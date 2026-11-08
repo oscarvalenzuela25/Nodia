@@ -8,6 +8,7 @@ import { observedModels } from '../../ai-provider/helpers/model-observation.help
 import type { AnalysisProgress } from './analysis-progress.js';
 import {
   API_INVOICE_SCHEMA,
+  GEMINI_API_INVOICE_SCHEMA,
   invoicePrompt,
   parseApiInvoice,
 } from './api-invoice-contract.js';
@@ -173,7 +174,7 @@ export class ApiProviderService {
     buffer: Buffer,
     mime: string,
     fields?: Record<string, unknown>,
-    tax = 19,
+    tax: number | null = 19,
     deadline?: AbortSignal,
     thinkingLevel?: ApiThinkingLevel,
     progress?: AnalysisProgress,
@@ -252,9 +253,15 @@ export class ApiProviderService {
           },
         ],
         generationConfig: {
-          responseMimeType: 'application/json',
-          responseJsonSchema: API_INVOICE_SCHEMA,
-          ...(thinkingLevel ? { thinkingConfig: { thinkingLevel: thinkingLevel.toUpperCase() } } : {}),
+          responseFormat: {
+            text: {
+              mimeType: 'APPLICATION_JSON',
+              schema: GEMINI_API_INVOICE_SCHEMA,
+            },
+          },
+          ...(thinkingLevel
+            ? { thinkingConfig: { thinkingLevel: thinkingLevel.toUpperCase() } }
+            : {}),
         },
       },
       deadline,

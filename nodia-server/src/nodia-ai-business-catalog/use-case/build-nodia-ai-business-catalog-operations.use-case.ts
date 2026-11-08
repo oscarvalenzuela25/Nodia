@@ -27,9 +27,18 @@ import { CreateProductLogDto } from '../../product/dto/create-product-log.dto.js
 import { UpdateProductLogDto } from '../../product/dto/update-product-log.dto.js';
 import { CreateProductUseCase } from '../../product/use-case/create-product.use-case.js';
 import { UpdateProductUseCase } from '../../product/use-case/update-product.use-case.js';
+import {
+  validateBarcode,
+  validateCatalogProduct,
+} from '../../product/product-catalog.js';
+import type { Product } from '../../product/entities/product.entity.js';
 import { CreateProductLogUseCase } from '../../product/use-case/create-product-log.use-case.js';
 import { UpdateProductLogUseCase } from '../../product/use-case/update-product-log.use-case.js';
 import { isFinanceBigint } from '../../finance-common/validation/finance-validation.js';
+import {
+  assertBusinessesAccess,
+  assertBusinessResourcesAccess,
+} from '../../business-access/business-access.js';
 import type {
   NodiaAiJsonObject,
   NodiaAiJsonValue,
@@ -57,11 +66,10 @@ type Writer = (
   input: Input,
   context: ProposalPreparerContext,
 ) => Promise<{ id: string } | void>;
-const route = '/tools/business';
+const route = '/business';
 const numbers = [
   'cost_price',
   'cost_price_tax',
-  'profit_percentage',
   'sale_price',
   'stock',
 ];
@@ -123,9 +131,12 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
               name: 'string',
               cost_price: 'integer',
               cost_price_tax: 'integer',
-              profit_percentage: 'integer',
               sale_price: 'integer',
               stock: 'integer',
+              barcode: 'string',
+              offer_price: 'integer',
+              is_offer_enabled: 'boolean',
+              has_stock: 'boolean',
               ...(resourceKey === 'products'
                 ? {
                     business_id: 'business_id',
@@ -143,7 +154,9 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
             ? ['name']
             : [
                 ...snapshotFields.filter((key) => key !== 'stock'),
-                ...(resourceKey === 'product_logs' ? ['product_id'] : []),
+                ...(resourceKey === 'product_logs'
+                  ? ['product_id']
+                  : ['has_stock']),
               ];
     this.outputKeys = {
       id:
@@ -170,17 +183,30 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
       )
       .digest('hex');
     this.reviewFields = Object.keys(this.editableFields)
-      .filter((key) => ['name', 'code', 'is_active', ...numbers].includes(key))
+      .filter((key) =>
+        [
+          'name',
+          'code',
+          'barcode',
+          'has_stock',
+          'is_offer_enabled',
+          'offer_price',
+          'is_active',
+          ...numbers,
+        ].includes(key),
+      )
       .map((field_key) => ({
         field_key,
         label_key: `nodiaAi:proposal.business_fields.${field_key}`,
-        kind:
-          field_key === 'is_active'
-            ? 'boolean'
-            : numbers.includes(field_key)
-              ? 'integer'
-              : 'text',
-        nullable: false,
+        kind: ['is_active', 'has_stock', 'is_offer_enabled'].includes(field_key)
+          ? 'boolean'
+          : numbers.includes(field_key) || field_key === 'offer_price'
+            ? 'integer'
+            : 'text',
+        nullable:
+          ['barcode', 'offer_price'].includes(field_key) ||
+          (resourceKey === 'product_logs' &&
+            ['has_stock', 'is_offer_enabled'].includes(field_key)),
         max_length:
           numbers.includes(field_key) || field_key === 'is_active' ? null : 255,
         minimum: numbers.includes(field_key)
@@ -201,7 +227,34 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
     )
       invalid();
     for (const [key, value] of Object.entries(command)) {
-      if (value === null && key !== 'provider_id') invalid();
+      if (
+        value === null &&
+        ![
+          'provider_id',
+          'barcode',
+          'offer_price',
+          ...(this.resourceKey === 'product_logs'
+            ? ['has_stock', 'is_offer_enabled']
+            : []),
+        ].includes(key)
+      )
+        invalid();
+      if (key === 'barcode') validateBarcode(value);
+      if (
+        key === 'offer_price' &&
+        value !== null &&
+        (typeof value !== 'number' ||
+          !Number.isInteger(value) ||
+          value < 0 ||
+          value > 2147483647)
+      )
+        invalid();
+      if (
+        ['has_stock', 'is_offer_enabled'].includes(key) &&
+        value !== null &&
+        typeof value !== 'boolean'
+      )
+        invalid();
       if (
         numbers.includes(key) &&
         (typeof value !== 'number' ||
@@ -212,7 +265,9 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
         invalid();
       if (
         ['name', 'code'].includes(key) &&
-        (typeof value !== 'string' || !value.trim() || Array.from(value).length > 255)
+        (typeof value !== 'string' ||
+          !value.trim() ||
+          Array.from(value).length > 255)
       )
         invalid();
       if (key === 'provider_id' && value !== null && !isFinanceBigint(value))
@@ -237,7 +292,8 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
           new Set(user.action_ids).size !== user.action_ids.length ||
           (user.position !== undefined &&
             user.position !== null &&
-            (typeof user.position !== 'string' || Array.from(user.position).length > 255))
+            (typeof user.position !== 'string' ||
+              Array.from(user.position).length > 255))
         )
           invalid();
         ids.add(user.user_id as string);
@@ -332,11 +388,15 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
         if (
           origin !== 'user' &&
           !(
-            origin === 'contract_default' &&
-            this.operation === 'create' &&
-            ((key === 'stock' && input.command[key] === 0) ||
-              (key === 'is_active' && input.command[key] === true) ||
-              (key === 'provider_id' && input.command[key] === null))
+            (origin === 'contract_default' &&
+              this.operation === 'create' &&
+              ((key === 'stock' && input.command[key] === 0) ||
+                (key === 'is_active' && input.command[key] === true) ||
+                (key === 'provider_id' && input.command[key] === null))) ||
+            (origin === 'contract_default' &&
+              key === 'is_offer_enabled' &&
+              input.command[key] === false &&
+              this.operation === 'create')
           )
         )
           invalid();
@@ -413,6 +473,52 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
       userId: context.actor.actorId,
       sessionId: context.actor.sessionId,
     });
+    if (this.resourceKey !== 'businesses') {
+      const reference = { userId: actor.actorId, sessionId: actor.sessionId };
+      const businessIds = [input.businessId, input.command.business_id].filter(
+        (id): id is string => typeof id === 'string',
+      );
+      await assertBusinessesAccess(context.manager, reference, businessIds, {
+        lock: true,
+      });
+      if (
+        input.id &&
+        (mutation ||
+          (await this.store.target(
+            context.manager,
+            this.resourceKey,
+            input.id,
+          )))
+      )
+        await assertBusinessResourcesAccess(
+          context.manager,
+          reference,
+          this.resourceKey,
+          [input.id],
+        );
+      if (
+        mutation &&
+        this.resourceKey === 'product_logs' &&
+        typeof input.command.product_id === 'string'
+      )
+        await assertBusinessResourcesAccess(
+          context.manager,
+          reference,
+          'products',
+          [input.command.product_id],
+        );
+      if (
+        mutation &&
+        this.resourceKey === 'products' &&
+        typeof input.command.provider_id === 'string'
+      )
+        await assertBusinessResourcesAccess(
+          context.manager,
+          reference,
+          'providers',
+          [input.command.provider_id],
+        );
+    }
     if (
       this.resourceKey === 'businesses' &&
       this.operation !== 'create' &&
@@ -504,7 +610,12 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
         this.resourceKey === 'businesses'
           ? { is_active: true }
           : this.resourceKey === 'products'
-            ? { stock: 0, is_active: true, provider_id: null }
+            ? {
+                stock: 0,
+                is_active: true,
+                provider_id: null,
+                is_offer_enabled: false,
+              }
             : { stock: 0 };
       for (const [key, value] of Object.entries(defaults))
         if (!Object.hasOwn(input.command, key)) {
@@ -566,9 +677,17 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
     }
     if (this.resourceKey === 'products') {
       const fields = Object.fromEntries(
-        snapshotFields.map((key) => [
+        [
+          ...snapshotFields,
+          'barcode',
+          'offer_price',
+          'is_offer_enabled',
+          'has_stock',
+        ].map((key) => [
           key,
-          Object.hasOwn(input.command, key) ? input.command[key] : target![key],
+          Object.hasOwn(input.command, key)
+            ? input.command[key]
+            : (target?.[key] ?? null),
         ]),
       );
       changes.push({
@@ -732,14 +851,14 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
     step: StoredProposalStep,
     context: ProposalPreparerContext,
   ): Promise<void> {
-    await this.authority(
-      this.decode(step.commandTemplate, true),
-      context,
-      true,
-    );
-    await this.verifyAuthority(step, context);
     let snapshot: NodiaAiJsonObject;
     try {
+      await this.authority(
+        this.decode(step.commandTemplate, true),
+        context,
+        true,
+      );
+      await this.verifyAuthority(step, context);
       snapshot = await this.snapshot(
         this.decode(step.commandTemplate, true),
         context,
@@ -802,6 +921,11 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
         : await this.store.target(manager, this.resourceKey, input.id!);
     if (this.operation !== 'create' && !target)
       throw new NotFoundException('Resource not found');
+    if (this.resourceKey === 'products')
+      validateCatalogProduct(
+        { ...target, ...input.command } as unknown as Partial<Product>,
+        this.operation === 'create',
+      );
     const result: NodiaAiJsonObject = { schema_version: 1, target };
     if (this.resourceKey === 'businesses') {
       if (this.operation === 'create') return result;
@@ -846,7 +970,8 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
         const ids = [
           ...new Set(users.flatMap((user) => user.action_ids as string[])),
         ];
-        if (ids.length > limit) throw new ConflictException('nodia_ai:result_too_large');
+        if (ids.length > limit)
+          throw new ConflictException('nodia_ai:result_too_large');
         result.actions = await this.store.actions(manager, ids);
         if (
           (result.actions as NodiaAiJsonObject[]).length !== ids.length ||
@@ -912,6 +1037,15 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
     const businessIds = [
       ...new Set([input.businessId!, destinationBusiness]),
     ].sort();
+    await assertBusinessesAccess(
+      manager,
+      {
+        userId: context.actor.actorId,
+        sessionId: context.actor.sessionId,
+      },
+      businessIds,
+      { lock: true },
+    );
     result.businesses = [];
     for (const id of businessIds) {
       const business = await this.store.business(manager, id);
@@ -980,6 +1114,10 @@ export class BuildNodiaAiBusinessCatalogOperationsUseCase {
           createProduct.execute(
             commandDto(CreateProductDto, input.command),
             context.manager,
+            {
+              userId: context.actor.actorId,
+              sessionId: context.actor.sessionId,
+            },
           ),
       ),
       new BusinessCatalogOperation(
@@ -991,6 +1129,10 @@ export class BuildNodiaAiBusinessCatalogOperationsUseCase {
             input.id!,
             commandDto(UpdateProductDto, input.command),
             context.manager,
+            {
+              userId: context.actor.actorId,
+              sessionId: context.actor.sessionId,
+            },
           ),
       ),
       new BusinessCatalogOperation(
@@ -1001,6 +1143,10 @@ export class BuildNodiaAiBusinessCatalogOperationsUseCase {
           createLog.execute(
             commandDto(CreateProductLogDto, input.command),
             context.manager,
+            {
+              userId: context.actor.actorId,
+              sessionId: context.actor.sessionId,
+            },
           ),
       ),
       new BusinessCatalogOperation(
@@ -1012,6 +1158,10 @@ export class BuildNodiaAiBusinessCatalogOperationsUseCase {
             input.id!,
             commandDto(UpdateProductLogDto, input.command),
             context.manager,
+            {
+              userId: context.actor.actorId,
+              sessionId: context.actor.sessionId,
+            },
           ),
       ),
     ]);

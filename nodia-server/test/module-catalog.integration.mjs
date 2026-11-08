@@ -20,6 +20,7 @@ import { ModuleModule } from '../dist/module/module.module.js';
 import { ModuleGroupModule } from '../dist/module-group/module-group.module.js';
 import { RedisService } from '../dist/common/redis/redis.service.js';
 import { DeleteModuleGroupUseCase } from '../dist/module-group/use-case/delete-module-group.use-case.js';
+import { AddModuleSortOrder1793200000000 } from '../dist/migrations/1793200000000-AddModuleSortOrder.js';
 
 const container = `template_module_catalog_${process.pid}_${randomBytes(4).toString('hex')}`;
 const password = randomBytes(20).toString('hex');
@@ -94,6 +95,17 @@ try {
     INSERT INTO user_modules(user_id,module_id) VALUES (1,100),(1,101);
     INSERT INTO translations(source_entity,source_id,source_key,locale,value) VALUES ('modules','100','key','es','Módulo de prueba'),('modules','101','key','es','Conservado'),('module_groups','11','key','es','Grupo de prueba'),('modules','11','key','es','Otro namespace');
   `);
+  const orderMigrationRunner = db.createQueryRunner();
+  try {
+    await orderMigrationRunner.startTransaction();
+    await new AddModuleSortOrder1793200000000().up(orderMigrationRunner);
+    await orderMigrationRunner.commitTransaction();
+  } catch (error) {
+    if (orderMigrationRunner.isTransactionActive) await orderMigrationRunner.rollbackTransaction();
+    throw error;
+  } finally {
+    await orderMigrationRunner.release();
+  }
   const testAuthority = await installAuthorityFixture(db, ['1']);
   const redis = {
     delByPattern: async (pattern) => {
@@ -222,7 +234,7 @@ try {
   assert.equal(invalidations, 4);
   // Force failure after assignment cleanup: the same transaction must restore it.
   await db.query(
-    `INSERT INTO module_groups(id,key) VALUES (20,'rollback'); INSERT INTO modules(id,module_group_id,key,link) VALUES(200,20,'rollback_module','/rollback'); INSERT INTO user_modules(user_id,module_id) VALUES(1,200); INSERT INTO translations(source_entity,source_id,source_key,locale,value) VALUES('modules','200','key','es','Rollback'); CREATE FUNCTION fail_module_delete() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF OLD.id=200 THEN RAISE EXCEPTION 'synthetic rollback'; END IF; RETURN OLD; END $$; CREATE TRIGGER fail_module_delete BEFORE DELETE ON modules FOR EACH ROW EXECUTE FUNCTION fail_module_delete();`,
+    `INSERT INTO module_groups(id,key,sort_order) VALUES (20,'rollback',20); INSERT INTO modules(id,module_group_id,key,link,sort_order) VALUES(200,20,'rollback_module','/rollback',0); INSERT INTO user_modules(user_id,module_id) VALUES(1,200); INSERT INTO translations(source_entity,source_id,source_key,locale,value) VALUES('modules','200','key','es','Rollback'); CREATE FUNCTION fail_module_delete() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF OLD.id=200 THEN RAISE EXCEPTION 'synthetic rollback'; END IF; RETURN OLD; END $$; CREATE TRIGGER fail_module_delete BEFORE DELETE ON modules FOR EACH ROW EXECUTE FUNCTION fail_module_delete();`,
   );
   assert.equal((await call('module/200', 'DELETE')).status, 500);
   assert.equal(
@@ -243,11 +255,11 @@ try {
     'DROP TRIGGER fail_module_delete ON modules; DROP FUNCTION fail_module_delete();',
   );
   // A module association committed before deletion must be observed after the lock.
-  await db.query("INSERT INTO module_groups(id,key) VALUES(30,'insert_wins')");
+  await db.query("INSERT INTO module_groups(id,key,sort_order) VALUES(30,'insert_wins',30)");
   const writer = db.createQueryRunner();
   await writer.startTransaction();
   await writer.query(
-    "INSERT INTO modules(id,module_group_id,key,link) VALUES(300,30,'concurrent_child','/concurrent')",
+    "INSERT INTO modules(id,module_group_id,key,link,sort_order) VALUES(300,30,'concurrent_child','/concurrent',0)",
   );
   let completed = false;
   const removing = call('module-group/30', 'DELETE').then((value) => {
@@ -260,7 +272,7 @@ try {
   await writer.release();
   assert.equal((await removing).status, 409);
   // A locked parent being deleted prevents a simultaneous new association.
-  await db.query("INSERT INTO module_groups(id,key) VALUES(31,'delete_wins')");
+  await db.query("INSERT INTO module_groups(id,key,sort_order) VALUES(31,'delete_wins',31)");
   const appDb = app.get(DataSource),
     originalTransaction = appDb.transaction.bind(appDb);
   let lockedResolve, continueResolve;
@@ -285,7 +297,7 @@ try {
   await locked;
   const associating = db
     .query(
-      "INSERT INTO modules(id,module_group_id,key,link) VALUES(301,31,'blocked_child','/blocked')",
+      "INSERT INTO modules(id,module_group_id,key,link,sort_order) VALUES(301,31,'blocked_child','/blocked',0)",
     )
     .then(
       () => 'inserted',
@@ -320,5 +332,5 @@ try {
 } finally {
   if (app) await app.close();
   if (db?.isInitialized) await db.destroy();
-  if (started) docker('rm', '--force', container);
+  if (started) docker('rm', '--force', '--volumes', container);
 }

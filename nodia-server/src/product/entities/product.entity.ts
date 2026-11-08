@@ -13,11 +13,17 @@ import {
 import { Business } from '../../business/entities/business.entity.js';
 import { Provider } from '../../provider/entities/provider.entity.js';
 import { ProductLog } from './product-log.entity.js';
+import type { ProductMeasurementUnit } from '../product-measurement-unit.js';
 
 @Entity({
   name: 'products',
 })
 @Index('uq_business_product_code', ['business_id', 'code'], { unique: true })
+@Index('uq_products_business_id_id', ['business_id', 'id'], { unique: true })
+@Index('uq_products_business_barcode', ['business_id', 'barcode'], {
+  unique: true,
+  where: '"barcode" IS NOT NULL',
+})
 export class Product {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;
@@ -30,8 +36,14 @@ export class Product {
   @Column({ type: 'bigint', nullable: true })
   provider_id: string | null;
 
-  @Column({ type: 'varchar', length: 255 })
-  code: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  code: string | null;
+
+  @Column({ type: 'varchar', length: 16, default: 'unit' })
+  measurement_unit: ProductMeasurementUnit;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  barcode: string | null;
 
   @Column({ type: 'varchar', length: 255 })
   name: string;
@@ -43,10 +55,31 @@ export class Product {
   cost_price_tax: number;
 
   @Column({ type: 'integer' })
-  profit_percentage: number;
-
-  @Column({ type: 'integer' })
   sale_price: number;
+
+  @Column({ type: 'integer', nullable: true })
+  offer_price: number | null;
+
+  @Column({ type: 'boolean', default: false })
+  is_offer_enabled: boolean;
+
+  @Column({ type: 'boolean', nullable: true })
+  has_stock: boolean | null;
+
+  @Column({ type: 'integer', default: 1 })
+  version: number;
+
+  effective_price?: string | null;
+  price_source?: 'regular' | 'offer' | null;
+  previous_price_snapshot?: ProductLog | null;
+  image?: {
+    id: string;
+    url: string;
+    mime_type: string;
+    width: number;
+    height: number;
+    byte_size: number;
+  } | null;
 
   @Column({ type: 'integer', default: 0 })
   stock: number;

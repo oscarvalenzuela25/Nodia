@@ -8,6 +8,10 @@ import * as businessServices from "../../../../../../../modules/business/infrast
 import type { ProductEntity, ProviderEntity, ProductLogEntity } from "../../../../../../../modules/business/infrastructure/types";
 import { sileo } from "sileo";
 
+vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductImageModal", () => ({
+  default: ({ product, businessId, onClose }: { product: ProductEntity; businessId: string; onClose: () => void }) => <div role="dialog" aria-label="Image viewer boundary"><span>{businessId}:{product.id}</span><button onClick={onClose}>Close image viewer</button></div>,
+}));
+
 vi.mock("sileo", () => ({
   sileo: {
     info: vi.fn(),
@@ -46,7 +50,6 @@ const mockProductLogs: ProductLogEntity[] = [
     name: "Café de Especialidad 250g",
     cost_price: 5000,
     cost_price_tax: 5950,
-    profit_percentage: 40,
     sale_price: 8330,
     stock: 25,
     created_at: "2026-09-20T14:30:00Z",
@@ -59,7 +62,6 @@ const mockProductLogs: ProductLogEntity[] = [
     name: "Café de Especialidad 250g Antiguo",
     cost_price: 4000,
     cost_price_tax: 4760,
-    profit_percentage: 30,
     sale_price: 6188,
     stock: 15,
     created_at: "2026-08-01T10:00:00Z",
@@ -72,7 +74,6 @@ const mockProductLogs: ProductLogEntity[] = [
     name: "Té Matcha Premium",
     cost_price: 12000,
     cost_price_tax: 14280,
-    profit_percentage: 35,
     sale_price: 19278,
     stock: 5,
     created_at: "2026-09-21T10:15:00Z",
@@ -85,7 +86,6 @@ const mockProductLogs: ProductLogEntity[] = [
     name: "Té Matcha Premium Anterior",
     cost_price: 15000,
     cost_price_tax: 17850,
-    profit_percentage: 40,
     sale_price: 24990,
     stock: 10,
     created_at: "2026-07-15T09:00:00Z",
@@ -113,7 +113,6 @@ const mockProducts: ProductEntity[] = [
     name: "Café de Especialidad 250g",
     cost_price: 5000,
     cost_price_tax: 5950,
-    profit_percentage: 40,
     sale_price: 8330,
     stock: 25,
     is_active: true,
@@ -129,7 +128,6 @@ const mockProducts: ProductEntity[] = [
     name: "Té Matcha Premium",
     cost_price: 12000,
     cost_price_tax: 14280,
-    profit_percentage: 35,
     sale_price: 19278,
     stock: 5,
     is_active: false,
@@ -160,10 +158,40 @@ const mockMobile = () => vi.spyOn(window, "matchMedia").mockImplementation((quer
 afterEach(() => vi.restoreAllMocks());
 
 describe("ProductsTab Component", () => {
+  it("opens the image column viewer for the selected product and keeps the name cell free of thumbnails", async () => {
+    renderWithClient(<ProductsTab businessId="biz-123" />);
+    expect(await screen.findByRole("columnheader", { name: "Imagen" })).toBeInTheDocument();
+    const row = await screen.findByRole("row", { name: /Café de Especialidad 250g/ });
+    expect(within(row).queryByRole("img")).not.toBeInTheDocument();
+    await user.click(within(row).getByRole("button", { name: "Ver imagen de Café de Especialidad 250g" }));
+    expect(screen.getByRole("dialog", { name: "Image viewer boundary" })).toHaveTextContent(`biz-123:${mockProducts[0].id}`);
+    await user.click(screen.getByRole("button", { name: "Close image viewer" }));
+    expect(screen.queryByRole("dialog", { name: "Image viewer boundary" })).not.toBeInTheDocument();
+    expect(businessServices.updateProduct).not.toHaveBeenCalled();
+    expect(businessServices.createProduct).not.toHaveBeenCalled();
+  });
+  it("shows the loaded thumbnail and enabled offer while retaining a name-only cell and the existing image viewer", async () => {
+    const product = { ...mockProducts[0], barcode: "00001234", offer_price: 9000, is_offer_enabled: true,
+      image: { id: "image-1", url: "https://example.test/synthetic.jpg", mime_type: "image/jpeg", width: 400, height: 300, byte_size: 1024 } };
+    vi.mocked(businessServices.getProducts).mockResolvedValue({ data: [product], meta: { total_items: 1, page: 1, limit: 25, total_pages: 1 } });
+    renderWithClient(<ProductsTab businessId="biz-123" />);
+    const row = await screen.findByRole("row", { name: /Café de Especialidad 250g/ });
+    const nameCell = within(row).getByText(product.name).closest("td")!;
+    expect(nameCell).toHaveTextContent(/^Café de Especialidad 250g$/);
+    expect(within(row).queryByText(product.barcode)).not.toBeInTheDocument();
+    expect(within(row).getByText("Oferta: $9.000 x unidad")).toBeInTheDocument();
+    expect(within(row).getByText("Normal: $8.330 x unidad")).toBeInTheDocument();
+    expect(within(row).getByAltText("")).toHaveAttribute("src", product.image.url);
+    await user.click(within(row).getByRole("button", { name: `Ver imagen de ${product.name}` }));
+    expect(screen.getByRole("dialog", { name: "Image viewer boundary" })).toHaveTextContent(`biz-123:${product.id}`);
+    expect(businessServices.updateProduct).not.toHaveBeenCalled();
+    expect(businessServices.createProduct).not.toHaveBeenCalled();
+  });
   const user = userEvent.setup();
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockProducts.forEach((product) => { product.previous_price_snapshot = null; });
     window.URL.createObjectURL = vi.fn(() => "blob:mock-url");
     window.URL.revokeObjectURL = vi.fn();
     vi.mocked(businessServices.exportProductsCsv).mockResolvedValue("Code (code),Name (name)\nPROD-001,Café");
@@ -205,12 +233,12 @@ describe("ProductsTab Component", () => {
     expect(screen.getByText(/\$5[.,\s]?950/)).toBeInTheDocument();
     expect(screen.getByText(/\$14[.,\s]?280/)).toBeInTheDocument();
 
-    // Verify Última actualización header
-    expect(screen.getByText("Última actualización")).toBeInTheDocument();
-
-    // Verify stock dots
-    expect(screen.getByTestId("stock-dot-prod-1")).toBeInTheDocument();
-    expect(screen.getByTestId("stock-dot-prod-2")).toBeInTheDocument();
+    // Additional status columns start collapsed without losing the product data.
+    expect(screen.queryByRole("columnheader", { name: "Última actualización" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: "Disponibilidad" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: "Estado" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Por confirmar")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("stock-dot-prod-2")).not.toBeInTheDocument();
 
     // Verify initial call to getProducts with table pagination params
     expect(businessServices.getProducts).toHaveBeenCalledWith(
@@ -227,6 +255,60 @@ describe("ProductsTab Component", () => {
     // Verify default pagination rows per page is 25
     expect(screen.getByRole("combobox")).toHaveTextContent("25");
     expect(screen.getByText(/1–2 de 2|1–2 of 2/i)).toBeInTheDocument();
+  });
+
+  it("toggles the three additional columns for current and expanded historical rows without refetching or replacing actions", async () => {
+    mockProducts[0].previous_price_snapshot = mockProductLogs[1];
+    renderWithClient(<ProductsTab businessId="biz-123" />);
+    const row = await screen.findByRole("row", { name: /Café de Especialidad 250g/ });
+    const nameCell = within(row).getByText(mockProducts[0].name).closest("td");
+    const actions = within(row).getByTestId("product-actions-btn-prod-1");
+    const expand = within(row).getByTestId("expand-product-btn-prod-1");
+    await user.click(expand);
+    const historical = screen.getByTestId("historical-row-prod-1");
+    expect(within(row).getAllByRole("cell")).toHaveLength(8);
+    expect(within(historical).getAllByRole("cell")).toHaveLength(8);
+    const reads = vi.mocked(businessServices.getProducts).mock.calls.length;
+    const historyReads = vi.mocked(businessServices.getProductLogs).mock.calls.length;
+    const toggle = screen.getByRole("button", { name: "Mostrar disponibilidad, estado y última actualización" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    toggle.focus();
+    await user.keyboard("{Enter}");
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(toggle).toHaveAccessibleName("Ocultar disponibilidad, estado y última actualización");
+    expect(toggle).toHaveFocus();
+    for (const name of ["Disponibilidad", "Estado", "Última actualización"]) expect(screen.getByRole("columnheader", { name })).toBeInTheDocument();
+    expect(within(row).getAllByRole("cell")).toHaveLength(11);
+    expect(within(historical).getAllByRole("cell")).toHaveLength(11);
+    expect(within(row).getByText("Por confirmar")).toBeInTheDocument();
+    expect(within(historical).getByText("Por confirmar")).toBeInTheDocument();
+    expect(within(row).getByText(mockProducts[0].name).closest("td")).toBe(nameCell);
+    expect(within(row).getByTestId("product-actions-btn-prod-1")).toBe(actions);
+    await user.keyboard(" ");
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(within(row).getAllByRole("cell")).toHaveLength(8);
+    expect(within(historical).getAllByRole("cell")).toHaveLength(8);
+    expect(screen.getByTestId("historical-row-prod-1")).toBe(historical);
+    expect(within(row).getByTestId("product-actions-btn-prod-1")).toBe(actions);
+    expect(businessServices.getProducts).toHaveBeenCalledTimes(reads);
+    expect(businessServices.getProductLogs).toHaveBeenCalledTimes(historyReads);
+    expect(businessServices.createProduct).not.toHaveBeenCalled();
+    expect(businessServices.updateProduct).not.toHaveBeenCalled();
+  });
+
+  it("keeps the empty row spanning the visible table columns when additional headers toggle", async () => {
+    vi.mocked(businessServices.getProducts).mockResolvedValue({ data: [], meta: { total_items: 0, page: 1, limit: 25, total_pages: 0 } });
+    renderWithClient(<ProductsTab businessId="biz-123" />);
+    const toggle = await screen.findByRole("button", { name: "Mostrar disponibilidad, estado y última actualización" });
+    const empty = screen.getByRole("cell");
+    expect(empty).toHaveAttribute("colspan", "8");
+    expect(screen.getAllByRole("columnheader")).toHaveLength(8);
+    await user.click(toggle);
+    expect(empty).toHaveAttribute("colspan", "11");
+    expect(screen.getAllByRole("columnheader")).toHaveLength(11);
+    await user.click(toggle);
+    expect(empty).toHaveAttribute("colspan", "8");
+    expect(screen.getAllByRole("columnheader")).toHaveLength(8);
   });
 
   it("paginates products and requests new page when clicking next page button", async () => {
@@ -521,6 +603,8 @@ describe("ProductsTab Component", () => {
   });
 
   it("renders expand icon, price variation indicators, and toggles historical sub-row", async () => {
+    mockProducts[0].previous_price_snapshot = mockProductLogs[1];
+    mockProducts[1].previous_price_snapshot = mockProductLogs[3];
     vi.mocked(businessServices.getProductLogs).mockResolvedValue({
       data: mockProductLogs,
       meta: { total_items: 4, page: 1, limit: 100, total_pages: 1 },
@@ -571,6 +655,8 @@ describe("ProductsTab Component", () => {
   });
 
   it("filters products by price change status (increased, decreased, unchanged)", async () => {
+    mockProducts[0].previous_price_snapshot = mockProductLogs[1];
+    mockProducts[1].previous_price_snapshot = mockProductLogs[3];
     vi.mocked(businessServices.getProductLogs).mockResolvedValue({
       data: mockProductLogs,
       meta: { total_items: 4, page: 1, limit: 100, total_pages: 1 },
@@ -629,6 +715,8 @@ describe("ProductsTab Component", () => {
 
   it("shows mobile product cards with the same historical comparison and edit target", async () => {
     mockMobile();
+    mockProducts[0].previous_price_snapshot = mockProductLogs[1];
+    mockProducts[1].previous_price_snapshot = mockProductLogs[3];
     vi.mocked(businessServices.getProductLogs).mockResolvedValue({ data: mockProductLogs, meta: { page: 1, limit: 100, total_items: mockProductLogs.length, total_pages: 1 } });
     renderWithClient(<ProductsTab businessId="biz-123" />);
     const card = await screen.findByRole("article", { name: "Café de Especialidad 250g" });

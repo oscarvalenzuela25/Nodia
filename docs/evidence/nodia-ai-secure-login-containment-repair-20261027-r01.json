@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "status": "operational_containment_repaired_and_kernel_closure_verified",
+  "source_release": "/opt/nodia/releases/nodia-server-image-generation-r06",
+  "source_manifest_sha256": "a6c2711b188c2c76b695d4579516f96080c2476f4118332a787ce452ab95709f",
+  "native_container_id": "858af71fd752147f3037a288c2a4ec147bd802a7142a4d4dc2319c3b8c6b4cbe",
+  "native_image_id": "sha256:fda9b4768248d27abad8bff705f70256a5a24783613e2a13728255da29083a71",
+  "native_started_at": "2026-10-27T00:46:49.162548662Z",
+  "codex_expired_execution": "45780b6b-52b1-40f3-b2f1-cdbecdc4b080",
+  "codex_login_closed": {
+    "state": "cancelled",
+    "acknowledged": true,
+    "owner_alive": false,
+    "native_alive": false,
+    "profile_lock_present": false
+  },
+  "antigravity_execution": "61d960cd-4574-4f60-af8b-73af6a0214d8",
+  "antigravity_request": "5f509aa5-3949-45f5-9592-56423c55c4db",
+  "actual_rejection": {
+    "HTTP_status": 503,
+    "code": "login_containment_unavailable",
+    "duration_ms": 7,
+    "following_GET_status": 404,
+    "following_GET_code": "login_not_found",
+    "login_supervisor_not_started": true
+  },
+  "before": {
+    "public_containment_proof_exists": false,
+    "delegated_mount_count": 0
+  },
+  "repair": {
+    "maintained_helper": "/usr/local/libexec/nodia/attach-gemini-chat-cgroup-r04.py",
+    "sha256": "438b1941808b6156b6f96390c769b65ac1fa96144b11ac73bd94c60d209a64a7",
+    "attached": true,
+    "same_container_image_start": true,
+    "restart": false,
+    "SDK_calls": 0,
+    "capabilities_added": false,
+    "resource_limits_changed": false,
+    "profile_data_changed_by_attachment": false
+  },
+  "kernel_test": {
+    "owned_sleep_processes_and_setsid_descendant_closed": true,
+    "kernel_populated_zero": true,
+    "test_group_removed": true,
+    "root_cgroup_kill_not_attempted": true
+  },
+  "ordinary_recovery": {
+    "performed_by_existing_compiled_worker_UC": true,
+    "manual_SQL_writes": 0,
+    "native_tombstone_state": "cancelled",
+    "native_closure_proof": "never_dispatched",
+    "acknowledged": true,
+    "SQL_execution_state": "failed",
+    "SQL_descriptor_status": "expired",
+    "SQL_revision": 7,
+    "SQL_native_request": null
+  },
+  "persistence": {
+    "systemd_ExecStartPost_contains_current_helper": true,
+    "unit_modified": false,
+    "gap": "Direct DockerAPI recreation bypassed the existing systemd post-start helper.",
+    "canonical_lifecycle": "Start/restart via nodia-gemini-lab; direct Docker/Compose lifecycle must explicitly execute the installed post-step and verify its certificate before readiness.",
+    "temporary_dependency_required": false,
+    "automatic_Docker_to_systemd_hook_claimed": false
+  },
+  "qualification_wrappers": {
+    "prepared": true,
+    "executed_by_this_task": false,
+    "SDK_generations": 0,
+    "future_proof_not_inherited": true
+  },
+  "secrets": {
+    "human_codes_or_provider_URLs_emitted": false,
+    "account_credential_files_read": false,
+    "database_credentials_used_only_in_private_reader": true
+  },
+  "limits": [
+    "New human login acceptance remains a separate real UI operation.",
+    "Post-login MCP generation must be observed and qualified afresh.",
+    "No claim that the repaired container was restarted or rebuilt."
+  ],
+  "artifact_readme": "ops/lab/artifacts/nodia-ai-six-login-containment-r01/README.md",
+  "receipts": {
+    "receipts/codex-login-closed.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-login-containment-r01/receipts/codex-login-closed.json",
+      "sha256": "543f947129fff0ecd1529659e39793b47ff344ef0f200bdda6c93bfb4a52d9dd"
+    },
+    "receipts/secure-sql-before.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-login-containment-r01/receipts/secure-sql-before.json",
+      "sha256": "f73497811224d2f5d1a93d6537b93b5e8db0bb789b0c3edf98726ad09e64ea52"
+    },
+    "receipts/secure-sql-after.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-login-containment-r01/receipts/secure-sql-after.json",
+      "sha256": "28eae46aa5723191011fc5a56a73a07a38a09adf6f30b7c87c2c124287c32e7a"
+    },
+    "receipts/native-login-closed-log.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-login-containment-r01/receipts/native-login-closed-log.json",
+      "sha256": "c8c9c0f0dd4563a996ee2511ee69911513a112c2afd5ac67c4333fd99f7cce5b"
+    },
+    "receipts/containment-before.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-login-containment-r01/receipts/containment-before.json",
+      "sha256": "8cf068e7221bc2279901d6a69609866d330917c5d6fa9d78cfa39866b0d35a9f"
+    },
+    "receipts/containment-attach.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-login-containment-r01/receipts/containment-attach.json",
+      "sha256": "1d58ee20b1a19714d9745c0ca1176f3a1b04303236de07d1b6e4213040a27e59"
+    },
+    "receipts/owned-process-test.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-login-containment-r01/receipts/owned-process-test.json",
+      "sha256": "37fca50581e9656f648553d020a602858244b61c8beb22ae2d1aa46818bed577"
+    },
+    "receipts/unit-post-start.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-login-containment-r01/receipts/unit-post-start.json",
+      "sha256": "f146335e934e14bf8c744d1b0d873612221be9793769b333f2e25e67a53a09c4"
+    },
+    "receipts/actual-cancel-tombstone.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-login-containment-r01/receipts/actual-cancel-tombstone.json",
+      "sha256": "f627e48056ba4f05e62f0e4edf1c165831c06d2736b4b2d685467c8f79016215"
+    }
+  }
+}

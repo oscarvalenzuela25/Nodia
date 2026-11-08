@@ -14,7 +14,7 @@ Este modulo contiene la experiencia principal de inicio (`/`) para visitantes en
 
 ## Reglas del modulo
 
-1. Esta pantalla usa `Guard`, que permite modo demo sin sesión. Las rutas `/settings/*` usan `GuardStrict` y requieren sesión validada más el módulo asignado. El detalle del contrato está en `docs/mvp/14-authentication.md` desde la raíz del repositorio.
+1. Esta pantalla usa `Guard`, que permite modo demo sin sesión. Los destinos funcionales privados usan `GuardStrict` con la ruta canónica del recurso, independiente del grupo del menú, y requieren sesión validada más el módulo asignado. Ver ADR-092 y `docs/mvp/14-authentication.md` desde la raíz del repositorio.
 2. Todo texto visible debe usar `t("home:key")` o `t("translate:key")`.
 3. Si agregas nuevas claves, mapear en:
    - `src/translate/es/home.json`

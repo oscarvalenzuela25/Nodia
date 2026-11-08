@@ -24,7 +24,7 @@ import {
 } from '../../nodia-ai-proposal/types/local-operation.types.js';
 import { nodiaAiSecureOperationIdentity } from '../../nodia-ai-proposal/types/secure-operation.types.js';
 import {
-  secureDescriptor,
+  historicalSecureDescriptor,
   secureUuid,
 } from '../../nodia-ai-secure-flow/types/secure-flow.types.js';
 import { NodiaAiConfirmationAvailabilityUseCase } from './nodia-ai-confirmation-availability.use-case.js';
@@ -75,7 +75,8 @@ export class GetNodiaAiExecutionUseCase {
       loaded.execution,
       loaded.now,
       loaded.steps,
-      loaded.actor.actorId === loaded.execution.actor_id,
+      loaded.catalogCompatible &&
+        loaded.actor.actorId === loaded.execution.actor_id,
     );
   }
   async authorize(
@@ -221,7 +222,11 @@ export class GetNodiaAiExecutionUseCase {
           invalid();
         return [];
       }
-      const secure = nodiaAiSecureOperationIdentity(source.tool_name);
+      const secure =
+        nodiaAiSecureOperationIdentity(source.tool_name) ??
+        (source.tool_name === 'nodia_ai_providers_prepare_gemini_web_logout'
+          ? { kind: 'gemini_web_logout' as const }
+          : null);
       if (
         (!nodiaAiLocalOperationIdentity(source.tool_name) && !secure) ||
         !step.completed_at ||
@@ -232,7 +237,7 @@ export class GetNodiaAiExecutionUseCase {
       )
         return invalid();
       if (secure) {
-        const descriptor = secureDescriptor(step.recovery_descriptor);
+        const descriptor = historicalSecureDescriptor(step.recovery_descriptor);
         this.validate.assert('SecureFlowReceipt', step.minimal_receipt, true);
         if (
           !step.minimal_receipt ||

@@ -1,0 +1,409 @@
+{
+  "schema_version": 1,
+  "status": "implemented_and_deployed_verified",
+  "updated_at": "2026-10-29T19:31:16.846570+00:00",
+  "scope": [
+    "Product editor field order, label help and alternate-price alignment",
+    "Local large image preview and remove intention; persistence only on Save",
+    "Sequential product-fields and image persistence with explicit partial-failure recovery",
+    "Readable version-conflict comparison table"
+  ],
+  "contract_decisions": {
+    "new_product_offer_price_default": 0,
+    "existing_null_offer_price": "preserved until explicit input",
+    "empty_offer_price": "null; invalid while alternate price is enabled",
+    "image_selection": "local until explicit Save; Cancel before Save performs no image mutation",
+    "save_sequence": "product fields then image operation; no global atomicity"
+  },
+  "implementation": "completed",
+  "verification": {
+    "backend_contract_source_review": "completed; existing product/image DTO and use cases unchanged",
+    "global_client_suite": {
+      "files_passed": 266,
+      "tests_passed": 2215,
+      "failed": 0,
+      "duration_seconds": 207,
+      "max_workers": 8,
+      "exit_code": 0,
+      "scope_note": "Global run preceded the last preview-transition regression and visual image-fit correction; final focused tests and browser checks cover those changes. No heavy build ran concurrently."
+    },
+    "focused_tests": {
+      "deferred_save_hook": 16,
+      "existing_products_tab": 14,
+      "product_modal": 11,
+      "shared_inputs": 7,
+      "final_image_draft": 9,
+      "failed": 0,
+      "image_draft_repeated_after_final_css": true
+    },
+    "typecheck": {
+      "exit_code": 0,
+      "included_again_in_final_build": true
+    },
+    "lint": {
+      "r01_exit_code": 0,
+      "r02_exit_code": 0
+    },
+    "build": {
+      "r01_exit_code": 0,
+      "r02_exit_code": 0,
+      "api_url": "/api/v1",
+      "existing_large_chunk_warning": true
+    },
+    "browser_ui": {
+      "transport": "isolated_synthetic_adapter",
+      "browser": "156.0.4314.50",
+      "profiles": [
+        {
+          "width": 320,
+          "lang": "es",
+          "theme": "dark"
+        },
+        {
+          "width": 390,
+          "lang": "es",
+          "theme": "dark"
+        },
+        {
+          "width": 600,
+          "lang": "en",
+          "theme": "light"
+        },
+        {
+          "width": 1569,
+          "lang": "es",
+          "theme": "dark"
+        },
+        {
+          "width": 1569,
+          "lang": "en",
+          "theme": "light"
+        }
+      ],
+      "checks": {
+        "five_visual_profiles": true,
+        "name_then_code_then_barcode_full_width": true,
+        "barcode_leading_zeros_preserved": true,
+        "no_page_horizontal_overflow": true,
+        "image_frame_220_xs_280_sm_plus": true,
+        "remove_touch_target_44_and_top_right": true,
+        "cancel_file_selection_no_mutation": true,
+        "new_without_image_creates_only_product": true,
+        "new_with_image_single_ordered_pipeline": true,
+        "lost_put_preserves_actual_blob_preview": true,
+        "lost_put_preserves_modal_fields": true,
+        "lost_put_recovers_without_replay": true,
+        "remove_local_until_save": true,
+        "help_click_and_keyboard": true,
+        "resize_preserves_fields_and_no_queries": true,
+        "comparison_table_600_cards_xs": true,
+        "comparison_distinguishes_null_and_zero": true,
+        "comparison_no_page_overflow": true
+      },
+      "receipt_sha256": "1664fbadfda2fb1464c629c4c7382cb9949b00e4d8c7775230a8ccc40fb15c33",
+      "mutations_to_real_data": 0,
+      "preview_preserved_after_lost_put": true,
+      "create_count_with_image": 1,
+      "file_put_count": 1,
+      "recovery_replays_file_put": false,
+      "cancel_before_save_mutations": 0,
+      "remove_before_save_delete_count": 0,
+      "remove_after_save_delete_count": 1,
+      "resize_extra_queries": 0,
+      "comparison_table_min_width": 650,
+      "comparison_mobile_cards": true,
+      "local_media_area_xs_height": 220,
+      "local_media_area_sm_height": 280,
+      "remove_hit_area": 44
+    },
+    "live_authenticated_ui": {
+      "read_only": true,
+      "release": "r02",
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      },
+      "image": {
+        "containerHeight": 278,
+        "containerWidth": 580,
+        "height": 278,
+        "loaded": true,
+        "objectFit": "contain",
+        "position": "absolute",
+        "width": 580
+      },
+      "remove": {
+        "height": 44,
+        "width": 44
+      },
+      "field_order": [
+        "product-name",
+        "product-code",
+        "product-barcode",
+        "product-cost-price",
+        "_r_27_",
+        "product-cost-price-tax",
+        "product-profit-percentage",
+        "product-sale-price",
+        "product-offer-price",
+        "_r_35_"
+      ],
+      "manual_upload_button": false,
+      "edits": 0,
+      "saves": 0,
+      "receipt_sha256": "345505696842b9d1888ba74fc993b591bf2a1a045c079280ad2aea5a0c63321a",
+      "screenshot_sha256": "bab19956a7496268337ce0bb9ad0a060a9bb487ce7860a41a487c4c2cbdba454",
+      "temporary_tab_closed": true,
+      "user_tab_untouched": true
+    },
+    "operator_tests": {
+      "r01_passed": 10,
+      "r02_passed": 10,
+      "failed": 0
+    },
+    "approved_files_unchanged": 44,
+    "frozen_inputs_unchanged": 1182,
+    "source_utf8_lf_checked": 18,
+    "source_scope": {
+      "added": [
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductImageDraft/ProductImageDraft.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductImageDraft/index.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductImageDraft/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/hooks/productSaveRecovery.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/hooks/useDeferredProductSave.ts",
+        "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductImageDraft/ProductImageDraft.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/hooks/useDeferredProductSave.test.tsx"
+      ],
+      "changed": [
+        "src/components/inputs/SelectSingleInput/SelectSingleInput.tsx",
+        "src/components/inputs/SelectSingleInput/types.ts",
+        "src/components/inputs/TextInput/TextInput.tsx",
+        "src/components/inputs/TextInput/types.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/ProductsTab.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductModal.tsx",
+        "src/test/components/inputs/SelectSingleInput/SelectSingleInput.test.tsx",
+        "src/test/components/inputs/TextInput/TextInput.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/ProductModal.test.tsx",
+        "src/translate/en/business.json",
+        "src/translate/es/business.json"
+      ],
+      "outside_authorized_scope": [],
+      "removed": []
+    },
+    "knowledge_check": {
+      "mode": "check_only",
+      "exit_code": 0,
+      "sources": 69,
+      "excluded": 25,
+      "documents": 44,
+      "fragments": 46,
+      "authoring_release_id": "e7dc4c2e840f8703edbd52132250394ab4458d1fbc24c6c35e9a1aeeaaf1a396",
+      "runtime_knowledge_changed": false
+    },
+    "diff_check_exit_code": 0
+  },
+  "vm_adoption": {
+    "active": {
+      "status": "activated_verified",
+      "release": "/opt/nodia/releases/nodia-client-product-editor-20261029-r02",
+      "manifest_sha256": "dfb13c9d5ed1b16746bf99204860ab0096e5cfc684acd3255044a3838bc72d39",
+      "config_sha256": "841af85b4fef6fdb27296dec9c1703bfade5b4275c075a37cae172734f3601a5",
+      "nginx_before_sha256": "d36fb74b8c2d613433a1184f3871fe3f80d39f3167a5cc0658f30771674aef9a",
+      "nginx_after_sha256": "edcab6c255254aef27ffbcbddadde14e877f39d9fae2491253140eed2f052998",
+      "index_sha256": "289408bf815b690100c284bdbab7b3dde8f871a63c930156e7b3b0fc128bd1dd",
+      "artifact": {
+        "bytes": 2163069,
+        "members": 173,
+        "sha256": "ed36db8c22128a02eda5f23f30c61191c7111e14be6dc26e1804414bca033fa3",
+        "unpacked_bytes": 4839496
+      },
+      "source_fingerprint_sha256": "7f5a3b0532d00b5adb8d93e12d9e8533d8d69db13687965980820b1323c007e1",
+      "source_delta": {
+        "added": [],
+        "changed": [
+          "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductImageDraft/styles.ts"
+        ],
+        "outside_authorized_scope": [],
+        "removed": []
+      },
+      "http": {
+        "current_assets": 169,
+        "previous_assets": 32,
+        "protected": [
+          {
+            "route": "/api/v1",
+            "status": 200
+          },
+          {
+            "route": "/api/v1/nodia-ai/connections",
+            "status": 401
+          },
+          {
+            "route": "/api/v1/products",
+            "status": 401
+          }
+        ],
+        "spa": [
+          {
+            "route": "/",
+            "sha256": "289408bf815b690100c284bdbab7b3dde8f871a63c930156e7b3b0fc128bd1dd",
+            "status": 200
+          },
+          {
+            "route": "/tools/nodia-ai",
+            "sha256": "289408bf815b690100c284bdbab7b3dde8f871a63c930156e7b3b0fc128bd1dd",
+            "status": 200
+          },
+          {
+            "route": "/tools/business",
+            "sha256": "289408bf815b690100c284bdbab7b3dde8f871a63c930156e7b3b0fc128bd1dd",
+            "status": 200
+          }
+        ]
+      },
+      "protected_runtime_preserved": true,
+      "status_runtime_matches_before": true,
+      "api_pid": "1864113",
+      "worker_pid": "1864114",
+      "server_manifest_sha256": "22f928167d186565cb08fed6eb0572d43263e0a0a424f235aad26e0c7063ef24",
+      "knowledge_release_id": "b49fde74a53483fad4fe80b8175b36bb7c337415097dd9cfa4349285f9e1e2ea",
+      "sql_queries": 0,
+      "provider_requests": 0,
+      "restart_requests": 0,
+      "nginx_backup_and_previous_release_preserved": true,
+      "activation_receipt_sha256": "2eae7ee8bf0e1759c6936a8812b2e2995e694f27a0f9ab91e27bbe69390a6f72",
+      "status_receipt_sha256": "2d1214b9514c32e0af98f752c73231f0721804a193f7913b7555cf5b6bbd7d0e"
+    },
+    "history": [
+      {
+        "status": "activated_verified",
+        "release": "/opt/nodia/releases/nodia-client-product-editor-20261029-r01",
+        "manifest_sha256": "3ab2ed6a388e0474dcc0db9828a327ac25a719276f3d3e7476161c645da62a4a",
+        "config_sha256": "5e6cc1f0e2663a4eacade4082eeba4905eabd7cdcfb6cdedf35b5545e1b18017",
+        "nginx_before_sha256": "3597d224df2dae4999768fae8d38087d535bab8f9bdb83fa0ce3383200cdb248",
+        "nginx_after_sha256": "d36fb74b8c2d613433a1184f3871fe3f80d39f3167a5cc0658f30771674aef9a",
+        "index_sha256": "e2f0c1ae5511d1ffe6dd975da6db446ed1c626b5fa1252aebda8899c1950b148",
+        "artifact": {
+          "bytes": 2162695,
+          "members": 173,
+          "sha256": "5081d92ae748c9df7286ff11390db30cccdc520ad98900caf78b0df4b50e8f34",
+          "unpacked_bytes": 4839468
+        },
+        "source_fingerprint_sha256": "a888787b7ec6d80b50981c186b47da5ace507e5d25dfa417bbec943106423e73",
+        "source_delta": {
+          "added": [
+            "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductImageDraft/ProductImageDraft.tsx",
+            "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductImageDraft/index.ts",
+            "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductImageDraft/styles.ts",
+            "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/hooks/productSaveRecovery.ts",
+            "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/hooks/useDeferredProductSave.ts",
+            "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductImageDraft/ProductImageDraft.test.tsx",
+            "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/hooks/useDeferredProductSave.test.tsx"
+          ],
+          "changed": [
+            "src/components/inputs/SelectSingleInput/SelectSingleInput.tsx",
+            "src/components/inputs/SelectSingleInput/types.ts",
+            "src/components/inputs/TextInput/TextInput.tsx",
+            "src/components/inputs/TextInput/types.ts",
+            "src/modules/business/pages/BusinessDetail/components/ProductsTab/ProductsTab.tsx",
+            "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductModal.tsx",
+            "src/test/components/inputs/SelectSingleInput/SelectSingleInput.test.tsx",
+            "src/test/components/inputs/TextInput/TextInput.test.tsx",
+            "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/ProductModal.test.tsx",
+            "src/translate/en/business.json",
+            "src/translate/es/business.json"
+          ],
+          "outside_authorized_scope": [],
+          "removed": []
+        },
+        "http": {
+          "current_assets": 169,
+          "previous_assets": 48,
+          "protected": [
+            {
+              "route": "/api/v1",
+              "status": 200
+            },
+            {
+              "route": "/api/v1/nodia-ai/connections",
+              "status": 401
+            },
+            {
+              "route": "/api/v1/products",
+              "status": 401
+            }
+          ],
+          "spa": [
+            {
+              "route": "/",
+              "sha256": "e2f0c1ae5511d1ffe6dd975da6db446ed1c626b5fa1252aebda8899c1950b148",
+              "status": 200
+            },
+            {
+              "route": "/tools/nodia-ai",
+              "sha256": "e2f0c1ae5511d1ffe6dd975da6db446ed1c626b5fa1252aebda8899c1950b148",
+              "status": 200
+            },
+            {
+              "route": "/tools/business",
+              "sha256": "e2f0c1ae5511d1ffe6dd975da6db446ed1c626b5fa1252aebda8899c1950b148",
+              "status": 200
+            }
+          ]
+        },
+        "protected_runtime_preserved": true,
+        "status_runtime_matches_before": true,
+        "api_pid": "1864113",
+        "worker_pid": "1864114",
+        "server_manifest_sha256": "22f928167d186565cb08fed6eb0572d43263e0a0a424f235aad26e0c7063ef24",
+        "knowledge_release_id": "b49fde74a53483fad4fe80b8175b36bb7c337415097dd9cfa4349285f9e1e2ea",
+        "sql_queries": 0,
+        "provider_requests": 0,
+        "restart_requests": 0,
+        "nginx_backup_and_previous_release_preserved": true,
+        "activation_receipt_sha256": "d6579bd37df0ae14e93ff3f9aa447971e31508c798ea901a86b2da55f4562235",
+        "status_receipt_sha256": "6a84164b8b3339e522ca7bbc88bd846c5d966785d832c3d4abf4f690a688f53b"
+      }
+    ],
+    "tunnel": [
+      {
+        "route": "/tools/business/5af15373-3638-4a02-a015-4e72c433fc11?section=products",
+        "status": 200,
+        "sha256": "289408bf815b690100c284bdbab7b3dde8f871a63c930156e7b3b0fc128bd1dd",
+        "bytes": 2973
+      },
+      {
+        "route": "/api/v1",
+        "status": 200,
+        "sha256": "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
+        "bytes": 12
+      }
+    ]
+  },
+  "documentary_approval": false,
+  "knowledge_publication": "unchanged",
+  "limitations": [
+    "Product fields and image persistence are sequential; no global transaction or rollback of already saved fields.",
+    "An uncertain product mutation has no server request receipt; it blocks blind retries and requires checking the catalog.",
+    "Browser save and recovery flows used synthetic transport; live VM validation was read-only, with no new image upload or commercial mutation.",
+    "Physical phone, scanner and performance are not qualified by these browser checks."
+  ],
+  "incidents_resolved": [
+    {
+      "issue": "New product ID triggered metadata skeleton and remounted a local image preview after a lost PUT response.",
+      "fix": "Skeleton only for keep/current image; selected File retains its image node and blob URL.",
+      "verification": "Added focused regression and repeated browser lost-response flow; exactly one product and one file PUT."
+    },
+    {
+      "issue": "Live R01 photo exceeded its fixed frame because of intrinsic grid sizing.",
+      "fix": "R02 positions only the image inside its existing frame with object-fit contain.",
+      "verification": "Local and authenticated live R02 image bounds exactly match its 580x278 content box; full photo visually inspected."
+    }
+  ],
+  "cleanup": {
+    "synthetic_browser_closed": true,
+    "temporary_live_tabs_closed": true,
+    "qa_server_5194_stopped": true,
+    "user_tunnel_5174_preserved": true
+  }
+}

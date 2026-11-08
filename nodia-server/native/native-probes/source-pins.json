@@ -1,0 +1,14 @@
+{
+  "contract": "teacher-operator-probes/1",
+  "live_turns_maximum": 2,
+  "cli_version": "1.3.1",
+  "cli_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+  "files": {
+    "antigravity_offline_catalog.py": "2aa976cd28059e2c9b721e6d8148db7f6213253ed57377cd3753bee7276a272b",
+    "README.md": "16f8ef528d859faa0f9f167d0d0fb74960867ebb8d0a323bcc2f1a3bbd77c7c6",
+    "run-offline.ps1": "18b0be079beb35c3a12023ab801d05833f968844553a5b708ccd77d672b1df28",
+    "teacher_operator_probe.py": "d615141851af7f4e5cde6f01d19fbe30a5aab31de53b40fe32b999fcc2c4aec7",
+    "teacher_probe_hook.py": "f2493085b7857aa3f826f580e2cf4b8b90f5c64bbab553992f166e4ecd3a2406",
+    "test_operator_probe.py": "c7d0fde8bf5af70822fec9716c98c8178b153455483f57e87a12d4c610fa073e"
+  }
+}

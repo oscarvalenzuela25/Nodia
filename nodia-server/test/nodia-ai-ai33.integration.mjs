@@ -100,7 +100,7 @@ try {
   };
   const rejectPreparation = (operation, partial, actor = '1') => assert.rejects(() => proposal(operation, partial, actor), error => [400,403,404,409].includes(error.getStatus?.()));
   const modules = new Map();
-  for (const [key, route] of [['finance','/tools/finances-personal'],['business','/tools/business'],['rental','/tools/reservations']]) {
+  for (const [key, route] of [['finance','/finances-personal'],['business','/business'],['rental','/reservations']]) {
     let [module] = await db.query('SELECT id::text FROM modules WHERE link=$1', [route]);
     if (!module) [module] = await db.query('INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,$1,$2 FROM modules WHERE key=$3 RETURNING id::text', [route, `synthetic_ai33_${key}`, 'nodia_ai']);
     modules.set(key, module.id);
@@ -204,7 +204,7 @@ try {
   await db.query('UPDATE business_collaborators SET is_active=false WHERE business_id=$1 AND user_id=2', [business]);
   const revokedBusiness = (await request('/nodia-ai/preferences', { actor: '2' })).items.find(item => item.preference_id === collaboratorMemory.id);
   const Reader = await loadAi('nodia-ai-preference/use-case/nodia-ai-preference-reader.use-case', 'NodiaAiPreferenceReaderUseCase');
-  const revokedContext = await db.transaction(manager => compiled.get(Reader).loadForContext(manager, identities.get('2'), ['/tools/business']));
+  const revokedContext = await db.transaction(manager => compiled.get(Reader).loadForContext(manager, identities.get('2'), ['/business']));
   check('business membership revocation hides its accepted label and removes it from assembled context', revokedBusiness?.available === false && revokedBusiness.value_label === null && revokedContext.length === 0);
   await perform('delete', { id: collaboratorMemory.id, expected_revision: 1 }, '2');
   // Suppliers intentionally keep their native authenticated global visibility;
@@ -293,7 +293,7 @@ try {
 
   allowRuntimeObservation = true;
   const [provider] = await db.query("INSERT INTO ai_providers(name,fields) VALUES('Synthetic AI33 no generation','{}') RETURNING id::text");
-  const selection = { connection_id: provider.id, mode: 'token_plan_web', model_id: 'synthetic-ai33-no-provider', effort_id: null };
+  const selection = { connection_id: provider.id, mode: 'agentic', model_id: 'synthetic-ai33-no-provider', effort_id: null };
   const runtimeChat = await compiled.get(CreateConversation).execute(identities.get('1'), { client_request_id: randomUUID(), selection });
   const runtimeTurn = await compiled.get(AdmitMessage).execute(identities.get('1'), runtimeChat.conversation_id, {
     client_message_id: randomUUID(), expected_conversation_revision: runtimeChat.revision,

@@ -6,9 +6,57 @@ import {
   IsString,
   IsUUID,
   IsNumber,
+  IsIn,
+  ArrayMaxSize,
+  ArrayNotEmpty,
+  ValidateBy,
 } from 'class-validator';
 
 export class FilterProductDto {
+  @IsOptional()
+  @Transform(({ value }) => Array.isArray(value) ? value : typeof value === 'string' ? value.split(',') : value)
+  @IsArray()
+  @ArrayNotEmpty()
+  @ArrayMaxSize(200)
+  @ValidateBy({ name: 'isCanonicalProductId', validator: { validate: (value: unknown) =>
+    typeof value === 'string' && /^[1-9][0-9]{0,18}$/.test(value) && BigInt(value) <= 9223372036854775807n } }, { each: true })
+  id_in?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @IsArray()
+  @IsIn(['available', 'unavailable', 'unknown'], { each: true })
+  availability_in?: Array<'available' | 'unavailable' | 'unknown'>;
+
+  @IsOptional()
+  @IsString()
+  barcode_eq?: string;
+
+  @IsOptional()
+  @IsString()
+  barcode_cont?: string;
+
+  @IsOptional()
+  @Transform(({ value }) =>
+    value === 'true' ? true : value === 'false' ? false : value,
+  )
+  @IsBoolean()
+  has_stock_eq?: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) =>
+    value === 'true' ? true : value === 'false' ? false : value,
+  )
+  @IsBoolean()
+  has_stock_null?: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) =>
+    value === 'true' ? true : value === 'false' ? false : value,
+  )
+  @IsBoolean()
+  is_offer_enabled_eq?: boolean;
+
   @IsOptional()
   @IsUUID()
   business_id_eq?: string;

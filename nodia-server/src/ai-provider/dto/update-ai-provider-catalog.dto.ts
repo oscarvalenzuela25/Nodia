@@ -14,11 +14,8 @@ export class UpdateAiProviderCatalogDto {
   @IsBoolean()
   can_use_api_key?: boolean;
 
-  @IsOptional()
-  @IsBoolean()
-  can_use_token_plan_web?: boolean;
 
   @IsOptional()
   @IsBoolean()
-  can_use_token_plan_agentic?: boolean;
+  can_use_agentic?: boolean;
 }

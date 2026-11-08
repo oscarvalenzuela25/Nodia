@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { parseNativeTerminalProof } from '../native-terminal-proof.js';
 import { createHash } from 'node:crypto';
+import { imageSize } from 'image-size';
 import { DataSource, type EntityManager } from 'typeorm';
 import type { NodiaAiSelection } from '../../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
 import { NodiaAiAdapterTransport } from '../nodia-ai-adapter.service.js';
@@ -17,7 +18,6 @@ import {
   type NodiaAiContextMeasureInput,
   type NodiaAiContextMeasurement,
 } from '../types/nodia-ai-adapter.types.js';
-
 function record(value: unknown): Record<string, unknown> | null {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
@@ -48,7 +48,6 @@ function canonical(value: unknown): unknown {
       )
     : value;
 }
-
 @Injectable()
 export class GeminiNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
   constructor(
@@ -57,54 +56,121 @@ export class GeminiNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
   ) {
     super();
   }
-
-  async measureContext(input: NodiaAiContextMeasureInput, signal?: AbortSignal): Promise<NodiaAiContextMeasurement> {
+  async measureContext(
+    input: NodiaAiContextMeasureInput,
+    signal?: AbortSignal,
+  ): Promise<NodiaAiContextMeasurement> {
     const engine = this.engine(input.selection);
-    if (!text(input.canonicalPrompt, 262144) ||
-      (input.tools && (!Array.isArray(input.tools) || input.tools.length > NODIA_AI_MCP_CATALOG_LIMITS.tools ||
-        new Set(input.tools.map((tool) => tool.name)).size !== input.tools.length ||
-        input.tools.some((tool) => !isNodiaAiMcpToolDescriptorValid(tool)) ||
-        nodiaAiMcpCatalogUtf8Bytes(input.tools) > NODIA_AI_MCP_CATALOG_LIMITS.utf8Bytes)) ||
-      (engine === 'web' && Boolean(input.tools?.length)) ||
-      (input.attachments && (!Array.isArray(input.attachments) || input.attachments.length > 4 ||
-        input.attachments.some((item) => !['image', 'pdf', 'audio'].includes(item.kind) ||
-          (item.media_type !== undefined && !text(item.media_type, 128))))))
-      throw new NodiaAiAdapterError('adapter_invalid_request', 'not_dispatched');
+    if (
+      !text(input.canonicalPrompt, 262144) ||
+      (input.tools &&
+        (!Array.isArray(input.tools) ||
+          input.tools.length > NODIA_AI_MCP_CATALOG_LIMITS.tools ||
+          new Set(input.tools.map((tool) => tool.name)).size !==
+            input.tools.length ||
+          input.tools.some((tool) => !isNodiaAiMcpToolDescriptorValid(tool)) ||
+          nodiaAiMcpCatalogUtf8Bytes(input.tools) >
+            NODIA_AI_MCP_CATALOG_LIMITS.utf8Bytes)) ||
+      (input.attachments &&
+        (!Array.isArray(input.attachments) ||
+          input.attachments.length > 4 ||
+          input.attachments.some(
+            (item) =>
+              !['image', 'pdf', 'audio'].includes(item.kind) ||
+              (item.media_type !== undefined && !text(item.media_type, 128)),
+          )))
+    )
+      throw new NodiaAiAdapterError(
+        'adapter_invalid_request',
+        'not_dispatched',
+      );
     const timeout = AbortSignal.timeout(10000);
     const combined = signal ? AbortSignal.any([signal, timeout]) : timeout;
-    const value = record(await this.transport.request(`/nodia-ai/${engine}/measure-context`, {
-      model_id: input.selection.model_id, effort_id: input.selection.effort_id,
-      canonical_prompt: input.canonicalPrompt,
-      tools: (input.tools ?? []).map((tool) => ({ name: tool.name, description: tool.description, input_schema: tool.inputSchema })),
-      attachments: (input.attachments ?? []).map((item) => ({ kind: item.kind, media_type: item.media_type })),
-    }, combined));
-    const byteKeys = ['canonical_utf8_bytes', 'catalog_utf8_bytes', 'overhead_utf8_bytes', 'total_utf8_bytes', 'max_utf8_bytes',
-      'first_mcp_listing_upper_bound_utf8_bytes'];
-    if (!value || !exactKeys(value, ['measurement_contract_version', 'measurement_scope', 'measurement_kind',
-      ...byteKeys, 'model_context_tokens']) ||
+    const value = record(
+      await this.transport.request(
+        `/nodia-ai/${engine}/measure-context`,
+        {
+          model_id: input.selection.model_id,
+          effort_id: input.selection.effort_id,
+          canonical_prompt: input.canonicalPrompt,
+          tools: (input.tools ?? []).map((tool) => ({
+            name: tool.name,
+            description: tool.description,
+            input_schema: tool.inputSchema,
+          })),
+          attachments: (input.attachments ?? []).map((item) => ({
+            kind: item.kind,
+            media_type: item.media_type,
+          })),
+        },
+        combined,
+      ),
+    );
+    const byteKeys = [
+      'canonical_utf8_bytes',
+      'catalog_utf8_bytes',
+      'overhead_utf8_bytes',
+      'total_utf8_bytes',
+      'max_utf8_bytes',
+      'first_mcp_listing_upper_bound_utf8_bytes',
+    ];
+    if (
+      !value ||
+      !exactKeys(value, [
+        'measurement_contract_version',
+        'measurement_scope',
+        'measurement_kind',
+        ...byteKeys,
+        'model_context_tokens',
+      ]) ||
       value.measurement_contract_version !== 'nodia-ai-context-budget/1' ||
       value.measurement_scope !== 'initial_native_prompt' ||
-      value.measurement_kind !== (engine === 'agentic' && input.attachments?.length ? 'upper_bound' : 'exact') ||
-      byteKeys.some((key) => typeof value[key] !== 'number' || !Number.isSafeInteger(value[key]) || Number(value[key]) < 0) ||
-      value.canonical_utf8_bytes !== Buffer.byteLength(input.canonicalPrompt, 'utf8') ||
-      value.max_utf8_bytes !== 262144 || value.model_context_tokens !== null ||
-      Number(value.total_utf8_bytes) !== Number(value.canonical_utf8_bytes) + Number(value.catalog_utf8_bytes) + Number(value.overhead_utf8_bytes) ||
+      value.measurement_kind !==
+        (engine === 'agentic' && input.attachments?.length
+          ? 'upper_bound'
+          : 'exact') ||
+      byteKeys.some(
+        (key) =>
+          typeof value[key] !== 'number' ||
+          !Number.isSafeInteger(value[key]) ||
+          Number(value[key]) < 0,
+      ) ||
+      value.canonical_utf8_bytes !==
+        Buffer.byteLength(input.canonicalPrompt, 'utf8') ||
+      value.max_utf8_bytes !== 262144 ||
+      value.model_context_tokens !== null ||
+      Number(value.total_utf8_bytes) !==
+        Number(value.canonical_utf8_bytes) +
+          Number(value.catalog_utf8_bytes) +
+          Number(value.overhead_utf8_bytes) ||
       (!input.tools?.length && value.catalog_utf8_bytes !== 0) ||
-      (!input.tools?.length && value.first_mcp_listing_upper_bound_utf8_bytes !== 0) ||
-      (Boolean(input.tools?.length) && (value.catalog_utf8_bytes === 0 ||
-        Number(value.first_mcp_listing_upper_bound_utf8_bytes) <= Number(value.catalog_utf8_bytes))))
-      throw new NodiaAiAdapterError('adapter_invalid_context_measurement', 'not_dispatched');
+      (!input.tools?.length &&
+        value.first_mcp_listing_upper_bound_utf8_bytes !== 0) ||
+      (Boolean(input.tools?.length) &&
+        (value.catalog_utf8_bytes === 0 ||
+          Number(value.first_mcp_listing_upper_bound_utf8_bytes) <=
+            Number(value.catalog_utf8_bytes)))
+    )
+      throw new NodiaAiAdapterError(
+        'adapter_invalid_context_measurement',
+        'not_dispatched',
+      );
     return {
-      measurementContractVersion: 'nodia-ai-context-budget/1', measurementScope: 'initial_native_prompt',
+      measurementContractVersion: 'nodia-ai-context-budget/1',
+      measurementScope: 'initial_native_prompt',
       measurementKind: value.measurement_kind as 'exact' | 'upper_bound',
-      canonicalUtf8Bytes: Number(value.canonical_utf8_bytes), catalogUtf8Bytes: Number(value.catalog_utf8_bytes),
-      overheadUtf8Bytes: Number(value.overhead_utf8_bytes), totalUtf8Bytes: Number(value.total_utf8_bytes),
-      maxUtf8Bytes: Number(value.max_utf8_bytes), modelContextTokens: null,
-      firstMcpListingUpperBoundUtf8Bytes: Number(value.first_mcp_listing_upper_bound_utf8_bytes),
+      canonicalUtf8Bytes: Number(value.canonical_utf8_bytes),
+      catalogUtf8Bytes: Number(value.catalog_utf8_bytes),
+      overheadUtf8Bytes: Number(value.overhead_utf8_bytes),
+      totalUtf8Bytes: Number(value.total_utf8_bytes),
+      maxUtf8Bytes: Number(value.max_utf8_bytes),
+      modelContextTokens: null,
+      firstMcpListingUpperBoundUtf8Bytes: Number(
+        value.first_mcp_listing_upper_bound_utf8_bytes,
+      ),
     };
   }
-
-  private engine(selection: NodiaAiSelection): 'web' | 'agentic' {
+  private engine(selection: NodiaAiSelection): 'agentic' {
     if (
       !/^[1-9][0-9]{0,18}$/.test(selection.connection_id) ||
       BigInt(selection.connection_id) > 9223372036854775807n ||
@@ -116,20 +182,18 @@ export class GeminiNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
         'not_dispatched',
       );
     }
-    if (selection.mode === 'token_plan_web') return 'web';
-    if (selection.mode === 'token_plan_agentic') return 'agentic';
+    if (selection.mode === 'agentic') return 'agentic';
     throw new NodiaAiAdapterError('adapter_mode_unsupported', 'not_dispatched');
   }
-
   private async generation(
     selection: NodiaAiSelection,
     manager: EntityManager = this.source.manager,
   ): Promise<string> {
-    const engine = this.engine(selection);
+    this.engine(selection);
     const rows: unknown = await manager.query(
-      `SELECT p.id::text, p.is_active, p.use_token_plan_web, p.use_token_plan_agentic,
+      `SELECT p.id::text, p.is_active, p.use_agentic,
        p.fields, p.updated_at, c.key AS provider_key, c.is_active AS catalog_active,
-       c.can_use_token_plan_web, c.can_use_token_plan_agentic
+       c.can_use_agentic
        FROM ai_providers p INNER JOIN ai_provider_catalog c ON c.id=p.catalog_id WHERE p.id=$1${manager.queryRunner?.isTransactionActive ? ' FOR SHARE OF p,c' : ''}`,
       [selection.connection_id],
     );
@@ -140,14 +204,8 @@ export class GeminiNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
       row.provider_key !== 'gemini' ||
       row.is_active !== true ||
       row.catalog_active !== true ||
-      row[
-        engine === 'web' ? 'use_token_plan_web' : 'use_token_plan_agentic'
-      ] !== true ||
-      row[
-        engine === 'web'
-          ? 'can_use_token_plan_web'
-          : 'can_use_token_plan_agentic'
-      ] !== true
+      row['use_agentic'] !== true ||
+      row['can_use_agentic'] !== true
     ) {
       throw new NodiaAiAdapterError(
         'adapter_connection_unavailable',
@@ -170,7 +228,6 @@ export class GeminiNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
       )
       .digest('hex');
   }
-
   async verifyConfiguration(
     selection: NodiaAiSelection,
     generation: string,
@@ -185,7 +242,6 @@ export class GeminiNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
         'not_dispatched',
       );
   }
-
   async observe(
     selection: NodiaAiSelection,
     signal?: AbortSignal,
@@ -217,16 +273,21 @@ export class GeminiNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
     ];
     if (
       !value ||
-      !exactKeys(
-        value,
-        [...keys, ...['verified_modalities', 'verified_attachment_media_types']
-          .filter((key) => Object.hasOwn(value, key))],
-      ) ||
+      !exactKeys(value, [
+        ...keys,
+        ...['verified_modalities', 'verified_attachment_media_types'].filter(
+          (key) => Object.hasOwn(value, key),
+        ),
+      ]) ||
       (value.verified_attachment_media_types !== undefined &&
         (!Array.isArray(value.verified_attachment_media_types) ||
-          new Set(value.verified_attachment_media_types).size !== value.verified_attachment_media_types.length ||
-          value.verified_attachment_media_types.some((mime) =>
-            typeof mime !== 'string' || !Object.hasOwn(NODIA_AI_NATIVE_MEDIA_TYPES, mime)))) ||
+          new Set(value.verified_attachment_media_types).size !==
+            value.verified_attachment_media_types.length ||
+          value.verified_attachment_media_types.some(
+            (mime) =>
+              typeof mime !== 'string' ||
+              !Object.hasOwn(NODIA_AI_NATIVE_MEDIA_TYPES, mime),
+          ))) ||
       (value.verified_modalities !== undefined &&
         (!Array.isArray(value.verified_modalities) ||
           new Set(value.verified_modalities).size !==
@@ -238,7 +299,6 @@ export class GeminiNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
       value.source !== 'gemini_live_session_and_catalog' ||
       value.adapter_contract_version !== 'nodia-ai-gemini-chat/1' ||
       typeof value.supports_mcp !== 'boolean' ||
-      (engine === 'web' && value.supports_mcp !== false) ||
       typeof value.session_generation !== 'string' ||
       !/^[0-9a-f]{32}$/.test(value.session_generation) ||
       !(
@@ -279,11 +339,11 @@ export class GeminiNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
       verifiedModalities: (value.verified_modalities ?? []) as (
         'image' | 'pdf' | 'audio'
       )[],
-      verifiedAttachmentMediaTypes: (value.verified_attachment_media_types ?? []) as string[],
+      verifiedAttachmentMediaTypes: (value.verified_attachment_media_types ??
+        []) as string[],
       reason: value.reason,
     };
   }
-
   async execute(
     request: NodiaAiAdapterRequest,
     signal?: AbortSignal,
@@ -303,6 +363,19 @@ export class GeminiNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
         'not_dispatched',
       );
     const attachments = request.attachments;
+    if (
+      request.imageGeneration &&
+      (engine !== 'agentic' ||
+        request.tools?.length ||
+        request.attachments?.length ||
+        !exactKeys(request.imageGeneration, ['prompt']) ||
+        !text(request.imageGeneration.prompt, 8000) ||
+        Buffer.byteLength(request.imageGeneration.prompt, 'utf8') > 8000)
+    )
+      throw new NodiaAiAdapterError(
+        'adapter_invalid_image_request',
+        'not_dispatched',
+      );
     if (
       attachments &&
       (!Array.isArray(attachments) ||
@@ -356,6 +429,116 @@ export class GeminiNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
         'adapter_cancelled_before_dispatch',
         'not_dispatched',
       );
+    if (request.imageGeneration) {
+      let finished = false;
+      try {
+        const value = record(
+          await this.transport.request(
+            '/nodia-ai/agentic/image/turn',
+            {
+              attempt_id: request.attemptId,
+              model_id: request.selection.model_id,
+              effort_id: request.selection.effort_id,
+              prompt: request.imageGeneration.prompt,
+              resource_key: request.resourceKey,
+              session_generation: request.sessionGeneration,
+              timeout_seconds: seconds,
+              configuration_generation: request.configurationGeneration,
+            },
+            combined,
+            true,
+          ),
+        );
+        if (!value || !exactKeys(value, ['reply', 'terminal_proof']))
+          throw new NodiaAiAdapterError('adapter_invalid_reply', 'unknown');
+        const reply = record(value.reply);
+        const image = record(reply?.generated_image);
+        const terminalProof = parseNativeTerminalProof(value.terminal_proof, {
+          engine,
+          attemptId: request.attemptId,
+          resourceKey: request.resourceKey,
+          sessionGeneration: request.sessionGeneration,
+          operationRef: request.attemptId,
+        });
+        if (
+          terminalProof.outcome !== 'completed' ||
+          !reply ||
+          !exactKeys(reply, ['kind', 'text', 'generated_image']) ||
+          reply.kind !== 'answer' ||
+          typeof reply.text !== 'string' ||
+          reply.text.length > 32768 ||
+          !image ||
+          !exactKeys(image, ['content_base64', 'media_type', 'sha256']) ||
+          typeof image.content_base64 !== 'string' ||
+          image.content_base64.length > Math.ceil(16777216 / 3) * 4 ||
+          typeof image.sha256 !== 'string' ||
+          !/^[0-9a-f]{64}$/.test(image.sha256) ||
+          !['image/png', 'image/jpeg', 'image/webp'].includes(
+            String(image.media_type),
+          )
+        )
+          throw new NodiaAiAdapterError(
+            'adapter_invalid_generated_image',
+            'unknown',
+          );
+        const bytes = Buffer.from(image.content_base64, 'base64');
+        try {
+          const size = imageSize(bytes);
+          const mediaType =
+            size.type === 'png'
+              ? 'image/png'
+              : size.type === 'jpg'
+                ? 'image/jpeg'
+                : size.type === 'webp'
+                  ? 'image/webp'
+                  : null;
+          if (
+            !mediaType ||
+            !bytes.length ||
+            bytes.length > 16777216 ||
+            bytes.toString('base64') !== image.content_base64 ||
+            createHash('sha256').update(bytes).digest('hex') !== image.sha256 ||
+            mediaType !== image.media_type ||
+            !size.width ||
+            !size.height ||
+            size.width * size.height > 12000000
+          )
+            throw new Error('Invalid image');
+          finished = true;
+          return {
+            kind: 'answer',
+            text: reply.text,
+            terminalProof,
+            generatedImage: {
+              contentBase64: image.content_base64,
+              mediaType,
+              sha256: image.sha256,
+            },
+          };
+        } catch {
+          throw new NodiaAiAdapterError(
+            'adapter_invalid_generated_image',
+            'unknown',
+          );
+        }
+      } finally {
+        if (!finished) {
+          // Independent cleanup signal: the dispatch signal may already be
+          // aborted. The receiver validates identity and reaps its CLI owner.
+          await this.transport
+            .request(
+              `/nodia-ai/agentic/attempts/${request.attemptId}/image/cancel`,
+              {
+                resource_key: request.resourceKey,
+                session_generation: request.sessionGeneration,
+                operation_ref: request.attemptId,
+              },
+              AbortSignal.timeout(10000),
+            )
+            .catch(() => undefined);
+        }
+      }
+    }
     if (request.tools?.length) {
       if (engine !== 'agentic')
         throw new NodiaAiAdapterError('web_tools_prohibited', 'not_dispatched');
@@ -402,17 +585,6 @@ export class GeminiNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
       text(reply.text, 32768)
     )
       return { kind: 'answer', text: reply.text, terminalProof };
-    if (
-      engine === 'web' &&
-      reply?.kind === 'delegation_request' &&
-      exactKeys(reply, ['kind', 'reason']) &&
-      text(reply.reason, 1024)
-    )
-      return {
-        kind: 'delegation_request',
-        reason: reply.reason,
-        terminalProof,
-      };
     throw new NodiaAiAdapterError('adapter_invalid_reply', 'unknown');
   }
   /** Explicit operator diagnostic only: never called by health, auth or automatic routing. */

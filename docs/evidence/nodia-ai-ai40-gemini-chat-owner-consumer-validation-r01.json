@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "scope": "Future Gemini plain-Agentic owner recovery; consumer source validation only",
+  "status": "candidate_validated_not_deployed",
+  "sources": [
+    {
+      "path": "nodia-gemini-microservice/native_chat_owner_bindings.py",
+      "sha256": "3891b8370ce610b833f2c8de305052035033342199bdf702df9696602b56be67",
+      "bytes": 7252
+    },
+    {
+      "path": "nodia-gemini-microservice/login_cgroups.py",
+      "sha256": "ca25d346190bcc3cd28abadb65be1dbce8d81f695c1572915bf73887e6d87442",
+      "bytes": 9953
+    },
+    {
+      "path": "nodia-gemini-microservice/profile_admission.py",
+      "sha256": "a68d9127f396fa90ae291d46d8a1061418e2054266b0d7517ae520dc48d9d34b",
+      "bytes": 13844
+    },
+    {
+      "path": "nodia-gemini-microservice/nodia_ai_chat.py",
+      "sha256": "ebfaffc697f76e33e678b52cd6c7959c981d8c9f0e383750649da6e71751c5bf",
+      "bytes": 39455
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/test_native_chat_owner_bindings.py",
+      "sha256": "142b191cc1a0e2d0fa33afc1619a426c2e5c46753a21ce45f458782e06a97cf6",
+      "bytes": 16245
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/test_native_attempts.py",
+      "sha256": "988eab35287e14b7c870f872ff7ef1699eb4d09059801fdd0fbc5b94522a442d",
+      "bytes": 8634
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/test_profile_admission_diagnostics.py",
+      "sha256": "49da8227b01205520456cb654ac9507dd35177b19fdb365d679473edfc1e16f1",
+      "bytes": 9624
+    }
+  ],
+  "protocol": {
+    "certificate_versions": [
+      1,
+      2
+    ],
+    "new_certificate_version": 2,
+    "certificate_keys": [
+      "version",
+      "root_device",
+      "root_inode",
+      "host_boot",
+      "closed_roots",
+      "chat_bindings"
+    ],
+    "binding_keys": [
+      "version",
+      "kind",
+      "binding_id",
+      "engine",
+      "attempt_id",
+      "resource_key",
+      "session_generation",
+      "operation_ref",
+      "record_sha256",
+      "record_bytes",
+      "record_observed_at",
+      "bound_at",
+      "generation",
+      "lineage_sha256"
+    ],
+    "generation_keys": [
+      "container_id",
+      "started_at",
+      "boot",
+      "device",
+      "parent_inode"
+    ],
+    "binding_kind": "legacy_chat_pre_stop",
+    "maximum_bindings": 8,
+    "maximum_closed_roots": 128,
+    "maximum_certificate_bytes": 32768,
+    "maximum_native_record_bytes": 4096,
+    "runtime_native_wire_schema": 1,
+    "new_database_tables": 0,
+    "new_services_or_ports": 0
+  },
+  "branches": {
+    "live_owner": [
+      "Same admitted attempt is present in the live adapter memory.",
+      "The real verified CliRunner, current session and physical resource match.",
+      "The attempt is no longer active and its native operation is closed.",
+      "The durable ARMED/false/null record and profile ownership validate before writing abandoned_unknown."
+    ],
+    "host_certified_legacy_owner": [
+      "No live-memory ownership is presumed after restart.",
+      "Root-owned read-only attestation v2 has one exact scope/record binding and matching raw SHA/bytes/observed_at.",
+      "The bound original root differs from the current root and its exact boot/device/parent_inode tuple is certified closed.",
+      "Binding of a still-live/current root is valid metadata but never sufficient authority.",
+      "Scope, raw record and profile ownership validate before abandoned_unknown and existing marker cleanup."
+    ]
+  },
+  "safety": [
+    "Only Agentic ARMED/process_closed:false/terminal_proof_id:null is eligible. Never infer completed, replay, clear by TTL or grant SQL authority.",
+    "Record FD is Linux-only, regular before and after open, O_RDONLY|O_NOFOLLOW|O_NONBLOCK, exact0600, own UID, single-link, bounded and unchanged in identity/content.",
+    "Root certificate remains read-only/root-owned/single-link, bounded, current host boot and strict no-duplicate JSON. Login certificate v1 remains supported.",
+    "Profile validation checks all same-resource in-memory owners and the disk marker before any unlink/held/quarantine mutation.",
+    "Validation and terminal/cleanup commit are synchronous without await. A failed or ambiguous check leaves the existing Native record untouched.",
+    "Successful terminal persistence precedes marker resolution; unproven execution closure is quarantined and reported unknown."
+  ],
+  "qa": {
+    "final_atomic_receipt": {
+      "path": ".tmp/ai40-native-owner-consumer-r01/focused-final-r01.json",
+      "sha256": "7b90c3965d7db3f06c65031ff59ece8e11be4970461f7095ee3796222ddd3c9f",
+      "receipt": {
+        "scope": "Final raw record nonblocking/0600 guard and reconciliation regression",
+        "exit": 0,
+        "receipt": {
+          "modules": [
+            "test_native_chat_owner_bindings",
+            "test_native_attempts",
+            "test_profile_admission_diagnostics"
+          ],
+          "total": 34,
+          "failures": 0,
+          "errors": 0,
+          "skipped": [
+            {
+              "id": "test_native_chat_owner_bindings.BoundRecordReaderTests.test_real_linux_fifo_and_regular_to_fifo_or_symlink_swap_do_not_block_or_write",
+              "reason": "Real FIFO and no-follow race require Linux"
+            }
+          ],
+          "closed_failure_ids": [],
+          "result": "passed",
+          "failure_detail": null
+        },
+        "source_sha256": {
+          "native_chat_owner_bindings.py": "3891b8370ce610b833f2c8de305052035033342199bdf702df9696602b56be67",
+          "login_cgroups.py": "ca25d346190bcc3cd28abadb65be1dbce8d81f695c1572915bf73887e6d87442",
+          "profile_admission.py": "a68d9127f396fa90ae291d46d8a1061418e2054266b0d7517ae520dc48d9d34b",
+          "nodia_ai_chat.py": "ebfaffc697f76e33e678b52cd6c7959c981d8c9f0e383750649da6e71751c5bf",
+          "tests/test_native_chat_owner_bindings.py": "142b191cc1a0e2d0fa33afc1619a426c2e5c46753a21ce45f458782e06a97cf6",
+          "tests/test_native_attempts.py": "988eab35287e14b7c870f872ff7ef1699eb4d09059801fdd0fbc5b94522a442d",
+          "tests/test_profile_admission_diagnostics.py": "49da8227b01205520456cb654ac9507dd35177b19fdb365d679473edfc1e16f1"
+        },
+        "AST_UTF8_LF": true,
+        "git_diff_check_exit": 0,
+        "source_unchanged_during_run": true,
+        "previous_full_suite_receipt": {
+          "path": ".tmp/ai40-native-owner-consumer-r01/full-unit-r02.json",
+          "sha256": "393e6e52a172bcd9e99129d8c77cc8aa8ec675fe50c1587d32e2c871d92121b6",
+          "scope": "Before final raw-reader hardening;545 total543 passed2 Windows skips"
+        },
+        "SDK_requests": 0,
+        "VM_access": false,
+        "deployed": false,
+        "private_stderr_emitted": false
+      }
+    },
+    "earlier_full_runner": {
+      "path": ".tmp/ai40-native-owner-consumer-r01/full-unit-r02.json",
+      "sha256": "393e6e52a172bcd9e99129d8c77cc8aa8ec675fe50c1587d32e2c871d92121b6",
+      "receipt": {
+        "runner": "venv Python run_tests.py",
+        "exit": 0,
+        "total": 545,
+        "elapsed_seconds": "16.565",
+        "skipped": 2,
+        "closed_failure_ids": [],
+        "source_sha256": {
+          "native_chat_owner_bindings.py": "674d09c3358c79b583ddc2ab6ae80308b53873d524e51594b526e71ab4bc04f9",
+          "login_cgroups.py": "ca25d346190bcc3cd28abadb65be1dbce8d81f695c1572915bf73887e6d87442",
+          "profile_admission.py": "a68d9127f396fa90ae291d46d8a1061418e2054266b0d7517ae520dc48d9d34b",
+          "nodia_ai_chat.py": "ebfaffc697f76e33e678b52cd6c7959c981d8c9f0e383750649da6e71751c5bf",
+          "tests/test_native_chat_owner_bindings.py": "a057076f85cb83c6752cd55299c88348c28b9c7cd26412031259a9297b6586d8",
+          "tests/test_native_attempts.py": "988eab35287e14b7c870f872ff7ef1699eb4d09059801fdd0fbc5b94522a442d",
+          "tests/test_profile_admission_diagnostics.py": "49da8227b01205520456cb654ac9507dd35177b19fdb365d679473edfc1e16f1"
+        },
+        "source_unchanged_during_run": true,
+        "AST_UTF8_LF": true,
+        "git_diff_check_exit": 0,
+        "SDK_requests": 0,
+        "VM_access": false,
+        "deployed": false,
+        "raw_output_emitted": false
+      },
+      "limitation": "Full545 covered the consumer before final raw0600/nonblocking hardening. Final source is covered by the focused receipt; it is not relabelled as a new full run."
+    },
+    "independent_source_review": {
+      "status": "conforme_no_blockers",
+      "reviewer": "ai40_draft_acceptance_review",
+      "runtime_source_pins": {
+        "native_chat_owner_bindings.py": "3891b8370ce610b833f2c8de305052035033342199bdf702df9696602b56be67",
+        "login_cgroups.py": "ca25d346190bcc3cd28abadb65be1dbce8d81f695c1572915bf73887e6d87442",
+        "profile_admission.py": "a68d9127f396fa90ae291d46d8a1061418e2054266b0d7517ae520dc48d9d34b",
+        "nodia_ai_chat.py": "ebfaffc697f76e33e678b52cd6c7959c981d8c9f0e383750649da6e71751c5bf"
+      }
+    }
+  },
+  "limits": [
+    "All local account/OS/certificate boundaries are explicit synthetic fixtures.",
+    "The real Linux FIFO/no-follow swap test is prepared but skipped on this Windows host. Its execution on the candidate Linux runtime remains a separate acceptance.",
+    "No original in-memory owner, live Native ledger, VM, kernel cgroup, account, SDK, R2 or operational SQL was changed by this validation.",
+    "The host binding producer and kernel certificate issuance require their own source review and real isolated acceptance.",
+    "Neither this source defect nor the candidate validation establishes the historical cause of the plain-Agentic HTTP409.",
+    "The working tree preexisting CLI1.4.2 changes are preserved; a selective overlay must retain the deployed CLI1.3.1 baseline by its own pinned lineage."
+  ],
+  "SDK_requests": 0,
+  "operational_SQL_writes": 0,
+  "live_owner_modified": false,
+  "deployed": false,
+  "documentary_approval": false
+}

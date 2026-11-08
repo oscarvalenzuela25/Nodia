@@ -1,0 +1,364 @@
+{
+  "schema": "teacher-setup-draft-new-page-delivery/1",
+  "date": "2026-11-04",
+  "status": "implemented_deployed_and_verified_for_requested_functional_scope_with_content_limits",
+  "requested_changes": [
+    "Persist the unsent setup message across pause and reload",
+    "Replace new-session modal with /nodia-teacher/new and atomic create plus queue",
+    "Continue the English course using the persisted exact Gemini selection",
+    "User-authorized 300 seconds for setup reply, outline and adjustment; retain written feedback at 120 seconds"
+  ],
+  "client": {
+    "release": "/opt/nodia/releases/nodia-client-teacher-20261104-r13",
+    "manifest_sha256": "080194fe50c36e908ddaee4c83d405d53b1d5fb8099c1d6856ff1364424cbecd",
+    "activation_receipt_sha256": "50c3ce346b415a915d340896a60a7f49899fd865f3bdb6eb21b8e766c485edd4",
+    "source_freeze_sha256": "61ca6305d5db27bd7e165e1026536852ccc8d4e2494b3b03c8783b0c4869893f",
+    "isolated_input_count": 1354,
+    "changed_inputs": 7,
+    "new_inputs": 2,
+    "outputs_HTTP_verified": 184,
+    "previous_R12_assets_HTTP_verified": 180,
+    "R12_Teacher_tests": 81,
+    "R12_test_files": 17,
+    "R13_integrated_auth_guard_draft_tests": 67,
+    "R13_integrated_test_files": 7,
+    "test_groups_overlap_not_summed": true,
+    "isolated_typecheck_errors": 0,
+    "scoped_lint_errors": 0,
+    "operator_tests": 4
+  },
+  "server": {
+    "release": "/opt/nodia/releases/nodia-server-teacher-20261104-r07",
+    "manifest_sha256": "e8760f3667b43af1e9797507dfbbbc0edbc5efcd07e74786b9e770a02d563015",
+    "canonical_adoption_path": "server-r07/adoption-attempt-r02-state.json",
+    "canonical_adoption_sha256": "b4816048be7475b17dbe47ba856689577729b075cc3480b817b9a7cc65d45cfb",
+    "R06_migration_receipt_sha256": "c7df85bf77a5e4901399f5382bbb5b189331bbec536dba2906da2247f4d8f0b5",
+    "migration": "PersistTeacherSetupDraft1793610000000",
+    "new_migrations": 1,
+    "ledger_after": 44,
+    "tables_after": 94,
+    "existing_rows_and_ledger_preserved": true,
+    "R07_DDL": 0,
+    "R06_atomic_unit_tests": 28,
+    "real_disposable_PostgreSQL_checks": 10,
+    "deadline_runtime_tests": 35,
+    "isolated_production_typecheck_errors": 0,
+    "scoped_lint_errors": 0,
+    "API_PID": 1204252,
+    "Worker_PID": 1204253,
+    "stable_seconds_after_adoption": 30,
+    "R06_fallback_retained_on_same_DB44": true
+  },
+  "implementation": {
+    "setup_draft_authority": "owned Server session with independent revision CAS",
+    "autosave_idle_ms": 1500,
+    "draft_max_characters": 4000,
+    "draft_max_utf8_bytes": 8192,
+    "pause_with_pending_draft_atomic": true,
+    "clear_only_matching_sent_revision": true,
+    "unsent_draft_excluded_from_generation_snapshot": true,
+    "browser_prompt_payload_storage": false,
+    "pending_reload_guard": true,
+    "same_validated_actor_view_retained_inert_during_renewal": true,
+    "initial_restore_or_revocation_cannot_inherit_old_view": true,
+    "new_commands_wait_for_active_session": true,
+    "new_route": "/nodia-teacher/new",
+    "canonical_authority": "/nodia-teacher",
+    "create_session_and_queue_one_transaction": true,
+    "save_draft_without_inference_retained": true,
+    "automatic_plan_acceptance": false
+  },
+  "Native": {
+    "id": "93e8f8fd8c795d633752af94ff9cbeb542d9ce97dacc26ef520173f598c80ea1",
+    "image": "sha256:7955721521bc8a103218c4d795583c3ee4c93e13cf9ffc49f7752a6c2377a3ff",
+    "started_at": "2026-11-04T13:39:08.556062771Z",
+    "SDK_manifest_sha256": "fe412d1059c2f9ac9d8637cc90b2007c72a664175f73b5246a27ebf6e7e7ccfa",
+    "restarted_for_this_delivery": false,
+    "selection": {
+      "mode": "agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high",
+      "connection_id": "2"
+    },
+    "selection_unchanged": true
+  },
+  "QA": {
+    "root_browser_source_sha256": "dfcb73cbfc4bff01a47b92a509eb21b237e92e0dd783bbe71d919c838f62bb73",
+    "final_SQL_observation_sha256": "63d1f0737d77af310956fa0a2666863534ac628241816d3fdae44de8241a6cd0",
+    "draft_pause_before_debounce_then_reload": true,
+    "autosave_261_characters_then_reload_exact": true,
+    "focus_and_caret_retained_on_autosave": true,
+    "focus_after_full_reload_not_asserted": true,
+    "new_page": {
+      "direct_route_observed": true,
+      "fields_complete": true,
+      "no_modal": true,
+      "narrow_320_document_width": 310,
+      "narrow_actions": {
+        "width": 278,
+        "height": 44
+      },
+      "resize_1088_retained_topic_and_objective": true,
+      "auth_me_200_during_edited_form_observed": true,
+      "fields_preserved_after_validation": true,
+      "actual_browser_401_during_R13_form_not_observed": true,
+      "form_not_submitted": true,
+      "technical_values_cleared": true,
+      "final_clean_reload_qualified_collapsed_and_create_enabled": true,
+      "viewport_override_reset": true,
+      "both_agent_created_tabs_marked_deliverable": true
+    },
+    "actual_atomic_create": {
+      "session_id": "89d1696b-902a-4fc0-b08b-9e8d1a0f1347",
+      "job_id": "4364f4e7-ac84-4fa9-abab-703e720d11ed",
+      "create_202_receipts": 1,
+      "metadata_patch_receipts": 0,
+      "single_admitted_job": true,
+      "result": "unknown",
+      "operation_id": "07917f6b-637a-4f00-b872-5b9fbf907831",
+      "remote_outcome": "unknown",
+      "local_transport_closed": "true",
+      "native_process_closed": "true",
+      "sql_ack": "2026-11-05T00:23:41.972Z",
+      "Native_ack": "2026-11-05T00:23:41.992Z",
+      "consumed_dispatches": 1,
+      "provider_dispatches": null,
+      "published_proposals": 0,
+      "later_state": "archived",
+      "timeout_analysis_sha256": "2168fc85a813534dac64f742851cf4ad5e0b5daee00a9b1a67d2aaf11183e1f0",
+      "unknown_preserved_no_replay": true
+    },
+    "English_setup": {
+      "job_id": "58ca258d-4a07-4220-b425-50169189c457",
+      "state": "ready",
+      "provider_POSTs": 1,
+      "HTTP_status": 200,
+      "finish_done": true,
+      "both_ACK": true,
+      "local_claim_to_terminal_seconds": 119.546
+    },
+    "English_old_outline": {
+      "schema": "teacher-R07-original-inflight-closure-observed/1",
+      "source_delivery_sha256": "571dfd2e3afcee634aa6a9d416573a9bcf5a46907280ead4c8355266402bf88c",
+      "observation_sha256": "291b6e43ac904bac4f50a3131f2e83be6c2fb3f5031557f79cf12e25e1e7a34f",
+      "job_id": "31192389-a778-41aa-aa0a-5598fda5b8d0",
+      "operation_id": "d44092ed-77db-4325-b77c-adab496e7a3f",
+      "original_Server_R06_budget_ms": 120000,
+      "final_job_state": "unknown",
+      "remote_outcome": "unknown",
+      "local_transport_closed": true,
+      "native_process_closed": true,
+      "sql_ack_at": "2026-11-05T00:32:48.237Z",
+      "Native_ack_at": "2026-11-05T00:32:48.264Z",
+      "proof_sha256": "5c4da7bb3906a5c6b511ab8b0f4ee13800092d4095cf2040877327a228510432",
+      "new_proposals": 0,
+      "provider_dispatches": null,
+      "original_deadline_not_extended": true,
+      "replay": false,
+      "scoped_observation_only_global_quiet_still_required_before_adoption": true,
+      "observer_database_mutations": 0,
+      "observer_inferences": 0
+    },
+    "English_new_outline": {
+      "job_id": "aa1825a5-86c5-4c32-a21d-8b18206c7565",
+      "operation_id": "5ef70996-17a2-4129-8d96-bebe08db4eb1",
+      "state": "ready",
+      "remote_outcome": "completed",
+      "provider_POSTs": 1,
+      "HTTP_status": 200,
+      "finish_done": true,
+      "both_ACK": true,
+      "local_claim_to_terminal_seconds": 128.182,
+      "organization": "topics",
+      "sections": 7,
+      "objectives": 20,
+      "units": 20,
+      "manual_revision_2_accepted": {
+        "content_hash": "a81ad61bde85f18c451e02da82ced6a95e2768a4f534d03c0b838789668a833e",
+        "created_at": "2026-11-05T00:56:58.349Z",
+        "generation_job_id": null,
+        "id": "9d7505b3-b593-499d-9679-2b01227b66e7",
+        "objective_count": 20,
+        "origin": "manual",
+        "outline_bytes": 10711,
+        "proposed_day_count": null,
+        "proposed_organization": "topics",
+        "revision_no": 2,
+        "section_count": 7,
+        "session_id": "904c19d5-ba6a-4b97-a29c-26e7c44cc59a",
+        "state": "accepted",
+        "unit_count": 20
+      }
+    },
+    "English_material": {
+      "job_id": "d9223206-e8d5-44e6-b658-4b83546ecc9c",
+      "operation_id": "7be5499e-d605-43f6-934e-d94288117c34",
+      "material_id": "9d87a3c4-64ff-4a98-bc79-131274468ed8",
+      "content_hash": "c4c9ab5529a550d7baab7bb1adba1f0fcf0cb28c8d273ef5da21acc8434d05e0",
+      "state": "ready",
+      "remote_outcome": "completed",
+      "provider_POSTs": 1,
+      "HTTP_status": 200,
+      "finish_done": true,
+      "both_ACK": true,
+      "local_claim_to_terminal_seconds": 175.452,
+      "blocks_reviewed": 4,
+      "reading_bookmark_pause_reload_same_heading": true
+    },
+    "English_practice": {
+      "HTTP_status": 201,
+      "attempt_id": "1f07bf77-6f12-439f-92ec-347e561c66d2",
+      "first_question_publicly_observed": true,
+      "question_count_displayed": 5,
+      "all_first_question_options_unselected": true,
+      "pause_reload_same_question": true,
+      "final_session_state": "paused",
+      "final_generation_counter": 4,
+      "responses_submitted_by_Root": 0,
+      "grades_requested_by_Root": 0,
+      "personal_language_level_certified": false,
+      "whole_English_course_completed": false
+    },
+    "final_English_dispatches": 4,
+    "final_English_state": "paused",
+    "all_five_scoped_jobs_terminal_operations_closed_both_ACK": true,
+    "unknown_outcomes_preserved_without_replay": true,
+    "personal_language_level_certified": false,
+    "whole_English_course_completed": false,
+    "screenshot": {
+      "artifact_created": false,
+      "attempts": 2,
+      "reason": "Page.captureScreenshot CDP command timed out; actual DOM state verified through CUA.",
+      "product_failure_inferred": false
+    }
+  },
+  "backup": {
+    "PRE": {
+      "phase": "pre_migration44",
+      "backup_id": "7ff890a8-bc4c-4081-97e5-9b37cab9ce1b",
+      "cipher_sha256": "13508f503cafca2d35ee5f05554dd3ae307c4164a23e168fc9df29c0bd03fae1",
+      "cipher_bytes": 3582723,
+      "restore_sha256": "31c69ad86f5dfc02f9d7efa43b422ffc1655529071ae4ab7206c36359cf5c412",
+      "ledger": 43,
+      "tables": 94
+    },
+    "POST": {
+      "backup_id": "0c0c62e2-1877-4dd9-9af1-3c867a771e08",
+      "canonical_backup_service_starts": 1,
+      "receipt_sha256": "3d9ceb4a4aff43fc49fae5279ffad2b7a3fec725bbfcb8d67c62f8939bb6cfc8",
+      "cipher_sha256": "58d312e65e1c394f8be0abdbbed861bbf0014defbe85987905902c86e3f2af60",
+      "cipher_bytes": 3727868,
+      "source_inventory_sha256": "ab9f748bb0db22c71b147703e87a9b5f72803d0e283a9067f4d5b504b9ec10a4",
+      "restore_sha256": "bc358c408401f063e5f2594d677dcca1a7fc3ca8de26bad10929d8fb8d7c88b9",
+      "GCM_authenticated": true,
+      "ledger": 44,
+      "tables": 94,
+      "raw_rows_equal": true,
+      "sequences_equal": true,
+      "schema_exact_except_reparsed_checks": true,
+      "reparsed_checks_equal": true,
+      "reparsed_check_count": 22,
+      "literal_raw_rows_schema_sequences_equal": false,
+      "original_ids_FKs_and_Teacher_rows_retained": true,
+      "native_proofs_and_ACKs_verified": true,
+      "four_owned_restore_resources_absent": true,
+      "configured_VM_DB_restored_or_modified": false,
+      "provider_requests": 0
+    },
+    "new_private_configuration_or_profile_captures": 0
+  },
+  "content_review_limits": [
+    "Setup reply repeated organization and zero-base clarification despite the user already providing them.",
+    "The material contains an inappropriate generic reference to sharing access credentials; it should use fictional identifiers and never encourage sharing secrets.",
+    "The CODE99 spelling example lists CODE and omits both digits.",
+    "Text-only lesson and structural validity do not certify pronunciation, learning efficacy or universal pedagogical quality."
+  ],
+  "operational_limits": [
+    "The first R07 operator attempt failed before creating intent/state/temporary files or changing services/data; its cause is not attributed. A separately authorized fresh R02 attempt passed with unchanged controls.",
+    "A failed AST diagnostic assertion was corrected before its lock-only observation; it never invoked adoption.",
+    "Two browser screenshot CDP commands timed out; no screenshot artifact or product failure is claimed.",
+    "QA and restored qualification history do not qualify another provider/model/mode/runtime epoch."
+  ],
+  "knowledge_check": {
+    "sources": 80,
+    "excluded": 36,
+    "documents": 44,
+    "fragments": 46,
+    "release_id": "ca3b8d894cbfc3780698e15b1b19c62a4554b00911af7893024fd025c6f948af",
+    "publication": false,
+    "document_approval": false
+  },
+  "sources": [
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/delivery.json",
+      "sha256": "717f937fe5e99f5a35f62a240855ee0e439341ddaff41a349c76534786e7d248"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/qa/root-ui-observations-r01.json",
+      "sha256": "fe1d7c74197a236bf95092fd36f57653b5254c46ab9f066a694604a2a3e5912c"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/qa/root-ui-observations-r02.json",
+      "sha256": "dfcb73cbfc4bff01a47b92a509eb21b237e92e0dd783bbe71d919c838f62bb73"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/qa/english-final-observation-summary.json",
+      "sha256": "63d1f0737d77af310956fa0a2666863534ac628241816d3fdae44de8241a6cd0"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/qa/english-plan300-summary.json",
+      "sha256": "5f25fcc29b3554824a4459b141c8b02175718e8d90bac18fc521ab98c4b3225c"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/qa/english-material-summary.json",
+      "sha256": "c9d7f2fc7929227cf0a33821c9d8d3e98f6b9c7eb7f952e81b2844bd1eeb76e7"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/server-budget-r07-logic/delivery.json",
+      "sha256": "571dfd2e3afcee634aa6a9d416573a9bcf5a46907280ead4c8355266402bf88c"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/db-post-r07-r13/database-POST-canonical.json",
+      "sha256": "d4ea8e54af750f715867b5aa7c78d023c116e31951db049cb03d3651a8667554"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/backups/final-Server-R07-Client-R13-database-restore-verified.json",
+      "sha256": "bc358c408401f063e5f2594d677dcca1a7fc3ca8de26bad10929d8fb8d7c88b9"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/db-post-r07-r13/local-restore-independent-cleanup.json",
+      "sha256": "ecb54e0cb8eb37a117e978f7b65a58d1a66a890d1a1e10b9dd778c1814b9e70d"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/final-health-r02.json",
+      "sha256": "94b0764a8ff81d240f02228c6ce4e6f70295022cd32921354c32ee4e594ee84f"
+    }
+  ],
+  "final_health": {
+    "success": true,
+    "source_sha256": "94b0764a8ff81d240f02228c6ce4e6f70295022cd32921354c32ee4e594ee84f",
+    "API_PID": 1204252,
+    "Worker_PID": 1204253,
+    "API_Worker_active_R07": true,
+    "Native_healthy_and_bindings_unchanged": true,
+    "new_page_HTTP_status": 200,
+    "anonymous_Teacher_HTTP_status": 401,
+    "anonymous_products_HTTP_status": 401,
+    "index_matches_Client_R13_manifest": true,
+    "SQL_calls": 0,
+    "service_mutations": 0,
+    "provider_requests": 0
+  },
+  "operator_delivery": {
+    "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/delivery.json",
+    "sha256": "717f937fe5e99f5a35f62a240855ee0e439341ddaff41a349c76534786e7d248",
+    "receipt_pins_verified": 42,
+    "source_pins_verified": 53,
+    "status": "Server_R07_Client_R13_active_scoped_QA_finished_POST44_local_restore_verified_health_passed"
+  },
+  "documentation_check": {
+    "UTF8_LF_files_checked": 9,
+    "frontmatter_and_explicit_source_paths_valid": true,
+    "knowledge_compiler_check_passed": true
+  }
+}

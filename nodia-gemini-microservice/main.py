@@ -17,34 +17,34 @@ from loguru import logger
 from pydantic import ValidationError
 from starlette.datastructures import UploadFile
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from gemini_webapi.exceptions import AuthError
 
 from agentic_service import AntigravityAgentService
-from gemini_service import GeminiWebService
-from interactive_login import InteractiveLoginManager
-from login_viewer import LoginFrame, LoginInput
 from agentic_login import AgenticLoginManager
 from request_guard import PrivateRequestGuard
 from profile_admission import ProfileAdmission
+from manual_invoice_dispatch import ManualInvoiceDispatches
+from cli_execution_receipt import CliExecutionReceipt
 from durable_login import DurableLoginRequests
 from durable_login_routes import register_durable_login_routes
-import browser_manager
-import session_store
-from nodia_ai_chat import ChatAdapter, ChatRequest, ObserveRequest, Answer, DelegationRequest, ChatTurnResponse, AttachmentProbeRequest, REPLY
+from nodia_ai_chat import ChatAdapter, ChatRequest, ObserveRequest, Answer, ChatTurnResponse, AttachmentProbeRequest
 from native_context_budget import ContextMeasureRequest, ContextMeasurement, measure_context
 from invoice_mcp_contract import register_invoice_mcp_contract_routes
+from native_invoice_analysis import NativeInvoiceAnalysis, register_native_invoice_routes
+from native_image_generation import NativeImageGeneration, register_native_image_routes
+from native_teacher_text import TeacherNativeText, register_teacher_text_routes
+from teacher_sdk_runtime import create_teacher_sdk_runtime
 from native_attempts import ReconcileAttempt, AcknowledgeAttempt
 from native_mcp_sessions import NativeMcpSessions, McpChatRequest, McpPoll, McpResult
 from analysis_observations import AnalysisObservations
 from attachment_inspector import AttachmentInspector, register_attachment_inspector_routes
 from schemas import (AgenticLoginJobResponse, AgenticLoginCode, AgenticStatusResponse,
-                     AgenticModelsResponse, AnalysisOptions, DualEngineStatusResponse,
-                     HealthResponse, InvoiceAnalysisResponse, LoginJobResponse,
-                     NodiaActorId, RuntimeLimits, WebStatusResponse, WebLogoutResponse)
+                     AgenticModelsResponse, AnalysisOptions, EngineStatusResponse,
+                     HealthResponse, InvoiceAnalysisResponse, NodiaActorId, RuntimeLimits)
 from service_auth import assert_service_auth_configured
 from service_errors import InvalidExtraction, ServiceError
 
 BASE_DIR = Path(__file__).resolve().parent
+STATE_DIR = BASE_DIR / "session_state"
 
 
 def analysis_request_body() -> dict[str, Any]:
@@ -70,7 +70,8 @@ def configured_limits() -> RuntimeLimits:
 
 
 async def execute_analysis(file: UploadFile, options: AnalysisOptions, service: Any,
-                           temp_dir: Path, limits: RuntimeLimits, progress: Callable[[str], None] | None = None) -> InvoiceAnalysisResponse:
+                           temp_dir: Path, limits: RuntimeLimits, progress: Callable[[str], None] | None = None,
+                           closure_receipt: CliExecutionReceipt | None = None) -> InvoiceAnalysisResponse:
     ext = Path(file.filename or "").suffix.lower()
     if ext not in {".pdf", ".png", ".jpg", ".jpeg", ".webp"}:
         raise ServiceError("invalid_file_type", "Formato de archivo no soportado.", 415)
@@ -100,6 +101,7 @@ async def execute_analysis(file: UploadFile, options: AnalysisOptions, service: 
             provider_tax=options.provider_tax, model=options.model,
             extended_thinking=options.extended_thinking, thinking_level=options.thinking_level,
             **({"progress_callback": progress} if progress else {}),
+            **({"closure_receipt": closure_receipt} if closure_receipt is not None else {}),
         ), timeout=limits.analysis_timeout)
         try:
             return InvoiceAnalysisResponse.model_validate(result)
@@ -112,8 +114,7 @@ async def execute_analysis(file: UploadFile, options: AnalysisOptions, service: 
         temp_path.unlink(missing_ok=True)
 
 
-def create_app(*, web_service: Any = None, agentic_service: Any = None,
-               login_manager: InteractiveLoginManager | None = None,
+def create_app(*, agentic_service: Any = None,
                temp_dir: Path | None = None, limits: RuntimeLimits | None = None,
                load_environment: bool = True) -> FastAPI:
     @asynccontextmanager
@@ -123,23 +124,30 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
         assert_service_auth_configured()
         state = application.state
         state.limits = limits if limits is not None else configured_limits()
-        state.web = web_service if web_service is not None else GeminiWebService(generation_timeout=state.limits.analysis_timeout)
         state.agentic = agentic_service if agentic_service is not None else AntigravityAgentService()
-        state.login = login_manager if login_manager is not None else InteractiveLoginManager()
         state.agentic_login = AgenticLoginManager(state.agentic)
         state.temp_dir = temp_dir if temp_dir is not None else BASE_DIR / "temp_uploads"
         state.attachment_inspector = AttachmentInspector(state.temp_dir)
         state.analysis_slots = asyncio.Semaphore(state.limits.analysis_slots)
         state.observations = AnalysisObservations()
         configured_home = os.getenv("ANTIGRAVITY_CLI_HOME", "").strip()
-        state.profiles = ProfileAdmission(
-            getattr(state.web.browser_manager, "profile_dir", browser_manager.PROFILE_DIR),
-            Path(configured_home) if configured_home else getattr(getattr(state.agentic, "runner", None), "config", None).home if getattr(getattr(state.agentic, "runner", None), "config", None) is not None else None, session_store.SESSION_FILE.parent / "runtime_admission")
-        state.chat = ChatAdapter(state.web, state.agentic, state.profiles, state.attachment_inspector)
-        async def prepare_login_dispatch(engine: str) -> None:
-            if engine == "web" and hasattr(state.web, "suspend_for_login"):
-                await state.web.suspend_for_login()
-        state.durable_login = DurableLoginRequests(session_store.SESSION_FILE.parent / "login_requests", state.profiles, prepare_login_dispatch)
+        legacy_config = getattr(getattr(state.agentic, "runner", None), "config", None)
+        physical_home = Path(configured_home) if configured_home else getattr(legacy_config, "home", None)
+        state.profiles = ProfileAdmission(physical_home, STATE_DIR / "runtime_admission")
+        state.manual_invoice_dispatches = ManualInvoiceDispatches(state.profiles, STATE_DIR / "manual_invoice_proofs")
+        state.manual_invoice_generation = uuid4().hex
+        state.manual_invoice_dispatches.initialize_safety()
+        state.teacher_backend, teacher_transport = create_teacher_sdk_runtime(physical_home,
+            state.profiles._state_dir, STATE_DIR / "teacher_sdk_work", os.environ, profiles=state.profiles)
+        # Recover/quarantine old SDK ownership before chat, OCR or CLI startup
+        # can acquire the same physical provider profile.
+        await state.teacher_backend.initialize_safety()
+        state.chat = ChatAdapter(state.agentic, state.profiles, state.attachment_inspector)
+        state.invoice_analysis = NativeInvoiceAnalysis(state.chat)
+        state.image_generation = NativeImageGeneration(state.chat)
+        state.teacher_text = TeacherNativeText(state.agentic, state.profiles,
+            backend=state.teacher_backend, transport=teacher_transport)
+        state.durable_login = DurableLoginRequests(STATE_DIR / "login_requests", state.profiles)
         state.mcp = NativeMcpSessions(state.chat)
         state.chat.mcp_sessions = state.mcp
         state.agentic_start_deferred = False
@@ -155,21 +163,16 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
                     if error.code != "runtime_busy":
                         raise
                     state.agentic_start_deferred = True
-            try:
-                async with state.profiles.operation("web", purpose="startup"):
-                    await state.web.init_client()
-            except Exception as error:
-                logger.warning("Initial Gemini connection failed: {}", type(error).__name__)
             yield
         finally:
             try:
+                await state.teacher_text.close()
                 await state.mcp.close()
                 await state.durable_login.close()
                 await state.agentic_login.close()
-                await state.login.close()
             finally:
                 try:
-                    await state.web.close()
+                    await state.teacher_backend.close()
                 finally:
                     if hasattr(state.agentic, "close"):
                         await state.agentic.close()
@@ -179,6 +182,9 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
     register_durable_login_routes(application)
     register_attachment_inspector_routes(application)
     register_invoice_mcp_contract_routes(application)
+    register_native_invoice_routes(application)
+    register_native_image_routes(application)
+    register_teacher_text_routes(application)
 
     async def durable_job(engine: str, job_id: str, actor: str, action: str, payload: dict | None = None):
         job = await application.state.durable_login.legacy(engine, job_id, actor, action, payload)
@@ -190,7 +196,8 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
         request.state.error_code = code
         # Stable operational categories only; Server never needs the provider body.
         headers = dict(headers or {})
-        if (code, status) in {("analysis_timeout", 504), ("provider_timeout", 504), ("agentic_timeout", 504), ("provider_response_error", 502), ("login_invalid_code", 422)}:
+        if (code, status) in {("analysis_timeout", 504), ("provider_timeout", 504), ("agentic_timeout", 504), ("provider_response_error", 502), ("login_invalid_code", 422),
+                             ("runtime_busy", 409), ("native_proof_missing", 409), ("native_proof_mismatch", 409)}:
             headers["X-Nodia-Error-Code"] = code
         return JSONResponse({"code": code, "detail": detail,
                              "request_id": getattr(request.state, "request_id", None)},
@@ -229,42 +236,10 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
 
     @application.get("/ready", response_model=HealthResponse)
     async def ready():
-        info = await application.state.web.get_status()
-        if not info["initialized"]:
-            raise ServiceError("session_unavailable", "La sesión Web no está disponible.")
-        return HealthResponse(status="ok")
+        return await agentic_ready()
 
-    async def web_status() -> WebStatusResponse:
-        async with application.state.profiles.operation("web", purpose="health_status"):
-            return await unlocked_web_status()
 
-    async def unlocked_web_status() -> WebStatusResponse:
-        web = application.state.web
-        try:
-            await web.init_client()
-        except Exception as error:
-            logger.warning("Session check failed: {}", type(error).__name__)
-        info = await web.get_status()
-        quota = await web.get_quota_summary() if info["initialized"] else None
-        metrics = dict(quota.get("quotas") or {}) if quota else {}
-        if quota and isinstance(quota.get("usage_info"), dict):
-            for window in ("current_5h", "weekly"):
-                value = quota["usage_info"].get(window)
-                if value is not None:
-                    metrics[window] = value
-        return WebStatusResponse(
-            authenticated=info["initialized"], has_cookies=info["has_cookies"],
-            has_browser_profile=info["has_browser_profile"], last_refresh_time=info.get("last_refresh_time"),
-            tier=info.get("tier", "UNKNOWN"), model=info.get("model"), model_display=info.get("model_display"),
-            quota=metrics or None,
-            quota_observed_at=quota.get("observed_at") if quota else None,
-            supported_options=info.get("supported_options"),
-        )
 
-    @application.get("/auth/status", response_model=WebStatusResponse)
-    @application.get("/web/status", response_model=WebStatusResponse)
-    async def auth_status():
-        return await web_status()
 
     @application.get("/agentic/status", response_model=AgenticStatusResponse)
     async def agentic_status():
@@ -328,23 +303,15 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
             return durable
         return await application.state.agentic_login.cancel(job_id, actor)
 
-    @application.get("/engines/status", response_model=DualEngineStatusResponse)
+    @application.get("/engines/status", response_model=EngineStatusResponse)
     async def engines_status():
-        async def independent_web_status():
-            try:
-                return await asyncio.wait_for(web_status(), 4)
-            except Exception:
-                return WebStatusResponse(authenticated=False, has_cookies=False,
-                                         has_browser_profile=False, tier="UNKNOWN")
-        async def independent_agentic_status():
-            try:
-                return await agentic_status()
-            except ServiceError as error:
-                service = application.state.agentic
-                available = service.is_available() if isinstance(service, AntigravityAgentService) else False
-                return AgenticStatusResponse(available=available, has_active_session=False, reason=error.code)
-        agentic, web = await asyncio.gather(independent_agentic_status(), independent_web_status())
-        return DualEngineStatusResponse(default_engine="web", agentic=agentic, web=web)
+        try:
+            agentic = await asyncio.wait_for(agentic_status(), 12)
+        except ServiceError as error:
+            agentic = AgenticStatusResponse(available=False, reason=error.code)
+        except TimeoutError:
+            agentic = AgenticStatusResponse(available=False, reason="agentic_timeout")
+        return EngineStatusResponse(agentic=agentic)
 
     @application.get("/agentic/models", response_model=AgenticModelsResponse)
     async def agentic_models():
@@ -353,103 +320,18 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
                 "authenticated": bool(info["available"] and info["has_active_session"]),
                 "models": info["models"], "reason": info.get("reason")}
 
-    @application.get("/models")
-    @application.get("/web/models")
-    async def get_models():
-        async with application.state.profiles.operation("web", purpose="discovery"):
-            return await application.state.web.get_models_and_quota()
 
-    async def run_login() -> bool:
-        web = application.state.web
-        result = await web.browser_manager.login_interactive(timeout_seconds=300)
-        cookies = result.get("cookies", {})
-        if not result.get("success") or not cookies.get("secure_1psid") or not cookies.get("secure_1psidts"):
-            return False
-        await web.reload_cookies(cookies["secure_1psid"], cookies["secure_1psidts"])
-        return web.is_initialized
 
-    @application.post("/auth/login/start", response_model=LoginJobResponse)
-    async def start_login(actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
-        application.state.web.assert_login_allowed()
-        reservation = application.state.profiles.reserve("web", purpose="login")
-        try:
-            job = application.state.login.start(run_login, actor, reservation.release)
-        except BaseException:
-            reservation.release()
-            raise
-        if job is None:
-            reservation.release()
-            raise ServiceError("login_busy", "Ya hay un inicio de sesión en curso.", 409)
-        return job
 
-    @application.post("/auth/logout", response_model=WebLogoutResponse)
-    async def logout_web(actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
-        if application.state.login.is_active:
-            raise ServiceError("web_session_busy", "Cancela el inicio de sesión Web en curso antes de cambiar de cuenta.", 409)
-        async with application.state.profiles.operation("web", purpose="logout"):
-            await application.state.web.disconnect()
-        return WebLogoutResponse(status="disconnected")
 
-    @application.get("/auth/login/{job_id}", response_model=LoginJobResponse)
-    async def login_status(job_id: str, actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
-        durable = await durable_job("web", job_id, actor, "status")
-        if durable is not None:
-            return durable
-        job = application.state.login.status(job_id, actor)
-        if job is None:
-            raise ServiceError("login_not_found", "Sesión de login no encontrada.", 404)
-        return job
 
-    @application.post("/auth/login/{job_id}/cancel", response_model=LoginJobResponse)
-    async def cancel_login(job_id: str, actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
-        durable = await durable_job("web", job_id, actor, "cancel")
-        if durable is not None:
-            return durable
-        job = application.state.login.cancel(job_id, actor)
-        if job is None:
-            raise ServiceError("login_not_found", "Sesión de login no encontrada.", 404)
-        return job
 
-    def running_login(job_id: str, actor: str) -> None:
-        job = application.state.login.status(job_id, actor)
-        if job is None:
-            raise ServiceError("login_not_found", "Sesión de login no encontrada.", 404)
-        if job["state"] != "running":
-            raise ServiceError("login_finished", "El intento de login ha terminado.", 409)
 
-    @application.get("/auth/login/{job_id}/frame", response_model=LoginFrame)
-    async def login_frame(job_id: str, actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
-        durable = await durable_job("web", job_id, actor, "frame")
-        if durable is not None:
-            return durable
-        running_login(job_id, actor)
-        frame = await application.state.web.browser_manager.viewer.frame()
-        running_login(job_id, actor)
-        return frame
 
-    @application.post("/auth/login/{job_id}/input", response_model=LoginJobResponse)
-    async def login_input(job_id: str, payload: LoginInput,
-                          actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
-        durable = await durable_job("web", job_id, actor, "input", payload.model_dump())
-        if durable is not None:
-            return durable
-        running_login(job_id, actor)
-        await application.state.web.browser_manager.viewer.input(payload)
-        return application.state.login.status(job_id, actor)
 
-    @application.post("/auth/refresh")
-    async def refresh_auth():
-        web = application.state.web
-        try:
-            async with application.state.profiles.operation("web", purpose="refresh"):
-                await web.recover_auth(web.client)
-        except AuthError:
-            raise ServiceError("session_expired", "La sesión de Gemini Web necesita renovarse.") from None
-        return {"status": "success", "initialized": web.is_initialized}
 
     @application.post("/analyze-invoice", response_model=InvoiceAnalysisResponse, openapi_extra=analysis_request_body())
     @application.post("/agentic/analyze-invoice", response_model=InvoiceAnalysisResponse, openapi_extra=analysis_request_body())
-    @application.post("/web/analyze-invoice", response_model=InvoiceAnalysisResponse, openapi_extra=analysis_request_body())
     async def analyze_invoice(request: Request):
         async with request.form(max_files=1, max_fields=6, max_part_size=16_384) as form:
             if any(len(form.getlist(key)) != 1 for key in form):
@@ -465,7 +347,7 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
                     fields["provider_fields"] = json.loads(fields["provider_fields"])
                 except (TypeError, ValueError):
                     raise ServiceError("invalid_provider_fields", "Configuración del proveedor inválida.", 422) from None
-            forced = "agentic" if request.url.path.startswith("/agentic/") else "web" if request.url.path.startswith("/web/") else None
+            forced = "agentic"
             if forced:
                 if fields.get("engine", forced) != forced:
                     raise ServiceError("engine_mismatch", "Motor incompatible con la ruta.", 422)
@@ -474,44 +356,37 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
                 options = AnalysisOptions.model_validate(fields)
             except ValidationError:
                 raise ServiceError("invalid_options", "Configure un modelo y parámetros válidos antes de analizar.", 422) from None
-            service = application.state.agentic if options.engine == "agentic" else application.state.web
+            service = application.state.agentic
             request.state.engine = options.engine
             if options.engine == "agentic" and not service.is_available():
                 raise ServiceError("agentic_unavailable", "Antigravity no dispone de un adaptador de sesión verificado.")
             identifier = getattr(request.state, "analysis_id", None)
-            dispatched = False
-            def progress(stage: str) -> None:
-                nonlocal dispatched
-                if stage == "provider_request_started" and not dispatched:
-                    application.state.profiles.arm_dispatch(options.engine)
-                    dispatched = True
-                if identifier:
-                    application.state.observations.emit(identifier, stage)
-            async with application.state.profiles.operation(options.engine, purpose="execution"):
-                try:
-                    result = await execute_analysis(file, options, service, application.state.temp_dir, application.state.limits, progress)
-                    if dispatched:
-                        application.state.profiles.resolve_dispatch(options.engine)
-                    return result
-                except BaseException:
-                    if dispatched:
-                        application.state.profiles.quarantine(options.engine)
-                    raise
+            generation = getattr(service, "session_generation", None)
+            if not isinstance(generation, str):
+                generation = application.state.manual_invoice_generation
+            async with application.state.manual_invoice_dispatches.operation(generation) as dispatch:
+                def progress(stage: str) -> None:
+                    if stage == "provider_request_started":
+                        dispatch.arm()
+                    if identifier:
+                        application.state.observations.emit(identifier, stage)
+                return await execute_analysis(file, options, service, application.state.temp_dir,
+                    application.state.limits, progress, dispatch.receipt)
 
     @application.post("/nodia-ai/{engine}/observe")
     async def observe_chat(engine: str, payload: ObserveRequest):
-        if engine not in ("web", "agentic"):
+        if engine != "agentic":
             raise ServiceError("invalid_engine", "Modo de chat inválido.", 422)
         return await application.state.chat.observe(engine, payload)
 
     @application.post("/nodia-ai/{engine}/measure-context", response_model=ContextMeasurement)
     async def measure_chat_context(engine: str, payload: ContextMeasureRequest):
         # Pure metadata: no account inspection, profile reservation, SDK or generation.
-        return measure_context(engine, payload, REPLY.json_schema() if engine == "web" else Answer.model_json_schema())
+        return measure_context(engine, payload, Answer.model_json_schema())
 
     @application.post("/nodia-ai/{engine}/turn", response_model=ChatTurnResponse)
     async def execute_chat(engine: str, payload: ChatRequest):
-        if engine not in ("web", "agentic"):
+        if engine != "agentic":
             raise ServiceError("invalid_engine", "Modo de chat inválido.", 422)
         reply = await application.state.chat.execute(engine, payload)
         proof = application.state.chat.ledger.read(payload.attempt_id)
@@ -524,8 +399,8 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
         return await application.state.mcp.start(payload)
 
     @application.post("/nodia-ai/{engine}/attachments/probe", response_model=ChatTurnResponse)
-    async def probe_web_attachment(engine: str, payload: AttachmentProbeRequest):
-        if engine not in ("web", "agentic"):
+    async def probe_attachment(engine: str, payload: AttachmentProbeRequest):
+        if engine != "agentic":
             raise ServiceError("invalid_engine", "Modo de chat inválido.", 422)
         reply = await application.state.chat.probe_attachments(payload, engine)
         proof = application.state.chat.ledger.read(payload.attempt_id)
@@ -551,13 +426,13 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
 
     @application.post("/nodia-ai/{engine}/attempts/{attempt_id}/reconcile")
     async def reconcile_chat(engine: str, attempt_id: str, payload: ReconcileAttempt):
-        if engine not in ("web", "agentic"):
+        if engine != "agentic":
             raise ServiceError("invalid_engine", "Modo de chat inválido.", 422)
         return application.state.chat.reconcile(engine, attempt_id, payload)
 
     @application.post("/nodia-ai/{engine}/attempts/{attempt_id}/acknowledge")
     async def acknowledge_chat(engine: str, attempt_id: str, payload: AcknowledgeAttempt):
-        if engine not in ("web", "agentic"):
+        if engine != "agentic":
             raise ServiceError("invalid_engine", "Modo de chat inválido.", 422)
         return application.state.chat.acknowledge(engine, attempt_id, payload)
 

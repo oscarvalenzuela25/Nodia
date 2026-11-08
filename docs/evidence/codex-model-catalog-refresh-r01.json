@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-28",
+  "status": "catalog_persisted_and_projected_in_nodia_ai",
+  "scope": "OpenAI Codex Agentic connection 1, Ubuntu lab behind localhost:5174",
+  "requested_models": [
+    "gpt-6-astra",
+    "gpt-6-luna",
+    "gpt-6-sol",
+    "gpt-6.1-sol",
+    "gpt-6.1-terra"
+  ],
+  "before": {
+    "providerId": "1",
+    "providerKey": "openai",
+    "defaultMode": "agentic",
+    "selectedModel": "gpt-6.1-sol",
+    "ocrFocusModel": "gpt-6.1-sol",
+    "thinkingLevel": "medium",
+    "apiConfigurationSha256": "2a12c4417d6d5f6fe2e86431a6ea21ce2326e664b5738f8c894e521bdf54b06e",
+    "models": [
+      {
+        "id": "gpt-6.1-sol",
+        "name": "GPT-6.1-Sol"
+      },
+      {
+        "id": "gpt-6-astra",
+        "name": "GPT-6-Astra"
+      },
+      {
+        "id": "gpt-6-sol",
+        "name": "GPT-6-Sol"
+      },
+      {
+        "id": "gpt-6-luna",
+        "name": "GPT-6-Luna"
+      }
+    ]
+  },
+  "after": {
+    "providerId": "1",
+    "key": "openai",
+    "defaultMode": "agentic",
+    "selectedModel": "gpt-6.1-sol",
+    "ocrFocusModel": "gpt-6.1-sol",
+    "thinkingLevel": "medium",
+    "apiConfigurationSha256": "2a12c4417d6d5f6fe2e86431a6ea21ce2326e664b5738f8c894e521bdf54b06e",
+    "models": [
+      {
+        "id": "gpt-6.1-sol",
+        "name": "GPT-6.1-Sol"
+      },
+      {
+        "id": "gpt-6.1-terra",
+        "name": "GPT-6.1 Terra"
+      },
+      {
+        "id": "gpt-6-astra",
+        "name": "GPT-6-Astra"
+      },
+      {
+        "id": "gpt-6-sol",
+        "name": "GPT-6-Sol"
+      },
+      {
+        "id": "gpt-6-luna",
+        "name": "GPT-6-Luna"
+      }
+    ]
+  },
+  "discovery": {
+    "source": "Authenticated connection Codex model/list through normal Settings sync-models UI",
+    "http_status": 201,
+    "persist": false,
+    "observed_models": [
+      "gpt-5.6-luna",
+      "gpt-5.6-sol",
+      "gpt-5.6-terra",
+      "gpt-6-astra",
+      "gpt-6-luna",
+      "gpt-6-sol",
+      "gpt-6.1-sol",
+      "gpt-6.1-terra"
+    ],
+    "curation": "Only the requested five persisted through normal provider configuration PUT; no closed production list added."
+  },
+  "save": {
+    "endpoint": "PUT /api/v1/ai-provider/1",
+    "ui_submit_count": 1,
+    "responses": [
+      401,
+      200
+    ],
+    "authentication_refresh": "Normal refresh returned 200; existing client replayed the rejected unauthenticated request. No repeated manual submit.",
+    "readback": "Subsequent provider health GET 200 returned the five persisted models and preserved selection/OCR/effort/API configuration hash."
+  },
+  "chat_projection": {
+    "fresh_tab": true,
+    "observed_selector_labels": [
+      "GPT-6.1-Sol",
+      "GPT-6.1 Terra",
+      "GPT-6-Astra",
+      "GPT-6-Sol",
+      "GPT-6-Luna"
+    ],
+    "configuration_applied": false,
+    "messages_sent": 0,
+    "draft_cancelled": true,
+    "original_user_tabs_preserved": true,
+    "tool_verification_warning": "UI correctly states tools are not yet verified for this selection.",
+    "screenshot": {
+      "path": "docs/evidence/codex-model-catalog-refresh-r01.png",
+      "sha256": "4ba53f1f4bfb3e8a6ffd5d363c2c6bdca745768f4b0cfd41ee41eb1c88bffb22",
+      "bytes": 70585
+    }
+  },
+  "runtime_repair": {
+    "trigger": "Initial model discovery failed HTTP 500: ESRCH reading a vanished procfs PID.",
+    "change": "Treat ESRCH like ENOENT only for a vanished PID, continue scanning every group member; permission, malformed identity, reused PID and live-child checks still fail closed.",
+    "release": "/opt/nodia/releases/nodia-server-codex-model-catalog-r01",
+    "manifest_sha256": "2125f948dfc34b33d0fb10027d5a2407a442279f840f2e9b0bd88870e3b8a713",
+    "delivery": {
+      "path": "ops/lab/artifacts/codex-model-catalog-r01/delivery-receipt-r01.json",
+      "sha256": "0f864cc9ee93c21f9e87ba482039c2e1430571bf65c26d88c1c34cd7fc6e5dda",
+      "bytes": 8063
+    },
+    "tests": {
+      "path": "ops/lab/artifacts/codex-model-catalog-r01/ownership-test-receipt.json",
+      "sha256": "74e98cabe176fbcd5596b96be227b89a204538a12b8accb4c7623104f2cc20e1",
+      "bytes": 2439
+    },
+    "linux_build": {
+      "path": "ops/lab/artifacts/codex-model-catalog-r01/build-receipt-r03.json",
+      "sha256": "9bf3eaeeb2726b7cab81007d3fca1ba78e3115f8be1db1843f865b79c105e95f",
+      "bytes": 3707
+    },
+    "verification": "23/23 focal units; Linux ownership 6/6; full build, synthetic HTTP/process/PDF, login-supervisor and assets passed. Global lint exit 0 with one historical warning in unchanged live-unknown fixture.",
+    "safe_lock_recovery": "One exact captured observation lock removed after dead owner and empty native process-group proof; zero signals. No credentials/profile/session deletion.",
+    "preservation": "65 table fingerprints and 32 migration ledger entries equal inside stopped deployment barrier; no migration. Intended later model PUT and normal auth refresh are outside that barrier.",
+    "unchanged": [
+      "Client release",
+      "Nginx",
+      "Native container",
+      "physical dependencies",
+      "published knowledge"
+    ],
+    "historical_acceptance": "Compiled helper participates in runtime fingerprint; prior tools/modalities acceptance is not promoted to this release."
+  },
+  "backups": {
+    "before": {
+      "backup": {
+        "backup_id": "49646ba5-fc66-4286-ba71-6df7ff376c3f",
+        "captured_at": "2026-10-28T04:49:05.154Z",
+        "cipher_bytes": 2679932,
+        "cipher_sha256": "e022e00c2212b332ce739e13b4edc8f504398779267fa1484ac7ec65e7b225cb",
+        "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+        "expires_at": "2026-11-04T04:49:05.154Z",
+        "journal_sequence": 1,
+        "status": "ready"
+      },
+      "backup_create_requests": 1,
+      "backup_service": {
+        "ActiveState": "inactive",
+        "ExecMainStatus": "0",
+        "Result": "success"
+      },
+      "checked_at_vm_utc": "2026-10-28T04:49:02.369217+00:00",
+      "encrypted_object_verified": true,
+      "journal": {
+        "closed": false,
+        "last_sequence": 1,
+        "unconfirmed": 0
+      },
+      "live_writer_guard_passed": true,
+      "object_read_operations": {
+        "get": 1,
+        "head": 1,
+        "if_match": true
+      },
+      "provider_requests": 0,
+      "retention_exactly_seven_days": true,
+      "retries": 0,
+      "schema_version": 1,
+      "service_invocation": "42b00a0e7a924ed78bf7f109a67832db",
+      "storage_write_requests": 0,
+      "success": true
+    },
+    "after": {
+      "backup": {
+        "backup_id": "128acda8-0160-47e1-aa26-2a41a81a9be9",
+        "captured_at": "2026-10-28T04:59:06.441Z",
+        "cipher_bytes": 2682062,
+        "cipher_sha256": "9807334e8326ad60648e3f864dd117d75536ca8027e30a5060ff255a3e65a6db",
+        "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+        "expires_at": "2026-11-04T04:59:06.441Z",
+        "journal_sequence": 1,
+        "status": "ready"
+      },
+      "backup_create_requests": 1,
+      "backup_service": {
+        "ActiveState": "inactive",
+        "ExecMainStatus": "0",
+        "Result": "success"
+      },
+      "checked_at_vm_utc": "2026-10-28T04:59:03.994040+00:00",
+      "encrypted_object_verified": true,
+      "journal": {
+        "closed": false,
+        "last_sequence": 1,
+        "unconfirmed": 0
+      },
+      "live_writer_guard_passed": true,
+      "object_read_operations": {
+        "get": 1,
+        "head": 1,
+        "if_match": true
+      },
+      "provider_requests": 0,
+      "retention_exactly_seven_days": true,
+      "retries": 0,
+      "schema_version": 1,
+      "service_invocation": "c5ea1c8c4c894e138fc9b06808bba39b",
+      "storage_write_requests": 0,
+      "success": true
+    },
+    "after_operator": {
+      "path": ".tmp/codex-model-catalog-r01/postbackup-operator-r01.py",
+      "sha256": "d367009cef1757655d4149886bac169d42478c69c745e558aa83d073be960b67",
+      "bytes": 5670
+    }
+  },
+  "cost_scope": {
+    "generative_inference_requests": 0,
+    "api_key_requests": 0,
+    "note": "Account/session observation and model discovery only; no chat/OCR/media generation executed."
+  },
+  "limits": [
+    "Discovery and saved catalog do not prove inference access, MCP, tools, OCR or multimedia per model.",
+    "GPT-6.1 Terra was added; the other four requested models were already configured. Older 5.6 models observed by the CLI were not enabled.",
+    "Labels come from runtime discovery and may use hyphens; executable IDs are preserved exactly.",
+    "Previous build setup failures and prebackup flock conflict remain in delivery evidence; no failed attempt is counted as acceptance.",
+    "No new documentary approval or knowledge publication was performed."
+  ]
+}

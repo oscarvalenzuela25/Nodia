@@ -53,9 +53,9 @@ async function childMain() {
           firstMcpListingUpperBoundUtf8Bytes:0,maxUtf8Bytes:262144,modelContextTokens:null};
       },
       async execute(request){
-        assert.ok(!request.tools?.length,'Web fixture exposes no MCP');
+        assert.equal(request.selection.mode,'agentic','Context evolution preserves the exact Agentic selection');
         const prompt=JSON.parse(request.canonicalPrompt);
-        const proof={engine:'web',attemptId:request.attemptId,resourceKey:request.resourceKey,
+        const proof={engine:'agentic',attemptId:request.attemptId,resourceKey:request.resourceKey,
           sessionGeneration:request.sessionGeneration,operationRef:request.attemptId,terminalProofId:randomUUID(),
           processClosed:true,outcome:'completed',observedAt:new Date()};
         calls.push({prompt,proof:{...proof,observedAt:proof.observedAt.toISOString()}});
@@ -173,7 +173,7 @@ async function main(){
       `INSERT INTO modules(key,link,module_group_id) SELECT $1::varchar,$2::varchar,$3::bigint WHERE NOT EXISTS(SELECT 1 FROM modules WHERE link=$2::varchar)`,
       ['synthetic_evolution_'+index,route,group.id]);
     const [provider]=await fixture.db.query("INSERT INTO ai_providers(name,fields) VALUES('Synthetic evolution transport','{}') RETURNING id::text");
-    const selection={connection_id:provider.id,mode:'token_plan_web',model_id:'synthetic-evolution-fixture-model',effort_id:null};
+    const selection={connection_id:provider.id,mode:'agentic',model_id:'synthetic-evolution-fixture-model',effort_id:null};
     const processA=await boot(releaseA,a.manifest,capability.capability_id,selection);
     const first=await processA.request('admit');
     const admittedA=await getRun(first.runId);
@@ -186,7 +186,7 @@ async function main(){
     const processB=await boot(bundleB,b.manifest,capability.capability_id,selection);
     check('B starts in a genuinely different process while old A remains alive',processA.info.pid!==processB.info.pid&&processA.child.exitCode===null);
     check('new worker B refuses to claim old catalog A job',(await processB.request('stage')).claimed===false);
-    const oldKnowledge=await processA.request('knowledge',{routes:['/tools/nodia-ai',...capability.required_module_routes]});
+    const oldKnowledge=await processA.request('knowledge',{routes:['/nodia-ai',...capability.required_module_routes]});
     check('existing A loader retains its pinned product and does not hot-reload B',oldKnowledge.detail.releaseId===a.manifest.release_id&&oldKnowledge.detail.fragments[0].text.includes('SYNTHETIC_PRODUCT_A_CONTEXT')&&!oldKnowledge.index.some(item=>item.id==='evolution.new-feature:overview'));
     let firstStage;
     for(let pass=0;pass<5;pass++){firstStage=await processA.request('stage');if((await getRun(first.runId)).state==='completed')break;}
@@ -211,9 +211,9 @@ async function main(){
     const promptB=secondStage.calls[0].prompt;
     check('B prompt uses revised product summary and the new feature index',JSON.stringify(promptB.knowledge).includes('SYNTHETIC_PRODUCT_B_CONTEXT')&&promptB.knowledge_index.some(item=>item.id==='evolution.new-feature:overview'));
     check('B preserves the original human request and assistant answer from A as canonical history',promptB.messages.some(item=>item.content.includes('Synthetic request under synthetic-evolution/a'))&&promptB.messages.some(item=>item.content==='Synthetic answer from synthetic-evolution/a'));
-    const detailB=await processB.request('knowledge',{routes:['/tools/nodia-ai',...capability.required_module_routes],ids:['evolution.new-feature:overview']});
+    const detailB=await processB.request('knowledge',{routes:['/nodia-ai',...capability.required_module_routes],ids:['evolution.new-feature:overview']});
     check('new process resolves the exact new feature detail through the real compiled loader',detailB.detail.fragments[0].text.includes('SYNTHETIC_NEW_FEATURE_B_DETAIL'));
-    const hidden=await processB.request('knowledge',{routes:['/tools/nodia-ai']});
+    const hidden=await processB.request('knowledge',{routes:['/nodia-ai']});
     check('new product detail is still hidden without its target module',hidden.index.length===0&&hidden.detail.fragments.length===0);
     const afterA=await getRun(first.runId),afterReceipts=await fixture.db.query('SELECT * FROM nodia_ai_job_attempts WHERE job_id=$1 ORDER BY id',[jobA.id]);
     const [afterNativeReceipt]=await fixture.db.query('SELECT * FROM nodia_ai_jobs WHERE id=$1',[nativeReceiptA.id]);

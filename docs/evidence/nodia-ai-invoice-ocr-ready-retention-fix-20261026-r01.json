@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "status": "ready_attachment_upload_TTL_guard_corrected_locally",
+  "decision": "Ready attachment retention follows the active chat; expires_at only bounds the upload intent. No TTL is extended or changed by this fix.",
+  "runtime_diagnostic": {
+    "receipt_path": "ops/lab/artifacts/invoice-ocr-live-read-diagnostic-r01/receipts/live-read-diagnostic-VM-r01.json",
+    "receipt_sha256": "e6fd05db411076f9713fbe8df6877f44ac788b7aafe912870f5b138c027939ad",
+    "helper_sha256": "947280bf9c2ec08e3e903bc899814356fadf6791e1866838a3c59325200b1da4",
+    "source_manifest_sha256": "2402115284e4e4d310c21a17e1ad98b4ca97fa392f6d5a7e99b2137c5f917831",
+    "input_origin": "actual_M3_receipt_arguments_with_M4_authority",
+    "persisted_M4_read_tool_present": false,
+    "source_attachment_state": "ready",
+    "source_attachment_upload_deadline": "2026-10-26 04:52:55.222+00",
+    "chat_expires_at": "2027-01-24 05:05:02.796+00",
+    "source_hash_matches": true,
+    "source_scope_visible": true,
+    "steps": [
+      {
+        "step": "Snapshot.read",
+        "passed": false,
+        "error_class": "ForbiddenException",
+        "code": "nodia_ai:invoice_ocr_invalid",
+        "sqlstate": null,
+        "raw_error_emitted": false
+      },
+      {
+        "step": "Builder.verifyAuthority",
+        "passed": false,
+        "error_class": "ForbiddenException",
+        "code": "nodia_ai:invoice_ocr_invalid",
+        "sqlstate": null,
+        "raw_error_emitted": false
+      },
+      {
+        "step": "Builder.external.prepare",
+        "passed": false,
+        "error_class": "ForbiddenException",
+        "code": "nodia_ai:invoice_ocr_invalid",
+        "sqlstate": null,
+        "raw_error_emitted": false
+      }
+    ],
+    "query_count": 41,
+    "SELECT_guarded": true,
+    "always_rollback": true,
+    "database_writes": 0,
+    "SDK_calls": 0,
+    "unexpected_adapter_calls": 0
+  },
+  "confirmed_contract_sources": [
+    {
+      "path": "docs/mvp/41-nodia-ai-v1-contracts.md",
+      "line": 195,
+      "rule": "Attachments/transcriptions are removed with the chat; 90 days from the last owner message."
+    },
+    {
+      "path": "docs/mvp/50-nodia-ai-ai04-runtime-policy.md",
+      "line": 12,
+      "rule": "Attachments/transcriptions follow chat retention; no extra archive."
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+      "line": 105,
+      "rule": "Chat/interpretation/files expire together under chat retention."
+    }
+  ],
+  "lifecycle_code_sources": [
+    {
+      "path": "nodia-server/src/nodia-ai-attachment/use-case/create-nodia-ai-attachment.use-case.ts",
+      "rule": "expires_at=min(upload intent deadline,chat expiry)"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-attachment/use-case/upload-nodia-ai-attachment.use-case.ts",
+      "rule": "Publishing ready removes its cleanup intent without changing expires_at."
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/cleanup-nodia-ai-attachments.use-case.ts",
+      "rule": "A stale upload intent cannot delete a ready attachment still bound to the chat."
+    }
+  ],
+  "fix": {
+    "sources": {
+      "nodia-server/src/nodia-ai-invoice-ocr/use-case/snapshot-nodia-ai-invoice-ocr.use-case.ts": {
+        "sha256": "9f15216faf761b68aaf244dbd5b38a44c4121b8d6e86023a13e3767b82c1514a"
+      },
+      "nodia-server/src/nodia-ai-invoice-ocr/use-case/snapshot-nodia-ai-invoice-ocr.use-case.spec.ts": {
+        "sha256": "b48e6060df259a85996c7329227bcb0f1370e280cd6c60056148dd0f9ec653a2"
+      }
+    },
+    "changes": [
+      "Remove ready attachment upload-deadline predicate from OCR capture.",
+      "Remove a.expires_at predicate from OCR reference SQL; retain ready state, active/unexpired chat, retention epochs, owner/actor/business, source hashes and through-sequence guards."
+    ],
+    "unchanged": [
+      "Attachment expires_at values",
+      "SQL schema",
+      "Approved feature content/binding",
+      "OCR replay/budget/selection/authority",
+      "Logical dispatch deadlines",
+      "Builder clock fix98a9"
+    ]
+  },
+  "local_validation": {
+    "red_regression": "Ready original with past upload TTL/live chat failed invoice_ocr_invalid before the fix.",
+    "green_suites": 3,
+    "green_tests_passed": 70,
+    "oxlint_exit": 0,
+    "real_current_revalidation_exercised": "prepare/request/current/read/comparison chain without mocking current; preserves result and TTL, no provider observation.",
+    "negative_cases": [
+      "chat expiry",
+      "chat lifecycle",
+      "chat epoch",
+      "attachment epoch",
+      "attachment state expired/uploading",
+      "source owner",
+      "existing business authority and source identity cases"
+    ],
+    "materials": {
+      "ops/lab/artifacts/invoice-ocr-live-read-diagnostic-r01/validation/before.json": {
+        "sha256": "e3d749d0b8630415429afd205fa907392e1e2905fece07cc94244f6faf517a40",
+        "bytes": 120
+      },
+      "ops/lab/artifacts/invoice-ocr-live-read-diagnostic-r01/validation/delivery.json": {
+        "sha256": "8bf70fa5e141ae4b90cc9bf04a2cbee5123aa465d11bef128d341e44004a7de8",
+        "bytes": 1251
+      },
+      "ops/lab/artifacts/invoice-ocr-live-read-diagnostic-r01/validation/green.txt": {
+        "sha256": "e9261f20ae53f784aa37cd4d0fa52115722b659f7eed73484c8d282728528e39",
+        "bytes": 466
+      },
+      "ops/lab/artifacts/invoice-ocr-live-read-diagnostic-r01/validation/red.txt": {
+        "sha256": "fab5a33cfd41d67d983c0fe8a1a494e4084e98af44f926ba71d35f76c4e92c4a",
+        "bytes": 1733
+      }
+    }
+  },
+  "limits": [
+    "Live diagnostic used persisted M3 read arguments and current M4 authority because no M4 OCR read row existed; it does not invent an M4 tool ID or call arguments.",
+    "The guarded normal transaction preserves real SELECT row locks, rejects DML/DDL and always rolls back; it is not PostgreSQL READ ONLY mode.",
+    "The diagnostic proves the current historical-source read is blocked by the upload TTL guard. It does not retroactively attribute M3 to expiry or prove the absent M4 callback arguments.",
+    "M3 clock conflict remains separately reproduced and documented; its exact runtime timestamp was not exported here.",
+    "Source fix tests use doubles; real SQL JOIN regression, selective compilation/adoption and later UI comparison require separate receipts.",
+    "No VM/SQL/SDK operation by this author; no new generation or manual attachment expiry update."
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-01",
+  "scope": "One freshly generated DNS introductory unit and its mixed formative assessment; synthetic learning request, real exact API selection, disposable storage.",
+  "selection": {
+    "connection_id": "4",
+    "mode": "api_key",
+    "model_id": "gpt-6.1-sol",
+    "effort_id": "medium"
+  },
+  "sample_sha256": "a52558c1cd1843f048fb9da43da194663df5524052756a7c81a3648929b80626",
+  "plan_job_id": "b9dc5573-d829-4292-97f3-24475cd06c15",
+  "material_job_id": "a73f50eb-a5a0-4ea5-b4f9-77de7635a6a9",
+  "blocks_reviewed": 6,
+  "questions_reviewed": 5,
+  "review_result": "accepted_for_this_sample",
+  "observations": [
+    {
+      "rule": "Concepts",
+      "finding": "Distingue nombre, dirección, registro y zona; la delegación no cambia la jerarquía de nombres.",
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc1034"
+      ]
+    },
+    {
+      "rule": "Record example",
+      "finding": "Owner, TTL en segundos, clase IN, tipo A y datos IPv4 están identificados coherentemente en los ejemplos.",
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc1035"
+      ]
+    },
+    {
+      "rule": "Hypothetical addresses",
+      "finding": "Los ejemplos usan direcciones reservadas para documentación y señalan que no son consultas reales.",
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc5737"
+      ]
+    },
+    {
+      "rule": "Assessment",
+      "finding": "Tres selecciones con una opción coherente y distractores incorrectos; completar admite zone/DNS zone sin distinción de mayúsculas; respuesta breve tiene tres criterios con anclas0/1/2 y explicación ligada a la evidencia suministrada.",
+      "sources": []
+    },
+    {
+      "rule": "Learning sequence",
+      "finding": "Nueve unidades en tres secciones con prerrequisitos; la primera cubre su objetivo y enlaza conceptos, ejemplo, práctica guiada y resumen. No atribuye nivel o progreso real al alumno.",
+      "sources": []
+    }
+  ],
+  "limitations": [
+    "This sample does not certify accuracy of future generations or the entire DNS plan.",
+    "No psychometric calibration, human learning effectiveness or oral skills were measured.",
+    "Sources were checked by the developer review; the generated lesson did not claim independently verified external sources.",
+    "Teacher Agentic/native tools lane remains unqualified."
+  ],
+  "knowledge_published": false,
+  "operational_acceptance_transferred": false
+}

@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Put, Body, Param, Query, Header } from '@nestjs/common';
+import type { AuthRequest } from '../auth/types/auth.types.js';
+import { actorReference } from '../authorization/authority-transaction.js';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Body,
+  Param,
+  Query,
+  Header,
+  Req,
+} from '@nestjs/common';
 import { CreateProviderDto } from './dto/create-provider.dto.js';
 import { BulkCreateProviderDto } from './dto/bulk-create-provider.dto.js';
 import { UpdateProviderDto } from './dto/update-provider.dto.js';
@@ -29,44 +41,85 @@ export class ProviderController {
   ) {}
 
   @Get()
-  findAll(@Query() queryParams: GetProvidersDto) {
-    return this.getAllProvidersUseCase.execute(queryParams);
+  findAll(@Query() queryParams: GetProvidersDto, @Req() request: AuthRequest) {
+    return this.getAllProvidersUseCase.execute(
+      queryParams,
+      actorReference(request.auth),
+    );
   }
 
   @Post('bulk')
-  createBulk(@Body() bulkCreateProviderDto: BulkCreateProviderDto) {
-    return this.createBulkProvidersUseCase.execute(bulkCreateProviderDto);
+  createBulk(
+    @Body() bulkCreateProviderDto: BulkCreateProviderDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.createBulkProvidersUseCase.execute(
+      bulkCreateProviderDto,
+      actorReference(request.auth),
+    );
   }
 
   @Post('import')
-  importCsv(@Body() dto: ImportProvidersDto) {
-    return this.importProvidersUseCase.execute(dto);
+  importCsv(@Body() dto: ImportProvidersDto, @Req() request: AuthRequest) {
+    return this.importProvidersUseCase.execute(
+      dto,
+      actorReference(request.auth),
+    );
   }
 
   @Put('bulk')
-  updateBulk(@Body() bulkUpdateProviderDto: BulkUpdateProviderDto) {
-    return this.updateBulkProvidersUseCase.execute(bulkUpdateProviderDto);
+  updateBulk(
+    @Body() bulkUpdateProviderDto: BulkUpdateProviderDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.updateBulkProvidersUseCase.execute(
+      bulkUpdateProviderDto,
+      actorReference(request.auth),
+    );
   }
 
   @Get('export-csv')
   @Header('Content-Type', 'text/csv; charset=utf-8')
   @Header('Content-Disposition', 'attachment; filename="providers.csv"')
-  exportCsv(@Query() dto: ExportProvidersCsvDto) {
-    return this.exportProvidersCsvUseCase.execute(dto);
+  exportCsv(@Query() dto: ExportProvidersCsvDto, @Req() request: AuthRequest) {
+    return this.exportProvidersCsvUseCase.execute(
+      dto,
+      undefined,
+      actorReference(request.auth),
+    );
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.getProviderByIdUseCase.execute(id);
+  findOne(@Param('id') id: string, @Req() request: AuthRequest) {
+    return this.getProviderByIdUseCase.execute(
+      id,
+      actorReference(request.auth),
+    );
   }
 
   @Post()
-  create(@Body() createProviderDto: CreateProviderDto) {
-    return this.createProviderUseCase.execute(createProviderDto);
+  create(
+    @Body() createProviderDto: CreateProviderDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.createProviderUseCase.execute(
+      createProviderDto,
+      undefined,
+      actorReference(request.auth),
+    );
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateProviderDto: UpdateProviderDto) {
-    return this.updateProviderUseCase.execute(id, updateProviderDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateProviderDto: UpdateProviderDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.updateProviderUseCase.execute(
+      id,
+      updateProviderDto,
+      undefined,
+      actorReference(request.auth),
+    );
   }
 }

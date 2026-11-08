@@ -1,0 +1,127 @@
+{
+  "purpose": "Byte-exact knowledge originals before API chat parity draft revisions; recovery only, no approval or publication.",
+  "created_at": "2026-10-27T20:04:55.948165+00:00",
+  "archive": "ops/lab/artifacts/api-chat-parity-r01/knowledge-originals.zip",
+  "archive_sha256": "8338e702dc10783182b5c29ef54e10159d9e349155e8e15eda39c64d0e635fdb",
+  "archive_bytes": 92428,
+  "roundtrip_members_verified": 9,
+  "files": [
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/secure-ai-interaction.md",
+      "sha256": "e2d13cc3eebc01bb344aa9814c65fec33fcc6758d3b0b1bfb25254eced2f18f7",
+      "bytes": 15764,
+      "archive_member": "docs/nodia-ai/knowledge/general-settings/features/secure-ai-interaction.md",
+      "document_id": "general-settings.secure-ai-interaction",
+      "revision": 4,
+      "document_status": "approved",
+      "integration_status": "published",
+      "approval": {
+        "reference": "docs/evidence/ai-two-modes-knowledge-human-approval-r01.json",
+        "revision": 4,
+        "content_sha256": "e42b4e545d652b8c1fbac6479b1968f0965cd9cf06b1acaa9f00b0945591a5a0"
+      }
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md",
+      "sha256": "4fec68d7475b06a06243671739101ab0a1e7177e879a28464fc03e05ec31dd95",
+      "bytes": 22367,
+      "archive_member": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md",
+      "document_id": "nodia-ai.conversation-coordination",
+      "revision": 17,
+      "document_status": "approved",
+      "integration_status": "published",
+      "approval": {
+        "reference": "docs/evidence/nodia-ai-ai36-c05-publication-authorization.md",
+        "revision": 17,
+        "content_sha256": "6fd431a73c54a4d84e1e84d5ff9531792227db317214e424718dabf396f64fb7"
+      }
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md",
+      "sha256": "9d93844d136b9aa056bdffdf5be60495fa474d06de08a911d53dfba6f2e33a6f",
+      "bytes": 22144,
+      "archive_member": "docs/nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md",
+      "document_id": "nodia-ai.invoice-ocr-product-comparison",
+      "revision": 1,
+      "document_status": "approved",
+      "integration_status": "verified",
+      "approval": {
+        "reference": "docs/evidence/nodia-ai-invoice-ocr-publication-authorization-20261025-r01.json",
+        "revision": 1,
+        "content_sha256": "48398b99493ff8dc54d7c3113c78621d32647b2dfcd1be93a3d6bdb514c90df9"
+      }
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/image-generation.md",
+      "sha256": "89026836bc51f46bc688a3ce6686ac4abd641c9922a6b9927cf9bce6f01f024e",
+      "bytes": 16783,
+      "archive_member": "docs/nodia-ai/knowledge/nodia-ai/features/image-generation.md",
+      "document_id": "nodia-ai.image-generation",
+      "revision": 3,
+      "document_status": "approved",
+      "integration_status": "verified",
+      "approval": {
+        "reference": "docs/evidence/nodia-ai-image-generation-publication-authorization-20261026-r01.json",
+        "revision": 3,
+        "content_sha256": "892673eab89682e1bc642ed436970524ef9c9349391f975480c5fd36a79549ef"
+      }
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+      "sha256": "a98368e3e3113fc254b200708b8c5b5aada9fe6668845f6a2aef9502e99057fa",
+      "bytes": 14981,
+      "archive_member": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+      "document_id": "nodia-ai.attachments-and-voice",
+      "revision": 10,
+      "document_status": "approved",
+      "integration_status": "published",
+      "approval": {
+        "reference": "docs/evidence/nodia-ai-ai36-c05-publication-authorization.md",
+        "revision": 10,
+        "content_sha256": "3983dfbcc4951b3d0c3d70ae22a97d4f5ca792ed1d20aceadfd8e1360b5b30b9"
+      }
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/capability-registry-gateway.md",
+      "sha256": "b8ac5b19cfe0ce6ccf0608ce4319685373b899baef4c860134bfaeed191f7588",
+      "bytes": 18552,
+      "archive_member": "docs/nodia-ai/knowledge/nodia-ai/features/capability-registry-gateway.md",
+      "document_id": "nodia-ai.capability-registry-gateway",
+      "revision": 9,
+      "document_status": "draft",
+      "integration_status": "unregistered",
+      "approval": null
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/README.md",
+      "sha256": "1e540bf4ef63ecb16407ab291532247cd024f034fe80783ffedc29a51c842cbc",
+      "bytes": 26418,
+      "archive_member": "docs/nodia-ai/knowledge/general-settings/README.md",
+      "document_id": "general-settings",
+      "revision": 19,
+      "document_status": "draft",
+      "integration_status": "unregistered",
+      "approval": null
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/README.md",
+      "sha256": "8df4a7204850d7fa685198b1cd3eed8cb505e14ecb29c146e97023554716d89d",
+      "bytes": 77518,
+      "archive_member": "docs/nodia-ai/knowledge/nodia-ai/README.md",
+      "document_id": "nodia-ai",
+      "revision": 68,
+      "document_status": "draft",
+      "integration_status": "unregistered",
+      "approval": null
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/README.md",
+      "sha256": "a01e8ecd861d139260e00ee0095c93eca6eb3703f436f81bfaf8e3b2cf35560e",
+      "bytes": 57970,
+      "archive_member": "docs/nodia-ai/knowledge/README.md"
+    }
+  ],
+  "absent_before": [
+    "docs/nodia-ai/knowledge/nodia-ai/features/api-key-chat-parity.md"
+  ]
+}

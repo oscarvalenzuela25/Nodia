@@ -9,6 +9,7 @@ import { CreateModuleUseCase } from './use-case/create-module.use-case.js';
 import { UpdateModuleUseCase } from './use-case/update-module.use-case.js';
 import { DeleteModuleUseCase } from './use-case/delete-module.use-case.js';
 import { TranslationModule } from '../translation/translation.module.js';
+import { MoveModuleOrderUseCase } from './use-case/move-module-order.use-case.js';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ModuleEntity]), TranslationModule],
@@ -20,12 +21,14 @@ import { TranslationModule } from '../translation/translation.module.js';
     CreateModuleUseCase,
     UpdateModuleUseCase,
     DeleteModuleUseCase,
+    MoveModuleOrderUseCase,
   ],
   exports: [
     GetAllModulesUseCase,
     ModuleService,
     SaveModuleUseCase,
     DeleteModuleUseCase,
+    MoveModuleOrderUseCase,
   ],
 })
 export class ModuleModule {}

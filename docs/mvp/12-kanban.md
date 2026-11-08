@@ -1,5 +1,13 @@
 # Panel Kanban — Nodia Parte 1
 
+## URLs estables y Teacher — implementación local, 2026-11-01
+
+La navegación actual usa `/users`, `/roles`, `/actions`, `/modules`, `/ai-providers`, `/business` (detalle `/business/:id`), `/finances-personal`, `/reservations`, `/nodia-ai` y `/nodia-teacher` (detalle `/nodia-teacher/:sessionId`). El grupo del menú no forma parte de la identidad de la ruta ni del filesystem. Los aliases anteriores sólo redirigen al destino canónico, que vuelve a comprobar su guard. APIs de dominio conservadas.
+
+[ADR092](../architecture/decisions/ADR-092-stable-module-navigation-routes.md) y [evidencia de migración](../evidence/canonical-module-routes-20261101-r01.json) documentan el mapa explícito, respaldo/ensayo y aplicación **local** de diez enlaces preservando IDs, relaciones y permisos. La duplicidad NodiaAI anterior no se fusionó ni concedió acceso: sigue denegada por ambigüedad. Las URLs con prefijos de los cortes fechados inferiores son históricas, no destinos nuevos ejecutables.
+
+Teacher tiene dominio propio Client/Server, módulo `/nodia-teacher`, sesiones privadas y autoridad89; no requiere módulos de chat o administración IA. El mantenedor ofrece su URL para asignación individual. [97](97-nodia-teacher-technical-contracts.md) describe los contratos; [96](96-nodia-teacher-implementation-plan.md#21-implementación-local-y-evidencia) mantiene la verificación local y los pendientes de calificación/adopción. Implementación no aprueba ni publica documentos.
+
 > Estado: en revisión — ampliaciones auth, Finanzas, Reservas y NodiaAI; aprobación histórica del MVP conservada
 > Última actualización: 2026-10-14
 > Dependencias: Documentos 01 al 11 aprobados
@@ -7,6 +15,22 @@
 ## Objetivo
 
 Derivar la especificación técnica en tickets o tareas funcionales trazables, organizados por épicas, para facilitar la implementación secuencial del MVP.
+
+## Épica nueva: punto de venta por negocio — implementación local 2026-10-28
+
+- [x] [Plan94 R05](94-business-point-of-sale-and-product-refactor.md#14-implementación-local-r05): alcance R04, catálogo/versiones/barcode/disponibilidad/precio alternativo e importadores compatibles.
+- [x] Imagen opcional privada, reservas/subida única/recuperación, reemplazo y limpieza durable; verificación aislada y R2 real.
+- [x] Ventas/partidas/eventos/recibos, transiciones, autoridad, concurrencia, snapshots e importes CLP exactos.
+- [x] POS responsive, escaneo HID/manual, carrito único, borradores, recuperación de resultado incierto, listado/detalle/anulación e informes completos.
+- [x] Puertos/gateway/schemas candidatos NodiaAI, agregador común, documentación y evidencia local; sin publicación automática.
+- [x] Aprobar revisión/hash de ficha rev5 y aplicar candidato de publicación POS-07, según autorización humana y plan94 R06.
+- [x] Lecturas naturales y propuesta hasta el gate humano con OpenAI Agentic1/gpt-6.1-sol/medium, MCP real y evidencia R08; ranking vacío contrastado con SalesList+SQL.
+- [ ] Confirmación/ejecución/recibo humanos; ranking positivo y motor reports_run conversacional; otras selecciones conservan aceptación propia.
+- [x] Migración/despliegue respaldados y smoke real POS-08 en VM: productos/ventas/reportes/imagen, preservación y limpieza trazable; plan94 R07.
+- [ ] Aceptación con lector/teléfono físico y proveedor real; clasificación de disponibilidad/barcodes anteriores.
+- [ ] Clasificar disponibilidad real y retirar compatibilidad histórica POS-09 sin inferir desde stock/code.
+
+La [evidencia local R05](../evidence/business-pos-implementation-20261028-r01.json) conserva su corte sin BD de uso/inferencia. La adopción R07 y la [prueba natural R08](../evidence/business-pos-nodia-ai-natural-20261028-r01.json) registran por separado la VM y el modelo exacto, con sus límites y confirmación humana pendiente.
 
 ## Épica nueva: NodiaAI — plan propuesto 2026-10-14
 

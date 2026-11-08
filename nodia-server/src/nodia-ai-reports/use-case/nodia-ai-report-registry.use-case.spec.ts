@@ -8,6 +8,20 @@ const policy = new ValidateNodiaAiRuntimePolicyUseCase().execute(
   policyEnvelope(),
 );
 const registry = new NodiaAiReportRegistryUseCase(policy);
+describe('new report publication gates', () => {
+  it('keeps native sale mappings private until the exact functional document is compiled and published', () => {
+    expect(registry.get('business_sales').sourceKey).toBe('business_sales');
+    expect(registry.isPublished('business_sales')).toBe(false);
+    expect(() => registry.getPublished('business_sale_items')).toThrow(
+      'nodia_ai:unsupported_semantics',
+    );
+    const published = new NodiaAiReportRegistryUseCase(policy, [
+      'businesses.point-of-sale-and-sales',
+    ]);
+    expect(published.isPublished('business_sales')).toBe(true);
+    expect(published.isPublished('business_sale_items')).toBe(true);
+  });
+});
 const query = () => ({
   catalog_version: registry.catalogVersion,
   combine: 'separate',
@@ -33,7 +47,7 @@ describe('NodiaAiReportRegistryUseCase', () => {
   it('exposes a versioned immutable whitelist without deriving ORM properties', () => {
     expect(registry.catalogVersion).toBe(NODIA_AI_REPORT_SOURCES_VERSION);
     expect(registry.catalogVersion).toMatch(/^[0-9a-f]{64}$/);
-    expect(registry.list()).toHaveLength(11);
+    expect(registry.list()).toHaveLength(13);
     const source = registry.get('business_invoices');
     expect(Object.isFrozen(source)).toBe(true);
     expect(Object.isFrozen(source.fields)).toBe(true);
@@ -53,7 +67,7 @@ describe('NodiaAiReportRegistryUseCase', () => {
     );
     const copy = registry.list();
     copy.pop();
-    expect(registry.list()).toHaveLength(11);
+    expect(registry.list()).toHaveLength(13);
   });
   it('preserves zero and false and returns a detached JSON command', () => {
     const input = query();

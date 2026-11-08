@@ -1,3 +1,4 @@
+import { moduleRouteIncluded } from '../../authorization/canonical-module-route.js';
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -94,7 +95,7 @@ export class NodiaAiToolSelectionFlowUseCase {
         ? claim.run.routing_snapshot.target?.selection
         : claim.run.selection_snapshot;
     if (
-      selection?.mode !== 'token_plan_agentic' ||
+      !['agentic', 'api_key'].includes(String(selection?.mode)) ||
       frozen?.phase !== 'discovery'
     )
       return undefined;
@@ -153,7 +154,7 @@ export class NodiaAiToolSelectionFlowUseCase {
       .map((module) => module.route)
       .filter(
         (route) =>
-          routes.includes(route) && grant.allowed_modules.includes(route),
+          moduleRouteIncluded(routes, route) && moduleRouteIncluded(grant.allowed_modules, route),
       )
       .sort();
     const tools = await this.discovery.visible(
@@ -299,7 +300,7 @@ export class NodiaAiToolSelectionFlowUseCase {
       activeAttempt.phase !== 'dispatch_armed' ||
       activeAttempt.ended_at !== null ||
       !['inference', 'delegated_inference'].includes(activeAttempt.stage_key) ||
-      activeSelection?.mode !== 'token_plan_agentic' ||
+      !['agentic', 'api_key'].includes(String(activeSelection?.mode)) ||
       canonicalKnowledge(activeAttempt.selection_snapshot) !==
         canonicalKnowledge(activeSelection) ||
       run.actor_id !== actor.actorId
@@ -458,9 +459,9 @@ export class NodiaAiToolSelectionFlowUseCase {
       .map((module) => module.route)
       .filter(
         (route) =>
-          grant.allowed_modules.includes(route) &&
+          moduleRouteIncluded(grant.allowed_modules, route) &&
           Array.isArray(run.context_manifest.module_routes) &&
-          run.context_manifest.module_routes.includes(route),
+          moduleRouteIncluded(run.context_manifest.module_routes, route),
       );
     const selected = await this.select(
       request.capability_ids,

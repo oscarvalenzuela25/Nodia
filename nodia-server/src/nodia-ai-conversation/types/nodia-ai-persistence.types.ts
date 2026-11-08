@@ -1,12 +1,8 @@
 /** Validated internal snapshots; metadata never carries credentials or executable SQL. */
-export interface NodiaAiSelection {
-  connection_id: string;
-  mode: 'api_key' | 'token_plan_web' | 'token_plan_agentic';
-  model_id: string;
-  effort_id: string | null;
-}
+export type { AiSelection as NodiaAiSelection } from '../../ai-generation/ai-selection.js';
+import type { AiSelection as NodiaAiSelection } from '../../ai-generation/ai-selection.js';
 export interface NodiaAiRoutingTarget {
-  selection: NodiaAiSelection & { mode: 'token_plan_agentic' };
+  selection: NodiaAiSelection & { mode: 'agentic' };
   configuration_generation: string;
   session_generation: string;
 }

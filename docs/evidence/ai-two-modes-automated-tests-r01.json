@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "status": "final_suites_passed_prior_client_failures_preserved",
+  "json_suites": [
+    {
+      "path": "client-all-tests.json",
+      "sha256": "9cd52a946f2d2c014cc65529ce0dd47b4a11dc83f7b1f1f016ed5626d93cea5c",
+      "bytes": 727881,
+      "success": false,
+      "total": 2001,
+      "passed": 1999,
+      "failed": 2,
+      "pending": 0,
+      "failed_cases": [
+        "confirmed execution observation and human controls shows ai_providers history and refreshes configuration without changing the current chat selection",
+        "confirmed execution observation and human controls shows ai_provider_catalog history and refreshes configuration without changing the current chat selection"
+      ]
+    },
+    {
+      "path": "client-all-tests-final.json",
+      "sha256": "ba23bf842c5472017f772d2679f46c2552135b4d565a94018a445998f38c0dee",
+      "bytes": 725780,
+      "success": false,
+      "total": 2001,
+      "passed": 2000,
+      "failed": 1,
+      "pending": 0,
+      "failed_cases": [
+        "ProvidersTab Component opens only the selected provider's contacts on demand and returns to the provider list"
+      ]
+    },
+    {
+      "path": "client-all-tests-release.json",
+      "sha256": "de9ec19a649212e872ebb7b7669f3855b2d0c705da57e1788114f33fcbc1d186",
+      "bytes": 724660,
+      "success": true,
+      "total": 2003,
+      "passed": 2003,
+      "failed": 0,
+      "pending": 0,
+      "failed_cases": []
+    },
+    {
+      "path": "server-all-final-r02.json",
+      "sha256": "7cfaf6d11a148f13a396518ab0a85e4d26d7386127cbbd417ea1461079597adb",
+      "bytes": 2127656,
+      "success": true,
+      "total": 5371,
+      "passed": 5371,
+      "failed": 0,
+      "pending": 0,
+      "failed_cases": []
+    }
+  ],
+  "native_linux": {
+    "total": 498,
+    "passed": 498,
+    "skipped": 0,
+    "image": "sha256:4b990e3e8c60077fceb06ac5018025a5ef80353297fe92affc8b20fe53915fa9",
+    "report": "docs/evidence/ai-two-modes-native-linux-r02.json"
+  },
+  "native_windows": {
+    "total": 498,
+    "skipped": 4,
+    "successful_runner_exit": true,
+    "all_tests_executed": false
+  },
+  "other_checks": [
+    "Client typecheck/lint/build",
+    "Server typecheck/lint/build,103 catalog/compiler tests",
+    "Real Linux maintenance CLI negative regression1/1",
+    "Native pip check and pinned CLI integrity/launch",
+    "Final authoring knowledge:check42 documents/44 fragments/151capabilities"
+  ],
+  "archive": {
+    "schema_version": 1,
+    "purpose": "Unit JSON receipts with earlier failures preserved; synthetic tests only, no real provider output or credentials",
+    "zip": "ops/lab/artifacts/agentic-api-mode-retirement-r01/automated-test-results-r01.zip",
+    "sha256": "f3d4823e0ff7bbb348a7bb7e48607593c998653692f7ee713a111fe624f4ccaa",
+    "bytes": 475137,
+    "files": [
+      {
+        "path": "client-all-tests.json",
+        "sha256": "9cd52a946f2d2c014cc65529ce0dd47b4a11dc83f7b1f1f016ed5626d93cea5c",
+        "bytes": 727881
+      },
+      {
+        "path": "client-all-tests-final.json",
+        "sha256": "ba23bf842c5472017f772d2679f46c2552135b4d565a94018a445998f38c0dee",
+        "bytes": 725780
+      },
+      {
+        "path": "client-all-tests-release.json",
+        "sha256": "de9ec19a649212e872ebb7b7669f3855b2d0c705da57e1788114f33fcbc1d186",
+        "bytes": 724660
+      },
+      {
+        "path": "server-all-final-r02.json",
+        "sha256": "7cfaf6d11a148f13a396518ab0a85e4d26d7386127cbbd417ea1461079597adb",
+        "bytes": 2127656
+      }
+    ]
+  },
+  "secrets": false,
+  "prior_failure_scope": "Earlier two history/refresh assertions and one later contacts test failure are preserved separately; only the final release suite is the final pass, with no inferred common cause."
+}

@@ -4,13 +4,14 @@ import { sileo } from "sileo";
 import i18n from "../translate";
 
 const notifiedErrors = new WeakSet<object>();
+const translatedServerMessage = (message: string): string => i18n.exists(message) ? String(i18n.t(message)) : message;
 
 export const getHttpErrorMessage = (error: unknown): string => {
   const message: unknown = isAxiosError(error) ? error.response?.data?.message : undefined;
-  if (typeof message === "string" && message.trim()) return message;
+  if (typeof message === "string" && message.trim()) return translatedServerMessage(message);
   if (Array.isArray(message)) {
     const messages = message.filter((value): value is string => typeof value === "string" && Boolean(value.trim()));
-    if (messages.length) return messages.join(". ");
+    if (messages.length) return messages.map(translatedServerMessage).join(". ");
   }
   return i18n.t("core:server_error_toast");
 };

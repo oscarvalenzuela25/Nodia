@@ -1,0 +1,298 @@
+{
+  "M4_retention_diagnosis": {
+    "actual_readonly_diagnostic": {
+      "SDK_calls": 0,
+      "SELECT_guarded": true,
+      "always_rollback": true,
+      "chat_expires_at": "2027-01-24 05:05:02.796+00",
+      "database_writes": 0,
+      "helper_sha256": "947280bf9c2ec08e3e903bc899814356fadf6791e1866838a3c59325200b1da4",
+      "input_origin": "actual_M3_receipt_arguments_with_M4_authority",
+      "persisted_M4_read_tool_present": false,
+      "query_count": 41,
+      "receipt_path": "ops/lab/artifacts/invoice-ocr-live-read-diagnostic-r01/receipts/live-read-diagnostic-VM-r01.json",
+      "receipt_sha256": "e6fd05db411076f9713fbe8df6877f44ac788b7aafe912870f5b138c027939ad",
+      "source_attachment_state": "ready",
+      "source_attachment_upload_deadline": "2026-10-26 04:52:55.222+00",
+      "source_hash_matches": true,
+      "source_manifest_sha256": "2402115284e4e4d310c21a17e1ad98b4ca97fa392f6d5a7e99b2137c5f917831",
+      "source_scope_visible": true,
+      "steps": [
+        {
+          "code": "nodia_ai:invoice_ocr_invalid",
+          "error_class": "ForbiddenException",
+          "passed": false,
+          "raw_error_emitted": false,
+          "sqlstate": null,
+          "step": "Snapshot.read"
+        },
+        {
+          "code": "nodia_ai:invoice_ocr_invalid",
+          "error_class": "ForbiddenException",
+          "passed": false,
+          "raw_error_emitted": false,
+          "sqlstate": null,
+          "step": "Builder.verifyAuthority"
+        },
+        {
+          "code": "nodia_ai:invoice_ocr_invalid",
+          "error_class": "ForbiddenException",
+          "passed": false,
+          "raw_error_emitted": false,
+          "sqlstate": null,
+          "step": "Builder.external.prepare"
+        }
+      ],
+      "unexpected_adapter_calls": 0
+    },
+    "boundary": "This is the separate M4 cause; no retrospective attribution of the M3 clock regression or other historical failures.",
+    "correction": "Ready attachment retention follows the active chat. Remove upload-intent expires_at predicate only from OCR capture and private-reference JOIN.",
+    "preserved": [
+      "Chat lifecycle/expiry, owner/actor/permissions, ready state, retention epochs, source identity and fingerprints",
+      "Attachment expires_at values and upload-intent deadline semantics",
+      "R02 clock fix and all approved document contents"
+    ],
+    "proof": {
+      "bytes": 6473,
+      "path": "docs/evidence/nodia-ai-invoice-ocr-ready-retention-fix-20261026-r01.json",
+      "sha256": "09563649d04c9dbe0cd19cc5ad31666be855750544677c369d1d623326bee964"
+    }
+  },
+  "actual_adoption": {
+    "Client_nginx_configuration_preserved": true,
+    "Linux_operator_tests": 16,
+    "Linux_tests_receipt": {
+      "bytes": 424,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r03/server-operator-Linux-r03.json",
+      "sha256": "b9888081928d778dcfa6c1847928abae31ac8e0325eabd58e2ca324de7dc4a49"
+    },
+    "SQL_business_writes": 0,
+    "SQL_restores": 0,
+    "all_61_table_hashes_and_schema_unchanged": true,
+    "automatic_replay": false,
+    "backup_runner_after_sha256": "6a480010647c90e428f19d45353f719c39ef66e4972d040f5eb95097931df8a4",
+    "capacity_after": {
+      "additional_phase_overhead_bytes": 20971520,
+      "available_bytes": 3783434240,
+      "device": 2050,
+      "future_cleanup_credited": false,
+      "required_bytes": 289415196,
+      "reserve_bytes": 268443676,
+      "spool_lock_only": true
+    },
+    "consumers_after": {
+      "nodia-ai-worker": {
+        "active": "active",
+        "argv_exact_match": true,
+        "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "pid": 454498,
+        "recovery_config_path_verified": true,
+        "sub": "running",
+        "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r03"
+      },
+      "nodia-api": {
+        "active": "active",
+        "argv_exact_match": true,
+        "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "pid": 454497,
+        "recovery_config_path_verified": true,
+        "sub": "running",
+        "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r03"
+      }
+    },
+    "fresh_backup": {
+      "backup_id": "08e77ee0-95ec-449a-89a5-26ea54238204",
+      "captured_at": "2026-10-26T05:26:25.853Z",
+      "cipher_bytes": 1493876,
+      "cipher_sha256": "0ff9c076f280eff875deffab9aa39093c60332dde557416ed4f96fa89adce63c",
+      "expires_at": "2026-11-02T05:26:25.853Z",
+      "journal_sequence": 1,
+      "status": "ready"
+    },
+    "migrations": 0,
+    "native_after": {
+      "epoch": {
+        "descriptor_sha256": "d27816454ab40e774919a16d3b99da50ccdc3c1e570ef244832b30b46a95f89d",
+        "id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+        "image": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+        "started_at": "2026-10-26T03:06:18.949917773Z"
+      },
+      "quiet": {
+        "active_native_processes": 0,
+        "attempt_receipts": 0,
+        "temporary_directories": 0,
+        "unknown_markers": 0
+      }
+    },
+    "native_exactly_unchanged": true,
+    "native_restarted": false,
+    "preflight": {
+      "bytes": 13132,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r03/server-preflight-VM-r03.json",
+      "sha256": "b6f8d8cf5768a91e142317b2b0b885fb7d456dd5d3f0a615fd55308bc4ca7e2d"
+    },
+    "provider_generations": 0,
+    "quiet_after": {
+      "open_attempts": 0,
+      "pending_jobs": 0,
+      "retained_slots": 0
+    },
+    "receipt": {
+      "bytes": 24078,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r03/server-adoption-VM-r03.json",
+      "sha256": "5414563e8f4cea2bf0fdf566caef04bd04845ec209ec7e3b179b795ea087c0de"
+    },
+    "schema_sha256": "82753ec54d69006d2850dd62173093c03086e43a37af62e2a3dba1c5da5b4b87",
+    "staging": {
+      "bytes": 534,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r03/server-stage-VM-r03.json",
+      "sha256": "f7edc3af4bf68bba8b595b38f268e9453a14046fc38e83397d9893ab2ad44935"
+    },
+    "status": "adopted_verified",
+    "timers_restored": true
+  },
+  "coordinates": {
+    "client": "/opt/nodia/releases/nodia-client-invoice-ocr-r01",
+    "client_manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+    "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "knowledge_after": "9e9ac9e50b2661ced6ab5b1856ca1aec0fc474bbdd527a8398c86b59ea134459",
+    "knowledge_before": "9a5d6cec4fc4d21a19a729471094cc8af4aa517b6b3c864de3f2d20999df7801",
+    "native_epoch": {
+      "container_id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+      "image_id": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+      "started_at_utc": "2026-10-26T03:06:18.949917773Z"
+    },
+    "nginx_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac",
+    "source": "/opt/nodia/releases/nodia-server-invoice-ocr-r02",
+    "source_manifest_sha256": "2402115284e4e4d310c21a17e1ad98b4ca97fa392f6d5a7e99b2137c5f917831",
+    "target": "/opt/nodia/releases/nodia-server-invoice-ocr-r03",
+    "target_manifest_sha256": "605ef5533af3c8ffbffde33ce13275d966b9271f34a2ee0f8a17c609c02308c1"
+  },
+  "generator": {
+    "bytes": 9498,
+    "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r03/consolidate.py",
+    "sha256": "e4e599adf8e8aba92405f54b69a40e5982102fb5304be7cb094304896653a5d5"
+  },
+  "internal_SQL_DI": {
+    "OCR_calls": 0,
+    "boundary": "Disposable PostgreSQL, actual private-reference JOIN and registered callbacks; explicit synthetic extraction. Ready fixtures have past upload intent TTL and live chat. Not MCP, provider OCR or UI.",
+    "check_names": [
+      "Nest resolves OCR module, Processing, OCR stage and Snapshot without a DI cycle",
+      "published composition registers the OCR MCP tool with an object-only closed input schema",
+      "published manifest contains the approved OCR document and business-scoped capability fragment",
+      "authorized knowledge execution reads the actual OCR fragment bytes and matching publication hashes",
+      "without business scope the OCR fragment is excluded and explicit detail reads are denied",
+      "prepare persists awaiting_supplier without OCR",
+      "pending analysis is recovered privately before the supplier turn",
+      "real private-reference JOIN keeps ready original after upload intent TTL while chat retention remains valid",
+      "foreign commercial supplier cannot consume the preparation",
+      "new turn requests the same original without reattachment and freezes commercial zero/config",
+      "repeated same request identity preserves one completed receipt",
+      "throughSeq excludes the future supplier decision even when its preparation is older",
+      "current bound exposes only the scoped request hint, no extraction or private configuration",
+      "another actor cannot recover references from an owned chat",
+      "business revocation immediately removes private references",
+      "unknown OCR intent remains visible as a hint without being replayable",
+      "concurrent requests use two real PostgreSQL connections",
+      "second production verification actually waits for the preparation lock",
+      "exactly one concurrent consumer commits and the loser cannot create an OCR request",
+      "registered read compare callbacks survive real clock advances across all three authority checks",
+      "published read preserves its actual output timestamp and original analysis without reattachment",
+      "published read comparison preserves zero unknown and unmatched without OCR or product effects",
+      "neither sequential nor concurrent preparation reserves an OCR dispatch budget",
+      "all preparation/recovery/concurrency checks perform zero OCR, external I/O and business writes"
+    ],
+    "checks": 24,
+    "cleanup_complete": true,
+    "configured_database_used": false,
+    "external_calls": 0,
+    "provider_generations": 0,
+    "receipt": {
+      "bytes": 2784,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r03/sql-di-VM-r03.json",
+      "sha256": "00f76547477aeb6dc5514c95ff66dd8ff85bb520477e9e64df632ad24f6209ee"
+    },
+    "status": "passed"
+  },
+  "knowledge_parity": {
+    "implementation_source_delta_only": "nodia-server/src/nodia-ai-invoice-ocr/use-case/snapshot-nodia-ai-invoice-ocr.use-case.ts",
+    "knowledge_after": "9e9ac9e50b2661ced6ab5b1856ca1aec0fc474bbdd527a8398c86b59ea134459",
+    "knowledge_before": "9a5d6cec4fc4d21a19a729471094cc8af4aa517b6b3c864de3f2d20999df7801",
+    "new_capabilities": [],
+    "old_capabilities_preserved": 152,
+    "old_document_contents_preserved": 41,
+    "old_fragments_preserved": 43,
+    "schema_descriptors_preserved": 304
+  },
+  "limits": [
+    "M5 comparison of the stored result remains pending in this adoption cut. No OCR replay or new extraction was performed during adoption.",
+    "No complete C03, AI36/C05 or AI38 acceptance follows from adoption or synthetic internal SQL/DI.",
+    "The active validation scope is explicitly selected Codex Agentic/Antigravity; no Web/API tests or automatic fallback are implied.",
+    "Frozen deliveries and approved documents remain unchanged."
+  ],
+  "package": {
+    "actual_delta_files": 8,
+    "catalog": {
+      "bytes": 4296,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-r03/catalog.json",
+      "sha256": "23df47e82e8b7977e51fbe6bd3946a910300bdc242052e94c2d183e2e229bbfc"
+    },
+    "clock_Builder_98a9_preserved": true,
+    "d_ts_emitted_identical_and_retained": true,
+    "manifest": {
+      "bytes": 559310,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-r03/package/release-manifest.json",
+      "sha256": "605ef5533af3c8ffbffde33ce13275d966b9271f34a2ee0f8a17c609c02308c1"
+    },
+    "mode": "Frozen selective overlay; not autonomous monorepo build",
+    "new_capabilities": [],
+    "overlay": {
+      "bytes": 285307,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-r03/package/overlay.tar.gz",
+      "sha256": "0e5b092f0ccd217586ac34d61c2908277c8f6ee66ff1e77a1909115866f16118"
+    },
+    "plan": {
+      "bytes": 5664,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-r03/package/plan.json",
+      "sha256": "cff6309bcf78b275119a15a6413f7abc1aee4087ba287e5298bb3f5ba002f2e9"
+    },
+    "production_source_paths": 1,
+    "source_files": 4230,
+    "target_files": 4230
+  },
+  "raw_inputs": [
+    {
+      "bytes": 24078,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r03/server-adoption-VM-r03.json",
+      "sha256": "5414563e8f4cea2bf0fdf566caef04bd04845ec209ec7e3b179b795ea087c0de"
+    },
+    {
+      "bytes": 2784,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r03/sql-di-VM-r03.json",
+      "sha256": "00f76547477aeb6dc5514c95ff66dd8ff85bb520477e9e64df632ad24f6209ee"
+    },
+    {
+      "bytes": 534,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r03/server-stage-VM-r03.json",
+      "sha256": "f7edc3af4bf68bba8b595b38f268e9453a14046fc38e83397d9893ab2ad44935"
+    },
+    {
+      "bytes": 13132,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r03/server-preflight-VM-r03.json",
+      "sha256": "b6f8d8cf5768a91e142317b2b0b885fb7d456dd5d3f0a615fd55308bc4ca7e2d"
+    },
+    {
+      "bytes": 424,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r03/server-operator-Linux-r03.json",
+      "sha256": "b9888081928d778dcfa6c1847928abae31ac8e0325eabd58e2ca324de7dc4a49"
+    }
+  ],
+  "recorded_on": "2026-10-26",
+  "schema_version": 1,
+  "scope": "Single Snapshot retention correction on exact240211. Server-only adoption; no repeated OCR or Client/Native cutover.",
+  "status": "server_r03_adopted_verified_M5_pending"
+}

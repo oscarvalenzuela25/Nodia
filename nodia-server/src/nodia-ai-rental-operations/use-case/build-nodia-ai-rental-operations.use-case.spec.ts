@@ -131,7 +131,7 @@ function fixture() {
   const ctx = {
     actor: { actorId: '1', sessionId: session, isSuperAdmin: false },
     manager,
-    moduleRoutes: ['/tools/reservations'],
+    moduleRoutes: ['/reservations'],
     actionKeys: [],
     conversationId: session,
     statementTimeoutMs: 1200,

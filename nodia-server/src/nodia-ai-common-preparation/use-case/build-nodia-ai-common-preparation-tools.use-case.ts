@@ -34,7 +34,7 @@ const object = (v: NodiaAiJsonValue | undefined): NodiaAiJsonObject =>
 const sha = (v: string) => createHash('sha256').update(v).digest('hex');
 const PREFERENCE = 'nodia_preferences_prepare';
 const WORKFLOW = 'nodia_workflows_prepare';
-const ROUTE = '/tools/nodia-ai';
+const ROUTE = '/nodia-ai';
 
 /** Candidate-only helpers. No execution, confirmation, or acceptance of a preference. */
 @Injectable()

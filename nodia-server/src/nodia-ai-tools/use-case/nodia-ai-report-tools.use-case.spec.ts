@@ -79,7 +79,7 @@ describe('NodiaAI report technical contracts and replay scope', () => {
         f.identity,
         'nodia_reports_describe',
         {},
-        { allowedModuleRoutes: ['/tools/nodia-ai'] },
+        { allowedModuleRoutes: ['/nodia-ai'] },
       ),
     ).toMatchObject({ sources: [] });
     expect(
@@ -90,7 +90,7 @@ describe('NodiaAI report technical contracts and replay scope', () => {
         { allowedModuleRoutes: ['/tools/finance'] },
       ),
     ).toMatchObject({ sources: [{ source_key: 'finance_movements' }] });
-    expect(() => f.subject.assertGranted(f.input, ['/tools/nodia-ai'])).toThrow(
+    expect(() => f.subject.assertGranted(f.input, ['/nodia-ai'])).toThrow(
       'capability_denied',
     );
   });
@@ -139,9 +139,11 @@ describe('NodiaAI report technical contracts and replay scope', () => {
   });
   it('binds each helper hash to the exact source registry and supplies closed object schemas', () => {
     const f = fixture();
-    const before = f.subject.contractHash('nodia_reports_run');
+    const before = new Map(f.subject.descriptors().map((descriptor) =>
+      [descriptor.name, f.subject.contractHash(descriptor.name)]));
     f.registry.catalogVersion = 'b'.repeat(64);
-    expect(f.subject.contractHash('nodia_reports_run')).not.toBe(before);
+    for (const [name, hash] of before)
+      expect(f.subject.contractHash(name)).not.toBe(hash);
     for (const descriptor of f.subject.descriptors())
       expect(descriptor.inputSchema).toMatchObject({
         type: 'object',

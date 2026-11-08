@@ -1,0 +1,290 @@
+{
+  "schema_version": 1,
+  "status": "api_chat_implemented_and_adopted_linux_with_scoped_acceptance",
+  "date": "2026-10-27",
+  "request": "API key in NodiaAI chat with common Agentic business functionality, permissions and human confirmations",
+  "active": {
+    "server_release": "/opt/nodia/releases/nodia-server-api-chat-r01",
+    "server_manifest_sha256": "ceb774256fd8c2030ece02c37fa872d819c2963c8f00fc71de7933de92b04451",
+    "client_release": "/opt/nodia/releases/nodia-client-api-chat-r01",
+    "client_manifest_sha256": "17f5d171402e8c3b9ae2593f1809ca1fb22f9b976602416fc6b329f28251f6b1",
+    "knowledge": {
+      "capabilities": 151,
+      "catalog_release": "nodia-ai-api-chat/1",
+      "documents": 43,
+      "fragments": 45,
+      "release_id": "184d9c344b3b0d48362143d700e961fa596fd307cd5251609eb00ab2dfbf30e3"
+    },
+    "nginx_sha256": "4b0a02d547a06fc09fb9b2ce7fa22ef15e0d631b27aa2689307e100c4ae192ea",
+    "services": {
+      "nodia-ai-backup-rotate.timer": {
+        "pid": null,
+        "state": "active",
+        "cwd": null
+      },
+      "nodia-ai-backup.timer": {
+        "pid": null,
+        "state": "active",
+        "cwd": null
+      },
+      "nodia-ai-worker.service": {
+        "pid": "1330942",
+        "state": "active",
+        "cwd": "/opt/nodia/releases/nodia-server-api-chat-r01"
+      },
+      "nodia-api.service": {
+        "pid": "1330941",
+        "state": "active",
+        "cwd": "/opt/nodia/releases/nodia-server-api-chat-r01"
+      },
+      "nodia-gemini-lab.service": {
+        "pid": "0",
+        "state": "active",
+        "cwd": "/opt/nodia/nodia-gemini-microservice"
+      }
+    },
+    "native": {
+      "health": "healthy",
+      "id": "b3dcf9d350532da2965a62cc276b8f5b81b935a23374c5c67f1bfe974c0be186",
+      "image": "sha256:4b990e3e8c60077fceb06ac5018025a5ef80353297fe92affc8b20fe53915fa9",
+      "started_at": "2026-10-27T18:32:11.657816024Z",
+      "status": "running"
+    },
+    "native_restarted": false,
+    "dependencies_realpath_unchanged": "/opt/nodia/nodia-server/node_modules"
+  },
+  "database": {
+    "migration": "AddNodiaAiApiChatRuntime1793310000000",
+    "migrations_before": 31,
+    "migrations_after": 32,
+    "tables_before": 63,
+    "tables_after": 65,
+    "preserved_existing_schemas": 63,
+    "preserved_existing_data_tables": 62,
+    "existing_migration_ledger_prefix_preserved": true,
+    "all_65_table_fingerprints_unchanged_after_service_start": true,
+    "quiet": {
+      "active_chats": 0,
+      "attempts": 0,
+      "jobs": 0,
+      "slots": 0,
+      "unacked_api": 0
+    },
+    "operational_api_dispatches": 0,
+    "operational_media_acceptances": 0,
+    "connection_configuration_and_credentials_preserved": true
+  },
+  "real_provider_tests": {
+    "scope": "Disposable PostgreSQL configuration on VM; actual REST discovery and inference plus authorized pinned knowledge callback. Business ToolGateway and human confirmation validated separately with actual SQL and synthetic provider messages.",
+    "openai": {
+      "model": "gpt-6-luna",
+      "success": true,
+      "posts": 2,
+      "pdf": true,
+      "tools": true,
+      "ack": true
+    },
+    "gemini_original": {
+      "model": "gemini-3.1-flash-lite",
+      "success": false,
+      "posts": 1,
+      "code": "api_provider_rejected",
+      "http_status": null,
+      "cause": null,
+      "reconciled_and_acked": true,
+      "replayed": false,
+      "terminal_closed_field_limitation": "Original report checked after cleanup cascade; false does not invalidate actual validated ACK. Its proves list is intended scope, not accepted results."
+    },
+    "gemini_text_successor": {
+      "model": "gemini-3.1-flash-lite",
+      "success": true,
+      "posts": 2,
+      "tools": true,
+      "http_inference_statuses": [
+        200,
+        200
+      ],
+      "ack": true,
+      "media_qualified": false
+    },
+    "instrumented_generative_posts_total": 5,
+    "discovery_gets_total": 3,
+    "automatic_retries": 0,
+    "real_keys_persisted_by_these_tests": false,
+    "credentials_only_in_memory_and_cleared": true,
+    "billed_amount": null
+  },
+  "verification": {
+    "server_local_final": {
+      "passed": 5539,
+      "failed": 0,
+      "skipped_platform": 1
+    },
+    "client_full_earlier": {
+      "passed": 2016,
+      "failed": 0,
+      "scope": "Before late metadata/feedback changes; final focused 230 and page57 subsequently passed."
+    },
+    "selective_linux_fullbuild_and_rebuild": true,
+    "selective_sql_runtime_checks": 19,
+    "selective_sql_gateway_checks": 16,
+    "shared_api_service_single_instance": true,
+    "build_assets_checks": 2,
+    "static_http_gets": 362,
+    "static_http_failures": 0,
+    "ui_synthetic_profiles": [
+      "390x844 ES dark",
+      "1280x900 EN light"
+    ],
+    "delivery_checks": {
+      "path": "docs/evidence/api-chat-delivery-checks-r01.json",
+      "sha256": "aaf0b65d01198a2d27a5b9a134ee19ebe53aa82710f1167bbc2e184b5fb59dea",
+      "bytes": 939
+    }
+  },
+  "backup": {
+    "pre": "e53cdab0-a91c-47b9-ad19-03d17a048668",
+    "post": {
+      "backup_id": "6b178520-014b-457a-b8e8-7aad8b87ab3f",
+      "captured_at": "2026-10-27T21:24:59.207Z",
+      "cipher_bytes": 2680243,
+      "cipher_sha256": "4acd0900830fb74542e3b078ffe9ceee29d2df99d46e999e573a6357e652d473",
+      "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+      "expires_at": "2026-11-03T21:24:59.207Z",
+      "journal_sequence": 1,
+      "status": "ready"
+    },
+    "encrypted_object_verified": true,
+    "instrumented_post_object_reads": {
+      "get": 1,
+      "head": 1,
+      "if_match": true
+    },
+    "retention_exactly_seven_days": true,
+    "timers_restored": true
+  },
+  "publication": {
+    "six_R02_revisions_explicitly_approved": true,
+    "only_those_revisions_adopted": true,
+    "approved_bodies_unchanged_after_approval": true,
+    "product_and_gateway_drafts_not_published": true,
+    "approved_documentation_is_not_blanket_feature_acceptance": true,
+    "post_delivery_authoring_check": {
+      "success": true,
+      "release_id": "7143c4a0aa91fb6a1786e71d908a5242c824b477a7c39fab7791389e2069f021",
+      "adopted": false,
+      "scope": "Only later authoring progress annotations; adopted source snapshot stays 184d9c."
+    }
+  },
+  "limits": [
+    "No acceptance of all 151 operations with each real provider; shared writers/authority remain common and tested by SQL.",
+    "Real provider tests did not run against operational connections; operational keys/models were not silently selected or replaced.",
+    "Operational API native-media and generated-image acceptances remain empty; text success does not enable PDF/audio/images for operational selections. OpenAI PDF success belongs only to its disposable exact configuration.",
+    "Gemini PDF rejection cause and HTTP status remain unknown; the successful text successor is a distinct case.",
+    "API conversational OCR code and shared-core regressions are present; actual conversational OCR/comparison/reload and generated-image/other-media end-to-end acceptance remain pending by exact selection.",
+    "Responsive UI checks use synthetic Axios; VM HTTP checks cover static assets/SPA, not an authenticated real-provider browser turn.",
+    "The approved policy remains three generative POSTs per run; longer dependent tool workflows must continue in another turn.",
+    "Windows live-provider runtime and future providers are not accepted by these Linux results.",
+    "Unrelated Codex audio code was preserved from the active baseline; five build-only reference snapshots are excluded from runtime and reproducible from the source artifact.",
+    "Source inputs were frozen in the reproducible selective package. Later progress annotations in the authoring workspace are not the adopted knowledge release.",
+    "Original app residue cleanup remains postponed."
+  ],
+  "operational_findings": [
+    {
+      "id": "maintenance_argument_parser_r01",
+      "result": "Preflight rejected digit-containing --migration-sha256 before service/database mutation. R02 changes only parser regex; parser tests and read-only preflight then passed. Original operators and failed receipt retained."
+    }
+  ],
+  "evidence": [
+    {
+      "path": "docs/evidence/api-chat-server-regressions-r01.json",
+      "sha256": "94262772400f34522dbf8034fcea58ebecfc466ddb918ffa081dffb9b253a37a",
+      "bytes": 843
+    },
+    {
+      "path": "docs/evidence/api-chat-sql-runtime-r01.json",
+      "sha256": "6c73898fb8a98337a8e5bcad500715e7807ff70a7fdbc6d81e0f9f885dd87aaf",
+      "bytes": 8664
+    },
+    {
+      "path": "docs/evidence/api-chat-gateway-sql-r01.json",
+      "sha256": "ddf5b6a84262345d07700d109e240fb733653634a37362c19a3c2da1aaf6bc63",
+      "bytes": 8913
+    },
+    {
+      "path": "docs/evidence/api-chat-openai-real-canary-r01.json",
+      "sha256": "e5beee529982509f523a4a22ec68eab15fe21e83125f08631ff1db759905f3bb",
+      "bytes": 3672
+    },
+    {
+      "path": "docs/evidence/api-chat-gemini-rejected-canary-r01.json",
+      "sha256": "83f03b1c78802c6a777c9dd10294eb26d7825dd21e6cb7f67400c304a4dc6a66",
+      "bytes": 2624
+    },
+    {
+      "path": "docs/evidence/api-chat-gemini-real-text-canary-r01.json",
+      "sha256": "0c45188a4bd3a347037dba7ae141406e703a0efac17985fcc91fcaa800a371ab",
+      "bytes": 5728
+    },
+    {
+      "path": "docs/evidence/api-chat-ui-r01.json",
+      "sha256": "1d03998f3eeec12dfe44bfc80fec5099cba852bb119ce7c72529df943be59c67",
+      "bytes": 8989
+    },
+    {
+      "path": "docs/evidence/api-chat-client-http-adoption-r01.json",
+      "sha256": "24e0a5d26adc0bea64ce059f32b634bb1cc9fa5a586e2ee128a921b0ef326ba7",
+      "bytes": 121002
+    },
+    {
+      "path": "docs/evidence/api-chat-server-candidate-r01.json",
+      "sha256": "2a461e7be7e8906ede6df49b554d84683049ce812f49d808ea0ef21b9b1baf6c",
+      "bytes": 12611
+    },
+    {
+      "path": "docs/evidence/api-chat-build-assets-r01.json",
+      "sha256": "d64bff8e358628554c49bd8aa84ec9a44be6ed865c836328f57883d775e829b9",
+      "bytes": 2294
+    },
+    {
+      "path": "docs/evidence/api-chat-operational-migration-r01.json",
+      "sha256": "531a51eb3a22ed3322a28705c5f516f864fc9cdd659a1b6623e0d9524f1eee36",
+      "bytes": 30674
+    },
+    {
+      "path": "docs/evidence/api-chat-vm-adoption-readonly-r01.json",
+      "sha256": "eee229368df9fe1313c5123093c7b5cf717071fcc712d2f6e32ddd8afe4ac779",
+      "bytes": 19432
+    },
+    {
+      "path": "docs/evidence/api-chat-pre-adoption-backup-r01.json",
+      "sha256": "380426b32b446c8b8de571d4d4f79eacbb1f7d951774033931a932fe005d316c",
+      "bytes": 974
+    },
+    {
+      "path": "docs/evidence/api-chat-post-adoption-backup-r01.json",
+      "sha256": "13c93198243f75087e6062aa2f4e9c2065bb623890a61e384a737a52e616ec6e",
+      "bytes": 974
+    },
+    {
+      "path": "docs/evidence/api-chat-knowledge-human-approval-r01.json",
+      "sha256": "28f1dc189174ce6bbf881cf6a26f0e4e299cfcc06153b04cf774ad91d0f3abc8",
+      "bytes": 7851
+    },
+    {
+      "path": "ops/lab/artifacts/api-chat-server-r01-catalog.json",
+      "sha256": "b9a583d770666f8f6e1e035170ff6e1ad3fcafd9e9664485335b001ddeba9efd",
+      "bytes": 1152
+    },
+    {
+      "path": "ops/lab/artifacts/api-chat-parity-r01/cutover-operators-r01-catalog.json",
+      "sha256": "bb6014b322962808d859a6b483913a180ebae34f1a3e30f55091af333d77deda",
+      "bytes": 5975
+    },
+    {
+      "path": "ops/lab/artifacts/api-chat-parity-r01/client-source-runtime-r01-catalog.json",
+      "sha256": "8b3bd6bf630452301d6839b10197c1d0624b3657ee1be870d2cc9daf5ff379c6",
+      "bytes": 167851
+    }
+  ]
+}

@@ -1,5 +1,17 @@
 # Instrucciones y Guía para Agentes de IA: Nodia Server
 
+## NodiaAI: ventas y reportes de solo lectura (2026-10-30)
+
+[Plan94 R17](../docs/mvp/94-business-point-of-sale-and-product-refactor.md#26-nodiaai-ventas-y-reportes-de-solo-lectura--r17-2026-10-30) retira cinco preparadores de ventas y su autoridad activa, incluidas propuestas antiguas. Conservar sólo consultas/reportes autorizados, lectura histórica y conciliación sin replay. No reintroducir esos escritores en loaders, catálogos, bindings o DI; POS manual y persistencia técnica del chat conservan sus contratos.
+
+## Ampliación actual: API chat (2026-10-27)
+
+API chat reutiliza ToolGateway, módulos/ownership, grants, propuestas, confirmación humana exacta, ejecución/idempotencia y recuperación de Agentic. Aplicar [plan92](../docs/mvp/92-nodia-ai-api-chat-parity.md), [ADR084](../docs/architecture/decisions/ADR-084-nodia-ai-api-chat-common-runtime.md) y las pruebas obligatorias de [plan91](../docs/mvp/91-ai-provider-onboarding-verification.md) al añadir o modificar un proveedor. API funciona en Server con HTTP/function calling: supports_tools no equivale a MCP; proof3 exige cierre local y distingue resultado remoto unknown, sin replay ni cancelación remota supuesta. Cada POST consume presupuesto antes del envío. Modelo/clave/conexión exactos y modalidades calificadas por selección; catálogo o key no acreditan inferencia. Las seis revisiones R02 cuentan con aprobación humana documental y se adoptaron en VM con validación técnica; eso no aprueba el ADR, otras fichas ni todas las modalidades. El plan92 conserva el estado técnico y evidencias; referencias inferiores de API chat no soportado describen el corte anterior.
+
+## Modos IA y nuevos proveedores — 2026-10-27
+
+Aplicar [plan90](../docs/mvp/90-agentic-api-only-web-retirement.md): los modos operativos son `agentic` y `api_key`. Web esta retirado; referencias inferiores son historicas y no lo rehabilitan. Todo nuevo proveedor/modo o cambio de adaptador debe pasar la matriz y gates de [verificacion91](../docs/mvp/91-ai-provider-onboarding-verification.md), con capacidades reales y evidencia por proveedor/modelo/entorno. No publicar ni aprobar fichas por actualizar codigo; catalogo y autenticacion no prueban inferencia.
+
 Este documento es el índice de reglas operativas de `nodia-server`. Leer primero `../docs/mvp/README.md` y `../docs/mvp/00-progress.md`; los documentos de producto aprobados y las decisiones en `../docs/architecture/decisions/` tienen prioridad sobre ejemplos genéricos. Aplicar también `../AGENTS.md` y las instrucciones explícitas del usuario. No aprobar documentos automáticamente.
 
 El análisis y los criterios de cierre actuales están en `../docs/mvp/19-prelaunch-review.md`, sección «Revisión actualizada de Nodia Server — 2026-10-03». Instalar una skill no cierra sus hallazgos.
@@ -39,12 +51,14 @@ Al cambiar filtros o listados, revisar `src/common/utils/ransack-query.policies.
 
 ## Reglas locales de autorización y proveedores
 
+- Regla funcional confirmada el2026-10-25: [89](../docs/mvp/89-module-access-and-user-data-scope.md) y [ADR081](../docs/architecture/decisions/ADR-081-module-access-and-business-data-scope.md) sustituyen el acceso global histórico a hijos de Negocios y las excepciones ai:manage. Módulos habilitan funcionalidades; datos por propietario/colaborador explícito, super_admin bypass de permisos y acceso global. Conservar sesión, integridad, atribución y confirmación humana. Las referencias históricas inferiores no reactivan la política sustituida.
+
 - Aplicar la política explícita del producto. El 2026-10-03 el usuario confirmó como intencional la administración sin permisos por acción y el acceso global a productos/facturas/archivos entre negocios para su público específico. No imponer permisos granulares ni aislamiento como arreglo de S-01/S-02. Mantener autenticación actual; esta decisión no habilita acceso anónimo.
 - Conservar coherencia de asociaciones y claves R2 conforme al contrato, protección de secretos y contexto autenticado cuando corresponda. Distinguir integridad de datos de aislamiento por negocio: acceso global autorizado no elimina validación de entradas ni límites SQL.
 - Preservar claves inmutables, rol reservado y al menos un superadministrador activo conforme al PRD; verificar invariantes también ante concurrencia.
-- IA permite API keys por proveedor; se excluyen las gratuitas de Gemini según la aclaración del 2026-10-06. Gemini admite API/Web/Agentic; OpenAI conserva API y adaptador Codex Agentic (migración aplicada en BD local y conexión ID 4 habilitada el 2026-10-08; cuenta/inferencia/Windows pendientes). El usuario canceló y solicitó retirar ChatGPT Web el 2026-10-12: adaptador, worker, UI y configuración exclusivos eliminados. No reintroducirlos ni activar su catálogo salvo nueva solicitud explícita; preservar el contrato Web de Gemini. [ADR-029](../docs/architecture/decisions/ADR-029-chatgpt-web-browser-adapter.md) resume la decisión. Ensayo Linux local en `docs/mvp/vps-local-vm-lab.md`. Flags de catálogo no prueban disponibilidad. Ver ADR-018 y `docs/features/ai-providers/openai-codex-agentic.md`. Conservar cifrado por instancia, modelos dinámicos y credenciales internas de ADR-008.
+- IA permite API keys por proveedor; se excluyen las gratuitas de Gemini según la aclaración del2026-10-06. Los únicos modos son Agentic y API key; Web está retirado en todos los proveedores por decisión del2026-10-27. Gemini y OpenAI conservan sus adaptadores reales y su [aceptación por alcance](../docs/mvp/90-agentic-api-only-web-retirement.md); no extrapolarla a otros modelos, cuentas o entornos. API chat y API OCR están implementados con [aceptaciones acotadas92](../docs/mvp/92-nodia-ai-api-chat-parity.md); mantener los gates por selección y modalidad. Los flags de catálogo no prueban disponibilidad. Conservar cifrado por instancia, modelos dinámicos y credenciales internas de ADR-008; ADR-018/ADR-029 describen historia, no autorizan restaurar Web.
 - Conservar instancia, modo y modelo exactos de configuración/descubrimiento. No sustituir un ID explícito inexistente por otro proveedor, inventar cuotas/capacidades o inferirlas por nombre. Sin modelo configurado, informar falta de asignación e impedir el flujo que lo exige.
-- La aplicación de Antigravity instalada no demuestra integración de sesión: el motor continúa no disponible hasta verificar un adaptador real. No reemplazarlo silenciosamente por Web. Seguir ADR-008 para consumo privado de microservicios.
+- La aplicación de Antigravity instalada no demuestra integración de sesión ni inferencia: exigir evidencia real por selección/época. No sustituir proveedor o modo ante fallos. Seguir ADR-008 para consumo privado de microservicios.
 
 ---
 

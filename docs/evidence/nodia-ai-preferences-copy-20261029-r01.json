@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "observed_at": "2026-10-29T16:46:47.834436+00:00",
+  "status": "preferences_explanation_copy_adopted_on_usage_vm",
+  "copy": {
+    "es": "NodiaAI recuerda solo las preferencias que confirmas y puede usarlas en otros chats. Por ejemplo, tu categoría habitual de gastos. Usa «Proponer cambio» para elegir otra o «Proponer borrado» para olvidarla. Revisa y confirma la propuesta para aplicar el cambio.",
+    "en": "NodiaAI remembers only the preferences you confirm and can use them in other chats. For example, your usual expense category. Choose “Propose a change” to pick another value or “Propose deletion” to forget it. Review and confirm the proposal to apply the change."
+  },
+  "change": "Únicamente preferences.description ES/EN: ejemplo de categoría habitual, botones exactos de cambio/borrado y confirmación de propuesta. Sin cambio funcional.",
+  "validation": {
+    "client_tests": {
+      "success": true,
+      "numPassedTests": 2126,
+      "numFailedTests": 0,
+      "startTime": 1793291709122,
+      "files": 260
+    },
+    "typecheck_exit": 0,
+    "lint_exit": 0,
+    "build_exit": 0,
+    "operator_offline_cases": 10,
+    "strict_leaf_delta": "Reponer sólo description anterior en memoria reproduce los SHA originales completos de cada locale.",
+    "browser": {
+      "exampleAndControlsExplained": true,
+      "profiles": [
+        {
+          "width": 320,
+          "theme": "dark",
+          "lang": "es",
+          "iconOnly": true,
+          "accessibleLabel": true,
+          "target44": true,
+          "closes": true,
+          "draftPreserved": true,
+          "mutations": 0
+        },
+        {
+          "width": 390,
+          "theme": "light",
+          "lang": "en",
+          "iconOnly": true,
+          "accessibleLabel": true,
+          "target44": true,
+          "closes": true,
+          "draftPreserved": true,
+          "mutations": 0
+        },
+        {
+          "width": 600,
+          "theme": "dark",
+          "lang": "es",
+          "iconOnly": true,
+          "accessibleLabel": true,
+          "target44": true,
+          "closes": true,
+          "draftPreserved": true,
+          "mutations": 0
+        },
+        {
+          "width": 1569,
+          "theme": "dark",
+          "lang": "es",
+          "iconOnly": true,
+          "accessibleLabel": true,
+          "target44": true,
+          "closes": true,
+          "draftPreserved": true,
+          "mutations": 0
+        }
+      ],
+      "transport": "synthetic-only 127.0.0.1:5194",
+      "noVmOrProviderMutations": true,
+      "engine": "Microsoft Edge/Chromium via Playwright CLI",
+      "drawer_transition_settled": true
+    },
+    "notes": [
+      "Sin nuevos tests de markup para este cambio de texto; suite existente completa y QA de lectura/tamaños/locales.",
+      "Se conservan avisos de desarrollo previamente registrados y favicon404 del harness; build mantiene el aviso previo chunk>500kB. No se atribuyen como corregidos."
+    ],
+    "knowledge_check": {
+      "task": "AI-06",
+      "mode": "check",
+      "sources": 69,
+      "excluded": 25,
+      "documents": 44,
+      "fragments": 46,
+      "catalogRelease": "nodia-ai-business-pos/1",
+      "releaseId": "8a7c2acab58c8ab78dfd5db5660c442702f5abf0ca5ac58c810c3ad60909e2ba",
+      "exit": 0,
+      "emitted_or_adopted": false
+    }
+  },
+  "delivery": {
+    "release": "/opt/nodia/releases/nodia-client-preferences-copy-20261029-r01",
+    "manifest_sha256": "67f45a66a4682dc3cff30e96ee157910e0ed9f0d741db40c629c7ddcf0c8deb1",
+    "artifact": {
+      "bytes": 2102484,
+      "members": 172,
+      "sha256": "0be450e3c06d94063c248f68e039469fee59573112d43164203ce3f0cfe9d892",
+      "unpacked_bytes": 4639914
+    },
+    "source_input_fingerprint_sha256": "61f4529fa61e7e0b8f73c75a921a3e01b41f1bd44d160b9c3981283044cd4b43",
+    "source_delta": {
+      "added": [],
+      "changed": [
+        "src/translate/en/nodiaAi.json",
+        "src/translate/es/nodiaAi.json"
+      ],
+      "outside_authorized_scope": [],
+      "removed": []
+    },
+    "nginx_sha256": "aad5b168418572a54172869d52ebc9ff7b6558c973877497a7619d6a9a2bdd19",
+    "http": {
+      "current_assets": 168,
+      "previous_assets": 46,
+      "protected": [
+        {
+          "route": "/api/v1",
+          "status": 200
+        },
+        {
+          "route": "/api/v1/nodia-ai/connections",
+          "status": 401
+        },
+        {
+          "route": "/api/v1/products",
+          "status": 401
+        }
+      ],
+      "spa": [
+        {
+          "route": "/",
+          "sha256": "d1b98fc9189e758da6b6c973885ebd0715fcb834c891688cc505480cf3cba628",
+          "status": 200
+        },
+        {
+          "route": "/tools/nodia-ai",
+          "sha256": "d1b98fc9189e758da6b6c973885ebd0715fcb834c891688cc505480cf3cba628",
+          "status": 200
+        },
+        {
+          "route": "/tools/business",
+          "sha256": "d1b98fc9189e758da6b6c973885ebd0715fcb834c891688cc505480cf3cba628",
+          "status": 200
+        }
+      ]
+    },
+    "local_index_sha256": "d1b98fc9189e758da6b6c973885ebd0715fcb834c891688cc505480cf3cba628",
+    "protected_runtime_preserved": true,
+    "server_manifest_sha256": "22f928167d186565cb08fed6eb0572d43263e0a0a424f235aad26e0c7063ef24",
+    "knowledge_release_id": "b49fde74a53483fad4fe80b8175b36bb7c337415097dd9cfa4349285f9e1e2ea",
+    "backup": {
+      "nginx_before_sha256": "a4e041a0cde9137dc74973a41101ccc5cbf9e4be54279e4d549fcf081afc71fb",
+      "configuration": "/opt/nodia/operations/nodia-ai-preferences-copy-20261029-r01/nginx-before.conf",
+      "previous_client": "/opt/nodia/releases/nodia-client-preferences-close-20261029-r01",
+      "previous_client_verified_and_preserved": true
+    },
+    "api_worker_native_restarts": 0,
+    "sql_queries": 0,
+    "auth_requests": 0,
+    "provider_requests": 0,
+    "receipts": [
+      {
+        "path": "ops/lab/artifacts/nodia-ai-preferences-copy-20261029-r01/preflight-receipt.json",
+        "sha256": "bfccc749eaf0ec94f0a95a737985d7838c408e6e0a56606fecea46650f410aec",
+        "bytes": 2834
+      },
+      {
+        "path": "ops/lab/artifacts/nodia-ai-preferences-copy-20261029-r01/stage-receipt.json",
+        "sha256": "6ac5cd1988799243e9213a07b44d4d6ad3527a12573bd131825ab95270771d9e",
+        "bytes": 170
+      },
+      {
+        "path": "ops/lab/artifacts/nodia-ai-preferences-copy-20261029-r01/activation-receipt.json",
+        "sha256": "8eea880a8e2758aa08f140ba488fba460a35f1a247e2cb2c6d3cd160be8498c9",
+        "bytes": 4191
+      },
+      {
+        "path": "ops/lab/artifacts/nodia-ai-preferences-copy-20261029-r01/status-receipt.json",
+        "sha256": "8e9ef0fcc492560656df640f191153b5541a1424cec4723b9067c90a75f8fbab",
+        "bytes": 6094
+      }
+    ]
+  },
+  "knowledge": {
+    "approved_bodies_unchanged": 44,
+    "candidate_revision": 8,
+    "candidate_status": "draft/unregistered",
+    "approval": null,
+    "published": false,
+    "impact": "Copy explicativo del contrato vigente; no amplía memoria, herramientas, permisos ni confirmación."
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/nodia-ai-preferences-copy-390-20261029.png",
+      "sha256": "fb4041f1fee9dcb2eb181443f6711db012410e5f5b2ccafbe19808ba135f32c2",
+      "bytes": 24176
+    },
+    {
+      "path": "docs/evidence/nodia-ai-preferences-copy-1569-20261029.png",
+      "sha256": "d8d0d7c4b72da81f4368eab45c9f3f17bba663ac38ae17e60ab57372c6690dca",
+      "bytes": 87016
+    }
+  ],
+  "limits": [
+    "QA con datos/transporte sintéticos. No se creó, cambió ni borró una preferencia real.",
+    "HTTP/delivery VM comprobados; no nuevo recorrido autenticado, inferencia o dispositivo físico."
+  ]
+}

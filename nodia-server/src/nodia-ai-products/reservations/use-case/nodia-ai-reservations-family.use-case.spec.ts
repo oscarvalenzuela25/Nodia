@@ -11,6 +11,7 @@ import { RentalPropertyService } from '../../../rental-property/rental-property.
 import { NodiaAiToolRegistryUseCase } from '../../../nodia-ai-tools/use-case/nodia-ai-tool-registry.use-case.js';
 import type { NodiaAiToolHandlerContext } from '../../../nodia-ai-tools/types/tool-registry.types.js';
 import { NodiaAiReservationsFamilyUseCase } from './nodia-ai-reservations-family.use-case.js';
+import { canonicalModuleRoute } from '../../../authorization/canonical-module-route.js';
 
 function fixture() {
   let collaborator = true;
@@ -107,7 +108,7 @@ function fixture() {
       isSuperAdmin: false,
       modules: [],
     },
-    moduleRoutes: ['/tools/reservations'],
+    moduleRoutes: ['/reservations'],
   };
   return {
     family,
@@ -215,7 +216,7 @@ describe('NodiaAiReservationsFamilyUseCase', () => {
     const expected = catalog.domainTools
       .filter(
         (tool) =>
-          tool.targetModuleRoute === '/tools/reservations' &&
+          canonicalModuleRoute(tool.targetModuleRoute) === '/reservations' &&
           tool.kind === 'read',
       )
       .map((tool) => tool.name)
@@ -230,7 +231,7 @@ describe('NodiaAiReservationsFamilyUseCase', () => {
           tool.kind === 'read' &&
           tool.effectKey === 'read' &&
           tool.capabilityId === tool.toolName &&
-          tool.requiredModuleRoutes.join() === '/tools/reservations',
+          tool.requiredModuleRoutes.join() === '/reservations',
       ),
     ).toBe(true);
     expect(

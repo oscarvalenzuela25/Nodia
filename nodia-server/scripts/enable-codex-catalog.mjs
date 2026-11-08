@@ -10,6 +10,14 @@ const source = new DataSource({
 });
 try {
   await source.initialize();
+  const inspection = source.createQueryRunner();
+  try {
+    const catalog = await inspection.getTable('ai_provider_catalog');
+    if (catalog?.columns.some((column) => column.name === 'can_use_agentic'))
+      throw new Error('This legacy Codex migration command is retired after Agentic/API key migration. Use the current catalog administration.');
+  } finally {
+    await inspection.release();
+  }
   const rows = await source.query(
     "SELECT id FROM ai_provider_catalog WHERE key = 'openai'",
   );
@@ -27,7 +35,7 @@ try {
   } else await source.runMigrations({ transaction: 'all' });
   console.log(
     await source.query(
-      "SELECT id, key, can_use_api_key, can_use_token_plan_web, can_use_token_plan_agentic FROM ai_provider_catalog WHERE key = 'openai'",
+      "SELECT id, key, can_use_api_key, can_use_token_plan_agentic AS can_use_agentic FROM ai_provider_catalog WHERE key = 'openai'",
     ),
   );
 } finally {

@@ -512,11 +512,15 @@ export class ComposeNodiaAiReportUseCase {
       const amountColumns = source.columns.filter(
         (column) => column.unit !== null,
       );
+      const totalColumns = amountColumns.filter(
+        (_, index) =>
+          !definition.measures[measureKeys[index]].requiredDimensionKey,
+      );
       if (
         amountColumns.length !== measureKeys.length ||
         canonical(Object.keys(source.totals).sort()) !==
-          canonical(amountColumns.map((column) => column.key).sort()) ||
-        amountColumns.some((column) => {
+          canonical(totalColumns.map((column) => column.key).sort()) ||
+        totalColumns.some((column) => {
           const total = source.totals[column.key];
           return (
             !/^-?\d+(?:\.\d+)?$/.test(total) ||

@@ -1,0 +1,684 @@
+{
+  "schema_version": 1,
+  "id": "nodia-ai-voice-dictation-20261029-r01",
+  "updated_at": "2026-10-29T17:24:12.351928+00:00",
+  "status": "implemented_and_static_vm_adopted_asr_unverified",
+  "human_scope": {
+    "browser_dictation_selected": true,
+    "may_use_browser_remote_service": true,
+    "main_mic_produces": "editable_text",
+    "automatic_send": false,
+    "audio_attachment_created_by_mic": false
+  },
+  "local_verification": {
+    "hook_tests": {
+      "passed": 22,
+      "failed": 0
+    },
+    "client_full_suite": {
+      "files_passed": 263,
+      "tests_passed": 2166,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "typecheck": {
+      "exit_code": 0
+    },
+    "lint": {
+      "exit_code": 0
+    },
+    "browser_ui": {
+      "schema_version": 1,
+      "checked_at_utc": "2026-10-29T17:19:43.517073+00:00",
+      "browser": {
+        "channel": "msedge",
+        "version": "156.0.4314.50",
+        "mode": "headless isolated profile",
+        "playwright_cli": "0.1.22"
+      },
+      "origin": "http://127.0.0.1:5194",
+      "scenario": "chat-redesign",
+      "speech_transport": "Explicit synthetic SpeechRecognition events; no real recognizer/inference invoked",
+      "waveform": "Real native Web Audio oscillator with gain0.18 into MediaStream and application Analyser/canvas; no hardware or speaker connection",
+      "results": [
+        {
+          "language": "es",
+          "theme": "dark",
+          "checks": {
+            "requesting": true,
+            "listening": true,
+            "basePreserved": true,
+            "interimReplaced": true,
+            "repeatedFinalNotDuplicated": true,
+            "stopTerminalEditable": true,
+            "networkFailureRetainsDraft": true,
+            "noFile": true,
+            "noAutosendOrUpload": true
+          },
+          "layouts": [
+            {
+              "width": 320,
+              "overflow": 0,
+              "gap": 8,
+              "measuredPeak": 0.1875,
+              "screenshot": "C:/Users/Oscar/Desktop/Nodia/.tmp/voice-dictation-ui-320-es-dark.png",
+              "control_size": [
+                44,
+                44
+              ],
+              "canvas_height": 44
+            },
+            {
+              "width": 390,
+              "overflow": 0,
+              "gap": 8,
+              "measuredPeak": 0.1875,
+              "screenshot": "C:/Users/Oscar/Desktop/Nodia/.tmp/voice-dictation-ui-390-es-dark.png",
+              "control_size": [
+                44,
+                44
+              ],
+              "canvas_height": 44
+            },
+            {
+              "width": 600,
+              "overflow": 0,
+              "gap": 8,
+              "measuredPeak": 0.1875,
+              "screenshot": "C:/Users/Oscar/Desktop/Nodia/.tmp/voice-dictation-ui-600-es-dark.png",
+              "control_size": [
+                44,
+                44
+              ],
+              "canvas_height": 44
+            },
+            {
+              "width": 1088,
+              "overflow": 0,
+              "gap": 8,
+              "measuredPeak": 0.1875,
+              "screenshot": "C:/Users/Oscar/Desktop/Nodia/.tmp/voice-dictation-ui-1088-es-dark.png",
+              "control_size": [
+                44,
+                44
+              ],
+              "canvas_height": 44
+            },
+            {
+              "width": 1569,
+              "overflow": 0,
+              "gap": 8,
+              "measuredPeak": 0.1875,
+              "screenshot": "C:/Users/Oscar/Desktop/Nodia/.tmp/voice-dictation-ui-1569-es-dark.png",
+              "control_size": [
+                44,
+                44
+              ],
+              "canvas_height": 44
+            }
+          ],
+          "capture": {
+            "starts": 2,
+            "stops": 1,
+            "aborts": 1,
+            "captures": 2,
+            "tracksStopped": 2,
+            "files": 0,
+            "recorders": 0,
+            "peak": 0.1875,
+            "contextsClosed": true,
+            "mutations": []
+          },
+          "sileo_error_titles": [],
+          "retained_text": "Base conservada. hola mundo y seguimos. Edición manual. texto recuperable"
+        },
+        {
+          "language": "en",
+          "theme": "light",
+          "checks": {
+            "requesting": true,
+            "listening": true,
+            "basePreserved": true,
+            "interimReplaced": true,
+            "repeatedFinalNotDuplicated": true,
+            "stopTerminalEditable": true,
+            "networkFailureRetainsDraft": true,
+            "noFile": true,
+            "noAutosendOrUpload": true
+          },
+          "layouts": [
+            {
+              "width": 320,
+              "overflow": 0,
+              "gap": 8,
+              "measuredPeak": 0.1875,
+              "screenshot": "C:/Users/Oscar/Desktop/Nodia/.tmp/voice-dictation-ui-320-en-light.png",
+              "control_size": [
+                44,
+                44
+              ],
+              "canvas_height": 44
+            },
+            {
+              "width": 390,
+              "overflow": 0,
+              "gap": 8,
+              "measuredPeak": 0.1875,
+              "screenshot": "C:/Users/Oscar/Desktop/Nodia/.tmp/voice-dictation-ui-390-en-light.png",
+              "control_size": [
+                44,
+                44
+              ],
+              "canvas_height": 44
+            },
+            {
+              "width": 600,
+              "overflow": 0,
+              "gap": 8,
+              "measuredPeak": 0.1875,
+              "screenshot": "C:/Users/Oscar/Desktop/Nodia/.tmp/voice-dictation-ui-600-en-light.png",
+              "control_size": [
+                44,
+                44
+              ],
+              "canvas_height": 44
+            },
+            {
+              "width": 1088,
+              "overflow": 0,
+              "gap": 8,
+              "measuredPeak": 0.1875,
+              "screenshot": "C:/Users/Oscar/Desktop/Nodia/.tmp/voice-dictation-ui-1088-en-light.png",
+              "control_size": [
+                44,
+                44
+              ],
+              "canvas_height": 44
+            },
+            {
+              "width": 1569,
+              "overflow": 0,
+              "gap": 8,
+              "measuredPeak": 0.1875,
+              "screenshot": "C:/Users/Oscar/Desktop/Nodia/.tmp/voice-dictation-ui-1569-en-light.png",
+              "control_size": [
+                44,
+                44
+              ],
+              "canvas_height": 44
+            }
+          ],
+          "capture": {
+            "starts": 2,
+            "stops": 1,
+            "aborts": 1,
+            "captures": 2,
+            "tracksStopped": 2,
+            "files": 0,
+            "recorders": 0,
+            "peak": 0.1875,
+            "contextsClosed": true,
+            "mutations": []
+          },
+          "sileo_error_titles": [
+            "The browser's dictation service could not connect. The recognized text has been kept."
+          ],
+          "retained_text": "Base conservada. hola mundo y seguimos. Edición manual. texto recuperable"
+        }
+      ],
+      "audio_preview": {
+        "syntheticWav": true,
+        "muted": true,
+        "explicitPlayerClicks": 2,
+        "events": [
+          "play",
+          "playing"
+        ],
+        "duration": 2.998821,
+        "readyState": 4,
+        "before": 0,
+        "currentTimeAdvancedTo": 0.207008,
+        "paused": true,
+        "hasControls": true,
+        "autoplay": false,
+        "source": "local Blob URL",
+        "scope": "Manual synthetic file selection after dictation checks; synthetic adapter only",
+        "operator_note": "The Playwright CLI upload and the pending run-code chooser both selected the same synthetic WAV, resulting in two test cards. One native player was decoded/played/paused; both cards were removed afterward. This is not evidence of an app duplicate-selection defect.",
+        "cleanup": {
+          "local_audio_elements": 0,
+          "dictation_contexts_closed": true,
+          "browser_session_closed": true
+        }
+      },
+      "visual_inspection": [
+        "320 es-dark screenshot",
+        "1569 en-light screenshot"
+      ],
+      "observations": [
+        "All ten layout samples have horizontal overflow0, 44x44 mic/send controls, gap8px, canvas44px and real measured peak0.1875.",
+        "320px listening with225characters: the disabled model/effort row overflows outside the composer/card by up to61px/52px; it is not CSS-clipped. The input/microphone/send remain uncut. In idle and afterStop all these controls fit inside the card, with the lower selector ending at716px before the card edge734px.",
+        "The first390px measurement occurred between ResizeObserver clearing and the next30fps paint; waiting for actual nonzero canvas pixels passed. No production fix was made.",
+        "Observed harness console: ChatPage setState-in-render coordination error and favicon404. No new attribution to dictation.",
+        "Sileo error method was observed with the translated English network-failure title; immediate body-text capture did not include the transient toaster."
+      ],
+      "real_asr_separate_receipt": ".tmp/browser-dictation-default-start-real.json",
+      "limits": [
+        "These UI checks do not accept browser recognition availability: separate real Edge/Chrome attempts both ended without text.",
+        "No physical microphone, telephone keyboard, audible output, provider or production API/chat was exercised.",
+        "Native WAV playback was muted and verified by playing event/currentTime advance/paused state, not by listening."
+      ],
+      "cleanup": {
+        "own_session_voice_dictation_ui_closed": true,
+        "root_audio_preview_session_preserved": true,
+        "all_synthetic_capture_tracks_stopped": true,
+        "all_created_contexts_closed": true,
+        "manual_audio_cards_removed": true,
+        "production_source_changes": 0
+      },
+      "conditional_mobile_overflow": {
+        "source": ".tmp/voice-dictation-ui-clipping.json",
+        "width": 320,
+        "text_characters": 225,
+        "listening": {
+          "form_bottom": 725,
+          "card_bottom": 734,
+          "model_bottom": 783,
+          "effort_bottom": 786,
+          "primary_controls_clipped_px": 0,
+          "selectors_disabled": true
+        },
+        "idle_and_after_stop": {
+          "effort_bottom": 716,
+          "card_bottom": 734,
+          "all_measured_controls_clipped_px": 0,
+          "input_editable": true
+        },
+        "screenshots": [
+          ".tmp/voice-dictation-ui-clipping-320-listening.png",
+          ".tmp/voice-dictation-ui-clipping-320-after-stop.png"
+        ],
+        "source_changes": 0
+      }
+    },
+    "production_build": {
+      "exit_code": 0,
+      "api_base_url": "/api/v1",
+      "out_dir": ".tmp/dist-voice-dictation-20261029-r01"
+    },
+    "operator_tests": {
+      "passed": 10,
+      "failed": 0
+    },
+    "approved_knowledge_integrity": {
+      "bodies_checked": 44,
+      "changed": 0
+    },
+    "knowledge_check": {
+      "exit_code": 0,
+      "sources": 69,
+      "excluded": 25,
+      "documents": 44,
+      "fragments": 46,
+      "local_candidate_release_id": "7ebac892c65d461eccc53c18a6efff958a653ac3ec1575e224f7081905c3faf5",
+      "published_or_adopted": false
+    },
+    "browser_screenshots": [
+      {
+        "path": "docs/evidence/nodia-ai-voice-dictation-320-es-dark-20261029.png",
+        "sha256": "1abfb216f92f21a7ad921a018a94cefc2c98e814e868fa26a4ec6d087451e449",
+        "fixture": "synthetic_recognition_with_native_WebAudio_signal"
+      },
+      {
+        "path": "docs/evidence/nodia-ai-voice-dictation-1569-en-light-20261029.png",
+        "sha256": "d3a23a125a51a5792e2ddace5371e06b13e004a2b699d094a5dea22a848654ba",
+        "fixture": "synthetic_recognition_with_native_WebAudio_signal"
+      }
+    ],
+    "utf8_lf_files_checked": 30,
+    "diff_check_exit_code": 0,
+    "narrow_listening_observation": {
+      "source": "Isolated synthetic recognizer and real oscillator, 320px",
+      "idle": {
+        "phase": "idle-long",
+        "width": 320,
+        "textLength": 225,
+        "formBottom": 725,
+        "cardBottom": 734,
+        "inputDisabled": false,
+        "input": {
+          "top": 481,
+          "bottom": 591,
+          "height": 110,
+          "visibleHeight": 110,
+          "clippedPixels": 0,
+          "clips": []
+        },
+        "microphone": {
+          "top": 557,
+          "bottom": 601,
+          "height": 44,
+          "visibleHeight": 44,
+          "clippedPixels": 0,
+          "clips": []
+        },
+        "send": {
+          "top": 557,
+          "bottom": 601,
+          "height": 44,
+          "visibleHeight": 44,
+          "clippedPixels": 0,
+          "clips": []
+        },
+        "model": {
+          "top": 669,
+          "bottom": 713,
+          "height": 44,
+          "visibleHeight": 44,
+          "clippedPixels": 0,
+          "clips": []
+        },
+        "effort": {
+          "top": 666,
+          "bottom": 716,
+          "height": 50,
+          "visibleHeight": 50,
+          "clippedPixels": 0,
+          "clips": []
+        }
+      },
+      "listening": {
+        "phase": "listening",
+        "width": 320,
+        "textLength": 225,
+        "formBottom": 725,
+        "cardBottom": 734,
+        "inputDisabled": true,
+        "input": {
+          "top": 379,
+          "bottom": 489,
+          "height": 110,
+          "visibleHeight": 110,
+          "clippedPixels": 0,
+          "clips": []
+        },
+        "microphone": {
+          "top": 455,
+          "bottom": 499,
+          "height": 44,
+          "visibleHeight": 44,
+          "clippedPixels": 0,
+          "clips": []
+        },
+        "send": {
+          "top": 455,
+          "bottom": 499,
+          "height": 44,
+          "visibleHeight": 44,
+          "clippedPixels": 0,
+          "clips": []
+        },
+        "model": {
+          "top": 739,
+          "bottom": 783,
+          "height": 44,
+          "visibleHeight": 44,
+          "clippedPixels": 0,
+          "clips": []
+        },
+        "effort": {
+          "top": 736,
+          "bottom": 786,
+          "height": 50,
+          "visibleHeight": 50,
+          "clippedPixels": 0,
+          "clips": []
+        }
+      },
+      "stopped": {
+        "phase": "after-stop-long",
+        "width": 320,
+        "textLength": 225,
+        "formBottom": 725,
+        "cardBottom": 734,
+        "inputDisabled": false,
+        "input": {
+          "top": 481,
+          "bottom": 591,
+          "height": 110,
+          "visibleHeight": 110,
+          "clippedPixels": 0,
+          "clips": []
+        },
+        "microphone": {
+          "top": 557,
+          "bottom": 601,
+          "height": 44,
+          "visibleHeight": 44,
+          "clippedPixels": 0,
+          "clips": []
+        },
+        "send": {
+          "top": 557,
+          "bottom": 601,
+          "height": 44,
+          "visibleHeight": 44,
+          "clippedPixels": 0,
+          "clips": []
+        },
+        "model": {
+          "top": 669,
+          "bottom": 713,
+          "height": 44,
+          "visibleHeight": 44,
+          "clippedPixels": 0,
+          "clips": []
+        },
+        "effort": {
+          "top": 666,
+          "bottom": 716,
+          "height": 50,
+          "visibleHeight": 50,
+          "clippedPixels": 0,
+          "clips": []
+        }
+      },
+      "cleanup": {
+        "contextsClosed": true,
+        "tracksStopped": 2,
+        "captures": 2
+      }
+    }
+  },
+  "real_browser_recognition": {
+    "successful_transcription": false,
+    "fixture": "locally_generated_synthetic_Spanish_WAV",
+    "physical_microphone_used": false,
+    "attempts": [
+      {
+        "browser": "Edge",
+        "version": "156.0.4314.50",
+        "start_calls": 1,
+        "api": "start()",
+        "terminal_error": "network",
+        "transcript": null
+      },
+      {
+        "browser": "Chrome",
+        "version": "156.0.8078.48",
+        "start_calls": 1,
+        "api": "start()",
+        "terminal_error": "no-speech",
+        "transcript": null
+      }
+    ],
+    "limits": "Fake-device flags and labels verify the test environment, not the recognizer internal audio routing. Neither constructor presence nor available() metadata demonstrates recognition. No retries or provider fallback.",
+    "earlier_exploratory_track_attempt": {
+      "engine": "browser SpeechRecognition",
+      "lang": "es",
+      "input": "generated Spanish WAV via explicit MediaStreamTrack",
+      "physicalMicrophoneRequested": false,
+      "startCalls": 1,
+      "events": [
+        "start",
+        "error",
+        "end"
+      ],
+      "text": null,
+      "error": "network",
+      "done": true,
+      "status": "error"
+    }
+  },
+  "vm_adoption": {
+    "status": "activated_verified",
+    "server_or_knowledge_changes": false,
+    "prior_release_preserved": true,
+    "preflight_success": true,
+    "api_pid_before": 1864113,
+    "worker_pid_before": 1864114,
+    "knowledge_release_id": "b49fde74a53483fad4fe80b8175b36bb7c337415097dd9cfa4349285f9e1e2ea",
+    "candidate_root": "/opt/nodia/releases/nodia-client-voice-dictation-20261029-r01",
+    "manifest_sha256": "4858860a8e1572b77467082bb784a0a9dbe22ca7d1938ad0c8f66144084c4a33",
+    "nginx_before_sha256": "aad5b168418572a54172869d52ebc9ff7b6558c973877497a7619d6a9a2bdd19",
+    "nginx_after_sha256": "0bb23e7bf30cfd28052f2a17ff298aab076b8e241b03d97fce027e830c6d4738",
+    "nginx_backup": "/opt/nodia/operations/nodia-ai-audio-preview-20261029-r01/nginx-before.conf",
+    "protected_runtime_preserved": true,
+    "protected_processes_knowledge_native_equals_before": true,
+    "status_timer_substate_change": {
+      "unit": "nodia-ai-backup-rotate.timer",
+      "activation_before": "running",
+      "status_after": "waiting",
+      "ActiveState": "active",
+      "operator_timer_mutations": 0
+    },
+    "http": {
+      "current_assets": 168,
+      "previous_assets": 46,
+      "protected": [
+        {
+          "route": "/api/v1",
+          "status": 200
+        },
+        {
+          "route": "/api/v1/nodia-ai/connections",
+          "status": 401
+        },
+        {
+          "route": "/api/v1/products",
+          "status": 401
+        }
+      ],
+      "spa": [
+        {
+          "route": "/",
+          "sha256": "1832b661c34e0e23c3831786524ed148c51546a69b93298acf708710b6cf0839",
+          "status": 200
+        },
+        {
+          "route": "/tools/nodia-ai",
+          "sha256": "1832b661c34e0e23c3831786524ed148c51546a69b93298acf708710b6cf0839",
+          "status": 200
+        },
+        {
+          "route": "/tools/business",
+          "sha256": "1832b661c34e0e23c3831786524ed148c51546a69b93298acf708710b6cf0839",
+          "status": 200
+        }
+      ]
+    },
+    "tunnel_http": {
+      "read_only": true,
+      "origin": "http://localhost:5174",
+      "checks": [
+        {
+          "route": "/tools/nodia-ai",
+          "status": 200,
+          "sha256": "1832b661c34e0e23c3831786524ed148c51546a69b93298acf708710b6cf0839",
+          "bytes": 2973
+        },
+        {
+          "route": "/tools/business",
+          "status": 200,
+          "sha256": "1832b661c34e0e23c3831786524ed148c51546a69b93298acf708710b6cf0839",
+          "bytes": 2973
+        },
+        {
+          "route": "/api/v1",
+          "status": 200,
+          "sha256": "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
+          "bytes": 12
+        }
+      ],
+      "authenticated_ui_test": false
+    },
+    "authenticated_ui_test": false,
+    "human_microphone_test": false,
+    "provider_requests": 0,
+    "sql_queries": 0,
+    "auth_requests": 0,
+    "api_or_worker_restart_requests": 0,
+    "native_restart_requests": 0
+  },
+  "documentary_approval": {
+    "new_document_approval": false,
+    "approved_knowledge_bodies_changed": false
+  },
+  "static_artifact": {
+    "candidate_root": "/opt/nodia/releases/nodia-client-voice-dictation-20261029-r01",
+    "manifest_sha256": "4858860a8e1572b77467082bb784a0a9dbe22ca7d1938ad0c8f66144084c4a33",
+    "config_sha256": "3f8db636eea5bc446af8b99005b027f9bda67361ab3919b28f898d959faa533a",
+    "artifact": {
+      "bytes": 2107394,
+      "members": 172,
+      "sha256": "7c82abed2b15d889879b192906e15bad59a6c8a775ae9bbc823a35f129932598",
+      "unpacked_bytes": 4654191
+    },
+    "source_fingerprint_sha256": "32933b54eb2e8a78200f8cd0035396a6bec2e0858b56b77c9262b67853a29657",
+    "scope": "static_client_only"
+  },
+  "technical_sources": [
+    "https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition",
+    "https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognitionEvent/results",
+    "https://learn.microsoft.com/en-us/microsoft-edge/web-platform/speech-recognition-api"
+  ],
+  "operational_receipts": {
+    "bootstrap-receipt.json": {
+      "path": "ops/lab/artifacts/nodia-ai-audio-preview-20261029-r01/bootstrap-receipt.json",
+      "sha256": "370a56217862536aadd6736965520ef48ea45f6d744c74055360e91b3186f12f"
+    },
+    "preflight-receipt.json": {
+      "path": "ops/lab/artifacts/nodia-ai-audio-preview-20261029-r01/preflight-receipt.json",
+      "sha256": "fc29b198877d811bddce5c4547bd027dcc7f6353410a23a5f4eeb77b019a7bae"
+    },
+    "stage-receipt.json": {
+      "path": "ops/lab/artifacts/nodia-ai-audio-preview-20261029-r01/stage-receipt.json",
+      "sha256": "d07595cbf60e1002c4efc0949bcbac086dd2976a6421f69e0dcddf5b560c668c"
+    },
+    "activation-receipt.json": {
+      "path": "ops/lab/artifacts/nodia-ai-audio-preview-20261029-r01/activation-receipt.json",
+      "sha256": "f3c495ded45f550ae0c3d4f837f41c618326191a9e7aeb96cb1c5edba2804829"
+    },
+    "status-receipt.json": {
+      "path": "ops/lab/artifacts/nodia-ai-audio-preview-20261029-r01/status-receipt.json",
+      "sha256": "2b9887d10d66e3a610747148d9740a75ec1713008d3a74f82340900d92c883b5"
+    },
+    "tunnel-http-receipt.json": {
+      "path": "ops/lab/artifacts/nodia-ai-audio-preview-20261029-r01/tunnel-http-receipt.json",
+      "sha256": "86081dbfdb742142dcf6e66412d31a447c86ab057c148b2f53d6f950f884b77b"
+    }
+  },
+  "limitations": [
+    "No successful real speech recognition was observed. User speech, microphone permissions and browser recognition service remain to be tried.",
+    "UI browser checks use simulated recognition with an actual Web Audio analyser signal; they are not ASR acceptance.",
+    "VM verification is HTTP/static/runtime preservation, not an authenticated user chat or provider inference.",
+    "At 320px with a 225-character base draft while listening, the disabled selection footer extends up to61px beyond the form/52px beyond the card. Input, microphone/Stop and send remain visible. Idle and afterStop measured0px clipping; editable text and send remain reachable. Physical-device behavior is not accepted by this synthetic test."
+  ],
+  "cleanup": {
+    "root_audio_preview_browser_closed": true,
+    "production_browser_tab_modified": false,
+    "vm_app_and_tunnel_kept_running": true,
+    "qa_server_stop": "verified_5194_not_listening",
+    "agent_qa_browser_closed": true,
+    "all_synthetic_tracks_and_contexts_closed": true
+  }
+}

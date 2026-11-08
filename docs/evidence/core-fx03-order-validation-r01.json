@@ -1,0 +1,331 @@
+{
+  "schema_version": 1,
+  "stage": "Core-FX-03",
+  "observed_on": "2026-10-25",
+  "status": "implemented_and_verified_locally_and_in_disposable_SQL_not_deployed",
+  "scope": {
+    "new_tables": 0,
+    "new_migrations": 0,
+    "new_write_endpoints": 0,
+    "configured_database_migrated": false,
+    "operational_services_restarted": false,
+    "actual_AI_generations": 0,
+    "MCP_capabilities_added": 0,
+    "authenticated_acceptance": "FX-04_pending"
+  },
+  "behavior": [
+    "Canonical server order grouped by parent, paginated by modules; repeated headings across pages, empty groups remain in their administration.",
+    "Explicit Reorder/Done mode includes inactive rows and removes partial filters; restores normal searches, filters and pagination without undoing saved moves.",
+    "Accessible atomic 44px controls use actual server neighbors, including across page boundaries; sticky Actions in desktop ordering tables, cards in xs.",
+    "Both movement hooks await invalidation of moduleKeys.all, moduleGroupKeys.all and authorizationKeys.all, feeding Sidenav; one contextual success, no permissions success toast.",
+    "No PATCH retries; conflicts and uncertain responses reconcile through reads, with recovery gate when a read fails and actor/session fences.",
+    "Readonly locate_id in ordering GET locates module anchor and reads its page in one repeatable-read snapshot after module or group moves; no full catalog download.",
+    "Ordering requests validate IDs, preconditions, returned identity/parent/rank/neighbors/page and actionable page metadata before enabling controls."
+  ],
+  "checks": [
+    {
+      "project": "nodia-client",
+      "command": "npm run test -- --maxWorkers=8",
+      "suites_passed": 242,
+      "tests_passed": 1960,
+      "failures": 0,
+      "log": {
+        "path": ".tmp/fx03-client-full.log",
+        "bytes": 516,
+        "sha256": "f8433c4c7c300cd5086793f5e852a00ac95929aa7315a1a9c61821f8fb55eae3"
+      }
+    },
+    {
+      "project": "nodia-server",
+      "command": "npm run test -- --maxWorkers=4",
+      "suites_passed": 261,
+      "tests_passed": 4941,
+      "failures": 0,
+      "log": {
+        "path": ".tmp/fx03-server-full.log",
+        "bytes": 34584,
+        "sha256": "8b6c009fe9cfcf141b0ccb578d8c855ea68b45d5a9f2c803d183314fe33f4782"
+      }
+    },
+    {
+      "project": "nodia-client",
+      "command": "npm run build",
+      "exit_code": 0,
+      "log": {
+        "path": ".tmp/fx03-client-build.log",
+        "bytes": 14653,
+        "sha256": "ffbca36f892e6a0d316ca3fad97c43253a3f32b694cbdcbe0ad87337212d1d24"
+      },
+      "notes": "Production TypeScript included; no operational adoption."
+    },
+    {
+      "project": "nodia-server",
+      "command": "npm run build",
+      "exit_code": 0,
+      "log": {
+        "path": ".tmp/fx03-server-build.log",
+        "bytes": 2101,
+        "sha256": "a6cda5f2bc3f2602eeb8f541bf0314421d982657104efa877f98c6f5ff8886c5"
+      },
+      "notes": "Production TypeScript included; no operational adoption."
+    },
+    {
+      "project": "nodia-client",
+      "command": "npm run lint",
+      "exit_code": 0,
+      "log": {
+        "path": ".tmp/fx03-client-lint-full.log",
+        "bytes": 43,
+        "sha256": "ffd8fd64020e579eedde270479fe815463785d7fafad2537f697ac8c68b27abe"
+      },
+      "notes": "No errors; Server retains three historical unrelated warnings."
+    },
+    {
+      "project": "nodia-server",
+      "command": "npm run lint",
+      "exit_code": 0,
+      "log": {
+        "path": ".tmp/fx03-server-lint.log",
+        "bytes": 601,
+        "sha256": "9b0f5eec3b6d1e8aa9a2855044fc288ac40d960d276d5b24230a32a5f3e08a50"
+      },
+      "notes": "No errors; Server retains three historical unrelated warnings."
+    }
+  ],
+  "SQL_HTTP": {
+    "receipt": {
+      "path": ".tmp/core-fx03-integration-r01/order-run-r01.json",
+      "bytes": 524,
+      "sha256": "3c88a354afb577fd6a96f340beac1401837966857d6f7cb3482e0bebf28866b9",
+      "content": {
+        "exit": 0,
+        "stdout": "{\"result\":\"passed\",\"checks\":81,\"requests\":54,\"invalidations\":15,\"query_counts\":{\"one_row\":9,\"many_rows\":9},\"scope\":\"compiled Nest HTTP/Core + disposable PostgreSQL16 + real migration/bootstrap; synthetic identity/cache only\",\"configured_database_used\":false,\"actual_AI_generations\":0}\n",
+        "stderr_tail": "",
+        "free_bytes": 515969024,
+        "new_volumes_remaining": [],
+        "new_containers_remaining": [],
+        "test_sha256": "f1c258b92771fd3363b98c671aa7c926bd2b9fb3660be67d270e39bb3985ab81"
+      }
+    },
+    "result": {
+      "result": "passed",
+      "checks": 81,
+      "requests": 54,
+      "invalidations": 15,
+      "query_counts": {
+        "one_row": 9,
+        "many_rows": 9
+      },
+      "scope": "compiled Nest HTTP/Core + disposable PostgreSQL16 + real migration/bootstrap; synthetic identity/cache only",
+      "configured_database_used": false,
+      "actual_AI_generations": 0
+    },
+    "compiled": {
+      "dist/module/dto/get-modules.dto.js": "4cd323a8cc245ac31e10d0dbd63886c4d32db7f1bea8bd7d2e41173b5ac1d52d",
+      "dist/module/module.service.js": "8b42fc694427101c8649e6b019093695ad9c97720ba9a354bc906c9246f3c6f4",
+      "dist/module-order/order-metadata.js": "b9bbe9463026e9b74eb42cdfc8b2687928aa023b4fdf4e1a9bf04de4ad7f2b97"
+    },
+    "test_sha256": "f1c258b92771fd3363b98c671aa7c926bd2b9fb3660be67d270e39bb3985ab81",
+    "cleanup": {
+      "path": ".tmp/core-fx03-integration-r01/final-cleanup-r01.json",
+      "bytes": 535,
+      "sha256": "92c908d274009a53dcf583a2d6fa4a47371b5bfb08b69fdbea2e4d875e5beb41",
+      "content": {
+        "status": "own_stage_removed",
+        "bytes_before_cleanup": 10919711,
+        "new_fixture_containers_remaining": 0,
+        "new_fixture_volumes_remaining": 0,
+        "dependency_target_exists": true,
+        "free_bytes": 536227840,
+        "compiled_sha256": {
+          "dist/module/dto/get-modules.dto.js": "4cd323a8cc245ac31e10d0dbd63886c4d32db7f1bea8bd7d2e41173b5ac1d52d",
+          "dist/module/module.service.js": "8b42fc694427101c8649e6b019093695ad9c97720ba9a354bc906c9246f3c6f4",
+          "dist/module-order/order-metadata.js": "b9bbe9463026e9b74eb42cdfc8b2687928aa023b4fdf4e1a9bf04de4ad7f2b97"
+        }
+      }
+    },
+    "limits": "Disposable PostgreSQL16, compiled Nest HTTP and synthetic actor/cache. Does not prove operational session or migrated configured database."
+  },
+  "browser_QA": {
+    "scope": "Production React components/router with isolated Axios adapter and synthetic context; no real network backend or writes. Fixture reload resets arrays.",
+    "observations": [
+      "Desktop module movement Users->Roles updates table and Sidenav without reload; subsequent mobile move restores Users before Roles.",
+      "Group Administration moved after Tools through module heading; Sidenav and grouped table both show Tools first without reload.",
+      "Pagination remains enabled in Reorder mode; first row Module10 on page2 retains true previous neighbor; moving up relocates to page1 with row visible.",
+      "Normal users search plus Active yields1 row; entering Reorder yields13 unfiltered rows; Done restores users search plus Active and1 row.",
+      "Desktop1280x900 ordering actions remain visible at right despite local horizontal table scroll; group header arrows sit beside title.",
+      "Mobile390x844 and320x844 use cards, with no document horizontal overflow; DOM widths380/310 equal scrollWidths.599px has0 visible tables,600px has2, also without document overflow.",
+      "Light/English timeout after synthetic committed swap plus failed recovery shows recovery notice and disabled arrows; read-only Recover order clears gate and preserves Roles before Users."
+    ],
+    "screenshots": [
+      {
+        "path": "docs/evidence/core-fx03-order-desktop-r01.png",
+        "bytes": 96470,
+        "sha256": "cf7dca2f6017293dfbf70a4aed7db556b689dec2aacac52441d5fead21b0576a"
+      },
+      {
+        "path": "docs/evidence/core-fx03-order-mobile-r01.png",
+        "bytes": 31842,
+        "sha256": "b2c6aeb371dc4f8337d772f92b58598d7d602d6ca049cfc8a0f62adfa0684bce"
+      },
+      {
+        "path": "docs/evidence/core-fx03-order-recovery-r01.png",
+        "bytes": 78357,
+        "sha256": "c1b8186561bc1925f397b70c3a046b6874ed221cdb8fc16107d088f59764f054"
+      }
+    ],
+    "cleanup": "QA tabs closed and QA Vite5186 stopped; viewport restored. Existing operational tab/services not changed.",
+    "limits": "No authenticated operational acceptance, persistence after real reload, concurrent real administrators or session lifecycle acceptance; FX-04 remains pending."
+  },
+  "knowledge": {
+    "feature_document_status": "draft",
+    "implementation_status": "partial",
+    "integration_status": "unregistered",
+    "approval": null,
+    "MCP_ordering_enabled": false,
+    "notes": "New locator is administrative HTTP only. Historical FX-02 evidence kept unchanged; its hashes refer to its original source cut.",
+    "build_checks": [
+      {
+        "task": "AI-06",
+        "mode": "check",
+        "sources": 63,
+        "excluded": 24,
+        "documents": 39,
+        "fragments": 41,
+        "catalogRelease": "nodia-ai-ai15-reads/1",
+        "releaseId": "df1780ad39433af1671467cc3f93285b01b0596155518f6c14330e27b65b80ba"
+      },
+      {
+        "task": "AI-06",
+        "mode": "build",
+        "sources": 63,
+        "excluded": 24,
+        "documents": 39,
+        "fragments": 41,
+        "catalogRelease": "nodia-ai-ai15-reads/1",
+        "releaseId": "df1780ad39433af1671467cc3f93285b01b0596155518f6c14330e27b65b80ba"
+      }
+    ]
+  },
+  "source_pins": [
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/Modules/Modules.tsx",
+      "bytes": 99941,
+      "sha256": "0f710478f75545335b029e29c3f81cc9912416b5f932f9abf2837a21e36da240"
+    },
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/Modules/styles.ts",
+      "bytes": 6620,
+      "sha256": "6970b0a8329946ea3d6d8dca374d2633f94ec3a19ccc78982a28c75d49c5db28"
+    },
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/Modules/types.ts",
+      "bytes": 3593,
+      "sha256": "46d0581420dfaaf56346a76e4e0baa5f756e43f9ea1e159ec17822236f71833d"
+    },
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/Modules/moduleGrouping.ts",
+      "bytes": 410,
+      "sha256": "3050a506193df85264f55bda7ba85a84c19131a77cb18c7147ee86630b978530"
+    },
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/Modules/infrastructure/services.ts",
+      "bytes": 3330,
+      "sha256": "95a119d9b459708ff80555dad37c8a057aed78117dd0f98eab3b0e75be6d2b1c"
+    },
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/Modules/infrastructure/useServices.ts",
+      "bytes": 13501,
+      "sha256": "dd7c031e09978ad1d60091eb1f4043b3ad47b4b7e5946af141728206e449f42e"
+    },
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/Modules/infrastructure/orderSchemas.ts",
+      "bytes": 4273,
+      "sha256": "03119701fde1c52c324b71fbfef122bfacfd6de64e7964de82b53f12cd13923a"
+    },
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/Modules/components/OrderControls/OrderControls.tsx",
+      "bytes": 1692,
+      "sha256": "69b04ca8fe9df52d23d7356a20ad2f5f3b36157bf2dc9d78a9b4b3bf1f75c93a"
+    },
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/Modules/components/OrderControls/styles.ts",
+      "bytes": 638,
+      "sha256": "2f21807d407df78769679d2bcba297dabc75a1b1d99a901f76529a71dca4b2a1"
+    },
+    {
+      "path": "nodia-client/src/test/modules/generalSettings/pages/Modules/infrastructure/orderServices.test.tsx",
+      "bytes": 11847,
+      "sha256": "0c4f05e9d8e231bd9770b5752d6e9cb971858b74b7d9f8ab15ceee8c922f6b0b"
+    },
+    {
+      "path": "nodia-client/src/test/modules/generalSettings/pages/Modules/moduleGrouping.test.ts",
+      "bytes": 1063,
+      "sha256": "fc4dd827176578a82d7c25bf83952d0d417e4ad6f13932e659607d199342d421"
+    },
+    {
+      "path": "nodia-client/src/test/manual/modules/main.tsx",
+      "bytes": 10858,
+      "sha256": "ee73fc0703a61abac2b9ce0c212776f30c5af6e95d041eb867e840e912c1a5ff"
+    },
+    {
+      "path": "nodia-client/src/translate/es/modules.json",
+      "bytes": 9667,
+      "sha256": "aa8ec5eb9e75837a7f435e8d7259e29749e7098b145ccc8bdc9a3c6ea819b482"
+    },
+    {
+      "path": "nodia-client/src/translate/en/modules.json",
+      "bytes": 8970,
+      "sha256": "290620f8532aa9a25b89fa41eafb59e2539d9cebdfd0d90bf011a4636c481583"
+    },
+    {
+      "path": "nodia-server/src/module/dto/get-modules.dto.ts",
+      "bytes": 665,
+      "sha256": "869d1bb902b82edfd72caeb8bf263c756e14a0658233fa43bcb4d3845a5e5a0f"
+    },
+    {
+      "path": "nodia-server/src/module/module.service.ts",
+      "bytes": 5065,
+      "sha256": "5cf4e489d9dc4ea8db51efa29b6231c19c679de0e6874011623ed8bfa0ca3326"
+    },
+    {
+      "path": "nodia-server/src/module-order/order-metadata.ts",
+      "bytes": 4804,
+      "sha256": "8e4d5e89902a77c313c2622ecc56bd266640d2658ec4cad58afa4a3f1b2a7c70"
+    },
+    {
+      "path": "nodia-server/src/module-order/catalog-order.spec.ts",
+      "bytes": 3112,
+      "sha256": "54da609f9133e3d4e8621b8274b426dd44a411bac09563a05ae86e07e3e0fc17"
+    },
+    {
+      "path": "nodia-server/test/module-order.integration.mjs",
+      "bytes": 29992,
+      "sha256": "f1c258b92771fd3363b98c671aa7c926bd2b9fb3660be67d270e39bb3985ab81"
+    }
+  ],
+  "warnings": [
+    "Client full tests emit jsdom navigation-not-implemented messages; all tests pass.",
+    "Client build warns on chunks above500kB and plugin timing; build succeeds.",
+    "Server lint retains unused AiConnectionMode, unused IsNumber and no-unsafe-finally in unrelated existing sources/fixture.",
+    "Global Server test-fixture TSC is not claimed green: previous FX-02 recorded210 diagnostics/57 files outside reviewed paths; this global check was not repeated here. Production TypeScript/build passes."
+  ],
+  "compiled_source_match": [
+    {
+      "path": "nodia-server/dist/module/dto/get-modules.dto.js",
+      "bytes": 1745,
+      "sha256": "4cd323a8cc245ac31e10d0dbd63886c4d32db7f1bea8bd7d2e41173b5ac1d52d"
+    },
+    {
+      "path": "nodia-server/dist/module/module.service.js",
+      "bytes": 6163,
+      "sha256": "8b42fc694427101c8649e6b019093695ad9c97720ba9a354bc906c9246f3c6f4"
+    },
+    {
+      "path": "nodia-server/dist/module-order/order-metadata.js",
+      "bytes": 4056,
+      "sha256": "b9bbe9463026e9b74eb42cdfc8b2687928aa023b4fdf4e1a9bf04de4ad7f2b97"
+    }
+  ],
+  "format_check": "Pinned edited text is UTF-8/LF; binaries and historical evidence unchanged."
+}

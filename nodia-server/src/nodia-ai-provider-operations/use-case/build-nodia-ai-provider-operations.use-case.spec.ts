@@ -28,7 +28,7 @@ function fixture() {
     authenticated: true,
     superAdmin: false,
     module: true,
-    action: true,
+    action: false,
     collision: false,
     missing: false,
     count: 1,
@@ -39,8 +39,7 @@ function fixture() {
     key: 'gemini',
     name: 'Catalog',
     can_use_api_key: true,
-    can_use_token_plan_web: true,
-    can_use_token_plan_agentic: true,
+    can_use_agentic: true,
     is_active: true,
   };
   const provider: NodiaAiJsonObject = {
@@ -48,15 +47,14 @@ function fixture() {
     catalog_id: '20',
     name: 'Connection',
     use_api_key: false,
-    use_token_plan_web: true,
-    use_token_plan_agentic: true,
-    default_mode: 'token_plan_web',
+    use_agentic: true,
+    default_mode: 'agentic',
     auto_rotate_api_keys: true,
     is_default: false,
     is_active: true,
     fields: {
       secret: 'MUST_NOT_LEAK',
-      token_plan_web: {
+      agentic: {
         selected_model: 'model-a',
         ocr_model: 'model-a',
         thinking_level: 'mode-effort',
@@ -73,7 +71,7 @@ function fixture() {
         ],
         cookies: 'MUST_NOT_LEAK',
       },
-      token_plan_agentic: { selected_model: 'agent-only' },
+      api_key: { selected_model: 'agent-only' },
     },
   };
   const defaults: NodiaAiJsonObject[] = [
@@ -115,8 +113,7 @@ function fixture() {
         id: '30',
         name: 'Connection',
         use_api_key: false,
-        use_token_plan_web: true,
-        use_token_plan_agentic: true,
+        use_agentic: true,
         is_active: true,
         is_default: false,
       },
@@ -143,7 +140,7 @@ function fixture() {
       isSuperAdmin: false,
       modules: [],
     },
-    moduleRoutes: ['/settings/ai-providers'],
+    moduleRoutes: ['/ai-providers'],
     conversationId: session,
     statementTimeoutMs: 1000,
   } as ProposalPreparerContext;
@@ -157,7 +154,7 @@ function fixture() {
   ): NodiaAiJsonObject =>
     operation === 'create'
       ? resource === 'ai_providers'
-        ? { catalog_id: '20', use_token_plan_web: true }
+        ? { catalog_id: '20', use_agentic: true }
         : { key: 'synthetic', name: 'New catalog' }
       : { id: resource === 'ai_providers' ? '30' : '20', name: 'Revised' };
   async function ready(
@@ -261,14 +258,11 @@ describe('AI-28 closed configuration operations', () => {
         result = await f.op(resource, operation).prepare({}, f.ctx);
       expect(result.status).toBe('needs_clarification');
     });
-    it(`${resource}/${operation} rejects revoked current action and destination module`, async () => {
+    it(`${resource}/${operation} permits missing role actions and rejects a revoked destination module`, async () => {
       const f = fixture(),
         { port, step } = await f.ready(resource, operation);
       f.state.action = false;
-      await expect(port.verifyAuthority(step, f.ctx)).rejects.toThrow(
-        'nodia_ai:capability_denied',
-      );
-      f.state.action = true;
+      await expect(port.verifyAuthority(step, f.ctx)).resolves.toBeUndefined();
       f.state.module = false;
       await expect(port.executeConfirmed(step, f.ctx)).rejects.toThrow(
         'nodia_ai:capability_denied',
@@ -308,8 +302,7 @@ describe('AI-28 closed configuration operations', () => {
     expect(step.commandTemplate.command).toMatchObject({
       name: 'Catalog',
       use_api_key: false,
-      use_token_plan_web: false,
-      use_token_plan_agentic: false,
+      use_agentic: false,
       default_mode: null,
       is_default: true,
       is_active: true,
@@ -321,7 +314,7 @@ describe('AI-28 closed configuration operations', () => {
     const f = fixture(),
       { step } = await f.ready('ai_provider_catalog', 'update', {
         id: '20',
-        can_use_token_plan_web: false,
+        can_use_agentic: false,
       });
     expect(step.preconditions.configuration_status).toEqual({
       availability: 'unknown',
@@ -329,7 +322,7 @@ describe('AI-28 closed configuration operations', () => {
     });
     expect(step.preconditions.affected_connections).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: '30', use_token_plan_web: true }),
+        expect.objectContaining({ id: '30', use_agentic: true }),
       ]),
     );
   });
@@ -345,15 +338,15 @@ describe('AI-28 closed configuration operations', () => {
   });
   it('rejects enabling a forbidden channel or disabling the default channel', async () => {
     const f = fixture();
-    f.catalog.can_use_token_plan_web = false;
+    f.catalog.can_use_agentic = false;
     await expect(f.ready('ai_providers', 'create')).rejects.toThrow(
       'channel_not_allowed',
     );
-    f.catalog.can_use_token_plan_web = true;
+    f.catalog.can_use_agentic = true;
     await expect(
       f.ready('ai_providers', 'update', {
         id: '30',
-        use_token_plan_web: false,
+        use_agentic: false,
       }),
     ).rejects.toThrow('default_mode_disabled');
   });
@@ -391,29 +384,28 @@ describe('AI-28 closed configuration operations', () => {
     const f = fixture(),
       { port, step } = await f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_web.selected_model': 'model-b',
+        'agentic.selected_model': 'model-b',
       });
     await port.executeConfirmed(step, f.ctx);
     expect(f.writers[1].execute.mock.calls[0][1]).toEqual({
-      fields: { token_plan_web: { selected_model: 'model-b' } },
+      fields: { agentic: { selected_model: 'model-b' } },
     });
     await expect(
       f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_web.selected_model': 'agent-only',
+        'api_key.selected_model': 'model-b',
       }),
     ).rejects.toThrow('model_unavailable');
   });
   it('keeps a configured historical ID correctable even when not in the discovered catalog', async () => {
     const f = fixture();
     (
-      (f.provider.fields as NodiaAiJsonObject)
-        .token_plan_web as NodiaAiJsonObject
+      (f.provider.fields as NodiaAiJsonObject).agentic as NodiaAiJsonObject
     ).selected_model = 'retired-id';
     await expect(
       f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_web.selected_model': 'retired-id',
+        'agentic.selected_model': 'retired-id',
       }),
     ).resolves.toBeDefined();
   });
@@ -421,12 +413,12 @@ describe('AI-28 closed configuration operations', () => {
     const f = fixture(),
       { port, step } = await f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_web.thinking_level': 'effort-new',
+        'agentic.thinking_level': 'effort-new',
       });
     await port.executeConfirmed(step, f.ctx);
     expect(f.writers[1].execute.mock.calls[0][1]).toMatchObject({
       fields: {
-        token_plan_web: {
+        agentic: {
           thinking_levels: {
             'model-a': 'effort-new',
           },
@@ -439,15 +431,15 @@ describe('AI-28 closed configuration operations', () => {
     await expect(
       f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_web.selected_model': 'model-b',
-        'token_plan_web.thinking_level': 'effort-next',
+        'agentic.selected_model': 'model-b',
+        'agentic.thinking_level': 'effort-next',
       }),
     ).resolves.toBeDefined();
     await expect(
       f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_web.selected_model': 'model-b',
-        'token_plan_web.thinking_level': 'effort-new',
+        'agentic.selected_model': 'model-b',
+        'agentic.thinking_level': 'effort-new',
       }),
     ).rejects.toThrow('reasoning_unavailable');
   });
@@ -455,11 +447,11 @@ describe('AI-28 closed configuration operations', () => {
     const f = fixture(),
       { port, step } = await f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_web.thinking_level': null,
+        'agentic.thinking_level': null,
       });
     await port.executeConfirmed(step, f.ctx);
     expect(f.writers[1].execute.mock.calls[0][1]).toMatchObject({
-      fields: { token_plan_web: { thinking_levels: { 'model-a': null } } },
+      fields: { agentic: { thinking_levels: { 'model-a': null } } },
     });
   });
   it('rejects an invented reasoning option and permits a general configured level without a model', async () => {
@@ -467,14 +459,14 @@ describe('AI-28 closed configuration operations', () => {
     await expect(
       f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_web.thinking_level': 'invented',
+        'agentic.thinking_level': 'invented',
       }),
     ).rejects.toThrow('reasoning_unavailable');
     await expect(
       f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_web.selected_model': null,
-        'token_plan_web.thinking_level': 'low',
+        'agentic.selected_model': null,
+        'agentic.thinking_level': 'low',
       }),
     ).resolves.toBeDefined();
   });
@@ -488,18 +480,18 @@ describe('AI-28 closed configuration operations', () => {
     };
     const { step } = await f.ready('ai_providers', 'update', {
       id: '30',
-      'token_plan_web.selected_model': 'new-dynamic',
+      'agentic.selected_model': 'new-dynamic',
     });
     expect(JSON.stringify(step)).not.toContain('MUST_NOT_LEAK');
     expect(
       (step.preconditions.target as NodiaAiJsonObject)[
-        'token_plan_web.selected_model'
+        'agentic.selected_model'
       ],
     ).toBe('old-configured');
     await expect(
       f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_agentic.selected_model': 'new-dynamic',
+        'api_key.selected_model': 'new-dynamic',
       }),
     ).rejects.toThrow('model_unavailable');
   });
@@ -513,6 +505,10 @@ describe('AI-28 closed configuration operations', () => {
     );
     expect(edited.command).toMatchObject({ name: 'Edited' });
     f.state.action = false;
+    await expect(port.reprepareStored(edited, f.ctx)).resolves.toMatchObject({
+      status: 'ready',
+    });
+    f.state.module = false;
     await expect(port.reprepareStored(edited, f.ctx)).rejects.toThrow(
       'capability_denied',
     );
@@ -553,7 +549,7 @@ describe('AI-28 closed configuration operations', () => {
       'capability_denied',
     );
   });
-  it('superadmin bypasses action assignment but not absence of active modules', async () => {
+  it('superadmin bypasses assignments but requires active modules', async () => {
     const f = fixture();
     f.state.superAdmin = true;
     f.state.action = false;
@@ -574,23 +570,22 @@ describe('AI-28 closed configuration operations', () => {
     await expect(
       f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_web.selected_model': 1,
+        'agentic.selected_model': 1,
       }),
     ).rejects.toThrow('invalid_input');
     (
-      (f.provider.fields as NodiaAiJsonObject)
-        .token_plan_web as NodiaAiJsonObject
+      (f.provider.fields as NodiaAiJsonObject).agentic as NodiaAiJsonObject
     ).available_models = Array.from({ length: 1001 }, (_, i) => ({
       id: `model-${i}`,
     }));
     await expect(
       f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_web.selected_model': 'model-1',
+        'agentic.selected_model': 'model-1',
       }),
     ).rejects.toThrow('result_too_large');
   });
-  for (const mode of ['api_key', 'token_plan_web', 'token_plan_agentic'])
+  for (const mode of ['api_key', 'agentic', 'agentic'])
     it(`configures ${mode} reasoning without discovered capability or assigned model`, async () => {
       const f = fixture();
       f.provider.fields = {};
@@ -610,11 +605,10 @@ describe('AI-28 closed configuration operations', () => {
     const f = fixture(),
       { port, step } = await f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_web.selected_model': 'model-b',
+        'agentic.selected_model': 'model-b',
       });
     const levels = (
-      (f.provider.fields as NodiaAiJsonObject)
-        .token_plan_web as NodiaAiJsonObject
+      (f.provider.fields as NodiaAiJsonObject).agentic as NodiaAiJsonObject
     ).thinking_levels as NodiaAiJsonObject;
     levels['unrelated-model'] = 'other-value';
     await expect(
@@ -686,10 +680,10 @@ describe('AI-28 closed configuration operations', () => {
         id: '20',
         can_use_token_plan_web: true,
       }),
-    ).rejects.toThrow('web_integration_disabled');
+    ).rejects.toThrow('invalid_input');
     await expect(
       f.ready('ai_providers', 'update', { id: '30', use_token_plan_web: true }),
-    ).rejects.toThrow('web_integration_disabled');
+    ).rejects.toThrow('invalid_input');
     await expect(
       f.ready('ai_provider_catalog', 'update', {
         id: '20',
@@ -711,17 +705,16 @@ describe('AI-28 closed configuration operations', () => {
         name: 'Catalog',
         can_use_token_plan_web: true,
       }),
-    ).rejects.toThrow('web_integration_disabled');
+    ).rejects.toThrow('invalid_input');
   });
   it('does not expose malformed historical model values as JSON', async () => {
     const f = fixture();
     (
-      (f.provider.fields as NodiaAiJsonObject)
-        .token_plan_web as NodiaAiJsonObject
+      (f.provider.fields as NodiaAiJsonObject).agentic as NodiaAiJsonObject
     ).selected_model = { token: 'PRIVATE_HISTORICAL' };
     const { step } = await f.ready('ai_providers', 'update', {
       id: '30',
-      'token_plan_web.selected_model': 'model-b',
+      'agentic.selected_model': 'model-b',
     });
     expect(JSON.stringify(step)).not.toContain('PRIVATE_HISTORICAL');
     expect(JSON.stringify(step)).not.toContain('MUST_NOT_LEAK');
@@ -731,7 +724,7 @@ describe('AI-28 closed configuration operations', () => {
       { step, port } = await f.ready('ai_providers', 'update', {
         id: '30',
         default_mode: null,
-        use_token_plan_web: false,
+        use_agentic: false,
       });
     expect(
       (step.preconditions.effective as NodiaAiJsonObject).default_mode,
@@ -739,7 +732,7 @@ describe('AI-28 closed configuration operations', () => {
     await port.executeConfirmed(step, f.ctx);
     expect(f.writers[1].execute.mock.calls[0][1]).toEqual({
       default_mode: null,
-      use_token_plan_web: false,
+      use_agentic: false,
     });
   });
   it('previews native translation upsert with existing keys preserved', async () => {
@@ -781,12 +774,11 @@ describe('AI-28 closed configuration operations', () => {
     it(`projects the actual historical Web boolean ${value} without inferring availability`, async () => {
       const f = fixture();
       (
-        (f.provider.fields as NodiaAiJsonObject)
-          .token_plan_web as NodiaAiJsonObject
+        (f.provider.fields as NodiaAiJsonObject).agentic as NodiaAiJsonObject
       ).enable_extended_thinking = value;
       const { step } = await f.ready('ai_providers', 'update', {
         id: '30',
-        'token_plan_web.selected_model': 'model-b',
+        'agentic.selected_model': 'model-b',
       });
       expect(
         (step.preconditions.configuration_status as NodiaAiJsonObject)
@@ -798,35 +790,35 @@ describe('AI-28 closed configuration operations', () => {
       );
       const modelConfig = step.preconditions
         .model_configuration as NodiaAiJsonObject;
-      expect(modelConfig.token_plan_web).toMatchObject({
+      expect(modelConfig.agentic).toMatchObject({
         legacy_boolean: value,
       });
     });
-  it('previews the concrete native default channel for create with explicit null', async () => {
+  it('keeps an explicitly unassigned default mode in preview and execution', async () => {
     const f = fixture(),
       { step, port } = await f.ready('ai_providers', 'create', {
         catalog_id: '20',
-        use_token_plan_web: true,
+        use_agentic: true,
         default_mode: null,
       });
     expect(
       (step.commandTemplate.command as NodiaAiJsonObject).default_mode,
-    ).toBe('token_plan_web');
+    ).toBeNull();
     expect(
       (step.commandTemplate.origins as NodiaAiJsonObject).default_mode,
-    ).toBe('contract_default');
+    ).toBe('user');
     expect(step.publicStep.changes).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           field_key: 'default_mode',
-          after: 'token_plan_web',
-          origin: 'contract_default',
+          after: null,
+          origin: 'user',
         }),
       ]),
     );
     await port.executeConfirmed(step, f.ctx);
     expect(f.writers[0].execute.mock.calls[0][0]).toMatchObject({
-      default_mode: 'token_plan_web',
+      default_mode: null,
     });
   });
 });

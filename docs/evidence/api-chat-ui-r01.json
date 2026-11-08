@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-10-27T20:52:32.707090+00:00",
+  "status": "mock_UI_checks_pass_with_documented_fixture_development_warnings",
+  "scope": "Bounded API eligibility/configuration/composer QA using real Client components and synthetic Axios responses. Not SQL, real API success or deployed application acceptance.",
+  "client_candidate_manifest": {
+    "path": "ops/lab/artifacts/api-chat-parity-r01/client-source-runtime-r01-manifest.json",
+    "sha256": "17f5d171402e8c3b9ae2593f1809ca1fb22f9b976602416fc6b329f28251f6b1",
+    "source_runtime_files_matching_workspace": 711,
+    "modified_runtime_files": 7,
+    "UI_target": "development manual fixture against matching source pins, not served production dist"
+  },
+  "initial_CUA_block": {
+    "chrome_create_error": "Browser is not available: chrome",
+    "browser_inventory": [],
+    "iab_create_error": "Browser is not available: iab",
+    "tabs_created_or_user_viewports_changed": 0
+  },
+  "fallback": {
+    "kind": "already installed Playwright CLI cli subcommand and local Chromium; no downloads/install",
+    "playwright_version": "1.62.1",
+    "browser_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+    "session": "api-chat-r01",
+    "headless": true,
+    "headed_browser_or_user_profile_used": false
+  },
+  "fixture": {
+    "origin": "http://127.0.0.1:5194",
+    "entry": "/src/test/manual/nodia-ai/index.html",
+    "Axios_adapter": "existing isolated manual NodiaAI fixture",
+    "temporary_transform": "Only API eligibility gains supports_image_generation:false in Vite memory; no Client source/test edit.",
+    "flags": {
+      "supports_tools": true,
+      "supports_mcp": false,
+      "supports_image_generation": false
+    },
+    "API_selection": {
+      "connection_id": "90000000991",
+      "mode": "api_key",
+      "model_id": "qa-synthetic-api",
+      "effort_id": null
+    },
+    "backend_proxy_disabled": true,
+    "current_page_resource_origins": [
+      "http://127.0.0.1:5194"
+    ],
+    "observed_backend_network_requests": 0,
+    "provider_inferences": 0,
+    "AI_provider_SDK_calls": 0,
+    "operational_DB_or_VM_calls": 0
+  },
+  "profiles": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "language": "es",
+      "theme": "dark",
+      "dialog_metrics": {
+        "width": 390,
+        "height": 844,
+        "documentWidth": 390,
+        "clientWidth": 390,
+        "dialogWidth": 390,
+        "dialogScrollWidth": 390,
+        "dialogClientWidth": 390,
+        "hasMCP": false,
+        "switchCount": 0,
+        "theme": "rgb(26, 33, 43)"
+      },
+      "composer_metrics": {
+        "width": 390,
+        "height": 844,
+        "documentWidth": 390,
+        "clientWidth": 390,
+        "scrollY": 356,
+        "selection": "API key · qa-synthetic-api",
+        "hint": "La generación de imágenes no está verificada para esta selección. Puedes seguir usando el chat de texto.",
+        "draft": "QA API: borrador sin enviar.",
+        "requests": [
+          {
+            "method": "PATCH",
+            "path": "/nodia-ai/conversations/10000000-0000-4000-8000-000000000001/selection"
+          }
+        ]
+      },
+      "checks": [
+        "Explicit Agentic to API key switch uses configured exact synthetic API model.",
+        "Apply closes drawer; selection header updates to API key and qa-synthetic-api.",
+        "Drawer support text states tool requests and exact human proposal confirmation without claiming MCP.",
+        "No delegation switch; no horizontal document/drawer overflow.",
+        "Image generation false gives the translated unverified hint; text can still be drafted.",
+        "Internal drawer scroll reaches full tools/scope content and 100% width footer actions."
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "language": "en",
+      "theme": "light",
+      "dialog_metrics": {
+        "width": 1280,
+        "height": 900,
+        "documentWidth": 1280,
+        "clientWidth": 1280,
+        "dialogWidth": 440,
+        "dialogScrollWidth": 440,
+        "dialogClientWidth": 440,
+        "hasMCP": false,
+        "switchCount": 0,
+        "theme": "rgb(255, 255, 255)"
+      },
+      "composer_metrics": {
+        "width": 1280,
+        "height": 900,
+        "documentWidth": 1280,
+        "clientWidth": 1280,
+        "scrollY": 0,
+        "hint": "Image generation is not verified for this selection. You can keep using text chat.",
+        "draft": "QA API: borrador sin enviar.",
+        "requests": [
+          {
+            "method": "PATCH",
+            "path": "/nodia-ai/conversations/10000000-0000-4000-8000-000000000001/selection"
+          }
+        ],
+        "selectionText": true,
+        "hasMCP": false
+      },
+      "checks": [
+        "Choose a different Agentic model draft, then API key resets to the exact configured API model rather than inheriting it.",
+        "Apply performs one synthetic selection PATCH and updates the visible API selection.",
+        "API available/tools support text and image unverified hint use English; no MCP/delegation UI.",
+        "Unsent draft retained across viewport/language reload and selection changes.",
+        "No horizontal document/drawer overflow; desktop drawer width440."
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "docs/evidence/api-chat-ui-mobile-es-dark-r01.png",
+      "sha256": "12a1afbeb5607653d6ee25ecbb913a0124777f4f22a4edc3800e0197154e850d",
+      "bytes": 51653,
+      "width": 390,
+      "height": 844,
+      "description": "Synthetic API drawer after explicit apply/reopen; internal fields scrolled to expose full tools/confirmation text and both footer actions.",
+      "data_source": "synthetic Axios fixture only; no operational records or provider result"
+    },
+    {
+      "path": "docs/evidence/api-chat-ui-desktop-en-light-r01.png",
+      "sha256": "7d995a11a54c7cb9b0d98e0595252bf9c68b661e8462a740bbf5ff3268fec9f0",
+      "bytes": 119723,
+      "width": 1280,
+      "height": 900,
+      "description": "Synthetic API chat after explicit Apply settings; exact API model, image capability hint, retained unsent draft and synthetic selection-save toast.",
+      "data_source": "synthetic Axios fixture only; no operational records or provider result"
+    }
+  ],
+  "logic_receipts_separate": [
+    {
+      "receipt_sha256": "1d7491ecd5dec30f48147c2d2fd7d630ebb50bba442352bed344992a99d58585",
+      "passed": 230,
+      "failed": 0,
+      "test_files": 6,
+      "source_receipt": ".tmp/ai-api-chat/client-contract-tests-r03.json",
+      "kind": "local synthetic/unit logic, separate from this browser QA"
+    },
+    {
+      "receipt_sha256": "b5ef2ce23b5dfa37f662757f79786d003acb18fd8b2a920a6948efbf9d78434f",
+      "passed": 57,
+      "failed": 0,
+      "test_files": 1,
+      "source_receipt": ".tmp/ai-api-chat/client-page-final-r01.json",
+      "kind": "local synthetic/unit logic, separate from this browser QA"
+    }
+  ],
+  "cleanup": {
+    "initial_viewport": {
+      "width": 1280,
+      "height": 900
+    },
+    "restored_viewport_before_close": {
+      "width": 1280,
+      "height": 900
+    },
+    "own_browser_session_closed": true,
+    "browser_session_PID_120796_absent": true,
+    "own_Vite_server_PID_116160_absent": true,
+    "port_5194_listeners_after_close": 0,
+    "first_server_PID_30184_also_closed": true,
+    "Client_13_source_test_files_unchanged": true,
+    "six_approved_knowledge_docs_untouched_by_UI_task": true
+  },
+  "observations_and_limits": [
+    "The fixture contains pre-existing mojibake in its synthetic title/history/connection label; product API labels and new ES/EN feedback inspected here render correctly. No general localization acceptance is claimed.",
+    "A React development console error (setState during initial ChatPage render) appeared on both initial Agentic fixture loads before API interaction; cause and production behavior are not determined by this QA. No clean-console claim or source fix is made.",
+    "The first fixture load requested absent favicon.ico (404); this is the manual HTML entry, not production index/favicon acceptance.",
+    "The visible selection-save success toast belongs to the synthetic adapter. It is not provider inference success or a SQL write.",
+    "The fixture resets selection when its URL reloads; this QA does not prove operational selection persistence/reload, SQL16, API credentials or real provider/media/image generation.",
+    "Viewport emulation uses Chromium headless on Windows, not a physical phone, touch/virtual keyboard, Safari or accessibility certification.",
+    "The long synthetic chat can scroll vertically. No horizontal overflow claim is extended beyond the two inspected profiles and states.",
+    "No source/test/dependency changes, message POSTs, operational backend authentication, keys, inference, deployment, Nginx or service changes."
+  ]
+}

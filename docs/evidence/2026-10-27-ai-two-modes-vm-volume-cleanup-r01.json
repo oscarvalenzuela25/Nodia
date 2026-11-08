@@ -1,0 +1,208 @@
+{
+  "success": true,
+  "removed_count": 10,
+  "removed_records": [
+    {
+      "name": "dd844dabdecbf618cd4a051e2398f00f45b96f0c19a5d1d740dc2d08a4c77144",
+      "created": "2026-10-24T16:57:33-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7700325975884791848",
+      "control_mtime": 1792871854.3972363
+    },
+    {
+      "name": "5d8ce559b3a6468b9742b1275f1602328a63216195d89531d7ae51fd6924927d",
+      "created": "2026-10-24T16:56:29-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7700325704546947112",
+      "control_mtime": 1792871791.2087717
+    },
+    {
+      "name": "6549d627750f975405af6618d7a1c0c00b65e81baa03b9c9c74e62d30becde31",
+      "created": "2026-10-24T16:54:46-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7700325260599103528",
+      "control_mtime": 1792871687.8790247
+    },
+    {
+      "name": "84f387356ea6459688945d85e27c321eb06b6e64f96ccf5545f8deda89c09356",
+      "created": "2026-10-24T16:52:04-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52944896,
+      "pg_version": "16",
+      "system_identifier_le": "7700324562618732584",
+      "control_mtime": 1792871525.3788905
+    },
+    {
+      "name": "394a277a2f6703d191ddeedbf76126bdd998b8d49cc46a37f09911ce13362e2b",
+      "created": "2026-10-24T16:09:50-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52830208,
+      "pg_version": "16",
+      "system_identifier_le": "7700313681322917928",
+      "control_mtime": 1792868991.869481
+    },
+    {
+      "name": "7a3eb7dd6982f7889ec68b527fce48eb06a8ca0ca36fbfcc3d46e62ace89f3a6",
+      "created": "2026-10-24T16:04:31-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52756480,
+      "pg_version": "16",
+      "system_identifier_le": "7700312310411767848",
+      "control_mtime": 1792868673.4673126
+    },
+    {
+      "name": "5f29e5597249e5d865e6bb749689e425b2a369fdc9939931cbfbcb40b9052d4e",
+      "created": "2026-10-24T15:57:10-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52756480,
+      "pg_version": "16",
+      "system_identifier_le": "7700310417740271656",
+      "control_mtime": 1792868232.0350463
+    },
+    {
+      "name": "62e9832281a6d30e67c8efeac957cab14fd255d22c478d6815ef24137cd1774c",
+      "created": "2026-10-24T00:00:58-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7700064004898877480",
+      "control_mtime": 1792810859.5502906
+    },
+    {
+      "name": "b522e3a8d42ff227ba72f794a7d212eb5a1fa4358c305070ae5e94dbbcb47fb5",
+      "created": "2026-10-23T23:59:59-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7700063754693685288",
+      "control_mtime": 1792810801.3305573
+    },
+    {
+      "name": "48fe0ae7484ba6372eb28311d3e34232911d63c09027cb48102eafb1bd3a89f4",
+      "created": "2026-10-23T23:52:44-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52977664,
+      "pg_version": "16",
+      "system_identifier_le": "7700061885275607080",
+      "control_mtime": 1792810366.1526492
+    }
+  ],
+  "before": {
+    "services": {
+      "nodia-api.service": {
+        "active": "active",
+        "pid": "1030156"
+      },
+      "nodia-ai-worker.service": {
+        "active": "active",
+        "pid": "1030157"
+      }
+    },
+    "containers": {
+      "nodia-lab-postgres-1": {
+        "id": "9b094ac3e8c7436c890b50b7b30dc1da090c6e462d5f6e6aeaf42eabd7be954d",
+        "status": "running",
+        "health": "healthy",
+        "restarts": 0
+      },
+      "nodia-lab-redis-1": {
+        "id": "46223b71d84f2da3923ef5abab855b36117e5af059c7fa4be18ac1b5c33b09ce",
+        "status": "running",
+        "health": "healthy",
+        "restarts": 0
+      },
+      "nodia-gemini-microservice": {
+        "id": "858af71fd752147f3037a288c2a4ec147bd802a7142a4d4dc2319c3b8c6b4cbe",
+        "status": "running",
+        "health": "healthy",
+        "restarts": 0
+      }
+    },
+    "disk_available_bytes": 625635328
+  },
+  "after": {
+    "services": {
+      "nodia-api.service": {
+        "active": "active",
+        "pid": "1030156"
+      },
+      "nodia-ai-worker.service": {
+        "active": "active",
+        "pid": "1030157"
+      }
+    },
+    "containers": {
+      "nodia-lab-postgres-1": {
+        "id": "9b094ac3e8c7436c890b50b7b30dc1da090c6e462d5f6e6aeaf42eabd7be954d",
+        "status": "running",
+        "health": "healthy",
+        "restarts": 0
+      },
+      "nodia-lab-redis-1": {
+        "id": "46223b71d84f2da3923ef5abab855b36117e5af059c7fa4be18ac1b5c33b09ce",
+        "status": "running",
+        "health": "healthy",
+        "restarts": 0
+      },
+      "nodia-gemini-microservice": {
+        "id": "858af71fd752147f3037a288c2a4ec147bd802a7142a4d4dc2319c3b8c6b4cbe",
+        "status": "running",
+        "health": "healthy",
+        "restarts": 0
+      }
+    },
+    "disk_available_bytes": 1154461696
+  },
+  "available_bytes_gain": 528826368,
+  "unknown_volumes_touched": false,
+  "user_table_rows_read": false,
+  "global_prune": false,
+  "timestamp_utc": "2026-10-27T17:22:04.103369+00:00",
+  "proposal_source": ".tmp/ai-two-modes/vm-volume-removal-proposal-r01.json"
+}

@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "stage": "Core-FX-01",
+  "observed_on": "2026-10-25",
+  "authorization": "User explicitly requested implementing FX-01 while preserving explicit action feedback and errors.",
+  "scope": "Local Client source and synthetic atomic/hook regressions; no operational deployment.",
+  "production_changes": [
+    {
+      "path": "nodia-client/src/services/authorizationService.ts",
+      "changes": [
+        "Remove unconditional permissions-success toast from GET transport.",
+        "Keep query flags, authorization data application and refetch behavior.",
+        "Mark error notification handled locally; claim the shared error before contextual feedback.",
+        "Remove process-global timestamp deduplication."
+      ]
+    },
+    {
+      "path": "nodia-client/src/config/authSession.ts",
+      "changes": [
+        "Remove automatic restoration and refresh success toasts.",
+        "Keep renewal, session validation, cross-tab coordination and error feedback unchanged."
+      ]
+    },
+    {
+      "path": "nodia-client/src/providers/AuthSessionProvider.tsx",
+      "changes": [
+        "Preserve session-restored success only after the user's Retry button completes; automatic lifecycle calls remain silent.",
+        "Keep failed retry Alert/retry and error ownership in the auth layer."
+      ]
+    }
+  ],
+  "preserved": [
+    "Explicit sign-in and sign-out success/error notifications.",
+    "Administrative mutation success/error feedback and authorization invalidation.",
+    "Frozen rental payment payload and idempotency UUID across 401 renewal.",
+    "QueryCache/auth-layer shared error deduplication and cancellation handling.",
+    "Timers, guards, access authority, retry policy and dynamic model configuration.",
+    "Human session recovery Retry retains a single success after resolution."
+  ],
+  "targeted_regressions": [
+    {
+      "command": "npm run test -- src/test/services/authorizationService.test.tsx src/test/modules/generalSettings/pages/Users/infrastructure/useServices.test.tsx src/test/config/httpFeedback.test.ts src/test/config/authSession.test.ts src/test/modules/auth/infrastructure/useServices.test.tsx src/test/routes/GuardStrict.test.tsx src/test/routes/RouteNotices.test.tsx src/test/providers/AuthSessionProvider.test.tsx src/test/providers/AuthSessionProvider.integration.test.tsx",
+      "suites_passed": 9,
+      "tests_passed": 68,
+      "failures": 0
+    },
+    {
+      "command": "npm run test -- src/test/modules/rentals/infrastructure/useServices.test.tsx",
+      "suites_passed": 1,
+      "tests_passed": 15,
+      "failures": 0
+    },
+    {
+      "command": "npm run test -- src/test/providers/AuthSessionProvider.test.tsx src/test/config/authSession.test.ts",
+      "suites_passed": 2,
+      "tests_passed": 28,
+      "failures": 0,
+      "notes": "After preserving success in the human Retry handler. Overlaps previous focused runs; do not sum totals."
+    }
+  ],
+  "initial_runs_preserved_in_summary": [
+    {
+      "scope": "New authorization hook harness",
+      "result": "One test initially failed because isFetching was read outside render and was not subscribed. Harness now reads the observed flags in render; production semantics/assertions were not weakened."
+    },
+    {
+      "scope": "First complete Client run",
+      "suites_passed": 238,
+      "suites_failed": 1,
+      "tests_passed": 1936,
+      "tests_failed": 1,
+      "total_tests": 1937,
+      "result": "Existing rental test expected the removed automatic session-renewal success. Revised to require only the rental save success; frozen payload/UUID assertions retained. Its 15-test suite passes."
+    }
+  ],
+  "static_checks": [
+    {
+      "command": "npm run typecheck",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run lint",
+      "exit_code": 0
+    },
+    {
+      "command": "npx eslint (seven scoped source/test paths after rental expectation adjustment)",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "notes": "Vite built successfully; output includes chunk-size and plugin-timing warnings. No deployment."
+    }
+  ],
+  "independent_review": {
+    "agents": [
+      "fx01_session_tests",
+      "fx01_review_actions"
+    ],
+    "findings_blocking": 0
+  },
+  "NodiaAI_context_impact": "Feedback only; no new operation, permission, capability binding, published tool or approved knowledge fragment. Existing draft module-order feature remains planned.",
+  "limitations": [
+    "No authenticated-browser renewal cycle observed in this delivery.",
+    "No VM or operational services restarted/deployed; no credentials, business data or DB/schema modifications.",
+    "FX-02 and FX-03 remain planned; FX-04 retains final authenticated integration acceptance."
+  ],
+  "status": "implemented_and_validated_locally_not_deployed",
+  "source_hashes": [
+    {
+      "path": "nodia-client/src/config/authSession.ts",
+      "sha256": "3051ebbc439e3b2f2f51dc5f3e68649ac0e4e6c944e3d4500a5cbaed16c54889"
+    },
+    {
+      "path": "nodia-client/src/services/authorizationService.ts",
+      "sha256": "2aeeffb833436891fc82a4b7d6c47433fc79c283040d78f3fd7400ede3e7bcf7"
+    },
+    {
+      "path": "nodia-client/src/providers/AuthSessionProvider.tsx",
+      "sha256": "690fe849421554279167e087094bcce58488b17eaef58935932fb0cef97578e8"
+    },
+    {
+      "path": "nodia-client/src/test/config/authSession.test.ts",
+      "sha256": "60865bde2b113b7e177e88732f6cd52621dd9e5fb4a84a3b0cc51721aeaf9294"
+    },
+    {
+      "path": "nodia-client/src/test/services/authorizationService.test.tsx",
+      "sha256": "d8b94d2f7ec0f89466b328f9812912acd972cf0f524b0cc31379ded825f391bd"
+    },
+    {
+      "path": "nodia-client/src/test/modules/auth/infrastructure/useServices.test.tsx",
+      "sha256": "a72989a01002b430243a31ca9516f6154691db76c2758d64839c0eac2c5f7e63"
+    },
+    {
+      "path": "nodia-client/src/test/modules/generalSettings/pages/Users/infrastructure/useServices.test.tsx",
+      "sha256": "8a2b455842aee0bd7fd94fb935b6ecd59539a11f53bb484f7ebb6ce9d5fce4f6"
+    },
+    {
+      "path": "nodia-client/src/test/modules/rentals/infrastructure/useServices.test.tsx",
+      "sha256": "6597c89d1c68e78e63ad6b360b3adc49babff6e2748d10c1fd5b9f97bb6453f0"
+    },
+    {
+      "path": "nodia-client/src/test/providers/AuthSessionProvider.test.tsx",
+      "sha256": "5d6300f132cb46cdf3a7616a3b89226acba7e3aa2a7d095d187eef370d56baff"
+    }
+  ],
+  "full_regression": {
+    "command": "npm run test -- --maxWorkers=4",
+    "exit_code": 0,
+    "suites_passed": 239,
+    "tests_passed": 1939,
+    "failures": 0,
+    "skipped": 0,
+    "duration_seconds": 322.67,
+    "includes_explicit_Retry_cases": true
+  },
+  "final_static_checks": {
+    "typecheck_exit_code": 0,
+    "lint_exit_code": 0,
+    "build_exit_code": 0,
+    "build_seconds": 17.42,
+    "notes": "Repeated after moving the human Retry success to AuthSessionProvider. Vite chunk-size/plugin-timing warnings; no deployment."
+  },
+  "text_integrity": {
+    "source_and_test_files_UTF8_LF": 9
+  }
+}

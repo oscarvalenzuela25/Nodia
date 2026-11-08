@@ -1,0 +1,2670 @@
+{
+  "schema": "nodia-ai-ai40-published-family-coverage-v1",
+  "status": "offline_inventory_scope_limited_no_publication_or_acceptance_change",
+  "date": "2026-10-24",
+  "method": {
+    "runtime_SQL_HTTP_SDK_or_account_requests": 0,
+    "application_or_registry_files_modified": false,
+    "inventory_source": "Frozen R07 package compiled knowledge manifest, compared with local registry by complete capability objects.",
+    "evidence_rule": "Only exact completed MCP tool_name receipts count as callbacks. UI GET/proposal rendering/admin health and neighboring tools do not imply a callback. Semantic/effect acceptance requires the separate cited oracle/UI/human/ACK evidence.",
+    "negative_rule": "No callback identified is an evidence gap in this enumerated review, not proof the capability was never used anywhere.",
+    "no_gateway_or_family_inheritance": true,
+    "tests_per_capability_not_required": true,
+    "test_count_is_not_acceptance": true
+  },
+  "publication": {
+    "server_release": "R07",
+    "release_manifest_sha256": "1799e821e6c2f668989a972fde26b162772e02e821ce9744fbe431894dfce476",
+    "archive": {
+      "path": "ops/lab/artifacts/ai40-server-r07.tar.gz",
+      "sha256": "eae0a37ea013fd2ac2deb6d746fcd0abdda4deb4ac734a740e1f3d8491cb9758"
+    },
+    "knowledge_release": "5c83848c6eb1a6ce77fa63ad9de38f4dea556f260b6a9646cfceaaf4850db994",
+    "compiled_manifest_member": "dist/nodia-ai/knowledge/manifest.json",
+    "compiled_manifest_sha256": "dd288bc860051d5c92590483d9af4436eb0975313afa9ea8bb28ccb41b4e2086",
+    "canonical_capability_array_sha256": "88e5471ad557cd0fa94b39ffddc2a798bd7808b6ef52de1109b4f2a309620636",
+    "local_registry": {
+      "path": "nodia-server/config/nodia-ai-knowledge.registry.json",
+      "observed_sha256": "d1736fd0763425197ddfa5c9a819cf6924842615bf0e013fda7e4a4003e14209",
+      "complete_capability_objects_equal_runtime": true,
+      "different_ids": [],
+      "different_contract_or_metadata_ids": []
+    },
+    "binding_or_source_path_sets_not_asserted_equal": true,
+    "counts": {
+      "published": 74,
+      "read": 68,
+      "read_artifact": 3,
+      "prepare": 3,
+      "exact_caps_with_completed_Codex_receipts": 7,
+      "semantic_product_reads": 4,
+      "semantic_financial_effect": 1,
+      "supporting_callbacks_only": 2,
+      "without_identified_exact_Codex_callback": 67
+    }
+  },
+  "evidence_index": {
+    "effect": {
+      "path": "docs/evidence/nodia-ai-ai40-ui-effect-sql-reloaded-r01.json",
+      "sha256": "ebe1c3cb547f1e4b5343049c06b5d51ac16e8b89e9f19ad85395dd2422319f54",
+      "bytes": 5130
+    },
+    "finance_GET": {
+      "path": "docs/evidence/nodia-ai-ai40-r06-finance-read-validation-r01.json",
+      "sha256": "23a13f6212183c30061dc2caa18965861982915d79a0e733c083bf5ec1356b4f",
+      "bytes": 82533
+    },
+    "business_list": {
+      "path": "docs/evidence/nodia-ai-ai40-r06-business-read-validation-r01.json",
+      "sha256": "c927a2b18859d442160120373761296ecfec0969a6e019e4217d9c03a9d63e43",
+      "bytes": 31141
+    },
+    "core_list": {
+      "path": "docs/evidence/nodia-ai-ai40-core-reservations-validation-r01.json",
+      "sha256": "a77aea80c4a1143d9c17d1580aae3f04a6576b9097274763ffd280a56ef5565d",
+      "bytes": 56279
+    },
+    "reservations_list": {
+      "path": "docs/evidence/nodia-ai-ai40-reservations-install-validation-r01.json",
+      "sha256": "30b7f4788befe3fffea28f1a431266480f138b0536f77bd0f74ad3795c77296c",
+      "bytes": 71547
+    },
+    "C05_publication": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-publication-validation.json",
+      "sha256": "85c0efe12c35eb5408662a890fbf85f1e7e810342fcdcf1807d03e90d114e099",
+      "bytes": 322951
+    }
+  },
+  "technical_callbacks_outside_published_product_count": {
+    "ids_with_observed_receipts": [
+      "nodia_capabilities_select",
+      "nodia_knowledge_index"
+    ],
+    "not_in_the_74": true,
+    "does_not_accept_product_capabilities": true
+  },
+  "mechanisms": [
+    {
+      "mechanism": "accepted_preference_proposal",
+      "count": 1,
+      "capability_ids": [
+        "nodia_preferences_prepare"
+      ]
+    },
+    {
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "count": 51,
+      "capability_ids": [
+        "nodia_actions_get",
+        "nodia_actions_list",
+        "nodia_ai_events_list",
+        "nodia_ai_providers_catalog_list",
+        "nodia_ai_providers_list",
+        "nodia_ai_providers_supported_providers",
+        "nodia_api_keys_list",
+        "nodia_business_actions_get",
+        "nodia_business_actions_list",
+        "nodia_businesses_get",
+        "nodia_businesses_list",
+        "nodia_finance_categories_get",
+        "nodia_finance_categories_list",
+        "nodia_finance_category_groups_get",
+        "nodia_finance_category_groups_list",
+        "nodia_finance_movements_get",
+        "nodia_finance_movements_list",
+        "nodia_finance_obligations_get",
+        "nodia_finance_obligations_list",
+        "nodia_invoices_get",
+        "nodia_invoices_list",
+        "nodia_module_groups_list",
+        "nodia_modules_get",
+        "nodia_modules_list",
+        "nodia_product_logs_get",
+        "nodia_product_logs_list",
+        "nodia_products_get",
+        "nodia_products_list",
+        "nodia_provider_contacts_list",
+        "nodia_providers_get",
+        "nodia_providers_list",
+        "nodia_rental_audit_list",
+        "nodia_rental_blocks_get",
+        "nodia_rental_blocks_list",
+        "nodia_rental_cancellation_policies_get",
+        "nodia_rental_cancellation_policies_list",
+        "nodia_rental_collaborators_candidates",
+        "nodia_rental_collaborators_list",
+        "nodia_rental_expenses_get",
+        "nodia_rental_expenses_list",
+        "nodia_rental_payments_get",
+        "nodia_rental_payments_list",
+        "nodia_rental_properties_get",
+        "nodia_rental_properties_list",
+        "nodia_rental_reservations_get",
+        "nodia_rental_reservations_list",
+        "nodia_rental_turnovers_get",
+        "nodia_rental_turnovers_list",
+        "nodia_roles_get",
+        "nodia_roles_list",
+        "nodia_users_list"
+      ]
+    },
+    {
+      "mechanism": "commercial_cancellation_preview",
+      "count": 1,
+      "capability_ids": [
+        "nodia_rental_reservations_cancellation_preview"
+      ]
+    },
+    {
+      "mechanism": "date_range_calendar_read",
+      "count": 2,
+      "capability_ids": [
+        "nodia_rental_calendar_availability",
+        "nodia_rental_calendar_calendar"
+      ]
+    },
+    {
+      "mechanism": "dependent_draft_workflow",
+      "count": 1,
+      "capability_ids": [
+        "nodia_workflows_prepare"
+      ]
+    },
+    {
+      "mechanism": "exact_financial_change_proposal",
+      "count": 1,
+      "capability_ids": [
+        "nodia_finance_movements_prepare_create"
+      ]
+    },
+    {
+      "mechanism": "external_runtime_observation",
+      "count": 5,
+      "capability_ids": [
+        "nodia_ai_providers_codex_session",
+        "nodia_ai_providers_gemini_engines",
+        "nodia_ai_providers_health",
+        "nodia_ai_providers_models",
+        "nodia_invoices_eligible_invoice_connections"
+      ]
+    },
+    {
+      "mechanism": "filtered_SQL_aggregate",
+      "count": 4,
+      "capability_ids": [
+        "nodia_finance_summaries_by_category",
+        "nodia_finance_summaries_by_category_group",
+        "nodia_finance_summaries_overview",
+        "nodia_rental_summaries_overview"
+      ]
+    },
+    {
+      "mechanism": "owned_conversation_helper",
+      "count": 4,
+      "capability_ids": [
+        "nodia_attachments_describe",
+        "nodia_operations_get",
+        "nodia_preferences_list",
+        "nodia_proposals_get"
+      ]
+    },
+    {
+      "mechanism": "reauthorized_download_reference",
+      "count": 3,
+      "capability_ids": [
+        "nodia_invoices_file",
+        "nodia_products_export_csv",
+        "nodia_providers_export_csv"
+      ]
+    },
+    {
+      "mechanism": "relational_filtered_query",
+      "count": 1,
+      "capability_ids": [
+        "nodia_product_logs_query"
+      ]
+    }
+  ],
+  "families": [
+    {
+      "family": "accepted_preferences",
+      "count": 2,
+      "capability_ids": [
+        "nodia_preferences_list",
+        "nodia_preferences_prepare"
+      ]
+    },
+    {
+      "family": "ai_provider_administration",
+      "count": 9,
+      "capability_ids": [
+        "nodia_ai_events_list",
+        "nodia_ai_providers_catalog_list",
+        "nodia_ai_providers_codex_session",
+        "nodia_ai_providers_gemini_engines",
+        "nodia_ai_providers_health",
+        "nodia_ai_providers_list",
+        "nodia_ai_providers_models",
+        "nodia_ai_providers_supported_providers",
+        "nodia_api_keys_list"
+      ]
+    },
+    {
+      "family": "attachment_metadata",
+      "count": 1,
+      "capability_ids": [
+        "nodia_attachments_describe"
+      ]
+    },
+    {
+      "family": "business_invoices",
+      "count": 4,
+      "capability_ids": [
+        "nodia_invoices_eligible_invoice_connections",
+        "nodia_invoices_file",
+        "nodia_invoices_get",
+        "nodia_invoices_list"
+      ]
+    },
+    {
+      "family": "business_product_history",
+      "count": 3,
+      "capability_ids": [
+        "nodia_product_logs_get",
+        "nodia_product_logs_list",
+        "nodia_product_logs_query"
+      ]
+    },
+    {
+      "family": "business_products",
+      "count": 3,
+      "capability_ids": [
+        "nodia_products_export_csv",
+        "nodia_products_get",
+        "nodia_products_list"
+      ]
+    },
+    {
+      "family": "business_suppliers",
+      "count": 4,
+      "capability_ids": [
+        "nodia_provider_contacts_list",
+        "nodia_providers_export_csv",
+        "nodia_providers_get",
+        "nodia_providers_list"
+      ]
+    },
+    {
+      "family": "businesses",
+      "count": 2,
+      "capability_ids": [
+        "nodia_businesses_get",
+        "nodia_businesses_list"
+      ]
+    },
+    {
+      "family": "core_actions",
+      "count": 2,
+      "capability_ids": [
+        "nodia_actions_get",
+        "nodia_actions_list"
+      ]
+    },
+    {
+      "family": "core_business_action_permissions",
+      "count": 2,
+      "capability_ids": [
+        "nodia_business_actions_get",
+        "nodia_business_actions_list"
+      ]
+    },
+    {
+      "family": "core_navigation",
+      "count": 3,
+      "capability_ids": [
+        "nodia_module_groups_list",
+        "nodia_modules_get",
+        "nodia_modules_list"
+      ]
+    },
+    {
+      "family": "core_roles",
+      "count": 2,
+      "capability_ids": [
+        "nodia_roles_get",
+        "nodia_roles_list"
+      ]
+    },
+    {
+      "family": "core_users",
+      "count": 1,
+      "capability_ids": [
+        "nodia_users_list"
+      ]
+    },
+    {
+      "family": "dependent_workflows",
+      "count": 1,
+      "capability_ids": [
+        "nodia_workflows_prepare"
+      ]
+    },
+    {
+      "family": "exact_proposals",
+      "count": 1,
+      "capability_ids": [
+        "nodia_proposals_get"
+      ]
+    },
+    {
+      "family": "execution_receipts",
+      "count": 1,
+      "capability_ids": [
+        "nodia_operations_get"
+      ]
+    },
+    {
+      "family": "finance_classification",
+      "count": 4,
+      "capability_ids": [
+        "nodia_finance_categories_get",
+        "nodia_finance_categories_list",
+        "nodia_finance_category_groups_get",
+        "nodia_finance_category_groups_list"
+      ]
+    },
+    {
+      "family": "finance_movements",
+      "count": 3,
+      "capability_ids": [
+        "nodia_finance_movements_get",
+        "nodia_finance_movements_list",
+        "nodia_finance_movements_prepare_create"
+      ]
+    },
+    {
+      "family": "finance_obligations",
+      "count": 2,
+      "capability_ids": [
+        "nodia_finance_obligations_get",
+        "nodia_finance_obligations_list"
+      ]
+    },
+    {
+      "family": "finance_reports",
+      "count": 3,
+      "capability_ids": [
+        "nodia_finance_summaries_by_category",
+        "nodia_finance_summaries_by_category_group",
+        "nodia_finance_summaries_overview"
+      ]
+    },
+    {
+      "family": "rental_access",
+      "count": 2,
+      "capability_ids": [
+        "nodia_rental_collaborators_candidates",
+        "nodia_rental_collaborators_list"
+      ]
+    },
+    {
+      "family": "rental_audit",
+      "count": 1,
+      "capability_ids": [
+        "nodia_rental_audit_list"
+      ]
+    },
+    {
+      "family": "rental_blocks",
+      "count": 2,
+      "capability_ids": [
+        "nodia_rental_blocks_get",
+        "nodia_rental_blocks_list"
+      ]
+    },
+    {
+      "family": "rental_calendar",
+      "count": 2,
+      "capability_ids": [
+        "nodia_rental_calendar_availability",
+        "nodia_rental_calendar_calendar"
+      ]
+    },
+    {
+      "family": "rental_cancellation_policies",
+      "count": 2,
+      "capability_ids": [
+        "nodia_rental_cancellation_policies_get",
+        "nodia_rental_cancellation_policies_list"
+      ]
+    },
+    {
+      "family": "rental_commercial_cycle",
+      "count": 3,
+      "capability_ids": [
+        "nodia_rental_reservations_cancellation_preview",
+        "nodia_rental_reservations_get",
+        "nodia_rental_reservations_list"
+      ]
+    },
+    {
+      "family": "rental_money",
+      "count": 4,
+      "capability_ids": [
+        "nodia_rental_expenses_get",
+        "nodia_rental_expenses_list",
+        "nodia_rental_payments_get",
+        "nodia_rental_payments_list"
+      ]
+    },
+    {
+      "family": "rental_preparation",
+      "count": 2,
+      "capability_ids": [
+        "nodia_rental_turnovers_get",
+        "nodia_rental_turnovers_list"
+      ]
+    },
+    {
+      "family": "rental_properties",
+      "count": 2,
+      "capability_ids": [
+        "nodia_rental_properties_get",
+        "nodia_rental_properties_list"
+      ]
+    },
+    {
+      "family": "rental_reports",
+      "count": 1,
+      "capability_ids": [
+        "nodia_rental_summaries_overview"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "capability_id": "nodia_actions_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/actions"
+      ],
+      "family": "core_actions",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "DetailInput",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "Action",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_actions_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/actions"
+      ],
+      "family": "core_actions",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "ActionQuery",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "ActionPage",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_ai_events_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "family": "ai_provider_administration",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+          "definition": "EventsInput",
+          "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+          "definition": "EventsResult",
+          "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_ai_providers_catalog_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "family": "ai_provider_administration",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+          "definition": "CatalogInput",
+          "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+          "definition": "CatalogResult",
+          "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_ai_providers_codex_session",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "family": "ai_provider_administration",
+      "mechanism": "external_runtime_observation",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+          "definition": "CodexInput",
+          "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+          "definition": "CodexResult",
+          "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_ai_providers_gemini_engines",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "family": "ai_provider_administration",
+      "mechanism": "external_runtime_observation",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+          "definition": "EmptyInput",
+          "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+          "definition": "EnginesResult",
+          "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_ai_providers_health",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "family": "ai_provider_administration",
+      "mechanism": "external_runtime_observation",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+          "definition": "EmptyInput",
+          "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+          "definition": "HealthResult",
+          "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_ai_providers_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "family": "ai_provider_administration",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+          "definition": "ProvidersInput",
+          "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+          "definition": "ProvidersResult",
+          "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_ai_providers_models",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "family": "ai_provider_administration",
+      "mechanism": "external_runtime_observation",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+          "definition": "ModelsInput",
+          "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+          "definition": "ModelsResult",
+          "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_ai_providers_supported_providers",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "family": "ai_provider_administration",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+          "definition": "SupportedInput",
+          "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+          "definition": "SupportedResult",
+          "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_api_keys_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "family": "ai_provider_administration",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+          "definition": "KeysInput",
+          "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+          "definition": "KeysResult",
+          "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_attachments_describe",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "family": "attachment_metadata",
+      "mechanism": "owned_conversation_helper",
+      "contract": {
+        "input": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-common-reads.schema.json",
+          "definition": "AttachmentDescribeInput",
+          "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c"
+        },
+        "output": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-common-reads.schema.json",
+          "definition": "AttachmentMetadata",
+          "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_business_actions_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/actions"
+      ],
+      "family": "core_business_action_permissions",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "DetailInput",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "BusinessAction",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_business_actions_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/actions"
+      ],
+      "family": "core_business_action_permissions",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "BusinessActionQuery",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "BusinessActionPage",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_businesses_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "businesses",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "BusinessesGetInput",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "BusinessesGetResult",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_businesses_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "businesses",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "BusinessesListInput",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "BusinessesListResult",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      },
+      "Codex_evidence": {
+        "status": "codex_real_read_semantic_verified",
+        "evidence_refs": [
+          "business_list"
+        ],
+        "completed_receipt_pointer": "$.receipts.completed.receipt.inspection.tools[1]",
+        "observed_server_release": "R06",
+        "scope": "Authorized super_admin all_businesses/all activity page 1 limit 1; total-only answer matched the SQL oracle; two dispatches and ACKs.",
+        "semantic_or_effect_acceptance_inferred": false,
+        "does_not_accept_other_variants_or_current_availability": true
+      }
+    },
+    {
+      "capability_id": "nodia_finance_categories_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "family": "finance_classification",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "CategoryInput",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "Category",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_finance_categories_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "family": "finance_classification",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "CategoryQuery",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "CategoryPage",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      },
+      "Codex_evidence": {
+        "status": "codex_supporting_callback_completed",
+        "evidence_refs": [
+          "effect"
+        ],
+        "completed_receipt_pointer": "$.tools[3]",
+        "observed_server_release": "R02",
+        "scope": "Completed supporting callback in the financial preparation; no independent categories-list semantic acceptance.",
+        "semantic_or_effect_acceptance_inferred": false,
+        "does_not_accept_other_variants_or_current_availability": true
+      }
+    },
+    {
+      "capability_id": "nodia_finance_category_groups_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "family": "finance_classification",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "CategoryInput",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "GroupDetail",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_finance_category_groups_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "family": "finance_classification",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "CategoryQuery",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "GroupPage",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_finance_movements_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "family": "finance_movements",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "CategoryInput",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "Movement",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      },
+      "Codex_evidence": {
+        "status": "codex_real_read_semantic_verified",
+        "evidence_refs": [
+          "finance_GET"
+        ],
+        "completed_receipt_pointer": "$.receipts.completed.receipt.inspection.tools[1]",
+        "observed_server_release": "R06",
+        "scope": "Exact own synthetic movement fields and continuity marker contrasted with SQL, useful UI response, two dispatches/select+GET, terminal ACKs and reload.",
+        "semantic_or_effect_acceptance_inferred": false,
+        "does_not_accept_other_variants_or_current_availability": true
+      }
+    },
+    {
+      "capability_id": "nodia_finance_movements_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "family": "finance_movements",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "MovementQuery",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "MovementPage",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_finance_movements_prepare_create",
+      "revision": 1,
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "family": "finance_movements",
+      "mechanism": "exact_financial_change_proposal",
+      "contract": {
+        "input": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-write-finance-business.schema.json",
+          "definition": "McpWriteInput_financemovementspreparecreatePartial",
+          "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897"
+        },
+        "output": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-write-finance-business.schema.json",
+          "definition": "McpWritePreparationResult",
+          "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897"
+        }
+      },
+      "Codex_evidence": {
+        "status": "codex_real_semantic_effect_verified",
+        "evidence_refs": [
+          "effect"
+        ],
+        "completed_receipt_pointer": "$.tools[5]",
+        "observed_server_release": "R02",
+        "scope": "Published preparer produced an exact revision/hash; human button created one execution, one receipt and movement 2; GET/reload did not repeat the effect.",
+        "semantic_or_effect_acceptance_inferred": false,
+        "does_not_accept_other_variants_or_current_availability": true
+      }
+    },
+    {
+      "capability_id": "nodia_finance_obligations_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "family": "finance_obligations",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "CategoryInput",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "Obligation",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_finance_obligations_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "family": "finance_obligations",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "ObligationQuery",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "ObligationPage",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_finance_summaries_by_category",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "family": "finance_reports",
+      "mechanism": "filtered_SQL_aggregate",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "SummaryQuery",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "SummaryPage",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_finance_summaries_by_category_group",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "family": "finance_reports",
+      "mechanism": "filtered_SQL_aggregate",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "SummaryQuery",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "GroupSummaryPage",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_finance_summaries_overview",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "family": "finance_reports",
+      "mechanism": "filtered_SQL_aggregate",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "MovementQuery",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+          "definition": "Overview",
+          "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_invoices_eligible_invoice_connections",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_invoices",
+      "mechanism": "external_runtime_observation",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+          "definition": "EmptyInput",
+          "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+          "definition": "EligibleResult",
+          "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_invoices_file",
+      "revision": 1,
+      "kind": "read_artifact",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_invoices",
+      "mechanism": "reauthorized_download_reference",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+          "definition": "InvoiceFileInput",
+          "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+          "definition": "InvoiceFileResult",
+          "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_invoices_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_invoices",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "InvoicesGetInput",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "InvoicesGetResult",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_invoices_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_invoices",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "InvoicesListInput",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "InvoicesListResult",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_module_groups_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/modules"
+      ],
+      "family": "core_navigation",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "GroupQuery",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "GroupPage",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_modules_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/modules"
+      ],
+      "family": "core_navigation",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "DetailInput",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "ModuleDetail",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_modules_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/modules"
+      ],
+      "family": "core_navigation",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "ModuleQuery",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "ModulePage",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      },
+      "Codex_evidence": {
+        "status": "codex_real_read_semantic_verified",
+        "evidence_refs": [
+          "core_list"
+        ],
+        "completed_receipt_pointer": "$.core_completed.receipt.inspection.tools[1]",
+        "observed_server_release": "R07",
+        "scope": "Authorized Core page 1 limit 1 active all/id asc; historical total 8 matched SQL/UI before later module installation; two dispatches and ACKs.",
+        "semantic_or_effect_acceptance_inferred": false,
+        "does_not_accept_other_variants_or_current_availability": true
+      }
+    },
+    {
+      "capability_id": "nodia_operations_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "family": "execution_receipts",
+      "mechanism": "owned_conversation_helper",
+      "contract": {
+        "input": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-common-reads.schema.json",
+          "definition": "OperationGetInput",
+          "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c"
+        },
+        "output": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-common-reads.schema.json",
+          "definition": "ExecutionStatus",
+          "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_preferences_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "family": "accepted_preferences",
+      "mechanism": "owned_conversation_helper",
+      "contract": {
+        "input": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-common-reads.schema.json",
+          "definition": "PreferenceListInput",
+          "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c"
+        },
+        "output": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-common-reads.schema.json",
+          "definition": "PreferencePage",
+          "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_preferences_prepare",
+      "revision": 1,
+      "kind": "prepare_preference_change",
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "family": "accepted_preferences",
+      "mechanism": "accepted_preference_proposal",
+      "contract": {
+        "input": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-common-preparation.schema.json",
+          "definition": "McpPreferencePrepareInput",
+          "sha256": "f6fb6198795002f4378e890f2ff861fe32786e2e3021daa2c12c490449382d22"
+        },
+        "output": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-common-preparation.schema.json",
+          "definition": "McpPreferencePreparationResult",
+          "sha256": "f6fb6198795002f4378e890f2ff861fe32786e2e3021daa2c12c490449382d22"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_product_logs_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_product_history",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProductLogsGetInput",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProductLogsGetResult",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_product_logs_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_product_history",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProductLogsListInput",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProductLogsListResult",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_product_logs_query",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_product_history",
+      "mechanism": "relational_filtered_query",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProductLogsQueryInput",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProductLogsQueryResult",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_products_export_csv",
+      "revision": 1,
+      "kind": "read_artifact",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_products",
+      "mechanism": "reauthorized_download_reference",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+          "definition": "ProductsExportInput",
+          "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+          "definition": "ProductsExportResult",
+          "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_products_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_products",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProductsGetInput",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProductsGetResult",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_products_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_products",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProductsListInput",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProductsListResult",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_proposals_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "family": "exact_proposals",
+      "mechanism": "owned_conversation_helper",
+      "contract": {
+        "input": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-common-reads.schema.json",
+          "definition": "ProposalGetInput",
+          "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c"
+        },
+        "output": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-common-reads.schema.json",
+          "definition": "PublicProposal",
+          "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_provider_contacts_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_suppliers",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProviderContactsListInput",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProviderContactsListResult",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_providers_export_csv",
+      "revision": 1,
+      "kind": "read_artifact",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_suppliers",
+      "mechanism": "reauthorized_download_reference",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+          "definition": "ProvidersExportInput",
+          "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+          "definition": "ProvidersExportResult",
+          "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_providers_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_suppliers",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProvidersGetInput",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProvidersGetResult",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_providers_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "family": "business_suppliers",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProvidersListInput",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+          "definition": "ProvidersListResult",
+          "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_audit_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_audit",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalAuditListInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalAuditListOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_blocks_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_blocks",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalBlocksGetInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalBlocksGetOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_blocks_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_blocks",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalBlocksListInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalBlocksListOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_calendar_availability",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_calendar",
+      "mechanism": "date_range_calendar_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalCalendarAvailabilityInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalCalendarAvailabilityOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_calendar_calendar",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_calendar",
+      "mechanism": "date_range_calendar_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalCalendarCalendarInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalCalendarCalendarOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_cancellation_policies_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_cancellation_policies",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalCancellationPoliciesGetInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalCancellationPoliciesGetOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_cancellation_policies_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_cancellation_policies",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalCancellationPoliciesListInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalCancellationPoliciesListOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_collaborators_candidates",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_access",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalCollaboratorsCandidatesInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalCollaboratorsCandidatesOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_collaborators_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_access",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalCollaboratorsListInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalCollaboratorsListOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_expenses_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_money",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalExpensesGetInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalExpensesGetOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_expenses_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_money",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalExpensesListInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalExpensesListOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_payments_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_money",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalPaymentsGetInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalPaymentsGetOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_payments_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_money",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalPaymentsListInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalPaymentsListOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_properties_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_properties",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalPropertiesGetInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalPropertiesGetOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_properties_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_properties",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalPropertiesListInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalPropertiesListOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "codex_real_read_semantic_verified",
+        "evidence_refs": [
+          "reservations_list"
+        ],
+        "completed_receipt_pointer": "$.reservations.completed_real_UI_run.receipt.inspection.tools[1]",
+        "observed_server_release": "R07",
+        "scope": "After explicit navigation installation and current authorization, query active all/page 1/limit 1 returned an empty page and genuine total 0; SQL/UI/ACK/reload matched. No house was seeded.",
+        "semantic_or_effect_acceptance_inferred": false,
+        "does_not_accept_other_variants_or_current_availability": true
+      }
+    },
+    {
+      "capability_id": "nodia_rental_reservations_cancellation_preview",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_commercial_cycle",
+      "mechanism": "commercial_cancellation_preview",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalReservationsCancellationPreviewInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalReservationsCancellationPreviewOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_reservations_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_commercial_cycle",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalReservationsGetInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalReservationsGetOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_reservations_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_commercial_cycle",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalReservationsListInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalReservationsListOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_summaries_overview",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_reports",
+      "mechanism": "filtered_SQL_aggregate",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalSummariesOverviewInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalSummariesOverviewOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_turnovers_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_preparation",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalTurnoversGetInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalTurnoversGetOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_rental_turnovers_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "family": "rental_preparation",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalTurnoversListInput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+          "definition": "RentalTurnoversListOutput",
+          "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_roles_get",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/roles"
+      ],
+      "family": "core_roles",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "DetailInput",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "RoleDetail",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_roles_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/roles"
+      ],
+      "family": "core_roles",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "RoleQuery",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "RolePage",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    },
+    {
+      "capability_id": "nodia_users_list",
+      "revision": 1,
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/users"
+      ],
+      "family": "core_users",
+      "mechanism": "bounded_SQL_or_local_catalog_read",
+      "contract": {
+        "input": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "UserQuery",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        "output": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+          "definition": "UserPage",
+          "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      },
+      "Codex_evidence": {
+        "status": "codex_supporting_callback_completed",
+        "evidence_refs": [
+          "effect"
+        ],
+        "completed_receipt_pointer": "$.tools[4]",
+        "observed_server_release": "R02",
+        "scope": "Completed supporting callback in the financial preparation; no independent users-list semantic acceptance.",
+        "semantic_or_effect_acceptance_inferred": false,
+        "does_not_accept_other_variants_or_current_availability": true
+      }
+    },
+    {
+      "capability_id": "nodia_workflows_prepare",
+      "revision": 1,
+      "kind": "prepare_workflow",
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "family": "dependent_workflows",
+      "mechanism": "dependent_draft_workflow",
+      "contract": {
+        "input": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-common-preparation.schema.json",
+          "definition": "McpWorkflowPrepareInput",
+          "sha256": "f6fb6198795002f4378e890f2ff861fe32786e2e3021daa2c12c490449382d22"
+        },
+        "output": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-publication-common-preparation.schema.json",
+          "definition": "McpWorkflowPreparationResult",
+          "sha256": "f6fb6198795002f4378e890f2ff861fe32786e2e3021daa2c12c490449382d22"
+        }
+      },
+      "Codex_evidence": {
+        "status": "no_real_Codex_callback_identified_in_reviewed_evidence",
+        "evidence_refs": [],
+        "semantic_or_effect_acceptance_inferred": false
+      }
+    }
+  ],
+  "excluded_unpublished_candidates": {
+    "count": 77,
+    "source_ref": "C05_publication",
+    "capability_ids": [
+      "nodia_actions_prepare_create",
+      "nodia_actions_prepare_delete",
+      "nodia_actions_prepare_update",
+      "nodia_ai_providers_prepare_catalog_create",
+      "nodia_ai_providers_prepare_catalog_update",
+      "nodia_ai_providers_prepare_codex_logout",
+      "nodia_ai_providers_prepare_create",
+      "nodia_ai_providers_prepare_gemini_web_logout",
+      "nodia_ai_providers_prepare_sync_models",
+      "nodia_ai_providers_prepare_update",
+      "nodia_api_keys_prepare_delete",
+      "nodia_business_actions_prepare_create",
+      "nodia_business_actions_prepare_delete",
+      "nodia_business_actions_prepare_update",
+      "nodia_businesses_prepare_create",
+      "nodia_businesses_prepare_set_collaborators",
+      "nodia_businesses_prepare_update",
+      "nodia_finance_categories_prepare_create",
+      "nodia_finance_categories_prepare_delete",
+      "nodia_finance_categories_prepare_update",
+      "nodia_finance_category_groups_prepare_create",
+      "nodia_finance_category_groups_prepare_delete",
+      "nodia_finance_category_groups_prepare_update",
+      "nodia_finance_movements_prepare_delete",
+      "nodia_finance_movements_prepare_update",
+      "nodia_finance_obligations_prepare_create",
+      "nodia_finance_obligations_prepare_delete",
+      "nodia_finance_obligations_prepare_update",
+      "nodia_invoices_analyze",
+      "nodia_invoices_prepare_create",
+      "nodia_invoices_prepare_update",
+      "nodia_module_groups_prepare_create",
+      "nodia_module_groups_prepare_delete",
+      "nodia_module_groups_prepare_update",
+      "nodia_modules_prepare_create",
+      "nodia_modules_prepare_delete",
+      "nodia_modules_prepare_update",
+      "nodia_product_logs_prepare_create",
+      "nodia_product_logs_prepare_update",
+      "nodia_products_prepare_create",
+      "nodia_products_prepare_update",
+      "nodia_provider_contacts_prepare_create",
+      "nodia_provider_contacts_prepare_set_active",
+      "nodia_provider_contacts_prepare_update",
+      "nodia_providers_prepare_create",
+      "nodia_providers_prepare_update",
+      "nodia_rental_blocks_prepare_create",
+      "nodia_rental_blocks_prepare_update",
+      "nodia_rental_cancellation_policies_prepare_create",
+      "nodia_rental_cancellation_policies_prepare_update",
+      "nodia_rental_collaborators_prepare_create",
+      "nodia_rental_collaborators_prepare_update",
+      "nodia_rental_expenses_prepare_create",
+      "nodia_rental_expenses_prepare_pay",
+      "nodia_rental_expenses_prepare_update",
+      "nodia_rental_expenses_prepare_void",
+      "nodia_rental_payments_prepare_create",
+      "nodia_rental_payments_prepare_void",
+      "nodia_rental_properties_prepare_create",
+      "nodia_rental_properties_prepare_update",
+      "nodia_rental_reservations_prepare_cancel",
+      "nodia_rental_reservations_prepare_complete",
+      "nodia_rental_reservations_prepare_confirm",
+      "nodia_rental_reservations_prepare_create",
+      "nodia_rental_reservations_prepare_start",
+      "nodia_rental_reservations_prepare_update",
+      "nodia_rental_turnovers_prepare_approve_same_day",
+      "nodia_rental_turnovers_prepare_update",
+      "nodia_roles_prepare_create",
+      "nodia_roles_prepare_delete",
+      "nodia_roles_prepare_update",
+      "nodia_secure_flows_prepare_api_key_create",
+      "nodia_secure_flows_prepare_api_key_update",
+      "nodia_secure_flows_prepare_connection_login",
+      "nodia_secure_flows_prepare_nodia_logout",
+      "nodia_users_prepare_create",
+      "nodia_users_prepare_update"
+    ],
+    "acceptance_or_publication_required_to_close_AI40_by_this_report": false,
+    "no_publication_requested_or_implied": true
+  },
+  "priority_blocks": [
+    {
+      "priority": 1,
+      "mechanisms": [
+        "owned_conversation_helper",
+        "accepted_preference_proposal",
+        "dependent_draft_workflow"
+      ],
+      "why": "These published mechanisms introduce owner-scoped memory, exact proposal reads and coordination of dependent drafts beyond a single financial change. Finance preview/status HTTP is not MCP proposals_get/operations_get, and a completed finance step is not workflow acceptance.",
+      "bounded_next_read_only_intention": "Read preferences_list plus proposals_get and operations_get for the exact already-owned historical financial proposal/execution. Obtain only their technical IDs with an authorized SQL oracle first; no new business effect or expected private values in the prompt.",
+      "separate_positive_preparation": "preferences_prepare and workflows_prepare need their own real callback/ready-or-clarification/proposal validation. Confirming an accepted memory or workflow effect requires the human channel on its exact revision/hash. Do not fabricate a preference or press the human button.",
+      "scope_limit": "One multi-tool intention can cover distinct common reads; it does not accept every helper or negative authority case."
+    },
+    {
+      "priority": 2,
+      "mechanisms": [
+        "filtered_SQL_aggregate",
+        "relational_filtered_query",
+        "date_range_calendar_read",
+        "commercial_cancellation_preview"
+      ],
+      "why": "A GET/list total does not verify sum/filter/date/status/relationship semantics or distinguish totals from a paginated subset.",
+      "bounded_next": "Use one published finance_summaries operation restricted by existing own synthetic movement/filter fields, with a separate READ ONLY SQL sum/count oracle. Calendar/detail scenarios requiring a real house remain data-dependent; do not seed commercial rows merely to claim acceptance.",
+      "reports_limit": "Cross-module report tooling is not added to the 74 by this inventory; use only currently published exact capabilities."
+    },
+    {
+      "priority": 3,
+      "mechanisms": [
+        "reauthorized_download_reference"
+      ],
+      "why": "MCP issues a regenerable reference; authenticated download reauthorizes and materializes current bytes. A text callback, original attachment upload, or PNG/R2 proof does not test that protocol.",
+      "bounded_next": "One authorized CSV export on a chosen existing business: exact artifact reference/MIME/filename, GET download SHA/size against native export, and foreign or stale reference rejection without content exposure. invoices_file needs its own existing invoice/storage source; CSV does not accept R2 invoice retrieval."
+    },
+    {
+      "priority": 4,
+      "mechanisms": [
+        "external_runtime_observation"
+      ],
+      "why": "External reads cross SQL/outside-SQL/revalidation boundaries and may contend with the active Codex profile or resolve API credentials. Unknown/busy must remain explicit; session or model discovery never proves inference.",
+      "bounded_next": "Choose one read-only observation with independently available source and exact runtime scope; serialize account access and accept legitimate busy/unknown as a negative, not a green result. A same-profile Codex session/model check during its own active callback can hit intentional exclusion.",
+      "credential_limit": "Do not activate API inference, reveal keys, change provider/model, or use fallback to force a positive."
+    }
+  ],
+  "closure_limits": [
+    "Four representative product-read positives cover exact cases, not every action/role/user/provider/financial/rental subfamily or the 74 individual capabilities.",
+    "Runtime availability/proofs are independently scoped and may invalidate after these historical receipts. This offline inventory is not an availability observation.",
+    "Cancel/revocation/uncertain reconciliation/compaction real subsets already have their own evidence. Do not reopen all C40-09 cases because older historical checklist text still says pending.",
+    "Direct O_EXCL contention and an HTTP/UI stop endpoint are not proven by the shared-journal contender test; the stop endpoint is proposed in contract41 and is not silently promoted to a newly approved epic.",
+    "PDF raw/audio unverified remain blocked; PDF reviewed-text and PNG/JPEG/WebP positives are distinct from product-tool coverage. Unsupported original modalities do not need fabricated transport to close a scoped Linux handoff.",
+    "Windows native, VPS/HTTPS/production, OpenAI API, OpenAI Web, other models/efforts/accounts, and the 77 unpublished candidates are outside this scoped Linux inventory.",
+    "This report does not close AI40, change plan45, approve draft documentation, or publish tools. The final 11-gate environment matrix and current deployment roundtrip are separate root-owned work."
+  ],
+  "source_contract_documents": [
+    "docs/mvp/45-nodia-ai-implementation-plan.md",
+    "docs/mvp/86-nodia-ai-ai40-codex-acceptance.md",
+    "docs/mvp/41-nodia-ai-v1-contracts.md",
+    "docs/mvp/ai-provider-feature-contract.md"
+  ],
+  "private_messages_prompts_tool_payloads_or_credentials_copied": false
+}

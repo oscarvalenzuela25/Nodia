@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-25",
+  "task": "maintained_current_knowledge_validation",
+  "status": "passed_local_source_bundle_and_pins",
+  "command": "npm run test:nodia-ai:knowledge",
+  "result": {
+    "task": "nodia_ai_current_knowledge",
+    "status": "passed",
+    "mode": "read_only",
+    "source_documents": 63,
+    "excluded_documents": 23,
+    "published_documents": 40,
+    "published_fragments": 42,
+    "published_capabilities": 151,
+    "release_id": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+    "catalog_release": "nodia-ai-ai15-reads/1",
+    "schema_sha256": "cc93ecb978c5e74f6a3492661da8bcd4b4bdce0afc0da57efdc678ea21b1d23c",
+    "runtime_pins": [
+      "src",
+      "dist"
+    ],
+    "local_links_checked": 1288,
+    "limits": [
+      "Filesystem/compiler fixtures run separately in the same package command. Synthetic approvals are not approval of actual documents.",
+      "Verifies current declared sources, local emitted bundle and source/dist pins; no deployed VM equality, API AST inventory, DI, SQL, provider or UI acceptance.",
+      "Historical dated release unrolls, fixed source/publication counts and reconciliation evidence are intentionally not executed or rewritten."
+    ]
+  },
+  "regressions": {
+    "total": 58,
+    "passed": 58,
+    "failed": 0,
+    "skipped": 0,
+    "preserved_filesystem_compiler_cases": 52,
+    "additional_runtime_pin_cases": 6,
+    "guarantees": [
+      "Strict authoring JSON/UTF8/paths, approval/revision/hash and source contract integrity",
+      "Bound publication excludes draft parent/unselected private content and rejects unauthorized bindings",
+      "Filesystem junction/traversal containment, reproducible manifests, locked/atomic bundle emission and retirement",
+      "Trusted release/catalog pins and fragment hash verification",
+      "Current runtime source/dist pins are closed and match current emitted release/catalog/schema; extra, absent and stale fields rejected"
+    ]
+  },
+  "historical_preservation": {
+    "validator_path": "docs/evidence/scripts/validate-nodia-ai-ai06.cjs",
+    "validator_sha256": "9fdf20ab08e1a38ffe5557a13bc36fb390d55a8c6ffbf3bfbc3326838ee9e85f",
+    "validator_modified": false,
+    "fixture_body_preserved_verbatim": true,
+    "fixture_body_bytes": 11591,
+    "fixture_body_sha256": "e359286a2311d34c8be10b6309995b68aff4c04e0730fad3e81619a9c01a99b0",
+    "not_executed": [
+      "Historical AI29/AI30/AI32 dated release unwind/reconciliation helpers",
+      "Fixed historical counts and historical AI15 source bytes/release assertions"
+    ],
+    "reason": "Those describe frozen earlier publications and cannot be used as the identity of the current corpus. Current publication identity is derived by the unchanged compiler and verified against emitted bundle and runtime pins."
+  },
+  "detected_and_fixed": {
+    "path": "docs/nodia-ai/knowledge/nodia-ai/features/image-generation.md",
+    "document_state": "draft_without_approval_or_publication_change",
+    "change": "Corrected only two equivalent relative Markdown links from ../../../mvp/ to ../../../../mvp/ (plan45 including anchor and policy50). No frontmatter or other body changes.",
+    "scan_result": "All registry source Markdown paths checked; no further broken links found."
+  },
+  "checks": {
+    "lint": "oxlint passed on the four new maintained .mjs files",
+    "diff_whitespace": "git diff --check passed on Server changes",
+    "utf8_lf": true,
+    "intermediate_log": {
+      "path": ".tmp/knowledge-current-r01/final.log",
+      "sha256": "bd9d0d895ddb773f7c2eb3b303ad25787aa987e0b63cd70e7c1afa59d0cd8d13"
+    }
+  },
+  "limits": [
+    "No compiler, registry, publication approval, production capability or VM change was made by this task.",
+    "No service was started, no SQL effect, R2 request, provider inference or authenticated UI acceptance was executed.",
+    "The package command does not build or rewrite pins automatically; stale or missing emitted assets fail and require an explicit normal build/prepare process.",
+    "It checks the declared corpus and local emitted bundle, not discovery of current API AST/routes, runtime DI, deployed image equality or operational behavior.",
+    "Filesystem/compiler approvals are synthetic fixtures; hash equality does not prove the human provenance of actual document approvals.",
+    "A local source/dist result does not attest that the active VM uses this release."
+  ],
+  "source_fingerprints": [
+    {
+      "path": "nodia-server/scripts/check-nodia-ai-knowledge.mjs",
+      "sha256": "15b27b5e27136579f1a27b47d8e5e187415e42e6cd96d731d5e7448bb8550f8c"
+    },
+    {
+      "path": "nodia-server/scripts/nodia-ai-knowledge/compiler-fixtures.mjs",
+      "sha256": "5925297a0ad624eb459ece26e6dd4c4a42dfedac19c22373f32d65b023e46f3e"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-knowledge-compiler.spec.mjs",
+      "sha256": "09c1bf962a96a6bd64684b891deca8158e503d0e6643deb3f7c193dcca4dff1a"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-knowledge-pin.spec.mjs",
+      "sha256": "711d1c9188ad50060de8ee66d0b68e60bd7503d40ed2b337e613425e3b19bbb8"
+    },
+    {
+      "path": "nodia-server/package.json",
+      "sha256": "50046cdfa866c566dffcc6a5f5d21ec87faa94e50255c602d322cce58bcfb2eb"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/image-generation.md",
+      "sha256": "ac946ad708c084a54b5bf42265b2b88b4fbcad8d84c6ab95572865c59b8d5090"
+    }
+  ]
+}

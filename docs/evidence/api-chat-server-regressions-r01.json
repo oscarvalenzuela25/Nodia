@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "scope": "Final local authoring Server source Vitest run; selective Linux candidate has separate build/SQL gates",
+  "command": "npm test -- --maxWorkers=4 --reporter=json --outputFile=../.tmp/ai-api-chat/server-all-r02.json",
+  "success": true,
+  "passed": 5539,
+  "failed": 0,
+  "pending": 1,
+  "total": 5540,
+  "raw_report_sha256": "4fd67364c6d383f567bddb09959ee69147cfd10647f9948306ce4ce1a910219b",
+  "raw_report_bytes": 2189164,
+  "raw_report_path": ".tmp/ai-api-chat/server-all-r02.json",
+  "skipped": [
+    {
+      "file": "src/nodia-ai-adapter/api-nodia-ai-runtime-owner.spec.ts",
+      "test": "API HTTP executor ownership and closure recognizes a reused PID only with a different kernel process birth",
+      "status": "skipped"
+    }
+  ],
+  "provider_requests": 0,
+  "operational_database_mutations": 0
+}

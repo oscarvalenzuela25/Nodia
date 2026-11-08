@@ -1,0 +1,381 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-07",
+  "scope": "compact_product_price_suggestion_UI",
+  "result": "pass_authenticated_VM_UI",
+  "summary": "ClientR36 activo en VM: calculadora compacta a la derecha del costo con impuestos desde sm600, porcentaje88px con%, importe visible e icono44px con tooltip «Usar precio sugerido». Un container query local de280px permite tres columnas (88+132+44+16); por debajo usa dos filas y conserva el importe entero. En xs el bloque va debajo del costo; no cambia el breakpoint global. Enter en el porcentaje evita enviar el formulario. Cambiar porcentaje/costo sólo actualiza la sugerencia; aplicar sólo cambia la venta del borrador.104pruebas/4archivos, tipos/lint/build aislado correctos. CUA autenticada1088/320px:30%→350,40%→377 con venta350 hasta aplicar, costos226/269 intactos y Cancelar/reabrir tras recarga recupera350/30%. Input/costo alineados, tooltip y targets44px comprobados; móvil sin overflow. Vista aislada600/320 verificó un importe1300000000 completo. No Guardar, mutaciones HTTP o inferencias; Server/Native/SQL/contratos/autoridad conservados. Una activación/recarga Nginx y185outputs actuales/18versiones históricas verificados. Sin publicación ni aprobación nueva.",
+  "browser": {
+    "result": "pass",
+    "scope": "authenticated_VM_ProductModal_UI",
+    "release": "ClientR36",
+    "url": "http://localhost:5174/business/5af15373-3638-4a02-a015-4e72c433fc11?section=products",
+    "beforeApply": {
+      "suggested": "377 CLP",
+      "sale": "350",
+      "net": "226",
+      "gross": "269"
+    },
+    "afterApply": {
+      "sale": "377",
+      "net": "226",
+      "gross": "269"
+    },
+    "desktopGeometry": {
+      "cost": {
+        "width": 283,
+        "x": 248,
+        "y": 420.40625
+      },
+      "markup": {
+        "width": 88,
+        "x": 547,
+        "y": 420.40625
+      },
+      "button": {
+        "height": 44,
+        "width": 44
+      }
+    },
+    "mobile": {
+      "document": {
+        "client": 320,
+        "scroll": 320
+      },
+      "dialog": {
+        "client": 288,
+        "scroll": 288
+      },
+      "markup": {
+        "width": 88,
+        "x": 32,
+        "y": 393.484375
+      },
+      "gross": {
+        "x": 32,
+        "y": 311.34375
+      },
+      "saleAfterResize": "377"
+    },
+    "reopenedAfterCancelAndFreshPage": {
+      "markup": "30",
+      "sale": "350",
+      "suggestion": "350 CLP"
+    },
+    "tooltip": "Usar precio sugerido",
+    "network": [
+      {
+        "method": "GET",
+        "path": "/api/v1/businesses/5af15373-3638-4a02-a015-4e72c433fc11/products/13/image"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/me"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/authorization/context"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/ai-providers/health"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/business/5af15373-3638-4a02-a015-4e72c433fc11"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/invoices"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/providers"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/products"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/products"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/businesses/5af15373-3638-4a02-a015-4e72c433fc11/products/13/image"
+      }
+    ],
+    "commercialSaveClicked": false,
+    "providerInferenceInitiated": false,
+    "originalTabsNotReloaded": true,
+    "viewportOverrideReset": true
+  },
+  "preview": {
+    "scope": "isolated_mutable_preview_only",
+    "sourceSyncedToFinalFreeze": true,
+    "desktop": {
+      "width": 1088,
+      "markupWidth": 88,
+      "costInputY": 420.40625,
+      "markupInputY": 420.40625
+    },
+    "calculator": {
+      "gross": 269,
+      "markupBefore": 30,
+      "suggestionBefore": 350,
+      "markupAfter": 40,
+      "suggestionAfter": 377,
+      "saleBeforeApply": 350,
+      "saleAfterApply": 377,
+      "costsAfterApply": [
+        226,
+        269
+      ]
+    },
+    "longPrice": {
+      "gross": 1000000000,
+      "markup": 30,
+      "rendered": "1.300.000.000 CLP",
+      "tablet": {
+        "viewport": 600,
+        "documentClient": 600,
+        "documentScroll": 600,
+        "statusClient": 179,
+        "statusScroll": 179,
+        "height": 20.015625
+      },
+      "mobile": {
+        "viewport": 320,
+        "documentClient": 320,
+        "documentScroll": 320,
+        "statusClient": 194,
+        "statusScroll": 194
+      }
+    },
+    "commercialSaveClicked": false,
+    "realProviderRequests": 0
+  },
+  "source_freeze": {
+    "schema": "product-price-suggestion-client-freeze/1",
+    "files": [
+      {
+        "path": "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/PriceSuggestion/PriceSuggestion.tsx",
+        "bytes": 2898,
+        "sha256": "9d5f1b6848513984aba7e6fc07a50c24e9ed97b543f8c1634a302118bbca0d75",
+        "before_sha256": "f2679ab1bfa32c2723746002c21135e701899f7e4a36a7c344d7c8288a804f7a"
+      },
+      {
+        "path": "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/PriceSuggestion/styles.ts",
+        "bytes": 1592,
+        "sha256": "e03fdd06251498f6e4592cb6d6dc4f39054abeafbdb02ae4afab536c0e9724db",
+        "before_sha256": "b7fde0a2b0c4eec38de4ba3e7c5c383686e04250dfa9dfddda7cb38f5531b3be"
+      },
+      {
+        "path": "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductModal.tsx",
+        "bytes": 23370,
+        "sha256": "b17ac721fb910340b5cc38463851d68180d01ac3c0b0ae55897e63b37af83da5",
+        "before_sha256": "d3ad9c906049a997fa97ee34c45a442c7201be98fe0dec19f7d75d459548210a"
+      },
+      {
+        "path": "src/translate/es/business.json",
+        "bytes": 53090,
+        "sha256": "dbedca51f376c36b6e159e9d42eb8f8c7328feef1e156c96ef6cee42e91bfda0",
+        "before_sha256": "155bb79b9c6d66f8a5d06d90dec1ec493d607dbb30287efc6c65aaeb556b2f1f"
+      },
+      {
+        "path": "src/translate/en/business.json",
+        "bytes": 49508,
+        "sha256": "d44bc704f5ff324fab4ba415fbe486f2cbd92aebc9e344ef8a03b41204a1669b",
+        "before_sha256": "9c338ad8f337d92976f9f517e14941989a3e8770abab3fc5466103cc104cf63e"
+      }
+    ],
+    "production_count": 5,
+    "baseline_manifest_sha256": "257f765d8423c50d98544fdabdedfc81bec1a00a50214d78a9f31776b249285a",
+    "VM_operations": 0
+  },
+  "build": {
+    "schema": "product-price-suggestion-client-r36-isolated-build/1",
+    "success": true,
+    "output_directory": "dist",
+    "build_directory": "build-root",
+    "typecheck_diagnostics": 0,
+    "typecheck_source_files": 866,
+    "typecheck_scope": "isolated production roots;src/test roots excluded,transitive imports still checked",
+    "excluded_test_roots": 377,
+    "transitive_test_files_checked": 0,
+    "Root_full_workspace_typecheck_exit": null,
+    "Root_final_regression_evidence": "pending separate receipt",
+    "build_ms": 17323,
+    "baseline_source_input_count": 1400,
+    "source_input_count": 1400,
+    "source_inputs_identical_before_after": true,
+    "source_fingerprint_sha256": "6b738b9538eaea9a12ad6708a8d097edfb4e10840016e802cd4fdbd9e48dbbd7",
+    "source_plan_sha256": "b32c4eecb2f7401a070fc3d32621b503470b48ed9640e9717c7fc58211ec7fbb",
+    "owner_delta_sha256": "5839e4d1bf6be5da6e5ad2c9fd693d0d1cbc2f15a9e0edc8b96c338c64be1ee7",
+    "global_working_tree_copied": false,
+    "public_config": {
+      "api_url": "/api/v1",
+      "google_client_id_sha256": "92d734acd9f93db3084a903aebff28adaf5f83d9dca318c7ddf19ed7a4ab7e3a"
+    },
+    "VM_operations": 0,
+    "provider_requests": 0
+  },
+  "activation": {
+    "success": true,
+    "phase": "Client_R36_active_static_and_legacy_assets_verified",
+    "receipt_sha256": "7494bbfc28f514cd084f465537a9d6791f9e3d88b4aad25d8e108b6c577305fc",
+    "manifest_sha256": "026c121804c662d78e6f37ed325c473ea2d175a84920f3ffcc42dca6cb3b6b17",
+    "new_assets_verified": 185,
+    "old_assets_verified": 181,
+    "old_asset_fallback_retained": true,
+    "server_restart": false,
+    "Native_restart": false,
+    "database_access": false,
+    "provider_requests": 0
+  },
+  "runtime_observer": {
+    "schema_version": 1,
+    "scope": "product_price_suggestion_client_R36_read_only_final_static_and_runtime_audit",
+    "result": "pass_static_assets_and_metadata_only",
+    "Client_manifest_sha256": "026c121804c662d78e6f37ed325c473ea2d175a84920f3ffcc42dca6cb3b6b17",
+    "Nginx_sha256": "e182342f898b2b6f9a432f9ee98068d385abbc81141038482e049d7859e62792",
+    "observed_static_at": "2026-11-07T04:53:09.720821+00:00",
+    "observed_metadata_at": "2026-11-07T04:53:25.862911+00:00",
+    "current_outputs_HTTP_hash_verified": 185,
+    "legacy_assets_HTTP_hash_verified": {
+      "r17": 180,
+      "r19": 180,
+      "r20": 180,
+      "r21": 180,
+      "r22": 180,
+      "r23": 180,
+      "r24": 180,
+      "r25": 180,
+      "r26": 180,
+      "r27": 181,
+      "r28": 182,
+      "r29": 182,
+      "r30": 182,
+      "r31": 182,
+      "r32": 181,
+      "r33": 181,
+      "r34": 181,
+      "r35": 181
+    },
+    "legacy_versions": 18,
+    "missing_asset_HTTP_status": 404,
+    "API_public_status": 200,
+    "API_unauthenticated_status": 401,
+    "preservation": {
+      "API_Worker_Native_identities_exact": true,
+      "Server_R12_manifest_sha256": "efbd76523322642c580c799640af01ab5626aa56ac72b0ef9104a11da6fd76e0",
+      "Native_R14_healthy": true,
+      "SDK_manifest_sha256": "fe412d1059c2f9ac9d8637cc90b2007c72a664175f73b5246a27ebf6e7e7ccfa",
+      "flags_environment_hash_timers_exactly_preserved_from_R35": true,
+      "Native_source_pins_verified": 9,
+      "Native_source_pins_unchanged": true,
+      "static_sample_protected_before_after_identical": true
+    },
+    "local_runtime": {
+      "CLI": 0,
+      "unknown_markers": 0,
+      "manual_invoice_proofs": 0,
+      "cgroup_owners": [],
+      "profile_marker": null,
+      "execution_acquisitions_in_observation_window": 0,
+      "observation_window_start_utc": "2026-11-07T04:52:49.720821+00:00"
+    },
+    "selective_source_inputs": {
+      "baseline_R35": 1400,
+      "current_R36": 1400,
+      "unchanged": 1395,
+      "changed": 5,
+      "new_files": 0,
+      "changed_paths": [
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/PriceSuggestion/PriceSuggestion.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/PriceSuggestion/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductModal.tsx",
+        "src/translate/en/business.json",
+        "src/translate/es/business.json"
+      ],
+      "frozen_delta_matches_changed_paths": true
+    },
+    "observer_effects": {
+      "static_health_samples": 1,
+      "metadata_samples": 1,
+      "SQL_queries_or_writes": 0,
+      "provider_requests": 0,
+      "inference_requests": 0,
+      "service_or_timer_mutations": 0,
+      "profile_state_mutations": 0,
+      "cancellations_or_reconciliations": 0,
+      "browser_actions": 0,
+      "raw_logs_persisted": false,
+      "credential_fields_auth_cookie_argv_or_environ_values_recorded": false
+    },
+    "limits": [
+      "Static assets and runtime metadata only; Root owns separate ProductModal browser QA.",
+      "No sale-price application, draft preservation or commercial save is proved by this observer.",
+      "The bounded fresh metadata window has no execution acquisition; no global inference-success claim is made.",
+      "No HTTP credentials were used; public API200 and protected API401 are separate from authenticated authorization QA.",
+      "No provider call, model capability, OCR success, billing, latency or external ACK is inferred."
+    ],
+    "files": [
+      {
+        "path": "ops/lab/artifacts/product-price-suggestion-ui-20261107-r01/runtime/static-health-r36-final.json",
+        "bytes": 21778,
+        "sha256": "e7a8ab48374eeff886158170ea5c9af4e959223cb4ddd4f9e552bc1335a829e7"
+      },
+      {
+        "path": "ops/lab/artifacts/product-price-suggestion-ui-20261107-r01/runtime/metadata-r36-final.json",
+        "bytes": 4473,
+        "sha256": "68924b16d04029e55485643540b49591d71a58de4e047bb9cc114ef7f144ebfc"
+      },
+      {
+        "path": "ops/lab/artifacts/product-price-suggestion-ui-20261107-r01/runtime/final-health-r36-readonly.py",
+        "bytes": 10487,
+        "sha256": "6cacd2760197454f488fc936298ab6786560cdb9f83f05f5686cac06716c7a8c"
+      },
+      {
+        "path": "ops/lab/artifacts/product-price-suggestion-ui-20261107-r01/runtime/pins-r36-final.json",
+        "bytes": 2069,
+        "sha256": "0f289c4109a2b00112ef66a398599809c26af3f290f7453a00370f929471221d"
+      }
+    ]
+  },
+  "checks": {
+    "client_tests": {
+      "passed": 104,
+      "files": 4,
+      "seconds": 43.53
+    },
+    "full_workspace_typecheck_exit": 0,
+    "full_workspace_lint_exit": 0,
+    "operator_checks": 7,
+    "approved_files_byte_identical": 44,
+    "final_source_freeze_matches": true,
+    "knowledge_check": {
+      "command": "npm run knowledge:check",
+      "exit_code": 0,
+      "sources": 81,
+      "excluded": 37,
+      "documents": 44,
+      "fragments": 46,
+      "releaseId": "fc73e784a102d8b8bb991078288b3dc24763a41987420c859dcaac183d7b1048",
+      "publication": false
+    }
+  },
+  "catalog": {
+    "path": "ops/lab/artifacts/product-price-suggestion-ui-20261107-r01/catalog.json",
+    "sha256": "805544f237127e1c2ffd680e0813fe1f74e7c2189ca35b9dbf099c2aa9c08f24"
+  },
+  "commercial_save_clicked": false,
+  "provider_inference": false,
+  "knowledge_publication": false,
+  "limits": [
+    "No final product persistence was exercised; Apply changed only the draft and Cancel discarded it.",
+    "Long monetary values and600px were checked in isolated mutable preview; real VM geometry checked1088/320px.",
+    "Physical phones, Safari, virtual keyboard and live English switching not tested.",
+    "UI does not claim atomicity or provider readiness; related earlier Gemini OCR timeout remains separate."
+  ],
+  "temporary_preview_stopped": true
+}

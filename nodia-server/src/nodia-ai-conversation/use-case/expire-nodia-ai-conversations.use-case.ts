@@ -1,3 +1,4 @@
+import { retireChatGenerationOwners } from '../../ai-generation/chat-generation-ownership.js';
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import type { EntityManager } from 'typeorm';
 import { NodiaAiAttachmentService } from '../../nodia-ai-attachment/nodia-ai-attachment.service.js';
@@ -94,6 +95,7 @@ export class ExpireNodiaAiConversationsUseCase {
           `UPDATE nodia_ai_runtime_slots SET state='unknown',fence=fence+1,conversation_id=NULL,job_id=NULL,updated_at=$2 WHERE conversation_id=$1 AND state<>'free'`,
           [chat.id, now],
         );
+        await retireChatGenerationOwners(manager,chat.id);
         // A paused attempt has ended, but its human-owned native login may still
         // be running. Preserve only that operational witness when content expires.
         await manager.query(

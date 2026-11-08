@@ -2,12 +2,17 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MemoryRouter, Route, Routes } from "react-router";
+import { Link, MemoryRouter, Route, Routes } from "react-router";
 import type { ReactElement } from "react";
 import BusinessDetail from "../../../../../modules/business/pages/BusinessDetail/BusinessDetail";
 import * as businessServices from "../../../../../modules/business/infrastructure/services";
 import type { BusinessEntity } from "../../../../../modules/business/infrastructure/types";
 import useAuthStore from "../../../../../store/authStore";
+import i18n from "../../../../../translate";
+
+vi.mock("../../../../../modules/business/pages/BusinessDetail/components/SalesWorkspace", () => ({
+  default: ({ businessId }: { businessId: string }) => <input aria-label={`Carrito sintético ${businessId}`} defaultValue="" />,
+}));
 
 vi.mock("sileo", () => ({
   sileo: {
@@ -94,14 +99,14 @@ const createTestQueryClient = () =>
     },
   });
 
-const renderWithClient = (ui: ReactElement) => {
+const renderWithClient = (ui: ReactElement, initialEntry = "/business/biz-123") => {
   const queryClient = createTestQueryClient();
   return render(
-    <MemoryRouter initialEntries={["/tools/business/biz-123"]}>
+    <MemoryRouter initialEntries={[initialEntry]}>
       <QueryClientProvider client={queryClient}>
         <Routes>
-          <Route path="/tools/business/:id" element={ui} />
-          <Route path="/tools/business" element={<div>Business List Page</div>} />
+          <Route path="/business/:id" element={ui} />
+          <Route path="/business" element={<div>Business List Page</div>} />
         </Routes>
       </QueryClientProvider>
     </MemoryRouter>
@@ -140,6 +145,10 @@ describe("BusinessDetail Page", () => {
 
     // Breadcrumb root present
     expect(screen.getByTestId("breadcrumb-root")).toBeInTheDocument();
+
+    const expand = screen.getByRole("button", { name: i18n.t("business:detail_header_expand") });
+    expect(expand).toHaveAttribute("aria-expanded", "false");
+    await userEvent.click(expand);
 
     // Owner and badge
     expect(screen.getByText(/Oscar Valenzuela/i)).toBeInTheDocument();
@@ -187,6 +196,7 @@ describe("BusinessDetail Page", () => {
       expect(screen.getAllByText("Panadería Central").length).toBeGreaterThanOrEqual(1);
     });
 
+    await user.click(screen.getByRole("button", { name: i18n.t("business:detail_header_expand") }));
     const editBtn = screen.getByRole("button", { name: "Actualizar" });
     await user.click(editBtn);
 
@@ -203,6 +213,7 @@ describe("BusinessDetail Page", () => {
       expect(screen.getAllByText("Panadería Central").length).toBeGreaterThanOrEqual(1);
     });
 
+    await user.click(screen.getByRole("button", { name: i18n.t("business:detail_header_expand") }));
     const addCollabBtn = screen.getByRole("button", {
       name: /Agregar colaborador/i,
     });
@@ -247,6 +258,7 @@ describe("BusinessDetail Page", () => {
 
     // 4. Switch to Colaboradores tab
     const collaboratorsTab = screen.getByRole("tab", { name: /Colaboradores/i });
+    expect(screen.getAllByRole("tab").at(-1)).toBe(collaboratorsTab);
     await user.click(collaboratorsTab);
 
     expect(await screen.findByText("Carlos Sanchez")).toBeInTheDocument();
@@ -255,8 +267,80 @@ describe("BusinessDetail Page", () => {
   it("prevents collaborators from editing the business or assigning collaborators", async () => {
     vi.mocked(businessServices.getBusinessById).mockResolvedValue({ ...mockBusiness, owner_id: "another-user", user_role: "collaborator" });
     renderWithClient(<BusinessDetail />);
+    await userEvent.click(await screen.findByRole("button", { name: i18n.t("business:detail_header_expand") }));
     await waitFor(() => expect(screen.getByRole("button", { name: "Actualizar" })).toBeDisabled());
     expect(screen.getByRole("button", { name: "Agregar colaborador" })).toBeDisabled();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("collapses only the business header while keeping the selected POS and its mounted draft unchanged", async () => {
+    const user = userEvent.setup();
+    renderWithClient(<BusinessDetail />, "/business/biz-123?section=pos");
+    const collapseLabel = i18n.t("business:detail_header_collapse");
+    const expandLabel = i18n.t("business:detail_header_expand");
+    const toggle = await screen.findByRole("button", { name: expandLabel });
+    await waitFor(() => expect(toggle).toBeEnabled());
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute("aria-label", collapseLabel);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    const headerId = toggle.getAttribute("aria-controls");
+    expect(headerId).toBeTruthy();
+    const header = document.getElementById(headerId!);
+    expect(header).toBeVisible();
+    const cart = screen.getByRole("textbox", { name: "Carrito sintético biz-123" });
+    const pos = screen.getByRole("tab", { name: i18n.t("business:pos.title") });
+    await user.type(cart, "Producto sintético ×2");
+    const businessReads = vi.mocked(businessServices.getBusinessById).mock.calls.length;
+    const invoiceReads = vi.mocked(businessServices.getInvoices).mock.calls.length;
+
+    await user.click(toggle);
+    const expand = screen.getByRole("button", { name: expandLabel });
+    expect(expand).toHaveAttribute("aria-expanded", "false");
+    expect(expand).toHaveAttribute("aria-controls", headerId);
+    expect(expand).toHaveFocus();
+    await waitFor(() => expect(header).not.toBeVisible());
+    expect(pos).toBeVisible();
+    expect(pos).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("textbox", { name: "Carrito sintético biz-123" })).toBe(cart);
+    expect(cart).toHaveValue("Producto sintético ×2");
+    await user.hover(expand);
+    expect(await screen.findByRole("tooltip", { name: expandLabel })).toBeInTheDocument();
+    await user.click(expand);
+    await waitFor(() => expect(header).toBeVisible());
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("textbox", { name: "Carrito sintético biz-123" })).toBe(cart);
+    expect(cart).toHaveValue("Producto sintético ×2");
+    expect(businessServices.getBusinessById).toHaveBeenCalledTimes(businessReads);
+    expect(businessServices.getInvoices).toHaveBeenCalledTimes(invoiceReads);
+    expect(businessServices.createProduct).not.toHaveBeenCalled();
+    expect(businessServices.updateProduct).not.toHaveBeenCalled();
+  });
+
+  it("isolates header collapse by business while keeping navigation available", async () => {
+    vi.mocked(businessServices.getBusinessById).mockImplementation(async id => id === "biz-456"
+      ? { ...mockBusiness, id: "biz-456", name: "Otro negocio sintético" }
+      : mockBusiness);
+    const user = userEvent.setup();
+    renderWithClient(<><BusinessDetail />
+      <Link to="/business/biz-456?section=pos">Cambiar de negocio</Link>
+      <Link to="/business/biz-123?section=pos">Volver al negocio inicial</Link>
+    </>, "/business/biz-123?section=pos");
+    const collapseLabel = i18n.t("business:detail_header_collapse");
+    const expandLabel = i18n.t("business:detail_header_expand");
+    const toggle = await screen.findByRole("button", { name: expandLabel });
+    await waitFor(() => expect(toggle).toBeEnabled());
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await user.click(toggle);
+    expect(screen.getByRole("button", { name: collapseLabel })).toHaveAttribute("aria-expanded", "true");
+    await user.click(screen.getByRole("link", { name: "Cambiar de negocio" }));
+    const otherToggle = await screen.findByRole("button", { name: expandLabel });
+    await waitFor(() => expect(otherToggle).toBeEnabled());
+    expect(otherToggle).toHaveAttribute("aria-expanded", "false");
+    await user.click(screen.getByRole("link", { name: "Volver al negocio inicial" }));
+    const initialToggle = await screen.findByRole("button", { name: collapseLabel });
+    await waitFor(() => expect(initialToggle).toBeEnabled());
+    expect(initialToggle).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("tab", { name: i18n.t("business:pos.title") })).toBeVisible();
   });
 });

@@ -109,7 +109,7 @@ function fixture() {
       isSuperAdmin: false,
       modules: [],
     },
-    moduleRoutes: ['/tools/finances-personal'],
+    moduleRoutes: ['/finances-personal'],
   };
   return {
     preparer,
@@ -160,6 +160,45 @@ function stored(
 }
 
 describe('PrepareNodiaAiFinanceMovementUseCase (internal, no effect)', () => {
+  it('authorizes only the sealed historical owner without decoding or preparing its old command', async () => {
+    const f = fixture();
+    const step = stored(f, await ready(f));
+    Object.assign(step, { contractHash: 'b'.repeat(64) });
+    step.commandTemplate.command = {
+      retired_contract_field: 'not a current DTO',
+    };
+    const original = JSON.stringify(step);
+    const prepare = vi.spyOn(f.preparer, 'prepare');
+    await expect(
+      f.preparer.verifyHistoricalReadAuthority(step, f.context),
+    ).resolves.toBeUndefined();
+    expect(prepare).not.toHaveBeenCalled();
+    expect(f.save).not.toHaveBeenCalled();
+    expect(JSON.stringify(step)).toBe(original);
+    await expect(f.preparer.verifyAuthority(step, f.context)).rejects.toThrow();
+    f.setAuthenticated(false);
+    await expect(
+      f.preparer.verifyHistoricalReadAuthority(step, f.context),
+    ).rejects.toThrow();
+  });
+  it.each(['owner', 'scope', 'module', 'binding'])(
+    'rejects a historical finance read with invalid %s authority',
+    async (variant) => {
+      const f = fixture();
+      const step = stored(f, await ready(f));
+      if (variant === 'owner') {
+        step.scope.subject_user_id = '2';
+        step.commandTemplate.owner_id = '2';
+      }
+      if (variant === 'scope') step.scope.unrecognized = '1';
+      if (variant === 'module') Object.assign(f.context, { moduleRoutes: [] });
+      if (variant === 'binding') Object.assign(step, { outputBindings: [{}] });
+      await expect(
+        f.preparer.verifyHistoricalReadAuthority(step, f.context),
+      ).rejects.toThrow();
+      expect(f.save).not.toHaveBeenCalled();
+    },
+  );
   it.each(['name', 'key'] as const)(
     'rejects category %s changes even when the timestamp is identical',
     async (field) => {

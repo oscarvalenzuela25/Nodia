@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "recorded_on": "2026-10-28",
+  "recorded_at_utc": "2026-10-28T22:15:55.175Z",
+  "status": "explicit_human_authorization_recorded",
+  "source": "Direct human answer to the exact asynchronous approval question in this conversation",
+  "exact_human_reply": "Aprobar ficha revisión 5 y publicación",
+  "question": "¿Apruebas la ficha de punto de venta revisión 5 y su publicación para habilitar las siete herramientas de ventas en NodiaAI? La implementación y pruebas locales están completas. Puedes revisar docs/nodia-ai/knowledge/businesses/features/point-of-sale-and-sales.md y la evidencia en docs/evidence/business-pos-implementation-20261028-r01.json. AGENTS.md y el contrato de publicación docs/mvp/52-nodia-ai-ai06-knowledge-publication-contract.md exigen aprobación explícita del documento; la autorización de desarrollo no la sustituye. Esto habilita lecturas y preparación de cambios con confirmación humana; el despliegue sigue siendo un paso separado.",
+  "scope": {
+    "document_id": "businesses.point-of-sale-and-sales",
+    "path": "docs/nodia-ai/knowledge/businesses/features/point-of-sale-and-sales.md",
+    "revision": 5,
+    "reviewed_content_sha256": "7759966f3bfa8e4faef84185d86e34b5c1b462e65b0deb7c35136fc92aff363c",
+    "reviewed_file_sha256": "daa69b2e0960820f4200ee4eec883067d3952da2757a8d5a52a21e42da9e3e33",
+    "approved_content_sha256": "148a52fe4478f514b20283f0d6df5ac6db39c1f7340169e0afab5aab9f603a40",
+    "approved_file_sha256": "95440a9ab70da9ce3acfa4439077011d2c9ea8453cf486b877d4d85829f46211",
+    "capability_ids": [
+      "nodia_sales_get",
+      "nodia_sales_list",
+      "nodia_sales_prepare_create",
+      "nodia_sales_prepare_update",
+      "nodia_sales_prepare_complete",
+      "nodia_sales_prepare_cancel",
+      "nodia_sales_prepare_discard"
+    ],
+    "publication_authorized": true,
+    "individual_business_effects_authorized": false,
+    "deployment_authorized_by_this_reply": false
+  },
+  "metadata_transition": {
+    "document_status": {
+      "before": "draft",
+      "after": "approved"
+    },
+    "approval": {
+      "before": null,
+      "after": {
+        "reference": "docs/evidence/business-pos-knowledge-publication-authorization-20261028-r01.json",
+        "revision": 5,
+        "content_sha256": "148a52fe4478f514b20283f0d6df5ac6db39c1f7340169e0afab5aab9f603a40"
+      }
+    },
+    "revision_preserved": 5,
+    "implementation_status_preserved": "implemented",
+    "integration_status_preserved": "verified",
+    "body_byte_identical": true,
+    "note": "Only document_status and approval changed. Candidate/draft descriptions in the reviewed body and verification notes retain their pre-publication cut; this approval record and current compiled registry describe the later publication."
+  },
+  "does_not_approve": [
+    "ADR085 or other documents",
+    "Implicit confirmation of individual sale/catalog changes",
+    "Provider/model/mode/MCP or device acceptance",
+    "Application database migration, deployment or a real business transaction"
+  ],
+  "publication_execution": "Authorized next action; this authorization record alone does not assert publication or deployment succeeded"
+}

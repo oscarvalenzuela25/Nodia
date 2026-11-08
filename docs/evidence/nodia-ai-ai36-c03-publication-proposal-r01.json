@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "stage": "AI36-C03-publication-proposal",
+  "prepared_on": "2026-10-25",
+  "status": "awaiting_explicit_human_review_not_approved_not_applied",
+  "decision": null,
+  "current_actual_state": {
+    "published_capabilities": 150,
+    "published_fragments": 41,
+    "analyzer_published": false,
+    "registry": {
+      "path": "nodia-server/config/nodia-ai-knowledge.registry.json",
+      "sha256": "5ebe68d33d8f014e76ba1d7cb226f3143a921be626155b99619e6dbc5b566a9e"
+    },
+    "ficha_revision": 3,
+    "ficha_document_status": "draft",
+    "ficha_integration_status": "unregistered",
+    "ficha_approval": null
+  },
+  "proposed_scope": {
+    "tool_id": "nodia_invoices_analyze",
+    "tool_revision": 1,
+    "kind": "analyze_attachment",
+    "family": "nodia_invoice_analysis",
+    "resource": "invoices",
+    "operation": "analyze",
+    "actions": [
+      "prepare",
+      "complete"
+    ],
+    "action_keys": [],
+    "target_module_routes": [
+      "/tools/business"
+    ],
+    "effective_context_and_tool_modules": [
+      "/tools/nodia-ai",
+      "/tools/business"
+    ],
+    "native_business_authority_revalidated": true,
+    "input_schema": {
+      "path": "docs/evidence/nodia-ai-ai36-c03-publication-r01.schema.json",
+      "definition": "InvoiceAnalysisInput",
+      "sha256": "005b8828afba2dcfa21be36eb61f66db947f151bf1afc92f99e8e15d1066bb9d"
+    },
+    "output_schema": {
+      "path": "docs/evidence/nodia-ai-ai36-c03-publication-r01.schema.json",
+      "definition": "InvoiceAnalysisResult",
+      "sha256": "005b8828afba2dcfa21be36eb61f66db947f151bf1afc92f99e8e15d1066bb9d"
+    },
+    "original_contract": {
+      "path": "nodia-server/src/nodia-ai-products/contracts/invoice-analysis.json",
+      "sha256": "005b8828afba2dcfa21be36eb61f66db947f151bf1afc92f99e8e15d1066bb9d"
+    },
+    "schema_projection_semantics": "byte_identical_authoring_projection_to_satisfy_existing_schema_json_path_contract; no runtime schema change",
+    "hypothetical_counts_only_if_approved_built_and_adopted": {
+      "capabilities": 151,
+      "fragments": 42
+    }
+  },
+  "functional_boundary": {
+    "prepare": "Resolve authorized business, optional same-business commercial provider and ready original attachment of current owner message; bind exact generation/selection/file hash; return native extraction instructions.",
+    "complete": "Normalize extraction made in the already active Agentic generation through private pure endpoint and commit one linked revisable analysis result.",
+    "accepted_originals_by_contract": [
+      "image/png",
+      "image/jpeg",
+      "image/webp",
+      "application/pdf"
+    ],
+    "original_bytes_maximum": 10485760,
+    "items_maximum": 100,
+    "active_selection_format_proof_required": true,
+    "audio_or_reviewed_text_or_old_chat_files_allowed": false,
+    "nested_OCR_or_provider_generation": false,
+    "business_record_creation_or_financial_effect": false,
+    "human_result_review_required": true,
+    "later_business_write": "Separate exact proposal and human confirmation button; this analysis does not authorize a write.",
+    "historical_result_retrieval": "Reauthorize resource/chat/attachment, return existing result receipt without normalization or inference replay."
+  },
+  "context_to_review": {
+    "document": {
+      "path": "docs/nodia-ai/knowledge/businesses/features/active-invoice-analysis.md",
+      "sha256": "fa89bb61e3d5ab81930d75099705b882c53992febfda08576c3b8d5622241ff9"
+    },
+    "document_id": "businesses.active-invoice-analysis",
+    "revision": 3,
+    "supersedes_revision": 2,
+    "actual_document_status": "draft",
+    "actual_integration_status": "unregistered",
+    "actual_approval": null,
+    "binding_fragment_id": "c03-active-invoice-analysis",
+    "only_section_selected": [
+      "Uso del análisis en la generación activa"
+    ],
+    "fragment": {
+      "path": "ops/lab/artifacts/c03-publication-proposal-r01/fragment-proposed.md",
+      "sha256": "630d1c3bf37ca49a1999351507c00aa6ce24ea3783f673d98ceaccd4a569d4e5"
+    },
+    "fragment_bytes": 1655,
+    "current_draft_content_sha256": "b2758c5f65abcbd3b37592c695a6c1d4fdff9ecff963589703f8a9467d9c79d1",
+    "future_approval_target": {
+      "document_status": "approved",
+      "integration_status": "published",
+      "revision": 3,
+      "content_sha256": "9fe8459c3831be7458a92b5636c50f0c6989b3a94019dff2a4f42bb24661098d",
+      "approval_reference": "not_created_requires_actual_human_decision"
+    },
+    "approval_boundary": "The compiler requires approval of the named ficha/revision/content hash for the proposed metadata state; only the selected declarative section is emitted. No approval of other documents, plans, ADRs, research narrative, provider availability or acceptance is implied. All actual approval fields remain null until an explicit decision."
+  },
+  "reviewable_changes_not_applied": {
+    "registry_additions": {
+      "path": "ops/lab/artifacts/c03-publication-proposal-r01/registry-delta-proposed.json",
+      "sha256": "ed3e016c6dac5e195e34b68b21dc1264e4bc72743792f550c9291de974cc7b7d"
+    },
+    "unified_registry_diff": {
+      "path": "ops/lab/artifacts/c03-publication-proposal-r01/registry-proposed.patch",
+      "sha256": "490c7a937915f9e6f96e0a1c46e7699def87fa3bb2ee76c6299bd1beb16a34f2"
+    },
+    "hypothetical_registry": {
+      "path": "ops/lab/artifacts/c03-publication-proposal-r01/registry-proposed.json",
+      "sha256": "16baaa2acd3bd4083b25da6d908ff318ba317df0b50613b7c8220846f979fd26"
+    },
+    "changes": {
+      "add_capabilities": 1,
+      "add_bindings": 1,
+      "new_source_paths": 0,
+      "existing_capabilities_or_bindings_changed": 0,
+      "new_routes_or_tables": 0
+    },
+    "future_document_state_transition": "Only after explicit human approval, record the actual decision reference and exact revision/content hash, apply the two registry additions, build/verify a new immutable release, and adopt/requalify that release separately.",
+    "new_schema_projection": {
+      "path": "docs/evidence/nodia-ai-ai36-c03-publication-r01.schema.json",
+      "sha256": "005b8828afba2dcfa21be36eb61f66db947f151bf1afc92f99e8e15d1066bb9d"
+    }
+  },
+  "confirmed_technical_readiness": {
+    "compiler_contract_schema_accepts_analyze_attachment": true,
+    "runtime_registry_and_external_gateway_accept_analyze_attachment": true,
+    "external_prepare_execute_verify_protocol_required": true,
+    "DI_existing": {
+      "registry_module": "nodia-server/src/nodia-ai-tools/nodia-ai-tool-registry.module.ts",
+      "activation": "compiled capability IDs -> analysisIds -> NodiaAiInvoiceAnalysisModule.forPublication -> HTTP contract/snapshot/builder -> published family composition",
+      "zero_ids_currently_yield_empty_family_without_HTTP_or_SQL_providers": true,
+      "publication_requires_compiled_manifest_change": true,
+      "new_DI_wiring_required": false
+    },
+    "native_endpoint": {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c03-native-contract-adoption-r01.json",
+        "sha256": "a7b2ec5c771a8fc4c1f1cbac0f883e23df42696b4888c1f54e6f5bf72c692c2e"
+      },
+      "image": "sha256:8320b3cbaee7a2f49fe845481e5f07bcb5d72c82684909bab408ece9711b1b1d",
+      "epoch": {
+        "container_id": "b4375ef639fd03c5955abe5c7c6c491908d8fe4e0a0aa28e5cd162e17d11442c",
+        "image_id": "sha256:8320b3cbaee7a2f49fe845481e5f07bcb5d72c82684909bab408ece9711b1b1d",
+        "started_at_utc": "2026-10-25T17:45:34.206184136Z"
+      },
+      "actions": [
+        "prepare",
+        "normalize"
+      ],
+      "pure_HTTP_statuses": [
+        401,
+        200,
+        200,
+        413,
+        422
+      ],
+      "nested_inference": false,
+      "schema_projection_is_only_authoring_gap_resolved": true
+    },
+    "validation": {
+      "authoring": {
+        "path": "ops/lab/artifacts/c03-publication-proposal-r01/authoring-validation-r01.json",
+        "sha256": "f3951035702f26388d0fc1aa087190b5ac63b9eae6c52ba76cb9037a970ae5d8"
+      },
+      "current_compile_without_emission": "150 capabilities/41 fragments; analyzer absent",
+      "hypothetical_registry_and_capability_binding_shapes": "passed",
+      "unknown_kind_rejected": true,
+      "actual_schema_projection_bytes_equal_runtime_candidate_schema": true,
+      "isolated_real_C03_draft_compilation": "binding_document_unapproved_expected; no synthetic approval generated",
+      "targeted_runtime_tests": {
+        "passed": 96,
+        "failed": 0,
+        "files": 3,
+        "report": {
+          "path": "ops/lab/artifacts/c03-publication-proposal-r01/targeted-tests-r01.json",
+          "sha256": "3ef15ce8f06dac3c0b2932849a5c3951197d426f420100c4ac3dcf96b07c1297"
+        }
+      },
+      "VM_operations": 0,
+      "provider_generations": 0,
+      "HTTP_calls": 0,
+      "SQL_connections": 0
+    }
+  },
+  "provider_evidence_limits": {
+    "Gemini": {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-gemini-requalification-20261025-r01.json",
+        "sha256": "5a56125eecb7b82e270c4418ecbb025c2280f148f1783968a50c1053753aaad4"
+      },
+      "status": "Agentic_MCP_and_four_MIME_passed_Web_failed_closed",
+      "MCP": {
+        "status": "passed",
+        "real_provider_dispatch_requests": 1,
+        "terminal_proof_acknowledged": true
+      },
+      "Agentic_original_formats": [
+        {
+          "media_type": "image/png",
+          "status": "passed",
+          "generation_requests": 1,
+          "native_acknowledged": true,
+          "exact_format_verified": true,
+          "semantic_control_verified": true,
+          "source_sha256": "9c62e4afecd98ed43604040389f3edfe71917e2961f01a8829f6a2208022b8ac"
+        },
+        {
+          "media_type": "application/pdf",
+          "status": "passed",
+          "generation_requests": 1,
+          "native_acknowledged": true,
+          "exact_format_verified": true,
+          "semantic_control_verified": true,
+          "source_sha256": "1494a3002497bec24b29d659747f6be3a4e8b771802121041187a814899e040e"
+        },
+        {
+          "media_type": "audio/wav",
+          "status": "passed",
+          "generation_requests": 1,
+          "native_acknowledged": true,
+          "exact_format_verified": true,
+          "semantic_control_verified": true,
+          "source_sha256": "f278293e3bac3abf6ac93b17224f49562109c167a3708ddc0ad4640a472fe2d1"
+        },
+        {
+          "media_type": "audio/webm",
+          "status": "passed",
+          "generation_requests": 1,
+          "native_acknowledged": true,
+          "exact_format_verified": true,
+          "semantic_control_verified": true,
+          "source_sha256": "50ef15811192757eb6d87e66e3a1503f9a6c6a6a314c514b10f25ad3fe2d0bd8"
+        }
+      ],
+      "Web": {
+        "status": "failed_closed_unknown",
+        "HTTP_status": 502,
+        "native_outcome": "abandoned_unknown",
+        "native_acknowledged": true,
+        "successful_text_inference": false
+      },
+      "notes": [
+        "Four native MIME proofs establish only their exact current Agentic scope; audio remains outside this invoice analyzer contract.",
+        "These are generic MCP/MIME controls, not real nodia_invoices_analyze prepare/complete or UI/R2 acceptance.",
+        "Web remains conversational only and is not requalified by this proposal."
+      ]
+    },
+    "Codex": "No new Codex C03 acceptance or PDF/audio support is claimed; generic registration still requires current verified original-format provenance."
+  },
+  "remaining_gates": [
+    "Explicit human approval of the named revision, exact content and selected fragment; no decision is inferred from implementation requests.",
+    "Apply approved authoring metadata/registry additions and compile a fresh release with exact schema/implementation hashes; verify discovery and executable descriptor limits without broadening limits.",
+    "Adopt the Server/context release under existing operational and recovery controls.",
+    "Real Agentic analysis acceptance: current original PNG/PDF through authorized UI/R2/worker/MCP prepare -> same-generation extraction -> complete -> human result readback; prove no nested inference, no business write, and correct recovery/revocation boundaries.",
+    "Any later commercial write requires its own exact human-confirmed proposal."
+  ],
+  "effects_of_preparing_this_proposal": {
+    "actual_registry_changed": false,
+    "document_approval_changed": false,
+    "current_compiled_publication_emitted": false,
+    "new_tool_published": false,
+    "VM_or_service_changes": false,
+    "provider_generations": 0,
+    "domain_writes": 0,
+    "new_schema_projection_only": true,
+    "ficha_revision3_draft_and_minimal_section_prepared": true
+  }
+}

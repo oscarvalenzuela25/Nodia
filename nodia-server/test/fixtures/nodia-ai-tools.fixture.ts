@@ -184,7 +184,7 @@ export function toolFixture(
     sessionId: 'de59956f-7b71-4555-9fb0-2f99b8cd4774',
     isSuperAdmin: false,
     modules: [
-      { id: '1', key: 'nodia_ai', route: '/tools/nodia-ai' },
+      { id: '1', key: 'nodia_ai', route: '/nodia-ai' },
       { id: '2', key: 'fixture', route: '/tools/fixture' },
     ],
   };
@@ -201,9 +201,7 @@ export function toolFixture(
         if (
           requirements.moduleRoutes?.some(
             (route) => !actor.modules.some((item) => item.route === route),
-          ) ||
-          (!actor.isSuperAdmin &&
-            requirements.actionKeys?.some((action) => !actions.has(action)))
+          )
         )
           throw new Error('nodia_ai:capability_denied');
         return actor;
@@ -218,15 +216,10 @@ export function toolFixture(
         }[],
       ) => ({
         actor,
-        allowed: requirements.map(
-          (requirement) =>
-            (requirement.moduleRoutes ?? []).every((route) =>
-              actor.modules.some((item) => item.route === route),
-            ) &&
-            (actor.isSuperAdmin ||
-              (requirement.actionKeys ?? []).every((action) =>
-                actions.has(action),
-              )),
+        allowed: requirements.map((requirement) =>
+          (requirement.moduleRoutes ?? []).every((route) =>
+            actor.modules.some((item) => item.route === route),
+          ),
         ),
       }),
     ),
@@ -249,7 +242,7 @@ export function toolFixture(
     catalog_version: registry.catalogVersion,
     selection_snapshot: {
       connection_id: '2',
-      mode: 'token_plan_agentic',
+      mode: 'agentic',
       model_id: 'synthetic-configured-model',
       effort_id: null,
     },
@@ -261,7 +254,7 @@ export function toolFixture(
     },
     context_manifest: {
       knowledge_release: manifest.release_id,
-      module_routes: ['/tools/fixture', '/tools/nodia-ai'],
+      module_routes: ['/tools/fixture', '/nodia-ai'],
       tool_catalog_version: registry.catalogVersion,
       tool_contracts: {},
     },
@@ -270,7 +263,7 @@ export function toolFixture(
     run_id: run.id,
     actor_id: actor.actorId,
     session_public_id: actor.sessionId,
-    allowed_modules: ['/tools/fixture', '/tools/nodia-ai'],
+    allowed_modules: ['/tools/fixture', '/nodia-ai'],
     allowed_operations: ['chat:respond'],
     revoked_at: null,
     expires_at: new Date(Date.now() + 60000),

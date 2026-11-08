@@ -1,5 +1,11 @@
 # AGENTS
 
+## Teacher: controles y carga inicial (2026-11-06)
+
+- Las acciones `Button` de Nodia Teacher deben declarar `contained` u `outlined`; no usar `text` ni depender de su valor por defecto. En la revisión del plan se usa `contained`. Los iconos, selectores, menús y acordeones conservan su semántica propia.
+- Boneyard debe tener geometría visible durante la primera carga informativa sin datos; las reconsultas conservan el contenido y los formularios. No envolver controles interactivos en huesos de carga.
+- `TextInput` multilínea conserva un solo padding, propiedad de la raíz MUI; el textarea interno tiene padding cero. No añadir otro inset al textarea en futuras pantallas. Ver `DESIGN.md`.
+
 Guia de contexto para agentes IA que trabajen en este repositorio.
 
 ## Calidad Frontend Obligatoria
@@ -24,7 +30,7 @@ Al especificar o ampliar funciones de producto, aplicar el [estándar de context
 - UI: MUI + Emotion.
 - Estado: Zustand.
 - Datos remotos: Axios + React Query.
-- Ruteo: React Router con `Guard` (demo), `GuardStrict` (sesión y módulo) y `NoGuard` (login).
+- Ruteo: React Router con `Guard` (demo), `GuardStrict` (sesión y módulo, con bypass super_admin y retorno a Inicio si falta acceso) y `NoGuard` (login). Política y privacidad en [89](../docs/mvp/89-module-access-and-user-data-scope.md); las acciones no bloquean funcionalidades.
 - Traducciones: i18next en `src/translate`.
 
 ## Arquitectura Base (Resumen)
@@ -59,7 +65,7 @@ Al especificar o ampliar funciones de producto, aplicar el [estándar de context
 2. Los servicios deben importar `mainInstance` o `createApiInstance` desde `config/api.ts`. No usar la fábrica de transporte `createAxiosInstance` directamente en servicios, porque no instala autenticación.
 3. Todo texto visible debe usar traduccion `t("namespace:key")`.
 4. Toda key nueva de traduccion debe existir en `src/translate/es/*` y `src/translate/en/*`.
-5. Usar `Guard` para rutas que admiten demo y `GuardStrict` para `/settings/*`, con el `modulePath` correspondiente. Mantener `NoGuard` en login. Detalle en `docs/mvp/14-authentication.md` desde la raíz del repositorio.
+5. Usar `Guard` para rutas que admiten demo y `GuardStrict` para destinos funcionales privados con el `modulePath` canónico del recurso. Las URLs no dependen de grupos del menú; aliases históricos sólo redirigen al destino guardado. Mantener `NoGuard` en login. Ver ADR-092 y `docs/mvp/14-authentication.md` desde la raíz del repositorio.
 6. Mantener tipado estricto en TypeScript; evitar `any` innecesario.
 7. No crear themes MUI en componentes de modulo; la composicion del theme debe quedarse en `MUIProvider`.
    - Para tablas con paginado, seguir el [patrón de diseño de Modules](../docs/mvp/07-design-constraints.md#patrón-de-tablas-paginadas--confirmado-el-2026-10-04): barra superior, contenedor con cabecera/fila/paginado y adaptación móvil.
@@ -183,3 +189,9 @@ Usar DateInput para fechas civiles, TimeInput para horarios por reserva y DateTi
 - Listas con hijos li válidos; nombre accesible de controles incluye su texto visible ES/EN, con traducciones y foco preservados. Usar `component` para jerarquía semántica y `variant` para estilo. Referencias Sidenav/LanguageSelector/Home en DESIGN10.5.
 - No conservar refactors que solo redistribuyen chunks: comparar descarga y primera interacción en ambos perfiles y retirar una variante sin ahorro/regresiva. El experimento health IA de37 fue descartado; conservar validación estricta, caché compartida y preferencias móviles.
 - En una misma máquina, ejecutar mediciones y suite completa sin compilaciones pesadas concurrentes; registrar una espera fallida y repetirla aislada antes de atribuir regresión. No modificar tests/timeouts para ocultar el fallo. Referencia y límites en DESIGN10.4/10.6 y evidencia de37.
+
+## Proveedores IA: Agentic y API key
+
+La retirada de Web y el contrato de dos modos se implementan conforme al [plan90](../docs/mvp/90-agentic-api-only-web-retirement.md). Todo proveedor/modo nuevo o cambio de adaptador debe cumplir el [plan91 de incorporación y verificación](../docs/mvp/91-ai-provider-onboarding-verification.md): registrar capacidades reales por selección, verificar UI/contratos/negativos y una inferencia real completada de cada camino habilitado. No atribuir disponibilidad a un flag, clave guardada, login o catálogo; no introducir fallbacks ni listas cerradas de modelos. Client usa exclusivamente `agentic` y `api_key`, etiquetas **Agentic**/**API key**, flags `use_agentic`/`can_use_agentic` y configuración `fields.agentic`. API verde en topbar informa clave configurada, no inferencia. Las selecciones retiradas requieren reconfiguración explícita. Conservar fuentes/evidencias históricas como tales.
+
+Para chat API, aplicar también [A01..A08 del plan91](../docs/mvp/91-ai-provider-onboarding-verification.md#contratos-adicionales-para-chat-api-key): Client verifica selección/caché exactas, booleanos estrictos de tools/imágenes sin MCP ficticio, configuración distinta de inferencia, capacidades por evidencia y borrador/confirmación humana conservados. Los gates compartidos de gateway/permisos, presupuesto por POST, proof HTTP schema3, unknown/ACK sin replay y calificación MIME requieren su evidencia Server/SQL/proveedor; una fixture UI no los acredita. El detalle y los comandos pertenecen al plan91, no a este índice.

@@ -14,6 +14,7 @@ import json
 from uuid import UUID
 
 from service_errors import ServiceError
+from native_chat_owner_bindings import validate_chat_bindings
 
 ROOT = Path("/run/nodia-login-cgroups")
 ATTESTATION = Path("/run/nodia-login-containment.json")
@@ -56,11 +57,11 @@ class LoginCgroups:
     def attestation(self) -> dict:
         descriptor = None
         try:
-            if ATTESTATION.parent.stat().st_uid != 0 or ATTESTATION.parent.stat().st_mode & 0o022:
+            if ATTESTATION.parent.is_symlink() or ATTESTATION.parent.stat().st_uid != 0 or ATTESTATION.parent.stat().st_mode & 0o022:
                 raise ValueError()
             descriptor = os.open(ATTESTATION, os.O_RDONLY | os.O_NOFOLLOW)
             info = os.fstat(descriptor)
-            if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or info.st_mode & 0o222 or info.st_size > 32_768:
+            if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or info.st_nlink != 1 or info.st_mode & 0o222 or info.st_size > 32_768:
                 raise ValueError()
             def unique_object(pairs):
                 result = {}
@@ -71,9 +72,14 @@ class LoginCgroups:
                 return result
             with os.fdopen(descriptor, "r") as source:
                 descriptor = None
-                data = json.load(source, object_pairs_hook=unique_object)
-            if (not isinstance(data, dict) or data.keys() != {"version", "root_device", "root_inode", "host_boot", "closed_roots"}
-                    or type(data["version"]) is not int or data["version"] != 1 or str(UUID(data["host_boot"])) != data["host_boot"]
+                raw = source.read(32_769)
+                if len(raw.encode("utf-8")) > 32_768:
+                    raise ValueError()
+                data = json.loads(raw, object_pairs_hook=unique_object)
+            if (not isinstance(data, dict) or type(data.get("version")) is not int or data["version"] not in (1, 2)
+                    or data.keys() != ({"version", "root_device", "root_inode", "host_boot", "closed_roots"}
+                                       | ({"chat_bindings"} if data["version"] == 2 else set()))
+                    or str(UUID(data["host_boot"])) != data["host_boot"]
                     or data["host_boot"] != boot_id() or not isinstance(data["closed_roots"], list)
                     or len(data["closed_roots"]) > 128):
                 raise ValueError()
@@ -85,6 +91,8 @@ class LoginCgroups:
                         or any(type(closed[key]) is not int or closed[key] < 1 for key in ("device", "parent_inode"))
                         or closed == {"boot": data["host_boot"], "device": data["root_device"], "parent_inode": data["root_inode"]}):
                     raise ValueError()
+            if data["version"] == 2:
+                validate_chat_bindings(data["chat_bindings"])
             return data
         except (OSError, ValueError, KeyError, TypeError):
             raise ServiceError("login_containment_unavailable", "Falta la prueba privada de contención.") from None

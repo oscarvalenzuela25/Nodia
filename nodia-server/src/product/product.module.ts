@@ -23,12 +23,18 @@ import { CreateBulkProductLogsUseCase } from './use-case/create-bulk-product-log
 import { UpdateProductLogUseCase } from './use-case/update-product-log.use-case.js';
 import { UpdateBulkProductLogsUseCase } from './use-case/update-bulk-product-logs.use-case.js';
 import { QueryProductLogsUseCase } from './use-case/query-product-logs.use-case.js';
+import { GetProductByBarcodeUseCase } from './use-case/get-product-by-barcode.use-case.js';
+import { GetProductAvailabilityUseCase } from './use-case/get-product-availability.use-case.js';
+import { AuthorizationModule } from '../authorization/authorization.module.js';
+import { StorageModule } from '../common/storage/storage.module.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product, ProductLog])],
+  imports: [AuthorizationModule, StorageModule, TypeOrmModule.forFeature([Product, ProductLog])],
   controllers: [ProductController, ProductLogController],
   providers: [
     ProductService,
+    GetProductByBarcodeUseCase,
+    GetProductAvailabilityUseCase,
     // Products
     GetAllProductsUseCase,
     GetProductByIdUseCase,
@@ -48,6 +54,8 @@ import { QueryProductLogsUseCase } from './use-case/query-product-logs.use-case.
   ],
   exports: [
     ProductService,
+    GetProductByBarcodeUseCase,
+    GetProductAvailabilityUseCase,
     GetAllProductsUseCase,
     GetProductByIdUseCase,
     CreateProductUseCase,

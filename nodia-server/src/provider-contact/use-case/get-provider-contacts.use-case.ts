@@ -6,11 +6,17 @@ import {
 import { ProviderContactService } from '../provider-contact.service.js';
 import { ContactListDto } from '../dto/provider-contact.dto.js';
 import { validateContactId } from './contact-validation.js';
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 
 @Injectable()
 export class GetProviderContactsUseCase {
   constructor(private readonly service: ProviderContactService) {}
-  async execute(providerId: string, query: ContactListDto, isActive?: boolean) {
+  async execute(
+    providerId: string,
+    query: ContactListDto,
+    isActive?: boolean,
+    actor?: ActorReference,
+  ) {
     validateContactId(providerId);
     if (
       !Number.isInteger(query.page) ||
@@ -23,10 +29,8 @@ export class GetProviderContactsUseCase {
         (typeof query.search !== 'string' || query.search.length > 255))
     )
       throw new BadRequestException('Invalid pagination');
-    if (!(await this.service.providerExists(providerId)))
+    if (!(await this.service.providerExists(providerId, undefined, actor)))
       throw new NotFoundException('Provider not found');
-    return isActive === undefined
-      ? this.service.list(providerId, query)
-      : this.service.list(providerId, query, isActive);
+    return this.service.list(providerId, query, isActive, actor);
   }
 }

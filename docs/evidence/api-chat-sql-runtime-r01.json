@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "evidence_id": "api-chat-sql-runtime-r01",
+  "status": "offline_postgresql_runtime_verified",
+  "scope": "Actual Server API runtime, common checkpoints and recovery against disposable PostgreSQL; no provider acceptance or production adoption claimed.",
+  "environment": {
+    "stage": "/opt/nodia/operations/api-chat-r01/offline-tests-r01",
+    "postgres_major": 16,
+    "fresh_migrations_applied": 32,
+    "existing_runtime_or_database_modified": false,
+    "configured_private_env_read": false,
+    "real_credentials_used": false
+  },
+  "result": {
+    "success": true,
+    "checks": [
+      "fresh installation includes additive API migration once",
+      "two executors race: only one durable attempt can start",
+      "a second module instance cannot reconcile a live physical executor",
+      "concurrent exchanges spend exactly the persisted HTTP dispatch budget",
+      "initial arm is not charged twice and failed over-budget exchange is rolled back",
+      "completed HTTP proof separates local closure from native process claims",
+      "qualification cannot replace original content or a returned nonce after completion",
+      "common checkpoint accepts API proof and ACK is idempotent",
+      "forged closure cannot acknowledge a proof",
+      "rollback refuses to discard recovery metadata after API dispatch",
+      "armed-before-start crash produces a closed unknown tombstone without dispatch/replay",
+      "a stale worker cannot dispatch after reconciliation has fenced its job",
+      "common administrative reconciliation closes the unknown run and releases its SQL slot",
+      "failed terminal SQL rolls back its physical row without inventing a durable proof",
+      "only the same executor with attested completed local work can recover failed terminal persistence",
+      "positive local closure recovery retains payload binding and never replays a request",
+      "completed response with failed SQL persistence settles through common recovery without another generation",
+      "HTTP cannot start from claimed phase before durable arming",
+      "no provider or HTTP requests were attempted during SQL verification"
+    ],
+    "checks_passed": 19,
+    "api_dispatch_rows_observed": 1,
+    "provider_http_requests": 0,
+    "real_credentials": false,
+    "postgres": "16 disposable",
+    "operational_database_accessed": false,
+    "cleanup": "owned container and its volumes removed in finally"
+  },
+  "execution_history": [
+    {
+      "run": "r01",
+      "status": "failed",
+      "original_stdout_sha256": "95088d1785282b1f7b594ae2c14e29c9ab295c2bba4319818304cdb9ac8c1bc9",
+      "classification": "production_SQL_result_shape_bug",
+      "finding": "Raw TypeORM UPDATE RETURNING returned [rows,affectedCount]; checking array length===1 rejected legitimate additional exchange reservations.",
+      "resolution": "Root changed the budget reservation to WITH changed AS(UPDATE...RETURNING) SELECT id FROM changed, preserving atomic limit/fence checks."
+    },
+    {
+      "run": "r02",
+      "status": "failed",
+      "original_stdout_sha256": "2ef7fe89ee455a64e4af5e1308007111bd056b1a57be25464240b7ad58b83bcf",
+      "classification": "same_production_SQL_result_shape_bug_with_diagnostic",
+      "observed_reservations": 1,
+      "required_reservations": 3,
+      "resolution": "Same Root CTE fix; neither failure contacted any provider."
+    },
+    {
+      "run": "r03",
+      "status": "failed",
+      "original_stdout_sha256": "30495d21a46890beebd979d0130342e1a036b72074412dcabb06fbc877fe5ff9",
+      "classification": "test_harness_left_unknown_SQL_slot_unsettled",
+      "finding": "Test directly reconciled API metadata but omitted common recovery/reconciliation, leaving an unknown run occupying owner admission; next seed could not claim. The production budget fix had passed before this assertion.",
+      "resolution": "Test uses actual RecoverNodiaAiJobs/ReconcileNodiaAiRuntime/Cleanup and ReleaseNodiaAiRuntimeSlot, including administrator actor, instead of bypassing admission."
+    },
+    {
+      "run": "r04",
+      "status": "success",
+      "original_stdout_sha256": "da5e92afcb164da58ec5a53e9f592d8df44b273a42cb48a0a766683a4fa96bde",
+      "checks_passed": 19,
+      "orchestrator_command_wall_seconds": 3.633384,
+      "wall_time_scope": "Reported tool command wall time including SSH; not SQL latency or isolated Node duration.",
+      "provider_http_requests": 0,
+      "api_dispatch_rows_before_disposable_cleanup": 1
+    }
+  ],
+  "safety_and_cost": {
+    "network_boundary": "global fetch replaced by a throwing guard for the entire test; actual invocation count0",
+    "provider_generations": 0,
+    "inference_replays": 0,
+    "api_keys": 0,
+    "operational_database_accessed": false,
+    "private_stderr_copied": false,
+    "cleanup": "Finally closes the fixture DataSource and removes only its random template_ai92 owned Docker container with --volumes; no prune or shared volume action. Successful test exit requires cleanup completion."
+  },
+  "bindings": {
+    "compiled_package": {
+      "path": ".tmp/ai-api-chat/sql-runtime-test-r03.tar.gz",
+      "bytes": 2032494,
+      "sha256": "b4901e8e7c51e1744e0b0341a1586ab5d52e871f97bea2cac65bc9314d83b0ce",
+      "public_files": 3070
+    },
+    "r04_test_overlay": {
+      "path": "nodia-server/test/nodia-ai-api-chat-runtime.integration.mjs",
+      "sha256": "298bde988b7b495d81cd29bdab71f2cca520afb66f0542ad7db9ad24878d8849"
+    },
+    "actual_compiled_inputs": {
+      "dist/nodia-ai-adapter/api-nodia-ai-runtime.service.js": "8c088130250efdc986d176356fdaccb059ed211e944e65148a34741a821cd585",
+      "dist/nodia-ai-adapter/api-nodia-ai-runtime-owner.js": "194c5c3aad17dea74df266f1ea68ab0d6cec8f6543d14b037e843c33dd1afbb2",
+      "dist/migrations/1793310000000-AddNodiaAiApiChatRuntime.js": "db1fc373db7068275bf39689d951a4fb72d1407d371c276755639fec1de94e6e",
+      "dist/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.js": "2e00f2ee9f5b4660e75d934144511f559221250395932e39f403ffee8a84475a",
+      "dist/nodia-ai-runtime/use-case/runtime-reconciliation-descriptor.js": "459bb904546eb1315eab2c94ecccff6a2f6674c8b9598f82ec7563939a0b5982",
+      "dist/nodia-ai-runtime/use-case/reconcile-nodia-ai-runtime.use-case.js": "e69075e19eff39be524039b19e7058938fa89aee2933194084ae843b55bbb394",
+      "dist/nodia-ai-runtime/use-case/recover-nodia-ai-jobs.use-case.js": "a52fa09b77fe669531c3321b6a3e9dd3488008bb56db18c2cdf9b1d34c2a0c73",
+      "dist/nodia-ai-runtime/use-case/release-nodia-ai-runtime-slot.use-case.js": "8e8f3d14801b392dd75f0f9190063bd19cc0d32379f0a4114f512c4fdf4958b3",
+      "dist/nodia-ai-runtime/use-case/cleanup-nodia-ai-runtime-proofs.use-case.js": "30224bb8bf9df8e8ec9d7890a274e0017e5848abe89839879d39ca672f409aaf",
+      "dist/nodia-ai-runtime/config/runtime-policy.json": "419c9db8717e6739159d836ba740a619d9dcf09ce694ed08b973c7af28a2ef06",
+      "test/nodia-ai.integration.fixture.mjs": "f20c592389be35ade29f2abec15730b93d2eeef685b9e5a0c14e2cde483316d3"
+    },
+    "operator_sources": {
+      "update-sql-test-r03.py": "e059bafbc6bc3f37d5c2b29e94d56709211cc905c949bd3e5a4f8168b4a76160",
+      "update-sql-test-r04.py": "f134aa6425891f09e8bfc0c673f04658c52646217df4dbd59318f63b24f8976c",
+      "run-sql-test-r03.py": "da309b9c28895b254bca0557bc80857360ac72b64f2541e7905fe85aca30903b",
+      "run-sql-test-r04.py": "0441bdb7d7fbf5dce6896a156686434d98bfc06156d84aba61d730d174da6f64",
+      "read-sql-runtime-diagnostic-r03.py": "12d4f72377c49c5631bdcbf3b0cb037b80fc0f630e89b06b289ade86cac69879"
+    },
+    "sanitized_diagnostics": {
+      "sql-runtime-test-diagnostic-r01.json": "6034757c95e9d39de383d1cefcc51f4c5bdc4fed2ccaff3e84248e110c17c9ff",
+      "sql-runtime-test-diagnostic-r03.json": "3d72a03d4efdf2e0a27d741124b7c4081535ecf7753d5307189e8becefe71cda"
+    },
+    "raw_r04_report": {
+      "path": ".tmp/ai-api-chat/sql-runtime-test-r04.json",
+      "bytes": 1683,
+      "sha256": "da5e92afcb164da58ec5a53e9f592d8df44b273a42cb48a0a766683a4fa96bde"
+    }
+  },
+  "limits": [
+    "No actual provider, key, model or modality was qualified by SQL fixtures.",
+    "Tests of owner-live denial and positive local closure run in the same process; SIGKILL/PID-reuse/reboot rules also have separate owner unit tests, not physical crash acceptance here.",
+    "A completed local HTTP executor with failed SQL persistence retains its known result binding; this does not prove remote cancellation.",
+    "Original failed reports remain failed and their private stderr is not included.",
+    "No application API/worker/Native restart, production migration, deploy or adoption was performed by this test."
+  ]
+}

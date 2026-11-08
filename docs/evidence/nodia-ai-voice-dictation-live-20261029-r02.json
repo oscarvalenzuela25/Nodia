@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-10-29T17:44:14.112Z",
+  "origin": "http://localhost:5174",
+  "route": "/tools/nodia-ai",
+  "browser": "ChatGPT in-app browser",
+  "authenticated_application": true,
+  "ui_language": "es",
+  "recognizer_language_directly_instrumented": false,
+  "recognizer_replaced_or_mocked": false,
+  "dictation_button_clicks": 1,
+  "observed_error": "El servicio de dictado del navegador no pudo conectarse. Conservamos el texto obtenido.",
+  "recognition_result": null,
+  "successful_transcription": false,
+  "stop_with_recognized_text": "not_reached_due_to_recognition_network_failure",
+  "manual_edit_after_failure": {
+    "text": "Prueba de edición manual, sin envío.",
+    "verified_in_visible_textarea": true,
+    "restored_to_original_empty_draft": true
+  },
+  "after_failure_editor": {
+    "disabled": false,
+    "readOnly": false,
+    "value": ""
+  },
+  "message_articles_after": 2,
+  "original_two_messages_unchanged_in_accessibility_tree": true,
+  "network": {
+    "truncated": false,
+    "hasMore": false,
+    "requests": [
+      {
+        "sequence": 11,
+        "method": "GET",
+        "path": "/api/v1/ai-providers/health"
+      }
+    ]
+  },
+  "visible_attachment_cards_after": 0,
+  "attachment_creation_requests": 0,
+  "message_submission_requests": 0,
+  "send_button_clicked": false,
+  "physical_speech_captured": "not_verified",
+  "browser_permission_prompt_observed": false,
+  "other_connected_general_browsers": 0,
+  "cleanup": {
+    "draft_restored": true,
+    "user_tab_preserved": true,
+    "no_navigation_or_reload": true,
+    "no_settings_or_provider_changes": true
+  },
+  "proof_screenshot": "ops/lab/artifacts/nodia-ai-voice-dictation-live-20261029-r02/ui-restored.png",
+  "status": "real_attempt_failed_transcription_and_manual_stop_not_validated",
+  "proof_screenshot_sha256": "b42969b9155f574495fd418229899beb17671465dd4f1a217b5e632019fd4352",
+  "limitations": [
+    "No words were recognized; a positive Spanish dictation and manual stop with recognized text were not exercised.",
+    "Editor editability was verified manually after the failure; manually typed text is not a transcription.",
+    "The observed browser error does not establish the underlying network or service cause.",
+    "Only the integrated browser was connected; no browser, provider, network, credential or permission setting was changed."
+  ]
+}

@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import { BulkCreateProviderDto } from '../dto/bulk-create-provider.dto.js';
 import { ProviderService } from '../provider.service.js';
@@ -6,7 +7,7 @@ import { ProviderService } from '../provider.service.js';
 export class CreateBulkProvidersUseCase {
   constructor(private readonly providerService: ProviderService) {}
 
-  async execute(bulkDto: BulkCreateProviderDto) {
+  async execute(bulkDto: BulkCreateProviderDto, actor?: ActorReference) {
     if (bulkDto.items) {
       bulkDto.items.forEach((item) => {
         if (item.name) {
@@ -14,6 +15,6 @@ export class CreateBulkProvidersUseCase {
         }
       });
     }
-    return this.providerService.createBulk(bulkDto);
+    return this.providerService.createBulk(bulkDto, actor);
   }
 }

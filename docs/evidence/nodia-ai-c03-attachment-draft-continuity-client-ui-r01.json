@@ -1,0 +1,164 @@
+{
+  "adopted_nginx_sha256": "1dbc5b36d3e61541fae29939a365c53ad913c14ab62b55c4097a11234b15f2da",
+  "client_target_manifest_sha256": "b7acc13f2e383bac6ff034bb1706d4cb9223e4b3fe2cddacbd34b29f59d2a963",
+  "cut_postquiet_UTC": "2026-10-26T00:35:07.652Z",
+  "database_return_readback": {
+    "all_other_readback_fields_exactly_equal": true,
+    "attachments_after": 7,
+    "attachments_before": 6,
+    "fixture_content_SHA_matches": true,
+    "historical_run_states": [
+      "failed",
+      "failed",
+      "failed"
+    ],
+    "new_attachment": {
+      "byte_count": "148100",
+      "content_hash": "0723e3c8fc45e6bbed58e91e16e7d18f55b2a1423ee007342b793f66c057d98b",
+      "duration_seconds": null,
+      "id": "4eca5dff-f299-46b4-8377-7a2587cbeca6",
+      "interpretation_origin": null,
+      "interpretation_present": false,
+      "interpretation_reviewed": false,
+      "interpretation_revision": 0,
+      "kind": "image",
+      "media_type": "image/png",
+      "page_count": null,
+      "state": "ready"
+    },
+    "new_attachment_in_message_parts": false,
+    "only_changed_top_level_key": "attachments",
+    "timing": "After SPA return, before final policy GET completed; not a second post-GET readback",
+    "unchanged_historical_runs": 3,
+    "unchanged_message_parts": 6,
+    "unchanged_messages": 3
+  },
+  "final_AX_verified": {
+    "accept_text_disabled": true,
+    "displayed_bytes": 148100,
+    "file_name": "C03-PNG-R01.png",
+    "file_state": "Archivo validado",
+    "message_text_exact": "Verificación de continuidad del borrador y archivo original; no enviar.",
+    "native_ready_badge_observed": false,
+    "review_editor_has_nonempty_AX_Value": false,
+    "send_disabled": true,
+    "upload_button_present": false
+  },
+  "invariants": {
+    "ACKs_are_not_current_Gemini_MCP_acceptance": true,
+    "domain_tables_rowcounts_and_hashes_equal": 41,
+    "entire_invariants_receipt_byte_exact_to_baseline": true,
+    "historical_Codex_native_ACKs_preserved": 2,
+    "no_new_proposals_executions_or_tool_records_vs_baseline": true,
+    "postquiet": {
+      "SQL": {
+        "configured_SQL_writes": 0,
+        "observed_at_utc": "2026-10-26T00:35:07.652Z",
+        "open_attempts": 0,
+        "pending_jobs": 0,
+        "preserved_r05_chat": 1,
+        "provider_requests": 0,
+        "retained_slots": 0,
+        "scope": "post_disposable_live_read_only_operational_quiescence",
+        "services_restarted": false,
+        "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395",
+        "stage": "AI-36-C05",
+        "status": "passed",
+        "storage_operations": 0
+      },
+      "SQL_writes": 0,
+      "native": {
+        "agentic_home_configured": true,
+        "armed_native_proofs": 0,
+        "configured_database_modified": false,
+        "invalid_native_proofs": 0,
+        "observed_at_utc": "2026-10-26T00:35:07Z",
+        "profile_bytes_read": false,
+        "provider_calls": 0,
+        "scope": "read_only_native_runtime_artifact_counts",
+        "stage": "AI-32-R04",
+        "temporary_attachment_directories": 0,
+        "temporary_cli_directories": 0,
+        "terminal_native_proofs": 0,
+        "unknown_markers": 0
+      },
+      "provider_generations": 0,
+      "services_restarted": false,
+      "source_epoch": {
+        "container_id": "1dc08be23adcecce38e4bb591fe43b12eb6d5f480a455fe23488f160d4a871bb",
+        "image_id": "sha256:56f6d5c48f81056968f02aa89b51192900e38251c35f9d499089244f2af323b5",
+        "started_at": "2026-10-26T00:21:42.03765925Z"
+      },
+      "status": "quiet_verified"
+    }
+  },
+  "limits": {
+    "AI36_closed": false,
+    "AI38_closed": false,
+    "C03_PNG_PDF_extraction_accepted": false,
+    "RAM_survival_after_tab_close_promised": false,
+    "SQL_write_statement_count_during_upload": null,
+    "authentication_remount_root_cause_proven": false,
+    "current_MCP_acceptance": false,
+    "duplicate_binary_PUT_absence_proven_by_live_trace": false,
+    "exact_live_HTTP_POST_or_PUT_count": null,
+    "full_browser_reload_tested_or_supported": false,
+    "live_JS_File_object_reference_identity_directly_inspected": false,
+    "new_VM_HTTP_SQL_SDK_operations_by_this_consolidator": 0,
+    "new_attachment_row_is_an_expected_operational_mutation": true,
+    "non_generative_availability_HTTP_or_SDK_count": null,
+    "original_native_ready_or_MIME_requalification_accepted": false,
+    "tab_closed_after_capture_reported": true
+  },
+  "operator_reported_sequence": [
+    "Initial availability false; explicit retry recovered metadata availability",
+    "Selected synthetic C03-PNG-R01.png, entered exact verification text, clicked upload then immediately Inicio",
+    "Left chat route to /, returned through SPA, text and validated attachment card persisted",
+    "Return availability HTTP error emitted toast; explicit retry recovered",
+    "Opened attachment panel, empty interpretation; no upload button and no second upload action",
+    "Explicit format recheck kept draft/card mounted and controls disabled during fetch",
+    "After policy fetch: card validated, interpretation not accepted, send remained disabled",
+    "No send or accept-text action; tab closed after final AX/screenshot capture"
+  ],
+  "operator_sequence_basis": "Root operator report; final AX/screenshot and SQL readback check the resulting state, not every action or HTTP request",
+  "prior_adoption_catalog_sha256": "df0bc5d957d32499c5a7bab8289eca92ef73e97cf4d55da63128baa7edf42e72",
+  "schema_version": 1,
+  "scope": "Real upload and SPA leave/return; no send, interpretation acceptance or new extraction",
+  "screenshot_scope": {
+    "message_editor_off_viewport": true,
+    "message_retention_basis": "full AX Value, not screenshot visibility",
+    "review_empty_basis": "AX without nonempty Value and operator report; editor extends below screenshot viewport",
+    "viewport_shows_file_card_name_bytes_and_validated_state": true
+  },
+  "sources": {
+    "baseline-c03-after-policy-remount-r01.json": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-ui-verification-r01/receipts/baseline-c03-after-policy-remount-r01.json",
+      "sha256": "6be0ad560f94801bf3af1dbc5d49186b8866ae4273f9b02ade530412761380bd"
+    },
+    "baseline-invariants-before-instrumented-png-r01.json": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-ui-verification-r01/receipts/baseline-invariants-before-instrumented-png-r01.json",
+      "sha256": "548105972ea494fce08feef55ce586740eb9e7fc939ad4185471fdbe9346e552"
+    },
+    "client-draft-return-readback-r01.json": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-ui-verification-r01/receipts/client-draft-return-readback-r01.json",
+      "sha256": "5980414a9470d198e2147576af98018752fd7408352ad1b7301ca79bd9151d50"
+    },
+    "client-draft-ui-after-quiet-r01.json": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-ui-verification-r01/receipts/client-draft-ui-after-quiet-r01.json",
+      "sha256": "130a29fd9ddac6a5c673febfe3d614b8d0816870fc78bfcb9f61d05cf2072c2b"
+    },
+    "client-draft-ui-final-r01.png": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-ui-verification-r01/receipts/client-draft-ui-final-r01.png",
+      "sha256": "e6183af47e0fd2f8d89b3b39080f1cd2a74cdd3a432a84dd7f1a8c13d73ef9c1"
+    },
+    "client-draft-ui-final-r01.txt": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-ui-verification-r01/receipts/client-draft-ui-final-r01.txt",
+      "sha256": "93ad15ed6634cdd2138624ffd653c91342b1ca89d47d904b3cd32ca7d97f1e8b"
+    },
+    "client-draft-ui-invariants-r01.json": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-ui-verification-r01/receipts/client-draft-ui-invariants-r01.json",
+      "sha256": "548105972ea494fce08feef55ce586740eb9e7fc939ad4185471fdbe9346e552"
+    }
+  },
+  "status": "partial_authenticated_UI_continuity_accepted"
+}

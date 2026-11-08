@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   Optional,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ExecuteApiInvoiceUseCase } from '../../ai-provider/use-case/execute-api-invoice.use-case.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
@@ -15,61 +16,95 @@ import { validateInvoiceFile } from '../invoice-file-validation.js';
 import type { GeminiExecutionEngine } from '../../common/ai/ai.types.js';
 import { ExecuteCodexInvoiceUseCase } from '../../ai-provider/use-case/execute-codex-invoice.use-case.js';
 import type { AnalysisProgress } from '../../common/ai/analysis-progress.js';
-
+import { invoiceAnalysisResponse } from '../invoice-analysis-response.js';
+import { InvoiceService } from '../invoice.service.js';
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 @Injectable()
 export class AnalyzeInvoiceUseCase {
   constructor(
     private readonly geminiService: GeminiService,
     private readonly mistralService: MistralService,
     private readonly providerService: ProviderService,
-    @Optional() private readonly aiProviderService?: AiProviderService,
-    @Optional() private readonly executeApiInvoice?: ExecuteApiInvoiceUseCase,
-    @Optional() private readonly executeCodexInvoice?: ExecuteCodexInvoiceUseCase,
+    @Optional()
+    private readonly aiProviderService?: AiProviderService,
+    @Optional()
+    private readonly executeApiInvoice?: ExecuteApiInvoiceUseCase,
+    @Optional()
+    private readonly executeCodexInvoice?: ExecuteCodexInvoiceUseCase,
+    @Optional()
+    private readonly invoiceService?: InvoiceService,
   ) {}
-
   async execute(
     file: Express.Multer.File | undefined,
     dto: AnalyzeInvoiceDto,
     signal?: AbortSignal,
     progress?: AnalysisProgress,
+    actor?: ActorReference,
   ): Promise<AnalyzeInvoiceResponse> {
     progress?.validateContext(dto);
     signal?.throwIfAborted();
     // Also validate legacy query options after the controller merges query/body.
     // They must never silently override a validated mode or be ignored.
     for (const [key, allowed] of Object.entries({
-      mode: ['api_key', 'token_plan_web', 'token_plan_agentic'],
-      engine: ['web', 'agentic'], model_type: ['default', 'ocr'],
+      mode: ['api_key', 'agentic'],
+      engine: ['agentic'],
+      model_type: ['default', 'ocr'],
     })) {
       const value = dto[key as keyof AnalyzeInvoiceDto];
-      if (value !== undefined && (typeof value !== 'string' || !allowed.includes(value))) {
+      if (
+        value !== undefined &&
+        (typeof value !== 'string' || !allowed.includes(value))
+      ) {
         throw new BadRequestException('Opciones de análisis inválidas.');
       }
     }
-    if (dto.thinking_level !== undefined && (typeof dto.thinking_level !== 'string' || !/^[a-z][a-z0-9_-]{0,31}$/.test(dto.thinking_level))) throw new BadRequestException('Esfuerzo de análisis inválido.');
-    if (dto.model !== undefined && (typeof dto.model !== 'string' || !dto.model.trim() || dto.model.length > 128)) {
+    if (
+      dto.thinking_level !== undefined &&
+      (typeof dto.thinking_level !== 'string' ||
+        !/^[a-z][a-z0-9_-]{0,31}$/.test(dto.thinking_level))
+    )
+      throw new BadRequestException('Esfuerzo de análisis inválido.');
+    if (
+      dto.model !== undefined &&
+      (typeof dto.model !== 'string' ||
+        !dto.model.trim() ||
+        dto.model.length > 128)
+    ) {
       throw new BadRequestException('Modelo de análisis inválido.');
     }
     const thinking = dto.extended_thinking as unknown;
-    if (thinking !== undefined && ![true, false, 'true', 'false'].includes(thinking as boolean | string)) {
+    if (
+      thinking !== undefined &&
+      ![true, false, 'true', 'false'].includes(thinking as boolean | string)
+    ) {
       throw new BadRequestException('Opción de razonamiento inválida.');
     }
-    dto = { ...dto, ...(thinking !== undefined ? { extended_thinking: thinking === true || thinking === 'true' } : {}) };
-    if (dto.mode && dto.engine && dto.engine !== (dto.mode === 'token_plan_agentic' ? 'agentic' : 'web')) {
-      throw new BadRequestException('El motor solicitado no corresponde al modo de sesión.');
+    dto = {
+      ...dto,
+      ...(thinking !== undefined
+        ? { extended_thinking: thinking === true || thinking === 'true' }
+        : {}),
+    };
+    if (dto.mode && dto.engine && dto.engine !== 'agentic') {
+      throw new BadRequestException(
+        'El motor solicitado no corresponde al modo de sesión.',
+      );
     }
     if (!file || !file.buffer) {
       throw new BadRequestException('No invoice file uploaded');
     }
-
     validateInvoiceFile(file);
+    if (!actor || !this.invoiceService)
+      throw new UnauthorizedException('auth:session_expired');
+    await this.invoiceService.assertBusinessAccess(dto.business_id, actor);
     progress?.emit('file_validated');
-
     let providerFields: Record<string, any> | undefined;
     let providerTax = 19;
-
     if (dto.provider_id && dto.provider_id.trim().length > 0) {
-      const provider = await this.providerService.findOne(dto.provider_id);
+      const provider = await this.providerService.findOne(
+        dto.provider_id,
+        actor,
+      );
       if (provider.business_id !== dto.business_id) {
         throw new BadRequestException(
           'Provider does not belong to the specified business',
@@ -81,26 +116,31 @@ export class AnalyzeInvoiceUseCase {
           ? Number(provider.tax)
           : 19;
     }
-
     // Resolve configured AI connection
     let configuredAiProvider: any = null;
     if (this.aiProviderService) {
       if (dto.ai_provider_id) {
-        configuredAiProvider = await this.aiProviderService.findProviderById(dto.ai_provider_id);
-        if (!configuredAiProvider) throw new BadRequestException('La conexión IA elegida no existe.');
+        configuredAiProvider = await this.aiProviderService.findProviderById(
+          dto.ai_provider_id,
+        );
+        if (!configuredAiProvider)
+          throw new BadRequestException('La conexión IA elegida no existe.');
       }
       if (!configuredAiProvider && dto.ai_provider) {
-          const allProvidersRes = await this.aiProviderService.findAllProviders({
-            all: true,
-            includes: true,
-          });
-          const allProviders = allProvidersRes.data || [];
-          configuredAiProvider = allProviders.find(
-            (p: any) =>
-              p.key?.toLowerCase() === dto.ai_provider?.toLowerCase() &&
-              p.is_active,
+        const allProvidersRes = await this.aiProviderService.findAllProviders({
+          all: true,
+          includes: true,
+        });
+        const allProviders = allProvidersRes.data || [];
+        configuredAiProvider = allProviders.find(
+          (p: any) =>
+            p.key?.toLowerCase() === dto.ai_provider?.toLowerCase() &&
+            p.is_active,
+        );
+        if (!configuredAiProvider)
+          throw new BadRequestException(
+            'El proveedor elegido no tiene una conexión activa configurada.',
           );
-          if (!configuredAiProvider) throw new BadRequestException('El proveedor elegido no tiene una conexión activa configurada.');
       }
       if (!configuredAiProvider) {
         const allProvidersRes = await this.aiProviderService.findAllProviders({
@@ -112,19 +152,24 @@ export class AnalyzeInvoiceUseCase {
           allProviders.find((p: any) => p.is_active && p.is_default) ||
           allProviders.find(
             (p: any) => p.is_active && p.fields?.is_default_for_invoices,
-          ) || allProviders.find((p: any) => p.is_active);
+          ) ||
+          allProviders.find((p: any) => p.is_active);
       }
     }
-
     const engineKey = (
       configuredAiProvider?.catalog?.key ||
       configuredAiProvider?.key ||
       dto.ai_provider ||
       (canUseGemini() ? 'gemini' : 'mistral')
     ).toLowerCase();
-    if (dto.ai_provider && dto.ai_provider.toLowerCase() !== engineKey) throw new BadRequestException('El proveedor solicitado no corresponde a la conexión elegida.');
-    if (!['gemini', 'mistral', 'openai'].includes(engineKey)) throw new BadRequestException('Este proveedor no tiene un adaptador de facturas implementado.');
-
+    if (dto.ai_provider && dto.ai_provider.toLowerCase() !== engineKey)
+      throw new BadRequestException(
+        'El proveedor solicitado no corresponde a la conexión elegida.',
+      );
+    if (!['gemini', 'mistral', 'openai'].includes(engineKey))
+      throw new BadRequestException(
+        'Este proveedor no tiene un adaptador de facturas implementado.',
+      );
     if (engineKey === 'mistral') {
       if (!canUseMistral()) {
         throw new BadRequestException(
@@ -132,149 +177,198 @@ export class AnalyzeInvoiceUseCase {
         );
       }
     }
-
-    if (configuredAiProvider?.is_active === false || configuredAiProvider?.catalog?.is_active === false) {
+    if (
+      configuredAiProvider?.is_active === false ||
+      configuredAiProvider?.catalog?.is_active === false
+    ) {
       throw new BadRequestException('La conexión IA elegida está inactiva.');
     }
-
     // Resolve connection mode
-    let effectiveMode: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null =
-      dto.mode || null;
-
+    let effectiveMode: 'api_key' | 'agentic' | null = dto.mode || null;
     if (!effectiveMode && dto.engine) {
-      effectiveMode = dto.engine === 'agentic' ? 'token_plan_agentic' : 'token_plan_web';
+      effectiveMode = 'agentic';
     }
-
     if (!effectiveMode && configuredAiProvider) {
-      if (configuredAiProvider.default_mode) {
-        effectiveMode = configuredAiProvider.default_mode;
-      } else if (configuredAiProvider.use_token_plan_agentic) {
-        effectiveMode = 'token_plan_agentic';
-      } else if (configuredAiProvider.use_token_plan_web) {
-        effectiveMode = 'token_plan_web';
-      } else if (configuredAiProvider.use_api_key) {
-        effectiveMode = 'api_key';
-      } else if (configuredAiProvider.mode === 'web_session') {
-        effectiveMode = 'token_plan_web';
-      } else if (configuredAiProvider.mode === 'api_key') {
-        effectiveMode = 'api_key';
-      } else if (configuredAiProvider.fields?.engine === 'agentic') {
-        effectiveMode = 'token_plan_agentic';
-      } else if (configuredAiProvider.fields?.engine === 'web') {
-        effectiveMode = 'token_plan_web';
-      }
+      effectiveMode = configuredAiProvider.default_mode ?? null;
     }
-
-    if (engineKey === 'gemini' && effectiveMode !== 'api_key' && !canUseGemini()) {
-      throw new BadRequestException('El servicio de Gemini AI no está disponible o no está configurado.');
+    if (!effectiveMode)
+      throw new BadRequestException('Seleccione un modo AI antes de analizar.');
+    if (
+      engineKey === 'gemini' &&
+      effectiveMode !== 'api_key' &&
+      !canUseGemini()
+    ) {
+      throw new BadRequestException(
+        'El servicio de Gemini AI no está disponible o no está configurado.',
+      );
     }
-    if (configuredAiProvider && effectiveMode &&
-      (configuredAiProvider[`use_${effectiveMode}`] === false || configuredAiProvider.catalog?.[`can_use_${effectiveMode}`] === false)) {
-      throw new BadRequestException('La conexión IA no permite el modo solicitado.');
+    if (
+      configuredAiProvider &&
+      effectiveMode &&
+      (configuredAiProvider[`use_${effectiveMode}`] === false ||
+        configuredAiProvider.catalog?.[`can_use_${effectiveMode}`] === false)
+    ) {
+      throw new BadRequestException(
+        'La conexión IA no permite el modo solicitado.',
+      );
     }
-    if (effectiveMode === 'token_plan_agentic' && dto.extended_thinking === true) {
-      throw new BadRequestException('El modo agéntico admite nivel de esfuerzo, no extended thinking Web.');
+    if (effectiveMode === 'agentic' && dto.extended_thinking === true) {
+      throw new BadRequestException(
+        'El modo agéntico admite nivel de esfuerzo, no extended thinking Web.',
+      );
     }
-
     // Scoped modes never inherit another channel's historical root preferences.
     const storedFields = configuredAiProvider?.fields ?? {};
-    const hasScoped = Boolean(storedFields.token_plan_web || storedFields.token_plan_agentic || storedFields.api_key);
-    const modeFields = (effectiveMode ? storedFields[effectiveMode] : undefined) ?? (hasScoped ? {} : storedFields);
-
+    const hasScoped = Boolean(storedFields.agentic || storedFields.api_key);
+    const modeFields =
+      (effectiveMode ? storedFields[effectiveMode] : undefined) ??
+      (hasScoped ? {} : storedFields);
     const defaultModel =
-      modeFields?.selected_model ||
-      modeFields?.default_model;
-    const ocrModel =
-      modeFields?.ocr_focus_model ||
-      modeFields?.ocr_model;
-
+      modeFields?.selected_model || modeFields?.default_model;
+    const ocrModel = modeFields?.ocr_focus_model || modeFields?.ocr_model;
     // Use explicit model from DTO if provided; otherwise if ocr_model is configured, prefer it, else default model
     const effectiveModel =
       dto.model ||
       (dto.model_type === 'ocr'
-        ? (ocrModel || defaultModel)
-        : (ocrModel && typeof ocrModel === 'string' && ocrModel.trim() !== ''
-            ? ocrModel
-            : defaultModel));
-
-    const sessionMode = effectiveMode === 'token_plan_web' || effectiveMode === 'token_plan_agentic';
+        ? ocrModel || defaultModel
+        : ocrModel && typeof ocrModel === 'string' && ocrModel.trim() !== ''
+          ? ocrModel
+          : defaultModel);
+    const sessionMode = effectiveMode === 'agentic';
     const levels: unknown = modeFields?.thinking_levels;
-    if (sessionMode && engineKey === 'gemini' && dto.thinking_level === undefined
-        && levels != null && (typeof levels !== 'object' || Array.isArray(levels))) {
-      throw new BadRequestException('La configuración de niveles de razonamiento es inválida.');
+    if (
+      sessionMode &&
+      engineKey === 'gemini' &&
+      dto.thinking_level === undefined &&
+      levels != null &&
+      (typeof levels !== 'object' || Array.isArray(levels))
+    ) {
+      throw new BadRequestException(
+        'La configuración de niveles de razonamiento es inválida.',
+      );
     }
-    const levelMap = levels && typeof levels === 'object' && !Array.isArray(levels)
-      ? levels as Record<string, unknown> : {};
-    const hasModelLevel = typeof effectiveModel === 'string' && Object.hasOwn(levelMap, effectiveModel);
-    const hasLevelPreference = dto.thinking_level !== undefined || hasModelLevel || Object.hasOwn(modeFields ?? {}, 'thinking_level');
-    const resolvedLevel: unknown = dto.thinking_level !== undefined ? dto.thinking_level
-      : sessionMode ? (hasModelLevel ? levelMap[effectiveModel] : modeFields?.thinking_level) : undefined;
-    if (engineKey === 'gemini' && sessionMode && resolvedLevel != null && !['low', 'medium', 'high'].includes(resolvedLevel as string)) {
-      throw new BadRequestException('El nivel de razonamiento configurado es inválido.');
+    const levelMap =
+      levels && typeof levels === 'object' && !Array.isArray(levels)
+        ? (levels as Record<string, unknown>)
+        : {};
+    const hasModelLevel =
+      typeof effectiveModel === 'string' &&
+      Object.hasOwn(levelMap, effectiveModel);
+    const resolvedLevel: unknown =
+      dto.thinking_level !== undefined
+        ? dto.thinking_level
+        : sessionMode
+          ? hasModelLevel
+            ? levelMap[effectiveModel]
+            : modeFields?.thinking_level
+          : undefined;
+    if (
+      engineKey === 'gemini' &&
+      sessionMode &&
+      resolvedLevel != null &&
+      !['low', 'medium', 'high'].includes(resolvedLevel as string)
+    ) {
+      throw new BadRequestException(
+        'El nivel de razonamiento configurado es inválido.',
+      );
     }
-    const effectiveThinkingLevel = resolvedLevel == null ? undefined : resolvedLevel as 'low' | 'medium' | 'high';
+    const effectiveThinkingLevel =
+      resolvedLevel == null
+        ? undefined
+        : (resolvedLevel as 'low' | 'medium' | 'high');
     // Preserve the legacy boolean only until an explicit level preference exists.
     const effectiveExtendedThinking =
-      effectiveMode === 'token_plan_agentic'
+      effectiveMode === 'agentic'
         ? undefined
-        : dto.extended_thinking ?? (effectiveMode === 'token_plan_web'
-          ? (!hasLevelPreference && typeof modeFields?.enable_extended_thinking === 'boolean' ? modeFields.enable_extended_thinking : undefined)
-          : undefined);
-
-    if (effectiveMode === 'token_plan_web' && effectiveThinkingLevel !== undefined && effectiveExtendedThinking !== undefined) {
-      throw new BadRequestException('No combine niveles de razonamiento con pensamiento extendido histórico.');
-    }
-
+        : (dto.extended_thinking ?? undefined);
     let targetGeminiEngine: GeminiExecutionEngine | undefined = dto.engine;
     if (!targetGeminiEngine) {
-      if (effectiveMode === 'token_plan_agentic') {
+      if (effectiveMode === 'agentic') {
         targetGeminiEngine = 'agentic';
-      } else if (effectiveMode === 'token_plan_web') {
-        targetGeminiEngine = 'web';
       } else if (configuredAiProvider?.fields?.engine) {
-        targetGeminiEngine = configuredAiProvider.fields.engine as GeminiExecutionEngine;
+        targetGeminiEngine = configuredAiProvider.fields
+          .engine as GeminiExecutionEngine;
       }
     }
-
-    const codex = engineKey === 'openai' && effectiveMode === 'token_plan_agentic';
-    if (engineKey === 'openai' && !codex && effectiveMode !== 'api_key') throw new BadRequestException('OpenAI no admite el canal Web.');
-    if (!codex && dto.thinking_level !== undefined && !['low', 'medium', 'high'].includes(dto.thinking_level)) throw new BadRequestException('Opciones de análisis inválidas.');
-    if (codex && (!configuredAiProvider?.id || !this.executeCodexInvoice)) throw new BadRequestException('Debe seleccionar una conexión Codex configurada.');
-    if (effectiveMode === 'api_key' && dto.engine) throw new BadRequestException('Un canal API no admite un motor de sesión.');
-    if (effectiveMode === 'api_key' && (!configuredAiProvider?.id || !this.executeApiInvoice)) throw new BadRequestException('Debe seleccionar una conexión API configurada.');
-    if (effectiveMode !== 'api_key') progress?.resolve({ providerId: configuredAiProvider?.id ?? null, provider: engineKey,
-      mode: effectiveMode, model: typeof effectiveModel === 'string' ? effectiveModel : null });
-    const extractedData =
-      codex ? await this.executeCodexInvoice!.execute(configuredAiProvider.id, effectiveModel, file, providerFields, providerTax, dto.thinking_level, signal, ...(progress ? [progress] : []))
+    const codex = engineKey === 'openai' && effectiveMode === 'agentic';
+    if (engineKey === 'openai' && !codex && effectiveMode !== 'api_key')
+      throw new BadRequestException('OpenAI no admite el canal Web.');
+    if (
+      !codex &&
+      dto.thinking_level !== undefined &&
+      !['low', 'medium', 'high'].includes(dto.thinking_level)
+    )
+      throw new BadRequestException('Opciones de análisis inválidas.');
+    if (codex && (!configuredAiProvider?.id || !this.executeCodexInvoice))
+      throw new BadRequestException(
+        'Debe seleccionar una conexión Codex configurada.',
+      );
+    if (effectiveMode === 'api_key' && dto.engine)
+      throw new BadRequestException(
+        'Un canal API no admite un motor de sesión.',
+      );
+    if (
+      effectiveMode === 'api_key' &&
+      (!configuredAiProvider?.id || !this.executeApiInvoice)
+    )
+      throw new BadRequestException(
+        'Debe seleccionar una conexión API configurada.',
+      );
+    if (effectiveMode !== 'api_key')
+      progress?.resolve({
+        providerId: configuredAiProvider?.id ?? null,
+        provider: engineKey,
+        mode: effectiveMode,
+        model: typeof effectiveModel === 'string' ? effectiveModel : null,
+      });
+    const extractedData = codex
+      ? await this.executeCodexInvoice!.execute(
+          configuredAiProvider.id,
+          effectiveModel,
+          file,
+          providerFields,
+          providerTax,
+          dto.thinking_level,
+          signal,
+          ...(progress ? [progress] : []),
+        )
       : effectiveMode === 'api_key'
         ? signal || progress
-          ? await this.executeApiInvoice!.execute(configuredAiProvider.id, dto.model, file, providerFields, providerTax, dto.thinking_level as 'low' | 'medium' | 'high' | undefined, signal, progress)
-          : await this.executeApiInvoice!.execute(configuredAiProvider.id, dto.model, file, providerFields, providerTax, dto.thinking_level as 'low' | 'medium' | 'high' | undefined)
+          ? await this.executeApiInvoice!.execute(
+              configuredAiProvider.id,
+              dto.model,
+              file,
+              providerFields,
+              providerTax,
+              dto.thinking_level as 'low' | 'medium' | 'high' | undefined,
+              signal,
+              progress,
+            )
+          : await this.executeApiInvoice!.execute(
+              configuredAiProvider.id,
+              dto.model,
+              file,
+              providerFields,
+              providerTax,
+              dto.thinking_level as 'low' | 'medium' | 'high' | undefined,
+            )
         : engineKey === 'mistral'
-        ? effectiveModel !== undefined || ocrModel !== undefined
-          ? await this.mistralService.extractInvoiceData(
-              file.buffer,
-              file.mimetype,
-              providerFields,
-              providerTax,
-              effectiveModel,
-              ocrModel || undefined,
-            )
-          : await this.mistralService.extractInvoiceData(
-              file.buffer,
-              file.mimetype,
-              providerFields,
-              providerTax,
-            )
-        : signal || progress
-          ? await this.geminiService.extractInvoiceData(file.buffer, file.mimetype, providerFields, providerTax, effectiveModel,
-              effectiveExtendedThinking, targetGeminiEngine, effectiveThinkingLevel, signal, progress)
-          : effectiveModel !== undefined ||
-            dto.extended_thinking !== undefined ||
-            targetGeminiEngine !== undefined ||
-            dto.thinking_level !== undefined ||
-            dto.mode !== undefined
-          ? effectiveThinkingLevel !== undefined
+          ? effectiveModel !== undefined || ocrModel !== undefined
+            ? await this.mistralService.extractInvoiceData(
+                file.buffer,
+                file.mimetype,
+                providerFields,
+                providerTax,
+                effectiveModel,
+                ocrModel || undefined,
+              )
+            : await this.mistralService.extractInvoiceData(
+                file.buffer,
+                file.mimetype,
+                providerFields,
+                providerTax,
+              )
+          : signal || progress
             ? await this.geminiService.extractInvoiceData(
                 file.buffer,
                 file.mimetype,
@@ -284,35 +378,46 @@ export class AnalyzeInvoiceUseCase {
                 effectiveExtendedThinking,
                 targetGeminiEngine,
                 effectiveThinkingLevel,
+                signal,
+                progress,
               )
-            : await this.geminiService.extractInvoiceData(
-                file.buffer,
-                file.mimetype,
-                providerFields,
-                providerTax,
-                effectiveModel,
-                effectiveExtendedThinking,
-                targetGeminiEngine,
-              )
-          : await this.geminiService.extractInvoiceData(
-              file.buffer,
-              file.mimetype,
-              providerFields,
-              providerTax,
-            );
-
+            : effectiveModel !== undefined ||
+                dto.extended_thinking !== undefined ||
+                targetGeminiEngine !== undefined ||
+                dto.thinking_level !== undefined ||
+                dto.mode !== undefined
+              ? effectiveThinkingLevel !== undefined
+                ? await this.geminiService.extractInvoiceData(
+                    file.buffer,
+                    file.mimetype,
+                    providerFields,
+                    providerTax,
+                    effectiveModel,
+                    effectiveExtendedThinking,
+                    targetGeminiEngine,
+                    effectiveThinkingLevel,
+                  )
+                : await this.geminiService.extractInvoiceData(
+                    file.buffer,
+                    file.mimetype,
+                    providerFields,
+                    providerTax,
+                    effectiveModel,
+                    effectiveExtendedThinking,
+                    targetGeminiEngine,
+                  )
+              : await this.geminiService.extractInvoiceData(
+                  file.buffer,
+                  file.mimetype,
+                  providerFields,
+                  providerTax,
+                );
     signal?.throwIfAborted();
     progress?.emit('extraction_validated');
-    return {
-      business_id: dto.business_id,
-      provider_id: dto.provider_id ?? null,
-      code: extractedData.code,
-      total_amount: extractedData.total_amount,
-      data: {
-        issue_date: extractedData.issue_date,
-        items: extractedData.items,
-        ...extractedData.raw_data,
-      },
-    };
+    return invoiceAnalysisResponse(
+      dto.business_id,
+      dto.provider_id ?? null,
+      extractedData,
+    );
   }
 }

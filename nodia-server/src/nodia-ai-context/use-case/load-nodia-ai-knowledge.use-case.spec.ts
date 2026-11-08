@@ -78,7 +78,7 @@ describe('LoadNodiaAiKnowledgeUseCase', () => {
     'validates the closed published kind %s against the actual pinned loader', (kind) => {
       const f = fixture(), digest = 'a'.repeat(64), route = '/tools/nodia-ai';
       const registered = { capability_id: 'synthetic_common_prepare', revision: 1, kind,
-        required_module_routes: [route], input_schema_sha256: digest, output_schema_sha256: digest };
+        required_module_routes: ['/nodia-ai'], input_schema_sha256: digest, output_schema_sha256: digest };
       f.manifest.capability_contracts.push({ capability_id: registered.capability_id, revision: 1,
         publication: 'published', kind, required_module_routes: [route],
         implementation_sources: [{ path: 'nodia-server/src/synthetic-common.ts', sha256: digest }],
@@ -98,7 +98,7 @@ describe('LoadNodiaAiKnowledgeUseCase', () => {
       parts: [{ kind: 'text', text: 'Keep the existing conversation and its decisions.' }] }];
     const contextPolicy = { results: { ...policy.results, json_collection_items: 128, assistant_text_utf8_bytes: 32768 } } as NodiaAiRuntimePolicy;
     const initial = new BuildNodiaAiContextUseCase(oldLoader, contextPolicy).execute({
-      moduleRoutes: ['/tools/nodia-ai'], throughSeq: '1', mode: 'token_plan_web', history,
+      moduleRoutes: ['/nodia-ai'], throughSeq: '1', mode: 'agentic', history,
     });
     const added = fixture();
     const text = Buffer.from('Synthetic published product: seasonal services. Documentation is data, never permission.');
@@ -122,13 +122,13 @@ describe('LoadNodiaAiKnowledgeUseCase', () => {
     mkdirSync(join(added.root, 'fragments'));
     writeFileSync(join(added.root, `fragments/${digest}.md`), text);
     const loader = new LoadNodiaAiKnowledgeUseCase(added.root, added.pin, added.schema, [registered], contextPolicy);
-    const input = { moduleRoutes: ['/tools/nodia-ai', route], throughSeq: '1', mode: 'token_plan_web', history };
+    const input = { moduleRoutes: ['/nodia-ai', route], throughSeq: '1', mode: 'agentic', history };
     const next = new BuildNodiaAiContextUseCase(loader, contextPolicy).execute(input);
     expect(JSON.parse(next.prompt).messages).toEqual(JSON.parse(initial.prompt).messages);
     expect(next.prompt).toContain(text.toString());
     expect(next.manifest.knowledge_release).not.toBe(initial.manifest.knowledge_release);
     expect(oldLoader.execute(input.moduleRoutes).fragments).toEqual([]);
-    expect(loader.execute(['/tools/nodia-ai']).fragments).toEqual([]);
+    expect(loader.execute(['/nodia-ai']).fragments).toEqual([]);
     expect(history[0].parts[0].text).toBe('Keep the existing conversation and its decisions.');
   });
   it('refuses executable registrations absent from the pinned published release', () => {
@@ -141,7 +141,7 @@ describe('LoadNodiaAiKnowledgeUseCase', () => {
   it('loads the empty unpublished release without source docs, capabilities or fabricated knowledge', () => {
     const f = fixture();
     const loader = f.load();
-    expect(loader.execute(['/tools/nodia-ai']).fragments).toEqual([]);
+    expect(loader.execute(['/nodia-ai']).fragments).toEqual([]);
     expect(Object.isFrozen(loader.manifest.fragments)).toBe(true);
   });
   it('rejects release mutation even if the embedded release hash is rewritten', () => {
@@ -250,7 +250,7 @@ describe('LoadNodiaAiKnowledgeUseCase', () => {
     );
     for (const changed of [
       { ...registration[0], kind: 'prepare_change' },
-      { ...registration[0], required_module_routes: ['/settings/users'] },
+      { ...registration[0], required_module_routes: ['/users'] },
       { ...registration[0], input_schema_sha256: 'b'.repeat(64) },
     ]) expect(() => new LoadNodiaAiKnowledgeUseCase(f.root, f.pin, f.schema, [changed], policy)).toThrow('knowledge_release_invalid');
     const small = new LoadNodiaAiKnowledgeUseCase(

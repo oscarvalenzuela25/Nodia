@@ -86,14 +86,14 @@ export class BuildNodiaAiCommonReadToolsUseCase {
         modules: [
           {
             key: 'nodia_ai_common',
-            route: '/tools/nodia-ai',
+            route: '/nodia-ai',
             label: 'NodiaAI',
           },
         ],
         resources: definitions.map((row) => ({
           key: row[2],
           label: row[2],
-          requiredModuleRoutes: ['/tools/nodia-ai'],
+          requiredModuleRoutes: ['/nodia-ai'],
         })),
         capabilities: NODIA_AI_COMMON_READ_TOOLS.map((name, index) => {
           const [inputDef, outputDef, resource, description] =
@@ -182,7 +182,7 @@ export class BuildNodiaAiCommonReadToolsUseCase {
             operationKey: name === 'nodia_preferences_list' ? 'list' : 'get',
             descriptionKey: `nodia_ai:tools.${name}`,
             description,
-            requiredModuleRoutes: ['/tools/nodia-ai'],
+            requiredModuleRoutes: ['/nodia-ai'],
             actionKeys: [],
             inputSchema,
             outputSchema,

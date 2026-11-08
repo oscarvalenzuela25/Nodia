@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-28",
+  "timezone": "America/Santiago",
+  "scope": "Local refinement from six browser comments; no deployment",
+  "specification": "docs/mvp/93-nodia-ai-chat-composer-redesign.md",
+  "changes": [
+    "Red44px trash at attachment top right; local blob image thumbnail with URL cleanup",
+    "Selecting/pasting files starts serial validated uploads in authorized idle chat; no initial upload button",
+    "No automatic replay after known failure or uncertain upload; explicit same-identity recovery remains",
+    "Content review disclosure preserves dirty failed edits and all native/OCR/review gates",
+    "Context and duplicate Configuration controls removed",
+    "Saved preferences moved from header into conversation menu without deleting accepted preferences",
+    "Full-width conversation tile with sibling menu button positioned inside top right",
+    "Microphone icon has border/background, pointer hover and visible keyboard focus"
+  ],
+  "browser": {
+    "engine": "Chromium via installed Chrome and Playwright CLI",
+    "transport": "Isolated synthetic Axios fixture; no external upload or inference",
+    "matrix": [
+      {
+        "width": 320,
+        "height": 892,
+        "theme": "dark",
+        "language": "es",
+        "no_horizontal_overflow": true,
+        "redundant_controls_absent": true,
+        "draft_preserved_on_resize": true,
+        "microphone_target_min44": true
+      },
+      {
+        "width": 360,
+        "height": 892,
+        "theme": "light",
+        "language": "en",
+        "no_horizontal_overflow": true,
+        "redundant_controls_absent": true,
+        "draft_preserved_on_resize": true,
+        "microphone_target_min44": true
+      },
+      {
+        "width": 390,
+        "height": 892,
+        "theme": "dark",
+        "language": "es",
+        "no_horizontal_overflow": true,
+        "redundant_controls_absent": true,
+        "draft_preserved_on_resize": true,
+        "microphone_target_min44": true
+      },
+      {
+        "width": 430,
+        "height": 892,
+        "theme": "light",
+        "language": "en",
+        "no_horizontal_overflow": true,
+        "redundant_controls_absent": true,
+        "draft_preserved_on_resize": true,
+        "microphone_target_min44": true
+      },
+      {
+        "width": 599,
+        "height": 892,
+        "theme": "dark",
+        "language": "es",
+        "no_horizontal_overflow": true,
+        "redundant_controls_absent": true,
+        "draft_preserved_on_resize": true,
+        "microphone_target_min44": true
+      },
+      {
+        "width": 600,
+        "height": 892,
+        "theme": "light",
+        "language": "en",
+        "no_horizontal_overflow": true,
+        "redundant_controls_absent": true,
+        "draft_preserved_on_resize": true,
+        "microphone_target_min44": true
+      },
+      {
+        "width": 768,
+        "height": 892,
+        "theme": "dark",
+        "language": "es",
+        "no_horizontal_overflow": true,
+        "redundant_controls_absent": true,
+        "draft_preserved_on_resize": true,
+        "microphone_target_min44": true
+      },
+      {
+        "width": 899,
+        "height": 892,
+        "theme": "light",
+        "language": "en",
+        "no_horizontal_overflow": true,
+        "redundant_controls_absent": true,
+        "draft_preserved_on_resize": true,
+        "microphone_target_min44": true
+      },
+      {
+        "width": 900,
+        "height": 892,
+        "theme": "dark",
+        "language": "es",
+        "no_horizontal_overflow": true,
+        "redundant_controls_absent": true,
+        "draft_preserved_on_resize": true,
+        "microphone_target_min44": true
+      },
+      {
+        "width": 1569,
+        "height": 892,
+        "theme": "light",
+        "language": "en",
+        "no_horizontal_overflow": true,
+        "redundant_controls_absent": true,
+        "draft_preserved_on_resize": true,
+        "microphone_target_min44": true
+      }
+    ],
+    "interaction_checks": {
+      "local_image_loaded": true,
+      "initial_upload_button_absent": true,
+      "auto_put_requests": 1,
+      "remove_button44px": true,
+      "microphone_hover_pointer_and_background_change": true,
+      "conversation_menu_inside_tile_top_right": true,
+      "saved_preferences_dialog_access": true,
+      "closing_preferences_and_removing_file_preserves_draft": true,
+      "mobile_composer_inside_viewport_with_closed_and_open_review": true
+    },
+    "screenshots": [
+      {
+        "path": "docs/evidence/nodia-ai-chat-refinement-mobile-20261028-r02.png",
+        "sha256": "18d714bdcd71b2bba79a2355fdaaac5fd197912f1ca4ccb8e43afd0a3cc0c547"
+      },
+      {
+        "path": "docs/evidence/nodia-ai-chat-refinement-desktop-20261028-r02.png",
+        "sha256": "4d38b161b5b9d125dc4b2368c44a414f473fd88c3048f58d88dee51cd11eae27"
+      }
+    ]
+  },
+  "verification": {
+    "full_client_suite": {
+      "passed": 2067,
+      "files": 251,
+      "scope": "before final review-disclosure refinement"
+    },
+    "final_affected_suites": {
+      "passed": 132,
+      "files": 10,
+      "scope": "131 passed; stale disclosure expectation corrected and its4-test file rerun passed; attachment-directory58/58 separately passed"
+    },
+    "typecheck_build": "passed",
+    "lint": "passed",
+    "diff_check": "passed",
+    "knowledge": {
+      "check": "passed",
+      "build": "passed",
+      "sources": 68,
+      "excluded": 25,
+      "documents": 43,
+      "fragments": 45,
+      "release_id": "8c41c654ead87cad80f81292cbed21b919f5024e1d1baaf890d65a90238db548",
+      "draft_published": false
+    }
+  },
+  "limits": [
+    "Synthetic uploads validate client behavior, not real backend/storage operation or provider inference.",
+    "Physical phone, virtual keyboard, Safari, microphone acceptance and deployment remain outside this verification.",
+    "Preexisting React development update warning and Vite chunk-size warning remain; no global performance acceptance claimed."
+  ],
+  "source_hashes": [
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+      "sha256": "a37560a96875cf5bea7d91a272f0a0367b8512980ffb97aba461b9e3c97160e2"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/styles.ts",
+      "sha256": "de0353c4ec2ce65236b253c1f9bc2c064b7062d12fd5f6e677b7689f4dc0c6b9"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Attachments/Attachments.tsx",
+      "sha256": "5e60c84f4a6c7494fc732c1e723719518b7bc32176c426c8d434a6395135f8b3"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Attachments/AttachmentDraftPreview.tsx",
+      "sha256": "90cba9abc50b9e64b169bbf26ee15082e09d5c57c5a1fab7b45fc2fe24f61b85"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Attachments/styles.ts",
+      "sha256": "36ce830ae52374cf6d0e221cce2021c7ef81030814e40575c794980fe99a4dde"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Attachments/hooks/useAttachmentDrafts.ts",
+      "sha256": "b665dbffdeeb942c0b5caad12b2a04cd35694fcbacd7468313a2d3d6c78000e7"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ChatComposer/ChatComposer.tsx",
+      "sha256": "35443769e87a17249a096c4edb0d92f1f04ef96362d1cbc3ad56026e7d9a1815"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ChatComposer/styles.ts",
+      "sha256": "9617a76a7f848a9401fa400b27bb8bc3d9117c29fd25b09e3142ff1e69690783"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConversationHistory/ConversationHistory.tsx",
+      "sha256": "738b45ff58ec1268a1a552d2db25969a6ee88b155922466da69c97c17904e4c0"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConversationHistory/styles.ts",
+      "sha256": "e475b5425b4d3ee2b44d59f910566fb4fb955ddd3bb1b4a7f357e6e00ffb5bf0"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConversationHistory/types.ts",
+      "sha256": "e8650ac9a64f0ffb4d1d4cac767275aaaab913fffb37a6be4493c9309596654e"
+    }
+  ]
+}

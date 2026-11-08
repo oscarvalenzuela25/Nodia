@@ -1,9 +1,19 @@
 # OpenAI Codex Agentic
 
+> Cambio solicitado el 2026-10-27: retirar Web y conservar sólo Agentic (`agentic`) y API key (`api_key`), conforme [plan90](../../mvp/90-agentic-api-only-web-retirement.md) y [pruebas91](../../mvp/91-ai-provider-onboarding-verification.md). Los apartados inferiores conservan contratos/evidencias anteriores por fecha y no habilitan Web. Implementación y aceptación en curso; ningún cambio automático de proveedor, modelo o modo por error.
+
 > Estado al2026-10-12: login y OCR PNG mediante cuenta real comprobados en VM Ubuntu, conexión de laboratorio ID1. La conexión Windows ID4 conserva su configuración independiente; runtime Windows pendiente.
 > Factura sintética analizada como borrador, sin guardar factura/productos. El documento no constituye una aprobación ni aceptación del VPS real.
 
 ## Comportamiento implementado
+
+### Actualización del catálogo solicitada — 2026-10-28
+
+La referencia aportada por el usuario incluye GPT-6.1 Sol, GPT-6 Astra, GPT-6.1 Terra, GPT-6 Sol y GPT-6 Luna. Es una selección solicitada, no una lista cerrada en código ni una prueba de capacidades. Los IDs, etiquetas, modalidades y esfuerzos deben proceder del `model/list` de la conexión; sincronizar Ajustes debe persistir el catálogo para que NodiaAI lo reciba. Conservar selección y foco OCR si siguen vigentes, otros modos y conversaciones históricas; no cambiar de modelo automáticamente.
+
+Durante la comprobación, el descubrimiento de la conexión1 devolvió HTTP500 con `ESRCH` al leer procfs. La corrección focal considera desaparecido ese PID y continúa el barrido de todos los miembros; un líder ausente no demuestra cierre del grupo, y errores de permiso, identidad inválida o descendientes vivos siguen bloqueándolo. La sesión y el catálogo continúan separados de la inferencia, MCP y las modalidades calificadas. [Evidencia consolidada de esta ronda](../../evidence/codex-model-catalog-refresh-r01.json).
+
+Resultado comprobado en la VM: el runtime entregó ocho modelos y se guardaron exclusivamente los cinco solicitados en `fields.agentic.available_models`, incluido `gpt-6.1-terra`. Una nueva pestaña de Nodia AI mostró las cinco opciones. Se conservaron `gpt-6.1-sol` como principal y foco OCR, esfuerzo `medium` y el hash de la configuración API key. El borrador del chat se canceló sin aplicar cambios ni enviar mensajes. Build Linux, pruebas focales y backup cifrado posterior verificado completados; cero inferencias y cero llamadas con API key. La aceptación histórica de herramientas no se extiende al nuevo fingerprint del runtime ni a Terra.
 
 OpenAI admite el canal `token_plan_agentic` mediante un runtime Codex supervisado por Nodia Server. API key conserva claves cifradas, modelos y facturación independientes. OpenAI Web permanece deshabilitado. El formulario utiliza los flags del catálogo: Agentic está habilitable en la BD local después de aplicar la migración, y debe activarse explícitamente por conexión. La conexión ID 4 ya lo tiene activado, conservando API como predeterminado.
 

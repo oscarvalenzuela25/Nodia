@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "observed_at": "2026-10-29T16:37:54.672207+00:00",
+  "status": "preferences_close_icon_adopted_on_usage_vm",
+  "change": {
+    "file": "nodia-client/src/modules/nodiaAi/components/Preferences/Preferences.tsx",
+    "description": "Cerrar pasa a IconButton CloseRounded con nombre accesible traducido y target44px; conserva handler/bloqueo busy existentes.",
+    "functional_impact": "Presentación exclusiva; preferencias, propuestas, consentimiento y contexto conservan sus contratos.",
+    "new_ai_tools": 0
+  },
+  "preferences_explanation_sources": [
+    "docs/nodia-ai/knowledge/nodia-ai/features/accepted-preferences.md",
+    "docs/mvp/79-nodia-ai-ai33-accepted-preferences.md",
+    "nodia-server/src/nodia-ai-preference/use-case/nodia-ai-preference-reader.use-case.ts",
+    "nodia-server/src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts"
+  ],
+  "validation": {
+    "client_tests": {
+      "success": true,
+      "numPassedTests": 2126,
+      "numFailedTests": 0,
+      "startTime": 1793291155938,
+      "files": 260
+    },
+    "typecheck_exit": 0,
+    "lint_exit": 0,
+    "build_exit": 0,
+    "operator_offline_cases": 10,
+    "browser": {
+      "profiles": [
+        {
+          "width": 320,
+          "theme": "dark",
+          "lang": "es",
+          "iconOnly": true,
+          "accessibleLabel": true,
+          "target44": true,
+          "closes": true,
+          "draftPreserved": true,
+          "mutations": 0
+        },
+        {
+          "width": 390,
+          "theme": "light",
+          "lang": "en",
+          "iconOnly": true,
+          "accessibleLabel": true,
+          "target44": true,
+          "closes": true,
+          "draftPreserved": true,
+          "mutations": 0
+        },
+        {
+          "width": 600,
+          "theme": "dark",
+          "lang": "es",
+          "iconOnly": true,
+          "accessibleLabel": true,
+          "target44": true,
+          "closes": true,
+          "draftPreserved": true,
+          "mutations": 0
+        },
+        {
+          "width": 1569,
+          "theme": "dark",
+          "lang": "es",
+          "iconOnly": true,
+          "accessibleLabel": true,
+          "target44": true,
+          "closes": true,
+          "draftPreserved": true,
+          "mutations": 0
+        }
+      ],
+      "transport": "synthetic-only 127.0.0.1:5194",
+      "noVmOrProviderMutations": true,
+      "engine": "Microsoft Edge/Chromium via Playwright CLI",
+      "drawer_entry_transition_settled_before_measure_and_screenshot": true
+    },
+    "notes": [
+      "Se usaron las regresiones existentes de preferencias y suite completa; no se añadió un test espejo de markup para este ajuste visual.",
+      "Las primeras capturas se tomaron durante la animación de entrada de Drawer; la comprobación final espera su posición dentro del viewport antes de medir/capturar.",
+      "El harness conserva los avisos de desarrollo previamente documentados y favicon404. Build conserva aviso previo chunk>500kB. No se afirman corregidos."
+    ],
+    "knowledge_check": {
+      "task": "AI-06",
+      "mode": "check",
+      "sources": 69,
+      "excluded": 25,
+      "documents": 44,
+      "fragments": 46,
+      "catalogRelease": "nodia-ai-business-pos/1",
+      "releaseId": "8a7c2acab58c8ab78dfd5db5660c442702f5abf0ca5ac58c810c3ad60909e2ba",
+      "exit": 0,
+      "emitted_or_adopted": false
+    }
+  },
+  "delivery": {
+    "release": "/opt/nodia/releases/nodia-client-preferences-close-20261029-r01",
+    "manifest_sha256": "0f90819df94e6b79c8b730bd3d71f4467f3d4f51a41375ade5e76154323eb672",
+    "artifact": {
+      "bytes": 2102253,
+      "members": 172,
+      "sha256": "e96617e9a292f565ba2bc8bea39ad5bf13622cc9925305ebd235042948620601",
+      "unpacked_bytes": 4639892
+    },
+    "source_input_fingerprint_sha256": "98307b6b82f087238c0f52d73e823132314746d46bad590ad400c4703c0b1049",
+    "source_delta": {
+      "added": [],
+      "changed": [
+        "src/modules/nodiaAi/components/Preferences/Preferences.tsx"
+      ],
+      "outside_authorized_scope": [],
+      "removed": []
+    },
+    "nginx_sha256": "a4e041a0cde9137dc74973a41101ccc5cbf9e4be54279e4d549fcf081afc71fb",
+    "http": {
+      "current_assets": 168,
+      "previous_assets": 32,
+      "protected": [
+        {
+          "route": "/api/v1",
+          "status": 200
+        },
+        {
+          "route": "/api/v1/nodia-ai/connections",
+          "status": 401
+        },
+        {
+          "route": "/api/v1/products",
+          "status": 401
+        }
+      ],
+      "spa": [
+        {
+          "route": "/",
+          "sha256": "10a03d906037f0d660490025c9d040f0753ffe5a62dcad95be09d16e924cd643",
+          "status": 200
+        },
+        {
+          "route": "/tools/nodia-ai",
+          "sha256": "10a03d906037f0d660490025c9d040f0753ffe5a62dcad95be09d16e924cd643",
+          "status": 200
+        },
+        {
+          "route": "/tools/business",
+          "sha256": "10a03d906037f0d660490025c9d040f0753ffe5a62dcad95be09d16e924cd643",
+          "status": 200
+        }
+      ]
+    },
+    "local_index_sha256": "10a03d906037f0d660490025c9d040f0753ffe5a62dcad95be09d16e924cd643",
+    "protected_runtime_preserved": true,
+    "server_manifest_sha256": "22f928167d186565cb08fed6eb0572d43263e0a0a424f235aad26e0c7063ef24",
+    "knowledge_release_id": "b49fde74a53483fad4fe80b8175b36bb7c337415097dd9cfa4349285f9e1e2ea",
+    "backup": {
+      "nginx_before_sha256": "95c2c165009f3ca041d22b3748de17b902a08f507b49eb5688b5a88a1dd09568",
+      "configuration": "/opt/nodia/operations/nodia-ai-preferences-close-20261029-r01/nginx-before.conf",
+      "previous_client": "/opt/nodia/releases/nodia-client-chat-title-20261029-r01",
+      "previous_client_verified_and_preserved": true
+    },
+    "api_worker_native_restarts": 0,
+    "sql_queries": 0,
+    "auth_requests": 0,
+    "provider_requests": 0,
+    "receipts": [
+      {
+        "path": "ops/lab/artifacts/nodia-ai-preferences-close-20261029-r01/preflight-receipt.json",
+        "sha256": "26b5a8d191b7c10ae3412d7382d2cb820ed4e4a3f753b5ec7e639a5135e8c717",
+        "bytes": 2827
+      },
+      {
+        "path": "ops/lab/artifacts/nodia-ai-preferences-close-20261029-r01/stage-receipt.json",
+        "sha256": "93b7d658a075a4adce40992780b149447fae8bac751b35809b85f6972df23947",
+        "bytes": 171
+      },
+      {
+        "path": "ops/lab/artifacts/nodia-ai-preferences-close-20261029-r01/activation-receipt.json",
+        "sha256": "6544bb49ac2ba6761db21711feec6b1fd89aa28e7228343d1b0c99c0ac4c814f",
+        "bytes": 4185
+      },
+      {
+        "path": "ops/lab/artifacts/nodia-ai-preferences-close-20261029-r01/status-receipt.json",
+        "sha256": "ae156a67df3f387a51580197a90dbc3873476f4bcc2d6c46f841e284f57257aa",
+        "bytes": 6088
+      }
+    ]
+  },
+  "knowledge": {
+    "approved_bodies_unchanged": 44,
+    "candidate_revision": 7,
+    "candidate_status": "draft/unregistered",
+    "approval": null,
+    "published": false,
+    "impact": "Control de cierre visual; no cambia contexto ni capacidades. La ficha de preferencias aprobada3 permanece intacta."
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/nodia-ai-preferences-close-390-20261029.png",
+      "sha256": "0d8c90492edd229180fbc0ba3a8a9e0f213c77423bf5bc669ebb47d877f533d6",
+      "bytes": 24520
+    },
+    {
+      "path": "docs/evidence/nodia-ai-preferences-close-1569-20261029.png",
+      "sha256": "d7fb9cb0544334a25accd1030e6a40521c3f617dc91cfe0a9f68f8dcf3ca2f9c",
+      "bytes": 84850
+    }
+  ],
+  "limits": [
+    "QA con transporte/datos sintéticos; no cambios de preferencias reales, propuestas o inferencias de proveedor.",
+    "Entrega VM/HTTP verificada; no se probó este cierre en UI autenticada VM ni teléfono/teclado virtual físicos."
+  ]
+}

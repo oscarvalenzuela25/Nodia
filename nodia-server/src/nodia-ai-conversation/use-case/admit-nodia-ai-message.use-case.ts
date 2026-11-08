@@ -35,6 +35,7 @@ import type { EntityManager } from 'typeorm';
 import type { NodiaAiConversation } from '../entities/nodia-ai-conversation.entity.js';
 import { appendNodiaAiEvent } from '../../nodia-ai-run/event-journal.js';
 import { ManageNodiaAiAttachmentUseCase } from '../../nodia-ai-attachment/use-case/manage-nodia-ai-attachment.use-case.js';
+import { isInvoiceOcrReference } from '../../nodia-ai-invoice-ocr/invoice-ocr-delivery.js';
 import { isNodiaAiNativeFormatVerified } from '../../nodia-ai-adapter/types/nodia-ai-adapter.types.js';
 
 @Injectable()
@@ -216,11 +217,15 @@ export class AdmitNodiaAiMessageUseCase {
       const formats = prepared.contextManifest.verified_attachment_media_types;
       const verifiedFormats = Array.isArray(formats)
         ? formats.filter((value): value is string => typeof value === 'string') : [];
+      const ocrReferences = attachments.filter(file =>
+        !isNodiaAiNativeFormatVerified(verifiedFormats, file.kind, file.metadata.media_type) &&
+        isInvoiceOcrReference(file, prepared.contextManifest));
       if (
         attachments.some(
           (file) =>
             file.text === null &&
-            !isNodiaAiNativeFormatVerified(verifiedFormats, file.kind, file.metadata.media_type),
+            !isNodiaAiNativeFormatVerified(verifiedFormats, file.kind, file.metadata.media_type) &&
+            !ocrReferences.some(reference => reference.attachment_id === file.attachment_id),
         )
       )
         throw new ConflictException('nodia_ai:attachment_review_required');
@@ -273,6 +278,7 @@ export class AdmitNodiaAiMessageUseCase {
         retention_epoch: chat.retention_epoch,
         context_manifest: {
           ...prepared.contextManifest,
+          ...(ocrReferences.length ? { invoice_ocr_reference_ids: ocrReferences.map(file => file.attachment_id) } : {}),
           admission_conversation_revision: chat.revision + 1,
         },
         routing_snapshot: projected.routing,

@@ -19,7 +19,6 @@ import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 import DoneAllOutlinedIcon from "@mui/icons-material/DoneAllOutlined";
 import RemoveDoneOutlinedIcon from "@mui/icons-material/RemoveDoneOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import DevicesOutlinedIcon from "@mui/icons-material/DevicesOutlined";
 import SearchOffOutlinedIcon from "@mui/icons-material/SearchOffOutlined";
 import BaseModal from "../../../../../../../../components/BaseModal";
 import SelectSingleInput from "../../../../../../../../components/inputs/SelectSingleInput";
@@ -61,14 +60,9 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
   const [ocrModelId, setOcrModelId] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const requestedMode = mode ?? provider?.default_mode ?? (provider?.mode === "web_session" ? "token_plan_web" : null);
-  const activeMode = requestedMode === "token_plan_web" || requestedMode === "token_plan_agentic" || requestedMode === "api_key" ? requestedMode : null;
-  const targetEngine: "agentic" | "web" | undefined =
-    activeMode === "token_plan_agentic"
-      ? "agentic"
-      : activeMode === "token_plan_web"
-      ? "web"
-      : undefined;
+  const requestedMode = mode ?? provider?.default_mode ?? provider?.mode ?? null;
+  const activeMode = requestedMode === "agentic" || requestedMode === "api_key" ? requestedMode : null;
+  const targetEngine = activeMode === "agentic" ? "agentic" : undefined;
 
   const {
     mutate: mutateSyncModels,
@@ -99,8 +93,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
       const modeFields = (providerFields[activeMode ?? ""] as Record<string, unknown>) || {};
 
       const hasAnyModeScoped =
-        Boolean(providerFields.token_plan_agentic) ||
-        Boolean(providerFields.token_plan_web) ||
+        Boolean(providerFields.agentic) ||
         Boolean(providerFields.api_key);
 
       const configuredModels =
@@ -396,12 +389,9 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
       <Tooltip
         title={
           !isOperationalMode
-            ? activeMode === "token_plan_agentic"
+            ? activeMode === "agentic"
               ? t("ai_providers:modal_sync_models.agentic_not_operational_warning")
-              : t(
-                  "ai_providers:modal_sync_models.session_not_operational_warning",
-                  "El modo de conexión seleccionado (Sesión Web) no se encuentra operativo. Debes iniciar sesión en el navegador remoto antes de poder guardar o utilizar estos modelos."
-                )
+              : t("ai_providers:api_keys.required")
             : selectedModelIds.size === 0
             ? t(
                 "ai_providers:modal_sync_models.no_models_selected_error",
@@ -456,32 +446,23 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                 <Chip
                   size="small"
                   icon={
-                    activeMode === "token_plan_agentic" ? (
+                    activeMode === "agentic" ? (
                       <PsychologyOutlinedIcon sx={{ fontSize: "14px !important" }} />
-                    ) : activeMode === "token_plan_web" ? (
-                      <DevicesOutlinedIcon sx={{ fontSize: "14px !important" }} />
                     ) : (
                       <InfoOutlinedIcon sx={{ fontSize: "14px !important" }} />
                     )
                   }
                   label={
-                    activeMode === "token_plan_agentic"
+                    activeMode === "agentic"
                       ? t(
                           "ai_providers:modal_sync_models.provider_badge_agentic",
-                          "Token Plan (Agentic)"
-                        )
-                      : activeMode === "token_plan_web"
-                      ? t(
-                          "ai_providers:modal_sync_models.provider_badge_web",
-                          "Sesión Web (Token Plan)"
+                          "Agentic"
                         )
                       : t("ai_providers:connection.api")
                   }
                   color={
-                    activeMode === "token_plan_agentic"
+                    activeMode === "agentic"
                       ? "secondary"
-                      : activeMode === "token_plan_web"
-                      ? "info"
                       : "primary"
                   }
                   variant="outlined"
@@ -525,12 +506,10 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                 )}
               </Typography>
               <Typography variant="body2">
-                {activeMode === "token_plan_agentic"
-                  ? t("ai_providers:modal_sync_models.agentic_not_operational_warning")
-                  : t(
-                      "ai_providers:modal_sync_models.session_not_operational_warning",
-                      "El modo de conexión seleccionado (Sesión Web) no se encuentra operativo. Debes iniciar sesión en el navegador remoto antes de poder guardar o utilizar estos modelos."
-                    )}
+                {t(activeMode === "agentic"
+                  ? "ai_providers:modal_sync_models.agentic_not_operational_warning"
+                  : "ai_providers:api_keys.required")}
+
               </Typography>
             </Alert>
           )}

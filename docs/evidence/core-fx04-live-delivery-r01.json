@@ -1,0 +1,646 @@
+{
+  "schema_version": 1,
+  "stage": "Core-FX-04",
+  "observed_on": "2026-10-25",
+  "status": "real_Linux_environment_deployed_and_authenticated_UI_open_acceptance_partial",
+  "authorization": "User explicitly selected real deployment and FX-04 migration when asked which environment to open.",
+  "current": {
+    "origin": "http://localhost:5174",
+    "UI": "/settings/modules",
+    "server": "/opt/nodia/releases/nodia-server-core-fx04-r02",
+    "server_manifest_sha256": "2b0df95b20b98dc253e9177b4238b49a7de1ee8f6f6c17fcb2667aa9df713ad1",
+    "client": "/opt/nodia/releases/nodia-client-core-fx04-r01",
+    "client_manifest_sha256": "ea3a877da1b859dce4e13bee9093df2541af5d485c93b211543a857e606ae8c4",
+    "processes": {
+      "nodia-api": {
+        "pid": 4125765,
+        "actual_cwd": "/opt/nodia/releases/nodia-server-core-fx04-r02",
+        "uid": 10000,
+        "expected_entrypoint": true
+      },
+      "nodia-ai-worker": {
+        "pid": 4125768,
+        "actual_cwd": "/opt/nodia/releases/nodia-server-core-fx04-r02",
+        "uid": 10000,
+        "expected_entrypoint": true
+      }
+    }
+  },
+  "transition": {
+    "Server_R09_to_R01_selective_delta": 121,
+    "Server_R01_to_R02_source_metadata_only": [
+      {
+        "path": "src/nodia-ai/knowledge/manifest.json",
+        "old_sha256": "3b1ac8ccd7336276bcbae4f4950b8831be943ed683a8dc5a09db74e94da6554e",
+        "sha256": "47ce3339cd92bd6cef1e24065e7d6f7798010d0d23dca542f6162974e2bde347"
+      },
+      {
+        "path": "src/nodia-ai-context/config/knowledge-pin.json",
+        "old_sha256": "dd59e67195efda2574e391caa3db949c8df5a1dba6acbf0c354bc87519a7cdad",
+        "sha256": "ba9407cf2e6891ef305b649ef2de46e4849b3796c1de2fe698db12baab65e674"
+      }
+    ],
+    "migration": {
+      "status": "committed",
+      "migration": "AddModuleSortOrder1793200000000",
+      "direction": "up"
+    },
+    "history_before": 29,
+    "history_after": 30,
+    "column_contract": [
+      {
+        "table_name": "module_groups",
+        "data_type": "integer",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "modules",
+        "data_type": "integer",
+        "is_nullable": "NO",
+        "column_default": null
+      }
+    ],
+    "constraints": [
+      {
+        "conname": "ck_module_groups_sort_order_nonnegative",
+        "contype": "c",
+        "condeferrable": false,
+        "condeferred": false
+      },
+      {
+        "conname": "ck_modules_sort_order_nonnegative",
+        "contype": "c",
+        "condeferrable": false,
+        "condeferred": false
+      },
+      {
+        "conname": "uq_module_groups_sort_order",
+        "contype": "u",
+        "condeferrable": true,
+        "condeferred": false
+      },
+      {
+        "conname": "uq_modules_group_sort_order",
+        "contype": "u",
+        "condeferrable": true,
+        "condeferred": false
+      }
+    ],
+    "initial_groups": [
+      {
+        "id": "2",
+        "key": "tools",
+        "is_active": true,
+        "sort_order": 0
+      },
+      {
+        "id": "4",
+        "key": "finances",
+        "is_active": true,
+        "sort_order": 1
+      },
+      {
+        "id": "1",
+        "key": "general_settings",
+        "is_active": true,
+        "sort_order": 2
+      }
+    ],
+    "initial_modules": [
+      {
+        "id": "6",
+        "key": "business",
+        "module_group_id": "2",
+        "is_active": true,
+        "sort_order": 0
+      },
+      {
+        "id": "7",
+        "key": "nodia_ai",
+        "module_group_id": "2",
+        "is_active": true,
+        "sort_order": 1
+      },
+      {
+        "id": "9",
+        "key": "rental_reservations",
+        "module_group_id": "2",
+        "is_active": true,
+        "sort_order": 2
+      },
+      {
+        "id": "8",
+        "key": "personal_finance",
+        "module_group_id": "4",
+        "is_active": true,
+        "sort_order": 0
+      },
+      {
+        "id": "1",
+        "key": "actions",
+        "module_group_id": "1",
+        "is_active": true,
+        "sort_order": 0
+      },
+      {
+        "id": "2",
+        "key": "roles",
+        "module_group_id": "1",
+        "is_active": true,
+        "sort_order": 1
+      },
+      {
+        "id": "3",
+        "key": "users",
+        "module_group_id": "1",
+        "is_active": true,
+        "sort_order": 2
+      },
+      {
+        "id": "4",
+        "key": "modules",
+        "module_group_id": "1",
+        "is_active": true,
+        "sort_order": 3
+      },
+      {
+        "id": "5",
+        "key": "ai_providers",
+        "module_group_id": "1",
+        "is_active": true,
+        "sort_order": 4
+      }
+    ],
+    "cache_invalidation": {
+      "removed": 1,
+      "remaining": 0,
+      "pattern": "auth:context:*"
+    },
+    "SQL_restores": 0,
+    "provider_generations": 0,
+    "new_capabilities": 0,
+    "native_configuration_or_credentials_changed": false
+  },
+  "preservation": {
+    "all_non_order_SQL_table_hashes_equal": true,
+    "table_hashes": {
+      "actions": {
+        "count": 2,
+        "sha256": "23b2cbae5fe4d28d6c7209428d9348291cee5d0ecfd437b655fe8f53e9a186dd"
+      },
+      "ai_api_keys": {
+        "count": 1,
+        "sha256": "4da1084212a4890de725cb72ce8ecd3354b3f051cc74b9066711cdfaba6568a0"
+      },
+      "ai_provider_catalog": {
+        "count": 17,
+        "sha256": "d419c60662c952500a5fd1f9ccabdbf9a4757ea0214d45e0a7224b9a7e6bf5bc"
+      },
+      "ai_provider_events": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "ai_providers": {
+        "count": 2,
+        "sha256": "30a4673f62a1b6ea3688665208385bc029c6ee809daef79ad0ca12ffddaea9b2"
+      },
+      "business_actions": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "business_collaborators": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "businesses": {
+        "count": 1,
+        "sha256": "cdaa78dbff634f8eed1d05ab828df25459609b7bf4f932ff3c20c103fc96d05f"
+      },
+      "finance_categories": {
+        "count": 2,
+        "sha256": "3024c1e13a82d6232c09f79601a3d8cdda76c00e6f7134b874fba804fc239996"
+      },
+      "finance_category_group_memberships": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "finance_category_groups": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "finance_movements": {
+        "count": 2,
+        "sha256": "5335e312c7b542552f924cf266fc007ff1a3691e522e6c682bb20e374b5b7871"
+      },
+      "finance_obligations": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "invoice_uploads": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "invoices": {
+        "count": 1,
+        "sha256": "969a3181fc5bf4098c84ad9bfc60410d25131541df5904fde4288d322bb31351"
+      },
+      "module_groups": {
+        "count": 3,
+        "sha256": "2a873d22592df216e7a5cd060429e9156b9e7b934103056de9afa3285183f935"
+      },
+      "modules": {
+        "count": 9,
+        "sha256": "cecd4b1560af37ab3516556fdc12cf9cf8a574b95ed50f7a9fdf8419f3bda4fc"
+      },
+      "nodia_ai_attachments": {
+        "count": 9,
+        "sha256": "3b758fd866b25b49b88c3596d29588abf0f8d3dd693bf2afa2e72bd02a09706b"
+      },
+      "nodia_ai_audit_events": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "nodia_ai_confirmation_challenges": {
+        "count": 9,
+        "sha256": "fe9d8e058974bb5a2d0ffbad081a936b5b26a6d19823dcfea262b18fffeb10f5"
+      },
+      "nodia_ai_context_snapshots": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "nodia_ai_conversations": {
+        "count": 7,
+        "sha256": "46d0da617167f380327811fa090deca0163a5b8e4d1eaf5355da206798e23249"
+      },
+      "nodia_ai_drafts": {
+        "count": 11,
+        "sha256": "c8f083608d2e75b0312c057b2a91519ff2b5f938d0e0b9431283ee21c96a99e9"
+      },
+      "nodia_ai_events": {
+        "count": 446,
+        "sha256": "beed21d24c6736c50212b2e173a92de659ab2f7a44b8ce826146eda92c407272"
+      },
+      "nodia_ai_execution_grants": {
+        "count": 56,
+        "sha256": "7a9f39d2d862cacaac899f65029adff4d53c335fae117a083cf354c175cb5876"
+      },
+      "nodia_ai_execution_steps": {
+        "count": 9,
+        "sha256": "caa0f456b847f75baae68ce804940701f2b3d5609e45acd6da01e24fd96f27c1"
+      },
+      "nodia_ai_executions": {
+        "count": 8,
+        "sha256": "206743870bbabf929e2d8dcb3163790e97047081c26ca48486815bbe359af8ee"
+      },
+      "nodia_ai_job_attempts": {
+        "count": 140,
+        "sha256": "ebb070c71d495d8967388984d9f6a3b7cc0b7ec2186511bfb32e38610d93a3ac"
+      },
+      "nodia_ai_jobs": {
+        "count": 50,
+        "sha256": "5f43fc45a2b53d0cfe949cd4eebc05d67185ca5ea93e0219869011f21c9b1f66"
+      },
+      "nodia_ai_message_parts": {
+        "count": 98,
+        "sha256": "6af14f2f7943998cb162ae8c6e2a284432fd6734ccf7734b1ca769def72a8be3"
+      },
+      "nodia_ai_messages": {
+        "count": 89,
+        "sha256": "dcb6e54970202282ccd91dd7044b8c5c5d79aad7153dd36917920cbf7976e098"
+      },
+      "nodia_ai_preferences": {
+        "count": 1,
+        "sha256": "c3ec6b40c6975557202b188118d5701db1aa357624ae18f7cfdcd0fd3029456a"
+      },
+      "nodia_ai_proposal_revisions": {
+        "count": 13,
+        "sha256": "8ec4222d2a2e36e45f400e74b2d301ad5d61f30b080dc16ea87b53088f44a810"
+      },
+      "nodia_ai_proposal_steps": {
+        "count": 15,
+        "sha256": "483dfaee50a1976aecf93a42a07bfb4d11f216c631444e798deb5c32cdce6546"
+      },
+      "nodia_ai_proposals": {
+        "count": 13,
+        "sha256": "a063ad05a12a284e3277e2c7b1312eda99cc3170d7b8feedcd01adad7e86bd38"
+      },
+      "nodia_ai_runs": {
+        "count": 48,
+        "sha256": "c41398aaae89a9df136e0b23bd422b974e47294cace37b9cbd18ce5cc05a36da"
+      },
+      "nodia_ai_runtime_slots": {
+        "count": 3,
+        "sha256": "8267e6b043d73b7577e6d4c1d0f9f8a83e455f74853a7fed49379516733c9d10"
+      },
+      "nodia_ai_tool_calls": {
+        "count": 83,
+        "sha256": "f477a0fbad829e5344bacc765a4a0ea4fb8feb9d8d2831411721dbadb542dc4d"
+      },
+      "nodia_codex_catalog_rollback": {
+        "count": 1,
+        "sha256": "0926d9d8aa406442a82e85cf48d3b04ea7f0c5fd56d088478160ac106b24cbf3"
+      },
+      "personal_info_provider": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "product_logs": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "products": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "providers": {
+        "count": 1,
+        "sha256": "05574765e95e43175e202040304c6dc3933bf9c694d4628d6ac157ddc7f95bd7"
+      },
+      "rental_audit_events": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_blocks": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_cancellation_policies": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_cancellation_rules": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_collaborators": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_expenses": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_operations": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_payments": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_properties": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_reservations": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_turnovers": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "role_actions": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "roles": {
+        "count": 1,
+        "sha256": "07ff2fbde402038411cd4f320f2462120b78ea7f6b3b6ab1bc18c92c1f235a06"
+      },
+      "translations": {
+        "count": 30,
+        "sha256": "48310ee9a1d3478891c2ca332e2e1a3988e5c624a6f507f08f099ebc8f3bdc4d"
+      },
+      "user_modules": {
+        "count": 8,
+        "sha256": "96d43ec5380d4042e508a14fcceaa7df4bcb6fc6d03ef501aa27dd6a6514022f"
+      },
+      "user_roles": {
+        "count": 1,
+        "sha256": "4acfc3d1452dbbfd9acc09bf01753ad99fe8782455e4411e55e252929b485657"
+      },
+      "users": {
+        "count": 1,
+        "sha256": "f401ede3581da12bc3dd44de0d6ecb6d705885e0fd546907d09faff714572972"
+      }
+    },
+    "auth_sessions_excluded_from_hash_comparison": "Normal browser authentication/renewal may alter this operational session table. No credential value captured.",
+    "R02_SQL_including_order_equal_to_R01": true,
+    "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "Gemini_epoch_unchanged": true,
+    "quiet_after": {
+      "chats": 1,
+      "messages": 64,
+      "runs": 34,
+      "dispatches": 51,
+      "tool_receipts": 60,
+      "executions": 4,
+      "effect_receipts": 5,
+      "financial_effects": 1,
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "current_process_uid": 10000
+  },
+  "knowledge": {
+    "capability_contracts_exactly_equal_to_R09": 150,
+    "fragments_and_assets_exactly_equal_to_R09": 41,
+    "release": "df1780ad39433af1671467cc3f93285b01b0596155518f6c14330e27b65b80ba",
+    "source_equals_compiled": {
+      "nodia-ai/knowledge/manifest.json": {
+        "source_equals_compiled": true,
+        "sha256": "47ce3339cd92bd6cef1e24065e7d6f7798010d0d23dca542f6162974e2bde347"
+      },
+      "nodia-ai-context/config/knowledge-pin.json": {
+        "source_equals_compiled": true,
+        "sha256": "ba9407cf2e6891ef305b649ef2de46e4849b3796c1de2fe698db12baab65e674"
+      }
+    },
+    "historical_issue": "R01 runtime had the correct150 contracts, but its generated authoring manifest/pin were stale74. Independent review caught this after adoption. R02 changes only those two source JSONs to match the validated dist; original release and receipts are retained. No claim that original R01 was source coherent.",
+    "future_package_guard": "Run context:prepare to refresh generated src assets and verify src/dist manifest and knowledge-pin equality before freezing a release. A general manifest hash alone does not validate semantic parity."
+  },
+  "backups": {
+    "before_migration": {
+      "schema_version": 1,
+      "operation": "backup",
+      "backup_id": "c477f89a-53d0-40e2-96e7-5063cbf3df73",
+      "status": "ready",
+      "captured_at": "2026-10-25T06:17:25.166Z",
+      "expires_at": "2026-11-01T06:17:25.166Z",
+      "cipher_bytes": 1182302,
+      "cipher_sha256": "f9217c192be32c1277ccc778cc3a1875d1e4a1b5d923913302ef1197f2479bcc",
+      "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+      "journal_sequence": 1,
+      "rotated": {
+        "removed": 0,
+        "pending_recovered": 0,
+        "retained": 29
+      }
+    },
+    "before_metadata_successor": {
+      "schema_version": 1,
+      "operation": "backup",
+      "backup_id": "11a88c62-297d-4c18-8d5a-9dd027586705",
+      "status": "ready",
+      "captured_at": "2026-10-25T06:21:09.557Z",
+      "expires_at": "2026-11-01T06:21:09.557Z",
+      "cipher_bytes": 1183389,
+      "cipher_sha256": "70d5f273c3d740ce04e1d01be6410c36b4b45aa75d4a9a210361ba9f389f8f8e",
+      "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+      "journal_sequence": 1,
+      "rotated": {
+        "removed": 0,
+        "pending_recovered": 0,
+        "retained": 30
+      }
+    },
+    "fresh_ready_encrypted": true,
+    "retention_days": 7,
+    "new_restore_exercise": false,
+    "journal": {
+      "operation": "status",
+      "coverage_from": "2026-10-20T23:52:27.154Z",
+      "updated_at": "2026-10-25T06:21:14.845Z",
+      "first_sequence": 1,
+      "last_sequence": 1,
+      "entries": 1,
+      "unconfirmed": 0,
+      "coverage_closed_at": null,
+      "backups": 31,
+      "expired_backups": 0,
+      "release_authorized": false
+    },
+    "spool_only_backup_lock": true,
+    "timers_restored": true
+  },
+  "HTTP": {
+    "assets_exact_SHA_MIME": 171,
+    "deep_route_index_exact": true,
+    "COOP": true,
+    "missing_asset_404": true,
+    "API_proxy_200": true,
+    "details": {
+      "path": "ops/lab/artifacts/core-fx04-r01/http.json",
+      "bytes": 37065,
+      "sha256": "e81d7e1672ce6a5258551ed5513aba7c252028a6ed4161f40195ed7f1b32e9ab"
+    }
+  },
+  "UI": {
+    "authenticated_account_visible": true,
+    "real_grouped_modules": 9,
+    "real_groups": 3,
+    "Reorder_mode_open": true,
+    "real_order_metadata_and_buttons_visible": true,
+    "real_extremes_disabled": true,
+    "groups_panel_collapsed": true,
+    "user_tab_retained": true,
+    "no_group_or_module_move_clicked_by_agent": true,
+    "no_CRUD_or_AI_message_sent": true,
+    "screenshot": {
+      "path": "docs/evidence/core-fx04-live-modules-r01.png",
+      "bytes": 72105,
+      "sha256": "cc1e6be96f62c033c36707aed9fa308d6a18f2395af7922f33b687fa4870cc50"
+    },
+    "viewport": "Native current in-app browser,1024px screenshot; Sidenav uses temporary drawer below lg. It displays the assigned active subset, which need not include every administrative module."
+  },
+  "recovery": {
+    "original_R09_and_R04_retained": true,
+    "R01_rollback_prepared_not_executed": true,
+    "R02_rollback_not_executed": "The R01 rollback has exact descriptor and SQL guards and cannot be applied directly to successor R02. A reviewed successor must account for the metadata transition and any subsequent user order/business changes; never switch to R09 code while keeping the new schema or silently restore a whole DB.",
+    "materials_catalog": {
+      "path": "ops/lab/artifacts/core-fx04-r01/catalog.json",
+      "bytes": 2470,
+      "sha256": "c140b30d9779b9591d781cb70fac9be172ed0352e5b0a86bd8aa1fa9ef759038"
+    }
+  },
+  "remaining_FX04_acceptance": [
+    "Human testing of real module/group moves and Sidenav refresh, with persistence after reload.",
+    "Creation appending at end, empty groups, inactive items and page-crossing on authenticated data.",
+    "Two real administrators and session-renewal lifecycle; preserve specific mutation feedback without generic background success.",
+    "Reviewed recovery/rollback from final R02 against current data; original R01 rollback remains intentionally fail closed."
+  ],
+  "operator_pins": [
+    {
+      "path": "docs/evidence/scripts/core-fx04-delivery-r01.py",
+      "bytes": 17789,
+      "sha256": "bac8b134f16f7b81709516539c0dbd5ebd58ebb6c07535313303c346098e1753"
+    },
+    {
+      "path": "docs/evidence/scripts/core-fx04-source-coherence-r02.py",
+      "bytes": 6746,
+      "sha256": "eb9e55625cfcc576e60aa823f44f71aad2b772acf4ee7114505571af15005b37"
+    },
+    {
+      "path": "docs/evidence/scripts/core-fx04-rollback-r01.py",
+      "bytes": 12650,
+      "sha256": "959947b74293f88f18608ac0e30fd88ddac6c2acf669c3a1615b096778030cc0"
+    }
+  ],
+  "receipts": [
+    {
+      "path": "ops/lab/artifacts/core-fx04-r01/payload.tar.gz",
+      "bytes": 2402921,
+      "sha256": "14cd1abdc8c39925c2c2d294aa22620259fd69339d0f4a0b66211c20bf8affd0"
+    },
+    {
+      "path": "ops/lab/artifacts/core-fx04-r01/plan.json",
+      "bytes": 65228,
+      "sha256": "d51190239dad78abf586b75936a40b1d4479890254462a60a1f99863108f80ed"
+    },
+    {
+      "path": "ops/lab/artifacts/core-fx04-r01/prepare.json",
+      "bytes": 116,
+      "sha256": "501685f3532d61ef5c941174b05696c0c5624f7cbd5afb70799fe9f7a5fd0e67"
+    },
+    {
+      "path": "ops/lab/artifacts/core-fx04-r01/preflight.json",
+      "bytes": 107,
+      "sha256": "2e132c3023d026a149ceb996f36bd15bc26ae8f1bb04f296360cdc75b27a4df0"
+    },
+    {
+      "path": "ops/lab/artifacts/core-fx04-r01/diagnostic.json",
+      "bytes": 604,
+      "sha256": "5fd7e5a658f184d0114b21d13cfc4b2332e08269accf44044d2bc74cb3761143"
+    },
+    {
+      "path": "ops/lab/artifacts/core-fx04-r01/preflight-r02.json",
+      "bytes": 11688,
+      "sha256": "bdac70e19e0101aaeb0db6da7e4a565cea1901095b971eddea21bd7bb65e47a9"
+    },
+    {
+      "path": "ops/lab/artifacts/core-fx04-r01/adopt.json",
+      "bytes": 24985,
+      "sha256": "68724557023fcd0d96b513eabe52c103fc4d3704b3f60658f36ea5786c311a44"
+    },
+    {
+      "path": "ops/lab/artifacts/core-fx04-r01/coherence-r02.json",
+      "bytes": 26607,
+      "sha256": "2ec4f77c9674d32a4a76b18e81edd247438e86760e7d1ae89b6cae0bcd266c4d"
+    },
+    {
+      "path": "ops/lab/artifacts/core-fx04-r01/postcheck.json",
+      "bytes": 783,
+      "sha256": "e2779feeb8e76358106cd318c09d2ec6142c5086a332397e8a12a77655106439"
+    },
+    {
+      "path": "ops/lab/artifacts/core-fx04-r01/http.json",
+      "bytes": 37065,
+      "sha256": "e81d7e1672ce6a5258551ed5513aba7c252028a6ed4161f40195ed7f1b32e9ab"
+    }
+  ],
+  "limits": [
+    "This delivers the requested live environment; it does not mark all FX-04 acceptance complete.",
+    "No new AI generation or MCP proof established in this stage. Authentication and configuration alone do not prove provider availability.",
+    "Runtime and user data remain private on the Linux VM; no credentials or full DB dump were exported to workspace."
+  ],
+  "cleanup": {
+    "status": "upload_stage_removed",
+    "files": 5,
+    "bytes": 2505334,
+    "active_packages_preserved": true,
+    "operator_receipts_preserved": true
+  }
+}

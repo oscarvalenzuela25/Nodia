@@ -17,7 +17,7 @@ vi.mock("../../../../services/authorizationService", () => ({ useAuthorizationCo
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 const realDialog = () => import("../../../../layouts/components/MobileShortcutDialog");
 const setup = () => render(<ThemeProvider theme={createTheme()}><MemoryRouter>
-  <input aria-label="Existing draft" defaultValue="" /><Link to="/tools/reservations">Navigate</Link><MobileBottomNav />
+  <input aria-label="Existing draft" defaultValue="" /><Link to="/reservations">Navigate</Link><MobileBottomNav />
 </MemoryRouter></ThemeProvider>);
 const slot = () => screen.getByRole("button", { name: i18n.t("layout:mobile_nav.add_slot", { position: i18n.t("layout:mobile_nav.slot_0") }) });
 beforeEach(() => {

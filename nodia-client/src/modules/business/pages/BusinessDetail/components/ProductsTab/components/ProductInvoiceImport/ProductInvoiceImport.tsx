@@ -1,5 +1,11 @@
+import InvoiceProductMatch from "./InvoiceProductMatch";
+import PriceSuggestion from "../PriceSuggestion";
+import InvoiceRowActions from "./InvoiceRowActions";
+import AddRounded from "@mui/icons-material/AddRounded";
+import RemoveRounded from "@mui/icons-material/RemoveRounded";
 import BusinessWorkflow from "../../../../../../components/BusinessWorkflow";
-import { notifyHttpError } from "../../../../../../../../config/httpFeedback";
+import { getHttpErrorMessage, notifyHttpError } from "../../../../../../../../config/httpFeedback";
+import { invoiceAiAnalysisMessageKey, invoiceAiRuntimeMessageKey } from "../../../../../../infrastructure/invoiceAiFailure";
 import AnalysisConsole, { useAnalysisObservation } from "../../../../../../components/AnalysisConsole";
 import { Workspace, WorkspaceGrid } from "../../../../../../components/AnalysisConsole/styles";
 import { getInvoiceAiModes, isInvoiceAiMode, isProviderVisibleInInvoiceImport, resolveInvoiceAiConfiguration, resolveInvoiceAiProvider, type InvoiceAiMode } from "./aiSelection";
@@ -10,11 +16,8 @@ import {
   Alert,
   Box,
   Button,
-  Checkbox,
   Chip,
   CircularProgress,
-  ToggleButton,
-  ToggleButtonGroup,
   Grid,
   IconButton,
   Paper,
@@ -30,12 +33,9 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import StopCircleOutlinedIcon from "@mui/icons-material/StopCircleOutlined";
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
 import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
@@ -60,6 +60,7 @@ import type {
   CreateProductPayload,
   BulkUpdateProductItemPayload,
   ProductLogEntity,
+  ProductEntity,
   VerifyIaProviderItem,
 } from "../../../../../../infrastructure/types";
 import { DropzoneBox, ValidBadge, ErrorBadge } from "../../../../styles";
@@ -75,6 +76,10 @@ import {
 } from "./styles";
 import {
   type InvoiceProvisionalRow,
+  type InvoiceUpdateField,
+  INVOICE_UPDATE_FIELDS,
+  bindInvoiceRow,
+  invoiceProductPayload,
   validateInvoiceRow,
   validateInvoiceRows,
   mapExtractedItemsToRows,
@@ -106,32 +111,31 @@ export const ProductInvoiceImport: FC<Props> = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const resultsSectionRef = useRef<HTMLDivElement | null>(null);
   const shouldScrollToResults = useRef<boolean>(false);
-  const analysisIntent = useRef(false);
+  const analysisIntent = useRef<symbol | null>(null);
+  const availabilityCheckPending = useRef(false);
+  const [isCheckingAiAvailability, setIsCheckingAiAvailability] = useState(false);
 
   const [selectedProviderId, setSelectedProviderId] = useState<string>("");
   const [selectedProviderTax, setSelectedProviderTax] = useState<number | null>(null);
-  const [isPreparingDraft, setIsPreparingDraft] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [rows, setRows] = useState<InvoiceProvisionalRow[]>([]);
   const [invoiceCode, setInvoiceCode] = useState<string>("");
   const [invoiceTotalAmount, setInvoiceTotalAmount] = useState<number>(0);
   const [invoiceIssueDate, setInvoiceIssueDate] = useState<string>("");
+  const [matchingRow, setMatchingRow] = useState<{ businessId: string; row: InvoiceProvisionalRow } | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<InvoiceProvisionalRow>>({});
   const [editTaxRate, setEditTaxRate] = useState<number>(19);
   const [isSaving, setIsSaving] = useState(false);
+  const [showInvoiceDetails, setShowInvoiceDetails] = useState(false);
 
-  const { data: iaProvidersData, isLoading: isVerifyingProviders, isFetching: isFetchingAiProviders, isError: aiProvidersError, refetch: refetchAiProviders } = useVerifyIaProviders();
+  const [modeSelection, setModeSelection] = useState<{ providerId: string; mode: InvoiceAiMode } | null>(null);
+  const { data: iaProvidersData, isLoading: isVerifyingProviders, isFetching: isFetchingAiProviders, isError: aiProvidersError, refetch: refetchAiProviders } = useVerifyIaProviders({ mode: modeSelection?.mode });
   const providersList = useMemo(() => {
     return normalizeVerifyProviders(iaProvidersData);
   }, [iaProvidersData]);
 
-  const [lastUsedProvider, setLastUsedProvider] = useState<VerifyIaProviderItem | null>(null);
-  const [webReasoningOverride, setWebReasoningOverride] = useState<{
-    providerId: string; model: string; level: "low" | "medium" | "high";
-  } | null>(null);
   const [selectedAiProviderId, setSelectedAiProviderId] = useState<string | null>(null);
-  const [modeSelection, setModeSelection] = useState<{ providerId: string; mode: InvoiceAiMode } | null>(null);
   const usableProviders = useMemo(() => {
     return providersList.filter(isProviderVisibleInInvoiceImport);
   }, [providersList]);
@@ -144,9 +148,14 @@ export const ProductInvoiceImport: FC<Props> = ({
     ? (enabledModes.includes(requestedMode) ? requestedMode : null)
     : (defaultMode && enabledModes.includes(defaultMode) ? defaultMode : enabledModes[0] ?? null);
   const aiConfiguration = resolveInvoiceAiConfiguration(currentAiProvider, selectedAiMode);
-  const currentWebReasoningLevel = webReasoningOverride !== null && webReasoningOverride.providerId === currentAiProvider?.id
-    && webReasoningOverride.model === aiConfiguration.model
-    ? webReasoningOverride.level : aiConfiguration.thinkingLevel;
+  const availabilityMessage = selectedAiMode === "agentic"
+    ? invoiceAiRuntimeMessageKey(currentAiProvider?.availability_reason) : null;
+  const unavailableMessage = !currentAiProvider
+    ? t("business:no_ai_providers_available")
+    : availabilityMessage ? t(availabilityMessage)
+    : !aiConfiguration.model ? t("business:ai_model_unassigned")
+    : currentAiProvider.error || t("business:provider_unavailable");
+
   const activeModes = enabledModes.map((value) => ({
     value,
     label: `${t(`business:mode_${value}`)}${currentAiProvider?.default_mode === value ? ` (${t("business:default_badge")})` : ""}`,
@@ -212,14 +221,15 @@ export const ProductInvoiceImport: FC<Props> = ({
 
   // Mutations
   const analyzeMutation = useAnalyzeInvoice();
+  const analysisRuntimeMessage = invoiceAiAnalysisMessageKey(analyzeMutation.error);
   const observation = useAnalysisObservation(businessId);
   const createInvoiceMutation = useCreateInvoiceWithFile();
   const bulkCreateMutation = useBulkCreateProducts();
   const bulkUpdateMutation = useBulkUpdateProducts();
 
-  const isAnalyzing = analyzeMutation.isPending;
+  const isAnalyzing = observation.isBusy;
   const isBusy =
-    isAnalyzing || isPreparingDraft || isFetchingAiProviders || isFetchingProducts || providerQuery.isFetching ||
+    isAnalyzing || isCheckingAiAvailability || isFetchingAiProviders || isFetchingProducts || providerQuery.isFetching ||
     isSaving ||
     createInvoiceMutation.isPending ||
     bulkCreateMutation.isPending ||
@@ -242,9 +252,10 @@ export const ProductInvoiceImport: FC<Props> = ({
   }, []);
 
   const hasErrors = useMemo(() => rows.some((r) => !r.isValid), [rows]);
+  const needsAvailability = rows.some(row => !row.id && typeof row.has_stock !== "boolean");
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (isUploadDisabled) return;
+    if (isUploadDisabled || analysisIntent.current) return;
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
     setFile(selectedFile);
@@ -277,7 +288,7 @@ export const ProductInvoiceImport: FC<Props> = ({
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-    if (isUploadDisabled) return;
+    if (isUploadDisabled || analysisIntent.current) return;
     const dropped = e.dataTransfer.files?.[0];
     if (dropped) {
       setFile(dropped);
@@ -290,16 +301,13 @@ export const ProductInvoiceImport: FC<Props> = ({
   ) => {
     const effectiveMode = modeToUse ?? selectedAiMode;
     const configuration = resolveInvoiceAiConfiguration(provider, effectiveMode);
-    if (analysisIntent.current || !file || !selectedProviderId || selectedProviderTax === null || productsError || isBusy || !configuration.canAnalyze || !effectiveMode) return;
-    analysisIntent.current = true;
-    setLastUsedProvider(provider);
+    if (analysisIntent.current || availabilityCheckPending.current || !file || !selectedProviderId || selectedProviderTax === null || productsError || aiProvidersError || isBusy || !configuration.canAnalyze || !effectiveMode) return;
+    const intent = Symbol("invoice-analysis");
+    analysisIntent.current = intent;
     const targetModel = configuration.model;
     const modelType = "default" as const;
-    const effectiveThinkingLevel = effectiveMode === "token_plan_web"
-      && webReasoningOverride?.providerId === provider.id && webReasoningOverride.model === targetModel
-      ? webReasoningOverride.level : configuration.thinkingLevel;
+    const effectiveThinkingLevel = configuration.thinkingLevel;
 
-    setIsPreparingDraft(true);
     let transport: Awaited<ReturnType<typeof observation.start>> | undefined;
     try {
       const params = {
@@ -314,26 +322,23 @@ export const ProductInvoiceImport: FC<Props> = ({
         thinking_level: effectiveThinkingLevel,
       };
       transport = await observation.start(params);
+      if (analysisIntent.current !== intent || !transport.isCurrent()) return;
       const response = await analyzeMutation.mutateAsync({ file, ...params, ...transport });
-      if (!transport.isCurrent()) return;
-      observation.preparing();
-
-      setInvoiceCode(response.code || "");
-      setInvoiceTotalAmount(response.total_amount ?? Number.NaN);
-      setInvoiceIssueDate(response.data?.issue_date || "");
+      if (analysisIntent.current !== intent || !transport.isCurrent()) return;
+      transport.preparing();
 
       const items = response.data?.items || [];
       const matchedProductIds = existingProducts
         .filter((p) =>
           items.some(
-            (item) => item.code && item.code.trim().toLowerCase() === p.code.trim().toLowerCase()
+            (item) => item.code && item.code.trim().toLowerCase() === p.code?.trim().toLowerCase()
           )
         )
         .map((p) => p.id);
 
       let historicalLogs: ProductLogEntity[] = [];
       if (matchedProductIds.length > 0) {
-        observation.emit('history_loading');
+        transport.emit('history_loading');
         try {
           const logsResponse = await getProductLogs({
             all: true,
@@ -341,55 +346,66 @@ export const ProductInvoiceImport: FC<Props> = ({
               product_id_in: matchedProductIds,
               s: "created_at desc",
             },
-          });
+          }, transport.signal);
+          if (analysisIntent.current !== intent || !transport.isCurrent()) return;
           historicalLogs = logsResponse.data || [];
         } catch (error) {
-          if (!transport.isCurrent()) return;
+          if (analysisIntent.current !== intent || !transport.isCurrent()) return;
           notifyHttpError(error);
-          observation.emit('history_unavailable');
+          transport.emit('history_unavailable');
           // Graceful fallback: existingProducts already provides catalog snapshot
         }
       }
 
-      if (!transport.isCurrent()) return;
-      observation.emit('rows_preparing');
+      if (analysisIntent.current !== intent || !transport.isCurrent()) return;
+      transport.emit('rows_preparing');
       const mappedRows = mapExtractedItemsToRows(
         items,
         existingProducts,
         historicalLogs,
         selectedProviderTax
       );
+      if (analysisIntent.current !== intent || !transport.isCurrent()) return;
+      setInvoiceCode(response.code || "");
+      setInvoiceTotalAmount(response.total_amount ?? Number.NaN);
+      setInvoiceIssueDate(response.data?.issue_date || "");
       shouldScrollToResults.current = true;
       setRows(mappedRows);
-      observation.emit('draft_ready');
-      observation.finish();
+      if (mappedRows.some(row => !row.id && typeof row.has_stock !== "boolean")) setShowInvoiceDetails(true);
+      transport.emit('draft_ready');
+      transport.finish();
     } catch (error) {
-      if (!transport || transport.isCurrent()) observation.finish(error);
+      if (analysisIntent.current === intent && transport?.isCurrent()) transport.finish(error);
       // Error handled by mutation onError
     } finally {
-      analysisIntent.current = false;
-      setIsPreparingDraft(false);
+      if (analysisIntent.current === intent) analysisIntent.current = null;
     }
   };
 
-  const handleToggleLock = (index: number) => {
-    setRows((prev) => {
-      const copy = [...prev];
-      const current = copy[index];
-      if (!current) return prev;
-      copy[index] = {
-        ...current,
-        isLocked: !current.isLocked,
-      };
-      return copy;
-    });
+  const handleCheckAiAvailability = async () => {
+    if (availabilityCheckPending.current) return;
+    availabilityCheckPending.current = true;
+    setIsCheckingAiAvailability(true);
+    try { await refetchAiProviders(); }
+    catch (error) { notifyHttpError(error); }
+    finally { availabilityCheckPending.current = false; setIsCheckingAiAvailability(false); }
+  };
+
+  const handleCancelAnalysis = () => {
+    if (!observation.cancel()) return;
+    analysisIntent.current = null;
+    analyzeMutation.reset();
+    void handleCheckAiAvailability();
+    sileo.success({ title: t("business:invoice_analysis_cancelled_title"), description: t("business:invoice_analysis_cancelled_description") });
   };
 
   const handleRemoveRow = (index: number) => {
+    if (isBusy || analysisIntent.current) return;
     setRows((prev) => validateInvoiceRows(prev.filter((_, idx) => idx !== index)));
   };
 
   const handleOpenEdit = (index: number) => {
+    if (isBusy || analysisIntent.current) return;
     const row = rows[index];
     setEditingIndex(index);
     setEditFormData({ ...row });
@@ -404,76 +420,43 @@ export const ProductInvoiceImport: FC<Props> = ({
   };
 
   const handleCostPriceChange = (cost: number) => {
-    const computedTaxCost = Math.round(cost * (1 + editTaxRate / 100));
-    const margin = editFormData.profit_percentage ?? 30;
-    const computedSale = Math.round(computedTaxCost * (1 + margin / 100));
-    setEditFormData((prev) => ({
-      ...prev,
-      cost_price: cost,
-      cost_price_tax: computedTaxCost,
-      sale_price: computedSale,
-    }));
+    if (isBusy || analysisIntent.current) return;
+    setEditFormData(prev => ({ ...prev, cost_price: cost, cost_price_tax: Math.round(cost * (1 + editTaxRate / 100)) }));
   };
-
   const handleTaxRateChange = (rate: number) => {
+    if (isBusy || analysisIntent.current) return;
     setEditTaxRate(rate);
-    const cost = editFormData.cost_price ?? 0;
-    const computedTaxCost = Math.round(cost * (1 + rate / 100));
-    const margin = editFormData.profit_percentage ?? 30;
-    const computedSale = Math.round(computedTaxCost * (1 + margin / 100));
-    setEditFormData((prev) => ({
-      ...prev,
-      cost_price_tax: computedTaxCost,
-      sale_price: computedSale,
-    }));
+    setEditFormData(prev => ({ ...prev, cost_price_tax: Math.round((prev.cost_price ?? Number.NaN) * (1 + rate / 100)) }));
   };
-
   const handleCostPriceTaxChange = (taxCost: number) => {
-    const computedCost = Math.round(taxCost / (1 + editTaxRate / 100));
-    const margin = editFormData.profit_percentage ?? 30;
-    const computedSale = Math.round(taxCost * (1 + margin / 100));
-    setEditFormData((prev) => ({
-      ...prev,
-      cost_price_tax: taxCost,
-      cost_price: computedCost,
-      sale_price: computedSale,
-    }));
+    if (isBusy || analysisIntent.current) return;
+    setEditFormData(prev => ({ ...prev, cost_price_tax: taxCost, cost_price: Math.round(taxCost / (1 + editTaxRate / 100)) }));
   };
-
-  const handleProfitMarginChange = (margin: number) => {
-    const taxCost = editFormData.cost_price_tax ?? 0;
-    const computedSale = Math.round(taxCost * (1 + margin / 100));
-    setEditFormData((prev) => ({
-      ...prev,
-      profit_percentage: margin,
-      sale_price: computedSale,
-    }));
-  };
-
   const handleSalePriceChange = (sale: number) => {
-    const taxCost = editFormData.cost_price_tax ?? 0;
-    let computedMargin = editFormData.profit_percentage ?? 30;
-    if (taxCost > 0) {
-      computedMargin = Math.max(0, Math.round(((sale - taxCost) / taxCost) * 100));
+    if (isBusy || analysisIntent.current) return;
+    setEditFormData(prev => ({ ...prev, sale_price: sale }));
+  };
+
+  const handleBindProduct = (product: ProductEntity, fields: InvoiceUpdateField[]) => {
+    if (isBusy || analysisIntent.current || !matchingRow || matchingRow.businessId !== businessId || !rows.includes(matchingRow.row)) return false;
+    try {
+      if (rows.some(row => row !== matchingRow.row && row.id === product.id)) throw new Error(t("business:invoice_match_duplicate_target"));
+      const bound = bindInvoiceRow(matchingRow.row, product, fields, businessId);
+      setRows(previous => validateInvoiceRows(previous.map(row => row === matchingRow.row ? bound : row)));
+      sileo.success({ title: t("business:invoice_match_prepared") });
+      return true;
+    } catch (error) {
+      sileo.error({ title: t("business:invoice_match_failed"), description: error instanceof Error ? error.message : t("core:server_error_toast") });
+      return false;
     }
-    setEditFormData((prev) => ({
-      ...prev,
-      sale_price: sale,
-      profit_percentage: computedMargin,
-    }));
   };
 
   const handleSaveEdit = () => {
-    if (editingIndex === null) return;
+    if (editingIndex === null || isBusy || analysisIntent.current) return;
 
     const { errors, isValid } = validateInvoiceRow(editFormData);
 
-    // Cross reference code if edited
     const newCode = (editFormData.code ?? "").trim();
-    const matched = existingProducts.find(
-      (p) => p.code.toLowerCase() === newCode.toLowerCase()
-    );
-
     const currentRow = rows[editingIndex];
     const newSalePrice = Number(editFormData.sale_price ?? 0);
     const priceDiff = calculatePriceDiff(
@@ -484,16 +467,18 @@ export const ProductInvoiceImport: FC<Props> = ({
     const updatedRow: InvoiceProvisionalRow = {
       ...currentRow,
       ...editFormData,
-      id: matched?.id,
+      id: currentRow.id,
       code: newCode,
       name: (editFormData.name ?? "").trim(),
       cost_price: Number(editFormData.cost_price ?? 0),
       cost_price_tax: Number(editFormData.cost_price_tax ?? 0),
-      profit_percentage: Number(editFormData.profit_percentage ?? 0),
       sale_price: newSalePrice,
-      stock: Number(editFormData.stock ?? 0),
+      quantity: editFormData.quantity ?? Number.NaN,
+      has_stock: currentRow.id ? currentRow.has_stock : editFormData.has_stock,
+      version: currentRow.version,
+      manual_match: currentRow.manual_match ? { ...currentRow.manual_match, fields: [...new Set([...currentRow.manual_match.fields, ...INVOICE_UPDATE_FIELDS.filter(field => editFormData[field] !== currentRow[field])])] } : undefined,
       is_active: editFormData.is_active ?? true,
-      isUpdate: Boolean(matched?.id),
+      isUpdate: Boolean(currentRow.id),
       isLocked: currentRow.isLocked ?? false,
       historicalProduct: currentRow.historicalProduct,
       priceDiff,
@@ -512,7 +497,7 @@ export const ProductInvoiceImport: FC<Props> = ({
   };
 
   const handleSubmitAll = async () => {
-    if (rows.length === 0 || hasErrors || isBusy || !invoiceCode.trim() || !file || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0) {
+    if (analysisIntent.current || rows.length === 0 || hasErrors || rows.some(row => !row.id && typeof row.has_stock !== "boolean") || isBusy || !invoiceCode.trim() || !file || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0) {
       return;
     }
 
@@ -533,10 +518,12 @@ export const ProductInvoiceImport: FC<Props> = ({
           issue_date: invoiceIssueDate || undefined,
           items_count: rows.length,
           extracted_items: rows.map((r) => ({
-            code: r.code,
+            code: r.invoice_code ?? r.code,
+            matched_product_id: r.id,
+            selected_update_fields: r.manual_match?.fields,
             name: r.name,
             cost_price: r.cost_price,
-            quantity: r.stock,
+            quantity: Number.isFinite(r.quantity) ? r.quantity : null,
             is_update: r.isUpdate,
           })),
         },
@@ -550,34 +537,10 @@ export const ProductInvoiceImport: FC<Props> = ({
       const newItems: CreateProductPayload[] = [];
       const updateItems: BulkUpdateProductItemPayload[] = [];
 
-      rows.forEach((r) => {
-        if (r.id) {
-          updateItems.push({
-            id: r.id,
-            provider_id: selectedProviderId || null,
-            code: r.code,
-            name: r.name,
-            cost_price: r.cost_price,
-            cost_price_tax: r.cost_price_tax,
-            profit_percentage: r.profit_percentage,
-            sale_price: r.sale_price,
-            stock: r.stock,
-            is_active: r.is_active,
-          });
-        } else {
-          newItems.push({
-            business_id: businessId,
-            provider_id: selectedProviderId || null,
-            code: r.code,
-            name: r.name,
-            cost_price: r.cost_price,
-            cost_price_tax: r.cost_price_tax,
-            profit_percentage: r.profit_percentage,
-            sale_price: r.sale_price,
-            stock: r.stock,
-            is_active: r.is_active,
-          });
-        }
+      rows.forEach(row => {
+        const payload = invoiceProductPayload(row, businessId, selectedProviderId || null);
+        if ("id" in payload) updateItems.push(payload);
+        else newItems.push(payload);
       });
 
       if (newItems.length > 0) {
@@ -606,13 +569,13 @@ export const ProductInvoiceImport: FC<Props> = ({
     <BusinessWorkflow>
       {/* Header with back button */}
       <Box data-business-toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
-        <Button startIcon={<ArrowBackIcon />} onClick={onCancel} sx={{ borderRadius: 2 }} disabled={isBusy}>
+        <Button startIcon={<ArrowBackIcon />} onClick={() => { if (!isBusy && !analysisIntent.current) onCancel(); }} sx={{ borderRadius: 2 }} disabled={isBusy}>
           {t("business:back_to_catalog")}
         </Button>
       </Box>
 
       {/* Instructions & Upload Area */}
-      <QueryErrorAlert isError={aiProvidersError || productsError || providerQuery.isError} isFetching={isBusy} onRetry={() => Promise.all([refetchAiProviders(), refetchProducts(), providerQuery.refetch()])} />
+      <QueryErrorAlert isError={aiProvidersError || productsError || providerQuery.isError} isFetching={isBusy} onRetry={() => { if (!isBusy && !analysisIntent.current) return Promise.all([handleCheckAiAvailability(), refetchProducts(), providerQuery.refetch()]); }} />
       <InvoiceSectionPaper>
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, display: "flex", alignItems: "center", gap: 1 }}>
           <ReceiptLongOutlinedIcon color="primary" />
@@ -639,10 +602,10 @@ export const ProductInvoiceImport: FC<Props> = ({
                 label={t("business:select_provider_required")}
                 required
                 options={providerOptions}
-                onSearchChange={providerQuery.setSearch} hasMore={providerQuery.hasNextPage}
-                onLoadMore={() => { void providerQuery.fetchNextPage(); }} loadingOptions={providerQuery.isFetching}
+                onSearchChange={value => { if (!isBusy && !analysisIntent.current) providerQuery.setSearch(value); }} hasMore={providerQuery.hasNextPage}
+                onLoadMore={() => { if (!isBusy && !analysisIntent.current) void providerQuery.fetchNextPage(); }} loadingOptions={providerQuery.isFetching}
                 value={selectedProviderId || null}
-                onChange={(val) => { setSelectedProviderId(val ?? ""); setSelectedProviderTax(providerQuery.providers.find((provider) => provider.id === val)?.tax ?? null); }}
+                onChange={(val) => { if (isBusy || analysisIntent.current) return; setSelectedProviderId(val ?? ""); setSelectedProviderTax(providerQuery.providers.find((provider) => provider.id === val)?.tax ?? null); }}
                 placeholder={t("business:select_provider_placeholder", "Seleccionar proveedor...")}
                 searchPlaceholder={t("business:search_provider_placeholder", "Buscar proveedor...")}
                 disabled={isBusy}
@@ -652,22 +615,7 @@ export const ProductInvoiceImport: FC<Props> = ({
               />
             </Box>
 
-            {Boolean(file && selectedAiMode === "token_plan_web" && currentAiProvider) && (
-              <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 1, alignItems: { xs: "stretch", sm: "center" } }}>
-                <Typography variant="body2">{t("ai_providers:detail.reasoning_level_label")}</Typography>
-                <ToggleButtonGroup exclusive disabled={isBusy} value={currentWebReasoningLevel ?? null}
-                  aria-label={t("ai_providers:detail.reasoning_level_label")}
-                  sx={{ minHeight: 44, "& .MuiToggleButton-root": { flex: { xs: 1, sm: "initial" } } }}
-                  onChange={(_event, level: "low" | "medium" | "high" | null) => {
-                    if (level && currentAiProvider) setWebReasoningOverride({ providerId: currentAiProvider.id,
-                      model: aiConfiguration.model, level });
-                  }}>
-                  {(["low", "medium", "high"] as const).map((level) => <ToggleButton key={level} value={level}>
-                    {t(`ai_providers:detail.web_level_${level}`)}
-                  </ToggleButton>)}
-                </ToggleButtonGroup>
-              </Box>
-            )}
+
           </Box>
 
           {/* Hidden File Input */}
@@ -716,10 +664,10 @@ export const ProductInvoiceImport: FC<Props> = ({
                       options={aiProviderOptions}
                       value={currentAiProvider?.id || null}
                       onChange={(val) => {
+                        if (isBusy || analysisIntent.current) return;
                         if (val) {
                           setSelectedAiProviderId(val);
                           setModeSelection(null);
-                          setWebReasoningOverride(null);
                         }
                       }}
                       placeholder={t(
@@ -741,9 +689,10 @@ export const ProductInvoiceImport: FC<Props> = ({
                         options={activeModes}
                         value={selectedAiMode}
                         onChange={(val) => {
+                          if (isBusy || analysisIntent.current) return;
                           if (currentAiProvider && isInvoiceAiMode(val)) {
+                            setSelectedAiProviderId(currentAiProvider.id);
                             setModeSelection({ providerId: currentAiProvider.id, mode: val });
-                            setWebReasoningOverride(null);
                           }
                         }}
                         placeholder={t(
@@ -762,7 +711,8 @@ export const ProductInvoiceImport: FC<Props> = ({
                 <Box
                   sx={{
                     display: "flex",
-                    alignItems: "center",
+                    alignItems: { xs: "stretch", sm: "center" },
+                    flexDirection: { xs: "column", sm: "row" },
                     alignSelf: "flex-end",
                     gap: 1,
                     width: { xs: '100%', sm: 'auto' },
@@ -770,14 +720,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                 >
                   <Tooltip
                     title={
-                      !currentAiProvider
-                        ? t("business:no_ai_providers_available", "No hay proveedores de IA disponibles o autorizados.")
-                        : !aiConfiguration.canAnalyze
-                        ? (!aiConfiguration.model ? t("business:ai_model_unassigned") : currentAiProvider?.error) ||
-                          (currentAiProvider?.key === "gemini"
-                            ? t("business:gemini_session_expired_tooltip")
-                            : t("business:provider_unavailable"))
-                        : ""
+                      !aiConfiguration.canAnalyze ? unavailableMessage : ""
                     }
                     arrow
                     placement="top"
@@ -797,6 +740,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                           isUploadDisabled ||
                           !file ||
                           !aiConfiguration.canAnalyze ||
+                          aiProvidersError ||
                           isVerifyingProviders
                         }
                         onClick={() =>
@@ -826,13 +770,20 @@ export const ProductInvoiceImport: FC<Props> = ({
                     </Box>
                   </Tooltip>
 
+                  {observation.isBusy && <Button variant="outlined" color="error" startIcon={<StopCircleOutlinedIcon />} onClick={handleCancelAnalysis}
+                    data-testid="cancel-invoice-analysis-btn" sx={{ width: { xs: "100%", sm: "auto" }, minHeight: 44 }}>{t("business:invoice_analysis_cancel")}</Button>}
+
+                  {currentAiProvider && !aiConfiguration.canAnalyze && !analyzeMutation.isError && (
+                    <Button variant="outlined" onClick={() => { void handleCheckAiAvailability(); }} disabled={isBusy || isVerifyingProviders}
+                      data-testid="check-invoice-ai-availability-btn" sx={{ width: { xs: "100%", sm: "auto" }, minHeight: 44 }}>
+                      {t("business:invoice_ai_check_availability")}
+                    </Button>
+                  )}
+
                   {!aiConfiguration.canAnalyze && !isVerifyingProviders && (
                     <Tooltip
                       title={
-                        currentAiProvider?.error ||
-                        (currentAiProvider?.key === "gemini"
-                          ? t("business:gemini_session_expired_tooltip")
-                          : t("business:provider_unavailable"))
+                        unavailableMessage
                       }
                       arrow
                       placement="top"
@@ -861,30 +812,27 @@ export const ProductInvoiceImport: FC<Props> = ({
           {analyzeMutation.isError && (
             <Alert
               severity="warning"
-              sx={{ mt: 2, borderRadius: 2 }}
+              sx={{ mt: 2, borderRadius: 2, flexWrap: "wrap",
+                "& .MuiAlert-message": { minWidth: 0, flex: "1 1 160px" },
+                "& .MuiAlert-action": { width: { xs: "100%", sm: "auto" }, ml: { xs: 0, sm: 2 }, mr: { xs: 0, sm: -1 }, pl: { xs: 0, sm: 2 }, pt: { xs: 1, sm: 0.5 } } }}
               action={
                 <Button
+                  variant="outlined"
                   color="inherit"
                   size="small"
                   onClick={() => {
-                    const target =
-                      lastUsedProvider ||
-                      providersList.find((p) => p.can_use_model) ||
-                      providersList[0];
-                    if (target) {
-                      handleAnalyze(target);
-                    }
+                    if (analysisRuntimeMessage) { void handleCheckAiAvailability(); return; }
+                    if (currentAiProvider) handleAnalyze(currentAiProvider, selectedAiMode);
                   }}
-                  disabled={isUploadDisabled}
+                  disabled={analysisRuntimeMessage ? isBusy : isUploadDisabled || !file || !aiConfiguration.canAnalyze || aiProvidersError || isVerifyingProviders}
                   data-testid="retry-analyze-btn"
-                  sx={{ fontWeight: 600 }}
+                  sx={{ fontWeight: 600, minHeight: 44, width: { xs: "100%", sm: "auto" } }}
                 >
-                  {t("business:retry_analysis_btn")}
+                  {t(analysisRuntimeMessage ? "business:invoice_ai_check_availability" : "business:retry_analysis_btn")}
                 </Button>
               }
             >
-              {analyzeMutation.error?.response?.data?.message ||
-                t("business:ai_analysis_failed_retry_hint")}
+              {analysisRuntimeMessage ? t(analysisRuntimeMessage) : getHttpErrorMessage(analyzeMutation.error)}
             </Alert>
           )}
           <Workspace>
@@ -902,7 +850,7 @@ export const ProductInvoiceImport: FC<Props> = ({
 
           {/* Dropzone Box */}
           <DropzoneBox
-            onClick={() => !isUploadDisabled && fileInputRef.current?.click()}
+            onClick={() => !isUploadDisabled && !analysisIntent.current && fileInputRef.current?.click()}
             onDragOver={handleDragOver}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
@@ -911,7 +859,7 @@ export const ProductInvoiceImport: FC<Props> = ({
             role="button"
             tabIndex={isUploadDisabled ? -1 : 0}
             aria-label={t("business:invoice_file_prompt")}
-            onKeyDown={(event) => { if (!isUploadDisabled && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); fileInputRef.current?.click(); } }}
+            onKeyDown={(event) => { if (!isUploadDisabled && !analysisIntent.current && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); fileInputRef.current?.click(); } }}
             aria-disabled={isUploadDisabled}
             sx={{
               flex: 1,
@@ -1052,7 +1000,7 @@ export const ProductInvoiceImport: FC<Props> = ({
               name="invoice_code"
               label={t("business:invoice_number_label")}
               value={invoiceCode}
-              onChange={(e) => setInvoiceCode(e.target.value)}
+              onChange={(e) => { if (!isBusy && !analysisIntent.current) setInvoiceCode(e.target.value); }}
               required
               error={!invoiceCode.trim()}
               helperText={!invoiceCode.trim() ? t("validations:required") : undefined}
@@ -1064,7 +1012,7 @@ export const ProductInvoiceImport: FC<Props> = ({
               name="invoice_total"
               label={t("business:invoice_total_label")}
               value={numericInputValue(invoiceTotalAmount)}
-              onChange={(e) => setInvoiceTotalAmount(parseNumericInput(e.target.value))}
+              onChange={(e) => { if (!isBusy && !analysisIntent.current) setInvoiceTotalAmount(parseNumericInput(e.target.value)); }}
               type="number"
               disabled={isBusy}
               error={!Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0}
@@ -1076,7 +1024,7 @@ export const ProductInvoiceImport: FC<Props> = ({
               name="invoice_date"
               label={t("business:invoice_date_label")}
               value={invoiceIssueDate}
-              onChange={(e) => setInvoiceIssueDate(e.target.value)}
+              onChange={(e) => { if (!isBusy && !analysisIntent.current) setInvoiceIssueDate(e.target.value); }}
               disabled={isBusy}
               data-testid="invoice-date-field"
             />
@@ -1113,7 +1061,7 @@ export const ProductInvoiceImport: FC<Props> = ({
               <Button
                 variant="contained"
                 color="success"
-                disabled={hasErrors || rows.length === 0 || isBusy || !invoiceCode.trim() || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0}
+                disabled={hasErrors || needsAvailability || rows.length === 0 || isBusy || !invoiceCode.trim() || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0}
                 onClick={handleSubmitAll}
                 startIcon={isSaving ? <CircularProgress size={18} color="inherit" /> : <ReceiptLongOutlinedIcon />}
                 sx={{ borderRadius: 2 }}
@@ -1127,13 +1075,16 @@ export const ProductInvoiceImport: FC<Props> = ({
           {/* Table */}
           <TableContainer
             component={Paper}
+            role="region"
+            aria-label={t("business:provisional_table_title", { count: rows.length })}
+            tabIndex={0}
             sx={{
               borderRadius: 2,
               border: (theme) => `1px solid ${theme.palette.divider}`,
               boxShadow: "none",
             }}
           >
-            <Table size="small">
+            <Table size="small" sx={{ minWidth: showInvoiceDetails ? 1200 : 1000 }}>
               <TableHead>
                 <TableRow>
                   <TableCell width={36}></TableCell>
@@ -1142,13 +1093,25 @@ export const ProductInvoiceImport: FC<Props> = ({
                   <TableCell>{t("business:product_name")}</TableCell>
                   <TableCell align="right">{t("business:product_cost_price")}</TableCell>
                   <TableCell align="right">{t("business:product_cost_tax")}</TableCell>
-                  <TableCell align="right">{t("business:product_profit_margin")}</TableCell>
-                  <TableCell align="right">{t("business:product_sale_price")}</TableCell>
-                  <TableCell align="right">{t("business:product_stock")}</TableCell>
-                  <TableCell width={48} align="center">
-                    <LockOutlinedIcon fontSize="small" sx={{ color: "text.secondary" }} />
+                  <TableCell align="right">
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 0.5 }}>
+                      {t("business:product_sale_price")}
+                      <Tooltip title={t(showInvoiceDetails ? "business:invoice_hide_detail_columns" : "business:invoice_show_detail_columns")}>
+                        <span><IconButton
+                          aria-label={t(showInvoiceDetails ? "business:invoice_hide_detail_columns" : "business:invoice_show_detail_columns")}
+                          aria-expanded={showInvoiceDetails}
+                          disabled={isBusy}
+                          onClick={() => { if (!isBusy && !analysisIntent.current) setShowInvoiceDetails(previous => !previous); }}
+                          sx={{ minWidth: 44, minHeight: 44, color: "inherit" }}
+                        >{showInvoiceDetails ? <RemoveRounded fontSize="small" /> : <AddRounded fontSize="small" />}</IconButton></span>
+                      </Tooltip>
+                    </Box>
                   </TableCell>
-                  <TableCell align="right" width={110}>{t("core:actions")}</TableCell>
+                  {showInvoiceDetails && <>
+                    <TableCell align="right">{t("business:pos.invoice_quantity")}</TableCell>
+                    <TableCell>{t("business:pos.availability")}</TableCell>
+                  </>}
+                  <TableCell align="right" width={96} sx={{ whiteSpace: "nowrap" }}>{t("core:actions")}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -1156,9 +1119,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                   <Fragment key={`${row.code}-${idx}`}>
                     <TableRow
                       sx={{
-                        backgroundColor: row.isLocked
-                          ? "rgba(46, 125, 50, 0.08)"
-                          : !row.isValid
+                        backgroundColor: !row.isValid
                           ? "rgba(211, 47, 47, 0.05)"
                           : "inherit",
                         transition: "background-color 0.2s ease",
@@ -1186,7 +1147,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                         </Tooltip>
                       </TableCell>
 
-                      {/* Action Type (Nuevo / Actualizar) & Ready Badge */}
+                      {/* Action Type (Nuevo / Actualizar) */}
                       <TableCell>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexWrap: "wrap" }}>
                           <Chip
@@ -1199,29 +1160,18 @@ export const ProductInvoiceImport: FC<Props> = ({
                             size="small"
                             variant={row.isUpdate ? "filled" : "outlined"}
                           />
-                          {row.isLocked && (
-                            <Chip
-                              label={t("business:row_locked_ready")}
-                              color="success"
-                              size="small"
-                              variant="filled"
-                              data-testid={`ready-badge-${idx}`}
-                              sx={{ fontWeight: 600, height: 22 }}
-                            />
-                          )}
                         </Box>
                       </TableCell>
 
-                      <TableCell sx={{ fontWeight: 600 }}>{row.code || "-"}</TableCell>
-                      <TableCell>{row.name}</TableCell>
-                      <TableCell align="right">
+                      <TableCell sx={{ fontWeight: 600, maxWidth: 240, overflowWrap: "anywhere" }}>{row.code || "-"}</TableCell>
+                      <TableCell sx={{ minWidth: 160, maxWidth: 280, overflowWrap: "anywhere" }}>{row.name}</TableCell>
+                      <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
                         {Number.isFinite(row.cost_price) ? `$${row.cost_price.toLocaleString()}` : "-"}
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
                         {Number.isFinite(row.cost_price_tax) ? `$${row.cost_price_tax.toLocaleString()}` : "-"}
                       </TableCell>
-                      <TableCell align="right">{Number.isFinite(row.profit_percentage) ? `${row.profit_percentage}%` : "—"}</TableCell>
-                      <TableCell align="right" sx={{ fontWeight: 600 }}>
+                      <TableCell align="right" sx={{ fontWeight: 600, whiteSpace: "nowrap" }}>
                         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
                           <span>{Number.isFinite(row.sale_price) ? `$${row.sale_price.toLocaleString()}` : "-"}</span>
                           {row.priceDiff && (
@@ -1258,57 +1208,21 @@ export const ProductInvoiceImport: FC<Props> = ({
                           )}
                         </Box>
                       </TableCell>
-                      <TableCell align="right">{Number.isFinite(row.stock) ? row.stock : "—"}</TableCell>
+                      {showInvoiceDetails && <>
+                      <TableCell align="right">{Number.isFinite(row.quantity) ? row.quantity : "—"}</TableCell>
+                      <TableCell><SelectSingleInput label={t("business:pos.availability")}
+                        value={typeof row.has_stock === "boolean" ? String(row.has_stock) : null}
+                        options={[{ value: "true", label: t("business:pos.available") }, { value: "false", label: t("business:pos.unavailable") }]}
+                        onChange={value => { if (!isBusy && !analysisIntent.current) setRows(previous => previous.map((item,index) => index === idx ? { ...item, has_stock: value === null ? undefined : value === "true" } : item)); }}
+                        disabled={isBusy || Boolean(row.id)} placeholder={t(row.id ? "business:pos.preserve_existing" : "business:pos.choose_availability")}
+                      /></TableCell>
 
-                      {/* Lock Checkbox (Moved to the right) */}
-                      <TableCell align="center" width={48}>
-                        <Tooltip
-                          title={
-                            row.isLocked
-                              ? t("business:unlock_row_tooltip")
-                              : t("business:lock_row_tooltip")
-                          }
-                        >
-                          <Checkbox
-                            size="small"
-                            icon={<LockOpenOutlinedIcon fontSize="small" color="action" />}
-                            checkedIcon={<LockOutlinedIcon fontSize="small" color="success" />}
-                            checked={Boolean(row.isLocked)}
-                            onChange={() => handleToggleLock(idx)}
-                            disabled={isBusy}
-                            data-testid={`lock-checkbox-${idx}`}
-                            sx={{ p: 0.5 }}
-                          />
-                        </Tooltip>
-                      </TableCell>
+                      </>}
 
                       <TableCell align="right">
-                        <Tooltip title={t("business:edit_row_tooltip")}>
-                          <span>
-                            <IconButton
-                              size="small"
-                              color="primary"
-                              onClick={() => handleOpenEdit(idx)}
-                              disabled={isBusy || Boolean(row.isLocked)}
-                              data-testid={`edit-row-${idx}`}
-                            >
-                              <EditOutlinedIcon fontSize="small" />
-                            </IconButton>
-                          </span>
-                        </Tooltip>
-                        <Tooltip title={t("business:remove_row_tooltip")}>
-                          <span>
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={() => handleRemoveRow(idx)}
-                              disabled={isBusy || Boolean(row.isLocked)}
-                              data-testid={`delete-row-${idx}`}
-                            >
-                              <DeleteOutlinedIcon fontSize="small" />
-                            </IconButton>
-                          </span>
-                        </Tooltip>
+                        <InvoiceRowActions index={idx} disabled={isBusy}
+                          onMatch={() => { if (!isBusy && !analysisIntent.current) setMatchingRow({ businessId, row }); }}
+                          onEdit={() => handleOpenEdit(idx)} onRemove={() => handleRemoveRow(idx)} />
                       </TableCell>
                     </TableRow>
 
@@ -1346,7 +1260,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                             }}
                           />
                         </TableCell>
-                        <TableCell sx={{ color: "text.secondary" }}>{row.historicalProduct.code}</TableCell>
+                        <TableCell sx={{ color: "text.secondary", maxWidth: 240, overflowWrap: "anywhere" }}>{row.historicalProduct.code}</TableCell>
                         <TableCell sx={{ color: "text.secondary" }}>
                           <Typography variant="caption" sx={{ fontStyle: "italic", color: "text.secondary" }}>
                             {row.historicalProduct.name}
@@ -1358,18 +1272,13 @@ export const ProductInvoiceImport: FC<Props> = ({
                         <TableCell align="right" sx={{ color: "text.secondary" }}>
                           ${row.historicalProduct.cost_price_tax.toLocaleString()}
                         </TableCell>
-                        <TableCell align="right" sx={{ color: "text.secondary" }}>
-                          {row.historicalProduct.profit_percentage}%
-                        </TableCell>
                         <TableCell align="right" sx={{ color: "text.secondary", fontWeight: 500 }}>
                           ${row.historicalProduct.sale_price.toLocaleString()}
                         </TableCell>
-                        <TableCell align="right" sx={{ color: "text.secondary" }}>
-                          {row.historicalProduct.stock}
-                        </TableCell>
-                        <TableCell align="center">
-                          <Typography variant="caption" color="text.disabled">-</Typography>
-                        </TableCell>
+                        {showInvoiceDetails && <>
+                          <TableCell align="right" sx={{ color: "text.secondary" }}>—</TableCell>
+                          <TableCell align="center">—</TableCell>
+                        </>}
                         <TableCell align="right">
                           <Typography variant="caption" color="text.disabled">-</Typography>
                         </TableCell>
@@ -1383,10 +1292,12 @@ export const ProductInvoiceImport: FC<Props> = ({
         </InvoiceSectionPaper>
       )}
 
+      {matchingRow && <InvoiceProductMatch key={rows.indexOf(matchingRow.row)} businessId={businessId} row={matchingRow.row} disabled={isBusy || matchingRow.businessId !== businessId} onClose={() => setMatchingRow(null)} onApply={handleBindProduct} />}
+
       {/* Row Edit Modal */}
       <BaseModal
         open={editingIndex !== null}
-        onClose={() => setEditingIndex(null)}
+        onClose={() => { if (!isBusy && !analysisIntent.current) setEditingIndex(null); }}
         title={t("business:edit_invoice_item_title")}
         size="md"
         actions={
@@ -1394,7 +1305,7 @@ export const ProductInvoiceImport: FC<Props> = ({
             <Button
               variant="contained"
               color="error"
-              onClick={() => setEditingIndex(null)}
+              disabled={isBusy} onClick={() => { if (!isBusy && !analysisIntent.current) setEditingIndex(null); }}
               data-testid="cancel-row-edit"
               sx={{ borderRadius: 2, px: 2.5 }}
             >
@@ -1403,6 +1314,7 @@ export const ProductInvoiceImport: FC<Props> = ({
             <Button
               variant="contained"
               color="primary"
+              disabled={isBusy}
               onClick={handleSaveEdit}
               data-testid="save-row-edit"
               sx={{ borderRadius: 2, px: 2.5 }}
@@ -1418,15 +1330,22 @@ export const ProductInvoiceImport: FC<Props> = ({
             handleSaveEdit();
           }}
         >
+          <SelectSingleInput
+            label={t("business:pos.availability")}
+            value={typeof editFormData.has_stock === "boolean" ? String(editFormData.has_stock) : null}
+            options={[{ value: "true", label: t("business:pos.available") }, { value: "false", label: t("business:pos.unavailable") }]}
+            onChange={(value) => { if (!isBusy && !analysisIntent.current) setEditFormData(previous => ({ ...previous, has_stock: value === null ? undefined : value === "true" })); }}
+            disabled={isBusy || Boolean(editFormData.id)}
+            placeholder={t(editFormData.id ? "business:pos.preserve_existing" : "business:pos.choose_availability")}
+          />
           {/* is_active Switch at top, matching Core pattern */}
           <SwitchWrapper>
             <StyledFormControlLabel
               control={
-                <StyledSwitch
+                  <StyledSwitch
+                    disabled={isBusy || Boolean(editFormData.manual_match)}
                   checked={editFormData.is_active ?? true}
-                  onChange={(e) =>
-                    setEditFormData((prev) => ({ ...prev, is_active: e.target.checked }))
-                  }
+                  onChange={(e) => { if (!isBusy && !analysisIntent.current) setEditFormData((prev) => ({ ...prev, is_active: e.target.checked })); }}
                   name="is_active"
                   data-testid="edit-field-active-switch"
                 />
@@ -1439,13 +1358,11 @@ export const ProductInvoiceImport: FC<Props> = ({
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextInput
-                id="edit-field-code"
+                id="edit-field-code" disabled={isBusy}
                 name="code"
                 label={t("business:product_code")}
                 value={editFormData.code ?? ""}
-                onChange={(e) =>
-                  setEditFormData((prev) => ({ ...prev, code: e.target.value }))
-                }
+                onChange={(e) => { if (!isBusy && !analysisIntent.current) setEditFormData((prev) => ({ ...prev, code: e.target.value })); }}
                 required
                 data-testid="edit-field-code"
               />
@@ -1453,13 +1370,11 @@ export const ProductInvoiceImport: FC<Props> = ({
 
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextInput
-                id="edit-field-name"
+                id="edit-field-name" disabled={isBusy}
                 name="name"
                 label={t("business:product_name")}
                 value={editFormData.name ?? ""}
-                onChange={(e) =>
-                  setEditFormData((prev) => ({ ...prev, name: e.target.value }))
-                }
+                onChange={(e) => { if (!isBusy && !analysisIntent.current) setEditFormData((prev) => ({ ...prev, name: e.target.value })); }}
                 required
                 data-testid="edit-field-name"
               />
@@ -1468,7 +1383,7 @@ export const ProductInvoiceImport: FC<Props> = ({
             {/* Row 2: Costo Base sin Impuesto, Impuesto % auxiliar, Costo Base con Impuestos */}
             <Grid size={{ xs: 12, sm: 4 }}>
               <TextInput
-                id="edit-field-cost"
+                id="edit-field-cost" disabled={isBusy}
                 name="cost_price"
                 type="number"
                 label={t("business:product_cost_price")}
@@ -1481,7 +1396,7 @@ export const ProductInvoiceImport: FC<Props> = ({
 
             <Grid size={{ xs: 12, sm: 4 }}>
               <TextInput
-                id="edit-field-tax-rate"
+                id="edit-field-tax-rate" disabled={isBusy}
                 name="tax_rate"
                 type="number"
                 label={t("business:product_tax_rate")}
@@ -1493,7 +1408,7 @@ export const ProductInvoiceImport: FC<Props> = ({
 
             <Grid size={{ xs: 12, sm: 4 }}>
               <TextInput
-                id="edit-field-cost-tax"
+                id="edit-field-cost-tax" disabled={isBusy}
                 name="cost_price_tax"
                 type="number"
                 label={t("business:product_cost_tax")}
@@ -1503,22 +1418,9 @@ export const ProductInvoiceImport: FC<Props> = ({
               />
             </Grid>
 
-            {/* Row 3: Margen % y Precio Venta */}
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextInput
-                id="edit-field-margin"
-                name="profit_percentage"
-                type="number"
-                label={t("business:product_profit_margin")}
-                value={numericInputValue(editFormData.profit_percentage)}
-                onChange={(e) => handleProfitMarginChange(parseNumericInput(e.target.value))}
-                data-testid="edit-field-margin"
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextInput
-                id="edit-field-sale"
+                id="edit-field-sale" disabled={isBusy}
                 name="sale_price"
                 type="number"
                 label={t("business:product_sale_price")}
@@ -1529,20 +1431,19 @@ export const ProductInvoiceImport: FC<Props> = ({
               />
             </Grid>
 
-            {/* Row 4: Stock */}
+            <Grid size={{ xs: 12 }}>
+              <PriceSuggestion key={editingIndex} costPriceTax={editFormData.cost_price_tax ?? null} disabled={isBusy} onApply={handleSalePriceChange} />
+            </Grid>
+
+            {/* Invoice quantity remains separate from catalog stock. */}
             <Grid size={{ xs: 12 }}>
               <TextInput
-                id="edit-field-stock"
-                name="stock"
+                id="edit-field-stock" disabled={isBusy}
+                name="quantity"
                 type="number"
-                label={t("business:product_stock")}
-                value={numericInputValue(editFormData.stock)}
-                onChange={(e) =>
-                  setEditFormData((prev) => ({
-                    ...prev,
-                    stock: parseNumericInput(e.target.value),
-                  }))
-                }
+                label={t("business:pos.invoice_quantity")}
+                value={numericInputValue(editFormData.quantity)}
+                onChange={(e) => { if (!isBusy && !analysisIntent.current) setEditFormData((prev) => ({ ...prev, quantity: parseNumericInput(e.target.value) })); }}
                 required
                 data-testid="edit-field-stock"
               />

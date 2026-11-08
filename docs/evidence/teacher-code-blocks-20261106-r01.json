@@ -1,0 +1,114 @@
+{
+  "schema": "teacher-code-blocks/1",
+  "local_date": "2026-11-06",
+  "status": "Client_R27_active_verified",
+  "scope": "Teacher lesson Markdown code frames, declared-language extension labels, exact code copy with pending/error feedback, local horizontal scroll. Inline code and HTML/image restrictions preserved.",
+  "source_freeze": {
+    "path": "ops/lab/artifacts/teacher-code-blocks-20261106-r01/client-r27-r01/source-freeze.json",
+    "sha256": "ac8087308160f7d06c1a37683511a76f95b70834f4361dd863de5a6a3df61164",
+    "bytes": 1887
+  },
+  "validation": {
+    "path": "ops/lab/artifacts/teacher-code-blocks-20261106-r01/client-r27-r01/Root-validation.json",
+    "sha256": "259009487cffa629ba42a9ad3844077b7359bd7d1c83588e7de0c6373e21397f",
+    "bytes": 528
+  },
+  "checks": {
+    "atomic_tests": 6,
+    "test_suites": 1,
+    "test_seconds": 9.88,
+    "typecheck_exit": 0,
+    "lint_exit": 0,
+    "isolated_build_typecheck_diagnostics": 0,
+    "isolated_vite_build_seconds": 15.022,
+    "operator_tests": 5,
+    "Root_current_sources_and_delivery_refs_verified": true
+  },
+  "operations": {
+    "release": "/opt/nodia/releases/nodia-client-teacher-20261106-r27",
+    "manifest": {
+      "path": "ops/lab/artifacts/teacher-code-blocks-20261106-r01/client-r27-r01/release-manifest.json",
+      "sha256": "50d48b096ed30b17a74474b75d9fc481bd036ec6b8577780c7a5a481d1d743e3",
+      "bytes": 30872
+    },
+    "delivery": {
+      "path": "ops/lab/artifacts/teacher-code-blocks-20261106-r01/client-r27-r01/delivery.json",
+      "sha256": "42c99bd009d5878485a783fe1b8c24c495df98d61f3f4f804eda6202024a042e",
+      "bytes": 12515
+    },
+    "activation": {
+      "path": "ops/lab/artifacts/teacher-code-blocks-20261106-r01/client-r27-r01/activation-state.json",
+      "sha256": "c621cc775bdf031d70182a4055fbe1cad6b44c35250cd58e29f55f3b9c9b5a28",
+      "bytes": 698
+    },
+    "health": {
+      "path": "ops/lab/artifacts/teacher-code-blocks-20261106-r01/client-r27-r01/final-health.json",
+      "sha256": "ca016c2c97996c6ccfd4b32e2b362e035600e4b07bebdbe078fbddbd1da0ec6c",
+      "bytes": 1526
+    },
+    "current_outputs": 185,
+    "previous_assets_each": 180,
+    "previous_releases_checked": [
+      "R26",
+      "R25",
+      "R24",
+      "R23",
+      "R22",
+      "R21",
+      "R20",
+      "R19",
+      "R17"
+    ],
+    "activation_reload_count": 1,
+    "full_metadata_CLI_CAS_preserved": true,
+    "Server_R09_Native_SDK_auth_timers_preserved": true
+  },
+  "browser": {
+    "receipt": {
+      "path": "ops/lab/artifacts/teacher-code-blocks-20261106-r01/browser/browser-verification.json",
+      "sha256": "f04f9b1b8cb67afcea9915fd1c1f87c885b66351e23861bfc625291afb7784b9",
+      "bytes": 2066
+    },
+    "screenshots": [
+      {
+        "path": "ops/lab/artifacts/teacher-code-blocks-20261106-r01/browser/code-desktop.png",
+        "sha256": "2650d5b92462b1ccaec1054bf5020b07e2883b84c2018a0914be32ba84840de7",
+        "bytes": 76824
+      },
+      {
+        "path": "ops/lab/artifacts/teacher-code-blocks-20261106-r01/browser/code-mobile.png",
+        "sha256": "08da48cd01694e8d2de35d28a791aa496b48bb90836a10f720d6b287401fc305",
+        "bytes": 40762
+      }
+    ],
+    "viewports": [
+      [
+        1088,
+        892
+      ],
+      [
+        320,
+        892
+      ]
+    ],
+    "document_overflow": false,
+    "mobile_code_scroll_keyboard": true,
+    "copy_success_toast_after_writeText_fulfilled": true,
+    "physical_clipboard_bytes_verified": false,
+    "limitation": "Browser Use virtual clipboard read returned empty and its paste wrapper refused. Physical OS clipboard readback is unverified; exact code copying, concurrency, missing API and rejection were verified atomically."
+  },
+  "existing_material": {
+    "available_before_change": true,
+    "generation_actor_audited": false,
+    "session_state": "active",
+    "counter": 8,
+    "code_blocks": 5,
+    "container_CSS_characters": 179,
+    "container_CSS_rendered_text_unchanged": true
+  },
+  "new_dependencies": 0,
+  "provider_inferences": 0,
+  "personal_course_writes": 0,
+  "knowledge_publication_or_approval": false,
+  "V1_previous_blockers_unchanged": true
+}

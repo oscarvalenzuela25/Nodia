@@ -1,4 +1,5 @@
 {
+  "module_access_required": "You do not have access to this module.",
   "nodia_ai_title": "NodiaAI",
   "nodia_ai_unavailable": "Chat is not available yet.",
   "nodia_ai_preparation": "This space will be enabled when conversations and their tools are ready.",
@@ -75,5 +76,33 @@
   "time_label": "Time",
   "data_owner": "Data owner",
   "search_owner_email": "Search by email",
-  "invalid_input": "The submitted data is invalid."
+  "invalid_input": "The submitted data is invalid.",
+  "message_composer": {
+    "dictation": {
+      "start": "Dictate message",
+      "stop": "Finish dictation",
+      "cancel": "Cancel dictation",
+      "requesting": "Preparing dictation…",
+      "listening": "Listening · {{time}}",
+      "stopping": "Finishing dictation…",
+      "notice": "Your browser converts speech to text and may use its speech recognition service. Review the text before sending it.",
+      "unsupported": "Voice dictation is not available in this browser. You can type your message.",
+      "activity_label": "Microphone activity",
+      "activity_waiting": "Waiting for microphone access",
+      "activity_unavailable": "Microphone activity could not be displayed.",
+      "errors": {
+        "dictation_unavailable": "Dictation is not available in this browser.",
+        "microphone_denied": "Microphone access was not granted. Review your browser permission.",
+        "dictation_network": "The browser's dictation service could not connect. The recognized text has been kept.",
+        "dictation_service_unavailable": "The browser's dictation service is unavailable or disabled.",
+        "dictation_no_speech": "No speech was recognized. You can try dictating again.",
+        "dictation_language_unsupported": "The browser service does not support the selected dictation language.",
+        "dictation_audio_capture": "An audio input could not be accessed for dictation.",
+        "dictation_failed": "Dictation could not be completed. The recognized text has been kept.",
+        "text_too_large": "Dictation stopped at the message text limit. Your text has been kept.",
+        "dictation_stop_timeout": "The browser did not confirm that dictation ended. Local capture stopped and the recognized text has been kept."
+      }
+    },
+    "text_too_large": "The message exceeds the allowed text limit. Your text has been kept so you can review it."
+  }
 }

@@ -24,7 +24,6 @@ import { GetAiProviderCatalogUseCase } from './use-case/get-ai-provider-catalog.
 import { CreateAiProviderCatalogUseCase } from './use-case/create-ai-provider-catalog.use-case.js';
 import { UpdateAiProviderCatalogUseCase } from './use-case/update-ai-provider-catalog.use-case.js';
 import { SyncAiProviderModelsUseCase } from './use-case/sync-ai-provider-models.use-case.js';
-import { ManageGeminiLoginUseCase } from './use-case/manage-gemini-login.use-case.js';
 import { ManageGeminiAgenticLoginUseCase } from './use-case/manage-gemini-agentic-login.use-case.js';
 import { GetGeminiEnginesUseCase } from './use-case/get-gemini-engines.use-case.js';
 import { ExecuteApiInvoiceUseCase } from './use-case/execute-api-invoice.use-case.js';
@@ -82,7 +81,6 @@ import { ExecuteCodexInvoiceUseCase } from './use-case/execute-codex-invoice.use
     CreateAiProviderCatalogUseCase,
     UpdateAiProviderCatalogUseCase,
     SyncAiProviderModelsUseCase,
-    ManageGeminiLoginUseCase,
     ManageGeminiAgenticLoginUseCase,
     GetGeminiEnginesUseCase,
     // AiApiKey
@@ -118,7 +116,6 @@ import { ExecuteCodexInvoiceUseCase } from './use-case/execute-codex-invoice.use
     CreateAiApiKeyUseCase,
     UpdateAiApiKeyUseCase,
     DeleteAiApiKeyUseCase,
-    ManageGeminiLoginUseCase,
     ManageGeminiAgenticLoginUseCase,
     ManageCodexSessionUseCase,
     GetAllAiProviderEventsUseCase,

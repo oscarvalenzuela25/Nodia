@@ -1,5 +1,6 @@
 import { ForbiddenException } from '@nestjs/common';
 import type { DataSource, EntityManager } from 'typeorm';
+import { CheckModuleAccessUseCase } from '../../authorization/use-case/check-module-access.use-case.js';
 import {
   currentActor,
   lockAuthority,
@@ -29,18 +30,11 @@ export async function runAiProviderConfigurationTransaction<T>(
         );
     }
     const authority = await currentActor(manager, actor);
-    if (!authority.isSuperAdmin) {
-      const rows: { allowed: boolean }[] = await manager.query(
-        `SELECT EXISTS (SELECT 1 FROM user_roles ur
-         JOIN roles r ON r.id=ur.role_id AND r.is_active=true
-         JOIN role_actions ra ON ra.role_id=r.id AND ra.is_active=true
-         JOIN actions a ON a.id=ra.action_id AND a.is_active=true
-         WHERE ur.user_id=$1 AND ur.is_active=true AND a.key='ai:manage') AS allowed`,
-        [authority.actorId],
-      );
-      if (rows[0]?.allowed !== true)
-        throw new ForbiddenException('ai_provider:manage_required');
-    }
+    await new CheckModuleAccessUseCase(source).execute(
+      authority.actorId,
+      ['/ai-providers'],
+      manager,
+    );
     // Same order for all local configuration writers; serializes first/default creation too.
     await manager.query(
       'LOCK TABLE ai_provider_catalog, ai_providers IN SHARE ROW EXCLUSIVE MODE',

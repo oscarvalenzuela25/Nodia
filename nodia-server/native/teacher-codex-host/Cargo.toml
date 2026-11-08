@@ -1,0 +1,51 @@
+[package]
+name = "nodia-teacher-codex-host"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[features]
+default = ["codex"]
+codex = ["dep:codex-core", "dep:codex-config", "dep:codex-exec-server", "dep:codex-extension-api", "dep:codex-login", "dep:codex-protocol", "dep:codex-thread-store", "dep:toml", "dep:futures", "dep:async-stream"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", default-features = false, features = ["clock", "std", "serde"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "io-std", "io-util", "signal", "time"] }
+futures = { version = "0.3", optional = true }
+async-stream = { version = "0.3", optional = true }
+toml = { version = "0.9", optional = true }
+# Exact commit behind the annotated upstream rust-v0.161.0 release tag.
+codex-core = { git = "https://github.com/openai/codex", rev = "979011409de0a60b52f179721948e65531d26144", optional = true }
+codex-config = { git = "https://github.com/openai/codex", rev = "979011409de0a60b52f179721948e65531d26144", optional = true }
+codex-exec-server = { git = "https://github.com/openai/codex", rev = "979011409de0a60b52f179721948e65531d26144", optional = true }
+codex-extension-api = { git = "https://github.com/openai/codex", rev = "979011409de0a60b52f179721948e65531d26144", optional = true }
+codex-login = { git = "https://github.com/openai/codex", rev = "979011409de0a60b52f179721948e65531d26144", optional = true }
+codex-protocol = { git = "https://github.com/openai/codex", rev = "979011409de0a60b52f179721948e65531d26144", optional = true }
+codex-thread-store = { git = "https://github.com/openai/codex", rev = "979011409de0a60b52f179721948e65531d26144", optional = true }
+
+[dev-dependencies]
+tempfile = "3"
+wiremock = "0.6"
+
+# Cargo does not inherit a git dependency's workspace patches. These are exactly
+# the patches maintained by OpenAI in codex-rs/Cargo.toml at SOURCE_COMMIT.
+[patch.crates-io]
+crossterm = { git = "https://github.com/openai-oss-forks/crossterm", rev = "efa177859fd9623d57b9fe7ae9bf491ae1ac6ec4" }
+tokio-tungstenite = { git = "https://github.com/openai-oss-forks/tokio-tungstenite", rev = "0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186" }
+tungstenite = { git = "https://github.com/openai-oss-forks/tungstenite-rs", rev = "4fffad30fe373adbdcffab9545e9e9bf4f2fc19f" }
+
+[patch."ssh://git@github.com/openai-oss-forks/tungstenite-rs.git"]
+tungstenite = { git = "https://github.com/openai-oss-forks/tungstenite-rs", rev = "4fffad30fe373adbdcffab9545e9e9bf4f2fc19f" }
+
+[profile.dev]
+debug = 0
+incremental = false
+
+[profile.release]
+strip = true

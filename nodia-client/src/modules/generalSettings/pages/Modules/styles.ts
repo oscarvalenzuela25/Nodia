@@ -1,8 +1,11 @@
 import { styled, alpha } from "@mui/material/styles";
+import { TABLE_PANEL_RADIUS } from "../../../../theme/tablePanel";
 import {
   Box,
   Typography,
   Paper,
+  TableCell,
+  TableRow,
   TablePagination,
 } from "@mui/material";
 
@@ -145,6 +148,44 @@ export const ActiveFilters = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(3),
 }));
 
+export const GroupSectionHeading = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-start",
+  flexWrap: "wrap",
+  gap: theme.spacing(1.5),
+  minWidth: 0,
+  padding: theme.spacing(1.5, 2),
+  backgroundColor: alpha(theme.palette.primary.main, theme.palette.mode === "dark" ? 0.14 : 0.07),
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  "& h3": { minWidth: 0, overflowWrap: "anywhere" },
+}));
+
+export const DragHandleCell = styled(TableCell)(({ theme, variant }) => ({
+  position: "sticky",
+  left: 0,
+  zIndex: variant === "head" ? 3 : 2,
+  width: 56,
+  minWidth: 56,
+  padding: theme.spacing(0.5),
+  textAlign: "center",
+  backgroundColor: variant === "head" ? theme.palette.primary.main : theme.palette.background.paper,
+  borderRight: `1px solid ${theme.palette.divider}`,
+}));
+
+export const DragOrderTableRow = styled(TableRow)(({ theme }) => ({
+  "&&[data-order-placement='before'] > td": { borderTop: `3px solid ${theme.palette.primary.main}` },
+  "&&[data-order-placement='after'] > td": { borderBottom: `3px solid ${theme.palette.primary.main}` },
+  "&[data-order-dragging='true']": { opacity: 0.65 },
+}));
+
+export const DragOrderCard = styled(Box)(({ theme }) => ({
+  minWidth: 0,
+  "&[data-order-placement='before']": { boxShadow: `0 -3px ${theme.palette.primary.main}` },
+  "&[data-order-placement='after']": { boxShadow: `0 3px ${theme.palette.primary.main}` },
+  "&[data-order-dragging='true']": { opacity: 0.65 },
+}));
+
 export const TableTopBar = styled(Box)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
@@ -168,10 +209,7 @@ export const StyledTableContainer = styled(Box)(({ theme }) => {
   const borderColor = theme.palette.border?.default ?? theme.palette.divider;
 
   return {
-    borderRadius:
-      typeof theme.shape.borderRadius === "number"
-        ? theme.shape.borderRadius * 2
-        : 16,
+    borderRadius: TABLE_PANEL_RADIUS,
     overflow: "hidden",
     boxShadow: theme.shadows[2],
     backgroundColor: theme.palette.background.paper,

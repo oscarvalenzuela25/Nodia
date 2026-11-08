@@ -38,7 +38,7 @@ export function secureFlowFixture(kind: SecureFlowKind = 'api_key_create') {
       ...(kind === 'api_key_update' || kind === 'api_key_delete'
         ? { key_id: '41' }
         : {}),
-      mode: 'token_plan_agentic',
+      mode: 'agentic',
       command: kind === 'api_key_create' ? { label: 'Synthetic key' } : {},
     },
   };
@@ -113,7 +113,7 @@ export function secureFlowFixture(kind: SecureFlowKind = 'api_key_create') {
     execution_id: execution.id,
     run_id: null,
     command_set_hash: execution.proposal_hash,
-    allowed_modules: ['/settings/ai-providers'],
+    allowed_modules: ['/ai-providers'],
     allowed_operations: [source.tool_name],
     allowed_scope: execution.minimal_scope,
     policy_version: f.policy.policyVersion,
@@ -152,7 +152,7 @@ export function secureFlowFixture(kind: SecureFlowKind = 'api_key_create') {
     confirmedBySession: vi.fn(async () => true),
   };
   const port = {
-    moduleRoutes: ['/settings/ai-providers'],
+    moduleRoutes: ['/ai-providers'],
     verifyPreconditions: vi.fn(async () => {}),
   };
   const proposals = { preparer: vi.fn(() => port), equal: isDeepStrictEqual };
@@ -174,7 +174,7 @@ export function secureFlowFixture(kind: SecureFlowKind = 'api_key_create') {
     reference: {
       provider_id: '31',
       provider_key: 'gemini',
-      mode: 'token_plan_agentic',
+      mode: 'agentic',
       job_id: 'a'.repeat(32),
     },
     state: 'pending',

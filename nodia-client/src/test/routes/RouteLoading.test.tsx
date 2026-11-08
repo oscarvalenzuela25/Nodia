@@ -18,17 +18,17 @@ vi.mock("../../layouts/BaseLayout", () => ({
   default: ({ children }: { children: ReactNode }) => <><aside>Navigation menu</aside><header>App header</header><main>{children}</main></>,
 }));
 vi.mock("../../modules/business/pages/Business", () => ({
-  default: () => <><h1>Businesses page</h1><Link to="/settings/users">Open users</Link></>,
+  default: () => <><h1>Businesses page</h1><Link to="/users">Open users</Link></>,
 }));
 vi.mock("../../modules/generalSettings/pages/Users", async () => {
   await usersImport.promise;
-  return { default: () => <><h1>Users page</h1><Link to="/tools/business">Go back</Link></> };
+  return { default: () => <><h1>Users page</h1><Link to="/business">Go back</Link></> };
 });
 
 describe("production lazy route navigation", () => {
   it("shows loading immediately while the new chunk waits and keeps the navigation shell", async () => {
     const user = userEvent.setup();
-    const testRouter = createMemoryRouter(router.routes, { initialEntries: ["/tools/business"] });
+    const testRouter = createMemoryRouter(router.routes, { initialEntries: ["/business"] });
     render(<RouterProvider router={testRouter} />);
     await screen.findByRole("heading", { name: "Businesses page" });
     await user.click(screen.getByRole("link", { name: "Open users" }));

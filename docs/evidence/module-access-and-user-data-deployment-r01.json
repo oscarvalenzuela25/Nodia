@@ -1,0 +1,400 @@
+{
+  "schema_version": 1,
+  "task": "module_access_and_user_data_scope",
+  "status": "deployed_and_verified",
+  "recorded_at_host_utc": "2026-10-26T03:20:23.274264+00:00",
+  "timezone": "America/Santiago",
+  "timestamp_boundary": "VM receipt timestamps are preserved as reported; host and VM clocks were not synchronized by this delivery.",
+  "policy": "docs/mvp/89-module-access-and-user-data-scope.md",
+  "decision": "docs/architecture/decisions/ADR-081-module-access-and-business-data-scope.md",
+  "previous_local_validation": "docs/evidence/module-access-and-user-data-validation-r01.json",
+  "rules": [
+    "ordinary assigned module enables functionality without role/action blockers",
+    "missing module redirects direct UI navigation home and forbids direct HTTP",
+    "active super_admin bypasses module/action assignments and sees all data",
+    "ordinary data visibility remains owner or explicitly shared collaborator scope",
+    "human confirmation, session validity, integrity and attribution remain enforced"
+  ],
+  "postgresql": {
+    "schema_version": 1,
+    "candidate_id": "2029c0155988ea16373afcef0f86fde5eb7ee8c794453fa90289c71872937386",
+    "candidate_manifest_sha256": "3b7f14ad5abf322fdfd139622ec25e60a6ffecbff88efa5a6093cbc1ac1ff79d",
+    "harness_manifest_sha256": "280f2abce70032b1cf15f59a2b12443cc6db46371c0ca1694edd8e3a2e3690de",
+    "selected_compiled_dependencies": 115,
+    "node": "v24.20.0",
+    "postgres_executed": true,
+    "suites": [
+      {
+        "name": "nodia-ai-authorization",
+        "started_at_utc": "2026-10-26T02:55:12.571Z",
+        "finished_at_utc": "2026-10-26T02:55:15.886Z",
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout_sha256": "5e0be6bc882b49b07cf3819535aa7774553b411fcd985f32c3362f2b49868187",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "extra_disposable_containers_removed": 0
+      },
+      {
+        "name": "provider-contacts",
+        "started_at_utc": "2026-10-26T02:55:15.887Z",
+        "finished_at_utc": "2026-10-26T02:55:19.193Z",
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout_sha256": "d8ba1aa50bdef69f40d656c26bfdbfaba5ef6fdf49de7695213f0e7729ab1c6a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "extra_disposable_containers_removed": 0
+      },
+      {
+        "name": "provider-csv",
+        "started_at_utc": "2026-10-26T02:55:19.194Z",
+        "finished_at_utc": "2026-10-26T02:55:22.513Z",
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout_sha256": "609e5e6b59b47975970f77226f3ada3c08d80a0a89b2827b5f92c9534ff4ca90",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "extra_disposable_containers_removed": 0
+      }
+    ],
+    "limitations": [
+      "Synthetic HTTP principal; no real Google login or provider inference.",
+      "These SQL harnesses do not replace authenticated acceptance after deployment."
+    ],
+    "postgres_image_id": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+    "status": "passed",
+    "configured_database_used_by_disposable_suites": false,
+    "real_engine_scope": [
+      "current module SQL authority and authorization invariants",
+      "owner/collaborator scope and provider/contact privacy",
+      "CSV server-client round trip, mixed bulk rejection, rollback and concurrent operations"
+    ],
+    "receipt": {
+      "path": "ops/lab/artifacts/module-access-deployment-r01/sql-receipt-r01.json",
+      "sha256": "a6940dc8b69d031f58a0e349a6e8d9c2e7a13de23764405e570a33c41cd2a067",
+      "bytes": 2091
+    }
+  },
+  "adoption": {
+    "server": {
+      "release": "/opt/nodia/releases/nodia-server-module-access-privacy-r01",
+      "manifest_sha256": "2029c0155988ea16373afcef0f86fde5eb7ee8c794453fa90289c71872937386",
+      "files": 4168,
+      "delta_paths": 234,
+      "knowledge_release": "b21babc5a17f6303d557f4e745704b3c115eab2558d77bb05e6a6f069a2e2a7f",
+      "processes": {
+        "nodia-api": {
+          "active": "active",
+          "sub": "running",
+          "pid": 377214,
+          "working_directory": "/opt/nodia/releases/nodia-server-module-access-privacy-r01",
+          "recovery_config_path_verified": true,
+          "original_dotenv_path_verified": true,
+          "other_environment_fields_emitted": false,
+          "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+          "argv_exact_match": true
+        },
+        "nodia-ai-worker": {
+          "active": "active",
+          "sub": "running",
+          "pid": 377221,
+          "working_directory": "/opt/nodia/releases/nodia-server-module-access-privacy-r01",
+          "recovery_config_path_verified": true,
+          "original_dotenv_path_verified": true,
+          "other_environment_fields_emitted": false,
+          "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+          "argv_exact_match": true
+        }
+      },
+      "descriptors": [
+        {
+          "path": "/etc/systemd/system/nodia-api.service.d/zz-ai38-journal.conf",
+          "before_sha256": "95fcedc3cc17b32401c60c9416209c09ee9c4646691ee3bccca9c2869fb965d5",
+          "after_sha256": "ac6d848031d9c7dffe3c4975296d23baf94ec85776101b33e45f0b36a8a54be4",
+          "mode": "0o644"
+        },
+        {
+          "path": "/etc/systemd/system/nodia-ai-worker.service.d/zz-ai38-journal.conf",
+          "before_sha256": "4a846777881086ef42aaeb8fc6fe1461876c1e03dfe663c1d9d0ca159efc4771",
+          "after_sha256": "cbe997bf6ce18440a4bf8d72ba9a3ea7945ae64183448f31527780d29346f64e",
+          "mode": "0o644"
+        },
+        {
+          "path": "/etc/nodia-ai-recovery/backup-runner.env",
+          "before_sha256": "5a881d07d8840e62730f479f204316f3bc2e857cafa38ad491a1cd2012755bce",
+          "after_sha256": "68c480d2f527c670e48a41f45c93d3ab378c3dc2ab4666cbc19788cc6f09825d",
+          "mode": "0o600"
+        }
+      ],
+      "cache": {
+        "removed": 0,
+        "remaining": 0,
+        "pattern": "auth:context:*"
+      },
+      "encrypted_backup": {
+        "backup_id": "dad5a1e8-9eed-4ff7-81e8-b8de9a3e69bc",
+        "status": "ready",
+        "cipher_sha256": "9bf6eae718dbb77acb72faa33b79b8e418e9645cd2e3d1b9541b6bf25b6f5f8b",
+        "cipher_bytes": 1404883,
+        "captured_at": "2026-10-26T03:21:37.256Z",
+        "expires_at": "2026-11-02T03:21:37.256Z",
+        "journal_sequence": 1
+      },
+      "backup_timers": {
+        "nodia-ai-backup.timer": "active",
+        "nodia-ai-backup-rotate.timer": "active"
+      },
+      "receipt": {
+        "path": "ops/lab/artifacts/module-access-deployment-r01/server-adopt-r02.json",
+        "sha256": "402c19f6444bcba8c73efca70569dcba82aef65f0fad4bf09a3b4b4513bb3561",
+        "bytes": 21712
+      }
+    },
+    "client": {
+      "release": "/opt/nodia/releases/nodia-client-module-access-privacy-r01",
+      "manifest_sha256": "eada6b5226b3f1d7ba31ef702047f1d9f9a4c4ce3c03b6a80ce448b790eb57a1",
+      "source_files": 719,
+      "source_files_unchanged": 710,
+      "source_overlay_files": 9,
+      "target_static_files": 184,
+      "verified_HTTP_files_with_legacy": 448,
+      "HTTP_attempts": 1,
+      "SHA_MIME_cache_COOP_verified": true,
+      "missing_assets_statuses": [
+        404,
+        404
+      ],
+      "fallback_chain": [
+        "target",
+        "b7acc",
+        "17f",
+        "R07",
+        "404"
+      ],
+      "fallback_only_hashed_assets": true,
+      "nginx_sha256": "c312445f1b8c3438ea1471c6f5cbdc4940c50402a8691ebd78092824549ba4a2",
+      "receipt": {
+        "path": "ops/lab/artifacts/module-access-deployment-r01/client-adopt-r01.json",
+        "sha256": "873ad825a06537950d06d86bf07508cc4c14f8d6af812ac1a8630f95218f6747",
+        "bytes": 100835
+      }
+    },
+    "isolated_from_unrelated_OCR_changes": true,
+    "new_knowledge_document_approval_or_publication": false,
+    "approved_document_content_and_fragments_unchanged": true
+  },
+  "live_readonly_HTTP": {
+    "status": "passed",
+    "receipt": {
+      "schema_version": 1,
+      "task": "module_access_adopted_readonly_smoke",
+      "started_at_utc": "2026-10-26T03:22:47.797Z",
+      "status": "passed",
+      "checks": [
+        {
+          "check": "selected_current_super_admin_module_bypass",
+          "passed": true
+        },
+        {
+          "endpoint": "authorization/context",
+          "authenticated": false,
+          "status": 401,
+          "shape_valid": true
+        },
+        {
+          "endpoint": "users",
+          "authenticated": false,
+          "status": 401,
+          "shape_valid": true
+        },
+        {
+          "endpoint": "modules",
+          "authenticated": false,
+          "status": 401,
+          "shape_valid": true
+        },
+        {
+          "endpoint": "products",
+          "authenticated": false,
+          "status": 401,
+          "shape_valid": true
+        },
+        {
+          "endpoint": "providers",
+          "authenticated": false,
+          "status": 401,
+          "shape_valid": true
+        },
+        {
+          "endpoint": "invoices",
+          "authenticated": false,
+          "status": 401,
+          "shape_valid": true
+        },
+        {
+          "endpoint": "authorization/context",
+          "authenticated": true,
+          "status": 200,
+          "shape_valid": true
+        },
+        {
+          "endpoint": "users",
+          "authenticated": true,
+          "status": 200,
+          "shape_valid": true
+        },
+        {
+          "endpoint": "modules",
+          "authenticated": true,
+          "status": 200,
+          "shape_valid": true
+        },
+        {
+          "endpoint": "products",
+          "authenticated": true,
+          "status": 200,
+          "shape_valid": true
+        },
+        {
+          "endpoint": "providers",
+          "authenticated": true,
+          "status": 200,
+          "shape_valid": true
+        },
+        {
+          "endpoint": "invoices",
+          "authenticated": true,
+          "status": 200,
+          "shape_valid": true
+        }
+      ],
+      "sql_read_only": true,
+      "sql_session_inserted": false,
+      "sql_session_revoked": false,
+      "mutating_http_requests": 0,
+      "refresh_requests": 0,
+      "provider_requests": 0,
+      "token_or_session_disclosed": false,
+      "limitations": [
+        "HTTP GET may update ordinary read caches and rate-limit counters.",
+        "This script does not compare all domain rows or replace browser acceptance; root owns the independent before/after readback."
+      ],
+      "candidate_id": "2029c0155988ea16373afcef0f86fde5eb7ee8c794453fa90289c71872937386",
+      "candidate_manifest_sha256": "3b7f14ad5abf322fdfd139622ec25e60a6ffecbff88efa5a6093cbc1ac1ff79d",
+      "adoption_guard_sha256": "f57608583530aadd1c51c62ec23b44c5f49d8f5376ece9c16f8b1f655d2a295f",
+      "verified_compiled_imports": 3,
+      "ephemeral_access_ttl_max_seconds": 120,
+      "finished_at_utc": "2026-10-26T03:22:48.191Z"
+    },
+    "domain_data_unchanged": true,
+    "schema_unchanged": true,
+    "provider_requests": 0,
+    "processes_unchanged": true,
+    "source_receipt": {
+      "path": "ops/lab/artifacts/module-access-deployment-r01/live-smoke-r01.json",
+      "sha256": "1a05547a0712deb2255fa563531a79c0f9266a41be2dd2f00a8ef5d634377873",
+      "bytes": 2215
+    }
+  },
+  "browser_acceptance": {
+    "origin": "http://localhost:5174",
+    "actor": "existing Super Admin session",
+    "home_loaded_after_reload": true,
+    "reservations_visible_on_home": true,
+    "route": "/tools/reservations",
+    "SPA_navigation_passed": true,
+    "direct_URL_reload_passed": true,
+    "access_check_visible_before_page": true,
+    "page_heading": "Reservas de alojamiento",
+    "empty_state_visible": true,
+    "business_actions_submitted": 0,
+    "active_module_and_explicit_assignment_counts": {
+      "active_reservation_modules": 1,
+      "explicit_assignments": 0
+    },
+    "ordinary_live_accounts_exercised": false
+  },
+  "integrity": {
+    "domain_tables_compared": 61,
+    "table_counts_and_content_hashes_unchanged": true,
+    "schema_sha256": "82753ec54d69006d2850dd62173093c03086e43a37af62e2a3dba1c5da5b4b87",
+    "schema_unchanged": true,
+    "auth_sessions_excluded_from_domain_comparison": true,
+    "configured_SQL_business_writes": 0,
+    "migrations": 0,
+    "SQL_restores": 0,
+    "native_epoch_preserved": {
+      "id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+      "image": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+      "started_at": "2026-10-26T03:06:18.949917773Z",
+      "descriptor_sha256": "d27816454ab40e774919a16d3b99da50ccdc3c1e570ef244832b30b46a95f89d"
+    },
+    "SQL_quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "native_quiet": {
+      "attempt_receipts": 0,
+      "unknown_markers": 0,
+      "temporary_directories": 0,
+      "active_native_processes": 0
+    },
+    "Codex_barrier": {
+      "profile_absent": false,
+      "pending": 0,
+      "locks_or_sockets": 0,
+      "records": 3,
+      "sdk_arg0_links": 0,
+      "sdk_binary": null
+    },
+    "final_free_bytes": 4088000512,
+    "backup_reserve_bytes": 268443676,
+    "final_readback": {
+      "path": "ops/lab/artifacts/module-access-deployment-r01/final-readback-r02.json",
+      "sha256": "267e51c7ac3ea27e5a151de1a77f85fce5b8a421e2392a70efc62b29924da979",
+      "bytes": 10192
+    }
+  },
+  "coordination": {
+    "human_authorized_cross_thread_coordination": true,
+    "other_thread": "01a17486-8a14-7f51-ac33-be9347cca642",
+    "other_thread_title": "NodiaAI — continuidad C03 y cierre AI-36/38",
+    "initial_preflight_safely_rejected_changed_native_epoch": true,
+    "reviewed_external_transition_evidence": "docs/evidence/nodia-ai-invoice-ocr-native-adoption-20261026-r01.json",
+    "rebound_operator": {
+      "path": "ops/lab/artifacts/module-access-deployment-r01/server-adopt-r02.py",
+      "sha256": "7401fd9a676807d293d682f1ea64f26aaa3860091f3031fc81a844f9e51c9f08",
+      "bytes": 15980
+    },
+    "exclusive_window_granted_and_released": true,
+    "final_bindings_and_recovery_archive_shared": true,
+    "later_OCR_deployments_must_preserve_policy89": true
+  },
+  "recovery": {
+    "server_public_archive": {
+      "path": "ops/lab/artifacts/module-access-deployment-r01/adopted-server-2029-recovery.tar.gz",
+      "sha256": "8966f9e760389c84d5a07bb7d1886904032fae109956a202c4927c9d123423c8",
+      "bytes": 3280606
+    },
+    "client_archive": {
+      "path": "ops/lab/artifacts/module-access-deployment-r01/client-build/client.tar.gz",
+      "sha256": "c2b7394abddc74b9e944d7c2a078a4691cec7edac9753595fc9c839d0088794b",
+      "bytes": 2123982
+    },
+    "catalog": "ops/lab/artifacts/module-access-deployment-r01/README.md",
+    "old_releases_preserved": true,
+    "private_originals_retained_only_on_VM": true,
+    "server_rollback_requires_client_rollback_first_and_fresh_quiet_backup": true,
+    "SQL_restore_required": false
+  },
+  "limitations": [
+    "No ordinary account exists in the configured environment. Ordinary allow/deny, ownership and collaborator cases were exercised in disposable PostgreSQL and local regressions, not fabricated in live SQL.",
+    "Real PostgreSQL suites do not prove every product/log/invoice/R2 HTTP combination; no live business mutation was submitted.",
+    "No real provider generation or native MIME requalification is asserted. UI/startup metadata checks are outside the zero-generation claim.",
+    "Knowledge revisions describing policy89 remain in review. The deployed technical pin preserves approved historical text and fragments.",
+    "Previously delivered signed URLs keep their native expiry; immediate revocation is not claimed.",
+    "This receipt is the verified cut at release of the coordinated window; subsequent OCR adoption belongs to the other thread."
+  ]
+}

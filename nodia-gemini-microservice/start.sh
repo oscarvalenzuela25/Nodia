@@ -1,7 +1,7 @@
 #!/bin/bash
 set -Eeuo pipefail
 echo "======================================================="
-echo "   Iniciando Nodia Gemini Microservice (Gemini Pro)   "
+echo "   Iniciando Nodia Agentic Microservice   "
 echo "======================================================="
 
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
@@ -21,7 +21,6 @@ if [ ! -f ".venv/bin/python" ]; then
     "$PYTHON_CMD" -m venv .venv
     echo "Instalando dependencias desde requirements.txt..."
     ./.venv/bin/python -m pip install -r requirements.txt
-    ./.venv/bin/python -m playwright install chromium
 fi
 
 if [ ! -f ".env" ]; then

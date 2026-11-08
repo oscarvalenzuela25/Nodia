@@ -32,7 +32,7 @@ try {
   const seed = await seedAi30Reports(db);
   const [group] = await db.query("SELECT module_group_id AS id FROM modules WHERE key='nodia_ai'");
   const moduleIds = new Map();
-  for (const [key, route] of [['personal_finance', '/tools/finances-personal'], ['businesses', '/tools/business'], ['rental_reservations', '/tools/reservations']]) {
+  for (const [key, route] of [['personal_finance', '/finances-personal'], ['businesses', '/business'], ['rental_reservations', '/reservations']]) {
     let [module] = await db.query('SELECT id::text FROM modules WHERE link=$1', [route]);
     if (!module) [module] = await db.query('INSERT INTO modules(key,link,module_group_id) VALUES($1,$2,$3) RETURNING id::text', [key, route, group.id]);
     moduleIds.set(key, module.id);

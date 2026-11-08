@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "status": "human_approved_documentary_revisions_technical_publication_gate_separate",
+  "scope": "Six successor knowledge revisions remove executable Web, rename Agentic and preserve historical facts. No approval or runtime acceptance inferred.",
+  "approved_originals_catalog": "ops/lab/artifacts/agentic-api-mode-retirement-r01/catalog.json",
+  "changes": [
+    "Only Agentic (agentic) and API key (api_key) selectable; Web removed",
+    "Rename connection/catalog flags and configuration namespace for Agentic",
+    "Historical Web defaults and chat selections require explicit reconfiguration, no fallback",
+    "Preserve authorization, confirmation, encrypted API keys, admission, uncertainty and idempotency",
+    "API OCR retained; NodiaAI API chat remains unavailable until a real adapter sustains its contract",
+    "Former Web facts remain dated evidence and do not authorize new Web execution"
+  ],
+  "revisions": [
+    {
+      "document_id": "general-settings.ai-connections",
+      "revision": 7,
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
+      "draft_file_sha256": "0a6eb03766e64ff72c474ed99d96c7e6d2dbe34317dbe95572a201288f17ac08"
+    },
+    {
+      "document_id": "general-settings.ai-models-and-health",
+      "revision": 9,
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+      "draft_file_sha256": "cd6667b59ec5d38829f490224b20e21ff3d2fa1c47bbd0bd05664727aec8d9d3"
+    },
+    {
+      "document_id": "general-settings.ai-credentials-and-sessions",
+      "revision": 9,
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
+      "draft_file_sha256": "1e01457d15da44d741946d5a1478c783a7222427743c0781d9b684e6ef82b21c"
+    },
+    {
+      "document_id": "general-settings.confirmed-ai-configuration",
+      "revision": 3,
+      "path": "docs/nodia-ai/knowledge/general-settings/features/confirmed-ai-configuration.md",
+      "draft_file_sha256": "a2388617cd9c44f33309ef5ef4875d7bf8f2be84c7aa1391b7136c8963fe009f"
+    },
+    {
+      "document_id": "general-settings.secure-ai-interaction",
+      "revision": 4,
+      "path": "docs/nodia-ai/knowledge/general-settings/features/secure-ai-interaction.md",
+      "draft_file_sha256": "0cf30458ec3e8ec0884dbf81a0fe4639b8ebdeb282ced1a9fdfc38889ac7926d"
+    },
+    {
+      "document_id": "businesses.invoice-analysis",
+      "revision": 5,
+      "path": "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md",
+      "draft_file_sha256": "22abbaff96d6251ad0d5d61ed29e4d8dbe0401b4faf91aa4bdf5da288276683d"
+    }
+  ],
+  "approval": {
+    "reference": "docs/evidence/ai-two-modes-knowledge-human-approval-r01.json",
+    "statement": "Apruebo las seis revisiones documentales",
+    "date": "2026-10-27"
+  },
+  "runtime_tests": "API real OCR success both providers; Linux candidate and live Agentic acceptance remain separate.",
+  "secrets_included": false
+}

@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-25",
+  "status": "implemented_and_deployed",
+  "change": "Home removed from assignable route catalog; fixed Home navigation unchanged. No backend validation or historical data migration.",
+  "client_release": "/opt/nodia/releases/nodia-client-core-fx04-home-r06",
+  "client_manifest_sha256": "b56a62b19633648237bd56a9b08a8f7fd3fa59312baab3c9704b85ba4a111501",
+  "HTTP_assets_SHA_MIME": 171,
+  "server_unchanged": true,
+  "SQL_writes": 0,
+  "server_restarts": 0,
+  "checks": {
+    "focal_tests": 15,
+    "suites": 3,
+    "build_and_types": true,
+    "ESLint_focal": true
+  },
+  "UI": {
+    "authenticated_new_module_form": true,
+    "route_dropdown_home_absent": true,
+    "dropdown_empty_reason": "All nine assignable routes are already occupied by current modules.",
+    "cancelled_without_submission": true,
+    "screenshot": {
+      "path": "docs/evidence/core-module-home-r01.png",
+      "sha256": "97211cf2d76a2237ddf905c540674f743a72075c856c86f2282021e7fe421dea"
+    }
+  },
+  "impact": "Catalog correction in Client; no new NodiaAI capability or MCP publication. Fixed Home and historical backend contracts unchanged.",
+  "materials": [
+    {
+      "path": "ops/lab/artifacts/module-home-r01/client.tar.gz",
+      "sha256": "56e129f52a189adc8ddfd1d35eeff45fc892ae375e9d1beaccef6932e194bc22"
+    },
+    {
+      "path": "ops/lab/artifacts/module-home-r01/plan.json",
+      "sha256": "a2e270c90bf1ae0031818d07cf90ff29108f11bdc64fe702a0fe9b49d8b01bd3"
+    },
+    {
+      "path": "ops/lab/artifacts/module-home-r01/adopt.py",
+      "sha256": "2c1ecd346b6cd4aa27ee9bddb80bee46bd82197e752a959d31eb285096c4c55a"
+    },
+    {
+      "path": "ops/lab/artifacts/module-home-r01/adopt.json",
+      "sha256": "cec9cae8c2b6b3a7ce9612a21b4bbf14673c68b2bc005b0a473e248ba4a51918"
+    }
+  ],
+  "cleanup": {
+    "status": "own_upload_removed",
+    "files": 3,
+    "bytes": 2142860,
+    "active_and_prior_releases_retained": true,
+    "private_operator_and_receipts_retained": true
+  }
+}

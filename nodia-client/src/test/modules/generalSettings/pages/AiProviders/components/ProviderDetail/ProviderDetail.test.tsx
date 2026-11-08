@@ -1,3 +1,4 @@
+import i18n from "../../../../../../../translate";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -6,7 +7,7 @@ import type { ReactElement } from "react";
 import {
   AiConnectionMode,
   type AiProviderEntity,
-  type GeminiDualEngineStatus,
+  type GeminiAgenticStatus,
 } from "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/types";
 import ProviderDetail from "../../../../../../../modules/generalSettings/pages/AiProviders/components/ProviderDetail/ProviderDetail";
 import * as aiServices from "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services";
@@ -34,7 +35,6 @@ vi.mock(
     disconnectGeminiWeb: vi.fn(),
     getAiProviderEvents: vi.fn(),
     getSelectableModels: vi.fn(),
-    getEnabledWebAiProviders: vi.fn(),
     getSupportedAiProviders: vi.fn(),
     syncAiProviderModels: vi.fn(),
     getAiApiKeys: vi.fn(),
@@ -73,10 +73,9 @@ const mockProviders: AiProviderEntity[] = [
   {
     id: "prov-1",
     key: "gemini",
-    use_token_plan_web: true,
-    use_token_plan_agentic: true,
-    default_mode: "token_plan_web",
-    mode: AiConnectionMode.WEB_SESSION,
+    use_agentic: true,
+    default_mode: "agentic",
+    mode: AiConnectionMode.AGENTIC,
     is_active: true,
     fields: {
       selected_model: "gemini-flash",
@@ -107,10 +106,9 @@ const mockProviders: AiProviderEntity[] = [
 
 const mockHealthData = {
   engines: {
-    active_engine: "web",
-    web: { engine: "web", available: true, authenticated: true },
+    active_engine: "agentic",
     agentic: { engine: "agentic", available: true, authenticated: true },
-  } as GeminiDualEngineStatus,
+  } as GeminiAgenticStatus,
   timestamp: "2026-09-26T12:00:00Z",
   overallStatus: "healthy" as const,
   alerts: [],
@@ -120,7 +118,7 @@ const mockHealthData = {
       key: "gemini",
       name: "Google Gemini",
       isActive: true,
-      mode: "web_session" as const,
+      mode: "agentic" as const,
       status: "healthy" as const,
       statusBadge: "DISPONIBLE",
       serviceState: "Disponible",
@@ -173,17 +171,17 @@ describe("ProviderDetail Component", () => {
     renderWithClient(
       <ProviderDetail
         providerId="prov-1"
-        initialMode="token_plan_agentic"
+        initialMode="agentic"
         onBack={vi.fn()}
       />,
     );
     expect(
-      await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/ }),
+      await screen.findByRole("tab", { name: /Agentic/ }),
     ).toHaveAttribute("aria-selected", "true");
     await waitFor(() =>
       expect(aiServices.getSelectableModels).toHaveBeenCalledWith({
         provider_id: "prov-1",
-        mode: "token_plan_agentic",
+        mode: "agentic",
       }),
     );
   });
@@ -199,9 +197,6 @@ describe("ProviderDetail Component", () => {
     vi.mocked(aiServices.getSupportedAiProviders).mockResolvedValue(
       mockSupported,
     );
-    vi.mocked(aiServices.getEnabledWebAiProviders).mockResolvedValue({
-      enabled_providers: ["gemini"],
-    });
     vi.mocked(aiServices.getAiProviderEvents).mockResolvedValue({
       data: [],
       meta: { total_items: 0, total_pages: 1, page: 1, limit: 10 },
@@ -211,7 +206,6 @@ describe("ProviderDetail Component", () => {
       ...mockHealthData,
       engines: {
         active_engine: "agentic",
-        web: { engine: "web", available: true, authenticated: true },
         agentic: { engine: "agentic", available: true, authenticated: true },
       },
     });
@@ -225,7 +219,7 @@ describe("ProviderDetail Component", () => {
     const user = userEvent.setup();
     renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
     await user.click(
-      await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/ }),
+      await screen.findByRole("tab", { name: /Agentic/ }),
     );
     const button = await screen.findByRole("button", {
       name: "Autenticar sesión Agentic",
@@ -255,8 +249,7 @@ describe("ProviderDetail Component", () => {
           available_models: [{ id: "api-model", name: "Account model" }],
           thinking_levels: { "api-model": "low", "other-model": "medium" },
         },
-        token_plan_agentic: { thinking_level: "high" },
-        token_plan_web: { selected_model: "web-model" },
+        agentic: { thinking_level: "high" },
       };
       vi.mocked(aiServices.getAiProviders).mockResolvedValue({
         data: [
@@ -292,8 +285,7 @@ describe("ProviderDetail Component", () => {
           "prov-1",
           expect.objectContaining({
             fields: expect.objectContaining({
-              token_plan_agentic: fields.token_plan_agentic,
-              token_plan_web: fields.token_plan_web,
+              agentic: fields.agentic,
               api_key: expect.objectContaining({
                 thinking_levels: {
                   "api-model": "high",
@@ -385,21 +377,22 @@ describe("ProviderDetail Component", () => {
     const user = userEvent.setup();
     renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
     await user.click(
-      await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/i }),
+      await screen.findByRole("tab", { name: /Agentic/i }),
     );
     expect(
       screen.queryByRole("tab", { name: /API Key/i }),
     ).not.toBeInTheDocument();
-    expect(await screen.findByText("Entorno Agéntico")).toBeInTheDocument();
+    expect(await screen.findByText("Entorno Agentic")).toBeInTheDocument();
     expect(
       screen.queryByText("Historial de Incidentes, Rotaciones y Auditoría"),
     ).not.toBeInTheDocument();
   });
   it("sets the active subscription as default on the correct instance", async () => {
     const user = userEvent.setup();
-    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({ data: [{ ...mockProviders[0], use_api_key: true, default_mode: "api_key" }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 } });
+    renderWithClient(<ProviderDetail providerId="prov-1" initialMode="agentic" onBack={() => {}} />);
     await user.click(
-      await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/i }),
+      await screen.findByRole("tab", { name: /Agentic/i }),
     );
     await user.click(
       screen.getByRole("checkbox", { name: /Modo Predeterminado/i }),
@@ -407,7 +400,7 @@ describe("ProviderDetail Component", () => {
     await waitFor(() =>
       expect(aiServices.updateAiProvider).toHaveBeenCalledWith(
         "prov-1",
-        expect.objectContaining({ default_mode: "token_plan_agentic" }),
+        expect.objectContaining({ default_mode: "agentic" }),
       ),
     );
   });
@@ -417,23 +410,6 @@ describe("ProviderDetail Component", () => {
     expect(
       screen.queryByRole("switch", { name: /Auto-reconexión/i }),
     ).not.toBeInTheDocument();
-  });
-  it("renews the selected web connection", async () => {
-    const renew = vi.fn(),
-      user = userEvent.setup();
-    renderWithClient(
-      <ProviderDetail
-        providerId="prov-1"
-        onBack={() => {}}
-        onRenewSession={renew}
-      />,
-    );
-    await user.click(
-      await screen.findByRole("button", {
-        name: /Iniciar Sesión en Navegador Remoto/i,
-      }),
-    );
-    expect(renew).toHaveBeenCalledOnce();
   });
   it("hides the header status on API and retains it on token plan tabs", async () => {
     const user = userEvent.setup();
@@ -448,7 +424,7 @@ describe("ProviderDetail Component", () => {
     const api = await screen.findByRole("tab", {name:/API key/});
     await waitFor(() => expect(api).toHaveAttribute("aria-selected","true"));
     expect(screen.queryByText("Disponible",{exact:true})).not.toBeInTheDocument();
-    await user.click(screen.getByRole("tab", {name:/Token Plan \(Web\)/}));
+    await user.click(screen.getByRole("tab", {name:/Agentic/}));
     expect(await screen.findByText("Disponible",{exact:true})).toBeInTheDocument();
     await user.click(api);
     expect(screen.queryByText("Disponible",{exact:true})).not.toBeInTheDocument();
@@ -498,7 +474,7 @@ describe("ProviderDetail Component", () => {
     const user = userEvent.setup();
     renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
     await user.click(
-      await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/i }),
+      await screen.findByRole("tab", { name: /Agentic/i }),
     );
     expect(screen.getByText("Degradado")).toBeInTheDocument();
     expect(
@@ -528,7 +504,7 @@ describe("ProviderDetail Component", () => {
     const user = userEvent.setup();
     renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
     await user.click(
-      await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/i }),
+      await screen.findByRole("tab", { name: /Agentic/i }),
     );
     expect(
       screen.getAllByText("ESTADO AGÉNTICO SIN VERIFICAR").length,
@@ -537,7 +513,7 @@ describe("ProviderDetail Component", () => {
       screen.queryByText("SESIÓN AGÉNTICA NO DISPONIBLE"),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Sesión Web de .* no disponible/i),
+      screen.queryByText(/Sesión Agentic de .* no disponible/i),
     ).not.toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Actualizar modelos" }),
@@ -549,14 +525,13 @@ describe("ProviderDetail Component", () => {
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
       ...mockHealthData,
       engines: {
-        active_engine: "web",
-        web: { engine: "web", available: true, authenticated: true },
+        active_engine: "agentic",
         agentic: { engine: "agentic", available: true, authenticated: false },
       },
     });
     renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
     await user.click(
-      await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/i }),
+      await screen.findByRole("tab", { name: /Agentic/i }),
     );
     expect(
       screen.queryByText("SESIÓN AGÉNTICA CONECTADA"),
@@ -600,13 +575,12 @@ describe("ProviderDetail Component", () => {
       await screen.findByText("Sincronizar y configurar modelos"),
     ).toBeInTheDocument();
   });
-  it("disables discovery and shows an alert when the web session expires", async () => {
+  it("disables discovery and shows the inactive Agentic session", async () => {
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
       ...mockHealthData,
       engines: {
-        active_engine: "web",
-        web: { engine: "web", available: true, authenticated: false },
-        agentic: { engine: "agentic", available: false, authenticated: false },
+        active_engine: "agentic",
+        agentic: { engine: "agentic", available: true, authenticated: false },
       },
     });
     renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
@@ -614,18 +588,18 @@ describe("ProviderDetail Component", () => {
       await screen.findByRole("button", { name: "Actualizar modelos" }),
     ).toBeDisabled();
     expect(
-      await screen.findByText(/Sesión Web de .* no disponible/i),
-    ).toBeInTheDocument();
+      await screen.findAllByText(i18n.t("ai_providers:detail.agentic_status_inactive_badge")),
+    ).toBeTruthy();
   });
   it("shows unknown quotas while allowing saved Agentic reasoning preferences", async () => {
     const user = userEvent.setup();
     renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
     expect(
-      await screen.findByText("El proveedor no informa cuotas verificables."),
+      await screen.findByRole("tab", { name: /Agentic/ }),
     ).toBeInTheDocument();
     expect(screen.queryByText(/2[.,]399|2[.,]400/)).not.toBeInTheDocument();
     await user.click(
-      screen.getByRole("tab", { name: /Token Plan \(Agentic\)/i }),
+      screen.getByRole("tab", { name: /Agentic/i }),
     );
     expect(
       await screen.findByTestId("thinking-level-high-gemini-flash"),
@@ -639,10 +613,10 @@ describe("ProviderDetail Component", () => {
         {
           providerId: "prov-1",
           provider: "gemini",
-          mode: params?.mode ?? "token_plan_web",
+          mode: params?.mode ?? "agentic",
           models_source: "provider",
           models_observed_at: new Date().toISOString(),
-          planType: "token_plan",
+          planType: "agentic",
           isSelected: true,
           isActive: true,
           selectedModel: "gemini-flash",
@@ -662,7 +636,7 @@ describe("ProviderDetail Component", () => {
     const user = userEvent.setup();
     renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
     await user.click(
-      await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/i }),
+      await screen.findByRole("tab", { name: /Agentic/i }),
     );
     const high = await screen.findByTestId("thinking-level-high-gemini-flash");
     await waitFor(() => expect(high).toBeEnabled());
@@ -675,7 +649,7 @@ describe("ProviderDetail Component", () => {
         "prov-1",
         expect.objectContaining({
           fields: expect.objectContaining({
-            token_plan_agentic: expect.objectContaining({
+            agentic: expect.objectContaining({
               thinking_levels: { "gemini-flash": "high" },
             }),
           }),
@@ -719,10 +693,10 @@ describe("ProviderDetail Component", () => {
       {
         providerId: "prov-1",
         provider: "gemini",
-        mode: "token_plan_web",
+        mode: "agentic",
         models_source: "provider",
         models_observed_at: new Date().toISOString(),
-        planType: "token_plan",
+        planType: "agentic",
         isSelected: true,
         isActive: true,
         selectedModel: "gemini-flash",
@@ -745,28 +719,27 @@ describe("ProviderDetail Component", () => {
     expect(screen.queryByText("Texto/Audio/Video")).not.toBeInTheDocument();
     expect(aiServices.getSelectableModels).toHaveBeenCalledWith({
       provider_id: "prov-1",
-      mode: "token_plan_web",
+      mode: "agentic",
     });
   });
   it("never renders numeric quotas without observation provenance", async () => {
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
       ...mockHealthData,
       engines: {
-        active_engine: "web",
-        web: {
-          engine: "web",
+        active_engine: "agentic",
+        agentic: {
+          engine: "agentic",
           available: true,
           authenticated: true,
           quota: {
             flash: { usage_percentage: 20, remaining: 2400, total: 3000 },
           },
         },
-        agentic: { engine: "agentic", available: false, authenticated: false },
       },
     });
     renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
     expect(
-      await screen.findByText("El proveedor no informa cuotas verificables."),
+      await screen.findByRole("tab", { name: /Agentic/ }),
     ).toBeInTheDocument();
     expect(screen.queryByText("20%")).not.toBeInTheDocument();
   });
@@ -777,7 +750,7 @@ describe("ProviderDetail Component", () => {
           ...mockProviders[0],
           fields: {
             enable_extended_thinking: true,
-            token_plan_web: {
+            agentic: {
               selected_model: "gemini-flash",
               available_models: [{ id: "gemini-flash", name: "Observed" }],
             },
@@ -790,9 +763,9 @@ describe("ProviderDetail Component", () => {
       {
         providerId: "prov-1",
         provider: "gemini",
-        mode: "token_plan_web",
+        mode: "agentic",
         models_source: "provider",
-        planType: "token_plan",
+        planType: "agentic",
         isSelected: true,
         isActive: true,
         selectedModel: "gemini-flash",
@@ -811,14 +784,13 @@ describe("ProviderDetail Component", () => {
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
       ...mockHealthData,
       engines: {
-        active_engine: "web",
-        web: {
-          engine: "web",
+        active_engine: "agentic",
+        agentic: {
+          engine: "agentic",
           available: true,
           authenticated: true,
           supported_options: { extended_thinking: true },
         },
-        agentic: { engine: "agentic", available: false, authenticated: false },
       },
     });
     renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
@@ -827,62 +799,33 @@ describe("ProviderDetail Component", () => {
     expect(control).toHaveAttribute("aria-pressed", "false");
     expect(screen.queryByRole("switch", { name: /Razonamiento Extendido/i })).not.toBeInTheDocument();
   });
-  it("shows recently observed Web credits using the real bucket without claiming requests", async () => {
-    vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
-      ...mockHealthData,
-      engines: {
-        active_engine: "web",
-        web: {
-          engine: "web",
-          available: true,
-          authenticated: true,
-          quota_source: "web",
-          quota_observed_at: Date.now() / 1000,
-          quota: {
-            "reported-bucket": {
-              usage_percentage: 20,
-              remaining: 8,
-              total: 10,
-            },
-          },
-        },
-        agentic: { engine: "agentic", available: false, authenticated: false },
-      },
-    });
-    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
-    expect(
-      await screen.findByText("Uso Web reportado (reported-bucket)"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("8 de 10 unidades reportadas disponibles"),
-    ).toBeInTheDocument();
-    expect(screen.queryByText(/8.*solicitudes/i)).not.toBeInTheDocument();
-  });
 
-  it.each(["api_key", "token_plan_agentic"] as const)("shows the Codex account only on Agentic with %s as default", async (defaultMode) => {
+  it.each(["api_key", "agentic"] as const)("shows the Codex account only on Agentic with %s as default", async (defaultMode) => {
     const user = userEvent.setup();
     vi.mocked(aiServices.getAiProviders).mockResolvedValue({
-      data: [{...mockProviders[0], key:"openai",use_api_key:true,use_token_plan_web:false,
-        use_token_plan_agentic:true,default_mode:defaultMode,fields:{},api_keys:[]}],
+      data: [{...mockProviders[0], key:"openai",use_api_key:true,use_agentic:true,default_mode:defaultMode,fields:{},api_keys:[]}],
       meta:{total_items:1,total_pages:1,page:1,limit:10},
     });
     vi.mocked(aiServices.getAiApiKeys).mockResolvedValue({data:[],meta:{total_items:0,total_pages:0,page:1,limit:10}});
+    vi.mocked(codexServices.getCodexSession).mockResolvedValue({available:true,authenticated:false,planType:null,checkedAt:null,reason:"codex_session_required",quotas:null,lastInferenceAt:null,usageAllowed:null});
     renderWithClient(<ProviderDetail providerId="prov-1" initialMode="api_key" onBack={() => {}} />);
     const api = await screen.findByRole("tab", {name:/API key/});
     await waitFor(() => expect(api).toHaveAttribute("aria-selected","true"));
     expect(screen.queryByText("Cuenta Codex")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", {name:"API keys"})).toBeInTheDocument();
-    await user.click(screen.getByRole("tab", {name:/Token Plan \(Agentic\)/}));
+    expect(codexServices.getCodexSession).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("tab", {name:/Agentic/}));
     expect(await screen.findByText("Cuenta Codex")).toBeInTheDocument();
-    expect(screen.getByRole("button",{name:"Gestionar cuenta Codex"})).toBeEnabled();
+    await waitFor(() => expect(screen.getByRole("button",{name:"Gestionar cuenta Codex"})).toBeEnabled());
+    expect(codexServices.getCodexSession).toHaveBeenCalledOnce();
     await user.click(api);
     expect(screen.queryByText("Cuenta Codex")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", {name:"API keys"})).toBeInTheDocument();
-    expect(codexServices.getCodexSession).not.toHaveBeenCalled();
+    expect(codexServices.getCodexSession).toHaveBeenCalledOnce();
   });
   it("opens Codex management from an alert after switching out of API", async () => {
     vi.mocked(aiServices.getAiProviders).mockResolvedValue({
-      data:[{...mockProviders[0],key:"openai",use_api_key:true,use_token_plan_web:false,use_token_plan_agentic:true,default_mode:"api_key",fields:{},api_keys:[]}],
+      data:[{...mockProviders[0],key:"openai",use_api_key:true,use_agentic:true,default_mode:"api_key",fields:{},api_keys:[]}],
       meta:{total_items:1,total_pages:1,page:1,limit:10},
     });
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({...mockHealthData,
@@ -892,11 +835,11 @@ describe("ProviderDetail Component", () => {
     vi.mocked(codexServices.getCurrentCodexLogin).mockResolvedValue(null);
     vi.mocked(codexServices.getCodexSession).mockResolvedValue({available:true,authenticated:false,planType:null,checkedAt:null,reason:"codex_session_required",quotas:null,lastInferenceAt:null,usageAllowed:null});
     renderWithClient(<ProviderDetail providerId="prov-1" initialMode="api_key" onBack={() => {}} />);
-    const agenticTab = await screen.findByRole("tab",{name:/Token Plan \(Agentic\)/});
+    const agenticTab = await screen.findByRole("tab",{name:/Agentic/});
     await userEvent.click(await screen.findByRole("button",{name:"Gestionar cuenta Codex"}));
     await waitFor(() => expect(agenticTab).toHaveAttribute("aria-selected","true"));
     expect(await screen.findByRole("dialog")).toBeInTheDocument();
-    expect(codexServices.getCodexSession).toHaveBeenCalledWith("prov-1");
+    expect(codexServices.getCodexSession).toHaveBeenCalledWith("prov-1", expect.objectContaining({ aborted: false }));
   });
   it("keeps an API-only OpenAI connection free of Codex and ChatGPT Web controls", async () => {
     vi.mocked(aiServices.getAiProviders).mockResolvedValue({
@@ -906,8 +849,7 @@ describe("ProviderDetail Component", () => {
           key: "openai",
           name: "OpenAI connection",
           use_api_key: true,
-          use_token_plan_web: false,
-          use_token_plan_agentic: false,
+          use_agentic: false,
           default_mode: "api_key",
           mode: AiConnectionMode.API_KEY,
           fields: {},
@@ -949,74 +891,13 @@ describe("ProviderDetail Component", () => {
       expect.objectContaining({ q: { provider_id_eq: "prov-1" } }),
     );
   });
-
-  it("labels known quota buckets while preserving zero and unknown identifiers", async () => {
-    vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
-      ...mockHealthData,
-      engines: {
-        active_engine: "web",
-        web: {
-          engine: "web",
-          available: true,
-          authenticated: true,
-          quota_source: "web",
-          quota_observed_at: Date.now() / 1000,
-          quota: Object.fromEntries(
-            ["None-11", "None-4", "current_5h", "weekly", "future-bucket"].map(
-              (id) => [
-                id,
-                { usage_percentage: 0, remaining: null, total: null },
-              ],
-            ),
-          ),
-        },
-        agentic: { engine: "agentic", available: false, authenticated: false },
-      },
-    });
-    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
-    for (const label of [
-      "Gemini Flash",
-      "Gemini Pro",
-      "Quota 5h",
-      "Quota semanal",
-      "Uso Web reportado (future-bucket)",
-    ])
-      expect(await screen.findByText(label)).toBeInTheDocument();
-    expect(screen.getAllByText("0%")).toHaveLength(5);
-  });
-  it("saves a Web level per model without inventing support or converting the legacy boolean", async () => {
-    vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
-      ...mockHealthData,
-      engines: {
-        active_engine: "web",
-        web: {
-          engine: "web",
-          available: true,
-          authenticated: true,
-          supported_options: { extended_thinking: true },
-        },
-        agentic: { engine: "agentic", available: false, authenticated: false },
-      },
-    });
-    const user = userEvent.setup();
-    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
-    const level = await screen.findByTestId("thinking-level-medium-gemini-flash");
-    await waitFor(() => expect(level).toBeEnabled());
-    expect(level).toHaveTextContent("Medio");
-    await user.click(level);
-    await waitFor(() => expect(aiServices.updateAiProvider).toHaveBeenCalledWith("prov-1",
-      expect.objectContaining({ fields: expect.objectContaining({
-        token_plan_web: expect.objectContaining({ thinking_levels: { "gemini-flash": "medium" }, thinking_level: "medium" }),
-      }) })));
-    expect(screen.queryByRole("switch", { name: /Razonamiento Extendido/i })).not.toBeInTheDocument();
-  });
   it("allows an Agentic level preference without assigning a model or enabling its adapter", async () => {
     vi.mocked(aiServices.getAiProviders).mockResolvedValue({
       data: [
         {
           ...mockProviders[0],
-          default_mode: "token_plan_agentic",
-          fields: { token_plan_agentic: {} },
+          default_mode: "agentic",
+          fields: { agentic: {} },
         },
       ],
       meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 },
@@ -1024,8 +905,7 @@ describe("ProviderDetail Component", () => {
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
       ...mockHealthData,
       engines: {
-        active_engine: "web",
-        web: { engine: "web", available: true, authenticated: true },
+        active_engine: "agentic",
         agentic: { engine: "agentic", available: false, authenticated: false },
       },
     });
@@ -1039,7 +919,7 @@ describe("ProviderDetail Component", () => {
         "prov-1",
         expect.objectContaining({
           fields: expect.objectContaining({
-            token_plan_agentic: { thinking_level: "high" },
+            agentic: { thinking_level: "high" },
           }),
         }),
       ),
@@ -1048,7 +928,7 @@ describe("ProviderDetail Component", () => {
       .getAllByRole("button", { name: "Actualizar modelos" })
       .forEach((button) => expect(button).toBeDisabled());
   });
-  it("does not block authenticated Web when the default API channel is unconfigured", async () => {
+  it("does not block authenticated Agentic when the default API channel is unconfigured", async () => {
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
       ...mockHealthData,
       providers: [{ ...mockHealthData.providers[0], status: "unconfigured" }],
@@ -1056,9 +936,8 @@ describe("ProviderDetail Component", () => {
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
       ...mockHealthData,
       engines: {
-        active_engine: "web",
-        web: { engine: "web", available: true, authenticated: true },
-        agentic: { engine: "agentic", available: false, authenticated: false },
+        active_engine: "agentic",
+        agentic: { engine: "agentic", available: true, authenticated: true },
       },
     });
     renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
@@ -1067,13 +946,15 @@ describe("ProviderDetail Component", () => {
         screen.getByRole("button", { name: "Actualizar modelos" }),
       ).toBeEnabled(),
     );
-    expect(screen.getByText("SESIÓN AUTENTICADA")).toBeInTheDocument();
+    expect(screen.getAllByText(i18n.t("ai_providers:detail.agentic_status_active_badge")).length).toBeGreaterThan(0);
   });
 
   it("renders discovered Codex efforts and keeps incompatible historical preferences visible and removable", async () => {
+    vi.mocked(codexServices.getCodexSession).mockResolvedValue({ available: true, authenticated: true,
+      planType: null, checkedAt: "2026-11-01T18:00:00Z", reason: null, quotas: null, lastInferenceAt: null, usageAllowed: null });
     const fields = {
       api_key: { selected_model: "api-unchanged" },
-      token_plan_agentic: {
+      agentic: {
         selected_model: "synthetic-codex",
         thinking_level: "obsolete",
         available_models: [{ id: "synthetic-codex", name: "Synthetic" }],
@@ -1085,9 +966,8 @@ describe("ProviderDetail Component", () => {
           ...mockProviders[0],
           key: "openai",
           use_api_key: true,
-          use_token_plan_web: false,
-          use_token_plan_agentic: true,
-          default_mode: "token_plan_agentic",
+          use_agentic: true,
+          default_mode: "agentic",
           fields,
         },
       ],
@@ -1097,8 +977,8 @@ describe("ProviderDetail Component", () => {
       {
         providerId: "prov-1",
         provider: "openai",
-        mode: "token_plan_agentic",
-        planType: "token_plan",
+        mode: "agentic",
+        planType: "agentic",
         isActive: true,
         isSelected: false,
         selectedModel: "synthetic-codex",
@@ -1141,7 +1021,7 @@ describe("ProviderDetail Component", () => {
         expect.objectContaining({
           fields: expect.objectContaining({
             api_key: fields.api_key,
-            token_plan_agentic: expect.objectContaining({
+            agentic: expect.objectContaining({
               thinking_level: null,
               thinking_levels: { "synthetic-codex": null },
             }),
@@ -1168,7 +1048,7 @@ describe("ProviderDetail Component", () => {
       const user = userEvent.setup();
       renderWithClient(<ProviderDetail providerId="prov-1" onBack={vi.fn()} />);
       const web = await screen.findByRole("tab", {
-        name: /Token Plan \(Web\)/,
+        name: /Agentic/,
       });
       await waitFor(() => expect(web).toBeEnabled());
       expect(screen.getByRole("tablist")).toHaveAttribute(
@@ -1179,12 +1059,12 @@ describe("ProviderDetail Component", () => {
       await user.keyboard("{ArrowDown}{Enter}");
       await waitFor(() =>
         expect(
-          screen.getByRole("tab", { name: /Token Plan \(Agentic\)/ }),
+          screen.getByRole("tab", { name: /Agentic/ }),
         ).toHaveAttribute("aria-selected", "true"),
       );
       expect(aiServices.getSelectableModels).toHaveBeenLastCalledWith({
         provider_id: "prov-1",
-        mode: "token_plan_agentic",
+        mode: "agentic",
       });
       expect(aiServices.updateAiProvider).not.toHaveBeenCalled();
     } finally {

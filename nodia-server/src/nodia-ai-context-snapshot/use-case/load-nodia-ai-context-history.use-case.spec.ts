@@ -4,9 +4,9 @@ import { LoadNodiaAiContextHistoryUseCase } from './load-nodia-ai-context-histor
 
 const input = {
   conversationId: '11111111-1111-4111-8111-111111111111', actorId: '1',
-  throughSeq: '3', moduleRoutes: ['/tools/business'], maxBytes: 131072,
+  throughSeq: '3', moduleRoutes: ['/business'], maxBytes: 131072,
 };
-const message = (seq: string, scope: unknown = { schema_version: 1, module_routes: ['/tools/business'] }) => ({
+const message = (seq: string, scope: unknown = { schema_version: 1, module_routes: ['/business'] }) => ({
   seq, role: 'user', scope, parts: [{ kind: 'text', text: `Message ${seq}` }],
 });
 function fixture(row: unknown = { history: [message('1'), message('3')], complete: true, through_seq: '3' }) {
@@ -27,7 +27,7 @@ describe('canonical history window and source fingerprint', () => {
       history: [first, last], complete: true, throughSeq: '3',
     });
     expect(f.query.mock.calls[0]?.[1]).toEqual([
-      input.conversationId, '3', '1', ['/tools/business'], '0', 131072,
+      input.conversationId, '3', '1', ['/business', '/tools/business'], '0', 131072,
     ]);
   });
   it('returns a bounded prefix with an explicit continuation anchor', async () => {
@@ -50,8 +50,8 @@ describe('canonical history window and source fingerprint', () => {
   });
   it.each([
     null,
-    { schema_version: 1, module_routes: ['/tools/finances-personal'] },
-    { schema_version: 1, module_routes: ['/tools/business'], ignored: true },
+    { schema_version: 1, module_routes: ['/finances-personal'] },
+    { schema_version: 1, module_routes: ['/business'], ignored: true },
     { schema_version: 1, module_routes: 'invalid' },
   ])('redacts content whose returned scope is unavailable or malformed', async (scope) => {
     const f = fixture({ history: [message('1', scope)], complete: true, through_seq: '1' });
@@ -62,7 +62,7 @@ describe('canonical history window and source fingerprint', () => {
   it.each([
     { throughSeq: '-1' }, { throughSeq: '01' }, { afterSeq: '4' },
     { maxBytes: 1 }, { maxBytes: 1.1 }, { maxBytes: Number.POSITIVE_INFINITY },
-    { moduleRoutes: ['arbitrary'] }, { moduleRoutes: Array(65).fill('/tools/business') },
+    { moduleRoutes: ['arbitrary'] }, { moduleRoutes: Array(65).fill('/business') },
   ])('rejects an invalid window before SQL', async (change) => {
     const f = fixture();
     await expect(f.useCase.load(f.manager, { ...input, ...change })).rejects.toThrow('nodia_ai:context_invalid');

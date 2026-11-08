@@ -59,7 +59,7 @@ export class BuildNodiaAiInvoiceAnalysisToolUseCase {
         modules: [
           {
             key: 'invoice_analysis_business',
-            route: '/tools/business',
+            route: '/business',
             label: 'Negocios',
           },
         ],
@@ -67,7 +67,7 @@ export class BuildNodiaAiInvoiceAnalysisToolUseCase {
           {
             key: 'invoices',
             label: 'Facturas',
-            requiredModuleRoutes: ['/tools/business'],
+            requiredModuleRoutes: ['/business'],
           },
         ],
         capabilities: [
@@ -82,8 +82,8 @@ export class BuildNodiaAiInvoiceAnalysisToolUseCase {
             operationKey: 'analyze',
             descriptionKey: 'nodia_ai:tools.nodia_invoices_analyze',
             description:
-              'Prepara las instrucciones nativas de factura para un adjunto de la generación Agentic actual y completa su extracción revisable; no crea facturas ni ejecuta otra inferencia.',
-            requiredModuleRoutes: ['/tools/business'],
+              'Prepara las instrucciones nativas de factura para un adjunto de la generación activa Agentic o API key y completa su extracción revisable; no crea facturas ni ejecuta otra inferencia.',
+            requiredModuleRoutes: ['/business'],
             actionKeys: [],
             inputSchema,
             outputSchema,
@@ -131,7 +131,7 @@ export class BuildNodiaAiInvoiceAnalysisToolUseCase {
                           ? context.toolCallId!
                           : input.analysis_id,
                       review_required: true,
-                      extraction_source: 'active_agentic_generation',
+                      extraction_source: analysisObject(snapshot.selection).mode === 'api_key' ? 'active_api_generation' : 'active_agentic_generation',
                       business_id: snapshot.business_id,
                       provider_id: snapshot.provider_id,
                       attachment_id: source.attachment_id,

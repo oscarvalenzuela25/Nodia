@@ -1,3 +1,4 @@
+import { contractModuleRoute, moduleRouteIncluded } from '../../authorization/canonical-module-route.js';
 import { randomUUID } from 'node:crypto';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { nodiaAiFailureDiagnostic } from '../../nodia-ai-runtime/types/nodia-ai-failure-diagnostic.js';
@@ -51,7 +52,6 @@ import {
   isNodiaAiMcpExecutableRegistration,
   isNodiaAiMcpPreparationKind,
 } from '../types/tool-registry.types.js';
-
 function fail(code = 'capability_denied'): never {
   throw new Error(`nodia_ai:${code}`);
 }
@@ -70,7 +70,6 @@ type ToolPhase =
   | 'validate_output'
   | 'output_authority'
   | 'persist_receipt';
-
 /** The only Agentic callback dispatcher. Authority, durable cost and public contracts precede every result, including replay. */
 @Injectable()
 export class ExecuteNodiaAiToolUseCase {
@@ -132,7 +131,11 @@ export class ExecuteNodiaAiToolUseCase {
   async execute(
     claim: NodiaAiClaim,
     context: NodiaAiStageContext,
-    call: { callId: string; name: string; arguments: unknown },
+    call: {
+      callId: string;
+      name: string;
+      arguments: unknown;
+    },
   ): Promise<NodiaAiJsonObject> {
     let phase: ToolPhase = 'reserve_budget';
     try {
@@ -157,13 +160,19 @@ export class ExecuteNodiaAiToolUseCase {
   private async executeWithDiagnostics(
     claim: NodiaAiClaim,
     context: NodiaAiStageContext,
-    call: { callId: string; name: string; arguments: unknown },
+    call: {
+      callId: string;
+      name: string;
+      arguments: unknown;
+    },
     phase: (next: ToolPhase) => void,
   ): Promise<NodiaAiJsonObject> {
     // This transaction commits before any lookup, input rejection, resource check or replay.
     await context.checkpoint(async (manager) => {
       await this.authorize.execute(claim.identity, {}, manager);
-      const reserved: { id: string }[] = await manager.query(
+      const reserved: {
+        id: string;
+      }[] = await manager.query(
         "WITH changed AS (UPDATE nodia_ai_runs SET tool_calls_used=tool_calls_used+1 WHERE id=$1 AND tool_calls_used<(budget_snapshot->>'tool_calls')::integer RETURNING id) SELECT id FROM changed",
         [claim.run.id],
       );
@@ -248,7 +257,7 @@ export class ExecuteNodiaAiToolUseCase {
         (!tool ||
           !(tool.kind === 'read' || isNodiaAiMcpPreparationKind(tool.kind)) ||
           !this.discovery.published(tool) ||
-          !tool.requiredModuleRoutes.every((route) => routes.includes(route)))
+          !tool.requiredModuleRoutes.every((route) => moduleRouteIncluded(routes, route)))
       )
         fail();
       const contractHash =
@@ -316,7 +325,7 @@ export class ExecuteNodiaAiToolUseCase {
       // Discovery replay must not leak a capability whose action was revoked meanwhile.
       const scopeHash = knowledgeHash(
         canonicalKnowledge({
-          routes,
+          routes: routes.map(contractModuleRoute).sort(),
           contracts: visible.map((item) => item.contractHash),
         }),
       );
@@ -452,7 +461,11 @@ export class ExecuteNodiaAiToolUseCase {
   private async executeReport(
     claim: NodiaAiClaim,
     context: NodiaAiStageContext,
-    call: { callId: string; name: string; arguments: unknown },
+    call: {
+      callId: string;
+      name: string;
+      arguments: unknown;
+    },
   ): Promise<NodiaAiJsonObject> {
     const reports = this.reports!;
     const contractHash = reports.contractHash(call.name);
@@ -468,7 +481,7 @@ export class ExecuteNodiaAiToolUseCase {
       reports.assertGranted(
         input,
         frozen.filter((route) =>
-          authority.grant.allowed_modules.includes(route),
+          moduleRouteIncluded(authority.grant.allowed_modules, route),
         ),
       );
       return { ...authority, input };
@@ -586,7 +599,11 @@ export class ExecuteNodiaAiToolUseCase {
   private async executeExternal(
     claim: NodiaAiClaim,
     context: NodiaAiStageContext,
-    call: { callId: string; name: string; arguments: unknown },
+    call: {
+      callId: string;
+      name: string;
+      arguments: unknown;
+    },
     tool: NodiaAiRegisteredTool,
   ): Promise<NodiaAiJsonObject> {
     const deadlineAt = Math.min(
@@ -784,7 +801,7 @@ export class ExecuteNodiaAiToolUseCase {
       !tool.external ||
       !access.grant.allowed_operations.includes(tool.toolName) ||
       !this.discovery.published(tool) ||
-      !tool.requiredModuleRoutes.every((route) => access.routes.includes(route))
+      !tool.requiredModuleRoutes.every((route) => moduleRouteIncluded(access.routes, route))
     )
       fail();
     if (this.frozenHash(claim, tool.toolName) !== tool.contractHash)
@@ -808,7 +825,7 @@ export class ExecuteNodiaAiToolUseCase {
       ...access,
       scopeHash: knowledgeHash(
         canonicalKnowledge({
-          routes: access.routes,
+          routes: access.routes.map(contractModuleRoute).sort(),
           contracts: visible.map((item) => item.contractHash),
         }),
       ),
@@ -817,7 +834,10 @@ export class ExecuteNodiaAiToolUseCase {
   private externalContext(
     manager: EntityManager,
     claim: NodiaAiClaim,
-    access: { actor: NodiaAiToolHandlerContext['actor']; routes: string[] },
+    access: {
+      actor: NodiaAiToolHandlerContext['actor'];
+      routes: string[];
+    },
     signal: AbortSignal,
     id: string,
     deadlineAt: number,
@@ -866,6 +886,22 @@ export class ExecuteNodiaAiToolUseCase {
       fail();
     return this.knowledgeTools.progress(claim, context, total, unforwarded);
   }
+  async compactionProgress(
+    claim: NodiaAiClaim,
+    context: NodiaAiStageContext,
+    total: number,
+    unforwarded = 0,
+  ): Promise<void> {
+    if (
+      claim.job.stage_key !== 'context' ||
+      !['agentic', 'api_key'].includes(claim.run.selection_snapshot.mode)
+    )
+      fail();
+    // Startup frames report zero requests. Commit any unexpected request cost
+    // through the same monotonic ledger before rejecting tool use in compaction.
+    await this.knowledgeTools.progress(claim, context, total, unforwarded);
+    if (total !== 0 || unforwarded !== 0) fail();
+  }
   private contractHash(name: string): string {
     if (name === NODIA_AI_SELECT_CAPABILITIES_TOOL)
       return this.selectionFlow.contractHash();
@@ -903,13 +939,8 @@ export class ExecuteNodiaAiToolUseCase {
     if (
       (!['inference', 'delegated_inference'].includes(claim.job.stage_key) &&
         !(descriptorsOnly && claim.job.stage_key === 'context')) ||
-      activeSelection?.mode !== 'token_plan_agentic' ||
-      (delegated &&
-        (!run.routing_snapshot.enabled ||
-          run.selection_snapshot.mode !== 'token_plan_web' ||
-          !target ||
-          target.selection.connection_id !==
-            run.selection_snapshot.connection_id))
+      !['agentic', 'api_key'].includes(String(activeSelection?.mode)) ||
+      delegated
     )
       fail();
     const contracts = claim.run.context_manifest.tool_contracts;
@@ -978,7 +1009,7 @@ export class ExecuteNodiaAiToolUseCase {
       .map((item) => item.route)
       .filter(
         (route) =>
-          frozen.includes(route) && grant.allowed_modules.includes(route),
+          moduleRouteIncluded(frozen, route) && moduleRouteIncluded(grant.allowed_modules, route),
       )
       .sort();
     return { actor, routes, grant };

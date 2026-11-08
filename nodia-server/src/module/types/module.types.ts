@@ -1,4 +1,5 @@
 import { Module } from '../entities/module.entity.js';
+import type { OrderMetadata } from '../../module-order/order-metadata.js';
 
 export type PaginationMeta = {
   page: number;
@@ -8,6 +9,6 @@ export type PaginationMeta = {
 };
 
 export type GetModulesResponse = {
-  data: Module[];
+  data: Array<Module & { ordering?: OrderMetadata; group_ordering?: OrderMetadata }>;
   meta: PaginationMeta;
 };

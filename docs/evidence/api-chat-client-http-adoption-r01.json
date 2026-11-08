@@ -1,0 +1,3057 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-10-27T21:19:59.433580+00:00",
+  "status": "passed_static_HTTP_adoption_only",
+  "scope": "Read-only VM loopback Nginx static Client assets and SPA entry points after coordinator activation; exact HTTP status, bytes, SHA256 and MIME. No backend API, SQL, provider or UI inference claim.",
+  "candidate": {
+    "release": "/opt/nodia/releases/nodia-client-api-chat-r01",
+    "manifest_path": "ops/lab/artifacts/api-chat-parity-r01/client-source-runtime-r01-manifest.json",
+    "manifest_sha256": "17f5d171402e8c3b9ae2593f1809ca1fb22f9b976602416fc6b329f28251f6b1",
+    "archive_path": "ops/lab/artifacts/api-chat-parity-r01/client-source-runtime-r01.tar.gz",
+    "archive_sha256": "c4298dd5877b2212e93fba5e2d5cfba2784c7822b2105a54077c688e4f5ea964",
+    "source_files": 711,
+    "modified_runtime_files": 7,
+    "asset_prefix": "api-chat-r01-"
+  },
+  "baseline": {
+    "release": "/opt/nodia/releases/nodia-client-agentic-api-r01",
+    "manifest_sha256": "86bdf6b977061d469d65fe76fe1525c099997edc84127379e478c1b005187740",
+    "legacy_hashed_assets_verified": 177
+  },
+  "summary": {
+    "HTTP_GET_requests": 362,
+    "passed": 362,
+    "failed": 0,
+    "candidate_assets": 181,
+    "candidate_SPA_routes": [
+      "/",
+      "/settings/ai-providers",
+      "/tools/nodia-ai",
+      "/tools/business"
+    ],
+    "candidate_GETs": 185,
+    "legacy_R01_hashed_asset_GETs": 177,
+    "status_hash_bytes_MIME_all_passed": true,
+    "MIME_counts": {
+      "application/javascript": 204,
+      "text/css": 4,
+      "font/woff2": 72,
+      "font/woff": 72,
+      "font/ttf": 2,
+      "image/svg+xml": 2,
+      "text/html": 5,
+      "image/png": 1
+    },
+    "font_TTF_new_and_legacy": "font/ttf",
+    "nginx_sha256_before_and_after": "4b0a02d547a06fc09fb9b2ce7fa22ef15e0d631b27aa2689307e100c4ae192ea",
+    "observed_client_roots_in_order": [
+      "/opt/nodia/releases/nodia-client-api-chat-r01/dist",
+      "/opt/nodia/releases/nodia-client-agentic-api-r01/dist",
+      "/opt/nodia/releases/nodia-client-image-generation-r03/dist",
+      "/opt/nodia/releases/nodia-client-module-access-privacy-r01/dist",
+      "/opt/nodia/releases/nodia-client-c03-attachment-draft-continuity-r01/dist",
+      "/opt/nodia/releases/nodia-client-c03-attachment-policy-r01/dist",
+      "/opt/nodia/releases/nodia-client-core-fx04-pagination-r07/dist"
+    ],
+    "HTTP_redirects_or_retries": 0,
+    "authenticated_requests": 0,
+    "backend_API_requests": 0,
+    "SQL_calls": 0,
+    "provider_inferences": 0,
+    "operator_config_or_service_mutations": 0
+  },
+  "checker": {
+    "path": "ops/lab/artifacts/api-chat-parity-r01/client-http-review-r01.py",
+    "sha256": "ffcaa704103e062df24bd3ae196a7899e635ef935acb367421d6c8fc4ed9f5e2",
+    "execution": "--execute after explicit activated notice; exact Nginx CAS guard; direct127.0.0.1:8080, redirects/proxy env disabled; static route allowlist only"
+  },
+  "exact_HTTP_receipt": {
+    "source_sha256": "aeba579e3017ce0b9442b6f7b55a1846bd9c31ea2e4606d92ea0c9e402e912cd",
+    "source_bytes": 86855,
+    "source_path_at_capture": ".tmp/ai-api-chat/client-http-adoption-r01.json",
+    "data": {
+      "status": "passed",
+      "manifest_sha256": "17f5d171402e8c3b9ae2593f1809ca1fb22f9b976602416fc6b329f28251f6b1",
+      "target_release": "/opt/nodia/releases/nodia-client-api-chat-r01",
+      "candidate_assets_planned": 181,
+      "SPA_routes_planned": [
+        "/",
+        "/settings/ai-providers",
+        "/tools/nodia-ai",
+        "/tools/business"
+      ],
+      "candidate_GETs_planned": 185,
+      "R01_legacy_hashed_assets_planned": 177,
+      "required_previous_asset_roots_in_order": [
+        "/opt/nodia/releases/nodia-client-agentic-api-r01/dist",
+        "/opt/nodia/releases/nodia-client-image-generation-r03/dist",
+        "/opt/nodia/releases/nodia-client-module-access-privacy-r01/dist",
+        "/opt/nodia/releases/nodia-client-c03-attachment-draft-continuity-r01/dist",
+        "/opt/nodia/releases/nodia-client-c03-attachment-policy-r01/dist",
+        "/opt/nodia/releases/nodia-client-core-fx04-pagination-r07/dist"
+      ],
+      "HTTP_GET_requests": 362,
+      "SQL_calls": 0,
+      "provider_inferences": 0,
+      "mutations": 0,
+      "limit": "Static bytes/MIME and SPA only; no backend auth, UI, provider or all older fallback asset acceptance.",
+      "nginx_sha256": "4b0a02d547a06fc09fb9b2ce7fa22ef15e0d631b27aa2689307e100c4ae192ea",
+      "observed_roots": [
+        "/opt/nodia/releases/nodia-client-api-chat-r01/dist",
+        "/opt/nodia/releases/nodia-client-agentic-api-r01/dist",
+        "/opt/nodia/releases/nodia-client-image-generation-r03/dist",
+        "/opt/nodia/releases/nodia-client-module-access-privacy-r01/dist",
+        "/opt/nodia/releases/nodia-client-c03-attachment-draft-continuity-r01/dist",
+        "/opt/nodia/releases/nodia-client-c03-attachment-policy-r01/dist",
+        "/opt/nodia/releases/nodia-client-core-fx04-pagination-r07/dist"
+      ],
+      "all_hashes_and_MIME_verified": true,
+      "passed_requests": 362,
+      "failed_requests": 0,
+      "failures": [],
+      "results": [
+        {
+          "route": "/assets/api-chat-r01-Actions-DQKn_s71.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 44319,
+          "sha256": "8fc8e9d91abfcb9324749de81b6e1fbf0ae4ce50e843e2993e92a228046b04f8"
+        },
+        {
+          "route": "/assets/api-chat-r01-AddCircleOutlined--r4XCPVK.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 283,
+          "sha256": "99ba023d06ab8c3135c1bee7e62141227fefcce88f62163e31fa57e11ad8f340"
+        },
+        {
+          "route": "/assets/api-chat-r01-AiProviders-9iD6ow2D.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 122910,
+          "sha256": "cf4e9216a317f2f76ef95c7f3b4c757da922d39fd4c78ad0daeef7c063c353ea"
+        },
+        {
+          "route": "/assets/api-chat-r01-Alert-DU2hjMTF.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 11498,
+          "sha256": "719ae71d73a9a553c93eb4015fc9006bc525a835125f85f1dfe60429ef9479f2"
+        },
+        {
+          "route": "/assets/api-chat-r01-ArrowBackOutlined-2XJ1IBHO.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 243,
+          "sha256": "85c25f8c2ec0298a28087ac002b375afc1ce75af34e065ffd8e5aa68ac4f44db"
+        },
+        {
+          "route": "/assets/api-chat-r01-Attachments-mBMPW0Q_.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 9630,
+          "sha256": "af20b307dcd39eacb347fe38c1b216deb58eba0c5c18584665086f9d185d244e"
+        },
+        {
+          "route": "/assets/api-chat-r01-BaseModal-oVFEgH8s.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 11885,
+          "sha256": "d22216ea3e4eb87aeea4a60cba8d04a92148afcff06126f3799575686c19657b"
+        },
+        {
+          "route": "/assets/api-chat-r01-BlockOutlined-DLrSG00j.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 412,
+          "sha256": "3c93a52f4045a06af3361381f6d4c155bad7eb20801b5791dcfbd13662cb0eb7"
+        },
+        {
+          "route": "/assets/api-chat-r01-BoltOutlined-BzJq7-dd.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 537,
+          "sha256": "e34698aba03486f3118dfab90ffb2d8b0de5ae9e20141583c5195cc910e52f92"
+        },
+        {
+          "route": "/assets/api-chat-r01-Business-CMQ7CZl-.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 14683,
+          "sha256": "9321962041c8e33c45f9c7f793e731800d1f75f45795f4e4b0addb8af0ef4e63"
+        },
+        {
+          "route": "/assets/api-chat-r01-BusinessCollaboratorModal-DXcUB6a4.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 25014,
+          "sha256": "c12acc6617eb6e8338ba6de8f1f47fff7c38674a512dbb56c2e4f7482ec24989"
+        },
+        {
+          "route": "/assets/api-chat-r01-BusinessDetail-BNrY4M8T.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 238490,
+          "sha256": "73010acf08207cd1aafbf3209ffde607f54a3f2b6490414b13a53ed7eacf9adb"
+        },
+        {
+          "route": "/assets/api-chat-r01-BusinessPagination-C68zi1-d.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 381,
+          "sha256": "5cd97ca0cd49df67a1061e757381b2182b302853e5475f9f707143f978200587"
+        },
+        {
+          "route": "/assets/api-chat-r01-Button-D08n0Rra.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 120410,
+          "sha256": "ee638ccf0730dd7533e323e7fd41b28c9e444f8ee1670fd933ce1c58871ca10d"
+        },
+        {
+          "route": "/assets/api-chat-r01-CheckCircleOutlineOutlined-DdnyZV2G.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 362,
+          "sha256": "dbcb30c16d09243c023699162ab901d06fc83c877d20d21197574aac2e7e3683"
+        },
+        {
+          "route": "/assets/api-chat-r01-CheckCircleOutlined-CTsf5zre.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 355,
+          "sha256": "e731e272e26ccb7cd56fd79e84d43e6cb8ce620fd54ef3830409951f46e45cb7"
+        },
+        {
+          "route": "/assets/api-chat-r01-Checkbox-BOW3nE9_.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3107,
+          "sha256": "9a460f2b9d670fa02cf5cdeb6880c4d1fc5225c3a51fdc371c5a82dd0d5fdd47"
+        },
+        {
+          "route": "/assets/api-chat-r01-CloseOutlined-CxfjFmRE.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 283,
+          "sha256": "1139ca3f39ce69554b9a8b64b5cffaebb0be24494ae22baf4fbadac4e25a2144"
+        },
+        {
+          "route": "/assets/api-chat-r01-ConfirmDialog-Do1o24tH.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 4055,
+          "sha256": "c78b277d6726898b36d1873878990ccc3b7647844507a27a47b5cd18386cf29f"
+        },
+        {
+          "route": "/assets/api-chat-r01-ContentCopy-CQ4Zo89y.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 301,
+          "sha256": "04f8abc29d13009fe8a1830de283b8512e02847fa200b2354d820016fd1b4034"
+        },
+        {
+          "route": "/assets/api-chat-r01-DateInput-VdDPG8sK.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 57829,
+          "sha256": "e9b191343c821501712231ca5758c9090bf6a208c14a8fd90bc83e436b25f075"
+        },
+        {
+          "route": "/assets/api-chat-r01-DateTimeInput-DLNcGLO4.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 16460,
+          "sha256": "37c89d86dda8ac5eff50540e1961022d68f25d3cef7faac6441567bb4ad148db"
+        },
+        {
+          "route": "/assets/api-chat-r01-DeleteOutlined-B5J202SS.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 268,
+          "sha256": "d10d5d729d597f63938d6aa6c101b4a6e07e6ad29d42065a3214fc4846b842aa"
+        },
+        {
+          "route": "/assets/api-chat-r01-DescriptionOutlined-D1DUDtwb.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 1134,
+          "sha256": "fe7da99a81f8f6173a749d014729f03a537ed11d665c25926b5b32ed67947f98"
+        },
+        {
+          "route": "/assets/api-chat-r01-ExpandLess-COYHfrkb.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 868,
+          "sha256": "90d6faabf9661faba0c392a545778ec8296684f3041fe69a689cffd9ec4d03f1"
+        },
+        {
+          "route": "/assets/api-chat-r01-FilterChips-DbsjpVn8.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 4553,
+          "sha256": "7bcabf6c823cf350c2589486e55f9b74d9378c3ec30f027901d0aac2cdf60763"
+        },
+        {
+          "route": "/assets/api-chat-r01-HolidayVillageOutlined-BjgrZjWk.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 442,
+          "sha256": "489beea89c348d6c1e14f944bfb97a4dc44cab8a22e31d719272bc30018fff3e"
+        },
+        {
+          "route": "/assets/api-chat-r01-Home-D186oAKT.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 6705,
+          "sha256": "7d9786007c2380006cf1022cd41df23bbf6b24487e437ef32302c65ab4d8e1a3"
+        },
+        {
+          "route": "/assets/api-chat-r01-InfoOutlined-CKCffxPg.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 638,
+          "sha256": "6b59a50fa830cfdb34940314bf06bccafe93bd7dd3b049d1219dae0f61068256"
+        },
+        {
+          "route": "/assets/api-chat-r01-InputSearch-BBHpESxt.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3197,
+          "sha256": "bacbcb6a06fbf075eeda5a1141e1075fe85754b0421a5dd1f31a4ad59dfdaea0"
+        },
+        {
+          "route": "/assets/api-chat-r01-KeyboardArrowDown-sXeKF1Xv.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 34794,
+          "sha256": "a23c0ca2f742332b7e1e89dc99bb7ecd5819db253493af61fb704f94919ddef5"
+        },
+        {
+          "route": "/assets/api-chat-r01-ListItemButton-BcK-1L7i.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3311,
+          "sha256": "9c949fcba6e0941bf673e2490c55df01743b569ab7b2559d9f9f107988458d97"
+        },
+        {
+          "route": "/assets/api-chat-r01-ListItemText-BzAD7dmC.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2252,
+          "sha256": "1115f76c20fde1d7cf7793e2eb162e1d45d08202b9ff928d254e69d80b57b3f7"
+        },
+        {
+          "route": "/assets/api-chat-r01-Login-PCJabIw0.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 5350,
+          "sha256": "06b1574ae5c9f4b2b54d74eb63bfed75b67fabe2778024de1f18d7b6ca1d3273"
+        },
+        {
+          "route": "/assets/api-chat-r01-Maintenance-BNNNYXcV.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3902,
+          "sha256": "44a60e191673b14021665303e33d7ab6d85ed974c15e81a491c7d81ee771c591"
+        },
+        {
+          "route": "/assets/api-chat-r01-Menu-DP-VbWB_.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 36145,
+          "sha256": "6116ad69279f85ed2abf5ce4a4f9a5fe749cf3f6a3384a195952a6b4641a1eae"
+        },
+        {
+          "route": "/assets/api-chat-r01-MobileRecordCard-BDEsop0-.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2881,
+          "sha256": "442f1198b24a576aeb741b35b93525a33c98a383a805f812d2d8bf3a7b00e5d9"
+        },
+        {
+          "route": "/assets/api-chat-r01-MobileRecordCard-D1aNypxy.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 52,
+          "sha256": "9b7422ebd80a33c1784ef108510616f8b28b8e5580dabea2a23e5c1ece1b4e3f"
+        },
+        {
+          "route": "/assets/api-chat-r01-MobileShortcutDialog-Dd5Oh_5z.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 6575,
+          "sha256": "487020aabc8cab4c9162ab49f011895ce9cc618314f0b409591ec9211865cb90"
+        },
+        {
+          "route": "/assets/api-chat-r01-Modules-BKcx81uI.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 88477,
+          "sha256": "e742cd9e23ba129d2a53a0b9eee5193e003a0b31f27e8a16ffda3144f0294da9"
+        },
+        {
+          "route": "/assets/api-chat-r01-MoreVert-DfZn_cbd.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 319,
+          "sha256": "3c2d24a554fc86762f3f7ca6de03f641f64437a407f1942451baacf5d0faa32b"
+        },
+        {
+          "route": "/assets/api-chat-r01-NodiaAI-C6K_n5uT.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 76358,
+          "sha256": "b194a85ba10268c47ece34724300265a257813939bafbfbc7041b0cb9931b986"
+        },
+        {
+          "route": "/assets/api-chat-r01-NotFound-0lmrO-l3.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2755,
+          "sha256": "6ea26d0d64af247b90b6c781503b2f45cd11739d7a66f3194adcb41525435532"
+        },
+        {
+          "route": "/assets/api-chat-r01-PaymentsOutlined-D8Z7eYPw.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 684,
+          "sha256": "7370ec563f2939067d22bc6d96a07c289b207a28cf3531711e0fccd4a9f88552"
+        },
+        {
+          "route": "/assets/api-chat-r01-PersonalFinance-CjfL6Ai6.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 76553,
+          "sha256": "0596e7d375bfa745ad9000bcac1cbc7510e6bd2fe1eb0cde3d77e84572ee06d9"
+        },
+        {
+          "route": "/assets/api-chat-r01-Preferences-DE3gRB0_.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 10509,
+          "sha256": "b715e40a9fadf476d74c1d610be7ba046247491c483cdb15ff3e077b848dd489"
+        },
+        {
+          "route": "/assets/api-chat-r01-ProviderContacts-BnSzd2za.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 28223,
+          "sha256": "81745ce06f81a8befde68f0bfcf35314b80e04408d93646af14e89f20f5b6d40"
+        },
+        {
+          "route": "/assets/api-chat-r01-QueryErrorAlert-BEi_r47V.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 765,
+          "sha256": "2027617d6189e892f88d1f8406e6bb6b9739c562ab023c5faf498ce56e3461df"
+        },
+        {
+          "route": "/assets/api-chat-r01-ReceiptLongOutlined-DVm3XBPK.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2385,
+          "sha256": "b16f28e3bafdf25dc8d9497563cde9b6a36b7cd9931aeb140ce36f3224f8de40"
+        },
+        {
+          "route": "/assets/api-chat-r01-RentalReservations-Bp-TPsKS.css",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "text/css",
+          "bytes": 17393,
+          "sha256": "8ea81fc9e8fcefe72d9b493883ade4166aefb451e397031293da86896f67cf29"
+        },
+        {
+          "route": "/assets/api-chat-r01-RentalReservations-bzLKG93t.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 485029,
+          "sha256": "da55404c75fc5173ff5f99d01b2e9578efa4c9e9c31b5305384ad690f25797e3"
+        },
+        {
+          "route": "/assets/api-chat-r01-ReportObservation-DbY9zbxd.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 10468,
+          "sha256": "07969d0a278378962ced4a84ae2676606f210985af925508f634624c95b094ba"
+        },
+        {
+          "route": "/assets/api-chat-r01-Roles-D_mp3Do_.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 23977,
+          "sha256": "668b5e8da77bd21d0e52bb4463d4a16b48b4ead6f038d1b379b0100880947da4"
+        },
+        {
+          "route": "/assets/api-chat-r01-RtlProvider-BuampWYT.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 294,
+          "sha256": "7c7c6c58b3fcb8e995beb52ae7319bbbaa0e2a9d5a59ba095a3076e2ac13fe15"
+        },
+        {
+          "route": "/assets/api-chat-r01-SecurityOutlined-B871MxGN.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 298,
+          "sha256": "b3c33f92bcca7c27549f49b8bc79b588e8526f6f678b08cc71bbffd3a7de4e62"
+        },
+        {
+          "route": "/assets/api-chat-r01-SelectMultipleInput-DpVyU0fJ.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 8543,
+          "sha256": "5e55abbc12b7ae27133b281c2c1c236081ad3e2669ef4939cfc4fafedfe71c3f"
+        },
+        {
+          "route": "/assets/api-chat-r01-SelectSingleInput-BFmV9BF3.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 24433,
+          "sha256": "4eaecfdffbdb7ee0448e1ae22ef8a60a216112d82a18db12d0dd1232e362eac5"
+        },
+        {
+          "route": "/assets/api-chat-r01-TablePagination-DJSdxJpC.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 7981,
+          "sha256": "2bcfd2799b15d582cd781a4ceb030e27dc61bee574836b27054662e363d65942"
+        },
+        {
+          "route": "/assets/api-chat-r01-TableRow-Co7q7sYc.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 6604,
+          "sha256": "bf0320d251d8b487ed459c80c730f96928aa91ee32f9cbebc3e8437ae8e10154"
+        },
+        {
+          "route": "/assets/api-chat-r01-Tabs-Ds5bE--x.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 15060,
+          "sha256": "3debd61909d9af36ca4a3ca3050faa3714fe59c38f651e41d1333936c40e3e01"
+        },
+        {
+          "route": "/assets/api-chat-r01-TextField-D0zmqPxX.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 45812,
+          "sha256": "ea589c8bfd2e300a82a64c843a669bce15a1a44a83f4f8401477ca58b2b9b61f"
+        },
+        {
+          "route": "/assets/api-chat-r01-TextInput-3Vag6-lu.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2529,
+          "sha256": "da358513b2874f42a7ff367f2c86718a970f4162bf480dfa648cec6e539e77fb"
+        },
+        {
+          "route": "/assets/api-chat-r01-ToggleButtonGroup-CK1X6LEi.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 6720,
+          "sha256": "90f90ad69bde151956f9467afc35123b6b863af3d100f4776a6c33000c082579"
+        },
+        {
+          "route": "/assets/api-chat-r01-TranslateOutlined-Ca8L_XBH.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 459,
+          "sha256": "8c31b8dcead1781961fefa751bce89d4195fb28e7cc350f6a43e5b1ce45abc8f"
+        },
+        {
+          "route": "/assets/api-chat-r01-TranslationInput-DqNMA06Q.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 5894,
+          "sha256": "233584d6ddb18f2ea66db88f99e2cc1432125ac394f1816ca212dc4e69ff57b5"
+        },
+        {
+          "route": "/assets/api-chat-r01-TuneOutlined-DV7pcmPJ.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 287,
+          "sha256": "ba71265afed820dd3a18df786d84e3768eb3a2c35394260d0094c31658625a58"
+        },
+        {
+          "route": "/assets/api-chat-r01-UserScopeSelect-CONMpJl2.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2973,
+          "sha256": "217b35e6991eab1944561704f97aed9fdd02a1dc84845a038ba19608f57e873d"
+        },
+        {
+          "route": "/assets/api-chat-r01-Users-BhVw8qHi.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 22191,
+          "sha256": "9b01a3ac088ec109b4801c156a8718a1e682a9cd14826cae8fc3f251a8db8d13"
+        },
+        {
+          "route": "/assets/api-chat-r01-VpnKeyOutlined-DftH8Fh4.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 4972,
+          "sha256": "6ede515398ce89297ccae267b89a9263b104fac53eeaeae0e8e0ecd9d186d9fd"
+        },
+        {
+          "route": "/assets/api-chat-r01-api-BkOtsa5I.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 591633,
+          "sha256": "1c1f0d9008b4e85c44e7d3b7504a037e914c9cb4e8eace6210d4a09342b38c1d"
+        },
+        {
+          "route": "/assets/api-chat-r01-attachmentSchemas-pCTBzWpn.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2232,
+          "sha256": "2bcc4762446b602e2a3656154ecebce97ea3e5f6e4e88de74413f17c52e56cc4"
+        },
+        {
+          "route": "/assets/api-chat-r01-codexSession-ZKl7MzvU.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3177,
+          "sha256": "6e41bf2f9be6acf4a68340f873f5f47ece128c5f63f3dbac867d3527af60aee9"
+        },
+        {
+          "route": "/assets/api-chat-r01-createSvgIcon-Dm65KkEm.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2441,
+          "sha256": "e247337aed94282db7e289f2d5cdef276f886cfcea68221ff25414d628d9c113"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-300-normal-C46oWILc.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 13708,
+          "sha256": "80f13c410ec41f210a5553e7f420f8a51f459180019274df0b3faea314916f90"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-300-normal-CsNfKS1n.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 17840,
+          "sha256": "febc375e590e3021cdfa7377bed436a99abcd11205833ac3b22f3ac5353569fe"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-400-normal-BwCSEQnW.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 18356,
+          "sha256": "38702875fe179437d200e7ba6f7fab4d497ffe48117ef332029b2081751186ad"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-400-normal-CW0RaeGs.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 14200,
+          "sha256": "4ab51eb2cd7305d177187908d6397474d4520663f6c6e572feb0a64f4fa80006"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-500-normal-B9HHJjqV.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 14304,
+          "sha256": "19bf1984956517c35c2bd35b6cdedac12a21d6fcd3596c614ecdfb88b648909d"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-500-normal-Dr3UlScf.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 18520,
+          "sha256": "7deb957e430b780ee3272d801af4f9f2211b1330ec40a312a8f25309eacb4034"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-700-normal-CUSSCpQX.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 18504,
+          "sha256": "af422a448ac00679a8dbb13532db3616829c5a35b58d3eeea5903ce17ad2e36a"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-700-normal-DvUfVpUG.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 14348,
+          "sha256": "35c5efa0e5daa52ee5c6500f5be354bf751fb65c4e49e1d6806c6eb5883e8fe9"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-ext-300-normal-COYJju1g.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9940,
+          "sha256": "182f079f9d10e83425f021c2b2607a32e66a08331d91e67a1a46cca3fa72ac7c"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-ext-300-normal-WGwOtXxi.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7188,
+          "sha256": "d45c7f5d73861db15ec16ba6c4a5e29fda548b32d382165a4afe3f9034ca13e2"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-ext-400-normal-BjWJ59Pq.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9976,
+          "sha256": "3d63423c3204f61bb196d1ae3729b7f2871d87abd4403d198f4810923888c016"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-ext-400-normal-BtiwyxMk.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7364,
+          "sha256": "962730c6ff7595f9499b0d963a3bccb2139d793f0fb31fbd87aed1881c020e0a"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-ext-500-normal-BJfUCQsA.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7432,
+          "sha256": "e0a1d21584ba00798a3dbe90ef5f8a162741d454f52ab66630f9dc41da372b3d"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-ext-500-normal-DR84L5F-.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 10068,
+          "sha256": "e1f67472aa96c6f60969c696ba8a9d36ed8ea26c2ff5c3e27ee29c664911575d"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-ext-700-normal-BLI3TTWz.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 10012,
+          "sha256": "56084e69490970432de58b4a2406ee4daa1f58d90f9600ae3fda0e895a6355e7"
+        },
+        {
+          "route": "/assets/api-chat-r01-dm-sans-latin-ext-700-normal-CJIcxD6K.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7452,
+          "sha256": "f6640907b94df0d227f26e2fcb6db2497d6c44c4b68f731ea1e06f5b45e2e91b"
+        },
+        {
+          "route": "/assets/api-chat-r01-getThemeProps-DOi9KGNN.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 217,
+          "sha256": "7a6962ac002e20c9db0fa3ceb82e98d5cbf98efaea921468d7a94cbe754dc483"
+        },
+        {
+          "route": "/assets/api-chat-r01-helpers-BetwoEOv.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 984,
+          "sha256": "6501cf8d05c15d5f811325aeef079d1f281c47a3b39b3827fbc8e2bce09a0370"
+        },
+        {
+          "route": "/assets/api-chat-r01-hooks-C2VQNu7X.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 70032,
+          "sha256": "af471b766d8b663594f922abc48d49c985fe8ca1e00e9fd9e2bc6d2e251f7e21"
+        },
+        {
+          "route": "/assets/api-chat-r01-index-C5lehWbL.css",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "text/css",
+          "bytes": 22817,
+          "sha256": "b28d9f785e9dd061036ebd64b93c593b8229c498e36fa689c77f9d5fbcbdd99e"
+        },
+        {
+          "route": "/assets/api-chat-r01-index-DqOML5J1.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 357493,
+          "sha256": "23ea97d8bfb36ac6e57e5241b05eb81a40109218a265b5b4ecdf3f5ab08d43d5"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-300-normal-BnqRxXuy.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7812,
+          "sha256": "2f4d3f2e59e0dd665765f7e6d52f0cd8173a1ec1732b544622e3a4780ad3877c"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-300-normal-LR1W_oT8.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9816,
+          "sha256": "3992f7793def227d01ffa09136961b3db4f37fa56edf4703baf8a0bd7df18903"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-400-normal-HOLc17fK.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9780,
+          "sha256": "6e441a6c94788318fa02b6d0a633aa29eebe27b69c6567eb1e59b4edc68ed70e"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-400-normal-obahsSVq.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7712,
+          "sha256": "f0bb586459ce8f09b238285040f17e3e9e9538b2c5a7aae0775194e33c36c3c3"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-500-normal-BasfLYem.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7900,
+          "sha256": "b77a86ec16aadc157f4a99e8898d71cd75ea264753d9bdf13f962f8c3988cbb0"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-500-normal-CxZf_p3X.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9940,
+          "sha256": "5be18e0345781cb882a267798518553c0e915174fc70731ab5f085ca64ba1ebc"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-700-normal-CjBOestx.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7904,
+          "sha256": "5917871d3cc970d8ce195101cbf65c1f68ec948022eb6070030342bb7edfb3bb"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-700-normal-DrXBdSj3.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9912,
+          "sha256": "72b6daa49173e531027d8a260ef128e142a165811cab6a2875eefe0c3c58fa0e"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-ext-300-normal-CgCALhwJ.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 10356,
+          "sha256": "71090ccd2581f26325c9a702e0238a5a2364e311e94f6315cdb773c8a2e42244"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-ext-300-normal-RId2JxDB.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 13400,
+          "sha256": "1d7d39494011221ffe9e83dbd430fd633c95a20e3751af36c19b8e34bd188851"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-ext-400-normal-BQZuk6qB.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 10232,
+          "sha256": "ef572f9187a8be018d9d9c2c6b77c1f6cb2af4199f02fc16c292ea10ab25a2cc"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-ext-400-normal-DQukG94-.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 13336,
+          "sha256": "5cb2f1cc0936f89a42ceae34f5a5720248dc5b8114c12b1c33a7d2ef01a9b6b9"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-ext-500-normal-B0yAr1jD.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 10432,
+          "sha256": "1c2db92d3cd9b237ca7c9c07af556d542f28ded1db54cd4382cf776501c5291f"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-ext-500-normal-BmqWE9Dz.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 13452,
+          "sha256": "e250c05aebcf49971e0b25f476992dd463c28c0292ebb204d9db542fb5066ca7"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-ext-700-normal-BjwYoWNd.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 10496,
+          "sha256": "a46b99781170971e2c99a87ff7ee9f5cf90a9dfcd18175e1be6300201d030123"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-cyrillic-ext-700-normal-LO58E6JB.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 13408,
+          "sha256": "0f3d4be2bd7018f78fa3484a5f6e9d8ce567689426643b84a47e8cabb91e5f16"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-300-normal-BrhSP0vQ.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9996,
+          "sha256": "2fa04efd6f5b6d43ab685326e7f27245cca528d701d578ee4241c1836abc85bb"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-300-normal-DmGD3g_f.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 8004,
+          "sha256": "88669b6ea20ccf52555d032740c5a1b7f550f6d54ca0acc0969cf938fafead55"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-400-normal-B4URO6DV.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7776,
+          "sha256": "c15ddd00a9927b56f5c655a41f976f79bd848a20cce91fc14227751872a1cc27"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-400-normal-q2sYcFCs.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9924,
+          "sha256": "bdae9d28729e8c68587d5d54e216d771a40d7a6800e824586a6e2f570c2f10df"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-500-normal-BIZE56-Y.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7920,
+          "sha256": "cc197d79d33a3615a047baae85f4d1957f6f98b8898313658e160b1d519b1b6f"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-500-normal-Xzm54t5V.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9980,
+          "sha256": "86d55a4b1b9cbced7e61e76d5d44cf49d0bd1c814d3df2de67b7136ab4fdcece"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-700-normal-BUv2fZ6O.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9980,
+          "sha256": "53368f53d5fc43381dcc45c8533ba2476f80337136313525f96dcbdc736616a5"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-700-normal-C3JjAnD8.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7920,
+          "sha256": "737c6c91cd60372d30e6540096ada83c89c9b4613cd7472e3366bf2e07ad99f1"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-ext-300-normal-DLbbeei1.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 7128,
+          "sha256": "3456cf2a25f7772120e265af7604c29c23da950bf55ec81a99688f2c829ae033"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-ext-300-normal-l2DDyC6M.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5348,
+          "sha256": "a605c6297c3a4193ce503d8ffbe9d8f9575343a186f2c94fe2844d5035a8c5e6"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-ext-400-normal-DGGRlc-M.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5264,
+          "sha256": "eadedd9e13c2582430a9fb1519eb86152fdabb483a6f66d90f8d8a52e977a1b7"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-ext-400-normal-KugGGMne.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 7064,
+          "sha256": "4f2b6f92ddfece8812e79774d446218aa6e0773ff8c2d31130fe2bdc23bd22d0"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-ext-500-normal-2j5mBUwD.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 7192,
+          "sha256": "c85d11bde719108cc9a4f6f5b008087f6c36493b47395580d4f5336182b0f0c7"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-ext-500-normal-C4iEst2y.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5428,
+          "sha256": "75a9ec9383a3b7a7bf7cfb94f64edf38d9cfdc5f7ffa0cbed2733627a6e4426d"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-ext-700-normal-BoQ6DsYi.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 7216,
+          "sha256": "b26ed64c9135a750ad580b92152bedeef90771e74e18f6f7759a6d7adb0f1b5d"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-greek-ext-700-normal-qfdV9bQt.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5444,
+          "sha256": "b7b2732ebc981b30a5463ffc850407649dba41e625aee124cc63293da4547629"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-300-normal-BVlfKGgI.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 23916,
+          "sha256": "be0276550393a72b94d673505567dceba801511d5e1ca5a87793190dc5d5a6ca"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-300-normal-i8F0SvXL.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 31012,
+          "sha256": "635cf706b3a3528c1617ce8edaa4e767489c1c61320a97b4aa649495ee49ac2a"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-400-normal-C38fXH4l.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 23664,
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-400-normal-CyCys3Eg.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 30696,
+          "sha256": "e20fa0b4fd2dd26e4d14b3ac3cc922509c3a63fa5e910e90c614544aa042dd45"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-500-normal-BL9OpVg8.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 31284,
+          "sha256": "9b42c108da48b5ed55a3072e815ffee2d271562e6c0dd6998910e8f9c09e0a3d"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-500-normal-Cerq10X2.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 24272,
+          "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-700-normal-BLAVimhd.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 31320,
+          "sha256": "7c5ed5655730de337704d3fc94628515cd7e3d8d32368871709bf56ac0397e7a"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-700-normal-Yt3aPRUw.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 24356,
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-ext-300-normal-CPgO9Ksf.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 35880,
+          "sha256": "b11def546ac052fad7993e39c53801b55af99b0fd51a9ac0e72884b5c3fcaa3f"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-ext-300-normal-Dp1L8vcn.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 48608,
+          "sha256": "0d9db034891287b2bd0c896a8e3cbf3f4594b385d95388c9841382cb3ef03bd6"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-ext-400-normal-77YHD8bZ.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 47560,
+          "sha256": "22ae8360fbad24d2af7c6c9898a346c881774dc87f7cf94bd262c48ad58d7116"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-ext-400-normal-C1nco2VV.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 35000,
+          "sha256": "6744a7f509ebc6ab220a6cd4ea77e898adf014f03d88dcda5d45d8a9feefb4e9"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-ext-500-normal-BxGbmqWO.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 48492,
+          "sha256": "30d2903ce97f8a89ea0e9c083b42cb8bf97e7bbb5607e7f00352815f19cb0d5b"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-ext-500-normal-CV4jyFjo.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 36024,
+          "sha256": "2c6fbc42d315528beb06c1096df45487bf4186c4b78b8111d12c9c951f8acca2"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-ext-700-normal-Ca8adRJv.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 36244,
+          "sha256": "143f9504f1377012aa3e39c90c4354ef429cb0494b9ac0e1437f1a81e5412236"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-latin-ext-700-normal-TidjK2hL.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 48632,
+          "sha256": "1761edba32014180deab3dbbe3f7156c64ef6f34bc76313ba31ce227fc9ff391"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-vietnamese-300-normal-Bdr24Bqb.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5060,
+          "sha256": "1e3cde652acfbc67194e84d2068953d4799df8b125089f11687142c39603cd7f"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-vietnamese-300-normal-DDGmYYdT.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 6588,
+          "sha256": "6305c5e2d150a513007f66f24d4ea5eb49a840cf59e46b166718cf845183b274"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-vietnamese-400-normal-Bbgyi5SW.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 6500,
+          "sha256": "54aa42d325bcdfd623ecb9eac4a5e3c6420c63d7b86e9d8545fb479f653beb57"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-vietnamese-400-normal-DMkecbls.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 4972,
+          "sha256": "547ad9fdaeb0ae43487f4b8a02e47c36553c0c0cb73c8aa98f93b7b615f6b55d"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-vietnamese-500-normal-DOriooB6.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5112,
+          "sha256": "44e36aa5a8f12130029a29bb0e6695d0262b67446ce321e878b1fb56162b5de6"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-vietnamese-500-normal-mJboJaSs.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 6596,
+          "sha256": "18a4a09f751671cd8929d7c66e8fe7d820b511c36e51cf6047ffceab88eec4a4"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-vietnamese-700-normal-BZaoP0fm.woff",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 6632,
+          "sha256": "412023ab2f41333b373e2c6eb2a3ebab806fddd610015d2ae8cd4f4314c7ba92"
+        },
+        {
+          "route": "/assets/api-chat-r01-inter-vietnamese-700-normal-DlLaEgI2.woff2",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5104,
+          "sha256": "5fafa3829a16d9ea5ac3a67c51e54186353122790b604a3e361f96cab188da8b"
+        },
+        {
+          "route": "/assets/api-chat-r01-isMuiElement-Bj9QvF-7.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 258,
+          "sha256": "95f6ead39ba51348bbbd970a8068afb0595e29c77e432e70bc723ed045381105"
+        },
+        {
+          "route": "/assets/api-chat-r01-karmatic-arcade-Ce2JsoxT.ttf",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "font/ttf",
+          "bytes": 56908,
+          "sha256": "fc570fe4c3b5a324a7f52a4b52362a6c6ae386b14d9c148eeae6a161e705cf09"
+        },
+        {
+          "route": "/assets/api-chat-r01-moduleIcons-Cm-5a49N.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 24284,
+          "sha256": "acfd535c6146597be7f32a0b39b416731e7482e90c2984aaeda91dba55a2b2bc"
+        },
+        {
+          "route": "/assets/api-chat-r01-phoneNumbers-DSVf9Ws0.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 195570,
+          "sha256": "ab572a205c5ab37e9afd49ac9515e517876bfdbff547bdbcd5d121b432538833"
+        },
+        {
+          "route": "/assets/api-chat-r01-queryKeys-xo688uGf.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 649,
+          "sha256": "066ace08a984b8efc470280a4121eca66d99f82a46be3a928f8e0ec547f81f2c"
+        },
+        {
+          "route": "/assets/api-chat-r01-react-dom-Cijqqrqf.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3616,
+          "sha256": "80d67d8a74678b8d1c84f9f7c97b4d7df298ccee32d9881b29a1c4b4df6fecbf"
+        },
+        {
+          "route": "/assets/api-chat-r01-react-m8Ctigzq.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3360,
+          "sha256": "50019ffa06c94fb659769df19cb5ff840860297364d7fe49b349cf7f4be30ab4"
+        },
+        {
+          "route": "/assets/api-chat-r01-reportSchemas-BFmoOvDR.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 4761,
+          "sha256": "6c5c408ac0f52e5bf7f7319ee8311e190a67c25272708dddd628a29d221f7060"
+        },
+        {
+          "route": "/assets/api-chat-r01-rolldown-runtime-B0Z9INg1.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 901,
+          "sha256": "5e9b0d884d2ebb14e241ab38b43e41efb61bce2e74d71507b0b95b264fba4047"
+        },
+        {
+          "route": "/assets/api-chat-r01-schemas-B3K7Kzrd.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 74180,
+          "sha256": "567553d7f1a650c487d02ec993ea93e5a70c08361cabc5aa2fad6fa13eed03d3"
+        },
+        {
+          "route": "/assets/api-chat-r01-skeletons-CDIcoxp0.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 18950,
+          "sha256": "f7160d3971f589bc3df569edd693d7c2c61975b389d57a9a0a79f5dc1a7737b6"
+        },
+        {
+          "route": "/assets/api-chat-r01-styled-DopbwKGd.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 74,
+          "sha256": "6b7e34fdf97c0a231df32089e5d4b85823e33f81a03017ae362c449ac511e4d3"
+        },
+        {
+          "route": "/assets/api-chat-r01-styles-BEWzTIjA.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 81242,
+          "sha256": "ba080c46eaec30ae9a054298cf87f65ba12eced2d25a0296d8d1fd5d52e06c81"
+        },
+        {
+          "route": "/assets/api-chat-r01-styles-D9a4nNqa.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2466,
+          "sha256": "29084ee7a04d4eb0e4957fb9fc5e0cb63d1c708d33619989e317fd797a35487e"
+        },
+        {
+          "route": "/assets/api-chat-r01-useAttachmentDrafts-D9J_N3ms.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 9441,
+          "sha256": "1fdcec070c2f11f40abd56a8b9bc28443f76606fe774df9e4e02ac011239d19c"
+        },
+        {
+          "route": "/assets/api-chat-r01-useAuth-Dy0-cCtM.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 864,
+          "sha256": "384214fef23f7b1a4b492cd9c4d25e2596e86c7c9c9162d45b19a5bde4e36768"
+        },
+        {
+          "route": "/assets/api-chat-r01-useGeneralSettings-BJZezahg.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 820,
+          "sha256": "7e417f90859c5ab8b96c7db5bddcb5f754763e986da5956da2dc267d737544b1"
+        },
+        {
+          "route": "/assets/api-chat-r01-useInfiniteQuery-C5OhuPQ3.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 1165,
+          "sha256": "44f8454769437bbc4699f019fb5de57882209892e1d61bd41d31728fdc33dce4"
+        },
+        {
+          "route": "/assets/api-chat-r01-useIsFetching-BitLIq5V.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 376,
+          "sha256": "c7114f4cabebdea60f0336b6e81e8770b795a0607518d5105dd6696a6f50687f"
+        },
+        {
+          "route": "/assets/api-chat-r01-useMutation-DbaWWFwC.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 8353,
+          "sha256": "4e6effef6e39b90c6561f0446ad36ada52b85e4dbada8ba12d6f38cc53fc5a7a"
+        },
+        {
+          "route": "/assets/api-chat-r01-useMutationState-BHuZYlKF.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 700,
+          "sha256": "d0430ca974ff7895a0e573a6524413ecc85d3f2f8aa638a6f71858819a86608b"
+        },
+        {
+          "route": "/assets/api-chat-r01-useObservation-DUjhS6LB.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 6190,
+          "sha256": "a2ba37fb2c75847761eb1c71646cb1eba66d44301e7c4805410d564434342f07"
+        },
+        {
+          "route": "/assets/api-chat-r01-useQuery-50SsRPgI.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 8882,
+          "sha256": "a28972381dcb53aca81f49c738ebf226db7c9df79cce40f67025314360ad3d7c"
+        },
+        {
+          "route": "/assets/api-chat-r01-useServices-D_oXpW12.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 27455,
+          "sha256": "0d3d66f7a9f1ffeba314b8013377122468d4730fb9bd85835939a4be765ddf47"
+        },
+        {
+          "route": "/assets/api-chat-r01-useServices-sy2kYnRL.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 9017,
+          "sha256": "e23b32577e9b927e42a728b9a06621be787e0e6fc5ea70544f4a6d834818e928"
+        },
+        {
+          "route": "/assets/api-chat-r01-useThemeProps-DTpP-irU.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 243,
+          "sha256": "0ca3406fde1d1c7a1df6a43f3e3ee446a868a333583fde657a5d71aba2c2e7c5"
+        },
+        {
+          "route": "/assets/api-chat-r01-zod-QDNLX9Za.js",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 40405,
+          "sha256": "57044266fe690f1631d9c95feb46915f79a1ac4051121ff280e021167f58f356"
+        },
+        {
+          "route": "/favicon.svg",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "image/svg+xml",
+          "bytes": 8577,
+          "sha256": "8996a3eb7f03cd0b72b67ef2f9e2d56cbf2aaf62930577e5a6389e61ed6f9336"
+        },
+        {
+          "route": "/icons.svg",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "image/svg+xml",
+          "bytes": 5031,
+          "sha256": "b45fa506195cfcdef406ba9f0c77b36ddc1a7c224040926ec70abc2fdea7b93a"
+        },
+        {
+          "route": "/index.html",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "text/html",
+          "bytes": 4498,
+          "sha256": "f0718768d60a492f7755d43a075eb27866e6c346027ff4de0388804792130d0f"
+        },
+        {
+          "route": "/logo-transparent.png",
+          "kind": "candidate_asset",
+          "status": 200,
+          "mime": "image/png",
+          "bytes": 6314,
+          "sha256": "4d057d25a58303406fbe68a2494eef2f7ac9dd4020cbbedb077cf2ef6f66eb65"
+        },
+        {
+          "route": "/",
+          "kind": "candidate_SPA",
+          "status": 200,
+          "mime": "text/html",
+          "bytes": 4498,
+          "sha256": "f0718768d60a492f7755d43a075eb27866e6c346027ff4de0388804792130d0f"
+        },
+        {
+          "route": "/settings/ai-providers",
+          "kind": "candidate_SPA",
+          "status": 200,
+          "mime": "text/html",
+          "bytes": 4498,
+          "sha256": "f0718768d60a492f7755d43a075eb27866e6c346027ff4de0388804792130d0f"
+        },
+        {
+          "route": "/tools/nodia-ai",
+          "kind": "candidate_SPA",
+          "status": 200,
+          "mime": "text/html",
+          "bytes": 4498,
+          "sha256": "f0718768d60a492f7755d43a075eb27866e6c346027ff4de0388804792130d0f"
+        },
+        {
+          "route": "/tools/business",
+          "kind": "candidate_SPA",
+          "status": 200,
+          "mime": "text/html",
+          "bytes": 4498,
+          "sha256": "f0718768d60a492f7755d43a075eb27866e6c346027ff4de0388804792130d0f"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Actions-BQ4oIlAZ.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 44451,
+          "sha256": "d996381d3b28d2e3478fd94ecdb0a457bb6333582422c02fcd81350657d1eb18"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-AddCircleOutlined-IRIMur7L.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 291,
+          "sha256": "3dd321d0eab82b9dad55d9ad03deca09f4df26c521c0b1610b00e35fdb2917ef"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-AiProviders-DEE21yg8.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 123026,
+          "sha256": "32ecc396da190ad95492095dee8d21b0286395022eb2d3deb2014c0bd27fef16"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Alert-BgOFrQNH.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 11510,
+          "sha256": "d5163fa16e98419a65b3e0bfaf5dbf77a18be9ff7e5efa46d9888b90044c08d2"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-ArrowBackOutlined-CW2S_cJw.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 251,
+          "sha256": "2ae167d84e596d38c41de9a765df2be0acfa638f4067bec9f75a3af31668bdbe"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Attachments-BNGChehR.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 9662,
+          "sha256": "7e6e11bb964e6f373a1f03505b770eaacfc48d691c85075d9d1af38fe076a18b"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-BaseModal-B6981Pjh.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 11913,
+          "sha256": "04c7b15d51d498ab79808c535a2d01492994f110bcc171f6bbdb7c24b028c43b"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-BlockOutlined-CRIfPuDT.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 420,
+          "sha256": "07506a09be6f594e510d5abc42ac048e47c0133233e80f8b2088bdc31cab4c6d"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-BoltOutlined-BfeykLju.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 545,
+          "sha256": "9726f41e524a175e19d4c3a2b66cfbe4b85c759a239d8142b23fe991e64b60e7"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Business-qzdI4ARE.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 14795,
+          "sha256": "e9ea184efd8747f83e968c986b25b23a3cb4f657543173a15252179c24a75417"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-BusinessCollaboratorModal-C18FhNDl.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 25094,
+          "sha256": "f13e51c93bdd6fc9df1d42af48e96a8289f7cd8e63412d0e94f61bc723002fc5"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-BusinessDetail-DPrltJTZ.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 238922,
+          "sha256": "85e0daf5d72b738e984eefe2a819016f3886731f592112fcad091f7f327b7d51"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-BusinessPagination-CoddeSeU.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 389,
+          "sha256": "add7d17e9cb2b8bdcbf9e764f3b78bb753bddd9957cedba8486450fd2232fcfa"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Button-eRm-pP13.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 120414,
+          "sha256": "54fc178302c0ba215040c4fa75fc3e7f150d36586f5657351f36e6fe38c4d1b2"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-CheckCircleOutlineOutlined-CHf2ntLY.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 370,
+          "sha256": "2bd7011bea92064aaca48da9fdf18d6323c2a500b80952b13095b24fffc84c77"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-CheckCircleOutlined-CvyvB04L.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 363,
+          "sha256": "77b4182f2fa943003b0f3fec49c2d96517364251af37ca9869b7c1a9f17bd71a"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Checkbox-WHS1IiON.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3131,
+          "sha256": "3789e0b7bdd07aac56d3b05b4a482ed4b8aa8109ce35b98fcf5fb98bac8f66bc"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-CloseOutlined-BBEsiqZ6.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 291,
+          "sha256": "869b5f68b44958f4c3fbb6f80c4817ac08ee0839af4b0b55430486dfd1cb4094"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-ConfirmDialog-B2ipc8Cj.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 4075,
+          "sha256": "aa97f0d6844dac514930f617ba8de32ab786f13401d0242cb892d52e3cdaa6f6"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-ContentCopy-CIQgZO9R.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 309,
+          "sha256": "9117776688d4d25133e0ca1791f418d971f1159802b4ba0669c2541046cbd9bc"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-DateInput-CKT4Bhiz.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 57873,
+          "sha256": "6e76ecdb0c531b6af34f0a3f916fe74d9f3f9b1a812aa1bbb8540183622fe437"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-DateTimeInput-BpkkSDcX.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 16508,
+          "sha256": "67e02ae569fe9b619a87a2f4ec87bc4a205bb3f4f829802bbb29dc4b064d8de9"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-DeleteOutlined-0W2gd6mO.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 276,
+          "sha256": "5b5abf41adc3e79f27d6fd9d07f115fc37a4864d9aef03b6fa498ca373d19153"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-DescriptionOutlined-WX1v-C-q.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 1142,
+          "sha256": "73be1c1015ceb638eac506f09c08c9569877e0bc3bdce07d6a6d06d343c4bdbf"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-ExpandLess-BYQyv9cN.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 884,
+          "sha256": "5417eab943b34c01916a76a752507ca8b1217aae40ba59f1f77bb1ebb173d5ac"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-FilterChips-Bj1EM1dw.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 4581,
+          "sha256": "86934197c26d82b6b04159b81886fee3704b1e494d14dcd5063bd4f31db0dab2"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-HolidayVillageOutlined-D98TLTeS.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 450,
+          "sha256": "46430328bbc65a21bae5babf1ebcecb3bc02a564c6ade1ad225e7a167d027a19"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Home-CCcxTeiI.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 6741,
+          "sha256": "f932bd95a789bc46fac3b5505dd476706284531d2046b0a10eeb6e4e9f5013f5"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-InfoOutlined-CDHp-d8n.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 646,
+          "sha256": "f63bb99bac0977345594dde44dd22166097940e1daa6e088fd9643559dbd8be3"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-InputSearch-4Cv9ZCro.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3217,
+          "sha256": "f94b5fd075f274991a380f892232ccb5eecb102b74d2af327ea1b88e57ae83a0"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-KeyboardArrowDown-DW8L2bkg.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 34822,
+          "sha256": "86a0a238670defc4165c061bfb7f471a75aaba28035aa046174d74f29f9f3e4d"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-ListItemButton-Bx08XV48.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3323,
+          "sha256": "59a067de3f0031f03924c77f80d8d8c0ad338b9e63dc6c2dcf4b7c9cb67f2731"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-ListItemText-Bv6mUGBn.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2272,
+          "sha256": "a9fd9a5a0072fb7ed8c735040fce1f3b8229f574567a35f33374372449f48457"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Login-DoJQq8Qx.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 5382,
+          "sha256": "506493419948a6462a373f0d1012897a95d8a11a1c47e061df855eb374aaa52a"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Maintenance-BiReaFU6.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3914,
+          "sha256": "b4f25457b7b37d332eed06957233af0e2411b6d4a47ad1c4340160a59f8d5302"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Menu-DBOCrIge.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 36165,
+          "sha256": "ac377d8df0ad30ad21c9393fd127425cfca98537a679d563171ed59ef06c7629"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-MobileRecordCard-BT2mA_me.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2917,
+          "sha256": "34c8799594e872d9aaba4e4cfeb40ab755e10837c179771d78806b0bc9ca484a"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-MobileRecordCard-SIZ-z0eu.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 56,
+          "sha256": "f7c88280646c2de12c2c5c69f3024ebaec2bb9bd872be964573fe1e178bed4b9"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-MobileShortcutDialog-DHB2eNj6.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 6623,
+          "sha256": "fc67b1bf21fb73c38488386e21da5625464c317655fa2bcef4c2fb773794cf65"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Modules-Bcslfd8a.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 88621,
+          "sha256": "4e731207cab5ffafff61ffaa106a7603835cc77060ad27caf211834d5affbdac"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-MoreVert-DnYbhxKv.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 327,
+          "sha256": "91903c922799ba1dc5edf813e658163d26bc2577d01b2d05fd45e6a9cad07908"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-NodiaAI-B4s2cdcn.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 75084,
+          "sha256": "d21a9d0a53c58e9659ae6cccafe1eb8c92d9baab807eefe83f48757413f1595e"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-NotFound-DOfnhEs1.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2763,
+          "sha256": "3c72dc5a5955ed17a0ffbe5a6475be47de6b00a562c5bc1dfed54f16b85d7513"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-PaymentsOutlined-Bf7RklP7.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 692,
+          "sha256": "53b66bc51a5aa0df909d815c03e1f015c2ffea3bbd20463b7eccc780a9774fd3"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-PersonalFinance-7G3vcMug.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 76689,
+          "sha256": "e0d23c07d70f324378c354252648f5cf7e5d1e3a53004bb8154f6741a735037e"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Preferences-DFYG-oOR.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 10561,
+          "sha256": "9f28f4c0e1c766fec5f6f1402e951434aa248aa094a8d4f32df9424f06d8376e"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-ProviderContacts-BBlM6f6E.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 28347,
+          "sha256": "070d7c9c1e50a51ca39a6b2066a4466b51db0204852b80177e13b9d57fe413ad"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-QueryErrorAlert-BSptc3rQ.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 773,
+          "sha256": "3e066465e5e32cfc80640ffc455ba00e30bb94d9ce0ba8a84c4a09fbd97a5ba5"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-ReceiptLongOutlined-xtcISwt2.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2393,
+          "sha256": "2c616ba664889e426f379ac2fccf1f1193385b79e4ae35953ba4a4c4558fdbfa"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-RentalReservations-Bp-TPsKS.css",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "text/css",
+          "bytes": 17393,
+          "sha256": "8ea81fc9e8fcefe72d9b493883ade4166aefb451e397031293da86896f67cf29"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-RentalReservations-DGm-z9x4.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 485201,
+          "sha256": "cc1f235b712bb84010bf7897aebe5cd5d77134d4c8444b4e6d0a431535948f36"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-ReportObservation-MdvEAIIo.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 10504,
+          "sha256": "58dfefaf4416e6317fbd6223ed88566999688168ad587becba2626127b11be9f"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Roles-B1Bipu4a.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 24097,
+          "sha256": "aa0b187ff478cbeafd8b2956e28122a33b75600d1f06054fd0d073b1efac2341"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-RtlProvider-CWMnwTzh.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 302,
+          "sha256": "a2f367e32eb9da55b99456695d52581de6e99c88361e5b1e44e1fce7213bdc93"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-SecurityOutlined-BX3nKUA8.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 306,
+          "sha256": "34392bf3427df6c57a347d571d9b4754f992e1e54a1d6e8353a381f8cf86ebe5"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-SelectMultipleInput-CAmEUrqc.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 8591,
+          "sha256": "431c8c8fd4c1cbd51d9d4052ec409d213a32a6306cadbb309bc0703a2a904bbf"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-SelectSingleInput-BesDNzGE.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 24477,
+          "sha256": "5e7fba41127aa0c45a8ff771d20bc8796f7bbebce9345ed586017bae14d08a8a"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-TablePagination-uIPUqknW.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 8013,
+          "sha256": "0df8e2ef84e5cf649f6dcd0e64cd62f87f3867710192084c1466d2460b28a34f"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-TableRow-P04b5l4M.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 6612,
+          "sha256": "ada6c8614365052805c148b54db2c23cfe74641cc90d2878659f1cf3fc0ea98a"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Tabs-BA60Ilvn.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 15084,
+          "sha256": "aee30681af2da4209cbea4fe83c9f784d349e3bc5ec50ed130037eefb020822c"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-TextField-CHzruH3n.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 45836,
+          "sha256": "ae8b8261e9b37756103c2ad2fdbe01ce5f5868532ccd675fe28f00343b5f070b"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-TextInput-CL2QprJ-.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2545,
+          "sha256": "41c3e018598d31152d9267fd8a65759508e367b31350c1e530d005c885546e1e"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-ToggleButtonGroup-B8Qh_XgS.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 6736,
+          "sha256": "25b43a5d7a9d7c8de8d4057f81bef1e20cba21bdd20fb4687cb26c7c8f621623"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-TranslateOutlined-C3qAlzQu.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 467,
+          "sha256": "e21c15fade64ca1426d898d52a37dfc7b602cdced33f9c1bacc03e1c921d9f44"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-TranslationInput-C_1U3kvr.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 5930,
+          "sha256": "14227832f6ce80ad5ac8dc60f123f7b0407986b9311c5fc6cd4b6a2ed9346c4a"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-TuneOutlined-CO7lyHq9.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 295,
+          "sha256": "514b05095dcb25e925c4592bf279ed1ad5e6a3261a6a616e23856fcbfcd816e1"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-UserScopeSelect-9a3Ow061.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3001,
+          "sha256": "f149f4650324478d8c27f11c9167d152ff77d6423580d57b6d5e1ceaa2993ef6"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-Users-CpElpBo4.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 22315,
+          "sha256": "3e3b32731b3535a3cdda845135e84f85196f9cfc8176323cea9073655885ace1"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-VpnKeyOutlined-CTVxYhJk.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 4980,
+          "sha256": "fbbf6d9c8896ad3b046a94a9dc1b568f0f3ce313ff32f9ff20947aca646f2354"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-api-DOJvr6Ou.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 588412,
+          "sha256": "28d33e67eb5cdaaf0f16a32f543419a4c2891c5e46c6941ee3e3e99b8f51dd0b"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-attachmentSchemas-DJAtfNc-.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2236,
+          "sha256": "1fb5ab0e1bbd307100a6cf96dc85679bd2f6b1e3b10e8b448191ab0fcbbbab1b"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-codexSession-CyBLA5K9.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3185,
+          "sha256": "da6bce1df0bfc23453251702b9d81c38e7f0a8e79104534720d3ac6c0644b7a4"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-createSvgIcon-tUHYkBdV.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2449,
+          "sha256": "29fa1d59bfaaa9e240595155193be6832a762687a0a2a40ff91a84162b983dcc"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-300-normal-C46oWILc.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 13708,
+          "sha256": "80f13c410ec41f210a5553e7f420f8a51f459180019274df0b3faea314916f90"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-300-normal-CsNfKS1n.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 17840,
+          "sha256": "febc375e590e3021cdfa7377bed436a99abcd11205833ac3b22f3ac5353569fe"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-400-normal-BwCSEQnW.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 18356,
+          "sha256": "38702875fe179437d200e7ba6f7fab4d497ffe48117ef332029b2081751186ad"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-400-normal-CW0RaeGs.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 14200,
+          "sha256": "4ab51eb2cd7305d177187908d6397474d4520663f6c6e572feb0a64f4fa80006"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-500-normal-B9HHJjqV.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 14304,
+          "sha256": "19bf1984956517c35c2bd35b6cdedac12a21d6fcd3596c614ecdfb88b648909d"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-500-normal-Dr3UlScf.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 18520,
+          "sha256": "7deb957e430b780ee3272d801af4f9f2211b1330ec40a312a8f25309eacb4034"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-700-normal-CUSSCpQX.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 18504,
+          "sha256": "af422a448ac00679a8dbb13532db3616829c5a35b58d3eeea5903ce17ad2e36a"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-700-normal-DvUfVpUG.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 14348,
+          "sha256": "35c5efa0e5daa52ee5c6500f5be354bf751fb65c4e49e1d6806c6eb5883e8fe9"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-ext-300-normal-COYJju1g.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9940,
+          "sha256": "182f079f9d10e83425f021c2b2607a32e66a08331d91e67a1a46cca3fa72ac7c"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-ext-300-normal-WGwOtXxi.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7188,
+          "sha256": "d45c7f5d73861db15ec16ba6c4a5e29fda548b32d382165a4afe3f9034ca13e2"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-ext-400-normal-BjWJ59Pq.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9976,
+          "sha256": "3d63423c3204f61bb196d1ae3729b7f2871d87abd4403d198f4810923888c016"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-ext-400-normal-BtiwyxMk.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7364,
+          "sha256": "962730c6ff7595f9499b0d963a3bccb2139d793f0fb31fbd87aed1881c020e0a"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-ext-500-normal-BJfUCQsA.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7432,
+          "sha256": "e0a1d21584ba00798a3dbe90ef5f8a162741d454f52ab66630f9dc41da372b3d"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-ext-500-normal-DR84L5F-.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 10068,
+          "sha256": "e1f67472aa96c6f60969c696ba8a9d36ed8ea26c2ff5c3e27ee29c664911575d"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-ext-700-normal-BLI3TTWz.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 10012,
+          "sha256": "56084e69490970432de58b4a2406ee4daa1f58d90f9600ae3fda0e895a6355e7"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-dm-sans-latin-ext-700-normal-CJIcxD6K.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7452,
+          "sha256": "f6640907b94df0d227f26e2fcb6db2497d6c44c4b68f731ea1e06f5b45e2e91b"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-getThemeProps-BF9V0H5i.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 221,
+          "sha256": "28e0513775efbc773eb3542b9bf2f62aefec3e7b44f8094702ac11e719d42a5f"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-helpers-BetwoEOv.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 984,
+          "sha256": "6501cf8d05c15d5f811325aeef079d1f281c47a3b39b3827fbc8e2bce09a0370"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-hooks-BOykJrcy.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 70040,
+          "sha256": "f5562a18f4482673dff69c64ca013eaa1715becf1478afc5723fc13a03c32dca"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-index-CGv4K5NZ.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 358053,
+          "sha256": "346b600bf7902c3a90e85bf3b250cab700a6c0df0df55db12f8885033aa68fdf"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-index-CzcEOQE5.css",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "text/css",
+          "bytes": 23109,
+          "sha256": "deee8fc64b72a30de6dfcc157ec8d98b039d71a6d47391be34e2f9a840060bb3"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-300-normal-BnqRxXuy.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7812,
+          "sha256": "2f4d3f2e59e0dd665765f7e6d52f0cd8173a1ec1732b544622e3a4780ad3877c"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-300-normal-LR1W_oT8.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9816,
+          "sha256": "3992f7793def227d01ffa09136961b3db4f37fa56edf4703baf8a0bd7df18903"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-400-normal-HOLc17fK.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9780,
+          "sha256": "6e441a6c94788318fa02b6d0a633aa29eebe27b69c6567eb1e59b4edc68ed70e"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-400-normal-obahsSVq.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7712,
+          "sha256": "f0bb586459ce8f09b238285040f17e3e9e9538b2c5a7aae0775194e33c36c3c3"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-500-normal-BasfLYem.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7900,
+          "sha256": "b77a86ec16aadc157f4a99e8898d71cd75ea264753d9bdf13f962f8c3988cbb0"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-500-normal-CxZf_p3X.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9940,
+          "sha256": "5be18e0345781cb882a267798518553c0e915174fc70731ab5f085ca64ba1ebc"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-700-normal-CjBOestx.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7904,
+          "sha256": "5917871d3cc970d8ce195101cbf65c1f68ec948022eb6070030342bb7edfb3bb"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-700-normal-DrXBdSj3.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9912,
+          "sha256": "72b6daa49173e531027d8a260ef128e142a165811cab6a2875eefe0c3c58fa0e"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-ext-300-normal-CgCALhwJ.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 10356,
+          "sha256": "71090ccd2581f26325c9a702e0238a5a2364e311e94f6315cdb773c8a2e42244"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-ext-300-normal-RId2JxDB.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 13400,
+          "sha256": "1d7d39494011221ffe9e83dbd430fd633c95a20e3751af36c19b8e34bd188851"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-ext-400-normal-BQZuk6qB.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 10232,
+          "sha256": "ef572f9187a8be018d9d9c2c6b77c1f6cb2af4199f02fc16c292ea10ab25a2cc"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-ext-400-normal-DQukG94-.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 13336,
+          "sha256": "5cb2f1cc0936f89a42ceae34f5a5720248dc5b8114c12b1c33a7d2ef01a9b6b9"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-ext-500-normal-B0yAr1jD.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 10432,
+          "sha256": "1c2db92d3cd9b237ca7c9c07af556d542f28ded1db54cd4382cf776501c5291f"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-ext-500-normal-BmqWE9Dz.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 13452,
+          "sha256": "e250c05aebcf49971e0b25f476992dd463c28c0292ebb204d9db542fb5066ca7"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-ext-700-normal-BjwYoWNd.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 10496,
+          "sha256": "a46b99781170971e2c99a87ff7ee9f5cf90a9dfcd18175e1be6300201d030123"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-cyrillic-ext-700-normal-LO58E6JB.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 13408,
+          "sha256": "0f3d4be2bd7018f78fa3484a5f6e9d8ce567689426643b84a47e8cabb91e5f16"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-300-normal-BrhSP0vQ.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9996,
+          "sha256": "2fa04efd6f5b6d43ab685326e7f27245cca528d701d578ee4241c1836abc85bb"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-300-normal-DmGD3g_f.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 8004,
+          "sha256": "88669b6ea20ccf52555d032740c5a1b7f550f6d54ca0acc0969cf938fafead55"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-400-normal-B4URO6DV.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7776,
+          "sha256": "c15ddd00a9927b56f5c655a41f976f79bd848a20cce91fc14227751872a1cc27"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-400-normal-q2sYcFCs.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9924,
+          "sha256": "bdae9d28729e8c68587d5d54e216d771a40d7a6800e824586a6e2f570c2f10df"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-500-normal-BIZE56-Y.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7920,
+          "sha256": "cc197d79d33a3615a047baae85f4d1957f6f98b8898313658e160b1d519b1b6f"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-500-normal-Xzm54t5V.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9980,
+          "sha256": "86d55a4b1b9cbced7e61e76d5d44cf49d0bd1c814d3df2de67b7136ab4fdcece"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-700-normal-BUv2fZ6O.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 9980,
+          "sha256": "53368f53d5fc43381dcc45c8533ba2476f80337136313525f96dcbdc736616a5"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-700-normal-C3JjAnD8.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 7920,
+          "sha256": "737c6c91cd60372d30e6540096ada83c89c9b4613cd7472e3366bf2e07ad99f1"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-ext-300-normal-DLbbeei1.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 7128,
+          "sha256": "3456cf2a25f7772120e265af7604c29c23da950bf55ec81a99688f2c829ae033"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-ext-300-normal-l2DDyC6M.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5348,
+          "sha256": "a605c6297c3a4193ce503d8ffbe9d8f9575343a186f2c94fe2844d5035a8c5e6"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-ext-400-normal-DGGRlc-M.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5264,
+          "sha256": "eadedd9e13c2582430a9fb1519eb86152fdabb483a6f66d90f8d8a52e977a1b7"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-ext-400-normal-KugGGMne.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 7064,
+          "sha256": "4f2b6f92ddfece8812e79774d446218aa6e0773ff8c2d31130fe2bdc23bd22d0"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-ext-500-normal-2j5mBUwD.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 7192,
+          "sha256": "c85d11bde719108cc9a4f6f5b008087f6c36493b47395580d4f5336182b0f0c7"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-ext-500-normal-C4iEst2y.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5428,
+          "sha256": "75a9ec9383a3b7a7bf7cfb94f64edf38d9cfdc5f7ffa0cbed2733627a6e4426d"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-ext-700-normal-BoQ6DsYi.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 7216,
+          "sha256": "b26ed64c9135a750ad580b92152bedeef90771e74e18f6f7759a6d7adb0f1b5d"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-greek-ext-700-normal-qfdV9bQt.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5444,
+          "sha256": "b7b2732ebc981b30a5463ffc850407649dba41e625aee124cc63293da4547629"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-300-normal-BVlfKGgI.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 23916,
+          "sha256": "be0276550393a72b94d673505567dceba801511d5e1ca5a87793190dc5d5a6ca"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-300-normal-i8F0SvXL.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 31012,
+          "sha256": "635cf706b3a3528c1617ce8edaa4e767489c1c61320a97b4aa649495ee49ac2a"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-400-normal-C38fXH4l.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 23664,
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-400-normal-CyCys3Eg.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 30696,
+          "sha256": "e20fa0b4fd2dd26e4d14b3ac3cc922509c3a63fa5e910e90c614544aa042dd45"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-500-normal-BL9OpVg8.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 31284,
+          "sha256": "9b42c108da48b5ed55a3072e815ffee2d271562e6c0dd6998910e8f9c09e0a3d"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-500-normal-Cerq10X2.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 24272,
+          "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-700-normal-BLAVimhd.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 31320,
+          "sha256": "7c5ed5655730de337704d3fc94628515cd7e3d8d32368871709bf56ac0397e7a"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-700-normal-Yt3aPRUw.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 24356,
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-ext-300-normal-CPgO9Ksf.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 35880,
+          "sha256": "b11def546ac052fad7993e39c53801b55af99b0fd51a9ac0e72884b5c3fcaa3f"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-ext-300-normal-Dp1L8vcn.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 48608,
+          "sha256": "0d9db034891287b2bd0c896a8e3cbf3f4594b385d95388c9841382cb3ef03bd6"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-ext-400-normal-77YHD8bZ.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 47560,
+          "sha256": "22ae8360fbad24d2af7c6c9898a346c881774dc87f7cf94bd262c48ad58d7116"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-ext-400-normal-C1nco2VV.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 35000,
+          "sha256": "6744a7f509ebc6ab220a6cd4ea77e898adf014f03d88dcda5d45d8a9feefb4e9"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-ext-500-normal-BxGbmqWO.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 48492,
+          "sha256": "30d2903ce97f8a89ea0e9c083b42cb8bf97e7bbb5607e7f00352815f19cb0d5b"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-ext-500-normal-CV4jyFjo.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 36024,
+          "sha256": "2c6fbc42d315528beb06c1096df45487bf4186c4b78b8111d12c9c951f8acca2"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-ext-700-normal-Ca8adRJv.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 36244,
+          "sha256": "143f9504f1377012aa3e39c90c4354ef429cb0494b9ac0e1437f1a81e5412236"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-latin-ext-700-normal-TidjK2hL.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 48632,
+          "sha256": "1761edba32014180deab3dbbe3f7156c64ef6f34bc76313ba31ce227fc9ff391"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-vietnamese-300-normal-Bdr24Bqb.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5060,
+          "sha256": "1e3cde652acfbc67194e84d2068953d4799df8b125089f11687142c39603cd7f"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-vietnamese-300-normal-DDGmYYdT.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 6588,
+          "sha256": "6305c5e2d150a513007f66f24d4ea5eb49a840cf59e46b166718cf845183b274"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-vietnamese-400-normal-Bbgyi5SW.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 6500,
+          "sha256": "54aa42d325bcdfd623ecb9eac4a5e3c6420c63d7b86e9d8545fb479f653beb57"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-vietnamese-400-normal-DMkecbls.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 4972,
+          "sha256": "547ad9fdaeb0ae43487f4b8a02e47c36553c0c0cb73c8aa98f93b7b615f6b55d"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-vietnamese-500-normal-DOriooB6.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5112,
+          "sha256": "44e36aa5a8f12130029a29bb0e6695d0262b67446ce321e878b1fb56162b5de6"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-vietnamese-500-normal-mJboJaSs.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 6596,
+          "sha256": "18a4a09f751671cd8929d7c66e8fe7d820b511c36e51cf6047ffceab88eec4a4"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-vietnamese-700-normal-BZaoP0fm.woff",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff",
+          "bytes": 6632,
+          "sha256": "412023ab2f41333b373e2c6eb2a3ebab806fddd610015d2ae8cd4f4314c7ba92"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-inter-vietnamese-700-normal-DlLaEgI2.woff2",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/woff2",
+          "bytes": 5104,
+          "sha256": "5fafa3829a16d9ea5ac3a67c51e54186353122790b604a3e361f96cab188da8b"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-isMuiElement-DKujskQk.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 266,
+          "sha256": "90ce687e3cc7e2d6024b03b26757c33cf64164eccc767d5aa602672d526bc16e"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-karmatic-arcade-Ce2JsoxT.ttf",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "font/ttf",
+          "bytes": 56908,
+          "sha256": "fc570fe4c3b5a324a7f52a4b52362a6c6ae386b14d9c148eeae6a161e705cf09"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-moduleIcons-DKbhtMmV.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 24336,
+          "sha256": "ab3bbddd90b5079ef01f0cc34cf3d94c57c84c19fa9277ac6dbe449d80a1a67b"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-phoneNumbers-DzLAciY5.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 195586,
+          "sha256": "a15e5e98608e387b8230c1998fe06e202c71502f330c1e6fc647c0094183b9c0"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-queryKeys-xo688uGf.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 649,
+          "sha256": "066ace08a984b8efc470280a4121eca66d99f82a46be3a928f8e0ec547f81f2c"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-react-Cw_oMN0q.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3368,
+          "sha256": "5bec5790f08978c3883983ab1a2f1d5ad8025763176e43199f1468660b3110ec"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-react-dom-RKpdDTUT.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 3624,
+          "sha256": "b540979e585d1a1b3a7644a0b7c66d223389349e00a70de32a8851cf0596635c"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-reportSchemas-2CiB1h5a.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 4765,
+          "sha256": "534e8a4e57e8d62d70a9cec8f81d9118edfccecacb910489b723851c631d6d07"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-rolldown-runtime-B0Z9INg1.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 901,
+          "sha256": "5e9b0d884d2ebb14e241ab38b43e41efb61bce2e74d71507b0b95b264fba4047"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-schemas-B3K7Kzrd.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 74180,
+          "sha256": "567553d7f1a650c487d02ec993ea93e5a70c08361cabc5aa2fad6fa13eed03d3"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-skeletons-D28vxF2_.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 18982,
+          "sha256": "09dc70bb85d50d4901e67cbd4d746467cfaa60cb2d48a92bcc41bba88d7a1f2c"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-styled-CRgTdJ_l.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 78,
+          "sha256": "43ecb57368d4d6b56ec9021d55f4134913d11b446c2e17d2a9bf3867cef9f6d7"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-styles-DDmCHLZR.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 81330,
+          "sha256": "8d39ae88cfacaa4d572497e4b4e5cfa8bd35384b125826508db3d78f9abfed9d"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-styles-DdeirunP.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 2486,
+          "sha256": "73cf08f11342d5def6df42a269b8476ff5b42326754867b01cc050d04ee1d543"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-useAttachmentDrafts-BFAIcBav.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 9473,
+          "sha256": "e9a95a61ff71386d4927b4ce0a2a353dc2f509542d90ae604c2d87b5b3c84d0e"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-useAuth-Cuf0SOnm.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 872,
+          "sha256": "042fe98a0a7dcd8c568a1726251d68efde5939059c260c10050079ca3bffcb45"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-useGeneralSettings-IoPWLj5q.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 840,
+          "sha256": "d91302d7e4434698f093645035180dc6a5f4b633462b2e17fff25290c8ae2a46"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-useInfiniteQuery-BIMZK42q.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 1173,
+          "sha256": "8d0274c4f64e11bbf86d1d035f12dd9d77320961e951f4ce01d6456c0981b7e9"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-useIsFetching-CBBvBkAX.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 388,
+          "sha256": "566858f110353b5e3b8261f13da71f2e38c3645dc849f5171c0b74dbd82ef025"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-useMutation-b1PKfwH3.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 8369,
+          "sha256": "a2fd20cdc2b70b16fea2c67f6e1fe2c6b484ecbade14e11fa75ac767e1c83d03"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-useMutationState-BbrEUBOM.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 712,
+          "sha256": "8293d6a482056d72c8ba38e339c3f6c6180168426aed52eb36f49768eb17b88d"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-useObservation-PRSjQgcB.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 6214,
+          "sha256": "f29d30dc9f203b04ad3967e5ea11129156c981a4e0dc8a87791b5027ec85452c"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-useQuery-DFCYZWPg.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 8894,
+          "sha256": "f524dd677e22bc5cbb0c12ffcc091f5733cb87e594c6cdb7eb954ec258cc3409"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-useServices-CZxRupAp.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 27436,
+          "sha256": "270249c57ae88426c630c13af43e7fa1739107be98fee87c424944d499c0d6c9"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-useServices-D9gslBza.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 9041,
+          "sha256": "546239a07597a2c7eec8caf9e75e32ccdaa83cb26609ef99a9e7e73776dca424"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-useThemeProps-DvpAb_nX.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 251,
+          "sha256": "b550210318cadc04fd289b6fc0ca3173ed619e9ae9d8a0d0b867462402d35056"
+        },
+        {
+          "route": "/assets/ai-two-modes-r01-zod-D1VxyUyi.js",
+          "kind": "R01_legacy_hashed_asset",
+          "status": 200,
+          "mime": "application/javascript",
+          "bytes": 40413,
+          "sha256": "f153665de714abc6feefd91416ec967dd56e9b0da11445ae2328425cb390ea6d"
+        }
+      ]
+    }
+  },
+  "current_metadata_readback": {
+    "source_sha256": "de715fb82c10a68a61da317c08de6aeeb9410958852d0f3f3918b66569805395",
+    "source_bytes": 966,
+    "data": {
+      "status": "matched",
+      "files": {
+        "checker": {
+          "path": "/opt/nodia/operations/api-chat-parity-r01/client-stage-r01/client-http-review-r01.py",
+          "sha256": "ffcaa704103e062df24bd3ae196a7899e635ef935acb367421d6c8fc4ed9f5e2",
+          "bytes": 6506
+        },
+        "manifest": {
+          "path": "/opt/nodia/releases/nodia-client-api-chat-r01/release-manifest.json",
+          "sha256": "17f5d171402e8c3b9ae2593f1809ca1fb22f9b976602416fc6b329f28251f6b1",
+          "bytes": 231747
+        },
+        "legacy_manifest": {
+          "path": "/opt/nodia/releases/nodia-client-agentic-api-r01/release-manifest.json",
+          "sha256": "86bdf6b977061d469d65fe76fe1525c099997edc84127379e478c1b005187740",
+          "bytes": 230540
+        },
+        "nginx_site": {
+          "path": "/etc/nginx/sites-available/nodia-lab",
+          "sha256": "4b0a02d547a06fc09fb9b2ce7fa22ef15e0d631b27aa2689307e100c4ae192ea",
+          "bytes": 4255
+        },
+        "mime_types": {
+          "path": "/etc/nginx/mime.types",
+          "sha256": "29f1bffad725815beb52aa8d01823a3d85d6613f43466dfab79762c55bd9f096",
+          "bytes": 5523
+        }
+      },
+      "HTTP_SQL_provider_calls": 0,
+      "mutations": 0
+    }
+  },
+  "limits": [
+    "This verifies HTTP bytes/MIME from VM loopback Nginx, not browser execution, authenticated UI, public-network/CDN/TLS delivery or device compatibility.",
+    "The four SPA checks return the exact new index HTML; they do not execute routes or call their authenticated APIs.",
+    "177 old R01 hashed assets passed. The five older fallback roots remain in order, but this run does not re-GET every asset from those five releases.",
+    "No real API chat/tool/media/image inference, SQL transactions, human confirmation effect or151-capability acceptance follows from these static checks. Those belong to separate receipts.",
+    "The operator did not change Nginx, MIME config, services or releases during this verification; activation was performed by root before this read-only run.",
+    "The durable JSON embeds all362 sanitized observations and metadata so ignored temporary receipts are not its sole dependency. No keys, tokens, cookies, upstream bodies or private documents are included."
+  ],
+  "secrets_included": false
+}

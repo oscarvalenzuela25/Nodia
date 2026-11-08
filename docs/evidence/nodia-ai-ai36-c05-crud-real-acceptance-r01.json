@@ -1,0 +1,313 @@
+{
+  "schema_version": 1,
+  "status": "representative_create_update_delete_and_readback_verified_with_real_Codex_and_human_confirmation",
+  "environment": "local_Linux_VM_R09",
+  "manifest_sha256": "edd279fa5f5f99a7529adcf4cf75b7016505bf6581fc57cb85a3000cf802ff85",
+  "knowledge_release": "6763cef6423d2cc511844351a384358e0e5141e4f597d19a291a5cf1feeb3c73",
+  "published_capabilities": 150,
+  "conversation_id": "c17fc842-1148-4bc5-b752-288cec2d35ff",
+  "selection": {
+    "connection_id": "1",
+    "mode": "token_plan_agentic",
+    "model_id": "gpt-6.1-sol",
+    "effort_id": null
+  },
+  "effects": [
+    {
+      "operation": "create",
+      "proposal_id": "22155a94-15eb-461e-baa1-baebd5a639c9",
+      "proposal_revision": 1,
+      "proposal_hash": "57e4d53a27bda342c25a7a2be258f335e55d79cd33a337e13d7ba0d0f3a07f78",
+      "execution_id": "7c31dd32-65f7-48fb-b979-011a1cdb92a3",
+      "state": "completed",
+      "execution_steps": 1,
+      "receipt": {
+        "operation": "create",
+        "resource_id": "3",
+        "resource_key": "finance_categories",
+        "schema_version": 1,
+        "subject_user_id": "1"
+      },
+      "physically_confirmed_by_the_user_in_NodiaAI": true
+    },
+    {
+      "operation": "update",
+      "proposal_id": "d4a67a7e-2b0e-4bc8-ab07-bc7feceafc07",
+      "proposal_revision": 1,
+      "proposal_hash": "5eb4736beda498c674c61f2a4b851f997ce928e3884ad6c5b31922baaaecb586",
+      "execution_id": "646f02e5-b452-4c29-8c7a-3ba4095fc4fa",
+      "state": "completed",
+      "execution_steps": 1,
+      "receipt": {
+        "operation": "update",
+        "resource_id": "3",
+        "resource_key": "finance_categories",
+        "schema_version": 1,
+        "subject_user_id": "1"
+      },
+      "physically_confirmed_by_the_user_in_NodiaAI": true
+    },
+    {
+      "operation": "delete",
+      "proposal_id": "a2653e1a-0de4-42a1-bed6-8a1ad95a4bc1",
+      "proposal_revision": 1,
+      "proposal_hash": "af6b714ce73d416f29b802160d3c7ba9dbf5456cc5bc183e5b4eb092a3f641b3",
+      "execution_id": "df7abce3-71c9-40f0-b439-46efdf9e597b",
+      "state": "completed",
+      "execution_steps": 1,
+      "receipt": {
+        "operation": "delete",
+        "resource_id": "3",
+        "resource_key": "finance_categories",
+        "schema_version": 1,
+        "subject_user_id": "1"
+      },
+      "physically_confirmed_by_the_user_in_NodiaAI": true
+    }
+  ],
+  "human_challenges": [
+    {
+      "proposal_id": "22155a94-15eb-461e-baa1-baebd5a639c9",
+      "proposal_revision": 1,
+      "total": 1,
+      "consumed": 1
+    },
+    {
+      "proposal_id": "a2653e1a-0de4-42a1-bed6-8a1ad95a4bc1",
+      "proposal_revision": 1,
+      "total": 1,
+      "consumed": 1
+    },
+    {
+      "proposal_id": "d4a67a7e-2b0e-4bc8-ab07-bc7feceafc07",
+      "proposal_revision": 1,
+      "total": 1,
+      "consumed": 1
+    }
+  ],
+  "data_after_cleanup": {
+    "target_id_rows": 0,
+    "target_key_rows": 0,
+    "memberships": 0,
+    "movements": 0
+  },
+  "original_categories_preserved": [
+    {
+      "id": "1",
+      "user_id": "1",
+      "is_active": true
+    },
+    {
+      "id": "2",
+      "user_id": "1",
+      "is_active": true
+    }
+  ],
+  "protected_data_hashes_and_original_chat": {
+    "original_messages": 64,
+    "original_runs": 34,
+    "original_dispatches": 51,
+    "finance_sha256": "5335e312c7b542552f924cf266fc007ff1a3691e522e6c682bb20e374b5b7871",
+    "preference_sha256": "711cd7844676b8ae7e427c8af60a8f846b3050a8ca7847c1b62ae20ee390d98b"
+  },
+  "current_chat_observation": {
+    "chats": [
+      {
+        "id": "c17fc842-1148-4bc5-b752-288cec2d35ff",
+        "owner_id": "1",
+        "active_job_id": null,
+        "connection_id": "1",
+        "mode": "token_plan_agentic",
+        "model_id": "gpt-6.1-sol",
+        "effort_id": null,
+        "routing_enabled": false,
+        "messages": 8,
+        "runs": 4,
+        "dispatches": 8,
+        "tool_receipts": 14,
+        "executions": 3,
+        "effect_steps": 3
+      },
+      {
+        "id": "ec626b72-1f32-4486-9f3a-8263cffce267",
+        "owner_id": "1",
+        "active_job_id": null,
+        "connection_id": "1",
+        "mode": "token_plan_agentic",
+        "model_id": "gpt-6.1-sol",
+        "effort_id": null,
+        "routing_enabled": false,
+        "messages": 64,
+        "runs": 34,
+        "dispatches": 51,
+        "tool_receipts": 60,
+        "executions": 4,
+        "effect_steps": 5
+      }
+    ],
+    "pending": {
+      "jobs": 0,
+      "open_attempts": 0,
+      "slots": 0
+    },
+    "preferences": [
+      {
+        "id": "04f8a72d-2fab-4c48-b7e1-e15e95d70bec",
+        "owner_id": "1",
+        "scope_key": "finance",
+        "key": "expense_category_id",
+        "value": "2",
+        "revision": 2
+      }
+    ],
+    "fixtures": {
+      "invoices": 1,
+      "upload_intents": 0
+    }
+  },
+  "readback": {
+    "schemas_and_args": true,
+    "calls": [
+      {
+        "id": "7332e4e2-a15f-4587-811f-6a8baa1ee3e4",
+        "tool_name": "nodia_finance_categories_list",
+        "arguments": {
+          "q": {
+            "key_cont": "ai36_c05_crud_validacion_r01"
+          },
+          "active": "all"
+        },
+        "input_schema_valid": true,
+        "output_schema_valid": true,
+        "contract_hash": "41166e0971f4fbe7169026faa8c810eab65b5889d6a725973ac914e46d5e847a",
+        "result_sha256": "ff801d996e9520d7fb9199acd351273e5558558539105a19e6a393b0e093ed12"
+      },
+      {
+        "id": "3da0bab8-4f15-45b5-ac6f-49ba29cc7d43",
+        "tool_name": "nodia_operations_get",
+        "arguments": {
+          "execution_id": "df7abce3-71c9-40f0-b439-46efdf9e597b"
+        },
+        "input_schema_valid": true,
+        "output_schema_valid": true,
+        "contract_hash": "b21ce362e5d50a9c03bf8f5d53b37da020199f97776edaecbe7d04b2268b7fe1",
+        "result_sha256": "e997e6cfebcdc268924ed27d8a40fdb100f5443338e02009329d23a2c94d95f0"
+      }
+    ],
+    "category_result": {
+      "count": 0,
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "total_items": 0,
+        "total_pages": 0
+      }
+    },
+    "operation_result": {
+      "execution_id": "df7abce3-71c9-40f0-b439-46efdf9e597b",
+      "state": "completed",
+      "revision": 3,
+      "steps_completed": 1
+    },
+    "assistant": {
+      "sha256": "2f41f6ec940c2bb0f07e47da6ab26a4c1a04ef77c3844150c929ac9b9f33ff11",
+      "UTF8_bytes": 486,
+      "mentions_zero": true,
+      "mentions_completed": true,
+      "mentions_one_step": true,
+      "raw_text_emitted": false
+    }
+  },
+  "CREATE_before_human_evidence": {
+    "immutable_preparation_was_ready": true,
+    "immutable_target_absent": true,
+    "contemporaneous_zero_effect_SQL_captured": false,
+    "immutable_preparation_duplicate_reads_empty": true,
+    "proposal_get_calls": 0
+  },
+  "UPDATE_and_DELETE_before_human_zero_execution_observations_captured": true,
+  "native_closure": {
+    "CREATE": "G2_composite_SQL_terminal_proofs_ACK_cleanup_jobs_absent_and_pinned_strict_ACK_code; original_native_UUID_files_no_longer_retained",
+    "UPDATE": "G2_composite_with_the_same_explicit_retention_limit",
+    "DELETE": "G1_two_native_typed_ACK_records_observed_directly",
+    "READBACK": "G1_two_native_typed_ACK_records_observed_directly",
+    "absence_alone_is_not_ACK_proof": true,
+    "graded_receipt_path": "ops/lab/artifacts/ai36-c05-server-r09-r01/live-native-closure-grades-r01.json",
+    "graded_receipt_sha256": "a2fd90f214efc22dfda4b8158edd6b8a8329bce19816059efd3fe01dc4945ae4",
+    "new_inference_or_ACK_request_to_recreate_evidence": false
+  },
+  "UI": {
+    "create_receipt_completed_category_3": true,
+    "category_visible_in_Finance_after_create": true,
+    "Finance_after_delete_shows_only_original_two_categories": true,
+    "one_manual_eligibility_recheck_after_session_refresh": true,
+    "no_message_or_human_confirmation_replayed": true,
+    "screenshots": [
+      {
+        "path": "docs/evidence/nodia-ai-ai36-c05-crud-create-confirm-r01.png",
+        "sha256": "42731e6c136f1f2c971bf72dafb1ab196f54428e7ae92962823b6e58b264134b"
+      },
+      {
+        "path": "docs/evidence/nodia-ai-ai36-c05-crud-create-receipt-r01.png",
+        "sha256": "97a4877963988b9db900688362533410cc0c8271ac54c86534d5db0cbdae133d"
+      },
+      {
+        "path": "docs/evidence/nodia-ai-ai36-c05-crud-update-preview-r01.png",
+        "sha256": "f24e0787fd72c654d25a9e23b8ba1dc5f691c843311875c64de58c68274eb164"
+      },
+      {
+        "path": "docs/evidence/nodia-ai-ai36-c05-crud-delete-preview-r01.png",
+        "sha256": "3364d99c71e81e5bc1dab46c89dc0992c3fc022d04a002099fa1af05fc7caf1c"
+      },
+      {
+        "path": "docs/evidence/nodia-ai-ai36-c05-crud-readback-r01.png",
+        "sha256": "12b8ac4c1e1d65a99de8e43043d3beb8558207d60ddbc30e7adc697f7056fd4f"
+      }
+    ]
+  },
+  "source_receipts": [
+    {
+      "name": "final-current-baseline-r01.json",
+      "sha256": "00ad41f4a9e352c772a41e255a5807d5a62ba1f7ce5074e8a90fe13a56121dcd"
+    },
+    {
+      "name": "live-create-inspection-r02.json",
+      "sha256": "ef3d3d1cff47350fddd1517bf5b5a1efa52d44ddffe70c6c025ea5aca281e2e8"
+    },
+    {
+      "name": "live-readback-receipt-validation-r02.json",
+      "sha256": "40ca81a443131d938141122d5b2d840b7f57a50a3d01ceae6c5c8ff33cdb220e"
+    },
+    {
+      "name": "live-category-create-effect-update-before-r01.json",
+      "sha256": "6f6c287644821344744bd11ec23ec819fee579433bc27f21998561cf7ae78d1d"
+    },
+    {
+      "name": "live-category-update-effect-r01.json",
+      "sha256": "30d271cf9c993951bde01a84851f6b7ef235bb4463da3924df4c9762e78a3672"
+    },
+    {
+      "name": "live-category-delete-before-r02.json",
+      "sha256": "5ed7888ab804e79a37b8cf81d56de0e155c9f79ab74633cff26e8d5cc8e36741"
+    },
+    {
+      "name": "live-category-delete-effect-closure-r02.json",
+      "sha256": "25b7a94114d693cff99ce66275786e91f745c6748d81132dfbc5b3c4422bc1b3"
+    },
+    {
+      "name": "live-delete-native-ACK-r01.json",
+      "sha256": "7d24186625d8479aaaa04f269c5145794bbe4fb0612d9e475402a4ac1314549f"
+    },
+    {
+      "name": "live-readback-native-ACK-r01.json",
+      "sha256": "a695e954d09b5e5114176caa7ee32c13724136ac5ff2d96dd447cb772002fef9"
+    }
+  ],
+  "limitations": [
+    "This is representative real-account acceptance of one financial resource, not live acceptance of all 150 capabilities, modes, models, accounts or production environments.",
+    "Bulk writes remain excluded; native unsupported physical deletes are not invented.",
+    "The active invoice analyzer remains unpublished.",
+    "No contemporary SQL snapshot of zero CREATE effects was captured before human confirmation; immutable preparation and prior empty reads are kept distinct.",
+    "Original native UUID files for CREATE and UPDATE were no longer retained; their closure is explicitly composite G2."
+  ]
+}

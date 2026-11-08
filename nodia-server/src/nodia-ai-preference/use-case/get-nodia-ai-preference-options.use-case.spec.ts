@@ -43,7 +43,7 @@ describe('bounded named preference choices', () => {
   it('reauthorizes the target module instead of trusting a saved preference or route', async () => {
     const f = fixture();
     f.actor.modules = f.actor.modules.filter(
-      (module) => module.route !== '/tools/finances-personal',
+      (module) => module.route !== '/finances-personal',
     );
     await expect(
       f.options.execute(f.identity, {
@@ -56,8 +56,8 @@ describe('bounded named preference choices', () => {
     const f = fixture();
     f.actor.modules = f.actor.modules.filter(
       (module) =>
-        module.route === '/tools/finances-personal' ||
-        module.route === '/tools/nodia-ai',
+        module.route === '/finances-personal' ||
+        module.route === '/nodia-ai',
     );
     expect(await f.catalog.execute(f.identity)).toEqual({
       items: [

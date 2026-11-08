@@ -91,11 +91,7 @@
     ]
   },
   "routing": {
-    "source_mode": "token_plan_web",
-    "target_mode": "token_plan_agentic",
-    "same_connection_only": true,
-    "default_enabled": false,
-    "return_to_base_next_turn": true,
+    "enabled": false,
     "fallback_on_error": false,
     "switch_confirms_writes": false,
     "api_delegation_enabled": false

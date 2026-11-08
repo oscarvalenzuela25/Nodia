@@ -1,0 +1,302 @@
+{
+  "schema": "teacher-material-correction-practice-vm-evidence/1",
+  "local_date": "2026-11-04",
+  "timezone": "America/Santiago",
+  "status": "deployed_bounded_QA_complete_POST44_restored_documentation_consolidated",
+  "documentation_closed_local_date": "2026-11-05",
+  "scope": "Learning packet guidance, explicit new material version, English unit practice with exact Gemini selection",
+  "selection": {
+    "connection_id": "2",
+    "effort_id": "high",
+    "mode": "agentic",
+    "model_id": "gemini-3.8-flash-high"
+  },
+  "changes": {
+    "server_release": "nodia-server-teacher-20261104-r08",
+    "server_manifest_sha256": "1a644aff453811b04d0e74206f494e737d231d9595d7ee6868ff308255dc5897",
+    "server_adoption_sha256": "dbdb5667b54c9a928c3ae8e0ec81daa711fa0079af002133e0df2632cc3f542f",
+    "client_release": "nodia-client-teacher-20261104-r14",
+    "client_manifest_sha256": "4e5cda54fde38b17ac1b0c29d3a25946a747e035a944f5a5b99648096a000d3b",
+    "client_activation_sha256": "d45e4d35033feb1cb6e0a38b7125440e7fa3d5d5bc5c5ee998f1978d19b710a6",
+    "DDL": 0,
+    "Native_SDK_credentials_selection_changed": false,
+    "protocol": "teacher-text/1",
+    "only_template_changed": "learning_packet",
+    "new_template_hash": "6644bcd778c026cb3fb77a8b333f566dafffcbbfb468c7105a5372bf16973a68",
+    "other_five_template_hashes_preserved": true,
+    "existing_variant_new_route_reused": true,
+    "explicit_confirmation_snapshot_CAS_no_automatic_rebase": true,
+    "error_dialog_retained_GET_receipt_recovery_no_replay": true
+  },
+  "validation": {
+    "Server_focal_tests": 21,
+    "Server_test_files": 3,
+    "Client_focal_tests": 13,
+    "Client_test_files": 3,
+    "production_types_lint_isolated_builds_passed": true,
+    "not_a_global_suite": true,
+    "documentation_closure": {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/documentation-closure-20261105-r01.json",
+      "bytes": 3157,
+      "sha256": "27e9b87c1d0ed1a03199d42a534430f7df546b4df32bac50d77ace2d3c2185c5"
+    },
+    "knowledge_check": {
+      "mode": "check",
+      "sources": 80,
+      "excluded": 36,
+      "documents": 44,
+      "fragments": 46,
+      "releaseId": "ca3b8d894cbfc3780698e15b1b19c62a4554b00911af7893024fd025c6f948af",
+      "publication": false
+    }
+  },
+  "content_review": {
+    "content_version_id": "15c03ce8-395f-4f04-89ba-e482a0a541f6",
+    "blocks_reviewed": 5,
+    "old_CODE99_example_absent": true,
+    "old_credential_sharing_phrase_absent": true,
+    "secret_sharing_recommendation_observed": false,
+    "complete_character_sequences": [
+      {
+        "identifier": "dev_42",
+        "sequence": [
+          "D",
+          "E",
+          "V",
+          "underscore",
+          "four",
+          "two"
+        ]
+      },
+      {
+        "identifier": "bug-7",
+        "sequence": [
+          "B",
+          "U",
+          "G",
+          "hyphen",
+          "seven"
+        ]
+      },
+      {
+        "identifier": "tag-3",
+        "sequence": [
+          "T",
+          "A",
+          "G",
+          "hyphen",
+          "three"
+        ]
+      }
+    ],
+    "letter_names_distinguished_from_word_pronunciation": true,
+    "old_literal_CODE99_edited_in_place": false,
+    "previous_material_and_attempt_retained": true,
+    "limits": [
+      "Sample review, not a semantic validator or universal quality guarantee.",
+      "Whole-word pronunciation glosses for dev_42 and bug-7 cover their lexical stems; full character spelling is explicit.",
+      "No audio or independent pronunciation certification."
+    ]
+  },
+  "responsive_confirmation_QA": {
+    "cancel_once_then_fresh_confirmation_once": true,
+    "counter_unchanged_after_cancel": 5,
+    "post_ack_status": 202,
+    "new_job_id": "3e09acee-0e73-4db5-879a-db71328b284a",
+    "viewport_320": {
+      "document_width_px": 320,
+      "dialog_width_px": 288,
+      "confirm_button_width_px": 256,
+      "confirm_button_height_px": 65,
+      "outer_button_width_px": 244,
+      "outer_button_height_px": 61,
+      "horizontal_overflow": false,
+      "focus_restored_after_cancel": true
+    },
+    "desktop_viewport_tested": [
+      1088,
+      892
+    ],
+    "temporary_viewport_override_reset": true
+  },
+  "old_practice": {
+    "attempt_id": "1f07bf77-6f12-439f-92ec-347e561c66d2",
+    "earned": 14,
+    "denominator": 14,
+    "q4_draft_pause_reload_retained": true,
+    "q5_401_refresh_202_same_idempotency_key_and_body": true,
+    "same_form_and_owner_preserved_without_false_uncertainty": true,
+    "no_app_hints_used": true
+  },
+  "new_practice": {
+    "attempt_id": "1edabcf2-c5a2-488f-9cd8-ffed5f2f6ea5",
+    "start_http_status": 201,
+    "started_with_five_initialized_blank_rows": true,
+    "prior_answers_or_points_copied": false,
+    "q1_to_q4_points": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "q2_complete_git_5_spelling_reviewed": true,
+    "q5_http_status": 202,
+    "q5_feedback_job_id": "cbe710ae-b32b-4b91-ac84-c18f56daf0ea",
+    "q5_earned": 6,
+    "q5_denominator": 6,
+    "finish_while_feedback_pending_showed_pending_without_final_grade": true,
+    "pause_reload_preserved_q5_feedback_and_final_score": true,
+    "final_earned": 14,
+    "final_denominator": 14,
+    "final_session_state": "paused",
+    "final_dispatches_used": 7,
+    "no_app_hints_used": true,
+    "three_single_choice_correct_options_all_first": true,
+    "positional_bias_recorded_as_sample_limit": true,
+    "personal_English_level_certified": false,
+    "whole_course_completed": false
+  },
+  "jobs": {
+    "terminal_observed": 8,
+    "all_observed_scoped_jobs_and_operations_locally_closed_both_ACK": true,
+    "old_unknowns_preserved_without_replay": true,
+    "material_job_id": "3e09acee-0e73-4db5-879a-db71328b284a",
+    "material_local_duration_seconds": 175.476,
+    "new_written_feedback_job_id": "cbe710ae-b32b-4b91-ac84-c18f56daf0ea",
+    "new_feedback_local_duration_seconds": 70.297,
+    "each_new_generation_provider_POSTs": 1,
+    "each_new_generation_local_attempts": 1,
+    "HTTP": 200,
+    "finish": "DONE",
+    "child_closed": true,
+    "durations_are_local_work_not_provider_latency": true,
+    "written_feedback_budget_seconds": 120,
+    "learning_packet_budget_seconds": 300
+  },
+  "final_screenshot": {
+    "CUA_capture_succeeded": true,
+    "visible_result": "Práctica corregida; 14 de 14 puntos; written feedback 6 de 6",
+    "image_displayed_in_tool_result": true,
+    "local_artifact_saved": false,
+    "prior_turn_failed_captures_reclassified": false
+  },
+  "operational_close": {
+    "GCM_verified_before_restore": true,
+    "RSA_exported": false,
+    "Teacher_rows_retained": true,
+    "VM_restore": false,
+    "Workers_started_for_restore": 0,
+    "all_raw_rows_equal": true,
+    "backup_id": "09f4e867-1ed3-4094-b1b3-e7a8c19b518a",
+    "canonical_backup_service_starts": 1,
+    "captured_at": "2026-11-05T02:13:03.865Z",
+    "cipher_bytes": 3825724,
+    "cipher_sha256": "00ff1a3154125e8a5b778730bd171d7b467ace0c893a300f06493fef6c7d25ab",
+    "historical_unknown_closed_preserved_count": 11,
+    "ledger_count": 44,
+    "native_proofs_and_ACKs_verified": true,
+    "owned_resources_removed": 4,
+    "plaintext_dump_files": 0,
+    "raw_rows_schema_sequences_equal": false,
+    "receipt": {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/backups/final-Server-R08-Client-R14-database-receipt.json",
+      "bytes": 1966,
+      "sha256": "e1bc60ce497adacc207aad26722e7832243faea70ff2477505b5bf625048d77f"
+    },
+    "reparsed_CHECK_count_is_not_total_CHECK_count": true,
+    "reparsed_CHECK_differences": 22,
+    "restore": {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/backups/final-Server-R08-Client-R14-database-restore-verified.json",
+      "bytes": 9635,
+      "sha256": "1983c604b6a13aab39f3039dacc8104f4d79a3327bd92ec0952d9a578ec6d381"
+    },
+    "schemas_semantically_equal": true,
+    "sequences_equal": true,
+    "source_inventory": {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/backups/final-Server-R08-Client-R14-database-source-before.json",
+      "bytes": 508791,
+      "sha256": "2578eba5e39d3d9e39012b6f06b132bcf588da8f50295f3c6267e243ce1ee0f0"
+    },
+    "table_count": 94,
+    "unknown_replayed": false,
+    "status": "single_canonical_POST44_copied_GCM_verified_locally_restored_cleaned",
+    "delivery": {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/delivery-R08-R14.json",
+      "bytes": 20597,
+      "sha256": "bb10413059b6fe8268fec94527ce9c13b8dae3ffc23cdf3a31b8f315bf429193"
+    },
+    "health_at_QA_close": {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/final-health-r08-r14.json",
+      "bytes": 2927,
+      "sha256": "7ecc4d479b2a01e3c2e1c04eed2d376f6701083327b03cbd086c543d57e1e735"
+    },
+    "resume_readonly_health": {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/resume-health-20261105-r01.json",
+      "bytes": 2927,
+      "sha256": "7eeb74b2816e6f27fa96f96c6d2da3f6586b00586abf01684277169607b38528"
+    },
+    "resume_readonly_health_success": true,
+    "resume_tunnel_HTTP_status": 200,
+    "new_backup_or_restore_or_provider_request_on_resume": false,
+    "Native_SDK_credentials_selection_changed": false,
+    "configuration_captures": 0,
+    "additional_PRE_captures": 0,
+    "original_prepare_failure_preserved_without_cause_attribution": true,
+    "original_adoption_CAS_rejection_preserved_before_effects": true,
+    "rows_schema_sequences_literal_equality_not_reclassified": true
+  },
+  "sources": [
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/server-prompt-r08-logic/delivery.json",
+      "bytes": 2192,
+      "sha256": "ac16b5003838ad201832e94fdf0680bbc7fa1b2bd4873043983a42c3f494f276"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/server-prompt-r08/adoption-state.json",
+      "bytes": 2599,
+      "sha256": "dbdb5667b54c9a928c3ae8e0ec81daa711fa0079af002133e0df2632cc3f542f"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/client-r14/activation-state.json",
+      "bytes": 703,
+      "sha256": "d45e4d35033feb1cb6e0a38b7125440e7fa3d5d5bc5c5ee998f1978d19b710a6"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/qa/root-material-correction-ui-r01.json",
+      "bytes": 3618,
+      "sha256": "57295fb234d61245fe8f0b4d06275bc94f5bfb83069e75e7bf518e98d0098f67"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/qa/english-material-guidance-r08-final-summary.json",
+      "bytes": 38553,
+      "sha256": "c8540ff58e3e3214bda309650fb0f90c59918c8347da5e6bf7d4c366344702ee"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/qa/english-material-variant-r08-summary.json",
+      "bytes": 11381,
+      "sha256": "836f3bdc3687946e12c14a645d2cb82e278637402efe52a207cc2a056bfcfae2"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/qa/english-practice-feedback-summary.json",
+      "bytes": 8954,
+      "sha256": "498363a6576be797008e5a606a5d46527ad863fe385d6fc7a1999c5402d1d9d0"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/client-r14/source-freeze.json",
+      "bytes": 3497,
+      "sha256": "6b28e56abeffc708370bc90ce8fc8eebafe463e0520d5363cb92812553bd0341"
+    }
+  ],
+  "historical_cut_preserved": {
+    "path": "docs/evidence/teacher-setup-draft-new-page-20261104-r01.json",
+    "bytes": 15951,
+    "sha256": "41a92acd219658a2c1e95df4898ebb96e28690c8dbb4d7fb4100f5f382dab986"
+  },
+  "limits": [
+    "Sample content review is not a semantic validator or universal pedagogical guarantee.",
+    "All three new single-choice correct options were first; positional bias remains recorded.",
+    "No audio, independent pronunciation certification, personal English-level accreditation or completion of all twenty course units.",
+    "No formal document approval, knowledge publication or global V1 acceptance."
+  ],
+  "raw_answers_credentials_tokens_private_keys_in_evidence": false
+}

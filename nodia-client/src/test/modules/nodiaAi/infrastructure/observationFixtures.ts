@@ -9,5 +9,5 @@ export const observation: NodiaAiToolObservation = {
   result_ref: toolRef, observed_at: conversation.created_at,
   source: { module_key: "businesses", resource_key: "synthetic-businesses", operation_key: "list", description_key: "synthetic.description" },
   summary: { total: 0, returned: 0 },
-  navigation: [{ kind: "business_detail", id: chatId, module_route: "/tools/business", label: "Synthetic business" }],
+  navigation: [{ kind: "business_detail", id: chatId, module_route: "/business", label: "Synthetic business" }],
 };

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "scope": "Real browser against isolated intercepted fixtures, no VM authentication or inference",
+  "checks": [
+    {
+      "viewport": "390x844",
+      "lang": "es",
+      "theme": "dark",
+      "checks": [
+        "Topbar offers API key and Agentic",
+        "Connection tabs exactly API key and Agentic",
+        "Configuration switches only these two modes",
+        "First save failure preserves modal and edited name",
+        "Retry succeeds and closes modal; edited name visible in detail/topbar",
+        "Full-width actions and no viewport horizontal overflow"
+      ]
+    },
+    {
+      "viewport": "1280x900",
+      "lang": "en",
+      "theme": "light",
+      "checks": [
+        "API key panel, encrypted-key guidance and masked synthetic keys",
+        "Only enabled connection modes shown; topbar two modes",
+        "Reasoning controls and table pagination preserved"
+      ]
+    }
+  ],
+  "screenshots": [
+    "docs/evidence/ai-two-modes-ui-mobile-r01.png",
+    "docs/evidence/ai-two-modes-ui-desktop-r01.png"
+  ],
+  "viewport_override_reset": true,
+  "paid_requests": 0,
+  "secrets_included": false,
+  "additional_checks": [
+    "Unknown Agentic observation displays Sin verificar, disables model sync; no invented quota",
+    "HTTP loading error displays error content and retry button",
+    "Empty connections displays explicit invitation to add connection"
+  ]
+}

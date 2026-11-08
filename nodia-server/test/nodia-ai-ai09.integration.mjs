@@ -440,7 +440,7 @@ try {
       'incomplete selection',
       {
         client_request_id: randomUUID(),
-        selection: { mode: 'token_plan_web' },
+        selection: { mode: 'agentic' },
       },
     ],
     [
@@ -449,7 +449,7 @@ try {
         client_request_id: randomUUID(),
         selection: {
           connection_id: '1',
-          mode: 'token_plan_web',
+          mode: 'agentic',
           model_id: 'synthetic-model',
           api_key: 'synthetic-forbidden',
         },
@@ -492,7 +492,7 @@ try {
   );
   const selection = {
     connection_id: provider.id,
-    mode: 'token_plan_web',
+    mode: 'agentic',
     model_id: 'synthetic-discovered-model',
     effort_id: 'synthetic-discovered-effort',
   };
@@ -504,50 +504,43 @@ try {
     'exact configured connection mode model and effort survive persistence',
     JSON.stringify(selected.selection) === JSON.stringify(selection),
   );
-  const target = {
-    selection: { ...selection, mode: 'token_plan_agentic' },
-    configuration_generation: 'synthetic-config-generation',
-    session_generation: 'synthetic-session-generation',
-  };
-  await db.query(
-    'UPDATE nodia_ai_conversations SET routing_enabled=true,routing_target_selection=$1,routing_revision=2 WHERE id=$2',
-    [target, selected.conversation_id],
-  );
-  await db.query(
-    "UPDATE nodia_ai_conversations SET selected_mode='token_plan_agentic' WHERE id=$1",
-    [selected.conversation_id],
-  );
-  const [preservedRouting] = await db.query(
-    'SELECT routing_enabled,routing_revision FROM nodia_ai_conversations WHERE id=$1',
-    [selected.conversation_id],
-  );
-  check(
-    'changing the base mode can preserve a previously stored routing preference',
-    preservedRouting.routing_enabled === true &&
-      preservedRouting.routing_revision === 2,
-  );
+  for (const retiredMode of ['token_plan_web', 'token_plan_agentic']) {
+    await denies(
+      'new selections reject retired mode ' + retiredMode,
+      () =>
+        create.execute(identities.get('1'), {
+          client_request_id: randomUUID(),
+          selection: { ...selection, mode: retiredMode },
+        }),
+      400,
+    );
+    await rejectsSql(
+      'stored current selection rejects retired mode ' + retiredMode,
+      () =>
+        db.query(
+          'UPDATE nodia_ai_conversations SET selected_mode=$1 WHERE id=$2',
+          [retiredMode, selected.conversation_id],
+        ),
+      '23514',
+    );
+  }
   await rejectsSql(
-    'enabled routing cannot omit its same-connection target identity',
+    'retired delegation cannot be enabled by direct SQL',
     () =>
       db.query(
-        'UPDATE nodia_ai_conversations SET routing_target_selection=$1 WHERE id=$2',
-        [
-          {
-            ...target,
-            selection: {
-              mode: 'token_plan_agentic',
-              model_id: selection.model_id,
-              effort_id: null,
-            },
-          },
-          selected.conversation_id,
-        ],
+        'UPDATE nodia_ai_conversations SET routing_enabled=true,routing_target_selection=$1 WHERE id=$2',
+        [{ selection }, selected.conversation_id],
       ),
     '23514',
   );
-  await db.query(
-    "UPDATE nodia_ai_conversations SET selected_mode='token_plan_web' WHERE id=$1",
+  const [preservedRouting] = await db.query(
+    'SELECT routing_enabled,routing_target_selection FROM nodia_ai_conversations WHERE id=$1',
     [selected.conversation_id],
+  );
+  check(
+    'failed retired writes preserve disabled routing and the configured selection',
+    preservedRouting.routing_enabled === false &&
+      preservedRouting.routing_target_selection === null,
   );
   const policy = JSON.parse(
     await readFile(

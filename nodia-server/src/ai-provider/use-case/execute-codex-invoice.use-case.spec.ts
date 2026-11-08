@@ -27,15 +27,15 @@ describe('Codex invoice extraction use case', () => {
     provider = {
       id: '42',
       is_active: true,
-      use_token_plan_agentic: true,
+      use_agentic: true,
       catalog: {
         key: 'openai',
         is_active: true,
-        can_use_token_plan_agentic: true,
+        can_use_agentic: true,
       },
       fields: {
         api_key: { selected_model: 'API-UNCHANGED' },
-        token_plan_agentic: {
+        agentic: {
           selected_model: 'synthetic-model',
           thinking_levels: { 'synthetic-model': 'new_effort' },
         },
@@ -196,8 +196,8 @@ describe('Codex invoice extraction use case', () => {
     }
   });
   it('clears an individual Codex effort without inheriting the general preference', async () => {
-    provider.fields.token_plan_agentic.thinking_level = 'unavailable';
-    provider.fields.token_plan_agentic.thinking_levels = {
+    provider.fields.agentic.thinking_level = 'unavailable';
+    provider.fields.agentic.thinking_levels = {
       'synthetic-model': null,
     };
     await useCase.execute('42', undefined, png);
@@ -207,7 +207,7 @@ describe('Codex invoice extraction use case', () => {
     expect(call?.[1]).not.toHaveProperty('effort');
   });
   it('never assigns a model from another mode or the first discovered model', async () => {
-    provider.fields.token_plan_agentic = {};
+    provider.fields.agentic = {};
     await expect(useCase.execute('42', undefined, png)).rejects.toMatchObject({
       status: 400,
     });

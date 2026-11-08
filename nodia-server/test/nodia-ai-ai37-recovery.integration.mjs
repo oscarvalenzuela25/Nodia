@@ -45,7 +45,7 @@ const row = async (source, table, id) => (await source.query(`SELECT * FROM ${ta
 async function reset() { await db.query('TRUNCATE nodia_ai_conversations,nodia_ai_jobs,nodia_ai_runtime_slots CASCADE'); }
 async function seed(owner = '1', selectedCatalog = catalog) {
   const chat = randomUUID(), message = randomUUID(), run = randomUUID(), job = randomUUID();
-  const selection = { connection_id: '1', mode: 'token_plan_web', model_id: 'synthetic-ai37-model', effort_id: null };
+  const selection = { connection_id: '1', mode: 'agentic', model_id: 'synthetic-ai37-model', effort_id: null };
   const budget = { schema_version: 1, tool_calls: policy.budget.tool_calls_per_run, mcp_rpc_messages: policy.budget.mcp_rpc_messages_per_run, provider_dispatches: policy.budget.provider_dispatches_per_run, compactions: policy.budget.compactions_per_run, delegations: policy.budget.delegations_per_run };
   await db.transaction(async manager => {
     await manager.query("INSERT INTO nodia_ai_conversations(id,owner_id,client_request_id,title,creation_request_hash,expires_at,next_message_seq) VALUES($1,$2,$3,'Synthetic recovery',$4,clock_timestamp()+interval '1 day',1)", [chat, owner, randomUUID(), 'a'.repeat(64)]);

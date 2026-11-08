@@ -55,7 +55,7 @@ mainInstance.defaults.adapter = async request => {
 };
 useAuthStore.getState().login({ token: "synthetic-ai34-qa-not-a-real-credential", user: { id: "90000000991", name: "Synthetic QA" }, expiresAt: Date.now() + 3600000 });
 const refresh = () => void queryClient.invalidateQueries();
-createRoot(document.getElementById("root")!).render(<QueryClientProvider client={queryClient}><MemoryRouter initialEntries={[`/tools/nodia-ai?chat=${CHAT_ID}`]}><MUIProvider>
+createRoot(document.getElementById("root")!).render(<QueryClientProvider client={queryClient}><MemoryRouter initialEntries={[`/nodia-ai?chat=${CHAT_ID}`]}><MUIProvider>
   <Box sx={{ p: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
     <Typography sx={{ width: "100%" }}>QA SINTÉTICO AI-34 · SIN BD NI PROVEEDOR / NO DATABASE OR PROVIDER</Typography>
     <Button onClick={() => void i18n.changeLanguage("es")}>ES</Button><Button onClick={() => void i18n.changeLanguage("en")}>EN</Button>

@@ -11,7 +11,9 @@ describe('GetAllProvidersUseCase', () => {
     providerServiceMock = {
       findAll: vi.fn(),
     };
-    useCase = new GetAllProvidersUseCase(providerServiceMock as ProviderService);
+    useCase = new GetAllProvidersUseCase(
+      providerServiceMock as ProviderService,
+    );
   });
 
   it('should be defined', () => {
@@ -45,12 +47,17 @@ describe('GetAllProvidersUseCase', () => {
       },
     };
 
-    vi.mocked(providerServiceMock.findAll!).mockResolvedValue(mockResponse as any);
+    vi.mocked(providerServiceMock.findAll!).mockResolvedValue(
+      mockResponse as any,
+    );
 
     const result = await useCase.execute(queryParams);
 
     expect(providerServiceMock.findAll).toHaveBeenCalledTimes(1);
-    expect(providerServiceMock.findAll).toHaveBeenCalledWith(queryParams);
+    expect(providerServiceMock.findAll).toHaveBeenCalledWith(
+      queryParams,
+      undefined,
+    );
     expect(result).toEqual(mockResponse);
   });
 });

@@ -16,8 +16,7 @@ export function configurationFixture() {
     name: 'Synthetic provider',
     is_active: true,
     can_use_api_key: true,
-    can_use_token_plan_web: true,
-    can_use_token_plan_agentic: true,
+    can_use_agentic: true,
   });
   const existing = Object.assign(new AiProvider(), {
     id: '9007199254740993',
@@ -25,16 +24,15 @@ export function configurationFixture() {
     catalog,
     fields: {
       legacy: { token: 'synthetic-private-value' },
-      token_plan_web: {
+      agentic: {
         selected_model: 'synthetic-model',
         secret: 'synthetic-mode-secret',
         thinking_levels: { 'synthetic-model': 'high', other: 'low' },
       },
     },
     use_api_key: false,
-    use_token_plan_web: true,
-    use_token_plan_agentic: false,
-    default_mode: 'token_plan_web',
+    use_agentic: true,
+    default_mode: 'agentic',
     name: 'Historical connection',
     is_active: true,
     is_default: false,
@@ -80,7 +78,7 @@ export function configurationFixture() {
     }),
   };
   let isSuperAdmin = true;
-  let hasPermission = true;
+  let hasModule = true;
   let validSession = true;
   let hasAuthorityLocks = true;
   const manager = {
@@ -93,7 +91,10 @@ export function configurationFixture() {
         return validSession
           ? [{ actorId: '1', sessionId: actor.sessionId, isSuperAdmin }]
           : [];
-      if (sql.includes('AS allowed')) return [{ allowed: hasPermission }];
+      if (sql.includes('AS allowed'))
+        return [
+          { actor_active: validSession, allowed: isSuperAdmin || hasModule },
+        ];
       return [];
     }),
     getRepository: vi.fn((entity: unknown) =>
@@ -128,8 +129,8 @@ export function configurationFixture() {
     setAdmin(value: boolean) {
       isSuperAdmin = value;
     },
-    setPermission(value: boolean) {
-      hasPermission = value;
+    setModule(value: boolean) {
+      hasModule = value;
     },
     setSession(value: boolean) {
       validSession = value;

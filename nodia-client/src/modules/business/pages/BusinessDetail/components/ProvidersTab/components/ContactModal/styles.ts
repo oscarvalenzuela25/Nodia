@@ -9,6 +9,10 @@ export const ContactFormContainer = styled("form")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(3),
+  [theme.breakpoints.down("sm")]: {
+    "& .MuiButton-root": { minHeight: 44 },
+    "& .MuiIconButton-root": { width: 44, height: 44 },
+  },
 }));
 export const PhoneRow = styled(Box)(({ theme }) => ({
   display: "grid",

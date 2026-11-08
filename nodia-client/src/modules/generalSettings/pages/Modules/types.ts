@@ -4,12 +4,33 @@ export type TranslateItem = {
   en: string;
 };
 
+export type OrderNeighbor = { id: string; sort_order: number };
+export type OrderMetadata = { previous: OrderNeighbor | null; next: OrderNeighbor | null };
+type MoveOrderBase = {
+  expected_sort_order: number;
+  page_size?: number;
+};
+export type MoveOrderCommand = MoveOrderBase & (
+  | { direction: "up" | "down"; expected_neighbor: OrderNeighbor | null }
+  | { direction: "before" | "after"; expected_neighbor: OrderNeighbor }
+);
+export type MoveModuleOrderCommand = MoveOrderCommand & { expected_module_group_id: string };
+export type OrderMoveResult = OrderMetadata & {
+  status: "moved" | "unchanged";
+  id: string;
+  module_group_id?: string;
+  sort_order: number;
+  position: number;
+  page: number;
+};
+
 export interface ModuleGroupSummary {
   id: string;
   key: string;
   icon?: string | null;
   is_active?: boolean;
   translates?: TranslateItem[];
+  sort_order?: number;
 }
 
 export interface ModuleGroupEntity {
@@ -20,6 +41,8 @@ export interface ModuleGroupEntity {
   created_at?: string;
   updated_at?: string;
   translates?: TranslateItem[];
+  sort_order?: number;
+  ordering?: OrderMetadata;
 }
 
 export type ModuleGroupItem = {
@@ -60,6 +83,7 @@ export interface GetModuleGroupsParams {
   limit?: number;
   size?: number;
   all?: boolean;
+  ordering?: boolean;
   q?: Record<string, unknown>;
 }
 
@@ -100,6 +124,9 @@ export interface ModuleEntity {
   created_at?: string;
   updated_at?: string;
   translates?: TranslateItem[];
+  sort_order?: number;
+  ordering?: OrderMetadata;
+  group_ordering?: OrderMetadata;
 }
 
 export interface GetModulesParams {
@@ -108,6 +135,8 @@ export interface GetModulesParams {
   size?: number;
   all?: boolean;
   includes?: boolean;
+  ordering?: boolean;
+  locate_id?: string;
   q?: Record<string, unknown>;
 }
 

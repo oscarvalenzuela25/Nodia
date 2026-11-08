@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "scope": "FinanceCreate opt-in historical read after incompatible release; no universal version compatibility",
+  "status": "local_atomic_and_isolated_SQL_read_validation_passed_UI_observation_pending",
+  "sources": {
+    "src/nodia-ai-proposal/types/proposal-preparer.types.ts": "6ffd52ca9dc7ba89f3f7a28007c55c1354e5fa07a057f0619080f18db59d633f",
+    "src/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.ts": "0ba3dca81341e67f9f7f9b8a5e57cb37f6113d2d184c115cb99c5c50f5e68ad7",
+    "src/nodia-ai-proposal/use-case/get-nodia-ai-proposal.use-case.ts": "127a3643ab08a3aa0adbc762bf0bbf740b59b9d1893660f97261f5598c6b19a3",
+    "src/nodia-ai-proposal/use-case/prepare-nodia-ai-finance-movement.use-case.ts": "ce9644f185ea3c6af483b7d687a1c876f25ce6bc8e183c81fec4bfc5dc8fc897",
+    "src/nodia-ai-proposal-review/use-case/get-nodia-ai-proposal-review.use-case.ts": "063bd6275534ad01e8e9442e2f83ddc864ee158a32dfa4bec3e0ecdf9acfb8b2",
+    "src/nodia-ai-confirmation/use-case/get-nodia-ai-execution.use-case.ts": "55fe7d191a72101d78daa2d97690b2f243b7d08445bafbfb3f2a11ad7b3c962c",
+    "src/nodia-ai-observation/use-case/observe-nodia-ai-proposals.use-case.ts": "7c8601a3f252d6c9d1814c45a631b6ca0feef1da7797c6bbe988b60b4e268407"
+  },
+  "validation": {
+    "focal": {
+      "files": 6,
+      "passed": 276,
+      "exit": 0
+    },
+    "typescript": {
+      "command": "node node_modules/typescript/bin/tsc -p tsconfig.build.json --noEmit --incremental false",
+      "exit": 0
+    },
+    "lint": {
+      "tool": "oxlint",
+      "selected_paths": 14,
+      "exit": 0
+    },
+    "isolated_actual_B": {
+      "source_manifest_sha256": "11abb1faae471cef7a3f3ed386fddae1fc9537717b19c899332b7796dde0ea79",
+      "knowledge_release_id": "a878aa85643f769582417a6affa3c13fe73f00db94884b0bebc016105a7d72dc",
+      "historical_proposal_and_verified_receipt_visible": true,
+      "pending_hash_preserved_read_only": true,
+      "both_proposal_ready_events_visible": true,
+      "effects_before": 2,
+      "effects_after": 2,
+      "completed_before": 2,
+      "completed_after": 2,
+      "jobs": 0,
+      "slots": 0,
+      "SDK_calls": 0,
+      "configured_database_used": false
+    }
+  },
+  "limits": [
+    "No Client change; actual Client UI observation remains separate.",
+    "Only FinanceCreate explicitly implements the historical authority port; incompatible families without it fail closed.",
+    "Human writes and resume require the current contract; historical reads do not prepare or execute old commands.",
+    "Pending A expired naturally during the fix; non-expired contract-mismatch rejection was separately proved before this fix.",
+    "The two fixture effects were created earlier by real confirmation/worker use cases; this read validation added none."
+  ],
+  "receipts": [
+    {
+      "path": "ops/lab/artifacts/nr32-historical-read-fix-r01/receipts/focal.log",
+      "sha256": "956e139f02ae4070356d8c1c5d59bb95ce1c4b3c7e04fffe4eced3ba31f59e4a",
+      "bytes": 471
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-historical-read-fix-r01/receipts/isolated-B-build.json",
+      "sha256": "248e1d27205ae2464830a7f6094f23ce909cb4de99f7cb6218dfd009732be53f",
+      "bytes": 3277
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-historical-read-fix-r01/receipts/isolated-B-authorized-reads.json",
+      "sha256": "8886bcfbe24882019a44e8de7f9f09ef0fd88264c4b7cdf7e5b57afad2a8502f",
+      "bytes": 1316
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-historical-read-fix-r01/receipts/source-hashes.json",
+      "sha256": "d6341dd0a54089ec0268a4e7046156f58a9c67217074f361dc6065c756ca3f48",
+      "bytes": 1012
+    }
+  ]
+}

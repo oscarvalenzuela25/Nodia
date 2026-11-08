@@ -71,7 +71,7 @@
             "$ref": "#/$defs/BigintId"
           },
           "mode": {
-            "enum": ["token_plan_web", "token_plan_agentic"]
+            "enum": ["agentic"]
           }
         }
       },

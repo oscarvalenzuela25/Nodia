@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "atomic_clock_fix_verified_offline",
+  "problem": "Fresh comparison reads produced a new comparison_observed_at at each authority check, conflicting despite identical data.",
+  "change": "Exclude only top-level comparison_observed_at from authority fingerprint for action read with compare_prices strictly true; keep returned initial real observation timestamp and every other field strict.",
+  "production": {
+    "nodia-server/src/nodia-ai-invoice-ocr/use-case/build-nodia-ai-invoice-ocr-tool.use-case.ts": {
+      "bytes": 6614,
+      "sha256": "98a9e9c1f71dc57f2abc01fbfe65cadba95451bcd94824b5413a6f7de0241680"
+    },
+    "nodia-server/src/nodia-ai-invoice-ocr/use-case/build-nodia-ai-invoice-ocr-tool.use-case.spec.ts": {
+      "bytes": 11771,
+      "sha256": "bff1fe2faea7c1f15960d4a665e3310147505b3bbfbad8e585a1f3ab36dd4e7c"
+    }
+  },
+  "regression": {
+    "old_class_sha256": "5b250f4ac1a5fdee1e8a8692ed6079b3564c176f06657dc11ba45cd03647eb54",
+    "old_class_manifest": "50ce9c572f3cf8648815afcc91ba637b0b499d5a46c9610f0c1d0c4cb38c51c9",
+    "valid_fixture_old_class_result": "request_conflict at +1ms; 1 regression failed as expected",
+    "isolated_harness_adaptation": "Only module import and schema asset URLs adapted; original class logic preserved.",
+    "after_fix_tests_passed": 18,
+    "oxlint_exit": 0,
+    "negative_checks": [
+      "price",
+      "supplier",
+      "analysis",
+      "business",
+      "extraction",
+      "source",
+      "selection",
+      "read(false) timestamp",
+      "other actions",
+      "nested timestamps",
+      "source hashes",
+      "zero/null distinction"
+    ]
+  },
+  "materials": {
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/validation/delivery.json": {
+      "bytes": 1136,
+      "sha256": "8a6957db2373c8c94cf684beadeeedc1068f7b9d9f07337c44d27be967213928"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/validation/green-final.txt": {
+      "bytes": 466,
+      "sha256": "5a4d6f936c95777f3363d63589314d9613c40a2922a3cffdd5b63a83bf8eea75"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/validation/red-valid-original-resolved.txt": {
+      "bytes": 1320,
+      "sha256": "322816e8b6896214b3ecc82daae00ddcc340d9b4e9400e038683487aec550e6b"
+    }
+  },
+  "limits": [
+    "Offline mocks and contract compiler; no SQL/DI/VM/SDK by this author.",
+    "Intermediate failed fixture with items[] was corrected to satisfy minimum one item; earlier logs remain in .tmp and are not the final regression evidence.",
+    "Clean selective compilation, SQLDI23, adoption and UI results are separately owned receipts; this document does not claim them from local tests.",
+    "No schema, approved feature content, registry publication, fallback, retry or OCR replay changed by this two-file fix."
+  ]
+}

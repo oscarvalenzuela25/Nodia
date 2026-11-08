@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "stage": "AI36-C03-publication",
+  "observed_on": "2026-10-25",
+  "status": "human_approved_exact_publication_built_locally_VM_adoption_and_specific_analyzer_acceptance_separate",
+  "human_authorization": {
+    "record": {
+      "path": "docs/evidence/nodia-ai-ai36-c03-publication-authorization-r01.json",
+      "sha256": "54e30d1e9d32e807cfa389b107e6e7c696b750088edb35689c52ed60c0643c3a"
+    },
+    "exact_reply": "Aprobar C03 para publicación y prueba en VM",
+    "scope": "Named C03 ficha revision3, exact section and tool prepare/complete, original image/PDF <=10MiB without business effects; other documents/plans/ADRs not approved",
+    "approved_document_content_sha256": "9fe8459c3831be7458a92b5636c50f0c6989b3a94019dff2a4f42bb24661098d",
+    "document": {
+      "path": "docs/nodia-ai/knowledge/businesses/features/active-invoice-analysis.md",
+      "sha256": "6842a0905033365ebdefa597c36c9e3de8e9208df883985fe9d9b6fd90f400a7"
+    },
+    "revision": 3,
+    "document_status": "approved",
+    "integration_status": "published",
+    "original_proposal_preserved": {
+      "path": "docs/evidence/nodia-ai-ai36-c03-publication-proposal-r01.json",
+      "sha256": "9e5018cc938a7b4713176d1ca2b977d1a73b3fdb426c043fe749e72d85966fa8"
+    }
+  },
+  "applied_registry_delta": {
+    "registry": {
+      "path": "nodia-server/config/nodia-ai-knowledge.registry.json",
+      "sha256": "16baaa2acd3bd4083b25da6d908ff318ba317df0b50613b7c8220846f979fd26"
+    },
+    "tool_id": "nodia_invoices_analyze",
+    "revision": 1,
+    "kind": "analyze_attachment",
+    "actions": [
+      "prepare",
+      "complete"
+    ],
+    "capabilities_added": 1,
+    "bindings_added": 1,
+    "previous_capabilities_preserved_exact": 150,
+    "previous_bindings_preserved_exact": 41,
+    "source_paths_added": 0,
+    "new_tables_routes_permissions_or_business_writers": false,
+    "module_routes": [
+      "/tools/business"
+    ],
+    "effective_context_routes": [
+      "/tools/business",
+      "/tools/nodia-ai"
+    ]
+  },
+  "schema": {
+    "canonical": {
+      "path": "nodia-server/src/nodia-ai-products/contracts/invoice-analysis.json",
+      "sha256": "005b8828afba2dcfa21be36eb61f66db947f151bf1afc92f99e8e15d1066bb9d"
+    },
+    "authoring_projection": {
+      "path": "docs/evidence/nodia-ai-ai36-c03-publication-r01.schema.json",
+      "sha256": "005b8828afba2dcfa21be36eb61f66db947f151bf1afc92f99e8e15d1066bb9d"
+    },
+    "projection_byte_identical": true,
+    "input_definition": "InvoiceAnalysisInput",
+    "output_definition": "InvoiceAnalysisResult",
+    "publication_contract_schema_sha256": "cc93ecb978c5e74f6a3492661da8bcd4b4bdce0afc0da57efdc678ea21b1d23c",
+    "publication_contract_schema_unchanged_from_VM": true,
+    "runtime_schema_or_JS_changed": false
+  },
+  "local_build": {
+    "command": "npm run build",
+    "status": "passed",
+    "release_id": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+    "manifest_sha256": "544721211fd18cb28684c67799d5901b81b65c728ff43e6d0ae56503e9d7c620",
+    "capabilities": 151,
+    "fragments": 42,
+    "published_documents": 40,
+    "source_and_compiled_bundle_equal": true,
+    "source_dev_assets_prepared": "node scripts/build-nodia-ai-context.mjs --prepare",
+    "source_dev_and_dist_assets_byte_identical": true,
+    "dist_changes": {
+      "changed": [
+        {
+          "path": "nodia-ai-context/config/knowledge-pin.json",
+          "old_sha256": "21eba348a883a137310c403be49b97f26155ccf4f3239bdbf00297d79159f23f",
+          "new_sha256": "450ccdc476bbf766f7046869ec4b95f97e7fedea348c0f17f44027f0eae4fe64"
+        },
+        {
+          "path": "nodia-ai/knowledge/fragments/5504a3cc2716d5da1b233a36ac992ab24209bfee2133f7eabbdeb8346370b9b8.md",
+          "old_sha256": null,
+          "new_sha256": "5504a3cc2716d5da1b233a36ac992ab24209bfee2133f7eabbdeb8346370b9b8"
+        },
+        {
+          "path": "nodia-ai/knowledge/manifest.json",
+          "old_sha256": "37f25a4ca837610264e74bd67b63a5a5392bd3a16c3c13c3d61352ef9469d482",
+          "new_sha256": "544721211fd18cb28684c67799d5901b81b65c728ff43e6d0ae56503e9d7c620"
+        }
+      ],
+      "JS_changes": [],
+      "schema_asset_changes": []
+    },
+    "VM_baseline_preservation": {
+      "source_manifest_sha256": "023d984ce52573c526a982ce54672aee949fd53ce498a2cd079345a3a6bcb9b1",
+      "old_compiled_manifest_sha256": "47ce3339cd92bd6cef1e24065e7d6f7798010d0d23dca542f6162974e2bde347",
+      "capability_contracts_deep_equal": 150,
+      "fragment_descriptors_and_hashes_deep_equal": 41
+    },
+    "local_baseline_manifest": {
+      "path": "ops/lab/artifacts/c03-publication-r01/compiled-manifest-before.json",
+      "sha256": "37f25a4ca837610264e74bd67b63a5a5392bd3a16c3c13c3d61352ef9469d482"
+    },
+    "overlay_asset_pins": {
+      "path": "ops/lab/artifacts/c03-publication-r01/local-build-assets-r01.json",
+      "sha256": "653dfef9da7e78f2ef5b207940435d31c10623f40867e9ef4de77e69a067ba1d"
+    },
+    "overlay_files": [
+      {
+        "path": "config/nodia-ai-knowledge.registry.json",
+        "sha256": "16baaa2acd3bd4083b25da6d908ff318ba317df0b50613b7c8220846f979fd26",
+        "bytes": 305439
+      },
+      {
+        "path": "src/nodia-ai/knowledge/manifest.json",
+        "sha256": "544721211fd18cb28684c67799d5901b81b65c728ff43e6d0ae56503e9d7c620",
+        "bytes": 391983
+      },
+      {
+        "path": "src/nodia-ai/knowledge/fragments/5504a3cc2716d5da1b233a36ac992ab24209bfee2133f7eabbdeb8346370b9b8.md",
+        "sha256": "5504a3cc2716d5da1b233a36ac992ab24209bfee2133f7eabbdeb8346370b9b8",
+        "bytes": 1656
+      },
+      {
+        "path": "src/nodia-ai-context/config/knowledge-pin.json",
+        "sha256": "450ccdc476bbf766f7046869ec4b95f97e7fedea348c0f17f44027f0eae4fe64",
+        "bytes": 225
+      },
+      {
+        "path": "dist/nodia-ai/knowledge/manifest.json",
+        "sha256": "544721211fd18cb28684c67799d5901b81b65c728ff43e6d0ae56503e9d7c620",
+        "bytes": 391983
+      },
+      {
+        "path": "dist/nodia-ai/knowledge/fragments/5504a3cc2716d5da1b233a36ac992ab24209bfee2133f7eabbdeb8346370b9b8.md",
+        "sha256": "5504a3cc2716d5da1b233a36ac992ab24209bfee2133f7eabbdeb8346370b9b8",
+        "bytes": 1656
+      },
+      {
+        "path": "dist/nodia-ai-context/config/knowledge-pin.json",
+        "sha256": "450ccdc476bbf766f7046869ec4b95f97e7fedea348c0f17f44027f0eae4fe64",
+        "bytes": 225
+      },
+      {
+        "path": "scripts/nodia-ai-knowledge/compiler.mjs",
+        "sha256": "f8243175903c486cb64fa77196120a626df053cdff5ce346b163d34ae54a4a6b",
+        "bytes": 17286
+      }
+    ]
+  },
+  "approved_fragment_serialization_correction": {
+    "original_proposal_and_authorization_reference_sha256": "630d1c3bf37ca49a1999351507c00aa6ce24ea3783f673d98ceaccd4a569d4e5",
+    "original_manual_artifact_bytes": 1655,
+    "actual_compiler_fragment_sha256": "5504a3cc2716d5da1b233a36ac992ab24209bfee2133f7eabbdeb8346370b9b8",
+    "actual_compiler_fragment_bytes": 1656,
+    "cause": "The manual proposal serializer omitted one blank line between the heading and first paragraph; the approved ficha always contained that line.",
+    "section": "Uso del análisis en la generación activa",
+    "ficha_text_metadata_approval_target_and_content_hash_changed_to_force_result": false,
+    "compiler_section_selection_changed": false,
+    "semantic_text_difference": false,
+    "root_instruction": "Preserve proposalR01; record serialization correction in successor evidence; no new human approval for whitespace because the exact approved ficha/revision/content hash already contained the emitted bytes."
+  },
+  "authoring_link_fix": {
+    "first_build_failed_before_emission": {
+      "path": "ops/lab/artifacts/c03-publication-r01/build-attempt-r01.json",
+      "sha256": "cc9663fa9addeb7807074d81064ab54c9bef11326a80995a6b07c38039babbe3"
+    },
+    "reason": "Approving the existing ficha activated its existing native Python hyperlink; the original authoring resolver rejected that project root.",
+    "changed_source": {
+      "path": "nodia-server/scripts/nodia-ai-knowledge/compiler.mjs",
+      "sha256": "f8243175903c486cb64fa77196120a626df053cdff5ce346b163d34ae54a4a6b"
+    },
+    "before_exact_VM_source_sha256": "554781fda5d29d7f54b62a3279be9874567a027b832da1037504b2530f874aad",
+    "diff": {
+      "path": "ops/lab/artifacts/c03-publication-r01/compiler-document-links-fix.patch",
+      "sha256": "8af2df6317579bc461d75edd2547cc1a4e64b43c2b11bc871048a807adba224c"
+    },
+    "boundary": "Only approved-document hyperlink validation opts into public .py sources of nodia-gemini-microservice; default repositoryFile and metadata/capability RepoPath remain unchanged.",
+    "operational_and_hidden_directories_rejected": true,
+    "shared_traversal_symlink_realpath_containment_checks_preserved": true,
+    "hardcoded_single_Python_file_exception": false,
+    "runtime_or_schema_contract_changes": false
+  },
+  "checks": {
+    "link_resolver_and_approved_build_regressions": {
+      "command": "node --test test/nodia-ai-knowledge-links.spec.mjs",
+      "passed": 5,
+      "failed": 0,
+      "source": {
+        "path": "nodia-server/test/nodia-ai-knowledge-links.spec.mjs",
+        "sha256": "7e92eccc52323f6215d0d18eb94f887a0fde01d48bbc68473546414b79b75184"
+      },
+      "covers": [
+        "multiple public Python sources; default repositoryFile and schema RepoPath denial",
+        "operational profile/session/credential directories containing .py",
+        "hidden .env/.venv, non-Python and traversal",
+        "symlink/repository containment",
+        "real approved C03 compile and selected fragment"
+      ]
+    },
+    "targeted_runtime_tests_before_metadata_publication": {
+      "passed": 96,
+      "failed": 0,
+      "files": 3,
+      "report": {
+        "path": "ops/lab/artifacts/c03-publication-proposal-r01/targeted-tests-r01.json",
+        "sha256": "3ef15ce8f06dac3c0b2932849a5c3951197d426f420100c4ac3dcf96b07c1297"
+      }
+    },
+    "lint": {
+      "command": "npx oxlint scripts/nodia-ai-knowledge/compiler.mjs test/nodia-ai-knowledge-links.spec.mjs",
+      "exit_code": 0
+    },
+    "current_catalog": {
+      "command": "node scripts/check-nodia-ai-catalog.mjs",
+      "status": "passed",
+      "published_capabilities": 151,
+      "closed_contracts": 302,
+      "fragments": 42,
+      "analyze_attachment_count": 1,
+      "unpublished_candidates": 0,
+      "generation_tools_limit_unchanged": 74,
+      "catalog_utf8_limit_unchanged": 131072
+    },
+    "bundle_and_source_verifier": {
+      "command": "node ops/lab/artifacts/c03-publication-r01/verify-approved-publication.mjs",
+      "status": "passed",
+      "script": {
+        "path": "ops/lab/artifacts/c03-publication-r01/verify-approved-publication.mjs",
+        "sha256": "0d7033e17fec7b9e4ff0520477ea3e4c60043b367fed756375316db3712830b3"
+      }
+    },
+    "legacy_knowledge_current_check": {
+      "command": "npm run test:nodia-ai:knowledge",
+      "status": "blocked_by_preexisting_historical_release_gate",
+      "stage": "unwindAi32R02",
+      "expected_historical_release": "6c4ff3a4259aebb2ec0d360c278457daa5cc8d59d46685246823f298c5423d50",
+      "baseline_150_41_also_fails_same_gate": true,
+      "baseline_check": {
+        "path": "ops/lab/artifacts/c03-publication-r01/legacy-knowledge-check-baseline-r01.json",
+        "sha256": "76c97c43479d33e2fc5be342c23088a796645c4568108ccbb7f015d61ff8f77e"
+      },
+      "historical_evidence_or_reconciliation_scripts_rewritten_to_claim_success": false
+    }
+  },
+  "effects": {
+    "authoring_publication_applied": true,
+    "local_compiled_publication_emitted": true,
+    "VM_or_service_changes_by_this_delivery": false,
+    "provider_generations": 0,
+    "HTTP_requests": 0,
+    "SQL_connections": 0,
+    "domain_effects": 0,
+    "other_approved_documents_or_ADRs_changed": false
+  },
+  "remaining": [
+    "Review/adopt the pinned minimal Server/context overlay in the VM under existing quiet/backup/recovery controls.",
+    "Actual authorized analyzer acceptance through UI/R2/worker/MCP prepare -> same-generation extraction -> complete -> human result readback, no nested inference or business effect.",
+    "Web text remains failed/closed for the observed epoch; generic Agentic MCP/MIME evidence does not certify this specific analyzer flow.",
+    "Legacy historical --current knowledge verifier is a separate maintenance gap; current compiler, source/bundle verification and current catalog validation pass."
+  ]
+}

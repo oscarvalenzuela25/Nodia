@@ -42,6 +42,10 @@ export const StyledDialog = styled(Dialog, {
               0.15
             )}, 0 0 0 1px ${borderColor}`,
       overflow: "hidden",
+      [theme.breakpoints.down("sm")]: {
+        margin: theme.spacing(2),
+        maxHeight: "calc(100dvh - 32px)",
+      },
       transition: theme.transitions.create(["box-shadow", "transform"], {
         duration: theme.transitions.duration.shorter,
       }),
@@ -78,6 +82,7 @@ export const HeaderContent = styled(Box)({
 export const ModalTitle = styled("h2")(({ theme }) => ({
   ...theme.typography.h6,
   margin: 0,
+  overflowWrap: "anywhere",
   fontWeight: 700,
   color: theme.palette.text.primary,
   lineHeight: 1.3,
@@ -87,6 +92,7 @@ export const ModalTitle = styled("h2")(({ theme }) => ({
 export const ModalSubtitle = styled("p")(({ theme }) => ({
   ...theme.typography.body2,
   margin: 0,
+  overflowWrap: "anywhere",
   color: theme.palette.text.secondary,
   lineHeight: 1.5,
 }));
@@ -147,4 +153,10 @@ export const ModalActions = styled(DialogActions)(({ theme }) => ({
   alignItems: "center",
   flexWrap: "wrap",
   gap: theme.spacing(1.5),
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column-reverse",
+    alignItems: "stretch",
+    "& .MuiButton-root": { minHeight: 44 },
+    "& > .MuiButton-root": { width: "100%", marginLeft: 0 },
+  },
 }));

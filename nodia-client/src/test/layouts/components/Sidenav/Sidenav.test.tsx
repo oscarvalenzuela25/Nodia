@@ -1,5 +1,5 @@
 import useAuthStore from "../../../../store/authStore";
-import { render, screen, act } from "@testing-library/react";
+import { render, screen, act, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import Sidenav from "../../../../../src/layouts/components/Sidenav/Sidenav";
@@ -7,6 +7,7 @@ import useGeneralSettingsStore from "../../../../../src/store/generalSettings/ge
 
 import { createMemoryRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
+import i18n from "../../../../translate";
 
 describe("Sidenav", () => {
   beforeEach(() => {
@@ -15,6 +16,55 @@ describe("Sidenav", () => {
     act(() => {
       useGeneralSettingsStore.getState().clearContext();
     });
+  });
+
+  it.each([
+    { language: "es", home: "Inicio", section: "Informes personalizados" },
+    { language: "en", home: "Home", section: "Custom reports" },
+  ])("identifies collapsed icons on hover and keeps keyboard navigation in $language", async ({ language, home, section }) => {
+    const user = userEvent.setup();
+    await act(async () => { await i18n.changeLanguage(language); });
+    act(() => {
+      useGeneralSettingsStore.getState().setContext({
+        roles: [], actions: [], modules: [{
+          module_group_key: "custom-group", translates: [], modules: [{
+            key: "custom-reports", link: "/custom/reports",
+            translates: [{ key: "key", es: "Informes personalizados", en: "Custom reports" }],
+          }],
+        }],
+      });
+    });
+    const renderNavigation = (collapsed: boolean) => (
+      <Sidenav mobileOpen onDrawerToggle={vi.fn()} desktopCollapsed={collapsed} />
+    );
+    const router = createMemoryRouter([{ path: "*", element: renderNavigation(true) }]);
+    const view = render(<RouterProvider router={router} />);
+    const homeIcon = screen.getByRole("button", { name: home });
+    const sectionIcon = screen.getByRole("button", { name: section });
+
+    await user.hover(sectionIcon);
+    expect(await screen.findByRole("tooltip", { name: section })).toHaveTextContent(section);
+    await user.unhover(sectionIcon);
+    await waitFor(() => expect(screen.queryByRole("tooltip")).not.toBeInTheDocument());
+
+    await user.hover(homeIcon);
+    expect(await screen.findByRole("tooltip", { name: home })).toHaveTextContent(home);
+    await user.unhover(homeIcon);
+    await waitFor(() => expect(screen.queryByRole("tooltip")).not.toBeInTheDocument());
+    await user.click(homeIcon);
+    await user.unhover(homeIcon);
+    await user.tab();
+    expect(sectionIcon).toHaveFocus();
+    // Native :focus-visible tooltip opening is verified in the browser QA.
+    await user.keyboard("{Enter}");
+    expect(router.state.location.pathname).toBe("/custom/reports");
+    view.unmount();
+
+    const expandedRouter = createMemoryRouter([{ path: "*", element: renderNavigation(false) }]);
+    render(<RouterProvider router={expandedRouter} />);
+    expect(screen.getByText(section)).toBeVisible();
+    await user.hover(screen.getByRole("button", { name: section }));
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
   });
 
   it("hides administrative links for a visitor even if stale assignments remain in memory", () => {
@@ -76,14 +126,14 @@ describe("Sidenav", () => {
             modules: [
               {
                 key: "usuarios",
-                link: "/settings/users",
+                link: "/users",
                 translates: [
                   { key: "key", es: "Usuarios", en: "Users" },
                 ],
               },
               {
                 key: "roles",
-                link: "/settings/roles",
+                link: "/roles",
                 translates: [
                   { key: "key", es: "Roles", en: "Roles" },
                 ],
@@ -186,7 +236,7 @@ describe("Sidenav", () => {
     expect(screen.getByText("Módulo Custom")).toBeInTheDocument();
   });
 
-  it("should display module groups inversely with Negocios before Ajustes Generales", () => {
+  it("preserves server group and module order instead of prioritizing names", () => {
     act(() => {
       useGeneralSettingsStore.getState().setContext({
         roles: ["admin"],
@@ -198,9 +248,10 @@ describe("Sidenav", () => {
               { key: "key", es: "Ajustes Generales", en: "General Settings" },
             ],
             modules: [
+              { key: "roles", link: "/roles", translates: [{ key: "key", es: "Roles primero", en: "Roles first" }] },
               {
                 key: "users",
-                link: "/settings/users",
+                link: "/users",
                 translates: [{ key: "key", es: "Usuarios", en: "Users" }],
               },
             ],
@@ -213,7 +264,7 @@ describe("Sidenav", () => {
             modules: [
               {
                 key: "businesses",
-                link: "/tools/business",
+                link: "/business",
                 translates: [{ key: "key", es: "Mis Negocios", en: "My Businesses" }],
               },
             ],
@@ -246,13 +297,15 @@ describe("Sidenav", () => {
     expect(businessHeader).toBeInTheDocument();
     expect(settingsHeader).toBeInTheDocument();
 
-    // Verify Negocios is rendered before Ajustes Generales in DOM order
+    // The server supplied Settings first; names must not override that order.
     expect(
       Boolean(
-        businessHeader.compareDocumentPosition(settingsHeader) &
+        settingsHeader.compareDocumentPosition(businessHeader) &
           Node.DOCUMENT_POSITION_FOLLOWING
       )
     ).toBe(true);
+    expect(screen.getByText("Roles primero").compareDocumentPosition(screen.getByText("Usuarios"))
+      & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("renders clickable submodules with a padding-left of 24px", () => {
@@ -269,7 +322,7 @@ describe("Sidenav", () => {
             modules: [
               {
                 key: "usuarios",
-                link: "/settings/users",
+                link: "/users",
                 translates: [{ key: "key", es: "Usuarios", en: "Users" }],
               },
             ],

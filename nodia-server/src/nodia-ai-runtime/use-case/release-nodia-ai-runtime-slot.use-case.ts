@@ -8,6 +8,10 @@ import {
 } from '../types/worker.types.js';
 import type { NodiaAiRuntimeTerminalProof } from '../types/reconciliation.types.js';
 import {
+  assertNativeDispatchRejection,
+  type NodiaAiNativeDispatchRejection,
+} from '../types/native-dispatch-rejection.js';
+import {
   assertRuntimeTerminalProof,
   readRuntimeProofRequest,
 } from './runtime-reconciliation-descriptor.js';
@@ -19,7 +23,7 @@ export class ReleaseNodiaAiRuntimeSlotUseCase {
   async execute(
     claim: NodiaAiClaim,
     reservation: NodiaAiRuntimeReservation,
-    proof: NodiaAiRuntimeTerminalProof,
+    proof: NodiaAiRuntimeTerminalProof | NodiaAiNativeDispatchRejection,
     manager?: EntityManager,
   ): Promise<void> {
     const release = async (transaction: EntityManager) => {
@@ -29,7 +33,15 @@ export class ReleaseNodiaAiRuntimeSlotUseCase {
       );
       if (!jobs[0]) throw new NodiaAiLostLeaseError();
       const request = readRuntimeProofRequest(jobs[0].recovery_descriptor);
-      assertRuntimeTerminalProof(request, proof);
+      if ('kind' in proof) {
+        if (claim.run.selection_snapshot.mode !== 'agentic')
+          throw new NodiaAiLostLeaseError();
+        assertNativeDispatchRejection(
+          request,
+          proof,
+          claim.run.context_manifest.configuration_generation,
+        );
+      } else assertRuntimeTerminalProof(request, proof);
       if (
         proof.attemptId !== claim.attempt.id ||
         proof.operationRef !== reservation.operationRef ||

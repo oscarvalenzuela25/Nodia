@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "date_local": "2026-10-26",
+  "conclusion": "INCONCLUSIVE: both synthetic sizes stopped at authentication before init/user_input; no parser-boundary verdict or causal fix.",
+  "receipt": {
+    "path": "ops/lab/artifacts/antigravity-cli-parser-boundary-r02/parser-VM-r02.json",
+    "sha256": "27922408217a92842434e6660c9bd0a410c3bf050a29ab028f2264bca7dfc074"
+  },
+  "image": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+  "cases": [
+    {
+      "wire_bytes": 64512,
+      "user_input_events": 0,
+      "terminal": "ERROR",
+      "authentication_indicator": true,
+      "network_indicator": true,
+      "scanner_indicator": false,
+      "stdin_delivery_completed": true,
+      "container_removed": true,
+      "interpretation": "INCONCLUSIVE"
+    },
+    {
+      "wire_bytes": 77824,
+      "user_input_events": 0,
+      "terminal": "ERROR",
+      "authentication_indicator": true,
+      "network_indicator": true,
+      "scanner_indicator": false,
+      "stdin_delivery_completed": true,
+      "container_removed": true,
+      "interpretation": "INCONCLUSIVE"
+    }
+  ],
+  "isolation_all_verified": true,
+  "provider_generations": 0,
+  "credentials_supplied": false,
+  "host_profile_mounts": false,
+  "live_native_restarted": false,
+  "R01": "Launcher exited127 before CLI; preserved7f0dba3f4b5a211cfdfd56e353d826c15e9a7b99cccd215e2f54eaa057b63684. R02 changed only verified/usr/bin/python and fresh WORK.",
+  "limits": [
+    "Neither result proves the real57cc cause,64KiB support,model availability or MCP.",
+    "No further unauthenticated parser variant justified by these cases. No production source changed."
+  ]
+}

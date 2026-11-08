@@ -23,12 +23,11 @@ describe('AlertBanner recovery actions', () => {
     expect(authenticate).toHaveBeenCalledWith(codex);
   });
   it('routes missing Agentic sessions to authentication only', async () => {
-    const authenticate = vi.fn(), configure = vi.fn(), web = vi.fn();
-    render(<AlertBanner alerts={[alert]} onAuthenticateAgentic={authenticate} onConfigure={configure} onRenewSession={web} />);
+    const authenticate = vi.fn(), configure = vi.fn();
+    render(<AlertBanner alerts={[alert]} onAuthenticateAgentic={authenticate} onConfigure={configure} />);
     await userEvent.click(screen.getByRole('button', { name: 'Autenticar sesión Agentic' }));
     expect(authenticate).toHaveBeenCalledOnce();
     expect(configure).not.toHaveBeenCalled();
-    expect(web).not.toHaveBeenCalled();
     expect(screen.getByText('Sesión Agentic de Mi Gemini pendiente')).toBeInTheDocument();
   });
 

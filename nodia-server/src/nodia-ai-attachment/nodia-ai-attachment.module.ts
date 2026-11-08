@@ -14,6 +14,7 @@ import { NodiaAiAttachmentController } from './nodia-ai-attachment.controller.js
 import { CreateNodiaAiAttachmentUseCase } from './use-case/create-nodia-ai-attachment.use-case.js';
 import { ManageNodiaAiAttachmentUseCase } from './use-case/manage-nodia-ai-attachment.use-case.js';
 import { UploadNodiaAiAttachmentUseCase } from './use-case/upload-nodia-ai-attachment.use-case.js';
+import { StoreNodiaAiGeneratedImageUseCase } from './use-case/store-nodia-ai-generated-image.use-case.js';
 import { StorageNodiaAiAttachment } from './adapters/storage-nodia-ai-attachment.js';
 import { HttpNodiaAiAttachmentInspector } from './adapters/http-nodia-ai-attachment-inspector.js';
 import {
@@ -39,6 +40,7 @@ import {
     CreateNodiaAiAttachmentUseCase,
     ManageNodiaAiAttachmentUseCase,
     UploadNodiaAiAttachmentUseCase,
+    StoreNodiaAiGeneratedImageUseCase,
     StorageNodiaAiAttachment,
     HttpNodiaAiAttachmentInspector,
     {
@@ -55,6 +57,7 @@ import {
     ManageNodiaAiAttachmentUseCase,
     CreateNodiaAiAttachmentUseCase,
     UploadNodiaAiAttachmentUseCase,
+    StoreNodiaAiGeneratedImageUseCase,
     NodiaAiAttachmentStorage,
   ],
 })

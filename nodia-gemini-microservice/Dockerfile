@@ -1,10 +1,15 @@
-FROM mcr.microsoft.com/playwright/python:v1.63.0-noble@sha256:72bd171a9ffc2b4b59532aaa6210e21014d07093120dc25528870c0b840da1f0
+FROM python:3.12-slim-bookworm@sha256:6dd8b6dab6b3adc7812bab69eca5dbdc1a5cc690ad28306d234ffb4ef8ac9753
 
 WORKDIR /app
 
 # Evitar prompts interactivos
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
+
+# Native CLI runtime and the isolated attachment decoder. No browser/display.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates libstdc++6 libseccomp2 && \
+    rm -rf /var/lib/apt/lists/*
 
 # Instalar dependencias del proyecto
 COPY requirements.txt .
@@ -20,7 +25,7 @@ COPY . .
 
 # Crear directorios necesarios
 RUN useradd --uid 10001 --create-home nodia && \
-    mkdir -p browser_profile session_state temp_uploads /home/nodia/agentic_profile /run/nodia-login-cgroups && \
+    mkdir -p session_state temp_uploads /home/nodia/agentic_profile /run/nodia-login-cgroups && \
     chown nodia:nodia /run/nodia-login-cgroups && \
     chown nodia:nodia /home/nodia/agentic_profile && \
     chown -R nodia:nodia /app
@@ -31,4 +36,4 @@ USER nodia
 EXPOSE 8000
 
 # Comando de inicio
-CMD ["xvfb-run", "--auto-servernum", "--server-args=-screen 0 1280x850x24 -nolisten tcp", "python", "run.py"]
+CMD ["python", "run.py"]

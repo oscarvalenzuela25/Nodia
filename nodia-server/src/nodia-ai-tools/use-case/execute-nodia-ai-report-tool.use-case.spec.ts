@@ -64,14 +64,14 @@ describe('NodiaAI technical report callback lifecycle', () => {
     expect(f.journal.events).toHaveLength(0);
   });
   it('rejects a new grant, changed contract or Web execution before reading sources', async () => {
-    for (const mode of ['grant', 'hash', 'web']) {
+    for (const mode of ['grant', 'hash', 'retired']) {
       const f = fixture();
       if (mode === 'grant') f.grant.allowed_operations = [];
       if (mode === 'hash')
         (f.run.context_manifest.tool_contracts as Record<string, string>)[
           f.call.name
         ] = 'b'.repeat(64);
-      if (mode === 'web') f.run.selection_snapshot.mode = 'token_plan_web';
+      if (mode === 'retired') f.run.selection_snapshot.mode = 'token_plan_web' as never;
       await expect(
         f.subject.execute(f.claim, f.context, f.call),
       ).rejects.toThrow();

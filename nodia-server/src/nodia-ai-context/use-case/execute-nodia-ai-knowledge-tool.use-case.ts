@@ -1,3 +1,4 @@
+import { moduleRouteIncluded } from '../../authorization/canonical-module-route.js';
 import { randomUUID } from 'node:crypto';
 import { Inject, Injectable } from '@nestjs/common';
 import { NodiaAiRun } from '../../nodia-ai-run/entities/nodia-ai-run.entity.js';
@@ -143,8 +144,8 @@ export class ExecuteNodiaAiKnowledgeToolUseCase {
         .map((module) => module.route)
         .filter(
           (route) =>
-            frozen.includes(route) &&
-            (!authorizedRoutes || authorizedRoutes.includes(route)),
+            moduleRouteIncluded(frozen, route) &&
+            (!authorizedRoutes || moduleRouteIncluded(authorizedRoutes, route)),
         );
       const repo = manager.getRepository(NodiaAiToolCall);
       const index = this.knowledge.index(routes);
@@ -162,7 +163,7 @@ export class ExecuteNodiaAiKnowledgeToolUseCase {
           !prior.public_result ||
           !Array.isArray(priorRoutes) ||
           priorRoutes.some(
-            (route) => typeof route !== 'string' || !routes.includes(route),
+            (route) => typeof route !== 'string' || !moduleRouteIncluded(routes, route),
           )
         )
           return fail('request_conflict');

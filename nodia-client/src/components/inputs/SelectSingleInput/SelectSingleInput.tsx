@@ -33,6 +33,7 @@ import {
 
 const SelectSingleInput: FC<SelectSingleInputProps> = ({
   label,
+  labelAdornment,
   options,
   value = null,
   onChange,
@@ -128,10 +129,13 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
   return (
     <SelectContainer fullWidth={fullWidth} data-testid={testId}>
       {label && (
-        <LabelTypography htmlFor={inputId} required={required}>
-          {label}
-          {required && <RequiredStar>*</RequiredStar>}
-        </LabelTypography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, minWidth: 0 }}>
+          <LabelTypography htmlFor={inputId} required={required}>
+            {label}
+            {required && <RequiredStar>*</RequiredStar>}
+          </LabelTypography>
+          {labelAdornment}
+        </Box>
       )}
 
       <SelectTrigger

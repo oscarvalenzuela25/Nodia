@@ -11,14 +11,14 @@ const maximum: NodiaAiBudgetSnapshot = {
 };
 const selection = {
   connection_id: '9007199254740993',
-  mode: 'token_plan_web',
+  mode: 'agentic',
   model_id: 'synthetic-source',
   effort_id: null,
 };
 const target = {
   selection: {
     ...selection,
-    mode: 'token_plan_agentic',
+    mode: 'agentic',
     model_id: 'synthetic-target',
     effort_id: 'configured-effort',
   },
@@ -45,7 +45,7 @@ describe('ValidateNodiaAiSnapshotsUseCase', () => {
   it('accepts exact immutable snapshots with zero usage without activating routing', () => {
     expect(subject.execute(valid(), maximum)).toEqual(valid());
   });
-  it('accepts a delegated stage on its exact consented connection/model/effort', () => {
+  it('rejects retired delegation for new work without mutating immutable historical input', () => {
     const input = {
       ...valid(),
       routing: { schema_version: 1, enabled: true, revision: 2, target },
@@ -57,9 +57,11 @@ describe('ValidateNodiaAiSnapshotsUseCase', () => {
         selection: target.selection,
       },
     };
-    expect(subject.execute(input, maximum).stage?.selection).toEqual(
-      target.selection,
+    const before = structuredClone(input);
+    expect(() => subject.execute(input, maximum)).toThrow(
+      'nodia_ai:invalid_input',
     );
+    expect(input).toEqual(before);
   });
   it.each([
     { ...valid(), secret: 'synthetic' },

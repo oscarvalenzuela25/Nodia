@@ -79,14 +79,15 @@ class CliVersionConfigurationTests(unittest.IsolatedAsyncioTestCase):
 class CliVersionConsumerTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.root = Path(self.enterContext(tempfile.TemporaryDirectory()))
-        self.profiles = ProfileAdmission(self.root / "web", self.root / "cli")
+        self.profiles = ProfileAdmission(self.root / "cli")
         self.runner = SimpleNamespace(config=SimpleNamespace(version="1.4.2"), run=AsyncMock())
         self.runner.run.return_value = (json.dumps({"status": "SUCCESS", "num_turns": 0,
             "usage": {"total_tokens": 0}, "command": {"name": "model", "data": {"id": "fixture-model"}}}), 0)
         self.agentic = SimpleNamespace(runner=self.runner, session_generation="a" * 32,
+            validate_model_option=AsyncMock(return_value=True),
             get_status=AsyncMock(return_value={"available": True, "has_active_session": True,
                 "models": [{"id": "fixture-model"}]}))
-        self.adapter = ChatAdapter(None, self.agentic, self.profiles)
+        self.adapter = ChatAdapter(self.agentic, self.profiles)
         self.adapter.mcp_sessions = SimpleNamespace(supports=Mock(return_value=False))
         self.request = ObserveRequest(model_id="fixture-model", effort_id="high", configuration_generation="b" * 64)
 
@@ -99,10 +100,9 @@ class CliVersionConsumerTests(unittest.IsolatedAsyncioTestCase):
                 self.assertFalse(observation["supports_mcp"])
                 self.assertEqual(observation["verified_modalities"], [])
                 self.assertEqual(observation["verified_attachment_media_types"], [])
-                self.assertEqual(self.runner.run.await_args.args[0], ["-p", "/model", "--output-format", "json",
-                    "--print-timeout", "10s", "--model", "fixture-model", "--effort", "high"])
-                self.assertEqual(self.runner.run.await_args.kwargs, {"timeout": 10})
-        self.assertEqual(self.runner.run.await_count, 2)
+                self.agentic.validate_model_option.assert_awaited_with("fixture-model", "high", "b" * 64)
+        self.assertEqual(self.agentic.validate_model_option.await_count, 2)
+        self.runner.run.assert_not_awaited()
 
     async def test_unknown_version_cannot_reach_model_preflight(self):
         self.runner.config.version = "unreviewed"

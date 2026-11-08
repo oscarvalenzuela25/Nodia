@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "status": "private_persistent_strict_keyring_verified_human_login_pending",
+  "observed_date": "2026-10-27",
+  "scope": "Nodia private SecretService operational repair; no model inference, SDK login, API key, plaintext auth fallback, database mutation or Native Docker restart by this operator.",
+  "cause_confirmed": {
+    "initial_collection_locked": true,
+    "original_credential_unlock_did_not_unlock_existing_collection": true,
+    "LF_strip_was_not_a_demonstrated_fix": true,
+    "queued_owners_prevented_canonical_v2_owner": true,
+    "operator_error": "Two manual gnome --unlock invocations returned zero but started queued daemons in SSH session cgroups; command success did not prove collection unlock. Exact NameOwner/PID checks exposed this.",
+    "canonical_service_owner_required": true
+  },
+  "recovery": {
+    "old_store": "/var/lib/nodia/.local/share/keyrings",
+    "old_store_original_bytes_identical_after": true,
+    "old_encrypted_recovery_copy": "/opt/nodia/verification/nodia-ai-six-keyring-private-v2-r01/old-keyrings-encrypted",
+    "new_persistent_XDG_DATA_HOME": "/var/lib/nodia/keyring-v2",
+    "same_existing_v2_store_reused": true,
+    "existing_root_LoadCredential_reused": true,
+    "credential_final_LF_removed_in_memory_only": true,
+    "credential_rewritten_or_emitted": false,
+    "collection_reset": false,
+    "default_collection_ephemeral_fallback": false,
+    "DBus_restart": false,
+    "API_worker_stop_authorized": true,
+    "retirement": "Private-bus ListQueuedOwners bounded at eight; each actual owner checked UID, executable, process birth and SSH/keyring cgroup, then pidfd SIGTERM. No pkill, broad process sweep, bus replacement or deleted collection."
+  },
+  "positive": {
+    "status": "private_persistent_keyring_verified",
+    "SDK_generations": 0,
+    "same_v2_store": true,
+    "old_collection_reset": false,
+    "retired_owned_daemons": [
+      {
+        "pid": 1010262,
+        "birth": "51792516",
+        "uid": 10000,
+        "cgroup": "0::/user.slice/user-1000.slice/session-6696.scope",
+        "queue_length": 1
+      }
+    ],
+    "first_owner_pid": 1029609,
+    "created": {
+      "action": "create",
+      "locked": false,
+      "owned_nonce_roundtrip": true,
+      "owned_nonce_deleted": false,
+      "real_entries_read": 0
+    },
+    "second_owner_pid": 1029625,
+    "persisted_deleted": {
+      "action": "read_delete",
+      "locked": false,
+      "owned_nonce_roundtrip": true,
+      "owned_nonce_deleted": true,
+      "real_entries_read": 0
+    },
+    "old_store_bytes_identical": true,
+    "broker_PID_unchanged": true,
+    "api_pid": 0,
+    "worker_pid": 0,
+    "API_worker_left_off_for_Root_R07_activation": true,
+    "SourceR06_manifest_unchanged": true
+  },
+  "seven_negative_cuts": [
+    {
+      "cut": "unlock-VM-r01",
+      "result": "Exit zero; subsequent nonce still IsLocked. Not an unlock success."
+    },
+    {
+      "cut": "unlock-VM-r02",
+      "result": "In-memory LF trim and exact control directory also exit zero; subsequent nonce still IsLocked."
+    },
+    {
+      "cut": "v2-apply-VM-r01",
+      "result": "Startup/nonce attempt failed and unit rollback preserved."
+    },
+    {
+      "cut": "v2-apply-VM-r02",
+      "result": "Nonce reached locked wrong owner; unit rollback preserved."
+    },
+    {
+      "cut": "v2-apply-VM-r03",
+      "result": "Guard failed after keyring restart propagated API/worker restart. Receipt boolean saying API_worker_or_bus_restarted=false was inaccurate; dependent PID changes were observed and disclosed. Root subsequently explicitly authorized their restart."
+    },
+    {
+      "cut": "v2-apply-VM-r04",
+      "result": "Exact owner assertion in helper rejected a queued SSH daemon; unit rollback preserved."
+    },
+    {
+      "cut": "completed-VM-r02",
+      "result": "Retired owner1008043; remaining queued owner1010262 triggered guard before canonical activation. No nonce success claimed."
+    }
+  ],
+  "startup_persistence": {
+    "installed_helper": "/usr/local/libexec/nodia/start-keyring-private-v2-r03.py",
+    "systemd_dropin": "/etc/systemd/system/nodia-keyring.service.d/zz-nodia-private-store-v2.conf",
+    "credential_delivery": "Existing systemd LoadCredential; no file credential copied into repository or secret value emitted.",
+    "lifecycle": "exec GNOME --foreground --login; ExecStartPost activates --start with exact control directory and attests NameOwner process == MainPID.",
+    "nonce_proxy": "Existing unique NameOwner, introspect=False, no well-known service activation. Only own UUID-scoped synthetic item read and deleted."
+  },
+  "handoff": {
+    "API_worker_left_off_for_Root_R07": true,
+    "Root_R07_activation": {
+      "status": "server_started",
+      "release": "/opt/nodia/releases/nodia-server-image-generation-r07",
+      "manifest_sha256": "e1f0fff9ef23922b486ae148a7bd4a44ab6d695d29e180eaa877c1fd99f4bb9f",
+      "changed_paths": [
+        "config/nodia-ai-knowledge.registry.json",
+        "dist/nodia-ai-confirmation/use-case/get-nodia-ai-execution.use-case.d.ts",
+        "dist/nodia-ai-confirmation/use-case/get-nodia-ai-execution.use-case.js",
+        "dist/nodia-ai-confirmation/use-case/get-nodia-ai-execution.use-case.js.map",
+        "dist/nodia-ai-context/config/knowledge-pin.json",
+        "dist/nodia-ai-observation/use-case/observe-nodia-ai-proposals.use-case.d.ts",
+        "dist/nodia-ai-observation/use-case/observe-nodia-ai-proposals.use-case.js",
+        "dist/nodia-ai-observation/use-case/observe-nodia-ai-proposals.use-case.js.map",
+        "dist/nodia-ai-proposal-review/use-case/get-nodia-ai-proposal-review.use-case.d.ts",
+        "dist/nodia-ai-proposal-review/use-case/get-nodia-ai-proposal-review.use-case.js",
+        "dist/nodia-ai-proposal-review/use-case/get-nodia-ai-proposal-review.use-case.js.map",
+        "dist/nodia-ai-proposal/types/proposal-preparer.types.d.ts",
+        "dist/nodia-ai-proposal/types/proposal-preparer.types.js",
+        "dist/nodia-ai-proposal/types/proposal-preparer.types.js.map",
+        "dist/nodia-ai-proposal/use-case/get-nodia-ai-proposal.use-case.d.ts",
+        "dist/nodia-ai-proposal/use-case/get-nodia-ai-proposal.use-case.js",
+        "dist/nodia-ai-proposal/use-case/get-nodia-ai-proposal.use-case.js.map",
+        "dist/nodia-ai-proposal/use-case/prepare-nodia-ai-finance-movement.use-case.d.ts",
+        "dist/nodia-ai-proposal/use-case/prepare-nodia-ai-finance-movement.use-case.js",
+        "dist/nodia-ai-proposal/use-case/prepare-nodia-ai-finance-movement.use-case.js.map",
+        "dist/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.d.ts",
+        "dist/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.js",
+        "dist/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.js.map",
+        "dist/nodia-ai/knowledge/manifest.json",
+        "src/nodia-ai-confirmation/use-case/get-nodia-ai-execution.use-case.ts",
+        "src/nodia-ai-context/config/knowledge-pin.json",
+        "src/nodia-ai-observation/use-case/observe-nodia-ai-proposals.use-case.ts",
+        "src/nodia-ai-proposal-review/use-case/get-nodia-ai-proposal-review.use-case.ts",
+        "src/nodia-ai-proposal/types/proposal-preparer.types.ts",
+        "src/nodia-ai-proposal/use-case/get-nodia-ai-proposal.use-case.ts",
+        "src/nodia-ai-proposal/use-case/prepare-nodia-ai-finance-movement.use-case.ts",
+        "src/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.ts",
+        "src/nodia-ai/knowledge/manifest.json"
+      ],
+      "provider_generation_requests": 0,
+      "base_retained": true
+    },
+    "Native_image_changed_by_keyring_repair": false
+  },
+  "limits": [
+    "Synthetic SecretService persistence proves OS credential store readiness, not successful new Codex authorization or authenticated model inference.",
+    "No historical failed login is relabelled successful. A fresh human login must be completed and checked through its existing secure-flow lifecycle.",
+    "No new login or model inference was executed by this repair operator.",
+    "Quiet SQL state was established in the existing prior guarded readiness; this completion receipt does not claim a new database query. Root subsequent Source activation is separate."
+  ],
+  "receipts": {
+    "nonce-before-VM-r03": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/nonce-before-VM-r03.json",
+      "bytes": 134,
+      "sha256": "9aba81617acea64883c86025577cc036b0368dbec12b7dc91e34d2a7def0a6c9"
+    },
+    "unlock-VM-r01": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/unlock-VM-r01.json",
+      "bytes": 238,
+      "sha256": "1b8785e36a48e2ba9706daf5b67cc956d7f4740007188641a981b5a48dc89012"
+    },
+    "unlock-VM-r02": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/unlock-VM-r02.json",
+      "bytes": 392,
+      "sha256": "517e3033dc285d60672b93371a9834b5baf75edc47fa1a47ddfdcc3a82ba9433"
+    },
+    "nonce-after-VM-r01": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/nonce-after-VM-r01.json",
+      "bytes": 134,
+      "sha256": "9aba81617acea64883c86025577cc036b0368dbec12b7dc91e34d2a7def0a6c9"
+    },
+    "nonce-after-VM-r02": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/nonce-after-VM-r02.json",
+      "bytes": 134,
+      "sha256": "9aba81617acea64883c86025577cc036b0368dbec12b7dc91e34d2a7def0a6c9"
+    },
+    "v2-apply-VM-r01": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/v2-apply-VM-r01.json",
+      "bytes": 183,
+      "sha256": "49fde40bde56e17d590125d80cdbcfda74a9004889cfad0001281cd156d61443"
+    },
+    "v2-apply-VM-r02": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/v2-apply-VM-r02.json",
+      "bytes": 183,
+      "sha256": "b9a3ade75cf2e52ec8d526c008e977a6e07796fe9f52dcce2fdf2dad4f454802"
+    },
+    "v2-apply-VM-r03": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/v2-apply-VM-r03.json",
+      "bytes": 155,
+      "sha256": "4ff08f1d3afebfc253483dc9ebb7053fd7f40aa83da3a70edfbd9f90e9949320"
+    },
+    "v2-apply-VM-r04": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/v2-apply-VM-r04.json",
+      "bytes": 236,
+      "sha256": "df8f111f3db20dd7a02730448726461294b1e313eed95efd2cc60ab4532c1415"
+    },
+    "v2-nonce-failure-VM-r02": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/v2-nonce-failure-VM-r02.json",
+      "bytes": 147,
+      "sha256": "71a1cd1e7f345d2a78f84b59f43a4346aa985f1d6865504f4ec1abdc1cac187a"
+    },
+    "v2-phase-VM-r03": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/v2-phase-VM-r03.json",
+      "bytes": 261,
+      "sha256": "e65c75815f2bea0f735436b275d9a44fd02c762610d37d643633a666c5056b26"
+    },
+    "v2-startup-failure-VM-r04": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/v2-startup-failure-VM-r04.json",
+      "bytes": 761,
+      "sha256": "44bff0ba295c86f1fd01a9309f45d8462048ab5c8bc44b6347897321fe90d850"
+    },
+    "completed-VM-r02": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/completed-VM-r02.json",
+      "bytes": 385,
+      "sha256": "c6fe62888256938a552de6a5974e7f96b58e6b3e93d9b8feb82188c3a73b2705"
+    },
+    "owner-context-VM-r01": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/owner-context-VM-r01.json",
+      "bytes": 254,
+      "sha256": "904f2f7d7b1f141508a6c4b864f7024ad9b3fccb39aa80632fd11e28356578fc"
+    },
+    "completed-VM-drain": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/completed-VM-drain.json",
+      "bytes": 816,
+      "sha256": "4ab5e8e6550ebf473df12fd9af03f609abed7f9bc858e64c5df40842cf9b8be6"
+    },
+    "Root_R07_activation": {
+      "path": "ops/lab/artifacts/nodia-ai-six-keyring-private-v2-r01/receipts/root-R07-activation.json",
+      "bytes": 2589,
+      "sha256": "4e27a396b155cb020e439b877ef90cd872b7d2173cbb2582251a09257d269849"
+    }
+  }
+}

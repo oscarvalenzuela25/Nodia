@@ -5,6 +5,7 @@ import { sileo } from "sileo";
 import { getHttpErrorMessage, notifyHttpError } from "../../config/httpFeedback";
 import { notifyAuthError } from "../../services/authFeedback";
 import { queryClient } from "../../config/reactQuery";
+import i18n from "../../translate";
 
 vi.mock("sileo", () => ({ sileo: { error: vi.fn() } }));
 
@@ -32,6 +33,16 @@ describe("HTTP query feedback", () => {
     notifyAuthError(error, "auth:session_expired");
     notifyHttpError(error);
     expect(sileo.error).toHaveBeenCalledTimes(1);
+  });
+  it("translates known server keys in either language while preserving custom messages", async () => {
+    const error = new AxiosError("internal URL");
+    Object.assign(error, { response: { data: { message: "product:barcode_conflict" } } });
+    expect(getHttpErrorMessage(error)).toContain("código de barras");
+    await i18n.changeLanguage("en");
+    expect(getHttpErrorMessage(error)).toContain("barcode");
+    Object.assign(error, { response: { data: { message: ["business:sale_product_changed", "Custom server detail"] } } });
+    expect(getHttpErrorMessage(error)).toContain("A product or its price changed");
+    expect(getHttpErrorMessage(error)).toContain("Custom server detail");
   });
 
 });

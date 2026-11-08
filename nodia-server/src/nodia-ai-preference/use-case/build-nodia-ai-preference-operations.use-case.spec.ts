@@ -147,7 +147,7 @@ describe('explicitly accepted preferences', () => {
       prepared = await f.build.operations[0].prepare(f.create, f.context),
       step = f.step(0, prepared);
     f.actor.modules = f.actor.modules.filter(
-      (module) => module.route !== '/tools/finances-personal',
+      (module) => module.route !== '/finances-personal',
     );
     await expect(
       f.build.operations[0].executeConfirmed(step, f.context),
@@ -239,7 +239,7 @@ describe('explicitly accepted preferences', () => {
     const f = preferenceFixture(),
       target = f.seed();
     f.actor.modules = f.actor.modules.filter(
-      (module) => module.route !== '/tools/finances-personal',
+      (module) => module.route !== '/finances-personal',
     );
     f.labels.clear();
     const prepared = await f.build.operations[2].prepare(

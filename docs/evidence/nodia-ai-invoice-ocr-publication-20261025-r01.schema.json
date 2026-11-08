@@ -1,0 +1,743 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:nodia:ai:invoice-ocr:v1",
+  "$defs": {
+    "InvoiceOcrInput": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "prepare"
+            },
+            "business_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "attachment_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "compare_prices": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "business_id",
+            "attachment_id",
+            "action"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "request"
+            },
+            "analysis_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "provider_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          "required": [
+            "action",
+            "analysis_id",
+            "provider_id"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "read"
+            },
+            "analysis_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "compare_prices": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "action",
+            "analysis_id"
+          ]
+        }
+      ],
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action": {},
+        "business_id": {},
+        "attachment_id": {},
+        "compare_prices": {},
+        "analysis_id": {},
+        "provider_id": {}
+      }
+    },
+    "InvoiceOcrResult": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "const": "awaiting_supplier"
+            },
+            "analysis_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "review_required": {
+              "const": true
+            },
+            "business_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "provider_id": {
+              "type": "null"
+            },
+            "attachment_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "compare_prices": {
+              "type": "boolean"
+            },
+            "selection": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "connection_id": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "maxLength": 19
+                },
+                "mode": {
+                  "const": "token_plan_agentic"
+                },
+                "model_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "effort_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 256
+                }
+              },
+              "required": [
+                "connection_id",
+                "mode",
+                "model_id",
+                "effort_id"
+              ]
+            },
+            "source": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "attachment_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "byte_count": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10485760
+                },
+                "media_type": {
+                  "enum": [
+                    "application/pdf",
+                    "image/png",
+                    "image/jpeg",
+                    "image/webp"
+                  ]
+                },
+                "kind": {
+                  "enum": [
+                    "pdf",
+                    "image"
+                  ]
+                }
+              },
+              "required": [
+                "attachment_id",
+                "byte_count",
+                "media_type",
+                "kind"
+              ]
+            },
+            "comparison_observed_at": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "status",
+            "analysis_id",
+            "review_required",
+            "business_id",
+            "provider_id",
+            "attachment_id",
+            "compare_prices",
+            "selection",
+            "source",
+            "comparison_observed_at"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "const": "requested"
+            },
+            "analysis_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "review_required": {
+              "const": true
+            },
+            "business_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "provider_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            "attachment_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "compare_prices": {
+              "type": "boolean"
+            },
+            "selection": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "connection_id": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "maxLength": 19
+                },
+                "mode": {
+                  "const": "token_plan_agentic"
+                },
+                "model_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "effort_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 256
+                }
+              },
+              "required": [
+                "connection_id",
+                "mode",
+                "model_id",
+                "effort_id"
+              ]
+            },
+            "source": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "attachment_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "byte_count": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10485760
+                },
+                "media_type": {
+                  "enum": [
+                    "application/pdf",
+                    "image/png",
+                    "image/jpeg",
+                    "image/webp"
+                  ]
+                },
+                "kind": {
+                  "enum": [
+                    "pdf",
+                    "image"
+                  ]
+                }
+              },
+              "required": [
+                "attachment_id",
+                "byte_count",
+                "media_type",
+                "kind"
+              ]
+            },
+            "request_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "comparison_observed_at": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "status",
+            "analysis_id",
+            "review_required",
+            "business_id",
+            "provider_id",
+            "attachment_id",
+            "compare_prices",
+            "selection",
+            "source",
+            "request_id",
+            "comparison_observed_at"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "const": "analyzed"
+            },
+            "analysis_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "review_required": {
+              "const": true
+            },
+            "business_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "provider_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            "attachment_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "compare_prices": {
+              "type": "boolean"
+            },
+            "selection": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "connection_id": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "maxLength": 19
+                },
+                "mode": {
+                  "const": "token_plan_agentic"
+                },
+                "model_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "effort_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 256
+                }
+              },
+              "required": [
+                "connection_id",
+                "mode",
+                "model_id",
+                "effort_id"
+              ]
+            },
+            "source": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "attachment_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "byte_count": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10485760
+                },
+                "media_type": {
+                  "enum": [
+                    "application/pdf",
+                    "image/png",
+                    "image/jpeg",
+                    "image/webp"
+                  ]
+                },
+                "kind": {
+                  "enum": [
+                    "pdf",
+                    "image"
+                  ]
+                }
+              },
+              "required": [
+                "attachment_id",
+                "byte_count",
+                "media_type",
+                "kind"
+              ]
+            },
+            "extraction": {
+              "$ref": "#/$defs/InvoiceAnalysisExtraction"
+            },
+            "comparison": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "maxItems": 100,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "index": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  },
+                  "code": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "product_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "match": {
+                    "enum": [
+                      "missing_code",
+                      "unmatched",
+                      "ambiguous",
+                      "unique"
+                    ]
+                  },
+                  "net": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "previous": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "current": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "delta": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "percent": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "direction": {
+                        "enum": [
+                          "unknown",
+                          "up",
+                          "down",
+                          "same"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "previous",
+                      "current",
+                      "delta",
+                      "percent",
+                      "direction"
+                    ]
+                  },
+                  "gross": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "previous": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "current": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "delta": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "percent": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "direction": {
+                        "enum": [
+                          "unknown",
+                          "up",
+                          "down",
+                          "same"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "previous",
+                      "current",
+                      "delta",
+                      "percent",
+                      "direction"
+                    ]
+                  }
+                },
+                "required": [
+                  "index",
+                  "code",
+                  "name",
+                  "product_id",
+                  "match",
+                  "net",
+                  "gross"
+                ]
+              }
+            },
+            "request_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "comparison_observed_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "maxLength": 35
+            }
+          },
+          "required": [
+            "status",
+            "analysis_id",
+            "review_required",
+            "business_id",
+            "provider_id",
+            "attachment_id",
+            "compare_prices",
+            "selection",
+            "source",
+            "extraction",
+            "comparison",
+            "request_id",
+            "comparison_observed_at"
+          ]
+        }
+      ],
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {},
+        "analysis_id": {},
+        "review_required": {},
+        "business_id": {},
+        "provider_id": {},
+        "attachment_id": {},
+        "compare_prices": {},
+        "selection": {},
+        "source": {},
+        "request_id": {},
+        "extraction": {},
+        "comparison": {},
+        "comparison_observed_at": {}
+      }
+    },
+    "InvoiceAnalysisExtraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 256
+        },
+        "total_amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "issue_date": {
+              "anyOf": [
+                {
+                  "const": ""
+                },
+                {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "items": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 100,
+              "items": {
+                "$ref": "#/$defs/InvoiceAnalysisItem"
+              }
+            }
+          },
+          "required": [
+            "issue_date",
+            "items"
+          ]
+        }
+      },
+      "required": [
+        "code",
+        "total_amount",
+        "data"
+      ]
+    },
+    "InvoiceAnalysisItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "\\S"
+        },
+        "code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 256
+        },
+        "quantity": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "packages": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "units_per_package": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "cost_price": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "cost_price_tax": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "unit_price": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "total_price": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "name",
+        "code",
+        "quantity",
+        "packages",
+        "units_per_package",
+        "cost_price",
+        "cost_price_tax",
+        "unit_price",
+        "total_price"
+      ]
+    }
+  }
+}

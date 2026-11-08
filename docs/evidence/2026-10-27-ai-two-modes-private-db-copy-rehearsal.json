@@ -1,0 +1,333 @@
+{
+  "success": true,
+  "operational_database_writes": false,
+  "provider_inferences": 0,
+  "stages": [
+    "readonly_snapshot_dump_created",
+    "restored_all_62_tables_byte_digest_equivalent",
+    "transactional_migration_up_passed",
+    "down_restored_all_62_table_digests",
+    "second_up_passed"
+  ],
+  "comparison": {
+    "backup_restore": {
+      "checked_tables": 62,
+      "differences": []
+    },
+    "up_unrelated": {
+      "checked_tables": 58,
+      "differences": []
+    },
+    "down": {
+      "checked_tables": 62,
+      "differences": []
+    },
+    "down_exact_rows_by_id": {
+      "tables": [
+        "ai_provider_catalog",
+        "ai_providers"
+      ],
+      "equal": true
+    },
+    "second_up_unrelated": {
+      "checked_tables": 58,
+      "differences": []
+    }
+  },
+  "private_dump_exported": false,
+  "preflight": {
+    "database_size_bytes": 18594839,
+    "available_bytes": 1388666880,
+    "required_bytes": 1148121180,
+    "quiet": {
+      "active_jobs": 0,
+      "open_attempts": 0,
+      "busy_slots": 0,
+      "active_chats": 0
+    }
+  },
+  "before_tables": {
+    "actions": {
+      "count": 4,
+      "sha256": "8f789f8580a7047d39743e747c02e2ba5f709cd6cbafe89eb8ca6cf503c189d8"
+    },
+    "ai_api_keys": {
+      "count": 1,
+      "sha256": "8b0f03b60f7532777f37c1838f0ce277da2ccad8449343af66562d00ceee4971"
+    },
+    "ai_provider_catalog": {
+      "count": 17,
+      "sha256": "a8f7185b3c5f45de8c405038fd753771ecec489c82a28976adb68f4351170f56"
+    },
+    "ai_provider_events": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ai_providers": {
+      "count": 4,
+      "sha256": "deeec1d9f854c48a5bd1379dd8617a43f8511c08fe460ec3c90d49105e82f1b0"
+    },
+    "auth_sessions": {
+      "count": 7,
+      "sha256": "8b6fc7af8da7f2e5476c8e20d18891c4e13fe19f1a86785eea3f310b0c31a991"
+    },
+    "business_actions": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "business_collaborators": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "businesses": {
+      "count": 1,
+      "sha256": "9e75e3ef2757a1e780221e88f22a85e46bddaecb203b89bbe20e09754a1a1112"
+    },
+    "finance_categories": {
+      "count": 2,
+      "sha256": "b873f15f409999df6f611268d6c4e8c6ff6685376a18ab2df6c88ae1598aef56"
+    },
+    "finance_category_group_memberships": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "finance_category_groups": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "finance_movements": {
+      "count": 4,
+      "sha256": "dfe2e4904e4321626171f90b3060c7bdf64b72fbafb6eb4bf8c3d98eb003643c"
+    },
+    "finance_obligations": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "invoice_uploads": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "invoices": {
+      "count": 1,
+      "sha256": "2b76d1ce02cc67f3e956efcb2704ae3b8574ba6e81aa2422dca2f65f75805283"
+    },
+    "migrations": {
+      "count": 30,
+      "sha256": "1e5696ec32b880841f84b61b553dc671557d958e3c6da948d6b264228598b836"
+    },
+    "module_groups": {
+      "count": 3,
+      "sha256": "6351aad18fb3eae5fec7b5a327ae55838d65f8c1fb63e08bc888ff38a7e8981d"
+    },
+    "modules": {
+      "count": 9,
+      "sha256": "0cf6828b4abe2e33f99deec8ebb427586f60d3a58f823d39f84d56c1a4a7e731"
+    },
+    "nodia_ai_attachments": {
+      "count": 33,
+      "sha256": "b65d5ee765b90006d0d5273950e5734d992347415f4b39adf89985cd712c0547"
+    },
+    "nodia_ai_audit_events": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "nodia_ai_confirmation_challenges": {
+      "count": 40,
+      "sha256": "f9be3c4658a473814162f1e4beff7ef136dd625000225d52b2a47a331ee83466"
+    },
+    "nodia_ai_context_snapshots": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "nodia_ai_conversations": {
+      "count": 20,
+      "sha256": "d84b4b3828fa1539dbfc42c166fb6791541b58ae2e4a18da0c53edb052aeb839"
+    },
+    "nodia_ai_drafts": {
+      "count": 49,
+      "sha256": "c89656e90cc76398ca0a913f68edaece945c7539792877f0657e8e638c6bcbe5"
+    },
+    "nodia_ai_events": {
+      "count": 1232,
+      "sha256": "abc1493017b1edaf91a6d685e5055702001b360e65b8b51b5a5347ae6ca8795b"
+    },
+    "nodia_ai_execution_grants": {
+      "count": 148,
+      "sha256": "408705679e17f91b9dd1c479440b16fae868ca2afbdd0d4683d31074856d3027"
+    },
+    "nodia_ai_execution_steps": {
+      "count": 40,
+      "sha256": "194bb49abc01a3ad1b813551a3f09fa50c2d5307482d500f877ec23403d848fc"
+    },
+    "nodia_ai_executions": {
+      "count": 39,
+      "sha256": "642ed559a70ecdaeab569054b6b4d68c77dda6cc55d60f539fda91e751d1f240"
+    },
+    "nodia_ai_job_attempts": {
+      "count": 340,
+      "sha256": "f21e646b20aba7092ed03009102a93e58cf15a974cc3eff11ae2b1fef7b8ebdd"
+    },
+    "nodia_ai_jobs": {
+      "count": 125,
+      "sha256": "d277ad376a267453b232cde973a0b61c8e35591dca02ece9ca0fd8a91a0eeb21"
+    },
+    "nodia_ai_message_parts": {
+      "count": 218,
+      "sha256": "cea1f4652d01ca5f91f61e853cc8d3007f1f0c265dd6f9b4c3ed55ffb9bc1274"
+    },
+    "nodia_ai_messages": {
+      "count": 190,
+      "sha256": "f981695952cd1f2ffeb7b3052ab7f4000b4c66c16ed1893cef1ff715d912359b"
+    },
+    "nodia_ai_preferences": {
+      "count": 1,
+      "sha256": "c356ac2277ab5e4fba6d61d65b254dc33490f6c45d7abe17a20e7977a390f929"
+    },
+    "nodia_ai_proposal_revisions": {
+      "count": 50,
+      "sha256": "3ae506128cd05faf7782d158c429ab034137ce29e30b60fca63283a7ee39e6bf"
+    },
+    "nodia_ai_proposal_steps": {
+      "count": 52,
+      "sha256": "cdd5d2824feeed908960c7e768364d6d17a3a5b2f0fba6fb3e0211eaa7d94030"
+    },
+    "nodia_ai_proposals": {
+      "count": 50,
+      "sha256": "2778d1de81f3953652d8aebf6909a83939f9a189da48636a6485b511df327ebb"
+    },
+    "nodia_ai_runs": {
+      "count": 109,
+      "sha256": "df1141f11bd631005e0c8ec3ad7871f0385f79dc252f7cfb676db62a6d2fc2db"
+    },
+    "nodia_ai_runtime_slots": {
+      "count": 3,
+      "sha256": "c135031d863f0cb6ba6785d4a7c83cec5ec9cb7dafaa5611b6e1f594a55a5fe0"
+    },
+    "nodia_ai_tool_calls": {
+      "count": 233,
+      "sha256": "7568e3d072913c1ff582b7996d02ee49898299afa52498414462b88a2846da8d"
+    },
+    "nodia_codex_catalog_rollback": {
+      "count": 1,
+      "sha256": "c2c934077977588be8660129d5ec666d5040ea719e1321cde53cfe194e37cdba"
+    },
+    "personal_info_provider": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "product_logs": {
+      "count": 14,
+      "sha256": "12b41fc01475d800cb39154e3803e2489b7a839dd73db9a6e35e87b7d9133c19"
+    },
+    "products": {
+      "count": 6,
+      "sha256": "8daa8b6cc49b1ff106d22b03a98fbde69e5a5190894e147f90c990bf56791199"
+    },
+    "providers": {
+      "count": 3,
+      "sha256": "876f2b18d921fcd990d3cc3b106493cf38711e7406617ba04de476faad53606d"
+    },
+    "rental_audit_events": {
+      "count": 7,
+      "sha256": "2121c587100ee9d53cef5d03d9132343ad0fbac4af394c0b53a5f19a5c50dbd3"
+    },
+    "rental_blocks": {
+      "count": 1,
+      "sha256": "f1990971329b2e1b240a94ee9ec555263b255b2522bf5ff12c37bd675255d454"
+    },
+    "rental_cancellation_policies": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rental_cancellation_rules": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rental_collaborators": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rental_expenses": {
+      "count": 2,
+      "sha256": "facc341121973093fe387686a327b18f654ab301259da255987fde21211fc5ff"
+    },
+    "rental_operations": {
+      "count": 7,
+      "sha256": "c216f9821d7446c19dbfeb6a2ac5afd8fc9d529b7f625e43dd657884d132819e"
+    },
+    "rental_payments": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rental_properties": {
+      "count": 2,
+      "sha256": "d7b5370f94b2743b97794701fe075254a6f591861ac095317222dd0b37b2722f"
+    },
+    "rental_reservations": {
+      "count": 2,
+      "sha256": "584ea154fcfbb0632c08b3c9c0af2b14ee0406b32567732562e623730f95a2ff"
+    },
+    "rental_turnovers": {
+      "count": 2,
+      "sha256": "b6312e4ac5f65f895ad62f7e1cca3d36fa29f6e2abae7fb2162d2af20d28ca37"
+    },
+    "role_actions": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "roles": {
+      "count": 1,
+      "sha256": "54a108702cf72213934f93a3f7d7978a997acaabdac473bca6ac9cbb4bf94433"
+    },
+    "translations": {
+      "count": 30,
+      "sha256": "baf97661bec10b2686982b03983d820de61db655aae781628f897fde1eaec23e"
+    },
+    "user_modules": {
+      "count": 8,
+      "sha256": "e02574abb5711edc0065203aaa7e1a8ee8c8e682834ec6170f8685c39251e225"
+    },
+    "user_roles": {
+      "count": 1,
+      "sha256": "e0f1272804335125aaddde63eeb8da7257735560fd1b157561f6c799b99ec7a6"
+    },
+    "users": {
+      "count": 1,
+      "sha256": "36198c2c7a6bba8b7ad851c1cd0955186b4666560258ce09f566fc74d19661e1"
+    }
+  },
+  "aggregate_canonicalization": "PostgreSQL to_jsonb(row)::text ordered with C collation, SHA256 per row stream",
+  "backup": {
+    "mode": "600",
+    "bytes": 655022,
+    "sha256": "d59d258a6a649f89e74fbeeadbcebd23e6a4eafaa2df6e3b29940b692293b036",
+    "exported": false,
+    "location": "Retained only on VM in private directory 0700; dump0600; never exported."
+  },
+  "copy": {
+    "container": "nodia_ai_modes_copy_1793122304621_af0409d3",
+    "network": "none",
+    "host_tcp_ports": [],
+    "data_volume_names": [
+      "da87d17d2276ac11833f91b71e00144d24d8120b1bfddf0d39a9bef1c8d6ac9f"
+    ]
+  },
+  "migration_sha256": "65a4c4afc7eea9bc618d0bfe996805f8789ce2e2a1a2ae96ab595cf7746acbd5",
+  "disposable_copy_removed": true,
+  "final_available_bytes": 1387995136,
+  "operational_health_unchanged": true,
+  "prior_attempts": [
+    {
+      "report": "vm-db-copy-rehearsal-r01.json",
+      "cause": "noncanonical row_to_json key order changed after restoring dropped columns; canonical JSONB and exact per-ID comparison subsequently passed",
+      "operational_writes": false,
+      "disposable_copy_removed": true
+    },
+    {
+      "report": "vm-db-copy-rehearsal-r02.json",
+      "cause": "copy pg_isready raced Docker initialization temporary server; fixed by requiring PID1 postgres before readiness",
+      "operational_writes": false,
+      "disposable_copy_removed": true
+    }
+  ]
+}

@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "checked_on_local": "2026-10-28",
+  "checked_at_utc": "2026-10-29T00:21:34.924Z",
+  "observation_clock": "usage_vm_utc",
+  "status": "real_sales_reads_and_empty_ranking_verified_sale_proposal_pending_human_confirmation",
+  "authorization": "User requested real NodiaAI sales/top/preparation flow with human confirmation before saving, and explicitly chose a marked Prueba NodiaAI product.",
+  "environment": {
+    "server": "/opt/nodia/releases/nodia-server-business-pos-r02",
+    "server_manifest_sha256": "22f928167d186565cb08fed6eb0572d43263e0a0a424f235aad26e0c7063ef24",
+    "client_release": "/opt/nodia/releases/nodia-client-business-pos-20261028-r02",
+    "knowledge_release_id": "b49fde74a53483fad4fe80b8175b36bb7c337415097dd9cfa4349285f9e1e2ea",
+    "application_code_changed": false,
+    "deployment_or_migrations_performed": false,
+    "runtime_restarted": false,
+    "transport": "real application HTTP admission, worker, provider and ToolGateway; read-only SQL verification"
+  },
+  "selection": {
+    "connection_id": "1",
+    "effort_id": "medium",
+    "mode": "agentic",
+    "model_id": "gpt-6.1-sol"
+  },
+  "conversation_id": "ae84f53f-b887-45a3-b97c-85329322d13e",
+  "chat_url": "http://localhost:5174/tools/nodia-ai?chat=ae84f53f-b887-45a3-b97c-85329322d13e",
+  "qualification": {
+    "scope": "exact configured Codex Agentic selection and runtime/session/configuration",
+    "native_generations": 1,
+    "gateway_callbacks": 1,
+    "status": "passed",
+    "terminal_proof_id": "b265b966-4ff8-4c89-8d0b-ed6ae15c4488",
+    "attempt_id": "41567f47-eecc-4612-abc9-0a4ad922259c",
+    "configuration_generation": "d2968cac1ca6e87f608c5c92fcce1ebae6e40d5ac7d1a2acac522b27e458b829",
+    "fixture_removed": true,
+    "native_ack_and_acceptance_verified": true,
+    "receipt_sha256": "cd0337067b9b504af1cf54268bdd50bc03cae223a7d45970f2d9a2a241de7ff7",
+    "earlier_operator_guards": "runuser PATH corrected before intent; private D-Bus namespace and timestamp mirror corrected after known zero-dispatch attempts, each fixture removed; no inference replay or acceptance copied"
+  },
+  "natural_runs": [
+    {
+      "purpose": "consult_sales",
+      "run_id": "0ec479a8-aa40-4f4f-b467-91baaa240fdb",
+      "state": "completed",
+      "provider_dispatches": 2,
+      "tools": [
+        {
+          "name": "nodia_capabilities_select",
+          "state": "completed",
+          "arguments_hash": "47d4edcc873434be0f04e2753ce70dc8ed252e6a651187fcaa3297191ba0f707",
+          "contract_hash": "c84994434a131c277db1391375db7f2b2fcc0de4dc2ff9bac684cd02405ce84e"
+        },
+        {
+          "name": "nodia_sales_list",
+          "state": "completed",
+          "arguments_hash": "571cb4e143c7a9766ed1bb496f9fb8b4a2730bbcc379683fabd0623ece49c927",
+          "contract_hash": "04018301b812530b83a2e02440bc509ea3b6afb560b51b7589a91d44800d0cb8"
+        }
+      ]
+    },
+    {
+      "purpose": "top_products",
+      "run_id": "535e6c58-e623-451c-a9a8-ea2620d4929d",
+      "state": "completed",
+      "provider_dispatches": 2,
+      "tools": [
+        {
+          "name": "nodia_capabilities_select",
+          "state": "completed",
+          "arguments_hash": "47d4edcc873434be0f04e2753ce70dc8ed252e6a651187fcaa3297191ba0f707",
+          "contract_hash": "c84994434a131c277db1391375db7f2b2fcc0de4dc2ff9bac684cd02405ce84e"
+        },
+        {
+          "name": "nodia_sales_list",
+          "state": "completed",
+          "arguments_hash": "d596b2c1ebff133947674b16507dd4e51c18558b003fe80f22dbfc04ccf4cd01",
+          "contract_hash": "04018301b812530b83a2e02440bc509ea3b6afb560b51b7589a91d44800d0cb8"
+        }
+      ]
+    },
+    {
+      "purpose": "prepare_sale",
+      "run_id": "f7a9f120-3f61-4be5-be54-a45d795087f2",
+      "state": "completed",
+      "provider_dispatches": 2,
+      "tools": [
+        {
+          "name": "nodia_capabilities_select",
+          "state": "completed",
+          "arguments_hash": "eb5fdd66e62508b2814323b469828813779043a8252a65820d9277beebff1761",
+          "contract_hash": "c84994434a131c277db1391375db7f2b2fcc0de4dc2ff9bac684cd02405ce84e"
+        },
+        {
+          "name": "nodia_products_get",
+          "state": "completed",
+          "arguments_hash": "9328b2187029e0b621913fa961c932d33c7b6c14f16cffe5abb7e91fb64f5a85",
+          "contract_hash": "38b77f71b12679b6c9e14aecc08b01321049133ffb137427c78b9258217f27f2"
+        },
+        {
+          "name": "nodia_sales_prepare_create",
+          "state": "completed",
+          "arguments_hash": "7f986c7fa15242519f3c1a02626a50636365a26603bab9ac93b466b900640c83",
+          "contract_hash": "3aebe99d4b0a3012464efd71160d14d0bd731e354ef40371a47fdd2f1047da38"
+        }
+      ]
+    }
+  ],
+  "sales_query": {
+    "business_id": "5af15373-3638-4a02-a015-4e72c433fc11",
+    "registered_sales": 0,
+    "real_tool": "nodia_sales_list"
+  },
+  "top_products": {
+    "period": {
+      "from": "2026-10-01",
+      "to_exclusive": "2026-11-01",
+      "timezone": "America/Santiago"
+    },
+    "basis": "completed sales only",
+    "completed_sales": 0,
+    "amount_clp": "0",
+    "ranking": [],
+    "proof": "completed real sales-list callback with exact business, completed status, October boundaries and total_items0; independent SQL reference also0",
+    "reports_engine_exercised": false,
+    "positive_ranking_verified": false,
+    "no_additional_inference_for_a_valid_empty_result": true,
+    "original_harness_error_preserved": "actual_report_tool_required was an overly narrow tool-name assertion; raw receipt remains failed and semantic review is separate",
+    "semantic_review_sha256": "65f0c7721b01519d1fab16f761da2a0049eef17825942ec090fd568840e48d8b"
+  },
+  "admission_recovery": {
+    "initial_status": 500,
+    "correlation_id": "f3b6c96e-eb46-4dcb-8e61-a002410fd0d7",
+    "client_message_id": "30bf3664-45e6-408d-bfd1-4cae132c583d",
+    "original_request_not_admitted": true,
+    "recovered_using_same_client_message_id": true,
+    "completed_first_run_repeated": false,
+    "inference_replay": false,
+    "cause": "not retained by the HTTP exception filter; runtime-busy mapping gap is a source finding, not a proven cause of this response",
+    "read_only_diagnostic_sha256": "632b097e1d78c62fd35ca147c455a25338f8ca9a6d275b45324d1abc3569ca8c"
+  },
+  "test_product": {
+    "id": "9",
+    "name": "Prueba NodiaAI POS 20261028",
+    "business_id": "5af15373-3638-4a02-a015-4e72c433fc11",
+    "unit_price_clp": "1200",
+    "active": true,
+    "has_stock": true,
+    "retained_for_human_review": true,
+    "single_post_readback_verified": true,
+    "original_tables_preserved": true,
+    "existing_six_products_not_classified": true
+  },
+  "proposal": {
+    "id": "50e284ba-28a6-42b7-96f1-fd4dd2ba811f",
+    "revision": 1,
+    "hash": "b5811ec7ff984e3cdb35192af1a5874f2aff2a774dea09f79ed9a4c1f7748d60",
+    "expires_at": "2026-10-29T00:33:41.080Z",
+    "state_at_observation": "ready",
+    "tool": "nodia_sales_prepare_create",
+    "effect": "sales.create",
+    "product_id": "9",
+    "quantity": 1,
+    "unit_price_clp": "1200",
+    "total_amount_clp": "1200",
+    "payment_method": "cash",
+    "currency": "CLP",
+    "state_after_human_confirmation": "draft",
+    "execution_id": null,
+    "confirmation_challenges": 0,
+    "executions": 0,
+    "sale_saved": false,
+    "sale_completed": false
+  },
+  "preservation": {
+    "reads_commercial_data_unchanged": true,
+    "preparation_commercial_data_unchanged": true,
+    "new_product_is_separate_explicit_test_fixture": true,
+    "temporary_sessions_revoked": 5,
+    "roles_credentials_and_provider_settings_unchanged": true,
+    "application_knowledge_not_republished": true,
+    "quiet": {
+      "attempts": 0,
+      "jobs": 0,
+      "slots": 0
+    },
+    "no_tokens_cookies_keys_or_private_provider_stderr_exported": true
+  },
+  "final_read_only_witness": {
+    "checked_at_utc": "2026-10-29T00:21:34.924Z",
+    "original_seven_table_hashes_preserved_excluding_own_product_and_log": true,
+    "proposal_unexpired_and_ready": true,
+    "temporary_sessions_revoked": 5,
+    "human_gate": {
+      "challenges": 0,
+      "executions": 0
+    },
+    "quiet": {
+      "attempts": 0,
+      "jobs": 0,
+      "slots": 0
+    },
+    "receipt_sha256": "948371d708c5537afd45bf128a4e38de3bea12b12c45e31e37d5d2573dda1b69",
+    "runtime_sha256": "f7beb9c2b5291dc858680211422add3f736cb90e8198ff7b70f1c0c06affc9d2",
+    "backup_timers": "both active"
+  },
+  "verification": {
+    "offline_contract_evidence_sha256": "7b0a3e589cb122fb31fe26dd3a04e46a7f915b36b35344ef66807c59152dcd7e",
+    "human_assistant_text_reviewed": true,
+    "browser_ui_verified": false,
+    "browser_limitation": "Computer Use stopped because Chrome URL could not be verified with sufficient confidence; no further UI automation was performed"
+  },
+  "pending": [
+    "Human review and exact authenticated confirmation in NodiaAI before any sale is saved; proposal expires at the observed instant",
+    "Human confirmation/execution/receipt of this proposal has not been exercised by the operator",
+    "A positive ranking and nodia_reports_run were not exercised by this empty-business conversation",
+    "Other provider/model/mode selections and physical barcode-reader/phone acceptance remain separate"
+  ],
+  "artifacts": {
+    "root": "ops/lab/artifacts/business-pos-ai-natural-20261028-r01",
+    "catalog": "ops/lab/artifacts/business-pos-ai-natural-20261028-r01/catalog.json"
+  },
+  "limits": "Scoped real provider reads and preparation ending at the human gate, not acceptance of every sales CRUD/tool, report engine path, provider, browser or production operation."
+}

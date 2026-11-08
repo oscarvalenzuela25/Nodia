@@ -24,12 +24,7 @@
           "minimum": 0
         }
       },
-      "required": [
-        "page",
-        "limit",
-        "total_items",
-        "total_pages"
-      ]
+      "required": ["page", "limit", "total_items", "total_pages"]
     },
     "ProviderRow": {
       "type": "object",
@@ -81,21 +76,14 @@
         "use_api_key": {
           "type": "boolean"
         },
-        "use_token_plan_web": {
-          "type": "boolean"
-        },
-        "use_token_plan_agentic": {
+        "use_agentic": {
           "type": "boolean"
         },
         "default_mode": {
           "anyOf": [
             {
               "type": "string",
-              "enum": [
-                "api_key",
-                "token_plan_web",
-                "token_plan_agentic"
-              ]
+              "enum": ["api_key", "agentic"]
             },
             {
               "type": "null"
@@ -114,8 +102,7 @@
         "is_active",
         "is_default",
         "use_api_key",
-        "use_token_plan_web",
-        "use_token_plan_agentic",
+        "use_agentic",
         "default_mode",
         "auto_rotate_api_keys"
       ]
@@ -303,10 +290,7 @@
         "can_use_api_key": {
           "type": "boolean"
         },
-        "can_use_token_plan_web": {
-          "type": "boolean"
-        },
-        "can_use_token_plan_agentic": {
+        "can_use_agentic": {
           "type": "boolean"
         }
       },
@@ -316,8 +300,7 @@
         "name",
         "is_active",
         "can_use_api_key",
-        "can_use_token_plan_web",
-        "can_use_token_plan_agentic"
+        "can_use_agentic"
       ]
     },
     "SupportedRow": {
@@ -373,11 +356,7 @@
         },
         "activity": {
           "type": "string",
-          "enum": [
-            "active",
-            "inactive",
-            "all"
-          ]
+          "enum": ["active", "inactive", "all"]
         },
         "q": {
           "type": "object",
@@ -423,10 +402,7 @@
           "$ref": "#/$defs/Meta"
         }
       },
-      "required": [
-        "data",
-        "meta"
-      ]
+      "required": ["data", "meta"]
     },
     "KeysInput": {
       "type": "object",
@@ -444,11 +420,7 @@
         },
         "activity": {
           "type": "string",
-          "enum": [
-            "active",
-            "inactive",
-            "all"
-          ]
+          "enum": ["active", "inactive", "all"]
         },
         "q": {
           "type": "object",
@@ -490,10 +462,7 @@
           "$ref": "#/$defs/Meta"
         }
       },
-      "required": [
-        "data",
-        "meta"
-      ]
+      "required": ["data", "meta"]
     },
     "EventsInput": {
       "type": "object",
@@ -511,11 +480,7 @@
         },
         "activity": {
           "type": "string",
-          "enum": [
-            "active",
-            "inactive",
-            "all"
-          ]
+          "enum": ["active", "inactive", "all"]
         },
         "q": {
           "type": "object",
@@ -562,10 +527,7 @@
           "$ref": "#/$defs/Meta"
         }
       },
-      "required": [
-        "data",
-        "meta"
-      ]
+      "required": ["data", "meta"]
     },
     "CatalogInput": {
       "type": "object",
@@ -585,9 +547,7 @@
           "maxItems": 100
         }
       },
-      "required": [
-        "items"
-      ]
+      "required": ["items"]
     },
     "SupportedInput": {
       "type": "object",
@@ -607,9 +567,7 @@
           "maxItems": 100
         }
       },
-      "required": [
-        "items"
-      ]
+      "required": ["items"]
     }
   }
 }

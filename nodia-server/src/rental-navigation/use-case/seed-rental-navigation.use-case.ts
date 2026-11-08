@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { RentalNavigationService } from '../rental-navigation.service.js';
+import { withCoreAuthorityLock } from '../../authorization/core-authority-transaction.js';
 @Injectable()
 export class SeedRentalNavigationUseCase {
   constructor(
@@ -8,10 +9,10 @@ export class SeedRentalNavigationUseCase {
     private readonly navigation: RentalNavigationService,
   ) {}
   execute(): Promise<{ group_id: string; module_id: string }> {
-    return this.dataSource.transaction('READ COMMITTED', async (manager) => {
-      await manager.query("SET LOCAL lock_timeout = '2s'");
-      await manager.query("SET LOCAL statement_timeout = '5s'");
-      return this.navigation.register(manager);
-    });
+    return this.dataSource.transaction('READ COMMITTED', (manager) =>
+      withCoreAuthorityLock(manager, undefined, () =>
+        this.navigation.register(manager),
+      ),
+    );
   }
 }

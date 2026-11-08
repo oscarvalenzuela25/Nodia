@@ -55,7 +55,18 @@ try {
   app = compiled.createNestApplication({ logger: false });
   app.setGlobalPrefix('api/v1');
   app.use('/api/v1/nodia-ai', parser(compiled.get(Policy).admission.http_json_bytes));
-  app.useGlobalFilters(new Filter());
+  const diagnosticFilter = new Filter(), originalCatch = diagnosticFilter.catch.bind(diagnosticFilter);
+  diagnosticFilter.catch = (error, host) => {
+    const req = host.switchToHttp().getRequest();
+    if (req.method === 'PATCH' && /\/contacts\/[^/]+\/status$/.test(req.path)) {
+      const name = error?.constructor?.name;
+      const frame = typeof error?.stack === 'string' ? /\/([^/()\s:]+\.js):(\d+)/.exec(error.stack) : null;
+      const sqlstate = typeof error?.code === 'string' && /^[0-9A-Z]{5}$/.test(error.code) ? error.code : null;
+      process.stderr.write(JSON.stringify({event:'synthetic_ai22_contact_status_failure',exception_class:typeof name==='string'&&/^[A-Za-z]{1,64}$/.test(name)?name:'Error',sqlstate,frame:frame?{file:frame[1],line:Number(frame[2])}:null})+'\n');
+    }
+    return originalCatch(error, host);
+  };
+  app.useGlobalFilters(diagnosticFilter);
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }));
   app.useGlobalGuards({ canActivate(context) {
     const request = context.switchToHttp().getRequest();
@@ -75,8 +86,8 @@ try {
     assert.equal(response.status, status, `${method} ${path}: ${response.status} ${JSON.stringify(value)}`);
     return value;
   }
-  let [destination] = await db.query("SELECT id FROM modules WHERE link='/tools/business'");
-  if (!destination) [destination] = await db.query("INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/tools/business','synthetic_ai22_business' FROM modules WHERE key='nodia_ai' RETURNING id");
+  let [destination] = await db.query("SELECT id FROM modules WHERE link='/business'");
+  if (!destination) [destination] = await db.query("INSERT INTO modules(module_group_id,sort_order,link,key) SELECT module_group_id,(SELECT COALESCE(MAX(m.sort_order),-1)+1 FROM modules m WHERE m.module_group_id=modules.module_group_id),'/business','synthetic_ai22_business' FROM modules WHERE key='nodia_ai' RETURNING id");
   await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1),(2,$1) ON CONFLICT DO NOTHING', [destination.id]);
   const toolName = (resource, operation) => `nodia_${resource}_prepare_${operation}`;
   async function proposal(resource, operation, partial, actor = '1', expectedStatus = 'ready') {
@@ -227,8 +238,11 @@ try {
   const beforeProvider=await proposal('provider_contacts','set_active',{business_id:businessTwo,provider_id:supplier.id,id:person.id,is_active:false});
   await db.query('UPDATE providers SET name=$2 WHERE id=$1',[supplier.id,'synthetic changed parent']);
   await admit(beforeProvider,'1',409);check('same timestamp supplier changes invalidate a frozen contact proposal');
-  const globalProvider=await perform('providers','create',{business_id:business,name:'Synthetic globally permitted supplier'},'2');
-  check('native global supplier access remains allowed with the target module while business ownership stays unchanged',(await request(`/providers/${globalProvider.id}`)).business_id===business&&(await request(`/businesses/${business}`)).owner_id==='1');
+  await rejection('providers','create',{business_id:business,name:'Synthetic unrelated supplier denied'},'2',[403,404]);
+  check('policy89 denies an unrelated actor despite its enabled business module');
+  await perform('businesses','set_collaborators',{business_id:business,id:business,users:[{user_id:'2',action_ids:[action.id]}]});
+  const globalProvider=await perform('providers','create',{business_id:business,name:'Synthetic authorized collaborator supplier'},'2');
+  check('policy89 permits an explicitly authorized collaborator without transferring ownership',(await request(`/providers/${globalProvider.id}`)).business_id===business&&(await request(`/businesses/${business}`)).owner_id==='1');
   await perform('businesses','update',{business_id:business,id:business,name:'Synthetic super admin edit'},'3');
   check('super admin can manage a foreign business without transferring its owner',(await request(`/businesses/${business}`)).owner_id==='1');
   await db.query('DELETE FROM user_modules WHERE user_id=2 AND module_id=$1',[destination.id]);
@@ -279,7 +293,7 @@ try {
     execute.execute(identities.get('1'),race.execution_id,raceClaim),
     fetch(base+`/providers/${supplier.id}/contacts/${person.id}/status`,{method:'PATCH',headers:{'content-type':'application/json','x-fixture-actor':'1'},body:JSON.stringify({version:beforeRace.version,is_active:false})}),
   ]);
-  assert.equal(outcomes[1].status,'fulfilled');assert.ok([200,409].includes(outcomes[1].value.status));
+  assert.equal(outcomes[1].status,'fulfilled');assert.ok([200,409].includes(outcomes[1].value.status),`synthetic_ai22_contact_race_http_${outcomes[1].value.status}`);
   if(outcomes[0].status==='rejected')await recovery.execute(raceClaim,'nodia_ai:preconditions_changed');
   const afterRace=(await contactList(supplier.id)).find(row=>row.id===person.id);
   check('native HTTP status and confirmed worker share contact CAS without duplicate version increments',afterRace.version===beforeRace.version+1&&afterRace.is_active===false);

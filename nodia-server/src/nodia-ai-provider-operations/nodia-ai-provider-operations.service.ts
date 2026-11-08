@@ -2,7 +2,6 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import type { EntityManager } from 'typeorm';
 import type { NodiaAiJsonObject } from '../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
 import type { NodiaAiProviderResource } from './types/provider-operation.types.js';
-
 @Injectable()
 export class NodiaAiProviderOperationsService {
   async target(
@@ -12,8 +11,8 @@ export class NodiaAiProviderOperationsService {
   ): Promise<NodiaAiJsonObject | null> {
     const columns =
       resource === 'ai_providers'
-        ? 'id::text,catalog_id::text,name,use_api_key,use_token_plan_web,use_token_plan_agentic,default_mode,auto_rotate_api_keys,is_default,is_active,fields'
-        : 'id::text,key,name,can_use_api_key,can_use_token_plan_web,can_use_token_plan_agentic,is_active';
+        ? 'id::text,catalog_id::text,name,use_api_key,use_agentic,default_mode,auto_rotate_api_keys,is_default,is_active,fields'
+        : 'id::text,key,name,can_use_api_key,can_use_agentic,is_active';
     const rows: NodiaAiJsonObject[] = await manager.query(
       `SELECT ${columns} FROM ${resource} WHERE id=$1`,
       [id],
@@ -25,7 +24,7 @@ export class NodiaAiProviderOperationsService {
     key: string,
   ): Promise<NodiaAiJsonObject | null> {
     const rows: NodiaAiJsonObject[] = await manager.query(
-      'SELECT id::text,key,name,can_use_api_key,can_use_token_plan_web,can_use_token_plan_agentic,is_active FROM ai_provider_catalog WHERE key=$1',
+      'SELECT id::text,key,name,can_use_api_key,can_use_agentic,is_active FROM ai_provider_catalog WHERE key=$1',
       [key],
     );
     return rows[0] ?? null;
@@ -38,7 +37,9 @@ export class NodiaAiProviderOperationsService {
     );
   }
   async count(manager: EntityManager): Promise<number> {
-    const [row]: { count: string }[] = await manager.query(
+    const [row]: {
+      count: string;
+    }[] = await manager.query(
       'SELECT count(*)::text AS count FROM ai_providers',
     );
     const count = Number(row.count);
@@ -63,7 +64,7 @@ export class NodiaAiProviderOperationsService {
   ): Promise<NodiaAiJsonObject[]> {
     return this.bounded(
       await manager.query(
-        'SELECT id::text,name,use_api_key,use_token_plan_web,use_token_plan_agentic,is_active,is_default FROM ai_providers WHERE catalog_id=$1 ORDER BY id LIMIT 101',
+        'SELECT id::text,name,use_api_key,use_agentic,is_active,is_default FROM ai_providers WHERE catalog_id=$1 ORDER BY id LIMIT 101',
         [catalogId],
       ),
     );

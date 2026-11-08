@@ -8,6 +8,9 @@ import { NODIA_AI_FINANCE_READ_FAMILY } from './finance/finance-read.family.js';
 import { NodiaAiReservationsModule } from './reservations/nodia-ai-reservations.module.js';
 import { NodiaAiReservationsFamilyUseCase } from './reservations/use-case/nodia-ai-reservations-family.use-case.js';
 import { createNodiaAiBusinessToolFamily } from './business/business-tool-family.js';
+import { createNodiaAiSalesToolFamily } from './business/sales-tool-family.js';
+import { SaleModule } from '../sale/sale.module.js';
+import { ReadSalesUseCase } from '../sale/use-case/read-sales.use-case.js';
 import { createNodiaAiAiSettingsReadFamily } from './ai-settings/ai-settings-read.family.js';
 import { NodiaAiCoreSettingsReadModule } from './core-settings/core-settings-read.module.js';
 import { NODIA_AI_CORE_SETTINGS_READ_FAMILY } from './core-settings/core-settings-read.family.js';
@@ -143,6 +146,11 @@ export class NodiaAiProductReadsModule {
         NodiaAiFinanceReadModule,
         NodiaAiReservationsModule,
         NodiaAiCoreSettingsReadModule,
+        ...(ids.some(
+          (id) => id === 'nodia_sales_get' || id === 'nodia_sales_list',
+        )
+          ? [SaleModule]
+          : []),
         ...(NODIA_AI_EXTERNAL_READS.some(([id]) => ids.includes(id))
           ? [NodiaAiExternalReadsModule]
           : []),
@@ -160,12 +168,14 @@ export class NodiaAiProductReadsModule {
             NodiaAiReservationsFamilyUseCase,
             NODIA_AI_CORE_SETTINGS_READ_FAMILY,
             { token: NODIA_AI_EXTERNAL_READ_FAMILY, optional: true },
+            { token: ReadSalesUseCase, optional: true },
           ],
           useFactory: (
             finance: NodiaAiToolFamily,
             reservations: NodiaAiReservationsFamilyUseCase,
             core: NodiaAiToolFamily,
             external?: NodiaAiToolFamily,
+            sales?: ReadSalesUseCase,
           ) =>
             selectPublishedNodiaAiFamilies(
               [
@@ -173,6 +183,20 @@ export class NodiaAiProductReadsModule {
                 reservations.family(),
                 core,
                 business,
+                ...(sales
+                  ? [
+                      createNodiaAiSalesToolFamily(
+                        readFileSync(
+                          new URL(
+                            './contracts/sales.schema.json',
+                            import.meta.url,
+                          ),
+                          'utf8',
+                        ),
+                        sales,
+                      ),
+                    ]
+                  : []),
                 aiSettings,
                 ...(external ? [external] : []),
                 artifacts,

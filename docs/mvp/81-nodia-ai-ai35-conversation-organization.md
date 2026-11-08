@@ -8,6 +8,10 @@
 
 ## Organización
 
+Ajuste visual solicitado el 2026-10-27: «NodiaAI» usa la fuente existente del logotipo, sin subtítulo. El historial deja la búsqueda siempre visible, con la lupa al final; la flecha junto a «Conversaciones» despliega archivado, ámbito autorizado y «Sólo fijadas», ahora switch. Los filtros empiezan plegados y conservan valores al plegar, cerrar el drawer o cruzar el breakpoint de 900 px. No cambian consultas, permisos, confirmaciones ni operaciones. [Evidencia de interfaz y despliegue](../evidence/nodia-ai-sidebar-ui-r01.json); [evaluación de impacto](../nodia-ai/knowledge/nodia-ai/features/conversation-organization.md#evaluación-de-impacto-visual--2026-10-27).
+
+El ajuste posterior del 2026-10-28 presenta el encabezado como «Nodia AI» y aplica el degradado del logotipo desde los tokens del tema, conservando tipografía y tamaño responsive. No renombra rutas, entidades ni contratos. [Evidencia](../evidence/nodia-ai-title-ui-r01.json).
+
 La página incorpora búsqueda por título/texto, filtros de archivado y fijadas, y acciones de renombrar, fijar/desfijar y archivar/desarchivar. Usa las rutas existentes de conversaciones y su paginación backend; no filtra ni reordena páginas localmente. El orden sigue updated_at/id descendente. Una conversación archivada sigue accesible por su enlace y conserva las mismas reglas de vigencia. Organizarla no reinicia los90 días: sólo un mensaje nuevo del dueño cambia la actividad humana relevante.
 
 El rol super_admin se obtiene del contexto de autorización cargado. Permite escoger ámbito propio/global; los chats ajenos siguen de sólo lectura conforme al contrato existente. La API revalida acceso, sesión, propiedad, revisión y estado ocupado. La UI no infiere permisos del rol que acompaña un objeto de usuario ni habilita escrituras por mostrar un chat.

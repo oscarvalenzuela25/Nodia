@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "title": "Antigravity Agentic: aceptación acotada del core OCR Products mediante protocolo durable directo",
+  "status": "accepted_component_only",
+  "observed_at": "2026-10-26T18:13:03.228Z",
+  "source": {
+    "Server_manifest_sha256": "8f83d1525802a08f468e8132ff496a0976493e3b32941366888b631e56273bc8",
+    "native_epoch": {
+      "id": "ae8b025b5910da6bb27a96dee881411a3c66d62fdcf612cf61013841d064f091",
+      "image": "sha256:6401f3576bc6eaba31afc47a6f1ba3f6ff397e966465d5cd6da573adc9a8ff93",
+      "started_at": "2026-10-26T16:56:35.276313977Z",
+      "descriptor_sha256": "f0bfd32c0af03e3e564c47e1ff83433fe18416e612f620a2558dcf2b07af1584"
+    },
+    "operator_package": "ops/lab/artifacts/invoice-ocr-core-direct-probe-r02",
+    "operator_catalog_sha256": "6d33e843b80c17d209a08e2d13d68f89f0ed31a49f4786a7ddcba96704c1a7f1"
+  },
+  "facts": {
+    "fixture_sha256": "0723e3c8fc45e6bbed58e91e16e7d18f55b2a1423ee007342b793f66c057d98b",
+    "fixture_bytes": 148100,
+    "fixture_media_type": "image/png",
+    "commercial_provider_id": "1",
+    "business_id": "5af15373-3638-4a02-a015-4e72c433fc11",
+    "configuration_and_selection_read_from_current_database": true,
+    "operator_native_invoice_HTTP_requests": 1,
+    "durable_dispatch_intents": 1,
+    "generation_retries": 0,
+    "native_terminal_proof": {
+      "engine": "agentic",
+      "attemptId": "5ab9ba77-b22b-4267-b3a4-68f563550b03",
+      "resourceKey": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+      "sessionGeneration": "3db7658859884fee8821166b4fd1d66a",
+      "operationRef": "5ab9ba77-b22b-4267-b3a4-68f563550b03",
+      "terminalProofId": "de896c57-b0cf-47b6-8410-89b17d06c8ba",
+      "processClosed": true,
+      "outcome": "completed",
+      "observedAt": "2026-10-26T18:13:03.228Z"
+    },
+    "native_ACK_calls": 1,
+    "elapsed_monotonic_seconds": 24.833143803989515,
+    "extraction_public_projection": {
+      "sha256": "ed14c365778995ddb507361dc6e7a7cfe09e7dd228d020af6e66bae9ad7c7721",
+      "business_id": "5af15373-3638-4a02-a015-4e72c433fc11",
+      "provider_id": "1",
+      "code": "C03-PNG-R01",
+      "code_matches_fixture": true,
+      "total_amount": 246,
+      "issue_date": "2026-10-24",
+      "item_count": 1,
+      "items": [
+        {
+          "code": "SKU-PNG-C03",
+          "name": "Pan C03 PNG",
+          "quantity": 2,
+          "unit_price": 123,
+          "total_price": 246,
+          "packages": null,
+          "units_per_package": null,
+          "cost_price": null,
+          "cost_price_tax": null
+        }
+      ]
+    },
+    "SQL_writes": 0,
+    "post_SQL_native_Codex_quiet_verified": true,
+    "protected_domain_schema_configuration_unchanged": true
+  },
+  "limits": [
+    "Real component call to the shared Products core through existing NativeInvoice; no natural MCP, UI conversation, business save, price comparison or proposal execution.",
+    "One operator native-invoice HTTP request/intent is observed; internal provider calls and vendor cost are unknown.",
+    "The fixture validates one PNG and four explicit unknown nulls, not general MIME support, adversarial PDF or all providers.",
+    "This historical epoch6401/session3db proof cannot qualify the future cache image/epoch.",
+    "R01 authorization-route error was corrected offline in R02 before any probe execution; R01 was not run."
+  ],
+  "receipts": {
+    "bootstrap.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-core-direct-probe-verification-r02/receipts/bootstrap.json",
+      "sha256": "b532bf811d0ee84c3e7296a9785dcbde01f5220a8687e627f433b54554b3eb87"
+    },
+    "plan.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-core-direct-probe-verification-r02/receipts/plan.json",
+      "sha256": "d995555838b5ac2a5395a1d46f62719fbfb6c58b98fb06ca213f295425b4c34c"
+    },
+    "execute.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-core-direct-probe-verification-r02/receipts/execute.json",
+      "sha256": "68db20c8d86834a533c57b5b70b5090e68fddce69d6f90bff15dd46cdb1797d6"
+    }
+  }
+}

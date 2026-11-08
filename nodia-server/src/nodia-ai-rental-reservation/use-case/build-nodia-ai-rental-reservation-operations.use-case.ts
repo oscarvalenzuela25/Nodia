@@ -78,7 +78,7 @@ import type {
   NodiaAiRentalReservationOperation,
 } from '../types/rental-reservation-operation.types.js';
 
-const route = '/tools/reservations';
+const route = '/reservations';
 type Action = NodiaAiRentalReservationAction;
 interface Input {
   property?: string;

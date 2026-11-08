@@ -4,13 +4,13 @@
   "document_id": "reservations.confirmed-reservation-lifecycle",
   "product_id": "reservations",
   "kind": "feature",
-  "revision": 1,
-  "document_status": "draft",
+  "revision": 2,
+  "document_status": "approved",
   "implementation": {
-    "status": "implemented",
-    "notes": "AI-25 implementa y verifica en laboratorio privado seis puertos internos de reservas/ciclo comercial, reutilizando casos de uso nativos, revisión exacta y recibo atómico. Preparadores MCP sin publicar y aceptación de escrituras Gemini pendiente; dinero/bloqueos/preparación conservan AI-26."
+    "status": "partial",
+    "notes": "AI36-C05 publica sólo la sección adicional enumerada bajo autorización humana específica; los apartados previos conservan su fecha y alcance. Contratos internos y publicación no prueban despliegue, inferencia o aceptación productiva."
   },
-  "integration_status": "unregistered",
+  "integration_status": "published",
   "maintainer": "Mantenimiento de Reservas y NodiaAI conforme AGENTS",
   "sources": [
     {
@@ -64,10 +64,14 @@
     {
       "path": "nodia-server/src/nodia-ai-rental-reservation/use-case/build-nodia-ai-rental-reservation-operations.use-case.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-10-17",
+    "checked_on": "2026-10-24",
     "evidence_paths": [
       "docs/mvp/71-nodia-ai-ai25-rental-reservation-lifecycle.md",
       "docs/evidence/nodia-ai-ai25-postgresql.json",
@@ -77,11 +81,17 @@
       "docs/evidence/nodia-ai-ai25-lab-activation.json",
       "docs/evidence/nodia-ai-ai25-deployed-equality.json",
       "docs/evidence/nodia-ai-ai25-lab-runtime.json",
-      "docs/evidence/nodia-ai-ai25-knowledge-validation.json"
+      "docs/evidence/nodia-ai-ai25-knowledge-validation.json",
+      "docs/evidence/nodia-ai-ai36-c01-validation.json",
+      "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json"
     ],
-    "notes": "Server2487/192, Client1488/203, focal222/5;266 checks SQL/HTTP/procesos (39 nuevos+227 regresiones,282 HTTP nativas), tipado/lint/build y7 checks QA sintéticos. Laboratorio privado activo con38 ejecutores,25 migraciones/18 tablas NodiaAI/241 columnas y0 pendientes, sin esquema nuevo. Draft/unregistered y approvalnull; no publica MCP ni acredita escritura Gemini."
+    "notes": "Publicación offline con builders nativos y schemas cerrados. El fragmento adicional es el único alcance nuevo; no equivale a cuenta real ni a una aceptación de todos sus efectos."
   },
-  "approval": null
+  "approval": {
+    "reference": "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-authorization.md",
+    "revision": 2,
+    "content_sha256": "d75cf4b6cfb7b5013fefb8b54d5a19a0445e7426bdb6a37755d8540aaf190fa8"
+  }
 }
 ---
 
@@ -115,7 +125,7 @@ Ejemplos ilustrativos; no contienen datos ni respuestas numéricas operativas. P
 | `nodia_rental_reservations_prepare_complete` | `CompleteRentalReservationUseCase` | Estadía completed |
 | `nodia_rental_reservations_prepare_cancel` | `CancelRentalReservationUseCase` | Acuerdo cancelled; devolución aprobada no pagada |
 
-Son preparadores internos, no herramientas MCP publicadas. Los [DTOs](../../../../../nodia-server/src/rental-reservation/dto/) y [casos de uso](../../../../../nodia-server/src/rental-reservation/use-case/) enlazados definen mínimos/validaciones. Las [lecturas publicadas](reservations.md) conservan autoridad y alcance; no se añade SQL, HTTP arbitrario ni acceso a Airbnb.
+Son preparadores internos, no herramientas MCP publicadas. Los [DTOs](../../../../../nodia-server/src/rental-reservation/dto/create-rental-reservation.dto.ts) y [casos de uso](../../../../../nodia-server/src/rental-reservation/use-case/create-rental-reservation.use-case.ts) enlazados definen mínimos/validaciones. Las [lecturas publicadas](reservations.md) conservan autoridad y alcance; no se añade SQL, HTTP arbitrario ni acceso a Airbnb.
 
 ## Datos mínimos y resolución de dudas
 
@@ -160,3 +170,18 @@ Ver [entrega71](../../../../mvp/71-nodia-ai-ai25-rental-reservation-lifecycle.md
 | Revisión | Cambio y fuentes | Compatibilidad |
 |---|---|---|
 | 1 | AI-25 incorpora seis operaciones internas conforme28/41 | Revalidar snapshots/propuestas ante cambios materiales; conservar recibos sin repetir efectos. Nueve cuerpos de lecturas aprobadas intactos |
+
+## Reservas: ciclo de vida publicado en AI36-C05
+
+Este fragmento añade sólo estas preparaciones publicadas:
+
+- `nodia_rental_reservations_prepare_cancel`
+- `nodia_rental_reservations_prepare_complete`
+- `nodia_rental_reservations_prepare_confirm`
+- `nodia_rental_reservations_prepare_create`
+- `nodia_rental_reservations_prepare_start`
+- `nodia_rental_reservations_prepare_update`
+
+Cada herramienta recibe un partial cerrado, devuelve mínimos faltantes o propuesta revisable y permite continuar sólo con draft_id/revisión CAS exactos. No aplica el cambio de dominio. Consulta las referencias reales; nunca inventes IDs o enlaces. Sólo el botón humano sobre revisión/hash exactos admite la ejecución y su recibo nativo. No se aceptan SQL, comandos arbitrarios, secretos ni bulk/importación. Confirmar/iniciar/completar/cancelar, pagar/anular y aprobar preparación conservan sus reglas y permisos nativos. No son eliminaciones físicas ni revierten automáticamente dinero u ocupación.
+
+El backend exige NodiaAI y cada módulo/acción de destino vigentes, reautoriza al ejecutar y conserva recuperación/idempotencia. Publicación, selección del intento, disponibilidad, despliegue y aceptación real son estados distintos. Los apartados anteriores son históricos y no amplían este lote.

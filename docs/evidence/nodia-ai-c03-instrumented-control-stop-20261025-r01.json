@@ -1,0 +1,141 @@
+{
+  "boundaries": {
+    "C03_UIretry_AI36_AI38_accepted": false,
+    "PNG_PDF_WAV_WebM_attempted": false,
+    "attest_endpoint_requests_zero_not_a_network_endpoint_failure_proven": true,
+    "no_new_MCP_instrumented_attempt_or_timeout": true,
+    "no_terminal_record_expected": true,
+    "provider_internal_calls_or_cost_unknown": true,
+    "root_cause_claimed": false
+  },
+  "cohort_plan_sha256": "4fb6481c322d5b93f0756913b06bdfce13d3305f59cc7c84c62efba5b4282371",
+  "diagnostics": {
+    "callbacks": null,
+    "endpoints": {
+      "acknowledge": {
+        "completed": 0,
+        "failed": 0,
+        "requests": 0
+      },
+      "attest": {
+        "completed": 0,
+        "failed": 0,
+        "requests": 0
+      },
+      "cancel": {
+        "completed": 0,
+        "failed": 0,
+        "requests": 0
+      },
+      "events": {
+        "completed": 0,
+        "failed": 0,
+        "requests": 0
+      },
+      "observe": {
+        "completed": 1,
+        "failed": 0,
+        "requests": 1
+      },
+      "reconcile": {
+        "completed": 0,
+        "failed": 0,
+        "requests": 0
+      },
+      "results": {
+        "completed": 0,
+        "failed": 0,
+        "requests": 0
+      },
+      "start": {
+        "completed": 0,
+        "failed": 0,
+        "requests": 0
+      }
+    },
+    "last_rpc_messages": null,
+    "phases": {
+      "cleanup": 1,
+      "failed": 1,
+      "observe_before": 1,
+      "verify_configured_selection": 1
+    },
+    "post_start_not_dispatched_error": false,
+    "start_admission": "not_requested"
+  },
+  "dispatch": {
+    "closed_public_actual_dispatches": 0,
+    "inference_replayed": false,
+    "intent_reserved": 1,
+    "native_pending_identity": false,
+    "native_terminal_proof_acknowledged": null,
+    "no_native_attempt_created": true,
+    "wrapper_actual_native_dispatch_requests": null
+  },
+  "epoch": {
+    "container_id": "1dc08be23adcecce38e4bb591fe43b12eb6d5f480a455fe23488f160d4a871bb",
+    "image_id": "sha256:56f6d5c48f81056968f02aa89b51192900e38251c35f9d499089244f2af323b5",
+    "started_at": "2026-10-26T00:21:42.03765925Z"
+  },
+  "error_code": "attestation_check_failed",
+  "metadata": {
+    "counter_scopes_are_separate_not_inference_retries": true,
+    "execute_observation_attempts": 2,
+    "execute_retry_count": 0,
+    "preflight_observation_attempts": 2,
+    "preflight_retry_count": 1
+  },
+  "native_start_admission": "not_requested",
+  "packager_VM_SQL_SDK_operations": 0,
+  "post_quiet": {
+    "SQL": {
+      "configured_SQL_writes": 0,
+      "observed_at_utc": "2026-10-26T00:26:57.787Z",
+      "open_attempts": 0,
+      "pending_jobs": 0,
+      "preserved_r05_chat": 1,
+      "provider_requests": 0,
+      "retained_slots": 0,
+      "scope": "post_disposable_live_read_only_operational_quiescence",
+      "services_restarted": false,
+      "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395",
+      "stage": "AI-36-C05",
+      "status": "passed",
+      "storage_operations": 0
+    },
+    "SQL_writes": 0,
+    "native": {
+      "agentic_home_configured": true,
+      "armed_native_proofs": 0,
+      "configured_database_modified": false,
+      "invalid_native_proofs": 0,
+      "observed_at_utc": "2026-10-26T00:26:57Z",
+      "profile_bytes_read": false,
+      "provider_calls": 0,
+      "scope": "read_only_native_runtime_artifact_counts",
+      "stage": "AI-32-R04",
+      "temporary_attachment_directories": 0,
+      "temporary_cli_directories": 0,
+      "terminal_native_proofs": 0,
+      "unknown_markers": 0
+    },
+    "provider_generations": 0,
+    "services_restarted": false,
+    "source_epoch": {
+      "container_id": "1dc08be23adcecce38e4bb591fe43b12eb6d5f480a455fe23488f160d4a871bb",
+      "image_id": "sha256:56f6d5c48f81056968f02aa89b51192900e38251c35f9d499089244f2af323b5",
+      "started_at": "2026-10-26T00:21:42.03765925Z"
+    },
+    "status": "quiet_verified"
+  },
+  "public_report_sha256": "9efb410c7b0899ec0eabbf6fd07fb6b3d392f73ce003ff720a41a2c3c361e3e8",
+  "schema_version": 1,
+  "sources": {
+    "mcp-instrumented-control-stop-r01.json": "d3af31e925a46829a52e3e6fae6b01532264f8acf6b9043431b83e26d47a52e1",
+    "mcp-instrumented-execute-r01.json": "8def0e4ac72f3f6c063fd1c8d2edd3f6c75bc099a082747c7082d9ea22374a29",
+    "mcp-instrumented-plan-r01.json": "3fe260e34b80c41bf250d3bc1d4a31a085e206ab910a0b4ffef7d26a3138cad9",
+    "mcp-instrumented-post-quiet-r01.json": "c8fa0a761e6a02fa2c523c58b795f67a46c02932faa9940309b2d42697ccb199",
+    "mcp-instrumented-preflight-r01.json": "d643a973ff2da8b580b42dcc36733b066ef3c240bffb47fb6cdb9accf964c879"
+  },
+  "status": "instrumented_epoch_control_stopped_before_generation"
+}

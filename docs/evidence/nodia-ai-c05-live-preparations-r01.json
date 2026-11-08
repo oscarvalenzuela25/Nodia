@@ -1,0 +1,1701 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-25",
+  "status": "representative_preparations_and_external_reads_accepted_not_domain_effects",
+  "environment": "Local Linux VM, real authenticated UI→Codex Agentic→MCP→SQL/native services",
+  "conversation_id": "1fe12085-233b-458c-bf53-e083894816fa",
+  "conversation_title": "AI36-C05 preparaciones 2026-10-25",
+  "model_selection": "Persisted/discovered and verified through drawer, chat-only change; no global provider/model/intensity modifications",
+  "source_publication_release": "df1780ad39433af1671467cc3f93285b01b0596155518f6c14330e27b65b80ba",
+  "published_capabilities": 150,
+  "runs": [
+    {
+      "id": "80ab2821-23d8-46a6-8cd6-c1ca89cf2077",
+      "state": "completed",
+      "phase": "inference",
+      "error_code": null,
+      "provider_dispatches_used": 2,
+      "tool_calls_used": 4,
+      "mcp_rpc_messages_used": 4
+    },
+    {
+      "id": "79f54047-cd4e-4789-8b2c-2f1b12754312",
+      "state": "completed",
+      "phase": "inference",
+      "error_code": null,
+      "provider_dispatches_used": 2,
+      "tool_calls_used": 2,
+      "mcp_rpc_messages_used": 2
+    },
+    {
+      "id": "f42244c6-79d4-4aaa-8285-aca5b4d2dcdb",
+      "state": "completed",
+      "phase": "inference",
+      "error_code": null,
+      "provider_dispatches_used": 2,
+      "tool_calls_used": 2,
+      "mcp_rpc_messages_used": 2
+    },
+    {
+      "id": "6d9b8072-cc52-4668-a036-3ef860a53ffe",
+      "state": "completed",
+      "phase": "inference",
+      "error_code": null,
+      "provider_dispatches_used": 2,
+      "tool_calls_used": 3,
+      "mcp_rpc_messages_used": 3
+    }
+  ],
+  "tools": [
+    {
+      "run_id": "80ab2821-23d8-46a6-8cd6-c1ca89cf2077",
+      "tool_name": "nodia_capabilities_select",
+      "state": "completed"
+    },
+    {
+      "run_id": "80ab2821-23d8-46a6-8cd6-c1ca89cf2077",
+      "tool_name": "nodia_businesses_list",
+      "state": "completed"
+    },
+    {
+      "run_id": "80ab2821-23d8-46a6-8cd6-c1ca89cf2077",
+      "tool_name": "nodia_businesses_get",
+      "state": "completed"
+    },
+    {
+      "run_id": "80ab2821-23d8-46a6-8cd6-c1ca89cf2077",
+      "tool_name": "nodia_providers_prepare_create",
+      "state": "completed"
+    },
+    {
+      "run_id": "79f54047-cd4e-4789-8b2c-2f1b12754312",
+      "tool_name": "nodia_capabilities_select",
+      "state": "completed"
+    },
+    {
+      "run_id": "79f54047-cd4e-4789-8b2c-2f1b12754312",
+      "tool_name": "nodia_rental_properties_prepare_create",
+      "state": "completed"
+    },
+    {
+      "run_id": "f42244c6-79d4-4aaa-8285-aca5b4d2dcdb",
+      "tool_name": "nodia_capabilities_select",
+      "state": "completed"
+    },
+    {
+      "run_id": "f42244c6-79d4-4aaa-8285-aca5b4d2dcdb",
+      "tool_name": "nodia_module_groups_prepare_create",
+      "state": "completed"
+    },
+    {
+      "run_id": "6d9b8072-cc52-4668-a036-3ef860a53ffe",
+      "tool_name": "nodia_capabilities_select",
+      "state": "completed"
+    },
+    {
+      "run_id": "6d9b8072-cc52-4668-a036-3ef860a53ffe",
+      "tool_name": "nodia_ai_providers_health",
+      "state": "completed"
+    },
+    {
+      "run_id": "6d9b8072-cc52-4668-a036-3ef860a53ffe",
+      "tool_name": "nodia_ai_providers_gemini_engines",
+      "state": "completed"
+    }
+  ],
+  "proposals": [
+    {
+      "id": "7ce39dc2-b5ff-4cd8-8512-47f2cd0207d4",
+      "current_revision": 1
+    },
+    {
+      "id": "00a03d67-f108-4238-9cfc-6a0de8a5d61e",
+      "current_revision": 1
+    },
+    {
+      "id": "03059e9c-40dc-4b35-b5b1-e21102e3e6e8",
+      "current_revision": 1
+    }
+  ],
+  "revisions": [
+    {
+      "proposal_id": "7ce39dc2-b5ff-4cd8-8512-47f2cd0207d4",
+      "revision": 1,
+      "state": "ready",
+      "hash": "1ef34d89464850bf932e0c83f30bcb37589f96562837062620fcfc5e9c8e8b4e"
+    },
+    {
+      "proposal_id": "00a03d67-f108-4238-9cfc-6a0de8a5d61e",
+      "revision": 1,
+      "state": "ready",
+      "hash": "2ac9c2a4fd0068af7d242a32e04bad77d85014cfbffddf0eaaf85a6cb79edda1"
+    },
+    {
+      "proposal_id": "03059e9c-40dc-4b35-b5b1-e21102e3e6e8",
+      "revision": 1,
+      "state": "ready",
+      "hash": "11485e9a2332af3168aa102a0e623d5bc2059a824dc056d41a47fa508abdbf5b"
+    }
+  ],
+  "steps": [
+    {
+      "proposal_id": "7ce39dc2-b5ff-4cd8-8512-47f2cd0207d4",
+      "position": 1,
+      "kind": "domain_change",
+      "effect_key": "providers.create",
+      "public_step": {
+        "kind": "domain_change",
+        "scope": {
+          "business_id": "5af15373-3638-4a02-a015-4e72c433fc11"
+        },
+        "target": null,
+        "changes": [
+          {
+            "after": "c05 proveedor de ensayo",
+            "before": null,
+            "origin": "user",
+            "field_key": "name",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": 19,
+            "before": null,
+            "origin": "contract_default",
+            "field_key": "tax",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": {
+              "kind": "object",
+              "fields": []
+            },
+            "before": null,
+            "origin": "contract_default",
+            "field_key": "fields",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": true,
+            "before": null,
+            "origin": "contract_default",
+            "field_key": "is_active",
+            "after_present": true,
+            "before_present": false
+          }
+        ],
+        "step_id": "733b0443-8edd-434a-8720-4f722c57a0ce",
+        "tool_name": "nodia_providers_prepare_create",
+        "depends_on": [],
+        "effect_key": "providers.create",
+        "output_bindings": []
+      }
+    },
+    {
+      "proposal_id": "00a03d67-f108-4238-9cfc-6a0de8a5d61e",
+      "position": 1,
+      "kind": "domain_change",
+      "effect_key": "rental_properties.create",
+      "public_step": {
+        "kind": "domain_change",
+        "scope": {
+          "subject_user_id": "1"
+        },
+        "target": null,
+        "changes": [
+          {
+            "after": "C05 alojamiento de ensayo",
+            "before": null,
+            "origin": "user",
+            "field_key": "name",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": 4,
+            "before": null,
+            "origin": "user",
+            "field_key": "max_guests",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": "America/Santiago",
+            "before": null,
+            "origin": "user",
+            "field_key": "timezone",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": "1",
+            "before": null,
+            "origin": "database",
+            "field_key": "owner_id",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": null,
+            "before": null,
+            "origin": "contract_default",
+            "field_key": "check_in_time",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": null,
+            "before": null,
+            "origin": "contract_default",
+            "field_key": "check_out_time",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": null,
+            "before": null,
+            "origin": "contract_default",
+            "field_key": "location",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": null,
+            "before": null,
+            "origin": "contract_default",
+            "field_key": "default_nightly_rate",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": null,
+            "before": null,
+            "origin": "contract_default",
+            "field_key": "default_deposit_percent",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": 0,
+            "before": null,
+            "origin": "contract_default",
+            "field_key": "minimum_turnover_minutes",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": null,
+            "before": null,
+            "origin": "contract_default",
+            "field_key": "notes",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": true,
+            "before": null,
+            "origin": "contract_default",
+            "field_key": "is_active",
+            "after_present": true,
+            "before_present": false
+          }
+        ],
+        "step_id": "7d201823-5d91-4b55-942e-3ae618ffc370",
+        "tool_name": "nodia_rental_properties_prepare_create",
+        "depends_on": [],
+        "effect_key": "rental_properties.create",
+        "output_bindings": []
+      }
+    },
+    {
+      "proposal_id": "03059e9c-40dc-4b35-b5b1-e21102e3e6e8",
+      "position": 1,
+      "kind": "domain_change",
+      "effect_key": "module_groups.create",
+      "public_step": {
+        "kind": "domain_change",
+        "scope": {},
+        "target": null,
+        "changes": [
+          {
+            "after": "c05_grupo_ensayo",
+            "before": null,
+            "origin": "user",
+            "field_key": "key",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": {
+              "kind": "array",
+              "items": [
+                {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "value": "name",
+                      "field_key": "key"
+                    },
+                    {
+                      "value": "C05 grupo de ensayo",
+                      "field_key": "es"
+                    },
+                    {
+                      "value": "C05 test group",
+                      "field_key": "en"
+                    }
+                  ]
+                }
+              ]
+            },
+            "before": null,
+            "origin": "user",
+            "field_key": "translates",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": false,
+            "before": null,
+            "origin": "user",
+            "field_key": "is_active",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": null,
+            "before": null,
+            "origin": "contract_default",
+            "field_key": "icon",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": false,
+            "before": null,
+            "origin": "database",
+            "field_key": "resolved_existing",
+            "after_present": true,
+            "before_present": false
+          },
+          {
+            "after": {
+              "kind": "object",
+              "fields": [
+                {
+                  "value": {
+                    "kind": "array",
+                    "items": []
+                  },
+                  "field_key": "affected_users"
+                },
+                {
+                  "value": {
+                    "kind": "array",
+                    "items": []
+                  },
+                  "field_key": "removed_roles"
+                },
+                {
+                  "value": {
+                    "kind": "array",
+                    "items": []
+                  },
+                  "field_key": "removed_modules"
+                },
+                {
+                  "value": {
+                    "kind": "array",
+                    "items": []
+                  },
+                  "field_key": "removed_actions"
+                },
+                {
+                  "value": true,
+                  "field_key": "deactivates_access"
+                }
+              ]
+            },
+            "before": null,
+            "origin": "database",
+            "field_key": "access_impact",
+            "after_present": true,
+            "before_present": false
+          }
+        ],
+        "step_id": "4ca391ce-6860-41cf-a549-ee7d42b5153b",
+        "tool_name": "nodia_module_groups_prepare_create",
+        "depends_on": [],
+        "effect_key": "module_groups.create",
+        "output_bindings": []
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "id": "35565312-1740-4f35-bb27-84d613ecbfd1",
+      "kind": "turn",
+      "state": "done",
+      "stage_key": "inference",
+      "stage_seq": 4
+    },
+    {
+      "id": "28c3f943-660e-4715-a668-72da1f20d353",
+      "kind": "turn",
+      "state": "done",
+      "stage_key": "inference",
+      "stage_seq": 4
+    },
+    {
+      "id": "9e28a7d0-4d6a-43d3-8e93-f4301b036de1",
+      "kind": "turn",
+      "state": "done",
+      "stage_key": "inference",
+      "stage_seq": 4
+    },
+    {
+      "id": "fab398e5-2764-4769-a9e5-8941f13b4c9e",
+      "kind": "turn",
+      "state": "done",
+      "stage_key": "inference",
+      "stage_seq": 4
+    }
+  ],
+  "attempts": [
+    {
+      "phase": "completed",
+      "stage_key": "context",
+      "stage_seq": 1,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "inference",
+      "stage_seq": 2,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "tool_selection",
+      "stage_seq": 3,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "inference",
+      "stage_seq": 4,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "context",
+      "stage_seq": 1,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "inference",
+      "stage_seq": 2,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "tool_selection",
+      "stage_seq": 3,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "inference",
+      "stage_seq": 4,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "context",
+      "stage_seq": 1,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "inference",
+      "stage_seq": 2,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "tool_selection",
+      "stage_seq": 3,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "inference",
+      "stage_seq": 4,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "context",
+      "stage_seq": 1,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "inference",
+      "stage_seq": 2,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "tool_selection",
+      "stage_seq": 3,
+      "error_code": null,
+      "ended": true
+    },
+    {
+      "phase": "completed",
+      "stage_key": "inference",
+      "stage_seq": 4,
+      "error_code": null,
+      "ended": true
+    }
+  ],
+  "remaining_runtime_slots": 0,
+  "unrevoked_grants": 0,
+  "domain_executions": 0,
+  "external_observations": [
+    "nodia_ai_providers_health",
+    "nodia_ai_providers_gemini_engines"
+  ],
+  "scope_limits": [
+    "Three distinct create preparers and two external observations accepted with this Codex selection; not all writers, edit/delete/dependencies or Gemini modes.",
+    "No human confirmation, execution or business record was submitted; proposals left unconfirmed and subject to native expiry. No cancellation endpoint or cancellation is claimed.",
+    "Runtime terminal jobs/attempts and released grants/slots verified; no new interrupted/unknown recovery case in this slice.",
+    "Other AI36/AI38 gates remain open."
+  ],
+  "conservation": {
+    "non_chat_tables_unchanged": true,
+    "changed_tables": [
+      "nodia_ai_conversations",
+      "nodia_ai_drafts",
+      "nodia_ai_events",
+      "nodia_ai_execution_grants",
+      "nodia_ai_job_attempts",
+      "nodia_ai_jobs",
+      "nodia_ai_message_parts",
+      "nodia_ai_messages",
+      "nodia_ai_proposal_revisions",
+      "nodia_ai_proposal_steps",
+      "nodia_ai_proposals",
+      "nodia_ai_runs",
+      "nodia_ai_runtime_slots",
+      "nodia_ai_tool_calls"
+    ],
+    "original_order_unchanged": true,
+    "server_release": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+    "services_unchanged": true
+  },
+  "verification_source": {
+    "path": "ops/lab/artifacts/c05-live-preparations-r01/four-completed.json",
+    "sha256": "bbc82b6117cdc02df9b7840cb2319503c476abdfd17f04792382c01a9a7e3abd"
+  },
+  "capability_matrix_this_slice": [
+    {
+      "capability_id": "nodia_actions_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_actions_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_actions_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_actions_prepare_delete",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_actions_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_events_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_catalog_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_codex_session",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_gemini_engines",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "read_live_completed",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_health",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "read_live_completed",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_models",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_prepare_catalog_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_prepare_catalog_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_prepare_codex_logout",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_prepare_gemini_web_logout",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_prepare_sync_models",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_ai_providers_supported_providers",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_api_keys_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_api_keys_prepare_delete",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_attachments_describe",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_business_actions_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_business_actions_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_business_actions_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_business_actions_prepare_delete",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_business_actions_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_businesses_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "read_live_completed",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_businesses_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "read_live_completed",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_businesses_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_businesses_prepare_set_collaborators",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_businesses_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_categories_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_categories_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_categories_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_categories_prepare_delete",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_categories_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_category_groups_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_category_groups_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_category_groups_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_category_groups_prepare_delete",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_category_groups_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_movements_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_movements_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_movements_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_movements_prepare_delete",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_movements_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_obligations_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_obligations_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_obligations_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_obligations_prepare_delete",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_obligations_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_summaries_by_category",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_summaries_by_category_group",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_finance_summaries_overview",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_invoices_eligible_invoice_connections",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_invoices_file",
+      "kind": "read_artifact",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_invoices_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_invoices_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_invoices_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_invoices_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_module_groups_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_module_groups_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "prepared_live_not_confirmed",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_module_groups_prepare_delete",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_module_groups_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_modules_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_modules_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_modules_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_modules_prepare_delete",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_modules_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_operations_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_preferences_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_preferences_prepare",
+      "kind": "prepare_preference_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_product_logs_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_product_logs_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_product_logs_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_product_logs_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_product_logs_query",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_products_export_csv",
+      "kind": "read_artifact",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_products_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_products_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_products_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_products_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_proposals_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_provider_contacts_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_provider_contacts_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_provider_contacts_prepare_set_active",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_provider_contacts_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_providers_export_csv",
+      "kind": "read_artifact",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_providers_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_providers_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_providers_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "prepared_live_not_confirmed",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_providers_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_audit_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_blocks_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_blocks_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_blocks_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_blocks_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_calendar_availability",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_calendar_calendar",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_cancellation_policies_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_cancellation_policies_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_cancellation_policies_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_cancellation_policies_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_collaborators_candidates",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_collaborators_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_collaborators_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_collaborators_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_expenses_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_expenses_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_expenses_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_expenses_prepare_pay",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_expenses_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_expenses_prepare_void",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_payments_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_payments_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_payments_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_payments_prepare_void",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_properties_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_properties_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_properties_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "prepared_live_not_confirmed",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_properties_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_reservations_cancellation_preview",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_reservations_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_reservations_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_reservations_prepare_cancel",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_reservations_prepare_complete",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_reservations_prepare_confirm",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_reservations_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_reservations_prepare_start",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_reservations_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_summaries_overview",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_turnovers_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_turnovers_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_turnovers_prepare_approve_same_day",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_rental_turnovers_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_roles_get",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_roles_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_roles_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_roles_prepare_delete",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_roles_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_secure_flows_prepare_api_key_create",
+      "kind": "prepare_secure_flow",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_secure_flows_prepare_api_key_update",
+      "kind": "prepare_secure_flow",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_secure_flows_prepare_connection_login",
+      "kind": "prepare_secure_flow",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_secure_flows_prepare_nodia_logout",
+      "kind": "prepare_secure_flow",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_users_list",
+      "kind": "read",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_users_prepare_create",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_users_prepare_update",
+      "kind": "prepare_change",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    },
+    {
+      "capability_id": "nodia_workflows_prepare",
+      "kind": "prepare_workflow",
+      "published": true,
+      "observation_this_slice": "not_exercised",
+      "prior_acceptance": "unchanged; consult prior dated evidence"
+    }
+  ],
+  "materials": [
+    {
+      "path": "ops/lab/artifacts/c05-live-preparations-r01/four-completed.json",
+      "sha256": "bbc82b6117cdc02df9b7840cb2319503c476abdfd17f04792382c01a9a7e3abd"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-live-preparations-r01/business-ui.txt",
+      "sha256": "39b5802cbd3109df22ce2e688743558adf0f9191c01c221eb06a344c1c4404e3"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-live-preparations-r01/rental-ui.txt",
+      "sha256": "a07afb6dcff2c19cd845cf13004898356a49e80f451fb2c3ef8f8fcc81ac7e08"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-live-preparations-r01/core-ui.txt",
+      "sha256": "54765bc37f44da7f60e21268c10523a4ff516c358cce766c55fec3061814b1f9"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-live-preparations-r01/external-ui.txt",
+      "sha256": "916c95e98a1b3b9b1ca74db55284fc0e7bd2ec4af8a994089f8d845ed7a8b408"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-live-preparations-r01/domain-after.json",
+      "sha256": "e033ae8d8945ff115fb5a72432876921e9a5e3b0ab7cd1618ff494c283ba706b"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-live-preparations-r01/readback.py",
+      "sha256": "e90f952e5f0f96b6358c0366267ac686385c06daca03e402e3a0c0917109054b"
+    }
+  ]
+}

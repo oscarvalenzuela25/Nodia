@@ -555,10 +555,10 @@ class NativeMcpSessionTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.root=Path(self.enterContext(tempfile.TemporaryDirectory()))
         self.profile=self.root/'cli';self.profile.mkdir()
-        self.profiles=ProfileAdmission(self.root/'web',self.profile,self.root/'state')
+        self.profiles=ProfileAdmission(self.profile, self.root/'state')
         self.runner=SimpleNamespace(config=CliConfig(Path(sys.executable),'',self.profile),_processes=set(),run=AsyncMock())
         self.service=SimpleNamespace(runner=self.runner,is_available=lambda:True,session_generation='a'*32,get_status=AsyncMock(return_value={'has_active_session':True,'models':[{'id':'fixture-model'}]}))
-        self.adapter=ChatAdapter(None,self.service,self.profiles)
+        self.adapter=ChatAdapter(self.service, self.profiles)
         self.sessions=NativeMcpSessions(self.adapter);self.adapter.mcp_sessions=self.sessions
         self.request=McpChatRequest(attempt_id=str(uuid4()),model_id='fixture-model',effort_id=None,canonical_prompt='Synthetic fixture only',resource_key=self.profiles.identity('agentic'),session_generation='a'*32,timeout_seconds=5,configuration_generation='b'*64,tools=TOOLS,diagnostic=True)
         self.reference=ReconcileAttempt(resource_key=self.request.resource_key,session_generation='a'*32,operation_ref=self.request.attempt_id)
@@ -810,6 +810,8 @@ class NativeMcpSessionTests(unittest.IsolatedAsyncioTestCase):
         job=self.sessions.jobs[self.request.attempt_id]
         self.assertEqual(result['state'],'unknown')
         self.assertEqual(job.trace.diagnostic()['stage'],'prompt_received')
+        self.assertEqual(job.trace.diagnostic()['init_identity'],
+            {'init_count':1,'agent_matches':None,'model_matches':None})
         self.assertEqual(job.cli_log_diagnostic['http_statuses'],[503])
         self.assertEqual(job.cli_log_diagnostic['interpretation'],'text_indicator_not_verified_cause')
         self.assertFalse(job.gate_verified)
@@ -821,6 +823,7 @@ class NativeMcpSessionTests(unittest.IsolatedAsyncioTestCase):
         diagnostic=json.loads(logs.output[-1].split('nodia_ai_mcp_terminal ',1)[1])
         self.assertEqual(diagnostic['cli_log'],job.cli_log_diagnostic)
         self.assertEqual(diagnostic['hook'],job.hook_diagnostic)
+        self.assertEqual(diagnostic['cli']['init_identity'],job.trace.diagnostic()['init_identity'])
         proof=self.adapter.reconcile('agentic',self.request.attempt_id,self.reference)
         self.adapter.acknowledge('agentic',self.request.attempt_id,AcknowledgeAttempt(**self.reference.model_dump(),terminal_proof_id=proof['terminal_proof_id']))
         self.assertNotIn(self.request.attempt_id,self.sessions.jobs)
@@ -910,7 +913,7 @@ class NativeMcpSessionTests(unittest.IsolatedAsyncioTestCase):
                     else:last=event
                 if value['state']!='running':break
                 await asyncio.sleep(.02)
-        self.assertEqual(callbacks,2);self.assertEqual(value['rpc_messages'],5)
+        self.assertEqual(callbacks,2,value);self.assertEqual(value['rpc_messages'],5)
         self.assertEqual(value['unforwarded_tool_requests'],0)
         self.assertEqual({key:value for key,value in last.items() if key!='terminal_proof'},{'seq':3,'kind':'answer','text':'SYNTHETIC_NONCE awaiting_human_confirmation'})
         self.assertEqual(last['terminal_proof']['outcome'],'completed')

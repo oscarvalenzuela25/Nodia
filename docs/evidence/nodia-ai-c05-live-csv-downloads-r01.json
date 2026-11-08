@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-25",
+  "status": "real_Codex_CSV_references_and_authenticated_GET_receipts_verified_by_scope",
+  "environment": "Local Linux VM; current compiled Client, real Codex Agentic/MCP and native export references",
+  "conversation_id": "1fe12085-233b-458c-bf53-e083894816fa",
+  "CSV_run": {
+    "id": "13c0edc8-39ad-4da3-93fd-d36423ec6d03",
+    "state": "completed",
+    "phase": "inference",
+    "error_code": null,
+    "provider_dispatches_used": 2,
+    "tool_calls_used": 4,
+    "mcp_rpc_messages_used": 4
+  },
+  "CSV_tools": [
+    "nodia_capabilities_select",
+    "nodia_businesses_list",
+    "nodia_providers_export_csv",
+    "nodia_products_export_csv"
+  ],
+  "cohort_checkpoint": {
+    "runs_completed": 5,
+    "dispatches_per_run": 2,
+    "dispatches_total": 10,
+    "completed_tool_receipts": 15,
+    "completed_jobs": 5,
+    "completed_ended_attempts": 20,
+    "domain_executions": 0,
+    "retained_slots": 0,
+    "unrevoked_grants": 0,
+    "three_proposals": "Unconfirmed, no execution asserted; see the separate four-turn preparation evidence"
+  },
+  "downloads": [
+    {
+      "timestamp": "25/Oct/2026:14:30:52 -0300",
+      "artifact_id": "661dfd6a-907a-4608-bf79-5625513936a5",
+      "filename": "providers.csv",
+      "status": 200,
+      "response_bytes": 645,
+      "filename_source": "Allowlisted artifact-ID association from the UI observer, not HTTP Content-Disposition",
+      "saved_body_sha256": null,
+      "parsed_row_count": null,
+      "raw_headers_captured": false
+    },
+    {
+      "timestamp": "25/Oct/2026:14:31:20 -0300",
+      "artifact_id": "d7299793-6dd9-447c-aa85-18b5e2f1db4c",
+      "filename": "products.csv",
+      "status": 200,
+      "response_bytes": 177,
+      "filename_source": "Allowlisted artifact-ID association from the UI observer, not HTTP Content-Disposition",
+      "saved_body_sha256": null,
+      "parsed_row_count": null,
+      "raw_headers_captured": false
+    }
+  ],
+  "download_evidence_scope": "Allowlisted nginx GET receipts show status200 and reported response byte counts. Saved file bodies, exact downloaded content hashes, CSV row counts and raw response headers were not retained or validated in this slice.",
+  "screenshot": {
+    "path": "docs/evidence/nodia-ai-c05-csv-result-r01.png",
+    "sha256": "3a935cc3d4cbc60072cdafcf29c7309685c4ad5ded1ad2986feefee2f2495737"
+  },
+  "previous_preparations_report": {
+    "path": "docs/evidence/nodia-ai-c05-live-preparations-r01.json",
+    "sha256": "c47c96adfc6f45e05d8fc3528c11c59d9914c828d42ef2834e3c7b6ffa8fcd30",
+    "change": "Only verification_source.path points to the already existing durable copy; all observations and raw input SHA unchanged.",
+    "prior_report_bytes_preserved": "ops/lab/artifacts/c05-live-csv-r01/four-turn-report-before-locator-fix.json"
+  },
+  "materials": [
+    {
+      "path": "ops/lab/artifacts/c05-live-csv-r01/five-completed.json",
+      "sha256": "5ba8ba9b31f00161ae65a5826661b63ea280b5c088dc680c52a252aa5f9fb87e"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-live-csv-r01/csv-downloads-r02.json",
+      "sha256": "b703785715acdeb0fd6fca8c9c1602021dfe16d376ae9416ac4f93356cc786d6"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-live-csv-r01/readback.py",
+      "sha256": "e90f952e5f0f96b6358c0366267ac686385c06daca03e402e3a0c0917109054b"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-live-csv-r01/read-downloads.py",
+      "sha256": "c2617f16901c68fbb0cf442532047e5b34c62c6623fa09d6e99ca2bb443a4b0b"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-live-csv-r01/consolidate-csv.py",
+      "sha256": "4f0a77a5867f908bf744d6cebbf98570748fc63db386808e09fbab188cc280af"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-live-csv-r01/four-turn-report-before-locator-fix.json",
+      "sha256": "ff71ae3edd9f5484535fe6a68c90b3db13cf867446a975a272708d88054e79f3"
+    }
+  ],
+  "limitations": [
+    "No newly confirmed effect or domain mutation; the five-run conversation checkpoint contains zero executions.",
+    "Not acceptance of every capability, Gemini modes, original invoice analysis or production.",
+    "The prior four-turn domain conservation snapshot is not extrapolated to new global table hashes after the fifth turn.",
+    "No claim of binary-body parity, filename/header validation or saved download hashes."
+  ],
+  "VM_mutations_by_consolidator": 0
+}

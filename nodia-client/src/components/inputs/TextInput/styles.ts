@@ -68,5 +68,9 @@ export const StyledTextField = styled(TextField)(({ theme }) => {
       padding: "10px 14px",
       fontSize: "0.875rem",
     },
+    // MUI gives the multiline root its spacing; the textarea must not add a second inset.
+    "& .MuiInputBase-multiline .MuiOutlinedInput-input": {
+      padding: 0,
+    },
   };
 });

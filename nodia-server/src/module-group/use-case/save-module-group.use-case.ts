@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { type ActorReference } from '../../authorization/authority-transaction.js';
 import { runCoreAuthorityTransaction } from '../../authorization/core-authority-transaction.js';
@@ -7,6 +11,7 @@ import { TranslationService } from '../../translation/translation.service.js';
 import { UpdateModuleGroupDto } from '../dto/update-module-group.dto.js';
 import { ModuleGroup } from '../entities/module-group.entity.js';
 import { ModuleGroupService } from '../module-group.service.js';
+import { nextModuleGroupSortOrder } from '../../module-order/next-sort-order.js';
 
 @Injectable()
 export class SaveModuleGroupUseCase {
@@ -21,6 +26,8 @@ export class SaveModuleGroupUseCase {
     dto: UpdateModuleGroupDto,
     actor: ActorReference,
   ): Promise<ModuleGroup> {
+    if (Object.hasOwn(dto, 'sort_order'))
+      throw new BadRequestException('modules:order_managed');
     const savedId = await runCoreAuthorityTransaction(
       this.source,
       actor,
@@ -35,8 +42,10 @@ export class SaveModuleGroupUseCase {
           throw new NotFoundException('modules:groups.not_found');
 
         const { translates, ...fields } = dto;
+        const sortOrder =
+          existing?.sort_order ?? (await nextModuleGroupSortOrder(manager));
         const saved = await repository.save(
-          repository.create({ ...existing, ...fields }),
+          repository.create({ ...existing, ...fields, sort_order: sortOrder }),
         );
 
         if (translates !== undefined)

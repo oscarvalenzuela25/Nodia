@@ -1,8 +1,8 @@
 import { useMediaQuery, useTheme } from "@mui/material";
 import type { FC, SyntheticEvent } from "react";
 import { BUSINESS_ROUTE } from "../../constants/routes";
-import { useState } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useId, useState } from "react";
+import { useParams, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -10,7 +10,10 @@ import {
   Box,
   Button,
   Chip,
+  Collapse,
+  IconButton,
   LinearProgress,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -21,11 +24,12 @@ import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import GroupAddOutlinedIcon from "@mui/icons-material/GroupAddOutlined";
+import KeyboardArrowUpOutlinedIcon from "@mui/icons-material/KeyboardArrowUpOutlined";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { Skeleton } from "boneyard-js/react";
 import { useIsMutating } from "@tanstack/react-query";
 
 import useAuth from "../../../../hooks/useAuth";
-import Breadcrumb from "../../../../components/Breadcrumb";
 import { HeaderCardSkeleton } from "../../../../components/skeletons";
 import BusinessModal from "../Business/components/BusinessModal";
 import BusinessCollaboratorModal from "../Business/components/BusinessCollaboratorModal";
@@ -42,9 +46,13 @@ import ProductsTab from "./components/ProductsTab";
 import ProvidersTab from "./components/ProvidersTab";
 import InvoicesTab from "./components/InvoicesTab";
 import CollaboratorsTab from "./components/CollaboratorsTab";
+import SalesWorkspace from "./components/SalesWorkspace";
+import type { SaleSection } from "../../infrastructure/salesTypes";
+import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 
 import {
   DetailContainer,
+  DetailBreadcrumb,
   HeaderCard,
   HeaderTopSection,
   BusinessAvatarBox,
@@ -58,6 +66,17 @@ import {
   StatusDot,
 } from "./styles";
 
+const sections = [
+  { value: "overview", label: "business:tab_overview", icon: DashboardOutlinedIcon },
+  { value: "providers", label: "business:tab_providers", icon: StorefrontOutlinedIcon },
+  { value: "products", label: "business:tab_products", icon: Inventory2OutlinedIcon },
+  { value: "invoices", label: "business:tab_invoices", icon: ReceiptLongOutlinedIcon },
+  { value: "pos", label: "business:pos.title" },
+  { value: "sales", label: "business:pos.sales" },
+  { value: "reports", label: "business:pos.reports" },
+  { value: "collaborators", label: "business:tab_collaborators", icon: PeopleOutlinedIcon },
+] as const;
+
 const BusinessDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -65,9 +84,17 @@ const BusinessDetail: FC = () => {
   const { t } = useTranslation(["business", "core"]);
   const mobile = useMediaQuery(useTheme().breakpoints.down("sm"));
 
-  const [activeTab, setActiveTab] = useState(0);
+  const [sectionParams, setSectionParams] = useSearchParams();
+  const activeSection = sectionParams.get("section") ?? "overview";
+  const activeTab = Math.max(0, sections.findIndex((section) => section.value === activeSection));
+  const selectedSection = sections[activeTab].value;
+  const saleSection: SaleSection | null = selectedSection === "pos" || selectedSection === "sales" || selectedSection === "reports" ? selectedSection : null;
+  const setActiveTab = (index: number) => setSectionParams((params) => { params.set("section", sections[index]?.value ?? "overview"); return params; });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCollaboratorModalOpen, setIsCollaboratorModalOpen] = useState(false);
+  const [collapsedHeaders, setCollapsedHeaders] = useState<Record<string, boolean>>({});
+  const headerId = useId();
+  const headerExpanded = collapsedHeaders[id ?? ""] === false;
 
   // Direct modal trigger states (from quick action buttons)
   const [directNewProductOpen, setDirectNewProductOpen] = useState(false);
@@ -85,6 +112,9 @@ const BusinessDetail: FC = () => {
   const totalProviders = business?.total_providers_count ?? 0;
   const totalInvoices = invoicesData?.meta?.total_items ?? 0;
   const totalCollaborators = business?.collaborators?.length ?? business?.collaborators_count ?? 0;
+  const sectionCounts: Partial<Record<(typeof sections)[number]["value"], number>> = {
+    providers: totalProviders, products: totalProducts, invoices: totalInvoices, collaborators: totalCollaborators,
+  };
 
   const isMutating = useIsMutating() > 0;
   const isBusy = isLoading || isFetching || isMutating;
@@ -146,17 +176,32 @@ const BusinessDetail: FC = () => {
       )}
 
       {/* Global Breadcrumb */}
-      <Breadcrumb
+      <DetailBreadcrumb
         items={[
           { label: t("business:title"), to: BUSINESS_ROUTE },
           { label: business?.name ?? t("business:detail_title") },
         ]}
+        extra={<Tooltip title={t(headerExpanded ? "business:detail_header_collapse" : "business:detail_header_expand")}>
+          <span>
+            <IconButton
+              aria-label={t(headerExpanded ? "business:detail_header_collapse" : "business:detail_header_expand")}
+              aria-expanded={headerExpanded}
+              aria-controls={headerId}
+              disabled={isBusy || !id || !business}
+              onClick={() => { if (id) setCollapsedHeaders(previous => ({ ...previous, [id]: !(previous[id] ?? true) })); }}
+              sx={{ width: 44, height: 44, flexShrink: 0 }}
+            >
+              {headerExpanded ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon />}
+            </IconButton>
+          </span>
+        </Tooltip>}
       />
 
       {/* Header Card with Business Info and Embedded Tabs */}
       <Skeleton loading={isLoading} fallback={<HeaderCardSkeleton />}>
         <HeaderCard>
-          <HeaderTopSection>
+          <Collapse id={headerId} in={headerExpanded} timeout="auto" aria-hidden={!headerExpanded} inert={!headerExpanded}>
+            <HeaderTopSection>
             <HeaderInfoContainer>
               <BusinessAvatarBox>
                 <StorefrontOutlinedIcon sx={{ fontSize: 32 }} />
@@ -226,73 +271,35 @@ const BusinessDetail: FC = () => {
                 {t("business:action_add_collaborator")}
               </Button>
             </HeaderActions>
-          </HeaderTopSection>
+            </HeaderTopSection>
+          </Collapse>
 
           {/* Embedded Navigation Tabs */}
           <TabsWrapper>
-            <StyledTabs
-              orientation={mobile ? "vertical" : "horizontal"}
+            {mobile ? <SelectSingleInput label={t("business:pos.section")} clearable={false} value={selectedSection} onChange={(value) => setActiveTab(sections.findIndex((section) => section.value === value))} disabled={isBusy} options={sections.map((section) => ({ value: section.value, label: t(section.label) }))} /> : <StyledTabs
+              orientation="horizontal"
               value={activeTab}
               onChange={handleTabChange}
               variant="scrollable"
               scrollButtons="auto"
             >
-              <StyledTab
-                icon={<DashboardOutlinedIcon sx={{ fontSize: 18 }} />}
-                disabled={isBusy}
-                iconPosition="start"
-                label={t("business:tab_overview")}
-                data-testid="tab-overview"
-              />
-              <StyledTab
-                icon={<StorefrontOutlinedIcon sx={{ fontSize: 18 }} />}
-                disabled={isBusy}
-                iconPosition="start"
-                label={
-                  <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
-                    {t("business:tab_providers")}
-                    <Chip label={totalProviders} size="small" sx={{ height: 18, fontSize: "0.68rem" }} />
-                  </Box>
-                }
-                data-testid="tab-providers"
-              />
-              <StyledTab
-                icon={<Inventory2OutlinedIcon sx={{ fontSize: 18 }} />}
-                disabled={isBusy}
-                iconPosition="start"
-                label={
-                  <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
-                    {t("business:tab_products")}
-                    <Chip label={totalProducts} size="small" sx={{ height: 18, fontSize: "0.68rem" }} />
-                  </Box>
-                }
-                data-testid="tab-products"
-              />
-              <StyledTab
-                icon={<ReceiptLongOutlinedIcon sx={{ fontSize: 18 }} />}
-                disabled={isBusy}
-                iconPosition="start"
-                label={
-                  <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
-                    {t("business:tab_invoices")}
-                    <Chip label={totalInvoices} size="small" sx={{ height: 18, fontSize: "0.68rem" }} />
-                  </Box>
-                }
-                data-testid="tab-invoices"
-              />
-              <StyledTab
-                icon={<PeopleOutlinedIcon sx={{ fontSize: 18 }} />}
-                disabled={isBusy}
-                iconPosition="start"
-                label={
-                  <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
-                    {t("business:tab_collaborators")}
-                    <Chip label={totalCollaborators} size="small" sx={{ height: 18, fontSize: "0.68rem" }} />
-                  </Box>
-                }
-                data-testid="tab-collaborators"
-              />
-            </StyledTabs>
+              {sections.map((section) => {
+                const Icon = "icon" in section ? section.icon : undefined;
+                const count = sectionCounts[section.value];
+                return <StyledTab
+                  key={section.value}
+                  icon={Icon ? <Icon sx={{ fontSize: 18 }} /> : undefined}
+                  disabled={isBusy}
+                  iconPosition="start"
+                  label={count === undefined ? t(section.label) :
+                    <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+                      {t(section.label)}
+                      <Chip label={count} size="small" sx={{ height: 18, fontSize: "0.68rem" }} />
+                    </Box>}
+                  data-testid={`tab-${section.value}`}
+                />;
+              })}
+            </StyledTabs>}
           </TabsWrapper>
         </HeaderCard>
       </Skeleton>
@@ -300,7 +307,7 @@ const BusinessDetail: FC = () => {
       {/* Tab Panels */}
       {business && (
         <Box sx={{ width: "100%", mt: 1 }}>
-          {activeTab === 0 && (
+          {selectedSection === "overview" && (
             <OverviewTab
               businessId={business.id}
               onSwitchTab={(tabIdx) => setActiveTab(tabIdx)}
@@ -319,7 +326,7 @@ const BusinessDetail: FC = () => {
             />
           )}
 
-          {activeTab === 1 && (
+          {selectedSection === "providers" && (
             <ProvidersTab
               businessId={business.id}
               isCreateModalOpenDirectly={directNewProviderOpen}
@@ -327,7 +334,7 @@ const BusinessDetail: FC = () => {
             />
           )}
 
-          {activeTab === 2 && (
+          {selectedSection === "products" && (
             <ProductsTab
               businessId={business.id}
               isCreateModalOpenDirectly={directNewProductOpen}
@@ -335,7 +342,7 @@ const BusinessDetail: FC = () => {
             />
           )}
 
-          {activeTab === 3 && (
+          {selectedSection === "invoices" && (
             <InvoicesTab
               businessId={business.id}
               isCreateModalOpenDirectly={directNewInvoiceOpen}
@@ -343,7 +350,9 @@ const BusinessDetail: FC = () => {
             />
           )}
 
-          {activeTab === 4 && (
+          {saleSection && <SalesWorkspace key={`${business.id}:${user?.id ?? ""}`} businessId={business.id} businessName={business.name} section={saleSection} />}
+
+          {selectedSection === "collaborators" && (
             <CollaboratorsTab
               businessId={business.id}
               businessName={business.name}

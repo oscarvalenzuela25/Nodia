@@ -644,7 +644,7 @@ function workflowFixture() {
   };
   const steps = [first, second] as unknown as NodiaAiExecutionStep[];
   f.store.steps.mockResolvedValue(steps as never);
-  f.grant.allowed_modules = ['/tools/business'];
+  f.grant.allowed_modules = ['/business'];
   f.grant.allowed_operations = [contact.tool_name, f.step.tool_name].sort();
   const bindOutputs = vi.fn(
     async (
@@ -671,7 +671,7 @@ function workflowFixture() {
     ...f.preparer,
     toolName: f.step.tool_name,
     catalogVersion: 'nodia-ai-ai22-business/1',
-    moduleRoutes: ['/tools/business'],
+    moduleRoutes: ['/business'],
     outputKeys: { id: 'provider_id' },
     bindableFields: {},
   };

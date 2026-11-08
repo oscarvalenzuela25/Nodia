@@ -52,7 +52,7 @@ import type {
 } from '../../nodia-ai-proposal/types/proposal-preparer.types.js';
 import type { NodiaAiProposalReviewField } from '../../nodia-ai-proposal/types/proposal-review.types.js';
 
-const route = '/tools/finances-personal';
+const route = '/finances-personal';
 const movementFields = {
   name: 'string',
   amount: 'finance_positive_bigint',

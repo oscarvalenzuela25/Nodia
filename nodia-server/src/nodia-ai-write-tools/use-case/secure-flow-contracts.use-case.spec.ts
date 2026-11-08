@@ -61,11 +61,9 @@ function fixture() {
     is_active: true,
     catalog_active: true,
     use_api_key: true,
-    use_token_plan_web: true,
-    use_token_plan_agentic: true,
+    use_agentic: true,
     can_use_api_key: true,
-    can_use_token_plan_web: true,
-    can_use_token_plan_agentic: true,
+    can_use_agentic: true,
   };
   const pool: NodiaAiJsonObject[] = [
     {
@@ -105,7 +103,7 @@ function fixture() {
       isSuperAdmin: false,
       modules: [],
     },
-    moduleRoutes: ['/tools/nodia-ai', '/settings/ai-providers'],
+    moduleRoutes: ['/nodia-ai', '/ai-providers'],
     conversationId: '00000000-0000-4000-8000-000000000002',
   };
   const operations = new BuildNodiaAiSecureOperationsUseCase(store).operations;
@@ -118,8 +116,7 @@ function fixture() {
 }
 function complete(kind: string): NodiaAiJsonObject {
   if (kind === 'nodia_logout') return {};
-  if (kind === 'connection_login')
-    return { provider_id: '2', mode: 'token_plan_web' };
+  if (kind === 'connection_login') return { provider_id: '2', mode: 'agentic' };
   return {
     provider_id: '2',
     ...(kind === 'api_key_update' ? { key_id: '3' } : {}),
@@ -164,7 +161,7 @@ describe('AI36-C02 closed secure preparation contracts', () => {
         ].sort(),
       );
       expect(native.moduleRoutes).toEqual(
-        identity.providerRequired ? ['/settings/ai-providers'] : [],
+        identity.providerRequired ? ['/ai-providers'] : [],
       );
       expect(native.actionKeys).toEqual(
         identity.providerRequired ? ['ai:manage'] : [],
@@ -390,16 +387,23 @@ describe('AI36-C02 closed secure preparation contracts', () => {
     ).rejects.toThrow('nodia_ai:invalid_input');
   });
 
-  it('permits only Web or Agentic for login and keeps provider-specific availability native', async () => {
+  it('permits only Agentic for login and keeps provider-specific availability native', async () => {
     const f = fixture();
-    for (const mode of ['token_plan_web', 'token_plan_agentic']) {
+    for (const mode of ['agentic']) {
       const input = { provider_id: '2', mode };
       expect(valid('connection_login', input)).toBe(true);
       expect(
         (await f.port('connection_login').prepare(input, f.context)).status,
       ).toBe('ready');
     }
-    for (const mode of ['api_key', 'web', 'agentic', '', null, 0]) {
+    for (const mode of [
+      'api_key',
+      'token_plan_web',
+      'token_plan_agentic',
+      '',
+      null,
+      0,
+    ]) {
       const input = { provider_id: '2', mode };
       expect(valid('connection_login', input)).toBe(false);
       await expect(
@@ -408,15 +412,15 @@ describe('AI36-C02 closed secure preparation contracts', () => {
     }
     f.provider.provider_key = 'openai';
     const web = { provider_id: '2', mode: 'token_plan_web' };
-    expect(valid('connection_login', web)).toBe(true);
+    expect(valid('connection_login', web)).toBe(false);
     await expect(
       f.port('connection_login').prepare(web, f.context),
     ).rejects.toThrow('nodia_ai:invalid_input');
-    const agentic = { provider_id: '2', mode: 'token_plan_agentic' };
+    const agentic = { provider_id: '2', mode: 'agentic' };
     expect(
       (await f.port('connection_login').prepare(agentic, f.context)).status,
     ).toBe('ready');
-    f.provider.use_token_plan_agentic = false;
+    f.provider.use_agentic = false;
     await expect(
       f.port('connection_login').prepare(agentic, f.context),
     ).rejects.toThrow('nodia_ai:capability_unavailable');
@@ -452,11 +456,7 @@ describe('AI36-C02 closed secure preparation contracts', () => {
         await expect(
           f
             .port(kind)
-            .prepare(
-              { mode: 'token_plan_agentic' },
-              f.context,
-              ready.commandTemplate,
-            ),
+            .prepare({ mode: 'api_key' }, f.context, ready.commandTemplate),
         ).rejects.toThrow('nodia_ai:invalid_input');
     },
   );
@@ -467,7 +467,7 @@ describe('AI36-C02 closed secure preparation contracts', () => {
     expect(valid('nodia_logout', {})).toBe(true);
     const result = await p.prepare(
       {},
-      { ...f.context, moduleRoutes: ['/tools/nodia-ai'] },
+      { ...f.context, moduleRoutes: ['/nodia-ai'] },
     );
     expect(result.status).toBe('ready');
     expect(f.store.provider).not.toHaveBeenCalled();
@@ -479,12 +479,12 @@ describe('AI36-C02 closed secure preparation contracts', () => {
     );
     expect(authorizationCall).toBeDefined();
     // This asserts the actual native policy query only asks for NodiaAI, not provider administration.
-    expect(authorizationCall?.[1]?.[1]).toEqual(['/tools/nodia-ai']);
+    expect(authorizationCall?.[1]?.[1]).toEqual(['/nodia-ai']);
     expect(JSON.stringify(result)).not.toContain('session_id');
     const invalidIdentities: NodiaAiJsonObject[] = [
       { provider_id: '2' },
       { key_id: '3' },
-      { mode: 'token_plan_web' },
+      { mode: 'agentic' },
       { actor_id: '9' },
     ];
     for (const payload of invalidIdentities) {

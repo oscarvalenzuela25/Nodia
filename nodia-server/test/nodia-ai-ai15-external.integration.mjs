@@ -79,8 +79,7 @@ const ports = {
       signal.throwIfAborted();
       if (cancelOnObservation) controller.abort();
       return {
-        active_engine: 'web',
-        web: { available: true, authenticated: true },
+        active_engine: 'agentic',
         agentic: { available: true, authenticated: true },
         private: 'synthetic-private',
       };
@@ -190,11 +189,11 @@ try {
   );
   assert.ok(geminiCatalog && openaiCatalog);
   const [gemini] = await db.query(
-    "INSERT INTO ai_providers(catalog_id,name,use_token_plan_web,default_mode,fields) VALUES($1,'Synthetic Web',true,'token_plan_web',$2) RETURNING id",
+    "INSERT INTO ai_providers(catalog_id,name,use_agentic,default_mode,fields) VALUES($1,'Synthetic Agentic',true,'agentic',$2) RETURNING id",
     [
       geminiCatalog.id,
       JSON.stringify({
-        token_plan_web: {
+        agentic: {
           selected_model: 'synthetic-discovered',
           ocr_model: 'synthetic-discovered',
           private: 'synthetic-private',
@@ -203,11 +202,11 @@ try {
     ],
   );
   const [openai] = await db.query(
-    "INSERT INTO ai_providers(catalog_id,name,use_token_plan_agentic,default_mode,fields) VALUES($1,'Synthetic Agentic',true,'token_plan_agentic',$2) RETURNING id",
+    "INSERT INTO ai_providers(catalog_id,name,use_agentic,default_mode,fields) VALUES($1,'Synthetic Agentic',true,'agentic',$2) RETURNING id",
     [
       openaiCatalog.id,
       JSON.stringify({
-        token_plan_agentic: {
+        agentic: {
           selected_model: 'synthetic-discovered',
           ocr_model: 'synthetic-discovered',
         },
@@ -308,11 +307,11 @@ try {
   );
   await changed.prepared.discard();
   await db.query(
-    "INSERT INTO user_modules(user_id,module_id) SELECT 1,id FROM modules WHERE link='/tools/business'",
+    "INSERT INTO user_modules(user_id,module_id) SELECT 1,id FROM modules WHERE link='/business'",
   );
   const ordinary = await phase('eligible', {}, '1');
   await db.query(
-    "DELETE FROM user_modules WHERE user_id=1 AND module_id IN(SELECT id FROM modules WHERE link='/tools/business')",
+    "DELETE FROM user_modules WHERE user_id=1 AND module_id IN(SELECT id FROM modules WHERE link='/business')",
   );
   await assert.rejects(
     verify(ordinary.prepared, ordinary.tool, '1'),

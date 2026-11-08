@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { moduleRouteIncluded } from '../../authorization/canonical-module-route.js';
 import type { NodiaAiToolFamily } from '../../nodia-ai-tools/types/tool-registry.types.js';
 
 /** Approval selects explicit exports; it cannot create a handler or widen a capability. */
@@ -26,7 +27,7 @@ export class ComposeNodiaAiReadFamiliesUseCase {
           resources,
           modules: family.modules.filter((module) =>
             capabilities.some((tool) =>
-              tool.requiredModuleRoutes.includes(module.route),
+              moduleRouteIncluded(tool.requiredModuleRoutes, module.route),
             ),
           ),
         },

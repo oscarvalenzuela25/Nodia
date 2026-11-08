@@ -46,6 +46,7 @@ export function confirmationFixture() {
     maxCollectionItems: 128,
   };
   const loaded = {
+    catalogCompatible: true,
     proposal: f.proposal,
     revision: f.revision,
     steps: [f.step],

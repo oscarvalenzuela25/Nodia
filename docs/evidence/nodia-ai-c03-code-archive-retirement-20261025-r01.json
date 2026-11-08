@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-25",
+  "status": "duplicate_VM_code_archive_retired_local_recovery_verified",
+  "scope": "One duplicate code-only recovery archive; no release, SQL, profile or image retirement",
+  "operator": "root executed the operation; this consolidator performed local read-only verification only",
+  "retired_VM_archive": {
+    "path": "/opt/nodia/verification/c03-eligibility-diagnostic-capacity-r02/source-6ef-recovery.tar.gz",
+    "bytes": 3255330,
+    "sha256": "45e2ac9098aef898b673bc623e67839f08e1dafdc0a033fa804bfdba7e6f1a83",
+    "removal": "exact-file unlink, parent fsync; no recursive deletion"
+  },
+  "current_recovery": {
+    "location": "local_only",
+    "archive": {
+      "path": "ops/lab/artifacts/c03-first-fix-recovery-r01/source-6ef-recovery.tar.gz",
+      "sha256": "45e2ac9098aef898b673bc623e67839f08e1dafdc0a033fa804bfdba7e6f1a83",
+      "bytes": 3255330
+    },
+    "regular_file_verified": true,
+    "matches_historical_catalog": true,
+    "all_old_catalog_files_verified_unchanged": true,
+    "transferable_for_guarded_code_recovery": true,
+    "archive_not_copied_or_rewritten_by_consolidator": true,
+    "VM_duplicate_currently_present": false,
+    "source_6ef_release_restored": false,
+    "SQL_restore": false
+  },
+  "capacity": {
+    "free_before": 275824640,
+    "free_after": 279076864,
+    "observed_delta_bytes": 3252224,
+    "backup_reserve_bytes": 268443676,
+    "reserve_reduced": false,
+    "free_after_exceeds_reserve": true,
+    "limit": "Point-in-time receipt; revalidate before future operations."
+  },
+  "preservation": {
+    "active_Server_manifest_sha256": "4276fd7091f3d7f36604ba355895a2e43054bcbcec7b87ee5f0d897a42a41549",
+    "services_before": {
+      "nodia-api": {
+        "MainPID": "136500",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01",
+        "ActiveState": "active"
+      },
+      "nodia-ai-worker": {
+        "MainPID": "136501",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01",
+        "ActiveState": "active"
+      }
+    },
+    "services_after": {
+      "nodia-api": {
+        "MainPID": "136500",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01",
+        "ActiveState": "active"
+      },
+      "nodia-ai-worker": {
+        "MainPID": "136501",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01",
+        "ActiveState": "active"
+      }
+    },
+    "services_exactly_equal": true,
+    "other_releases_profiles_images_quota_retention": "Not targeted by this exact-file operation; no generic cleanup authorized."
+  },
+  "effects": {
+    "SQL_calls_by_retirement_operator": 0,
+    "SDK_requests": 0,
+    "provider_generations": 0,
+    "recursive_deletions": 0,
+    "release_changes": 0,
+    "VM_actions_by_consolidator": 0,
+    "binary_changes_by_consolidator": 0
+  },
+  "sources": {
+    "retirement_receipt": {
+      "path": "ops/lab/artifacts/c03-code-archive-retirement-r01/duplicate-code-archive-retirement-r01.json",
+      "sha256": "83541e217420f5938edaed9b87bab501ed04bce8d965c5d406b40b172c561c2b",
+      "bytes": 1338
+    },
+    "retirement_script": {
+      "path": "ops/lab/artifacts/c03-code-archive-retirement-r01/retire-own-duplicate-code-archive.py",
+      "sha256": "e3fb61716948908bba6aac8a4e6d50e1b50c9e8e7c963430a939025ebe0f96e9",
+      "bytes": 4728
+    },
+    "local_verification": {
+      "path": "ops/lab/artifacts/c03-code-archive-retirement-r01/local-recovery-verification.json",
+      "sha256": "4e7e82900ec59ce2a60abc056c9af49b5b29a45f4705561ace3ced37d1032b11",
+      "bytes": 966
+    },
+    "new_package_catalog": {
+      "path": "ops/lab/artifacts/c03-code-archive-retirement-r01/catalog.json",
+      "sha256": "3343c40db33850a0c282e42e6e72b96d5d9276676e057c576ac119e8a5d07474",
+      "bytes": 746
+    },
+    "historical_recovery_catalog_untouched": {
+      "path": "ops/lab/artifacts/c03-first-fix-recovery-r01/catalog.json",
+      "sha256": "ba6a14ff8dd9200d34ca4f1c3cd5a56974dc582a83db654a71ad24eb04c21fb4",
+      "bytes": 705
+    },
+    "historical_adoption": {
+      "path": "docs/evidence/nodia-ai-c03-eligibility-diagnostic-adoption-20261025-r02.json",
+      "sha256": "a97e911ded909158ad1c75feb5ad993bbb4826333a6a02b18edb0dc3f8833b47",
+      "bytes": 13903
+    }
+  },
+  "supersedes_only": "Current recovery archive location. Historical evidence of identical local and VM copies remains accurate for its original checkpoint; it has not been edited. The source6ef release was previously retired and remains absent.",
+  "acceptance": {
+    "C03_accepted": false,
+    "native_timeout_fix_adopted_by_this_operation": false,
+    "new_document_approval": false
+  }
+}

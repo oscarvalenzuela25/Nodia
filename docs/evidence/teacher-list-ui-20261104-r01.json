@@ -1,0 +1,134 @@
+{
+  "schema": "teacher-list-ui-annotations/1",
+  "checked_on": "2026-11-04",
+  "status": "implemented_and_verified_in_VM",
+  "scope": "Six requested visual annotations; static Client R06 over R05",
+  "document_approval": false,
+  "knowledge_publication": false,
+  "annotations": {
+    "brand": "Existing Karmatic Arcade font, local brand20px / xs16px; also consistent inside plan",
+    "my_plans_title_weight": 700,
+    "search": "100% below600px;50% from existing sm600px breakpoint, relative to page content",
+    "archived_filter": "Next row, theme body2/14px,44px clickable area",
+    "open_plan": "contained",
+    "session_chips": {
+      "completed": "success.main",
+      "active": "info.main",
+      "paused": "warning.main",
+      "archived": "error.main",
+      "draft": "default"
+    }
+  },
+  "deployment": {
+    "Native_restart": false,
+    "Server_manifest_sha256": "fe1fa26d3148d062cba09ed5bfa1f8a6dd11f64ac2601eb277961e9d644c3442",
+    "Server_restart": false,
+    "backup_workflow_actions": 0,
+    "canonical_state_sha256": "5d1070c7591dbae3ad8291031d879a3848a30122069e29cc229652b1a77f92cd",
+    "database_access": false,
+    "legacy_R05_asset_fallback_retained": true,
+    "new_assets_verified": 179,
+    "old_assets_verified": 175,
+    "one_Nginx_reload": true,
+    "phase": "Client_R06_active_static_and_legacy_assets_verified",
+    "private_recovery_workflows": 0,
+    "protected_runtime_snapshot_unchanged": true,
+    "provider_requests": 0,
+    "stdout_receipt_sha256": "29b0b213ce904a959e08434de82f8d384deb82c63895050842ed079a3b12c34e",
+    "success": true
+  },
+  "release": "/opt/nodia/releases/nodia-client-teacher-20261104-r06",
+  "release_manifest_sha256": "4b8efe719a4744e12f98156cfc4591b524b3eaac368a4245ec58c35ab23d5a60",
+  "checks": {
+    "Teacher_regression_tests": 46,
+    "Teacher_test_files": 12,
+    "all_baseline_inputs_rehashed_before_after": true,
+    "assets": 179,
+    "isolated_build_ms": 18095,
+    "isolated_typecheck_diagnostics": 0,
+    "operator_tests": 4,
+    "public_configuration_preserved": true,
+    "scoped_lint_diagnostics": 0,
+    "unchanged_dist_files": 144,
+    "workspace_typecheck_diagnostics": 0
+  },
+  "source_scope": {
+    "added_paths": [],
+    "frozen_UI_sources": {
+      "src/modules/teacher/pages/Teacher/Teacher.tsx": {
+        "after_bytes": 35240,
+        "after_sha256": "a6768dfc18e803029dbece092331086a11590151d6ce54588609452b2909caf7",
+        "before_sha256": "e668c1d80d38bbb4a508a4550269c71b9a4cfc4d16c9a5f54db0b0986bf9b116"
+      },
+      "src/modules/teacher/pages/Teacher/styles.ts": {
+        "after_bytes": 2880,
+        "after_sha256": "27f38dd2570e06a1a6e99b208dde966838ddaa00d60b484cf2d9f5a6ee92edf8",
+        "before_sha256": "8237084df15d410d966f830c70e78366f510320f3eb21cb365cf088e7b5c23e4"
+      }
+    },
+    "global_working_tree_copied": false,
+    "outside_whitelist_delta": 0,
+    "owner_delta_sha256": "f52c73547c9fc7dfb1f4c58ec100322660cdaa3ba482a379bc4dc7b274864622",
+    "paths": [
+      "src/modules/teacher/pages/Teacher/Teacher.tsx",
+      "src/modules/teacher/pages/Teacher/styles.ts"
+    ],
+    "production_paths": 2,
+    "removed_paths": [],
+    "source_input_count": 1340,
+    "unchanged_R05_source_inputs": 1338
+  },
+  "remaining": [],
+  "QA_closes_delivery_snapshot_remaining_validation": true,
+  "source_receipts": [
+    {
+      "path": "ops/lab/artifacts/teacher-list-ui-20261104-r01/client-r06/delivery.json",
+      "bytes": 5808,
+      "sha256": "237177dbd5bd6fffbe2a3a70bcfe54040079f599380e886192409c2bb139b3a6"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-list-ui-20261104-r01/browser-verification.json",
+      "bytes": 3824,
+      "sha256": "8ac2d6c92ebdc6d750b302f8d21d24a7466121cef3d053bff213ac8956c9f43f"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-list-ui-20261104-r01/knowledge-check.json",
+      "bytes": 478,
+      "sha256": "db6916ef60ced80ce449c49da2d9cab39800c058de5aa27d1da3cf5ae486e629"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-list-ui-20261104-r01/catalog.json",
+      "bytes": 2148,
+      "sha256": "83dc31d00ed45d8bf61ec1df6fad37e531bf947c518ae62776dc04825883e1a8"
+    }
+  ],
+  "edited_files": [
+    {
+      "path": "nodia-client/src/modules/teacher/pages/Teacher/Teacher.tsx",
+      "bytes": 35240,
+      "sha256": "a6768dfc18e803029dbece092331086a11590151d6ce54588609452b2909caf7"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/pages/Teacher/styles.ts",
+      "bytes": 2880,
+      "sha256": "27f38dd2570e06a1a6e99b208dde966838ddaa00d60b484cf2d9f5a6ee92edf8"
+    },
+    {
+      "path": "nodia-client/DESIGN.md",
+      "bytes": 90601,
+      "sha256": "f3d24f9827e8c9996d534d94b06ca44955329119d938d802eb490f7f5970b589"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/studies/features/adaptive-plans-and-day-material.md",
+      "bytes": 24420,
+      "sha256": "6ff50d75fe3270692311587fb52d299c29ac101b1a8abd381c1288e91566ef69"
+    }
+  ],
+  "limitations": [
+    "Physical phone, keyboard and touch input not tested.",
+    "Paused/warning and draft/neutral mappings checked in source/typecheck, not by creating records.",
+    "Server outage/invalid payload/authentication renewal scenarios were not reinjected for this visual change; existing Teacher unit regressions were run.",
+    "A transient overflow observation immediately after theme switching cleared in settled geometry; no persistent overflow found.",
+    "FontFaceSet iteration did not enumerate the face; CSS family, font check and rendered screenshots were observed."
+  ]
+}

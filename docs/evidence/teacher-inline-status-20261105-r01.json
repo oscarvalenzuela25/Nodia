@@ -1,0 +1,266 @@
+{
+  "schema": "teacher-inline-status/1",
+  "local_date": "2026-11-05",
+  "status": "Client_R21_active_browser_verified",
+  "current_client_release": "/opt/nodia/releases/nodia-client-teacher-20261105-r21",
+  "current_client_manifest_sha256": "9c4be105a4a535033ced428926aeb97172f21e075e6583b716e8ef70b748e9f0",
+  "baseline_client": "R20",
+  "source_delta": {
+    "existing": 8,
+    "production": 6,
+    "tests": 2,
+    "new": 0,
+    "deleted": 0,
+    "inputs": 1377,
+    "baseline_identical": 1369,
+    "global_working_tree_copied": false
+  },
+  "validation": {
+    "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/client-r21-r01/Root-validation.json",
+    "bytes": 832,
+    "sha256": "ee10692992b03da39806af39a4887abf9059b4eed8b449c8021e5b5c79be1531"
+  },
+  "functional_tests": {
+    "suites": 6,
+    "tests": 73,
+    "exit_code": 0
+  },
+  "operations": {
+    "delivery.json": {
+      "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/client-r21-r01/delivery.json",
+      "bytes": 11632,
+      "sha256": "a18a93779e209f49f210019621b37ed15cb5245cc079c959f84c11467ae4da2d"
+    },
+    "activation-state.json": {
+      "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/client-r21-r01/activation-state.json",
+      "bytes": 700,
+      "sha256": "7e32b47f321de1b92ccf8a142f184b703f8b5350a9f04753b8063698d6727f39"
+    },
+    "final-health.json": {
+      "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/client-r21-r01/final-health.json",
+      "bytes": 1444,
+      "sha256": "89f8b7f4a22c1ad9faaf23a2c83e0cf4e694eaa292349f297f4e68fe285290cb"
+    },
+    "release-manifest.json": {
+      "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/client-r21-r01/release-manifest.json",
+      "bytes": 30710,
+      "sha256": "9c4be105a4a535033ced428926aeb97172f21e075e6583b716e8ef70b748e9f0"
+    },
+    "root-review.json": {
+      "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/client-r21-r01/root-review.json",
+      "bytes": 3763,
+      "sha256": "440c79667c338b21f0736e74a34991911cdbf26717dc266799cf9c9b36b11222"
+    },
+    "source-plan.json": {
+      "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/client-r21-r01/source-plan.json",
+      "bytes": 251159,
+      "sha256": "e3bda73684ab5a38cf017d4e981eba02179883dbf7f9cbc0a4a1e7f9f306e75b"
+    },
+    "source-freeze.json": {
+      "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/client-r21-r01/source-freeze.json",
+      "bytes": 2126,
+      "sha256": "0672be20977db0b009d2523279b0f53b432c2d4d4175f46406917dffd583ce12"
+    }
+  },
+  "browser": {
+    "browser-verification.json": {
+      "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/browser/browser-verification.json",
+      "bytes": 2582,
+      "sha256": "a96a10444411d33c5765dcc15e97031ff5178fef201f401b59ef3ce8378ca09f"
+    },
+    "implement-plan-confirmation.jpg": {
+      "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/browser/implement-plan-confirmation.jpg",
+      "bytes": 44294,
+      "sha256": "80072ff289a252032f09b3829e73bd1c62d3d940c519d06be10acb795dd7c6a7"
+    },
+    "inline-status-desktop.jpg": {
+      "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/browser/inline-status-desktop.jpg",
+      "bytes": 86683,
+      "sha256": "58ef358cc2de4040c623358c4448d5ed86fdf7e72efc298082693dfbe696a8b1"
+    },
+    "inline-status-mobile.jpg": {
+      "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/browser/inline-status-mobile.jpg",
+      "bytes": 34404,
+      "sha256": "3a251d09f0c843c3c73580c67b614d9115d499f54e3f3fd6044ec744a7ac69b6"
+    },
+    "saved-message-tooltip.jpg": {
+      "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/browser/saved-message-tooltip.jpg",
+      "bytes": 99145,
+      "sha256": "1c1244de4bd20fde5db9abe67353f21f66119d8f1a1b9475841ef8aec40a6f61"
+    }
+  },
+  "browser_observations": {
+    "schema": "teacher-inline-status-browser/1",
+    "release": "ClientR21",
+    "baseline": {
+      "budget": "Generaciones reservadas: 2 de 200 del límite de esta sesión. Cada solicitud genera sólo el recurso indicado.",
+      "draftLength": 0,
+      "savedCaptions": 1,
+      "savedIcons": 0,
+      "workHeadings": 1
+    },
+    "desktop": {
+      "budget": "Generaciones reservadas: 2 de 200 del límite de esta sesión. Cada solicitud genera sólo el recurso indicado.",
+      "chip": {
+        "background": "rgb(74, 222, 128)",
+        "text": "Resultado guardado",
+        "y": 432.4375
+      },
+      "documentWidth": 1078,
+      "draftLength": 0,
+      "fileInputs": 0,
+      "heading": {
+        "fontSize": "22px",
+        "fontWeight": "700",
+        "text": "Define tu plan con Nodia Teacher",
+        "textTransform": "none",
+        "y": 368.84375
+      },
+      "ownSaved": {
+        "authorX": 334,
+        "bubbleRight": 979,
+        "color": "rgb(74, 222, 128)",
+        "right": 962,
+        "x": 942
+      },
+      "refresh": {
+        "height": 44,
+        "width": 44
+      },
+      "savedCaptions": 0,
+      "savedIcons": 1,
+      "scrollWidth": 1078,
+      "viewport": [
+        1088,
+        892
+      ],
+      "workHeadings": 0
+    },
+    "mobile": {
+      "chip": {
+        "width": 150.65625,
+        "y": 777.5
+      },
+      "documentWidth": 310,
+      "draftLength": 0,
+      "heading": {
+        "bottom": 693.5,
+        "fontSize": "22px",
+        "fontWeight": "700",
+        "textTransform": "none"
+      },
+      "implement": {
+        "height": 44,
+        "width": 244
+      },
+      "refresh": {
+        "height": 44,
+        "width": 44
+      },
+      "savedCaptions": 0,
+      "savedIcons": 1,
+      "scrollWidth": 310,
+      "statusInsideChatCard": true,
+      "viewport": [
+        320,
+        892
+      ]
+    },
+    "final": {
+      "budget": "Generaciones reservadas: 2 de 200 del límite de esta sesión. Cada solicitud genera sólo el recurso indicado.",
+      "dialogCount": 0,
+      "draftLength": 0,
+      "viewport": [
+        1088,
+        892
+      ]
+    },
+    "refreshClicked": true,
+    "savedTooltipVerified": "Mensaje guardado",
+    "implementModalOpenedWithKeyboard": true,
+    "implementModalCancelled": true,
+    "proposalSubmitted": false,
+    "newMessages": 0,
+    "newProviderRequests": 0,
+    "viewportRestored": true,
+    "voiceCaptureTested": false,
+    "physicalMobileTested": false,
+    "controls_after_revalidation": {
+      "implement_enabled": true,
+      "source": "CUA isEnabled=true and AX after the desktop capture"
+    },
+    "desktop_capture_phase": "The capture shows controls temporarily disabled during eligibility/session revalidation; the subsequent CUA check confirmed they were enabled."
+  },
+  "deployment_direct_SQL_calls": 0,
+  "new_provider_inferences": 0,
+  "new_teacher_messages": 0,
+  "new_plan_requests": 0,
+  "server_native_SDK_auth_configuration_changes": false,
+  "contracts": [
+    {
+      "path": "docs/mvp/95-studies-adaptive-learning.md",
+      "bytes": 67054,
+      "sha256": "4dc306e16857d4092f4ddeb4815f5e4cd36e77ae2cf9b05435a68c7f170b9c00"
+    },
+    {
+      "path": "docs/mvp/96-nodia-teacher-implementation-plan.md",
+      "bytes": 179703,
+      "sha256": "2980813db1e4582f0d17a4aa9188712a2986c46b59d8c0bad38050b20ddbd6e1"
+    },
+    {
+      "path": "docs/mvp/97-nodia-teacher-technical-contracts.md",
+      "bytes": 92540,
+      "sha256": "aea626d64a5ab85eae2cc352699877a32e784cbbdc00da1b30b70f62d8ea0130"
+    },
+    {
+      "path": "nodia-client/DESIGN.md",
+      "bytes": 103998,
+      "sha256": "135a30bdeff45b728426931a7c29ad102f5f3bc0d01b934ab362eca745b4f364"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/studies/README.md",
+      "bytes": 32600,
+      "sha256": "29cbf999f3dfe608d16d8af7986f9e6e90c08552ebcc80527d4e834fb29a707f"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/studies/features/session-setup-and-planning.md",
+      "bytes": 33346,
+      "sha256": "f0274aa66cc896fccc9dd1fb121f057d88aed3a44d041a557f7e713703d73a72"
+    }
+  ],
+  "knowledge": {
+    "studies_revision": 24,
+    "setup_revision": 19,
+    "status": "draft/partial/unregistered/approval:null",
+    "published": false,
+    "final_check": {
+      "schema": "teacher-inline-status-knowledge-check/1",
+      "exit_code": 0,
+      "mode": "check",
+      "sources": 80,
+      "excluded": 36,
+      "documents": 44,
+      "fragments": 46,
+      "catalogRelease": "nodia-ai-business-pos/4",
+      "releaseId": "ca3b8d894cbfc3780698e15b1b19c62a4554b00911af7893024fd025c6f948af",
+      "published": false
+    },
+    "receipt": {
+      "path": "ops/lab/artifacts/teacher-inline-status-20261105-r01/knowledge-check.json",
+      "bytes": 320,
+      "sha256": "9990a4523e76fa5e699d033a98e02082f0a8eeab2c531465053a930770d3b1a1"
+    }
+  },
+  "semantic_guards": [
+    "User message saved icon comes exclusively from persisted GET history, not private draft state or AI job status.",
+    "Implement plan is the requested label for the same reviewable proposal; confirmation does not accept or start a course.",
+    "One stable job observer remains mounted across conversation/study/revision presentation.",
+    "Refresh reads status; unknown/error/retry and draft conflict/CAS guards preserved."
+  ],
+  "limitations": [
+    "Current real browser job was ready; queued/running/unknown/failed/read failures were checked in atomic synthetic tests, not new provider dispatches.",
+    "Viewport resized to320px; no physical phone or microphone recording.",
+    "The desktop image was taken during a transient revalidation; subsequent CUA verified Implement enabled and selectors recovered.",
+    "Prior Gemini timeout/reply_framing blockers were not changed or requalified."
+  ]
+}

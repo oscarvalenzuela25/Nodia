@@ -11,11 +11,20 @@ import { ResolveNodiaAiAdapterUseCase } from './use-case/resolve-nodia-ai-adapte
 import { RouteNodiaAiAdapterUseCase } from './use-case/route-nodia-ai-adapter.use-case.js';
 import { RouteNodiaAiReconciliationUseCase } from './use-case/route-nodia-ai-reconciliation.use-case.js';
 import { NodiaAiRuntimePolicyModule } from '../nodia-ai-runtime/config/runtime-policy.module.js';
+import { ApiNodiaAiRuntimeService } from './api-nodia-ai-runtime.service.js';
+import { ApiNodiaAiCredentialsService } from './api-nodia-ai-credentials.service.js';
+import { ApiNodiaAiAdapterUseCase } from './use-case/api-nodia-ai-adapter.use-case.js';
+import { ApiNodiaAiAcceptanceService } from './api-nodia-ai-acceptance.service.js';
+import { ApiProviderModule } from '../common/ai/api-provider.module.js';
 
 @Module({
-  imports: [CodexRuntimeModule, NodiaAiRuntimePolicyModule],
+  imports: [CodexRuntimeModule, NodiaAiRuntimePolicyModule, ApiProviderModule],
   providers: [
     NodiaAiAdapterTransport,
+    ApiNodiaAiRuntimeService,
+    ApiNodiaAiCredentialsService,
+    ApiNodiaAiAdapterUseCase,
+    ApiNodiaAiAcceptanceService,
     GeminiNodiaAiAdapterUseCase,
     ReconcileGeminiNodiaAiRuntimeUseCase,
     CodexNodiaAiAdapterUseCase,
@@ -29,6 +38,14 @@ import { NodiaAiRuntimePolicyModule } from '../nodia-ai-runtime/config/runtime-p
     },
     { provide: NodiaAiAdapterPort, useExisting: RouteNodiaAiAdapterUseCase },
   ],
-  exports: [NodiaAiAdapterPort, NodiaAiRuntimeReconciliationPort],
+  exports: [
+    NodiaAiAdapterPort,
+    NodiaAiRuntimeReconciliationPort,
+    ApiNodiaAiRuntimeService,
+    ApiNodiaAiCredentialsService,
+    ApiNodiaAiAcceptanceService,
+    ApiNodiaAiAdapterUseCase,
+    ApiProviderModule,
+  ],
 })
 export class NodiaAiAdapterModule {}

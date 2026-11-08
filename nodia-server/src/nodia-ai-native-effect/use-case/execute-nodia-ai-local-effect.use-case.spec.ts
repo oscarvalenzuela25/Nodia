@@ -45,9 +45,9 @@ function fixture() {
       actorId: '1',
       sessionId: '44444444-4444-4444-8444-444444444444',
       isSuperAdmin: false,
-      modules: [{ id: '2', key: 'business', route: '/tools/business' }],
+      modules: [{ id: '2', key: 'business', route: '/business' }],
     },
-    moduleRoutes: ['/tools/business'],
+    moduleRoutes: ['/business'],
     conversationId: '55555555-5555-4555-8555-555555555555',
   };
   const executeBusiness = vi.fn(
@@ -62,7 +62,7 @@ function fixture() {
     resourceKey: 'invoices',
     operation: 'update',
     catalogVersion: 'nodia-ai-ai22-business/1',
-    moduleRoutes: ['/tools/business'],
+    moduleRoutes: ['/business'],
     actionKeys: [],
     editableFields: { code: 'string' },
     bindableFields: {},
@@ -91,7 +91,7 @@ function fixture() {
     toolName: 'nodia_finance_movements_prepare_update',
     resourceKey: 'finance_movements',
     operation: 'update',
-    moduleRoutes: ['/tools/finances-personal'],
+    moduleRoutes: ['/finances-personal'],
     executeConfirmed: executeFinancialUpdate,
   };
   const finance = new ExecuteNodiaAiFinanceEffectUseCase(
@@ -137,7 +137,7 @@ describe('ExecuteNodiaAiLocalEffectUseCase', () => {
         toolName: `nodia_${resource}_prepare_${operation}`,
         resourceKey: resource,
         operation,
-        moduleRoutes: ['/tools/reservations'],
+        moduleRoutes: ['/reservations'],
         executeConfirmed: execute,
       } as unknown as NodiaAiRentalMoneyOperation | NodiaAiRentalOperation;
       const monetary =
@@ -207,7 +207,7 @@ describe('ExecuteNodiaAiLocalEffectUseCase', () => {
         resourceKey: 'rental_reservations',
         operation,
         catalogVersion: 'nodia-ai-ai25-rental-reservation/1',
-        moduleRoutes: ['/tools/reservations'],
+        moduleRoutes: ['/reservations'],
         executeConfirmed: execute,
       };
       const local = new ExecuteNodiaAiLocalEffectUseCase(
@@ -269,7 +269,7 @@ describe('ExecuteNodiaAiLocalEffectUseCase', () => {
       resourceKey: 'rental_cancellation_policies',
       operation: 'update',
       catalogVersion: 'nodia-ai-ai24-rental-configuration/1',
-      moduleRoutes: ['/tools/reservations'],
+      moduleRoutes: ['/reservations'],
       executeConfirmed: execute,
     };
     const local = new ExecuteNodiaAiLocalEffectUseCase(

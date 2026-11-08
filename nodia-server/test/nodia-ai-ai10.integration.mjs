@@ -28,7 +28,7 @@ try {
   );
   const selection = {
     connection_id: provider.id,
-    mode: 'token_plan_web',
+    mode: 'agentic',
     model_id: 'synthetic-ai10-model',
     effort_id: null,
   };

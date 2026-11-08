@@ -17,7 +17,7 @@ const business = '061b33d2-98c7-4ec1-b0d5-4bd207dc31de';
 const identity = { userId: '1', sessionId: 'efec579b-8fba-4ddd-b9a0-0433814eb22c' };
 function fixture() {
   const snapshot: NodiaAiAuthorizationSnapshot = { actorId: '1', sessionId: identity.sessionId, isSuperAdmin: false, actionKeys: [], modules: [
-    { id: '1', key: 'nodia_ai', route: '/tools/nodia-ai', assigned: true }, { id: '2', key: 'businesses', route: '/tools/business', assigned: true },
+    { id: '1', key: 'nodia_ai', route: '/nodia-ai', assigned: true }, { id: '2', key: 'businesses', route: '/business', assigned: true },
   ] };
   const conversation = { id: chat, owner_id: '1', lifecycle: 'active', expires_at: new Date(Date.now() + 86_400_000) };
   const invoice = { id: '1', business_id: business, path_storage: `invoices/${business}/synthetic.pdf` };
@@ -25,7 +25,16 @@ function fixture() {
     arguments: { id: '1' }, arguments_hash: knowledgeHash(canonicalKnowledge({ id: '1' })), contract_hash: 'a'.repeat(64),
     public_result: { artifact: { reference: ref, semantics: 'current_on_download', access: 'authenticated_reauthorized' } } };
   let inTransaction = false;
-  const manager = { queryRunner: { isTransactionActive: true }, query: vi.fn(async () => []), getRepository: vi.fn((entity) => entity === NodiaAiToolCall ? { findOneBy: async () => call } : { findOne: async () => invoice }) } as unknown as EntityManager;
+  const authority = { visible: true };
+  const invoiceRepository = { findOne: async () => invoice };
+  const manager = { queryRunner: { isTransactionActive: true }, query: vi.fn(async (sql: string) => {
+    if (sql.startsWith('SELECT u.id')) return [{
+      actorId: snapshot.actorId, sessionId: snapshot.sessionId, isSuperAdmin: snapshot.isSuperAdmin,
+    }];
+    if (sql.startsWith('SELECT business.id::text')) return authority.visible ? [{ id: business }] : [];
+    return [];
+  }), getRepository: vi.fn((entity) => entity === NodiaAiToolCall ? { findOneBy: async () => call } : invoiceRepository) } as unknown as EntityManager;
+  Object.assign(invoiceRepository, { manager });
   const source = { transaction: vi.fn(async (_isolation: string, work: (value: EntityManager) => Promise<unknown>) => {
     inTransaction = true;
     try { return await work(manager); } finally { inTransaction = false; }
@@ -38,7 +47,7 @@ function fixture() {
   const storage = { downloadFile: vi.fn(async (_key, _bytes, signal: AbortSignal) => { expect(inTransaction).toBe(false); await external(); signal.throwIfAborted(); return Buffer.from('%PDF-synthetic'); }) };
   const policy = { admission: { file_bytes: 20 * 1024 * 1024 }, results: { list_max_rows: 100 }, timing: { domain_step_seconds: 30, read_query_seconds: 3 } } as NodiaAiRuntimePolicy;
   const subject = new DownloadNodiaAiArtifactUseCase(source as unknown as DataSource, authorize, authorizeChat, new ExecuteNodiaAiArtifactUseCase(), storage as unknown as StorageService, policy);
-  return { subject, snapshot, conversation, invoice, source, manager, storage, policy, chats, setExternal: (effect: () => Promise<void>) => { external = effect; }, deleteCall: () => { call = null; }, call: () => call! };
+  return { subject, snapshot, conversation, invoice, source, manager, storage, policy, chats, authority, setExternal: (effect: () => Promise<void>) => { external = effect; }, deleteCall: () => { call = null; }, call: () => call! };
 }
 describe('NodiaAI private artifact downloads', () => {
   it('reauthorizes completed receipt and streams storage outside both SQL checkpoints', async () => {
@@ -58,13 +67,14 @@ describe('NodiaAI private artifact downloads', () => {
     await f.subject.execute(identity, ref);
     expect(f.chats.auditInspection).toHaveBeenCalledTimes(1);
   });
-  it.each(['expired', 'purged', 'module_revoked', 'session_revoked', 'path_changed'] as const)('discards output after %s during storage I/O', async (change) => {
+  it.each(['expired', 'purged', 'module_revoked', 'session_revoked', 'business_revoked', 'path_changed'] as const)('discards output after %s during storage I/O', async (change) => {
     const f = fixture();
     f.setExternal(async () => {
       if (change === 'expired') f.conversation.expires_at = new Date(0);
       if (change === 'purged') f.deleteCall();
       if (change === 'module_revoked') f.snapshot.modules[1].assigned = false;
       if (change === 'session_revoked') f.snapshot.sessionId = chat;
+      if (change === 'business_revoked') f.authority.visible = false;
       if (change === 'path_changed') f.invoice.path_storage = `invoices/${business}/changed.pdf`;
     });
     await expect(f.subject.execute(identity, ref)).rejects.toThrow();

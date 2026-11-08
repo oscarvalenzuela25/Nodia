@@ -2,8 +2,11 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { sileo } from "sileo";
 import useAuthStore from "../../../../../store/authStore";
-import { useAttachmentDrafts } from "../../../../../modules/nodiaAi/components/Attachments/hooks/useAttachmentDrafts";
+import { isInvoiceOcrReference, useAttachmentDrafts } from "../../../../../modules/nodiaAi/components/Attachments/hooks/useAttachmentDrafts";
+import type { AttachmentDraft } from "../../../../../modules/nodiaAi/components/Attachments/hooks/useAttachmentDrafts";
+import type { NodiaAiInvoiceOcrEligibility } from "../../../../../modules/nodiaAi/infrastructure/types";
 import * as services from "../../../../../modules/nodiaAi/infrastructure/attachmentServices";
 import { chatId, messageId, conversation } from "../../infrastructure/fixtures";
 import type { NodiaAiAttachment } from "../../../../../modules/nodiaAi/infrastructure/attachmentSchemas";
@@ -25,6 +28,208 @@ beforeEach(() => {
 afterEach(() => { client.clear(); useAuthStore.setState({ user: null, token: null, sessionStatus: "anonymous" }); });
 function add(result: { current: ReturnType<typeof useAttachmentDrafts> }) { act(() => result.current.add([new File(["synthetic"], "synthetic.pdf", { type: "application/pdf" })])); return result.current.entries[0]!.localId; }
 describe("per conversation attachment drafts", () => {
+  const invoiceOcr: NodiaAiInvoiceOcrEligibility = { media_types: ["image/png", "image/jpeg", "image/webp", "application/pdf"], file_bytes: 10485760 };
+  it.each(["image/png", "image/jpeg", "image/webp", "application/pdf"] as const)("allows a ready %s invoice OCR reference without accepting text or claiming native MIME", async mediaType => {
+    const kind = mediaType === "application/pdf" ? "pdf" : "image";
+    vi.mocked(services.uploadAttachment).mockResolvedValue({ ...attachment, kind, state: "ready", media_type: mediaType, byte_count: 9 });
+    const hook = renderHook(() => useAttachmentDrafts(chatId, 1, invoiceOcr), { wrapper });
+    const file = new File(["synthetic"], "invoice.synthetic", { type: mediaType });
+    act(() => hook.result.current.add([file]));
+    const id = hook.result.current.entries[0]!.localId;
+    await act(() => hook.result.current.upload(id));
+    await waitFor(() => expect(hook.result.current.ready).toBe(true));
+    expect(hook.result.current.parts).toEqual([{ kind, attachment_id: attachment.attachment_id }]);
+    expect(hook.result.current.capabilities.data?.native_media_types).toBeUndefined();
+    expect(hook.result.current.entries[0]?.file).toBe(file);
+    expect(services.reviewAttachment).not.toHaveBeenCalled();
+  });
+  it("removes OCR permission on null, policy fetch and policy error while preserving the File", async () => {
+    const hook = renderHook(({ route }) => useAttachmentDrafts(chatId, 1, route), { wrapper, initialProps: { route: invoiceOcr as NodiaAiInvoiceOcrEligibility | null } });
+    const id = add(hook.result);
+    await act(() => hook.result.current.upload(id));
+    await waitFor(() => expect(hook.result.current.ready).toBe(true));
+    const file = hook.result.current.entries[0]!.file;
+    hook.rerender({ route: null });
+    expect(hook.result.current.parts).toEqual([]);
+    hook.rerender({ route: invoiceOcr });
+    expect(hook.result.current.parts).toHaveLength(1);
+    let reject!: (error: Error) => void;
+    vi.mocked(services.getAttachmentCapabilities).mockImplementationOnce(() => new Promise((_resolve, fail) => { reject = fail; }));
+    act(() => { void client.invalidateQueries({ queryKey: ["nodia-ai"] }); });
+    await waitFor(() => expect(hook.result.current.capabilities.isFetching).toBe(true));
+    expect(hook.result.current.parts).toEqual([]);
+    expect(hook.result.current.invoiceOcr).toBeUndefined();
+    await act(async () => reject(new Error("Synthetic policy unavailable")));
+    await waitFor(() => expect(hook.result.current.capabilities.isError).toBe(true));
+    expect(hook.result.current.parts).toEqual([]);
+    expect(hook.result.current.entries[0]?.file).toBe(file);
+    expect(services.uploadAttachment).toHaveBeenCalledOnce();
+  });
+  it("bounds invoice OCR originals by ready state, kind, exact MIME and known bytes without new defaults", () => {
+    const file = new File([new Uint8Array(10485760)], "invoice.pdf", { type: "application/pdf" });
+    const entry: AttachmentDraft = { localId: "synthetic-ocr", clientRequestId: "synthetic-request", file,
+      attachment: { ...attachment, state: "ready", media_type: "application/pdf", byte_count: 10485760 },
+      text: "", progress: 100, busy: false, uncertain: false, error: null };
+    expect(isInvoiceOcrReference(entry, invoiceOcr)).toBe(true);
+    expect(isInvoiceOcrReference(entry, null)).toBe(false);
+    for (const change of [{ byte_count: null }, { byte_count: 0 }, { byte_count: 10485761 }, { state: "uploading" as const },
+      { media_type: "audio/wav" }, { kind: "audio" as const }, { kind: "image" as const }]) {
+      expect(isInvoiceOcrReference({ ...entry, attachment: { ...entry.attachment!, ...change } }, invoiceOcr)).toBe(false);
+    }
+    expect(isInvoiceOcrReference({ ...entry, textDirty: true }, invoiceOcr)).toBe(false);
+    expect(isInvoiceOcrReference({ ...entry, file: new File([new Uint8Array(10485761)], "too-large.pdf", { type: "application/pdf" }) }, invoiceOcr)).toBe(false);
+  });
+  it("keeps the real File and ready receipt across unmount; empty or pending policy still blocks original parts", async () => {
+    const file = new File([new Uint8Array([0, 255, 13, 10, 127])], "synthetic.pdf", { type: "application/pdf" });
+    const first = renderHook(() => useAttachmentDrafts(chatId, 1), { wrapper });
+    act(() => first.result.current.add([file]));
+    const original = first.result.current.entries[0]!;
+    await act(() => first.result.current.upload(original.localId));
+    act(() => first.result.current.edit(original.localId, "Unaccepted draft: 0"));
+    first.unmount();
+    act(() => useAuthStore.setState({ sessionStatus: "restoring", isRefreshing: true }));
+    act(() => useAuthStore.setState({ token: "synthetic-renewed", sessionStatus: "authenticated", isRefreshing: false }));
+    const second = renderHook(() => useAttachmentDrafts(chatId, 1), { wrapper });
+    await waitFor(() => expect(second.result.current.capabilities.isFetching).toBe(false));
+    expect(second.result.current.entries[0]?.file).toBe(file);
+    expect(second.result.current.entries[0]?.clientRequestId).toBe(original.clientRequestId);
+    expect(second.result.current.entries[0]?.attachment?.attachment_id).toBe(attachment.attachment_id);
+    expect(second.result.current.entries[0]?.text).toBe("Unaccepted draft: 0");
+    const bytes = await new Promise<ArrayBuffer>((resolve, reject) => {
+      const reader = new FileReader(); reader.onload = () => resolve(reader.result as ArrayBuffer); reader.onerror = reject; reader.readAsArrayBuffer(second.result.current.entries[0]!.file);
+    });
+    expect([...new Uint8Array(bytes)]).toEqual([0, 255, 13, 10, 127]);
+    expect(second.result.current.parts).toEqual([]);
+    act(() => second.result.current.resetReview(original.localId));
+    let resolve!: (value: Awaited<ReturnType<typeof services.getAttachmentCapabilities>>) => void;
+    vi.mocked(services.getAttachmentCapabilities).mockImplementationOnce(() => new Promise(done => { resolve = done; }));
+    let pending!: Promise<void>;
+    act(() => { pending = second.result.current.refreshCapabilities(); });
+    expect(second.result.current.parts).toEqual([]);
+    await act(async () => {
+      resolve({ limits: { file_bytes: 20971520, files_per_message: 4, message_files_bytes: 41943040, audio_seconds: 300, pdf_pages: 50, image_pixels: 40000000 }, reviewed_text: true, native_modalities: { image: null, pdf: true, audio: null }, native_media_types: ["application/pdf"] });
+      await pending;
+    });
+    await waitFor(() => expect(second.result.current.ready).toBe(true));
+    expect(second.result.current.parts).toEqual([{ kind: "pdf", attachment_id: attachment.attachment_id }]);
+    expect(second.result.current.entries[0]?.file).toBe(file);
+    expect(services.createAttachment).toHaveBeenCalledOnce();
+    expect(services.uploadAttachment).toHaveBeenCalledOnce();
+    expect(services.reviewAttachment).not.toHaveBeenCalled();
+  });
+  it("settles an upload after unmount without a second create or PUT and releases the shared lock", async () => {
+    let resolve!: (value: NodiaAiAttachment) => void;
+    vi.mocked(services.uploadAttachment).mockImplementationOnce(() => new Promise(done => { resolve = done; }));
+    const first = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    const id = add(first.result);
+    let pending!: Promise<void>;
+    await act(async () => { pending = first.result.current.upload(id); await Promise.resolve(); });
+    await waitFor(() => expect(services.uploadAttachment).toHaveBeenCalledOnce());
+    const file = first.result.current.entries[0]!.file;
+    first.unmount();
+    vi.mocked(sileo.success).mockClear();
+    const second = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    expect(second.result.current.busy).toBe(true);
+    await act(() => second.result.current.upload(id));
+    expect(services.createAttachment).toHaveBeenCalledOnce();
+    expect(services.uploadAttachment).toHaveBeenCalledOnce();
+    await act(async () => { resolve({ ...attachment, state: "ready", media_type: "application/pdf" }); await pending; });
+    await waitFor(() => expect(second.result.current.busy).toBe(false));
+    expect(second.result.current.entries[0]?.busy).toBe(false);
+    expect(second.result.current.entries[0]?.attachment?.state).toBe("ready");
+    expect(second.result.current.entries[0]?.file).toBe(file);
+    expect(sileo.success).toHaveBeenCalledOnce();
+  });
+  it("does not reuse positive MIME evidence while the remounted policy is pending or fails", async () => {
+    vi.mocked(services.getAttachmentCapabilities).mockResolvedValue({ limits: { file_bytes: 20971520, files_per_message: 4, message_files_bytes: 41943040, audio_seconds: 300, pdf_pages: 50, image_pixels: 40000000 }, reviewed_text: true, native_modalities: { image: null, pdf: true, audio: null }, native_media_types: ["application/pdf"] });
+    const first = renderHook(() => useAttachmentDrafts(chatId, 1), { wrapper });
+    const id = add(first.result);
+    await act(() => first.result.current.upload(id));
+    await waitFor(() => expect(first.result.current.ready).toBe(true));
+    const file = first.result.current.entries[0]!.file;
+    first.unmount();
+    let reject!: (error: Error) => void;
+    vi.mocked(services.getAttachmentCapabilities).mockImplementationOnce(() => new Promise((_resolve, fail) => { reject = fail; }));
+    const second = renderHook(() => useAttachmentDrafts(chatId, 1), { wrapper });
+    await waitFor(() => expect(reject).toBeDefined());
+    expect(second.result.current.capabilities.isFetching).toBe(true);
+    expect(second.result.current.parts).toEqual([]);
+    expect(second.result.current.entries[0]?.file).toBe(file);
+    await act(async () => reject(new Error("Synthetic policy unavailable")));
+    await waitFor(() => expect(second.result.current.capabilities.isError).toBe(true));
+    expect(second.result.current.parts).toEqual([]);
+    expect(second.result.current.entries[0]?.file).toBe(file);
+    expect(services.uploadAttachment).toHaveBeenCalledOnce();
+  });
+  it("clears an unmounted owner's originals and rejects a late upload after logout/account change", async () => {
+    let resolve!: (value: NodiaAiAttachment) => void;
+    vi.mocked(services.uploadAttachment).mockImplementationOnce(() => new Promise(done => { resolve = done; }));
+    const first = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    const id = add(first.result);
+    let pending!: Promise<void>;
+    await act(async () => { pending = first.result.current.upload(id); await Promise.resolve(); });
+    await waitFor(() => expect(services.uploadAttachment).toHaveBeenCalledOnce());
+    first.unmount();
+    vi.mocked(sileo.success).mockClear();
+    vi.mocked(sileo.error).mockClear();
+    act(() => useAuthStore.getState().logout());
+    act(() => useAuthStore.getState().login({ token: "synthetic-other", user: { id: "10", name: "Other owner" }, expiresAt: Date.now() + 600000 }));
+    const second = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    await act(async () => { resolve({ ...attachment, state: "ready" }); await pending; });
+    expect(second.result.current.entries).toEqual([]);
+    expect(second.result.current.admission).toBeUndefined();
+    expect(sileo.success).not.toHaveBeenCalled();
+    expect(sileo.error).not.toHaveBeenCalled();
+    expect(services.createAttachment).toHaveBeenCalledOnce();
+    act(() => useAuthStore.getState().login({ token: "synthetic-return", user: { id: "9", name: "Returning owner" }, expiresAt: Date.now() + 600000 }));
+    expect(second.result.current.entries).toEqual([]);
+  });
+  it("clears RAM on a session-generation change even while the route is unmounted", () => {
+    const first = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    add(first.result); first.unmount();
+    act(() => useAuthStore.setState({ sessionVersion: 2 }));
+    const second = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    expect(second.result.current.entries).toEqual([]);
+  });
+  it("keeps the exact admission intent through remount and an uncertain result; only explicit recovery reuses it", async () => {
+    const first = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    add(first.result);
+    const input = { client_message_id: messageId, expected_conversation_revision: 1, parts: [{ kind: "text" as const, text: "Synthetic intent: 0" }, { kind: "pdf" as const, attachment_id: attachment.attachment_id }] };
+    let admission!: NonNullable<ReturnType<typeof first.result.current.reserveAdmission>>;
+    act(() => { admission = first.result.current.reserveAdmission(input, "Synthetic intent: 0")!; });
+    first.unmount();
+    const second = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    expect(second.result.current.admissionInFlight).toBe(true);
+    expect(second.result.current.admission?.input).toBe(input);
+    act(() => expect(second.result.current.reserveAdmission({ ...input, client_message_id: chatId }, "replacement")).toBeNull());
+    act(() => first.result.current.settleAdmission(chatId, admission, "uncertain"));
+    expect(second.result.current.admission?.status).toBe("uncertain");
+    expect(second.result.current.admission?.text).toBe("Synthetic intent: 0");
+    expect(services.createAttachment).not.toHaveBeenCalled();
+    let recovery!: typeof admission;
+    act(() => { recovery = second.result.current.reserveAdmission({ ...input, client_message_id: chatId }, "replacement")!; });
+    expect(recovery.input).toBe(input);
+    expect(recovery.input.client_message_id).toBe(messageId);
+    expect(recovery.input.parts).toBe(input.parts);
+    act(() => second.result.current.settleAdmission(chatId, recovery, "accepted"));
+    expect(second.result.current.entries).toEqual([]);
+    expect(second.result.current.admission).toBeUndefined();
+    act(() => first.result.current.settleAdmission(chatId, admission, "uncertain"));
+    expect(second.result.current.admission).toBeUndefined();
+  });
+  it("retains a definite rejection's text after remount and allows editing before a fresh intent", () => {
+    const first = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    const input = { client_message_id: messageId, expected_conversation_revision: 1, parts: [{ kind: "text" as const, text: "Rejected synthetic draft" }] };
+    let admission!: NonNullable<ReturnType<typeof first.result.current.reserveAdmission>>;
+    act(() => { admission = first.result.current.reserveAdmission(input, "Rejected synthetic draft")!; });
+    first.unmount();
+    act(() => first.result.current.settleAdmission(chatId, admission, "rejected"));
+    const second = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    expect(second.result.current.admission?.text).toBe("Rejected synthetic draft");
+    expect(second.result.current.admissionInFlight).toBe(false);
+    act(() => second.result.current.dismissRejectedAdmission());
+    expect(second.result.current.admission).toBeUndefined();
+  });
   it("keeps local files across chat changes and releases them only after accepted admission", () => {
     const { result, rerender } = renderHook(({ id }) => useAttachmentDrafts(id), { initialProps: { id: chatId }, wrapper });
     const id = add(result);
@@ -127,5 +332,61 @@ describe("per conversation attachment drafts", () => {
     vi.mocked(services.reviewAttachment).mockResolvedValue({ ...attachment, state: "ready", interpretation: { origin: "user_reviewed", reviewed: true, revision: 1, text: "€" } });
     await act(() => result.current.review(id));
     expect(result.current.reviewedTextBytes).toBe(3);
+  });
+});
+
+
+describe("automatic attachment upload after selection", () => {
+  it("uploads the queue serially once and preserves local files through rerenders", async () => {
+    let finishFirst!: (value: NodiaAiAttachment) => void;
+    vi.mocked(services.uploadAttachment).mockImplementationOnce(() => new Promise(done => { finishFirst = done; }));
+    const hook = renderHook(() => useAttachmentDrafts(chatId, 1, null, { autoUpload: true }), { wrapper });
+    const files = [new File(["first"], "first.pdf", { type: "application/pdf" }), new File(["second"], "second.pdf", { type: "application/pdf" })];
+    act(() => hook.result.current.add(files));
+    await waitFor(() => expect(services.uploadAttachment).toHaveBeenCalledOnce());
+    expect(services.createAttachment).toHaveBeenCalledOnce();
+    hook.rerender();
+    expect(services.uploadAttachment).toHaveBeenCalledOnce();
+    await act(async () => { finishFirst({ ...attachment, state: "ready", media_type: "application/pdf", byte_count: 5 }); });
+    await waitFor(() => expect(services.uploadAttachment).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(hook.result.current.busy).toBe(false));
+    expect(hook.result.current.entries.map(entry => entry.file)).toEqual(files);
+    hook.rerender();
+    expect(services.createAttachment).toHaveBeenCalledTimes(2);
+    expect(services.uploadAttachment).toHaveBeenCalledTimes(2);
+    expect(hook.result.current.parts).toEqual([]); // Upload never grants interpretation/native support.
+  });
+  it("does not replay uncertain uploads on refresh or remount and recovers only on explicit intent", async () => {
+    vi.mocked(services.uploadAttachment).mockRejectedValueOnce(new Error("Synthetic response lost"));
+    const first = renderHook(() => useAttachmentDrafts(chatId, 1, null, { autoUpload: true }), { wrapper });
+    const id = add(first.result);
+    await waitFor(() => expect(first.result.current.entries[0]?.error).toBe("upload_error"));
+    expect(first.result.current.entries[0]?.uncertain).toBe(true);
+    first.unmount();
+    const second = renderHook(() => useAttachmentDrafts(chatId, 1, null, { autoUpload: true }), { wrapper });
+    await waitFor(() => expect(second.result.current.capabilities.isFetching).toBe(false));
+    await act(() => second.result.current.refreshCapabilities());
+    expect(services.uploadAttachment).toHaveBeenCalledOnce();
+    expect(services.createAttachment).toHaveBeenCalledOnce();
+    expect(services.getAttachment).not.toHaveBeenCalled();
+    await act(() => second.result.current.upload(id));
+    expect(services.getAttachment).toHaveBeenCalledWith(attachment.attachment_id, chatId);
+    expect(services.uploadAttachment).toHaveBeenCalledOnce();
+    expect(services.createAttachment).toHaveBeenCalledOnce();
+    expect(second.result.current.entries[0]?.uncertain).toBe(false);
+  });
+  it("pauses new queued uploads when the caller withdraws authorization", async () => {
+    let finishFirst!: (value: NodiaAiAttachment) => void;
+    vi.mocked(services.uploadAttachment).mockImplementationOnce(() => new Promise(done => { finishFirst = done; }));
+    const hook = renderHook(({ allowed }) => useAttachmentDrafts(chatId, 1, null, { autoUpload: allowed }), { wrapper, initialProps: { allowed: true } });
+    act(() => hook.result.current.add([new File(["one"], "one.pdf", { type: "application/pdf" }), new File(["two"], "two.pdf", { type: "application/pdf" })]));
+    await waitFor(() => expect(services.uploadAttachment).toHaveBeenCalledOnce());
+    hook.rerender({ allowed: false });
+    await act(async () => { finishFirst({ ...attachment, state: "ready" }); });
+    await waitFor(() => expect(hook.result.current.busy).toBe(false));
+    expect(services.uploadAttachment).toHaveBeenCalledOnce();
+    expect(hook.result.current.entries[1]?.attachment).toBeNull();
+    hook.rerender({ allowed: true });
+    await waitFor(() => expect(services.uploadAttachment).toHaveBeenCalledTimes(2));
   });
 });

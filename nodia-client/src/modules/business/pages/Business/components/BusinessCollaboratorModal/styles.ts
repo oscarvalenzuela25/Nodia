@@ -5,6 +5,11 @@ export const ModalContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(2.5),
+  [theme.breakpoints.down("sm")]: {
+    minWidth: 0,
+    "& .MuiButton-root": { minHeight: 44 },
+    "& .MuiIconButton-root": { width: 44, height: 44, flexShrink: 0 },
+  },
 }));
 
 export const CollaboratorItemCard = styled(Card)(({ theme }) => {

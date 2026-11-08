@@ -35,18 +35,19 @@ describe('SyncAiProviderModelsUseCase', () => {
     await expect(useCase.execute('999')).rejects.toThrow('not found');
   });
 
-  it('should discover models from gemini microservice when mode is WEB_SESSION', async () => {
+  it('should discover models from gemini microservice when mode is AGENTIC', async () => {
     vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
       id: '1',
       key: 'gemini',
-      name: 'Gemini Web Plan',
-      mode: AiConnectionMode.WEB_SESSION,
+      name: 'Gemini Agentic Plan',
+      mode: AiConnectionMode.AGENTIC,
       fields: {
         selected_model: 'gemini-flash',
       },
     } as any);
 
     vi.mocked(geminiServiceMock.getModelsAndQuota!).mockResolvedValue({
+      available: true,
       authenticated: true,
       tier: 'PRO',
       plan_label: 'Google One AI Premium',
@@ -78,19 +79,19 @@ describe('SyncAiProviderModelsUseCase', () => {
     expect(result.models).toHaveLength(2);
     expect(result.models[0].displayName).toBe('Gemini 3.8 Flash');
     expect(result.models[1].capabilities).toContain('reasoning');
-    expect(result.tokenPlan?.authenticated).toBe(true);
+    expect(result.agenticPlan?.authenticated).toBe(true);
     expect(aiProviderServiceMock.mergeDiscoveredModels).toHaveBeenCalledWith(
       '1',
-      'token_plan_web',
+      'agentic',
       result.models,
     );
   });
 
-  it('should throw BadRequestException if Gemini web session is not authenticated', async () => {
+  it('should throw BadRequestException if Gemini agentic session is not authenticated', async () => {
     vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
       id: '1',
       key: 'gemini',
-      mode: AiConnectionMode.WEB_SESSION,
+      mode: AiConnectionMode.AGENTIC,
     } as any);
 
     vi.mocked(geminiServiceMock.getModelsAndQuota!).mockResolvedValue({
@@ -98,7 +99,7 @@ describe('SyncAiProviderModelsUseCase', () => {
     });
 
     await expect(useCase.execute('1')).rejects.toThrow(
-      'no está activa o no ha sido autenticada',
+      'Agentic no esta disponible o no tiene sesion activa',
     );
   });
 
@@ -123,14 +124,15 @@ describe('SyncAiProviderModelsUseCase', () => {
     vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
       id: '1',
       key: 'gemini',
-      name: 'Gemini Web Plan',
-      mode: AiConnectionMode.WEB_SESSION,
+      name: 'Gemini Agentic Plan',
+      mode: AiConnectionMode.AGENTIC,
       fields: {
         selected_model: 'gemini-1.5-flash', // Deprecated
       },
     } as any);
 
     vi.mocked(geminiServiceMock.getModelsAndQuota!).mockResolvedValue({
+      available: true,
       authenticated: true,
       tier: 'PRO',
       models: [
@@ -151,7 +153,7 @@ describe('SyncAiProviderModelsUseCase', () => {
     vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
       id: '1',
       key: 'gemini',
-      mode: AiConnectionMode.WEB_SESSION,
+      mode: AiConnectionMode.AGENTIC,
     } as never);
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
@@ -212,10 +214,11 @@ describe('SyncAiProviderModelsUseCase', () => {
     vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
       id: '1',
       key: 'gemini',
-      mode: AiConnectionMode.WEB_SESSION,
+      mode: AiConnectionMode.AGENTIC,
       fields: {},
     } as never);
     vi.mocked(geminiServiceMock.getModelsAndQuota!).mockResolvedValue({
+      available: true,
       authenticated: true,
       models: [{ id: 'discovered-flash' }],
     });
@@ -239,9 +242,10 @@ describe('SyncAiProviderModelsUseCase', () => {
       vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
         id: '1',
         key: 'gemini',
-        mode: AiConnectionMode.WEB_SESSION,
+        mode: AiConnectionMode.AGENTIC,
       } as never);
       vi.mocked(geminiServiceMock.getModelsAndQuota!).mockResolvedValue({
+        available: true,
         authenticated: true,
         models,
       });
@@ -290,7 +294,7 @@ describe('SyncAiProviderModelsUseCase', () => {
       }),
     };
     const sync = new SyncAiProviderModelsUseCase(service, gemini as never);
-    const pending = sync.execute(f.existing.id, { mode: 'token_plan_web' });
+    const pending = sync.execute(f.existing.id, { mode: 'agentic' });
     await started;
     await new SaveAiProviderConfigurationUseCase(
       f.source,
@@ -300,7 +304,7 @@ describe('SyncAiProviderModelsUseCase', () => {
       {
         name: 'Confirmed meanwhile',
         fields: {
-          token_plan_web: {
+          agentic: {
             selected_model: 'new-confirmed-model',
             thinking_levels: { 'new-confirmed-model': 'new-effort' },
           },
@@ -308,10 +312,14 @@ describe('SyncAiProviderModelsUseCase', () => {
       },
       f.actor,
     );
-    release({ authenticated: true, models: [{ id: 'freshly-discovered-id' }] });
+    release({
+      available: true,
+      authenticated: true,
+      models: [{ id: 'freshly-discovered-id' }],
+    });
     await pending;
     expect(f.existing.name).toBe('Confirmed meanwhile');
-    expect(f.existing.fields.token_plan_web).toMatchObject({
+    expect(f.existing.fields.agentic).toMatchObject({
       selected_model: 'new-confirmed-model',
       secret: 'synthetic-mode-secret',
       thinking_levels: { 'new-confirmed-model': 'new-effort', other: 'low' },

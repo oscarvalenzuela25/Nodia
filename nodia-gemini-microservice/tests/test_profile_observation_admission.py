@@ -14,7 +14,7 @@ from service_errors import ServiceError
 class ProfileObservationAdmissionTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.root = Path(self.enterContext(tempfile.TemporaryDirectory()))
-        self.gate = ProfileAdmission(self.root / "shared", self.root / "shared", self.root / "state")
+        self.gate = ProfileAdmission(self.root / "shared", self.root / "state")
         self.events = []
         self.waits = [asyncio.Event() for _ in range(8)]
         self.tasks = []
@@ -63,7 +63,7 @@ class ProfileObservationAdmissionTests(unittest.IsolatedAsyncioTestCase):
 
         async def observer(position):
             nonlocal active, maximum
-            async with self.gate.observation("web", purpose="eligibility", timeout_seconds=2):
+            async with self.gate.observation("agentic", purpose="eligibility", timeout_seconds=2):
                 active += 1
                 maximum = max(maximum, active)
                 order.append(position)
@@ -112,7 +112,7 @@ class ProfileObservationAdmissionTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(owner.done())
         self.assertEqual(self.gate._observation_admitted[self.gate.identity("agentic")], 1)
         with self.assertRaises(ServiceError):
-            self.gate.reserve("web", purpose="login")
+            self.gate.reserve("agentic", purpose="login")
         self.assertEqual(sum(row["event"] == "release" for row in self.events), 0)
         self.release_all.set()
         await owner
@@ -195,7 +195,7 @@ class ProfileObservationAdmissionTests(unittest.IsolatedAsyncioTestCase):
     async def test_operation_remains_fail_fast_while_observation_owns_profile(self):
         async with self.gate.observation("agentic", purpose="eligibility", timeout_seconds=2):
             with self.assertRaises(ServiceError) as caught:
-                async with self.gate.operation("web", purpose="login"):
+                async with self.gate.operation("agentic", purpose="login"):
                     self.fail("Legacy operation must not queue or overlap")
             self.assertEqual(caught.exception.code, "runtime_busy")
         self.assert_available()
@@ -257,12 +257,6 @@ class ProfileObservationAdmissionTests(unittest.IsolatedAsyncioTestCase):
         current.release()
         self.assert_available()
 
-    async def test_distinct_physical_profiles_keep_independent_observational_capacity(self):
-        gate = ProfileAdmission(self.root / "web", self.root / "agentic")
-        async with gate.observation("web", purpose="health_status", timeout_seconds=2):
-            async with gate.observation("agentic", purpose="eligibility", timeout_seconds=2):
-                self.assertEqual(len(gate._held), 2)
-        self.assertTrue(all(count == 0 for count in gate._observation_admitted.values()))
 
     async def test_invalid_budgets_never_reserve_or_admit_work(self):
         for timeout in (0, -1, float("nan"), float("inf"), True, "18"):

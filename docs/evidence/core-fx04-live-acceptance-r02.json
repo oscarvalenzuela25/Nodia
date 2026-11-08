@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-25",
+  "status": "FX04_partially_accepted_live",
+  "environment": "Local Linux VM; real authenticated Nodia session",
+  "client_release": "/opt/nodia/releases/nodia-client-core-fx04-pagination-r07",
+  "client_manifest_sha256": "56f0f9e1418a827cbe0b67455e88b0aca230a236a8933c1667feb6d3f655954b",
+  "server_release": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+  "server_manifest_sha256": "023d984ce52573c526a982ce54672aee949fd53ce498a2cd079345a3a6bcb9b1",
+  "migrations": 0,
+  "backend_restarts": 0,
+  "AI_generations": 0,
+  "HTTP_assets_SHA_MIME": 171,
+  "change": {
+    "problem": "size=5 kept backend DTO default limit10; counter showed five while nine rows were rendered",
+    "fix": "Client transport canonicalizes size to limit for modules, groups and locator; explicit limit wins",
+    "backend_shared_DTO_changed": false,
+    "direct_backend_size_alias": "Not corrected by this scoped Client change"
+  },
+  "checks": {
+    "existing_Client_order_and_session": {
+      "passed": 79,
+      "files": 9
+    },
+    "pagination_and_order_transport_successor": {
+      "passed": 33,
+      "files": 2,
+      "new_pagination_cases": 11,
+      "overlaps_previous_order_tests": true
+    },
+    "backend_atomic": {
+      "passed": 71,
+      "files": 3
+    },
+    "isolated_SQL": {
+      "checks": 99,
+      "HTTP": 64,
+      "invalidations": 18,
+      "query_count_1_and_100_rows": [
+        9,
+        9
+      ],
+      "two_principals": "Distinct synthetic actors/sessions; one200 and one409 for concurrent swap and interval"
+    },
+    "MCP_permissions": {
+      "existing_tests": 85,
+      "files": 4,
+      "additional_temporary_projection_cases": 2,
+      "current_contracts": 18,
+      "reachable_schema_definitions": 27,
+      "published_capabilities": 150,
+      "new_order_tools": 0
+    },
+    "build_types_and_focal_lint": true
+  },
+  "live": {
+    "positive_module_pointer_before": {
+      "module": "7",
+      "before": "6",
+      "same_parent": "2"
+    },
+    "positive_group_keyboard": {
+      "group": "4",
+      "direction": "down"
+    },
+    "sidenav_updated_without_reload": true,
+    "order_survives_reload": true,
+    "cross_page_keyboard_and_locator": {
+      "module": "4",
+      "page_size": 5,
+      "forward": "1→2",
+      "restore": "2→1",
+      "actual_rows_page1": 5,
+      "actual_rows_page2": 4
+    },
+    "filters_restored": {
+      "search": "users",
+      "activity": "active",
+      "page_size": 10
+    },
+    "empty_inactive_group": {
+      "id": "6",
+      "key": "fx04_qa_empty_20261025",
+      "is_active": false,
+      "sort_order": 3
+    },
+    "fixture_move_and_restore": true,
+    "fixture_deleted_after_explicit_user_confirmation": true,
+    "order_mutations": [
+      {
+        "timestamp": "25/Oct/2026:13:07:59 -0300",
+        "method": "PATCH",
+        "path": "/api/v1/module-group/4/order",
+        "query": {},
+        "status": 200
+      },
+      {
+        "timestamp": "25/Oct/2026:13:09:02 -0300",
+        "method": "PATCH",
+        "path": "/api/v1/module/7/order",
+        "query": {},
+        "status": 200
+      },
+      {
+        "timestamp": "25/Oct/2026:13:11:17 -0300",
+        "method": "PATCH",
+        "path": "/api/v1/module/6/order",
+        "query": {},
+        "status": 200
+      },
+      {
+        "timestamp": "25/Oct/2026:13:11:24 -0300",
+        "method": "PATCH",
+        "path": "/api/v1/module-group/4/order",
+        "query": {},
+        "status": 200
+      },
+      {
+        "timestamp": "25/Oct/2026:13:14:06 -0300",
+        "method": "PATCH",
+        "path": "/api/v1/module/4/order",
+        "query": {},
+        "status": 200
+      },
+      {
+        "timestamp": "25/Oct/2026:13:14:40 -0300",
+        "method": "PATCH",
+        "path": "/api/v1/module/4/order",
+        "query": {},
+        "status": 200
+      },
+      {
+        "timestamp": "25/Oct/2026:13:16:11 -0300",
+        "method": "PATCH",
+        "path": "/api/v1/module-group/6/order",
+        "query": {},
+        "status": 200
+      },
+      {
+        "timestamp": "25/Oct/2026:13:16:20 -0300",
+        "method": "PATCH",
+        "path": "/api/v1/module-group/6/order",
+        "query": {},
+        "status": 200
+      }
+    ],
+    "automatic_refresh_observed": [],
+    "specific_success_toast_observed": true,
+    "generic_permission_success_observed": false,
+    "sidenav_scope": "Active assigned modules only, preserving current authorization subset; no assignments added."
+  },
+  "conservation": {
+    "original_order_restored": true,
+    "original_group_count": 3,
+    "original_module_count": 9,
+    "other_table_hashes_unchanged": 58,
+    "tables_with_expected_timestamp_changes": [
+      "module_groups",
+      "modules"
+    ],
+    "sequence_advanced_for_fixture": "Not reset; identity gaps are retained",
+    "permissions_assignments_and_business_rows_unchanged": true,
+    "services_before": {
+      "nodia-api": {
+        "MainPID": "4143736",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+        "ActiveState": "active"
+      },
+      "nodia-ai-worker": {
+        "MainPID": "4143737",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+        "ActiveState": "active"
+      }
+    },
+    "services_after": {
+      "nodia-api": {
+        "MainPID": "4143736",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+        "ActiveState": "active"
+      },
+      "nodia-ai-worker": {
+        "MainPID": "4143737",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+        "ActiveState": "active"
+      }
+    }
+  },
+  "remaining": [
+    "Create module from actual UI: all nine assignable routes currently occupied; no route or existing module removed to fabricate availability. Native concurrent append is tested only in disposable PostgreSQL.",
+    "Two real authenticated administrators: concurrency passed with two distinct synthetic principals only.",
+    "Complete natural session renewal: no refresh POST in observed window; restoration/reload and atomic session regressions passed."
+  ],
+  "limits": [
+    "No physical touch or production deployment acceptance.",
+    "Historical global catalog validator still expects67reads against current150capabilities; preserved failure, current scoped contract check passed.",
+    "No new knowledge approval, MCP publication or inference."
+  ],
+  "screenshots": [
+    {
+      "path": "docs/evidence/core-fx04-live-group-order-r02.png",
+      "sha256": "ce48c4afbec7a44f133335ad3d75434c1fd757afae6867dcba52643c4b92ae5b"
+    },
+    {
+      "path": "docs/evidence/core-fx04-live-module-order-r02.png",
+      "sha256": "ebdfe6cd92833c7243b9d8aaa8a3bcf9ee4fb5bec76d40ea18b3926b8041fec5"
+    },
+    {
+      "path": "docs/evidence/core-fx04-live-cross-page-r02.png",
+      "sha256": "72143cccb0b0b529f5422092ea86e5687ff1e76ca4af1a770d9b9db05da21bfd"
+    },
+    {
+      "path": "docs/evidence/core-fx04-live-final-r02.png",
+      "sha256": "84136fb417611fef91d12fe90782dc77ed85e3a9ead5272a29ba325ca18d6eea"
+    },
+    {
+      "path": "docs/evidence/core-fx04-empty-group-cleanup-r02.png",
+      "sha256": "6ea71c462b818cd153beda21daae256a06f605bc9709781c923ffaf419dee710"
+    }
+  ],
+  "materials_catalog": "ops/lab/artifacts/fx04-acceptance-r02/catalog.json",
+  "materials": [
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/before.json",
+      "sha256": "8699ac27e32d5f48f7ac25ab3b4fbd253d14b13f6ec6f5415a7ee59a11b9c22c"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/group-moved.json",
+      "sha256": "0a220b8fbf11f14f21c817ec828eba023948d2d91dd66b9cafb49ab3f85f7145"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/module-moved.json",
+      "sha256": "1310f708e237d64bb39a484b366cf9311281e5399bb5406ad69ec9ef0feac722"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/restore-first.json",
+      "sha256": "06be9fefb5b7597db32e17a6c81b701474de83343a4e2efd2e8e53fec6e26d85"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/cross-page.json",
+      "sha256": "1821b21a804d1576e4857041e15b405f78c5a7a13f1ef74435d27f6e91cffb45"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/empty-group-created.json",
+      "sha256": "50eb7b5c174a15ae59f070db65a172535075b0305d1607167bd635da118e2cf0"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/empty-group-moved.json",
+      "sha256": "3c305514d20ed189bf2ffc11671f344adda6b029e1ec91237237c474612fa54b"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/final.json",
+      "sha256": "996426acdc8e163f18a01ad2d9a8a2fac56299645d5b16fcca3f32cca226c2f4"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/http-final.json",
+      "sha256": "ed57eb75c615fdbd3678512e0d8a374c421646a1a05dec77c7d8a4197ec97272"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/group-sidenav.txt",
+      "sha256": "933f0715f8b9c6fba83333ca823caea6a1f8257d4a8071ea18fa761646389a55"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/module-sidenav.txt",
+      "sha256": "ac6f46df47e178e6c4b9c73360bfe90b49b9c096296348baf8e41476e054ba0d"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/reloaded-sidenav.txt",
+      "sha256": "2f25177a364364d7c222fc49e304c4c89683f82c05848d92480c0a17e67252ec"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/filter-before.txt",
+      "sha256": "a545ffa1a7a6d94cd002fc9d618c1aa4b1f21a1c0db3d4d42cf759dee5b1beac"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/filter-restored.txt",
+      "sha256": "dc3b67e8b8381399158b3e89f9e21dcc53bd6b32f1e6b5807b5bd387f234db28"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/cross-page.txt",
+      "sha256": "577ff4934aa24249af9dbb49e2767ac9b3a8e9317c8b520ad71c24226e98eed8"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/live/final-ui.txt",
+      "sha256": "6ac01f5a431fca48855000c44a02440280e906a73f486c6d2e63529975cb5565"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/client/client.tar.gz",
+      "sha256": "ad58ccf8e8df43344ef9bb26e363072915692fe61fe3c11d41139fdea30728bd"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/client/plan.json",
+      "sha256": "f36cc90e05aab8f7740fe58aa85bac67ca066e5c751e2185cece9774233dc640"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/client/adopt.py",
+      "sha256": "72fa4b30df3c4d56aed43b36cd275871714be70ef5eded7a8698009cf4b2c56f"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/client/adopt.json",
+      "sha256": "cd15b8d0b01c711d125672beec5430887ba6f38a6d233b7376ed8f7cac0387fa"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/client/cleanup.json",
+      "sha256": "e918aca8c2da4705b3d4190a16d16bcb7b356a71b0c96e43928658ad0929f428"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/client-tests/summary.json",
+      "sha256": "0f9822c31ca1eeca05127ab8d7720e4275d544a6298d2805c26387d47c67afc6"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/client-tests/results.json",
+      "sha256": "b1e25b577d05b6fc636ba81f61d8f7b088ee4b0b6fc4893a8874e74ff80e1d1f"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/client-tests/session-results.json",
+      "sha256": "f396b57b46a2e13603cbbc85aee45b2f1d60f8da2ed6257fac9b216b6594871d"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/isolated/summary.json",
+      "sha256": "54e2dba3553b1c5a9aa95aa408f43065a5538831d457e03e8e8e9ca876c5d944"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/isolated/two-actors-result.jsonl",
+      "sha256": "ad1edb32f1f509a61fd316117d596e5969a8a5c72ed231be632cf09e1d7a35a6"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/isolated/module-order-two-actors.integration.mjs",
+      "sha256": "60cfa0a5ea4878095a56924f42d7a27dc8e5397510d17974c37deb1b4cdf5a93"
+    },
+    {
+      "path": "ops/lab/artifacts/fx04-acceptance-r02/isolated/mcp-permissions-summary.json",
+      "sha256": "5c9cc91ba6300b5b1a817971c4bb9940559f4dd391eb8342a20b37de65918481"
+    }
+  ],
+  "upload_cleanup": {
+    "status": "own_upload_removed",
+    "files": 3,
+    "bytes": 2143407,
+    "active_and_prior_releases_retained": true,
+    "private_operator_and_receipts_retained": true
+  },
+  "documentation_check": {
+    "knowledge_check_after_draft_updates": true,
+    "documents": 39,
+    "fragments": 41,
+    "publication_release_id": "df1780ad39433af1671467cc3f93285b01b0596155518f6c14330e27b65b80ba",
+    "approval_changed": false
+  }
+}

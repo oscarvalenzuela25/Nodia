@@ -1,0 +1,1548 @@
+{
+  "schema_version": 1,
+  "status": "implemented_verified_and_adopted",
+  "updated_on": "2026-10-29",
+  "scope": [
+    "Plan94R13 local sale tabs with independent carts, manual four payment methods, quantities, offer presentation and bounded catalogue",
+    "Client-only immutable R02 delivery; no schema, server application or AI tool contract changes"
+  ],
+  "implementation": "implemented",
+  "initial_contract_audit": {
+    "status": "documented",
+    "server_payment_methods": "unchanged; includes other",
+    "server_quantities": "positive integers; local zero removes a line before transport",
+    "new_backend_tables_migrations_or_tools": false
+  },
+  "verification": {
+    "full_suite": {
+      "status": "passed",
+      "tests": 2305,
+      "files": 277,
+      "duration_seconds": 213.08,
+      "log_sha256": "6ebb01a6b2886e5ef1ab262f45e421fa2c030fb06893710fd2f0ba11e12bfc59",
+      "scope": "Final logic; subsequent two visual property fixes distinguished below"
+    },
+    "final_r02_focused": {
+      "status": "passed",
+      "tests": 80,
+      "files": 10,
+      "duration_seconds": 8.5,
+      "log_sha256": "978995bd9363c10979a55fd597ee6403e6dfff967428f23ba9109e7bd760a665",
+      "scope": "After 1px sentinel and positioned Stepper fixes"
+    },
+    "typecheck_lint_build": {
+      "status": "passed",
+      "typecheck": "Included in final R02 npm build (tsc -b)",
+      "lint_log_sha256": "ffd8fd64020e579eedde270479fe815463785d7fafad2537f697ac8c68b27abe",
+      "build_log_sha256": "209d01a7a04d3b054492d1e511c068a117e5cf3bf691761e15643154eba452fb",
+      "source_capture": {
+        "path": "ops/lab/artifacts/business-pos-multi-sale-20261029-r01/client-r02/build-inputs.json",
+        "bytes": 243241,
+        "sha256": "9be594861f5f0fdb5177119d272f07a4b7a5280e7cd268566d5e164f2ce18b68"
+      },
+      "source_fingerprint": "7886764954e6686f6770e8acf922eb15abe0b832beabceda8f80cfe48b0a8514",
+      "captured_files": 1215,
+      "delta": {
+        "added": [
+          "src/config/businessSaleWorkspaceStorage.ts",
+          "src/modules/business/infrastructure/saleWorkspaceEngine.ts",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/OpenSaleTabs/OpenSaleTabs.tsx",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/OpenSaleTabs/index.ts",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/OpenSaleTabs/styles.ts",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/OpenSaleTabs/types.ts",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/ProductPrice/ProductPrice.tsx",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/ProductPrice/index.ts",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/ProductPrice/styles.ts",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/QuantityStepper/QuantityStepper.tsx",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/QuantityStepper/index.ts",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/QuantityStepper/styles.ts",
+          "src/test/config/businessSaleWorkspaceStorage.test.ts",
+          "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/OpenSaleTabs/OpenSaleTabs.test.tsx",
+          "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/ProductPrice/ProductPrice.test.tsx",
+          "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/QuantityStepper/QuantityStepper.test.tsx"
+        ],
+        "changed": [
+          "src/modules/business/infrastructure/salesPolicies.ts",
+          "src/modules/business/infrastructure/useSaleDraft.ts",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/PaymentMethodButtons/PaymentMethodButtons.tsx",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/PaymentMethodButtons/styles.ts",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/PosProductCatalog/PosProductCatalog.tsx",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/PosProductCatalog/styles.ts",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesWorkspace.tsx",
+          "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/styles.ts",
+          "src/test/modules/business/infrastructure/salesPolicies.test.ts",
+          "src/test/modules/business/infrastructure/useSaleDraft.test.tsx",
+          "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/PaymentMethodButtons/PaymentMethodButtons.test.tsx",
+          "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/PosProductCatalog/PosProductCatalog.test.tsx",
+          "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesWorkspace.test.tsx",
+          "src/translate/en/business.json",
+          "src/translate/es/business.json"
+        ],
+        "outside_authorized_scope": [],
+        "removed": []
+      },
+      "current_mismatches": []
+    },
+    "browser_qa": {
+      "status": "passed",
+      "receipt": {
+        "path": "ops/lab/artifacts/business-pos-multi-sale-20261029-r01/client-r02/qa-r13-receipt.json",
+        "bytes": 28137,
+        "sha256": "2ddc5198d69e69d511ccc7482ceebcb4e6fdf6a50a413ad85aee9d21f43986d3"
+      },
+      "environment": {
+        "origin": "http://127.0.0.1:5196",
+        "browser": "Microsoft Edge 156.0.4314.50 headless",
+        "session": "pos-r13-ui",
+        "profiles": [
+          "es-dark",
+          "en-light"
+        ],
+        "widths": [
+          320,
+          390,
+          600,
+          1569
+        ],
+        "height_final_profiles": 1000,
+        "additional_bound_heights": [
+          700,
+          892
+        ]
+      },
+      "observations": {
+        "catalogue_bound_before_final_two_visual_fixes": {
+          "synthetic": true,
+          "beforeAt892": {
+            "panelHeight": 672,
+            "panelClient": 670,
+            "panelScroll": 670,
+            "regionHeight": 323,
+            "scrollTop": 0,
+            "scrollHeight": 5329,
+            "rows": 24,
+            "documentOverflow": 0
+          },
+          "afterOneAppendAt892": {
+            "panelHeight": 672,
+            "panelClient": 670,
+            "panelScroll": 670,
+            "regionHeight": 323,
+            "scrollTop": 5005,
+            "scrollHeight": 10297,
+            "rows": 48,
+            "documentOverflow": 0
+          },
+          "minimums": [
+            {
+              "width": 320,
+              "height": 700,
+              "panelHeight": 620,
+              "panelClient": 618,
+              "panelScroll": 628,
+              "regionHeight": 258,
+              "scrollTop": 5005,
+              "scrollHeight": 11203,
+              "rows": 48,
+              "documentOverflow": 0
+            },
+            {
+              "width": 600,
+              "height": 700,
+              "panelHeight": 620,
+              "panelClient": 618,
+              "panelScroll": 618,
+              "regionHeight": 271,
+              "scrollTop": 5005,
+              "scrollHeight": 10268,
+              "rows": 48,
+              "documentOverflow": 0
+            },
+            {
+              "width": 1569,
+              "height": 700,
+              "panelHeight": 620,
+              "panelClient": 618,
+              "panelScroll": 618,
+              "regionHeight": 271,
+              "scrollTop": 5005,
+              "scrollHeight": 10245,
+              "rows": 48,
+              "documentOverflow": 0
+            }
+          ],
+          "cota": "clamp(620px,calc(100dvh - 220px),1040px)",
+          "expectedTop": 5006
+        },
+        "sessions_reload": {
+          "passed": true,
+          "reloadRestoredBothCartsAndActiveTab": true,
+          "quantityDraftEmptyNotZero": true,
+          "paymentsAndBarcodesIsolated": true,
+          "repeatedScanOneLineQuantity2": true,
+          "persisted": {
+            "activeNumber": 1,
+            "sessions": [
+              {
+                "number": 1,
+                "payment": "credit_card",
+                "barcode": "1111",
+                "quantities": [
+                  2
+                ],
+                "quantityDrafts": {
+                  "401": ""
+                }
+              },
+              {
+                "number": 2,
+                "payment": "bank_transfer",
+                "barcode": "2222",
+                "quantities": [
+                  1
+                ],
+                "quantityDrafts": {}
+              }
+            ]
+          },
+          "harnessRouteLimitation": "Manual fixture uses a memory router, so POS was reopened after reload; no workspace storage was edited by QA"
+        },
+        "quantity_and_close": {
+          "passed": true,
+          "emptyDirtyBarcodeClosesWithoutDialog": true,
+          "nonemptyCloseRequiresConfirmationAndCancelPreserves": true,
+          "closedNumbersNotReused": [
+            3,
+            4
+          ],
+          "survivingNumber": 2,
+          "manualZeroRemovesOnlyTarget": true,
+          "emptyDraftPreservedAndBlocksCheckout": true,
+          "repeatedScanOneLine": true,
+          "catalogueButtonsDoNotDoubleAdd": true,
+          "quantity": 2147483647,
+          "exactLargeTotal": "3221225470500",
+          "mutations": 0
+        },
+        "checkout_origin_and_recovery": {
+          "passed": true,
+          "beforeEveryPostHumanReview": true,
+          "busyAndPendingOriginCannotClose": true,
+          "completedOnlyOrigin2": true,
+          "afterOrigin": {
+            "active": 5,
+            "sessions": [
+              {
+                "number": 5,
+                "pending": false,
+                "barcode": "5555",
+                "payment": "debit_card",
+                "quantities": [
+                  1
+                ]
+              }
+            ]
+          },
+          "sequenceContinuesTo6UntilAllClosed": true,
+          "lastCloseAndLastConfirmResetToFresh1": true,
+          "lostResponseRecoveredWithoutReplay": true,
+          "final": {
+            "active": 1,
+            "sessions": [
+              {
+                "number": 1,
+                "pending": false,
+                "barcode": "",
+                "payment": "cash",
+                "quantities": []
+              }
+            ]
+          },
+          "trace": {
+            "writes": [
+              {
+                "url": "/businesses/9007199254740993/sales/checkout",
+                "key": "34fc9ec3-914e-4545-8b09-4e14fe3250ea",
+                "quantity": 2
+              },
+              {
+                "url": "/businesses/9007199254740993/sales/checkout",
+                "key": "59354804-d27d-4f4c-bf57-7a637e79974e",
+                "quantity": 1
+              },
+              {
+                "url": "/businesses/9007199254740993/sales/checkout",
+                "key": "c61de5ac-0fdd-4ec6-bbe2-4db8c678b54f",
+                "quantity": 1
+              }
+            ],
+            "receiptGets": 1,
+            "statuses": [
+              "completed",
+              "completed",
+              "completed"
+            ],
+            "totals": [
+              "3000",
+              "2000",
+              "2000"
+            ]
+          }
+        },
+        "es_dark_final": {
+          "passed": true,
+          "profile": "es-dark",
+          "samples": [
+            {
+              "width": 320,
+              "catalog": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "height": 392,
+                "scrollHeight": 5477,
+                "width": 252,
+                "rows": 24,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "fillsCatalog": true,
+                "codesVisible": false,
+                "nestedControls": false,
+                "stepButtons": [
+                  {
+                    "height": 56,
+                    "width": 56
+                  },
+                  {
+                    "height": 56,
+                    "width": 56
+                  }
+                ],
+                "inputHeight": 56,
+                "regionAnchor": "none"
+              },
+              "dropdown": {
+                "options": 24,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "pageOverflow": 0
+              },
+              "cart": {
+                "overflow": 0,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "total": "$3.221.225.470.500",
+                "totalFont": "36px",
+                "totalWidth": 254,
+                "totalParentWidth": 254
+              },
+              "methods": [
+                {
+                  "text": "Efectivo",
+                  "height": 84
+                },
+                {
+                  "text": "Débito",
+                  "height": 84
+                },
+                {
+                  "text": "Crédito",
+                  "height": 84
+                },
+                {
+                  "text": "Transferencia",
+                  "height": 84
+                }
+              ]
+            },
+            {
+              "width": 390,
+              "catalog": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "height": 412,
+                "scrollHeight": 5084,
+                "width": 322,
+                "rows": 24,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "fillsCatalog": true,
+                "codesVisible": false,
+                "nestedControls": false,
+                "stepButtons": [
+                  {
+                    "height": 56,
+                    "width": 56
+                  },
+                  {
+                    "height": 56,
+                    "width": 56
+                  }
+                ],
+                "inputHeight": 56,
+                "regionAnchor": "none"
+              },
+              "dropdown": {
+                "options": 24,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "pageOverflow": 0
+              },
+              "cart": {
+                "overflow": 0,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "total": "$3.221.225.470.500",
+                "totalFont": "36px",
+                "totalWidth": 324,
+                "totalParentWidth": 324
+              },
+              "methods": [
+                {
+                  "text": "Efectivo",
+                  "height": 84
+                },
+                {
+                  "text": "Débito",
+                  "height": 84
+                },
+                {
+                  "text": "Crédito",
+                  "height": 84
+                },
+                {
+                  "text": "Transferencia",
+                  "height": 84
+                }
+              ]
+            },
+            {
+              "width": 600,
+              "catalog": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "height": 431,
+                "scrollHeight": 5030,
+                "width": 516,
+                "rows": 24,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "fillsCatalog": true,
+                "codesVisible": false,
+                "nestedControls": false,
+                "stepButtons": [
+                  {
+                    "height": 56,
+                    "width": 56
+                  },
+                  {
+                    "height": 56,
+                    "width": 56
+                  }
+                ],
+                "inputHeight": 56,
+                "regionAnchor": "none"
+              },
+              "dropdown": {
+                "options": 24,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "pageOverflow": 0
+              },
+              "cart": {
+                "overflow": 0,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "total": "$3.221.225.470.500",
+                "totalFont": "48px",
+                "totalWidth": 458.546875,
+                "totalParentWidth": 518
+              },
+              "methods": [
+                {
+                  "text": "Efectivo",
+                  "height": 84
+                },
+                {
+                  "text": "Débito",
+                  "height": 84
+                },
+                {
+                  "text": "Crédito",
+                  "height": 84
+                },
+                {
+                  "text": "Transferencia",
+                  "height": 84
+                }
+              ]
+            },
+            {
+              "width": 1569,
+              "catalog": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "height": 431,
+                "scrollHeight": 5006,
+                "width": 694,
+                "rows": 24,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "fillsCatalog": true,
+                "codesVisible": false,
+                "nestedControls": false,
+                "stepButtons": [
+                  {
+                    "height": 56,
+                    "width": 56
+                  },
+                  {
+                    "height": 56,
+                    "width": 56
+                  }
+                ],
+                "inputHeight": 56,
+                "regionAnchor": "none"
+              },
+              "dropdown": {
+                "options": 24,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "pageOverflow": 0
+              },
+              "cart": {
+                "overflow": 0,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "total": "$3.221.225.470.500",
+                "totalFont": "48px",
+                "totalWidth": 452.8125,
+                "totalParentWidth": 452.8125
+              },
+              "methods": [
+                {
+                  "text": "Efectivo",
+                  "height": 84
+                },
+                {
+                  "text": "Débito",
+                  "height": 84
+                },
+                {
+                  "text": "Crédito",
+                  "height": 84
+                },
+                {
+                  "text": "Transferencia",
+                  "height": 84
+                }
+              ]
+            }
+          ],
+          "nativeApiResources": 0
+        },
+        "en_light_final": {
+          "passed": true,
+          "profile": "en-light",
+          "samples": [
+            {
+              "width": 320,
+              "catalog": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "height": 412,
+                "scrollHeight": 5477,
+                "width": 252,
+                "rows": 24,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "fillsCatalog": true,
+                "codesVisible": false,
+                "nestedControls": false,
+                "stepButtons": [
+                  {
+                    "height": 56,
+                    "width": 56
+                  },
+                  {
+                    "height": 56,
+                    "width": 56
+                  }
+                ],
+                "inputHeight": 56,
+                "regionAnchor": "none"
+              },
+              "dropdown": {
+                "options": 24,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "pageOverflow": 0
+              },
+              "cart": {
+                "overflow": 0,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "total": "CLP 4,294,967,294,000",
+                "totalFont": "36px",
+                "totalWidth": 254,
+                "totalParentWidth": 254
+              },
+              "methods": [
+                {
+                  "text": "Cash",
+                  "height": 84
+                },
+                {
+                  "text": "Debit card",
+                  "height": 84
+                },
+                {
+                  "text": "Credit card",
+                  "height": 84
+                },
+                {
+                  "text": "Bank transfer",
+                  "height": 84
+                }
+              ]
+            },
+            {
+              "width": 390,
+              "catalog": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "height": 412,
+                "scrollHeight": 5084,
+                "width": 322,
+                "rows": 24,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "fillsCatalog": true,
+                "codesVisible": false,
+                "nestedControls": false,
+                "stepButtons": [
+                  {
+                    "height": 56,
+                    "width": 56
+                  },
+                  {
+                    "height": 56,
+                    "width": 56
+                  }
+                ],
+                "inputHeight": 56,
+                "regionAnchor": "none"
+              },
+              "dropdown": {
+                "options": 24,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "pageOverflow": 0
+              },
+              "cart": {
+                "overflow": 0,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "total": "CLP 4,294,967,294,000",
+                "totalFont": "36px",
+                "totalWidth": 324,
+                "totalParentWidth": 324
+              },
+              "methods": [
+                {
+                  "text": "Cash",
+                  "height": 84
+                },
+                {
+                  "text": "Debit card",
+                  "height": 84
+                },
+                {
+                  "text": "Credit card",
+                  "height": 84
+                },
+                {
+                  "text": "Bank transfer",
+                  "height": 84
+                }
+              ]
+            },
+            {
+              "width": 600,
+              "catalog": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "height": 431,
+                "scrollHeight": 5030,
+                "width": 516,
+                "rows": 24,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "fillsCatalog": true,
+                "codesVisible": false,
+                "nestedControls": false,
+                "stepButtons": [
+                  {
+                    "height": 56,
+                    "width": 56
+                  },
+                  {
+                    "height": 56,
+                    "width": 56
+                  }
+                ],
+                "inputHeight": 56,
+                "regionAnchor": "none"
+              },
+              "dropdown": {
+                "options": 24,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "pageOverflow": 0
+              },
+              "cart": {
+                "overflow": 0,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "total": "CLP 4,294,967,294,000",
+                "totalFont": "48px",
+                "totalWidth": 518,
+                "totalParentWidth": 518
+              },
+              "methods": [
+                {
+                  "text": "Cash",
+                  "height": 84
+                },
+                {
+                  "text": "Debit card",
+                  "height": 84
+                },
+                {
+                  "text": "Credit card",
+                  "height": 84
+                },
+                {
+                  "text": "Bank transfer",
+                  "height": 84
+                }
+              ]
+            },
+            {
+              "width": 1569,
+              "catalog": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "height": 431,
+                "scrollHeight": 5006,
+                "width": 694,
+                "rows": 24,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "fillsCatalog": true,
+                "codesVisible": false,
+                "nestedControls": false,
+                "stepButtons": [
+                  {
+                    "height": 56,
+                    "width": 56
+                  },
+                  {
+                    "height": 56,
+                    "width": 56
+                  }
+                ],
+                "inputHeight": 56,
+                "regionAnchor": "none"
+              },
+              "dropdown": {
+                "options": 24,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "pageOverflow": 0
+              },
+              "cart": {
+                "overflow": 0,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "total": "CLP 4,294,967,294,000",
+                "totalFont": "48px",
+                "totalWidth": 452.8125,
+                "totalParentWidth": 452.8125
+              },
+              "methods": [
+                {
+                  "text": "Cash",
+                  "height": 84
+                },
+                {
+                  "text": "Debit card",
+                  "height": 84
+                },
+                {
+                  "text": "Credit card",
+                  "height": 84
+                },
+                {
+                  "text": "Bank transfer",
+                  "height": 84
+                }
+              ]
+            }
+          ],
+          "nativeApiResources": 0
+        },
+        "contrast_and_document_tail_final": {
+          "passed": true,
+          "contrastRealThemes": {
+            "light": {
+              "color": "rgb(162, 89, 4)",
+              "labelColor": "rgb(162, 89, 4)",
+              "paper": "rgb(255, 255, 255)",
+              "amountContrast": 5.293698143710226,
+              "chipContrast": 5.293698143710226
+            },
+            "dark": {
+              "color": "rgb(253, 230, 138)",
+              "labelColor": "rgb(253, 230, 138)",
+              "paper": "rgb(26, 33, 43)",
+              "amountContrast": 13.007496945286594,
+              "chipContrast": 13.007496945286594
+            }
+          },
+          "tails": [
+            {
+              "width": 320,
+              "htmlHeight": 1815,
+              "bodyHeight": 1815,
+              "htmlBodyDifference": 0,
+              "ctaTop": 702.609375,
+              "ctaBottom": 758.609375,
+              "ctaVisible": true,
+              "ctaUnobscured": true,
+              "documentOverflow": 0
+            },
+            {
+              "width": 600,
+              "htmlHeight": 2170,
+              "bodyHeight": 2170,
+              "htmlBodyDifference": 0,
+              "ctaTop": 858.96875,
+              "ctaBottom": 914.96875,
+              "ctaVisible": true,
+              "ctaUnobscured": true,
+              "documentOverflow": 0
+            }
+          ],
+          "nativeApiResources": 0
+        },
+        "final_hygiene": {
+          "synthetic": true,
+          "untranslatedVisibleKeys": [],
+          "nativeApiResourceCount": 0,
+          "documentOverflow": 0
+        }
+      },
+      "resolved_defects": [
+        {
+          "problem": "Catalog scroll flex child had no bounded ancestor and could grow with loaded pages.",
+          "fix": "CatalogPanel height clamp(620px, calc(100dvh - 220px), 1040px), accessible local overflow.",
+          "proof": "Panel remains 672px at viewport 892px after one 24-to-48 append; no eager third page; anchor drift 1px."
+        },
+        {
+          "problem": "Absolutely positioned visually-hidden stepper descriptions escaped the clipping ancestor and created a large blank document tail.",
+          "before": {
+            "width": 600,
+            "html_height": 5654,
+            "body_height": 2037,
+            "cta_top_at_maximum_scroll": -2758
+          },
+          "fix": "Position the stepper wrapper relative; focused regression checks the containing block.",
+          "after": "Final widths 320/600: HTML/body heights equal; CTA visible and center hit-test unobscured."
+        },
+        {
+          "problem": "MUI sx height:1 resolved to100%, leaving an oversized blank infinite-scroll sentinel.",
+          "fix": "Explicit height:\"1px\"; focused regression observes computed sentinel height.",
+          "after": "Final eight-profile metrics and screenshots use a 1px sentinel."
+        }
+      ],
+      "cleanup": {
+        "browser_session_closed": true,
+        "own_server_5196_stopped": true,
+        "port_5196_listening_after_stop": false,
+        "other_browser_sessions_or_5174_or_vm_changed": false
+      },
+      "limits": [
+        "This proves Client behavior against an explicit synthetic transport, not Server transaction durability, real payments, hardware scanner input or real product-image upload.",
+        "Native reload restored both stored carts and the active sale after reopening POS: the manual fixture uses an in-memory router, so route persistence itself is outside this proof.",
+        "At 320x700, the bounded panel has 10px of accessible outer scrolling due to wrapped scanner help; controls remain reachable.",
+        "Very large totals wrap within the available width without truncation; mobile actions require ordinary document scrolling.",
+        "Catalogue DOM remains the loaded infinite-query pages; arbitrary-scale virtualization and performance are outside this change.",
+        "Browser operator selector/transition corrections preceded the final recorded proofs; no synthetic checkout was replayed after an uncertain result."
+      ]
+    },
+    "delivery_live_ui": {
+      "status": "passed",
+      "receipt": {
+        "path": "ops/lab/artifacts/business-pos-multi-sale-20261029-r01/client-r02/live-ui-receipt.json",
+        "bytes": 1812,
+        "sha256": "534436329645403f0da028189a4b6d859d635eeaa35925cbecc314ad659eb973"
+      },
+      "observations": {
+        "schema_version": 1,
+        "status": "passed",
+        "environment": "Authenticated in-app browser, actual VM R02 via localhost:5174",
+        "owned_tab_id": "11",
+        "user_tab_untouched": true,
+        "business_id": "5af15373-3638-4a02-a015-4e72c433fc11",
+        "checks": [
+          "Initial scanner focus and one empty Sale1, cash",
+          "Two real barcode lookups add the same existing synthetic product to one line, quantity2, total2400CLP",
+          "New Sale2 starts empty; local add quantity1, debit and partial barcode002 stay separate",
+          "Switching to Sale1 restores quantity2, cash and empty barcode; tabs2400/1200",
+          "Setting quantity0 removes without dialog; empty X closes Sale1 and preserves Sale2 number/data",
+          "Zero and close Sale2 leaves a new empty Sale1, cash and empty barcode; own tab closed"
+        ],
+        "geometry": {
+          "total_label_px": 28,
+          "total_amount_px": 48,
+          "confirm_height_px": 56,
+          "product_image_px": [
+            80,
+            80
+          ],
+          "product_image_loaded": true
+        },
+        "commercial_confirmation_performed": false,
+        "commercial_sale_saved": false,
+        "provider_inference_performed": false,
+        "physical_scanner_or_phone_tested": false,
+        "screenshots": [
+          {
+            "path": "ops/lab/artifacts/business-pos-multi-sale-20261029-r01/client-r02/live-pos-multi-sale-final.png",
+            "bytes": 102194,
+            "sha256": "a5882b23f73fa15fe2fa69e4f7e8f32a81a9a1845d3eae587d2dc1ee10fc20d0"
+          },
+          {
+            "path": "ops/lab/artifacts/business-pos-multi-sale-20261029-r01/client-r02/live-pos-total-final.png",
+            "bytes": 72051,
+            "sha256": "52a84f6f878b5de42eb6b4ceb9b29431f6321dc710d12fad0af6ef989de5abb7"
+          }
+        ],
+        "screenshot_note": "Full-page overview shows tabs; normal viewport capture after keyboard focus shows amount and confirmation, avoiding dvh relayout during full-page capture."
+      }
+    },
+    "source_hygiene": {
+      "owned_paths": 31,
+      "utf8_lf_no_bom": true,
+      "git_diff_check": "passed"
+    },
+    "operator_offline_tests": {
+      "passed": 10,
+      "recovery_kit": {
+        "path": "ops/lab/artifacts/business-pos-multi-sale-20261029-r01/client-r02/catalog.json",
+        "bytes": 7401,
+        "sha256": "e034aa1bafca2ebec4af7cd395dae1d50c1f21e004928d7b8b7f09062ec8c9ec"
+      }
+    },
+    "knowledge": {
+      "status": "passed",
+      "compiler_tests": 58,
+      "source_documents_global": 75,
+      "excluded_global": 31,
+      "approved_documents": 44,
+      "fragments": 46,
+      "capabilities": 158,
+      "local_authoring_release_id": "f60d63c227a3fc13178fec01fc7d342943d5b5db044380d8dbce1c126ccb078c",
+      "deployed_release_id_unchanged": "cde7fab20277d8c6a4e670e6df18e886cd72641135a044776cf8889d054213c5",
+      "runtime_pins_checked": [
+        "src",
+        "dist"
+      ],
+      "r13_source_delta": 1,
+      "independent_other_work_sources": 4,
+      "independent_other_work": "Studies draft sources retained; not implemented or approved by this task",
+      "log_sha256": "a8c0f28842e5f1eb0028b259b34bc11a6f69571b0b9be3aed1f6effc882f4b99"
+    }
+  },
+  "documentary_approval": false,
+  "knowledge_publication": "No new document approval, tool binding, capability publication or VM knowledge adoption; local authoring metadata checked separately.",
+  "limitations": [
+    "Positive checkout and uncertain-result recovery were exercised with synthetic transport; the actual VM test prepared and removed local carts without saving a commercial sale.",
+    "Local recovery is scoped to the same browser tab and actor/business; no cross-device or cross-user synchronization.",
+    "Physical scanner, physical phone, real payment collection and provider inference were not exercised.",
+    "Server/DTO/history/AI retain Other compatibility; new manual selection offers cash, debit, credit and bank transfer.",
+    "R12 cannot interpret R13 multi-cart snapshots; a post-use return requires preserving and reconciling every pending identity. Deployment rollback proof is limited to pre-use.",
+    "ADR088 remains proposed and feature documentation draft/unregistered with approval:null. Local compiler metadata includes independent Studies drafts, without approving or publishing them."
+  ],
+  "approved_document_integrity": {
+    "baseline_knowledge_release_id": "cde7fab20277d8c6a4e670e6df18e886cd72641135a044776cf8889d054213c5",
+    "baseline_snapshot_sha256": "dbb65e5146a991abed75607b75ccc178c93e870f8ce6c59214b1310df48d46a4",
+    "baseline_manifest_sha256": "bec4d635beed80a5be18ca1b7fb5518f229146a641c18e2df86e6296369a082c",
+    "approved_documents": 44,
+    "mismatches": 0,
+    "aggregate_format": "sha256 of UTF8 sorted(path + NUL + full_file_sha256 + LF)",
+    "aggregate_sha256": "ed28119a33cf89230c5ecbaef1c371fe21b2f6e709b8c71fdf47ce755dbb3373",
+    "files": [
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/active-invoice-analysis.md",
+        "document_id": "businesses.active-invoice-analysis",
+        "revision": 3,
+        "sha256": "6842a0905033365ebdefa597c36c9e3de8e9208df883985fe9d9b6fd90f400a7",
+        "baseline_sha256": "6842a0905033365ebdefa597c36c9e3de8e9208df883985fe9d9b6fd90f400a7",
+        "matches": true,
+        "approved_content_sha256": "9fe8459c3831be7458a92b5636c50f0c6989b3a94019dff2a4f42bb24661098d"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/businesses-and-collaborators.md",
+        "document_id": "businesses.businesses-and-collaborators",
+        "revision": 4,
+        "sha256": "671f85892afd38ac710e00fb02207d7822826fdcc0f0c7726565dcb5e7daa6f1",
+        "baseline_sha256": "671f85892afd38ac710e00fb02207d7822826fdcc0f0c7726565dcb5e7daa6f1",
+        "matches": true,
+        "approved_content_sha256": "18f5faef1819229a0ac63d90d5a21290bf75766afe3756a7f89fc06c10e69d67"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/confirmed-business-effects.md",
+        "document_id": "businesses.confirmed-business-effects",
+        "revision": 5,
+        "sha256": "47ae5d238d8815a0643a25700c15e1a6a684430a804f87f3aecc9b6b5e70d9d8",
+        "baseline_sha256": "47ae5d238d8815a0643a25700c15e1a6a684430a804f87f3aecc9b6b5e70d9d8",
+        "matches": true,
+        "approved_content_sha256": "24f5392a70b035e7de8bd49353554e5fec794ef015e1e7e9f1b36e271da1c203"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md",
+        "document_id": "businesses.invoice-analysis",
+        "revision": 5,
+        "sha256": "c2e3301a26d81272bd9c72440f92a8e994cfefb539a43f29520e53b38ca5e1ff",
+        "baseline_sha256": "c2e3301a26d81272bd9c72440f92a8e994cfefb539a43f29520e53b38ca5e1ff",
+        "matches": true,
+        "approved_content_sha256": "4a424ef77d6d144c4b324fce3d2ef05e9d7314d3b6571fcef238817f56b212f2"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/invoices-and-files.md",
+        "document_id": "businesses.invoices-and-files",
+        "revision": 5,
+        "sha256": "7313d14131119ca57e8a8472a9a24343fe2f76fac7fe0801215054c89edc3e11",
+        "baseline_sha256": "7313d14131119ca57e8a8472a9a24343fe2f76fac7fe0801215054c89edc3e11",
+        "matches": true,
+        "approved_content_sha256": "05dcd5b4671e1b355d5406ebe925fd3003cc6362c69c85fdd7fbdff566510dc5"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/point-of-sale-and-sales.md",
+        "document_id": "businesses.point-of-sale-and-sales",
+        "revision": 5,
+        "sha256": "95440a9ab70da9ce3acfa4439077011d2c9ea8453cf486b877d4d85829f46211",
+        "baseline_sha256": "95440a9ab70da9ce3acfa4439077011d2c9ea8453cf486b877d4d85829f46211",
+        "matches": true,
+        "approved_content_sha256": "148a52fe4478f514b20283f0d6df5ac6db39c1f7340169e0afab5aab9f603a40"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/product-logs.md",
+        "document_id": "businesses.product-logs",
+        "revision": 4,
+        "sha256": "851e62ea11b212d54edf50a8c445bdf73efe1e0deffc951431665a33cf719ae2",
+        "baseline_sha256": "851e62ea11b212d54edf50a8c445bdf73efe1e0deffc951431665a33cf719ae2",
+        "matches": true,
+        "approved_content_sha256": "32ea883e86b2d0065b0ce8b1e849e998cdb4c4dd97ffcd5d3ec3b693faa1ae75"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/products.md",
+        "document_id": "businesses.products",
+        "revision": 5,
+        "sha256": "fc22bcd7dc2cab1fe69c83d4440c11c3e06a6b76344620b4dda3d55ce243c0df",
+        "baseline_sha256": "fc22bcd7dc2cab1fe69c83d4440c11c3e06a6b76344620b4dda3d55ce243c0df",
+        "matches": true,
+        "approved_content_sha256": "652f13e33e16c24dd265c18ee438fe6bc1e6584da53fae285e16fca81392ba6c"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/supplier-contacts.md",
+        "document_id": "businesses.supplier-contacts",
+        "revision": 4,
+        "sha256": "554dcb858cd39d34b30af5237aafd733fbc00dd8ebbb27c061cefd3060562744",
+        "baseline_sha256": "554dcb858cd39d34b30af5237aafd733fbc00dd8ebbb27c061cefd3060562744",
+        "matches": true,
+        "approved_content_sha256": "f999a557ac417e8d78b60374e8022bee553022f6befd9becc1e300e9ef40f17e"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/suppliers.md",
+        "document_id": "businesses.suppliers",
+        "revision": 5,
+        "sha256": "b0109877c253168b32390a30f29514cf4d39c8c2b46eff5958768e51f182409a",
+        "baseline_sha256": "b0109877c253168b32390a30f29514cf4d39c8c2b46eff5958768e51f182409a",
+        "matches": true,
+        "approved_content_sha256": "874daa57627550b89a4a078eef85cdab16b97128a122c86621a09d480bf017a3"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/actions-and-business-actions.md",
+        "document_id": "general-settings.actions-and-business-actions",
+        "revision": 5,
+        "sha256": "c05efe40f9fee14bf9996f9395c0c700a8cc4229000da7a2eb41923ebc5da7f0",
+        "baseline_sha256": "c05efe40f9fee14bf9996f9395c0c700a8cc4229000da7a2eb41923ebc5da7f0",
+        "matches": true,
+        "approved_content_sha256": "597ba7a45a9b982968942bdd00b48c47fd307ef6dec0c45cffc55a3696c4e383"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
+        "document_id": "general-settings.ai-connections",
+        "revision": 7,
+        "sha256": "af94d4e2d7004f6fbdcf475f6e49372a9856428c65d2eaa72a55cdc46aa03eb5",
+        "baseline_sha256": "af94d4e2d7004f6fbdcf475f6e49372a9856428c65d2eaa72a55cdc46aa03eb5",
+        "matches": true,
+        "approved_content_sha256": "7356cc5b7fa06997c0f79de70eb5ac1d8031e66baa007b3c4ba08e938a95d2a1"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
+        "document_id": "general-settings.ai-credentials-and-sessions",
+        "revision": 9,
+        "sha256": "d1d6d0e9cf82ede8a73bb4db01f9e8c200848b0694b808c276d30e1f0e840f1f",
+        "baseline_sha256": "d1d6d0e9cf82ede8a73bb4db01f9e8c200848b0694b808c276d30e1f0e840f1f",
+        "matches": true,
+        "approved_content_sha256": "7da7f1b4aba33b5eaa4d9a2c33d3ea086eb5416ed2aff296d925992cf589c001"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+        "document_id": "general-settings.ai-models-and-health",
+        "revision": 9,
+        "sha256": "6c44a005ce7e8b73273c416e0fb24fb9a880ef9eb82ee7b8de526eb1359a543f",
+        "baseline_sha256": "6c44a005ce7e8b73273c416e0fb24fb9a880ef9eb82ee7b8de526eb1359a543f",
+        "matches": true,
+        "approved_content_sha256": "942cfef6916bbdd0bcdba7616e6747b615c750f22432d5f4d0333feb5023fdd0"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/confirmed-administration.md",
+        "document_id": "general-settings.confirmed-administration",
+        "revision": 2,
+        "sha256": "bda80d67cf8fccc06ad4a26d5d60e296ab041c91e13df2e5c2aa91cb4b2f4283",
+        "baseline_sha256": "bda80d67cf8fccc06ad4a26d5d60e296ab041c91e13df2e5c2aa91cb4b2f4283",
+        "matches": true,
+        "approved_content_sha256": "688a9888a46b0199c3e9f31477850e9a5b7c4e2e78c7cafb2bc8a817dddbd428"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/confirmed-ai-configuration.md",
+        "document_id": "general-settings.confirmed-ai-configuration",
+        "revision": 3,
+        "sha256": "a2e63fa9692dffd862665db972218d6199e84b4c18253fac17ff781cad2ed24c",
+        "baseline_sha256": "a2e63fa9692dffd862665db972218d6199e84b4c18253fac17ff781cad2ed24c",
+        "matches": true,
+        "approved_content_sha256": "9d42d48d2367e1c4ca73ef479ed31563794e49a48b7f979505e912848015734d"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/modules-and-groups.md",
+        "document_id": "general-settings.modules-and-groups",
+        "revision": 6,
+        "sha256": "8c4458fb045dc4ff4a5e47be3ff1b375ff8bdf0e3bc1d877af8fee32fab1ad6c",
+        "baseline_sha256": "8c4458fb045dc4ff4a5e47be3ff1b375ff8bdf0e3bc1d877af8fee32fab1ad6c",
+        "matches": true,
+        "approved_content_sha256": "2f8eacfb7962f3ec141a4122719f43fc737bbec18e7ca9c78ea2aebe2cbfcc7a"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/roles.md",
+        "document_id": "general-settings.roles",
+        "revision": 5,
+        "sha256": "06cb6bf7babed7893123a42f53696a28a156c9bb5d3e31aa8bb70b51fb4f6909",
+        "baseline_sha256": "06cb6bf7babed7893123a42f53696a28a156c9bb5d3e31aa8bb70b51fb4f6909",
+        "matches": true,
+        "approved_content_sha256": "dcfcf89555b02a3f0314d624981f89b05a5d50d126365ef4a290a5d8f3b78bc4"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/secure-ai-interaction.md",
+        "document_id": "general-settings.secure-ai-interaction",
+        "revision": 5,
+        "sha256": "34d82697caeecf33d4a8616cb87069cd12299ade15017ca7982351be7c5372e2",
+        "baseline_sha256": "34d82697caeecf33d4a8616cb87069cd12299ade15017ca7982351be7c5372e2",
+        "matches": true,
+        "approved_content_sha256": "e9aee09d17b54cd09cb249e1560402253819b156a176bebbece1d5ab767254f4"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/users.md",
+        "document_id": "general-settings.users",
+        "revision": 5,
+        "sha256": "a8617b1ab2635798da0d607c47af3c4d2389dbb93595fcd69c7bd89bdfcd9b63",
+        "baseline_sha256": "a8617b1ab2635798da0d607c47af3c4d2389dbb93595fcd69c7bd89bdfcd9b63",
+        "matches": true,
+        "approved_content_sha256": "de03de5c0fc780e1ee99aac7fe19f16a65df6d5d366a578384c53b5f732d0998"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/accepted-preferences.md",
+        "document_id": "nodia-ai.accepted-preferences",
+        "revision": 3,
+        "sha256": "62964211264988e62aa32f06b8ba956beccec14275f31e26d44d6959fa20daa8",
+        "baseline_sha256": "62964211264988e62aa32f06b8ba956beccec14275f31e26d44d6959fa20daa8",
+        "matches": true,
+        "approved_content_sha256": "13ad08d98fe37ad468b6c872d9e066c810cd09512bf52d7d2e721ff676637983"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/api-key-chat-parity.md",
+        "document_id": "nodia-ai.api-key-chat-parity",
+        "revision": 1,
+        "sha256": "e60ef90981e3af1380e52d748e32900cc260d099e1532dee97ed0ec1b0a38da8",
+        "baseline_sha256": "e60ef90981e3af1380e52d748e32900cc260d099e1532dee97ed0ec1b0a38da8",
+        "matches": true,
+        "approved_content_sha256": "43aac0e69fa57ca5b60f2aa1a7897895094f8a65094a81e3695539bb2fd33a31"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+        "document_id": "nodia-ai.attachments-and-voice",
+        "revision": 11,
+        "sha256": "201dc70bfebb2263722d295413d511e5c196eaa354d98bb10cba5c1fe5d85474",
+        "baseline_sha256": "201dc70bfebb2263722d295413d511e5c196eaa354d98bb10cba5c1fe5d85474",
+        "matches": true,
+        "approved_content_sha256": "a7d8507feb6a8cb999df5220362f8e47c297a8ab60ebc1b442a748b2c844b9eb"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md",
+        "document_id": "nodia-ai.conversation-coordination",
+        "revision": 18,
+        "sha256": "e4a5a64e0ccad3318cf7528dc4d7e07c199a5e696f2c4b373a998c7798da5634",
+        "baseline_sha256": "e4a5a64e0ccad3318cf7528dc4d7e07c199a5e696f2c4b373a998c7798da5634",
+        "matches": true,
+        "approved_content_sha256": "2de014ea07523dd77aa8e1a5fc9c9e3d23412815b4b7b05fd164b32c4ac2b4ee"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/image-generation.md",
+        "document_id": "nodia-ai.image-generation",
+        "revision": 4,
+        "sha256": "2377c2b2cb4cadc4d76c5ef3f2137e7e2c6857e0e23239eff1bcdef17e635675",
+        "baseline_sha256": "2377c2b2cb4cadc4d76c5ef3f2137e7e2c6857e0e23239eff1bcdef17e635675",
+        "matches": true,
+        "approved_content_sha256": "e30416fbf06f2b0af45962b5d842d6f339ef7df4717eef0c78773711eab2cdaa"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md",
+        "document_id": "nodia-ai.invoice-ocr-product-comparison",
+        "revision": 2,
+        "sha256": "ed074df8f77b4f44eac5bcde3e55c270c167bf605b628d43aa32744500098482",
+        "baseline_sha256": "ed074df8f77b4f44eac5bcde3e55c270c167bf605b628d43aa32744500098482",
+        "matches": true,
+        "approved_content_sha256": "021645ae55f81e6129ee01a52bacda800ae8c18c2a423e4e982df72b3ae9eac7"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/categories-and-groups.md",
+        "document_id": "personal-finance.categories-and-groups",
+        "revision": 5,
+        "sha256": "5d463297e54867a1e2132a650a6ef479f8fd088b47e9c5286d764d58fb2d0826",
+        "baseline_sha256": "5d463297e54867a1e2132a650a6ef479f8fd088b47e9c5286d764d58fb2d0826",
+        "matches": true,
+        "approved_content_sha256": "aa2b03e1a2aab6003ff940fb48d1f0a1148f0f30daaa36a78094011d6ae8d117"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/confirmed-movement-effect.md",
+        "document_id": "personal-finance.confirmed-movement-effect",
+        "revision": 5,
+        "sha256": "d27f52845b5b02815736577366d9559af874281c345a9b9b63f9b29dd5929ddc",
+        "baseline_sha256": "d27f52845b5b02815736577366d9559af874281c345a9b9b63f9b29dd5929ddc",
+        "matches": true,
+        "approved_content_sha256": "a8bbfa23c08f12c41967cfc1f34a9dd173d4d912a663725dc53b603866b7554b"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/movements.md",
+        "document_id": "personal-finance.movements",
+        "revision": 5,
+        "sha256": "674ccdbd457adc321dbe35ce0ed6a35d5cec20cddf2a590b3f4da15a8ae0af9a",
+        "baseline_sha256": "674ccdbd457adc321dbe35ce0ed6a35d5cec20cddf2a590b3f4da15a8ae0af9a",
+        "matches": true,
+        "approved_content_sha256": "cdf3967b491587b0d48edd785c0a74b44ee139c88f4bc181bd52c3ff24201ad1"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/obligations.md",
+        "document_id": "personal-finance.obligations",
+        "revision": 5,
+        "sha256": "3c86175ea8e8f5689952254b4775ae23be89c441fe02b80475fa5d2b96398be8",
+        "baseline_sha256": "3c86175ea8e8f5689952254b4775ae23be89c441fe02b80475fa5d2b96398be8",
+        "matches": true,
+        "approved_content_sha256": "8df7778cf40b10a95d8d67001decf4f1b36e2eda87801a661e0ebd760d4663f3"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/summaries.md",
+        "document_id": "personal-finance.summaries",
+        "revision": 5,
+        "sha256": "e3540cc2c23686d7d41f09762a8b42f7f3496d81eccf4317ca8552d1a40375e5",
+        "baseline_sha256": "e3540cc2c23686d7d41f09762a8b42f7f3496d81eccf4317ca8552d1a40375e5",
+        "matches": true,
+        "approved_content_sha256": "3ddb29acaee5ba2b8cc9f777f4fb62a9d4b6b7b3ce6f20e337e10e41dd8e600e"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/audit-and-recovery.md",
+        "document_id": "reservations.audit-and-recovery",
+        "revision": 5,
+        "sha256": "0d379d0948dfad1fa0b9a0892dbd2d6fb3a442a9806c9e302f230898e1dbf396",
+        "baseline_sha256": "0d379d0948dfad1fa0b9a0892dbd2d6fb3a442a9806c9e302f230898e1dbf396",
+        "matches": true,
+        "approved_content_sha256": "54ab99ce6b71dadfee709c5cb228f766566335ab97aec58d018aa3b9913b2f0b"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/availability-and-calendar.md",
+        "document_id": "reservations.availability-and-calendar",
+        "revision": 5,
+        "sha256": "95448f5b58cb0b7b6f701f0d20a83d2394aa3635e190b0aa36d941ed7878df72",
+        "baseline_sha256": "95448f5b58cb0b7b6f701f0d20a83d2394aa3635e190b0aa36d941ed7878df72",
+        "matches": true,
+        "approved_content_sha256": "aca42aab7ad8d6cc6a821ddaf6ff0d3d9c36d8092b573d341d8511fe7edeee3f"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/blocks.md",
+        "document_id": "reservations.blocks",
+        "revision": 5,
+        "sha256": "1795ea88e34afdc856a143544426220218ef87be597a21f0c6bce7c4f5451667",
+        "baseline_sha256": "1795ea88e34afdc856a143544426220218ef87be597a21f0c6bce7c4f5451667",
+        "matches": true,
+        "approved_content_sha256": "96238625a2d4e5b5b4988b51a8edba439ef2b37bcb359e26dabd951e85051186"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/cancellation-policies.md",
+        "document_id": "reservations.cancellation-policies",
+        "revision": 5,
+        "sha256": "0815af692ff10bb58e9e1d15aa6c4a1df94c2ec40f31d7f594e6ab0093e5a84f",
+        "baseline_sha256": "0815af692ff10bb58e9e1d15aa6c4a1df94c2ec40f31d7f594e6ab0093e5a84f",
+        "matches": true,
+        "approved_content_sha256": "0f7a79b19e4a65b2cf990050a6030e10cdb3366b507a45636cbe9e65d2e0691f"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/confirmed-configuration.md",
+        "document_id": "reservations.confirmed-configuration",
+        "revision": 2,
+        "sha256": "f00421e4c280a42d9f9de24b44b96c0b07c2de2bd29db3d782c3e971541163a4",
+        "baseline_sha256": "f00421e4c280a42d9f9de24b44b96c0b07c2de2bd29db3d782c3e971541163a4",
+        "matches": true,
+        "approved_content_sha256": "aaff4faef3781885961e5548111a58ce30a0451d6f01cff3a6cd3a2d55845475"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/confirmed-money.md",
+        "document_id": "reservations.confirmed-money",
+        "revision": 2,
+        "sha256": "ce730177fe59cf91b336b2b65ea600f23a2eb21e78d841a32a268854a2587ae6",
+        "baseline_sha256": "ce730177fe59cf91b336b2b65ea600f23a2eb21e78d841a32a268854a2587ae6",
+        "matches": true,
+        "approved_content_sha256": "210bc49d2cabcffd4e733f168c76bb6352f06bd5f5da07f5bc4ed27ad067ff1c"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/confirmed-occupancy-preparation.md",
+        "document_id": "reservations.confirmed-occupancy-preparation",
+        "revision": 2,
+        "sha256": "78aabb97b599d462971a9935eb8afe340b6b999b3fe6998c8a7fbf6035a5b35a",
+        "baseline_sha256": "78aabb97b599d462971a9935eb8afe340b6b999b3fe6998c8a7fbf6035a5b35a",
+        "matches": true,
+        "approved_content_sha256": "6a6e22122d1bd3724c15323db90082bdfe15b229d6ad44c4b0f4c1cd6fd90415"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/confirmed-reservation-lifecycle.md",
+        "document_id": "reservations.confirmed-reservation-lifecycle",
+        "revision": 2,
+        "sha256": "44d21e71f8d6e2afce5cd7a7cb4b3da16b60490a630080eb80c9ce6931fe9353",
+        "baseline_sha256": "44d21e71f8d6e2afce5cd7a7cb4b3da16b60490a630080eb80c9ce6931fe9353",
+        "matches": true,
+        "approved_content_sha256": "d75cf4b6cfb7b5013fefb8b54d5a19a0445e7426bdb6a37755d8540aaf190fa8"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/expenses.md",
+        "document_id": "reservations.expenses",
+        "revision": 5,
+        "sha256": "bc5442eb08b65cf01ab3fa4ef6bb5ccce2b15d8434002f1e7801e832bee90765",
+        "baseline_sha256": "bc5442eb08b65cf01ab3fa4ef6bb5ccce2b15d8434002f1e7801e832bee90765",
+        "matches": true,
+        "approved_content_sha256": "6008b2f0ebc7d430c7a700b892db4eba81617d40ae97f5e65ebf8a43009fd8d7"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/payments-and-refunds.md",
+        "document_id": "reservations.payments-and-refunds",
+        "revision": 5,
+        "sha256": "75c27849aa84993d66398e675e32a6fba44b06101f7915809280d8329e0b97a5",
+        "baseline_sha256": "75c27849aa84993d66398e675e32a6fba44b06101f7915809280d8329e0b97a5",
+        "matches": true,
+        "approved_content_sha256": "a701e2b12ca9dd1de333306d1d1834c0828214fdbf33517b84de958e30d4e8f3"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/preparation.md",
+        "document_id": "reservations.preparation",
+        "revision": 5,
+        "sha256": "bc6a729fa3565bdc258a058027cbf3324a730cea3fdeea3764758b432cade882",
+        "baseline_sha256": "bc6a729fa3565bdc258a058027cbf3324a730cea3fdeea3764758b432cade882",
+        "matches": true,
+        "approved_content_sha256": "223a845a72f056d9337736b6706f54a688e8cfc020fb4aea2aa04eed7c6fd71c"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/properties-and-collaborators.md",
+        "document_id": "reservations.properties-and-collaborators",
+        "revision": 5,
+        "sha256": "379f8962d7f150d84f378ce0e383c73877fa241d9a39ccf34fddd8ae71ff3931",
+        "baseline_sha256": "379f8962d7f150d84f378ce0e383c73877fa241d9a39ccf34fddd8ae71ff3931",
+        "matches": true,
+        "approved_content_sha256": "3444022fa8f2220b9aa639cd009004683e71ef55a96dbb3a5ac01cb7023ce662"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/reservations.md",
+        "document_id": "reservations.reservations",
+        "revision": 5,
+        "sha256": "705e990e4e2927902372e520eb79ad021928fc194b4416dc3884edfb04efa12f",
+        "baseline_sha256": "705e990e4e2927902372e520eb79ad021928fc194b4416dc3884edfb04efa12f",
+        "matches": true,
+        "approved_content_sha256": "a5dd403c338c3cc862d327456ef2f8962c6ac609e8b4174c08a86ec99c8fafed"
+      }
+    ]
+  },
+  "delivery": {
+    "status": "active_verified",
+    "candidate": "/opt/nodia/releases/nodia-client-business-pos-multi-sale-20261029-r02",
+    "manifest_sha256": "3145c385641c91e8dc40709f0f582e564669d159901812cebadb03bca3447f37",
+    "config_sha256": "3ef34d4ae2265b07dc4193d2d4f792b6b88ab45545feb0f44d866c7e7799d31f",
+    "index": {
+      "bytes": 2973,
+      "sha256": "ad739b3a4d2bc79be2b8f2d3d89d5178d2ac347b883fb35bd19f3c377b4d3d26"
+    },
+    "nginx_before_sha256": "0ffab07d5dbd20a7d810854fbfa4183caf19dbc5f64e4528062b85dcf832273e",
+    "nginx_after_sha256": "29107e88f002d2c078c3d766bd48adc966920303df5095779c7695c515fb0893",
+    "files": 173,
+    "http": {
+      "current_assets": 169,
+      "previous_assets": 88,
+      "protected": [
+        {
+          "route": "/api/v1",
+          "status": 200
+        },
+        {
+          "route": "/api/v1/nodia-ai/connections",
+          "status": 401
+        },
+        {
+          "route": "/api/v1/products",
+          "status": 401
+        }
+      ],
+      "spa": [
+        {
+          "route": "/",
+          "sha256": "ad739b3a4d2bc79be2b8f2d3d89d5178d2ac347b883fb35bd19f3c377b4d3d26",
+          "status": 200
+        },
+        {
+          "route": "/tools/nodia-ai",
+          "sha256": "ad739b3a4d2bc79be2b8f2d3d89d5178d2ac347b883fb35bd19f3c377b4d3d26",
+          "status": 200
+        },
+        {
+          "route": "/tools/business",
+          "sha256": "ad739b3a4d2bc79be2b8f2d3d89d5178d2ac347b883fb35bd19f3c377b4d3d26",
+          "status": 200
+        }
+      ]
+    },
+    "backed_up_configuration": "/opt/nodia/operations/business-pos-multi-sale-20261029-r01/client-r02/nginx-before.conf",
+    "previous_release_preserved": true,
+    "protected_runtime_preserved": true,
+    "protected_runtime": {
+      "services": {
+        "nodia-api.service": {
+          "MainPID": "2263533",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-business-pos-accessibility-20261029-r01",
+          "ActiveState": "active",
+          "SubState": "running",
+          "executable": "/opt/node-v24.20.0-linux-x64/bin/node",
+          "start_ticks": "65459257"
+        },
+        "nodia-ai-worker.service": {
+          "MainPID": "2263534",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-business-pos-accessibility-20261029-r01",
+          "ActiveState": "active",
+          "SubState": "running",
+          "executable": "/opt/node-v24.20.0-linux-x64/bin/node",
+          "start_ticks": "65459259"
+        },
+        "nodia-keyring.service": {
+          "MainPID": "1029625",
+          "WorkingDirectory": "",
+          "ActiveState": "active",
+          "SubState": "running"
+        },
+        "nodia-gemini-lab.service": {
+          "MainPID": "0",
+          "WorkingDirectory": "/opt/nodia/nodia-gemini-microservice",
+          "ActiveState": "active",
+          "SubState": "exited"
+        },
+        "nodia-ai-backup.timer": {
+          "ActiveState": "active",
+          "SubState": "waiting"
+        },
+        "nodia-ai-backup-rotate.timer": {
+          "ActiveState": "active",
+          "SubState": "waiting"
+        }
+      },
+      "server_manifest_sha256": "73be36b2117d96fc3ffc8e8bc07303b7dbcc68093fb852d80ee37c3d85d7ddef",
+      "knowledge_files": {
+        "src/nodia-ai/knowledge/manifest.json": "bec4d635beed80a5be18ca1b7fb5518f229146a641c18e2df86e6296369a082c",
+        "dist/nodia-ai/knowledge/manifest.json": "bec4d635beed80a5be18ca1b7fb5518f229146a641c18e2df86e6296369a082c",
+        "src/nodia-ai-context/config/knowledge-pin.json": "e70446455105423eef211c94d3aa6b502075cc482d894753d6f8f40068c960f3",
+        "dist/nodia-ai-context/config/knowledge-pin.json": "e70446455105423eef211c94d3aa6b502075cc482d894753d6f8f40068c960f3"
+      },
+      "native": {
+        "id": "b3dcf9d350532da2965a62cc276b8f5b81b935a23374c5c67f1bfe974c0be186",
+        "image": "sha256:4b990e3e8c60077fceb06ac5018025a5ef80353297fe92affc8b20fe53915fa9",
+        "started_at": "2026-10-27T18:32:11.657816024Z",
+        "status": "running",
+        "health": "healthy"
+      }
+    },
+    "operator_requests": {
+      "api_or_worker_restart_requests": 0,
+      "auth_requests": 0,
+      "cloud_backup_requests": 0,
+      "native_restart_requests": 0,
+      "provider_requests": 0,
+      "sql_queries": 0
+    },
+    "receipts": {
+      "activate-receipt.json": {
+        "path": "ops/lab/artifacts/business-pos-multi-sale-20261029-r01/client-r02/activate-receipt.json",
+        "bytes": 4276,
+        "sha256": "de683a7d6a68fc1ba7985a00bcc166a1a697a1e7a2a3533e82c6ced56fc20d49"
+      },
+      "status-receipt.json": {
+        "path": "ops/lab/artifacts/business-pos-multi-sale-20261029-r01/client-r02/status-receipt.json",
+        "bytes": 6225,
+        "sha256": "fbbd45442215074f71b7cb1c01611a8bca84e4a0ceb87b0104f690d22aa2cacb"
+      }
+    },
+    "rejected_predecessor": {
+      "status": "staged_not_activated_rejected",
+      "reason": "Native QA found visually hidden Stepper text extending document scroll and a 100% rather than 1px sentinel. Corrected and verified in successor R02.",
+      "successor": "/opt/nodia/releases/nodia-client-business-pos-multi-sale-20261029-r02",
+      "old_release_remains_private": true,
+      "no_rollback_or_activation_was_performed": true
+    }
+  }
+}

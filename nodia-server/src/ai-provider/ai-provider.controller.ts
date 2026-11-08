@@ -28,16 +28,12 @@ import { GetAiProviderCatalogUseCase } from './use-case/get-ai-provider-catalog.
 import { CreateAiProviderCatalogUseCase } from './use-case/create-ai-provider-catalog.use-case.js';
 import { UpdateAiProviderCatalogUseCase } from './use-case/update-ai-provider-catalog.use-case.js';
 import { SyncAiProviderModelsUseCase } from './use-case/sync-ai-provider-models.use-case.js';
-import { ManageGeminiLoginUseCase } from './use-case/manage-gemini-login.use-case.js';
 import { GetGeminiEnginesUseCase } from './use-case/get-gemini-engines.use-case.js';
-import { RequireAction } from '../authorization/action-permission.guard.js';
 import type { AuthRequest } from '../auth/types/auth.types.js';
 import type { GeminiExecutionEngine } from '../common/ai/ai.types.js';
 import { ManageCodexSessionUseCase } from './use-case/manage-codex-session.use-case.js';
 import { CodexSessionDto } from './dto/codex-session.dto.js';
-import { GeminiLoginInputDto } from './dto/gemini-login-input.dto.js';
 
-@RequireAction('ai:manage')
 @Controller(['ai-provider', 'ai-providers'])
 export class AiProviderController {
   constructor(
@@ -51,7 +47,6 @@ export class AiProviderController {
     private readonly createAiProviderCatalogUseCase: CreateAiProviderCatalogUseCase,
     private readonly updateAiProviderCatalogUseCase: UpdateAiProviderCatalogUseCase,
     private readonly syncAiProviderModelsUseCase: SyncAiProviderModelsUseCase,
-    private readonly manageGeminiLoginUseCase: ManageGeminiLoginUseCase,
     private readonly getGeminiEnginesUseCase: GetGeminiEnginesUseCase,
     private readonly manageGeminiAgenticLoginUseCase: ManageGeminiAgenticLoginUseCase,
     private readonly manageCodexSessionUseCase: ManageCodexSessionUseCase,
@@ -118,18 +113,6 @@ export class AiProviderController {
     return this.getGeminiEnginesUseCase.execute();
   }
 
-  @Post('gemini-login/start')
-  @Header('Cache-Control', 'no-store')
-  startGeminiLogin(@Req() request: AuthRequest) {
-    return this.manageGeminiLoginUseCase.start(request.auth.user.id);
-  }
-
-  @Post('gemini-session/logout')
-  @Header('Cache-Control', 'no-store')
-  disconnectGeminiWeb(@Req() request: AuthRequest) {
-    return this.manageGeminiLoginUseCase.disconnect(request.auth.user.id);
-  }
-
   @Post('gemini-agentic-login/start')
   @Header('Cache-Control', 'no-store')
   startGeminiAgenticLogin(@Req() request: AuthRequest) {
@@ -177,47 +160,6 @@ export class AiProviderController {
     return this.manageGeminiAgenticLoginUseCase.cancel(
       jobId,
       request.auth.user.id,
-    );
-  }
-
-  @Get('gemini-login/:jobId')
-  @Header('Cache-Control', 'no-store')
-  getGeminiLoginStatus(
-    @Param('jobId') jobId: string,
-    @Req() request: AuthRequest,
-  ) {
-    return this.manageGeminiLoginUseCase.status(jobId, request.auth.user.id);
-  }
-
-  @Post('gemini-login/:jobId/cancel')
-  @Header('Cache-Control', 'no-store')
-  cancelGeminiLogin(
-    @Param('jobId') jobId: string,
-    @Req() request: AuthRequest,
-  ) {
-    return this.manageGeminiLoginUseCase.cancel(jobId, request.auth.user.id);
-  }
-
-  @Get('gemini-login/:jobId/frame')
-  @Header('Cache-Control', 'no-store')
-  getGeminiLoginFrame(
-    @Param('jobId') jobId: string,
-    @Req() request: AuthRequest,
-  ) {
-    return this.manageGeminiLoginUseCase.frame(jobId, request.auth.user.id);
-  }
-
-  @Post('gemini-login/:jobId/input')
-  @Header('Cache-Control', 'no-store')
-  sendGeminiLoginInput(
-    @Param('jobId') jobId: string,
-    @Req() request: AuthRequest,
-    @Body() dto: GeminiLoginInputDto,
-  ) {
-    return this.manageGeminiLoginUseCase.input(
-      jobId,
-      request.auth.user.id,
-      dto,
     );
   }
 

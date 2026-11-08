@@ -1,7 +1,19 @@
 import type { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { Avatar, Stack, IconButton, useTheme, Button, Menu, MenuItem, ListItemIcon, ListItemText, Divider, Typography } from "@mui/material";
+import {
+  Avatar,
+  Stack,
+  IconButton,
+  useTheme,
+  Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Typography,
+} from "@mui/material";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
@@ -10,8 +22,7 @@ import ThemeSelector from "../ThemeSelector";
 import LanguageSelector from "../../../components/LanguageSelector";
 import { TopbarRoot } from "./styles";
 import AiProviderIndicators from "./components/AiProviderIndicators";
-import { useHasAction, useHasRole, useVisibleModules } from "../../../store/generalSettings/useGeneralSettings";
-import { hasModuleAccess } from "../../../store/generalSettings/helpers";
+import { useCanAccessModule } from "../../../store/generalSettings/useGeneralSettings";
 
 type Props = {
   onDrawerToggle: () => void;
@@ -27,10 +38,16 @@ const Topbar: FC<Props> = ({
   const { t } = useTranslation("layout");
   const theme = useTheme();
   const navigate = useNavigate();
-  const { user, isAuthenticated, isBusy, anchorEl, openMenu, closeMenu, handleLogout } = useProfileMenu();
-  const modules = useVisibleModules();
-  const canManageAi = useHasAction("ai:manage");
-  const isSuperAdmin = useHasRole("super_admin");
+  const {
+    user,
+    isAuthenticated,
+    isBusy,
+    anchorEl,
+    openMenu,
+    closeMenu,
+    handleLogout,
+  } = useProfileMenu();
+  const canManageAi = useCanAccessModule("/ai-providers");
 
   return (
     <TopbarRoot>
@@ -59,8 +76,17 @@ const Topbar: FC<Props> = ({
         <ArrowCircleLeftOutlinedIcon />
       </IconButton>
 
-      {isAuthenticated && (canManageAi || isSuperAdmin) && hasModuleAccess(modules, "/settings/ai-providers") && <AiProviderIndicators />}
-      <Stack direction="row" spacing={{ xs: 1, sm: 2 }} sx={{ alignItems: "center", justifyContent: "flex-end", gridRow: 1, gridColumn: { xs: 2, sm: 3 } }}>
+      {isAuthenticated && canManageAi && <AiProviderIndicators />}
+      <Stack
+        direction="row"
+        spacing={{ xs: 1, sm: 2 }}
+        sx={{
+          alignItems: "center",
+          justifyContent: "flex-end",
+          gridRow: 1,
+          gridColumn: { xs: 2, sm: 3 },
+        }}
+      >
         <LanguageSelector />
         <ThemeSelector />
         {isAuthenticated ? (
@@ -78,13 +104,27 @@ const Topbar: FC<Props> = ({
                 {(user?.name || user?.email || "?").slice(0, 1).toUpperCase()}
               </Avatar>
             </IconButton>
-            <Menu id="profile-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}
-              slotProps={{ list: { "aria-labelledby": "profile-menu-button" } }}>
-              <Typography sx={{ px: 2, pt: 1, fontWeight: 600 }}>{user?.name}</Typography>
-              <Typography variant="body2" sx={{ px: 2, pb: 1, color: "text.secondary" }}>{user?.email}</Typography>
+            <Menu
+              id="profile-menu"
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={closeMenu}
+              slotProps={{ list: { "aria-labelledby": "profile-menu-button" } }}
+            >
+              <Typography sx={{ px: 2, pt: 1, fontWeight: 600 }}>
+                {user?.name}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ px: 2, pb: 1, color: "text.secondary" }}
+              >
+                {user?.email}
+              </Typography>
               <Divider />
               <MenuItem onClick={handleLogout} disabled={isBusy}>
-                <ListItemIcon><LogoutOutlinedIcon fontSize="small" /></ListItemIcon>
+                <ListItemIcon>
+                  <LogoutOutlinedIcon fontSize="small" />
+                </ListItemIcon>
                 <ListItemText>{t("auth:logout")}</ListItemText>
               </MenuItem>
             </Menu>

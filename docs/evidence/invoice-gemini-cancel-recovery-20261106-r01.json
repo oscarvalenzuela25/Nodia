@@ -1,0 +1,383 @@
+{
+  "schema": "invoice-gemini-cancel-recovery-consolidated/1",
+  "status": "VERIFIED_MANUAL_OCR_CANCEL_AND_FRESH_REANALYSIS_ON_VM",
+  "scope": "Manual invoice OCR local closure/recovery and safe availability reasons; no new AI authority",
+  "current": {
+    "Server": "R12 active efbd76523322642c580c799640af01ab5626aa56ac72b0ef9104a11da6fd76e0",
+    "Client": "R31 active4a9ad3e96df7aa498e563dd9b61b6cb9cfe6561aae8aa847cf03acb2547769ea",
+    "Native": "R14 active sha256:402c307ca52d108e5ab459f71657af46a9afaae24de6e155229b13347fe4ed3a; R13 historical",
+    "SDK": "fe412d1059c2f9ac9d8637cc90b2007c72a664175f73b5246a27ebf6e7e7ccfa unchanged"
+  },
+  "tests": {
+    "Client": {
+      "passed": 78,
+      "file_suites": 4,
+      "types_exit": 0,
+      "eslint_exit": 0,
+      "report": {
+        "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/client-error-ui-r01/tests.json",
+        "bytes": 30136,
+        "sha256": "05bbff3e12217718e359479aaa01b43adbcc6e667d98103042ddc47e23476650"
+      }
+    },
+    "Server": {
+      "passed": 30,
+      "file_suites": 3,
+      "report": {
+        "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/server-tests.json",
+        "bytes": 11636,
+        "sha256": "e0f64fb2eb7fb6d3d4ed5e132603b2d288b59155b8dd5d857c985dd8083f90e1"
+      }
+    },
+    "NativeR13": {
+      "passed": 651,
+      "skipped": 0,
+      "independent_fixture": "real cgroup/setsid/IO/new-intent, no account/provider",
+      "receipt": {
+        "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/operation/native-r13-r03/linux-gate-result-readonly.json",
+        "bytes": 2404,
+        "sha256": "5f9b43bc7feb7ac4f7aa8a93aa1eb80aa654ae8ad16b54d0447e300e24c4f9c3"
+      }
+    },
+    "NativeR14": {
+      "passed": 655,
+      "skipped": 0,
+      "ASGI_header_cases_included": 4,
+      "R13_independent_lifecycle_fixture_is_reference_only": true,
+      "receipt": {
+        "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/operation/native-r14-r01/asgi-linux-gate-executed.json",
+        "bytes": 998,
+        "sha256": "b5b27fb8adf8b79d823426c8b15ea604c121a125511688ea8046024e2eaa0f88"
+      }
+    },
+    "do_not_sum_R13_and_R14": true
+  },
+  "source_final_readonly": {
+    "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/source-final-readonly.json",
+    "bytes": 6164,
+    "sha256": "8b3f7bc7d337d0062dcebf3651d8ca3dc2a5592909d97a39e8cd972dcf6f8c88"
+  },
+  "source_record_count": 38,
+  "source_records_are_overlapping_roles_not_unique_sources": true,
+  "legacy_oneoff": {
+    "executed": 1,
+    "receipt_sha256": "4bf0c4b198bff6144de74b719ecd2fd89d981b8565b94334e064265942092bd9",
+    "composite_source": {
+      "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/operation/coordinator-r01/final-receipts-readonly.json",
+      "bytes": 22011,
+      "sha256": "b87ba04d8e37e2b846f1e0beb848f026ed0d41fb4f8fdcd84d943d6566de7218"
+    },
+    "remote_outcome": "unknown",
+    "original_execution_replay": false,
+    "historical_outcome_reclassified": false,
+    "business_writes": 0,
+    "provider_requests": 0,
+    "authorization_scope": "only exact user-approved historical synthetic marker, no general exception"
+  },
+  "adoptions": {
+    "R12_R13": {
+      "canonical_receipt_sha256": "7f64edc05cf2b8bd55705c606dba579a92dc318a2039a486f14b20f49bedf159",
+      "source": {
+        "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/client-r31-r01/combined-gate-receipt.json",
+        "bytes": 6804,
+        "sha256": "7f64edc05cf2b8bd55705c606dba579a92dc318a2039a486f14b20f49bedf159"
+      },
+      "stdout_sha256": "a09bfb582bac906e5c6cbb313659b0b1e9388e1fd9fbd08891840212d554cad9",
+      "SDK_unchanged": true,
+      "old_unknown_preserved": true
+    },
+    "ClientR31": {
+      "delivery": {
+        "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/client-r31-r01/delivery.json",
+        "bytes": 17872,
+        "sha256": "03ac5c3d6f1523fac5860477f022785002b493eaa6a854326430b916695d5695"
+      },
+      "activation_executions": 1,
+      "Nginx_reloads": 1,
+      "current_outputs": 186,
+      "same_assets_after_R14": true
+    },
+    "NativeR14": {
+      "status": "ACTIVE_STABLE30_HEALTH_PASS",
+      "candidate_image": "sha256:402c307ca52d108e5ab459f71657af46a9afaae24de6e155229b13347fe4ed3a",
+      "production_delta": "only main.py safe header allowlist",
+      "Server_Client_code_changes": 0,
+      "new_legacy_oneoff": 0,
+      "additional_Client_reloads": 0,
+      "canonical_receipt": {
+        "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/final-readonly-r14-r01/runtime-gate-receipt.json",
+        "bytes": 5114,
+        "sha256": "aef81d74b0244a08ed3c461c62c9a67b2e9dfd88f192c3684afc3cac1e3b3129"
+      },
+      "stdout_receipt": {
+        "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/operation/coordinator-r14-r01/adoption-executed.json",
+        "bytes": 4364,
+        "sha256": "da80376389dbe832e5cb8e1a5072ce0152b3f8651c020213309f3db8a50c33ea"
+      },
+      "CID": "e5e2824303255c72747eeb58e3c4d20bf3d3ac29f3b773bdc8886542dd835bf9",
+      "started_at": "2026-11-07T01:36:11.537966421Z",
+      "API": {
+        "PID": 2261990,
+        "start_ticks": 24739707
+      },
+      "Worker": {
+        "PID": 2261991,
+        "start_ticks": 24739708
+      },
+      "final_readonly": {
+        "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/final-readonly-r14-r01/capture-executed.json",
+        "bytes": 21719,
+        "sha256": "31fdfc59e14fd7cd1dadfd5985bc6dac56016559f975ef216c2abe38cd0f2488"
+      },
+      "final_readonly_validation": {
+        "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/final-readonly-r14-r01/validation.json",
+        "bytes": 1080,
+        "sha256": "ceeb2dcd1be5a73667b19f1a7eea11d9ea5e37e3b103b606928bb5bfd74439ae"
+      }
+    }
+  },
+  "real_QA": {
+    "source": "Root observed; final structured QA pins to be appended by Root",
+    "R13_Intent1": {
+      "OCR_POSTs": 1,
+      "cancelled": true,
+      "local_closure": "PASS",
+      "group_after": 0,
+      "marker_after": 0,
+      "proof_after": 0,
+      "same_primary_Blob": true,
+      "error_specificity": "FAIL: generic safe warning, missing Native allowlist header; no false logout",
+      "remote_ACK_or_provider_stop_claimed": false,
+      "business_writes": 0,
+      "local_receipt_retired": true,
+      "release_quarantine": false,
+      "ACK_independently_observed": false,
+      "closure_interpretation": "Observed quarantine=false and marker/proof/group retirement support the local transition and closure under the protocol; no independent ACK receipt, SQL commit or remote ACK is asserted."
+    },
+    "secondary_tab_R13": {
+      "local_file_preserved": true,
+      "OCR_POSTs": 0
+    },
+    "R14_Intent2_cancel": {
+      "status": "PASS_ROOT_OBSERVED",
+      "correlation": "7c6d2edc-08f8-41ca-9089-4f7164fbea1b",
+      "cancel_after_seconds": 38,
+      "all_action_controls_disabled_except_cancel": true,
+      "same_primary_Blob": true,
+      "primary_file_selections": 1,
+      "after_cancel_Analyze_disabled": true,
+      "check_availability_visible": true,
+      "secondary_GET_only": true,
+      "secondary_OCR_POSTs": 0,
+      "secondary_Gemini_Agentic_preserved": true,
+      "busy_message_specific": true,
+      "checkpoint": {
+        "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/browser/r14-cancel-checkpoint.json",
+        "bytes": 46941,
+        "sha256": "c80edab7facb7b46821b17a3fb884b5ad2423077d1e59b8651fe931a7e57a12a"
+      },
+      "quiet_observer_root_reported_at_VM": "01:40:22",
+      "CLI_after": 0,
+      "unknown_after": 0,
+      "proofs_after": 0,
+      "groups_after": [],
+      "release_quarantine": false,
+      "manual_availability_GET_blocks_controls": true,
+      "manual_availability_GET_then_Analyze_enabled": true,
+      "ACK_independently_observed": false,
+      "remote_ACK_or_provider_stop_claimed": false
+    },
+    "R14_Intent3_completed_extraction": {
+      "status": "PASS_UI_AND_FINAL_OBSERVER",
+      "correlation": "891f4628-64de-4978-bec2-7864ee6aa51d",
+      "new_explicit_intent_same_Blob": true,
+      "elapsed_seconds": 104,
+      "UI_state": "Borrador listo/extracción validada",
+      "synthetic_items": 3,
+      "synthetic_total": 7140,
+      "same_original_Blob": true,
+      "primary_file_selections": 1,
+      "primary_Analyze_POSTs_all_intents": 3,
+      "primary_Analyze_POSTs_R13_cancel": 1,
+      "primary_Analyze_POSTs_R14_cancel_and_complete": 2,
+      "secondary_Analyze_POSTs": 0,
+      "observed_POST_routes_only": [
+        "analysis-observations",
+        "analyze"
+      ],
+      "commercial_mutation_requests": 0,
+      "Save_clicks": 0,
+      "Save_disabled": true,
+      "screenshot": {
+        "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/browser/gemini-reanalysis-completed.png",
+        "bytes": 71200,
+        "sha256": "541d3e9fb50027073fa4c8b94a423509dc0f162abf20e0654f08592675ff5651"
+      },
+      "final_observer_receipt": {
+        "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/qa-runtime-readonly-r01/after-intent3-r14.json",
+        "bytes": 10922,
+        "sha256": "72f78604ae6e34cd32375981d9a96507435ec2f3c2866ab3bc3c63a9e1dac4bb"
+      },
+      "final_CLI": 0,
+      "final_unknown": 0,
+      "final_proofs": 0,
+      "final_groups": [],
+      "final_release_quarantine": false,
+      "HTTP_terminal_status_independently_exported": false
+    },
+    "final_browser_summary": {
+      "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/browser/final-qa-summary.json",
+      "bytes": 4223,
+      "sha256": "99cc109f879e71adf41fe49d1277f086aa543c2f267482793c3a37e635124a11"
+    },
+    "application_analyze_POST_count": 3,
+    "provider_internal_HTTP_send_count": null,
+    "provider_internal_retries_not_claimed": true,
+    "clock_scope": "Browser and VM wall clocks differ; UI elapsed and Native elapsed are separately sourced local durations."
+  },
+  "documentation": {
+    "ADR096": "proposed; user oneoff authorization is separate",
+    "candidate_revision": 6,
+    "candidate_status": "draft/partial/unregistered/approval:null",
+    "approved_bodies": 44,
+    "approved_body_changes": 0,
+    "new_capabilities": 0,
+    "new_bindings": 0,
+    "new_publication": false,
+    "draft_manifest": {
+      "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/docs-preparation-r03/draft-manifest.json",
+      "bytes": 4256,
+      "sha256": "2d373f1ec090ba6d9af6b8e66098beebdf38a1cd44bc3e260af4420615783e2e"
+    },
+    "canonical_files": [
+      {
+        "path": "docs/mvp/94-business-point-of-sale-and-product-refactor.md",
+        "bytes": 223432,
+        "sha256": "2a103edc9284c186fe67bb3b6bd2c68f93903af6a136365830edb0790f4401f1",
+        "Root_precision_overrides": [
+          "tras38s durante `read_document`: todos los controles accionables permanecieron bloqueados excepto Cancelar.",
+          "cgroup propio vacío, líder recogido e IO cerrado",
+          "El tiempo es el contador local de UI, no latencia del proveedor."
+        ]
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/product-price-calculator-and-invoice-binding.md",
+        "bytes": 22759,
+        "sha256": "9b0f3e4fbd2984093e1efe8096fe12f87b9b08e4a6e097d0410ef491acebbec0",
+        "Root_precision_overrides": [
+          "tras38s con todos los controles bloqueados salvo Cancelar",
+          "cgroup propio vacío, líder recogido e IO cerrado",
+          "Moved two Native Python references from invalid metadata.sources into public Markdown body; retained metadata schema unchanged."
+        ]
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/README.md",
+        "bytes": 85815,
+        "sha256": "0b9c59e673b632b5449bac8f084c40a26b350dc63ea9bdf586e35194b297203a",
+        "Root_precision_overrides": []
+      },
+      {
+        "path": "docs/mvp/README.md",
+        "bytes": 191327,
+        "sha256": "244609ac1ca94269c760230c2d561e5b209c6e771edfa56274ca57f55acd7eef",
+        "Root_precision_overrides": []
+      },
+      {
+        "path": "docs/mvp/00-progress.md",
+        "bytes": 362411,
+        "sha256": "c20d725836325915f5aec6e9b5a7d9e2377c8b95657f5c911408b0a8332d8a38",
+        "Root_precision_overrides": []
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/README.md",
+        "bytes": 104572,
+        "sha256": "0c068f5e0dd937840e0d717fd8036d5e99b650791f6bdf1a17d869b99bcd71ea",
+        "Root_precision_overrides": []
+      }
+    ],
+    "Root_owned_sources": [
+      {
+        "path": "docs/architecture/decisions/ADR-096-manual-invoice-ocr-cancellation-recovery.md",
+        "bytes": 6414,
+        "sha256": "659f96d807df72b1f0a60ce15284325c1cd718676df1190dd6b060faa9820302"
+      },
+      {
+        "path": "docs/mvp/ai-provider-feature-contract.md",
+        "bytes": 48524,
+        "sha256": "ddad0be76215f8f2e8af28b9cf2ec9e2e9884cc2da97af4d90799349b334b95e"
+      }
+    ],
+    "knowledge_check": {
+      "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/knowledge-check-final.json",
+      "bytes": 1037,
+      "sha256": "91e7d3f8b765d35db3b3c853c379e101ac411009e76d2348021bde545fa4e410"
+    },
+    "knowledge_check_passed": true,
+    "approved_documents_compiled": 44,
+    "approved_fragments_compiled": 46,
+    "runtime_bundle_rebuilt_or_published": false
+  },
+  "privacy": {
+    "credential_contents": false,
+    "document_prompt_or_response_dumped": false,
+    "private_logs_dumped": false
+  },
+  "previous_wording_evidence_sha256": "3ce9c39b8682f54c8297083664f0019679268580daf0d0d5dccf291b9128a099",
+  "supersedes_draft_evidence_sha256": "236c490fbeb84dd84a55143885458fda4cab65061c9b344caa9dea47d6fddc2e",
+  "scope_limitations": [
+    "Manual OCR synthetic invoice, exact selected Gemini Agentic connection/model/effort only",
+    "No commercial save or invoice/product mutation tested or performed",
+    "No remote stop/ACK claim; cancelled remote outcomes remain unknown",
+    "Observed UI duration is not provider latency",
+    "No claim all Teacher or other provider modalities passed"
+  ],
+  "final_runtime_observer": {
+    "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/qa-runtime-readonly-r01/observer-report-final-r01.json",
+    "bytes": 10609,
+    "sha256": "fbccd6ab66da72ab4d30febc065b881354e132ba8a3833add9009f87f0a63f7b"
+  },
+  "final_runtime_observation": {
+    "health": "healthy",
+    "id": "e5e2824303255c72747eeb58e3c4d20bf3d3ac29f3b773bdc8886542dd835bf9",
+    "image": "sha256:402c307ca52d108e5ab459f71657af46a9afaae24de6e155229b13347fe4ed3a",
+    "started_at": "2026-11-07T01:36:11.537966421Z",
+    "status": "running"
+  },
+  "final_readonly_preservation": {
+    "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/final-readonly-r14-r01/capture-executed.json",
+    "bytes": 21719,
+    "sha256": "31fdfc59e14fd7cd1dadfd5985bc6dac56016559f975ef216c2abe38cd0f2488"
+  },
+  "final_readonly_validation": {
+    "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/final-readonly-r14-r01/validation.json",
+    "bytes": 1080,
+    "sha256": "ceeb2dcd1be5a73667b19f1a7eea11d9ea5e37e3b103b606928bb5bfd74439ae"
+  },
+  "R14_operational_delivery": {
+    "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/operation/delivery-r14-final.json",
+    "bytes": 5403,
+    "sha256": "b2e39fb06f1cb3a34a9e55664dfdcb232e824a5b6baf0e9e080b626d0f83a273"
+  },
+  "screenshots": [
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/browser/gemini-r14-running.png",
+      "bytes": 132571,
+      "sha256": "c52b0392142665676796130e1d3251060ec5fc4bf03a6d3de0afd6c1d9112041"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/browser/gemini-r14-busy-reason.png",
+      "bytes": 124012,
+      "sha256": "3f5aee949c45447eef1180dff81c845780e43deb2b52f27bbcd7acb244a5e1fd"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/browser/gemini-r14-cancelled.png",
+      "bytes": 146379,
+      "sha256": "39d29c1472c534415a82543f80009075a298dce5d5074188228379fffe87fa66"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancel-recovery-20261106-r01/browser/gemini-reanalysis-completed.png",
+      "bytes": 71200,
+      "sha256": "541d3e9fb50027073fa4c8b94a423509dc0f162abf20e0654f08592675ff5651"
+    }
+  ]
+}

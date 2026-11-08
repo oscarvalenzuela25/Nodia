@@ -2,20 +2,24 @@ import { z } from "zod";
 import type { NodiaAiReviewValue } from "./types";
 import { attachmentPartSchema } from "./attachmentSchemas";
 
+/** Nodia admission contract: policy50, 32 KiB UTF-8, independent of provider quotas. */
+export const NODIA_AI_MESSAGE_TEXT_BYTES = 32768;
+
 const uuid = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
 const bigint = z.string().regex(/^[1-9]\d{0,18}$/).refine((value) => /^[1-9]\d{0,18}$/.test(value) && BigInt(value) <= 9223372036854775807n);
 const revision = z.number().int().min(1).max(2147483647);
 const instant = z.iso.datetime({ offset: true });
 const text = (bytes: number) => z.string().refine((value) => /\S/u.test(value) && new TextEncoder().encode(value).length <= bytes);
-export const nodiaAiModeSchema = z.enum(["api_key", "token_plan_web", "token_plan_agentic"]);
+export const nodiaAiModeSchema = z.enum(["api_key", "agentic"]);
 export const nodiaAiSelectionSchema = z.object({
   connection_id: bigint,
   mode: nodiaAiModeSchema,
   model_id: text(1024),
   effort_id: text(256).nullable(),
 }).strict();
+const runSelection = nodiaAiSelectionSchema.extend({ mode: z.enum(["api_key", "agentic", "retired"]) });
 const target = z.object({
-  selection: nodiaAiSelectionSchema.extend({ mode: z.literal("token_plan_agentic") }),
+  selection: nodiaAiSelectionSchema.extend({ mode: z.literal("agentic") }),
   configuration_generation: text(256),
   session_generation: text(256),
 }).strict();
@@ -35,7 +39,7 @@ const budget = z.object({
 }).strict();
 export const nodiaAiRunSchema = z.object({
   run_id: uuid, conversation_id: uuid, user_message_id: uuid, assistant_message_id: uuid.nullable(),
-  revision, selection: nodiaAiSelectionSchema, catalog_version: text(256),
+  revision, selection: runSelection, catalog_version: text(256),
   state: z.enum(["queued", "running", "waiting_for_user", "completed", "failed", "cancel_requested", "cancelled", "unknown"]),
   phase: z.string(), deadline_at: instant, created_at: instant, completed_at: instant.nullable(),
   error: z.object({ code: z.string(), message_key: z.string(), field_errors: z.array(z.unknown()), retry_action: z.string(), correlation_id: uuid }).strict().nullable(),
@@ -70,6 +74,7 @@ export const nodiaAiMessagesSchema = z.object({ conversation_id: uuid, items: z.
 export const nodiaAiCatalogSchema = z.object({
   items: z.array(z.object({
     connection_id: bigint, label: z.string(), provider_key: text(256), is_active: z.boolean(),
+    is_default: z.boolean().optional(), default_mode: nodiaAiModeSchema.nullable().optional(),
     modes: z.array(z.object({
       mode: nodiaAiModeSchema, configured_selection: nodiaAiSelectionSchema.nullable(),
       configuration: z.enum(["configured", "incomplete", "disabled"]), authentication: z.literal("unknown"),
@@ -80,7 +85,13 @@ export const nodiaAiCatalogSchema = z.object({
 }).strict();
 export const nodiaAiEligibilitySchema = z.object({
   selection: nodiaAiSelectionSchema, available: z.boolean(), reason: z.string().nullable(), observed_at: instant.nullable(),
+  supports_tools: z.boolean().optional(), supports_image_generation: z.boolean().optional(),
   supports_mcp: z.boolean(), routing_target: target.nullable(),
+  invoice_ocr: z.object({
+    media_types: z.array(z.enum(["image/png", "image/jpeg", "image/webp", "application/pdf"]))
+      .min(1).max(4).refine(values => new Set(values).size === values.length),
+    file_bytes: z.literal(10485760),
+  }).strict().nullable().optional(),
 }).strict();
 export const nodiaAiCreateSchema = z.object({ client_request_id: uuid, title: text(256).optional(), selection: nodiaAiSelectionSchema.optional() }).strict();
 export const nodiaAiConversationUpdateSchema = z.object({
@@ -89,11 +100,10 @@ export const nodiaAiConversationUpdateSchema = z.object({
   is_pinned: z.boolean().optional(),
   is_archived: z.boolean().optional(),
 }).strict().refine(value => value.title !== undefined || value.is_pinned !== undefined || value.is_archived !== undefined);
-export const nodiaAiAdmitSchema = z.object({ client_message_id: uuid, expected_conversation_revision: revision, parts: z.array(z.union([z.object({kind: z.literal("text"), text: text(32768)}).strict(), attachmentPartSchema])).min(1).max(8) }).strict();
+export const nodiaAiAdmitSchema = z.object({ client_message_id: uuid, expected_conversation_revision: revision, parts: z.array(z.union([z.object({kind: z.literal("text"), text: text(NODIA_AI_MESSAGE_TEXT_BYTES)}).strict(), attachmentPartSchema])).min(1).max(8) }).strict();
 export const nodiaAiAdmissionSchema = z.object({ message_id: uuid, conversation_revision: revision, run: nodiaAiRunSchema }).strict();
 export const nodiaAiSelectionInputSchema = z.object({ expected_conversation_revision: revision, selection: nodiaAiSelectionSchema }).strict();
-export const nodiaAiRoutingInputSchema = z.object({ expected_conversation_revision: revision, expected_routing_revision: revision, enabled: z.boolean(), target: target.nullable() }).strict()
-  .refine((value) => value.enabled === (value.target !== null));
+export const nodiaAiRoutingInputSchema = z.object({ expected_conversation_revision: revision, expected_routing_revision: revision, enabled: z.literal(false), target: z.null() }).strict();
 
 const resultRef = z.object({ tool_call_id: uuid, tool_name: text(256), contract_hash: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
 const eventBase = z.object({ event_id: uuid, conversation_id: uuid, seq: bigint, cursor: z.string().min(1).max(2048), created_at: instant, run_id: uuid });
@@ -103,7 +113,7 @@ const event = z.discriminatedUnion("kind", [
   eventBase.extend({ kind: z.literal("run_changed"), payload: z.object({ revision, state: nodiaAiRunSchema.shape.state, error: nodiaAiRunSchema.shape.error }).strict() }).strict(),
   eventBase.extend({ kind: z.literal("message_sealed"), payload: z.object({ message_id: uuid, status: z.enum(["sealed", "partial"]) }).strict() }).strict(),
   eventBase.extend({ kind: z.literal("tool_completed"), payload: z.object({ result_ref: resultRef, state: z.enum(["completed", "rejected", "unknown"]), error: nodiaAiRunSchema.shape.error }).strict() }).strict(),
-  eventBase.extend({ kind: z.literal("run_stage_changed"), payload: z.object({ stage: z.object({ stage_seq: revision, stage_key: text(128), routing_phase: z.enum(["base", "delegated"]), selection: nodiaAiSelectionSchema }).strict() }).strict() }).strict(),
+  eventBase.extend({ kind: z.literal("run_stage_changed"), payload: z.object({ stage: z.object({ stage_seq: revision, stage_key: text(128), routing_phase: z.enum(["base", "delegated"]), selection: runSelection }).strict() }).strict() }).strict(),
   eventBase.extend({ kind: z.literal("proposal_ready"), payload: nodiaAiProposalRefSchema }).strict(),
 ]);
 export const nodiaAiEventsSchema = z.object({ conversation_id: uuid, items: z.array(event).max(100), next_cursor: cursor, cursor_state: z.enum(["current", "reset_required"]), has_more: z.boolean() }).strict();

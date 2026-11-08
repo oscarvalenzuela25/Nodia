@@ -89,8 +89,8 @@ export class SnapshotNodiaAiInvoiceAnalysisUseCase {
       !context.runId ||
       !context.conversationId ||
       !context.toolCallId ||
-      !context.moduleRoutes.includes('/tools/business') ||
-      !context.moduleRoutes.includes('/tools/nodia-ai')
+      !context.moduleRoutes.includes('/business') ||
+      !context.moduleRoutes.includes('/nodia-ai')
     )
       invoiceAnalysisInvalid();
     const historical = !context.attemptId;
@@ -175,7 +175,7 @@ export class SnapshotNodiaAiInvoiceAnalysisUseCase {
     const selection = attempt.selection_snapshot;
     if (
       !selection ||
-      selection.mode !== 'token_plan_agentic' ||
+      !['agentic', 'api_key'].includes(selection.mode) ||
       !selection.connection_id ||
       !selection.model_id
     )
@@ -376,7 +376,7 @@ export class SnapshotNodiaAiInvoiceAnalysisUseCase {
       analysis_id:
         input.action === 'prepare' ? context.toolCallId! : input.analysis_id,
       review_required: true,
-      extraction_source: 'active_agentic_generation',
+      extraction_source: analysisObject(snapshot.selection).mode === 'api_key' ? 'active_api_generation' : 'active_agentic_generation',
       business_id: snapshot.business_id,
       provider_id: snapshot.provider_id,
       attachment_id: source.attachment_id,

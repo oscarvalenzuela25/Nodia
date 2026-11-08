@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import type { NodiaAiRun } from '../../nodia-ai-run/entities/nodia-ai-run.entity.js';
 import { ValidateNodiaAiSnapshotsUseCase } from './validate-nodia-ai-snapshots.use-case.js';
+import { projectHistoricalAiSnapshots } from './historical-ai-snapshots.js';
 @Injectable()
 export class ProjectNodiaAiRunUseCase {
   constructor(private readonly snapshots: ValidateNodiaAiSnapshotsUseCase) {}
@@ -13,10 +14,11 @@ export class ProjectNodiaAiRunUseCase {
       delegations: run.delegations_used,
     };
     try {
+      const historical = projectHistoricalAiSnapshots(run.selection_snapshot, run.routing_snapshot);
       this.snapshots.execute(
         {
-          base_selection: run.selection_snapshot,
-          routing: run.routing_snapshot,
+          base_selection: { ...historical.selection, mode: historical.selection.mode === 'retired' ? 'agentic' : historical.selection.mode },
+          routing: { ...historical.routing, enabled: false, target: null },
           budget: run.budget_snapshot,
           usage,
           stage: null,
@@ -42,7 +44,7 @@ export class ProjectNodiaAiRunUseCase {
         user_message_id: run.user_message_id,
         assistant_message_id: run.assistant_message_id,
         revision: run.revision,
-        selection: { ...run.selection_snapshot },
+        selection: historical.selection,
         catalog_version: run.catalog_version,
         state: run.state,
         phase: run.phase,
@@ -58,7 +60,7 @@ export class ProjectNodiaAiRunUseCase {
               correlation_id: run.id,
             }
           : null,
-        routing: structuredClone(run.routing_snapshot),
+        routing: historical.routing,
         budget_limits: { ...run.budget_snapshot },
         budget_used: usage,
         active_stage: null,

@@ -74,6 +74,10 @@ describe('GetAllInvoicesUseCase', () => {
   });
 });
 
+const actor = {
+  userId: '12',
+  sessionId: '11111111-1111-4111-8111-111111111112',
+};
 class OfflineInvoiceDataSource extends DataSource {
   async prepare() {
     await this.buildMetadatas();
@@ -138,6 +142,13 @@ describe('GetAllInvoicesUseCase: transformed HTTP filter regression', () => {
   });
   beforeEach(() => {
     const repo = source.getRepository<Invoice>('Invoice');
+    vi.spyOn(repo.manager, 'query').mockResolvedValue([
+      {
+        actorId: '12',
+        sessionId: '11111111-1111-4111-8111-111111111112',
+        isSuperAdmin: true,
+      },
+    ]);
     const create = repo.createQueryBuilder.bind(repo);
     executeQuery = vi.fn().mockResolvedValue([[], 0]);
     vi.spyOn(repo, 'createQueryBuilder').mockImplementation((alias) => {
@@ -159,7 +170,7 @@ describe('GetAllInvoicesUseCase: transformed HTTP filter regression', () => {
     });
     expect(Object.hasOwn(dto.q!, 'issue_date_gteq')).toBe(true);
     expect(dto.q!.issue_date_gteq).toBeUndefined();
-    await expect(useCase.execute(dto)).resolves.toMatchObject({
+    await expect(useCase.execute(dto, actor)).resolves.toMatchObject({
       meta: { page: 1, limit: 1, total_items: 0 },
     });
     expect(query.getQuery()).toContain('"invoice"."business_id" = :ransack_0');
@@ -172,6 +183,7 @@ describe('GetAllInvoicesUseCase: transformed HTTP filter regression', () => {
       await transform({
         q: { business_id_eq: business, issue_date_gteq: '2026-10-01' },
       }),
+      actor,
     );
     expect(query.getParameters()).toEqual({
       issueDateFrom: '2026-10-01',
@@ -180,7 +192,7 @@ describe('GetAllInvoicesUseCase: transformed HTTP filter regression', () => {
     expect(query.getQuery()).toContain('COALESCE');
   });
   it('accepts an empty filter DTO without producing any WHERE clause', async () => {
-    await useCase.execute(await transform({ q: {} }));
+    await useCase.execute(await transform({ q: {} }), actor);
     expect(query.getParameters()).toEqual({});
     expect(query.getQuery()).not.toContain(' WHERE ');
   });
@@ -192,7 +204,10 @@ describe('GetAllInvoicesUseCase: transformed HTTP filter regression', () => {
   });
   it('still rejects malformed UUIDs before executing SQL', async () => {
     await expect(
-      useCase.execute(await transform({ q: { business_id_eq: 'invalid' } })),
+      useCase.execute(
+        await transform({ q: { business_id_eq: 'invalid' } }),
+        actor,
+      ),
     ).rejects.toBeInstanceOf(BadRequestException);
     expect(executeQuery).not.toHaveBeenCalled();
   });

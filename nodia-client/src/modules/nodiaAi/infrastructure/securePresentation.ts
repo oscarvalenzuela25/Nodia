@@ -5,7 +5,6 @@ const secureTools: Readonly<Record<string, string>> = {
   nodia_secure_flows_prepare_connection_login: "connection_login",
   nodia_secure_flows_prepare_nodia_logout: "nodia_logout",
   nodia_ai_providers_prepare_codex_logout: "codex_logout",
-  nodia_ai_providers_prepare_gemini_web_logout: "gemini_web_logout",
   nodia_ai_providers_prepare_sync_models: "sync_models",
 };
 export const nodiaAiSecureKind = (tool: string): string | undefined => Object.hasOwn(secureTools, tool) ? secureTools[tool] : undefined;

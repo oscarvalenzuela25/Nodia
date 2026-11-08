@@ -78,10 +78,10 @@ export default function HumanProposalReview({ conversationId, proposal, metadata
     {action.error && <Alert severity="error">{action.error}</Alert>}
     {readonly && <Alert severity="info">{t("proposal.readonly")}</Alert>}
     {!readonly && !metadata.confirmation.available && <Alert severity="info">{t(metadata.confirmation.reason === "nodia_ai:execution_unavailable" ? "proposal.executor_unavailable" : "proposal.confirmation_unavailable")}</Alert>}
-    {action.uncertain && <Alert severity="warning" action={<Button disabled={busy} onClick={() => void action.recover()}>{t("proposal.recover")}</Button>}>{t(`proposal.uncertain_${action.uncertain}`)}</Alert>}
+    {action.uncertain && <Alert severity="warning" action={<Button variant="contained" disabled={busy} onClick={() => void action.recover()}>{t("proposal.recover")}</Button>}>{t(`proposal.uncertain_${action.uncertain}`)}</Alert>}
     {action.canReplay && <ReviewActions><Button disabled={busy} variant="outlined" onClick={() => void action.replay()}>{t("proposal.retry_confirmation")}</Button></ReviewActions>}
     {(proposal.execution_id || action.execution) && <ConfirmedExecution conversationId={conversationId} executionId={proposal.execution_id ?? action.execution!.execution_id} observed={observed} />}
-    {proposal.state === "superseded" && <ReviewActions><Button disabled={busy} onClick={() => void action.recover()}>{t("proposal.show_current")}</Button></ReviewActions>}
+    {proposal.state === "superseded" && <ReviewActions><Button variant="contained" disabled={busy} onClick={() => void action.recover()}>{t("proposal.show_current")}</Button></ReviewActions>}
     {editing && !readonly && <Box component="form" onSubmit={event => { event.preventDefault(); if (!busy && !action.uncertain) void save(); }} sx={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
       <Typography component="h5" variant="subtitle2">{t("proposal.edit_title")}</Typography>
       {proposal.steps.map((step, index) => {
@@ -105,16 +105,16 @@ export default function HumanProposalReview({ conversationId, proposal, metadata
           {temporal === "date" ? <DateInput {...temporalProps} /> : temporal === "time" ? <TimeInput {...temporalProps} /> : temporal === "instant" ? timezone ? <DateTimeInput {...temporalProps} timezone={timezone} /> : <Alert severity="error">{t("proposal.rental_timezone_unavailable")}</Alert> : <TextInput {...temporalProps} multiline={["description", "notes", "resolution_note"].includes(field.field_key)} minRows={["description", "notes", "resolution_note"].includes(field.field_key) ? 3 : undefined} maxRows={["description", "notes", "resolution_note"].includes(field.field_key) ? 6 : undefined} />}
           {field.nullable && ["text", "integer", "bigint"].includes(field.kind) && <Box sx={{ mt: 1 }}>
             {input.value === null && <Typography variant="caption" component="p">{t("proposal.null_value")}</Typography>}
-            <Button type="button" size="small" disabled={busy || input.value === null} sx={{ minHeight: 44, width: { xs: "100%", sm: "auto" } }} onClick={() => input.onChange(null)}>{t("proposal.set_null", { field: label(field.label_key) })}</Button>
+            <Button variant="contained" type="button" size="small" disabled={busy || input.value === null} sx={{ minHeight: 44, width: { xs: "100%", sm: "auto" } }} onClick={() => input.onChange(null)}>{t("proposal.set_null", { field: label(field.label_key) })}</Button>
           </Box>}
         </Box>;
       }} />)}
       </Box>;
       })}
-      <ReviewActions><Button type="submit" variant="outlined" disabled={busy || Boolean(action.uncertain) || !form.formState.isDirty}>{t("proposal.save_revision")}</Button><Button disabled={busy || Boolean(action.uncertain)} onClick={() => setEditing(false)}>{t("proposal.close_editor")}</Button></ReviewActions>
+      <ReviewActions><Button type="submit" variant="contained" disabled={busy || Boolean(action.uncertain) || !form.formState.isDirty}>{t("proposal.save_revision")}</Button><Button variant="outlined" disabled={busy || Boolean(action.uncertain)} onClick={() => setEditing(false)}>{t("proposal.close_editor")}</Button></ReviewActions>
     </Box>}
     {!readonly && <ReviewActions>
-      {fields.length > 0 && !editing && <Button disabled={busy || Boolean(action.uncertain)} onClick={() => setEditing(true)}>{t("proposal.edit")}</Button>}
+      {fields.length > 0 && !editing && <Button variant="outlined" disabled={busy || Boolean(action.uncertain)} onClick={() => setEditing(true)}>{t("proposal.edit")}</Button>}
       <Button variant="contained" disabled={busy || editing || Boolean(action.uncertain) || action.requiresReview || !metadata.confirmation.available} onClick={() => void action.confirm()}>{t("proposal.confirm_exact", { revision: proposal.revision })}</Button>
     </ReviewActions>}
   </Box>;

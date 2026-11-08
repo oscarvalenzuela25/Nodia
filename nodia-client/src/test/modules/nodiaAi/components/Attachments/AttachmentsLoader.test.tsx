@@ -7,7 +7,7 @@ import type { AttachmentPanelProps } from "../../../../../modules/nodiaAi/compon
 
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 vi.mock("../../../../../modules/nodiaAi/components/Attachments/loadAttachments", () => ({ loadAttachments: vi.fn() }));
-const props: AttachmentPanelProps = { conversationId: "11111111-1111-4111-8111-111111111111", disabled: false, onRecordingChange: vi.fn(), draft: { entries: [], parts: [], reviewedTextBytes: 0, resetReview: vi.fn(), busy: false, ready: true, add: vi.fn(), upload: vi.fn(), review: vi.fn(), remove: vi.fn(), edit: vi.fn(), clear: vi.fn() } };
+const props: AttachmentPanelProps = { conversationId: "11111111-1111-4111-8111-111111111111", disabled: false, onRecordingChange: vi.fn(), draft: { entries: [], parts: [], reviewedTextBytes: 0, resetReview: vi.fn(), busy: false, ready: true, add: vi.fn(), upload: vi.fn(), review: vi.fn(), remove: vi.fn(), edit: vi.fn(), clear: vi.fn(), capabilities: { data: undefined, isFetching: false, isError: false }, enableCapabilities: vi.fn(), refreshCapabilities: vi.fn(), admission: undefined, admissionInFlight: false, reserveAdmission: vi.fn(), settleAdmission: vi.fn(), dismissRejectedAdmission: vi.fn() } };
 beforeEach(() => vi.resetAllMocks());
 describe("secondary attachment panel intent boundary", () => {
   it("loads only on intent and recovers chunk failure locally", async () => {

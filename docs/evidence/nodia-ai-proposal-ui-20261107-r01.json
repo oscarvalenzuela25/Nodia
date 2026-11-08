@@ -1,0 +1,265 @@
+{
+  "schema": "nodia-ai-proposal-ui-validation/1",
+  "date_local": "2026-11-07",
+  "status": "ClientR38_adopted_visual_scope_verified",
+  "scope": {
+    "production_delta_files": 8,
+    "existing_changed": 7,
+    "new_display_helper": 1,
+    "changed_presentation": [
+      "ProposalPreview",
+      "ProposalObservation header",
+      "HumanProposalReview button variants",
+      "historical sales display labels"
+    ],
+    "other_execution_or_tool_result_cards_changed": false,
+    "confirmed_means": "confirmation admitted; not proof that business effect executed",
+    "authority_or_registry_changed": false,
+    "provider_contract_changed": false,
+    "OCR_timeout_resolved_by_this_delivery": false
+  },
+  "behavior": {
+    "expand_min_height_px": 44,
+    "before_after_container_threshold_px": 560,
+    "presence_flags_preserved": true,
+    "null_zero_false_strings_IDs_preserved": true,
+    "technical_details_full_exact_content": true,
+    "visited_draft_retained_when_collapsed": true,
+    "collapse_disabled_during_proposal_review_fetch_or_human_uncertainty": true,
+    "confirm_save_variant": "contained",
+    "edit_close_variant": "outlined",
+    "historical_sales_operations_display_only": [
+      "create",
+      "update",
+      "complete",
+      "cancel",
+      "discard"
+    ],
+    "legacy_preparation_or_execution_enabled": false,
+    "new_label_queries": 0
+  },
+  "automated": {
+    "regressions_passed": 218,
+    "files_passed": 4,
+    "helper_cases": 9,
+    "helper_included_in_218": true,
+    "duration_seconds": 30.13,
+    "first_attempt": {
+      "passed": 217,
+      "failed": 1,
+      "classification": "test interaction method only",
+      "reason": "userEvent refuses disabled MUI pointer interaction",
+      "correction": "fireEvent dispatch plus disabled/expanded assertions; no product fix or weakened assertion"
+    },
+    "post_regression_visual_adjustments": "reviewed presentation-only; no rerun218 claimed on final bytes",
+    "final_global_typecheck_exit": 0,
+    "final_global_lint_exit": 0,
+    "build_inputs": 1401,
+    "build_outputs": 185,
+    "isolated_production_typecheck_diagnostics": 0
+  },
+  "synthetic_browser": {
+    "fixture_only": true,
+    "business_network": false,
+    "languages": [
+      "es",
+      "en"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "comparison_two_columns_region_widths": [
+      1058,
+      598
+    ],
+    "comparison_single_column_region_width": 308,
+    "viewport320": {
+      "document_scroll_width": 310,
+      "region_width": 244,
+      "overflow_elements": 0,
+      "toggle_width": 244,
+      "toggle_height": 44
+    },
+    "draft_preserved": true,
+    "full_hash_keyboard_expand": true,
+    "legacy_readonly_labels": true,
+    "Core_editor_loaded": true,
+    "zero_false_null_absence_large_IDs": true,
+    "harness_closed": true
+  },
+  "real_browser": {
+    "authenticated": true,
+    "proposal_state": "expired",
+    "readonly": true,
+    "mutation_controls": 0,
+    "revision": 1,
+    "new_asset": "/assets/index-DIEGsBfB.js",
+    "fields_recursive_and_legible": true,
+    "full_hash_keyboard_expand": true,
+    "collapse_reopen_stable": true,
+    "viewport320": {
+      "document_scroll_width": 310,
+      "region_width": 212,
+      "region_scroll_width": 212,
+      "overflow_inside": 0,
+      "toggle_width": 212,
+      "toggle_height": 44
+    },
+    "original_tab_reloaded": false,
+    "original_draft_edited": false,
+    "business_mutations": 0,
+    "AI_messages_sent": 0,
+    "confirmations": 0,
+    "HTTP_reads_performed": true,
+    "scope": "reads of existing expired proposal; not a new authority or write test"
+  },
+  "adoption": {
+    "manifest_sha256": "0af574a3795579f0522aa70352e99d8039eb49fedde446837c555436ade5fdb9",
+    "canonical_receipt_sha256": "8fe309edc5d04ff360b1a10d11adca7cbdc33bd02422f25f43700fa564ad4505",
+    "Nginx_sha256": "0ad3eb2f72fc0f3973a0d34e743a58ed5cbb58fcfb653d2471d50a31db4c07bb",
+    "initial_precheck": "protected baseline changed; before intent/reload",
+    "reconciliation": "sole natural rotate.timer SubState running→waiting; service success/exit0; exact new pin, no timer action/guard relaxation",
+    "activation_count": 1,
+    "Nginx_reload_count": 1,
+    "Server_Native_restarts": 0,
+    "operation_SQL_queries": 0,
+    "operation_provider_requests": 0,
+    "current_assets_verified": 185,
+    "previous_R37_assets_verified": 181,
+    "legacy_versions_verified": 20,
+    "miss_HTTP_status": 404,
+    "API_public_status": 200,
+    "API_unauthenticated_status": 401,
+    "Server_Native_SDK_auth_env_timers_preserved": true
+  },
+  "knowledge_impact": {
+    "visual_and_labeling_only": true,
+    "new_context_operations_capabilities_bindings": false,
+    "approved_baseline_path": "ops/lab/artifacts/invoice-manual-match-qa-20261107-r01/approved-before.json",
+    "approved_baseline_sha256": "c254e2cf7491db06c7881cfd1cc409664f87fa00098c1550ca3fc38f38b05662",
+    "approved_documents_byte_identical": 44,
+    "draft_revisions": {
+      "nodia-ai": 72,
+      "runtime-policy": 20
+    },
+    "approval_or_publication": false,
+    "prior_evidence_retained_transitively": [
+      {
+        "document": "nodia-ai",
+        "path": "docs/evidence/nodia-ai-invoice-ocr-chat-acceptance-20261026-r01.json",
+        "sha256": "d3cecfef0ffb1fae7bb2a68fdec852560074300dc2a20b1448ed0d4f602a74c9",
+        "reason": "metadata max32; body/history retained"
+      },
+      {
+        "document": "nodia-ai.runtime-policy",
+        "path": "docs/evidence/nodia-ai-ai04-runtime-policy-validation.json",
+        "sha256": "5b598d86d79824f05c25c613e7621b1e26b61f8ca725c68487e32f9ff8c6a391",
+        "reason": "metadata max32; body/history retained"
+      }
+    ]
+  },
+  "limitations": [
+    "No physical-phone validation",
+    "No new confirmation or business effect tested",
+    "No inference/provider acceptance claimed",
+    "No performance improvement measurement"
+  ],
+  "source_receipts": [
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/checks/root-quality.json",
+      "sha256": "8eba0bfb9250ff76d61bf8603b34ae2d1ed0b366c97c0bccc3f41a16c433ac8d"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/checks/proposal-regressions.json",
+      "sha256": "5f3137ba9aee8b42bc4cbfa668197ddeca0d8c52f21cbe93b1496d79f93d928b"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/client-r38-r01/source-freeze.json",
+      "sha256": "768d78ed60edca048a2d6a99e5610d6ca6a7b85258b83fb0e5cd10682a5c44f8"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/client-r38-r01/build-receipt.json",
+      "sha256": "4460a1ec92424e787f47e33c639a3b5b7cd27a0c84a1b2e1e3c9da9d0f05e53c"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/client-r38-r01/release-manifest.json",
+      "sha256": "0af574a3795579f0522aa70352e99d8039eb49fedde446837c555436ade5fdb9"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/client-r38-r01/remote-activation-check.json",
+      "sha256": "afe2543fee967799308891e8ce961532aabc5f4af65612dc5d12679b3cff0ed8"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/client-r38-r01/reconciled-helper-review.json",
+      "sha256": "2deb42c5d36f00999248082d971e2def378971546b85395c76fde88e632cbaa4"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/client-r38-r01/remote-activation-reconciled-check.json",
+      "sha256": "9ce57ec87f75d1a315f12d08499d21d531111d0c548b6711ca9639cc91b56d3e"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/client-r38-r01/remote-activation-reconciled.json",
+      "sha256": "07f8f9f425e203d603a895950eab42df3be7edb8eb49d203144ade09d4ce6a29"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/operation/adoption-summary.json",
+      "sha256": "c63af60a0ba40a5f2a315f8d59c8ce03716627f6ad2cdf1e114c77530062e623"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/runtime/final-static-health.json",
+      "sha256": "35fa836eb0d050f313f785182e11a06231477202949a8c6a8f32bf1d1647e25b"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/browser/synthetic-qa.json",
+      "sha256": "720d7e8ec279496fecad43a2cc985c4573dee0cdba307f586cb8dd8d7ed58e67"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/browser/vm-qa.json",
+      "sha256": "cad1ed3857b4fd2e38351559e996fcc753b8c3898e0ccee8b1faf6be6d83e2e2"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/browser/synthetic-historical-dark-320.png",
+      "sha256": "6c2a082d94f9ebf7d6caeb31820b2a2ec55bbc42ac84b0e5c469f4f7b8762771"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/browser/synthetic-finance-comparison-dark-1280.png",
+      "sha256": "1f6b5470c014054204f556f480101214a58f3e96060e562ed69115d68d8edc16"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/browser/synthetic-finance-light-narrow.png",
+      "sha256": "f9b8b8a3262c0470df110d9abb7da4a7eb31a3132080d705e1bc80047f94c095"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/browser/vm-proposal-desktop.png",
+      "sha256": "d4b6f1aaca50813605f453b9db94c2e2361921f73c3e5e76f8711dc6a753afd8"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/browser/vm-proposal-details-desktop.png",
+      "sha256": "d63db24389561d575d5f4ce62cf3f90027b8882290a251c319f13a4a39b822d8"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/browser/vm-proposal-mobile-320.png",
+      "sha256": "2598dc68c4b31605e326d790506da7bd8e04f2393729b6b2b66bac57c1124586"
+    },
+    {
+      "path": "ops/lab/artifacts/nodia-ai-proposal-ui-20261107-r01/preview/closure.json",
+      "sha256": "6a3a7075abac4467fe1711ae3313ea0dbba34e104b67eae2e5b5924ea23229a1"
+    }
+  ],
+  "documentation_verification": {
+    "UTF8_LF_files": 11,
+    "new_links": "passed",
+    "source_receipt_hashes_verified": 20,
+    "approved_byte_identical": 44,
+    "knowledge_check": {
+      "exit_code": 0,
+      "sources": 81,
+      "excluded": 37,
+      "documents": 44,
+      "fragments": 46,
+      "mode": "check only; no build/publication",
+      "release_id_omitted": "avoid hashing this compiler-input evidence into itself"
+    }
+  }
+}

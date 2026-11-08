@@ -79,7 +79,7 @@ export const getCodexLogin = async (id: string, jobId: string) => {
 export const startCodexLogin = async (id: string) => {
   const { data } = await mainInstance.post<unknown>(
     endpoint(id, "/login"),
-    { mode: "token_plan_agentic" },
+    { mode: "agentic" },
     { timeout: 65000 },
   );
   return codexJobSchema.parse(data);
@@ -92,7 +92,7 @@ export const cancelCodexLogin = async (id: string, jobId: string) => {
 };
 export const logoutCodex = async (id: string) => {
   const { data } = await mainInstance.post<unknown>(endpoint(id, "/logout"), {
-    mode: "token_plan_agentic",
+    mode: "agentic",
   });
   return z
     .object({ disconnected: z.literal(true) })
@@ -100,10 +100,10 @@ export const logoutCodex = async (id: string) => {
     .parse(data);
 };
 
-export const getCodexSession = async (id: string) => {
+export const getCodexSession = async (id: string, signal?: AbortSignal) => {
   const { data } = await mainInstance.get<unknown>(
-    endpoint(id, "?mode=token_plan_agentic"),
-    { timeout: 65000 },
+    endpoint(id, "?mode=agentic"),
+    { timeout: 65000, signal },
   );
   return codexSessionSchema.parse(data);
 };

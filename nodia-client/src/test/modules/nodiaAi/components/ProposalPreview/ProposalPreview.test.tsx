@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ExecutionObservation from "../../../../../modules/nodiaAi/components/ExecutionObservation";
+import type { NodiaAiPublicProposal } from "../../../../../modules/nodiaAi/infrastructure/types";
 import useAuthStore from "../../../../../store/authStore";
 import { chatId, run } from "../../infrastructure/fixtures";
 import { proposal, proposalEvent, stepId, readonlyReview, editableProposal, editableReview } from "../../infrastructure/proposalFixtures";
@@ -15,7 +16,7 @@ import { rentalPolicyProposal, rentalPolicyReview, rentalReservationProposal, re
 import i18n from "../../../../../translate";
 import { rentalPaymentProposal, rentalRefundProposal, rentalVoidProposal, rentalExpensePayProposal, rentalBlockProposal, rentalApprovalProposal } from "../../infrastructure/rentalMoneyPreparationFixtures";
 
-const mocks = vi.hoisted(() => ({ getNodiaAiEvents: vi.fn(), getNodiaAiProposal: vi.fn(), getNodiaAiProposalReview: vi.fn(), updateNodiaAiProposal: vi.fn(), error: vi.fn(), success: vi.fn() }));
+const mocks = vi.hoisted(() => ({ getNodiaAiEvents: vi.fn(), getNodiaAiProposal: vi.fn(), getNodiaAiProposalReview: vi.fn(), updateNodiaAiProposal: vi.fn(), challengeNodiaAiProposal: vi.fn(), confirmNodiaAiProposal: vi.fn(), error: vi.fn(), success: vi.fn() }));
 vi.mock("../../../../../modules/nodiaAi/infrastructure/services", async original => ({ ...await original<object>(), ...mocks }));
 vi.mock("sileo", () => ({ sileo: { error: mocks.error, success: mocks.success } }));
 let client: QueryClient;
@@ -32,11 +33,62 @@ function open() { return render(<QueryClientProvider client={client}><MemoryRout
 async function preview() { const user = userEvent.setup(); await user.click(await screen.findByRole("button", { name: "Ver propuesta" })); return user; }
 
 describe("NodiaAI immutable proposal previews", () => {
+  it("presents expired sales snapshots without changing their values or reviving retired writes, and reveals identity only on intent", async () => {
+    const historical: NodiaAiPublicProposal = {
+      ...proposal, state: "expired", expires_at: "2026-10-28T23:33:00.000Z",
+      steps: [{
+        ...proposal.steps[0], tool_name: "nodia_sales_prepare_create", effect_key: "sales.create",
+        changes: [{
+          field_key: "sale_pricing_snapshot", before: null, before_present: false, after_present: true, origin: "database",
+          after: { kind: "object", fields: [
+            { field_key: "payment_method", value: "cash" },
+            { field_key: "total_amount", value: "1200" },
+            { field_key: "lines", value: { kind: "array", items: [{ kind: "object", fields: [
+              { field_key: "product_id", value: "9007199254740993" },
+              { field_key: "name", value: "[QA] Historical product" },
+              { field_key: "quantity", value: 0 },
+              { field_key: "is_offer_enabled", value: false },
+              { field_key: "offer_price", value: null },
+              { field_key: "synthetic_unknown_field", value: "[QA] Unchanged unknown value" },
+            ] }] } },
+          ] },
+        }],
+      }],
+    };
+    mocks.getNodiaAiProposal.mockResolvedValue(historical);
+    open(); const user = await preview();
+    expect(await screen.findByText("Paso 1: Crear borrador de venta")).toBeInTheDocument();
+    await waitFor(() => expect(mocks.getNodiaAiProposalReview).toHaveBeenCalledOnce());
+    expect(screen.getByText("Expirada")).toBeInTheDocument();
+    for (const text of ["Precios y condiciones guardados", "Detalle de productos", "[QA] Historical product", "9007199254740993", "1200", "synthetic_unknown_field", "[QA] Unchanged unknown value"]) {
+      expect(screen.getByText(text)).toBeVisible();
+    }
+    for (const [field, value] of [
+      ["Medio de pago", i18n.t("business:pos.payment_cash")],
+      ["Cantidad", "0"], ["Oferta activa", i18n.t("nodiaAi:proposal.false_value")],
+      ["Precio de oferta", i18n.t("nodiaAi:proposal.null_value")],
+    ]) {
+      expect(within(screen.getByText(field).parentElement!).getByText(value)).toBeVisible();
+    }
+    expect(screen.queryByText("sales.create")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Corregir propuesta" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Confirmar revisión/ })).not.toBeInTheDocument();
+    const identity = screen.getByText(`Identidad del contenido: ${historical.hash}`);
+    expect(identity).not.toBeVisible();
+    await user.click(screen.getByText("Detalles de la propuesta"));
+    expect(identity).toBeVisible();
+    expect(identity).toHaveTextContent(historical.hash);
+    expect(mocks.getNodiaAiProposal).toHaveBeenCalledOnce();
+    expect(mocks.getNodiaAiProposalReview).toHaveBeenCalledOnce();
+    expect(mocks.updateNodiaAiProposal).not.toHaveBeenCalled();
+    expect(mocks.challengeNodiaAiProposal).not.toHaveBeenCalled();
+    expect(mocks.confirmNodiaAiProposal).not.toHaveBeenCalled();
+  });
   it.each([
     ["nodia_secure_flows_prepare_api_key_create", "api_key_create"], ["nodia_secure_flows_prepare_api_key_update", "api_key_update"],
     ["nodia_api_keys_prepare_delete", "api_key_delete"], ["nodia_secure_flows_prepare_connection_login", "connection_login"],
     ["nodia_secure_flows_prepare_nodia_logout", "nodia_logout"], ["nodia_ai_providers_prepare_codex_logout", "codex_logout"],
-    ["nodia_ai_providers_prepare_gemini_web_logout", "gemini_web_logout"], ["nodia_ai_providers_prepare_sync_models", "sync_models"],
+    ["nodia_ai_providers_prepare_sync_models", "sync_models"],
   ])("shows the exact safe target and human action for %s", async (tool_name, kind) => {
     await i18n.changeLanguage("es");
     mocks.getNodiaAiProposal.mockResolvedValue({ ...proposal, steps: [{ ...proposal.steps[0], tool_name, kind: "secure_flow",
@@ -58,7 +110,7 @@ describe("NodiaAI immutable proposal previews", () => {
     expect(await screen.findByText(`Paso 1: ${label}`)).toBeInTheDocument();
     expect(screen.getByText("Registro: [QA] Same provider · 9007199254740993")).toBeInTheDocument();
     expect(screen.getByText(/Guardar configuración no comprueba disponibilidad/)).toBeInTheDocument();
-    expect(screen.getByText("Web · Modelo seleccionado")).toBeInTheDocument();
+    expect(screen.getByText("API · Modelo seleccionado")).toBeInTheDocument();
     expect(screen.getByText("Agentic · Modelo seleccionado")).toBeInTheDocument();
     expect(screen.getByText("Catálogo resuelto")).toBeInTheDocument();
     expect(screen.getByText("Disponibilidad")).toBeInTheDocument();
@@ -68,7 +120,7 @@ describe("NodiaAI immutable proposal previews", () => {
     expect(screen.getByText("Intensidad general del modo")).toBeInTheDocument();
     expect(screen.getByText("Preferencia booleana histórica")).toBeInTheDocument();
     expect(screen.getByText(/Dejar la intensidad sin valor elimina/)).toBeInTheDocument();
-    expect(screen.queryByText("token_plan_web.selected_model")).not.toBeInTheDocument();
+    expect(screen.queryByText("agentic.selected_model")).not.toBeInTheDocument();
     expect(mocks.updateNodiaAiProposal).not.toHaveBeenCalled();
   });
   it("accepts an explicit null default mode from a saved provider proposal", async () => {

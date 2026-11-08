@@ -1,0 +1,154 @@
+{
+  "schema": "nodia-ai-ai40-selective-fixes-validation-v1",
+  "status": "local_validation_passed_no_live_acceptance_claim",
+  "validated_on_host_date": "2026-10-23",
+  "working_tree": {
+    "files": [
+      {
+        "path": "src/common/ai/codex/codex-chat-runtime.ts",
+        "sha256": "98d4256af0e2e82dac7dd5e9aaf3add3c4e835f208579cb9c04574b20ab812a4",
+        "bytes": 31942,
+        "utf8_lf": true
+      },
+      {
+        "path": "src/ai-provider/use-case/codex-chat-runtime.use-case.spec.ts",
+        "sha256": "6a868c1043362fd52980d1d73d79a7d889ea65ebdedf7ade3f7b3d2c9654b07d",
+        "bytes": 34483,
+        "utf8_lf": true
+      },
+      {
+        "path": "src/nodia-ai-adapter/use-case/codex-nodia-ai-adapter.use-case.ts",
+        "sha256": "e6c6400f02e895b20b60897f3c77dbbcb12d893c7db025aa3ccb4caf8f090c37",
+        "bytes": 40201,
+        "utf8_lf": true
+      },
+      {
+        "path": "src/nodia-ai-adapter/use-case/codex-nodia-ai-adapter.use-case.spec.ts",
+        "sha256": "93402113e4929f916f04efb01bc613f59575d1b2f651ae18705c5ff2ce4fb070",
+        "bytes": 54158,
+        "utf8_lf": true
+      },
+      {
+        "path": "src/nodia-ai-context/use-case/build-nodia-ai-compaction.use-case.ts",
+        "sha256": "a04a0717faae9e26d673e1c42d2c72fdc150590a0fcf4cbe87942a82a5602183",
+        "bytes": 9435,
+        "utf8_lf": true
+      },
+      {
+        "path": "src/nodia-ai-context/use-case/build-nodia-ai-compaction.use-case.spec.ts",
+        "sha256": "61c4809e2a620789ceaaa86b1f9eb7a528327b642fbbc637ecef6bb88ce581f5",
+        "bytes": 13824,
+        "utf8_lf": true
+      },
+      {
+        "path": "src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+        "sha256": "2ce8f0661c25f0b8d48e59de8e3801f6180ecf8151c0d79397c5e167ad8d2965",
+        "bytes": 41765,
+        "utf8_lf": true
+      },
+      {
+        "path": "src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts",
+        "sha256": "623dfb7d202d669d81786809c74468a2e75d2fa2b9c74e78de6962f190c179ec",
+        "bytes": 86868,
+        "utf8_lf": true
+      }
+    ],
+    "qa": [
+      {
+        "command": "npx vitest run src/ai-provider/use-case/codex-chat-runtime.use-case.spec.ts src/nodia-ai-adapter/use-case/codex-nodia-ai-adapter.use-case.spec.ts src/nodia-ai-context/use-case/build-nodia-ai-compaction.use-case.spec.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts --reporter=dot",
+        "exit_code": 0,
+        "test_files_passed": 4,
+        "tests_passed": 275,
+        "tests_failed": 0,
+        "duration_seconds": 3.06
+      },
+      {
+        "command": "npx oxlint src/common/ai/codex/codex-chat-runtime.ts src/ai-provider/use-case/codex-chat-runtime.use-case.spec.ts src/nodia-ai-adapter/use-case/codex-nodia-ai-adapter.use-case.ts src/nodia-ai-adapter/use-case/codex-nodia-ai-adapter.use-case.spec.ts src/nodia-ai-context/use-case/build-nodia-ai-compaction.use-case.ts src/nodia-ai-context/use-case/build-nodia-ai-compaction.use-case.spec.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts",
+        "exit_code": 0,
+        "diagnostics": 0
+      },
+      {
+        "command": "npx tsc --project tsconfig.build.json --noEmit",
+        "exit_code": 0,
+        "emitted": false
+      }
+    ],
+    "tests_passed": 275,
+    "test_files_passed": 4
+  },
+  "root_independent_selection_flow_regression": {
+    "reported_by": "root",
+    "host_start_time": "2026-10-23 16:44:52",
+    "command": "npx vitest run src/nodia-ai-tools/use-case/nodia-ai-tool-selection-flow.use-case.spec.ts",
+    "exit_code": 0,
+    "test_files_passed": 1,
+    "tests_passed": 47,
+    "tests_failed": 0
+  },
+  "combined_focused_checks": {
+    "tests_passed": 322,
+    "test_files_passed": 5,
+    "scope": "Focused cohorts only; not a complete server suite."
+  },
+  "selective_R05_successor": {
+    "production_files": [
+      {
+        "path": "src/common/ai/codex/codex-chat-runtime.ts",
+        "baseline_sha256": "c23e319bff20a8ecbb484bd482981f6c16d71091ac7a40a62919d4b4d809591a",
+        "target_sha256": "1193e72a44efe0f03eeea9579e4e8066348047185f1556f9c45cbae43f5e187a",
+        "working_sha256": "98d4256af0e2e82dac7dd5e9aaf3add3c4e835f208579cb9c04574b20ab812a4",
+        "target_bytes": 28757
+      },
+      {
+        "path": "src/nodia-ai-adapter/use-case/codex-nodia-ai-adapter.use-case.ts",
+        "baseline_sha256": "c0f302b58df2f175ffd3b6586d3657699ac1163dc0f6b8cf89d4940fae6f05ba",
+        "target_sha256": "317ad121596317159cbaa0954bdfa20eea7035e311306b8f207a78f6088edb41",
+        "working_sha256": "e6c6400f02e895b20b60897f3c77dbbcb12d893c7db025aa3ccb4caf8f090c37",
+        "target_bytes": 34005
+      },
+      {
+        "path": "src/nodia-ai-context/use-case/build-nodia-ai-compaction.use-case.ts",
+        "baseline_sha256": "f47bbcef2dc125af780c663fe7c4c658ea8fd4a5a61ad7df6863b9c34b358273",
+        "target_sha256": "a04a0717faae9e26d673e1c42d2c72fdc150590a0fcf4cbe87942a82a5602183",
+        "working_sha256": "a04a0717faae9e26d673e1c42d2c72fdc150590a0fcf4cbe87942a82a5602183",
+        "target_bytes": 9435
+      },
+      {
+        "path": "src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+        "baseline_sha256": "3fc0c3ee8a5464f76f5f0088fc6220d1d56179216c9caed4763be31cf1922c19",
+        "target_sha256": "2ce8f0661c25f0b8d48e59de8e3801f6180ecf8151c0d79397c5e167ad8d2965",
+        "working_sha256": "2ce8f0661c25f0b8d48e59de8e3801f6180ecf8151c0d79397c5e167ad8d2965",
+        "target_bytes": 41765
+      }
+    ],
+    "source_count": 4,
+    "patch_sha256": "c880f6a2922fd3abaf00ce467c8e5c82bcba63365bc852c383031d83ae158daa",
+    "patch_bytes": 12092,
+    "audio_candidate_excluded": true,
+    "new_source_dependencies": [],
+    "unchanged_dependencies": "Existing R05 contracts and modules; protocol tool name is local and does not import the Nest selection use case.",
+    "byte_guard": "Each isolated source is UTF-8/LF and contains neither codex-chat-audio imports nor CodexChatAudio symbols.",
+    "portable_materials": {
+      "local_source_manifest": ".tmp/ai40-r06-fix-port-r01/source-manifest.json",
+      "local_patch": ".tmp/ai40-r06-fix-port-r01/selective.patch"
+    },
+    "packaging_and_environment_acceptance": "Tracked separately by the native operator; this report does not assert adoption."
+  },
+  "verified_rules": [
+    "Compaction response transport is mandatory and selected from the real adapter observation source; Codex receives plain summary JSON, historical Gemini retains its answer envelope instruction. Unknown sources and omitted transport fail closed.",
+    "Runtime can reconcile an exact native completed turn without an agent message as a completed transport, without inventing text or repeating turn/start. Failed and cancelled native outcomes remain rejected.",
+    "Adapter accepts exactly empty text only after a genuine forwarded nodia_capabilities_select callback returns its exact four-key non-business ACK for the captured unique capability ID set. Ordinary empty or whitespace replies and invalid terminal proofs remain rejected.",
+    "ProcessStage independently validates SQL selection state and persists its ACK-pending barrier, without sealing an intermediate assistant message or expanding tools before that barrier."
+  ],
+  "not_proven": [
+    "The historical real mcp_result_unknown cause is not established by these deterministic regressions.",
+    "No live account, generation, deployment, native MIME acceptance or business effect is accepted by this local validation.",
+    "The selective runtime change modifies the native runtime fingerprint; old MCP or image proofs cannot be copied or treated as acceptance for the new fingerprint.",
+    "Working-tree WAV candidate support remains excluded from the R05-derived selective sources."
+  ],
+  "references": [
+    "docs/evidence/nodia-ai-ai40-real-unknown-reconciliation-r01.json",
+    "docs/mvp/80-nodia-ai-ai34-long-context-compaction.md",
+    "docs/mvp/43-nodia-ai-execution-architecture.md"
+  ]
+}

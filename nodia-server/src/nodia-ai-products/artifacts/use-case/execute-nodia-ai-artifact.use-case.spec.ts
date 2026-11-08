@@ -13,12 +13,28 @@ const invalidInputs: NodiaAiJsonObject[] = [{ id: '9223372036854775808' }, { id:
 function fixture() {
   const invoice = { id: '1', business_id: business, path_storage: `invoices/${business}/synthetic.pdf` };
   const repository = { findOne: vi.fn(async () => invoice) };
+  const authority = { current: true, visible: true };
+  const manager = {
+    queryRunner: { isTransactionActive: true },
+    getRepository: vi.fn(() => repository),
+    query: vi.fn(async (sql: string) => {
+      if (sql.startsWith('SELECT u.id')) return authority.current ? [{
+        actorId: '1', sessionId: chat, isSuperAdmin: false,
+      }] : [];
+      if (sql.startsWith('SELECT business.id::text'))
+        return authority.visible ? [{ id: business }] : [];
+      if (sql.startsWith('SELECT resource.id::text'))
+        return authority.visible ? [{ id: '1' }] : [];
+      return [];
+    }),
+  } as unknown as EntityManager;
+  Object.assign(repository, { manager });
   const context: NodiaAiToolHandlerContext = {
-    manager: { queryRunner: { isTransactionActive: true }, getRepository: vi.fn(() => repository) } as unknown as EntityManager,
-    actor: { actorId: '1', sessionId: chat, isSuperAdmin: false, modules: [{ id: '1', key: 'businesses', route: '/tools/business' }] },
-    moduleRoutes: ['/tools/business'], conversationId: chat, toolCallId: ref,
+    manager,
+    actor: { actorId: '1', sessionId: chat, isSuperAdmin: false, modules: [{ id: '1', key: 'businesses', route: '/business' }] },
+    moduleRoutes: ['/business'], conversationId: chat, toolCallId: ref,
   };
-  return { invoice, repository, context, subject: new ExecuteNodiaAiArtifactUseCase() };
+  return { invoice, repository, context, authority, subject: new ExecuteNodiaAiArtifactUseCase() };
 }
 describe('NodiaAI regenerable artifact references', () => {
   it('issues an opaque authenticated invoice reference without storage keys, data or URLs', async () => {
@@ -42,6 +58,23 @@ describe('NodiaAI regenerable artifact references', () => {
     const prepared = await f.subject.prepare('invoices_file', { id: '1' }, f.context);
     f.invoice.path_storage = `invoices/${business}/different.pdf`;
     await expect(prepared.verify(f.context)).rejects.toThrow('nodia_ai:artifact_changed');
+  });
+  it('rejects an invoice reference when business membership or the session is revoked', async () => {
+    const f = fixture();
+    const prepared = await f.subject.prepare('invoices_file', { id: '1' }, f.context);
+    f.authority.visible = false;
+    await expect(prepared.verify(f.context)).rejects.toThrow('business:resource_not_found');
+    f.authority.visible = true;
+    f.authority.current = false;
+    await expect(prepared.verify(f.context)).rejects.toThrow('auth:session_expired');
+  });
+  it('rechecks explicit CSV business and supplier identities before issuing or reusing references', async () => {
+    const f = fixture();
+    const prepared = await f.subject.prepare('providers_export_csv', { business_id: business, ids: ['1'] }, f.context);
+    f.authority.visible = false;
+    await expect(prepared.verify(f.context)).rejects.toThrow('business:resource_not_found');
+    await expect(f.subject.prepare('products_export_csv', { business_id: business }, f.context))
+      .rejects.toThrow('business:resource_not_found');
   });
   it.each(['invoices_file', 'products_export_csv', 'providers_export_csv'] as const)('rejects revoked destination for %s even for a cached result', async (operation) => {
     const f = fixture();
@@ -76,6 +109,9 @@ describe('NodiaAI regenerable artifact references', () => {
     const source = readFileSync(new URL('../../contracts/artifacts.schema.json', import.meta.url), 'utf8');
     const family = createNodiaAiArtifactsFamily(source);
     expect(family.capabilities.map((cap) => cap.toolName)).toEqual(['nodia_invoices_file', 'nodia_products_export_csv', 'nodia_providers_export_csv']);
+    expect(family.capabilities.map((cap) => [cap.toolName, cap.revision])).toEqual([
+      ['nodia_invoices_file', 1], ['nodia_products_export_csv', 2], ['nodia_providers_export_csv', 1],
+    ]);
     expect(family.capabilities.every((cap) => cap.kind === 'read_artifact' && cap.external && cap.actionKeys.length === 0)).toBe(true);
     expect(new Set(family.resources.map((resource) => resource.key)).size).toBe(3);
   });

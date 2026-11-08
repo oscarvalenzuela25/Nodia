@@ -17,12 +17,12 @@ const params = new URLSearchParams(location.search);
 await i18n.changeLanguage(params.get("lang") === "en" ? "en" : "es");
 config.setState({ themeType: params.get("theme") === "dark" ? "dark" : "light" });
 useAuthStore.getState().login({ token: "synthetic-never-sent", expiresAt: Date.now() + 900_000, user: { id: "topbar-qa", name: "QA" } });
-settings.getState().setContext({ roles: ["super_admin"], actions: [], modules: [{ module_group_key: "settings", translates: [], modules: [{ key: "ai-providers", link: "/settings/ai-providers", translates: [] }] }] });
+settings.getState().setContext({ roles: ["super_admin"], actions: [], modules: [{ module_group_key: "settings", translates: [], modules: [{ key: "ai-providers", link: "/ai-providers", translates: [] }] }] });
 const health: AiProvidersHealthResponse = {
   timestamp: "2026-10-09T12:00:00Z", overallStatus: "degraded", alerts: [],
-  engines: { active_engine: "web", web: { engine: "web", available: true, authenticated: true }, agentic: { engine: "agentic", available: false, authenticated: false } },
+  engines: { active_engine: "agentic", agentic: { engine: "agentic", available: false, authenticated: false }, },
   providers: [{ id: "900", key: "gemini", name: "QA connection", is_default: true, isActive: true,
-    use_api_key: false, use_token_plan_web: true, use_token_plan_agentic: true, mode: "web_session", status: "degraded",
+    use_api_key: true, apiKeysCount: 1, use_agentic: true, mode: "api_key", status: "degraded",
     statusBadge: "", serviceState: "", lastCheck: null, latencyMs: null, hasConnection: true }],
   summary: { totalProviders: 1, activeProviders: 1, healthyProviders: 0, incidentsCount: 0 },
 };

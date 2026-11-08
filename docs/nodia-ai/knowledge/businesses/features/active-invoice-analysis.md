@@ -4,13 +4,13 @@
   "document_id": "businesses.active-invoice-analysis",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 1,
-  "document_status": "draft",
+  "revision": 3,
+  "document_status": "approved",
   "implementation": {
     "status": "partial",
-    "notes": "AI36-C03 implementa un candidato MCP de análisis en la generación activa y un contrato privado puro que reutiliza el parser nativo. Publicación y aceptación generativa real pendientes."
+    "notes": "Candidato MCP implementado; contrato privado puro adoptado y comprobado en la VM Linux local el2026-10-25. Reutiliza el parser nativo sin OCR anidado. Publicación y aceptación del recorrido generativo específico siguen pendientes."
   },
-  "integration_status": "unregistered",
+  "integration_status": "published",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
   "sources": [
     {
@@ -31,14 +31,19 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-10-18",
+    "checked_on": "2026-10-25",
     "evidence_paths": [
       "docs/evidence/nodia-ai-ai36-c03-validation.json",
-      "docs/evidence/nodia-ai-ai36-c03-python-linux-validation.json"
+      "docs/evidence/nodia-ai-ai36-c03-python-linux-validation.json",
+      "docs/evidence/nodia-ai-ai36-c03-native-contract-adoption-r01.json"
     ],
-    "notes": "Evidencia por capas: contrato/parser nativo, gateway y SQL desechable. No inferencia real ni despliegue operativo; esta ficha draft no habilita el candidato."
+    "notes": "Contrato/parser y SQL desechable históricos separados de la adopción real8320. Cinco HTTP privados reales comprueban401/200/200/413/422 y cero/null, sin inferencia, R2 o efectos. La recalificación general de Gemini y la aceptación MCP del analizador son gates independientes. La ficha sigue draft/unregistered, approval:null; no habilita el candidato."
   },
-  "approval": null
+  "approval": {
+    "reference": "docs/evidence/nodia-ai-ai36-c03-publication-authorization-r01.json",
+    "revision": 3,
+    "content_sha256": "9fe8459c3831be7458a92b5636c50f0c6989b3a94019dff2a4f42bb24661098d"
+  }
 }
 ---
 
@@ -88,8 +93,20 @@ El resultado queda pendiente de revisión. Una solicitud de creación posterior 
 
 ## Integración y evidencia
 
-La [entrega82](../../../../mvp/82-nodia-ai-ai36-integral-coverage.md) y [evidencia C03](../../../../evidence/nodia-ai-ai36-c03-validation.json) distinguen tests de contrato/parser real, SQL desechable con transporte y normalizador sintéticos, y disponibilidad real pendiente. El [ADR-062](../../../../architecture/decisions/ADR-062-nodia-ai-active-invoice-analysis.md) explica las alternativas y la prevención del OCR anidado. Publicación selectiva, despliegue del endpoint privado y aceptación con Gemini real permanecen pendientes; no se concede aprobación documental por implementar.
+La [entrega82](../../../../mvp/82-nodia-ai-ai36-integral-coverage.md) y [evidencia C03](../../../../evidence/nodia-ai-ai36-c03-validation.json) distinguen tests de contrato/parser real, SQL desechable con transporte y normalizador sintéticos, y disponibilidad real pendiente. El [ADR-062](../../../../architecture/decisions/ADR-062-nodia-ai-active-invoice-analysis.md) explica las alternativas y la prevención del OCR anidado. El [endpoint privado fue adoptado y comprobado en la VM Linux local](../../../../evidence/nodia-ai-ai36-c03-native-contract-adoption-r01.json) el2026-10-25. El despliegue conserva parser, SDK, credenciales y configuración; añade sólo el contrato puro y su registro/límite HTTP. Publicación selectiva y aceptación del analizador con Gemini real permanecen pendientes. Los cinco HTTP no demuestran el recorrido adjunto→generación→MCP ni conceden aprobación documental.
 
 ## Evolución y compatibilidad
 
 Revisión1: contrato específico de análisis en generación activa, separado del OCR legacy y de las escrituras C01. No cambia esquemas/bindings publicados ni habilita mutaciones automáticas. Cambios futuros invalidan las revisiones y recibos incompatibles conforme los contratos comunes.
+
+Revisión2: registra adopción real del contrato privado y sus cinco comprobaciones HTTP, incluido el fallo de precedencia systemd y su recuperación explícita. Sin nueva publicación, aprobación, capacidad o cambio funcional del contrato.
+
+## Uso del análisis en la generación activa
+
+El análisis de una factura utiliza `nodia_invoices_analyze` en dos acciones: `prepare` obtiene instrucciones nativas y `complete` valida y normaliza la extracción realizada por la misma generación Agentic. No inicia otra inferencia ni crea facturas, productos, gastos o propuestas de escritura.
+
+Se necesita un negocio autorizado y una imagen o PDF original listo del mensaje actual, de hasta10 MiB, que la conexión, modelo y configuración actuales puedan recibir con soporte verificado. El proveedor comercial es opcional y debe pertenecer al mismo negocio. Si hay varios negocios, proveedores o archivos posibles, se debe preguntar antes de analizar. Audio, texto revisado, archivos de otros mensajes o chats y formatos sin verificar no sustituyen el original.
+
+La preparación y la finalización quedan vinculadas al archivo, su contenido y la generación activa. No se aceptan credenciales, rutas, URLs, SQL ni identidades elegidas por el modelo. Se requieren NodiaAI, Negocios y la autoridad sobre el recurso; los permisos, la selección y la procedencia se revalidan antes de ejecutar o recuperar el resultado.
+
+El resultado es una extracción pendiente de revisión humana: conserva ceros reales y valores desconocidos, admite hasta100 ítems y no acredita pagos ni registros comerciales. No se deben inventar fechas, códigos, cantidades, precios o importes. La lectura de un resultado terminado reautoriza el acceso y devuelve el recibo existente sin volver a inferir. Guardar datos después requiere completar los campos obligatorios y confirmar una propuesta exacta mediante el botón humano.

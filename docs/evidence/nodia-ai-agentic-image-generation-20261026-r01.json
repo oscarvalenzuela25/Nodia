@@ -1,0 +1,813 @@
+{
+  "schema_version": 1,
+  "evidence_id": "nodia-ai-agentic-image-generation-20261026-r01",
+  "checked_on": "2026-10-26",
+  "status": "scoped_real_image_generation_and_UI_passed_Codex_and_Antigravity_global_AI41_partial",
+  "scope": {
+    "command": "/imagen DESCRIPCIÓN",
+    "mode": "Agentic",
+    "Web_API_executed": false,
+    "ordinary_chat_new_tool": false,
+    "business_association_or_write_authorized_by_this_feature": false,
+    "AI41_closed": false,
+    "global_NodiaAI_closed": false
+  },
+  "contract": {
+    "description_utf8_bytes_max": 8000,
+    "input_attachments_allowed": false,
+    "output_images_max": 1,
+    "output_bytes_max": 16777216,
+    "output_pixels_max": 12000000,
+    "limits_owned_by": "Nodia",
+    "configured_selection_dynamic": true,
+    "automatic_provider_mode_model_fallback": false,
+    "image_lane": {
+      "Codex": "builtin imageGeneration only",
+      "Antigravity": "owned generate_image + finish role"
+    },
+    "MCP_required_for_generation_lane": false,
+    "storage": "existing private Attachment/R2, same owner and chat",
+    "assistant_part": {
+      "kind": "image",
+      "text": null,
+      "module_routes": []
+    },
+    "provider_internal_calls_or_cost": null,
+    "provider_quota": null,
+    "guaranteed_resolution": null
+  },
+  "deployment": {
+    "server": {
+      "status": "server_started",
+      "release": "/opt/nodia/releases/nodia-server-image-generation-r02",
+      "manifest_sha256": "bd7ae69a32effe00321226619428eeda6d468fb4cf693ca80d540abe7d081e53",
+      "knowledge_release_id": "71578acc63da58ace95fa74b78063852a4d866cec051c67f37d36e415213dd19",
+      "provider_generation_requests_during_deployment": 0,
+      "base_retained": true
+    },
+    "client": {
+      "status": "client_started",
+      "release": "/opt/nodia/releases/nodia-client-image-generation-r03",
+      "manifest_sha256": "14aa3bad801ccb906f06f0f8a8311f4325d385a74d9ec86ceb0802925fe0c20b",
+      "legacy_assets_retained": 358,
+      "nginx_sha256": "d38996cca62366f42e63a368c68f58a277ddd128eed6d690f20d20dd18104e1a",
+      "nginx_test": true
+    },
+    "native_R04": {
+      "status": "native_started",
+      "image": "sha256:c82c116c7219ba1766e8fa1903a171d038085aaa29984c1374450cef2de9ccfe",
+      "container_id": "0a15a9d3311cc4c33563ed04ba620d64bf66637498f50e1c9dc9056d4ab29889",
+      "started_at": "2026-10-26T23:51:07.191347854Z",
+      "files": {
+        "native_image_generation.py": "6ac4ab872e5c6d1d7556ec5a6d6c19ec9b7bd5caaaa3c10feb625b931ba5969b"
+      },
+      "previous_container_retained": true,
+      "CLI_version_changed": false,
+      "provider_dispatches": 0
+    },
+    "knowledge_parity": {
+      "capabilities": 152,
+      "schemas": 304,
+      "fragments": 43,
+      "approved_document_contents": 41,
+      "approved_OCR_file_sha256": "9d93844d136b9aa056bdffdf5be60495fa474d06de08a911d53dfba6f2e33a6f",
+      "contracts_schemas_fragments_approved_contents_preserved": true,
+      "PrepareAdmission_actual_source_sha256": "65323f4df6cd93ba89597df366950ca3525fe5beb4545693ba1301c65b5dd2a2",
+      "authoring_superset_1a1_not_deployed": true
+    },
+    "native_R04_annotations": {
+      "diagnostic_candidate": true,
+      "hypothesis_not_causal_acceptance": true,
+      "new_generation_test_result": "metadata_timeout_before_generation_CLI_turn",
+      "current_epoch_MCP_qualification_claimed_here": false
+    },
+    "native_R04_tests": {
+      "status": "passed",
+      "tests": 22,
+      "provider_generations": 0,
+      "fixture_tests_not_provider_acceptance": true
+    },
+    "native_R04_persistent_pointer": {
+      "image": "sha256:c82c116c7219ba1766e8fa1903a171d038085aaa29984c1374450cef2de9ccfe",
+      "override_sha256": "b5f2cf71e1452626bd5b3303e5498c0321d687a49c24ef70552a395f43c26811",
+      "compose_config_validated": true,
+      "native_restarted_by_pointer_update": false
+    },
+    "native_R05": {
+      "status": "native_started",
+      "image": "sha256:0ef734f2f00e8cc42839141881ea68f08abca853bdc7b6391e998381b28cfd9a",
+      "container_id": "75271be0636dd3b24022a6132b280a3fb11345e168d3d9f9fce08443a2faa7f7",
+      "started_at": "2026-10-26T23:55:15.159382505Z",
+      "files": {
+        "native_image_generation.py": "c0e2110ccf306823f5ca48e02904e719339a1890d30283852a9f3a93387d55ad"
+      },
+      "previous_container_retained": true,
+      "CLI_version_changed": false,
+      "provider_dispatches": 0
+    },
+    "native_R05_tests": {
+      "status": "passed",
+      "tests": 23,
+      "provider_generations": 0,
+      "fixture_tests_not_provider_acceptance": true
+    },
+    "native_R05_persistent_pointer": {
+      "image": "sha256:0ef734f2f00e8cc42839141881ea68f08abca853bdc7b6391e998381b28cfd9a",
+      "override_sha256": "c97a38ce3bdef7a8147831e243f347c9425c838a77ed4564db7670983d02bcb4",
+      "compose_config_validated": true,
+      "native_restarted_by_pointer_update": false
+    },
+    "native_R06_tests": {
+      "status": "passed",
+      "tests": 25,
+      "provider_generations": 0,
+      "fixture_tests_not_provider_acceptance": true
+    },
+    "native_R07": {
+      "status": "native_started",
+      "image": "sha256:311a6bd34e79efc12b8544d5e9a35b7eea9d658b1814a1befc8eba3ad69c2acc",
+      "container_id": "47915e3e18d755c425db19081e6e59cc8b4cc0f4dcdaa1abc8cb20a4e44a019e",
+      "started_at": "2026-10-27T00:02:56.188716193Z",
+      "files": {
+        "native_image_generation.py": "8a2ab9377139bdaeec0236cfc37d6dd66fb8276aa820ed889435efb6b9a74926"
+      },
+      "previous_container_retained": true,
+      "CLI_version_changed": false,
+      "provider_dispatches": 0
+    },
+    "native_R07_tests": {
+      "status": "passed",
+      "tests": 27,
+      "provider_generations": 0,
+      "fixture_tests_not_provider_acceptance": true
+    },
+    "native_R07_persistent_pointer": {
+      "image": "sha256:311a6bd34e79efc12b8544d5e9a35b7eea9d658b1814a1befc8eba3ad69c2acc",
+      "override_sha256": "214bed49866647c86c1e6551cdade9f38398158b113d063e0720806445789171",
+      "compose_config_validated": true,
+      "native_restarted_by_pointer_update": false
+    },
+    "current_native_release_at_cut": "R09",
+    "native_R08": {
+      "status": "native_started",
+      "image": "sha256:76c234eca85e32c198b437c0fe335f70df09f5d1b648b0800210a1edee79aa5e",
+      "container_id": "ba6466afd64cf614b75d78cd61f3380e609ed0b5c8e1cd1643fd2dbd88f1f02b",
+      "started_at": "2026-10-27T00:07:38.453551634Z",
+      "files": {
+        "native_image_generation.py": "27b36f2e04ea41b87d644222436c7bf6703ee7dac7b03b6057689cb7e8fa909c"
+      },
+      "previous_container_retained": true,
+      "CLI_version_changed": false,
+      "provider_dispatches": 0
+    },
+    "native_R08_tests": {
+      "status": "passed",
+      "provider_generations": 0,
+      "fixture_tests_not_provider_acceptance": true
+    },
+    "native_R09": {
+      "status": "native_started",
+      "image": "sha256:2db1a2864bfa193a769e3b140213311ee7eae3a1dd287f07c0909e6642902337",
+      "container_id": "95493948d54b7f4b5baeb2a61eeacd916244736432445951000fea63079f53dd",
+      "started_at": "2026-10-27T00:11:27.178641901Z",
+      "files": {
+        "native_image_generation.py": "9f8bb62b41160726955b6bd93589619e44de6eb90f454685cdaff1a89160663d"
+      },
+      "previous_container_retained": true,
+      "CLI_version_changed": false,
+      "provider_dispatches": 0
+    },
+    "native_R09_tests": {
+      "status": "passed",
+      "tests": 33,
+      "provider_generations": 0,
+      "fixture_tests_not_provider_acceptance": true
+    },
+    "native_R09_persistent_pointer": {
+      "image": "sha256:2db1a2864bfa193a769e3b140213311ee7eae3a1dd287f07c0909e6642902337",
+      "override_sha256": "34563874aa38dcd759c7323c32cc68691a700734a0b5db03f6fec060afcfe611",
+      "compose_config_validated": true,
+      "native_restarted_by_pointer_update": false
+    }
+  },
+  "codex_real_result": {
+    "state": "completed",
+    "error_code": null,
+    "provider_dispatches_used": 1,
+    "assistant_message_id": "4455050f-2db0-41ef-ba0e-eb928b2ebbb5",
+    "attachment_id": "6d0a0ff2-9772-4337-8e2c-a13e31b99a51",
+    "media_type": "image/png",
+    "byte_count": 1244479,
+    "content_hash": "7d2eeec35cd24ae109877f281bfc28011337bcd955d17e289bd0a9b5059883f4",
+    "run_id": "859f8f35-bb0e-4a7f-844f-a1563e4271cc",
+    "assistant_image_only_valid": true,
+    "narrative_text_required": false,
+    "width_pixels": 1374,
+    "height_pixels": 1145,
+    "observed_pixels": 1573230,
+    "dimensions_are_observed_not_promised": true
+  },
+  "codex_UI_root_review": {
+    "source": "Root direct Ver + reload observation on deployed Client R03, screenshot recorded below; download hash separately confirmed by Root.",
+    "view_passed": true,
+    "reload_passed": true,
+    "download_passed": true,
+    "download_sha256": "7d2eeec35cd24ae109877f281bfc28011337bcd955d17e289bd0a9b5059883f4",
+    "download_bytes": 1244479,
+    "HTTP_response_headers_captured_in_this_evidence": false,
+    "separate_machine_UI_receipt": null,
+    "screenshot": {
+      "path": "docs/evidence/nodia-ai-codex-image-generation-20261026-r01.png",
+      "sha256": "8bdb1f7572ed3c5d560c4840e0664bbbe504e17d016f1ae51d7f73e474a61e31",
+      "bytes": 79664,
+      "visually_reviewed_by": "Root"
+    }
+  },
+  "qualification_receipts": {
+    "Codex_final_recorded": {
+      "status": "MCP_nonce_completed_ACK_qualified",
+      "native_dispatch_intents": 1,
+      "maximum_native_dispatch_intents": 1,
+      "native_pending_identity": false,
+      "acknowledged": true,
+      "qualification_accepted": true,
+      "callback_count": 1,
+      "configured_SQL_writes": 0,
+      "business_tool_dispatches": 0,
+      "automatic_inference_retries": 0,
+      "provider_internal_calls_or_cost": null
+    },
+    "Antigravity_prior_R04_recorded": {
+      "status": "MCP_nonce_completed_ACK_qualified",
+      "native_dispatch_intents": 1,
+      "maximum_native_dispatch_intents": 1,
+      "native_pending_identity": false,
+      "acknowledged": true,
+      "qualification_accepted": true,
+      "callback_count": 1,
+      "configured_SQL_writes": 0,
+      "business_tool_dispatches": 0,
+      "automatic_inference_retries": 0,
+      "provider_internal_calls_or_cost": null
+    },
+    "limits": "Nonce MCP and image generation remain separate proofs. R09 qualification is explicit; earlier epoch proofs are not inherited. The false supports_mcp last_observation in the qualification receipt is the prequalification read, not the postqualification state.",
+    "Antigravity_R09_actual": {
+      "status": "MCP_nonce_completed_ACK_qualified",
+      "native_dispatch_intents": 1,
+      "maximum_native_dispatch_intents": 1,
+      "native_pending_identity": false,
+      "acknowledged": true,
+      "qualification_accepted": true,
+      "callback_count": 1,
+      "configured_SQL_writes": 0,
+      "business_tool_dispatches": 0,
+      "automatic_inference_retries": 0,
+      "provider_internal_calls_or_cost": null,
+      "last_observation_in_receipt_is_prequalification": true
+    },
+    "Antigravity_R09_after_observation": {
+      "available": true,
+      "supports_mcp": true,
+      "source_matches": true,
+      "native_dispatch_intents": 0,
+      "source_manifest_sha256": "bd7ae69a32effe00321226619428eeda6d468fb4cf693ca80d540abe7d081e53"
+    }
+  },
+  "reconciled_prior_intents": [
+    {
+      "run_id": "31c8bf5e-9b0e-44ef-bb42-38fd0846fd7b",
+      "status": "reconciled_ACK_verified",
+      "reconcile_calls": 1,
+      "ACK_calls": 1,
+      "generations_during_reconciliation": 0,
+      "manual_SQL_release": false,
+      "run_state_after": "failed",
+      "pending_jobs_after": 0,
+      "open_attempts_after": 0,
+      "slots_after": 0,
+      "source": ".tmp/ai41-codex-reconcile-execute.json"
+    },
+    {
+      "run_id": "3ada4aa9-6dae-42bf-a284-c954dd2a39f2",
+      "status": "reconciled_ACK_verified",
+      "reconcile_calls": 1,
+      "ACK_calls": 1,
+      "generations_during_reconciliation": 0,
+      "manual_SQL_release": false,
+      "run_state_after": "failed",
+      "pending_jobs_after": 0,
+      "open_attempts_after": 0,
+      "slots_after": 0,
+      "source": ".tmp/ai41-gemini-reconcile-execute.json"
+    },
+    {
+      "run_id": "40521a39-d4b1-4228-9f2b-372999421bf9",
+      "status": "reconciled_ACK_verified",
+      "reconcile_calls": 1,
+      "ACK_calls": 1,
+      "generations_during_reconciliation": 0,
+      "manual_SQL_release": false,
+      "run_state_after": "failed",
+      "pending_jobs_after": 0,
+      "open_attempts_after": 0,
+      "slots_after": 0,
+      "source": ".tmp/ai41-gemini-second-reconciled.json"
+    },
+    {
+      "run_id": "1b144ea1-71b7-4244-bee8-8351766f56b3",
+      "status": "reconciled_ACK_verified",
+      "reconcile_calls": 1,
+      "ACK_calls": 1,
+      "generations_during_reconciliation": 0,
+      "manual_SQL_release": false,
+      "run_state_after": "failed",
+      "pending_jobs_after": 0,
+      "open_attempts_after": 0,
+      "slots_after": 0,
+      "source": ".tmp/ai41-gemini-third-reconciled.json"
+    },
+    {
+      "run_id": "bcf1e9bb-3034-47b3-b6e1-e8134e1d78ca",
+      "status": "reconciled_ACK_verified",
+      "reconcile_calls": 1,
+      "ACK_calls": 1,
+      "generations_during_reconciliation": 0,
+      "manual_SQL_release": false,
+      "run_state_after": "failed",
+      "pending_jobs_after": 0,
+      "open_attempts_after": 0,
+      "slots_after": 0,
+      "source": ".tmp/ai41-gemini-fourth-reconciled.json"
+    },
+    {
+      "run_id": "898da494-bcd9-4388-9101-c1773fa1d78d",
+      "status": "reconciled_ACK_verified",
+      "reconcile_calls": 1,
+      "ACK_calls": 1,
+      "generations_during_reconciliation": 0,
+      "manual_SQL_release": false,
+      "run_state_after": "failed",
+      "pending_jobs_after": 0,
+      "open_attempts_after": 0,
+      "slots_after": 0,
+      "source": ".tmp/ai41-gemini-fifth-reconciled.json"
+    },
+    {
+      "run_id": "cc75c9ef-788c-482a-9d3a-d2fe16a42028",
+      "status": "reconciled_ACK_verified",
+      "reconcile_calls": 1,
+      "ACK_calls": 1,
+      "generations_during_reconciliation": 0,
+      "manual_SQL_release": false,
+      "run_state_after": "failed",
+      "pending_jobs_after": 0,
+      "open_attempts_after": 0,
+      "slots_after": 0,
+      "source": ".tmp/ai41-gemini-sixth-reconciled.json"
+    },
+    {
+      "run_id": "359d073d-3d58-451a-a3d3-b866ea6d3918",
+      "status": "reconciled_ACK_verified",
+      "reconcile_calls": 1,
+      "ACK_calls": 1,
+      "generations_during_reconciliation": 0,
+      "manual_SQL_release": false,
+      "run_state_after": "failed",
+      "pending_jobs_after": 0,
+      "open_attempts_after": 0,
+      "slots_after": 0,
+      "source": ".tmp/ai41-gemini-seventh-reconciled.json"
+    },
+    {
+      "run_id": "39e4bf1d-8bac-4aaf-b178-faff72ffdaaf",
+      "status": "reconciled_ACK_verified",
+      "reconcile_calls": 1,
+      "ACK_calls": 1,
+      "generations_during_reconciliation": 0,
+      "manual_SQL_release": false,
+      "run_state_after": "failed",
+      "pending_jobs_after": 0,
+      "open_attempts_after": 0,
+      "slots_after": 0,
+      "source": ".tmp/ai41-gemini-eighth-reconciled.json"
+    }
+  ],
+  "Antigravity_status": {
+    "generation_accepted": true,
+    "acceptance_scope": "One R09 real image-only run with current dynamic selection, private storage, preview/download/reload; no global channel or AI41 acceptance.",
+    "closed_prior_image_intents": 8,
+    "automatic_replay": false,
+    "vendor_internal_cause_verified": false,
+    "prior_closed_diagnostics": [
+      {
+        "run_id": "1b144ea1-71b7-4244-bee8-8351766f56b3",
+        "reason": "args_keys",
+        "source": "Root closed diagnostic review"
+      },
+      {
+        "run_id": "bcf1e9bb-3034-47b3-b6e1-e8134e1d78ca",
+        "phase": "METADATA",
+        "elapsed_ms": 20021,
+        "result_count": 0,
+        "generation_CLI_turn_started": false,
+        "source": "Root closed diagnostic review"
+      },
+      {
+        "run_id": "898da494-bcd9-4388-9101-c1773fa1d78d",
+        "metadata_passed": true,
+        "native_CLI_success_reported": true,
+        "reason": "args_keys",
+        "unknown_key_count": 1,
+        "source": "Root closed diagnostic review"
+      },
+      {
+        "run_id": "cc75c9ef-788c-482a-9d3a-d2fe16a42028",
+        "phase": "CLI_SUCCESS",
+        "generation_pre_hook_present": true,
+        "generation_post_hook_present": true,
+        "finish_hook_present": false,
+        "state": "error",
+        "AspectRatio_present": true,
+        "unknown_argument_key_count": 0,
+        "source": "Root closed diagnostic review"
+      },
+      {
+        "run_id": "359d073d-3d58-451a-a3d3-b866ea6d3918",
+        "phase": "COLLECT",
+        "generation_pre_hook_present": true,
+        "generation_post_hook_present": true,
+        "finish_hook_present": true,
+        "post_error_kind_observed": "empty_string",
+        "state": "error",
+        "source": "Root closed diagnostic review"
+      },
+      {
+        "run_id": "39e4bf1d-8bac-4aaf-b178-faff72ffdaaf",
+        "phase": "COLLECT",
+        "reason": "directory_budget",
+        "directory_entries_count": 12,
+        "candidate_count": 1,
+        "image_suffix_count": 1,
+        "depth": 4,
+        "source": "Root closed diagnostic review"
+      }
+    ],
+    "R09_scope": {
+      "sdk_metadata_pruned_at_depth_4": true,
+      "read_depth_limit": 4,
+      "directory_entry_limit": 256,
+      "limits_widened": false,
+      "PostToolUse_error_absent_null_empty_string_accepted": true,
+      "other_error_values_rejected": true
+    }
+  },
+  "retention_and_failure_limits": [
+    "Store requests Manage.discard when upload/readback/hash fails.",
+    "If SQL sealing fails after successful store, a ready unbound attachment remains counted against quota and follows chat retention/purge; upload intent persistence is not assumed.",
+    "No global orphan/cancellation/deduplication/retention acceptance is asserted.",
+    "Client R03 admission45s versus Server observe30s preserves global Axios20s; the former20<30 source mismatch does not establish the cause of the first admission failure."
+  ],
+  "document_state": {
+    "image_feature_revision": 2,
+    "document_status": "draft",
+    "implementation_status": "partial",
+    "integration_status": "unregistered",
+    "approval": null
+  },
+  "limits": [
+    "No Web/API acceptance or removal; no business write/association acceptance.",
+    "No new feature approval or global AI36/AI38/AI41 closure.",
+    "This consolidated projection contains no credentials, resource/session identity strings, prompt, raw wire or signed private URL.",
+    "Source receipt hashes identify original operational records; projected facts are self-contained here.",
+    "Both image-generation/UI examples passed; cancellation, retention, orphan cleanup, complete permissions/error matrices and global AI41 acceptance remain open."
+  ],
+  "source_receipts": [
+    {
+      "path": ".tmp/ai41-image-persistence.json",
+      "sha256": "4238245d2ff4165663a46b150306fcbc5222c851dbad60cc40ceeb24ef39b0fa",
+      "bytes": 778,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-server-final-deploy.json",
+      "sha256": "ad8df663a9bae81bccbdb847c9f150cd54291d595731db17ed00ad3b3eaf6bab",
+      "bytes": 1281,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-client-r03-deploy.json",
+      "sha256": "37421781ac6460a03b7cf3412689831095c019a033460cba2f436e6228cd2bb6",
+      "bytes": 319,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-native-r04-deploy.json",
+      "sha256": "31682e7b3a05f2bce6da364ce6d5b9c48a4be80678cff09965820b738e10c2d7",
+      "bytes": 447,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-codex-final-qualify.json",
+      "sha256": "c27f1b77885b6aec9d0d600b301af5b1bb4dda64c763c34d62a1bb07d78687f5",
+      "bytes": 397,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-gemini-final-qualify.json",
+      "sha256": "5b5040af938f45479d323cb691259662c897eb2b8a8ab305c4511845e446ed0b",
+      "bytes": 519,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-codex-reconcile-execute.json",
+      "sha256": "3bd40b1a6d6ce62af51cfa22c1a96970901428c36003cbd6d2b0dfad47e06275",
+      "bytes": 1467,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-gemini-reconcile-execute.json",
+      "sha256": "a4540bd54dfc0803dcb6400c5ce2fae2717460354e4556a6082b42902d384bd1",
+      "bytes": 1239,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-gemini-second-reconciled.json",
+      "sha256": "c76620ef71f4f6b104d8593f4efca88e04d2fa07e8e721b4c2465d6bdff21b95",
+      "bytes": 1239,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-gemini-third-reconciled.json",
+      "sha256": "93d17e6fb88d35f2c30feb27125be9d718ab3b02fd7de441b2d323ea3888da9a",
+      "bytes": 1239,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-gemini-fourth-reconciled.json",
+      "sha256": "00e239fbcf5cab896bf93506603de8682158801f90f0cf9fda9915a3767a950b",
+      "bytes": 1239,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-fourth-state.json",
+      "sha256": "08f5df41889337b0f5490dae4e64dd2728fbc253719b9efa96efb1eb4398baa9",
+      "bytes": 1134,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-native-r04-tests.json",
+      "sha256": "a21d77cd0ac39b4502efb47e7469cb90657e7dec0e8b7a9547efd1c4f3c927ad",
+      "bytes": 5255,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-runtime-pointers-r04.json",
+      "sha256": "34f9444f6e13568ac8c720d477cc2a6eabbf74718c0b4079cf60cdcb23813784",
+      "bytes": 358,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-native-r05-deploy.json",
+      "sha256": "6e615274ba9ba30f0864db649ecdd9c48ba327bfa2310d2c33a0596d56da35b1",
+      "bytes": 447,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-native-r05-tests.json",
+      "sha256": "6548180c5965686fcc131b6dc40231549d128943d79aff2277cadc975a3be756",
+      "bytes": 6820,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-runtime-pointers-r05.json",
+      "sha256": "c82d3288f90258e780de78078b629fd86e444d98239c67b2ce766c2533761121",
+      "bytes": 358,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-gemini-fifth-reconciled.json",
+      "sha256": "5380e89f9416b7aaf0481f2279589a6011661e116abeae903aaa7be982ab15cf",
+      "bytes": 1239,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-gemini-sixth-reconciled.json",
+      "sha256": "900b5c0ab408b1d8ff7b5838b6c6181f6bb4f7424cd90ca1d9c3c639fa73ab92",
+      "bytes": 1239,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-public-cli-image-schema.json",
+      "sha256": "74ca9f8e1e487c88257d70f80a09f128d1666fb0cf6dd1750e983ef633075ba4",
+      "bytes": 16150,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-native-r06-tests.json",
+      "sha256": "2791e9888126cb6c8470eecca4db1df47d417cbacfe8f9714738cff018dfa520",
+      "bytes": 6843,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-native-r07-deploy.json",
+      "sha256": "898c40cbdee6f870c999d496a92d3db302666b083fecb4ccd62bab2385ccc430",
+      "bytes": 447,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-native-r07-tests.json",
+      "sha256": "f439c03f7aad60e229716f52f35259cd6571347fe42b77fbd32f06461969c15c",
+      "bytes": 6923,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-runtime-pointers-r07.json",
+      "sha256": "07d5d0ddfd9aefd451490eb7ef8a7f7dd2f1c227bd224c16081315bb8095ae4e",
+      "bytes": 358,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-gemini-seventh-reconciled.json",
+      "sha256": "6a0ae5fa1541165dcd3f08374e281c192507f730136531111807197d55b87292",
+      "bytes": 1239,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-gemini-eighth-reconciled.json",
+      "sha256": "5c47ec865973190132ae8473b33fb74bddc469aa47762628884e1ca43c12c770",
+      "bytes": 1239,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-native-r08-deploy.json",
+      "sha256": "2dca4747567e1bdb518fe542a99f749918181a0b3475c6d270a7d3e515ad0dd4",
+      "bytes": 447,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-native-r08-tests.json",
+      "sha256": "2d566d553c7a949f92c5941ae68ff297adeec88892cec07d5059fd30fe24c2df",
+      "bytes": 7189,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-native-r09-deploy.json",
+      "sha256": "d6325bbb502ac9834eee236df57e5680897456c9d12bb7c08296cd848549127e",
+      "bytes": 447,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-native-r09-tests.json",
+      "sha256": "167c0eafedfbd7d9475db3188f02a5e009c9daa1953c7b88f39b89f31ce086e2",
+      "bytes": 7191,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-runtime-pointers-r09.json",
+      "sha256": "3d49f6e03d3c297d3cf7341155e9d05a0914e1e150367374fb12afebdc25fcfa",
+      "bytes": 358,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-image-final-runtime.json",
+      "sha256": "1537e346a60566ff6c645907ea5fd4e69f5413db5a44aa404441391f66351ad5",
+      "bytes": 2112,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-image-final-state.json",
+      "sha256": "b43946412dd6f540ff5a552321b03b44584333fa7e98502330888c880d4a10ee",
+      "bytes": 2112,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-gemini-image-success.json",
+      "sha256": "18ecf83953d258b729f95af162e74defac168d30a212f4e0190df13dad2e709b",
+      "bytes": 1170,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-gemini-r09-qualified.json",
+      "sha256": "5b5040af938f45479d323cb691259662c897eb2b8a8ab305c4511845e446ed0b",
+      "bytes": 519,
+      "projection_only": true
+    },
+    {
+      "path": ".tmp/ai41-gemini-r09-after-qualified.json",
+      "sha256": "9434d5145478b3024e10555be762e007142b37d17e0e6762a532450fa9a16057",
+      "bytes": 1082,
+      "projection_only": true
+    }
+  ],
+  "Antigravity_real_result": {
+    "state": "completed",
+    "error_code": null,
+    "provider_dispatches_used": 1,
+    "assistant_message_id": "bdbd8447-44a4-4f60-bd2a-f8637b2eac07",
+    "attachment_id": "9fc72d4d-7835-4764-9cf7-e32aee265a62",
+    "media_type": "image/jpeg",
+    "byte_count": 239004,
+    "content_hash": "06b262e59db5d296871acd87e17bfae8c4ba14235f02748fd7312a4d0c71d7a2",
+    "run_id": "81353a28-8619-48e4-b601-d5bbddaa63a1",
+    "assistant_image_only_valid": true,
+    "narrative_text_required": false,
+    "width_pixels": 1024,
+    "height_pixels": 1024,
+    "dimensions_are_observed_not_promised": true
+  },
+  "Antigravity_native_closed_diagnostic": {
+    "attempt_id": "19199042-5b9b-4f9d-b208-d91046bc89d0",
+    "phase": "collect",
+    "cli_return_code": 0,
+    "metadata_step": "model_option",
+    "generation_pre_hook_present": true,
+    "generation_post_hook_present": true,
+    "generation_post_error_kind": "empty_string",
+    "finish_pre_hook_present": true,
+    "first_denial_reason": null,
+    "first_generate_argument_shape": {
+      "arguments_object": true,
+      "known_key_presence": {
+        "Prompt": true,
+        "ImageName": true,
+        "ImagePaths": false,
+        "AspectRatio": true,
+        "toolAction": true,
+        "toolSummary": true,
+        "prompt": false,
+        "imageName": false,
+        "imagePaths": false,
+        "image_name": false,
+        "image_paths": false
+      },
+      "unknown_key_count": 0
+    },
+    "collect": {
+      "collect_error": null,
+      "directory_entries_count": 15,
+      "prefix_file_count": 1,
+      "exact_prefix_candidate_count": 1,
+      "image_type_count": 1,
+      "candidate_nlink": 1,
+      "owner_match": true,
+      "bounded_bytes": 239004,
+      "filename_relation": "owned_prefix"
+    },
+    "outcome": "completed",
+    "error_type": null,
+    "init_count": 1,
+    "result_count": 1,
+    "result_status": "SUCCESS",
+    "model_matches": true,
+    "agent_matches": true,
+    "generate_image_seen": true,
+    "finish_seen": true,
+    "result_error_categories": [],
+    "elapsed_ms": 25065
+  },
+  "final_runtime": {
+    "source": "/opt/nodia/releases/nodia-server-image-generation-r02",
+    "server_manifest_sha256": "bd7ae69a32effe00321226619428eeda6d468fb4cf693ca80d540abe7d081e53",
+    "client_manifest_sha256": "14aa3bad801ccb906f06f0f8a8311f4325d385a74d9ec86ceb0802925fe0c20b",
+    "native_image": "sha256:2db1a2864bfa193a769e3b140213311ee7eae3a1dd287f07c0909e6642902337",
+    "native_container_id": "95493948d54b7f4b5baeb2a61eeacd916244736432445951000fea63079f53dd",
+    "native_process_closed": true,
+    "unknown_markers": 0,
+    "quiet": {
+      "jobs": 0,
+      "attempts": 0,
+      "slots": 0
+    },
+    "units": {
+      "nodia-api": {
+        "active": "active",
+        "source_matches": true
+      },
+      "nodia-ai-worker": {
+        "active": "active",
+        "source_matches": true
+      }
+    },
+    "nginx_config_sha256": "d38996cca62366f42e63a368c68f58a277ddd128eed6d690f20d20dd18104e1a",
+    "operational_image_override_sha256": "34563874aa38dcd759c7323c32cc68691a700734a0b5db03f6fec060afcfe611"
+  },
+  "Antigravity_UI_root_review": {
+    "source": "Root direct UI observation and downloaded-file readback; local consolidator independently verified download bytes/SHA.",
+    "view_passed": true,
+    "reload_passed": true,
+    "download_passed": true,
+    "download_sha256": "06b262e59db5d296871acd87e17bfae8c4ba14235f02748fd7312a4d0c71d7a2",
+    "download_bytes": 239004,
+    "download_dimensions_PIL_root_review": [
+      1024,
+      1024
+    ],
+    "HTTP_response_headers_captured_in_this_evidence": false,
+    "screenshot": {
+      "path": "docs/evidence/nodia-ai-antigravity-image-generation-20261026-r01.png",
+      "sha256": "5beb07cf7ca16bb7c0f3e50e4b801aef8d9a18e844c865173d913f197abf7540",
+      "bytes": 81061,
+      "visually_reviewed_by": "Root"
+    }
+  }
+}

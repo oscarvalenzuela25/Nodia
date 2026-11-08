@@ -2,7 +2,6 @@ import type { AiApiKeyEntity, CreateAiApiKeyPayload, UpdateAiApiKeyPayload, GetA
 import { mainInstance } from "../../../../../config/api";
 import { currentGeminiAgenticLoginSchema, geminiAgenticLoginSchema } from "./agenticLogin";
 import { codexSessionSchema } from "./codexSession";
-import { geminiWebLoginSchema, geminiWebLogoutSchema, geminiLoginFrameSchema, type GeminiLoginInput } from "./webLogin";
 import type {
   GetSelectableModelsParams,
   ProviderSelectableModelsResult,
@@ -14,11 +13,9 @@ import type {
   AiProviderEventEntity,
   GetAiProviderEventsParams,
   PaginatedResponse,
-  EnabledWebAiProvidersResponse,
   AiProviderCatalogEntity,
   SyncModelsResult,
-  GeminiLoginJob,
-  GeminiDualEngineStatus,
+  GeminiAgenticStatus,
 } from "./types";
 
 const getEndpoint = (path: string) => {
@@ -45,42 +42,6 @@ export const submitGeminiAgenticCode = async ({ id, code }: { id: string; code: 
 export const cancelGeminiAgenticLogin = async (id: string) => {
   const { data } = await mainInstance.post<unknown>(getEndpoint(`/ai-providers/gemini-agentic-login/${id}/cancel`));
   return geminiAgenticLoginSchema.parse(data);
-};
-
-export const startGeminiLogin = async (): Promise<GeminiLoginJob> => {
-  const { data } = await mainInstance.post<GeminiLoginJob>(
-    getEndpoint("/ai-providers/gemini-login/start")
-  );
-  return geminiWebLoginSchema.parse(data);
-};
-
-export const disconnectGeminiWeb = async () => {
-  const { data } = await mainInstance.post<unknown>(getEndpoint("/ai-providers/gemini-session/logout"), undefined, { timeout: 20_000 });
-  return geminiWebLogoutSchema.parse(data);
-};
-
-export const getGeminiLoginStatus = async (jobId: string): Promise<GeminiLoginJob> => {
-  const { data } = await mainInstance.get<GeminiLoginJob>(
-    getEndpoint(`/ai-providers/gemini-login/${jobId}`)
-  );
-  return geminiWebLoginSchema.parse(data);
-};
-
-export const cancelGeminiLogin = async (jobId: string): Promise<GeminiLoginJob> => {
-  const { data } = await mainInstance.post<GeminiLoginJob>(
-    getEndpoint(`/ai-providers/gemini-login/${jobId}/cancel`)
-  );
-  return geminiWebLoginSchema.parse(data);
-};
-
-export const getGeminiLoginFrame = async (id: string, signal?: AbortSignal) => {
-  const { data } = await mainInstance.get<unknown>(getEndpoint(`/ai-providers/gemini-login/${id}/frame`), { signal, timeout: 7000 });
-  return geminiLoginFrameSchema.parse(data);
-};
-
-export const sendGeminiLoginInput = async ({ id, input }: { id: string; input: GeminiLoginInput }) => {
-  const { data } = await mainInstance.post<unknown>(getEndpoint(`/ai-providers/gemini-login/${id}/input`), input, { timeout: 7000 });
-  return geminiWebLoginSchema.parse(data);
 };
 
 export const getAiProviderCatalog = async (): Promise<AiProviderCatalogEntity[]> => {
@@ -170,15 +131,8 @@ export const getSelectableModels = async (
   return data;
 };
 
-export const getEnabledWebAiProviders = async (): Promise<EnabledWebAiProvidersResponse> => {
-  const { data } = await mainInstance.get<EnabledWebAiProvidersResponse>(
-    getEndpoint("/ai-providers/web-enabled")
-  );
-  return data;
-};
-
-export const getGeminiEngines = async (): Promise<GeminiDualEngineStatus | null> => {
-  const { data } = await mainInstance.get<GeminiDualEngineStatus | null>(
+export const getGeminiEngines = async (): Promise<GeminiAgenticStatus | null> => {
+  const { data } = await mainInstance.get<GeminiAgenticStatus | null>(
     getEndpoint("/ai-providers/gemini-engines")
   );
   return data;

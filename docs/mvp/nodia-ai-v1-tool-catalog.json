@@ -6,12 +6,12 @@
   "noAutomaticExecutionTools": true,
   "counts": {
     "sourceHandlers": 177,
-    "domainTools": 141,
+    "domainTools": 140,
     "commonTools": 11,
     "secureFlowTools": 4,
-    "totalProposedTools": 156,
+    "totalProposedTools": 155,
     "domainToolKinds": {
-      "prepare_change": 73,
+      "prepare_change": 72,
       "read": 64,
       "read_artifact": 3,
       "analyze_attachment": 1
@@ -23,7 +23,7 @@
     "implementedReadArtifacts": 3,
     "runtimePublishedDomainReads": 64,
     "runtimePublishedReadArtifacts": 3,
-    "runtimeUnpublishedTools": 89
+    "runtimeUnpublishedTools": 88
   },
   "schemaDerivationCaveat": "AI-15 publishes exactly67 read/artifact contracts through an explicitly approved compiled release with27 selected context fragments;89 other candidates remain unpublished. Real Gemini/SQL and reference/CSV turns passed; final external generation and third Web routing turn retained unknown outcomes with no replay. Schema/argument failures are rejected by the Gateway rather than treated as success. Invoice reference publication does not certify positive R2 binary download; invoice_binary_download_r2_real remains open. Each mode/dependency must still have current observed eligibility.",
   "domainTools": [
@@ -1473,72 +1473,6 @@
         "openWorldHint": false
       },
       "impact": "create"
-    },
-    {
-      "name": "nodia_ai_providers_prepare_gemini_web_logout",
-      "kind": "prepare_change",
-      "resourceKey": "ai_providers",
-      "targetModuleRoute": "/settings/ai-providers",
-      "requireAction": "ai:manage",
-      "sourceHandlerIds": [
-        "AiProviderController.disconnectGeminiWeb"
-      ],
-      "backendBindings": [
-        {
-          "operationId": "AiProviderController.disconnectGeminiWeb",
-          "httpMethod": "POST",
-          "httpPaths": [
-            "/api/v1/ai-provider/gemini-session/logout",
-            "/api/v1/ai-providers/gemini-session/logout"
-          ],
-          "controllerFile": "nodia-server/src/ai-provider/ai-provider.controller.ts",
-          "controllerLine": 127,
-          "delegates": [
-            {
-              "property": "manageGeminiLoginUseCase",
-              "method": "disconnect",
-              "dependency": {
-                "type": "ManageGeminiLoginUseCase",
-                "file": "nodia-server/src/ai-provider/use-case/manage-gemini-login.use-case.ts"
-              },
-              "line": 99
-            }
-          ]
-        }
-      ],
-      "inputContract": {
-        "bodySources": [],
-        "querySources": [],
-        "pathSources": [],
-        "systemManaged": [
-          "actor",
-          "session",
-          "idempotency_key",
-          "contact_version",
-          "confirmation"
-        ],
-        "schemaStatus": "requires_strict_runtime_contract_derivation"
-      },
-      "outputContract": "draft_and_public_proposal_without_confirmation_token",
-      "publication": {
-        "implemented": false,
-        "published": false,
-        "requires": [
-          "strict_input_output_schemas",
-          "current_session_and_target_module",
-          "domain_authority",
-          "mode_tool_protocol_verified",
-          "human_confirmation_pipeline",
-          "durable_step_recovery"
-        ],
-        "sourceReviewPrerequisites": []
-      },
-      "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": false,
-        "openWorldHint": false
-      },
-      "impact": "update_or_domain_transition"
     },
     {
       "name": "nodia_ai_providers_prepare_sync_models",
@@ -13352,14 +13286,6 @@
       "reason": "Trabajo de autenticación con actor, TTL y entradas/código/frame privados"
     },
     {
-      "operationId": "AiProviderController.disconnectGeminiWeb",
-      "treatment": "domain_tool",
-      "toolNames": [
-        "nodia_ai_providers_prepare_gemini_web_logout"
-      ],
-      "implemented": false
-    },
-    {
       "operationId": "AiProviderController.startGeminiAgenticLogin",
       "treatment": "secure_client_flow",
       "toolNames": [
@@ -14615,8 +14541,8 @@
     "confirmation": "trusted_client_button_on_exact_preview",
     "crossModuleReports": "compatible_measures_with_separate_provenance",
     "initialViabilityModes": [
-      "token_plan_web",
-      "token_plan_agentic"
+      "agentic",
+      "api_key"
     ],
     "chatRetention": {
       "automatic": true,
@@ -14628,5 +14554,13 @@
       "acceptedPreferences": "independent_until_explicit_deletion",
       "clientCheck": "localStorage_cache_optional_server_authority"
     }
-  }
+  },
+  "retiredCapabilities": [
+    {
+      "name": "nodia_ai_providers_prepare_gemini_web_logout",
+      "decision_date": "2026-10-27",
+      "source": "90-agentic-api-only-web-retirement.md",
+      "historical_evidence_preserved": true
+    }
+  ]
 }

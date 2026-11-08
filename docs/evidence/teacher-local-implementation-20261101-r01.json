@@ -1,0 +1,406 @@
+{
+  "schema_version": 1,
+  "recorded_on": "2026-11-01",
+  "status": "local_implementation_verified_operational_activation_not_performed",
+  "scope": "local implementation; no VM deployment",
+  "routes_evidence": "docs/evidence/canonical-module-routes-20261101-r01.json",
+  "teacher_domain": {
+    "tables": 20,
+    "postgres_http_checks": 14,
+    "isolated": true,
+    "harness": "nodia-server/test/teacher-domain.integration.mjs"
+  },
+  "shared_runtime": {
+    "postgres_checks": 29,
+    "synthetic_posts": 3,
+    "isolated": true,
+    "no_fake_chat_owners": true,
+    "harness": "nodia-server/test/teacher-runtime.integration.mjs"
+  },
+  "real_api": {
+    "selection": {
+      "connection_id": "4",
+      "mode": "api_key",
+      "model_id": "gpt-6.1-sol",
+      "effort_id": "medium"
+    },
+    "plan_state": "ready",
+    "material_state": "ready",
+    "error": null,
+    "operational_database_writes": 0,
+    "acceptance_transferred": false,
+    "pedagogical_review": "docs/evidence/teacher-pedagogical-review-20261101-r01.json",
+    "posts_total": 6,
+    "runs": [
+      {
+        "purpose": "qualification, plan, packet",
+        "posts": 3,
+        "completed": true,
+        "canary": {
+          "job_id": "f73b2a0b-d003-4329-9085-b157888f0449",
+          "operation_id": "77cccb86-f995-493e-84ce-628306387c6d",
+          "configuration_generation": "b2c337cbbb2724bdea13b7236468e3c60fda79b00b379807051f83f8afd968ce",
+          "selection": {
+            "connection_id": "4",
+            "mode": "api_key",
+            "model_id": "gpt-6.1-sol",
+            "effort_id": "medium"
+          },
+          "local_closed": true,
+          "remote_outcome": "completed",
+          "posts": 1,
+          "evidence_hash": "885b52990cf56e75466a696b3e2b54b63948d3fe5087c8c56c1c996e08533271"
+        }
+      },
+      {
+        "purpose": "fresh qualification, plan and packet retained for explicit pedagogical review",
+        "posts": 3,
+        "completed": true,
+        "canary": {
+          "job_id": "d2f06688-0bbf-4497-991d-8dbe2800c69b",
+          "operation_id": "1186a7a9-e95c-4c1c-a1c8-af71e8bb8db3",
+          "configuration_generation": "b2c337cbbb2724bdea13b7236468e3c60fda79b00b379807051f83f8afd968ce",
+          "selection": {
+            "connection_id": "4",
+            "mode": "api_key",
+            "model_id": "gpt-6.1-sol",
+            "effort_id": "medium"
+          },
+          "local_closed": true,
+          "remote_outcome": "completed",
+          "posts": 1,
+          "evidence_hash": "41133cdd4d51a4f41604ec66fb63a1af40c8e21748f6bd85f4d03ebe3e9ab476"
+        },
+        "plan_job_id": "b9dc5573-d829-4292-97f3-24475cd06c15",
+        "material_job_id": "a73f50eb-a5a0-4ea5-b4f9-77de7635a6a9"
+      }
+    ],
+    "storage": "Disposable PostgreSQL. Configured database supplied read-only exact configuration and encrypted credential lookup, never persisted synthetic owners/results/qualification.",
+    "no_automatic_retry_or_fallback": true
+  },
+  "agentic_teacher": "adapter_unqualified; native tools restrictions not demonstrated",
+  "document_approval": false,
+  "knowledge_publication": false,
+  "vm_adoption": false,
+  "local_teacher_migrations": {
+    "applied": [
+      "1793570000000",
+      "1793580000000",
+      "1793590000000"
+    ],
+    "database": "nodia_db",
+    "host": "localhost:5432",
+    "container": "nodia_postgres",
+    "scope": "additive local schema only; no API/worker restart or VM deployment",
+    "teacher_rows_created": 0,
+    "qualifications_created": 0,
+    "tables_after": 89,
+    "migration_records_after": 36,
+    "all_local_migrations_applied": [
+      "1793560000000",
+      "1793570000000",
+      "1793580000000",
+      "1793590000000"
+    ],
+    "durable_evidence": [
+      "docs/evidence/canonical-module-routes-20261101-r01.json",
+      "docs/evidence/teacher-local-schema-20261101-r01.json",
+      "docs/evidence/teacher-local-archive-frame-20261101-r01.json"
+    ],
+    "applied_sources_unchanged": true
+  },
+  "workspace": {
+    "head": "cde2a864562a5680a8a775c0f2004f7eb0e22c1f",
+    "existing_dirty_tree_preserved": true,
+    "reset_stash_revert_or_global_commit": false,
+    "note": "Implementation integrated into the authorized working tree; HEAD alone does not identify the full baseline."
+  },
+  "regressions": {
+    "chat_api_runtime": {
+      "checks": 21,
+      "harness": "nodia-server/test/nodia-ai-api-chat-runtime.integration.mjs",
+      "real_provider_posts": 0
+    },
+    "chat_api_gateway": {
+      "checks": 16,
+      "synthetic_posts": 14,
+      "harness": "nodia-server/test/nodia-ai-api-chat-gateway.integration.mjs",
+      "real_provider_posts": 0
+    },
+    "http_module_access": {
+      "checks": 28,
+      "harness": "nodia-server/test/http-module-access.integration.mjs"
+    },
+    "tool_catalog": {
+      "passed": 42,
+      "command": "npm run test:nodia-ai:catalog"
+    },
+    "common_contract_fixtures": {
+      "passed": 3,
+      "command": "npm run test:nodia-ai:common-contract-fixtures"
+    },
+    "knowledge": {
+      "passed": 58,
+      "release": "00d917fb54996564961e521393f30c858f532f562e3c48f855575c908761fdbb",
+      "approved_documents": 44,
+      "fragments": 46,
+      "capabilities": 153,
+      "approved_files_unchanged": 44,
+      "teacher_draft_sheets_published": 0
+    }
+  },
+  "client_evidence": "docs/evidence/teacher-ui-20261101-r01.json",
+  "acceptance_trace": {
+    "AC-01": {
+      "evidence": [
+        "domain ownership/current super_admin/module-revocation PostgreSQL guarantees",
+        "HTTP module access28 checks",
+        "Client guards/aliases49 checks"
+      ],
+      "scope": "local"
+    },
+    "AC-02": {
+      "evidence": [
+        "exact selection/epoch/credential policies",
+        "runtime qualification gate",
+        "two bounded real API rounds"
+      ],
+      "scope": "exact selection only; operational qualification not transferred"
+    },
+    "AC-03": {
+      "evidence": [
+        "versioned brief beyond12 messages",
+        "manual outline without inference",
+        "candidate compare/apply UI",
+        "English days and networking topics HTTP QA"
+      ],
+      "scope": "local"
+    },
+    "AC-04": {
+      "evidence": [
+        "concurrent create immutable receipt/payload conflict",
+        "manual acceptance without provider",
+        "Client409/draft and receipt recovery",
+        "modal focus-trap receipt access; failed GET preserves inputs, known success closes, no mutation replay"
+      ],
+      "scope": "local"
+    },
+    "AC-05": {
+      "evidence": [
+        "one packet publication and concurrent intent",
+        "invalid complete output fails known without publication",
+        "transactional publisher and private key mappers"
+      ],
+      "scope": "local"
+    },
+    "AC-06": {
+      "evidence": [
+        "packet reuse/read cursor",
+        "HTTP/browser pause/reload",
+        "stable question key/focus and late ACK protection"
+      ],
+      "scope": "local"
+    },
+    "AC-07": {
+      "evidence": [
+        "practice draft/submission policies",
+        "response CAS/freeze integration",
+        "unknown feedback pending with explicit closure",
+        "idle autosave and lost receipt browser QA"
+      ],
+      "scope": "local"
+    },
+    "AC-08": {
+      "evidence": [
+        "direct final assessment without lesson dependency",
+        "HTTP networking direct final80 and new variant",
+        "English final90"
+      ],
+      "scope": "local synthetic content"
+    },
+    "AC-09": {
+      "evidence": [
+        "compiled HTTP index/question/response private-field tests",
+        "all12 final questions browser navigation without feedback",
+        "full delivery transaction"
+      ],
+      "scope": "local"
+    },
+    "AC-10": {
+      "evidence": [
+        "pure integer score threshold regression",
+        "mixed rubric90 exact pending before valid feedback",
+        "blank versus explicit do-not-know semantics"
+      ],
+      "scope": "local"
+    },
+    "AC-11": {
+      "evidence": [
+        "fresh variant prompt fingerprint/variant_group",
+        "not-passed reinforcement and90passed UI",
+        "unchanged semantic verification preserved on future revision"
+      ],
+      "scope": "local"
+    },
+    "AC-12": {
+      "evidence": [
+        "atomic pause response/cursor with rollback and archived pause frame",
+        "GET receipt recovery no replay",
+        "paused queued job no dispatch",
+        "cross-tab409 disables pause until explicit resolution",
+        "uncertain command recovery inside create/edit/selection/help dialogs"
+      ],
+      "scope": "local"
+    },
+    "AC-13": {
+      "evidence": [
+        "canonical shared slots and real XOR/FKs",
+        "actor/session budgets before POST",
+        "auth/module/config/fence revocation",
+        "local lost SQL/dead owner/remote unknown proof and no replay",
+        "chat regression21 checks"
+      ],
+      "scope": "local; mixed legacy worker deployment remains operational gate"
+    },
+    "AC-14": {
+      "evidence": [
+        "Teacher atomic UI/hooks tests",
+        "32 responsive profiles ES/EN light/dark at320/390/600/1280",
+        "keyboard/focus and HTTP risk flows"
+      ],
+      "scope": "browser laboratory; no physical phone or performance certification"
+    },
+    "AC-15": {
+      "evidence": [
+        "API text adapter tools empty, no native callbacks, one exchange",
+        "real exact selection canary/plan/packet",
+        "chat gateway/contracts/R17 regressions"
+      ],
+      "scope": "API text only; Agentic adapter_unqualified"
+    },
+    "AC-16": {
+      "evidence": [
+        "global suites/build/lint/typecheck",
+        "applied migration restore/reversal rehearsal",
+        "draft knowledge excluded and44 approved bytes preserved",
+        "document validation receipt"
+      ],
+      "scope": "local_verified; operational activation, documentary approval and Teacher knowledge publication not performed"
+    }
+  },
+  "operational_gates": [
+    "Assign Teacher manually through the maintainer URL selector if desired. No module/user grant/role assignment or optional seed was executed.",
+    "Configured database has zero Teacher records and zero Teacher qualifications. Real isolated qualification does not authorize operational execution.",
+    "Use a dedicated user-owned saved draft and scripts/qualify-teacher-text.mjs for the actual exact selection/environment before operational generation; no authentication impersonation or fallback.",
+    "Drain compatible API/workers and prove no open/held/unknown dispatch before activating the shared runtime. No running configured API/worker was restarted and no VM deployed. Mixed old/new worker rollout is not accepted.",
+    "Teacher Agentic is unavailable until native-tool prohibition and exact adapter selection are demonstrated.",
+    "Chat-only restore rejects populated Teacher data before mutation. Mixed Teacher/chat recovery requires an explicit full-database rehearsal and adoption plan.",
+    "Existing duplicate NodiaAI modules16(nodiaai) and21(nodia_ai) retain identities and assignments; ordinary ambiguous authority remains denied. No automatic merge/grant was performed.",
+    "Document approval and knowledge publication remain explicit separate decisions; sample pedagogical review does not certify future generated lessons or learning effectiveness."
+  ],
+  "final_checks": {
+    "server": {
+      "command": "npm test -- --maxWorkers=4",
+      "exit_code": 0,
+      "passed": 5805,
+      "skipped": 1,
+      "files_passed": 322,
+      "duration_seconds": 241.02,
+      "source_frozen_during_run": true,
+      "log": "output/teacher/server-vitest-release.log",
+      "log_sha256": "747b9b1031df061cee0cf062a48a67f79cc30213026d5939693c408d7c4719ee",
+      "build": {
+        "command": "npm run build",
+        "exit_code": 0
+      },
+      "lint": {
+        "command": "npm run lint",
+        "exit_code": 0,
+        "errors": 0,
+        "existing_warnings": [
+          {
+            "path": "nodia-server/test/nodia-ai-live-unknown.fixture.mjs",
+            "line": 269,
+            "rule": "eslint(no-unsafe-finally)"
+          }
+        ]
+      }
+    },
+    "client": {
+      "status": "passed",
+      "teacher_focal": {
+        "passed": 26,
+        "files": 9
+      },
+      "source_frozen": true,
+      "prior_immutable_run": {
+        "passed": 2530,
+        "files": 307,
+        "duration_seconds": 428.87,
+        "source_frozen_during_run": true,
+        "limitation": "Subsequent closing static review found modal focus trapped the external uncertain-request recovery action. This green run does not verify the corrective placement inside dialogs."
+      },
+      "modal_recovery": {
+        "verified": true,
+        "atomic_cases": "Lost POST, failed receipt GET preserves modal fields; successful explicit GET closes only after confirmed result; one mutation, no replay.",
+        "browser": "Synthetic transport fixture, not Nest/PostgreSQL. Create at320/390 plus selection/help dialogs, keyboard focus and44px target, zero horizontal overflow.",
+        "contract_impact": "Accessible placement of existing receipt recovery; no new capability, permission or API contract."
+      },
+      "command": "npm test -- --maxWorkers=4",
+      "exit_code": 0,
+      "passed": 2531,
+      "files_passed": 308,
+      "duration_seconds": 402.71,
+      "log": ".tmp/teacher-ui/client-global-modal-immutable.log",
+      "log_sha256": "63b04bccd884efea63737d31f29caa24d5c28972c8c81a9cf18d70cae66e53bb",
+      "source_frozen_during_run": true,
+      "source_manifest_files": 1322,
+      "source_manifest_sha256": "52f9d1621ceebfea3385749de2d22cc9ac36dc0b5083cf16ed269094010354b4",
+      "source_manifests_byte_identical_independently_checked": true,
+      "typecheck": {
+        "passed": true,
+        "exit_code": 0,
+        "log": ".tmp/teacher-ui/client-typecheck-modal.log"
+      },
+      "lint": {
+        "passed": true,
+        "exit_code": 0,
+        "errors": 0,
+        "log": ".tmp/teacher-ui/client-lint-modal.log"
+      },
+      "build": {
+        "passed": true,
+        "exit_code": 0,
+        "vite_seconds": 16.52,
+        "teacher_chunk_kb": 90.62,
+        "teacher_gzip_kb": 28.66,
+        "log": ".tmp/teacher-ui/client-build-modal.log",
+        "warning": "Existing shared api chunk660.55kB exceeds500kB warning threshold; no performance acceptance is claimed."
+      }
+    }
+  },
+  "documentation_validation": "docs/evidence/teacher-route-document-validation-20261101-r01.json",
+  "source_encoding": {
+    "files_checked": 84,
+    "scope": "Teacher Server/Client, shared ai-generation, Teacher harnesses and atomic Client tests, ES/EN dictionaries",
+    "invalid_utf8": 0,
+    "cr_bytes": 0,
+    "scoped_git_diff_check_exit_code": 0
+  },
+  "gates": {
+    "G0": "local_verified_existing_tree_preserved",
+    "G1": "local_verified_private_domain_and_catalogue_no_grants",
+    "G2": "local_verified_shared_runtime_and_legacy_chat_regressions; coordinated compatible worker adoption pending",
+    "G3": "local_verified_synthetic_vertical_http_postgres",
+    "G4": "local_verified_browser_risk_matrix",
+    "G5": "exact_api_text_selection_verified_in_disposable_storage; operational qualification and Agentic unavailable",
+    "G6": "local_checks_complete; explicit operational gates retained, no VM deployment or Teacher knowledge publication"
+  },
+  "cleanup": {
+    "teacher_disposable_http_servers_closed": true,
+    "teacher_disposable_database_containers_removed": true,
+    "teacher_qa_browser_and_vite_closed": true,
+    "configured_nodia_postgres_and_nodia_redis_preserved": true,
+    "configured_api_or_worker_restarted": false
+  }
+}

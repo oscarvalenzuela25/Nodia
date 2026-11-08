@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "date_local": "2026-10-26",
+  "scope": "offline read-only source/packaging and closed sanitized diagnostic review; no VM, CLI execution, SDK, generation, replay or runtime changes",
+  "conclusion": "No causal contract, serialization or controlled-context defect is determinable from available evidence. Timeout before any callback remains the observed result; CLI/provider internal cause is unknown.",
+  "diagnostic_source_sha256": "683ae430237b3e6242992a543ee71a0859613c3dc36b7fe45e647298d97398b9",
+  "sanitized_source_literal": {
+    "status": "closed_source_sanitized_diagnostic",
+    "native_source_sha256": "15e99643a39fdaec47605698815eaef915c19f5b62cbb50d80340c2e48626a89",
+    "diagnostic": {
+      "attempt_id": "57cc354d-0ecb-4f6a-80d4-f01494d1a3a2",
+      "phase": "running_cli",
+      "state": "unknown",
+      "exception_type": "TimeoutError",
+      "elapsed_ms": 119031,
+      "rpc_messages": 6,
+      "callbacks": 0,
+      "exit_code": null,
+      "gate_verified": false,
+      "cli": {
+        "stage": "prompt_received",
+        "events": 2,
+        "invalid_lines": 0,
+        "stdout_bytes": 1814,
+        "initialized": true,
+        "document_read_completed": false,
+        "result_seen": false,
+        "last_event_age_ms": 115800,
+        "phase": "prompt_received",
+        "result_status": null,
+        "denied_actions_count": null,
+        "tool_error_categories": [],
+        "tool_event_counts": {},
+        "tool_completed_counts": {},
+        "tool_error_counts": {},
+        "tool_steps": 0,
+        "last_tool": "none",
+        "terminal_status": "absent",
+        "denied_count": 0,
+        "stderr_bytes": 0,
+        "init_identity": {
+          "init_count": 1,
+          "agent_matches": true,
+          "model_matches": true
+        },
+        "error_indicator_interpretation": "text_indicator_not_verified_cause",
+        "stderr_error_categories": [],
+        "result_error_categories": [],
+        "result_error_json_utf8_bytes": null
+      },
+      "hook": {
+        "receipt_class": "missing",
+        "decision_count": null,
+        "rejected_count": null,
+        "categories_state": "missing",
+        "categories": {}
+      },
+      "cli_log": {
+        "state": "observed",
+        "interpretation": "text_indicator_not_verified_cause",
+        "bytes_read": 27974,
+        "lines_scanned": 128,
+        "truncated": true,
+        "transport_indicators": [],
+        "provider_error_indicators": [],
+        "http_statuses": []
+      },
+      "rpc": {
+        "scope": "bridge_reply_constructed_not_cli_consumption",
+        "state": "observed",
+        "events": 6,
+        "unknown_events": 0,
+        "methods": {
+          "initialize": 1,
+          "notifications_initialized": 1,
+          "tools_list": 1,
+          "tools_call": 0,
+          "ping": 0,
+          "other": 3
+        },
+        "responses": {
+          "success": 2,
+          "error": 1,
+          "notification": 3,
+          "unknown": 0
+        },
+        "tools_list_successes": 1,
+        "last_response": {
+          "method": "other",
+          "response": "notification",
+          "error_code": null
+        },
+        "closed_observation": {
+          "schema_version": 1,
+          "state": "observed",
+          "unknown_events": 0,
+          "scope": "flush_completed_not_cli_consumption",
+          "sequence": [
+            {
+              "ordinal": 1,
+              "elapsed_ms": 0,
+              "method": "other",
+              "response": "error",
+              "reason": "pre_ready",
+              "error_code": -32000,
+              "constructed": true,
+              "write_completed": true,
+              "flush_completed": true,
+              "response_utf8_bytes": 96
+            },
+            {
+              "ordinal": 2,
+              "elapsed_ms": 1,
+              "method": "other",
+              "response": "notification",
+              "reason": "notification",
+              "error_code": null,
+              "constructed": false,
+              "write_completed": false,
+              "flush_completed": false,
+              "response_utf8_bytes": null
+            },
+            {
+              "ordinal": 3,
+              "elapsed_ms": 2,
+              "method": "initialize",
+              "response": "success",
+              "reason": "initialize",
+              "error_code": null,
+              "constructed": true,
+              "write_completed": true,
+              "flush_completed": true,
+              "response_utf8_bytes": 161
+            },
+            {
+              "ordinal": 4,
+              "elapsed_ms": 2,
+              "method": "notifications_initialized",
+              "response": "notification",
+              "reason": "notification",
+              "error_code": null,
+              "constructed": false,
+              "write_completed": false,
+              "flush_completed": false,
+              "response_utf8_bytes": null
+            },
+            {
+              "ordinal": 5,
+              "elapsed_ms": 3,
+              "method": "tools_list",
+              "response": "success",
+              "reason": "tools_list",
+              "error_code": null,
+              "constructed": true,
+              "write_completed": true,
+              "flush_completed": true,
+              "response_utf8_bytes": 12527
+            },
+            {
+              "ordinal": 6,
+              "elapsed_ms": 2854,
+              "method": "other",
+              "response": "notification",
+              "reason": "notification",
+              "error_code": null,
+              "constructed": false,
+              "write_completed": false,
+              "flush_completed": false,
+              "response_utf8_bytes": null
+            }
+          ]
+        }
+      },
+      "controlled_context": {
+        "scope": "initial_prompt_and_mcp_stdout",
+        "initial_utf8_bytes": 75912,
+        "used_utf8_bytes": 88696,
+        "maximum_utf8_bytes": 262144,
+        "provider_internal_context_tokens": null
+      }
+    },
+    "provider_generations": 0,
+    "provider_observations": 0,
+    "SQL_queries": 0,
+    "raw_vendor_logs_emitted": false
+  },
+  "pinned_sources_matching_current_e3b5_inventory": {
+    "native_mcp_stdio.py": {
+      "sha256": "5022f53a0f1267202adb56f5c72d0a4ec4f61822d3a73add795fab9d588a9564",
+      "line_references": [
+        39,
+        177,
+        195,
+        261,
+        285,
+        289,
+        322
+      ]
+    },
+    "native_mcp_sessions.py": {
+      "sha256": "15e99643a39fdaec47605698815eaef915c19f5b62cbb50d80340c2e48626a89",
+      "line_references": [
+        447,
+        449,
+        512,
+        528,
+        533,
+        537,
+        564
+      ]
+    },
+    "native_context_budget.py": {
+      "sha256": "5a5414e0f9130278b8cf0ecb2fb6a1315e3cead101f4a88f9573cc5bc5db6f77",
+      "line_references": [
+        127,
+        173
+      ]
+    },
+    "native_execution_agents.py": {
+      "sha256": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+      "line_references": [
+        18,
+        23
+      ]
+    },
+    "agentic_cli.py": {
+      "sha256": "03a7145c3e7be51b15ce71c20d54acd7016a51e2e50b9549c772b179efd7f29b",
+      "line_references": [
+        240,
+        282,
+        292,
+        309
+      ]
+    }
+  },
+  "source_limit": "Local agentic_cli.py is dirty/different and was not used as deployed source. The reviewed runner is the exported03a7145c source matching the image manifest. MCP/role/context local bytes match that same inventory. Official CLI is the pinned1.3.1 Go executable; internal vendor source was not available for this offline review.",
+  "findings": [
+    {
+      "fact": "Controlled-context delta equals all emitted replies",
+      "equation": "88696 - 75912 = 12784 = 96 + 161 + 12527",
+      "limit": 262144,
+      "interpretation": "No Nodia byte-accounting overflow evidenced. This is not provider token usage or proof the internal provider context fits."
+    },
+    {
+      "fact": "Ordinal1 other/pre_ready -32000 was followed by initialize/initialized/tools_list success, each response write+flush complete",
+      "interpretation": "The rejected method is not identified by other; this does not establish a fatal protocol error or CLI consumption of the listing."
+    },
+    {
+      "fact": "Zero tools_call, callbacks and tool steps",
+      "interpretation": "Business callback result serialization and callback gate branches were not reached. There is no evidence of rejection in those branches."
+    },
+    {
+      "fact": "UTF8 JSON newline serialization and single write\u2192flush are implemented in exact pinned source; inputSchema/name/description emitted by tools_list",
+      "interpretation": "No malformed wire reply established by this diagnostic. Flush is not consumption/acceptance by the vendor CLI."
+    },
+    {
+      "fact": "init_count1, agent_matches/model_matches true; b16 control7e8c18999d398b13f5c47e156ceed6d016eed1a7e1c8813932dd6026aed1eac9 passed and ACKed in same e3b5 epoch",
+      "interpretation": "No unconditional packaging/owned-role incompatibility established; the control does not attest this full-chat request."
+    },
+    {
+      "fact": "Runner gathers stdout/stderr/write/process-wait before returning exit code; supervisor has an outer request timeout",
+      "interpretation": "exit_code null does not independently prove the parent CLI remained alive for the full interval. The diagnostic does not distinguish vendor wait from process/pipe/internal SDK stalls."
+    },
+    {
+      "fact": "No provider/transport/HTTP indicators in bounded vendor log tail; truncated true",
+      "interpretation": "Absence of indicators in this tail is not proof no such error occurred."
+    }
+  ],
+  "decision_boundary": {
+    "causal_fix_justified": false,
+    "timeout_or_budget_increase_justified": false,
+    "CLI_upgrade_or_role_permission_change_justified": false,
+    "automatic_replay_permitted": false,
+    "independent_Codex_case": "root-operated separate case only after exact Gemini reconciliation/ACK, not a fallback of the uncertain original attempt"
+  },
+  "prior_review": "docs/evidence/nodia-ai-ai38-mcp-post-list-review-r01.md",
+  "product_acceptance_claim": false
+}

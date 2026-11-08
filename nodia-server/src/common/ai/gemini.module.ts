@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { GeminiService } from './gemini.service.js';
 import { MistralService } from './mistral.service.js';
-import { ApiProviderService } from './api-provider.service.js';
+import { ApiProviderModule } from './api-provider.module.js';
 
 @Module({
-  providers: [GeminiService, MistralService, ApiProviderService],
-  exports: [GeminiService, MistralService, ApiProviderService],
+  imports: [ApiProviderModule],
+  providers: [GeminiService, MistralService],
+  exports: [GeminiService, MistralService, ApiProviderModule],
 })
 export class GeminiModule {}

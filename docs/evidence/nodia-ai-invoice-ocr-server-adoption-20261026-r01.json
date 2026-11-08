@@ -1,0 +1,355 @@
+{
+  "actual_adoption": {
+    "Linux_operator_tests": 16,
+    "Linux_tests_receipt": {
+      "bytes": 424,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/server-operator-Linux-r01.json",
+      "sha256": "a8d3f8df0176fdb0a3d20125d1ae562644dd6ccc75b55c178d67ffeef514522d"
+    },
+    "SQL_business_writes": 0,
+    "SQL_restores": 0,
+    "all_61_table_hashes_and_schema_unchanged": true,
+    "automatic_replay": false,
+    "backup_runner_after_sha256": "92e10973137b795190aaf4627d1491c6740c05fa510807cd4f50f43b08909a83",
+    "capacity_after": {
+      "additional_phase_overhead_bytes": 20971520,
+      "available_bytes": 3987841024,
+      "device": 2050,
+      "future_cleanup_credited": false,
+      "required_bytes": 289415196,
+      "reserve_bytes": 268443676,
+      "spool_lock_only": true
+    },
+    "client_nginx_configuration_preserved": true,
+    "codex_terminal_inventory_count": 3,
+    "consumers_after": {
+      "nodia-ai-worker": {
+        "active": "active",
+        "argv_exact_match": true,
+        "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "pid": 407782,
+        "recovery_config_path_verified": true,
+        "sub": "running",
+        "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r01"
+      },
+      "nodia-api": {
+        "active": "active",
+        "argv_exact_match": true,
+        "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "pid": 407781,
+        "recovery_config_path_verified": true,
+        "sub": "running",
+        "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r01"
+      }
+    },
+    "fresh_backup": {
+      "backup_id": "18a8f48d-f6e4-4f04-afd9-eb0106ed9861",
+      "captured_at": "2026-10-26T04:13:23.158Z",
+      "cipher_bytes": 1404883,
+      "cipher_sha256": "a9a9e09ab88b925ffb4b5fa203ce0c76cdc25b5d50fb7c8b62a10da596b4aa68",
+      "expires_at": "2026-11-02T04:13:23.158Z",
+      "journal_sequence": 1,
+      "status": "ready"
+    },
+    "migrations": 0,
+    "native_after": {
+      "epoch": {
+        "descriptor_sha256": "d27816454ab40e774919a16d3b99da50ccdc3c1e570ef244832b30b46a95f89d",
+        "id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+        "image": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+        "started_at": "2026-10-26T03:06:18.949917773Z"
+      },
+      "quiet": {
+        "active_native_processes": 0,
+        "attempt_receipts": 0,
+        "temporary_directories": 0,
+        "unknown_markers": 0
+      }
+    },
+    "native_exactly_unchanged": true,
+    "native_restarted": false,
+    "preflight": {
+      "bytes": 33139,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/server-preflight-VM-r01.json",
+      "sha256": "92e55c43e3337cb5661d11143239ce3142cd2b75482f341b6f470c06db1ac838"
+    },
+    "provider_generations": 0,
+    "quiet_after": {
+      "open_attempts": 0,
+      "pending_jobs": 0,
+      "retained_slots": 0
+    },
+    "receipt": {
+      "bytes": 44085,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/server-adoption-VM-r01.json",
+      "sha256": "da6ea6b2f1a5ea17a9b651c0ba9e2b00e0cebc7d04daddbccca74b09ff1d44c4"
+    },
+    "schema_sha256": "82753ec54d69006d2850dd62173093c03086e43a37af62e2a3dba1c5da5b4b87",
+    "status": "adopted_verified",
+    "timers_restored": true
+  },
+  "actual_staging": {
+    "SDK_calls": 0,
+    "SQL_writes": 0,
+    "receipt": {
+      "bytes": 536,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/server-stage-VM-r01.json",
+      "sha256": "68bf85150c2c027fe40a1aa8d96c07e2ba12d8a9bcd8cd3e78ca2d47b4db2183"
+    },
+    "service_restarts": 0,
+    "status": "target_staged_verified_not_adopted"
+  },
+  "coordinates": {
+    "client": "/opt/nodia/releases/nodia-client-module-access-privacy-r01",
+    "client_manifest_sha256": "eada6b5226b3f1d7ba31ef702047f1d9f9a4c4ce3c03b6a80ce448b790eb57a1",
+    "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "knowledge_after": "46405d3078a9c065bc3c5c6e4f5758b71b101dd2ea06abdcb017eb6b96f8364e",
+    "knowledge_before": "b21babc5a17f6303d557f4e745704b3c115eab2558d77bb05e6a6f069a2e2a7f",
+    "native_epoch": {
+      "container_id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+      "image_id": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+      "started_at_utc": "2026-10-26T03:06:18.949917773Z"
+    },
+    "nginx_sha256": "c312445f1b8c3438ea1471c6f5cbdc4940c50402a8691ebd78092824549ba4a2",
+    "source": "/opt/nodia/releases/nodia-server-module-access-privacy-r01",
+    "source_manifest_sha256": "2029c0155988ea16373afcef0f86fde5eb7ee8c794453fa90289c71872937386",
+    "target": "/opt/nodia/releases/nodia-server-invoice-ocr-r01",
+    "target_manifest_sha256": "50ce9c572f3cf8648815afcc91ba637b0b499d5a46c9610f0c1d0c4cb38c51c9"
+  },
+  "historical_knowledge_parity": {
+    "knowledge_after": "46405d3078a9c065bc3c5c6e4f5758b71b101dd2ea06abdcb017eb6b96f8364e",
+    "knowledge_before": "b21babc5a17f6303d557f4e745704b3c115eab2558d77bb05e6a6f069a2e2a7f",
+    "new_capabilities": [
+      "nodia_invoices_ocr"
+    ],
+    "old_capabilities_preserved": 151,
+    "old_document_contents_preserved": 40,
+    "old_fragments_preserved": 42
+  },
+  "internal_SQL_DI": {
+    "OCR_calls": 0,
+    "check_names": [
+      "Nest resolves OCR module, Processing, OCR stage and Snapshot without a DI cycle",
+      "published composition registers the OCR MCP tool with an object-only closed input schema",
+      "published manifest contains the approved OCR document and business-scoped capability fragment",
+      "authorized knowledge execution reads the actual OCR fragment bytes and matching publication hashes",
+      "without business scope the OCR fragment is excluded and explicit detail reads are denied",
+      "prepare persists awaiting_supplier without OCR",
+      "pending analysis is recovered privately before the supplier turn",
+      "foreign commercial supplier cannot consume the preparation",
+      "new turn requests the same original without reattachment and freezes commercial zero/config",
+      "repeated same request identity preserves one completed receipt",
+      "throughSeq excludes the future supplier decision even when its preparation is older",
+      "current bound exposes only the scoped request hint, no extraction or private configuration",
+      "another actor cannot recover references from an owned chat",
+      "business revocation immediately removes private references",
+      "unknown OCR intent remains visible as a hint without being replayable",
+      "concurrent requests use two real PostgreSQL connections",
+      "second production verification actually waits for the preparation lock",
+      "exactly one concurrent consumer commits and the loser cannot create an OCR request",
+      "neither sequential nor concurrent preparation reserves an OCR dispatch budget",
+      "all preparation/recovery/concurrency checks perform zero OCR, external I/O and business writes"
+    ],
+    "checks": 20,
+    "cleanup_complete": true,
+    "configured_database_used": false,
+    "external_calls": 0,
+    "provider_generations": 0,
+    "receipt": {
+      "bytes": 2378,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/sql-di-VM-r01.json",
+      "sha256": "67c5c822927e3187eb11c9745df8a7a51e23e6470f6e2253ed00a976c4be93f8"
+    },
+    "status": "passed"
+  },
+  "package": {
+    "authoring_extras_not_deployed": true,
+    "baseline_paths_retained": 4168,
+    "delta_files": 111,
+    "foreign_audio_changes_removed": {
+      "after": "65323f4df6cd93ba89597df366950ca3525fe5beb4545693ba1301c65b5dd2a2",
+      "before": "a52014d7ef10280c0bec2d35803e4b14a2cd16bd67dbafc6df4750804a047a96",
+      "path": "src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.ts",
+      "reason": "Remove unrelated Codex audio admission expansion from old OCR authoring snapshot; preserve source2029 image behavior and the invoice OCR flag",
+      "registry_references_updated": [
+        {
+          "after": "65323f4df6cd93ba89597df366950ca3525fe5beb4545693ba1301c65b5dd2a2",
+          "before": "a52014d7ef10280c0bec2d35803e4b14a2cd16bd67dbafc6df4750804a047a96",
+          "capability_id": "nodia_invoices_ocr"
+        }
+      ],
+      "root_checkout_modified": false
+    },
+    "manifest": {
+      "bytes": 559306,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-r01/package/release-manifest.json",
+      "sha256": "50ce9c572f3cf8648815afcc91ba637b0b499d5a46c9610f0c1d0c4cb38c51c9"
+    },
+    "mode": "Frozen selective publication; not an autonomous monorepo build",
+    "overlay": {
+      "bytes": 448054,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-r01/package/overlay.tar.gz",
+      "sha256": "05a3351a94e1e29ae7e4268702d2090a15e75aaaa317142956e85cf17164f8f3"
+    },
+    "plan": {
+      "bytes": 45165,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-r01/package/plan.json",
+      "sha256": "4a096207ca7219a8cfbdefb5fe0caadd577919df2656cdb3cc363ad868fbff29"
+    },
+    "source_paths": 27,
+    "target_files": 4230,
+    "transitive_declaration_outputs": [
+      "dist/nodia-ai-conversation/nodia-ai-connections.controller.d.ts",
+      "dist/nodia-ai-proposal/types/local-operation.types.d.ts"
+    ]
+  },
+  "raw_inputs": [
+    {
+      "bytes": 2378,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/sql-di-VM-r01.json",
+      "sha256": "67c5c822927e3187eb11c9745df8a7a51e23e6470f6e2253ed00a976c4be93f8"
+    },
+    {
+      "bytes": 536,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/server-stage-VM-r01.json",
+      "sha256": "68bf85150c2c027fe40a1aa8d96c07e2ba12d8a9bcd8cd3e78ca2d47b4db2183"
+    },
+    {
+      "bytes": 33139,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/server-preflight-VM-r01.json",
+      "sha256": "92e55c43e3337cb5661d11143239ce3142cd2b75482f341b6f470c06db1ac838"
+    },
+    {
+      "bytes": 44085,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/server-adoption-VM-r01.json",
+      "sha256": "da6ea6b2f1a5ea17a9b651c0ba9e2b00e0cebc7d04daddbccca74b09ff1d44c4"
+    },
+    {
+      "bytes": 424,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/server-operator-Linux-r01.json",
+      "sha256": "a8d3f8df0176fdb0a3d20125d1ae562644dd6ccc75b55c178d67ffeef514522d"
+    },
+    {
+      "bytes": 67420,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/final-server-lineage.json",
+      "sha256": "99bcf7a43e3279cfc582b3342694439ec470b6d154ea2fba6be5986109e4ae3c"
+    },
+    {
+      "bytes": 1972,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/foreign-audio-removal.diff",
+      "sha256": "f83a6a0539716cd4487556c98468b53d8086cb7289972273e0cbdca5e7a29fc8"
+    },
+    {
+      "bytes": 3554,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/relative-import-closure-r03.json",
+      "sha256": "ccc2931ec60821d915c038f75c60ec34d727fcfb073081e946666097bbc6a705"
+    },
+    {
+      "bytes": 481,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/text-and-knowledge-inputs-check.json",
+      "sha256": "d7612fd27ad56149427f910f9e3e468bf4d8e1ce647a05593d9e52835594091b"
+    },
+    {
+      "bytes": 3022,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/authoring-inputs-only.json",
+      "sha256": "653e61bc1c90a463906dc6efb15826793bc6fec1b5dc6a70f351cb75d4c82f80"
+    },
+    {
+      "bytes": 529,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/authoring-metadata-adjustments.json",
+      "sha256": "bf3c0290f36759b1ea30d79373651e396184fdde5defbb36908cfd8b1048617b"
+    },
+    {
+      "bytes": 2101,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/server-build-r01.log",
+      "sha256": "bab373d440a768333941dd7d9cd4d733946d8051fd4d9fe216f6b3f84e707e3f"
+    },
+    {
+      "bytes": 406,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/server-build-r02.log",
+      "sha256": "ea7afeb9240df6140ea58f44086dd727a6b7351dcd8a3280ba316d7d597d489a"
+    },
+    {
+      "bytes": 2101,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/server-build-r03.log",
+      "sha256": "c34eb9015957abcd497742dcf21e28b167f696287115cc8862fad2146b3764ad"
+    }
+  ],
+  "recorded_on": "2026-10-26",
+  "retained_limits_and_negative_attempts": [
+    "Initial local build passed an authoring superset containing unrelated Codex audio admission changes; it was superseded and never packaged/adopted. The selective target restores source2029 image behavior plus the OCR flag, without shipping audio/media helpers.",
+    "Local rebuildR02 failed before compilation with section_missing after an inline Python registry edit omitted explicit file encoding on Windows. Registry was restored from the verified2029 archive plus explicit OCR additions in UTF8, not repaired by reinterpretation; UTF8/cap151/binding42 title-byte regression passed. The failed log is retained.",
+    "Historical authoring fixture URL oracles remain unchanged and unreachable from main/worker; they were not deleted or copied outside the release. All emitted static relative module imports resolve.",
+    "Internal SQL/DI uses disposable PostgreSQL and synthetic planner provenance; it does not exercise provider OCR inference or real MCP transport.",
+    "The operator requested no SDK/inference or business mutation. Automatic startup metadata checks are not inference acceptance.",
+    "Client eada/nginx c312 were preserved in this Server-only cut. Subsequent Client adoption/UI and natural multi-turn OCR acceptance are separate evidence.",
+    "No new C03 extraction/MIME/zero-null/business-write acceptance or global AI36/AI38 closure follows from this delivery."
+  ],
+  "runtime_import_closure": {
+    "dangling": [],
+    "declared_asset_references": 33,
+    "modules": 979,
+    "new_URL_asset_exceptions": 0,
+    "nonliteral_imports": [],
+    "production_entrypoints": [
+      "dist/main.js",
+      "dist/nodia-ai-worker.js"
+    ],
+    "production_reachable_modules": 889,
+    "proof": {
+      "bytes": 3554,
+      "path": "ops/lab/artifacts/invoice-ocr-server-adoption-verification-r01/relative-import-closure-r03.json",
+      "sha256": "ccc2931ec60821d915c038f75c60ec34d727fcfb073081e946666097bbc6a705"
+    },
+    "relative_module_references": 3567,
+    "unchanged_unreachable_authoring_fixture_assets": [
+      {
+        "baseline_sha256": "cf8205d170fb4d458ae4458a6e0ab12f3df9c0e8081488a0d53f3b168461f4cb",
+        "classification": "unchanged baseline authoring fixture asset; not a module import or a production entrypoint dependency",
+        "module": "dist/nodia-ai-confirmation/use-case/confirmation.fixture.js",
+        "production_reachable": false,
+        "specifier": "../../../../docs/mvp/nodia-ai-v1-common-contracts.schema.json",
+        "target_sha256": "cf8205d170fb4d458ae4458a6e0ab12f3df9c0e8081488a0d53f3b168461f4cb"
+      },
+      {
+        "baseline_sha256": "f7025cac1ff2e687484bbce7916667e0214b5c4df0113a511ea0c1512254a02d",
+        "classification": "unchanged baseline authoring fixture asset; not a module import or a production entrypoint dependency",
+        "module": "dist/nodia-ai-conversation/use-case/conversation-admission.fixture.js",
+        "production_reachable": false,
+        "specifier": "../../../../docs/mvp/nodia-ai-v1-runtime-policy.json",
+        "target_sha256": "f7025cac1ff2e687484bbce7916667e0214b5c4df0113a511ea0c1512254a02d"
+      },
+      {
+        "baseline_sha256": "6c836d3b3d9320ff72cdd6333ce45f10e3213417c0d23759ec705416735a1108",
+        "classification": "unchanged baseline authoring fixture asset; not a module import or a production entrypoint dependency",
+        "module": "dist/nodia-ai-proposal/use-case/proposal.fixture.js",
+        "production_reachable": false,
+        "specifier": "../../../../docs/mvp/nodia-ai-v1-common-contracts.schema.json",
+        "target_sha256": "6c836d3b3d9320ff72cdd6333ce45f10e3213417c0d23759ec705416735a1108"
+      },
+      {
+        "baseline_sha256": "9e50827520b6cf799e3a7c777a9b94201efd5dc9b39c2e3340de8902c0c65dee",
+        "classification": "unchanged baseline authoring fixture asset; not a module import or a production entrypoint dependency",
+        "module": "dist/nodia-ai-runtime/use-case/runtime.fixture.js",
+        "production_reachable": false,
+        "specifier": "../../../../docs/mvp/nodia-ai-v1-runtime-policy.json",
+        "target_sha256": "9e50827520b6cf799e3a7c777a9b94201efd5dc9b39c2e3340de8902c0c65dee"
+      },
+      {
+        "baseline_sha256": "9e50827520b6cf799e3a7c777a9b94201efd5dc9b39c2e3340de8902c0c65dee",
+        "classification": "unchanged baseline authoring fixture asset; not a module import or a production entrypoint dependency",
+        "module": "dist/nodia-ai-runtime/use-case/runtime.fixture.js",
+        "production_reachable": false,
+        "specifier": "../../../../docs/mvp/nodia-ai-v1-runtime-policy.schema.json",
+        "target_sha256": "9e50827520b6cf799e3a7c777a9b94201efd5dc9b39c2e3340de8902c0c65dee"
+      }
+    ]
+  },
+  "schema_version": 1,
+  "scope": "Selective OCR Server release rebased onto the adopted module-access privacy2029 source; no Client or Native cutover in this Server operation",
+  "status": "server_adopted_verified_not_full_OCR_acceptance"
+}

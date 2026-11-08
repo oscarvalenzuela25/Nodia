@@ -120,7 +120,7 @@ function fixture() {
         session_public_id: 'session',
         command_set_hash: execution.proposal_hash,
         allowed_operations: [source.tool_name],
-        allowed_modules: ['/tools/business'],
+        allowed_modules: ['/business'],
         allowed_scope: {},
         policy_version: policy.policyVersion,
       },
@@ -132,7 +132,7 @@ function fixture() {
   const proposals = {
     equal: isDeepStrictEqual,
     preparer: () => ({
-      moduleRoutes: ['/tools/business'],
+      moduleRoutes: ['/business'],
       verifyPreconditions: verify,
     }),
   } as unknown as ValidateNodiaAiProposalUseCase;

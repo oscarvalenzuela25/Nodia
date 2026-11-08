@@ -26,7 +26,7 @@ import { PickerSurface } from "./styles";
 
 export type DateInputProps = Omit<
   TextInputProps,
-  "onChange" | "type" | "multiline" | "rows" | "minRows" | "maxRows"
+  "onChange" | "onFocus" | "onKeyDown" | "type" | "multiline" | "rows" | "minRows" | "maxRows"
 > & {
   displayLabel?: string;
   onChange: (value: string) => void;

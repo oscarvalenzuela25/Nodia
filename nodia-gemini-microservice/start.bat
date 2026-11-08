@@ -1,7 +1,7 @@
 @echo off
 title Nodia Gemini Microservice
 echo =======================================================
-echo    Iniciando Nodia Gemini Microservice (Gemini Pro)
+echo    Iniciando Nodia Agentic Microservice
 echo =======================================================
 
 cd /d "%~dp0"
@@ -14,7 +14,6 @@ if not exist ".venv\Scripts\python.exe" (
     echo Instalando dependencias desde requirements.txt...
     .\.venv\Scripts\python.exe -m pip install -r requirements.txt
     if errorlevel 1 exit /b 1
-    .\.venv\Scripts\python.exe -m playwright install chromium
     if errorlevel 1 exit /b 1
 )
 

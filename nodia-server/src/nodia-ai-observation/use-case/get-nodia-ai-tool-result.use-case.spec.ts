@@ -285,7 +285,7 @@ describe('GetNodiaAiToolResultUseCase', () => {
       status: 401,
     });
   });
-  it('denies a revoked destination assignment and existing action', async () => {
+  it('denies a revoked destination assignment while allowing access without role actions', async () => {
     const f = fixture();
     f.current.modules.find(
       (item) => item.route === '/tools/fixture',
@@ -293,14 +293,17 @@ describe('GetNodiaAiToolResultUseCase', () => {
     await expect(f.subject.execute(f.identity, callId)).rejects.toBeInstanceOf(
       ForbiddenException,
     );
+    expect(f.verifyAuthority).not.toHaveBeenCalled();
     f.current.modules.find(
       (item) => item.route === '/tools/fixture',
     )!.assigned = true;
     f.current.actionKeys = [];
-    await expect(f.subject.observe(f.identity, callId)).rejects.toBeInstanceOf(
-      ForbiddenException,
-    );
-    expect(f.verifyAuthority).not.toHaveBeenCalled();
+    await expect(f.subject.observe(f.identity, callId)).resolves.toMatchObject({
+      result_ref: { tool_call_id: callId },
+    });
+    await expect(f.subject.execute(f.identity, callId)).resolves.toEqual(f.call.public_result);
+    expect(f.verifyAuthority).toHaveBeenCalledTimes(2);
+    expect(f.handler).not.toHaveBeenCalled();
   });
   it('revalidates module revocation between contract lookup and final projection', async () => {
     const f = fixture();
@@ -470,7 +473,7 @@ describe('GetNodiaAiToolResultUseCase', () => {
       tool,
       {},
       { data, meta: { total_items: 0 } },
-      '/tools/business',
+      '/business',
     );
     expect(projected.summary).toEqual({ total: 0, returned: 30 });
     expect(projected.navigation).toHaveLength(25);
@@ -494,7 +497,7 @@ describe('GetNodiaAiToolResultUseCase', () => {
       f.tool,
       { property_id: '9007199254740993' },
       result,
-      '/tools/reservations',
+      '/reservations',
     );
     expect(rental.navigation).toEqual([
       {
@@ -513,7 +516,7 @@ describe('GetNodiaAiToolResultUseCase', () => {
       f.tool,
       { property_id: '../../elsewhere' },
       {},
-      '/tools/reservations',
+      '/reservations',
     );
     expect(invalid.navigation).toEqual([
       {
@@ -592,7 +595,7 @@ describe('GetNodiaAiToolResultUseCase', () => {
         { ...f.tool, toolName: 'nodia_businesses_get' },
         {},
         { data: { id: chatId, name: label } },
-        '/tools/business',
+        '/business',
       );
       expect(result.navigation).toEqual([
         {
@@ -612,7 +615,7 @@ describe('GetNodiaAiToolResultUseCase', () => {
       { ...f.tool, toolName: 'nodia_businesses_get' },
       {},
       { data: { id: chatId, name: label } },
-      '/tools/business',
+      '/business',
     );
     expect(result.navigation[0].label).toBe(label);
   });
@@ -625,7 +628,7 @@ describe('GetNodiaAiToolResultUseCase', () => {
       { ...f.tool, toolName: 'nodia_businesses_get' },
       {},
       { data: { id: historicalId, name: 'Synthetic historical business' } },
-      '/tools/business',
+      '/business',
     );
     vi.spyOn(
       observationProjection,
@@ -670,7 +673,7 @@ describe('GetNodiaAiToolResultUseCase', () => {
         tool,
         {},
         { data: business },
-        '/tools/business',
+        '/business',
       ).navigation[0],
     ).toMatchObject({ kind: 'business_detail', id: chatId });
     expect(
@@ -679,7 +682,7 @@ describe('GetNodiaAiToolResultUseCase', () => {
         tool,
         {},
         business,
-        '/tools/business',
+        '/business',
       ).navigation,
     ).toEqual([
       {
@@ -699,7 +702,7 @@ describe('GetNodiaAiToolResultUseCase', () => {
         tool,
         {},
         { id: '123', name: 'Synthetic property' },
-        '/tools/reservations',
+        '/reservations',
       ).navigation,
     ).toEqual([
       {
@@ -715,7 +718,7 @@ describe('GetNodiaAiToolResultUseCase', () => {
         tool,
         {},
         { data: { id: '123', name: 'Synthetic property' } },
-        '/tools/reservations',
+        '/reservations',
       ).navigation,
     ).toEqual([
       {

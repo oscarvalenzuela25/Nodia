@@ -64,12 +64,6 @@ const identities: Readonly<
     keyRequired: false,
     modeRequired: false,
   },
-  nodia_ai_providers_prepare_gemini_web_logout: {
-    kind: 'gemini_web_logout',
-    providerRequired: true,
-    keyRequired: false,
-    modeRequired: false,
-  },
   nodia_ai_providers_prepare_sync_models: {
     kind: 'sync_models',
     providerRequired: true,

@@ -1,4 +1,5 @@
 import type { ProviderContact } from "../../../modules/business/pages/BusinessDetail/components/ProvidersTab/components/ProviderContacts/types";
+import { salesFixture } from "./salesFixtures";
 import { notifyHttpError } from "../../../config/httpFeedback";
 // Isolated synthetic fixture: intercept every HTTP call; no real account or database is used.
 import { createRoot } from "react-dom/client";
@@ -46,7 +47,7 @@ const context = {
     {
       module_group_key: "tools",
       translates: [],
-      modules: [{ key: "business", link: "/tools/business", translates: [] }],
+      modules: [{ key: "business", link: "/business", translates: [] }],
     },
   ],
 };
@@ -125,15 +126,22 @@ const products: ProductEntity[] = Array.from({ length: 28 }, (_, i) => ({
   business_id: business.id,
   provider_id: "101",
   provider: providers[0],
-  code: "QA-PRODUCTO-" + (i + 1),
+  code: i === 1 ? null : "QA-PRODUCTO-" + (i + 1),
+  measurement_unit: "unit",
   name:
     i === 0
       ? "Producto de prueba con un nombre largo para validar la tarjeta"
       : "Producto QA " + (i + 1),
   cost_price: 1000,
   cost_price_tax: 1190,
-  profit_percentage: 20,
   sale_price: 1500,
+  barcode: String(100000 + i).padStart(8, "0"),
+  has_stock: i === 26 ? false : i === 25 ? null : true,
+  offer_price: i === 0 ? 2000 : null,
+  is_offer_enabled: i === 0,
+  effective_price: i === 0 ? "2000" : "1500",
+  price_source: i === 0 ? "offer" : "regular",
+  version: 1,
   stock: i === 0 ? 0 : 5,
   is_active: i !== 27,
   created_at: "2026-10-09",
@@ -186,6 +194,8 @@ mainInstance.defaults.adapter = async (request) => {
     url,
     JSON.stringify(request.params ?? {}),
   );
+  const commerce = salesFixture(request, products, business.id);
+  if (commerce) return commerce;
   if (url.endsWith("/authorization/context")) return response(context);
   if (url.endsWith("/ai-providers/health"))
     return response({
@@ -225,7 +235,6 @@ mainInstance.defaults.adapter = async (request) => {
           name: products[0].name,
           cost_price: 800,
           cost_price_tax: 952,
-          profit_percentage: 20,
           sale_price: 1200,
           stock: 10,
           created_at: "2026-10-01",
@@ -248,7 +257,7 @@ mainInstance.defaults.adapter = async (request) => {
   }
   if (url.endsWith("/business/" + business.id)) return response(business);
   const list = <
-    T extends { is_active?: boolean; name?: string; code?: string },
+    T extends { is_active?: boolean; name?: string; code?: string | null },
   >(
     records: T[],
   ) => {
@@ -323,8 +332,8 @@ client.setQueryData(["authorization", "context", actorId], context);
 const router = createMemoryRouter(productionRouter.routes, {
   initialEntries: [
     params.get("list") === "1"
-      ? "/tools/business"
-      : "/tools/business/" + business.id,
+      ? "/business"
+      : "/business/" + business.id + (params.get("section") ? `?section=${params.get("section")}` : ""),
   ],
 });
 createRoot(document.getElementById("root")!).render(

@@ -1,30 +1,33 @@
-import { ForbiddenException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { describe, expect, it, vi } from 'vitest';
 import type { DataSource } from 'typeorm';
 import { CheckActionPermissionUseCase } from './check-action-permission.use-case.js';
 
-describe('CheckActionPermissionUseCase', () => {
-  it('allows an active role with the required action', async () => {
-    const query = vi.fn().mockResolvedValue([{ allowed: true }]);
+describe('CheckActionPermissionUseCase compatibility', () => {
+  it('does not require a role or action from an active user', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValue([{ actor_active: true, allowed: true }]);
     const useCase = new CheckActionPermissionUseCase({
       query,
     } as unknown as DataSource);
 
     await expect(useCase.execute('12', 'ai:manage')).resolves.toBeUndefined();
-    expect(query).toHaveBeenCalledWith(
-      expect.stringContaining('ur.user_id = $1'),
-      ['12', 'ai:manage'],
-    );
+    expect(query).toHaveBeenCalledWith(expect.any(String), ['12', [], 'all',
+      expect.objectContaining({ '/settings/users': '/users', '/tools/nodia-ai': '/nodia-ai' }),
+    ]);
   });
 
-  it('denies a user without the required action', async () => {
-    const query = vi.fn().mockResolvedValue([{ allowed: false }]);
+  it('still rejects an inactive user instead of granting anonymous access', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValue([{ actor_active: false, allowed: false }]);
     const useCase = new CheckActionPermissionUseCase({
       query,
     } as unknown as DataSource);
 
     await expect(useCase.execute('12', 'ai:manage')).rejects.toThrow(
-      ForbiddenException,
+      UnauthorizedException,
     );
   });
 
@@ -35,7 +38,7 @@ describe('CheckActionPermissionUseCase', () => {
     } as unknown as DataSource);
 
     await expect(useCase.execute('12', 'invoice:analyze')).rejects.toThrow(
-      ForbiddenException,
+      UnauthorizedException,
     );
   });
 });

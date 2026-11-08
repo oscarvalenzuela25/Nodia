@@ -17,7 +17,7 @@ from agentic_login_terminal import LoginTerminalProtocol, valid_authorization_ur
 from agentic_service import AntigravityAgentService
 from service_errors import ServiceError
 from test_agentic_cli import QUOTA, report
-from test_support import HEADERS, TOKEN, fake_web
+from test_support import HEADERS, TOKEN
 
 # Synthetic OAuth metadata, never real codes, clients or credentials.
 URL = "https://accounts.google.com/o/oauth2/auth?" + urlencode({
@@ -257,7 +257,7 @@ class AgenticLoginHttpTest(unittest.TestCase):
         from fastapi.testclient import TestClient
         from main import create_app
         self.enterContext(patch.dict(os.environ, {"GEMINI_SERVICE_TOKEN": TOKEN}))
-        self.client = self.enterContext(TestClient(create_app(web_service=fake_web(), load_environment=False)))
+        self.client = self.enterContext(TestClient(create_app(load_environment=False)))
         self.headers = {**HEADERS, "X-Nodia-Actor-Id": OWNER}
 
     def test_private_routes_require_service_identity_and_actor(self):

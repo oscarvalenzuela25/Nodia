@@ -6,6 +6,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
+from uuid import uuid4
 
 from profile_admission import ProfileAdmission
 from service_errors import ServiceError
@@ -14,7 +15,7 @@ from service_errors import ServiceError
 class ProfileAdmissionDiagnosticTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.root = Path(self.enterContext(tempfile.TemporaryDirectory()))
-        self.gate = ProfileAdmission(self.root / "sensitive-profile-path", self.root / "sensitive-profile-path", self.root / "state")
+        self.gate = ProfileAdmission(self.root / "sensitive-profile-path", self.root / "state")
         self.log = self.enterContext(patch("profile_admission.logger.info"))
         self.clock = self.enterContext(patch("profile_admission.monotonic", return_value=100.0))
 
@@ -25,13 +26,13 @@ class ProfileAdmissionDiagnosticTests(unittest.IsolatedAsyncioTestCase):
         owner = self.gate.reserve("agentic", purpose="health_status")
         self.clock.return_value = 102.25
         with self.assertRaises(ServiceError) as caught:
-            self.gate.reserve("web", purpose="eligibility")
+            self.gate.reserve("agentic", purpose="eligibility")
         self.assertEqual((caught.exception.code, caught.exception.status), ("runtime_busy", 409))
         self.assertEqual(caught.exception.message, "El perfil está ocupado por otra operación.")
         owner.release()
         acquired, rejected, released = self.events()
         self.assertEqual([item["event"] for item in self.events()], ["acquire", "reject", "release"])
-        self.assertEqual(rejected["engine"], "web")
+        self.assertEqual(rejected["engine"], "agentic")
         self.assertEqual(rejected["purpose"], "eligibility")
         self.assertEqual(rejected["owner_engine"], "agentic")
         self.assertEqual(rejected["owner_purpose"], "health_status")
@@ -39,7 +40,7 @@ class ProfileAdmissionDiagnosticTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(acquired["reservation_nonce"], rejected["reservation_nonce"])
         self.assertEqual(acquired["reservation_nonce"], released["reservation_nonce"])
         self.assertRegex(acquired["reservation_nonce"], r"^[a-f0-9]{32}$")
-        self.gate.reserve("web").release()
+        self.gate.reserve("agentic").release()
 
     async def test_log_field_allowlist_excludes_profile_and_arbitrary_input(self):
         self.gate.reserve("agentic", purpose="eligibility").release()
@@ -107,7 +108,7 @@ class ProfileAdmissionDiagnosticTests(unittest.IsolatedAsyncioTestCase):
         async with self.gate.operation("agentic", purpose="execution"):
             self.gate.arm_dispatch("agentic")
             self.gate.quarantine("agentic")
-        restarted = ProfileAdmission(self.root / "sensitive-profile-path", self.root / "sensitive-profile-path", self.root / "state")
+        restarted = ProfileAdmission(self.root / "sensitive-profile-path", self.root / "state")
         with self.assertRaises(ServiceError):
             restarted.reserve("agentic", purpose="eligibility")
         rejected = self.events()[-1]
@@ -129,7 +130,7 @@ class ProfileAdmissionDiagnosticTests(unittest.IsolatedAsyncioTestCase):
             self.gate.reserve("agentic", purpose="eligibility")
         self.assertEqual(caught.exception.code, "runtime_busy")
         first.release()
-        self.gate.reserve("web", purpose="logout").release()
+        self.gate.reserve("agentic", purpose="logout").release()
         self.assertEqual(self.gate._owners, {})
 
     async def test_monotonic_duration_never_uses_wall_clock(self):
@@ -138,3 +139,42 @@ class ProfileAdmissionDiagnosticTests(unittest.IsolatedAsyncioTestCase):
         with patch("time.time", side_effect=AssertionError("wall clock is not elapsed time")):
             reservation.release()
         self.assertEqual(self.events()[-1]["elapsed_ms"], 1500)
+
+    async def test_reconciliation_validation_does_not_remove_marker_or_quarantine(self):
+        identity = self.gate.identity("agentic")
+        operation = {"attempt_id": str(uuid4()), "resource_key": identity,
+                     "session_generation": "a" * 32, "operation_ref": str(uuid4())}
+        owner = self.gate.reserve("agentic", purpose="execution")
+        self.gate.arm_dispatch("agentic", operation)
+        self.gate.quarantine("agentic")
+        owner.release()
+        marker = self.root / "state" / (identity.split(":")[1] + ".unknown")
+        before = marker.read_bytes()
+        self.gate.validate_reconcile_dispatch("agentic", operation)
+        self.assertEqual(marker.read_bytes(), before)
+        self.assertIn(identity, self.gate._held)
+        self.assertIn(identity, self.gate._quarantined)
+        self.gate.reconcile_dispatch("agentic", operation)
+        self.assertFalse(marker.exists())
+        self.assertNotIn(identity, self.gate._held)
+
+    async def test_foreign_memory_owner_cannot_be_hidden_by_an_old_matching_disk_marker(self):
+        identity = self.gate.identity("agentic")
+        operation = {"attempt_id": str(uuid4()), "resource_key": identity,
+                     "session_generation": "a" * 32, "operation_ref": str(uuid4())}
+        owner = self.gate.reserve("agentic", purpose="execution")
+        self.gate.arm_dispatch("agentic", operation)
+        self.gate.quarantine("agentic")
+        owner.release()
+        foreign = {**operation, "attempt_id": str(uuid4())}
+        self.gate._operations["agentic"] = foreign  # Explicit synthetic conflicting owner.
+        marker = self.root / "state" / (identity.split(":")[1] + ".unknown")
+        before = marker.read_bytes()
+        for action in (self.gate.validate_reconcile_dispatch, self.gate.reconcile_dispatch):
+            with self.assertRaises(ServiceError) as caught:
+                action("agentic", operation)
+            self.assertEqual(caught.exception.code, "native_proof_mismatch")
+            self.assertEqual(marker.read_bytes(), before)
+            self.assertEqual(self.gate._operations["agentic"], foreign)
+            self.assertIn(identity, self.gate._held)
+            self.assertIn(identity, self.gate._quarantined)

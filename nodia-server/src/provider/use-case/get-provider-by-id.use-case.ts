@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import { ProviderService } from '../provider.service.js';
 
@@ -5,7 +6,7 @@ import { ProviderService } from '../provider.service.js';
 export class GetProviderByIdUseCase {
   constructor(private readonly providerService: ProviderService) {}
 
-  async execute(id: string) {
-    return this.providerService.findOne(id);
+  async execute(id: string, actor?: ActorReference) {
+    return this.providerService.findOne(id, actor);
   }
 }

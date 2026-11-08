@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { MemoryRouter } from "react-router";
-import type { GeminiDualEngineStatus } from "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/types";
+import type { GeminiAgenticStatus } from "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/types";
 import i18n from "../../../../../translate";
 import AiProviders from "../../../../../modules/generalSettings/pages/AiProviders/AiProviders";
 import * as aiServices from "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services";
@@ -29,7 +29,6 @@ vi.mock(
     getAiProvidersHealth: vi.fn(),
     getAiProviderEvents: vi.fn(),
     getSelectableModels: vi.fn(),
-    getEnabledWebAiProviders: vi.fn(),
     getSupportedAiProviders: vi.fn(),
   })
 );
@@ -52,7 +51,7 @@ const createTestQueryClient = () =>
     },
   });
 
-const renderWithClient = (ui: ReactElement, entry = "/settings/ai-providers") => {
+const renderWithClient = (ui: ReactElement, entry = "/ai-providers") => {
   const queryClient = createTestQueryClient();
   return { queryClient, ...render(
     <QueryClientProvider client={queryClient}><MemoryRouter initialEntries={[entry]}>{ui}</MemoryRouter></QueryClientProvider>
@@ -65,8 +64,7 @@ const mockProviders = [
 ];
 
 const mockHealthData = {
-  engines: { active_engine: 'web', web: { engine: 'web', available: true, authenticated: true },
-    agentic: { engine: 'agentic', available: true, authenticated: true } } as GeminiDualEngineStatus,
+  engines: { active_engine: "agentic", agentic: { engine: "agentic", available: true, authenticated: true }, } as GeminiAgenticStatus,
   timestamp: "2026-09-26T12:00:00Z",
   overallStatus: "incident" as const,
   alerts: [
@@ -78,7 +76,7 @@ const mockHealthData = {
       title: "INCIDENTE ACTIVO: GOOGLE GEMINI",
       message: "Sesión web remota caducada (401 Unauthorized).",
       timeAgo: "42 min atrás",
-      actionType: "renew_session" as const,
+      actionType: "authenticate_agentic" as const,
       actionLabel: "Renovar Sesión Ahora",
     },
     {
@@ -98,8 +96,8 @@ const mockHealthData = {
       key: "gemini",
       name: "Google Gemini",
       isActive: true,
-      use_token_plan_web: true, use_token_plan_agentic: true,
-      mode: "web_session" as const,
+      use_agentic: true,
+      mode: "agentic" as const,
       status: "expired" as const,
       statusBadge: "REQUIERE INICIAR SESIÓN",
       serviceState: "Caducado (401)",
@@ -169,7 +167,7 @@ describe("AiProviders Page", () => {
   it.each(["overview", "detail"])("shows visible loading while health is pending in %s, without empty or operational states", async (view) => {
     let resolveHealth!: (value: typeof mockHealthData) => void;
     vi.mocked(aiServices.getAiProvidersHealth).mockReturnValue(new Promise((resolve) => { resolveHealth = resolve; }));
-    renderWithClient(<AiProviders />, view === "overview" ? "/settings/ai-providers" : "/settings/ai-providers?provider=1&mode=token_plan_agentic");
+    renderWithClient(<AiProviders />, view === "overview" ? "/ai-providers" : "/ai-providers?provider=1&mode=agentic");
     await waitFor(() => expect(aiServices.getAiProviders).toHaveBeenCalledOnce());
     expect(screen.getByRole("status")).toHaveTextContent(i18n.t("ai_providers:loading.title"));
     expect(document.querySelectorAll("[data-boneyard-bone]").length).toBeGreaterThan(0);
@@ -181,7 +179,7 @@ describe("AiProviders Page", () => {
     resolveHealth(mockHealthData);
     await waitFor(() => expect(screen.queryByText(i18n.t("ai_providers:loading.title"))).not.toBeInTheDocument());
     if (view === "overview") expect(screen.getByText("INCIDENTE ACTIVO: GOOGLE GEMINI")).toBeVisible();
-    else expect(await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/ })).toHaveAttribute("aria-selected", "true");
+    else expect(await screen.findByRole("tab", { name: /Agentic/ })).toHaveAttribute("aria-selected", "true");
   });
   it("keeps loading visible when health arrives before the connections", async () => {
     let resolveProviders!: (value: Awaited<ReturnType<typeof aiServices.getAiProviders>>) => void;
@@ -221,9 +219,9 @@ describe("AiProviders Page", () => {
   });
   it("opens the exact provider and mode from a topbar link and returns to the overview", async () => {
     vi.mocked(aiServices.getSelectableModels).mockResolvedValue([]);
-    renderWithClient(<AiProviders />, "/settings/ai-providers?provider=1&mode=token_plan_agentic");
-    expect(await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/ })).toHaveAttribute("aria-selected", "true");
-    await waitFor(() => expect(aiServices.getSelectableModels).toHaveBeenCalledWith({ provider_id: "1", mode: "token_plan_agentic" }));
+    renderWithClient(<AiProviders />, "/ai-providers?provider=1&mode=agentic");
+    expect(await screen.findByRole("tab", { name: /Agentic/ })).toHaveAttribute("aria-selected", "true");
+    await waitFor(() => expect(aiServices.getSelectableModels).toHaveBeenCalledWith({ provider_id: "1", mode: "agentic" }));
     await userEvent.click(screen.getByRole("button", { name: /Volver/ }));
     expect(await screen.findByRole("button", { name: /General \(Todos los proveedores\)/ })).toBeInTheDocument();
   });
@@ -233,9 +231,8 @@ describe("AiProviders Page", () => {
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue(mockHealthData);
     vi.mocked(aiServices.getAiProviderCatalog).mockResolvedValue([]);
     vi.mocked(aiServices.getSupportedAiProviders).mockResolvedValue([]);
-    vi.mocked(aiServices.getEnabledWebAiProviders).mockResolvedValue({ enabled_providers: ["gemini"] });
     vi.mocked(aiServices.getAiProviderEvents).mockResolvedValue({ data: mockEvents, meta: { total_items: 2, total_pages: 1, page: 1, limit: 10 } });
-    vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({ ...mockHealthData, engines: { active_engine: "web", web: { engine: "web", available: true, authenticated: true }, agentic: { engine: "agentic", available: true, authenticated: true } } });
+    vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({ ...mockHealthData, engines: { active_engine: "agentic", agentic: { engine: "agentic", available: true, authenticated: true }, } });
     vi.mocked(aiServices.updateAiProvider).mockResolvedValue(mockProviders[0]);
     vi.mocked(aiServices.getCurrentGeminiAgenticLogin).mockResolvedValue(null);
   });
@@ -306,8 +303,8 @@ describe("AiProviders Page", () => {
   it("uses instance IDs for two connections of the same catalog", async () => {
     const user = userEvent.setup();
     const connections = [
-      { ...mockProviders[0], id: "primary", key: "gemini", name: "Primary", use_token_plan_web: true, default_mode: "token_plan_web" as const, fields: { selected_model: "primary-model", available_models: [{ id: "primary-model", name: "Primary model" }] } },
-      { ...mockProviders[0], id: "secondary", key: "gemini", name: "Secondary", use_token_plan_web: true, default_mode: "token_plan_web" as const, fields: { selected_model: "secondary-model", available_models: [{ id: "secondary-model", name: "Secondary model" }] } },
+      { ...mockProviders[0], id: "primary", key: "gemini", name: "Primary", use_agentic: true, default_mode: "agentic" as const, fields: { selected_model: "primary-model", available_models: [{ id: "primary-model", name: "Primary model" }] } },
+      { ...mockProviders[0], id: "secondary", key: "gemini", name: "Secondary", use_agentic: true, default_mode: "agentic" as const, fields: { selected_model: "secondary-model", available_models: [{ id: "secondary-model", name: "Secondary model" }] } },
     ];
     vi.mocked(aiServices.getAiProviders).mockResolvedValue({ data: connections, meta: { total_items: 2, total_pages: 1, page: 1, limit: 100 } });
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({ ...mockHealthData, alerts: [], providers: connections.map((p) => ({ ...mockHealthData.providers[0], id: p.id, name: p.name, key: p.key, status: "healthy" as const })) });
@@ -316,15 +313,5 @@ describe("AiProviders Page", () => {
     await user.click(screen.getByText(/Secondary \(gemini\)/i));
     expect(await screen.findByText("Secondary model")).toBeInTheDocument();
     expect(screen.queryByText("Primary model")).not.toBeInTheDocument();
-  });
-  it("offers local login through Server and refreshes data after success", async () => {
-    const user = userEvent.setup();
-    const job = { id: "b".repeat(32), state: "running" as const };
-    vi.mocked(aiServices.startGeminiLogin).mockResolvedValue(job);
-    vi.mocked(aiServices.getGeminiLoginStatus).mockResolvedValue({ ...job, state: "succeeded" });
-    renderWithClient(<AiProviders />);
-    await user.click(await screen.findByRole("button", { name: /Renovar Sesión \(Navegador Remoto\)/i }));
-    await user.click(await screen.findByRole("button", { name: /Abrir visor de Gemini/i }));
-    await waitFor(() => expect(vi.mocked(aiServices.getAiProvidersHealth).mock.calls.length).toBeGreaterThan(1));
   });
 });

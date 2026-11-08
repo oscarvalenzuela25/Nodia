@@ -36,7 +36,7 @@ mainInstance.defaults.adapter = fixture.adapter;
 useAuthStore.getState().login({ token: "synthetic-qa-not-a-real-credential", user: { id: "90000000991", name: "Synthetic QA" }, expiresAt: Date.now() + 3600000 });
 Object.assign(window, { __nodiaAiQa: fixture.controls });
 createRoot(document.getElementById("root")!).render(
-  <QueryClientProvider client={queryClient}><MemoryRouter initialEntries={[`/tools/nodia-ai?chat=${CHAT_ID}`]}>
+  <QueryClientProvider client={queryClient}><MemoryRouter initialEntries={[`/nodia-ai?chat=${CHAT_ID}`]}>
     <MUIProvider><PageContent><NodiaAI /></PageContent></MUIProvider>
   </MemoryRouter></QueryClientProvider>,
 );

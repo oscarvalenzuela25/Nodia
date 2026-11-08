@@ -10,6 +10,7 @@ import { NodiaAiSecurePreparationService } from '../nodia-ai-secure-preparation.
 
 /** Entirely synthetic key metadata; never a credential or native account. */
 function fixture() {
+  const authority = { module: true, action: false };
   const provider: NodiaAiJsonObject = {
     id: '2',
     name: 'Synthetic connection',
@@ -17,11 +18,9 @@ function fixture() {
     is_active: true,
     catalog_active: true,
     use_api_key: true,
-    use_token_plan_web: true,
-    use_token_plan_agentic: true,
+    use_agentic: true,
     can_use_api_key: true,
-    can_use_token_plan_web: true,
-    can_use_token_plan_agentic: true,
+    can_use_agentic: true,
   };
   const pool: NodiaAiJsonObject[] = [];
   const store = {
@@ -37,7 +36,7 @@ function fixture() {
           isSuperAdmin: false,
         },
       ];
-    if (sql.includes(' AS module')) return [{ module: true, action: true }];
+    if (sql.includes(' AS module')) return [{ ...authority }];
     return [];
   });
   const manager = {
@@ -52,7 +51,7 @@ function fixture() {
       isSuperAdmin: false,
       modules: [],
     },
-    moduleRoutes: ['/tools/nodia-ai', '/settings/ai-providers'],
+    moduleRoutes: ['/nodia-ai', '/ai-providers'],
     conversationId: '00000000-0000-4000-8000-000000000002',
   };
   const operations = new BuildNodiaAiSecureOperationsUseCase(store).operations;
@@ -72,6 +71,7 @@ function fixture() {
     return { p, r, step };
   }
   return {
+    authority,
     provider,
     pool,
     store,
@@ -84,9 +84,35 @@ function fixture() {
   };
 }
 describe('BuildNodiaAiSecureOperationsUseCase', () => {
-  it('registers eight opaque human flows without executable SQL/model output ports', () => {
+  it('keeps the retired logout reader outside all live preparation and rechecks read authority without rewriting its command', async () => {
     const f = fixture();
-    expect(f.operations).toHaveLength(8);
+    const builder = new BuildNodiaAiSecureOperationsUseCase(f.store);
+    const reader = builder.historicalReaders[0];
+    expect(builder.operations.some((p) => p.toolName === reader.toolName)).toBe(
+      false,
+    );
+    const { step } = await f.ready('sync_models', {
+      provider_id: '2',
+      mode: 'agentic',
+    });
+    step.toolName = reader.toolName;
+    step.contractHash = 'b'.repeat(64);
+    const bytes = JSON.stringify(step);
+    await expect(
+      reader.verifyHistoricalReadAuthority!(step, f.context),
+    ).resolves.toBeUndefined();
+    expect(JSON.stringify(step)).toBe(bytes);
+    await expect(
+      reader.prepare({ provider_id: '2' }, f.context),
+    ).rejects.toThrow('mode_retired');
+    f.authority.module = false;
+    await expect(
+      reader.verifyHistoricalReadAuthority!(step, f.context),
+    ).rejects.toThrow('capability_denied');
+  });
+  it('registers seven opaque human flows without executable SQL/model output ports', () => {
+    const f = fixture();
+    expect(f.operations).toHaveLength(7);
     for (const p of f.operations) {
       expect(p.contractHash).toMatch(/^[a-f0-9]{64}$/);
       expect(p.bindableFields).toEqual({});
@@ -182,7 +208,7 @@ describe('BuildNodiaAiSecureOperationsUseCase', () => {
       await expect(
         f
           .port('connection_login')
-          .prepare({ provider_id: id, mode: 'token_plan_web' }, f.context),
+          .prepare({ provider_id: id, mode: 'agentic' }, f.context),
       ).rejects.toThrow('nodia_ai:invalid_input');
     },
   );
@@ -275,8 +301,8 @@ describe('BuildNodiaAiSecureOperationsUseCase', () => {
   });
   it.each([
     ['gemini', 'api_key'],
-    ['openai', 'token_plan_web'],
-    ['other', 'token_plan_agentic'],
+    ['openai', 'api_key'],
+    ['other', 'agentic'],
   ])('rejects unsupported login %s/%s', async (provider, mode) => {
     const f = fixture();
     f.provider.provider_key = provider;
@@ -286,14 +312,14 @@ describe('BuildNodiaAiSecureOperationsUseCase', () => {
   });
   it('requires enabled target mode but never infers authenticated availability', async () => {
     const f = fixture();
-    f.provider.use_token_plan_web = false;
+    f.provider.use_agentic = false;
     await expect(
-      f.ready('connection_login', { provider_id: '2', mode: 'token_plan_web' }),
+      f.ready('connection_login', { provider_id: '2', mode: 'agentic' }),
     ).rejects.toThrow('nodia_ai:capability_unavailable');
-    f.provider.use_token_plan_web = true;
+    f.provider.use_agentic = true;
     const { r } = await f.ready('connection_login', {
       provider_id: '2',
-      mode: 'token_plan_web',
+      mode: 'agentic',
     });
     expect(r.preconditions.provider_key).toBe('gemini');
     expect(r.preconditions).not.toHaveProperty('authenticated');
@@ -307,12 +333,18 @@ describe('BuildNodiaAiSecureOperationsUseCase', () => {
     await p.verifyPreconditions(step, f.context);
     expect(f.store.provider).not.toHaveBeenCalled();
   });
-  it('enforces current module and action authority on each revalidation', async () => {
+  it('permits missing role actions and revalidates current module authority', async () => {
     const f = fixture(),
       { p, step } = await f.ready('connection_login', {
         provider_id: '2',
-        mode: 'token_plan_web',
+        mode: 'agentic',
       });
+    await expect(p.verifyAuthority(step, f.context)).resolves.toBeUndefined();
+    f.authority.module = false;
+    await expect(p.verifyAuthority(step, f.context)).rejects.toThrow(
+      'nodia_ai:capability_denied',
+    );
+    f.authority.module = true;
     f.context.moduleRoutes = [];
     await expect(p.verifyAuthority(step, f.context)).rejects.toThrow(
       'nodia_ai:capability_denied',

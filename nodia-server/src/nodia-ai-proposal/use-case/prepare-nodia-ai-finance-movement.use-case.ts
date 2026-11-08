@@ -48,7 +48,7 @@ const fields = {
   is_active: 'boolean',
 } as const;
 const required = ['name', 'amount', 'type', 'status', 'category_id'] as const;
-const route = '/tools/finances-personal';
+const route = '/finances-personal';
 const contract = {
   version: 'nodia-ai-finance-movement-create/2',
   partial: { fields, owner_id: 'finance_positive_bigint', required: [] },
@@ -385,6 +385,35 @@ export class PrepareNodiaAiFinanceMovementUseCase implements NodiaAiProposalPrep
       throw new ForbiddenException('nodia_ai:capability_denied');
     await this.ledger.withScope(
       this.actor(decoded.ownerId, context),
+      async () => undefined,
+    );
+  }
+
+  async verifyHistoricalReadAuthority(
+    step: StoredProposalStep,
+    context: ProposalPreparerContext,
+  ): Promise<void> {
+    const ownerId = step.scope.subject_user_id;
+    if (
+      step.toolName !== this.toolName ||
+      Object.keys(step.scope).length !== 1 ||
+      typeof ownerId !== 'string' ||
+      !/^[1-9][0-9]{0,18}$/.test(ownerId) ||
+      BigInt(ownerId) > 9223372036854775807n ||
+      step.commandTemplate.schema_version !== 1 ||
+      step.commandTemplate.owner_id !== ownerId ||
+      Object.keys(step.commandTemplate).length !== 4 ||
+      !['schema_version', 'owner_id', 'command', 'origins'].every((key) =>
+        Object.hasOwn(step.commandTemplate, key),
+      ) ||
+      step.outputBindings.length !== 0 ||
+      !Array.isArray(step.publicStep.depends_on) ||
+      step.publicStep.depends_on.length !== 0
+    )
+      throw new ForbiddenException('nodia_ai:capability_denied');
+    // Current session/owner/module authority; old business commands are never decoded or refreshed.
+    await this.ledger.withScope(
+      this.actor(ownerId, context),
       async () => undefined,
     );
   }

@@ -71,6 +71,11 @@ const BaseModal: FC<BaseModalProps> = ({
             size="small"
             sx={(theme) => ({
               color: theme.palette.text.secondary,
+              [theme.breakpoints.down("sm")]: {
+                width: 44,
+                height: 44,
+                flexShrink: 0,
+              },
               transition: theme.transitions.create(["color", "background-color"], {
                 duration: theme.transitions.duration.shorter,
               }),

@@ -4,7 +4,7 @@ import type { NodiaAiConversation, NodiaAiDetail, NodiaAiRun, NodiaAiSelection }
 export const chatId = "11111111-1111-4111-8111-111111111111";
 export const messageId = "22222222-2222-4222-8222-222222222222";
 export const runId = "33333333-3333-4333-8333-333333333333";
-export const selection: NodiaAiSelection = { connection_id: "9007199254740993", mode: "token_plan_web", model_id: "synthetic-model", effort_id: null };
+export const selection: NodiaAiSelection = { connection_id: "9007199254740993", mode: "agentic", model_id: "synthetic-model", effort_id: null };
 export const conversation: NodiaAiConversation = {
   conversation_id: chatId, owner_user_id: "9", title: null, is_pinned: false, is_archived: false,
   revision: 1, selection, routing: {schema_version: 1, enabled: false, revision: 1, target: null},

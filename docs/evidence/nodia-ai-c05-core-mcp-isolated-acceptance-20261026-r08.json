@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "title": "C05 Core: una costura MCP→preview→confirmación fixture→recibo nativo en PostgreSQL aislado",
+  "status": "accepted_isolated_one_family_not_C05_global",
+  "execution_timestamp_not_supplied": true,
+  "source": {
+    "Server_manifest_sha256": "01afbfa3fe33adaa8b67748efb09e94f1e5f18e3a774826ad8574001ae15d0c9",
+    "frozen_harness": "ops/lab/artifacts/c05-core-mcp-seam-r08",
+    "harness_catalog_sha256": "545f7ef2808393b9d97e604cabd4449569f728350b447b77493539b5b85e65ce",
+    "C01_base_sha256": "b0bdaaf47608e8414e4adc47529dfef88b9f28a2bb6463117c1be2969ee48113",
+    "generated_fixture_sha256_on_VM": "cfcec0523281acdc7d5d7e6a3a9b2be687705faeb8bd6bc351769837300dbb8e",
+    "generated_case_sha256_on_VM": "93df6b9801989614d85cb61f30038e9fdd5884485b461555c160028d992a8dde"
+  },
+  "verified": {
+    "capability": "nodia_actions_prepare_create",
+    "checks": [
+      "only one actual native Core contract is composed",
+      "only the selected actual Core MCP preparer is advertised",
+      "the real Core preparer requests its required key without creating an action",
+      "MCP creates an exact ready Core preview while the domain is unchanged",
+      "identical MCP callback replay returns the same proposal without another draft or effect",
+      "the real native Core writer commits only the reviewed action preserving null and false",
+      "fixture confirmation crosses the actual exclusive Core frontier and stores one native receipt",
+      "duplicate fixture confirmation is one execution and one effect, not another action",
+      "original Core action history remains byte-equivalent after the single fixture effect",
+      "the real proof cleanup acknowledges the synthetic terminal once and duplicate cleanup is inert",
+      "the fixture ends with no pending job, open attempt or retained slot"
+    ],
+    "check_count": 11,
+    "synthetic_provider_dispatches": 1,
+    "ready_preview_before_domain_write": true,
+    "description_null_and_is_active_false_preserved": true,
+    "fixture_domain_effects": 1,
+    "executions": 1,
+    "native_Core_receipts": 1,
+    "proposal_id": "44b2ea33-0fec-459f-8961-160bb5794860",
+    "execution_id": "412dc900-f63b-4e50-9552-b2fc9ab24591",
+    "resource_id_in_disposable_database": "3",
+    "identical_MCP_callback_replay_same_proposal": true,
+    "identical_fixture_HTTP_confirmation_replay_same_execution": true,
+    "actual_exclusive_Core_authority_frontier_exercised": true,
+    "original_action_history_sha256_preserved": "18a0f5b9d974b7cb5ffb1d27551c1867eacd2cf32cfe05ad85b2ddd57dddfe3d",
+    "real_CleanupUseCase_with_synthetic_terminal_proof": {
+      "settled_first": 1,
+      "processed_duplicate": 0,
+      "acknowledged_fixture_proofs": 1,
+      "actual_provider_ACK_claimed": false
+    },
+    "observed_pending": {
+      "counts": {
+        "jobs": 0,
+        "attempts": 0,
+        "slots": 0
+      },
+      "jobs": []
+    },
+    "Node_network_namespace": "loopback_only",
+    "PG_network": "none",
+    "PG_image": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+    "owned_fixture_cleanup_complete": true,
+    "configured_database_used": false,
+    "actual_AI_provider_generations": 0,
+    "AI_SDK_calls": 0,
+    "storage_operations": 0,
+    "production_publication": false
+  },
+  "negative_history_preserved": {
+    "recovery_archive": "ops/lab/artifacts/c05-core-mcp-seam-verification-r08/recovery/failed-Core-r01-r07.tar.gz",
+    "archive_sha256": "8608a1e1ef4ff229c74cd8b87c74cfbd0a8e204e56d4585101849e2b9e36da27",
+    "member_count": 102,
+    "originals_deleted_or_moved": false,
+    "scope": "Original bytes of failed harnessR01..R07 and their raw negative/diagnostic receipts, one archive only.",
+    "R01": "Execution output was lost before supervisor cleanup; outcome not reconstructed. Separate Root metadata proved owned PG/socket absent.",
+    "R01_R02_cleanup_cause": "Root control proved Docker missing-object text was lowercase; case-sensitive absence classification was a harness defect. Minimal HOME/context was not established as cause.",
+    "R05_and_R07": "Root/code readback establishes one ephemeral Core effect before the later harness assertion failed. A false status-derived boolean in old receipts is not proof of zero effects; original bytes remain unchanged.",
+    "no_aggregate_failed_effect_count_invented": true,
+    "later_harness_fixes": "Use actual worker confirmation queue and real CleanupUseCase/fixture ACK, preserve private errors before cleanup, measure effect count independently from overall status. No production runtime edit."
+  },
+  "limits": [
+    "Only one Core writer capability and the MCP preparation/confirmation seam are accepted here; native69/wire73 or all C05 families are not newly accepted.",
+    "Publication, provider transport/proofs and HTTP identity are synthetic fixtures; authorization, schemas, SQL/DI/Core exclusive lock, native writer and receipt are real compiled use cases.",
+    "No real Agentic account/MCP transport, human browser button/JWT authentication or live business mutation is tested.",
+    "The single action existed only in a disposable PostgreSQL database, removed with its owned container; configured DB and provider accounts were unused.",
+    "Independent NativeP1 adoption, UI/MIME/OCR, human/time/environment and global NodiaAI acceptance keep their own receipts/gates."
+  ],
+  "receipts": {
+    "bootstrap": {
+      "path": "ops/lab/artifacts/c05-core-mcp-seam-verification-r08/receipts/bootstrap-r08.json",
+      "sha256": "407cf9d3a629505deff09bd8eebbb5bcebaf7d7371e74315ffed32c83dcf9e47"
+    },
+    "execution": {
+      "path": "ops/lab/artifacts/c05-core-mcp-seam-verification-r08/receipts/execute-r08.json",
+      "sha256": "f1b48266e0d1d429f0aed2c423f736f93b47fe4d27cc7e96569dfc360ced0623"
+    }
+  }
+}

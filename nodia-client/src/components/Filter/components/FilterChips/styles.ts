@@ -12,4 +12,16 @@ export const ChipWrapper = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   lineHeight: 1.5,
   whiteSpace: "nowrap",
+  [theme.breakpoints.down("sm")]: {
+    maxWidth: "100%",
+    minWidth: 0,
+    whiteSpace: "normal",
+    overflowWrap: "anywhere",
+    padding: theme.spacing(0.5, 1, 0.5, 2),
+    "& .MuiIconButton-root": {
+      width: 44,
+      height: 44,
+      flexShrink: 0,
+    },
+  },
 }));

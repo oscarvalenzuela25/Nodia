@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { nativeDispatchRejection } from '../nodia-ai-runtime/types/native-dispatch-rejection.js';
 import { envs } from '../config/envs.config.js';
 import { NodiaAiAdapterError } from './types/nodia-ai-adapter.types.js';
 
@@ -9,6 +10,7 @@ export class NodiaAiAdapterTransport {
     payload: object,
     signal: AbortSignal,
     dispatch = false,
+    onRejected?: (body: unknown, status: number) => void,
   ): Promise<unknown> {
     if (
       !/^[0-9a-fA-F]{64}$/.test(envs.GEMINI_SERVICE_TOKEN) ||
@@ -16,6 +18,7 @@ export class NodiaAiAdapterTransport {
     ) {
       throw new NodiaAiAdapterError('adapter_unconfigured', 'not_dispatched');
     }
+    const requestBytes = JSON.stringify(payload);
     let response: Response;
     try {
       response = await fetch(new URL(path, envs.GEMINI_MICROSERVICE_URL), {
@@ -24,7 +27,7 @@ export class NodiaAiAdapterTransport {
           'Content-Type': 'application/json',
           'X-Nodia-Service-Token': envs.GEMINI_SERVICE_TOKEN,
         },
-        body: JSON.stringify(payload),
+        body: requestBytes,
         signal,
       });
     } catch {
@@ -41,18 +44,24 @@ export class NodiaAiAdapterTransport {
       );
     const chunks: Uint8Array[] = [];
     let bytes = 0;
+    const maximumResponseBytes = dispatch && response.ok && path === '/nodia-ai/agentic/image/turn'
+      ? Math.ceil(16777216 / 3) * 4 + 65536
+      : /^\/teacher\/agentic-text\/(start|status|reconcile)$/.test(path) ? 262144 : 131072;
     try {
       while (true) {
         const item = await reader.read();
         if (item.done) break;
         bytes += item.value.byteLength;
-        if (bytes > 131072) throw new Error('Response limit');
+        if (bytes > maximumResponseBytes) throw new Error('Response limit');
         chunks.push(item.value);
       }
       const data: unknown = JSON.parse(
         new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks)),
       );
       if (!response.ok) {
+        // Private consumers may validate their own bound exclusion proof. Never log
+        // or attach the response body to the shared public error contract.
+        onRejected?.(data, response.status);
         const code =
           typeof data === 'object' &&
           data !== null &&
@@ -78,9 +87,16 @@ export class NodiaAiAdapterTransport {
           'context_limit',
           'web_tools_prohibited',
         ]);
+        const rejectionProof = dispatch ? nativeDispatchRejection({
+          route: path, payload, requestBytes, responseBytes: Buffer.concat(chunks),
+          body: data, status: response.status, requestIdHeader: response.headers.get('x-request-id'),
+          contentType: response.headers.get('content-type'), redirected: response.redirected,
+        }) : undefined;
         throw new NodiaAiAdapterError(
           beforeDispatch.has(code) ? code : 'adapter_result_unknown',
-          dispatch && !beforeDispatch.has(code) ? 'unknown' : 'not_dispatched',
+          dispatch && (!beforeDispatch.has(code) || (code === 'runtime_busy' && !rejectionProof))
+            ? 'unknown' : 'not_dispatched',
+          rejectionProof,
         );
       }
       return data;

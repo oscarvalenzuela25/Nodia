@@ -24,7 +24,7 @@ describe('UpdateModuleUseCase', () => {
     const dto: UpdateModuleDto = {
       key: 'users_updated',
       module_group_id: '1',
-      link: '/general-settings/users-updated',
+      link: '/users-updated',
       is_active: false,
       translates: [
         { key: 'key', es: 'Usuarios Actualizado', en: 'Users Updated' },
@@ -35,7 +35,7 @@ describe('UpdateModuleUseCase', () => {
       id: '2',
       key: 'users_updated',
       module_group_id: '1',
-      link: '/general-settings/users-updated',
+      link: '/users-updated',
       is_active: false,
       created_at: new Date(),
       updated_at: new Date(),

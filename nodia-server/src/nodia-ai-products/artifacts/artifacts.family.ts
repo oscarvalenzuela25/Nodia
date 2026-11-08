@@ -16,13 +16,13 @@ export function createNodiaAiArtifactsFamily(
   const sha256 = createHash('sha256').update(sourceJson).digest('hex');
   return {
     familyKey: 'business_artifacts',
-    modules: [{ key: 'businesses', route: '/tools/business', label: 'Negocios' }],
-    resources: NODIA_AI_ARTIFACT_CAPABILITIES.map(([, , key]) => ({ key, label: key, requiredModuleRoutes: ['/tools/business'] })),
+    modules: [{ key: 'businesses', route: '/business', label: 'Negocios' }],
+    resources: NODIA_AI_ARTIFACT_CAPABILITIES.map(([, , key]) => ({ key, label: key, requiredModuleRoutes: ['/business'] })),
     capabilities: NODIA_AI_ARTIFACT_CAPABILITIES.map(([operation, prefix, resourceKey, description]) => ({
-      capabilityId: `nodia_${operation}`, revision: 1, publication: 'published', toolName: `nodia_${operation}`,
+      capabilityId: `nodia_${operation}`, revision: operation === 'products_export_csv' ? 2 : 1, publication: 'published', toolName: `nodia_${operation}`,
       kind: 'read_artifact', moduleKey: 'businesses', resourceKey, operationKey: operation === 'invoices_file' ? 'file' : 'export_csv',
       descriptionKey: `nodia_ai.capabilities.${operation}`, description,
-      requiredModuleRoutes: ['/tools/business'], actionKeys: [], effectKey: `read:${resourceKey}`,
+      requiredModuleRoutes: ['/business'], actionKeys: [], effectKey: `read:${resourceKey}`,
       inputSchema: { sourceJson, sha256, definition: `${prefix}Input` },
       outputSchema: { sourceJson, sha256, definition: `${prefix}Result` },
       verifyAuthority: (input, context) => useCase.verifyAuthority(operation, input, context),

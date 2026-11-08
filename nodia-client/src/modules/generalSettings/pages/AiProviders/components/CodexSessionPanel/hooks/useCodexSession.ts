@@ -9,11 +9,12 @@ import {
   cancelCodexLogin,
   codexJobActive,
   getCodexLogin,
-  getCodexSession,
   getCurrentCodexLogin,
   logoutCodex,
   startCodexLogin,
 } from "../../../infrastructure/codexSession";
+import { useCodexSessionObservation } from "../../../infrastructure/useCodexSessionObservation";
+import { codexConnectionState, selectCodexSession } from "../../../infrastructure/codexSessionState";
 
 export const useCodexSession = (providerId: string, disabled: boolean, session?: CodexSession) => {
   const { t } = useTranslation(["ai_providers", "core"]);
@@ -43,14 +44,9 @@ export const useCodexSession = (providerId: string, disabled: boolean, session?:
     gcTime: 0,
     refetchOnWindowFocus: false,
   });
-  const sessionObservation = useQuery({
-    queryKey: ["codex-session", providerId],
-    queryFn: () => getCodexSession(providerId),
-    enabled: open,
-    retry: false,
-    gcTime: 0,
-    refetchOnWindowFocus: false,
-  });
+  // This panel mounts only for the selected OpenAI Agentic detail, so mounting
+  // it is the read intent. Opening a login modal is not required to inspect auth.
+  const sessionObservation = useCodexSessionObservation(providerId);
   const effectiveId = jobId ?? current.data?.id ?? null;
   const status = useQuery({
     queryKey: ["codex-login", providerId, effectiveId],
@@ -77,21 +73,21 @@ export const useCodexSession = (providerId: string, disabled: boolean, session?:
     current.isFetching ||
     status.isFetching ||
     sessionObservation.isFetching;
-  const currentSession = open && job?.state !== "succeeded"
-    ? sessionObservation.data ?? session
-    : session;
+  const currentSession = selectCodexSession(sessionObservation.data, session);
+  const connectionState = codexConnectionState(currentSession);
   const runtimeStartError = isAxiosError<{ code?: string }>(start.error) &&
     start.error.response?.data?.code === "codex_runtime_unavailable";
-  const runtimeUnavailable = currentSession?.available === false || runtimeStartError;
-  const canConnect = currentSession?.available === true && !runtimeUnavailable &&
+  const runtimeUnavailable = connectionState === "unavailable" || runtimeStartError;
+  const canConnect = currentSession?.available === true && connectionState !== "busy" && !runtimeUnavailable &&
     !current.isError && !status.isError && !sessionObservation.isError;
   const notified = useRef<string | null>(null);
-  const refresh = () =>
-    Promise.all(
-      ["ai-providers-health", "ai-selectable-models", "codex-session"].map(
-        (key) => client.invalidateQueries({ queryKey: [key] }),
-      ),
-    );
+  const refresh = async () => {
+    // Both session and model discovery lease the same physical profile. Finish
+    // the auth read first instead of racing two Native observations.
+    await client.invalidateQueries({ queryKey: ["ai-selectable-models"], refetchType: "none" });
+    await client.invalidateQueries({ queryKey: ["codex-session", providerId] });
+    await client.invalidateQueries({ queryKey: ["ai-providers-health"] });
+  };
   useEffect(() => {
     if (sessionObservation.data) void client.invalidateQueries({ queryKey: ["ai-providers-health"] });
   }, [sessionObservation.data, client]);
@@ -117,9 +113,9 @@ export const useCodexSession = (providerId: string, disabled: boolean, session?:
     notified.current = `${job.id}:${job.state}`;
     if (job.state === "succeeded") {
       sileo.success({ title: t("ai_providers:codex.success") });
-      void client.invalidateQueries({ queryKey: ["ai-providers-health"] });
-      void client.invalidateQueries({ queryKey: ["ai-selectable-models"] });
-      void client.invalidateQueries({ queryKey: ["codex-session", providerId] });
+      void client.invalidateQueries({ queryKey: ["ai-selectable-models"], refetchType: "none" })
+        .then(() => client.invalidateQueries({ queryKey: ["codex-session", providerId] }))
+        .then(() => client.invalidateQueries({ queryKey: ["ai-providers-health"] }));
     } else if (job.state === "failed")
       sileo.error({
         title: t("ai_providers:codex.failed"),
@@ -179,6 +175,7 @@ export const useCodexSession = (providerId: string, disabled: boolean, session?:
   return {
     t,
     currentSession,
+    connectionState,
     runtimeUnavailable,
     canConnect,
     startError: start.isError ? getHttpErrorMessage(start.error) : null,

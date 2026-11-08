@@ -4,15 +4,19 @@
   "document_id": "general-settings.confirmed-ai-configuration",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 1,
-  "document_status": "draft",
+  "revision": 3,
+  "document_status": "approved",
   "implementation": {
-    "status": "implemented",
-    "notes": "AI-28 integra cuatro puertos internos y revisión Client de configuración no secreta; verificación de laboratorio y límites en74. No publica MCP ni acredita aceptación Gemini."
+    "status": "partial",
+    "notes": "Agentic and API key only. Existing publication fragments retained; implementation verification and live operational acceptance are separate. Human documentary approval recorded 2026-10-27."
   },
-  "integration_status": "unregistered",
+  "integration_status": "published",
   "maintainer": "Mantenimiento de Ajustes Generales y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/mvp/90-agentic-api-only-web-retirement.md",
+      "kind": "specification"
+    },
     {
       "path": "docs/mvp/74-nodia-ai-ai28-provider-configuration.md",
       "kind": "specification"
@@ -36,25 +40,46 @@
     {
       "path": "nodia-server/src/ai-provider/dto/create-ai-provider-catalog.dto.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-10-17",
+    "checked_on": "2026-10-27",
     "evidence_paths": [
       "docs/mvp/74-nodia-ai-ai28-provider-configuration.md",
       "docs/evidence/nodia-ai-ai28-client-validation.json",
       "docs/evidence/nodia-ai-ai28-validation.json",
       "docs/evidence/nodia-ai-ai28-postgresql.json",
       "docs/evidence/nodia-ai-ai28-regressions.json",
-      "docs/evidence/nodia-ai-ai28-ui-validation.json"
+      "docs/evidence/nodia-ai-ai28-ui-validation.json",
+      "docs/evidence/nodia-ai-ai36-c01-validation.json",
+      "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
+      "docs/evidence/ai-two-modes-knowledge-review-r01.json"
     ],
-    "notes": "Laboratorio privado:2893 pruebas Server,1589 Client,432 checks SQL/HTTP/procesos y2 suites adicionales,9 QA sintéticas;69 ejecutores,851 dist idénticos, esquema18/241 conservado. Sync remoto del chat, publicación MCP y aceptación Gemini pendientes; no aprobación documental."
+    "notes": "Publicación offline con builders nativos y schemas cerrados. El fragmento adicional es el único alcance nuevo; no equivale a cuenta real ni a una aceptación de todos sus efectos. Two-mode source review on 2026-10-27; new runtime/VM/API acceptance is separate and pending."
   },
-  "approval": null
+  "approval": {
+    "reference": "docs/evidence/ai-two-modes-knowledge-human-approval-r01.json",
+    "revision": 3,
+    "content_sha256": "9d42d48d2367e1c4ca73ef479ed31563794e49a48b7f979505e912848015734d"
+  }
 }
 ---
 
 # Configuración IA confirmada — contexto funcional para NodiaAI
+
+## Modos vigentes solicitados el 2026-10-27
+
+Sólo **Agentic** (`agentic`) y **API key** (`api_key`), conforme al [plan90](../../../../mvp/90-agentic-api-only-web-retirement.md). Flags `use_agentic`/`can_use_agentic`, `use_api_key`/`can_use_api_key`; configuración por `fields.agentic` y `fields.api_key`. Los defaults/selecciones Web se desasignan y requieren elección explícita; no se convierten en otra modalidad. El historial anterior conserva su evidencia y no habilita Web.
+
+La revisión aprobada anterior 2 se conserva byte exacta; el [informe de revisión](../../../../evidence/ai-two-modes-knowledge-review-r01.json) identifica originales y cambios. La disponibilidad de cada funcionalidad se verifica por proveedor/modo/modelo con el [plan91](../../../../mvp/91-ai-provider-onboarding-verification.md); las pruebas históricas de Web no acreditan API ni Agentic actual.
 
 ## Qué resuelve
 
@@ -62,7 +87,7 @@ Crear/editar instancias de conexiones y catálogo IA mediante propuesta no secre
 
 ## Solicitudes y aclaraciones
 
-«Crea una conexión para este catálogo» requiere resolver catalog_id real, no clave/nombre ambiguos. «Cambia el modelo de Web» exige identificar instancia, modo y modelo permitido; preguntar cuando falten. «Activa Agentic» cambia un flag configurable y no acredita que funcione. «Haz esta conexión predeterminada» debe mostrar los predeterminados previos. «Agrega una API key» debe abrir el futuro canal seguro de AI-29; nunca recibir secretos en el modelo.
+«Crea una conexión para este catálogo» requiere resolver catalog_id real, no clave/nombre ambiguos. «Cambia el modelo de Agentic» exige identificar instancia, modo y modelo permitido; preguntar cuando falten. «Activa Agentic» cambia un flag configurable y no acredita que funcione. «Haz esta conexión predeterminada» debe mostrar los predeterminados previos. «Agrega una API key» debe abrir el futuro canal seguro de AI-29; nunca recibir secretos en el modelo.
 
 ## Operaciones y mínimos
 
@@ -89,3 +114,20 @@ Cuatro puertos internos y Client implementados conforme74. Client1589/205, focal
 ## Evolución
 
 Cambiar campos, reglas o semántica requiere actualizar DTO, escritor, preparador, contrato/hash, pruebas y esta ficha. Invalidar propuestas incompatibles; respetar el recibo histórico. Un proveedor o modelo nuevo no se habilita por añadir su nombre a la documentación.
+
+## IA: administración no secreta publicada en AI36-C05
+
+Este fragmento añade sólo estas preparaciones publicadas:
+
+- `nodia_ai_providers_prepare_catalog_create`
+- `nodia_ai_providers_prepare_catalog_update`
+- `nodia_ai_providers_prepare_codex_logout`
+- `nodia_ai_providers_prepare_create`
+- `nodia_ai_providers_prepare_gemini_web_logout`
+- `nodia_ai_providers_prepare_sync_models`
+- `nodia_ai_providers_prepare_update`
+- `nodia_api_keys_prepare_delete`
+
+Cada herramienta recibe un partial cerrado, devuelve mínimos faltantes o propuesta revisable y permite continuar sólo con draft_id/revisión CAS exactos. No aplica el cambio de dominio. Consulta las referencias reales; nunca inventes IDs o enlaces. Sólo el botón humano sobre revisión/hash exactos admite la ejecución y su recibo nativo. No se aceptan SQL, comandos arbitrarios, secretos ni bulk/importación. Configurar no acredita disponibilidad. Eliminar una clave usa sólo su identidad, nunca su secreto. Logout/sync son comandos explícitos separados: no fallback, login automático ni cambio de proveedor/modelo inferido. Los cuatro flujos seguros de credenciales/login C02 siguen fuera.
+
+El backend exige NodiaAI y cada módulo/acción de destino vigentes, reautoriza al ejecutar y conserva recuperación/idempotencia. Publicación, selección del intento, disponibilidad, despliegue y aceptación real son estados distintos. Los apartados anteriores son históricos y no amplían este lote.

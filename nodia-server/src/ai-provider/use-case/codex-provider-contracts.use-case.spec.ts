@@ -16,19 +16,19 @@ const setup = () => {
     name: 'Synthetic',
     is_active: true,
     use_api_key: true,
-    use_token_plan_agentic: true,
-    default_mode: 'token_plan_agentic',
+    use_agentic: true,
+    default_mode: 'agentic',
     api_keys: [],
     catalog: {
       key: 'openai',
       name: 'OpenAI',
       is_active: true,
       can_use_api_key: true,
-      can_use_token_plan_agentic: true,
+      can_use_agentic: true,
     },
     fields: {
       api_key: { selected_model: 'synthetic-api', thinking_level: 'low' },
-      token_plan_agentic: {
+      agentic: {
         selected_model: 'synthetic-codex',
         thinking_level: 'new_effort',
       },
@@ -82,18 +82,18 @@ const setup = () => {
 describe('Codex provider use-case contracts', () => {
   it('persists discovery only in Agentic, without selecting the first model or inventing a plan', async () => {
     const x = setup();
-    x.provider.fields.token_plan_agentic = {};
+    x.provider.fields.agentic = {};
     const result = await new SyncAiProviderModelsUseCase(
       x.p,
       x.g,
       undefined,
       x.c,
-    ).execute('42', { mode: 'token_plan_agentic' });
+    ).execute('42', { mode: 'agentic' });
     expect(result.currentSelectedModel).toBeNull();
-    expect(result.tokenPlan).toBeNull();
+    expect(result.agenticPlan).toBeNull();
     expect(x.providers.mergeDiscoveredModels).toHaveBeenCalledWith(
       '42',
-      'token_plan_agentic',
+      'agentic',
       [x.model],
     );
     expect(x.gemini.getModelsAndQuota).not.toHaveBeenCalled();
@@ -103,7 +103,7 @@ describe('Codex provider use-case contracts', () => {
     x.codex.listModels.mockResolvedValue([]);
     await expect(
       new SyncAiProviderModelsUseCase(x.p, x.g, undefined, x.c).execute('42', {
-        mode: 'token_plan_agentic',
+        mode: 'agentic',
       }),
     ).rejects.toMatchObject({ status: 400 });
     expect(x.providers.mergeDiscoveredModels).not.toHaveBeenCalled();
@@ -117,12 +117,12 @@ describe('Codex provider use-case contracts', () => {
       x.g,
       undefined,
       x.c,
-    ).execute({ provider_id: '42', mode: 'token_plan_agentic' });
+    ).execute({ provider_id: '42', mode: 'agentic' });
     expect(result.models[0]).toMatchObject({
       capabilities: [],
       supportedReasoningEfforts: ['new_effort'],
     });
-    expect(result.tokenPlan).toBeNull();
+    expect(result.agenticPlan).toBeNull();
   });
   it('uses snapshots for health and does not certify authentication as successful inference', async () => {
     const x = setup();
@@ -146,9 +146,9 @@ describe('Codex provider use-case contracts', () => {
       if (cause === 'missing-session') x.session.authenticated = false;
       if (cause === 'quota') x.session.usageAllowed = false;
       if (cause === 'effort')
-        x.provider.fields.token_plan_agentic.thinking_level = 'unavailable';
+        x.provider.fields.agentic.thinking_level = 'unavailable';
       if (cause === 'alias')
-        x.provider.fields.token_plan_agentic.selected_model = x.model.name;
+        x.provider.fields.agentic.selected_model = x.model.name;
       const result = await new VerifyIaProvidersUseCase(
         x.g,
         x.p,
@@ -189,7 +189,7 @@ describe('Codex provider use-case contracts', () => {
     ).execute();
     expect(result[0]).toMatchObject({
       can_use_model: true,
-      active_mode: 'token_plan_agentic',
+      active_mode: 'agentic',
       ocr_model: 'synthetic-codex',
     });
   });

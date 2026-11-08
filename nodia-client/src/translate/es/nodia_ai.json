@@ -1,0 +1,5 @@
+{
+  "invalid_image_generation_request": "Escribe /imagen seguido de una descripción de entre 1 y 8000 bytes UTF-8, sin adjuntar archivos.",
+  "invalid_generated_image": "No pudimos validar la imagen recibida del proveedor.",
+  "generated_image_storage_unavailable": "No pudimos guardar la imagen generada. Consulta el estado de la conversación antes de solicitar otra."
+}

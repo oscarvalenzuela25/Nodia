@@ -1,5 +1,7 @@
 # NodiaAI — AI-07: módulo y autorización compartida
 
+> Regla vigente2026-10-25: [política89](89-module-access-and-user-data-scope.md) y [ADR081](../architecture/decisions/ADR-081-module-access-and-business-data-scope.md) sustituyen las restricciones históricas por acciones y la asignación de navegación de super_admin. Las acciones ya no bloquean; los módulos habilitan funcionalidades y no datos ajenos. Las comprobaciones históricas siguientes describen su cohorte original, no una aprobación de la revisión actual. La implementación local conserva sesión, propiedad/colaboración y confirmaciones humanas; la publicación/adopción de la nueva política se valida por separado.
+
 > Continuidad: AI-08 implementó las barreras y la transversalidad previstas, con evidencia independiente en[54](54-nodia-ai-ai08-transversal-authority.md). Esta entrega AI-07 conserva sus resultados históricos.
 
 > Estado: implementación local y verificación aislada; documentación en revisión, sin publicación de chat/herramientas

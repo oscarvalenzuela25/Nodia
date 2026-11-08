@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-28",
+  "timezone": "America/Santiago",
+  "scope": "Local chat redesign, synthetic transport, no deployment",
+  "specification": "docs/mvp/93-nodia-ai-chat-composer-redesign.md",
+  "browser": {
+    "engine": "Chromium via installed Chrome, Playwright CLI",
+    "fixture": "nodia-client/src/test/manual/nodia-ai/index.html?scenario=chat-redesign",
+    "matrix": [
+      {
+        "width": 320,
+        "height": 900,
+        "theme": "dark",
+        "language": "es",
+        "horizontal_overflow": false,
+        "action_targets_min_44px": true,
+        "microphone_before_send": true,
+        "draft_preserved_on_resize": true,
+        "user_message_on_right": true
+      },
+      {
+        "width": 360,
+        "height": 900,
+        "theme": "light",
+        "language": "en",
+        "horizontal_overflow": false,
+        "action_targets_min_44px": true,
+        "microphone_before_send": true,
+        "draft_preserved_on_resize": true,
+        "user_message_on_right": true
+      },
+      {
+        "width": 390,
+        "height": 900,
+        "theme": "dark",
+        "language": "es",
+        "horizontal_overflow": false,
+        "action_targets_min_44px": true,
+        "microphone_before_send": true,
+        "draft_preserved_on_resize": true,
+        "user_message_on_right": true
+      },
+      {
+        "width": 430,
+        "height": 900,
+        "theme": "light",
+        "language": "en",
+        "horizontal_overflow": false,
+        "action_targets_min_44px": true,
+        "microphone_before_send": true,
+        "draft_preserved_on_resize": true,
+        "user_message_on_right": true
+      },
+      {
+        "width": 599,
+        "height": 900,
+        "theme": "dark",
+        "language": "es",
+        "horizontal_overflow": false,
+        "action_targets_min_44px": true,
+        "microphone_before_send": true,
+        "draft_preserved_on_resize": true,
+        "user_message_on_right": true
+      },
+      {
+        "width": 600,
+        "height": 900,
+        "theme": "light",
+        "language": "en",
+        "horizontal_overflow": false,
+        "action_targets_min_44px": true,
+        "microphone_before_send": true,
+        "draft_preserved_on_resize": true,
+        "user_message_on_right": true
+      },
+      {
+        "width": 768,
+        "height": 900,
+        "theme": "dark",
+        "language": "es",
+        "horizontal_overflow": false,
+        "action_targets_min_44px": true,
+        "microphone_before_send": true,
+        "draft_preserved_on_resize": true,
+        "user_message_on_right": true
+      },
+      {
+        "width": 899,
+        "height": 900,
+        "theme": "light",
+        "language": "en",
+        "horizontal_overflow": false,
+        "action_targets_min_44px": true,
+        "microphone_before_send": true,
+        "draft_preserved_on_resize": true,
+        "user_message_on_right": true
+      },
+      {
+        "width": 900,
+        "height": 900,
+        "theme": "dark",
+        "language": "es",
+        "horizontal_overflow": false,
+        "action_targets_min_44px": true,
+        "microphone_before_send": true,
+        "draft_preserved_on_resize": true,
+        "user_message_on_right": true
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "theme": "light",
+        "language": "en",
+        "horizontal_overflow": false,
+        "action_targets_min_44px": true,
+        "microphone_before_send": true,
+        "draft_preserved_on_resize": true,
+        "user_message_on_right": true
+      }
+    ],
+    "interactions": {
+      "context_escape_preserves_draft": true,
+      "explicit_mode_apply_preserves_draft": true,
+      "pasted_pdf_uses_normal_attachment_draft": true,
+      "resize_with_file_preserves_text": true,
+      "inference_post_requests": 0,
+      "remote_file_uploads": 0,
+      "synthetic_selection_patches": 1
+    },
+    "screenshots": [
+      {
+        "path": "docs/evidence/nodia-ai-chat-redesign-390-dark-es-20261028.png",
+        "sha256": "c6f7e23846f011a90bc0a41dca4aa246bd62f8a6761cbf4d90ead593dc3f8a96"
+      },
+      {
+        "path": "docs/evidence/nodia-ai-chat-redesign-1440-light-en-20261028.png",
+        "sha256": "b7d82a8fd97c7e15b1409f1735d24926afacf0acddf741c217204fbf08cf02af"
+      }
+    ]
+  },
+  "verification": {
+    "client_full_suite": {
+      "files": 250,
+      "passed": 2055,
+      "failed": 0
+    },
+    "client_typecheck": "passed",
+    "client_lint": "passed",
+    "client_build": "passed (includes TypeScript build target)",
+    "server_focused_tests": {
+      "files": 4,
+      "passed": 77
+    },
+    "server_compiled_di_checks": 6,
+    "server_build": "passed",
+    "knowledge": {
+      "sources": 68,
+      "excluded": 25,
+      "documents": 43,
+      "fragments": 45,
+      "release_id": "8c41c654ead87cad80f81292cbed21b919f5024e1d1baaf890d65a90238db548",
+      "draft_published": false
+    }
+  },
+  "limits": [
+    "No physical phone, virtual keyboard, Safari or microphone capture acceptance. Audio lifecycle verified with synthetic MediaRecorder and atomic hook tests.",
+    "No real provider inference, cloud attachment storage, new provider qualification, database integration or deployment performed.",
+    "A React development render-update warning was observed in the existing coordination hooks path; source of that warning not attributed to the redesign. Assertions pass.",
+    "Vite reports a bundle over 500 kB outside this chat-specific change. No performance acceptance claimed.",
+    "Knowledge document remains draft; adding an explicit source path validates it without publishing it."
+  ],
+  "source_hashes": [
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+      "sha256": "09b53b74e2c1ecf499c68b5a4943607bca0f213a8f8c8d5c79a2e5419696afe6"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/styles.ts",
+      "sha256": "ab8fd24045559a08fdbb7b2b48311ceba834ad50c7c25ba94c8830d6c309ab3c"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ChatComposer/ChatComposer.tsx",
+      "sha256": "d288fe85e16f6c6898e2c638de2b5b5b429d212c47432632bb8fc6c4421d477d"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ChatComposer/styles.ts",
+      "sha256": "d6267db3382c5a38dad325345910174534dbd42ded08329c995890ee85c5c06d"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ComposerSelection/ComposerSelection.tsx",
+      "sha256": "093989eda9e6a829e769d1c61188191b1ec8a4c06170307c1f1df55890320ad4"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ChatMessage/styles.ts",
+      "sha256": "5fd967f61c406ed94bade12a1f2d6f36da0750049671621c7ac00623555a4222"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Attachments/Attachments.tsx",
+      "sha256": "9a79f7795a3ea61f13983b4d32b4d09e32c19e638ab184997a101350d0109c33"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Attachments/AttachmentsLoader.tsx",
+      "sha256": "d781844d9642de572f233a6718ad7cb39bd80f56cf60e2dcd5a74dc1a252371d"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/schemas.ts",
+      "sha256": "151d2c21e75d1751435a7c5adcc05d47ecc6869db8866efd2e78648803c74127"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/types.ts",
+      "sha256": "e4605297d48722fe65641e00ab73d12bb7711afc098593109f7f5d9a39651dc9"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-conversation/use-case/create-nodia-ai-conversation.use-case.ts",
+      "sha256": "5558db7bb555cabac86a04c7a495e035112aa4ea9dd3ae8254531f3e843d1755"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-conversation/use-case/nodia-ai-configured-selection.ts",
+      "sha256": "b0734ca7791a723b2c2e6224c73d9ebc001c18988a481fcf6770da1a2fcf7f6f"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-conversation/use-case/list-nodia-ai-connections.use-case.ts",
+      "sha256": "1e04e42aee1a2291fd122f8df20aa774230ad53aa8e16c52df091a5a6442257b"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-conversation/nodia-ai-connections.service.ts",
+      "sha256": "3f31e0273fc85b29f272e01081e3b18ee10b8e70613ab75cc81cc74c7799e4e7"
+    }
+  ]
+}

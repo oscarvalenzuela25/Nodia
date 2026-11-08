@@ -38,6 +38,7 @@ describe('GetAllModuleGroupsUseCase', () => {
         {
           id: '1',
           key: 'settings',
+          sort_order: 0,
           is_active: true,
           created_at: new Date(),
           updated_at: new Date(),

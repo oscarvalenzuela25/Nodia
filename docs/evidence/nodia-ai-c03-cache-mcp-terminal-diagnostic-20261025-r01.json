@@ -1,0 +1,95 @@
+{
+  "C03_AI36_AI38_acceptance_closed": false,
+  "CLI_observations": {
+    "document_read_completed": false,
+    "events": 2,
+    "initialized": true,
+    "phase": "unknown_not_projected",
+    "result_seen": false,
+    "stage": "unknown_not_projected",
+    "terminal_status": "absent"
+  },
+  "RPC_observations": {
+    "events": 6,
+    "last_response": {
+      "error_code": null,
+      "method": "other",
+      "response": "notification"
+    },
+    "methods": {
+      "initialize": 1,
+      "notifications_initialized": 1,
+      "other": 3,
+      "ping": 0,
+      "tools_call": 0,
+      "tools_list": 1
+    },
+    "responses": {
+      "error": 1,
+      "notification": 3,
+      "success": 2,
+      "unknown": 0
+    },
+    "scope": "unknown_not_projected",
+    "state": "observed",
+    "tools_list_successes": 1,
+    "unknown_events": 0
+  },
+  "attempt_id": "9e161c28-a3ed-4d38-9cfb-69065c524f13",
+  "boundaries": {
+    "CLI_log_is_truncated_prefix_not_full_trace": true,
+    "RPC_error_count_does_not_identify_a_cause": true,
+    "captured_before_future_epoch_transition_not_live_availability": true,
+    "causal_fix_or_root_cause_claimed": false,
+    "empty_indicator_arrays_do_not_prove_absence_or_cause": true,
+    "new_MCP_module_adoption_or_acceptance_proven_by_this_read": false,
+    "old_MCP_stop_and_ACK_evidence_unchanged": true,
+    "provider_internal_context_or_cost_not_inferred": true
+  },
+  "callbacks": 0,
+  "capture_scope": {
+    "new_provider_generation_requests": 0,
+    "raw_logs_or_provider_stderr_emitted": false
+  },
+  "closed_projection_sha256": "a70f2cccde2db2d5d3568f071a0023a803dffb36c93ef9eb3c50d7d635647a74",
+  "controlled_context_observed": {
+    "initial_utf8_bytes": 1758,
+    "maximum_utf8_bytes": 262144,
+    "provider_internal_context_tokens": null,
+    "scope": "unknown_not_projected",
+    "used_utf8_bytes": 2298
+  },
+  "docker_timestamp": "2026-10-25T23:29:32.950523400Z",
+  "elapsed_ms": 119042,
+  "epoch": {
+    "container_id": "5f77cc37e60dd21ed69f318c8c4891df886923d7fb5a0fcad77b5babd5cb0588",
+    "image_id": "sha256:cf5a6120e26a0cdf0ffd08a8efc80e7a393612faa672ea3187a7c256b76d4b1b",
+    "started_at": "2026-10-25T23:24:23.136960345Z"
+  },
+  "exception_type": "TimeoutError",
+  "exit_code": null,
+  "gate_verified": false,
+  "packager_VM_SQL_SDK_operations": 0,
+  "phase": "running_cli",
+  "prior_administrative_close": {
+    "inference_replayed": false,
+    "native_pending_identity": false,
+    "native_terminal_proof_acknowledged": true
+  },
+  "prior_stop_evidence_sha256": "8264e051198bc07b6bb4990beffa519712faee702f29f217da073e7a158d6f84",
+  "reproduction": "ops/lab/artifacts/c03-cache-mcp-terminal-diagnostic-verification-r01/consolidate.py --verify",
+  "rpc_messages": 6,
+  "sampled_CLI_log_projection": {
+    "bytes_read": 28284,
+    "http_statuses": [],
+    "interpretation": "unknown_not_projected",
+    "lines_scanned": 128,
+    "provider_error_indicators": [],
+    "state": "observed",
+    "transport_indicators": [],
+    "truncated": true
+  },
+  "schema_version": 1,
+  "state": "unknown",
+  "status": "closed_safe_terminal_appendix_cause_unknown"
+}

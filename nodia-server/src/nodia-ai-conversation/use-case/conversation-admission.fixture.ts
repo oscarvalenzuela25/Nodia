@@ -12,7 +12,6 @@ import { ProjectNodiaAiConversationUseCase } from './project-nodia-ai-conversati
 import { ProjectNodiaAiRunUseCase } from './project-nodia-ai-run.use-case.js';
 import { ValidateNodiaAiSnapshotsUseCase } from './validate-nodia-ai-snapshots.use-case.js';
 import { eventJournalFixture } from '../../nodia-ai-run/event-journal.fixture.js';
-
 export const testIdentity = {
   userId: '1',
   sessionId: '8d524fcc-68dd-4c62-a183-6cf3baedc6d1',
@@ -36,7 +35,7 @@ export function conversationFixture() {
   };
   const selection = {
     connection_id: '2',
-    mode: 'token_plan_web' as const,
+    mode: 'agentic' as const,
     model_id: 'synthetic-model',
     effort_id: null,
   };
@@ -122,7 +121,7 @@ export function conversationFixture() {
     actorId: '1',
     sessionId: testIdentity.sessionId,
     isSuperAdmin: false,
-    modules: [{ id: '2', key: 'nodia_ai', route: '/tools/nodia-ai' }],
+    modules: [{ id: '2', key: 'nodia_ai', route: '/nodia-ai' }],
   };
   const authorize = { execute: vi.fn(async () => actor) };
   const service = conversations as unknown as NodiaAiConversationService;

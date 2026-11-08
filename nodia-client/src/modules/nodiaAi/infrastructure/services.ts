@@ -66,7 +66,8 @@ export async function updateNodiaAiConversation(id: string, input: NodiaAiConver
   return result;
 }
 export async function admitNodiaAiMessage(id: string, input: NodiaAiAdmitInput): Promise<NodiaAiAdmission> {
-  const { data } = await mainInstance.post<unknown>(`${chatPath(id)}/messages`, nodiaAiAdmitSchema.parse(input));
+  // Admission includes metadata observation; this budget belongs only to sending a message.
+  const { data } = await mainInstance.post<unknown>(`${chatPath(id)}/messages`, nodiaAiAdmitSchema.parse(input), { timeout: 45_000 });
   const result = nodiaAiAdmissionSchema.parse(data);
   if (result.run.conversation_id !== id) throw new Error("nodia_ai:invalid_response");
   return result;

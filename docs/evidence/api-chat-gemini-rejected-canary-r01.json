@@ -1,0 +1,72 @@
+{
+  "operator_exit": 1,
+  "stderr_bytes": 0,
+  "report": {
+    "schema_version": 1,
+    "success": false,
+    "mode": "real_api_technical_canary",
+    "scope": "disposable_configuration_only",
+    "proves": [
+      "selected_model_live_discovery",
+      "one_pdf_read",
+      "authorized_pinned_knowledge_index",
+      "server_function_calling",
+      "durable_api_terminal_and_ack"
+    ],
+    "does_not_prove": [
+      "operational_connection_qualification",
+      "all_151_business_operations",
+      "business_tool_gateway_permissions",
+      "human_confirmation_ui",
+      "all_media_formats"
+    ],
+    "real_key_persisted": false,
+    "operational_database_accessed": false,
+    "key_transport": "ssh_stdin_memory_only",
+    "automatic_retries": 0,
+    "post_limit": 2,
+    "provider_posts": 1,
+    "discovery_gets": 1,
+    "callback_calls": 0,
+    "replayed_requests": 0,
+    "terminal_closed": false,
+    "ack": true,
+    "state_clean": true,
+    "owned_fixture_cleanup": true,
+    "provider": "gemini",
+    "model": "gemini-3.1-flash-lite",
+    "fixture_sha256": "9f9a32bd46ebfcb1063e7d1bf4e067f91ff5e5c5d82e1536c2d9725f84917e59",
+    "migrations": 32,
+    "knowledge_release": "8237f8738de3be70bcce1b93597d061fdd95552fe750b3aa1803c68d93839355",
+    "catalog_release": "nodia-ai-api-chat/1",
+    "published_contracts": 151,
+    "operator_sha256": "2e8666b6a6c2c176c1678d21c36d2c0d4608ef8366064e693866e6321bb2b6e5",
+    "discovered_models": 46,
+    "selected_model_discovered": true,
+    "request_prompt_sha256": "b0a0eb8870022cfe74f5998a117939f653caa59208d4863db9c4a2737c91990f",
+    "public_nonce_sha256": "8f222fcd6098ea409d28432e6f3e53c69cb5f653103addde0f2fad96dbfcecb6",
+    "receipt_nonce_sha256": "93968851bf689e3c4673a9581423a8075dbdd36391306da26ceb3ffba03ed9ad",
+    "heartbeats": 2,
+    "failure_stage": "one_combined_pdf_and_knowledge_qualification",
+    "error_code": "api_provider_rejected",
+    "recovery_resolved": true,
+    "sql_quiet_counts": {
+      "active_slots": 0,
+      "pending_jobs": 0,
+      "unacked_dispatches": 0
+    },
+    "checks": [
+      "public_pdf_original_hash_and_size",
+      "fresh_postgresql_all_32_migrations",
+      "actual_compiled_151_contract_registry_and_pinned_knowledge",
+      "selected_model_exactly_in_live_discovery",
+      "disposable_provider_catalog_entry_exists",
+      "synthetic_actor_has_only_nodia_ai_module",
+      "no_unproved_media_or_mcp_advertised_before_test",
+      "hidden_oracles_are_not_in_prompt",
+      "common_claim_matches_own_job"
+    ]
+  },
+  "key_transport": "local_named_pipe_and_ssh_stdin_memory_only",
+  "credential_files_written": 0
+}

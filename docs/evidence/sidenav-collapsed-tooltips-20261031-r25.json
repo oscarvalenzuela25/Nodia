@@ -1,0 +1,294 @@
+{
+  "QA": {
+    "attempts": {
+      "bytes": 1075,
+      "path": "ops/lab/artifacts/sidenav-collapsed-tooltips-20261031-r25/qa/attempts.json",
+      "sha256": "bd21f497a6a33b362495f04c440f3a3b2764ee081b023529822cfa2597fa61b4"
+    },
+    "native_keyboard": [
+      {
+        "escapeClosesAndPreservesFocus": true,
+        "focusVisible": true,
+        "language": "es",
+        "translatedTooltip": "Negocios"
+      },
+      {
+        "escapeClosesAndPreservesFocus": true,
+        "focusVisible": true,
+        "language": "en",
+        "translatedTooltip": "Businesses"
+      }
+    ],
+    "profiles": [
+      {
+        "geometry": {
+          "height": 24.5,
+          "width": 62.109375,
+          "x": 79,
+          "y": 24
+        },
+        "label": "Inicio",
+        "language": "es",
+        "mode": "collapsed",
+        "theme": "dark",
+        "width": 1569
+      },
+      {
+        "geometry": {
+          "height": 24.5,
+          "width": 83,
+          "x": 79,
+          "y": 97
+        },
+        "label": "Negocios",
+        "language": "es",
+        "mode": "collapsed",
+        "theme": "dark",
+        "width": 1569
+      },
+      {
+        "duplicateTooltip": false,
+        "labelVisible": true,
+        "language": "es",
+        "mode": "expanded",
+        "width": 1569
+      },
+      {
+        "language": "es",
+        "mode": "collapsed",
+        "tooltip": true,
+        "width": 1200
+      },
+      {
+        "dimensions": {
+          "client": 390,
+          "scroll": 390,
+          "width": 390
+        },
+        "duplicateTooltip": false,
+        "labelVisible": true,
+        "language": "es",
+        "mode": "mobile expanded",
+        "width": 390
+      },
+      {
+        "dimensions": {
+          "client": 599,
+          "scroll": 599,
+          "width": 599
+        },
+        "duplicateTooltip": false,
+        "labelVisible": true,
+        "language": "es",
+        "mode": "mobile expanded",
+        "width": 599
+      },
+      {
+        "geometry": {
+          "height": 24.5,
+          "width": 64.140625,
+          "x": 79,
+          "y": 24
+        },
+        "label": "Home",
+        "language": "en",
+        "mode": "collapsed",
+        "theme": "light",
+        "width": 1569
+      },
+      {
+        "geometry": {
+          "height": 24.5,
+          "width": 93.75,
+          "x": 79,
+          "y": 97
+        },
+        "label": "Businesses",
+        "language": "en",
+        "mode": "collapsed",
+        "theme": "light",
+        "width": 1569
+      },
+      {
+        "duplicateTooltip": false,
+        "labelVisible": true,
+        "language": "en",
+        "mode": "expanded",
+        "width": 1569
+      },
+      {
+        "language": "en",
+        "mode": "collapsed",
+        "tooltip": true,
+        "width": 1200
+      },
+      {
+        "dimensions": {
+          "client": 390,
+          "scroll": 390,
+          "width": 390
+        },
+        "duplicateTooltip": false,
+        "labelVisible": true,
+        "language": "en",
+        "mode": "mobile expanded",
+        "width": 390
+      },
+      {
+        "dimensions": {
+          "client": 599,
+          "scroll": 599,
+          "width": 599
+        },
+        "duplicateTooltip": false,
+        "labelVisible": true,
+        "language": "en",
+        "mode": "mobile expanded",
+        "width": 599
+      }
+    ],
+    "receipt": {
+      "bytes": 2952,
+      "path": "ops/lab/artifacts/sidenav-collapsed-tooltips-20261031-r25/qa/qa-summary.json",
+      "sha256": "93195e7bcc14ca78d37133d0d26556d5ba5ccf02f02d99f5ca54e1b089d12d67"
+    },
+    "settled_screenshots_visually_inspected": true,
+    "status": "passed",
+    "synthetic_only": true
+  },
+  "build": {
+    "exit_code": 0,
+    "ran_after_global_suite": true,
+    "seconds": 32.053,
+    "status": "passed"
+  },
+  "cleanup": {
+    "identity_and_listener_observed": true,
+    "own_CLI_closed": true,
+    "own_Vite_pid": 96376,
+    "own_Vite_port": 5197,
+    "process_absent_verified": true,
+    "stopped_via_original_exec_session_Ctrl_C": true,
+    "user_tabs_and_tunnel_preserved": true
+  },
+  "client_catalog": {
+    "bytes": 7395,
+    "path": "ops/lab/artifacts/sidenav-collapsed-tooltips-20261031-r25/client/catalog-delivery-r01.json",
+    "sha256": "2c9f933b8fcb57c7f3ddf0d16de06afa6b91edbf20100f97de87bd74288474c0"
+  },
+  "date": "2026-10-31",
+  "deployment": {
+    "AI_inferences": 0,
+    "SQL_queries": 0,
+    "Server_Runtime_KB_Native_keyring_timers_preserved": true,
+    "assets_current": 169,
+    "assets_previous": 32,
+    "backup": "private original Nginx config verified before CAS",
+    "client_release": "/opt/nodia/releases/nodia-client-sidenav-collapsed-tooltips-20261031-r25",
+    "commercial_mutations": 0,
+    "consecutive_matching_SPA_rounds": 3,
+    "first_round_old_then_rounds2_to4_new": true,
+    "index_sha256": "a1ccf0c577e4188120a07754cc0c1ed1b5c666d9827e82dfc4d77e393cc2f69b",
+    "local_tunnel_index_verified": true,
+    "manifest_sha256": "a1ab1392de7bbe9dc94219457e6940d5fb1493ce9ba7e54fd870158e9b8f0153",
+    "nginx_sha256": "b70c2bdccc8e263a04fd987139b709839dab99be26f78e9a282924289762a533",
+    "reloads": 1,
+    "static_files": 173,
+    "status": "activated_verified"
+  },
+  "focals": {
+    "files": 1,
+    "seconds": 7.92,
+    "status": "passed",
+    "tests": 9
+  },
+  "global_tests": {
+    "exit_code": 0,
+    "files": 296,
+    "seconds": 403.29,
+    "status": "passed",
+    "tests": 2481
+  },
+  "knowledge": {
+    "approved_aggregate_sha256": "ed28119a33cf89230c5ecbaef1c371fe21b2f6e709b8c71fdf47ce755dbb3373",
+    "approved_full_files_preserved": 44,
+    "excluded": 35,
+    "final_authoring_check": "passed;79sources/35excluded/44documents/46fragments, local bundle unchanged; no VM knowledge publication",
+    "new_approvals": 0,
+    "new_sources_or_tools": 0,
+    "runtime_KB_not_republished": true,
+    "source_paths": 79,
+    "visual_impact_documented_in_existing_draft": true
+  },
+  "limits": [
+    "Synthetic viewport/browser QA is not a physical mobile device certification"
+  ],
+  "lint": "passed",
+  "new_AI_capabilities": 0,
+  "new_document_approvals": 0,
+  "preserved_attempts": [
+    {
+      "phase": "VM_preflight_R01",
+      "result": "protected_runtime_binding_changed before staging/activation; exact differing field not captured"
+    },
+    {
+      "phase": "readonly_reconciliation",
+      "result": "status state:null, original Nginx and exact baseline runtime; preflightR02 then passed unchanged guards"
+    },
+    {
+      "phase": "activation_R01",
+      "result": "passed; one reload, no rollback or consumed intent replay"
+    }
+  ],
+  "quality_receipt": {
+    "bytes": 3782,
+    "path": "ops/lab/artifacts/sidenav-collapsed-tooltips-20261031-r25/quality/verification.json",
+    "sha256": "4d102b8e176e6e60ff652b6fcf783ed8eb6b0a290ea3e5a8fb6b0208a79d2571"
+  },
+  "receipt_paths": [
+    {
+      "bytes": 5704,
+      "path": "ops/lab/artifacts/sidenav-collapsed-tooltips-20261031-r25/client/preflight-observed-root-r01.json",
+      "sha256": "b8f88c1c721bc0929ceab2aa5b4acda6e65b906001e67e589e83ad24727c3e8b"
+    },
+    {
+      "bytes": 229,
+      "path": "ops/lab/artifacts/sidenav-collapsed-tooltips-20261031-r25/client/preflight-bound-observed-root-r01.json",
+      "sha256": "35bc9c8bfd4b55723c3b4dae6e36839ed1e6b3b5dd43a47baf21aec2b1e79deb"
+    },
+    {
+      "bytes": 1946,
+      "path": "ops/lab/artifacts/sidenav-collapsed-tooltips-20261031-r25/client/status-after-preflight-observed-root-r01.json",
+      "sha256": "866ab37f483a68584348e673657fb57501e31c682caf19459975dac7a7aba04c"
+    },
+    {
+      "bytes": 2896,
+      "path": "ops/lab/artifacts/sidenav-collapsed-tooltips-20261031-r25/client/preflight-bound-observed-root-r02.json",
+      "sha256": "a8410b1b98a81195e0cb08461007820ef9aa815c258868664ac4d3bd52a01e8c"
+    },
+    {
+      "bytes": 12903,
+      "path": "ops/lab/artifacts/sidenav-collapsed-tooltips-20261031-r25/client/activation-state-final.json",
+      "sha256": "9a2105b9dfdd9e806ef08a07d5b4a1fd3c38dd1accde3ef8c2675db26de819d7"
+    },
+    {
+      "bytes": 255,
+      "path": "ops/lab/artifacts/sidenav-collapsed-tooltips-20261031-r25/client/local-tunnel-observed-root-r01.json",
+      "sha256": "b4793f3eca1f0af1317f8eb1d8bb0182fdb09c9e44a427fa9684ad37a9ba9000"
+    },
+    {
+      "bytes": 1111,
+      "path": "ops/lab/artifacts/sidenav-collapsed-tooltips-20261031-r25/client/source-scope-r01.json",
+      "sha256": "8e697a4e875d742f2e0d23fb0028eaf1d5d22ed771932889f5f4cf7e74eb80e4"
+    }
+  ],
+  "schema_version": 1,
+  "scope": "Collapsed desktop Sidenav tooltip labels; same translated titles and accessible names, no backend or navigation contract changes",
+  "source_fingerprint_sha256": "e03802087b7571971faed5ad15c9a69ef1ac40b0435028e2734422e27d8f77e0",
+  "source_paths": [
+    "nodia-client/src/layouts/components/Sidenav/Sidenav.tsx",
+    "nodia-client/src/test/layouts/components/Sidenav/Sidenav.test.tsx"
+  ],
+  "status": "implemented_tested_and_deployed_in_usage_VM",
+  "types": "passed"
+}

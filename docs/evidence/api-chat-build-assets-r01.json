@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "task": "api_chat_candidate_build_assets_readonly",
+  "checked_at_vm_utc": "2026-10-27T21:27:14.497289+00:00",
+  "status": "passed",
+  "source_root": "/opt/nodia/operations/api-chat-r01/candidate-source-r01/nodia-server",
+  "command": "node test/build-assets.integration.mjs",
+  "test_sha256": "906881989224852e76b5d2a03cff928bc1180f69850d1e9d1c4a3ecfc413be0e",
+  "return_code": 0,
+  "checks": [
+    {
+      "check": "nest-build-common-schema",
+      "result": "passed"
+    },
+    {
+      "check": "nest-build-invoice-ocr-schema",
+      "result": "passed"
+    }
+  ],
+  "dist_files": 3064,
+  "dist_bytes_unchanged": true,
+  "release_writes": false,
+  "rebuild_performed": false,
+  "production_database_accessed": false,
+  "provider_requests": 0,
+  "stderr_bytes": 0,
+  "private_stderr_emitted": false,
+  "scope_limit": "Direct asset test on exact candidate source with final full-build dist; this invocation does not independently rerun the clean Nest emission phase.",
+  "test_matches_current_checkout": true,
+  "npm_gate_observation": {
+    "guide": "docs/mvp/91-ai-provider-onboarding-verification.md:53",
+    "command": "npm run prepare:chat && nest build && node test/build-assets.integration.mjs",
+    "intent": "Verify canonical common/OCR schema assets directly after clean Nest emission, before post-build repair.",
+    "mutates_source_and_dist": true,
+    "context_prepare_reuses_existing_dist_knowledge_bundle": true,
+    "publishes_current_knowledge_from_approved_sources": false,
+    "risk": "When an existing dist bundle predates approved source/registry changes, this isolated npm gate can preserve that older publication while its two schema assertions pass. It requires an existing dist knowledge bundle. It is not a complete release build or a readonly verification.",
+    "ordered_plan91_assessment": "Plan91 already calls npm run build first. With no intervening source change, context:prepare copies that freshly published bundle; stale publication is not asserted for the adopted candidate.",
+    "recommendation": "Treat test:build-assets as a dedicated clean-emission gate in a disposable build workspace; package releases only from full npm run build with all postbuilders and publication checks.",
+    "frozen_candidate_changed": false
+  }
+}

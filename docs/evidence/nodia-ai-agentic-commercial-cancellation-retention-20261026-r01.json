@@ -1,0 +1,576 @@
+{
+  "schema_version": 1,
+  "evidence_id": "nodia-ai-agentic-commercial-cancellation-retention-20261026-r01",
+  "checked_on": "2026-10-26",
+  "status": "three_gates_verified_with_explicit_scope_and_calendar_limits",
+  "scope": {
+    "providers": [
+      "Codex Agentic",
+      "Antigravity Agentic"
+    ],
+    "commercial_input": "Explicit manual synthetic comparison table; NO new OCR extraction or OCR price-rise/fall acceptance.",
+    "global_C05_AI41_AI38_or_NodiaAI_closed": false,
+    "new_document_approval": false,
+    "knowledge_build_or_publication": false,
+    "inference_Web": 0,
+    "inference_API_key": 0,
+    "Web_API_scope": "Excluded from this acceptance; no implementation removal or fallback."
+  },
+  "deployment": {
+    "server": {
+      "status": "server_started",
+      "release": "/opt/nodia/releases/nodia-server-image-generation-r03",
+      "manifest_sha256": "5acd9f042b8cf8d617d5985eb10735687aaeccdac05d46973c9687f0d37848fe",
+      "changed_paths": [
+        "src/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.ts",
+        "dist/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.js",
+        "dist/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.d.ts",
+        "dist/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.js.map"
+      ],
+      "provider_generation_requests": 0,
+      "base_retained": true
+    },
+    "native_R10": {
+      "status": "native_started",
+      "image": "sha256:fda9b4768248d27abad8bff705f70256a5a24783613e2a13728255da29083a71",
+      "container_id": "858af71fd752147f3037a288c2a4ec147bd802a7142a4d4dc2319c3b8c6b4cbe",
+      "started_at": "2026-10-27T00:46:49.162548662Z",
+      "files": {
+        "native_image_generation.py": "81e6ef2e735a715c6fc34f5018874375acabe416e4924f9066e2397f8e88a947"
+      },
+      "previous_container_retained": true,
+      "CLI_version_changed": false,
+      "provider_dispatches": 0
+    },
+    "current_runtime": {
+      "status": "final_runtime_verified",
+      "quiet": {
+        "jobs": 0,
+        "attempts": 0,
+        "slots": 0
+      },
+      "cancelled_runs": [
+        {
+          "id": "b9e792a5-af49-46b8-9144-392481cf4b09",
+          "state": "failed",
+          "error_code": "nodia_ai:outcome_unknown",
+          "assistant_message_id": null,
+          "active_job_id": null,
+          "active_generated_attachments": 0,
+          "assistant_attachments": 0
+        },
+        {
+          "id": "bef76c9b-9ef6-4893-931f-ccd18901a89f",
+          "state": "failed",
+          "error_code": "nodia_ai:outcome_unknown",
+          "assistant_message_id": null,
+          "active_job_id": null,
+          "active_generated_attachments": 0,
+          "assistant_attachments": 0
+        }
+      ],
+      "source": "/opt/nodia/releases/nodia-server-image-generation-r03",
+      "source_manifest_sha256": "5acd9f042b8cf8d617d5985eb10735687aaeccdac05d46973c9687f0d37848fe",
+      "source_files_verified": 4252,
+      "units": {
+        "nodia-api": {
+          "MainPID": "886689",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-image-generation-r03",
+          "ActiveState": "active"
+        },
+        "nodia-ai-worker": {
+          "MainPID": "894400",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-image-generation-r03",
+          "ActiveState": "active"
+        }
+      },
+      "native_image": "sha256:fda9b4768248d27abad8bff705f70256a5a24783613e2a13728255da29083a71",
+      "native_container_id": "858af71fd752147f3037a288c2a4ec147bd802a7142a4d4dc2319c3b8c6b4cbe",
+      "native_started_at": "2026-10-27T00:46:49.162548662Z",
+      "native_processes_closed": true,
+      "unknown_markers": 0,
+      "client_manifest_sha256": "14aa3bad801ccb906f06f0f8a8311f4325d385a74d9ec86ceb0802925fe0c20b",
+      "client_files_verified": 183,
+      "nginx_config_sha256": "d38996cca62366f42e63a368c68f58a277ddd128eed6d690f20d20dd18104e1a",
+      "operational_image_override_sha256": "b9fff62184ed703a0033bc9222e1ddc96b2e294ca62276ab0913c68f941a5aa0",
+      "effective_compose_image_verified": true,
+      "backup_writer_paths_R03_verified": true,
+      "backup_runner_sha256": "073bddad0523d972b328c644026439b7b6b5f77f38f8d254c29c13e6feb87588",
+      "timers": {
+        "nodia-ai-backup.timer": "active",
+        "nodia-ai-backup-rotate.timer": "active"
+      },
+      "SQL_readonly": true,
+      "SQL_writes": 0,
+      "R2_requests": 0,
+      "AI_provider_calls": 0,
+      "mutations": 0
+    },
+    "native_Linux_tests": {
+      "reported_passed": 37,
+      "receipt_exit": 0,
+      "source": ".tmp/nodia-ai-closure-native-tests.json",
+      "not_provider_acceptance": true
+    },
+    "other_validation_reported_by_Root": {
+      "backend_focal_76": 76,
+      "backend_regressions_136": 136,
+      "UI_focal_22": 22,
+      "no_new_suite_run_by_document_consolidator": true
+    },
+    "Antigravity_R10_MCP": {
+      "status": "MCP_nonce_completed_ACK_qualified",
+      "native_dispatch_intents": 1,
+      "callback_count": 1,
+      "acknowledged": true,
+      "qualification_accepted": true,
+      "native_pending_identity": false,
+      "business_tool_dispatches": 0,
+      "configured_SQL_writes": 0
+    }
+  },
+  "commercial": {
+    "Codex": {
+      "run_id": "ad009c39-4d05-430b-b69c-e95118adebc9",
+      "state": "completed",
+      "provider_dispatches_used": 2,
+      "UI_exact_proposals_reviewed_and_confirmed": 2
+    },
+    "Antigravity": {
+      "run_id": "b6a6e82b-9003-4bfa-b68b-272a143cfc37",
+      "state": "completed",
+      "provider_dispatches_used": null,
+      "dispatch_count_limit": "Final count not exposed in retained receipt; running progress count is not substituted.",
+      "UI_exact_proposals_reviewed_and_confirmed": 2
+    },
+    "manual_comparison": {
+      "baseline_net_gross": [
+        1000,
+        1190
+      ],
+      "up_net_gross": [
+        1200,
+        1428
+      ],
+      "down_net_gross": [
+        800,
+        952
+      ],
+      "same_net_gross": [
+        1000,
+        1190
+      ],
+      "directions_percent": [
+        20,
+        -20,
+        0
+      ],
+      "not_new_OCR": true
+    },
+    "products": [
+      {
+        "id": "1",
+        "code": "QA-NODIA-CLOSE-CDX-UP-20261026",
+        "cost_price": 1200,
+        "cost_price_tax": 1428,
+        "profit_percentage": 30,
+        "sale_price": 1547,
+        "stock": 0,
+        "log_count": 2
+      },
+      {
+        "id": "2",
+        "code": "QA-NODIA-CLOSE-CDX-DOWN-20261026",
+        "cost_price": 800,
+        "cost_price_tax": 952,
+        "profit_percentage": 30,
+        "sale_price": 1547,
+        "stock": 0,
+        "log_count": 2
+      },
+      {
+        "id": "3",
+        "code": "QA-NODIA-CLOSE-CDX-SAME-20261026",
+        "cost_price": 1000,
+        "cost_price_tax": 1190,
+        "profit_percentage": 30,
+        "sale_price": 1547,
+        "stock": 0,
+        "log_count": 1
+      },
+      {
+        "id": "4",
+        "code": "QA-NODIA-CLOSE-AGY-UP-20261026",
+        "cost_price": 1200,
+        "cost_price_tax": 1428,
+        "profit_percentage": 30,
+        "sale_price": 1547,
+        "stock": 0,
+        "log_count": 2
+      },
+      {
+        "id": "5",
+        "code": "QA-NODIA-CLOSE-AGY-DOWN-20261026",
+        "cost_price": 800,
+        "cost_price_tax": 952,
+        "profit_percentage": 30,
+        "sale_price": 1547,
+        "stock": 0,
+        "log_count": 2
+      },
+      {
+        "id": "6",
+        "code": "QA-NODIA-CLOSE-AGY-SAME-20261026",
+        "cost_price": 1000,
+        "cost_price_tax": 1190,
+        "profit_percentage": 30,
+        "sale_price": 1547,
+        "stock": 0,
+        "log_count": 1
+      }
+    ],
+    "confirmed_effects": 4,
+    "additional_product_logs": 4,
+    "unchanged_products": [
+      "3",
+      "6"
+    ],
+    "known_UP_resume": {
+      "execution_id": "b84765d1-86a4-4976-a664-bb05d99d5fb6",
+      "first_state": "Expired in queue while Antigravity was unknown; no bound command, no receipt, product still baseline and one log.",
+      "recovery": "Root used UI Resume confirmed operation after exact Antigravity reconciliation/ACK and quiet; same execution completed.",
+      "replay_of_uncertain_effect": false,
+      "manual_SQL_reset": false,
+      "source": ".tmp/nodia-ai-closure-business-first-readback.json",
+      "Root_UI_observation": true
+    },
+    "screenshot": {
+      "path": "docs/evidence/nodia-ai-antigravity-commercial-closure-20261026-r01.png",
+      "sha256": "cd73356683b7259554b98ca37f6323fd2b5ce51d2558adb0ecf432e98de48d7a",
+      "bytes": 91088,
+      "reviewed_by": "Root",
+      "scope": "Antigravity completed execution/product5; not screenshot evidence for both providers."
+    }
+  },
+  "idempotency": {
+    "status": "real_confirmation_duplicate_verified_no_effect",
+    "source_manifest_sha256": "5acd9f042b8cf8d617d5985eb10735687aaeccdac05d46973c9687f0d37848fe",
+    "results": [
+      {
+        "execution_id": "b84765d1-86a4-4976-a664-bb05d99d5fb6",
+        "proposal_id": "4dd2bb66-6335-4be9-aee5-d27344bbaca2",
+        "product_id": "1",
+        "original_request_same_execution": true,
+        "new_request_rejected": "nodia_ai:proposal_already_confirmed"
+      },
+      {
+        "execution_id": "3d88f5d2-68ec-4dd3-995b-2a8804a5185e",
+        "proposal_id": "d0922d04-0bab-435a-81f3-d53d4c13e94d",
+        "product_id": "2",
+        "original_request_same_execution": true,
+        "new_request_rejected": "nodia_ai:proposal_already_confirmed"
+      },
+      {
+        "execution_id": "475093d7-a7c9-4b4b-92cf-3f0379b4bcc0",
+        "proposal_id": "364babc8-c611-4a25-93e9-8a5c8c7b5836",
+        "product_id": "4",
+        "original_request_same_execution": true,
+        "new_request_rejected": "nodia_ai:proposal_already_confirmed"
+      },
+      {
+        "execution_id": "0e61243e-9883-49f8-be85-8dde695e7782",
+        "proposal_id": "12f5bea0-406a-4cef-98c7-a397f38b13aa",
+        "product_id": "5",
+        "original_request_same_execution": true,
+        "new_request_rejected": "nodia_ai:proposal_already_confirmed"
+      }
+    ],
+    "before": {
+      "products": {
+        "count": 6,
+        "sha256": "627922d74c325938c371d022048981f544716472ecca29e5808cba4a478a68f6"
+      },
+      "logs": {
+        "count": 10,
+        "sha256": "fed2e2bde7c572e2ba9d2a97ba1992bb5e9381e4b89c32fee07383b5b9d77af0"
+      },
+      "executions": {
+        "count": 4,
+        "sha256": "017f7a6f009f7dbd4b7c791808e2477cc665e6249f2d151b756a1696054e2393"
+      },
+      "execution_steps": {
+        "count": 4,
+        "sha256": "e3e7d1b9377b8934399f58a6de3b540952eed2422ad8f898d38e0d2b2463e3ff"
+      },
+      "proposals": {
+        "count": 4,
+        "sha256": "7895cc5482ce4c0dc3230b7024ec6eaf551e4311fbc21d9900a63fd22ed0edd4"
+      },
+      "revisions": {
+        "count": 4,
+        "sha256": "ce858d1a54812e580097bf4e86b6a138faac65c8a1e6df792564f442eabf5101"
+      },
+      "proposal_steps": {
+        "count": 4,
+        "sha256": "3005297d351f932ca97ad8ecf0d498f27965d9ec1cb123beb3dee56791ecac56"
+      },
+      "challenges": {
+        "count": 4,
+        "sha256": "9c0b50f854776a3df3e31edad70c0e675ccea5d5dbd1092bbb5ad476dc67b8d6"
+      }
+    },
+    "after": {
+      "products": {
+        "count": 6,
+        "sha256": "627922d74c325938c371d022048981f544716472ecca29e5808cba4a478a68f6"
+      },
+      "logs": {
+        "count": 10,
+        "sha256": "fed2e2bde7c572e2ba9d2a97ba1992bb5e9381e4b89c32fee07383b5b9d77af0"
+      },
+      "executions": {
+        "count": 4,
+        "sha256": "017f7a6f009f7dbd4b7c791808e2477cc665e6249f2d151b756a1696054e2393"
+      },
+      "execution_steps": {
+        "count": 4,
+        "sha256": "e3e7d1b9377b8934399f58a6de3b540952eed2422ad8f898d38e0d2b2463e3ff"
+      },
+      "proposals": {
+        "count": 4,
+        "sha256": "7895cc5482ce4c0dc3230b7024ec6eaf551e4311fbc21d9900a63fd22ed0edd4"
+      },
+      "revisions": {
+        "count": 4,
+        "sha256": "ce858d1a54812e580097bf4e86b6a138faac65c8a1e6df792564f442eabf5101"
+      },
+      "proposal_steps": {
+        "count": 4,
+        "sha256": "3005297d351f932ca97ad8ecf0d498f27965d9ec1cb123beb3dee56791ecac56"
+      },
+      "challenges": {
+        "count": 4,
+        "sha256": "9c0b50f854776a3df3e31edad70c0e675ccea5d5dbd1092bbb5ad476dc67b8d6"
+      }
+    },
+    "snapshots_identical": true,
+    "actual_authorization_and_Get_load_used": true,
+    "actual_product_preparer_authority_used": true,
+    "synthetic_unused_token_only": true,
+    "challenge_reads": 0,
+    "newly_issued_challenges": 0,
+    "SQL_mutation_statements_allowed": false,
+    "rejected_SQL_statements": 0,
+    "observed_read_or_lock_statements": 592,
+    "provider_generations": 0,
+    "SDK_calls": 0,
+    "new_business_effects": 0
+  },
+  "cancellation": {
+    "method": "Real UI Stop followed by administrative exact UC reconciliation and manual ACK; not immediate automatic UI closure.",
+    "closed_runs": [
+      {
+        "id": "b9e792a5-af49-46b8-9144-392481cf4b09",
+        "state": "failed",
+        "error_code": "nodia_ai:outcome_unknown",
+        "assistant_message_id": null,
+        "active_job_id": null,
+        "active_generated_attachments": 0,
+        "assistant_attachments": 0
+      },
+      {
+        "id": "bef76c9b-9ef6-4893-931f-ccd18901a89f",
+        "state": "failed",
+        "error_code": "nodia_ai:outcome_unknown",
+        "assistant_message_id": null,
+        "active_job_id": null,
+        "active_generated_attachments": 0,
+        "assistant_attachments": 0
+      }
+    ],
+    "reconciliations": [
+      {
+        "run_id": "bef76c9b-9ef6-4893-931f-ccd18901a89f",
+        "status": "reconciled_ACK_verified",
+        "reconcile_calls": 1,
+        "ACK_calls": 1,
+        "provider_generations": 0,
+        "manual_SQL_release": false,
+        "after": {
+          "run_state": "failed",
+          "active_job_id": null,
+          "pending_jobs": 0,
+          "open_attempts": 0,
+          "slots": 0
+        }
+      },
+      {
+        "run_id": "b9e792a5-af49-46b8-9144-392481cf4b09",
+        "status": "reconciled_ACK_verified",
+        "reconcile_calls": 1,
+        "ACK_calls": 1,
+        "provider_generations": 0,
+        "manual_SQL_release": false,
+        "after": {
+          "run_state": "failed",
+          "active_job_id": null,
+          "pending_jobs": 0,
+          "open_attempts": 0,
+          "slots": 0
+        }
+      }
+    ],
+    "final_native_processes_closed": true,
+    "final_unknown_markers": 0,
+    "final_quiet": {
+      "jobs": 0,
+      "attempts": 0,
+      "slots": 0
+    },
+    "remote_provider_abort_semantics_claimed": false,
+    "automatic_replay": false
+  },
+  "retention": {
+    "local_unit_verification": {
+      "passed": 79,
+      "files": 6,
+      "failed": 0,
+      "VM_or_AI_provider_calls": 0,
+      "command": "node node_modules/vitest/vitest.mjs run src/nodia-ai-conversation/use-case/expire-nodia-ai-conversations.use-case.spec.ts src/nodia-ai-runtime/use-case/cleanup-nodia-ai-attachments.use-case.spec.ts src/nodia-ai-recovery/use-case/manage-nodia-ai-backups.use-case.spec.ts src/nodia-ai-recovery/use-case/validate-nodia-ai-restore.use-case.spec.ts src/nodia-ai-recovery/use-case/prepare-nodia-ai-restore.use-case.spec.ts src/nodia-ai-recovery/use-case/reconcile-nodia-ai-deletion-journal.use-case.spec.ts"
+    },
+    "real_R2_fixture": {
+      "passed": true,
+      "PUT": 1,
+      "GET": 1,
+      "HEAD": 4,
+      "DELETE": 1,
+      "counts": "logical SDK commands, not asserted HTTP request counts",
+      "duplicate_cleanup_DELETE": 0,
+      "object_absence_proven": true,
+      "configured_database_used": false,
+      "fixture_PG_container_and_anonymous_volume_absent": true,
+      "no_operational_backup_or_journal_mutation": true,
+      "prior_harness_failure": "Fixture clock TypeError occurred before I/O; explicit resume-before-io used the same disposable PostgreSQL fixture and object key. This was not an inference retry or a production runtime failure."
+    },
+    "fresh_operational_metadata": {
+      "observed_at": "2026-10-27T00:49:20.312Z",
+      "retained_ready": 51,
+      "HEAD_present": 51,
+      "all_ready_metadata_match": true,
+      "catalog_GET": 2,
+      "backup_HEAD": 51,
+      "backup_payload_GET": 0,
+      "coverage_from": "2026-10-20T23:52:27.154Z",
+      "coverage_elapsed_seconds": 521813.158,
+      "seven_days_elapsed": false,
+      "seven_day_boundary": "2026-10-27T23:52:27.154Z",
+      "earliest_catalog_expiry": "2026-10-27T23:58:20.785Z",
+      "seconds_until_first_expiry_at_observation": 83340.473,
+      "backup_writers_R03_verified": true,
+      "backup_timers_active": true
+    },
+    "still_pending": [
+      "Observar vencimiento y retirada reales del primer backup desde 2026-10-27T23:58:20.785Z; no alterar reloj/TTL.",
+      "Acreditar ventana física de24h y eliminación de todas copias/destinos/versiones aplicables; fixture R2 aislada no demuestra esos plazos globales.",
+      "Esta observación de metadatos no vuelve a calcular SHA del ciphertext ni demuestra restauración/cobertura continua7d."
+    ]
+  },
+  "retention_count_limit": "R2 PUT/GET/HEAD/DELETE counts are logical shared-storage SDK commands; internal HTTP retries/counts are not asserted.",
+  "calendar_gate": {
+    "seven_days_complete": false,
+    "physical_all_destinations_24h_complete": false,
+    "first_expiry_UTC": "2026-10-27T23:58:20.785Z",
+    "first_expiry_Chile": "2026-10-27T20:58:20.785-03:00",
+    "no_clock_or_TTL_change": true
+  },
+  "approved_OCR_file_sha256": "9d93844d136b9aa056bdffdf5be60495fa474d06de08a911d53dfba6f2e33a6f",
+  "limits": [
+    "Four synthetic commercial fixture effects only; no arbitrary real-business writes authorized.",
+    "Manual-table comparison does not add an OCR extraction proof.",
+    "Nonce MCP, image generation, cancellation and commercial confirmation remain separate scopes.",
+    "Temporal7d/24h, all backup copies/versions/destinations and global acceptance remain pending.",
+    "No credentials, real confirmation token, resource/session identifiers, raw wire or signed private URL included."
+  ],
+  "source_receipts": [
+    {
+      "path": ".tmp/nodia-ai-closure-final-runtime.json",
+      "sha256": "71d4c7fae848ad671fc4e2cdf596c8c3935012d147231ca2bff05a28306166fd",
+      "bytes": 2015
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-idempotency.json",
+      "sha256": "811b3db2120a4da8a4f9a2e1bf43df6ea11bf0c7f0ec4d845245cfd291804c81",
+      "bytes": 3422
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-commercial-final.json",
+      "sha256": "4f0b9b1a89606a6eb14b0575c0f5de32bd5d08c8aed2ebf3865c67c67785bc87",
+      "bytes": 3588
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-business-first-readback.json",
+      "sha256": "300625b4985f13592148d3dc0fec6c16d3185a989e81e640bab7f8d70906441a",
+      "bytes": 1575
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-commercial-codex.json",
+      "sha256": "fe4306be99d26683c75a962f407269b23479612e270c09ef30e2641ff822f3ba",
+      "bytes": 1640
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-codex-reconciled-r02.json",
+      "sha256": "17943746fc0eb276a4e6364edd181d58cf685b0695814ff40c87b3629e63b19d",
+      "bytes": 2770
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-agy-reconciled-r02.json",
+      "sha256": "83c4d565d99df1a418aaca0d1335018795cb0ce1498f553af1b68eafc1fd69be",
+      "bytes": 1291
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-retention-integration-note.json",
+      "sha256": "f5c9577d69bea213b522f49380f4d27ef263f6355b4a13da9a7e7abbdc272763",
+      "bytes": 2971
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-retention-current.json",
+      "sha256": "16828c6e436122ef93f37a2f02b896dc1228f585d6de204fe29c65e0ba09af99",
+      "bytes": 31419
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-backup-writer-check.json",
+      "sha256": "3954e346937c707b764cb3751073f76f9bea0e4c089ca853db4271a27ab3a299",
+      "bytes": 338
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-native-deployed.json",
+      "sha256": "694b3e4effa4b603a09ca87dfe2334813154dc98fe0827c4451023d573057790",
+      "bytes": 447
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-native-tests.json",
+      "sha256": "3dcf376f21c7163feebf0e75e8d4bd9d68f20ea2a7728319de3656ec2a720759",
+      "bytes": 9486
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-server-deployed.json",
+      "sha256": "cfc10800446ced42726274459413cb107bb38c6225e34510990c802817b04753",
+      "bytes": 546
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-agy-qualified.json",
+      "sha256": "5b5040af938f45479d323cb691259662c897eb2b8a8ab305c4511845e446ed0b",
+      "bytes": 519
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-r2-resumed.json",
+      "sha256": "a332acc35501bf922161edbb9dea6773fbdf7e1909b632fcdbd1441a200b26af",
+      "bytes": 1175
+    },
+    {
+      "path": ".tmp/nodia-ai-closure-r2-fixture-cleanup-final.json",
+      "sha256": "09ee05ea36a0863fe11b3d3b73b70306908e73a003611e2d5588bc11c668da29",
+      "bytes": 949
+    }
+  ]
+}

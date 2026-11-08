@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "status": "bounded_real_tests_complete_with_explicit_blocks_and_server_fix_adopted",
+  "implementation": {
+    "server_release": "/opt/nodia/releases/nodia-server-api-conversational-ocr-r02",
+    "server_manifest_sha256": "f1bd47cb3fb56beec240972edc55feb2825c2e48f24672dce9c10d100ae38af6",
+    "knowledge": {
+      "capabilities": 151,
+      "catalog_release": "nodia-ai-api-chat/1",
+      "documents": 43,
+      "fragments": 45,
+      "release_id": "ad41d3b87e27dde7d4c2db2283d5a27ed1be50ddd5aae44cc6dece160aafd5e5"
+    },
+    "client_manifest_sha256": "17f5d171402e8c3b9ae2593f1809ca1fb22f9b976602416fc6b329f28251f6b1",
+    "nginx_sha256": "4b0a02d547a06fc09fb9b2ce7fa22ef15e0d631b27aa2689307e100c4ae192ea",
+    "changes": [
+      "Three closed OCR result variants now allow agentic/api_key; Web remains rejected.",
+      "Single valid persisted OCR request handoff stops API planning transport without a discarded continuation. Common worker rechecks pending request before OCR; no policy budget increase."
+    ],
+    "runtime_changed_files": 8,
+    "production_source_changed_files": 2,
+    "focal_regressions": 151,
+    "linux_fullbuild_and_independent_rebuild": true,
+    "sql_runtime_checks": 19,
+    "sql_gateway_checks": 16,
+    "pure_cutover_checks": 20,
+    "migration_applied": false,
+    "database_tables": 65,
+    "migration_count": 32,
+    "all_65_table_fingerprints_unchanged": true,
+    "native_restarted": false,
+    "client_or_nginx_changed": false
+  },
+  "consumption": {
+    "generative_post_attempts": 10,
+    "discovery_gets": 8,
+    "accepted_http200_posts": 8,
+    "rejected_http400_posts": 1,
+    "rejected_http429_posts": 1,
+    "automatic_retries": 0,
+    "inference_replays": 0,
+    "fallbacks": 0,
+    "billed_amount": null,
+    "account_balance_or_remaining_quota": null,
+    "real_keys_persisted_by_tests": false,
+    "memory_only_secret_delivery_and_kernel_reset": true
+  },
+  "matrix": [
+    {
+      "feature": "conversational_supplier_choice_OCR_turn",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "pass",
+      "case": "real-openai-ocr-r01",
+      "scope": "Second turn real: discovery+request+extraction=3 POST; first awaiting-supplier setup synthetic."
+    },
+    {
+      "feature": "conversational_supplier_choice_OCR_turn",
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite",
+      "status": "blocked",
+      "case": "real-gemini-ocr-r01",
+      "reason": "HTTP400 at first planner/discovery POST, before OCR; cause unconfirmed. Closed/reconciled/ACK without replay."
+    },
+    {
+      "feature": "common_worker_OCR_extraction",
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite",
+      "status": "pass",
+      "case": "real-gemini-ocr-extraction-r01",
+      "scope": "Planning synthetic; one real extraction through common worker. Four zeros/four nulls, unchanged readback, owner/module negatives, no commercial writes."
+    },
+    {
+      "feature": "native_png_read",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "pass",
+      "case": "real-openai-png-r01",
+      "scope": "One original/MIME, hidden code and nonce, request/response/closure bound; disposable qualification only."
+    },
+    {
+      "feature": "native_png_read",
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite",
+      "status": "pass",
+      "case": "real-gemini-png-r01",
+      "scope": "One original/MIME, hidden code and nonce; disposable qualification only."
+    },
+    {
+      "feature": "native_pdf_read",
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite",
+      "status": "pass",
+      "case": "real-gemini-pdf-r01",
+      "scope": "New pure-PDF case with no tools, one POST; does not establish cause of earlier combined-case rejection."
+    },
+    {
+      "feature": "native_pdf_read",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "pass_previous_scope_only",
+      "evidence": "docs/evidence/api-chat-openai-real-canary-r01.json",
+      "reason": "Prior exact disposable PDF+knowledge case retained; not repeated to save balance."
+    },
+    {
+      "feature": "native_wav_understanding",
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite",
+      "status": "pass",
+      "case": "real-gemini-wav-r01",
+      "scope": "2.615-second offline synthetic spoken word, actual hidden semantic oracle; one POST; does not qualify other audio formats."
+    },
+    {
+      "feature": "generated_image",
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-image",
+      "status": "blocked",
+      "case": "real-gemini-image-r01",
+      "reason": "HTTP429 api_provider_rate_limited; no image/no qualification, no retries/fallback. Remaining quota/reset and billed amount unknown."
+    },
+    {
+      "feature": "native_audio_input",
+      "provider": "openai",
+      "status": "unsupported_in_current_nodia_adapter",
+      "reason": "Current Nodia Responses adapter rejects audio before POST; not a claim that all OpenAI products/APIs lack audio."
+    },
+    {
+      "feature": "native_audio_mp4",
+      "provider": "openai_and_gemini",
+      "status": "unsupported_in_current_nodia_adapter",
+      "reason": "apiMediaSupported rejects audio/mp4; broad acceptance enum does not enable transport."
+    },
+    {
+      "feature": "jpeg_webp_other_audio_image_openai",
+      "provider": "as_applicable",
+      "status": "blocked_not_tested_in_this_round",
+      "reason": "Transport/fixture checks do not establish real inference. JPEG/WebP/OGG/WebM/MPEG and OpenAI image generation not additionally billed/tested."
+    },
+    {
+      "feature": "operational_connection_native_media_qualification",
+      "provider": "openai_and_gemini",
+      "status": "blocked_configuration_and_exact_qualification_required",
+      "reason": "Operational fields have no API model/catalog configured; Gemini also lacks a selected eligible key. Test keys were not persisted, selections not silently changed, disposable acceptance cannot be copied."
+    }
+  ],
+  "permissions_and_confirmation": {
+    "actual_authorized_OCR_reads_and_owner_module_negatives": true,
+    "media_and_image_missing_module_or_foreign_owner_negatives": true,
+    "four_real_zeros_and_four_unknown_numbers_preserved": true,
+    "comparison_readback_reuses_same_extraction_without_new_inference": true,
+    "comparison_scope": "Products-empty produces unmatched/unknown; no matched-price up/down or browser reload acceptance.",
+    "commercial_writes_proposals_confirmations_from_OCR": 0,
+    "reason_no_commercial_save_test": "Synthetic PDF lacks reliable commercial cost; no price invented. Existing common proposal/challenge/human confirmation/idempotency SQL gate16 passed again with synthetic provider responses.",
+    "runtime_ACK_is_not_human_confirmation": true,
+    "physical_human_button_click_in_current_tests": false
+  },
+  "limits": [
+    "Real calls executed against disposable PostgreSQL configurations; API secret port overridden only in test harness. This is not end-to-end production key decryption/authenticated browser acceptance.",
+    "First awaiting-supplier turn uses synthetic planning. OpenAI second supplier-choice turn is guided and real; Gemini only isolated extraction passes, full real planner remains blocked.",
+    "Original storage and generated-image rehearsal object storage are RAM test ports, not operational R2/upload/download/retention acceptance.",
+    "Image-generation live case produced HTTP429 and no image. Synthetic rehearsal20 proves local private-store/owner/readback mechanics only.",
+    "No qualification is promoted to operational connections. API model/key configuration and exact credential epochs require separate operational evidence.",
+    "No acceptance of all151 business capabilities, all MIME, Windows runtime, whole-account quota or real seven-day retention.",
+    "Historical rejected receipts retained; schema compatibility is a hypothesis for Gemini400, not a proved offending keyword or cause."
+  ],
+  "official_sources_used_for_image_test_selection": [
+    {
+      "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite-image",
+      "purpose": "Model output Image/Text supported explicitly; exact ID also discovered live. Not proof of account availability."
+    },
+    {
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "purpose": "Compared documented image lane cost before one attempt; actual billed amount remains unknown."
+    }
+  ],
+  "backup": {
+    "pre_backup_id": "19411191-8ae5-455e-9033-a09d56e279b5",
+    "post": {
+      "backup_id": "ff7f81a0-1ac3-40aa-a739-47e62a459767",
+      "captured_at": "2026-10-27T23:10:46.072Z",
+      "cipher_bytes": 2680243,
+      "cipher_sha256": "981998fc859ea40f5e8f994cfe0a9e40370d6f3ffac1eba804df796d78d57ab1",
+      "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+      "expires_at": "2026-11-03T23:10:46.072Z",
+      "journal_sequence": 1,
+      "status": "ready"
+    },
+    "encrypted_object_verified": true,
+    "instrumented_post_head_get": {
+      "get": 1,
+      "head": 1,
+      "if_match": true
+    },
+    "retention_TTL_exactly_seven_days": true
+  },
+  "evidence": [
+    {
+      "path": "docs/evidence/api-ocr-media-real-cases-r01.json",
+      "sha256": "a8e527d90d7bf6b83b678decacdc2983fe9dd9bbd42f8772df7661a5d692f6f4",
+      "bytes": 50833
+    },
+    {
+      "path": "docs/evidence/api-ocr-media-server-adoption-r01.json",
+      "sha256": "f2011d19da26896db953914d75bd7417a061660c70a73c9837c35273d4bffa0d",
+      "bytes": 25373
+    },
+    {
+      "path": "docs/evidence/api-conversational-ocr-server-candidate-r01.json",
+      "sha256": "b18ce255b8a4b6fc51d1cfbf637438987c7adcd5a50ab3e6e6f9d8d668eed8ed",
+      "bytes": 16053
+    },
+    {
+      "path": "docs/evidence/api-ocr-media-pre-adoption-backup-r01.json",
+      "sha256": "ba694d10ddc109fec48a9d24753cfd891591f27f1119f5efd8590e821eb30784",
+      "bytes": 974
+    },
+    {
+      "path": "docs/evidence/api-ocr-media-post-adoption-backup-r01.json",
+      "sha256": "4bdcadb8897b29113a5b7fa03b27c45ff3dab36a176af8c85a85f52d76f020f0",
+      "bytes": 974
+    },
+    {
+      "path": "docs/evidence/api-chat-knowledge-human-approval-r01.json",
+      "sha256": "28f1dc189174ce6bbf881cf6a26f0e4e299cfcc06153b04cf774ad91d0f3abc8",
+      "bytes": 7851
+    }
+  ],
+  "execution_environments": {
+    "native_media_and_image_tests": {
+      "base_server_manifest_sha256": "ceb774256fd8c2030ece02c37fa872d819c2963c8f00fc71de7933de92b04451",
+      "knowledge_release_id": "184d9c344b3b0d48362143d700e961fa596fd307cd5251609eb00ab2dfbf30e3"
+    },
+    "OCR_tests": {
+      "candidate_manifest_sha256": "f1bd47cb3fb56beec240972edc55feb2825c2e48f24672dce9c10d100ae38af6",
+      "knowledge_release_id": "ad41d3b87e27dde7d4c2db2283d5a27ed1be50ddd5aae44cc6dece160aafd5e5"
+    },
+    "notes": "Patched transport only adds OCR handoff; image generation and no-tool media request bodies unchanged. Real cases were not repeated after adoption."
+  },
+  "recovery": {
+    "catalog": {
+      "path": "ops/lab/artifacts/api-ocr-media-verification-r01/catalog.json",
+      "sha256": "baa8bc6a3ef2f2a7bbb3378f110d80856f2cc5c099e69ba5957ab575bc09d896",
+      "bytes": 21473
+    },
+    "archive": {
+      "path": "ops/lab/artifacts/api-ocr-media-verification-r01/api-ocr-media-verification-r01.zip",
+      "sha256": "306c41ffab4140f8cbc7ac7c11732454709c3d3c189050b9e9b0130181993fa8",
+      "bytes": 343888
+    },
+    "independent_roundtrip": {
+      "path": "ops/lab/artifacts/api-ocr-media-verification-r01/recovery-verification.json",
+      "sha256": "dcadbc7c0219ae4dd32c2ee7aa391d6c0b8c252ebed0151e6d11fcf0a8434b2b",
+      "bytes": 432
+    }
+  },
+  "delivery_checks": {
+    "path": "docs/evidence/api-ocr-media-delivery-checks-r01.json",
+    "sha256": "8420cd870052746d288f9322db4ec33b906a38d8dae90f604b225ea944d17316",
+    "bytes": 967
+  }
+}

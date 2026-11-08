@@ -1,0 +1,54 @@
+{
+  "SDK_requests": 0,
+  "SQL_writes": 0,
+  "acceptance": {
+    "C03_accepted": false,
+    "native_CF_epoch_requalification_not_granted_by_retirement": true,
+    "new_evidence_cache_candidate_adopted": false
+  },
+  "active_Server_manifest_sha256": "4276fd7091f3d7f36604ba355895a2e43054bcbcec7b87ee5f0d897a42a41549",
+  "archive_bytes": 2113333,
+  "archive_sha256": "f45c84d9908ff99194eba1d633aa1464119a546e2aacc22410d633dace9553e6",
+  "capacity_boundary": {
+    "build_margin_bytes": 8388608,
+    "build_minimum_before_payload_bytes": 276832284,
+    "not_a_current_live_preflight_or_future_cleanup_credit": true,
+    "observed_free_after_insufficient_for_build_margin": true,
+    "reserve_bytes": 268443676,
+    "shortfall_before_any_new_payload_bytes": 3227676
+  },
+  "checked_on": "2026-10-25",
+  "free_after": 273604608,
+  "free_before": 271495168,
+  "local_archive": "ops/lab/artifacts/c03-attachment-policy-client-r01/client.tar.gz",
+  "local_archive_reverified_offline": true,
+  "observed_free_delta_bytes": 2109440,
+  "original_Client_archive_and_catalog_unchanged": true,
+  "other_releases_Docker_profiles_or_business_data_removed": false,
+  "provider_generations": 0,
+  "recursive_deletions": 0,
+  "retired_VM_path": "/opt/nodia/verification/c03-attachment-policy-client-r01/client.tar.gz",
+  "retirement_operator_recorded_not_executed": {
+    "path": "ops/lab/artifacts/c03-client-staging-payload-retirement-r01/retire-staged-client-payload.py",
+    "sha256": "1c2e63d3b03a6107e184b08ac6b3bde628392dcb24c8c22326a24a977bec6345"
+  },
+  "schema_version": 1,
+  "scope": "Exactly one already-adopted duplicate Client staging tar in the VM",
+  "services_before_and_after": {
+    "nodia-ai-worker": {
+      "ActiveState": "active",
+      "MainPID": "196757",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01"
+    },
+    "nodia-api": {
+      "ActiveState": "active",
+      "MainPID": "196756",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01"
+    }
+  },
+  "source_receipt": {
+    "path": "ops/lab/artifacts/c03-client-staging-payload-retirement-r01/client-staging-payload-retirement-r01.json",
+    "sha256": "9d6b2208748b9830f4c77e10d86f71027591ab2a700642ff5cfda6391420d95a"
+  },
+  "status": "duplicate_VM_client_staging_payload_retired_local_recovery_preserved"
+}

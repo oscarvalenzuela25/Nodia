@@ -38,7 +38,6 @@ describe('QueryProductLogsUseCase', () => {
           name: 'Producto A',
           cost_price: 1000,
           cost_price_tax: 1190,
-          profit_percentage: 30,
           sale_price: 1547,
           stock: 50,
           created_at: new Date(),
@@ -53,7 +52,9 @@ describe('QueryProductLogsUseCase', () => {
       },
     };
 
-    vi.mocked(productServiceMock.findAllLogs!).mockResolvedValue(mockResponse as any);
+    vi.mocked(productServiceMock.findAllLogs!).mockResolvedValue(
+      mockResponse as any,
+    );
 
     const result = await useCase.execute(dto);
 

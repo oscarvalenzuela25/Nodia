@@ -3,7 +3,7 @@
 from typing import Annotated, Literal
 from datetime import date
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator
 
 
 def validate_user_bigint(value: str) -> str:
@@ -20,15 +20,6 @@ NodiaActorId = Annotated[str, Field(strict=True, pattern=r"^[1-9][0-9]{0,18}$", 
 
 class HealthResponse(BaseModel):
     status: Literal["ok"]
-
-
-class LoginJobResponse(BaseModel):
-    id: str = Field(pattern=r"^[0-9a-f]{32}$")
-    state: Literal["running", "succeeded", "failed", "cancelled"]
-
-
-class WebLogoutResponse(BaseModel):
-    status: Literal["disconnected"]
 
 
 class AgenticLoginJobResponse(BaseModel):
@@ -48,7 +39,7 @@ class AgenticStatusResponse(BaseModel):
     engine: Literal["agentic"] = "agentic"
     available: bool
     has_active_session: bool = False
-    quota_type: str = "antigravity_token_plan"
+    quota_type: str = "agentic"
     model: str | None = None
     model_display: str | None = None
     models: list[dict[str, object]] = Field(default_factory=list)
@@ -66,33 +57,10 @@ class AgenticModelsResponse(BaseModel):
     reason: str | None = None
 
 
-class WebSupportedOptions(BaseModel):
-    model_config = ConfigDict(extra="forbid", strict=True)
-    extended_thinking: bool | None = None
-    thinking_level: bool | None = None
-    thinking_levels_by_model: dict[str, list[Literal["low", "medium", "high"]]] | None = None
-
-
-class WebStatusResponse(BaseModel):
-    engine: Literal["web"] = "web"
-    authenticated: bool
-    has_cookies: bool
-    has_browser_profile: bool
-    last_refresh_time: float | str | None = None
-    tier: str
-    model: str | None = None
-    model_display: str | None = None
-    quota: dict[str, object] | None = None
-    quota_source: Literal["web"] = "web"
-    quota_observed_at: float | None = None
-    supported_options: WebSupportedOptions | None = None
-
-
-class DualEngineStatusResponse(BaseModel):
+class EngineStatusResponse(BaseModel):
     status: Literal["ok"] = "ok"
-    default_engine: Literal["agentic", "web"]
+    default_engine: Literal["agentic"] = "agentic"
     agentic: AgenticStatusResponse
-    web: WebStatusResponse
 
 
 NonNegativeNumber = Annotated[float, Field(ge=0, allow_inf_nan=False, strict=True)]
@@ -133,18 +101,12 @@ class InvoiceAnalysisResponse(BaseModel):
 
 class AnalysisOptions(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
-    engine: Literal["web", "agentic"] = "web"
+    engine: Literal["agentic"] = "agentic"
     provider_fields: dict[str, object] | None = None
     provider_tax: int | None = Field(default=None, ge=0, le=100)
     model: str = Field(min_length=1, max_length=128)
     extended_thinking: bool | None = None
     thinking_level: Literal["low", "medium", "high"] | None = None
-
-    @model_validator(mode="after")
-    def exclusive_web_reasoning(self):
-        if self.engine == "web" and self.thinking_level is not None and self.extended_thinking is not None:
-            raise ValueError("Do not combine explicit Web levels with legacy thinking")
-        return self
 
 
 class RuntimeLimits(BaseModel):

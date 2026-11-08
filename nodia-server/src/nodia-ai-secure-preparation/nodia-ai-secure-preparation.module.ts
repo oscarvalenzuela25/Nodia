@@ -1,9 +1,16 @@
+import { NODIA_AI_HISTORICAL_PROPOSAL_READERS } from '../nodia-ai-proposal/types/proposal-preparer.types.js';
 import { Module } from '@nestjs/common';
 import { NODIA_AI_SECURE_OPERATIONS } from '../nodia-ai-proposal/types/secure-operation.types.js';
 import { NodiaAiSecurePreparationService } from './nodia-ai-secure-preparation.service.js';
 import { BuildNodiaAiSecureOperationsUseCase } from './use-case/build-nodia-ai-secure-operations.use-case.js';
 @Module({
   providers: [
+    {
+      provide: NODIA_AI_HISTORICAL_PROPOSAL_READERS,
+      inject: [BuildNodiaAiSecureOperationsUseCase],
+      useFactory: (builder: BuildNodiaAiSecureOperationsUseCase) =>
+        builder.historicalReaders,
+    },
     NodiaAiSecurePreparationService,
     BuildNodiaAiSecureOperationsUseCase,
     {
@@ -13,6 +20,10 @@ import { BuildNodiaAiSecureOperationsUseCase } from './use-case/build-nodia-ai-s
         builder.operations,
     },
   ],
-  exports: [NODIA_AI_SECURE_OPERATIONS, BuildNodiaAiSecureOperationsUseCase],
+  exports: [
+    NODIA_AI_HISTORICAL_PROPOSAL_READERS,
+    NODIA_AI_SECURE_OPERATIONS,
+    BuildNodiaAiSecureOperationsUseCase,
+  ],
 })
 export class NodiaAiSecurePreparationModule {}

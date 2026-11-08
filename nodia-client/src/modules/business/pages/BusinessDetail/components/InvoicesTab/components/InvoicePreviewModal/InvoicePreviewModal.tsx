@@ -60,16 +60,12 @@ export const InvoicePreviewModal: FC<InvoicePreviewModalProps> = ({
       data?.url?.toLowerCase().includes(".pdf")
   );
 
-  const modalTitle = invoice
-    ? `${t("business:invoice_preview_title")}: ${invoice.code}`
-    : t("business:invoice_preview_title");
-
   const modalSubtitle = invoice?.path_storage
     ? invoice.path_storage.split("/").pop() || invoice.path_storage
     : undefined;
 
   const modalActions = (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, width: "100%", justifyContent: "space-between" }}>
+    <Box sx={{ display: "flex", flexDirection: { xs: "column-reverse", sm: "row" }, alignItems: { xs: "stretch", sm: "center" }, gap: 1.5, width: "100%", justifyContent: "space-between" }}>
       <Tooltip title={t("business:invoice_copy_path_tooltip")}>
         <Button
           size="small"
@@ -83,7 +79,7 @@ export const InvoicePreviewModal: FC<InvoicePreviewModalProps> = ({
         </Button>
       </Tooltip>
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box sx={{ display: "flex", flexDirection: { xs: "column-reverse", sm: "row" }, alignItems: { xs: "stretch", sm: "center" }, gap: 1 }}>
         {data?.url && (
           <Button
             size="small"
@@ -106,12 +102,15 @@ export const InvoicePreviewModal: FC<InvoicePreviewModalProps> = ({
     <BaseModal
       open={open}
       onClose={onClose}
-      title={modalTitle}
-      subtitle={modalSubtitle}
+      title={t("business:invoice_preview_title")}
       size="lg"
       actions={modalActions}
     >
-      <Box sx={{ minHeight: 320, width: "100%", position: "relative" }}>
+      <Box sx={{ minWidth: 0, overflowWrap: "anywhere" }}>
+        <Typography variant="subtitle2">{t("business:invoice_code")}: {invoice?.code}</Typography>
+        {modalSubtitle && <Typography variant="body2" color="text.secondary">{modalSubtitle}</Typography>}
+      </Box>
+      <Box sx={{ minHeight: { xs: "min(240px, 35svh)", sm: 320 }, width: "100%", position: "relative" }}>
         {isLoading && (
           <Skeleton
             loading={isLoading}
@@ -163,11 +162,12 @@ export const InvoicePreviewModal: FC<InvoicePreviewModalProps> = ({
           <Box sx={{ py: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
             <Alert
               severity="error"
-              sx={{ width: "100%" }}
+              sx={{ width: "100%", minWidth: 0, flexWrap: { xs: "wrap", sm: "nowrap" }, "& .MuiAlert-action": { width: { xs: "100%", sm: "auto" }, margin: { xs: 0, sm: undefined }, padding: { xs: 0, sm: undefined } } }}
               action={
                 <Button
                   color="inherit"
                   size="small"
+                  sx={{ minHeight: { xs: 44, sm: undefined }, width: { xs: "100%", sm: "auto" } }}
                   startIcon={<RefreshIcon />}
                   onClick={() => refetch()}
                 >

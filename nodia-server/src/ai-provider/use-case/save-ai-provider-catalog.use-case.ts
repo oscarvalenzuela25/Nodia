@@ -24,12 +24,9 @@ export class SaveAiProviderCatalogUseCase {
     actor: ActorReference,
   ): Promise<AiProviderCatalog> {
     if (
-      [
-        'can_use_api_key',
-        'can_use_token_plan_web',
-        'can_use_token_plan_agentic',
-        'is_active',
-      ].some((key) => (dto as unknown as Record<string, unknown>)[key] === null)
+      ['can_use_api_key', 'can_use_agentic', 'is_active'].some(
+        (key) => (dto as unknown as Record<string, unknown>)[key] === null,
+      )
     )
       throw new BadRequestException('ai_provider:invalid_catalog');
     const checked = id

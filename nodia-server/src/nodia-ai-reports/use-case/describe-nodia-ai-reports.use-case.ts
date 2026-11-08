@@ -25,6 +25,7 @@ export class DescribeNodiaAiReportsUseCase {
       throw new NodiaAiReportQueryError('invalid_input', 'cursor');
     const sources = this.registry
       .list()
+      .filter((source) => this.registry.isPublished(source.sourceKey))
       .filter((source) => !modules || modules.includes(source.moduleKey));
     const work = async (manager: EntityManager) => {
       if (!manager.queryRunner?.isTransactionActive)

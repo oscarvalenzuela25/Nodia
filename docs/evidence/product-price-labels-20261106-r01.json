@@ -1,0 +1,124 @@
+{
+  "schema": "product-price-labels-delivery/1",
+  "status": "Client_R29_active_live_UI_verified",
+  "date": "2026-11-06",
+  "change": {
+    "ES": [
+      "Oferta: {{price}}",
+      "Normal: {{price}}"
+    ],
+    "EN": [
+      "Offer: {{price}}",
+      "Regular: {{price}}"
+    ],
+    "scope": "shared product catalog table/mobile only; POS regular_price unchanged",
+    "styles": "16px/700 and offer theme.error preserved",
+    "data_behavior": "unchanged"
+  },
+  "Client_manifest_sha256": "d3199f1b69cdc14efc198932118b7117ace147c4355da4a71091ff57e6ae27e7",
+  "Server_manifest_preserved": "b3ff880a8ad432a8c3b3e586f78e99803ca3c20ecb3121b6dd015a93f0ffb7c5",
+  "validation": {
+    "existing_tests_passed": 36,
+    "files_suites": 4,
+    "typecheck_exit": 0,
+    "scoped_eslint_exit": 0,
+    "isolated_build": "passed",
+    "live_authenticated_UI": [
+      1088,
+      320
+    ],
+    "mobile_document_client_scroll": [
+      310,
+      310
+    ],
+    "business_writes": 0,
+    "provider_inference": 0,
+    "CUA_cleanup": "agent tab closed; user tab1 unchanged; viewport reset",
+    "knowledge_check_exit": 0
+  },
+  "legacy_assets": {
+    "initial_failure": "R17assetHTTP500 due named location internal redirect limit; failure preserved",
+    "correction": "one latest fallback block uses literal retained client roots; precommit nginx-t and fresh CAS; old config retained",
+    "roots_preserved": 60,
+    "Client_activations": 1,
+    "initial_Nginx_reload": 1,
+    "corrective_Nginx_reload": 1,
+    "Server_restart": false,
+    "Native_restart": false,
+    "DB_calls": 0,
+    "automatic_replay": false
+  },
+  "knowledge_impact": "visual only; no new concepts/actions/interpretation, capability/binding/permission or publication; existing draft revision3 and approval:null retained",
+  "references": [
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/source-freeze.json",
+      "bytes": 2036,
+      "sha256": "049d22d0d0a8ea84acea5e4bb66732aabe548ff5b66c2f67ef70c50a60d5eb19"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/tests.json",
+      "bytes": 14357,
+      "sha256": "e1f3ca375aee3dafac43eb297c0f357e17c966459dfd2d00468a4d43e9c4d468"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/browser/verification.json",
+      "bytes": 1066,
+      "sha256": "4413f0e4c5737290c258c7348296bd2d602576911c27169a90377f9166665400"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/browser/desktop.png",
+      "bytes": 65363,
+      "sha256": "409533b825354ec361e5a05dc0d2ff93cb894331cf378cd057902fb7cfd80a20"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/browser/mobile.png",
+      "bytes": 31204,
+      "sha256": "108c3c1d41deb7853056a0a7a93fa6dd2414cf75cc484dbe63388e62c3eee5ba"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/client-r29-r01/root-review.json",
+      "bytes": 4975,
+      "sha256": "15ff419fac2883e3ef01cf9b1ac444d0924f0c4ba3a5006dd5fe0a757021d844"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/client-r29-r01/activation-executed.json",
+      "bytes": 448,
+      "sha256": "15a0e8c3cae4984fbbbf4a9f34f421ac370025f7e073b081d207263e2b73d8a2"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/legacy-fallback-r01/executed.json",
+      "bytes": 4398,
+      "sha256": "c0f2dc8cb80463dc2c78a866c232ca92f2996f8f3a05401cf9e24e162dfdd208"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/legacy-fallback-r01/full-preflight.json",
+      "bytes": 18515,
+      "sha256": "7c6025aafb399ac0125021b0250f46d952a597adc976019d84dbd0c5ab75aa04"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/legacy-fallback-r01/plan.json",
+      "bytes": 38545,
+      "sha256": "bd8964dddb40da887ccc2c26198398d25056b35e66d4709eccee237ee1b54b0c"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/legacy-fallback-r01/nginx-fallback.patch",
+      "bytes": 3585,
+      "sha256": "a7d92cfc841672bf8e873d5392051b4ec0c4db8db0a2a721fb573d78eac58493"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/client-r29-r01/delivery.json",
+      "bytes": 21727,
+      "sha256": "eb89655ca78219a65a9cc6e4827f545e363fcd04d80ba8a761ef226fd175050c"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/client-r29-r01/catalog.json",
+      "bytes": 12876,
+      "sha256": "e7df16a1b9033b2f6bcf317d4ea9dd09a00b24475384a2343bbc48771c9e4db0"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-labels-20261106-r01/client-r29-r01/final-health-r02.json",
+      "bytes": 1842,
+      "sha256": "09aee2b95bfbb4b76598fe60397d37c78baafbbb62fe58c8550b42a4c74e3f15"
+    }
+  ]
+}

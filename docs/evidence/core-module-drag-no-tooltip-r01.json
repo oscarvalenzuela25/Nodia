@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-25",
+  "status": "client_served_and_verified_after_independent_reconciliation",
+  "change": "Remove only drag-handle visual Tooltip and wrapper. Accessible label/description and Pointer/keyboard bindings retained.",
+  "client_release": "/opt/nodia/releases/nodia-client-core-fx04-no-tooltip-r03",
+  "client_manifest_sha256": "fad9bae244af96222ec34814af31c3440868447650c2cbae042bc9cff5510a5a",
+  "initial_operator_receipt": {
+    "SQL_writes": 0,
+    "code": "private_dependency_failure",
+    "migrations": 0,
+    "provider_calls": 0,
+    "server_before": {
+      "nodia-ai-worker": {
+        "ActiveState": "active",
+        "MainPID": "4143737",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03"
+      },
+      "nodia-api": {
+        "ActiveState": "active",
+        "MainPID": "4143736",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03"
+      }
+    },
+    "server_restarts": 0,
+    "status": "failed"
+  },
+  "initial_failure_reason": "Not determined; original failed receipt retained. Site had switched and no adoption was replayed.",
+  "independent_HTTP_checks": {
+    "assets_exact_SHA_MIME": 171,
+    "API_200": true,
+    "SPA_exact": true,
+    "COOP": true,
+    "asset404": true
+  },
+  "Server_unchanged_PIDs": {
+    "nodia-ai-worker": {
+      "ActiveState": "active",
+      "MainPID": "4143737",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03"
+    },
+    "nodia-api": {
+      "ActiveState": "active",
+      "MainPID": "4143736",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03"
+    }
+  },
+  "SQL_writes": 0,
+  "migrations": 0,
+  "provider_generations": 0,
+  "checks": {
+    "existing_component_and_hook_tests": 11,
+    "suites": 2,
+    "client_build_types": true,
+    "ESLint_focal": true
+  },
+  "UI": {
+    "native_tab_reloaded": true,
+    "second_tab_reloaded": true,
+    "handle_focused": "Arrastrar Finanzas",
+    "tooltip_nodes": 0,
+    "native_title": null,
+    "aria_label_and_description_retained": true,
+    "screenshot": {
+      "path": "docs/evidence/core-module-drag-no-tooltip-r01.png",
+      "sha256": "b2797e7caf57fbbf5956a5a4008dd91756e2af3cb82f9df194896ac664cdd2cb"
+    }
+  },
+  "knowledge_impact": "Visual only; no capability/permission/contract or publication changes.",
+  "materials": [
+    {
+      "path": "ops/lab/artifacts/module-tooltip-r01/client.tar.gz",
+      "sha256": "296c607c26cccb293774b60fe1a9cb6a33571d5dc94632a0ed8e7d8ee1ecf37f"
+    },
+    {
+      "path": "ops/lab/artifacts/module-tooltip-r01/plan.json",
+      "sha256": "04f4c0f084c895390502b07e1e7ce2e11646c41845907f48b43b77633cfca782"
+    },
+    {
+      "path": "ops/lab/artifacts/module-tooltip-r01/adopt.py",
+      "sha256": "3ca9efa0c75407d8c27e1f50fb2457c54fd97a4593c37661db76c7a916cc884c"
+    },
+    {
+      "path": "ops/lab/artifacts/module-tooltip-r01/initial-receipt.json",
+      "sha256": "4878576ab962eb355317dc869595601842054a213d25c492e200933730cbf47f"
+    },
+    {
+      "path": "ops/lab/artifacts/module-tooltip-r01/http.json",
+      "sha256": "5bd96153f2846d90b49ec394a110bcc6b5813e8a75d32bfdff02812f2ae9e6b3"
+    }
+  ],
+  "FX04_acceptance": "Remains partial; this visual change does not close other gates.",
+  "server_after_observation": "MainPID=4143736\nWorkingDirectory=/opt/nodia/releases/nodia-server-core-fx04-dnd-r03\nActiveState=active\n\nMainPID=4143737\nWorkingDirectory=/opt/nodia/releases/nodia-server-core-fx04-dnd-r03\nActiveState=active\n",
+  "cleanup": {
+    "status": "own_upload_removed",
+    "files": 3,
+    "bytes": 2142904,
+    "active_and_prior_releases_retained": true,
+    "private_operator_and_receipts_retained": true
+  }
+}

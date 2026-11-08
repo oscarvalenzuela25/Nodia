@@ -15,7 +15,10 @@ export type ProposalPreparerContext = NodiaAiToolHandlerContext & {
   /** Backend-owned execution identity, supplied only inside the confirmed effect transaction. */
   readonly executionStepId?: string;
   /** Ephemeral backend-only proof supplied after external preflight, never a DTO. */
-  readonly [NODIA_AI_DELETION_PROOF]?: { readonly executionStepId: string; readonly preferenceId: string };
+  readonly [NODIA_AI_DELETION_PROOF]?: {
+    readonly executionStepId: string;
+    readonly preferenceId: string;
+  };
 };
 export interface ProposalFieldEdit {
   readonly step_id: string;
@@ -101,9 +104,19 @@ export interface NodiaAiProposalPreparer {
     step: StoredProposalStep,
     context: ProposalPreparerContext,
   ): Promise<void>;
+  /** Opt-in read authority for an immutable older contract. Never prepares or executes it. */
+  verifyHistoricalReadAuthority?(
+    step: StoredProposalStep,
+    context: ProposalPreparerContext,
+  ): Promise<void>;
   /** Reject stale material conditions without rewriting any approved values. */
   verifyPreconditions(
     step: StoredProposalStep,
     context: ProposalPreparerContext,
   ): Promise<void>;
 }
+
+/** Read-only registrations never enter preparation, confirmation or ToolRegistry. */
+export const NODIA_AI_HISTORICAL_PROPOSAL_READERS = Symbol(
+  'NODIA_AI_HISTORICAL_PROPOSAL_READERS',
+);

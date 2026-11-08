@@ -14,88 +14,221 @@ const reservation = {
 };
 describe('CheckpointNodiaAiJobUseCase', () => {
   function codexDispatch() {
-    const f = runtimeFixture(), claim = f.leased();
-    claim.run.selection_snapshot.mode = 'token_plan_agentic';
-    claim.run.context_manifest = { session_generation: 'b'.repeat(32), adapter_identity: {
-      provider_key: 'openai', contract_version: 'nodia-ai-codex-chat/1', connection_id: '1',
-    } };
-    const codexReservation = { resourceKey: 'codex-profile:' + 'a'.repeat(64), fence: '1',
-      operationRef: claim.attempt.id, sessionGeneration: 'b'.repeat(32),
-      adapterIdentity: { providerKey: 'openai' as const, contractVersion: 'nodia-ai-codex-chat/1' as const, connectionId: '1' } };
-    return { ...f, claim, codexReservation, checkpoint: new CheckpointNodiaAiJobUseCase(f.runtimePort, f.authorization, f.policy) };
+    const f = runtimeFixture(),
+      claim = f.leased();
+    claim.run.selection_snapshot.mode = 'agentic';
+    claim.run.context_manifest = {
+      session_generation: 'b'.repeat(32),
+      adapter_identity: {
+        provider_key: 'openai',
+        contract_version: 'nodia-ai-codex-chat/1',
+        connection_id: '1',
+      },
+    };
+    const codexReservation = {
+      resourceKey: 'codex-profile:' + 'a'.repeat(64),
+      fence: '1',
+      operationRef: claim.attempt.id,
+      sessionGeneration: 'b'.repeat(32),
+      adapterIdentity: {
+        providerKey: 'openai' as const,
+        contractVersion: 'nodia-ai-codex-chat/1' as const,
+        connectionId: '1',
+      },
+    };
+    return {
+      ...f,
+      claim,
+      codexReservation,
+      checkpoint: new CheckpointNodiaAiJobUseCase(
+        f.runtimePort,
+        f.authorization,
+        f.policy,
+      ),
+    };
   }
   it('persists the explicit Codex schema2 identity atomically with dispatch arming', async () => {
     const f = codexDispatch();
     await f.checkpoint.armDispatch(f.claim, undefined, f.codexReservation);
-    const descriptorWrite = f.query.mock.calls.find(([sql]) => sql.startsWith('UPDATE nodia_ai_jobs SET recovery_descriptor='))!;
-    expect(JSON.parse(String(descriptorWrite[1]?.[1]))).toEqual({ schema_version: 2, runtime: {
-      provider_key: 'openai', adapter_contract_version: 'nodia-ai-codex-chat/1', connection_id: '1', engine: 'agentic',
-      attempt_id: f.claim.attempt.id, operation_ref: f.claim.attempt.id,
-      resource_key: f.codexReservation.resourceKey, session_generation: 'b'.repeat(32),
-    } });
-    expect(f.query.mock.calls.filter(([sql]) => sql.includes('provider_dispatches_used='))).toHaveLength(1);
+    const descriptorWrite = f.query.mock.calls.find(([sql]) =>
+      sql.startsWith('UPDATE nodia_ai_jobs SET recovery_descriptor='),
+    )!;
+    expect(JSON.parse(String(descriptorWrite[1]?.[1]))).toEqual({
+      schema_version: 2,
+      runtime: {
+        provider_key: 'openai',
+        adapter_contract_version: 'nodia-ai-codex-chat/1',
+        connection_id: '1',
+        engine: 'agentic',
+        attempt_id: f.claim.attempt.id,
+        operation_ref: f.claim.attempt.id,
+        resource_key: f.codexReservation.resourceKey,
+        session_generation: 'b'.repeat(32),
+      },
+    });
+    expect(
+      f.query.mock.calls.filter(([sql]) =>
+        sql.includes('provider_dispatches_used='),
+      ),
+    ).toHaveLength(1);
   });
-  it.each(['connection', 'manifest', 'session', 'prefix', 'mode', 'missing_identity', 'operation'])('rejects mismatched Codex %s before budget or phase mutations', async (change) => {
-    const f = codexDispatch();
-    if (change === 'connection') f.codexReservation.adapterIdentity.connectionId = '2';
-    if (change === 'manifest') delete f.claim.run.context_manifest.adapter_identity;
-    if (change === 'session') f.codexReservation.sessionGeneration = 'c'.repeat(32);
-    if (change === 'prefix') f.codexReservation.resourceKey = 'gemini-profile:' + 'a'.repeat(64);
-    if (change === 'mode') f.claim.run.selection_snapshot.mode = 'token_plan_web';
-    if (change === 'missing_identity') Reflect.deleteProperty(f.codexReservation, 'adapterIdentity');
-    if (change === 'operation') f.codexReservation.operationRef = '9aa72a4f-8039-4979-bb21-329046333789';
-    await expect(f.checkpoint.armDispatch(f.claim, undefined, f.codexReservation)).rejects.toThrow('eligibility_changed');
-    expect(f.query.mock.calls.some(([sql]) => sql.includes('provider_dispatches_used=') || sql.includes("phase='dispatch_armed'") || sql.includes('recovery_descriptor='))).toBe(false);
-  });
+  it.each([
+    'connection',
+    'manifest',
+    'session',
+    'prefix',
+    'mode',
+    'missing_identity',
+    'operation',
+  ])(
+    'rejects mismatched Codex %s before budget or phase mutations',
+    async (change) => {
+      const f = codexDispatch();
+      if (change === 'connection')
+        f.codexReservation.adapterIdentity.connectionId = '2';
+      if (change === 'manifest')
+        delete f.claim.run.context_manifest.adapter_identity;
+      if (change === 'session')
+        f.codexReservation.sessionGeneration = 'c'.repeat(32);
+      if (change === 'prefix')
+        f.codexReservation.resourceKey = 'gemini-profile:' + 'a'.repeat(64);
+      if (change === 'mode') f.claim.run.selection_snapshot.mode = 'api_key';
+      if (change === 'missing_identity')
+        Reflect.deleteProperty(f.codexReservation, 'adapterIdentity');
+      if (change === 'operation')
+        f.codexReservation.operationRef =
+          '9aa72a4f-8039-4979-bb21-329046333789';
+      await expect(
+        f.checkpoint.armDispatch(f.claim, undefined, f.codexReservation),
+      ).rejects.toThrow('eligibility_changed');
+      expect(
+        f.query.mock.calls.some(
+          ([sql]) =>
+            sql.includes('provider_dispatches_used=') ||
+            sql.includes("phase='dispatch_armed'") ||
+            sql.includes('recovery_descriptor='),
+        ),
+      ).toBe(false);
+    },
+  );
   it('preserves Gemini schema1 without manufacturing a Codex identity', async () => {
-    const f = runtimeFixture(), claim = f.leased();
+    const f = runtimeFixture(),
+      claim = f.leased();
     claim.run.context_manifest.session_generation = 'b'.repeat(32);
-    const r = { resourceKey: 'gemini-profile:' + 'a'.repeat(64), operationRef: claim.attempt.id, fence: '1' };
-    await new CheckpointNodiaAiJobUseCase(f.runtimePort, f.authorization, f.policy).armDispatch(claim, undefined, r);
-    const call = f.query.mock.calls.find(([sql]) => sql.startsWith('UPDATE nodia_ai_jobs SET recovery_descriptor='))!;
-    const value = JSON.parse(String(call[1]?.[1])) as { schema_version: number; runtime: object };
-    expect(value.schema_version).toBe(1); expect(Object.keys(value.runtime)).toHaveLength(5);
+    const r = {
+      resourceKey: 'gemini-profile:' + 'a'.repeat(64),
+      operationRef: claim.attempt.id,
+      fence: '1',
+    };
+    await new CheckpointNodiaAiJobUseCase(
+      f.runtimePort,
+      f.authorization,
+      f.policy,
+    ).armDispatch(claim, undefined, r);
+    const call = f.query.mock.calls.find(([sql]) =>
+      sql.startsWith('UPDATE nodia_ai_jobs SET recovery_descriptor='),
+    )!;
+    const value = JSON.parse(String(call[1]?.[1])) as {
+      schema_version: number;
+      runtime: object;
+    };
+    expect(value.schema_version).toBe(1);
+    expect(Object.keys(value.runtime)).toHaveLength(5);
     expect(value.runtime).not.toHaveProperty('provider_key');
   });
   it('does not accept a Gemini terminal proof to complete an armed Codex attempt', async () => {
     const f = codexDispatch();
     f.claim.attempt.phase = 'dispatch_armed';
-    f.job.recovery_descriptor = runtimeProofDescriptor({ engine: 'agentic', attemptId: f.claim.attempt.id,
-      operationRef: f.claim.attempt.id, resourceKey: f.codexReservation.resourceKey,
-      sessionGeneration: f.codexReservation.sessionGeneration, adapterIdentity: f.codexReservation.adapterIdentity });
+    f.job.recovery_descriptor = runtimeProofDescriptor({
+      engine: 'agentic',
+      attemptId: f.claim.attempt.id,
+      operationRef: f.claim.attempt.id,
+      resourceKey: f.codexReservation.resourceKey,
+      sessionGeneration: f.codexReservation.sessionGeneration,
+      adapterIdentity: f.codexReservation.adapterIdentity,
+    });
     const persist = vi.fn();
-    const proof = { engine: 'agentic' as const, attemptId: f.claim.attempt.id, operationRef: f.claim.attempt.id,
-      resourceKey: 'gemini-profile:' + 'a'.repeat(64), sessionGeneration: 'b'.repeat(32),
-      terminalProofId: 'b3e5e6f3-6de9-4c27-8509-2b9d01acf5ed', processClosed: true as const,
-      outcome: 'completed' as const, observedAt: f.now };
-    await expect(f.checkpoint.finish(f.claim, { status: 'completed', terminalProof: proof, persist })).rejects.toThrow('invalid_terminal_proof');
+    const proof = {
+      engine: 'agentic' as const,
+      attemptId: f.claim.attempt.id,
+      operationRef: f.claim.attempt.id,
+      resourceKey: 'gemini-profile:' + 'a'.repeat(64),
+      sessionGeneration: 'b'.repeat(32),
+      terminalProofId: 'b3e5e6f3-6de9-4c27-8509-2b9d01acf5ed',
+      processClosed: true as const,
+      outcome: 'completed' as const,
+      observedAt: f.now,
+    };
+    await expect(
+      f.checkpoint.finish(f.claim, {
+        status: 'completed',
+        terminalProof: proof,
+        persist,
+      }),
+    ).rejects.toThrow('invalid_terminal_proof');
     expect(persist).not.toHaveBeenCalled();
-    expect(f.query.mock.calls.some(([sql]) => sql.includes('active_job_id=NULL') || sql.includes("'reconcile_ack'"))).toBe(false);
+    expect(
+      f.query.mock.calls.some(
+        ([sql]) =>
+          sql.includes('active_job_id=NULL') || sql.includes("'reconcile_ack'"),
+      ),
+    ).toBe(false);
   });
   it('rejects an old worker after restore even if the copied lease still appears current', async () => {
-    const f = runtimeFixture(), claim = f.leased(), work = vi.fn(async () => undefined);
+    const f = runtimeFixture(),
+      claim = f.leased(),
+      work = vi.fn(async () => undefined);
     f.job.recovery_descriptor = { restore_quarantined: true };
-    await expect(new CheckpointNodiaAiJobUseCase(f.runtimePort, f.authorization, f.policy).execute(claim, work)).rejects.toThrow('lease_lost');
+    await expect(
+      new CheckpointNodiaAiJobUseCase(
+        f.runtimePort,
+        f.authorization,
+        f.policy,
+      ).execute(claim, work),
+    ).rejects.toThrow('lease_lost');
     expect(work).not.toHaveBeenCalled();
   });
   const dispatched = () => {
-    const f = runtimeFixture(); const claim = f.leased();
+    const f = runtimeFixture();
+    const claim = f.leased();
     f.attempt.phase = 'dispatch_armed';
     const proof: NodiaAiRuntimeTerminalProof = {
-      engine: 'web', attemptId: claim.attempt.id, operationRef: claim.attempt.id,
-      resourceKey: 'gemini-profile:' + 'a'.repeat(64), sessionGeneration: 'b'.repeat(32),
+      engine: 'agentic',
+      attemptId: claim.attempt.id,
+      operationRef: claim.attempt.id,
+      resourceKey: 'gemini-profile:' + 'a'.repeat(64),
+      sessionGeneration: 'b'.repeat(32),
       terminalProofId: 'b3e5e6f3-6de9-4c27-8509-2b9d01acf5ed',
-      processClosed: true, outcome: 'completed', observedAt: f.now,
+      processClosed: true,
+      outcome: 'completed',
+      observedAt: f.now,
     };
     f.job.recovery_descriptor = runtimeProofDescriptor(proof);
-    return { ...f, claim, proof, checkpoint: new CheckpointNodiaAiJobUseCase(f.runtimePort, f.authorization, f.policy) };
+    return {
+      ...f,
+      claim,
+      proof,
+      checkpoint: new CheckpointNodiaAiJobUseCase(
+        f.runtimePort,
+        f.authorization,
+        f.policy,
+      ),
+    };
   };
   it('rejects a claimed provider failure after dispatch when its native completion proof is absent', async () => {
-    const f = dispatched(); const persist = vi.fn();
-    await expect(f.checkpoint.finish(f.claim, { status: 'failed', errorCode: 'nodia_ai:compaction_invalid', persist }))
-      .rejects.toThrow('terminal_proof_required');
+    const f = dispatched();
+    const persist = vi.fn();
+    await expect(
+      f.checkpoint.finish(f.claim, {
+        status: 'failed',
+        errorCode: 'nodia_ai:compaction_invalid',
+        persist,
+      }),
+    ).rejects.toThrow('terminal_proof_required');
     expect(persist).not.toHaveBeenCalled();
-    expect(f.query.mock.calls.some(([sql]) => sql.includes('active_job_id=NULL'))).toBe(false);
+    expect(
+      f.query.mock.calls.some(([sql]) => sql.includes('active_job_id=NULL')),
+    ).toBe(false);
   });
   it.each([
     { resourceKey: 'gemini-profile:' + 'c'.repeat(64) },
@@ -104,32 +237,81 @@ describe('CheckpointNodiaAiJobUseCase', () => {
     { operationRef: '9aa72a4f-8039-4979-bb21-329046333789' },
     { terminalProofId: 'invalid' },
     { outcome: 'abandoned_unknown' as const },
-  ])('does not downgrade unknown work using an invalid/mismatched failure proof %j', async (change) => {
-    const f = dispatched(); const persist = vi.fn();
-    await expect(f.checkpoint.finish(f.claim, { status: 'failed', errorCode: 'nodia_ai:compaction_invalid',
-      terminalProof: { ...f.proof, ...change }, persist })).rejects.toThrow('invalid_terminal_proof');
-    expect(persist).not.toHaveBeenCalled();
-    expect(f.query.mock.calls.some(([sql]) => sql.includes('active_job_id=NULL') || sql.includes("'ack:'"))).toBe(false);
-  });
+  ])(
+    'does not downgrade unknown work using an invalid/mismatched failure proof %j',
+    async (change) => {
+      const f = dispatched();
+      const persist = vi.fn();
+      await expect(
+        f.checkpoint.finish(f.claim, {
+          status: 'failed',
+          errorCode: 'nodia_ai:compaction_invalid',
+          terminalProof: { ...f.proof, ...change },
+          persist,
+        }),
+      ).rejects.toThrow('invalid_terminal_proof');
+      expect(persist).not.toHaveBeenCalled();
+      expect(
+        f.query.mock.calls.some(
+          ([sql]) =>
+            sql.includes('active_job_id=NULL') || sql.includes("'ack:'"),
+        ),
+      ).toBe(false);
+    },
+  );
   it('accepts a completed provider response whose extraction failed, releases its exact slot and queues its acknowledgement atomically', async () => {
     const f = dispatched();
-    Object.defineProperty(f.manager, 'queryRunner', { value: { isTransactionActive: true } });
+    Object.defineProperty(f.manager, 'queryRunner', {
+      value: { isTransactionActive: true },
+    });
     const original = f.query.getMockImplementation()!;
     f.query.mockImplementation(async (sql, args) => {
-      if (sql.startsWith('SELECT recovery_descriptor')) return [{ recovery_descriptor: f.job.recovery_descriptor }];
-      if (sql.includes('WITH changed AS (UPDATE nodia_ai_runtime_slots')) return [{ resource_key: f.proof.resourceKey }];
+      if (sql.startsWith('SELECT recovery_descriptor'))
+        return [{ recovery_descriptor: f.job.recovery_descriptor }];
+      if (sql.includes('WITH changed AS (UPDATE nodia_ai_runtime_slots'))
+        return [{ resource_key: f.proof.resourceKey }];
       return original(sql, args);
     });
     const release = new ReleaseNodiaAiRuntimeSlotUseCase(f.checkpoint);
-    const persist = vi.fn(async (manager: EntityManager) => release.execute(f.claim, {
-      resourceKey: f.proof.resourceKey, fence: '1', operationRef: f.proof.operationRef,
-    }, f.proof, manager));
-    await f.checkpoint.finish(f.claim, { status: 'failed', errorCode: 'nodia_ai:compaction_invalid', terminalProof: f.proof, persist });
+    const persist = vi.fn(async (manager: EntityManager) =>
+      release.execute(
+        f.claim,
+        {
+          resourceKey: f.proof.resourceKey,
+          fence: '1',
+          operationRef: f.proof.operationRef,
+        },
+        f.proof,
+        manager,
+      ),
+    );
+    await f.checkpoint.finish(f.claim, {
+      status: 'failed',
+      errorCode: 'nodia_ai:compaction_invalid',
+      terminalProof: f.proof,
+      persist,
+    });
     expect(persist).toHaveBeenCalledWith(f.manager);
     expect(f.run.state).toBe('failed');
-    expect(f.query.mock.calls.some(([sql, args]) => sql.includes('WITH changed AS (UPDATE nodia_ai_runtime_slots') && args?.[0] === f.proof.resourceKey)).toBe(true);
-    expect(f.query.mock.calls.some(([sql, args]) => sql.includes("'reconcile_ack'") && args?.[1] === 'ack:' + f.claim.attempt.id)).toBe(true);
-    expect(f.query.mock.calls.some(([sql]) => sql.includes("runtime_slots SET state='unknown'"))).toBe(false);
+    expect(
+      f.query.mock.calls.some(
+        ([sql, args]) =>
+          sql.includes('WITH changed AS (UPDATE nodia_ai_runtime_slots') &&
+          args?.[0] === f.proof.resourceKey,
+      ),
+    ).toBe(true);
+    expect(
+      f.query.mock.calls.some(
+        ([sql, args]) =>
+          sql.includes("'reconcile_ack'") &&
+          args?.[1] === 'ack:' + f.claim.attempt.id,
+      ),
+    ).toBe(true);
+    expect(
+      f.query.mock.calls.some(([sql]) =>
+        sql.includes("runtime_slots SET state='unknown'"),
+      ),
+    ).toBe(false);
   });
   it('persists the terminal state and revision within the existing checkpoint even when normal event slots are exhausted', async () => {
     const f = runtimeFixture();
@@ -358,10 +540,21 @@ describe('CheckpointNodiaAiJobUseCase', () => {
       expect(manager).toBe(f.manager);
       throw new Error('nodia_ai:preferences_changed');
     });
-    await expect(new CheckpointNodiaAiJobUseCase(f.runtimePort, f.authorization, f.policy)
-      .armDispatch(claim, undefined, reservation, validate)).rejects.toThrow('preferences_changed');
+    await expect(
+      new CheckpointNodiaAiJobUseCase(
+        f.runtimePort,
+        f.authorization,
+        f.policy,
+      ).armDispatch(claim, undefined, reservation, validate),
+    ).rejects.toThrow('preferences_changed');
     expect(validate).toHaveBeenCalledOnce();
-    expect(f.query.mock.calls.some(([sql]) => sql.includes('provider_dispatches_used=') || sql.includes("phase='dispatch_armed'"))).toBe(false);
+    expect(
+      f.query.mock.calls.some(
+        ([sql]) =>
+          sql.includes('provider_dispatches_used=') ||
+          sql.includes("phase='dispatch_armed'"),
+      ),
+    ).toBe(false);
   });
   it('does not arm when the durable dispatch budget is exhausted', async () => {
     const f = runtimeFixture();
@@ -373,8 +566,12 @@ describe('CheckpointNodiaAiJobUseCase', () => {
         : [],
     );
     const error = await new CheckpointNodiaAiJobUseCase(
-      f.runtimePort, f.authorization, f.policy,
-    ).armDispatch(claim, undefined, reservation, undefined, rejection).catch((failure: unknown) => failure);
+      f.runtimePort,
+      f.authorization,
+      f.policy,
+    )
+      .armDispatch(claim, undefined, reservation, undefined, rejection)
+      .catch((failure: unknown) => failure);
     expect(error).toBeInstanceOf(NodiaAiKnownPreDispatchError);
     expect(error).toMatchObject({ errorCode: 'nodia_ai:execution_limit' });
     expect(rejection).toHaveBeenCalledExactlyOnceWith(error);
@@ -384,21 +581,27 @@ describe('CheckpointNodiaAiJobUseCase', () => {
       ),
     ).toBe(false);
   });
-  it('proves a delegation budget rejection before provider arming and preserves the rejection identity', async () => {
-    const f = runtimeFixture();
-    const claim = f.leased();
-    const selection = { ...claim.run.selection_snapshot, mode: 'token_plan_agentic' as const };
-    f.conversation.routing_enabled = true;
+  it('reports a retired routing rejection as known pre-dispatch without reserving another provider generation', async () => {
+    const f = runtimeFixture(),
+      claim = f.leased();
     claim.run.routing_snapshot.enabled = true;
-    claim.run.routing_snapshot.target = { selection, configuration_generation: 'fixture-config', session_generation: 'b'.repeat(32) };
-    const original = f.query.getMockImplementation()!;
-    f.query.mockImplementation(async (sql, args) => sql.includes('delegations_used=') ? [] : original(sql, args));
     const rejection = vi.fn<(error: NodiaAiKnownPreDispatchError) => void>();
-    const checkpoint = new CheckpointNodiaAiJobUseCase(f.runtimePort, f.authorization, f.policy);
-    const error = await checkpoint.armDispatch(claim, selection, reservation, undefined, rejection).catch((failure: unknown) => failure);
+    const error = await new CheckpointNodiaAiJobUseCase(
+      f.runtimePort,
+      f.authorization,
+      f.policy,
+    )
+      .armDispatch(claim, undefined, reservation, undefined, rejection)
+      .catch((failure: unknown) => failure);
     expect(error).toBeInstanceOf(NodiaAiKnownPreDispatchError);
     expect(rejection).toHaveBeenCalledExactlyOnceWith(error);
-    expect(f.query.mock.calls.some(([sql]) => sql.includes('provider_dispatches_used=') || sql.includes("phase='dispatch_armed'"))).toBe(false);
+    expect(
+      f.query.mock.calls.some(
+        ([sql]) =>
+          sql.includes('provider_dispatches_used=') ||
+          sql.includes("phase='dispatch_armed'"),
+      ),
+    ).toBe(false);
   });
   it('rejects rearming a delivered attempt', async () => {
     const f = runtimeFixture();
@@ -412,66 +615,78 @@ describe('CheckpointNodiaAiJobUseCase', () => {
       ).armDispatch(claim),
     ).rejects.toThrow('lease_lost');
   });
-  function selectedDelegation() {
-    const f = runtimeFixture();
-    const claim = f.leased();
-    const selection = { ...claim.run.selection_snapshot, mode: 'token_plan_agentic' as const };
-    f.conversation.routing_enabled = true;
-    claim.run.routing_snapshot.enabled = true;
-    claim.run.routing_snapshot.target = { selection, configuration_generation: 'fixture-config', session_generation: 'b'.repeat(32) };
-    claim.job.stage_key = 'delegated_inference';
-    claim.job.stage_seq = 5;
-    f.run.context_manifest.tool_selection = {
-      schema_version: 1, phase: 'execution', catalog_hash: 'a'.repeat(64), request: {
-        attempt_id: '4b49e52d-7013-4df6-b872-26c891b2fa98', tool_call_id: 'a1990d09-5770-41bf-8c31-213596729fda',
-        capability_ids: ['fixture_capability'],
-        profile: { schema_version: 1, profile_id: 'selected_capabilities', revision: 1, sha256: 'b'.repeat(64) },
-        tool_contracts: Object.fromEntries(['fixture_capability', ...Array.from({ length: 7 }, (_, i) => `technical_${i}`)]
-          .map((name) => [name, 'c'.repeat(64)])),
-      },
-    };
-    const original = f.query.getMockImplementation()!;
-    f.query.mockImplementation(async (sql, args) => sql.startsWith('SELECT a.id FROM nodia_ai_job_attempts a')
-      ? [{ id: '4b49e52d-7013-4df6-b872-26c891b2fa98' }] : original(sql, args));
-    return { ...f, claim, selection };
-  }
-  it('charges every provider generation but charges an acknowledged continuation of the same delegation only once', async () => {
-    const f = selectedDelegation();
-    await new CheckpointNodiaAiJobUseCase(f.runtimePort, f.authorization, f.policy)
-      .armDispatch(f.claim, f.selection, reservation);
-    expect(f.query.mock.calls.some(([sql]) => sql.includes('delegations_used='))).toBe(false);
-    expect(f.query.mock.calls.filter(([sql]) => sql.includes('provider_dispatches_used='))).toHaveLength(1);
-    const lookup = f.query.mock.calls.find(([sql]) => sql.startsWith('SELECT a.id FROM nodia_ai_job_attempts a'))!;
-    expect(lookup[0]).toContain("a.phase='completed'");
-    expect(lookup[0]).toContain('a.stage_seq+2=$5');
-    expect(lookup[0]).toContain('a.selection_snapshot=$6::jsonb');
-    expect(lookup[0]).toContain('NOT EXISTS');
-    expect(lookup[1]?.[4]).toBe(5);
-    expect(lookup[1]?.[5]).toBe(JSON.stringify(f.selection));
-    expect(f.query.mock.calls.some(([sql]) => sql.includes("phase='dispatch_armed'"))).toBe(true);
+  it.each([
+    'inference',
+    'tool_selection',
+    'invoice_ocr',
+    'delegated_inference',
+  ])(
+    'rejects retired routing in %s before dispatch budgets or arming',
+    async (stage) => {
+      const f = runtimeFixture(),
+        claim = f.leased();
+      claim.job.stage_key = stage;
+      claim.run.routing_snapshot.enabled = true;
+      claim.run.routing_snapshot.target = {
+        selection: { ...claim.run.selection_snapshot, mode: 'agentic' },
+        configuration_generation: 'fixture-config',
+        session_generation: 'b'.repeat(32),
+      };
+      await expect(
+        new CheckpointNodiaAiJobUseCase(
+          f.runtimePort,
+          f.authorization,
+          f.policy,
+        ).armDispatch(claim, undefined, reservation),
+      ).rejects.toThrow('mode_retired');
+      expect(
+        f.query.mock.calls.some(
+          ([sql]) =>
+            sql.includes('provider_dispatches_used=') ||
+            sql.includes('delegations_used=') ||
+            sql.includes("phase='dispatch_armed'"),
+        ),
+      ).toBe(false);
+    },
+  );
+  it('charges a direct Agentic OCR generation against the existing dispatch budget without delegation', async () => {
+    const f = runtimeFixture(),
+      claim = f.leased();
+    claim.job.stage_key = 'invoice_ocr';
+    await new CheckpointNodiaAiJobUseCase(
+      f.runtimePort,
+      f.authorization,
+      f.policy,
+    ).armDispatch(claim, undefined, reservation);
+    expect(
+      f.query.mock.calls.filter(([sql]) =>
+        sql.includes('provider_dispatches_used='),
+      ),
+    ).toHaveLength(1);
+    expect(
+      f.query.mock.calls.some(([sql]) => sql.includes('delegations_used=')),
+    ).toBe(false);
   });
-  it('rejects a continuation with missing completed selection, matching profile or native acknowledgement before arming', async () => {
-    const f = selectedDelegation();
+  it('does not let direct OCR bypass the remaining dispatch budget', async () => {
+    const f = runtimeFixture(),
+      claim = f.leased();
+    claim.job.stage_key = 'invoice_ocr';
     const original = f.query.getMockImplementation()!;
-    f.query.mockImplementation(async (sql, args) => sql.startsWith('SELECT a.id FROM nodia_ai_job_attempts a') ? [] : original(sql, args));
-    await expect(new CheckpointNodiaAiJobUseCase(f.runtimePort, f.authorization, f.policy)
-      .armDispatch(f.claim, f.selection, reservation)).rejects.toThrow('invalid_selection');
-    expect(f.query.mock.calls.some(([sql]) => sql.includes('provider_dispatches_used=') || sql.includes("phase='dispatch_armed'"))).toBe(false);
-  });
-  it('does not treat tool selection as an exemption from the remaining dispatch budget', async () => {
-    const f = selectedDelegation();
-    const original = f.query.getMockImplementation()!;
-    f.query.mockImplementation(async (sql, args) => sql.includes('provider_dispatches_used=') ? [] : original(sql, args));
-    await expect(new CheckpointNodiaAiJobUseCase(f.runtimePort, f.authorization, f.policy)
-      .armDispatch(f.claim, f.selection, reservation)).rejects.toThrow('execution_limit');
-    expect(f.query.mock.calls.some(([sql]) => sql.includes("phase='dispatch_armed'"))).toBe(false);
-  });
-  it('does not continue a selected delegation from an unrelated stage', async () => {
-    const f = selectedDelegation();
-    f.claim.job.stage_key = 'inference';
-    await expect(new CheckpointNodiaAiJobUseCase(f.runtimePort, f.authorization, f.policy)
-      .armDispatch(f.claim, f.selection, reservation)).rejects.toThrow('invalid_selection');
-    expect(f.query.mock.calls.some(([sql]) => sql.includes('provider_dispatches_used='))).toBe(false);
+    f.query.mockImplementation(async (sql, args) =>
+      sql.includes('provider_dispatches_used=') ? [] : original(sql, args),
+    );
+    await expect(
+      new CheckpointNodiaAiJobUseCase(
+        f.runtimePort,
+        f.authorization,
+        f.policy,
+      ).armDispatch(claim, undefined, reservation),
+    ).rejects.toThrow('execution_limit');
+    expect(
+      f.query.mock.calls.some(([sql]) =>
+        sql.includes("phase='dispatch_armed'"),
+      ),
+    ).toBe(false);
   });
   it('keeps unknown work active and quarantines its runtime', async () => {
     const f = runtimeFixture();

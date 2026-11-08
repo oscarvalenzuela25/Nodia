@@ -1,0 +1,146 @@
+{
+  "operator_exit": 0,
+  "stderr_bytes": 0,
+  "report": {
+    "schema_version": 1,
+    "success": true,
+    "mode": "real_api_technical_canary",
+    "case": "text-knowledge",
+    "scope": "disposable_configuration_only",
+    "proves": [
+      "selected_model_live_discovery",
+      "authorized_pinned_knowledge_index",
+      "server_function_calling",
+      "durable_api_terminal_and_ack"
+    ],
+    "does_not_prove": [
+      "operational_connection_qualification",
+      "all_151_business_operations",
+      "business_tool_gateway_permissions",
+      "human_confirmation_ui",
+      "media_reading_or_qualification"
+    ],
+    "real_key_persisted": false,
+    "operational_database_accessed": false,
+    "key_transport": "ssh_stdin_memory_only",
+    "automatic_retries": 0,
+    "post_limit": 2,
+    "provider_posts": 2,
+    "discovery_gets": 1,
+    "callback_calls": 1,
+    "replayed_requests": 0,
+    "terminal_closed": true,
+    "ack": true,
+    "state_clean": true,
+    "owned_fixture_cleanup": true,
+    "provider": "gemini",
+    "model": "gemini-3.1-flash-lite",
+    "migrations": 32,
+    "knowledge_release": "a559839cb418db8b791b8565c99911db23c26f828f0b4e8bd60b2aa75425c697",
+    "catalog_release": "nodia-ai-api-chat/1",
+    "published_contracts": 151,
+    "operator_sha256": "9988669d323a0fc9e540bb3cbc1b8c8eb6975fd948f119da765e952113e547f0",
+    "discovered_models": 46,
+    "selected_model_discovered": true,
+    "request_prompt_sha256": "42ae7c46a5645d1a52699d65fe96c1f26b816e4a414726de9163f1c7c44ef6ca",
+    "public_nonce_sha256": "5ae5ed9c3dbe137ff41d1eea8164fe3a45dfd4562aaf6e0e1d4bbab45fd71499",
+    "receipt_nonce_sha256": "afab9612483c964d532c39d264b32f859a3b8b451053e607f01d2a4e7ab60cbe",
+    "heartbeats": 1,
+    "authorized_index_sha256": "edeac9981a8fcdf7aea150e7aff0d920564e3796860d463d7a6431287d3eed7c",
+    "authorized_fragments": 6,
+    "callback_authorized_knowledge_read": true,
+    "reply_sha256": "2ed44e01f9c0d653d0fcae9af69b66fd241878b595034602151b941e585ca77c",
+    "public_nonce_valid": true,
+    "hidden_receipt_nonce_valid": true,
+    "terminal_proof_sha256": "abc3b4bc4af1d48a104476595a36807a052bbae7df4f2ef4f9af7aba03441b06",
+    "remote_outcome": "completed",
+    "terminal_outcome": "completed",
+    "terminal_schema_version": 3,
+    "terminal_observations": [
+      {
+        "point": "adapter_reply_before_common_checkpoint_and_ack",
+        "schema_version": 3,
+        "descriptor_sha256": "8363e71a3c7ee38a1b4d630fed60e7b6d974ae301df1e46de8ed1140e1caa3fd",
+        "local_transport_closed": true,
+        "remote_outcome": "completed",
+        "outcome": "completed",
+        "observed_at": "2026-10-27T21:14:52.801Z",
+        "proof_id_sha256": "4c29b734f6e3ce92f2d62d5ebc8a8fda3ea600933c062e5aa69111a65c05d117"
+      },
+      {
+        "point": "durable_success_before_common_checkpoint_and_ack",
+        "schema_version": 3,
+        "descriptor_sha256": "abc3b4bc4af1d48a104476595a36807a052bbae7df4f2ef4f9af7aba03441b06",
+        "local_transport_closed": true,
+        "remote_outcome": "completed",
+        "outcome": "completed",
+        "observed_at": "2026-10-27T21:14:52.801Z",
+        "proof_id_sha256": "4c29b734f6e3ce92f2d62d5ebc8a8fda3ea600933c062e5aa69111a65c05d117"
+      },
+      {
+        "point": "before_actual_runtime_ack",
+        "schema_version": 3,
+        "descriptor_sha256": "8363e71a3c7ee38a1b4d630fed60e7b6d974ae301df1e46de8ed1140e1caa3fd",
+        "local_transport_closed": true,
+        "remote_outcome": "completed",
+        "outcome": "completed",
+        "observed_at": "2026-10-27T21:14:52.801Z",
+        "proof_id_sha256": "4c29b734f6e3ce92f2d62d5ebc8a8fda3ea600933c062e5aa69111a65c05d117"
+      },
+      {
+        "point": "durable_before_actual_runtime_ack",
+        "schema_version": 3,
+        "descriptor_sha256": "abc3b4bc4af1d48a104476595a36807a052bbae7df4f2ef4f9af7aba03441b06",
+        "local_transport_closed": true,
+        "remote_outcome": "completed",
+        "outcome": "completed",
+        "observed_at": "2026-10-27T21:14:52.801Z",
+        "proof_id_sha256": "4c29b734f6e3ce92f2d62d5ebc8a8fda3ea600933c062e5aa69111a65c05d117"
+      }
+    ],
+    "request_sha256": "2beec83fc8211983c81975252e3bc091f35ba2a18acf7cdca918118af8e35c98",
+    "response_sha256": "3c2be73b506a89cfd44452b984fc098c20f35d36515c19d46d8a05853cad352a",
+    "durable_exchange_count": 2,
+    "media_qualification_created": false,
+    "supports_tools": true,
+    "supports_mcp": false,
+    "acknowledged_terminal_sha256": "8363e71a3c7ee38a1b4d630fed60e7b6d974ae301df1e46de8ed1140e1caa3fd",
+    "sql_quiet_counts": {
+      "active_slots": 0,
+      "pending_jobs": 0,
+      "unacked_dispatches": 0
+    },
+    "http_statuses": [
+      {
+        "kind": "discovery",
+        "status": 200
+      },
+      {
+        "kind": "inference",
+        "status": 200
+      },
+      {
+        "kind": "inference",
+        "status": 200
+      }
+    ],
+    "network_failures": 0,
+    "checks": [
+      "fresh_postgresql_all_32_migrations",
+      "actual_compiled_151_contract_registry_and_pinned_knowledge",
+      "selected_model_exactly_in_live_discovery",
+      "disposable_provider_catalog_entry_exists",
+      "synthetic_actor_has_only_nodia_ai_module",
+      "no_unproved_media_or_mcp_advertised_before_test",
+      "hidden_receipt_is_not_in_prompt",
+      "common_claim_matches_own_job",
+      "exactly_one_real_authorized_callback_and_two_posts",
+      "real_reply_closed_schema3_proof_and_hidden_oracles",
+      "text_test_does_not_qualify_media_or_claim_mcp",
+      "common_cleanup_ack_settled_once",
+      "durable_exchange_count_matches_guarded_actual_posts"
+    ]
+  },
+  "key_transport": "local_named_pipe_and_ssh_stdin_memory_only",
+  "credential_files_written": 0
+}

@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "status": "passed_isolated_postgresql_with_candidate_parent_lock_fix",
+  "source_release": "/opt/nodia/releases/nodia-server-image-generation-r03",
+  "source_manifest_sha256": "5acd9f042b8cf8d617d5985eb10735687aaeccdac05d46973c9687f0d37848fe",
+  "source_files_verified_each_run": 4252,
+  "source_R04_R05_parity": "Root deployment receipts list only comparison helper/KB changes; suites were not executed directly against R05",
+  "suites": [
+    {
+      "suite": "ai21",
+      "checks": 47,
+      "operations": [
+        "categories/create",
+        "categories/delete",
+        "categories/update",
+        "category_groups/create",
+        "category_groups/delete",
+        "category_groups/update",
+        "movements/create",
+        "movements/delete",
+        "movements/update",
+        "obligations/create",
+        "obligations/delete",
+        "obligations/update"
+      ],
+      "receipt": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/suite-r02.json",
+      "receipt_sha256": "b627fad026919bc8ff91718c1c42a87848bc18009f6eb1e448b1a72633a35045",
+      "candidate_overlay": false
+    },
+    {
+      "suite": "ai24",
+      "checks": 36,
+      "operations": [
+        "rental_cancellation_policies/create",
+        "rental_cancellation_policies/update",
+        "rental_collaborators/create",
+        "rental_collaborators/update",
+        "rental_properties/create",
+        "rental_properties/update"
+      ],
+      "receipt": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/suite-r02.json",
+      "receipt_sha256": "b627fad026919bc8ff91718c1c42a87848bc18009f6eb1e448b1a72633a35045",
+      "candidate_overlay": false
+    },
+    {
+      "suite": "ai25",
+      "checks": 39,
+      "operations": [
+        "rental_reservations/cancel",
+        "rental_reservations/complete",
+        "rental_reservations/confirm",
+        "rental_reservations/create",
+        "rental_reservations/start",
+        "rental_reservations/update"
+      ],
+      "receipt": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/suite-r02.json",
+      "receipt_sha256": "b627fad026919bc8ff91718c1c42a87848bc18009f6eb1e448b1a72633a35045",
+      "candidate_overlay": false
+    },
+    {
+      "suite": "ai26",
+      "checks": 44,
+      "operations": [
+        "rental_blocks/create",
+        "rental_blocks/update",
+        "rental_expenses/create",
+        "rental_expenses/pay",
+        "rental_expenses/update",
+        "rental_expenses/void",
+        "rental_payments/create",
+        "rental_payments/void",
+        "rental_turnovers/approve_same_day",
+        "rental_turnovers/update"
+      ],
+      "receipt": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/suite-r02.json",
+      "receipt_sha256": "b627fad026919bc8ff91718c1c42a87848bc18009f6eb1e448b1a72633a35045",
+      "candidate_overlay": false
+    },
+    {
+      "suite": "ai27",
+      "checks": 36,
+      "operations": [
+        "actions/create",
+        "actions/delete",
+        "actions/update",
+        "business_actions/create",
+        "business_actions/delete",
+        "business_actions/update",
+        "module_groups/create",
+        "module_groups/delete",
+        "module_groups/update",
+        "modules/create",
+        "modules/delete",
+        "modules/update",
+        "roles/create",
+        "roles/delete",
+        "roles/update",
+        "users/create",
+        "users/update"
+      ],
+      "receipt": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/suite-r02.json",
+      "receipt_sha256": "b627fad026919bc8ff91718c1c42a87848bc18009f6eb1e448b1a72633a35045",
+      "candidate_overlay": false
+    },
+    {
+      "suite": "c05",
+      "checks": 30,
+      "operations": null,
+      "receipt": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/suite-r02.json",
+      "receipt_sha256": "b627fad026919bc8ff91718c1c42a87848bc18009f6eb1e448b1a72633a35045",
+      "candidate_overlay": false
+    },
+    {
+      "suite": "ai28",
+      "checks": 26,
+      "operations": [
+        "ai_provider_catalog/create",
+        "ai_provider_catalog/update",
+        "ai_providers/create",
+        "ai_providers/update"
+      ],
+      "receipt": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/suite-r03.json",
+      "receipt_sha256": "911184b5e5340fe755649fba94fc209ac51c71bfed138b2e4a6fa580cbbf986e",
+      "candidate_overlay": false
+    },
+    {
+      "suite": "ai22",
+      "checks": 58,
+      "operations": [
+        "businesses/create",
+        "businesses/set_collaborators",
+        "businesses/update",
+        "invoices/create",
+        "invoices/update",
+        "product_logs/create",
+        "product_logs/update",
+        "products/create",
+        "products/update",
+        "provider_contacts/create",
+        "provider_contacts/set_active",
+        "provider_contacts/update",
+        "providers/create",
+        "providers/update"
+      ],
+      "receipt": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/candidate-ai22-pass-r06.json",
+      "receipt_sha256": "ac02a18bd6b32feca3688b6a78c513c2e5cf6e0da64a21057818eefbaeb10381",
+      "candidate_overlay": true
+    }
+  ],
+  "unique_common_SQL_operations": 69,
+  "C05_synthetic_published_tool_paths": 5,
+  "C05_paths_overlap_common_operations": true,
+  "prepare_change_catalog_count": 73,
+  "four_prepare_change_secure_dispatch_excluded": [
+    "nodia_api_keys_prepare_delete",
+    "nodia_ai_providers_prepare_codex_logout",
+    "nodia_ai_providers_prepare_gemini_web_logout",
+    "nodia_ai_providers_prepare_sync_models"
+  ],
+  "additional_prepare_secure_flow_count_excluded": 4,
+  "runtime_fix": {
+    "path": "nodia-server/src/provider-contact/provider-contact.service.ts",
+    "before_sha256": "276254ce70698e2537252da9b64690449903e662069e21db9939da181813660b",
+    "after_sha256": "550ca042df749d040433bd8cefd61cafed4452a0965f88d89bd0c63ad09b0c25",
+    "change": "Contact writer takes provider FOR UPDATE before child callback, preventing parent/child lock upgrade cycle with NativeSupplier snapshot. No retry or global exception mapping.",
+    "atomic_checks": 30,
+    "atomic_files": 3,
+    "oxlint_exit": 0,
+    "production_typecheck_exit": 0,
+    "compiled_fixture_overlay": "Single literal applied to byte-pinned SourceR03 compiled Service. Production publication independently compiles TS.",
+    "compiled_before_sha256": "4fa523e05ac4331b5f3cb64b19676ef5dff880b70dafb3c83c49a3edc7f47345",
+    "compiled_after_sha256": "5d3610106f1415576c06fccb46c4ad669fec143e3f79632354d7c1d95b6410f5",
+    "adopted_by_this_task": false,
+    "KB_changed_by_this_task": false
+  },
+  "failures_preserved": [
+    {
+      "revision": "r01",
+      "cause": "Historical synthetic module seed omitted required sort_order; SQLSTATE23502 on modules.sort_order. No writer effect reached."
+    },
+    {
+      "revision": "r02/r03",
+      "cause": "Historical AI22 global supplier access and AI28 ai:manage revocation expectations contradicted approved policy89; revised to unrelated-denied/explicit-collaborator-allowed and live module revocation."
+    },
+    {
+      "revision": "r03/r04/r05",
+      "cause": "Real reproducible PATCH contact/worker race produced HTTP500 from PostgreSQL40P01. Expectations stayed200/409; candidate fixed parent lock before r06 PASS."
+    }
+  ],
+  "fixture_changes": "Synthetic module sort_order MAX+1 within group; policy89 assertions; closed error diagnostics in AI22. No production schema or DB default altered.",
+  "isolation": {
+    "configured_database_accessed": false,
+    "operational_environment_read": false,
+    "SDK_calls": 0,
+    "actual_provider_calls": 0,
+    "R2_requests": 0,
+    "fixture_SQL_writes": true,
+    "PGDATA": "own tmpfs768MiB; memory1GiB; image ID pinned from installed image; pullnever",
+    "postgres_image_id": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+    "remaining_owned_containers_after_each_run": 0,
+    "services_or_runtime_mutated_by_helper": false,
+    "Root_authorized_VM_exception": "Only own verification namespace and own labelled PG fixtures; no mainDB, environment, SDK or units.",
+    "services_identical_R02_through_R06_field_limit": "Equality of an external-fence marker only; not a measurement of PIDs or services. Root operational observations are separate."
+  },
+  "limits": [
+    "Disposable SQL fixtures and synthetic adapter callbacks are not natural-language/UI/provider acceptance for each capability.",
+    "Secure operations, preferences and workflows are separate validation lanes.",
+    "No operational domain equality claim while Root independently uses the app.",
+    "No retention calendar proof.",
+    "Runtime fix candidate had passed local focal tests and isolated PG; no deployment performed by this task."
+  ],
+  "raw_receipts": {
+    "initial-root-failure-r01.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/initial-root-failure-r01.json",
+      "sha256": "ab6d142ea4352be4b1db5da35f14518b53c330987cfc81bf811b71d5a4df732f"
+    },
+    "suite-r02.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/suite-r02.json",
+      "sha256": "b627fad026919bc8ff91718c1c42a87848bc18009f6eb1e448b1a72633a35045"
+    },
+    "suite-r03.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/suite-r03.json",
+      "sha256": "911184b5e5340fe755649fba94fc209ac51c71bfed138b2e4a6fa580cbbf986e"
+    },
+    "race-http500-r04.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/race-http500-r04.json",
+      "sha256": "b0dd512126697d3557b63391e157624f446d953da7470042e90778ea008b313d"
+    },
+    "race-exception-r05.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/race-exception-r05.json",
+      "sha256": "d8411ffaf52c6be47da2e37c6818c9261ed0cb2045e5997878d96c63a50f7434"
+    },
+    "candidate-ai22-pass-r06.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/candidate-ai22-pass-r06.json",
+      "sha256": "ac02a18bd6b32feca3688b6a78c513c2e5cf6e0da64a21057818eefbaeb10381"
+    },
+    "initial-failure-classification.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/initial-failure-classification.json",
+      "sha256": "fc94a60c8dc8c31b56b1bfbd3cb8d4e10d4da626e1de2c67b0f8d79199b56173"
+    },
+    "race-status-projection.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/race-status-projection.json",
+      "sha256": "fe144849b80f564e8d3ab529a10169a518cc0f34ed64d8a7dfee68bfae0284c5"
+    },
+    "race-cause-projection.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-domain-sql-r01/verification-r01/receipts/race-cause-projection.json",
+      "sha256": "cc9b1c0d9239c45fe4d90210fdba3451ce702ae1cdd46c7039417aff0e5dd0d0"
+    }
+  }
+}

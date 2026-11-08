@@ -112,7 +112,7 @@ function fixture() {
       isSuperAdmin: false,
       modules: [],
     },
-    moduleRoutes: ['/tools/finances-personal'],
+    moduleRoutes: ['/finances-personal'],
     maxCollectionItems: 100,
   };
   return {

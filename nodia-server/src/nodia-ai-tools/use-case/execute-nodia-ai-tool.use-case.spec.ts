@@ -7,6 +7,155 @@ import type { NodiaAiToolHandlerContext } from '../types/tool-registry.types.js'
 import type { EntityManager } from 'typeorm';
 import { randomUUID } from 'node:crypto';
 import { NodiaAiRun } from '../../nodia-ai-run/entities/nodia-ai-run.entity.js';
+import { ExecuteNodiaAiKnowledgeToolUseCase } from '../../nodia-ai-context/use-case/execute-nodia-ai-knowledge-tool.use-case.js';
+import { ExecuteNodiaAiToolUseCase } from './execute-nodia-ai-tool.use-case.js';
+import type { AuthorizeNodiaAiUseCase } from '../../nodia-ai/use-case/authorize-nodia-ai.use-case.js';
+import { canonicalKnowledge, knowledgeHash } from '../../nodia-ai-context/use-case/load-nodia-ai-knowledge.use-case.js';
+
+describe('tool-free compaction protocol progress', () => {
+  function fixture() {
+    const f = toolFixture();
+    f.claim.job.stage_key = 'context';
+    f.run.mcp_rpc_messages_used = 0;
+    f.run.tool_calls_used = 0;
+    const original = f.query.getMockImplementation()!;
+    f.query.mockImplementation(async (sql, parameters) => {
+      if (
+        sql.startsWith(
+          'WITH changed AS (UPDATE nodia_ai_runs SET mcp_rpc_messages_used=',
+        )
+      ) {
+        f.run.mcp_rpc_messages_used += parameters![1] as number;
+        f.run.tool_calls_used += parameters![2] as number;
+        return [{ id: f.run.id }];
+      }
+      if (
+        sql ===
+        'UPDATE nodia_ai_runs SET context_manifest=$2::jsonb WHERE id=$1'
+      ) {
+        f.run.context_manifest = JSON.parse(
+          parameters![1] as string,
+        ) as NodiaAiJsonObject;
+        return [];
+      }
+      return original(sql, parameters);
+    });
+    const ledger = new ExecuteNodiaAiKnowledgeToolUseCase(
+      f.knowledge,
+      f.authorize as unknown as AuthorizeNodiaAiUseCase,
+      f.policy,
+    );
+    const subject = new ExecuteNodiaAiToolUseCase(
+      f.registry,
+      f.knowledge,
+      ledger,
+      f.discovery,
+      f.authorize as unknown as AuthorizeNodiaAiUseCase,
+      f.policy,
+      f.selectionFlow,
+    );
+    return { ...f, subject };
+  }
+  it('accepts zero-RPC startup through the real durable ledger without authorizing tools', async () => {
+    const f = fixture();
+    await f.subject.compactionProgress(f.claim, f.context, 0, 0);
+    expect(f.context.checkpoint).toHaveBeenCalledOnce();
+    expect(f.run.mcp_rpc_messages_used).toBe(0);
+    expect(f.run.tool_calls_used).toBe(0);
+    await expect(f.subject.progress(f.claim, f.context, 0, 0)).rejects.toThrow(
+      'capability_denied',
+    );
+    await expect(f.subject.execute(f.claim, f.context, f.call)).rejects.toThrow(
+      'capability_denied',
+    );
+    expect(f.handler).not.toHaveBeenCalled();
+    expect(f.receipts.size).toBe(0);
+  });
+  it.each([
+    [1, 0],
+    [1, 1],
+    [0, 1],
+  ])(
+    'durably charges unexpected RPC/tool progress %i/%i before rejecting it',
+    async (total, hidden) => {
+      const f = fixture();
+      await expect(
+        f.subject.compactionProgress(f.claim, f.context, total, hidden),
+      ).rejects.toThrow('capability_denied');
+      expect(f.run.mcp_rpc_messages_used).toBe(total);
+      expect(f.run.tool_calls_used).toBe(hidden);
+      expect(f.run.context_manifest.mcp_rpc_progress).toEqual({
+        [f.claim.attempt.id]: total,
+      });
+      expect(f.run.context_manifest.mcp_unforwarded_tool_progress).toEqual({
+        [f.claim.attempt.id]: hidden,
+      });
+      await expect(
+        f.subject.compactionProgress(f.claim, f.context, total, hidden),
+      ).rejects.toThrow('capability_denied');
+      expect(f.run.mcp_rpc_messages_used).toBe(total);
+      expect(f.run.tool_calls_used).toBe(hidden);
+      await expect(
+        f.subject.compactionProgress(f.claim, f.context, 0, 0),
+      ).rejects.toThrow('invalid_provider_response');
+      expect(f.handler).not.toHaveBeenCalled();
+    },
+  );
+  it.each(['inference', 'delegated_inference', 'response', 'cleanup'])(
+    'rejects stage %s before entering the ledger',
+    async (stage) => {
+      const f = fixture();
+      f.claim.job.stage_key = stage;
+      await expect(
+        f.subject.compactionProgress(f.claim, f.context, 0),
+      ).rejects.toThrow('capability_denied');
+      expect(f.context.checkpoint).not.toHaveBeenCalled();
+    },
+  );
+  it('rejects Web before entering the ledger', async () => {
+    const f = fixture();
+    f.run.selection_snapshot.mode = 'token_plan_web' as never;
+    await expect(
+      f.subject.compactionProgress(f.claim, f.context, 0),
+    ).rejects.toThrow('capability_denied');
+    expect(f.context.checkpoint).not.toHaveBeenCalled();
+  });
+  it.each([
+    [-1, 0],
+    [Number.NaN, 0],
+    [Number.MAX_SAFE_INTEGER, 0],
+    [0, -1],
+  ])('preserves ledger bounds for %s/%s', async (total, hidden) => {
+    const f = fixture();
+    await expect(
+      f.subject.compactionProgress(f.claim, f.context, total, hidden),
+    ).rejects.toThrow('execution_limit');
+    expect(f.context.checkpoint).not.toHaveBeenCalled();
+  });
+  it('preserves the fenced checkpoint failure without accepting startup', async () => {
+    const f = fixture();
+    const revoked = new Error('synthetic checkpoint authorization revoked');
+    vi.mocked(f.context.checkpoint).mockRejectedValueOnce(revoked);
+    await expect(
+      f.subject.compactionProgress(f.claim, f.context, 0),
+    ).rejects.toBe(revoked);
+    expect(f.run.mcp_rpc_messages_used).toBe(0);
+    expect(f.handler).not.toHaveBeenCalled();
+  });
+  it('keeps the real ledger budget rejection without writing a progress manifest', async () => {
+    const f = fixture();
+    f.query.mockResolvedValueOnce([]);
+    await expect(
+      f.subject.compactionProgress(f.claim, f.context, 1),
+    ).rejects.toThrow('execution_limit');
+    expect(f.query).toHaveBeenCalledExactlyOnceWith(
+      expect.stringContaining('mcp_rpc_messages_used+$2<='),
+      [f.run.id, 1, 0],
+    );
+    expect(f.run.context_manifest.mcp_rpc_progress).toBeUndefined();
+    expect(f.handler).not.toHaveBeenCalled();
+  });
+});
 
 describe('frozen staged capability selection', () => {
   it('refuses a current phase/profile that diverges from the armed generation snapshot', async () => {
@@ -46,7 +195,7 @@ describe('frozen staged capability selection', () => {
       string
     >;
     delete frozenContracts[f.call.name];
-    for (const tool of f.registry.list(['/tools/fixture', '/tools/nodia-ai']))
+    for (const tool of f.registry.list(['/tools/fixture', '/nodia-ai']))
       delete frozenContracts[tool.toolName];
     const current = Object.assign(new NodiaAiRun(), f.run, {
       context_manifest: structuredClone(f.run.context_manifest),
@@ -449,10 +598,12 @@ describe('External NodiaAI tool checkpoints', () => {
     expect(f.verify).not.toHaveBeenCalled();
     expect(f.discard).toHaveBeenCalledOnce();
   });
-  it('discards an in-flight response after action revocation', async () => {
+  it('discards an in-flight response after destination module revocation', async () => {
     const f = externalFixture();
     f.execute.mockImplementationOnce(async () => {
-      f.actions.clear();
+      f.actor.modules = f.actor.modules.filter(
+        (module) => module.route !== '/tools/fixture',
+      );
       return { total: '25.00' };
     });
     await expect(f.subject.execute(f.claim, f.context, f.call)).rejects.toThrow(
@@ -460,6 +611,18 @@ describe('External NodiaAI tool checkpoints', () => {
     );
     expect(f.receipts.get(f.call.callId)?.public_result).toBeNull();
     expect(f.discard).toHaveBeenCalledOnce();
+  });
+  it('keeps an authorized in-flight response when only role actions are revoked', async () => {
+    const f = externalFixture();
+    f.execute.mockImplementationOnce(async () => {
+      f.actions.clear();
+      return { total: '25.00' };
+    });
+    await expect(
+      f.subject.execute(f.claim, f.context, f.call),
+    ).resolves.toEqual({ total: '25.00' });
+    expect(f.receipts.get(f.call.callId)?.state).toBe('completed');
+    expect(f.execute).toHaveBeenCalledOnce();
   });
   it('rejects resource changes observed during external execution', async () => {
     const f = externalFixture();
@@ -696,10 +859,10 @@ describe('ExecuteNodiaAiToolUseCase', () => {
       expect(f.spent()).toBe(2);
     }
   });
-  it('rejects Web, API and non-inference phases before exposing tools while charging attempted callbacks', async () => {
-    for (const mode of ['token_plan_web', 'api_key'] as const) {
+  it('rejects retired modes and non-inference phases before exposing tools while charging attempted callbacks', async () => {
+    for (const mode of ['token_plan_web', 'web'] as const) {
       const f = toolFixture();
-      f.run.selection_snapshot.mode = mode;
+      f.run.selection_snapshot.mode = mode as never;
       await expect(f.subject.descriptors(f.claim, f.context)).rejects.toThrow(
         'capability_denied',
       );
@@ -715,37 +878,13 @@ describe('ExecuteNodiaAiToolUseCase', () => {
       'capability_denied',
     );
   });
-  it('permits a frozen Web-to-Agentic phase only with opt-in and the same connection', async () => {
+  it('rejects historical delegated callbacks before exposing tools or running a handler', async () => {
     const f = toolFixture();
-    const target = {
-      selection: {
-        ...f.run.selection_snapshot,
-        mode: 'token_plan_agentic' as const,
-      },
-      configuration_generation: 'a'.repeat(64),
-      session_generation: 'b'.repeat(32),
-    };
-    f.run.selection_snapshot.mode = 'token_plan_web';
     f.claim.job.stage_key = 'delegated_inference';
-    f.run.routing_snapshot = {
-      schema_version: 1,
-      enabled: true,
-      revision: 1,
-      target,
-    };
-    expect(await f.subject.execute(f.claim, f.context, f.call)).toEqual({
-      total: '12.50',
-    });
-    f.run.routing_snapshot.enabled = false;
     await expect(f.subject.execute(f.claim, f.context, f.call)).rejects.toThrow(
       'capability_denied',
     );
-    f.run.routing_snapshot.enabled = true;
-    target.selection.connection_id = '3';
-    await expect(f.subject.execute(f.claim, f.context, f.call)).rejects.toThrow(
-      'capability_denied',
-    );
-    expect(f.handler).toHaveBeenCalledOnce();
+    expect(f.handler).not.toHaveBeenCalled();
   });
   it('accepts 74 descriptors without truncating registrations', async () => {
     const f = toolFixture();
@@ -815,7 +954,7 @@ describe('ExecuteNodiaAiToolUseCase', () => {
       expect.objectContaining({
         manager: f.manager,
         actor: f.actor,
-        moduleRoutes: ['/tools/fixture', '/tools/nodia-ai'],
+        moduleRoutes: ['/nodia-ai', '/tools/fixture'],
       }),
     );
     expect(f.verifyAuthority).toHaveBeenCalledOnce();
@@ -843,6 +982,20 @@ describe('ExecuteNodiaAiToolUseCase', () => {
     );
     expect(f.spent()).toBe(3);
   });
+  it('keeps historical authority hashes and recovers completed receipts after route canonicalization', async () => {
+    const f = toolFixture();
+    await f.subject.execute(f.claim, f.context, f.call);
+    const receipt = [...f.receipts.values()][0];
+    expect(receipt.scope_manifest.authority_hash).toBe(knowledgeHash(canonicalKnowledge({
+      routes: ['/tools/fixture', '/tools/nodia-ai'],
+      contracts: f.registry.list(['/tools/fixture', '/nodia-ai']).map(tool => tool.contractHash),
+    })));
+    receipt.scope_manifest.module_routes = ['/tools/fixture', '/tools/nodia-ai'];
+    await expect(f.subject.execute(f.claim, f.context, f.call)).resolves.toEqual({ total: '12.50' });
+    expect(f.handler).toHaveBeenCalledOnce();
+    expect(f.verifyAuthority).toHaveBeenCalledTimes(2);
+    expect(f.spent()).toBe(2);
+  });
   it('charges rejected unknown calls and invalid input before any read work', async () => {
     const f = toolFixture();
     await expect(
@@ -866,10 +1019,10 @@ describe('ExecuteNodiaAiToolUseCase', () => {
   it('cannot widen the frozen run modules, grant operations or contract hashes', async () => {
     for (const narrow of [
       (f: ReturnType<typeof toolFixture>) => {
-        f.run.context_manifest.module_routes = ['/tools/nodia-ai'];
+        f.run.context_manifest.module_routes = ['/nodia-ai'];
       },
       (f: ReturnType<typeof toolFixture>) => {
-        f.grant.allowed_modules = ['/tools/nodia-ai'];
+        f.grant.allowed_modules = ['/nodia-ai'];
       },
       (f: ReturnType<typeof toolFixture>) => {
         f.grant.allowed_operations = ['chat:respond'];
@@ -907,7 +1060,7 @@ describe('ExecuteNodiaAiToolUseCase', () => {
       expect(f.handler).not.toHaveBeenCalled();
     }
   });
-  it('does not replay broad discovery results after action revocation', async () => {
+  it('replays discovery without role actions and rejects a changed module scope', async () => {
     const f = toolFixture();
     const call = {
       ...f.call,
@@ -918,10 +1071,16 @@ describe('ExecuteNodiaAiToolUseCase', () => {
       (await f.subject.execute(f.claim, f.context, call)).items,
     ).toHaveLength(2);
     f.actions.clear();
+    expect(
+      (await f.subject.execute(f.claim, f.context, call)).items,
+    ).toHaveLength(2);
+    f.actor.modules = f.actor.modules.filter(
+      (module) => module.route !== '/tools/fixture',
+    );
     await expect(f.subject.execute(f.claim, f.context, call)).rejects.toThrow(
       'request_conflict',
     );
-    expect(f.spent()).toBe(2);
+    expect(f.spent()).toBe(3);
   });
   it('rejects reuse of call IDs with different input and rejects malformed cached projections', async () => {
     const f = toolFixture();
@@ -978,7 +1137,7 @@ describe('ExecuteNodiaAiToolUseCase', () => {
       expect.objectContaining({ signal: f.context.signal }),
       call,
       true,
-      ['/tools/fixture', '/tools/nodia-ai'],
+      ['/nodia-ai', '/tools/fixture'],
     );
     expect(f.spent()).toBe(1);
     await f.subject.progress(f.claim, f.context, 8, 2);
@@ -1032,6 +1191,10 @@ describe('ExecuteNodiaAiToolUseCase', () => {
       'nodia_fixture_resolve',
     ]);
     f.actions.clear();
+    expect(await f.subject.descriptors(f.claim, f.context)).toHaveLength(7);
+    f.actor.modules = f.actor.modules.filter(
+      (module) => module.route !== '/tools/fixture',
+    );
     expect(
       (await f.subject.descriptors(f.claim, f.context)).map(
         (tool) => tool.name,
@@ -1061,7 +1224,8 @@ describe('ExecuteNodiaAiToolUseCase', () => {
     for (const stage of ['context', 'seal']) {
       const f = toolFixture();
       f.claim.job.stage_key = stage;
-      if (stage === 'context') f.run.selection_snapshot.mode = 'token_plan_web';
+      if (stage === 'context')
+        f.run.selection_snapshot.mode = 'token_plan_web' as never;
       await expect(f.subject.descriptors(f.claim, f.context)).rejects.toThrow(
         'capability_denied',
       );
@@ -1069,4 +1233,51 @@ describe('ExecuteNodiaAiToolUseCase', () => {
       expect(f.receipts.size).toBe(0);
     }
   });
+});
+
+describe('API function calls share the NodiaAI gateway', () => {
+  it('charges duplicate API requests and reauthorizes the same receipt without repeating the domain read', async () => {
+    const f = toolFixture();
+    f.run.selection_snapshot.mode = 'api_key';
+    expect(await f.subject.execute(f.claim, f.context, f.call)).toEqual({
+      total: '12.50',
+    });
+    expect(await f.subject.execute(f.claim, f.context, f.call)).toEqual({
+      total: '12.50',
+    });
+    expect(f.handler).toHaveBeenCalledOnce();
+    expect(f.verifyAuthority).toHaveBeenCalledTimes(2);
+    expect(f.spent()).toBe(2);
+    f.verifyAuthority.mockRejectedValueOnce(new Error('resource_revoked'));
+    await expect(f.subject.execute(f.claim, f.context, f.call)).rejects.toThrow(
+      'resource_revoked',
+    );
+    expect(f.handler).toHaveBeenCalledOnce();
+    expect(f.spent()).toBe(3);
+  });
+  it.each(['grant', 'contracts', 'scope', 'cancel', 'unknown_tool'] as const)(
+    'API cannot bypass %s',
+    async (change) => {
+      const f = toolFixture();
+      f.run.selection_snapshot.mode = 'api_key';
+      if (change === 'grant') f.grant.allowed_operations = ['chat:respond'];
+      if (change === 'contracts') f.run.context_manifest.tool_contracts = {};
+      if (change === 'scope')
+        f.run.context_manifest.module_routes = ['/nodia-ai'];
+      if (change === 'cancel') {
+        const controller = new AbortController();
+        controller.abort();
+        f.context.signal = controller.signal;
+      }
+      const call =
+        change === 'unknown_tool'
+          ? { ...f.call, name: 'nodia_execute_sql' }
+          : f.call;
+      await expect(
+        f.subject.execute(f.claim, f.context, call),
+      ).rejects.toThrow();
+      expect(f.handler).not.toHaveBeenCalled();
+      expect(f.spent()).toBe(1);
+    },
+  );
 });

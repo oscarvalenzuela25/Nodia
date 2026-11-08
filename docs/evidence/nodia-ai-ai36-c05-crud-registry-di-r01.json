@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "status": "passed_actual_R09_registry_DI_isolated",
+  "source_receipt_sha256": "f407bb95797f0d14bf442d2332505de91a5c412571529ba1944b3b7930529811",
+  "candidate_manifest_sha256": "edd279fa5f5f99a7529adcf4cf75b7016505bf6581fc57cb85a3000cf802ff85",
+  "test_sha256": "fb0b63baa5742a465fb7c782dd2e6f1d056312d78e5e50a460a2afc1a62c79b8",
+  "published_baseline_sha256": "f72f3cbd410d7b8c7cf1d57c4c823840afec7daeeac5398db26db2a9e0ddc957",
+  "all_initial_read_paths_verified": true,
+  "PostgreSQL_image_id": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+  "environment_allowlist": [
+    "DOTENV_CONFIG_PATH",
+    "HOME",
+    "NODE_ENV",
+    "PATH",
+    "RATE_LIMIT_STORAGE"
+  ],
+  "test_result": {
+    "stage": "AI36-C05-publication-registry",
+    "status": "passed",
+    "checks": 12,
+    "results": [
+      "actual registry composes exactly all 150 published IDs without a synthetic publication override",
+      "actual pinned knowledge loader agrees with the composed registry for all 150 contracts and 41 fragments",
+      "exactly 72 change preparations and four secure preparations are added with the analyzer absent",
+      "registered native contract hashes and route/kind metadata agree with the real release manifest",
+      "ordinary actor assigned only users discovers users preparation but no roles/module administration",
+      "broad Core explanation is excluded unless its complete route union is granted",
+      "own-session logout remains discoverable with NodiaAI alone while credential/login administration is absent",
+      "own logout knowledge is separate from administrative credential knowledge",
+      "provider module assignment alone does not confer ai:manage",
+      "actual current module plus ai:manage reveals exactly the three administrative secure preparers",
+      "revocation removes administrative tools and fragment without removing own-session logout",
+      "metadata/discovery never invokes external services, execution, login, keys or domain writers"
+    ],
+    "published": 150,
+    "actual_registry_and_knowledge_DI": true,
+    "original_contracts_exact": 74,
+    "added_change": 72,
+    "added_secure": 4,
+    "synthetic_publication_override": false,
+    "configured_database_used": false,
+    "SDK_requests": 0,
+    "domain_handlers_invoked": false,
+    "fixture_permission_setup_only": true
+  },
+  "operational_SQL_services_proofs_and_Gemini_unchanged": true,
+  "operational_database_used_by_test": false,
+  "fixture_cleanup_verified": true,
+  "provider_generations": 0,
+  "human_confirmation_or_real_account_inference": false,
+  "R08_transactional_suite_applicability": "R09 archive independently preserves all runtime TS_JS_policy_and_dependencies bytes",
+  "historical_caller_failure": "R01 snapshot omitted release-manifest.json; stopped before PostgreSQL fixture; original assertion retained"
+}

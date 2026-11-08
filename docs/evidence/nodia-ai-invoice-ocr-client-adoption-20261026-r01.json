@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "date_local": "2026-10-26",
+  "status": "Client_static_adoption_verified",
+  "scope": "Client static release plus exact nginx CAS/reload; no Server or native adoption in this receipt",
+  "receipts": {
+    "client-adoption-VM-r01.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-client-adoption-verification-r01/client-adoption-VM-r01.json",
+      "sha256": "b2217a50a63a33c3c59a242645504d7bceb8045a16540f3956dd2ff1c29bf542",
+      "bytes": 134895
+    },
+    "client-prepare-VM-r01.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-client-adoption-verification-r01/client-prepare-VM-r01.json",
+      "sha256": "ea89545a573a677dbf869d10a294bedbb24f4be050d052bbb4ec2dbeb14dd944",
+      "bytes": 1106
+    },
+    "client-preflight-VM-r01.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-client-adoption-verification-r01/client-preflight-VM-r01.json",
+      "sha256": "90a7f9452d2e46e987c19e0d5a4cb9d729cd03cf9dac9eb9a3c5d9325221b297",
+      "bytes": 90689
+    },
+    "client-bootstrap-VM-r01.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-client-adoption-verification-r01/client-bootstrap-VM-r01.json",
+      "sha256": "427ff78378eae9b9f5641bcdb64e3ee5964390078b069ae01585ab3294afe114",
+      "bytes": 498
+    }
+  },
+  "immutable_delivery": {
+    "path": "ops/lab/artifacts/invoice-ocr-client-delivery-r01",
+    "catalog_sha256": "131f009100c626c6ed2047d1fdb7a3d2c6118160bd100f32e91e459320355c8b",
+    "operator_sha256": "93efc0a8bdeb22dc3d3bd0182d3a76a32c6e0f982c9312f11da425d8ca012aa9",
+    "plan_sha256": "044df97a19c9aefdb0ced6c95c1a5fc128d56c8fe584a8f0eeafa363f4c07ae4",
+    "manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+    "archive_sha256": "5aec9d08b4038ca94efafa784602c805a8f5260a14dafe1d3b5d774b7f3954f0"
+  },
+  "Client": {
+    "source": {
+      "release": "/opt/nodia/releases/nodia-client-module-access-privacy-r01",
+      "manifest_sha256": "eada6b5226b3f1d7ba31ef702047f1d9f9a4c4ce3c03b6a80ce448b790eb57a1",
+      "prior_nginx_sha256": "c312445f1b8c3438ea1471c6f5cbdc4940c50402a8691ebd78092824549ba4a2"
+    },
+    "target": "/opt/nodia/releases/nodia-client-invoice-ocr-r01",
+    "static_files": 183,
+    "HTTP_files_verified": 627,
+    "legacy_fallback_counts": [
+      180,
+      168,
+      37,
+      59
+    ],
+    "fallback_order": [
+      "target",
+      "eada",
+      "b7acc",
+      "17f",
+      "R07",
+      "404"
+    ],
+    "nginx_after_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac",
+    "HTTP": {
+      "checks": "SHA256/size/MIME for627files; immutable-cache/COOP/HTML-cache assertions in exact pinned operator",
+      "attempts": 1,
+      "maximum_attempts": 5,
+      "only_HTTP_reads_retried": true,
+      "missing_asset_statuses": [
+        404,
+        404
+      ],
+      "API_body_sha256_unchanged": "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069"
+    }
+  },
+  "protected": {
+    "Server": {
+      "release": "/opt/nodia/releases/nodia-server-invoice-ocr-r01",
+      "manifest_sha256": "50ce9c572f3cf8648815afcc91ba637b0b499d5a46c9610f0c1d0c4cb38c51c9",
+      "knowledge_release": "46405d3078a9c065bc3c5c6e4f5758b71b101dd2ea06abdcb017eb6b96f8364e",
+      "knowledge_counts": {
+        "capabilities": 152,
+        "fragments": 43,
+        "documents": 41
+      }
+    },
+    "processes_before_equal_after": true,
+    "API_pid": 407781,
+    "worker_pid": 407782,
+    "native_before_equal_after": true,
+    "native": {
+      "id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+      "image": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+      "started_at": "2026-10-26T03:06:18.949917773Z",
+      "descriptor_sha256": "d27816454ab40e774919a16d3b99da50ccdc3c1e570ef244832b30b46a95f89d"
+    },
+    "configuration_sha256_unchanged": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "database_readonly": true,
+    "domain_table_count": 61,
+    "domain_hashes_before_equal_after": true,
+    "schema_sha256_unchanged": "82753ec54d69006d2850dd62173093c03086e43a37af62e2a3dba1c5da5b4b87",
+    "SQL_quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "native_quiet": {
+      "attempt_receipts": 0,
+      "unknown_markers": 0,
+      "temporary_directories": 0,
+      "active_native_processes": 0
+    },
+    "stable_state_before_equal_after": true,
+    "comparison_exclusions": [
+      "available_bytes",
+      "nginx_sha256",
+      "journal.updated_at",
+      "journal.backups"
+    ],
+    "codex_barrier_before_equal_after": true,
+    "unrelated_services_before_equal_after": true
+  },
+  "capacity": {
+    "available_after_bytes": 3979927552,
+    "backup_reserve_bytes": 268443676,
+    "operator_required_bytes": 275933474,
+    "reserve_preserved": true
+  },
+  "operations_reported": {
+    "SQL_writes": 0,
+    "SDK_calls": 0,
+    "provider_generations": 0,
+    "Server_restarts": 0,
+    "migrations": 0,
+    "target_deleted": false
+  },
+  "limits": {
+    "authenticated_UI_acceptance": false,
+    "MCP_acceptance": false,
+    "invoice_OCR_real_inference": false,
+    "C03_completion_claim": false,
+    "consolidation_VM_calls": 0,
+    "consolidation_new_tests_or_builds": 0,
+    "runtime_payload_or_delivery_modified": false
+  },
+  "note": "Receipt bytes are retained exactly. This is the durable static-adoption checkpoint. Root is validating UI separately; no UI or provider success is inferred from HTTP asset checks."
+}

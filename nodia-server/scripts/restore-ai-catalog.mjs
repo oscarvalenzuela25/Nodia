@@ -17,6 +17,8 @@ try {
       && !table?.uniques.some((unique) => unique.columnNames.length === 1 && unique.columnNames[0] === 'key')) {
       throw new Error('An existing catalog with a unique canonical key is required.');
     }
+    if (table.columns.some((column) => column.name === 'can_use_agentic'))
+      throw new Error('Legacy catalog restoration is retired after Agentic/API key migration. Use the current catalog administration.');
     const previous = await runner.query('SELECT * FROM ai_provider_catalog ORDER BY id');
     const directory = join(process.env.LOCALAPPDATA ?? homedir(), 'Nodia', 'backups');
     await mkdir(directory, { recursive: true });
@@ -25,6 +27,6 @@ try {
     console.log(`Catalog backup: ${backup}`);
   } finally { await runner.release(); }
   await source.runMigrations({ transaction: 'all' });
-  const rows = await source.query('SELECT id, key, name, can_use_api_key, can_use_token_plan_web, can_use_token_plan_agentic, is_active FROM ai_provider_catalog ORDER BY id');
+  const rows = await source.query('SELECT id, key, name, can_use_api_key, can_use_token_plan_agentic AS can_use_agentic, is_active FROM ai_provider_catalog ORDER BY id');
   console.log(JSON.stringify(rows, null, 2));
 } finally { if (source.isInitialized) await source.destroy(); }

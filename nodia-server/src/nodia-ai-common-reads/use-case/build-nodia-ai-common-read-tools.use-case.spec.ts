@@ -112,7 +112,7 @@ describe('AI36-C04 native common read adapters', () => {
     expect(f.tools).toHaveLength(4);
     for (const tool of f.tools) {
       expect(tool.kind).toBe('read');
-      expect(tool.requiredModuleRoutes).toEqual(['/tools/nodia-ai']);
+      expect(tool.requiredModuleRoutes).toEqual(['/nodia-ai']);
       compileNodiaAiToolSchema(tool.inputSchema);
       compileNodiaAiToolSchema(tool.outputSchema);
     }

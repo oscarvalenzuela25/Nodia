@@ -1,0 +1,650 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-01",
+  "status": "local_ui_verified",
+  "scope": "Teacher Client local implementation and browser verification. No publication, documentary approval or VM adoption.",
+  "implementation": {
+    "paths": [
+      "/nodia-teacher",
+      "/nodia-teacher/:sessionId"
+    ],
+    "domain": "nodia-client/src/modules/teacher",
+    "features": [
+      "private paginated plans",
+      "RHF/Zod draft form and edit",
+      "Teacher-only exact selection catalog and eligibility",
+      "paginated setup chat",
+      "structured plan revision editing",
+      "candidate comparison and explicit apply",
+      "editable assessment counts with retained invalid fields and fixed90 threshold",
+      "exact acceptance separate from preparation",
+      "safe stored Markdown reading",
+      "practice answer draft versus submission",
+      "bounded1500ms draft autosave with CAS, late-ACK/local-edit preservation and stop on error",
+      "full final delivery without prior feedback",
+      "server-derived outcomes and section actions",
+      "assisted hint consequence confirmation",
+      "atomic pause payload with cursor and pending responses",
+      "pause blocked while another-tab draft conflict is unresolved",
+      "409 GET refresh without POST replay",
+      "resume without generation",
+      "job polling restricted to visible active work",
+      "unknown reconciliation without inference replay",
+      "opaque request recovery metadata without payload",
+      "GET receipt recovery reachable inside the active create/edit/selection/help modal focus trap",
+      "optional diagnostic",
+      "future plan revision activation",
+      "reversible archive"
+    ],
+    "authority": "Client consumes allowed_actions and exact Server DTOs; Server remains authoritative.",
+    "models": "Only configuration/discovery options; missing historical selection is preserved visibly and blocks use. No production model fallback."
+  },
+  "browser_matrix": {
+    "tool": "Playwright CLI real browser, production React components and theme/PageContent",
+    "transport": "Synthetic Axios adapter, no provider or database",
+    "viewport_height": 900,
+    "profiles": [
+      {
+        "scenario": "list",
+        "width": 320,
+        "lang": "es",
+        "theme": "light",
+        "scrollWidth": 320,
+        "bodyWidth": 320,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "lesson",
+        "width": 320,
+        "lang": "es",
+        "theme": "light",
+        "scrollWidth": 320,
+        "bodyWidth": 320,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "review",
+        "width": 320,
+        "lang": "es",
+        "theme": "dark",
+        "scrollWidth": 320,
+        "bodyWidth": 320,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "final",
+        "width": 320,
+        "lang": "es",
+        "theme": "dark",
+        "scrollWidth": 320,
+        "bodyWidth": 320,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "list",
+        "width": 320,
+        "lang": "en",
+        "theme": "light",
+        "scrollWidth": 320,
+        "bodyWidth": 320,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "lesson",
+        "width": 320,
+        "lang": "en",
+        "theme": "light",
+        "scrollWidth": 320,
+        "bodyWidth": 320,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "review",
+        "width": 320,
+        "lang": "en",
+        "theme": "dark",
+        "scrollWidth": 320,
+        "bodyWidth": 320,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "final",
+        "width": 320,
+        "lang": "en",
+        "theme": "dark",
+        "scrollWidth": 320,
+        "bodyWidth": 320,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "list",
+        "width": 390,
+        "lang": "es",
+        "theme": "light",
+        "scrollWidth": 390,
+        "bodyWidth": 390,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "lesson",
+        "width": 390,
+        "lang": "es",
+        "theme": "light",
+        "scrollWidth": 390,
+        "bodyWidth": 390,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "review",
+        "width": 390,
+        "lang": "es",
+        "theme": "dark",
+        "scrollWidth": 390,
+        "bodyWidth": 390,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "final",
+        "width": 390,
+        "lang": "es",
+        "theme": "dark",
+        "scrollWidth": 390,
+        "bodyWidth": 390,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "list",
+        "width": 390,
+        "lang": "en",
+        "theme": "light",
+        "scrollWidth": 390,
+        "bodyWidth": 390,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "lesson",
+        "width": 390,
+        "lang": "en",
+        "theme": "light",
+        "scrollWidth": 390,
+        "bodyWidth": 390,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "review",
+        "width": 390,
+        "lang": "en",
+        "theme": "dark",
+        "scrollWidth": 390,
+        "bodyWidth": 390,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "final",
+        "width": 390,
+        "lang": "en",
+        "theme": "dark",
+        "scrollWidth": 390,
+        "bodyWidth": 390,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "list",
+        "width": 600,
+        "lang": "es",
+        "theme": "light",
+        "scrollWidth": 600,
+        "bodyWidth": 600,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "lesson",
+        "width": 600,
+        "lang": "es",
+        "theme": "light",
+        "scrollWidth": 600,
+        "bodyWidth": 600,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "review",
+        "width": 600,
+        "lang": "es",
+        "theme": "dark",
+        "scrollWidth": 600,
+        "bodyWidth": 600,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "final",
+        "width": 600,
+        "lang": "es",
+        "theme": "dark",
+        "scrollWidth": 600,
+        "bodyWidth": 600,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "list",
+        "width": 600,
+        "lang": "en",
+        "theme": "light",
+        "scrollWidth": 600,
+        "bodyWidth": 600,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "lesson",
+        "width": 600,
+        "lang": "en",
+        "theme": "light",
+        "scrollWidth": 600,
+        "bodyWidth": 600,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "review",
+        "width": 600,
+        "lang": "en",
+        "theme": "dark",
+        "scrollWidth": 600,
+        "bodyWidth": 600,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "final",
+        "width": 600,
+        "lang": "en",
+        "theme": "dark",
+        "scrollWidth": 600,
+        "bodyWidth": 600,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "list",
+        "width": 1280,
+        "lang": "es",
+        "theme": "light",
+        "scrollWidth": 1280,
+        "bodyWidth": 1280,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "lesson",
+        "width": 1280,
+        "lang": "es",
+        "theme": "light",
+        "scrollWidth": 1280,
+        "bodyWidth": 1280,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "review",
+        "width": 1280,
+        "lang": "es",
+        "theme": "dark",
+        "scrollWidth": 1280,
+        "bodyWidth": 1280,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "final",
+        "width": 1280,
+        "lang": "es",
+        "theme": "dark",
+        "scrollWidth": 1280,
+        "bodyWidth": 1280,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "list",
+        "width": 1280,
+        "lang": "en",
+        "theme": "light",
+        "scrollWidth": 1280,
+        "bodyWidth": 1280,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "lesson",
+        "width": 1280,
+        "lang": "en",
+        "theme": "light",
+        "scrollWidth": 1280,
+        "bodyWidth": 1280,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "review",
+        "width": 1280,
+        "lang": "en",
+        "theme": "dark",
+        "scrollWidth": 1280,
+        "bodyWidth": 1280,
+        "untranslated": null,
+        "buttonMin": 44
+      },
+      {
+        "scenario": "final",
+        "width": 1280,
+        "lang": "en",
+        "theme": "dark",
+        "scrollWidth": 1280,
+        "bodyWidth": 1280,
+        "untranslated": null,
+        "buttonMin": 44
+      }
+    ],
+    "visual_inspection": [
+      "output/teacher-ui/final-320-en-dark.png",
+      "output/teacher-ui/review-320-es-dark.png",
+      "output/teacher-ui/lesson-1280-es-light.png"
+    ],
+    "captures_directory": "output/teacher-ui (ignored)",
+    "result": "No document/body horizontal overflow, no untranslated Teacher keys, visible button targets at least44 CSS px in all32 recorded profiles."
+  },
+  "synthetic_browser_interactions": {
+    "viewport": "390x844",
+    "passed": [
+      "pause409 preserves selected answer and unsaved status",
+      "confirmed pause carries latest answer plus attempt ID/cursor/CAS in one command",
+      "radio ArrowDown keyboard navigation",
+      "lost response reconciled by1 receipt GET after1 mutation, zero replay",
+      "assisted final consequence displayed before requesting hint",
+      "post-delivery36/40 shows passed with correct answer and explanation"
+    ],
+    "scope": "Browser behavior over synthetic HTTP adapter; does not establish SQL atomicity or provider availability."
+  },
+  "real_http_database_browser": {
+    "server": "nodia-server/test/teacher-domain.integration.mjs --serve",
+    "url_used": "http://127.0.0.1:57087/api/v1",
+    "actor": "9007199254740993 (synthetic isolated actor)",
+    "database": "Disposable PostgreSQL owned by the domain integration harness; never the configured work/operational database",
+    "generation": "Synthetic publisher pump passes generated candidates through real validation/publication. No provider HTTP, shared-runtime dispatch or production qualification is claimed by these UI runs.",
+    "english": {
+      "session_id": "2f648c27-8940-45d6-8085-83cffb4b6fb2",
+      "organization": "days",
+      "day_count": 7,
+      "passed": [
+        "create through actual form and HTTP",
+        "persist explicit discovered selection",
+        "setup reply",
+        "generate proposal and accept exact plan",
+        "prepare stored packet",
+        "practice immediate deterministic feedback",
+        "pause question2 with unsent choice",
+        "full browser reload restores choice/question and resume",
+        "answer all12 final questions through real HTTP",
+        "no feedback during all12 pre-delivery navigations",
+        "2 wrong multiple-choice answers plus valid completion/short feedback yield36/40 exact90 and pass"
+      ],
+      "capture": "output/teacher-ui/real-http-english-final90-390-es-dark.png"
+    },
+    "networks": {
+      "session_id": "1d88fc7e-7fc7-443e-9b48-8b99596e032a",
+      "organization": "topics",
+      "day_count": null,
+      "passed": [
+        "new form and discovered selection",
+        "proposal/acceptance",
+        "direct final without preparing lesson material",
+        "0 POST /units/:id/material observed during direct route",
+        "4 wrong multiple-choice answers produce32/40 and reinforcement",
+        "explicit new final creates different question variant",
+        "reload restores new active variant without old question ID",
+        "optional diagnostic starts through actual HTTP and pause/reload retains draft"
+      ],
+      "first_prompt_variant_id": "43769c9b-4def-48f5-ba74-5fe56c8abf95",
+      "new_prompt_variant_id": "c6d83d65-692e-4951-9abe-02c2ff1f02e9",
+      "capture": "output/teacher-ui/real-http-topics-final80-1280-en-light.png"
+    }
+  },
+  "latest_http_checks": {
+    "url_used": "http://127.0.0.1:58403/api/v1",
+    "generation": "Same disposable real HTTP/SQL harness with synthetic validated publisher; no real provider qualification.",
+    "accepted_revision_blank_and_conflict": {
+      "sessionId": "e8fb08d5-9326-408e-be0d-6c2d76bb68b3",
+      "acceptedId": "00a432bf-c41b-4303-bdd6-3ea98d352158",
+      "newPlanId": "2ccdde29-a0e2-4eec-817b-dce95b7b6ac3",
+      "acceptedClone": true,
+      "activation": true,
+      "blankWithOther11AnsweredRejected": true,
+      "blankUnfrozen": true,
+      "conflictGETRefresh": true,
+      "pauseBlockedDuringConflict": true,
+      "localPreserved": true,
+      "serverPreservedUntilExplicitSave": true,
+      "explicitSaveThenPauseReload": true,
+      "lessonPreparationPosts": 0
+    },
+    "assessment_policy_editor": {
+      "originalPracticeSingle": 3,
+      "editedPracticeSingle": 4,
+      "invalidRetained": true,
+      "invalidBlocked": true,
+      "accordionRetained": true,
+      "documentOverflow": false,
+      "mutationsBeforeExplicitSave": 0,
+      "saveMutations": [
+        {
+          "method": "PATCH",
+          "url": "http://127.0.0.1:58403/api/v1/teacher/sessions/e8fb08d5-9326-408e-be0d-6c2d76bb68b3/plan-proposals/2ccdde29-a0e2-4eec-817b-dce95b7b6ac3"
+        }
+      ],
+      "threshold": 90,
+      "countsPersistedInNewDraft": true
+    },
+    "autosave_previous_harness": {
+      "idle_draft_commands": 1,
+      "radio_focus_restored": true,
+      "pause_contains_latest_unsaved_answer": true,
+      "browser_reload_restores_answer": true,
+      "mutations_on_reload": 0
+    },
+    "uncertain_autosave_synthetic_adapter": {
+      "draft_patch_commands": 1,
+      "receipt_gets": 1,
+      "replays": 0,
+      "selected_answer_retained": true,
+      "saved_state_after_receipt": true
+    },
+    "modal_recovery_synthetic_transport": {
+      "transport": "synthetic Axios adapter and production command/receipt hooks; no Nest, database or provider is claimed",
+      "results": [
+        {
+          "case": "create",
+          "width": 320,
+          "retained": true,
+          "keyboard": true,
+          "insideDialog": true,
+          "height": 44,
+          "overflow": false,
+          "mutations": 1,
+          "receipts": 1
+        },
+        {
+          "case": "create",
+          "width": 390,
+          "retained": true,
+          "keyboard": true,
+          "insideDialog": true,
+          "height": 44,
+          "overflow": false,
+          "mutations": 1,
+          "receipts": 1
+        },
+        {
+          "case": "selection",
+          "width": 390,
+          "insideDialog": true,
+          "mutations": 1,
+          "receipts": 1
+        },
+        {
+          "case": "help",
+          "width": 390,
+          "insideDialog": true,
+          "hintRecovered": true,
+          "mutations": 1,
+          "receipts": 1
+        }
+      ]
+    },
+    "captures": [
+      "output/teacher-ui/latest-http-blank-conflict-390-en-dark.png",
+      "output/teacher-ui/assessment-editor-390-en-dark.png",
+      "output/teacher-ui/real-http-autosave-pause-reload-390-en-light.png"
+    ],
+    "owned_helpers": "Teacher QA browser and Vite5192 closed after QA/build. Dedicated disposable Server/container closure coordinated with its owner."
+  },
+  "checks": {
+    "teacher_unit_tests": {
+      "command": "npx vitest run src/test/modules/teacher --maxWorkers=2",
+      "passed": true,
+      "files": 9,
+      "tests": 26,
+      "duration_seconds": 17.44,
+      "log": ".tmp/teacher-ui/teacher-focal-modal.log"
+    },
+    "client_global": {
+      "status": "passed",
+      "passed": true,
+      "exit_code": 0,
+      "tests": 2531,
+      "files": 308,
+      "duration_seconds": 402.71,
+      "command": "npm test -- --maxWorkers=4",
+      "log": ".tmp/teacher-ui/client-global-modal-immutable.log",
+      "source_manifest_before": ".tmp/teacher-ui/client-source-before.json",
+      "source_manifest_after": ".tmp/teacher-ui/client-source-after.json",
+      "manifest_file_count": 1322,
+      "source_unchanged_during_run": true,
+      "before_and_after_manifest_sha256": "52f9d1621ceebfea3385749de2d22cc9ac36dc0b5083cf16ed269094010354b4"
+    },
+    "prior_global_runs": [
+      {
+        "tests_passed": 2515,
+        "tests_failed": 4,
+        "files_passed": 302,
+        "files_failed": 2,
+        "duration_seconds": 389.5,
+        "cause": "Escaped regex fixtures expected retired /settings/* labels. Route owner corrected fixtures and preserved occupied-alias regression."
+      },
+      {
+        "tests_passed": 2524,
+        "tests_failed": 1,
+        "files_passed": 304,
+        "files_failed": 1,
+        "duration_seconds": 421.55,
+        "log": ".tmp/teacher-ui/client-global-final.log",
+        "cause": "Source/i18n were changed during this run. The failed DOM contained literal response_submitted from a preloaded namespace; isolated immutable Teacher checks pass. This mixed run is retained and is not reported as a global pass."
+      },
+      {
+        "tests_passed": 2530,
+        "tests_failed": 0,
+        "files_passed": 307,
+        "files_failed": 0,
+        "duration_seconds": 428.87,
+        "exit_code": 0,
+        "log": ".tmp/teacher-ui/client-global-immutable.log",
+        "scope": "Successful immutable baseline before the later modal-recovery fix; not the final source snapshot.",
+        "manifest_file_count": 1318,
+        "source_unchanged_during_run": true,
+        "before_and_after_manifest_sha256": "29680a4e4033b2c228780e7e0ec1fda995e2d1c7cb116102f6450ab394a73095"
+      }
+    ],
+    "typecheck": {
+      "passed": true,
+      "exit_code": 0,
+      "log": ".tmp/teacher-ui/client-typecheck-modal.log"
+    },
+    "lint_global": {
+      "passed": true,
+      "exit_code": 0,
+      "errors": 0,
+      "log": ".tmp/teacher-ui/client-lint-modal.log"
+    },
+    "build": {
+      "passed": true,
+      "exit_code": 0,
+      "vite_seconds": 16.52,
+      "teacher_chunk_kb": 90.62,
+      "teacher_gzip_kb": 28.66,
+      "log": ".tmp/teacher-ui/client-build-modal.log",
+      "warning": "Existing shared api chunk660.55kB exceeds500kB warning threshold; no performance acceptance is claimed."
+    }
+  },
+  "limitations": [
+    "No physical phone or virtual-keyboard acceptance",
+    "No performance benchmark or full accessibility certification",
+    "No provider qualification from synthetic UI/domain runs",
+    "No VM deployment or production adoption",
+    "No documentary approval or knowledge publication"
+  ],
+  "source_sha256": {
+    "nodia-client/src/modules/teacher/components/AssessmentPolicyEditor/AssessmentPolicyEditor.tsx": "ddea5cfdc944d96a89dfa32b3e975ab2333fbc7faeefc7ab6b8b130a4e8061cd",
+    "nodia-client/src/modules/teacher/components/AssessmentPolicyEditor/index.ts": "a4fa9b0da3a1712c1697ff3607cd0e0a5c54c154e2b867b413890c2290a2d8bd",
+    "nodia-client/src/modules/teacher/components/AssessmentPolicyEditor/styles.ts": "401804f81430b675f0310e474c3c8438216d34ad6fd9aecb89cead7aa5986438",
+    "nodia-client/src/modules/teacher/components/JobPanel/index.ts": "32c5632b611e044c5309d0aedc4c03e6757dfefb7ba42a15239efcc29972e86f",
+    "nodia-client/src/modules/teacher/components/JobPanel/JobPanel.tsx": "6cedef858221343c117c5c077a2eb2c1ed5f82b1328c3e765141739d87a7d373",
+    "nodia-client/src/modules/teacher/components/JobPanel/styles.ts": "48dca34b79e23d29b20ac373f45e51ccf3b4a0a3cd73958199b50ca777b9477d",
+    "nodia-client/src/modules/teacher/components/PlanReview/index.ts": "a9d41f27b1c215261f233b09fb17f04b15e66973707044043b3bd1ad1eeb71e6",
+    "nodia-client/src/modules/teacher/components/PlanReview/PlanReview.tsx": "acd445aee90f69e16d38583f4562c47e0b2f2dfc731efe9e453c678cd3e0f1b1",
+    "nodia-client/src/modules/teacher/components/PlanReview/styles.ts": "615d56f4a9135e43b0138be9f9d6f8ce0c818bcd2f46a0fb54c88980b647a10c",
+    "nodia-client/src/modules/teacher/components/QuestionCard/index.ts": "aab4ca15ae380076b3ef68927abcbff116405f65f7df9f78a340c3cbcc56021e",
+    "nodia-client/src/modules/teacher/components/QuestionCard/QuestionCard.tsx": "bb094765fb651fbb6ed7e7449d4cdb7057f714f155e536b833a93ac1ab804d8d",
+    "nodia-client/src/modules/teacher/components/QuestionCard/styles.ts": "b17fd9539f3e6793a174af9cc13092de64f8b4aa849675840a5187029e6ff954",
+    "nodia-client/src/modules/teacher/components/RequestRecovery/index.ts": "1ef91cb36f39de3b3f65d0b3ffff35b31e4b842b7489fb1d64deb507cdfbdbf1",
+    "nodia-client/src/modules/teacher/components/RequestRecovery/RequestRecovery.tsx": "1fd328dfb528b37c1de1c9f47db00b22b0e0a4dd9cff50e33a530098e4c2abfa",
+    "nodia-client/src/modules/teacher/components/RequestRecovery/styles.ts": "df0b0349fb38fada516adeaf8b93afae1ca2e7e36bff19e2ace14af3ede9da5f",
+    "nodia-client/src/modules/teacher/components/SelectionPanel/index.ts": "427a484c59a8b8ac8a8af99b5d3c5d695567414a2c2fff146ab09f508073eace",
+    "nodia-client/src/modules/teacher/components/SelectionPanel/SelectionPanel.tsx": "a3e78bd9b9e9410173ffc7e0012c042a478bd1c5352d072677b55d676ffb35c9",
+    "nodia-client/src/modules/teacher/components/SelectionPanel/styles.ts": "bb46bd533272fb517da0e47206100319985295d13652e59078d5bc59857d1e80",
+    "nodia-client/src/modules/teacher/components/SessionForm/index.ts": "1bbde011d0da4c627d0fd69ad838ab068781bd90bec46155a0d7bff55a5c8128",
+    "nodia-client/src/modules/teacher/components/SessionForm/SessionForm.tsx": "97514c0f877a4f57ddebac817b0de9aac4ea9da40e66fa4383e12ba0b71e0501",
+    "nodia-client/src/modules/teacher/components/SessionForm/styles.ts": "76ea25c642610cb600f33346829bdb72251b29c2b0b7015e5b4fa7ededab66f4",
+    "nodia-client/src/modules/teacher/constants/routes.ts": "705d71684a23aafb07eb812633bceb92d1a3a080cdb3fb267c884518c84aa3a1",
+    "nodia-client/src/modules/teacher/hooks/useAnswerDraft.ts": "217491be14355ea9e18b4cea6ff19f565278365c3101e9780c058444f925bc74",
+    "nodia-client/src/modules/teacher/infrastructure/assessmentPolicy.ts": "431c37cd7dff1bfa03bd73ad695b845a4e2d75a294f2e1be3fc61965d0457582",
+    "nodia-client/src/modules/teacher/infrastructure/presentation.ts": "0df499d039fd16e75f09c4192b9bac18c9f6bfd2ddcdd9253a938111a535d072",
+    "nodia-client/src/modules/teacher/infrastructure/recovery.ts": "756df76bc994f520f1ad6ae80a50a63897e73f2ce4cca9e345a4b1b0f044e0f0",
+    "nodia-client/src/modules/teacher/infrastructure/schemas.ts": "215e8f74a196bfbd75080fd658e85b6bd43ff792bb1df7cb4355705d060bdbc9",
+    "nodia-client/src/modules/teacher/infrastructure/services.ts": "25ebbc33e794d5999f3ec095a2dd202ffee016d5cd6ea0415e89dd60e9a59bb4",
+    "nodia-client/src/modules/teacher/infrastructure/useServices.ts": "3ee752b6122ae3d64a38fe29c2cd456916d4f08c92b3de85e03ae6d58ea62592",
+    "nodia-client/src/modules/teacher/pages/Teacher/index.ts": "22e3ba440159978c502cb562f9a6c5988c724655a2f7ee5df605a023d2b6bfa7",
+    "nodia-client/src/modules/teacher/pages/Teacher/styles.ts": "8237084df15d410d966f830c70e78366f510320f3eb21cb365cf088e7b5c23e4",
+    "nodia-client/src/modules/teacher/pages/Teacher/Teacher.tsx": "62e8b5db22e41a42bd2740d7b205ae31d1c1a1c781ccf32a4781bb05c6fd6979",
+    "nodia-client/src/translate/es/teacher.json": "2a2d8aaafef6d9831de5b6cfcafeac1a07db2962d1925cb3b41ee37bb9f35af1",
+    "nodia-client/src/translate/en/teacher.json": "dc98838dac44795157a2616fbeb01e16b8146b9b871ece0a0e90aa3f621664b3"
+  }
+}

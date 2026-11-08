@@ -12,7 +12,7 @@ function fixture() {
   const target = {
     selection: {
       ...f.selection,
-      mode: 'token_plan_agentic' as const,
+      mode: 'agentic' as const,
       model_id: 'synthetic-agentic',
       effort_id: null,
     },
@@ -21,7 +21,7 @@ function fixture() {
   };
   const original = f.query.getMockImplementation()!;
   f.query.mockImplementation(async (sql) =>
-    sql.includes("fields->'token_plan_agentic'")
+    sql.includes("fields->'agentic'")
       ? [
           {
             configuration: {
@@ -60,28 +60,38 @@ function fixture() {
   return { ...f, target, observation, adapter, subject, input };
 }
 describe('UpdateNodiaAiRoutingUseCase', () => {
-  it('saves explicit exact same-connection Agentic consent with a live verified MCP observation', async () => {
-    const f = fixture(),
-      expiry = f.chat.expires_at;
-    const result = await f.subject.execute(testIdentity, testChatId, f.input);
-    expect(result.routing).toEqual({
-      schema_version: 1,
-      enabled: true,
-      revision: 2,
-      target: f.target,
-    });
-    expect(result.revision).toBe(2);
-    expect(f.chat.expires_at).toBe(expiry);
-    expect(f.chat.last_owner_message_at).toBeNull();
-    expect(f.adapter.observe).toHaveBeenCalledWith(f.target.selection);
-    expect(
-      f.query.mock.calls.some(([sql]) =>
-        sql.includes('conversation.routing.updated'),
-      ),
-    ).toBe(true);
-  });
-  it('withdraws consent during an active job without requiring the broken provider', async () => {
+  it.each([
+    { enabled: true },
+    { enabled: false },
+    { enabled: true, target: null },
+    {
+      enabled: false,
+      target: {
+        selection: {
+          connection_id: '9',
+          mode: 'api_key',
+          model_id: 'another',
+          effort_id: null,
+        },
+        configuration_generation: 'a'.repeat(64),
+        session_generation: 'b'.repeat(32),
+      },
+    },
+  ])(
+    'rejects retired delegation configuration before SQL or observation: %j',
+    async (patch) => {
+      const f = fixture();
+      await expect(
+        f.subject.execute(testIdentity, testChatId, { ...f.input, ...patch }),
+      ).rejects.toThrow('nodia_ai:invalid_input');
+      expect(f.conversations.transaction).not.toHaveBeenCalled();
+      expect(f.adapter.observe).not.toHaveBeenCalled();
+      expect(f.conversations.save).not.toHaveBeenCalled();
+    },
+  );
+  it('withdraws historical consent during an active job without requiring a provider', async () => {
     const f = fixture();
+    const expiry = f.chat.expires_at;
     f.chat.active_job_id = testChatId;
     f.chat.routing_enabled = true;
     f.chat.routing_target_selection = f.target;
@@ -91,90 +101,69 @@ describe('UpdateNodiaAiRoutingUseCase', () => {
       enabled: false,
       target: null,
     });
-    expect(result.routing.enabled).toBe(false);
-    expect(result.routing.revision).toBe(2);
+    expect(result.routing).toEqual({
+      schema_version: 1,
+      enabled: false,
+      revision: 2,
+      target: null,
+    });
+    expect(result.revision).toBe(2);
+    expect(f.chat.expires_at).toBe(expiry);
+    expect(f.chat.last_owner_message_at).toBeNull();
     expect(f.adapter.observe).not.toHaveBeenCalled();
+    expect(
+      f.query.mock.calls.some(([sql]) =>
+        sql.includes('conversation.routing.updated'),
+      ),
+    ).toBe(true);
   });
-  it('does not enable while a job has frozen the base selection', async () => {
-    const f = fixture();
-    f.chat.active_job_id = testChatId;
-    await expect(
-      f.subject.execute(testIdentity, testChatId, f.input),
-    ).rejects.toThrow('nodia_ai:conversation_busy');
-    expect(f.adapter.observe).not.toHaveBeenCalled();
-  });
-  it.each(['api_key', 'token_plan_agentic'] as const)(
-    'enables only from Web, not %s',
-    async (mode) => {
+  it.each([
+    'expected_conversation_revision',
+    'expected_routing_revision',
+  ] as const)(
+    'rejects stale %s before persisting withdrawal',
+    async (field) => {
       const f = fixture();
-      f.chat.selected_mode = mode;
-      await expect(
-        f.subject.execute(testIdentity, testChatId, f.input),
-      ).rejects.toThrow('nodia_ai:invalid_selection');
-    },
-  );
-  it('does not substitute an API destination or another connection', async () => {
-    const f = fixture();
-    for (const selection of [
-      { ...f.target.selection, mode: 'api_key' },
-      { ...f.target.selection, connection_id: '9' },
-    ])
       await expect(
         f.subject.execute(testIdentity, testChatId, {
           ...f.input,
-          target: { ...f.target, selection },
+          enabled: false,
+          target: null,
+          [field]: 2,
         }),
-      ).rejects.toThrow('nodia_ai:invalid_selection');
-    expect(f.conversations.save).not.toHaveBeenCalled();
-  });
-  it('requires the model/effort configured for that connection instead of the first discovered model', async () => {
-    const f = fixture();
-    f.query.mockImplementation(async (sql) =>
-      sql.includes("fields->'token_plan_agentic'")
-        ? [{ configuration: { selected_model: 'another-configured-model' } }]
-        : [],
-    );
-    await expect(
-      f.subject.execute(testIdentity, testChatId, f.input),
-    ).rejects.toThrow('nodia_ai:invalid_selection');
-    expect(f.adapter.observe).not.toHaveBeenCalled();
-  });
-  it.each(['available', 'supportsMcp'] as const)(
-    'does not treat an absent %s proof as valid Agentic eligibility',
-    async (field) => {
-      const f = fixture();
-      f.observation[field] = false;
-      await expect(
-        f.subject.execute(testIdentity, testChatId, f.input),
-      ).rejects.toMatchObject({ status: 503 });
+      ).rejects.toThrow('nodia_ai:revision_conflict');
       expect(f.conversations.save).not.toHaveBeenCalled();
+      expect(f.adapter.observe).not.toHaveBeenCalled();
     },
   );
-  it('rejects a stale or changed provider/session observation', async () => {
+  it('rechecks revisions between short authority transactions before withdrawal', async () => {
     const f = fixture();
-    f.observation.sessionGeneration = 'changed';
-    await expect(
-      f.subject.execute(testIdentity, testChatId, f.input),
-    ).rejects.toThrow('nodia_ai:eligibility_changed');
-    expect(f.conversations.save).not.toHaveBeenCalled();
-  });
-  it('rejects revoked authority or a changed revision after observation', async () => {
-    const f = fixture();
-    f.adapter.observe.mockImplementationOnce(async () => {
+    f.conversations.transaction.mockImplementationOnce(async (work) => {
+      const result = await work(f.manager);
       f.chat.revision = 2;
-      return f.observation;
+      return result;
     });
     await expect(
-      f.subject.execute(testIdentity, testChatId, f.input),
+      f.subject.execute(testIdentity, testChatId, {
+        ...f.input,
+        enabled: false,
+        target: null,
+      }),
     ).rejects.toThrow('nodia_ai:revision_conflict');
     expect(f.conversations.save).not.toHaveBeenCalled();
   });
-  it('never lets super_admin configure consent as another chat owner', async () => {
+  it('never lets super_admin withdraw consent as another chat owner', async () => {
     const f = fixture();
     f.actor.isSuperAdmin = true;
     f.chat.owner_id = '2';
     await expect(
-      f.subject.execute(testIdentity, testChatId, f.input),
+      f.subject.execute(testIdentity, testChatId, {
+        ...f.input,
+        enabled: false,
+        target: null,
+      }),
     ).rejects.toMatchObject({ status: 403 });
+    expect(f.conversations.save).not.toHaveBeenCalled();
+    expect(f.adapter.observe).not.toHaveBeenCalled();
   });
 });

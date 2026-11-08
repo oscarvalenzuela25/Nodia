@@ -65,7 +65,7 @@ try {
   );
   const selection = {
     connection_id: provider.id,
-    mode: 'token_plan_web',
+    mode: 'agentic',
     model_id: 'synthetic-ai12-model',
     effort_id: null,
   };
@@ -117,7 +117,7 @@ try {
       );
       if (failTransport) throw Error('Synthetic connection lost after send');
       return { kind: 'answer', text: 'Synthetic answer without product tools', terminalProof: {
-        engine:request.selection.mode==='token_plan_web'?'web':'agentic',attemptId:request.attemptId,
+        engine:'agentic',attemptId:request.attemptId,
         resourceKey:request.resourceKey,sessionGeneration:request.sessionGeneration,operationRef:request.attemptId,
         terminalProofId:randomUUID(),processClosed:true,outcome:'completed',observedAt:new Date(),
       }};

@@ -20,7 +20,7 @@ import useAuthStore from "../../../store/authStore";
 import useThemeStore from "../../../store/configStore";
 import useGeneralSettingsStore from "../../../store/generalSettings/generalSettingsStore";
 import i18n from "../../../translate";
-import { CHAT_ID, WEB_SELECTION, installFixture } from "../nodia-ai/fixtures";
+import { CHAT_ID, BASE_SELECTION, installFixture } from "../nodia-ai/fixtures";
 import { run as syntheticRun, conversation as syntheticConversation } from "../../modules/nodiaAi/infrastructure/fixtures";
 import { proposalEvent, readonlyReview } from "../../modules/nodiaAi/infrastructure/proposalFixtures";
 import { report } from "../../modules/nodiaAi/infrastructure/reportFixtures";
@@ -55,10 +55,10 @@ const rows: NodiaAiConversation[] = Array.from({ length: 28 }, (_, index) => ({ 
   conversation_id: index === 0 ? CHAT_ID : `10000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`,
   owner_user_id: index === 4 ? "90000000992" : owner,
   title: index === 0 ? "[QA] Negocios, Reservas y Finanzas · conversación con un título largo para comprobar el ajuste" : index % 2 ? `[QA] Reservas ${index + 1}` : `[QA] Finanzas ${index + 1}`,
-  is_pinned: index === 2, is_archived: index >= 24, selection: WEB_SELECTION,
+  is_pinned: index === 2, is_archived: index >= 24, selection: BASE_SELECTION,
   read_only: index === 4,
 }));
-const run = { ...syntheticRun, conversation_id: CHAT_ID, selection: WEB_SELECTION, state: scenario === "unknown" ? "unknown" as const : "completed" as const, completed_at: scenario === "unknown" ? null : syntheticConversation.updated_at };
+const run = { ...syntheticRun, conversation_id: CHAT_ID, selection: BASE_SELECTION, state: scenario === "unknown" ? "unknown" as const : "completed" as const, completed_at: scenario === "unknown" ? null : syntheticConversation.updated_at };
 const attachmentId = "80000000-0000-4000-8000-000000000001";
 const reportRef = { tool_call_id: "80000000-0000-4000-8000-000000000002", tool_name: "nodia_reports_run", contract_hash: "a".repeat(64) };
 const eventBase = { ...proposalEvent, conversation_id: CHAT_ID, run_id: run.run_id };
@@ -148,7 +148,7 @@ mainInstance.defaults.adapter = async config => {
 useAuthStore.getState().login({ token: "synthetic-ai35-only-not-a-real-credential", user: { id: owner, name: "Synthetic QA" }, expiresAt: Date.now() + 3600000 });
 useGeneralSettingsStore.setState({ isLoaded: true, roles: ["super_admin"], modules: [], actions: [] });
 const refresh = () => void queryClient.invalidateQueries({ queryKey: ["nodia-ai"] });
-createRoot(document.getElementById("root")!).render(<QueryClientProvider client={queryClient}><MemoryRouter initialEntries={[`/tools/nodia-ai?chat=${CHAT_ID}`]}><MUIProvider>
+createRoot(document.getElementById("root")!).render(<QueryClientProvider client={queryClient}><MemoryRouter initialEntries={[`/nodia-ai?chat=${CHAT_ID}`]}><MUIProvider>
   <Box component="aside" aria-label="AI35 synthetic controls" sx={{ p: 2, display: "flex", flexWrap: "wrap", gap: 1, minWidth: 0 }}>
     <Typography sx={{ width: "100%" }}>QA SINTÉTICO AI-35 · SIN BD / PROVEEDOR / MICRÓFONO</Typography>
     <Button onClick={() => { detailFailure = 403; counts.detail = "403"; display(); refresh(); }}>Detail 403</Button>

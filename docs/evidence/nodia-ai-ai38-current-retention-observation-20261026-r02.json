@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "status": "scoped_point_in_time_retention_metadata_verified",
+  "observed_at_VM_utc": "2026-10-26T15:15:24.779Z",
+  "source_manifest_sha256": "605ef5533af3c8ffbffde33ce13275d966b9271f34a2ee0f8a17c609c02308c1",
+  "source_files_verified": 4230,
+  "services": {
+    "nodia-api": {
+      "MainPID": "454497",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r03",
+      "ActiveState": "active"
+    },
+    "nodia-ai-worker": {
+      "MainPID": "529979",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r03",
+      "ActiveState": "active"
+    }
+  },
+  "service_identity": {
+    "nodia-api": {
+      "Uid": [
+        10000,
+        10000,
+        10000,
+        10000
+      ],
+      "Gid": [
+        987,
+        987,
+        987,
+        987
+      ],
+      "Groups": [
+        987
+      ]
+    },
+    "nodia-ai-worker": {
+      "Uid": [
+        10000,
+        10000,
+        10000,
+        10000
+      ],
+      "Gid": [
+        987,
+        987,
+        987,
+        987
+      ],
+      "Groups": [
+        987
+      ]
+    }
+  },
+  "journal": {
+    "coverage_from": "2026-10-20T23:52:27.154Z",
+    "updated_at": "2026-10-26T15:11:54.743Z",
+    "coverage_closed": false,
+    "entry_count": 1,
+    "unconfirmed": 0
+  },
+  "summary": {
+    "retained_entries": 46,
+    "ready": 46,
+    "pending": 0,
+    "deleting": 0,
+    "expired_entries": 0,
+    "oldest_capture": "2026-10-20T23:58:20.785Z",
+    "earliest_catalog_expiry": "2026-10-27T23:58:20.785Z",
+    "earliest_possible_seven_day_boundary_of_current_era": "2026-10-27T23:52:27.154Z",
+    "current_era_seven_days_elapsed": false,
+    "all_declared_horizons_exactly_seven_days": true,
+    "HEAD_present": 46,
+    "HEAD_missing": 0,
+    "HEAD_unavailable": 0,
+    "all_ready_HEAD_metadata_match": true
+  },
+  "R2_metadata_reads": {
+    "catalog_GET": 2,
+    "backup_HEAD": 46
+  },
+  "AI_provider_calls": 0,
+  "SQL_queries": 0,
+  "SQL_writes": 0,
+  "backup_payload_GETs": 0,
+  "catalog_plaintext_sha256": "5edf49830d9953768acc877ca3eeba8dcede1fc3aca7c9b83a4f4b3e5f96a4f4",
+  "catalog_unchanged_during_observation": true,
+  "HEAD_interpretation": "Presence and recorded metadata match, not a rehash of ciphertext or a new restore proof. No backup payload GET.",
+  "VM_roots_inventory": [
+    {
+      "root": "/var/lib/nodia-ai-recovery/spool",
+      "exists": true,
+      "entry_budget": 1500,
+      "entries_examined": 1,
+      "truncated": false,
+      "candidate_files": 0,
+      "payloads_read": false,
+      "capture_encryption_and_deletion": "unknown_from_stat_only"
+    },
+    {
+      "root": "/var/backups/nodia",
+      "exists": true,
+      "entry_budget": 1500,
+      "entries_examined": 4,
+      "truncated": false,
+      "candidate_files": 0,
+      "payloads_read": false,
+      "capture_encryption_and_deletion": "unknown_from_stat_only"
+    },
+    {
+      "root": "/opt/nodia/verification-backups",
+      "exists": true,
+      "entry_budget": 1500,
+      "entries_examined": 1500,
+      "truncated": true,
+      "candidate_files": 12,
+      "payloads_read": false,
+      "capture_encryption_and_deletion": "unknown_from_stat_only"
+    },
+    {
+      "root": "/opt/nodia/verification",
+      "exists": true,
+      "entry_budget": 1500,
+      "entries_examined": 1500,
+      "truncated": true,
+      "candidate_files": 1,
+      "payloads_read": false,
+      "capture_encryption_and_deletion": "unknown_from_stat_only"
+    }
+  ],
+  "prior_failures_preserved": {
+    "R01": "Generic refusal before successful observation; no inventory acceptance.",
+    "source_diagnostic_R01": "Authoring bug: node --check combined with -e, syntax exit9; successor diagnostic uses stdin. Not a runtime recovery defect.",
+    "observe_once_R01": "Exactly one diagnostic execution, no retry. Sanitized frames reach factory lstat before config/client construction; R2 counter absent, not fabricated as measured0.",
+    "metadata_probes": "EACCES with UID10000/GID10000/clear-groups; file10000:987 0600 and parent0:987 0750; API UID10000/GID987/Groups[987].",
+    "R02": "Same private loader and owner/mode checks under real service primary GID987; no permissions/ACL/config changes or root secret loading."
+  },
+  "limits": {
+    "point_in_time_metadata_only": true,
+    "continuous_seven_day_operation_verified": false,
+    "physical_cleanup_within_24h_verified": false,
+    "all_destinations_or_object_versions_inventoried": false,
+    "remote_provider_chat_deletion_verified": false,
+    "HEAD_digest_is_metadata_not_a_new_hash_of_ciphertext": true
+  },
+  "remaining_gates": [
+    "Observe real oldest backup expiry after 2026-10-27T23:58:20.785Z; no clock simulation or cleanup invocation.",
+    "Seven elapsed days/continuous operation are not yet accredited at this snapshot.",
+    "Physical deletion within24h needs a real deletion timeline and applicable destination/version absence; this observation does not provide it.",
+    "Bounded roots are truncated for verification-backups/verification, with candidate files of unknown capture/encryption. Global destinations, historical host exports/checkpoints, versions/multipart and remote-provider deletion remain unverified."
+  ],
+  "receipt_pins": {
+    "ai38-config-access-probe-VM-r01.json": {
+      "sha256": "941b4d54695b55803fcd39cbd7d5c46d499747cbc7541ad1c86abd664ddf5dde",
+      "bytes": 217
+    },
+    "ai38-parent-metadata-VM-r01.json": {
+      "sha256": "899fa0a5330c3a5b553b0fbc29e08a7b058e9675eef4356ba5a0533aee3bf780",
+      "bytes": 485
+    },
+    "ai38-retention-observation-VM-r01.json": {
+      "sha256": "2cdd99a689e4314e3f1c64f447516417d68a33c1cb82822ea4e0133f023f1e01",
+      "bytes": 172
+    },
+    "ai38-retention-observation-VM-r02.json": {
+      "sha256": "0c43bd981fe1bc3577d1fb0f0d4968cb715878fd1ec6c2936caf64853a5b3e7b",
+      "bytes": 33993
+    },
+    "ai38-retention-once-diagnostic-VM-r01.json": {
+      "sha256": "4e5f0e053891851d42744fbdb95d39c7c056b5a510167d50b019fe4221777da9",
+      "bytes": 887
+    },
+    "ai38-retention-source-diagnostic-VM-r01.json": {
+      "sha256": "9e2f518706972778f6b28f467164fcd797a25628b7c2576901de498f07ae5b0b",
+      "bytes": 437
+    }
+  },
+  "verification_command": "python -B ops/lab/artifacts/ai38-retention-current-verification-r02/consolidate.py",
+  "consolidator_VM_storage_AI_SQL_calls": 0
+}

@@ -1,0 +1,383 @@
+{
+  "schema_version": 1,
+  "title": "Codex Agentic UI acceptance: explicit supplier, synthetic PDF OCR and later comparison after reload",
+  "status": "scoped_Codex_UI_accepted",
+  "execution_date_utc": "2026-10-26",
+  "operator": "Root; unique authorized VM/UI lane",
+  "author_operations": "Offline consolidation only; no VM/browser/SQL/SDK by this author",
+  "scope": {
+    "provider_engine": "Codex Agentic",
+    "fixture": "Synthetic C03 PDF43102bytes/SHA9f9a32bd",
+    "accepted": [
+      "Natural request discovers authorized business and commercial supplier list before OCR.",
+      "Explicit supplier continuation reuses the same original and analysis without reattachment.",
+      "Exactly one durable Products OCR stage, terminal and ACK, preserving real zero/null values.",
+      "Later read(compare_prices:true) succeeds with a fresh real observation timestamp and unchanged stored extraction.",
+      "Full reload preserves result; final readback is byte identical.",
+      "No products/invoice/stock/price save or proposal/confirmation/effect."
+    ],
+    "not_accepted": [
+      "Live matched product price increases/decreases: this laboratory has Products0 and the honest result is unmatched/unknown.",
+      "Gemini/Antigravity OCR, chat PDF native MIME, other accounts/environments or all NodiaAI capabilities.",
+      "Web/API inference or retirement of Web; those were outside this validation.",
+      "Global AI-36/C05 or AI-38 closure."
+    ]
+  },
+  "runtime": {
+    "Server": {
+      "release": "/opt/nodia/releases/nodia-server-invoice-ocr-r03",
+      "manifest_sha256": "605ef5533af3c8ffbffde33ce13275d966b9271f34a2ee0f8a17c609c02308c1",
+      "files_verified": 4230,
+      "knowledge_release": "9e9ac9e50b2661ced6ab5b1856ca1aec0fc474bbdd527a8398c86b59ea134459",
+      "knowledge_manifest_sha256": "7c89bdeafb9fbf0908ee60d4f22a8db8326d04c619dc3236e604a307e06c2f9c",
+      "capabilities": 152,
+      "fragments": 43
+    },
+    "Client": {
+      "release": "/opt/nodia/releases/nodia-client-invoice-ocr-r01",
+      "manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+      "files_verified": 183
+    },
+    "native": {
+      "id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+      "image": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+      "started_at": "2026-10-26T03:06:18.949917773Z",
+      "descriptor_sha256": "d27816454ab40e774919a16d3b99da50ccdc3c1e570ef244832b30b46a95f89d"
+    },
+    "nginx_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac",
+    "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "processes": {
+      "nodia-api": {
+        "active": "active",
+        "sub": "running",
+        "pid": 454497,
+        "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r03",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+        "argv_exact_match": true
+      },
+      "nodia-ai-worker": {
+        "active": "active",
+        "sub": "running",
+        "pid": 454498,
+        "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r03",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+        "argv_exact_match": true
+      }
+    },
+    "backup_runner_sha256": "6a480010647c90e428f19d45353f719c39ef66e4972d040f5eb95097931df8a4",
+    "backup_runner_hash_change_is_observation_only": true
+  },
+  "backend_acceptance": {
+    "conversation_id": "47a125cd-0dca-48bb-8a0b-fd6f95a256a2",
+    "analysis_id": "4cf7c71f-2399-4cf1-97e1-8ca945a9835f",
+    "request_id": "1dad898b-b1ee-44fd-b83a-6f3521c113ea",
+    "read_tool_id": "679d87bd-b41d-4315-b46f-f4334490d129",
+    "OCR_attempt_id": "f0817e2b-93f0-4ac6-96e2-cc620f332b6f",
+    "stored_result_hash": "08e4c0969ec3626daa9548b79394b2ec15fa6d3f5e5bf0c98313fa0728aa8802",
+    "projected_extraction_sha256_local": "811a351f4a5005801e3de2effa5c3f79c8389678ff99487f660c0b9f9a59c843",
+    "fresh_comparison_observed_at": "2026-10-26T05:28:13.987Z",
+    "run_budget_counter_sum_observed": 11,
+    "provider_internal_calls": null,
+    "provider_cost": null,
+    "actual_provider_generations": null,
+    "explicit_Codex_ACK_sources": {
+      "f3b2ccdc-56af-4ef8-b59e-ac42647e797d": [
+        "ui-codex-supplier-prompt-VM-r01.json"
+      ],
+      "59ef01fd-9033-4e0e-bf6b-230e25daa1c4": [
+        "ui-codex-supplier-prompt-VM-r01.json"
+      ],
+      "79bbbde2-77ae-4114-ae67-aea807cdb596": [
+        "ui-codex-ocr-completed-VM-r01.json"
+      ],
+      "c453f425-bc0b-4074-8ce3-68092c757b33": [
+        "ui-codex-ocr-completed-VM-r01.json"
+      ],
+      "f0817e2b-93f0-4ac6-96e2-cc620f332b6f": [
+        "ui-codex-ocr-completed-VM-r01.json"
+      ],
+      "2d8a316f-712e-4986-be03-465907efa911": [
+        "ui-codex-compare-after-reload-VM-r01.json"
+      ],
+      "71e0a211-c584-4b4e-bdbd-067cb1f66371": [
+        "ui-codex-compare-after-reload-VM-r01.json"
+      ],
+      "bd143240-d2cf-4148-be54-fb42beb77003": [
+        "ui-codex-compare-second-failure-VM-r01.json"
+      ],
+      "c71ce8d2-6397-4be2-a1bb-4720e1b86391": [
+        "ui-codex-compare-second-failure-VM-r01.json"
+      ],
+      "11d11b64-5d35-4bde-bb77-a3de723f11db": [
+        "final"
+      ],
+      "0d17485e-b78b-4a8d-b6a6-80f0ea81dafa": [
+        "final"
+      ]
+    },
+    "OCR_stages": 1,
+    "attachments": 1,
+    "extraction": {
+      "code": "C03-PDF-R01",
+      "total_amount": 0,
+      "data": {
+        "issue_date": "2026-10-25",
+        "items": [
+          {
+            "name": "Agua C03 PDF",
+            "code": "SKU-PDF-C03",
+            "quantity": 0,
+            "packages": null,
+            "units_per_package": null,
+            "cost_price": null,
+            "cost_price_tax": null,
+            "unit_price": 0,
+            "total_price": 0
+          }
+        ]
+      },
+      "numeric_values": {
+        "zero": 4,
+        "unknown": 4
+      }
+    },
+    "comparison": [
+      {
+        "index": 0,
+        "product_id": null,
+        "match": "unmatched",
+        "net": {
+          "direction": "unknown",
+          "previous": null,
+          "current": null,
+          "delta": null,
+          "percent": null
+        },
+        "gross": {
+          "direction": "unknown",
+          "previous": null,
+          "current": null,
+          "delta": null,
+          "percent": null
+        }
+      }
+    ],
+    "counts": {
+      "proposals": 0,
+      "executions": 0,
+      "effects": 0,
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0,
+      "unrevoked_grants": 0
+    }
+  },
+  "history": [
+    {
+      "turn": "M1",
+      "result": "completed; supplier list and awaiting_supplier preparation; zero OCR stages",
+      "dispatch_budget_counter": 2
+    },
+    {
+      "turn": "M2",
+      "result": "completed; explicit provider1, same PDF/analysis; one OCR stage",
+      "dispatch_budget_counter": 3
+    },
+    {
+      "turn": "M3 after reload",
+      "result": "run completed but OCR read tool remained validated with no result; clock-fingerprint regression preserved",
+      "dispatch_budget_counter": 2,
+      "fix_evidence": "docs/evidence/nodia-ai-invoice-ocr-comparison-clock-fix-20261026-r01.json"
+    },
+    {
+      "turn": "M4 after clock fix",
+      "result": "run completed; OCR read call did not persist. Current-source diagnostic found the incorrect ready upload-TTL guard. No invented M4 arguments or retrospective M3 expiry cause.",
+      "dispatch_budget_counter": 2,
+      "fix_evidence": "docs/evidence/nodia-ai-invoice-ocr-ready-retention-fix-20261026-r01.json"
+    },
+    {
+      "turn": "M5 after ready-retention fix",
+      "result": "completed; real read tool679d compare_prices strictly true; fresh comparison05:28:13.987Z, unchanged extraction, no repeat OCR",
+      "dispatch_budget_counter": 2
+    }
+  ],
+  "direct_before_after": {
+    "before_receipt": "receipts/live-read-diagnostic-VM-r01.json",
+    "before_status": "Current historical read rejected invoice_ocr_invalid; attachment ready with past upload-intent deadline but active chat.",
+    "after_receipt": "receipts/live-read-diagnostic-VM-r02.json",
+    "after_six_steps_passed": true,
+    "after_query_count": 125,
+    "SELECT_guarded_always_rollback": true,
+    "provider_generations": 0,
+    "database_writes": 0,
+    "upload_deadline_unchanged": "2026-10-26 04:52:55.222+00",
+    "input_origin": "actual_M3_receipt_arguments_with_M4_authority"
+  },
+  "post_reload": {
+    "byte_identical_to_M5_readback": true,
+    "sha256": "3f4038811e714cba4afc359381f06c7fb35faefceb39f05c0afee3c9430f868f",
+    "screenshot": "receipts/codex-comparison-success-after-reload-r01.png",
+    "Root_confirmed_full_reload_and_honest_unmatched_response": true,
+    "tab7_closed_and_VM_lane_released": true
+  },
+  "domain_final": {
+    "receipt": "receipts/final-domain-preservation-VM-r02.json",
+    "receipt_sha256": "5c99917799054d8e90946b411d56810db05dc33730a387d8aee9b6c15b276946",
+    "comparison": {
+      "matches": true,
+      "baseline_tables": 40,
+      "current_tables": 40,
+      "missing": [],
+      "added": [],
+      "changed": [],
+      "schema_matches": true,
+      "exclusions": [
+        "auth_sessions",
+        "nodia_ai_*"
+      ]
+    },
+    "schema_sha256": "82753ec54d69006d2850dd62173093c03086e43a37af62e2a3dba1c5da5b4b87",
+    "baseline_sha256": "d0548539b8135c378781511ea47df28baa8abcbf387567c02de40b9ca962ead8",
+    "SQL_quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "native_quiet": {
+      "attempt_receipts": 0,
+      "unknown_markers": 0,
+      "temporary_directories": 0,
+      "active_native_processes": 0
+    },
+    "Codex_pending": 0,
+    "timers": {
+      "nodia-ai-backup.timer": {
+        "active": "active",
+        "sub": "waiting",
+        "pid": 0,
+        "working_directory": ""
+      },
+      "nodia-ai-backup-rotate.timer": {
+        "active": "active",
+        "sub": "waiting",
+        "pid": 0,
+        "working_directory": ""
+      }
+    },
+    "journal_unconfirmed": 0,
+    "available_bytes": 3783032832,
+    "reserve_bytes": 268443676
+  },
+  "prior_Antigravity_result": {
+    "evidence": "docs/evidence/nodia-ai-invoice-ocr-gemini-ui-unknown-reconciliation-20261026-r01.json",
+    "sha256": "959e8f21116369377b59715eb47a6fd4f3f6953a0060b2b48dec909ed7e3198c",
+    "result": "Independent M1 unknown before callbacks/OCR, exactly reconciled and ACKed without replay; not accepted by Codex success."
+  },
+  "receipts": {
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/final-domain-preservation-VM-r02.json": {
+      "bytes": 8503,
+      "sha256": "5c99917799054d8e90946b411d56810db05dc33730a387d8aee9b6c15b276946"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/live-read-diagnostic-VM-r01.json": {
+      "bytes": 2854,
+      "sha256": "e6fd05db411076f9713fbe8df6877f44ac788b7aafe912870f5b138c027939ad"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/live-read-diagnostic-VM-r02.json": {
+      "bytes": 4791,
+      "sha256": "2d3c16e2348da765feda6c45c96495fd481fe452439bcccfaabe41d8e81c8f8e"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/server-adoption-VM-r02.json": {
+      "bytes": 24340,
+      "sha256": "9b012e714e8b5141c8001d6c77ed2cfd0a8f9a39db6cb9db1917c6ce10028ebe"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/server-adoption-VM-r03.json": {
+      "bytes": 24078,
+      "sha256": "5414563e8f4cea2bf0fdf566caef04bd04845ec209ec7e3b179b795ea087c0de"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/sql-di-VM-r02.json": {
+      "bytes": 2673,
+      "sha256": "aa87f5cfc0449dd931de58a37f11d50d21e8f9566cf579d0fe9a9c51674a2825"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/sql-di-VM-r03.json": {
+      "bytes": 2784,
+      "sha256": "00f76547477aeb6dc5514c95ff66dd8ff85bb520477e9e64df632ad24f6209ee"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/ui-codex-baseline-VM-r01.json": {
+      "bytes": 2571,
+      "sha256": "aec9b789626edc3cf70411bae07563553884dfb285b97f4a1feb1f4fd297c9d8"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/ui-codex-compare-after-reload-VM-r01.json": {
+      "bytes": 14579,
+      "sha256": "46d3ac5bf0b9ea4a824c28cc3c21c5f501fc94730e228a6b65752e5ed896d267"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/ui-codex-compare-second-failure-VM-r01.json": {
+      "bytes": 16908,
+      "sha256": "bd78f21d488bb353eb7dea2d9c2afbe4c965bd857f1f2ec875fe49f711ca9e27"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/ui-codex-comparison-after-reload-VM-r01.json": {
+      "bytes": 20612,
+      "sha256": "3f4038811e714cba4afc359381f06c7fb35faefceb39f05c0afee3c9430f868f"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/ui-codex-comparison-success-VM-r01.json": {
+      "bytes": 20612,
+      "sha256": "3f4038811e714cba4afc359381f06c7fb35faefceb39f05c0afee3c9430f868f"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/ui-codex-ocr-completed-VM-r01.json": {
+      "bytes": 11518,
+      "sha256": "d4e7e55326ce7c43c5266415fc800c56a5b839b2708bae35df9a96ef1febca41"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/ui-codex-read-comparison-proof-VM-r02.json": {
+      "bytes": 1335,
+      "sha256": "d04aea543a7484b186490ae5a03d64006ce6f9db84eab256377a1b9f11a121f4"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/ui-codex-supplier-prompt-VM-r01.json": {
+      "bytes": 6541,
+      "sha256": "901f9d9414c2933272cd89781827f92b399fd497cf62ee75db133fd4972f13a5"
+    }
+  },
+  "screenshots": {
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/01-unreviewed-invoice-ready.png": {
+      "bytes": 88910,
+      "sha256": "8c52018c763d4395980b47b113ca0f311fa5a21d8380d3cb2474106608fce945"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/02-gemini-unknown-before-callbacks.png": {
+      "bytes": 97699,
+      "sha256": "b4dce893ea12b3319ed71d1afc74fc480d0a32fe24028c2ba921a834afd86368"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/03-codex-pdf-unreviewed-ready.png": {
+      "bytes": 89212,
+      "sha256": "7b0f26e00bb85886ca1a8094fd895df2abc4afb914dc5e1d7b8b09c9d5e045b7"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/04-codex-supplier-list-before-ocr.png": {
+      "bytes": 84705,
+      "sha256": "1f4c5a8ce757316b9c58a963c4aeb3f4db09c2d6583740d4d7e2e410fd6ed8e8"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/05-codex-comparison-regression-before-fix.png": {
+      "bytes": 79504,
+      "sha256": "18f446320c34fb4bcb32377e283cb6e535df9d5d6371000feaf651cde724c754"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/codex-comparison-second-failure-r01.png": {
+      "bytes": 86452,
+      "sha256": "d5a7ace335447906ffb29c0552acfa9f4e1f069c3fa3ac71ac1c362c4ab67fc2"
+    },
+    "ops/lab/artifacts/invoice-ocr-chat-ui-verification-r01/receipts/codex-comparison-success-after-reload-r01.png": {
+      "bytes": 76308,
+      "sha256": "b7c5f5f0767052e37eb41b3097751b12fbe8b77a9e9ecd7d64bec73ce2b1c36f"
+    }
+  },
+  "limits": [
+    "Stored_result_hash08e4 covers the stored extraction/comparison/timestamp object; it is not a standalone extraction hash. Local projected extraction SHA811a351f is a separate reproducible comparison of the exact M2/M5 projection.",
+    "The strict comparison boolean is proved by the supplementary SELECT reader for actual M5 tool/run/analysis IDs; its own result_hash/request_hash are null and are not called extraction hashes.",
+    "Eleven run dispatch-budget units and eleven explicit Codex terminal/ACK observations across snapshots are recorded separately from unknown provider internal calls, generations and cost.",
+    "Old native receipts missing in later snapshots are not inferred ACKs; earlier explicit decoded ACKtrue samples are retained.",
+    "Domain40 comparison excludes auth_sessions and nodia_ai_*; conversational writes and expected technical updates are separately described. It is not a claim that every database row stayed unchanged.",
+    "Reader array order is lexical for the seq::text alias at10; identity/metadata preservation is checked using numeric sequences, without modifying raw receipts.",
+    "No new schema migration, TTL update, business write, fallback, replay of an uncertain generation, feature approval or global acceptance is implied."
+  ]
+}

@@ -10,3 +10,8 @@ temp_uploads/
 __pycache__/
 *.pyc
 .git/
+.tmp/
+.temp/
+output/
+outputs/
+*.log

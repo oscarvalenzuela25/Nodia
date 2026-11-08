@@ -1,0 +1,296 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodia.local/schemas/sales-read/3",
+  "$defs": {
+    "SaleItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "product_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "position": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "quantity": {
+          "type": "number",
+          "maximum": 2147483647,
+          "description": "Positive quantity with at most three decimal places. The native sales reader and result guard validate the exact decimal representation; no floating-point multipleOf coercion or rounding.",
+          "exclusiveMinimum": 0
+        },
+        "product_code_snapshot": {
+          "type": ["string", "null"],
+          "maxLength": 255
+        },
+        "product_barcode_snapshot": {
+          "type": ["string", "null"],
+          "maxLength": 255
+        },
+        "product_name_snapshot": {
+          "type": "string",
+          "maxLength": 255
+        },
+        "regular_unit_price": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,18})$"
+        },
+        "offer_price_snapshot": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,18})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "is_offer_enabled_snapshot": {
+          "type": "boolean"
+        },
+        "price_source": {
+          "enum": ["regular", "offer", "manual"]
+        },
+        "unit_price": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,18})$"
+        },
+        "line_total": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,18})$"
+        },
+        "product_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "measurement_unit_snapshot": {
+          "type": "string",
+          "enum": ["unit", "kg", "g", "bundle"]
+        }
+      },
+      "required": [
+        "id",
+        "product_id",
+        "position",
+        "quantity",
+        "product_code_snapshot",
+        "product_barcode_snapshot",
+        "product_name_snapshot",
+        "regular_unit_price",
+        "offer_price_snapshot",
+        "is_offer_enabled_snapshot",
+        "price_source",
+        "unit_price",
+        "line_total",
+        "product_version",
+        "measurement_unit_snapshot"
+      ]
+    },
+    "Sale": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "business_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "enum": ["draft", "completed", "cancelled", "discarded"]
+        },
+        "currency": {
+          "const": "CLP"
+        },
+        "payment_method": {
+          "enum": [
+            "cash",
+            "bank_transfer",
+            "debit_card",
+            "credit_card",
+            "other"
+          ]
+        },
+        "payment_method_description": {
+          "type": ["string", "null"],
+          "maxLength": 500
+        },
+        "total_amount": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,18})$"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completed_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cancelled_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cancellation_reason": {
+          "type": ["string", "null"],
+          "maxLength": 500
+        },
+        "items": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/SaleItem"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "business_id",
+        "status",
+        "currency",
+        "payment_method",
+        "payment_method_description",
+        "total_amount",
+        "version",
+        "created_at",
+        "updated_at",
+        "completed_at",
+        "cancelled_at",
+        "cancellation_reason",
+        "items"
+      ]
+    },
+    "SalesGetInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "business_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": ["business_id", "id"]
+    },
+    "SalesListInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "business_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "status": {
+          "enum": ["draft", "completed", "cancelled", "discarded"]
+        },
+        "from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "to_exclusive": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "search": {
+          "type": "string",
+          "maxLength": 255
+        }
+      },
+      "required": ["business_id"]
+    },
+    "SalesGetResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "$ref": "#/$defs/Sale"
+        }
+      },
+      "required": ["data"]
+    },
+    "SalesListResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/Sale"
+          }
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "total_items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "total_pages": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": ["page", "limit", "total_items", "total_pages"]
+        }
+      },
+      "required": ["data", "meta"]
+    }
+  }
+}

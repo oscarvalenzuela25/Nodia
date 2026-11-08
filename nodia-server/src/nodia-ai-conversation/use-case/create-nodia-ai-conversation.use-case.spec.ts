@@ -2,11 +2,16 @@ import { describe, expect, it, vi } from 'vitest';
 import { createHash } from 'node:crypto';
 import type { EntityManager } from 'typeorm';
 import type { NodiaAiConversationService } from '../nodia-ai-conversation.service.js';
+import type {
+  NodiaAiConnectionsService,
+  NodiaAiConnectionConfiguration,
+} from '../nodia-ai-connections.service.js';
 import type { AuthorizeNodiaAiUseCase } from '../../nodia-ai/use-case/authorize-nodia-ai.use-case.js';
 import type { NodiaAiConversation } from '../entities/nodia-ai-conversation.entity.js';
 import { CreateNodiaAiConversationUseCase } from './create-nodia-ai-conversation.use-case.js';
 import { ValidateNodiaAiConversationInputUseCase } from './validate-nodia-ai-conversation-input.use-case.js';
 import { ProjectNodiaAiConversationUseCase } from './project-nodia-ai-conversation.use-case.js';
+import { connectionFixture } from './nodia-ai-connections.fixture.js';
 const identity = {
   userId: '1',
   sessionId: '8d524fcc-68dd-4c62-a183-6cf3baedc6d1',
@@ -41,12 +46,18 @@ function setup() {
     retentionDays: 90,
     titleUtf8Bytes: 256,
   };
+  const connections = {
+    findDefault: vi
+      .fn<() => Promise<NodiaAiConnectionConfiguration | null>>()
+      .mockResolvedValue(null),
+  };
   const subject = new CreateNodiaAiConversationUseCase(
     conversations as unknown as NodiaAiConversationService,
     authorize as unknown as AuthorizeNodiaAiUseCase,
     new ValidateNodiaAiConversationInputUseCase(),
     new ProjectNodiaAiConversationUseCase(),
     policy,
+    connections as unknown as NodiaAiConnectionsService,
   );
   return {
     subject,
@@ -55,12 +66,57 @@ function setup() {
     manager,
     query,
     policy,
+    connections,
     setSaved: (value: NodiaAiConversation) => {
       saved = value;
     },
   };
 }
 describe('CreateNodiaAiConversationUseCase', () => {
+  it('initializes a new chat from the exact saved default and keeps it stable on idempotent recovery', async () => {
+    const { subject, connections } = setup();
+    const { row } = connectionFixture();
+    row.is_default = true;
+    row.default_mode = 'api_key';
+    row.fields = {
+      api_key: { selected_model: 'synthetic-default', thinking_level: 'high' },
+    };
+    connections.findDefault.mockResolvedValue(row);
+    const first = await subject.execute(identity, input);
+    expect(first.selection).toEqual({
+      connection_id: row.id,
+      mode: 'api_key',
+      model_id: 'synthetic-default',
+      effort_id: 'high',
+    });
+    connections.findDefault.mockResolvedValue({ ...row, id: '9' });
+    expect(await subject.execute(identity, input)).toEqual(first);
+    expect(connections.findDefault).toHaveBeenCalledOnce();
+  });
+  it('honors an explicit creation selection without consulting or changing the global default', async () => {
+    const { subject, connections } = setup();
+    const selection = {
+      connection_id: '8',
+      mode: 'agentic' as const,
+      model_id: 'synthetic-explicit',
+      effort_id: null,
+    };
+    expect(
+      (await subject.execute(identity, { ...input, selection })).selection,
+    ).toEqual(selection);
+    expect(connections.findDefault).not.toHaveBeenCalled();
+  });
+  it('creates an unassigned chat when the default configuration has no selected model', async () => {
+    const { subject, connections } = setup();
+    const { row } = connectionFixture();
+    Object.assign(row, {
+      is_default: true,
+      default_mode: 'agentic',
+      fields: { agentic: {} },
+    });
+    connections.findDefault.mockResolvedValue(row);
+    expect((await subject.execute(identity, input)).selection).toBeNull();
+  });
   it('creates a private empty chat with policy retention and no tools/routing/owner message', async () => {
     const { subject, conversations, authorize, manager, query } = setup();
     const result = await subject.execute(identity, input);

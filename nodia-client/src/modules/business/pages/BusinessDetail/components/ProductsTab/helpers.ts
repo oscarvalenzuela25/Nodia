@@ -1,3 +1,4 @@
+import { isMeasurementUnit } from "../../../../infrastructure/measurementUnits";
 import type { ProductLogEntity, ProductEntity } from "../../../../infrastructure/types";
 
 export interface PriceDiffData {
@@ -7,6 +8,15 @@ export interface PriceDiffData {
 }
 
 export type PriceChangeStatus = "increased" | "decreased" | "unchanged";
+
+export const priceMeasurementsComparable = (
+  current: Pick<ProductEntity, "measurement_unit">,
+  historical: Pick<ProductLogEntity, "measurement_unit">,
+): boolean => {
+  const currentUnit = current.measurement_unit === undefined ? "unit" : current.measurement_unit;
+  const historicalUnit = historical.measurement_unit === undefined ? "unit" : historical.measurement_unit;
+  return isMeasurementUnit(currentUnit) && isMeasurementUnit(historicalUnit) && currentUnit === historicalUnit;
+};
 
 export const calculatePriceDiff = (
   currentSale: number,
@@ -42,7 +52,7 @@ export const calculatePriceDiff = (
  *   - If only 1 log exists (the creation log), it is the baseline snapshot.
  */
 export const resolveHistoricalLog = (
-  product: Pick<ProductEntity, "sale_price" | "cost_price">,
+  product: Pick<ProductEntity, "sale_price" | "cost_price" | "measurement_unit">,
   logs: ProductLogEntity[]
 ): ProductLogEntity | null => {
   if (!logs || logs.length === 0) return null;
@@ -51,12 +61,13 @@ export const resolveHistoricalLog = (
   if (
     logs.length > 1 &&
     newestLog.sale_price === product.sale_price &&
-    newestLog.cost_price === product.cost_price
+    newestLog.cost_price === product.cost_price &&
+    priceMeasurementsComparable(product, newestLog)
   ) {
     return logs[1];
   }
 
-  if (newestLog.sale_price !== product.sale_price) {
+  if (newestLog.sale_price !== product.sale_price || !priceMeasurementsComparable(product, newestLog)) {
     return newestLog;
   }
 

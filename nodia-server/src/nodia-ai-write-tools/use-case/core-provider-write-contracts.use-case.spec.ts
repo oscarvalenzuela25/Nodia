@@ -138,21 +138,20 @@ function complete(entry: Entry): NodiaAiJsonObject {
     return { provider_id: '1', key_id: '2' };
   if (entry.tool_name.endsWith('_logout')) return { provider_id: '1' };
   if (entry.tool_name.endsWith('_sync_models'))
-    return { provider_id: '1', mode: 'token_plan_agentic' };
+    return { provider_id: '1', mode: 'agentic' };
   if (entry.resource_key === 'ai_providers')
     return {
       ...(action === 'create'
         ? { catalog_id: '1' }
         : {
             id: '1',
-            'token_plan_agentic.selected_model': 'synthetic-discovered-model',
-            'token_plan_web.ocr_model': null,
+            'agentic.selected_model': 'synthetic-discovered-model',
+            'agentic.ocr_model': null,
             'api_key.thinking_level': null,
           }),
       name: 'Conexión de prueba',
       use_api_key: false,
-      use_token_plan_web: false,
-      use_token_plan_agentic: true,
+      use_agentic: true,
       default_mode: null,
       auto_rotate_api_keys: false,
       is_default: false,
@@ -166,8 +165,7 @@ function complete(entry: Entry): NodiaAiJsonObject {
         : { id: '1', is_active: false }),
       name: 'Synthetic provider',
       can_use_api_key: false,
-      can_use_token_plan_web: false,
-      can_use_token_plan_agentic: false,
+      can_use_agentic: false,
     };
   return {
     ...(action === 'create' ? {} : { id: '1' }),
@@ -193,12 +191,12 @@ async function nativeStatus(
 }
 
 describe('Core/provider MCP write contracts use real preparation decoders', () => {
-  it('covers precisely the 25 native preparers, excluding four secure credential/login flows', () => {
-    expect(bundle.tools).toHaveLength(25);
+  it('covers precisely the 24 native preparers, excluding four secure credential/login flows', () => {
+    expect(bundle.tools).toHaveLength(24);
     expect([...validators.keys()].sort()).toEqual([...preparers.keys()].sort());
     expect(
       new Set(bundle.tools.map((entry) => entry.input_definition)).size,
-    ).toBe(25);
+    ).toBe(24);
     expect(
       bundle.tools.every((entry) => /[Pp]repara/u.test(entry.description)),
     ).toBe(true);
@@ -365,7 +363,7 @@ describe('Core/provider MCP write contracts use real preparation decoders', () =
   });
   it('keeps model IDs dynamic but configuration closed, nullable and separate per channel', () => {
     const name = 'nodia_ai_providers_prepare_update';
-    for (const mode of ['api_key', 'token_plan_web', 'token_plan_agentic']) {
+    for (const mode of ['api_key', 'agentic', 'agentic']) {
       for (const key of [
         'selected_model',
         'ocr_model',

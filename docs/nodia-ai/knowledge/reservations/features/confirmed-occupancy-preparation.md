@@ -4,13 +4,13 @@
   "document_id": "reservations.confirmed-occupancy-preparation",
   "product_id": "reservations",
   "kind": "feature",
-  "revision": 1,
-  "document_status": "draft",
+  "revision": 2,
+  "document_status": "approved",
   "implementation": {
-    "status": "implemented",
-    "notes": "AI-26 implementa y verifica en laboratorio privado4 puertos internos con escritores/reglas nativas, revisión exacta y recibo atómico. No publica herramientas MCP ni acredita escrituras Gemini."
+    "status": "partial",
+    "notes": "AI36-C05 publica sólo la sección adicional enumerada bajo autorización humana específica; los apartados previos conservan su fecha y alcance. Contratos internos y publicación no prueban despliegue, inferencia o aceptación productiva."
   },
-  "integration_status": "unregistered",
+  "integration_status": "published",
   "maintainer": "Mantenimiento de Reservas y NodiaAI conforme AGENTS",
   "sources": [
     {
@@ -60,10 +60,14 @@
     {
       "path": "nodia-server/src/nodia-ai-rental-operations/nodia-ai-rental-operations.service.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-10-17",
+    "checked_on": "2026-10-24",
     "evidence_paths": [
       "docs/mvp/72-nodia-ai-ai26-rental-money-occupancy-preparation.md",
       "docs/evidence/nodia-ai-ai26-validation.json",
@@ -75,11 +79,17 @@
       "docs/evidence/nodia-ai-ai26-lab-activation.json",
       "docs/evidence/nodia-ai-ai26-deployed-equality.json",
       "docs/evidence/nodia-ai-ai26-lab-runtime.json",
-      "docs/evidence/nodia-ai-ai26-knowledge-validation.json"
+      "docs/evidence/nodia-ai-ai26-knowledge-validation.json",
+      "docs/evidence/nodia-ai-ai36-c01-validation.json",
+      "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json"
     ],
-    "notes": "AI-26: Server2637/194, Client1526/203,310 comprobaciones SQL/HTTP/procesos (44 nuevas+266 regresiones,282 HTTP nativas) y9 QA sintéticas. Laboratorio privado con48 ejecutores,25 migraciones/18 tablas NodiaAI/241 columnas y0 pendientes; sin esquema nuevo. Ficha draft/unregistered y approval null, sin publicación MCP o aceptación de escrituras Gemini."
+    "notes": "Publicación offline con builders nativos y schemas cerrados. El fragmento adicional es el único alcance nuevo; no equivale a cuenta real ni a una aceptación de todos sus efectos."
   },
-  "approval": null
+  "approval": {
+    "reference": "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-authorization.md",
+    "revision": 2,
+    "content_sha256": "6a6e22122d1bd3724c15323db90082bdfe15b229d6ad44c4b0f4c1cd6fd90415"
+  }
 }
 ---
 
@@ -133,3 +143,16 @@ Implementación y laboratorio privado AI-26 verificados; evidencia en [72](../..
 | Revisión | Cambio | Compatibilidad |
 |---|---|---|
 | 1 | AI-26 integra cuatro puertos internos de bloqueos/preparación conforme reglas nativas | Plan o vecindad cambiados requieren revalidar propuesta; recibo histórico no acredita preparación actual. Sin nueva publicación MCP |
+
+## Reservas: ocupación y preparación publicadas en AI36-C05
+
+Este fragmento añade sólo estas preparaciones publicadas:
+
+- `nodia_rental_blocks_prepare_create`
+- `nodia_rental_blocks_prepare_update`
+- `nodia_rental_turnovers_prepare_approve_same_day`
+- `nodia_rental_turnovers_prepare_update`
+
+Cada herramienta recibe un partial cerrado, devuelve mínimos faltantes o propuesta revisable y permite continuar sólo con draft_id/revisión CAS exactos. No aplica el cambio de dominio. Consulta las referencias reales; nunca inventes IDs o enlaces. Sólo el botón humano sobre revisión/hash exactos admite la ejecución y su recibo nativo. No se aceptan SQL, comandos arbitrarios, secretos ni bulk/importación. Confirmar/iniciar/completar/cancelar, pagar/anular y aprobar preparación conservan sus reglas y permisos nativos. No son eliminaciones físicas ni revierten automáticamente dinero u ocupación.
+
+El backend exige NodiaAI y cada módulo/acción de destino vigentes, reautoriza al ejecutar y conserva recuperación/idempotencia. Publicación, selección del intento, disponibilidad, despliegue y aceptación real son estados distintos. Los apartados anteriores son históricos y no amplían este lote.

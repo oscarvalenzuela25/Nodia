@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { useId } from "react";
+import { Box } from "@mui/material";
 import type { TextInputProps } from "./types";
 import {
   InputContainer,
@@ -10,10 +11,14 @@ import {
 
 const TextInput: FC<TextInputProps> = ({
   label,
+  labelAdornment,
   value,
   onChange,
   onBlur,
+  onFocus,
+  onKeyDown,
   type = "text",
+  inputMode,
   placeholder,
   required = false,
   disabled = false,
@@ -39,10 +44,13 @@ const TextInput: FC<TextInputProps> = ({
   return (
     <InputContainer fullWidth={fullWidth} data-testid={testId}>
       {label && (
-        <LabelTypography htmlFor={inputId}>
-          {label}
-          {required && <RequiredStar>*</RequiredStar>}
-        </LabelTypography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, minWidth: 0 }}>
+          <LabelTypography htmlFor={inputId}>
+            {label}
+            {required && <RequiredStar>*</RequiredStar>}
+          </LabelTypography>
+          {labelAdornment}
+        </Box>
       )}
       <StyledTextField
         id={inputId}
@@ -55,7 +63,7 @@ const TextInput: FC<TextInputProps> = ({
         disabled={disabled}
         error={error}
         helperText={helperText}
-        slotProps={{ input: { endAdornment }, ...(ariaDescribedBy ? { htmlInput: { "aria-describedby": ariaDescribedBy } } : {}) }}
+        slotProps={{ input: { endAdornment }, htmlInput: { onFocus, onKeyDown, inputMode, ...(ariaDescribedBy ? { "aria-describedby": ariaDescribedBy } : {}) } }}
         fullWidth
         autoFocus={autoFocus}
         variant="outlined"

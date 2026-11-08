@@ -1,5 +1,11 @@
 # Instalación de base de datos e inventario de migraciones
 
+## Arranque local y reconciliación — 2026-10-28
+
+[Recibo local](../evidence/nodia-ai-local-backend-startup-20261028-r01.json): la BD Docker existente pasó de42tablas/7registros a66tablas/32migraciones, sin pendientes. Antes se verificó copia DPAPI por descifrado/TOC; después se conservó otra. Catálogo ya refactorizado, claves v2/HMAC válidas y Finanzas semánticamente comparada contra su `up` aislado se adoptaron documentalmente como tres estados existentes; no se simula que fueron ejecutados históricamente. Finanzas sólo necesitó dos índices no únicos, sin cambios de filas. Las otras22migraciones versionadas se aplicaron en transacción. Claves cifradas y35tablas previas de dominio permanecieron byte/lógicamente idénticas por sus huellas. La retirada Web conserva su respaldo y deja null el antiguo predeterminado Web, sin sustituir modo.
+
+API3000/worker separado y weblocalhost5174 iniciados, RedisPONG y Native127.0.0.1:8000 con status autenticado200. No hubo inferencia, impersonación, seed/reset o despliegue VM; Codex Agentic conserva su límite Windows. El paquete de recuperación local y sus launchers están catalogados en `ops/lab/artifacts/local-backend-startup-20261028-r01/`; DPAPI exige la misma cuenta Windows y no acredita restauración completa/retención externa. Los estados locales anteriores siguientes son históricos.
+
 > Estado: implementado y verificado localmente; en revisión documental
 > Fecha: 2026-10-10
 > Decisión: [ADR-027](../architecture/decisions/ADR-027-reusable-core-and-database-bootstrap.md)

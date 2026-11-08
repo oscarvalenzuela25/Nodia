@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { canonicalModuleRoute, canonicalModuleRoutes } from '../../authorization/canonical-module-route.js';
 import { createHash } from 'node:crypto';
 import { lstatSync, readFileSync, realpathSync } from 'node:fs';
 import { isAbsolute, join, relative, resolve, sep } from 'node:path';
@@ -113,8 +114,8 @@ export class LoadNodiaAiKnowledgeUseCase {
         !actual ||
         actual.revision !== item.revision ||
         actual.kind !== item.kind ||
-        canonicalKnowledge([...actual.required_module_routes].sort()) !==
-          canonicalKnowledge([...item.required_module_routes].sort()) ||
+        canonicalKnowledge(canonicalModuleRoutes(actual.required_module_routes).sort()) !==
+          canonicalKnowledge(canonicalModuleRoutes(item.required_module_routes).sort()) ||
         actual.input_schema_sha256 !== item.input_schema.sha256 ||
         actual.output_schema_sha256 !== item.output_schema.sha256
       )
@@ -144,9 +145,9 @@ export class LoadNodiaAiKnowledgeUseCase {
     this.manifest = freezeKnowledge(manifest);
   }
   index(moduleRoutes: readonly string[]) {
-    const authorized = new Set(moduleRoutes);
+    const authorized = new Set(canonicalModuleRoutes(moduleRoutes));
     const selected = this.manifest.fragments.filter((fragment) =>
-      fragment.required_module_routes.every((route) => authorized.has(route)),
+      fragment.required_module_routes.every((route) => authorized.has(canonicalModuleRoute(route))),
     );
     if (selected.length > this.policy.results.json_collection_items)
       throw new Error('nodia_ai:context_limit');
@@ -169,7 +170,7 @@ export class LoadNodiaAiKnowledgeUseCase {
     catalogVersion: string;
     fragments: { id: string; sha256: string; text: string }[];
   } {
-    const authorized = new Set(moduleRoutes);
+    const authorized = new Set(canonicalModuleRoutes(moduleRoutes));
     if (
       fragmentIds &&
       (fragmentIds.length > 8 ||
@@ -180,7 +181,7 @@ export class LoadNodiaAiKnowledgeUseCase {
     )
       throw new Error('nodia_ai:invalid_knowledge_request');
     const allowed = this.manifest.fragments.filter((fragment) =>
-      fragment.required_module_routes.every((route) => authorized.has(route)),
+      fragment.required_module_routes.every((route) => authorized.has(canonicalModuleRoute(route))),
     );
     const selected = allowed.filter((fragment) =>
       fragmentIds

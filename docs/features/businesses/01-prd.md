@@ -1,5 +1,9 @@
 # PRD — Módulo Businesses (Nodia)
 
+> Decisión vigente R17 (2026-10-30): NodiaAI sólo consulta y muestra ventas/reportes; se retiran las cinco preparaciones comerciales de ventas, incluso para propuestas antiguas. El POS y la gestión manual se conservan. Véase [Plan94 §26](../../mvp/94-business-point-of-sale-and-product-refactor.md#26-nodiaai-ventas-y-reportes-de-solo-lectura--r17-2026-10-30). Las referencias inferiores al CRUD de ventas mediante IA son históricas y no lo rehabilitan.
+
+Ampliación desplegada2026-10-28: [punto de venta y refactor de productos94 R07](../../mvp/94-business-point-of-sale-and-product-refactor.md#16-adopción-en-vm-r07), [ADR085 propuesto](../../architecture/decisions/ADR-085-business-sales-and-product-availability.md) y [ficha rev5 aprobada](../../nodia-ai/knowledge/businesses/features/point-of-sale-and-sales.md). VM de uso con34migraciones/70tablas, respaldos cifrados y smoke real de productos/ventas/reportes/imagen, preservando originales. CLP, medios informativos, disponibilidad manual, imagen opcional y código de factura separado de barcode conservan R04. Registro individual, CSV con barcode opcional y edición posterior se explican en94; foco/Enter del lector conserva guardado explícito. Siete herramientas de ventas publicadas y adoptadas; pendientes aceptación natural por proveedor, lector físico y clasificación de los seis productos anteriores. Stock histórico retenido sin uso operativo. Para acceso prevalece89; el PRD inferior conserva su corte histórico y esta entrega no aprueba el ADR completo.
+
 > Estado: borrador preliminar para contraste con base de datos
 > Fecha de creación: 2026-09-15
 > Módulo: `businesses`

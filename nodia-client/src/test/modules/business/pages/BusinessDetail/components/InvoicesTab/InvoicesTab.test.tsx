@@ -367,8 +367,9 @@ describe("InvoicesTab Component", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Visualización de Factura: FAC-MANUAL-001/i)
+        screen.getByRole("heading", { name: "Visualización de Factura" })
       ).toBeInTheDocument();
+      expect(screen.getByText(/Código \/ Folio: FAC-MANUAL-001/i)).toBeInTheDocument();
     });
   });
 
@@ -392,8 +393,9 @@ describe("InvoicesTab Component", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Visualización de Factura: FAC-MANUAL-001/i)
+        screen.getByRole("heading", { name: "Visualización de Factura" })
       ).toBeInTheDocument();
+      expect(screen.getByText(/Código \/ Folio: FAC-MANUAL-001/i)).toBeInTheDocument();
     });
   });
   it("requests subsequent pages when the business has more than 100 invoices", async () => {

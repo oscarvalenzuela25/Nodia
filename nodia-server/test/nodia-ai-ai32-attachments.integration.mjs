@@ -126,7 +126,7 @@ try {
     loadAi('nodia-ai-conversation/use-case/authorize-nodia-ai-conversation.use-case','AuthorizeNodiaAiConversationUseCase'),
   ]);
   const [connection]=await db.query("INSERT INTO ai_providers(name,fields) VALUES('Synthetic AI32 admission only','{}') RETURNING id");
-  const selection={connection_id:connection.id,mode:'token_plan_web',model_id:'synthetic-ai32-admission-model',effort_id:null};
+  const selection={connection_id:connection.id,mode:'agentic',model_id:'synthetic-ai32-admission-model',effort_id:null};
   let trustedModalities=[];
   const syntheticAdmission={async observe(){return {synthetic:true};},async prepare(_manager,actor,chat){return {
     selection,catalogVersion:'synthetic-ai32-admission/1',contextManifest:{schema_version:1,verified_modalities:trustedModalities,verified_attachment_media_types:trustedModalities.includes('pdf')?['application/pdf']:[]},

@@ -1,0 +1,145 @@
+{
+  "acceptance": {
+    "C03_accepted": false,
+    "MCP_or_MIME_availability_claimed": false,
+    "cache_image_build_or_adoption_accredited_by_cleanup": false
+  },
+  "capacity": {
+    "backup_reserve_bytes": 268443676,
+    "build_margin_bytes": 8388608,
+    "build_minimum_before_payload_bytes": 276832284,
+    "expansion_cancelled": true,
+    "future_live_preflight_still_required": true,
+    "guards_unchanged": true,
+    "host_merge_AccessDenied_pending_separate_from_active_service": true,
+    "physical_snapshot_merge_completion_claimed": false,
+    "resize_executed": false,
+    "resolved_at_recorded_cut": true
+  },
+  "checked_at": "2026-10-25T23:22:08.702943+00:00",
+  "command": [
+    "docker",
+    "builder",
+    "prune",
+    "--all",
+    "--force"
+  ],
+  "delivery_documentation": {
+    "executables_payloads_and_native_artifact_changed": false,
+    "old_catalog_and_README_preserved": "ops/lab/artifacts/c03-unused-build-cache-retirement-r01/prior-delivery/",
+    "old_catalog_sha256": "eb099bf61f72f1e5f8a1a7e0702be8546f81963829275db10666a93c5d467345",
+    "only_delivery_README_changed_among_old_33_files": true,
+    "updated_catalog_sha256": "4a1e7afddf05d866d57bda1d3128e015801d35dedea60b940367837dda599cf4"
+  },
+  "docker_df_after": [
+    {
+      "Active": "3",
+      "Reclaimable": "63.97MB (1%)",
+      "Size": "5.36GB",
+      "TotalCount": "32",
+      "Type": "Images"
+    },
+    {
+      "Active": "3",
+      "Reclaimable": "0B (0%)",
+      "Size": "819.2kB",
+      "TotalCount": "3",
+      "Type": "Containers"
+    },
+    {
+      "Active": "2",
+      "Reclaimable": "30.16GB (99%)",
+      "Size": "30.24GB",
+      "TotalCount": "478",
+      "Type": "Local Volumes"
+    },
+    {
+      "Active": "0",
+      "Reclaimable": "0B",
+      "Size": "0B",
+      "TotalCount": "0",
+      "Type": "Build Cache"
+    }
+  ],
+  "effects": {
+    "SDK_requests_by_this_operator": 0,
+    "SQL_writes": 0,
+    "images_deleted": 0,
+    "logs_or_backups_removed": false,
+    "provider_generations": 0,
+    "releases_deleted": 0,
+    "services_restarted": false,
+    "volumes_deleted": 0
+  },
+  "free_after": 4426633216,
+  "free_before": 265027584,
+  "net_free_bytes_gained": 4161605632,
+  "preservation": {
+    "Client_manifest_sha256": "17f0acd53cbfc04fad73f00bbfaed37e2d5a50d131b84333c50b49b5272363cb",
+    "Server_manifest_sha256": "4276fd7091f3d7f36604ba355895a2e43054bcbcec7b87ee5f0d897a42a41549",
+    "before_after_inventory_equal": true,
+    "containers": 3,
+    "docker_df_image_references_or_tags": 32,
+    "epoch": {
+      "container_id": "138e361d0a084c853e96d0ae40eb2aca642a22d49384f5c1535e3b942b65bb17",
+      "image_id": "sha256:cf652cf6c005fcdb4baacca123d76897ca6fe55cd4c3db9758ae260ff802d930",
+      "started_at": "2026-10-25T22:13:11.898521833Z"
+    },
+    "global_SQL_or_profile_readback_performed": false,
+    "nginx_sha256": "8ea8a9517a3362c8df0a6e35b09d3a0870ebae657001d3752cd2faf15e90fc21",
+    "not_32_unique_images": true,
+    "pins_basis": "Pinned retirement operator checks them inside before/after inventory; raw receipt reports equality, not duplicate file rows",
+    "services": {
+      "nginx": {
+        "ActiveState": "active",
+        "MainPID": "3630787",
+        "SubState": "running",
+        "WorkingDirectory": ""
+      },
+      "nodia-ai-worker": {
+        "ActiveState": "active",
+        "MainPID": "196757",
+        "SubState": "running",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01"
+      },
+      "nodia-api": {
+        "ActiveState": "active",
+        "MainPID": "196756",
+        "SubState": "running",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01"
+      },
+      "nodia-keyring": {
+        "ActiveState": "active",
+        "MainPID": "3630841",
+        "SubState": "running",
+        "WorkingDirectory": ""
+      }
+    },
+    "unique_image_IDs": 25,
+    "volumes": 478
+  },
+  "prune_output": {
+    "bytes": 8701,
+    "raw_contents_copied": false,
+    "sha256": "34d4c794957b90910cdbf3a68b37e5735b86e291d79f08446044fc6c2499e6eb"
+  },
+  "schema_version": 1,
+  "scope": "Root executed only docker builder prune --all --force, unused build cache",
+  "sources": {
+    "receipt": {
+      "path": "ops/lab/artifacts/c03-unused-build-cache-retirement-r01/unused-build-cache-retirement-r01.json",
+      "sha256": "45ee3683c9acd5146d3a477882a21237092520537f4cfc7a6ced60e5ea1c6f36"
+    },
+    "retirement_script_recorded_not_executed_by_consolidator": {
+      "path": "ops/lab/artifacts/c03-unused-build-cache-retirement-r01/prune-unused-build-cache-r01.py",
+      "sha256": "a6f391c637008aacd006b02797ce5983191d6fe8a252531447d49d09ad29cbb1"
+    }
+  },
+  "status": "unused_build_cache_retired_runtime_preserved",
+  "unclassified_volume_data": {
+    "all_478_volumes_preserved": true,
+    "data_classification_inferred": false,
+    "displayed_reclaimable": "30.16GB (99%)",
+    "pruned": false
+  }
+}

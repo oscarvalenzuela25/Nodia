@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "status": "operational_repair_verified_subsequent_real_login_expiry_closed",
+  "previous_evidence": {
+    "path": "docs/evidence/nodia-ai-secure-login-containment-repair-20261027-r01.json",
+    "sha256": "9f387d9060a66b8bb29c9a61fcc1c69b939d3778a2dc7d49c07869323486e7ee"
+  },
+  "new_attempt_after_repair": {
+    "proposal_id": "7f394cce-a628-4d47-82c3-89eed143853a",
+    "execution_id": "e9e2a71f-98ea-4b98-9ed5-ce3dfeab71b2",
+    "native_request_id": "a3184433-a024-4d30-85b7-83823f3b8e9d",
+    "created_at": "2026-10-27T03:17:53.703Z",
+    "expires_at": "2026-10-27T03:22:55.672Z",
+    "Root_UI_fact": "Start returned pending after containment repair; operator began close to the existing five-minute deadline. Human login did not complete before expiry.",
+    "SQL_after": {
+      "state": "failed",
+      "descriptor_status": "expired",
+      "revision": 7,
+      "native_request": null
+    },
+    "native_after": {
+      "state": "cancelled",
+      "closure_proof": "native_tree_closed",
+      "acknowledged": true,
+      "supervisor": null,
+      "containment": null
+    },
+    "recovery": "Existing compiled worker cancellation/recovery and post-SQL ACK; no second manual UC, SQL patch or replay.",
+    "human_login_accepted": false
+  },
+  "qualification": {
+    "Codex_and_Antigravity_wrappers_prepared": true,
+    "executed_by_this_task": false,
+    "do_not_reuse_before_login_generation_proofs": true
+  },
+  "receipts": {
+    "agy-subsequent-expiry-sql.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-login-containment-r01/receipts/agy-subsequent-expiry-sql.json",
+      "sha256": "00a50b6cc980b7626342de5af4d894a5e8cc492a29fc01e8d975bfb7a6372164"
+    },
+    "agy-subsequent-expiry-native.json": {
+      "path": "ops/lab/artifacts/nodia-ai-six-login-containment-r01/receipts/agy-subsequent-expiry-native.json",
+      "sha256": "cdd16999fb6ba5725bb435396d339e9b93f4df2139eac66c4453bb15a8b0c584"
+    }
+  }
+}

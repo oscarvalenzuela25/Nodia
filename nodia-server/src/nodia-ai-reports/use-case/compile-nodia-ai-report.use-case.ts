@@ -116,10 +116,21 @@ function instantMicros(value: string): bigint {
 }
 function scalar(
   value: unknown,
-  type: ReportValueType,
+  type: ReportValueType | 'aggregate_integer' | 'aggregate_decimal',
   path: string,
 ): ReportScalar {
   switch (type) {
+    case 'aggregate_decimal':
+      if (
+        typeof value === 'string' &&
+        /^(?:0|-?[1-9]\d{0,127})(?:\.\d{1,3})?$/.test(value)
+      )
+        return value;
+      return fail(path);
+    case 'aggregate_integer':
+      if (typeof value === 'string' && /^(?:0|-?[1-9]\d{0,127})$/.test(value))
+        return value;
+      return fail(path);
     case 'string':
       if (typeof value === 'string' && Buffer.byteLength(value) <= 1024)
         return value;
@@ -212,6 +223,7 @@ export class CompileNodiaAiReportUseCase {
         'period',
         'measures',
         'group_by',
+        'order_by',
       ],
       ['source_key', 'alias', 'scope', 'measures'],
       'source',
@@ -237,6 +249,7 @@ export class CompileNodiaAiReportUseCase {
       return `$${parameters.length}`;
     };
     const predicates = [...source.basePredicatesSql, input.scopeSql];
+    const fixedDimensions = new Set<string>();
     if (request.filters !== undefined) {
       const filters = object(request.filters, ['all', 'any'], [], 'filters');
       const all =
@@ -316,6 +329,14 @@ export class CompileNodiaAiReportUseCase {
           : `(${sql})`;
       };
       predicates.push(...all.map(compilePredicate));
+      for (const raw of all) {
+        const predicate = raw as RecordValue;
+        if (
+          predicate.operator === 'eq' &&
+          typeof predicate.field_key === 'string'
+        )
+          fixedDimensions.add(predicate.field_key);
+      }
       if (any.length)
         predicates.push(`(${any.map(compilePredicate).join(' OR ')})`);
     }
@@ -406,6 +427,7 @@ export class CompileNodiaAiReportUseCase {
         scale: null,
       });
     });
+    const omittedTotalKeys: string[] = [];
     const aggregates = list(
       request.measures,
       limits.maxCollectionItems,
@@ -434,6 +456,14 @@ export class CompileNodiaAiReportUseCase {
       )
         unsupported('currency');
       const alias = `m${index}`;
+      if (m.requiredDimensionKey) {
+        if (
+          !usedDimensions.has(m.requiredDimensionKey) &&
+          !fixedDimensions.has(m.requiredDimensionKey)
+        )
+          unsupported('measurement_unit');
+        omittedTotalKeys.push(alias);
+      }
       projections.push(`${m.expressionSql} AS v${index}`);
       columns.push({
         output_key: outputKey(measure.output_key),
@@ -449,6 +479,62 @@ export class CompileNodiaAiReportUseCase {
       return `${aggregation === 'count' ? 'COUNT(*)' : `COALESCE(SUM(v${index}), 0)`}::text AS ${alias}`;
     });
     const typedRequest = request as unknown as ReportSourceRequest;
+    const cursorOrder: CompiledReportQuery['cursorOrder'] = [];
+    if (request.order_by !== undefined) {
+      if (!groupKeys.length) unsupported('order_by');
+      const seen = new Set<string>();
+      for (const raw of list(
+        request.order_by,
+        limits.maxCollectionItems,
+        'order_by',
+        1,
+      )) {
+        const order = object(
+          raw,
+          ['output_key', 'direction'],
+          ['output_key', 'direction'],
+          'order_by',
+        );
+        const key = text(order.output_key, 'order_by.output_key');
+        const column = columns.find((item) => item.output_key === key);
+        if (!column) return fail('order_by');
+        if (
+          !column ||
+          seen.has(key) ||
+          (order.direction !== 'asc' && order.direction !== 'desc')
+        )
+          fail('order_by');
+        seen.add(key);
+        const groupIndex = groupKeys.indexOf(column.sql_key);
+        cursorOrder.push({
+          key: column.sql_key,
+          type: column.measure_key
+            ? column.scale === 3
+              ? 'aggregate_decimal'
+              : 'aggregate_integer'
+            : groupTypes[groupIndex],
+          direction: order.direction as 'asc' | 'desc',
+          aggregate: column.measure_key !== undefined,
+        });
+      }
+    }
+    // Dimensions complete every ranking's order, so tied totals cannot skip/duplicate groups.
+    groupKeys.forEach((key, index) => {
+      if (!cursorOrder.some((item) => item.key === key))
+        cursorOrder.push({
+          key,
+          type: groupTypes[index],
+          direction: 'asc',
+          aggregate: false,
+        });
+    });
+    const orderExpression = (
+      item: CompiledReportQuery['cursorOrder'][number],
+    ) =>
+      item.aggregate ? `grouped.${item.key}::numeric` : `grouped.${item.key}`;
+    const cursorExpression = (
+      item: CompiledReportQuery['cursorOrder'][number],
+    ) => (item.aggregate ? `${item.key}::numeric` : item.key);
     const queryFingerprint = createHash('sha256')
       .update(
         canonical({
@@ -464,25 +550,25 @@ export class CompileNodiaAiReportUseCase {
       const cursor = this.decodeCursor(
         input.cursor,
         queryFingerprint,
-        groupTypes,
+        cursorOrder.map((item) => item.type),
       );
       const branches = cursor.map((value, index) => {
         const equal = cursor
           .slice(0, index)
           .map(
             (previous, previousIndex) =>
-              `${groupKeys[previousIndex]} IS NOT DISTINCT FROM ${bind(previous)}`,
+              `${cursorExpression(cursorOrder[previousIndex])} IS NOT DISTINCT FROM ${bind(previous)}`,
           );
         const greater =
           value === null
             ? 'FALSE'
-            : `(${groupKeys[index]} > ${bind(value)} OR ${groupKeys[index]} IS NULL)`;
+            : `(${cursorExpression(cursorOrder[index])} ${cursorOrder[index].direction === 'desc' ? '<' : '>'} ${bind(value)} OR ${cursorExpression(cursorOrder[index])} IS NULL)`;
         return `(${[...equal, greater].join(' AND ')})`;
       });
       after = ` WHERE (${branches.join(' OR ')})`;
     }
-    const ordering = groupKeys.length
-      ? ` ORDER BY ${groupKeys.map((key) => `grouped.${key} ASC NULLS LAST`).join(', ')}`
+    const ordering = cursorOrder.length
+      ? ` ORDER BY ${cursorOrder.map((item) => `${orderExpression(item)} ${item.direction.toUpperCase()} NULLS LAST`).join(', ')}`
       : '';
     const grouped = `${groupKeys.length ? `${groupKeys.join(', ')}, ` : ''}${aggregates.join(', ')}`;
     const groupBy = groupKeys.length ? ` GROUP BY ${groupKeys.join(', ')}` : '';
@@ -496,7 +582,10 @@ export class CompileNodiaAiReportUseCase {
       ),
       ...aggregates.map((_, index) => `m${index}`),
     ].join(', ');
-    const sql = `WITH filtered AS MATERIALIZED (SELECT ${projections.join(', ')} FROM ${source.fromSql} WHERE ${predicates.map((p) => `(${p})`).join(' AND ')}), totals AS (SELECT ${aggregates.join(', ')}, COUNT(*)::text AS matched_records FROM filtered), grouped AS (SELECT ${grouped} FROM filtered${groupBy}), page AS (SELECT ${pageProjection}, row_number() OVER (${ordering.trim()}) AS __order FROM grouped${after}${ordering} LIMIT ${bind(pageLimit + 1)}) SELECT COALESCE((SELECT jsonb_agg(to_jsonb(page) - '__order' ORDER BY __order) FROM page), '[]'::jsonb) AS rows, to_jsonb(totals) - 'matched_records' AS totals, totals.matched_records FROM totals`;
+    const totalProjection = aggregates.filter(
+      (_, index) => !omittedTotalKeys.includes(`m${index}`),
+    );
+    const sql = `WITH filtered AS MATERIALIZED (SELECT ${projections.join(', ')} FROM ${source.fromSql} WHERE ${predicates.map((p) => `(${p})`).join(' AND ')}), totals AS (SELECT ${totalProjection.length ? totalProjection.join(', ') + ', ' : ''}COUNT(*)::text AS matched_records FROM filtered), grouped AS (SELECT ${grouped} FROM filtered${groupBy}), page AS (SELECT ${pageProjection}, row_number() OVER (${ordering.trim()}) AS __order FROM grouped${after}${ordering} LIMIT ${bind(pageLimit + 1)}) SELECT COALESCE((SELECT jsonb_agg(to_jsonb(page) - '__order' ORDER BY __order) FROM page), '[]'::jsonb) AS rows, to_jsonb(totals) - 'matched_records' AS totals, totals.matched_records FROM totals`;
     return {
       sql,
       parameters,
@@ -506,6 +595,8 @@ export class CompileNodiaAiReportUseCase {
       pageLimit,
       groupKeys,
       groupTypes,
+      cursorOrder,
+      ...(omittedTotalKeys.length ? { omittedTotalKeys } : {}),
     };
   }
 
@@ -514,14 +605,8 @@ export class CompileNodiaAiReportUseCase {
     lastRow: Record<string, unknown>,
   ): string {
     if (!query.groupKeys.length) fail('cursor');
-    const values = query.groupKeys.map((key, index) =>
-      lastRow[key] === null
-        ? null
-        : scalar(
-            lastRow[key],
-            query.groupTypes[index] as ReportValueType,
-            'cursor',
-          ),
+    const values = query.cursorOrder.map(({ key, type }) =>
+      lastRow[key] === null ? null : scalar(lastRow[key], type, 'cursor'),
     );
     const cursor = Buffer.from(
       JSON.stringify({ v: 1, query: query.queryFingerprint, values }),
@@ -533,7 +618,9 @@ export class CompileNodiaAiReportUseCase {
   private decodeCursor(
     cursor: string,
     hash: string,
-    types: readonly ReportValueType[],
+    types: readonly (
+      ReportValueType | 'aggregate_integer' | 'aggregate_decimal'
+    )[],
   ): ReportScalar[] {
     if (
       !types.length ||

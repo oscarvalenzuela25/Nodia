@@ -12,7 +12,6 @@ import type { NodiaAiToolHandlerContext } from '../../../nodia-ai-tools/types/to
 import { CodexRuntimeService } from '../../../common/ai/codex/codex-runtime.service.js';
 import { codexError } from '../../../common/ai/codex/codex-contract.js';
 import { normalizeGeminiEngineStatus } from '../../../common/ai/gemini-engine-status.js';
-
 function fixture() {
   const provider = Object.assign(new AiProvider(), {
     id: '9007199254740993',
@@ -21,12 +20,11 @@ function fixture() {
     is_active: true,
     is_default: false,
     use_api_key: false,
-    use_token_plan_web: true,
-    use_token_plan_agentic: false,
-    default_mode: 'token_plan_web',
+    use_agentic: true,
+    default_mode: 'agentic',
     auto_rotate_api_keys: false,
     fields: {
-      token_plan_web: {
+      agentic: {
         selected_model: 'dynamic-model',
         ocr_model: 'dynamic-model',
         secret: 'private-nested-marker',
@@ -38,7 +36,7 @@ function fixture() {
       key: 'gemini',
       name: 'Gemini',
       is_active: true,
-      can_use_token_plan_web: true,
+      can_use_agentic: true,
     },
     api_keys: [],
   });
@@ -61,16 +59,15 @@ function fixture() {
   const ports = {
     gemini: {
       getDualEngineStatus: vi.fn(async () => ({
-        active_engine: 'web',
-        web: {
+        active_engine: 'agentic',
+        agentic: {
           available: true,
           authenticated: true,
           quota_observed_at: null,
-          private: 'private-engine-marker',
         },
-        agentic: { available: false, authenticated: false },
       })),
       getModelsAndQuota: vi.fn(async () => ({
+        available: true,
         authenticated: true,
         models: [
           {
@@ -115,7 +112,7 @@ function fixture() {
       isSuperAdmin: true,
       modules: [],
     },
-    moduleRoutes: ['/settings/ai-providers', '/tools/business'],
+    moduleRoutes: ['/ai-providers', '/business'],
     maxRows: 100,
     maxCollectionItems: 128,
   };
@@ -146,12 +143,11 @@ describe('ReadNodiaAiExternalUseCase', () => {
     'does not claim an occupied Agentic account is signed out in %s',
     async (operation) => {
       const f = fixture();
-      f.provider.use_token_plan_web = false;
-      f.provider.use_token_plan_agentic = true;
-      f.provider.default_mode = 'token_plan_agentic';
+      f.provider.use_agentic = false;
+      f.provider.use_agentic = true;
+      f.provider.default_mode = 'agentic';
       const native = normalizeGeminiEngineStatus({
         active_engine: 'agentic',
-        web: { available: false, authenticated: false },
         agentic: {
           available: true,
           has_active_session: false,
@@ -196,13 +192,7 @@ describe('ReadNodiaAiExternalUseCase', () => {
         const f = fixture();
         const seconds = Date.parse(timestamp) / 1000;
         const native = normalizeGeminiEngineStatus({
-          active_engine: 'web',
-          web: {
-            available: true,
-            authenticated: true,
-            quota_source: 'web',
-            quota_observed_at: seconds,
-          },
+          active_engine: 'agentic',
           agentic: {
             available: true,
             has_active_session: true,
@@ -210,7 +200,6 @@ describe('ReadNodiaAiExternalUseCase', () => {
             quota_observed_at: seconds,
           },
         })!;
-        expect(native.web.quota_observed_at).toBe(seconds);
         expect(native.agentic.quota_observed_at).toBe(seconds);
         f.ports.gemini.getDualEngineStatus.mockResolvedValueOnce(
           native as never,
@@ -226,7 +215,6 @@ describe('ReadNodiaAiExternalUseCase', () => {
           output,
         );
         expect(output.engines).toMatchObject({
-          web: { quota_observed_at: timestamp },
           agentic: { quota_observed_at: timestamp },
         });
       } finally {
@@ -234,43 +222,43 @@ describe('ReadNodiaAiExternalUseCase', () => {
       }
     },
   );
-  it('preserves epoch zero and missing quota observations without inventing a check date', async () => {
-    const f = fixture();
-    f.ports.gemini.getDualEngineStatus.mockResolvedValueOnce({
-      active_engine: 'web',
-      web: { available: true, authenticated: true, quota_observed_at: 0 },
-      agentic: {
-        available: false,
-        authenticated: null,
-        quota_observed_at: null,
-      },
-    } as never);
-    const prepared = await f.subject.prepare('engines', {}, f.context);
-    const output = await prepared.execute(new AbortController().signal);
-    f.registry.validateOutput(
-      f.registry.get('nodia_ai_providers_gemini_engines')!,
-      output,
-    );
-    expect(output.engines).toMatchObject({
-      web: { quota_observed_at: '1970-01-01T00:00:00.000Z' },
-      agentic: { quota_observed_at: null },
-    });
-  });
+  it.each([0, null])(
+    'preserves real zero versus missing Agentic quota observations %s',
+    async (timestamp) => {
+      const f = fixture();
+      f.ports.gemini.getDualEngineStatus.mockResolvedValueOnce({
+        active_engine: 'agentic',
+        agentic: {
+          available: false,
+          authenticated: null,
+          quota_observed_at: timestamp,
+        },
+      } as never);
+      const prepared = await f.subject.prepare('engines', {}, f.context),
+        output = await prepared.execute(new AbortController().signal);
+      f.registry.validateOutput(
+        f.registry.get('nodia_ai_providers_gemini_engines')!,
+        output,
+      );
+      expect(output.engines).toMatchObject({
+        agentic: {
+          quota_observed_at:
+            timestamp === 0 ? '1970-01-01T00:00:00.000Z' : null,
+        },
+      });
+      expect(output.engines).not.toHaveProperty('web');
+    },
+  );
   it.each([NaN, Infinity, -1, Number.MAX_VALUE, 'not-a-native-timestamp'])(
     'rejects an invalid native quota observation %s',
     async (timestamp) => {
       const f = fixture();
       f.ports.gemini.getDualEngineStatus.mockResolvedValueOnce({
-        active_engine: 'web',
-        web: {
-          available: true,
-          authenticated: true,
-          quota_observed_at: timestamp,
-        },
+        active_engine: 'agentic',
         agentic: {
           available: false,
           authenticated: null,
-          quota_observed_at: null,
+          quota_observed_at: timestamp,
         },
       } as never);
       const prepared = await f.subject.prepare('engines', {}, f.context);
@@ -346,7 +334,7 @@ describe('ReadNodiaAiExternalUseCase', () => {
       { provider_id: f.provider.id },
       f.context,
     );
-    f.provider.fields.token_plan_web.selected_model = 'changed-model';
+    f.provider.fields.agentic.selected_model = 'changed-model';
     await expect(prepared.verify(f.context)).rejects.toThrow(
       'capability_denied',
     );
@@ -546,7 +534,9 @@ describe('ReadNodiaAiExternalUseCase', () => {
       // Register the same native owner the real supervisor now checks by
       // reference. Replacing get() alone must not bypass physical ownership.
       (
-        runtime as unknown as { profiles: Map<string, Promise<typeof profile>> }
+        runtime as unknown as {
+          profiles: Map<string, Promise<typeof profile>>;
+        }
       ).profiles.set(f.provider.id, Promise.resolve(profile));
       const subject = new ReadNodiaAiExternalUseCase({
         ...f.ports,
@@ -558,7 +548,7 @@ describe('ReadNodiaAiExternalUseCase', () => {
         f.context,
       );
       const result = prepared.execute(controller.signal);
-      await vi.waitFor(()=>expect(request).toHaveBeenCalledTimes(1));
+      await vi.waitFor(() => expect(request).toHaveBeenCalledTimes(1));
       expect(profile.busy).toBe(true);
       controller.abort(new Error('synthetic cancellation'));
       await expect(result).rejects.toThrow('synthetic cancellation');

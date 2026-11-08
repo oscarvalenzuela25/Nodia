@@ -4,15 +4,19 @@
   "document_id": "general-settings.ai-credentials-and-sessions",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 8,
+  "revision": 9,
   "document_status": "approved",
   "implementation": {
     "status": "partial",
-    "notes": "Publicación AI-15 de las lecturas/referencias expresamente enumeradas mediante contratos cerrados y reglas nativas. Las escrituras y otras etapas del producto no se habilitan. La disponibilidad de cada dependencia se observa por separado; no se promete éxito de toda inferencia ni acceso a contenido R2 no configurado."
+    "notes": "Agentic and API key only. Existing publication fragments retained; implementation verification and live operational acceptance are separate. Human documentary approval recorded 2026-10-27."
   },
   "integration_status": "published",
   "maintainer": "Mantenimiento de Ajustes Generales y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/mvp/90-agentic-api-only-web-retirement.md",
+      "kind": "specification"
+    },
     {
       "path": "docs/mvp/02-prd-v1.md",
       "kind": "specification"
@@ -63,7 +67,7 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-10-16",
+    "checked_on": "2026-10-27",
     "evidence_paths": [
       "docs/mvp/51-nodia-ai-ai05-product-knowledge.md",
       "docs/evidence/nodia-ai-ai05-knowledge-validation.json",
@@ -76,19 +80,26 @@
       "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
       "docs/evidence/nodia-ai-ai15-live-external-final.json",
       "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
-      "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json",
+      "docs/evidence/ai-two-modes-knowledge-review-r01.json"
     ],
-    "notes": "Gemini Agentic real completó un turno de cinco familias SQL (10 comprobaciones) y otro de tres referencias (12): dos CSV autenticados correctos; factura devuelve 503 por R2 sin configurar. La emisión de referencia no certifica bytes disponibles. Routing real completó Web conversacional y delegación opt-in SQL; el siguiente turno Web quedó unknown/502 y se concilió sin replay. El ensayo externo final completó recibos health/engines y luego quedó unknown; no se registra como aceptación generativa completa. La regresión Gateway de las cinco salidas usa observaciones sintéticas y cero inferencias. Los fallos permanecen en sus informes, sin atribuirlos a causa no observada. Las demás lecturas conservan su evidencia aislada SQL/HTTP; publicar no garantiza que el modelo siempre construya llamadas válidas. Pulido documental: evidencia aislada anterior etiquetada como histórica y referencia Codex alineada con su publicación real. Sin nuevas observaciones, herramientas, contratos ni cambios de fragmentos publicados."
+    "notes": "Gemini Agentic real completó un turno de cinco familias SQL (10 comprobaciones) y otro de tres referencias (12): dos CSV autenticados correctos; factura devuelve 503 por R2 sin configurar. La emisión de referencia no certifica bytes disponibles. Routing real completó Web conversacional y delegación opt-in SQL; el siguiente turno Web quedó unknown/502 y se concilió sin replay. El ensayo externo final completó recibos health/engines y luego quedó unknown; no se registra como aceptación generativa completa. La regresión Gateway de las cinco salidas usa observaciones sintéticas y cero inferencias. Los fallos permanecen en sus informes, sin atribuirlos a causa no observada. Las demás lecturas conservan su evidencia aislada SQL/HTTP; publicar no garantiza que el modelo siempre construya llamadas válidas. Pulido documental: evidencia aislada anterior etiquetada como histórica y referencia Codex alineada con su publicación real. Sin nuevas observaciones, herramientas, contratos ni cambios de fragmentos publicados. Two-mode source review on 2026-10-27; new runtime/VM/API acceptance is separate and pending."
   },
   "approval": {
-    "reference": "docs/evidence/nodia-ai-ai15-publication-authorization.md",
-    "revision": 8,
-    "content_sha256": "36967b7cd2f517ed647c5439df91764aeeb10434e590b5207eb53059d3a80f18"
+    "reference": "docs/evidence/ai-two-modes-knowledge-human-approval-r01.json",
+    "revision": 9,
+    "content_sha256": "7da7f1b4aba33b5eaa4d9a2c33d3ea086eb5416ed2aff296d925992cf589c001"
   }
 }
 ---
 
 # Credenciales y sesiones de IA — contexto funcional para NodiaAI
+
+## Modos vigentes solicitados el 2026-10-27
+
+Sólo **Agentic** (`agentic`) y **API key** (`api_key`), conforme al [plan90](../../../../mvp/90-agentic-api-only-web-retirement.md). Flags `use_agentic`/`can_use_agentic`, `use_api_key`/`can_use_api_key`; configuración por `fields.agentic` y `fields.api_key`. Los defaults/selecciones Web se desasignan y requieren elección explícita; no se convierten en otra modalidad. El historial anterior conserva su evidencia y no habilita Web.
+
+La revisión aprobada anterior 8 se conserva byte exacta; el [informe de revisión](../../../../evidence/ai-two-modes-knowledge-review-r01.json) identifica originales y cambios. La disponibilidad de cada funcionalidad se verifica por proveedor/modo/modelo con el [plan91](../../../../mvp/91-ai-provider-onboarding-verification.md); las pruebas históricas de Web no acreditan API ni Agentic actual.
 
 Estado actual: esta revisión publica sólo el fragmento «Lecturas disponibles en AI-15». Las secciones de implementación/evidencia anteriores a ese fragmento conservan la trazabilidad de entregas iniciales; sus frases históricas sobre publicación pendiente no sustituyen el frontmatter actual ni habilitan escrituras.
 
@@ -103,7 +114,7 @@ Gestionar metadata de claves y iniciar/desconectar sesiones por un canal humano 
 | Solicitud ilustrativa | Intención y aclaración esperada |
 |---|---|
 | «Agrega una API key» | Preparar apertura del formulario seguro para esa conexión; jamás solicitar el secret por chat. |
-| «Autentica Gemini Agentic» | Abrir flujo seguro independiente de Web y comprobar estado real. |
+| «Autentica Gemini Agentic» | Abrir flujo seguro Agentic de la instancia exacta y comprobar estado real. |
 | «Pega aquí cookies/código de login» | Rechazar ingreso por conversación y remitir al visor seguro. |
 
 Ejemplos ilustrativos sin resultados ni identificadores reales. Preguntar sólo obligatorios y ambigüedades; los opcionales no bloquean salvo condición del dominio.
@@ -122,7 +133,6 @@ Ejemplos ilustrativos sin resultados ni identificadores reales. Preguntar sólo 
 | [AiProviderController.cancelCodexLogin](../../../../../nodia-server/src/ai-provider/ai-provider.controller.ts)<br>`POST /api/v1/ai-provider/:id/session/login/:jobId/cancel` | `nodia_secure_flows_prepare_connection_login` (prepare_secure_flow, candidato40) | Canal humano seguro |
 | [AiProviderController.logoutCodex](../../../../../nodia-server/src/ai-provider/ai-provider.controller.ts)<br>`POST /api/v1/ai-provider/:id/session/logout` | `nodia_ai_providers_prepare_codex_logout` (prepare_change, candidato40) | Candidato; sin publicar |
 | [AiProviderController.startGeminiLogin](../../../../../nodia-server/src/ai-provider/ai-provider.controller.ts)<br>`POST /api/v1/ai-provider/gemini-login/start` | `nodia_secure_flows_prepare_connection_login` (prepare_secure_flow, candidato40) | Canal humano seguro |
-| [AiProviderController.disconnectGeminiWeb](../../../../../nodia-server/src/ai-provider/ai-provider.controller.ts)<br>`POST /api/v1/ai-provider/gemini-session/logout` | `nodia_ai_providers_prepare_gemini_web_logout` (prepare_change, candidato40) | Candidato; sin publicar |
 | [AiProviderController.startGeminiAgenticLogin](../../../../../nodia-server/src/ai-provider/ai-provider.controller.ts)<br>`POST /api/v1/ai-provider/gemini-agentic-login/start` | `nodia_secure_flows_prepare_connection_login` (prepare_secure_flow, candidato40) | Canal humano seguro |
 | [AiProviderController.currentGeminiAgenticLogin](../../../../../nodia-server/src/ai-provider/ai-provider.controller.ts)<br>`GET /api/v1/ai-provider/gemini-agentic-login/current` | `nodia_secure_flows_prepare_connection_login` (prepare_secure_flow, candidato40) | Canal humano seguro |
 | [AiProviderController.getGeminiAgenticLogin](../../../../../nodia-server/src/ai-provider/ai-provider.controller.ts)<br>`GET /api/v1/ai-provider/gemini-agentic-login/:jobId` | `nodia_secure_flows_prepare_connection_login` (prepare_secure_flow, candidato40) | Canal humano seguro |
@@ -164,7 +174,7 @@ El nuevo registro combinable de [contratos41](../../../../mvp/41-nodia-ai-v1-con
 
 Preview metadata, impacto de borrar/seleccionar/desconectar e identidad; credenciales sólo UI→API segura tras consentimiento específico. No reintentar generación desconocida ni cambiar conexión por fallo. La puerta compartida OCR/login/chat/discovery/refresh/logout está implementada en AI-11/12: login retiene reserva hasta cerrar su tarea y un perfil incierto permanece en cuarentena también tras reinicio. Esta ficha no habilita herramientas de credenciales ni el desbloqueo automático.
 
-Desde NodiaAI, preparar es distinto de ejecutar: cambios requieren vista previa exacta y botón humano de41; el switch Web→Agentic no confirma. Conservar efectos completados si falla un paso dependiente y no reenviar un resultado desconocido. Payload del chat caduca según50 sin borrar registros de dominio ni sus journals nativos.
+Desde NodiaAI, preparar es distinto de ejecutar: cambios requieren vista previa exacta y botón humano de41; elegir Agentic o API key no confirma. Conservar efectos completados si falla un paso dependiente y no reenviar un resultado desconocido. Payload del chat caduca según50 sin borrar registros de dominio ni sus journals nativos.
 
 ## Integración y evidencia
 
@@ -196,7 +206,7 @@ libera al finalizar realmente y el resultado generativo incierto queda en
 cuarentena sin reenvío. El marcador técnico mínimo no contiene mensajes o datos
 de negocio y no se elimina por vencer un chat.
 
-Web sólo conversa o pide delegación tipada. Agentic sin herramientas usa MCP
+Agentic se elige directamente; Web no es una opción ejecutable. Agentic sin herramientas usa MCP
 vacío y hook sólo `finish`. El loop técnico registrado por Server admite un catálogo
 cerrado, callbacks con autorización/fence vigente y presupuestos de RPC/llamadas;
 no admite URLs de retorno ni herramientas shell/archivos/HTTP. El gateway de
@@ -248,7 +258,7 @@ Resolver entidades, destinatario, intervalo y filtros ambiguos antes de llamar. 
 
 Server valida sesión, módulo NodiaAI y todos los módulos destino actuales para usuarios ordinarios; super_admin conserva transversalidad y las reglas de dominio. Datos privados y autoridad se revalidan al devolver o recuperar resultados. Finanzas permite owner_id ajeno sólo a super_admin; Reservas conserva autoridad actual del alojamiento; administración IA conserva ai:manage. No construir SQL libre ni pedir tokens, cookies o secretos.
 
-Esta publicación incluye lecturas y referencias privadas, no preparaciones ni ejecución de escrituras. Cualquier creación, edición, eliminación o confirmación conserva sus herramientas y etapas posteriores. No anunciar informes cruzados, un total por proveedor u otros filtros/agrupaciones si el schema o caso de uso no los soporta. Web permanece conversacional; MCP sólo se ejecuta mediante Agentic verificado, con delegación Web→Agentic opt-in de la misma conexión.
+Esta publicación incluye lecturas y referencias privadas, no preparaciones ni ejecución de escrituras. Cualquier creación, edición, eliminación o confirmación conserva sus herramientas y etapas posteriores. No anunciar informes cruzados, un total por proveedor u otros filtros/agrupaciones si el schema o caso de uso no los soporta. Web se retira conforme al plan90; MCP requiere Agentic verificado elegido directamente, sin delegación ni fallback de modo.
 
 Las observaciones externas se ejecutan fuera de SQL, con deadline/cancelación y verificación posterior de autoridad y configuración. La recuperación de una llamada completada no repite red; una llamada interrumpida no se reintenta ciegamente. Los artefactos son referencias privadas current_on_download: la descarga humana reautoriza chat/recurso, rechaza exceso sin truncar y no conserva el archivo al expirar el chat; el original de factura pertenece al negocio.
 

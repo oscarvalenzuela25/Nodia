@@ -102,7 +102,7 @@ export function createNodiaAiFinanceReadFamily(
   );
   const sha256 = createHash('sha256').update(sourceJson, 'utf8').digest('hex');
   const reader = new ExecuteNodiaAiFinanceReadUseCase(ports);
-  const route = '/tools/finances-personal';
+  const route = '/finances-personal';
   return {
     familyKey: 'personal_finance',
     modules: [{ key: 'personal_finance', route, label: 'Personal finance' }],

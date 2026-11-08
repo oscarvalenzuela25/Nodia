@@ -7,7 +7,57 @@ import { connectionFixture } from './nodia-ai-connections.fixture.js';
 import { testIdentity } from './conversation-admission.fixture.js';
 
 describe('ListNodiaAiConnectionsUseCase', () => {
-  it('keeps OpenAI Agentic tools unknown until an independent live observation and leaves Web/API unsupported', async () => {
+  it('publishes the saved default identity and mode without manufacturing a retired-mode alias', async () => {
+    const f = connectionFixture();
+    f.row.is_default = true;
+    f.row.default_mode = 'api_key';
+    const subject = new ListNodiaAiConnectionsUseCase(
+      f.connections,
+      f.authorize,
+      f.policy,
+    );
+    expect((await subject.execute(testIdentity, {})).items[0]).toMatchObject({
+      connection_id: f.row.id,
+      is_default: true,
+      default_mode: 'api_key',
+    });
+    f.row.default_mode = 'token_plan_web';
+    expect(
+      (await subject.execute(testIdentity, {})).items[0].default_mode,
+    ).toBeNull();
+    expect(f.transport.observe).not.toHaveBeenCalled();
+  });
+  it('exposes OpenAI API effort preferences without claiming discovered support or replacing the saved preference', async () => {
+    const f = connectionFixture();
+    f.row.provider_key = 'openai';
+    f.row.fields = {
+      api_key: {
+        selected_model: 'synthetic-api',
+        thinking_levels: { 'synthetic-api': 'high' },
+        available_models: [{ id: 'synthetic-api' }],
+      },
+    };
+    const result = await new ListNodiaAiConnectionsUseCase(
+      f.connections,
+      f.authorize,
+      f.policy,
+    ).execute(testIdentity, {});
+    const api = result.items[0].modes.find((mode) => mode.mode === 'api_key')!;
+    expect(api.configured_selection?.effort_id).toBe('high');
+    expect(api.models[0].efforts.map((item) => item.effort_id)).toEqual([
+      'low',
+      'medium',
+      'high',
+    ]);
+    expect(api).toMatchObject({
+      authentication: 'unknown',
+      inference: 'unknown',
+      tools: 'unknown',
+      observed_at: null,
+    });
+    expect(f.transport.observe).not.toHaveBeenCalled();
+  });
+  it('keeps OpenAI Agentic and API tools unknown until an independent observation', async () => {
     const f = connectionFixture();
     f.row.provider_key = 'openai';
     const result = await new ListNodiaAiConnectionsUseCase(
@@ -16,9 +66,7 @@ describe('ListNodiaAiConnectionsUseCase', () => {
       f.policy,
     ).execute(testIdentity, {});
     const item = result.items[0];
-    expect(
-      item.modes.find((mode) => mode.mode === 'token_plan_agentic'),
-    ).toMatchObject({
+    expect(item.modes.find((mode) => mode.mode === 'agentic')).toMatchObject({
       tools: 'unknown',
       authentication: 'unknown',
       inference: 'unknown',
@@ -26,16 +74,16 @@ describe('ListNodiaAiConnectionsUseCase', () => {
     });
     expect(
       item.modes
-        .filter((mode) => mode.mode !== 'token_plan_agentic')
+        .filter((mode) => mode.mode !== 'agentic')
         .map((mode) => mode.tools),
-    ).toEqual(['unsupported', 'unsupported']);
+    ).toEqual(['unknown']);
     expect(f.transport.observe).not.toHaveBeenCalled();
   });
   it('projects only discovered Codex efforts per model without static options or unsupported saved preferences', async () => {
     const f = connectionFixture();
     f.row.provider_key = 'openai';
     f.row.fields = {
-      token_plan_agentic: {
+      agentic: {
         selected_model: 'synthetic-codex-one',
         thinking_level: 'historical-unsupported',
         thinking_levels: { 'synthetic-codex-two': 'other-unsupported' },
@@ -61,7 +109,7 @@ describe('ListNodiaAiConnectionsUseCase', () => {
       f.authorize,
       f.policy,
     ).execute(testIdentity, {});
-    const mode = result.items[0].modes[2];
+    const mode = result.items[0].modes[1];
     expect(mode.configured_selection?.effort_id).toBe('historical-unsupported');
     expect(mode.models).toEqual([
       {
@@ -96,7 +144,7 @@ describe('ListNodiaAiConnectionsUseCase', () => {
       const f = connectionFixture();
       f.row.provider_key = 'openai';
       f.row.fields = {
-        token_plan_agentic: {
+        agentic: {
           selected_model: 'synthetic-codex',
           thinking_level: 'historical-effort',
           available_models: [
@@ -109,7 +157,7 @@ describe('ListNodiaAiConnectionsUseCase', () => {
         f.authorize,
         f.policy,
       ).execute(testIdentity, {});
-      expect(result.items[0].modes[2]).toMatchObject({
+      expect(result.items[0].modes[1]).toMatchObject({
         configured_selection: { effort_id: 'historical-effort' },
         models: [{ model_id: 'synthetic-codex', efforts: [] }],
         authentication: 'unknown',
@@ -122,7 +170,7 @@ describe('ListNodiaAiConnectionsUseCase', () => {
     const f = connectionFixture();
     f.row.provider_key = 'openai';
     f.row.fields = {
-      token_plan_agentic: {
+      agentic: {
         selected_model: 'synthetic-historical',
         thinking_levels: { 'synthetic-historical': null },
         thinking_level: 'historical-general',
@@ -133,7 +181,7 @@ describe('ListNodiaAiConnectionsUseCase', () => {
       f.authorize,
       f.policy,
     ).execute(testIdentity, {});
-    expect(result.items[0].modes[2]).toMatchObject({
+    expect(result.items[0].modes[1]).toMatchObject({
       configured_selection: {
         model_id: 'synthetic-historical',
         effort_id: null,
@@ -141,7 +189,7 @@ describe('ListNodiaAiConnectionsUseCase', () => {
       models: [{ model_id: 'synthetic-historical', efforts: [] }],
     });
   });
-  it('does not project Codex effort metadata into OpenAI API or Web modes', async () => {
+  it('keeps API configuration preferences separate from discovered Codex effort metadata', async () => {
     const f = connectionFixture();
     f.row.provider_key = 'openai';
     const fields = {
@@ -155,8 +203,7 @@ describe('ListNodiaAiConnectionsUseCase', () => {
     };
     f.row.fields = {
       api_key: fields,
-      token_plan_web: fields,
-      token_plan_agentic: fields,
+      agentic: fields,
     };
     const result = await new ListNodiaAiConnectionsUseCase(
       f.connections,
@@ -164,14 +211,21 @@ describe('ListNodiaAiConnectionsUseCase', () => {
       f.policy,
     ).execute(testIdentity, {});
     expect(result.items[0].modes.map((mode) => mode.models[0].efforts)).toEqual(
-      [[], [], [{ effort_id: 'future_effort', label: 'future_effort' }]],
+      [
+        [
+          { effort_id: 'low', label: 'low' },
+          { effort_id: 'medium', label: 'medium' },
+          { effort_id: 'high', label: 'high' },
+        ],
+        [{ effort_id: 'future_effort', label: 'future_effort' }],
+      ],
     );
   });
   it('rejects an oversized Codex effort catalog instead of silently truncating it', async () => {
     const f = connectionFixture();
     f.row.provider_key = 'openai';
     f.row.fields = {
-      token_plan_agentic: {
+      agentic: {
         available_models: [
           {
             id: 'synthetic-codex',
@@ -194,7 +248,7 @@ describe('ListNodiaAiConnectionsUseCase', () => {
   it('preserves Gemini configurable effort preferences independently of Codex discovery metadata', async () => {
     const f = connectionFixture();
     f.row.fields = {
-      token_plan_agentic: {
+      agentic: {
         selected_model: 'synthetic-gemini',
         thinking_level: 'synthetic-preferred',
         available_models: [
@@ -211,19 +265,19 @@ describe('ListNodiaAiConnectionsUseCase', () => {
       f.policy,
     ).execute(testIdentity, {});
     expect(
-      result.items[0].modes[2].models[0].efforts.map(
+      result.items[0].modes[1].models[0].efforts.map(
         (option) => option.effort_id,
       ),
     ).toEqual(['low', 'medium', 'high', 'synthetic-preferred']);
-    expect(result.items[0].modes[2].configured_selection?.effort_id).toBe(
+    expect(result.items[0].modes[1].configured_selection?.effort_id).toBe(
       'synthetic-preferred',
     );
-    expect(result.items[0].modes[2].tools).toBe('unknown');
+    expect(result.items[0].modes[1].tools).toBe('unknown');
   });
   it('pages by UTF-8 response bytes between whole connections without skipping rows', async () => {
     const f = connectionFixture();
     const largeFields = {
-      token_plan_web: {
+      agentic: {
         available_models: Array.from({ length: 200 }, (_, index) => ({
           id: `synthetic-${index}`,
           name: 'á'.repeat(500),
@@ -263,13 +317,12 @@ describe('ListNodiaAiConnectionsUseCase', () => {
     const mode = {
       available_models: Array.from({ length: 200 }, (_, index) => ({
         id: `${'x'.repeat(1000)}-${index}`,
-        name: 'á'.repeat(500),
+        name: '"'.repeat(1024),
       })),
     };
     f.row.fields = {
       api_key: mode,
-      token_plan_web: mode,
-      token_plan_agentic: mode,
+      agentic: mode,
     };
     await expect(
       new ListNodiaAiConnectionsUseCase(
@@ -282,7 +335,7 @@ describe('ListNodiaAiConnectionsUseCase', () => {
   it('rejects oversized saved catalogs explicitly rather than hiding later models', async () => {
     const f = connectionFixture();
     f.row.fields = {
-      token_plan_web: {
+      agentic: {
         available_models: Array.from({ length: 201 }, (_, index) => ({
           id: `synthetic-${index}`,
         })),
@@ -309,7 +362,7 @@ describe('ListNodiaAiConnectionsUseCase', () => {
       configuration: 'configured',
       authentication: 'unknown',
       inference: 'unknown',
-      tools: 'unsupported',
+      tools: 'unknown',
       observed_at: null,
     });
     expect(JSON.stringify(result)).not.toContain('synthetic-never-public');
@@ -318,15 +371,15 @@ describe('ListNodiaAiConnectionsUseCase', () => {
       result.items[0].modes[1].models[0].efforts.map(
         (option) => option.effort_id,
       ),
-    ).toEqual(['low', 'medium', 'high']);
+    ).toEqual(['low', 'medium', 'high', 'synthetic-effort']);
     expect(f.transport.observe).not.toHaveBeenCalled();
   });
   it('never promotes inactive gates to configured or supplies a phantom model', async () => {
     const f = connectionFixture();
-    f.row.can_use_token_plan_web = false;
+    f.row.can_use_agentic = false;
     f.row.fields = {
-      token_plan_web: {},
-      token_plan_agentic: {
+      agentic: {},
+      api_key: {
         selected_model: 'synthetic-other',
         thinking_levels: { 'synthetic-other': null },
         thinking_level: 'synthetic-general',
@@ -342,7 +395,7 @@ describe('ListNodiaAiConnectionsUseCase', () => {
       configured_selection: null,
       models: [],
     });
-    expect(result.items[0].modes[2].configured_selection?.effort_id).toBeNull();
+    expect(result.items[0].modes[1].configured_selection).toBeNull();
   });
   it('rejects revoked assignment before reading connections', async () => {
     const f = connectionFixture();

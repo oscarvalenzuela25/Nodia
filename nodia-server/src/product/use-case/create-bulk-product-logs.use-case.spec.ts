@@ -11,7 +11,9 @@ describe('CreateBulkProductLogsUseCase', () => {
     productServiceMock = {
       createBulkLogs: vi.fn(),
     };
-    useCase = new CreateBulkProductLogsUseCase(productServiceMock as ProductService);
+    useCase = new CreateBulkProductLogsUseCase(
+      productServiceMock as ProductService,
+    );
   });
 
   it('should be defined', () => {
@@ -27,7 +29,6 @@ describe('CreateBulkProductLogsUseCase', () => {
           name: 'Coca Cola 1.5L',
           cost_price: 1000,
           cost_price_tax: 190,
-          profit_percentage: 30,
           sale_price: 1547,
           stock: 50,
         },
@@ -43,7 +44,9 @@ describe('CreateBulkProductLogsUseCase', () => {
       },
     ];
 
-    vi.mocked(productServiceMock.createBulkLogs!).mockResolvedValue(mockCreated as any);
+    vi.mocked(productServiceMock.createBulkLogs!).mockResolvedValue(
+      mockCreated as any,
+    );
 
     const result = await useCase.execute(bulkDto);
 

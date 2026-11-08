@@ -16,6 +16,7 @@ import { CreateInvoiceDto } from './dto/create-invoice.dto.js';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto.js';
 import { GetInvoicesDto } from './dto/get-invoices.dto.js';
 import { AnalyzeInvoiceDto } from './dto/analyze-invoice.dto.js';
+import { VerifyIaProvidersQueryDto } from './dto/verify-ia-providers-query.dto.js';
 import { GetAllInvoicesUseCase } from './use-case/get-all-invoices.use-case.js';
 import { GetInvoiceByIdUseCase } from './use-case/get-invoice-by-id.use-case.js';
 import { GetInvoiceViewUrlUseCase } from './use-case/get-invoice-view-url.use-case.js';
@@ -26,7 +27,12 @@ import { VerifyIaProvidersUseCase } from './use-case/verify-ia-providers.use-cas
 import type { Response } from 'express';
 import { AnalysisObservationsUseCase } from './use-case/analysis-observations.use-case.js';
 import { ReserveAnalysisObservationDto } from './dto/reserve-analysis-observation.dto.js';
-import { AnalysisObservationInterceptor, type ObservedAnalysisRequest } from './analysis-observation.interceptor.js';
+import {
+  AnalysisObservationInterceptor,
+  type ObservedAnalysisRequest,
+} from './analysis-observation.interceptor.js';
+import type { AuthRequest } from '../auth/types/auth.types.js';
+import { actorReference } from '../authorization/authority-transaction.js';
 
 @Controller(['invoice', 'invoices'])
 export class InvoiceController {
@@ -42,35 +48,54 @@ export class InvoiceController {
   ) {}
 
   @Get()
-  findAll(@Query() queryParams: GetInvoicesDto) {
-    return this.getAllInvoicesUseCase.execute(queryParams);
+  findAll(@Query() queryParams: GetInvoicesDto, @Req() request: AuthRequest) {
+    return this.getAllInvoicesUseCase.execute(
+      queryParams,
+      actorReference(request.auth),
+    );
   }
 
   @Get(['verify-ia-providers', 'verify-ia-provider'])
-  verifyIaProviders() {
-    return this.verifyIaProvidersUseCase.execute();
+  verifyIaProviders(@Query() query: VerifyIaProvidersQueryDto) {
+    return this.verifyIaProvidersUseCase.execute(undefined, query.mode);
   }
 
   @Get(':id/view-url')
-  getViewUrl(@Param('id') id: string) {
-    return this.getInvoiceViewUrlUseCase.execute(id);
+  getViewUrl(@Param('id') id: string, @Req() request: AuthRequest) {
+    return this.getInvoiceViewUrlUseCase.execute(
+      id,
+      actorReference(request.auth),
+    );
   }
 
   @Post('analysis-observations')
-  reserveObservation(@Req() request: ObservedAnalysisRequest, @Body() dto: ReserveAnalysisObservationDto, @Res({ passthrough: true }) response: Response) {
+  reserveObservation(
+    @Req() request: ObservedAnalysisRequest,
+    @Body() dto: ReserveAnalysisObservationDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     response.setHeader('Cache-Control', 'no-store');
     return this.observations.reserve(request.auth.user.id, dto);
   }
 
   @Get('analysis-observations/:id')
-  readObservation(@Req() request: ObservedAnalysisRequest, @Param('id') id: string, @Query('after') after: string | undefined, @Res({ passthrough: true }) response: Response) {
+  readObservation(
+    @Req() request: ObservedAnalysisRequest,
+    @Param('id') id: string,
+    @Query('after') after: string | undefined,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     response.setHeader('Cache-Control', 'no-store');
-    return this.observations.read(request.auth.user.id, id, after === undefined ? 0 : Number(after));
+    return this.observations.read(
+      request.auth.user.id,
+      id,
+      after === undefined ? 0 : Number(after),
+    );
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.getInvoiceByIdUseCase.execute(id);
+  findOne(@Param('id') id: string, @Req() request: AuthRequest) {
+    return this.getInvoiceByIdUseCase.execute(id, actorReference(request.auth));
   }
 
   @Post('analyze')
@@ -91,7 +116,13 @@ export class InvoiceController {
       ...queryParams,
       ...analyzeInvoiceDto,
     };
-    return this.analyzeInvoiceUseCase.execute(file, mergedDto, request.analysisSignal, request.analysisProgress);
+    return this.analyzeInvoiceUseCase.execute(
+      file,
+      mergedDto,
+      request.analysisSignal,
+      request.analysisProgress,
+      actorReference(request.auth),
+    );
   }
 
   @Post()
@@ -103,12 +134,27 @@ export class InvoiceController {
   create(
     @UploadedFile() file: Express.Multer.File | undefined,
     @Body() createInvoiceDto: CreateInvoiceDto,
+    @Req() request: AuthRequest,
   ) {
-    return this.createInvoiceUseCase.execute(createInvoiceDto, file);
+    return this.createInvoiceUseCase.execute(
+      createInvoiceDto,
+      file,
+      undefined,
+      actorReference(request.auth),
+    );
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateInvoiceDto: UpdateInvoiceDto) {
-    return this.updateInvoiceUseCase.execute(id, updateInvoiceDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateInvoiceDto: UpdateInvoiceDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.updateInvoiceUseCase.execute(
+      id,
+      updateInvoiceDto,
+      undefined,
+      actorReference(request.auth),
+    );
   }
 }

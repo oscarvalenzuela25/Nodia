@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "status": "adopted_verified_natural_chat_acceptance_pending",
+  "source_manifest_sha256": "605ef5533af3c8ffbffde33ce13275d966b9271f34a2ee0f8a17c609c02308c1",
+  "target": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+  "target_manifest_sha256": "8f83d1525802a08f468e8132ff496a0976493e3b32941366888b631e56273bc8",
+  "knowledge_release": "607b9d24fb64ad69f81576c1a80000a95d8c7f601a40ebe505ff0a06d1339001",
+  "scope": {
+    "source_files": 4230,
+    "target_files": 4234,
+    "delta_files": 12,
+    "production_sources": 2,
+    "helper_new_paths": 4,
+    "contracts_preserved": 152,
+    "schemas_preserved": 304,
+    "fragments_preserved": 43,
+    "approved_document_contents_preserved": 41,
+    "new_capabilities": [],
+    "only_knowledge_implementation_source_changed": "nodia-server/src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts"
+  },
+  "behavior": "Optional deterministic discovery hint of four authorized capability IDs; complete index retained; no grant/model/effort/budget/permission change.",
+  "validation": {
+    "Linux_guard_tests": 16,
+    "local_guard_tests": 14,
+    "local_POSIX_skips": 2,
+    "implementation_focal_reported": 65,
+    "compiled_full152": {
+      "status": "full152_compiled_hint_and_BuildContext_passed",
+      "metadata_source": "Source605 public factories; all152 exact public projection; catalog_hash fixture only, not current authority proof",
+      "source_index_sha256": "e23a5e77cc4ea2aefca2f8b941c53d0a1860a9aeed271f5e6626071dd8f40a00",
+      "metadata_capabilities": 152,
+      "current_reference": true,
+      "awaiting_supplier": true,
+      "stored_result": true,
+      "dynamic_version_hash_preserved": true,
+      "full_index_preserved": true,
+      "input_deep_freeze_and_immutability": true,
+      "private_ids_absent_from_hint": true,
+      "grants_execution": false,
+      "DB_queries": 0,
+      "SDK_calls": 0,
+      "domain_handlers": 0
+    },
+    "first_compile_missing_junction_log_preserved": true,
+    "valid_directed_compile_exit": 0
+  },
+  "consumers_after": {
+    "nodia-api": {
+      "pid": 545973,
+      "active": "active",
+      "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+      "argv_exact_match": true
+    },
+    "nodia-ai-worker": {
+      "pid": 545974,
+      "active": "active",
+      "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+      "argv_exact_match": true
+    }
+  },
+  "database": {
+    "table_hashes_compared": 61,
+    "schema_sha256": "82753ec54d69006d2850dd62173093c03086e43a37af62e2a3dba1c5da5b4b87",
+    "all_rows_and_schema_equal": true,
+    "auth_sessions_excluded_by_maintained_guard": true,
+    "quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    }
+  },
+  "native": {
+    "epoch": {
+      "id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+      "image": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+      "started_at": "2026-10-26T03:06:18.949917773Z",
+      "descriptor_sha256": "d27816454ab40e774919a16d3b99da50ccdc3c1e570ef244832b30b46a95f89d"
+    },
+    "quiet": {
+      "attempt_receipts": 0,
+      "unknown_markers": 0,
+      "temporary_directories": 0,
+      "active_native_processes": 0
+    }
+  },
+  "native_restarted": false,
+  "preserved": [
+    "Client4157",
+    "nginx9f94",
+    "configuration63bc",
+    "policy89",
+    "Codex journal",
+    "unrelated unit descriptors"
+  ],
+  "backup": {
+    "backup_id": "c56a4bcf-d1a3-4f3c-ad71-a051f782c698",
+    "status": "ready",
+    "captured_at": "2026-10-26T15:28:42.733Z",
+    "expires_at": "2026-11-02T15:28:42.733Z",
+    "cipher_bytes": 1581024,
+    "cipher_sha256": "8635f4dfd73f3a5d8df01382a3d7a92b50c4d39c5a62bb662b5a7ffe75de3607"
+  },
+  "backup_runner_after_sha256": "c9ead7fe8d5a7794d7f7f8fe50cee33283f767252a2379326bf86663017fe15f",
+  "capacity_after": {
+    "available_bytes": 3688960000,
+    "device": 2050,
+    "reserve_bytes": 268443676,
+    "additional_phase_overhead_bytes": 20971520,
+    "required_bytes": 289415196,
+    "spool_lock_only": true,
+    "future_cleanup_credited": false
+  },
+  "timers_restored": true,
+  "provider_generations": 0,
+  "SQL_business_writes": 0,
+  "SQL_restores": 0,
+  "migrations": 0,
+  "automatic_replay": false,
+  "limits": [
+    "No causal fix or natural Antigravity OCR success claimed; UI acceptance follows separately.",
+    "No approved document content, new approval, full-monorepo build, model availability or global AI36/AI38 closure claimed.",
+    "Full152 input is reconstructed public metadata, with explicitly synthetic catalog hash; not SQL authority or private prompt reproduction.",
+    "No independent R2 ciphertext GET/integrity experiment added; fresh backup result is from the maintained adoption workflow."
+  ],
+  "receipts": [
+    {
+      "path": "ops/lab/artifacts/invoice-ocr-discovery-hint-server-adoption-verification-r01/raw/stage.json",
+      "sha256": "17b7d0ee75cafdded40971e06684b0c4f676a4a2612ac36957acd4cd4ea331a5",
+      "bytes": 535
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-ocr-discovery-hint-server-adoption-verification-r01/raw/bootstrap.json",
+      "sha256": "c1fc8b6cd11b876b0247566b2e368bebfc020560dd8729585d0f56d9fa3d5771",
+      "bytes": 424
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-ocr-discovery-hint-server-adoption-verification-r01/raw/preflight.json",
+      "sha256": "ae9f7a1eb5faf4588143e0d54a9b5ae381e017a9c08c422ea59a730c007af5d7",
+      "bytes": 13769
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-ocr-discovery-hint-server-adoption-verification-r01/raw/adopt.json",
+      "sha256": "f13859852e6f512155255ace99c4c2f8fada2bab21b06186ba45de8b008b7f2f",
+      "bytes": 24715
+    }
+  ],
+  "package_catalog": {
+    "path": "ops/lab/artifacts/invoice-ocr-discovery-hint-server-r01/catalog.json",
+    "sha256": "4b2262489b88ff5609270a29036a2850e119db98d0b21ea4647cefc8c1245943",
+    "bytes": 4599
+  }
+}

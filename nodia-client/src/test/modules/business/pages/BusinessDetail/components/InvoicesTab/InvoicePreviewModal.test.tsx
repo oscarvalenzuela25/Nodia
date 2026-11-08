@@ -83,7 +83,8 @@ describe("InvoicePreviewModal Component", () => {
       />
     );
 
-    expect(screen.getByText(/Visualización de Factura: FAC-IMAGE-001/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Visualización de Factura" })).toBeInTheDocument();
+    expect(screen.getByText(/Código \/ Folio: FAC-IMAGE-001/i)).toBeInTheDocument();
     expect(screen.getByText("receipt.png")).toBeInTheDocument();
 
     await waitFor(() => {

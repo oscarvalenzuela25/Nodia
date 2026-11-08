@@ -1,7 +1,6 @@
 import axios, { type AxiosError, CanceledError, type AxiosInstance } from "axios";
 import useAuthStore, { hasActiveSession, type AuthUser } from "../store/authStore";
 import i18n from "../translate";
-import { sileo } from "sileo";
 import { apiPath } from "./apiPath";
 import { notifyAuthError } from "../services/authFeedback";
 import type { AuthResponse } from "../modules/auth/infrastructure/types";
@@ -26,7 +25,6 @@ export function createAuthSession(client: AxiosInstance) {
     if (current.sessionVersion !== version || current.token !== token) throw new CanceledError("Session changed");
     const session = { token, expiresAt, user };
     current.login(session);
-    sileo.success({ title: i18n.t("auth:session_restored") });
     return session;
   }
 
@@ -81,7 +79,6 @@ export function createAuthSession(client: AxiosInstance) {
         throw new CanceledError("Session changed");
       }
       useAuthStore.getState().login(data);
-      sileo.success({ title: i18n.t("auth:refresh_success") });
       return data;
     };
     const operation = typeof navigator !== "undefined" && navigator.locks

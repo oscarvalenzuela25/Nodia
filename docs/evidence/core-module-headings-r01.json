@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-25",
+  "status": "implemented_and_deployed_visual_change",
+  "change": "Group headings show translated name only; removed group prefix and repeated page-continuation caption, including unused ES/EN keys. Shared renderer used by table and mobile cards.",
+  "client_release": "/opt/nodia/releases/nodia-client-core-fx04-headings-r04",
+  "client_manifest_sha256": "c62e7b00371f62b98bf3adb72323364b64a0822bbfd1378f9cb4b132109ff1ba",
+  "HTTP_assets_SHA_MIME": 171,
+  "server_before": {
+    "nodia-api": {
+      "MainPID": "4143736",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+      "ActiveState": "active"
+    },
+    "nodia-ai-worker": {
+      "MainPID": "4143737",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+      "ActiveState": "active"
+    }
+  },
+  "server_after": {
+    "nodia-api": {
+      "MainPID": "4143736",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+      "ActiveState": "active"
+    },
+    "nodia-ai-worker": {
+      "MainPID": "4143737",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+      "ActiveState": "active"
+    }
+  },
+  "server_restarts": 0,
+  "migrations": 0,
+  "SQL_writes": 0,
+  "AI_generations": 0,
+  "checks": {
+    "existing_focal_tests": 24,
+    "suites": 2,
+    "build_and_types": true,
+    "ESLint_focal": true
+  },
+  "UI": {
+    "authenticated_tabs_reloaded": 2,
+    "group_headings": [
+      "Finanzas",
+      "Herramientas",
+      "Administrador General"
+    ],
+    "notice_present": false,
+    "prior_order_mode_restored": true,
+    "screenshot": {
+      "path": "docs/evidence/core-module-headings-r01.png",
+      "sha256": "443bb6e71211d7b298f04d57ea49108eb3629ea0dbc5c29443fbabc3528ea709"
+    }
+  },
+  "impact": "Presentation only; pagination, ordering, permissions and MCP publication unchanged. No new knowledge feature needed. FX04 remains partial.",
+  "materials": [
+    {
+      "path": "ops/lab/artifacts/module-headings-r01/client.tar.gz",
+      "sha256": "8d74b1565a695a701a98812a590c8aa2502bce0b2b6d75ae8ca015ffb68f4453"
+    },
+    {
+      "path": "ops/lab/artifacts/module-headings-r01/plan.json",
+      "sha256": "c07001772541e80e5c523bc22a66847b02e0c561e16af3688dce94d7584ad153"
+    },
+    {
+      "path": "ops/lab/artifacts/module-headings-r01/adopt.py",
+      "sha256": "2da7f4c1d894ecf297bffebc60760e0d4a90b3379eca5c258648a9b65bf26341"
+    },
+    {
+      "path": "ops/lab/artifacts/module-headings-r01/adopt.json",
+      "sha256": "4ea9c1cd9b7f3473aba785af0f988ef0f2209ac9199c6f882eb9d44827a0a3f4"
+    }
+  ],
+  "cleanup": {
+    "status": "own_upload_removed",
+    "files": 3,
+    "bytes": 2143419,
+    "active_and_prior_releases_retained": true,
+    "private_operator_and_receipts_retained": true
+  }
+}

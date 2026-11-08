@@ -26,7 +26,7 @@ from native_cli_diagnostics import capture_cli_log_diagnostic, cli_error_indicat
 from native_attempts import ReconcileAttempt
 from native_execution_agents import (execution_agent_definition, prepare_execution_agent,
                                      verify_execution_agent, mcp_execution_policy_hash)
-from native_mcp_stdio import bounded_json, atomic, MAX_CATALOG_TOOLS, MAX_CATALOG_BYTES, MAX_MANIFEST_BYTES, MAX_CONTROLLED_CONTEXT_BYTES, check_context_budget
+from native_mcp_stdio import bounded_json, atomic, MAX_CATALOG_TOOLS, MAX_CATALOG_BYTES, MAX_MANIFEST_BYTES, MAX_CONTROLLED_CONTEXT_BYTES, check_context_budget, CLOSED_RPC_METHODS, CLOSED_RPC_REASONS
 from nodia_ai_chat import ChatRequest, Closed, Answer, unique_pairs, CONTRACT_VERSION
 from service_errors import ServiceError
 from native_context_budget import (McpTool, validate_catalog, build_mcp_prompt, require_context_budget,
@@ -88,6 +88,48 @@ def capture_rpc_diagnostic(directory: Path) -> dict[str, object]:
         if value["response"] is None:summary["unknown_events"]+=1
         if value["method"]=="tools_list" and value["response"]=="success":summary["tools_list_successes"]+=1
         summary["last_response"]=value
+    summary["closed_observation"] = capture_closed_rpc_diagnostic(directory, summary["events"])
+    return summary
+
+
+def capture_closed_rpc_diagnostic(directory: Path, expected_events: int | None = None) -> dict[str, object]:
+    """Bounded allowlist only; legacy/missing evidence never means delivery."""
+    summary = {"schema_version": 1, "state": "missing", "unknown_events": 0,
+        "scope": "flush_completed_not_cli_consumption", "sequence": []}
+    files = sorted((directory / "rpc-diagnostics").glob("*.json"))
+    if len(files) > 128:
+        summary["state"] = "oversize"
+        return summary
+    summary["state"] = "observed" if files else "missing"
+    if expected_events is not None and len(files) != expected_events:
+        summary["state"] = "partial" if files else "missing"
+        summary["unknown_events"] = max(0, expected_events - len(files))
+    required = {"ordinal", "elapsed_ms", "method", "response", "reason", "error_code",
+        "constructed", "write_completed", "flush_completed", "response_utf8_bytes"}
+    for ordinal, path in enumerate(files, 1):
+        try:
+            if path.is_symlink() or path.stem != str(ordinal).zfill(4):
+                raise ValueError("Unknown diagnostic ordinal")
+            with path.open("rb") as source:
+                value = bounded_json(source.read(2049), 2048)
+            if (not isinstance(value, dict) or set(value) != required
+                    or type(value["ordinal"]) is not int or value["ordinal"] != ordinal
+                    or type(value["elapsed_ms"]) is not int or not 0 <= value["elapsed_ms"] <= 2147483647
+                    or type(value["method"]) is not str or value["method"] not in {*CLOSED_RPC_METHODS.values(), "other"}
+                    or type(value["response"]) is not str or value["response"] not in ("unknown", "success", "error", "notification")
+                    or type(value["reason"]) is not str or value["reason"] not in CLOSED_RPC_REASONS
+                    or (value["error_code"] is not None and (type(value["error_code"]) is not int or value["error_code"] not in (-32600, -32602, -32000)))
+                    or (value["response"] == "error") != (type(value["error_code"]) is int)
+                    or any(type(value[key]) is not bool for key in ("constructed", "write_completed", "flush_completed"))
+                    or (value["response_utf8_bytes"] is not None and (type(value["response_utf8_bytes"]) is not int or not 1 <= value["response_utf8_bytes"] <= MAX_CONTROLLED_CONTEXT_BYTES))
+                    or (value["constructed"] and (value["response"] not in ("success", "error") or value["response_utf8_bytes"] is None))
+                    or (value["write_completed"] and not value["constructed"])
+                    or (value["flush_completed"] and not value["constructed"])):
+                raise ValueError("Unknown closed RPC diagnostic")
+            summary["sequence"].append(value)
+        except (OSError, ValueError, TypeError, UnicodeError):
+            summary["unknown_events"] += 1
+            summary["state"] = "partial"
     return summary
 
 
@@ -157,6 +199,27 @@ class McpTrace(NativeFileCliProgress):
         self.result_error_categories: list[str] = []
         self.result_error_json_utf8_bytes: int | None = None
         self._stderr_tail = b""
+        self._expected_agent = None
+        self._expected_model = None
+        self.init_count = 0
+        self.init_agent_matches = None
+        self.init_model_matches = None
+
+    def expect_identity(self, agent: str, model: str) -> None:
+        self._expected_agent = agent
+        self._expected_model = model
+
+    def _observe_init(self, value):
+        self.init_count += 1
+        identity = value.get("init")
+        for key, expected, attribute in (("agent", self._expected_agent, "init_agent_matches"),
+                ("model", self._expected_model, "init_model_matches")):
+            actual = identity.get(key) if isinstance(identity, dict) else None
+            match = actual == expected if isinstance(actual, str) and isinstance(expected, str) else None
+            previous = getattr(self, attribute)
+            # Duplicated/malformed init cannot claim a unique matching identity.
+            setattr(self, attribute, match if self.init_count == 1 else
+                False if previous is False or match is False else None)
 
     def feed_error(self, chunk):
         self.stderr_bytes += len(chunk)
@@ -172,6 +235,9 @@ class McpTrace(NativeFileCliProgress):
         try:
             value = json.loads(line)
             if not isinstance(value, dict): return
+            if value.get("event") == "init":
+                try: self._observe_init(value)
+                except Exception: pass  # Supplemental comparisons never change stream handling.
             if value.get("event") == "step_update":
                 step = value.get("step_update")
                 if not isinstance(step, dict) or step.get("step_type") != "tool": return
@@ -199,6 +265,8 @@ class McpTrace(NativeFileCliProgress):
         return {**self.summary(), "tool_steps": self.tool_steps, "last_tool": self.last_tool,
                 "terminal_status": self.terminal_status, "denied_count": self.denied_count,
                 "stderr_bytes": self.stderr_bytes,
+                "init_identity": {"init_count": self.init_count, "agent_matches": self.init_agent_matches,
+                    "model_matches": self.init_model_matches},
                 "error_indicator_interpretation":"text_indicator_not_verified_cause",
                 "stderr_error_categories":sorted(self.stderr_error_categories),
                 "result_error_categories":self.result_error_categories,
@@ -437,10 +505,7 @@ class NativeMcpSessions:
                     shutil.copyfile(source,target);target.chmod(0o400);copies.append(target)
                 attachment_paths=copies
             job.directory=bridge
-            prepare_cli_home(home)
-            for name in ("antigravity-oauth-token","installation_id"):
-                source=runner.config.home/".gemini/antigravity-cli"/name
-                if source.is_file(): (home/".gemini/antigravity-cli"/name).symlink_to(source)
+            prepare_cli_home(home,account_home=runner.config.home)
             prompt=build_mcp_prompt(request.canonical_prompt,request.tools,[str(path.resolve()) for path in attachment_paths])
             if job.execution_policy_hash != mcp_execution_policy_hash(): raise ValueError("MCP execution policy changed")
             agent_name,agent_document=execution_agent_definition("mcp",bool(attachment_paths))
@@ -465,6 +530,7 @@ class NativeMcpSessions:
             (configuration/"hooks.json").write_text(json.dumps({"nodia-mcp":{"PreToolUse":[{"matcher":"*","hooks":[{"type":"command","command":command,"timeout":3}]}]}}),encoding="utf-8")
             args=["--input-format","stream-json","--output-format","stream-json","--json-schema",json.dumps(Answer.model_json_schema()),"--disable-slash-commands","--sandbox","--print-timeout",str(request.timeout_seconds)+"s","--log-file",str(root/"cli.log"),*options,"--agent",agent_name]
             job.phase="running_cli"
+            job.trace.expect_identity(agent_name, request.model_id)
             process=asyncio.create_task(runner.run(args,stdin=(json.dumps({"event":"user","message":{"content":prompt}})+"\n").encode(),cwd=workspace,home=home,timeout=request.timeout_seconds,stdout_observer=job.trace.feed,stderr_observer=job.trace.feed_error))
             watcher=asyncio.create_task(self.watch(job))
             try:

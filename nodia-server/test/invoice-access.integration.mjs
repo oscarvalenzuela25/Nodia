@@ -7,8 +7,8 @@ import { AuthGuard } from '../dist/auth/auth.guard.js';
 import { AuthService } from '../dist/auth/auth.service.js';
 import { AuthTokenService } from '../dist/auth/auth-token.service.js';
 import { AuthenticateRequestUseCase } from '../dist/auth/use-case/authenticate-request.use-case.js';
-import { ActionPermissionGuard, RequireAction } from '../dist/authorization/action-permission.guard.js';
-import { CheckActionPermissionUseCase } from '../dist/authorization/use-case/check-action-permission.use-case.js';
+import { ModuleAccessGuard } from '../dist/authorization/module-access.guard.js';
+import { CheckModuleAccessUseCase } from '../dist/authorization/use-case/check-module-access.use-case.js';
 import { InvoiceController } from '../dist/invoice/invoice.controller.js';
 import { AnalyzeInvoiceUseCase } from '../dist/invoice/use-case/analyze-invoice.use-case.js';
 import { VerifyIaProvidersUseCase } from '../dist/invoice/use-case/verify-ia-providers.use-case.js';
@@ -18,6 +18,9 @@ import { AnalysisObservationInterceptor } from '../dist/invoice/analysis-observa
 // Real HTTP pipeline, guards and invoice use cases; session/token/persistence
 // boundaries are synthetic. No .env, configured DB, Redis or AI calls.
 const actor = { id: '42', email: 'business-user@example.test', name: 'Business user', modules: ['business'], roles: [] };
+const sessionId = '11111111-1111-4111-8111-111111111111';
+const businessId = '9601aa95-dd70-4af3-a5cf-50dd553a4ae9';
+let businessChecks = 0;
 let inferenceCalls = 0;
 let releaseInference;
 let waitForInference = null;
@@ -33,12 +36,21 @@ const analysis = new AnalyzeInvoiceUseCase({}, {}, {}, {
     progress?.emit('response_received');
     return { code: 'SYNTHETIC', total_amount: 0, issue_date: null, items: [] };
   },
+}, undefined, {
+  async assertBusinessAccess(id, identity) {
+    assert.equal(id, businessId);
+    assert.deepEqual(identity, { userId: actor.id, sessionId });
+    businessChecks++;
+  },
 });
-let actionChecks = 0;
-const deniedDataSource = {
-  async query() {
-    actionChecks++;
-    return [{ allowed: false }];
+let moduleChecks = 0;
+const syntheticDataSource = {
+  async query(sql, [userId, routes, match]) {
+    assert.ok(sql.includes('permitted_routes'));
+    assert.deepEqual(routes, ['/business']);
+    assert.equal(match, 'all');
+    moduleChecks++;
+    return [{ actor_active: ['42', '43', '44'].includes(userId), allowed: ['42', '43'].includes(userId) }];
   },
 };
 class PermissionControlController {
@@ -47,7 +59,6 @@ class PermissionControlController {
 Controller('permission-control')(PermissionControlController);
 const controlDescriptor = Object.getOwnPropertyDescriptor(PermissionControlController.prototype, 'check');
 Get()(PermissionControlController.prototype, 'check', controlDescriptor);
-RequireAction('ai:manage')(PermissionControlController.prototype, 'check', controlDescriptor);
 
 const unusedInvoiceProviders = Reflect.getMetadata('design:paramtypes', InvoiceController)
   .filter((token) => token !== AnalyzeInvoiceUseCase && token !== VerifyIaProvidersUseCase && token !== AnalysisObservationsUseCase)
@@ -63,21 +74,22 @@ Module({
     { provide: AnalyzeInvoiceUseCase, useValue: analysis },
     { provide: VerifyIaProvidersUseCase, useValue: new VerifyIaProvidersUseCase({}, { async findAllProviders() { return { data: [] }; } }) },
     AuthenticateRequestUseCase,
-    CheckActionPermissionUseCase,
-    { provide: DataSource, useValue: deniedDataSource },
+    CheckModuleAccessUseCase,
+    { provide: DataSource, useValue: syntheticDataSource },
     { provide: AuthService, useValue: {
-      async findActiveSession(id) { return id === 'active-session' ? { public_id: id, image_url: null } : null; },
+      async findActiveSession(id) { return id === sessionId ? { public_id: id, image_url: null } : null; },
       async findUser(id) { return { ...actor, id }; },
     } },
     { provide: AuthTokenService, useValue: {
       async verify(token, type) {
         assert.equal(type, 'access');
-        if (!['business-only', 'other-user', 'revoked'].includes(token)) throw new UnauthorizedException();
-        return { sub: token === 'other-user' ? 'other' : actor.id, sid: token === 'revoked' ? 'revoked-session' : 'active-session' };
+        if (!['business-only', 'other-user', 'without-module', 'revoked'].includes(token)) throw new UnauthorizedException();
+        return { sub: token === 'other-user' ? '43' : token === 'without-module' ? '44' : actor.id,
+          sid: token === 'revoked' ? '22222222-2222-4222-8222-222222222222' : sessionId };
       },
     } },
     { provide: APP_GUARD, useClass: AuthGuard },
-    { provide: APP_GUARD, useClass: ActionPermissionGuard },
+    { provide: APP_GUARD, useClass: ModuleAccessGuard },
   ],
 })(InvoiceAccessTestModule);
 
@@ -93,12 +105,20 @@ try {
       const path = `${base}/api/v1/${resource}/${alias}`;
       assert.equal((await fetch(path)).status, 401);
       assert.equal((await fetch(path, { headers: { Authorization: 'Bearer revoked' } })).status, 401);
+      assert.equal((await fetch(path, { headers: { Authorization: 'Bearer without-module' } })).status, 403);
       const response = await fetch(path, { headers });
       assert.equal(response.status, 200);
       assert.deepEqual(await response.json(), []);
     }
     const path = `${base}/api/v1/${resource}/analyze`;
     assert.equal((await fetch(path, { method: 'POST' })).status, 401);
+    const withoutModule = await fetch(path, {
+      method: 'POST', headers: { Authorization: 'Bearer without-module', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ business_id: 'invalid' }),
+    });
+    assert.equal(withoutModule.status, 403);
+    assert.equal(businessChecks, 0);
+    assert.equal(inferenceCalls, 0);
     const response = await fetch(path, {
       method: 'POST',
       headers: { ...headers, 'Content-Type': 'application/json' },
@@ -114,7 +134,7 @@ try {
     assert.equal(invalid.status, 400);
     assert.ok((await invalid.json()).message.includes('business_id must be a UUID'));
   }
-  assert.equal(actionChecks, 0);
+  assert.ok(moduleChecks > 0);
   const context = { business_id: '9601aa95-dd70-4af3-a5cf-50dd553a4ae9', ai_provider_id: '42', mode: 'api_key', model: 'synthetic' };
   const reserve = async (resource = 'invoices') => {
     const response = await fetch(`${base}/api/v1/${resource}/analysis-observations`, { method: 'POST',
@@ -157,6 +177,7 @@ try {
     await new Promise(resolve => setTimeout(resolve, 10));
   }
   assert.equal(inferenceCalls, 1);
+  assert.equal(businessChecks, 1);
   const running = await snapshot(id);
   assert.equal(running.state, 'running');
   assert.ok(running.events.some(event => event.stage === 'provider_request_started'));
@@ -172,9 +193,10 @@ try {
   assert.equal(completed.events.at(-1).stage, 'extraction_validated');
   assert.equal(inferenceCalls, 1);
   assert.deepEqual((await fetch(`${base}/api/v1/invoices/analysis-observations/${id}?after=${completed.lastSequence}`, { headers }).then(response => response.json())).events, []);
+  const beforeUnknownController = moduleChecks;
   assert.equal((await fetch(`${base}/api/v1/permission-control`, { headers })).status, 403);
-  assert.equal(actionChecks, 1);
-  console.log('Invoice access HTTP checks passed: business user without actions, aliases, authentication, validation and remaining action guard.');
+  assert.equal(moduleChecks, beforeUnknownController);
+  console.log('Invoice access HTTP checks passed: module-required access, user without actions, aliases, authentication, observation ownership, validation, one principal inference and fail-closed controller coverage.');
 } finally {
   await app.close();
 }

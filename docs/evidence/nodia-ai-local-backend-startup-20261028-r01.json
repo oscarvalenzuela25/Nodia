@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-28",
+  "timezone": "America/Santiago",
+  "scope": "Local Windows backend startup for human testing; no provider inference",
+  "readiness": {
+    "checked_on": "2026-10-28",
+    "timezone": "America/Santiago",
+    "operator_inference_requests": 0,
+    "database": {
+      "tableCount": 66,
+      "migrations": 32,
+      "runtime": {
+        "nodia_ai_jobs": 0,
+        "nodia_ai_job_attempts": 0,
+        "nodia_ai_runs": 0,
+        "nodia_ai_executions": 0,
+        "nodia_ai_api_dispatches": 0
+      }
+    },
+    "providers": [
+      {
+        "id": "3",
+        "name": "Mi gemini",
+        "provider_key": "gemini",
+        "is_default": true,
+        "default_mode": null,
+        "use_api_key": false,
+        "use_agentic": true,
+        "api_model": null,
+        "agentic_model": "gemini-3.8-flash-high"
+      },
+      {
+        "id": "4",
+        "name": "Chatgpt pega",
+        "provider_key": "openai",
+        "is_default": false,
+        "default_mode": "agentic",
+        "use_api_key": true,
+        "use_agentic": true,
+        "api_model": "gpt-6.1-sol",
+        "agentic_model": null
+      }
+    ],
+    "redis": {
+      "ping": "PONG"
+    },
+    "http": {
+      "api": {
+        "status": 200,
+        "allowedOrigin": "http://localhost:5174"
+      },
+      "webProxy": {
+        "status": 200
+      },
+      "protectedChat": {
+        "status": 401
+      },
+      "web": {
+        "status": 200,
+        "realApplication": true
+      }
+    },
+    "native": {
+      "status": 200,
+      "available": true,
+      "has_active_session": true,
+      "reason": null,
+      "inference_proven": false
+    },
+    "processes": {
+      "api": {
+        "role": "api",
+        "entry": "C:\\Users\\Oscar\\Desktop\\Nodia\\nodia-server\\dist\\main.js",
+        "pid": 132336,
+        "watch": false,
+        "started_at": "2026-10-28T18:06:00.8496350Z"
+      },
+      "worker": {
+        "role": "worker",
+        "watch": false,
+        "entry": "C:\\Users\\Oscar\\Desktop\\Nodia\\nodia-server\\dist\\nodia-ai-worker.js",
+        "started_at": "2026-10-28T18:06:33.3707635Z",
+        "pid": 139304
+      }
+    }
+  },
+  "database_upgrade": {
+    "before_tables": 42,
+    "before_migration_records": 7,
+    "after_tables": 66,
+    "after_migration_records": 32,
+    "documentary_legacy_adoptions": [
+      "CreateAiProviderCatalogAndRefactorAiProviders1789257800000",
+      "HardenAiApiKeyEncryption1790553600000",
+      "CreatePersonalFinance1791085000000"
+    ],
+    "applied_versioned_migrations": [
+      "InitialCoreSchema1789257400000",
+      "InitialBusinessAiSchema1789257500000",
+      "AuthSessions1789257600000",
+      "AddIconToModulesAndModuleGroups1789257700000",
+      "SeedSecurityActions1790553500000",
+      "AddTokenPlanFlagsToCatalogAndProviders1790553700000",
+      "AddIsDefaultToAiProviders1790553800000",
+      "CompleteAiProviderCatalog1791640000000",
+      "RegisterNodiaAiNavigation1792100000000",
+      "CreateNodiaAiConversationPersistence1792200000000",
+      "IndexNodiaAiRunEvents1792300000000",
+      "CreateNodiaAiProposalPersistence1792400000000",
+      "CreateNodiaAiConfirmationPersistence1792500000000",
+      "FreezeNodiaAiFinancialWitness1792600000000",
+      "AddNodiaAiWorkflowBindings1792700000000",
+      "CreateNodiaAiAttachments1792800000000",
+      "CreateNodiaAiPreferences1792900000000",
+      "CreateNodiaAiContextSnapshots1793000000000",
+      "AddNodiaAiTextSearchIndex1793100000000",
+      "AddModuleSortOrder1793200000000",
+      "RetireWebAiModes1793300000000",
+      "AddNodiaAiApiChatRuntime1793310000000"
+    ],
+    "pending": false,
+    "keys_preserved_byte_exact": true,
+    "unchanged_domain_tables": [
+      "ai_api_keys",
+      "ai_provider_events",
+      "auth_sessions",
+      "business_actions",
+      "business_collaborators",
+      "businesses",
+      "finance_categories",
+      "finance_category_group_memberships",
+      "finance_category_groups",
+      "finance_movements",
+      "finance_obligations",
+      "invoice_items",
+      "invoice_uploads",
+      "invoices",
+      "nodia_codex_catalog_rollback",
+      "personal_info_provider",
+      "product_logs",
+      "products",
+      "providers",
+      "rental_audit_events",
+      "rental_blocks",
+      "rental_cancellation_policies",
+      "rental_cancellation_rules",
+      "rental_collaborators",
+      "rental_expenses",
+      "rental_operations",
+      "rental_payments",
+      "rental_properties",
+      "rental_reservations",
+      "rental_turnovers",
+      "role_actions",
+      "roles",
+      "user_modules",
+      "user_roles",
+      "users"
+    ],
+    "finance_semantic_equivalent": true,
+    "finance_rows_unchanged": true,
+    "finance_additive_indexes": [
+      "idx_finance_movements_user_created",
+      "idx_finance_movements_user_category_created"
+    ],
+    "scratch_database_dropped": true
+  },
+  "snapshots": {
+    "before": {
+      "file": "before.pgdump.dpapi",
+      "protection": "Windows DPAPI CurrentUser",
+      "plaintext_bytes": 169838,
+      "plaintext_sha256": "b8c6f7d134edb09ce5e48bf384742f0d979c535b8713039f72b656efed7e61a2",
+      "ciphertext_bytes": 170054,
+      "ciphertext_sha256": "2d0e0dd6ea7badca2fc05a318a7ea7664a4a1e169ba5faa2976231cc25a53d46",
+      "decrypt_verified": true,
+      "archive_toc_verified": true,
+      "archive_toc_entries": 418
+    },
+    "after": {
+      "file": "after.pgdump.dpapi",
+      "protection": "Windows DPAPI CurrentUser",
+      "plaintext_bytes": 312279,
+      "plaintext_sha256": "9481e39eebf9b9595e0bd4139db95943c0528c0816ef196bd0fe58cc9cdebacc",
+      "ciphertext_bytes": 312502,
+      "ciphertext_sha256": "a953009d9108f687761544aa49c877064e11a385f3aa04ccafc253031fa11958",
+      "decrypt_verified": true,
+      "archive_toc_verified": true,
+      "archive_toc_entries": 642
+    }
+  },
+  "native_artifact": {
+    "version": "1.3.1",
+    "sha512": "f346d2cd9d68e7e5395cb94ff95e7e8ab2e0c65cf2ad835d0eb671fb41f12f5fc713d7a26ceb4510678eb9baa62c6cd9ab8205211e3661c6cd1e23ca7bc69781",
+    "lock": "nodia-gemini-microservice/antigravity-cli.lock.json",
+    "profile_path_preserved": true,
+    "env_files_preserved": true,
+    "original_binary_preserved": true,
+    "bind": "127.0.0.1:8000",
+    "inference_proven": false
+  },
+  "recovery_catalog": "ops/lab/artifacts/local-backend-startup-20261028-r01/catalog.json",
+  "limits": [
+    "Human login and actual provider messages remain to be tested; no session was impersonated.",
+    "Codex Agentic is not supported by this runtime on Windows.",
+    "Retired Web default became null under the approved mode-retirement migration; no substitute selected.",
+    "Local DPAPI copies verified by decryption and pg_restore TOC; no full restore, remote retention or production acceptance claimed."
+  ],
+  "operator_diagnostics": [
+    {
+      "code": "42P08",
+      "scope": "Initial legacy migration metadata insert parameter types",
+      "resolution": "Transaction rolled back; explicit bigint/varchar casts then applied with verified baseline state."
+    },
+    {
+      "status": 401,
+      "scope": "Initial private metadata probe used a wrong header name",
+      "resolution": "Corrected to the actual X-Nodia-Service-Token protocol; final authenticated200."
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "status": "R09_active_in_local_Linux_VM",
+  "source_receipt_sha256": "769b7e7001a18b9db0ff50c497b33ee7c66ada4b23ab5cfcee4022dbea9887cf",
+  "operator_sha256": "b1881202ce745d3bf2fc45bd736ef9a4fe6f3af782de90172a2348719c65a3e5",
+  "plan_sha256": "505fa8dca968e6ddd6b8c9e36aa98302fff8e6018962eca74c3b124b2773e170",
+  "source": "/opt/nodia/releases/nodia-server-ai40-r08",
+  "target": "/opt/nodia/releases/nodia-server-ai36-c05-r09",
+  "post_consumers": {
+    "nodia-api": {
+      "active": "active",
+      "sub": "running",
+      "pid": 3982963,
+      "working_directory": "/opt/nodia/releases/nodia-server-ai36-c05-r09",
+      "recovery_config_path_verified": true,
+      "original_dotenv_path_verified": true,
+      "other_environment_fields_emitted": false,
+      "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+      "argv_exact_match": true
+    },
+    "nodia-ai-worker": {
+      "active": "active",
+      "sub": "running",
+      "pid": 3982964,
+      "working_directory": "/opt/nodia/releases/nodia-server-ai36-c05-r09",
+      "recovery_config_path_verified": true,
+      "original_dotenv_path_verified": true,
+      "other_environment_fields_emitted": false,
+      "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+      "argv_exact_match": true
+    }
+  },
+  "publication": {
+    "source": "5c83848c6eb1a6ce77fa63ad9de38f4dea556f260b6a9646cfceaaf4850db994",
+    "target": "6763cef6423d2cc511844351a384358e0e5141e4f597d19a291a5cf1feeb3c73",
+    "old_contracts_exact": 74,
+    "added_prepare_change": 72,
+    "added_prepare_secure_flow": 4,
+    "old_fragment_assets_exact": 31,
+    "runtime_code_policy_unchanged": true
+  },
+  "protected_chat_SQL_projection": {
+    "chats": 1,
+    "messages": 64,
+    "runs": 34,
+    "dispatches": 51,
+    "tool_receipts": 60,
+    "executions": 4,
+    "effect_receipts": 5,
+    "financial_effects": 1,
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "protected_projection_unchanged": true,
+  "current_proof_snapshots_and_Gemini_unchanged": true,
+  "public_configuration_sha256": "506e4c436bc22152c9aa632565d470450206d5ffdb1c9b976c0d0c7b5116f8b2",
+  "backup": {
+    "backup_id": "5087e2df-c4b7-431d-a5f6-ab4ef47110b0",
+    "captured_at": "2026-10-25T01:54:36.243Z",
+    "cipher_bytes": 1077188,
+    "cipher_sha256": "d1df8e8f8a2e1ad91a13c74615eafece6621261cf06754f4515d0b7db1596c79",
+    "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+    "expires_at": "2026-11-01T01:54:36.243Z",
+    "journal_sequence": 1,
+    "operation": "backup",
+    "rotated": {
+      "pending_recovered": 0,
+      "removed": 0,
+      "retained": 27
+    },
+    "schema_version": 1,
+    "status": "ready"
+  },
+  "backup_replayed": false,
+  "timers_restored": true,
+  "commands_completed": 58,
+  "command_returncodes": [
+    0
+  ],
+  "provider_inference_requests": 0,
+  "SQL_restores": 0,
+  "migrations": 0,
+  "original_attempt": {
+    "status": "adopt_failed_before_API_stop_after_successful_backup",
+    "failure_cause": "unknown_original_command_details_were_not_retained",
+    "original_failure_receipt_sha256": "5809fc8c28ffbb6a6bd3f6796e0608f5d54d7dbff2f67ea5f79e44f76956f0bb",
+    "original_backup_receipt_sha256": "2574626e3c5efbc30d0a892531f67b5d62968d595cc453da2a44ac34caf36f4f",
+    "original_success_receipt_was_not_fabricated": true,
+    "later_read_only_snapshot_and_exact_R2_ready_catalog_verified": true
+  },
+  "immediate_rollback_preflight": {
+    "status": "preflight_passed_no_mutations",
+    "receipt_sha256": "7517be3e5292ba99e23093204afb26505943532a795707cb9dd26335d48bbeeb",
+    "performed_before_any_new_C05_UI_intention": true,
+    "actual_rollback_performed": false,
+    "new_work_requires_a_new_supervised_plan": true,
+    "protected_projection_is_not_a_digest_of_all_database_transactions": true
+  },
+  "real_account_generations_and_human_effects": "separate_acceptance_not_claimed_by_this_operator"
+}

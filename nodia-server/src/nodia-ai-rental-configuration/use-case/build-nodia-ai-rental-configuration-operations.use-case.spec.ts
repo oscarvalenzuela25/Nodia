@@ -169,7 +169,7 @@ function fixture() {
       isSuperAdmin: false,
       modules: [],
     },
-    moduleRoutes: ['/tools/reservations'],
+    moduleRoutes: ['/reservations'],
     conversationId: session,
     maxCollectionItems: 128,
     statementTimeoutMs: 1200,
@@ -327,7 +327,7 @@ describe('Build NodiaAI rental configuration operations', () => {
     const f = fixture();
     expect(f.factory.operations).toHaveLength(6);
     for (const port of f.factory.operations) {
-      expect(port.moduleRoutes).toEqual(['/tools/reservations']);
+      expect(port.moduleRoutes).toEqual(['/reservations']);
       expect(port.catalogVersion).toBe('nodia-ai-ai24-rental-configuration/1');
       expect(port.bindableFields).toEqual({});
       expect(port.contractHash).toMatch(/^[a-f0-9]{64}$/);

@@ -11,6 +11,8 @@ import { AuthorizeNodiaAiUseCase } from '../../nodia-ai/use-case/authorize-nodia
 import type { NodiaAiActorReference } from '../../nodia-ai/types/nodia-ai-authorization.types.js';
 import { NodiaAiConversation } from '../entities/nodia-ai-conversation.entity.js';
 import { NodiaAiConversationService } from '../nodia-ai-conversation.service.js';
+import { NodiaAiConnectionsService } from '../nodia-ai-connections.service.js';
+import { defaultNodiaAiSelection } from './nodia-ai-configured-selection.js';
 import { ValidateNodiaAiConversationInputUseCase } from './validate-nodia-ai-conversation-input.use-case.js';
 import { ProjectNodiaAiConversationUseCase } from './project-nodia-ai-conversation.use-case.js';
 import {
@@ -27,6 +29,7 @@ export class CreateNodiaAiConversationUseCase {
     private readonly project: ProjectNodiaAiConversationUseCase,
     @Inject(NODIA_AI_CONVERSATION_POLICY)
     private readonly policy: NodiaAiConversationPolicy,
+    private readonly connections: NodiaAiConnectionsService,
   ) {}
   async execute(identity: NodiaAiActorReference, input: unknown) {
     const command = this.validate.execute(input);
@@ -53,6 +56,9 @@ export class CreateNodiaAiConversationUseCase {
         return this.existing(existing, hash);
       }
       const now = await this.conversations.now(manager);
+      const selection =
+        command.selection ??
+        defaultNodiaAiSelection(await this.connections.findDefault(manager));
       const entity = Object.assign(new NodiaAiConversation(), {
         id: randomUUID(),
         owner_id: actor.actorId,
@@ -63,10 +69,10 @@ export class CreateNodiaAiConversationUseCase {
         is_archived: false,
         revision: 1,
         retention_epoch: '1',
-        selected_connection_id: command.selection?.connection_id ?? null,
-        selected_mode: command.selection?.mode ?? null,
-        selected_model_id: command.selection?.model_id ?? null,
-        selected_effort_id: command.selection?.effort_id ?? null,
+        selected_connection_id: selection?.connection_id ?? null,
+        selected_mode: selection?.mode ?? null,
+        selected_model_id: selection?.model_id ?? null,
+        selected_effort_id: selection?.effort_id ?? null,
         routing_enabled: false,
         routing_revision: 1,
         routing_target_selection: null,

@@ -50,5 +50,5 @@ export const usePagedProductCodeOptions = (businessId: string, enabled = true) =
     getNextPageParam: (page) => page.meta.page < page.meta.total_pages ? page.meta.page + 1 : undefined,
     enabled: isSessionActive && enabled && !!businessId,
   });
-  return { isFetching: query.isFetching, isLoading: query.isLoading, isError: query.isError, refetch: query.refetch, fetchNextPage: query.fetchNextPage, hasNextPage: query.hasNextPage, setSearch, options: Array.from(new Set(query.data?.pages.flatMap((page) => page.data.map((product) => product.code)) ?? [])) };
+  return { isFetching: query.isFetching, isLoading: query.isLoading, isError: query.isError, refetch: query.refetch, fetchNextPage: query.fetchNextPage, hasNextPage: query.hasNextPage, setSearch, options: Array.from(new Set(query.data?.pages.flatMap((page) => page.data.map((product) => product.code).filter((code): code is string => typeof code === "string" && code.trim().length > 0)) ?? [])) };
 };

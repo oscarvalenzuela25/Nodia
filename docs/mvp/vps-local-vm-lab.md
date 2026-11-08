@@ -1,5 +1,11 @@
 # Ensayo de VPS en una VM Linux local
 
+## Web y chat completos en VM — 2026-10-28
+
+El acceso vigente es `http://localhost:5174/tools/nodia-ai`: un túnel SSH estricto lleva el puerto5174 local a Nginx8080 de la VM, que sirve Client estático y API `/api/v1` del mismo origen. Sustituye para este recorrido al Vite Windows/proxy3100 descrito en cortes inferiores. API/worker usan `/opt/nodia/releases/nodia-server-chat-redesign-r01`; Nginx sirve `/opt/nodia/releases/nodia-client-chat-redesign-r01/dist`, conservando assets de clientes anteriores. PostgreSQL/Redis y Native continúan en la VM; no se copian BD, `.env`, claves o perfiles Windows.
+
+El servidor nuevo deriva del runtime Codex Model Catalog realmente activo, con overlay acotado del chat y conocimiento publicado intacto. Respaldo antes/después, conservación SQL/configuración/época nativa y pruebas en la [evidencia de adopción](../evidence/nodia-ai-chat-vm-adoption-20261028-r01.json). Los operadores y recibos privados están catalogados en `ops/lab/artifacts/chat-redesign-vm-20261028-r01/`; el driver de despliegue es de un solo uso y no debe repetirse para arrancar el laboratorio. API/worker tienen systemd; el acceso5174 depende del túnel de esta sesión Windows. No se reinició Native ni se calificaron modelos mediante inferencias nuevas.
+
 ## R2 y micrófono NodiaAI — actualización 2026-10-18
 
 [R05](78-nodia-ai-ai32-attachments-voice.md#revalidación-ai-32-r05--r2-micrófono-y-contención-del-compositor) configura R2 privado en el entorno de la VM con las cuatro variables existentes R2_ACCOUNT_ID/R2_ACCESS_KEY_ID/R2_SECRET_ACCESS_KEY/R2_BUCKET_NAME; valores nunca en repositorio o frontend. Backup privado y activación API/worker; Gemini y nginx preservados. Canario real PUT/GET/hash/DELETE/404 y chat real PNG/PDF/audio del micrófono comprobados, con descarga privada y recarga. R2 ya no está ausente en este laboratorio; las menciones posteriores a R2 pendiente corresponden a snapshots históricos. No acredita automáticamente promoción/legacy cloud, purga al vencer ni producción. Frontend5174 y túnel3100 encendidos; secretos sólo en los entornos privados.

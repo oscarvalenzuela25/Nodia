@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "status": "current_Agentic_availability_blocked_by_three_observed_timeouts",
+  "date_local": "2026-10-25",
+  "observed_date_UTC": "2026-10-26",
+  "runtime_epoch": {
+    "container_id": "1dc08be23adcecce38e4bb591fe43b12eb6d5f480a455fe23488f160d4a871bb",
+    "image_id": "sha256:56f6d5c48f81056968f02aa89b51192900e38251c35f9d499089244f2af323b5",
+    "started_at": "2026-10-26T00:21:42.03765925Z"
+  },
+  "current_static_pins": {
+    "Server_manifest_sha256": "4276fd7091f3d7f36604ba355895a2e43054bcbcec7b87ee5f0d897a42a41549",
+    "Client_manifest_sha256": "b7acc13f2e383bac6ff034bb1706d4cb9223e4b3fe2cddacbd34b29f59d2a963",
+    "nginx_sha256": "1dbc5b36d3e61541fae29939a365c53ad913c14ab62b55c4097a11234b15f2da",
+    "knowledge_release": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd"
+  },
+  "reader": {
+    "path": "ops/lab/artifacts/c03-predispatch-observe-only-r01/observe-only.mjs",
+    "sha256": "0910cd5f977e9a96c07b8c13dd1bca1265e2c92b0fbc7ae79eeabad73f02f9e8",
+    "scope": "one production Adapter.observe and canonical DB projection, READ ONLY; availability and selection assertions preserved; route allowlist forbids native start"
+  },
+  "executed_wrapper": {
+    "path": "ops/lab/artifacts/c03-predispatch-observe-only-r01/executed-wrapper-r01.py",
+    "sha256": "af63cb0e49c5cfb8f858afeb8cf15529e143a1181b38dfc402a2841aa000af6f",
+    "scope": "root-operated exact static/epoch fences and canonical SQL/native quiet before/after; private configuration read without credential export"
+  },
+  "baseline": {
+    "path": "ops/lab/artifacts/c03-predispatch-observe-only-r01/baseline-preflight.json",
+    "sha256": "d643a973ff2da8b580b42dcc36733b066ef3c240bffb47fb6cdb9accf964c879",
+    "comparison_applies_only_to_same_bound_epoch": true,
+    "comparison_does_not_grant_availability": true
+  },
+  "observations": [
+    {
+      "receipt": "ops/lab/artifacts/c03-predispatch-observe-only-r01/receipts/predispatch-observe-only-r01.json",
+      "receipt_sha256": "f1a830b879bc78aa58aed3e4fbe347c366c9857b33da18365901d2d83b100b45",
+      "observe_elapsed_ms": 12061,
+      "failed_gate": "availability",
+      "available": false,
+      "reason": "agentic_timeout",
+      "configuration_matches": true,
+      "session_matches": true,
+      "selection_recheck_matches": null,
+      "observation_requests": 1,
+      "native_start_requests": 0,
+      "native_pending_identity": false,
+      "quiet_SQL_and_native_before_after_zero": true,
+      "quiet_window_utc": {
+        "before": "2026-10-26T00:39:16.111Z",
+        "after": "2026-10-26T00:39:28.757Z"
+      }
+    },
+    {
+      "receipt": "ops/lab/artifacts/c03-predispatch-observe-only-r01/receipts/predispatch-observe-only-r02.json",
+      "receipt_sha256": "80bdc7be3dd2236db0751ab263e26c81e32d7b6b369cab1688d5cb6625db266d",
+      "observe_elapsed_ms": 12048,
+      "failed_gate": "availability",
+      "available": false,
+      "reason": "agentic_timeout",
+      "configuration_matches": true,
+      "session_matches": true,
+      "selection_recheck_matches": null,
+      "observation_requests": 1,
+      "native_start_requests": 0,
+      "native_pending_identity": false,
+      "quiet_SQL_and_native_before_after_zero": true,
+      "quiet_window_utc": {
+        "before": "2026-10-26T00:40:27.615Z",
+        "after": "2026-10-26T00:40:40.266Z"
+      }
+    },
+    {
+      "receipt": "ops/lab/artifacts/c03-predispatch-observe-only-r01/receipts/predispatch-observe-only-r03.json",
+      "receipt_sha256": "7951cffc9a00c829f0127828cc8d021a3fb93a1162b01cb63bdffc17f9eb15c5",
+      "observe_elapsed_ms": 12061,
+      "failed_gate": "availability",
+      "available": false,
+      "reason": "agentic_timeout",
+      "configuration_matches": true,
+      "session_matches": true,
+      "selection_recheck_matches": null,
+      "observation_requests": 1,
+      "native_start_requests": 0,
+      "native_pending_identity": false,
+      "quiet_SQL_and_native_before_after_zero": true,
+      "quiet_window_utc": {
+        "before": "2026-10-26T00:41:29.319Z",
+        "after": "2026-10-26T00:41:41.970Z"
+      }
+    }
+  ],
+  "confirmed": [
+    "All three fresh canonical observations returned available:false and reason:agentic_timeout.",
+    "Configuration/session comparisons match the real bound baseline in the same epoch.",
+    "Each run made one observe request and zero native start/generation requests; no terminal attempt record is expected.",
+    "Quiet SQL/native checks passed before and after all three runs.",
+    "Current availability blocks C03 completion; the client/UI deployment is a separate completed result."
+  ],
+  "limits": [
+    "These later observations do not identify which assertion failed in the earlier generic attestation_check_failed report.",
+    "Measured ~12s and typed timeout do not establish the internal CLI/SDK command, upstream cause, quota, authentication or transport failure.",
+    "HTTP200 alone does not prove available:true.",
+    "Prior positive preflights and UI retries do not authorize borrowing availability for a later observation.",
+    "No diagnosis is inferred from model names or unavailable quota data."
+  ],
+  "operator_stop": "Root stopped after three consecutive negatives. No further metadata calls or MCP control in this window; no timeout, TTL, retry or production changes.",
+  "unused_prototype": {
+    "path": "ops/lab/artifacts/c03-predispatch-observe-only-r01/prototype-observe-shim-not-executed.py",
+    "sha256": "749b4b73c6175038e3e00566e4047055e84fa3cc197c2c206a5eaac3847e126d",
+    "executed": false
+  },
+  "single_control_r02_written_or_executed": false,
+  "effects": {
+    "observe_requests": 3,
+    "native_start_requests": 0,
+    "provider_generations": 0,
+    "SQL_writes": 0,
+    "SDK_direct_calls_by_reader": 0,
+    "service_restarts": 0,
+    "inference_retries": 0,
+    "new_cohorts": 0
+  },
+  "new_document_or_operational_approval": false
+}

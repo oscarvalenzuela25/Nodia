@@ -19,15 +19,44 @@ export interface NodiaAiCodexRuntimeProofRequest extends NodiaAiRuntimeProofIden
     connectionId: string;
   };
 }
+export interface NodiaAiApiRuntimeProofRequest {
+  engine: 'api_key';
+  attemptId: string;
+  resourceKey: string;
+  sessionGeneration: string;
+  operationRef: string;
+  adapterIdentity: {
+    providerKey: 'openai' | 'gemini';
+    contractVersion: 'nodia-ai-api-chat/1';
+    connectionId: string;
+  };
+}
+export type NodiaAiNativeRuntimeProofRequest =
+  NodiaAiGeminiRuntimeProofRequest | NodiaAiCodexRuntimeProofRequest;
 export type NodiaAiRuntimeProofRequest =
   | NodiaAiGeminiRuntimeProofRequest
-  | NodiaAiCodexRuntimeProofRequest;
-export type NodiaAiRuntimeTerminalProof = NodiaAiRuntimeProofRequest & {
+  | NodiaAiCodexRuntimeProofRequest
+  | NodiaAiApiRuntimeProofRequest;
+export type NodiaAiNativeRuntimeTerminalProof =
+  NodiaAiNativeRuntimeProofRequest & {
+    terminalProofId: string;
+    processClosed: true;
+    outcome: 'completed' | 'abandoned_unknown';
+    observedAt: Date;
+    localTransportClosed?: never;
+    remoteOutcome?: never;
+  };
+/** A closed local HTTP executor never proves remote cancellation or an unobserved result. */
+export type NodiaAiApiRuntimeTerminalProof = NodiaAiApiRuntimeProofRequest & {
   terminalProofId: string;
-  processClosed: true;
+  localTransportClosed: true;
+  remoteOutcome: 'completed' | 'unknown';
+  processClosed?: never;
   outcome: 'completed' | 'abandoned_unknown';
   observedAt: Date;
 };
+export type NodiaAiRuntimeTerminalProof =
+  NodiaAiNativeRuntimeTerminalProof | NodiaAiApiRuntimeTerminalProof;
 /** Private authenticated adapter only. The model and public DTOs never supply a proof. */
 export abstract class NodiaAiRuntimeReconciliationPort {
   abstract reconcile(

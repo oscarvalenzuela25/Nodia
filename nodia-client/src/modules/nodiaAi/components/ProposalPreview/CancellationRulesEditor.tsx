@@ -18,9 +18,9 @@ export default function CancellationRulesEditor({ label, value, onChange, disabl
         <TextInput label={t("proposal.rental_fields.min_days_before")} required value={row.min_days_before} disabled={disabled} onChange={event => change(row.row_id, "min_days_before", event.target.value)} />
         <TextInput label={t("proposal.rental_fields.refund_percent")} required value={row.refund_percent} disabled={disabled} onChange={event => change(row.row_id, "refund_percent", event.target.value)} />
       </Box>
-      <ReviewActions><Button type="button" disabled={disabled || value.length <= 1} aria-label={t("proposal.remove_rental_rule", { position: index + 1 })} onClick={() => onChange(value.filter(item => item.row_id !== row.row_id))}>{t("proposal.remove_rental_rule", { position: index + 1 })}</Button></ReviewActions>
+      <ReviewActions><Button variant="contained" type="button" disabled={disabled || value.length <= 1} aria-label={t("proposal.remove_rental_rule", { position: index + 1 })} onClick={() => onChange(value.filter(item => item.row_id !== row.row_id))}>{t("proposal.remove_rental_rule", { position: index + 1 })}</Button></ReviewActions>
     </Box>)}
     {error && <Alert severity="error">{t("proposal.rental_rules_invalid")}</Alert>}
-    <ReviewActions><Button type="button" disabled={disabled || value.length >= 100} onClick={() => onChange([...value, { row_id: crypto.randomUUID(), min_days_before: "", refund_percent: "" }])}>{t("proposal.add_rental_rule")}</Button></ReviewActions>
+    <ReviewActions><Button variant="contained" type="button" disabled={disabled || value.length >= 100} onClick={() => onChange([...value, { row_id: crypto.randomUUID(), min_days_before: "", refund_percent: "" }])}>{t("proposal.add_rental_rule")}</Button></ReviewActions>
   </Box>;
 }

@@ -89,7 +89,7 @@ export function createNodiaAiCoreSettingsReadFamily(
     familyKey: 'core_settings',
     modules: ['actions', 'modules', 'roles', 'users'].map((key) => ({
       key,
-      route: `/settings/${key}`,
+      route: `/${key}`,
       label: key,
     })),
     resources: (
@@ -105,7 +105,7 @@ export function createNodiaAiCoreSettingsReadFamily(
       key,
       label: key,
       requiredModuleRoutes: [
-        `/settings/${key === 'business_actions' ? 'actions' : key === 'module_groups' ? 'modules' : key}`,
+        `/${key === 'business_actions' ? 'actions' : key === 'module_groups' ? 'modules' : key}`,
       ],
     })),
     capabilities: NODIA_AI_CORE_SETTINGS_READ_DEFINITIONS.map(
@@ -120,7 +120,7 @@ export function createNodiaAiCoreSettingsReadFamily(
         operationKey: suffix,
         descriptionKey: `nodia_ai.core.${suffix}`,
         description: `Read Nodia settings ${suffix.replaceAll('_', ' ')}. List requests are paginated, active by default, and return explicit public fields. No credentials or authentication identifiers.`,
-        requiredModuleRoutes: [`/settings/${moduleKey}`],
+        requiredModuleRoutes: [`/${moduleKey}`],
         actionKeys: [],
         effectKey: `core.read.${suffix}`,
         inputSchema: { sourceJson, definition: input, sha256 },

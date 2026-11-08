@@ -1,4 +1,5 @@
 import type { NodiaAiJsonObject } from '../../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
+import { canonicalModuleRoute, contractModuleRoute } from '../../authorization/canonical-module-route.js';
 import type { NodiaAiToolCall } from '../../nodia-ai-run/entities/nodia-ai-tool-call.entity.js';
 import type { NodiaAiRegisteredTool } from '../../nodia-ai-tools/types/tool-registry.types.js';
 import type {
@@ -27,6 +28,7 @@ export function projectNodiaAiToolObservation(
   result: NodiaAiJsonObject,
   moduleRoute: string,
 ): NodiaAiToolObservation {
+  const destination = canonicalModuleRoute(moduleRoute);
   const meta = object(result.meta);
   const total = meta?.total_items;
   const data = result.data;
@@ -48,7 +50,7 @@ export function projectNodiaAiToolObservation(
     navigation.push({
       kind,
       id,
-      module_route: moduleRoute,
+      module_route: contractModuleRoute(destination),
       label:
         typeof label === 'string' && label.length >= 1 && label.length <= 256
           ? label
@@ -56,7 +58,7 @@ export function projectNodiaAiToolObservation(
     });
   };
   if (
-    moduleRoute === '/tools/business' &&
+    destination === '/business' &&
     ['nodia_businesses_get', 'nodia_businesses_list'].includes(tool.toolName)
   ) {
     for (const row of rows ?? [data]) {
@@ -65,7 +67,7 @@ export function projectNodiaAiToolObservation(
         add('business_detail', item.id, item.name);
     }
   }
-  if (moduleRoute === '/tools/reservations') {
+  if (destination === '/reservations') {
     if (
       ['nodia_rental_properties_get', 'nodia_rental_properties_list'].includes(
         tool.toolName,
@@ -84,7 +86,7 @@ export function projectNodiaAiToolObservation(
     navigation.push({
       kind: 'module',
       id: null,
-      module_route: moduleRoute,
+      module_route: contractModuleRoute(destination),
       label: null,
     });
   return {

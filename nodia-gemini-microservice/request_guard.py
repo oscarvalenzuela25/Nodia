@@ -1,6 +1,7 @@
 """Authenticate and admit bounded uploads before Starlette parses multipart."""
 
 import asyncio
+import json
 import tempfile
 import time
 from uuid import uuid4
@@ -14,7 +15,7 @@ from schemas import RuntimeLimits
 from service_auth import authenticate_service_request
 from service_errors import ServiceError
 
-ANALYSIS_PATHS = {"/analyze-invoice", "/agentic/analyze-invoice", "/web/analyze-invoice"}
+ANALYSIS_PATHS = {"/analyze-invoice", "/agentic/analyze-invoice"}
 
 
 class PrivateRequestGuard:
@@ -37,7 +38,7 @@ class PrivateRequestGuard:
                 response_started = True
                 response_status = message["status"]
                 message.setdefault("headers", []).append((b"x-request-id", request_id.encode()))
-                if scope["path"].startswith(("/agentic/auth/login", "/auth/login", "/auth/logout")):
+                if scope["path"].startswith(("/agentic/auth/login")):
                     message["headers"].append((b"cache-control", b"no-store"))
             await send(message)
 
@@ -57,12 +58,21 @@ class PrivateRequestGuard:
             if rejection is not None:
                 await rejection(scope, receive, traced_send)
                 return
-            if scope["path"].startswith(("/agentic/auth/login/", "/auth/login/", "/nodia-ai/")) and scope["method"] == "POST":
+            if scope["path"].startswith(("/agentic/auth/login/", "/nodia-ai/", "/teacher/agentic-text/")) and scope["method"] == "POST":
                 # Login inputs are tiny private commands, never unbounded JSON.
                 payload = bytearray()
-                context_measure = scope["path"] in {"/nodia-ai/web/measure-context", "/nodia-ai/agentic/measure-context"}
+                context_measure = scope["path"] in {"/nodia-ai/agentic/measure-context"}
                 invoice_contract = scope["path"] == "/nodia-ai/invoice-analysis/contract"
-                maximum_body = 64 * 1024 if invoice_contract else 57 * 1024 * 1024 if scope["path"] in {"/nodia-ai/web/turn", "/nodia-ai/agentic/turn", "/nodia-ai/web/attachments/probe", "/nodia-ai/agentic/attachments/probe", "/nodia-ai/agentic/mcp/start"} else 2 * 1024 * 1024 if context_measure else 300000 if scope["path"].startswith("/nodia-ai/") else 8192
+                invoice_turn = scope["path"] in {"/nodia-ai/agentic/invoice/turn"}
+                maximum_body = 64 * 1024 if invoice_contract else 57 * 1024 * 1024 if scope["path"] in {"/nodia-ai/agentic/turn", "/nodia-ai/agentic/attachments/probe", "/nodia-ai/agentic/mcp/start"} else 2 * 1024 * 1024 if context_measure else 300000 if scope["path"].startswith("/nodia-ai/") else 8192
+                if scope["path"].startswith("/teacher/agentic-text/"):
+                    # ASCII JSON escaping can expand each prompt byte sixfold.
+                    maximum_body = 800000 if scope["path"] == "/teacher/agentic-text/start" else 8192
+                if invoice_turn:
+                    from native_invoice_analysis import MAX_REQUEST_BYTES
+                    maximum_body = MAX_REQUEST_BYTES
+                if scope["path"] == "/nodia-ai/agentic/image/turn":
+                    maximum_body = 64 * 1024
                 try:
                     async with asyncio.timeout(60 if maximum_body > 400000 and not context_measure else 5):
                         while True:
@@ -80,6 +90,26 @@ class PrivateRequestGuard:
                 except TimeoutError:
                     await reject("upload_timeout", "Tiempo de carga del login agotado.", 408)
                     return
+
+                if scope["path"].startswith("/teacher/agentic-text/"):
+                    # Reject ambiguous JSON before Starlette/Pydantic can collapse keys.
+                    def unique_teacher_fields(pairs):
+                        value = {}
+                        for key, item in pairs:
+                            if key in value:
+                                raise ValueError("Duplicate field")
+                            value[key] = item
+                        return value
+
+                    def invalid_teacher_constant(value):
+                        raise ValueError("Non-finite JSON")
+
+                    try:
+                        json.loads(payload.decode("utf-8"), object_pairs_hook=unique_teacher_fields,
+                                   parse_constant=invalid_teacher_constant)
+                    except (ValueError, UnicodeError):
+                        await reject("invalid_request", "Parámetros inválidos.", 422)
+                        return
 
                 async def login_receive() -> dict:
                     return {"type": "http.request", "body": bytes(payload), "more_body": False}

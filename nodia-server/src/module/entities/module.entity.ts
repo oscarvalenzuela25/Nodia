@@ -1,5 +1,6 @@
 import {
   Column,
+  Check,
   CreateDateColumn,
   Entity,
   Index,
@@ -8,6 +9,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  Unique,
   type Relation,
 } from 'typeorm';
 import { UserModule as UserModuleEntity } from '../../user/entities/user-module.entity.js';
@@ -17,12 +19,19 @@ import { ModuleGroup as ModuleGroupEntity } from '../../module-group/entities/mo
   name: 'modules',
 })
 @Index('idx_modules_module_group_id', ['module_group_id'])
+@Check('ck_modules_sort_order_nonnegative', '"sort_order" >= 0')
+@Unique('uq_modules_group_sort_order', ['module_group_id', 'sort_order'], {
+  deferrable: 'INITIALLY IMMEDIATE',
+})
 export class Module {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;
 
   @Column({ type: 'bigint' })
   module_group_id: string;
+
+  @Column({ type: 'integer' })
+  sort_order: number;
 
   @Column({ type: 'varchar', length: 255 })
   link: string;

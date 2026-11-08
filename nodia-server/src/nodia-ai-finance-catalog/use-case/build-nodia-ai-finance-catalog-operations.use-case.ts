@@ -57,7 +57,7 @@ type Writer = (
   actor: FinanceActor,
   input: Decoded,
 ) => Promise<{ id: string; user_id: string } | void>;
-const route = '/tools/finances-personal';
+const route = '/finances-personal';
 const scalarFields = {
   name: 'string',
   key: 'string',

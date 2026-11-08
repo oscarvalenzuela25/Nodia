@@ -1,5 +1,4 @@
 {
-  "subtitle": "Conversations connected to Nodia",
   "settings": "Settings",
   "conversations": "Conversations",
   "new_chat": "New chat",
@@ -14,7 +13,7 @@
   "more_conversations": "Load more conversations",
   "welcome": "Your conversation space",
   "welcome_message": "Talk to NodiaAI",
-  "welcome_detail": "Create a chat and choose a connection, mode and model. Available tools depend on your permissions and Agentic verification.",
+  "welcome_detail": "Each conversation starts with your default configuration. You can change provider, mode, model and effort between messages.",
   "invalid_chat": "This conversation identifier is invalid.",
   "detail_error": "We could not recover this chat. It may have expired or access may no longer be authorized.",
   "checking_selection": "Checking availability for this selection…",
@@ -30,7 +29,8 @@
     "model_unavailable": "The selected model is unavailable for this connection.",
     "option_unsupported": "The provider does not support the selected model and reasoning combination.",
     "protocol_unverified": "The integration required for this mode has not been verified yet.",
-    "invalid_observation": "The provider availability check returned an invalid response."
+    "invalid_observation": "The provider availability check returned an invalid response.",
+    "api_credential_required": "Configure an available API key for this connection."
   },
   "catalog_error": "We could not load NodiaAI connections.",
   "messages": "Chat messages",
@@ -41,6 +41,10 @@
   "messages_error": "We could not recover the history. Previously loaded messages are preserved.",
   "more_messages": "Load earlier messages",
   "message": "Message",
+  "image_generation": {
+    "command_hint": "To request an image in this chat, type /imagen and a description, without attachments.",
+    "unverified": "Image generation is not verified for this selection. You can keep using text chat."
+  },
   "send": "Send message",
   "recover_send": "Check the same submission",
   "send_uncertain": "Receipt was not confirmed. You can check using the same key without starting a new intent.",
@@ -74,13 +78,19 @@
   },
   "modes": {
     "api_key": "API key",
-    "token_plan_web": "Web",
-    "token_plan_agentic": "Agentic"
+    "agentic": "Agentic",
+    "retired": "Retired mode"
   },
   "effort_levels": {
     "low": "Low",
     "medium": "Medium",
     "high": "High"
+  },
+  "activity": {
+    "title": "NodiaAI activity",
+    "steps_label": "Turn steps",
+    "steps_one": "{{count}} step",
+    "steps_other": "{{count}} steps"
   },
   "observation": {
     "title": "Activity and results",
@@ -134,14 +144,10 @@
     "missing_model": "Unavailable model ({{id}})",
     "missing_effort": "Unavailable intensity ({{id}})",
     "selection_missing": "The saved selection is no longer in the catalog. Review it before continuing.",
-    "api_deferred": "API mode will be enabled in a later stage.",
     "mode_disabled": "The connection or this mode is disabled in its configuration. Review AI Settings before continuing.",
-    "openai_web_disabled": "OpenAI Web is not enabled for NodiaAI. Select Agentic to use Codex.",
     "codex_description": "Codex Agentic uses this connection’s account. The saved catalog does not verify that the model can respond.",
     "codex_manage": "Manage Codex account in another tab",
     "codex_private_login": "Sign in through the secure AI Settings channel. Do not send codes or credentials to the chat. Then check the selection again.",
-    "mcp_verified": "MCP tools are verified for this selection. Changes require your confirmation of the exact proposal.",
-    "mcp_unverified": "MCP tools are not yet verified for this selection. Chat availability does not enable them.",
     "checking": "Checking this selection…",
     "check_again": "Check again",
     "available": "This selection is available for chat.",
@@ -153,9 +159,61 @@
     "routing_unavailable": "The Agentic target is no longer available. Disable switching to continue.",
     "scope": "These changes affect only this conversation; they do not change the provider’s global settings.",
     "cancel": "Cancel",
-    "apply": "Apply settings"
+    "apply": "Apply settings",
+    "tools_unverified": "Tools are not yet verified for this selection. Chat availability does not enable them.",
+    "api_available": "This API key selection is available for chat.",
+    "tools_supported": "This selection supports tool requests. Changes require your confirmation of the exact proposal."
   },
   "proposal": {
+    "historical_sales": {
+      "operations": {
+        "create": "Create sale draft",
+        "update": "Update sale draft",
+        "complete": "Confirm sale",
+        "cancel": "Void sale",
+        "discard": "Discard sale draft"
+      },
+      "fields": {
+        "id": "Record ID",
+        "business_id": "Business ID",
+        "sale_id": "Sale ID",
+        "product_id": "Product ID",
+        "items": "Requested products",
+        "quantity": "Quantity",
+        "payment_method": "Payment method",
+        "payment_method_description": "Payment method description",
+        "cancellation_reason": "Void reason",
+        "sale_pricing_snapshot": "Saved prices and conditions",
+        "currency": "Currency",
+        "version_before": "Previous version",
+        "state_before": "Previous status",
+        "lines": "Product details",
+        "total_amount": "Total amount",
+        "state_after": "Resulting status",
+        "expected_product_version": "Reviewed product version",
+        "expected_unit_price": "Reviewed unit price",
+        "code": "Invoice / supplier code",
+        "barcode": "Barcode",
+        "name": "Product name",
+        "regular_unit_price": "Regular unit price",
+        "offer_price": "Offer price",
+        "is_offer_enabled": "Offer enabled",
+        "price_source": "Price source",
+        "line_total": "Subtotal",
+        "product_version": "Saved product version",
+        "product_code_snapshot": "Saved invoice / supplier code",
+        "product_barcode_snapshot": "Saved barcode",
+        "product_name_snapshot": "Saved product name",
+        "offer_price_snapshot": "Saved offer price",
+        "is_offer_enabled_snapshot": "Saved offer enabled",
+        "unit_price": "Applied unit price"
+      },
+      "price_sources": {
+        "regular": "Regular",
+        "offer": "Offer",
+        "manual": "Manual"
+      }
+    },
     "available": "Proposal available for review",
     "show": "View proposal",
     "hide": "Hide proposal",
@@ -623,11 +681,9 @@
       "is_active": "Active",
       "is_default": "Default connection",
       "use_api_key": "API enabled",
-      "use_token_plan_web": "Web enabled",
-      "use_token_plan_agentic": "Agentic enabled",
+      "use_agentic": "Agentic enabled",
       "can_use_api_key": "API configurable",
-      "can_use_token_plan_web": "Web configurable",
-      "can_use_token_plan_agentic": "Agentic configurable",
+      "can_use_agentic": "Agentic configurable",
       "auto_rotate_api_keys": "API key rotation",
       "translates": "Translations",
       "es": "Spanish",
@@ -644,14 +700,10 @@
       "api_key.ocr_model": "API · OCR model",
       "api_key.ocr_focus_model": "API · OCR focus model",
       "api_key.thinking_level": "API · Reasoning level",
-      "token_plan_web.selected_model": "Web · Selected model",
-      "token_plan_web.ocr_model": "Web · OCR model",
-      "token_plan_web.ocr_focus_model": "Web · OCR focus model",
-      "token_plan_web.thinking_level": "Web · Reasoning level",
-      "token_plan_agentic.selected_model": "Agentic · Selected model",
-      "token_plan_agentic.ocr_model": "Agentic · OCR model",
-      "token_plan_agentic.ocr_focus_model": "Agentic · OCR focus model",
-      "token_plan_agentic.thinking_level": "Agentic · Reasoning level",
+      "agentic.selected_model": "Agentic · Selected model",
+      "agentic.ocr_model": "Agentic · OCR model",
+      "agentic.ocr_focus_model": "Agentic · OCR focus model",
+      "agentic.thinking_level": "Agentic · Reasoning level",
       "affected_connections": "Affected connections",
       "availability": "Availability",
       "changes_chat_configuration": "Changes this chat selection",
@@ -672,8 +724,7 @@
     "ai_provider_configuration_note": "Saving configuration does not verify availability, authentication or model execution. Credentials are managed through their secure flow.",
     "ai_provider_modes": {
       "api_key": "API",
-      "token_plan_web": "Web",
-      "token_plan_agentic": "Agentic"
+      "agentic": "Agentic"
     },
     "ai_provider_values": {
       "unknown": "Unknown"
@@ -699,7 +750,17 @@
       "nodia_preferences_prepare_create": "Remember a preference",
       "nodia_preferences_prepare_update": "Change a preference",
       "nodia_preferences_prepare_delete": "Forget a preference"
-    }
+    },
+    "card_title": "Proposed changes",
+    "card_description": "Review the details and available actions.",
+    "step_count_one": "{{count}} step",
+    "step_count_other": "{{count}} steps",
+    "created_label": "Created",
+    "expires_label": "Valid until",
+    "technical_details": "Proposal details",
+    "proposal_id": "Proposal identifier:",
+    "catalog_version": "Catalog version:",
+    "historical_sales_label": "Historical sale · Read only"
   },
   "execution": {
     "title": "Confirmed execution",
@@ -811,7 +872,6 @@
       "nodia_logout": "Sign out only of my current Nodia session",
       "api_key_delete": "Delete the confirmed credential",
       "codex_logout": "Sign out of the confirmed Codex connection",
-      "gemini_web_logout": "Sign out of the shared Gemini Web session",
       "sync_models": "Fetch and save the remote catalog for the confirmed mode"
     },
     "status": {
@@ -922,6 +982,7 @@
     "action_error": "We could not complete this action. Your draft was preserved.",
     "pending": "Upload attachments and accept their text, or use a format verified for the current selection.",
     "view": "View file",
+    "image_preview": "Preview of {{name}}",
     "download": "Download private file",
     "unavailable": "We could not retrieve this file or access is no longer allowed.",
     "bytes": "{{count}} bytes",
@@ -941,15 +1002,24 @@
       "audio": "Audio"
     },
     "capabilities_error": "We could not retrieve attachment requirements. Try again to continue.",
+    "recheck_capabilities": "Check formats again",
+    "capabilities_refreshed": "Attachment compatibility updated",
+    "invoice_ocr_reference": "File available to request invoice extraction",
     "native_ready": "This format is verified for the current selection. You can send the original file without writing an interpretation; this does not imply an available transcript.",
     "discard_edit": "Discard text edit",
     "edit_discarded": "Text edit discarded",
     "text_too_large": "The message and accepted attachment text exceed 32 KiB. Reduce the text before sending.",
-    "file_name_invalid": "The file name must contain text and be no longer than 256 UTF-8 bytes. Rename it before attaching."
+    "file_name_invalid": "The file name must contain text and be no longer than 256 UTF-8 bytes. Rename it before attaching.",
+    "preview_unavailable": "Preview unavailable",
+    "review_content": "Review content",
+    "audio_preview_label": "Audio player: {{name}}",
+    "audio_preview_error": "This audio could not be played in this browser.",
+    "audio_preview_retry": "Retry playback",
+    "audio_preview_unavailable": "The audio preview is unavailable. You can download the file."
   },
   "preferences": {
     "title": "Preferences",
-    "description": "NodiaAI only remembers what you accept. You can review or delete preferences; remembering them grants no permissions and confirms no operations. Preferences remain after a chat expires. If module access is revoked, they stop being used; you can still forget them.",
+    "description": "NodiaAI remembers only the preferences you confirm and can use them in other chats. For example, your usual expense category. Choose “Propose a change” to pick another value or “Propose deletion” to forget it. Review and confirm the proposal to apply the change.",
     "loading": "Opening preferences…",
     "chunk_error": "We could not open preferences. Retry without reloading the page.",
     "chat_required": "To propose changes, open an available chat you own and wait for its current activity to finish.",
@@ -989,6 +1059,8 @@
     "changed": "Preferences changed during this turn. The original history is preserved and the request will not be repeated automatically. You can send a new request to use their current version."
   },
   "organization": {
+    "show_filters": "Show conversation filters",
+    "hide_filters": "Hide conversation filters",
     "search": "Search by title or text",
     "archive_filter": "Conversations",
     "archive_active": "Not archived",
@@ -1012,12 +1084,95 @@
     "unarchive_confirm": "Unarchive “{{title}}”?",
     "title": "Conversation title",
     "title_limit": "The title allows up to 256 UTF-8 bytes.",
+    "current_title": "Current title: {{title}}",
+    "title_changed": "The conversation changed. Review its current state before saving.",
     "title_help": "Leave it empty to show “Untitled conversation”.",
     "save": "Save title",
     "review_latest": "Review current state",
     "retention_unchanged": "Organizing a conversation does not renew its retention period.",
     "search_limit": "Search was not applied: it allows up to 256 UTF-8 bytes.",
     "access_rejected": "This conversation is no longer available to your session. Its content has been hidden.",
-    "partial_message": "Partial response: this message did not finish."
+    "partial_message": "Partial response: this message did not finish.",
+    "saved_preferences": "Saved preferences"
+  },
+  "artifacts": {
+    "tools": {
+      "nodia_products_export_csv": "Product export",
+      "nodia_providers_export_csv": "Supplier export",
+      "nodia_invoices_file": "Invoice file"
+    },
+    "current_on_download": "Your permissions are checked again when downloading. CSV files are generated from current data.",
+    "download": "Download private file",
+    "retry": "Retry download",
+    "download_ready": "File ready to download",
+    "download_error": "We could not download this file. Check that the conversation and your permissions are still valid, then try again."
+  },
+  "run_control": {
+    "title": "Turn control",
+    "stop": "Stop response",
+    "requested": "Stop request sent",
+    "already_terminal": "The current turn status was retrieved",
+    "waiting": "Waiting for the turn to finish closing. This request does not undo changes already made.",
+    "uncertain": "We could not confirm whether the request was received. Check the status before trying again.",
+    "check": "Check turn status",
+    "retry": "Retry the same request",
+    "retry_note": "The turn is still active. You can send the same stop request again."
+  },
+  "api_errors": {
+    "rate_limited": "The API provider rejected the request because of a usage limit. It will not be retried automatically.",
+    "credential_rejected": "The provider rejected the API credential. Review this connection's key; the request will not be retried automatically.",
+    "provider_rejected": "The API provider rejected the request. Review the selection and its options; the model will not change and the request will not be retried automatically.",
+    "response_invalid": "We did not receive a complete, valid API response within the limits. The request will not be resent automatically.",
+    "exchange_invalid": "The API exchange does not meet the required format or limits. It will not be retried automatically.",
+    "budget_exhausted": "The turn reached its request or tool budget. No more requests will be sent in this turn.",
+    "image_invalid": "We could not validate the image received from the API provider. Another image will not be generated automatically.",
+    "image_effort_unsupported": "This image generation path does not support the configured reasoning effort. Review the selection and its options.",
+    "result_unknown": "The API request's remote result is unknown. It will not be repeated during reconciliation.",
+    "runtime_start_failed": "We could not start the API executor. Check its status before sending a new request.",
+    "acceptance_invalid": "Evidence for this API capability is not valid for the current selection. It must be verified before use."
+  },
+  "dictation": {
+    "start": "Dictate message",
+    "stop": "Finish dictation",
+    "cancel": "Cancel dictation",
+    "requesting": "Preparing dictation…",
+    "listening": "Listening · {{time}}",
+    "stopping": "Finishing dictation…",
+    "notice": "Your browser converts speech to text and may use its speech recognition service. Review the text before sending it.",
+    "unsupported": "Voice dictation is not available in this browser. You can type your message.",
+    "activity_label": "Microphone activity",
+    "activity_waiting": "Waiting for microphone access",
+    "activity_unavailable": "Microphone activity could not be displayed.",
+    "errors": {
+      "dictation_unavailable": "Dictation is not available in this browser.",
+      "microphone_denied": "Microphone access was not granted. Review your browser permission.",
+      "dictation_network": "The browser's dictation service could not connect. The recognized text has been kept.",
+      "dictation_service_unavailable": "The browser's dictation service is unavailable or disabled.",
+      "dictation_no_speech": "No speech was recognized. You can try dictating again.",
+      "dictation_language_unsupported": "The browser service does not support the selected dictation language.",
+      "dictation_audio_capture": "An audio input could not be accessed for dictation.",
+      "dictation_failed": "Dictation could not be completed. The recognized text has been kept.",
+      "text_too_large": "Dictation stopped at the message text limit. Your text has been kept.",
+      "dictation_stop_timeout": "The browser did not confirm that dictation ended. Local capture stopped and the recognized text has been kept."
+    }
+  },
+  "composer": {
+    "actions": "Add to message",
+    "attach_file": "Attach a file",
+    "title": "Write a message",
+    "placeholder": "Message Nodia AI…",
+    "context": "Context",
+    "context_detail": "Nodia AI uses the authorized history of this conversation and the admitted files in your message. Review attachments before sending them.",
+    "selection_scope": "Your selection applies to upcoming messages. Earlier messages keep their original execution.",
+    "files_one": "{{count}} file",
+    "files_other": "{{count}} files",
+    "files_ready": "Ready to send",
+    "files_review": "Review attachments",
+    "recording": "Recording · {{time}}",
+    "unassigned_effort": "Unassigned"
+  },
+  "markdown": {
+    "table_region": "Message table",
+    "code_region": "Message code block"
   }
 }

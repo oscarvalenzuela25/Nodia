@@ -35,16 +35,15 @@ let messageItems: unknown[];
 let eventItems: NodiaAiEvent[];
 let admitAction: ((config: InternalAxiosRequestConfig) => unknown) | undefined;
 let patchAction: ((config: InternalAxiosRequestConfig) => unknown) | undefined;
-const model = {model_id: selection.model_id, label: "Synthetic Web model", efforts: []};
-const agentic: NodiaAiSelection = {...selection, mode: "token_plan_agentic", model_id: "synthetic-agentic-model"};
-const routingTarget = {selection: agentic as NodiaAiSelection & {mode: "token_plan_agentic"}, configuration_generation: "synthetic-config", session_generation: "synthetic-session"};
+const model = {model_id: selection.model_id, label: "Synthetic Agentic base model", efforts: []};
+const agentic: NodiaAiSelection = {...selection, mode: "agentic", model_id: "synthetic-agentic-model"};
+const routingTarget = {selection: agentic as NodiaAiSelection & {mode: "agentic"}, configuration_generation: "synthetic-config", session_generation: "synthetic-session"};
 const catalog = {items: [{connection_id: selection.connection_id, label: "Synthetic connection", provider_key: "gemini", is_active: true, modes: [
-  {mode: selection.mode, configured_selection: selection, models: [model, {...model, model_id: "synthetic-second-model", label: "Second Web model"}], configuration: "configured", authentication: "unknown", inference: "unknown", tools: "unsupported", observed_at: null, block_reason: null},
-  {mode: agentic.mode, configured_selection: agentic, models: [{model_id: agentic.model_id, label: "Synthetic Agentic model", efforts: []}], configuration: "configured", authentication: "unknown", inference: "unknown", tools: "unknown", observed_at: null, block_reason: null},
+  {mode: selection.mode, configured_selection: selection, models: [model, {...model, model_id: "synthetic-second-model", label: "Second Agentic model"}], configuration: "configured", authentication: "unknown", inference: "unknown", tools: "unsupported", observed_at: null, block_reason: null},
 ]}], next_cursor: null};
 
 let extraConnections: NodiaAiConnection[] = [];
-const codexSelection: NodiaAiSelection = { connection_id: "9007199254740995", mode: "token_plan_agentic", model_id: "ai40-synthetic-codex", effort_id: "new-observed-effort" };
+const codexSelection: NodiaAiSelection = { connection_id: "9007199254740995", mode: "agentic", model_id: "ai40-synthetic-codex", effort_id: "new-observed-effort" };
 const codexConnection: NodiaAiConnection = { connection_id: codexSelection.connection_id, label: "AI40 synthetic Codex account", provider_key: "openai", is_active: true,
   modes: [{ mode: codexSelection.mode, configured_selection: codexSelection, models: [{ model_id: codexSelection.model_id, label: "AI40 discovered Codex model", efforts: [{ effort_id: "new-observed-effort", label: "New observed effort" }] }], configuration: "configured", authentication: "unknown", inference: "unknown", tools: "unknown", observed_at: null, block_reason: null }],
 };
@@ -75,6 +74,10 @@ function setupTransport() {
     if (url === `/nodia-ai/runs/${run.run_id}`) return response(config, { ...run, state: "completed", completed_at: conversation.created_at });
     if (url === "/nodia-ai/conversations") return response(config, {items: [current.conversation, other.conversation], next_cursor: null});
     if (url === "/nodia-ai/connections") return response(config, { ...catalog, items: [...catalog.items, ...extraConnections] });
+    if (url === "/nodia-ai/attachments/capabilities") return response(config, {
+      limits: { file_bytes: 20971520, files_per_message: 4, message_files_bytes: 41943040, audio_seconds: 300, pdf_pages: 100, image_pixels: 12000000 },
+      reviewed_text: true, native_modalities: { image: null, pdf: null, audio: null }, native_media_types: [],
+    });
     if (url.endsWith("/eligibility")) {
       const observed = {...selection, connection_id: url.split("/").at(-2), mode: params?.mode, model_id: params?.model_id, effort_id: params?.effort_id ?? null};
       return response(config, {selection: observed, available, reason: available ? null : eligibilityReason, observed_at: null, supports_mcp: false, routing_target: available ? routingTarget : null});
@@ -91,7 +94,7 @@ function Navigation() {
   return null;
 }
 function openPage() {
-  render(<QueryClientProvider client={client}><MemoryRouter initialEntries={[`/tools/nodia-ai?chat=${chatId}`]}><Navigation /><NodiaAI /></MemoryRouter></QueryClientProvider>);
+  render(<QueryClientProvider client={client}><MemoryRouter initialEntries={[`/nodia-ai?chat=${chatId}`]}><Navigation /><NodiaAI /></MemoryRouter></QueryClientProvider>);
 }
 async function readyComposer() {
   const input = await screen.findByRole("textbox", {name: "Mensaje"});
@@ -109,7 +112,163 @@ beforeEach(() => {
 afterEach(() => { useGeneralSettingsStore.getState().clearContext(); client.clear(); mainInstance.defaults.adapter = originalAdapter; useAuthStore.setState({token: null, user: null, sessionStatus: "anonymous"}); });
 
 describe("NodiaAI page with synthetic authenticated HTTP", () => {
-  it("changes Gemini and Codex explicitly between turns, preserving history, composer identity, draft and return focus", async () => {
+  it("opens a new conversation with the Server-resolved defaults and no configuration modal", async () => {
+    extraConnections = [codexConnection];
+    other.conversation.selection = codexSelection;
+    const original = mainInstance.defaults.adapter;
+    if (typeof original !== "function") throw new Error("Missing synthetic test adapter");
+    mainInstance.defaults.adapter = async config => {
+      if (config.method === "post" && config.url === "/nodia-ai/conversations") {
+        writes.push({ url: config.url, body: JSON.parse(config.data as string) as Record<string, unknown> });
+        return response(config, other.conversation);
+      }
+      return original(config);
+    };
+    const user = userEvent.setup(); openPage(); await readyComposer();
+    await user.click(screen.getByRole("button", { name: i18n.t("nodiaAi:new_chat") }));
+    await screen.findByRole("heading", { name: "Other synthetic chat" });
+    await readyComposer();
+    expect(screen.getByRole("button", { name: "Conexión" })).toHaveTextContent(codexConnection.label);
+    expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("AI40 discovered Codex model");
+    expect(screen.getByRole("button", { name: "Intensidad" })).toHaveTextContent("New observed effort");
+    expect(screen.queryByRole("dialog", { name: i18n.t("nodiaAi:configuration.title") })).not.toBeInTheDocument();
+    expect(writes).toHaveLength(1);
+    expect(writes[0].url).toBe("/nodia-ai/conversations");
+    expect(writes[0].body).not.toHaveProperty("selection");
+  });
+
+  it("uses the explicitly applied inline selection for the next admission while retaining the previous turn's selection", async () => {
+    extraConnections = [{ ...codexConnection, default_mode: "agentic" }];
+    const admittedSelections: NodiaAiSelection[] = [];
+    admitAction = config => {
+      const selected = structuredClone(current.conversation.selection!);
+      admittedSelections.push(selected);
+      const completed = { ...run, selection: selected, state: "completed" as const, completed_at: conversation.created_at };
+      current = { ...current, conversation: { ...current.conversation, revision: current.conversation.revision + 1 }, current_run: completed };
+      return response(config, { message_id: messageId, conversation_revision: current.conversation.revision, run: completed });
+    };
+    patchAction = config => {
+      const body = JSON.parse(config.data as string) as { selection: NodiaAiSelection };
+      current.conversation = { ...current.conversation, selection: body.selection, revision: current.conversation.revision + 1 };
+      return response(config, current.conversation);
+    };
+    const user = userEvent.setup(); openPage(); const composer = await readyComposer();
+    await user.type(composer, "Synthetic first turn");
+    await user.click(screen.getByRole("button", { name: "Enviar mensaje" }));
+    await waitFor(() => expect(admittedSelections).toEqual([selection]));
+    await waitFor(() => expect(composer).toBeEnabled());
+    await user.type(composer, "Synthetic second turn");
+    await user.click(screen.getByRole("button", { name: "Conexión" }));
+    await user.click(await screen.findByRole("option", { name: codexConnection.label }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Aplicar configuración" })).toBeEnabled());
+    expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeDisabled();
+    expect(writes).toHaveLength(1);
+    expect(composer).toHaveValue("Synthetic second turn");
+    await user.click(screen.getByRole("button", { name: "Aplicar configuración" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "Enviar mensaje" }));
+    await waitFor(() => expect(admittedSelections).toEqual([selection, codexSelection]));
+    expect(writes.map(entry => entry.url)).toEqual([
+      `/nodia-ai/conversations/${chatId}/messages`, `/nodia-ai/conversations/${chatId}/selection`, `/nodia-ai/conversations/${chatId}/messages`,
+    ]);
+    expect(writes[0].body.expected_conversation_revision).toBe(1);
+    expect(writes[1].body).toEqual({ expected_conversation_revision: 2, selection: codexSelection });
+    expect(writes[2].body.expected_conversation_revision).toBe(3);
+  });
+
+  it.each([false, true, undefined])("uses only explicit image qualification %j for the exact API selection's hint without blocking text", async supports_image_generation => {
+    current.conversation.selection = { ...selection, mode: "api_key" };
+    const original = mainInstance.defaults.adapter;
+    if (typeof original !== "function") throw new Error("Missing synthetic test adapter");
+    mainInstance.defaults.adapter = async config => {
+      const result = await original(config);
+      return config.url?.endsWith("/eligibility") && supports_image_generation !== undefined
+        ? { ...result, data: { ...result.data, supports_image_generation } } : result;
+    };
+    openPage();
+    const composer = await readyComposer();
+    const warning = i18n.t("nodiaAi:image_generation.unverified");
+    if (supports_image_generation === false) expect(screen.getByText(warning)).toBeInTheDocument();
+    else expect(screen.queryByText(warning)).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: i18n.t("nodiaAi:composer.context") })).not.toBeInTheDocument();
+    expect(screen.queryByText(i18n.t("nodiaAi:image_generation.command_hint"))).not.toBeInTheDocument();
+    fireEvent.change(composer, { target: { value: "Synthetic ordinary text" } });
+    expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeEnabled();
+    expect(current.conversation.selection).toEqual({ ...selection, mode: "api_key" });
+    expect(writes).toEqual([]);
+  });
+
+  it("gates invoice OCR originals by fresh matching eligibility without losing the draft or claiming native MIME", async () => {
+    current.conversation.selection = agentic;
+    const original = mainInstance.defaults.adapter;
+    if (typeof original !== "function") throw new Error("Missing synthetic test adapter");
+    const attachmentId = "77777777-7777-4777-8777-777777777777";
+    const attachment = { attachment_id: attachmentId, conversation_id: chatId, kind: "pdf", state: "uploading", file_name: "invoice.pdf", byte_count: null, media_type: null, page_count: null, duration_seconds: null, interpretation: null };
+    let phase = "fresh", uploads = 0;
+    let finishObservation!: (value: ReturnType<typeof response>) => void;
+    let pendingConfig!: InternalAxiosRequestConfig;
+    const eligibilityValue = () => ({ selection: phase === "mismatch" ? { ...agentic, model_id: "synthetic-other-selection" } : agentic,
+      available: true, reason: null, observed_at: null, supports_mcp: true, routing_target: null,
+      invoice_ocr: { media_types: ["image/png", "image/jpeg", "image/webp", "application/pdf"], file_bytes: 10485760 } });
+    mainInstance.defaults.adapter = async config => {
+      if (config.url?.endsWith("/eligibility")) {
+        if (phase === "error") return rejected(config, 503, "Synthetic eligibility unavailable");
+        if (phase === "pending") {
+          pendingConfig = config;
+          return new Promise<ReturnType<typeof response>>(resolve => { finishObservation = resolve; });
+        }
+        return response(config, eligibilityValue());
+      }
+      if (config.url === "/nodia-ai/attachments/capabilities") return response(config, {
+        limits: { file_bytes: 20971520, files_per_message: 4, message_files_bytes: 41943040, audio_seconds: 300, pdf_pages: 100, image_pixels: 12000000 },
+        reviewed_text: true, native_modalities: { image: null, pdf: null, audio: null }, native_media_types: [],
+      });
+      if (config.url === "/nodia-ai/attachments" && config.method === "post") return response(config, {
+        attachment, upload: { method: "PUT", path: `/nodia-ai/attachments/${attachmentId}/content`, expires_at: conversation.expires_at },
+      });
+      if (config.url === `/nodia-ai/attachments/${attachmentId}/content` && config.method === "put") {
+        uploads++;
+        return response(config, { ...attachment, state: "ready", media_type: "application/pdf", byte_count: 9 });
+      }
+      return original(config);
+    };
+    const user = userEvent.setup(); openPage(); const composer = await readyComposer();
+    await user.type(composer, "Analiza esta factura");
+    await waitFor(() => expect(screen.getByRole("button", { name: "Añadir al mensaje" })).toBeEnabled());
+    await user.upload(screen.getByLabelText("Elegir archivos", { selector: "input" }), new File(["synthetic"], "invoice.pdf", { type: "application/pdf" }));
+    const badge = "Archivo disponible para solicitar extracción de factura";
+    expect(await screen.findByText(badge)).toBeInTheDocument();
+    expect(screen.queryByText(/Este formato está verificado para la selección actual/)).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeEnabled());
+    const refresh = () => client.invalidateQueries({ predicate: query => query.queryKey[3] === "eligibility" });
+    phase = "pending";
+    act(() => { void refresh(); });
+    await waitFor(() => expect(finishObservation).toBeDefined());
+    expect(screen.queryByText(badge)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeDisabled();
+    phase = "mismatch";
+    await act(async () => finishObservation(response(pendingConfig, eligibilityValue())));
+    expect(await screen.findByText("No pudimos comprobar la disponibilidad de esta selección.")).toBeInTheDocument();
+    expect(screen.queryByText(badge)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeDisabled();
+    phase = "fresh";
+    await act(async () => { await refresh(); });
+    expect(await screen.findByText(badge)).toBeInTheDocument();
+    phase = "error";
+    await act(async () => { await refresh(); });
+    await waitFor(() => expect(screen.queryByText(badge)).not.toBeInTheDocument());
+    expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeDisabled();
+    expect(composer).toHaveValue("Analiza esta factura");
+    expect(screen.getByText("invoice.pdf")).toBeInTheDocument();
+    phase = "fresh";
+    await act(async () => { await refresh(); });
+    await waitFor(() => expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "Enviar mensaje" }));
+    await waitFor(() => expect(writes).toHaveLength(1));
+    expect(writes[0]?.body.parts).toEqual([{ kind: "text", text: "Analiza esta factura" }, { kind: "pdf", attachment_id: attachmentId }]);
+    expect(uploads).toBe(1);
+  });
+  it("changes Gemini and Codex explicitly between turns, preserving history, composer identity, draft and inline selection controls", async () => {
     extraConnections = [codexConnection];
     messageItems = [{ message_id: messageId, run_id: null, seq: "1", role: "assistant", status: "sealed", visibility: "visible", author_user_id: null, created_at: conversation.created_at, sealed_at: conversation.created_at, parts: [{ kind: "text", text: "AI40 previous decisions stay in this conversation" }] }];
     patchAction = config => {
@@ -119,31 +278,28 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     };
     const user = userEvent.setup(); openPage(); const composer = await readyComposer();
     await user.type(composer, "AI40 next message stays unsent");
-    const settings = screen.getByRole("button", { name: "Configuración" });
     const selectOption = async (field: string, label: string) => {
       await user.click(screen.getByRole("button", { name: field }));
       await user.click(await screen.findByRole("option", { name: label }));
     };
-    await user.click(settings);
     await waitFor(() => expect(screen.getByRole("button", { name: "Conexión" })).not.toHaveAttribute("aria-disabled", "true"));
     await selectOption("Conexión", codexConnection.label);
-    await selectOption("Modo", i18n.t("nodiaAi:modes.token_plan_agentic"));
+    await selectOption("Modo", i18n.t("nodiaAi:modes.agentic"));
     expect(writes).toEqual([]);
     expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("AI40 discovered Codex model");
     expect(screen.queryByRole("switch", { name: "Alternar automáticamente a Agentic" })).not.toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole("button", { name: "Aplicar configuración" })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: "Aplicar configuración" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    await waitFor(() => expect(settings).toHaveFocus());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Conexión" })).toBeEnabled());
     expect(screen.getByRole("textbox", { name: "Mensaje" })).toBe(composer);
     expect(composer).toHaveValue("AI40 next message stays unsent");
     expect(screen.getByText("AI40 previous decisions stay in this conversation")).toBeInTheDocument();
     expect(writes).toHaveLength(1);
     expect(writes[0]).toEqual({ url: `/nodia-ai/conversations/${chatId}/selection`, body: { expected_conversation_revision: 1, selection: codexSelection } });
-    await user.click(settings);
     await waitFor(() => expect(screen.getByRole("button", { name: "Conexión" })).not.toHaveAttribute("aria-disabled", "true"));
     await selectOption("Conexión", "Synthetic connection");
-    await selectOption("Modo", i18n.t("nodiaAi:modes.token_plan_web"));
+    await selectOption("Modo", i18n.t("nodiaAi:modes.agentic"));
     await waitFor(() => expect(screen.getByRole("button", { name: "Aplicar configuración" })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: "Aplicar configuración" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
@@ -154,20 +310,23 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     expect(writes.every(entry => entry.url.endsWith("/selection"))).toBe(true);
   });
 
-  it("requires both provider management permission and its assigned module for the private account link, including revocation", async () => {
+  it("keeps private account management out of the compact composer while preserving the draft across access changes", async () => {
     extraConnections = [codexConnection];
     current.conversation.selection = codexSelection;
     const user = userEvent.setup(); openPage(); const composer = await readyComposer();
     await user.type(composer, "AI40 private draft");
-    await user.click(screen.getByRole("button", { name: "Configuración" }));
-    await screen.findByText(i18n.t("nodiaAi:configuration.codex_description"));
+    expect(screen.queryByRole("button", { name: "Configuración" })).not.toBeInTheDocument();
     const linkName = i18n.t("nodiaAi:configuration.codex_manage");
     expect(screen.queryByRole("link", { name: linkName })).not.toBeInTheDocument();
     await act(() => useGeneralSettingsStore.setState({ isLoaded: true, actions: [{ key: "ai:manage", description: null, translates: [] }] }));
     expect(screen.queryByRole("link", { name: linkName })).not.toBeInTheDocument();
-    await act(() => useGeneralSettingsStore.setState({ modules: [{ module_group_key: "synthetic", translates: [], modules: [{ key: "ai-providers", link: "/settings/ai-providers", translates: [] }] }] }));
-    expect(screen.getByRole("link", { name: linkName })).toHaveAttribute("href", `/settings/ai-providers?provider=${codexSelection.connection_id}&mode=token_plan_agentic`);
+    await act(() => useGeneralSettingsStore.setState({ modules: [{ module_group_key: "synthetic", translates: [], modules: [{ key: "ai-providers", link: "/ai-providers", translates: [] }] }] }));
+    expect(screen.queryByRole("link", { name: linkName })).not.toBeInTheDocument();
     await act(() => useGeneralSettingsStore.setState({ actions: [] }));
+    expect(screen.queryByRole("link", { name: linkName })).not.toBeInTheDocument();
+    await act(() => useGeneralSettingsStore.setState({ modules: [] }));
+    expect(screen.queryByRole("link", { name: linkName })).not.toBeInTheDocument();
+    await act(() => useGeneralSettingsStore.setState({ roles: ["super_admin"] }));
     expect(screen.queryByRole("link", { name: linkName })).not.toBeInTheDocument();
     expect(composer).toHaveValue("AI40 private draft");
     expect(writes).toEqual([]);
@@ -218,7 +377,7 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
       await act(async () => { while (notifications.length) notifications.shift()?.(); });
     }
   });
-  it("keeps sibling drawer identities distinct while opening configuration and preferences without losing the composer draft", async () => {
+  it("opens saved preferences from the conversation menu without duplicate drawer identities or loss of the composer draft", async () => {
     const errors = vi.spyOn(console, "error");
     const base = mainInstance.defaults.adapter;
     if (typeof base !== "function") throw new Error("Missing synthetic adapter");
@@ -231,11 +390,11 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
       const user = userEvent.setup(); openPage();
       const composer = await readyComposer();
       await user.type(composer, "AI35 preserve draft across independent drawers");
-      await user.click(screen.getByRole("button", { name: "Configuración" }));
-      const configuration = await screen.findByRole("dialog", { name: "Configuración del chat" });
-      await user.click(within(configuration).getByRole("button", { name: "Cerrar configuración" }));
-      await waitFor(() => expect(screen.queryByRole("dialog", { name: "Configuración del chat" })).not.toBeInTheDocument());
-      await user.click(await screen.findByRole("button", { name: "Preferencias" }));
+      expect(screen.queryByRole("button", { name: "Configuración" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Preferencias" })).not.toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: "Conversaciones" }));
+      await user.click(await screen.findByRole("button", { name: i18n.t("nodiaAi:organization.actions", { title: i18n.t("nodiaAi:untitled") }) }));
+      await user.click(screen.getByRole("menuitem", { name: i18n.t("nodiaAi:organization.saved_preferences") }));
       await screen.findByText("Todavía no has aceptado ninguna preferencia.");
       const preferences = screen.getByRole("dialog", { name: "Preferencias" });
       await waitFor(() => expect(within(preferences).getByRole("button", { name: "Cerrar" })).toBeEnabled());
@@ -326,8 +485,9 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     const search = screen.getByRole("textbox", { name: "Buscar por título o texto" });
     await user.type(search, "AI35 supplier");
     await waitFor(() => expect(reads.some(item => item.url === "/nodia-ai/conversations" && item.params.search === "AI35 supplier" && item.params.cursor === undefined)).toBe(true));
-    await waitFor(() => expect(screen.getByRole("checkbox", { name: "Sólo fijadas" })).toBeEnabled());
-    await user.click(screen.getByRole("checkbox", { name: "Sólo fijadas" }));
+    await user.click(screen.getByRole("button", { name: "Mostrar filtros de conversaciones" }));
+    await waitFor(() => expect(screen.getByRole("switch", { name: "Sólo fijadas" })).toBeEnabled());
+    await user.click(screen.getByRole("switch", { name: "Sólo fijadas" }));
     await waitFor(() => expect(reads.some(item => item.url === "/nodia-ai/conversations" && item.params.is_pinned === true && item.params.search === "AI35 supplier")).toBe(true));
     await waitFor(() => expect(screen.getByRole("button", { name: "Conversaciones" })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: "Conversaciones" }));
@@ -454,33 +614,37 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     expect(writes.filter((entry) => entry.url.endsWith("/messages"))).toHaveLength(1);
     expect(writes.filter((entry) => entry.url.endsWith("/selection"))).toEqual([]);
   });
-  it("keeps an active voice note intact by blocking older-message loading until recording stops", async () => {
+  it("preserves dictation by blocking history loading and requires explicit send without uploading audio", async () => {
     const original = mainInstance.defaults.adapter;
     if (typeof original !== "function") throw new Error("Missing synthetic test adapter");
     const stopped = vi.fn(), released = vi.fn();
-    class SyntheticRecorder {
-      state = "inactive";
-      mimeType = "audio/webm";
-      ondataavailable: ((event: { data: Blob }) => void) | null = null;
-      onstop: (() => void) | null = null;
-      onerror: (() => void) | null = null;
-      start() { this.state = "recording"; }
+    class SyntheticRecognition {
+      lang = "";
+      continuous = false;
+      interimResults = false;
+      onstart: (() => void) | null = null;
+      onresult: ((event: { results: { 0: { 0: { transcript: string }; length: number; isFinal: boolean }; length: number } }) => void) | null = null;
+      onend: (() => void) | null = null;
+      onerror: ((event: { error: string }) => void) | null = null;
+      start() { this.onstart?.(); }
       stop() {
         stopped();
-        this.state = "inactive";
-        this.ondataavailable?.({ data: new Blob(["synthetic voice bytes"], { type: this.mimeType }) });
-        this.onstop?.();
+        this.onresult?.({ results: { 0: { 0: { transcript: "palabras dictadas" }, length: 1, isFinal: true }, length: 1 } });
+        this.onend?.();
       }
+      abort() {}
     }
     const previousMediaDevices = Object.getOwnPropertyDescriptor(navigator, "mediaDevices");
-    const getUserMedia = vi.fn().mockResolvedValue({ getTracks: () => [{ stop: released }] });
-    vi.stubGlobal("MediaRecorder", SyntheticRecorder);
+    const track = { stop: released, readyState: "live", addEventListener: vi.fn(), removeEventListener: vi.fn() };
+    const getUserMedia = vi.fn().mockResolvedValue({ getTracks: () => [track], getAudioTracks: () => [track] });
+    vi.stubGlobal("SpeechRecognition", SyntheticRecognition);
     Object.defineProperty(navigator, "mediaDevices", { value: { getUserMedia }, configurable: true });
-    let historyRequests = 0;
+    let historyRequests = 0, uploadIntents = 0;
     mainInstance.defaults.adapter = async config => {
       if (config.url === "/nodia-ai/attachments/capabilities")
         return response(config, { limits: { file_bytes: 20971520, files_per_message: 4, message_files_bytes: 41943040, audio_seconds: 300, pdf_pages: 100, image_pixels: 12000000 }, reviewed_text: true, native_modalities: { image: null, pdf: null, audio: true }, native_media_types: ["audio/webm"] });
-      if (config.url === `/nodia-ai/conversations/${chatId}/messages`) {
+      if (config.method === "post" && config.url === "/nodia-ai/attachments") uploadIntents++;
+      if (config.method === "get" && config.url === `/nodia-ai/conversations/${chatId}/messages`) {
         historyRequests++;
         return response(config, { conversation_id: chatId, items: [], next_cursor: "synthetic-older-cursor" });
       }
@@ -488,13 +652,13 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     };
     try {
       const user = userEvent.setup();
-      openPage(); await readyComposer();
+      openPage(); const input = await readyComposer();
+      await user.type(input, "Borrador previo");
       const older = await screen.findByRole("button", { name: "Cargar mensajes anteriores" });
-      await user.click(screen.getByRole("button", { name: "Adjuntar archivo o grabar voz" }));
-      const record = await screen.findByRole("button", { name: "Grabar nota de voz" });
+      const record = await screen.findByRole("button", { name: "Dictar mensaje" });
       await waitFor(() => expect(record).toBeEnabled());
       await user.click(record);
-      const stop = await screen.findByRole("button", { name: /Detener grabación/ });
+      const stop = await screen.findByRole("button", { name: "Terminar dictado" });
       expect(getUserMedia).toHaveBeenCalledOnce();
       expect(older).toBeDisabled();
       const before = historyRequests;
@@ -506,10 +670,15 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
       expect(released).not.toHaveBeenCalled();
       expect(stop).toBeEnabled();
       await user.click(stop);
-      expect(await screen.findByText("voice.webm")).toBeInTheDocument();
+      await waitFor(() => expect(input).toHaveValue("Borrador previo palabras dictadas"));
       expect(stopped).toHaveBeenCalledOnce();
       expect(released).toHaveBeenCalledOnce();
       await waitFor(() => expect(older).toBeEnabled());
+      expect(uploadIntents).toBe(0);
+      expect(writes.filter(entry => entry.url.endsWith("/messages"))).toHaveLength(0);
+      await user.click(screen.getByRole("button", { name: "Enviar mensaje" }));
+      await waitFor(() => expect(writes.filter(entry => entry.url.endsWith("/messages"))).toHaveLength(1));
+      expect(uploadIntents).toBe(0);
     } finally {
       vi.unstubAllGlobals();
       if (previousMediaDevices) Object.defineProperty(navigator, "mediaDevices", previousMediaDevices);
@@ -543,10 +712,8 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     };
     const user = userEvent.setup();
     openPage(); await readyComposer();
-    await user.click(screen.getByRole("button", { name: "Adjuntar archivo o grabar voz" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "Elegir archivos" })).toBeEnabled());
-    await user.upload(screen.getByLabelText("Elegir archivos"), new File(["%PDF-qa"], "synthetic.pdf", { type: "application/pdf" }));
-    await user.click(screen.getByRole("button", { name: "Subir archivo" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Añadir al mensaje" })).toBeEnabled());
+    await user.upload(screen.getByLabelText("Elegir archivos", { selector: "input" }), new File(["%PDF-qa"], "synthetic.pdf", { type: "application/pdf" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: "Enviar mensaje" }));
     const recover = await screen.findByRole("button", { name: "Comprobar el mismo envío" });
@@ -701,7 +868,8 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     openPage();
     expect(await screen.findByText("Solo lectura")).toBeInTheDocument();
     expect(screen.queryByRole("textbox", {name: "Mensaje"})).not.toBeInTheDocument();
-    expect(screen.getByRole("button", {name: "Configuración"})).toBeDisabled();
+    expect(screen.queryByRole("button", {name: "Configuración"})).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", {name: "Conexión"})).not.toBeInTheDocument();
     expect(writes).toEqual([]);
   });
 
@@ -771,16 +939,40 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     expect(writes).toEqual([]);
   });
 
-  it("keeps a persistent rejection blocked after rechecking and never renders an unknown raw reason", async () => {
+  it("offers the translated alert action and prevents duplicate checks while a persistent rejection is pending", async () => {
     available = false; eligibilityReason = "private-provider-text-that-must-not-be-rendered";
     const user = userEvent.setup(); openPage();
     await screen.findByText("Configura una selección disponible antes de enviar mensajes.");
-    const retry = screen.getByRole("button", { name: "Volver a comprobar" });
+    const label = i18n.t("nodiaAi:configuration.check_again");
+    const retry = screen.getByRole("button", { name: label });
     await waitFor(() => expect(retry).toBeEnabled());
-    await user.click(retry);
+    const alert = retry.closest('[role="alert"]');
+    expect(alert?.querySelector(".MuiAlert-action")).toContainElement(retry);
+    expect(alert?.querySelector(".MuiAlert-message")).not.toContainElement(retry);
+    await user.hover(retry);
+    expect(await screen.findByRole("tooltip", { name: label })).toBeInTheDocument();
+    await user.unhover(retry);
+    const composer = screen.getByRole("textbox", { name: "Mensaje" });
+    const base = mainInstance.defaults.adapter;
+    if (typeof base !== "function") throw new Error("Missing synthetic adapter");
+    let checksStarted = 0;
+    let completeCheck: (() => void) | undefined;
+    mainInstance.defaults.adapter = async config => {
+      if (config.url?.endsWith("/eligibility")) {
+        checksStarted += 1;
+        await new Promise<void>(resolve => { completeCheck = resolve; });
+      }
+      return base(config);
+    };
+    await user.dblClick(retry);
+    await waitFor(() => expect(retry).toBeDisabled());
+    expect(checksStarted).toBe(1);
+    expect(retry.closest('[role="alert"]')).toBe(alert);
+    expect(screen.getByRole("textbox", { name: "Mensaje" })).toBe(composer);
+    await act(async () => { completeCheck?.(); });
     await waitFor(() => expect(retry).toBeEnabled());
     expect(screen.queryByText(eligibilityReason)).not.toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: "Mensaje" })).toBeDisabled();
+    expect(composer).toBeDisabled();
     expect(reads.filter(entry => entry.url.endsWith("/eligibility"))).toHaveLength(2);
     expect(writes).toEqual([]);
   });
@@ -828,46 +1020,6 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     expect(writes).toEqual([]);
   });
 
-  it("keeps a successfully saved selection when routing fails, then retries only routing with the fresh revision", async () => {
-    let routingAttempts = 0;
-    patchAction = config => {
-      const body = JSON.parse(config.data as string) as Record<string, unknown>;
-      if (config.url?.endsWith("/selection")) {
-        current.conversation = {...current.conversation, selection: body.selection as NodiaAiSelection, revision: 2};
-        return response(config, current.conversation);
-      }
-      if (++routingAttempts === 1) return rejected(config, 503, "Synthetic routing offline");
-      current.conversation = {...current.conversation, revision: 3, routing: {schema_version: 1, revision: 2, enabled: true, target: routingTarget}};
-      return response(config, current.conversation);
-    };
-    const user = userEvent.setup(); openPage(); await readyComposer();
-    await user.click(screen.getByRole("button", {name: "Configuración"}));
-    const dialog = await screen.findByRole("dialog", {name: "Configuración del chat"});
-    await waitFor(() => expect(within(dialog).getByRole("button", {name: "Modelo"})).not.toHaveAttribute("aria-disabled", "true"));
-    await user.click(within(dialog).getByRole("button", {name: "Modelo"}));
-    await user.click(await screen.findByRole("option", {name: "Second Web model"}));
-    const toggle = await screen.findByRole("switch", {name: "Alternar automáticamente a Agentic"});
-    await waitFor(() => expect(toggle).toBeEnabled());
-    await user.click(toggle);
-    await user.click(within(dialog).getByRole("button", {name: "Aplicar configuración"}));
-    expect(await within(dialog).findByText("Synthetic routing offline")).toBeInTheDocument();
-    expect(writes).toHaveLength(2);
-    expect(writes[0].url).toMatch(/\/selection$/);
-    expect(writes[0].body.expected_conversation_revision).toBe(1);
-    expect(writes[1].body.expected_conversation_revision).toBe(2);
-    expect(writes[1].body.expected_routing_revision).toBe(1);
-    expect(within(dialog).getByRole("button", {name: "Modelo"})).toHaveTextContent("Second Web model");
-    expect(toggle).toBeChecked();
-    await user.click(within(dialog).getByRole("button", {name: "Reintentar"}));
-    const apply = within(dialog).getByRole("button", {name: "Aplicar configuración"});
-    await waitFor(() => expect(apply).toBeEnabled());
-    await user.click(apply);
-    await waitFor(() => expect(writes).toHaveLength(3));
-    expect(writes.filter(entry => entry.url.endsWith("/selection"))).toHaveLength(1);
-    expect(writes[2].body).toEqual(writes[1].body);
-    await waitFor(() => expect(screen.queryByRole("dialog", {name: "Configuración del chat"})).not.toBeInTheDocument());
-  });
-
   it("does not apply another chat's configuration after browser navigation during a pending selection save", async () => {
     let completeSelection: (() => void) | undefined;
     patchAction = config => new Promise(resolve => {
@@ -878,20 +1030,16 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
       };
     });
     const user = userEvent.setup(); openPage(); await readyComposer();
-    await user.click(screen.getByRole("button", {name: "Configuración"}));
-    const dialog = await screen.findByRole("dialog", {name: "Configuración del chat"});
-    await waitFor(() => expect(within(dialog).getByRole("button", {name: "Modelo"})).not.toHaveAttribute("aria-disabled", "true"));
-    await user.click(within(dialog).getByRole("button", {name: "Modelo"}));
-    await user.click(await screen.findByRole("option", {name: "Second Web model"}));
-    const toggle = await screen.findByRole("switch", {name: "Alternar automáticamente a Agentic"});
-    await waitFor(() => expect(toggle).toBeEnabled());
-    await user.click(toggle);
-    await user.click(within(dialog).getByRole("button", {name: "Aplicar configuración"}));
+    await waitFor(() => expect(screen.getByRole("button", {name: "Modelo"})).not.toHaveAttribute("aria-disabled", "true"));
+    await user.click(screen.getByRole("button", {name: "Modelo"}));
+    await user.click(await screen.findByRole("option", {name: "Second Agentic model"}));
+    await user.click(screen.getByRole("button", {name: "Aplicar configuración"}));
     await waitFor(() => expect(writes).toHaveLength(1));
-    await act(() => navigate(`/tools/nodia-ai?chat=${otherChatId}`));
+    await act(() => navigate(`/nodia-ai?chat=${otherChatId}`));
     expect(await screen.findByRole("heading", {name: "Other synthetic chat"})).toBeInTheDocument();
     await act(async () => { completeSelection?.(); });
-    await waitFor(() => expect(screen.getByRole("button", {name: "Configuración"})).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", {name: "Conexión"})).toBeEnabled());
+    expect(screen.getByRole("button", {name: "Modelo"})).toHaveTextContent(model.label);
     expect(writes).toHaveLength(1);
     expect(writes[0].url).toBe(`/nodia-ai/conversations/${chatId}/selection`);
     expect(screen.queryByRole("dialog", {name: "Configuración del chat"})).not.toBeInTheDocument();

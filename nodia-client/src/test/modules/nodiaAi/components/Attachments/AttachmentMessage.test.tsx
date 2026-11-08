@@ -1,23 +1,85 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AttachmentMessage from "../../../../../modules/nodiaAi/components/Attachments/AttachmentMessage";
 import * as services from "../../../../../modules/nodiaAi/infrastructure/attachmentServices";
 import { chatId } from "../../infrastructure/fixtures";
+import { sileo } from "sileo";
 
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 vi.mock("../../../../../modules/nodiaAi/infrastructure/attachmentServices", () => ({ getAttachment: vi.fn(), downloadAttachment: vi.fn() }));
 const id = "77777777-7777-4777-8777-777777777777";
+const authScope = vi.hoisted(() => ({ user: { id: "1" }, sessionVersion: 1 }));
+vi.mock("../../../../../hooks/useAuth", () => ({ default: () => authScope }));
 const attachment = { attachment_id: id, conversation_id: chatId, kind: "pdf" as const, state: "ready" as const, file_name: "synthetic.pdf", byte_count: null, media_type: "application/pdf", page_count: null, duration_seconds: null, interpretation: null };
 let client: QueryClient;
+const createUrl = vi.fn(() => "blob:synthetic-private-preview");
+const revokeUrl = vi.fn();
 beforeEach(() => {
+  authScope.user = { id: "1" };
+  authScope.sessionVersion = 1;
   client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   vi.mocked(services.getAttachment).mockResolvedValue(attachment);
   vi.mocked(services.downloadAttachment).mockResolvedValue(new Blob(["synthetic"]));
+  vi.stubGlobal("URL", Object.assign(URL, { createObjectURL: createUrl, revokeObjectURL: revokeUrl }));
+  vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
+  vi.spyOn(HTMLMediaElement.prototype, "load").mockImplementation(() => {});
 });
-afterEach(() => { client.clear(); vi.clearAllMocks(); });
+afterEach(() => { client.clear(); vi.clearAllMocks(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 describe("private historical attachment", () => {
+  it("loads a private audio player only after intent and removes it when its authorization read fails", async () => {
+    vi.mocked(services.getAttachment).mockResolvedValue({ ...attachment, kind: "audio", file_name: "synthetic.webm", media_type: "audio/webm", byte_count: 3 });
+    vi.mocked(services.downloadAttachment).mockResolvedValue(new Blob(["wav"], { type: "audio/webm; codecs=opus" }));
+    render(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="audio" conversationId={chatId} /></QueryClientProvider>);
+    expect(services.getAttachment).not.toHaveBeenCalled();
+    expect(services.downloadAttachment).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button", { name: /Audio · Ver archivo/ }));
+    const player = await screen.findByLabelText("Reproductor de audio: synthetic.webm");
+    expect(player).toHaveAttribute("controls");
+    expect(player).not.toHaveAttribute("autoplay");
+    expect(player).toHaveAttribute("src", "blob:synthetic-private-preview");
+    expect(services.downloadAttachment).toHaveBeenCalledOnce();
+    vi.mocked(services.getAttachment).mockRejectedValueOnce(new Error("Synthetic revocation"));
+    await client.invalidateQueries({ queryKey: ["nodia-ai"] });
+    await screen.findByText(/No pudimos recuperar este archivo/);
+    expect(screen.queryByLabelText("Reproductor de audio: synthetic.webm")).not.toBeInTheDocument();
+    expect(revokeUrl).toHaveBeenCalledWith("blob:synthetic-private-preview");
+    expect(screen.getByRole("button", { name: "Descargar archivo privado" })).toBeDisabled();
+  });
+  it("rejects an audio MIME mismatch and recovers through an authorized read", async () => {
+    vi.mocked(services.getAttachment).mockResolvedValue({ ...attachment, kind: "audio", file_name: "synthetic.webm", media_type: "audio/webm", byte_count: 3 });
+    vi.mocked(services.downloadAttachment).mockResolvedValueOnce(new Blob(["bad"], { type: "text/html" })).mockResolvedValue(new Blob(["wav"], { type: "audio/webm" }));
+    render(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="audio" conversationId={chatId} /></QueryClientProvider>);
+    await userEvent.click(screen.getByRole("button", { name: /Audio · Ver archivo/ }));
+    await screen.findByText(/No pudimos recuperar este archivo/);
+    expect(createUrl).not.toHaveBeenCalled();
+    expect(sileo.error).toHaveBeenCalledOnce();
+    await userEvent.click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(await screen.findByLabelText("Reproductor de audio: synthetic.webm")).toBeInTheDocument();
+    expect(services.downloadAttachment).toHaveBeenCalledTimes(2);
+  });
+  it("does not manufacture an audio preview with unknown MIME", async () => {
+    vi.mocked(services.getAttachment).mockResolvedValue({ ...attachment, kind: "audio", file_name: "synthetic-audio", media_type: null });
+    render(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="audio" conversationId={chatId} /></QueryClientProvider>);
+    await userEvent.click(screen.getByRole("button", { name: /Audio · Ver archivo/ }));
+    expect(await screen.findByText("La vista previa de audio no está disponible. Puedes descargar el archivo.")).toBeInTheDocument();
+    expect(services.downloadAttachment).not.toHaveBeenCalled();
+  });
+  it("discards a late audio read after the actor and session change", async () => {
+    let finish!: (blob: Blob) => void;
+    vi.mocked(services.getAttachment).mockResolvedValue({ ...attachment, kind: "audio", file_name: "old.webm", media_type: "audio/webm", byte_count: 3 });
+    vi.mocked(services.downloadAttachment).mockReturnValueOnce(new Promise(resolve => { finish = resolve; }));
+    const view = render(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="audio" conversationId={chatId} /></QueryClientProvider>);
+    await userEvent.click(screen.getByRole("button", { name: /Audio · Ver archivo/ }));
+    await waitFor(() => expect(services.downloadAttachment).toHaveBeenCalledOnce());
+    authScope.user = { id: "2" }; authScope.sessionVersion = 2;
+    view.rerender(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="audio" conversationId={chatId} /></QueryClientProvider>);
+    await act(async () => finish(new Blob(["old"], { type: "audio/webm" })));
+    expect(createUrl).not.toHaveBeenCalled();
+    expect(screen.queryByText("old.webm")).not.toBeInTheDocument();
+    expect(sileo.error).not.toHaveBeenCalled();
+  });
   it("does not download metadata or bytes before intent and keeps unknown values unknown", async () => {
     render(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="pdf" conversationId={chatId} /></QueryClientProvider>);
     expect(services.getAttachment).not.toHaveBeenCalled();
@@ -26,6 +88,99 @@ describe("private historical attachment", () => {
     expect(await screen.findByText("synthetic.pdf")).toBeInTheDocument();
     expect(screen.getByText("Tamaño desconocido")).toBeInTheDocument();
     expect(services.downloadAttachment).not.toHaveBeenCalled();
+  });
+  it("opens a private image only by intent and downloads it through a fresh authorized request", async () => {
+    const image = { ...attachment, kind: "image" as const, file_name: "synthetic.png", media_type: "image/png", byte_count: 3 };
+    vi.mocked(services.getAttachment).mockResolvedValue(image);
+    vi.mocked(services.downloadAttachment).mockResolvedValue(new Blob(["png"], { type: "image/png" }));
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    const view = render(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="image" conversationId={chatId} /></QueryClientProvider>);
+    expect(services.getAttachment).not.toHaveBeenCalled();
+    expect(services.downloadAttachment).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button", { name: /Imagen · Ver archivo/ }));
+    expect(await screen.findByRole("img", { name: "Vista previa de synthetic.png" })).toHaveAttribute("src", "blob:synthetic-private-preview");
+    expect(services.downloadAttachment).toHaveBeenCalledTimes(1);
+    await userEvent.click(screen.getByRole("button", { name: "Descargar archivo privado" }));
+    await waitFor(() => expect(click).toHaveBeenCalledTimes(1));
+    expect(services.downloadAttachment).toHaveBeenCalledTimes(2);
+    expect(click.mock.instances[0]).toHaveProperty("download", "synthetic.png");
+    view.unmount();
+    expect(revokeUrl).toHaveBeenCalledWith("blob:synthetic-private-preview");
+    click.mockRestore();
+  });
+  it("recovers a failed image read locally without accepting a forged MIME", async () => {
+    vi.mocked(services.getAttachment).mockResolvedValue({ ...attachment, kind: "image", file_name: "synthetic.png", media_type: "image/png", byte_count: 3 });
+    vi.mocked(services.downloadAttachment).mockResolvedValueOnce(new Blob(["bad"], { type: "text/html" }))
+      .mockResolvedValue(new Blob(["png"], { type: "image/png" }));
+    render(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="image" conversationId={chatId} /></QueryClientProvider>);
+    await userEvent.click(screen.getByRole("button", { name: /Ver archivo/ }));
+    expect(await screen.findByText(/No pudimos recuperar este archivo/)).toBeInTheDocument();
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(createUrl).not.toHaveBeenCalled();
+    expect(sileo.error).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button", { name: "Descargar archivo privado" })).toBeDisabled();
+    await userEvent.click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(await screen.findByRole("img", { name: "Vista previa de synthetic.png" })).toBeInTheDocument();
+  });
+  it("does not invent a preview when image MIME is unknown", async () => {
+    vi.mocked(services.getAttachment).mockResolvedValue({ ...attachment, kind: "image", file_name: "synthetic-image", media_type: null });
+    render(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="image" conversationId={chatId} /></QueryClientProvider>);
+    await userEvent.click(screen.getByRole("button", { name: /Ver archivo/ }));
+    expect(await screen.findByText("synthetic-image")).toBeInTheDocument();
+    expect(screen.getByText("Tamaño desconocido")).toBeInTheDocument();
+    expect(services.downloadAttachment).not.toHaveBeenCalled();
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+  });
+  it("discards a late image after changing attachment context and requires a new intent", async () => {
+    const nextId = "88888888-8888-4888-8888-888888888888";
+    let finish!: (blob: Blob) => void;
+    const pending = new Promise<Blob>(resolve => { finish = resolve; });
+    vi.mocked(services.getAttachment).mockResolvedValueOnce({ ...attachment, kind: "image", file_name: "old.png", media_type: "image/png", byte_count: 3 });
+    vi.mocked(services.downloadAttachment).mockReturnValueOnce(pending);
+    const view = render(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="image" conversationId={chatId} /></QueryClientProvider>);
+    await userEvent.click(screen.getByRole("button", { name: /Ver archivo/ }));
+    await waitFor(() => expect(services.downloadAttachment).toHaveBeenCalledTimes(1));
+    view.rerender(<QueryClientProvider client={client}><AttachmentMessage id={nextId} kind="image" conversationId={chatId} /></QueryClientProvider>);
+    await act(async () => finish(new Blob(["png"], { type: "image/png" })));
+    expect(createUrl).not.toHaveBeenCalled();
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Imagen · Ver archivo/ })).toBeInTheDocument();
+    expect(services.getAttachment).toHaveBeenCalledTimes(1);
+    expect(sileo.error).not.toHaveBeenCalled();
+  });
+  it("revokes a viewed image and blocks download when authorization is revoked", async () => {
+    vi.mocked(services.getAttachment).mockResolvedValue({ ...attachment, kind: "image", file_name: "synthetic.png", media_type: "image/png", byte_count: 3 });
+    vi.mocked(services.downloadAttachment).mockResolvedValue(new Blob(["png"], { type: "image/png" }));
+    render(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="image" conversationId={chatId} /></QueryClientProvider>);
+    await userEvent.click(screen.getByRole("button", { name: /Ver archivo/ }));
+    expect(await screen.findByRole("img")).toBeInTheDocument();
+    vi.mocked(services.getAttachment).mockRejectedValueOnce(new Error("Synthetic permission revoked"));
+    await client.invalidateQueries({ queryKey: ["nodia-ai"] });
+    expect(await screen.findByText(/No pudimos recuperar este archivo/)).toBeInTheDocument();
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Descargar archivo privado" })).toBeDisabled();
+    expect(revokeUrl).toHaveBeenCalledWith("blob:synthetic-private-preview");
+    expect(services.downloadAttachment).toHaveBeenCalledTimes(1);
+  });
+  it("does not deliver an old private download after the actor or session changes", async () => {
+    let finish!: (blob: Blob) => void;
+    const pending = new Promise<Blob>(resolve => { finish = resolve; });
+    vi.mocked(services.downloadAttachment).mockReturnValueOnce(pending);
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    const view = render(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="pdf" conversationId={chatId} /></QueryClientProvider>);
+    await userEvent.click(screen.getByRole("button", { name: /Ver archivo/ }));
+    expect(await screen.findByText("synthetic.pdf")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Descargar archivo privado" }));
+    authScope.user = { id: "2" };
+    authScope.sessionVersion = 2;
+    view.rerender(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="pdf" conversationId={chatId} /></QueryClientProvider>);
+    await act(async () => finish(new Blob(["synthetic"])));
+    expect(click).not.toHaveBeenCalled();
+    expect(createUrl).not.toHaveBeenCalled();
+    expect(screen.queryByText("synthetic.pdf")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Ver archivo/ })).toBeEnabled();
+    expect(services.getAttachment).toHaveBeenCalledTimes(1);
+    click.mockRestore();
   });
   it("hides stale metadata on revocation and keeps download disabled", async () => {
     render(<QueryClientProvider client={client}><AttachmentMessage id={id} kind="pdf" conversationId={chatId} /></QueryClientProvider>);

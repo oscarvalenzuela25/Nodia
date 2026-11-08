@@ -19,12 +19,14 @@ import { ProviderModule } from './provider/provider.module.js';
 import { ProviderContactModule } from './provider-contact/provider-contact.module.js';
 import { InvoiceModule } from './invoice/invoice.module.js';
 import { ProductModule } from './product/product.module.js';
+import { SaleModule } from './sale/sale.module.js';
+import { ProductImageModule } from './product-image/product-image.module.js';
 import { RedisModule } from './common/redis/redis.module.js';
 import { RateLimitModule } from './rate-limit/rate-limit.module.js';
 import { RateLimitGuard } from './rate-limit/rate-limit.guard.js';
 import { UserRateLimitGuard } from './rate-limit/user-rate-limit.guard.js';
 import { AuthGuard } from './auth/auth.guard.js';
-import { ActionPermissionGuard } from './authorization/action-permission.guard.js';
+import { ModuleAccessGuard } from './authorization/module-access.guard.js';
 import { FinanceCategoryModule } from './finance-category/finance-category.module.js';
 import { FinanceCategoryGroupModule } from './finance-category-group/finance-category-group.module.js';
 import { FinanceObligationModule } from './finance-obligation/finance-obligation.module.js';
@@ -33,6 +35,7 @@ import { FinanceOverviewModule } from './finance-overview/finance-overview.modul
 import { RentalModule } from './rental-common/rental.module.js';
 import { NodiaAiModule } from './nodia-ai/nodia-ai.module.js';
 import { NodiaAiPreferenceModule } from './nodia-ai-preference/nodia-ai-preference.module.js';
+import { TeacherModule } from './teacher/teacher.module.js';
 
 @Module({
   imports: [
@@ -49,6 +52,8 @@ import { NodiaAiPreferenceModule } from './nodia-ai-preference/nodia-ai-preferen
     ProviderContactModule,
     InvoiceModule,
     ProductModule,
+    SaleModule,
+    ProductImageModule,
     ModuleGroupModule,
     ModuleModule,
     TranslationModule,
@@ -62,6 +67,7 @@ import { NodiaAiPreferenceModule } from './nodia-ai-preference/nodia-ai-preferen
     RentalModule,
     NodiaAiModule,
     NodiaAiPreferenceModule,
+    TeacherModule,
   ],
   controllers: [AppController],
   providers: [
@@ -71,7 +77,7 @@ import { NodiaAiPreferenceModule } from './nodia-ai-preference/nodia-ai-preferen
     { provide: APP_GUARD, useExisting: RateLimitGuard },
     { provide: APP_GUARD, useExisting: AuthGuard },
     { provide: APP_GUARD, useExisting: UserRateLimitGuard },
-    { provide: APP_GUARD, useExisting: ActionPermissionGuard },
+    { provide: APP_GUARD, useExisting: ModuleAccessGuard },
   ],
 })
 export class AppModule {}

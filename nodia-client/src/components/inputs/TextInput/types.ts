@@ -1,11 +1,15 @@
-import type { ChangeEventHandler, ReactNode, FocusEventHandler } from "react";
+import type { ChangeEventHandler, ReactNode, FocusEventHandler, KeyboardEventHandler } from "react";
 
 export type TextInputProps = {
   label?: string;
+  labelAdornment?: ReactNode;
   value: string;
   onChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   onBlur?: FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  onFocus?: FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   type?: string;
+  inputMode?: "none" | "text" | "decimal" | "numeric" | "tel" | "search" | "email" | "url";
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;

@@ -10,9 +10,17 @@ export type NodiaAiBusinessResource =
   | 'product_logs'
   | 'providers'
   | 'provider_contacts'
-  | 'invoices';
+  | 'invoices'
+  | 'sales';
+// Sale commands use the same confirmed SQL effect boundary, never a model-owned executor.
 export type NodiaAiBusinessMutation =
-  'create' | 'update' | 'set_collaborators' | 'set_active';
+  | 'create'
+  | 'update'
+  | 'set_collaborators'
+  | 'set_active'
+  | 'complete'
+  | 'cancel'
+  | 'discard';
 
 /** Trusted local SQL ports. Files requiring external I/O use a separate staged protocol. */
 export interface NodiaAiNativeOperation extends NodiaAiProposalPreparer {

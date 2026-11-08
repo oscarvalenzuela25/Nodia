@@ -4,13 +4,13 @@
   "document_id": "general-settings.confirmed-administration",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 1,
-  "document_status": "draft",
+  "revision": 2,
+  "document_status": "approved",
   "implementation": {
-    "status": "implemented",
-    "notes": "AI-27 integra17 puertos Core internos con escritores nativos, revisión exacta y recibo atómico; no publica escrituras MCP ni acredita aceptación Gemini."
+    "status": "partial",
+    "notes": "AI36-C05 publica sólo la sección adicional enumerada bajo autorización humana específica; los apartados previos conservan su fecha y alcance. Contratos internos y publicación no prueban despliegue, inferencia o aceptación productiva."
   },
-  "integration_status": "unregistered",
+  "integration_status": "published",
   "maintainer": "Mantenimiento de Ajustes Generales y NodiaAI conforme AGENTS",
   "sources": [
     {
@@ -60,20 +60,30 @@
     {
       "path": "docs/mvp/74-nodia-ai-ai28-provider-configuration.md",
       "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-10-17",
+    "checked_on": "2026-10-24",
     "evidence_paths": [
       "docs/evidence/nodia-ai-ai27-validation.json",
       "docs/mvp/73-nodia-ai-ai27-core-administration.md",
       "docs/evidence/nodia-ai-ai27-client-validation.json",
       "docs/evidence/nodia-ai-ai27-ui-validation.json",
-      "docs/evidence/nodia-ai-ai28-validation.json"
+      "docs/evidence/nodia-ai-ai28-validation.json",
+      "docs/evidence/nodia-ai-ai36-c01-validation.json",
+      "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json"
     ],
-    "notes": "Laboratorio privado: 2760 pruebas Server,1571 Client,407 comprobaciones SQL/HTTP/procesos y11 QA sintéticas;65 ejecutores y esquema18 tablas/241 columnas conservado. Puertos internos; no publica MCP ni acredita aceptación Gemini."
+    "notes": "Publicación offline con builders nativos y schemas cerrados. El fragmento adicional es el único alcance nuevo; no equivale a cuenta real ni a una aceptación de todos sus efectos."
   },
-  "approval": null
+  "approval": {
+    "reference": "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-authorization.md",
+    "revision": 2,
+    "content_sha256": "688a9888a46b0199c3e9f31477850e9a5b7c4e2e78c7cafb2bc8a817dddbd428"
+  }
 }
 ---
 
@@ -138,3 +148,29 @@ Verificación Client: Client1571/205, focal280/7, tipado/lint/build correctos y1
 
 
 Continuidad AI-28: traducciones Core se agregan o actualizan por clave; claves omitidas se conservan. La propuesta muestra la colección resultante y rechaza quitar claves ya guardadas. Un marcador material exige nueva revisión de propuestas previas afectadas; los recibos completados continúan legibles. [Detalle74](../../../../mvp/74-nodia-ai-ai28-provider-configuration.md).
+
+## Core: administración publicada en AI36-C05
+
+Este fragmento añade sólo estas preparaciones publicadas:
+
+- `nodia_actions_prepare_create`
+- `nodia_actions_prepare_delete`
+- `nodia_actions_prepare_update`
+- `nodia_business_actions_prepare_create`
+- `nodia_business_actions_prepare_delete`
+- `nodia_business_actions_prepare_update`
+- `nodia_module_groups_prepare_create`
+- `nodia_module_groups_prepare_delete`
+- `nodia_module_groups_prepare_update`
+- `nodia_modules_prepare_create`
+- `nodia_modules_prepare_delete`
+- `nodia_modules_prepare_update`
+- `nodia_roles_prepare_create`
+- `nodia_roles_prepare_delete`
+- `nodia_roles_prepare_update`
+- `nodia_users_prepare_create`
+- `nodia_users_prepare_update`
+
+Cada herramienta recibe un partial cerrado, devuelve mínimos faltantes o propuesta revisable y permite continuar sólo con draft_id/revisión CAS exactos. No aplica el cambio de dominio. Consulta las referencias reales; nunca inventes IDs o enlaces. Sólo el botón humano sobre revisión/hash exactos admite la ejecución y su recibo nativo. No se aceptan SQL, comandos arbitrarios, secretos ni bulk/importación. Los cambios de usuarios, roles, acciones, módulos y asignaciones conservan autoridad Core, reglas de último administrador y precondiciones actuales. Una propuesta no concede su propia autoridad.
+
+El backend exige NodiaAI y cada módulo/acción de destino vigentes, reautoriza al ejecutar y conserva recuperación/idempotencia. Publicación, selección del intento, disponibilidad, despliegue y aceptación real son estados distintos. Los apartados anteriores son históricos y no amplían este lote.

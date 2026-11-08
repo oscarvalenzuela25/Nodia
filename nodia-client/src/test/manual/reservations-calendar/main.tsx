@@ -43,7 +43,7 @@ const context = {
       modules: [
         {
           key: "reservations",
-          link: "/tools/reservations",
+          link: "/reservations",
           icon: "HolidayVillageOutlined",
           translates: [{ key: "key", es: "Reservas", en: "Reservations" }],
         },

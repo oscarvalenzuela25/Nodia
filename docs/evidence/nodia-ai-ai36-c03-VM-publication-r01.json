@@ -1,0 +1,282 @@
+{
+  "schema_version": 1,
+  "verification_date": "2026-10-25",
+  "scope": "C03 publication adoption in the local Linux VM only; invoice-analysis functional acceptance remains separate and pending in this evidence",
+  "status": "VM_publication_adopted_analysis_acceptance_not_claimed",
+  "sources": {
+    "artifact_directory": "ops/lab/artifacts/c03-VM-publication-r01",
+    "catalog": "sources-catalog.json",
+    "catalog_sha256": "3973da1a7f8b7c315fad0c58884897d2f009342c542f2226c463a871d91576fc",
+    "captured_receipts": {
+      "private-staging-r02.json": {
+        "path": "private-staging-r02-sanitized.json",
+        "sha256": "c0f8b9b8377f9cc599599139edbfd5bc06f2645615e40911237fae3f7101960b",
+        "original_sha256": "1feaa777713b197cb18f8d19e16bc52e74e88b6ddf19ba8e87ba63b0f5be160e"
+      },
+      "prepare-execute-r02.json": {
+        "path": "prepare-execute-r02-sanitized.json",
+        "sha256": "462d3f8f325c1267c85e153244f5bca383ea7f14beb783111deb9de8ff5f3317",
+        "original_sha256": "43b49e7f4b0672ebdfd4fe32615980e45adcd08184c1f6a448dcd95534e8b636"
+      },
+      "preflight-execute-r02.json": {
+        "path": "preflight-execute-r02-sanitized.json",
+        "sha256": "aaf0893b60a80b8461b5d1f4c65321809ccf8657f45e93ca8c9f1a38f06d4ba2",
+        "original_sha256": "ee8b23020447d20e7a0190a3694cfbbc2d557e52ddf59da2edb7717735ff3617"
+      },
+      "private-staging-r03.json": {
+        "path": "private-staging-r03-sanitized.json",
+        "sha256": "72e21ffbfc1ae7f5a2b175dcb1f850fe6c2ffe42d7768cce7a3c9a9c0e7735fb",
+        "original_sha256": "86de6ab667ebd448fb656d54ad23789cda4725c725706694ea8a9b0687286caf"
+      },
+      "preflight-execute-r03.json": {
+        "path": "preflight-execute-r03-sanitized.json",
+        "sha256": "d157dd29d60550ae04cca997ff7924f6dda4099656bf54c46228e31bda655fff",
+        "original_sha256": "bf5abac68b3e247bbff4fb38782d6d1d9cc6dc6af1bc99e976c01c337f949e82"
+      },
+      "adopt-execute-r03.json": {
+        "path": "adopt-execute-r03-sanitized.json",
+        "sha256": "adec5704616fdbcedbb29c2f9795c5c11bf9394b8a1481b6fdddeb352701304d",
+        "original_sha256": "ba3edd0884bd4396dac9de02feab6fc5a178c54b46fbb3ddf2fecd1f590bbfc2"
+      }
+    }
+  },
+  "operator": {
+    "path": "ops/lab/artifacts/c03-publication-rollout-r03/publication-operator-r03.py",
+    "sha256": "a50944c74a3b69a4b1a60839f7642b36b3358135465d59ba40b47fda9d63569a",
+    "plan": {
+      "path": "ops/lab/artifacts/c03-publication-rollout-r02/plan.json",
+      "sha256": "06b04fc4ce47cd091b242c5cd39d40093ec42cd9a8efd08b26794ffe58f3cf50"
+    },
+    "R02_preflight_only_not_adopted": true,
+    "R02_review_blockers_fixed_before_adoption": [
+      "Private snapshots now force0600 and descriptor CAS forces original0644or0600 independent of umask.",
+      "Complete unit simulation and loaded-unit hash guards include User/Environment, plus loaded WorkingDirectory and ExecStart.",
+      "Explicit restore-only-timers branch covers failure before API admission closes; full recovery requires owned original snapshots."
+    ]
+  },
+  "release_transition": {
+    "source": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+    "target": "/opt/nodia/releases/nodia-server-ai36-c03-publication-r01",
+    "source_manifest_sha256": "023d984ce52573c526a982ce54672aee949fd53ce498a2cd079345a3a6bcb9b1",
+    "target_manifest_sha256": "dbacaab63ab521b6e6ad3eb89c8c8c1c2f1968ae098c61ee70c016ef127e7ccf",
+    "knowledge_before": "df1780ad39433af1671467cc3f93285b01b0596155518f6c14330e27b65b80ba",
+    "knowledge_after": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+    "published_capabilities_before": 150,
+    "published_capabilities_after": 151,
+    "new_capabilities": [
+      "nodia_invoices_analyze"
+    ],
+    "fragments_before": 41,
+    "fragments_after": 42,
+    "previous_150_contracts_exact": true,
+    "previous_41_fragments_exact": true,
+    "overlay_paths": [
+      {
+        "old_sha256": "5ebe68d33d8f014e76ba1d7cb226f3143a921be626155b99619e6dbc5b566a9e",
+        "path": "config/nodia-ai-knowledge.registry.json",
+        "sha256": "16baaa2acd3bd4083b25da6d908ff318ba317df0b50613b7c8220846f979fd26"
+      },
+      {
+        "old_sha256": "ba9407cf2e6891ef305b649ef2de46e4849b3796c1de2fe698db12baab65e674",
+        "path": "dist/nodia-ai-context/config/knowledge-pin.json",
+        "sha256": "450ccdc476bbf766f7046869ec4b95f97e7fedea348c0f17f44027f0eae4fe64"
+      },
+      {
+        "old_sha256": null,
+        "path": "dist/nodia-ai/knowledge/fragments/5504a3cc2716d5da1b233a36ac992ab24209bfee2133f7eabbdeb8346370b9b8.md",
+        "sha256": "5504a3cc2716d5da1b233a36ac992ab24209bfee2133f7eabbdeb8346370b9b8"
+      },
+      {
+        "old_sha256": "47ce3339cd92bd6cef1e24065e7d6f7798010d0d23dca542f6162974e2bde347",
+        "path": "dist/nodia-ai/knowledge/manifest.json",
+        "sha256": "544721211fd18cb28684c67799d5901b81b65c728ff43e6d0ae56503e9d7c620"
+      },
+      {
+        "old_sha256": "554781fda5d29d7f54b62a3279be9874567a027b832da1037504b2530f874aad",
+        "path": "scripts/nodia-ai-knowledge/compiler.mjs",
+        "sha256": "f8243175903c486cb64fa77196120a626df053cdff5ce346b163d34ae54a4a6b"
+      },
+      {
+        "old_sha256": "ba9407cf2e6891ef305b649ef2de46e4849b3796c1de2fe698db12baab65e674",
+        "path": "src/nodia-ai-context/config/knowledge-pin.json",
+        "sha256": "450ccdc476bbf766f7046869ec4b95f97e7fedea348c0f17f44027f0eae4fe64"
+      },
+      {
+        "old_sha256": null,
+        "path": "src/nodia-ai/knowledge/fragments/5504a3cc2716d5da1b233a36ac992ab24209bfee2133f7eabbdeb8346370b9b8.md",
+        "sha256": "5504a3cc2716d5da1b233a36ac992ab24209bfee2133f7eabbdeb8346370b9b8"
+      },
+      {
+        "old_sha256": "47ce3339cd92bd6cef1e24065e7d6f7798010d0d23dca542f6162974e2bde347",
+        "path": "src/nodia-ai/knowledge/manifest.json",
+        "sha256": "544721211fd18cb28684c67799d5901b81b65c728ff43e6d0ae56503e9d7c620"
+      }
+    ],
+    "runtime_JS_TS_or_contract_schema_changed": false,
+    "authoring_compiler_only_changed": true,
+    "Client_release_unchanged": "/opt/nodia/releases/nodia-client-core-fx04-pagination-r07",
+    "source_regular_bytes_cloned": 17149418,
+    "dependency_symlink_preserved": "/opt/nodia/nodia-server/node_modules",
+    "node_modules_copied": false,
+    "standalone_release_rebuild_claimed": false
+  },
+  "real_preparation_DI": {
+    "status": "compiled_DI_and_asset_passed",
+    "compiled_capabilities": 151,
+    "analysis_families": 1,
+    "analysis_handler_constructed": true,
+    "executed_uid": 10000,
+    "executed_gid": 987,
+    "readable_runtime_paths": 12,
+    "HTTP_contract_is_real_class": true,
+    "asset_sha256": "005b8828afba2dcfa21be36eb61f66db947f151bf1afc92f99e8e15d1066bb9d",
+    "provider_calls": 0,
+    "handler_executions": 0,
+    "limits": "Isolated actual Nest module with provider adapter replaced fail-closed; production API/worker boot and authenticated tool acceptance remain separate checks."
+  },
+  "production_boot_after_adoption": {
+    "consumers": {
+      "nodia-api": {
+        "active": "active",
+        "sub": "running",
+        "pid": 89850,
+        "working_directory": "/opt/nodia/releases/nodia-server-ai36-c03-publication-r01",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+        "argv_exact_match": true
+      },
+      "nodia-ai-worker": {
+        "active": "active",
+        "sub": "running",
+        "pid": 89851,
+        "working_directory": "/opt/nodia/releases/nodia-server-ai36-c03-publication-r01",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+        "argv_exact_match": true
+      }
+    },
+    "scope": "Both real production consumer entrypoints active at target and API health passed; this is distinct from invoice analysis through MCP."
+  },
+  "preserved_state": {
+    "domain_hashes_compared": 60,
+    "domain_hashes_unchanged": true,
+    "migration_count": 30,
+    "migration_head": {
+      "id": 30,
+      "timestamp": "1793200000000",
+      "name": "AddModuleSortOrder1793200000000"
+    },
+    "module_group_and_module_order_hash": "d7dc372514ce587a2e8df210363169abb53a9d7109029ba9339899f5904dcacc",
+    "provider_configuration_hash_unchanged": true,
+    "proof_snapshot_unchanged": true,
+    "proofs_copied_or_restored": false,
+    "Gemini_epoch": {
+      "id": "b4375ef639fd03c5955abe5c7c6c491908d8fe4e0a0aa28e5cd162e17d11442c",
+      "image": "sha256:8320b3cbaee7a2f49fe845481e5f07bcb5d72c82684909bab408ece9711b1b1d",
+      "started_at": "2026-10-25T17:45:34.206184136Z",
+      "descriptor_sha256": "ba195f645283c86b4d7fb202bb2470fe939510309a54ea255bf00f34369fdaec"
+    },
+    "Gemini_container_pid_asserted_unchanged": 39024,
+    "native_restart_performed": false,
+    "nginx_hash_unchanged": true,
+    "unrelated_services": {
+      "nodia-keyring": {
+        "active": "active",
+        "sub": "running",
+        "pid": 3630841,
+        "working_directory": ""
+      },
+      "nginx": {
+        "active": "active",
+        "sub": "running",
+        "pid": 3630787,
+        "working_directory": ""
+      },
+      "nodia-gemini-lab": {
+        "active": "active",
+        "sub": "exited",
+        "pid": 0,
+        "working_directory": "/opt/nodia/nodia-gemini-microservice"
+      }
+    },
+    "private_operator_files_only_hashes_and_modes_captured": true,
+    "journal": {
+      "operation": "status",
+      "coverage_from": "2026-10-20T23:52:27.154Z",
+      "first_sequence": 1,
+      "last_sequence": 1,
+      "unconfirmed": 0,
+      "coverage_closed_at": null,
+      "expired_backups": 0
+    }
+  },
+  "fresh_encrypted_backup": {
+    "schema_version": 1,
+    "operation": "backup",
+    "backup_id": "5459725d-1b03-448f-a85c-277b613d50f0",
+    "status": "ready",
+    "captured_at": "2026-10-25T19:12:40.610Z",
+    "expires_at": "2026-11-01T19:12:40.610Z",
+    "cipher_bytes": 1323138,
+    "cipher_sha256": "52b6d5d641163f7d681e3500af7ce11fa50d5ac3f019e6e78955ae2bdcaaf7b1",
+    "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+    "journal_sequence": 1,
+    "rotated": {
+      "removed": 0,
+      "pending_recovered": 0,
+      "retained": 34
+    }
+  },
+  "quiet_after_operator_before_new_acceptance_runs": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "timers_restored": true,
+  "side_effects": {
+    "provider_requests": 0,
+    "SQL_restores": 0,
+    "migrations": 0,
+    "journal_bootstrap_or_close": false,
+    "sessions_or_login_modified": false
+  },
+  "guard_verification": {
+    "POSIX_evidence": {
+      "path": "ops/lab/artifacts/c03-publication-rollout-r03/POSIX-verification-r03.json",
+      "sha256": "0034995c8ed368ebb1597e9442bd6549e06736cf176ccd24b287b816f070be13"
+    },
+    "real_Linux_tests_passed": 24,
+    "skipped": 0,
+    "umasks": [
+      "022",
+      "077"
+    ],
+    "snapshot_mode": "0600",
+    "CAS_modes": [
+      "0644",
+      "0600"
+    ],
+    "test_scope": "Atomic filesystem, original legacy failure boundary, service-unit/full-hash/identity and recovery ownership guards; tests do not execute live rollback, recovery or timer-restoration actions.",
+    "live_rollback_executed": false,
+    "live_recovery_executed": false,
+    "live_restore_only_timers_executed": false
+  },
+  "acceptance": {
+    "invoice_analysis_with_real_Gemini": false,
+    "meaning": "Not claimed by this deployment-only evidence; root starts the separate real PDF/audio analysis acceptance after adoption.",
+    "native_MCP_and_media_baseline": "docs/evidence/nodia-ai-gemini-requalification-20261025-r01.json",
+    "NR26_separate": "NR26 is separate; no attachment content or analysis response is copied into this deployment evidence."
+  },
+  "limits": [
+    "No provider generation, session login, native restart or account observation was performed by this adoption.",
+    "Prepared runtime UID/GID DI probe replaces only the adapter port fail-closed; production bootstrap is observed separately.",
+    "No authenticated invoice-analysis tool execution, extraction accuracy, UI presentation or business record creation is accepted here.",
+    "Original public stdout hashes are preserved; raw private descriptors, environment/credential/profile/session files and recovery private key were not copied.",
+    "Reconstruction uses pinned external monorepo/docs sources; standalone npm build inside the deployed release is not claimed.",
+    "Quiet counters describe the point immediately after adoption and before root started new acceptance turns; no live VM reads were made while those turns ran."
+  ]
+}

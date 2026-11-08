@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "success": true,
+  "scope": "Current API production source paths, Client changes and delivery docs/evidence; historical originals, binaries and unrelated dirty files excluded",
+  "utf8_lf_paths_checked": 84,
+  "issues": [],
+  "secret_like_literals_found": [],
+  "approved_revision_files_unchanged": [
+    "general-settings.secure-ai-interaction",
+    "nodia-ai.conversation-coordination",
+    "nodia-ai.invoice-ocr-product-comparison",
+    "nodia-ai.image-generation",
+    "nodia-ai.attachments-and-voice",
+    "nodia-ai.api-key-chat-parity"
+  ],
+  "diff_check": [
+    {
+      "project": "nodia-server",
+      "exit_code": 0,
+      "output_bytes": 0
+    },
+    {
+      "project": "nodia-client",
+      "exit_code": 0,
+      "output_bytes": 0
+    }
+  ],
+  "knowledge_check_exit": 0,
+  "source_notes": "Later authoring annotations validated separately; adopted selective source/runtime artifacts remain frozen."
+}

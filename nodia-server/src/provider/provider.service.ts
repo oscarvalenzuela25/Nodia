@@ -21,6 +21,12 @@ import {
 } from '../common/utils/ransack-query.builder.js';
 import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { GetProvidersResponse } from './types/provider.types.js';
+import type { ActorReference } from '../authorization/authority-transaction.js';
+import {
+  assertBusinessesAccess,
+  resolveBusinessAccess,
+  scopeBusinessQuery,
+} from '../business-access/business-access.js';
 
 @Injectable()
 export class ProviderService {
@@ -54,6 +60,13 @@ export class ProviderService {
       throw new NotFoundException('Provider not found');
     return rows;
   }
+  assertBusinessAccess(
+    manager: EntityManager,
+    actor: ActorReference,
+    ids: readonly string[],
+  ) {
+    return assertBusinessesAccess(manager, actor, ids, { lock: true });
+  }
   async lockBusinesses(
     manager: EntityManager,
     ids: readonly string[],
@@ -77,14 +90,14 @@ export class ProviderService {
     return provider;
   }
 
-  async findAll({
-    page = 1,
-    limit = 10,
-    all = false,
-    includes = true,
-    q,
-  }: GetProvidersDto): Promise<GetProvidersResponse> {
-    const qb = this.providerRepository.createQueryBuilder('provider');
+  async findAll(
+    { page = 1, limit = 10, all = false, includes = true, q }: GetProvidersDto,
+    actor?: ActorReference,
+  ): Promise<GetProvidersResponse> {
+    const repository =
+      actor?.transaction?.getRepository(Provider) ?? this.providerRepository;
+    const scope = await resolveBusinessAccess(repository.manager, actor!);
+    const qb = repository.createQueryBuilder('provider');
     validateRansackEnvelope(q);
 
     if (includes) {
@@ -98,6 +111,8 @@ export class ProviderService {
     }
     if (!/^id(?:\s|$)/i.test(q?.s?.trim() ?? ''))
       qb.addOrderBy('provider.id', 'ASC');
+
+    scopeBusinessQuery(qb, 'provider.business_id', scope);
 
     if (all) {
       const data = await qb.getMany();
@@ -130,11 +145,18 @@ export class ProviderService {
     };
   }
 
-  async findOne(id: string): Promise<Provider> {
-    const provider = await this.providerRepository.findOne({
-      where: { id },
-      relations: { business: true },
-    });
+  async findOne(id: string, actor?: ActorReference): Promise<Provider> {
+    const repository =
+      actor?.transaction?.getRepository(Provider) ?? this.providerRepository;
+    const scope = await resolveBusinessAccess(repository.manager, actor!);
+    const provider = await scopeBusinessQuery(
+      repository
+        .createQueryBuilder('provider')
+        .leftJoinAndSelect('provider.business', 'business')
+        .where('provider.id = :id', { id }),
+      'provider.business_id',
+      scope,
+    ).getOne();
     if (!provider) {
       throw new NotFoundException(`Provider with ID "${id}" not found`);
     }
@@ -144,6 +166,7 @@ export class ProviderService {
   async findForExport(
     dto: ExportProvidersCsvDto,
     limits?: { maxRows: number; maxBytes: number },
+    actor?: ActorReference,
   ) {
     const maxRows = limits ? Math.min(1000, limits.maxRows) : 1000;
     if (
@@ -153,12 +176,16 @@ export class ProviderService {
         (!Number.isSafeInteger(limits.maxBytes) || limits.maxBytes < 1))
     )
       throw new BadRequestException('Export resource limits are invalid');
-    const qb = this.providerRepository.createQueryBuilder('provider');
+    const repository =
+      actor?.transaction?.getRepository(Provider) ?? this.providerRepository;
+    const scope = await resolveBusinessAccess(repository.manager, actor!);
+    const qb = repository.createQueryBuilder('provider');
     if (dto.business_id)
       qb.andWhere('provider.business_id = :businessId', {
         businessId: dto.business_id,
       });
     if (dto.ids) qb.andWhere('provider.id IN (:...ids)', { ids: dto.ids });
+    scopeBusinessQuery(qb, 'provider.business_id', scope);
     qb.orderBy('provider.id', 'ASC').take(maxRows + 1);
     let mappingBytes = 0;
     if (limits) {
@@ -185,8 +212,7 @@ export class ProviderService {
       );
     if (!providers.length)
       return { providers, contacts: [] as ProviderContact[] };
-    const contactRepository =
-      this.providerRepository.manager.getRepository(ProviderContact);
+    const contactRepository = repository.manager.getRepository(ProviderContact);
     if (limits) {
       const sizes: { id: string; bytes: string }[] = await contactRepository
         .createQueryBuilder('contact')
@@ -228,37 +254,53 @@ export class ProviderService {
   async create(
     createProviderDto: CreateProviderDto,
     manager?: EntityManager,
+    actor?: ActorReference,
   ): Promise<Provider> {
-    const payload = {
-      ...createProviderDto,
-      tax:
-        createProviderDto.tax !== undefined && createProviderDto.tax !== null
-          ? Number(createProviderDto.tax)
-          : 19,
-      name: createProviderDto.name
-        ? createProviderDto.name.trim().toLowerCase()
-        : createProviderDto.name,
-    };
-    const repository =
-      manager?.getRepository(Provider) ?? this.providerRepository;
-    const provider = repository.create(payload);
-    return repository.save(provider);
+    return this.transaction(
+      manager ?? actor?.transaction,
+      async (transaction) => {
+        await assertBusinessesAccess(
+          transaction,
+          actor!,
+          [createProviderDto.business_id],
+          { lock: true },
+        );
+        const payload = {
+          ...createProviderDto,
+          tax:
+            createProviderDto.tax !== undefined &&
+            createProviderDto.tax !== null
+              ? Number(createProviderDto.tax)
+              : 19,
+          name: createProviderDto.name
+            ? createProviderDto.name.trim().toLowerCase()
+            : createProviderDto.name,
+        };
+        const repository = transaction.getRepository(Provider);
+        const provider = repository.create(payload);
+        return repository.save(provider);
+      },
+    );
   }
 
   async update(
     id: string,
     updateProviderDto: UpdateProviderDto,
     manager?: EntityManager,
+    actor?: ActorReference,
   ): Promise<Provider> {
     const repository =
       manager?.getRepository(Provider) ?? this.providerRepository;
-    const provider = manager
-      ? await repository
-          .createQueryBuilder('provider')
-          .setLock('pessimistic_write')
-          .where('provider.id = :id', { id })
-          .getOne()
-      : await this.findOne(id);
+    const scope = await resolveBusinessAccess(repository.manager, actor!);
+    const provider = await scopeBusinessQuery(
+      repository
+        .createQueryBuilder('provider')
+        .where('provider.id = :id', { id }),
+      'provider.business_id',
+      scope,
+    )
+      .setLock('pessimistic_write')
+      .getOne();
     if (!provider) throw new NotFoundException('Provider not found');
     const payload = {
       ...updateProviderDto,
@@ -275,18 +317,34 @@ export class ProviderService {
     return repository.save(provider);
   }
 
-  async createBulk(bulkDto: BulkCreateProviderDto): Promise<Provider[]> {
-    const payload = bulkDto.items.map((item) => ({
-      ...item,
-      tax: item.tax !== undefined && item.tax !== null ? Number(item.tax) : 19,
-      name: item.name ? item.name.trim().toLowerCase() : item.name,
-      fields: item.fields ?? {},
-    }));
-    const entities = this.providerRepository.create(payload);
-    return this.providerRepository.save(entities);
+  async createBulk(
+    bulkDto: BulkCreateProviderDto,
+    actor?: ActorReference,
+  ): Promise<Provider[]> {
+    return this.transaction(actor?.transaction, async (manager) => {
+      await assertBusinessesAccess(
+        manager,
+        actor!,
+        bulkDto.items.map((item) => item.business_id),
+        { lock: true },
+      );
+      const payload = bulkDto.items.map((item) => ({
+        ...item,
+        tax:
+          item.tax !== undefined && item.tax !== null ? Number(item.tax) : 19,
+        name: item.name ? item.name.trim().toLowerCase() : item.name,
+        fields: item.fields ?? {},
+      }));
+      const repository = manager.getRepository(Provider);
+      const entities = repository.create(payload);
+      return repository.save(entities);
+    });
   }
 
-  async updateBulk(bulkDto: BulkUpdateProviderDto): Promise<Provider[]> {
+  async updateBulk(
+    bulkDto: BulkUpdateProviderDto,
+    actor?: ActorReference,
+  ): Promise<Provider[]> {
     const items = bulkDto.items.map((item) => {
       if (
         typeof item.id !== 'string' ||
@@ -300,15 +358,21 @@ export class ProviderService {
     const ids = items.map((item) => item.id);
     if (!ids.length || new Set(ids).size !== ids.length)
       throw new BadRequestException('Duplicate or empty provider selection');
-    return this.providerRepository.manager.transaction(async (manager) => {
+    return this.transaction(actor?.transaction, async (manager) => {
+      await assertBusinessesAccess(manager, actor!, [], { lock: true });
       const before = await this.scopes(manager, ids);
       const origins = new Map(before.map((row) => [row.id, row.business_id]));
-      await this.lockBusinesses(manager, [
-        ...before.map((row) => row.business_id),
-        ...items.flatMap((item) =>
-          item.business_id === undefined ? [] : [item.business_id],
-        ),
-      ]);
+      await assertBusinessesAccess(
+        manager,
+        actor!,
+        [
+          ...before.map((row) => row.business_id),
+          ...items.flatMap((item) =>
+            item.business_id === undefined ? [] : [item.business_id],
+          ),
+        ],
+        { lock: true },
+      );
       const repository = manager.getRepository(Provider);
       const providers = await repository
         .createQueryBuilder('provider')

@@ -4,6 +4,8 @@ import { ResolveNodiaAiAdapterUseCase } from './resolve-nodia-ai-adapter.use-cas
 import { RouteNodiaAiAdapterUseCase } from './route-nodia-ai-adapter.use-case.js';
 import { RouteNodiaAiReconciliationUseCase } from './route-nodia-ai-reconciliation.use-case.js';
 import type { GeminiNodiaAiAdapterUseCase } from './gemini-nodia-ai-adapter.use-case.js';
+import type { ApiNodiaAiAdapterUseCase } from './api-nodia-ai-adapter.use-case.js';
+import type { ApiNodiaAiRuntimeService } from '../api-nodia-ai-runtime.service.js';
 import type { CodexNodiaAiAdapterUseCase } from './codex-nodia-ai-adapter.use-case.js';
 import type { ReconcileGeminiNodiaAiRuntimeUseCase } from './reconcile-gemini-nodia-ai-runtime.use-case.js';
 import type { ReconcileCodexNodiaAiRuntimeUseCase } from './reconcile-codex-nodia-ai-runtime.use-case.js';
@@ -22,7 +24,7 @@ vi.mock('../../config/envs.config.js', () => ({
 
 const selection: NodiaAiSelection = {
   connection_id: '9007199254740993',
-  mode: 'token_plan_agentic',
+  mode: 'agentic',
   model_id: 'fixture-dynamic-model',
   effort_id: 'fixture_effort',
 };
@@ -49,10 +51,10 @@ function setup(provider = 'openai') {
     provider_key: provider,
     is_active: true,
     catalog_active: true,
-    use_token_plan_web: true,
-    can_use_token_plan_web: true,
-    use_token_plan_agentic: true,
-    can_use_token_plan_agentic: true,
+    use_agentic: true,
+    can_use_agentic: true,
+    use_api_key: true,
+    can_use_api_key: true,
   };
   const query = vi.fn().mockResolvedValue([row]);
   const resolver = new ResolveNodiaAiAdapterUseCase({
@@ -65,13 +67,15 @@ function setup(provider = 'openai') {
     execute: vi.fn().mockResolvedValue({ kind: 'answer' }),
   });
   const gemini = port(),
-    codex = port();
+    codex = port(),
+    api = port();
   const router = new RouteNodiaAiAdapterUseCase(
     resolver,
     gemini as unknown as GeminiNodiaAiAdapterUseCase,
     codex as unknown as CodexNodiaAiAdapterUseCase,
+    api as unknown as ApiNodiaAiAdapterUseCase,
   );
-  return { row, query, resolver, gemini, codex, router };
+  return { row, query, resolver, gemini, codex, api, router };
 }
 
 describe('NodiaAI runtime adapter routing', () => {
@@ -114,8 +118,8 @@ describe('NodiaAI runtime adapter routing', () => {
     'id',
     'is_active',
     'catalog_active',
-    'use_token_plan_agentic',
-    'can_use_token_plan_agentic',
+    'use_agentic',
+    'can_use_agentic',
   ])('rejects a changed/disabled %s before native calls', async (key) => {
     const f = setup();
     Object.assign(f.row, { [key]: key === 'id' ? '9007199254740992' : false });
@@ -126,13 +130,32 @@ describe('NodiaAI runtime adapter routing', () => {
     expect(f.codex.observe).not.toHaveBeenCalled();
     expect(f.gemini.observe).not.toHaveBeenCalled();
   });
+  it.each(['gemini', 'openai'])(
+    'routes configured %s API exclusively to the API adapter',
+    async (provider) => {
+      const f = setup(provider);
+      await f.router.observe({ ...selection, mode: 'api_key' });
+      expect(f.api.observe).toHaveBeenCalledOnce();
+      expect(f.codex.observe).not.toHaveBeenCalled();
+      expect(f.gemini.observe).not.toHaveBeenCalled();
+      f.api.observe.mockRejectedValueOnce(Error('fixture API failure'));
+      await expect(
+        f.router.observe({ ...selection, mode: 'api_key' }),
+      ).rejects.toThrow('fixture API failure');
+      expect(f.codex.observe).not.toHaveBeenCalled();
+      expect(f.gemini.observe).not.toHaveBeenCalled();
+    },
+  );
   it.each(['unknown', 'openai'])(
     'never falls back from unsupported %s Web to Gemini',
     async (provider) => {
       const f = setup(provider);
       await expect(
-        f.router.observe({ ...selection, mode: 'token_plan_web' }),
-      ).rejects.toMatchObject({ code: 'adapter_provider_mode_unsupported' });
+        f.router.observe({
+          ...selection,
+          mode: 'token_plan_web' as NodiaAiSelection['mode'],
+        }),
+      ).rejects.toMatchObject({ code: 'adapter_mode_unsupported' });
       expect(f.codex.observe).not.toHaveBeenCalled();
       expect(f.gemini.observe).not.toHaveBeenCalled();
     },
@@ -147,10 +170,13 @@ describe('NodiaAI runtime adapter routing', () => {
       expect(f.query).not.toHaveBeenCalled();
     },
   );
-  it('rejects API mode before SQL and never turns an adapter error into a second provider dispatch', async () => {
+  it('rejects retired Web mode before SQL and never turns an adapter error into a second provider dispatch', async () => {
     const f = setup();
     await expect(
-      f.router.observe({ ...selection, mode: 'api_key' }),
+      f.router.observe({
+        ...selection,
+        mode: 'token_plan_web' as NodiaAiSelection['mode'],
+      }),
     ).rejects.toMatchObject({ code: 'adapter_mode_unsupported' });
     expect(f.query).not.toHaveBeenCalled();
     f.codex.observe.mockRejectedValueOnce(new Error('fixture native failure'));
@@ -191,6 +217,10 @@ describe('NodiaAI runtime adapter routing', () => {
     const router = new RouteNodiaAiReconciliationUseCase(
       gemini as unknown as ReconcileGeminiNodiaAiRuntimeUseCase,
       codex as unknown as ReconcileCodexNodiaAiRuntimeUseCase,
+      {
+        reconcile: vi.fn(),
+        acknowledge: vi.fn(),
+      } as unknown as ApiNodiaAiRuntimeService,
     );
     for (const request of [geminiIdentity, codexIdentity]) {
       await router.reconcile(request, new AbortController().signal);
@@ -217,6 +247,10 @@ describe('NodiaAI runtime adapter routing', () => {
     const router = new RouteNodiaAiReconciliationUseCase(
       gemini as unknown as ReconcileGeminiNodiaAiRuntimeUseCase,
       codex as unknown as ReconcileCodexNodiaAiRuntimeUseCase,
+      {
+        reconcile: vi.fn(),
+        acknowledge: vi.fn(),
+      } as unknown as ApiNodiaAiRuntimeService,
     );
     for (const request of [
       { ...codexIdentity, resourceKey: geminiIdentity.resourceKey },

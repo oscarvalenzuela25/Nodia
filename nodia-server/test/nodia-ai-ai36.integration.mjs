@@ -69,7 +69,7 @@ try {
   const ledger = await db.query('SELECT name FROM migrations ORDER BY timestamp,id');
   check('clean PostgreSQL16 installation applies all 29 migrations and the measured text search index', ledger.length === 29 && ledger.at(-1).name === 'AddNodiaAiTextSearchIndex1793100000000' && (await db.query("SELECT to_regclass('public.ix_nodia_ai_message_parts_text_search')::text AS name"))[0].name !== null);
   const moduleIds = new Map();
-  for (const [key, route] of [['personal_finance', '/tools/finances-personal'], ['businesses', '/tools/business'], ['rental_reservations', '/tools/reservations']]) {
+  for (const [key, route] of [['personal_finance', '/finances-personal'], ['businesses', '/business'], ['rental_reservations', '/reservations']]) {
     let [module] = await db.query('SELECT id::text FROM modules WHERE link=$1', [route]);
     if (!module) [module] = await db.query("INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,$1,$2 FROM modules WHERE key='nodia_ai' RETURNING id::text", [route, key]);
     moduleIds.set(route, module.id);
@@ -153,14 +153,14 @@ try {
   const revoked = await mixed('revocation', '3000'), revokedExecution = await admit(revoked.proposal);
   await next(revokedExecution.execution_id);
   const preserved = (await steps(revokedExecution.execution_id))[0].minimal_receipt;
-  await db.query('DELETE FROM user_modules WHERE user_id=1 AND module_id=$1', [moduleIds.get('/tools/business')]);
+  await db.query('DELETE FROM user_modules WHERE user_id=1 AND module_id=$1', [moduleIds.get('/business')]);
   await worker.execute(randomUUID(), new AbortController().signal);
   const deniedRows = await steps(revokedExecution.execution_id);
   check('module revocation between products stops the suffix and preserves the already committed expense', deniedRows[0].state === 'completed' && JSON.stringify(deniedRows[0].minimal_receipt) === JSON.stringify(preserved) && deniedRows[1].state === 'failed' && deniedRows[2].minimal_receipt === null && await count('providers') === 1 && await count('rental_expenses') === 1);
   await http(`/proposals/${revoked.proposal.proposal_id}`, { expected: [403, 404] });
   await http(`/operations/${revokedExecution.execution_id}/resume`, { method: 'POST', expected: [403, 404], body: { client_request_id: randomUUID(), expected_execution_revision: 1 } });
   check('revoked module blocks preview and recovery over HTTP rather than exposing retained commands');
-  await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1)', [moduleIds.get('/tools/business')]);
+  await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1)', [moduleIds.get('/business')]);
   const restored = await status(revokedExecution.execution_id);
   check('restoring module assignment exposes the exact partial execution without automatic dispatch', restored.state === 'partially_completed' && await count('providers') === 1 && await count('rental_expenses') === 1);
   assert.equal(restored.can_resume, true);
@@ -204,10 +204,10 @@ try {
   const personal = report.source_results.find(row => row.source_alias === 'personal'), lodging = report.source_results.find(row => row.source_alias === 'lodging');
   check('cross-product report reads the actual committed effects including cancelled suffix finance and excludes unexecuted rental effects', personal.totals.amount === '27000' && personal.totals.count === '4' && lodging.totals.amount === '15000' && lodging.totals.count === '3');
   check('cross-product report preserves independent temporal bases and provenance without inventing a joint total or currency', report.snapshot_consistency === 'independent_source_snapshots' && report.provenance.length === 2 && personal.basis_key === 'created_at' && lodging.basis_key === 'incurred_on' && !Object.hasOwn(report, 'totals'));
-  await db.query('DELETE FROM user_modules WHERE user_id=1 AND module_id=$1', [moduleIds.get('/tools/reservations')]);
+  await db.query('DELETE FROM user_modules WHERE user_id=1 AND module_id=$1', [moduleIds.get('/reservations')]);
   const deniedReport = await compose.execute(identity, { catalog_version: reportVersion, combine: 'separate', sources });
   check('report module revocation never exposes the property source while preserving explicitly partial compatible sources', deniedReport.status === 'partial' && deniedReport.source_results.length === 1 && deniedReport.source_results[0].source_alias === 'personal' && deniedReport.source_errors.some(row => row.source_alias === 'lodging'));
-  await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1)', [moduleIds.get('/tools/reservations')]);
+  await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1)', [moduleIds.get('/reservations')]);
 
   // A synthetic next-release registration exercises the compiled admission rule.
   // This is not a hot reload, a deployed release or new MCP publication.

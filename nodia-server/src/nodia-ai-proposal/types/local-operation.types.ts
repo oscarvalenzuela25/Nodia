@@ -15,6 +15,17 @@ type BusinessIdentity = Readonly<{
 }>;
 const businessIdentities: Readonly<Record<string, BusinessIdentity>> =
   Object.freeze({
+    ...Object.fromEntries(
+      ['create', 'update', 'complete', 'cancel', 'discard'].map((operation) => [
+        `nodia_sales_prepare_${operation}`,
+        {
+          family: 'business' as const,
+          resourceKey: 'sales' as const,
+          operation: operation as NodiaAiBusinessMutation,
+          idKind: 'uuid' as const,
+        },
+      ]),
+    ),
     nodia_businesses_prepare_create: {
       family: 'business',
       resourceKey: 'businesses',

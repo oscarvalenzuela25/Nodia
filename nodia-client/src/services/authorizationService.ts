@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { sileo } from "sileo";
 import { mainInstance } from "../config/api";
+import { claimHttpErrorNotification } from "../config/httpFeedback";
 import i18n from "../translate";
 import useGeneralSettingsStore from "../store/generalSettings/generalSettingsStore";
 import type { AuthorizationContextResponse } from "../store/generalSettings/types";
@@ -17,7 +18,6 @@ export const getAuthorizationContext = async (): Promise<AuthorizationContextRes
   const { data } = await mainInstance.get<AuthorizationContextResponse>(
     getEndpoint("/authorization/context")
   );
-  sileo.success({ title: i18n.t("auth:context_loaded") });
   return data;
 };
 
@@ -25,8 +25,6 @@ export const authorizationKeys = {
   all: ["authorization"] as const,
   context: () => [...authorizationKeys.all, "context"] as const,
 };
-
-let lastNotifiedContextErrorTimestamp = 0;
 
 export const useAuthorizationContext = (options?: { enabled?: boolean }) => {
   const userId = useAuthStore((state) => state.user?.id);
@@ -36,6 +34,7 @@ export const useAuthorizationContext = (options?: { enabled?: boolean }) => {
   const query = useQuery({
     queryKey: [...authorizationKeys.context(), userId],
     queryFn: getAuthorizationContext,
+    meta: { errorNotification: "handled-locally" },
     enabled: isSessionActive && (options?.enabled ?? true),
     staleTime: 5 * 60 * 1000,
     retry: false,
@@ -52,8 +51,7 @@ export const useAuthorizationContext = (options?: { enabled?: boolean }) => {
   }, [query.data, isSessionActive, setContext]);
 
   useEffect(() => {
-    if (query.isError && query.errorUpdatedAt > lastNotifiedContextErrorTimestamp) {
-      lastNotifiedContextErrorTimestamp = query.errorUpdatedAt;
+    if (query.isError && claimHttpErrorNotification(query.error)) {
       const error = query.error as AxiosError<{ message?: string; error?: string }> | Error;
       let backendMessage: string | undefined;
 

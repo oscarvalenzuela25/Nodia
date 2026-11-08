@@ -20,7 +20,7 @@ export default function PreferencesLoader(props: PreferencesProps) {
   }, [props.open, attempt, state.Panel]);
   if (state.Panel) return <state.Panel {...props} />;
   return <PreferencesDrawer anchor="right" open={props.open} onClose={props.onClose} slotProps={{ paper: { role: "dialog", "aria-modal": true, "aria-labelledby": titleId } }}>
-    <Header><Typography id={titleId} component="h2" variant="h6">{t("preferences.title")}</Typography><Button onClick={props.onClose}>{t("close")}</Button></Header>
-    <Content>{state.failed ? <Alert severity="error" action={<Button onClick={() => { setState({ failed: false }); setAttempt(value => value + 1); }}>{t("retry")}</Button>}>{t("preferences.chunk_error")}</Alert> : <Typography role="status">{t("preferences.loading")}</Typography>}</Content>
+    <Header><Typography id={titleId} component="h2" variant="h6">{t("preferences.title")}</Typography><Button variant="contained" onClick={props.onClose}>{t("close")}</Button></Header>
+    <Content>{state.failed ? <Alert severity="error" action={<Button variant="contained" onClick={() => { setState({ failed: false }); setAttempt(value => value + 1); }}>{t("retry")}</Button>}>{t("preferences.chunk_error")}</Alert> : <Typography role="status">{t("preferences.loading")}</Typography>}</Content>
   </PreferencesDrawer>;
 }

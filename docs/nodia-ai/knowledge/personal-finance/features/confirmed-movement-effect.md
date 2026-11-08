@@ -4,11 +4,11 @@
   "document_id": "personal-finance.confirmed-movement-effect",
   "product_id": "personal-finance",
   "kind": "feature",
-  "revision": 4,
+  "revision": 5,
   "document_status": "approved",
   "implementation": {
     "status": "partial",
-    "notes": "AI36-C05 publica sólo el fragmento mínimo y los contratos enumerados de este lote bajo autorización humana específica. La evidencia interna C01/C04 no equivale a inferencia o aceptación productiva; otras funciones descritas históricamente conservan sus gates."
+    "notes": "AI36-C05 publica sólo la sección adicional enumerada bajo autorización humana específica; los apartados previos conservan su fecha y alcance. Contratos internos y publicación no prueban despliegue, inferencia o aceptación productiva."
   },
   "integration_status": "published",
   "maintainer": "Mantenimiento de Finanzas personales y NodiaAI conforme AGENTS",
@@ -59,19 +59,20 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-10-18",
+    "checked_on": "2026-10-24",
     "evidence_paths": [
       "docs/evidence/nodia-ai-ai19-validation.json",
       "docs/evidence/nodia-ai-ai20-validation.json",
       "docs/evidence/nodia-ai-ai36-c01-validation.json",
-      "docs/evidence/nodia-ai-ai36-c04-validation.json"
+      "docs/evidence/nodia-ai-ai36-c04-validation.json",
+      "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json"
     ],
-    "notes": "Contratos cerrados y adaptadores reales con integración SQL aislada C01/C04. C05 revisa publicación de este lote; las pruebas de proveedor y dependencias se registran separadamente, sin convertir fixtures o health200 en aceptación generativa. Los estados anteriores de los apartados históricos no sustituyen el frontmatter y el fragmento publicado actuales."
+    "notes": "Publicación offline con builders nativos y schemas cerrados. El fragmento adicional es el único alcance nuevo; no equivale a cuenta real ni a una aceptación de todos sus efectos."
   },
   "approval": {
-    "reference": "docs/evidence/nodia-ai-ai36-c05-publication-authorization.md",
-    "revision": 4,
-    "content_sha256": "ddf9bab7e1380efec4ce92be9ff2e01114a19834504a5ed86b196ec993af8382"
+    "reference": "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-authorization.md",
+    "revision": 5,
+    "content_sha256": "a8bbfa23c08f12c41967cfc1f34a9dd173d4d912a663725dc53b603866b7554b"
   }
 }
 ---
@@ -149,3 +150,23 @@ Las once lecturas y resúmenes existentes conservan filtros, fechas, unidades y 
 Un parcial vacío permite conocer los campos obligatorios. Para continuar un borrador usa su draft_id y expected_draft_revision exactos; un conflicto requiere volver a consultar/revisar, nunca repetir una escritura. Sólo el botón humano sobre la propuesta exacta admite ejecución y recibo financiero atómicos. Editar, borrar o registrar pagos de obligaciones siguen fuera de este lote. Se requiere NodiaAI y el módulo Finanzas personal vigente; super_admin conserva la autoridad transversal y el mismo botón de confirmación.
 
 Este contrato sólo se ofrece cuando esté publicado, seleccionado en el intento y autorizado. La publicación no acredita disponibilidad ni inferencia real del proveedor.
+
+## Finanzas: preparaciones adicionales publicadas en AI36-C05
+
+Este fragmento añade sólo estas preparaciones publicadas:
+
+- `nodia_finance_categories_prepare_create`
+- `nodia_finance_categories_prepare_delete`
+- `nodia_finance_categories_prepare_update`
+- `nodia_finance_category_groups_prepare_create`
+- `nodia_finance_category_groups_prepare_delete`
+- `nodia_finance_category_groups_prepare_update`
+- `nodia_finance_movements_prepare_delete`
+- `nodia_finance_movements_prepare_update`
+- `nodia_finance_obligations_prepare_create`
+- `nodia_finance_obligations_prepare_delete`
+- `nodia_finance_obligations_prepare_update`
+
+Cada herramienta recibe un partial cerrado, devuelve mínimos faltantes o propuesta revisable y permite continuar sólo con draft_id/revisión CAS exactos. No aplica el cambio de dominio. Consulta las referencias reales; nunca inventes IDs o enlaces. Sólo el botón humano sobre revisión/hash exactos admite la ejecución y su recibo nativo. No se aceptan SQL, comandos arbitrarios, secretos ni bulk/importación. Categorías, grupos, movimientos y obligaciones conservan dueño autorizado, referencias, estados y restricciones financieras. No inventar importes, categoría ni estado pagado; preguntar por mínimos ausentes.
+
+El backend exige NodiaAI y cada módulo/acción de destino vigentes, reautoriza al ejecutar y conserva recuperación/idempotencia. Publicación, selección del intento, disponibilidad, despliegue y aceptación real son estados distintos. Los apartados anteriores son históricos y no amplían este lote.

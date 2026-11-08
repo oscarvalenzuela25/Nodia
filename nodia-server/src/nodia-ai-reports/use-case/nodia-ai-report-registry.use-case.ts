@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Optional } from '@nestjs/common';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { Ajv2020 } from 'ajv/dist/2020.js';
@@ -13,6 +13,9 @@ import {
 } from '../../nodia-ai-runtime/config/runtime-policy.js';
 import { NodiaAiReportQueryError } from './compile-nodia-ai-report.use-case.js';
 import type { NodiaAiJsonObject } from '../../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
+export const NODIA_AI_PUBLISHED_REPORT_DOCUMENTS = Symbol(
+  'NODIA_AI_PUBLISHED_REPORT_DOCUMENTS',
+);
 
 /** An explicit logical catalog; never an ORM/schema/endpoint introspector. */
 @Injectable()
@@ -25,6 +28,9 @@ export class NodiaAiReportRegistryUseCase {
   constructor(
     @Inject(NODIA_AI_RUNTIME_POLICY)
     private readonly policy: NodiaAiRuntimePolicy,
+    @Optional()
+    @Inject(NODIA_AI_PUBLISHED_REPORT_DOCUMENTS)
+    private readonly publishedDocuments: readonly string[] = [],
   ) {
     const schema = JSON.parse(
       readFileSync(
@@ -59,6 +65,18 @@ export class NodiaAiReportRegistryUseCase {
   }
   list() {
     return [...this.sources.values()];
+  }
+  isPublished(key: string) {
+    const source = this.get(key);
+    return (
+      source.publicationDocumentId === undefined ||
+      this.publishedDocuments.includes(source.publicationDocumentId)
+    );
+  }
+  getPublished(key: string) {
+    if (!this.isPublished(key))
+      throw new NodiaAiReportQueryError('unsupported_semantics', 'source_key');
+    return this.get(key);
   }
   get(key: string) {
     const source = this.sources.get(key);

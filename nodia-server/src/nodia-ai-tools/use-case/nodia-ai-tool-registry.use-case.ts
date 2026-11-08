@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { canonicalModuleRoute, canonicalModuleRoutes, contractModuleRoute, moduleRouteIncluded } from '../../authorization/canonical-module-route.js';
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { Ajv2020 } from 'ajv/dist/2020.js';
@@ -53,11 +54,11 @@ function routes(value: readonly string[]): boolean {
     Array.isArray(value) &&
     value.length > 0 &&
     value.length <= 16 &&
-    new Set(value).size === value.length &&
+    new Set(canonicalModuleRoutes(value)).size === value.length &&
     value.every(
       (route) =>
         typeof route === 'string' &&
-        /^\/(settings|tools)\/[a-z][a-z0-9_-]*$/.test(route) &&
+        /^\/(?:[a-z][a-z0-9_-]*|(?:settings|tools)\/[a-z][a-z0-9_-]*)$/.test(route) &&
         route.length <= 128,
     )
   );
@@ -253,9 +254,9 @@ export class NodiaAiToolRegistryUseCase {
           invalid();
         const prior = modules.get(module.key);
         if (
-          (prior && canonical(prior) !== canonical(module)) ||
+          (prior && canonical({ ...prior, route: canonicalModuleRoute(prior.route) }) !== canonical({ ...module, route: canonicalModuleRoute(module.route) })) ||
           [...modules.values()].some(
-            (item) => item.route === module.route && item.key !== module.key,
+            (item) => canonicalModuleRoute(item.route) === canonicalModuleRoute(module.route) && item.key !== module.key,
           )
         )
           invalid();
@@ -269,7 +270,7 @@ export class NodiaAiToolRegistryUseCase {
           !resource.label.trim() ||
           !routes(resource.requiredModuleRoutes) ||
           resource.requiredModuleRoutes.some(
-            (route) => !family.modules.some((module) => module.route === route),
+            (route) => !family.modules.some((module) => canonicalModuleRoute(module.route) === canonicalModuleRoute(route)),
           ) ||
           resources.has(resource.key)
         )
@@ -309,15 +310,13 @@ export class NodiaAiToolRegistryUseCase {
           Buffer.byteLength(item.description, 'utf8') > 4096 ||
           !routes(item.requiredModuleRoutes) ||
           item.requiredModuleRoutes.some(
-            (route) => !family.modules.some((module) => module.route === route),
+            (route) => !family.modules.some((module) => canonicalModuleRoute(module.route) === canonicalModuleRoute(route)),
           ) ||
-          !item.requiredModuleRoutes.includes(
-            modules.get(item.moduleKey)!.route,
-          ) ||
+          !moduleRouteIncluded(item.requiredModuleRoutes, modules.get(item.moduleKey)!.route) ||
           resources
             .get(item.resourceKey)!
             .requiredModuleRoutes.some(
-              (route) => !item.requiredModuleRoutes.includes(route),
+              (route) => !moduleRouteIncluded(item.requiredModuleRoutes, route),
             ) ||
           !Array.isArray(item.actionKeys) ||
           item.actionKeys.length > 64 ||
@@ -385,7 +384,9 @@ export class NodiaAiToolRegistryUseCase {
         };
         const registered = freeze({
           ...metadata,
-          contractHash: hash(canonical({ catalogVersion, ...metadata })),
+          contractHash: hash(canonical({ catalogVersion, ...metadata,
+            requiredModuleRoutes: metadata.requiredModuleRoutes.map(contractModuleRoute),
+          })),
           handler: item.handler,
           verifyAuthority: item.verifyAuthority,
           verifyResultAuthority: item.verifyResultAuthority,
@@ -429,11 +430,11 @@ export class NodiaAiToolRegistryUseCase {
     return id ? this.byId.get(id) : undefined;
   }
   list(moduleRoutes: readonly string[]): readonly NodiaAiRegisteredTool[] {
-    const routes = new Set(moduleRoutes);
+    const routes = new Set(canonicalModuleRoutes(moduleRoutes));
     return Object.freeze(
       [...this.tools.values()]
         .filter((tool) =>
-          tool.requiredModuleRoutes.every((route) => routes.has(route)),
+          tool.requiredModuleRoutes.every((route) => routes.has(canonicalModuleRoute(route))),
         )
         .sort((a, b) =>
           a.toolName < b.toolName ? -1 : a.toolName > b.toolName ? 1 : 0,
@@ -487,7 +488,7 @@ export class NodiaAiToolRegistryUseCase {
         (resource) =>
           keys.has(resource.key) &&
           resource.requiredModuleRoutes.every((route) =>
-            moduleRoutes.includes(route),
+            moduleRouteIncluded(moduleRoutes, route),
           ),
       ),
     );

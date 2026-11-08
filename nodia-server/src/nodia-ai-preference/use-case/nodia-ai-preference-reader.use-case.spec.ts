@@ -35,11 +35,11 @@ describe('context preferences remain data, scoped and reauthorized', () => {
     const f = preferenceFixture();
     f.seed();
     await reader(f).loadForContext(f.manager, f.identity, [
-      '/tools/reservations',
+      '/reservations',
       '/unregistered',
     ]);
     expect(f.store.references.mock.calls[0][2]).toEqual([
-      '/tools/reservations',
+      '/reservations',
     ]);
   });
   it('refuses a corrupt owner or scope hash instead of injecting it into context', async () => {

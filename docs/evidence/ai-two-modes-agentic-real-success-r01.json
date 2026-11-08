@@ -1,0 +1,245 @@
+{
+  "schema_version": 1,
+  "evidence_id": "ai-two-modes-agentic-real-success-r01",
+  "status": "two_provider_technical_successes_verified",
+  "authorization": "Root-coordinated explicit dispatch gates; no automatic retry or fallback.",
+  "environment_binding": {
+    "server_release_manifest_sha256": "5771c60b6ab896a51f5486ac0082c0d5a91c9a3d54b2a992004632cb4509dfad",
+    "knowledge_release": "f8734238a60c9346edc87108d0525ecd5d50fdaa67ca248b0a48f69991ef4305",
+    "published_capability_contracts": 151,
+    "native_image": "sha256:4b990e3e8c60077fceb06ac5018025a5ef80353297fe92affc8b20fe53915fa9",
+    "application_api_workers_during_canaries": "stopped by coordinator; this evidence does not attest subsequent activation"
+  },
+  "outcome": {
+    "native_turns_total": 4,
+    "openai_native_turns": 2,
+    "gemini_native_turns": 2,
+    "successful_turns": 2,
+    "failed_turns": 2,
+    "api_key_requests": 0,
+    "inference_replays": 0,
+    "all_native_attempts_process_closed_acknowledged": true,
+    "all_success_supervisors_closed": true,
+    "pending_native_identities": 0,
+    "configuration_database_read_only": true,
+    "configuration_database_modified": false
+  },
+  "verified_scope": [
+    "Native Agentic text response and one technical operator MCP canary per successful provider",
+    "Real LoadNodiaAiKnowledgeUseCase.index read bound to pinned release and validated closed schema/hash",
+    "Nonce returned from actual MCP output; exact terminal proof reconciliation and ACK",
+    "Codex probe acceptance persisted and actual subsequent supportsMcp=true; Gemini native attestation and subsequent supportsMcp=true"
+  ],
+  "scope_limits": [
+    "151 denotes published capability contracts, not151 executed or qualified operations.",
+    "Operator canary output {result,verification_nonce} is deliberately separate from published production output contracts.",
+    "Does not qualify all domain permissions, OCR, images, audio, concurrency or all provider features.",
+    "These Agentic attempts used no API keys; separate API-key verification is outside this evidence."
+  ],
+  "new_gemini_case": {
+    "case_id": "GeminiAI-settings-index-r02",
+    "distinct_from_prior_attempt": true,
+    "authorized_module_routes": [
+      "/tools/nodia-ai",
+      "/settings/ai-providers"
+    ],
+    "real_index_items": 10,
+    "real_index_utf8_bytes": 2746,
+    "permission_filter": "The real knowledge reader filters fragments by required_module_routes; no truncation or fabricated entries.",
+    "explicit_finish_required_in_prompt": true,
+    "maximum_seconds": 120,
+    "native_start_budget": 1,
+    "budget_boundary": "actual global fetch loopback pathname /nodia-ai/agentic/mcp/start",
+    "prior_attempt_outcome": "abandoned_unknown",
+    "prior_attempt_process_closed_acknowledged": true,
+    "prior_quiet_gate_all_blockers_zero": true,
+    "new_attempt_process_closed_acknowledged": true,
+    "previous_timeout_cause_claimed": false
+  },
+  "runs": [
+    {
+      "original_zip_entry": "agentic-openai-r01.json",
+      "original_sha256": "ad141391ae5d261a89ef6d784430c8974f9b6ab8fa63bb88bc83a3ad2096bbb9",
+      "status": "failed",
+      "provider_key": "openai",
+      "connection_id": "1",
+      "model_id_from_persisted_configuration": "gpt-6.1-sol",
+      "effort_id_from_persisted_configuration": null,
+      "observed_native_turns": 1,
+      "original_reported_turns": 1,
+      "api_key_requests": 0,
+      "inference_replayed": false,
+      "native_supervisor_closed": true,
+      "pending_native_identity": false,
+      "failure_code": "acceptance_check_failed",
+      "failure_type": "AssertionError",
+      "failure_stage": "single_native_mcp_turn",
+      "diagnosis": "Confirmed operator instrumentation wrapped the wrong execute argument; the nonce output observer was bypassed and callback count stayed stale on failure. Exact failed assertion was not retained. This run remains failed.",
+      "native_receipt_observed_read_only": {
+        "state": "completed",
+        "acknowledged": true,
+        "owner_exists": false,
+        "native_exists": false,
+        "rpc_messages": 1,
+        "unforwarded_requests": 0,
+        "journal_sha256": "440fa7df34803039efccf5d904d50250b6f55b7fdb90c905047fd040b4dfd930"
+      },
+      "original_report_limit": "Original terminal flags and callback count are stale; independent read-only journal inspection proves completed/ACKed and no live owner/native PID. Original witness remained armed_no_replay and is not reused."
+    },
+    {
+      "original_zip_entry": "agentic-openai-r02.json",
+      "original_sha256": "b3728a1c54fa62e3315b7996497ed5b9e74c486f49c61619cfdaedb39a7c8c6c",
+      "status": "success",
+      "provider_key": "openai",
+      "connection_id": "1",
+      "model_id_from_persisted_configuration": "gpt-6.1-sol",
+      "effort_id_from_persisted_configuration": null,
+      "observed_native_turns": 1,
+      "original_reported_turns": 1,
+      "api_key_requests": 0,
+      "inference_replayed": false,
+      "native_supervisor_closed": true,
+      "pending_native_identity": false,
+      "mcp": {
+        "operator_canary": true,
+        "production_output_equivalence_claimed": false,
+        "descriptor_count": 1,
+        "real_read": "LoadNodiaAiKnowledgeUseCase.index",
+        "callbacks": 1,
+        "real_index_sha256": "89553a1b292dd47054e62f33c8e6760da68c6408c84d0b1e64ec88b0a5d164da",
+        "supports_before": false,
+        "probe_acceptance_persisted": true,
+        "rpc_messages": 1,
+        "canary_output_schema_valid": true,
+        "nonce_roundtrip_verified": true,
+        "supports_after": true
+      },
+      "terminal": {
+        "completed": true,
+        "process_closed": true,
+        "acknowledged": true,
+        "proof_id": "7f90ab55-afdf-4a16-9590-43d5c6ca7823"
+      },
+      "reply": {
+        "kind": "answer",
+        "text_utf8_bytes": 64,
+        "sha256": "b2075bbdd602f6fe94aeb0636afc9894e318e425432cd69328ab08e17db6eba6",
+        "nonce_verified": true
+      }
+    },
+    {
+      "original_zip_entry": "agentic-gemini-r01.json",
+      "original_sha256": "c16142a2948b37fa63be0d55bf622b610bb3a87bff5c5aaa0985f16744eb4f03",
+      "status": "failed",
+      "provider_key": "gemini",
+      "connection_id": "2",
+      "model_id_from_persisted_configuration": "gemini-3.8-flash-high",
+      "effort_id_from_persisted_configuration": "high",
+      "observed_native_turns": 1,
+      "original_reported_turns": 0,
+      "api_key_requests": 0,
+      "inference_replayed": false,
+      "native_supervisor_closed": true,
+      "pending_native_identity": false,
+      "failure_code": "mcp_result_unknown",
+      "failure_type": "TimeoutError",
+      "native_phase": "awaiting_cli_terminal",
+      "elapsed_ms": 120043,
+      "terminal": {
+        "outcome": "abandoned_unknown",
+        "processClosed": true,
+        "terminalProofId": "6b97ce14-0cd2-409a-9e7b-61898b85b24c"
+      },
+      "acknowledged": true,
+      "observed_callbacks": 1,
+      "rpc_messages": 7,
+      "cli_initialized": true,
+      "cli_result_seen": false,
+      "tool_result_response_bytes": 25134,
+      "tool_result_write_completed": true,
+      "tool_result_flush_completed": true,
+      "cause": "Unknown. No cause attributed to provider, index size, prompt or finish behavior.",
+      "original_counter_correction": "Original report says0 provider_turns; real CLI initialization, MCP callback and terminal receipt prove one native attempt. Original bytes preserved."
+    },
+    {
+      "original_zip_entry": "agentic-gemini-ai-settings-r02.json",
+      "original_sha256": "eb2ee68389d9ab6d0270f1855c2735b16d700ba3e1637fb30c836c728379cecc",
+      "status": "success",
+      "provider_key": "gemini",
+      "connection_id": "2",
+      "model_id_from_persisted_configuration": "gemini-3.8-flash-high",
+      "effort_id_from_persisted_configuration": "high",
+      "observed_native_turns": 1,
+      "original_reported_turns": 1,
+      "api_key_requests": 0,
+      "inference_replayed": false,
+      "native_supervisor_closed": true,
+      "pending_native_identity": false,
+      "mcp": {
+        "operator_canary": true,
+        "production_output_equivalence_claimed": false,
+        "descriptor_count": 1,
+        "real_read": "LoadNodiaAiKnowledgeUseCase.index",
+        "callbacks": 1,
+        "real_index_sha256": "abcdd38530b635de2d66c73ecd5d1c370212a5198a02f304c5ef8af589adc42c",
+        "supports_before": false,
+        "authorized_module_routes": [
+          "/tools/nodia-ai",
+          "/settings/ai-providers"
+        ],
+        "real_index_items": 10,
+        "real_index_utf8_bytes": 2746,
+        "turn_budget_boundary": "actual_global_fetch_loopback_mcp_start",
+        "rpc_messages": 7,
+        "canary_output_schema_valid": true,
+        "nonce_roundtrip_verified": true,
+        "supports_after": true
+      },
+      "terminal": {
+        "completed": true,
+        "process_closed": true,
+        "acknowledged": true,
+        "proof_id": "b1b27974-601d-4c9d-a9f0-dd9462208053"
+      },
+      "reply": {
+        "kind": "answer",
+        "text_utf8_bytes": 64,
+        "sha256": "856d1b7e81952ea07f4ddaa94842f2244f8eb74e29513a6c3e43d7947070994b",
+        "nonce_verified": true
+      },
+      "case_id": "GeminiAI-settings-index-r02"
+    }
+  ],
+  "originals_archive": {
+    "path": "ops/lab/artifacts/agentic-api-mode-retirement-r01/agentic-real-original-reports-r01.zip",
+    "bytes": 3932,
+    "sha256": "25ec5482ecc4dccb4fc945a51d1cd61edb910e33ad95b9dd24241cf94aac0051",
+    "entries": 4,
+    "original_byte_hashes_verified": true,
+    "capture_method": "Reports were read as parsed JSON with original private VM byte hashes; harness JSON.stringify(report,null,2)+LF reconstruction matched all four original hashes exactly.",
+    "excluded": [
+      "stderr",
+      "raw CLI logs",
+      "prompts",
+      "native witnesses",
+      "profiles",
+      "sessions",
+      "private env/configuration",
+      "API keys",
+      "credentials"
+    ],
+    "review": "Closed report-field allowlists and values reviewed; credential-pattern checks passed before packing."
+  },
+  "source_material_hashes": {
+    "agentic-real-acceptance-result-r02.json": "7106285ccf761821899b5f682059fcb12761ba7a04dd8c96c46e0c92251852bc",
+    "agentic-reports-readonly-r02.json": "dc9d264827f74a8b2ccfe1b21f1516129145c076e6a9355c8c8bd17bf2a13123",
+    "agentic-openai-receipt-metadata-r01.json": "4a88ceeaa6379d98bf15e63a34fddcfd5689db7ed843c67e22f735144182ffe1",
+    "agentic-gemini-terminal-diagnostic-r01.json": "611b2da341f1156ea03078ffbd5418a39b3bce7fe5a7d259d7e2dfa1ec731692",
+    "agentic-gemini-ai-settings-terminal-diagnostic-r02.json": "595f5b5fd7c0ae4f3c4bef51089758741e9fee3f344560e1f5d7a8d9375a0a64",
+    "gemini-ai-settings-prior-quiet-r02.json": "aa37b18103b65b669b0b6334594adb9e78493dff15c3849bcad4df1a68e6331d",
+    "agentic-harness-diagnostic-result.json": "0ccea6a68daab8846946ec76abb29a2d5e5865fcca5c64adadce8d20bb607d54"
+  },
+  "acceptance_schema_sha256": "f0902cb612afac54722deee0f5af044de5763fcffd36662fd79f94cb8e86ef39",
+  "report_validation": "Both success reports passed the frozen success JSON schema and exact server/knowledge/capability bindings; failed reports remain failed.",
+  "coordinator_activation_authorized_by_this_evidence": false
+}

@@ -6,7 +6,7 @@ import useAuth from "../../../../../hooks/useAuth";
 import i18n from "../../../../../translate";
 import { notifyHttpError } from "../../../../../config/httpFeedback";
 import { reserveObservation, readObservation, type RequestedContext } from "./services";
-import type { ConsoleEvent, ConsolePhase, ConsoleView, LocalStage, Snapshot } from "../types";
+import { isActiveAnalysisPhase, type ConsoleEvent, type ConsolePhase, type ConsoleView, type LocalStage, type Snapshot } from "../types";
 
 type Execution = { id: string | null; scope: string; epoch: number; phase: ConsolePhase; startedAt: number; events: ConsoleEvent[]; uploadPercent: number | null };
 async function readAggregate(client: QueryClient, key: readonly unknown[], signal: AbortSignal): Promise<Snapshot> {
@@ -21,8 +21,10 @@ function observationReader(client: QueryClient) {
   return ({ queryKey, signal }: QueryFunctionContext) => readAggregate(client, queryKey, signal);
 }
 export function useAnalysisObservation(businessId: string) {
-  const { user, isSessionActive, isAuthenticated, sessionVersion } = useAuth();
-  const sessionAvailable = isAuthenticated && Boolean(user?.id);
+  const { user, token, isSessionActive, sessionVersion } = useAuth();
+  // Keep the same in-flight execution during credential renewal. Starting or
+  // polling still requires an active session; identity replacement invalidates it.
+  const sessionAvailable = Boolean(token && user?.id);
   const scope = `${user?.id ?? ''}:${sessionVersion ?? 0}:${businessId}`;
   const [execution, setExecution] = useState<Execution | null>(null);
   const epoch = useRef(0);
@@ -37,8 +39,8 @@ export function useAnalysisObservation(businessId: string) {
   const key = ["invoice", "analysis-observation", scope, active?.id] as const;
   const reserve = useMutation({ mutationFn: ({ context, signal }: { context: RequestedContext; signal: AbortSignal }) => reserveObservation(context, signal),
     retry: false,
-    onSuccess: () => sileo.success({ title: i18n.t("business:analysis_console_reserved") }),
-    onError: notifyHttpError,
+    onSuccess: (_, variables) => { if (!variables.signal.aborted) sileo.success({ title: i18n.t("business:analysis_console_reserved") }); },
+    onError: (error, variables) => { if (!variables.signal.aborted) notifyHttpError(error); },
   });
   const query = useQuery({
     queryKey: key,
@@ -74,12 +76,33 @@ export function useAnalysisObservation(businessId: string) {
     if (!sessionAvailable || (execution && execution.scope !== scope)) {
       epoch.current++; principal.current?.abort(); inProgress.current = false;
       if (execution?.id) void queryClient.cancelQueries({ queryKey: ["invoice", "analysis-observation", execution.scope, execution.id] });
+      currentRun.current = null;
+      setExecution(null);
     }
   }, [scope, sessionAvailable, execution, queryClient]);
   const update = useCallback((token: number, action: (entry: Execution) => Execution) => {
     if (!mounted.current || epoch.current !== token) return;
     setExecution(entry => entry?.epoch === token ? action(entry) : entry);
   }, []);
+  const emit = (token: number, stage: LocalStage) => update(token, entry => ({ ...entry, events: [...entry.events,
+    { key: `local-${entry.events.length}`, occurredAt: new Date().toISOString(), stage, severity: stage === 'history_unavailable' ? 'warning' as const : 'info' as const }].slice(-64) }));
+  const finish = (token: number, controller: AbortController, error?: unknown) => {
+    if (!mounted.current || epoch.current !== token) return;
+    inProgress.current = false;
+    const phase: ConsolePhase = error ? controller.signal.aborted || isCancel(error) ? 'cancelled'
+      : isAxiosError(error) && !error.response ? 'uncertain' : 'failed' : 'ready';
+    update(token, entry => ({ ...entry, phase }));
+    const run = currentRun.current;
+    if (run && run.token === token && !controller.signal.aborted) {
+      const queryKey = ['invoice', 'analysis-observation', run.scope, run.id];
+      // Fetch once after the result, even if preparation already disabled periodic polling.
+      void queryClient.cancelQueries({ queryKey }).then(() => {
+        if (!mounted.current || run.token !== epoch.current) return;
+        return queryClient.fetchQuery({ queryKey, staleTime: 0, retry: false, queryFn: reader, meta: { errorNotification: 'handled-locally' } });
+      })
+        .catch(error => { if (mounted.current && run.token === epoch.current && !episode.current) { episode.current = true; notifyHttpError(error); } });
+    }
+  };
   const start = async (context: RequestedContext) => {
     if (!isSessionActive || inProgress.current) throw new Error("Analysis unavailable");
     inProgress.current = true;
@@ -99,6 +122,9 @@ export function useAnalysisObservation(businessId: string) {
       return {
         analysisId: result.id, signal: controller.signal,
         isCurrent: () => mounted.current && epoch.current === token && !controller.signal.aborted,
+        emit: (stage: LocalStage) => emit(token, stage),
+        preparing: () => update(token, entry => ({ ...entry, phase: 'preparing' })),
+        finish: (error?: unknown) => finish(token, controller, error),
         onUploadProgress: (event: AxiosProgressEvent) => {
           if (!event.total || event.total <= 0 || !Number.isFinite(event.loaded)) return;
           const percentage = Math.min(100, Math.max(0, Math.floor(event.loaded / event.total * 100)));
@@ -113,24 +139,18 @@ export function useAnalysisObservation(businessId: string) {
       throw error;
     }
   };
-  const emit = (stage: LocalStage) => update(epoch.current, entry => ({ ...entry, events: [...entry.events,
-    { key: `local-${entry.events.length}`, occurredAt: new Date().toISOString(), stage, severity: stage === 'history_unavailable' ? 'warning' as const : 'info' as const }].slice(-64) }));
-  const preparing = () => update(epoch.current, entry => ({ ...entry, phase: 'preparing' }));
-  const finish = (error?: unknown) => {
+  const cancel = () => {
+    const entry = active;
+    if (!mounted.current || !entry || entry.scope !== scope || entry.epoch !== epoch.current || !isActiveAnalysisPhase(entry.phase)) return false;
+    const token = entry.epoch;
+    principal.current?.abort();
+    epoch.current++;
     inProgress.current = false;
-    const phase: ConsolePhase = error ? principal.current?.signal.aborted || isCancel(error) ? 'cancelled'
-      : isAxiosError(error) && !error.response ? 'uncertain' : 'failed' : 'ready';
-    update(epoch.current, entry => ({ ...entry, phase }));
+    setExecution(previous => previous?.epoch === token ? { ...previous, phase: 'cancelled' } : previous);
     const run = currentRun.current;
-    if (run && run.token === epoch.current && mounted.current && !principal.current?.signal.aborted) {
-      const queryKey = ['invoice', 'analysis-observation', run.scope, run.id];
-      // Fetch once after the result, even if preparation already disabled periodic polling.
-      void queryClient.cancelQueries({ queryKey }).then(() => {
-        if (!mounted.current || run.token !== epoch.current) return;
-        return queryClient.fetchQuery({ queryKey, staleTime: 0, retry: false, queryFn: reader, meta: { errorNotification: 'handled-locally' } });
-      })
-        .catch(error => { if (mounted.current && run.token === epoch.current && !episode.current) { episode.current = true; notifyHttpError(error); } });
-    }
+    if (run) void queryClient.cancelQueries({ queryKey: ['invoice', 'analysis-observation', run.scope, run.id] });
+    currentRun.current = null;
+    return true;
   };
   const serverEvents: ConsoleEvent[] = query.data?.events.map(event => ({ ...event, key: `server-${event.sequence}` })) ?? [];
   const view: ConsoleView = {
@@ -140,6 +160,6 @@ export function useAnalysisObservation(businessId: string) {
     gap: query.data?.gap ?? false, uploadPercent: active?.uploadPercent ?? null, correlation: active?.id ?? null,
     isFetching: query.isFetching, resume: () => { void query.refetch(); },
   };
-  return { start, emit, preparing, finish, view };
+  return { start, cancel, isBusy: isActiveAnalysisPhase(view.phase), view };
 }
 

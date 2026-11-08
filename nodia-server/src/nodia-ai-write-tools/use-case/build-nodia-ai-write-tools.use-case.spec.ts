@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { readFileSync } from 'node:fs';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 import type { DataSource, EntityManager } from 'typeorm';
 import type { NodiaAiJsonObject } from '../../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
@@ -123,10 +123,8 @@ const secureStore = {
     catalog_active: true,
     can_use_api_key: true,
     use_api_key: true,
-    can_use_token_plan_web: true,
-    use_token_plan_web: true,
-    can_use_token_plan_agentic: true,
-    use_token_plan_agentic: true,
+    can_use_agentic: true,
+    use_agentic: true,
   })),
   keys: vi.fn(async () => [
     {
@@ -162,7 +160,7 @@ function fixture(secureToolName?: string) {
         route,
       })),
       ...(secureToolName
-        ? [{ id: '2', key: 'nodia_ai', route: '/tools/nodia-ai' }]
+        ? [{ id: '2', key: 'nodia_ai', route: '/nodia-ai' }]
         : []),
     ],
   };
@@ -310,7 +308,7 @@ function fixture(secureToolName?: string) {
     manager: f.manager,
     actor: f.actor,
     moduleRoutes: secureToolName
-      ? ['/tools/nodia-ai', ...preparer.moduleRoutes]
+      ? ['/nodia-ai', ...preparer.moduleRoutes]
       : [...preparer.moduleRoutes],
     conversationId: f.chat.id,
   };
@@ -342,9 +340,45 @@ function fixture(secureToolName?: string) {
 }
 
 describe('BuildNodiaAiWriteToolsUseCase — candidate MCP adapters', () => {
-  it('covers exactly all 73 real domain preparers and excludes the four secure-flow gates', () => {
+  it('matches the complete generated finance-business artifact bytes and schema hashes', () => {
+    const accessApplication = vi.fn(() => {
+      throw Error('Structural compilation must not access application ports');
+    });
+    const applicationPort = new Proxy({}, { get: accessApplication });
+    const families = new BuildNodiaAiWriteToolsUseCase(
+      applicationPort as PrepareNodiaAiProposalUseCase,
+      applicationPort as GetNodiaAiProposalUseCase,
+      structuralValidate,
+      commonSource,
+      policy,
+    ).execute(bundles);
+    const family = families.find((candidate) =>
+      candidate.capabilities.some((tool) => tool.capabilityId === 'nodia_products_prepare_create'),
+    );
+    expect(family).toBeDefined();
+    const artifact = readFileSync(
+      new URL('../../nodia-ai-products/contracts/pos-write-finance-business.schema.json', import.meta.url),
+      'utf8',
+    );
+    const artifactHash = createHash('sha256').update(artifact).digest('hex');
+    // Whole-bundle bytes include every native_preparer contractHash comment and formatting.
+    // A per-tool sliced bundle is not a substitute for the published schema artifact.
+    for (const tool of family!.capabilities) {
+      expect(tool.inputSchema.sourceJson).toBe(artifact);
+      expect(tool.outputSchema.sourceJson).toBe(artifact);
+      expect(tool.inputSchema.sha256).toBe(artifactHash);
+      expect(tool.outputSchema.sha256).toBe(artifactHash);
+    }
+    expect(accessApplication).not.toHaveBeenCalled();
+  });
+  it('covers exactly all 72 real domain preparers and excludes the four secure-flow gates', () => {
     const preparers = structuralNativePreparers;
-    expect(preparers).toHaveLength(73);
+    expect(preparers).toHaveLength(72);
+    expect(
+      preparers.some((port) =>
+        port.toolName.startsWith('nodia_sales_prepare_'),
+      ),
+    ).toBe(false);
     expect(
       bundles
         .flatMap((bundle) => bundle.tools.map((tool) => tool.tool_name))
@@ -380,6 +414,11 @@ describe('BuildNodiaAiWriteToolsUseCase — candidate MCP adapters', () => {
       const registered = registry.list(routes);
       expect(registered).toHaveLength(1);
       expect(registered[0].toolName).toBe(tool.tool_name);
+      const changed = new Set([
+        'nodia_products_prepare_create', 'nodia_products_prepare_update',
+        'nodia_product_logs_prepare_create', 'nodia_product_logs_prepare_update',
+      ]);
+      expect(registered[0].revision).toBe(changed.has(tool.tool_name) ? 2 : 1);
       expect(registered[0].kind).toBe('prepare_change');
       expect(registry.validateInput(registered[0], { partial: {} })).toEqual({
         partial: {},
@@ -726,10 +765,15 @@ describe('BuildNodiaAiWriteToolsUseCase — candidate MCP adapters', () => {
   });
 });
 
-describe('BuildNodiaAiWriteToolsUseCase � secure preparation MCP adapters', () => {
-  it('keeps the original three bundles and 73 candidate schema documents separate', () => {
+describe('BuildNodiaAiWriteToolsUseCase — secure preparation MCP adapters', () => {
+  it('keeps the original three bundles and 72 candidate schema documents separate', () => {
     expect(bundles).toHaveLength(3);
-    expect(bundles.flatMap((bundle) => bundle.tools)).toHaveLength(73);
+    expect(bundles.flatMap((bundle) => bundle.tools)).toHaveLength(72);
+    expect(
+      bundles
+        .flatMap((bundle) => bundle.tools)
+        .some((tool) => tool.resource_key === 'sales'),
+    ).toBe(false);
     expect(secureBundles).toHaveLength(1);
     expect(secureBundles[0].tools.map((tool) => tool.tool_name).sort()).toEqual(
       securePreparers.map((port) => port.toolName).sort(),
@@ -755,7 +799,7 @@ describe('BuildNodiaAiWriteToolsUseCase � secure preparation MCP adapters', ()
       expect(tool.requiredModuleRoutes).toEqual(
         f.preparer.moduleRoutes.length
           ? f.preparer.moduleRoutes
-          : ['/tools/nodia-ai'],
+          : ['/nodia-ai'],
       );
       expect(registry.list(tool.requiredModuleRoutes)).toHaveLength(1);
       expect(() =>
@@ -876,7 +920,7 @@ describe('BuildNodiaAiWriteToolsUseCase � secure preparation MCP adapters', ()
     },
     {
       name: 'nodia_secure_flows_prepare_connection_login',
-      partial: { provider_id: '2', mode: 'token_plan_web' },
+      partial: { provider_id: '2', mode: 'agentic' },
     },
   ])(
     'prepares $name without opening a session or submitting a credential',
@@ -902,7 +946,7 @@ describe('BuildNodiaAiWriteToolsUseCase � secure preparation MCP adapters', ()
     expect(f.preparer.moduleRoutes).toEqual([]);
     expect(f.preparer.actionKeys).toEqual([]);
     expect(f.tool.resourceKey).toBe('nodia_sessions');
-    expect(f.tool.requiredModuleRoutes).toEqual(['/tools/nodia-ai']);
+    expect(f.tool.requiredModuleRoutes).toEqual(['/nodia-ai']);
     const result = await f.tool.handler({ partial: {} }, f.context);
     expect(result.status).toBe('ready');
     expect([...f.proposals.values()][0].actor_id).toBe(f.identity.userId);
@@ -920,7 +964,7 @@ describe('BuildNodiaAiWriteToolsUseCase � secure preparation MCP adapters', ()
   it('rechecks the native module/action decision for secure preparation and replay', async () => {
     const f = fixture('nodia_secure_flows_prepare_connection_login');
     const result = await f.tool.handler(
-      { partial: { provider_id: '2', mode: 'token_plan_agentic' } },
+      { partial: { provider_id: '2', mode: 'agentic' } },
       f.context,
     );
     const previous = f.manager.query;
@@ -942,7 +986,7 @@ describe('BuildNodiaAiWriteToolsUseCase � secure preparation MCP adapters', ()
     );
     const ready = await f.tool.handler(
       {
-        partial: { mode: 'token_plan_web' },
+        partial: { mode: 'agentic' },
         draft_id: first.draft_id,
         expected_draft_revision: 1,
       },

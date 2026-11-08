@@ -3,9 +3,8 @@
 // ==========================================
 
 Enum ai_connection_mode {
-  web_session
   api_key
-  token_plan_agentic
+  agentic
 }
 
 Enum ai_key_health_state {
@@ -270,8 +269,7 @@ Table ai_provider_catalog [headercolor: #49e3e3] {
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
 	can_use_api_key boolean [ not null, default: false, note: 'Permite configurar API; no demuestra disponibilidad' ]
-	can_use_token_plan_web boolean [ not null, default: false, note: 'Permite configurar sesión Web' ]
-	can_use_token_plan_agentic boolean [ not null, default: false, note: 'Permite configurar sesión Agentic' ]
+	can_use_agentic boolean [ not null, default: false, note: 'Permite configurar sesión Agentic' ]
 }
 
 Table ai_providers [headercolor: #49e3e3] {
@@ -284,9 +282,8 @@ Table ai_providers [headercolor: #49e3e3] {
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
 	use_api_key boolean [ not null, default: false ]
-	use_token_plan_web boolean [ not null, default: false ]
-	use_token_plan_agentic boolean [ not null, default: false ]
-	default_mode varchar(32) [ note: 'Canal elegido: api_key, token_plan_web o token_plan_agentic; nullable' ]
+	use_agentic boolean [ not null, default: false ]
+	default_mode varchar(32) [ note: 'Canal elegido: api_key o agentic; nullable' ]
 	is_default boolean [ not null, default: false ]
 }
 

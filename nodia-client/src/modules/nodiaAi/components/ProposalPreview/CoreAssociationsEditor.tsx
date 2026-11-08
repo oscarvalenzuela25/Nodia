@@ -19,7 +19,7 @@ export default function CoreAssociationsEditor({ label, value, onChange, disable
     <SelectMultipleInput label={label} options={[...new Set([...known, ...value])].map(id => options.find(option => option.value === id) ?? { value: id, label: id })} value={value} onChange={onChange} disabled={disabled} error={error} />
     <Typography variant="caption" component="p">{t("proposal.core_associations_help")}</Typography>
     <TextInput label={t("proposal.core_association_id", { field: label })} value={newId} disabled={disabled || atLimit} onChange={event => setNewId(event.target.value)} />
-    <ReviewActions><Button type="button" disabled={disabled || !canAdd} onClick={add}>{t("proposal.core_add_id")}</Button></ReviewActions>
+    <ReviewActions><Button variant="contained" type="button" disabled={disabled || !canAdd} onClick={add}>{t("proposal.core_add_id")}</Button></ReviewActions>
     {error && <Alert severity="error">{t("proposal.core_ids_invalid")}</Alert>}
   </Box>;
 }

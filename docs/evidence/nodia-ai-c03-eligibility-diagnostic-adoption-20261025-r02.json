@@ -1,0 +1,308 @@
+{
+  "schema_version": 1,
+  "verification_date": "2026-10-25",
+  "status": "eligibility_diagnostic_runtime_adopted_capacity_recovered_cause_not_yet_observed",
+  "scope": "Local Linux VM, safe eligibility instrumentation only; no new inference or C03 functional acceptance by adoption.",
+  "sources": {
+    "artifact_directory": "ops/lab/artifacts/c03-eligibility-diagnostic-adoption-verification-r02",
+    "catalog": "ops/lab/artifacts/c03-eligibility-diagnostic-adoption-verification-r02/catalog.json",
+    "catalog_sha256": "aace0334f90b023eda84c83535ee435d40f225225fea8652b44f5cd71dc5bf68",
+    "generator": "ops/lab/artifacts/c03-eligibility-diagnostic-adoption-verification-r02/consolidate-r02.py",
+    "captured_receipts_not_live_state": true
+  },
+  "release_transition": {
+    "source": "/opt/nodia/releases/nodia-server-ai36-c03-original-read-r01",
+    "target": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01",
+    "source_manifest_sha256": "6efb78af9a4e610be55337ef8b8b3cb5007f283cef32c81061fc32807edf2ee6",
+    "target_manifest_sha256": "4276fd7091f3d7f36604ba355895a2e43054bcbcec7b87ee5f0d897a42a41549",
+    "operator_sha256": "a438974712f50dbb96269c448b7e74f5e222249723dfba3bda8440fc64718b95",
+    "plan_sha256": "2d316c759485b75e94f870d439e485a9a7479474985182381cded91ea25c2d60",
+    "delta": [
+      {
+        "old_sha256": "2a181c2460bb5f5402e65c4767bf25253395421095931f8276f0fa401d76d9e1",
+        "path": "dist/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.js",
+        "sha256": "40fb92e0c04fd1c8000f87c12cb46a317b5e8d94c0f0c0bd902ca372e1d608b1"
+      },
+      {
+        "old_sha256": "e99e42fd3d1d86fb6f30bcd9b0c82a3c74d1faca2ea40deb74b597bd1a016552",
+        "path": "dist/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.js.map",
+        "sha256": "ebe5683675c60cb261c3c4e258bd53776c365e830a12429d9e544f0fcf828eee"
+      },
+      {
+        "old_sha256": "594c90986003eea0e101a513f32071639ef97f48b963ccc10db0ad7c188833cf",
+        "path": "dist/nodia-ai-runtime/types/nodia-ai-failure-diagnostic.d.ts",
+        "sha256": "9041988addbbc5005f4c15bf4ea9187191f13e0cd91a0ce41972596bc47401ba"
+      },
+      {
+        "old_sha256": "86282d743ea3d867a9c9e35759ec9ed22ddee4d4eb39a09c0a8e63b1871f1cb1",
+        "path": "dist/nodia-ai-runtime/types/nodia-ai-failure-diagnostic.js",
+        "sha256": "81f01ec6e1baa2e8ed7fa0f3cc72bd5f41e86f34645a881c6975cf6dc9882620"
+      },
+      {
+        "old_sha256": "e0a6acec9bad81a75bfc131afe44461d6bd9b69468f98e8a14743c74f84c7848",
+        "path": "dist/nodia-ai-runtime/types/nodia-ai-failure-diagnostic.js.map",
+        "sha256": "5e5b820d40df667ba15a246bc478ba1275922e5f250d54bd76d2663c21dbf3e2"
+      },
+      {
+        "old_sha256": "d0548d240a6cf2c051054e1cca4b25c02c8a5b6948f4ffd81b356ed53c874a1d",
+        "path": "src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+        "sha256": "ac0326e77b653fb53c12a55b9770248bec5b19a4777f7723038218e274fd4685"
+      },
+      {
+        "old_sha256": "a728b281fe28205f5dc8eb3b5d3c0a249e2c3869064ccb7d67de73088d6a8113",
+        "path": "src/nodia-ai-runtime/types/nodia-ai-failure-diagnostic.ts",
+        "sha256": "3ee0bc3780625e040196a72ac52fa094cb36c9b4bd9b36ee3e58da58caf1bd39"
+      }
+    ],
+    "served_Client_unchanged": "/opt/nodia/releases/nodia-client-core-fx04-pagination-r07",
+    "first_original_read_fix_bytes_preserved": true
+  },
+  "behavior": "Adds closed diagnostic location/category/boolean comparisons to the existing eligibility_changed boundary. It preserves rejection, budgets, permissions, tool selection, original-read proof and retry semantics.",
+  "publication_preserved": {
+    "knowledge_release": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+    "capabilities": 151,
+    "fragments": 42,
+    "approved_C03_revision": 3,
+    "new_approval_or_knowledge_build": false,
+    "independent_full_monorepo_build_claimed": false
+  },
+  "validation": {
+    "captured_implementation_unit_tests": {
+      "passed": 146,
+      "files": 2,
+      "source": "ops/lab/artifacts/c03-eligibility-diagnostic-package-r01/vitest-r01.log",
+      "sha256": "c4ff747dc5d06d64169dbbfff852132dda3d739d0a3a88b0255cc654d0ff34b5"
+    },
+    "lint_and_compile_logs": {
+      "captured_stdout_bytes": {
+        "lint": 0,
+        "compile": 0
+      },
+      "meaning": "Empty captured logs; lint/compile success was reported by the implementation lane, not inferred solely from empty stdout."
+    },
+    "previous_original_read_39_tests": "Reported in previous delivery without raw durable log; not relabelled as captured here.",
+    "compiled_Linux_probe": {
+      "status": "compiled_context_cases_passed",
+      "cases": 11,
+      "telemetry_cases": 8,
+      "preserved_original_read_cases": 3,
+      "release": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01",
+      "SQL_calls": 0,
+      "provider_generations": 0,
+      "executed_uid": 10000,
+      "knowledge_release": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd"
+    },
+    "captured_Linux_operator_suites": [
+      {
+        "path": "diagnostic-adopt-linux-tests-r01.txt",
+        "passed": 8,
+        "skipped": 0,
+        "sha256": "316558a93ba028238bcd514bbec8a07c6b5122f2fa8e4ce8499b5d85bc6111f8"
+      },
+      {
+        "path": "capacity-r02-linux-tests.txt",
+        "passed": 8,
+        "skipped": 0,
+        "sha256": "d1737db24da81b3c3a0b18702ce65bfadfb6524254e681f8bc84ee0e82703fbb"
+      },
+      {
+        "path": "capacity-r02-linux-scope-tests-r02.txt",
+        "passed": 6,
+        "skipped": 0,
+        "sha256": "4727a0cb4772fc575619dd588803317c8d5bf30673190eb694aec26b406e7d9e"
+      }
+    ],
+    "preserved_initial_capacity_suite_failure": {
+      "passed": 5,
+      "harness_errors": 1,
+      "reason": "Missing explicitly located recovery archive fixture; no product assertion failed.",
+      "source": "capacity-r02-linux-scope-tests.txt",
+      "sha256": "66de5bb9481f0e17457e8d99b9489118dd69a6ae4627a1f8c75929ffc91708f3",
+      "corrected_fixture_result": "Six passed with the explicit archive fixture; initial log preserved."
+    }
+  },
+  "preserved_failed_first_adoption": {
+    "status": "adoption_failed",
+    "failure_class": "ValueError",
+    "failure_code": "operator_command_failed",
+    "admission_closed": false,
+    "changed_descriptors": [],
+    "timers_restored": true,
+    "fresh_backup_receipt_absent": true,
+    "new_R02_intent_used": true,
+    "original_intent_replayed_or_overwritten": false,
+    "readonly_preflight_failures": [
+      "diagnostic-adopt-preflight-r01.json",
+      "diagnostic-adopt-preflight-r02.json"
+    ]
+  },
+  "backup_boundaries": {
+    "last_observed_before_R02": {
+      "ready": 36,
+      "pending": [
+        {
+          "backup_id": "79efd42f-2e31-4eb8-a8a5-8bf0217e75f1",
+          "status": "pending",
+          "captured_at": "2026-10-25T20:12:05.907Z",
+          "expires_at": "2026-11-01T20:12:05.907Z",
+          "cipher_bytes": null,
+          "cipher_sha256": null
+        }
+      ]
+    },
+    "initial_capacity": {
+      "max_dump_bytes": 268435456,
+      "available_bytes": 265543680,
+      "spool_entry_count": 1
+    },
+    "new_fresh_backup": {
+      "schema_version": 1,
+      "operation": "backup",
+      "backup_id": "23f67dcc-33f6-4360-8f40-0836eebdc967",
+      "status": "ready",
+      "captured_at": "2026-10-25T20:28:20.792Z",
+      "expires_at": "2026-11-01T20:28:20.792Z",
+      "cipher_bytes": 1402646,
+      "cipher_sha256": "bcbb2207162ca0ad17a9cb9bc06b69ae6e81b2f88ec46fa93785b652fdd73d45",
+      "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+      "journal_sequence": 1,
+      "rotated": {
+        "removed": 0,
+        "pending_recovered": 0,
+        "retained": 36
+      }
+    },
+    "after_adoption_catalog_total": 37,
+    "pending_backup_current_state": "not_rechecked_by_this_evidence",
+    "pending_cleanup_actor_or_cause": "not_attributed",
+    "retention_policy_changed": false
+  },
+  "capacity_recovery": {
+    "scope": "Only own first-fix/source6ef and reproducible target4276 code trees named by the reviewed operator; no other history/data/profile trees.",
+    "source_retired_after_target_verified": true,
+    "source_no_longer_deployed_at_original_VM_path": true,
+    "remote_recovery_archive": {
+      "path": "/opt/nodia/verification/c03-eligibility-diagnostic-capacity-r02/source-6ef-recovery.tar.gz",
+      "sha256": "45e2ac9098aef898b673bc623e67839f08e1dafdc0a033fa804bfdba7e6f1a83",
+      "bytes": 3255330,
+      "source_manifest_sha256": "6efb78af9a4e610be55337ef8b8b3cb5007f283cef32c81061fc32807edf2ee6",
+      "regular_members": 4149,
+      "dependency_symlink_only": true
+    },
+    "local_recovery_archive": "ops/lab/artifacts/c03-first-fix-recovery-r01/source-6ef-recovery.tar.gz",
+    "local_recovery_catalog": "ops/lab/artifacts/c03-first-fix-recovery-r01/catalog.json",
+    "VM_local_archive_sha256_equal": "45e2ac9098aef898b673bc623e67839f08e1dafdc0a033fa804bfdba7e6f1a83",
+    "final_backup_capacity": {
+      "device": 2050,
+      "available_bytes": 292073472,
+      "maximum_dump_bytes": 268435456,
+      "required_bytes": 268443676,
+      "spool_lock_only": true,
+      "configuration_sha256": "20407b1bea525dde5c6c9bea476d26c5695045b7ab6595f1ca7529e00be39adc"
+    },
+    "recovery_archive_copied_again_here": false
+  },
+  "preserved": {
+    "SQL_table_projections": 61,
+    "SQL_counts_hashes_and_schema_equal": true,
+    "schema_sha256": "82753ec54d69006d2850dd62173093c03086e43a37af62e2a3dba1c5da5b4b87",
+    "quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "Gemini_epoch_and_native_quiet": {
+      "epoch": {
+        "id": "b4375ef639fd03c5955abe5c7c6c491908d8fe4e0a0aa28e5cd162e17d11442c",
+        "image": "sha256:8320b3cbaee7a2f49fe845481e5f07bcb5d72c82684909bab408ece9711b1b1d",
+        "started_at": "2026-10-25T17:45:34.206184136Z",
+        "descriptor_sha256": "ba195f645283c86b4d7fb202bb2470fe939510309a54ea255bf00f34369fdaec"
+      },
+      "quiet": {
+        "attempt_receipts": 0,
+        "unknown_markers": 0,
+        "temporary_directories": 0,
+        "active_native_processes": 0
+      }
+    },
+    "Codex_metadata": {
+      "profile_absent": false,
+      "pending": 0,
+      "locks_or_sockets": 0,
+      "records": 3,
+      "sdk_arg0_links": 0,
+      "sdk_binary": null
+    },
+    "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "nginx_sha256": "7c573a1b96d135598a90dacce9d6d5e0e5858b2252b6de21a5b0b2e6d00ed366",
+    "unrelated_services": {
+      "nodia-keyring": {
+        "active": "active",
+        "sub": "running",
+        "pid": 3630841,
+        "working_directory": ""
+      },
+      "nginx": {
+        "active": "active",
+        "sub": "running",
+        "pid": 3630787,
+        "working_directory": ""
+      },
+      "nodia-gemini-lab": {
+        "active": "active",
+        "sub": "exited",
+        "pid": 0,
+        "working_directory": "/opt/nodia/nodia-gemini-microservice"
+      }
+    },
+    "consumers": {
+      "nodia-api": {
+        "active": "active",
+        "sub": "running",
+        "pid": 136500,
+        "working_directory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+        "argv_exact_match": true
+      },
+      "nodia-ai-worker": {
+        "active": "active",
+        "sub": "running",
+        "pid": 136501,
+        "working_directory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+        "argv_exact_match": true
+      }
+    },
+    "previous_C03_snapshots_exact_except_release_coordinates": true,
+    "timers_restored": true
+  },
+  "side_effects": {
+    "provider_generations": 0,
+    "business_SQL_writes": 0,
+    "SQL_restores": 0,
+    "migrations": 0,
+    "automatic_replay": false,
+    "changed_descriptors": [
+      "/etc/systemd/system/nodia-api.service.d/zz-ai38-journal.conf",
+      "/etc/systemd/system/nodia-ai-worker.service.d/zz-ai38-journal.conf",
+      "/etc/nodia-ai-recovery/backup-runner.env"
+    ]
+  },
+  "remaining_gate": "Eligibility cause remains undetermined at this adoption checkpoint. Instrumentation is now active; a later explicitly bounded original-file turn must supply its own acceptance/failure evidence.",
+  "limits": [
+    "No extraction accuracy, zero/null normalization, analyzer prepare/complete or authenticated C03 result is accepted by this adoption.",
+    "The single earlier observation with equal pins cannot reconstruct the historical eligibility cause.",
+    "61 SQL projections explicitly exclude auth_sessions; no global DB identity or R2 document-byte equivalence.",
+    "No attribution that the earlier pending backup was removed/recovered: the successor rotation reports removed0/pending_recovered0/retained36, and its exact later status was not reread.",
+    "Only archived own code was retired after verified adoption. No older evidences, database backups, profiles, sessions, unrelated releases or retention policy were deleted or shortened.",
+    "Prepared package metadata remains frozen; later runtime adoption is proved by its captured operator and consumer coordinates.",
+    "No Web availability, new approval, AI-36/C05 or AI-38 completion, other-account, Windows/API or production acceptance.",
+    "This consolidator performs no VM/browser/SQL/SDK actions and repeats no operational tests."
+  ]
+}

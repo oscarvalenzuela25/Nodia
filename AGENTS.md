@@ -1,5 +1,22 @@
 # Instrucciones del proyecto: Nodia
 
+## Rutas independientes del menú y Teacher (2026-11-01)
+
+Aplicar [ADR092](docs/architecture/decisions/ADR-092-stable-module-navigation-routes.md) y [traspaso98](docs/mvp/98-nodia-teacher-start-handoff.md): URLs funcionales sin prefijo de sección, Teacher en dominio propio y autoridad por destino canónico. La migración de enlaces preserva identidades/asignaciones; mover o renombrar grupos no concede acceso. APIs y evidencia histórica firmada conservan sus contratos.
+
+## NodiaAI: ventas y reportes de solo lectura (2026-10-30)
+
+Aplicar [plan94, R17](docs/mvp/94-business-point-of-sale-and-product-refactor.md#26-nodiaai-ventas-y-reportes-de-solo-lectura--r17-2026-10-30): NodiaAI sólo obtiene y muestra información de ventas/reportes. No prepara ni ejecuta creación, edición, confirmación, anulación o descarte de ventas, tampoco mediante propuestas antiguas. El POS manual permanece disponible. No confundir esta restricción comercial con SQL libre o con prohibir la persistencia técnica del chat. Las referencias anteriores al CRUD conversacional de ventas son históricas.
+
+## Ampliación actual: API key en NodiaAI (2026-10-27)
+
+API chat reutiliza ToolGateway, módulos/ownership, grants, propuestas, confirmación humana exacta, ejecución/idempotencia y recuperación de Agentic. Aplicar [plan92](docs/mvp/92-nodia-ai-api-chat-parity.md), [ADR084](docs/architecture/decisions/ADR-084-nodia-ai-api-chat-common-runtime.md) y las pruebas obligatorias de [plan91](docs/mvp/91-ai-provider-onboarding-verification.md) al añadir o modificar un proveedor. API funciona en Server con HTTP/function calling: supports_tools no equivale a MCP; proof3 exige cierre local y distingue resultado remoto unknown, sin replay ni cancelación remota supuesta. Cada POST consume presupuesto antes del envío. Modelo/clave/conexión exactos y modalidades calificadas por selección; catálogo o key no acreditan inferencia. Las seis revisiones R02 cuentan con aprobación humana documental y se adoptaron en VM con validación técnica; eso no aprueba el ADR, otras fichas ni todas las modalidades. El plan92 conserva el estado técnico y evidencias; referencias inferiores de API chat no soportado describen el corte anterior.
+
+## Modos IA y proveedores nuevos (2026-10-27)
+
+- La solicitud vigente retira Web y el nombre token plan; aplicar [plan90](docs/mvp/90-agentic-api-only-web-retirement.md) y [ADR083](docs/architecture/decisions/ADR-083-agentic-and-api-only-ai-modes.md). Los únicos modos operativos son `agentic` y `api_key`, presentados como Agentic/API key. El historial retirado no habilita ejecución.
+- Al incorporar un proveedor, adaptador o modo, completar las pruebas aplicables del [plan91](docs/mvp/91-ai-provider-onboarding-verification.md) por proveedor/modelo/entorno, con inferencia real válida y capacidades no soportadas explícitas. Un flag, clave guardada, login o catálogo no prueba inferencia. Conservar integridad, no-replay y confirmación humana.
+
 ## Rol y Mentalidad: Tech Lead (TL) Senior Full Stack
 
 - **Cero complacencia ("No dar por el lado"):** Cuestionar técnicamente cualquier propuesta o decisión que genere deuda técnica, acoplamiento innecesario o riesgos en producción. Si una idea o implementación tiene fisuras, señalarla de inmediato con fundamentos técnicos y proponer la alternativa superior.
@@ -178,10 +195,10 @@ Skills disponibles en `nodia-client/skills/`:
 ## Proveedores de IA y credenciales
 
 - API keys permitidas por proveedor por aclaración explícita del usuario el 2026-10-06. Se excluyen las keys gratuitas de Gemini/Google AI Studio como vía operativa del proyecto; no se prohíben APIs de pago ni OpenAI.
-- Catálogo objetivo: `gemini` permite API, Web y Agentic; `openai` permite API y Codex Agentic, con Web deshabilitado. Migración Codex aplicada en la BD local configurada y Agentic activado en la conexión OpenAI ID 4 por solicitud explícita del 2026-10-08; API conserva su predeterminado. Cuenta/inferencia y soporte Windows siguen pendientes. Los flags `can_use_*` definen modos configurables, no disponibilidad de ejecución. Ver `docs/features/ai-providers/openai-codex-agentic.md` y ADR-018.
-- Gemini Web y Antigravity conservan sus sesiones independientes. Agentic sigue indisponible hasta comprobar un adaptador real; nunca sustituirlo silenciosamente por Web/API.
+- Los modos operativos son Agentic y API key. Gemini y OpenAI tienen adaptadores comprobados por los alcances del [plan90](docs/mvp/90-agentic-api-only-web-retirement.md); los flags `can_use_*` sólo permiten configuración, no prueban disponibilidad. Web y su delegación están retirados; conservar históricos sin alias ejecutables. API OCR y API chat están implementados; consultar la [aceptación por alcance92](docs/mvp/92-nodia-ai-api-chat-parity.md). No extender un success de texto a otros formatos/modelos.
+- Las sesiones Agentic de cada adaptador y sus perfiles son independientes. La disponibilidad exige evidencia real por proveedor/modelo/esfuerzo/entorno; no sustituir silenciosamente un modo o proveedor.
 - Guardar claves cifradas en `ai_api_keys`, vinculadas a la instancia. Nunca en frontend, campos JSON, logs, fixtures reales o repositorio. El cliente recibe únicamente etiquetas y máscaras.
-- No cambiar automáticamente de proveedor ni modo salvo la delegación opt-in del nuevo chat NodiaAI confirmada el2026-10-14 en[política48](docs/mvp/48-nodia-ai-mode-routing-policy.md): Web conversacional puede alternar a Agentic verificado de la misma conexión cuando el usuario habilite su switch; API queda para después, sin cambio por error ni confirmación de escrituras implícita. Runtime/contratos pendientes. OCR y consumidores existentes conservan la prohibición. Rotación de claves solo dentro de la misma instancia API, si está habilitada y ante errores de credencial/cuota; no reintentar inferencias con resultado incierto.
+- No cambiar automáticamente de proveedor ni modo; elegir explícitamente Agentic o API key. La delegación Web→Agentic de la política48 es histórica y quedó retirada por la decisión del2026-10-27. Rotar claves sólo dentro de la misma instancia API cuando esté habilitado y ante error conocido de credencial/cuota; nunca reintentar inferencias de resultado incierto ni confirmar escrituras implícitamente.
 - Modelos por descubrimiento/configuración, sin listas cerradas o versiones por defecto. No inventar cuotas, modalidades ni capacidad por el nombre. Una clave guardada o catálogo accesible no prueba inferencia exitosa.
 
 ## Prohibición Total de Modelos Estáticos y Fallbacks Hardcodeados (Cero Hardcoding de Modelos de IA)

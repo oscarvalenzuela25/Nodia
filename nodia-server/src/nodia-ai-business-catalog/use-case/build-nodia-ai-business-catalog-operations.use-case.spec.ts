@@ -20,15 +20,16 @@ const prices = {
   name: 'Article',
   cost_price: 10,
   cost_price_tax: 12,
-  profit_percentage: 20,
   sale_price: 20,
   stock: 8,
+  has_stock: true,
 };
 function fixture() {
   let authenticated = true;
   let superAdmin = false;
   let duplicate = false;
   let missing = false;
+  const deniedBusinesses = new Set<string>();
   const business: NodiaAiJsonObject = {
     id: businessId,
     owner_id: '1',
@@ -85,6 +86,38 @@ function fixture() {
     { id: '7', key: 'products:edit', is_active: true, updated_at: 'same' },
   ];
   const query = vi.fn(async (sql: string, args: unknown[] = []) => {
+    if (sql.includes('AS authority_locks')) return [{ authority_locks: 9 }];
+    const visible = (id: string) =>
+      superAdmin ||
+      (!deniedBusinesses.has(id) &&
+        (business.owner_id === '1' ||
+          collaborators.some(
+            (item) => item.user_id === '1' && item.is_active === true,
+          )));
+    if (sql.includes('FROM businesses business'))
+      return (args[0] as string[]).filter(visible).map((id) => ({ id }));
+    if (sql.includes('FROM businesses WHERE id=ANY'))
+      return (args[0] as string[]).map((id) => ({ id }));
+    if (sql.includes('resource.id=ANY')) {
+      if (missing) return [];
+      const ids = args[0] as string[];
+      if (sql.includes('FROM product_logs resource'))
+        return ids.includes(logId) && visible(String(product.business_id))
+          ? [{ id: logId }]
+          : [];
+      if (sql.includes('FROM products resource'))
+        return ids
+          .filter(
+            (id) =>
+              ['3', '5'].includes(id) &&
+              visible(id === '5' ? otherBusiness : String(product.business_id)),
+          )
+          .map((id) => ({ id }));
+      if (sql.includes('FROM providers resource'))
+        return ids.includes('4') && visible(String(provider.business_id))
+          ? [{ id: '4' }]
+          : [];
+    }
     if (sql.startsWith('SELECT u.id'))
       return authenticated
         ? [{ actorId: '1', sessionId: businessId, isSuperAdmin: superAdmin }]
@@ -152,7 +185,7 @@ function fixture() {
       isSuperAdmin: false,
       modules: [],
     },
-    moduleRoutes: ['/tools/business'],
+    moduleRoutes: ['/business'],
     conversationId: otherBusiness,
     maxCollectionItems: 100,
   };
@@ -180,6 +213,9 @@ function fixture() {
     },
     setSuper: () => {
       superAdmin = true;
+    },
+    denyBusiness: (id: string) => {
+      deniedBusinesses.add(id);
     },
     op: (resource: string, operation = 'create') =>
       factory.operations.find(
@@ -210,6 +246,18 @@ function change(s: StoredProposalStep, key: string) {
   )!;
 }
 describe('AI-22 native business/catalog proposals', () => {
+  it('rejects retired margin fields in new or stored proposals without calling a writer', async () => {
+    const f = fixture();
+    for (const resource of ['products', 'product_logs']) {
+      const op = f.op(resource);
+      const input: NodiaAiJsonObject = resource === 'products' ? { business_id: businessId, ...prices } : { business_id: businessId, product_id: '3', ...prices };
+      expect(op.editableFields).not.toHaveProperty('profit_percentage');
+      await expect(op.prepare({ ...input, profit_percentage: 30 }, f.context)).rejects.toMatchObject({ status: 400 });
+      const prepared = await step(op, input, f.context);
+      await expect(op.verifyAuthority({ ...prepared, contractHash: '0'.repeat(64) }, f.context)).rejects.toMatchObject({ status: 403 });
+      expect(f.writers.every(writer => writer.execute.mock.calls.length === 0)).toBe(true);
+    }
+  });
   it('represents every absent create-before value as null even for translation effects', async () => {
     const f = fixture();
     const s = await step(
@@ -230,23 +278,60 @@ describe('AI-22 native business/catalog proposals', () => {
     }
   });
   it('bounds the union of collaborator actions before querying instead of multiplying per-user limits', async () => {
-    const f = fixture(); f.users.push({ id: '6', is_active: true, updated_at: 'same' });
-    await expect(f.op('businesses', 'set_collaborators').prepare({ id: businessId, users: [{ user_id: '2', action_ids: ['7', '8'] }, { user_id: '6', action_ids: ['9', '10'] }] }, { ...f.context, maxCollectionItems: 2 })).rejects.toMatchObject({ status: 409 });
-    expect(f.query.mock.calls.some(([sql]) => sql.includes('FROM business_actions'))).toBe(false);
+    const f = fixture();
+    f.users.push({ id: '6', is_active: true, updated_at: 'same' });
+    await expect(
+      f.op('businesses', 'set_collaborators').prepare(
+        {
+          id: businessId,
+          users: [
+            { user_id: '2', action_ids: ['7', '8'] },
+            { user_id: '6', action_ids: ['9', '10'] },
+          ],
+        },
+        { ...f.context, maxCollectionItems: 2 },
+      ),
+    ).rejects.toMatchObject({ status: 409 });
+    expect(
+      f.query.mock.calls.some(([sql]) => sql.includes('FROM business_actions')),
+    ).toBe(false);
   });
-  it.each([255, 256])('counts Unicode code points consistently with native DTOs and PostgreSQL varchar for %s characters', async count => {
-    const f = fixture(); const value = '🍽'.repeat(count);
-    const cases: [NodiaAiNativeOperation, NodiaAiJsonObject][] = [
-      [f.op('businesses'), { name: value }],
-      [f.op('products'), { business_id: businessId, ...prices, code: value, name: value }],
-      [f.op('businesses'), { name: 'Business', translates: [{ key: value, es: 'ES', en: 'EN' }] }],
-      [f.op('businesses', 'set_collaborators'), { id: businessId, users: [{ user_id: '2', position: value, action_ids: ['7'] }] }],
-    ];
-    for (const [op, input] of cases) {
-      if (count === 255) expect((await op.prepare(input, f.context)).status).toBe('ready');
-      else await expect(op.prepare(input, f.context)).rejects.toMatchObject({ status: 400 });
-    }
-  });
+  it.each([255, 256])(
+    'counts Unicode code points consistently with native DTOs and PostgreSQL varchar for %s characters',
+    async (count) => {
+      const f = fixture();
+      const value = '🍽'.repeat(count);
+      const cases: [NodiaAiNativeOperation, NodiaAiJsonObject][] = [
+        [f.op('businesses'), { name: value }],
+        [
+          f.op('products'),
+          { business_id: businessId, ...prices, code: value, name: value },
+        ],
+        [
+          f.op('businesses'),
+          {
+            name: 'Business',
+            translates: [{ key: value, es: 'ES', en: 'EN' }],
+          },
+        ],
+        [
+          f.op('businesses', 'set_collaborators'),
+          {
+            id: businessId,
+            users: [{ user_id: '2', position: value, action_ids: ['7'] }],
+          },
+        ],
+      ];
+      for (const [op, input] of cases) {
+        if (count === 255)
+          expect((await op.prepare(input, f.context)).status).toBe('ready');
+        else
+          await expect(op.prepare(input, f.context)).rejects.toMatchObject({
+            status: 400,
+          });
+      }
+    },
+  );
   it('registers seven exact existing individual operations and no bulk or invented deletes', () => {
     const f = fixture();
     expect(f.factory.operations).toHaveLength(7);
@@ -305,22 +390,27 @@ describe('AI-22 native business/catalog proposals', () => {
   });
   it('asks only the missing required product fields and accepts zero/false without treating them as missing', async () => {
     const f = fixture();
-    const result = await f
-      .op('products')
-      .prepare(
-        {
-          business_id: businessId,
-          name: 'New',
-          code: 'N',
-          cost_price: 0,
-          is_active: false,
-        },
-        f.context,
-      );
+    const result = await f.op('products').prepare(
+      {
+        business_id: businessId,
+        name: 'New',
+        code: 'N',
+        cost_price: 0,
+        is_active: false,
+      },
+      f.context,
+    );
     expect(result).toMatchObject({
       status: 'needs_clarification',
-      missingFields: ['cost_price_tax', 'profit_percentage', 'sale_price'],
+      missingFields: ['cost_price_tax', 'sale_price', 'has_stock'],
     });
+  });
+  it('validates the resulting alternative-price state instead of approving an active missing price', async () => {
+    const f = fixture();
+    f.product.is_offer_enabled = true;
+    f.product.offer_price = 1500;
+    await expect(f.op('products', 'update').prepare({business_id: businessId, id: '3', offer_price: null}, f.context)).rejects.toThrow('product:selected_price_missing');
+    expect((await f.op('products', 'update').prepare({business_id: businessId, id: '3', offer_price: null, is_offer_enabled: false}, f.context)).status).toBe('ready');
   });
   it('merges clarification while keeping immutable original scope and target', async () => {
     const f = fixture();
@@ -335,8 +425,8 @@ describe('AI-22 native business/catalog proposals', () => {
         name: 'X',
         cost_price: 0,
         cost_price_tax: 0,
-        profit_percentage: 0,
         sale_price: 0,
+        has_stock: false,
       },
       f.context,
       initial.partial,
@@ -476,9 +566,15 @@ describe('AI-22 native business/catalog proposals', () => {
       ).status,
     ).toBe('ready');
   });
-  it('global product authority intentionally does not require owner membership but requires destination module', async () => {
+  it('denies foreign product previews and allows a current superadministrator while requiring the destination module', async () => {
     const f = fixture();
     f.business.owner_id = '2';
+    await expect(
+      f
+        .op('products')
+        .prepare({ business_id: businessId, ...prices }, f.context),
+    ).rejects.toMatchObject({ status: 404 });
+    f.setSuper();
     expect(
       (
         await f
@@ -508,6 +604,94 @@ describe('AI-22 native business/catalog proposals', () => {
       status: 401,
     });
   });
+  it('allows an explicit collaborator to prepare product and log changes and rejects revoked membership on receipt recovery', async () => {
+    const f = fixture();
+    f.business.owner_id = '2';
+    const collaboration = {
+      id: '10',
+      user_id: '1',
+      position: 'Synthetic',
+      action_ids: [],
+      is_active: true,
+      updated_at: 'same',
+    };
+    f.collaborators.push(collaboration);
+    const op = f.op('products', 'update');
+    const prepared = await step(
+      op,
+      { business_id: businessId, id: '3', name: 'Permitted' },
+      f.context,
+    );
+    expect(
+      (
+        await f
+          .op('product_logs')
+          .prepare(
+            { business_id: businessId, product_id: '3', ...prices },
+            f.context,
+          )
+      ).status,
+    ).toBe('ready');
+    collaboration.is_active = false;
+    await expect(op.verifyAuthority(prepared, f.context)).rejects.toMatchObject(
+      { status: 404 },
+    );
+    expect(
+      f.writers.every((writer) => writer.execute.mock.calls.length === 0),
+    ).toBe(true);
+  });
+
+  it.each(['products', 'product_logs'])(
+    'rejects receipt recovery for an existing %s target reparented to a foreign business',
+    async (resource) => {
+      const f = fixture();
+      const op = f.op(resource, 'update');
+      const prepared = await step(
+        op,
+        {
+          business_id: businessId,
+          id: resource === 'products' ? '3' : logId,
+          name: 'Before',
+        },
+        f.context,
+      );
+      f.product.business_id = otherBusiness;
+      f.denyBusiness(otherBusiness);
+      await expect(
+        op.verifyAuthority(prepared, f.context),
+      ).rejects.toMatchObject({ status: 404 });
+      expect(
+        f.writers.every((writer) => writer.execute.mock.calls.length === 0),
+      ).toBe(true);
+    },
+  );
+
+  it('rejects an unauthorized product transfer or log reassociation before exposing a preview', async () => {
+    const f = fixture();
+    f.denyBusiness(otherBusiness);
+    await expect(
+      f.op('products', 'update').prepare(
+        {
+          business_id: businessId,
+          id: '3',
+          command: { business_id: otherBusiness, provider_id: null },
+        },
+        f.context,
+      ),
+    ).rejects.toMatchObject({ status: 404 });
+    await expect(
+      f
+        .op('product_logs', 'update')
+        .prepare(
+          { business_id: businessId, id: logId, product_id: '5' },
+          f.context,
+        ),
+    ).rejects.toMatchObject({ status: 404 });
+    expect(
+      f.writers.every((writer) => writer.execute.mock.calls.length === 0),
+    ).toBe(true);
+  });
+
   it('historical product receipt authority does not require deleted or edited targets', async () => {
     const f = fixture();
     const op = f.op('products', 'update');
@@ -552,16 +736,14 @@ describe('AI-22 native business/catalog proposals', () => {
   it('rejects provider from a different business and does not silently clear it when moving a product', async () => {
     const f = fixture();
     await expect(
-      f
-        .op('products', 'update')
-        .prepare(
-          {
-            business_id: businessId,
-            id: '3',
-            command: { business_id: otherBusiness },
-          },
-          f.context,
-        ),
+      f.op('products', 'update').prepare(
+        {
+          business_id: businessId,
+          id: '3',
+          command: { business_id: otherBusiness },
+        },
+        f.context,
+      ),
     ).rejects.toMatchObject({ status: 400 });
   });
   it('supports explicit product transfer and freezes destination business separately', async () => {

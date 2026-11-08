@@ -98,8 +98,8 @@ try {
   await db.initialize();
   const executed = await db.runMigrations();
   check(
-    executed.length === 18,
-    'All18 migrations install on a truly empty database',
+    executed.length === db.migrations.length,
+    'Every registered migration installs on a truly empty database',
   );
   check(
     (await db.runMigrations()).length === 0,
@@ -122,8 +122,11 @@ try {
       );
   }
   check(
-    db.entityMetadatas.length === 39,
-    'All39 entity tables and their columns exist',
+    db.entityMetadatas.length > 0 &&
+      db.entityMetadatas.every((metadata) =>
+        tables.some((table) => table.name === metadata.tableName),
+      ),
+    'Every registered entity table and its columns exist',
   );
   const [initial] =
     await db.query(`SELECT (SELECT count(*)::int FROM roles WHERE key='super_admin') AS roles,
@@ -140,7 +143,7 @@ try {
     'Migrations create Core defaults but never accounts or credentials',
   );
   const catalog = await db.query(
-    'SELECT key,can_use_api_key,can_use_token_plan_web,can_use_token_plan_agentic FROM ai_provider_catalog ORDER BY key',
+    'SELECT key,can_use_api_key,can_use_agentic FROM ai_provider_catalog ORDER BY key',
   );
   check(
     catalog.length === 17 &&
@@ -153,11 +156,9 @@ try {
   const openai = catalog.find((value) => value.key === 'openai');
   check(
     !kimi.can_use_api_key &&
-      !kimi.can_use_token_plan_web &&
-      !kimi.can_use_token_plan_agentic &&
+      !kimi.can_use_agentic &&
       openai.can_use_api_key &&
-      openai.can_use_token_plan_agentic &&
-      !openai.can_use_token_plan_web,
+      openai.can_use_agentic,
     'Catalog does not invent Kimi integrations or change OpenAI modes',
   );
   const seed = () =>
@@ -424,7 +425,8 @@ try {
   checks++;
   check(
     (await cliDb.query('SELECT count(*)::int AS count FROM migrations'))[0]
-      .count === 17,
+      .count ===
+      db.migrations.length - 1,
     'CLI refuses partial history without applying missing migrations',
   );
   await assert.rejects(

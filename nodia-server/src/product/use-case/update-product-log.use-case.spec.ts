@@ -32,14 +32,15 @@ describe('UpdateProductLogUseCase', () => {
       name: 'Coca Cola 2.0L',
       cost_price: 1000,
       cost_price_tax: 190,
-      profit_percentage: 30,
       sale_price: 2000,
       stock: 50,
       created_at: new Date(),
       updated_at: new Date(),
     };
 
-    vi.mocked(productServiceMock.updateLog!).mockResolvedValue(mockUpdated as any);
+    vi.mocked(productServiceMock.updateLog!).mockResolvedValue(
+      mockUpdated as any,
+    );
 
     const result = await useCase.execute(id, dto);
 

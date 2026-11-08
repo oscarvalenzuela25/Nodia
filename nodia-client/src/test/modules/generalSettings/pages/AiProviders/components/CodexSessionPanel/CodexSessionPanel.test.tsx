@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import CodexSessionPanel from "../../../../../../../modules/generalSettings/pages/AiProviders/components/CodexSessionPanel";
@@ -66,10 +66,14 @@ const mount = (state = session, disabled = false) => {
   );
   return { client, ...rendered };
 };
-const open = async () => {
+const manage = async () => {
+  await waitFor(() => expect(screen.getByRole("button", { name: label("manage") })).toBeEnabled());
   await userEvent
     .setup()
     .click(screen.getByRole("button", { name: label("manage") }));
+};
+const open = async () => {
+  await manage();
   await waitFor(() =>
     expect(
       screen.getByRole("button", { name: label("connect") }),
@@ -96,7 +100,7 @@ describe("Codex session panel", () => {
     mock.session.mockResolvedValue(unavailable);
     mount(unavailable);
     expect(screen.getByText(label("runtime_unavailable"))).toBeVisible();
-    await userEvent.setup().click(screen.getByRole("button", { name: label("manage") }));
+    await manage();
     const dialog = await screen.findByRole("dialog");
     await waitFor(() => expect(within(dialog).getByRole("button", { name: label("check_status") })).toBeEnabled());
     expect(within(dialog).getByRole("button", { name: label("connect") })).toBeDisabled();
@@ -129,7 +133,7 @@ describe("Codex session panel", () => {
   it("keeps connect disabled if the session query fails even with previously available health", async () => {
     mock.session.mockRejectedValue(new Error("Synthetic session error"));
     mount();
-    await userEvent.setup().click(screen.getByRole("button", { name: label("manage") }));
+    await manage();
     await waitFor(() => expect(mock.error).toHaveBeenCalled());
     expect(screen.getByRole("button", { name: label("connect") })).toBeDisabled();
     expect(screen.getByRole("dialog")).toBeVisible();
@@ -138,9 +142,7 @@ describe("Codex session panel", () => {
   it("exposes only the official device URL and recovers a pending login for this connection", async () => {
     mock.current.mockResolvedValue(job);
     mount();
-    await userEvent
-      .setup()
-      .click(screen.getByRole("button", { name: label("manage") }));
+    await manage();
     expect(await screen.findByText("TEST-ONLY")).toBeVisible();
     expect(
       screen.getByRole("link", { name: label("open_login") }),
@@ -201,11 +203,14 @@ describe("Codex session panel", () => {
     });
     expect(invalidate).toHaveBeenCalledWith({
       queryKey: ["ai-selectable-models"],
+      refetchType: "none",
     });
   });
   it("preserves disconnect confirmation on failure without reporting success", async () => {
     mock.logout.mockRejectedValue(new Error("synthetic failure"));
+    mock.session.mockResolvedValue({ ...session, authenticated: true });
     mount({ ...session, authenticated: true });
+    await waitFor(() => expect(screen.getByRole("button", { name: label("disconnect") })).toBeEnabled());
     await userEvent
       .setup()
       .click(screen.getByRole("button", { name: label("disconnect") }));
@@ -220,8 +225,8 @@ describe("Codex session panel", () => {
     expect(screen.getByRole("dialog")).toBeVisible();
     expect(mock.success).not.toHaveBeenCalled();
   });
-  it("shows zero observed usage and leaves unknown figures absent", () => {
-    mount({
+  it("shows zero observed usage and leaves unknown figures absent", async () => {
+    const quotaObservation = {
       ...session,
       quotas: [
         {
@@ -231,17 +236,19 @@ describe("Codex session panel", () => {
           secondary: null,
         },
       ],
-    });
-    expect(screen.getByText(/0\s*%/)).toBeVisible();
+    };
+    mock.session.mockResolvedValue(quotaObservation);
+    mount(quotaObservation);
+    expect(await screen.findByText(/0\s*%/)).toBeVisible();
     expect(screen.queryByText(/100\s*%/)).not.toBeInTheDocument();
   });
   it("does not overwrite fresh parent health with an old modal observation", async () => {
-    const connected = { ...session, authenticated: true }; mock.session.mockResolvedValue(connected);
+    const connected = { ...session, authenticated: true, checkedAt: "2026-11-01T18:00:00Z" }; mock.session.mockResolvedValue(connected);
     const { client, rerender } = mount(connected); await open();
     const close = within(screen.getByRole("dialog")).getAllByRole("button").find((button) => button.textContent === label("close"))!;
     await userEvent.setup().click(close);
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    rerender(<QueryClientProvider client={client}><CodexSessionPanel providerId="42" session={session} disabled={false} /></QueryClientProvider>);
+    rerender(<QueryClientProvider client={client}><CodexSessionPanel providerId="42" session={{ ...session, checkedAt: "2026-11-01T18:00:01Z" }} disabled={false} /></QueryClientProvider>);
     expect(screen.getByText(label("session_required"))).toBeVisible();
   });
   it("disables actions during a parent mutation", () => {
@@ -249,6 +256,50 @@ describe("Codex session panel", () => {
     expect(
       screen.getByRole("button", { name: label("manage") }),
     ).toBeDisabled();
+  });
+  it("observes persisted auth on detail entry without requiring management or login", async () => {
+    const connected = { ...session, authenticated: true, checkedAt: "2026-11-01T18:00:00Z" };
+    mock.session.mockResolvedValue(connected);
+    const stale = { ...session, available: false, authenticated: null, reason: "codex_runtime_unverified" };
+    const { client, rerender } = mount(stale);
+    expect(await screen.findByText(label("connected"))).toBeVisible();
+    rerender(<QueryClientProvider client={client}><CodexSessionPanel providerId="42" session={{ ...stale }} disabled={false} /></QueryClientProvider>);
+    expect(screen.getByText(label("connected"))).toBeVisible();
+    expect(screen.queryByText(label("runtime_unavailable"))).not.toBeInTheDocument();
+    expect(mock.session).toHaveBeenCalledOnce();
+    expect(mock.start).not.toHaveBeenCalled();
+    expect(mock.current).not.toHaveBeenCalled();
+    expect(mock.logout).not.toHaveBeenCalled();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByText(label("inference_unverified"))).toBeVisible();
+  });
+  it.each([
+    ["codex_runtime_unverified", "unknown"],
+    ["codex_profile_busy", "busy"],
+  ])("does not label %s as a disconnected account or unavailable runtime", async (reason, message) => {
+    const unknown = { ...session, available: false, authenticated: null, reason };
+    mock.session.mockResolvedValue(unknown);
+    mount(unknown);
+    expect(await screen.findByText(label(message))).toBeVisible();
+    expect(screen.queryByText(label("runtime_unavailable"))).not.toBeInTheDocument();
+    expect(screen.queryByText(label("session_required"))).not.toBeInTheDocument();
+    expect(mock.start).not.toHaveBeenCalled();
+  });
+  it("keeps the last observed auth visible after a failed explicit recheck and offers retry", async () => {
+    const connected = { ...session, authenticated: true };
+    mock.session.mockResolvedValue(connected);
+    const { client } = mount(connected);
+    expect(await screen.findByText(label("connected"))).toBeVisible();
+    mock.session.mockRejectedValueOnce(new Error("Synthetic metadata outage"));
+    await act(async () => { await client.invalidateQueries({ queryKey: ["codex-session", "42"] }); });
+    expect(screen.getByText(label("connected"))).toBeVisible();
+    expect(await screen.findByRole("alert")).toBeVisible();
+    expect(screen.getByRole("button", { name: label("check_status") })).toBeEnabled();
+    expect(mock.error).toHaveBeenCalledOnce();
+    await userEvent.setup().click(screen.getByRole("button", { name: label("check_status") }));
+    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
+    expect(screen.getByText(label("connected"))).toBeVisible();
+    expect(mock.start).not.toHaveBeenCalled();
   });
   it("rejects foreign URLs, unexpected secret fields and invented quota values", () => {
     expect(

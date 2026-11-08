@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "status": "native_core_4module_COPY_build_and_adoption_verified",
+  "scope": "Native Products OCR account-home/owned-reader core delivery only; no inference or workflow acceptance",
+  "observed_at_VM_utc": "2026-10-26T16:57:18.528717+00:00",
+  "source_epoch": {
+    "container_id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+    "image_id": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+    "started_at_utc": "2026-10-26T03:06:18.949917773Z"
+  },
+  "new_epoch": {
+    "container_id": "ae8b025b5910da6bb27a96dee881411a3c66d62fdcf612cf61013841d064f091",
+    "image_id": "sha256:6401f3576bc6eaba31afc47a6f1ba3f6ff397e966465d5cd6da573adc9a8ff93",
+    "started_at_utc": "2026-10-26T16:56:35.276313977Z"
+  },
+  "changed_public_modules": [
+    "agentic_cli.py",
+    "agentic_service.py",
+    "native_mcp_sessions.py",
+    "nodia_ai_chat.py"
+  ],
+  "total_modules": 52,
+  "other_modules_preserved": 48,
+  "target_public_module_hashes": {
+    "agentic_cli.py": "0813e73f61ad02f6a5e9797c465e4085d7691ebb39b6fdfb45ec5a0feb945760",
+    "agentic_service.py": "7a7ed2bb9b506587bdc61d7c0a2601542a211acd29208dc19599c4f99bc3ee5e",
+    "native_mcp_sessions.py": "bac8a8258047de5598e726c7e35c5b53e196007e33680b0236cc91656de76f65",
+    "nodia_ai_chat.py": "07a5ac95984ae0ae1221ff09e11f674e0fcf2f115a5b003ef267555d63f3375c"
+  },
+  "build": {
+    "manifest_sha256": "b9711ec1015f8d710a6622e71cdc88d05be3bd725dbcbf8d4d99981d13d54db2",
+    "single_COPY_layer": 1,
+    "image_configuration_preserved": true,
+    "public52_target_hashes_verified": true,
+    "isolated_network_none_readonly": true,
+    "Linux_FakeRunner_tests": {
+      "status": "offline_candidate_tests",
+      "before_control": false,
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "SDK_calls": 0,
+      "provider_generations": 0
+    },
+    "actual_image_size_delta_bytes": 165888,
+    "test_output_sha256": "4fe3465d23aff883016398efa7d2f7c115a5c5599124c0a6faa37f7eb23bb5b5",
+    "CLI_binary_upgrade": false,
+    "CLI_version_prior_verified_and_inherited_by_COPY_only": "1.3.1"
+  },
+  "adoption": {
+    "operator_sha256": "e2ea9a8cd7d541405c8b553fcb8ac4566456c85c3e791621acfc48271b00803f",
+    "plan_sha256": "5c69d4c11c00b732317af570b2ec2d2fb10beb315077f87fb53a46de8dd91b4f",
+    "effective_ExecStart_preflight": {
+      "planned_dropin": "zzzzzzzz-invoice-ocr-native-core-r03.conf",
+      "prior_dropin_count": 14,
+      "effective_argv_sha256": "727646e02c238fcd337cff83742f4bdb41ea540e2edc03152ee4057d9ca4155b",
+      "last_effective_ExecStart_simulated": true
+    },
+    "SQL61_schema_equality_enforced_before_CAS_and_after_restart_by_successful_pinned_operator": true,
+    "SQL61_source_schema_sha256": "82753ec54d69006d2850dd62173093c03086e43a37af62e2a3dba1c5da5b4b87",
+    "SQL61_excludes_only_auth_sessions": true,
+    "configuration_mounts_environment_privateports_resources_preserved_by_same_configuration_guard": true,
+    "source_consumers_stopped_after_quiet_and_new_consumers_started": true,
+    "consumers_after": {
+      "nodia-api": {
+        "active": "active",
+        "sub": "running",
+        "pid": 598878,
+        "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+        "argv_exact_match": true
+      },
+      "nodia-ai-worker": {
+        "active": "active",
+        "sub": "running",
+        "pid": 598879,
+        "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+        "argv_exact_match": true
+      }
+    },
+    "timers_restored": true,
+    "quiet_after": {
+      "native": {
+        "unknown_markers": 0,
+        "armed_native_proofs": 0,
+        "terminal_native_proofs": 0,
+        "invalid_native_proofs": 0,
+        "temporary_attachment_directories": 0,
+        "temporary_cli_directories": 0,
+        "agentic_home_configured": true,
+        "stage": "AI-32-R04",
+        "scope": "read_only_native_runtime_artifact_counts",
+        "observed_at_utc": "2026-10-26T16:57:17Z",
+        "provider_calls": 0,
+        "configured_database_modified": false,
+        "profile_bytes_read": false
+      },
+      "SQL": {
+        "stage": "AI-36-C05",
+        "scope": "post_disposable_live_read_only_operational_quiescence",
+        "status": "passed",
+        "observed_at_utc": "2026-10-26T16:57:17.573Z",
+        "pending_jobs": 0,
+        "open_attempts": 0,
+        "retained_slots": 0,
+        "preserved_r05_chat": 1,
+        "configured_SQL_writes": 0,
+        "provider_requests": 0,
+        "storage_operations": 0,
+        "services_restarted": false,
+        "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+      }
+    },
+    "new_native_epoch_requires_fresh_MCP": true,
+    "operator_generation_requests": 0,
+    "SQL_writes_restores_migrations_business_effects": 0
+  },
+  "fresh_encrypted_backup": {
+    "backup_id": "297335ad-db7c-4fa7-bf19-67716eacfd61",
+    "status": "ready",
+    "captured_at": "2026-10-26T16:56:27.554Z",
+    "expires_at": "2026-11-02T16:56:27.554Z",
+    "cipher_bytes": 1691616,
+    "cipher_sha256": "1b1adf7d0c459f5f9c564a99768d37f8ebf169add92530c124ddf1c8f34da4c0",
+    "journal_sequence": 1
+  },
+  "protected_static": {
+    "Server_manifest_sha256": "8f83d1525802a08f468e8132ff496a0976493e3b32941366888b631e56273bc8",
+    "Client_manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+    "nginx_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac",
+    "knowledge_release": "607b9d24fb64ad69f81576c1a80000a95d8c7f601a40ebe505ff0a06d1339001",
+    "client_verification": {
+      "manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+      "files": 183,
+      "format": "bytes_sha256_records"
+    }
+  },
+  "account_layout_probe": {
+    "two_existing_account_files_regular_uid10001_inside_home": true,
+    "contents_read": false,
+    "credentials_or_paths_exported": false,
+    "provider_calls": 0
+  },
+  "knowledge_impact": {
+    "exact_R04_registry_and_src_dist_manifest_audit": "ops/lab/artifacts/invoice-ocr-native-core-overlay-r03/knowledge-reference-audit.json",
+    "references_to4_changed_native_modules": 0,
+    "Server_R05_required_by_these4pins": false,
+    "knowledge607b_contracts_approved_content_preserved": true
+  },
+  "operator_Linux_tests": {
+    "Root_reported_exit_code": 0,
+    "inventory_in_pinned_scripts": {
+      "plan_guards": 8,
+      "protected_boundary": 2
+    },
+    "saved_stdout_bytes": [
+      0,
+      0
+    ],
+    "stdout_test_count_claim": false,
+    "unittest_stderr_transcript_in_saved_files": false,
+    "local_atomic_tests_observed_separately": 10
+  },
+  "limits": [
+    "No fresh MCP qualification or PNG/PDF OCR/provider success is claimed by this delivery.",
+    "Previous MIME/MCP qualification is not inherited across this epoch; Root must qualify explicitly.",
+    "No real CLI/provider inference, auth or account credential read is implied by isolated FakeRunner tests.",
+    "Non-generative metadata checks during service startup are not counted as provider generations or as independently audited SDK request totals.",
+    "The prior consumed/unknown OCR preparation stays resolved historically and is never replayed automatically.",
+    "No Web/API testing, global AI36/C03/AI38 acceptance, restore test or seven elapsed retention days."
+  ],
+  "receipt_pins": {
+    "invoice-ocr-core-build-bootstrap-VM-r03.json": {
+      "bytes": 270,
+      "sha256": "9d3cf5139265f926be3847d80906a41a3c4baac34e8f376923d3017d864f4d2d"
+    },
+    "invoice-ocr-core-source-observe-VM-r03.json": {
+      "bytes": 20101,
+      "sha256": "65896101d9e6a798ec3d4aff0ad9f8a18ce7eeb666d06aee85975ea5c541d38d"
+    },
+    "invoice-ocr-core-build-preflight-VM-r03.json": {
+      "bytes": 20852,
+      "sha256": "0a1da996341c28a8127532d7c3c562d5929ebbfba9fac1d0eaad235c7912186d"
+    },
+    "invoice-ocr-core-build-execute-VM-r03.json": {
+      "bytes": 46509,
+      "sha256": "9d8284b4fa417dbb04f90b463af2f4fd84173afd71b1644764e38e4a884b51c0"
+    },
+    "invoice-ocr-core-adopt-bootstrap-VM-r03.json": {
+      "bytes": 288,
+      "sha256": "e942ac09700c38ec2e8308d1d157e853e1cd9bd2342b7ff747d0be04d1979f08"
+    },
+    "invoice-ocr-core-plan-tests-VM-r03.json": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "invoice-ocr-core-protected-tests-VM-r03.json": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "invoice-ocr-core-adopt-preflight-VM-r03.json": {
+      "bytes": 16450,
+      "sha256": "6a8bdbdf20fdbce5fb2478af826be9b4e9f7a6572393106c2d25c953f845a05e"
+    },
+    "invoice-ocr-core-adopt-execute-VM-r03.json": {
+      "bytes": 25419,
+      "sha256": "994bd13b36acb6cc4b7195d0f162e27eea36c5b8b5cc8c89b05b187f2a0c1ed3"
+    },
+    "ocr-account-layout-probe-VM-r01.json": {
+      "bytes": 561,
+      "sha256": "aed1dba7e859e5ba646210d40323a3afa83c83230549d8f5d605622b01f37389"
+    }
+  },
+  "verification_command": "python -B ops/lab/artifacts/invoice-ocr-native-core-adoption-verification-r03/consolidate.py",
+  "consolidator_VM_SQL_SDK_calls": 0
+}

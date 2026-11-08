@@ -4,11 +4,11 @@
   "document_id": "nodia-ai.capability-registry-gateway",
   "product_id": "nodia-ai",
   "kind": "feature",
-  "revision": 9,
+  "revision": 10,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "C01..C04 implementan84contratos/adaptadores MCP cerrados candidatos. C05 publica en fuentes un lote de7(crear movimiento financiero y6ayudantes comunes), conservando67lecturas anteriores y sus hashes:74capacidades/31fragmentos y77candidatos sin publicar. Descubrimiento automático por etapas elegido por el usuario:8técnicos para descubrir/seleccionar IDs exactos contra catálogo autorizado congelado, recibo transaccional, cierre/prueba terminal/ACK y etapa local tool_selection antes de ejecutar subconjunto+7técnicos. El callback no amplía el grant de la generación; después del ACK se reemplaza su allowlist por la selección validada bajo módulos/ámbito congelados y permisos vigentes. No eleva límites y la selección desaparece en ejecución. Implementación, SQL y aceptación real del nuevo camino siguen en verificación. Perfiles explícitos sóloAPI/backend/pruebas, sin UI/Python/DDL nuevos. Confirmación, efecto, aceptación de memoria y credenciales permanecen humanos. Esta ficha continúa draft/unregistered; publicación estrecha no aprueba arquitectura ni disponibilidad."
+    "notes": "API chat OpenAI/Gemini implementado en código candidato sobre gateway, grants, permisos y confirmación comunes; ledger HTTP/proof3 y presupuesto por POST. Ensayo SQL, proveedor real, modalidad/imágenes, VM y publicación de esta revisión pendientes. Original aprobado anterior archivado; approval:null."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento del módulo NodiaAI conforme AGENTS",
@@ -44,25 +44,56 @@
     {
       "path": "docs/architecture/decisions/ADR-063-nodia-ai-bounded-staged-discovery.md",
       "kind": "specification"
+    },
+    {
+      "path": "docs/mvp/92-nodia-ai-api-chat-parity.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-084-nodia-ai-api-chat-common-runtime.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/mvp/89-module-access-and-user-data-scope.md",
+      "kind": "specification"
     }
   ],
   "verification": {
-    "checked_on": "2026-10-19",
+    "checked_on": "2026-10-27",
     "evidence_paths": [
       "docs/evidence/nodia-ai-ai14-validation.json",
       "docs/evidence/nodia-ai-ai14-postgres-integration.json",
       "docs/evidence/nodia-ai-ai15-postgres-integration.json",
       "docs/evidence/nodia-ai-ai36-c01-validation.json",
       "docs/evidence/nodia-ai-ai36-c04-validation.json",
-      "docs/evidence/nodia-ai-ai36-c05-publication-validation.json"
+      "docs/evidence/nodia-ai-ai36-c05-publication-validation.json",
+      "docs/evidence/api-chat-knowledge-review-r01.json"
     ],
-    "notes": "C05 verifica offline el compilador, schemas reales del primer lote, preservación exacta de67hashes MCP y27contenidos aprobados. La implementación automática por etapas sigue en verificación; SQL, cuenta real, despliegue y aceptación productiva requieren sus evidencias propias. Aprobación null e integración unregistered conservadas para esta ficha; los hechos históricos se mantienen en las entregas enlazadas."
+    "notes": "Revisión de código/contratos candidatos API y preparación documental con originales byte exactos archivados. Código implementado; ensayo SQL, success API chat real, modalidades, imágenes, VM y publicación de esta revisión pendientes. Las evidencias de etapas anteriores conservan su alcance y no califican el modo API nuevo. Aprobación humana pendiente."
   },
   "approval": null
 }
 ---
 
 # Registro de capacidades y acceso a herramientas
+
+## Ampliación API key — 2026-10-27
+
+[Plan92](../../../../mvp/92-nodia-ai-api-chat-parity.md), [ADR-084 propuesto](../../../../architecture/decisions/ADR-084-nodia-ai-api-chat-common-runtime.md) y [paridad API candidata](api-key-chat-parity.md) describen código implementado con ensayo real/VM todavía pendiente. Esta revisión es **draft/partial/unregistered, approval:null**. Los [originales anteriores](../../../../../ops/lab/artifacts/api-chat-parity-r01/catalog.json) conservan sus bytes y aprobaciones históricas; no se revocan ni se sustituyen sus evidencias por un resultado inventado.
+
+API OpenAI/Gemini reutiliza catálogo, ToolGateway, grants, permisos y confirmación comunes. Aplican [contratos41](../../../../mvp/41-nodia-ai-v1-contracts.md) y [política89](../../../../mvp/89-module-access-and-user-data-scope.md): módulo NodiaAI y destinos autorizados, propietario/colaborador y bypass legítimo de super_admin sin omitir invariantes o botón humano. Las acciones históricas de roles no añaden un bloqueo contrario a89. Seleccionar capacidades o escribir «sí» no confirma una propuesta ni ejecuta efectos; revisión/hash, ejecución idempotente y recibos permanecen independientes del modo.
+
+`supports_tools` describe soporte de solicitudes de herramientas; API usa function calling y mantiene `supports_mcp:false`. Configuración/catálogo listos no son health remoto ni éxito de inferencia. Conexión/modelo/esfuerzo son explícitos y dinámicos, sin defaults de modelo ni fallback API↔Agentic. Los tres envíos generativos actuales por run incluyen cada POST API y sus continuaciones, reservados durablemente antes de transmitir; reiniciar o reintentar no devuelve presupuesto.
+
+El ledger HTTP y descriptor privado schema3 distinguen cierre local (`local_transport_closed`) de resultado remoto (`remote_outcome:completed|unknown`); no simulan un proceso nativo cerrado. Timeout/abort/crash no prueban cancelación remota ni coste cero. Conciliación/ACK exigen identidad y cierre local demostrados, sin autoretry de inferencia incierta. Las pruebas y publicación se cierran por separado con [plan91](../../../../mvp/91-ai-provider-onboarding-verification.md), sin aceptar todas las operaciones por un success acotado.
+
+El adaptador API candidato usa el mismo índice autorizado, descubrimiento, selección de capacidades, ToolGateway y grant que Agentic mediante function calling REST. No es MCP nativo ni un invocador de endpoints. Las herramientas de negocio no se duplican y el mismo runtime valida identidad, esquema, contrato, ámbito y permiso actuales antes de consultar o preparar. Los preparadores seguros abren el canal humano, nunca entregan secretos al modelo.
+
+API chat deja de estar excluido por arquitectura: el código común está implementado y su aceptación SQL/proveedor/VM permanece pendiente. Catálogo publicado no significa 151 operaciones API verificadas. La generación activa API puede producir `active_api_generation` en el analizador autorizado con original calificado; esa procedencia no modifica snapshots Agentic anteriores. Esta ficha permanece draft/unregistered, no forma parte de las seis revisiones propuestas para aprobación y no se publica por actualizarla.
+
+## Cortes anteriores conservados
+
+> Las secciones inferiores conservan decisiones, pruebas y estados del corte anterior a esta ampliación API. Sus expresiones «actual», API posterior, permisos por acciones o publicación se leen en su fecha histórica, no como prohibición o aceptación del contrato nuevo. La regla vigente de esta revisión es el bloque API superior; las evidencias originales no se reescriben.
 
 [Producto](../README.md) · [Entrega AI-14](../../../../mvp/60-nodia-ai-ai14-capability-registry.md).
 
@@ -129,7 +160,7 @@ PostgreSQL desechable comprueba dos recorridos representativos, financieros y de
 
 [Entrega82](../../../../mvp/82-nodia-ai-ai36-integral-coverage.md#continuación-ai36-c02--preparación-mcp-de-cuatro-flujos-seguros), [decisión](../../../../architecture/decisions/ADR-061-nodia-ai-mcp-write-preparation.md#extensión-ai36-c02--cuatro-preparadores-del-canal-seguro) y [evidencia](../../../../evidence/nodia-ai-ai36-c02-validation.json). Se añaden contratos/adaptadores candidatos de alta y actualización de API key, login de conexión y logout propio. Mantienen parciales no secretos, revisión CAS, permisos vigentes y propuesta exacta. MCP no recibe secretos/códigos ni descriptores de interacción: el botón humano admite la ejecución y el worker pausa antes de abrir el canal seguro.
 
-Los tres flujos de proveedor exigen Ajustes IA y ai:manage. Cerrar la sesión Nodia actual usa únicamente la autoridad basal NodiaAI y el actor/sesión autenticados; el recurso separado nodia_sessions evita heredar permisos de proveedor. No se puede elegir una sesión ajena. La normalización y mínimos nativos permanecen en sus casos de uso, sin duplicarlos en el chat. Las API keys administran conexiones existentes; esto no habilita inferencia API en NodiaAI.
+Los tres flujos de proveedor exigen Ajustes IA y ai:manage. Cerrar la sesión Nodia actual usa únicamente la autoridad basal NodiaAI y el actor/sesión autenticados; el recurso separado nodia_sessions evita heredar permisos de proveedor. No se puede elegir una sesión ajena. La normalización y mínimos nativos permanecen en sus casos de uso, sin duplicarlos en el chat. En el corte AI36-C02, administrar claves no habilitaba inferencia API en NodiaAI; el adaptador común candidato y sus gates posteriores se describen en la ampliación API superior.
 
 Los 77 preparadores candidatos C01+C02 siguen sin publicar; se conservan67 lecturas/27 fragmentos y las fichas aprobadas. La evidencia distingue pruebas de contratos, SQL aislado y proveedor simulado de autenticación/inferencia real. Rechazar campos secretos no acredita detección semántica de secretos pegados en texto libre. No hay cambios de UI, endpoints, tablas o migraciones; esta ficha permanece draft/unregistered y no habilita herramientas.
 

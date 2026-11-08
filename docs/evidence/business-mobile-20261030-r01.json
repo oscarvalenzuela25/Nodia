@@ -1,0 +1,569 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "scope": "R16 responsive presentation throughout Business, POS, Sales and Reports; no backend or commercial contract change",
+  "status": "implemented_deployed_verified_by_scope",
+  "client_validation": {
+    "tests": {
+      "passed": 2389,
+      "files": 288,
+      "seconds": 186.12
+    },
+    "typecheck": 0,
+    "lint": 0,
+    "build": {
+      "exit": 0,
+      "vite_seconds": 11.99,
+      "known_warning": "api chunk629.68kB >500kB and plugin timing diagnostics; no performance claim"
+    },
+    "offline_operator_invariants": 10
+  },
+  "source": {
+    "paths": 41,
+    "changed": 39,
+    "added": 2,
+    "removed": 0,
+    "inputs": 1253,
+    "fingerprint_sha256": "b1681a64187ba287ace280f8377258e210c89989e50de179f9abc78db7ea1537",
+    "capture_sha256": "40b02f6ddd722e1d3f565e10693eb96cf6910f076f6fe2dc999120cd45431eaa",
+    "source_scope": {
+      "added": [
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/salesReportStyles.ts",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/mobileViewport.ts"
+      ],
+      "changed": [
+        "src/components/BaseModal/BaseModal.tsx",
+        "src/components/BaseModal/styles.ts",
+        "src/components/ConfirmDialog/ConfirmDialog.tsx",
+        "src/components/ConfirmDialog/styles.ts",
+        "src/components/Filter/components/FilterChips/styles.ts",
+        "src/components/Filter/styles.ts",
+        "src/components/QueryErrorAlert/styles.ts",
+        "src/modules/business/components/BusinessMobileCards/BusinessMobileCards.tsx",
+        "src/modules/business/components/BusinessPagination.tsx",
+        "src/modules/business/pages/Business/components/BusinessCollaboratorModal/styles.ts",
+        "src/modules/business/pages/Business/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/InvoicesTab/components/InvoicePreviewModal/InvoicePreviewModal.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/ProductsTab.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductImageModal/ProductImageModal.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductImageModal/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductImageDraft/ProductImageDraft.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductImageDraft/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductModal.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductSalePrice/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProvidersTab/components/ContactModal/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/OpenSaleTabs/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/PosProductCatalog/PosProductCatalog.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SaleLineList/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportFilters/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportRanking/SalesReportRanking.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportRanking/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReports.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesWorkspace.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/salesRecordsStyles.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/styles.ts",
+        "src/modules/business/pages/BusinessDetail/styles.ts",
+        "src/test/modules/business/pages/BusinessDetail/components/InvoicesTab/InvoicePreviewModal.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/InvoicesTab/InvoicesTab.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesRecords.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportRanking/SalesReportRanking.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesWorkspace.test.tsx",
+        "src/translate/en/business.json",
+        "src/translate/es/business.json"
+      ],
+      "outside_authorized_scope": [],
+      "removed": []
+    }
+  },
+  "native_qa": {
+    "engine": "Edge156.0.4314.50 isolated Playwright CLI, touch emulation",
+    "business_layout_views": 40,
+    "business_widths": [
+      320,
+      360,
+      390,
+      430,
+      599,
+      600,
+      768,
+      899,
+      900,
+      1280
+    ],
+    "sales_reports_views": 24,
+    "pos_profiles": 10,
+    "root_layout_horizontal_overflow": 0,
+    "commercial_mutations": 0,
+    "physical_hardware": false,
+    "receipts": [
+      "qa-business-layout.json",
+      "qa-business-forms.json",
+      "qa-pos.json",
+      "qa-products.json",
+      "qa-sales-reports.json"
+    ]
+  },
+  "live_ui": {
+    "schema_version": 1,
+    "kind": "authenticated-live-vm-ui-read-only",
+    "origin": "http://localhost:5174",
+    "business": "Laboratorio Ubuntu (datos sintéticos)",
+    "checks": [
+      {
+        "articles": 5,
+        "overflow": -10,
+        "section": "reports",
+        "tables": 0,
+        "text": true,
+        "viewport": [
+          390,
+          844
+        ]
+      },
+      {
+        "articles": 2,
+        "overflow": -10,
+        "pagerButtons": [
+          44,
+          44
+        ],
+        "section": "sales",
+        "tables": 0,
+        "viewport": [
+          390,
+          844
+        ]
+      },
+      {
+        "buttons": [
+          {
+            "h": 44,
+            "label": "Cerrar",
+            "w": 44
+          },
+          {
+            "h": 44,
+            "label": "Elegir fecha: Desde",
+            "w": 44
+          },
+          {
+            "h": 44,
+            "label": "Elegir fecha: Hasta (incluido)",
+            "w": 44
+          },
+          {
+            "h": 44,
+            "label": "Limpiar filtros",
+            "w": 326
+          },
+          {
+            "h": 44,
+            "label": "Cancelar",
+            "w": 326
+          },
+          {
+            "h": 44,
+            "label": "Filtrar",
+            "w": 326
+          }
+        ],
+        "section": "sales-filter",
+        "width": 358,
+        "x": 16
+      },
+      {
+        "dock": 749.75,
+        "focusedLabel": null,
+        "overflow": -10,
+        "section": "pos-products",
+        "viewport": [
+          390,
+          844
+        ],
+        "visibleInputs": [
+          {
+            "bottom": 442.1875,
+            "label": null,
+            "y": 402.0625
+          },
+          {
+            "bottom": 623.515625,
+            "label": null,
+            "y": 585.515625
+          }
+        ]
+      },
+      {
+        "buttons": [
+          {
+            "h": 84,
+            "label": "Efectivo",
+            "w": 153
+          },
+          {
+            "h": 84,
+            "label": "Débito",
+            "w": 153
+          },
+          {
+            "h": 84,
+            "label": "Crédito",
+            "w": 314
+          },
+          {
+            "h": 84,
+            "label": "Transferencia",
+            "w": 314
+          },
+          {
+            "h": 56,
+            "label": "Confirmar venta",
+            "w": 314
+          }
+        ],
+        "confirmDisabled": true,
+        "overflow": -10,
+        "section": "pos-payment"
+      },
+      {
+        "articles": 8,
+        "overflow": -10,
+        "section": "products",
+        "tables": 0
+      },
+      {
+        "actions": [
+          {
+            "h": 44,
+            "label": "Cerrar",
+            "w": 44
+          },
+          {
+            "h": 44,
+            "label": "Cancelar",
+            "w": 326
+          },
+          {
+            "h": 44,
+            "label": "Guardar",
+            "w": 326
+          }
+        ],
+        "focusedId": "product-barcode",
+        "helpButtons": [
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44
+        ],
+        "paper": {
+          "overflow": 0,
+          "width": 358,
+          "x": 16
+        },
+        "section": "new-product",
+        "viewport": [
+          390,
+          844
+        ]
+      }
+    ],
+    "console_errors": [],
+    "save_confirm_upload_or_inference_actions": 0,
+    "filter_cancelled_without_apply": true,
+    "product_cancelled_without_save": true,
+    "viewport_override_reset": true,
+    "own_tab_5_closed": true,
+    "user_tabs_untouched": true,
+    "limits": [
+      "Mobile viewport in IAB; no physical phone, keyboard or barcode scanner.",
+      "Positive error/retry/pagination/cart recovery covered with isolated synthetic fixtures."
+    ]
+  },
+  "deployment": {
+    "client": "/opt/nodia/releases/nodia-client-business-mobile-20261030-r01",
+    "manifest_sha256": "a22f0170dccb90239aa438f98daedda38076978ed050a3b8bd0a9f1cbb198985",
+    "index_sha256": "c732dd46473ff188906df6099aabb98ce3f9a0b082c58ff3df526f356cf4fbcf",
+    "nginx_sha256": "78b91adc85cc225bf3d3ac19a105669dc0245ac259623101df83bb3929262933",
+    "static_files": 173,
+    "http": {
+      "current_assets": 169,
+      "previous_assets": 51,
+      "protected": [
+        {
+          "route": "/api/v1",
+          "status": 200
+        },
+        {
+          "route": "/api/v1/nodia-ai/connections",
+          "status": 401
+        },
+        {
+          "route": "/api/v1/products",
+          "status": 401
+        }
+      ],
+      "spa": [
+        {
+          "route": "/",
+          "sha256": "c732dd46473ff188906df6099aabb98ce3f9a0b082c58ff3df526f356cf4fbcf",
+          "status": 200
+        },
+        {
+          "route": "/tools/nodia-ai",
+          "sha256": "c732dd46473ff188906df6099aabb98ce3f9a0b082c58ff3df526f356cf4fbcf",
+          "status": 200
+        },
+        {
+          "route": "/tools/business",
+          "sha256": "c732dd46473ff188906df6099aabb98ce3f9a0b082c58ff3df526f356cf4fbcf",
+          "status": 200
+        }
+      ]
+    },
+    "configuration_backup": "/opt/nodia/operations/business-mobile-20261030-r01/client/nginx-before.conf",
+    "previous_release_preserved": true,
+    "nginx_reload_requests": 1,
+    "protected_runtime_unchanged": true,
+    "same_runtime_as_R15": true,
+    "server_restart_migration_sql_auth_inference_requests": 0
+  },
+  "approved_document_integrity": {
+    "documents": 44,
+    "mismatches": 0,
+    "aggregate_sha256": "ed28119a33cf89230c5ecbaef1c371fe21b2f6e709b8c71fdf47ce755dbb3373",
+    "files": [
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/active-invoice-analysis.md",
+        "sha256": "6842a0905033365ebdefa597c36c9e3de8e9208df883985fe9d9b6fd90f400a7"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/businesses-and-collaborators.md",
+        "sha256": "671f85892afd38ac710e00fb02207d7822826fdcc0f0c7726565dcb5e7daa6f1"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/confirmed-business-effects.md",
+        "sha256": "47ae5d238d8815a0643a25700c15e1a6a684430a804f87f3aecc9b6b5e70d9d8"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md",
+        "sha256": "c2e3301a26d81272bd9c72440f92a8e994cfefb539a43f29520e53b38ca5e1ff"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/invoices-and-files.md",
+        "sha256": "7313d14131119ca57e8a8472a9a24343fe2f76fac7fe0801215054c89edc3e11"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/point-of-sale-and-sales.md",
+        "sha256": "95440a9ab70da9ce3acfa4439077011d2c9ea8453cf486b877d4d85829f46211"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/product-logs.md",
+        "sha256": "851e62ea11b212d54edf50a8c445bdf73efe1e0deffc951431665a33cf719ae2"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/products.md",
+        "sha256": "fc22bcd7dc2cab1fe69c83d4440c11c3e06a6b76344620b4dda3d55ce243c0df"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/supplier-contacts.md",
+        "sha256": "554dcb858cd39d34b30af5237aafd733fbc00dd8ebbb27c061cefd3060562744"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/suppliers.md",
+        "sha256": "b0109877c253168b32390a30f29514cf4d39c8c2b46eff5958768e51f182409a"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/actions-and-business-actions.md",
+        "sha256": "c05efe40f9fee14bf9996f9395c0c700a8cc4229000da7a2eb41923ebc5da7f0"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
+        "sha256": "af94d4e2d7004f6fbdcf475f6e49372a9856428c65d2eaa72a55cdc46aa03eb5"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
+        "sha256": "d1d6d0e9cf82ede8a73bb4db01f9e8c200848b0694b808c276d30e1f0e840f1f"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+        "sha256": "6c44a005ce7e8b73273c416e0fb24fb9a880ef9eb82ee7b8de526eb1359a543f"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/confirmed-administration.md",
+        "sha256": "bda80d67cf8fccc06ad4a26d5d60e296ab041c91e13df2e5c2aa91cb4b2f4283"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/confirmed-ai-configuration.md",
+        "sha256": "a2e63fa9692dffd862665db972218d6199e84b4c18253fac17ff781cad2ed24c"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/modules-and-groups.md",
+        "sha256": "8c4458fb045dc4ff4a5e47be3ff1b375ff8bdf0e3bc1d877af8fee32fab1ad6c"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/roles.md",
+        "sha256": "06cb6bf7babed7893123a42f53696a28a156c9bb5d3e31aa8bb70b51fb4f6909"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/secure-ai-interaction.md",
+        "sha256": "34d82697caeecf33d4a8616cb87069cd12299ade15017ca7982351be7c5372e2"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/users.md",
+        "sha256": "a8617b1ab2635798da0d607c47af3c4d2389dbb93595fcd69c7bd89bdfcd9b63"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/accepted-preferences.md",
+        "sha256": "62964211264988e62aa32f06b8ba956beccec14275f31e26d44d6959fa20daa8"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/api-key-chat-parity.md",
+        "sha256": "e60ef90981e3af1380e52d748e32900cc260d099e1532dee97ed0ec1b0a38da8"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+        "sha256": "201dc70bfebb2263722d295413d511e5c196eaa354d98bb10cba5c1fe5d85474"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md",
+        "sha256": "e4a5a64e0ccad3318cf7528dc4d7e07c199a5e696f2c4b373a998c7798da5634"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/image-generation.md",
+        "sha256": "2377c2b2cb4cadc4d76c5ef3f2137e7e2c6857e0e23239eff1bcdef17e635675"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md",
+        "sha256": "ed074df8f77b4f44eac5bcde3e55c270c167bf605b628d43aa32744500098482"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/categories-and-groups.md",
+        "sha256": "5d463297e54867a1e2132a650a6ef479f8fd088b47e9c5286d764d58fb2d0826"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/confirmed-movement-effect.md",
+        "sha256": "d27f52845b5b02815736577366d9559af874281c345a9b9b63f9b29dd5929ddc"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/movements.md",
+        "sha256": "674ccdbd457adc321dbe35ce0ed6a35d5cec20cddf2a590b3f4da15a8ae0af9a"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/obligations.md",
+        "sha256": "3c86175ea8e8f5689952254b4775ae23be89c441fe02b80475fa5d2b96398be8"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/summaries.md",
+        "sha256": "e3540cc2c23686d7d41f09762a8b42f7f3496d81eccf4317ca8552d1a40375e5"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/audit-and-recovery.md",
+        "sha256": "0d379d0948dfad1fa0b9a0892dbd2d6fb3a442a9806c9e302f230898e1dbf396"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/availability-and-calendar.md",
+        "sha256": "95448f5b58cb0b7b6f701f0d20a83d2394aa3635e190b0aa36d941ed7878df72"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/blocks.md",
+        "sha256": "1795ea88e34afdc856a143544426220218ef87be597a21f0c6bce7c4f5451667"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/cancellation-policies.md",
+        "sha256": "0815af692ff10bb58e9e1d15aa6c4a1df94c2ec40f31d7f594e6ab0093e5a84f"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/confirmed-configuration.md",
+        "sha256": "f00421e4c280a42d9f9de24b44b96c0b07c2de2bd29db3d782c3e971541163a4"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/confirmed-money.md",
+        "sha256": "ce730177fe59cf91b336b2b65ea600f23a2eb21e78d841a32a268854a2587ae6"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/confirmed-occupancy-preparation.md",
+        "sha256": "78aabb97b599d462971a9935eb8afe340b6b999b3fe6998c8a7fbf6035a5b35a"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/confirmed-reservation-lifecycle.md",
+        "sha256": "44d21e71f8d6e2afce5cd7a7cb4b3da16b60490a630080eb80c9ce6931fe9353"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/expenses.md",
+        "sha256": "bc5442eb08b65cf01ab3fa4ef6bb5ccce2b15d8434002f1e7801e832bee90765"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/payments-and-refunds.md",
+        "sha256": "75c27849aa84993d66398e675e32a6fba44b06101f7915809280d8329e0b97a5"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/preparation.md",
+        "sha256": "bc6a729fa3565bdc258a058027cbf3324a730cea3fdeea3764758b432cade882"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/properties-and-collaborators.md",
+        "sha256": "379f8962d7f150d84f378ce0e383c73877fa241d9a39ccf34fddd8ae71ff3931"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/reservations.md",
+        "sha256": "705e990e4e2927902372e520eb79ad021928fc194b4416dc3884edfb04efa12f"
+      }
+    ]
+  },
+  "knowledge": {
+    "candidate_business_revision": 34,
+    "candidate_workspace_revision": 4,
+    "document_status": "draft",
+    "integration_status": "unregistered",
+    "approval": null,
+    "new_tools_permissions_publication": false,
+    "controlled_vm_release": "cde7fab20277d8c6a4e670e6df18e886cd72641135a044776cf8889d054213c5",
+    "local_checks": {
+      "context_prepare": 0,
+      "context_build": 0,
+      "knowledge_tests_passed": 58,
+      "knowledge_check": 0,
+      "source_documents": 75,
+      "excluded": 31,
+      "approved": 44,
+      "fragments": 46,
+      "capabilities": 158,
+      "local_authoring_release_id": "fe09db532b7935ba3fd137793ebf5ddb0f7c8ae22ae3a7867540b1d7b98e2b01",
+      "not_deployed_vm_knowledge": true
+    }
+  },
+  "limits": [
+    "Desktop Edge and IAB viewport QA are not physical Safari/Android keyboard, notch or barcode-scanner acceptance.",
+    "Existing calendar day buttons remain30.28x36 at320 and36x36 at600 landscape; navigation40/close36.5. No global WCAG certification or every-control44 claim.",
+    "Tablet/desktop pagination remains40px from600; mobile arrows44px.",
+    "Native root fixture includes intended invoice-preview error; real PDF delivery and image saving are not newly accepted in this visual revision.",
+    "No commercial writes or inference requested during live UI checks.",
+    "Local knowledge rebuild does not deploy a Server/KB release."
+  ],
+  "historical_attempts": [
+    "HMR intermediate stale styles module required restart of isolated Vite; final fresh QA supersedes transient errors.",
+    "First suite exposed2 invoice-title assertions; updated to require generic heading plus the same invoice code; final2389PASS.",
+    "One early build began after a capture command with the wrong working directory failed; it was never packaged. Final build used a separate output after exclusive successful capture."
+  ],
+  "final_source_check": {
+    "utf8_lf_no_bom": 48,
+    "scoped_git_diff_check": 0,
+    "unrelated_files_untouched": true
+  },
+  "artifact_catalog": {
+    "path": "ops/lab/artifacts/business-mobile-20261030-r01/client/catalog.json",
+    "sha256": "41c5d85f41543499e8fd4380fc7ccc56c1f7328dd73ed0ae73b4718f08960eba",
+    "entries": 38
+  }
+}

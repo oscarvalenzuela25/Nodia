@@ -25,10 +25,9 @@ globalThis.fetch = async function (input, init) {
 try {
   const native = new GeminiService();
   const engines = await native.getDualEngineStatus(AbortSignal.timeout(15000));
-  const web = await native.getModelsAndQuota('web', AbortSignal.timeout(15000));
   const agentic = await native.getModelsAndQuota('agentic', AbortSignal.timeout(15000));
   const shape = (value) => ({ available: typeof value?.available === 'boolean' ? value.available : null, authenticated: typeof value?.authenticated === 'boolean' ? value.authenticated : null, model_count: Array.isArray(value?.models) ? value.models.length : null });
-  const report = { task: 'AI-15', scope: 'native_gemini_observations_without_generation', provider_inferences: 0, configured_database_modified: false, native_requests: requests, engines: engines ? { web: shape(engines.web), agentic: shape(engines.agentic) } : null, web: shape(web), agentic: shape(agentic), configured_url_trailing_slash_removed_in_driver: true };
+  const report = { task: 'AI-15', scope: 'native_gemini_observations_without_generation', provider_inferences: 0, configured_database_modified: false, native_requests: requests, engines: engines ? { agentic: shape(engines.agentic) } : null, agentic: shape(agentic), configured_url_trailing_slash_removed_in_driver: true };
   if (process.env.NODIA_AI_LAB_REPORT_JSON) fs.writeFileSync(process.env.NODIA_AI_LAB_REPORT_JSON, JSON.stringify(report, null, 2));
   console.log(JSON.stringify(report, null, 2));
 } finally { globalThis.fetch = nativeFetch; }

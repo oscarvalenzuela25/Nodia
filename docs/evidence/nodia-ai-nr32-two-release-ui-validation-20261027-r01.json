@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-10-27T03:45:08.746679+00:00",
+  "status": "passed_scoped_real_two_release_API_Client_UI_fixture",
+  "scope": "NR32 FinanceCreate: incompatible A contract is blocked, B requires a fresh human review, historical A reads remain authorized and immutable.",
+  "environment": {
+    "API_Client": "real compiled releases on loopback 127.0.0.1:15443",
+    "database": "one disposable PostgreSQL fixture ai44",
+    "identity_exception": "Google identity verification fixture only; real LoginUC, cookie, refresh, AuthGuard and Client store handshake",
+    "OAuth_real": false,
+    "SDK_calls": 0,
+    "configured_database_used": false,
+    "operational_services_changed": false
+  },
+  "releases": {
+    "A": {
+      "manifest_sha256": "d3278defeea5326e684f8a266b1d0fd2cef54cd79b0aaaad6815ed347d501bcc",
+      "contract_hash": "63b080f395a438b59b7384de849b7c407335690c839664e87d4794a7800fd88d"
+    },
+    "B_original": {
+      "manifest_sha256": "938d35c7eb99ed4109629786b70a18bbdad02a2b7b31500dbd4e96374686674c",
+      "contract_hash": "1bbe75ab1eabe4b4c36c913c9c75947ed074a6027d0e3df42fe41a89a143ce5f"
+    },
+    "B_historical_read_fix": {
+      "manifest_sha256": "11abb1faae471cef7a3f3ed386fddae1fc9537717b19c899332b7796dde0ea79",
+      "knowledge_release_id": "a878aa85643f769582417a6affa3c13fe73f00db94884b0bebc016105a7d72dc",
+      "same_B_private_contract": true
+    },
+    "Client": {
+      "manifest_sha256": "14aa3bad801ccb906f06f0f8a8311f4325d385a74d9ec86ceb0802925fe0c20b",
+      "source_changed": false
+    }
+  },
+  "actual_checks": {
+    "A_ready_no_confirmation": {
+      "proposal_id": "d397b916-5204-4e69-87bb-f5aa60546c6f",
+      "revision": 1,
+      "hash": "c922055ebd61fdafdaf1b921c6aaf5b79627fc3796777774756ae650a12c80cf",
+      "amount": "21000"
+    },
+    "B_rejection": "Both real challenge and confirm UCs rejected with nodia_ai:catalog_changed while A proposal and challenge were still valid; see raw validity proof. No A pending execution was created.",
+    "B_new_human_review": {
+      "proposal_id": "c08711e4-5027-4d59-a2d5-fb0751998b70",
+      "revision": 2,
+      "hash": "89cab714b95caa26bb6fa1bed3399f23000ee649d6ef9f4319af0327cc5f3089",
+      "amount": "22000",
+      "state": "completed",
+      "movement_id": "2"
+    },
+    "historical_A": {
+      "proposal_id": "b2b33f09-ab10-4c6b-8460-7bbca5c1518a",
+      "hash": "61d209c9daf9974b3accda5e20298babdbb16651b8b7e37c421e716a4745f023",
+      "execution_id": "c937c17b-5f6e-4a29-bc5d-8bb4b58786de",
+      "receipt_state": "completed",
+      "result_refs": [
+        {
+          "resource_key": "finance_movements",
+          "id": "1"
+        }
+      ],
+      "can_resume": false
+    },
+    "historical_pending_A": {
+      "proposal_id": "d397b916-5204-4e69-87bb-f5aa60546c6f",
+      "hash": "c922055ebd61fdafdaf1b921c6aaf5b79627fc3796777774756ae650a12c80cf",
+      "state": "expired",
+      "read_only": true,
+      "confirmation_available": false,
+      "editable_fields": []
+    },
+    "historical_UI_observation_by_root": {
+      "history": "First activity -> confirmed A proposal hash61d209, amount17000 -> completed receipt Movement1, no resume.",
+      "pending": "Second activity -> expired A proposal hashc922, amount21000, no Confirm/Edit; values preserved.",
+      "receipt_visible_screenshot": "nr32-r04-a-history-receipt-visible.png",
+      "screenshot_limits": "Readonly-under-B viewport alone does not prove all fields or controls; control observations are Root AX/UI observations plus actual read metadata."
+    },
+    "final": {
+      "status": "NR32_fixture_final_readonly_and_owned_cleanup_passed",
+      "final_readonly_status": {
+        "lane": "B",
+        "chat": "399e1308-b65d-469c-99fe-b6a916e7cb9c",
+        "contract_hash": "1bbe75ab1eabe4b4c36c913c9c75947ed074a6027d0e3df42fe41a89a143ce5f",
+        "catalog_version": "nodia-ai-ai19-finance-effect/nr32-fixture-2",
+        "old_proposal": "d397b916-5204-4e69-87bb-f5aa60546c6f",
+        "new_proposal": "c08711e4-5027-4d59-a2d5-fb0751998b70",
+        "new_revision": 2,
+        "new_hash": "89cab714b95caa26bb6fa1bed3399f23000ee649d6ef9f4319af0327cc5f3089",
+        "new_amount": "22000",
+        "old_rejected": true,
+        "historical_hash_unchanged": true,
+        "old_preview_unchanged": true,
+        "effects": 2,
+        "executions": [
+          {
+            "id": "c937c17b-5f6e-4a29-bc5d-8bb4b58786de",
+            "state": "completed",
+            "origin_proposal_id": "b2b33f09-ab10-4c6b-8460-7bbca5c1518a"
+          },
+          {
+            "id": "92e85b40-16a4-441c-a50d-16307fe4711e",
+            "state": "completed",
+            "origin_proposal_id": "c08711e4-5027-4d59-a2d5-fb0751998b70"
+          }
+        ],
+        "quiet": {
+          "jobs": 0,
+          "slots": 0
+        },
+        "blocked_external_IO_attempts": 0,
+        "actual_provider_calls": 0
+      },
+      "owned_API_stopped": true,
+      "owned_listener_absent": true,
+      "owned_PG_container_absent": true,
+      "owned_anonymous_volume_absent": true,
+      "configured_database_used": false,
+      "operational_services_changed": false,
+      "SDK_calls": 0,
+      "reseed_or_TTL_changes": 0
+    },
+    "source_fix_validation": {
+      "path": "docs/evidence/nodia-ai-nr32-historical-read-validation-20261027-r01.json",
+      "sha256": "cb44d568d3326d19d2af1b38bf2089f1fec1226c4dceedef716e2abc0b5213c8",
+      "focal_tests_passed": 276,
+      "suites": 6
+    }
+  },
+  "limits": [
+    "Two effects are real but confined to the disposable PG: historical A Movement1 and explicitly reviewed B Movement2. There are zero operational DB writes or AI provider calls.",
+    "A pending naturally expired during the product fix. Expired UI presentation is not used as evidence of incompatibility; earlier non-expired SQL/UC proof is preserved separately.",
+    "Assistant presentation messages are explicitly labeled fixture messages, linked to genuine proposal/run records; no inferred provider output or fake completion event was seeded.",
+    "Historical read compatibility is opt-in for FinanceCreate only. Other incompatible families without a historical authority port fail closed.",
+    "No claim of production hot-release acceptance, real OAuth, all-family compatibility or global NodiaAI completion."
+  ],
+  "receipts": [
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nodia-ai-six-nr32-build.json",
+      "sha256": "06bff1589b582fe5c7bf16bd77b106a2f2b02e4e8451866d3f8c36a66a11fe0e",
+      "bytes": 812
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nr32-DI-B-preflight.json",
+      "sha256": "5f5ee7a6feb53e35af0310ff4432e6f5e9c3906550636ec79145f1b1c6231f21",
+      "bytes": 703
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nr32-coherent-B-compiler-r05.json",
+      "sha256": "6d2bb8176b2245911ce3e2f791da2facc7bc09a13dff7f9bf5663ce82c54f617",
+      "bytes": 1616
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nr32-r04-ready-A.json",
+      "sha256": "6a3f5c95823fd82920865b10bdd407f5d6b373530b1088db8525258e8e94360e",
+      "bytes": 829
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nr32-r04-B-ready-proof.json",
+      "sha256": "b0486f9ea2b249f249594efd18bc496e16f22abe36e1b19501c61f171ca6fbac",
+      "bytes": 1982
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nr32-r04-history-presentation.json",
+      "sha256": "e7c0039f87e115cc144bbd1d163d5f4af08f97b58eac33c286ef5e71949e730d",
+      "bytes": 961
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nr32-history-build.json",
+      "sha256": "248e1d27205ae2464830a7f6094f23ce909cb4de99f7cb6218dfd009732be53f",
+      "bytes": 3277
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nr32-history-handoff.json",
+      "sha256": "8886bcfbe24882019a44e8de7f9f09ef0fd88264c4b7cdf7e5b57afad2a8502f",
+      "bytes": 1316
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nr32-r04-final-owned-cleanup.json",
+      "sha256": "feddbec9bd6b101a53d029d340c2f910a4b874fe908028983b1a2980e916d9c9",
+      "bytes": 1269
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nr32-r04-a-ready.png",
+      "sha256": "6c0a24a5667c91f8b1debc213f48b5db061a28e8ec2a897a5b6e1d281d30128e",
+      "bytes": 75952
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nr32-r04-b-completed.png",
+      "sha256": "7d4181af363be95cfcc4b23b0e5f7aed212b991c4a839d75823230eb8f5452a4",
+      "bytes": 77738
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nr32-r04-a-history-under-b.png",
+      "sha256": "3166cc36ef4372ecfeaf5bdd05837bd96a051e652c3ffd781db39dc880c32816",
+      "bytes": 83623
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nr32-r04-a-readonly-under-b.png",
+      "sha256": "377180769d1a0989038ba7b8293effb9660924e11101a76c3edbdf1f958dd583",
+      "bytes": 83576
+    },
+    {
+      "path": "ops/lab/artifacts/nr32-two-release-ui-verification-r01/receipts/nr32-r04-a-history-receipt-visible.png",
+      "sha256": "da5ed24ef950a39cf256060454183f6872e7e231e0f1362d1d1e49b14c5e87ea",
+      "bytes": 78818
+    }
+  ]
+}

@@ -1,4 +1,7 @@
-import type { ReportSourceDefinition } from './report-source.types.js';
+import type {
+  ReportSourceDefinition,
+  ReportValueType,
+} from './report-source.types.js';
 
 export type ReportScalar = string | number | boolean | null;
 export interface ReportPredicate {
@@ -32,6 +35,8 @@ export interface ReportSourceRequest {
     output_key: string;
   }[];
   group_by?: { dimension_key: string; output_key: string }[];
+  /** Only selected output keys; Server maps these to trusted aggregate/dimension expressions. */
+  order_by?: { output_key: string; direction: 'asc' | 'desc' }[];
 }
 export interface CompileReportInput {
   request: unknown;
@@ -68,4 +73,11 @@ export interface CompiledReportQuery {
   pageLimit: number;
   groupKeys: string[];
   groupTypes: string[];
+  omittedTotalKeys?: string[];
+  cursorOrder: {
+    key: string;
+    type: ReportValueType | 'aggregate_integer' | 'aggregate_decimal';
+    direction: 'asc' | 'desc';
+    aggregate: boolean;
+  }[];
 }

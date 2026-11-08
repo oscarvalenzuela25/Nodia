@@ -4,31 +4,81 @@
   "document_id": "reservations.confirmed-configuration",
   "product_id": "reservations",
   "kind": "feature",
-  "revision": 1,
-  "document_status": "draft",
+  "revision": 2,
+  "document_status": "approved",
   "implementation": {
-    "status": "implemented",
-    "notes": "AI-24 implementa y verifica en laboratorio privado seis puertos internos de configuración de casas, colaboradores y políticas, con confirmación exacta y recibos atómicos. SQL/HTTP/worker, recuperación y activación comprobados; preparadores MCP sin publicar y aceptación de escrituras Gemini pendiente."
+    "status": "partial",
+    "notes": "AI36-C05 publica sólo la sección adicional enumerada bajo autorización humana específica; los apartados previos conservan su fecha y alcance. Contratos internos y publicación no prueban despliegue, inferencia o aceptación productiva."
   },
-  "integration_status": "unregistered",
+  "integration_status": "published",
   "maintainer": "Mantenimiento de Reservas y NodiaAI conforme AGENTS",
   "sources": [
-    { "path": "docs/mvp/28-rental-reservations-contracts.md", "kind": "specification" },
-    { "path": "docs/mvp/41-nodia-ai-v1-contracts.md", "kind": "specification" },
-    { "path": "docs/mvp/70-nodia-ai-ai24-rental-configuration.md", "kind": "specification" },
-    { "path": "nodia-server/src/rental-property/use-case/create-rental-property.use-case.ts", "kind": "implementation" },
-    { "path": "nodia-server/src/rental-property/use-case/update-rental-property.use-case.ts", "kind": "implementation" },
-    { "path": "nodia-server/src/rental-collaborator/use-case/create-rental-collaborator.use-case.ts", "kind": "implementation" },
-    { "path": "nodia-server/src/rental-collaborator/use-case/update-rental-collaborator.use-case.ts", "kind": "implementation" },
-    { "path": "nodia-server/src/rental-cancellation-policy/use-case/create-rental-cancellation-policy.use-case.ts", "kind": "implementation" },
-    { "path": "nodia-server/src/rental-cancellation-policy/use-case/update-rental-cancellation-policy.use-case.ts", "kind": "implementation" }
+    {
+      "path": "docs/mvp/28-rental-reservations-contracts.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/mvp/41-nodia-ai-v1-contracts.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/mvp/70-nodia-ai-ai24-rental-configuration.md",
+      "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/rental-property/use-case/create-rental-property.use-case.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/rental-property/use-case/update-rental-property.use-case.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/rental-collaborator/use-case/create-rental-collaborator.use-case.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/rental-collaborator/use-case/update-rental-collaborator.use-case.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/rental-cancellation-policy/use-case/create-rental-cancellation-policy.use-case.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/rental-cancellation-policy/use-case/update-rental-cancellation-policy.use-case.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-rental-configuration/use-case/build-nodia-ai-rental-configuration-operations.use-case.ts",
+      "kind": "implementation"
+    }
   ],
   "verification": {
-    "checked_on": "2026-10-17",
-    "evidence_paths": ["docs/mvp/70-nodia-ai-ai24-rental-configuration.md", "docs/evidence/nodia-ai-ai24-ui-validation.json", "docs/evidence/nodia-ai-ai24-postgresql.json", "docs/evidence/nodia-ai-ai24-regressions.json", "docs/evidence/nodia-ai-ai24-lab-activation.json", "docs/evidence/nodia-ai-ai24-deployed-equality.json", "docs/evidence/nodia-ai-ai24-lab-runtime.json", "docs/evidence/nodia-ai-ai24-knowledge-validation.json"],
-    "notes": "Server2418/191, Client1441/202 y focal178/5;227 comprobaciones SQL/HTTP/procesos (36 nuevas y191 de regresión), tipado/lint/build y QA sintético ES/EN/móvil. Laboratorio privado activo con25 migraciones/18 tablas NodiaAI/241 columnas,32 ejecutores y0 pendientes; sin esquema nuevo. La ficha sigue draft/unregistered y excluida del bundle; verificación interna no acredita publicación MCP, escritura Gemini o aprobación humana."
+    "checked_on": "2026-10-24",
+    "evidence_paths": [
+      "docs/mvp/70-nodia-ai-ai24-rental-configuration.md",
+      "docs/evidence/nodia-ai-ai24-ui-validation.json",
+      "docs/evidence/nodia-ai-ai24-postgresql.json",
+      "docs/evidence/nodia-ai-ai24-regressions.json",
+      "docs/evidence/nodia-ai-ai24-lab-activation.json",
+      "docs/evidence/nodia-ai-ai24-deployed-equality.json",
+      "docs/evidence/nodia-ai-ai24-lab-runtime.json",
+      "docs/evidence/nodia-ai-ai24-knowledge-validation.json",
+      "docs/evidence/nodia-ai-ai36-c01-validation.json",
+      "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json"
+    ],
+    "notes": "Publicación offline con builders nativos y schemas cerrados. El fragmento adicional es el único alcance nuevo; no equivale a cuenta real ni a una aceptación de todos sus efectos."
   },
-  "approval": null
+  "approval": {
+    "reference": "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-authorization.md",
+    "revision": 2,
+    "content_sha256": "aaff4faef3781885961e5548111a58ce30a0451d6f01cff3a6cd3a2d55845475"
+  }
 }
 ---
 
@@ -103,3 +153,18 @@ La ficha permanece draft/unregistered y approval null; no tiene binding publicad
 | Revisión | Cambio y fuentes | Herramientas/contexto y compatibilidad |
 |---|---|---|
 | 1 | AI-24: seis operaciones de configuración con escritores nativos y recibos | Ficha nueva draft excluida; cuerpos aprobados de lectura intactos. Cambios materiales de contrato/precondiciones invalidan propuestas incompatibles antes del efecto. |
+
+## Reservas: configuración publicada en AI36-C05
+
+Este fragmento añade sólo estas preparaciones publicadas:
+
+- `nodia_rental_cancellation_policies_prepare_create`
+- `nodia_rental_cancellation_policies_prepare_update`
+- `nodia_rental_collaborators_prepare_create`
+- `nodia_rental_collaborators_prepare_update`
+- `nodia_rental_properties_prepare_create`
+- `nodia_rental_properties_prepare_update`
+
+Cada herramienta recibe un partial cerrado, devuelve mínimos faltantes o propuesta revisable y permite continuar sólo con draft_id/revisión CAS exactos. No aplica el cambio de dominio. Consulta las referencias reales; nunca inventes IDs o enlaces. Sólo el botón humano sobre revisión/hash exactos admite la ejecución y su recibo nativo. No se aceptan SQL, comandos arbitrarios, secretos ni bulk/importación. Confirmar/iniciar/completar/cancelar, pagar/anular y aprobar preparación conservan sus reglas y permisos nativos. No son eliminaciones físicas ni revierten automáticamente dinero u ocupación.
+
+El backend exige NodiaAI y cada módulo/acción de destino vigentes, reautoriza al ejecutar y conserva recuperación/idempotencia. Publicación, selección del intento, disponibilidad, despliegue y aceptación real son estados distintos. Los apartados anteriores son históricos y no amplían este lote.

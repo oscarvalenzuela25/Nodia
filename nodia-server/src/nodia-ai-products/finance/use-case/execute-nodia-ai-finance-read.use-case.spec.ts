@@ -122,7 +122,7 @@ function fixture() {
       isSuperAdmin: false,
       modules: [],
     },
-    moduleRoutes: ['/tools/finances-personal'],
+    moduleRoutes: ['/finances-personal'],
   };
   const family = createNodiaAiFinanceReadFamily(ports);
   const registry = new NodiaAiToolRegistryUseCase([family], 'test-v1');
@@ -181,7 +181,7 @@ describe('ExecuteNodiaAiFinanceReadUseCase', () => {
   it('exports exactly the eleven catalog reads with closed schemas', () => {
     const { family, registry } = fixture();
     expect(family.capabilities).toHaveLength(11);
-    expect(registry.list(['/tools/finances-personal'])).toHaveLength(11);
+    expect(registry.list(['/finances-personal'])).toHaveLength(11);
     for (const registration of family.capabilities) {
       expect(registration.capabilityId).toBe(registration.toolName);
       expect(

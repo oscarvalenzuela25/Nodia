@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "recorded_on": "2026-10-25",
+  "status": "explicit_human_authorization_recorded",
+  "source": "User reply relayed by the root agent in this same conversation",
+  "exact_human_reply": "Aprobar C03 para publicación y prueba en VM",
+  "scope": {
+    "proposal": {
+      "path": "docs/evidence/nodia-ai-ai36-c03-publication-proposal-r01.json",
+      "sha256": "9e5018cc938a7b4713176d1ca2b977d1a73b3fdb426c043fe749e72d85966fa8"
+    },
+    "document_id": "businesses.active-invoice-analysis",
+    "revision": 3,
+    "document_content_sha256": "9fe8459c3831be7458a92b5636c50f0c6989b3a94019dff2a4f42bb24661098d",
+    "selected_section": "Uso del análisis en la generación activa",
+    "selected_fragment_sha256": "630d1c3bf37ca49a1999351507c00aa6ce24ea3783f673d98ceaccd4a569d4e5",
+    "tool_id": "nodia_invoices_analyze",
+    "kind": "analyze_attachment",
+    "actions": [
+      "prepare",
+      "complete"
+    ],
+    "original_image_or_PDF_bytes_maximum": 10485760,
+    "business_effects": false,
+    "registry_additions": {
+      "capabilities": 1,
+      "bindings": 1
+    },
+    "VM_publication_and_acceptance_test_authorized": true
+  },
+  "does_not_approve": [
+    "Other documents, implementation plans or ADRs",
+    "General Web inference acceptance",
+    "Unverified provider/model/format scopes",
+    "Business record writes or implicit confirmations",
+    "Production deployment or global AI-36/C05 closure"
+  ],
+  "execution_scope_of_this_record": {
+    "authoring_only": true,
+    "VM_changes": false,
+    "provider_generations": 0,
+    "exact_prior_capabilities_preserved": 150,
+    "exact_prior_bindings_preserved": 41
+  }
+}

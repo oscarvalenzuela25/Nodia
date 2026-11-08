@@ -1,5 +1,6 @@
 import { Box, Button, TableContainer, TablePagination } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
+import { TABLE_PANEL_RADIUS } from "../../../../theme/tablePanel";
 
 export const TableTopBar = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -27,10 +28,7 @@ export const CreateButton = styled(Button)(({ theme }) => ({
 export const TablePanel = styled(Box)(({ theme }) => ({
   position: "relative",
   border: `1px solid ${theme.palette.border?.default ?? theme.palette.divider}`,
-  borderRadius:
-    typeof theme.shape.borderRadius === "number"
-      ? theme.shape.borderRadius * 2
-      : theme.shape.borderRadius,
+  borderRadius: TABLE_PANEL_RADIUS,
   overflow: "hidden",
   backgroundColor: theme.palette.background.paper,
   boxShadow: theme.shadows[2],

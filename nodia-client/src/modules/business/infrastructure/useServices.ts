@@ -2,6 +2,7 @@ import { businessKeys, productKeys, providerKeys, invoiceKeys, productLogKeys, n
 export { businessKeys, productKeys, providerKeys, invoiceKeys, productLogKeys } from "./queryKeys";
 import useAuth from "../../../hooks/useAuth";
 import { claimHttpErrorNotification, getHttpErrorMessage } from "../../../config/httpFeedback";
+import { invoiceAiAnalysisMessageKey } from "./invoiceAiFailure";
 import type { AxiosError } from "axios";
 import {
   keepPreviousData,
@@ -29,6 +30,7 @@ import {
   verifyIaProviders,
   createInvoiceWithFile,
   getProducts,
+  getProductAvailability,
   createProduct,
   updateProduct,
   bulkCreateProducts,
@@ -84,8 +86,7 @@ export const useCreateBusiness = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -112,8 +113,7 @@ export const useUpdateBusiness = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -143,8 +143,7 @@ export const useAssignCollaborators = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -174,6 +173,11 @@ export const useProducts = (
   });
 };
 
+export const useProductAvailability = (businessId: string) => {
+  const { isSessionActive } = useAuth();
+  return useQuery({ queryKey: [...productKeys.all, "availability", businessId], queryFn: () => getProductAvailability(businessId), enabled: isSessionActive && Boolean(businessId) });
+};
+
 export const useCreateProduct = () => {
   const queryClient = useQueryClient();
 
@@ -188,8 +192,7 @@ export const useCreateProduct = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -217,8 +220,7 @@ export const useUpdateProduct = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -243,8 +245,7 @@ export const useBulkCreateProducts = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -269,8 +270,7 @@ export const useBulkUpdateProducts = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -314,8 +314,7 @@ export const useCreateProvider = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -343,8 +342,7 @@ export const useUpdateProvider = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -369,8 +367,7 @@ export const useBulkCreateProviders = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -395,8 +392,7 @@ export const useBulkUpdateProviders = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -436,8 +432,7 @@ export const useCreateInvoice = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -464,8 +459,7 @@ export const useUpdateInvoice = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -479,17 +473,19 @@ export const useAnalyzeInvoice = () => {
     retry: false,
     mutationFn: (params: import("./types").AnalyzeInvoiceParams) =>
       analyzeInvoice(params),
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
+      if (variables.signal?.aborted || variables.isCurrent?.() === false) return;
       sileo.success({
         title: i18n.t("business:invoice_analyzed_success", {
           count: data.data?.items?.length || 0,
         }),
       });
     },
-    onError: (error: AxiosError<{ message?: string; error?: string }>) => {
+    onError: (error: AxiosError<{ message?: string; error?: string }>, variables) => {
+      if (variables.signal?.aborted || variables.isCurrent?.() === false) return;
       if (!claimHttpErrorNotification(error)) return;
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
+      const runtimeMessage = invoiceAiAnalysisMessageKey(error);
       const status = error.response?.status;
 
       let title = i18n.t("core:server_error_toast");
@@ -502,18 +498,19 @@ export const useAnalyzeInvoice = () => {
       sileo.error({
         title,
         description:
-          serverMessage || i18n.t("business:ai_service_error_generic"),
+          runtimeMessage ? i18n.t(runtimeMessage) : serverMessage || i18n.t("business:ai_service_error_generic"),
       });
     },
   });
 };
 
-export const useVerifyIaProviders = (options?: { enabled?: boolean }) => {
+export const useVerifyIaProviders = (options?: { enabled?: boolean; mode?: import("./types").InvoiceAiConnectionMode }) => {
   const { isSessionActive } = useAuth();
 
   return useQuery({
-    queryKey: ["invoice", "verify-ia-providers"],
-    queryFn: () => verifyIaProviders(),
+    queryKey: ["invoice", "verify-ia-providers", options?.mode ?? null],
+    queryFn: () => verifyIaProviders(options?.mode),
+    placeholderData: keepPreviousData,
     enabled: isSessionActive && (options?.enabled ?? true),
     staleTime: 30000,
     refetchOnWindowFocus: false,
@@ -533,8 +530,7 @@ export const useCreateInvoiceWithFile = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("core:server_error_toast"),
         description: serverMessage,
@@ -578,8 +574,7 @@ export const useExportProductsCsv = () => {
     mutationFn: (params?: { business_id?: string; lang?: string }) =>
       exportProductsCsv(params),
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("business:download_error"),
         description: serverMessage,
@@ -611,8 +606,7 @@ export const useExportProvidersCsv = () => {
       exportProvidersCsv(params),
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
       if (!claimHttpErrorNotification(error)) return;
-      const serverMessage =
-        error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = getHttpErrorMessage(error);
       sileo.error({
         title: i18n.t("business:download_error"),
         description: serverMessage || i18n.t('core:server_error_toast'),

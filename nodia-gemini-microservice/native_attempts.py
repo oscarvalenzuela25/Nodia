@@ -27,6 +27,7 @@ class NativeAttemptProof(ReconcileAttempt):
     input_digest: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     schema_version: Literal[1] = 1
     attempt_id: str = Field(pattern=r"^[0-9a-f-]{36}$")
+    # Historical Web proofs remain readable; new dispatches are Agentic only.
     engine: Literal["web", "agentic"]
     state: Literal["dispatch_armed", "completed", "abandoned_unknown"]
     process_closed: bool
@@ -89,6 +90,8 @@ class NativeAttemptLedger:
                 os.close(descriptor)
 
     def arm(self, attempt_id: str, engine: str, request: ReconcileAttempt, input_digest: str | None = None) -> NativeAttemptProof:
+        if engine != "agentic":
+            raise ServiceError("invalid_engine", "Unsupported execution mode.", 422)
         if self.read(attempt_id) is not None:
             raise ServiceError("attempt_already_dispatched", "El intento ya fue admitido; no se reenviará.", 409)
         proof = NativeAttemptProof(attempt_id=attempt_id, engine=engine, state="dispatch_armed",

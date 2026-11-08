@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "verification_date": "2026-10-25",
+  "status": "original_attachment_discovery_prompt_fix_adopted_functional_acceptance_separate",
+  "scope": "Exact three-path Server runtime change in the local Linux VM; no C03 inference or functional acceptance by this adoption.",
+  "sources": {
+    "artifact_directory": "ops/lab/artifacts/c03-original-read-adoption-verification-r01",
+    "catalog": "ops/lab/artifacts/c03-original-read-adoption-verification-r01/catalog.json",
+    "catalog_sha256": "5b9407e7096e4f57c67315961cd147c0b12cab7680a79a55ecaed189e7e78a09",
+    "generator": "ops/lab/artifacts/c03-original-read-adoption-verification-r01/consolidate-r01.py",
+    "captured_receipts_not_live_state": true
+  },
+  "release_transition": {
+    "source": "/opt/nodia/releases/nodia-server-ai36-c03-publication-r01",
+    "target": "/opt/nodia/releases/nodia-server-ai36-c03-original-read-r01",
+    "source_manifest_sha256": "dbacaab63ab521b6e6ad3eb89c8c8c1c2f1968ae098c61ee70c016ef127e7ccf",
+    "target_manifest_sha256": "6efb78af9a4e610be55337ef8b8b3cb5007f283cef32c81061fc32807edf2ee6",
+    "plan_sha256": "7bf1a30326d8621e787b20e0cc018c87e579ee06cc77ad6a53c19da4143edce4",
+    "operator_sha256": "7bbc5fb8a6840c45688660107a925dfd5144115ffd2e3d316e00dc7379ab2eec",
+    "delta": [
+      {
+        "old_sha256": "2dd37cb113a334b505bcbbb4e6590bf7268aaf0676ced245f454365e551d0dbe",
+        "path": "dist/nodia-ai-context/use-case/build-nodia-ai-context.use-case.js",
+        "sha256": "ea06aa36badbca7a3a8c1c9c9ee7acfd384d4d2cae28a4aebc0ca0b61fcdc7dd"
+      },
+      {
+        "old_sha256": "4b5e455307f379359240b1da33436244e119b50b3758f2a77b4581735881a5a1",
+        "path": "dist/nodia-ai-context/use-case/build-nodia-ai-context.use-case.js.map",
+        "sha256": "7b81871faf9830bba7f274312260288f45ee2c5ba1f35176dcc07f4763b5f7cf"
+      },
+      {
+        "old_sha256": "866cc8dfae0f0d8f4eb3c0cfb7ac432e43d441438b256de0758cadf0ed1d4b2c",
+        "path": "src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts",
+        "sha256": "24339ee88a280011b7f54893ffe625d0d21bb455b900eff2506ba29f5549d859"
+      }
+    ],
+    "served_Client_unchanged": "/opt/nodia/releases/nodia-client-core-fx04-pagination-r07",
+    "new_capabilities": [],
+    "node_modules_copied": false,
+    "secrets_copied": false
+  },
+  "behavior_change": "Discovery prompt now instructs reading current original attachments before selecting/finalizing. Native original-document proof, execution-stage prepare/complete, authority and budgets remain unchanged.",
+  "publication_preserved": {
+    "knowledge_release": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+    "capabilities": 151,
+    "fragments": 42,
+    "approved_documents": 40,
+    "C03_revision": 3,
+    "C03_content_sha256": "9fe8459c3831be7458a92b5636c50f0c6989b3a94019dff2a4f42bb24661098d",
+    "new_approval_required_or_claimed": false,
+    "knowledge_build_performed": false
+  },
+  "validation": {
+    "implementation_lane_reported": {
+      "schema_version": 1,
+      "source": "Root relay of implementation lane results, 2026-10-25; no additional durable raw log supplied.",
+      "scope": "Implementation-only unit/type/lint/transpilation verification, distinct from captured Linux preparation and adoption checks.",
+      "reported_focused_tests_passed": 39,
+      "reported_TDD_initial_failures": 3,
+      "reported_typecheck": "passed",
+      "reported_focused_lint": "passed",
+      "reported_TypeScript_emit": "completed",
+      "independent_raw_log_captured_here": false,
+      "tests_rerun_for_evidence": false
+    },
+    "captured_compiled_Linux_probe": {
+      "status": "compiled_context_cases_passed",
+      "cases": 9,
+      "release": "/opt/nodia/releases/nodia-server-ai36-c03-original-read-r01",
+      "SQL_calls": 0,
+      "provider_generations": 0,
+      "executed_uid": 10000,
+      "knowledge_release": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd"
+    },
+    "captured_Linux_operator_tests": {
+      "passed": 8,
+      "skipped": 0,
+      "source": "adopt-linux-tests-r02.txt",
+      "sha256": "74202dc09a3347400de94f86db7081b0c92ff6270bca74570c143aa53888e576"
+    }
+  },
+  "preserved": {
+    "SQL_table_projections": 61,
+    "SQL_counts_hashes_schema_exact": true,
+    "schema_sha256": "82753ec54d69006d2850dd62173093c03086e43a37af62e2a3dba1c5da5b4b87",
+    "SQL_quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "Gemini_epoch_and_native_quiet": {
+      "epoch": {
+        "id": "b4375ef639fd03c5955abe5c7c6c491908d8fe4e0a0aa28e5cd162e17d11442c",
+        "image": "sha256:8320b3cbaee7a2f49fe845481e5f07bcb5d72c82684909bab408ece9711b1b1d",
+        "started_at": "2026-10-25T17:45:34.206184136Z",
+        "descriptor_sha256": "ba195f645283c86b4d7fb202bb2470fe939510309a54ea255bf00f34369fdaec"
+      },
+      "quiet": {
+        "attempt_receipts": 0,
+        "unknown_markers": 0,
+        "temporary_directories": 0,
+        "active_native_processes": 0
+      }
+    },
+    "Codex_metadata": {
+      "profile_absent": false,
+      "pending": 0,
+      "locks_or_sockets": 0,
+      "records": 3,
+      "sdk_arg0_links": 0,
+      "sdk_binary": null
+    },
+    "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "nginx_sha256": "7c573a1b96d135598a90dacce9d6d5e0e5858b2252b6de21a5b0b2e6d00ed366",
+    "unrelated_services": {
+      "nodia-keyring": {
+        "active": "active",
+        "sub": "running",
+        "pid": 3630841,
+        "working_directory": ""
+      },
+      "nginx": {
+        "active": "active",
+        "sub": "running",
+        "pid": 3630787,
+        "working_directory": ""
+      },
+      "nodia-gemini-lab": {
+        "active": "active",
+        "sub": "exited",
+        "pid": 0,
+        "working_directory": "/opt/nodia/nodia-gemini-microservice"
+      }
+    },
+    "consumers": {
+      "nodia-api": {
+        "active": "active",
+        "sub": "running",
+        "pid": 114303,
+        "working_directory": "/opt/nodia/releases/nodia-server-ai36-c03-original-read-r01",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+        "argv_exact_match": true
+      },
+      "nodia-ai-worker": {
+        "active": "active",
+        "sub": "running",
+        "pid": 114304,
+        "working_directory": "/opt/nodia/releases/nodia-server-ai36-c03-original-read-r01",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+        "argv_exact_match": true
+      }
+    },
+    "original_C03_chat_projection_exact_except_release_coordinates": true,
+    "timers_restored": true
+  },
+  "fresh_encrypted_backup": {
+    "schema_version": 1,
+    "operation": "backup",
+    "backup_id": "ba4786e8-c385-475c-a3e8-c98d57f3ce79",
+    "status": "ready",
+    "captured_at": "2026-10-25T19:52:08.590Z",
+    "expires_at": "2026-11-01T19:52:08.590Z",
+    "cipher_bytes": 1363145,
+    "cipher_sha256": "6bba1dd0f8f57b82f3f34a75f7fde7c9e57636490211344623ea40f67121d4bf",
+    "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+    "journal_sequence": 1,
+    "rotated": {
+      "removed": 0,
+      "pending_recovered": 0,
+      "retained": 35
+    }
+  },
+  "side_effects": {
+    "provider_generations": 0,
+    "business_SQL_writes": 0,
+    "SQL_restores": 0,
+    "migrations": 0,
+    "automatic_replay": false,
+    "changed_descriptors": [
+      "/etc/systemd/system/nodia-api.service.d/zz-ai38-journal.conf",
+      "/etc/systemd/system/nodia-ai-worker.service.d/zz-ai38-journal.conf",
+      "/etc/nodia-ai-recovery/backup-runner.env"
+    ]
+  },
+  "limits": [
+    "Preparation, Linux probes and adoption are separate from the subsequent authenticated PNG/PDF analyzer turn.",
+    "The original uncertain PDF run remains failed/outcome_unknown with its one dispatch and no prepare/complete; it was not replayed.",
+    "39 focused implementation tests/typecheck/lint/emit are reported by the implementation lane; no additional raw log is fabricated or tests rerun for this receipt.",
+    "Nine compiled Linux cases at uid10000 and eight Linux operator cases are captured, with zero skips for the operator cases.",
+    "61 SQL projections include runtime and ordering; auth_sessions is explicitly excluded. No R2 document-byte comparison or global database identity is claimed.",
+    "Frozen publication assets/manifest are preserved; independent full npm build reproduction from the changing monorepo/documentation is not claimed.",
+    "Prepared package metadata deployment_performed:false records its creation stage; adoption is evidenced by the later captured operator result and consumer coordinates.",
+    "No new approval, Web availability, C03 functional acceptance, AI-36/C05 or AI-38 completion, Windows/API/other-account/production acceptance."
+  ]
+}

@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "task_date": "2026-11-06",
+  "scope": "real_authenticated_VM_manual_invoice_Gemini_cancellation_QA",
+  "result": "partial_reanalysis_blocked",
+  "runtime": {
+    "client": "R30",
+    "server": "R11",
+    "native": "R12"
+  },
+  "selection_observed": {
+    "connection": "Laboratorio Ubuntu gemini",
+    "mode": "agentic",
+    "model": "gemini-3.8-flash-high"
+  },
+  "ui_checks": {
+    "busy": {
+      "file": false,
+      "supplier": false,
+      "ai": false,
+      "mode": false,
+      "analyze": false,
+      "cancel": true
+    },
+    "afterCancel": {
+      "sameImage": true,
+      "file": true,
+      "supplier": true,
+      "ai": true,
+      "mode": true,
+      "analyze": true
+    },
+    "afterSecond": {
+      "sameImage": true,
+      "fileEnabled": true,
+      "supplierEnabled": true,
+      "aiEnabled": true,
+      "modeEnabled": true,
+      "analyzeEnabled": false
+    },
+    "firstCorrelation": "20431d05-c61c-417e-b423-eef8877e91ab",
+    "secondCorrelation": "0ef35b8f-c437-488b-a4da-ebcdcfad3ee0"
+  },
+  "principal_analysis_POST_count": 2,
+  "intent1": {
+    "provider_dispatch_observed": true,
+    "cancel_elapsed_seconds_UI": 41,
+    "transport_aborted": true,
+    "local_CLI_cleanup_observed": true,
+    "profile_quarantined_after_release": true,
+    "remote_stop_proven": false
+  },
+  "intent2": {
+    "explicit_new_user_authorized_intent": true,
+    "analysis_http_status": 502,
+    "native_rejection": "runtime_busy",
+    "new_CLI_started": false,
+    "observation_reservation_401_then_auth_renewal": true,
+    "inference_auto_retry": false
+  },
+  "pending": [
+    "Identified manual OCR reconciliation and close proof before safe profile recovery",
+    "Specific error presentation distinguishing quarantine from authentication failure",
+    "Successful same-file reanalysis after safe recovery"
+  ],
+  "effects": {
+    "invoice_or_products_saved": false,
+    "profile_quarantine_cleared": false,
+    "account_reconnected": false,
+    "deployment": false,
+    "provider_mode_model_changed": false
+  },
+  "limits": [
+    "No completed extraction or monetary correctness acceptance",
+    "No remote cancellation ACK",
+    "No Teacher V1 acceptance",
+    "No adoption or knowledge publication"
+  ],
+  "artifacts": [
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/browser/gemini-cancelled.png",
+      "bytes": 71770,
+      "sha256": "cfd6c5b3cdb04c39de94e66ed30222a5a6b747287d766f77b1ba2e05ab451bcf"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/browser/gemini-reanalysis-blocked.png",
+      "bytes": 69984,
+      "sha256": "f989e7e879cdf2c62b46ba7dcffadeb953a662f009b346828a1c12256fa4c7a5"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/browser/gemini-running.png",
+      "bytes": 65464,
+      "sha256": "f64d7b6e32e46b0b8f33ff9109c265e68a519efed1c369a338bb37f1d282e358"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/browser/network-metadata.json",
+      "bytes": 11759,
+      "sha256": "4033541e603edb7cf97e90ba968bdc0212db9e36836ceff57156e55f95bac4d0"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/browser/ui-checks.json",
+      "bytes": 582,
+      "sha256": "68d8c81435fb3dddc2d7d8fb781ed3fbc9d3594d381a6c56b3cbfbbfa4ade1fe"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/factura-sintetica.png",
+      "bytes": 35264,
+      "sha256": "0f2f4039f1a9af07dd094ca4416297633f92b6299b194bf23d2c00d4bd7e6f49"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/runtime-readonly/after-intent2.json",
+      "bytes": 4038,
+      "sha256": "e3f828ca846f66d1c97b8fd19ab6ad605743b5354d011cb6a95831c5dbea255b"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/runtime-readonly/baseline.json",
+      "bytes": 2839,
+      "sha256": "39552a65aedbf3fe62cbaa1feba58f10b2064710d1e2405cfce11af950528006"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/runtime-readonly/during-intent1.json",
+      "bytes": 4306,
+      "sha256": "5b55cf543a01680cf62f979c05782c7f156c643641233d6925f5725320e19c4b"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/runtime-readonly/intent1-boundary-r02.json",
+      "bytes": 4593,
+      "sha256": "0a622062e7818d2391bb291e73a20f4e4ca26786d956542546c42339cf41249c"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/runtime-readonly/observe-readonly.py",
+      "bytes": 3078,
+      "sha256": "a75800796f4349d9e021c5f50db765efd115e78857bb8eb4d508bb2b309eddaf"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/runtime-readonly/observer-report-r01.json",
+      "bytes": 2283,
+      "sha256": "d6b93a1769c27effbddf2e7136483ef5dd9cbf82dde7b418df686d6e14388a85"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/runtime-readonly/observer-report-r02.json",
+      "bytes": 5046,
+      "sha256": "5c16761c3faf5349f082b99208b0ca00eba8eed63d3a9035636baec915c8d6fa"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-cancellation-qa-20261106-r01/runtime-readonly/post-cancel-admission.json",
+      "bytes": 4593,
+      "sha256": "33c7ecdd75bf1e6286d419e30e6047de303d76fd4cf6781d6a8cc7afc5d5173e"
+    }
+  ],
+  "documentation_check": {
+    "command": "npm run knowledge:check",
+    "exit_code": 0,
+    "sources": 81,
+    "excluded": 37,
+    "approved_documents": 44,
+    "fragments": 46,
+    "approval_or_publication": false
+  },
+  "documentation_sources": [
+    {
+      "path": "docs/mvp/README.md",
+      "sha256": "747cecf337cc7d2f7259ca4fee1c6ba40a162ba3d32dca212bed2c5a5aa0d19c"
+    },
+    {
+      "path": "docs/mvp/00-progress.md",
+      "sha256": "47df8a3a913d54c51fda62e5e66cbe76c1d1c0ee8fba205073a3d00d9b5bc960"
+    },
+    {
+      "path": "docs/mvp/94-business-point-of-sale-and-product-refactor.md",
+      "sha256": "0e8d47857de6ff9401a0ce174a18ba34e7c8a3293398e54aad1570495467ff87"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/product-price-calculator-and-invoice-binding.md",
+      "sha256": "a0acce319e0ca548b53b12425f0ba41eb7283b6f54e75b54e0aa0024a1b01ce3"
+    }
+  ]
+}

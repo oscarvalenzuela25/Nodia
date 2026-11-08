@@ -1,0 +1,898 @@
+{
+  "schema": "teacher-V1-VM-process-evidence/1",
+  "checked_on": "2026-11-03",
+  "status": "operational_scope_and_final_recovery_passed",
+  "document_approval": null,
+  "knowledge_publication": false,
+  "product_V1_accepted": false,
+  "scope": {
+    "session_id": "ddf4eb65-89ad-4363-a837-fea2be50a443",
+    "actor_user_id": "1",
+    "provider": "gemini",
+    "mode": "agentic",
+    "connection_id": "2",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high",
+    "selection_values_are_observed_not_defaults": true,
+    "organization": "topics",
+    "real_authenticated_UI": true
+  },
+  "normal_Worker": {
+    "purpose": "plan_outline",
+    "job_id": "351be6d4-e9b8-439f-bb95-671c5051ab83",
+    "state": "ready",
+    "operation_id": "fbfa529f-899a-4d0f-8d05-4b6a1d168d89",
+    "remote_outcome": "completed",
+    "phase": "closed",
+    "SQL_ACK": true,
+    "Native_ACK": true,
+    "dispatches_used": 1,
+    "dispatch_limit": 1,
+    "started_exchanges": 1,
+    "worker_PID": 323408,
+    "same_services_after_read": true,
+    "response_sha256": "60b1b121d52cb5fa9d08e2e0d9305cb028050dc218b920f8b32d7359143b559c",
+    "proof_sha256": "fa8a159cdfe2c2383f2ac1591b98fd884384ca19ceb52698dc2bbef22f1ae392",
+    "attempt_started_at": "2026-11-03T23:02:32.018175+00:00",
+    "attempt_ended_at": "2026-11-03T23:03:29.962895+00:00",
+    "runtime_cut": "NativeR10_ServerR02_prior120s"
+  },
+  "SDK_source": {
+    "assets_hash": "fe412d1059c2f9ac9d8637cc90b2007c72a664175f73b5246a27ebf6e7e7ccfa",
+    "provider_POSTs": 1,
+    "upstream_status": 200,
+    "FINISH_DONE": true,
+    "owned_child_closed": true,
+    "sdk_stop_reason_preserved": "MAX_MODEL_CALLS_EXCEEDED",
+    "native_failure": null,
+    "original_CLI_internal_POST_counter_rewritten": false
+  },
+  "UI_operator_observations": {
+    "source": "Root authenticated browser observations, reported in this task",
+    "draft_created": true,
+    "selection_saved": true,
+    "one_plan_proposal_requested": true,
+    "plan_visible_after_reload": true,
+    "plan_objectives": 2,
+    "plan_units": 2,
+    "manual_title_revision_saved": true,
+    "plan_accepted_and_session_active": true,
+    "learning_packet_requested_once": true,
+    "learning_packet_outcome": "unknown_closed_both_ACK_cli_timeout",
+    "stale_UI_observed": true,
+    "polling_bug_diagnosed": false
+  },
+  "history": {
+    "previous_R10_canary_still_valid": true,
+    "previous_timeout_not_replayed": true,
+    "previous_unknown_records_preserved": 7,
+    "unknowns_reclassified_as_success": 0,
+    "new_intention_is_separate_plan_outline": true,
+    "source_code_changes_for_this_success": 0
+  },
+  "acceptance_remaining": [],
+  "source_receipts": [
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/plan-worker-readonly.json",
+      "sha256": "8e0d31a22d7b9547062db51ff175e647cff31bdf9d0d0049ef08f6c368e4fd56",
+      "bytes": 1939,
+      "original_path": ".tmp/teacher-vm-session-readonly-20261103-r01.json",
+      "exact_original_bytes": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/plan-sdk-diagnostic.json",
+      "sha256": "e439baee3e799270ca1de66a98ca81d9b5d106b40717117ab896526c6645efb3",
+      "bytes": 2130,
+      "original_path": ".tmp/teacher-vm-plan-sdk-diagnostic-20261103-r01.json",
+      "exact_original_bytes": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/gemini-packet-terminal-readonly.json",
+      "sha256": "4c2b6d3168bc7e3d4e4078d76bfce53d9376e480d021f1e1ac023f9c67da4717",
+      "bytes": 3240,
+      "original_path": ".tmp/teacher-vm-gemini-packet-readonly-20261103-r01.json",
+      "exact_original_bytes": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/gemini-packet-sdk-diagnostic.json",
+      "sha256": "dc4cf2e7c694d0e7ea1efcbca6968ee448ace76747422f19b2ec46325a450a4a",
+      "bytes": 1626,
+      "original_path": ".tmp/teacher-vm-packet-sdk-diagnostic-20261103-r01.json",
+      "exact_original_bytes": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/codex-assessment-ready-readonly.json",
+      "sha256": "8a55472861028712f7989f17819f447a636ea1a2c9d5775198ccf0ad8f3621e5",
+      "bytes": 3280,
+      "original_path": ".tmp/teacher-vm-codex-assessment-readonly-20261103-r02.json",
+      "exact_original_bytes": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/budget300-local-delivery.json",
+      "sha256": "170f9580cc366602d3cf61561c8d452ef791d049e65d4df62a9a1a49ae7a0bc4",
+      "bytes": 3421,
+      "original_path": ".tmp/teacher-budget300-delivery-20261103-r01.json",
+      "exact_original_bytes": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/budget300-native-suite.log",
+      "sha256": "eead6f14bbe00cf534ce4b7405ea541bf5654c70cf6102372a92ab4f41ace94e",
+      "bytes": 291212,
+      "original_path": ".tmp/teacher-native-suite-budget300-20261103-r01.log",
+      "exact_original_bytes": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/native-r11-server-r03-adoption-receipt.json",
+      "sha256": "1b477e789a22fb8fcc23b68c2e421c12a716938c6e3663063216d950a0fa7b97",
+      "bytes": 3257,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/teacher-gemini-r11-qualify.json",
+      "sha256": "ab20085eba81e475d9c557e3346ab218129ec1c2b7ff282f604b0ac585d88a05",
+      "bytes": 6255,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/qualification-r11-qualified-resume.json",
+      "sha256": "2d52d3d67f29aa30c6ecca82fc11c1e588405d2e4b349776e16b58f10fc2fd4b",
+      "bytes": 123,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/configuration-helpers-r11-r01-stage.json",
+      "sha256": "92707be8a27147d4e0cf2643b68a420b797a7760a680fb9573a59919182c4672",
+      "bytes": 926,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/qualification-r11-qualified-resume-r02.json",
+      "sha256": "dfe1cfc23ecec8c10870e79e96310035c0bd2d74434ed8fdd6b90560061fdbab",
+      "bytes": 1452,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/sdk-r11-qualified-diagnostic.json",
+      "sha256": "9514196bd7585538c9f8788fedf9926636ce5759ffb9ba061d5069ca83c947ab",
+      "bytes": 2129,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/configuration-helpers-r11-r02-stage.json",
+      "sha256": "69bd1fc42dd370dbf950cf92c88a451919c2f1adf1abd5624fe4babdd419e123",
+      "bytes": 693,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/pre-r11-duplicate-cipher-retired.json",
+      "sha256": "3ad2fec55837e1d32fcc870a2408cb757ba22843f27f9c34389282b6c67a741a",
+      "bytes": 996,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/teacher-gemini-r11-real-material-summary-agent.json",
+      "sha256": "5747cc3b2166248f5740a1c23c1c234dc72f6235cd43695d02bd5a8305c4edb2",
+      "bytes": 1764,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/teacher-gemini-r11-material-final-observer-agent.json",
+      "sha256": "53d61d253f7069d8ee8c8637d1479cdf755b2e8e37f4ec97a507160ec9a37e7f",
+      "bytes": 6749,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/sdk-r11-material-final-diagnostic-agent.json",
+      "sha256": "f144587ad37d360f1e7d47496515c08995b0e35fd345adefca3e8a4643fa120a",
+      "bytes": 2129,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/configuration-helpers-r11-r03-stage.json",
+      "sha256": "01f93c93ebdac18edfdc40fb003a23b9df7b6d8d8c5da7e71e438a5032f97b18",
+      "bytes": 696,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/configuration-helpers-r11-r04-stage.json",
+      "sha256": "7d0faa026dbd71dc0510fbe8f6b2edd1cc9518b1c4b8f2ce1d743c7dc9f71b2d",
+      "bytes": 596,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/client-r03-ui-verification.json",
+      "sha256": "ecc718f4b3e5a37a9c4faf0a2daa28dc7372b2cbf5b2a062857f52078920e13d",
+      "bytes": 1833,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/client-r03-final-operator-bindings.json",
+      "sha256": "3f7c548bf25401b71da1305fd100433cb186ac6942716a2ceb8b67cb23afad5d",
+      "bytes": 1539,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/teacher-codex-r03-current-eligibility-summary-agent.json",
+      "sha256": "d2f11da16e4bb4dd3fa7595f71741e8f5ae3cfab352dccf58199fa591bbabeb7",
+      "bytes": 2674,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/chat-gemini-r11-probe.json",
+      "sha256": "4333fdb2d85aab75e56ff4d56a510f700e0b765fce78d6312d0d7ba11e5156b1",
+      "bytes": 647,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/chat-r04-worker-resumed.json",
+      "sha256": "6523490ba06614fdb4ee2a3d6b4d8ca2a7841df7b9155498ab7ac187daad1661",
+      "bytes": 250,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/chat-openai-r11-observe-r02.json",
+      "sha256": "596d870ad162063e30ec15fd6b9b6c23e6c76ef150a22e6c53910af7c4917f59",
+      "bytes": 601,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/final-configuration-r11-r05-preparation.json",
+      "sha256": "d7f5a260f73fa493637aa91c68e27579abcb2638337d496ca63645ec47c40cc5",
+      "bytes": 2135,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/backups/final-database-r03-receipt.json",
+      "sha256": "3878b4649a1e194dc2ec7d2d3999ea7f2b8edcee289f9059413ca778c48653f7",
+      "bytes": 1941,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/backups/final-database-r03-restore-verified.json",
+      "sha256": "9dd34327b9b5562bede7719bba94babddddd38bb16e8cd1905b45c96502bd748",
+      "bytes": 9624,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/backups/final-database-r03-restore-independent-summary.json",
+      "sha256": "ba1726a26dbef16000f85bbc82172450925edcdb0f8bcee51721329b144409ed",
+      "bytes": 1644,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/final-configuration-r11-r06-preflight.json",
+      "sha256": "1a90f0ad2ca5fd682d29032f19da8962a3eb813c66226df75bf68fd3c23a170d",
+      "bytes": 403,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/final-configuration-r11-r07-preparation.json",
+      "sha256": "e0f65a2cda61da2f1bb928428357077eb9de4d1948e642c7565a2a51567e1cf8",
+      "bytes": 2135,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/final-configuration-r11-r07-preflight.json",
+      "sha256": "5552c5a471ff6ce0789e0d3ba46870fa28ac5c119ba97aa71cb947842acbdaed",
+      "bytes": 10782,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/candidate/final-recovery-r11-r07/delivery.json",
+      "sha256": "51f172f48751137cdeeb54896f4f8c70a18f92c1098cdba5884c5aebe731e8f0",
+      "bytes": 715,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/knowledge-validation-r02.json",
+      "sha256": "b8dbace8cfeca6c68ecbad381d4abda6b48f7bddcd9407919302969798ba343f",
+      "bytes": 522,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/final-configuration-r11-r07-capture.json",
+      "sha256": "cd77eecaac21ebb12ed95ee45048e2350c700ccfc075b97a205bc45074d326e3",
+      "bytes": 261,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/backups/final-r11-configuration-receipt.json",
+      "sha256": "e14fd70009b810e0b404ff062d31d66cb790cac436050fa398c2dba80c05470b",
+      "bytes": 121538,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/backups/final-r11-configuration-local-verified.json",
+      "sha256": "4d67421a6ede026ac257ebc83988158186f17b77f4e7540b0d09e57e3a75150b",
+      "bytes": 967,
+      "already_durable_root_receipt": true
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/knowledge-validation-r03.json",
+      "sha256": "ea497bcbab113431fbf061112210aa5b8593b88d158047db5be2611908a3f39a",
+      "bytes": 522,
+      "already_durable_root_receipt": true
+    }
+  ],
+  "limits": [
+    "A completed plan_outline proves this exact Gemini text selection and normal Worker path; it does not prove all resources or other selections.",
+    "The prior normal setup_reply timeout remains unknown. The concrete cause was not established.",
+    "The full product journey and final recovery are still in progress. No document approval or knowledge publication is inferred.",
+    "Lesson save/pause/reload/resume reused the same three-block packet at dispatch count4; exact viewport scroll or anchor restoration was not visually verified."
+  ],
+  "Gemini_learning_packet": {
+    "job_id": "2edd6e78-e26c-47f8-ae79-8b4615f68887",
+    "operation_id": "5a79a417-1352-4581-be14-fb79433ae5cb",
+    "state": "unknown",
+    "remote_outcome": "unknown",
+    "phase": "closed",
+    "error_code": "provider_outcome_unknown",
+    "SQL_ACK": true,
+    "Native_ACK": true,
+    "dispatches_used": 1,
+    "response_sha256": null,
+    "proof_sha256": "42bdbd6fb937032f5bafa47a10aeabde3617b531c31e95f2e4fbbe53255c7ed2",
+    "SDK_phase": "reserved",
+    "SDK_terminal": null,
+    "Native_failure": {
+      "stage": "lifecycle",
+      "code": "cli_timeout",
+      "exit_code": null
+    },
+    "provider_POSTs": null,
+    "original_job_replayed": false,
+    "concrete_timeout_cause_established": false,
+    "material_published": false,
+    "explicit_new_generation_requested_after_unknown": true,
+    "new_generation_source": "Historical R10 explicit new intent; its outcome remains preserved separately. Current R11 material success is current_runtime.normal_Gemini_learning_packet.",
+    "runtime_cut": "NativeR10_ServerR02_prior120s"
+  },
+  "second_journey_operator_observation": {
+    "source": "Root authenticated browser observations reported in this task",
+    "session_id": "ffb6f108-ca29-4221-a784-2d8a874e8aa5",
+    "provider": "openai",
+    "mode": "agentic",
+    "connection_id": "1",
+    "model_id": "gpt-6.1-sol",
+    "effort_id": "medium",
+    "selection_chosen_explicitly_for_separate_session": true,
+    "hidden_Gemini_fallback": false,
+    "organization": "days",
+    "language": "en",
+    "plan_ready_and_accepted": true,
+    "direct_final_without_lesson_requested_once": true,
+    "assessment_outcome": "ready_closed_both_ACK",
+    "assessment_questions": 12,
+    "single_choice_questions": 6,
+    "completion_questions": 4,
+    "short_answer_questions": 2,
+    "answer_keys_visible_before_submission": false,
+    "draft_answer_saved_pause_reload_resume_verified": true,
+    "generations_before_and_after_pause": 2,
+    "assessment_submitted_once": true,
+    "some_answers_deliberately_unsure_for_remediation_path": true,
+    "grade": "completed_Server_grade",
+    "question_11_written_feedback": "ready",
+    "question_1_draft_preserved": true,
+    "earned_points": 12,
+    "possible_points": 40,
+    "score_percent": 30,
+    "section_result": "needs_reinforcement",
+    "reinforcement_theory_navigation": true,
+    "learning_packet_requested_once_after_final": true,
+    "learning_packet_outcome": "ready_in_UI",
+    "learning_packet_blocks": 3,
+    "learning_packet_generations_before_practice": 4,
+    "lesson_reader_cursor_save_and_pause_performed": true,
+    "lesson_cursor_return_attestation": "same_saved_three_block_packet_and_dispatch_count4_after_reload_resume",
+    "practice": {
+      "responses_submitted_individually": 5,
+      "immediate_feedback_observed": true,
+      "written_feedback_pending_then_ready": true,
+      "finalized": true,
+      "earned_points": 14,
+      "possible_points": 14,
+      "Server_status": "practice_graded",
+      "dispatches_after_practice": 5,
+      "prior_final_earned_points_preserved": 12,
+      "prior_final_possible_points_preserved": 40,
+      "practice_score_not_added_to_final": true,
+      "answers_or_feedback_text_stored_in_technical_evidence": false
+    },
+    "lesson_saved_reading_cursor_UI_success": true,
+    "lesson_packet_continuity_verified": true,
+    "lesson_viewport_scroll_or_anchor_restore_verified": false,
+    "runtime_cut": "NativeR10_ServerR02_prior120s"
+  },
+  "Codex_normal_Worker": [
+    {
+      "purpose": "plan_outline",
+      "job_id": "0d83d24a-686f-4a1f-934b-44731e56a28f",
+      "state": "ready",
+      "dispatches_used": 1,
+      "operation_id": "5ef3725a-7e26-471d-bfc2-185d11cd92b9",
+      "remote_outcome": "completed",
+      "phase": "closed",
+      "SQL_ACK": true,
+      "Native_ACK": true,
+      "response_sha256": "8eb2faf115dedbf0a00272515a3ea4043aeec55161e80aab87509a0d30aabef4",
+      "proof_sha256": "3b4c185800991714c62ef69abd382b47a64eeae2c9461da46526acfe0e4e3a35"
+    },
+    {
+      "purpose": "assessment_only",
+      "job_id": "2d3581e4-08c7-4fd2-b3b4-775072dcfea9",
+      "state": "ready",
+      "dispatches_used": 1,
+      "operation_id": "b6d5ba8a-dd73-461f-8eb8-b8bddd027925",
+      "remote_outcome": "completed",
+      "phase": "closed",
+      "SQL_ACK": true,
+      "Native_ACK": true,
+      "response_sha256": "885158f10901c354e26eea09254690b61c6240ab755557753af711750b78530e",
+      "proof_sha256": "26c903def566b6edd19063d0ed39e8cdf725c2151f22805e480e8f2db806f7b2"
+    }
+  ],
+  "content_review": {
+    "source": "Root authenticated UI review of the actual Codex assessment, not a synthetic fixture",
+    "scope": "eight visible items observed from an actual12-item arithmetic assessment; arithmetic and visible explanations were coherent in that sample",
+    "questions_reviewed": 8,
+    "single_choice": 6,
+    "completion": 4,
+    "short_answer": 2,
+    "arithmetic_consistency_reviewed": true,
+    "pre_submission_answer_key_hidden": true,
+    "reviewed_answers_or_keys_stored_in_technical_evidence": false,
+    "pedagogical_effectiveness_or_psychometric_validation_claimed": false,
+    "Gemini_learning_material_reviewed": true,
+    "question_numbers_reviewed": [
+      1,
+      2,
+      3,
+      6,
+      7,
+      8,
+      11,
+      12
+    ],
+    "assessment_total_questions": 12,
+    "distribution_is_UI_verified_not_quality_review_of_all_items": true,
+    "Codex_lesson_blocks_reviewed": 3,
+    "Codex_lesson_total_blocks": 3,
+    "Codex_practice_items_reviewed": 5,
+    "Codex_practice_total_items": 5,
+    "visible_theory_examples_and_practice_coherent_in_observed_sample": true,
+    "Gemini_material_review": {
+      "blocks_reviewed": 4,
+      "quiz_questions_reviewed": 1,
+      "quiz_total_questions": 5,
+      "status": "accepted_core_with_limitations",
+      "core_hierarchy_and_cache_concepts_coherent": true,
+      "live_DNS_lookup_performed": false,
+      "limitations": [
+        "Illustrative names should use reserved example domains; the observed material used a translated example name that is not itself reserved.",
+        "The referral chain is a simplified uncached case; cached answers and aliases can change the steps.",
+        "Caching does not guarantee a literally instantaneous answer."
+      ],
+      "primary_sources": [
+        {
+          "title": "RFC1034 — Domain Names: Concepts and Facilities",
+          "url": "https://www.rfc-editor.org/rfc/rfc1034.html"
+        },
+        {
+          "title": "IANA — Example Domains",
+          "url": "https://www.iana.org/help/example-domains"
+        }
+      ],
+      "raw_lesson_text_answers_keys_and_example_addresses_stored": false,
+      "universal_future_content_quality_claimed": false
+    }
+  },
+  "authorized_timeout_change": {
+    "authorized_on": "2026-11-03",
+    "explicit_human_authorization": true,
+    "maximum_seconds_by_purpose": {
+      "learning_packet": 300,
+      "assessment_only": 300,
+      "all_other_purposes": 120
+    },
+    "queue_seconds_unchanged": 300,
+    "job_seconds_unchanged": 600,
+    "effective_deadline": "minimum_of_purpose_budget_and_existing_caller_and_job_deadlines",
+    "provider_POST_limit_unchanged": 1,
+    "retries": 0,
+    "model_or_effort_changed": false,
+    "prior_jobs_extended_or_replayed": false,
+    "implementation_status": "implemented_locally_and_verified",
+    "VM_adoption_status": "adopted_Native_R11_Server_R03",
+    "tradeoff": "slot/profile may remain occupied up to300seconds for these two purposes",
+    "local_checks": {
+      "Native_full": {
+        "tests": 614,
+        "passed": 604,
+        "skipped": 10,
+        "exit": 0
+      },
+      "Server_focal": {
+        "tests": 32,
+        "files": 4,
+        "exit": 0
+      },
+      "Server_production_typecheck": {
+        "exit": 0
+      },
+      "Server_scoped_lint": {
+        "exit": 0
+      },
+      "workspace_including_unrelated_test_fixtures_typecheck": {
+        "exit": 1,
+        "global_success_claimed": false
+      }
+    }
+  },
+  "technical_draft_archives": {
+    "source": "Root authenticated UI observations; existing per-session archive use cases",
+    "status": "six_exact_owned_technical_drafts_archived",
+    "session_ids": [
+      "d2e0fddc-6198-403d-a938-fa0314f5d89f",
+      "55ccee2a-eabf-4c8e-ad8f-caa22dbdba48",
+      "280e4b5f-2186-4fa6-bcd0-20140dd3799a",
+      "129c0f93-b3e2-4e45-a722-780f628a17fc",
+      "82ca9a92-12db-4fb5-8ae2-62883e61a612",
+      "ae8948dd-5406-4aa0-bfe4-ee4c54aef691"
+    ],
+    "R10_ready_qualification_and_unknown_history_still_visible": true,
+    "new_provider_requests_from_archives": 0,
+    "standalone_R03_operator": "staged_unused",
+    "standalone_R03_archive_intents_created": 0,
+    "new_R11_canary_archived_after_closed_success": true
+  },
+  "recovery_phase": {
+    "before_R11_Server_R03": "actual_DB_and_configuration_backup_local_GCM_restore_passed",
+    "POST_final_backup_started": true,
+    "local_restore_GCM_gate": "final_DB_and_configuration_passed",
+    "configuration_uses_prepared_R10_R01_184control_config_r07": "9b4c494cbaf214316aa4e5f0e98a95deae77be53415e13f78948b6e13ab54ab6",
+    "adoption": "Native_R11_Server_R03_Client_R03_adopted_actual",
+    "original_intent_consumer_reconciliation": "R02_passed_no_new_canary_or_inference",
+    "final_backup_runner_R03_binding": "exact_one_path_CAS_applied_preserving_all_other_bytes",
+    "final_DB_operation": "one_canonical_start_completed_download_GCM_full_restore_passed",
+    "final_CFG": "R07_one_capture_completed_original_runtime_restored_stable30_and_timers_local_copies_full_GCM_passed",
+    "final_DB_prestart_failures": {
+      "count": 2,
+      "canonical_starts": 0,
+      "first": "immutable_public_Server_R03_hardlinks_rejected_by_old_operator_guard",
+      "second": "historical_owner_reader_did_not_admit_R03_root",
+      "original_receipts_and_configs_preserved": true,
+      "runtime_Server_sources_not_modified": true
+    },
+    "final_DB_restore": {
+      "tables": 94,
+      "migrations": 43,
+      "raw_rows_equal": true,
+      "sequences_equal": true,
+      "foreign_keys_equal": true,
+      "CHECK_constraints_semantically_reparsed_equal": 22,
+      "legacy_schema_text_equal": false,
+      "full_GCM_before_restore": true,
+      "four_owned_local_resources_independently_absent": true,
+      "provider_requests": 0
+    },
+    "configuration_local_copy_verified_separately_from_original_receipt": true,
+    "configuration_full_GCM": {
+      "source_receipt_sha256": "e14fd70009b810e0b404ff062d31d66cb790cac436050fa398c2dba80c05470b",
+      "proof_sha256": "4d67421a6ede026ac257ebc83988158186f17b77f4e7540b0d09e57e3a75150b",
+      "both_ciphertexts_verified": true,
+      "original_phase_preserved": "post",
+      "private_key_exported": false,
+      "plaintext_files": 0,
+      "provider_requests": 0,
+      "VM_operations": 0
+    }
+  },
+  "current_runtime": {
+    "Native": {
+      "health": "healthy",
+      "id": "2b276dd59d4e7957d3860ed595fedfc3068f9f20a9d4469c7aa45880f3526c70",
+      "image": "sha256:7955721521bc8a103218c4d795583c3ee4c93e13cf9ffc49f7752a6c2377a3ff",
+      "started_at": "2026-11-03T23:34:45.20355436Z",
+      "status": "running"
+    },
+    "SDK_manifest_unchanged": "fe412d1059c2f9ac9d8637cc90b2007c72a664175f73b5246a27ebf6e7e7ccfa",
+    "Server_release": "/opt/nodia/releases/nodia-server-teacher-20261103-r03",
+    "Server_manifest_sha256": "30de4d47e42b02d0f246b7ddb2b7bbd65d40bce1f4507843e97907d41656ff34",
+    "application_environment_and_flags_preserved": true,
+    "migrations_run": false,
+    "qualification": {
+      "session_id": "ae8948dd-5406-4aa0-bfe4-ee4c54aef691",
+      "job": {
+        "id": "bac5168c-dc21-4cfb-96e9-59f6481739a6",
+        "state": "ready",
+        "blocks_duplicate": false,
+        "dispatches_used": 1,
+        "qualification_probe": true
+      },
+      "operation": {
+        "id": "8ff0aa4a-5b5d-4ba7-85e5-f26afb00e488",
+        "job_id": "bac5168c-dc21-4cfb-96e9-59f6481739a6",
+        "phase": "closed",
+        "remote_outcome": "completed",
+        "sql_ack": true,
+        "native_ack": true,
+        "response_hash": "32fe0be80b421ea66c7e3ee07c2bd701d1b2183edf76cc8a6239117296fe69bf",
+        "proof_sha256": "c0c2f269002d692090facc753c1cadfd02dd590abbd04b9f8707a85f3bd3003c"
+      },
+      "current_descriptor_binding": true,
+      "native_dispatches": 1,
+      "CLI_internal_provider_POSTs": null,
+      "SDK_source_POST_count": 1,
+      "SDK_FINISH_DONE": true,
+      "SDK_source_upstream_status": 200,
+      "SDK_owned_child_closed": true
+    },
+    "historical_unknowns_locally_closed_both_ACK": 9,
+    "unclosed_counts_after_qualification": {
+      "jobs": 0,
+      "attempts": 0,
+      "slots": 0,
+      "active_chats": 0,
+      "unacknowledged_api": 0,
+      "running_api": 0,
+      "runs": 0,
+      "executions": 0,
+      "execution_steps": 0,
+      "teacher_jobs": 0,
+      "teacher_attempts": 0,
+      "generation_owners": 0
+    },
+    "consumer_resume": "original_intent_reconciled_successfully_R02",
+    "all_API_and_Worker_active_claimed": true,
+    "new_normal_Gemini_material_generation_on_300s": "ready_completed_closed_both_ACK",
+    "stable_seconds": 30,
+    "original_resume_intent_sha256": "ac79b48e750ad038bcfc13e2d7b97d7fa744ebea169ed8acc8039ef8f2b8234e",
+    "original_resume_attempt_rewritten": false,
+    "original_resume_failure_cause": "not_established",
+    "native_full_snapshot_after_reconciliation": {
+      "id": "2b276dd59d4e7957d3860ed595fedfc3068f9f20a9d4469c7aa45880f3526c70",
+      "image": "sha256:7955721521bc8a103218c4d795583c3ee4c93e13cf9ffc49f7752a6c2377a3ff",
+      "started_at": "2026-11-03T23:34:45.20355436Z",
+      "config_sha256": "4346cdaf9d5efded30cb4e011210ee64bc34060b19d3f5ab34afd7cab033b608",
+      "host_config_sha256": "c3b4541963ba2e2e22039ff50a50a80c59918c2837248fbe533e4d16ee464865",
+      "mounts_sha256": "2a742c3da4f5ef1d34ce50c409bbf0bfa9ed2b0d5894549dccd3b4a6df03121a"
+    },
+    "normal_Gemini_learning_packet": {
+      "success": true,
+      "session_id": "ddf4eb65-89ad-4363-a837-fea2be50a443",
+      "job_id": "1728c113-a609-4c6e-9545-6e967fe2ecd7",
+      "operation_id": "795d8cc4-69c4-4f10-99b9-9067cfbedb18",
+      "job_state": "ready",
+      "remote_outcome": "completed",
+      "local_closed": true,
+      "SQL_ACK": true,
+      "Native_ACK": true,
+      "started_at": "2026-11-03T23:55:29.96285+00:00",
+      "ended_at": "2026-11-03T23:57:47.651791+00:00",
+      "attempt_wall_seconds": 137.688941,
+      "duration_source": "Actual SQL attempt ended_at minus started_at; not a provider latency claim",
+      "provider_latency_seconds": null,
+      "authorized_max_seconds": 300,
+      "purpose": "learning_packet",
+      "prior_unknowns_reclassified": false,
+      "sdk_source_provider_dispatches": 1,
+      "sdk_source_local_attempts": 1,
+      "SDK_FINISH_DONE": true,
+      "upstream_status": 200,
+      "canonical_CLI_internal_POST_count_preserved_unknown": true,
+      "worker_PID": 626018,
+      "API_PID": 626017,
+      "content_versions": [
+        {
+          "id": "e3460da7-37ef-4add-b5ed-5f9d046b51ed",
+          "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+          "unit_id": "1c117816-7b7a-40e6-8107-cfd7e1e35502",
+          "version_no": 1,
+          "generation_job_id": "1728c113-a609-4c6e-9545-6e967fe2ecd7",
+          "content_hash": "084b39817a3acbcf824dff7e69c77a1504b5d4f8005e5566dab07a17bbc9ee88",
+          "publication_state": "current",
+          "block_count": 4,
+          "created_at": "2026-11-03T23:57:47.641Z"
+        }
+      ],
+      "scope_note": "Current NativeR11/ServerR03 selection only; wall duration is not provider latency and does not diagnose discarded prior replies."
+    },
+    "Client_release": "/opt/nodia/releases/nodia-client-teacher-20261103-r03",
+    "Client_manifest_sha256": "9d1f56d61a4bf7ac63a70573d05d0c3cbfc5a64faeaf2ec5abaae60b7461faa0",
+    "services_after_compatibility": {
+      "API_PID": "626017",
+      "Worker_PID": "638497",
+      "stable_seconds": 30,
+      "Native_binding_unchanged": true
+    },
+    "Codex_Teacher_current_eligibility": {
+      "eligible": true,
+      "actual_ReadTeacherUseCase_and_authority": true,
+      "current_runtime_descriptor_matches": true,
+      "prior_qualification_preserved": "987006af-72e9-4f88-a7ae-e6032bfcc0d1",
+      "metadata_RPC_methods": {
+        "initialize": 1,
+        "config/read": 1,
+        "account/read": 1,
+        "account/rateLimits/read": 1,
+        "model/list": 1
+      },
+      "metadata_HTTP_requests": null,
+      "generative_requests": 0,
+      "new_canary_jobs": 0,
+      "jobs_before_after": [
+        5,
+        5
+      ]
+    },
+    "resumed_pids_after_qualification_reconciliation": {
+      "nodia-api.service": "626017",
+      "nodia-ai-worker.service": "626018"
+    },
+    "services_after_final_configuration_capture": {
+      "stable_seconds": 30,
+      "original_runtime_states_restored": true,
+      "timers_restored": true,
+      "API_PID": null,
+      "Worker_PID": null,
+      "PID_values_not_in_consolidated_receipt": true
+    }
+  },
+  "configuration_recovery_variant": {
+    "delivery_path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/candidate/final-recovery-r11-r01/delivery.json",
+    "delivery_sha256": "4e85bf970af189ccb31bd9aac3d720774eb0a8eb981655374f20c45aa72440e5",
+    "historical_controls_preserved": 184,
+    "new_control_count_with_sidecar": 223,
+    "six_public_helpers_staged": true,
+    "preparation_or_capture_executed": true,
+    "next_variant_may_be_needed_if_resume_operator_tree_changes": true,
+    "R02_delivery_path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/candidate/final-recovery-r11-r02/delivery.json",
+    "R02_delivery_sha256": "275fd9cb1821685de834fd8f5de1f3640ac064a3a9102f2e651e0080624f7016",
+    "R02_three_new_helpers_staged": true,
+    "DB_metadata_only_private_tree_addition_pending_new_variant": true,
+    "final_R04_delivery_path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/candidate/final-recovery-r11-r04/delivery.json",
+    "final_R04_delivery_sha256": "4e201d0a4b8511419dce5813a833e3ad52cb5a64bd28d9e0e99f67f124285e44",
+    "final_R04_expected_controls": 238,
+    "final_R04_two_helpers_staged": true,
+    "exact_Chat_R04_source_owner_compatibility_paths": 6,
+    "R05_delivery_path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/candidate/final-recovery-r11-r05/delivery.json",
+    "R05_delivery_sha256": "89d88f4b558afdadfb1e67b516d2fb06c4cdcdf0b1dc05191721781987503bd0",
+    "R05_expected_controls_with_sidecar": 249,
+    "R05_four_helpers_staged": true,
+    "R05_config_prepared": true,
+    "R05_config_sha256": "4e391f31f5b9b54dd62620a8f15f1c6e0c9471777a2d204a3e49857d047f0d7d",
+    "R05_capture_executed": false,
+    "R05_preflight_executed": false,
+    "final_active_variant": "R07",
+    "final_direct_controls": 256,
+    "preserved_R05_controls": 249,
+    "unused_R05_R06_inputs_preserved": true,
+    "producer_only_delta": "R03_owner_reader_import_and_exact_SHA_guard",
+    "owner_sha256": "c4bb3986212bf1149dbb990d18c6c194d43064bf922ad3377166e6d8ad6d65d5",
+    "owner_integrity": "transitive_exact_SHA_in_directly_pinned_producer_and_encrypted_whole_DB_operator_tree",
+    "R07_delivery_sha256": "51f172f48751137cdeeb54896f4f8c70a18f92c1098cdba5884c5aebe731e8f0",
+    "R07_preflight_passed": true,
+    "R07_capture_passed": true,
+    "canonical_receipt_sha256": "e14fd70009b810e0b404ff062d31d66cb790cac436050fa398c2dba80c05470b",
+    "R07_capture_and_local_GCM_passed": true
+  },
+  "Gemini_UI_observations": {
+    "source": "Root authenticated UI observations",
+    "material_blocks_reviewed": 4,
+    "material_total_blocks": 4,
+    "practice_total_questions": 5,
+    "practice_questions_answered_and_reviewed": 1,
+    "answered_item_earned_points": 2,
+    "answered_item_possible_points": 2,
+    "immediate_deterministic_feedback": true,
+    "extra_AI_for_answer": false,
+    "paused_and_saved": true,
+    "session_dispatches": 4,
+    "full_Gemini_practice_completed": false,
+    "Gemini_final_generated_or_completed": false,
+    "Client_R03_hard_reload_current_READY_not_old_UNKNOWN": true,
+    "practice_question_and_feedback_preserved_after_hard_reload": true,
+    "reader_bookmark_exact_desktop_and_mobile_verified": true,
+    "reader_saved_block_id": "b-resolucion-dns-02",
+    "responsive_viewports": [
+      {
+        "width": "normal desktop",
+        "height": 720,
+        "restored_block_top_px": 103.859375
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "restored_block_top_px": 0.171875,
+        "document_scroll_width_px": 380,
+        "horizontal_overflow": false
+      }
+    ],
+    "generation_count_before_after_reload_and_mobile": [
+      4,
+      4
+    ],
+    "all_agent_application_tabs_closed_before_final_backups": true
+  },
+  "client_restore_fix": {
+    "status": "adopted_and_authenticated_UI_verified",
+    "candidate_release": "/opt/nodia/releases/nodia-client-teacher-20261103-r03",
+    "candidate_manifest_sha256": "9d1f56d61a4bf7ac63a70573d05d0c3cbfc5a64faeaf2ec5abaae60b7461faa0",
+    "existing_contract": "Server latest_job_id is authoritative including null; fallback only for absent legacy field",
+    "behavior": "Restored historical UNKNOWN cannot replace the actual latest job; restored READY cannot override a valid saved reader or quiz cursor.",
+    "Server_Native_model_auth_contract_changed": false,
+    "historical_unknowns_reclassified": false,
+    "extra_inference_for_fix": false,
+    "local_Teacher_focals": {
+      "tests": 28,
+      "files": 9,
+      "passed": true
+    },
+    "local_type_and_lint_passed": true,
+    "isolated_frozen_Client_build_passed": true,
+    "activation_state_sha256": "d91bb652c8716e2e35d79d9921e89adece983a101d7b2e50b4984f5e5cadb9d9",
+    "nginx_after_sha256": "5184badde907dfecb97dc07fe7488b8440255dff64dd5602889bb960e579c726",
+    "new_assets_verified": 179,
+    "old_assets_verified": 175,
+    "old_asset_fallback_retained": true,
+    "bookmark_and_responsive_UI_source": "ops/lab/artifacts/teacher-v1-process-20261103-r01/client-r03-ui-verification.json"
+  },
+  "current_compatibility": {
+    "OpenAI_Chat": {
+      "supports_MCP_current": true,
+      "prior_acceptance_preserved": true,
+      "new_probes": 0,
+      "generative_requests": 0
+    },
+    "Gemini_Chat": {
+      "status": "MCP_text_nonce_completed_ACK_current",
+      "maximum_native_dispatch_intents": 1,
+      "native_dispatch_intents": 1,
+      "acknowledged": true,
+      "qualification_accepted": true,
+      "operational_success_after_ack": true,
+      "configured_SQL_writes": 0,
+      "chat_owners_created": 0,
+      "auth_sessions_created": 0,
+      "jwts_created": 0,
+      "business_tool_dispatches": 0,
+      "automatic_inference_retries": 0,
+      "provider_internal_calls_or_cost": null,
+      "actor_cookie_UI_verified": false,
+      "provider": "gemini",
+      "native_attestation_before_ack": true,
+      "nonce_echo_verifier": "operator_callback_nonce",
+      "phase": "accept_current",
+      "native_pending_identity": false,
+      "callback_count": 1
+    },
+    "worker_resumed_after_probe_closed_and_ACK": true,
+    "extra_same_input_observation_guard": {
+      "expected_original_intent_recovery_required": true,
+      "new_native_dispatches": 0,
+      "provider_failure_or_unknown": false
+    },
+    "Teacher_and_Chat_scopes_distinct": true
+  },
+  "operational_scope_passed": {
+    "Teacher_exact_selected_Codex_and_Gemini_text": true,
+    "Gemini_current_R11_normal_material_published": true,
+    "Codex_representative_full_product_journey": true,
+    "current_Chat_compatibility": true,
+    "Client_current_job_and_saved_cursor": true,
+    "responsive_smoke": true
+  },
+  "post_recovery_operator_observation": {
+    "source": "Root live HTTP and authenticated in-app-browser observation after configuration recovery, reported in task coordination",
+    "HTTP_root": 200,
+    "HTTP_Teacher_route": 200,
+    "real_Oscar_session": true,
+    "expected_DNS_paused_and_Codex_cards_visible": true,
+    "technical_archives_hidden_by_default": true,
+    "UI_error_observed": false,
+    "tab_left_visible_for_user": true,
+    "mutations": 0,
+    "inferences": 0
+  }
+}

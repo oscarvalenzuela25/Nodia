@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "status": "two_independent_synthetic_controls_passed_original_natural_chat_cause_open",
+  "scope": "Root operated real Antigravity Agentic controls; this consolidation is local read-only receipt preservation. No production source, release, permissions, model selection or timeout change.",
+  "receipts": {
+    "antigravity-catalog-A-preflight-VM-r01.json": {
+      "path": "ops/lab/artifacts/antigravity-catalog-volume-control-verification-r01/antigravity-catalog-A-preflight-VM-r01.json",
+      "sha256": "60e244e441853aa52a9428fd0cfdb113eaef8ebd0b85733e9b6b24b1585426a6",
+      "bytes": 104
+    },
+    "antigravity-catalog-A-preflight-trace-VM-r01.json": {
+      "path": "ops/lab/artifacts/antigravity-catalog-volume-control-verification-r01/antigravity-catalog-A-preflight-trace-VM-r01.json",
+      "sha256": "0a0eeef783e2e0b88f84e7f133176cac70fd948006520d682c5f3052279496a4",
+      "bytes": 687
+    },
+    "antigravity-catalog-A-preflight-VM-r02.json": {
+      "path": "ops/lab/artifacts/antigravity-catalog-volume-control-verification-r01/antigravity-catalog-A-preflight-VM-r02.json",
+      "sha256": "ef07e705988ca16e46de000577d890fd22e4deaa91e6ed6dfa41b81bd20e3c8f",
+      "bytes": 3712
+    },
+    "antigravity-catalog-A-execute-VM-r02.json": {
+      "path": "ops/lab/artifacts/antigravity-catalog-volume-control-verification-r01/antigravity-catalog-A-execute-VM-r02.json",
+      "sha256": "c13550631b5489e582958690bf4f1b3b621eea5ca654a9328bbc741815cb21ff",
+      "bytes": 4177
+    },
+    "antigravity-catalog-B-preflight-VM-r02.json": {
+      "path": "ops/lab/artifacts/antigravity-catalog-volume-control-verification-r01/antigravity-catalog-B-preflight-VM-r02.json",
+      "sha256": "0e5c1b6882cef49bf08e5af0f21db4f124764b47e640afc54d990b94490a4314",
+      "bytes": 3720
+    },
+    "antigravity-catalog-B-execute-VM-r02.json": {
+      "path": "ops/lab/artifacts/antigravity-catalog-volume-control-verification-r01/antigravity-catalog-B-execute-VM-r02.json",
+      "sha256": "51e4bcabd9a0d696cace5c1f52b706f390b1a010aabed1c9182e48f3257f945f",
+      "bytes": 4185
+    }
+  },
+  "operator": {
+    "path": "ops/lab/artifacts/antigravity-catalog-volume-control-r02/control-operator.py",
+    "sha256": "13303baf989aa5996d29c9b76bbd6fae9e48df8c13f7b358fd87cbe8fd747e18",
+    "bytes": 11661
+  },
+  "plan": {
+    "path": "ops/lab/artifacts/antigravity-catalog-volume-control-r02/plan.json",
+    "sha256": "63cd383bba48d17a5e5e30944110f5321397c8b615ad324eb2dc3f3139c414b1",
+    "bytes": 9241
+  },
+  "control": {
+    "path": "ops/lab/artifacts/antigravity-catalog-volume-control-r02/control.mjs",
+    "sha256": "35debcc04d5c386fda79217e0a6930a0ef3f87667eecf14232d468b2a2e8daf2",
+    "bytes": 14302
+  },
+  "bootstrap": {
+    "path": "ops/lab/artifacts/antigravity-catalog-volume-control-r02/bootstrap.py",
+    "sha256": "d3e1e6900f65dbb1f9f715b2d8d08fccd05f4a2fd6e83fd0472041cda7a7ed9c",
+    "bytes": 80768
+  },
+  "native_public_source_pins": {
+    "path": "ops/lab/artifacts/antigravity-catalog-volume-control-verification-r01/native-public-source-pins.json",
+    "sha256": "9561881de9be7a112b22f5ffb5c310919d08fa8ca92fea9ca54911c9e6193706",
+    "bytes": 5407
+  },
+  "R01_failure": {
+    "stage": "preflight_before_intent_and_SDK",
+    "native_starts": 0,
+    "cause_confirmed": "Shared Codex barrier used legacy global NEW as subprocess cwd; FileNotFoundError. Operator R01 omitted current release global bindings.",
+    "R02_only_runtime_change": "Bind base.NEW and journal.RELEASE to pinned current Server before runtime helpers; fresh work and A/B attempt IDs.",
+    "production_change": false
+  },
+  "controls": [
+    {
+      "case": "A",
+      "attempt_id": "5b99c44c-cad9-4eed-ae20-18804cd98545",
+      "status": "passed",
+      "start_requests": 1,
+      "tool_count": 9,
+      "padding_ASCII_bytes": 0,
+      "canonical_prompt_utf8_bytes": 405,
+      "native_measurement": {
+        "measurementContractVersion": "nodia-ai-context-budget/1",
+        "measurementScope": "initial_native_prompt",
+        "measurementKind": "exact",
+        "canonicalUtf8Bytes": 405,
+        "catalogUtf8Bytes": 12708,
+        "overheadUtf8Bytes": 1312,
+        "totalUtf8Bytes": 14425,
+        "maxUtf8Bytes": 262144,
+        "modelContextTokens": null,
+        "firstMcpListingUpperBoundUtf8Bytes": 15832
+      },
+      "actual_native_timeout_seconds": 119,
+      "fixture_accepted": 1,
+      "fixture_rejected": 0,
+      "acknowledged": true,
+      "pending_identity": false,
+      "terminal": {
+        "engine": "agentic",
+        "attempt_id": "5b99c44c-cad9-4eed-ae20-18804cd98545",
+        "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+        "session_generation": "0ea0c22e7d6747f19f7ac0d96c23e585",
+        "operation_ref": "5b99c44c-cad9-4eed-ae20-18804cd98545",
+        "terminal_proof_id": "f5299a7d-7709-4642-a0ca-228bc3318787",
+        "process_closed": true,
+        "outcome": "completed"
+      },
+      "SQL_quiet_after": {
+        "pending_jobs": 0,
+        "open_attempts": 0,
+        "retained_slots": 0
+      },
+      "business_tool_dispatches": 0,
+      "business_writes": 0,
+      "SQL_writes": 0,
+      "automatic_inference_retries": 0,
+      "provider_internal_calls": null,
+      "provider_generations": null,
+      "provider_cost": null
+    },
+    {
+      "case": "B",
+      "attempt_id": "94a0ddff-82ca-481b-be28-cf31571d86c7",
+      "status": "passed",
+      "start_requests": 1,
+      "tool_count": 9,
+      "padding_ASCII_bytes": 70000,
+      "canonical_prompt_utf8_bytes": 70425,
+      "native_measurement": {
+        "measurementContractVersion": "nodia-ai-context-budget/1",
+        "measurementScope": "initial_native_prompt",
+        "measurementKind": "exact",
+        "canonicalUtf8Bytes": 70425,
+        "catalogUtf8Bytes": 12708,
+        "overheadUtf8Bytes": 1312,
+        "totalUtf8Bytes": 84445,
+        "maxUtf8Bytes": 262144,
+        "modelContextTokens": null,
+        "firstMcpListingUpperBoundUtf8Bytes": 15832
+      },
+      "actual_native_timeout_seconds": 119,
+      "fixture_accepted": 1,
+      "fixture_rejected": 0,
+      "acknowledged": true,
+      "pending_identity": false,
+      "terminal": {
+        "engine": "agentic",
+        "attempt_id": "94a0ddff-82ca-481b-be28-cf31571d86c7",
+        "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+        "session_generation": "0ea0c22e7d6747f19f7ac0d96c23e585",
+        "operation_ref": "94a0ddff-82ca-481b-be28-cf31571d86c7",
+        "terminal_proof_id": "45bf2ab4-1ca2-4f5e-9c8c-8ff9740e824a",
+        "process_closed": true,
+        "outcome": "completed"
+      },
+      "SQL_quiet_after": {
+        "pending_jobs": 0,
+        "open_attempts": 0,
+        "retained_slots": 0
+      },
+      "business_tool_dispatches": 0,
+      "business_writes": 0,
+      "SQL_writes": 0,
+      "automatic_inference_retries": 0,
+      "provider_internal_calls": null,
+      "provider_generations": null,
+      "provider_cost": null
+    }
+  ],
+  "same_binding": {
+    "selection": {
+      "connection_id": "2",
+      "effort_id": "high",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high"
+    },
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+    "session_generation": "0ea0c22e7d6747f19f7ac0d96c23e585"
+  },
+  "runtime_after_both": {
+    "services": {
+      "nodia-api": {
+        "MainPID": "454497",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r03",
+        "ActiveState": "active"
+      },
+      "nodia-ai-worker": {
+        "MainPID": "454498",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r03",
+        "ActiveState": "active"
+      },
+      "nginx": {
+        "MainPID": "3630787",
+        "WorkingDirectory": "",
+        "ActiveState": "active"
+      },
+      "nodia-keyring": {
+        "MainPID": "3630841",
+        "WorkingDirectory": "",
+        "ActiveState": "active"
+      }
+    },
+    "native": {
+      "id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+      "image": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+      "started_at": "2026-10-26T03:06:18.949917773Z",
+      "descriptor_sha256": "d27816454ab40e774919a16d3b99da50ccdc3c1e570ef244832b30b46a95f89d"
+    },
+    "server_manifest_sha256": "605ef5533af3c8ffbffde33ce13275d966b9271f34a2ee0f8a17c609c02308c1",
+    "native_source_count": 52,
+    "client_manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+    "nginx_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac",
+    "environment_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "native_quiet": {
+      "attempt_receipts": 0,
+      "unknown_markers": 0,
+      "temporary_directories": 0,
+      "active_native_processes": 0
+    },
+    "codex": {
+      "profile_absent": false,
+      "pending": 0,
+      "locks_or_sockets": 0,
+      "records": 4,
+      "sdk_arg0_links": 0,
+      "sdk_binary": null
+    }
+  },
+  "claims": [
+    "Both independent controls exposed the same eight published descriptors plus one synthetic nonce descriptor; only the nonce callback was executable by the fixture.",
+    "A used a 405-byte canonical prompt; B added 70000 inert ASCII padding bytes (70425-byte canonical prompt). Their exact initial native measurements were 14425 and 84445 bytes, below the unchanged 262144-byte limit.",
+    "Each had one native start, one accepted fixture callback, zero rejected callbacks, a closed completed terminal, one acknowledged result and no pending identity. Canonical SQL/native/Codex quiet guards passed.",
+    "All 52 public native Python pins and the pinned Server/Client/nginx/environment/native epoch were checked by the operator; reported consumer PIDs remained 454497/454498."
+  ],
+  "limits": [
+    "These successful synthetic calls do not establish a cause or fix for the prior natural-chat attempt 57cc354d-0ecb-4f6a-80d4-f01494d1a3a2.",
+    "Eight original schemas were advertised but their real technical/business handlers were not executed; the custom nonce tool was called. Natural-context interpretation, real tool selection and domain workflows remain distinct proofs.",
+    "B shows successful input above 64 KiB in this configured live path; it does not prove every earlier input was fully consumed or identify an internal CLI parser rule. Inert ASCII padding is not equivalent to natural multilingual context.",
+    "The original full-chat timeout remains unexplained; no causal attribution to schema complexity, context size, pre-ready RPC error, quota, authentication, transport or provider internals.",
+    "Provider internal call/generation counts, tokens and cost were not delivered and remain null. A native start counter is not a provider internal generation counter.",
+    "No extra synthetic control, production fix, model fallback, budget increase or automatic inference replay is authorized by this evidence."
+  ],
+  "local_validation": {
+    "commands": [
+      "python -B ops/lab/artifacts/antigravity-catalog-volume-control-r02/test_rebind.py",
+      "python -B ops/lab/artifacts/antigravity-catalog-volume-control-r02/test_operator.py"
+    ],
+    "results": [
+      "1 atomic test passed; real pinned codex_barrier AST with external operations stubbed",
+      "1 atomic test passed; exact A proof/ACK gate for B"
+    ],
+    "VM_SDK_or_inference_from_these_tests": false
+  },
+  "prior_full_chat_diagnostic": {
+    "path": ".tmp/invoice-ocr-privacy-rebase-r01/ui-native-diagnostic-VM-r01.json",
+    "sha256": "683ae430237b3e6242992a543ee71a0859613c3dc36b7fe45e647298d97398b9",
+    "bytes": 3752
+  }
+}

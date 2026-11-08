@@ -1,9 +1,11 @@
 import { AxiosError, type AxiosAdapter, type InternalAxiosRequestConfig } from "axios";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { sileo } from "sileo";
 import { createApiInstance, mainInstance, refreshSession, restoreSession, waitForRefresh } from "../../config/api";
 import useAuthStore from "../../store/authStore";
 import useGeneralSettingsStore from "../../store/generalSettings/generalSettingsStore";
 import { queryClient } from "../../config/reactQuery";
+import i18n from "../../translate";
 
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 const originalAdapter = mainInstance.defaults.adapter;
@@ -13,7 +15,7 @@ const response = (config: InternalAxiosRequestConfig, data: unknown) => ({ confi
 const reject = (config: InternalAxiosRequestConfig, status = 401) => new AxiosError("Unauthorized", "ERR_BAD_RESPONSE", config, undefined, {
   config, data: { message: "auth:session_expired" }, status, statusText: "Error", headers: {},
 });
-beforeEach(() => { useAuthStore.getState().logout(); useAuthStore.getState().login(session); });
+beforeEach(() => { vi.clearAllMocks(); useAuthStore.getState().logout(); useAuthStore.getState().login(session); });
 afterEach(async () => { await waitForRefresh(); vi.unstubAllGlobals(); mainInstance.defaults.adapter = originalAdapter; useAuthStore.getState().logout(); });
 
 describe("API session renewal", () => {
@@ -37,6 +39,8 @@ describe("API session renewal", () => {
     expect((await requests).every((result) => result.data.ok)).toBe(true);
     expect(refresh).toHaveBeenCalledOnce();
     expect(adapter.mock.calls.filter(([config]) => !config.url?.endsWith("/auth/refresh"))).toHaveLength(4);
+    expect(sileo.success).not.toHaveBeenCalled();
+    expect(sileo.error).not.toHaveBeenCalled();
   });
 
   it("reuses the token renewed by another tab while waiting for a Web Lock", async () => {
@@ -52,6 +56,8 @@ describe("API session renewal", () => {
     expect(adapter).toHaveBeenCalledOnce();
     expect(adapter.mock.calls[0][0].url).toMatch(/\/auth\/me$/);
     expect(result.token).toBe("new-token");
+    expect(sileo.success).not.toHaveBeenCalled();
+    expect(sileo.error).not.toHaveBeenCalled();
   });
 
   it("renews only once for concurrent 401s and retries with the new JWT", async () => {
@@ -86,12 +92,22 @@ describe("API session renewal", () => {
     expect(useAuthStore.getState().token).toBeNull();
     expect(useGeneralSettingsStore.getState().roles).toEqual([]);
     expect(queryClient.getQueryData(["private"])).toBeUndefined();
+    expect(sileo.success).not.toHaveBeenCalled();
+    expect(sileo.error).toHaveBeenCalledExactlyOnceWith({
+      title: i18n.t("auth:error_title"),
+      description: i18n.t("auth:session_expired"),
+    });
   });
 
   it("does not discard the session on a temporary backend failure", async () => {
     mainInstance.defaults.adapter = async (config) => { throw reject(config, 503); };
     await expect(refreshSession()).rejects.toThrow();
     expect(useAuthStore.getState().token).toBe("old-token");
+    expect(sileo.success).not.toHaveBeenCalled();
+    expect(sileo.error).toHaveBeenCalledExactlyOnceWith({
+      title: i18n.t("auth:error_title"),
+      description: i18n.t("auth:session_expired"),
+    });
   });
 
   it("never restores a session when a refresh finishes after logout", async () => {
@@ -108,6 +124,8 @@ describe("API session renewal", () => {
     await rejection;
     expect(useAuthStore.getState().token).toBeNull();
     expect(localStorage.getItem("authStore")).toBeNull();
+    expect(sileo.success).not.toHaveBeenCalled();
+    expect(sileo.error).not.toHaveBeenCalled();
   });
 
   it("discards a private response arriving after logout", async () => {
@@ -166,6 +184,8 @@ describe("active session transport gate", () => {
     expect(useAuthStore.getState().sessionStatus).toBe("authenticated");
     await mainInstance.get("/users");
     expect(adapter).toHaveBeenCalledTimes(2);
+    expect(sileo.success).not.toHaveBeenCalled();
+    expect(sileo.error).not.toHaveBeenCalled();
   });
 
   it("renews an expired token before sending a protected request", async () => {
@@ -190,6 +210,11 @@ describe("active session transport gate", () => {
     expect(useAuthStore.getState().token).toBe("old-token");
     await expect(mainInstance.get("/users")).rejects.toMatchObject({ code: "ERR_CANCELED" });
     expect(adapter).toHaveBeenCalledOnce();
+    expect(sileo.success).not.toHaveBeenCalled();
+    expect(sileo.error).toHaveBeenCalledExactlyOnceWith({
+      title: i18n.t("auth:error_title"),
+      description: i18n.t("auth:session_expired"),
+    });
   });
 
   it("ends the saved session if both validation and renewal reject it", async () => {
@@ -228,5 +253,7 @@ describe("active session transport gate", () => {
     await rejection;
     expect(useAuthStore.getState().sessionStatus).toBe("anonymous");
     expect(localStorage.getItem("authStore")).toBeNull();
+    expect(sileo.success).not.toHaveBeenCalled();
+    expect(sileo.error).not.toHaveBeenCalled();
   });
 });

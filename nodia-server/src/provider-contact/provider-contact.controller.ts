@@ -1,3 +1,5 @@
+import type { AuthRequest } from '../auth/types/auth.types.js';
+import { actorReference } from '../authorization/authority-transaction.js';
 import {
   Body,
   Controller,
@@ -7,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -32,25 +35,51 @@ export class ProviderContactController {
   @Get() list(
     @Param() params: ContactParamsDto,
     @Query() query: ContactListDto,
+    @Req() request: AuthRequest,
   ) {
-    return this.listContacts.execute(params.providerId, query);
+    return this.listContacts.execute(
+      params.providerId,
+      query,
+      undefined,
+      actorReference(request.auth),
+    );
   }
   @Post() create(
     @Param() params: ContactParamsDto,
     @Body() dto: CreateProviderContactDto,
+    @Req() request: AuthRequest,
   ) {
-    return this.createContact.execute(params.providerId, dto);
+    return this.createContact.execute(
+      params.providerId,
+      dto,
+      undefined,
+      actorReference(request.auth),
+    );
   }
   @Put(':id') update(
     @Param() params: ContactIdParamsDto,
     @Body() dto: UpdateProviderContactDto,
+    @Req() request: AuthRequest,
   ) {
-    return this.updateContact.execute(params.providerId, params.id, dto);
+    return this.updateContact.execute(
+      params.providerId,
+      params.id,
+      dto,
+      undefined,
+      actorReference(request.auth),
+    );
   }
   @Patch(':id/status') toggle(
     @Param() params: ContactIdParamsDto,
     @Body() dto: ToggleProviderContactDto,
+    @Req() request: AuthRequest,
   ) {
-    return this.updateContact.execute(params.providerId, params.id, dto);
+    return this.updateContact.execute(
+      params.providerId,
+      params.id,
+      dto,
+      undefined,
+      actorReference(request.auth),
+    );
   }
 }

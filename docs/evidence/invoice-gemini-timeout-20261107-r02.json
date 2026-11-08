@@ -1,0 +1,205 @@
+{
+  "schema": "invoice-gemini-timeout-validation/2",
+  "date": "2026-11-07",
+  "status": "NativeR16_adopted_real_OCR_still_blocked",
+  "historical_evidence": [
+    {
+      "path": "docs/evidence/invoice-gemini-timeout-20261107-r01.json",
+      "sha256": "e7946304ee143bffc2b69ee50eab6c654991804bee9ddc6a68d2d8f017fb951d",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/product-price-result-alignment-20261107-r01.json",
+      "sha256": "d9f554d1b581bfdefc32ab480feca0dfe33b3024089563401e88676ce2eadf7e",
+      "unchanged": true
+    }
+  ],
+  "change": {
+    "production_delta": [
+      "agentic_service.py"
+    ],
+    "inherited_helper": "native_cli_diagnostics.py",
+    "helper_sha256": "9edcd4731fc4db17d2b9f208c36bc8ea9d2bd7ceb48f06bc721a36c1165a951c",
+    "diagnostics": [
+      "capture_cli_log_diagnostic",
+      "capture_plain_gate_diagnostic"
+    ],
+    "diagnostic_errors_change_outcome": false,
+    "free_text_recorded": false,
+    "parser_prompt_role_hook_runner_model_effort_SDK_deadlines_changed": false,
+    "CLI_version": "1.3.1",
+    "deadline_extensions": false
+  },
+  "checks": {
+    "Windows_cases": 660,
+    "Windows_passed": 649,
+    "Windows_skipped": 11,
+    "Linux_cases": 660,
+    "Linux_failures": 0,
+    "Linux_errors": 0,
+    "Linux_skipped": 0,
+    "closure_fixture": "cancel/setsid descendant/IO drain/fresh intent passed",
+    "fixture_network": "none",
+    "real_profiles_read": false,
+    "fixture_provider_requests": 0
+  },
+  "adoption": {
+    "completed": true,
+    "phase": "Native_R16_active_original_Server_R12_and_independent_Client_preserved",
+    "image": "sha256:87a0f2230e338b72c8305432d6aeaed3ac60b503c3e05af4f13c65af0491d712",
+    "container_id": "88038e804975c6950092d12f4e7a609ff453e6a128ea669c4b08edac026d7f69",
+    "started_at": "2026-11-07T06:18:32.04139273Z",
+    "ServerR12_same_configuration": "deliberately stopped/resumed",
+    "ClientR37_changed": false,
+    "SQL_calls": 0,
+    "provider_requests": 0,
+    "legacy_marker_actions": 0,
+    "timer_actions": 0
+  },
+  "real_OCR": {
+    "public_intent": "a4c2d495-d6bc-4104-bfd7-725c6ac6d189",
+    "native_attempt": "63dfd9ef-bd39-49b0-a767-ce45dea63349",
+    "analyze_POST_observed": 1,
+    "file_chooser_invoked": false,
+    "same_File_preserved": true,
+    "multipart_uploaded_in_this_new_request": true,
+    "model": "gemini-3.8-flash-high",
+    "effort": "high",
+    "mode": "agentic",
+    "HTTP_status": 504,
+    "UI_elapsed_seconds": 250,
+    "deadline_seconds": 240,
+    "inference_duration_ms": 242057,
+    "document_read_completed": true,
+    "view_file_events": 2,
+    "view_file_completions": 1,
+    "events": 5,
+    "stdout_bytes": 4197,
+    "invalid_lines": 0,
+    "finish_count": 0,
+    "result_event_count": 0,
+    "last_event_age_ms": 233168,
+    "CLI_exit_observed": false,
+    "remote_outcome": "unknown",
+    "replayed": false,
+    "saved": false,
+    "new_matching": false,
+    "PNG_preserved": true,
+    "controls_recovered": true
+  },
+  "diagnostics": {
+    "hook": {
+      "state": "observed",
+      "decision_count": 1,
+      "rejected_count": 0,
+      "unrecognized_count": 0,
+      "finish_count": 0,
+      "scope": "this attempt only; no proof about all future permissions"
+    },
+    "cli_log": {
+      "state": "observed",
+      "bytes_read": 30835,
+      "lines_scanned": 128,
+      "truncated": true,
+      "transport_indicators": [],
+      "provider_error_indicators": [],
+      "http_statuses": [],
+      "interpretation": "empty indicators are not verified absence or cause"
+    }
+  },
+  "post_run": {
+    "CLI_processes": 0,
+    "unknown_markers": 0,
+    "manual_proofs": 0,
+    "owned_cgroups": 0,
+    "source_pins_verified": 22,
+    "release_execution_ms": 250881,
+    "quarantined": false,
+    "health_status_metadata_rejections": 10,
+    "extra_inferences_inferred_from_metadata": false
+  },
+  "remaining": [
+    "Isolate cause of no result after completed document read",
+    "Define compatible strategy with pinned CLI and no replay",
+    "Obtain valid real OCR extraction before declaring this issue resolved"
+  ],
+  "source_receipts": [
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-timeout-20261107-r01/native-r16-r01/source-freeze.json",
+      "sha256": "62e5516b77a906fc4979a3b0a48817fd12fe2abde07ecf3d8dc78bc4730438f3"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-timeout-20261107-r01/native-r16-r01/image-staged.json",
+      "sha256": "a309fad899713785ba890b61c3402cc633aa7722e608c7059aad70c4d3e15b72"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-timeout-20261107-r01/native-r16-r01/isolated-linux-gate-executed.json",
+      "sha256": "15705a72d7e1fc0774a3e975fb904030a7574461e298baf2ae36e496677e6397"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-timeout-20261107-r01/native-r16-r01/adoption-executed.json",
+      "sha256": "d5de0e599763a6178e6b0aeb0b8420ca600d7fbe8dee326ed92b9f4ca3e9b82a"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-timeout-20261107-r01/runtime/progress-r16-terminal.json",
+      "sha256": "270747d9f6e400b8142dc023ba23f938277d10c5d48b7140eed24d1bafd16783"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-timeout-20261107-r01/runtime/after-r16.json",
+      "sha256": "f52544a430bdd2fbef444435037d3a8f7fe4fe66e0eb79385fca0bb8fbe51fb0"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-timeout-20261107-r01/browser/r16-network-initial.json",
+      "sha256": "79c0cc45cebcc533a033ef78b7c68676d9620d72e86a4402022c44d633ee3808"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-timeout-20261107-r01/browser/r16-network-terminal.json",
+      "sha256": "be3557cf63a49562cfb5c665844d91711255fc9d7491dfd0fb84a118d026b89e"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-timeout-20261107-r01/browser/r16-terminal-summary.json",
+      "sha256": "6e8e9f324ed4e90660643f54508aecf0d00ef051fb7def5b1b925598f2b62e08"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-gemini-timeout-20261107-r01/browser/r16-timeout-invoice-preserved.png",
+      "sha256": "5ac80b828b298aa6526fb489f395730f4beac539500108eb57f9180a7ff092af"
+    }
+  ],
+  "knowledge_impact": {
+    "document_status": "draft",
+    "integration_status": "unregistered",
+    "approval_or_publication": false,
+    "new_capabilities_or_bindings": false,
+    "approved_documents_preserved": 44,
+    "prior_product_evidence_retained_transitively": {
+      "path": "docs/evidence/nodia-ai-ai40-data-variants-r01.json",
+      "sha256": "b5c030581b2a5a03ed2555e3eaf1c00d479bfc8d46b5262ad0c50173e7b46943",
+      "reason": "metadata max32; historical body retained"
+    },
+    "approved_baseline_path": "ops/lab/artifacts/invoice-manual-match-qa-20261107-r01/approved-before.json",
+    "approved_baseline_sha256": "c254e2cf7491db06c7881cfd1cc409664f87fa00098c1550ca3fc38f38b05662",
+    "approved_hash_mismatches": [],
+    "compiler_check": {
+      "exit_code": 0,
+      "sources": 81,
+      "excluded": 37,
+      "documents": 44,
+      "fragments": 46,
+      "mode": "check; no build/publication"
+    }
+  },
+  "browser_observed_window": {
+    "analyze_POST_requests": 1,
+    "analyze_responses": 1,
+    "analyze_status": 504,
+    "business_mutation_paths_observed": 0,
+    "network_truncated": false,
+    "network_has_more": false,
+    "invoice_preserved": true,
+    "upload_enabled": true,
+    "provider_enabled": true,
+    "cancel_controls_remaining": 0,
+    "file_chooser_invoked": false,
+    "scope": "bounded observed R16 network window; not a claim about all HTTP traffic"
+  }
+}

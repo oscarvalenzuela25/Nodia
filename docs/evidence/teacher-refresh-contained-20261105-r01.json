@@ -1,0 +1,78 @@
+{
+  "schema": "teacher-refresh-contained/1",
+  "local_date": "2026-11-05",
+  "status": "Client_R17_active_visual_verified",
+  "source_freeze": {
+    "path": "output/teacher-refresh-contained-20261105-source-freeze-r01.json",
+    "bytes": 636,
+    "sha256": "a5010acfe004b2f118f2e1f87b318869206cf68ab3a308686527a0c36dc61d15"
+  },
+  "operations": {
+    "delivery": {
+      "path": "ops/lab/artifacts/teacher-refresh-contained-20261105-r01/client-r17-r01/delivery.json",
+      "bytes": 9618,
+      "sha256": "b7672d859210204f46d55ffb1c860f4e470cc57c8f982bc0f9c29c01cf18df7c"
+    },
+    "activation": {
+      "path": "ops/lab/artifacts/teacher-refresh-contained-20261105-r01/client-r17-r01/activation-state.json",
+      "bytes": 704,
+      "sha256": "fa2b7e07551afb2bc24ed1d860bdb15cbe474c324fd17d38fc1bf1251a0e0aaf"
+    },
+    "health": {
+      "path": "ops/lab/artifacts/teacher-refresh-contained-20261105-r01/client-r17-r01/final-health.json",
+      "bytes": 1386,
+      "sha256": "274eee1cdc2461e885880c4d07250279689e2847aa407daf725baf143c091b01"
+    },
+    "catalog": {
+      "path": "ops/lab/artifacts/teacher-refresh-contained-20261105-r01/catalog.json",
+      "bytes": 1046,
+      "sha256": "a80088df99236d2189a3c099ef5642d96e2cf4ccd8e38f9287b918f67d6137a0"
+    }
+  },
+  "browser": {
+    "path": "output/teacher-refresh-contained-20261105-r01/browser-proof.json",
+    "bytes": 774,
+    "sha256": "81f1bf2da32f57e372627e30a316fb6cbf34afd9e42d00dadccaca504bf4e410"
+  },
+  "screenshot": {
+    "path": "output/teacher-refresh-contained-20261105-r01/refresh-contained.jpg",
+    "bytes": 14876,
+    "sha256": "4fa4d2f67771d01852e6173ecb7fc9850e7695c7b7bb02cdfdd84a26a3d11db5"
+  },
+  "checks": {
+    "existing_JobPanel_tests": 9,
+    "test_files": 1,
+    "test_exit": 0,
+    "new_style_tests_added": false,
+    "isolated_build_typecheck_exit": 0,
+    "scoped_eslint_exit": 0,
+    "source_inputs": 1365,
+    "unchanged_inputs": 1364,
+    "changed_production_files": 1,
+    "current_outputs_verified": 184,
+    "old_R16_assets_verified": 180,
+    "operator_tests": 5,
+    "local_refs_rehashed": 37,
+    "editable_files_UTF8_LF_verified": 6,
+    "new_local_links_verified": 6,
+    "knowledge_check": {
+      "exit_code": 0,
+      "sources": 80,
+      "excluded": 36,
+      "documents": 44,
+      "fragments": 46,
+      "releaseId": "ca3b8d894cbfc3780698e15b1b19c62a4554b00911af7893024fd025c6f948af",
+      "published": false
+    }
+  },
+  "functional_context_impact": "visual_only_existing_save_send_propose_contract_unchanged_no_knowledge_revision_required",
+  "provider_requests": 0,
+  "messages_sent": 0,
+  "plans_requested": 0,
+  "user_draft_changed": false,
+  "known_Gemini_blockers_from_prior_QA_unchanged": true,
+  "SDK_candidate_deployed": false,
+  "document_approval": false,
+  "knowledge_publication": false,
+  "viewport_restored": true
+}

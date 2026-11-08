@@ -15,14 +15,13 @@ import {
   testIdentity,
   testNow,
 } from './conversation-admission.fixture.js';
-
 export function connectionFixture() {
   const snapshot = {
     actorId: '1',
     sessionId: testIdentity.sessionId,
     isSuperAdmin: false,
     modules: [
-      { id: '2', key: 'nodia_ai', route: '/tools/nodia-ai', assigned: true },
+      { id: '2', key: 'nodia_ai', route: '/nodia-ai', assigned: true },
     ],
     actionKeys: [],
   };
@@ -37,25 +36,15 @@ export function connectionFixture() {
     label: 'Synthetic connection',
     provider_key: 'gemini',
     is_active: true,
+    is_default: false,
+    default_mode: null,
     catalog_active: true,
     use_api_key: true,
-    use_token_plan_web: true,
-    use_token_plan_agentic: true,
+    use_agentic: true,
     can_use_api_key: true,
-    can_use_token_plan_web: true,
-    can_use_token_plan_agentic: true,
+    can_use_agentic: true,
     fields: {
-      token_plan_web: {
-        selected_model: 'synthetic-web',
-        available_models: [
-          {
-            id: 'synthetic-web',
-            name: 'Web',
-            secret: 'synthetic-never-public',
-          },
-        ],
-      },
-      token_plan_agentic: {
+      agentic: {
         selected_model: 'synthetic-agentic',
         thinking_level: 'synthetic-effort',
         available_models: [{ id: 'synthetic-agentic' }],

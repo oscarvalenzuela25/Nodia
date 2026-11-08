@@ -7,6 +7,7 @@ import { randomUUID } from 'node:crypto';
 import { validateInvoiceFile } from '../invoice-file-validation.js';
 import { RecoverInvoiceUploadsUseCase } from './recover-invoice-uploads.use-case.js';
 import { Invoice } from '../entities/invoice.entity.js';
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 
 @Injectable()
 export class CreateInvoiceUseCase {
@@ -19,25 +20,37 @@ export class CreateInvoiceUseCase {
     private readonly recovery: RecoverInvoiceUploadsUseCase,
   ) {}
 
-  async execute(dto: CreateInvoiceDto, file?: Express.Multer.File, manager?: EntityManager) {
+  async execute(
+    dto: CreateInvoiceDto,
+    file?: Express.Multer.File,
+    manager?: EntityManager,
+    actor?: ActorReference,
+  ) {
     if (manager && !manager.queryRunner?.isTransactionActive)
-      throw new ConflictException('Invoice effect requires an active transaction');
+      throw new ConflictException(
+        'Invoice effect requires an active transaction',
+      );
     // External storage never runs while the conversational effect transaction
     // holds its authority and execution fences. A later attachment protocol
     // must stage the object before entering this boundary.
     if (manager && file)
-      throw new ConflictException('Invoice upload requires a separate storage phase');
+      throw new ConflictException(
+        'Invoice upload requires a separate storage phase',
+      );
     if (!file) {
       const input = {
         ...dto,
         path_storage: dto.path_storage || '',
       };
+      if (actor)
+        return this.invoiceService.createInvoice(input, manager, actor);
       return manager
         ? this.invoiceService.createInvoice(input, manager)
         : this.invoiceService.createInvoice(input);
     }
 
     const extension = validateInvoiceFile(file);
+    await this.invoiceService.assertBusinessAccess(dto.business_id, actor);
     const storageKey = `invoices/${dto.business_id}/${randomUUID()}.${extension}`;
     // Fail closed: without a durable intent, no object may be uploaded.
     await this.dataSource.query(
@@ -73,6 +86,7 @@ export class CreateInvoiceUseCase {
         const invoice = await this.invoiceService.createInvoice(
           { ...dto, path_storage: storageKey },
           manager,
+          actor,
         );
         await manager.query(
           'DELETE FROM invoice_uploads WHERE storage_key = $1',
@@ -87,7 +101,13 @@ export class CreateInvoiceUseCase {
         const committed = await this.dataSource
           .getRepository(Invoice)
           .findOneBy({ path_storage: storageKey });
-        if (committed) return committed;
+        if (committed) {
+          await this.invoiceService.assertBusinessAccess(
+            committed.business_id,
+            actor,
+          );
+          return committed;
+        }
         await this.recovery.execute(storageKey);
       } catch {
         this.logger.error({

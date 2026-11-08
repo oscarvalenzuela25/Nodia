@@ -11,7 +11,9 @@ export const mobilePreferencesSchema = z.object({
 });
 export type ShortcutReference = z.infer<typeof referenceSchema>;
 export type MobilePreferences = z.infer<typeof mobilePreferencesSchema>;
-export const shortcutIdentity = (reference: ShortcutReference) => JSON.stringify([reference.groupKey, reference.moduleKey]);
+// Module.key is globally unique; a group is presentation and can change independently.
+// Keep reading the existing v1 references without rewriting a user's saved slots.
+export const shortcutIdentity = (reference: ShortcutReference) => JSON.stringify(reference.moduleKey);
 export const createMobilePreferences = (): MobilePreferences => ({ version: 1, locked: false, slots: [null, null, null, null] });
 export const mobileStorageKey = (ownerId: string) => `nodia:mobile-navigation:v1:${encodeURIComponent(ownerId)}`;
 type State = {

@@ -157,6 +157,23 @@ describe('NodiaAI authorized operation recovery', () => {
     expect(f.store.create).not.toHaveBeenCalled();
     expect(f.preparer.prepare).not.toHaveBeenCalled();
   });
+  it('retains verified historical receipts after authorized incompatible reads and never enables resume', async () => {
+    const f = await completed();
+    const loaded = await f.get.load();
+    loaded.catalogCompatible = false;
+    const original = JSON.stringify([f.execution, f.executionStep]);
+    const result = await f.useCase.execute(f.identity, f.execution.id);
+    expect(result.can_resume).toBe(false);
+    expect(result.steps[0].result_refs).toEqual([
+      { resource_key: 'finance_movements', id: '9007199254740993' },
+    ]);
+    expect(JSON.stringify([f.execution, f.executionStep])).toBe(original);
+    expect(f.store.create).not.toHaveBeenCalled();
+    f.executionStep.minimal_receipt!.subject_user_id = '2';
+    await expect(f.useCase.execute(f.identity, f.execution.id)).rejects.toThrow(
+      'nodia_ai:invalid_persisted_state',
+    );
+  });
   async function financialReceipt(resource: string, operation: string) {
     const f = await completed();
     f.step.tool_name = `nodia_${resource}_prepare_${operation}`;

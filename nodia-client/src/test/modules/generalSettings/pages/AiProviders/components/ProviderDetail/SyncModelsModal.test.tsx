@@ -50,7 +50,7 @@ const mockProvider: AiProviderEntity = {
   key: "gemini",
   name: "Google Gemini",
   is_active: true,
-  mode: "web_session",
+  mode: "agentic",
   fields: {
     available_models: [],
     selected_model: "gemini-flash",
@@ -119,8 +119,8 @@ describe("SyncModelsModal Component", () => {
       expect(aiServices.syncAiProviderModels).toHaveBeenCalledWith(
         "prov-1",
         false,
-        "token_plan_web",
-        "web"
+        "agentic",
+        "agentic"
       );
       expect(screen.getAllByText("3.5 Flash-Lite")[0]).toBeInTheDocument();
       expect(screen.getAllByText("3.8 Flash")[0]).toBeInTheDocument();
@@ -207,7 +207,7 @@ describe("SyncModelsModal Component", () => {
   it("disables save button and displays warning when web session is not operational", async () => {
     const webProvider: AiProviderEntity = {
       ...mockProvider,
-      mode: "web_session",
+      mode: "agentic",
     };
 
     renderWithClient(
@@ -265,8 +265,8 @@ describe("SyncModelsModal Component", () => {
       expect(aiServices.syncAiProviderModels).toHaveBeenCalledWith(
         "prov-1",
         false,
-        "token_plan_web",
-        "web"
+        "agentic",
+        "agentic"
       );
     });
 
@@ -284,7 +284,7 @@ describe("SyncModelsModal Component", () => {
     expect(aiServices.syncAiProviderModels).toHaveBeenCalledTimes(1);
   });
 
-  it("isolates agentic mode: queries agentic engine and saves models into fields.token_plan_agentic", async () => {
+  it("isolates agentic mode: queries agentic engine and saves models into fields.agentic", async () => {
     const handleClose = vi.fn();
     const handleSuccess = vi.fn();
     const user = userEvent.setup();
@@ -294,16 +294,12 @@ describe("SyncModelsModal Component", () => {
         open={true}
         provider={{
           ...mockProvider,
-          default_mode: "token_plan_agentic",
+          default_mode: "agentic",
           fields: {
-            token_plan_agentic: { selected_model: "gemini-flash" },
-            token_plan_web: {
-              available_models: [{ id: "web-model-only" }],
-              selected_model: "web-model-only",
-            },
+            agentic: { selected_model: "gemini-flash" },
           },
         }}
-        mode="token_plan_agentic"
+        mode="agentic"
         isOperational={true}
         onClose={handleClose}
         onSuccess={handleSuccess}
@@ -314,7 +310,7 @@ describe("SyncModelsModal Component", () => {
       expect(aiServices.syncAiProviderModels).toHaveBeenCalledWith(
         "prov-1",
         false,
-        "token_plan_agentic",
+        "agentic",
         "agentic"
       );
     });
@@ -327,12 +323,9 @@ describe("SyncModelsModal Component", () => {
         "prov-1",
         expect.objectContaining({
           fields: expect.objectContaining({
-            token_plan_agentic: expect.objectContaining({
+            agentic: expect.objectContaining({
               available_models: expect.any(Array),
               selected_model: expect.any(String),
-            }),
-            token_plan_web: expect.objectContaining({
-              selected_model: "web-model-only",
             }),
           }),
         })

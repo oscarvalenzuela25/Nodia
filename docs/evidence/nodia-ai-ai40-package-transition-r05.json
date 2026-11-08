@@ -1,0 +1,43 @@
+{
+  "source_archive_sha256": "758df1ce08f19030466eaf915739560e8b8ab1d53d518f4581d31aa3f18ca05c",
+  "source_manifest_sha256": "188d4ca7d251d986862bc8c7edf5f267bc6746f3f2b38a0164fce1c085ae3ef0",
+  "knowledge_release": "5c83848c6eb1a6ce77fa63ad9de38f4dea556f260b6a9646cfceaaf4850db994",
+  "changed_paths": {
+    "dist/nodia-ai-context/config/knowledge-pin.json": {
+      "old": "4dc6c994ae129faba2937c824e4732282668852b03a3879ce43f83a6088e7b66",
+      "new": "4ac64fc3d64b4354b39abff8d3b89560d87fe34d7785bf6a7e375f5f94318c8c"
+    },
+    "dist/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.d.ts": {
+      "old": "bb055b7f4bd510eec01d4ef84524986c33d4a398e4c0e7ffc23193ef46a22b2b",
+      "new": "0c402b8c8616973b1cc26c43cc5e12afd8444ebc33ffbcd80f5dfe7409455001"
+    },
+    "dist/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.js": {
+      "old": "c7cf64964960e4ebbcd41a05fa71ad4f0cc5bc4e27051947ed48f090a4fd39fe",
+      "new": "8c6e9e724163bdd809714c1e117a91527638e68b2301b5e6879e514ec59bd94d"
+    },
+    "dist/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.js.map": {
+      "old": "7ab8f8f04ab3ce0bd8d2c63cfd3a270ae62dcf7c4b5691e2527a1ecf50ff1a87",
+      "new": "9c3c055349d54ea13feff6a3d9a4e0426ecd9590f6d6dfa9cdc231ebf34efd94"
+    },
+    "dist/nodia-ai-runtime/types/nodia-ai-failure-diagnostic.js": {
+      "old": "fd1f408f4815a26e9d220cbd720b2e837cd0f9f4b62c2574e4b3ba1d023d58f1",
+      "new": "86282d743ea3d867a9c9e35759ec9ed22ddee4d4eb39a09c0a8e63b1871f1cb1"
+    },
+    "dist/nodia-ai-runtime/types/nodia-ai-failure-diagnostic.js.map": {
+      "old": "81c8eb6effadbffa66370d107bb2aec0c4795bb0ba9c52227d5a657f6fae4132",
+      "new": "e0a6acec9bad81a75bfc131afe44461d6bd9b69468f98e8a14743c74f84c7848"
+    },
+    "dist/nodia-ai/knowledge/manifest.json": {
+      "old": "ba2674431fc59c77e243e958b6ee8973a8d05909f4121393f96bba97977451ca",
+      "new": "dd288bc860051d5c92590483d9af4436eb0975313afa9ea8bb28ccb41b4e2086"
+    },
+    "src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts": {
+      "old": "9ee49fe24b624499cddb2626002a5048affd52f9af710cdc0c81c9f523d942af",
+      "new": "3fc0c3ee8a5464f76f5f0088fc6220d1d56179216c9caed4763be31cf1922c19"
+    },
+    "src/nodia-ai-runtime/types/nodia-ai-failure-diagnostic.ts": {
+      "old": "aa5d157f5d9392e42130372f1b9e475b33a650796a64f9841ebaf5933706dcdd",
+      "new": "a728b281fe28205f5dc8eb3b5d3c0a249e2c3869064ccb7d67de73088d6a8113"
+    }
+  }
+}

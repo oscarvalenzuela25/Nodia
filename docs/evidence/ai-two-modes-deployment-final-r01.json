@@ -1,0 +1,367 @@
+{
+  "api_health_http": 200,
+  "application": {
+    "backup_operations": 0,
+    "backup_writer_identity_check": "passed_actual_exported_readonly_guard",
+    "columns": [
+      {
+        "column_name": "can_use_agentic",
+        "table_name": "ai_provider_catalog"
+      },
+      {
+        "column_name": "can_use_api_key",
+        "table_name": "ai_provider_catalog"
+      },
+      {
+        "column_name": "use_agentic",
+        "table_name": "ai_providers"
+      },
+      {
+        "column_name": "use_api_key",
+        "table_name": "ai_providers"
+      }
+    ],
+    "compiled_web_routes": {
+      "forbidden_present": [],
+      "source_sha256": "fa924fa69cc817d3d26d7f1f9d5f4d5488313adf37909d04848ac7efcb9d4bb1"
+    },
+    "inferences": 0,
+    "migration": {
+      "count": 1
+    },
+    "native_health_http": 200,
+    "native_openapi": {
+      "forbidden_paths": [],
+      "path_count": 34,
+      "sha256": "6b2411f9983d22194f61c4d7ab4e1b41c91290570f4b1169492a9a3988ea11f2",
+      "status": 200
+    },
+    "provider_modes": [
+      {
+        "count": 3,
+        "default_mode": "agentic"
+      },
+      {
+        "count": 1,
+        "default_mode": null
+      }
+    ],
+    "provider_observations": 0,
+    "read_only": true,
+    "retired_chat_selection_count": 0,
+    "retired_config_count": 0,
+    "retired_web_http": [
+      {
+        "route": "/api/v1/ai-providers/gemini-login/readonly-final-probe",
+        "status": 404
+      },
+      {
+        "route": "/api/v1/ai-providers/gemini-login/readonly-final-probe/frame",
+        "status": 404
+      }
+    ],
+    "sql_quiet": {
+      "active_chats": 0,
+      "active_jobs": 0,
+      "busy_slots": 0,
+      "open_attempts": 0
+    },
+    "sql_table_count": 63,
+    "success": true
+  },
+  "backup_config_paths": {
+    "NODIA_AI_BACKUP_CONFIG": {
+      "expected_path": "/etc/nodia-ai-recovery/backup.json",
+      "matches_expected": true
+    },
+    "NODIA_AI_BACKUP_SCRIPT": {
+      "expected_path": "/opt/nodia/releases/nodia-server-agentic-api-r01/scripts/nodia-ai-backups.mjs",
+      "matches_expected": true
+    },
+    "NODIA_AI_JOURNAL_SCRIPT": {
+      "expected_path": "/opt/nodia/releases/nodia-server-agentic-api-r01/scripts/nodia-ai-journal.mjs",
+      "matches_expected": true
+    },
+    "NODIA_AI_RECOVERY_CONFIG": {
+      "expected_path": "/etc/nodia-ai-recovery/recovery.json",
+      "matches_expected": true
+    }
+  },
+  "backup_env_matches_adoption_witness": true,
+  "backup_last_services": {
+    "nodia-ai-backup-rotate.service": {
+      "ActiveEnterTimestamp": "",
+      "ActiveState": "inactive",
+      "ExecMainExitTimestamp": "Tue 2026-10-27 16:28:48 -03",
+      "ExecMainStatus": "0",
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Result": "success",
+      "SubState": "dead",
+      "WorkingDirectory": ""
+    },
+    "nodia-ai-backup.service": {
+      "ActiveEnterTimestamp": "",
+      "ActiveState": "inactive",
+      "ExecMainExitTimestamp": "Mon 2026-10-26 23:30:23 -03",
+      "ExecMainStatus": "0",
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Result": "success",
+      "SubState": "dead",
+      "WorkingDirectory": ""
+    }
+  },
+  "backup_operations": 0,
+  "backup_timers": {
+    "nodia-ai-backup-rotate.timer": {
+      "ActiveEnterTimestamp": "Tue 2026-10-27 16:12:42 -03",
+      "ActiveState": "active",
+      "LastTriggerUSec": "Tue 2026-10-27 16:28:46 -03",
+      "NextElapseUSecRealtime": "",
+      "Result": "success",
+      "SubState": "waiting"
+    },
+    "nodia-ai-backup.timer": {
+      "ActiveEnterTimestamp": "Tue 2026-10-27 16:12:42 -03",
+      "ActiveState": "active",
+      "LastTriggerUSec": "Mon 2026-10-26 23:30:13 -03",
+      "NextElapseUSecRealtime": "Tue 2026-10-27 23:30:00 -03",
+      "Result": "success",
+      "SubState": "waiting"
+    }
+  },
+  "checked_at_utc": "2026-10-27T19:32:57.680695+00:00",
+  "cutover_state": {
+    "activated_at": null,
+    "backup_env_after_sha256": "e8cc13f9cde7e910d385d9424aa57b9a61b7e86d7eef984bbd7a774bbefb1e22",
+    "backup_writer_paths_adopted": true,
+    "live_boundary": true,
+    "nginx_after_sha256": "c2e3ba6d1face3f753c2d384d8601d5881cb9551a447a267bc34361df6c3e01b",
+    "phase": "activated",
+    "post_adoption_fixes": [
+      {
+        "action": "applied_after_activation",
+        "epoch": 1793129044.0682068,
+        "fix_id": "ai-two-modes-r03-assets-r01",
+        "manifest_sha256": "3098c208b944341a1a8c951a1de0d02b756fe01cda9837cef510897f90809c80",
+        "nginx_before_sha256": "c2e3ba6d1face3f753c2d384d8601d5881cb9551a447a267bc34361df6c3e01b",
+        "nginx_fix_sha256": "acc10e6bc2dbac4a7655fd5d2b022f511f01d7c79a0526bf78a95109f7223c30",
+        "ttf_included": true
+      }
+    ]
+  },
+  "inferences": 0,
+  "native_container": {
+    "expected_image": true,
+    "health": "healthy",
+    "image": "sha256:4b990e3e8c60077fceb06ac5018025a5ef80353297fe92affc8b20fe53915fa9",
+    "restart_count": 0,
+    "status": "running"
+  },
+  "native_quiet": {
+    "counts": {
+      "active_agentic_cli_processes": 0,
+      "active_codex_cli_processes": 0,
+      "codex_chat_nonterminal": 0,
+      "codex_chat_unacknowledged": 0,
+      "codex_login_nonterminal": 0,
+      "codex_login_unacknowledged": 0,
+      "codex_profile_locks": 0,
+      "gemini_login_nonterminal": 0,
+      "gemini_login_unacknowledged": 0,
+      "inspection_errors": 0,
+      "native_proofs_nonterminal": 0,
+      "native_proofs_terminal": 0,
+      "unknown_markers": 0
+    },
+    "inference_requests": 0,
+    "native_roots_valid": true,
+    "private_data_output": false,
+    "quiet": true,
+    "schema_version": 1,
+    "session_files_read": false,
+    "state_modified": false
+  },
+  "nginx_configuration_valid": true,
+  "pins": {
+    "/etc/nginx/mime.types": {
+      "matches_expected": true,
+      "sha256": "29f1bffad725815beb52aa8d01823a3d85d6613f43466dfab79762c55bd9f096"
+    },
+    "/etc/nginx/sites-enabled/nodia-lab": {
+      "matches_expected": true,
+      "sha256": "acc10e6bc2dbac4a7655fd5d2b022f511f01d7c79a0526bf78a95109f7223c30"
+    },
+    "/opt/nodia/operations/ai-two-modes-r01/docker-compose.json": {
+      "matches_expected": true,
+      "sha256": "a90eeefab8bb1d9db9a8a9ebcdf8f28b4b1c5d7e95184ba9ede2c5bf57392b38"
+    },
+    "/opt/nodia/releases/nodia-client-agentic-api-r01/release-manifest.json": {
+      "matches_expected": true,
+      "sha256": "86bdf6b977061d469d65fe76fe1525c099997edc84127379e478c1b005187740"
+    },
+    "/opt/nodia/releases/nodia-server-agentic-api-r01/release-manifest.json": {
+      "matches_expected": true,
+      "sha256": "5771c60b6ab896a51f5486ac0082c0d5a91c9a3d54b2a992004632cb4509dfad"
+    },
+    "/opt/nodia/releases/nodia-server-agentic-api-r01/scripts/nodia-ai-backups.mjs": {
+      "matches_expected": true,
+      "sha256": "54a7244d31b94281783965114f301dbf07c937eb53957cb6de0c653957e7abeb"
+    },
+    "/opt/nodia/releases/nodia-server-agentic-api-r01/scripts/nodia-ai-journal.mjs": {
+      "matches_expected": true,
+      "sha256": "c675014a129a00a55f74a9794607c5bc064dd90e6bad0e3d3bbc409af446d8dd"
+    },
+    "/opt/nodia/releases/nodia-server-agentic-api-r01/scripts/retire-web-ai-modes.mjs": {
+      "matches_expected": true,
+      "sha256": "4b224220fe20e87a5665b133f66911502985103aff3d371c1bb6f65c39a8aed0"
+    }
+  },
+  "provider_observations": 0,
+  "read_only": true,
+  "schema_version": 1,
+  "services": {
+    "nginx.service": {
+      "ActiveEnterTimestamp": "Sat 2026-10-24 13:27:28 -03",
+      "ActiveState": "active",
+      "ExecMainExitTimestamp": "",
+      "ExecMainStatus": "0",
+      "MainPID": "3630787",
+      "NRestarts": "0",
+      "Result": "success",
+      "SubState": "running",
+      "WorkingDirectory": ""
+    },
+    "nodia-ai-worker.service": {
+      "ActiveEnterTimestamp": "Tue 2026-10-27 16:05:12 -03",
+      "ActiveState": "active",
+      "ExecMainExitTimestamp": "",
+      "ExecMainStatus": "0",
+      "MainPID": "1246528",
+      "NRestarts": "0",
+      "Result": "success",
+      "SubState": "running",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-agentic-api-r01",
+      "actual_cwd": "/opt/nodia/releases/nodia-server-agentic-api-r01"
+    },
+    "nodia-api.service": {
+      "ActiveEnterTimestamp": "Tue 2026-10-27 16:05:12 -03",
+      "ActiveState": "active",
+      "ExecMainExitTimestamp": "",
+      "ExecMainStatus": "0",
+      "MainPID": "1246527",
+      "NRestarts": "0",
+      "Result": "success",
+      "SubState": "running",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-agentic-api-r01",
+      "actual_cwd": "/opt/nodia/releases/nodia-server-agentic-api-r01"
+    },
+    "nodia-gemini-lab.service": {
+      "ActiveEnterTimestamp": "Tue 2026-10-27 15:32:42 -03",
+      "ActiveState": "active",
+      "ExecMainExitTimestamp": "Tue 2026-10-27 15:32:42 -03",
+      "ExecMainStatus": "0",
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Result": "success",
+      "SubState": "exited",
+      "WorkingDirectory": "/opt/nodia/nodia-gemini-microservice"
+    }
+  },
+  "success": true,
+  "task": "ai_two_modes_deployment_final_readonly_acceptance",
+  "scope": {
+    "mutations": 0,
+    "provider_observations": 0,
+    "api_inferences": 0,
+    "agentic_inferences": 0,
+    "migrations_executed": 0,
+    "backup_writer_runs": 0,
+    "credentials_or_private_configs_emitted": false,
+    "service_changes": 0,
+    "claim": "Point-in-time deployed process, transport, schema, configuration, timer and quiescence verification; inference acceptance is recorded separately."
+  },
+  "backup_acceptance": {
+    "live_writer_identity_guard": "passed",
+    "public_backup_and_journal_script_pins": "passed",
+    "adopted_private_environment_CAS": "passed",
+    "private_configuration_paths": "passed",
+    "backup_and_rotation_timers": "active",
+    "last_backup_create_success_local": "Tue 2026-10-27 16:33:38 -03",
+    "last_rotation_success_local": "2026-10-27 16:28:48 -03:00",
+    "post_adoption_backup_create_proven": true,
+    "recommendation": "Post-adoption encrypted backup creation and stored-object integrity now passed through the adopted operational writer. A restore drill of this exact new encrypted object remains a separate operation; it was not performed by this audit.",
+    "existing_recovery_evidence": "docs/evidence/2026-10-27-ai-two-modes-private-db-copy-rehearsal.json",
+    "existing_recovery_limit": "Pre-migration private backup restore/up/down rehearsal passed. It does not prove a new encrypted operational backup after adoption."
+  },
+  "historical_state_handling": {
+    "coordinator_phase": "activated",
+    "live_boundary": true,
+    "original_nginx_after_sha256_preserved": "c2e3ba6d1face3f753c2d384d8601d5881cb9551a447a267bc34361df6c3e01b",
+    "post_adoption_nginx_fix_witness_present": true,
+    "no_state_rewrite_in_this_audit": true
+  },
+  "collection": {
+    "remote_stdout_sha256": "3a2f00790e08a424f7f02c94c7ab0b23cda24a6089e2856bbf84099335b1e134",
+    "node_probe_sha256": "d2f93c2eec7dbfe7edc60a2cd9a67601f4050e48467ce34cadfdad6670b96bf3",
+    "readonly_orchestrator_sha256": "71710b02fe248d220abf295a6b5ab53fdea982bb8ff34ee0bccc7abbeb7b70ae",
+    "native_quiet_checker_sha256": "f32df1a3ff420ebc11ca3a7f8874c85248623ad1e52ed6e86a265342f797eb7f",
+    "private_stderr_emitted": false,
+    "probe_temporary_files_required_for_live_runtime": false
+  },
+  "limits": [
+    "Readonly health/configuration and an empty queue do not prove every provider feature; paid API and real SDK acceptances are separate preserved receipts.",
+    "API-key NodiaAI chat remains unavailable until a compatible adapter passes the provider gate; API-key invoice OCR is preserved.",
+    "Deployed knowledge release remains the pinned f873 release; later authoring knowledge updates are not represented as deployed by this receipt.",
+    "The exact new encrypted backup was not decrypted/restored in this audit; the pre-migration isolated backup restore/up/down rehearsal remains separate evidence."
+  ],
+  "post_adoption_backup_verification": {
+    "backup": {
+      "backup_id": "cf9ce84d-a285-4a91-8285-e5c7ab9b96fc",
+      "captured_at": "2026-10-27T19:33:32.964Z",
+      "cipher_bytes": 2674183,
+      "cipher_sha256": "358c5b76e7e189e5d9077909d1ad20e421012ef317180df94c4cfeb8740e0e3d",
+      "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+      "expires_at": "2026-11-03T19:33:32.964Z",
+      "journal_sequence": 1,
+      "status": "ready"
+    },
+    "backup_create_requests": 0,
+    "backup_service": {
+      "ActiveState": "inactive",
+      "ExecMainExitTimestamp": "Tue 2026-10-27 16:33:38 -03",
+      "ExecMainStatus": "0",
+      "Result": "success",
+      "SubState": "dead",
+      "ExecMainStartTimestamp": "Tue 2026-10-27 16:33:30 -03"
+    },
+    "checked_at_utc": "2026-10-27T19:34:21.009Z",
+    "encrypted_object_verified": true,
+    "journal": {
+      "closed": false,
+      "last_sequence": 1,
+      "unconfirmed": 0
+    },
+    "live_writer_guard_passed": true,
+    "new_backup_count": 1,
+    "object_read_operations": {
+      "get": 1,
+      "head": 1,
+      "if_match": true
+    },
+    "read_only": true,
+    "retention_exactly_seven_days": true,
+    "retries": 0,
+    "service_ready_receipts": 1,
+    "storage_write_requests": 0,
+    "success": true,
+    "successful_service_receipt_matches_object": true,
+    "timestamp_source": "VM system UTC and systemd local -03 timestamps; not compared with the operator host clock. No clock changed.",
+    "restore_drill_performed": false,
+    "claim": "New post-adoption encrypted operational backup is ready in the external catalogue. The exact object was verified with conditional HEAD/GET, streamed SHA256 and byte count; no plaintext was decrypted, copied or restored.",
+    "collection_sha256": "77c823602dd5d59acce250ac4639e89b26f6ba13fdb9450d46e87c25c065080b",
+    "create_executed_by": "Root, one start of existing nodia-ai-backup.service; this audit performed only readonly checks."
+  },
+  "timestamp_source": "VM clock for checked_at_utc and all collected service/backup timestamps. Operator host clock was not used for ordering; no clock adjustment."
+}

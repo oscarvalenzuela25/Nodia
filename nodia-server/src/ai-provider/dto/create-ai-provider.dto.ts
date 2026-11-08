@@ -3,7 +3,6 @@ import {
   IsBoolean,
   IsEnum,
   IsIn,
-  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -38,18 +37,15 @@ export class CreateAiProviderDto {
   @IsBoolean()
   use_api_key?: boolean;
 
-  @IsOptional()
-  @IsBoolean()
-  use_token_plan_web?: boolean;
 
   @IsOptional()
   @IsBoolean()
-  use_token_plan_agentic?: boolean;
+  use_agentic?: boolean;
 
   @IsOptional()
   @IsString()
-  @IsIn(['api_key', 'token_plan_web', 'token_plan_agentic'])
-  default_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
+  @IsIn(['api_key', 'agentic'])
+  default_mode?: 'api_key' | 'agentic' | null;
 
   @IsOptional()
   @IsBoolean()

@@ -10,6 +10,7 @@ import {
   type Relation,
 } from 'typeorm';
 import { Product } from './product.entity.js';
+import type { ProductMeasurementUnit } from '../product-measurement-unit.js';
 
 @Entity({
   name: 'product_logs',
@@ -22,8 +23,11 @@ export class ProductLog {
   @Column({ type: 'bigint' })
   product_id: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  code: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  code: string | null;
+
+  @Column({ type: 'varchar', length: 16, default: 'unit' })
+  measurement_unit: ProductMeasurementUnit;
 
   @Column({ type: 'varchar', length: 255 })
   name: string;
@@ -35,13 +39,40 @@ export class ProductLog {
   cost_price_tax: number;
 
   @Column({ type: 'integer' })
-  profit_percentage: number;
-
-  @Column({ type: 'integer' })
   sale_price: number;
 
   @Column({ type: 'integer', default: 0 })
   stock: number;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  barcode: string | null;
+
+  @Column({ type: 'integer', nullable: true })
+  offer_price: number | null;
+
+  @Column({ type: 'boolean', nullable: true })
+  is_offer_enabled: boolean | null;
+
+  @Column({ type: 'boolean', nullable: true })
+  has_stock: boolean | null;
+
+  @Column({ type: 'integer', nullable: true })
+  product_version: number | null;
+
+  @Column({ type: 'varchar', length: 40, default: 'legacy' })
+  event_type: string;
+
+  @Column({ type: 'varchar', length: 40, default: 'legacy' })
+  source: string;
+
+  @Column({ type: 'bigint', nullable: true })
+  actor_id: string | null;
+
+  @Column({ type: 'jsonb', default: () => "'[]'" })
+  changed_fields: string[];
+
+  @Column({ type: 'uuid', nullable: true })
+  image_id: string | null;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

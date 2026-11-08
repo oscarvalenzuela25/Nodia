@@ -1,0 +1,339 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "status": "implemented_deployed_verified_physical_print_pending",
+  "presentation": {
+    "summary": "same receipt except no product rows",
+    "detailed": "same receipt with product rows",
+    "confirmation_show_details_default": false,
+    "reset_each_open": true,
+    "failed_checkout_preserves_choice": true,
+    "saved_panel_rows": [
+      [
+        "cancel_sale",
+        "print_summary"
+      ],
+      [
+        "print_detailed_full_width"
+      ]
+    ],
+    "retained_receipt_formats": [
+      "summary",
+      "detailed"
+    ],
+    "duplicate_retained_receipt_hidden_when_same_saved_sale": true
+  },
+  "contracts": {
+    "server_changes": false,
+    "database_changes": false,
+    "migrations": 0,
+    "new_permissions_or_AI_tools": 0,
+    "builders_omitted_option_default": "detailed for compatibility",
+    "UI_explicit_selection": true,
+    "summary_validates_complete_cart_and_saved_sale": true,
+    "reprint": "authorized fresh GET, confirmed snapshot only",
+    "print_before_save": false,
+    "extra_commercial_POST_for_print": false,
+    "Chrome_or_printer_settings_changes": false
+  },
+  "validation": {
+    "initial_focals": {
+      "files": 4,
+      "tests": 37,
+      "seconds": 11.5,
+      "note": "followed by one test-only assertion for preserving enabled switch on failure; full final suite includes it"
+    },
+    "types": {
+      "exit": 0,
+      "scope": "global final sources"
+    },
+    "lint": {
+      "exit": 0,
+      "scope": "global final sources"
+    },
+    "QA": {
+      "status": "passed",
+      "summary_sha256": "6db61efcdc0f847f616f35b4f2b7b5d6f1c6c9bb03933a9e087de302f43e281d",
+      "languages_themes": [
+        "es-dark",
+        "en-light"
+      ],
+      "widths": [
+        320,
+        390,
+        600,
+        1569
+      ],
+      "switch_default_off": true,
+      "failure_keeps_choice": true,
+      "same_fields_except_lines": true,
+      "print_documents_captured": 12,
+      "representative_HTML": 4,
+      "screenshots": 33,
+      "physical_prints": 0,
+      "VM_domain_writes": 0,
+      "mobile_clipping_found_then_fixed": true,
+      "actual_usage_readonly": "qa/usage-readonly-root.json"
+    },
+    "full_suite_before_final_CSS": {
+      "files": 293,
+      "tests": 2458,
+      "seconds": 277.01,
+      "log": "qa/pos-r22-client-all-final.log"
+    },
+    "final_focals_after_CSS": {
+      "files": 4,
+      "tests": 37,
+      "seconds": 15.54,
+      "log": "qa/pos-r22-focals-final.log"
+    },
+    "build": {
+      "seconds": 33.56,
+      "exit": 0,
+      "warnings": "existing API633.97kB chunk and plugin timing; no performance claim"
+    },
+    "operator_guards": 19,
+    "final_integrity": "qa/final-checks-root.json"
+  },
+  "deployment": {
+    "status": "activated_verified",
+    "client_only": true,
+    "kit": "ops/lab/artifacts/business-pos-receipt-detail-20261030-r22",
+    "release": "/opt/nodia/releases/nodia-client-business-pos-receipt-detail-20261030-r22",
+    "manifest_sha256": "c13c8a5396700b3078e863bf1a159acd28e8f2f5d2f363f72cc8d4d7d328a22d",
+    "index_sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+    "nginx_sha256": "aa1c803c2432271450436d21778db905f969e67bab96a50be2bc8e4189549a64",
+    "source_input_fingerprint_sha256": "6391a06ce144b74fcd231dadcbf5b16c7a29e632b2bf47478ac5901b20b18fb3",
+    "source_inputs": 1267,
+    "changed_paths": 9,
+    "production_paths": 6,
+    "test_paths": 3,
+    "static_files": 173,
+    "current_assets": 169,
+    "previous_assets": 46,
+    "backup_before": true,
+    "fallback_R21_preserved": true,
+    "reloads": 1,
+    "rollback": false,
+    "replay": false,
+    "stabilization": {
+      "required_consecutive_rounds": 3,
+      "rounds": [
+        {
+          "consecutive": 0,
+          "round": 1,
+          "spa": [
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "route": "/",
+              "sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+              "status": 200,
+              "verified": false
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "route": "/tools/nodia-ai",
+              "sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+              "status": 200,
+              "verified": false
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "route": "/tools/business",
+              "sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+              "status": 200,
+              "verified": false
+            }
+          ]
+        },
+        {
+          "consecutive": 1,
+          "round": 2,
+          "spa": [
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "route": "/",
+              "sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "status": 200,
+              "verified": true
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "route": "/tools/nodia-ai",
+              "sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "status": 200,
+              "verified": true
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "route": "/tools/business",
+              "sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "status": 200,
+              "verified": true
+            }
+          ]
+        },
+        {
+          "consecutive": 2,
+          "round": 3,
+          "spa": [
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "route": "/",
+              "sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "status": 200,
+              "verified": true
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "route": "/tools/nodia-ai",
+              "sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "status": 200,
+              "verified": true
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "route": "/tools/business",
+              "sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "status": 200,
+              "verified": true
+            }
+          ]
+        },
+        {
+          "consecutive": 3,
+          "round": 4,
+          "spa": [
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "route": "/",
+              "sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "status": 200,
+              "verified": true
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "route": "/tools/nodia-ai",
+              "sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "status": 200,
+              "verified": true
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "route": "/tools/business",
+              "sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "status": 200,
+              "verified": true
+            }
+          ]
+        }
+      ]
+    },
+    "protected_runtime_preserved": true,
+    "SQL": 0,
+    "migrations": 0,
+    "provider_requests": 0,
+    "auth_requests": 0,
+    "API_worker_native_restarts": 0,
+    "receipts": [
+      {
+        "path": "client/bootstrap-observed-root-r01.json",
+        "sha256": "61c0c9c776dc9edb19718d122f2c44319aea0e33229ae7f98d025f4d3265ccd0"
+      },
+      {
+        "path": "client/preflight-bound-root-r01.json",
+        "sha256": "e91e8623f37aa3128c6460d48c09b3777e632b41970fbc0bf2bc4a8c053cd74f"
+      },
+      {
+        "path": "client/stage-observed-root-r01.json",
+        "sha256": "a19dacf00219bf933c544db441c9fd2d5a6941aa4efb16e35a6d4b2fb7ec8281"
+      },
+      {
+        "path": "client/activate-observed-root-r01.json",
+        "sha256": "a9685b28092ddcb3f0a0a41fd573ff9c2923bfe515ff0b55eeba6f64059b5b99"
+      },
+      {
+        "path": "client/status-observed-root-r01.json",
+        "sha256": "4e7b8660eb24cfbd5bea5fb854c2587af007f801548c53233898d1aa04dd09d9"
+      }
+    ],
+    "kit_catalog_sha256": "0bd6cfbbfb4f4ad0f519162b3177e06cc9e2a08e758613db2bbb144ec040241e"
+  },
+  "knowledge": {
+    "candidate_revisions": {
+      "businesses": 39,
+      "businesses.multi-sale-workspace": 10,
+      "businesses.manual-sale-ticket-printing": 3
+    },
+    "approval": null,
+    "runtime_release_preserved": "070212946febc8cb3315d5115093b95c93cf23efab88076acc4f57836069dc75",
+    "approved_documents": 44,
+    "approved_document_integrity": {
+      "count": 44,
+      "mismatches": 0,
+      "evidence": "qa/approved-document-integrity.json"
+    },
+    "authoring_verification": {
+      "prepare_exit": 0,
+      "check_exit": 0,
+      "release_id": "fa6cf46c73c644a7b2646ae2afd3593dc403918097ff8641fd6ebb1ade0bcfce",
+      "sources": 78,
+      "excluded_drafts": 34,
+      "documents": 44,
+      "fragments": 46,
+      "capability_contracts": 153,
+      "runtime_adoption": false,
+      "active_runtime_release_preserved": "070212946febc8cb3315d5115093b95c93cf23efab88076acc4f57836069dc75"
+    }
+  },
+  "limits": [
+    "Native printer/spool and physical80mm output remain untested; no PDF generated in R22 because production transport is unchanged from R20.",
+    "Opera qualification is separate from the configured Chrome shortcut and UI validation.",
+    "Responsive QA uses desktop viewport resizing; no physical phone or virtual keyboard tested.",
+    "Real usage inspection is read-only and empty-sale; saved-sale buttons and checkout choices were exercised only in isolated synthetic QA.",
+    "No new knowledge approval/publication, AI authority or printer/Chrome configuration changes."
+  ],
+  "finished_on": "2026-10-31",
+  "cleanup": {
+    "own_browser_tab_closed": 11,
+    "agent_CLI_closed": 3,
+    "verified_owned_Vite_stopped": 164832,
+    "original_tabs_and_5174_tunnel_preserved": true
+  }
+}

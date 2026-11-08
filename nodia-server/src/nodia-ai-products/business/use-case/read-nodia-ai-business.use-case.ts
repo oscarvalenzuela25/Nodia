@@ -17,6 +17,7 @@ import { GetAllInvoicesUseCase } from '../../../invoice/use-case/get-all-invoice
 import { ProductService } from '../../../product/product.service.js';
 import { Product } from '../../../product/entities/product.entity.js';
 import { ProductLog } from '../../../product/entities/product-log.entity.js';
+import { CheckModuleAccessUseCase } from '../../../authorization/use-case/check-module-access.use-case.js';
 import { GetProductByIdUseCase } from '../../../product/use-case/get-product-by-id.use-case.js';
 import { GetAllProductsUseCase } from '../../../product/use-case/get-all-products.use-case.js';
 import { GetProductLogByIdUseCase } from '../../../product/use-case/get-product-log-by-id.use-case.js';
@@ -32,6 +33,11 @@ import { GetProviderContactsUseCase } from '../../../provider-contact/use-case/g
 import { TranslationService } from '../../../translation/translation.service.js';
 import { Translation } from '../../../translation/entities/translation.entity.js';
 import { UserRole } from '../../../user/entities/user-role.entity.js';
+import {
+  assertBusinessResourcesAccess,
+  resolveBusinessAccess,
+  type BusinessDataResource,
+} from '../../../business-access/business-access.js';
 import type { NodiaAiToolHandlerContext } from '../../../nodia-ai-tools/types/tool-registry.types.js';
 import type {
   NodiaAiJsonObject,
@@ -55,7 +61,6 @@ export type BusinessReadOperation =
 const prices = [
   'cost_price',
   'cost_price_tax',
-  'profit_percentage',
   'sale_price',
   'stock',
 ] as const;
@@ -63,10 +68,12 @@ const common = ['id', 'is_active', 'created_at', 'updated_at'] as const;
 type PublicRow = Record<string, unknown>;
 function project(row: PublicRow, fields: readonly string[]): NodiaAiJsonObject {
   return Object.fromEntries(
-    fields.map((key) => {
-      const value = row[key];
-      return [key, value instanceof Date ? value.toISOString() : value];
-    }),
+    fields
+      .filter((key) => Object.hasOwn(row, key))
+      .map((key) => {
+        const value = row[key];
+        return [key, value instanceof Date ? value.toISOString() : value];
+      }),
   ) as NodiaAiJsonObject;
 }
 function businessService(manager: EntityManager): BusinessService {
@@ -119,16 +126,30 @@ function publicRow(resource: string, row: unknown): NodiaAiJsonObject {
         'business_id',
         'provider_id',
         'code',
+        'measurement_unit',
         'name',
         ...prices,
+        'barcode',
+        'offer_price',
+        'is_offer_enabled',
+        'has_stock',
+        'version',
+        'effective_price',
+        'price_source',
       ]);
     case 'product_logs':
       return project(value, [
         'id',
         'product_id',
         'code',
+        'measurement_unit',
         'name',
         ...prices,
+        'barcode',
+        'offer_price',
+        'is_offer_enabled',
+        'has_stock',
+        'product_version',
         'created_at',
         'updated_at',
       ]);
@@ -179,8 +200,14 @@ export class ReadNodiaAiBusinessUseCase {
     if (!context.manager.queryRunner?.isTransactionActive)
       throw new ForbiddenException('authorization:transaction_required');
     this.validateIds(input);
-    if (!context.moduleRoutes.includes('/tools/business'))
+    if (!context.moduleRoutes.includes('/business'))
       throw new ForbiddenException('nodia_ai:module_not_allowed');
+    const actor = {
+      userId: context.actor.actorId,
+      sessionId: context.actor.sessionId,
+      transaction: context.manager,
+    };
+    const scope = await resolveBusinessAccess(context.manager, actor);
     if (operation === 'businesses_get') {
       await new GetBusinessByIdUseCase(
         businessService(context.manager),
@@ -189,13 +216,24 @@ export class ReadNodiaAiBusinessUseCase {
     if (
       operation === 'businesses_list' &&
       input.all_businesses === true &&
-      !context.actor.isSuperAdmin
+      !scope.isSuperAdmin
     )
       throw new ForbiddenException('nodia_ai:business_scope_not_allowed');
+    if (operation.endsWith('_get') && operation !== 'businesses_get')
+      await assertBusinessResourcesAccess(
+        context.manager,
+        actor,
+        operation.replace(/_get$/, '') as BusinessDataResource,
+        [String(input.id)],
+      );
     if (operation === 'provider_contacts_list') {
       await new GetProviderByIdUseCase(
         new ProviderService(context.manager.getRepository(Provider)),
-      ).execute(String(input.provider_id));
+      ).execute(String(input.provider_id), {
+        userId: context.actor.actorId,
+        sessionId: context.actor.sessionId,
+        transaction: context.manager,
+      });
     }
   }
 
@@ -206,6 +244,11 @@ export class ReadNodiaAiBusinessUseCase {
     result: NodiaAiJsonObject,
     context: NodiaAiToolHandlerContext,
   ): Promise<void> {
+    context.signal?.throwIfAborted();
+    if (!context.manager.queryRunner?.isTransactionActive)
+      throw new ForbiddenException('authorization:transaction_required');
+    if (!context.moduleRoutes.includes('/business'))
+      throw new ForbiddenException('nodia_ai:module_not_allowed');
     const data = result.data;
     if (operation.endsWith('_get')) {
       if (
@@ -217,6 +260,7 @@ export class ReadNodiaAiBusinessUseCase {
         data.id.toLowerCase() !== input.id.toLowerCase()
       )
         throw new ForbiddenException('nodia_ai:business_result_scope_invalid');
+      await this.verifyAuthority(operation, input, context);
       return;
     }
     if (
@@ -231,10 +275,35 @@ export class ReadNodiaAiBusinessUseCase {
       )
     )
       throw new ForbiddenException('nodia_ai:business_result_scope_invalid');
-    if (operation !== 'businesses_list' || context.actor.isSuperAdmin) return;
     if (!Array.isArray(data))
       throw new BadRequestException('nodia_ai:business_result_invalid');
+    if (
+      data.some(
+        (row) =>
+          !row ||
+          typeof row !== 'object' ||
+          Array.isArray(row) ||
+          typeof row.id !== 'string',
+      )
+    )
+      throw new BadRequestException('nodia_ai:business_result_invalid');
     const ids = data.map((row) => String((row as NodiaAiJsonObject).id));
+    const actor = {
+      userId: context.actor.actorId,
+      sessionId: context.actor.sessionId,
+      transaction: context.manager,
+    };
+    if (operation !== 'businesses_list') {
+      await assertBusinessResourcesAccess(
+        context.manager,
+        actor,
+        operation.replace(/_(list|query)$/, '') as BusinessDataResource,
+        ids,
+      );
+      return;
+    }
+    const scope = await resolveBusinessAccess(context.manager, actor);
+    if (scope.isSuperAdmin) return;
     if (!ids.length) return;
     // Collaborator writers lock the business row before changing membership.
     // Lock before the fresh membership check, including replayed list results.
@@ -267,8 +336,14 @@ export class ReadNodiaAiBusinessUseCase {
       new ProductService(
         manager.getRepository(Product),
         manager.getRepository(ProductLog),
+        new CheckModuleAccessUseCase(manager.connection),
       );
     const invoices = () => new InvoiceService(manager.getRepository(Invoice));
+    const invoiceActor = {
+      userId: context.actor.actorId,
+      sessionId: context.actor.sessionId,
+      transaction: manager,
+    };
     const providers = () =>
       new ProviderService(manager.getRepository(Provider));
     let result: unknown;
@@ -294,57 +369,84 @@ export class ReadNodiaAiBusinessUseCase {
       case 'invoices_get':
         result = await new GetInvoiceByIdUseCase(invoices()).execute(
           String(input.id),
+          invoiceActor,
         );
         break;
       case 'invoices_list':
-        result = await new GetAllInvoicesUseCase(invoices()).execute({
-          ...page(input),
-          q: filters(input, true),
-        });
+        result = await new GetAllInvoicesUseCase(invoices()).execute(
+          {
+            ...page(input),
+            q: filters(input, true),
+          },
+          invoiceActor,
+        );
         break;
       case 'products_get':
         result = await new GetProductByIdUseCase(products()).execute(
           String(input.id),
+          { userId: context.actor.actorId, sessionId: context.actor.sessionId },
         );
         break;
       case 'products_list':
-        result = await new GetAllProductsUseCase(products()).execute({
-          ...page(input),
-          q: filters(input, true),
-        });
+        result = await new GetAllProductsUseCase(products()).execute(
+          {
+            ...page(input),
+            q: filters(input, true),
+          },
+          { userId: context.actor.actorId, sessionId: context.actor.sessionId },
+        );
         break;
       case 'product_logs_get':
         result = await new GetProductLogByIdUseCase(products()).execute(
           String(input.id),
+          { userId: context.actor.actorId, sessionId: context.actor.sessionId },
         );
         break;
       case 'product_logs_list':
-        result = await new GetAllProductLogsUseCase(products()).execute({
-          ...page(input),
-          q: filters(input, false),
-        });
+        result = await new GetAllProductLogsUseCase(products()).execute(
+          {
+            ...page(input),
+            q: filters(input, false),
+          },
+          { userId: context.actor.actorId, sessionId: context.actor.sessionId },
+        );
         break;
       case 'product_logs_query':
-        result = await new QueryProductLogsUseCase(products()).execute({
-          ...page(input),
-          q: filters(input, false),
-          ...(input.product_ids
-            ? { product_ids: input.product_ids as string[] }
-            : {}),
-          ...(input.codes ? { codes: input.codes as string[] } : {}),
-          ...(input.s ? { s: String(input.s) } : {}),
-        });
+        result = await new QueryProductLogsUseCase(products()).execute(
+          {
+            ...page(input),
+            q: filters(input, false),
+            ...(input.product_ids
+              ? { product_ids: input.product_ids as string[] }
+              : {}),
+            ...(input.codes ? { codes: input.codes as string[] } : {}),
+            ...(input.s ? { s: String(input.s) } : {}),
+          },
+          { userId: context.actor.actorId, sessionId: context.actor.sessionId },
+        );
         break;
       case 'providers_get':
         result = await new GetProviderByIdUseCase(providers()).execute(
           String(input.id),
+          {
+            userId: context.actor.actorId,
+            sessionId: context.actor.sessionId,
+            transaction: manager,
+          },
         );
         break;
       case 'providers_list':
-        result = await new GetAllProvidersUseCase(providers()).execute({
-          ...page(input),
-          q: filters(input, true),
-        });
+        result = await new GetAllProvidersUseCase(providers()).execute(
+          {
+            ...page(input),
+            q: filters(input, true),
+          },
+          {
+            userId: context.actor.actorId,
+            sessionId: context.actor.sessionId,
+            transaction: manager,
+          },
+        );
         break;
       case 'provider_contacts_list':
         result = await new GetProviderContactsUseCase(
@@ -360,6 +462,11 @@ export class ReadNodiaAiBusinessUseCase {
             ...(input.search ? { search: String(input.search) } : {}),
           },
           activity(input),
+          {
+            userId: context.actor.actorId,
+            sessionId: context.actor.sessionId,
+            transaction: manager,
+          },
         );
         break;
       default:

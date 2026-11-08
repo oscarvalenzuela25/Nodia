@@ -30,13 +30,14 @@ describe('GetInvoiceViewUrlUseCase', () => {
     const id = 'inv-123';
     const mockInvoice = {
       id,
-      business_id: 'biz-001',
+      business_id: '11111111-1111-4111-8111-111111111111',
       code: 'INV-2026-001',
-      path_storage: 'invoices/biz-001/17000000-receipt.pdf',
+      path_storage:
+        'invoices/11111111-1111-4111-8111-111111111111/17000000-receipt.pdf',
     };
 
     const mockSignedUrl =
-      'https://account-id.r2.cloudflarestorage.com/invoices/biz-001/17000000-receipt.pdf?signature=abc';
+      'https://account-id.r2.cloudflarestorage.com/invoices/11111111-1111-4111-8111-111111111111/17000000-receipt.pdf?signature=abc';
 
     vi.mocked(invoiceServiceMock.findOneInvoice!).mockResolvedValue(
       mockInvoice as any,
@@ -49,11 +50,12 @@ describe('GetInvoiceViewUrlUseCase', () => {
 
     expect(invoiceServiceMock.findOneInvoice).toHaveBeenCalledWith(id);
     expect(storageServiceMock.getSignedFileUrl).toHaveBeenCalledWith(
-      'invoices/biz-001/17000000-receipt.pdf',
+      'invoices/11111111-1111-4111-8111-111111111111/17000000-receipt.pdf',
     );
     expect(result).toEqual({
       url: mockSignedUrl,
-      path_storage: 'invoices/biz-001/17000000-receipt.pdf',
+      path_storage:
+        'invoices/11111111-1111-4111-8111-111111111111/17000000-receipt.pdf',
     });
   });
 
@@ -61,7 +63,7 @@ describe('GetInvoiceViewUrlUseCase', () => {
     const id = 'inv-empty-path';
     const mockInvoice = {
       id,
-      business_id: 'biz-001',
+      business_id: '11111111-1111-4111-8111-111111111111',
       code: 'INV-2026-002',
       path_storage: '',
     };
@@ -78,7 +80,7 @@ describe('GetInvoiceViewUrlUseCase', () => {
     const id = 'inv-whitespace-path';
     const mockInvoice = {
       id,
-      business_id: 'biz-001',
+      business_id: '11111111-1111-4111-8111-111111111111',
       code: 'INV-2026-003',
       path_storage: '   ',
     };

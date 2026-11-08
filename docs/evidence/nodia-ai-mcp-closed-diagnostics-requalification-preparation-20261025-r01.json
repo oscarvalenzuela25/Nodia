@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "status": "prepared_offline_pending_real_instrumented_adoption",
+  "scope": "new independent MCP+PNG+PDF+WAV+WebM control; diagnostics not a causal fix",
+  "artifact": "ops/lab/artifacts/c03-mcp-closed-diagnostics-requalification-r01",
+  "work": "/opt/nodia/verification/c03-mcp-closed-diagnostics-requalification-live-r01",
+  "template_unbound_fields": [
+    "target_image",
+    "epoch",
+    "adoption_plan_sha256",
+    "adoption_plan",
+    "adoption_report"
+  ],
+  "new_image_or_epoch_invented": false,
+  "lineage_sha256": "8c51473979b026408217c42dd30d88c912e1d2125d7871ba24890173cedc45d2",
+  "verification": {
+    "schema_version": 1,
+    "status": "offline_guard_tests_passed_no_operational_acceptance",
+    "tests": 20,
+    "passed": 20,
+    "failed": 0,
+    "platform": "Windows_POSIX_boundaries_isolated",
+    "test_log": {
+      "path": ".tmp/c03-continuation-r01/mcp-closed-requalification-local-tests-r01.txt",
+      "sha256": "3ec57334977aa314c73ea004ca4ce49b60187eca24fc16e28aa4b001f7d65ee7"
+    },
+    "source_compile": true,
+    "target_image_id": null,
+    "target_epoch": null,
+    "adoption_plan_sha256": null,
+    "adoption_receipt_sha256": null,
+    "new_instrumented_adoption_guard_tested": true,
+    "VM_operations": 0,
+    "provider_observations": 0,
+    "provider_generations": 0,
+    "SQL_calls": 0,
+    "SDK_calls": 0,
+    "old_cohort_replayed_or_modified": false,
+    "delivery_peer_review": {
+      "catalog_sha256": "b779185de90cca8f68d0d2e360d740626b70bcea74f8f1508c25d47542687de6",
+      "files_verified": 30,
+      "references_verified": 17,
+      "blockers": [],
+      "scope": "only changed two-module overlay/bundle22/installed-root fence and guarded operator reuse; no repeated29/22suites",
+      "continuation": {
+        "catalog_sha256": "bd3dd6228e259fd0f3eba09a1ca8e5883b2e6ae3db414a7863d4f2df8a44c665",
+        "files_verified": 41,
+        "references_verified": 17,
+        "freeze_sha256": "98faf026007256ff398604c151f0149cd373d07189ac52f1fc221b4dad8e8456",
+        "blockers": [],
+        "no_suites_repeated": true
+      }
+    }
+  },
+  "predecessor": {
+    "attempt_id": "9e161c28-a3ed-4d38-9cfb-69065c524f13",
+    "terminal_acknowledged": true,
+    "cohort_plan_sha256": "5bdbe5b0423d7a74701dffc02f42b68fcee72cf4e507469230a667101a1aa0a1",
+    "evidence_path": "docs/evidence/nodia-ai-c03-cache-metadata-and-mcp-stop-20261025-r01.json",
+    "evidence_sha256": "8264e051198bc07b6bb4990beffa519712faee702f29f217da073e7a158d6f84",
+    "overwritten_or_replayed": false
+  },
+  "control_boundary": [
+    "Require actual successful adoption of exact MCP delivery plan before freezing plan and again before operation",
+    "Fresh work and attempt per case; zero replay of5bdbe/9e161",
+    "Flush completion does not prove CLI consumption",
+    "One dispatch per case, maximum5, terminal/ACK and quietness mandatory, stop on first uncertainty",
+    "Metadata checks remain at most3 only for canonical_configuration_failed; no inference retry or timeout increase"
+  ],
+  "approval": "offline preparation only; no documentary, operational or MCP acceptance",
+  "effects": {
+    "VM_operations": 0,
+    "provider_observations": 0,
+    "provider_generations": 0,
+    "SQL_calls": 0,
+    "SDK_calls": 0
+  }
+}

@@ -16,13 +16,13 @@ const identity = {
 const nodia = {
   id: '10',
   key: 'nodia_ai',
-  route: '/tools/nodia-ai',
+  route: '/nodia-ai',
   assigned: true,
 };
 const finance = {
   id: '11',
   key: 'personal_finance',
-  route: '/tools/finances-personal',
+  route: '/finances-personal',
   assigned: true,
 };
 let snapshot: NodiaAiAuthorizationSnapshot | null;
@@ -39,11 +39,19 @@ beforeEach(() => {
     sessionId: identity.sessionId,
     isSuperAdmin: false,
     modules: [{ ...nodia }, { ...finance }],
-    actionKeys: ['ai:manage'],
+    actionKeys: [],
   };
 });
 
 describe('NodiaAI current authority', () => {
+  it('projects historical requirements to current authority without merging duplicate identities', async () => {
+    snapshot!.modules = [{ ...nodia, route: '/tools/nodia-ai' }, { ...finance, route: '/tools/finances-personal' }];
+    const result = await authorize.execute(identity, { moduleRoutes: ['/tools/finances-personal'] });
+    expect(result.modules.map(module => module.route)).toEqual(['/nodia-ai', '/finances-personal']);
+    expect(snapshot!.modules[0].route).toBe('/tools/nodia-ai');
+    snapshot!.modules.push({ ...nodia, id: '99', route: '/nodia-ai' });
+    await expect(authorize.execute(identity)).rejects.toThrow('nodia_ai:capability_denied');
+  });
   it('filters many catalog requirements with one current read and no exposed permission keys', async () => {
     const result = await authorize.filterAuthorized(identity, [
       { moduleRoutes: [finance.route] },
@@ -52,7 +60,7 @@ describe('NodiaAI current authority', () => {
       { moduleRoutes: ['/tools/missing'] },
     ]);
     expect(load).toHaveBeenCalledTimes(1);
-    expect(result.allowed).toEqual([true, true, false, false]);
+    expect(result.allowed).toEqual([true, true, true, false]);
     expect(result.actor).not.toHaveProperty('actionKeys');
     expect(Object.isFrozen(result.actor)).toBe(true);
     expect(Object.isFrozen(result.actor.modules)).toBe(true);
@@ -132,7 +140,7 @@ describe('NodiaAI current authority', () => {
   it('rejects the entire multi-module request if one destination is absent', async () => {
     await expect(
       authorize.execute(identity, {
-        moduleRoutes: [finance.route, '/tools/reservations'],
+        moduleRoutes: [finance.route, '/reservations'],
       }),
     ).rejects.toBeInstanceOf(ForbiddenException);
   });
@@ -163,9 +171,19 @@ describe('NodiaAI current authority', () => {
       ForbiddenException,
     );
   });
-  it('preserves existing action requirements instead of introducing granular permissions', async () => {
+  it('allows assigned modules without role actions even when a registration declares actions', async () => {
+    const actor = await authorize.execute(identity, {
+      moduleRoutes: [finance.route],
+      actionKeys: ['ai:manage', 'missing:action'],
+    });
+    expect(actor.actorId).toBe(identity.userId);
+    expect(actor.isSuperAdmin).toBe(false);
+    snapshot!.modules[1].assigned = false;
     await expect(
-      authorize.execute(identity, { actionKeys: ['missing:action'] }),
+      authorize.execute(identity, {
+        moduleRoutes: [finance.route],
+        actionKeys: ['ai:manage'],
+      }),
     ).rejects.toBeInstanceOf(ForbiddenException);
   });
   it('super administrator bypasses assignments/actions without changing actor identity', async () => {

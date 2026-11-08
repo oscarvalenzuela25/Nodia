@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "status": "implemented_deployed_verified",
+  "confirmed_units": [
+    "unit",
+    "kg",
+    "g",
+    "bundle"
+  ],
+  "confirmed_display_scale_only": true,
+  "manual_sale_quantity_decimals": 3,
+  "commercial_code_optional": true,
+  "money_rounding": "CLP half-up per line using integer thousandths; total is sum of rounded lines",
+  "zero_cart_row": "Retained while editing; confirmation automatically removes zero rows and journals/sends only positive quantities. All-zero sales are not submitted.",
+  "NodiaAI_sales_read_only_preserved": true,
+  "approved_documents_modified": 0,
+  "deployment": {
+    "server": {
+      "release": "/opt/nodia/releases/nodia-server-business-product-units-20261030-r01",
+      "manifest_sha256": "55a06eb85f3c744b901d1139862b2cae56ba6bf845c14dc964a120da3e7e5f08",
+      "knowledge_release_id": "070212946febc8cb3315d5115093b95c93cf23efab88076acc4f57836069dc75",
+      "phase": "completed_product_units_adoption",
+      "migrations_before": 35,
+      "migrations_after": 37,
+      "tables_compared": 70,
+      "domain_tables_with_preserved_rows": 69,
+      "all_domain_rows_preserved": true,
+      "readiness": {
+        "pids": {
+          "nodia-ai-worker.service": "2760663",
+          "nodia-api.service": "2760662"
+        },
+        "stable_seconds": 31.200291674002074
+      }
+    },
+    "client": {
+      "release": "/opt/nodia/releases/nodia-client-business-product-units-20261030-r01",
+      "manifest_sha256": "5804f5e7bc3e8a7e90648aa4100df327f3641846bfe885e384fe3363d6108591",
+      "nginx_sha256": "fe2a7d67d1bbf0e0acaf12c65f1e93fe9792edab3e2c3adcb3b194b453aa85a2",
+      "phase": "activated_verified",
+      "reload_exit_code": 0,
+      "http": {
+        "current_assets": 169,
+        "previous_assets": 47,
+        "protected": [
+          {
+            "route": "/api/v1",
+            "status": 200
+          },
+          {
+            "route": "/api/v1/nodia-ai/connections",
+            "status": 401
+          },
+          {
+            "route": "/api/v1/products",
+            "status": 401
+          }
+        ],
+        "spa": [
+          {
+            "route": "/",
+            "sha256": "db42acfdd032cbb162588c94dbc76fb0f8ec6cf105141e8797be64bea49dc634",
+            "status": 200
+          },
+          {
+            "route": "/tools/nodia-ai",
+            "sha256": "db42acfdd032cbb162588c94dbc76fb0f8ec6cf105141e8797be64bea49dc634",
+            "status": 200
+          },
+          {
+            "route": "/tools/business",
+            "sha256": "db42acfdd032cbb162588c94dbc76fb0f8ec6cf105141e8797be64bea49dc634",
+            "status": 200
+          }
+        ]
+      },
+      "protected_runtime_preserved": true
+    },
+    "local_tunnel": {
+      "url": "http://localhost:5174/tools/business/5af15373-3638-4a02-a015-4e72c433fc11?section=pos",
+      "status": 200,
+      "index_sha256": "db42acfdd032cbb162588c94dbc76fb0f8ec6cf105141e8797be64bea49dc634"
+    }
+  },
+  "verification": {
+    "server_global": {
+      "passed": 5766,
+      "skipped": 1,
+      "files": 317,
+      "seconds": 176.83,
+      "receipt": "ops/lab/artifacts/business-product-units-20261030-r01/server/verification-consolidated-server.json"
+    },
+    "client_global": {
+      "passed": 2425,
+      "files": 290,
+      "seconds": 285.55,
+      "receipt": "ops/lab/artifacts/business-product-units-20261030-r01/client/verification-r03.json",
+      "deployed_receipt": "ops/lab/artifacts/business-product-units-20261030-r01/client/verification-deployed.json"
+    },
+    "typecheck_lint_build": {
+      "server_exit_code": 0,
+      "client_exit_code": 0,
+      "client_vite_seconds": 13.5,
+      "existing_warnings": [
+        "Existing Server no-unsafe-finally test warning",
+        "Existing Client large API chunk warning"
+      ]
+    },
+    "isolated_postgresql": {
+      "checks": 11,
+      "ledger": 37,
+      "configured_database_used": false,
+      "cleanup_completed": true,
+      "receipt": "ops/lab/artifacts/business-product-units-20261030-r01/server/isolated-sql-root-r03.json"
+    },
+    "browser": "ops/lab/artifacts/business-product-units-20261030-r01/qa/browser-qa.json",
+    "zero_confirmation": {
+      "focal_tests": 36,
+      "files": 2,
+      "log_sha256": "7705f8e0c2f56a123b04817c232edc6a31a419a93904e865e4226a0193f6bc79",
+      "synthetic_checkout_excludes_zero": true,
+      "pending_retry_preserves_filtered_command": true,
+      "durable_log": "ops/lab/artifacts/business-product-units-20261030-r01/qa/zero-confirmation-focals.log"
+    },
+    "publication": {
+      "runtime_catalog": "nodia-ai-business-pos/3",
+      "published_documents": 44,
+      "published_fragments": 46,
+      "active_sales_read_tools": 2,
+      "active_sales_writers": 0,
+      "new_unit_ficha": "draft/unregistered/approval:null",
+      "workspace7": "draft/unregistered/approval:null",
+      "new_candidate_content_published": false,
+      "local_authoring_release_id": "16d36c94a873af221ea51787a93312f7e17f7019eb596b21b0f1cdeafa66ce1a",
+      "local_authoring_sources": 77,
+      "local_authoring_excluded": 33,
+      "local_prepare_chat_exit_code": 0,
+      "local_knowledge_check_exit_code": 0,
+      "runtime_controlled_sources": 71,
+      "runtime_controlled_excluded": 27,
+      "controlled_plan94_source_sha256_at_capture": "bfb0f57a2ede9efc153100e0ee527ee3e15bea9c1464938c9a6ee40777de9209",
+      "current_plan94_source_sha256": "c5ed76c63f2c50ba5197006fe9074123bf7f86a4d210e4fcad88473d2ad59179"
+    },
+    "final_source_bytes": {
+      "UTF8_LF_no_BOM": true,
+      "git_diff_check_exit_code": 0,
+      "paths_checked": 112
+    }
+  },
+  "display_scale": {
+    "default": 100,
+    "minimum": 80,
+    "maximum": 200,
+    "step": 10,
+    "text_only": true
+  },
+  "approved_document_integrity": {
+    "files": [
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/active-invoice-analysis.md",
+        "sha256": "6842a0905033365ebdefa597c36c9e3de8e9208df883985fe9d9b6fd90f400a7",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/businesses-and-collaborators.md",
+        "sha256": "671f85892afd38ac710e00fb02207d7822826fdcc0f0c7726565dcb5e7daa6f1",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/confirmed-business-effects.md",
+        "sha256": "47ae5d238d8815a0643a25700c15e1a6a684430a804f87f3aecc9b6b5e70d9d8",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md",
+        "sha256": "c2e3301a26d81272bd9c72440f92a8e994cfefb539a43f29520e53b38ca5e1ff",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/invoices-and-files.md",
+        "sha256": "7313d14131119ca57e8a8472a9a24343fe2f76fac7fe0801215054c89edc3e11",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/point-of-sale-and-sales.md",
+        "sha256": "95440a9ab70da9ce3acfa4439077011d2c9ea8453cf486b877d4d85829f46211",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/product-logs.md",
+        "sha256": "851e62ea11b212d54edf50a8c445bdf73efe1e0deffc951431665a33cf719ae2",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/products.md",
+        "sha256": "fc22bcd7dc2cab1fe69c83d4440c11c3e06a6b76344620b4dda3d55ce243c0df",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/supplier-contacts.md",
+        "sha256": "554dcb858cd39d34b30af5237aafd733fbc00dd8ebbb27c061cefd3060562744",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/features/suppliers.md",
+        "sha256": "b0109877c253168b32390a30f29514cf4d39c8c2b46eff5958768e51f182409a",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/actions-and-business-actions.md",
+        "sha256": "c05efe40f9fee14bf9996f9395c0c700a8cc4229000da7a2eb41923ebc5da7f0",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
+        "sha256": "af94d4e2d7004f6fbdcf475f6e49372a9856428c65d2eaa72a55cdc46aa03eb5",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
+        "sha256": "d1d6d0e9cf82ede8a73bb4db01f9e8c200848b0694b808c276d30e1f0e840f1f",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+        "sha256": "6c44a005ce7e8b73273c416e0fb24fb9a880ef9eb82ee7b8de526eb1359a543f",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/confirmed-administration.md",
+        "sha256": "bda80d67cf8fccc06ad4a26d5d60e296ab041c91e13df2e5c2aa91cb4b2f4283",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/confirmed-ai-configuration.md",
+        "sha256": "a2e63fa9692dffd862665db972218d6199e84b4c18253fac17ff781cad2ed24c",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/modules-and-groups.md",
+        "sha256": "8c4458fb045dc4ff4a5e47be3ff1b375ff8bdf0e3bc1d877af8fee32fab1ad6c",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/roles.md",
+        "sha256": "06cb6bf7babed7893123a42f53696a28a156c9bb5d3e31aa8bb70b51fb4f6909",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/secure-ai-interaction.md",
+        "sha256": "34d82697caeecf33d4a8616cb87069cd12299ade15017ca7982351be7c5372e2",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/general-settings/features/users.md",
+        "sha256": "a8617b1ab2635798da0d607c47af3c4d2389dbb93595fcd69c7bd89bdfcd9b63",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/accepted-preferences.md",
+        "sha256": "62964211264988e62aa32f06b8ba956beccec14275f31e26d44d6959fa20daa8",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/api-key-chat-parity.md",
+        "sha256": "e60ef90981e3af1380e52d748e32900cc260d099e1532dee97ed0ec1b0a38da8",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+        "sha256": "201dc70bfebb2263722d295413d511e5c196eaa354d98bb10cba5c1fe5d85474",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md",
+        "sha256": "e4a5a64e0ccad3318cf7528dc4d7e07c199a5e696f2c4b373a998c7798da5634",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/image-generation.md",
+        "sha256": "2377c2b2cb4cadc4d76c5ef3f2137e7e2c6857e0e23239eff1bcdef17e635675",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md",
+        "sha256": "ed074df8f77b4f44eac5bcde3e55c270c167bf605b628d43aa32744500098482",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/categories-and-groups.md",
+        "sha256": "5d463297e54867a1e2132a650a6ef479f8fd088b47e9c5286d764d58fb2d0826",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/confirmed-movement-effect.md",
+        "sha256": "d27f52845b5b02815736577366d9559af874281c345a9b9b63f9b29dd5929ddc",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/movements.md",
+        "sha256": "674ccdbd457adc321dbe35ce0ed6a35d5cec20cddf2a590b3f4da15a8ae0af9a",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/obligations.md",
+        "sha256": "3c86175ea8e8f5689952254b4775ae23be89c441fe02b80475fa5d2b96398be8",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/personal-finance/features/summaries.md",
+        "sha256": "e3540cc2c23686d7d41f09762a8b42f7f3496d81eccf4317ca8552d1a40375e5",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/audit-and-recovery.md",
+        "sha256": "0d379d0948dfad1fa0b9a0892dbd2d6fb3a442a9806c9e302f230898e1dbf396",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/availability-and-calendar.md",
+        "sha256": "95448f5b58cb0b7b6f701f0d20a83d2394aa3635e190b0aa36d941ed7878df72",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/blocks.md",
+        "sha256": "1795ea88e34afdc856a143544426220218ef87be597a21f0c6bce7c4f5451667",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/cancellation-policies.md",
+        "sha256": "0815af692ff10bb58e9e1d15aa6c4a1df94c2ec40f31d7f594e6ab0093e5a84f",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/confirmed-configuration.md",
+        "sha256": "f00421e4c280a42d9f9de24b44b96c0b07c2de2bd29db3d782c3e971541163a4",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/confirmed-money.md",
+        "sha256": "ce730177fe59cf91b336b2b65ea600f23a2eb21e78d841a32a268854a2587ae6",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/confirmed-occupancy-preparation.md",
+        "sha256": "78aabb97b599d462971a9935eb8afe340b6b999b3fe6998c8a7fbf6035a5b35a",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/confirmed-reservation-lifecycle.md",
+        "sha256": "44d21e71f8d6e2afce5cd7a7cb4b3da16b60490a630080eb80c9ce6931fe9353",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/expenses.md",
+        "sha256": "bc5442eb08b65cf01ab3fa4ef6bb5ccce2b15d8434002f1e7801e832bee90765",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/payments-and-refunds.md",
+        "sha256": "75c27849aa84993d66398e675e32a6fba44b06101f7915809280d8329e0b97a5",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/preparation.md",
+        "sha256": "bc6a729fa3565bdc258a058027cbf3324a730cea3fdeea3764758b432cade882",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/properties-and-collaborators.md",
+        "sha256": "379f8962d7f150d84f378ce0e383c73877fa241d9a39ccf34fddd8ae71ff3931",
+        "matches": true
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/reservations/features/reservations.md",
+        "sha256": "705e990e4e2927902372e520eb79ad021928fc194b4416dc3884edfb04efa12f",
+        "matches": true
+      }
+    ],
+    "modified": 0
+  },
+  "backups": {
+    "database_pre": {
+      "receipt_sha256": "fec547b87816d7bb68f081acb6e247984329f8c9fe5f24d0a0d53dedbb6a1ffe",
+      "encrypted_object_head_get_verified": true
+    },
+    "database_post": {
+      "receipt_sha256": "ac2377b0fccbdd64a3457dcd3a34ef766e7155b6aedf589d73d93d574a839786",
+      "encrypted_object_head_get_verified": true
+    },
+    "configuration": {
+      "receipt_sha256": "613300d2b88e7a3b1d1d8dba4369be84b1278e7f3f873ea36110265ae584a9fc",
+      "local_cipher_sha256": "5a5597e4b2034d16a489f7fd96dac4fcae13ede3d179413bd10d14adf3a1ddff",
+      "local_cipher_bytes": 6824895
+    },
+    "clock_observation_sha256": "c88ca7ff402c45fb933557d5b39cc85f4bc4c7c917c79aef07579eef58cdfd6c",
+    "restore_drill_performed": false
+  },
+  "limits": [
+    "Browser QA uses synthetic Axios fixtures; no real product or sale was created for this delivery.",
+    "No physical phone, physical scanner, payment or provider inference was tested.",
+    "Database backup integrity was verified; no restore drill was performed.",
+    "R01 SQL seed failure, Unicode regression and Client timeout remain recorded; final reruns passed.",
+    "Runtime KB is the controlled release, distinct from the final local authoring build."
+  ],
+  "delivery_catalog": "ops/lab/artifacts/business-product-units-20261030-r01/catalog-final.json"
+}

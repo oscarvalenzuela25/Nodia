@@ -1,0 +1,180 @@
+{
+  "acceptance": {
+    "AI36_closed": false,
+    "AI38_closed": false,
+    "C03_accepted": false,
+    "authenticated_attachment_retry_UI": "pending",
+    "historical_attachment_draft_loss": "UI showed text retained and attachment panel empty; root cause pending",
+    "new_PNG_case": "pending",
+    "old_SPA_preferences_opening": "Reported by root after adoption; no cache-miss conclusion or durable visual acceptance claimed",
+    "provider_availability_inferred": false
+  },
+  "capacity": {
+    "after_adoption": {
+      "archive_bytes": 2113333,
+      "available_bytes": 277995520,
+      "backup_reserve_bytes": 268443676,
+      "extraction_allocated_upper_bound": 5042176,
+      "required_free_bytes": 275861329,
+      "stage": "after_adoption",
+      "working_buffer_bytes": 262144
+    },
+    "after_extraction": {
+      "archive_bytes": 2113333,
+      "available_bytes": 278126592,
+      "backup_reserve_bytes": 268443676,
+      "extraction_allocated_upper_bound": 5042176,
+      "required_free_bytes": 275861329,
+      "stage": "after_extraction",
+      "working_buffer_bytes": 262144
+    },
+    "before_upload_observed": {
+      "archive_bytes": 2113333,
+      "available_bytes": 285298688,
+      "backup_reserve_bytes": 268443676,
+      "extraction_allocated_upper_bound": 5042176,
+      "required_free_bytes": 275861329,
+      "stage": "before_capacity",
+      "working_buffer_bytes": 262144
+    },
+    "releases_removed": false,
+    "retention_or_max_dump_reduced": false,
+    "upload_guard_confirmed": true
+  },
+  "checked_on": "2026-10-25",
+  "client": {
+    "archive_bytes": 2113333,
+    "archive_sha256": "f45c84d9908ff99194eba1d633aa1464119a546e2aacc22410d633dace9553e6",
+    "baseline_authoring_sources": 719,
+    "legacy_R07_retained": {
+      "legacy_missing_assets_verified": 59,
+      "manifest_sha256": "56f0f9e1418a827cbe0b67455e88b0aca230a236a8933c1667feb6d3f655954b",
+      "path": "/opt/nodia/releases/nodia-client-core-fx04-pagination-r07",
+      "retired": false
+    },
+    "runtime_source_changes": 4,
+    "runtime_source_cohort_verified": 718,
+    "source": "/opt/nodia/releases/nodia-client-core-fx04-pagination-r07",
+    "source_manifest_sha256": "56f0f9e1418a827cbe0b67455e88b0aca230a236a8933c1667feb6d3f655954b",
+    "target": "/opt/nodia/releases/nodia-client-c03-attachment-policy-r01",
+    "target_manifest_sha256": "17f0acd53cbfc04fad73f00bbfaed37e2d5a50d131b84333c50b49b5272363cb",
+    "unrelated_documental_drift_excluded": 1
+  },
+  "delivery": {
+    "HTTP_convergence": {
+      "attempts": 2,
+      "backoff_seconds": 0.2,
+      "maximum_attempts": 5,
+      "maximum_backoff_seconds": 0.8,
+      "scope": "HTTP_reads_only",
+      "verified": true
+    },
+    "automatic_retry": false,
+    "automatic_retry_scope": "No repeated CAS/reload/adoption/SQL/SDK/inference; bounded HTTP reads only",
+    "checks": [
+      "HTTP 200",
+      "exact SHA",
+      "MIME",
+      "COOP",
+      "immutable hashed-asset cache",
+      "missing hashed and unhashed assets 404",
+      "API body hash unchanged"
+    ],
+    "fallback_scope": "hashed asset regex only; fixed retained R07 root; generic assets and API rules unchanged",
+    "legacy_HTTP_assets_verified": 59,
+    "nginx_after_sha256": "8ea8a9517a3362c8df0a6e35b09d3a0870ebae657001d3752cd2faf15e90fc21",
+    "nginx_source_sha256": "7c573a1b96d135598a90dacce9d6d5e0e5858b2252b6de21a5b0b2e6d00ed366",
+    "rollback_invoked": false,
+    "shared_immutable_assets_SHA_identical": 108,
+    "source_HTTP_assets_verified": 171,
+    "target_HTTP_assets_verified": 172
+  },
+  "effects": {
+    "SDK_requests": 0,
+    "SQL_reads_by_operator": 0,
+    "SQL_writes": 0,
+    "Server_restarts": 0,
+    "migrations": 0,
+    "provider_generations": 0
+  },
+  "runtime_unchanged_during_adoption": {
+    "Gemini_epoch": {
+      "id": "b4375ef639fd03c5955abe5c7c6c491908d8fe4e0a0aa28e5cd162e17d11442c",
+      "image": "sha256:8320b3cbaee7a2f49fe845481e5f07bcb5d72c82684909bab408ece9711b1b1d",
+      "running": true,
+      "started_at": "2026-10-25T17:45:34.206184136Z"
+    },
+    "SDK_requests": 0,
+    "SQL_calls": 0,
+    "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "keyring": {
+      "ActiveState": "active",
+      "MainPID": "3630841",
+      "WorkingDirectory": ""
+    },
+    "knowledge_release": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+    "nginx": {
+      "ActiveState": "active",
+      "MainPID": "3630787",
+      "WorkingDirectory": ""
+    },
+    "server_consumers": {
+      "nodia-ai-worker": {
+        "ActiveState": "active",
+        "MainPID": "136501",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01"
+      },
+      "nodia-api": {
+        "ActiveState": "active",
+        "MainPID": "136500",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01"
+      }
+    },
+    "server_manifest_sha256": "4276fd7091f3d7f36604ba355895a2e43054bcbcec7b87ee5f0d897a42a41549"
+  },
+  "schema_version": 1,
+  "scope": "Client static release and nginx hashed-asset fallback, local Linux VM",
+  "sources": {
+    "adopt": {
+      "path": "ops/lab/artifacts/c03-attachment-policy-client-adoption-verification-r01/receipts/client-adopt-r01.json",
+      "sha256": "fc97679665b9bf08af777b3a8e378414d043d00d6200d5bb53d903bea2b9a7e6"
+    },
+    "bootstrap": {
+      "path": "ops/lab/artifacts/c03-attachment-policy-client-adoption-verification-r01/receipts/client-bootstrap-r01.json",
+      "sha256": "186ca194b047602eb046f3b72d84cdc0056c3f424095fc19af13cdffb922ff16"
+    },
+    "capacity": {
+      "path": "ops/lab/artifacts/c03-attachment-policy-client-adoption-verification-r01/receipts/client-capacity-r01.json",
+      "sha256": "cea92e4d9b1b6127deb42f012cdce9cc716bd07a7ba3bdbbf4a1e6ba954bfee5"
+    },
+    "linux-tests": {
+      "path": "ops/lab/artifacts/c03-attachment-policy-client-adoption-verification-r01/receipts/client-linux-tests-r01.json",
+      "sha256": "58af087eb68676c0b0540f1055b5c9b437d10bd8087ecf4481f324f8ff9ad136"
+    },
+    "preflight": {
+      "path": "ops/lab/artifacts/c03-attachment-policy-client-adoption-verification-r01/receipts/client-preflight-r01.json",
+      "sha256": "e7c51d76047e88ae41ceeda648a7f9499db88e068c562273fb5a9a43e4941a62"
+    },
+    "prepare": {
+      "path": "ops/lab/artifacts/c03-attachment-policy-client-adoption-verification-r01/receipts/client-prepare-r01.json",
+      "sha256": "a6c2d7c0a28facc2c07fc1a8b26f20287611453ea0f6fca80db38efd2891996e"
+    },
+    "upload": {
+      "path": "ops/lab/artifacts/c03-attachment-policy-client-adoption-verification-r01/receipts/client-upload-r01.json",
+      "sha256": "310b151ee18aa483840ab9f64c565728823caabebeb93e1d8a5619e751152569"
+    }
+  },
+  "status": "client_adopted_verified",
+  "validation": {
+    "Linux_root_operator_tests": 11,
+    "Linux_root_passed": 11,
+    "Linux_root_skipped": 0,
+    "includes": [
+      "umask077 static permissions",
+      "post-replace CAS failure compensation",
+      "bounded HTTP convergence and exhaustion",
+      "capacity and safe paths"
+    ],
+    "prior_offline_verification": "ops/lab/artifacts/c03-attachment-policy-client-r01/offline-verification-r01.json"
+  }
+}

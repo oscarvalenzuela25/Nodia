@@ -1,0 +1,126 @@
+{
+  "schema": "teacher-brand-ui-annotations/1",
+  "checked_on": "2026-11-04",
+  "status": "implemented_and_verified_in_VM",
+  "document_approval": false,
+  "knowledge_publication": false,
+  "scope": "Five visual annotations: logo colors in both routes, pause contained, archive right of search from600px, bold Teacher chips",
+  "annotations": {
+    "brand": "Shared existing logo gradient primary to tertiary/secondary, clipped to text width",
+    "pause": "contained; existing action unchanged and not clicked",
+    "archived_filter": "Right-aligned in search row from sm600px; own row below full-width search in xs",
+    "chips": "Shared StateChip fontWeightBold in list and detail; state colors unchanged"
+  },
+  "source_scope": {
+    "added_paths": [],
+    "frozen_UI_sources": {
+      "src/modules/teacher/pages/Teacher/Teacher.tsx": {
+        "after_bytes": 35413,
+        "after_sha256": "9025ab47177054854ccd993c747e1c2c746de54f35176981bb05eabe37089c88",
+        "before_sha256": "6c08c925a7619b40076632ab83ce919e653f9391981f8a1f0d0d22799cf8c960"
+      },
+      "src/modules/teacher/pages/Teacher/styles.ts": {
+        "after_bytes": 3505,
+        "after_sha256": "294d3b242d38e354dfefaf0c488932daba13709972750c879f529ef5e587545d",
+        "before_sha256": "766cbf6f0b3edccfcc9e84216aa9cf712f7905ebe241dd9f85475285e18a8373"
+      }
+    },
+    "global_working_tree_copied": false,
+    "outside_whitelist_delta": 0,
+    "owner_delta_sha256": "76ccf03c876f9e6d94e7a22e38efbe11436620cee975b6d1218a3f78dfb06b79",
+    "paths": [
+      "src/modules/teacher/pages/Teacher/Teacher.tsx",
+      "src/modules/teacher/pages/Teacher/styles.ts"
+    ],
+    "production_paths": 2,
+    "removed_paths": [],
+    "source_input_count": 1340,
+    "unchanged_JobPanel_sha256": "679767468a552c3ba4a8143ee47e6e56a000917cdd08f44d967ff1ccde2bfef3",
+    "unchanged_R07_source_inputs": 1338
+  },
+  "checks": {
+    "Teacher_regression_tests": 46,
+    "Teacher_test_files": 12,
+    "all_baseline_inputs_rehashed_before_after": true,
+    "assets": 179,
+    "isolated_build_ms": 17357,
+    "isolated_typecheck_diagnostics": 0,
+    "operator_tests": 4,
+    "public_configuration_preserved": true,
+    "scoped_lint_diagnostics": 0,
+    "unchanged_dist_files": 144,
+    "workspace_typecheck_diagnostics": 0
+  },
+  "deployment": {
+    "Native_restart": false,
+    "Server_manifest_sha256": "fe1fa26d3148d062cba09ed5bfa1f8a6dd11f64ac2601eb277961e9d644c3442",
+    "Server_restart": false,
+    "backup_workflow_actions": 0,
+    "canonical_state_sha256": "43d30d53bf840ccc5a3e6dfa18f92e8416ed727f2d9f89e47429e317eae85885",
+    "database_access": false,
+    "legacy_R07_asset_fallback_retained": true,
+    "new_assets_verified": 179,
+    "old_assets_verified": 175,
+    "one_Nginx_reload": true,
+    "phase": "Client_R08_active_static_and_legacy_assets_verified",
+    "private_recovery_workflows": 0,
+    "protected_runtime_snapshot_unchanged": true,
+    "provider_requests": 0,
+    "stdout_receipt_sha256": "44a3774864f31a93cbaf559fbf674e8cfeed0009c814d7ae76924e7c0f67facc",
+    "success": true
+  },
+  "release": "/opt/nodia/releases/nodia-client-teacher-20261104-r08",
+  "release_manifest_sha256": "0192407bbe872e11c3142cc3724f33e55803c4d6f9ee487cc927fbeb66eb1b04",
+  "source_receipts": [
+    {
+      "path": "ops/lab/artifacts/teacher-brand-ui-20261104-r01/client-r08/delivery.json",
+      "bytes": 6022,
+      "sha256": "9afc6c683dda1b2484f94783aad8a6e19128e6b51880d26c7cece355302c4627"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-brand-ui-20261104-r01/browser-verification.json",
+      "bytes": 3757,
+      "sha256": "ef5426af8136d460aad922d94ee2508429368f105305458ace54f762686a47b1"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-brand-ui-20261104-r01/knowledge-check.json",
+      "bytes": 429,
+      "sha256": "1547cbc996faad650069c90955c82a92d4c24084a97354b3adac056d9d9f3898"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-brand-ui-20261104-r01/catalog.json",
+      "bytes": 2185,
+      "sha256": "2a67a5c6d15b4770277c45539581a853ae897a8023dc9c7d3baf98fca9c6bf25"
+    }
+  ],
+  "edited_files": [
+    {
+      "path": "nodia-client/src/modules/teacher/pages/Teacher/Teacher.tsx",
+      "bytes": 35413,
+      "sha256": "9025ab47177054854ccd993c747e1c2c746de54f35176981bb05eabe37089c88"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/pages/Teacher/styles.ts",
+      "bytes": 3505,
+      "sha256": "294d3b242d38e354dfefaf0c488932daba13709972750c879f529ef5e587545d"
+    },
+    {
+      "path": "nodia-client/DESIGN.md",
+      "bytes": 91724,
+      "sha256": "c8d422670e3baa51baacc5dfca2377358f8c8d4e04d53b50b8f66403379a0de3"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/studies/features/adaptive-plans-and-day-material.md",
+      "bytes": 25918,
+      "sha256": "c4b551f9d76266890980bbf2617710291fca954147c9109a64f50a56d5e9ef62"
+    }
+  ],
+  "QA_closes_delivery_snapshot_remaining_validation": true,
+  "remaining": [],
+  "limits": [
+    "No physical phone, touch gesture or full contrast/accessibility certification.",
+    "Paused and draft chip appearances were not exercised by creating or modifying study records.",
+    "Material/assessment and provider inference were not rerun for a visual-only change.",
+    "A locator-based archive uncheck did not apply after the theme switch; current AX state was inspected and a native switch click restored the filter."
+  ]
+}

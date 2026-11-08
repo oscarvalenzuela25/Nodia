@@ -1,4 +1,4 @@
-"""Offline Linux integration: actual Chromium, subprocesses, PTY, UDS and cgroups.
+"""Offline Linux integration: actual subprocesses, PTY, UDS and cgroups.
 
 Requires an ephemeral --network=none container with the host attachment helper.
 No account/profile/credential from the running service is mounted or accessed.
@@ -23,7 +23,7 @@ ACTOR = "9223372036854775807"
 
 
 def runtime(directory):
-    profiles = ProfileAdmission(directory / "web", directory / "agentic", directory / "admission")
+    profiles = ProfileAdmission(directory / "agentic", directory / "admission")
     manager = DurableLoginRequests(directory / "requests", profiles)
     manager.supervisor_script = Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "login_supervisor_fixture.py"
     return manager
@@ -110,46 +110,6 @@ async def agentic_case(directory, crash):
         await cleanup(manager, key)
 
 
-async def web_case(directory):
-    manager = runtime(directory)
-    request = str(uuid4())
-    key = request.replace("-", "")
-    deadline = datetime.fromtimestamp(time.time() + 60, timezone.utc).isoformat()
-    try:
-        await manager.start("web", request, ACTOR, "2", deadline)
-        async with asyncio.timeout(25):
-            while True:
-                try:
-                    frame = await manager.legacy("web", key, ACTOR, "frame")
-                    if frame["ready"]:
-                        assert len(frame["image"]) > 100
-                        break
-                except ServiceError as error:
-                    assert error.code in {"login_not_ready", "login_unknown", "login_invalid_interaction",
-                                          "viewer_not_ready", "viewer_site_blocked", "viewer_unavailable"}, error.code
-                await asyncio.sleep(0.1)
-        record = await read(manager, key)
-        process_ids = (manager.containment.directory(record["containment"]) / "cgroup.procs").read_text().split()
-        assert len(process_ids) >= 3
-        sessions = set()
-        for pid in process_ids:
-            try:
-                sessions.add(os.getsid(int(pid)))
-            except ProcessLookupError:
-                pass
-        assert len(sessions) >= 2  # Chromium/crashpad are allowed to setsid.
-        os.kill(record["supervisor"]["pid"], signal.SIGKILL)
-        await asyncio.sleep(0.1)
-        # Playwright may close automatically on driver EOF, or the API watcher
-        # may already reconcile. Either path still requires kernel-empty proof.
-        result = await manager.cancel("web", request, ACTOR, "2")
-        assert result["state"] == "cancelled", result
-        assert not manager.containment.populated(record["containment"])
-        manager.acknowledge("web", request, ACTOR, "2")
-        return {"real_chromium_frame": True, "native_processes": len(process_ids),
-                "native_sessions": len(sessions), "sigkill_native_tree_closed": True}
-    finally:
-        await cleanup(manager, key)
 
 
 async def main():
@@ -157,11 +117,10 @@ async def main():
         raise RuntimeError("explicit_isolated_runtime_required")
     with tempfile.TemporaryDirectory(prefix="n29-") as directory:
         root = Path(directory)
-        for name in ("complete", "crash", "web"):
+        for name in ("complete", "crash"):
             (root / name).mkdir(mode=0o700)
         result = {"response_loss_and_http_restart": await agentic_case(root / "complete", False),
-                  "supervisor_sigkill_and_pty_descendant_cleanup": await agentic_case(root / "crash", True),
-                  "chromium_sigkill": await web_case(root / "web")}
+                  "supervisor_sigkill_and_pty_descendant_cleanup": await agentic_case(root / "crash", True)}
         print(json.dumps(result, sort_keys=True))
 
 

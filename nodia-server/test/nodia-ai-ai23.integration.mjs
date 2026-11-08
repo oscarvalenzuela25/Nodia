@@ -73,7 +73,7 @@ try {
   async function request(path, input = {}) {
     const result = await http(path, input); assert.equal(result.status, input.status ?? 200, `${input.method ?? 'GET'} ${path}: ${result.status} ${JSON.stringify(result.value)}`); return result.value;
   }
-  for (const [route, key] of [['/tools/business', 'synthetic_ai23_business'], ['/tools/finances-personal', 'synthetic_ai23_finance']]) {
+  for (const [route, key] of [['/business', 'synthetic_ai23_business'], ['/finances-personal', 'synthetic_ai23_finance']]) {
     let [module] = await db.query('SELECT id FROM modules WHERE link=$1', [route]);
     if (!module) [module] = await db.query('INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,$1,$2 FROM modules WHERE key=\'nodia_ai\' RETURNING id', [route, key]);
     await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1),(2,$1) ON CONFLICT DO NOTHING', [module.id]);

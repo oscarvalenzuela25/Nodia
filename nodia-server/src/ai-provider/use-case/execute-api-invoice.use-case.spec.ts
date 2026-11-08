@@ -174,7 +174,7 @@ describe('API invoice execution through the real adapter', () => {
     await useCase.execute('42', undefined, file);
     expect(JSON.parse(fetch.mock.calls[1][1].body).reasoning).toEqual({ effort: 'medium' });
     Object.assign(provider.fields.api_key, { thinking_level: undefined });
-    Object.assign(provider.fields, { thinking_level: 'high', token_plan_agentic: { thinking_level: 'high' } });
+    Object.assign(provider.fields, { thinking_level: 'high', agentic: { thinking_level: 'high' } });
     await useCase.execute('42', undefined, file);
     expect(JSON.parse(fetch.mock.calls[2][1].body)).not.toHaveProperty('reasoning');
     Object.assign(provider, { fields: { selected_model: 'account-model', available_models: [{ id: 'account-model' }], thinking_level: 'low' } });

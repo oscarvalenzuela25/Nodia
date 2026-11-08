@@ -9,6 +9,8 @@ import test_support
 import asyncio
 import json
 import os
+import sys
+from agentic_cli import CliConfig
 import tempfile
 import unittest
 from dataclasses import dataclass, field
@@ -21,8 +23,7 @@ from loguru import logger
 
 from agentic_service import AntigravityAgentService
 from main import create_app
-import session_store
-from test_support import HEADERS, TOKEN, fake_web
+from test_support import HEADERS, TOKEN
 
 
 MODEL_A = "synthetic-profile-model-a"
@@ -45,7 +46,7 @@ class MetadataRunner:
     """Only metadata commands are accepted; generations fail the test."""
 
     def __init__(self, home: Path):
-        self.config = SimpleNamespace(home=home, version="1.3.1")
+        self.config = CliConfig(Path(sys.executable), "", home, version="1.3.1")
         self.calls: list[tuple[str, str | None]] = []
         self.barriers: dict[str, CommandBarrier] = {}
         self.active = 0
@@ -109,12 +110,9 @@ class AgenticProfileObservationAsgiTests(unittest.IsolatedAsyncioTestCase):
             "GEMINI_SERVICE_TOKEN": TOKEN,
             "ANTIGRAVITY_CLI_HOME": str(self.root / "agentic"),
         }))
-        self.enterContext(patch.object(session_store, "SESSION_FILE", self.root / "session" / "synthetic.json"))
-        self.web = fake_web()
-        self.web.browser_manager.profile_dir = self.root / "web"
         self.runner = MetadataRunner(self.root / "agentic")
         self.agentic = AntigravityAgentService(self.runner)
-        self.app = create_app(web_service=self.web, agentic_service=self.agentic,
+        self.app = create_app(agentic_service=self.agentic,
                               load_environment=False, temp_dir=self.root / "uploads")
         await self.enterAsyncContext(self.app.router.lifespan_context(self.app))
         self.client = await self.enterAsyncContext(httpx.AsyncClient(
@@ -152,8 +150,7 @@ class AgenticProfileObservationAsgiTests(unittest.IsolatedAsyncioTestCase):
         await asyncio.wait_for(barrier.entered.wait(), timeout=2)
 
     def expire_status(self) -> None:
-        self.agentic._snapshot = None
-        self.agentic._observed = 0
+        self.agentic._invalidate_evidence()
 
     async def observe(self, model: str = MODEL_A):
         return await self.client.post("/nodia-ai/agentic/observe", json={
@@ -303,12 +300,3 @@ class AgenticProfileObservationAsgiTests(unittest.IsolatedAsyncioTestCase):
         finally:
             lease.release()
         self.assert_observed(await self.observe())
-
-    async def test_independent_web_profile_does_not_block_agentic_observation(self):
-        lease = self.app.state.profiles.reserve("web", purpose="execution")
-        try:
-            self.assertNotEqual(self.app.state.profiles.identity("web"), self.app.state.profiles.identity("agentic"))
-            self.assert_observed(await self.observe())
-            self.assertEqual(self.runner.calls, [("model", MODEL_A)])
-        finally:
-            lease.release()

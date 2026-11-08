@@ -13,35 +13,59 @@
           "pattern": "\\S"
         },
         "code": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "maxLength": 256
         },
         "quantity": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "minimum": 0
         },
         "packages": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "minimum": 0
         },
         "units_per_package": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "minimum": 0
         },
         "cost_price": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "minimum": 0
         },
         "cost_price_tax": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "minimum": 0
         },
         "unit_price": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "minimum": 0
         },
         "total_price": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "minimum": 0
         }
       },
@@ -62,11 +86,17 @@
       "additionalProperties": false,
       "properties": {
         "code": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "maxLength": 256
         },
         "total_amount": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "minimum": 0
         },
         "data": {
@@ -94,10 +124,17 @@
               }
             }
           },
-          "required": ["issue_date", "items"]
+          "required": [
+            "issue_date",
+            "items"
+          ]
         }
       },
-      "required": ["code", "total_amount", "data"]
+      "required": [
+        "code",
+        "total_amount",
+        "data"
+      ]
     },
     "InvoiceAnalysisSource": {
       "type": "object",
@@ -113,13 +150,26 @@
           "maximum": 10485760
         },
         "media_type": {
-          "enum": ["application/pdf", "image/png", "image/jpeg", "image/webp"]
+          "enum": [
+            "application/pdf",
+            "image/png",
+            "image/jpeg",
+            "image/webp"
+          ]
         },
         "kind": {
-          "enum": ["pdf", "image"]
+          "enum": [
+            "pdf",
+            "image"
+          ]
         }
       },
-      "required": ["attachment_id", "byte_count", "media_type", "kind"]
+      "required": [
+        "attachment_id",
+        "byte_count",
+        "media_type",
+        "kind"
+      ]
     },
     "InvoiceAnalysisSelection": {
       "type": "object",
@@ -131,7 +181,10 @@
           "maxLength": 19
         },
         "mode": {
-          "const": "token_plan_agentic"
+          "enum": [
+            "agentic",
+            "api_key"
+          ]
         },
         "model_id": {
           "type": "string",
@@ -139,11 +192,19 @@
           "maxLength": 1024
         },
         "effort_id": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "maxLength": 256
         }
       },
-      "required": ["connection_id", "mode", "model_id", "effort_id"]
+      "required": [
+        "connection_id",
+        "mode",
+        "model_id",
+        "effort_id"
+      ]
     },
     "InvoiceAnalysisPrepareInput": {
       "type": "object",
@@ -166,7 +227,11 @@
           "maxLength": 19
         }
       },
-      "required": ["action", "business_id", "attachment_id"]
+      "required": [
+        "action",
+        "business_id",
+        "attachment_id"
+      ]
     },
     "InvoiceAnalysisCompleteInput": {
       "type": "object",
@@ -183,7 +248,11 @@
           "$ref": "#/$defs/InvoiceAnalysisExtraction"
         }
       },
-      "required": ["action", "analysis_id", "extraction"]
+      "required": [
+        "action",
+        "analysis_id",
+        "extraction"
+      ]
     },
     "InvoiceAnalysisInput": {
       "oneOf": [
@@ -198,7 +267,10 @@
       "additionalProperties": false,
       "properties": {
         "action": {
-          "enum": ["prepare", "complete"]
+          "enum": [
+            "prepare",
+            "complete"
+          ]
         },
         "business_id": {
           "type": "string",
@@ -221,7 +293,9 @@
           "$ref": "#/$defs/InvoiceAnalysisExtraction"
         }
       },
-      "required": ["action"]
+      "required": [
+        "action"
+      ]
     },
     "InvoiceAnalysisPreparedResult": {
       "type": "object",
@@ -238,7 +312,10 @@
           "const": true
         },
         "extraction_source": {
-          "const": "active_agentic_generation"
+          "enum": [
+            "active_agentic_generation",
+            "active_api_generation"
+          ]
         },
         "business_id": {
           "type": "string",
@@ -283,6 +360,34 @@
         "source",
         "selection",
         "instructions"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "selection": {
+                "$ref": "#/$defs/InvoiceAnalysisApiSelection"
+              }
+            },
+            "required": [
+              "selection"
+            ]
+          },
+          "then": {
+            "properties": {
+              "extraction_source": {
+                "const": "active_api_generation"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "extraction_source": {
+                "const": "active_agentic_generation"
+              }
+            }
+          }
+        }
       ]
     },
     "InvoiceAnalysisAnalyzedResult": {
@@ -300,7 +405,10 @@
           "const": true
         },
         "extraction_source": {
-          "const": "active_agentic_generation"
+          "enum": [
+            "active_agentic_generation",
+            "active_api_generation"
+          ]
         },
         "business_id": {
           "type": "string",
@@ -343,6 +451,34 @@
         "source",
         "selection",
         "extraction"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "selection": {
+                "$ref": "#/$defs/InvoiceAnalysisApiSelection"
+              }
+            },
+            "required": [
+              "selection"
+            ]
+          },
+          "then": {
+            "properties": {
+              "extraction_source": {
+                "const": "active_api_generation"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "extraction_source": {
+                "const": "active_agentic_generation"
+              }
+            }
+          }
+        }
       ]
     },
     "InvoiceAnalysisResult": {
@@ -358,7 +494,10 @@
       "additionalProperties": false,
       "properties": {
         "status": {
-          "enum": ["prepared", "analyzed"]
+          "enum": [
+            "prepared",
+            "analyzed"
+          ]
         },
         "analysis_id": {
           "type": "string",
@@ -368,7 +507,10 @@
           "const": true
         },
         "extraction_source": {
-          "const": "active_agentic_generation"
+          "enum": [
+            "active_agentic_generation",
+            "active_api_generation"
+          ]
         },
         "business_id": {
           "type": "string",
@@ -405,7 +547,41 @@
           "$ref": "#/$defs/InvoiceAnalysisExtraction"
         }
       },
-      "required": ["status"]
+      "required": [
+        "status"
+      ]
+    },
+    "InvoiceAnalysisApiSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "mode": {
+          "const": "api_key"
+        },
+        "model_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "effort_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection_id",
+        "mode",
+        "model_id",
+        "effort_id"
+      ]
     }
   }
 }

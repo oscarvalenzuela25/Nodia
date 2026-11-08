@@ -101,7 +101,27 @@ describe('SeedAuthUseCase', () => {
 
     managerMock = {
       getRepository: getRepo as any,
-      query: vi.fn().mockResolvedValue([]),
+      queryRunner: {
+        isTransactionActive: true,
+      } as EntityManager['queryRunner'],
+      query: vi
+        .fn()
+        .mockImplementation(async (sql: string, params: unknown[] = []) => {
+          if (sql.includes('AS next_sort_order')) {
+            const rows = sql.includes('FROM module_groups')
+              ? [...moduleGroupsStore.values()]
+              : [...modulesStore.values()].filter(
+                  (row) => row.module_group_id === params[0],
+                );
+            const positions = rows
+              .map((row) => row.sort_order)
+              .filter(Number.isInteger);
+            return [
+              { next_sort_order: String(Math.max(-1, ...positions) + 1) },
+            ];
+          }
+          return [];
+        }),
     };
 
     dataSourceMock = {
@@ -220,17 +240,17 @@ describe('SeedAuthUseCase', () => {
     const modules = Array.from(modulesStore.values());
     expect(modules).toHaveLength(4);
     const usersMod = modules.find((m) => m.key === 'users');
-    expect(usersMod?.link).toBe('/settings/users');
+    expect(usersMod?.link).toBe('/users');
     expect(usersMod?.module_group_id).toBe(createdGroup?.id);
 
     const rolesMod = modules.find((m) => m.key === 'roles');
-    expect(rolesMod?.link).toBe('/settings/roles');
+    expect(rolesMod?.link).toBe('/roles');
 
     const actionsMod = modules.find((m) => m.key === 'actions');
-    expect(actionsMod?.link).toBe('/settings/actions');
+    expect(actionsMod?.link).toBe('/actions');
 
     const modulesMod = modules.find((m) => m.key === 'modules');
-    expect(modulesMod?.link).toBe('/settings/modules');
+    expect(modulesMod?.link).toBe('/modules');
 
     // Check User created and relations assigned
     const createdUser = Array.from(usersStore.values()).find(
@@ -346,5 +366,78 @@ describe('SeedAuthUseCase', () => {
     envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = 'different@example.com';
     await expect(useCase.bootstrap()).rejects.toThrow(ConflictException);
     expect(usersStore.size).toBe(1);
+  });
+
+  it('preserves reused navigation positions and appends after inactive siblings', async () => {
+    envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = 'owner@example.com';
+    moduleGroupsStore.set('400', {
+      id: '400',
+      key: 'general_settings',
+      is_active: false,
+      sort_order: 7,
+      created_at: new Date('2026-10-25T00:00:00.000Z'),
+      updated_at: new Date('2026-10-25T00:00:00.000Z'),
+      modules: [],
+    });
+    modulesStore.set('401', {
+      id: '401',
+      key: 'users',
+      link: '/users',
+      module_group_id: '400',
+      is_active: false,
+      sort_order: 12,
+      created_at: new Date('2026-10-25T00:00:00.000Z'),
+      updated_at: new Date('2026-10-25T00:00:00.000Z'),
+      module_users: [],
+    });
+    modulesStore.set('402', {
+      id: '402',
+      key: 'inactive_fixture',
+      link: '/fixture',
+      module_group_id: '400',
+      is_active: false,
+      sort_order: 22,
+      created_at: new Date('2026-10-25T00:00:00.000Z'),
+      updated_at: new Date('2026-10-25T00:00:00.000Z'),
+      module_users: [],
+    });
+
+    await useCase.bootstrap();
+
+    expect(moduleGroupsStore.get('400')?.sort_order).toBe(7);
+    expect(modulesStore.get('401')?.sort_order).toBe(12);
+    expect(modulesStore.get('402')).toMatchObject({
+      is_active: false,
+      sort_order: 22,
+    });
+    const positions = [...modulesStore.values()]
+      .filter((row) => ['roles', 'actions', 'modules'].includes(row.key))
+      .map((row) => row.sort_order);
+    expect(positions).toEqual([23, 24, 25]);
+  });
+
+  it('puts a new Core group after existing inactive groups', async () => {
+    envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = 'owner@example.com';
+    moduleGroupsStore.set('400', {
+      id: '400',
+      key: 'inactive_fixture',
+      is_active: false,
+      sort_order: 19,
+      created_at: new Date('2026-10-25T00:00:00.000Z'),
+      updated_at: new Date('2026-10-25T00:00:00.000Z'),
+      modules: [],
+    });
+
+    await useCase.bootstrap();
+
+    expect(
+      [...moduleGroupsStore.values()].find(
+        (row) => row.key === 'general_settings',
+      )?.sort_order,
+    ).toBe(20);
+    expect(moduleGroupsStore.get('400')).toMatchObject({
+      is_active: false,
+      sort_order: 19,
+    });
   });
 });

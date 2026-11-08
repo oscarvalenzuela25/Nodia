@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "status": "scoped_C02_Agentic_login_and_own_logout_previews_verified",
+  "scope": "Codex Agentic native UI preparation of two independent secure-flow proposals, no actual authentication/logout",
+  "source_manifest_sha256": "8f83d1525802a08f468e8132ff496a0976493e3b32941366888b631e56273bc8",
+  "knowledge_release": "607b9d24fb64ad69f81576c1a80000a95d8c7f601a40ebe505ff0a06d1339001",
+  "source_files_verified": 4234,
+  "services": {
+    "nodia-api": {
+      "MainPID": "545973",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+      "ActiveState": "active"
+    },
+    "nodia-ai-worker": {
+      "MainPID": "557212",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+      "ActiveState": "active"
+    }
+  },
+  "native_epoch": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a|sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779|2026-10-26T03:06:18.949917773Z",
+  "conversation_id": "1fe12085-233b-458c-bf53-e083894816fa",
+  "run": {
+    "id": "9566f551-d5e1-4c90-9dac-155465e27fa3",
+    "state": "completed",
+    "phase": "inference",
+    "error_code": null,
+    "provider_dispatches_used": 2,
+    "tool_calls_used": 4,
+    "input_through_seq": "15"
+  },
+  "tools": [
+    {
+      "id": "d8e055d7-99ab-4adf-8182-97d7dc9ce331",
+      "run_id": "9566f551-d5e1-4c90-9dac-155465e27fa3",
+      "tool_name": "nodia_capabilities_select",
+      "state": "completed",
+      "public_status": null,
+      "draft_id": null,
+      "draft_revision": null,
+      "proposal_id": null
+    },
+    {
+      "id": "9ef60e6a-9b6f-4c86-a531-1f9abc304252",
+      "run_id": "9566f551-d5e1-4c90-9dac-155465e27fa3",
+      "tool_name": "nodia_ai_providers_list",
+      "state": "completed",
+      "public_status": null,
+      "draft_id": null,
+      "draft_revision": null,
+      "proposal_id": null
+    },
+    {
+      "id": "beaeca2b-5c61-4da5-b6b7-4fbad6329562",
+      "run_id": "9566f551-d5e1-4c90-9dac-155465e27fa3",
+      "tool_name": "nodia_secure_flows_prepare_connection_login",
+      "state": "completed",
+      "public_status": "ready",
+      "draft_id": "4879e489-c86f-492f-9031-6d1ea0b25d2a",
+      "draft_revision": "1",
+      "proposal_id": "1f51e3b1-d8c5-46d9-affd-c8aef9e613e8"
+    },
+    {
+      "id": "e45ae719-6f05-4096-81a2-b2491995ba92",
+      "run_id": "9566f551-d5e1-4c90-9dac-155465e27fa3",
+      "tool_name": "nodia_secure_flows_prepare_nodia_logout",
+      "state": "completed",
+      "public_status": "ready",
+      "draft_id": "e4a48c43-2032-4f21-8aad-bf14e479f9ab",
+      "draft_revision": "1",
+      "proposal_id": "9696fb90-8520-446c-a73d-e7a6f1891250"
+    }
+  ],
+  "new_proposals": [
+    {
+      "proposal_id": "1f51e3b1-d8c5-46d9-affd-c8aef9e613e8",
+      "revision": 1,
+      "state": "ready",
+      "hash": "d0c778c886794823ef31335db65ab35fd894604e2251f660fde69e5e62d1b98b",
+      "expires_at": "2026-10-26 16:18:26.461+00"
+    },
+    {
+      "proposal_id": "9696fb90-8520-446c-a73d-e7a6f1891250",
+      "revision": 1,
+      "state": "ready",
+      "hash": "e2783ded6fa255034e88620cda803a597c70f41d14015966a3aaae5db8b40a4a",
+      "expires_at": "2026-10-26 16:18:26.592+00"
+    }
+  ],
+  "new_steps": [
+    {
+      "proposal_id": "1f51e3b1-d8c5-46d9-affd-c8aef9e613e8",
+      "revision": 1,
+      "position": 1,
+      "tool_name": "nodia_secure_flows_prepare_connection_login",
+      "kind": "secure_flow",
+      "contract_hash": "b5cdeb98f3ccb90827cad922680f7fde1f0239824e58b9176ed5730bc341ffb1",
+      "history_sha256": "7200f2ac1d1a2e9c96576c62a779947e181ec7e0740cdd5bcd53915ba06f034a",
+      "projection_allowed": true,
+      "public_step_sha256": "71d0ffcb5d176d35ee08823bb4945295d99470d027a5e9b21b471b72664bfabc",
+      "command_template_sha256": "851c9401f6e657e215121e2a17423a84e4217234801c17bafcd345623481a819",
+      "preview": {
+        "tool_name": "nodia_secure_flows_prepare_connection_login",
+        "kind": "secure_flow",
+        "target": {
+          "resource_key": "ai_providers",
+          "id": "2"
+        },
+        "scope": {},
+        "secure_operation": "connection_login",
+        "connection": {
+          "id": "2",
+          "name": "Laboratorio Ubuntu gemini",
+          "provider_key": "gemini",
+          "mode": "token_plan_agentic",
+          "configured_active": true
+        },
+        "command_keys": [],
+        "credentials_or_codes_supplied": false
+      }
+    },
+    {
+      "proposal_id": "9696fb90-8520-446c-a73d-e7a6f1891250",
+      "revision": 1,
+      "position": 1,
+      "tool_name": "nodia_secure_flows_prepare_nodia_logout",
+      "kind": "secure_flow",
+      "contract_hash": "e9c8acf5e258a7ca5b13720cc626d66ca32b0aaa0c61f71ed0e0b6a377104042",
+      "history_sha256": "8c908b96d71ed340aa5ab61382c99be12b197274fc1b97fe731a0cd84c34acb5",
+      "projection_allowed": true,
+      "public_step_sha256": "d95c71257236c458ef40477ea3f16d9440b455b19569af7c15eb173f91416185",
+      "command_template_sha256": "f2a9d177596659310c30d98720df64063bc76dcfbd1ec4a2d0567981769aae37",
+      "preview": {
+        "tool_name": "nodia_secure_flows_prepare_nodia_logout",
+        "kind": "secure_flow",
+        "target": null,
+        "scope": {},
+        "secure_operation": "nodia_logout",
+        "session_target": "current_authenticated_actor_session_only",
+        "command_keys": [],
+        "identity_fields_supplied": false
+      }
+    }
+  ],
+  "connection_unchanged": {
+    "id": "2",
+    "name": "Laboratorio Ubuntu gemini",
+    "provider_key": "gemini",
+    "mode": "token_plan_agentic",
+    "configured_active": true,
+    "configuration_public_snapshot_sha256": "7316bdaa6ed988463c08892d5cf87fc0d34b6df39c8ac30e09191e496d3e370d"
+  },
+  "authority_unchanged": {
+    "actor_super_admin_active": true,
+    "required_modules_active": true,
+    "latest_run_origin_session_counts": {
+      "origin_sessions": 1,
+      "origin_sessions_active": 1
+    },
+    "session_identifiers_emitted": false
+  },
+  "checks": {
+    "historical4_proposal_revisions_and_sampled_step_hashes_unchanged": true,
+    "new_proposals_exactly2_single_step_ready": true,
+    "zero_challenges_consumptions_executions_effects_secure_human_flows": true,
+    "new_native_ACKs_present_explicit": true,
+    "SQL_native_Codex_quiet0": true,
+    "domain40_schema_and_configuration_preserved": true
+  },
+  "acknowledged_attempt_ids": [
+    "498065f9-661a-4c78-8091-b8bbcefb64c5",
+    "26337e5f-4b79-4003-9a2b-45d9365a9774"
+  ],
+  "history_limit": "Equality covers complete sampled public projections and history hashes of selected step columns, not unsampled private columns or absent old native ACK files.",
+  "UI_observation": {
+    "source": "Root-operated UI; screenshot/AX preserved byte exact",
+    "two_independent_previews_present": true,
+    "confirmation_not_clicked": true,
+    "no_login_visor_or_logout_executed": true
+  },
+  "reader_history": {
+    "R01": "Unexecuted: pre-VM review found R06 Codex decoder rejects R04; preserved frozen.",
+    "R02": "Metadata read refused before SDK; closed single diagnostic located connection_metadata/connection_configuration_changed, no SQLSTATE.",
+    "R03": "Only fixture expected name corrected to real direct UI/backend label Laboratorio Ubuntu gemini; successful baseline and final; no production/config change.",
+    "original_ambiguous_name_rejected": true
+  },
+  "accounting": {
+    "one_new_UI_run": true,
+    "SQL_budget_dispatch_counter": 2,
+    "tool_receipts": 4,
+    "vendor_internal_generations_and_cost": "not independently established by these counters",
+    "consolidator_VM_SQL_AI_calls": 0
+  },
+  "limits": [
+    "Only login connection2/Gemini/Agentic and current actor own Nodia logout previews.",
+    "Web/API-key tests excluded by user; no new provider availability claim from configuration.",
+    "No secure-channel authentication, credentials, OTP/visor interaction, session revocation, actual login/logout or commercial effect.",
+    "No global C02/C05/AI36/AI38 closure or ordinary-user permission acceptance.",
+    "No reload acceptance is asserted for this preview."
+  ],
+  "receipt_pins": {
+    "c02-agentic-preview-before-VM-r01.json": {
+      "bytes": 102,
+      "sha256": "acad9f479b23a99db17c4de17fc79f5d27e81462ddcc232b7cd4d9cdcc5037bd"
+    },
+    "c02-agentic-preview-before-VM-r03.json": {
+      "bytes": 23325,
+      "sha256": "088ad9be8cd0866462604ff487ff86d2ccff7b23ab4fc25aad19b7873d2f529c"
+    },
+    "c02-agentic-preview-closed-diagnostic-VM-r01.json": {
+      "bytes": 1446,
+      "sha256": "8c9ac823d211846e6c33e791d0f49d7d945e2bf5f0ee80b6a09e4e00d8bdc316"
+    },
+    "c02-agentic-preview-completed-VM-r03.json": {
+      "bytes": 28797,
+      "sha256": "e9b4b0ca3accc7321d8d6241409ea4d7ae9a45145d8e5972a3eb4eab1e0d2c34"
+    },
+    "c02-agentic-preview-domain-after-VM-r03.json": {
+      "bytes": 8503,
+      "sha256": "913268933a696bed387ab9023e6a9496ef3d1f0f9b8dfdac0a3a1329675cf773"
+    },
+    "c02-agentic-previews-UI-AX-r03.txt": {
+      "bytes": 17387,
+      "sha256": "0fcc4d702320d31dd21c252b0caec0a416ca85b89885e9e0500e644f502371c7"
+    },
+    "c02-agentic-previews-UI-r03.png": {
+      "bytes": 105409,
+      "sha256": "4e650e297ba86e89a84d0d1a4de9ce52129474e953f271d305ca9a8001e5a7a8"
+    },
+    "domain-baseline-C05-after.json": {
+      "bytes": 8503,
+      "sha256": "d3eca1be1bbd965810aa8f2a5edcf23413b585a390317a04c2b5043636646f16"
+    }
+  },
+  "verification_command": "python -B ops/lab/artifacts/c02-agentic-secure-preview-verification-r03/consolidate.py"
+}

@@ -1,4 +1,5 @@
 import { Injectable, Optional } from '@nestjs/common';
+import { hasGenerationBridge } from '../../ai-generation/chat-generation-ownership.js';
 import { DataSource } from 'typeorm';
 import { lockAuthority } from '../../authorization/authority-transaction.js';
 import { lockNodiaAiQueue } from '../../nodia-ai-runtime/queue-lock.js';
@@ -23,6 +24,10 @@ export class PrepareNodiaAiRestoreUseCase {
     const prepared = await this.source.transaction(async manager => {
       await lockAuthority(manager, true, this.policy.timing.read_query_seconds * 1000);
       await lockNodiaAiQueue(manager);
+      if(await hasGenerationBridge(manager)){
+        const rows:{populated:boolean}[]=await manager.query('SELECT EXISTS(SELECT 1 FROM teacher_sessions) AS populated');
+        if(rows[0]?.populated)throw Error('nodia_ai:teacher_restore_requires_owner_reconciliation');
+      }
       const [clock]: { now: Date }[] = await manager.query('SELECT clock_timestamp() AS now');
       const manifest = this.validate.execute(input, new Date(clock.now), this.policy);
       // Restored ready/claimed records can have been sent after backup capture. None proves never-sent.

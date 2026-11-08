@@ -12,7 +12,6 @@ import type { NodiaAiRuntimeService } from '../nodia-ai-runtime.service.js';
 import type { AuthorizeNodiaAiUseCase } from '../../nodia-ai/use-case/authorize-nodia-ai.use-case.js';
 import type { NodiaAiClaim } from '../types/worker.types.js';
 import { eventJournalFixture } from '../../nodia-ai-run/event-journal.fixture.js';
-
 export function policyEnvelope() {
   const bytes = readFileSync(
     new URL(
@@ -71,7 +70,7 @@ export function runtimeFixture() {
     actor_id: userId,
     selection_snapshot: {
       connection_id: '1',
-      mode: 'token_plan_web' as const,
+      mode: 'agentic' as const,
       model_id: 'fixture-model',
       effort_id: null,
     },

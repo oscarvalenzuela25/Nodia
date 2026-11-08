@@ -20,7 +20,7 @@ import { publishNodiaAiRunChanged } from '../../nodia-ai-run/event-journal.js';
 import {
   assertRuntimeTerminalProof,
   readRuntimeProofRequest,
-  runtimeProofDescriptor,
+  terminalRuntimeProofDescriptor,
 } from './runtime-reconciliation-descriptor.js';
 import { CleanupNodiaAiRuntimeProofsUseCase } from './cleanup-nodia-ai-runtime-proofs.use-case.js';
 
@@ -140,15 +140,7 @@ export class ReconcileNodiaAiRuntimeUseCase {
           JSON.stringify(snapshot.job.recovery_descriptor)
       )
         throw new ConflictException('nodia_ai:reconciliation_changed');
-      const descriptor = {
-        ...runtimeProofDescriptor(snapshot.request),
-        terminal_proof: {
-          id: proof.terminalProofId,
-          outcome: proof.outcome,
-          observed_at: proof.observedAt.toISOString(),
-        },
-        cleanup_attempts: 0,
-      };
+      const descriptor = terminalRuntimeProofDescriptor(proof);
       if (job.run_id) {
         await manager.query(
           "UPDATE nodia_ai_runs SET state='failed',error_code=$2,completed_at=clock_timestamp() WHERE id=$1",

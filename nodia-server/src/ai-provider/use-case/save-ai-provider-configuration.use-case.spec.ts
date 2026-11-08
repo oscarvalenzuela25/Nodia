@@ -10,6 +10,20 @@ describe('SaveAiProviderConfigurationUseCase', () => {
       uc: new SaveAiProviderConfigurationUseCase(f.source, f.translations),
     };
   };
+  it.each(['token_plan_web', 'token_plan_agentic'])(
+    'rejects the retired %s JSON scope before persistence',
+    async (scope) => {
+      const f = fixture();
+      await expect(
+        f.uc.execute(
+          f.existing.id,
+          { fields: { [scope]: { selected_model: 'synthetic' } } },
+          f.actor,
+        ),
+      ).rejects.toThrow('retired_mode');
+      expect(f.providerRepo.save).not.toHaveBeenCalled();
+    },
+  );
   it('locks authority, validates live actor and locks configuration before the first domain read', async () => {
     const f = fixture();
     await f.uc.execute(undefined, { catalog_id: '2' }, f.actor);
@@ -30,7 +44,7 @@ describe('SaveAiProviderConfigurationUseCase', () => {
       undefined,
       {
         catalog_id: '2',
-        use_token_plan_agentic: true,
+        use_agentic: true,
         fields: {
           selected_model: 'caller-invented-model',
           available_models: [{ id: 'caller-invented-model' }],
@@ -39,7 +53,7 @@ describe('SaveAiProviderConfigurationUseCase', () => {
       f.actor,
     );
     expect(f.providerRepo.save.mock.calls[0][0]).toMatchObject({
-      default_mode: 'token_plan_agentic',
+      default_mode: 'agentic',
       is_default: true,
       fields: { available_models: [] },
     });
@@ -66,14 +80,14 @@ describe('SaveAiProviderConfigurationUseCase', () => {
       f.existing.id,
       {
         fields: {
-          token_plan_web: { thinking_levels: { 'synthetic-model': 'medium' } },
+          agentic: { thinking_levels: { 'synthetic-model': 'medium' } },
         },
       },
       f.actor,
     );
     expect(f.providerRepo.save.mock.calls[0][0].fields).toEqual({
       legacy: { token: 'synthetic-private-value' },
-      token_plan_web: {
+      agentic: {
         selected_model: 'synthetic-model',
         secret: 'synthetic-mode-secret',
         thinking_levels: { 'synthetic-model': 'medium', other: 'low' },
@@ -133,33 +147,29 @@ describe('SaveAiProviderConfigurationUseCase', () => {
     expect(f.trace.some((value) => value.includes('AS "actorId"'))).toBe(false);
     expect(f.providerRepo.findOne).not.toHaveBeenCalled();
   });
-  it('denies a live non admin without current ai:manage before configuration access', async () => {
+  it('denies a live non admin without the assigned module before configuration access', async () => {
     const f = fixture();
     f.setAdmin(false);
-    f.setPermission(false);
+    f.setModule(false);
     await expect(f.uc.execute(f.existing.id, {}, f.actor)).rejects.toThrow(
-      'ai_provider:manage_required',
+      'core:module_access_required',
     );
     expect(f.trace).not.toContain('catalog-read');
     expect(f.providerRepo.save).not.toHaveBeenCalled();
   });
-  it('permits a live non admin with current ai:manage', async () => {
+  it('permits a live non admin with the assigned module and no action requirement', async () => {
     const f = fixture();
     f.setAdmin(false);
     await f.uc.execute(f.existing.id, { name: 'Allowed' }, f.actor);
     expect(f.existing.name).toBe('Allowed');
   });
-  it.each([
-    'use_api_key',
-    'use_token_plan_web',
-    'use_token_plan_agentic',
-  ] as const)(
+  it.each(['use_api_key', 'use_agentic'] as const)(
     'rejects enabling %s when the catalog disallows it',
     async (flag) => {
       const f = fixture();
       f.catalog.can_use_api_key = false;
-      f.catalog.can_use_token_plan_web = false;
-      f.catalog.can_use_token_plan_agentic = false;
+      f.catalog.can_use_agentic = false;
+      f.catalog.can_use_agentic = false;
       await expect(
         f.uc.execute(undefined, { catalog_id: '2', [flag]: true }, f.actor),
       ).rejects.toThrow('ai_provider:channel_not_allowed');
@@ -169,11 +179,11 @@ describe('SaveAiProviderConfigurationUseCase', () => {
   it('requires clearing/changing a default mode when its channel is disabled', async () => {
     const f = fixture();
     await expect(
-      f.uc.execute(f.existing.id, { use_token_plan_web: false }, f.actor),
+      f.uc.execute(f.existing.id, { use_agentic: false }, f.actor),
     ).rejects.toThrow('ai_provider:default_mode_disabled');
     await f.uc.execute(
       f.existing.id,
-      { use_token_plan_web: false, default_mode: null },
+      { use_agentic: false, default_mode: null },
       f.actor,
     );
     expect(f.existing.default_mode).toBeNull();
@@ -219,7 +229,7 @@ describe('SaveAiProviderConfigurationUseCase', () => {
     for (const dto of [
       { fields: null },
       { is_default: null },
-      { use_token_plan_web: null },
+      { use_agentic: null },
     ])
       await expect(
         f.uc.execute(f.existing.id, dto as never, f.actor),
@@ -235,23 +245,21 @@ describe('SaveAiProviderConfigurationUseCase', () => {
         { catalog_id: '2', use_token_plan_web: true },
         f.actor,
       ),
-    ).rejects.toThrow('ai_provider:web_integration_disabled');
+    ).rejects.toThrow('ai_provider:invalid_configuration');
     await expect(
       f.uc.execute(f.existing.id, { use_token_plan_web: true }, f.actor),
-    ).rejects.toThrow('ai_provider:web_integration_disabled');
+    ).rejects.toThrow('ai_provider:invalid_configuration');
     await f.uc.execute(f.existing.id, { name: 'Historical renamed' }, f.actor);
-    expect(f.existing.use_token_plan_web).toBe(true);
+    expect(f.existing.use_agentic).toBe(true);
   });
   it('keeps an explicitly selected dynamic model even when a historical catalog no longer lists it', async () => {
     const f = fixture();
     await f.uc.execute(
       f.existing.id,
-      { fields: { token_plan_web: { selected_model: 'future-model-id' } } },
+      { fields: { agentic: { selected_model: 'future-model-id' } } },
       f.actor,
     );
-    expect(f.existing.fields.token_plan_web.selected_model).toBe(
-      'future-model-id',
-    );
+    expect(f.existing.fields.agentic.selected_model).toBe('future-model-id');
   });
   it('rejects creation against inactive or unimplemented catalogs without affecting defaults', async () => {
     const f = fixture();
@@ -266,7 +274,7 @@ describe('SaveAiProviderConfigurationUseCase', () => {
     ).rejects.toThrow('implementada');
     expect(f.qb.execute).not.toHaveBeenCalled();
   });
-  it.each(['token_plan_web', 'token_plan_agentic'] as const)(
+  it.each(['agentic', 'api_key'] as const)(
     'preserves original flat preferences when introducing scoped %s',
     async (mode) => {
       const f = fixture();
@@ -284,9 +292,9 @@ describe('SaveAiProviderConfigurationUseCase', () => {
         { fields: { [mode]: { selected_model: 'new-mode-model' } } },
         f.actor,
       );
-      expect(f.existing.fields.token_plan_web).toMatchObject({
+      expect(f.existing.fields.agentic).toMatchObject({
         selected_model:
-          mode === 'token_plan_web' ? 'new-mode-model' : 'old-flat-model',
+          mode === 'agentic' ? 'new-mode-model' : 'old-flat-model',
         ocr_model: 'old-ocr-model',
         ocr_focus_model: 'old-focus-model',
         thinking_level: 'old-effort',
@@ -294,7 +302,7 @@ describe('SaveAiProviderConfigurationUseCase', () => {
         available_models: [{ id: 'old-flat-model' }],
       });
       expect(f.existing.fields.historical_secret).toBe('synthetic-private');
-      if (mode !== 'token_plan_web')
+      if (mode !== 'agentic')
         expect(f.existing.fields[mode]).toEqual({
           selected_model: 'new-mode-model',
         });
@@ -310,12 +318,10 @@ describe('SaveAiProviderConfigurationUseCase', () => {
       };
       await f.uc.execute(
         f.existing.id,
-        { fields: { token_plan_web: { selected_model: 'new-flat-model' } } },
+        { fields: { agentic: { selected_model: 'new-flat-model' } } },
         f.actor,
       );
-      expect(f.existing.fields.token_plan_web.enable_extended_thinking).toBe(
-        value,
-      );
+      expect(f.existing.fields.agentic.enable_extended_thinking).toBe(value);
       expect(f.existing.fields.enable_extended_thinking).toBe(value);
     },
   );

@@ -1,0 +1,55 @@
+{
+  "success": true,
+  "read_only": true,
+  "retired_columns_absent": true,
+  "agentic_columns_present": true,
+  "providers": [
+    {
+      "id": "1",
+      "default_mode": "agentic",
+      "use_api_key": true,
+      "use_agentic": true,
+      "legacy_web_fields": false,
+      "legacy_agentic_fields": false
+    },
+    {
+      "id": "2",
+      "default_mode": null,
+      "use_api_key": true,
+      "use_agentic": true,
+      "legacy_web_fields": false,
+      "legacy_agentic_fields": false
+    },
+    {
+      "id": "3",
+      "default_mode": "agentic",
+      "use_api_key": false,
+      "use_agentic": true,
+      "legacy_web_fields": false,
+      "legacy_agentic_fields": false
+    },
+    {
+      "id": "4",
+      "default_mode": "agentic",
+      "use_api_key": false,
+      "use_agentic": true,
+      "legacy_web_fields": false,
+      "legacy_agentic_fields": false
+    }
+  ],
+  "chat_mode_counts": [
+    {
+      "selected_mode": "agentic",
+      "count": "17"
+    },
+    {
+      "selected_mode": null,
+      "count": "3"
+    }
+  ],
+  "migration_ledger_count": 1,
+  "unchanged_tables": 58,
+  "api_key_ciphertext_table_unchanged": true,
+  "immutable_run_history_unchanged": true,
+  "provider_inferences": 0
+}

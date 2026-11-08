@@ -1,0 +1,128 @@
+{
+  "success": true,
+  "inferences": 0,
+  "configured_database_access": false,
+  "migrations": [
+    "InitialCoreSchema1789257400000",
+    "InitialBusinessAiSchema1789257500000",
+    "AuthSessions1789257600000",
+    "AddIconToModulesAndModuleGroups1789257700000",
+    "CreateAiProviderCatalogAndRefactorAiProviders1789257800000",
+    "SeedSecurityActions1790553500000",
+    "HardenAiApiKeyEncryption1790553600000",
+    "AddTokenPlanFlagsToCatalogAndProviders1790553700000",
+    "AddIsDefaultToAiProviders1790553800000",
+    "CreatePersonalFinance1791085000000",
+    "CreateRentalReservations1791146000000",
+    "CreateProviderContacts1791220000000",
+    "RestoreAiApiCatalog1791320000000",
+    "SelectSoleAiApiKey1791330000000",
+    "EnableCodexAgenticCatalog1791450000000",
+    "OptionalRentalPropertyTimes1791540000000",
+    "CreateInvoiceUploads1791630000000",
+    "CompleteAiProviderCatalog1791640000000",
+    "RegisterNodiaAiNavigation1792100000000",
+    "CreateNodiaAiConversationPersistence1792200000000",
+    "IndexNodiaAiRunEvents1792300000000",
+    "CreateNodiaAiProposalPersistence1792400000000",
+    "CreateNodiaAiConfirmationPersistence1792500000000",
+    "FreezeNodiaAiFinancialWitness1792600000000",
+    "AddNodiaAiWorkflowBindings1792700000000",
+    "CreateNodiaAiAttachments1792800000000",
+    "CreateNodiaAiPreferences1792900000000",
+    "CreateNodiaAiContextSnapshots1793000000000",
+    "AddNodiaAiTextSearchIndex1793100000000",
+    "AddModuleSortOrder1793200000000",
+    "RetireWebAiModes1793300000000"
+  ],
+  "catalog": [
+    {
+      "key": "anthropic",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    },
+    {
+      "key": "aws_bedrock",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    },
+    {
+      "key": "azure_openai",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    },
+    {
+      "key": "cohere",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    },
+    {
+      "key": "deepseek",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    },
+    {
+      "key": "gemini",
+      "can_use_api_key": true,
+      "can_use_agentic": true
+    },
+    {
+      "key": "groq",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    },
+    {
+      "key": "huggingface",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    },
+    {
+      "key": "meta",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    },
+    {
+      "key": "mistral",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    },
+    {
+      "key": "moonshot",
+      "can_use_api_key": false,
+      "can_use_agentic": false
+    },
+    {
+      "key": "ollama",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    },
+    {
+      "key": "openai",
+      "can_use_api_key": true,
+      "can_use_agentic": true
+    },
+    {
+      "key": "perplexity",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    },
+    {
+      "key": "qwen",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    },
+    {
+      "key": "together",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    },
+    {
+      "key": "xai",
+      "can_use_api_key": true,
+      "can_use_agentic": false
+    }
+  ],
+  "schema_columns": "agentic/api_key only",
+  "pending": false,
+  "disposable_container_removed": true
+}

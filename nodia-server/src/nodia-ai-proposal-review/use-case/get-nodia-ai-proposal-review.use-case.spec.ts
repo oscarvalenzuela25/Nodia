@@ -22,6 +22,7 @@ function fixture() {
   };
   Object.assign(f.preparer, { reviewFields: [field] });
   const loaded = {
+    catalogCompatible: true,
     proposal: f.proposal,
     revision: f.revision,
     steps: [f.step],
@@ -47,6 +48,19 @@ function fixture() {
   return { ...f, field, loaded, get, useCase };
 }
 describe('NodiaAI human-only exact preview affordances', () => {
+  it('does not offer edits or confirmation for an authorized incompatible historical snapshot', async () => {
+    const f = fixture();
+    f.loaded.catalogCompatible = false;
+    const preparer = vi.spyOn(f.validate, 'preparer');
+    const result = await f.useCase.execute(f.identity, f.proposal.id);
+    expect(result).toMatchObject({
+      hash: f.revision.hash,
+      read_only: true,
+      editable_fields: [],
+      confirmation: { available: false, reason: 'nodia_ai:proposal_read_only' },
+    });
+    expect(preparer).not.toHaveBeenCalled();
+  });
   it('returns the exact revision/hash and registered scalar fields without minting a nonce', async () => {
     const f = fixture();
     const snapshot = JSON.stringify(f.step);

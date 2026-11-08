@@ -104,12 +104,12 @@ const fields: Record<Resource, Readonly<Record<string, string>>> = {
   },
 };
 const routes: Record<Resource, string> = {
-  users: '/settings/users',
-  roles: '/settings/roles',
-  actions: '/settings/actions',
-  business_actions: '/settings/actions',
-  modules: '/settings/modules',
-  module_groups: '/settings/modules',
+  users: '/users',
+  roles: '/roles',
+  actions: '/actions',
+  business_actions: '/actions',
+  modules: '/modules',
+  module_groups: '/modules',
 };
 const dtoClasses = {
   users: [CreateUserDto, UpdateUserDto],

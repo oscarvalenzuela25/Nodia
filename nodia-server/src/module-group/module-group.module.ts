@@ -9,6 +9,7 @@ import { CreateModuleGroupUseCase } from './use-case/create-module-group.use-cas
 import { UpdateModuleGroupUseCase } from './use-case/update-module-group.use-case.js';
 import { DeleteModuleGroupUseCase } from './use-case/delete-module-group.use-case.js';
 import { TranslationModule } from '../translation/translation.module.js';
+import { MoveModuleGroupOrderUseCase } from './use-case/move-module-group-order.use-case.js';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ModuleGroup]), TranslationModule],
@@ -20,6 +21,7 @@ import { TranslationModule } from '../translation/translation.module.js';
     CreateModuleGroupUseCase,
     UpdateModuleGroupUseCase,
     DeleteModuleGroupUseCase,
+    MoveModuleGroupOrderUseCase,
   ],
   exports: [
     GetAllModuleGroupsUseCase,
@@ -27,6 +29,7 @@ import { TranslationModule } from '../translation/translation.module.js';
     TypeOrmModule,
     SaveModuleGroupUseCase,
     DeleteModuleGroupUseCase,
+    MoveModuleGroupOrderUseCase,
   ],
 })
 export class ModuleGroupModule {}

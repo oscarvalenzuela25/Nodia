@@ -43,14 +43,14 @@ export function useSecureInteraction(conversationId: string, executionId: string
     finally { inFlight.current = false; if (current()) setBusy(false); }
   };
   const act = async (action: SecureFlowAction, payload?: SecureFlowPayload) => {
-    if (!value || denied || inFlight.current || !current() || uncertain && !["status", "frame", "cancel"].includes(action)) return null;
+    if (!value || denied || inFlight.current || !current() || uncertain && !["status", "cancel"].includes(action)) return null;
     inFlight.current = true; setBusy(true);
     try {
       const result = await actNodiaAiSecureFlow(executionId, value.flow, action, crypto.randomUUID(), payload);
       if (!current()) return null;
       setValue(previous => ["completed", "cancelled", "expired", "failed"].includes(result.flow.status) ? { flow: result.flow } : ({ ...previous, ...result })); setFailed(false);
       setUncertain(["unknown", "invoking"].includes(result.flow.status));
-      if (action !== "frame") sileo.success({ title: i18n.t("nodiaAi:secure.updated") });
+      sileo.success({ title: i18n.t("nodiaAi:secure.updated") });
       if (result.flow.status === "completed" || result.flow.status === "cancelled") {
         if (action === "logout" && result.flow.kind === "nodia_logout") useAuthStore.getState().logout();
         else refreshExecution();
@@ -60,7 +60,7 @@ export function useSecureInteraction(conversationId: string, executionId: string
       if (!current()) return null;
       setFailed(true); notifyHttpError(error);
       if (isAxiosError(error) && [401, 403, 404, 410].includes(error.response?.status ?? 0)) setDenied(true);
-      if (!["status", "frame"].includes(action) && !(isAxiosError(error) && error.response && error.response.status < 500)) setUncertain(true);
+      if (!["status"].includes(action) && !(isAxiosError(error) && error.response && error.response.status < 500)) setUncertain(true);
       return null;
     } finally { inFlight.current = false; if (current()) setBusy(false); }
   };

@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { lockAuthority } from '../../authorization/authority-transaction.js';
-import { NodiaAiAdapterPort, isNodiaAiNativeFormatVerified } from '../../nodia-ai-adapter/types/nodia-ai-adapter.types.js';
+import {
+  NodiaAiAdapterPort,
+  isNodiaAiNativeFormatVerified,
+} from '../../nodia-ai-adapter/types/nodia-ai-adapter.types.js';
 import type { NodiaAiActorReference } from '../../nodia-ai/types/nodia-ai-authorization.types.js';
 import { AuthorizeNodiaAiConversationUseCase } from '../../nodia-ai-conversation/use-case/authorize-nodia-ai-conversation.use-case.js';
 import { NodiaAiAttachmentService } from '../nodia-ai-attachment.service.js';
 import { ManageNodiaAiAttachmentUseCase } from './manage-nodia-ai-attachment.use-case.js';
+
+import { observationIdentityManifest } from '../../nodia-ai-context/use-case/nodia-ai-observation-identity.js';
 
 /** Exact current connection/model/session evidence, independent of saved mode flags. No inference is performed. */
 @Injectable()
@@ -44,10 +49,12 @@ export class ObserveNodiaAiAttachmentCapabilitiesUseCase {
         };
       });
     const before = await snapshot();
-    if (!before.selection || before.selection.mode === 'api_key') return base;
+    if (!before.selection) return base;
     let observation;
     try {
       observation = await this.adapter.observe(before.selection);
+      if (before.selection.mode === 'api_key')
+        observationIdentityManifest(before.selection, observation);
     } catch {
       return base;
     }
@@ -62,9 +69,21 @@ export class ObserveNodiaAiAttachmentCapabilitiesUseCase {
       ...base,
       native_media_types: [...verified],
       native_modalities: {
-        image: verified.some((mime) => isNodiaAiNativeFormatVerified(verified, 'image', mime)) ? true : null,
-        pdf: verified.some((mime) => isNodiaAiNativeFormatVerified(verified, 'pdf', mime)) ? true : null,
-        audio: verified.some((mime) => isNodiaAiNativeFormatVerified(verified, 'audio', mime)) ? true : null,
+        image: verified.some((mime) =>
+          isNodiaAiNativeFormatVerified(verified, 'image', mime),
+        )
+          ? true
+          : null,
+        pdf: verified.some((mime) =>
+          isNodiaAiNativeFormatVerified(verified, 'pdf', mime),
+        )
+          ? true
+          : null,
+        audio: verified.some((mime) =>
+          isNodiaAiNativeFormatVerified(verified, 'audio', mime),
+        )
+          ? true
+          : null,
       },
     };
   }

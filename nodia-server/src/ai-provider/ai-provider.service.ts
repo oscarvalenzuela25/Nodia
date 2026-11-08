@@ -357,7 +357,7 @@ export class AiProviderService {
   /** Persist only observations after remote I/O; never replay its stale configuration snapshot. */
   async mergeDiscoveredModels(
     id: string,
-    mode: 'api_key' | 'token_plan_web' | 'token_plan_agentic',
+    mode: 'api_key' | 'agentic',
     models: readonly DiscoveredModelInfo[],
   ): Promise<void> {
     await this.aiProviderRepository.manager.transaction(async (manager) => {

@@ -52,7 +52,6 @@ describe('GetAllProductsUseCase', () => {
           name: 'Coca Cola 1.5L',
           cost_price: 1000,
           cost_price_tax: 190,
-          profit_percentage: 30,
           sale_price: 1547,
           stock: 50,
           is_active: true,
@@ -108,11 +107,12 @@ describe('GetAllProductsUseCase: Ransack query contract', () => {
             business_id: { type: 'uuid' },
             provider_id: { type: 'bigint', nullable: true },
             code: { type: 'varchar' },
+            measurement_unit: { type: 'varchar' },
             name: { type: 'varchar' },
             stock: { type: 'integer' },
             cost_price: { type: 'integer' },
             cost_price_tax: { type: 'integer' },
-            profit_percentage: { type: 'integer' },
+
             sale_price: { type: 'integer' },
             is_active: { type: 'boolean' },
             created_at: { type: 'timestamp' },
@@ -130,6 +130,13 @@ describe('GetAllProductsUseCase: Ransack query contract', () => {
 
   beforeEach(() => {
     const repository = source.getRepository<Product>('Product');
+    vi.spyOn(repository.manager, 'query').mockResolvedValue([
+      {
+        actorId: '12',
+        sessionId: '11111111-1111-4111-8111-111111111112',
+        isSuperAdmin: true,
+      },
+    ]);
     const createQuery = repository.createQueryBuilder.bind(repository);
     executeQuery = vi.fn().mockResolvedValue([]);
     vi.spyOn(repository, 'createQueryBuilder').mockImplementation((alias) => {
@@ -141,6 +148,7 @@ describe('GetAllProductsUseCase: Ransack query contract', () => {
       new RealProductService(
         repository,
         source.getRepository<ProductLog>('ProductLog'),
+        { execute: vi.fn(async () => undefined) } as unknown as ConstructorParameters<typeof RealProductService>[2],
       ),
     );
   });
@@ -148,11 +156,14 @@ describe('GetAllProductsUseCase: Ransack query contract', () => {
   afterEach(() => vi.restoreAllMocks());
 
   const list = (q: Record<string, unknown>) =>
-    useCase.execute({
-      all: true,
-      includes: false,
-      q: q as GetProductsDto['q'],
-    });
+    useCase.execute(
+      {
+        all: true,
+        includes: false,
+        q: q as GetProductsDto['q'],
+      },
+      { userId: '12', sessionId: '11111111-1111-4111-8111-111111111112' },
+    );
 
   it('keeps valid filters, parameterized values and caller sorting', async () => {
     await list({
@@ -307,6 +318,20 @@ describe('GetAllProductsUseCase: Ransack query contract', () => {
     expect(executeQuery).toHaveBeenCalledOnce();
   });
 
+  it('compares price only after selecting the latest changed snapshot and checking its unit', async () => {
+    await list({ price_change_in: ['up', 'same'] });
+    const sql = query.getQuery();
+    expect(sql).toContain('pl.measurement_unit');
+    expect(sql).toContain("price_baseline.value->>'measurement_unit'");
+    expect(sql.indexOf('ORDER BY pl.created_at DESC,pl.id DESC LIMIT 1'))
+      .toBeLessThan(sql.indexOf("WHERE price_baseline.value->>'measurement_unit'"));
+    // A unit predicate inside the ordered history lookup would choose an older
+    // compatible snapshot and manufacture a comparison across a unit change.
+    expect(sql).not.toMatch(/pl\.measurement_unit\s*=\s*(?:"?product"?)\./);
+    expect((sql.match(/FROM product_logs pl/g) ?? [])).toHaveLength(1);
+    expect(executeQuery).toHaveBeenCalledOnce();
+  });
+
   it('allows the new product predicates through the real HTTP DTO validation', async () => {
     const pipe = new ValidationPipe({
       transform: true,
@@ -327,7 +352,10 @@ describe('GetAllProductsUseCase: Ransack query contract', () => {
       },
       { type: 'query', metatype: RuntimeGetProductsDto },
     );
-    await useCase.execute(dto);
+    await useCase.execute(dto, {
+      userId: '12',
+      sessionId: '11111111-1111-4111-8111-111111111112',
+    });
     expect(query.getQuery()).toContain('"product"."name" !=');
     expect(query.getParameters()).toMatchObject({
       ransack_0: 'x',

@@ -4,15 +4,27 @@
   "document_id": "general-settings",
   "product_id": "general-settings",
   "kind": "product",
-  "revision": 9,
+  "revision": 22,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "19 lecturas publicadas y17 escritores Core internos implementados en AI-27. El resumen y la nueva ficha permanecen excluidos; las escrituras MCP y la aceptación Gemini siguen pendientes. AI-28 incorpora cuatro preparadores internos y revisión Client de configuración IA no secreta; alcance de laboratorio en74. AI-29 incorpora un canal humano seguro; verificación final pendiente en75. AI36-C02 añade cuatro contratos/adaptadores MCP candidatos para alta/actualización de clave, login de conexión y logout Nodia propio. MCP prepara la propuesta pública; confirmación, secreto e interacción siguen en el canal humano. Sin publicación, cambio nativo o inferencia nueva. SQL aislado:31 comprobaciones C02 y22 de regresión C01 sobre el mismo compilado; no equivale a disponibilidad con cuenta real."
+    "notes": "Índice enlaza la ampliación API chat candidata y sus seis revisiones draft; código implementado, ensayos SQL/API/VM pendientes. Sin aprobación o publicación del producto o fichas por actualizar el índice. Cabecera: ClientR32 expone actualización manual de la consulta de salud existente, con17 regresiones y QA autenticada/escritorio/móvil acotada; sin ampliar capacidades o aceptación del resto del producto. ClientR33 retira únicamente el padding inferior del header compartido; evaluación visual sin cambio de conceptos, operaciones o interpretación del contexto."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Ajustes Generales y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/mvp/90-agentic-api-only-web-retirement.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/mvp/89-module-access-and-user-data-scope.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-081-module-access-and-business-data-scope.md",
+      "kind": "specification"
+    },
     {
       "path": "docs/mvp/02-prd-v1.md",
       "kind": "specification"
@@ -52,10 +64,30 @@
     {
       "path": "docs/architecture/decisions/ADR-061-nodia-ai-mcp-write-preparation.md",
       "kind": "specification"
+    },
+    {
+      "path": "docs/mvp/92-nodia-ai-api-chat-parity.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-084-nodia-ai-api-chat-common-runtime.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/features/ai-providers/topbar-mode-health.md",
+      "kind": "specification"
+    },
+    {
+      "path": "nodia-client/src/layouts/components/Topbar/components/AiProviderIndicators/AiProviderIndicators.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/layouts/components/Topbar/styles.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-10-18",
+    "checked_on": "2026-11-06",
     "evidence_paths": [
       "docs/mvp/51-nodia-ai-ai05-product-knowledge.md",
       "docs/evidence/nodia-ai-ai05-knowledge-validation.json",
@@ -68,15 +100,35 @@
       "docs/evidence/nodia-ai-ai27-client-validation.json",
       "docs/evidence/nodia-ai-ai27-ui-validation.json",
       "docs/evidence/nodia-ai-ai28-client-validation.json",
-      "docs/evidence/nodia-ai-ai36-c02-validation.json"
+      "docs/evidence/nodia-ai-ai36-c02-validation.json",
+      "docs/evidence/core-fx04-live-delivery-r01.json",
+      "docs/evidence/core-module-drag-delivery-r01.json",
+      "docs/evidence/core-fx04-live-acceptance-r02.json",
+      "docs/evidence/module-access-and-user-data-deployment-r01.json",
+      "docs/evidence/api-chat-knowledge-review-r01.json",
+      "docs/evidence/ai-topbar-manual-refresh-20261106-r01.json",
+      "docs/evidence/topbar-bottom-padding-20261106-r01.json"
     ],
-    "notes": "Índice actualizado según el registro de 67 capacidades y 27 bindings funcionales. Esta ficha de producto conserva document_status:draft, integration_status:unregistered y approval:null; su actualización no aprueba el resumen ni lo publica. La evidencia real separa SQL/CSV positivos, factura R2 no configurado y resultados externos/Web parciales con unknown sin replay. No se certifica cada llamada del modelo ni despliegue productivo completo. AI-27: Client1571/205, focal280/7, tipado/lint/build correctos y11 QA sintéticas/6 capturas. Corpus51/24 con67 capacidades/27 fragmentos conservados. AI-28: Client1589/205 y focal241/3, tipado/lint/build correctos; configuración distinta de disponibilidad, modelos por modo y errores recuperables con feedback ES/EN. SQL/laboratorio según74, sin publicación MCP ni aceptación Gemini de escrituras. AI36-C02 añade cuatro contratos/adaptadores MCP candidatos para alta/actualización de clave, login de conexión y logout Nodia propio. MCP prepara la propuesta pública; confirmación, secreto e interacción siguen en el canal humano. Sin publicación, cambio nativo o inferencia nueva. SQL aislado:31 comprobaciones C02 y22 de regresión C01 sobre el mismo compilado; no equivale a disponibilidad con cuenta real."
+    "notes": "Revisión de código/contratos candidatos API y preparación documental con originales byte exactos archivados. Código implementado; ensayo SQL, success API chat real, modalidades, imágenes, VM y publicación de esta revisión pendientes. Las evidencias de etapas anteriores conservan su alcance y no califican el modo API nuevo. Aprobación humana pendiente. Actualización manual del topbar verificada por separado en ClientR32; no transfiere aceptación a otras funciones/proveedores ni a inferencia. Padding inferior0 y geometría comparada320/600/1088px comprobados por separado en R33; sin nueva publicación."
   },
   "approval": null
 }
 ---
 
+## Ampliación candidata: API key en NodiaAI — 2026-10-27
+
+La [paridad API del chat](../nodia-ai/features/api-key-chat-parity.md), [plan92](../../../mvp/92-nodia-ai-api-chat-parity.md) y [flujo seguro revisión5](features/secure-ai-interaction.md) están en revisión. Código implementado para la misma autoridad/gateway, propuesta y confirmación humanas; API no simula MCP ni éxito por tener clave/catálogo. SQL, proveedor real, modalidades y VM se verifican por separado. Esta revisión del índice es draft/unregistered/approval:null y no aprueba ni publica las fichas. Los apartados inferiores son cortes anteriores con su propia evidencia.
+
 # Ajustes Generales — contexto de producto para NodiaAI
+
+## Cambio solicitado el 2026-10-27: Agentic y API key
+
+La petición actual retira Web y su delegación a Agentic; se mantienen sólo `agentic` y `api_key`. [Modos IA Agentic y API key](features/agentic-api-modes.md), [implementación90](../../../mvp/90-agentic-api-only-web-retirement.md) y [aceptación de proveedores91](../../../mvp/91-ai-provider-onboarding-verification.md). Implementación en curso y aceptación VM/API por comprobar. La existencia de un modo no habilita todas las capacidades; historial/snapshots y evidencias anteriores se preservan con sus límites. Los apartados inferiores son cortes previos, no habilitan ejecución Web.
+
+## Regla vigente de módulos y privacidad — 2026-10-25
+
+[Política89](../../../mvp/89-module-access-and-user-data-scope.md) y [ADR081](../../../architecture/decisions/ADR-081-module-access-and-business-data-scope.md). El módulo habilita funcionalidades y no datos ajenos. Usuarios ordinarios necesitan el módulo y la propiedad o colaboración explícita; super_admin tiene bypass de permisos y acceso global. Las acciones de roles no bloquean. El guard vuelve a Inicio sin módulo. Se conservan sesión, recursos existentes, confirmaciones humanas y atribución del actor; ver un chat ajeno no permite confirmar como su autor. Esta revisión candidata sustituye las referencias históricas a ai:manage y al acceso global entre negocios; no publica conocimiento ni altera aprobaciones anteriores.
+
 
 Metadatos canónicos migrados en [AI-06](../../../mvp/52-nodia-ai-ai06-knowledge-publication-contract.md); este resumen conserva aprobación pendiente y no se publica; las secciones funcionales de lectura publicadas se identifican debajo.
 
@@ -172,6 +224,22 @@ Client1571/205, focal280/7, tipado/lint/build correctos y11 QA sintéticas/6 cap
 [Entrega75](../../../mvp/75-nodia-ai-ai29-secure-human-flows.md) y [ficha de interacción segura](features/secure-ai-interaction.md): ocho preparadores internos de claves, login, logout y sincronización, sin secretos en chat/modelo. La ejecución espera una acción humana liberando worker; ownership/TTL y autoridad se revalidan. Canal local verificado: Server 3072/197, Client 1636/208 y487 comprobaciones SQL/HTTP/procesos; AI-29 sigue abierto por R01 (prueba durable nativa/aceptación real). Sin crecimiento de esquema; ficha draft/unregistered, sin aprobación ni publicación MCP automática.
 
 
+## Plan Core87 — presentación y orden de módulos
+
+Adopción de arrastre, 2026-10-25: [Server DnD R03/Client DnD R02 entregados](../../../mvp/87-core-feedback-module-order-plan.md#adopción-de-la-ampliación-de-arrastre--2026-10-25), [ficha revisión6](features/module-presentation-and-order.md), índice16 draft/partial/unregistered y approval null. Asa antes de ID, Pointer/teclado y PATCH before/after atómico conservando ámbito/rangos/huecos; Copiar ID retirado y URL conservada. Sin migración adicional sobre historia30.171 assets HTTP/SHA/MIME,60 tablas/orden/configuración/época Gemini preservados, journal abierto sin no-confirmados/expirados. UI autenticada acredita dos drops unchanged; positivos de orden/sidenav pertenecen a SQL aislada/fixture sintética. [Recibo](../../../evidence/core-module-drag-delivery-r01.json). Rollback mismo esquema30 preparado, no ejecutado; FX-04 sigue parcial por efectos positivos autenticados, concurrencia y sesión, sin dispositivo físico, inferencias o ampliación MCP.
+
+FX-04, 2026-10-25: [adopción operativa parcial](../../../mvp/87-core-feedback-module-order-plan.md#adopción-operativa-parcial-de-fx-04--2026-10-25) y [ficha revisión5](features/module-presentation-and-order.md), draft/partial/unregistered. Server R02/Client R01 y migración única1793200000000 adoptados en VM Linux local, con backup cifrado y contexto Redis limpiado; datos ajenos al orden y autoridad conservados. R02 alinea dos metadatos src con dist sin otra migración;150 contratos/41fragmentos R09 exactos. UI autenticada de módulos/Ordenar leída con metadata y extremos coherentes; no movimientos ni CRUD reales. [Evidencia y pendientes](../../../evidence/core-fx04-live-delivery-r01.json): altas/movimientos, sidenav, concurrencia y sesión conservan el gate abierto. Sin nueva publicación MCP; rollback R01 preparado sólo para el corte histórico, no aplicable a R02 sin plan revisado.
+
+FX-03, 2026-10-25: [tabla agrupada y controles implementados](../../../mvp/87-core-feedback-module-order-plan.md#implementación-local-y-qa-sintética-de-fx-03--2026-10-25), [contrato](../../../../nodia-client/src/modules/generalSettings/pages/Modules/CONTRACT.md) y [ficha revisión4](features/module-presentation-and-order.md), draft/partial/unregistered. Modo Ordenar con Subir/Bajar en tabla/tarjetas, filtros/paginado restaurados y acciones sticky desde sm. Ambos movimientos esperan invalidar módulos, grupos y authorizationKeys.all; el sidenav refleja la relectura sin toast genérico de permisos. Locator snapshot de sólo lectura conserva el ancla; conflictos y resultados inciertos no repiten PATCH y bloquean movimientos hasta recuperar. [Evidencia por capas](../../../evidence/core-fx03-order-validation-r01.json), incluido navegador sintético390/1280. Sin ampliar MCP, desplegar o migrar BD de uso; aceptación autenticada FX-04 pendiente.
+
+FX-02, 2026-10-25: [contrato implementado](../../../../nodia-client/src/modules/generalSettings/pages/Modules/CONTRACT.md), [ficha revisión3](features/module-presentation-and-order.md) partial/unregistered y [verificación aislada](../../../evidence/core-fx02-order-validation-r01.json). Altas al final, movimientos atómicos, vecinos paginados y contexto/Sidenav ordenados en fuentes; seeds y migración ensayados en PostgreSQL desechable. Sin migrar BD de uso ni publicar campos/herramientas MCP. Controles de tabla FX-03 y aceptación FX-04 pendientes.
+
+Refinamiento de planificación, 2026-10-25: [FX-02/03](../../../mvp/87-core-feedback-module-order-plan.md#contrato-propuesto-de-orden--fx-02) y [ADR-078 propuesto](../../../architecture/decisions/ADR-078-module-order-and-atomic-moves.md). Nuevos registros al final de su ámbito; controles Subir/Bajar en filas y cabeceras guardan movimientos atómicos. Sustituye números manuales/empates del plan inicial; [ficha revisión2](features/module-presentation-and-order.md) planned/unregistered. Sólo documentación por petición del usuario; no implementar todavía. FX-01 conserva su alcance local previo y no se modifica.
+
+[Investigación y plan87](../../../mvp/87-core-feedback-module-order-plan.md), solicitud del 2026-10-25. La [ficha de módulos agrupados y orden](features/module-presentation-and-order.md) permanece draft/planned/unregistered: propone orden persistido de grupos y módulos para administración/navegación, sin herramienta MCP nueva. El ajuste de avisos automáticos sólo cambia feedback, no permisos ni capacidades del modelo. Esta revisión del índice conserva las fichas aprobadas y no acredita implementación o despliegue.
+
+Actualización FX-01, 2026-10-25: [implementación local y pruebas](../../../evidence/core-fx01-notification-validation-r01.json) de feedback de acceso. Se silencian éxitos de lecturas/renovaciones automáticas y se deduplica el error de contexto; éxitos de acciones explícitas y errores conservados. Evaluación de impacto: sólo notificaciones, sin nuevas operaciones ni cambios de autoridad/contexto funcional; no requiere herramienta o publicación. FX-02/03 y su ficha de orden permanecen planificados; no hay despliegue ni aceptación operativa nueva por esta revisión11.
+
 ## Continuación AI36-C02 — preparación segura candidata
 
 [Entrega82](../../../mvp/82-nodia-ai-ai36-integral-coverage.md#continuación-ai36-c02--preparación-mcp-de-cuatro-flujos-seguros), [decisión](../../../architecture/decisions/ADR-061-nodia-ai-mcp-write-preparation.md#extensión-ai36-c02--cuatro-preparadores-del-canal-seguro) y [evidencia](../../../evidence/nodia-ai-ai36-c02-validation.json). Se añaden contratos/adaptadores candidatos de alta y actualización de API key, login de conexión y logout propio. Mantienen parciales no secretos, revisión CAS, permisos vigentes y propuesta exacta. MCP no recibe secretos/códigos ni descriptores de interacción: el botón humano admite la ejecución y el worker pausa antes de abrir el canal seguro.
@@ -179,3 +247,17 @@ Client1571/205, focal280/7, tipado/lint/build correctos y11 QA sintéticas/6 cap
 Los tres flujos de proveedor exigen Ajustes IA y ai:manage. Cerrar la sesión Nodia actual usa únicamente la autoridad basal NodiaAI y el actor/sesión autenticados; el recurso separado nodia_sessions evita heredar permisos de proveedor. No se puede elegir una sesión ajena. La normalización y mínimos nativos permanecen en sus casos de uso, sin duplicarlos en el chat. Las API keys administran conexiones existentes; esto no habilita inferencia API en NodiaAI.
 
 Los 77 preparadores candidatos C01+C02 siguen sin publicar; se conservan67 lecturas/27 fragmentos y las fichas aprobadas. La evidencia distingue pruebas de contratos, SQL aislado y proveedor simulado de autenticación/inferencia real. Rechazar campos secretos no acredita detección semántica de secretos pegados en texto libre. No hay cambios de UI, endpoints, tablas o migraciones; esta ficha permanece draft/unregistered y no habilita herramientas.
+
+## Actualización manual de salud en la cabecera — 2026-11-06
+
+La cabecera autenticada expone «Actualizar estado de IA» junto a los modos del predeterminado. Conserva acceso por módulo canónico y bypass existente, sin mostrar el grupo a visitantes. Reutiliza GET de salud/caché/polling120s; no añade una operación de proveedor o herramienta NodiaAI. Un clic no cambia modelos, modos o conexiones ni inicia login/inferencia. Durante reconsulta mantiene los indicadores, bloquea acciones y muestra carga en el icono; éxito sólo indica observación actualizada, error mantiene datos y un único aviso con reintento manual.
+
+Evaluación de contexto: mejora el acceso visual a la consulta ya existente, sin cambiar conceptos, datos, interpretación de resultados ni autoridad. La [ficha de modelos y salud aprobada](features/ai-models-and-health.md) conserva sus bytes/revisión9; esta evaluación queda en el producto draft/partial/unregistered, sin publicación o aprobación nuevas. No se propone otra herramienta por añadir el botón. [Especificación](../../../features/ai-providers/topbar-mode-health.md#actualización-manual-desde-la-cabecera--2026-11-06) y [evidencia](../../../evidence/ai-topbar-manual-refresh-20261106-r01.json).
+
+ClientR32 activo:17 regresiones/2 archivos, tipos/lint y build aislado;185 archivos actuales y14 versiones históricas verificados, una activación/recarga. QA real ES/oscuro confirmó un GET200 por clic, toast, tooltip, retorno de foco y targets44px dentro de320/599/600/1088px. El bitmap móvil inicial no sincronizado al redimensionar se conserva como intento; la captura320r02 se hizo desde una pestaña ya creada a ese ancho y se inspeccionó aparte. Sin cambios de sesión, inferencias o mutaciones comerciales. Carga/error/rápidos y etiquetas EN se acreditan por unidad, no por un fallo provocado en VM; no acredita teléfono físico.
+
+## Evaluación visual: padding inferior de cabecera — 2026-11-06
+
+Topbar compartido retira su padding inferior en todos los tamaños. No altera conceptos, operaciones, datos o interpretación de salud: controles, consultas, autenticación y permisos siguen su contrato. Por ello no requiere una ficha o herramienta nueva; la ficha aprobada de modelos/salud conserva su revisión/hash. Producto revisión22 sigue draft/partial/unregistered, approval:null.
+
+ClientR33 adoptado con un archivo de estilos,17 regresiones existentes/tipos/lint/build y QA comparada320/600/1088px: padding0, reducción exacta de la altura, sin overflow y controles dentro del ancho. Viewport restaurado y pestaña original intacta; sin inferencias ni mutaciones comerciales. [Detalle](../../../features/ai-providers/topbar-mode-health.md#padding-inferior-de-la-cabecera--2026-11-06) y [evidencia](../../../evidence/topbar-bottom-padding-20261106-r01.json).

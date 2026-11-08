@@ -1,0 +1,516 @@
+{
+  "schema": "nodia-ai-ai40-compaction-validation-v1",
+  "status": "real_compaction_not_accepted_unknown_reconciled",
+  "cut_host_date": "2026-10-23",
+  "active_release": {
+    "root": "/opt/nodia/releases/nodia-server-ai40-r06",
+    "manifest_sha256": "5aa5b74dd43cfbc61615f766ba8e17dd12bb3c8bb0a695bd85fc68c6d519c2bd",
+    "runtime_fingerprint": "1233a6c04a7d215994bfb7f40f41eef5e0d44935532fce8a8f092fdf1c57d11a",
+    "runtime_policy_asset_sha256": "7ff3c624496ace6514100d03b2e1f236683b235bfe7d4fa68da7cd268c419521",
+    "adoption_or_code_mutation_by_these_harnesses": false
+  },
+  "scope": {
+    "real_account_existing_profile": true,
+    "new_business_changes": 0,
+    "new_operational_chats": 0,
+    "configured_database_writes": 0,
+    "generation_replay": false,
+    "runtime_handler_overridden": false,
+    "readiness_overridden": false,
+    "publication_overridden": false,
+    "policy_limits_lowered": false,
+    "audio_candidate_adopted": false,
+    "synthetic_infrastructure": [
+      "Disposable PostgreSQL/authenticated fixture actors and six declared synthetic user source messages",
+      "Public nonsecret provider configuration mirrored into the disposable database",
+      "Redis event bus only replaced by a no-op; SQL coordination and native runtime remain real"
+    ]
+  },
+  "QA": {
+    "r02_atomic_source_and_queue_contract_tests": {
+      "command": "node --test docs/evidence/scripts/nodia-ai-ai40-compaction-sources-r06-r02.spec.mjs",
+      "passed": 4,
+      "failed": 0
+    },
+    "r02_atomic_receipt_policy_tests": {
+      "command": "python -B -m unittest discover -s docs/evidence/scripts -p test_nodia_ai_ai40_compaction_operator_r06_r02.py",
+      "passed": 3,
+      "failed": 0
+    },
+    "node_syntax": "passed",
+    "oxlint": "passed_no_diagnostics",
+    "production_fix_regressions_reference": "docs/evidence/nodia-ai-ai40-selective-fixes-validation-r01.json",
+    "production_regressions_not_recounted_here": true
+  },
+  "bootstrap_zero_inference": {
+    "R01": {
+      "receipt": {
+        "path": ".tmp/ai40-r06-compaction-harness-r01/bootstrap-r01.json",
+        "sha256": "3d068636e5994410b0f2265cfca8deac55f9ecbc4f805e49d00a12f47f80dd6d",
+        "bytes": 10939
+      },
+      "status": "passed",
+      "fixture_removed": true,
+      "dispatches": 0,
+      "source_metrics": {
+        "source_messages": 6,
+        "source_text_utf8_bytes": 159744,
+        "history_json_utf8_bytes": 160507,
+        "threshold_utf8_bytes": 131072,
+        "history_load_window_utf8_bytes": 196608,
+        "assembly_ceiling_utf8_bytes": 262144,
+        "oracle_sha256": "10e30cae9f1b84f87a3691bd9e6501a910241b0db08b775e09bd92ccb2b38a08",
+        "source_first_text_sha256": "f1eb3e8aa5613b223a84acecc20b699d4db87b5605be9ef8b512a64970ea3970",
+        "current_requests_contain_oracle": false,
+        "synthetic_assistant_messages_seeded": 0,
+        "actual_SQL_loader_complete": true,
+        "actual_SQL_history_json_utf8_bytes": 160507,
+        "source_hash": "2e0030931c9bd204c93e9351496a0442d02ef89195d214dd37c2a00e4901af12",
+        "prepared_transport": "plain_text",
+        "prepared_prompt_sha256": "c7f591d441b3615c0c085feb56b94ea762f2ab63f394340c4b3d502135347838",
+        "prepared_prompt_utf8_bytes": 163521,
+        "pure_native_measurement": {
+          "measurementKind": "upper_bound",
+          "canonicalUtf8Bytes": 163521,
+          "catalogUtf8Bytes": 2,
+          "overheadUtf8Bytes": 1403,
+          "totalUtf8Bytes": 164926,
+          "maxUtf8Bytes": 262144
+        }
+      }
+    },
+    "R02": {
+      "receipt": {
+        "path": ".tmp/ai40-r06-compaction-harness-r02/bootstrap-r02.json",
+        "sha256": "8be4b2bc837a6a0e96006d1ed22ae36985754dd56ff7917763b346ba73d93476",
+        "bytes": 11032
+      },
+      "status": "passed",
+      "fixture_removed": true,
+      "dispatches": 0,
+      "source_metrics": {
+        "source_messages": 6,
+        "source_text_utf8_bytes": 159744,
+        "history_json_utf8_bytes": 160507,
+        "threshold_utf8_bytes": 131072,
+        "history_load_window_utf8_bytes": 196608,
+        "assembly_ceiling_utf8_bytes": 262144,
+        "oracle_sha256": "5afc8e1c5d9b0f346e8767d10fdffb3b905ce9d6e791e5b6b44fa37404289776",
+        "source_first_text_sha256": "510256c8f35c3760d82d9f670f0bff3d368c7e40f9d874ff74b2ca36415ddc91",
+        "current_requests_contain_oracle": false,
+        "synthetic_assistant_messages_seeded": 0,
+        "actor_module_routes": [
+          "/tools/nodia-ai"
+        ],
+        "source_scope_matches_actual_actor": true,
+        "actual_SQL_loader_complete": true,
+        "actual_SQL_history_json_utf8_bytes": 160507,
+        "source_hash": "7b90b283a3864ef6870348a31430f49add8ed0b80dec8662b9ccbb27f6088399",
+        "prepared_transport": "plain_text",
+        "prepared_prompt_sha256": "f89cef9e439c5230d68cbf1feb6871064d1d0b632ab4574d618961332a7ad213",
+        "prepared_prompt_utf8_bytes": 163521,
+        "pure_native_measurement": {
+          "measurementKind": "upper_bound",
+          "canonicalUtf8Bytes": 163521,
+          "catalogUtf8Bytes": 2,
+          "overheadUtf8Bytes": 1403,
+          "totalUtf8Bytes": 164926,
+          "maxUtf8Bytes": 262144
+        }
+      }
+    },
+    "barrier": "Actual Create, seed/load/fingerprint, explicit plain_text builder and pure native-envelope measurement execute before executable(), account observation, Admit or RunStage. Admit itself observes the real adapter and is excluded from zero-account bootstrap.",
+    "provider_observations": 0,
+    "provider_generations": 0
+  },
+  "attempt_R01": {
+    "receipt": {
+      "path": ".tmp/ai40-r06-compaction-harness-r01/probe-r01.json",
+      "sha256": "63bdf11ffe3377b4560954cf5d51028a077083c596fddf5f91a20d0ecd28e524",
+      "bytes": 11056
+    },
+    "operator_sha256": "e371c1e9016cc29117fc7f2e90bb752ba762e9bd9c740bf0466e034b66fefe09",
+    "status": "harness_pre_stage_assertion_failed",
+    "run_id": "d230d78d-63a0-488f-8a75-e2dbc49b8003",
+    "provider_dispatches_armed": 0,
+    "cause_confirmed": "The harness wrongly required run.phase=context|inference before the first worker stage. Actual Admit stores run.phase=queued, while the authoritative job is turn/ready/context. The first RunStage was never called.",
+    "provider_or_product_failure_proven": false,
+    "readonly_inspection": {
+      "schema": "nodia-ai-ai40-r06-compaction-retained-inspection-v1",
+      "status": "verified_zero_armed_no_native_dispatch",
+      "container": "template_ai40_3296596_8dc52a72",
+      "projection": {
+        "run": {
+          "id": "d230d78d-63a0-488f-8a75-e2dbc49b8003",
+          "phase": "queued",
+          "state": "queued",
+          "module_routes": [
+            "/tools/nodia-ai"
+          ],
+          "conversation_id": "b0a3fa06-85f0-42ca-a485-3c08a85e9bd4",
+          "tool_calls_used": 0,
+          "compactions_used": 0,
+          "mcp_rpc_messages_used": 0,
+          "provider_dispatches_used": 0
+        },
+        "jobs": [
+          {
+            "id": "4e734dca-6048-4c32-ba0e-2a86c23bf5b6",
+            "kind": "turn",
+            "state": "ready",
+            "stage_key": "context",
+            "lease_owner": null,
+            "attempt_count": 0,
+            "recovery_descriptor_present": false
+          }
+        ],
+        "effects": 0,
+        "all_runs": 1,
+        "attempts": 0,
+        "database": "ai40",
+        "messages": 7,
+        "snapshots": 0,
+        "dispatches": 0,
+        "source_scopes": [
+          {
+            "module_routes": [
+              "/tools/nodia-ai"
+            ],
+            "schema_version": 1
+          }
+        ],
+        "tool_receipts": 0,
+        "armed_attempts": 0,
+        "retained_slots": 0,
+        "other_client_connections": 0
+      },
+      "readonly_transaction": true,
+      "provider_observations": 0,
+      "provider_generations": 0,
+      "SQL_writes": 0,
+      "container_removed": false,
+      "services_changed": false,
+      "profile_files_opened": false
+    },
+    "readonly_inspection_source": {
+      "path": ".tmp/ai40-r06-compaction-harness-r01/retained-inspection-r01.json",
+      "sha256": "77ecd5891663c32aad250a93fd438746911989eccaf4392c6a168e1c04216771",
+      "bytes": 1143
+    },
+    "cleanup": {
+      "schema": "nodia-ai-ai40-r06-compaction-retained-cleanup-v1",
+      "status": "exact_disposable_container_removed",
+      "container": "template_ai40_3296596_8dc52a72",
+      "run_id": "d230d78d-63a0-488f-8a75-e2dbc49b8003",
+      "fresh_zero_armed_inspection": {
+        "schema": "nodia-ai-ai40-r06-compaction-retained-inspection-v1",
+        "status": "verified_zero_armed_no_native_dispatch",
+        "container": "template_ai40_3296596_8dc52a72",
+        "projection": {
+          "run": {
+            "id": "d230d78d-63a0-488f-8a75-e2dbc49b8003",
+            "phase": "queued",
+            "state": "queued",
+            "module_routes": [
+              "/tools/nodia-ai"
+            ],
+            "conversation_id": "b0a3fa06-85f0-42ca-a485-3c08a85e9bd4",
+            "tool_calls_used": 0,
+            "compactions_used": 0,
+            "mcp_rpc_messages_used": 0,
+            "provider_dispatches_used": 0
+          },
+          "jobs": [
+            {
+              "id": "4e734dca-6048-4c32-ba0e-2a86c23bf5b6",
+              "kind": "turn",
+              "state": "ready",
+              "stage_key": "context",
+              "lease_owner": null,
+              "attempt_count": 0,
+              "recovery_descriptor_present": false
+            }
+          ],
+          "effects": 0,
+          "all_runs": 1,
+          "attempts": 0,
+          "database": "ai40",
+          "messages": 7,
+          "snapshots": 0,
+          "dispatches": 0,
+          "source_scopes": [
+            {
+              "module_routes": [
+                "/tools/nodia-ai"
+              ],
+              "schema_version": 1
+            }
+          ],
+          "tool_receipts": 0,
+          "armed_attempts": 0,
+          "retained_slots": 0,
+          "other_client_connections": 0
+        },
+        "readonly_transaction": true,
+        "provider_observations": 0,
+        "provider_generations": 0,
+        "SQL_writes": 0,
+        "container_removed": false,
+        "services_changed": false,
+        "profile_files_opened": false
+      },
+      "removed_target_absent": true,
+      "provider_observations": 0,
+      "provider_generations": 0,
+      "configured_SQL_writes": 0,
+      "services_changed": false,
+      "profile_files_opened": false,
+      "original_intent_or_receipt_changed": false
+    },
+    "cleanup_source": {
+      "path": ".tmp/ai40-r06-compaction-harness-r01/retained-cleanup-r01.json",
+      "sha256": "443901c60b733256aaf75475e922f69855e4d1d92930047fa6790d14c784c855",
+      "bytes": 1600
+    },
+    "original_consumed_intent_and_materials_preserved": true
+  },
+  "successor_R02": {
+    "receipt": {
+      "path": ".tmp/ai40-r06-compaction-harness-r02/probe-r02.json",
+      "sha256": "26b2363fef1be000e41f6507dc6d3b96ceb1dd7a4accfb10a5ee2836a30b1a5c",
+      "bytes": 10956
+    },
+    "operator_sha256": "9047ce0bf614b3295ddca8be0b9fd63e2623440d0942cefda74f1f1c16fb1c07",
+    "materials": {
+      "nodia-ai-ai40-compaction-sources-r06-r02.mjs": "05d19a8179dccfb37d13ac4aae910d7876c6e16b17f0ae00fc93f05a15869e5a",
+      "nodia-ai-ai40-compaction-parent-r06-r02.mjs": "318b9d3c27baafaa73b576ed9899526a5f94ba8356d8b6c53be9ee63ecbd116f",
+      "nodia-ai-ai40-compaction-child-r06-r02.mjs": "acc52bad5f8da920fc31b4815534eb7f67b4519597373480a598f02e1cadc379",
+      "nodia-ai-ai40-r06-mcp-operator-r02.py": "287f1673da85074275c0595e6ab245c113fe9ff949fd0514c16a39493d999588"
+    },
+    "status": "first_compaction_dispatch_unknown_closed_and_acknowledged",
+    "run_id": "2129159b-f333-495a-95a5-a840c3b84541",
+    "provider_dispatches_armed": 1,
+    "actual_provider_inference_began": "not established by the retained journal; SQL arming precedes native thread/turn delivery",
+    "second_compacting_continuation_started": false,
+    "second_snapshot_reuse_intention_started": false,
+    "snapshot_accepted": false,
+    "source_metrics": {
+      "source_messages": 6,
+      "source_text_utf8_bytes": 159744,
+      "history_json_utf8_bytes": 160507,
+      "threshold_utf8_bytes": 131072,
+      "history_load_window_utf8_bytes": 196608,
+      "assembly_ceiling_utf8_bytes": 262144,
+      "oracle_sha256": "60f16b12264f50ff273d6b693aae583a00241df524e88f5c110b559303a49806",
+      "source_first_text_sha256": "9f073b3c8828aada572a56e7b21fa2ec2b5cabb05ac5c3b4356d2c6cd77346b5",
+      "current_requests_contain_oracle": false,
+      "synthetic_assistant_messages_seeded": 0,
+      "actor_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "source_scope_matches_actual_actor": true,
+      "actual_SQL_loader_complete": true,
+      "actual_SQL_history_json_utf8_bytes": 160507,
+      "source_hash": "58d8213403659beb6624a465f4f5affaad567391d0a4b66a3f43fce947465db0",
+      "prepared_transport": "plain_text",
+      "prepared_prompt_sha256": "2525dd0a0f6a176e6dba52d0b892c961a2a54cda174d230ecc1ff7714a9b8958",
+      "prepared_prompt_utf8_bytes": 163521,
+      "pure_native_measurement": {
+        "measurementKind": "upper_bound",
+        "canonicalUtf8Bytes": 163521,
+        "catalogUtf8Bytes": 2,
+        "overheadUtf8Bytes": 1403,
+        "totalUtf8Bytes": 164926,
+        "maxUtf8Bytes": 262144
+      }
+    },
+    "native_terminal_ack_receipts": [
+      {
+        "attempt_id": "fe0dde3d-89fb-45ae-9011-5b5bac282232",
+        "terminal_proof_id": "02b1703d-c7be-4636-9896-29ce95a0fba1",
+        "operation_ref": "fe0dde3d-89fb-45ae-9011-5b5bac282232",
+        "process_closed": true,
+        "outcome": "abandoned_unknown",
+        "exact_native_ack_settled": true,
+        "journal_state": "abandoned_unknown",
+        "journal_acknowledged": true,
+        "journal_record_sha256": "050fd7c5ee3c32f4668e2cef4917b0c025915e9744aaf08186a5878941b7f217",
+        "exact_native_process_absent": true,
+        "owned_native_process_group_empty": true,
+        "image_staging_root_present": true,
+        "image_staging_entries": 0
+      }
+    ],
+    "read_only_journal_inspection": {
+      "schema": "nodia-ai-ai40-r06-compaction-journal-inspection-v1",
+      "status": "exact_owned_unknown_closed_and_acknowledged",
+      "attempt_id": "fe0dde3d-89fb-45ae-9011-5b5bac282232",
+      "run_id": "2129159b-f333-495a-95a5-a840c3b84541",
+      "identity": {
+        "engine": "agentic",
+        "attemptId": "fe0dde3d-89fb-45ae-9011-5b5bac282232",
+        "operationRef": "fe0dde3d-89fb-45ae-9011-5b5bac282232",
+        "resourceKey": "codex-profile:c17db95bfdfba4ffee919e03da6cc09443c0c337a66ec234c4fef830ae2507f6",
+        "sessionGeneration": "2a552f6b8a434521b8b438a8f7b01dca",
+        "adapterIdentity": {
+          "providerKey": "openai",
+          "contractVersion": "nodia-ai-codex-chat/1",
+          "connectionId": "1"
+        }
+      },
+      "state": "abandoned_unknown",
+      "acknowledged": true,
+      "terminal_proof_id": "02b1703d-c7be-4636-9896-29ce95a0fba1",
+      "terminal_observed_at": "2026-10-23T20:35:24.642Z",
+      "payload_sha256": "c6d40c3c0a74580ad01762e1b7a7babc4308684e64e6638db69ee11ce72acd81",
+      "rpc_count": 0,
+      "frames": 3,
+      "bytes": 721,
+      "unforwarded_requests": 0,
+      "cancel_requested": false,
+      "native_certificate": {
+        "pid": 3306999,
+        "group": 3306999,
+        "birth": "32739491",
+        "boot": "4030022f-2641-40bc-b62d-79928876b867"
+      },
+      "exact_native_process_absent": true,
+      "native_group_empty": true,
+      "image_staging_present": true,
+      "image_staging_entries": 0,
+      "journal_record_sha256": "050fd7c5ee3c32f4668e2cef4917b0c025915e9744aaf08186a5878941b7f217",
+      "typed_decoder_manifest_sha256": "5aa5b74dd43cfbc61615f766ba8e17dd12bb3c8bb0a695bd85fc68c6d519c2bd",
+      "provider_observations": 0,
+      "provider_generations": 0,
+      "SQL_writes": 0,
+      "credential_files_read": false,
+      "raw_messages_read": false,
+      "causal_error_code_not_stored_in_journal": true
+    },
+    "read_only_journal_source": {
+      "path": ".tmp/ai40-r06-compaction-harness-r02/journal-inspection-r02.json",
+      "sha256": "4b9b12c9d1092ea0a60856594db3204fc75b2d0040b876f387f5f2d2b2a90fe7",
+      "bytes": 1531
+    },
+    "recovery": "Exactly the owned unknown turn is passed once to the real administrative reconciliation use case. Its native terminal identity/ACK/process certificate/group/staging are checked independently after SQL cleanup. No queued stage or generation is replayed.",
+    "fixture_removed_after_proven_closure": true,
+    "retained_disposable_container": null,
+    "underlying_cause": "unknown; the journal does not persist a causal exception code. The final harness AssertionError only observes that the intended run did not complete.",
+    "receipt_limitation": "The disposable database was safely removed after native/SQL closure. The harness did not retain the pre-reconciliation run/attempt error projection; do not invent that historical code."
+  },
+  "operational_invariants": {
+    "before": {
+      "chats": 1,
+      "messages": 24,
+      "runs": 13,
+      "dispatches": 15,
+      "tool_receipts": 13,
+      "executions": 1,
+      "effect_receipts": 1,
+      "financial_effects": 1,
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "after": {
+      "chats": 1,
+      "messages": 24,
+      "runs": 13,
+      "dispatches": 15,
+      "tool_receipts": 13,
+      "executions": 1,
+      "effect_receipts": 1,
+      "financial_effects": 1,
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "SQL_projection_equal": true,
+    "public_configuration_unchanged": true,
+    "services_and_release_pins_unchanged": true,
+    "sole_historical_financial_effect_preserved": true,
+    "MCP_and_format_proofs_before": {
+      "mcp": true,
+      "mcp-image-png": true,
+      "mcp-image-jpeg": true,
+      "mcp-image-webp": true
+    },
+    "MCP_and_format_proofs_after": {
+      "mcp": false,
+      "mcp-image-png": false,
+      "mcp-image-jpeg": false,
+      "mcp-image-webp": false
+    },
+    "proofs_invalidated_legitimately": true,
+    "proofs_restored_or_copied": false
+  },
+  "C40_09": {
+    "compaction_real": "pending; no valid snapshot accepted",
+    "snapshot_continuation_real": "not executed",
+    "snapshot_reuse_real": "not executed",
+    "unknown_native_and_SQL_closure": "verified in the disposable production pipeline with a real account/native process",
+    "complete_matrix_accepted": false
+  },
+  "next_steps_not_authorized_or_executed": [
+    "Read-only/offline transport-framing and exception-boundary investigation; do not attribute the cause from the small frame count alone.",
+    "Local-only typed error-cause preservation and closed diagnostic projection, with atomic tests; deployment and new native qualification require their own reviewed successor.",
+    "No new generations, model/provider changes, readiness overrides or restoration of invalidated proofs."
+  ],
+  "references": [
+    "docs/evidence/nodia-ai-ai40-selective-fixes-validation-r01.json",
+    "docs/evidence/nodia-ai-ai40-real-unknown-reconciliation-r01.json",
+    "docs/mvp/86-nodia-ai-ai40-codex-acceptance.md"
+  ],
+  "offline_verified_defect": {
+    "receipt": {
+      "path": ".tmp/ai40-r06-compaction-harness-r02/offline-progress-reproduction-r01.json",
+      "sha256": "a2c3ad8788d4baaccd0b08a417971949389ae8f46f1b84819c130e7b39d2e977",
+      "bytes": 2281
+    },
+    "selected_receipt": {
+      "schema": "nodia-ai-ai40-r06-compaction-offline-progress-reproduction-v1",
+      "status": "passed",
+      "release_manifest_sha256": "5aa5b74dd43cfbc61615f766ba8e17dd12bb3c8bb0a695bd85fc68c6d519c2bd",
+      "compiled_pins": {
+        "dist/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.js": "6c46995be5ff9b2a0c096554a07fa149044af56d90bf3b247496e161f18390b9",
+        "dist/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.js": "721ae31413ce47b024dfc83890a1a18e451abd4456b94df028917fb6f38f2098",
+        "dist/common/ai/codex/codex-chat-runtime.js": "f7267fa6c4b83dea7f0b5093c01a5d5b384503fcc0770f142262dc2704e2c41c",
+        "dist/common/ai/codex/codex-rpc.js": "2df0e1724c9f5786595ecae3632b7ea5d200eac5eaefcce553607724373bf0f2",
+        "dist/common/ai/codex/codex-runtime.service.js": "908ff60aebbd07182261155dd0896e384b6de1942b2ad82b8bbd9f03f11ed8b9"
+      },
+      "verified_cases": [
+        "context zero-count progress rejects before knowledgeTools/DB",
+        "actual ProcessStage protocolProgress propagates same context failure",
+        "inference and delegated_inference forward progress normally",
+        "actual CodexRpc observedFrame rejects before delivering synthetic initialize reply, collapses observer failure to codex_protocol_invalid"
+      ],
+      "context_error": "nodia_ai:capability_denied",
+      "rpc_projected_error": "codex_protocol_invalid",
+      "synthetic_rpc_receive_calls": 0,
+      "fixture_only_no_native_constructor": true,
+      "SDK_processes": 0,
+      "account_reads": 0,
+      "provider_generations": 0,
+      "SQL_accesses": 0,
+      "historical_causality": "A deterministic code defect is reproduced; the original private native error was not retained, so historical causality is not directly proven.",
+      "transport_review": {
+        "own_prompt_utf8_limit": 262144,
+        "own_inbound_frame_utf8_limit": 2097152,
+        "own_inbound_aggregate_limit": 16777216,
+        "own_frame_count_limit": 10000,
+        "outbound_line_cap_in_send": null,
+        "compaction_prompt_bytes": 163521,
+        "native_measurement_upper_bound": 164926,
+        "historical_observed_frames": 3,
+        "historical_observed_bytes": 721,
+        "minimum_successful_responses_before_turn_start": 5,
+        "normally_with_rate_limits": 6,
+        "no_evidence_of_payload_overflow": true,
+        "CLI_internal_line_limit_not_verified_by_this_offline_review": true
+      }
+    },
+    "conclusion": "Frozen R06 reproducibly rejects native startup zero-RPC progress in context through the inference-only tool-progress guard. This is a deterministic production defect; the historical private causal exception was not retained, so it does not retrospectively prove the exact cause of R02.",
+    "native_or_account_actions": false,
+    "historical_outcome_unchanged": true
+  }
+}

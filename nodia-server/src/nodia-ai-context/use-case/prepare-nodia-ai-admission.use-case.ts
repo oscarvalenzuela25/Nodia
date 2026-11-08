@@ -1,3 +1,5 @@
+import { isCodexChatAudioMime } from '../../common/ai/codex/codex-chat-audio.js';
+import { isCodexChatImageMime } from '../../common/ai/codex/codex-chat-images.js';
 import {
   BadRequestException,
   ConflictException,
@@ -17,7 +19,10 @@ import type {
   NodiaAiSelection,
 } from '../../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
 import type { NodiaAiConversation } from '../../nodia-ai-conversation/entities/nodia-ai-conversation.entity.js';
-import { NodiaAiAdapterPort } from '../../nodia-ai-adapter/types/nodia-ai-adapter.types.js';
+import {
+  NodiaAiAdapterPort,
+  supportsNodiaAiTools,
+} from '../../nodia-ai-adapter/types/nodia-ai-adapter.types.js';
 import { LoadNodiaAiKnowledgeUseCase } from './load-nodia-ai-knowledge.use-case.js';
 import {
   NODIA_AI_RUNTIME_POLICY,
@@ -49,7 +54,7 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
     chat: Readonly<NodiaAiConversationSummary>,
     options?: { toolProfileId?: string },
   ) {
-    if (!chat.selection || chat.selection.mode === 'api_key')
+    if (!chat.selection)
       throw new ServiceUnavailableException('nodia_ai:mode_unavailable');
     const observation = {
       actorId: identity.userId,
@@ -60,7 +65,13 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
       toolProfileId: options?.toolProfileId,
       eligibility: structuredClone(await this.adapter.observe(chat.selection)),
     };
-    if (observation.eligibility.adapterIdentity) Object.freeze(observation.eligibility.adapterIdentity);
+    if (observation.selection.mode === 'api_key')
+      observationIdentityManifest(
+        observation.selection,
+        observation.eligibility,
+      );
+    if (observation.eligibility.adapterIdentity)
+      Object.freeze(observation.eligibility.adapterIdentity);
     Object.freeze(observation.selection);
     Object.freeze(observation.eligibility);
     Object.freeze(observation);
@@ -106,9 +117,16 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
     )
       throw new ServiceUnavailableException('nodia_ai:mode_unavailable');
     let adapterManifest: ReturnType<typeof observationIdentityManifest>;
-    try { adapterManifest = observationIdentityManifest(selection, observation.eligibility); }
-    catch { throw new ConflictException('nodia_ai:eligibility_changed'); }
-    const codex = adapterManifest.adapter_identity !== undefined;
+    try {
+      adapterManifest = observationIdentityManifest(
+        selection,
+        observation.eligibility,
+      );
+    } catch {
+      throw new ConflictException('nodia_ai:eligibility_changed');
+    }
+    const codex =
+      observation.eligibility.source === 'codex_live_session_and_catalog';
     await this.adapter.verifyConfiguration(
       selection,
       observation.eligibility.configurationGeneration,
@@ -169,17 +187,40 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
           }
         : {}),
     };
+    const verifiedCodexMediaTypes = (
+      observation.eligibility.verifiedAttachmentMediaTypes ?? []
+    ).filter(
+      (mime) => isCodexChatImageMime(mime) || isCodexChatAudioMime(mime),
+    );
+    const invoiceOcr =
+      supportsNodiaAiTools(observation.eligibility) &&
+      knowledge.capability_contracts.some(
+        (item) => item.capability_id === 'nodia_invoices_ocr',
+      ) &&
+      visible.some((item) => item.capabilityId === 'nodia_invoices_ocr');
     return {
       selection,
       catalogVersion: knowledge.catalog_release,
       contextManifest: {
         schema_version: 1,
+        ...(invoiceOcr ? { invoice_ocr_capability: true } : {}),
         ...adapterManifest,
         verified_modalities: [
-          ...(!codex ? observation.eligibility.verifiedModalities ?? [] : []),
+          ...(!codex
+            ? (observation.eligibility.verifiedModalities ?? [])
+            : [
+                ...(verifiedCodexMediaTypes.some(isCodexChatImageMime)
+                  ? ['image']
+                  : []),
+                ...(verifiedCodexMediaTypes.some(isCodexChatAudioMime)
+                  ? ['audio']
+                  : []),
+              ]),
         ],
         verified_attachment_media_types: [
-          ...(!codex ? observation.eligibility.verifiedAttachmentMediaTypes ?? [] : []),
+          ...(!codex
+            ? (observation.eligibility.verifiedAttachmentMediaTypes ?? [])
+            : verifiedCodexMediaTypes),
         ],
         knowledge_release: knowledge.release_id,
         resource_key: observation.eligibility.resourceKey,

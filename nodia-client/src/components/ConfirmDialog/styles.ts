@@ -42,6 +42,10 @@ export const StyledDialog = styled(Dialog, {
               0.15,
             )}, 0 0 0 1px ${borderColor}`,
       overflow: "hidden",
+      [theme.breakpoints.down("sm")]: {
+        margin: theme.spacing(2),
+        maxHeight: "calc(100dvh - 32px)",
+      },
       transition: theme.transitions.create(["box-shadow", "transform"], {
         duration: theme.transitions.duration.shorter,
       }),
@@ -100,6 +104,8 @@ export const DialogActionsContainer = styled(DialogActions)(({ theme }) => ({
     flexDirection: "column-reverse",
     "& button": {
       width: "100%",
+      minHeight: 44,
+      marginLeft: 0,
     },
   },
 }));

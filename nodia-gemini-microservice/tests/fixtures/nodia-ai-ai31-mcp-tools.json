@@ -723,8 +723,7 @@
         "mode": {
           "enum": [
             "api_key",
-            "token_plan_web",
-            "token_plan_agentic"
+            "agentic"
           ]
         }
       },
@@ -745,8 +744,7 @@
             "mode": {
               "enum": [
                 "api_key",
-                "token_plan_web",
-                "token_plan_agentic"
+                "agentic"
               ]
             }
           },

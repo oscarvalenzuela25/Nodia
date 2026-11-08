@@ -83,7 +83,7 @@ export class CodexChatAcceptanceStore {
       throw codexError('codex_protocol_invalid', 502);
     return v;
   }
-  private async path(connectionId: string) {
+  protected async path(connectionId: string) {
     await this.journal.identity(connectionId, false, false);
     return join(
       dirname(await this.journal.root()),
@@ -104,6 +104,7 @@ export class CodexChatAcceptanceStore {
       const info = await handle.stat();
       if (
         !info.isFile() ||
+        info.nlink !== 1 ||
         info.uid !== process.getuid!() ||
         (info.mode & 0o077) !== 0 ||
         info.size > 4096
@@ -174,11 +175,18 @@ export async function codexChatRuntimeFingerprint(
     executable,
     ...[
       './codex-chat-runtime.js',
+      './codex-generated-image.js',
+      './codex-chat-images.js',
+      './codex-chat-image-acceptance.js',
+      './codex-chat-audio.js',
+      './codex-chat-audio-acceptance.js',
+      './codex-chat-media-storage.js',
       './codex-chat-acceptance.js',
       './codex-chat-journal.js',
       './codex-contract.js',
       './codex-rpc.js',
       './codex-runtime.service.js',
+      './codex-profile-lease.js',
       './codex-process-ownership.js',
       '../../../ai-provider/use-case/codex-chat-tool-channel.use-case.js',
       '../../../nodia-ai-adapter/use-case/codex-nodia-ai-adapter.use-case.js',

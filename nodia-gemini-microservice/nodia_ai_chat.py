@@ -22,31 +22,21 @@ from uuid import uuid4
 from time import monotonic
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, field_validator
-from gemini_webapi.exceptions import AuthError
-from loguru import logger as progress_logger
 
-from agentic_cli import CHAT_CLI_VERSIONS, prepare_cli_home, permission_path
+from agentic_cli import CHAT_CLI_VERSIONS, CliRunner, prepare_cli_home, permission_path
 from agentic_observation import command_data
 from service_errors import ServiceError
 from native_attempts import NativeAttemptLedger, ReconcileAttempt, AcknowledgeAttempt, NativeTerminalReply
-from web_generation_diagnostics import WebGenerationDiagnostics
 from native_attachments import NativeAttachment, NativeAttachmentProofs, attachment_digest, materialize, probe_answer_hash, require_completed_attachment_reads, prepare_native_reader_agent, verify_native_reader_agent, NATIVE_READER_AGENT
 from agentic_progress import NativeFileCliProgress
 from native_cli_diagnostics import capture_cli_log_diagnostic, capture_plain_gate_diagnostic
 from native_execution_agents import execution_agent_definition, prepare_execution_agent, verify_execution_agent
+from native_chat_owner_bindings import read_recovery_record, require_closed_legacy_chat_owner
 from native_context_budget import (build_chat_prompt, append_agentic_attachment_prompt, require_context_budget,
                                    ContextMeasureRequest, measure_context, require_measurement_budget)
 
 CONTRACT_VERSION = "nodia-ai-gemini-chat/1"
 logger = logging.getLogger(__name__)
-
-
-def _web_diagnostic(event: Literal["progress", "success", "cancelled"], payload: dict[str, object]) -> None:
-    try:
-        progress_logger.info("nodia_ai_web_{} {}", event, json.dumps(payload))
-    except Exception:
-        # Operational diagnostics never turn a completed generation into unknown.
-        pass
 
 
 class Closed(BaseModel):
@@ -96,18 +86,12 @@ class AttachmentProbeRequest(ChatRequest):
     answer_normalization: Literal["literal", "speech_words_v1"] = "literal"
 
 
-class DelegationRequest(Closed):
-    kind: Literal["delegation_request"]
-    reason: str = Field(min_length=1, max_length=1024, pattern=r"\S")
-
-
 class ChatTurnResponse(Closed):
-    reply: Answer | DelegationRequest
+    reply: Answer
     terminal_proof: NativeTerminalReply
 
 
-REPLY = TypeAdapter(Answer | DelegationRequest)
-WEB_CITATION_SUFFIX = re.compile(r"(?:[ \t\r\n]*\[cite: [0-9]{1,10}\]){1,32}[ \t\r\n]*")
+REPLY = TypeAdapter(Answer)
 
 
 def unique_pairs(pairs: list[tuple[str, object]]) -> dict[str, object]:
@@ -119,7 +103,9 @@ def unique_pairs(pairs: list[tuple[str, object]]) -> dict[str, object]:
     return result
 
 
-def parse_reply(raw: str, engine: str) -> Answer | DelegationRequest:
+def parse_reply(raw: str, engine: str) -> Answer:
+    if engine != "agentic":
+        raise ServiceError("invalid_engine", "Unsupported execution mode.", 422)
     if not isinstance(raw, str) or len(raw.encode("utf-8")) > 65536:
         raise ValueError("Invalid response size")
     text = raw.strip()
@@ -128,76 +114,11 @@ def parse_reply(raw: str, engine: str) -> Answer | DelegationRequest:
         text = fence.group(1)
     decoder = json.JSONDecoder(object_pairs_hook=unique_pairs,
         parse_constant=lambda _: (_ for _ in ()).throw(ValueError("Non-finite JSON")))
-    if engine == "web":
-        # Gemini Web can place native citation presentation after a complete
-        # JSON object. Only that closed, bounded suffix is normalized locally;
-        # the JSON document and its fields are never repaired or re-generated.
-        start = len(text) - len(text.lstrip(" \t\r\n"))
-        value, end = decoder.raw_decode(text, start)
-        suffix = text[end:]
-        if suffix.strip(" \t\r\n") and (len(suffix.encode("utf-8")) > 512 or WEB_CITATION_SUFFIX.fullmatch(suffix) is None):
-            position = end + len(suffix) - len(suffix.lstrip(" \t\r\n"))
-            raise json.JSONDecodeError("Extra data", text, position)
-    else:
-        value = decoder.decode(text)
-    return (REPLY.validate_python(value) if engine == "web" else Answer.model_validate(value))
-
-
-def _json_character_category(value: str, position: int) -> str:
-    """Return code-owned lexical categories; never export provider characters."""
-    if position < 0 or position >= len(value):
-        return "boundary"
-    character = value[position]
-    punctuation = {'"': "double_quote", "'": "single_quote", "{": "object_open",
-        "}": "object_close", "[": "array_open", "]": "array_close", ":": "colon",
-        ",": "comma", "\\": "backslash", "=": "equals", "`": "backtick"}
-    if character in punctuation:
-        return punctuation[character]
-    if ord(character) < 32:
-        return "control"
-    if character.isspace():
-        return "whitespace"
-    if character.isalnum():
-        return "alphanumeric"
-    return "other"
-
-
-def _json_syntax_diagnostic(error: json.JSONDecodeError) -> dict[str, object]:
-    """Classify a failed parse without logging its message or document content.
-
-    JSONDecodeError.doc is already the parser's normalized input, including fence
-    handling. Offsets below therefore refer to that input, not SDK stream frames.
-    The digest only correlates this exact returned document; it grants no proof.
-    """
-    categories = {
-        "Expecting property name enclosed in double quotes": "property_name",
-        "Expecting ':' delimiter": "colon_delimiter",
-        "Expecting ',' delimiter": "comma_delimiter",
-        "Expecting value": "value",
-        "Extra data": "extra_data",
-    }
-    category = categories.get(error.msg)
-    if category is None:
-        category = ("unterminated_string" if error.msg.startswith("Unterminated string")
-            else "invalid_control" if error.msg.startswith("Invalid control character")
-            else "invalid_escape" if error.msg.startswith("Invalid ") else "other")
-    return {
-        "category": category, "position": error.pos, "line": error.lineno,
-        "column": error.colno, "document_chars": len(error.doc),
-        "document_sha256": hashlib.sha256(error.doc.encode("utf-8", errors="surrogatepass")).hexdigest(),
-        "at_end": error.pos >= len(error.doc),
-        "character_category": _json_character_category(error.doc, error.pos),
-        "previous_category": _json_character_category(error.doc, error.pos - 1),
-        "next_category": _json_character_category(error.doc, error.pos + 1),
-        "ending_category": _json_character_category(error.doc, len(error.doc) - 1),
-        **({"trailing_presentation_category": "citation_prefix" if error.doc[error.pos:].lstrip(" \t\r\n").startswith("[cite: ") else "other"}
-            if category == "extra_data" else {}),
-    }
+    return Answer.model_validate(decoder.decode(text))
 
 
 class ChatAdapter:
-    def __init__(self, web, agentic, profiles, attachment_inspector=None):
-        self.web = web
+    def __init__(self, agentic, profiles, attachment_inspector=None):
         self.agentic = agentic
         self.profiles = profiles
         self.generation = uuid4().hex
@@ -212,7 +133,9 @@ class ChatAdapter:
         self.ledger = NativeAttemptLedger(profiles._state_dir / "attempts" if profiles._state_dir is not None else None)
 
     def session_generation(self, engine: str) -> str:
-        return getattr(self.web if engine == "web" else self.agentic, "session_generation", self.generation)
+        if engine != "agentic":
+            raise ServiceError("invalid_engine", "Unsupported execution mode.", 422)
+        return getattr(self.agentic, "session_generation", self.generation)
 
     async def observe(self, engine: str, request: ObserveRequest) -> dict[str, object]:
         resource = self.profiles.identity(engine)
@@ -225,83 +148,51 @@ class ChatAdapter:
         }
         if resource is None:
             return observation
-        admission = (self.profiles.observation(engine, purpose="eligibility", timeout_seconds=18)
-                     if engine == "agentic" else self.profiles.operation(engine, purpose="eligibility"))
         try:
-            async with admission:
+            async with self.profiles.observation(engine, purpose="eligibility", timeout_seconds=18):
                 try:
-                    if engine == "web":
-                        await self.web.init_client()
-                        if not self.web.is_initialized or self.web.client is None:
-                            observation["reason"] = "session_required"
-                            return observation
-                        from importlib.metadata import version
-                        if version("gemini-webapi") != "2.1.1":
-                            observation["reason"] = "adapter_protocol_unverified"
-                            return observation
-                        matches = [model for model in self.web.discovered_models() if model.model_id == request.model_id]
-                        if len(matches) != 1:
-                            observation["reason"] = "model_unavailable"
-                            return observation
-                        self.web_options(request)
-                    else:
-                        status = await self.agentic.get_status()
-                        if not status["available"] or not status["has_active_session"]:
-                            observation["reason"] = status.get("reason") or "session_required"
-                            return observation
-                        if self.agentic.runner.config.version not in CHAT_CLI_VERSIONS:
-                            observation["reason"] = "adapter_protocol_unverified"
-                            return observation
-                        if len([m for m in status["models"] if m["id"] == request.model_id]) != 1:
-                            observation["reason"] = "model_unavailable"
-                            return observation
-                        options = ["--model", request.model_id]
-                        if request.effort_id is not None:
-                            options += ["--effort", request.effort_id]
-                        raw, code = await self.agentic.runner.run(["-p", "/model", "--output-format", "json", "--print-timeout", "10s", *options], timeout=10)
-                        if code != 0 or command_data(raw, "model").get("id") != request.model_id:
-                            observation["reason"] = "model_option_mismatch"
-                            return observation
+                    status = await self.agentic.get_status()
+                    if not status["available"] or not status["has_active_session"]:
+                        observation["reason"] = status.get("reason") or "session_required"
+                        return observation
+                    if self.agentic.runner.config.version not in CHAT_CLI_VERSIONS:
+                        observation["reason"] = "adapter_protocol_unverified"
+                        return observation
+                    if len([m for m in status["models"] if m["id"] == request.model_id]) != 1:
+                        observation["reason"] = "model_unavailable"
+                        return observation
+                    if not await self.agentic.validate_model_option(request.model_id, request.effort_id, request.configuration_generation):
+                        observation["reason"] = "model_option_mismatch"
+                        return observation
                     mcp = getattr(self, "mcp_sessions", None)
-                    supports = bool(engine == "agentic" and mcp is not None and request.configuration_generation is not None
+                    supports = bool(mcp is not None and request.configuration_generation is not None
                         and mcp.supports(resource, self.session_generation(engine), request.model_id, request.effort_id, request.configuration_generation))
                     attachment_selection = type("AttachmentSelection", (), {"resource_key": resource, "session_generation": self.session_generation(engine), "model_id": request.model_id, "effort_id": request.effort_id, "configuration_generation": request.configuration_generation})()
                     observation.update(available=True, reason=None, session_generation=self.session_generation(engine), supports_mcp=supports,
                         verified_modalities=[kind for kind in ("image", "pdf", "audio") if self.attachment_proofs.supports(engine, attachment_selection, kind)],
                         verified_attachment_media_types=self.attachment_proofs.media_types(engine, attachment_selection))
-                except (ServiceError, AuthError) as error:
-                    observation["reason"] = error.code if isinstance(error, ServiceError) else "session_required"
+                except ServiceError as error:
+                    observation["reason"] = error.code
         except ServiceError as error:
-            # The bounded preflight is non-generative. Preserve a typed
-            # negative observation rather than a transport-unknown result.
-            # Actual execution/login/quarantine conflicts remain HTTP409.
-            if engine != "agentic" or error.code != "agentic_timeout":
+            if error.code != "agentic_timeout":
                 raise
             observation["reason"] = "agentic_timeout"
         return observation
 
-    def web_options(self, request: ChatSelection) -> dict[str, object]:
-        if request.effort_id is None:
-            return {}
-        profile = self.web._reasoning_profiles.get(request.model_id)
-        supported = self.web.supported_options().get("thinking_levels_by_model", {}).get(request.model_id, [])
-        if self.web._reasoning_profile_invalid or profile is None or request.effort_id not in supported:
-            raise ServiceError("thinking_level_unsupported", "El esfuerzo no está verificado para este modelo Web.", 422)
-        return {"thinking_level": request.effort_id}
 
-    async def execute(self, engine: str, request: ChatRequest) -> Answer | DelegationRequest:
+    async def execute(self, engine: str, request: ChatRequest) -> Answer:
         require_measurement_budget(measure_context(engine, ContextMeasureRequest(
             model_id=request.model_id, effort_id=request.effort_id, canonical_prompt=request.canonical_prompt,
             attachments=[{"kind": item.kind, "media_type": item.media_type} for item in request.attachments]),
-            REPLY.json_schema() if engine == "web" else Answer.model_json_schema()))
+            Answer.model_json_schema()))
         if request.attachments:
             self.verify_attachment_runtime(engine)
             if request.configuration_generation is None or any(not self.attachment_proofs.supports(engine, request, item.kind, item.media_type) for item in request.attachments):
                 raise ServiceError("attachment_adapter_unverified", "La modalidad exacta no está verificada.", 409)
-        async with materialize(request.attachments, self.attachment_inspector, web_upload=engine == "web") as paths:
+        async with materialize(request.attachments, self.attachment_inspector) as paths:
             return await self._execute(engine, request, paths)
 
-    async def probe_attachments(self, request: AttachmentProbeRequest, engine: str = "web") -> Answer | DelegationRequest:
+    async def probe_attachments(self, request: AttachmentProbeRequest, engine: str = "agentic") -> Answer:
         self.verify_attachment_runtime(engine)
         if len(request.attachments) != 1 or request.configuration_generation is None:
             raise ServiceError("invalid_request", "La prueba requiere un adjunto y configuración exacta.", 422)
@@ -315,7 +206,7 @@ class ChatAdapter:
             'Sustituye únicamente el marcador del campo "text" por el contenido que realmente leas o transcribas. '
             "Usa comillas dobles y escape JSON válido para comillas, saltos de línea y otros caracteres del contenido. "
             "No agregues explicaciones, texto plano, Markdown ni bloques de código; no omitas campos.")})
-        async with materialize(probe.attachments, self.attachment_inspector, web_upload=engine == "web") as paths:
+        async with materialize(probe.attachments, self.attachment_inspector) as paths:
             reply = await self._execute(engine, probe, paths)
         if isinstance(reply, Answer) and probe_answer_hash(reply.text, request.answer_normalization) == request.expected_answer_sha256:
             self.attachment_proofs.mark(engine, request, request.attachments[0].kind, request.attachments[0].media_type)
@@ -324,38 +215,28 @@ class ChatAdapter:
         return reply
 
     def verify_attachment_runtime(self, engine: str) -> None:
-        from importlib.metadata import version
-        if (engine == "web" and version("gemini-webapi") == "2.1.1") or (engine == "agentic" and getattr(getattr(getattr(self.agentic, "runner", None), "config", None), "version", None) == "1.3.1"):
+        if engine == "agentic" and getattr(getattr(getattr(self.agentic, "runner", None), "config", None), "version", None) == "1.3.1":
             return
-        raise ServiceError("attachment_adapter_unverified", "La versión exacta del adaptador no está verificada.", 409)
+        raise ServiceError("attachment_adapter_unverified", "The exact adapter version is not verified.", 409)
 
-    async def _execute(self, engine: str, request: ChatRequest, attachment_paths: list[Path]) -> Answer | DelegationRequest:
-        prompt = build_chat_prompt(engine, request.canonical_prompt,
-            REPLY.json_schema() if engine == "web" else Answer.model_json_schema(), bool(attachment_paths))
-        require_context_budget(prompt, execution_agent_definition("chat", bool(attachment_paths))[1] if engine == "agentic" else "")
+    async def _execute(self, engine: str, request: ChatRequest, attachment_paths: list[Path]) -> Answer:
+        prompt = build_chat_prompt(engine, request.canonical_prompt, Answer.model_json_schema(), bool(attachment_paths))
+        require_context_budget(prompt, execution_agent_definition("chat", bool(attachment_paths))[1])
         if (request.resource_key != self.profiles.identity(engine)
                 or request.session_generation != self.session_generation(engine)):
-            raise ServiceError("runtime_generation_changed", "El perfil o sesión cambió; vuelve a comprobarlo.", 409)
+            raise ServiceError("runtime_generation_changed", "The profile or session changed; verify it again.", 409)
         if request.attempt_id in self.attempts:
-            raise ServiceError("attempt_already_dispatched", "El intento ya fue admitido; no se reenviará.", 409)
+            raise ServiceError("attempt_already_dispatched", "The attempt was already admitted and will not be resent.", 409)
         if len(self.attempts) >= self.maximum_attempts:
-            raise ServiceError("adapter_admission_capacity", "Se requiere drenar y reiniciar el adaptador.", 503)
+            raise ServiceError("adapter_admission_capacity", "Drain and restart the adapter before admitting more attempts.", 503)
         async with self.profiles.operation(engine, purpose="execution"):
-            if engine == "web":
-                if not self.web.is_initialized or self.web.client is None:
-                    raise ServiceError("session_required", "Verifica la sesión Web antes de ejecutar.", 503)
-                matches = [m for m in self.web.discovered_models() if m.model_id == request.model_id]
-                if len(matches) != 1:
-                    raise ServiceError("model_unavailable", "El modelo exacto ya no está disponible.", 422)
-                options = self.web_options(request)
-            else:
-                if not self.agentic.is_available() or self.agentic.runner is None:
-                    raise ServiceError("agentic_unavailable", "El adaptador Agentic no está disponible.", 503)
-                status = await self.agentic.get_status()
-                if not status["has_active_session"]:
-                    raise ServiceError("session_required", "Verifica la sesión Agentic antes de ejecutar.", 503)
-                if len([m for m in status["models"] if m["id"] == request.model_id]) != 1:
-                    raise ServiceError("model_unavailable", "El modelo exacto ya no está disponible.", 422)
+            if not self.agentic.is_available() or self.agentic.runner is None:
+                raise ServiceError("agentic_unavailable", "The Agentic adapter is unavailable.", 503)
+            status = await self.agentic.get_status()
+            if not status["has_active_session"]:
+                raise ServiceError("session_required", "Verify the Agentic session before executing.", 503)
+            if len([m for m in status["models"] if m["id"] == request.model_id]) != 1:
+                raise ServiceError("model_unavailable", "The exact model is no longer available.", 422)
             reference = ReconcileAttempt(resource_key=request.resource_key, session_generation=request.session_generation,
                 operation_ref=request.attempt_id)
             input_digest = attachment_digest(request.attachments)
@@ -368,74 +249,43 @@ class ChatAdapter:
             self.active_attempts[request.attempt_id] = engine
             phase = "generation"
             started = monotonic()
-            diagnostics = WebGenerationDiagnostics(request.attempt_id, lambda event: _web_diagnostic(
-                "progress", event)) if engine == "web" else None
-            agentic_diagnostic: dict[str, object] | None = {} if engine == "agentic" else None
-            response_shape = None
+            agentic_diagnostic: dict[str, object] = {}
             try:
                 async with asyncio.timeout(request.timeout_seconds):
-                    if engine == "web":
-                        output = await self.web._generate_content(prompt, model=matches[0], diagnostics=diagnostics,
-                            preserve_structured_text=True,
-                            chat_budget_seconds=request.timeout_seconds,
-                            native_attachment_media_types=[item.media_type for item in request.attachments] or None,
-                            **({"files": attachment_paths} if attachment_paths else {}), **options)
-                        phase = "reply_validation"
-                        raw_reply = output.text
-                        first = raw_reply.lstrip()[:1] if isinstance(raw_reply, str) else ""
-                        response_shape = {"text_bytes": len(raw_reply.encode()) if isinstance(raw_reply, str) else None,
-                            "leading_category": "object" if first == "{" else "fence" if isinstance(raw_reply, str) and raw_reply.lstrip().startswith("```") else "other"}
-                        reply = parse_reply(output.text, engine)
-                        phase = "cookie_persistence"
-                        self.web._persist_live_cookies()
-                    else:
-                        reply = await self.agentic_answer(request, prompt, attachment_paths,
-                            **({"native_diagnostic": agentic_diagnostic} if agentic_diagnostic is not None else {}))
+                    reply = await self.agentic_answer(request, prompt, attachment_paths,
+                        native_diagnostic=agentic_diagnostic)
                     phase = "terminal_record"
-                    if self.native_operation_closed(engine):
-                        self.ledger.close(proof, "completed")
+                    if not self.native_operation_closed(engine):
+                        raise ServiceError("native_operation_active_or_unverified", "Native termination is not yet verified.", 409)
+                    self.ledger.close(proof, "completed")
                     self.profiles.resolve_dispatch(engine)
-                    if diagnostics is not None:
-                        _web_diagnostic("success", {
-                            "attempt_id": request.attempt_id, "web_generation": diagnostics.snapshot()})
                     return reply
             except asyncio.CancelledError:
                 self.profiles.quarantine(engine)
                 if self.native_operation_closed(engine):
                     self.ledger.close(proof, "abandoned_unknown")
-                if diagnostics is not None:
-                    _web_diagnostic("cancelled", {"attempt_id": request.attempt_id,
-                        "phase": phase, "web_generation": diagnostics.snapshot()})
                 raise
             except Exception as error:
-                # Only code-owned fields and the exception class; never its message,
-                # provider response, canonical history, cookies or credentials.
                 try:
-                    if phase == "reply_validation" and response_shape is not None and isinstance(error, json.JSONDecodeError):
-                        response_shape["json_syntax"] = _json_syntax_diagnostic(error)
                     logger.warning("nodia_ai_chat_failure %s", json.dumps({
                         "engine": engine, "attempt_id": request.attempt_id,
                         "phase": phase, "error_type": type(error).__name__[:80],
                         **({"failure_category": error.code} if isinstance(error, ServiceError) else {}),
                         "elapsed_ms": round((monotonic() - started) * 1000),
-                            **({"reply_format": response_shape} if response_shape is not None else {}),
-                        **({"web_generation": diagnostics.snapshot()} if diagnostics is not None else {}),
-                        **({"agentic_generation": agentic_diagnostic} if agentic_diagnostic is not None else {}),
+                        "agentic_generation": agentic_diagnostic,
                     }))
                 except Exception:
                     pass
                 self.profiles.quarantine(engine)
                 if self.native_operation_closed(engine):
                     self.ledger.close(proof, "abandoned_unknown")
-                # Any failure after this boundary is uncertain and never replayed.
-                raise ServiceError("chat_result_unknown", "El resultado del intento es incierto; no se reenviará.", 502) from None
+                raise ServiceError("chat_result_unknown", "The attempt result is uncertain and will not be resent.", 502) from None
             finally:
                 self.active_attempts.pop(request.attempt_id, None)
 
     def native_operation_closed(self, engine: str) -> bool:
-        # Web generation awaits its stream/transport cleanup before propagating.
-        # CLI transport reaps its own process group before its coroutine completes.
-        return engine == "web" or not getattr(self.agentic.runner, "_processes", ())
+        return engine == "agentic" and (not getattr(self.agentic.runner, "_processes", ())
+                                       and not getattr(self.agentic.runner, "_spawns", ()))
 
     def reconcile(self, engine: str, attempt_id: str, request: ReconcileAttempt) -> dict[str, object]:
         proof = self.ledger.read(attempt_id)
@@ -443,6 +293,23 @@ class ChatAdapter:
             raise ServiceError("native_proof_missing", "No hay recibo nativo para el intento.", 404)
         if not self.ledger.matches(proof, engine, request):
             raise ServiceError("native_proof_mismatch", "El recibo no corresponde al intento.", 409)
+        if proof.state == "dispatch_armed" and engine == "agentic":
+            if (proof.attempt_id != attempt_id or proof.operation_ref != attempt_id
+                    or proof.process_closed or proof.terminal_proof_id is not None
+                    or attempt_id in self.active_attempts or not self.native_operation_closed(engine)):
+                raise ServiceError("native_operation_active_or_unverified", "La terminación nativa aún no está verificada.", 409)
+            raw = read_recovery_record(self.ledger, proof)
+            same_live_owner = (attempt_id in self.attempts and isinstance(self.agentic.runner, CliRunner)
+                               and self.agentic.runner._verified_stat is not None
+                               and self.session_generation(engine) == proof.session_generation
+                               and self.profiles.identity(engine) == proof.resource_key)
+            if not same_live_owner:
+                require_closed_legacy_chat_owner(proof, request, raw)
+            operation = {"attempt_id": attempt_id, **request.model_dump()}
+            self.profiles.validate_reconcile_dispatch(engine, operation)
+            # Synchronous validation/commit: no new owner can enter this gate
+            # between its ownership check and the terminal/marker transition.
+            proof = self.ledger.close(proof, "abandoned_unknown")
         if (attempt_id in self.active_attempts or proof.state == "dispatch_armed" or not proof.process_closed
                 or proof.terminal_proof_id is None or not self.native_operation_closed(engine)):
             raise ServiceError("native_operation_active_or_unverified", "La terminación nativa aún no está verificada.", 409)
@@ -509,11 +376,7 @@ class ChatAdapter:
                     copies.append(target)
                 attachment_paths = copies
             home = Path(directory) / "profile"
-            prepare_cli_home(home)
-            for name in ("antigravity-oauth-token", "installation_id"):
-                source = runner.config.home / ".gemini/antigravity-cli" / name
-                if source.is_file():
-                    (home / ".gemini/antigravity-cli" / name).symlink_to(source)
+            prepare_cli_home(home, account_home=runner.config.home)
             gate = workspace / "deny_tools.py"
             gate.write_bytes(Path(__file__).with_name("nodia_ai_tool_gate.py").read_bytes())
             receipt = workspace / "gate_receipts.jsonl"

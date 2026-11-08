@@ -65,7 +65,7 @@ describe('UpdateNodiaAiConversationUseCase', () => {
     const f = setup();
     f.chat.routing_enabled = true;
     f.chat.routing_target_selection = {
-      selection: { ...f.selection, mode: 'token_plan_agentic' },
+      selection: { ...f.selection, mode: 'agentic' },
       configuration_generation: 'synthetic',
       session_generation: 'synthetic',
     };

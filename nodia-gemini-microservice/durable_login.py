@@ -42,6 +42,8 @@ class DurableLoginRequests:
                 "supervisor": None, "containment": None, "closure_proof": None}
 
     async def start(self, engine: str, request_id: str, actor: str, provider: str, expires_at: str) -> dict:
+        if engine != "agentic":
+            raise ServiceError("invalid_engine", "Unsupported execution mode.", 422)
         key = request_key(request_id)
         deadline = login_deadline(expires_at)  # before replay or admission
         if sys.platform != "linux":

@@ -1,0 +1,209 @@
+{
+  "success": true,
+  "task": "api_chat_common_gateway_sql",
+  "checks": [
+    "compiled production publication supplies actual read/preparation contracts without fixture registration overrides",
+    "real API adapter and durable runtime consume exactly three shared POST dispatches across discovery and tool continuation",
+    "real ToolGateway persists a preparation receipt without modifying accepted preference state",
+    "API continuation receives actual gateway output rather than mock domain data",
+    "prepared command is bound to the exact synthetic category and owner scope",
+    "anonymous foreign owner wrong hash and fabricated token cannot authorize any execution",
+    "human HTTP confirmation consumes the exact challenge idempotently and never sends another provider request",
+    "confirmed native executor writes one exact SQL preference and committed receipt remains idempotent on replay",
+    "a separate realistic single-function API turn reads the actual committed SQL effect within the same three-POST budget",
+    "API function callback cannot read another owners proposal and leaves no public receipt",
+    "module revocation between HTTP dispatch and callback is revalidated before preparing a new change",
+    "revoked invocation grant cannot borrow a previously frozen tool or create a receipt",
+    "provider-supplied confirmation tool is absent from the catalog and rejected before any gateway or consent action",
+    "missing NodiaAI module rejects admission without contacting a provider",
+    "all API attempts close and ACK through real reconciliation without replay and final SQL is quiet",
+    "no real provider destination or credential was used"
+  ],
+  "checks_passed": 16,
+  "cases": [
+    {
+      "actor": "1",
+      "success_expected": true,
+      "terminal_run_state": "completed",
+      "error_code": null,
+      "synthetic_provider_posts": 3,
+      "provider_dispatches_used": 3,
+      "receipt_tools": [
+        "nodia_capabilities_select",
+        "nodia_preferences_prepare"
+      ],
+      "phases": [
+        "discovery",
+        "execution",
+        "execution"
+      ]
+    },
+    {
+      "actor": "1",
+      "success_expected": true,
+      "terminal_run_state": "completed",
+      "error_code": null,
+      "synthetic_provider_posts": 3,
+      "provider_dispatches_used": 3,
+      "receipt_tools": [
+        "nodia_capabilities_select",
+        "nodia_preferences_list"
+      ],
+      "phases": [
+        "discovery",
+        "execution",
+        "execution"
+      ]
+    },
+    {
+      "actor": "2",
+      "success_expected": false,
+      "terminal_run_state": "unknown",
+      "error_code": "nodia_ai:outcome_unknown",
+      "synthetic_provider_posts": 2,
+      "provider_dispatches_used": 2,
+      "receipt_tools": [
+        "nodia_capabilities_select"
+      ],
+      "phases": [
+        "discovery",
+        "execution"
+      ]
+    },
+    {
+      "actor": "1",
+      "success_expected": false,
+      "terminal_run_state": "unknown",
+      "error_code": "nodia_ai:outcome_unknown",
+      "synthetic_provider_posts": 2,
+      "provider_dispatches_used": 2,
+      "receipt_tools": [
+        "nodia_capabilities_select"
+      ],
+      "phases": [
+        "discovery",
+        "execution"
+      ]
+    },
+    {
+      "actor": "1",
+      "success_expected": false,
+      "terminal_run_state": "unknown",
+      "error_code": "nodia_ai:outcome_unknown",
+      "synthetic_provider_posts": 2,
+      "provider_dispatches_used": 2,
+      "receipt_tools": [
+        "nodia_capabilities_select"
+      ],
+      "phases": [
+        "discovery",
+        "execution"
+      ]
+    },
+    {
+      "actor": "1",
+      "success_expected": false,
+      "terminal_run_state": "unknown",
+      "error_code": "nodia_ai:outcome_unknown",
+      "synthetic_provider_posts": 2,
+      "provider_dispatches_used": 2,
+      "receipt_tools": [
+        "nodia_capabilities_select"
+      ],
+      "phases": [
+        "discovery",
+        "execution"
+      ]
+    }
+  ],
+  "synthetic_provider_http_posts": 14,
+  "real_provider_http_requests": 0,
+  "forbidden_network_requests": 0,
+  "real_credentials": false,
+  "synthetic_http_actor": true,
+  "physical_user_click": false,
+  "production_database_accessed": false,
+  "production_gateway_and_api_adapter": true,
+  "durable_api_runtime": true,
+  "production_publication": true,
+  "preference_effects": 1,
+  "sql_quiet": {
+    "active_jobs": 0,
+    "open_attempts": 0,
+    "busy_slots": 0,
+    "api_pending": 0
+  },
+  "postgres": "16 disposable",
+  "cleanup": "owned container and volumes removed in finally",
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-27T20:36:48.063709+00:00",
+  "evidence_layer": "compiled production classes and approved catalog in a disposable SQL fixture, mocked provider HTTP and synthetic authenticated actor. Not actual provider/model/UI/physical human acceptance.",
+  "script": "nodia-server/test/nodia-ai-api-chat-gateway.integration.mjs",
+  "script_sha256": "932cedb866d82fb564879df47c75257c428c15768cb9109a75458c8cab62d98c",
+  "shared_fixture_sha256": "f20c592389be35ade29f2abec15730b93d2eeef685b9e5a0c14e2cde483316d3",
+  "runner_exit": 0,
+  "cleanup_verification": {
+    "read_only": true,
+    "owned_gateway_containers_remaining": 0,
+    "stage_script_sha256": "932cedb866d82fb564879df47c75257c428c15768cb9109a75458c8cab62d98c",
+    "knowledge_release": "8237f8738de3be70bcce1b93597d061fdd95552fe750b3aa1803c68d93839355",
+    "knowledge_capability_count": 151,
+    "cleanup_success": true,
+    "new_provider_requests": 0
+  },
+  "knowledge_release": "8237f8738de3be70bcce1b93597d061fdd95552fe750b3aa1803c68d93839355",
+  "catalog_version": "nodia-ai-api-chat/1",
+  "postgres_migrations": "Shared fixture applied the complete compiled migration glob. Root runtime SQL R04 separately verifies the current 32 migrations; this harness does not claim an independent migration count.",
+  "lease_recovery": "Module/grant revocation waits for the actual bounded 30-second lease expiry before production Recover/Reconcile/Cleanup. No test timestamp rewrite or provider retry.",
+  "checks_local": {
+    "node_syntax": "pass",
+    "oxlint": "pass",
+    "prettier": "pass",
+    "utf8_lf": "pass"
+  },
+  "raw_report_sha256": "36f34d56764537775e98166f7dea1b29e71ecc426209779dee553beaab08f304",
+  "failure_history": [
+    {
+      "path": ".tmp/ai-two-modes/api-gateway-sql-r01.log",
+      "sha256": "72aeba11a9e9c8f06af87a1420289bde40b6908ebb325a500fdacf0d7283c84f",
+      "interpretation": "Stale 152-capability compiled knowledge asset rejected during setup."
+    },
+    {
+      "path": ".tmp/ai-two-modes/api-gateway-sql-r02.log",
+      "sha256": "70a049fb9c5979ccb47370584c5b91422caaa63ec967e312652c98d10961ceca",
+      "interpretation": "Code-frame diagnostic confirmed retired Web capability in stale compiled asset."
+    },
+    {
+      "path": ".tmp/ai-two-modes/api-gateway-sql-r03.log",
+      "sha256": "b9b31b3e5284d41c032999e0818b636d7762e327f1c45d82509caa087afb0bc1",
+      "interpretation": "Current schema requires modules.sort_order; fixed fixture insertion."
+    },
+    {
+      "path": ".tmp/ai-two-modes/api-gateway-sql-r04.log",
+      "sha256": "228d62afd7cc1b0877b9b564ae6126e48ab7b73104573840d23e387cd737ec35",
+      "interpretation": "Real API/common-context integration exposed incorrect measurement maximum; source fixed under coordination."
+    },
+    {
+      "path": ".tmp/ai-two-modes/api-gateway-sql-r05.log",
+      "sha256": "506200c8f1e64a0706e9950c33b53255086ee052a45d489ec488a96e95c91ee1",
+      "interpretation": "Readback assertion used id instead of the actual public preference_id; fixture assertion fixed."
+    },
+    {
+      "path": ".tmp/ai-two-modes/api-gateway-sql-r06.log",
+      "sha256": "3efae0a6cd752fb0cdbdebb53a7fd3d78c26ea52adba3f2fc771e44c58fa0f9c",
+      "interpretation": "Revocation correctly retained a live lease; added real expiry and production recovery instead of expecting immediate terminal state."
+    }
+  ],
+  "source_fix": {
+    "path": "nodia-server/src/nodia-ai-adapter/use-case/api-nodia-ai-adapter.use-case.ts",
+    "behavior": "measureContext.maxUtf8Bytes uses the common assembled_context_utf8_bytes ceiling rather than the response-stream ceiling. Actual ProcessStage integration rejected old behavior before POST (R04) and passes with the fix (R07).",
+    "unit_spec": "nodia-server/src/nodia-ai-adapter/use-case/api-nodia-ai-adapter.use-case.spec.ts",
+    "unit_tests_passed": 9
+  },
+  "scope_limits": [
+    "One preference create and corresponding read are exercised, not all 151 registered operations.",
+    "The human confirmation driver uses production HTTP endpoints with fixture identities; it is not a physical click or real human approval.",
+    "Original/media/image-generation/provider real acceptance remains outside this SQL harness.",
+    "No operational database migration, credentials, deployment or service restart was performed."
+  ]
+}

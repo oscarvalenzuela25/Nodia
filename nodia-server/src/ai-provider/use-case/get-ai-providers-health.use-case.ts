@@ -11,7 +11,6 @@ import {
 import { configuredModelFields } from '../helpers/model-observation.helper.js';
 import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
 import type { CodexSession } from '../../common/ai/codex/codex-contract.js';
-
 export interface AiProviderAlert {
   id: string;
   provider: string;
@@ -28,14 +27,13 @@ export interface AiProviderAlert {
   timeAgo?: string;
   providerId?: string;
   actionType:
-    | 'renew_session'
+    | 'check_status'
     | 'manage_quotas'
     | 'configure'
     | 'authenticate_agentic'
     | 'check_status';
   actionLabel: string;
 }
-
 export interface AiProviderHealthItem {
   id: string;
   key: string;
@@ -45,8 +43,7 @@ export interface AiProviderHealthItem {
   isActive: boolean;
   is_default?: boolean;
   use_api_key?: boolean;
-  use_token_plan_web?: boolean;
-  use_token_plan_agentic?: boolean;
+  use_agentic?: boolean;
   default_mode?: string | null;
   auto_rotate_api_keys?: boolean;
   mode: AiConnectionMode | null;
@@ -69,10 +66,9 @@ export interface AiProviderHealthItem {
     is_active: boolean;
   } | null;
   hasConnection: boolean;
-  engine?: 'agentic' | 'web';
+  engine?: 'agentic';
   codexSession?: CodexSession;
 }
-
 export interface AiProvidersHealthResponse {
   timestamp: string;
   engines: GeminiDualEngineStatus | null;
@@ -86,81 +82,51 @@ export interface AiProvidersHealthResponse {
     incidentsCount: number;
   };
 }
-
 @Injectable()
 export class GetAiProvidersHealthUseCase {
   constructor(
     private readonly aiProviderService: AiProviderService,
     private readonly geminiService: GeminiService,
-    @Optional() private readonly codex?: CodexRuntimeService,
+    @Optional()
+    private readonly codex?: CodexRuntimeService,
   ) {}
-
   private async checkEngineHealth(
     engine: GeminiExecutionEngine,
     sharedStatus?: ReturnType<GeminiService['getDualEngineStatus']>,
   ) {
     const started = performance.now();
     try {
-      if (typeof this.geminiService.getDualEngineStatus === 'function') {
-        const status = await (sharedStatus ??
-          this.geminiService.getDualEngineStatus());
-        if (!status) return { healthy: null, latency: null, available: null };
-        // Admission can report a busy runtime without inspecting its account.
-        // Its false session marker is not evidence that credentials expired.
-        if (status[engine]?.reason === 'runtime_busy')
-          return { healthy: null, latency: null, available: null };
-        if (
-          engine === 'agentic' &&
-          (typeof status.agentic?.available !== 'boolean' ||
-            (status.agentic.available &&
-              typeof (
-                status.agentic.authenticated ??
-                status.agentic.has_active_session
-              ) !== 'boolean'))
-        ) {
-          return { healthy: null, latency: null, available: null };
-        }
-        return {
-          healthy:
-            engine === 'agentic'
-              ? isAgenticSessionActive(status.agentic)
-              : status.web?.authenticated === true &&
-                status.web?.available !== false,
-          latency: Math.round(performance.now() - started),
-          available:
-            engine === 'agentic' &&
-            typeof status.agentic?.available === 'boolean'
-              ? status.agentic.available
-              : null,
-        };
-      }
-      const status = await this.geminiService.getModelsAndQuota(engine);
-      if (typeof status?.authenticated !== 'boolean')
-        return { healthy: null, latency: null, available: null };
-      if (engine === 'agentic' && typeof status.available !== 'boolean')
+      const status = await (sharedStatus ??
+        this.geminiService.getDualEngineStatus());
+      if (
+        !status ||
+        status.agentic?.reason === 'runtime_busy' ||
+        typeof status.agentic?.available !== 'boolean' ||
+        (status.agentic.available &&
+          typeof (
+            status.agentic.authenticated ?? status.agentic.has_active_session
+          ) !== 'boolean')
+      )
         return { healthy: null, latency: null, available: null };
       return {
-        healthy:
-          engine === 'agentic'
-            ? isAgenticSessionActive(status)
-            : status.authenticated === true,
+        healthy: isAgenticSessionActive(status.agentic),
         latency: Math.round(performance.now() - started),
-        available:
-          engine === 'agentic' && typeof status.available === 'boolean'
-            ? status.available
-            : null,
+        available: status.agentic.available,
       };
     } catch {
       return { healthy: null, latency: null, available: null };
     }
   }
-
-  async execute(execution?: ProviderReadExecution): Promise<AiProvidersHealthResponse> {
+  async execute(
+    execution?: ProviderReadExecution,
+  ): Promise<AiProvidersHealthResponse> {
     execution?.signal.throwIfAborted();
-    const response = execution ? { data: execution.providers } : await this.aiProviderService.findAllProviders({
-      all: true,
-      includes: true,
-    });
+    const response = execution
+      ? { data: execution.providers }
+      : await this.aiProviderService.findAllProviders({
+          all: true,
+          includes: true,
+        });
     const providers = response.data ?? [];
     const alerts: AiProviderAlert[] = [];
     const health: AiProviderHealthItem[] = [];
@@ -174,12 +140,12 @@ export class GetAiProvidersHealthUseCase {
             (provider.catalog?.key ?? provider.key ?? '').toLowerCase(),
           ) &&
           provider.is_active &&
-          ((provider.use_token_plan_web ?? provider.mode === 'web_session') ||
-            (provider.use_token_plan_agentic ??
-              provider.mode === 'token_plan_agentic')),
+          (provider.use_agentic ?? provider.mode === 'agentic'),
       )
     ) {
-      sharedStatus = this.geminiService.getDualEngineStatus(...(execution ? [execution.signal] : [])).catch(() => null);
+      sharedStatus = this.geminiService
+        .getDualEngineStatus(...(execution ? [execution.signal] : []))
+        .catch(() => null);
     }
     const codexSnapshots = new Map<string, Promise<CodexSession>>();
     for (const provider of providers) {
@@ -190,7 +156,10 @@ export class GetAiProvidersHealthUseCase {
         provider.is_active &&
         this.codex
       ) {
-        const pending = this.codex.snapshot(String(provider.id), ...(execution ? [execution.signal] : []));
+        const pending = this.codex.snapshot(
+          String(provider.id),
+          ...(execution ? [execution.signal] : []),
+        );
         // Observe later rejection immediately while retaining the original
         // error for the awaited result below.
         void pending.catch(() => undefined);
@@ -211,26 +180,15 @@ export class GetAiProvidersHealthUseCase {
       execution?.signal.throwIfAborted();
       const key = (provider.catalog?.key ?? provider.key ?? '').toLowerCase();
       const name = provider.name || provider.catalog?.name || key;
-      const web =
-        provider.use_token_plan_web ??
-        (provider.mode === 'web_session' || provider.mode === 'token_plan_web');
+      const web = false;
       const api = provider.use_api_key === true;
-      const agentic =
-        provider.use_token_plan_agentic ??
-        provider.mode === 'token_plan_agentic';
+      const agentic = provider.use_agentic ?? provider.mode === 'agentic';
       const defaultMode =
-        provider.default_mode ??
-        (agentic
-          ? 'token_plan_agentic'
-          : web
-            ? 'token_plan_web'
-            : api
-              ? 'api_key'
-              : provider.mode);
+        provider.default_mode === undefined
+          ? provider.mode
+          : provider.default_mode;
       const fields = configuredModelFields(provider.fields ?? {});
-      const hasScoped = Boolean(
-        fields.token_plan_web || fields.token_plan_agentic || fields.api_key,
-      );
+      const hasScoped = Boolean(fields.agentic || fields.api_key);
       const modelFields = (fields[defaultMode ?? ''] ??
         (hasScoped ? {} : fields)) as Record<string, unknown>;
       const selected =
@@ -260,8 +218,7 @@ export class GetAiProvidersHealthUseCase {
         isActive: provider.is_active,
         is_default: provider.is_default,
         use_api_key: provider.use_api_key,
-        use_token_plan_web: web,
-        use_token_plan_agentic: agentic,
+        use_agentic: agentic,
         default_mode: defaultMode,
         auto_rotate_api_keys: provider.auto_rotate_api_keys,
         mode: (defaultMode as AiConnectionMode) ?? null,
@@ -289,7 +246,7 @@ export class GetAiProvidersHealthUseCase {
       if (key === 'openai' && provider.is_active && this.codex) {
         // Also expose a safe session panel while the catalogue remains API-only.
         base.codexSession = await codexSnapshots.get(String(provider.id))!;
-        if (agentic && defaultMode === 'token_plan_agentic') {
+        if (agentic && defaultMode === 'agentic') {
           const session = base.codexSession;
           health.push({
             ...base,
@@ -407,22 +364,22 @@ export class GetAiProvidersHealthUseCase {
           severity: 'warning',
           title: 'INTEGRACIÓN NO VERIFICADA: ' + name.toUpperCase(),
           message:
-            'No hay un canal de sesión Gemini Web o Antigravity habilitado y verificable para este proveedor.',
+            'No hay un canal de sesión Agentic habilitado y verificable para este proveedor.',
           actionType: 'configure',
           actionLabel: 'Configurar Proveedor',
         });
         continue;
       }
       const checks = await Promise.all([
-        web ? checkEngine('web') : null,
+        null,
         agentic ? checkEngine('agentic') : null,
       ]);
       const observed = checks.filter((check) => check !== null);
       const healthy = observed.filter((check) => check.healthy === true).length;
       const unknown = observed.some((check) => check.healthy === null);
-      for (const [index, check] of checks.entries()) {
+      for (const check of checks) {
         if (!check || check.healthy === true) continue;
-        const engine = index === 0 ? 'web' : 'agentic';
+        const engine = 'agentic';
         const missingAgenticSession =
           engine === 'agentic' &&
           check.available === true &&
@@ -432,12 +389,7 @@ export class GetAiProvidersHealthUseCase {
           (engine === 'agentic' && !missingAgenticSession);
         const warning = check.healthy === null || missingAgenticSession;
         alerts.push({
-          id:
-            'alert-' +
-            provider.id +
-            '-' +
-            engine +
-            (engine === 'web' ? '-expired' : '-unavailable'),
+          id: 'alert-' + provider.id + '-' + engine + '-unavailable',
           provider: key,
           providerName: name,
           ...(check.healthy === null
@@ -461,23 +413,21 @@ export class GetAiProvidersHealthUseCase {
                 ? 'SESIÓN REQUERIDA: '
                 : 'INCIDENTE ACTIVO: ') +
             name.toUpperCase() +
-            (engine === 'web' ? ' (SESIÓN WEB)' : ' (MODO AGÉNTICO)'),
+            ' (MODO AGÉNTICO)',
           message:
             check.healthy === null
               ? 'No se pudo comprobar el estado del servicio.'
-              : engine === 'web'
-                ? 'La sesión Web no está autenticada o disponible.'
-                : missingAgenticSession
-                  ? 'El adaptador Agentic está disponible, pero requiere iniciar sesión con Google en el servidor.'
-                  : check.available === false
-                    ? 'El adaptador Antigravity no está disponible en el servidor. Revisa su configuración y vuelve a comprobar el estado.'
-                    : 'No se pudo confirmar la disponibilidad del adaptador Agentic en el servidor.',
+              : missingAgenticSession
+                ? 'El adaptador Agentic está disponible, pero requiere iniciar sesión con Google en el servidor.'
+                : check.available === false
+                  ? 'El adaptador Antigravity no está disponible en el servidor. Revisa su configuración y vuelve a comprobar el estado.'
+                  : 'No se pudo confirmar la disponibilidad del adaptador Agentic en el servidor.',
           timestamp: new Date().toISOString(),
           actionType: needsCheck
             ? 'check_status'
             : missingAgenticSession
               ? 'authenticate_agentic'
-              : 'renew_session',
+              : 'check_status',
           actionLabel: needsCheck
             ? 'Volver a comprobar'
             : missingAgenticSession
@@ -512,23 +462,15 @@ export class GetAiProvidersHealthUseCase {
                   : 'INCIDENTE ACTIVO',
         serviceState:
           status === 'healthy'
-            ? web && agentic
-              ? 'Sesiones Web y Agentic disponibles'
-              : web
-                ? 'Sesión Web Disponible'
-                : 'Modo Agéntico Disponible'
-            : status === 'degraded'
-              ? checks[0]?.healthy === false
-                ? 'Sesión Web inactiva (Agentic operativo)'
-                : 'Agentic inactivo (Sesión Web operativa)'
-              : unknown
-                ? 'Estado no comprobado'
-                : 'Sin canales operativos',
+            ? 'Agentic disponible'
+            : unknown
+              ? 'Estado no comprobado'
+              : 'Sin canales operativos',
         lastCheck: latencies.length ? new Date().toISOString() : null,
         latencyMs: latencies.length
           ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length)
           : null,
-        engine: defaultMode === 'token_plan_agentic' ? 'agentic' : 'web',
+        engine: 'agentic',
       });
     }
     execution?.signal.throwIfAborted();

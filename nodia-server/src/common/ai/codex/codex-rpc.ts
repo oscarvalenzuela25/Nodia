@@ -21,6 +21,7 @@ import type {
   CodexChatToolChannel,
   CodexServerRequestId,
 } from './codex-chat-tool-channel.js';
+import { CODEX_GENERATED_IMAGE_FRAME_BYTES } from './codex-generated-image.js';
 
 const MAX_FRAME = 2 * 1024 * 1024;
 type Pending = {
@@ -39,6 +40,15 @@ export interface CodexProtocolProgress {
 
 /** One versioned JSONL connection. No stderr/payload is ever logged or returned. */
 export class CodexRpc extends EventEmitter {
+  private maxFrame = MAX_FRAME;
+  private maxObservedBytes = 16 * 1024 * 1024;
+  /** One private owner opts in before the image-only thread starts. */
+  allowImageGenerationOutput(): void {
+    if (this.closed || !this.protocolObserver)
+      throw codexError('codex_runtime_unavailable');
+    this.maxFrame = CODEX_GENERATED_IMAGE_FRAME_BYTES;
+    this.maxObservedBytes = 2 * CODEX_GENERATED_IMAGE_FRAME_BYTES + 16 * 1024 * 1024;
+  }
   private readonly child: ChildProcessWithoutNullStreams;
   private readonly pending = new Map<number, Pending>();
   private readonly decoder = new StringDecoder('utf8');
@@ -180,12 +190,12 @@ export class CodexRpc extends EventEmitter {
           this.buffer = this.buffer.slice(newline + 1);
           if (this.protocolObserver) this.observedFrame(raw);
           else {
-            if (Buffer.byteLength(raw) > MAX_FRAME)
+            if (Buffer.byteLength(raw) > this.maxFrame)
               throw codexError('codex_protocol_invalid');
             if (raw.trim()) this.receive(codexObject(JSON.parse(raw)));
           }
         }
-        if (Buffer.byteLength(this.buffer) > MAX_FRAME) {
+        if (Buffer.byteLength(this.buffer) > this.maxFrame) {
           if (this.protocolObserver) {
             this.observedFrame(this.buffer, true);
             this.buffer = '';
@@ -214,7 +224,7 @@ export class CodexRpc extends EventEmitter {
     const bytes = Buffer.byteLength(raw);
     let message: Record<string, unknown> | undefined;
     try {
-      if (!partial && bytes <= MAX_FRAME && raw.trim())
+      if (!partial && bytes <= this.maxFrame && raw.trim())
         message = codexObject(JSON.parse(raw));
     } catch {
       /* Persist invalid frame before closing. */
@@ -225,9 +235,9 @@ export class CodexRpc extends EventEmitter {
       Object.hasOwn(message, 'id');
     const overflow =
       partial ||
-      bytes > MAX_FRAME ||
+      bytes > this.maxFrame ||
       this.protocolReceived.frames >= 10000 ||
-      this.protocolReceived.bytes + bytes > 16 * 1024 * 1024;
+      this.protocolReceived.bytes + bytes > this.maxObservedBytes;
     this.protocolOverflow ||= overflow;
     this.protocolReceived = {
       frames: this.protocolReceived.frames + 1,

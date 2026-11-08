@@ -1,0 +1,557 @@
+{
+  "schema_version": 1,
+  "status": "native_only_adopt_completed_pending_operational_qualification",
+  "local_date": "2026-10-26",
+  "observed_at_VM_utc": "2026-10-26T03:07:02.923063+00:00",
+  "consolidated_at_utc": "2026-10-26T03:08:21.571292+00:00",
+  "scope": "Root-operated native image adoption only. Server4276, Clientb7acc and nginx1dbc retained; no new Node/client/catalog publication is asserted.",
+  "receipt": {
+    "path": "ops/lab/artifacts/invoice-ocr-native-adoption-verification-r01/native-adoption-VM-r01.json",
+    "sha256": "13efdab81ba44a83ef4519ddc17f8ba855cac941bf1ba34185f3d09d6593f10d",
+    "bytes": 22734
+  },
+  "operator": {
+    "path": "ops/lab/artifacts/invoice-ocr-native-transition-r01/adopt.py",
+    "sha256": "d48f03e04c33e3441515b43049c02e71ae3d157f3920f12f463e74262d03bfb9",
+    "bytes": 36836
+  },
+  "protected_companion": {
+    "path": "ops/lab/artifacts/invoice-ocr-native-transition-r01/protected.py",
+    "sha256": "6a17ba8789dcd6d6935b1e06f104ec614a8fe34d0f63d3b78606daa9169ea95a",
+    "bytes": 6389
+  },
+  "plan": {
+    "path": "ops/lab/artifacts/invoice-ocr-native-transition-r01/plan.json",
+    "sha256": "5d072740495ddf3b275589531c551427651c13c3eb70d0ac18b9dea1714ec84f",
+    "bytes": 14065
+  },
+  "operator_catalog": {
+    "path": "ops/lab/artifacts/invoice-ocr-native-transition-r01/catalog.json",
+    "sha256": "5f65db77c1c32038372c43b1d9cde420c61db8a1decd8c8fd669b34d8c626d4f",
+    "bytes": 1071
+  },
+  "epoch_before": {
+    "container_id": "1dc08be23adcecce38e4bb591fe43b12eb6d5f480a455fe23488f160d4a871bb",
+    "image_id": "sha256:56f6d5c48f81056968f02aa89b51192900e38251c35f9d499089244f2af323b5",
+    "started_at_utc": "2026-10-26T00:21:42.03765925Z"
+  },
+  "epoch_after": {
+    "container_id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+    "image_id": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+    "started_at_utc": "2026-10-26T03:06:18.949917773Z"
+  },
+  "source_inventory": {
+    "before_modules": 51,
+    "after_modules": 52,
+    "unchanged_original_modules": 49,
+    "changed_paths": [
+      "main.py",
+      "native_invoice_analysis.py",
+      "request_guard.py"
+    ],
+    "changes": {
+      "main.py": {
+        "before_sha256": "65dbd7cb69ec6afce140f97b88e097e4070595a7032f084988ad2654e1f92ef4",
+        "after_sha256": "d6924b722c6fef67c76dbfe052f0f5c17f9a77f18f32c30d0f589087b413bb5a"
+      },
+      "native_invoice_analysis.py": {
+        "before_sha256": null,
+        "after_sha256": "2008bf97aadbff3dc7d50254e5adf9dde4af9781a38372521f66f115302f430b"
+      },
+      "request_guard.py": {
+        "before_sha256": "5393c138c9c4b294b0a3283dabedb9027ae2abfc4291048d059d79b206c94c46",
+        "after_sha256": "7f31bee5c94fa7fe217526bfc52a52c6bf5da442a546f648862d43aad6e8c541"
+      }
+    },
+    "preserved_core_hashes": {
+      "agentic_service.py": "b20f724a3bcdcf3ba433a11c19474fc2cd9d4f2e02edb155eed317494daa3a03",
+      "agentic_cli.py": "03a7145c3e7be51b15ce71c20d54acd7016a51e2e50b9549c772b179efd7f29b",
+      "nodia_ai_chat.py": "e96753763b141dd1d726957d3005a3b0bc42f2b463a544f02ab743ba9d616dd7",
+      "native_attempts.py": "102cd400cd5400798984ae37fb4b497f3cb58cc5420488e62360134a46615f60",
+      "gemini_service.py": "0617b30f35727d03ccd3ee4f804d86984d69f5314b4f2a8f10d658579614cb3d",
+      "native_mcp_stdio.py": "5022f53a0f1267202adb56f5c72d0a4ec4f61822d3a73add795fab9d588a9564",
+      "native_mcp_sessions.py": "15e99643a39fdaec47605698815eaef915c19f5b62cbb50d80340c2e48626a89"
+    },
+    "exact_full_maps_in_receipt": true
+  },
+  "image_and_service_preservation": {
+    "derivative": {
+      "source_layers": 24,
+      "target_layers": 25,
+      "source_layer_prefix_preserved": true
+    },
+    "same_container_process_mount_resource_configuration_asserted_by_pinned_operator": true,
+    "protected_package": {
+      "server_manifest_sha256": "4276fd7091f3d7f36604ba355895a2e43054bcbcec7b87ee5f0d897a42a41549",
+      "server_consumers": {
+        "nodia-api": {
+          "active": "active",
+          "sub": "running",
+          "pid": 274161,
+          "working_directory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01",
+          "recovery_config_path_verified": true,
+          "original_dotenv_path_verified": true,
+          "other_environment_fields_emitted": false,
+          "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+          "argv_exact_match": true
+        },
+        "nodia-ai-worker": {
+          "active": "active",
+          "sub": "running",
+          "pid": 274162,
+          "working_directory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01",
+          "recovery_config_path_verified": true,
+          "original_dotenv_path_verified": true,
+          "other_environment_fields_emitted": false,
+          "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+          "argv_exact_match": true
+        }
+      },
+      "nginx_sha256": "1dbc5b36d3e61541fae29939a365c53ad913c14ab62b55c4097a11234b15f2da",
+      "nginx_state": {
+        "active": "active",
+        "sub": "running",
+        "pid": 3630787,
+        "working_directory": ""
+      }
+    },
+    "consumers_after": {
+      "nodia-api": {
+        "active": "active",
+        "sub": "running",
+        "pid": 368075,
+        "working_directory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+        "argv_exact_match": true
+      },
+      "nodia-ai-worker": {
+        "active": "active",
+        "sub": "running",
+        "pid": 368076,
+        "working_directory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+        "argv_exact_match": true
+      }
+    },
+    "Server_release_changed": false,
+    "Client_release_changed": false,
+    "nginx_changed": false,
+    "API_and_worker_restarted_on_existing_Server4276": true
+  },
+  "protected_invariants": {
+    "schema_and_provider_configuration": {
+      "migrations": 30,
+      "migration_ledger_sha256": "22ae960a022dc6fc5fbc191779a76f4c45c87d042a75ef003441fd92890c8dcd",
+      "schema_sha256": "82753ec54d69006d2850dd62173093c03086e43a37af62e2a3dba1c5da5b4b87",
+      "provider_configuration_sha256": "0991f942e121ae3c3aa8afe7ce1c28e1ef5a18ddf17b03e727c872930aadc126",
+      "read_only": true
+    },
+    "protected_domain_and_preferences": {
+      "readonly": true,
+      "domain": {
+        "actions": {
+          "rows": 2,
+          "sha256": "23b2cbae5fe4d28d6c7209428d9348291cee5d0ecfd437b655fe8f53e9a186dd"
+        },
+        "ai_api_keys": {
+          "rows": 1,
+          "sha256": "4da1084212a4890de725cb72ce8ecd3354b3f051cc74b9066711cdfaba6568a0"
+        },
+        "ai_provider_catalog": {
+          "rows": 17,
+          "sha256": "d419c60662c952500a5fd1f9ccabdbf9a4757ea0214d45e0a7224b9a7e6bf5bc"
+        },
+        "ai_provider_events": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "ai_providers": {
+          "rows": 2,
+          "sha256": "30a4673f62a1b6ea3688665208385bc029c6ee809daef79ad0ca12ffddaea9b2"
+        },
+        "business_actions": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "business_collaborators": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "businesses": {
+          "rows": 1,
+          "sha256": "cdaa78dbff634f8eed1d05ab828df25459609b7bf4f932ff3c20c103fc96d05f"
+        },
+        "finance_categories": {
+          "rows": 2,
+          "sha256": "3024c1e13a82d6232c09f79601a3d8cdda76c00e6f7134b874fba804fc239996"
+        },
+        "finance_category_group_memberships": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "finance_category_groups": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "finance_movements": {
+          "rows": 2,
+          "sha256": "5335e312c7b542552f924cf266fc007ff1a3691e522e6c682bb20e374b5b7871"
+        },
+        "finance_obligations": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "invoice_uploads": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "invoices": {
+          "rows": 1,
+          "sha256": "969a3181fc5bf4098c84ad9bfc60410d25131541df5904fde4288d322bb31351"
+        },
+        "migrations": {
+          "rows": 30,
+          "sha256": "f5a11689be060f8de77306d426d2ac084982bf6ff553a1b9603aa64b4c240b82"
+        },
+        "module_groups": {
+          "rows": 3,
+          "sha256": "e91f13cc01e041ccb08d15356f76381f8548407c0f863d9c7069ff4cc45d252e"
+        },
+        "modules": {
+          "rows": 9,
+          "sha256": "bb4e19aaf2906a5755943710649572a5c70a0e46ff5f1c346f5cfe3521459b28"
+        },
+        "nodia_ai_preferences": {
+          "rows": 1,
+          "sha256": "c3ec6b40c6975557202b188118d5701db1aa357624ae18f7cfdcd0fd3029456a"
+        },
+        "nodia_codex_catalog_rollback": {
+          "rows": 1,
+          "sha256": "0926d9d8aa406442a82e85cf48d3b04ea7f0c5fd56d088478160ac106b24cbf3"
+        },
+        "personal_info_provider": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "product_logs": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "products": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "providers": {
+          "rows": 1,
+          "sha256": "05574765e95e43175e202040304c6dc3933bf9c694d4628d6ac157ddc7f95bd7"
+        },
+        "rental_audit_events": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "rental_blocks": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "rental_cancellation_policies": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "rental_cancellation_rules": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "rental_collaborators": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "rental_expenses": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "rental_operations": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "rental_payments": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "rental_properties": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "rental_reservations": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "rental_turnovers": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "role_actions": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "roles": {
+          "rows": 1,
+          "sha256": "07ff2fbde402038411cd4f320f2462120b78ea7f6b3b6ab1bc18c92c1f235a06"
+        },
+        "translations": {
+          "rows": 30,
+          "sha256": "48310ee9a1d3478891c2ca332e2e1a3988e5c624a6f507f08f099ebc8f3bdc4d"
+        },
+        "user_modules": {
+          "rows": 8,
+          "sha256": "96d43ec5380d4042e508a14fcceaa7df4bcb6fc6d03ef501aa27dd6a6514022f"
+        },
+        "user_roles": {
+          "rows": 1,
+          "sha256": "4acfc3d1452dbbfd9acc09bf01753ad99fe8782455e4411e55e252929b485657"
+        },
+        "users": {
+          "rows": 1,
+          "sha256": "f401ede3581da12bc3dd44de0d6ecb6d705885e0fd546907d09faff714572972"
+        }
+      },
+      "SQL_writes": 0,
+      "provider_generations": 0
+    },
+    "static_pins": {
+      "Server_manifest_sha256": "4276fd7091f3d7f36604ba355895a2e43054bcbcec7b87ee5f0d897a42a41549",
+      "Client_manifest_sha256": "b7acc13f2e383bac6ff034bb1706d4cb9223e4b3fe2cddacbd34b29f59d2a963",
+      "nginx_sha256": "1dbc5b36d3e61541fae29939a365c53ad913c14ab62b55c4097a11234b15f2da",
+      "knowledge_release": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd"
+    }
+  },
+  "invariant_comparison_boundary": {
+    "equality_asserted": "Pinned adopter compared schema_and_selection before drain/native transition and after native startup, before restarting existing API/worker. Receipt stores the protected snapshot; successful status establishes those exact equality guards passed.",
+    "domain_table_count": 41,
+    "domain_snapshot_excludes": [
+      "auth_sessions",
+      "nodia_ai_* except nodia_ai_preferences"
+    ],
+    "not_a_claim_all_database_bytes_unchanged": "Runtime/auth renewals and the fresh encrypted backup pipeline are outside the protected-domain aggregate."
+  },
+  "operational_guards": {
+    "capacity_before": {
+      "available_bytes": 4097843200,
+      "reserve_bytes": 268443676,
+      "additional_phase_overhead_bytes": 2097152,
+      "required_bytes": 270540828,
+      "future_cleanup_credited": false
+    },
+    "capacity_after": {
+      "available_bytes": 4097884160,
+      "reserve_bytes": 268443676,
+      "additional_phase_overhead_bytes": 2097152,
+      "required_bytes": 270540828,
+      "future_cleanup_credited": false
+    },
+    "Codex_barrier_before": {
+      "profile_absent": false,
+      "pending": 0,
+      "locks_or_sockets": 0,
+      "records": 3,
+      "sdk_arg0_links": 0,
+      "sdk_binary": null
+    },
+    "quiet_before": {
+      "native": {
+        "unknown_markers": 0,
+        "armed_native_proofs": 0,
+        "terminal_native_proofs": 0,
+        "invalid_native_proofs": 0,
+        "temporary_attachment_directories": 0,
+        "temporary_cli_directories": 0,
+        "agentic_home_configured": true,
+        "stage": "AI-32-R04",
+        "scope": "read_only_native_runtime_artifact_counts",
+        "observed_at_utc": "2026-10-26T03:06:04Z",
+        "provider_calls": 0,
+        "configured_database_modified": false,
+        "profile_bytes_read": false
+      },
+      "SQL": {
+        "stage": "AI-36-C05",
+        "scope": "post_disposable_live_read_only_operational_quiescence",
+        "status": "passed",
+        "observed_at_utc": "2026-10-26T03:06:04.885Z",
+        "pending_jobs": 0,
+        "open_attempts": 0,
+        "retained_slots": 0,
+        "preserved_r05_chat": 1,
+        "configured_SQL_writes": 0,
+        "provider_requests": 0,
+        "storage_operations": 0,
+        "services_restarted": false,
+        "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+      }
+    },
+    "drained": {
+      "native": {
+        "unknown_markers": 0,
+        "armed_native_proofs": 0,
+        "terminal_native_proofs": 0,
+        "invalid_native_proofs": 0,
+        "temporary_attachment_directories": 0,
+        "temporary_cli_directories": 0,
+        "agentic_home_configured": true,
+        "stage": "AI-32-R04",
+        "scope": "read_only_native_runtime_artifact_counts",
+        "observed_at_utc": "2026-10-26T03:06:11Z",
+        "provider_calls": 0,
+        "configured_database_modified": false,
+        "profile_bytes_read": false
+      },
+      "SQL": {
+        "stage": "AI-36-C05",
+        "scope": "post_disposable_live_read_only_operational_quiescence",
+        "status": "passed",
+        "observed_at_utc": "2026-10-26T03:06:11.817Z",
+        "pending_jobs": 0,
+        "open_attempts": 0,
+        "retained_slots": 0,
+        "preserved_r05_chat": 1,
+        "configured_SQL_writes": 0,
+        "provider_requests": 0,
+        "storage_operations": 0,
+        "services_restarted": false,
+        "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+      }
+    },
+    "quiet_after": {
+      "native": {
+        "unknown_markers": 0,
+        "armed_native_proofs": 0,
+        "terminal_native_proofs": 0,
+        "invalid_native_proofs": 0,
+        "temporary_attachment_directories": 0,
+        "temporary_cli_directories": 0,
+        "agentic_home_configured": true,
+        "stage": "AI-32-R04",
+        "scope": "read_only_native_runtime_artifact_counts",
+        "observed_at_utc": "2026-10-26T03:07:01Z",
+        "provider_calls": 0,
+        "configured_database_modified": false,
+        "profile_bytes_read": false
+      },
+      "SQL": {
+        "stage": "AI-36-C05",
+        "scope": "post_disposable_live_read_only_operational_quiescence",
+        "status": "passed",
+        "observed_at_utc": "2026-10-26T03:07:01.919Z",
+        "pending_jobs": 0,
+        "open_attempts": 0,
+        "retained_slots": 0,
+        "preserved_r05_chat": 1,
+        "configured_SQL_writes": 0,
+        "provider_requests": 0,
+        "storage_operations": 0,
+        "services_restarted": false,
+        "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+      }
+    },
+    "journal_before": {
+      "operation": "status",
+      "coverage_from": "2026-10-20T23:52:27.154Z",
+      "updated_at": "2026-10-26T03:05:37.239Z",
+      "first_sequence": 1,
+      "last_sequence": 1,
+      "entries": 1,
+      "unconfirmed": 0,
+      "coverage_closed_at": null,
+      "backups": 41,
+      "expired_backups": 0,
+      "release_authorized": false
+    },
+    "journal_after": {
+      "operation": "status",
+      "coverage_from": "2026-10-20T23:52:27.154Z",
+      "updated_at": "2026-10-26T03:06:10.881Z",
+      "first_sequence": 1,
+      "last_sequence": 1,
+      "entries": 1,
+      "unconfirmed": 0,
+      "coverage_closed_at": null,
+      "backups": 42,
+      "expired_backups": 0,
+      "release_authorized": false
+    },
+    "fresh_backup": {
+      "schema_version": 1,
+      "operation": "backup",
+      "backup_id": "cf0c01ce-ab85-440b-bdcb-a98a565da8b5",
+      "status": "ready",
+      "captured_at": "2026-10-26T03:06:06.495Z",
+      "expires_at": "2026-11-02T03:06:06.495Z",
+      "cipher_bytes": 1404883,
+      "cipher_sha256": "bb00e14d25e69a2d8ae027199f95c1dd73be2d68514ff5ceacd5fc4b15235958",
+      "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+      "journal_sequence": 1,
+      "rotated": {
+        "removed": 0,
+        "pending_recovered": 0,
+        "retained": 41
+      }
+    },
+    "timers_restored": true
+  },
+  "effects_reported": {
+    "configured_SQL_writes": 0,
+    "provider_generation_requests": 0,
+    "metadata_startup_checks_not_counted": true,
+    "orderly_native_stop_may_cancel_non_generative_metadata_checks": true,
+    "business_effects": 0,
+    "migrations": 0,
+    "journal_bootstrap_or_close": false,
+    "session_or_profile_bytes_opened": false
+  },
+  "acceptance_limits": {
+    "new_epoch_requires_explicit_inference_MCP_acceptance": true,
+    "operator_required_requalification": [
+      "MCP",
+      "PNG",
+      "PDF",
+      "WAV",
+      "WebM"
+    ],
+    "real_invoice_OCR_result_proven": false,
+    "native_MIME_acceptance_proven": false,
+    "C03_completed": false,
+    "new_Node_publication_proven": false,
+    "SDK_request_zero_claim": false,
+    "note": "No generation was requested by adoption. Session/discovery/startup metadata may run; metadata startup checks were explicitly not counted by the operator. Adoption is not real inference, current availability or permission to reuse an old control intent.",
+    "availability_or_metadata_timeout_resolution_proven": false
+  },
+  "lineage": {
+    "image_validation": {
+      "path": "docs/evidence/nodia-ai-invoice-ocr-native-image-validation-20261025-r01.json",
+      "sha256": "7b0626e2953e1e4a19ac0b83f8f36e6fdc5163c58a8a4911e7ddcb7bdab1e64c",
+      "bytes": 12047
+    },
+    "native_source_validation": {
+      "path": "docs/evidence/nodia-ai-invoice-ocr-native-validation-20261025-r01.json",
+      "sha256": "f1036a69b60ca58e2202747c5e3d85fb36edd8d584628ebf2571228b0d25bac3",
+      "bytes": 13572
+    },
+    "overlay_R02_manifest": {
+      "path": "ops/lab/artifacts/invoice-ocr-native-overlay-r02/manifest.json",
+      "sha256": "e1cfa4e2cf234e8fd19eddd71de61630aa0aad20f78568f903da1eef963480b3",
+      "bytes": 16731
+    }
+  },
+  "consolidator_operations": {
+    "VM": 0,
+    "Docker": 0,
+    "SDK": 0,
+    "tests_repeated": 0,
+    "immutable_operators_or_payloads_edited": false
+  }
+}

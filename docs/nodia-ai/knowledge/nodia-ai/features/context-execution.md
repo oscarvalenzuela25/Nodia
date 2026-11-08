@@ -4,11 +4,11 @@
   "document_id": "nodia-ai.context-execution",
   "product_id": "nodia-ai",
   "kind": "feature",
-  "revision": 17,
+  "revision": 34,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "AI-40 incorpora Codex en el drawer, modelos/esfuerzos descubiertos y una aceptación MCP privada ligada a sesión/configuración/runtime exactos. API y Web OpenAI no se habilitan. La aceptación requiere gateway real, nonce, terminal y ACK; login y catálogo no la sustituyen. QA de código y build comprobada; la aceptación Linux operativa se registra por gate en documento86, sin extender formatos ni publicar capacidades nuevas."
+    "notes": "AI-40 completado técnicamente en la VM Linux local. R08/ClientR04, cuenta real Codex/MCP y matriz por alcance verificados. Las dos variantes finales están cerradas: categoría2 activa/elegible y factura1 de importe0 con PDF real en R2; la UI descarga1894bytes/SHA exactos. La actualización de la misma preferencia se confirma por botón humano, deja un recibo/revisión2 y pasa readback/contextos/recarga con la categoría nueva. Snapshot64mensajes/34runs/51dispatches, cero pendientes; finanzas/configuración/cuatro proofs/servicios conservados. Fixtures retenidos y marcados; respaldo cifrado previo,27 backups sin expirados y journal histórico confirmado. PDF/audio originales permanecen bloqueados para el scope observado; descarga PDF no acredita entrada al modelo. Windows/API/OpenAIWeb/producción, otras cuentas/selecciones y77 candidatos mantienen su alcance separado. AI-36/C05 y AI-38 conservan sus gates; sin aprobación documental ni publicación nuevas."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento NodiaAI conforme AGENTS",
@@ -108,22 +108,155 @@
     {
       "path": "docs/architecture/decisions/ADR-073-codex-mcp-acceptance-scope.md",
       "kind": "specification"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-document-audio-validation-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-real-unknown-reconciliation-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-selective-fixes-validation-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-r06-selective-delivery-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-r06-mcp-qualification-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-r06-finance-read-validation-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-r06-business-read-validation-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-r06-native-images-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-compaction-validation-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-compaction-progress-fix-validation-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-r07-selective-delivery-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-r07-mcp-qualification-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-r07-compaction-validation-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-r07-native-images-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-r07-ui-image-validation-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-recovery-acceptance-r01.json",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-recovery-harness-validation-r01.json",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-post-recovery-images-r01.json",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-core-reservations-validation-r01.json",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-reservations-install-validation-r01.json",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-compiled-client-nginx-validation-r01.json",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-client-roundtrip-validation-r01.json",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-published-family-coverage-r01.json",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-common-tools-validation-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-contained-buttons-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-role-canary12-canary-report.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt12-native-diagnostics.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-remaining-validation-r01.json",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-076-durable-human-run-cancellation.md",
+      "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-conversation/use-case/cancel-nodia-ai-run.use-case.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-observation/use-case/observe-nodia-ai-run.use-case.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ArtifactObservation/ArtifactObservation.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/RunCancellation/RunCancellation.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-077-gemini-chat-legacy-containment-recovery.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/features/ai-providers/gemini-chat-legacy-recovery.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-data-variants-r01.json",
+      "kind": "evidence"
     }
   ],
   "verification": {
-    "checked_on": "2026-10-22",
+    "checked_on": "2026-10-24",
     "evidence_paths": [
-      "docs/evidence/nodia-ai-ai11-ai12-final-regression.json",
-      "docs/evidence/nodia-ai-ai12-routing-postgres-integration.json",
-      "docs/evidence/nodia-ai-ai12-postgres-integration.json",
-      "docs/evidence/nodia-ai-ai11-ai12-live-validation.json",
-      "docs/evidence/nodia-ai-ai11-ai12-live-routing.json",
-      "docs/evidence/nodia-ai-ai36-c05-high-runtime-validation.json",
-      "docs/evidence/nodia-ai-ai36-c05-r01-compiled-delta.json",
-      "docs/evidence/nodia-ai-ai36-c05-owned-mcp-agent-validation.json",
-      "docs/evidence/nodia-ai-ai36-c05-role-candidate-qa03.json",
-      "docs/evidence/nodia-ai-ai36-c05-role-canary12-canary-report.json",
-      "docs/evidence/nodia-ai-ai36-c05-live-attempt12-native-diagnostics.json",
       "docs/evidence/nodia-ai-ai36-c05-owned-mcp-agent-r02-validation.json",
       "docs/evidence/nodia-ai-ai36-c05-owned-role-r02-rollback-validation.json",
       "docs/evidence/nodia-ai-ai36-c05-r05-validation.json",
@@ -144,13 +277,82 @@
       "docs/evidence/nodia-ai-ai39-journal-integration-r06.json",
       "docs/evidence/nodia-ai-ai39-protocol-integration-r06.json",
       "docs/evidence/nodia-ai-ai39-unit-qa-r03.json",
-      "docs/evidence/nodia-ai-ai40-validation-r02.json"
+      "docs/evidence/nodia-ai-ai40-r06-business-read-validation-r01.json",
+      "docs/evidence/nodia-ai-ai40-r06-finance-read-validation-r01.json",
+      "docs/evidence/nodia-ai-ai40-data-variants-r01.json",
+      "docs/evidence/nodia-ai-ai40-compaction-validation-r01.json",
+      "docs/evidence/nodia-ai-ai40-compaction-progress-fix-validation-r01.json",
+      "docs/evidence/nodia-ai-ai40-r07-selective-delivery-r01.json",
+      "docs/evidence/nodia-ai-ai40-r07-mcp-qualification-r01.json",
+      "docs/evidence/nodia-ai-ai40-r07-compaction-validation-r01.json",
+      "docs/evidence/nodia-ai-ai40-r07-native-images-r01.json",
+      "docs/evidence/nodia-ai-ai40-r07-ui-image-validation-r01.json",
+      "docs/evidence/nodia-ai-ai40-common-tools-validation-r01.json",
+      "docs/evidence/nodia-ai-ai40-remaining-validation-r01.json"
     ],
-    "notes": "AI-40: cuenta real y MCP Linux aceptados para la selección exacta; R03 adoptada, canario R06 con gateway/nonce/terminal/ACK y lecturas desde UI/worker normal. Confirmación humana de revisión exacta produce una ejecución/recibo/movimiento2 de importe1; relecturas y recarga no duplican efectos. Historial y selección conservados; compositor recupera automáticamente tras ACK con GET acotados. Server4651/252; Client1823/229 del candidato previo, delta final126 focales/build y UI comprobados por separado. Originales, familias restantes, recuperación real ampliada y entrega compilada permanecen pendientes. Draft/unregistered, approval null, sin nueva publicación; relojes host/VM desalineados y evidencia fechada por origen."
+    "notes": "AI-40 completado técnicamente en la VM Linux local. R08/ClientR04, cuenta real Codex/MCP y matriz por alcance verificados. Las dos variantes finales están cerradas: categoría2 activa/elegible y factura1 de importe0 con PDF real en R2; la UI descarga1894bytes/SHA exactos. La actualización de la misma preferencia se confirma por botón humano, deja un recibo/revisión2 y pasa readback/contextos/recarga con la categoría nueva. Snapshot64mensajes/34runs/51dispatches, cero pendientes; finanzas/configuración/cuatro proofs/servicios conservados. Fixtures retenidos y marcados; respaldo cifrado previo,27 backups sin expirados y journal histórico confirmado. PDF/audio originales permanecen bloqueados para el scope observado; descarga PDF no acredita entrada al modelo. Windows/API/OpenAIWeb/producción, otras cuentas/selecciones y77 candidatos mantienen su alcance separado. AI-36/C05 y AI-38 conservan sus gates; sin aprobación documental ni publicación nuevas. Verificación previa y límites históricos en86; no se declara verde el tipado global histórico de fixtures."
   },
   "approval": null
 }
 ---
+
+## Corte actual AI-40 — Lecturas y controles
+
+AI-40 completado técnicamente en la VM Linux local. R08/ClientR04, cuenta real Codex/MCP y matriz por alcance verificados. Las dos variantes finales están cerradas: categoría2 activa/elegible y factura1 de importe0 con PDF real en R2; la UI descarga1894bytes/SHA exactos. La actualización de la misma preferencia se confirma por botón humano, deja un recibo/revisión2 y pasa readback/contextos/recarga con la categoría nueva. Snapshot64mensajes/34runs/51dispatches, cero pendientes; finanzas/configuración/cuatro proofs/servicios conservados. Fixtures retenidos y marcados; respaldo cifrado previo,27 backups sin expirados y journal histórico confirmado. PDF/audio originales permanecen bloqueados para el scope observado; descarga PDF no acredita entrada al modelo. Windows/API/OpenAIWeb/producción, otras cuentas/selecciones y77 candidatos mantienen su alcance separado. AI-36/C05 y AI-38 conservan sus gates; sin aprobación documental ni publicación nuevas.
+
+[Evidencia y límites](../../../../evidence/nodia-ai-ai40-remaining-validation-r01.json).
+
+## Corte sucesor — Helpers y preferencias aceptadas con Codex
+
+La [aceptación real](../../../../evidence/nodia-ai-ai40-common-tools-validation-r01.json) distingue lectura, preparación y efecto humano: cuatro intenciones/ocho dispatches/18RPC, tres helpers propios y dos preparadores publicados. R01 caduca sin ejecución; R02 se confirma en la app sobre revisión/hash nuevos y crea dos preferencias propias mediante una sola ejecución/dos recibos. El conjunto tiene dos pasos independientes y bindings vacíos; los preparadores publicados no ofrecen una pareja tipada compatible para aceptar dependencia, aunque el coordinador sí la soporte. Readback y fingerprints reconstruidos de run/ambas etapas comprueban inclusión de memoria aceptada y recarga con dos tarjetas; no prueban cambio de proveedor con recuerdos no vacíos ni defaults financieros implícitos.
+
+Final38mensajes/20runs/28dispatches/seis adjuntos/dos ejecuciones/tres recibos, dos recuerdos y cero pendientes. Finanzas, R07/config/proofs conservados. 116unidades existentes,17checks de recibos y11readback separados; schema publicado compuesto distinto del template. Reloj/refresh son observaciones sin causalidad exclusiva ni fix. AI-40 sigue parcial por agregados/relaciones, archivos, observaciones externas y variantes explícitas. Client5e30 fue la superficie; cambios visuales contained pertenecen a un sucesor aún por verificar. Sin aprobación/publicación ni cambio de45/registry; los cortes inferiores conservan sus hechos históricos.
+
+
+## Verificación de recuperación con Codex real
+
+La [aceptación de recuperación](../../../../evidence/nodia-ai-ai40-recovery-acceptance-r01.json) distingue cancelación, revocación y exclusión verificadas de la cancelación UI propuesta y O_EXCL directo no ensayado. El [histórico del harness](../../../../evidence/nodia-ai-ai40-recovery-harness-validation-r01.json) conserva sus fallos y conciliación sin replay. La [recalificación posterior](../../../../evidence/nodia-ai-ai40-post-recovery-images-r01.json) completa MCP y los tres MIME con generaciones nuevas y fixtures R07 reutilizados; no es otro recorrido UI/R2 ni restauración de proofs.
+
+
+## Corte sucesor R07: compactación y PNG actuales
+
+La [entrega R07](../../../../evidence/nodia-ai-ai40-r07-selective-delivery-r01.json) adopta dos fuentes de producción y seis outputs: progreso cero-RPC de compactación en contexto con el mismo ledger monotónico y fence, reserva verificada antes/después y rechazo de cualquier uso de herramientas. No amplía el gateway ordinario ni sus permisos. Los [265 casos focales y tipado de producción/lint](../../../../evidence/nodia-ai-ai40-compaction-progress-fix-validation-r01.json) pasan; el chequeo global de tipos de fixtures falla con202 errores y no se presenta como verde. El defecto offline es reproducible, pero no demuestra el código causal no conservado en el [unknown real R06](../../../../evidence/nodia-ai-ai40-compaction-validation-r01.json).
+
+El [MCP propio R07](../../../../evidence/nodia-ai-ai40-r07-mcp-qualification-r01.json) completa una generación/un callback y ACK exacto, con proof nuevo b6350cbf…7e60d para el scope observado. La [compactación real posterior](../../../../evidence/nodia-ai-ai40-r07-compaction-validation-r01.json) completa dos intenciones y tres dispatches(2+1): un snapshot con siete citas literales cubre secuencias1..6; el segundo turno reutiliza su ID/sourcehash sin otra compactación. Ambos resultados semánticos son exactos y los tres terminales completed tienen ACK, procesos ausentes, grupos cerrados y staging vacío antes de retirar el fixture. Son seis fuentes sintéticas y Redis sintético en PostgreSQL aislado, con Create/Admit/RunStage compilados reales y cuenta real; no el daemon/UI operativo ejecutando ese historial. C40-09 acepta sólo este subconjunto, no toda recuperación/autoridad.
+
+Los [tres calificadores MIME nuevos](../../../../evidence/nodia-ai-ai40-r07-native-images-r01.json) verifican PNG/JPEG/WebP por separado con semántica, ACK y cleanup propios. El [PNG nuevo desde UI](../../../../evidence/nodia-ai-ai40-r07-ui-image-validation-r01.json) recorre Vite autenticado→R2→admisión/contexto→worker operativo R07: un upload/un envío/un dispatch y cero herramientas/RPC. Original de11233bytes con SHA exacto y sin interpretación textual; respuesta visual exacta, terminal/ACK, staging vacío y recarga preservada. HEAD confirma200 y GET real completa con SHA/tamaño; el status HTTP de GET no entregado por el SDK permanece null. No es una nueva prueba UI JPEG/WebP ni imagen+MCP en un turno R07.
+
+El corte final conserva26 mensajes/14runs/16dispatches/seis adjuntos, una ejecución/recibo y el único movimiento2 histórico; cero pendientes y proof MCP preservado. El compositor vuelve a estar habilitado/vacío y el envío deshabilitado por texto vacío tras recarga; la ocupación transitoria desaparece automáticamente. No hay nuevo efecto de negocio, replay, login/configuración modificados, aprobación o publicación. Los positivos previos de Finanzas/Negocios y los negativos conservan sus alcances históricos.
+
+Los [gates Linux y el límite administrativo](../../../../mvp/86-nodia-ai-ai40-codex-acceptance.md#corte-sucesor-2026-10-23--r07-compactación-real-e-imagen-desde-la-ui) permanecen explícitos; no se aceptan todas las familias, recuperación, Client compilado, Windows o producción. Esta ficha sigue draft/unregistered y no publica capacidades. Los cortes inferiores son históricos.
+
+## Corte sucesor 2026-10-23 — Compactación R06 incierta y disponibilidad invalidada
+
+El [ensayo real de compactación R06](../../../../evidence/nodia-ai-ai40-compaction-validation-r01.json) termina en resultado incierto tras armar un único dispatch SQL. No consta una inferencia efectiva completada ni una respuesta; el transporte registra3frames/721bytes y0RPC. Su cierre físico, terminal/ACK y staging vacío se verifican sin reenviar la inferencia; el PostgreSQL desechable se retira tras la conciliación. No hay snapshot/continuidad aceptados y C40-09 permanece bloqueado. La causa está en investigación offline; no se atribuye a duración, tamaño, proveedor o a los fixes selectivos sin evidencia propia. El intento anterior R01 falló en el caller antes de despachar y se conserva por separado: cero generaciones nativas no equivalen al resultado R02.
+
+El fallo invalida legítimamente los cuatro proofs del scope operativo: MCP/PNG/JPEG/WebP quedan actualmente sin verificar. Los [tres positivos nativos R06](../../../../evidence/nodia-ai-ai40-r06-native-images-r01.json) anteriores conservan sus semánticas exactas, terminales/ACK y staging vacío; son un corte histórico, sin disponibilidad actual ni aceptación nueva de UI/R2. Lo mismo aplica al canario MCP y a las lecturas UI representativas de Finanzas y Negocios anteriores. No se restauran/copian proofs, no hay fallback y no se inicia una recalificación mientras se investiga.
+
+API/worker siguen en R06; configuración y SQL operativo permanecen en24 mensajes/13runs/15dispatches/cinco adjuntos, una ejecución/recibo/efecto histórico y cero pendientes. El recorrido PNG nuevo desde UI sólo quedó preparado: wrapper readonly R06 pinneado y bootstrap SQL sin perfil/proveedor/R2; ningún upload, envío o generación UI. Ese bootstrap no acredita originales ni recorrido funcional.
+
+Los gates Linux priorizados están en [86](../../../../mvp/86-nodia-ai-ai40-codex-acceptance.md#corte-sucesor-2026-10-23--compactación-r06-incierta-y-disponibilidad-invalidada). Esta ficha continúa draft/unregistered y no publica capacidades. Los cortes inferiores conservan sus alcances históricos.
+
+## Corte sucesor: lista de Negocios y bloqueo de entorno en Reservas
+
+La [lista de Negocios desde UI](../../../../evidence/nodia-ai-ai40-r06-business-read-validation-r01.json) recorre el worker normal con selección técnica, barrera de ACK y lectura publicada: dos dispatches/callbacks y ambos terminales/ACK propios. Bajo super_admin y módulo actuales, page1/limit1/activity all/all_businesses true devuelve un total que coincide con SQL antes/después. La respuesta UI y el único byte sellado son exactos; no se exponen nombres/precios en la evidencia.24 mensajes/13runs/15dispatches/cinco adjuntos, un efecto histórico y cero pendientes; MCP conservado.
+
+La misma evidencia verifica la ruta publicada /tools/reservations sin módulo en el entorno operativo, aunque su tabla existe. El destino no está autorizado y el oráculo de alojamientos permanece null, sin ejecutar COUNT ni crear módulos/permisos/casas. Es bloqueo de configuración del entorno; no se declara inexistente la implementación de Reservas. El positivo acepta una lista representativa de Negocios y conserva el GET financiero previo, sin aceptar todas las operaciones/familias ni la compactación real. Los cortes inferiores conservan sus alcances históricos.
+
+## Corte sucesor: R06 y lectura financiera propia
+
+La [entrega R06](../../../../evidence/nodia-ai-ai40-r06-selective-delivery-r01.json) ensaya adopción/reversión/re-adopción sin inferencias ni efectos. Su [MCP propio](../../../../evidence/nodia-ai-ai40-r06-mcp-qualification-r01.json) completa un nonce real y ACK en el nuevo fingerprint, sin restaurar pruebas históricas. La [lectura financiera UI](../../../../evidence/nodia-ai-ai40-r06-finance-read-validation-r01.json) usa una intención nueva, selección técnica/barrera ACK/GET financiero, dos dispatches/dos callbacks y una respuesta final contrastada con SQL. Ambos ACK nativos, grupos cerrados y staging vacío;22 mensajes/12runs/13dispatches/cinco adjuntos y único efecto histórico conservados, cero pendientes. La recarga autenticada conserva run, counters, SHA de respuesta y fixture, con compositor habilitado y sin nuevo envío.
+
+Es aceptación acotada de un GET financiero representativo y continuidad del marcador/gasto en Vite después de las transiciones. No acepta todo C40-06, compactación Codex, originales de imagen actuales, audio, Client compilado o Windows. Los fallos previos y sus recibos se conservan; no se atribuye causalidad retrospectiva a los fixes ni se repite el turno incierto. Los cortes inferiores son históricos.
+
+## Corte AI-40: incertidumbre real y disponibilidad invalidada
+
+La [conciliación real](../../../../evidence/nodia-ai-ai40-real-unknown-reconciliation-r01.json) sucede a los positivos históricos de imágenes/PDF de esta ficha. El único turno financiero nuevo sólo completa selección de capacidades y termina sin respuesta; no acredita lectura de Finanzas. Una única intervención administrativa reautoriza actor/sesión, verifica cierre nativo y ACK y elimina el pendiente sin reenviar la generación. SQL/FS confirman20 mensajes/11runs/11dispatches/cinco adjuntos, único efecto histórico2 intacto y cero pendientes. El TypeError del operador ocurrió al proyectar un job que cleanup ya había eliminado; no se repitió la acción.
+
+MCP/PNG/JPEG/WebP quedan legítimamente invalidados en el scope operativo. Los recibos anteriores siguen siendo históricos; disponibilidad actual requiere reaceptación propia y no se recupera copiando proofs. R05 continúa activo; las correcciones de compactación por transporte y terminal sin texto de selección son candidatas sin adopción/aceptación real. PDF revisado conserva su positivo como texto; audio continúa sin proof. Los [fixes selectivos](../../../../evidence/nodia-ai-ai40-selective-fixes-validation-r01.json) pasan322 pruebas focales/5 archivos, tipado y lint; el candidato R06 cambia fingerprint y excluye WAV, sin aceptación operativa. La causa original de la inferencia sigue desconocida. C40-06 y las variantes restantes de C40-09/C40-11 permanecen parciales.
 
 # Contexto autorizado y ejecuciÃ³n conversacional
 
@@ -288,3 +490,72 @@ La [entrega86](../../../../mvp/86-nodia-ai-ai40-codex-acceptance.md) y la [valid
 Un gasto pendiente propio de prueba pasó por preparación MCP, revisión/hash y botón humano hasta un solo movimiento visible en Finanzas. Sus recibos se conservaron al reconsultar, volver y recargar. La disponibilidad posterior al turno conserva el orden SQL→ACK y sólo reconsulta GET mientras el motivo exacto sea ocupado, con tres esperas propias de UI (1,5,15 segundos); no reinicia inferencias ni efectos. La suma de21 segundos no es una garantía de duración ni una capacidad del proveedor.
 
 Modelos e intensidades se resuelven desde configuración/descubrimiento. Login y credenciales permanecen fuera del modelo; un snapshot vencido se muestra sin verificar. OpenAI Web/API, formatos nativos sin prueba propia y delegación entre proveedores no se habilitan. El borrador se conserva entre selecciones; su persistencia tras recarga/remount no está aceptada. Tampoco se extrapolan cancelación, revocación, compactación, Windows o producción. El contexto aprobado y las74 capacidades/31fragmentos conservan su registro.
+
+## Continuación de implementación C40-08/C40-10
+
+La continuidad del texto sin enviar se documenta en [organización](conversation-organization.md). El adaptador Codex incorpora [imágenes candidatas por MIME](codex-image-inputs.md), staging privado por intento y acreditación técnica exacta posterior a terminal/ACK. La admisión y el pipeline conservan las barreras comunes; medir referencias no concede autorización sobre el archivo. PDF/audio permanecen bloqueados en este adaptador. El runtime de la VM R03 y su aceptación histórica no se sustituyen por estos cambios de fuentes; la nueva frontera requiere su propia aceptación antes de habilitar originales.
+
+Antecedentes históricos conservados fuera del índice acotado de verificación actual: [evidencia](../../../../evidence/nodia-ai-ai11-ai12-final-regression.json).
+
+
+### Continuación verificada: borrador y formatos nativos
+
+La [aceptación de navegador](../../../../evidence/nodia-ai-ai40-draft-browser-r01.json) verifica recuperación exacta de texto sin enviar tras recarga/remount, cancelación del drawer y aislamiento frente a otro chat, sin enviarlo. La restauración exige un GET posterior al montaje, cambio de actor/sesión/chat o reanudación; caché o lecturas canceladas no acreditan acceso. Un fallo transitorio preserva texto ya autorizado en la misma época, bloqueando acciones; una denegación lo retira.
+
+Los [tres probes de imágenes](../../../../evidence/nodia-ai-ai40-native-images-r01.json) aceptan PNG/JPEG/WebP por semántica/terminal/ACK en un candidato aislado con la cuenta real. Esto no adopta el paquete en R03 ni acepta imagen desde UI/R2/admisión/worker o MCP combinado; PDF/audio siguen pendientes. La [entrega86](../../../../mvp/86-nodia-ai-ai40-codex-acceptance.md#aceptación-2026-10-23--borrador-en-navegador-e-imágenes-codex-reales) conserva scope y gates, sin aprobación o publicación nuevas.
+
+### Adopción R04 y recorrido de imágenes desde la UI
+
+La [entrega R04](../../../../evidence/nodia-ai-ai40-r04-image-delivery-r01.json) adopta el transporte en la VM Linux local conservando cuenta/configuración, esquema y journal. La [verificación UI→R2→worker](../../../../evidence/nodia-ai-ai40-ui-image-flow-r01.json) acredita un PNG sintético: bytes y SHA exactos, original sin interpretación textual, lectura semántica de sus píxeles, un dispatch y terminal/ACK con staging limpio. El positivo no acredita herramientas MCP en ese turno.
+
+El JPEG queda íntegro y vinculado en R2, pero el worker termina antes del dispatch con NodiaAiAdapterError; no hay inferencia nativa ni ACK que verificar. La coincidencia temporal con una consulta de capacidades es compatible con contención del perfil, sin causalidad demostrada. Se prepara un reintento durable acotado sólo para runtime_busy/not_dispatched durante observe; jamás se reintenta una inferencia enviada o incierta. WebP desde UI, imagen+MCP, PDF/audio y los gates generales conservan sus pendientes. La ficha sigue draft/unregistered.
+
+### Recorrido completo y sucesor R05
+
+La [entrega R05](../../../../evidence/nodia-ai-ai40-r05-predispatch-delivery-r01.json) conserva la identidad técnica del transporte:11fronteras JavaScript, binario, Node/V8 y política exactos, corroborados por la observación real posterior. Se adopta una corrección de coordinación previa al dispatch: sólo la observación con runtime_busy/not_dispatched de clase real usa el retry durable existente y acotado; ejecución, resultados inciertos, cancelación y medición mantienen sus barreras.
+
+La [aceptación UI/R2/worker](../../../../evidence/nodia-ai-ai40-ui-image-flow-r01.json) completa PNG en R04 y JPEG/WebP en R05 con códigos exclusivos de los píxeles, originales sin interpretación textual, SHA/tamaño R2 exactos y terminal/ACK/staging limpio. JPEG completa también nodia_knowledge_index con1callback/1RPC y procedencia de22items/cuatro dominios contrastada con el recibo; no acredita todas las herramientas de los productos. Los tres turnos positivos tienen un dispatch cada uno, sin retries.
+
+Recargar conserva respuestas y17mensajes/9runs/9dispatches/4adjuntos; una ejecución/recibo y movimiento2 históricos permanecen únicos y no hay pendientes. El primer JPEG fallido sigue registrado con0dispatches: no se reetiqueta como error del proveedor ni se demuestra su causalidad. Las pruebas atómicas sí verifican la nueva clasificación del perfil ocupado. Se conservan los gates independientes de PDF/audio, otras familias, recuperación real, Client compilado/reversión y Windows; AI-40 sigue parcial.
+
+## Continuación AI-40: PDF como texto revisado y WAV sin aceptación
+
+La [ficha de audio Codex](codex-audio-inputs.md) conserva draft/unregistered. El [consolidado documental](../../../../evidence/nodia-ai-ai40-document-audio-validation-r01.json) separa tres resultados: PDF raw rechazado por el decoder instalado; PDF extraído y aceptado por el dueño que completa como texto desde UI/R2/worker R05; y dos canarios WAV PCM16 distintos sin aceptación semántica ni proof de audio. No se incorpora renderizado, OCR, transcode o cambio de proveedor/modo.
+
+El PDF revisado usa un dispatch y cero herramientas, respuesta exacta, R2/SHA y ACK propios. La recuperación de una observación runtime_busy anterior ocurre antes de despachar y no repite inferencia. SQL conserva19 mensajes/10 runs/10 dispatches/cinco adjuntos y una ejecución/recibo/efecto financiero histórico movimiento2, sin pendientes. El original PDF no forma parte del payload nativo enviado.
+
+El candidato audio tiene352 pruebas focales y6 del wrapper observacional; ambos canarios cierran proceso/grupo, terminal y ACK con staging vacío. En el segundo, una única llamada nativa devuelve un rechazo explícito de53 bytes/ocho palabras, oráculo no coincidente y audio_probe_unverified; el diagnóstico no acredita causa ASR ni incompatibilidad global. No existe aceptación WAV y no se adopta el candidato. La [evidencia del operador](../../../../evidence/nodia-ai-ai40-audio-native-probes-r01.json) conserva ambos negativos sin reescribirlos como éxitos.
+
+R05 y sus proofs MCP/imagen previos mantienen sus bytes. Los positivos históricos de [imágenes UI](../../../../evidence/nodia-ai-ai40-ui-image-flow-r01.json) conservan su alcance propio y no prestan aceptación al audio candidato. Se mantienen31 fragmentos/74 capacidades, ninguna aprobación o herramienta nueva y AI-40 parcial.
+
+La [captura PDF revisado](../../../../evidence/nodia-ai-ai40-pdf-reviewed-text-ui-r01.jpg) y la inspección final del consolidado verifican recarga autenticada: respuesta exacta persistida, compositor habilitado y borrador vacío. Se conservan19 mensajes/10 runs/10 dispatches/cinco adjuntos, el único efecto histórico y cero pendientes, sin reenviar ni confirmar nada.
+
+Antecedentes históricos conservados fuera del índice acotado actual: [nodia-ai-ai12-routing-postgres-integration](../../../../evidence/nodia-ai-ai12-routing-postgres-integration.json), [nodia-ai-ai12-postgres-integration](../../../../evidence/nodia-ai-ai12-postgres-integration.json).
+
+Antecedentes históricos conservados fuera del índice acotado actual: [nodia-ai-ai11-ai12-live-validation](../../../../evidence/nodia-ai-ai11-ai12-live-validation.json), [nodia-ai-ai11-ai12-live-routing](../../../../evidence/nodia-ai-ai11-ai12-live-routing.json), [nodia-ai-ai36-c05-high-runtime-validation](../../../../evidence/nodia-ai-ai36-c05-high-runtime-validation.json), [nodia-ai-ai36-c05-r01-compiled-delta](../../../../evidence/nodia-ai-ai36-c05-r01-compiled-delta.json), [nodia-ai-ai36-c05-owned-mcp-agent-validation](../../../../evidence/nodia-ai-ai36-c05-owned-mcp-agent-validation.json), [nodia-ai-ai36-c05-role-candidate-qa03](../../../../evidence/nodia-ai-ai36-c05-role-candidate-qa03.json).
+
+
+## Continuación AI-40: Core representativo y autoridad de Reservas
+
+La [verificación Core/Reservas](../../../../evidence/nodia-ai-ai40-core-reservations-validation-r01.json) distingue una lista Core real por UI/worker y dos ACK de un diagnóstico de instalación sin inferencia de Reservas. `nodia_modules_list` devuelve un registro de página y total8, contrastado con SQL; no se acepta toda Core. La ausencia del módulo `/tools/reservations` oculta sus herramientas y devuelve403 aunque existan tablas/contratos. Total de alojamientos null/sin COUNT, sin seed ni ampliación de permisos. Super_admin omite asignación, no existencia/actividad del destino. La instalación explícita y la aceptación de Reservas son pasos separados. R07/publicación conservados; AI-40 parcial.
+
+
+## Continuación AI-40: Reservas instalado y listado autorizado
+
+La [aceptación de instalación/lectura](../../../../evidence/nodia-ai-ai40-reservations-install-validation-r01.json) verifica el módulo9 activo de la VM, seed compilado real ejecutado una vez y navegación/asignaciones previas conservadas. La existencia del módulo permite que Authorize/discovery actuales presenten sus21 herramientas; no sustituye permisos por casa ni confirma operaciones. Una lista desde UI/worker Codex devuelve0 alojamientos frente a SQL, con dos dispatches/callbacks, terminales/ACK y cierre físico. No se crearon casas/reservas/pagos para obtener un positivo. Borrador e historial sobreviven al mantenimiento y la recarga. El fallo inmediato del observador START queda separado de la verificación posterior del estado real, sin repetirlo. Instalación operativa y una lectura vacía representativa: no es un cambio de contratos/herramientas/publicación ni aceptación de todas las variantes. R07/proofs vigentes conservados; AI-40 sigue parcial.
+
+
+## Continuación AI-40: Client compilado y continuidad autenticada
+
+La [aceptación nginx/UI](../../../../evidence/nodia-ai-ai40-compiled-client-nginx-validation-r01.json) verifica los assets de producción y el mismo chat autenticado en origen5174 por SSH/nginx, sin depender de Vite. Historial, selección y borrador sin enviar se conservan tras cancelar el drawer, salir/volver y recargar; GET frescos y oráculo SQL idéntico respaldan la continuidad. No se envía un turno, aplica configuración o crea un efecto. Es aceptación de entrega/continuidad, no nueva inferencia o modalidad del proveedor. R07/publicación intactos; AI-40 conserva sus demás gates y la reversión nginx sólo preparada.
+
+
+## Corte AI-40 — Reversión del Client y cierre delimitado
+
+Reversión Client A→descriptor404→A verificada, un reload por fase,172 assets y API/SHA conservados. Misma pestaña autentica y restaura historial/selección/borrador tras GET fresco; ES/EN/ES y Cancelar sin Aplicar comprobados, borrador retirado sin enviar. Oráculo propio byteidéntico30/16/20/seis adjuntos/un efecto histórico, cero generaciones/confirmaciones/efectos nuevos o pendientes; R07/proofs/PIDs/época actual conservados. Matriz11gates reconciliada e inventario74 contrastado con runtime: cuatro bloques restantes por mecanismo (preferencias/workflows, agregados/filtros, archivos, observaciones IA), más móvil/continuidad de preferencias reales. AI-40 parcial; Windows/API/producción y77candidatos separados, sin aprobación/publicación/checklist nuevos.
+
+Fuentes: [reversión y continuidad](../../../../evidence/nodia-ai-ai40-client-roundtrip-validation-r01.json), [cobertura por mecanismo](../../../../evidence/nodia-ai-ai40-published-family-coverage-r01.json). Son hechos de aceptación y límites documentados, no contratos ni permisos nuevos.
+
+## Evaluación de impacto visual — Botones contained
+
+Ajuste visual solicitado el2026-10-24: [botones contained verificados](../../../../evidence/nodia-ai-ai40-contained-buttons-r01.json).84 botones text/predeterminados pasan a contained en21 TSX de NodiaAI; seis outlined e IconButton conservados.98 regresiones atómicas existentes, lint/tipos y dos builds reproducibles correctos. Client65c1… adoptado con172 archivos HTTP/SHA/MIME; recarga autenticada conserva chat, selección y dos preferencias. Preferencias/drawer/adjuntos observados en1045×892, oscuro/ES, controles44px y sin scroll horizontal del documento; no prueba móvil ni todos los estados Alert. Sólo presentación: no cambia contexto funcional, contratos, permisos, herramientas ni confirmación. Operador sin SDK/escrituras SQL; no mensajes, confirmaciones o efectos de negocio nuevos desde UI. Backend/configuración/proofs/finanzas conservados; la renovación normal de sesión no se confunde con identidad física de toda la BD. AI-40 sigue parcial.

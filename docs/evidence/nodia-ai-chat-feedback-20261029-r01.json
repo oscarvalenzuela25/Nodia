@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "observed_at": "2026-10-29T16:11:27.593708+00:00",
+  "status": "client_feedback_adopted_on_usage_vm",
+  "request": "Ocho comentarios de navegador sobre el chat NodiaAI",
+  "behavior": {
+    "polling_header": "Overlay sin cambio de altura; durante turno activo el globo presenta el estado.",
+    "user_avatar": "Misma image_url e inicial fallback de Topbar, incluido fallo de imagen.",
+    "activity": "Globo temporal con eventos públicos/estado real, pasos y detener; retirado al terminar. Resultados/propuestas y errores/recuperación conservados.",
+    "completed_banner": "Retirado.",
+    "keyboard": "Enter envía; Shift+Enter agrega línea. IME/repeat y bloqueos no disparan admisión; recuperación sólo explícita.",
+    "composer": "Padding duplicado retirado, acciones44px/gap8px, SendRounded y menú + con Adjuntar archivo."
+  },
+  "validation": {
+    "client_tests": {
+      "success": true,
+      "numTotalTests": 2118,
+      "numPassedTests": 2118,
+      "numFailedTests": 0,
+      "startTime": 1793289453205,
+      "files": 259
+    },
+    "typecheck_exit": 0,
+    "lint_exit": 0,
+    "production_build_exit": 0,
+    "operator_offline_tests": 10,
+    "browser": {
+      "matrix": [
+        {
+          "width": 320,
+          "theme": "dark",
+          "lang": "es",
+          "gap": 8,
+          "targets44": true,
+          "padding": {
+            "input": "0px",
+            "parent": "4px"
+          },
+          "menuEscapeFocus": true,
+          "shiftEnter": true,
+          "draftPreserved": true
+        },
+        {
+          "width": 390,
+          "theme": "light",
+          "lang": "en",
+          "gap": 8,
+          "targets44": true,
+          "padding": {
+            "input": "0px",
+            "parent": "4px"
+          },
+          "menuEscapeFocus": true,
+          "shiftEnter": true,
+          "draftPreserved": true
+        },
+        {
+          "width": 599,
+          "theme": "dark",
+          "lang": "en",
+          "gap": 8,
+          "targets44": true,
+          "padding": {
+            "input": "0px",
+            "parent": "4px"
+          },
+          "menuEscapeFocus": true,
+          "shiftEnter": true,
+          "draftPreserved": true
+        },
+        {
+          "width": 600,
+          "theme": "light",
+          "lang": "es",
+          "gap": 8,
+          "targets44": true,
+          "padding": {
+            "input": "0px",
+            "parent": "4px"
+          },
+          "menuEscapeFocus": true,
+          "shiftEnter": true,
+          "draftPreserved": true
+        },
+        {
+          "width": 900,
+          "theme": "dark",
+          "lang": "es",
+          "gap": 8,
+          "targets44": true,
+          "padding": {
+            "input": "0px",
+            "parent": "4px"
+          },
+          "menuEscapeFocus": true,
+          "shiftEnter": true,
+          "draftPreserved": true
+        },
+        {
+          "width": 1569,
+          "theme": "dark",
+          "lang": "es",
+          "gap": 8,
+          "targets44": true,
+          "padding": {
+            "input": "0px",
+            "parent": "4px"
+          },
+          "menuEscapeFocus": true,
+          "shiftEnter": true,
+          "draftPreserved": true
+        }
+      ],
+      "activeBubble": true,
+      "terminalActivityRemoved": true,
+      "completedBannerRemoved": true,
+      "headerHeights": [
+        97,
+        97,
+        97
+      ],
+      "headerPreserved": true,
+      "syntheticEnterAdmissions": 1,
+      "noVmOrProviderRequests": true,
+      "engine": "Microsoft Edge/Chromium via Playwright CLI",
+      "transport": "synthetic-only isolated 127.0.0.1:5194",
+      "mobile_stop_reachable_by_local_scroll": true
+    },
+    "notes": [
+      "La primera suite falló en dos selectores del botón anterior. Se actualizaron al menú Añadir al mensaje conservando garantías de upload/admisión; la suite final completa pasa.",
+      "La primera medida inmediata después de resize observó el árbol desktop anterior; se espera el layout responsive asentado. La inspección posterior y QA final no muestran overflow.",
+      "Consola de desarrollo muestra setState-during-render en ChatPage y al montar ExecutionObservation, más favicon404 del harness. El aviso general estaba documentado antes; no se confirmó la causa de cada recorrido ni se declara corregido. Las medidas observadas de cabecera/refetch y las regresiones de comportamiento pasan.",
+      "Build conserva aviso previo de chunk mayor500kB; el outDir aislado nuevo no requiere vaciar archivos.",
+      "knowledge:check detectó defectos previos en el índice candidato BusinessesR25: dos notas>4096 y dos rutas ops no admitidas por RepoPath. R26 reubica notas/rutas intactas al cuerpo y usa evidencia pública, conservando draft/partial/unregistered y approval:null. Check final69/25/44/46 correcto; no se publican borradores ni se adopta el candidato local."
+    ],
+    "knowledge_check": {
+      "exit": 0,
+      "sources": 69,
+      "excluded": 25,
+      "documents": 44,
+      "fragments": 46,
+      "local_candidate_release_id": "8a7c2acab58c8ab78dfd5db5660c442702f5abf0ca5ac58c810c3ad60909e2ba",
+      "emitted_or_adopted": false,
+      "runtime_release_unchanged": "b49fde74a53483fad4fe80b8175b36bb7c337415097dd9cfa4349285f9e1e2ea"
+    }
+  },
+  "delivery": {
+    "url": "http://localhost:5174/tools/nodia-ai?chat=7b6d989f-c211-4bc6-9ce9-8077e9008748",
+    "release": "/opt/nodia/releases/nodia-client-chat-feedback-20261029-r01",
+    "manifest_sha256": "6470a79d6fd28a6ccd5c55a55f603b4c19d52ba7a5e03f563fff7b762ffcab20",
+    "artifact": {
+      "bytes": 2100513,
+      "members": 172,
+      "sha256": "d3e9df643f63aed79f27d386b41c560203df293dff75d8eed21a42c928dfd966",
+      "unpacked_bytes": 4633613
+    },
+    "source_input_fingerprint_sha256": "7140892943b260a3aaa79d555bf78e7c769a132b3e3a202927dcaffa88706b22",
+    "source_delta": {
+      "added": [
+        "src/modules/nodiaAi/components/RunActivity/RunActivity.tsx",
+        "src/modules/nodiaAi/components/RunActivity/index.ts",
+        "src/modules/nodiaAi/components/RunActivity/styles.ts",
+        "src/test/modules/nodiaAi/components/RunActivity/RunActivity.test.tsx"
+      ],
+      "changed": [
+        "src/modules/nodiaAi/components/ChatComposer/ChatComposer.tsx",
+        "src/modules/nodiaAi/components/ChatComposer/styles.ts",
+        "src/modules/nodiaAi/components/ChatMessage/ChatMessage.tsx",
+        "src/modules/nodiaAi/components/ChatMessage/styles.ts",
+        "src/modules/nodiaAi/components/ExecutionObservation/ExecutionObservation.tsx",
+        "src/modules/nodiaAi/components/ExecutionObservation/styles.ts",
+        "src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+        "src/modules/nodiaAi/pages/NodiaAI/styles.ts",
+        "src/test/modules/nodiaAi/components/ChatComposer/ChatComposer.test.tsx",
+        "src/test/modules/nodiaAi/components/ChatMessage/ChatMessage.test.tsx",
+        "src/test/modules/nodiaAi/components/ExecutionObservation/ExecutionObservation.test.tsx",
+        "src/test/modules/nodiaAi/pages/NodiaAI/NodiaAI.test.tsx",
+        "src/translate/en/nodiaAi.json",
+        "src/translate/es/nodiaAi.json"
+      ],
+      "outside_authorized_scope": [],
+      "removed": []
+    },
+    "nginx_sha256": "0fc64047518292922ecdc19ba0d6b88fdc7864dbb968c80003871009036091e7",
+    "http": {
+      "current_assets": 168,
+      "previous_assets": 46,
+      "protected": [
+        {
+          "route": "/api/v1",
+          "status": 200
+        },
+        {
+          "route": "/api/v1/nodia-ai/connections",
+          "status": 401
+        },
+        {
+          "route": "/api/v1/products",
+          "status": 401
+        }
+      ],
+      "spa": [
+        {
+          "route": "/",
+          "sha256": "7faffe7aadec37654547e3642a0f7a49796822d5873331fa141e58db4b59182c",
+          "status": 200
+        },
+        {
+          "route": "/tools/nodia-ai",
+          "sha256": "7faffe7aadec37654547e3642a0f7a49796822d5873331fa141e58db4b59182c",
+          "status": 200
+        },
+        {
+          "route": "/tools/business",
+          "sha256": "7faffe7aadec37654547e3642a0f7a49796822d5873331fa141e58db4b59182c",
+          "status": 200
+        }
+      ]
+    },
+    "local_tunnel_index_sha256": "7faffe7aadec37654547e3642a0f7a49796822d5873331fa141e58db4b59182c",
+    "backup": {
+      "configuration": "/opt/nodia/operations/nodia-ai-chat-feedback-20261029-r01/nginx-before.conf",
+      "sha256": "a25c7f75a5470e0892ad0cf29def3f43f3e496c5fa94e09d9c47d490a09aaa77",
+      "original_client": "/opt/nodia/releases/nodia-client-business-pos-20261028-r02",
+      "original_release_preserved": true
+    },
+    "graceful_nginx_reload": true,
+    "api_or_worker_restarts": 0,
+    "native_restarts": 0,
+    "sql_queries": 0,
+    "auth_requests": 0,
+    "provider_requests": 0,
+    "protected_runtime_preserved": true,
+    "server_manifest_sha256": "22f928167d186565cb08fed6eb0572d43263e0a0a424f235aad26e0c7063ef24",
+    "knowledge_release_id": "b49fde74a53483fad4fe80b8175b36bb7c337415097dd9cfa4349285f9e1e2ea",
+    "receipts": [
+      {
+        "path": "ops/lab/artifacts/nodia-ai-chat-feedback-20261029-r01/preflight-receipt.json",
+        "sha256": "3450a45095feba3351640cb07f89009ecb00649125e469dbd0cd77c8d4739b0e",
+        "bytes": 2829
+      },
+      {
+        "path": "ops/lab/artifacts/nodia-ai-chat-feedback-20261029-r01/stage-receipt.json",
+        "sha256": "0903553644f48c0fb4292b0d80543dcd1521d8834d16725a0b29cddaa2d94441",
+        "bytes": 167
+      },
+      {
+        "path": "ops/lab/artifacts/nodia-ai-chat-feedback-20261029-r01/activation-receipt.json",
+        "sha256": "96b472965e11bf2da55286fec70a320e4e53320e74ac2a3d5a4eb4de735b6470",
+        "bytes": 4183
+      },
+      {
+        "path": "ops/lab/artifacts/nodia-ai-chat-feedback-20261029-r01/status-receipt.json",
+        "sha256": "c276dfcce6f7aa359fe43721e41a50f31e617f45d75d0be56282c91800e837c7",
+        "bytes": 6086
+      }
+    ]
+  },
+  "knowledge": {
+    "approved_bodies_unchanged": 44,
+    "candidate_path": "docs/nodia-ai/knowledge/nodia-ai/features/chat-composer-selection.md",
+    "candidate_revision": 5,
+    "document_status": "draft",
+    "integration_status": "unregistered",
+    "approval": null,
+    "publication": false,
+    "impact": "Cambios visuales/interacción sobre eventos existentes; sin herramientas, permisos, semántica de resultados, contexto o confirmación nuevos."
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/nodia-ai-chat-feedback-active-desktop-20261029.png",
+      "sha256": "3295e476a570981a326b3cda1c74a7b755631eea41c2f882af5702877b3e3f60",
+      "bytes": 76856
+    },
+    {
+      "path": "docs/evidence/nodia-ai-chat-feedback-active-mobile-20261029.png",
+      "sha256": "82944396fbf51255b562247a9e9320c2768f724704b3b65695681c4cf1439da8",
+      "bytes": 44321
+    },
+    {
+      "path": "docs/evidence/nodia-ai-chat-feedback-completed-mobile-20261029.png",
+      "sha256": "c16924fd0753e58b8b356e8c70d2fedc2725190fe17f25dad643fe5bd4e859c7",
+      "bytes": 56305
+    }
+  ],
+  "limits": [
+    "QA de interacción con transporte sintético; no nueva inferencia ni aceptación de modelos, herramientas o confirmación comercial.",
+    "No se ejercitó UI autenticada de VM, micrófono, IME/teclado virtual o teléfono físico.",
+    "IME y fallo de avatar comprobados en unidades sintéticas; no mediante hardware real.",
+    "La entrega conserva Server/KB/Native; no acredita NodiaAI global ni rendimiento de campo."
+  ]
+}

@@ -19,7 +19,7 @@ function identity(
   request: NodiaAiRuntimeProofRequest,
 ): NodiaAiCodexRuntimeProofRequest {
   const normalized = readRuntimeProofRequest(runtimeProofDescriptor(request));
-  if (!normalized.adapterIdentity)
+  if (normalized.engine !== 'agentic' || !normalized.adapterIdentity)
     throw Error('nodia_ai:invalid_reconciliation');
   Object.freeze(normalized.adapterIdentity);
   Object.freeze(normalized);

@@ -14,9 +14,9 @@ vi.mock("../../modules/finances/pages/PersonalFinance", () => ({ default: () => 
 
 describe("tools navigation routes", () => {
   it.each([
-    ["/tools/business", "Business list", "/tools/business"],
-    ["/tools/business/42", "Business detail", "/tools/business"],
-    ["/tools/finances-personal", "Personal finances", "/tools/finances-personal"],
+    ["/business", "Business list", "/business"],
+    ["/business/42", "Business detail", "/business"],
+    ["/finances-personal", "Personal finances", "/finances-personal"],
   ])("opens %s through the production router with the correct module", async (path, title, modulePath) => {
     const memory = createMemoryRouter(router.routes, { initialEntries: [path] });
     render(<RouterProvider router={memory} />);
@@ -26,7 +26,8 @@ describe("tools navigation routes", () => {
   });
   it("offers the new paths in Modules and excludes the former paths", () => {
     const paths = APP_AVAILABLE_ROUTES.map(route => route.value);
-    expect(paths).toContain("/tools/business"); expect(paths).toContain("/tools/finances-personal");
-    expect(paths).not.toContain("/business"); expect(paths).not.toContain("/finances/personal");
+    expect(paths).toContain("/business"); expect(paths).toContain("/finances-personal");
+    expect(paths).not.toContain("/tools/business"); expect(paths).not.toContain("/tools/finances-personal");
+    expect(paths).toContain("/nodia-teacher");
   });
 });

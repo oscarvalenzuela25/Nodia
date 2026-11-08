@@ -2,7 +2,7 @@
 
 Actualizado por solicitud del usuario el 2026-10-09. Registro de implementación; no implica aprobación documental automática.
 
-- Rutas: `/tools/business` y `/tools/business/:id`.
+- Rutas canónicas: `/business` y `/business/:id`, independientes del grupo del menú. Los enlaces anteriores `/tools/business` sólo redirigen al mismo destino guardado (ADR-092, 2026-11-01).
 - Descripción opcional con un TextInput multilinea, independiente del idioma de interfaz. DTO existente `translates`: guardar el mismo texto en es/en; alta vacía `[]`, borrado en edición ambas cadenas vacías. Priorizar description canónica sobre comment legado; no recuperar comment después de borrar description.
 - Resumen: últimas diez facturas activas, predicado aplicado por Server antes de paginar, orden created_at descendente. Consulta acotada separada de los agregados generales; no cambia el alcance de los KPIs ni supone anulación financiera de una factura inactiva.
 - Proveedores, productos y facturas: activos desde la primera consulta. Filter conserva búsqueda y reinicia página al cambiar estado; Limpiar restaura activos, quitar chip permite todos. Proveedores incorpora Filter reutilizable: botón de filtro, chip de estado debajo y luego barra con buscador a la izquierda y acciones de descarga/administración a la derecha desde sm; en xs el buscador y las acciones se apilan con ancho completo.

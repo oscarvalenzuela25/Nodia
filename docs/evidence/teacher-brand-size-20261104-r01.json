@@ -1,0 +1,105 @@
+{
+  "schema": "teacher-brand-size-annotation/1",
+  "checked_on": "2026-11-04",
+  "status": "implemented_and_verified_in_VM",
+  "scope": "Shared Teacher brand34px from existing sm600px,24px below600 to fit narrow content",
+  "document_approval": false,
+  "knowledge_publication": false,
+  "source_scope": {
+    "added_paths": [],
+    "exact_change": "Only ProductBrand desktop1.25rem->2.125rem and xs1rem->1.5rem",
+    "frozen_UI_sources": {
+      "src/modules/teacher/pages/Teacher/styles.ts": {
+        "after_bytes": 3508,
+        "after_sha256": "c54b3f63a55e6237bb8e9d769ae9203a26eab3ec2a023d23fc0cd3cee17f09ae",
+        "before_sha256": "294d3b242d38e354dfefaf0c488932daba13709972750c879f529ef5e587545d"
+      }
+    },
+    "global_working_tree_copied": false,
+    "outside_whitelist_delta": 0,
+    "owner_delta_sha256": "f84b7a4c308179b2fda938aa02bdd6442d26645d625bf5acf61df0b5ca78e495",
+    "paths": [
+      "src/modules/teacher/pages/Teacher/styles.ts"
+    ],
+    "production_paths": 1,
+    "removed_paths": [],
+    "source_input_count": 1340,
+    "unchanged_JobPanel_sha256": "679767468a552c3ba4a8143ee47e6e56a000917cdd08f44d967ff1ccde2bfef3",
+    "unchanged_R08_source_inputs": 1339,
+    "unchanged_Teacher_sha256": "9025ab47177054854ccd993c747e1c2c746de54f35176981bb05eabe37089c88"
+  },
+  "checks": {
+    "Teacher_regression_tests": 46,
+    "Teacher_test_files": 12,
+    "all_baseline_inputs_rehashed_before_after": true,
+    "assets": 179,
+    "isolated_build_ms": 17403,
+    "isolated_typecheck_diagnostics": 0,
+    "operator_tests": 4,
+    "public_configuration_preserved": true,
+    "scoped_lint_diagnostics": 0,
+    "unchanged_dist_files": 144,
+    "workspace_typecheck_diagnostics": 0
+  },
+  "deployment": {
+    "Native_restart": false,
+    "Server_manifest_sha256": "fe1fa26d3148d062cba09ed5bfa1f8a6dd11f64ac2601eb277961e9d644c3442",
+    "Server_restart": false,
+    "backup_workflow_actions": 0,
+    "canonical_state_sha256": "7b0d20087518dd111266e9b6451370eeb149e0d09db37e0382f355ee7f0e2ed3",
+    "database_access": false,
+    "legacy_R08_asset_fallback_retained": true,
+    "new_assets_verified": 179,
+    "old_assets_verified": 175,
+    "one_Nginx_reload": true,
+    "phase": "Client_R09_active_static_and_legacy_assets_verified",
+    "private_recovery_workflows": 0,
+    "protected_runtime_snapshot_unchanged": true,
+    "provider_requests": 0,
+    "stdout_receipt_sha256": "a46f9bb6eed576eebe293d07c0b18cbdd4a2dce6951f02a5a4b4b6ae9d99fc05",
+    "success": true
+  },
+  "release": "/opt/nodia/releases/nodia-client-teacher-20261104-r09",
+  "release_manifest_sha256": "33ac4bb70b2a6f038881c854d878d1f58b9dd04a527082705bd42eebced161ed",
+  "source_receipts": [
+    {
+      "path": "ops/lab/artifacts/teacher-brand-size-20261104-r01/client-r09/delivery.json",
+      "bytes": 5792,
+      "sha256": "86a8822c69ac4082ccbab58c378fe10c501017dcd68646bd69745f830150ab96"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-brand-size-20261104-r01/browser-verification.json",
+      "bytes": 2024,
+      "sha256": "1ff6c1a3cdda41e13f406dc252067dce0a7a034aaeda767221ddc4656c225c67"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-brand-size-20261104-r01/catalog.json",
+      "bytes": 1994,
+      "sha256": "493eb8e035ecbcd0f71e7430152e80e4b04f16e8a6a14248b8b16ae645b2f803"
+    }
+  ],
+  "edited_files": [
+    {
+      "path": "nodia-client/src/modules/teacher/pages/Teacher/styles.ts",
+      "bytes": 3508,
+      "sha256": "c54b3f63a55e6237bb8e9d769ae9203a26eab3ec2a023d23fc0cd3cee17f09ae"
+    },
+    {
+      "path": "nodia-client/DESIGN.md",
+      "bytes": 91846,
+      "sha256": "5a5b0bbede399da9f94d1971dbbf85fee4b9ef27ed7e8e7cfaa63577a190400f"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/studies/features/adaptive-plans-and-day-material.md",
+      "bytes": 26249,
+      "sha256": "1bd1bad182b0abf420cc4b933ef6dafb16ac66de412d9c12ac560f728a25d835"
+    }
+  ],
+  "QA_closes_delivery_snapshot_remaining_validation": true,
+  "remaining": [],
+  "limits": [
+    "Viewport resizing does not demonstrate physical phone or touch input.",
+    "One rapid requested390px read still reported320px; only actual observed widths are counted.",
+    "No new light-theme matrix or provider inference for this font-size-only delta."
+  ]
+}

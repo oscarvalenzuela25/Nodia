@@ -3,6 +3,7 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import { lockAuthority } from '../../authorization/authority-transaction.js';
 import { AuthorizeNodiaAiUseCase } from '../../nodia-ai/use-case/authorize-nodia-ai.use-case.js';
@@ -10,6 +11,7 @@ import type { NodiaAiActorReference } from '../../nodia-ai/types/nodia-ai-author
 import {
   NodiaAiAdapterError,
   NodiaAiAdapterPort,
+  supportsNodiaAiTools,
   type NodiaAiAdapterObservation,
 } from '../../nodia-ai-adapter/types/nodia-ai-adapter.types.js';
 import { NodiaAiConnectionsService } from '../nodia-ai-connections.service.js';
@@ -20,7 +22,12 @@ import type {
 import { NodiaAiEligibilityQueryDto } from '../dto/nodia-ai-eligibility-query.dto.js';
 import { validateNodiaAiDto } from '../dto/nodia-ai-validation.js';
 import { projectNodiaAiConnection } from './list-nodia-ai-connections.use-case.js';
-
+import { LoadNodiaAiKnowledgeUseCase } from '../../nodia-ai-context/use-case/load-nodia-ai-knowledge.use-case.js';
+import {
+  INVOICE_OCR_FILE_BYTES,
+  INVOICE_OCR_MEDIA_TYPES,
+} from '../../nodia-ai-invoice-ocr/invoice-ocr-delivery.js';
+import { observationIdentityManifest } from '../../nodia-ai-context/use-case/nodia-ai-observation-identity.js';
 const safeReasons = new Set([
   'adapter_unconfigured',
   'adapter_transport_unavailable',
@@ -37,8 +44,8 @@ const safeReasons = new Set([
   'runtime_busy',
   'runtime_unconfigured',
   'mcp_adapter_unverified',
+  'agentic_timeout',
 ]);
-
 /** Read-only non-generative preflight. It never probes MCP or grants authority to execute a turn. */
 @Injectable()
 export class ObserveNodiaAiEligibilityUseCase {
@@ -46,6 +53,8 @@ export class ObserveNodiaAiEligibilityUseCase {
     private readonly connections: NodiaAiConnectionsService,
     private readonly authorize: AuthorizeNodiaAiUseCase,
     private readonly adapter: NodiaAiAdapterPort,
+    @Optional()
+    private readonly knowledge?: LoadNodiaAiKnowledgeUseCase,
   ) {}
   async execute(
     identity: NodiaAiActorReference,
@@ -66,29 +75,17 @@ export class ObserveNodiaAiEligibilityUseCase {
     };
     const before = await this.configuration(identity, selection);
     const mode = before.modes.find((value) => value.mode === selection.mode)!;
-    const configuredTarget = before.modes.find(
-      (value) => value.mode === 'token_plan_agentic',
-    );
-    const target =
-      selection.mode === 'token_plan_web' &&
-      before.provider_key === 'gemini' &&
-      configuredTarget?.configuration === 'configured'
-        ? configuredTarget.configured_selection
-        : null;
     const supported =
-      (before.provider_key === 'gemini' && selection.mode !== 'api_key') ||
-      (before.provider_key === 'openai' && selection.mode === 'token_plan_agentic');
+      ['gemini', 'openai'].includes(before.provider_key) &&
+      ['agentic', 'api_key'].includes(selection.mode);
     const enabled = mode.configuration !== 'disabled';
-    const [baseObservation, targetObservation] = await Promise.all([
-      supported && enabled ? this.observe(selection) : Promise.resolve(null),
-      supported && enabled && target
-        ? this.observe(target)
-        : Promise.resolve(null),
-    ]);
+    const baseObservation =
+      supported && enabled ? await this.observe(selection) : null;
     // Permissions and configuration can change while waiting for an external provider. No SQL lock crosses that wait.
+    let invoiceOcrAllowed = false;
     await this.connections.transaction(async (manager) => {
       await lockAuthority(manager);
-      await this.authorize.execute(identity, {}, manager);
+      const actor = await this.authorize.execute(identity, {}, manager);
       const row = await this.connections.find(manager, connectionId);
       if (
         !row ||
@@ -101,28 +98,16 @@ export class ObserveNodiaAiEligibilityUseCase {
           baseObservation.observation.configurationGeneration,
           manager,
         );
-      if (target && targetObservation?.observation)
-        await this.adapter.verifyConfiguration(
-          target,
-          targetObservation.observation.configurationGeneration,
-          manager,
-        );
+      invoiceOcrAllowed =
+        this.knowledge?.manifest.capability_contracts.some(
+          (contract) => contract.capability_id === 'nodia_invoices_ocr',
+        ) === true &&
+        baseObservation?.observation?.available === true &&
+        supportsNodiaAiTools(baseObservation.observation) &&
+        actor.modules.some((module) => module.route === '/business');
     });
     const observation = baseObservation?.observation;
-    let routingTarget: NodiaAiRoutingTarget | null = null;
-    if (
-      target &&
-      targetObservation?.observation?.available &&
-      targetObservation.observation.supportsMcp &&
-      targetObservation.observation.resourceKey
-    ) {
-      routingTarget = {
-        selection: { ...target, mode: 'token_plan_agentic' },
-        configuration_generation:
-          targetObservation.observation.configurationGeneration,
-        session_generation: targetObservation.observation.sessionGeneration,
-      };
-    }
+    const routingTarget: NodiaAiRoutingTarget | null = null;
     return {
       selection,
       available: observation?.available === true,
@@ -133,10 +118,27 @@ export class ObserveNodiaAiEligibilityUseCase {
           : (baseObservation?.reason ?? null),
       observed_at: observation?.observedAt.toISOString() ?? null,
       supports_mcp:
-        selection.mode === 'token_plan_agentic' &&
+        selection.mode === 'agentic' &&
         observation?.available === true &&
         observation.supportsMcp,
+      supports_tools:
+        observation?.available === true && supportsNodiaAiTools(observation),
+      ...(selection.mode === 'api_key'
+        ? {
+            supports_image_generation:
+              observation?.available === true &&
+              observation.supportsImageGeneration === true,
+          }
+        : {}),
       routing_target: routingTarget,
+      ...(invoiceOcrAllowed
+        ? {
+            invoice_ocr: {
+              media_types: [...INVOICE_OCR_MEDIA_TYPES],
+              file_bytes: INVOICE_OCR_FILE_BYTES,
+            },
+          }
+        : {}),
     };
   }
   private async configuration(
@@ -161,6 +163,7 @@ export class ObserveNodiaAiEligibilityUseCase {
   }> {
     try {
       const observation = await this.adapter.observe(selection);
+      observationIdentityManifest(selection, observation);
       return {
         observation,
         reason: observation.available

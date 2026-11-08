@@ -2,9 +2,9 @@ import { styled } from "@mui/material/styles";
 
 export const TopbarRoot = styled("header")(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
-  padding: theme.spacing(1.5, 2),
+  padding: theme.spacing(1.5, 2, 0),
   [theme.breakpoints.up("md")]: {
-    padding: theme.spacing(2, 4),
+    padding: theme.spacing(2, 4, 0),
   },
   display: "grid",
   gridTemplateColumns: "40px minmax(0, 1fr)",

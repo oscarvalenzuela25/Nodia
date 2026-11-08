@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-25",
+  "status": "implemented_offline_candidate_not_built_or_adopted",
+  "scope": "Validated metadata pieces only, not final selection/proofs/eligibility cache",
+  "ADR": {
+    "path": "docs/architecture/decisions/ADR-079-validated-agentic-metadata-pieces.md",
+    "sha256": "4e178ed07c7a6ec5e773237012dc2a3c161584b4942bd558930ec7b1107cc49e",
+    "bytes": 7108,
+    "status": "proposed_not_approved"
+  },
+  "candidate": {
+    "path": "ops/lab/artifacts/c03-agentic-status-evidence-cache-r01/after/agentic_service.py",
+    "sha256": "b20f724a3bcdcf3ba433a11c19474fc2cd9d4f2e02edb155eed317494daa3a03",
+    "bytes": 18494
+  },
+  "baseline": {
+    "path": "ops/lab/artifacts/c03-agentic-status-evidence-cache-r01/before/agentic_service.py",
+    "sha256": "a626e350f6063432291d8dbf74091f7570c7d976976c8ffa970c8ef302dc6bd5",
+    "bytes": 15020
+  },
+  "package_catalog": {
+    "path": "ops/lab/artifacts/c03-agentic-status-evidence-cache-r01/catalog.json",
+    "sha256": "dd1bb653760512c627384811753da3077cb34ae99bb050c97c2a3ad9753f5948",
+    "bytes": 2775
+  },
+  "lineage": {
+    "path": "ops/lab/artifacts/c03-agentic-status-evidence-cache-r01/lineage.json",
+    "sha256": "19a28cdd3a71646310f0961c4c00fc814d24861f3ebdecceeda9473e8ddde80d",
+    "bytes": 1732
+  },
+  "verification": {
+    "path": "ops/lab/artifacts/c03-agentic-status-evidence-cache-r01/verification.json",
+    "sha256": "636e49bb8265fea87016555230ad325b4b2e8ff83cdf14a427fd7a859d23931f",
+    "bytes": 3208
+  },
+  "observation": {
+    "source": {
+      "path": ".tmp/c03-continuation-r01/metadata-command-phases-r01.json",
+      "sha256": "ca922f93d75c566f4d4d78e3b8a1d321e680a750e758661567c573c76df7215a",
+      "bytes": 1207
+    },
+    "result": "agentic_timeout",
+    "available": false,
+    "sampling": {
+      "sample_window_seconds": 22,
+      "interval_seconds": 0.25,
+      "command_arguments_emitted": false,
+      "process_phases": [
+        {
+          "pid": 434,
+          "phase": "usage",
+          "first_seen_ms": 251,
+          "last_seen_ms": 9518,
+          "samples": 38
+        },
+        {
+          "pid": 442,
+          "phase": "models",
+          "first_seen_ms": 9769,
+          "last_seen_ms": 12023,
+          "samples": 10
+        }
+      ]
+    },
+    "limit": "Observed process phases do not prove successful usage response, auth or valid quota. Before a626 validates usage after models. No historical C03 failure is attributed to this sample."
+  },
+  "behavior": [
+    "Validate usage return/envelope/groups immediately before models; retain only parsed allowlist values.",
+    "After timeout or same-epoch enclosing cancellation, preserve only previously validated pieces; subsequent explicit observation may complete only the missing piece.",
+    "No partial authenticated/public snapshot or catalog; both components fresh, TTL30 anchored at the oldest validation and original quota timestamp.",
+    "Invalidate on auth/parse/nonzero/OSError, login begin/finish, runner/session change, close and the existing execution-failure invalidation point.",
+    "Propagate cancellation and await cleanup; context/token/cancelling fences reject late commits.",
+    "Keep exact /model+effort and configuration/session/model/effort proofs per eligibility request; no final-observation cache, deadline increase, parallel CLI, fallback or static model."
+  ],
+  "tests": {
+    "candidate_atomic": {
+      "exit_code": 0,
+      "cases": 20,
+      "skipped": 0,
+      "scope": "packaged candidate exact b20f"
+    },
+    "negative_before_control": {
+      "exit_code": 1,
+      "cases": 1,
+      "skipped": 0,
+      "scope": "expected failure: before a626 repeats usage"
+    },
+    "local_focal": {
+      "exit_code": 0,
+      "cases": 80,
+      "skipped": 0,
+      "scope": "local checkout, not complete candidate"
+    },
+    "local_full": {
+      "exit_code": 0,
+      "cases": 573,
+      "skipped": 3,
+      "scope": "local checkout retaining unrelated CLI/OCR; not complete candidate"
+    },
+    "pycompile": {
+      "exit_code": 0,
+      "cases": null,
+      "skipped": 0,
+      "scope": "before/after/local/harness/proof/regression sources"
+    }
+  },
+  "local_integration": {
+    "source": {
+      "path": "nodia-gemini-microservice/agentic_service.py",
+      "sha256": "ad013454ab35dd86a4a19f1d9f828bed31e38406b398deb9d3c04f4e2cfa2b59",
+      "bytes": 18711
+    },
+    "metadata_bytes_and_AST_match_candidate": true,
+    "unrelated_local_OCR_preserved_except_single_existing_invalidation": true,
+    "whole_local_file_adoptable": false,
+    "local_full_suite_is_not_candidate_full_suite": true
+  },
+  "knowledge_impact": {
+    "public_schema_or_capability_changed": false,
+    "C03_approved_revision_3_edited": false,
+    "published_fda_151_42_changed": false,
+    "approved_knowledge_cards_edited": false,
+    "evaluation": "Internal freshness/health improvement; ADR and evidence explain implementation without claiming availability or requiring new published permissions."
+  },
+  "limits": {
+    "VM_actions": 0,
+    "real_provider_generations": 0,
+    "new_CLI_version_or_agentic_cli_changes": false,
+    "new_image_or_epoch_created": false,
+    "root_independent_review": "b20f reviewed, 20 candidate tests passed in service venv per parent report",
+    "acceptance": "Linux image/build/adoption and new-epoch MCP/PNG/PDF/WAV/WebM requalification remain separate gates; no C03/0/null acceptance or approval new."
+  }
+}

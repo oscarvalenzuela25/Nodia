@@ -1,4 +1,4 @@
-import { Box, Drawer, FormControlLabel, Switch } from "@mui/material";
+import { Box, Drawer } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
 
 export const SettingsDrawer = styled(Drawer)(({ theme }) => ({
@@ -72,33 +72,5 @@ export const Footer = styled(Box)(({ theme }) => ({
     flexDirection: "column-reverse",
     paddingInline: theme.spacing(2),
     "& .MuiButton-root": { width: "100%" },
-  },
-}));
-
-export const SwitchWrapper = styled(Box)(({ theme }) => ({
-  border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius,
-  padding: theme.spacing(1.5, 2),
-  backgroundColor: alpha(theme.palette.background.default, 0.5),
-  minWidth: 0,
-}));
-
-export const RoutingLabel = styled(FormControlLabel)(({ theme }) => ({
-  margin: 0,
-  width: "100%",
-  minWidth: 0,
-  justifyContent: "space-between",
-  gap: theme.spacing(1),
-  "& .MuiFormControlLabel-label": {
-    fontWeight: 600,
-    minWidth: 0,
-  },
-  "& .MuiSwitch-root": { flexShrink: 0 },
-}));
-
-export const RoutingSwitch = styled(Switch)(({ theme }) => ({
-  "& .MuiSwitch-switchBase.Mui-checked": { color: theme.palette.success.main },
-  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-    backgroundColor: theme.palette.success.main,
   },
 }));

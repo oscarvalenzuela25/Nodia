@@ -8,16 +8,9 @@ import {
   getAiProvidersHealth,
   getAiProviderEvents,
   getSelectableModels,
-  getEnabledWebAiProviders,
   getSupportedAiProviders,
   getAiProviderCatalog,
   syncAiProviderModels,
-  startGeminiLogin,
-  disconnectGeminiWeb,
-  getGeminiLoginStatus,
-  cancelGeminiLogin,
-  getGeminiLoginFrame,
-  sendGeminiLoginInput,
   startGeminiAgenticLogin,
   getCurrentGeminiAgenticLogin,
   getGeminiAgenticLoginStatus,
@@ -55,46 +48,6 @@ export const useAiProviderCatalog = () => {
     staleTime: 1000 * 60 * 10, // 10 minutes
   });
 };
-
-export const useStartGeminiLogin = () => useMutation({ mutationFn: startGeminiLogin, retry: false, gcTime: 0 });
-
-export const useDisconnectGeminiWeb = () => {
-  const client = useQueryClient();
-  return useMutation({
-    mutationFn: disconnectGeminiWeb, retry: false, gcTime: 0,
-    onSuccess: async () => {
-      await client.cancelQueries({ queryKey: ["ai-providers-health"] });
-      await Promise.all([
-        client.invalidateQueries({ queryKey: ["ai-providers-health"] }),
-        client.invalidateQueries({ queryKey: ["ai-selectable-models"] }),
-        client.invalidateQueries({ queryKey: ["ai-enabled-web-providers"] }),
-      ]);
-    },
-  });
-};
-
-export const useGeminiLoginFrame = (id: string, paused: boolean) => useQuery({
-  queryKey: ["gemini-login-frame", id], queryFn: ({ signal }) => getGeminiLoginFrame(id, signal),
-  retry: false, gcTime: 0, staleTime: 0, refetchOnWindowFocus: false,
-  meta: { errorNotification: "handled-locally" },
-  // Screen reads can recover automatically; inputs are never replayed.
-  refetchInterval: (query) => query.state.error ? 10_000 : paused ? false : 2000,
-});
-
-export const useSendGeminiLoginInput = () => useMutation({ mutationFn: sendGeminiLoginInput, retry: false, gcTime: 0 });
-
-export const useGeminiLoginStatus = (jobId: string | null, enabled: boolean) =>
-  useQuery({
-    queryKey: ["gemini-login", jobId],
-    queryFn: () => getGeminiLoginStatus(jobId!),
-    enabled: enabled && Boolean(jobId),
-    retry: false, gcTime: 0, refetchOnWindowFocus: false,
-    refetchInterval: (query) =>
-      query.state.error ? false : query.state.data?.state === "running" || !query.state.data ? 2000 : false,
-  });
-
-export const useCancelGeminiLogin = () =>
-  useMutation({ mutationFn: cancelGeminiLogin, retry: false, gcTime: 0 });
 
 export const useSyncAiProviderModels = () => {
   const queryClient = useQueryClient();
@@ -193,13 +146,6 @@ export const useUpdateAiProvider = () => {
   });
 };
 
-export const useEnabledWebAiProviders = () => {
-  return useQuery({
-    queryKey: ["ai-enabled-web-providers"],
-    queryFn: () => getEnabledWebAiProviders(),
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-};
 
 export const useGeminiEngines = (options?: { enabled?: boolean }) => {
   return useQuery({

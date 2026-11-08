@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "task": "api_conversational_ocr_selective_server_candidate",
+  "status": "passed",
+  "baseline": {
+    "task": "api_media_ocr_candidate_baseline",
+    "status": "passed",
+    "source_artifact_sha256": "612e52b92de416f107af33503765d0bce15fee52717b18f7425ea4b67bccd1b9",
+    "base_release_manifest_sha256": "ceb774256fd8c2030ece02c37fa872d819c2963c8f00fc71de7933de92b04451",
+    "runtime_files_verified": 4140,
+    "candidate_source": "/opt/nodia/operations/api-media-ocr-r01/candidate-r01/nodia-server",
+    "knowledge_release_id": "184d9c344b3b0d48362143d700e961fa596fd307cd5251609eb00ab2dfbf30e3",
+    "stage_r01_modified": false,
+    "production_modified": false,
+    "overlays_applied": false
+  },
+  "build": {
+    "task": "api_media_ocr_selective_fullbuild",
+    "base_release_manifest_sha256": "ceb774256fd8c2030ece02c37fa872d819c2963c8f00fc71de7933de92b04451",
+    "checks": [
+      {
+        "name": "overlay_hashes",
+        "passed": true
+      },
+      {
+        "name": "all_other_source_inputs_preserved",
+        "passed": true
+      },
+      {
+        "name": "prepare_overlay17ca_preserved",
+        "passed": true
+      },
+      {
+        "name": "buildonly_excluded_typescript_program",
+        "passed": true
+      },
+      {
+        "name": "fullbuild",
+        "passed": true
+      },
+      {
+        "name": "buildonly_not_emitted",
+        "passed": true
+      },
+      {
+        "name": "published151",
+        "passed": true
+      }
+    ],
+    "production_modified": false,
+    "registry_update": {
+      "capability_id": "nodia_invoices_ocr",
+      "previous": {
+        "input_schema": {
+          "path": "docs/evidence/ai-two-modes-invoice-ocr-r01.schema.json",
+          "definition": "InvoiceOcrInput",
+          "sha256": "a20566e98b2ca1e13c1dd112af2b562523e8d3c1c638023f9fd602ac354de7d9"
+        },
+        "output_schema": {
+          "path": "docs/evidence/ai-two-modes-invoice-ocr-r01.schema.json",
+          "definition": "InvoiceOcrResult",
+          "sha256": "a20566e98b2ca1e13c1dd112af2b562523e8d3c1c638023f9fd602ac354de7d9"
+        }
+      },
+      "new_path": "docs/evidence/api-ocr-conversation-r01.schema.json",
+      "new_sha256": "2230729e212f11d2a64e2241b9b6d8b31007ca2598bfa22edf2e5405cab78f95",
+      "binding_contract_references_updated": 1,
+      "prepare_admission_sha256": "17ca29c958abb14722482cc4b413e18e0eb2bccb9f4dc44f7ee61b1a27ca7ae4"
+    },
+    "build_exit": 0,
+    "knowledge": {
+      "release_id": "ad41d3b87e27dde7d4c2db2283d5a27ed1be50ddd5aae44cc6dece160aafd5e5",
+      "documents": 43,
+      "fragments": 45,
+      "capabilities": 151
+    },
+    "status": "passed",
+    "buildonly_removed": true
+  },
+  "gates": [
+    {
+      "check": "nest-build-common-schema",
+      "result": "passed"
+    },
+    {
+      "check": "nest-build-invoice-ocr-schema",
+      "result": "passed"
+    },
+    {
+      "case": "assets",
+      "exit": 0,
+      "stderr_bytes": 0,
+      "private_stderr_emitted": false
+    },
+    {
+      "task": "selective_candidate_DI",
+      "status": "passed",
+      "checks": [
+        "ApiNodiaAiAdapterUseCase",
+        "ApiNodiaAiRuntimeService",
+        "ApiNodiaAiCredentialsService",
+        "ApiNodiaAiAcceptanceService",
+        "ApiProviderService"
+      ],
+      "apiProviderInstances": 1,
+      "providerRequests": 0,
+      "nativeSupervisorsMocked": true,
+      "databaseCalls": 0
+    },
+    {
+      "case": "di",
+      "exit": 0,
+      "stderr_bytes": 0,
+      "private_stderr_emitted": false
+    },
+    {
+      "success": true,
+      "checks": [
+        "fresh installation includes additive API migration once",
+        "two executors race: only one durable attempt can start",
+        "a second module instance cannot reconcile a live physical executor",
+        "concurrent exchanges spend exactly the persisted HTTP dispatch budget",
+        "initial arm is not charged twice and failed over-budget exchange is rolled back",
+        "completed HTTP proof separates local closure from native process claims",
+        "qualification cannot replace original content or a returned nonce after completion",
+        "common checkpoint accepts API proof and ACK is idempotent",
+        "forged closure cannot acknowledge a proof",
+        "rollback refuses to discard recovery metadata after API dispatch",
+        "armed-before-start crash produces a closed unknown tombstone without dispatch/replay",
+        "a stale worker cannot dispatch after reconciliation has fenced its job",
+        "common administrative reconciliation closes the unknown run and releases its SQL slot",
+        "failed terminal SQL rolls back its physical row without inventing a durable proof",
+        "only the same executor with attested completed local work can recover failed terminal persistence",
+        "positive local closure recovery retains payload binding and never replays a request",
+        "completed response with failed SQL persistence settles through common recovery without another generation",
+        "HTTP cannot start from claimed phase before durable arming",
+        "no provider or HTTP requests were attempted during SQL verification"
+      ],
+      "checks_passed": 19,
+      "api_dispatch_rows_observed": 1,
+      "provider_http_requests": 0,
+      "real_credentials": false,
+      "postgres": "16 disposable",
+      "operational_database_accessed": false,
+      "cleanup": "owned container and its volumes removed in finally"
+    },
+    {
+      "case": "runtime",
+      "exit": 0,
+      "stderr_bytes": 0,
+      "private_stderr_emitted": false
+    },
+    {
+      "success": true,
+      "task": "api_chat_common_gateway_sql",
+      "checks": [
+        "compiled production publication supplies actual read/preparation contracts without fixture registration overrides",
+        "real API adapter and durable runtime consume exactly three shared POST dispatches across discovery and tool continuation",
+        "real ToolGateway persists a preparation receipt without modifying accepted preference state",
+        "API continuation receives actual gateway output rather than mock domain data",
+        "prepared command is bound to the exact synthetic category and owner scope",
+        "anonymous foreign owner wrong hash and fabricated token cannot authorize any execution",
+        "human HTTP confirmation consumes the exact challenge idempotently and never sends another provider request",
+        "confirmed native executor writes one exact SQL preference and committed receipt remains idempotent on replay",
+        "a separate realistic single-function API turn reads the actual committed SQL effect within the same three-POST budget",
+        "API function callback cannot read another owners proposal and leaves no public receipt",
+        "module revocation between HTTP dispatch and callback is revalidated before preparing a new change",
+        "revoked invocation grant cannot borrow a previously frozen tool or create a receipt",
+        "provider-supplied confirmation tool is absent from the catalog and rejected before any gateway or consent action",
+        "missing NodiaAI module rejects admission without contacting a provider",
+        "all API attempts close and ACK through real reconciliation without replay and final SQL is quiet",
+        "no real provider destination or credential was used"
+      ],
+      "checks_passed": 16,
+      "cases": [
+        {
+          "actor": "1",
+          "success_expected": true,
+          "terminal_run_state": "completed",
+          "error_code": null,
+          "synthetic_provider_posts": 3,
+          "provider_dispatches_used": 3,
+          "receipt_tools": [
+            "nodia_capabilities_select",
+            "nodia_preferences_prepare"
+          ],
+          "phases": [
+            "discovery",
+            "execution",
+            "execution"
+          ]
+        },
+        {
+          "actor": "1",
+          "success_expected": true,
+          "terminal_run_state": "completed",
+          "error_code": null,
+          "synthetic_provider_posts": 3,
+          "provider_dispatches_used": 3,
+          "receipt_tools": [
+            "nodia_capabilities_select",
+            "nodia_preferences_list"
+          ],
+          "phases": [
+            "discovery",
+            "execution",
+            "execution"
+          ]
+        },
+        {
+          "actor": "2",
+          "success_expected": false,
+          "terminal_run_state": "unknown",
+          "error_code": "nodia_ai:outcome_unknown",
+          "synthetic_provider_posts": 2,
+          "provider_dispatches_used": 2,
+          "receipt_tools": [
+            "nodia_capabilities_select"
+          ],
+          "phases": [
+            "discovery",
+            "execution"
+          ]
+        },
+        {
+          "actor": "1",
+          "success_expected": false,
+          "terminal_run_state": "unknown",
+          "error_code": "nodia_ai:outcome_unknown",
+          "synthetic_provider_posts": 2,
+          "provider_dispatches_used": 2,
+          "receipt_tools": [
+            "nodia_capabilities_select"
+          ],
+          "phases": [
+            "discovery",
+            "execution"
+          ]
+        },
+        {
+          "actor": "1",
+          "success_expected": false,
+          "terminal_run_state": "unknown",
+          "error_code": "nodia_ai:outcome_unknown",
+          "synthetic_provider_posts": 2,
+          "provider_dispatches_used": 2,
+          "receipt_tools": [
+            "nodia_capabilities_select"
+          ],
+          "phases": [
+            "discovery",
+            "execution"
+          ]
+        },
+        {
+          "actor": "1",
+          "success_expected": false,
+          "terminal_run_state": "unknown",
+          "error_code": "nodia_ai:outcome_unknown",
+          "synthetic_provider_posts": 2,
+          "provider_dispatches_used": 2,
+          "receipt_tools": [
+            "nodia_capabilities_select"
+          ],
+          "phases": [
+            "discovery",
+            "execution"
+          ]
+        }
+      ],
+      "synthetic_provider_http_posts": 14,
+      "real_provider_http_requests": 0,
+      "forbidden_network_requests": 0,
+      "real_credentials": false,
+      "synthetic_http_actor": true,
+      "physical_user_click": false,
+      "production_database_accessed": false,
+      "production_gateway_and_api_adapter": true,
+      "durable_api_runtime": true,
+      "production_publication": true,
+      "preference_effects": 1,
+      "sql_quiet": {
+        "active_jobs": 0,
+        "open_attempts": 0,
+        "busy_slots": 0,
+        "api_pending": 0
+      },
+      "postgres": "16 disposable",
+      "cleanup": "owned container and volumes removed in finally"
+    },
+    {
+      "case": "gateway",
+      "exit": 0,
+      "stderr_bytes": 0,
+      "private_stderr_emitted": false
+    },
+    {
+      "dist_unchanged": true,
+      "dist_files": 3064
+    }
+  ],
+  "preservation": {
+    "frozen8_preserved": true,
+    "codex_overlay_d66": true,
+    "prepare_overlay17ca": true,
+    "build_only5_absent": true,
+    "production_modified": false
+  },
+  "runtime_artifact": {
+    "runtime_manifest_sha256": "f1bd47cb3fb56beec240972edc55feb2825c2e48f24672dce9c10d100ae38af6",
+    "artifact": "/opt/nodia/operations/api-media-ocr-r01/artifacts/nodia-server-api-conversational-ocr-r02.runtime.tar.gz",
+    "sha256": "a433d96c2ca513c5d3a161ce62e09c42d0783b86b4381009d6556adff346fa4b",
+    "bytes": 2891768,
+    "files": 4140,
+    "knowledge_release_id": "ad41d3b87e27dde7d4c2db2283d5a27ed1be50ddd5aae44cc6dece160aafd5e5",
+    "release_installed": false,
+    "production_modified": false
+  },
+  "runtime_manifest_verification": {
+    "manifest_complete": true,
+    "exact_runtime_path_set_preserved": true,
+    "runtime_files": 4140,
+    "changed": [
+      "config/nodia-ai-knowledge.registry.json",
+      "dist/nodia-ai-adapter/api-nodia-ai-chat-transport.js",
+      "dist/nodia-ai-adapter/api-nodia-ai-chat-transport.js.map",
+      "dist/nodia-ai-context/config/knowledge-pin.json",
+      "dist/nodia-ai-invoice-ocr/contracts/invoice-ocr.json",
+      "dist/nodia-ai/knowledge/manifest.json",
+      "src/nodia-ai-adapter/api-nodia-ai-chat-transport.ts",
+      "src/nodia-ai-invoice-ocr/contracts/invoice-ocr.json"
+    ],
+    "runtime_manifest_sha256": "f1bd47cb3fb56beec240972edc55feb2825c2e48f24672dce9c10d100ae38af6"
+  },
+  "source_artifact": {
+    "task": "api_ocr_source_artifact",
+    "status": "passed",
+    "artifact": "/opt/nodia/operations/api-media-ocr-r01/artifacts/nodia-server-api-conversational-ocr-r01.source.tar.gz",
+    "sha256": "909ed3d94f95225cf87da83ed91bf28a1645542b6dc28f2dfdea84af4f91ddfd",
+    "bytes": 7576746,
+    "source_rebuild_manifest_sha256": "d90754b16518b4e5377d969dc5a9905864da98220c75f0a78e18784bc878f543",
+    "source_inputs_verified": 2505,
+    "expected_knowledge_release_id": "ad41d3b87e27dde7d4c2db2283d5a27ed1be50ddd5aae44cc6dece160aafd5e5",
+    "operator_fixture_inputs": {
+      "nodia-server/test/nodia-ai-api-ocr-conversation-real-canary.mjs": "9bedd67eb184470fd85a29e05c2d67d86accbad29bc5187b41d3558f8e6a4f7e",
+      "nodia-server/test/nodia-ai.integration.fixture.mjs": "f20c592389be35ade29f2abec15730b93d2eeef685b9e5a0c14e2cde483316d3",
+      "nodia-server/public-fixtures/api-canary-input.pdf": "9f9a32bd46ebfcb1063e7d1bf4e067f91ff5e5c5d82e1536c2d9725f84917e59"
+    },
+    "production_modified": false
+  },
+  "independent_rebuild": {
+    "task": "api_ocr_source_rebuild",
+    "status": "passed",
+    "exit": 0,
+    "source_artifact_sha256": "909ed3d94f95225cf87da83ed91bf28a1645542b6dc28f2dfdea84af4f91ddfd",
+    "release_id": "ad41d3b87e27dde7d4c2db2283d5a27ed1be50ddd5aae44cc6dece160aafd5e5",
+    "capabilities": 151,
+    "rebuild_root": "/opt/nodia/operations/api-media-ocr-r01/rebuild-verification-r01",
+    "shared_candidate_modified": false,
+    "production_modified": false,
+    "provider_requests": 0,
+    "rebuild_log_sha256": "037d11b1b4aaa620db06c35509f14c2e566068c8897748622e8f891f5d11f80b"
+  },
+  "installed_new_release": {
+    "task": "api_ocr_candidate_install",
+    "status": "passed",
+    "release": "/opt/nodia/releases/nodia-server-api-conversational-ocr-r02",
+    "manifest_sha256": "f1bd47cb3fb56beec240972edc55feb2825c2e48f24672dce9c10d100ae38af6",
+    "knowledge_release_id": "ad41d3b87e27dde7d4c2db2283d5a27ed1be50ddd5aae44cc6dece160aafd5e5",
+    "files_verified": 4140,
+    "dependencies_symlink": "/opt/nodia/nodia-server/node_modules",
+    "files_mode": "0644",
+    "directories_mode": "0755",
+    "nodia_read_access": true,
+    "root_owned_release": true,
+    "candidate_source_modified": false,
+    "active_services_changed": false,
+    "production_database_accessed": false,
+    "provider_requests": 0
+  },
+  "operational_adoption": false,
+  "production_database_accessed": false,
+  "provider_requests_by_this_agent": 0,
+  "scope_limits": [
+    "Provider HTTP in gateway SQL is synthetic; successful real OCR/media acceptance belongs to separate Root receipts.",
+    "New release creation is reversible staging only; this receipt does not claim service adoption.",
+    "Shared candidate was frozen before Root real OCR; independent source rebuild ran in another directory.",
+    "Runtime excludes tests, documentation, build-only snapshots and credentials.",
+    "Five historical source references are retained only in reproducible source artifact and excluded from TypeScript program/emission."
+  ],
+  "local_artifacts": {
+    "runtime": {
+      "path": "ops/lab/artifacts/api-conversational-ocr-r01-runtime.tar.gz",
+      "sha256": "a433d96c2ca513c5d3a161ce62e09c42d0783b86b4381009d6556adff346fa4b",
+      "bytes": 2891768
+    },
+    "source": {
+      "path": "ops/lab/artifacts/api-conversational-ocr-r01-source.tar.gz",
+      "sha256": "909ed3d94f95225cf87da83ed91bf28a1645542b6dc28f2dfdea84af4f91ddfd",
+      "bytes": 7576746
+    },
+    "manifest": {
+      "path": "ops/lab/artifacts/api-conversational-ocr-r01-manifest.json",
+      "sha256": "f1bd47cb3fb56beec240972edc55feb2825c2e48f24672dce9c10d100ae38af6",
+      "bytes": 550625
+    }
+  }
+}

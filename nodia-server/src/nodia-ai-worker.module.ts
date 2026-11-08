@@ -13,6 +13,7 @@ import { RunNodiaAiWorkerUseCase } from './nodia-ai-runtime/use-case/run-nodia-a
 import { NodiaAiWorker } from './nodia-ai-runtime/nodia-ai.worker.js';
 import { NodiaAiExecutionModule } from './nodia-ai-execution/nodia-ai-execution.module.js';
 import { NodiaAiOperationsModule } from './nodia-ai-operations/nodia-ai-operations.module.js';
+import { TeacherModule } from './teacher/teacher.module.js';
 
 /** Standalone process: importing the HTTP app never starts these consumers. */
 @Module({
@@ -25,6 +26,7 @@ import { NodiaAiOperationsModule } from './nodia-ai-operations/nodia-ai-operatio
     NodiaAiExecutionModule,
     NodiaAiSecureFlowModule,
     NodiaAiOperationsModule,
+    TeacherModule,
   ],
   providers: [
     RunNodiaAiStageUseCase,

@@ -1,0 +1,194 @@
+{
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://nodia.local/schemas/write-sales/1",
+    "$defs": {
+      "SalesCreatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "business_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "product_id": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$"
+                },
+                "quantity": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                }
+              },
+              "required": [
+                "product_id",
+                "quantity"
+              ]
+            }
+          },
+          "payment_method": {
+            "enum": [
+              "cash",
+              "bank_transfer",
+              "debit_card",
+              "credit_card",
+              "other"
+            ]
+          },
+          "payment_method_description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        },
+        "required": []
+      },
+      "SalesUpdatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "business_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "product_id": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$"
+                },
+                "quantity": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                }
+              },
+              "required": [
+                "product_id",
+                "quantity"
+              ]
+            }
+          },
+          "payment_method": {
+            "enum": [
+              "cash",
+              "bank_transfer",
+              "debit_card",
+              "credit_card",
+              "other"
+            ]
+          },
+          "payment_method_description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        },
+        "required": []
+      },
+      "SalesCompletePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "business_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": []
+      },
+      "SalesCancelPartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "business_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cancellation_reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": []
+      },
+      "SalesDiscardPartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "business_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": []
+      }
+    }
+  },
+  "tools": [
+    {
+      "tool_name": "nodia_sales_prepare_create",
+      "input_definition": "SalesCreatePartial",
+      "resource_key": "sales",
+      "description": "Prepare create of one authorized business sale for exact human review. Never confirms, executes or asserts payment. Cash is the visible creation default; prices and identities come from Server."
+    },
+    {
+      "tool_name": "nodia_sales_prepare_update",
+      "input_definition": "SalesUpdatePartial",
+      "resource_key": "sales",
+      "description": "Prepare update of one authorized business sale for exact human review. Never confirms, executes or asserts payment. Cash is the visible creation default; prices and identities come from Server."
+    },
+    {
+      "tool_name": "nodia_sales_prepare_complete",
+      "input_definition": "SalesCompletePartial",
+      "resource_key": "sales",
+      "description": "Prepare complete of one authorized business sale for exact human review. Never confirms, executes or asserts payment. Cash is the visible creation default; prices and identities come from Server."
+    },
+    {
+      "tool_name": "nodia_sales_prepare_cancel",
+      "input_definition": "SalesCancelPartial",
+      "resource_key": "sales",
+      "description": "Prepare cancel of one authorized business sale for exact human review. Never confirms, executes or asserts payment. Cash is the visible creation default; prices and identities come from Server."
+    },
+    {
+      "tool_name": "nodia_sales_prepare_discard",
+      "input_definition": "SalesDiscardPartial",
+      "resource_key": "sales",
+      "description": "Prepare discard of one authorized business sale for exact human review. Never confirms, executes or asserts payment. Cash is the visible creation default; prices and identities come from Server."
+    }
+  ]
+}

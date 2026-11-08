@@ -32,7 +32,7 @@ function openRoute() {
     [
       financeRoute,
       { path: "/login", element: <p>Sign in</p> },
-      { path: "/404", element: <p>Access denied</p> },
+      { path: "/", element: <p>Home page</p> },
     ],
     { initialEntries: [PERSONAL_FINANCE_ROUTE] },
   );
@@ -115,7 +115,7 @@ describe("personal finance route", () => {
       openRoute();
       expect(
         await screen.findByText(
-          hasModule ? "Private finance page" : "Access denied",
+          hasModule ? "Private finance page" : "Home page",
         ),
       ).toBeInTheDocument();
       if (hasModule) await screen.findByText("Private finance page");

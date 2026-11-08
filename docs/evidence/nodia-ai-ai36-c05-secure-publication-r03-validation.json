@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "stage": "AI36-C05-C02-secure-publication-r03",
+  "status": "source_publication_validated_offline_not_deployed_or_provider_accepted",
+  "authorization": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-authorization.md",
+    "sha256": "24d9350c359eaf4b84bf0d793d999b76e5b728c25f6c5110987d946d46e9e0ec"
+  },
+  "baseline": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-baseline.json",
+    "sha256": "a33331d57cdc2b0eff9862a176662c1f8953008d24342ce4cdeb85da43f89423"
+  },
+  "previous_publication": [
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-baseline.json",
+      "sha256": "f72f3cbd410d7b8c7cf1d57c4c823840afec7daeeac5398db26db2a9e0ddc957"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
+      "sha256": "b0df8c4b8359335ad9e4c2387c42892d408070555ca1ea124ba13fa5794f26c5"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai36-c05-write-publication-r02.cjs",
+      "sha256": "339a0d8f7aea00f3e51c118fadfa1768625ba385ca7d77ae6819b45407a378bb"
+    }
+  ],
+  "counts": {
+    "original_published": 74,
+    "prior_C01_additions": 72,
+    "new_C02": 4,
+    "published": 150,
+    "fragments": 41,
+    "remaining_unpublished": 1
+  },
+  "preserved": {
+    "original74_exact": true,
+    "prior146_exact": true,
+    "prior39_bindings_exact": true,
+    "prior_secure_body_exact": true,
+    "R02_report_historical_146_not_reexecuted_or_rewritten": true
+  },
+  "new_capabilities": [
+    {
+      "capability_id": "nodia_secure_flows_prepare_api_key_create",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_secure_flow",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
+          "sha256": "a34093fde2c1e03fe48a1c637bb7806afe53690f9535b5339228d94d1051bffa"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
+          "sha256": "b2d8c028b2ec447d884fb2fa11ced94d7a45a598c600f3d0d2bcb76d1145aa4e"
+        }
+      ],
+      "input_schema": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-secure.schema.json",
+        "definition": "McpWriteInput_ApiKeyCreatePartial",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136"
+      },
+      "output_schema": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-secure.schema.json",
+        "definition": "McpWritePreparationResult",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai36-c02-validation.json",
+        "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-validation.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_secure_flows_prepare_api_key_update",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_secure_flow",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
+          "sha256": "a34093fde2c1e03fe48a1c637bb7806afe53690f9535b5339228d94d1051bffa"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
+          "sha256": "b2d8c028b2ec447d884fb2fa11ced94d7a45a598c600f3d0d2bcb76d1145aa4e"
+        }
+      ],
+      "input_schema": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-secure.schema.json",
+        "definition": "McpWriteInput_ApiKeyUpdatePartial",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136"
+      },
+      "output_schema": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-secure.schema.json",
+        "definition": "McpWritePreparationResult",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai36-c02-validation.json",
+        "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-validation.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_secure_flows_prepare_connection_login",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_secure_flow",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
+          "sha256": "a34093fde2c1e03fe48a1c637bb7806afe53690f9535b5339228d94d1051bffa"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
+          "sha256": "b2d8c028b2ec447d884fb2fa11ced94d7a45a598c600f3d0d2bcb76d1145aa4e"
+        }
+      ],
+      "input_schema": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-secure.schema.json",
+        "definition": "McpWriteInput_ConnectionLoginPartial",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136"
+      },
+      "output_schema": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-secure.schema.json",
+        "definition": "McpWritePreparationResult",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai36-c02-validation.json",
+        "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-validation.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_secure_flows_prepare_nodia_logout",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_secure_flow",
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
+          "sha256": "a34093fde2c1e03fe48a1c637bb7806afe53690f9535b5339228d94d1051bffa"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
+          "sha256": "b2d8c028b2ec447d884fb2fa11ced94d7a45a598c600f3d0d2bcb76d1145aa4e"
+        }
+      ],
+      "input_schema": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-secure.schema.json",
+        "definition": "McpWriteInput_NodiaLogoutPartial",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136"
+      },
+      "output_schema": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-secure.schema.json",
+        "definition": "McpWritePreparationResult",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai36-c02-validation.json",
+        "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-validation.json"
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "document_id": "general-settings.secure-ai-interaction",
+      "fragment_id": "ai36-c05-secure-ai",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Preparación segura IA publicada en AI36-C05"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_secure_flows_prepare_api_key_create",
+          "revision": 1,
+          "input_schema_sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136",
+          "output_schema_sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136"
+        },
+        {
+          "capability_id": "nodia_secure_flows_prepare_api_key_update",
+          "revision": 1,
+          "input_schema_sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136",
+          "output_schema_sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136"
+        },
+        {
+          "capability_id": "nodia_secure_flows_prepare_connection_login",
+          "revision": 1,
+          "input_schema_sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136",
+          "output_schema_sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136"
+        }
+      ],
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ]
+    },
+    {
+      "document_id": "general-settings.secure-ai-interaction",
+      "fragment_id": "ai36-c05-own-logout",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Preparación de logout propio publicada en AI36-C05"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_secure_flows_prepare_nodia_logout",
+          "revision": 1,
+          "input_schema_sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136",
+          "output_schema_sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ]
+    }
+  ],
+  "generated_schema": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-secure.schema.json",
+    "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136"
+  },
+  "individual_catalog_measurements": [
+    {
+      "capability_id": "nodia_secure_flows_prepare_api_key_create",
+      "descriptors": 8,
+      "catalog_utf8_bytes": 12931
+    },
+    {
+      "capability_id": "nodia_secure_flows_prepare_api_key_update",
+      "descriptors": 8,
+      "catalog_utf8_bytes": 12998
+    },
+    {
+      "capability_id": "nodia_secure_flows_prepare_connection_login",
+      "descriptors": 8,
+      "catalog_utf8_bytes": 12813
+    },
+    {
+      "capability_id": "nodia_secure_flows_prepare_nodia_logout",
+      "descriptors": 8,
+      "catalog_utf8_bytes": 12179
+    }
+  ],
+  "max_individual_catalog": {
+    "capability_id": "nodia_secure_flows_prepare_api_key_update",
+    "descriptors": 8,
+    "catalog_utf8_bytes": 12998
+  },
+  "scope": {
+    "credential_input_and_login_stay_human": true,
+    "own_logout_has_no_admin_route_or_action": true,
+    "analyzer_unpublished": true,
+    "no_general_documentary_approval": true
+  },
+  "limits": {
+    "selected_capabilities": 67,
+    "technical": 7,
+    "per_generation_tools": 74,
+    "catalog_utf8_bytes": 131072,
+    "json_per_collection": 128,
+    "context_utf8_bytes": 262144,
+    "any_67_fit_not_assumed": true
+  },
+  "compiled": {
+    "release_id": "6763cef6423d2cc511844351a384358e0e5141e4f597d19a291a5cf1feeb3c73",
+    "counts": {
+      "sources": 61,
+      "excluded": 22
+    }
+  },
+  "factory_sources": [
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/validate-nodia-ai-runtime-policy.use-case.ts",
+      "sha256": "225990cde9f5fca9a134a2e0e2a4bbcb7876cb79b3393290a883805c8e3819a0"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-runtime/use-case/validate-nodia-ai-runtime-policy.use-case.js",
+      "sha256": "e9e80177b149f389b284b0fa27c37b7a42ba95ef6355f9dd1d549133900490ac"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
+      "sha256": "b2d8c028b2ec447d884fb2fa11ced94d7a45a598c600f3d0d2bcb76d1145aa4e"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.js",
+      "sha256": "10ef94c636bd3759e95e02e00c50d62774811e3918c2baaf98f8e4c48ba8b19c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-proposal/use-case/canonicalize-nodia-ai-proposal.use-case.ts",
+      "sha256": "026bbfc8104acbe527243e0e2071190f7ef2d382cc3f59b76f6df312ce60d95d"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-proposal/use-case/canonicalize-nodia-ai-proposal.use-case.js",
+      "sha256": "536874ec622e2effc12ab0a19e0fac6fdd3604deab6206f57e8bca5a7bf36547"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.ts",
+      "sha256": "01bff87bd1cf4c72191b214988adf9963f861defc498d39be8c94de9f45cfd15"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.js",
+      "sha256": "3c8802fff0b52ed46976eafdf3b39cf5de68e44f7b5bc772ab2088f64b929564"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
+      "sha256": "a34093fde2c1e03fe48a1c637bb7806afe53690f9535b5339228d94d1051bffa"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.js",
+      "sha256": "3342a9ec54c045369a458dae04eb0673b9f7b895d077b4764da663bff384ddf3"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-write-tools/types/write-tool-contract.types.ts",
+      "sha256": "727745bad4d35deb8afab944a8e2dc3308c7a0c2f01357904e520aedd6c2ad6c"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-write-tools/types/write-tool-contract.types.js",
+      "sha256": "2fede085e86248eb1c414c4c12f3a7ea009ae5c497431aa509d9cf82758514af"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-tools/use-case/nodia-ai-tool-registry.use-case.ts",
+      "sha256": "14baea168c6a3b5586531c5532b0a841a0c20a87e98bb5c6bcb6276aed118cc2"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-tools/use-case/nodia-ai-tool-registry.use-case.js",
+      "sha256": "871d3c5a27866a0e5659078543af36e542a35859d9b43eea0d9c01c9ddd50776"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-tools/use-case/nodia-ai-report-tools.use-case.ts",
+      "sha256": "82abe0df990cc80f0eaa9687abd2aed31e752d719265f4a2c25676a8e7f3d7bf"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-tools/use-case/nodia-ai-report-tools.use-case.js",
+      "sha256": "ffed12c7e167e142206fbde751a809547d20e00c44c85d2dcb20bd5f79e1a1db"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-tools/use-case/discover-nodia-ai-tools.use-case.ts",
+      "sha256": "2f70c21b22365b459653fac6eef55edd319d0f6e392f846e0df593a2060e4f5c"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-tools/use-case/discover-nodia-ai-tools.use-case.js",
+      "sha256": "1577639c6d8292043288aaae6848ee6a148956d1214444af7fff9bab21b491fe"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/execute-nodia-ai-knowledge-tool.use-case.ts",
+      "sha256": "d5c8ee6d4179e5afc7f3b1d16a09f937dc8c4afa253944b90a8515dcb05725f6"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-context/use-case/execute-nodia-ai-knowledge-tool.use-case.js",
+      "sha256": "c6e44775824d8c6fb58459afb4e421249f8c89fc43de46580ca3c77e356f12b7"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-adapter/types/nodia-ai-adapter.types.ts",
+      "sha256": "f4e0c73347e2fdea7e25bfe99488cf6bb44d1851d160cc64684d9f5e3efaf394"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-adapter/types/nodia-ai-adapter.types.js",
+      "sha256": "43d44b193022eec11917290779a06e5149bb9c3b223550a405443614703bc639"
+    }
+  ],
+  "AI_provider_calls": 0,
+  "SQL_calls": 0,
+  "domain_calls": 0,
+  "secure_native_executions": 0,
+  "limitations": [
+    "Source publication and historical SQL do not prove current human login, API-key flow, SDK behavior or provider inference.",
+    "Every selected set still requires exact schema/context budgeting before dispatch."
+  ]
+}

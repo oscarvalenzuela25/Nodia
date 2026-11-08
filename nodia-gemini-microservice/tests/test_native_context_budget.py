@@ -46,7 +46,7 @@ class NativeContextBudgetTests(unittest.TestCase):
                 self.assertEqual(caught.exception.code,'native_cli_agent_invalid')
 
     def test_exact_web_and_agentic_bytes_are_the_same_constructed_native_prompt(self):
-        for engine, schema in (("web", REPLY.json_schema()), ("agentic", Answer.model_json_schema())):
+        for engine, schema in (("agentic", Answer.model_json_schema()),):
             with self.subTest(engine=engine):
                 source = request()
                 measured = measure_context(engine, source, schema)
@@ -94,10 +94,10 @@ class NativeContextBudgetTests(unittest.TestCase):
 
     def test_metadata_reports_overflow_but_the_actual_boundary_rejects_it(self):
         source = request().model_copy(update={"canonical_prompt": "x" * MAX_NATIVE_CONTEXT_BYTES})
-        measured = measure_context("web", source, REPLY.json_schema())
+        measured = measure_context("agentic", source, REPLY.json_schema())
         self.assertGreater(measured.total_utf8_bytes, measured.max_utf8_bytes)
         with self.assertRaises(ServiceError) as caught:
-            require_context_budget(build_chat_prompt("web", source.canonical_prompt, REPLY.json_schema(), False))
+            require_context_budget(build_chat_prompt("agentic", source.canonical_prompt, REPLY.json_schema(), False))
         self.assertEqual(caught.exception.code, "context_limit")
 
     def test_agentic_attachment_bound_covers_unicode_escaped_absolute_paths_without_reading_files(self):
@@ -111,12 +111,6 @@ class NativeContextBudgetTests(unittest.TestCase):
         with self.assertRaises(ServiceError):
             append_agentic_attachment_prompt(base, ["/" + "a" * 1024])
 
-    def test_web_attachment_measurement_is_exact_because_paths_are_not_put_in_its_prompt(self):
-        source = request(attachments=[{"kind": "image", "media_type": "image/png"}])
-        measured = measure_context("web", source, REPLY.json_schema())
-        self.assertEqual(measured.measurement_kind, "exact")
-        self.assertEqual(measured.total_utf8_bytes,
-            len(build_chat_prompt("web", source.canonical_prompt, REPLY.json_schema(), True).encode("utf-8")))
 
     def test_mcp_attachment_path_bound_counts_catalog_and_full_escaped_path(self):
         source = request(tools=[tool()], attachments=[{"kind": "pdf"}])
@@ -140,9 +134,9 @@ class NativeContextBudgetTests(unittest.TestCase):
             self.addCleanup(client.close)
             data = request().model_dump()
             for headers in ({}, {"X-Nodia-Service-Token": "invalid"}):
-                response = client.post("/nodia-ai/web/measure-context", json=data, headers=headers)
+                response = client.post("/nodia-ai/agentic/measure-context", json=data, headers=headers)
                 self.assertEqual(response.status_code, 401)
-            response = client.post("/nodia-ai/web/measure-context", json=data,
+            response = client.post("/nodia-ai/agentic/measure-context", json=data,
                 headers={"X-Nodia-Service-Token": "ab" * 32})
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["measurement_kind"], "exact")
@@ -161,7 +155,7 @@ class NativeContextBudgetTests(unittest.TestCase):
             response = client.post("/nodia-ai/agentic/measure-context", json=data, headers=headers)
             self.assertEqual(response.status_code, 200)
             self.assertGreater(response.json()["total_utf8_bytes"], response.json()["max_utf8_bytes"])
-            response = client.post("/nodia-ai/web/measure-context", content=b"x" * (2 * 1024 * 1024 + 1),
+            response = client.post("/nodia-ai/agentic/measure-context", content=b"x" * (2 * 1024 * 1024 + 1),
                 headers={**headers, "Content-Type": "application/json"})
             self.assertEqual(response.status_code, 413)
             self.assertEqual(response.json()["code"], "body_too_large")
@@ -177,7 +171,7 @@ class NativeContextPreDispatchTests(unittest.IsolatedAsyncioTestCase):
     async def test_chat_rejects_protocol_overflow_before_reading_any_profile_ledger_or_sdk_state(self):
         adapter = ChatAdapter.__new__(ChatAdapter)
         with self.assertRaises(ServiceError) as caught:
-            await adapter.execute("web", ChatRequest.model_validate(self.oversized()))
+            await adapter.execute("agentic", ChatRequest.model_validate(self.oversized()))
         self.assertEqual(caught.exception.code, "context_limit")
 
     async def test_mcp_rejects_catalog_overflow_before_claiming_any_profile_or_arming_the_ledger(self):

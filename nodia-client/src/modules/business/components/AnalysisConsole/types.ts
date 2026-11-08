@@ -11,6 +11,8 @@ export type Snapshot = z.infer<typeof snapshotSchema>;
 export type LocalStage = 'upload_started' | 'upload_completed' | 'history_loading' | 'history_unavailable' | 'rows_preparing' | 'draft_ready';
 export type ConsoleEvent = { key: string; occurredAt: string; stage: typeof serverStages[number] | LocalStage; severity: 'info' | 'warning' | 'error' };
 export type ConsolePhase = 'idle' | 'reserving' | 'analyzing' | 'preparing' | 'ready' | 'failed' | 'uncertain' | 'cancelled';
+export const isActiveAnalysisPhase = (phase: ConsolePhase): boolean =>
+  phase === 'reserving' || phase === 'analyzing' || phase === 'preparing';
 export type ConsoleView = { phase: ConsolePhase; startedAt: number | null; events: ConsoleEvent[]; identity: Snapshot['identity'];
   observationError: boolean; gap: boolean; uploadPercent: number | null; correlation: string | null; isFetching: boolean; resume: () => void };
 

@@ -1,0 +1,320 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "status": "web_retirement_implemented_migrated_deployed_and_verified_for_stated_scope",
+  "purpose": "Final evidence index and layer-specific application of provider plan91; pass means the stated regression/real scope, never every operation tested live.",
+  "modes": {
+    "selectable": [
+      "agentic",
+      "api_key"
+    ],
+    "labels": [
+      "Agentic",
+      "API key"
+    ],
+    "web": "retired_readonly_history_only",
+    "automatic_provider_or_mode_fallback": false
+  },
+  "projects": [
+    "nodia-client",
+    "nodia-server",
+    "nodia-gemini-microservice"
+  ],
+  "implementation_map": "docs/mvp/90-agentic-api-only-web-retirement.md",
+  "mandatory_future_provider_plan": "docs/mvp/91-ai-provider-onboarding-verification.md",
+  "mandatory_rule_locations": [
+    "AGENTS.md",
+    "nodia-client/AGENTS.md",
+    "nodia-server/AGENTS.md",
+    "nodia-gemini-microservice/AGENTS.md"
+  ],
+  "automated_suites": {
+    "client": {
+      "passed": 2003,
+      "failed": 0
+    },
+    "server": {
+      "passed": 5371,
+      "failed": 0
+    },
+    "native_linux": {
+      "passed": 498,
+      "failed": 0
+    },
+    "native_windows": {
+      "total": 498,
+      "skipped": 4,
+      "runner_success": true
+    }
+  },
+  "real_acceptance": {
+    "openai_api_ocr": "success",
+    "gemini_api_ocr": "success",
+    "openai_agentic_technical_mcp_knowledge": "success",
+    "gemini_agentic_technical_mcp_knowledge": "success",
+    "api_chat_nodiaai": "unsupported_no_prior_adapter",
+    "api_http_posts": {
+      "openai": {
+        "total": 1,
+        "completed": 1
+      },
+      "gemini": {
+        "total": 5,
+        "completed": 1,
+        "rejected400": 3,
+        "unavailable503": 1
+      }
+    },
+    "api_automatic_retries": 0,
+    "api_billed_amount": null,
+    "native_turns": {
+      "native_turns_total": 4,
+      "openai_native_turns": 2,
+      "gemini_native_turns": 2,
+      "successful_turns": 2,
+      "failed_turns": 2,
+      "api_key_requests": 0,
+      "inference_replays": 0,
+      "all_native_attempts_process_closed_acknowledged": true,
+      "all_success_supervisors_closed": true,
+      "pending_native_identities": 0,
+      "configuration_database_read_only": true,
+      "configuration_database_modified": false
+    },
+    "further_paid_inference_required_for_this_delivery": false
+  },
+  "matrix_interpretation": "P01-P16 cover regression layers and explicitly described real cases for OpenAI/Gemini in this Linux VM. Unsupported operations do not become success. A future provider must qualify its own actual advertised operations; neither this report nor catalog flags qualify it.",
+  "provider_mode_coverage": [
+    {
+      "provider": "openai",
+      "mode": "api_key",
+      "real_operation": "PDF invoice OCR",
+      "chat_tools": "unsupported"
+    },
+    {
+      "provider": "gemini",
+      "mode": "api_key",
+      "real_operation": "PDF invoice OCR",
+      "chat_tools": "unsupported"
+    },
+    {
+      "provider": "openai",
+      "mode": "agentic",
+      "real_operation": "technical MCP+authorized knowledge read+valid completed output",
+      "other_operations": "regression/prior scoped evidence, not exhaustive new live acceptance"
+    },
+    {
+      "provider": "gemini",
+      "mode": "agentic",
+      "real_operation": "technical MCP+authorized knowledge read+valid completed output",
+      "other_operations": "regression/prior scoped evidence, not exhaustive new live acceptance"
+    }
+  ],
+  "plan91_matrix": [
+    {
+      "id": "P01",
+      "status": "pass",
+      "verified_scope": "Catalog/configuration contracts, isolated fresh installation and operational mode readback. Catalog flags remain configuration only."
+    },
+    {
+      "id": "P02",
+      "status": "pass",
+      "verified_scope": "Encryption/masking/instance ownership regressions and unchanged ciphertext table. Real API keys used only by stdin, not saved; Agentic used preserved native profiles. No new live login/logout or UI credential creation in this epoch."
+    },
+    {
+      "id": "P03",
+      "status": "pass",
+      "verified_scope": "Real API model discovery and explicit selection; Agentic exact persisted model/effort. Missing/invalid models and unknown quotas covered by unit contracts; no hardcoded production model fallback."
+    },
+    {
+      "id": "P04",
+      "status": "pass",
+      "verified_scope": "31 fresh-install migrations, nine focused migration guarantees, private-copy up/down/up rehearsal and single operational upgrade. Conflict/quiet/rollback and immutable historical data covered in SQL; UI save failure/retry uses synthetic fixture."
+    },
+    {
+      "id": "P05",
+      "status": "pass",
+      "verified_scope": "Client atomic topbar/health regressions plus mobile/desktop fixture QA. API green means key saved, not successful inference; pending/error/unavailable distinctions retained."
+    },
+    {
+      "id": "P06",
+      "status": "pass",
+      "verified_scope": "Both Agentic selections completed a real technical MCP+knowledge canary with valid final output. API chat NodiaAI is unsupported; API success is OCR under P07, not API conversational acceptance."
+    },
+    {
+      "id": "P07",
+      "status": "pass",
+      "verified_scope": "Both API providers extracted the same synthetic PDF through real ApiProviderService:12 oracle checks each, zeros/nulls preserved. Other MIME and Agentic OCR are preserved by unit/contract regression and prior R07 scoped evidence, not repeated live on this epoch."
+    },
+    {
+      "id": "P08",
+      "status": "pass",
+      "verified_scope": "Attachment/context/limits/authorization regressions passed. Synthetic PDF was real API input. No new live audio/video/voice or expiry acceptance; eight unrelated audio/media source files preserved exactly from R07."
+    },
+    {
+      "id": "P09",
+      "status": "pass",
+      "verified_scope": "Real Agentic callback invoked authorized knowledge index with run nonce and terminal ACK. Domain authorization/catalog/schema regressions passed. No claim of live execution of all151operations; API MCP/chat tools unsupported."
+    },
+    {
+      "id": "P10",
+      "status": "pass",
+      "verified_scope": "Confirmation, idempotency and concurrency regressions and prior scoped real domain evidence retained. No new commercial mutation or human confirmation synthesized for this retirement. API conversational writes unsupported."
+    },
+    {
+      "id": "P11",
+      "status": "pass",
+      "verified_scope": "Existing image capability/binding preserved from R07; exact contract/compiler regressions. No paid image generation or new live retention acceptance. API chat image generation unsupported."
+    },
+    {
+      "id": "P12",
+      "status": "pass",
+      "verified_scope": "Atomic negative cases for credentials/models/service/invalid responses/fallback/uncertain retries. Real Gemini400/503 and two native failed turns preserved separately; no automatic inference retries or fallback. Billed cost remains unknown."
+    },
+    {
+      "id": "P13",
+      "status": "pass",
+      "verified_scope": "Admission/cancel/reconcile/restart regressions. Four real native attempts closed and ACKed, including timeout; no replay. A distinct narrower Gemini case has its own run/nonce. Final SQL/native quiet readback separate from inference success."
+    },
+    {
+      "id": "P14",
+      "status": "pass",
+      "verified_scope": "Operational canonical integrity:58 unrelated tables unchanged; API ciphertext and historical run bytes preserved. Permission/ownership/security regressions. Operator reports sanitized; no raw provider stderr or private database dump exported."
+    },
+    {
+      "id": "P15",
+      "status": "pass",
+      "verified_scope": "ES/EN mobile/desktop browser fixtures verify two modes, loading/error/retry, preserved modal draft after failure and successful close; compiled deployed SPA/assets verified through HTTP. No claim of live authenticated browser traversal of every feature."
+    },
+    {
+      "id": "P16",
+      "status": "pass",
+      "verified_scope": "Only agentic/api_key new selections; retired Web rejected without executable alias. Legacy history remains readable, former Web selections null/reconfiguration required. Native Web routes/SDK/browser resources removed; no profile/history deletion."
+    }
+  ],
+  "knowledge": {
+    "approved_successor_revisions": 6,
+    "deployed_release": "f8734238a60c9346edc87108d0525ecd5d50fdaa67ca248b0a48f69991ef4305",
+    "deployed_counts": {
+      "capabilities": 151,
+      "documents": 42,
+      "fragments": 44,
+      "closed_contracts": 302
+    },
+    "final_authoring_check_release": "369cdf6b0ff157d8286688ea3689d9c18edb71604e0a1cd830c438ca35031d86",
+    "authoring_check_deployed": false,
+    "reason_for_distinct_authoring_hash": "Final progress notes changed source hashes after deployment; exact build inputs archived, deployed release immutable and approved six files remain byte exact.",
+    "source_input_archive_catalog": "ops/lab/artifacts/agentic-api-mode-retirement-r01/deployed-knowledge-authoring-inputs-r01.catalog.json",
+    "unapproved_new_mode_feature": "draft_unregistered"
+  },
+  "maintenance": {
+    "discardable_test_volumes_removed": 35,
+    "bytes_recovered": 1867345920,
+    "unknown_volumes_preserved": true,
+    "original_project_1_26_GB_cleanup": "postponed_by_user"
+  },
+  "release_recovery_catalog": "ops/lab/artifacts/agentic-api-mode-retirement-r01/release-catalog.json",
+  "post_adoption_backup": {
+    "creation": "ready",
+    "stored_object_integrity": "verified_SHA256_and_bytes_with_HEAD_and_GET",
+    "expiry_interval": "7_days_exact",
+    "new_encrypted_object_restore_drill": "not_performed_separate_from_prior_private_copy_restore_rehearsal",
+    "receipt": "docs/evidence/ai-two-modes-deployment-final-r01.json"
+  },
+  "important_protected_dependencies": [
+    "Server R07 node_modules remains new Server symlink target",
+    "Client R03 and four older static roots retained for open tabs",
+    "Private credentials/profiles/DB dumps/native rollback image remain protected on VM"
+  ],
+  "not_claimed": [
+    "API NodiaAI chat support",
+    "All151operations traversed live on every provider",
+    "New live OCR/media/image/retention qualification on Agentic epoch",
+    "Windows real Agentic acceptance",
+    "Production-wide availability or future provider support",
+    "Known billed amount or zero cost for rejected requests"
+  ],
+  "evidence": [
+    {
+      "path": "docs/evidence/ai-two-modes-automated-tests-r01.json",
+      "sha256": "8b6868bbcb3c98aef459e03a7ad562893eebd007e1ad5f0045c80d98da12bf24",
+      "bytes": 3770
+    },
+    {
+      "path": "docs/evidence/ai-two-modes-contract-integration-r01.json",
+      "sha256": "d8561227e4b428204ca16e8a0286b557125c3ec5cbd7cd0bd9b6450c372fd324",
+      "bytes": 8553
+    },
+    {
+      "path": "docs/evidence/ai-two-modes-fresh-install-r01.json",
+      "sha256": "9b41952ca1262f61733846fe993dfe6c0fb32f072e9720edcf407ed9ec6ff711",
+      "bytes": 3338
+    },
+    {
+      "path": "docs/evidence/2026-10-27-ai-two-modes-private-db-copy-rehearsal.json",
+      "sha256": "b16b9e7668a9369c8339bc590a85dbb8c9559d29e8618c5001497dc996703357",
+      "bytes": 10899
+    },
+    {
+      "path": "docs/evidence/ai-two-modes-operational-migration-r01.json",
+      "sha256": "1e14f82bf0890705c18c9cf9bf31c861c90367dfb8a14e765422475dbc6b76a6",
+      "bytes": 732
+    },
+    {
+      "path": "docs/evidence/ai-two-modes-operational-mode-readback-r01.json",
+      "sha256": "a23d440de89bae7031fbff856bff7d77bb917cfe5d8fcdaa792b2470390c42f8",
+      "bytes": 1212
+    },
+    {
+      "path": "docs/evidence/ai-two-modes-native-linux-r02.json",
+      "sha256": "f2d56e9356c1ed9509697c3b95b7e60de67e54998b90d85b6a00e6a9b2eb6c4e",
+      "bytes": 2269
+    },
+    {
+      "path": "docs/evidence/ai-two-modes-native-private-api-r01.json",
+      "sha256": "e837eaccdda4c4185018a60fcfa560c54046d844f43ab40b73536d5e6f8f6351",
+      "bytes": 692
+    },
+    {
+      "path": "docs/evidence/ai-two-modes-api-real-success-r01.json",
+      "sha256": "bebad3bdc2f496734a9505f62a94f7e64df5210bbd80e4c3b35f49a438f18be1",
+      "bytes": 2382
+    },
+    {
+      "path": "docs/evidence/ai-two-modes-agentic-real-success-r01.json",
+      "sha256": "15b459ba66e74bed48db578bc1a6b64920deed052825a9511b2affe42f6af039",
+      "bytes": 11253
+    },
+    {
+      "path": "docs/evidence/ai-two-modes-ui-r01.json",
+      "sha256": "821f3141b30d859d662785316e5cfcc877efae2d656fdcc5a7ddfdd5816b3310",
+      "bytes": 1434
+    },
+    {
+      "path": "docs/evidence/ai-two-modes-client-http-adoption-r01.json",
+      "sha256": "d82ef741db37020406da1e5407b59a78fc7bdc6052480e75390c7c51d8a82c8d",
+      "bytes": 88758
+    },
+    {
+      "path": "docs/evidence/ai-two-modes-deployment-final-r01.json",
+      "sha256": "98d05022756e2f990959c179902cf032773fe819598fe116b2c7a88bdb781c1d",
+      "bytes": 14022
+    },
+    {
+      "path": "docs/evidence/ai-two-modes-knowledge-human-approval-r01.json",
+      "sha256": "a5c98bad74caa3e073618fa5b91374cb0a9ad2575cfea8cea12881633cd75a55",
+      "bytes": 3317
+    },
+    {
+      "path": "docs/evidence/ai-two-modes-codex-lock-closure-r01.json",
+      "sha256": "506102b196c803a493a3beab174d82d2cb4d1e0b0c44e88d74e7c5922fa984ee",
+      "bytes": 1258
+    },
+    {
+      "path": "docs/evidence/2026-10-27-ai-two-modes-vm-volume-cleanup-summary.json",
+      "sha256": "8faa883e856ed6fa91e81c04240a55e69dc1ae193c7e7dcdd6533a923efdce8e",
+      "bytes": 18956
+    }
+  ],
+  "secrets_included": false
+}

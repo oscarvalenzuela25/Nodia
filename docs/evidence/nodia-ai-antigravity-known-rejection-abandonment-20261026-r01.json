@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "status": "audited_infrastructure_abandonment_completed_not_native_reconciliation",
+  "scope": {
+    "conversation_id": "d668a1f2-4cb2-4b53-814a-d86c3f537657",
+    "run_id": "db43947c-8afd-4398-8595-d62124775d84",
+    "job_id": "349ea3a9-7b0f-452d-844a-a6ce365ac047",
+    "attempt_id": "efcf2c07-ad6a-4f15-bce7-d30bbbd97dc4",
+    "stage": "inference",
+    "stage_seq": 2,
+    "reserved_dispatch_budget": 1,
+    "tools": 0,
+    "invoice_OCR_started": false
+  },
+  "confirmed_failure": {
+    "receiver_route": "/nodia-ai/agentic/mcp/start",
+    "HTTP_status": 409,
+    "code": "runtime_busy",
+    "duration_ms": 3,
+    "request_id": "93cdba1798224a81a81454dbeddcce0f",
+    "following_attempt_cancel_HTTP_status": 404,
+    "following_cancel_code": "mcp_attempt_missing",
+    "observation_owner": "eligibility",
+    "observation_owner_duration_ms": 4423,
+    "native_terminal_record_found": false,
+    "historical_identity_correlation": "strong_source_path_and_timestamp_inference; no contemporaneous authenticated request/body receipt retained"
+  },
+  "source": {
+    "Server": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+    "manifest_sha256": "8f83d1525802a08f468e8132ff496a0976493e3b32941366888b631e56273bc8",
+    "native": {
+      "id": "ae8b025b5910da6bb27a96dee881411a3c66d62fdcf612cf61013841d064f091",
+      "image": "sha256:6401f3576bc6eaba31afc47a6f1ba3f6ff397e966465d5cd6da573adc9a8ff93",
+      "started_at": "2026-10-26T16:56:35.276313977Z",
+      "descriptor_sha256": "f0bfd32c0af03e3e564c47e1ff83433fe18416e612f620a2558dcf2b07af1584"
+    },
+    "native_public_module_count": 52,
+    "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105"
+  },
+  "operational_attempts": [
+    {
+      "revision": "R01",
+      "result": "readiness_failed_before_mutation",
+      "cause": "operator omitted mandatory profile argument to maintained codex_barrier; not runtime/provider failure",
+      "readiness_receipt_sha256": "22a647a542ca3ed9a74a6459ebdc615c1df6c1bef54e1d53c48e5ed7f045c84f"
+    },
+    {
+      "revision": "R02",
+      "result": "transaction_rolled_back_and_independent_readback_confirmed_original_state",
+      "cause": "operator assumed UPDATE RETURNING result was flat; actual TypeORM returns rows/count tuple",
+      "execute_receipt_sha256": "575bd7b1e79586c0f8134281116f5f0135dd33b744b6e4cf7fed1342b886cd36",
+      "readback_receipt_sha256": "b26569ec565a29b1c3e1945fff1a068064adafe5554c02fcfd2f58e52055f1c3",
+      "original_state": {
+        "run": "unknown",
+        "revision": 5,
+        "slot_state": "unknown",
+        "slot_fence": "34",
+        "history_attempts": 2
+      }
+    },
+    {
+      "revision": "R03",
+      "result": "operator_abandoned_without_native_receipt",
+      "correction": "four guarded mutations use CTE SELECT; actual PostgresQueryRunner result parser tested",
+      "operator_catalog_sha256": "e30fc484b424a86260a7ca2ae17b3972dcc409a49b7409848e42f6b5af19aab6",
+      "execute_receipt_sha256": "74f4c82eabfd2ddb79df43c7574f89c318533a8cae270847a8e24f6dfe87a1e4",
+      "final": {
+        "retained_history_jobs": 1,
+        "pending_jobs": 0,
+        "attempt_history_rows": 2,
+        "ack_jobs": 0,
+        "retained_slots": 0,
+        "unrevoked_grants": 0,
+        "active_job_id": null,
+        "run_state": "failed",
+        "error_code": "nodia_ai:outcome_unknown",
+        "revision": 6,
+        "slot_state": "free",
+        "slot_fence": "35"
+      }
+    }
+  ],
+  "invariants": {
+    "protected_table_projections": 61,
+    "including_non_NodiaAI_domain_tables": 40,
+    "protected_before_equals_after": true,
+    "own_two_attempts_unchanged_by_hash": true,
+    "history_job_and_recovery_descriptor_retained": true,
+    "schema_hash_before_equals_after": true,
+    "schema_projection_sha256": "2a100334080f04eaf414f412d9b3706a9a59e12f39db2e8404ee37b50022bb4b",
+    "native_epoch_sources_unchanged": true,
+    "native_physical_counts": {
+      "attempt_receipts": 0,
+      "unknown_markers": 0,
+      "temporary_directories": 0,
+      "active_native_processes": 0
+    },
+    "Codex_pending": 0,
+    "restored_services": {
+      "nodia-api": {
+        "command_ok": true,
+        "state": {
+          "MainPID": "641018",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+          "ActiveState": "active"
+        }
+      },
+      "nodia-ai-worker": {
+        "command_ok": true,
+        "state": {
+          "MainPID": "641021",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+          "ActiveState": "active"
+        }
+      }
+    },
+    "no_new_grants_or_business_effects": true,
+    "budget_not_refunded": true
+  },
+  "witness": {
+    "path": "/opt/nodia/verification/invoice-ocr-known-rejection-recovery-r03/execute-r01.witness.jsonl",
+    "sha256": "63eea37d558280b650b9f70a8a48d5a18dee1a53918bf282fcd70a04f62a0d61",
+    "evidence_origin": "hash reported by real execute receipt; local witness bytes not downloaded in this consolidation",
+    "exclusive_mode": "0600",
+    "fsync_before_SQL": true
+  },
+  "no_false_claims": {
+    "native_terminal_proof": null,
+    "native_ACK": null,
+    "native_ACK_calls": 0,
+    "provider_or_SDK_calls_by_repair": 0,
+    "generation_retry_or_replay": false,
+    "current_OCR_acceptance": false,
+    "ordinary_runtime_candidate_adopted": false,
+    "ADR082_status": "proposed_not_approved"
+  },
+  "limits": [
+    "This is an explicit root-operated infrastructure exception after verified physical closure, not the common native reconciliation policy.",
+    "No historical receiver response-body digest is invented and no absent ledger is converted to a terminal proof.",
+    "The timeout/CLI/OCR failures from other attempts are not attributed to this 3ms profile rejection.",
+    "Client and nginx were not operated; this repair receipt does not independently rehash their files.",
+    "Future ordinary typed rejection candidate has separate lineage/tests and is not deployed by these receipts."
+  ],
+  "receipt_sha256": {
+    "antigravity-known-rejection-repair-bootstrap-VM-r01.json": "f590fcb771c2f3f256b6d6cc69b2cfd9016aecdd2ba0100b77e4690912b722da",
+    "antigravity-known-rejection-repair-readiness-VM-r01.json": "22a647a542ca3ed9a74a6459ebdc615c1df6c1bef54e1d53c48e5ed7f045c84f",
+    "antigravity-known-rejection-repair-bootstrap-VM-r02.json": "91622cae0fa0a7cc75c2fb774324cec017b95e18d8e2bae458827494c4c16fe1",
+    "antigravity-known-rejection-repair-readiness-VM-r02.json": "467800a4b81a6ab1371440cce90b4ccfbbf6175381e6bb236e00d2119ada2ac8",
+    "antigravity-known-rejection-repair-execute-VM-r02.json": "575bd7b1e79586c0f8134281116f5f0135dd33b744b6e4cf7fed1342b886cd36",
+    "antigravity-known-rejection-repair-readback-VM-r02.json": "b26569ec565a29b1c3e1945fff1a068064adafe5554c02fcfd2f58e52055f1c3",
+    "antigravity-known-rejection-repair-witness-events-VM-r02.json": "ecba0111ca63821d973b44330befddd8334f6d6d82a8acded6c8b2f6e5fa968c",
+    "antigravity-known-rejection-repair-bootstrap-VM-r03.json": "3e286a722b164fca95f78e1f56fa358d6f22e2c210c75748dff671ab2aa5cd34",
+    "antigravity-known-rejection-repair-readiness-VM-r03.json": "4d41748953b743797fa2e03ab7aa1d83f7b9fd906c13d4bb9389abad18089200",
+    "antigravity-known-rejection-repair-snapshot-stage-VM-r03.json": "bb43d6fd06fe4f213adb5afd30799ee3f532226673541a9612788182159ffb58",
+    "antigravity-known-rejection-repair-execute-VM-r03.json": "74f4c82eabfd2ddb79df43c7574f89c318533a8cae270847a8e24f6dfe87a1e4",
+    "native-http-access-diagnostic-VM-r01.json": "006f8bbecd2e762289b10285c26623f06487192135cabe0f16fe9c55d534c162",
+    "native-http-access-diagnostic-VM-r04.json": "4cdd0b9678d49f86b7f5266468d0d26d0e2500c2e69d97ed1e76c2f99e529bc7",
+    "native-profile-owner-diagnostic-VM-r02.json": "224af8ffeea6261ed0124ff8df5d4737b27468c8b4f5825b1fda99a72b600690",
+    "antigravity-corrected-M1-state-VM-r01.json": "43d2dc5a7c35cbcbdb88f9d6a17365a7f03600f999b0bb99d9de4b07525fac4a",
+    "antigravity-corrected-M1-closed-diagnostic-VM-r01.json": "4017a3db236680287cf9eec7f5d045a8260b68607bd5ee60caeaa7977218eee3"
+  },
+  "artifact": "ops/lab/artifacts/invoice-ocr-known-rejection-recovery-verification-r01"
+}

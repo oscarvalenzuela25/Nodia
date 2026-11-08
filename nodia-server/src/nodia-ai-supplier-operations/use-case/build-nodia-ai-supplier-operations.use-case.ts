@@ -13,9 +13,9 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { isUUID, validateSync } from 'class-validator';
 import {
-  currentActor,
-  lockAuthority,
-} from '../../authorization/authority-transaction.js';
+  assertBusinessesAccess,
+  assertBusinessResourcesAccess,
+} from '../../business-access/business-access.js';
 import { isFinanceBigint } from '../../finance-common/validation/finance-validation.js';
 import type {
   NodiaAiJsonObject,
@@ -58,7 +58,7 @@ type Writer = (
   input: Input,
   context: ProposalPreparerContext,
 ) => Promise<{ id: string }>;
-const route = '/tools/business';
+const route = '/business';
 const providerFields = {
   name: 'string',
   tax: 'number',
@@ -143,9 +143,10 @@ class SupplierOperation implements NodiaAiNativeOperation {
     private readonly writer: Writer,
   ) {
     this.contact = resourceKey === 'provider_contacts';
-    this.bindableFields = this.contact && operation === 'create'
-      ? { provider_id: 'provider_id' }
-      : {};
+    this.bindableFields =
+      this.contact && operation === 'create'
+        ? { provider_id: 'provider_id' }
+        : {};
     this.toolName = `nodia_${resourceKey}_prepare_${operation}`;
     this.editableFields =
       operation === 'set_active'
@@ -204,7 +205,10 @@ class SupplierOperation implements NodiaAiNativeOperation {
           transfer:
             'native_locked_no_products_or_invoices_in_another_business/1',
           ...(this.contact && operation === 'create'
-            ? { futureProvider: 'verified_provider_create_output+known_values+first_binding/1' }
+            ? {
+                futureProvider:
+                  'verified_provider_create_output+known_values+first_binding/1',
+              }
             : {}),
         }),
       )
@@ -353,17 +357,55 @@ class SupplierOperation implements NodiaAiNativeOperation {
       ...(input.provider ? { provider_id: input.provider } : {}),
     };
   }
-  private async authority(context: ProposalPreparerContext) {
+  private async authority(context: ProposalPreparerContext, input: Input) {
     if (
       !context.manager.queryRunner?.isTransactionActive ||
       !context.moduleRoutes.includes(route)
     )
       throw new ForbiddenException('nodia_ai:capability_denied');
-    await lockAuthority(context.manager, false, context.statementTimeoutMs);
-    await currentActor(context.manager, {
+    const actor = {
       userId: context.actor.actorId,
       sessionId: context.actor.sessionId,
-    });
+      transaction: context.manager,
+      statementTimeoutMs: context.statementTimeoutMs,
+    };
+    await assertBusinessesAccess(
+      context.manager,
+      actor,
+      [
+        ...(input.business ? [input.business] : []),
+        ...(!this.contact && typeof input.command.business_id === 'string'
+          ? [input.command.business_id]
+          : []),
+      ],
+      { lock: true },
+    );
+    const providers = this.contact
+      ? input.provider
+        ? [input.provider]
+        : []
+      : input.id
+        ? [input.id]
+        : [];
+    const contacts = this.contact && input.id ? [input.id] : [];
+    // A deleted target does not invalidate a historical receipt. Existing targets
+    // must still belong to a business visible now, even if their parent changed.
+    for (const [resource, table, ids] of [
+      ['providers', 'providers', providers],
+      ['provider_contacts', 'personal_info_provider', contacts],
+    ] as const) {
+      if (!ids.length) continue;
+      const rows: { id: string }[] = await context.manager.query(
+        `SELECT id::text FROM ${table} WHERE id=ANY($1::bigint[]) FOR SHARE`,
+        [ids],
+      );
+      await assertBusinessResourcesAccess(
+        context.manager,
+        actor,
+        resource,
+        rows.map((row) => row.id),
+      );
+    }
   }
   async prepare(
     partial: NodiaAiJsonObject,
@@ -397,19 +439,31 @@ class SupplierOperation implements NodiaAiNativeOperation {
     const source = binding.source;
     const template = source.commandTemplate;
     const command = object(template.command);
-    if (binding.target_field_key !== 'provider_id' || binding.output_key !== 'id' ||
-        binding.from_step_id !== source.id || source.toolName !== 'nodia_providers_prepare_create' ||
-        source.outputBindings.length || input.provider || !input.business ||
-        template.schema_version !== 1 || template.business_id !== input.business ||
-        source.scope.business_id !== input.business ||
-        typeof command.name !== 'string' || !Number.isInteger(command.tax) ||
-        typeof command.is_active !== 'boolean') return invalid();
+    if (
+      binding.target_field_key !== 'provider_id' ||
+      binding.output_key !== 'id' ||
+      binding.from_step_id !== source.id ||
+      source.toolName !== 'nodia_providers_prepare_create' ||
+      source.outputBindings.length ||
+      input.provider ||
+      !input.business ||
+      template.schema_version !== 1 ||
+      template.business_id !== input.business ||
+      source.scope.business_id !== input.business ||
+      typeof command.name !== 'string' ||
+      !Number.isInteger(command.tax) ||
+      typeof command.is_active !== 'boolean'
+    )
+      return invalid();
     return {
       from_step_id: source.id,
       source_contract_hash: source.contractHash,
       expected_provider: {
-        business_id: input.business, name: command.name, tax: command.tax,
-        fields: object(command.fields), is_active: command.is_active,
+        business_id: input.business,
+        name: command.name,
+        tax: command.tax,
+        fields: object(command.fields),
+        is_active: command.is_active,
       },
     };
   }
@@ -430,27 +484,60 @@ class SupplierOperation implements NodiaAiNativeOperation {
   }
   async bindOutputs(
     step: StoredProposalStep,
-    values: Readonly<Record<string, { readonly value: NodiaAiJsonValue; readonly source: StoredProposalStep }>>,
+    values: Readonly<
+      Record<
+        string,
+        {
+          readonly value: NodiaAiJsonValue;
+          readonly source: StoredProposalStep;
+        }
+      >
+    >,
     context: ProposalPreparerContext,
   ): Promise<PreparedProposalStep> {
-    if (Object.keys(values).length !== 1 || !values.provider_id || !isFinanceBigint(values.provider_id.value))
+    if (
+      Object.keys(values).length !== 1 ||
+      !values.provider_id ||
+      !isFinanceBigint(values.provider_id.value)
+    )
       return invalid();
-    const future = this.futureProvider(step.commandTemplate, [{
-      target_field_key: 'provider_id', output_key: 'id',
-      from_step_id: values.provider_id.source.id, source: values.provider_id.source,
-    }], context);
+    const future = this.futureProvider(
+      step.commandTemplate,
+      [
+        {
+          target_field_key: 'provider_id',
+          output_key: 'id',
+          from_step_id: values.provider_id.source.id,
+          source: values.provider_id.source,
+        },
+      ],
+      context,
+    );
     if (!isDeepStrictEqual(future, step.preconditions.future_provider))
       throw new ConflictException('nodia_ai:preconditions_changed');
     await this.verifyPreconditions(step, context);
-    const prepared = await this.prepareInternal({
-      ...step.commandTemplate, provider_id: values.provider_id.value,
-    }, context);
-    if (prepared.status !== 'ready' ||
-        !isDeepStrictEqual(prepared.commandTemplate.command, step.commandTemplate.command))
+    const prepared = await this.prepareInternal(
+      {
+        ...step.commandTemplate,
+        provider_id: values.provider_id.value,
+      },
+      context,
+    );
+    if (
+      prepared.status !== 'ready' ||
+      !isDeepStrictEqual(
+        prepared.commandTemplate.command,
+        step.commandTemplate.command,
+      )
+    )
       throw new ConflictException('nodia_ai:preconditions_changed');
     const provider = object(prepared.preconditions.provider);
     const expected = object(future.expected_provider);
-    if (Object.keys(expected).some(key => !isDeepStrictEqual(provider[key], expected[key])))
+    if (
+      Object.keys(expected).some(
+        (key) => !isDeepStrictEqual(provider[key], expected[key]),
+      )
+    )
       throw new ConflictException('nodia_ai:preconditions_changed');
     return { ...prepared, publicStep: step.publicStep };
   }
@@ -490,10 +577,11 @@ class SupplierOperation implements NodiaAiNativeOperation {
         origins: { ...previous.origins, ...next.origins },
       };
     } else input = this.decode(partial, context);
-    await this.authority(context);
+    await this.authority(context, input);
     const missing: string[] = [];
     if (!input.business) missing.push('business_id');
-    if (this.contact && !input.provider && !futureProvider) missing.push('provider_id');
+    if (this.contact && !input.provider && !futureProvider)
+      missing.push('provider_id');
     if (this.operation !== 'create' && !input.id) missing.push('id');
     if (
       this.operation === 'create' ||
@@ -565,10 +653,15 @@ class SupplierOperation implements NodiaAiNativeOperation {
         origin: input.origins[field_key],
       }));
     const scope = this.scope(input);
-    if (futureProvider) changes.push({
-      field_key: 'provider_id', before: null, before_present: false,
-      after: null, after_present: false, origin: 'future_step',
-    });
+    if (futureProvider)
+      changes.push({
+        field_key: 'provider_id',
+        before: null,
+        before_present: false,
+        after: null,
+        after_present: false,
+        origin: 'future_step',
+      });
     return {
       status: 'ready',
       commandTemplate: this.template(input),
@@ -610,7 +703,7 @@ class SupplierOperation implements NodiaAiNativeOperation {
       input.origins[edit.field_key] = 'user';
     }
     const result = this.decode(this.template(input), context);
-    await this.authority(context);
+    await this.authority(context, result);
     return this.template(result);
   }
   async verifyAuthority(
@@ -624,7 +717,7 @@ class SupplierOperation implements NodiaAiNativeOperation {
       !isDeepStrictEqual(step.scope, this.scope(input))
     )
       throw new ForbiddenException('nodia_ai:capability_denied');
-    await this.authority(context);
+    await this.authority(context, input);
   }
   async verifyPreconditions(
     step: StoredProposalStep,
@@ -635,8 +728,13 @@ class SupplierOperation implements NodiaAiNativeOperation {
     try {
       if (
         !isDeepStrictEqual(
-          await this.snapshot(input, context, step.preconditions.future_provider === undefined
-            ? undefined : object(step.preconditions.future_provider)),
+          await this.snapshot(
+            input,
+            context,
+            step.preconditions.future_provider === undefined
+              ? undefined
+              : object(step.preconditions.future_provider),
+          ),
           step.preconditions,
         )
       )
@@ -735,15 +833,22 @@ class SupplierOperation implements NodiaAiNativeOperation {
       if (!row) throw new NotFoundException('Business not found');
       businesses.push(row);
     }
-    if (futureProvider && (!this.contact || this.operation !== 'create' || input.provider || input.id))
+    if (
+      futureProvider &&
+      (!this.contact ||
+        this.operation !== 'create' ||
+        input.provider ||
+        input.id)
+    )
       return invalid();
-    const provider = this.contact && !futureProvider
-      ? await this.store.provider(
-          context.manager,
-          input.business,
-          input.provider!,
-        )
-      : null;
+    const provider =
+      this.contact && !futureProvider
+        ? await this.store.provider(
+            context.manager,
+            input.business,
+            input.provider!,
+          )
+        : null;
     if (this.contact && !futureProvider && !provider)
       throw new NotFoundException('Provider not found for this business');
     const target =
@@ -808,6 +913,11 @@ export class BuildNodiaAiSupplierOperationsUseCase {
             business_id: input.business,
           }),
           ctx.manager,
+          {
+            userId: ctx.actor.actorId,
+            sessionId: ctx.actor.sessionId,
+            transaction: ctx.manager,
+          },
         ),
       ),
       new SupplierOperation('providers', 'update', store, (input, ctx) =>
@@ -815,6 +925,11 @@ export class BuildNodiaAiSupplierOperationsUseCase {
           input.id!,
           providerUpdateDto(input.command),
           ctx.manager,
+          {
+            userId: ctx.actor.actorId,
+            sessionId: ctx.actor.sessionId,
+            transaction: ctx.manager,
+          },
         ),
       ),
       new SupplierOperation(
@@ -828,6 +943,11 @@ export class BuildNodiaAiSupplierOperationsUseCase {
               CreateProviderContactUseCase['execute']
             >[1],
             ctx.manager,
+            {
+              userId: ctx.actor.actorId,
+              sessionId: ctx.actor.sessionId,
+              transaction: ctx.manager,
+            },
           ),
       ),
       new SupplierOperation(
@@ -842,6 +962,11 @@ export class BuildNodiaAiSupplierOperationsUseCase {
               UpdateProviderContactUseCase['execute']
             >[2],
             ctx.manager,
+            {
+              userId: ctx.actor.actorId,
+              sessionId: ctx.actor.sessionId,
+              transaction: ctx.manager,
+            },
           ),
       ),
       new SupplierOperation(
@@ -856,6 +981,11 @@ export class BuildNodiaAiSupplierOperationsUseCase {
               UpdateProviderContactUseCase['execute']
             >[2],
             ctx.manager,
+            {
+              userId: ctx.actor.actorId,
+              sessionId: ctx.actor.sessionId,
+              transaction: ctx.manager,
+            },
           ),
       ),
     ]);

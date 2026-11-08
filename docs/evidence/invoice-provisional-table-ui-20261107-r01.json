@@ -1,0 +1,2000 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-07",
+  "result": "UI_pass_real_provider_QA_blocked",
+  "scope": "manual_invoice_provisional_table_UI",
+  "summary": "ClientR35 activo en VM (R34 incorporó el menú y R35 corrigió sólo la anchura/nowrap de Acciones): menú por fila de tres acciones, control +/− junto a Precio Venta para cantidad/disponibilidad y columna del candado retirada. Las columnas empiezan ocultas y se abren al publicar una extracción con productos nuevos sin disponibilidad requerida; ocultarlas conserva valores y alinea el histórico. Objetivos44px y scroll horizontal local min1000/1200px.52pruebas/2archivos, tipos/lint y build aislado correctos. La nueva QA autenticada Gemini recibió409antes del dispatch por health_status; tras GET explícito, otra intención agotó240s y devolvió504 sin extracción. No se reenvió su resultado incierto. La comprobación visual escritorio/320/600px usa el componente R35 exacto en harness aislado, rotulado sintético y sin red; verifica menú/toggle/borrador, no inferencia real. Sin guardar factura/productos ni cambios Server/Native/SQL/modelos/permisos. Se preservó la pestañaR33 anterior. No acredita escritura final ni teléfono físico.",
+  "source_freeze": {
+    "schema": "invoice-provisional-table-header-client-freeze/1",
+    "files": [
+      {
+        "path": "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/ProductInvoiceImport.tsx",
+        "bytes": 64443,
+        "sha256": "2bd49aae278bd5d9c76be8a378332440a8ade455e773a3738a680342927f9a67",
+        "before_sha256": "9b7bfe94eb621ed4622dc6cab9b5620e7835c6c7c3626347261d9c2cd687258a"
+      }
+    ],
+    "production_count": 1,
+    "baseline_manifest_sha256": "a4d2c5aa2d3a82fa481046ec656f49a5b78f2e0e524ef930e4ce3bd9e72e9943",
+    "VM_operations": 0
+  },
+  "initial_R34_source_freeze": {
+    "schema": "invoice-provisional-table-client-freeze/1",
+    "files": [
+      {
+        "path": "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/ProductInvoiceImport.tsx",
+        "bytes": 64413,
+        "sha256": "9b7bfe94eb621ed4622dc6cab9b5620e7835c6c7c3626347261d9c2cd687258a",
+        "before_sha256": "6e1638afbc8a72976d078c4170ecf398125dcdf7dd348c4c8eeab3ee5a0c29bc"
+      },
+      {
+        "path": "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/InvoiceRowActions/InvoiceRowActions.tsx",
+        "bytes": 2827,
+        "sha256": "e96368b2a99383a7e7e63e18cdbc66253cfc86173409655248ea2f746e366d20",
+        "before_sha256": null
+      },
+      {
+        "path": "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/InvoiceRowActions/styles.ts",
+        "bytes": 577,
+        "sha256": "9e0f24c606b9cc950a71fc667dbc87c4524b9d22214d649792bdb240e4775fc5",
+        "before_sha256": null
+      },
+      {
+        "path": "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/InvoiceRowActions/index.ts",
+        "bytes": 68,
+        "sha256": "f303228c49f51ad9c083b854ba5f60a0e88e7edb5e208feddaa4ad32390fcdbb",
+        "before_sha256": null
+      },
+      {
+        "path": "src/translate/es/business.json",
+        "bytes": 53040,
+        "sha256": "155bb79b9c6d66f8a5d06d90dec1ec493d607dbb30287efc6c65aaeb556b2f1f",
+        "before_sha256": "3bda18060f70212fab848687379d41b3b3d2e553489bd536b41589fe76c4c94d"
+      },
+      {
+        "path": "src/translate/en/business.json",
+        "bytes": 49462,
+        "sha256": "9c338ad8f337d92976f9f517e14941989a3e8770abab3fc5466103cc104cf63e",
+        "before_sha256": "7eeb7c039467de3462513c5fba25b99c699013af771863f88bf3987cafee7404"
+      }
+    ],
+    "production_count": 6,
+    "baseline_manifest_sha256": "ad520604765d3680c6015109879e2a2b911e64854aa64a8b696fdc9e32cdeb55",
+    "VM_operations": 0
+  },
+  "initial_R34_activation": {
+    "success": true,
+    "phase": "Client_R34_active_static_and_legacy_assets_verified",
+    "receipt_sha256": "b3b708236cad8c57be8f3924fdf0b5de080cb8d9af73c56d6a12b1e66f11f68d",
+    "manifest_sha256": "a4d2c5aa2d3a82fa481046ec656f49a5b78f2e0e524ef930e4ce3bd9e72e9943",
+    "new_assets_verified": 185,
+    "old_assets_verified": 181,
+    "old_asset_fallback_retained": true,
+    "server_restart": false,
+    "Native_restart": false,
+    "database_access": false,
+    "provider_requests": 0
+  },
+  "build": {
+    "schema": "invoice-provisional-table-client-r35-isolated-build/1",
+    "success": true,
+    "output_directory": "dist",
+    "build_directory": "build-root",
+    "typecheck_diagnostics": 0,
+    "typecheck_source_files": 866,
+    "typecheck_scope": "isolated production roots;src/test roots excluded,transitive imports still checked",
+    "excluded_test_roots": 377,
+    "transitive_test_files_checked": 0,
+    "Root_full_workspace_typecheck_exit": null,
+    "Root_final_regression_evidence": "pending separate receipt",
+    "build_ms": 17212,
+    "baseline_source_input_count": 1400,
+    "source_input_count": 1400,
+    "source_inputs_identical_before_after": true,
+    "source_fingerprint_sha256": "d1424d5bcc7ce0b74c3fcb6ffb4a48c206743c0407e629a03fd5175bd176cf9a",
+    "source_plan_sha256": "f4cc1b9faefeb3b0e5cf39ec0fa3a7781a60c55a26067baa525d35cdae43425a",
+    "owner_delta_sha256": "4d9e57e86de069494d3bebe7249ffde43d90878d5d8c4169cb6c5575785623bc",
+    "global_working_tree_copied": false,
+    "public_config": {
+      "api_url": "/api/v1",
+      "google_client_id_sha256": "92d734acd9f93db3084a903aebff28adaf5f83d9dca318c7ddf19ed7a4ab7e3a"
+    },
+    "VM_operations": 0,
+    "provider_requests": 0
+  },
+  "activation": {
+    "success": true,
+    "phase": "Client_R35_active_static_and_legacy_assets_verified",
+    "receipt_sha256": "a8f84f5a409143b2a681ab5ff7e27e8b9088f8b4f24e6e3c05eadc02f7e66f97",
+    "manifest_sha256": "257f765d8423c50d98544fdabdedfc81bec1a00a50214d78a9f31776b249285a",
+    "new_assets_verified": 185,
+    "old_assets_verified": 181,
+    "old_asset_fallback_retained": true,
+    "server_restart": false,
+    "Native_restart": false,
+    "database_access": false,
+    "provider_requests": 0
+  },
+  "browser": {
+    "result": "pass",
+    "scope": "isolated_component_UI_only",
+    "release": "ClientR35",
+    "url": "http://127.0.0.1:5176/",
+    "synthetic": true,
+    "businessNetwork": [],
+    "network": [],
+    "requiredColumnsAutoExpanded": true,
+    "compactCellCounts": [
+      8,
+      8,
+      8
+    ],
+    "expandedCellCounts": [
+      10,
+      10,
+      10
+    ],
+    "expandedRows": [
+      "EstadoCódigo de factura / proveedorNombre del ProductoCosto Base sin ImpuestoCosto Base con ImpuestosPrecio VentaCantidad de la facturaDisponibilidadAcciones",
+      "ActualizarPRUEBA-IA-POS-20261028-38ff7f89-3db4-4d7f-8273-7f12304ce483Prueba NodiaAI POS 20261028$900$1,071$1,2001DisponibilidadDisponible",
+      "HistóricoPRUEBA-IA-POS-20261028-38ff7f89-3db4-4d7f-8273-7f12304ce483Prueba NodiaAI POS 20261028$1,000$1,190$1,200——-"
+    ],
+    "restoredRowsEqual": true,
+    "editValuesBeforeCancel": [
+      "900",
+      "19",
+      "1071",
+      "1200",
+      "1"
+    ],
+    "menuItems": [
+      "Vincular con un producto existente",
+      "Editar fila",
+      "Quitar fila de la lista"
+    ],
+    "menuKeyboardOpening": true,
+    "escapeFocusReturn": "Acciones del producto 1",
+    "lockControlCount": 0,
+    "actionsHeader": {
+      "whiteSpace": "nowrap",
+      "width": 96.703125
+    },
+    "controls": [
+      {
+        "height": 44,
+        "name": "Mostrar cantidad de la factura y disponibilidad",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "name": "Acciones del producto 1",
+        "width": 44
+      }
+    ],
+    "geometry": {
+      "mobile320": {
+        "client": 320,
+        "scroll": 320
+      },
+      "menu320": {
+        "height": 172,
+        "width": 286,
+        "x": 17
+      },
+      "table320": {
+        "client": 250,
+        "scroll": 1200
+      },
+      "tablet600": {
+        "client": 590,
+        "scroll": 590
+      },
+      "desktop": {
+        "client": 1280,
+        "scroll": 1280
+      }
+    },
+    "themes": {
+      "light": "rgb(247, 249, 243)",
+      "dark": "rgb(0, 0, 0)"
+    },
+    "language": {
+      "ES_visual": true,
+      "EN_resources_present": true,
+      "EN_visual": false,
+      "limitation": "Harness language toolbar did not visibly change translated content; no production defect established."
+    },
+    "commercialSaveClicked": false,
+    "viewportOverrideReset": true,
+    "oldR33DraftTabUntouched": true
+  },
+  "real_browser_analysis": {
+    "result": "blocked_real_Gemini_visual_table_QA",
+    "firstPublicId": "8873cc6a-87f8-4cee-901e-beb676f3bb64",
+    "secondPublicId": "f0a01459-fb6c-4550-9b36-31f1d46898b4",
+    "visibleError": [
+      "Antigravity CLI agotÃ³ el tiempo de comprobaciÃ³n o anÃ¡lisis.Reintentar anÃ¡lisis"
+    ],
+    "filePreserved": true,
+    "commercialSaveClicked": false,
+    "network": [
+      {
+        "event": "request",
+        "id": "36976.197",
+        "method": "POST",
+        "path": "/api/v1/invoices/analysis-observations"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.197",
+        "status": 201
+      },
+      {
+        "event": "request",
+        "id": "36976.198",
+        "method": "POST",
+        "path": "/api/v1/invoices/analyze"
+      },
+      {
+        "event": "request",
+        "id": "36976.199",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/8873cc6a-87f8-4cee-901e-beb676f3bb64"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.198",
+        "status": 409
+      },
+      {
+        "event": "request",
+        "id": "36976.200",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/8873cc6a-87f8-4cee-901e-beb676f3bb64"
+      },
+      {
+        "event": "loadingFailed",
+        "id": "36976.199",
+        "error": "net::ERR_ABORTED",
+        "canceled": true
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.200",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.201",
+        "method": "GET",
+        "path": "/api/v1/ai-providers/health"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.201",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.202",
+        "method": "GET",
+        "path": "/api/v1/invoices/verify-ia-providers"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.202",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.203",
+        "method": "POST",
+        "path": "/api/v1/invoices/analysis-observations"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.203",
+        "status": 201
+      },
+      {
+        "event": "request",
+        "id": "36976.204",
+        "method": "POST",
+        "path": "/api/v1/invoices/analyze"
+      },
+      {
+        "event": "request",
+        "id": "36976.205",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.205",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.206",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.206",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.207",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.207",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.208",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.208",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.209",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.209",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.210",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.210",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.211",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.211",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.212",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.212",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.213",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.213",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.214",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.214",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.215",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.215",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.216",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.216",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.217",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.217",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.218",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.218",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.219",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.219",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.220",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.220",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.221",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.221",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.222",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.222",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.223",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.223",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.224",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.224",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.225",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.225",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.226",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.226",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.227",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.227",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.228",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.228",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.229",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.229",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.230",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.230",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.231",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.231",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.232",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.232",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.233",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.233",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.234",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.234",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.235",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.235",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.236",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.236",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.237",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.237",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.238",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.238",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.239",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.239",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.240",
+        "method": "GET",
+        "path": "/api/v1/ai-providers/health"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.240",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.241",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.241",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.242",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.242",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.243",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.243",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.244",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.244",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.245",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.245",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.246",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.246",
+        "status": 401
+      },
+      {
+        "event": "request",
+        "id": "36976.247",
+        "method": "POST",
+        "path": "/api/v1/auth/refresh"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.247",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.251",
+        "method": "GET",
+        "path": "/api/v1/invoices/verify-ia-providers"
+      },
+      {
+        "event": "request",
+        "id": "36976.252",
+        "method": "GET",
+        "path": "/api/v1/providers"
+      },
+      {
+        "event": "request",
+        "id": "36976.253",
+        "method": "GET",
+        "path": "/api/v1/products"
+      },
+      {
+        "event": "request",
+        "id": "36976.254",
+        "method": "GET",
+        "path": "/api/v1/products"
+      },
+      {
+        "event": "request",
+        "id": "36976.255",
+        "method": "GET",
+        "path": "/api/v1/products"
+      },
+      {
+        "event": "request",
+        "id": "36976.256",
+        "method": "GET",
+        "path": "/api/v1/business/5af15373-3638-4a02-a015-4e72c433fc11"
+      },
+      {
+        "event": "request",
+        "id": "36976.257",
+        "method": "GET",
+        "path": "/api/v1/invoices"
+      },
+      {
+        "event": "request",
+        "id": "36976.258",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.252",
+        "status": 200
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.258",
+        "status": 200
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.253",
+        "status": 200
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.254",
+        "status": 200
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.255",
+        "status": 200
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.257",
+        "status": 200
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.256",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.259",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.259",
+        "status": 200
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.251",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.260",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.260",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.261",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.261",
+        "status": 429
+      },
+      {
+        "event": "request",
+        "id": "36976.262",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.262",
+        "status": 429
+      },
+      {
+        "event": "request",
+        "id": "36976.263",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.263",
+        "status": 429
+      },
+      {
+        "event": "request",
+        "id": "36976.264",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.264",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.265",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.265",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.266",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.266",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.267",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.267",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.268",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.268",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.269",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.269",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.270",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.270",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.271",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.271",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.272",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.272",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.273",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.273",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.274",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.274",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.275",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.275",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.276",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.276",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.277",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.277",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.278",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.278",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.279",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.279",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.280",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.280",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.281",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.281",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.282",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.282",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.283",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.283",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.284",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.284",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.285",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.285",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.286",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.286",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.287",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.287",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.288",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.288",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.289",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.289",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.290",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.290",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.291",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.291",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.292",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.292",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.293",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.293",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.294",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.294",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.295",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.295",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.296",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.296",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.297",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.297",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.298",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.298",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.299",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.299",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.300",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.300",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.301",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.301",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.302",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.302",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.303",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.303",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.304",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.304",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.305",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.305",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.306",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.306",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.307",
+        "method": "GET",
+        "path": "/api/v1/ai-providers/health"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.307",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.308",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.308",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.309",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.309",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.310",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.310",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.311",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.311",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.312",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.312",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.313",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.313",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.314",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.314",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.315",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.315",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.316",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.316",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.317",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.317",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.318",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.318",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.319",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.319",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.320",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.320",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.321",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.321",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.322",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.322",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.323",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.323",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.324",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.324",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.325",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.325",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.326",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.326",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.327",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.327",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.328",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.328",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.329",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.329",
+        "status": 200
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.204",
+        "status": 504
+      },
+      {
+        "event": "request",
+        "id": "36976.330",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/f0a01459-fb6c-4550-9b36-31f1d46898b4"
+      },
+      {
+        "event": "responseReceived",
+        "id": "36976.330",
+        "status": 200
+      },
+      {
+        "event": "request",
+        "id": "36976.331",
+        "method": "GET",
+        "path": "/api/v1/ai-providers/health"
+      }
+    ]
+  },
+  "runtime_observer": {
+    "schema_version": 1,
+    "scope": "read_only_runtime_and_static_assets_for_invoice_provisional_table_UI_QA",
+    "result": "Client_R34_static_health_pass_real_Gemini_extraction_timeout_no_commercial_write_claim",
+    "Root_UI_reported": {
+      "public_intentions": 2,
+      "first": {
+        "public_id": "8873cc6a-87f8-4cee-901e-beb676f3bb64",
+        "status": 409,
+        "result": "known_runtime_busy_pre_dispatch",
+        "new_extraction_published": false
+      },
+      "second": {
+        "public_id": "f0a01459-fb6c-4550-9b36-31f1d46898b4",
+        "result": "timeout",
+        "UI_elapsed_seconds": 245,
+        "new_extraction_published": false,
+        "new_explicit_intention_after_availability_GET": true
+      },
+      "commercial_save_clicked": false,
+      "harness_QA_to_be_recorded_separately": true
+    },
+    "Native_attempt_UUID": "00ef0b34-0aa2-47f8-8632-bccbee6e29b6",
+    "Native_observed_execution_acquire_count": 1,
+    "first_rejection": {
+      "elapsed_ms": 398,
+      "engine": "agentic",
+      "event": "reject",
+      "observed_log_time": "2026-11-07 04:15:33.495",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "purpose": "execution",
+      "quarantined": false,
+      "reason": "runtime_busy",
+      "reservation_nonce": "cf816d5ed7604838bcc84c41b545c924"
+    },
+    "inference_deadline_event": [
+      {
+        "observed_log_time": "2026-11-07 04:16:42.794",
+        "deadline_seconds": 240.0
+      }
+    ],
+    "execution_acquire": {
+      "elapsed_ms": 0,
+      "engine": "agentic",
+      "event": "acquire",
+      "observed_log_time": "2026-11-07 04:16:39.083",
+      "owner_engine": "agentic",
+      "owner_purpose": "execution",
+      "purpose": "execution",
+      "quarantined": false,
+      "reason": null,
+      "reservation_nonce": "d5b87476fc2d4a4bb9d83bd523dbf1b6"
+    },
+    "execution_release": {
+      "elapsed_ms": 245783,
+      "engine": "agentic",
+      "event": "release",
+      "observed_log_time": "2026-11-07 04:20:44.866",
+      "owner_engine": "agentic",
+      "owner_purpose": "execution",
+      "purpose": "execution",
+      "quarantined": false,
+      "reason": null,
+      "reservation_nonce": "d5b87476fc2d4a4bb9d83bd523dbf1b6"
+    },
+    "during_exact_UUID_marker_proof_group_match": true,
+    "during": {
+      "CLI": 1,
+      "unknown_markers": 1,
+      "manual_proofs": 1,
+      "proof_state": "dispatch_armed",
+      "process_closed": false,
+      "owned_group_processes": 2
+    },
+    "final": {
+      "observed_at": "2026-11-07T04:21:43.817133+00:00",
+      "CLI": 0,
+      "unknown_markers": 0,
+      "manual_proofs": 0,
+      "cgroup_owners": [],
+      "local_quiet_observed": true,
+      "release_quarantined": false,
+      "local_closure_observed": true,
+      "remote_inference_result_not_established": true,
+      "ready_or_successful_extraction_claimed": false
+    },
+    "preservation": {
+      "API_Worker_Native_exact_identities": true,
+      "source_pins_verified_each_runtime_sample": 9,
+      "source_pins_unchanged": true,
+      "Server_Native_SDK_flags_environment_hash_timers_unchanged": true,
+      "metadata_before_after_static_sample_identical": true,
+      "Native_healthy": true
+    },
+    "static_assets_final": {
+      "observed_at": "2026-11-07T04:22:04.604296+00:00",
+      "Client_manifest_sha256": "a4d2c5aa2d3a82fa481046ec656f49a5b78f2e0e524ef930e4ce3bd9e72e9943",
+      "Nginx_sha256": "b5ad366814a10830d76b29eb490ce7c4d7b4bbc6d241ac524f464f9158ad0c98",
+      "Server_manifest_sha256": "efbd76523322642c580c799640af01ab5626aa56ac72b0ef9104a11da6fd76e0",
+      "SDK_manifest_sha256": "fe412d1059c2f9ac9d8637cc90b2007c72a664175f73b5246a27ebf6e7e7ccfa",
+      "current_outputs_HTTP_hash_verified": 185,
+      "legacy_assets_HTTP_hash_verified": {
+        "r17": 180,
+        "r19": 180,
+        "r20": 180,
+        "r21": 180,
+        "r22": 180,
+        "r23": 180,
+        "r24": 180,
+        "r25": 180,
+        "r26": 180,
+        "r27": 181,
+        "r28": 182,
+        "r29": 182,
+        "r30": 182,
+        "r31": 182,
+        "r32": 181,
+        "r33": 181
+      },
+      "missing_asset_HTTP_status": 404,
+      "API_public_status": 200,
+      "API_unauthenticated_status": 401
+    },
+    "observer_effects": {
+      "metadata_samples": 5,
+      "static_health_samples": 2,
+      "deadline_sanitized_log_read": 1,
+      "SQL_queries_or_writes": 0,
+      "provider_requests": 0,
+      "service_or_timer_mutations": 0,
+      "reconciliations": 0,
+      "cancellations": 0,
+      "profile_state_writes": 0,
+      "auth_cookie_argv_environ_or_document_content_recorded": false,
+      "raw_logs_persisted": false
+    },
+    "limits": {
+      "HTTP_status_and_UI_content_only_Root_reported": true,
+      "no_terminal_payload_or_external_ACK_read": true,
+      "no_provider_upstream_HTTP_count_or_billing_inferred": true,
+      "no_remote_success_claim_from_local_closure_or_zero_markers": true,
+      "health_status_HTTP_origin_not_established": true,
+      "no_product_match_or_commercial_persistence_QA_by_this_observer": true,
+      "pending_and_terminal_were_separate_observations": true
+    },
+    "samples": [
+      {
+        "path": "ops/lab/artifacts/invoice-provisional-table-ui-20261107-r01/runtime/baseline.json",
+        "bytes": 2724,
+        "sha256": "89c8374992591c9d0ae1914106f5852905cfbec3864efff1de432097f7646576",
+        "observed_at": "2026-11-07T04:15:19.052464+00:00"
+      },
+      {
+        "path": "ops/lab/artifacts/invoice-provisional-table-ui-20261107-r01/runtime/after-409.json",
+        "bytes": 4770,
+        "sha256": "04c8723faa0e2922dc24a4c5727530139b9ae6f729de17048d8bf40fe3a26656",
+        "observed_at": "2026-11-07T04:16:05.660023+00:00"
+      },
+      {
+        "path": "ops/lab/artifacts/invoice-provisional-table-ui-20261107-r01/runtime/during.json",
+        "bytes": 6428,
+        "sha256": "66fa6570af4415927dc64d7112556aa5cfa893a20b453ab998b4294a9f0fd488",
+        "observed_at": "2026-11-07T04:16:53.880998+00:00"
+      },
+      {
+        "path": "ops/lab/artifacts/invoice-provisional-table-ui-20261107-r01/runtime/pending.json",
+        "bytes": 8840,
+        "sha256": "a0f9ab573322b3a3092129a9b1afe29dd0378194edde8fdd21803e6f87328a00",
+        "observed_at": "2026-11-07T04:20:25.703811+00:00"
+      },
+      {
+        "path": "ops/lab/artifacts/invoice-provisional-table-ui-20261107-r01/runtime/final.json",
+        "bytes": 8340,
+        "sha256": "6b22e5833967c4c989ccc297ec5c4ae22ca3574e9926d27b5482936d3a274418",
+        "observed_at": "2026-11-07T04:21:43.817133+00:00"
+      },
+      {
+        "path": "ops/lab/artifacts/invoice-provisional-table-ui-20261107-r01/runtime/deadline.json",
+        "bytes": 216,
+        "sha256": "0b021194610f245f329f74c25b4dcd7728d2921046cf9508ce87bc6635209313",
+        "observed_at": null
+      },
+      {
+        "path": "ops/lab/artifacts/invoice-provisional-table-ui-20261107-r01/runtime/static-health.json",
+        "bytes": 21755,
+        "sha256": "dde28b533024a104d2f477cd3e431bd6f4549c479b6195e5e67633405ce974f6",
+        "observed_at": "2026-11-07T04:15:54.488411+00:00"
+      },
+      {
+        "path": "ops/lab/artifacts/invoice-provisional-table-ui-20261107-r01/runtime/static-health-final.json",
+        "bytes": 21755,
+        "sha256": "ee5f226b7728ace099a6af88cee1ab9bd0bf2ac5968cbe3b845156dc47214dd9",
+        "observed_at": "2026-11-07T04:22:04.604296+00:00"
+      }
+    ],
+    "Client_R35_final_audit": {
+      "result": "static_and_metadata_pass_no_new_inference",
+      "previous_R34_observer_report_sha256": "86aa74c4dd3d8e58e2e1aaf5a717ff20c27baa91ced2e88586eeaf6ee62f8512",
+      "observed_static_at": "2026-11-07T04:31:49.594086+00:00",
+      "observed_metadata_at": "2026-11-07T04:32:04.170586+00:00",
+      "current_manifest_sha256": "257f765d8423c50d98544fdabdedfc81bec1a00a50214d78a9f31776b249285a",
+      "Nginx_sha256": "19bba3ad7b9449c357ad1f5528ef4657cfb3e7ea63ae7c50d167bf6689a0e02c",
+      "current_outputs_HTTP_hash_verified": 185,
+      "legacy_assets_HTTP_hash_verified": {
+        "r17": 180,
+        "r19": 180,
+        "r20": 180,
+        "r21": 180,
+        "r22": 180,
+        "r23": 180,
+        "r24": 180,
+        "r25": 180,
+        "r26": 180,
+        "r27": 181,
+        "r28": 182,
+        "r29": 182,
+        "r30": 182,
+        "r31": 182,
+        "r32": 181,
+        "r33": 181,
+        "r34": 181
+      },
+      "legacy_versions": 17,
+      "missing_asset_HTTP_status": 404,
+      "API_public_status": 200,
+      "API_unauthenticated_status": 401,
+      "API_Worker_Native_SDK_flags_environment_hash_timers_preserved": true,
+      "Native_healthy": true,
+      "Native_source_pins_verified": 9,
+      "CLI": 0,
+      "unknown_markers": 0,
+      "manual_invoice_proofs": 0,
+      "cgroup_owners": [],
+      "R34_source_inputs": 1400,
+      "R35_source_inputs": 1400,
+      "source_changed_paths": [
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/ProductInvoiceImport.tsx"
+      ],
+      "new_source_paths": 0,
+      "unchanged_source_inputs": 1399,
+      "scope": "R35 header width/nowrap delta only; R34 OCR timeout remains historical and unproven remote outcome; harness QA separate",
+      "new_ocr_execution_acquisitions": 0,
+      "observer_effects": {
+        "metadata_samples": 1,
+        "static_health_samples": 1,
+        "SQL_queries_or_writes": 0,
+        "provider_requests": 0,
+        "service_or_timer_mutations": 0,
+        "profile_mutations": 0,
+        "cancellations_or_reconciliations": 0
+      },
+      "files": [
+        {
+          "path": "ops/lab/artifacts/invoice-provisional-table-ui-20261107-r01/runtime/static-health-r35-final.json",
+          "bytes": 21767,
+          "sha256": "a42a18af0cae2fe0841814541b1e21c19d47061014fdf6f102cf5c1627674a22"
+        },
+        {
+          "path": "ops/lab/artifacts/invoice-provisional-table-ui-20261107-r01/runtime/metadata-r35-final.json",
+          "bytes": 17119,
+          "sha256": "1885ce82c9554c57c8907f295ee5d3cdb7e050debb6de3e92f8b6e9397af4f20"
+        },
+        {
+          "path": "ops/lab/artifacts/invoice-provisional-table-ui-20261107-r01/runtime/final-health-r35-readonly.py",
+          "bytes": 10322,
+          "sha256": "2579996b0d71ff5503b88e1b36129db6b469ab356a2fe744297a11986065c2f8"
+        },
+        {
+          "path": "ops/lab/artifacts/invoice-provisional-table-ui-20261107-r01/runtime/pins-r35-final.json",
+          "bytes": 2060,
+          "sha256": "406293927a2a9af09d661e252cd0ac24f61a2552018d2c9d2f13380190b5e8c8"
+        }
+      ]
+    },
+    "cumulative_observer_effects_including_R35": {
+      "metadata_samples": 6,
+      "static_health_samples": 3,
+      "known_deadline_log_reads": 1,
+      "SQL_queries_or_writes": 0,
+      "provider_requests": 0,
+      "service_or_timer_mutations": 0,
+      "profile_mutations": 0,
+      "cancellations_or_reconciliations": 0,
+      "observed_ocr_execution_acquisitions": 1,
+      "reported_public_intentions": 2
+    }
+  },
+  "checks": {
+    "client_tests": {
+      "passed": 52,
+      "files": 2,
+      "seconds": 33.52
+    },
+    "full_workspace_typecheck_exit": 0,
+    "full_workspace_lint_exit": 0,
+    "final_style_lint_exit": 0,
+    "local_operator_checks_R34": 5,
+    "local_operator_checks_R35": 6,
+    "approved_files_byte_identical": 44,
+    "utf8_lf": true,
+    "knowledge_check": {
+      "command": "npm run knowledge:check",
+      "exit_code": 0,
+      "sources": 81,
+      "excluded": 37,
+      "documents": 44,
+      "fragments": 46,
+      "releaseId": "e5c6576b3a54b06de3db341fbd67b7a356a9dc4bcf0809332d25cf020f1eff82",
+      "publication": false
+    },
+    "final_source_freeze_matches": true
+  },
+  "catalog": {
+    "path": "ops/lab/artifacts/invoice-provisional-table-ui-20261107-r01/catalog.json",
+    "sha256": "bb94a9e04968a5c84e9112f3ca3abe3d35decc5949c92fd247bcae8e98b6e743"
+  },
+  "commercial_save": false,
+  "knowledge_publication": false,
+  "limitations": [
+    "New real Gemini extraction did not complete: known pre-dispatch409 and a later240s timeout/504. The unknown remote result was not replayed.",
+    "Visual table QA uses explicit isolated fixtures and the exact R34 component; it does not prove live provider integration.",
+    "No final invoice/product persistence tested.",
+    "Physical phone, Safari and OS virtual keyboard not tested.",
+    "No upstream request count or billing inferred from public POST/Native execution.",
+    "Transient health_status ownership can reject a new inference with known409; this visual change does not modify Native scheduling.",
+    "English resources are present but live English switching was not visually verified in the isolated harness; no product defect established.",
+    "Harness mounts the exact component with project theme, not the full authenticated BaseLayout."
+  ]
+}

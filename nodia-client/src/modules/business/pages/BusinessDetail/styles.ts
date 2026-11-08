@@ -1,12 +1,36 @@
 import { styled, alpha } from "@mui/material/styles";
 import { Box, Card, Typography, Tabs as MuiTabs, Tab as MuiTab } from "@mui/material";
+import Breadcrumb from "../../../../components/Breadcrumb";
 
 export const DetailContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(3),
   width: "100%",
+  minWidth: 0,
   margin: "0 auto",
+}));
+
+export const DetailBreadcrumb = styled(Breadcrumb)(({ theme }) => ({
+  marginBottom: 0,
+  flexWrap: "nowrap",
+  minWidth: 0,
+  "& .MuiBreadcrumbs-root": { minWidth: 0, flex: 1 },
+  "& .MuiBreadcrumbs-ol": { flexWrap: "nowrap" },
+  "& .MuiBreadcrumbs-li": { minWidth: 0 },
+  "& .MuiBreadcrumbs-li:last-of-type": {
+    overflow: "hidden",
+    "& > span": { display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
+  },
+  "& > .MuiBox-root": { flexShrink: 0 },
+  [theme.breakpoints.down("sm")]: {
+    alignItems: "flex-start",
+    "& .MuiBreadcrumbs-li:first-of-type, & .MuiBreadcrumbs-separator": { flexShrink: 0 },
+    "& .MuiBreadcrumbs-li:last-of-type > span": {
+      whiteSpace: "normal",
+      overflowWrap: "anywhere",
+    },
+  },
 }));
 
 export const HeaderCard = styled(Card)(({ theme }) => {

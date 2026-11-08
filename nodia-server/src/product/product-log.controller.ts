@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Body,
+  Param,
+  Query,
+  Req,
+} from '@nestjs/common';
+import type { AuthRequest } from '../auth/types/auth.types.js';
+import { actorReference } from '../authorization/authority-transaction.js';
 import { CreateProductLogDto } from './dto/create-product-log.dto.js';
 import { BulkCreateProductLogDto } from './dto/bulk-create-product-log.dto.js';
 import { UpdateProductLogDto } from './dto/update-product-log.dto.js';
@@ -26,37 +37,82 @@ export class ProductLogController {
   ) {}
 
   @Get()
-  findAll(@Query() queryParams: GetProductLogsDto) {
-    return this.getAllProductLogsUseCase.execute(queryParams);
+  findAll(
+    @Query() queryParams: GetProductLogsDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.getAllProductLogsUseCase.execute(
+      queryParams,
+      actorReference(request.auth),
+    );
   }
 
   @Post(['query', 'by-products'])
-  query(@Body() queryProductLogsDto: QueryProductLogsDto) {
-    return this.queryProductLogsUseCase.execute(queryProductLogsDto);
+  query(
+    @Body() queryProductLogsDto: QueryProductLogsDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.queryProductLogsUseCase.execute(
+      queryProductLogsDto,
+      actorReference(request.auth),
+    );
   }
 
   @Post('bulk')
-  createBulk(@Body() bulkCreateProductLogDto: BulkCreateProductLogDto) {
-    return this.createBulkProductLogsUseCase.execute(bulkCreateProductLogDto);
+  createBulk(
+    @Body() bulkCreateProductLogDto: BulkCreateProductLogDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.createBulkProductLogsUseCase.execute(
+      bulkCreateProductLogDto,
+      undefined,
+      actorReference(request.auth),
+    );
   }
 
   @Put('bulk')
-  updateBulk(@Body() bulkUpdateProductLogDto: BulkUpdateProductLogDto) {
-    return this.updateBulkProductLogsUseCase.execute(bulkUpdateProductLogDto);
+  updateBulk(
+    @Body() bulkUpdateProductLogDto: BulkUpdateProductLogDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.updateBulkProductLogsUseCase.execute(
+      bulkUpdateProductLogDto,
+      undefined,
+      actorReference(request.auth),
+    );
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.getProductLogByIdUseCase.execute(id);
+  findOne(@Param('id') id: string, @Req() request: AuthRequest) {
+    return this.getProductLogByIdUseCase.execute(
+      id,
+      actorReference(request.auth),
+    );
   }
 
   @Post()
-  create(@Body() createProductLogDto: CreateProductLogDto) {
-    return this.createProductLogUseCase.execute(createProductLogDto);
+  create(
+    @Body() createProductLogDto: CreateProductLogDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.createProductLogUseCase.execute(
+      createProductLogDto,
+      undefined,
+      actorReference(request.auth),
+    );
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateProductLogDto: UpdateProductLogDto) {
-    return this.updateProductLogUseCase.execute(id, updateProductLogDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateProductLogDto: UpdateProductLogDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.updateProductLogUseCase.execute(
+      id,
+      updateProductLogDto,
+      undefined,
+      actorReference(request.auth),
+    );
   }
 }

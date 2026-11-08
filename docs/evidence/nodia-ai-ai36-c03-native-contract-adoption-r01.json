@@ -1,0 +1,370 @@
+{
+  "schema_version": 1,
+  "stage": "AI36-C03",
+  "observed_on": "2026-10-25",
+  "environment": "local_Linux_VM",
+  "status": "native_pure_contract_adopted_and_HTTP_verified_MCP_publication_and_inference_acceptance_pending",
+  "scope": {
+    "route": "/nodia-ai/invoice-analysis/contract",
+    "actions": [
+      "prepare",
+      "normalize"
+    ],
+    "private_service_authentication": true,
+    "body_limit_bytes": 65536,
+    "nested_provider_inference": false,
+    "SQL_or_R2_in_contract": false,
+    "MCP_candidate": "nodia_invoices_analyze",
+    "MCP_candidate_actions": [
+      "prepare",
+      "complete"
+    ],
+    "MCP_candidate_published": false,
+    "published_contract_count": 150,
+    "published_context_fragments": 41,
+    "domain_effects": 0
+  },
+  "package": {
+    "base_image": "sha256:15e8c319011ecfc7f792938cc4177ab0943af8894b204375bd1c1200728f935a",
+    "adopted_image": "sha256:8320b3cbaee7a2f49fe845481e5f07bcb5d72c82684909bab408ece9711b1b1d",
+    "source_Python_files": 50,
+    "target_Python_files": 51,
+    "changed_files": [
+      {
+        "path": "main.py",
+        "original_sha256": "f5d449e606947fd23afdc0e766566ffa04e5055bd2087969667045216dbfc55a",
+        "candidate_sha256": "65dbd7cb69ec6afce140f97b88e097e4070595a7032f084988ad2654e1f92ef4"
+      },
+      {
+        "path": "request_guard.py",
+        "original_sha256": "c811d3b9468511a49b2ab3d31821608c177009487c18c2b34c8dbb019e7ee866",
+        "candidate_sha256": "5393c138c9c4b294b0a3283dabedb9027ae2abfc4291048d059d79b206c94c46"
+      },
+      {
+        "path": "invoice_mcp_contract.py",
+        "original_sha256": null,
+        "candidate_sha256": "17011344639028e005606baa6ad86a2e8cb6ce364adfbbd77e71118b55872640"
+      }
+    ],
+    "source_layers": 20,
+    "target_layers": 21,
+    "dependency_or_parser_changes": false,
+    "preserved_parser_files": [
+      "invoice_parser.py",
+      "schemas.py"
+    ],
+    "recovery_layer_archive": "ops/lab/artifacts/ai36-c03-native-contract-r01/candidate-layer.tar.gz",
+    "recovery_layer_archive_sha256": "cace98c8e991ba101d4622c4b05e8588046d7327087dc204e7c9d43474fd1d1b",
+    "base_and_candidate_images_retained": true,
+    "full_image_export_created": false,
+    "secrets_profiles_or_dependencies_packaged": false
+  },
+  "source_and_isolated_verification": {
+    "Node_candidate": {
+      "tests": 44,
+      "failed": 0
+    },
+    "gateway_source_attestation_human_receipts": {
+      "tests": 128,
+      "failed": 0
+    },
+    "Python_contract": {
+      "tests": 15,
+      "failed": 0
+    },
+    "isolated_private_HTTP": {
+      "checks": [
+        {
+          "case": "missing_auth_before_large_body",
+          "HTTP": 401
+        },
+        {
+          "case": "wrong_auth",
+          "HTTP": 401
+        },
+        {
+          "case": "prepare_zero_tax",
+          "HTTP": 200
+        },
+        {
+          "case": "normalize_preserves_zero_and_null",
+          "HTTP": 200
+        },
+        {
+          "case": "body_65537_rejected_before_parser",
+          "HTTP": 413
+        },
+        {
+          "case": "duplicate_key_rejected",
+          "HTTP": 422
+        },
+        {
+          "case": "nonfinite_rejected",
+          "HTTP": 422
+        },
+        {
+          "case": "unknown_actor_override_rejected",
+          "HTTP": 422
+        },
+        {
+          "case": "prepare_cannot_receive_extraction",
+          "HTTP": 422
+        },
+        {
+          "case": "normalize_requires_extraction",
+          "HTTP": 422
+        },
+        {
+          "case": "invalid_mapping_rejected",
+          "HTTP": 422
+        },
+        {
+          "case": "negative_tax_rejected",
+          "HTTP": 422
+        },
+        {
+          "case": "101_items_rejected",
+          "HTTP": 422
+        }
+      ],
+      "real_route_auth_guard_parser": true,
+      "network": "none",
+      "public_ports": 0,
+      "profile_mounts": 0,
+      "SDK_or_provider_generations": 0
+    },
+    "main_factory_and_lifespan": {
+      "status": "main_factory_and_lifespan_with_synthetic_SDK_boundaries_passed",
+      "real_factory_lifespan_and_private_route": true,
+      "HTTP": [
+        401,
+        200,
+        200,
+        422,
+        413
+      ],
+      "SDK_constructors_browser_processes_forbidden": true,
+      "web_initialization": "explicit_async_fake",
+      "actual_provider_or_session_startup": false,
+      "profiles": "temporary_synthetic_only",
+      "cookies_created": false,
+      "cleanup_awaited": true,
+      "provider_generations": 0,
+      "R2_or_SQL": false
+    },
+    "operator_decisions_and_recovery": {
+      "tests": 26,
+      "failed": 0,
+      "precedence_regressions": 9,
+      "reproduce_from_recovery_artifact_directory": "python run-operator-tests-r05.py"
+    },
+    "canary_credential_source": {
+      "tests": 4,
+      "failed": 0,
+      "fixture_values_synthetic": true,
+      "environment_precedence_matches_load_dotenv_override_false": true,
+      "reproduce_from_recovery_artifact_directory": "python test-canary-credential-r02.py"
+    }
+  },
+  "preserved_failed_attempt": {
+    "operator": "R04",
+    "status": "adopt_failed",
+    "failure_code": "new_image_mismatch",
+    "native_transition_attempted": true,
+    "cause": "zz-ai40-chat-image.conf sorted after zz-ai36-c03-native-contract-fix-r04.conf and reset ExecStart to source image",
+    "candidate_image_adopted": false,
+    "automatic_rollback": false,
+    "inference_replay": false,
+    "explicit_recovery": {
+      "status": "failed_adoption_recovered_to_source",
+      "route": "restore_exact_source_descriptor_and_new_epoch",
+      "epoch_after": {
+        "container_id": "678d4f10274cf557590311af0bee81a7cb71be7015ec282a4154d48b71d6d38b",
+        "image_id": "sha256:15e8c319011ecfc7f792938cc4177ab0943af8894b204375bd1c1200728f935a",
+        "started_at_utc": "2026-10-25T17:41:00.033701938Z"
+      },
+      "API_worker_health_quiet_and_timers_restored": true,
+      "configured_SQL_writes": 0,
+      "provider_generations": 0
+    }
+  },
+  "R05": {
+    "operator_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/c03-native-adopt-r05.py",
+    "operator_sha256": "fe32dae0685e9b4e6d2d121bcd6b63aa8c72648d0e353d68cd46267141df5a2d",
+    "plan_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/adoption-plan-r05.json",
+    "plan_sha256": "7f4b7aaa2f4d59cf69f8dc67ddf81e5be72a45d16a7eaef131ddbc921ec4e920",
+    "work_directory": "/opt/nodia/verification/ai36-c03-native-contract-fix-r05",
+    "dropin_basename": "zzz-ai36-c03-native-contract-fix-r05.conf",
+    "precedence_gate_before_backup_and_service_stop": "simulate_last_dropin_and_one_exact_argv; compare_current_systemctl_show_loaded_argv",
+    "post_daemon_reload_before_start": "compare_systemctl_cat_effective_owner_and_argv_AND_systemctl_show_loaded_argv_to_exact_own_descriptor",
+    "rollback_and_failed_recovery": "exact_restored_source_descriptor_AND_loaded_manager_argv; fresh_SQL_native_Codex_quiet; refuse_unknown",
+    "status": "adopt_completed",
+    "epoch_before": {
+      "container_id": "678d4f10274cf557590311af0bee81a7cb71be7015ec282a4154d48b71d6d38b",
+      "image_id": "sha256:15e8c319011ecfc7f792938cc4177ab0943af8894b204375bd1c1200728f935a",
+      "started_at_utc": "2026-10-25T17:41:00.033701938Z"
+    },
+    "epoch_after": {
+      "container_id": "b4375ef639fd03c5955abe5c7c6c491908d8fe4e0a0aa28e5cd162e17d11442c",
+      "image_id": "sha256:8320b3cbaee7a2f49fe845481e5f07bcb5d72c82684909bab408ece9711b1b1d",
+      "started_at_utc": "2026-10-25T17:45:34.206184136Z"
+    },
+    "server_manifest_sha256": "023d984ce52573c526a982ce54672aee949fd53ce498a2cd079345a3a6bcb9b1",
+    "opaque_environment_mounts_ports_configuration_preserved": true,
+    "public_source_inventory_exact": true,
+    "schema_selection_nginx_and_unrelated_configuration_preserved": true,
+    "timers_restored": true,
+    "fresh_backup": {
+      "cipher_sha256": "b86c5b4ccc8ad1c3301b598128b571a8d7490bb13cc804c13fa30f465d6f05eb",
+      "cipher_bytes": 1299805,
+      "captured_at": "2026-10-25T17:45:26.293Z",
+      "expires_at": "2026-11-01T17:45:26.293Z",
+      "retention_days": 7
+    },
+    "SQL_quiet_after": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "native_and_Codex_quiet_gates_passed": true,
+    "configured_SQL_writes": 0,
+    "provider_generation_requests": 0,
+    "business_effects": 0,
+    "migrations": 0,
+    "services_restarted_by_explicit_root_action": true
+  },
+  "operational_HTTP": {
+    "status": "adopted_private_contract_verified",
+    "checks": [
+      {
+        "case": "unauthorized_before_oversized_parser",
+        "HTTP": 401
+      },
+      {
+        "case": "native_instructions",
+        "HTTP": 200
+      },
+      {
+        "case": "native_normalization_zero_null",
+        "HTTP": 200
+      },
+      {
+        "case": "private_body_bound_64KiB",
+        "HTTP": 413
+      },
+      {
+        "case": "duplicate_key_rejected",
+        "HTTP": 422
+      }
+    ],
+    "epoch_before_after_unchanged": {
+      "id": "b4375ef639fd03c5955abe5c7c6c491908d8fe4e0a0aa28e5cd162e17d11442c",
+      "image": "sha256:8320b3cbaee7a2f49fe845481e5f07bcb5d72c82684909bab408ece9711b1b1d",
+      "started_at": "2026-10-25T17:45:34.206184136Z"
+    },
+    "normalization_sha256": "64ef36e6624031d0335e41797fc585d8945547b7fce2cf9968d75b5a40839451",
+    "preserves_zero_and_null": true,
+    "service_token_emitted": false,
+    "SDK_initialized": false,
+    "provider_requests": 0,
+    "SQL_or_R2_IO": false,
+    "published_tools_changed": false,
+    "inference_acceptance": false,
+    "initial_canary_failure": {
+      "receipt_bytes": 0,
+      "class": "AssertionError",
+      "code": "service_token_unavailable",
+      "line": 9,
+      "HTTP_calls": 0,
+      "cause": "old canary looked in Docker Config.Env, but service loads existing RO /app/.env",
+      "fix": "R02 reads only service-key result in memory using explicit-env precedence, otherwise dotenv source; never serializes .env",
+      "preflight_only_actual": {
+        "status": "adopted_canary_preconditions_verified",
+        "epoch": {
+          "id": "b4375ef639fd03c5955abe5c7c6c491908d8fe4e0a0aa28e5cd162e17d11442c",
+          "image": "sha256:8320b3cbaee7a2f49fe845481e5f07bcb5d72c82684909bab408ece9711b1b1d",
+          "started_at": "2026-10-25T17:45:34.206184136Z"
+        },
+        "service_token_shape_valid": true,
+        "service_token_emitted": false,
+        "private_binding_verified": true,
+        "HTTP_calls": 0,
+        "provider_requests": 0,
+        "SDK_initialized": false,
+        "SQL_or_R2_IO": false
+      }
+    }
+  },
+  "receipt_provenance": [
+    {
+      "recovery_artifact_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/summary.json",
+      "sha256": "f371ba5004777316cb385494db8d756071eb387b42cb7f8e9d32d4c93817ba11"
+    },
+    {
+      "recovery_artifact_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/sidecar-continuation-receipt.jsonl",
+      "sha256": "79c8aa9e23bc65aae514581d7b2fc0209e0e586050684b61045021ba4f11aa89"
+    },
+    {
+      "recovery_artifact_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/main-lifespan-r02.json",
+      "sha256": "871c298b8ab39773b668525fc39c0ea91f2d61b58e2fe0b32057c79a5020ca1e"
+    },
+    {
+      "recovery_artifact_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/adoption-preflight-r04-pinned.json",
+      "sha256": "1a65e0534e01276a5261490056301a9f0befa3b3102bbb70561448400aadc921"
+    },
+    {
+      "recovery_artifact_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/adoption-execute-r04.json",
+      "sha256": "aed35e74e7f9d1ab9432cc915f470be61cf693451fec0e1dcdfb7416c106c3bb"
+    },
+    {
+      "recovery_artifact_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/image-transition-diagnostic-r01.json",
+      "sha256": "323184d529d13def1ed3282f7dbde0751736fbe104b31f669a7951320c1f48ff"
+    },
+    {
+      "recovery_artifact_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/recovery-execute-r04.json",
+      "sha256": "dbf997752adf4007e49eedb882d9070a39405742540b73b806a396df02ab40b4"
+    },
+    {
+      "recovery_artifact_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/adoption-preflight-r05.json",
+      "sha256": "4ac7b84c5000466ddf24bb4e6930f005f0e675b494c5bc54cc140577dfb82585"
+    },
+    {
+      "recovery_artifact_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/adoption-execute-r05.json",
+      "sha256": "26776aa208ba3ce60a4153d455a7675b3f8b14b083a17093f4eb049d9ceff806"
+    },
+    {
+      "recovery_artifact_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/adopted-private-contract-r01.json",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "recovery_artifact_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/adopted-canary-diagnostic-r01.json",
+      "sha256": "bf5b213f1a40fec5b38d9d1e1a9cba0ea15ac2e07b8a99fa669fec610915828b"
+    },
+    {
+      "recovery_artifact_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/adopted-canary-preflight-r02.json",
+      "sha256": "20cbb2e32ea2964eab723af3bdf112b105088e033bfee8b7d2089728dc858b0e"
+    },
+    {
+      "recovery_artifact_path": "ops/lab/artifacts/ai36-c03-native-contract-r01/adopted-private-contract-r02.json",
+      "sha256": "021c106cfbd4f01e1e6975f75b178f9f91c154212b41e110dba842cb01fc8838"
+    }
+  ],
+  "effects": {
+    "new_provider_generations": 0,
+    "business_writes": 0,
+    "configured_SQL_writes": 0,
+    "migrations": 0,
+    "new_tools_published": 0,
+    "approval_changes": 0,
+    "private_credentials_or_snapshots_in_repository": false,
+    "account_profiles_modified_by_probes": false
+  },
+  "limits": [
+    "Main-factory/lifespan isolation uses explicit fake SDK boundaries and does not certify provider-account startup or inference.",
+    "Operational adoption and five pure HTTP requests do not qualify any Web/Agentic model, reasoning level, original-file modality or MCP inference in the new epoch.",
+    "Runtime requalification is a separate cohort/evidence; no old proofs were rewritten or removed.",
+    "Analyzer remains unpublished; real prepare -> active-generation extraction -> complete -> authorized human result readback remains a separate acceptance gate.",
+    "Codex PDF/audio are not inferred supported; original formats require their own actual proofs.",
+    "No approval of documentation, AI-36/C05 closure, AI-38 global delivery or production acceptance is granted by this receipt."
+  ]
+}

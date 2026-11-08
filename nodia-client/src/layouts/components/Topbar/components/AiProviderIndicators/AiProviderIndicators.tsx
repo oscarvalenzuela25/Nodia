@@ -1,23 +1,36 @@
-import { Tooltip } from "@mui/material";
+import { useRef } from "react";
+import { IconButton, Tooltip } from "@mui/material";
+import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
 import VpnKeyOutlinedIcon from "@mui/icons-material/VpnKeyOutlined";
-import LanguageOutlinedIcon from "@mui/icons-material/LanguageOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import { sileo } from "sileo";
 import { useAiProvidersHealth } from "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/useServices";
 import { enabledModes, modeHealth } from "./modeHealth";
 import { Indicators, ModeButton, StatusBadge } from "./styles";
 
 const modeIcons = {
   api_key: VpnKeyOutlinedIcon,
-  token_plan_web: LanguageOutlinedIcon,
-  token_plan_agentic: PsychologyOutlinedIcon,
+  agentic: PsychologyOutlinedIcon,
 };
 
 export default function AiProviderIndicators() {
   const { t } = useTranslation("layout");
   const navigate = useNavigate();
-  const { data, isFetching, isError } = useAiProvidersHealth();
+  const { data, isFetching, isError, refetch } = useAiProvidersHealth();
+  const manualRefreshPending = useRef(false);
+  const refreshHealth = async () => {
+    if (isFetching || manualRefreshPending.current) return;
+    manualRefreshPending.current = true;
+    try {
+      const result = await refetch({ cancelRefetch: false });
+      if (result.isSuccess) sileo.success({ title: t("ai_indicators.refreshed") });
+      // Failed reads use the shared QueryCache error notification.
+    } finally {
+      manualRefreshPending.current = false;
+    }
+  };
   const provider = data?.providers?.find((item) => item.is_default === true);
   // This optional group has no empty state when no default is configured.
   if (!provider || !data) return null;
@@ -35,7 +48,7 @@ export default function AiProviderIndicators() {
             <span>
               <ModeButton aria-label={label} disabled={isFetching || state === "disabled"} size="small" onClick={() => {
                 const params = new URLSearchParams({ provider: provider.id, mode });
-                navigate(`/settings/ai-providers?${params}`);
+                navigate(`/ai-providers?${params}`);
               }}>
                 <StatusBadge variant="dot" color={state === "disabled" ? "default" : state === "configured" || state === "healthy" || state === "session_ready" ? "success" : "error"} overlap="circular" anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
                   <Icon fontSize="small" />
@@ -46,6 +59,19 @@ export default function AiProviderIndicators() {
           </Tooltip>
         );
       })}
+      <Tooltip title={t("ai_indicators.refresh")}>
+        <span>
+          <IconButton
+            aria-label={t("ai_indicators.refresh")}
+            size="small"
+            loading={isFetching}
+            onClick={refreshHealth}
+            sx={{ width: 44, height: 44, flexShrink: 0, color: "text.secondary" }}
+          >
+            <RefreshOutlinedIcon fontSize="small" />
+          </IconButton>
+        </span>
+      </Tooltip>
     </Indicators>
   );
 }

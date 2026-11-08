@@ -38,8 +38,9 @@ import {
   consumeInvoiceAttachmentStage,
   invoiceLegacyFileMediaType,
 } from '../../nodia-ai-invoice-attachment/types/invoice-attachment-stage.js';
+import { assertBusinessesAccess } from '../../business-access/business-access.js';
 
-const route = '/tools/business';
+const route = '/business';
 const fields = {
   business_id: 'business_id',
   provider_id: 'provider_id',
@@ -358,6 +359,7 @@ class InvoiceOperation implements NodiaAiNativeOperation {
         origins: { ...previous.origins, ...input.origins },
       };
     }
+    await this.assertDataAuthority(input, context);
     const missingFields =
       this.operation === 'create' && !Object.hasOwn(input.command, 'code')
         ? ['code']
@@ -490,7 +492,9 @@ class InvoiceOperation implements NodiaAiNativeOperation {
       input.command[edit.field_key] = edit.value;
       input.origins[edit.field_key] = 'user';
     }
-    return this.template(this.decode(this.template(input)));
+    const checked = this.decode(this.template(input));
+    await this.assertDataAuthority(checked, context);
+    return this.template(checked);
   }
 
   async verifyAuthority(
@@ -506,8 +510,9 @@ class InvoiceOperation implements NodiaAiNativeOperation {
       step.scope.business_id !== input.businessId
     )
       throw new ForbiddenException('nodia_ai:capability_denied');
-    // Global authenticated product access is deliberate. Target existence and
-    // changed values belong to preconditions, never historical receipt reads.
+    await this.assertDataAuthority(input, context);
+    // Historical receipts need current visibility, not unchanged business values.
+    // A deleted invoice has no new destination; the original business still gates it.
   }
 
   async verifyPreconditions(
@@ -610,6 +615,7 @@ class InvoiceOperation implements NodiaAiNativeOperation {
     input: Decoded,
     context: ProposalPreparerContext,
   ): Promise<NodiaAiJsonObject> {
+    await this.assertDataAuthority(input, context);
     const first = input.id
       ? await this.store.target(context.manager, input.id)
       : null;
@@ -665,6 +671,35 @@ class InvoiceOperation implements NodiaAiNativeOperation {
     this.boundedReview(snapshot);
     return snapshot;
   }
+
+  private async assertDataAuthority(
+    input: Decoded,
+    context: ProposalPreparerContext,
+  ): Promise<void> {
+    const actor = {
+      userId: context.actor.actorId,
+      sessionId: context.actor.sessionId,
+      transaction: context.manager,
+      statementTimeoutMs: context.statementTimeoutMs,
+    };
+    const destination = String(input.command.business_id ?? input.businessId);
+    await assertBusinessesAccess(
+      context.manager,
+      actor,
+      [input.businessId, destination],
+      { lock: true },
+    );
+    if (input.id) {
+      const current = await this.store.target(context.manager, input.id);
+      if (current)
+        await assertBusinessesAccess(
+          context.manager,
+          actor,
+          [String(current.business_id)],
+          { lock: true },
+        );
+    }
+  }
 }
 
 @Injectable()
@@ -695,6 +730,11 @@ export class BuildNodiaAiInvoiceOperationsUseCase {
             } as unknown as CreateInvoiceDto,
             undefined,
             context.manager,
+            {
+              userId: context.actor.actorId,
+              sessionId: context.actor.sessionId,
+              transaction: context.manager,
+            },
           ),
         policy,
       ),
@@ -713,6 +753,11 @@ export class BuildNodiaAiInvoiceOperationsUseCase {
               ...(input.stagedPath ? { path_storage: input.stagedPath } : {}),
             } as UpdateInvoiceDto,
             context.manager,
+            {
+              userId: context.actor.actorId,
+              sessionId: context.actor.sessionId,
+              transaction: context.manager,
+            },
           ),
         policy,
       ),

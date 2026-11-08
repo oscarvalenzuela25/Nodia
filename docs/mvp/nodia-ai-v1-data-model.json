@@ -886,8 +886,7 @@
           "key": "mode",
           "values": [
             "api_key",
-            "token_plan_web",
-            "token_plan_agentic"
+            "agentic"
           ]
         },
         {
@@ -3746,5 +3745,14 @@
       "verified": "docs/evidence/nodia-ai-ai34-sql-validation.json",
       "activation": "docs/evidence/nodia-ai-ai34-runtime-activation.json"
     }
+  },
+  "modeRetirementDecision": {
+    "date": "2026-10-27",
+    "source": "docs/mvp/90-agentic-api-only-web-retirement.md",
+    "modes": [
+      "agentic",
+      "api_key"
+    ],
+    "history": "Immutable historical run snapshots are preserved; removed Web selections require explicit reconfiguration."
   }
 }

@@ -23,7 +23,6 @@ import ProviderDetail from "./components/ProviderDetail";
 import ProvidersLoading from "./components/ProvidersLoading";
 import AddProviderModal from "./components/AddProviderModal";
 import ConfigureProviderModal from "./components/ConfigureProviderModal";
-import RemoteLoginModal from "./components/RemoteLoginModal";
 import AgenticLoginModal from "./components/AgenticLoginModal";
 import {
   PageContainer,
@@ -46,8 +45,7 @@ const AiProviders: FC = () => {
   const requestedMode = searchParams.get("mode");
   const initialMode =
     requestedMode === "api_key" ||
-    requestedMode === "token_plan_web" ||
-    requestedMode === "token_plan_agentic"
+    requestedMode === "agentic"
       ? requestedMode
       : undefined;
   const setSelectedView = (view: string) => {
@@ -62,7 +60,6 @@ const AiProviders: FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [configureProvider, setConfigureProvider] =
     useState<AiProviderHealthItem | null>(null);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isAgenticLoginModalOpen, setIsAgenticLoginModalOpen] = useState(false);
 
   // Queries
@@ -83,7 +80,6 @@ const AiProviders: FC = () => {
   } = useAiProvidersHealth();
 
   const {
-    data: geminiEnginesData,
     isError: enginesError,
     isFetching: isFetchingEngines,
   } = useGeminiEngines();
@@ -154,38 +150,6 @@ const AiProviders: FC = () => {
   const activeAlerts = useMemo(() => {
     const allAlerts = [...(healthResponse?.alerts || [])];
 
-    const geminiProvider = displayProviders.find(
-      (p) => p.key.toLowerCase() === "gemini",
-    );
-
-    if (geminiProvider?.use_token_plan_web) {
-      if (geminiEnginesData?.web?.authenticated === false) {
-        const hasWebAlert = allAlerts.some(
-          (a) =>
-            a.provider.toLowerCase() === "gemini" &&
-            (a.id.includes("web-expired") || a.actionType === "renew_session"),
-        );
-        if (!hasWebAlert) {
-          allAlerts.unshift({
-            id: `alert-${geminiProvider.id}-web-expired`,
-            provider: "gemini",
-            type: "incident",
-            severity: "error",
-            title: t("ai_providers:alerts.web_expired_title", {
-              provider: geminiProvider.name,
-            }),
-            message: t("ai_providers:alerts.web_expired_message"),
-            timeAgo: t("ai_providers:alerts.recent"),
-            actionType: "renew_session",
-            actionLabel: t(
-              "ai_providers:alerts.renew_session_now",
-              "Renovar Sesión Ahora",
-            ),
-          });
-        }
-      }
-    }
-
     if (selectedView === "overview") return allAlerts;
     const selected = displayProviders.find((p) => p.id === selectedView);
     return allAlerts.filter(
@@ -194,14 +158,11 @@ const AiProviders: FC = () => {
   }, [
     healthResponse?.alerts,
     displayProviders,
-    geminiEnginesData?.web?.authenticated,
     selectedView,
-    t,
   ]);
 
   const handleRefreshAllData = async () => {
     await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ["ai-enabled-web-providers"] }),
       queryClient.invalidateQueries({ queryKey: ["ai-selectable-models"] }),
     ]);
     await Promise.all([
@@ -222,10 +183,6 @@ const AiProviders: FC = () => {
     } catch (error) {
       notifyHttpError(error);
     }
-  };
-
-  const handleRenewSession = () => {
-    setIsLoginModalOpen(true);
   };
 
   return (
@@ -257,7 +214,7 @@ const AiProviders: FC = () => {
           <PageSubtitle>
             {t(
               "ai_providers:subtitle",
-              "Configuración de conexiones, modelos y sesiones de los planes Web y Agentic.",
+              "Configuración de conexiones y modelos de Agentic y API key.",
             )}
           </PageSubtitle>
         </HeaderTitleBox>
@@ -326,7 +283,6 @@ const AiProviders: FC = () => {
           providerId={selectedView}
           initialMode={initialMode}
           onBack={() => setSelectedView("overview")}
-          onRenewSession={handleRenewSession}
           onConfigure={(p) => setConfigureProvider(p)}
         />
       ) : (
@@ -342,7 +298,6 @@ const AiProviders: FC = () => {
                 setIsAgenticLoginModalOpen(true);
             }}
             onCheckStatus={handleVerifyAll}
-            onRenewSession={handleRenewSession}
             onConfigure={(providerKey) => {
               const prov = displayProviders.find(
                 (p) => p.key.toLowerCase() === providerKey.toLowerCase(),
@@ -392,7 +347,6 @@ const AiProviders: FC = () => {
                   }
                   onGoToDetail={(p) => setSelectedView(p.id)}
                   onConfigure={(p) => setConfigureProvider(p)}
-                  onRenewSession={handleRenewSession}
                   onViewModels={(p) => setSelectedView(p.id)}
                 />
               ))}
@@ -423,13 +377,8 @@ const AiProviders: FC = () => {
         onSuccess={handleRefreshAllData}
       />
 
-      <RemoteLoginModal
-        open={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        onSuccess={handleRefreshAllData}
-      />
       {isAgenticLoginModalOpen && (
-        <AgenticLoginModal onClose={() => setIsAgenticLoginModalOpen(false)} />
+      <AgenticLoginModal onClose={() => setIsAgenticLoginModalOpen(false)} />
       )}
     </PageContainer>
   );

@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "status": "scoped_C05_provider_update_preview_verified",
+  "scope": "Codex Agentic native UI: synthetic provider name/activity proposal only; no confirmation or domain effect",
+  "source_manifest_sha256": "605ef5533af3c8ffbffde33ce13275d966b9271f34a2ee0f8a17c609c02308c1",
+  "conversation_id": "1fe12085-233b-458c-bf53-e083894816fa",
+  "run": {
+    "id": "52207f08-5d6b-4cd4-b556-1c10f013f004",
+    "state": "completed",
+    "phase": "inference",
+    "error_code": null,
+    "provider_dispatches_used": 2,
+    "tool_calls_used": 6,
+    "input_through_seq": "13"
+  },
+  "new_proposal_id": "e9521ebd-43a5-4002-a818-e31845ec1f8c",
+  "proposal_revision": {
+    "proposal_id": "e9521ebd-43a5-4002-a818-e31845ec1f8c",
+    "revision": 1,
+    "state": "ready",
+    "hash": "2b7555fa2e71e1fc8b721e684c6cc3eae3224b015344a258ad4ef8a204f6f9bb",
+    "expires_at": "2026-10-26 15:30:59.726+00"
+  },
+  "preview": {
+    "tool_name": "nodia_providers_prepare_update",
+    "target": {
+      "resource_key": "providers",
+      "id": "1"
+    },
+    "business_id": "5af15373-3638-4a02-a015-4e72c433fc11",
+    "changes": [
+      {
+        "field_key": "name",
+        "before": "proveedor sintético",
+        "after": "ensayo c05 vista previa 20261026",
+        "before_present": true,
+        "after_present": true
+      },
+      {
+        "field_key": "is_active",
+        "before": true,
+        "after": false,
+        "before_present": true,
+        "after_present": true
+      }
+    ],
+    "command_keys": [
+      "is_active",
+      "name"
+    ],
+    "unrequested_fields_absent": true
+  },
+  "preparation_receipts": [
+    {
+      "id": "3d1a6293-c971-4fc3-af83-59105c9846f0",
+      "run_id": "52207f08-5d6b-4cd4-b556-1c10f013f004",
+      "tool_name": "nodia_providers_prepare_update",
+      "state": "completed",
+      "public_status": "needs_clarification",
+      "draft_id": "d8488fb6-0be4-4ee0-a2f0-b8741bdb2c48",
+      "draft_revision": "1",
+      "proposal_id": null
+    },
+    {
+      "id": "94d1392d-a808-4086-9659-55c64c122236",
+      "run_id": "52207f08-5d6b-4cd4-b556-1c10f013f004",
+      "tool_name": "nodia_providers_prepare_update",
+      "state": "completed",
+      "public_status": "ready",
+      "draft_id": "d8488fb6-0be4-4ee0-a2f0-b8741bdb2c48",
+      "draft_revision": "2",
+      "proposal_id": "e9521ebd-43a5-4002-a818-e31845ec1f8c"
+    }
+  ],
+  "provider_unchanged": {
+    "id": "1",
+    "business_id": "5af15373-3638-4a02-a015-4e72c433fc11",
+    "name": "proveedor sintético",
+    "is_active": true,
+    "tax": 19,
+    "fields_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "updated_at": "2026-10-13 01:51:54.177183"
+  },
+  "contacts": {
+    "count": 0,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "private_values_emitted": false
+  },
+  "history_checks": {
+    "previous_proposals": 3,
+    "proposal_ids_current_revisions_unchanged": true,
+    "persisted_revision_state_and_hash_unchanged": true,
+    "public_steps_canonical_hashes_equal": true,
+    "limit": "The old receipt does not expose private command/precondition values; their historical byte equality is not asserted. Prior ready rows remain retained with expiry timestamps in the past."
+  },
+  "checks": {
+    "domain40_and_schema_identical_before_after": true,
+    "all_runtime_guards_passed": true,
+    "challenges_executions_effects_zero": true,
+    "SQL_native_Codex_quiet_zero": true,
+    "native_ACKs_explicit": true
+  },
+  "acknowledged_attempt_ids": [
+    "99c4df40-5c44-4fb7-a419-8c6056a17a5d",
+    "4e490767-c4d5-4f96-9046-f92def0d5dc4"
+  ],
+  "UI_observation": {
+    "source": "Root-operated UI and captured AX/screenshots; no UI actions by consolidator",
+    "preview_name_and_activity_before_after_visible": true,
+    "confirmation_not_clicked": true,
+    "saved_effect_not_claimed": true
+  },
+  "accounting": {
+    "SQL_run_budget_used": 2,
+    "tool_calls_used": 6,
+    "prepare_tool_receipts": 2,
+    "vendor_generations_and_cost": "not established by SQL counters",
+    "consolidator_VM_SQL_AI_calls": 0
+  },
+  "limits": [
+    "One provider update/activity preview, not every C05 family or CRUD action.",
+    "No challenge, confirmation, execution, live provider mutation or human approval of commercial effects.",
+    "No global AI36/C05/AI38 or other-provider acceptance.",
+    "No new reload claim is made for this preview."
+  ],
+  "receipt_pins": {
+    "c05-provider-preview-completed-VM-r01.json": {
+      "sha256": "d8fbd3f9c3eb4a44095c8eb4805cea81bdb26395861058b5327bccf7fa684749",
+      "bytes": 23753
+    },
+    "c05-provider-preview-reader-bootstrap-VM-r01.json": {
+      "sha256": "b8a22a5ec355fe4d1db24ceaa5a02e1d5c9483196643eb82bc8b9585175c8ac4",
+      "bytes": 439
+    },
+    "c05-update-domain-after-VM-r01.json": {
+      "sha256": "d3eca1be1bbd965810aa8f2a5edcf23413b585a390317a04c2b5043636646f16",
+      "bytes": 8503
+    },
+    "c05-update-domain-before-VM-r01.json": {
+      "sha256": "e63613b7acbab4577c5b762b3ad20e3c31482a4fee0eb49b2cd6ea84484358f9",
+      "bytes": 8503
+    },
+    "c05-update-preview-active-UI-r01.png": {
+      "sha256": "3d56f7a983f004b7b928ae47e09cf57893416762e94d6b6f41530abe92019e4a",
+      "bytes": 86354
+    },
+    "c05-update-preview-name-UI-r01.png": {
+      "sha256": "8fbc43a029e7745a97bdb07848b739303d024c53fa468e7601e33b275351a99d",
+      "bytes": 87136
+    },
+    "c05-update-preview-UI-AX-r01.txt": {
+      "sha256": "a321a54513956f84d5b939156dac0a13f016f0e9d04ec0bbfd7149a6a7f42028",
+      "bytes": 17250
+    },
+    "c05-update-preview-UI-r01.png": {
+      "sha256": "9d42e597aa1cd0707e16a122c28278d9a1df59db52411f65aa1b85204a112e0b",
+      "bytes": 91485
+    },
+    "historical-four-completed.json": {
+      "sha256": "bbc82b6117cdc02df9b7840cb2319503c476abdfd17f04792382c01a9a7e3abd",
+      "bytes": 9947
+    }
+  },
+  "verification_command": "python -B ops/lab/artifacts/c05-provider-preview-verification-r01/consolidate.py"
+}

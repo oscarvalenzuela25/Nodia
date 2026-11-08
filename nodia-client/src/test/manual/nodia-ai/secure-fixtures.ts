@@ -11,11 +11,11 @@ export function installSecureFixture(scenario: string) {
   let failure: string | null = scenario === "secure-key-error" ? "key" : null;
   const login = scenario === "secure-login" || scenario === "secure-codex";
   let value: SecureFlowResponse = { flow: { ...secureFlowFixture.flow, expires_at: "2099-01-01T00:00:00Z",
-    ...(login ? { kind: "connection_login", mode: "token_plan_agentic", provider_key: scenario === "secure-codex" ? "openai" : "gemini" }
+    ...(login ? { kind: "connection_login", mode: "agentic", provider_key: scenario === "secure-codex" ? "openai" : "gemini" }
       : scenario === "secure-key-update" ? { kind: "api_key_update", key_id: "9007199254740994" }
       : scenario === "secure-delete" ? { kind: "api_key_delete", key_id: "9007199254740994" }
-      : scenario === "secure-sync" ? { kind: "sync_models", mode: "token_plan_agentic" }
-      : scenario === "secure-logout" ? { kind: "gemini_web_logout", mode: "token_plan_web" } : {}) } };
+      : scenario === "secure-sync" ? { kind: "sync_models", mode: "agentic" }
+      : scenario === "secure-logout" ? { kind: "codex_logout", provider_key: "openai", mode: "agentic" } : {}) } };
   let observed: NodiaAiExecutionStatus = { ...execution, revision: 3, state: "waiting_for_user", can_resume: false,
     steps: [{ ...execution.steps[0], state: "waiting_for_user", result_refs: [] }] };
   const proposal: NodiaAiPublicProposal = { ...editableProposal, state: "confirmed", execution_id: execution.execution_id, steps: [{ ...editableProposal.steps[0], kind: "secure_flow",

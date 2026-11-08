@@ -11,7 +11,9 @@ describe('ExportProductsCsvUseCase', () => {
     productServiceMock = {
       findAllProducts: vi.fn(),
     };
-    useCase = new ExportProductsCsvUseCase(productServiceMock as ProductService);
+    useCase = new ExportProductsCsvUseCase(
+      productServiceMock as ProductService,
+    );
   });
 
   it('should be defined', () => {
@@ -25,9 +27,9 @@ describe('ExportProductsCsvUseCase', () => {
         business_id: 'b7b80a11-827c-4712-9c17-9150d0325d7b',
         code: 'PROD-001',
         name: 'Bebida Cola, 500ml',
+        measurement_unit: 'unit',
         cost_price: 600,
         cost_price_tax: 114,
-        profit_percentage: 30,
         sale_price: 1200,
         stock: 50,
         is_active: true,
@@ -45,9 +47,11 @@ describe('ExportProductsCsvUseCase', () => {
 
     const lines = csv.split('\n');
     expect(lines[0]).toBe(
-      'Código (code),Nombre (name),Costo base (cost_price),Impuesto (cost_price_tax),Margen % (profit_percentage),Precio de venta (sale_price),Stock (stock),Activo (is_active),ID (id)'
+      'Código proveedor (code),Código de barras (barcode),Nombre (name),Unidad de medida (measurement_unit),Costo base (cost_price),Costo con IVA (cost_price_tax),Precio normal (sale_price),Precio alternativo (offer_price),Alternativo habilitado (is_offer_enabled),Disponible (has_stock),Stock histórico (stock),Activo (is_active),ID (id),Versión (version)',
     );
-    expect(lines[1]).toBe('PROD-001,"Bebida Cola, 500ml",600,114,30,1200,50,true,101');
+    expect(lines[1]).toBe(
+      'PROD-001,,"Bebida Cola, 500ml",unit,600,114,1200,,,,50,true,101,',
+    );
     expect(productServiceMock.findAllProducts).toHaveBeenCalledWith({
       all: true,
       includes: false,
@@ -62,9 +66,9 @@ describe('ExportProductsCsvUseCase', () => {
         business_id: 'b7b80a11-827c-4712-9c17-9150d0325d7b',
         code: 'PROD-002',
         name: 'Potato Chips',
+        measurement_unit: 'kg',
         cost_price: 450,
         cost_price_tax: 85,
-        profit_percentage: 35,
         sale_price: 900,
         stock: 30,
         is_active: false,
@@ -83,28 +87,69 @@ describe('ExportProductsCsvUseCase', () => {
 
     const lines = csv.split('\n');
     expect(lines[0]).toBe(
-      'Code (code),Name (name),Base cost (cost_price),Tax (cost_price_tax),Margin % (profit_percentage),Sale price (sale_price),Stock (stock),Active (is_active),ID (id)'
+      'Supplier code (code),Barcode (barcode),Name (name),Measurement unit (measurement_unit),Base cost (cost_price),Tax-inclusive cost (cost_price_tax),Regular price (sale_price),Alternative price (offer_price),Alternative enabled (is_offer_enabled),Available (has_stock),Legacy stock (stock),Active (is_active),ID (id),Version (version)',
     );
-    expect(lines[1]).toBe('PROD-002,Potato Chips,450,85,35,900,30,false,102');
+    expect(lines[1]).toBe(
+      'PROD-002,,Potato Chips,kg,450,85,900,,,,30,false,102,',
+    );
   });
 
   it('neutralizes spreadsheet formulas while retaining zero/false and CSV quoting', async () => {
-    vi.mocked(productServiceMock.findAllProducts!).mockResolvedValue({ data: [{ id: '1', code: '=SUM(1,2)', name: '  @CMD', cost_price: 0, stock: 0, is_active: false }] as Product[], meta: { page: 1, limit: 1, total_items: 1, total_pages: 1 } });
+    vi.mocked(productServiceMock.findAllProducts!).mockResolvedValue({
+      data: [
+        {
+          id: '1',
+          code: '=SUM(1,2)',
+          name: '  @CMD',
+          cost_price: 0,
+          stock: 0,
+          is_active: false,
+        },
+      ] as Product[],
+      meta: { page: 1, limit: 1, total_items: 1, total_pages: 1 },
+    });
     const csv = await useCase.execute({}, { maxRows: 100, maxBytes: 4096 });
-    expect(csv).toContain('"\'=SUM(1,2)",\'  @CMD,0');
+    expect(csv).toContain('"\'=SUM(1,2)",,\'  @CMD,,0');
     expect(csv).toContain(',0,false,1');
-    expect(productServiceMock.findAllProducts).toHaveBeenCalledWith({ all: true, includes: false }, 100);
+    expect(productServiceMock.findAllProducts).toHaveBeenCalledWith(
+      { all: true, includes: false },
+      100,
+    );
+  });
+
+  it('exports a missing supplier code as an empty cell and preserves the measurement ID', async () => {
+    vi.mocked(productServiceMock.findAllProducts!).mockResolvedValue({
+      data: [{ id: '3', code: null, name: 'Rice', measurement_unit: 'kg' }] as Product[],
+      meta: { page: 1, limit: 1, total_items: 1, total_pages: 1 },
+    });
+    expect((await useCase.execute({})).split('\n')[1]).toMatch(/^,,Rice,kg,/);
   });
 
   it('rejects an oversized row probe rather than silently truncating the export', async () => {
-    vi.mocked(productServiceMock.findAllProducts!).mockResolvedValue({ data: [{}, {}] as Product[], meta: { page: 1, limit: 2, total_items: 2, total_pages: 1 } });
-    await expect(useCase.execute({}, { maxRows: 1, maxBytes: 4096 })).rejects.toThrow('Export exceeds row limit');
+    vi.mocked(productServiceMock.findAllProducts!).mockResolvedValue({
+      data: [{}, {}] as Product[],
+      meta: { page: 1, limit: 2, total_items: 2, total_pages: 1 },
+    });
+    await expect(
+      useCase.execute({}, { maxRows: 1, maxBytes: 4096 }),
+    ).rejects.toThrow('Export exceeds row limit');
   });
 
   it('rejects header/row bytes and cancellation without returning partial CSV', async () => {
-    vi.mocked(productServiceMock.findAllProducts!).mockResolvedValue({ data: [], meta: { page: 1, limit: 1, total_items: 0, total_pages: 0 } });
-    await expect(useCase.execute({}, { maxRows: 100, maxBytes: 1 })).rejects.toThrow('Export exceeds byte limit');
-    const controller = new AbortController(); controller.abort();
-    await expect(useCase.execute({}, { maxRows: 100, maxBytes: 4096, signal: controller.signal })).rejects.toThrow();
+    vi.mocked(productServiceMock.findAllProducts!).mockResolvedValue({
+      data: [],
+      meta: { page: 1, limit: 1, total_items: 0, total_pages: 0 },
+    });
+    await expect(
+      useCase.execute({}, { maxRows: 100, maxBytes: 1 }),
+    ).rejects.toThrow('Export exceeds byte limit');
+    const controller = new AbortController();
+    controller.abort();
+    await expect(
+      useCase.execute(
+        {},
+        { maxRows: 100, maxBytes: 4096, signal: controller.signal },
+      ),
+    ).rejects.toThrow();
   });
 });

@@ -943,7 +943,7 @@ try {
   );
   const selection = {
     connection_id: provider.id,
-    mode: 'token_plan_agentic',
+    mode: 'agentic',
     model_id: 'synthetic-fixture-model',
     effort_id: null,
   };
@@ -1020,7 +1020,7 @@ try {
       [shared.id],
     );
     const [module] = await db.query(
-      "SELECT id FROM modules WHERE link='/tools/business'",
+      "SELECT id FROM modules WHERE link='/business'",
     );
     await db.query(
       'DELETE FROM user_modules WHERE user_id=1 AND module_id=$1',

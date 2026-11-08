@@ -21,6 +21,11 @@ import {
 } from '../../common/ai/api-invoice-contract.js';
 import { validateInvoiceFile } from '../../invoice/invoice-file-validation.js';
 import type { AnalysisProgress } from '../../common/ai/analysis-progress.js';
+import {
+  executeNativeCodexInvoice,
+  type CodexInvoiceLifecycle,
+  type CodexNativeInvoiceRequest,
+} from '../../common/ai/codex/invoice-native-runtime.js';
 
 @Injectable()
 export class ExecuteCodexInvoiceUseCase {
@@ -30,15 +35,43 @@ export class ExecuteCodexInvoiceUseCase {
     private readonly providers: AiProviderService,
     private readonly runtime: CodexRuntimeService,
   ) {}
+  executeNative(input: CodexNativeInvoiceRequest) {
+    validateInvoiceFile(input.file);
+    const snapshot: CodexNativeInvoiceRequest = {
+      ...input,
+      identity: structuredClone(input.identity),
+      deadlineAt: new Date(input.deadlineAt),
+      file: { ...input.file, buffer: Buffer.from(input.file.buffer) },
+      fields:
+        input.fields === undefined ? undefined : structuredClone(input.fields),
+    };
+    return executeNativeCodexInvoice(
+      this.runtime,
+      snapshot,
+      (lifecycle, signal) =>
+        this.execute(
+          snapshot.identity.adapterIdentity.connectionId,
+          snapshot.modelId,
+          snapshot.file,
+          snapshot.fields,
+          snapshot.tax,
+          snapshot.effortId ?? undefined,
+          signal,
+          undefined,
+          lifecycle,
+        ),
+    );
+  }
   async execute(
     id: string,
     model: string | undefined,
     file: Express.Multer.File,
     fields?: Record<string, unknown>,
-    tax = 19,
+    tax: number | null = 19,
     effort?: string,
     callerSignal?: AbortSignal,
     progress?: AnalysisProgress,
+    native?: CodexInvoiceLifecycle,
   ) {
     validateInvoiceFile(file);
     const provider = await this.providers.findProviderById(id);
@@ -47,21 +80,22 @@ export class ExecuteCodexInvoiceUseCase {
       provider.catalog?.key !== 'openai' ||
       !provider.is_active ||
       provider.catalog.is_active === false ||
-      !provider.use_token_plan_agentic ||
-      provider.catalog.can_use_token_plan_agentic !== true
+      !provider.use_agentic ||
+      provider.catalog.can_use_agentic !== true
     )
       throw new BadRequestException(
         'El canal Codex no está habilitado para esta conexión.',
       );
-    const scoped = provider.fields?.token_plan_agentic ?? {};
+    const scoped = provider.fields?.agentic ?? {};
     const selected = model ?? scoped.ocr_model ?? scoped.selected_model;
     const levels = scoped.thinking_levels ?? {};
-    const thinking =
-      effort ??
-      (Object.hasOwn(levels, selected)
-        ? levels[selected]
-        : scoped.thinking_level) ??
-      undefined;
+    const thinking = native
+      ? (native.effortId ?? undefined)
+      : (effort ??
+        (Object.hasOwn(levels, selected)
+          ? levels[selected]
+          : scoped.thinking_level) ??
+        undefined);
     if (
       typeof selected !== 'string' ||
       !selected.trim() ||
@@ -95,7 +129,9 @@ export class ExecuteCodexInvoiceUseCase {
     };
     signal.addEventListener('abort', stopOnAbort, { once: true });
     try {
-      lease = await this.runtime.acquire(id);
+      lease = native
+        ? await native.acquire(signal)
+        : await this.runtime.acquire(id);
       if (signal.aborted) throw codexError('codex_cancelled', 499);
       const session = await this.runtime.observe(id, undefined, lease.profile);
       if (session.available !== true)
@@ -120,7 +156,7 @@ export class ExecuteCodexInvoiceUseCase {
       progress?.resolve({
         providerId: id,
         provider: 'openai',
-        mode: 'token_plan_agentic',
+        mode: 'agentic',
         model: selected,
       });
       progress?.emit('model_checked');
@@ -264,6 +300,10 @@ export class ExecuteCodexInvoiceUseCase {
             deadline.aborted ? 'codex_timeout' : 'codex_cancelled',
             deadline.aborted ? 504 : 499,
           );
+        if (native) {
+          await native.beforeDispatch(signal);
+          signal.throwIfAborted();
+        }
         progress?.emit('provider_request_started');
         const result = codexObject(
           await rpc.request(
@@ -297,6 +337,7 @@ export class ExecuteCodexInvoiceUseCase {
           progress?.emit('response_receiving');
         checkTerminal();
         const extracted = parseApiInvoice(await completion);
+        native?.validateResult(extracted);
         progress?.emit('response_received');
         lease.profile.lastInferenceAt = new Date().toISOString();
         // Ephemeral contexts must be released after success too; idle shutdown is insufficient.
@@ -305,6 +346,7 @@ export class ExecuteCodexInvoiceUseCase {
         } catch {
           await this.runtime.stop(id);
         }
+        if (native) signal.throwIfAborted();
         outcome = 'completed';
         return extracted;
       } catch (error) {
@@ -355,8 +397,12 @@ export class ExecuteCodexInvoiceUseCase {
       );
     } finally {
       signal.removeEventListener('abort', stopOnAbort);
-      lease?.release();
-      this.active--;
+      try {
+        if (native) await native.finish(outcome === 'completed');
+      } finally {
+        lease?.release();
+        this.active--;
+      }
       this.logger.log(
         JSON.stringify({
           operation: 'codex_invoice',

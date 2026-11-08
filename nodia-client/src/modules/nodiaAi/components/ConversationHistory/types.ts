@@ -6,6 +6,8 @@ export interface ConversationHistoryProps {
   items: NodiaAiConversation[];
   selectedId: string | null;
   filters: ConversationFilters;
+  filtersExpanded: boolean;
+  onToggleFilters: () => void;
   canViewAll: boolean;
   loading: boolean;
   fetching: boolean;
@@ -15,6 +17,7 @@ export interface ConversationHistoryProps {
   onFilters: (filters: ConversationFilters) => void;
   onSelect: (id: string) => void;
   onAction: (chat: NodiaAiConversation, action: ConversationAction, anchor: HTMLElement) => void;
+  onPreferences?: (chatId: string) => void;
   onRetry: () => void;
   onMore: () => void;
 }

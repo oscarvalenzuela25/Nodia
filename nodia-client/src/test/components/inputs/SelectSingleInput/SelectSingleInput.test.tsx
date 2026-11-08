@@ -4,6 +4,15 @@ import { describe, it, expect, vi } from "vitest";
 import SelectSingleInput from "../../../../../src/components/inputs/SelectSingleInput";
 
 describe("SelectSingleInput", () => {
+  it("keeps a help action outside the label and preserves the selector name", async () => {
+    const help = vi.fn();
+    render(<SelectSingleInput label="Proveedor" labelAdornment={<button type="button" onClick={help}>Ayuda del selector</button>} options={[]} value={null} onChange={vi.fn()} />);
+    expect(screen.getByRole("button", { name: "Proveedor" })).toBeInTheDocument();
+    await userEvent.setup().click(screen.getByRole("button", { name: "Ayuda del selector" }));
+    expect(help).toHaveBeenCalledOnce();
+    expect(screen.getByRole("button", { name: "Ayuda del selector" }).closest("label")).toBeNull();
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+  });
   const options = [
     { value: "users", label: "Módulo de Usuarios" },
     { value: "roles", label: "Módulo de Roles" },

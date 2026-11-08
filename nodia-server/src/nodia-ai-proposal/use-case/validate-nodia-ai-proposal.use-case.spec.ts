@@ -10,6 +10,7 @@ import { NodiaAiProposalRevision } from '../entities/nodia-ai-proposal-revision.
 import { NodiaAiProposalStep } from '../entities/nodia-ai-proposal-step.entity.js';
 import { CanonicalizeNodiaAiProposalUseCase } from './canonicalize-nodia-ai-proposal.use-case.js';
 import { ValidateNodiaAiProposalUseCase } from './validate-nodia-ai-proposal.use-case.js';
+import { proposalFixture } from './proposal.fixture.js';
 function fixture() {
   const policy = runtimeFixture().policy;
   const preparer: NodiaAiProposalPreparer = {
@@ -101,6 +102,37 @@ function fixture() {
   return { validate, proposal, revision, steps, makeStep, seal, preparer };
 }
 describe('Compile immutable NodiaAI proposal revisions', () => {
+  it('validates an opted-in historical snapshot hash and common schema without executing its authority port', () => {
+    const f = proposalFixture();
+    f.preparer.verifyHistoricalReadAuthority = vi.fn();
+    Object.assign(f.preparer, {
+      contractHash: 'b'.repeat(64),
+      catalogVersion: 'fixture/2',
+    });
+    expect(
+      f.validate.compileHistorical(f.proposal, f.revision, [f.step]).hash,
+    ).toBe(f.revision.hash);
+    expect(f.preparer.verifyHistoricalReadAuthority).not.toHaveBeenCalled();
+    expect(() => f.validate.compile(f.proposal, f.revision, [f.step])).toThrow(
+      'nodia_ai:catalog_changed',
+    );
+    f.step.public_step.unrecognized = 'tampered';
+    expect(() =>
+      f.validate.compileHistorical(f.proposal, f.revision, [f.step]),
+    ).toThrow('nodia_ai:invalid_persisted_state');
+  });
+  it('does not interpret historical workflow bindings through a new contract', () => {
+    const f = proposalFixture();
+    f.preparer.verifyHistoricalReadAuthority = vi.fn();
+    Object.assign(f.preparer, { contractHash: 'b'.repeat(64) });
+    f.step.output_bindings = [
+      { from_step_id: f.step.id, target_field_key: 'name', output_key: 'id' },
+    ];
+    f.step.public_step.output_bindings = f.step.output_bindings;
+    expect(() =>
+      f.validate.compileHistorical(f.proposal, f.revision, [f.step]),
+    ).toThrow('nodia_ai:catalog_changed');
+  });
   it('reconstructs exact projection and command hash without invoking native preparation or authority', () => {
     const f = fixture();
     f.seal();

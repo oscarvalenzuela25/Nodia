@@ -1,0 +1,542 @@
+{
+  "schema_version": 1,
+  "verification_date": "2026-10-25",
+  "status": "two_post_fix_original_turns_fail_closed_before_second_dispatch_eligibility_cause_unresolved",
+  "scope": "PNG and a fresh PDF upload in the current message, same recorded Gemini selection and local Linux VM.",
+  "sources": {
+    "artifact_directory": "ops/lab/artifacts/c03-originals-eligibility-gate-r01",
+    "catalog": "ops/lab/artifacts/c03-originals-eligibility-gate-r01/catalog.json",
+    "catalog_sha256": "97ccad74e6d4891d232bf723be46d6d765308a8adcd9decc99110283f0aedf87",
+    "generator": "ops/lab/artifacts/c03-originals-eligibility-gate-r01/consolidate-r01.py",
+    "captured_receipts_not_live_state": true
+  },
+  "release": "/opt/nodia/releases/nodia-server-ai36-c03-original-read-r01",
+  "manifest_sha256": "6efb78af9a4e610be55337ef8b8b3cb5007f283cef32c81061fc32807edf2ee6",
+  "knowledge_release": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+  "cases": [
+    {
+      "run": {
+        "id": "8452e633-e415-4bce-b2b5-d2ee9672d827",
+        "actor_id": "1",
+        "user_message_id": "b8a9af8f-34c1-4e7d-8ffe-6b2b4ca6ab08",
+        "assistant_message_id": null,
+        "state": "failed",
+        "phase": "inference",
+        "error_code": "nodia_ai:eligibility_changed",
+        "connection_id": "2",
+        "catalog_version": "nodia-ai-ai15-reads/1",
+        "policy_version": "nodia-ai-runtime/1",
+        "input_through_seq": "2",
+        "provider_dispatches_used": 1,
+        "tool_calls_used": 1,
+        "mcp_rpc_messages_used": 7,
+        "compactions_used": 0,
+        "delegations_used": 0,
+        "knowledge_release": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+        "context_sha256": "cf6e72b7d117d0f7dfe946609fbcf5a7f29137f0f8f74866aa41c1abbc7d23b7",
+        "context_bytes": "61123",
+        "through_seq": "2",
+        "selection": {
+          "mode": "token_plan_agentic",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high",
+          "connection_id": "2"
+        }
+      },
+      "job": {
+        "id": "4601c820-9057-4509-ac71-a4f7313c9fd2",
+        "run_id": "8452e633-e415-4bce-b2b5-d2ee9672d827",
+        "execution_id": null,
+        "kind": "turn",
+        "state": "failed",
+        "stage_key": "inference",
+        "stage_seq": 4,
+        "attempt_count": 4
+      },
+      "attempts": [
+        {
+          "id": "2feb81a2-7a16-4f94-8175-d46834ae028e",
+          "job_id": "4601c820-9057-4509-ac71-a4f7313c9fd2",
+          "phase": "completed",
+          "stage_key": "context",
+          "stage_seq": 1,
+          "error_code": null,
+          "routing_phase": "base",
+          "ended": true
+        },
+        {
+          "id": "5ef3efc3-eaad-4a25-8837-d4516fc37c0b",
+          "job_id": "4601c820-9057-4509-ac71-a4f7313c9fd2",
+          "phase": "completed",
+          "stage_key": "inference",
+          "stage_seq": 2,
+          "error_code": null,
+          "routing_phase": "base",
+          "ended": true
+        },
+        {
+          "id": "2342ca94-bfd5-4e5c-b643-82bf7cb44e98",
+          "job_id": "4601c820-9057-4509-ac71-a4f7313c9fd2",
+          "phase": "completed",
+          "stage_key": "tool_selection",
+          "stage_seq": 3,
+          "error_code": null,
+          "routing_phase": "base",
+          "ended": true
+        },
+        {
+          "id": "93a0ff53-ac66-4aa9-bc4a-c7840ba690a5",
+          "job_id": "4601c820-9057-4509-ac71-a4f7313c9fd2",
+          "phase": "failed",
+          "stage_key": "inference",
+          "stage_seq": 4,
+          "error_code": "nodia_ai:eligibility_changed",
+          "routing_phase": "base",
+          "ended": true
+        }
+      ],
+      "completed_discovery_tools": [
+        {
+          "id": "d06727f8-bddc-4d4e-8974-4687f9672ef8",
+          "tool_name": "nodia_capabilities_select",
+          "state": "completed"
+        }
+      ],
+      "current_original_attachment": {
+        "id": "27f10a8a-f31a-42ad-bf1f-a7af6b32bfda",
+        "kind": "image",
+        "state": "ready",
+        "byte_count": "148100",
+        "media_type": "image/png",
+        "content_hash": "0723e3c8fc45e6bbed58e91e16e7d18f55b2a1423ee007342b793f66c057d98b",
+        "page_count": null,
+        "duration_seconds": null,
+        "interpretation_revision": 0,
+        "interpretation_reviewed": false,
+        "interpretation_origin": null,
+        "interpretation_present": false
+      },
+      "original_message_part": {
+        "message_id": "b8a9af8f-34c1-4e7d-8ffe-6b2b4ca6ab08",
+        "seq": "2",
+        "part_index": 1,
+        "kind": "image",
+        "attachment_id": "27f10a8a-f31a-42ad-bf1f-a7af6b32bfda",
+        "text_present": false,
+        "text_bytes": null,
+        "text_sha256": null,
+        "part_sha256": "809e57e273c5a561e168735c0bfd2daf4cd5b13e150b2739d42c61135d646415"
+      },
+      "human_prompt_projection": {
+        "text_bytes": 372,
+        "text_sha256": "06b870ffc7b85b495713930dde587c470cb68ed56d7448bece8138286aa85e75",
+        "part_sha256": "382835be2792e78839309dff1b0c298f90c74d20b9233161217aa9094f83e768",
+        "plaintext_reconstructed": false
+      },
+      "analysis_prepare_complete_calls": 0,
+      "new_proposals": 0,
+      "executions": 0,
+      "second_provider_dispatch_performed": false
+    },
+    {
+      "run": {
+        "id": "f12167a9-566d-49d8-b567-c4a51b409c9a",
+        "actor_id": "1",
+        "user_message_id": "6d6ffae7-b9c0-4a64-830d-a87801a40567",
+        "assistant_message_id": null,
+        "state": "failed",
+        "phase": "inference",
+        "error_code": "nodia_ai:eligibility_changed",
+        "connection_id": "2",
+        "catalog_version": "nodia-ai-ai15-reads/1",
+        "policy_version": "nodia-ai-runtime/1",
+        "input_through_seq": "3",
+        "provider_dispatches_used": 1,
+        "tool_calls_used": 2,
+        "mcp_rpc_messages_used": 8,
+        "compactions_used": 0,
+        "delegations_used": 0,
+        "knowledge_release": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+        "context_sha256": "9c258465dfe3bc7405cbbbefe2d064fd91a53b7d02caea806bc88afd850236f9",
+        "context_bytes": "61830",
+        "through_seq": "3",
+        "selection": {
+          "mode": "token_plan_agentic",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high",
+          "connection_id": "2"
+        }
+      },
+      "job": {
+        "id": "918a9352-546b-45c4-a684-1d4817282523",
+        "run_id": "f12167a9-566d-49d8-b567-c4a51b409c9a",
+        "execution_id": null,
+        "kind": "turn",
+        "state": "failed",
+        "stage_key": "inference",
+        "stage_seq": 4,
+        "attempt_count": 4
+      },
+      "attempts": [
+        {
+          "id": "77988545-e2e3-4078-95ff-e98337c1d8be",
+          "job_id": "918a9352-546b-45c4-a684-1d4817282523",
+          "phase": "completed",
+          "stage_key": "context",
+          "stage_seq": 1,
+          "error_code": null,
+          "routing_phase": "base",
+          "ended": true
+        },
+        {
+          "id": "c9edd8bf-b75e-47bd-9d3b-752ed5f46af3",
+          "job_id": "918a9352-546b-45c4-a684-1d4817282523",
+          "phase": "completed",
+          "stage_key": "inference",
+          "stage_seq": 2,
+          "error_code": null,
+          "routing_phase": "base",
+          "ended": true
+        },
+        {
+          "id": "9d909338-9676-4410-a1fc-483b684ad682",
+          "job_id": "918a9352-546b-45c4-a684-1d4817282523",
+          "phase": "completed",
+          "stage_key": "tool_selection",
+          "stage_seq": 3,
+          "error_code": null,
+          "routing_phase": "base",
+          "ended": true
+        },
+        {
+          "id": "7d866a19-341d-4352-8a3c-3c983b7e200b",
+          "job_id": "918a9352-546b-45c4-a684-1d4817282523",
+          "phase": "failed",
+          "stage_key": "inference",
+          "stage_seq": 4,
+          "error_code": "nodia_ai:eligibility_changed",
+          "routing_phase": "base",
+          "ended": true
+        }
+      ],
+      "completed_discovery_tools": [
+        {
+          "id": "ac162369-86ea-45dd-b254-1a6cc0ac1c4b",
+          "tool_name": "nodia_knowledge_get",
+          "state": "completed"
+        },
+        {
+          "id": "d7065eb3-e72d-4c42-901e-82021039d50e",
+          "tool_name": "nodia_capabilities_select",
+          "state": "completed"
+        }
+      ],
+      "current_original_attachment": {
+        "id": "7ca113ed-98cb-4158-bc75-f3878f9e33a3",
+        "kind": "pdf",
+        "state": "ready",
+        "byte_count": "43102",
+        "media_type": "application/pdf",
+        "content_hash": "9f9a32bd46ebfcb1063e7d1bf4e067f91ff5e5c5d82e1536c2d9725f84917e59",
+        "page_count": 1,
+        "duration_seconds": null,
+        "interpretation_revision": 1,
+        "interpretation_reviewed": false,
+        "interpretation_origin": "extracted",
+        "interpretation_present": true
+      },
+      "original_message_part": {
+        "message_id": "6d6ffae7-b9c0-4a64-830d-a87801a40567",
+        "seq": "3",
+        "part_index": 1,
+        "kind": "pdf",
+        "attachment_id": "7ca113ed-98cb-4158-bc75-f3878f9e33a3",
+        "text_present": false,
+        "text_bytes": null,
+        "text_sha256": null,
+        "part_sha256": "1c5afbbe4502de26c13c7b4120d9cc8bc0b7ff45ad165ca79bbb5eea0320f605"
+      },
+      "human_prompt_projection": {
+        "text_bytes": 454,
+        "text_sha256": "f0f0eb73670d8fd90a49e72db27481c0d058c5ffcef385ff2898b08c2d2c96ba",
+        "part_sha256": "7e5363ef089bd7e35546433ac14dad0f5876b58cea95cfc02760ba8764265116",
+        "plaintext_reconstructed": false
+      },
+      "analysis_prepare_complete_calls": 0,
+      "new_proposals": 0,
+      "executions": 0,
+      "second_provider_dispatch_performed": false
+    }
+  ],
+  "native_closure_evidence": {
+    "kind": "completed_SQL_inference_stage_and_tool_selection_plus_ACK_HTTP_access_and_empty_native_ledger",
+    "ACK_access_receipts": [
+      {
+        "attempt_id": "5ef3efc3-eaad-4a25-8837-d4516fc37c0b",
+        "HTTP_200": true
+      },
+      {
+        "attempt_id": "c9edd8bf-b75e-47bd-9d3b-752ed5f46af3",
+        "HTTP_200": true
+      }
+    ],
+    "after": {
+      "receipts": 0,
+      "unknown_markers": 0
+    },
+    "terminal_proof_ids_captured": false,
+    "raw_success_document_read_trace_captured": false,
+    "interpretation": "Corroborates closure/ACK. Does not reconstruct successful INFO terminal payloads or their original-document-read proof."
+  },
+  "post_PNG_observation": {
+    "calls": 1,
+    "provider_generations": 0,
+    "observation": {
+      "available": true,
+      "reason": null,
+      "source": "gemini_live_session_and_catalog",
+      "adapterContractVersion": "nodia-ai-gemini-chat/1",
+      "resourceKey": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+      "configurationGeneration": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+      "sessionGeneration": "9cf64d5c9e964c41aa4c4d46eaec9ed8",
+      "supportsMcp": true,
+      "verifiedAttachmentMediaTypes": [
+        "image/png",
+        "application/pdf",
+        "audio/wav",
+        "audio/webm"
+      ]
+    },
+    "frozen_pins": {
+      "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+      "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+      "session_generation": "9cf64d5c9e964c41aa4c4d46eaec9ed8"
+    },
+    "pin_equalities": {
+      "resource": true,
+      "configuration": true,
+      "session": true
+    },
+    "missing_historical_diagnostic": true,
+    "interpretation": "A later available:true with identical three pins does not reconstruct the eligibility rejection at its earlier decision time."
+  },
+  "preserved": {
+    "domain_and_preference_projections": 41,
+    "count_and_hash_equal_to_post_adoption": true,
+    "normalization": "Only count->rows key rename; no value coercion, rehash, excluded fields or changed row order.",
+    "domain_rows_and_hashes": {
+      "actions": {
+        "rows": 2,
+        "sha256": "23b2cbae5fe4d28d6c7209428d9348291cee5d0ecfd437b655fe8f53e9a186dd"
+      },
+      "ai_api_keys": {
+        "rows": 1,
+        "sha256": "4da1084212a4890de725cb72ce8ecd3354b3f051cc74b9066711cdfaba6568a0"
+      },
+      "ai_provider_catalog": {
+        "rows": 17,
+        "sha256": "d419c60662c952500a5fd1f9ccabdbf9a4757ea0214d45e0a7224b9a7e6bf5bc"
+      },
+      "ai_provider_events": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "ai_providers": {
+        "rows": 2,
+        "sha256": "30a4673f62a1b6ea3688665208385bc029c6ee809daef79ad0ca12ffddaea9b2"
+      },
+      "business_actions": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "business_collaborators": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "businesses": {
+        "rows": 1,
+        "sha256": "cdaa78dbff634f8eed1d05ab828df25459609b7bf4f932ff3c20c103fc96d05f"
+      },
+      "finance_categories": {
+        "rows": 2,
+        "sha256": "3024c1e13a82d6232c09f79601a3d8cdda76c00e6f7134b874fba804fc239996"
+      },
+      "finance_category_group_memberships": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "finance_category_groups": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "finance_movements": {
+        "rows": 2,
+        "sha256": "5335e312c7b542552f924cf266fc007ff1a3691e522e6c682bb20e374b5b7871"
+      },
+      "finance_obligations": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "invoice_uploads": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "invoices": {
+        "rows": 1,
+        "sha256": "969a3181fc5bf4098c84ad9bfc60410d25131541df5904fde4288d322bb31351"
+      },
+      "migrations": {
+        "rows": 30,
+        "sha256": "f5a11689be060f8de77306d426d2ac084982bf6ff553a1b9603aa64b4c240b82"
+      },
+      "module_groups": {
+        "rows": 3,
+        "sha256": "e91f13cc01e041ccb08d15356f76381f8548407c0f863d9c7069ff4cc45d252e"
+      },
+      "modules": {
+        "rows": 9,
+        "sha256": "bb4e19aaf2906a5755943710649572a5c70a0e46ff5f1c346f5cfe3521459b28"
+      },
+      "nodia_ai_preferences": {
+        "rows": 1,
+        "sha256": "c3ec6b40c6975557202b188118d5701db1aa357624ae18f7cfdcd0fd3029456a"
+      },
+      "nodia_codex_catalog_rollback": {
+        "rows": 1,
+        "sha256": "0926d9d8aa406442a82e85cf48d3b04ea7f0c5fd56d088478160ac106b24cbf3"
+      },
+      "personal_info_provider": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "product_logs": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "products": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "providers": {
+        "rows": 1,
+        "sha256": "05574765e95e43175e202040304c6dc3933bf9c694d4628d6ac157ddc7f95bd7"
+      },
+      "rental_audit_events": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_blocks": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_cancellation_policies": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_cancellation_rules": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_collaborators": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_expenses": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_operations": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_payments": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_properties": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_reservations": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rental_turnovers": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "role_actions": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "roles": {
+        "rows": 1,
+        "sha256": "07ff2fbde402038411cd4f320f2462120b78ea7f6b3b6ab1bc18c92c1f235a06"
+      },
+      "translations": {
+        "rows": 30,
+        "sha256": "48310ee9a1d3478891c2ca332e2e1a3988e5c624a6f507f08f099ebc8f3bdc4d"
+      },
+      "user_modules": {
+        "rows": 8,
+        "sha256": "96d43ec5380d4042e508a14fcceaa7df4bcb6fc6d03ef501aa27dd6a6514022f"
+      },
+      "user_roles": {
+        "rows": 1,
+        "sha256": "4acfc3d1452dbbfd9acc09bf01753ad99fe8782455e4411e55e252929b485657"
+      },
+      "users": {
+        "rows": 1,
+        "sha256": "f401ede3581da12bc3dd44de0d6ecb6d705885e0fd546907d09faff714572972"
+      }
+    },
+    "prior_Codex_two_terminal_ACK_metadata_exact": [
+      {
+        "attempt_id": "4b5ea142-d65f-45dd-a2fd-c02d38e99adb",
+        "job_id": "f66aa876-295d-4ad5-8f66-a6016514b947",
+        "job_fence": "2",
+        "runtime_fence": "70",
+        "terminal_proof_id": "f720dacc-756a-43d1-b1d8-1bbf74a8b319",
+        "outcome": "completed",
+        "process_closed": true,
+        "acknowledged": true,
+        "rpc_count": 1,
+        "unforwarded_requests": 0
+      },
+      {
+        "attempt_id": "6be9adec-f3bf-479e-8dcd-02f64393d808",
+        "job_id": "f66aa876-295d-4ad5-8f66-a6016514b947",
+        "job_fence": "4",
+        "runtime_fence": "71",
+        "terminal_proof_id": "3fb4c218-e53b-4748-b661-e18ffbacff28",
+        "outcome": "completed",
+        "process_closed": true,
+        "acknowledged": true,
+        "rpc_count": 3,
+        "unforwarded_requests": 0
+      }
+    ],
+    "R2_compared": false,
+    "chat_active_job_id": null,
+    "retained_slots": 0,
+    "unrevoked_grants": 0,
+    "persisted_failed_jobs": 2,
+    "all_captured_attempts_ended": true
+  },
+  "current_diagnosis": {
+    "observed_boundary": "stage4 pre-dispatch eligibility_changed after completed discovery/ACK and tool_selection",
+    "cause": "undetermined",
+    "next_gate": "Safe offline instrumentation and bounded diagnostics before further inference.",
+    "no_fallback_or_automatic_retry": true
+  },
+  "limits": [
+    "Neither turn called C03 prepare/complete or produced a normalized extraction; C03 functional acceptance remains open.",
+    "One provider dispatch per new turn completed the discovery stage; the second dispatch never occurred. The earlier uncertain PDF run remains a distinct reconciled historical run.",
+    "Only current-message attachment identity/hash/bytes and text-not-accepted projections are consolidated; prompt plaintext and oracle values are not reconstructed.",
+    "ACK HTTP200 access rows, completed SQL stage2/stage3 and empty receipts/unknown markers corroborate closure, not a retained native terminal proof ID or raw original-read trace.",
+    "The single later non-generative observation cannot prove which eligibility condition failed historically; no quota, expiry, authentication, MIME or provider cause is inferred.",
+    "41 SQL projections and two prior Codex ACK records were preserved; no global database identity or R2 document-byte acceptance.",
+    "No Web inference/availability, other accounts, Windows/API/production, AI-36/C05 or AI-38 completion is accepted.",
+    "This local generator made no VM, browser, SDK, SQL or inference calls; its source inspectors have their separately recorded actions."
+  ]
+}

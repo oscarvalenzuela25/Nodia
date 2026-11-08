@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-25",
+  "stage": "AI36-NR26-backend-attachment-trust-boundaries",
+  "status": "partial_backend_regression_verified_not_model_acceptance",
+  "changes": {
+    "production_code_changed": false,
+    "new_test": "nodia-server/src/nodia-ai-context/use-case/nodia-ai-attachment-context-boundary.spec.ts",
+    "new_regression_cases": [
+      "reviewed PDF text with forged JSON control fields",
+      "reviewed audio text with forged JSON control fields"
+    ],
+    "existing_guarantees_reused_without_duplicate_tests": true
+  },
+  "result": {
+    "passed_tests": 151,
+    "failed_tests": 0,
+    "suites": 6,
+    "new_cases": 2,
+    "existing_cases": 149,
+    "reports": [
+      {
+        "temporary_report": ".tmp/nr26-backend-barriers-r01/result.json",
+        "sha256": "99241fffa864cf264eca1e833ad27fb1052f3ca8c19938f7e7e0684f48a64af3",
+        "passed": 138,
+        "failed": 0,
+        "suites": [
+          {
+            "path": "nodia-server/src/nodia-ai-confirmation/use-case/confirm-nodia-ai-proposal.use-case.spec.ts",
+            "status": "passed",
+            "tests": 21
+          },
+          {
+            "path": "nodia-server/src/nodia-ai-context/use-case/attest-nodia-ai-native-sources.use-case.spec.ts",
+            "status": "passed",
+            "tests": 18
+          },
+          {
+            "path": "nodia-server/src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.spec.ts",
+            "status": "passed",
+            "tests": 28
+          },
+          {
+            "path": "nodia-server/src/nodia-ai-context/use-case/nodia-ai-attachment-context-boundary.spec.ts",
+            "status": "passed",
+            "tests": 2
+          },
+          {
+            "path": "nodia-server/src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.spec.ts",
+            "status": "passed",
+            "tests": 69
+          }
+        ]
+      },
+      {
+        "temporary_report": ".tmp/nr26-backend-barriers-r01/attachment-management.json",
+        "sha256": "92ae36b939646d8495d16c9b25878e88ace079c279bbf771ead232c98319a35e",
+        "passed": 13,
+        "failed": 0,
+        "suites": [
+          {
+            "path": "nodia-server/src/nodia-ai-attachment/use-case/manage-nodia-ai-attachment.use-case.spec.ts",
+            "status": "passed",
+            "tests": 13
+          }
+        ]
+      }
+    ],
+    "lint": {
+      "command": "npx oxlint src/nodia-ai-context/use-case/nodia-ai-attachment-context-boundary.spec.ts",
+      "exit_code": 0
+    }
+  },
+  "guarantees": [
+    {
+      "boundary": "reviewed_attachment_to_prompt",
+      "verified": "JSON breakout strings and forged instructions, role, actor, modules, operations, selection, preferences, recovery and confirmation fields remain literal reviewed_attachment_text. Canonical instructions, user role, trusted envelope and context manifest match the ordinary-content baseline.",
+      "test": "nodia-server/src/nodia-ai-context/use-case/nodia-ai-attachment-context-boundary.spec.ts"
+    },
+    {
+      "boundary": "attachment_review_and_binding",
+      "verified": "Existing tests require explicit human review, optimistic revision, the same chat and epoch, and reject rewriting interpretation after a message binds the attachment. Private-byte access is reauthorized after storage download.",
+      "test": "nodia-server/src/nodia-ai-attachment/use-case/manage-nodia-ai-attachment.use-case.spec.ts"
+    },
+    {
+      "boundary": "native_source_attestation",
+      "verified": "Existing tests attest loaded bytes against attachment identity, conversation, epoch, expiry, MIME/kind, immutable generation, size and SHA-256 under an active transaction; invalid or duplicate sources are rejected.",
+      "test": "nodia-server/src/nodia-ai-context/use-case/attest-nodia-ai-native-sources.use-case.spec.ts"
+    },
+    {
+      "boundary": "tool_gateway",
+      "verified": "Existing tests reject unknown tools and extra input fields before invoking handlers; frozen modules, grant operations and contract hashes cannot be widened; unpublished or changed catalog bindings are rejected and resource authority is checked before replay.",
+      "test": "nodia-server/src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.spec.ts"
+    },
+    {
+      "boundary": "human_confirmation",
+      "verified": "Existing tests bind nonce/admission to actor, session, exact proposal revision and hash, expiry/consumption and request identity. Invalid proofs do not reach admission; confirmation does not invoke the writer itself.",
+      "test": "nodia-server/src/nodia-ai-confirmation/use-case/confirm-nodia-ai-proposal.use-case.spec.ts"
+    }
+  ],
+  "limits": [
+    "The new cases use synthetic reviewed text, not real PDF/audio binaries or a provider account.",
+    "Serialization preserves data/control structure; it does not prove that a language model semantically ignores adversarial text.",
+    "Native-source byte attestation proves provenance and consistency, not that file instructions are harmless.",
+    "Unit tests use isolated repositories and boundaries; no real SQL effect, R2 request, browser click, VM deployment or provider inference was executed in this check.",
+    "No registry, permissions, publication, knowledge approval or actual acceptance state was changed.",
+    "NR-26 remains open for real adversarial PDF/voice behavior through verified provider/mode/format paths; ordinary transport and transcription acceptance alone do not close it.",
+    "Temporary reports are intermediate evidence only; this consolidated receipt includes suite results and fingerprints, without requiring their future retention."
+  ],
+  "commands": [
+    "npx vitest run src/nodia-ai-context/use-case/nodia-ai-attachment-context-boundary.spec.ts src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.spec.ts src/nodia-ai-context/use-case/attest-nodia-ai-native-sources.use-case.spec.ts src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.spec.ts src/nodia-ai-confirmation/use-case/confirm-nodia-ai-proposal.use-case.spec.ts --reporter=json --outputFile=../.tmp/nr26-backend-barriers-r01/result.json",
+    "npx vitest run src/nodia-ai-attachment/use-case/manage-nodia-ai-attachment.use-case.spec.ts --reporter=json --outputFile=../.tmp/nr26-backend-barriers-r01/attachment-management.json",
+    "npx oxlint src/nodia-ai-context/use-case/nodia-ai-attachment-context-boundary.spec.ts"
+  ],
+  "source_fingerprints": [
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/nodia-ai-attachment-context-boundary.spec.ts",
+      "sha256": "eb45940ec514b2d2a47f79f70a62d3171d6b6c168d9f9b978a57165ed9b860a4"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts",
+      "sha256": "866cc8dfae0f0d8f4eb3c0cfb7ac432e43d441438b256de0758cadf0ed1d4b2c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.spec.ts",
+      "sha256": "6129adc4877745caaaf6ff8c841874dd65c047204d7ad7161488994aeb6ddb52"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/attest-nodia-ai-native-sources.use-case.ts",
+      "sha256": "57e0f9f648446156c80e4078f2c0e2782f156d6347de54fa657f659754c0656d"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/attest-nodia-ai-native-sources.use-case.spec.ts",
+      "sha256": "0288673efcae842b064e0a5519b988872b69225b9701e812318089aaa16cb05d"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-attachment/use-case/manage-nodia-ai-attachment.use-case.spec.ts",
+      "sha256": "fc1eb3a7416f1fc5243de485f54562e9851a5b1cd9b2da21ae564ecf793eaeb4"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.spec.ts",
+      "sha256": "e24873626274c1710ea9dcdc95308717e25922a69ff2d4b39c9887ee64c9ede1"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-confirmation/use-case/confirm-nodia-ai-proposal.use-case.spec.ts",
+      "sha256": "f122c375dbbe68f816d49c89fa21eb4459f4616780f7fcfd7949d3791dbf6c18"
+    }
+  ]
+}

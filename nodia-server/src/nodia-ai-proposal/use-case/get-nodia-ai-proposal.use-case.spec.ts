@@ -20,6 +20,50 @@ function fixture() {
   };
 }
 describe('Observe immutable NodiaAI proposal', () => {
+  it('reads an opted-in older snapshot without making it executable or editable', async () => {
+    const f = fixture();
+    const historical = vi.fn(async () => undefined);
+    f.preparer.verifyHistoricalReadAuthority = historical;
+    Object.assign(f.preparer, {
+      contractHash: 'b'.repeat(64),
+      catalogVersion: 'fixture/2',
+    });
+    const original = JSON.stringify([f.proposal, f.revision, f.step]);
+    expect(await f.get.execute(f.identity, f.proposal.id)).toMatchObject({
+      hash: f.revision.hash,
+      state: 'invalidated',
+    });
+    expect(historical).toHaveBeenCalledOnce();
+    expect(f.preparer.verifyAuthority).not.toHaveBeenCalled();
+    expect(f.preparer.prepare).not.toHaveBeenCalled();
+    await expect(
+      f.get.load(f.manager, f.identity, f.proposal.id, 'write'),
+    ).rejects.toThrow('nodia_ai:catalog_changed');
+    expect(JSON.stringify([f.proposal, f.revision, f.step])).toBe(original);
+  });
+  it('does not expose a mismatched family without an explicit historical authority port', async () => {
+    const f = fixture();
+    Object.assign(f.preparer, { contractHash: 'b'.repeat(64) });
+    await expect(f.get.execute(f.identity, f.proposal.id)).rejects.toThrow(
+      'nodia_ai:catalog_changed',
+    );
+  });
+  it('rechecks current historical authority and frozen integrity rather than trusting a prior read', async () => {
+    const f = fixture();
+    f.preparer.verifyHistoricalReadAuthority = vi.fn(async () => undefined);
+    Object.assign(f.preparer, { contractHash: 'b'.repeat(64) });
+    await f.get.execute(f.identity, f.proposal.id);
+    vi.mocked(f.preparer.verifyHistoricalReadAuthority).mockRejectedValueOnce(
+      new ForbiddenException('nodia_ai:capability_denied'),
+    );
+    await expect(f.get.execute(f.identity, f.proposal.id)).rejects.toThrow(
+      'nodia_ai:capability_denied',
+    );
+    f.step.command_template.name = 'tampered';
+    await expect(f.get.execute(f.identity, f.proposal.id)).rejects.toThrow(
+      'nodia_ai:invalid_persisted_state',
+    );
+  });
   it('rechecks current resource authority without recalculating commands or preview', async () => {
     const f = fixture();
     const snapshot = JSON.stringify(f.step);

@@ -1,0 +1,130 @@
+{
+  "revision": "R26",
+  "status": "implemented_deployed_verified",
+  "scope": "R26: editor de precio compacto y acciones alineadas; mientras está abierto se bloquean lector, búsqueda/selección, cantidades, eliminación, otros precios, medios, revisión de precios, nueva venta, cierre/alternancia y confirmación. El editor activo conserva sus acciones. Cancelar o guardar con éxito libera el bloqueo; un rechazo conserva el valor y el bloqueo. Sólo estado transitorio de Client, sin nuevos contratos HTTP/BD o autoridad NodiaAI. Verificación local y adopción por alcance en el recibo R26; no hay nueva aprobación/publicación documental.",
+  "source_fingerprint_sha256": "33437f32936b04a4848083e217d2f412378d0f6f57819aa5b26d7db4262a38f0",
+  "verification": {
+    "status": "passed",
+    "global": {
+      "files": 297,
+      "tests": 2486,
+      "seconds": 399.03,
+      "exit": 0
+    },
+    "focals": {
+      "files": 3,
+      "tests": 12,
+      "seconds": 6.13,
+      "exit": 0
+    },
+    "typecheck_exit": 0,
+    "lint_exit": 0,
+    "knowledge_check_exit": 0,
+    "approved_full_files": 44,
+    "build": {
+      "path": "ops/lab/artifacts/pos-price-editor-20261031-r26/client/build-receipt-r01.json",
+      "bytes": 1716,
+      "sha256": "eb61138d35bb752401e1838911997ca326f522f8076d8d783ae9300d818cb5f0"
+    },
+    "browser_qa": {
+      "path": "ops/lab/artifacts/pos-price-editor-20261031-r26/qa/verification.json",
+      "bytes": 12608,
+      "sha256": "74bbc495302f6e2dc3a0c1ef641a834b34482e7ca71b99ddcc5529fe2d944b00"
+    },
+    "approved_documents": {
+      "path": "ops/lab/artifacts/pos-price-editor-20261031-r26/quality/approved-full-files.json",
+      "bytes": 9202,
+      "sha256": "3d69c98f7a68df71921c2895b7d5b9a65a5a95b7a4d49207430739330398dfeb"
+    }
+  },
+  "limits": [
+    "No business mutation or inference against usage data",
+    "No physical mobile/keyboard test",
+    "No new knowledge approval/publication"
+  ],
+  "delivery": {
+    "release": "/opt/nodia/releases/nodia-client-pos-price-editor-20261031-r26",
+    "manifest_sha256": "47ad914710763123ca27966f82822d4d74bb491cf73afedee609049240eb8c98",
+    "nginx_sha256": "675d1b321d650eb9b770e39238261e2d09b5d73ff75b9b1a8dcbeb506ee4a09c",
+    "index_sha256": "11f3aade3a7313fb57ed2a67dce2095db6ee8d4642a0b3f975eccf69c5ef48fc",
+    "static_files": 173,
+    "current_assets": 169,
+    "previous_assets": 32,
+    "three_consecutive_spa_rounds": true,
+    "reloads": 1,
+    "backup_and_fallback_preserved": true,
+    "protected_runtime_preserved": true,
+    "receipts": [
+      {
+        "path": "ops/lab/artifacts/pos-price-editor-20261031-r26/client/preflight-observed-root-r01.json",
+        "bytes": 5704,
+        "sha256": "c922ff948628e556ad5ec937eaac16f2570cfd90de862dae6e464fefdb015360"
+      },
+      {
+        "path": "ops/lab/artifacts/pos-price-editor-20261031-r26/client/bootstrap-observed-root-r01.json",
+        "bytes": 369,
+        "sha256": "4fa4086b22362077480fb40f8cfa5e5ef79a3514053504231f5a871dc75a3d79"
+      },
+      {
+        "path": "ops/lab/artifacts/pos-price-editor-20261031-r26/client/preflight-bound-observed-root-r01.json",
+        "bytes": 2900,
+        "sha256": "b5ddb6fe6e0df5ca99181ff0fee5b93303ec12b2ed2e7e9ba2ef09d86d08cb86"
+      },
+      {
+        "path": "ops/lab/artifacts/pos-price-editor-20261031-r26/client/stage-observed-root-r01.json",
+        "bytes": 170,
+        "sha256": "a560af9cc45978728afa276776b15cdfca594e26168a70f23c663b3020e03b4a"
+      },
+      {
+        "path": "ops/lab/artifacts/pos-price-editor-20261031-r26/client/activation-observed-root-r01.json",
+        "bytes": 9983,
+        "sha256": "71e092bb6f6bd5af151d118c328927c9b0f8432b62baec512144f1c587ac15c7"
+      },
+      {
+        "path": "ops/lab/artifacts/pos-price-editor-20261031-r26/client/status-observed-root-r01.json",
+        "bytes": 11924,
+        "sha256": "af32e7a415b6500c7deb7c6329eb2877432497557e10bace32b24eb135b5748b"
+      },
+      {
+        "path": "ops/lab/artifacts/pos-price-editor-20261031-r26/client/local-tunnel-observed-root-r01.json",
+        "bytes": 280,
+        "sha256": "5aaf95598f2e8b45e2eeb8703687235ff7f2d77960fa02bf3eb3c6d905d1315d"
+      }
+    ],
+    "client_verification": {
+      "path": "ops/lab/artifacts/pos-price-editor-20261031-r26/client/verification-delivery-r01.json",
+      "sha256": "7686a850b82a355c26c69380b6b9b8fbaaed114ff0448452ee6647d9ac4d9ab5",
+      "bytes": 5066
+    },
+    "client_catalog": {
+      "path": "ops/lab/artifacts/pos-price-editor-20261031-r26/client/catalog-delivery-r01.json",
+      "sha256": "c997c4cacaafae336b31ef7bcbb6db1b5be0584925ca3d29918e623d7925205c",
+      "bytes": 6026
+    }
+  },
+  "cleanup": {
+    "own_browser_sessions_closed": [
+      "pos-r26",
+      "pos-r26-es",
+      "pos-r26-en"
+    ],
+    "own_vite_5198_stopped": true,
+    "user_tab_preserved": true,
+    "local_ssh_5174_preserved": true
+  },
+  "knowledge": {
+    "new_approval": false,
+    "runtime_publication": false,
+    "approved_full_files_unchanged": 44,
+    "authoring_check": {
+      "sources": 79,
+      "excluded": 35,
+      "documents": 44,
+      "fragments": 46,
+      "release_id": "eccdcf05bf33fd17bf3c945fa89a5acc822b301bbc5610f684ef9bf9b9080f9d"
+    },
+    "usage_runtime_release_id": "f89593b1da6ae409391e178c9719817f21dc85aac1032ae482ffa0c60ebf4024",
+    "sales_writers_enabled": 0
+  },
+  "recovery_kit": "ops/lab/artifacts/pos-price-editor-20261031-r26"
+}

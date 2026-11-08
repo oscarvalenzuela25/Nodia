@@ -1,5 +1,7 @@
 # Tarjeta Resumen de Conexión API (OpenAI / Gemini) en Ajustes IA
 
+> Cambio solicitado el 2026-10-27: retirar Web y conservar sólo Agentic (`agentic`) y API key (`api_key`), conforme [plan90](../../mvp/90-agentic-api-only-web-retirement.md) y [pruebas91](../../mvp/91-ai-provider-onboarding-verification.md). Los apartados inferiores conservan contratos/evidencias anteriores por fecha y no habilitan Web. Implementación y aceptación en curso; ningún cambio automático de proveedor, modelo o modo por error.
+
 Fecha: 2026-10-07. Implementación aprobada y validada según el contrato funcional de proveedores IA.
 
 ## Contexto y problema resuelto

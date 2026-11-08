@@ -34,6 +34,7 @@ vi.mock("../../../../../../../hooks/useAuth", () => ({
 
 vi.mock("../../../../../../../modules/business/infrastructure/services", () => ({
   getProducts: vi.fn(),
+  getProductAvailability: vi.fn(),
   getProviders: vi.fn(),
   getInvoices: vi.fn(),
 }));
@@ -66,7 +67,6 @@ const mockProducts: ProductEntity[] = [
     name: "Café de Especialidad 250g",
     cost_price: 5000,
     cost_price_tax: 5950,
-    profit_percentage: 40,
     sale_price: 1000,
     stock: 15, // Normal stock (>= 10)
     is_active: true,
@@ -79,7 +79,6 @@ const mockProducts: ProductEntity[] = [
     name: "Té Verde Matcha",
     cost_price: 3000,
     cost_price_tax: 3570,
-    profit_percentage: 30,
     sale_price: 2000,
     stock: 5, // Low stock (0 < stock < 10)
     is_active: true,
@@ -92,7 +91,6 @@ const mockProducts: ProductEntity[] = [
     name: "Endulzante Natural",
     cost_price: 1000,
     cost_price_tax: 1190,
-    profit_percentage: 20,
     sale_price: 500,
     stock: 0, // Sin stock (<= 0)
     is_active: true,
@@ -163,6 +161,7 @@ describe("OverviewTab Component", () => {
       user: { id: "42", name: "Oscar Valenzuela" },
     });
     vi.clearAllMocks();
+    vi.mocked(businessServices.getProductAvailability).mockResolvedValue({ total: 3, available: 1, unavailable: 1, unknown: 1, activity: "active" });
     vi.mocked(businessServices.getProducts).mockResolvedValue({
       data: mockProducts,
       meta: { total_items: 3, page: 1, limit: 50, total_pages: 1 },
@@ -177,7 +176,7 @@ describe("OverviewTab Component", () => {
     });
   });
 
-  it("renders 3 KPI cards with correct order: Productos first, Proveedores second, Rendimiento comercial third, without OPERACIÓN DE ALMACÉN and CADENA DE ABASTECIMIENTO", async () => {
+  it("renders catalog, commercial performance and providers in reading order without removed labels", async () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
@@ -198,28 +197,28 @@ describe("OverviewTab Component", () => {
 
     const productsHeader = screen.getByText("Catálogo de Productos");
     const providersHeader = screen.getByText("Proveedores Registrados");
-    const invoicesHeader = screen.getByText("RENDIMIENTO COMERCIAL");
+    const performanceHeader = screen.getByText("RENDIMIENTO COMERCIAL");
 
     expect(productsHeader).toBeInTheDocument();
     expect(providersHeader).toBeInTheDocument();
-    expect(invoicesHeader).toBeInTheDocument();
+    expect(performanceHeader).toBeInTheDocument();
 
-    // Verify DOM order: Products < Providers < Invoices
+    // Reading order matches the requested desktop rows and single-column mobile flow.
     expect(
       Boolean(
-        productsHeader.compareDocumentPosition(providersHeader) &
+        productsHeader.compareDocumentPosition(performanceHeader) &
           Node.DOCUMENT_POSITION_FOLLOWING
       )
     ).toBe(true);
     expect(
       Boolean(
-        providersHeader.compareDocumentPosition(invoicesHeader) &
+        performanceHeader.compareDocumentPosition(providersHeader) &
           Node.DOCUMENT_POSITION_FOLLOWING
       )
     ).toBe(true);
   });
 
-  it("renders products card with total products, 3 stock badges and without inventory value", async () => {
+  it("renders product count and authoritative availability without numeric inventory", async () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
@@ -231,7 +230,7 @@ describe("OverviewTab Component", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId("kpi-stock-normal-chip")).toHaveTextContent("1 stock normal");
+      expect(screen.getByText("Disponible: 1")).toBeInTheDocument();
     });
 
     // Main count: 3 productos
@@ -239,15 +238,15 @@ describe("OverviewTab Component", () => {
     expect(screen.getByText("productos")).toBeInTheDocument();
 
     // 3 Stock badges
-    expect(screen.getByTestId("kpi-stock-normal-chip")).toHaveTextContent("1 stock normal");
-    expect(screen.getByTestId("kpi-stock-low-chip")).toHaveTextContent("1 stock bajo");
-    expect(screen.getByTestId("kpi-stock-out-chip")).toHaveTextContent("1 sin stock");
+    expect(screen.getByText("Disponible: 1")).toBeInTheDocument();
+    expect(screen.getByText("No disponible: 1")).toBeInTheDocument();
+    expect(screen.getByText("Por confirmar: 1")).toBeInTheDocument();
 
     // Inventory value and its divider are removed
     expect(screen.queryByText(/Valor inventario/i)).not.toBeInTheDocument();
 
     // Availability label is removed
-    expect(screen.queryByText(/Disponibilidad/i)).not.toBeInTheDocument();
+    expect(screen.getByText("Disponibilidad de productos activos")).toBeInTheDocument();
     expect(screen.queryByText(/98\.4%/i)).not.toBeInTheDocument();
   });
 
@@ -330,7 +329,7 @@ describe("OverviewTab Component", () => {
     expect(screen.getByText("FAC-PAST")).toBeInTheDocument();
   });
 
-  it("renders key providers with percentage of stock progress bars for active providers", async () => {
+  it("renders active providers without deriving inventory percentages", async () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
@@ -348,7 +347,8 @@ describe("OverviewTab Component", () => {
     // Active provider Distribuidora Central owns 20 of 20 total stock (100%)
     const provProgress = screen.getByTestId("key-provider-progress-prov-1");
     expect(provProgress).toHaveTextContent("Distribuidora Central");
-    expect(provProgress).toHaveTextContent("100%");
+    expect(provProgress).toHaveTextContent("Activo");
+    expect(provProgress).not.toHaveTextContent("100%");
 
     // Inactive provider (prov-2) should not appear in active providers progress bars
     expect(screen.queryByTestId("key-provider-progress-prov-2")).not.toBeInTheDocument();
@@ -401,7 +401,7 @@ describe("OverviewTab Component", () => {
     const explanation = screen.getByTestId("key-providers-explanation");
     expect(explanation).toBeInTheDocument();
     expect(explanation).toHaveTextContent(
-      "Las barras de progreso indican el porcentaje del stock total de inventario asociado a cada proveedor."
+      "Proveedores activos del negocio. No se calcula inventario numérico."
     );
   });
 

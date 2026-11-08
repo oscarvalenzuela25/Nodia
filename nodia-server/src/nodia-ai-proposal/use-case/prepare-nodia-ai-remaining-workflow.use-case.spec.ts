@@ -31,7 +31,7 @@ function fixture() {
   Object.assign(f.preparer, {
     toolName: 'nodia_providers_prepare_create',
     catalogVersion: 'nodia-ai-ai22-business/1',
-    moduleRoutes: ['/tools/business'],
+    moduleRoutes: ['/business'],
     outputKeys: { id: 'provider_id' },
   });
   Object.assign(f.step, {
@@ -290,7 +290,7 @@ function fixture() {
     manager,
     actor: f.actor,
     conversationId: f.chat.id,
-    moduleRoutes: ['/tools/business'],
+    moduleRoutes: ['/business'],
   };
   const get = {
     load: vi.fn(async () => ({

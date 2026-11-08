@@ -117,15 +117,15 @@ describe('SaveAiApiKeyUseCase', () => {
     expect(f.providerRepo.findOne).not.toHaveBeenCalled();
     expect(f.repo.save).not.toHaveBeenCalled();
   });
-  it('rejects a manager without ai:manage and permits the actual permission', async () => {
+  it('rejects a manager without its module and permits the actual assignment', async () => {
     const f = fixture();
     f.setAdmin(false);
-    f.setPermission(false);
+    f.setModule(false);
     await expect(f.uc.remove(f.key.id, f.actor)).rejects.toThrow(
-      'manage_required',
+      'core:module_access_required',
     );
     expect(f.repo.findOneBy).not.toHaveBeenCalled();
-    f.setPermission(true);
+    f.setModule(true);
     await f.uc.execute(f.key.id, { label: 'Allowed' }, f.actor);
     expect(f.repo.save).toHaveBeenCalledOnce();
   });

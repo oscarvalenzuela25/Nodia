@@ -1,5 +1,9 @@
 # NodiaAI — Web conversacional y alternancia autorizada a Agentic
 
+## Decisión actual — retirada Web autorizada el 2026-10-27
+
+El usuario solicita e autoriza retirar Web de los tres proyectos y conservar sólo **Agentic** (`agentic`) y **API key** (`api_key`). Esta petición sustituye la conservación anterior de Web y la delegación Web→Agentic; API requiere verificación real posterior con credencial provista por el usuario. [Plan90 y mapa por proyecto](90-agentic-api-only-web-retirement.md), [verificación reusable de nuevos proveedores91](91-ai-provider-onboarding-verification.md) y [ADR083](../architecture/decisions/ADR-083-agentic-and-api-only-ai-modes.md). Implementación y VM pendientes; documentos/fichas sin aprobación/publicación automática. Los apartados inferiores conservan sus fechas y límites históricos.
+
 > Continuidad AI-09: [persistencia55](55-nodia-ai-ai09-conversation-persistence.md) materializa contratos cerrados de esfuerzo/routing/etapas/presupuesto y migración M1, sin publicar rutas, worker o inferencias. Modelo completo revisión3:23 tablas/298 columnas/62 FKs; M1:11/151. La auditoría vinculada al chat pasa a CASCADE conforme50; pendientes mínimos siguen separados. Las menciones anteriores de wire/ERD pendiente describen el baseline anterior; runtime permanece AI-10..12.
 
 > Estado: decisiones funcionales confirmadas por el usuario; diseño técnico en revisión, runtime sin implementar

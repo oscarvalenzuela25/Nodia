@@ -9,6 +9,7 @@ import {
 import { GeminiNodiaAiAdapterUseCase } from './gemini-nodia-ai-adapter.use-case.js';
 import { CodexNodiaAiAdapterUseCase } from './codex-nodia-ai-adapter.use-case.js';
 import { ResolveNodiaAiAdapterUseCase } from './resolve-nodia-ai-adapter.use-case.js';
+import { ApiNodiaAiAdapterUseCase } from './api-nodia-ai-adapter.use-case.js';
 
 @Injectable()
 export class RouteNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
@@ -16,6 +17,7 @@ export class RouteNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
     private readonly resolver: ResolveNodiaAiAdapterUseCase,
     private readonly gemini: GeminiNodiaAiAdapterUseCase,
     private readonly codex: CodexNodiaAiAdapterUseCase,
+    private readonly api: ApiNodiaAiAdapterUseCase,
   ) {
     super();
   }
@@ -24,9 +26,9 @@ export class RouteNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
     selection: NodiaAiSelection,
     manager?: EntityManager,
   ): Promise<NodiaAiAdapterPort> {
-    return (await this.resolver.execute(selection, manager)) === 'gemini'
-      ? this.gemini
-      : this.codex;
+    const resolved = await this.resolver.execute(selection, manager);
+    if (resolved === 'api') return this.api;
+    return resolved === 'gemini' ? this.gemini : this.codex;
   }
   async measureContext(
     input: NodiaAiContextMeasureInput,

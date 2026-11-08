@@ -1,0 +1,295 @@
+{
+  "schema": "teacher-chat-ui/1",
+  "local_date": "2026-11-05",
+  "status": "Client_R20_active_browser_verified",
+  "current_client_release": "/opt/nodia/releases/nodia-client-teacher-20261105-r20",
+  "current_client_manifest_sha256": "50000e941d98a76563a2a3c0b5afdfbaa2681e40fdd33dade8862836b7377117",
+  "server_release_unchanged": "/opt/nodia/releases/nodia-server-teacher-20261104-r08",
+  "native_release_unchanged": "R12",
+  "SDK_changed": false,
+  "new_provider_requests": 0,
+  "new_teacher_messages": 0,
+  "new_plan_requests": 0,
+  "source_freezes": [
+    {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/client-r19-r01/source-freeze.json",
+      "bytes": 7805,
+      "sha256": "848f31d77f28b667345d09148815e59235a9c7c680b428d973b85a928b9edd93"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/client-r20-r01/source-freeze.json",
+      "bytes": 666,
+      "sha256": "6a009c4fc0ae593b52c5305b9011c3f3c599371020b0b615c9e14c6e78b62142"
+    }
+  ],
+  "validation": {
+    "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/client-r19-r01/Root-validation.json",
+    "bytes": 915,
+    "sha256": "09409e98a194723969cef63f1fb5f70db86104ddf9793f49987da2a259eae85e"
+  },
+  "functional_tests": {
+    "suites": 10,
+    "tests": 105,
+    "exit_code": 0,
+    "phase": "R19 final functional integration; R20 changes one color property only, checked by build/types/lint/browser without style-mirror tests"
+  },
+  "operations": {
+    "client-r19-r01/delivery.json": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/client-r19-r01/delivery.json",
+      "bytes": 13225,
+      "sha256": "72e0f0f39013f08d164c005cebbe9126ffdfd6d33e585a12932f940c7b814cd9"
+    },
+    "client-r19-r01/activation-state.json": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/client-r19-r01/activation-state.json",
+      "bytes": 694,
+      "sha256": "9b71bbe8fda0332b5b7e4500753ed338485fe01e5caa299ac184bee96067b1fd"
+    },
+    "client-r20-r01/delivery.json": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/client-r20-r01/delivery.json",
+      "bytes": 13840,
+      "sha256": "f2edb689a5564a88ce6a5674848031d60e3b14ec6749f91ec44544f63df30c72"
+    },
+    "client-r20-r01/activation-state.json": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/client-r20-r01/activation-state.json",
+      "bytes": 700,
+      "sha256": "8ca8da3ba708a459fe4efad94999650f790aca301a1ecfa3f0eb10c37d1ec192"
+    },
+    "client-r20-r01/final-health.json": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/client-r20-r01/final-health.json",
+      "bytes": 1427,
+      "sha256": "ce55404072adf42c95b0646685f51fb0238fbeb844d9a9da4e3aeaebc3f7ce52"
+    },
+    "client-r20-r01/root-review.json": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/client-r20-r01/root-review.json",
+      "bytes": 3505,
+      "sha256": "4f044753b5a2d43b59f728358e5026edf9f7b870d7e7bd1b18c88b81a1a061a9"
+    },
+    "client-r20-r01/release-manifest.json": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/client-r20-r01/release-manifest.json",
+      "bytes": 30710,
+      "sha256": "50000e941d98a76563a2a3c0b5afdfbaa2681e40fdd33dade8862836b7377117"
+    },
+    "client-r20-r01/source-plan.json": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/client-r20-r01/source-plan.json",
+      "bytes": 250744,
+      "sha256": "ba313af02cfc4aed637cdb8c856bc9e30a236bcaa8f79972b6cff8603c8aa553"
+    },
+    "reconciliation-r18-after-interruption-r01/summary.json": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/reconciliation-r18-after-interruption-r01/summary.json",
+      "bytes": 2060,
+      "sha256": "80308bd426d1b89c033d5aae51f0ed4c4e70285b3773fa83169d90a239707be1"
+    }
+  },
+  "browser": {
+    "browser-verification.json": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/browser/browser-verification.json",
+      "bytes": 2293,
+      "sha256": "10ded86aaa19f818222dcd74007af6acfa059b4ce48a1456b9abd60aba87df26"
+    },
+    "teacher-chat-desktop.jpg": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/browser/teacher-chat-desktop.jpg",
+      "bytes": 79474,
+      "sha256": "74407030e99901bfaa9c6022ca063e7bcee4cf74cc83e54b6cb31217e722bcfc"
+    },
+    "teacher-chat-mobile.jpg": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/browser/teacher-chat-mobile.jpg",
+      "bytes": 35308,
+      "sha256": "281de8a478c88ff89e2fa5697c75756906c1dbc0ca9c026f585688a3100d86e3"
+    },
+    "teacher-plan-confirmation.jpg": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/browser/teacher-plan-confirmation.jpg",
+      "bytes": 38344,
+      "sha256": "03117bf711724633c11fdbbbabbfd4257859311fcbc9a0c4f6af1497bb14c260"
+    }
+  },
+  "browser_observations": {
+    "schema": "teacher-chat-ui-browser-verification/1",
+    "release": "Client_R20",
+    "desktop": {
+      "articles": [
+        {
+          "author": "TÃº",
+          "avatarSvg": 0,
+          "background": "rgb(79, 70, 229)",
+          "color": "rgb(255, 255, 255)",
+          "direction": "row-reverse"
+        },
+        {
+          "author": "Nodia Teacher",
+          "avatarSvg": 1,
+          "background": "rgb(26, 33, 43)",
+          "color": "rgb(255, 255, 255)",
+          "direction": "row"
+        }
+      ],
+      "budget": "Generaciones reservadas: 2 de 200 del lÃ­mite de esta sesiÃ³n. Cada solicitud genera sÃ³lo el recurso indicado.",
+      "documentWidth": 1078,
+      "draftLength": 0,
+      "fileInputs": 0,
+      "micEnabled": true,
+      "saveButtons": 0,
+      "scrollWidth": 1078,
+      "scrollY": 0,
+      "selectionHeadings": 0,
+      "textareaPadding": "0px",
+      "title": {
+        "fontSize": "22px",
+        "fontWeight": "700",
+        "textTransform": "uppercase"
+      },
+      "viewport": [
+        1088,
+        892
+      ]
+    },
+    "mobile": {
+      "documentWidth": 310,
+      "draftLength": 0,
+      "fileInputs": 0,
+      "formWidth": 260,
+      "ownerBackground": "rgb(79, 70, 229)",
+      "ownerColor": "rgb(255, 255, 255)",
+      "propose": {
+        "height": 44,
+        "width": 244
+      },
+      "scrollWidth": 310,
+      "textareaPadding": "0px",
+      "viewport": [
+        320,
+        892
+      ]
+    },
+    "modal": {
+      "opened": true,
+      "keyboard_open_verified": true,
+      "cancelled": true,
+      "dialog_after_cancel": 0,
+      "generations_before": 2,
+      "generations_after": 2,
+      "draft_length_before": 0,
+      "draft_length_after": 0
+    },
+    "model_selector": {
+      "opened": true,
+      "selection_changed": false,
+      "dismissed": "Escape"
+    },
+    "nodiaAi_composer": {
+      "attachmentMenu": true,
+      "composer": 1,
+      "fileInputs": 1,
+      "mic": true,
+      "send": true
+    },
+    "voice": {
+      "button_enabled": true,
+      "real_capture_tested": false,
+      "permission_requested": false
+    },
+    "viewport_restored": true,
+    "new_teacher_messages": 0,
+    "new_plan_requests": 0,
+    "notes": [
+      "A direct click immediately after closing the model popover exposed the help tooltip; keyboard Enter opened the confirmation. No plan confirmation was submitted.",
+      "Native microphone capture and physical mobile keyboard were not exercised."
+    ]
+  },
+  "contrast": {
+    "background_rgb": [
+      79,
+      70,
+      229
+    ],
+    "R19_text_rgb": [
+      0,
+      0,
+      0
+    ],
+    "R19_ratio": 3.34,
+    "R20_text_rgb": [
+      255,
+      255,
+      255
+    ],
+    "R20_ratio": 6.288,
+    "scope": "observed current dark theme only"
+  },
+  "baseline_R17_ui": {
+    "viewport": [
+      1088,
+      892
+    ],
+    "document_width": 1078,
+    "scroll_width": 1078,
+    "draft_length": 0,
+    "save_buttons": 1,
+    "separate_AI_selection_heading": 1,
+    "textarea_padding": "10px 14px",
+    "file_inputs": 0
+  },
+  "contracts": [
+    {
+      "path": "docs/mvp/95-studies-adaptive-learning.md",
+      "bytes": 65514,
+      "sha256": "79d685b2abf847f86551a53277db29d2c46e44cda9dd93751ce0addb84332091"
+    },
+    {
+      "path": "docs/mvp/96-nodia-teacher-implementation-plan.md",
+      "bytes": 175225,
+      "sha256": "8c5ef67eef6716c2a255fc495ac14ac5031c472af90b50952a4912a354772faf"
+    },
+    {
+      "path": "docs/mvp/97-nodia-teacher-technical-contracts.md",
+      "bytes": 89306,
+      "sha256": "67719c5735f7e275267bad3c6d1b1b2a6a44f2e9edb6ba762e9fb85d3bf9c3f4"
+    },
+    {
+      "path": "nodia-client/DESIGN.md",
+      "bytes": 101065,
+      "sha256": "61aba20859638b7692226cb6b577dd9be6cf0e49104d47250502b2006c5fbe6e"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/studies/README.md",
+      "bytes": 30327,
+      "sha256": "22a8a500892d18e6a70d82fe5841302d12fb02ad072ae351f5b71ad677067cce"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/studies/features/session-setup-and-planning.md",
+      "bytes": 30356,
+      "sha256": "57095147301411f4e1c1c9649428b028c28a0bd4ca52e7038794053d4e9e6f13"
+    }
+  ],
+  "knowledge": {
+    "studies_revision": 23,
+    "setup_revision": 18,
+    "status": "draft/partial/unregistered/approval:null",
+    "published": false,
+    "check": {
+      "schema": "teacher-chat-ui-knowledge-check/1",
+      "exit_code": 0,
+      "mode": "check",
+      "sources": 80,
+      "excluded": 36,
+      "documents": 44,
+      "fragments": 46,
+      "catalogRelease": "nodia-ai-business-pos/4",
+      "releaseId": "ca3b8d894cbfc3780698e15b1b19c62a4554b00911af7893024fd025c6f948af",
+      "published": false,
+      "approved_docs_unchanged": true
+    },
+    "receipt": {
+      "path": "ops/lab/artifacts/teacher-chat-ui-20261105-r01/knowledge-check.json",
+      "bytes": 349,
+      "sha256": "539f0320d22157c58285976cade389921a7fa7cbef8b668d8288860238bcd741"
+    }
+  },
+  "limitations": [
+    "No physical mobile device or real microphone audio exercised; keyboard/voice lifecycle/CAS/error checks are synthetic tests.",
+    "No new generation, provider qualification, SDK patch, or resolution of prior Gemini timeout/reply_framing blockers.",
+    "R18 public inputs preserved but release never activated. R19 initial pre-intent CAS rejection retained with unknown historical cause. R20 guard prevented execute until full matched CAS.",
+    "Static bundle byte counts are not route latency or device performance measurements."
+  ],
+  "deployment_SQL_calls": 0,
+  "SQL_count_scope": "Direct SQL commands by the deployment/verification tooling; ordinary application GET requests may query the database."
+}

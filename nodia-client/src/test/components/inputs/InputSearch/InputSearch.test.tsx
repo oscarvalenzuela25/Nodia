@@ -4,6 +4,18 @@ import { describe, it, expect, vi } from "vitest";
 import InputSearch from "../../../../../src/components/inputs/InputSearch";
 
 describe("InputSearch", () => {
+  it("keeps typing, clear and focus working with the search icon at the end", async () => {
+    const user = userEvent.setup();
+    const change = vi.fn();
+    render(<InputSearch value="" onChange={change} searchIconPosition="end" debounceMs={0} />);
+    const search = screen.getByRole("textbox");
+    await user.type(search, "OCR");
+    expect(change).toHaveBeenLastCalledWith("OCR");
+    await user.click(screen.getByRole("button", { name: "Limpiar búsqueda" }));
+    expect(change).toHaveBeenLastCalledWith("");
+    expect(search).toHaveValue("");
+    await waitFor(() => expect(search).toHaveFocus());
+  });
   it("disables clearing along with the search input while fetching, preserving the draft", async () => {
     const change = vi.fn();
     render(<InputSearch value="Reservas" onChange={change} disabled />);

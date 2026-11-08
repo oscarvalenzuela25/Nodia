@@ -1,0 +1,156 @@
+{
+  "artifact": "ops/lab/artifacts/invoice-ocr-known-rejection-server-adoption-verification-r01",
+  "backup_runner_sha256": "d9a06fd1f5120441d349ce02cab1198dd5c37366f5ce607b6a79124568ab2153",
+  "capacity_after": {
+    "additional_phase_overhead_bytes": 20971520,
+    "available_bytes": 3627880448,
+    "device": 2050,
+    "future_cleanup_credited": false,
+    "required_bytes": 289415196,
+    "reserve_bytes": 268443676,
+    "spool_lock_only": true
+  },
+  "client_preserved": {
+    "files": 183,
+    "format": "bytes_sha256_records",
+    "manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf"
+  },
+  "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+  "consumers": {
+    "nodia-ai-worker": {
+      "active": "active",
+      "argv_exact_match": true,
+      "pid": 660394,
+      "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r05"
+    },
+    "nodia-api": {
+      "active": "active",
+      "argv_exact_match": true,
+      "pid": 660393,
+      "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r05"
+    }
+  },
+  "database": {
+    "all_rows_and_schema_equal": true,
+    "method": "Exact before.database equality after.database; hashes and schema in pinned adopt receipt.",
+    "tables_compared": 61
+  },
+  "delta_files": 29,
+  "fresh_backup": {
+    "backup_id": "62eb2392-0299-4b72-a62d-a56d74687b3e",
+    "captured_at": "2026-10-26T18:40:20.336Z",
+    "cipher_bytes": 1701900,
+    "cipher_sha256": "9ba2362a63e67f2248195756b595e054b4fd4b7e7663c98c562404239283c8b1",
+    "expires_at": "2026-11-02T18:40:20.336Z",
+    "status": "ready"
+  },
+  "knowledge_after": "b90f2c50757cbe0f408fd385549eba0b7f9c09f97ae12a41491d973175e85daf",
+  "knowledge_before": "607b9d24fb64ad69f81576c1a80000a95d8c7f601a40ebe505ff0a06d1339001",
+  "limitations": [
+    "No new MCP, OCR, MIME, UI, provider availability or end-to-end acceptance is established by adoption.",
+    "NativeCache706f requires its own explicit qualification; prior epoch acceptance is not inherited.",
+    "ADR-082 remains proposed; approval documents and schemas were not changed.",
+    "The zero-byte work-creation stdout is catalogued as bytes only, not an event count or independent success proof.",
+    "AI36/AI38 global completion is not claimed."
+  ],
+  "linux_operator_tests": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 16
+  },
+  "local_authoring_check": {
+    "SDK_calls": 0,
+    "VM_calls": 0,
+    "capture_kind": "structured transcription of observed local command output",
+    "command": "npm run knowledge:check",
+    "exit": 0,
+    "limitation": "Authoring checkout includes excluded draft privacy metadata and unrelated existing sources; this is not the deployed b90 release.",
+    "result": {
+      "catalogRelease": "nodia-ai-ai15-reads/1",
+      "documents": 41,
+      "excluded": 24,
+      "fragments": 43,
+      "mode": "check",
+      "releaseId": "66af3d57fa14cf9c36124401b1a10c3136b19b3a5e6716f18f82ee540d18d075",
+      "sources": 65,
+      "task": "AI-06"
+    },
+    "working_directory": "nodia-server"
+  },
+  "local_registry_alignment": {
+    "adoption_receipt_sha256": "d7584a3aa6c5b9e06e03c97e2be1932c5d618778e882cfacf44adf715c635c3e",
+    "after": "2a029675ae0b3dec7833c8c17752b7c7804190117e174c23c892d001da48a5da",
+    "approved_document_changes": 0,
+    "before": "a856c4d4d0211cc8f372f21e7a66dee0c73f771d8fe23c2e85da50175a1a8fc8",
+    "other_records_preserved": true,
+    "path": "nodia-server/src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.ts",
+    "registry_after": "7bef0928ca2c9213fe53583e07a4b24078f6226f930da90f4c48790c27f87ce5",
+    "registry_before": "6f9378f69a94015546b7fef4aa7f554c3374b43996d07408564afdc5488beead",
+    "status": "factual_implementation_pin_aligned_to_adopted_R05"
+  },
+  "native_epoch": {
+    "descriptor_sha256": "1f38ad45a615c374374638f59ea7d699b781cebbfd0315362da84fe6a562fd5d",
+    "id": "65862c1a1853322c0cd4734a06c96cf8b6d01bc7ca4bd4f9e5cb2eaa027fc72a",
+    "image": "sha256:706f34fcf3586f4fd5476d6d3fd8ff04185ede838fb77620e611fef37f010e28",
+    "started_at": "2026-10-26T18:37:06.112041394Z"
+  },
+  "native_restarted": false,
+  "nginx_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac",
+  "operator_effect_counts": {
+    "SQL_business_writes": 0,
+    "SQL_restores": 0,
+    "automatic_replay": false,
+    "migrations": 0,
+    "provider_generations": 0
+  },
+  "operator_sha256": "9552515d5097cc1b45845e7b5f2360ea78fede4156227e8aa44a4d01226c64a1",
+  "plan_sha256": "a0accd9c5811838cef63705a2990cd82a29cf09c1aac3ba646cc78ea207ba21e",
+  "production_TypeScript_paths": 7,
+  "publication_preserved": {
+    "implementation_source_delta_only": "nodia-server/src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.ts",
+    "knowledge_after": "b90f2c50757cbe0f408fd385549eba0b7f9c09f97ae12a41491d973175e85daf",
+    "knowledge_before": "607b9d24fb64ad69f81576c1a80000a95d8c7f601a40ebe505ff0a06d1339001",
+    "new_capabilities": [],
+    "old_capabilities_preserved": 152,
+    "old_document_contents_preserved": 41,
+    "old_fragments_preserved": 43
+  },
+  "quiet_native_and_Codex_preserved": true,
+  "root_receipts": {
+    "adopt.json": {
+      "bytes": 28653,
+      "path": "ops/lab/artifacts/invoice-ocr-known-rejection-server-adoption-verification-r01/raw/adopt.json",
+      "sha256": "d7584a3aa6c5b9e06e03c97e2be1932c5d618778e882cfacf44adf715c635c3e"
+    },
+    "linux-tests.json": {
+      "bytes": 424,
+      "path": "ops/lab/artifacts/invoice-ocr-known-rejection-server-adoption-verification-r01/raw/linux-tests.json",
+      "sha256": "05768eaf55171714f227c4ec8d5bb02970610a96ed6b465c5ec2075d968053c5"
+    },
+    "post-identity.json": {
+      "bytes": 726,
+      "path": "ops/lab/artifacts/invoice-ocr-known-rejection-server-adoption-verification-r01/raw/post-identity.json",
+      "sha256": "0c5b82d2e0cfa089cf046d8d912a17e4708cd49f2bcb0c85c6fa0b2417efa002"
+    },
+    "preflight.json": {
+      "bytes": 17707,
+      "path": "ops/lab/artifacts/invoice-ocr-known-rejection-server-adoption-verification-r01/raw/preflight.json",
+      "sha256": "55ef2e7c8a6daad4d5a2897c7470e629a84ef48c4b9d0d88a7e73e1afc86fbca"
+    },
+    "stage.json": {
+      "bytes": 535,
+      "path": "ops/lab/artifacts/invoice-ocr-known-rejection-server-adoption-verification-r01/raw/stage.json",
+      "sha256": "8ed79c26fa2f1b81d72107f708d12caff56bf501457a8885683a993af015307a"
+    }
+  },
+  "schema_version": 1,
+  "scope": "Selective Server R04 to R05 known pre-NativeStart rejection delivery; no inference acceptance.",
+  "source": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+  "source_manifest_sha256": "8f83d1525802a08f468e8132ff496a0976493e3b32941366888b631e56273bc8",
+  "status": "server_adopted_verified",
+  "target": "/opt/nodia/releases/nodia-server-invoice-ocr-r05",
+  "target_files": 4238,
+  "target_manifest_sha256": "01afbfa3fe33adaa8b67748efb09e94f1e5f18e3a774826ad8574001ae15d0c9",
+  "timers_restored": true
+}

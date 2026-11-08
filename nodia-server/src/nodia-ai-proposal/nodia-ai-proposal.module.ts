@@ -40,7 +40,12 @@ import {
   ValidateNodiaAiProposalUseCase,
   NODIA_AI_PROPOSAL_COMMON_SCHEMA,
 } from './use-case/validate-nodia-ai-proposal.use-case.js';
-import { NODIA_AI_PROPOSAL_PREPARERS } from './types/proposal-preparer.types.js';
+import {
+  NODIA_AI_PROPOSAL_PREPARERS,
+  NODIA_AI_HISTORICAL_PROPOSAL_READERS,
+  type NodiaAiProposalPreparer,
+} from './types/proposal-preparer.types.js';
+import { BuildNodiaAiSecureOperationsUseCase } from '../nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.js';
 import { PrepareNodiaAiFinanceMovementUseCase } from './use-case/prepare-nodia-ai-finance-movement.use-case.js';
 import { PrepareNodiaAiProposalUseCase } from './use-case/prepare-nodia-ai-proposal.use-case.js';
 import { PrepareNodiaAiWorkflowUseCase } from './use-case/prepare-nodia-ai-workflow.use-case.js';
@@ -62,6 +67,8 @@ import {
   type NodiaAiNativeOperation,
 } from './types/native-operation.types.js';
 import { NodiaAiBusinessCatalogModule } from '../nodia-ai-business-catalog/nodia-ai-business-catalog.module.js';
+import { NodiaAiSalesModule } from '../nodia-ai-sales/nodia-ai-sales.module.js';
+import { BuildNodiaAiHistoricalSalesReadersUseCase } from '../nodia-ai-sales/use-case/build-nodia-ai-historical-sales-readers.use-case.js';
 import { BuildNodiaAiBusinessCatalogOperationsUseCase } from '../nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.js';
 import { NodiaAiSupplierOperationsModule } from '../nodia-ai-supplier-operations/nodia-ai-supplier-operations.module.js';
 import { BuildNodiaAiSupplierOperationsUseCase } from '../nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.js';
@@ -98,6 +105,7 @@ import {
     NodiaAiFinanceCatalogModule,
     NodiaAiFinanceLedgerModule,
     NodiaAiBusinessCatalogModule,
+    NodiaAiSalesModule,
     NodiaAiSupplierOperationsModule,
     NodiaAiInvoiceOperationsModule,
     NodiaAiRentalConfigurationModule,
@@ -158,6 +166,21 @@ import {
           ...business.operations,
           ...suppliers.operations,
           ...invoices.operations,
+        ]),
+    },
+    {
+      provide: NODIA_AI_HISTORICAL_PROPOSAL_READERS,
+      inject: [
+        BuildNodiaAiSecureOperationsUseCase,
+        BuildNodiaAiHistoricalSalesReadersUseCase,
+      ],
+      useFactory: (
+        secure: BuildNodiaAiSecureOperationsUseCase,
+        sales: BuildNodiaAiHistoricalSalesReadersUseCase,
+      ): readonly NodiaAiProposalPreparer[] =>
+        Object.freeze([
+          ...secure.historicalReaders,
+          ...sales.historicalReaders,
         ]),
     },
     {

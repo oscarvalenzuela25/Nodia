@@ -67,7 +67,7 @@ try {
     return value;
   }
   const destinations = new Map();
-  for (const [key, route] of [['businesses', '/tools/business'], ['ai_providers', '/settings/ai-providers']]) {
+  for (const [key, route] of [['businesses', '/business'], ['ai_providers', '/ai-providers']]) {
     let [module] = await db.query('SELECT id FROM modules WHERE link=$1', [route]);
     if (!module) [module] = await db.query("INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,$1,$2 FROM modules WHERE key='nodia_ai' RETURNING id", [route, `ai16_${key}`]);
     destinations.set(route, module.id);
@@ -77,9 +77,9 @@ try {
   await db.query("INSERT INTO actions(key) VALUES('ai:manage') ON CONFLICT(key) DO NOTHING");
   await db.query("INSERT INTO role_actions(role_id,action_id) SELECT $1,id FROM actions WHERE key='ai:manage'", [role.id]);
   await db.query('INSERT INTO user_roles(user_id,role_id) VALUES(1,$1)', [role.id]);
-  const [connection] = await db.query("INSERT INTO ai_providers(catalog_id,name,fields,use_token_plan_web) SELECT id,'Synthetic AI16 only','{}',true FROM ai_provider_catalog WHERE key='gemini' RETURNING id");
+  const [connection] = await db.query("INSERT INTO ai_providers(catalog_id,name,fields,use_agentic) SELECT id,'Synthetic AI16 only','{}',true FROM ai_provider_catalog WHERE key='gemini' RETURNING id");
   const chat = await request('/conversations', { method: 'POST', status: 201, body: { client_request_id: randomUUID() } });
-  const selection = { connection_id: connection.id, mode: 'token_plan_web', model_id: 'synthetic-ai16-no-inference', effort_id: null };
+  const selection = { connection_id: connection.id, mode: 'agentic', model_id: 'synthetic-ai16-no-inference', effort_id: null };
   const budget = { schema_version: 1, tool_calls: policy.budget.tool_calls_per_run, mcp_rpc_messages: policy.budget.mcp_rpc_messages_per_run,
     provider_dispatches: policy.budget.provider_dispatches_per_run, compactions: policy.budget.compactions_per_run, delegations: policy.budget.delegations_per_run };
   let messageSeq = 0;
@@ -113,8 +113,8 @@ try {
       { schema_version: 1, module_routes: [route], authority_hash: 'e'.repeat(64) }]);
     return { id, tool_name: name, contract_hash: tool.contractHash };
   }
-  const businessRef = await seedReceipt('nodia_businesses_list', {}, businessOutput, '/tools/business');
-  const settingsRef = await seedReceipt('nodia_ai_providers_list', {}, emptyMetadata, '/settings/ai-providers');
+  const businessRef = await seedReceipt('nodia_businesses_list', {}, businessOutput, '/business');
+  const settingsRef = await seedReceipt('nodia_ai_providers_list', {}, emptyMetadata, '/ai-providers');
   let eventSeq = 9007199254740992n;
   async function seedEvent(kind, payload, routes = []) {
     const id = randomUUID(), seq = String(++eventSeq);
@@ -124,8 +124,8 @@ try {
     return { id, seq };
   }
   const accepted = await seedEvent('run_accepted', { message_id: run.userMessage, run_revision: 1 });
-  await seedEvent('tool_completed', { result_ref: { tool_call_id: businessRef.id, tool_name: businessRef.tool_name, contract_hash: businessRef.contract_hash }, state: 'completed', error: null }, ['/tools/business']);
-  await seedEvent('tool_completed', { result_ref: { tool_call_id: settingsRef.id, tool_name: settingsRef.tool_name, contract_hash: settingsRef.contract_hash }, state: 'completed', error: null }, ['/settings/ai-providers']);
+  await seedEvent('tool_completed', { result_ref: { tool_call_id: businessRef.id, tool_name: businessRef.tool_name, contract_hash: businessRef.contract_hash }, state: 'completed', error: null }, ['/business']);
+  await seedEvent('tool_completed', { result_ref: { tool_call_id: settingsRef.id, tool_name: settingsRef.tool_name, contract_hash: settingsRef.contract_hash }, state: 'completed', error: null }, ['/ai-providers']);
   await seedEvent('message_sealed', { message_id: run.assistantMessage, status: 'sealed' });
   const terminal = await seedEvent('run_changed', { revision: 1, state: 'completed', error: null });
   async function readCounters() {
@@ -142,7 +142,7 @@ try {
   const observation = await request(observationPath);
   check('metadata uses the closed ToolObservation runtime schema', observationSchema.validate(observation));
   check('metadata carries the original receipt date and native source', observation.source.module_key === 'businesses' && observation.result_ref.contract_hash === businessRef.contract_hash && Number.isFinite(Date.parse(observation.observed_at)));
-  check('verified business navigation targets the real native record', observation.navigation.some(item => item.kind === 'business_detail' && item.id === business.id && item.module_route === '/tools/business'));
+  check('verified business navigation targets the real native record', observation.navigation.some(item => item.kind === 'business_detail' && item.id === business.id && item.module_route === '/business'));
   check('metadata does not expose arguments, full output or provider secrets', !('arguments' in observation) && !('result' in observation) && !JSON.stringify(observation).includes('fields'));
   check('known list counts retain their exact native values', observation.summary.total === 1 && observation.summary.returned === 1);
   const summary = await request(`/runs/${run.id}`);
@@ -172,13 +172,13 @@ try {
   const [audit] = await db.query("SELECT count(*)::integer AS count FROM nodia_ai_audit_events WHERE actor_id=3 AND conversation_id=$1 AND event_key='conversation.inspected'", [chat.conversation_id]);
   check('super_admin can inspect without destination assignment and the inspection is audited', audit.count > 0);
 
-  await db.query('DELETE FROM user_modules WHERE user_id=1 AND module_id=$1', [destinations.get('/tools/business')]);
+  await db.query('DELETE FROM user_modules WHERE user_id=1 AND module_id=$1', [destinations.get('/business')]);
   await request(resultPath, { status: 403 });
   const moduleReset = await request(eventsPath + '?cursor=' + encodeURIComponent(tail.next_cursor));
   check('destination revocation denies stored results and explicitly resets cursor visibility', moduleReset.cursor_state === 'reset_required' && moduleReset.items.length === 0);
   const restricted = await request(eventsPath);
   check('revoked destination tool references are omitted, not exposed as stale allowed data', !restricted.items.some(item => item.kind === 'tool_completed' && item.payload.result_ref.tool_call_id === businessRef.id));
-  await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1)', [destinations.get('/tools/business')]);
+  await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1)', [destinations.get('/business')]);
   await request(observationPath);
   check('restoring the actual module restores authorized observation without executing the tool', true);
 

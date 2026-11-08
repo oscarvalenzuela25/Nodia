@@ -6,6 +6,7 @@ import {
   Get,
   Post,
   Put,
+  Patch,
   Body,
   Param,
   Query,
@@ -21,6 +22,8 @@ import { CreateModuleGroupUseCase } from './use-case/create-module-group.use-cas
 import { UpdateModuleGroupUseCase } from './use-case/update-module-group.use-case.js';
 import { DeleteModuleGroupUseCase } from './use-case/delete-module-group.use-case.js';
 import { CatalogIdDto } from '../common/dto/catalog-id.dto.js';
+import { MoveModuleGroupOrderDto } from './dto/move-module-group-order.dto.js';
+import { MoveModuleGroupOrderUseCase } from './use-case/move-module-group-order.use-case.js';
 
 @Controller(['module-group', 'module-groups'])
 export class ModuleGroupController {
@@ -29,6 +32,7 @@ export class ModuleGroupController {
     private readonly createModuleGroupUseCase: CreateModuleGroupUseCase,
     private readonly updateModuleGroupUseCase: UpdateModuleGroupUseCase,
     private readonly deleteModuleGroupUseCase: DeleteModuleGroupUseCase,
+    private readonly moveModuleGroupOrderUseCase: MoveModuleGroupOrderUseCase,
   ) {}
 
   @Post()
@@ -65,6 +69,19 @@ export class ModuleGroupController {
   remove(@Param() params: CatalogIdDto, @Req() request: AuthRequest) {
     return this.deleteModuleGroupUseCase.execute(
       params.id,
+      actorReference(request.auth),
+    );
+  }
+
+  @Patch(':id/order')
+  moveOrder(
+    @Param() params: CatalogIdDto,
+    @Body() command: MoveModuleGroupOrderDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.moveModuleGroupOrderUseCase.execute(
+      params.id,
+      command,
       actorReference(request.auth),
     );
   }

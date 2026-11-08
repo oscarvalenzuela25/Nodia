@@ -22,6 +22,46 @@ export function readRuntimeProofRequest(
 ): NodiaAiRuntimeProofRequest {
   const descriptor = record(value),
     runtime = record(descriptor?.runtime);
+  if (descriptor?.schema_version === 3) {
+    if (
+      !runtime ||
+      Object.keys(runtime).length !== 8 ||
+      ![
+        'provider_key',
+        'adapter_contract_version',
+        'connection_id',
+        'engine',
+        'attempt_id',
+        'operation_ref',
+        'resource_key',
+        'session_generation',
+      ].every((key) => Object.hasOwn(runtime, key)) ||
+      (runtime.provider_key !== 'openai' && runtime.provider_key !== 'gemini') ||
+      runtime.adapter_contract_version !== 'nodia-ai-api-chat/1' ||
+      runtime.engine !== 'api_key' ||
+      !canonicalConnectionId(runtime.connection_id) ||
+      typeof runtime.attempt_id !== 'string' ||
+      !uuid.test(runtime.attempt_id) ||
+      runtime.operation_ref !== runtime.attempt_id ||
+      typeof runtime.resource_key !== 'string' ||
+      !/^api-connection:[a-f0-9]{64}$/.test(runtime.resource_key) ||
+      typeof runtime.session_generation !== 'string' ||
+      !/^[a-f0-9]{32}$/.test(runtime.session_generation)
+    )
+      throw Error('nodia_ai:reconciliation_identity_missing');
+    return {
+      engine: 'api_key',
+      attemptId: runtime.attempt_id,
+      operationRef: runtime.operation_ref,
+      resourceKey: runtime.resource_key,
+      sessionGeneration: runtime.session_generation,
+      adapterIdentity: {
+        providerKey: runtime.provider_key as 'openai' | 'gemini',
+        contractVersion: 'nodia-ai-api-chat/1',
+        connectionId: runtime.connection_id,
+      },
+    };
+  }
   if (descriptor?.schema_version === 2) {
     if (
       !runtime ||
@@ -87,6 +127,32 @@ export function readRuntimeProofRequest(
 export function runtimeProofDescriptor(
   request: NodiaAiRuntimeProofRequest,
 ): NodiaAiJsonObject {
+  if (request.engine === 'api_key') {
+    const identity = record(request.adapterIdentity);
+    if (
+      !identity ||
+      Object.keys(identity).length !== 3 ||
+      !['providerKey', 'contractVersion', 'connectionId'].every((key) =>
+        Object.hasOwn(identity, key),
+      )
+    )
+      throw Error('nodia_ai:reconciliation_identity_missing');
+    const descriptor: NodiaAiJsonObject = {
+      schema_version: 3,
+      runtime: {
+        provider_key: identity.providerKey as string,
+        adapter_contract_version: identity.contractVersion as string,
+        connection_id: identity.connectionId as string,
+        engine: request.engine,
+        attempt_id: request.attemptId,
+        resource_key: request.resourceKey,
+        session_generation: request.sessionGeneration,
+        operation_ref: request.operationRef,
+      },
+    };
+    readRuntimeProofRequest(descriptor);
+    return descriptor;
+  }
   if (request.adapterIdentity !== undefined) {
     const identity = record(request.adapterIdentity);
     if (
@@ -134,7 +200,7 @@ export function readTerminalProof(value: unknown): NodiaAiRuntimeTerminalProof {
     terminal = record(descriptor?.terminal_proof);
   if (
     !terminal ||
-    Object.keys(terminal).length !== 3 ||
+    Object.keys(terminal).length !== (request.engine === 'api_key' ? 5 : 3) ||
     typeof terminal.id !== 'string' ||
     !uuid.test(terminal.id) ||
     !['completed', 'abandoned_unknown'].includes(String(terminal.outcome)) ||
@@ -144,6 +210,31 @@ export function readTerminalProof(value: unknown): NodiaAiRuntimeTerminalProof {
   const observedAt = new Date(terminal.observed_at);
   if (!Number.isFinite(observedAt.getTime()))
     throw Error('nodia_ai:invalid_terminal_proof');
+  if (request.engine === 'api_key') {
+    if (
+      ![
+        'id',
+        'outcome',
+        'observed_at',
+        'local_transport_closed',
+        'remote_outcome',
+      ].every((key) => Object.hasOwn(terminal, key)) ||
+      terminal.local_transport_closed !== true ||
+      (terminal.remote_outcome !== 'completed' && terminal.remote_outcome !== 'unknown') ||
+      (terminal.outcome !== 'completed' && terminal.outcome !== 'abandoned_unknown') ||
+      (terminal.outcome === 'completed') !==
+        (terminal.remote_outcome === 'completed')
+    )
+      throw Error('nodia_ai:invalid_terminal_proof');
+    return {
+      ...request,
+      terminalProofId: terminal.id,
+      localTransportClosed: true,
+      remoteOutcome: terminal.remote_outcome as 'completed' | 'unknown',
+      outcome: terminal.outcome as 'completed' | 'abandoned_unknown',
+      observedAt,
+    };
+  }
   return {
     ...request,
     terminalProofId: terminal.id,
@@ -182,7 +273,15 @@ export function assertRuntimeTerminalProof(
     proof.resourceKey !== request.resourceKey ||
     proof.sessionGeneration !== request.sessionGeneration ||
     !uuid.test(proof.terminalProofId) ||
-    proof.processClosed !== true ||
+    (proof.engine === 'api_key'
+      ? proof.localTransportClosed !== true ||
+        proof.processClosed !== undefined ||
+        !['completed', 'unknown'].includes(proof.remoteOutcome) ||
+        (proof.outcome === 'completed') !==
+          (proof.remoteOutcome === 'completed')
+      : proof.processClosed !== true ||
+        proof.localTransportClosed !== undefined ||
+        proof.remoteOutcome !== undefined) ||
     !['completed', 'abandoned_unknown'].includes(proof.outcome) ||
     !(proof.observedAt instanceof Date) ||
     !Number.isFinite(proof.observedAt.getTime())
@@ -192,12 +291,19 @@ export function assertRuntimeTerminalProof(
 export function terminalRuntimeProofDescriptor(
   proof: NodiaAiRuntimeTerminalProof,
 ): NodiaAiJsonObject {
+  if (proof.engine === 'api_key') assertRuntimeTerminalProof(proof, proof);
   return {
     ...runtimeProofDescriptor(proof),
     terminal_proof: {
       id: proof.terminalProofId,
       outcome: proof.outcome,
       observed_at: proof.observedAt.toISOString(),
+      ...(proof.engine === 'api_key'
+        ? {
+            local_transport_closed: proof.localTransportClosed,
+            remote_outcome: proof.remoteOutcome,
+          }
+        : {}),
     },
     cleanup_attempts: 0,
   };

@@ -27,20 +27,20 @@ def register_durable_login_routes(application: FastAPI) -> None:
     def router_for(engine: str, prefix: str) -> APIRouter:
         router = APIRouter(prefix=prefix)
 
-        @router.post("/requests/{request_id}", response_model=DurableLoginJob, response_model_exclude_none=engine == "web")
+        @router.post("/requests/{request_id}", response_model=DurableLoginJob)
         async def start(request_id: UUID,
                         actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")],
                         provider: Annotated[ProviderId, Header(alias="X-Nodia-Provider-Id")],
                         deadline: Annotated[str, Header(alias="X-Nodia-Login-Expires-At", max_length=64)]):
             return await application.state.durable_login.start(engine, str(request_id), actor, provider, deadline)
 
-        @router.get("/requests/{request_id}", response_model=DurableLoginJob, response_model_exclude_none=engine == "web")
+        @router.get("/requests/{request_id}", response_model=DurableLoginJob)
         async def observe(request_id: UUID,
                           actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")],
                           provider: Annotated[ProviderId, Header(alias="X-Nodia-Provider-Id")]):
             return await application.state.durable_login.observe(engine, str(request_id), actor, provider)
 
-        @router.post("/requests/{request_id}/cancel", response_model=DurableLoginJob, response_model_exclude_none=engine == "web")
+        @router.post("/requests/{request_id}/cancel", response_model=DurableLoginJob)
         async def cancel(request_id: UUID,
                          actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")],
                          provider: Annotated[ProviderId, Header(alias="X-Nodia-Provider-Id")]):
@@ -53,5 +53,4 @@ def register_durable_login_routes(application: FastAPI) -> None:
             return application.state.durable_login.acknowledge(engine, str(request_id), actor, provider)
         return router
 
-    application.include_router(router_for("web", "/auth/login"))
     application.include_router(router_for("agentic", "/agentic/auth/login"))

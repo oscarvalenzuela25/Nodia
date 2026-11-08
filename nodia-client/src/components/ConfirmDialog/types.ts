@@ -12,6 +12,7 @@ export type ConfirmDialogProps = {
   children?: ReactNode;
   confirmText?: ReactNode;
   cancelText?: ReactNode;
+  additionalActions?: ReactNode;
   isLoading?: boolean;
   confirmDisabled?: boolean;
   size?: ConfirmDialogSize;

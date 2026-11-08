@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "status": "sales_read_only_retirement",
+  "decision_on": "2026-10-30",
+  "authoring_only": true,
+  "decision": "The user restricts NodiaAI sales to obtaining and displaying information. Manual POS and historical receipts remain independent.",
+  "catalog_release": "nodia-ai-business-pos/2",
+  "registry_path": "nodia-server/config/nodia-ai-knowledge.registry.json",
+  "catalog_extension_path": "docs/mvp/nodia-ai-v1-tool-catalog.extensions.json",
+  "read_capability_ids": [
+    "nodia_sales_get",
+    "nodia_sales_list"
+  ],
+  "retired_capability_ids": [
+    "nodia_sales_prepare_create",
+    "nodia_sales_prepare_update",
+    "nodia_sales_prepare_complete",
+    "nodia_sales_prepare_cancel",
+    "nodia_sales_prepare_discard"
+  ],
+  "document_review": {
+    "path": "docs/nodia-ai/knowledge/businesses/features/point-of-sale-and-sales.md",
+    "document_id": "businesses.point-of-sale-and-sales",
+    "revision": 5,
+    "approved_content_sha256": "148a52fe4478f514b20283f0d6df5ac6db39c1f7340169e0afab5aab9f603a40",
+    "approval_reference": "docs/evidence/business-pos-knowledge-publication-authorization-20261028-r01.json",
+    "approved_document_unchanged": true,
+    "new_approval_created": false
+  },
+  "required_binding": {
+    "document_id": "businesses.point-of-sale-and-sales",
+    "fragment_id": "pos-sales-v1",
+    "purpose": "feature_explanation",
+    "sections": [
+      "Filtros e informes"
+    ],
+    "requires": [
+      {
+        "capability_id": "nodia_sales_get",
+        "revision": 1,
+        "input_schema_sha256": "8194a596e0b46949ad7ad1b53467f1bbf4659beb27633e01c1177239cbe64256",
+        "output_schema_sha256": "8194a596e0b46949ad7ad1b53467f1bbf4659beb27633e01c1177239cbe64256"
+      },
+      {
+        "capability_id": "nodia_sales_list",
+        "revision": 1,
+        "input_schema_sha256": "8194a596e0b46949ad7ad1b53467f1bbf4659beb27633e01c1177239cbe64256",
+        "output_schema_sha256": "8194a596e0b46949ad7ad1b53467f1bbf4659beb27633e01c1177239cbe64256"
+      }
+    ],
+    "required_module_routes": [
+      "/tools/business"
+    ]
+  },
+  "preserved_historical_contract_paths": [
+    "nodia-server/src/nodia-ai-products/contracts/write-sales.json",
+    "nodia-server/src/nodia-ai-products/contracts/pos-write-sales.schema.json",
+    "nodia-server/src/nodia-ai-products/contracts/sales.schema.json"
+  ],
+  "limits": [
+    "This file cannot apply or restore the retired five writers. The companion CLI is read-only and rejects --apply.",
+    "The existing approved document is not rewritten or newly approved; only its already-approved report semantics section is projected.",
+    "A new read-only feature document may be a draft for review and must not be published without exact human document approval.",
+    "No deployment, provider inference, arbitrary SQL, receipt replay or global database read-only promise."
+  ]
+}

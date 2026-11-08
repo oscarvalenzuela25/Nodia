@@ -1,0 +1,323 @@
+{
+  "schema": "teacher-selection-qa-delivery/1",
+  "date": "2026-11-04",
+  "status": "implemented_deployed_and_verified_for_requested_scope",
+  "requested_changes": [
+    "Single local textarea padding",
+    "Explain and resolve current Gemini unqualified selection",
+    "Use persisted system defaults without overriding session selection",
+    "Contained selection/send/propose actions",
+    "Collapsed qualified selection with correction states open",
+    "Direct Archive for sole action with confirmation"
+  ],
+  "client": {
+    "release": "/opt/nodia/releases/nodia-client-teacher-20261104-r10",
+    "manifest_sha256": "ceaeaeb8bc6b2fc17a67a06aa157f2eb026ee8cbec9814f86cab9d33809d34a5",
+    "activation": {
+      "Native_restart": false,
+      "Server_manifest_sha256": "fe1fa26d3148d062cba09ed5bfa1f8a6dd11f64ac2601eb277961e9d644c3442",
+      "Server_restart": false,
+      "backup_workflow_actions": 0,
+      "canonical_state_sha256": "21b986412df3c7bbc683c135fc6f622fa875906d53ac2fd943043542d9e10ef6",
+      "database_access": false,
+      "legacy_R09_asset_fallback_retained": true,
+      "new_assets_verified": 179,
+      "nginx_after_sha256": "2fd03ae9cebcc1951e5c1003c84d5ce039bb4e70db6c46a7cab7d24c5120365a",
+      "nginx_before_sha256": "a244f0e54d77c6049ecf4bef2d6b38eff0cc45276ca616afa9bec242115b1854",
+      "old_assets_verified": 175,
+      "one_Nginx_reload": true,
+      "phase": "Client_R10_active_static_and_legacy_assets_verified",
+      "private_recovery_workflows": 0,
+      "protected_runtime_snapshot_unchanged": true,
+      "provider_requests": 0,
+      "stdout_receipt_sha256": "f1dc604a000e3ece73fcb2e0823ea90174e62d6c6e933d164a4820f0e6471de3",
+      "success": true
+    },
+    "checks": {
+      "Teacher_test_files": 12,
+      "Teacher_tests": 58,
+      "VM_operations": 0,
+      "all_baseline_inputs_rehashed_before_after": true,
+      "assets": 179,
+      "isolated_build_ms": 22396,
+      "isolated_typecheck_diagnostics": 0,
+      "lint_configuration": {
+        "bytes": 734,
+        "sha256": "68eb93930a420d734cfa86764f54b6424671b3796651b068b513de19c5ea19cc"
+      },
+      "operator_tests": 4,
+      "provider_requests": 0,
+      "public_configuration_preserved": true,
+      "scoped_lint_diagnostics": 0,
+      "success": true,
+      "unchanged_dist_files": 130
+    },
+    "baseline_input_count": 1340,
+    "input_count": 1341,
+    "unchanged_baseline_inputs": 1332,
+    "changed_existing_inputs": 8,
+    "new_inputs": 1
+  },
+  "gemini": {
+    "selection": {
+      "connection_id": "2",
+      "mode": "agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high"
+    },
+    "cause": {
+      "historical_qualification_operation_id": "8ff0aa4a-5b5d-4ba7-85e5-f26afb00e488",
+      "only_changed_stable_observation_key": "session_generation",
+      "old_session_generation": "433024647069445573f827a0ddbfa583",
+      "current_session_generation": "17e4109d6cebaf3a6f874a2ff5e155d2",
+      "other_stable_observation_fields_equal": true,
+      "selection_and_configuration_unchanged": true,
+      "historical_evidence_preserved": true,
+      "contract_requires_new_qualification_after_process_restart": true,
+      "gate_weakened": false
+    },
+    "qualification": {
+      "technical_session_id": "2a9669b8-f3e9-4c83-8bf6-d50812f8ae65",
+      "job_id": "4a75792d-9f3e-4d5d-8996-fac28b81d77a",
+      "operation_id": "742c954c-fe4a-4c46-8cb0-e49304a33614",
+      "job_state": "ready",
+      "remote_outcome": "completed",
+      "phase": "closed",
+      "native_ack": true,
+      "sql_ack": true,
+      "session_dispatches_used": 1,
+      "provider_dispatches": 1,
+      "local_attempts": 1,
+      "upstream_status": 200,
+      "finish_done": true,
+      "known_child_closed": true,
+      "canonical_receipt_sha256": "1ecd4be44dcb144fe31323dc5d5e85ac69068c905e089caac1dba28a7731cefb",
+      "current_scope_hash": "9d74d14e3624abe0fe1b31f928c35c995d25eb795eae33341150aac25655f0b4",
+      "current_eligibility": {
+        "eligible": true,
+        "reason_code": null,
+        "checked_at": "2026-11-04T23:06:05.124Z",
+        "selection": {
+          "mode": "agentic",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high",
+          "connection_id": "2"
+        }
+      },
+      "technical_session_archived": true
+    },
+    "runtime_after": {
+      "api_after": {
+        "active": true,
+        "pid": 1143406,
+        "birth": 12421228,
+        "uid": 10000
+      },
+      "worker_after": {
+        "active": true,
+        "pid": 1143407,
+        "birth": 12421230,
+        "uid": 10000
+      },
+      "stable_seconds": 30,
+      "SQL_12_quiet": true,
+      "Native_13_sources": true,
+      "SDK_quiet": true
+    },
+    "effects": {
+      "canary_generation_dispatches": 1,
+      "historical_inference_replays": 0,
+      "auth_changes": 0,
+      "JWTs_created": 0,
+      "provider_model_or_mode_changes": 0,
+      "Native_stops_or_restarts": 0,
+      "Server_service_exclusive_stop_start_cycles": 1,
+      "heavy_backup_or_configuration_captures": 0,
+      "Client_changes": 0
+    },
+    "operator_local_checks": {
+      "guard_tests": 7,
+      "launcher_tests": 6,
+      "resume_policy_tests": 4,
+      "syntax_and_default_inert": true
+    }
+  },
+  "browser_QA": {
+    "schema": "teacher-selection-authenticated-qa/1",
+    "environment": "VM via http://localhost:5174",
+    "browser": "IAB Chromium through cua_repl",
+    "real_course_id": "904c19d5-ba6a-4b97-a29c-26e7c44cc59a",
+    "real_course_state": "paused",
+    "real_course_generation_count": 0,
+    "real_course_mutations_by_root": 0,
+    "real_course_selection_qualified": true,
+    "real_course_selection_collapsed": true,
+    "direct_archive": true,
+    "archive_open_cancel_focus_returned": true,
+    "technical_session_id": "fe09acc5-4fe7-4b45-a857-6dd2dc8d0968",
+    "technical_session_created_via_UI": true,
+    "system_default_preloaded_without_manual_selection": true,
+    "selection_confirmed_then_collapsed": true,
+    "technical_session_archived_via_confirmed_UI": true,
+    "technical_session_generations": 0,
+    "before_padding": {
+      "container": "16.5px 14px",
+      "textarea": "10px 14px"
+    },
+    "after_padding": {
+      "container": "10px 14px",
+      "textarea": "0px"
+    },
+    "responsive": [
+      {
+        "actual_width": 320,
+        "document_width": 310,
+        "overflow": false,
+        "selection_collapsed": true,
+        "send_propose_contained": true,
+        "send_propose_width": 244,
+        "send_propose_height": 44
+      },
+      {
+        "actual_width": 600,
+        "document_width": 590,
+        "overflow": false,
+        "fields_two_columns": true,
+        "field_width": 238,
+        "field_x": [
+          49,
+          303
+        ],
+        "keyboard_Enter_collapsed": true
+      },
+      {
+        "actual_width": 1088,
+        "document_width": 1078,
+        "overflow": false,
+        "selection_collapsed": true,
+        "send_propose_contained": true,
+        "archive_cancel_focus_restored": true
+      }
+    ],
+    "save_selection_contained": true,
+    "save_selection_disabled_when_unchanged": true,
+    "save_selection_height": 44,
+    "viewport_override_reset": true,
+    "visible_final_screenshot_reviewed": true,
+    "original_tab_reloaded_by_root": false,
+    "original_unsent_message": {
+      "initial_AX_had_text": true,
+      "later_DOM_was_empty": true,
+      "cause": "not established; original tab was not reloaded by Root",
+      "recovered_local_copy": "output/teacher-message-recovery-20261104.txt",
+      "message_submitted": false
+    },
+    "scope_limits": [
+      "No real provider generation from the QA course or user course; operational canary is a separate receipt.",
+      "Browser QA sampled ES dark at 320/600/1088; secondary synthetic QA covers EN/light/error, not physical mobile.",
+      "Unsent setup message disappearance is recorded with no proven cause; copy recovered from initial observed UI, no user course state changed."
+    ]
+  },
+  "edited_source_pins": {
+    "nodia-client/src/modules/teacher/components/SelectionPanel/SelectionPanel.tsx": {
+      "path": "nodia-client/src/modules/teacher/components/SelectionPanel/SelectionPanel.tsx",
+      "bytes": 6873,
+      "sha256": "d2af913251154ab330ebc9a59ee55ec420cddb080c0f34488dcf5b52321fbf69"
+    },
+    "nodia-client/src/modules/teacher/components/SelectionPanel/styles.ts": {
+      "path": "nodia-client/src/modules/teacher/components/SelectionPanel/styles.ts",
+      "bytes": 654,
+      "sha256": "51b6a24405797975f4d25a36dacf9767d4c4c1dd32241209f11d5120c8fa46fb"
+    },
+    "nodia-client/src/modules/teacher/components/SessionForm/styles.ts": {
+      "path": "nodia-client/src/modules/teacher/components/SessionForm/styles.ts",
+      "bytes": 306,
+      "sha256": "9544bfade6adc9f87d2df7a7815eaffe362670dcc8fd44d756d47161c3f358cc"
+    },
+    "nodia-client/src/modules/teacher/infrastructure/schemas.ts": {
+      "path": "nodia-client/src/modules/teacher/infrastructure/schemas.ts",
+      "bytes": 10917,
+      "sha256": "ba7cef28abdde4e2d74586b3d318db54a2d1d95bbee99fa7c7d235f40c803b0c"
+    },
+    "nodia-client/src/modules/teacher/infrastructure/selection.ts": {
+      "path": "nodia-client/src/modules/teacher/infrastructure/selection.ts",
+      "bytes": 2194,
+      "sha256": "448a6b9736fdae2c1f0d5d713c196dbc8a04a6ece9f6755896823e3eeb61b2cc"
+    },
+    "nodia-client/src/modules/teacher/pages/Teacher/Teacher.tsx": {
+      "path": "nodia-client/src/modules/teacher/pages/Teacher/Teacher.tsx",
+      "bytes": 36362,
+      "sha256": "444f4cc08115c9c5930ebf03b39271ff5cd36117127a487c306bb18f5d33f999"
+    },
+    "nodia-client/src/test/modules/teacher/components/SelectionPanel/SelectionPanel.test.tsx": {
+      "path": "nodia-client/src/test/modules/teacher/components/SelectionPanel/SelectionPanel.test.tsx",
+      "bytes": 7459,
+      "sha256": "21a413e232a7d9a71bb686266bd1528109f187eb9e0fc45cce2ef177b1304daf"
+    },
+    "nodia-client/src/translate/en/teacher.json": {
+      "path": "nodia-client/src/translate/en/teacher.json",
+      "bytes": 14420,
+      "sha256": "76131baaa769eccf30235a5d19ee66984280f9610611c7dd3a5dcaee744b8f0c"
+    },
+    "nodia-client/src/translate/es/teacher.json": {
+      "path": "nodia-client/src/translate/es/teacher.json",
+      "bytes": 15097,
+      "sha256": "275fb3da541716590a4d34ff0c5109eeb7ea2f8f3143180a8d251b6b009380cc"
+    }
+  },
+  "source_receipts": [
+    {
+      "path": "ops/lab/artifacts/teacher-selection-qa-20261104-r01/client-r10/delivery.json",
+      "bytes": 10159,
+      "sha256": "e36563c7858ad4cd6b67ef3e5752feb270a1daed0a829b055de377aebc84ab06"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-requalification-20261104-r01/delivery.json",
+      "bytes": 8570,
+      "sha256": "115e0a99e6e43a19a6a7bab1bbed99ca91fb26af89698ab0680626d68b3a24eb"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-selection-qa-20261104-r01/browser-verification.json",
+      "bytes": 2583,
+      "sha256": "ac3f9ef277884f56d174d976402e67e098476d00415d19d32970bdb35996a8d0"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-selection-qa-20261104-r01/local-ui-verification.json",
+      "bytes": 2085,
+      "sha256": "943164d868b7dd9e1a698b740b1248c4b16cc8ccf00bd89426e7c03856a9e96c"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-selection-qa-20261104-r01/catalog.json",
+      "bytes": 1144,
+      "sha256": "9f1a14269479494fc16a143e94f912a0edf0ab457975c00a141832d089080fc1"
+    }
+  ],
+  "root_integrity_verification": {
+    "delivery_source_and_receipt_pins_rehashed": 54,
+    "edited_source_pins_matching_frozen_build": 9,
+    "UTF8_LF": true
+  },
+  "knowledge_check": {
+    "mode": "read_only_check",
+    "sources": 80,
+    "excluded": 36,
+    "documents": 44,
+    "fragments": 46,
+    "release_id": "ca3b8d894cbfc3780698e15b1b19c62a4554b00911af7893024fd025c6f948af",
+    "publication": false
+  },
+  "documentation": [
+    "docs/mvp/96-nodia-teacher-implementation-plan.md#28",
+    "nodia-client/DESIGN.md#9.12",
+    "docs/nodia-ai/knowledge/studies/features/adaptive-plans-and-day-material.md revision22 draft/partial/unregistered"
+  ],
+  "product_V1_acceptance_or_ADR_approval": false,
+  "new_knowledge_publication": false,
+  "limitations": [
+    "Qualification applies to this exact current selection/epoch; another Native restart requires a new qualification under the existing contract.",
+    "No lifecycle redesign, automatic inference, qualification-gate weakening, auth change or model fallback.",
+    "Original unsent setup message no longer appeared during work; recovery copy available locally, cause not established.",
+    "No physical mobile, universal pedagogy/performance, or new full learning-cycle acceptance in this UI task."
+  ],
+  "remaining_requested_work": []
+}

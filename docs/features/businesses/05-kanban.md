@@ -1,5 +1,11 @@
 # Panel Kanban — Módulo Businesses
 
+> Decisión vigente R17 (2026-10-30): NodiaAI sólo consulta y muestra ventas/reportes; se retiran las cinco preparaciones comerciales de ventas, incluso para propuestas antiguas. El POS y la gestión manual se conservan. Véase [Plan94 §26](../../mvp/94-business-point-of-sale-and-product-refactor.md#26-nodiaai-ventas-y-reportes-de-solo-lectura--r17-2026-10-30). Las referencias inferiores al CRUD de ventas mediante IA son históricas y no lo rehabilitan.
+
+## Continuidad de POS — alcance funcional cerrado R04, 2026-10-28
+
+Checklist vigente en [plan94 R04, POS-00..09](../../mvp/94-business-point-of-sale-and-product-refactor.md#10-fases-y-checklist-ejecutable). **POS-00/01 completos documentalmente; primer pendiente POS-02**, expansión/compatibilidad del catálogo; después imágenes, ventas, Client/escáner, reportes, IA y aceptación/retiro stock. Reglas funcionales, cinco medios informativos y America/Santiago aceptados. No reabrirlos como bloqueos ni marcar implementación/pruebas, épicas históricas o fichas completas como aprobadas. Sin tablas de pagos/caja fuera del alcance.
+
 > Estado: borrador preliminar para contraste con base de datos
 > Fecha de creación: 2026-09-15
 > Dependencias: Documentos 01 al 04 de `docs/features/businesses/`

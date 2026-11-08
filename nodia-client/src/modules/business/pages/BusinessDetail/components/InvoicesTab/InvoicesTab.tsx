@@ -1,5 +1,6 @@
 import DateInput from "../../../../../../components/inputs/DateInput";
 import BusinessPagination from "../../../../components/BusinessPagination";
+import { TABLE_PANEL_RADIUS } from "../../../../../../theme/tablePanel";
 import { InvoiceMobileCard } from "../../../../components/BusinessMobileCards/BusinessMobileCards";
 import { useMediaQuery, useTheme } from "@mui/material";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
@@ -572,7 +573,7 @@ export const InvoicesTab: FC<Props> = ({
           </Box> : (        <TableContainer
           component={Paper}
           sx={{
-            borderRadius: 3,
+            borderRadius: TABLE_PANEL_RADIUS,
             p: { xs: 0, sm: 0 },
             border: (theme) => `1px solid ${theme.palette.divider}`,
             boxShadow: "none",

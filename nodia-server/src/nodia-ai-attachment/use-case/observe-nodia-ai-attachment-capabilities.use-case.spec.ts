@@ -15,7 +15,7 @@ function fixture() {
   const chat = {
     revision: 1,
     selected_connection_id: '2',
-    selected_mode: 'token_plan_web',
+    selected_mode: 'agentic',
     selected_model_id: 'fixture-live-model',
     selected_effort_id: null,
   };
@@ -32,9 +32,11 @@ function fixture() {
     execute: vi.fn().mockImplementation(async () => ({ chat })),
   };
   const adapter = {
-    observe: vi
-      .fn()
-      .mockResolvedValue({ available: true, verifiedModalities: ['image'], verifiedAttachmentMediaTypes: ['image/png'] }),
+    observe: vi.fn().mockResolvedValue({
+      available: true,
+      verifiedModalities: ['image'],
+      verifiedAttachmentMediaTypes: ['image/png'],
+    }),
   };
   const subject = new ObserveNodiaAiAttachmentCapabilitiesUseCase(
     attachments as unknown as NodiaAiAttachmentService,
@@ -62,7 +64,7 @@ describe('AI-32 exact attachment modality evidence', () => {
     });
     expect(f.adapter.observe).toHaveBeenCalledWith({
       connection_id: '2',
-      mode: 'token_plan_web',
+      mode: 'agentic',
       model_id: 'fixture-live-model',
       effort_id: null,
     });
@@ -70,10 +72,17 @@ describe('AI-32 exact attachment modality evidence', () => {
   });
   it('keeps historical category-only observations unknown', async () => {
     const f = fixture();
-    f.adapter.observe.mockResolvedValue({ available: true, verifiedModalities: ['image', 'audio'] });
+    f.adapter.observe.mockResolvedValue({
+      available: true,
+      verifiedModalities: ['image', 'audio'],
+    });
     const result = await f.subject.execute(identity, 'chat');
     expect(result.native_media_types).toEqual([]);
-    expect(result.native_modalities).toEqual({ image: null, pdf: null, audio: null });
+    expect(result.native_modalities).toEqual({
+      image: null,
+      pdf: null,
+      audio: null,
+    });
   });
   it('returns unknown when provider is unavailable without inventing metadata', async () => {
     const f = fixture();
@@ -84,7 +93,11 @@ describe('AI-32 exact attachment modality evidence', () => {
     const f = fixture();
     f.adapter.observe.mockImplementation(async () => {
       f.chat.revision++;
-      return { available: true, verifiedModalities: ['image'], verifiedAttachmentMediaTypes: ['image/png'] };
+      return {
+        available: true,
+        verifiedModalities: ['image'],
+        verifiedAttachmentMediaTypes: ['image/png'],
+      };
     });
     expect(await f.subject.execute(identity, 'chat')).toEqual(f.base);
   });
@@ -97,10 +110,51 @@ describe('AI-32 exact attachment modality evidence', () => {
       'revoked',
     );
   });
-  it('keeps API native formats unknown without trying a different mode', async () => {
+  it('keeps API formats unknown when observation is not an API identity', async () => {
     const f = fixture();
     f.chat.selected_mode = 'api_key';
     expect(await f.subject.execute(identity, 'chat')).toEqual(f.base);
-    expect(f.adapter.observe).not.toHaveBeenCalled();
+    expect(f.adapter.observe).toHaveBeenCalledOnce();
   });
 });
+
+it.each([
+  { mediaTypes: [] },
+  { mediaTypes: ['image/png'] },
+  { mediaTypes: ['application/pdf'] },
+  { mediaTypes: ['audio/wav'] },
+])(
+  'exposes only API formats qualified for the exact current identity: $mediaTypes',
+  async ({ mediaTypes }) => {
+    const f = fixture();
+    f.chat.selected_mode = 'api_key';
+    f.adapter.observe.mockResolvedValue({
+      available: true,
+      source: 'api_configuration_and_catalog',
+      adapterContractVersion: 'nodia-ai-api-chat/1',
+      resourceKey: 'api-connection:' + 'a'.repeat(64),
+      sessionGeneration: 'b'.repeat(32),
+      supportsMcp: false,
+      supportsTools: true,
+      adapterIdentity: {
+        providerKey: 'openai',
+        contractVersion: 'nodia-ai-api-chat/1',
+        connectionId: '2',
+      },
+      verifiedAttachmentMediaTypes: [...mediaTypes],
+    });
+    const result = await f.subject.execute(identity, 'chat');
+    expect(result.native_media_types).toEqual(mediaTypes);
+    expect(result.native_modalities).toEqual({
+      image: mediaTypes.includes('image/png') ? true : null,
+      pdf: mediaTypes.includes('application/pdf') ? true : null,
+      audio: mediaTypes.includes('audio/wav') ? true : null,
+    });
+    expect(f.adapter.observe).toHaveBeenCalledExactlyOnceWith({
+      connection_id: '2',
+      mode: 'api_key',
+      model_id: 'fixture-live-model',
+      effort_id: null,
+    });
+  },
+);

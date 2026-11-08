@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { canonicalModuleRoutes } from '../../authorization/canonical-module-route.js';
 import { Ajv2020 } from 'ajv/dist/2020.js';
 import { createRequire } from 'node:module';
 import type { ValidateFunction } from 'ajv';
@@ -179,8 +180,8 @@ export class DiscoverNodiaAiToolsUseCase {
         item.revision === tool.requirement.revision &&
         item.input_schema.sha256 === tool.requirement.input_schema_sha256 &&
         item.output_schema.sha256 === tool.requirement.output_schema_sha256 &&
-        canonicalKnowledge([...item.required_module_routes].sort()) ===
-          canonicalKnowledge([...tool.requiredModuleRoutes].sort()),
+        canonicalKnowledge(canonicalModuleRoutes(item.required_module_routes).sort()) ===
+          canonicalKnowledge(canonicalModuleRoutes(tool.requiredModuleRoutes).sort()),
     );
   }
   async execute(

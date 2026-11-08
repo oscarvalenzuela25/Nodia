@@ -75,10 +75,10 @@ export function useNodiaAiExecution(conversationId: string, executionId: string,
     for (const resource of resources) {
       if (resource === "nodia_ai_preferences") pendingKeys.push([...nodiaAiKeys.all([user?.id ?? null, sessionVersion]), "preferences"]);
       if (resource === "secure_flows") {
-        pendingKeys.push(...["ai-api-keys", "ai-providers", "ai-providers-health", "ai-selectable-models", "ai-enabled-web-providers", "ai-provider-catalog", "ai-provider-events"].map(key => [key]));
+        pendingKeys.push(...["ai-api-keys", "ai-providers", "ai-providers-health", "ai-selectable-models", "ai-provider-catalog", "ai-provider-events"].map(key => [key]));
       }
       if (nodiaAiProviderResources.some(item => item === resource)) {
-        pendingKeys.push(...["ai-providers", "ai-provider-catalog", "ai-providers-health", "ai-selectable-models", "ai-enabled-web-providers", "ai-supported-providers", "ai-provider-events"].map(key => [key]), nodiaAiKeys.all([user?.id ?? null, sessionVersion]));
+        pendingKeys.push(...["ai-providers", "ai-provider-catalog", "ai-providers-health", "ai-selectable-models", "ai-supported-providers", "ai-provider-events"].map(key => [key]), nodiaAiKeys.all([user?.id ?? null, sessionVersion]));
       }
       if (nodiaAiCoreResources.some(item => item === resource)) {
         // Core associations can affect navigation and downstream access. Re-read

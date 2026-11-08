@@ -15,7 +15,7 @@ describe('analysis console', () => {
   it('retains events on observer failure and only resumes tracking', () => {
     const resume = vi.fn();
     render(<AnalysisConsole view={{ ...idle, phase: 'analyzing', observationError: true, resume,
-      identity: { providerId: '42', provider: 'gemini', mode: 'token_plan_web', model: null },
+      identity: { providerId: '42', provider: 'gemini', mode: 'agentic', model: null },
       events: [{ key: '1', occurredAt: new Date().toISOString(), stage: 'provider_request_started', severity: 'info' }] }} />);
     expect(screen.getByText('Solicitud al proveedor iniciada')).toBeVisible();
     expect(screen.getByText(/Sin modelo asignado/)).toBeVisible();
@@ -28,6 +28,12 @@ describe('analysis console', () => {
     expect(screen.getByText(/No se recibió el resultado/)).toBeVisible();
     expect(screen.getByText(/eventos anteriores/)).toBeVisible();
     expect(screen.queryByText(/guardada/)).not.toBeInTheDocument();
+  });
+  it('distinguishes local cancellation from a stopped provider and removes the loading indicator', () => {
+    render(<AnalysisConsole view={{ ...idle, phase: 'cancelled' }} />);
+    expect(screen.getByText('Espera cancelada')).toBeVisible();
+    expect(screen.getByRole('alert')).toHaveTextContent('El proveedor podría seguir procesando la solicitud.');
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
   });
   it('pauses autoscroll when inspecting earlier events and offers recent events', () => {
     render(<AnalysisConsole view={{ ...idle, phase: 'ready', events: [{ key: '1', occurredAt: new Date().toISOString(), stage: 'draft_ready', severity: 'info' }] }} />);

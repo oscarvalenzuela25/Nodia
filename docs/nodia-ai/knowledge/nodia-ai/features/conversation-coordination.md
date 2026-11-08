@@ -4,13 +4,13 @@
   "document_id": "nodia-ai.conversation-coordination",
   "product_id": "nodia-ai",
   "kind": "feature",
-  "revision": 17,
+  "revision": 18,
   "document_status": "approved",
   "implementation": {
     "status": "partial",
-    "notes": "AI36-C05 publica sólo el fragmento mínimo y los contratos enumerados de este lote bajo autorización humana específica. La evidencia interna C01/C04 no equivale a inferencia o aceptación productiva; otras funciones descritas históricamente conservan sus gates."
+    "notes": "API chat code and common permission/confirmation/runtime contracts implemented. Real provider/model/media qualification and VM adoption require their separate receipts; documentary approval does not certify all151 operations."
   },
-  "integration_status": "published",
+  "integration_status": "verified",
   "maintainer": "Mantenimiento del módulo NodiaAI conforme AGENTS",
   "sources": [
     {
@@ -80,10 +80,22 @@
     {
       "path": "nodia-server/src/nodia-ai-common-preparation/use-case/build-nodia-ai-common-preparation-tools.use-case.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/92-nodia-ai-api-chat-parity.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-084-nodia-ai-api-chat-common-runtime.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/mvp/89-module-access-and-user-data-scope.md",
+      "kind": "specification"
     }
   ],
   "verification": {
-    "checked_on": "2026-10-18",
+    "checked_on": "2026-10-27",
     "evidence_paths": [
       "docs/evidence/nodia-ai-v1-catalog-contracts-validation.json",
       "docs/evidence/nodia-ai-ai09-persistence-validation.json",
@@ -98,19 +110,41 @@
       "docs/mvp/68-nodia-ai-ai22-business-operations.md",
       "docs/evidence/nodia-ai-ai36-c01-validation.json",
       "docs/evidence/nodia-ai-ai36-c02-validation.json",
-      "docs/evidence/nodia-ai-ai36-c04-validation.json"
+      "docs/evidence/nodia-ai-ai36-c04-validation.json",
+      "docs/evidence/api-chat-knowledge-review-r01.json",
+      "docs/evidence/api-chat-knowledge-review-r02.json",
+      "docs/evidence/api-chat-sql-runtime-r01.json",
+      "docs/evidence/api-chat-knowledge-human-approval-r01.json"
     ],
-    "notes": "Contratos cerrados y adaptadores reales con integración SQL aislada C01/C04. C05 revisa publicación de este lote; las pruebas de proveedor y dependencias se registran separadamente, sin convertir fixtures o health200 en aceptación generativa. Los estados anteriores de los apartados históricos no sustituyen el frontmatter y el fragmento publicado actuales."
+    "notes": "Approved successor/new explanatory revision;19 real isolated PostgreSQL runtime checks and local source/contract regressions verified. Full common-gateway SQL, live API/media and coordinated adoption are separate technical gates. Approved body unchanged from R02."
   },
   "approval": {
-    "reference": "docs/evidence/nodia-ai-ai36-c05-publication-authorization.md",
-    "revision": 17,
-    "content_sha256": "6fd431a73c54a4d84e1e84d5ff9531792227db317214e424718dabf396f64fb7"
+    "reference": "docs/evidence/api-chat-knowledge-human-approval-r01.json",
+    "revision": 18,
+    "content_sha256": "2de014ea07523dd77aa8e1a5fc9c9e3d23412815b4b7b05fd164b32c4ac2b4ee"
   }
 }
 ---
 
 # Coordinación de conversaciones y cambios
+
+## Ampliación API key — 2026-10-27
+
+[Plan92](../../../../mvp/92-nodia-ai-api-chat-parity.md), [ADR-084](../../../../architecture/decisions/ADR-084-nodia-ai-api-chat-common-runtime.md) y [paridad API](api-key-chat-parity.md) definen esta ampliación. Aprobación documental, implementación, calificación técnica y adopción por entorno se acreditan por separado en sus metadatos e informes fechados. Los [originales anteriores](../../../../evidence/api-chat-knowledge-originals-catalog-r01.json) conservan sus bytes y aprobaciones históricas; no se revocan ni se sustituyen sus evidencias por un resultado inventado.
+
+API OpenAI/Gemini reutiliza catálogo, ToolGateway, grants, permisos y confirmación comunes. Aplican [contratos41](../../../../mvp/41-nodia-ai-v1-contracts.md) y [política89](../../../../mvp/89-module-access-and-user-data-scope.md): módulo NodiaAI y destinos autorizados, propietario/colaborador y bypass legítimo de super_admin sin omitir invariantes o botón humano. Las acciones históricas de roles no añaden un bloqueo contrario a89. Seleccionar capacidades o escribir «sí» no confirma una propuesta ni ejecuta efectos; revisión/hash, ejecución idempotente y recibos permanecen independientes del modo.
+
+`supports_tools` describe soporte de solicitudes de herramientas; API usa function calling y mantiene `supports_mcp:false`. Configuración/catálogo listos no son health remoto ni éxito de inferencia. Conexión/modelo/esfuerzo son explícitos y dinámicos, sin defaults de modelo ni fallback API↔Agentic. Los tres envíos generativos actuales por run incluyen cada POST API y sus continuaciones, reservados durablemente antes de transmitir; reiniciar o reintentar no devuelve presupuesto.
+
+El ledger HTTP y descriptor privado schema3 distinguen cierre local (`local_transport_closed`) de resultado remoto (`remote_outcome:completed|unknown`); no simulan un proceso nativo cerrado. Timeout/abort/crash no prueban cancelación remota ni coste cero. Conciliación/ACK exigen identidad y cierre local demostrados, sin autoretry de inferencia incierta. Las pruebas y publicación se cierran por separado con [plan91](../../../../mvp/91-ai-provider-onboarding-verification.md), sin aceptar todas las operaciones por un success acotado.
+
+La selección explícita API usa el mismo chat, historial, borrador, contexto autorizado, discovery y transición de selección/grant que Agentic. La función del proveedor sólo consulta o prepara mediante el gateway; no llama al endpoint humano de confirmación. Los comandos aprobados usan escritores nativos, locks, idempotencia y recibos existentes; no nace un ejecutor comercial paralelo.
+
+El presupuesto por POST es acumulado entre etapas del run, incluida compactación cuando aplique. Recuperar eventos, una respuesta perdida o un recibo sólo observa bajo permisos actuales. Se conserva la identidad del envío; unknown remoto no se transforma en resultado exitoso por ACK local. La UI distingue soporte de herramientas de MCP y no habilita controles por una observación de otra conexión/modo/modelo/esfuerzo. Las regresiones locales de Client no sustituyen SQL, proveedor real o UI/VM autenticada del nuevo contrato.
+
+## Cortes anteriores conservados
+
+> Las secciones inferiores conservan decisiones, pruebas y estados del corte anterior a esta ampliación API. Sus expresiones «actual», API posterior, permisos por acciones o publicación se leen en su fecha histórica, no como prohibición o aceptación del contrato nuevo. La regla vigente de esta revisión es el bloque API superior; las evidencias originales no se reescriben.
 
 Estado actual AI36-C05: sólo se publica la sección «Coordinación publicada en AI36-C05». Los apartados anteriores documentan etapas históricas; sus referencias a draft o publicación pendiente no revocan este fragmento ni habilitan otras capacidades.
 

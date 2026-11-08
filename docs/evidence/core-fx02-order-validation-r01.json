@@ -1,0 +1,317 @@
+{
+  "schema_version": 1,
+  "stage": "Core-FX-02",
+  "observed_on": "2026-10-25",
+  "status": "implemented_and_verified_locally_and_in_disposable_SQL_not_deployed",
+  "scope": {
+    "new_tables": 0,
+    "new_migration": "1793200000000-AddModuleSortOrder",
+    "configured_database_migrated": false,
+    "operational_services_restarted": false,
+    "actual_AI_generations": 0,
+    "MCP_capabilities_added": 0,
+    "UI_order_controls": "FX-03_pending",
+    "authenticated_acceptance": "FX-04_pending"
+  },
+  "behavior": [
+    "Server-managed unique nonnegative sort_order: groups globally, modules within parent.",
+    "New records append after all siblings including inactive; edits/reactivation/reused keys preserve position; parent change appends at destination; deletion allows gaps.",
+    "Existing exclusive Core frontier serializes MAX+1 and swaps; deferrable uniqueness guards persistence.",
+    "Two atomic move endpoints and plural aliases validate parent/current rank/neighbor; stale409, edge unchanged, no automatic replay guarantee.",
+    "Canonical paginated reads and ordering metadata under an HTTP snapshot; no per-row queries.",
+    "Authorization context ordered and Sidenav respects arrays from Server; existing visibility and authority rules retained.",
+    "Core and product-navigation seeds remain repeatable."
+  ],
+  "checks": [
+    {
+      "command": "npm run test -- --maxWorkers=4",
+      "project": "nodia-server",
+      "suites_passed": 261,
+      "tests_passed": 4937,
+      "failures": 0,
+      "notes": "Complete suite cut before two additional internal page-size guard cases."
+    },
+    {
+      "command": "npm run test -- src/module-order src/nodia-ai-products/core-settings src/module/use-case src/module-group/use-case",
+      "project": "nodia-server",
+      "suites_passed": 12,
+      "tests_passed": 109,
+      "failures": 0,
+      "notes": "Final focused source after SQL pagination/explicit-sort fixes and two internal page-size guard cases; overlaps complete suite."
+    },
+    {
+      "command": "npm run test -- --maxWorkers=8",
+      "project": "nodia-client",
+      "suites_passed": 239,
+      "tests_passed": 1939,
+      "failures": 0
+    },
+    {
+      "command": "npm run build",
+      "project": "nodia-client",
+      "exit_code": 0,
+      "notes": "Includes TypeScript build; Vite chunk-size/plugin-timing warnings."
+    },
+    {
+      "command": "npm run typecheck",
+      "project": "nodia-client",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run lint",
+      "project": "nodia-client",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run lint",
+      "project": "nodia-server",
+      "exit_code": 0,
+      "notes": "Three existing warnings: two unused AI imports and unsafe-finally in unrelated live-unknown fixture."
+    },
+    {
+      "command": "npm run build",
+      "project": "nodia-server",
+      "exit_code": 0,
+      "notes": "Final source and knowledge/context generation pass; production TypeScript passes. Does not imply all test fixtures type-check."
+    },
+    {
+      "project": "nodia-server",
+      "scope": "Final seed fixture type corrections",
+      "suites_passed": 2,
+      "tests_passed": 14,
+      "failures": 0
+    },
+    {
+      "project": "nodia-server",
+      "scope": "Final get-all-module-groups fixture with explicit initial rank",
+      "suites_passed": 1,
+      "tests_passed": 2,
+      "failures": 0
+    }
+  ],
+  "SQL": {
+    "environment": "Linux VM existing Docker; postgres:16-alpine image reused; disposable tmpfs database, synthetic identity/cache only",
+    "order_checks": 77,
+    "order_HTTP_requests": 50,
+    "order_cache_invalidations": 15,
+    "legacy_HTTP_requests": 46,
+    "legacy_cache_invalidations": 5,
+    "query_counts": {
+      "one_row": 9,
+      "one_hundred_rows": 9
+    },
+    "stderr_bytes": 0,
+    "fixtures_remaining": 0,
+    "volumes_remaining": 0,
+    "own_staging_removed": true,
+    "operational_dependencies_preserved": true,
+    "cut_note": "SQL validates compiled native logic, migration, API contracts, pagination fix and explicit sort fix. Final additional internal page-size guards are unit-tested; public HTTP DTO already rejected those inputs."
+  },
+  "review": {
+    "agents": [
+      "fx02_migration_seeds",
+      "fx02_writers_moves",
+      "fx02_integration"
+    ],
+    "blocking_findings_remaining": 0
+  },
+  "findings_resolved": [
+    {
+      "kind": "product_bug",
+      "finding": "TypeORM skip/take with nonselected group order columns referenced missing distinctAlias columns.",
+      "fix": "Direct SQL offset/limit over the only many-to-one join; retains counts and includes=false omission.",
+      "SQL_verified": true
+    },
+    {
+      "kind": "product_bug",
+      "finding": "Whitespace-prefixed id sort could be overwritten by ASC tie-breaker.",
+      "fix": "Trim before identifying primary id order; preserve explicit DESC.",
+      "SQL_verified": true
+    },
+    {
+      "kind": "fixtures",
+      "finding": "Missing reflect metadata/query-builder methods and old Sidenav priority expectation.",
+      "fix": "Update fixture infrastructure and existing order assertion to authorized contract without changing production rule."
+    },
+    {
+      "kind": "fixtures",
+      "finding": "Base migration includes initial group and revoked session uses native401.",
+      "fix": "Use exact native expectations; do not weaken assertions or change production semantics."
+    }
+  ],
+  "source_manifest": [
+    {
+      "path": "nodia-client/src/layouts/components/Sidenav/Sidenav.tsx",
+      "sha256": "487a13b000288c5cb1ecaf786a9dc1889a25322efb05e9524e867c9dcae6eb86"
+    },
+    {
+      "path": "nodia-client/src/test/layouts/components/Sidenav/Sidenav.test.tsx",
+      "sha256": "447bb08c9dfb6e77fb267190aa56c0cdc1febd0948ae0f5a96f955c0d31e1f75"
+    },
+    {
+      "path": "nodia-server/src/authorization/authorization.service.ts",
+      "sha256": "c25d8c22fb5b84bb86ac3dffaa72ce4e1b36dfc5b7444fec58ce0cb4fd8e0a66"
+    },
+    {
+      "path": "nodia-server/src/migrations/1793200000000-AddModuleSortOrder.ts",
+      "sha256": "f976a9c7bb99a063b2976ec56d6895e1f57aa1ca1c270e3bc4f895b910e349db"
+    },
+    {
+      "path": "nodia-server/src/module-group/entities/module-group.entity.ts",
+      "sha256": "71e9622893161927e4341de8814a0be7f0aae6707febdd00ebf2825080a167de"
+    },
+    {
+      "path": "nodia-server/src/module-group/module-group.service.ts",
+      "sha256": "2ea0379c21dfae518bbb387fd192ce52d950a9c14e651b28d8c6bd5dd78431c1"
+    },
+    {
+      "path": "nodia-server/src/module-group/use-case/move-module-group-order.use-case.ts",
+      "sha256": "e412fac233817f2e4867c40643fac56622bc87eff14189c8825f77680f6383c7"
+    },
+    {
+      "path": "nodia-server/src/module-group/use-case/save-module-group.use-case.ts",
+      "sha256": "bd8a1c6db4f783e1ed028b5a09a7128297573529920e2a18bb746bcf16c31bfa"
+    },
+    {
+      "path": "nodia-server/src/module-order/catalog-order.spec.ts",
+      "sha256": "590e9b9effaf01de4a8467970def7e303b5f714a7520c1d9629162dd0326f2f1"
+    },
+    {
+      "path": "nodia-server/src/module-order/compare-catalog-order.ts",
+      "sha256": "f1e0dae1a843a9125de6cfdc259c7cf8c7a2bf50608b3b1fcd36df65583fcb4f"
+    },
+    {
+      "path": "nodia-server/src/module-order/move-catalog-order.ts",
+      "sha256": "f27cf3d56421a781c662028d4a0d8aa668d2a70f1cee4d267f053bad6aac2775"
+    },
+    {
+      "path": "nodia-server/src/module-order/move-order.dto.spec.ts",
+      "sha256": "4eb26b4c1d66f2f8d5e6063146f1c7fa96ad1df932e5c29e1ae0e78622f601f3"
+    },
+    {
+      "path": "nodia-server/src/module-order/move-order.dto.ts",
+      "sha256": "9ffa10eba52490eb13f6701bae1e0238159124618f075b323b556748f8f7b9ed"
+    },
+    {
+      "path": "nodia-server/src/module-order/next-sort-order.ts",
+      "sha256": "9d9e93d75e1c93dde4ff451143be75790297d8e44e8d58652b008784f169d5e4"
+    },
+    {
+      "path": "nodia-server/src/module-order/order-metadata.ts",
+      "sha256": "5e0a78c919a30cc2122626260447de77892186f0bef7b1ffd6840763d40700c7"
+    },
+    {
+      "path": "nodia-server/src/module-order/order-policy.spec.ts",
+      "sha256": "6ef775da8507a4bd2490157fddb05d52c822fbe2dd9c56eb8d6da25bcb315684"
+    },
+    {
+      "path": "nodia-server/src/module-order/order-policy.ts",
+      "sha256": "dacd66a8fe6c88697800b04088b39acc0dd33bb0dd74b361f222cf394bd27c6d"
+    },
+    {
+      "path": "nodia-server/src/module/entities/module.entity.ts",
+      "sha256": "307db951503d8518d4d32033b6ffe3cbc57f00835d48ad8e1a579dd30ac7c7b9"
+    },
+    {
+      "path": "nodia-server/src/module/module.service.ts",
+      "sha256": "81e2bd5473ec86a5bb7e945b8bb5b384f17b5c9e0bcfb6f4b1872650ddf2eb24"
+    },
+    {
+      "path": "nodia-server/src/module/use-case/move-module-order.use-case.ts",
+      "sha256": "06e056ddfac0493d9c6aa8e775299a9dbef6bd505be222d06ca2178d1c13dcf2"
+    },
+    {
+      "path": "nodia-server/src/module/use-case/save-module.use-case.ts",
+      "sha256": "143f151b7561efa7eca93de500cd719c577aba205546ba4517995eb6e56233a5"
+    },
+    {
+      "path": "nodia-server/test/module-catalog.integration.mjs",
+      "sha256": "dfb5e001fc52a38b1f5376381c6f57e22467b5d383126b6f92a297f8372343c6"
+    },
+    {
+      "path": "nodia-server/test/module-order.integration.mjs",
+      "sha256": "50558de6400f27314fe0c3968d9a7607ee65724fd06141148b8e4e1365111347"
+    },
+    {
+      "path": "nodia-server/src/auth/use-case/seed-auth.use-case.spec.ts",
+      "sha256": "ab35e219e303346a31a73972f13241d0504c673237b57b84fa241ddd88bc9bdc"
+    },
+    {
+      "path": "nodia-server/src/module-group/use-case/get-all-module-groups.use-case.spec.ts",
+      "sha256": "a777b80d036b08983738e540983d0fbc1b54e2c7468a1bf9fd16b64454390467"
+    }
+  ],
+  "raw_receipts": [
+    {
+      "path": ".tmp/core-fx02-integration-r01/order-run-r07.json",
+      "sha256": "f5380c1ab49a8d42a33101b6ebf7db7712a0f4b9b0f5296c4e290e65899a3faa",
+      "result": {
+        "exit": 0,
+        "stdout": "{\"result\":\"passed\",\"checks\":77,\"requests\":50,\"invalidations\":15,\"query_counts\":{\"one_row\":9,\"many_rows\":9},\"scope\":\"compiled Nest HTTP/Core + disposable PostgreSQL16 + real migration/bootstrap; synthetic identity/cache only\",\"configured_database_used\":false,\"actual_AI_generations\":0}\n",
+        "stderr_tail": "",
+        "free_bytes": 516083712,
+        "new_volumes_remaining": [],
+        "fixture_containers_remaining": [],
+        "test_sha256": "50558de6400f27314fe0c3968d9a7607ee65724fd06141148b8e4e1365111347"
+      }
+    },
+    {
+      "path": ".tmp/core-fx02-integration-r01/legacy-run-r02.json",
+      "sha256": "314989a6b344119b90e820d2ab4c94987b34ea074c4ceaf3aab29f93a8e77d2d",
+      "result": {
+        "exit": 0,
+        "stdout": "{\"result\":\"passed\",\"requests\":46,\"invalidations\":5,\"checks\":[\"aliases and auth boundary\",\"bigint IDs\",\"active filters\",\"active and inactive group associations\",\"assignment and translation cleanup\",\"transaction rollback\",\"both concurrent association orders\"]}\n",
+        "stderr_tail": "",
+        "free_bytes": 516071424,
+        "new_volumes_remaining": [],
+        "fixture_containers_remaining": [],
+        "test_sha256": "dfb5e001fc52a38b1f5376381c6f57e22467b5d383126b6f92a297f8372343c6"
+      }
+    },
+    {
+      "path": ".tmp/core-fx02-integration-r01/final-cleanup-r01.json",
+      "sha256": "ecc44cbb74bb99a5f2abbeb344331e435ffd29c4e847f0c5814d03d38fbba17c",
+      "result": {
+        "status": "own_stage_removed",
+        "bytes_before_cleanup": 10961594,
+        "fixture_containers_remaining": 0,
+        "new_fixture_volumes_remaining": 0,
+        "deps_target_preserved": true,
+        "free_bytes": 536383488,
+        "compiled_sha256": {
+          "dist/module/module.service.js": "3ebaab7fe0ff09bb7f68d6899674b4ef59ab19119914df59151c06cb12d4e3de",
+          "dist/module-group/module-group.service.js": "dbb358b46c5e89fb8f5efa6b4368540f117282b92ebdee932987e235ca1cd118",
+          "dist/module-order/move-catalog-order.js": "3563e2066c4506891a2e035b7a63a68dc8bc35ef65f5477ded97ed884fd7abdb",
+          "dist/migrations/1793200000000-AddModuleSortOrder.js": "33d05c764d6ad27052263ea59aadf0c9a1c9b1f0f72e056313a48ba3e206e5a2"
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "No migration or deployment applied to configured/operational database.",
+    "Table ordering mode and buttons are not implemented by FX-02.",
+    "No new MCP fields or tools; no provider/account inference acceptance.",
+    "Position preconditions do not promise permanent idempotency or ABA detection.",
+    "Migration adoption requires draining old writers, backup/cutover and authorization cache invalidation."
+  ],
+  "knowledge": {
+    "sources": 63,
+    "excluded": 24,
+    "documents": 39,
+    "fragments": 41,
+    "release_id": "df1780ad39433af1671467cc3f93285b01b0596155518f6c14330e27b65b80ba",
+    "runtime_policy_hash": "3b94138aa31b732399860e2cf584528856f1dee6c1b60e681d6b9adbe7afb20f",
+    "new_tools_published": 0
+  },
+  "fixture_typecheck": {
+    "command": "npx tsc --noEmit -p tsconfig.json",
+    "project": "nodia-server",
+    "exit_code": 2,
+    "diagnostics": 210,
+    "files_with_diagnostics": 57,
+    "FX02_paths_with_diagnostics": 0,
+    "log_path": ".tmp/fx02-fixture-typecheck/global-tsc-r03.log",
+    "log_sha256": "d1330fef8ce8abfe9d2d5e609ec35edb6f901afffbcf7e08742d8c61123ee024",
+    "notes": "Global fixtures are not green; remaining diagnostics are outside the reviewed FX-02 paths. No exact parity with historical 202-diagnostic baseline is claimed. New seed and catalog fixtures corrected without casts or production changes."
+  }
+}

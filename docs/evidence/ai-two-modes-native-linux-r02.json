@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "status": "linux_candidate_build_and_isolated_checks_passed_live_acceptance_pending",
+  "source_archive": {
+    "path": ".tmp/ai-two-modes/native-source-r02.tar.gz",
+    "sha256": "2f98c8ffe56677d0213910bc87b58febc3bd2ca6a1ab89df5d91b7bd6bf51b3a"
+  },
+  "image": "sha256:4b990e3e8c60077fceb06ac5018025a5ef80353297fe92affc8b20fe53915fa9",
+  "image_bytes": 724824936,
+  "build_log_sha256": "6a657f11b9a594f632145cfe069136cdc545dfcf6ac2e9e22d2d73a33efe4db2",
+  "unit_tests": {
+    "total": 498,
+    "passed": 498,
+    "failed": 0,
+    "duration_seconds": 8.759,
+    "log_sha256": "535b623a105502c7b6bee9ba0074eb117150735cbe2350c295212d6d321204c8"
+  },
+  "isolated_gate": {
+    "success": true,
+    "python": "3.12.16",
+    "uid": 10001,
+    "cli_relative": "/opt/nodia/antigravity-cli/1.3.1/agy",
+    "cli_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+    "checks": {
+      "pip_check": {
+        "exit": 0,
+        "stdout_bytes": 30,
+        "stderr_bytes": 0,
+        "output_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+      },
+      "cli_version": {
+        "exit": 0,
+        "stdout_bytes": 6,
+        "stderr_bytes": 0,
+        "output_sha256": "10e2e117b01523891ca271a615ae36e9d5e52348fd7d642f66727602c1b8dcbe"
+      },
+      "cli_help": {
+        "exit": 0,
+        "stdout_bytes": 0,
+        "stderr_bytes": 2901,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "cli_login_help": {
+        "exit": 0,
+        "stdout_bytes": 0,
+        "stderr_bytes": 2901,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "network": "none",
+    "real_profiles_mounted": false,
+    "browser_installed": false
+  },
+  "cli_binary_matches_reviewed_lock": true,
+  "provider_inferences": 0,
+  "operational_service_replaced": false,
+  "limitations": [
+    "No real profile mounted; CLI launch/help does not prove OAuth or inference",
+    "Actual Agentic inference/containment acceptance is separate",
+    "Existing image and services retained for coordinated adoption/rollback"
+  ]
+}

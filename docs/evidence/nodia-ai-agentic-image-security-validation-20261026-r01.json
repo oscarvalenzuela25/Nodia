@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "status": "local_image_matrix_passed",
+  "created_at_utc": "2026-10-27T01:53:00.124315+00:00",
+  "scope": [
+    "Codex Agentic",
+    "Antigravity Agentic"
+  ],
+  "runtime_edits": [],
+  "modified_test_files": {
+    "nodia-server/src/nodia-ai-attachment/use-case/store-nodia-ai-generated-image.use-case.spec.ts": {
+      "sha256": "d19ed445a710ff8faf36eed4fad7d9e7b7932508675837313079a62e0a0686f2",
+      "bytes": 7864
+    },
+    "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts": {
+      "sha256": "64d72688e1e42a8eef113641abd2e1fecd3df471fa7fe584816a09e04f498dd6",
+      "bytes": 101804
+    },
+    "nodia-gemini-microservice/tests/test_native_image_generation.py": {
+      "sha256": "c7d824efcc8ba2be1f7071f89310f24ba2577ef3ca967df7898a54080bac32ef",
+      "bytes": 39479
+    }
+  },
+  "observed_runtime_files": {
+    "nodia-server/src/nodia-ai-attachment/use-case/store-nodia-ai-generated-image.use-case.ts": {
+      "sha256": "1ac5ba0b48e97447a4f546ac8d208049136b79d031387b83caac604fdb2926b3",
+      "bytes": 3274
+    },
+    "nodia-server/src/nodia-ai-attachment/use-case/upload-nodia-ai-attachment.use-case.ts": {
+      "sha256": "2bf7fc549cca6a76da16052c992300d41b7ba772ef05e15d2544e9255e2f2bfd",
+      "bytes": 10082
+    },
+    "nodia-server/src/nodia-ai-attachment/use-case/manage-nodia-ai-attachment.use-case.ts": {
+      "sha256": "fcb8240ab73c7138b08cea14b70d9bc3f4de143015478e85f71665ca0a8a1bc5",
+      "bytes": 11847
+    },
+    "nodia-server/src/nodia-ai-attachment/use-case/create-nodia-ai-attachment.use-case.ts": {
+      "sha256": "e723767468d3ef349f5709eb319f1e60744087e70607acf8c4a8f6c19903a400",
+      "bytes": 5257
+    },
+    "nodia-server/src/nodia-ai-attachment/nodia-ai-attachment.service.ts": {
+      "sha256": "1239060430a1f3d2467c7cd0eab316a7b5c540417e0db2db17b7ded1b2e3e728",
+      "bytes": 8521
+    },
+    "nodia-server/src/nodia-ai-runtime/use-case/cleanup-nodia-ai-attachments.use-case.ts": {
+      "sha256": "49debb99f0bc7d44bcde56adac3545902e81dc1e827a8279688b5675533002c5",
+      "bytes": 8631
+    },
+    "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts": {
+      "sha256": "35d77b7970c6f5772a0de3fdefcf9d7c36bfed99f3a2ba5bd8507c7e70e6534e",
+      "bytes": 48780
+    },
+    "nodia-server/src/common/ai/codex/codex-generated-image.ts": {
+      "sha256": "68a0fa2ba650240015314af43cc8c3c132f5bb949fe6edffd032def90f91fc7c",
+      "bytes": 1851
+    },
+    "nodia-gemini-microservice/native_image_generation.py": {
+      "sha256": "81e6ef2e735a715c6fc34f5018874375acabe416e4924f9066e2397f8e88a947",
+      "bytes": 35692
+    },
+    "nodia-gemini-microservice/attachment_inspector_worker.py": {
+      "sha256": "3579be757bb9b7a4fdab96f19843f91133f9bf8e56fc4a555a662a380cb82033",
+      "bytes": 7316
+    }
+  },
+  "checks": [
+    {
+      "runner": "vitest",
+      "files": [
+        "store-nodia-ai-generated-image.use-case.spec.ts",
+        "process-nodia-ai-stage.use-case.spec.ts"
+      ],
+      "passed": 145,
+      "failed": 0,
+      "command": "nodia-server/node_modules/.bin/vitest.cmd run src/nodia-ai-attachment/use-case/store-nodia-ai-generated-image.use-case.spec.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts --maxWorkers=1"
+    },
+    {
+      "runner": "vitest",
+      "files": [
+        "create-nodia-ai-attachment.use-case.spec.ts",
+        "upload-nodia-ai-attachment.use-case.spec.ts",
+        "manage-nodia-ai-attachment.use-case.spec.ts",
+        "cleanup-nodia-ai-attachments.use-case.spec.ts",
+        "codex-generated-image.spec.ts",
+        "codex-chat-image-generation.spec.ts",
+        "codex-chat-images-storage.spec.ts",
+        "image-generation-command.spec.ts"
+      ],
+      "passed": 86,
+      "failed": 0,
+      "workers": 1
+    },
+    {
+      "runner": "unittest",
+      "files": [
+        "test_native_image_generation.py"
+      ],
+      "total": 39,
+      "passed": 38,
+      "skipped": 1,
+      "skip_reason": "POSIX symlink/hardlink checks require Linux; Windows host",
+      "failed": 0,
+      "command": ".venv/Scripts/python.exe -B -m unittest discover -s tests -p test_native_image_generation.py"
+    },
+    {
+      "runner": "unittest",
+      "cases": [
+        "test_attachment_inspector.AttachmentDecoderTests.test_images_are_fully_decoded_and_metadata_stays_unknown",
+        "test_attachment_inspector.AttachmentDecoderTests.test_truncated_image_and_oversized_pixels_are_rejected"
+      ],
+      "passed": 2,
+      "failed": 0
+    },
+    {
+      "runner": "oxlint",
+      "files": [
+        "nodia-server/src/nodia-ai-attachment/use-case/store-nodia-ai-generated-image.use-case.spec.ts",
+        "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts"
+      ],
+      "errors": 0
+    },
+    {
+      "runner": "typescript compiler API",
+      "scope": "diagnostics of the two modified Server specs only; not a global test-source typecheck",
+      "errors": 0,
+      "fixture_fix": "typed measureContext input using Parameters<NodiaAiAdapterPort[measureContext]>[0] instead of implicit any"
+    }
+  ],
+  "guarantees": [
+    "Explicit current /imagen command and isolated provider tool policy; no vision-to-generation inference, Web/API mode or model fallback added.",
+    "Real Create/Upload/Manage use cases exercised together with synthetic authority, SQL, inspector and object-store boundaries: authorized bytes preserve identity/MIME/hash; denied authority stops before PUT.",
+    "Uncertain PUT, failed GET, corrupted readback hash, mismatched MIME or permission loss never returns a successful stored image. Unbound output is expired with a cleanup witness when discard is authorized; there is no provider or PUT retry.",
+    "Permanent permission loss preserves the original error even when discard is denied; the ready object remains associated with its chat and byte reservation, rather than becoming an unidentified object.",
+    "Stage persist rejects expired or revoked attachment read authority before inserting image part or assistant binding; no second adapter execution. This test does not independently prove PostgreSQL rollback.",
+    "Cleanup tests cover exact-generation ownership, journal-before-delete, uncertain DELETE/ACK, stale ready-intent refusal and no deletion before the bounded late-PUT window.",
+    "Native actual PNG decoder tests reject corrupt/oversized/multiframe/nonimage outputs; closed role/hook/reference, filename/path/NOFOLLOW/link/size and one-image guards remain tested.",
+    "No runtime production bug or new permission/cleanup bypass was found in this matrix; production source was not modified."
+  ],
+  "retained_output_policy": {
+    "ready_after_failed_SQL_seal": "chat-owned, quota-accounted and governed by chat retention/purge; no immediate deletion claim",
+    "discard_denied_after_permission_loss": "same retained-output policy; no unauthenticated force-delete",
+    "unknown_native_generation": "shared quarantine/terminal proof/reconcile/ACK policy; never replay to recover bytes"
+  },
+  "limits": {
+    "VM_calls": 0,
+    "live_provider_generations": 0,
+    "live_provider_SDK_calls": 0,
+    "live_R2_operations": 0,
+    "new_PostgreSQL_fault_injection": false,
+    "SQL_boundary": "existing fixture; statement/authority behavior checked, transaction atomicity relies on the maintained transaction/checkpoint contract and separate SQL integration evidence",
+    "calendar_retention": "not accelerated or accepted here; real elapsed retention/physical cleanup observation remains pending",
+    "provider_cost_or_internal_calls": null,
+    "documentary_approval": "not changed"
+  },
+  "source_documents": [
+    "docs/mvp/00-progress.md",
+    "docs/mvp/45-nodia-ai-implementation-plan.md"
+  ]
+}

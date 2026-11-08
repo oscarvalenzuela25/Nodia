@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "authority": "Explicit human reply in this task",
+  "statement": "Apruebo las seis revisiones documentales.",
+  "review_report": "docs/evidence/api-chat-knowledge-review-r02.json",
+  "review_report_sha256": "ba9d10c3a75a16c9c45235c32f50dcb64557b448a27de48cf27eeca8d32fb4d9",
+  "scope": "Six R02 revisions explicitly approved by human; only five recovery-catalog hyperlink targets normalized for the publication boundary, with compiler-rendered body identical and original reviewed hashes retained. No product statement or capability changed. Documentary approval never certifies provider inference, all operations or VM adoption.",
+  "revisions": [
+    {
+      "document_id": "general-settings.secure-ai-interaction",
+      "revision": 5,
+      "path": "docs/nodia-ai/knowledge/general-settings/features/secure-ai-interaction.md",
+      "approved_review_draft_sha256": "bc5097661964ff698af0cf59969973bb3b9aaeb327fada8fafb541fc302cb1fc",
+      "approved_review_content_sha256": "d20629532b3606fc769c439c4bbcd13b6403db5ab21acf6b5b3da9109688f486",
+      "body_sha256": "173c182a3e74cfb29476741dc7c3d38bce65431e000c6463d852b593f121bb04",
+      "content_sha256": "e9aee09d17b54cd09cb249e1560402253819b156a176bebbece1d5ab767254f4",
+      "approved_file_sha256": "34d82697caeecf33d4a8616cb87069cd12299ade15017ca7982351be7c5372e2",
+      "reviewed_body_sha256": "9ee550b3208d52ce6ec8814d9f8c64a6abd9dcff1f45326f9a427691dff79ca0",
+      "compiler_rendered_body_sha256": "abfd3b38ea9455957561c807357b6f78a6bdd07b1128b5030e0dec4c55366f5b",
+      "technical_link_normalization": {
+        "before_file_sha256": "cab6215a5b876493d4e4fbd2376d27bc9f04a90f2064d97544713070f45dee88",
+        "catalog_original": "ops/lab/artifacts/api-chat-parity-r01/catalog.json",
+        "catalog_public_copy": "docs/evidence/api-chat-knowledge-originals-catalog-r01.json",
+        "rendered_body_unchanged": true
+      }
+    },
+    {
+      "document_id": "nodia-ai.conversation-coordination",
+      "revision": 18,
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md",
+      "approved_review_draft_sha256": "da58de1c9e71ac5c7be9cea2c327fae42c4449ffdfdad78c5b7a81073b875806",
+      "approved_review_content_sha256": "d89104d86c3f32fb2a4e8db465a86c059fe33a044666ce9b663eea9e9f611bfd",
+      "body_sha256": "b0df114230cb6a03d03fafa25a3c1031fc5a07398e3ff42659fc6599125d5aae",
+      "content_sha256": "2de014ea07523dd77aa8e1a5fc9c9e3d23412815b4b7b05fd164b32c4ac2b4ee",
+      "approved_file_sha256": "e4a5a64e0ccad3318cf7528dc4d7e07c199a5e696f2c4b373a998c7798da5634",
+      "reviewed_body_sha256": "fba18797650ae8f7dd80be1b936d99d97d6b869ee84f89c83b87e59ccd127912",
+      "compiler_rendered_body_sha256": "4d281e859d046457ae0029ede804514e354c779d591a62e8b14c110bd2a27756",
+      "technical_link_normalization": {
+        "before_file_sha256": "d0b08bd5ec0aa06e765843de8140fbf1eeec1ab6a9dc1053a693f66fc09883ee",
+        "catalog_original": "ops/lab/artifacts/api-chat-parity-r01/catalog.json",
+        "catalog_public_copy": "docs/evidence/api-chat-knowledge-originals-catalog-r01.json",
+        "rendered_body_unchanged": true
+      }
+    },
+    {
+      "document_id": "nodia-ai.invoice-ocr-product-comparison",
+      "revision": 2,
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md",
+      "approved_review_draft_sha256": "5e167be4d854fda215269875542a6cdf40f96311804d87eef317d325aef27cef",
+      "approved_review_content_sha256": "ac99d666b8ed4fb568630a8f19ee0aa6fe6f71ff27da73256c99225cfc08cb43",
+      "body_sha256": "78b6b3cb1b968339ec00618b65431cc21d66037845391b6fa0b6af824c749b28",
+      "content_sha256": "021645ae55f81e6129ee01a52bacda800ae8c18c2a423e4e982df72b3ae9eac7",
+      "approved_file_sha256": "ed074df8f77b4f44eac5bcde3e55c270c167bf605b628d43aa32744500098482",
+      "reviewed_body_sha256": "32d51dbf38bb5eb0b5accc92d187eddad9dc27d480a0381d7b552edaf16588ec",
+      "compiler_rendered_body_sha256": "33aee76d521ff37d85ab2ba0388be0ed247edbcbd13a70c7566f7b73448e9d22",
+      "technical_link_normalization": {
+        "before_file_sha256": "54024eba8cbfc106dd6b13b0c090d1c91c6eeb9ac82d22aa73f326a0cad31f7b",
+        "catalog_original": "ops/lab/artifacts/api-chat-parity-r01/catalog.json",
+        "catalog_public_copy": "docs/evidence/api-chat-knowledge-originals-catalog-r01.json",
+        "rendered_body_unchanged": true
+      }
+    },
+    {
+      "document_id": "nodia-ai.image-generation",
+      "revision": 4,
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/image-generation.md",
+      "approved_review_draft_sha256": "ef816df42d880974b75f18139b8e71e0aec7d9363abec962f4375f9b08d2a824",
+      "approved_review_content_sha256": "13dd1d1a4691cb8644146e25ea7465832eacc27d420bdd9c3df44c552baebbed",
+      "body_sha256": "54baa810e6096e0342e6551f193da99e4924f29663bfc8d2663e10ec54c15785",
+      "content_sha256": "e30416fbf06f2b0af45962b5d842d6f339ef7df4717eef0c78773711eab2cdaa",
+      "approved_file_sha256": "2377c2b2cb4cadc4d76c5ef3f2137e7e2c6857e0e23239eff1bcdef17e635675",
+      "reviewed_body_sha256": "a5997c11898e72f4b4e10220120bf45c4b38d768a688389c2df36f7c5134a10f",
+      "compiler_rendered_body_sha256": "1d7f69d27be40d0adba9e0f1272cb65492564cc64878941c35476e2070ac6747",
+      "technical_link_normalization": {
+        "before_file_sha256": "62827dc79a4e8484d630bea1bc23d319b77a730911bcbc2db237277cbe6af08c",
+        "catalog_original": "ops/lab/artifacts/api-chat-parity-r01/catalog.json",
+        "catalog_public_copy": "docs/evidence/api-chat-knowledge-originals-catalog-r01.json",
+        "rendered_body_unchanged": true
+      }
+    },
+    {
+      "document_id": "nodia-ai.attachments-and-voice",
+      "revision": 11,
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+      "approved_review_draft_sha256": "8e03b6a3fc6fec951227429fed9282dd134ad860f2156c0c917bd10ce31dee87",
+      "approved_review_content_sha256": "91c681f37f47ac35691b7b9bd4ac6f6be7da383a3bc3ecd5a44146c023755f35",
+      "body_sha256": "6101ad1e9904d88b2e014a338007b90cbb12636ba5e578bfdebbc6b908c8b65f",
+      "content_sha256": "a7d8507feb6a8cb999df5220362f8e47c297a8ab60ebc1b442a748b2c844b9eb",
+      "approved_file_sha256": "201dc70bfebb2263722d295413d511e5c196eaa354d98bb10cba5c1fe5d85474",
+      "reviewed_body_sha256": "a9e71c9170cb86e0f875ffb9588f2e36eb3ca22e47c10061fc34ad7e4e7d1bbd",
+      "compiler_rendered_body_sha256": "9dc28d16fe9f55fea1943a4ac1c3f02c5f2702b30b7e85db81be38bae21d8fa0",
+      "technical_link_normalization": {
+        "before_file_sha256": "b3e48ac136072b831dce2bc4c49f0fc4e4c87d12db95499b060ed10a905e0b01",
+        "catalog_original": "ops/lab/artifacts/api-chat-parity-r01/catalog.json",
+        "catalog_public_copy": "docs/evidence/api-chat-knowledge-originals-catalog-r01.json",
+        "rendered_body_unchanged": true
+      }
+    },
+    {
+      "document_id": "nodia-ai.api-key-chat-parity",
+      "revision": 1,
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/api-key-chat-parity.md",
+      "approved_review_draft_sha256": "f1ed830a236bfbc734979451e09ded5b29886d0560ffdee21b44f56812f4f322",
+      "approved_review_content_sha256": "5837d0f063443d8ab764a603d860c4a0a5ebe5e1390d4c7400efc1ba1fb0aa7f",
+      "body_sha256": "3fe0a8ba89a90b35f5e5c2d68226bb217a99f4146af28f4868163d199b776dbc",
+      "content_sha256": "43aac0e69fa57ca5b60f2aa1a7897895094f8a65094a81e3695539bb2fd33a31",
+      "approved_file_sha256": "e60ef90981e3af1380e52d748e32900cc260d099e1532dee97ed0ec1b0a38da8"
+    }
+  ],
+  "secrets_included": false,
+  "technical_normalization": {
+    "kind": "hyperlink_target_only",
+    "count": 5,
+    "renderer": "same link stripping as compileKnowledge.selectedSections",
+    "all_rendered_body_bytes_unchanged": true,
+    "original_catalog_copy_byte_exact": true
+  }
+}

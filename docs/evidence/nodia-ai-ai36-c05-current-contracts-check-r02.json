@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-25",
+  "stage": "AI36-C05-maintained-common-and-current-contracts",
+  "status": "passed_offline_common_fixtures_and_current_source_publication",
+  "supersedes_tooling_receipt": "docs/evidence/nodia-ai-ai36-c05-current-catalog-check-r01.json",
+  "result": {
+    "task": "nodia_ai_current_contracts",
+    "status": "passed",
+    "mode": "read_only",
+    "common_contracts": {
+      "definitions_compiled": 148,
+      "fixture_assertions": 504,
+      "positive_fixtures": 268,
+      "negative_fixtures": 236,
+      "schema_path": "docs/mvp/nodia-ai-v1-common-contracts.schema.json",
+      "sha256": "b8b029300f93b5cf316e6d34526cd6ae2a7c0c5f090bb0c7296fb3b117aacad0"
+    },
+    "publication": {
+      "task": "nodia_ai_current_catalog",
+      "status": "passed",
+      "mode": "read_only",
+      "publication_authority": "explicit_registry_and_compiled_approved_knowledge",
+      "catalog_flags": "historical_design_snapshot_not_runtime_authority",
+      "release_id": "44ee449e1fe393b56354c350cf3edd8d70de1b01c638bc739a8394d2409d0a77",
+      "documents": 39,
+      "fragments": 41,
+      "closed_contracts": 300,
+      "proposed_candidates": 156,
+      "published_capabilities": 150,
+      "published_by_kind": {
+        "prepare_change": 73,
+        "prepare_preference_change": 1,
+        "prepare_secure_flow": 4,
+        "prepare_workflow": 1,
+        "read": 68,
+        "read_artifact": 3
+      },
+      "unpublished_candidates": [
+        "nodia_invoices_analyze"
+      ],
+      "technical_candidates": [
+        "nodia_capabilities_describe",
+        "nodia_capabilities_search",
+        "nodia_entities_search",
+        "nodia_reports_describe",
+        "nodia_reports_run"
+      ],
+      "excluded_handlers_by_treatment": {
+        "coordinator_internal": [
+          "AuthController.me",
+          "AuthController.renew",
+          "AuthorizationController.getContext",
+          "InvoiceController.readObservation",
+          "InvoiceController.reserveObservation",
+          "RentalHistoryController.recover"
+        ],
+        "deferred_bulk": [
+          "ProductController.createBulk",
+          "ProductController.updateBulk",
+          "ProductLogController.createBulk",
+          "ProductLogController.updateBulk",
+          "ProviderController.createBulk",
+          "ProviderController.importCsv",
+          "ProviderController.updateBulk"
+        ],
+        "infrastructure_only": [
+          "AppController.getHelloWorld",
+          "AuthController.seed"
+        ]
+      },
+      "historical_publication_flag_differences": [
+        "nodia_actions_prepare_create",
+        "nodia_actions_prepare_delete",
+        "nodia_actions_prepare_update",
+        "nodia_ai_providers_prepare_catalog_create",
+        "nodia_ai_providers_prepare_catalog_update",
+        "nodia_ai_providers_prepare_codex_logout",
+        "nodia_ai_providers_prepare_create",
+        "nodia_ai_providers_prepare_gemini_web_logout",
+        "nodia_ai_providers_prepare_sync_models",
+        "nodia_ai_providers_prepare_update",
+        "nodia_api_keys_prepare_delete",
+        "nodia_attachments_describe",
+        "nodia_business_actions_prepare_create",
+        "nodia_business_actions_prepare_delete",
+        "nodia_business_actions_prepare_update",
+        "nodia_businesses_prepare_create",
+        "nodia_businesses_prepare_set_collaborators",
+        "nodia_businesses_prepare_update",
+        "nodia_finance_categories_prepare_create",
+        "nodia_finance_categories_prepare_delete",
+        "nodia_finance_categories_prepare_update",
+        "nodia_finance_category_groups_prepare_create",
+        "nodia_finance_category_groups_prepare_delete",
+        "nodia_finance_category_groups_prepare_update",
+        "nodia_finance_movements_prepare_create",
+        "nodia_finance_movements_prepare_delete",
+        "nodia_finance_movements_prepare_update",
+        "nodia_finance_obligations_prepare_create",
+        "nodia_finance_obligations_prepare_delete",
+        "nodia_finance_obligations_prepare_update",
+        "nodia_invoices_prepare_create",
+        "nodia_invoices_prepare_update",
+        "nodia_module_groups_prepare_create",
+        "nodia_module_groups_prepare_delete",
+        "nodia_module_groups_prepare_update",
+        "nodia_modules_prepare_create",
+        "nodia_modules_prepare_delete",
+        "nodia_modules_prepare_update",
+        "nodia_operations_get",
+        "nodia_preferences_list",
+        "nodia_preferences_prepare",
+        "nodia_product_logs_prepare_create",
+        "nodia_product_logs_prepare_update",
+        "nodia_products_prepare_create",
+        "nodia_products_prepare_update",
+        "nodia_proposals_get",
+        "nodia_provider_contacts_prepare_create",
+        "nodia_provider_contacts_prepare_set_active",
+        "nodia_provider_contacts_prepare_update",
+        "nodia_providers_prepare_create",
+        "nodia_providers_prepare_update",
+        "nodia_rental_blocks_prepare_create",
+        "nodia_rental_blocks_prepare_update",
+        "nodia_rental_cancellation_policies_prepare_create",
+        "nodia_rental_cancellation_policies_prepare_update",
+        "nodia_rental_collaborators_prepare_create",
+        "nodia_rental_collaborators_prepare_update",
+        "nodia_rental_expenses_prepare_create",
+        "nodia_rental_expenses_prepare_pay",
+        "nodia_rental_expenses_prepare_update",
+        "nodia_rental_expenses_prepare_void",
+        "nodia_rental_payments_prepare_create",
+        "nodia_rental_payments_prepare_void",
+        "nodia_rental_properties_prepare_create",
+        "nodia_rental_properties_prepare_update",
+        "nodia_rental_reservations_prepare_cancel",
+        "nodia_rental_reservations_prepare_complete",
+        "nodia_rental_reservations_prepare_confirm",
+        "nodia_rental_reservations_prepare_create",
+        "nodia_rental_reservations_prepare_start",
+        "nodia_rental_reservations_prepare_update",
+        "nodia_rental_turnovers_prepare_approve_same_day",
+        "nodia_rental_turnovers_prepare_update",
+        "nodia_roles_prepare_create",
+        "nodia_roles_prepare_delete",
+        "nodia_roles_prepare_update",
+        "nodia_secure_flows_prepare_api_key_create",
+        "nodia_secure_flows_prepare_api_key_update",
+        "nodia_secure_flows_prepare_connection_login",
+        "nodia_secure_flows_prepare_nodia_logout",
+        "nodia_users_prepare_create",
+        "nodia_users_prepare_update",
+        "nodia_workflows_prepare"
+      ],
+      "generation_limits": {
+        "discovery_tools": 8,
+        "discovery_selection_tool": "nodia_capabilities_select",
+        "execution_technical_tools": 7,
+        "selected_capabilities_maximum": 67,
+        "execution_tools_maximum": 74,
+        "catalog_utf8_bytes": 131072
+      },
+      "profiles": [
+        {
+          "profile_id": "published_reads",
+          "configured_capabilities": 67
+        },
+        {
+          "profile_id": "finance_assistance",
+          "configured_capabilities": 18
+        },
+        {
+          "profile_id": "automatic_discovery",
+          "configured_capabilities": 0
+        }
+      ],
+      "source_fingerprints": {
+        "docs/mvp/nodia-ai-v1-tool-catalog.json": "7b0bc3abffedd6c61a21c931bc849b1398c136874f80c82b15c9156a63e43bda",
+        "nodia-server/src/nodia-ai-tools/config/tool-selection-profiles.json": "0a59dccc1f6684ee794ba9ca1333d4d04bd871c128213062030cb9d5bbb4017e",
+        "nodia-server/config/nodia-ai-knowledge.registry.json": "5ebe68d33d8f014e76ba1d7cb226f3143a921be626155b99619e6dbc5b566a9e"
+      },
+      "limitations": [
+        "Not provider inference, handler execution, SQL authorization or acceptance per capability.",
+        "Cross-checks the declared handlerCoverage cohort and a manifest compiled from source; it does not discover the current API AST, identify new routes, or prove equality with a deployed VM.",
+        "Generation counts are ceilings, not proof that every possible selected combination fits the byte limit.",
+        "Historical design publication flags are reported without modifying their source."
+      ]
+    },
+    "scope": "Common wire fixtures plus the current declared catalog/source-publication audit. No current API AST, deployed VM equality, handlers, SQL or provider acceptance."
+  },
+  "historical_common_fixture_continuity": {
+    "historical_validator": "docs/evidence/scripts/validate-nodia-ai-catalog-contracts.cjs",
+    "historical_validator_sha256": "b001f89aa626c95c5b65529867ef0c55b5bda2f33949f4f0837a1519168377c9",
+    "common_segment_sha256": "e2e4848532f928f060b9e7ad4e2f38b568f567a7168d6985db5641d71c898ab8",
+    "ported_segment_byte_identical": true,
+    "named_and_minimal_assertions_preserved": true,
+    "definition_count": "Derived from current schema, not a fixed release count.",
+    "historical_validator_modified": false,
+    "not_reexecuted_by_successor": "Dated inventory/AST, coordination-route and other historical release assertions remain in the original validator; the successor does not claim to execute or update those checks."
+  },
+  "verification": {
+    "full_command": "npm run test:nodia-ai:contracts",
+    "full_build_and_successor_check_passed": true,
+    "atomic_commands": [
+      "npm run test:nodia-ai:catalog",
+      "npm run test:nodia-ai:common-contract-fixtures",
+      "npm run test:nodia-ai:catalog:runtime"
+    ],
+    "focal_tests": {
+      "catalog_policies": 22,
+      "common_fixtures": 3,
+      "actual_runtime_compiler": 5
+    },
+    "focal_total": 30,
+    "lint_passed_without_warnings": true,
+    "scope_of_runtime_tests": "Actual compiled schema compiler only; no Nest application, handlers, SQL or provider.",
+    "additionalProperties_guarantee": "Runtime compiler rejects true and empty schema at root and nested object; an accepted sort_order pattern is rejected independently by Core metadata guard. Other products remain unaffected.",
+    "sources_UTF8_LF": true
+  },
+  "source_files": [
+    {
+      "path": "nodia-server/scripts/check-nodia-ai-catalog.mjs",
+      "sha256": "c07d96ac562b93a75fc1f5323fd4d969214aeeefda7aba84ef0174312d0e11d0"
+    },
+    {
+      "path": "nodia-server/scripts/check-nodia-ai-contracts.mjs",
+      "sha256": "9a77d14a0e3b2f18602b27bd59a20b10c9c5cded8b461399d4ccac0523cce8a2"
+    },
+    {
+      "path": "nodia-server/scripts/nodia-ai-knowledge/catalog-audit.mjs",
+      "sha256": "f1f13fab535a249b621e039f91535fd96422b9fad53d5e9e1763231a3cb9b291"
+    },
+    {
+      "path": "nodia-server/scripts/nodia-ai-knowledge/common-contract-fixtures.mjs",
+      "sha256": "d1ce6557eae7c77e311fa4ce6f73da7294feef9879bd3c361b6f7a2e5de797d2"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-catalog.spec.mjs",
+      "sha256": "3540ee951bd596c7810b7a3a7722eef0e4d0f3c90db026e1ce5de7fd128b628b"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-common-contract-fixtures.spec.mjs",
+      "sha256": "c9c7cdb6aa37902b9f02b163c7fc77b6ac3ccab84596ffa23c10977b6f4a64bc"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-catalog-runtime.spec.mjs",
+      "sha256": "56838246014f10729d18101015f72dc445762a3c97ed2cc5befc54be4348deb4"
+    },
+    {
+      "path": "nodia-server/package.json",
+      "sha256": "67c2fbab9d00318af2d75d0fcef2d65f6e24783c69026eed563bc5cccf2a9555"
+    }
+  ],
+  "checked_source_only_composition": {
+    "release_id": "44ee449e1fe393b56354c350cf3edd8d70de1b01c638bc739a8394d2409d0a77",
+    "registry_sha256": "5ebe68d33d8f014e76ba1d7cb226f3143a921be626155b99619e6dbc5b566a9e",
+    "source_recomposition_is_not_deployed_VM_equality": true,
+    "local_generated_assets_updated_by_build": true,
+    "registry_or_VM_changed_by_checker": false
+  },
+  "intermediate_report_hashes": {
+    "current_result_sha256": "3393a9dc0cf209f0a5f90dbc77a9f5a02b47a1b85372f83f124b5132f103cba7",
+    "full_build_and_check_log_sha256": "3ef9ac752607d38ac80df1d7c31439e25ffb4e64d7e7e4f142e35a53fd0a2706",
+    "final_unit_log_sha256": "606f9157b8f108f042949ad98cf5b1f61c3a1022743569d3df097ab51a0ac90a"
+  },
+  "preserved": {
+    "new_tool_publication": false,
+    "approval_changes": false,
+    "real_acceptance_states_changed": false,
+    "C03_unpublished": true,
+    "provider_calls": 0,
+    "VM_changes": 0,
+    "configured_database_changes": 0
+  },
+  "limitations": [
+    "Not provider inference, handler execution, SQL authorization or acceptance per capability.",
+    "Cross-checks the declared handlerCoverage cohort and a manifest compiled from source; it does not discover the current API AST, identify new routes, or prove equality with a deployed VM.",
+    "Generation counts are ceilings, not proof that every possible selected combination fits the byte limit.",
+    "Historical design publication flags are reported without modifying their source."
+  ]
+}

@@ -1,9 +1,23 @@
 import { alpha, styled, type CSSObject, type Theme } from "@mui/material/styles";
 
+export const PageTitle = styled("h1")(({ theme }) => ({
+  fontFamily: '"Karmatic Arcade", monospace, sans-serif',
+  fontWeight: 400,
+  fontSize: "2.125rem",
+  lineHeight: 1.25,
+  margin: 0,
+  display: "inline-block",
+  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.tertiary?.main ?? theme.palette.secondary.main} 100%)`,
+  backgroundClip: "text",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  [theme.breakpoints.down("sm")]: { fontSize: "1.5rem" },
+}));
+
 export const Page = styled("section")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: theme.spacing(3),
+  gap: theme.spacing(2),
   minWidth: 0,
   overflowWrap: "anywhere",
 }));
@@ -24,19 +38,20 @@ export const Actions = styled("div")(({ theme }) => ({
   flexWrap: "wrap",
   "& button": { minHeight: 44 },
   [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
+    display: "grid",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
     alignItems: "stretch",
-    "& button": { width: "100%" },
+    "& button": { width: "100%", minWidth: 0, fontSize: "0.75rem" },
   },
 }));
 export const Workspace = styled("div")(({ theme }) => ({
   display: "flex",
   minWidth: 0,
   gap: theme.spacing(2),
-  height: "calc(100dvh - 15rem)",
-  minHeight: 600,
-  maxHeight: 1000,
-  [theme.breakpoints.down("sm")]: { height: "auto", minHeight: 0, maxHeight: "none" },
+  height: "calc(100dvh - 13rem)",
+  minHeight: 580,
+  maxHeight: 1200,
+  [theme.breakpoints.down("sm")]: { height: "calc(100dvh - 18rem)", minHeight: 520, maxHeight: "none" },
 }));
 const scrollAreaStyles = (theme: Theme): CSSObject => {
   const thumb = alpha(
@@ -71,10 +86,10 @@ const scrollAreaStyles = (theme: Theme): CSSObject => {
 };
 export const ScrollArea = styled("div")(({ theme }) => scrollAreaStyles(theme));
 export const History = styled(ScrollArea)(({ theme }) => ({
-  width: 264,
+  width: 260,
   flexShrink: 0,
   border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: 20,
   padding: theme.spacing(2),
   background: theme.palette.background.paper,
 }));
@@ -85,11 +100,14 @@ export const Chat = styled("div")(({ theme }) => ({
   minHeight: 0,
   flex: 1,
   border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: 24,
   background: theme.palette.background.paper,
+  boxShadow: `0 8px 32px ${alpha(theme.palette.common.black, theme.palette.mode === "dark" ? 0.14 : 0.025)}`,
 }));
 export const ChatHeading = styled("div")(({ theme }) => ({
-  padding: theme.spacing(2),
+  position: "relative",
+  padding: theme.spacing(2, 3),
+  [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5, 2) },
   borderBottom: `1px solid ${theme.palette.divider}`,
   display: "flex",
   flexDirection: "column",
@@ -99,42 +117,14 @@ export const ChatHeading = styled("div")(({ theme }) => ({
 export const Messages = styled(ScrollArea)(({ theme }) => ({
   flex: 1,
   overflowAnchor: "none",
-  minHeight: 240,
-  padding: theme.spacing(2),
+  minHeight: 180,
+  padding: theme.spacing(3),
+  background: alpha(theme.palette.primary.main, theme.palette.mode === "dark" ? 0.025 : 0.018),
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(3),
   [theme.breakpoints.down("sm")]: {
-    flex: "none",
-    minHeight: 0,
-    height: "clamp(15rem, 40dvh, 24rem)",
-  },
-}));
-export const Message = styled("article", {
-  shouldForwardProp: (prop) => prop !== "isOwner",
-})<{ isOwner: boolean }>(({ theme, isOwner }) => ({
-  alignSelf: isOwner ? "flex-end" : "stretch",
-  maxWidth: isOwner ? "92%" : "100%",
-  padding: theme.spacing(1.5, 2),
-  borderRadius: theme.shape.borderRadius,
-  background: isOwner ? alpha(theme.palette.primary.main, 0.08) : "transparent",
-  whiteSpace: "pre-wrap",
-  overflowWrap: "anywhere",
-  minWidth: 0,
-}));
-export const Composer = styled("form")(({ theme }) => ({
-  ...scrollAreaStyles(theme),
-  padding: theme.spacing(2),
-  borderTop: `1px solid ${theme.palette.divider}`,
-  flex: "0 1 auto",
-  display: "flex",
-  flexDirection: "column",
-  gap: theme.spacing(1.5),
-  [theme.breakpoints.up("sm")]: {
-    display: "grid",
-    gridTemplateColumns: "minmax(0, 1fr) auto",
-    alignItems: "end",
-    "& > .MuiAlert-root, & > .MuiTypography-root": { gridColumn: "1 / -1" },
-    "& > [data-composer-actions]": { gridColumn: "1 / -1", justifyContent: "flex-end" },
+    padding: theme.spacing(2, 1.25),
+    minHeight: 160,
   },
 }));

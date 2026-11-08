@@ -29,8 +29,7 @@ import {
 } from '../../nodia-ai-proposal/types/secure-operation.types.js';
 import { NodiaAiSecurePreparationService } from '../nodia-ai-secure-preparation.service.js';
 import type { NodiaAiProposalReviewField } from '../../nodia-ai-proposal/types/proposal-review.types.js';
-
-const route = '/settings/ai-providers';
+const route = '/ai-providers';
 const names = [
   'nodia_secure_flows_prepare_api_key_create',
   'nodia_secure_flows_prepare_api_key_update',
@@ -38,7 +37,6 @@ const names = [
   'nodia_secure_flows_prepare_nodia_logout',
   'nodia_api_keys_prepare_delete',
   'nodia_ai_providers_prepare_codex_logout',
-  'nodia_ai_providers_prepare_gemini_web_logout',
   'nodia_ai_providers_prepare_sync_models',
 ] as const;
 const isId = (v: unknown): v is string =>
@@ -70,7 +68,6 @@ function review(value: NodiaAiJsonValue): NodiaAiJsonValue {
     };
   return value;
 }
-
 class SecureOperation implements NodiaAiSecureOperation {
   readonly catalogVersion = 'nodia-ai-ai29-secure/1';
   readonly contractHash: string;
@@ -85,9 +82,20 @@ class SecureOperation implements NodiaAiSecureOperation {
     readonly toolName: string,
     private readonly store: NodiaAiSecurePreparationService,
   ) {
-    const definition = nodiaAiSecureOperationIdentity(toolName)!;
+    const definition =
+      nodiaAiSecureOperationIdentity(toolName) ??
+      (toolName === 'nodia_ai_providers_prepare_gemini_web_logout'
+        ? {
+            kind: 'gemini_web_logout' as const,
+            providerRequired: true,
+            keyRequired: false,
+            modeRequired: false,
+          }
+        : null);
+    if (!definition) throw new Error('nodia_ai:invalid_historical_reader');
     this.kind = definition.kind;
     this.moduleRoutes = definition.providerRequired ? [route] : [];
+    // Legacy publication metadata; role actions do not gate module-based access.
     this.actionKeys = definition.providerRequired ? ['ai:manage'] : [];
     this.editableFields =
       this.kind === 'api_key_create' || this.kind === 'api_key_update'
@@ -129,6 +137,8 @@ class SecureOperation implements NodiaAiSecureOperation {
       .digest('hex');
   }
   private decode(raw: NodiaAiJsonObject, stored = false): NodiaAiJsonObject {
+    if (this.kind === 'gemini_web_logout')
+      throw new BadRequestException('nodia_ai:mode_retired');
     object(raw);
     const definition = nodiaAiSecureOperationIdentity(this.toolName)!;
     const fields = [
@@ -181,9 +191,7 @@ class SecureOperation implements NodiaAiSecureOperation {
       if (raw[k] !== undefined && !isId(raw[k])) return invalid();
     if (
       raw.mode !== undefined &&
-      !['api_key', 'token_plan_web', 'token_plan_agentic'].includes(
-        String(raw.mode),
-      )
+      !['api_key', 'agentic'].includes(String(raw.mode))
     )
       return invalid();
     const origins = stored
@@ -218,18 +226,16 @@ class SecureOperation implements NodiaAiSecureOperation {
       userId: c.actor.actorId,
       sessionId: c.actor.sessionId,
     });
-    const routes = ['/tools/nodia-ai', ...this.moduleRoutes];
+    const routes = ['/nodia-ai', ...this.moduleRoutes];
     if (this.moduleRoutes.some((r) => !c.moduleRoutes.includes(r)))
       throw new ForbiddenException('nodia_ai:capability_denied');
-    const [access]: { module: boolean; action: boolean }[] =
-      await c.manager.query(
-        `SELECT (SELECT count(DISTINCT m.link)=$4 FROM modules m JOIN module_groups g ON g.id=m.module_group_id WHERE m.link=ANY($2::text[]) AND m.is_active=true AND g.is_active=true AND ($3::boolean OR EXISTS(SELECT 1 FROM user_modules um WHERE um.user_id=$1 AND um.module_id=m.id AND um.is_active=true))) AS module, EXISTS(SELECT 1 FROM user_roles ur JOIN roles r ON r.id=ur.role_id AND r.is_active=true JOIN role_actions ra ON ra.role_id=r.id AND ra.is_active=true JOIN actions a ON a.id=ra.action_id AND a.is_active=true WHERE ur.user_id=$1 AND ur.is_active=true AND a.key='ai:manage') AS action`,
-        [actor.actorId, routes, actor.isSuperAdmin, routes.length],
-      );
-    if (
-      !access?.module ||
-      (this.actionKeys.length && !actor.isSuperAdmin && !access.action)
-    )
+    const [access]: {
+      module: boolean;
+    }[] = await c.manager.query(
+      `SELECT (SELECT count(DISTINCT m.link)=$4 FROM modules m JOIN module_groups g ON g.id=m.module_group_id WHERE m.link=ANY($2::text[]) AND m.is_active=true AND g.is_active=true AND ($3::boolean OR EXISTS(SELECT 1 FROM user_modules um WHERE um.user_id=$1 AND um.module_id=m.id AND um.is_active=true))) AS module`,
+      [actor.actorId, routes, actor.isSuperAdmin, routes.length],
+    );
+    if (!access?.module)
       throw new ForbiddenException('nodia_ai:capability_denied');
   }
   async prepare(
@@ -433,6 +439,7 @@ class SecureOperation implements NodiaAiSecureOperation {
     t: NodiaAiJsonObject,
     c: ProposalPreparerContext,
   ): Promise<NodiaAiJsonObject> {
+    if (this.kind === 'gemini_web_logout') return invalid();
     if (this.kind === 'nodia_logout')
       return {
         schema_version: 1,
@@ -446,18 +453,11 @@ class SecureOperation implements NodiaAiSecureOperation {
     );
     const key = provider.provider_key;
     const mode =
-      this.kind === 'codex_logout'
-        ? 'token_plan_agentic'
-        : this.kind === 'gemini_web_logout'
-          ? 'token_plan_web'
-          : String(t.mode ?? 'api_key');
+      this.kind === 'codex_logout' ? 'agentic' : String(t.mode ?? 'api_key');
     if (
       (this.kind === 'connection_login' &&
-        (mode === 'api_key' ||
-          !['gemini', 'openai'].includes(String(key)) ||
-          (key === 'openai' && mode === 'token_plan_web'))) ||
-      (this.kind === 'codex_logout' && key !== 'openai') ||
-      (this.kind === 'gemini_web_logout' && key !== 'gemini')
+        (mode === 'api_key' || !['gemini', 'openai'].includes(String(key)))) ||
+      (this.kind === 'codex_logout' && key !== 'openai')
     )
       return invalid();
     if (this.kind === 'api_key_create' && provider.can_use_api_key !== true)
@@ -520,6 +520,39 @@ class SecureOperation implements NodiaAiSecureOperation {
       throw new ForbiddenException('nodia_ai:capability_denied');
     await this.authority(c);
   }
+  async verifyHistoricalReadAuthority(
+    step: StoredProposalStep,
+    c: ProposalPreparerContext,
+  ) {
+    if (
+      step.toolName !== this.toolName ||
+      !/^[a-f0-9]{64}$/.test(step.contractHash) ||
+      !isDeepStrictEqual(step.scope, {})
+    )
+      throw new ForbiddenException('nodia_ai:capability_denied');
+    const template = object(step.commandTemplate);
+    if (
+      template.schema_version !== 1 ||
+      !object(template.command) ||
+      !object(template.origins)
+    )
+      return invalid();
+    const providerRequired = this.kind !== 'nodia_logout';
+    if (providerRequired && !isId(template.provider_id)) return invalid();
+    if (
+      ['api_key_update', 'api_key_delete'].includes(this.kind) &&
+      !isId(template.key_id)
+    )
+      return invalid();
+    if (
+      ['connection_login', 'sync_models'].includes(this.kind) &&
+      !['agentic', 'api_key', 'token_plan_agentic', 'token_plan_web'].includes(
+        String(template.mode),
+      )
+    )
+      return invalid();
+    await this.authority(c);
+  }
   async verifyPreconditions(
     step: StoredProposalStep,
     c: ProposalPreparerContext,
@@ -537,7 +570,14 @@ class SecureOperation implements NodiaAiSecureOperation {
 @Injectable()
 export class BuildNodiaAiSecureOperationsUseCase {
   readonly operations: readonly NodiaAiSecureOperation[];
+  readonly historicalReaders: readonly NodiaAiSecureOperation[];
   constructor(store: NodiaAiSecurePreparationService) {
+    this.historicalReaders = Object.freeze([
+      new SecureOperation(
+        'nodia_ai_providers_prepare_gemini_web_logout',
+        store,
+      ),
+    ]);
     this.operations = Object.freeze(
       names.map((name) => new SecureOperation(name, store)),
     );

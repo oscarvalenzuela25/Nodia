@@ -46,11 +46,13 @@ export async function sameCodexProcess(
   }
 }
 function isMissing(error: unknown) {
+  // A PID can disappear between /proc enumeration and reading its stat.
+  // The group scan must still inspect every other member before proving closure.
   return (
     !!error &&
     typeof error === 'object' &&
     'code' in error &&
-    error.code === 'ENOENT'
+    (error.code === 'ENOENT' || error.code === 'ESRCH')
   );
 }
 async function members(group: number) {

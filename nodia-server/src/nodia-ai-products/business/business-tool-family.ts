@@ -95,7 +95,7 @@ export function createNodiaAiBusinessToolFamily(
       const resourceKey = operation.replace(/_(get|list|query)$/, '');
       return {
         capabilityId: `nodia_${operation}`,
-        revision: 1,
+        revision: resourceKey === 'products' || resourceKey === 'product_logs' ? 3 : 2,
         publication: 'published',
         toolName: `nodia_${operation}`,
         kind: 'read',
@@ -104,7 +104,7 @@ export function createNodiaAiBusinessToolFamily(
         operationKey: action.toLowerCase(),
         descriptionKey: `nodia_ai.capabilities.${operation}`,
         description,
-        requiredModuleRoutes: ['/tools/business'],
+        requiredModuleRoutes: ['/business'],
         actionKeys: [],
         effectKey: `read:${resourceKey}`,
         inputSchema: {
@@ -128,38 +128,38 @@ export function createNodiaAiBusinessToolFamily(
   return {
     familyKey: 'businesses',
     modules: [
-      { key: 'businesses', route: '/tools/business', label: 'Negocios' },
+      { key: 'businesses', route: '/business', label: 'Negocios' },
     ],
     resources: [
       {
         key: 'businesses',
         label: 'Negocios',
-        requiredModuleRoutes: ['/tools/business'],
+        requiredModuleRoutes: ['/business'],
       },
       {
         key: 'invoices',
         label: 'Facturas',
-        requiredModuleRoutes: ['/tools/business'],
+        requiredModuleRoutes: ['/business'],
       },
       {
         key: 'products',
         label: 'Productos',
-        requiredModuleRoutes: ['/tools/business'],
+        requiredModuleRoutes: ['/business'],
       },
       {
         key: 'product_logs',
         label: 'Historial de productos',
-        requiredModuleRoutes: ['/tools/business'],
+        requiredModuleRoutes: ['/business'],
       },
       {
         key: 'providers',
         label: 'Proveedores comerciales',
-        requiredModuleRoutes: ['/tools/business'],
+        requiredModuleRoutes: ['/business'],
       },
       {
         key: 'provider_contacts',
         label: 'Contactos de proveedores',
-        requiredModuleRoutes: ['/tools/business'],
+        requiredModuleRoutes: ['/business'],
       },
     ],
     capabilities,

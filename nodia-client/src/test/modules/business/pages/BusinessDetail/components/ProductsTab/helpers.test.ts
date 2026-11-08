@@ -3,10 +3,21 @@ import {
   calculatePriceDiff,
   resolveHistoricalLog,
   getPriceChangeStatus,
+  priceMeasurementsComparable,
 } from "../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/helpers";
 import type { ProductLogEntity } from "../../../../../../../modules/business/infrastructure/types";
 
 describe("ProductsTab helpers", () => {
+  it("compares only the same measurement while retaining legacy units and rejecting invalid runtime data", () => {
+    expect(priceMeasurementsComparable({}, {})).toBe(true);
+    expect(priceMeasurementsComparable({ measurement_unit: "kg" }, { measurement_unit: "kg" })).toBe(true);
+    expect(priceMeasurementsComparable({ measurement_unit: "kg" }, { measurement_unit: "g" })).toBe(false);
+    expect(priceMeasurementsComparable({ measurement_unit: "kg" }, {})).toBe(false);
+    expect(priceMeasurementsComparable({ measurement_unit: "mg" } as never, { measurement_unit: "mg" } as never)).toBe(false);
+    const newest = { sale_price: 1000, cost_price: 700, measurement_unit: "unit" } as ProductLogEntity;
+    const older = { sale_price: 900, cost_price: 600, measurement_unit: "unit" } as ProductLogEntity;
+    expect(resolveHistoricalLog({ sale_price: 1000, cost_price: 700, measurement_unit: "kg" }, [newest, older])).toBe(newest);
+  });
   describe("calculatePriceDiff", () => {
     it("returns null if historicalSale or currentSale are invalid or <= 0", () => {
       expect(calculatePriceDiff(100, undefined)).toBeNull();
@@ -51,7 +62,6 @@ describe("ProductsTab helpers", () => {
         name: "Prod 1",
         cost_price: 700,
         cost_price_tax: 833,
-        profit_percentage: 30,
         sale_price: 1000,
         stock: 10,
         created_at: "2026-01-01T00:00:00Z",
@@ -70,7 +80,6 @@ describe("ProductsTab helpers", () => {
         name: "Prod 1",
         cost_price: 900,
         cost_price_tax: 1071,
-        profit_percentage: 30,
         sale_price: 1300,
         stock: 15,
         created_at: "2026-02-01T00:00:00Z",
@@ -83,7 +92,6 @@ describe("ProductsTab helpers", () => {
         name: "Prod 1",
         cost_price: 700,
         cost_price_tax: 833,
-        profit_percentage: 30,
         sale_price: 1000,
         stock: 10,
         created_at: "2026-01-01T00:00:00Z",
@@ -105,7 +113,6 @@ describe("ProductsTab helpers", () => {
         name: "Prod 1",
         cost_price: 700,
         cost_price_tax: 833,
-        profit_percentage: 30,
         sale_price: 1000,
         stock: 10,
         created_at: "2026-01-01T00:00:00Z",

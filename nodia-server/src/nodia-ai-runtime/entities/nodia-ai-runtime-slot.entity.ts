@@ -15,6 +15,9 @@ export class NodiaAiRuntimeSlot {
   @Column({ type: 'uuid', nullable: true })
   job_id!: string | null;
 
+  // Read by neutral owner stores with explicit SQL; legacy ORM projections stay compatible.
+  generation_operation_id!: string | null;
+
   @Column({ type: 'uuid', nullable: true })
   holder_worker_id!: string | null;
 

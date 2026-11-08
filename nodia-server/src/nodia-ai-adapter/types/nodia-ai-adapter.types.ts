@@ -1,5 +1,9 @@
+import type { NodiaAiNativeDispatchRejection } from '../../nodia-ai-runtime/types/native-dispatch-rejection.js';
 import type { EntityManager } from 'typeorm';
-import type { NodiaAiRuntimeTerminalProof } from '../../nodia-ai-runtime/types/reconciliation.types.js';
+import type {
+  NodiaAiApiRuntimeProofRequest,
+  NodiaAiRuntimeTerminalProof,
+} from '../../nodia-ai-runtime/types/reconciliation.types.js';
 import type { NodiaAiSelection } from '../../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
 
 /** Current private MCP transport envelope ceilings; these are not provider/model quotas. */
@@ -18,6 +22,10 @@ export interface NodiaAiAdapterObservationBase {
   configurationGeneration: string;
   sessionGeneration: string;
   supportsMcp: boolean;
+  /** Server-owned function calling capability, separate from native MCP qualification. */
+  supportsTools?: boolean;
+  /** Separate accepted generation lane; reading an image grants no generation capability. */
+  supportsImageGeneration?: boolean;
   verifiedModalities?: readonly ('image' | 'pdf' | 'audio')[];
   /** Exact formats proved in this selection/session; category summaries never authorize originals. */
   verifiedAttachmentMediaTypes?: readonly string[];
@@ -39,7 +47,22 @@ export type NodiaAiAdapterObservation = NodiaAiAdapterObservationBase &
           connectionId: string;
         };
       }
+    | {
+        source: 'api_configuration_and_catalog';
+        adapterContractVersion: 'nodia-ai-api-chat/1';
+        adapterIdentity: NodiaAiApiRuntimeProofRequest['adapterIdentity'];
+        supportsMcp: false;
+        supportsTools: boolean;
+      }
   );
+
+export function supportsNodiaAiTools(
+  observation: NodiaAiAdapterObservation,
+): boolean {
+  return observation.source === 'api_configuration_and_catalog'
+    ? observation.supportsTools === true && observation.supportsMcp === false
+    : observation.supportsMcp === true;
+}
 export const NODIA_AI_NATIVE_MEDIA_TYPES = Object.freeze({
   'image/png': 'image',
   'image/jpeg': 'image',
@@ -115,7 +138,7 @@ export interface NodiaAiContextMeasureInput {
 /** Observable initial prompt only; SDK/CLI internal token windows remain unknown. */
 export interface NodiaAiContextMeasurement {
   measurementContractVersion: 'nodia-ai-context-budget/1';
-  measurementScope: 'initial_native_prompt';
+  measurementScope: 'initial_native_prompt' | 'initial_api_prompt';
   measurementKind: 'exact' | 'upper_bound';
   canonicalUtf8Bytes: number;
   catalogUtf8Bytes: number;
@@ -126,6 +149,8 @@ export interface NodiaAiContextMeasurement {
   firstMcpListingUpperBoundUtf8Bytes: number;
 }
 export interface NodiaAiAdapterRequest {
+  /** Explicit owner command; a separate native image lane, never inferred from vision. */
+  imageGeneration?: { prompt: string };
   attemptId: string;
   selection: NodiaAiSelection;
   canonicalPrompt: string;
@@ -155,12 +180,23 @@ export interface NodiaAiAdapterRequest {
   ) => Promise<void>;
 }
 export type NodiaAiAdapterReply =
-  | { kind: 'answer'; text: string; terminalProof: NodiaAiRuntimeTerminalProof }
+  | {
+      kind: 'answer';
+      text: string;
+      generatedImage?: NodiaAiGeneratedImage;
+      terminalProof: NodiaAiRuntimeTerminalProof;
+    }
   | {
       kind: 'delegation_request';
       reason: string;
       terminalProof: NodiaAiRuntimeTerminalProof;
     };
+
+export interface NodiaAiGeneratedImage {
+  readonly contentBase64: string;
+  readonly mediaType: 'image/png' | 'image/jpeg' | 'image/webp';
+  readonly sha256: string;
+}
 
 /** Only Server grants authority and arms durable dispatch; transport never retries. */
 export abstract class NodiaAiAdapterPort {
@@ -186,6 +222,7 @@ export class NodiaAiAdapterError extends Error {
   constructor(
     public readonly code: string,
     public readonly outcome: 'not_dispatched' | 'unknown',
+    public readonly rejectionProof?: NodiaAiNativeDispatchRejection,
   ) {
     super(code);
     this.name = 'NodiaAiAdapterError';

@@ -1,0 +1,490 @@
+{
+  "success": true,
+  "removed_volume_count": 35,
+  "available_bytes_gain": 1867345920,
+  "final_available_bytes": 2492964864,
+  "final_available_gib": 2.322,
+  "operational_services_unchanged": true,
+  "protected_named_volumes": [
+    "nodia-lab_pgdata",
+    "nodia-lab_redisdata"
+  ],
+  "unknown_volumes_touched": false,
+  "prune_used": false,
+  "user_table_rows_read": false,
+  "source": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+  "records": [
+    {
+      "name": "dd844dabdecbf618cd4a051e2398f00f45b96f0c19a5d1d740dc2d08a4c77144",
+      "created": "2026-10-24T16:57:33-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7700325975884791848",
+      "control_mtime": 1792871854.3972363
+    },
+    {
+      "name": "5d8ce559b3a6468b9742b1275f1602328a63216195d89531d7ae51fd6924927d",
+      "created": "2026-10-24T16:56:29-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7700325704546947112",
+      "control_mtime": 1792871791.2087717
+    },
+    {
+      "name": "6549d627750f975405af6618d7a1c0c00b65e81baa03b9c9c74e62d30becde31",
+      "created": "2026-10-24T16:54:46-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7700325260599103528",
+      "control_mtime": 1792871687.8790247
+    },
+    {
+      "name": "84f387356ea6459688945d85e27c321eb06b6e64f96ccf5545f8deda89c09356",
+      "created": "2026-10-24T16:52:04-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52944896,
+      "pg_version": "16",
+      "system_identifier_le": "7700324562618732584",
+      "control_mtime": 1792871525.3788905
+    },
+    {
+      "name": "394a277a2f6703d191ddeedbf76126bdd998b8d49cc46a37f09911ce13362e2b",
+      "created": "2026-10-24T16:09:50-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52830208,
+      "pg_version": "16",
+      "system_identifier_le": "7700313681322917928",
+      "control_mtime": 1792868991.869481
+    },
+    {
+      "name": "7a3eb7dd6982f7889ec68b527fce48eb06a8ca0ca36fbfcc3d46e62ace89f3a6",
+      "created": "2026-10-24T16:04:31-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52756480,
+      "pg_version": "16",
+      "system_identifier_le": "7700312310411767848",
+      "control_mtime": 1792868673.4673126
+    },
+    {
+      "name": "5f29e5597249e5d865e6bb749689e425b2a369fdc9939931cbfbcb40b9052d4e",
+      "created": "2026-10-24T15:57:10-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52756480,
+      "pg_version": "16",
+      "system_identifier_le": "7700310417740271656",
+      "control_mtime": 1792868232.0350463
+    },
+    {
+      "name": "62e9832281a6d30e67c8efeac957cab14fd255d22c478d6815ef24137cd1774c",
+      "created": "2026-10-24T00:00:58-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7700064004898877480",
+      "control_mtime": 1792810859.5502906
+    },
+    {
+      "name": "b522e3a8d42ff227ba72f794a7d212eb5a1fa4358c305070ae5e94dbbcb47fb5",
+      "created": "2026-10-23T23:59:59-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7700063754693685288",
+      "control_mtime": 1792810801.3305573
+    },
+    {
+      "name": "48fe0ae7484ba6372eb28311d3e34232911d63c09027cb48102eafb1bd3a89f4",
+      "created": "2026-10-23T23:52:44-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52977664,
+      "pg_version": "16",
+      "system_identifier_le": "7700061885275607080",
+      "control_mtime": 1792810366.1526492
+    },
+    {
+      "name": "48da63ce7d0f96cac90c91a9a9bc9be6517c788e481c807863f5b146e89f6812",
+      "created": "2026-10-23T23:51:33-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52944896,
+      "pg_version": "16",
+      "system_identifier_le": "7700061579784372264",
+      "control_mtime": 1792810294.9545786
+    },
+    {
+      "name": "f7d1e564613bd3bd80a49637656fa31e9b52135007393db9304dc063a7e168ff",
+      "created": "2026-10-23T23:49:32-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 53043200,
+      "pg_version": "16",
+      "system_identifier_le": "7700061059605868584",
+      "control_mtime": 1792810173.8236585
+    },
+    {
+      "name": "8bec363b6de2d70739beef174725488894dd54e3dda91fd21b002c85a99ed732",
+      "created": "2026-10-23T23:48:50-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52518912,
+      "pg_version": "16",
+      "system_identifier_le": "7700060878743281704",
+      "control_mtime": 1792810131.6849566
+    },
+    {
+      "name": "e7a58d483da3aeb2f44f30701366a91e82e75e284cda00c0449d3d2fa7ca579a",
+      "created": "2026-10-23T23:47:52-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52944896,
+      "pg_version": "16",
+      "system_identifier_le": "7700060629884403752",
+      "control_mtime": 1792810073.783959
+    },
+    {
+      "name": "48a1665032bc4336f95ba7b12078c3fffc6d4c77ba1a29482c5dc977b781b9a2",
+      "created": "2026-10-23T23:46:31-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7700060283675533352",
+      "control_mtime": 1792809993.1184971
+    },
+    {
+      "name": "8d95bb2c5db736b5907705f5571f14e03a23831602707b32922bcfdbbfdcb597",
+      "created": "2026-10-23T23:45:51-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52518912,
+      "pg_version": "16",
+      "system_identifier_le": "7700060110100914217",
+      "control_mtime": 1792809952.7397304
+    },
+    {
+      "name": "f68123b57a7ad6e62e03ff9529fb579d01efaaf7f985e6fe6154150719d1caef",
+      "created": "2026-10-23T23:35:46-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "11138853936cee2dca56916d02ef67cdaaf9981f3252b5915d4c1e4bce13a4af",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 70148096,
+      "pg_version": "16",
+      "system_identifier_le": "7700057510942732328",
+      "control_mtime": 1792809713.5340571
+    },
+    {
+      "name": "ef361520d44d6fd152c69b65e0d4a8d4110d0d344e05d4ba0feddc3bff5058dd",
+      "created": "2026-10-23T23:34:46-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52518912,
+      "pg_version": "16",
+      "system_identifier_le": "7700057253135376424",
+      "control_mtime": 1792809287.530821
+    },
+    {
+      "name": "0e25e99f154000cc70243911d0c30612bf27f8a610f91659ac900484d6605410",
+      "created": "2026-10-23T23:27:45-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52518912,
+      "pg_version": "16",
+      "system_identifier_le": "7700055445257850920",
+      "control_mtime": 1792808866.5836852
+    },
+    {
+      "name": "3955f8f945e8d173f804fe228a3ba032a8201f942183ea201c991112eae6a2f4",
+      "created": "2026-10-23T18:10:13-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7699973617766686760",
+      "control_mtime": 1792789814.6471102
+    },
+    {
+      "name": "07cc1d120149da4c2578007f36c3ce852135edd46a37f653c449ec69b81c40e8",
+      "created": "2026-10-23T18:08:44-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7699973235190964264",
+      "control_mtime": 1792789725.5527008
+    },
+    {
+      "name": "01b03db8bd9a563acdf92006ff0e51ce97872fc19e301ba0accac6d2138d95fd",
+      "created": "2026-10-23T18:07:35-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7699972939207921704",
+      "control_mtime": 1792789656.6555471
+    },
+    {
+      "name": "a6e1ce222e35c4590fba2be6c9ad20b04228d87d24d4c353ffdc10037cd8bb53",
+      "created": "2026-10-23T18:02:48-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 53043200,
+      "pg_version": "16",
+      "system_identifier_le": "7699971707395014696",
+      "control_mtime": 1792789369.8618505
+    },
+    {
+      "name": "2319fc68774f26217be6b073f8a77f802350d46984292ca1df062eeb460fe174",
+      "created": "2026-10-23T18:01:31-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52633600,
+      "pg_version": "16",
+      "system_identifier_le": "7699971378338648104",
+      "control_mtime": 1792789293.2091806
+    },
+    {
+      "name": "a51c81d6f2a2c25629a07064c4bc809bf27715e5b3a5aa2287d2d4a3e0b49373",
+      "created": "2026-10-23T17:59:26-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52944896,
+      "pg_version": "16",
+      "system_identifier_le": "7699970839062167592",
+      "control_mtime": 1792789167.6780887
+    },
+    {
+      "name": "156d0680c2d64a66dddbe8a99c6ebd224f106b5c7c870b2013789b59c46751b0",
+      "created": "2026-10-23T17:35:08-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52912128,
+      "pg_version": "16",
+      "system_identifier_le": "7699964575608545320",
+      "control_mtime": 1792787709.3382866
+    },
+    {
+      "name": "6da2f0793db0c00e7ff901ad25e3a857557528e4a9d8a69515cda2003ef40620",
+      "created": "2026-10-23T17:34:18-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52633600,
+      "pg_version": "16",
+      "system_identifier_le": "7699964361098870824",
+      "control_mtime": 1792787659.394083
+    },
+    {
+      "name": "c54c1db68da2cc3418ca5c6af6961ba739ed08c97bc5803b3662d1a5431d56f1",
+      "created": "2026-10-23T17:31:30-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7699963643196846120",
+      "control_mtime": 1792787492.2445974
+    },
+    {
+      "name": "9d1db62911bee96eaf9650db4e53329c8b4b74754517138611470308a1f5ce5f",
+      "created": "2026-10-23T17:29:48-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7699963202846728232",
+      "control_mtime": 1792787389.7364516
+    },
+    {
+      "name": "e45e10a4fbdabe10753c368919067947a16fb274bcb78234620e246e09b4e802",
+      "created": "2026-10-23T17:28:16-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7699962806914433064",
+      "control_mtime": 1792787297.5444806
+    },
+    {
+      "name": "144fe92daf3115b49a2295d4c13cfc73b8160b24d529d3ef26a7f6e70da7ca0d",
+      "created": "2026-10-23T17:26:27-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 53305344,
+      "pg_version": "16",
+      "system_identifier_le": "7699962339026563112",
+      "control_mtime": 1792787188.6253333
+    },
+    {
+      "name": "da0f5144c3ccb99446e5deea68aedca07e3bbcf1d217b69574e99e2e931c6e4a",
+      "created": "2026-10-23T17:25:48-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52633600,
+      "pg_version": "16",
+      "system_identifier_le": "7699962171778089000",
+      "control_mtime": 1792787149.665923
+    },
+    {
+      "name": "2af62a742515ea54f57b285c4f8c499fbea9b76652e53e50c0b37fa3afd88f07",
+      "created": "2026-10-23T17:05:15-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 53018624,
+      "pg_version": "16",
+      "system_identifier_le": "7699956876281094184",
+      "control_mtime": 1792785916.7149856
+    },
+    {
+      "name": "db89f0fe74bd5e7506bff76c96df84cc49eb862a1539532e23a9b70cba70e3cc",
+      "created": "2026-10-23T15:47:26-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7699936825114841128",
+      "control_mtime": 1792781248.1488996
+    },
+    {
+      "name": "fde094187b3042075ae27e8b6bc08d603820584e38418c67b871db0014db5030",
+      "created": "2026-10-23T15:35:18-03:00",
+      "catalog_file": "global/1262",
+      "catalog_sha256": "b056773b53dc75621f64da65c903c20bc9dbe1934e57ede896669650e6c4df34",
+      "matched_test_database_identifiers": [
+        "ai40"
+      ],
+      "allocated_bytes": 52903936,
+      "pg_version": "16",
+      "system_identifier_le": "7699933694692569128",
+      "control_mtime": 1792780519.3212461
+    }
+  ],
+  "batches": [
+    "2026-10-27-ai-two-modes-vm-volume-cleanup-r01.json",
+    "2026-10-27-ai-two-modes-vm-volume-cleanup-r02.json"
+  ],
+  "disposable_origin_evidence": {
+    "source": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+    "source_sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df",
+    "rule": "createNodiaAiIntegrationFixture validates /^ai[0-9]+$/, creates fresh postgres:16-alpine with POSTGRES_DB=stage, NODE_ENV=test and DOTENV_CONFIG_PATH=/dev/null; ai40 callers are test harnesses",
+    "source_callers": [
+      "nodia-server/test/nodia-ai-ai40-real-canary.mjs",
+      "nodia-server/test/nodia-ai-ai40-real-canary-parent.mjs",
+      "nodia-server/test/nodia-ai-run-cancellation.integration.mjs"
+    ]
+  },
+  "verification_scope": "Only volume metadata, PG_VERSION, first 8 bytes of pg_control, and exact known synthetic database identifier tokens in shared pg_database catalog file global/1262; no user table data or unknown names emitted",
+  "unknown_volume_count_at_initial_inventory": 32,
+  "selection": "Only exact two approved batches of ai40 test clusters created before 2026-10-27; all other volumes retained."
+}

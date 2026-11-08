@@ -56,6 +56,14 @@ No se comparten resultados entre modelos, esfuerzos, configuración o generacion
 
 ## Referencias
 
+### Ampliación solicitada: admisión Teacher frente a observaciones — 2026-11-05
+
+La QA del curso de entrevistas técnicas observó una carrera distinta: elegibilidad adquirió el perfil32ms antes de la ejecución Teacher, que recibió409/runtime_busy con prueba de exclusión previa a proceso/proveedor. Serializar sólo las lecturas no resuelve esa transición. Coordinar ventanas en Client no arbitra otros consumidores; reintentar una inferencia o encolar ejecuciones/login de forma general ampliaría indebidamente el alcance.
+
+La corrección añade una API interna exclusiva de Teacher que espera sólo al dueño observacional real, identificado por su lease y flag interno; una etiqueta de diagnóstico no concede ese trato. Un único turno Teacher pendiente por perfil impide que observaciones posteriores se adelanten; no expulsa al dueño actual ni crea capacidad extra. Adquiere el mutex observacional, obtiene la reserva exclusiva y conserva esa reserva hasta el cierre existente. Cancelación/timeout elimina sólo su turno, sin liberar reservas ajenas o limpiar cuarentena. Los consumidores legacy/login/chat/OCR conservan su admisión inmediata; la API nueva no se aplica a ellos.
+
+La espera consume el preflight18s existente y el deadline firmado más corto; después se revalidan generación, perfil, runtime/política, selección y tiempo antes de armar. No hay bucle de reenvío, cambio de modelo/credencial, ampliación del plazo o relajación de fences. Esta excepción Teacher amplía el comportamiento original descrito arriba; no lo presenta como si hubiera esperado desde el inicio. [96§31](../../mvp/96-nodia-teacher-implementation-plan.md#31-definición-clara-y-estado-de-preparación-estable--2026-11-05) separa pruebas y adopción. El ADR conserva estado propuesto, sin aprobación documental inferida.
+
 Aceptación local 2026-10-22: ambos órdenes controlados y tres recargas autenticadas completan salud/elegibilidad sin rechazo; la versión FIX pasa474 pruebas Linux y503 Windows aplicables. El canario MCP posterior falla conciliado sin contención con salud, por lo que este ADR no acredita disponibilidad generativa/MCP ni modalidades en la nueva época. Estado propuesto y límites de aprobación conservados.
 
 - [AI-38 y evidencias de reserva](../../evidence/nodia-ai-ai38-profile-reservation-r01.md)

@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { lockAuthority } from '../../authorization/authority-transaction.js';
+import { moduleRouteIncluded } from '../../authorization/canonical-module-route.js';
 import type { NodiaAiActorReference } from '../../nodia-ai/types/nodia-ai-authorization.types.js';
 import { NodiaAiConversationService } from '../nodia-ai-conversation.service.js';
 import { AuthorizeNodiaAiConversationUseCase } from './authorize-nodia-ai-conversation.use-case.js';
@@ -33,7 +34,7 @@ export function canReadNodiaAiManifest(
     Array.isArray(manifest.module_routes) &&
     manifest.module_routes.length <= 64 &&
     manifest.module_routes.every(
-      (route: unknown) => typeof route === 'string' && routes.includes(route),
+      (route: unknown) => typeof route === 'string' && moduleRouteIncluded(routes, route),
     )
   );
 }

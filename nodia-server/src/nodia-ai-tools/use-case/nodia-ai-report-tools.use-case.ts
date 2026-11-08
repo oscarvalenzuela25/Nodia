@@ -1,3 +1,4 @@
+import { moduleRouteIncluded } from '../../authorization/canonical-module-route.js';
 import { Injectable } from '@nestjs/common';
 import { readFileSync } from 'node:fs';
 import type { EntityManager } from 'typeorm';
@@ -84,7 +85,7 @@ export class NodiaAiReportToolsUseCase {
       if (
         !this.registry
           .get(request.source_key)
-          .requiredModuleRoutes.every((route) => routes.includes(route))
+          .requiredModuleRoutes.every((route) => moduleRouteIncluded(routes, route))
       )
         throw new Error('nodia_ai:capability_denied');
     }
@@ -129,7 +130,7 @@ export class NodiaAiReportToolsUseCase {
           typeof source.source_key === 'string' &&
           this.registry
             .get(source.source_key)
-            .requiredModuleRoutes.every((route) => routes.includes(route)),
+            .requiredModuleRoutes.every((route) => moduleRouteIncluded(routes, route)),
       ),
     };
   }

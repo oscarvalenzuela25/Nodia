@@ -48,7 +48,7 @@ it("adds a current authorized section, excludes duplicate slots, links to the ex
   await userEvent.keyboard("{Escape}");
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   await userEvent.click(screen.getByRole("button", { name: label("lock") }));
-  expect(screen.getByRole("link", { name: i18n.t("layout:mobile_nav.go", { section: "Reservas" }) })).toHaveAttribute("href", "/tools/reservations");
+  expect(screen.getByRole("link", { name: i18n.t("layout:mobile_nav.go", { section: "Reservas" }) })).toHaveAttribute("href", "/reservations");
   await userEvent.click(screen.getByRole("button", { name: label("unlock") }));
   await userEvent.click(screen.getByRole("button", { name: /Editar acceso:.*Reservas/ }));
   await userEvent.click(screen.getByRole("button", { name: label("remove") }));

@@ -42,7 +42,7 @@ const context = {
     {
       module_group_key: "general_settings",
       translates: [],
-      modules: [{ key: "users", link: "/settings/users", translates: [] }],
+      modules: [{ key: "users", link: "/users", translates: [] }],
     },
   ],
 };
@@ -65,7 +65,7 @@ const modules = [
   {
     id: "1",
     key: "users",
-    link: "/settings/users",
+    link: "/users",
     module_group_id: "1",
     is_active: true,
     translates: [{ key: "key", es: "Usuarios", en: "Users" }],
@@ -180,7 +180,7 @@ const client = new QueryClient({
 });
 client.setQueryData(["authorization", "context", actorId], context);
 const router = createMemoryRouter(productionRouter.routes, {
-  initialEntries: ["/settings/users"],
+  initialEntries: ["/users"],
 });
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={client}>

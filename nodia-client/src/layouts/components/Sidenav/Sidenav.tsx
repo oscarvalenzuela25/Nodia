@@ -11,6 +11,7 @@ import {
   useMediaQuery,
   Divider,
   Collapse,
+  Tooltip,
 } from "@mui/material";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -71,19 +72,6 @@ type Props = {
   desktopCollapsed?: boolean;
 };
 
-const getGroupPriority = (key: string): number => {
-  const normalized = key.toLowerCase().replace(/[-_]/g, "");
-  if (normalized.includes("business") || normalized.includes("negocio")) return 1;
-  if (
-    normalized.includes("setting") ||
-    normalized.includes("ajuste") ||
-    normalized.includes("admin")
-  ) {
-    return 99;
-  }
-  return 50;
-};
-
 const Sidenav: FC<Props> = ({
   mobileOpen,
   onDrawerToggle,
@@ -126,9 +114,7 @@ const Sidenav: FC<Props> = ({
       return [homeItem];
     }
 
-    const sortedGroups = [...userModules].reverse().sort((a, b) => {
-      return getGroupPriority(a.module_group_key) - getGroupPriority(b.module_group_key);
-    });
+    const sortedGroups = userModules;
 
     const dynamicGroups: SidenavItem[] = sortedGroups.map((group) => {
       const groupTitle = getTranslatedLabel(
@@ -249,35 +235,38 @@ const Sidenav: FC<Props> = ({
                             disablePadding
                             sx={{ display: "block" }}
                           >
-                            <NavItemButton
-                              isSubItem={!isCollapsed}
-                              selected={location.pathname === subItem.path}
-                              onClick={() => handleNavigate(subItem.path)}
-                              sx={{
-                                justifyContent: isCollapsed
-                                  ? "center"
-                                  : "initial",
-                                ...(isCollapsed ? { pl: 1.5 } : { pl: "24px" }),
-                              }}
-                            >
-                              {subItem.icon && (
-                                <ListItemIcon
-                                  sx={{
-                                    minWidth: 0,
-                                    mr: isCollapsed ? 0 : 2,
-                                    justifyContent: "center",
-                                    color: "inherit",
-                                    transition:
-                                      "color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-                                  }}
-                                >
-                                  {subItem.icon}
-                                </ListItemIcon>
-                              )}
-                              {!isCollapsed && (
-                                <NavItemText primary={subDisplayName} />
-                              )}
-                            </NavItemButton>
+                            <Tooltip title={isCollapsed ? subDisplayName : ""} placement="right" arrow>
+                              <NavItemButton
+                                aria-label={subDisplayName}
+                                isSubItem={!isCollapsed}
+                                selected={location.pathname === subItem.path}
+                                onClick={() => handleNavigate(subItem.path)}
+                                sx={{
+                                  justifyContent: isCollapsed
+                                    ? "center"
+                                    : "initial",
+                                  ...(isCollapsed ? { pl: 1.5 } : { pl: "24px" }),
+                                }}
+                              >
+                                {subItem.icon && (
+                                  <ListItemIcon
+                                    sx={{
+                                      minWidth: 0,
+                                      mr: isCollapsed ? 0 : 2,
+                                      justifyContent: "center",
+                                      color: "inherit",
+                                      transition:
+                                        "color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+                                    }}
+                                  >
+                                    {subItem.icon}
+                                  </ListItemIcon>
+                                )}
+                                {!isCollapsed && (
+                                  <NavItemText primary={subDisplayName} />
+                                )}
+                              </NavItemButton>
+                            </Tooltip>
                           </ListItem>
                         );
                       })}
@@ -293,27 +282,30 @@ const Sidenav: FC<Props> = ({
                 disablePadding
                 sx={{ mb: 1, display: "block" }}
               >
-                <NavItemButton
-                  selected={location.pathname === moduleItem.path}
-                  onClick={() => handleNavigate(moduleItem.path)}
-                  sx={{ justifyContent: isCollapsed ? "center" : "initial" }}
-                >
-                  {moduleItem.icon && (
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 0,
-                        mr: isCollapsed ? 0 : 2,
-                        justifyContent: "center",
-                        color: "inherit",
-                        transition:
-                          "color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-                      }}
-                    >
-                      {moduleItem.icon}
-                    </ListItemIcon>
-                  )}
-                  {!isCollapsed && <NavItemText primary={displayName} />}
-                </NavItemButton>
+                <Tooltip title={isCollapsed ? displayName : ""} placement="right" arrow>
+                  <NavItemButton
+                    aria-label={displayName}
+                    selected={location.pathname === moduleItem.path}
+                    onClick={() => handleNavigate(moduleItem.path)}
+                    sx={{ justifyContent: isCollapsed ? "center" : "initial" }}
+                  >
+                    {moduleItem.icon && (
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: isCollapsed ? 0 : 2,
+                          justifyContent: "center",
+                          color: "inherit",
+                          transition:
+                            "color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+                        }}
+                      >
+                        {moduleItem.icon}
+                      </ListItemIcon>
+                    )}
+                    {!isCollapsed && <NavItemText primary={displayName} />}
+                  </NavItemButton>
+                </Tooltip>
               </ListItem>
             );
           })}

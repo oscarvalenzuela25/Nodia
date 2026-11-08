@@ -5,4 +5,5 @@ export interface AttachmentPanelProps {
   draft: ReturnType<typeof useAttachmentDrafts>;
   disabled: boolean;
   onRecordingChange: (recording: boolean) => void;
+  reviewOnly?: boolean;
 }

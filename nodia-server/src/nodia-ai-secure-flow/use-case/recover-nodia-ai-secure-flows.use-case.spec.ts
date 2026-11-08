@@ -33,7 +33,7 @@ function invoked(f: ReturnType<typeof setup>) {
   f.descriptor.native_reference = {
     provider_id: '31',
     provider_key: 'gemini',
-    mode: 'token_plan_agentic',
+    mode: 'agentic',
     job_id: 'a'.repeat(32),
   };
 }
@@ -94,7 +94,7 @@ describe('RecoverNodiaAiSecureFlowsUseCase', () => {
       reference: {
         provider_id: '31',
         provider_key: 'gemini',
-        mode: 'token_plan_agentic',
+        mode: 'agentic',
         job_id: 'a'.repeat(32),
       },
       state: 'pending',
@@ -133,7 +133,7 @@ describe('RecoverNodiaAiSecureFlowsUseCase', () => {
         reference: {
           provider_id: '31',
           provider_key: 'gemini',
-          mode: 'token_plan_agentic',
+          mode: 'agentic',
           job_id: 'a'.repeat(32),
         },
         state: 'cancelled',
@@ -153,7 +153,7 @@ describe('RecoverNodiaAiSecureFlowsUseCase', () => {
       reference: {
         provider_id: '31',
         provider_key: 'gemini',
-        mode: 'token_plan_agentic',
+        mode: 'agentic',
         job_id: 'a'.repeat(32),
       },
       state: 'completed',

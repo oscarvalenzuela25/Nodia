@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, type EntityManager } from 'typeorm';
 import { RedisService } from '../common/redis/redis.service.js';
@@ -11,6 +11,7 @@ import { TranslationService } from '../translation/translation.service.js';
 import { GetModulesDto } from './dto/get-modules.dto.js';
 import { Module } from './entities/module.entity.js';
 import { GetModulesResponse } from './types/module.types.js';
+import { assertOrderView, attachModuleOrderMetadata, locateModuleOrderPage } from '../module-order/order-metadata.js';
 
 @Injectable()
 export class ModuleService {
@@ -22,9 +23,19 @@ export class ModuleService {
   ) {}
 
   async findAll(
-    { page = 1, limit = 10, all = false, includes = true, q }: GetModulesDto,
+    { page = 1, limit = 10, all = false, includes = true, ordering = false, locate_id, q }: GetModulesDto,
     manager?: EntityManager,
   ): Promise<GetModulesResponse> {
+    assertOrderView({ ordering, all, limit, q });
+    if (locate_id !== undefined && !ordering)
+      throw new BadRequestException('modules:invalid_order_view');
+    if (ordering && !manager) {
+      return this.moduleRepository.manager.transaction('REPEATABLE READ', (snapshot) =>
+        this.findAll({ page, limit, all, includes, ordering, locate_id, q }, snapshot),
+      );
+    }
+    if (locate_id !== undefined)
+      page = await locateModuleOrderPage(manager!, locate_id, limit);
     const qb = (
       manager?.getRepository(Module) ?? this.moduleRepository
     ).createQueryBuilder('module');
@@ -32,15 +43,21 @@ export class ModuleService {
 
     if (includes) {
       qb.leftJoinAndSelect('module.module_group', 'module_group');
+    } else {
+      qb.leftJoin('module.module_group', 'module_group');
     }
 
     applyRansack(qb, q, 'module', RANSACK_POLICIES.module);
-    if (manager && !/^id\s/i.test(String(q?.s ?? '')))
-      qb.addOrderBy('module.id', 'ASC');
+    if (!q?.s) {
+      qb.addOrderBy('module_group.sort_order', 'ASC');
+      qb.addOrderBy('module_group.id', 'ASC');
+      qb.addOrderBy('module.sort_order', 'ASC');
+    }
+    if (!/^id(?:\s|$)/i.test(String(q?.s ?? '').trim())) qb.addOrderBy('module.id', 'ASC');
 
-    const attachGroupTranslations = async (modulesList: any[]) => {
+    const attachGroupTranslations = async (modulesList: Module[]) => {
       if (!includes) return;
-      const groupsMap = new Map<string, any>();
+      const groupsMap = new Map<string, NonNullable<Module['module_group']>>();
       for (const m of modulesList) {
         if (m.module_group?.id) {
           groupsMap.set(String(m.module_group.id), m.module_group);
@@ -84,9 +101,10 @@ export class ModuleService {
       };
     }
 
+    // The only join is many-to-one; direct pagination keeps includes=false unhydrated.
     const [rawData, total_items] = await qb
-      .skip((page - 1) * limit)
-      .take(limit)
+      .offset((page - 1) * limit)
+      .limit(limit)
       .getManyAndCount();
 
     await attachGroupTranslations(rawData);
@@ -98,7 +116,9 @@ export class ModuleService {
     const total_pages = Math.ceil(total_items / limit);
 
     return {
-      data: data as any,
+      data: ordering
+        ? await attachModuleOrderMetadata(manager!, data)
+        : data,
       meta: {
         page,
         limit,

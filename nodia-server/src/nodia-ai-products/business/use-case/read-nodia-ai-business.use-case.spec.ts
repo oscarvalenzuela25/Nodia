@@ -31,10 +31,10 @@ const product = {
   business_id: uuid,
   provider_id: null,
   code: 'SKU',
+  measurement_unit: 'unit',
   name: 'Arroz',
   cost_price: 10,
   cost_price_tax: 12,
-  profit_percentage: 30,
   sale_price: 15,
   stock: 0,
   business: { owner: { password: 'synthetic-private' } },
@@ -46,7 +46,9 @@ const schema = readFileSync(
 const family = createNodiaAiBusinessToolFamily(schema);
 
 function harness(entity: unknown = Product, row: unknown = product) {
+  const authority = { current: true, visible: true, superAdmin: false, module: true };
   const qb = {
+    expressionMap: { wheres: [] },
     getParameters: vi.fn(() => ({})),
     andWhere: vi.fn().mockReturnThis(),
     where: vi.fn().mockReturnThis(),
@@ -56,7 +58,10 @@ function harness(entity: unknown = Product, row: unknown = product) {
     take: vi.fn().mockReturnThis(),
     leftJoinAndSelect: vi.fn().mockReturnThis(),
     innerJoin: vi.fn().mockReturnThis(),
+    innerJoinAndSelect: vi.fn().mockReturnThis(),
     getCount: vi.fn(async () => 0),
+    getOne: vi.fn(async () => row),
+    getExists: vi.fn(async () => true),
     getManyAndCount: vi.fn(async () => [[row], 1]),
   };
   const main = {
@@ -75,7 +80,17 @@ function harness(entity: unknown = Product, row: unknown = product) {
   const collaboration = { findOne: vi.fn(async () => null) };
   const translation = { find: vi.fn(async () => []) };
   const manager = {
-    query: vi.fn(async () => []),
+    query: vi.fn(async (sql: string) => {
+      if (sql.includes('WITH actor AS')) return [{actor_active: authority.current, allowed: authority.module}];
+      if (sql.startsWith('SELECT u.id')) return authority.current ? [{
+        actorId: '7', sessionId: '11111111-1111-4111-8111-111111111111', isSuperAdmin: authority.superAdmin,
+      }] : [];
+      if (sql.startsWith('SELECT business.id::text'))
+        return authority.visible ? [{ id: uuid }] : [];
+      if (sql.startsWith('SELECT resource.id::text'))
+        return authority.visible ? [{ id: String((row as { id: string }).id) }] : [];
+      return [];
+    }),
     queryRunner: { isTransactionActive: true },
     getRepository: vi.fn((target: unknown) =>
       target === entity
@@ -89,37 +104,49 @@ function harness(entity: unknown = Product, row: unknown = product) {
               : main,
     ),
   } as unknown as EntityManager;
+  Object.assign(main, { manager });
   const context: NodiaAiToolHandlerContext = {
     manager,
     actor: {
       actorId: '7',
-      sessionId: 'session-fixture',
+      sessionId: '11111111-1111-4111-8111-111111111111',
       isSuperAdmin: false,
       modules: [],
     },
-    moduleRoutes: ['/tools/business'],
+    moduleRoutes: ['/business'],
   };
-  return { qb, main, context, manager, collaboration, translation };
+  return { qb, main, context, manager, collaboration, translation, authority };
 }
 
 describe('AI-15 Negocios reads', () => {
   const uc = new ReadNodiaAiBusinessUseCase();
+  it('rejects a destination module revoked after a prior grant before returning product data', async () => {
+    const f = harness();
+    f.authority.module = false;
+    await expect(uc.execute('products_get', {id: product.id}, f.context)).rejects.toThrow('core:module_access_required');
+  });
   it('registers only local reads and keeps external/artifact operations gated', () => {
     const registry = new NodiaAiToolRegistryUseCase([family], 'fixture_v1');
-    expect(registry.list(['/tools/business'])).toHaveLength(12);
+    expect(registry.list(['/business'])).toHaveLength(12);
+    const changed = new Set([
+      'nodia_products_get', 'nodia_products_list',
+      'nodia_product_logs_get', 'nodia_product_logs_list', 'nodia_product_logs_query',
+    ]);
+    for (const tool of registry.list(['/business']))
+      expect(tool.revision).toBe(changed.has(tool.toolName) ? 3 : 2);
+    expect(registry.list(['/business']).filter((tool) => tool.revision === 3)).toHaveLength(5);
     expect(
-      new Set(registry.list(['/tools/business']).map((tool) => tool.kind)),
+      new Set(registry.list(['/business']).map((tool) => tool.kind)),
     ).toEqual(new Set(['read']));
     for (const gate of NODIA_AI_BUSINESS_PENDING_TOOLS)
       expect(registry.get(gate.toolName)).toBeUndefined();
   });
   it('preserves bigint identities, zero stock and explicit projections without private relations', async () => {
-    const { context, main } = harness();
+    const { context, qb } = harness();
     const result = await uc.execute('products_get', { id: common.id }, context);
-    expect(main.findOne).toHaveBeenCalledWith({
-      where: { id: common.id },
-      relations: { business: true, provider: true },
-    });
+    expect(qb.where).toHaveBeenCalledWith('product.id = :productId', { productId: common.id });
+    expect(qb.andWhere).toHaveBeenCalledWith(expect.stringContaining('business_collaborators'),
+      { businessAccessUserId: '7' });
     expect(result.data).toMatchObject({
       id: common.id,
       stock: 0,
@@ -152,7 +179,9 @@ describe('AI-15 Negocios reads', () => {
     );
     const all = harness();
     await uc.execute('products_list', { activity: 'all' }, all.context);
-    expect(all.qb.andWhere).not.toHaveBeenCalled();
+    expect(all.qb.andWhere).not.toHaveBeenCalledWith('product.is_active = :ransack_0', expect.anything());
+    expect(all.qb.andWhere).toHaveBeenCalledWith(expect.stringContaining('business_collaborators'),
+      { businessAccessUserId: '7' });
   });
   it('stabilizes equal-value pages without overriding an explicit descending ID sort', async () => {
     const sorted = harness();
@@ -241,6 +270,20 @@ describe('AI-15 Negocios reads', () => {
       }),
     ).toThrow();
   });
+  it('keeps nullable supplier identifiers and explicit measurement units in product and log reads', async () => {
+    const registry = new NodiaAiToolRegistryUseCase([family], 'fixture_v1');
+    const current = harness(Product, { ...product, code: null, measurement_unit: 'kg' });
+    const result = await uc.execute('products_get', { id: common.id }, current.context);
+    expect(result.data).toMatchObject({ code: null, measurement_unit: 'kg' });
+    const tool = registry.get('nodia_products_get')!;
+    expect(registry.validateOutput(tool, result)).toEqual(result);
+    for (const measurement_unit of [null, 'mg', 'l', 'ml', 'm'])
+      expect(() => registry.validateOutput(tool, { data: { ...(result.data as object), measurement_unit } })).toThrow();
+    const historical = harness(ProductLog, { ...product, id: uuid, product_id: common.id, code: null, measurement_unit: 'bundle' });
+    const snapshot = await uc.execute('product_logs_get', { id: uuid }, historical.context);
+    expect(snapshot.data).toMatchObject({ code: null, measurement_unit: 'bundle' });
+    expect(registry.validateOutput(registry.get('nodia_product_logs_get')!, snapshot)).toEqual(snapshot);
+  });
   it('validates UUID identities and bounded query input without coercing numeric strings', () => {
     const registry = new NodiaAiToolRegistryUseCase([family], 'fixture_v1');
     const get = registry.get('nodia_product_logs_get')!;
@@ -301,7 +344,9 @@ describe('AI-15 Negocios reads', () => {
     });
   });
   it('rejects a cached detail with another identity or contacts from a different supplier', async () => {
-    const { context } = harness();
+    const { context } = harness(Business, {
+      ...common, id: uuid, owner_id: '7', name: 'Own', has_description: false,
+    });
     await expect(
       uc.verifyResultAuthority(
         'businesses_get',
@@ -327,13 +372,45 @@ describe('AI-15 Negocios reads', () => {
       ),
     ).rejects.toThrow('business_result_scope_invalid');
   });
-  it('does not invent per-business ownership restrictions for globally authorized products', async () => {
-    const { context } = harness();
+  it('rechecks product business visibility before reusing a cached detail', async () => {
+    const { context, authority } = harness();
     await expect(
       uc.verifyAuthority('products_get', { id: common.id }, context),
     ).resolves.toBeUndefined();
     expect(context.manager.getRepository).not.toHaveBeenCalled();
+    authority.visible = false;
+    await expect(uc.verifyAuthority('products_get', { id: common.id }, context))
+      .rejects.toThrow('business:resource_not_found');
   });
+  it.each([
+    'products_list', 'providers_list', 'invoices_list', 'product_logs_list', 'provider_contacts_list',
+  ] as const)('rejects cached %s after collaboration revocation and rechecks current administrator authority', async (operation) => {
+    const id = operation === 'product_logs_list' ? uuid : common.id;
+    const f = harness(Product, { id });
+    const input = operation === 'provider_contacts_list' ? { provider_id: '1' } : {};
+    const result = { data: [{ id, ...(operation === 'provider_contacts_list' ? { provider_id: '1' } : {}) }] };
+    await expect(uc.verifyResultAuthority(operation, input, result, f.context)).resolves.toBeUndefined();
+    f.authority.visible = false;
+    await expect(uc.verifyResultAuthority(operation, input, result, f.context))
+      .rejects.toThrow('business:resource_not_found');
+    // DB role and visible-row boundaries change; the cached/client actor flag remains false.
+    f.authority.superAdmin = true;
+    f.authority.visible = true;
+    await expect(uc.verifyResultAuthority(operation, input, result, f.context)).resolves.toBeUndefined();
+    expect(f.manager.query).toHaveBeenLastCalledWith(expect.stringContaining('SELECT resource.id::text'),
+      [[id], '7', true]);
+    f.authority.current = false;
+    await expect(uc.verifyResultAuthority(operation, input, result, f.context)).rejects.toThrow('session_expired');
+  });
+  it.each(['products_get', 'providers_get', 'invoices_get', 'product_logs_get'] as const)(
+    'rejects cached %s after its current business visibility is removed', async (operation) => {
+      const id = operation === 'product_logs_get' ? uuid : common.id;
+      const f = harness(Product, { id });
+      f.authority.visible = false;
+      await expect(uc.verifyResultAuthority(operation, { id }, { data: { id } }, f.context))
+        .rejects.toThrow('business:resource_not_found');
+    },
+  );
   it('requires the destination module and forbids all-business scope for an ordinary actor', async () => {
     const { context } = harness();
     await expect(

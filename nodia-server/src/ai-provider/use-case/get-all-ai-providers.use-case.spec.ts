@@ -62,8 +62,8 @@ describe('AI provider public contract through real translation attachment', () =
         id: '7',
         key: 'gemini',
       }),
-      default_mode: 'token_plan_web' as const,
-      use_token_plan_web: true,
+      default_mode: 'agentic' as const,
+      use_agentic: true,
       is_active: true,
       fields: { selected_model: 'discovered-model', secret: 'sensitive-value' },
     });
@@ -78,16 +78,14 @@ describe('AI provider public contract through real translation attachment', () =
       getManyAndCount: vi.fn().mockResolvedValue([[provider], 1]),
     };
     const translations = new TranslationService({
-      find: vi
-        .fn()
-        .mockResolvedValue([
-          {
-            source_id: '1',
-            source_key: 'name',
-            locale: 'es',
-            value: 'Sesión Web',
-          },
-        ]),
+      find: vi.fn().mockResolvedValue([
+        {
+          source_id: '1',
+          source_key: 'name',
+          locale: 'es',
+          value: 'Agentic',
+        },
+      ]),
     } as unknown as Repository<Translation>);
     const service = new AiProviderService(
       {
@@ -114,11 +112,11 @@ describe('AI provider public contract through real translation attachment', () =
       const serialized = JSON.parse(JSON.stringify(result));
       expect(serialized.data[0]).toMatchObject({
         key: 'gemini',
-        mode: 'token_plan_web',
-        default_mode: 'token_plan_web',
+        mode: 'agentic',
+        default_mode: 'agentic',
       });
       expect(serialized.data[0].translates).toEqual([
-        { key: 'name', es: 'Sesión Web', en: '' },
+        { key: 'name', es: 'Agentic', en: '' },
       ]);
       expect(serialized.data[0].fields.secret).not.toBe('sensitive-value');
       expect(provider.fields.secret).toBe('sensitive-value');
@@ -147,25 +145,42 @@ describe('AI provider public contract through real translation attachment', () =
     expect(result).toHaveLength(1);
     expect(result[0]).toMatchObject({
       provider: 'gemini',
-      mode: 'token_plan_web',
+      mode: 'agentic',
       selectedModel: 'discovered-model',
     });
-    expect(result[0].tokenPlan?.authenticated).toBe(false);
-    expect(gemini.getModelsAndQuota).toHaveBeenCalledWith('web');
+    expect(result[0].agenticPlan?.authenticated).toBe(false);
+    expect(gemini.getModelsAndQuota).toHaveBeenCalledWith('agentic');
   });
 
   it('revokes cached model and quota claims without changing stored configuration', async () => {
     const { useCase, provider } = setup();
-    const model = { id: 'saved-id', contextWindow: 128000, capabilities: ['vision', 'reasoning'], isRecommended: true, remaining_credits: 2400 };
+    const model = {
+      id: 'saved-id',
+      contextWindow: 128000,
+      capabilities: ['vision', 'reasoning'],
+      isRecommended: true,
+      remaining_credits: 2400,
+    };
     provider.fields.available_models = [model];
     provider.fields.quota = { remaining: 2400 };
-    provider.fields.token_plan_web = { selected_model: 'saved-id', available_models: [model], usage_info: { weekly: 99 } };
+    provider.fields.agentic = {
+      selected_model: 'saved-id',
+      available_models: [model],
+      usage_info: { weekly: 99 },
+    };
     const response = await useCase.execute({ all: true });
     expect(response.data[0].fields).not.toHaveProperty('quota');
-    expect(response.data[0].fields.token_plan_web).not.toHaveProperty('usage_info');
-    expect(response.data[0].fields.available_models[0]).toMatchObject({ id: 'saved-id', contextWindow: null, capabilities: [], isRecommended: false });
-    expect(response.data[0].fields.available_models[0]).not.toHaveProperty('remaining_credits');
+    expect(response.data[0].fields.agentic).not.toHaveProperty('usage_info');
+    expect(response.data[0].fields.available_models[0]).toMatchObject({
+      id: 'saved-id',
+      contextWindow: null,
+      capabilities: [],
+      isRecommended: false,
+    });
+    expect(response.data[0].fields.available_models[0]).not.toHaveProperty(
+      'remaining_credits',
+    );
     expect(provider.fields.available_models[0]).toEqual(model);
-    expect(provider.fields.token_plan_web.selected_model).toBe('saved-id');
+    expect(provider.fields.agentic.selected_model).toBe('saved-id');
   });
 });

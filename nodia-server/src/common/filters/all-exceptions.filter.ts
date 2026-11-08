@@ -19,6 +19,21 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
+    if(request.path==='/api/v1/teacher'||request.path.startsWith('/api/v1/teacher/')){
+      const detail=exception instanceof HttpException?exception.getResponse():null;
+      const record=detail&&typeof detail==='object'?detail as Record<string,unknown>:null;
+      const rawStatus=exception&&typeof exception==='object'&&'status' in exception?(exception as {status:unknown}).status:null;
+      const status=exception instanceof HttpException?exception.getStatus():rawStatus===413?413:rawStatus===400?400:500;
+      const candidate=record?.code??record?.message??detail;
+      const code=typeof candidate==='string'&&/^(?:teacher:)?[a-z][a-z0-9_]{0,100}$/.test(candidate)
+        ?candidate.replace(/^teacher:/,''):status===400||status===413?'invalid_input':status===401?'session_expired':status===403?'module_access_required':status===404?'not_found':'request_failed';
+      response.setHeader('Cache-Control','no-store');
+      // Only observed local capacity values are exposed; no invented provider retry interval.
+      const retry=record?.retry_after_seconds;
+      if(status===429&&typeof retry==='number'&&Number.isSafeInteger(retry)&&retry>0)response.setHeader('Retry-After',String(retry));
+      this.logger.warn({event:'teacher_http_error',status,code});
+      response.status(status).json({code,message:`teacher:${code}`});return;
+    }
     if (exception instanceof GeminiUpstreamException && exception.retryAfterSeconds !== null) {
       response.setHeader('Retry-After', String(exception.retryAfterSeconds));
     }

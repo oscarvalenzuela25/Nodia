@@ -6,7 +6,7 @@ export async function verifyConfiguredRoutingTarget(
   selection: NodiaAiSelection,
 ): Promise<void> {
   const rows: { configuration: unknown }[] = await manager.query(
-    "SELECT fields->'token_plan_agentic' AS configuration FROM ai_providers WHERE id=$1 FOR SHARE",
+    "SELECT fields->'agentic' AS configuration FROM ai_providers WHERE id=$1 FOR SHARE",
     [selection.connection_id],
   );
   const value = rows[0]?.configuration;
@@ -26,7 +26,7 @@ export async function verifyConfiguredRoutingTarget(
   if (
     model !== selection.model_id ||
     effort !== selection.effort_id ||
-    selection.mode !== 'token_plan_agentic'
+    selection.mode !== 'agentic'
   )
     throw new Error('nodia_ai:invalid_selection');
 }

@@ -1,0 +1,758 @@
+{
+  "schema": "business-product-pricing/1",
+  "date": "2026-11-06",
+  "status": "Server_R11_Client_R28_active_verified",
+  "functional_instruction": "Explicit user request: remove persisted product percentage; independent manual sale price and local explicit suggestion; reviewed manual OCR product binding; 16px/700 product prices.",
+  "documentation": {
+    "ADR095": "proposed",
+    "candidate": "draft/partial/unregistered/approval:null",
+    "new_document_approval": false,
+    "new_knowledge_publication": false,
+    "approved_documents_byte_identical": 44,
+    "approved_fragment_bytes_vs_R09": "all46identical"
+  },
+  "implementation": {
+    "sale_price": "Independent from cost/tax/markup edits; explicit suggestion changes only the draft sale price.",
+    "local_markup": "Default30, editable finite non-negative decimal, dot/comma accepted, not stored or sent; gross * (1 + markup/100), Math.round whole CLP, int32 range, no clamp/missing-to-zero.",
+    "costs": "Net and tax-inclusive cost remain linked by local IVA assistance; manual sale never updates costs.",
+    "retirement": "New migration removes products/product_logs columns without changing other data; active DTO/schema/projection/CSV/preparers reject or omit the retired field as appropriate; incompatible proposals invalidated by contract revisions, historical signed bytes unchanged.",
+    "manual_binding": "Name search pages25, business filter; fresh ID snapshot via bounded products list query limit1/id_in. Explicit fields prepare draft tied to ID/business/expected_version, final native save later.",
+    "matching_context": "Session inactive/reads pending/parent busy disable controls. Actor/business/sessionVersion drift requires reopening; selected ID change awaits fresh snapshot.",
+    "unchosen_fields": "Preserved from target; quantity never becomes stock; offers, barcode, unit, availability, provider not overwritten by binding."
+  },
+  "source_freezes": {
+    "Server": {
+      "path": "output/business-product-pricing-20261106-server-freeze-r03.json",
+      "sha256": "a99bfbcf3d8ba7a6bfd213fc71ab2a436e5d7d9b61f941229c8e96600699de17",
+      "production": 18,
+      "tests": 25,
+      "all_files_current_equal_frozen": false,
+      "verified_current_equal_before_forward_patch": true,
+      "history_preserved": true,
+      "authorized_forward_checkout_delta": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
+          "R03_sha256": "5f88332fcb501fe5b920123d73940d102ac18dfd9f1413c1ac47b76bb314a0a3",
+          "forward_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.spec.ts",
+          "R03_sha256": "886e78719c46804662a2ca7acca35dedc31fab522351542a94c0cf9af9c74e92",
+          "forward_sha256": "ed783c55bdae9062f640b4f22ef27f2ef2dedb01fffaafecea19d1ca14db61cc"
+        }
+      ]
+    },
+    "Client": {
+      "path": "output/business-product-pricing-20261106-client-freeze-r03.json",
+      "sha256": "d764400c46588c4aa6d2a5a0d193d8bbd1090fc95e017fca04c51bad3214bf3f",
+      "production": 25,
+      "tests": 24,
+      "fixtures": 3,
+      "all_files_current_equal_frozen": true
+    }
+  },
+  "checks": {
+    "Client": {
+      "cases": 308,
+      "suites": 25,
+      "workspace_typecheck_exit": 0,
+      "scoped_lint_exit": 0
+    },
+    "Server": {
+      "initial_run": {
+        "cases": 315,
+        "suites": 23
+      },
+      "later_metadata_run": {
+        "cases": 159,
+        "suites": 3
+      },
+      "counting": "Separate partially overlapping runs; never summed or represented as a wholly included subset.",
+      "production_typecheck_exit": 0,
+      "scoped_lint_exit": 0,
+      "broad_specs_typecheck": "Failed in untouched WIP spec suites; not claimed passed."
+    },
+    "PostgreSQL": {
+      "status": "passed_R02",
+      "checks": [
+        "dependent_object_rejected_without_cascade_and_transaction_restores_both_columns",
+        "only_two_columns_removed_money_bigint_ids_versions_and_sales_snapshots_preserved",
+        "business_code_barcode_uniqueness_and_log_foreign_key_preserved",
+        "rollback_requires_original_backup_without_fabricated_percentage"
+      ],
+      "isolated": true,
+      "operational_database_used": false,
+      "auth_guards_exercised": false,
+      "cleanup_verified": true
+    }
+  },
+  "builds": {
+    "Server_R10": {
+      "manifest_sha256": "4aa51de4feeeea73cf2afd4b22b02e3603f9ccb9ea54bb17990f1fea97fea92b",
+      "isolated_production_compile": true,
+      "adopted": false,
+      "adoption_phase": "Migration committed; startup failed before stable30; forward recovery pending"
+    },
+    "Client_R28": {
+      "manifest_sha256": "774c639682e1968e69bb80ac0f57a75d5146accedfb330a76188f359b1ebac6f",
+      "isolated_production_roots": 862,
+      "excluded_baseline_test_roots": 377,
+      "current_workspace_typecheck_exit": 0,
+      "regression_cases": 308,
+      "Vite_ms": 14277,
+      "source_inputs": 1396,
+      "static_outputs": 186,
+      "adopted": true,
+      "one_activation_and_nginx_reload": true,
+      "verified_assets": {
+        "current": 186,
+        "R27": 181,
+        "each_R26_R25_R24_R23_R22_R21_R20_R19_R17": 180
+      },
+      "Server_Native_auth_timers_preserved": true
+    },
+    "Server_R11": {
+      "manifest_sha256": "b3ff880a8ad432a8c3b3e586f78e99803ca3c20ecb3121b6dd015a93f0ffb7c5",
+      "release": "/opt/nodia/releases/nodia-server-business-product-pricing-20261106-r11",
+      "base": "immutable R10failed-startup release",
+      "changed_JSON_or_assets": 5,
+      "unchanged_files": 4547,
+      "total_files": 4552,
+      "adopted": true,
+      "stable_seconds": 30,
+      "DDL": 0,
+      "database_mutations": 0,
+      "ledger_count": 45,
+      "table_count": 94,
+      "inventory_equal_migration_after": true,
+      "original_flags_environment_preserved": true,
+      "Native_changed": false,
+      "backup_script_rebinding": "Two exact backup paths R09toR11only",
+      "provider_requests": 0
+    }
+  },
+  "knowledge": {
+    "registry_checkout_sha256": "fe8cb04416f974fa65903f61adee1918e968c211251c5d7d2db8093ca742368f",
+    "registry_release_sha256": "5c38a53e0e0205892fabdb51e1faaede942a09774267a0289e16f9bff914068c",
+    "knowledge_release_id": "f7f4b2a0c62fd6aad97f9d9e76ca38168e49643b0a9e0acb2fc0e0e74596fa0c",
+    "knowledge_manifest_sha256": "29e021903e1d8d894a4c45d1838adf0073e75a791b0d53ab45be5f00af2e080c",
+    "source_count": 81,
+    "excluded": 37,
+    "published_documents": 44,
+    "fragments": 46,
+    "capabilities": 153,
+    "approved_bytes_preserved": 44,
+    "fragment_bytes_vs_R09": "all46identical",
+    "changed_outputs_vs_R09": [
+      "dist/nodia-ai/knowledge/manifest.json"
+    ],
+    "unpublished_code_or_docs_promoted": false,
+    "scope": "Historical R10closed compile; startup subsequently failed. Current adopted knowledge is the forwardR04closed release below."
+  },
+  "synthetic_CUA": {
+    "reader": "Explicit local synthetic adapter, exact alias only for InvoiceProductMatch reader; real components/theme/translations and bind helper.",
+    "verification": {
+      "schema": "business-product-pricing-synthetic-visual/1",
+      "fixture": "http://127.0.0.1:5176/",
+      "realComponents": true,
+      "syntheticReader": true,
+      "authenticatedSession": false,
+      "providerCalls": 0,
+      "productWrites": 0,
+      "desktop": [
+        1088,
+        892
+      ],
+      "mobile": {
+        "viewport": [
+          320,
+          892
+        ],
+        "buttons": [
+          {
+            "height": 44,
+            "text": "Cancelar",
+            "width": 256
+          },
+          {
+            "height": 44,
+            "text": "Preparar actualización",
+            "width": 256
+          }
+        ],
+        "client": 288,
+        "documentClient": 320,
+        "documentScroll": 320,
+        "scroll": 288,
+        "width": 288
+      },
+      "selectedFields": [
+        "cost_price",
+        "cost_price_tax"
+      ],
+      "unchangedCode": "CAT-12",
+      "unchangedSale": 990,
+      "preparedCost": 900,
+      "preparedGrossCost": 1071,
+      "priceStyles": [
+        {
+          "fontSize": "16px",
+          "fontWeight": "700",
+          "text": "$990 x unidad"
+        },
+        {
+          "fontSize": "16px",
+          "fontWeight": "700",
+          "text": "Precio oferta: $1.290 x unidad"
+        },
+        {
+          "fontSize": "16px",
+          "fontWeight": "700",
+          "text": "Precio normal: $990 x unidad"
+        }
+      ],
+      "limitations": "Isolated visual fixture; no real OCR, persistence or authentication verified."
+    },
+    "harness_cleaned": true,
+    "clipboard_or_audio_or_provider_claims": false
+  },
+  "PRE_recovery": {
+    "encrypted_object_and_GCM_verified": true,
+    "restore_receipt_sha256": "ad8d2186b63ea35ffb9875753aa48038b1b0e0d54d084db918c828cc9412e5d3",
+    "independent_cleanup_sha256": "f486db90bfe178ecc5f5b0ae76d0729059c7a37583383e9a58505463786802fb",
+    "comparison": "Raw rows and sequences equal; schema equivalence verified via22reparsed checks. Combined raw_rows_schema_sequences_equal is false due representation; do not claim identical raw schema.",
+    "operational_adoption_GATE": "R10 check rejected PRE_restore_database_CAS_failed because auth_sessions changed. No intent, stop, DDL or service mutations; fresh PRE/readonly reconciliation pending.",
+    "initial_CAS_drift": {
+      "table": "auth_sessions",
+      "rows_before": 19,
+      "rows_after": 19,
+      "change": "raw/comparison row hashes changed; no row-count change",
+      "actions_before_rejection": {
+        "intent": 0,
+        "service_stops": 0,
+        "DDL": 0
+      },
+      "table_inventory_count": 93,
+      "other_inventory_ledger_and_sequences": "unchanged per Root readonly review"
+    },
+    "fresh_PRE_R03": "Separately authorized fresh capture3a2a28250b5edd71b4f66d7b3b991a744a8baa6e6e215e88ffe3ecf71f8ba678 passed; isolated restore41b81dab74c6b82499b0151c8eab2a49478809943fd232172325182f42801b6a and independent cleanup passed. Fresh preflight authorized before the unique R10migration. Distinct from original PRE; no replay."
+  },
+  "failures_preserved": [
+    "Initial development knowledge implementation_hash_mismatch; later closed compiler mismatch for checkout audioWIP vs immutable R09admission corrected only in release registry.",
+    "Closed input preparation initially rejected a source outside baseline/freeze; corrected through reviewed input closure.",
+    "Server compile footprint initially compared TypeScript BOM-normalized text with original bytes; corrected raw-byte check, no production change/output.",
+    "Client initial invocation rejected delta pin before copy/build; original broad isolated typecheck later failed on inherited old tests, before Vite. Final production capsule plus current workspace tests/typecheck are recorded separately.",
+    "SQL fixture R01 assertion included its own view; R02 corrected only fixture query and passed all4checks; both cleanups verified.",
+    "First local ciphertext transfer failed because destination parent was absent; backup not restarted and no ciphertext created.",
+    "First restore rejected inherited POST-only phase guard before RSA read or resource creation; corrected PRE purpose and verified restore/independent cleanup.",
+    "First R10 adoption check rejected changed PRE DB CAS before intent/stop/DDL; not an adoption.",
+    "R10 migration committed once with all non-retired invariants; API/Worker startup then rejected knowledge_release_invalid runtime capability metadata before stable30. Fail-closed stop and forward recovery; no DOWN or DDL replay.",
+    "Own concurrent draft update exceeded metadata evidence_paths max32 with33references. Corrected to32while retaining the oldest evidence as an explicit historical body link; three native metadata checks pass, previous failure reproduced only in memory. No schema/registry/approved-content changes.",
+    "First full-runtime verification harness composed read/write modules without the production composer and failed registry before Loader; corrected harness uses the real compiled production composition and passes153contracts plus Loader. Not a provider or DB run."
+  ],
+  "limitations": [
+    "No real OCR, provider inference or commercial create/update was performed for these UI proofs.",
+    "Synthetic CUA is not authentication/authorization, persistence or live OCR proof.",
+    "PostgreSQL fixture does not exercise HTTP guards or operational data.",
+    "Invoice and product saves remain separate requests; no global atomicity or whole-import idempotency is asserted.",
+    "No new documentary approval, knowledge fragment/tool publication or V1 certification.",
+    "Authenticated live UI checks were read/form-only: draft377was cancelled and the saved350price remained unchanged. No business Save, real OCR/persistence flow, provider inference, new approval or fake authentication was performed."
+  ],
+  "artifacts": [
+    {
+      "path": "docs/evidence/business-product-pricing-documentation-20261106-r01.json",
+      "bytes": 12561,
+      "sha256": "e085051dea33be9940d6cb8e3567e883db4a105cf7a4628b1fb8695fa0a788ab"
+    },
+    {
+      "path": "output/business-product-pricing-20261106-server-freeze-r03.json",
+      "bytes": 13616,
+      "sha256": "a99bfbcf3d8ba7a6bfd213fc71ab2a436e5d7d9b61f941229c8e96600699de17"
+    },
+    {
+      "path": "output/business-product-pricing-20261106-client-freeze-r03.json",
+      "bytes": 16009,
+      "sha256": "d764400c46588c4aa6d2a5a0d193d8bbd1090fc95e017fca04c51bad3214bf3f"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/root-operator-review.json",
+      "bytes": 1701,
+      "sha256": "7ea87d1787ee763b18ffce95e254055395c9d74cb216db57345f5d061b02ee61"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/release-manifest.json",
+      "bytes": 601723,
+      "sha256": "4aa51de4feeeea73cf2afd4b22b02e3603f9ccb9ea54bb17990f1fea97fea92b"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/client-r28-r01/release-manifest.json",
+      "bytes": 31050,
+      "sha256": "774c639682e1968e69bb80ac0f57a75d5146accedfb330a76188f359b1ebac6f"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/compile-receipt.json",
+      "bytes": 32895,
+      "sha256": "efdf063c214331d3ee9cf7642d7e3153ab8ef2f625d76aac2e80939ef05ac08e"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/client-r28-r01/build-receipt.json",
+      "bytes": 31468,
+      "sha256": "82f35e31b53f25eb4e609952730bfbc7b39a7c80e503efbcfb684a820f165308"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/client-r28-r01/Root-validation.json",
+      "bytes": 510,
+      "sha256": "a363b8c18ea860379ccb0d5f0a619d1371f931770b1881846c1a4154a0a0bcc4"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/fixture-r01/execution.json",
+      "bytes": 1473,
+      "sha256": "e7a54cd37b3d52af4eb5a97b5e88044ebcf49a667c8ebf773014c26ec1167566"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/fixture-r02/execution.json",
+      "bytes": 1467,
+      "sha256": "2e66c907e54b41b52d0ced26734c0ab3ee94d4749d87142e7534498320ae434a"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/compile-attempt-r01/failure.json",
+      "bytes": 212,
+      "sha256": "8afcfef8c8ec15a33be9f01d6fbb524cd38aafe0a195a1321473dbb058bdc433"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/client-r28-r01/build-invocation-rejected-r01.json",
+      "bytes": 210,
+      "sha256": "fabb76d491129cc765eca70cd66e7d7c459e92f7d9d879ce4febb069626637e1"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/client-r28-r01/build-failure-r01.json",
+      "bytes": 750,
+      "sha256": "c1c3e7d25bd92882d133f306be9a496fbad37d048b03f07be7dcf0a4d9dbdb40"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/knowledge-r02/input-preparation-failed-r01.json",
+      "bytes": 88368,
+      "sha256": "4f87b883aec0a3a56f96d8359faee3895f1d6f63275a97dcde488a4d339f7fd0"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/knowledge-r02/knowledge-build-failed-r01.json",
+      "bytes": 611,
+      "sha256": "a05b70456d46d54e86cb4424a27c5df044120fb860c04db2ae7d0760ff2a8e41"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/knowledge-r03/handoff.json",
+      "bytes": 15854,
+      "sha256": "1e981f19298d9bce8326b646df9f81ea7c45e4a134b30ace7192aad683898643"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/pre-restore-gate.json",
+      "bytes": 1056,
+      "sha256": "23882ada9902deb09de0c1fd3a1d435eefe75e7941ae85be2b7234cbf512709a"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/db-pre-r02/local-transfer-attempt-r01/failure.json",
+      "bytes": 217,
+      "sha256": "4d291f777bd5f2c843505dfb48d48f178119a7b9bacbfdd97afa7143d148bc66"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/db-pre-r02/local-restore-attempt-r01/failure.json",
+      "bytes": 197,
+      "sha256": "ed2c9e824e54a7ca0dd71a064e18154fe2acb2e51e384c58d3d770e5d2fee8c8"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/db-pre-r02/local-restore-independent-cleanup.json",
+      "bytes": 767,
+      "sha256": "f486db90bfe178ecc5f5b0ae76d0729059c7a37583383e9a58505463786802fb"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/PRE-CAS-diagnostic.json",
+      "bytes": 1154,
+      "sha256": "7174e8a584eb7d04639b65f1f523370439c8559564aafd306fc1af8a2045e889"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/browser/synthetic-invoice-verification.json",
+      "bytes": 1269,
+      "sha256": "a8bb3d75346b61edf2a6a4083ab5e1e4e4bd1cdf47121934e3afabd75631a72b"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/browser/invoice-match-desktop.png",
+      "bytes": 75172,
+      "sha256": "c57264b6255a425fcd66c7f5b98e39538fa4fed4973d40ff3874d2b493cd04d2"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/browser/invoice-match-mobile.png",
+      "bytes": 41438,
+      "sha256": "f67be6819d16174abeb4c10a9f43d0bcaba9a95300d924601126231cbcee4dc1"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/browser/synthetic-selected-fields-result.png",
+      "bytes": 40211,
+      "sha256": "efaa64534df41545c37b87df6f901166583eb3ceb07c74d27a3d822e45337b90"
+    },
+    {
+      "path": "output/business-product-pricing-20261106-visual/manifest.json",
+      "bytes": 2329,
+      "sha256": "9c1c96c9bbc20512f976c96c211e7a70f3a164f1aa1a0346b01bb32e2e508fc5"
+    },
+    {
+      "path": "output/business-product-pricing-20261106-visual/ready.json",
+      "bytes": 762,
+      "sha256": "14da3e74e8a90181fb1f820403494721391de29eeb765e7b5ace8182bd8d0666"
+    },
+    {
+      "path": "output/business-product-pricing-20261106-visual/cleanup.json",
+      "bytes": 422,
+      "sha256": "b67fb7fb5280d16b153f9799c50d713486d25f6993106089131dbc8b23f77e76"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/adoption-executed.json",
+      "sha256": "f0b83a25b0e33603b435603d08024341fbad913a9e3ade00c7b1cc747f2c6dc3",
+      "bytes": 325
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/startup-diagnostic-readonly-r03.json",
+      "sha256": "2a3418e13ee35daf76afc816028ad1589aadaa62cb0c2b3ff848611f0a3d8dd9",
+      "bytes": 2486
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/migration-receipt.json",
+      "bytes": 692345,
+      "sha256": "258ddcc6fcf0b8da426c0926eaa98b56e1699a5349924a7b1a1e33b33896332e"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/precommit-baseline.json",
+      "bytes": 11527,
+      "sha256": "71dc0709bd6fcdd91abffce1e1de6e468681ed7f65c99ab3e511162c56f218bf"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/backups/pre-Server-R10-r03-database-restore-verified.json",
+      "bytes": 9634,
+      "sha256": "41b81dab74c6b82499b0151c8eab2a49478809943fd232172325182f42801b6a"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/db-pre-r03/canonical-backup.json",
+      "bytes": 633,
+      "sha256": "3a2a28250b5edd71b4f66d7b3b991a744a8baa6e6e215e88ffe3ecf71f8ba678"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r10-r01/db-pre-r03/local-restore-independent-cleanup.json",
+      "bytes": 771,
+      "sha256": "3be2946f7b354bcccd49ab454b7986dbe4f88c3df14d3ff5bee8d41eb1166322"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/docs-metadata-correction.json",
+      "sha256": "e632c4e44d6d8a4e41e80e8d68483efe292c5a602462a36aafb47aec863c6f6a",
+      "bytes": 1050
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/knowledge-forward-r04/full-runtime-knowledge-parity.json",
+      "bytes": 59147,
+      "sha256": "4cf84de038549643965ad2b0dd25e2201eab1599edd88c04b70f660fc3ac5ffd"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/knowledge-forward-r04/validation-r04.json",
+      "bytes": 1337,
+      "sha256": "889820e8e00774e5306b73121fe0e96a0e03774ea83f78fddbcc9ed466256501"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/knowledge-forward-r04/knowledge-build-receipt.json",
+      "bytes": 11696,
+      "sha256": "3c3e7dc777f56664b21b028f223bde985a17e0bdd1c549e14357e5a62ab836f0"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r11-r01/release-manifest.json",
+      "bytes": 601740,
+      "sha256": "b3ff880a8ad432a8c3b3e586f78e99803ca3c20ecb3121b6dd015a93f0ffb7c5"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r11-r01/recovery-executed.json",
+      "bytes": 1982,
+      "sha256": "83c12cd1b27daef8f99457381b6053279987bcad0b6a6052bc63f504edc0321f"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r11-r01/final-health.json",
+      "bytes": 1953,
+      "sha256": "5458a9778db421af24083339731423f695a63dfd41c6fb29668e4daff80b693d"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r11-r01/full-contracts-gate.json",
+      "bytes": 59147,
+      "sha256": "4cf84de038549643965ad2b0dd25e2201eab1599edd88c04b70f660fc3ac5ffd"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r11-r01/delivery.json",
+      "bytes": 5986,
+      "sha256": "abb22b1c1d1baa2af659be4ff45b9db5902f803e6ae64bda860495ecb6d558f2"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r11-r01/recovery-state.json",
+      "bytes": 2785,
+      "sha256": "de4a883397afd3e42af9c2eca0183683e4017085e35c817c03e3acc998943a0f"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/server-r11-r01/recovery-precommit-baseline.json",
+      "bytes": 11596,
+      "sha256": "3ce1a0376d539bba3b25e9fd9256147437b2accb2a0efdb7bba89a13b2c70f2f"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/client-r28-r01/delivery.json",
+      "bytes": 13957,
+      "sha256": "1aa6f3fb75c79bb051b15a4636b388f5fd61e9718662ea92324fcf2a7f6d0313"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/client-r28-r01/catalog.json",
+      "bytes": 10942,
+      "sha256": "41c16cd4c11de1cfe3eb3880e32827666b95309b7915e417122f3964368cb715"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/client-r28-r01/final-health.json",
+      "bytes": 1711,
+      "sha256": "f70bcf81bd85683d2a4b0a924bbbb3b356086faa6a493aebe38da28828d5981f"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/root-final-verification.json",
+      "bytes": 1069,
+      "sha256": "120d96d722d23e3a28be8cf2101365dad52fdc371af4a39b7af9ec0a509cd548"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/browser/vm-ui-verification.json",
+      "bytes": 1721,
+      "sha256": "44d600cc8571a215e89078455457adb4ffcb8d4cf8901a22140bef93207f5470"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/browser/vm-products-desktop.png",
+      "bytes": 66005,
+      "sha256": "a537e2df2d2aea721b0dfc1361d5da7c240dbfa8d3ef55cf972fb0bb8bcb6aef"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/browser/vm-products-mobile.png",
+      "bytes": 28136,
+      "sha256": "dca6e88fbf3e62aa2e91c9fa2609eb2467fef0b8572be8e6fad0fa77fe4d9f67"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/browser/vm-price-calculator-desktop.png",
+      "bytes": 53151,
+      "sha256": "32240d73a45a64f4722bf6e1780a31e8933ed8ae6161866f5b0987ff14a6bdad"
+    },
+    {
+      "path": "ops/lab/artifacts/business-product-pricing-20261106-r01/browser/vm-price-calculator-mobile.png",
+      "bytes": 25475,
+      "sha256": "9b39b3838df8bc46c851d480fb9e8c27953856d946dc27929d1900ab0f85e3a4"
+    }
+  ],
+  "artifact_catalog": "ops/lab/artifacts/business-product-pricing-20261106-r01/catalog.json",
+  "operational_migration": {
+    "migration_receipt_sha256": "258ddcc6fcf0b8da426c0926eaa98b56e1699a5349924a7b1a1e33b33896332e",
+    "migration": {
+      "committed": true,
+      "applied": [
+        "RemoveProductProfitPercentage1793620000000"
+      ],
+      "guarantees": {
+        "all_other_columns_constraints_indexes_triggers_preserved": true,
+        "all_other_rows_preserved": true,
+        "columns_removed": [
+          "product_logs.profit_percentage",
+          "products.profit_percentage"
+        ],
+        "migrations_after": 45,
+        "migrations_before": 44,
+        "monetary_values_ids_versions_and_existing_snapshots_preserved": true,
+        "non_migration_sequences_preserved": true,
+        "original_percentage_reconstruction_claimed": false,
+        "tables": 94
+      }
+    },
+    "precommit_baseline_sha256": "71dc0709bd6fcdd91abffce1e1de6e468681ed7f65c99ab3e511162c56f218bf",
+    "DDL": 2,
+    "database_mutations": 1,
+    "automatic_replay": false,
+    "down_performed": false,
+    "raw_receipt_available": true
+  },
+  "runtime_startup": {
+    "status": "R10_failed_then_recovered_by_R11",
+    "error_identifier": "nodia_ai:knowledge_release_invalid",
+    "frame": "load-nodia-ai-knowledge.use-case.js:101",
+    "API_Worker": "R10fail-closed stop preserved; R11recovery now stable30 with fresh processes and HTTP health verified.",
+    "forward_recovery": "Completed by separate forward ServerR11adoption with0DDL/0DBwrites; R10migration not repeated.",
+    "confirmed_offline_cause": "26 finance-business write contracts carry stale static input/output schema hashes after four native_preparer.contractHash comments changed. Runtime revisions, kind and15read contracts match; this is not a revision mismatch."
+  },
+  "forward_recovery_candidate": {
+    "status": "Server_R11_adopted_stable30",
+    "closed_knowledge_release_id": "430bf6e74eb70c2e4d1c292a6a2ce84909f3f2619549d849fad81df489d1e346",
+    "closed_registry_sha256": "b9bdd8b2324fd4c76c45a77f70a6590001ce3c36aecbaa9feab74f66463b8882",
+    "checkout_registry_sha256": "9692333465f54c8afbcdb94cdbaabf766bcc2b2514a8d77ba96690baf70550f9",
+    "knowledge_manifest_sha256": "6f12209cd6c0ef47dba4e399a8248f2466e913065bc074a02eb5e4bc864175a1",
+    "counts": {
+      "sources": 81,
+      "excluded": 37,
+      "documents": 44,
+      "fragments": 46,
+      "capabilities": 153
+    },
+    "full_runtime_parity": {
+      "capabilities": 153,
+      "families": 12,
+      "differences": [],
+      "actual_compiled_runtime": true,
+      "LoadNodiaAiKnowledge_constructor": "PASS",
+      "DB_calls": 0,
+      "application_port_calls": 0,
+      "provider_requests": 0
+    },
+    "atomic_regression": {
+      "passed": 1,
+      "filtered_existing_tests": 100,
+      "duration_seconds": 7.25,
+      "oxlint_exit": 0
+    },
+    "global_checkout_check": {
+      "exit_code": 0,
+      "sources": 81,
+      "excluded": 37,
+      "documents": 44,
+      "fragments": 46,
+      "release_id": "b8ad5d882434261f9308077f44a485a05c471d7621d5b11e9b8cd93ea7226ea2",
+      "registry_sha256": "9692333465f54c8afbcdb94cdbaabf766bcc2b2514a8d77ba96690baf70550f9",
+      "distinct_from_closed_release": true
+    },
+    "DDL": 0,
+    "R10_history_and_migration_replayed": false,
+    "approval_or_new_fragment_publication": false
+  },
+  "authenticated_VM_UI": {
+    "schema": "business-product-pricing-real-VM-UI/1",
+    "authenticatedNormalSession": true,
+    "desktop": [
+      1088,
+      892
+    ],
+    "priceNormalOfferAndRegular": {
+      "fontSize": "16px",
+      "fontWeight": "700",
+      "offerRed": true
+    },
+    "marginColumnAbsent": true,
+    "marginProductFieldAbsent": true,
+    "initialMarkup": 30,
+    "changedMarkup": 40,
+    "suggested": 377,
+    "saleUnchangedUntilExplicitApply": 350,
+    "manualSale990PreservedCosts": [
+      226,
+      269
+    ],
+    "afterApply": [
+      {
+        "name": "product-cost-price",
+        "value": "226"
+      },
+      {
+        "name": "_r_3s_",
+        "value": "19"
+      },
+      {
+        "name": "product-cost-price-tax",
+        "value": "269"
+      },
+      {
+        "name": "product-sale-price",
+        "value": "377"
+      },
+      {
+        "name": "product-offer-price",
+        "value": "0"
+      }
+    ],
+    "reopenedAfterCancel": [
+      {
+        "id": "product-cost-price",
+        "value": "226"
+      },
+      {
+        "id": "product-cost-price-tax",
+        "value": "269"
+      },
+      {
+        "id": "product-sale-price",
+        "value": "350"
+      }
+    ],
+    "mobileDialog": {
+      "width": 288,
+      "client": 288,
+      "scroll": 288,
+      "documentClient": 320,
+      "documentScroll": 320,
+      "actions": [
+        256,
+        44
+      ]
+    },
+    "mobileCatalog": {
+      "client": 310,
+      "scroll": 310
+    },
+    "savedProductPriceAfterCancel": 350,
+    "businessSaveClicked": false,
+    "realInvoiceOCRRun": false,
+    "limitations": "Live read/form-only QA; manual invoice binding covered by atomic tests and synthetic component fixture, not a live OCR/persistence run.",
+    "browserHarnessRecovery": "Responsive viewport removed desktop menu toggle before click; refreshed DOM and continued without changing navigation.",
+    "draft_377_was_not_saved": true,
+    "synthetic_auth_used": false,
+    "CUA_cleanup": "Root temporary tab closed; original user tab1 preserved; viewport restored"
+  },
+  "final_traceability": {
+    "Root_verification": "ops/lab/artifacts/business-product-pricing-20261106-r01/root-final-verification.json",
+    "Server_delivery_pins_verified": 13,
+    "Client_delivery_refs_verified": 40,
+    "R11_canonical_precommit_recomputed": true,
+    "R11_raw_precommit_equal_preflight": true,
+    "R11_CLI_argv_saved": true,
+    "POST_backup_created_or_claimed": false
+  },
+  "current_knowledge": {
+    "status": "Server_R11_adopted_stable30",
+    "closed_knowledge_release_id": "430bf6e74eb70c2e4d1c292a6a2ce84909f3f2619549d849fad81df489d1e346",
+    "closed_registry_sha256": "b9bdd8b2324fd4c76c45a77f70a6590001ce3c36aecbaa9feab74f66463b8882",
+    "checkout_registry_sha256": "9692333465f54c8afbcdb94cdbaabf766bcc2b2514a8d77ba96690baf70550f9",
+    "knowledge_manifest_sha256": "6f12209cd6c0ef47dba4e399a8248f2466e913065bc074a02eb5e4bc864175a1",
+    "counts": {
+      "sources": 81,
+      "excluded": 37,
+      "documents": 44,
+      "fragments": 46,
+      "capabilities": 153
+    },
+    "full_runtime_parity": {
+      "capabilities": 153,
+      "families": 12,
+      "differences": [],
+      "actual_compiled_runtime": true,
+      "LoadNodiaAiKnowledge_constructor": "PASS",
+      "DB_calls": 0,
+      "application_port_calls": 0,
+      "provider_requests": 0
+    },
+    "atomic_regression": {
+      "passed": 1,
+      "filtered_existing_tests": 100,
+      "duration_seconds": 7.25,
+      "oxlint_exit": 0
+    },
+    "global_checkout_check": {
+      "exit_code": 0,
+      "sources": 81,
+      "excluded": 37,
+      "documents": 44,
+      "fragments": 46,
+      "release_id": "b8ad5d882434261f9308077f44a485a05c471d7621d5b11e9b8cd93ea7226ea2",
+      "registry_sha256": "9692333465f54c8afbcdb94cdbaabf766bcc2b2514a8d77ba96690baf70550f9",
+      "distinct_from_closed_release": true
+    },
+    "DDL": 0,
+    "R10_history_and_migration_replayed": false,
+    "approval_or_new_fragment_publication": false
+  }
+}

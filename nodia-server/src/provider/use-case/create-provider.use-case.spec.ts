@@ -39,10 +39,14 @@ describe('CreateProviderUseCase', () => {
 
     expect(dto.name).toBe('proveedor los andes s.a.');
     expect(providerServiceMock.create).toHaveBeenCalledTimes(1);
-    expect(providerServiceMock.create).toHaveBeenCalledWith({
-      business_id: 'b7b80a11-827c-4712-9c17-9150d0325d7b',
-      name: 'proveedor los andes s.a.',
-    });
+    expect(providerServiceMock.create).toHaveBeenCalledWith(
+      {
+        business_id: 'b7b80a11-827c-4712-9c17-9150d0325d7b',
+        name: 'proveedor los andes s.a.',
+      },
+      undefined,
+      undefined,
+    );
     expect(result).toEqual(created);
   });
 });

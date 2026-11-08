@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "status": "candidate_validated_offline_not_deployed",
+  "scope": "Owned subprocess creation and shutdown under repeated task cancellation; shared CLI run/remote_login/close only.",
+  "sources": [
+    {
+      "path": "nodia-gemini-microservice/agentic_cli.py",
+      "sha256": "82eedadb16ec4d43af568e5ab2ba0fe0c24357532150cbf23f8239b9d36a37bd",
+      "bytes": 20696
+    },
+    {
+      "path": "nodia-gemini-microservice/nodia_ai_chat.py",
+      "sha256": "cd0a2f1f290304638622c464af3d64c9ba869b093575d5e0a1fcf88d69be8cfc",
+      "bytes": 39544
+    },
+    {
+      "path": "nodia-gemini-microservice/native_chat_owner_bindings.py",
+      "sha256": "3891b8370ce610b833f2c8de305052035033342199bdf702df9696602b56be67",
+      "bytes": 7252
+    },
+    {
+      "path": "nodia-gemini-microservice/login_cgroups.py",
+      "sha256": "ca25d346190bcc3cd28abadb65be1dbce8d81f695c1572915bf73887e6d87442",
+      "bytes": 9953
+    },
+    {
+      "path": "nodia-gemini-microservice/profile_admission.py",
+      "sha256": "a68d9127f396fa90ae291d46d8a1061418e2054266b0d7517ae520dc48d9d34b",
+      "bytes": 13844
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/test_agentic_cleanup.py",
+      "sha256": "e5a8deb05ea87cd3d0b1ae1a2d7534bc17030a31a31d319572521ebb301de6ce",
+      "bytes": 8337
+    }
+  ],
+  "lifecycle_delta": {
+    "baseline_sha256": "0397bfc364326036d77bf8c65e4c8162312d27ac23fd025c2b10e6d6199625ff",
+    "patch_sha256": "72fff7eca748d14e875aec083d8d7a61db8cfed247dd572053abc4a07c73d55a",
+    "patch_bytes": 13250,
+    "encoding": "UTF-8/LF explicit read and byte write",
+    "r01_patch_rejected": "Default Windows decoding introduced mojibake into the patch only; source was correct and remains unchanged. R01 is preserved, never used for porting.",
+    "preexisting_cli_1_4_2_configuration_preserved": true,
+    "deployed_cli_1_3_1_port_requires_lifecycle_delta_only": true
+  },
+  "red_before_edit": {
+    "schema_version": 1,
+    "status": "reproduced_offline",
+    "source": ".tmp/ai40-continuity-r01/observed-runtime/agentic_cli.py",
+    "source_sha256": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08",
+    "source_changed": false,
+    "actual_OS_processes_spawned": 0,
+    "actual_OS_kill_calls": 0,
+    "SDK_requests": 0,
+    "VM_access": false,
+    "control": {
+      "second_cancel": false,
+      "run_task_cancelled": true,
+      "synthetic_process_exited": true,
+      "runner_retained_process_entries": 0,
+      "native_operation_closed_predicate": true,
+      "wait_calls": 2,
+      "kill_requested_to_fake_only": true
+    },
+    "second_cancellation": {
+      "second_cancel": true,
+      "run_task_cancelled": true,
+      "synthetic_process_exited": true,
+      "runner_retained_process_entries": 1,
+      "native_operation_closed_predicate": false,
+      "wait_calls": 2,
+      "kill_requested_to_fake_only": true
+    },
+    "interpretation": "A second cancellation while the real run finally awaits cleanup can skip discard and leave a defunct Process in the global set. This demonstrates a possible source failure, not that it occurred in the historical Gemini attempt."
+  },
+  "candidate_guarantees": [
+    "Repeated waiter cancellation preserves CancelledError after bounded owned cleanup.",
+    "Spawn is shielded and registered until Process identity is recovered; late handles are shut down without inference.",
+    "Pending spawn prevents native_operation_closed from returning true.",
+    "Terminate plus IO drain must both verify closure before Process ownership is removed.",
+    "Timeout, terminate error, missing returncode or pending drain retain handles and close runner to new work.",
+    "Concurrent close and run finally reuse one shutdown; verified untracked Process is never killed again."
+  ],
+  "operational_budgets_seconds": {
+    "spawn": 3,
+    "terminate": 3,
+    "io_drain": 1
+  },
+  "new_typed_boundaries": [
+    "_spawn_owned(list[str], dict[str, object], float) -> tuple[asyncio.subprocess.Process, bool]",
+    "_wait_owned(asyncio.Task[object], float) -> tuple[bool, bool]",
+    "_start_shutdown(Process, Sequence[Task[object]]) -> Task[bool]",
+    "_shutdown_owned(Process) -> bool",
+    "_finish_process(Process, Sequence[Task[object]]) -> None",
+    "_spawns: dict[Task[Process], bool]; _shutdowns: dict[Process, Task[bool]]; _io_tasks: dict[Process, tuple[Task[object], ...]]"
+  ],
+  "qa": {
+    "new_atomic": {
+      "command": ".venv/Scripts/python.exe -m unittest discover -s tests -p test_agentic_cleanup.py -v",
+      "exit_code": 0,
+      "selected": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    "focused": {
+      "loader": "test_support installed before unittest loader",
+      "modules": [
+        "test_agentic_cleanup",
+        "test_agentic_cli",
+        "test_agentic_cli_versions",
+        "test_agentic_login",
+        "test_agentic_progress",
+        "test_native_attempts",
+        "test_native_chat_owner_bindings"
+      ],
+      "exit_code": 0,
+      "selected": 91,
+      "passed": 90,
+      "failed": 0,
+      "skipped": 1
+    },
+    "full": {
+      "command": ".venv/Scripts/python.exe run_tests.py",
+      "exit_code": 0,
+      "selected": 553,
+      "passed": 550,
+      "failed": 0,
+      "skipped": 3,
+      "seconds": 16.492,
+      "captured_log_sha256": "1bb0a3ee204e5c8dec3f0a66559b1a91451247da30590d17965ec37a0c80085d",
+      "skip_scope": "Windows filesystem/symlink and real Linux FIFO checks; no passing Linux integration claimed."
+    },
+    "ast": "passed_all_six_sources",
+    "utf8_lf": "passed_all_six_sources",
+    "diff_check_exit_code": 0,
+    "independent_peer": "ai40_draft_acceptance_review reviewed frozen CLI82eed/Chatcd0a/teste5a8; no blocking finding."
+  },
+  "effects": {
+    "actual_cli_processes": 0,
+    "actual_OS_kill_calls": 0,
+    "SDK_requests": 0,
+    "VM_access": false,
+    "deployment": false,
+    "operational_native_ledger_writes": 0
+  },
+  "limits": [
+    "Source failure reproduced independently; no claim of exclusive causality for historical Gemini attempt c6cc8739-7de7-4c13-a5c9-6b230fb3b1de.",
+    "The original owner process, ledger, markers and session are untouched.",
+    "Candidate requires separate Linux kernel and deployed-account acceptance; unit tests do not qualify a provider."
+  ]
+}

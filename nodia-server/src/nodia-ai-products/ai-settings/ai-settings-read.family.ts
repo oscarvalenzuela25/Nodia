@@ -30,7 +30,7 @@ export function createNodiaAiAiSettingsReadFamily(
 ): NodiaAiToolFamily {
   const sourceHash = createHash('sha256').update(sourceJson).digest('hex');
   const reads = new ReadNodiaAiAiSettingsUseCase();
-  const route = '/settings/ai-providers';
+  const route = '/ai-providers';
   return {
     familyKey: 'ai_settings',
     modules: [
@@ -54,6 +54,7 @@ export function createNodiaAiAiSettingsReadFamily(
         descriptionKey: name,
         description: `Read bounded ${operation} metadata. Configuration does not prove a live session, model availability or inference.`,
         requiredModuleRoutes: [route],
+        // Legacy publication metadata; authorization uses assigned modules.
         actionKeys: ['ai:manage'],
         effectKey: 'read:ai_settings',
         inputSchema: {

@@ -23,7 +23,7 @@ describe('CreateModuleUseCase', () => {
     const dto: CreateModuleDto = {
       key: 'users',
       module_group_id: '1',
-      link: '/general-settings/users',
+      link: '/users',
       icon: 'PersonOutlined',
       is_active: true,
       translates: [{ key: 'key', es: 'Usuarios', en: 'Users' }],
@@ -33,7 +33,7 @@ describe('CreateModuleUseCase', () => {
       id: '2',
       key: 'users',
       module_group_id: '1',
-      link: '/general-settings/users',
+      link: '/users',
       icon: 'PersonOutlined',
       is_active: true,
       created_at: new Date(),

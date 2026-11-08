@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "recorded_on": "2026-11-01",
+  "status": "local_module_assigned_exact_api_selection_qualified_worker_started",
+  "environment": "local localhost:5432/nodia_db only",
+  "actor": {
+    "user_id": "1",
+    "name": "Oscar",
+    "existing_active_session_validated": true,
+    "auth_sessions_created": 0
+  },
+  "authority_path": "explicit operator setup; existing Core authority transaction and TeacherNavigationService; targeted individual assignment without replacing existing relations",
+  "registration": {
+    "group_id": "9",
+    "module_id": "22",
+    "module_key": "nodia_teacher",
+    "created": true
+  },
+  "assignment": {
+    "id": "62",
+    "user_id": "1",
+    "module_id": "22",
+    "is_active": true
+  },
+  "unchanged_assignments": 18,
+  "unchanged_assignments_sha256": "8fd0b055041b594c0797477b586cfe6a804ef48780137f1268b9815e9ff46f47",
+  "roles_unchanged": true,
+  "vm_deployed": false,
+  "remote_service_commands": 0,
+  "document_approval": false,
+  "teacher_knowledge_publication": false,
+  "dedicated_draft": {
+    "session_id": "fab5aa66-c589-4210-8215-37a03d20bc0f",
+    "revision": 2,
+    "creation_path": "operator invoking existing validated Teacher DTOs and use cases under existing Oscar session; no JWT or auth session created",
+    "selection": {
+      "connection_id": "4",
+      "mode": "api_key",
+      "model_id": "gpt-6.1-sol",
+      "effort_id": "medium"
+    },
+    "eligibility_before": {
+      "eligible": false,
+      "reason_code": "adapter_unqualified",
+      "checked_at": null,
+      "selection": {
+        "connection_id": "4",
+        "mode": "api_key",
+        "model_id": "gpt-6.1-sol",
+        "effort_id": "medium"
+      }
+    },
+    "archived": {
+      "revision": 3,
+      "preserved_history": true,
+      "new_generations": 0
+    }
+  },
+  "qualification_exit_code": 0,
+  "qualification": {
+    "contract": "teacher-text/1",
+    "job_id": "9815c6a5-4fb7-4847-b62b-d2da55555721",
+    "operation_id": "9c6a3e9d-5432-45ba-b147-d2d1830f2859",
+    "configuration_generation": "b2c337cbbb2724bdea13b7236468e3c60fda79b00b379807051f83f8afd968ce",
+    "selection": {
+      "mode": "api_key",
+      "model_id": "gpt-6.1-sol",
+      "effort_id": "medium",
+      "connection_id": "4"
+    },
+    "local_closed": true,
+    "remote_outcome": "completed",
+    "posts": 1,
+    "evidence_hash": "f2c709ecfa5d145d1908dcba3908422c4ce91dc147bbbddc1372ca1e3410404f"
+  },
+  "eligibility_after": {
+    "eligible": true,
+    "reason_code": null,
+    "checked_at": "2026-11-01T19:22:21.429Z",
+    "selection": {
+      "connection_id": "4",
+      "mode": "api_key",
+      "model_id": "gpt-6.1-sol",
+      "effort_id": "medium"
+    }
+  },
+  "proof_readback": {
+    "job_state": "ready",
+    "phase": "closed",
+    "remote_outcome": "completed",
+    "reserved_exchanges": 1,
+    "started_exchanges": 1,
+    "acknowledged": true,
+    "local_transport_closed": "true"
+  },
+  "generation_jobs": [
+    {
+      "state": "ready",
+      "n": 1
+    }
+  ],
+  "qualification_rows": 1,
+  "local_services": {
+    "client": {
+      "url": "http://localhost:5174",
+      "pid": 139844,
+      "source": "working tree Vite; local proxy localhost:3000"
+    },
+    "api": {
+      "url": "http://localhost:3000/api/v1",
+      "pid": 184488,
+      "source": "current local dist/main.js"
+    },
+    "worker": {
+      "pid": 184760,
+      "source": "current local dist/nodia-ai-worker.js"
+    },
+    "mode": "normal",
+    "old_local_vm_tunnel_closed_by_user_request": true,
+    "remote_vm_services_changed": false
+  },
+  "browser_verification": {
+    "authenticated_ui_smoke": false,
+    "reason": "Computer Use stopped because current Chrome URL could not be determined confidently; no browser automation fallback or forged authentication used.",
+    "public_local_ui_loaded": true,
+    "operator_setup_verified": true
+  },
+  "http_checks": {
+    "client_status": 200,
+    "local_vite_marker": true,
+    "private_teacher_without_auth": 401,
+    "scope": "local non-authenticated HTTP protection and UI entry point only; no authenticated browser flow claimed"
+  },
+  "operational_scope": {
+    "teacher_api_text": "qualified_and_eligible_for_exact_persisted_selection",
+    "agentic": "adapter_unqualified",
+    "api_keys_modified": false,
+    "models_or_efforts_changed": false,
+    "qualification_real_posts": 1,
+    "no_tools_or_callbacks": true,
+    "replays": 0,
+    "worker_started_after_qualification": true,
+    "legacy_queued_jobs_before_worker": 0,
+    "open_or_unknown_slots_before_worker": 0
+  },
+  "limitations": [
+    "Authenticated browser smoke not completed: Computer Use could not determine the Chrome URL confidently and was stopped. Internal setup used existing validated Oscar identity/session, never forged JWTs or inserted auth sessions.",
+    "Local services are running processes, not an installed auto-start service.",
+    "Agentic/native tools lane remains unqualified. No other model, effort, provider or environment inherits this qualification.",
+    "No VM deployment or remote service modification. Only the local SSH forwarding process on5174 was stopped at the user request."
+  ],
+  "cli_preflight_guard": {
+    "quarantine_checked_before_database_init": true,
+    "safe_operation_mode_error": true,
+    "isolated_dry_run_database_calls": 0,
+    "isolated_dry_run_posts": 0,
+    "source": "nodia-server/scripts/qualify-teacher-text.mjs"
+  },
+  "activation_checks": {
+    "cli_quarantine_and_invalid_mode": {
+      "command": "node --test test/teacher-qualification-cli.spec.mjs",
+      "passed": 2,
+      "exit_code": 0,
+      "isolated_database_calls": 0,
+      "isolated_posts": 0,
+      "independently_repeated_by_integrator": true
+    },
+    "server_lint": {
+      "command": "npm run lint",
+      "exit_code": 0,
+      "errors": 0,
+      "historical_warning": "test/nodia-ai-live-unknown.fixture.mjs:269 eslint(no-unsafe-finally)"
+    },
+    "changes_requiring_rebuild": false,
+    "reason": "Only operator CLI JavaScript guard, its isolated regression, documentation and authorized local data/configuration changed; application TypeScript and built runtime are unchanged from the verified prior delivery.",
+    "own_text_encoding": {
+      "invalid_utf8": 0,
+      "cr_bytes": 0,
+      "bom": 0,
+      "files": [
+        "nodia-server/scripts/qualify-teacher-text.mjs",
+        "nodia-server/test/teacher-qualification-cli.spec.mjs"
+      ]
+    }
+  },
+  "public_selection_projection": {
+    "configured_model_in_options": true,
+    "configured_effort_in_options": true,
+    "scope": "actual public connection projection from configured local DB; no browser completion claimed"
+  },
+  "documentation_validation": {
+    "passed": true,
+    "markdown_utf8_lf_files": 21,
+    "local_links": 253,
+    "anchors": 52,
+    "frontmatter_paths": 47,
+    "strict_json_files": 10,
+    "evidence_local_references": 97,
+    "issues": 0,
+    "approved_knowledge_files_unchanged": 44,
+    "approved_baseline_aggregate_sha256": "ed28119a33cf89230c5ecbaef1c371fe21b2f6e709b8c71fdf47ce755dbb3373",
+    "knowledge_check_passed": true,
+    "knowledge_release": "00d917fb54996564961e521393f30c858f532f562e3c48f855575c908761fdbb",
+    "teacher_drafts_published": 0,
+    "status": "activation reflected in current notes and draft sheets; original implementation/canary reports remain historical"
+  },
+  "operator_source_sha256": {
+    "nodia-server/scripts/qualify-teacher-text.mjs": "be11bbf28013ec9a5fbc265b712e8ad7d8e52a8add18958cd2d1f7a6351a0d73",
+    "nodia-server/test/teacher-qualification-cli.spec.mjs": "541aac1658f0b9396a235f158baf833721adecba44edb17785767da479fae384"
+  }
+}

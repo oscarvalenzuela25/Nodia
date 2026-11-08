@@ -1,0 +1,184 @@
+{
+  "task": "AI-40",
+  "date": "2026-10-23",
+  "status": "implementation_verified_scoped_acceptance_pending",
+  "scope": "unsent_text_continuity_and_codex_image_inputs",
+  "real_account_acceptance": false,
+  "runtime_adoption": false,
+  "capability_publication": false,
+  "prior_evidence_paths_outside_current_metadata_limit": {
+    "docs/nodia-ai/knowledge/nodia-ai/README.md": [
+      "docs/evidence/nodia-ai-ai04-runtime-policy-validation.json"
+    ],
+    "docs/nodia-ai/knowledge/nodia-ai/features/context-execution.md": [
+      "docs/evidence/nodia-ai-ai11-ai12-final-regression.json"
+    ]
+  },
+  "clock_note": "Calendar date from client America/Santiago; no host/VM timestamp ordering or clock changes.",
+  "implemented": [
+    "tab-scoped unsent text with global logout cleanup",
+    "private localImage staging and exact MIME acceptance",
+    "admission/context/inference image gates",
+    "operator image probe and POSIX acceptance harness"
+  ],
+  "checks": {
+    "client": {
+      "affected_units": {
+        "passed": 28,
+        "files": [
+          "src/test/modules/nodiaAi/infrastructure/conversationDrafts.test.ts",
+          "src/test/modules/nodiaAi/infrastructure/useConversationDraft.test.tsx",
+          "src/test/store/authStore.test.ts"
+        ]
+      },
+      "prior_affected_cohort": {
+        "passed": 80,
+        "note": "Before final quota and late-unmount hardening; final 28 unit tests/build rerun afterward. No final global UI suite claimed."
+      },
+      "typecheck": "passed",
+      "lint": "passed, no warnings on changed files",
+      "final_build": "passed",
+      "build_warning": "existing chunks above 500KiB"
+    },
+    "server": {
+      "focused_tests": 222,
+      "test_files": 6,
+      "typecheck": "passed",
+      "lint": "passed with three unchanged warnings",
+      "build": "passed",
+      "knowledge_check": "passed",
+      "knowledge_build": "passed"
+    },
+    "linux_posix": {
+      "returncode": 0,
+      "isolated": true,
+      "provider_dispatches": 0,
+      "sql": false,
+      "checks": {
+        "task": "AI-40",
+        "scope": "isolated_private_acceptance_store",
+        "status": "passed",
+        "checks": [
+          "absent receipt never asserts acceptance",
+          "acceptance round-trips exact bounded receipt",
+          "private file and profile modes",
+          "another process reads the same technical receipt",
+          "receipt contains no account content or request transcript",
+          "world-readable acceptance fails closed",
+          "symlink receipt fails closed without touching target",
+          "foreign connection receipt is rejected",
+          "malformed metadata is never coerced into acceptance",
+          "in-flight old acceptance is discarded after current marker rotation",
+          "login rotation changes logical identity and invalidates old scope",
+          "stale invalidation cannot erase another session acceptance",
+          "matching uncertain operation removes only its acceptance",
+          "acceptance does not create or mutate runtime proof records",
+          "native executable bytes invalidate runtime fingerprint",
+          "atomic writes leave no temporary acceptance files"
+        ],
+        "image_checks": [
+          "MCP receipt does not certify any image MIME",
+          "exact PNG proof round-trips independently of JPEG and MCP",
+          "image proof has private POSIX mode and bounded metadata only",
+          "invalidating PNG preserves an independently accepted JPEG MIME",
+          "symlink image proof fails closed without touching target",
+          "hardlinked image proof fails closed without modifying either alias",
+          "world-readable image proof fails closed and remains recoverable",
+          "attempt-derived image paths contain exact decoded bytes without sharing ownership",
+          "staging root and attempt are private and files have single ownership",
+          "a repeated staging call cannot overwrite an already owned attempt",
+          "cleanup rejects a symlink before deleting any valid sibling",
+          "cleanup rejects a hardlink before deleting a valid sibling or another attempt",
+          "cleanup rejects public image permissions without deleting staged content",
+          "cleanup refuses an attempt path outside the validated UUID identity",
+          "partial staging survives cancellation until explicit native-closure cleanup",
+          "explicit cleanup is idempotent and preserves other owned attempts",
+          "session rotation invalidates every previous MIME proof independently",
+          "session rotation blocks staging under a stale attempt identity",
+          "closed old-session cleanup does not erase another attempt after rotation",
+          "stale PNG invalidation cannot erase a newer session proof",
+          "final image cleanup leaves profiles and acceptance metadata intact",
+          "staging and cleanup reject a symlink root without traversing another profile"
+        ],
+        "real_account": false,
+        "provider_dispatches": 0,
+        "operational_profiles_modified": false
+      },
+      "snapshot_removed": true,
+      "snapshot_archive_sha256": "87891b03beaf00b2d06ceb052b9121b5faf451a682ccf9a8797a3180aef6fdb3",
+      "archive_files": 948,
+      "archive_bytes": 717984
+    },
+    "initial_linux_harness_attempt": {
+      "status": "rejected_by_existing_profile_guard",
+      "reason": "Disposable working directory placed directly under /tmp made the fixture profile a sibling under the workspace parent. Driver changed to a nested workspace/server; production code unchanged between runs.",
+      "provider_dispatches": 0,
+      "sql": false,
+      "snapshot_removed": true
+    },
+    "final_hygiene": {
+      "git_diff_check": "passed",
+      "changed_text_CRLF": 0,
+      "broken_relative_markdown_links": 0,
+      "operator_harness_syntax": "passed"
+    }
+  },
+  "knowledge": {
+    "release": "aa65da06b352743b1f937e8613c3c34bc0caf86db94be4993954a1b7814113d0",
+    "source_paths": 60,
+    "excluded": 29,
+    "documents": 31,
+    "fragments": 31,
+    "capabilities": 74,
+    "new_draft": "nodia-ai.codex-image-inputs",
+    "approved_attachment_feature_unchanged": true,
+    "registry_changes": "Only one draft authoring path added; remaining registry fields equal HEAD. No publication or approval changes.",
+    "historical_R03_fragment_hashes_and_capability_ids_preserved": true,
+    "historical_note": "Exact contract provenance hashes differ after prior LF normalization; see ops/maintenance. No claim of identical R03 bytes or transferred operational acceptance."
+  },
+  "pending": [
+    "real browser reload/remount acceptance of unsent drafts",
+    "native account image proof per PNG/JPEG/WebP; public original formats remain blocked without proof",
+    "Codex PDF/audio transport and acceptance remain blocked",
+    "C40-06 remaining published-family acceptance",
+    "C40-09 real recovery/revocation/compaction acceptance",
+    "C40-01/C40-11 compiled Client adoption and R03 rollback successor",
+    "Windows and production acceptance"
+  ],
+  "not_performed": [
+    "provider inference",
+    "operational SQL or schema changes",
+    "account login or credential change",
+    "runtime adoption or restart in VM",
+    "local connection/permission adjustments"
+  ],
+  "code_source_sha256": {
+    "nodia-client/src/config/nodiaAiDraftStorage.ts": "760a27282f28d03f9d64dae7d1782ae40e42114e859754afbaf2d5455e09363a",
+    "nodia-client/src/modules/nodiaAi/infrastructure/conversationDrafts.ts": "cc811164a962772e07e584624b9980af52f6a124f1433b47626dafcda02068f1",
+    "nodia-client/src/modules/nodiaAi/infrastructure/schemas.ts": "2b31bf52fa2d6097250f6a25fbdd964090b65cd1b117d6c7bf944e94b6b0420e",
+    "nodia-client/src/modules/nodiaAi/infrastructure/useConversationDraft.ts": "7749b748e98d7d5c4481d161b54c76f78c5b829c3c7d7ec8b23c25e0ff5a723d",
+    "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx": "084cbc416087310ee62b14c26772bf5486e1981229480a472615596c47729a2e",
+    "nodia-client/src/store/authStore.tsx": "0987cec1c9a02d48d2f8d4bc7cd1d1ff8346f3b21360756e34fc2f5c35fd461f",
+    "nodia-client/src/test/modules/nodiaAi/infrastructure/conversationDrafts.test.ts": "2477b4a4185421b29cede4f28f027313f2e57adafa661f9afecfb23d3ce6edfb",
+    "nodia-client/src/test/modules/nodiaAi/infrastructure/useConversationDraft.test.tsx": "3bdbcfdb5a7a479dc870d70711c8b0b98aaa133d86887bf4c81bd247e46af991",
+    "nodia-client/src/test/store/authStore.test.ts": "8445d2939584d45f66b228598dfcb7503701721627f7c72f1b670eaa9d25d0c7",
+    "nodia-server/src/ai-provider/use-case/codex-chat-runtime.use-case.spec.ts": "eebef285357a442b72df791476d4e4d8af9c9a38abd65276c7a44f36a2e5c3ba",
+    "nodia-server/src/common/ai/codex/codex-chat-acceptance.ts": "7e37fc9368d0f15de587602cc9aa44b9dcbea28f9ac623fd74c1eeaaf5bd8bb2",
+    "nodia-server/src/common/ai/codex/codex-chat-contract.ts": "d95e815992e7138ecaaa92d7f809d5901beab575050eac5dbcdfb0a701f55a13",
+    "nodia-server/src/common/ai/codex/codex-chat-image-acceptance.ts": "05b5539079a61d75510f542bd995f7261f423e399dc6ab18a073758b33bce686",
+    "nodia-server/src/common/ai/codex/codex-chat-images-storage.spec.ts": "c2b44b80d9d932d21172b67081935d1eb64adc5b925ccaa45d786793f0a73383",
+    "nodia-server/src/common/ai/codex/codex-chat-images.spec.ts": "017af762bca387e344ff8540b98976e9fb76d833ee16b4854020bcade0751c39",
+    "nodia-server/src/common/ai/codex/codex-chat-images.ts": "09ee622883fa9247dfa1b41f9c438925647c0e5af018ec5c3cd5fee4d41639b0",
+    "nodia-server/src/common/ai/codex/codex-chat-runtime.ts": "c23e319bff20a8ecbb484bd482981f6c16d71091ac7a40a62919d4b4d809591a",
+    "nodia-server/src/nodia-ai-adapter/use-case/codex-nodia-ai-adapter.use-case.spec.ts": "ace16fcdeea33a6d4cf8cd1e25b50579c4b60021d5f4e2ebd957360994ae1980",
+    "nodia-server/src/nodia-ai-adapter/use-case/codex-nodia-ai-adapter.use-case.ts": "c0f302b58df2f175ffd3b6586d3657699ac1163dc0f6b8cf89d4940fae6f05ba",
+    "nodia-server/src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.spec.ts": "0da8f488e26f23e6592d9f419e554bd999c61d1395196a18c9433b12fd19bb85",
+    "nodia-server/src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.ts": "65c391b5d41967da882eaad88092bfc7f47af144987781caf1415eb975ddff42",
+    "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts": "236678ceb52f7abd34139389b69e9a45ce79107e40228b3fe6ea793781fd2943",
+    "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts": "9ee49fe24b624499cddb2626002a5048affd52f9af710cdc0c81c9f523d942af",
+    "nodia-server/test/build-assets.integration.mjs": "e8e4fe3995fd2543f6e10100f0e19fdb3354d7bf8beaa74ebc13fe13c8ff4a96",
+    "nodia-server/test/nodia-ai-ai40-acceptance-store.integration.mjs": "ede246a797660e3229e3498714b3324c342352d5f5aa0af557d84373959cb111",
+    "nodia-server/test/nodia-ai-ai40-real-canary-parent.mjs": "b954adf3d2f63ec8b09103fbd3ac5ec40a304a65ad206c158be0e1e53a3c63a9",
+    "nodia-server/test/nodia-ai-ai40-real-canary.mjs": "04d008e977afecd008165086d86277e5e51fae0dbec85562b038b56e5232d055"
+  }
+}

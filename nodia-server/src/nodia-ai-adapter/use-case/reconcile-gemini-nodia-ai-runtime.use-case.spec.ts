@@ -5,7 +5,7 @@ import type { NodiaAiRuntimeProofRequest } from '../../nodia-ai-runtime/types/re
 import { parseNativeTerminalProof } from '../native-terminal-proof.js';
 
 const request: NodiaAiRuntimeProofRequest = {
-  engine: 'web',
+  engine: 'agentic',
   attemptId: 'eadf13a7-4182-4793-b143-869529a38c49',
   resourceKey: 'gemini-profile:' + 'a'.repeat(64),
   sessionGeneration: 'b'.repeat(32),
@@ -77,7 +77,7 @@ describe('ReconcileGeminiNodiaAiRuntimeUseCase', () => {
     expect(result.terminalProofId).toBe(f.value.terminal_proof_id);
     expect(Object.isFrozen(result)).toBe(true);
     expect(f.transport.request.mock.calls[0]?.[0]).toBe(
-      `/nodia-ai/web/attempts/${request.attemptId}/reconcile`,
+      `/nodia-ai/agentic/attempts/${request.attemptId}/reconcile`,
     );
   });
   it.each([
@@ -116,7 +116,7 @@ describe('ReconcileGeminiNodiaAiRuntimeUseCase', () => {
     f.transport.request.mockResolvedValueOnce({ acknowledged: true });
     await f.usecase.acknowledge(proof, new AbortController().signal);
     expect(f.transport.request.mock.calls[1]?.[0]).toBe(
-      `/nodia-ai/web/attempts/${request.attemptId}/acknowledge`,
+      `/nodia-ai/agentic/attempts/${request.attemptId}/acknowledge`,
     );
   });
   it('retains a pending cleanup when native acknowledgement is malformed', async () => {

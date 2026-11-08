@@ -103,7 +103,7 @@ export class RecoverNodiaAiSecureFlowsUseCase {
             state.descriptor.flow_kind === 'nodia_logout'
               ? {}
               : {
-                  moduleRoutes: ['/settings/ai-providers'],
+                  moduleRoutes: ['/ai-providers'],
                   actionKeys: ['ai:manage'],
                 },
             manager,

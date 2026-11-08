@@ -6,8 +6,8 @@ export class GetSelectableModelsDto {
   provider?: string;
 
   @IsOptional()
-  @IsIn(['api_key', 'web_session', 'token_plan_web', 'token_plan_agentic'])
-  mode?: 'api_key' | 'web_session' | 'token_plan_web' | 'token_plan_agentic';
+  @IsIn(['api_key', 'agentic'])
+  mode?: 'api_key' | 'agentic';
 
   @IsOptional()
   @IsString()

@@ -186,11 +186,11 @@ try {
     )[0];
   }
   let [destination] = await db.query(
-    "SELECT id FROM modules WHERE link='/tools/finances-personal'",
+    "SELECT id FROM modules WHERE link='/finances-personal'",
   );
   if (!destination)
     [destination] = await db.query(
-      "INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/tools/finances-personal','synthetic_ai18_finance' FROM modules WHERE key='nodia_ai' RETURNING id",
+      "INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/finances-personal','synthetic_ai18_finance' FROM modules WHERE key='nodia_ai' RETURNING id",
     );
   await db.query(
     'INSERT INTO user_modules(user_id,module_id) VALUES(1,$1),(2,$1) ON CONFLICT DO NOTHING',
@@ -528,7 +528,7 @@ try {
     executionId,
     eventKey: approvalEvent.event_key,
     payload: { revision: 1, state: 'queued', error: null },
-    moduleRoutes: ['/tools/finances-personal'],
+    moduleRoutes: ['/finances-personal'],
     maxEvents: 8,
   };
   await db.transaction((manager) =>
@@ -547,7 +547,7 @@ try {
     db.transaction((manager) =>
       appendNodiaAiExecutionEvent(manager, {
         ...journalInput,
-        moduleRoutes: ['/tools/finances-personal', '/unexpected'],
+        moduleRoutes: ['/finances-personal', '/unexpected'],
       }),
     ),
     /request_conflict/,
@@ -926,7 +926,7 @@ try {
         state: 'cancelled',
         error: null,
       },
-      moduleRoutes: ['/tools/finances-personal'],
+      moduleRoutes: ['/finances-personal'],
       maxEvents: 8,
     });
   });

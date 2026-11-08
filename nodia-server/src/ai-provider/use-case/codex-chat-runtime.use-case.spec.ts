@@ -1,3 +1,16 @@
+import {
+  cleanupCodexChatImages,
+  stageCodexChatImages,
+} from '../../common/ai/codex/codex-chat-images.js';
+import { createHash } from 'node:crypto';
+import {
+  cleanupCodexChatAudio,
+  stageCodexChatAudio,
+  CODEX_CHAT_AUDIO_MIMES,
+} from '../../common/ai/codex/codex-chat-audio.js';
+import { CodexChatAudioAcceptanceStore } from '../../common/ai/codex/codex-chat-audio-acceptance.js';
+import { CodexChatImageAcceptanceStore } from '../../common/ai/codex/codex-chat-image-acceptance.js';
+import { CODEX_CHAT_IMAGE_MIMES } from '../../common/ai/codex/codex-chat-images.js';
 import { describe, expect, it, vi } from 'vitest';
 import { EventEmitter } from 'node:events';
 import type { DataSource } from 'typeorm';
@@ -19,6 +32,21 @@ import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service
 import type { CodexChatRecord } from '../../common/ai/codex/codex-chat-journal.js';
 import type { CodexChatToolChannel } from '../../common/ai/codex/codex-chat-tool-channel.js';
 import type { CodexProtocolProgress } from '../../common/ai/codex/codex-rpc.js';
+
+vi.mock('../../common/ai/codex/codex-chat-images.js', async (original) => ({
+  ...(await original<
+    typeof import('../../common/ai/codex/codex-chat-images.js')
+  >()),
+  cleanupCodexChatImages: vi.fn(async () => undefined),
+  stageCodexChatImages: vi.fn(async () => ['/synthetic-private/0.png']),
+}));
+vi.mock('../../common/ai/codex/codex-chat-audio.js', async (original) => ({
+  ...(await original<
+    typeof import('../../common/ai/codex/codex-chat-audio.js')
+  >()),
+  cleanupCodexChatAudio: vi.fn(async () => undefined),
+  stageCodexChatAudio: vi.fn(async () => ['/synthetic-private/0.wav']),
+}));
 
 vi.mock('../../common/ai/codex/codex-process-ownership.js', () => ({
   codexProcessIdentity: vi.fn(async () => ({
@@ -49,6 +77,8 @@ function fixture(
     tool?: boolean;
     rejectTool?: boolean;
     noAnswer?: boolean;
+    noAgentMessage?: boolean;
+    terminalStatus?: 'completed' | 'failed';
     mutate?: boolean;
     modelMissing?: boolean;
     busy?: boolean;
@@ -139,7 +169,7 @@ function fixture(
                 );
               }
               await progress();
-              rpc.emit('notification', 'item/completed', {
+              if (!options.noAgentMessage) rpc.emit('notification', 'item/completed', {
                 threadId,
                 turnId: 'synthetic-turn',
                 item: {
@@ -152,7 +182,7 @@ function fixture(
               await progress();
               rpc.emit('notification', 'turn/completed', {
                 threadId,
-                turn: { id: 'synthetic-turn', status: 'completed' },
+                turn: { id: 'synthetic-turn', status: options.terminalStatus ?? 'completed' },
               });
             })().catch((error) => rpc.emit('closed', error));
           }, 0);
@@ -174,6 +204,7 @@ function fixture(
   }
   const release = vi.fn();
   const runtime = {
+    chatFingerprint: vi.fn(async () => 'f'.repeat(64)),
     acquire: vi.fn(async () => ({ profile: { rpc }, release })),
     acquireChat: vi.fn(
       async (
@@ -257,7 +288,7 @@ function fixture(
   const facade = new CodexChatRuntime(runtime, journal);
   const selection = {
     connection_id: '4',
-    mode: 'token_plan_agentic' as const,
+    mode: 'agentic' as const,
     model_id: request.modelId,
     effort_id: request.effort!,
   };
@@ -266,11 +297,11 @@ function fixture(
     provider_key: 'openai',
     is_active: true,
     catalog_active: true,
-    use_token_plan_agentic: true,
-    can_use_token_plan_agentic: true,
+    use_agentic: true,
+    can_use_agentic: true,
     updated_at: '2026-10-22T00:00:00.000Z',
     fields: {
-      token_plan_agentic: {
+      agentic: {
         selected_model: selection.model_id,
         thinking_level: selection.effort_id,
       },
@@ -286,6 +317,20 @@ function fixture(
     facade,
     new ValidateNodiaAiRuntimePolicyUseCase().execute(policyEnvelope()),
     acceptance,
+    new Map(
+      CODEX_CHAT_IMAGE_MIMES.map((mime) => {
+        const store = new CodexChatImageAcceptanceStore(mime);
+        vi.spyOn(store, 'read').mockResolvedValue(null);
+        return [mime, store];
+      }),
+    ),
+    new Map(
+      CODEX_CHAT_AUDIO_MIMES.map((mime) => {
+        const store = new CodexChatAudioAcceptanceStore(mime);
+        vi.spyOn(store, 'read').mockResolvedValue(null);
+        return [mime, store];
+      }),
+    ),
   );
   const reconciler = new ReconcileCodexNodiaAiRuntimeUseCase(facade, source);
   // Test helpers adapt fixture inputs only. Every operation enters the actual
@@ -333,6 +378,7 @@ function fixture(
   };
   return {
     useCase,
+    facade,
     runtime,
     rpc,
     callbacks,
@@ -348,6 +394,24 @@ function fixture(
 }
 
 describe('Codex adapter and reconciliation use cases with the real chat runtime', () => {
+  it('returns an empty native completed transport without inventing an agent message and records its exact closed proof', async () => {
+    const f = fixture({ noAgentMessage: true });
+    const result = await f.facade.execute(f.request, { ...f.callbacks, onPrepared: vi.fn() });
+    expect(result.text).toBe('');
+    expect(result.terminalProof).toMatchObject({ processClosed: true, outcome: 'completed' });
+    expect(f.stored?.state).toBe('completed');
+    expect(f.stored?.terminalProofId).toBe(result.terminalProof.terminalProofId);
+    expect(f.runtime.stop).toHaveBeenCalledOnce();
+    expect(f.rpc.request.mock.calls.filter(([method]) => method === 'turn/start')).toHaveLength(1);
+    await f.facade.acknowledge(result.terminalProof, new AbortController().signal);
+    expect(f.stored?.acknowledged).toBe(true);
+  });
+  it('does not treat a failed native turn without an agent message as empty completed transport', async () => {
+    const f = fixture({ noAgentMessage: true, terminalStatus: 'failed' });
+    await expect(f.facade.execute(f.request, { ...f.callbacks, onPrepared: vi.fn() })).rejects.toMatchObject({ outcome: 'unknown' });
+    expect(f.stored?.state).toBe('abandoned_unknown');
+    expect(f.rpc.request.mock.calls.filter(([method]) => method === 'turn/start')).toHaveLength(1);
+  });
   it('measures the same escaped native envelope and exposes overflow for compaction', async () => {
     const f = fixture();
     const measured = await f.useCase.measure({
@@ -515,5 +579,317 @@ describe('Codex adapter and reconciliation use cases with the real chat runtime'
       ),
     ).rejects.toThrow('nodia_ai:invalid_terminal_proof');
     expect(f.journal.read).not.toHaveBeenCalled();
+  });
+});
+
+function withSyntheticImage(request: CodexChatRequest): CodexChatRequest {
+  const bytes = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==',
+    'base64',
+  );
+  return {
+    ...request,
+    images: [
+      {
+        mediaType: 'image/png',
+        sha256: createHash('sha256').update(bytes).digest('hex'),
+        contentBase64: bytes.toString('base64'),
+      },
+    ],
+    imageLimits: {
+      fileBytes: 20971520,
+      totalBytes: 41943040,
+      count: 4,
+      pixels: 12000000,
+    },
+  };
+}
+describe('Codex image supervisor lifecycle', () => {
+  it('sends a localImage reference only, accounts its metadata, and cleans after native close before terminal proof', async () => {
+    vi.mocked(cleanupCodexChatImages).mockClear();
+    vi.mocked(stageCodexChatImages).mockClear();
+    const f = fixture();
+    const request = withSyntheticImage(f.request);
+    const reply = await f.facade.execute(request, {
+      ...f.callbacks,
+      onPrepared: vi.fn(),
+    });
+    const params = f.rpc.request.mock.calls.find(
+      ([method]) => method === 'turn/start',
+    )![1] as { input: unknown[] };
+    expect(params.input).toEqual([
+      { type: 'text', text: request.prompt },
+      { type: 'localImage', path: '/synthetic-private/0.png' },
+    ]);
+    expect(JSON.stringify(params)).not.toContain(
+      request.images![0].contentBase64,
+    );
+    expect(f.stored?.payloadSha256).toMatch(/^[a-f0-9]{64}$/);
+    expect(cleanupCodexChatImages).toHaveBeenCalledWith(
+      f.journal,
+      f.request.identity,
+    );
+    expect(vi.mocked(f.runtime.stop).mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(cleanupCodexChatImages).mock.invocationCallOrder[0],
+    );
+    expect(reply.terminalProof.processClosed).toBe(true);
+  });
+  it('retains staging when closure fails and cleans during exact-identity reconciliation before a proof', async () => {
+    vi.mocked(cleanupCodexChatImages).mockClear();
+    const f = fixture({ stopFails: true });
+    const request = withSyntheticImage(f.request);
+    await expect(
+      f.facade.execute(request, { ...f.callbacks, onPrepared: vi.fn() }),
+    ).rejects.toMatchObject({ outcome: 'unknown' });
+    expect(cleanupCodexChatImages).not.toHaveBeenCalled();
+    expect(f.stored?.terminalProofId).toBeNull();
+    const proof = await f.facade.reconcile(
+      f.request.identity,
+      new AbortController().signal,
+    );
+    expect(proof).toMatchObject({
+      processClosed: true,
+      outcome: 'abandoned_unknown',
+    });
+    expect(cleanupCodexChatImages).toHaveBeenCalledOnce();
+    expect(
+      vi.mocked(f.runtime.recoverClosedChat).mock.invocationCallOrder[0],
+    ).toBeLessThan(
+      vi.mocked(cleanupCodexChatImages).mock.invocationCallOrder[0],
+    );
+    expect(
+      f.rpc.request.mock.calls.filter(([method]) => method === 'turn/start'),
+    ).toHaveLength(1);
+  });
+  it('cleans partial staging after confirmed native shutdown without submitting or replaying a turn', async () => {
+    vi.mocked(cleanupCodexChatImages).mockClear();
+    vi.mocked(stageCodexChatImages).mockRejectedValueOnce(
+      new Error('synthetic partial write failure'),
+    );
+    const f = fixture();
+    const request = withSyntheticImage(f.request);
+    await expect(
+      f.facade.execute(request, { ...f.callbacks, onPrepared: vi.fn() }),
+    ).rejects.toMatchObject({ outcome: 'unknown' });
+    expect(cleanupCodexChatImages).toHaveBeenCalledOnce();
+    expect(f.stored?.state).toBe('abandoned_unknown');
+    expect(
+      f.rpc.request.mock.calls.some(([method]) => method === 'turn/start'),
+    ).toBe(false);
+  });
+});
+
+function withSyntheticAudio(request: CodexChatRequest): CodexChatRequest {
+  const bytes = Buffer.alloc(16044);
+  bytes.write('RIFF');
+  bytes.writeUInt32LE(bytes.length - 8, 4);
+  bytes.write('WAVEfmt ', 8);
+  bytes.writeUInt32LE(16, 16);
+  bytes.writeUInt16LE(1, 20);
+  bytes.writeUInt16LE(1, 22);
+  bytes.writeUInt32LE(8000, 24);
+  bytes.writeUInt32LE(16000, 28);
+  bytes.writeUInt16LE(2, 32);
+  bytes.writeUInt16LE(16, 34);
+  bytes.write('data', 36);
+  bytes.writeUInt32LE(16000, 40);
+  return {
+    ...request,
+    audio: [
+      {
+        mediaType: 'audio/wav',
+        sha256: createHash('sha256').update(bytes).digest('hex'),
+        contentBase64: bytes.toString('base64'),
+      },
+    ],
+    audioLimits: {
+      fileBytes: 20971520,
+      totalBytes: 41943040,
+      count: 4,
+      seconds: 300,
+    },
+  };
+}
+
+describe('Codex mixed original media runtime boundaries', () => {
+  it('measures localAudio by escaped bounded path count, never binary payload size', () => {
+    const f = fixture();
+    const request = withSyntheticAudio(f.request);
+    const plain = f.facade.measure(f.request),
+      measured = f.facade.measure(request);
+    expect(measured).toEqual(
+      f.facade.measure({ ...f.request, audio: [{ mediaType: 'audio/wav' }] }),
+    );
+    expect(measured.canonicalUtf8Bytes).toBe(plain.canonicalUtf8Bytes);
+    expect(measured.catalogUtf8Bytes).toBe(plain.catalogUtf8Bytes);
+    expect(measured.totalUtf8Bytes).toBeGreaterThan(
+      plain.totalUtf8Bytes + 4096 * 2,
+    );
+    expect(measured.maxUtf8Bytes).toBe(262144);
+    expect(measured.totalUtf8Bytes).toBeLessThan(measured.maxUtf8Bytes);
+    expect(f.runtime.acquireChat).not.toHaveBeenCalled();
+  });
+  it('preserves mixed source order through local references and records no original content', async () => {
+    vi.mocked(stageCodexChatAudio).mockClear();
+    vi.mocked(cleanupCodexChatAudio).mockClear();
+    vi.mocked(cleanupCodexChatImages).mockClear();
+    vi.mocked(stageCodexChatAudio).mockResolvedValueOnce([
+      '/synthetic-private/0.wav',
+      '/synthetic-private/1.wav',
+    ]);
+    const f = fixture();
+    const one = withSyntheticAudio(withSyntheticImage(f.request));
+    const request: CodexChatRequest = {
+      ...one,
+      audio: [...one.audio!, ...one.audio!],
+      mediaOrder: ['audio', 'image', 'audio'],
+    };
+    const reply = await f.facade.execute(request, {
+      ...f.callbacks,
+      onPrepared: vi.fn(),
+    });
+    const params = f.rpc.request.mock.calls.find(
+      ([method]) => method === 'turn/start',
+    )![1] as { input: unknown[] };
+    expect(params.input).toEqual([
+      { type: 'text', text: request.prompt },
+      { type: 'localAudio', path: '/synthetic-private/0.wav' },
+      { type: 'localImage', path: '/synthetic-private/0.png' },
+      { type: 'localAudio', path: '/synthetic-private/1.wav' },
+    ]);
+    expect(JSON.stringify(params)).not.toContain(
+      request.audio![0].contentBase64,
+    );
+    expect(JSON.stringify(f.records)).not.toContain(
+      request.audio![0].contentBase64,
+    );
+    expect(f.facade.measure(request).totalUtf8Bytes).toBeGreaterThan(
+      Buffer.byteLength(JSON.stringify(params)),
+    );
+    expect(cleanupCodexChatAudio).toHaveBeenCalledWith(
+      f.journal,
+      request.identity,
+    );
+    expect(vi.mocked(f.runtime.stop).mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(cleanupCodexChatAudio).mock.invocationCallOrder[0],
+    );
+    expect(reply.terminalProof.processClosed).toBe(true);
+  });
+  it.each(
+    [
+      [],
+      ['audio'],
+      ['image', 'image'],
+      ['audio', 'image', 'audio'],
+      ['pdf', 'image'],
+    ].map((order) => ({ order })),
+  )(
+    'rejects inconsistent or unknown media order before reservation/native: $order',
+    async ({ order }) => {
+      const f = fixture();
+      const request = withSyntheticAudio(withSyntheticImage(f.request));
+      await expect(
+        f.facade.execute(
+          { ...request, mediaOrder: order as CodexChatRequest['mediaOrder'] },
+          { ...f.callbacks, onPrepared: vi.fn() },
+        ),
+      ).rejects.toMatchObject({ outcome: 'not_dispatched' });
+      expect(f.runtime.acquireChat).not.toHaveBeenCalled();
+      expect(f.journal.reserve).not.toHaveBeenCalled();
+    },
+  );
+  it('rejects excessive localAudio path context without staging or acquiring native even when byte policy fits', async () => {
+    const f = fixture();
+    const one = withSyntheticAudio(f.request);
+    const request = {
+      ...one,
+      audio: Array.from({ length: 33 }, () => one.audio![0]),
+      audioLimits: { ...one.audioLimits!, count: 33 },
+    };
+    const measured = f.facade.measure(request);
+    expect(measured.totalUtf8Bytes).toBeGreaterThan(measured.maxUtf8Bytes);
+    await expect(
+      f.facade.execute(request, { ...f.callbacks, onPrepared: vi.fn() }),
+    ).rejects.toMatchObject({ outcome: 'not_dispatched' });
+    expect(f.runtime.acquireChat).not.toHaveBeenCalled();
+    expect(f.journal.reserve).not.toHaveBeenCalled();
+  });
+  it.each(['audio/webm', 'image/png', 'application/pdf'])(
+    'rejects wrong audio MIME %s before reservation/native',
+    async (mime) => {
+      const f = fixture();
+      const request = withSyntheticAudio(f.request);
+      const invalid = {
+        ...request,
+        audio: [{ ...request.audio![0], mediaType: mime }],
+      } as CodexChatRequest;
+      await expect(
+        f.facade.execute(invalid, { ...f.callbacks, onPrepared: vi.fn() }),
+      ).rejects.toMatchObject({ outcome: 'not_dispatched' });
+      expect(f.runtime.acquireChat).not.toHaveBeenCalled();
+      expect(f.journal.reserve).not.toHaveBeenCalled();
+    },
+  );
+  it('rejects combined cardinality even when each media collection fits its own limit', async () => {
+    const f = fixture();
+    const one = withSyntheticAudio(withSyntheticImage(f.request));
+    const request = {
+      ...one,
+      images: Array.from({ length: 3 }, () => one.images![0]),
+      audio: [one.audio![0], one.audio![0]],
+    };
+    await expect(
+      f.facade.execute(request, { ...f.callbacks, onPrepared: vi.fn() }),
+    ).rejects.toMatchObject({ outcome: 'not_dispatched' });
+    expect(f.runtime.acquireChat).not.toHaveBeenCalled();
+    expect(f.journal.reserve).not.toHaveBeenCalled();
+  });
+  it('rejects combined bytes even when each original independently fits its own limit', async () => {
+    const f = fixture();
+    const one = withSyntheticAudio(withSyntheticImage(f.request));
+    const total = [...one.images!, ...one.audio!].reduce(
+      (count, item) => count + Buffer.from(item.contentBase64, 'base64').length,
+      0,
+    );
+    const request = {
+      ...one,
+      imageLimits: { ...one.imageLimits!, totalBytes: total - 1 },
+      audioLimits: { ...one.audioLimits!, totalBytes: total - 1 },
+    };
+    await expect(
+      f.facade.execute(request, { ...f.callbacks, onPrepared: vi.fn() }),
+    ).rejects.toMatchObject({ outcome: 'not_dispatched' });
+    expect(f.runtime.acquireChat).not.toHaveBeenCalled();
+    expect(f.journal.reserve).not.toHaveBeenCalled();
+  });
+  it('retains both original kinds until group closure is recovered without replaying turn/start', async () => {
+    vi.mocked(cleanupCodexChatAudio).mockClear();
+    vi.mocked(cleanupCodexChatImages).mockClear();
+    const f = fixture({ stopFails: true });
+    const request = withSyntheticAudio(withSyntheticImage(f.request));
+    await expect(
+      f.facade.execute(request, { ...f.callbacks, onPrepared: vi.fn() }),
+    ).rejects.toMatchObject({ outcome: 'unknown' });
+    expect(cleanupCodexChatAudio).not.toHaveBeenCalled();
+    expect(cleanupCodexChatImages).not.toHaveBeenCalled();
+    expect(f.stored?.terminalProofId).toBeNull();
+    const proof = await f.facade.reconcile(
+      request.identity,
+      new AbortController().signal,
+    );
+    expect(proof).toMatchObject({
+      processClosed: true,
+      outcome: 'abandoned_unknown',
+    });
+    expect(cleanupCodexChatAudio).toHaveBeenCalledOnce();
+    expect(cleanupCodexChatImages).toHaveBeenCalledOnce();
+    expect(
+      vi.mocked(f.runtime.recoverClosedChat).mock.invocationCallOrder[0],
+    ).toBeLessThan(
+      vi.mocked(cleanupCodexChatAudio).mock.invocationCallOrder[0],
+    );
+    expect(
+      f.rpc.request.mock.calls.filter(([method]) => method === 'turn/start'),
+    ).toHaveLength(1);
   });
 });

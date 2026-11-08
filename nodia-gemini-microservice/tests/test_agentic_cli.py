@@ -15,8 +15,9 @@ from agentic_cli import CliConfig, CliRunner, cli_environment, prepare_cli_home
 from agentic_observation import command_data, discovered_models, observed_quota
 from agentic_service import AntigravityAgentService
 from agentic_tool_gate import decide
+from native_execution_agents import NATIVE_READER_AGENT
 from service_errors import ServiceError
-from test_support import RESULT, HEADERS, fake_web
+from test_support import RESULT, HEADERS
 
 
 def report(name, data):
@@ -37,7 +38,7 @@ class AgenticCliTest(unittest.IsolatedAsyncioTestCase):
         self.runner.run.side_effect = self.run_command
         self.service = AntigravityAgentService(self.runner)
         await self.service.initialize()
-        self.service._snapshot = None
+        self.service._invalidate_evidence()
         self.runner.run.reset_mock()
 
     async def asyncTearDown(self):
@@ -53,7 +54,7 @@ class AgenticCliTest(unittest.IsolatedAsyncioTestCase):
         document = kwargs["cwd"] / "invoice.pdf"
         (kwargs["home"] / "tool_receipts.jsonl").write_text(json.dumps({"tool": "view_file", "allowed": True}))
         return "\n".join(json.dumps(e) for e in [
-            {"event": "init", "init": {"model": "observed-model"}},
+            {"event": "init", "init": {"model": "observed-model", "agent": NATIVE_READER_AGENT}},
             {"event": "step_update", "step_update": {"tool_name": "view_file", "state": "DONE",
              "tool_info": {"parameters": {"AbsolutePath": str(document)}}}},
             {"event": "result", "result": {"status": "SUCCESS", "structured_output": RESULT}},
@@ -69,7 +70,7 @@ class AgenticCliTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_failed_observation_invalidates_previous_models(self):
         await self.service.get_status()
-        self.service._observed = 0
+        self.service._invalidate_evidence()
         self.runner.run.side_effect = ServiceError("session_expired", "safe")
         status = await self.service.get_status()
         self.assertFalse(status["has_active_session"])
@@ -87,6 +88,31 @@ class AgenticCliTest(unittest.IsolatedAsyncioTestCase):
         self.assertIn("low", generation.args[0])
         self.assertFalse(generation.kwargs["cwd"].exists())
         self.assertTrue(invoice.exists())
+
+    async def test_invoice_transport_finishes_once_after_schema_without_changing_selection(self):
+        invoice = self.home / "source.pdf"
+        invoice.write_bytes(b"%PDF-1.4")
+        await self.service.analyze_invoice(invoice, model="observed-model", thinking_level="high")
+        generations = [call for call in self.runner.run.await_args_list if "--input-format" in call.args[0]]
+        self.assertEqual(len(generations), 1)
+        generation = generations[0]
+        messages = generation.kwargs["stdin"].decode("utf-8").splitlines()
+        self.assertEqual(len(messages), 1)
+        message = json.loads(messages[0])
+        self.assertEqual(message["event"], "user")
+        prompt = message["message"]["content"]
+        self.assertIn((generation.kwargs["cwd"] / "invoice.pdf").as_posix(), prompt)
+        final_protocol = prompt.index("Protocolo de cierre de este análisis:")
+        self.assertGreater(final_protocol, prompt.index("Reglas estrictas:"))
+        self.assertIn("llama una única vez a finish", prompt[final_protocol:])
+        self.assertIn("structured_output", prompt[final_protocol:])
+        self.assertIn("No solicites confirmación ni esperes otra interacción.", prompt[final_protocol:])
+        self.assertIn("view_file sobre ese archivo exacto", prompt)
+        args = generation.args[0]
+        self.assertEqual(args[args.index("--model") + 1], "observed-model")
+        self.assertEqual(args[args.index("--effort") + 1], "high")
+        self.assertEqual(args[args.index("--agent") + 1], NATIVE_READER_AGENT)
+        self.assertFalse(generation.kwargs["cwd"].exists())
 
     async def test_long_generation_budget_preserves_model_without_resending(self):
         self.runner.config = CliConfig(Path(sys.executable), "", self.home, timeout=240)
@@ -107,6 +133,12 @@ class AgenticCliTest(unittest.IsolatedAsyncioTestCase):
         async def timeout_inference(args, **kwargs):
             if "--input-format" not in args:
                 return await original(args, **kwargs)
+            (kwargs["cwd"] / "cli.log").write_text(
+                "PRIVATE_TOKEN PRIVATE_DOCUMENT /PRIVATE_PATH i/o timeout RESOURCE_EXHAUSTED HTTP status: 503",
+                encoding="utf-8")
+            (kwargs["home"] / "tool_receipts.jsonl").write_text("\n".join(json.dumps(value) for value in (
+                {"tool": "view_file", "allowed": True}, {"tool": "finish", "allowed": True},
+                {"tool": "PRIVATE_TOOL", "allowed": False})), encoding="utf-8")
             kwargs["stdout_observer"](b'{"event":"init","token":"PRIVATE_TOKEN"}\n'
                                       b'{"event":"step_update","step_update":{"tool_name":"view_file","state":"DONE"}}\n')
             raise ServiceError("agentic_timeout", "Safe timeout", 504)
@@ -121,8 +153,85 @@ class AgenticCliTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(summaries[0][1], "timeout")
         self.assertTrue(summaries[0][2]["document_read_completed"])
         self.assertFalse(summaries[0][2]["result_seen"])
-        self.assertNotIn("PRIVATE_TOKEN", str(log.call_args_list))
+        diagnostics = {call.args[1]: call.args[2] for call in log.call_args_list
+                       if "invoice failure diagnostic" in call.args[0]}
+        self.assertEqual(diagnostics["cli_log"]["transport_indicators"], ["io_timeout"])
+        self.assertEqual(diagnostics["cli_log"]["provider_error_indicators"], ["RESOURCE_EXHAUSTED"])
+        self.assertEqual(diagnostics["cli_log"]["http_statuses"], [503])
+        self.assertEqual(diagnostics["cli_log"]["interpretation"], "text_indicator_not_verified_cause")
+        self.assertEqual(diagnostics["hook"], {"state": "observed", "decision_count": 3,
+            "rejected_count": 1, "unrecognized_count": 1, "finish_count": 1})
+        self.assertNotIn("PRIVATE_", str(log.call_args_list))
+        self.assertNotIn(str(self.home), str(log.call_args_list))
         self.assertEqual(sum("--input-format" in call.args[0] for call in self.runner.run.await_args_list), 1)
+        self.assertFalse(any(self.home.glob("nodia-agentic-*")))
+
+    async def test_failure_diagnostics_cannot_replace_error_or_prevent_other_observation(self):
+        invoice = self.home / "source.pdf"
+        invoice.write_bytes(b"%PDF-1.4")
+        original = self.runner.run.side_effect
+        failure = ServiceError("agentic_timeout", "Safe timeout", 504)
+
+        async def timeout_inference(args, **kwargs):
+            if "--input-format" not in args:
+                return await original(args, **kwargs)
+            raise failure
+
+        self.runner.run.side_effect = timeout_inference
+        for failing_source in ("cli_log", "hook", "logger"):
+            with self.subTest(failing_source=failing_source):
+                self.runner.run.reset_mock()
+                with patch("agentic_service.capture_cli_log_diagnostic", return_value={"state": "missing"}) as cli_log, \
+                        patch("agentic_service.capture_plain_gate_diagnostic", return_value={"state": "missing"}) as hook, \
+                        patch("agentic_service.logger.info") as log:
+                    if failing_source == "logger":
+                        def fail_diagnostic_log(message, *args):
+                            if "invoice failure diagnostic" in message:
+                                raise RuntimeError("PRIVATE_LOGGER_ERROR")
+                        log.side_effect = fail_diagnostic_log
+                    else:
+                        (cli_log if failing_source == "cli_log" else hook).side_effect = RuntimeError("PRIVATE_CAPTURE_ERROR")
+                    with self.assertRaises(ServiceError) as caught:
+                        await self.service.analyze_invoice(invoice, model="observed-model")
+                    self.assertIs(caught.exception, failure)
+                    cli_log.assert_called_once()
+                    hook.assert_called_once()
+                    self.assertNotIn("PRIVATE_", str(log.call_args_list))
+                self.assertEqual(sum("--input-format" in call.args[0] for call in self.runner.run.await_args_list), 1)
+                self.assertFalse(self.service._analysis_lock.locked())
+                self.assertFalse(any(self.home.glob("nodia-agentic-*")))
+
+    async def test_failed_document_read_timeout_keeps_callback_honest_without_replaying(self):
+        invoice = self.home / "source.pdf"
+        invoice.write_bytes(b"%PDF-1.4")
+        original = self.runner.run.side_effect
+        callbacks = []
+
+        async def timeout_after_failed_read(args, **kwargs):
+            if "--input-format" not in args:
+                return await original(args, **kwargs)
+            event = {"event": "step_update", "step_update": {"tool_name": "view_file", "state": "DONE",
+                     "tool_info": {"parameters": {"AbsolutePath": "PRIVATE_PATH"},
+                                   "error": {"message": "unsupported binary file PRIVATE_DOCUMENT"}}}}
+            kwargs["stdout_observer"]((json.dumps(event) + "\n").encode())
+            raise ServiceError("agentic_timeout", "Safe timeout", 504)
+
+        self.runner.run.side_effect = timeout_after_failed_read
+        with patch("agentic_service.logger.info") as log:
+            with self.assertRaises(ServiceError) as caught:
+                await self.service.analyze_invoice(invoice, model="observed-model", thinking_level="high",
+                                                   progress_callback=callbacks.append)
+        self.assertEqual(caught.exception.code, "agentic_timeout")
+        self.assertNotIn("document_read_completed", callbacks)
+        summaries = [call.args[2] for call in log.call_args_list if "inference progress" in call.args[0]]
+        self.assertEqual(len(summaries), 1)
+        self.assertEqual(summaries[0]["phase"], "document_read_failed")
+        self.assertFalse(summaries[0]["document_read_completed"])
+        self.assertEqual(summaries[0]["tool_error_categories"], ["format", "unsupported"])
+        self.assertEqual(summaries[0]["result_event_count"], 0)
+        self.assertNotIn("PRIVATE_", str(log.call_args_list))
+        self.assertEqual(sum("--input-format" in call.args[0] for call in self.runner.run.await_args_list), 1)
+        self.assertFalse(self.service._analysis_lock.locked())
         self.assertFalse(any(self.home.glob("nodia-agentic-*")))
 
     async def test_analysis_reuses_recent_verified_session_and_refreshes_expired_observation(self):
@@ -133,11 +242,15 @@ class AgenticCliTest(unittest.IsolatedAsyncioTestCase):
         await self.service.analyze_invoice(invoice, model="observed-model")
         self.assertEqual(self.runner.run.await_count, 2)  # Exact effort check + one inference.
         self.assertFalse(any("/usage" in c.args[0] for c in self.runner.run.await_args_list))
-        self.service._observed = time.monotonic() - 31
+        # Expire the actual component evidence using a service-local clock;
+        # assigning the old assembled snapshot timestamp no longer models TTL.
+        later = time.monotonic() + 31
         self.runner.run.reset_mock()
         self.runner.run.side_effect = ServiceError("agentic_timeout", "Safe", 504)
-        with self.assertRaises(ServiceError) as caught:
-            await self.service.analyze_invoice(invoice, model="observed-model")
+        from types import SimpleNamespace
+        with patch("agentic_service.time", SimpleNamespace(monotonic=lambda: later, time=time.time)):
+            with self.assertRaises(ServiceError) as caught:
+                await self.service.analyze_invoice(invoice, model="observed-model")
         self.assertEqual(caught.exception.code, "agentic_timeout")
         # Discovery is serial per physical profile; a failed usage probe
         # prevents launching a second CLI process against that same session.
@@ -164,8 +277,11 @@ class AgenticCliTest(unittest.IsolatedAsyncioTestCase):
         original = self.run_command
         async def denied(args, **kwargs):
             if "--input-format" in args:
-                return json.dumps({"event": "result", "result": {"status": "SUCCESS",
-                    "structured_output": RESULT, "denied_actions": [{"action": "read_file"}]}}), 0
+                return '\n'.join(json.dumps(event) for event in [
+                    {"event": "init", "init": {"model": "observed-model", "agent": NATIVE_READER_AGENT}},
+                    {"event": "result", "result": {"status": "SUCCESS",
+                     "structured_output": RESULT, "denied_actions": [{"action": "read_file"}]}},
+                ]), 0
             return await original(args, **kwargs)
         self.runner.run.side_effect = denied
         invoice = self.home / "source.pdf"
@@ -345,7 +461,7 @@ class CliBoundaryTest(unittest.IsolatedAsyncioTestCase):
 
 
 class AgenticHttpTest(unittest.TestCase):
-    def test_same_adapter_serves_status_models_readiness_and_analysis_with_web_down(self):
+    def test_same_adapter_serves_status_models_readiness_and_analysis(self):
         from fastapi.testclient import TestClient
         from main import create_app
         from unittest.mock import patch
@@ -355,9 +471,7 @@ class AgenticHttpTest(unittest.TestCase):
             "models": [{"id": "observed-model", "name": "Observed model"}]}
         service.analyze_invoice.return_value = RESULT
         with tempfile.TemporaryDirectory() as folder, patch.dict('os.environ', {"GEMINI_SERVICE_TOKEN": test_support.TOKEN}):
-            web = fake_web()
-            web.get_status.side_effect = RuntimeError("web offline")
-            app = create_app(web_service=web, agentic_service=service, temp_dir=Path(folder), load_environment=False)
+            app = create_app(agentic_service=service, temp_dir=Path(folder), load_environment=False)
             with TestClient(app) as client:
                 for path in ["/agentic/status", "/agentic/models", "/agentic/ready", "/engines/status"]:
                     self.assertEqual(client.get(path, headers=HEADERS).status_code, 200)
@@ -365,4 +479,3 @@ class AgenticHttpTest(unittest.TestCase):
                 response = client.post('/agentic/analyze-invoice', headers=HEADERS, data={'model': 'observed-model'},
                     files={'file': ('invoice.pdf', b'%PDF-1.4', 'application/pdf')})
                 self.assertEqual(response.status_code, 200)
-                web.analyze_invoice.assert_not_awaited()

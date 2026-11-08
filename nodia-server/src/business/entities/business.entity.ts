@@ -33,6 +33,9 @@ export class Business {
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
 
+  @Column({ type: 'varchar', length: 64, default: 'America/Santiago' })
+  sales_timezone: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 

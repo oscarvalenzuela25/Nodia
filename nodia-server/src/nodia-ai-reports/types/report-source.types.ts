@@ -71,8 +71,12 @@ export interface ReportMeasureDefinition {
   readonly descriptor: ReportMeasureDescriptor;
   /** Scalar per base row. Compiler owns SUM/COUNT and exact serialization. */
   readonly expressionSql: string;
+  /** Heterogeneous quantities require grouping or fixing this dimension; no scalar total is exposed. */
+  readonly requiredDimensionKey?: string;
 }
 export interface ReportSourceDefinition {
+  /** A new domain source stays private until this exact document is present in the compiled approved bundle. */
+  readonly publicationDocumentId?: string;
   readonly sourceKey: string;
   readonly moduleKey: string;
   readonly requiredModuleRoutes: readonly string[];

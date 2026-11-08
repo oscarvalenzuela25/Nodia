@@ -1,0 +1,399 @@
+{
+  "schema": "teacher-preparation-ux-vm-evidence/1",
+  "local_date": "2026-11-05",
+  "status": "deployed_current_qualification_and_normal_Worker_UI_verified",
+  "original_session_id": "65b0f2ce-8f99-442c-81f9-e1d1b0c2e5b0",
+  "diagnosis": {
+    "source": {
+      "path": "ops/lab/artifacts/teacher-preparation-failure-20261105-r01/diagnosis-summary.json",
+      "bytes": 20010,
+      "sha256": "daaa4cb3ded23483e53d0ee2b902dfeb2f2b0ac9f8c8253a16b154f0e25542b8"
+    },
+    "first_plan_state": "failed_known",
+    "code": "native_dispatch_excluded",
+    "Native_status": 409,
+    "Native_code": "runtime_busy",
+    "blocking_owner": "real_observational_eligibility_lease",
+    "owner_age_ms": 32,
+    "provider_not_started_proved_by_exclusion": true,
+    "first_plan_provider_POSTs": 0,
+    "subsequent_setup_state": "ready",
+    "subsequent_setup_provider_POSTs": 1,
+    "subsequent_setup_local_duration_seconds": 150.521,
+    "historical_failure_reclassified": false
+  },
+  "implementation": {
+    "Client_release": "R15",
+    "Client_manifest_sha256": "f2135f92856a547d27d4199f0bd144509f143528da0ad4021a8ef12565171618",
+    "Client_activation_sha256": "d1b1d3d8daefbdf7ec3b0f5dbbef8edf168bdff9538329cd90db1c5e6cab1e1e",
+    "progress": "indeterminate by queued/running job state; reserved space across polling; cached data retained on read error",
+    "setup": "contained draft-save; clear descriptions of save/send/propose; proposal blocked while saved or unsaved text remains unsent; no implicit send",
+    "Native_changed_files": 2,
+    "Teacher_only_bounded_admission_wait": true,
+    "wait_behind_actual_observational_owner_only": true,
+    "pending_Teacher_turns_per_profile": 1,
+    "preflight_seconds_unchanged": 18,
+    "signed_deadline_still_authoritative": true,
+    "other_writers_fail_fast": true,
+    "quarantine_exclusivity_cancellation_preserved": true,
+    "no_inference_retry_added": true,
+    "Server_R08_unchanged": true,
+    "SDK_manifest_unchanged": "fe412d1059c2f9ac9d8637cc90b2007c72a664175f73b5246a27ebf6e7e7ccfa"
+  },
+  "local_checks": {
+    "Native_total": 624,
+    "Native_pass": 614,
+    "Native_skip": 10,
+    "Native_focal_included": 39,
+    "Native_regression_red_before_green_after": true,
+    "Client_R01_relevant_tests": 26,
+    "Client_R02_affected_tests": 7,
+    "Client_unchanged_tests_previously_passed": 19,
+    "Client_typecheck_lint_isolated_build_passed": true,
+    "not_summed_as_distinct_global_suites": true,
+    "knowledge_check": {
+      "command": "npm run knowledge:check",
+      "exit_code": 0,
+      "sources": 80,
+      "excluded": 36,
+      "documents": 44,
+      "fragments": 46,
+      "releaseId": "ca3b8d894cbfc3780698e15b1b19c62a4554b00911af7893024fd025c6f948af",
+      "published": false
+    }
+  },
+  "operations": {
+    "Native_actual": {
+      "health": "healthy",
+      "id": "39499a997622e9874565b9c9f39159d68b1c4b1f996c33abbdff740bfce6e60d",
+      "image": "sha256:a48549816df414b93e6fba0964dacdef6d0d9504f541f0aa85e9f9ca6e87e39a",
+      "started_at": "2026-11-05T05:11:42.761920459Z",
+      "status": "running"
+    },
+    "resume_proof": {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/native-r12/resume-only-r01-receipt.json",
+      "bytes": 2946,
+      "sha256": "db1c6807cc82838394a21c865d10e0f8484bbca39ae2989ce55d74d8dfc24df9"
+    },
+    "original_cutover_failure_preserved": true,
+    "original_quiet_guard_failures_preserved": true,
+    "failure_causes_not_reconstructed_or_attributed": true,
+    "reconstructed_original_baseline_matched_exactly": true,
+    "Native_cutover_replayed": false,
+    "new_coordinator_success_fabricated": false,
+    "resumed_pids": {
+      "nodia-ai-worker.service": "1355811",
+      "nodia-api.service": "1355810"
+    },
+    "stable_seconds": 30,
+    "database_inventory_preserved_before_business_QA": true,
+    "ledger_count": 44,
+    "table_count": 94,
+    "new_CFG_captures": 0,
+    "new_DB_PRE_captures": 0,
+    "old_verified_DB_backup_reused": "09f4e867-1ed3-4094-b1b3-e7a8c19b518a",
+    "current_resumed_pids": {
+      "nodia-api.service": 1366591,
+      "nodia-ai-worker.service": 1366592
+    },
+    "qualification_completion": {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/qualification-r12/completion-receipt.json",
+      "bytes": 8965,
+      "sha256": "66359d880fa6bd947f07d1f8fcc071885f11bb51b33da047095e2a44c823feff"
+    },
+    "native_resume_pids_are_historical_and_not_assumed_permanent": true,
+    "final_delivery": {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/delivery-R12-R15.json",
+      "bytes": 28160,
+      "sha256": "496344de205abb777c79747b96670b78797060380c9b5682603b5ac7c646d536"
+    },
+    "final_health": {
+      "bytes": 1724,
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/final-health-R12-R15.json",
+      "sha256": "c572fed2a0e8b0ecd74636785b0248ceaaa5ac6af82e3b14e181f94e8792f3db"
+    },
+    "final_health_passed": true,
+    "final_health_scope": "Current API/Worker/Native/R08/R15, public HTTP200, anonymous Teacher401; no provider request."
+  },
+  "CUA_original_course": {
+    "path": "ops/lab/artifacts/teacher-preparation-failure-20261105-r01/root-r15-user-view.json",
+    "bytes": 1384,
+    "sha256": "4eaba9b107779bef8cf3e81ba65ddc4a583063db6566cd7a604fc685c8736502"
+  },
+  "controlled_generation": {
+    "status": "PASS",
+    "session_id": "593fccfc-1f56-4b19-9cf8-b0929e180a34",
+    "qualification_scope": "20e8913c64dc6caef71f303479640f6b28c9d4fa1680210cec1ae0fe5ab1fbfa",
+    "Native_session_generation": "c88015874daea89a2420f94d46a4afea",
+    "jobs": [
+      {
+        "SDK_diagnostic_source": "canary-and-plan-observation-r03.json; not reread in final cut",
+        "claim_to_terminal_seconds": 73.756,
+        "generation_attempt": {
+          "attempt_no": 1,
+          "ended_at": "2026-11-05T05:43:26.660Z",
+          "fence": "1",
+          "id": "690b2eba-b9dc-4f20-bf86-255d54f3e9e9",
+          "job_id": "e4e70610-c89e-412f-bdbe-66ad9652eea3",
+          "phase": "terminal",
+          "session_id": "593fccfc-1f56-4b19-9cf8-b0929e180a34",
+          "started_at": "2026-11-05T05:42:12.904Z",
+          "worker_id": "1af0ed3e-23c1-43c0-ae3d-4a289abac0b0"
+        },
+        "job": {
+          "attempt_id": null,
+          "blocks_duplicate": false,
+          "configuration_generation": "3a3d1972f6211c3890c93c3c20bb8baa5eb9081f566ab7c483c4c1fa287a78ef",
+          "created_at": "2026-11-05T05:42:12.888Z",
+          "deadline_at": "2026-11-05T05:44:12.888Z",
+          "dispatch_limit": 1,
+          "dispatches_used": 1,
+          "error_code": null,
+          "id": "e4e70610-c89e-412f-bdbe-66ad9652eea3",
+          "plan_revision_id": null,
+          "purpose": "setup_reply",
+          "result_attempt_id": null,
+          "result_content_version_id": null,
+          "result_message_id": "169436e5-6289-47a1-986a-fc5013c27814",
+          "result_proposal_revision_id": null,
+          "section_id": null,
+          "selection_matches_current": true,
+          "session_generation": "c88015874daea89a2420f94d46a4afea",
+          "session_id": "593fccfc-1f56-4b19-9cf8-b0929e180a34",
+          "state": "ready",
+          "template_hash": "8da31f3001fd984d86299e765745b95193561f5c90e6dc393cce8f98add7d627",
+          "template_ref": "teacher/setup_reply",
+          "template_version": "teacher-text/1",
+          "unit_id": null,
+          "updated_at": "2026-11-05T05:43:26.659Z"
+        },
+        "operation": {
+          "acknowledged_at": "2026-11-05T05:43:26.661Z",
+          "agentic_acknowledged_at": "2026-11-05T05:43:26.676Z",
+          "configuration_generation": "3a3d1972f6211c3890c93c3c20bb8baa5eb9081f566ab7c483c4c1fa287a78ef",
+          "created_at": "2026-11-05T05:42:12.891Z",
+          "exchange_limit": 1,
+          "id": "690b2eba-b9dc-4f20-bf86-255d54f3e9e9",
+          "job_id": "e4e70610-c89e-412f-bdbe-66ad9652eea3",
+          "local_transport_closed": "true",
+          "native_process_closed": "true",
+          "phase": "closed",
+          "proof_sha256": "1a8b5ca0159916d38352afc45a23c517754b64b89e10f04ab2c03326dfd63303",
+          "remote_outcome": "completed",
+          "reserved_exchanges": 1,
+          "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+          "response_hash": "913e00174098fbda1228758305449c96a5f2501f57881c0ec824be833e35d23a",
+          "session_generation": "c88015874daea89a2420f94d46a4afea",
+          "session_id": "593fccfc-1f56-4b19-9cf8-b0929e180a34",
+          "started_exchanges": 1,
+          "updated_at": "2026-11-05T05:43:26.648Z"
+        },
+        "provider_POSTs": 1,
+        "upstream_HTTP_status": 200
+      },
+      {
+        "SDK_diagnostic_source": "canary-and-plan-observation-r03.json; not reread in final cut",
+        "claim_to_terminal_seconds": 82.778,
+        "generation_attempt": {
+          "attempt_no": 1,
+          "ended_at": "2026-11-05T05:48:01.187Z",
+          "fence": "1",
+          "id": "ca1dd075-db3f-474b-bcc6-60e026c93e84",
+          "job_id": "c3eaf75c-04b0-4a17-8392-e6a6b6eccae6",
+          "phase": "terminal",
+          "session_id": "593fccfc-1f56-4b19-9cf8-b0929e180a34",
+          "started_at": "2026-11-05T05:46:38.409Z",
+          "worker_id": "13c0c44a-9f03-4cd0-a130-b9609de14583"
+        },
+        "job": {
+          "attempt_id": null,
+          "blocks_duplicate": false,
+          "configuration_generation": "3a3d1972f6211c3890c93c3c20bb8baa5eb9081f566ab7c483c4c1fa287a78ef",
+          "created_at": "2026-11-05T05:46:34.269Z",
+          "deadline_at": "2026-11-05T05:56:34.269Z",
+          "dispatch_limit": 1,
+          "dispatches_used": 1,
+          "error_code": null,
+          "id": "c3eaf75c-04b0-4a17-8392-e6a6b6eccae6",
+          "plan_revision_id": null,
+          "purpose": "plan_outline",
+          "result_attempt_id": null,
+          "result_content_version_id": null,
+          "result_message_id": null,
+          "result_proposal_revision_id": "6499260b-05fb-4aaa-b60e-7083bd88946b",
+          "section_id": null,
+          "selection_matches_current": true,
+          "session_generation": "c88015874daea89a2420f94d46a4afea",
+          "session_id": "593fccfc-1f56-4b19-9cf8-b0929e180a34",
+          "state": "ready",
+          "template_hash": "7c0969138a33b2808b5b2c32d4e7f1cbf0b545d54c27734119d7fd8bcc95351c",
+          "template_ref": "teacher/plan_outline",
+          "template_version": "teacher-text/1",
+          "unit_id": null,
+          "updated_at": "2026-11-05T05:48:01.187Z"
+        },
+        "operation": {
+          "acknowledged_at": "2026-11-05T05:48:01.188Z",
+          "agentic_acknowledged_at": "2026-11-05T05:48:01.204Z",
+          "configuration_generation": "3a3d1972f6211c3890c93c3c20bb8baa5eb9081f566ab7c483c4c1fa287a78ef",
+          "created_at": "2026-11-05T05:46:38.388Z",
+          "exchange_limit": 1,
+          "id": "ca1dd075-db3f-474b-bcc6-60e026c93e84",
+          "job_id": "c3eaf75c-04b0-4a17-8392-e6a6b6eccae6",
+          "local_transport_closed": "true",
+          "native_process_closed": "true",
+          "phase": "closed",
+          "proof_sha256": "274e73f65f2214f2c5125284c4a50fcbcd479bc726664e9706e107dfadabb906",
+          "remote_outcome": "completed",
+          "reserved_exchanges": 1,
+          "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+          "response_hash": "66b4e887fcdcaa25a9b2762cfcaf723934b83c944eeac03d0de1642e99016671",
+          "session_generation": "c88015874daea89a2420f94d46a4afea",
+          "session_id": "593fccfc-1f56-4b19-9cf8-b0929e180a34",
+          "started_exchanges": 1,
+          "updated_at": "2026-11-05T05:48:01.174Z"
+        },
+        "provider_POSTs": 1,
+        "upstream_HTTP_status": 200
+      }
+    ],
+    "candidate": {
+      "content_hash": "3c451099d4a2a599fa905c0b286dfeade56dbe802586536b0587a6439c27b93b",
+      "created_at": "2026-11-05T05:48:01.185Z",
+      "generation_job_id": "c3eaf75c-04b0-4a17-8392-e6a6b6eccae6",
+      "id": "6499260b-05fb-4aaa-b60e-7083bd88946b",
+      "objective_count": 1,
+      "origin": "ai",
+      "outline_bytes": 1500,
+      "proposed_day_count": null,
+      "proposed_organization": "topics",
+      "revision_no": 1,
+      "section_count": 1,
+      "session_id": "593fccfc-1f56-4b19-9cf8-b0929e180a34",
+      "state": "candidate",
+      "unit_count": 1
+    },
+    "technical_user_AI_messages": 0,
+    "technical_plan_accepted": false,
+    "technical_session_archived": true,
+    "technical_request_counts": [
+      {
+        "http_status": 200,
+        "operation": "archive",
+        "receipts": 1,
+        "session_id": "593fccfc-1f56-4b19-9cf8-b0929e180a34"
+      },
+      {
+        "http_status": 201,
+        "operation": "create",
+        "receipts": 1,
+        "session_id": "593fccfc-1f56-4b19-9cf8-b0929e180a34"
+      },
+      {
+        "http_status": 200,
+        "operation": "patch",
+        "receipts": 1,
+        "session_id": "593fccfc-1f56-4b19-9cf8-b0929e180a34"
+      },
+      {
+        "http_status": 202,
+        "operation": "propose",
+        "receipts": 1,
+        "session_id": "593fccfc-1f56-4b19-9cf8-b0929e180a34"
+      },
+      {
+        "http_status": 200,
+        "operation": "setup_draft",
+        "receipts": 2,
+        "session_id": "593fccfc-1f56-4b19-9cf8-b0929e180a34"
+      }
+    ],
+    "source": {
+      "path": "ops/lab/artifacts/teacher-preparation-failure-20261105-r01/qa-r12/final-cohort-summary.json",
+      "bytes": 25579,
+      "sha256": "0f8264d0d9986d0e723978500938ddf9dc389ed53c825fc40e22d4d752df4eaf"
+    },
+    "UI": {
+      "path": "ops/lab/artifacts/teacher-preparation-failure-20261105-r01/root-r15-technical-view.json",
+      "bytes": 2016,
+      "sha256": "42816007cbaa30aec86405e7bb3f5f72952a215e30efec7bb8d877e405e24fc8"
+    },
+    "durations_are_local_work_not_provider_latency": true
+  },
+  "sources": [
+    {
+      "path": "ops/lab/artifacts/teacher-preparation-failure-20261105-r01/native-fix-r01/delivery.json",
+      "bytes": 6679,
+      "sha256": "f497d43ecdd84e112196a739ba68458c6e10d011375ed3120cbcb2d98a03c0b7"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/client-r15-r02/source-freeze.json",
+      "bytes": 4540,
+      "sha256": "a7f6ba41abc85df3ecb9e8907b5bd2868f38b5658b8e0d4c01b56b8b260f89da"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/client-r15-r02/activation-state.json",
+      "bytes": 699,
+      "sha256": "d1b1d3d8daefbdf7ec3b0f5dbbef8edf168bdff9538329cd90db1c5e6cab1e1e"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/native-r12/reconstructed-baseline-r01.json",
+      "bytes": 7938,
+      "sha256": "9046d4a1ebd188682dfdd2b28e64d4b5da968dfc95998bdc7404c831a0d52dc5"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-setup-start-20261104-r01/native-r12/native-cutover-state.json",
+      "bytes": 2431,
+      "sha256": "42df45fcf0801bc558fef250210d057c7ebca08a623b7f70e3b70faeca907f32"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-preparation-failure-20261105-r01/qa-r12/delivery-current-r02.json",
+      "bytes": 2148,
+      "sha256": "d06f0155f56c9dd13b18cbb531cab47c88ea3d16d987f0fb88446ac3198f86dd"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-preparation-failure-20261105-r01/qa-r12/final-cohort-summary.json",
+      "bytes": 25579,
+      "sha256": "0f8264d0d9986d0e723978500938ddf9dc389ed53c825fc40e22d4d752df4eaf"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-preparation-failure-20261105-r01/root-r15-technical-view.json",
+      "bytes": 2016,
+      "sha256": "42816007cbaa30aec86405e7bb3f5f72952a215e30efec7bb8d877e405e24fc8"
+    }
+  ],
+  "limits": [
+    "Isolated red/green tests reproduce the exact observation/execution collision; the new real Worker run is a separate integration observation.",
+    "No new global V1 pedagogical acceptance, personal proficiency certification, or other modality qualification.",
+    "No formal ADR/knowledge approval or publication.",
+    "Original coordinator failures remain failed; later exact reconstruction/resume does not reclassify their causes.",
+    "The previous English paused cut is historical; current active state predates this fix.",
+    "Final screenshot was displayed by CUA; no local screenshot file was saved."
+  ],
+  "raw_credentials_tokens_private_messages_or_keys_in_evidence": false,
+  "cohort": {
+    "sessions": 3,
+    "jobs": 11,
+    "operations": 11,
+    "job_states": {
+      "failed_known": 1,
+      "ready": 9,
+      "unknown": 1
+    },
+    "all_terminal_closed_local_and_both_ACK": true,
+    "original65_comparable_metadata_unchanged": true,
+    "English_state": "active",
+    "English_revision": 23,
+    "English_state_updated_before_this_fix": "2026-11-05T04:35:20.987Z",
+    "English_practice_grades_exactly_preserved": true,
+    "English_state_change_by_Root": false,
+    "unknown_history_not_replayed": true
+  },
+  "validation": {
+    "operational_artifact_refs_rehashed": 78,
+    "capsule_source_pins_rehashed": 16,
+    "formal_document_approval": false,
+    "knowledge_publication": false,
+    "editable_document_UTF8_LF_checked": 11
+  }
+}

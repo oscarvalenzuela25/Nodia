@@ -55,7 +55,10 @@ describe('UpdateBulkProvidersUseCase', () => {
 
     expect(bulkDto.items[0].name).toBe('proveedor actualizado');
     expect(providerServiceMock.updateBulk).toHaveBeenCalledTimes(1);
-    expect(providerServiceMock.updateBulk).toHaveBeenCalledWith(bulkDto);
+    expect(providerServiceMock.updateBulk).toHaveBeenCalledWith(
+      bulkDto,
+      undefined,
+    );
     expect(result).toEqual(mockUpdated);
   });
 });
@@ -71,6 +74,9 @@ function persistenceFixture() {
     changed = false,
     missing = false;
   const query = vi.fn(async (sql: string, params: unknown[] = []) => {
+    if (sql.includes('authority_locks')) return [{ authority_locks: 9 }];
+    if (sql.includes('FROM users u JOIN auth_sessions'))
+      return [{ actorId: '1', sessionId: origin, isSuperAdmin: false }];
     if (sql.startsWith('SELECT id::text,business_id'))
       return state.map((row) => ({ id: row.id, business_id: row.business_id }));
     if (sql.includes('FROM businesses'))
@@ -101,13 +107,18 @@ function persistenceFixture() {
   });
   const manager = {
     query,
+    queryRunner: { isTransactionActive: true },
     getRepository: () => ({ createQueryBuilder: () => qb, save }),
   } as unknown as EntityManager;
   const transaction = vi.fn(async (work) => work(manager));
   const service = new ProviderService({
     manager: { transaction },
   } as unknown as Repository<Provider>);
-  const uc = new UpdateBulkProvidersUseCase(service);
+  const realUseCase = new UpdateBulkProvidersUseCase(service);
+  const uc = {
+    execute: (dto: BulkUpdateProviderDto) =>
+      realUseCase.execute(dto, { userId: '1', sessionId: origin }),
+  };
   return {
     origin,
     destination,
@@ -222,7 +233,7 @@ describe('bulk provider integrity through the native use case and real persisten
           { id: '2', business_id: f.destination },
         ],
       }),
-    ).rejects.toThrow('Business not found');
+    ).rejects.toThrow('business:resource_not_found');
     expect(f.save).not.toHaveBeenCalled();
   });
 });

@@ -23,6 +23,8 @@ export async function codexHttpContracts() {
     { AuthenticateRequestUseCase },
     { ActionPermissionGuard },
     { CheckActionPermissionUseCase },
+    { ModuleAccessGuard },
+    { CheckModuleAccessUseCase },
     { AllExceptionsFilter },
     { codexError },
   ] = await Promise.all([
@@ -35,6 +37,8 @@ export async function codexHttpContracts() {
     import('../dist/auth/use-case/authenticate-request.use-case.js'),
     import('../dist/authorization/action-permission.guard.js'),
     import('../dist/authorization/use-case/check-action-permission.use-case.js'),
+    import('../dist/authorization/module-access.guard.js'),
+    import('../dist/authorization/use-case/check-module-access.use-case.js'),
     import('../dist/common/filters/all-exceptions.filter.js'),
     import('../dist/common/ai/codex/codex-contract.js'),
   ]);
@@ -65,7 +69,16 @@ export async function codexHttpContracts() {
     lastUsed: Date.now(),
     lastInferenceAt: null,
   };
-  runtime.get = async () => profile;
+  // Keep the production acquire/owned-profile checks; replace only native profile
+  // creation/closure boundaries so no filesystem or real Codex process is touched.
+  runtime.get = async (id) => {
+    runtime.profiles.set(id, Promise.resolve(profile));
+    return profile;
+  };
+  runtime.stop = async (id) => {
+    runtime.profiles.delete(id);
+    profile.observation = undefined;
+  };
   const jobs = new Map();
   const control = {
     async start(providerId, actorId) {
@@ -144,12 +157,13 @@ export async function codexHttpContracts() {
       })),
       AuthenticateRequestUseCase,
       CheckActionPermissionUseCase,
+      CheckModuleAccessUseCase,
       {
         provide: DataSource,
         useValue: {
           async query(_sql, args) {
-            assert.equal(args[1], 'ai:manage');
-            return [{ allowed }];
+            assert.deepEqual(args[1], ['/ai-providers']);
+            return [{ actor_active: true, allowed }];
           },
         },
       },
@@ -184,6 +198,7 @@ export async function codexHttpContracts() {
       },
       { provide: APP_GUARD, useClass: AuthGuard },
       { provide: APP_GUARD, useClass: ActionPermissionGuard },
+      { provide: APP_GUARD, useClass: ModuleAccessGuard },
     ],
   })(ProbeModule);
   const app = await NestFactory.create(ProbeModule, { logger: false });
@@ -219,8 +234,7 @@ export async function codexHttpContracts() {
       allowed = false;
       const before = requests;
       assert.equal(
-        (await call(path + '/login', 'POST', { mode: 'token_plan_agentic' }))
-          .status,
+        (await call(path + '/login', 'POST', { mode: 'agentic' })).status,
         403,
       );
       assert.equal(requests, before);
@@ -231,11 +245,11 @@ export async function codexHttpContracts() {
       for (const body of [
         { mode: 'api_key' },
         { mode: 'token_plan_web' },
-        { mode: 'token_plan_agentic', actor_id: other },
+        { mode: 'agentic', actor_id: other },
       ])
         assert.equal((await call(path + '/login', 'POST', body)).status, 400);
       const start = await call(path + '/login', 'POST', {
-        mode: 'token_plan_agentic',
+        mode: 'agentic',
       });
       assert.equal(start.status, 201);
       assert.equal(start.headers.get('cache-control'), 'no-store');
@@ -259,14 +273,12 @@ export async function codexHttpContracts() {
       ).json();
       assert.equal(cancelled.state, 'cancelled');
       assert.equal(cancelled.userCode, null);
-      const observed = await (
-        await call(path + '?mode=token_plan_agentic')
-      ).json();
+      const observed = await (await call(path + '?mode=agentic')).json();
       assert.equal(observed.authenticated, false);
       assert.equal(observed.quotas, null);
       assert.deepEqual(
         await (
-          await call(path + '/logout', 'POST', { mode: 'token_plan_agentic' })
+          await call(path + '/logout', 'POST', { mode: 'agentic' })
         ).json(),
         { disconnected: true },
       );

@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-25",
+  "status": "local_client_validation_passed_not_adopted",
+  "scope": "Invoice OCR attachment reference eligibility and draft preservation; no OCR button or automatic send",
+  "production_sources": [
+    {
+      "path": "nodia-client/src/translate/en/nodiaAi.json",
+      "sha256": "2a9b274c133ce9d091575c0ff2ad1ec1d7374c5fa72674606036656db9f7fa84",
+      "bytes": 51948
+    },
+    {
+      "path": "nodia-client/src/translate/es/nodiaAi.json",
+      "sha256": "e59329ddff3774cef4ed580958e86711de367dd216812d5285a6f28e790cfd98",
+      "bytes": 55282
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/schemas.ts",
+      "sha256": "edc1308c5c81485e6836520db168291b4a89064bb24f2fdccba808561ec3e2b9",
+      "bytes": 15867
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/types.ts",
+      "sha256": "e9c367e533884abcab13d520069bd9ec3ae54f9c1fa020c3d27403022719e3d5",
+      "bytes": 9525
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+      "sha256": "4440131602fbf71fad7b388849b4f5f43c6254d4363975a93ce12528a689dc50",
+      "bytes": 32732
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Attachments/Attachments.tsx",
+      "sha256": "483f8f9c85b25da861dd962dd015a50f8174fdd7074a06b47fa8b540cf38be57",
+      "bytes": 6581
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Attachments/hooks/useAttachmentDrafts.ts",
+      "sha256": "3b9a83bef8cf3323c48268e67061f249519f1976d4a92ce272233a8ed5d8c8a7",
+      "bytes": 11705
+    }
+  ],
+  "validation": {
+    "full_suite": {
+      "command": "npm run test -- --maxWorkers=2",
+      "exit_code": 0,
+      "passed_tests": 2027,
+      "passed_files": 249,
+      "duration_seconds": 543.09,
+      "executions": 1,
+      "captured_summary": [
+        "Test Files  249 passed (249)",
+        "Tests  2027 passed (2027)",
+        "Duration  543.09s (transform 23.98s, setup 69.96s, import 370.48s, tests 383.56s, environment 219.94s)"
+      ],
+      "observed_warnings": "Four jsdom navigation-to-another-Document messages; no failed tests"
+    },
+    "build": {
+      "command": "npm run build -- --outDir ../.tmp/c03-invoice-ocr-client-r01/client-dist",
+      "exit_code": 0,
+      "executions": 1,
+      "ran_after_full_suite": true,
+      "typecheck_included": true,
+      "vite_version": "8.2.1",
+      "static_files": 183,
+      "root_dist_written": false,
+      "captured_summary": [
+        "vite v8.2.1 building client environment for production...",
+        "✓ built in 11.76s"
+      ],
+      "warnings": [
+        "chunk size",
+        "plugin timings"
+      ]
+    },
+    "prior_focal_checks": {
+      "schema_hook_panel_tests": 33,
+      "schema_hook_panel_files": 3,
+      "page_stale_selection_test": 1,
+      "other_page_tests_filtered": 54,
+      "typecheck_exit_code": 0,
+      "focal_eslint_exit_code": 0,
+      "provenance": "Observed agent command results, summarized before full suite in local verification-r01.json; no separate saved typecheck/eslint stdout log"
+    }
+  },
+  "regression_scope": [
+    "Optional/null invoice_ocr preserves previous contract",
+    "PNG/JPEG/WebP/PDF and exact 10 MiB boundary; no unknown-size or oversized OCR reference",
+    "Fresh matching selection and completed successful attachment policy GET required; fetching/error/revoked flag reject the OCR reference",
+    "Same RAM File and draft survive policy refresh/stale selection; no native MIME claim from OCR eligibility",
+    "Standard text+attachment parts only; one targeted page integration; no OCR wizard/button/auto-send"
+  ],
+  "raw_log_pins": [
+    {
+      "temporary_path": ".tmp/c03-invoice-ocr-client-r01/full-suite-r01.log",
+      "sha256": "cce25a9633dcba43e97d1c2c19cee967acba21f35a7bdd0084f8a0c3b42845da",
+      "bytes": 515
+    },
+    {
+      "temporary_path": ".tmp/c03-invoice-ocr-client-r01/build-r01.log",
+      "sha256": "16864219666df6216edafc9ac18c883d07511e57eaf7c9c66986b885f76f28cb",
+      "bytes": 23510
+    }
+  ],
+  "boundaries": {
+    "VM_operations": 0,
+    "SDK_or_provider_operations": 0,
+    "browser_acceptance": false,
+    "server_integration_proved": false,
+    "deployed": false,
+    "C03_accepted": false,
+    "knowledge_publication_or_approval_changed": false,
+    "note": "Self-contained validation summary; temporary logs/output corroborate local execution but are not a maintained runtime dependency. No full-suite repetition for evidence packaging."
+  }
+}

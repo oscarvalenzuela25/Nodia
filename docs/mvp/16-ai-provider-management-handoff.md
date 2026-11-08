@@ -1,5 +1,7 @@
 # Entrega para agente — Gestión global de proveedores de IA
 
+> Cambio solicitado el 2026-10-27: retirar Web y conservar sólo Agentic (`agentic`) y API key (`api_key`), conforme [plan90](90-agentic-api-only-web-retirement.md) y [pruebas91](91-ai-provider-onboarding-verification.md). Los apartados inferiores conservan contratos/evidencias anteriores por fecha y no habilitan Web. Implementación y aceptación en curso; ningún cambio automático de proveedor, modelo o modo por error.
+
 
 ## Aclaración vigente del usuario — 2026-10-06
 

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { isAxiosError } from "axios";
 import {
   Alert,
@@ -6,37 +6,41 @@ import {
   Button,
   Chip,
   Drawer,
+  IconButton,
   LinearProgress,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
-import TuneOutlined from "@mui/icons-material/TuneOutlined";
 import ForumOutlined from "@mui/icons-material/ForumOutlined";
-import SendOutlined from "@mui/icons-material/SendOutlined";
-import BookmarkOutlined from "@mui/icons-material/BookmarkOutlined";
+import RefreshOutlined from "@mui/icons-material/RefreshOutlined";
 import { Skeleton } from "boneyard-js/react";
 import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import useAuth from "../../../../hooks/useAuth";
 import useGeneralSettingsStore from "../../../../store/generalSettings/generalSettingsStore";
-import { hasModuleAccess } from "../../../../store/generalSettings/helpers";
-import TextInput from "../../../../components/inputs/TextInput";
 import { getHttpErrorMessage } from "../../../../config/httpFeedback";
-import { nodiaAiEligibilityReasonKey } from "../../infrastructure/eligibilityPresentation";
-import ConfigurationDrawer from "../../components/ConfigurationDrawer";
+import { nodiaAiEligibilityReasonKey, nodiaAiRunErrorKey } from "../../infrastructure/eligibilityPresentation";
+import { useConversationDraft } from "../../infrastructure/useConversationDraft";
+import { useNodiaAiStatusRefresh } from "../../infrastructure/useNodiaAiStatusRefresh";
+import { NODIA_AI_MESSAGE_TEXT_BYTES } from "../../infrastructure/schemas";
 import Preferences from "../../components/Preferences";
 import ConversationHistory from "../../components/ConversationHistory";
-import ConversationManagement, { type ConversationOperation } from "../../components/ConversationManagement/ConversationManagement";
+import ConversationManagement, {
+  type ConversationOperation,
+} from "../../components/ConversationManagement/ConversationManagement";
 import type { ConversationFilters } from "../../components/ConversationHistory/types";
-import Attachments from "../../components/Attachments";
-import AttachmentMessage from "../../components/Attachments/AttachmentMessage";
+import ChatComposer from "../../components/ChatComposer";
+import ChatMessage from "../../components/ChatMessage";
+import ConversationTitle from "../../components/ConversationTitle";
+import ComposerSelection from "../../components/ComposerSelection";
 import { useAttachmentDrafts } from "../../components/Attachments/hooks/useAttachmentDrafts";
-import ExecutionObservation, { HistoricalObservation } from "../../components/ExecutionObservation";
+import ExecutionObservation from "../../components/ExecutionObservation";
+import RunCancellation from "../../components/RunCancellation";
 import type { NodiaAiConfigurationChange } from "../../components/ConfigurationDrawer/types";
 import type {
-  NodiaAiAdmitInput,
   NodiaAiSelection,
   NodiaAiConversationUpdateInput,
 } from "../../infrastructure/types";
@@ -58,21 +62,13 @@ import {
   Actions,
   Chat,
   ChatHeading,
-  Composer,
   Header,
   History,
-  Message,
   Messages,
   Page,
+  PageTitle,
   Workspace,
 } from "./styles";
-
-const contextErrorMessages: Readonly<Record<string, string>> = {
-  "nodia_ai:compaction_invalid": "context_errors.compaction_invalid",
-  "nodia_ai:context_sources_changed": "context_errors.context_sources_changed",
-  "nodia_ai:context_snapshot_invalid": "context_errors.context_snapshot_invalid",
-  "nodia_ai:context_limit": "context_errors.context_limit",
-};
 
 const sameSelection = (
   a: NodiaAiSelection | null,
@@ -96,21 +92,31 @@ function ChatPage() {
       : null;
   const desktop = useMediaQuery(useTheme().breakpoints.up("md"));
   const [overlayState, setOverlayState] = useState<{
-    kind: "history" | "configuration" | "preferences";
+    kind: "history" | "preferences";
     chatId: string | null;
   } | null>(null);
   const overlay = overlayState?.chatId === chatId ? overlayState.kind : null;
-  const setOverlay = (kind: "history" | "configuration" | "preferences" | null) =>
-    setOverlayState(kind ? { kind, chatId } : null);
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
-  const [filters, setFilters] = useState<ConversationFilters>({ search: "", archive: "active", pinned: false, view: "own" });
+  const setOverlay = (
+    kind: "history" | "preferences" | null,
+  ) => setOverlayState(kind ? { kind, chatId } : null);
+  const [filters, setFilters] = useState<ConversationFilters>({
+    search: "",
+    archive: "active",
+    pinned: false,
+    view: "own",
+  });
   const [search, setSearch] = useState("");
-  const canViewAll = useGeneralSettingsStore(state => state.isLoaded && state.roles.includes("super_admin"));
-  const canManageConnections = useGeneralSettingsStore(state => state.isLoaded
-    && (state.roles.includes("super_admin") || state.actions.some(action => action.key === "ai:manage"))
-    && hasModuleAccess(state.modules, "/settings/ai-providers"));
-  const [operationState, setOperation] = useState<{ operation: ConversationOperation; contextId: string | null; anchor: HTMLElement } | null>(null);
-  const operation = operationState?.contextId === chatId ? operationState.operation : null;
+  const [historyFiltersExpanded, setHistoryFiltersExpanded] = useState(false);
+  const canViewAll = useGeneralSettingsStore(
+    (state) => state.isLoaded && state.roles.includes("super_admin"),
+  );
+  const [operationState, setOperation] = useState<{
+    operation: ConversationOperation;
+    contextId: string | null;
+    anchor: HTMLElement;
+  } | null>(null);
+  const operation =
+    operationState?.contextId === chatId ? operationState.operation : null;
   const [operationError, setOperationError] = useState<string | null>(null);
   const operationLock = useRef(false);
   const historyTrigger = useRef<HTMLButtonElement | null>(null);
@@ -120,58 +126,97 @@ function ChatPage() {
     const timer = setTimeout(() => setSearch(value), 300);
     return () => clearTimeout(timer);
   }, [filters.search]);
-  const [configurationDraft, setConfigurationDraft] =
-    useState<NodiaAiSelection | null>(null);
   const [configurationError, setConfigurationError] = useState<string | null>(
     null,
   );
+  const [inlineState, setInlineState] = useState<{ chatId: string | null; selection: NodiaAiSelection | null; dirty: boolean } | null>(null);
+  const inlineDraft = inlineState?.chatId === chatId ? inlineState.selection : null;
+  const inlineDirty = inlineState?.chatId === chatId && inlineState.dirty;
+  const setInlineDraft = useCallback((selection: NodiaAiSelection | null) => {
+    setInlineState(previous => ({ chatId, selection, dirty: previous?.chatId === chatId && previous.dirty }));
+  }, [chatId]);
+  const setInlineDirty = useCallback((dirty: boolean) => {
+    setInlineState(previous => ({ chatId, dirty, selection: previous?.chatId === chatId ? previous.selection : null }));
+  }, [chatId]);
   const [saving, setSaving] = useState(false);
   const createKey = useRef<string | null>(null);
-  const pendingMessages = useRef(new Map<string, NodiaAiAdmitInput>());
-  const [uncertainIds, setUncertainIds] = useState<Set<string>>(new Set());
-  const uncertain = chatId && uncertainIds.has(chatId) ? chatId : null;
   const inFlight = useRef(false);
   const currentChat = useRef(chatId);
   useLayoutEffect(() => {
     currentChat.current = chatId;
   }, [chatId]);
-  const chats = useNodiaAiConversations({ view: canViewAll ? filters.view : "own", search: search || undefined,
-    is_archived: filters.archive === "all" ? undefined : filters.archive === "archived", is_pinned: filters.pinned ? true : undefined });
+  const chats = useNodiaAiConversations({
+    view: canViewAll ? filters.view : "own",
+    search: search || undefined,
+    is_archived:
+      filters.archive === "all" ? undefined : filters.archive === "archived",
+    is_pinned: filters.pinned ? true : undefined,
+  });
   const detail = useNodiaAiConversation(chatId);
-  const history = useNodiaAiMessages(chatId, isNodiaAiRunActive(detail.data?.current_run?.state));
+  const history = useNodiaAiMessages(
+    chatId,
+    isNodiaAiRunActive(detail.data?.current_run?.state),
+  );
   const accessRejected = detail.accessRejected || history.accessRejected;
   const chat = accessRejected ? undefined : detail.data?.conversation;
   const run = accessRejected ? undefined : detail.data?.current_run;
+  const runErrorKey = nodiaAiRunErrorKey(run?.error?.code);
   const active =
-    isNodiaAiRunActive(run?.state) || run?.state === "unknown" || isNodiaAiExecutionActive(detail.data?.active_execution?.state);
-  const operationDetail = useNodiaAiConversation(operation?.chat.conversation_id ?? null);
-  const updateConversation = useUpdateNodiaAiConversation(operation?.chat.conversation_id ?? null);
-  const catalog = useNodiaAiCatalog(overlay === "configuration");
+    isNodiaAiRunActive(run?.state) ||
+    run?.state === "unknown" ||
+    isNodiaAiExecutionActive(detail.data?.active_execution?.state);
+  const operationDetail = useNodiaAiConversation(
+    operation?.chat.conversation_id ?? null,
+  );
+  const updateConversation = useUpdateNodiaAiConversation(
+    operation?.chat.conversation_id ?? null,
+  );
+  const renameConversation = useUpdateNodiaAiConversation(chatId);
+  const titleLock = useRef(false);
+  const [titleErrorState, setTitleErrorState] = useState<{ chatId: string; message: string } | null>(null);
+  const titleError = titleErrorState?.chatId === chatId ? titleErrorState.message : null;
+  const catalog = useNodiaAiCatalog(!!chat && !chat.read_only);
   const eligibility = useNodiaAiEligibility(
-    overlay === "configuration"
-      ? configurationDraft
-      : (chat?.selection ?? null),
+    inlineDirty ? inlineDraft : (chat?.selection ?? null),
     { conversationId: chatId, active },
   );
+  const statusRefresh = useNodiaAiStatusRefresh({
+    conversationId: chatId,
+    runId: run?.run_id,
+    detail: detail.refetch,
+    history: history.refetch,
+    eligibility: eligibility.refetch,
+  });
   const create = useCreateNodiaAiConversation();
   const admit = useAdmitNodiaAiMessage(chatId);
   const select = useSetNodiaAiSelection(chatId);
   const routing = useSetNodiaAiRouting(chatId);
   const connections = catalog.data?.pages.flatMap((page) => page.items) ?? [];
   const chatItems = chats.data?.pages.flatMap((page) => page.items) ?? [];
-  const messages = accessRejected ? [] :
-    history.data?.pages
-      .slice()
-      .reverse()
-      .flatMap((page) => page.items) ?? [];
+  const messages = accessRejected
+    ? []
+    : (history.data?.pages
+        .slice()
+        .reverse()
+        .flatMap((page) => page.items) ?? []);
   const messageScroll = useRef<HTMLDivElement | null>(null);
   const followMessages = useRef(true);
+  const followActivity = useCallback(() => {
+    const node = messageScroll.current;
+    if (node && followMessages.current) node.scrollTop = node.scrollHeight;
+  }, []);
   const lastWindow = useRef<string | null>(null);
   const lastMessageId = messages.at(-1)?.message_id;
   const firstMessageId = messages[0]?.message_id;
-  const pendingScroll = useRef<{ id: string; top: number; height: number; firstId: string | null } | null>(null);
+  const pendingScroll = useRef<{
+    id: string;
+    top: number;
+    height: number;
+    firstId: string | null;
+  } | null>(null);
   useLayoutEffect(() => {
-    const pending = pendingScroll.current, node = messageScroll.current;
+    const pending = pendingScroll.current,
+      node = messageScroll.current;
     if (pending && pending.id !== chatId) pendingScroll.current = null;
     else if (pending && node && pending.firstId !== (firstMessageId ?? null)) {
       node.scrollTop = pending.top + node.scrollHeight - pending.height;
@@ -184,20 +229,43 @@ function ChatPage() {
     if (lastWindow.current !== chatId || followMessages.current)
       node.scrollTop = node.scrollHeight;
     lastWindow.current = chatId;
-  }, [chatId, lastMessageId]);
-  const draft = chatId ? (drafts[chatId] ?? "") : "";
-  const attachments = useAttachmentDrafts(chatId, chat?.revision);
-  const [recording, setRecording] = useState(false);
-  const messageTextBytes = new TextEncoder().encode(draft).length + attachments.reviewedTextBytes;
-  const busy = create.isPending || admit.isPending || saving || updateConversation.isPending;
-  const readBusy = detail.isFetching || history.isFetching;
+  }, [chatId, lastMessageId, run?.run_id]);
+  const composerDraft = useConversationDraft(
+    chat,
+    accessRejected ? chatId : null,
+    detail.draftAuthorized,
+  );
   const selectionMatches =
     !!chat?.selection &&
     !!eligibility.data &&
     sameSelection(chat.selection, eligibility.data.selection);
-  const usable = selectionMatches && !eligibility.isError && eligibility.data?.available === true;
+  const usable =
+    selectionMatches &&
+    !eligibility.isError &&
+    eligibility.data?.available === true;
+  const attachments = useAttachmentDrafts(
+    chatId,
+    chat?.revision,
+    usable && !eligibility.isFetching ? eligibility.data?.invoice_ocr : null,
+    { autoUpload: !!chat && !chat.read_only && detail.draftAuthorized && usable && !active && !inlineDirty && !detail.isError && !history.isError },
+  );
+  const draft = attachments.admission?.text ?? composerDraft.text;
+  const uncertain =
+    attachments.admission?.status === "uncertain" ? chatId : null;
+  const [recording, setRecording] = useState(false);
+  const messageTextBytes =
+    new TextEncoder().encode(draft).length + attachments.reviewedTextBytes;
+  const busy =
+    create.isPending ||
+    admit.isPending ||
+    saving ||
+    updateConversation.isPending ||
+    renameConversation.isPending ||
+    attachments.admissionInFlight;
+  const readBusy = detail.isFetching || history.isFetching;
   const sendDisabled =
     !chat ||
+    !detail.draftAuthorized ||
     chat.read_only ||
     busy ||
     readBusy ||
@@ -214,6 +282,7 @@ function ChatPage() {
       return next;
     });
     setOverlay(null);
+    setInlineDirty(false);
     setConfigurationError(null);
   };
   const closeOperation = () => {
@@ -229,7 +298,14 @@ function ChatPage() {
     }, 0);
   };
   const saveOperation = async (input: NodiaAiConversationUpdateInput) => {
-    if (!operation || operationLock.current || operationDetail.accessRejected || operation.chat.read_only || operationDetail.data?.conversation.read_only) return;
+    if (
+      !operation ||
+      operationLock.current ||
+      operationDetail.accessRejected ||
+      operation.chat.read_only ||
+      operationDetail.data?.conversation.read_only
+    )
+      return;
     operationLock.current = true;
     setOperationError(null);
     try {
@@ -237,23 +313,58 @@ function ChatPage() {
       operationLock.current = false;
       if (operationState?.contextId === currentChat.current) closeOperation();
     } catch (error) {
-      if (operationState?.contextId === currentChat.current) setOperationError(getHttpErrorMessage(error));
+      if (operationState?.contextId === currentChat.current)
+        setOperationError(getHttpErrorMessage(error));
       throw error;
-    } finally { operationLock.current = false; }
+    } finally {
+      operationLock.current = false;
+    }
   };
   const reviewOperation = async () => {
     const result = await operationDetail.refetch();
     if (!result.data || result.isError || !operation) return;
     const latest = result.data.conversation;
-    setOperation(previous => previous?.operation.chat.conversation_id === latest.conversation_id
-      ? { ...previous, operation: { ...previous.operation, chat: latest } } : previous);
+    setOperation((previous) =>
+      previous?.operation.chat.conversation_id === latest.conversation_id
+        ? { ...previous, operation: { ...previous.operation, chat: latest } }
+        : previous,
+    );
     setOperationError(null);
   };
-  const recoverContent = () => Promise.all([detail.refetch(), history.refetch()]);
+  const recoverContent = () =>
+    Promise.all([detail.refetch(), history.refetch()]);
+  const saveTitle = async (title: string | null, revision: number) => {
+    if (!chatId || !chat || chat.read_only || titleLock.current || busy || readBusy || active
+      || !detail.draftAuthorized || detail.isError || history.isError || currentChat.current !== chatId)
+      throw new Error(t("detail_error"));
+    const boundId = chatId;
+    titleLock.current = true;
+    setTitleErrorState(null);
+    try {
+      await renameConversation.mutateAsync({ expected_conversation_revision: revision, title });
+    } catch (error) {
+      if (currentChat.current === boundId) setTitleErrorState({ chatId: boundId, message: getHttpErrorMessage(error) });
+      throw error;
+    } finally {
+      titleLock.current = false;
+    }
+  };
+  const refreshTitle = async () => {
+    const boundId = chatId;
+    const result = await detail.refetch();
+    if (currentChat.current !== boundId || result.isError || !result.data || result.data.conversation.read_only) return null;
+    setTitleErrorState(null);
+    return result.data.conversation;
+  };
   const loadOlderMessages = async () => {
     const node = messageScroll.current;
     if (!chatId || !node || history.isFetching || recording) return;
-    const previous = { id: chatId, top: node.scrollTop, height: node.scrollHeight, firstId: firstMessageId ?? null };
+    const previous = {
+      id: chatId,
+      top: node.scrollTop,
+      height: node.scrollHeight,
+      firstId: firstMessageId ?? null,
+    };
     pendingScroll.current = previous;
     followMessages.current = false;
     try {
@@ -261,7 +372,10 @@ function ChatPage() {
       const first = result.data?.pages.at(-1)?.items[0]?.message_id ?? null;
       // Query completion can precede React's notification/commit. Only the layout
       // effect may consume a successful prepend after its DOM exists.
-      if (pendingScroll.current === previous && (result.isError || first === previous.firstId))
+      if (
+        pendingScroll.current === previous &&
+        (result.isError || first === previous.firstId)
+      )
         pendingScroll.current = null;
     } catch {
       if (pendingScroll.current === previous) pendingScroll.current = null;
@@ -279,11 +393,7 @@ function ChatPage() {
       createKey.current = null;
       if (currentChat.current === sourceChat) {
         openChat(created.conversation_id);
-        setConfigurationDraft(created.selection);
-        setOverlayState({
-          kind: "configuration",
-          chatId: created.conversation_id,
-        });
+        setInlineDirty(false);
       }
     } catch {
       /* Hook owns HTTP feedback; the request key is retained for an explicit retry. */
@@ -293,7 +403,9 @@ function ChatPage() {
   };
   const send = async () => {
     const recovering =
-      !!chatId && uncertain === chatId && pendingMessages.current.has(chatId);
+      !!chatId &&
+      uncertain === chatId &&
+      attachments.admission?.status === "uncertain";
     if (
       inFlight.current ||
       !chatId ||
@@ -302,38 +414,43 @@ function ChatPage() {
       busy ||
       readBusy ||
       (sendDisabled && !recovering) ||
-      (!recovering && ((!draft.trim() && !attachments.parts.length) || attachments.busy || recording || !attachments.ready || messageTextBytes > 32768))
+      (inlineDirty && !recovering) ||
+      (!recovering &&
+        ((!draft.trim() && !attachments.parts.length) ||
+          attachments.busy ||
+          recording ||
+          !attachments.ready ||
+          messageTextBytes > NODIA_AI_MESSAGE_TEXT_BYTES))
     )
       return;
     const id = chatId;
-    const input = pendingMessages.current.get(id) ?? {
+    const input = (recovering ? attachments.admission?.input : null) ?? {
       client_message_id: crypto.randomUUID(),
       expected_conversation_revision: chat.revision,
-      parts: [...(draft.trim() ? [{ kind: "text" as const, text: draft }] : []), ...attachments.parts],
+      parts: [
+        ...(draft.trim() ? [{ kind: "text" as const, text: draft }] : []),
+        ...attachments.parts,
+      ],
     };
-    pendingMessages.current.set(id, input);
+    const admission = attachments.reserveAdmission(input, draft);
+    if (!admission) return;
+    composerDraft.beginSubmission();
     inFlight.current = true;
     try {
-      await admit.mutateAsync(input);
-      pendingMessages.current.delete(id);
-      setDrafts((previous) => ({ ...previous, [id]: "" }));
-      attachments.clear(id);
-      setUncertainIds((previous) => {
-        const next = new Set(previous);
-        next.delete(id);
-        return next;
-      });
+      await admit.mutateAsync(admission.input);
+      attachments.settleAdmission(id, admission, "accepted");
+      composerDraft.finishSubmission(id, "accepted", chat.expires_at);
     } catch (error) {
       const status = isAxiosError(error) ? error.response?.status : undefined;
       const rejected =
         status !== undefined && status >= 400 && status < 500 && status !== 408;
-      if (rejected) pendingMessages.current.delete(id);
-      setUncertainIds((previous) => {
-        const next = new Set(previous);
-        if (rejected) next.delete(id);
-        else next.add(id);
-        return next;
-      });
+      const outcome = [401, 403, 404, 410].includes(status ?? 0)
+        ? "accepted"
+        : rejected
+          ? "rejected"
+          : "uncertain";
+      attachments.settleAdmission(id, admission, outcome);
+      composerDraft.finishSubmission(id, outcome, chat.expires_at);
       void detail.refetch();
     } finally {
       inFlight.current = false;
@@ -354,25 +471,15 @@ function ChatPage() {
         });
       }
       if (currentChat.current !== sourceChat) return;
-      if (
-        change.routingEnabled !== current.routing.enabled ||
-        (change.routingEnabled &&
-          JSON.stringify(current.routing.target) !==
-            JSON.stringify(eligibility.data?.routing_target))
-      ) {
-        const target = change.routingEnabled
-          ? eligibility.data?.routing_target
-          : null;
-        if (change.routingEnabled && !target)
-          throw new Error(t("routing_unavailable"));
+      if (current.routing.enabled || current.routing.target !== null) {
         await routing.mutateAsync({
           expected_conversation_revision: current.revision,
           expected_routing_revision: current.routing.revision,
-          enabled: change.routingEnabled,
-          target: target ?? null,
+          enabled: false,
+          target: null,
         });
       }
-      if (currentChat.current === sourceChat) setOverlay(null);
+      if (currentChat.current === sourceChat) { setOverlay(null); setInlineDirty(false); }
     } catch (error) {
       if (currentChat.current === sourceChat)
         setConfigurationError(getHttpErrorMessage(error));
@@ -383,64 +490,69 @@ function ChatPage() {
       setSaving(false);
     }
   };
-  const historyContent = <ConversationHistory items={chats.accessRejected ? [] : chatItems} selectedId={chatId}
-    filters={{ ...filters, view: canViewAll ? filters.view : "own" }} canViewAll={canViewAll}
-    loading={chats.isLoading} fetching={chats.isFetching} error={chats.isError} disabled={busy || recording}
-    hasMore={!!chats.hasNextPage} onFilters={setFilters} onSelect={openChat}
-    onRetry={() => void chats.refetch()} onMore={() => void chats.fetchNextPage()}
-    onAction={(target, action, anchor) => {
-      setOverlay(null);
-      setOperationError(null);
-      setOperation({ operation: { chat: target, action }, contextId: chatId, anchor });
-    }} />;
+  const historyContent = (
+    <ConversationHistory
+      items={chats.accessRejected ? [] : chatItems}
+      selectedId={chatId}
+      filters={{ ...filters, view: canViewAll ? filters.view : "own" }}
+      canViewAll={canViewAll}
+      filtersExpanded={historyFiltersExpanded}
+      onToggleFilters={() => setHistoryFiltersExpanded(value => !value)}
+      loading={chats.isLoading}
+      fetching={chats.isFetching}
+      error={chats.isError}
+      disabled={busy || recording}
+      hasMore={!!chats.hasNextPage}
+      onFilters={setFilters}
+      onSelect={openChat}
+      onPreferences={id => {
+        if (id !== chatId) openChat(id);
+        setOverlayState({ kind: "preferences", chatId: id });
+      }}
+      onRetry={() => void chats.refetch()}
+      onMore={() => void chats.fetchNextPage()}
+      onAction={(target, action, anchor) => {
+        setOverlay(null);
+        setOperationError(null);
+        setOperation({
+          operation: { chat: target, action },
+          contextId: chatId,
+          anchor,
+        });
+      }}
+    />
+  );
   return (
     <Page aria-labelledby="nodia-ai-title">
       <Header>
         <Box>
-          <Typography id="nodia-ai-title" component="h1" variant="h4">
-            NodiaAI
-          </Typography>
-          <Typography color="text.secondary" variant="body2">
-            {t("subtitle")}
-          </Typography>
+          <PageTitle id="nodia-ai-title">
+            Nodia AI
+          </PageTitle>
         </Box>
         <Actions>
-          <Button startIcon={<BookmarkOutlined />} disabled={busy || readBusy || recording} onClick={() => setOverlay("preferences")}>{t("preferences.title")}</Button>
           {!desktop && (
             <Button
+              variant="text"
               startIcon={<ForumOutlined />}
+            aria-label={t("conversations")}
+            title={t("conversations")}
               ref={historyTrigger}
               disabled={busy || recording}
               onClick={() => setOverlay("history")}
             >
-              {t("conversations")}
+              <span className="header-action-label">{t("conversations")}</span>
             </Button>
           )}
           <Button
-            variant="outlined"
+            variant="contained"
             startIcon={<AddOutlined />}
+            aria-label={t("new_chat")}
+            title={t("new_chat")}
             disabled={busy || chats.isFetching || recording}
             onClick={() => void createChat()}
           >
-            {t("new_chat")}
-          </Button>
-          <Button
-            startIcon={<TuneOutlined />}
-            disabled={
-              !chat ||
-              chat.read_only ||
-              busy ||
-              readBusy ||
-              recording ||
-              uncertain === chatId
-            }
-            onClick={() => {
-              setConfigurationDraft(chat?.selection ?? null);
-              setConfigurationError(null);
-              setOverlay("configuration");
-            }}
-          >
-            {t("settings")}
+            <span className="header-action-label">{t("new_chat")}</span>
           </Button>
         </Actions>
       </Header>
@@ -452,35 +564,34 @@ function ChatPage() {
         )}
         <Chat>
           <ChatHeading>
-            <Typography
+            {chat ? <ConversationTitle key={chat.conversation_id}
+              conversation={chat} readOnly={chat.read_only}
+              disabled={!detail.draftAuthorized || busy || readBusy || active || !!operation || recording || attachments.busy || uncertain === chatId || detail.isError || history.isError}
+              busy={renameConversation.isPending} error={titleError}
+              onSave={saveTitle} onRefresh={refreshTitle}
+            /> : <Typography
               component="h2"
               variant="h6"
-              sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
+              sx={{ fontSize: { xs: "1rem", sm: "1.25rem" }, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}
             >
-              {chat?.title ?? t(chatId ? "untitled" : "welcome")}
-            </Typography>
+              {t(chatId ? "untitled" : "welcome")}
+            </Typography>}
             {chat && (
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
                 <Chip
                   size="small"
+                  sx={{ display: { xs: "none", sm: "inline-flex" } }}
                   label={
                     chat.selection
                       ? `${t(`modes.${chat.selection.mode}`)} · ${chat.selection.model_id}`
                       : t("no_selection")
                   }
                 />
-                {chat.routing.enabled && (
-                  <Chip
-                    size="small"
-                    label={t("routing_enabled")}
-                    color="info"
-                  />
-                )}
                 {chat.read_only && <Chip size="small" label={t("read_only")} />}
               </Box>
             )}
-            {readBusy && !detail.isLoading && (
-              <LinearProgress aria-label={t("refreshing")} />
+            {readBusy && !detail.isLoading && !active && (
+              <LinearProgress aria-label={t("refreshing")} sx={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2 }} />
             )}
             {requestedId && !chatId && (
               <Alert severity="error">{t("invalid_chat")}</Alert>
@@ -490,6 +601,7 @@ function ChatPage() {
                 severity="error"
                 action={
                   <Button
+                    variant="contained"
                     disabled={detail.isFetching}
                     onClick={() => void recoverContent()}
                   >
@@ -500,19 +612,41 @@ function ChatPage() {
                 {t("detail_error")}
               </Alert>
             )}
-            {accessRejected && <Alert severity="warning">{t("organization.access_rejected")}</Alert>}
+            {accessRejected && (
+              <Alert severity="warning">
+                {t("organization.access_rejected")}
+              </Alert>
+            )}
             {chat && !chat.read_only && !usable && !eligibility.isError && (
-              <Alert severity="info">
+              <Alert
+                severity="info"
+                slotProps={{
+                  message: { sx: { minWidth: 0, overflowWrap: "anywhere" } },
+                  action: { sx: { alignSelf: "flex-start", flexShrink: 0, pt: 0, pl: 1 } },
+                }}
+                action={chat.selection && !active ? (
+                  <Tooltip title={t("configuration.check_again")}>
+                    <span>
+                      <IconButton
+                        color="inherit"
+                        aria-label={t("configuration.check_again")}
+                        disabled={busy || readBusy || eligibility.isFetching}
+                        onClick={() => void eligibility.refetch()}
+                        sx={{ width: 44, height: 44 }}
+                      >
+                        <RefreshOutlined />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                ) : undefined}
+              >
                 {eligibility.isFetching
                   ? t("checking_selection")
-                  : t(nodiaAiEligibilityReasonKey(selectionMatches ? eligibility.data?.reason : null))}
-                {chat.selection && !active && (
-                  <Button color="inherit" disabled={busy || readBusy || eligibility.isFetching}
-                    onClick={() => void eligibility.refetch()}
-                    sx={{ display: "flex", mt: 1, minHeight: 44, width: { xs: "100%", sm: "auto" } }}>
-                    {t("configuration.check_again")}
-                  </Button>
-                )}
+                  : t(
+                      nodiaAiEligibilityReasonKey(
+                        selectionMatches ? eligibility.data?.reason : null,
+                      ),
+                    )}
               </Alert>
             )}
             {eligibility.isError && (
@@ -520,7 +654,10 @@ function ChatPage() {
                 severity="error"
                 action={
                   <Button
-                    disabled={active || busy || readBusy || eligibility.isFetching}
+                    variant="contained"
+                    disabled={
+                      active || busy || readBusy || eligibility.isFetching
+                    }
                     onClick={() => void eligibility.refetch()}
                   >
                     {t("retry")}
@@ -530,22 +667,29 @@ function ChatPage() {
                 {t("eligibility_error")}
               </Alert>
             )}
+            {usable && eligibility.data?.supports_image_generation === false && (
+              <Typography variant="caption" color="text.secondary">{t("image_generation.unverified")}</Typography>
+            )}
           </ChatHeading>
           <Messages
             ref={messageScroll}
             role="region"
             aria-label={t("messages")}
             tabIndex={0}
-              onScroll={(event) => {
+            onScroll={(event) => {
               const node = event.currentTarget;
               followMessages.current =
                 node.scrollHeight - node.scrollTop - node.clientHeight < 80;
-                if (pendingScroll.current?.id === chatId && pendingScroll.current.height === node.scrollHeight)
-                  pendingScroll.current.top = node.scrollTop;
+              if (
+                pendingScroll.current?.id === chatId &&
+                pendingScroll.current.height === node.scrollHeight
+              )
+                pendingScroll.current.top = node.scrollTop;
             }}
           >
             {history.hasNextPage && (
               <Button
+                variant="contained"
                 disabled={history.isFetching || busy || recording}
                 onClick={() => void loadOlderMessages()}
               >
@@ -569,36 +713,18 @@ function ChatPage() {
               </Box>
             )}
             <Skeleton loading={detail.isLoading || history.isLoading}>
-              {chatId && !accessRejected && !messages.length && !history.isLoading && !history.isError && (
-                <Typography color="text.secondary">
-                  {t("empty_messages")}
-                </Typography>
-              )}
+              {chatId &&
+                !accessRejected &&
+                !messages.length &&
+                !history.isLoading &&
+                !history.isError && (
+                  <Typography color="text.secondary">
+                    {t("empty_messages")}
+                  </Typography>
+                )}
               {messages.map((message) => (
-                <Message
-                  key={message.message_id}
-                  isOwner={message.role === "user"}
-                >
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    component="p"
-                    sx={{ mb: 0.5 }}
-                  >
-                    {t(message.role === "user" ? "you" : "assistant")}
-                  </Typography>
-                  {message.status === "partial" && <Alert severity="info" sx={{ mb: 1 }}>{t("organization.partial_message")}</Alert>}
-                  <Typography
-                    component="div"
-                    sx={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}
-                  >
-                    {message.visibility === "restricted"
-                      ? t("restricted_message")
-                      : message.parts.map((part) => part.text).join("\n")}
-                  </Typography>
-                  {message.visibility === "visible" && message.parts.map(part => part.kind !== "text" && <AttachmentMessage key={part.attachment_id} id={part.attachment_id} kind={part.kind} conversationId={chatId!} />)}
-                  {chatId && message.visibility === "visible" && message.role === "assistant" && message.run_id && message.run_id !== run?.run_id && <HistoricalObservation conversationId={chatId} runId={message.run_id} />}
-                </Message>
+                <ChatMessage key={message.message_id} message={message}
+                  conversationId={chatId!} currentRunId={run?.run_id} />
               ))}
             </Skeleton>
             {history.isError && (
@@ -606,6 +732,7 @@ function ChatPage() {
                 severity="error"
                 action={
                   <Button
+                    variant="contained"
                     disabled={history.isFetching}
                     onClick={() => void recoverContent()}
                   >
@@ -616,7 +743,7 @@ function ChatPage() {
                 {t("messages_error")}
               </Alert>
             )}
-            {run && (
+            {run && (run.state === "failed" || run.state === "unknown" || run.state === "cancelled") && (
               <Alert
                 severity={
                   run.state === "failed" || run.state === "unknown"
@@ -627,8 +754,9 @@ function ChatPage() {
                 action={
                   active && !isNodiaAiRunActive(run.state) ? (
                     <Button
-                      disabled={detail.isFetching}
-                      onClick={() => void detail.refetch()}
+                      variant="contained"
+                      disabled={detail.isFetching || statusRefresh.isRefreshing}
+                      onClick={() => void statusRefresh.refresh()}
                     >
                       {t("refresh_status")}
                     </Button>
@@ -636,113 +764,139 @@ function ChatPage() {
                 }
               >
                 {t(`states.${run.state}`)}
-                {run.error?.code === "nodia_ai:preferences_changed" && <Typography variant="body2">{t("preferences.changed")}</Typography>}
-                {run.error?.code && contextErrorMessages[run.error.code] && <Typography variant="body2">{t(contextErrorMessages[run.error.code])}</Typography>}
+                {run.error?.code === "nodia_ai:preferences_changed" && (
+                  <Typography variant="body2">
+                    {t("preferences.changed")}
+                  </Typography>
+                )}
+                {runErrorKey && (
+                  <Typography variant="body2">
+                    {t(runErrorKey)}
+                  </Typography>
+                )}
                 {run.state === "unknown" && (
                   <Typography variant="body2">{t("unknown_detail")}</Typography>
                 )}
               </Alert>
             )}
-            {!accessRejected && detail.data?.active_execution && <Alert severity="info" role="status" action={<Button disabled={detail.isFetching} onClick={() => void detail.refetch()}>{t("refresh_status")}</Button>}>
-              {t("proposal.execution_status", { state: t(`proposal.execution_states.${detail.data.active_execution.state}`) })}
-            </Alert>}
-            {chatId && run && <ExecutionObservation key={run.run_id} conversationId={chatId} run={run} />}
+            {!accessRejected && detail.data?.active_execution && (
+              <Alert
+                severity="info"
+                role="status"
+                action={
+                  <Button
+                    variant="contained"
+                    disabled={detail.isFetching}
+                    onClick={() => void detail.refetch()}
+                  >
+                    {t("refresh_status")}
+                  </Button>
+                }
+              >
+                {t("proposal.execution_status", {
+                  state: t(
+                    `proposal.execution_states.${detail.data.active_execution.state}`,
+                  ),
+                })}
+              </Alert>
+            )}
+            {chatId && run && (
+              <ExecutionObservation
+                key={run.run_id}
+                conversationId={chatId}
+                run={run}
+                onProgress={followActivity}
+                activityControls={<RunCancellation
+                  conversationId={chatId}
+                  run={run}
+                  authorized={detail.draftAuthorized && !detail.isFetching && !detail.isError}
+                  readOnly={chat?.read_only ?? true}
+                />}
+              />
+            )}
           </Messages>
           {chat && !chat.read_only && (
-            <Composer
-              onSubmit={(event) => {
-                event.preventDefault();
-                void send();
-              }}
-            >
-              {uncertain === chatId && (
-                <Alert severity="warning">{t("send_uncertain")}</Alert>
-              )}
-              <TextInput
-                label={t("message")}
-                value={draft}
-                onChange={(event) =>
-                  setDrafts((previous) => ({
-                    ...previous,
-                    [chatId!]: event.target.value,
-                  }))
-                }
-                multiline
-                minRows={2}
-                maxRows={5}
-                disabled={sendDisabled || uncertain === chatId || attachments.busy || recording}
-              />
-              <Attachments key={chatId!} conversationId={chatId!} conversationRevision={chat.revision} draft={attachments} disabled={sendDisabled || uncertain === chatId} onRecordingChange={setRecording} />
-              {attachments.entries.length > 0 && !attachments.ready && <Alert severity="info">{t("attachments.pending")}</Alert>}
-              {messageTextBytes > 32768 && <Alert severity="warning">{t("attachments.text_too_large")}</Alert>}
-              <Actions data-composer-actions>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  startIcon={<SendOutlined />}
-                  disabled={
-                    uncertain === chatId
-                      ? busy || readBusy || detail.isError
-                      : sendDisabled || (!draft.trim() && !attachments.parts.length) || !attachments.ready || attachments.busy || recording || messageTextBytes > 32768
-                  }
-                >
-                  {t(uncertain === chatId ? "recover_send" : "send")}
-                </Button>
-              </Actions>
-              <Typography variant="caption" color="text.secondary">
-                {t("attachments.review_help")}
-              </Typography>
-            </Composer>
+            <ChatComposer key={chatId!}
+              conversationId={chatId!} conversationRevision={chat.revision}
+              text={draft} onTextChange={text => { composerDraft.setText(text); attachments.dismissRejectedAdmission(); }}
+              draft={attachments} disabled={sendDisabled || uncertain === chatId || inlineDirty}
+              recovering={uncertain === chatId}
+              textTooLarge={messageTextBytes > NODIA_AI_MESSAGE_TEXT_BYTES}
+              onSend={() => void send()} onRecordingChange={setRecording}
+              sendDisabled={uncertain === chatId
+                ? busy || readBusy || detail.isError
+                : sendDisabled || inlineDirty || (!draft.trim() && !attachments.parts.length)
+                  || !attachments.ready || attachments.busy || recording || messageTextBytes > NODIA_AI_MESSAGE_TEXT_BYTES}
+              footer={<Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.5, flexWrap: "wrap", minWidth: 0 }}>
+                <ComposerSelection key={chatId!} connections={connections} selection={chat.selection}
+                  onSelectionChange={setInlineDraft} onDirtyChange={setInlineDirty}
+                  eligibility={eligibility.data ?? null}
+                  eligibilityBusy={eligibility.isFetching} eligibilityError={eligibility.isError ? t("eligibility_error") : null}
+                  onRetryEligibility={() => void eligibility.refetch()}
+                  isLoading={catalog.isLoading} isFetching={catalog.isFetching || readBusy}
+                  isSaving={saving} readOnly={active || busy || recording || attachments.busy || uncertain === chatId || detail.isError}
+                  error={configurationError ?? (catalog.isError ? t("catalog_error") : null)}
+                  onRetry={() => { setConfigurationError(null); void catalog.refetch(); void detail.refetch(); }}
+                  hasMore={!!catalog.hasNextPage} onLoadMore={() => void catalog.fetchNextPage()}
+                  onApply={applyConfiguration} />
+              </Box>} />
           )}
         </Chat>
       </Workspace>
-      {operation && !operationDetail.accessRejected && <ConversationManagement key={`${operation.chat.conversation_id}:${operation.action}`}
-        operation={operation} busy={updateConversation.isPending || operationDetail.isFetching}
-        error={operationError ?? (operationDetail.isError ? t("detail_error") : null)} onApply={saveOperation}
-        onClose={closeOperation} onRefresh={() => void reviewOperation()} />}
-      {operation && operationDetail.accessRejected && <Alert severity="warning" action={<Button onClick={closeOperation}>{t("close")}</Button>}>{t("organization.access_rejected")}</Alert>}
+      {operation && !operationDetail.accessRejected && (
+        <ConversationManagement
+          key={`${operation.chat.conversation_id}:${operation.action}`}
+          operation={operation}
+          busy={updateConversation.isPending || operationDetail.isFetching}
+          error={
+            operationError ??
+            (operationDetail.isError ? t("detail_error") : null)
+          }
+          onApply={saveOperation}
+          onClose={closeOperation}
+          onRefresh={() => void reviewOperation()}
+        />
+      )}
+      {operation && operationDetail.accessRejected && (
+        <Alert
+          severity="warning"
+          action={
+            <Button variant="contained" onClick={closeOperation}>
+              {t("close")}
+            </Button>
+          }
+        >
+          {t("organization.access_rejected")}
+        </Alert>
+      )}
       <Drawer
         anchor="left"
         open={overlay === "history" && !desktop}
         onClose={() => setOverlay(null)}
         slotProps={{ paper: { sx: { width: "min(100%, 320px)", p: 2 } } }}
       >
-        <Button onClick={() => setOverlay(null)} sx={{ minHeight: 44 }}>
+        <Button
+          variant="contained"
+          onClick={() => setOverlay(null)}
+          sx={{ minHeight: 44 }}
+        >
           {t("close")}
         </Button>
         {!desktop && historyContent}
       </Drawer>
-      <Preferences key={`preferences:${chatId ?? "new"}`} open={overlay === "preferences"} conversationId={chatId} disabled={!chat || chat.read_only || busy || readBusy || active || uncertain === chatId} onClose={() => setOverlay(null)} />
-      <ConfigurationDrawer
-        key={`configuration:${chatId ?? "new"}`}
-        open={overlay === "configuration"}
-        onClose={() => {
-          if (!saving) setOverlay(null);
-        }}
-        connections={connections}
-        canManageConnection={canManageConnections}
-        selection={chat?.selection ?? null}
-        routingEnabled={chat?.routing.enabled ?? false}
-        onSelectionChange={setConfigurationDraft}
-        eligibility={eligibility.data ?? null}
-        eligibilityBusy={eligibility.isFetching}
-        eligibilityError={eligibility.isError ? t("eligibility_error") : null}
-        onRetryEligibility={() => void eligibility.refetch()}
-        isLoading={catalog.isLoading}
-        isFetching={catalog.isFetching || detail.isFetching}
-        isSaving={saving}
-        readOnly={!chat || chat.read_only || active || detail.isError}
-        error={
-          configurationError ?? (catalog.isError ? t("catalog_error") : null)
+      <Preferences
+        key={`preferences:${chatId ?? "new"}`}
+        open={overlay === "preferences"}
+        conversationId={chatId}
+        disabled={
+          !chat ||
+          chat.read_only ||
+          busy ||
+          readBusy ||
+          active ||
+          uncertain === chatId
         }
-        onRetry={() => {
-          setConfigurationError(null);
-          void catalog.refetch();
-          void detail.refetch();
-        }}
-        hasMore={!!catalog.hasNextPage}
-        onLoadMore={() => void catalog.fetchNextPage()}
-        onApply={applyConfiguration}
+        onClose={() => setOverlay(null)}
       />
     </Page>
   );

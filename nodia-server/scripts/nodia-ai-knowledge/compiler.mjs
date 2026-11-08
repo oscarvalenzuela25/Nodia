@@ -20,10 +20,18 @@ export function validateShape(name, value) {
 function unique(values, code) { ensure(new Set(values).size === values.length, code); }
 function sorted(values) { return [...values].sort(); }
 
-export function repositoryFile(root, relative) {
-  ensure(typeof relative === 'string' && /^(docs|nodia-server|nodia-client)\/[A-Za-z0-9_./-]+$/.test(relative), 'invalid_repository_path');
+function resolveRepositoryFile(root, relative, nativeDocumentLink) {
+  const native = nativeDocumentLink && typeof relative === 'string' && relative.startsWith('nodia-gemini-microservice/');
+  ensure(typeof relative === 'string' && (native
+    ? /^nodia-gemini-microservice\/[A-Za-z0-9_./-]+$/.test(relative)
+    : /^(docs|nodia-server|nodia-client)\/[A-Za-z0-9_./-]+$/.test(relative)), 'invalid_repository_path');
   ensure(!relative.split('/').some(p => p === '' || p === '.' || p === '..'), 'path_traversal');
   ensure(!relative.split('/').some(p => p.startsWith('.')), 'hidden_source_denied');
+  if (native) {
+    const directories = relative.split('/').slice(1, -1).map(p => p.toLowerCase());
+    const operational = /^(?:browser_profiles?|session_states?|sessions?|profiles?|perfiles?|venv|agentic_home|gemini_home|antigravity_home|credentials?|secrets?|cookies?|temp_uploads|node_modules|__pycache__)$/;
+    ensure(relative.endsWith('.py') && !directories.some(p => operational.test(p)), 'native_document_link_denied');
+  }
   let target = path.resolve(root);
   for (const part of relative.split('/')) {
     target = path.join(target, part);
@@ -34,6 +42,10 @@ export function repositoryFile(root, relative) {
   ensure(inside !== '..' && !inside.startsWith('..' + path.sep) && !path.isAbsolute(inside), 'source_outside_root');
   return resolved;
 }
+// Metadata, schema and implementation references retain their original three-root contract.
+export function repositoryFile(root, relative) { return resolveRepositoryFile(root, relative, false); }
+// Only approved-document hyperlink validation opts into public Python source links.
+export function repositoryDocumentLinkFile(root, relative) { return resolveRepositoryFile(root, relative, true); }
 function readUtf8(file, limit = 1048576) {
   ensure(fs.statSync(file).size <= limit, 'input_too_large');
   const bytes = fs.readFileSync(file);
@@ -67,7 +79,7 @@ function checkLinks(root, sourcePath, body) {
     if (!link || link.startsWith('#') || /^https?:\/\//i.test(link)) continue;
     ensure(!/^[a-z][a-z0-9+.-]*:/i.test(link) && !link.includes('\\'), 'invalid_document_link');
     const target = path.posix.normalize(path.posix.join(path.posix.dirname(sourcePath), link.split('#')[0]));
-    repositoryFile(root, target);
+    repositoryDocumentLinkFile(root, target);
   }
 }
 function selectedSections(body, titles) {

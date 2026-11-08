@@ -2,6 +2,8 @@ import { type StateCreator, create } from "zustand";
 import { persist } from "zustand/middleware";
 import { queryClient } from "../config/reactQuery";
 import useGeneralSettingsStore from "./generalSettings/generalSettingsStore";
+import { clearNodiaAiDraftStorage } from "../config/nodiaAiDraftStorage";
+import { clearBusinessSaleRecoveryStorage } from "../config/businessSaleRecoveryStorage";
 
 export type AuthUser = {
   id?: string;
@@ -48,6 +50,8 @@ const authStore: StateCreator<AuthState> = (set, get) => ({
   sessionStatus: "anonymous",
   login: ({ token, user, expiresAt }) => {
     if (get().user?.id !== user?.id) {
+      clearNodiaAiDraftStorage();
+      clearBusinessSaleRecoveryStorage();
       void queryClient.cancelQueries();
       queryClient.clear();
       useGeneralSettingsStore.getState().clearContext();
@@ -63,6 +67,8 @@ const authStore: StateCreator<AuthState> = (set, get) => ({
   setRefreshing: (isRefreshing) => set({ isRefreshing }),
   setSessionStatus: (sessionStatus) => set({ sessionStatus }),
   logout: () => {
+    clearNodiaAiDraftStorage();
+    clearBusinessSaleRecoveryStorage();
     void queryClient.cancelQueries();
     queryClient.clear();
     useGeneralSettingsStore.getState().clearContext();
@@ -90,6 +96,9 @@ const useAuthStore = create<AuthState>()(
       const user = saved.user && typeof saved.user.name === "string" ? saved.user : null;
       const changedUser = saved.user?.id !== current.user?.id || Boolean(saved.token) !== Boolean(current.token);
       const unchangedCredentials = !changedUser && token === current.token && expiresAt === current.expiresAt;
+      // Initial hydration must preserve the same browser tab's unsent text.
+      // A real replacement/removal of a known actor must purge it globally.
+      if (current.user?.id && (!token || current.user.id !== user?.id)) { clearNodiaAiDraftStorage(); clearBusinessSaleRecoveryStorage(); }
       if (changedUser) {
         void queryClient.cancelQueries();
         queryClient.clear();

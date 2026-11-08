@@ -33,10 +33,10 @@ export function preferenceFixture(deletionJournal: NodiaAiDeletionJournalPort = 
     sessionId: identity.sessionId,
     isSuperAdmin: false,
     modules: [
-      { id: '1', key: 'nodia-ai', route: '/tools/nodia-ai' },
-      { id: '2', key: 'finance', route: '/tools/finances-personal' },
-      { id: '3', key: 'business', route: '/tools/business' },
-      { id: '4', key: 'reservations', route: '/tools/reservations' },
+      { id: '1', key: 'nodia-ai', route: '/nodia-ai' },
+      { id: '2', key: 'finance', route: '/finances-personal' },
+      { id: '3', key: 'business', route: '/business' },
+      { id: '4', key: 'reservations', route: '/reservations' },
     ],
   };
   let chatOwner = '1',

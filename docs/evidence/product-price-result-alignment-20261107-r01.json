@@ -1,0 +1,182 @@
+{
+  "schema": "product-price-result-alignment-validation/1",
+  "date": "2026-11-07",
+  "scope": "ClientR37 visual alignment only",
+  "status": "adopted_and_browser_verified",
+  "release_manifest_sha256": "9f879442c5afab38a79b123843850a6391b19109f3ce99addc1a86f0579cb4ab",
+  "checks": {
+    "atomic_cases": 7,
+    "atomic_files": 1,
+    "global_typecheck_exit": 0,
+    "global_lint_exit": 0,
+    "global_exits_source": "Root direct executions sessions32104/35141",
+    "source_inputs": 1400,
+    "production_files_changed": 2,
+    "outputs": 185,
+    "current_assets_verified": 185,
+    "previous_assets_verified": 181
+  },
+  "activation": {
+    "first_execute": "baseline_CAS_changed before mutation",
+    "readonly_reconciliation": {
+      "intent_exists": false,
+      "journal_exists": false
+    },
+    "second_execute": "deliberate same-pin execution success; not automatic retry",
+    "canonical_receipt_sha256": "a4d0a5c3ed98d9770eaf24e0174904350b8a0a03238f2cf182c3c47eca73a2fb",
+    "server_restart": false,
+    "native_restart": false,
+    "database_access": false,
+    "provider_requests": 0,
+    "database_access_scope": "static cutover only; authenticated browser GET reads through backend remain separate"
+  },
+  "browser": {
+    "source": "Root authenticated real VM observation and pinned screenshots",
+    "desktop": {
+      "viewport_width": 1088,
+      "label_y": [
+        394.390625,
+        394.515625
+      ],
+      "label_delta_px": 0.125,
+      "input_height": 40.125,
+      "input_center_y": 440.46875,
+      "status_height": 40,
+      "status_center_y": 440.53125,
+      "center_delta_px": 0.0625,
+      "displayed_suggestion": "377",
+      "currency_suffix_present": false,
+      "markup": 40
+    },
+    "mobile": {
+      "viewport": [
+        320,
+        892
+      ],
+      "document_client_width": 320,
+      "document_scroll_width": 320,
+      "dialog_x": 16,
+      "dialog_width": 288,
+      "status_box": {
+        "x": 32,
+        "y": 467.625,
+        "width": 194,
+        "height": 40
+      },
+      "displayed_suggestion": "350",
+      "currency_suffix_present": false,
+      "two_rows": "intentional container width below280px",
+      "markup": 30
+    },
+    "markup_change": [
+      40,
+      30
+    ],
+    "sale_price_unchanged": 350,
+    "apply_clicked": false,
+    "save_clicked": false,
+    "modal_cancelled_after_verification": true,
+    "sale_price_after_cancel": 350,
+    "HTTP_reads_performed": true,
+    "total_HTTP_requests": null
+  },
+  "knowledge_impact": {
+    "visual_only": true,
+    "new_context_or_capabilities": false,
+    "approved_documents_checked": 44,
+    "approved_baseline_path": "ops/lab/artifacts/invoice-manual-match-qa-20261107-r01/approved-before.json",
+    "approved_baseline_sha256": "c254e2cf7491db06c7881cfd1cc409664f87fa00098c1550ca3fc38f38b05662",
+    "approved_hash_mismatches": [],
+    "approval_or_publication": false,
+    "prior_product_evidence_retained_transitively": {
+      "path": "docs/evidence/nodia-ai-ai36-c03-validation.json",
+      "reason": "metadata max32; historical evidence remains referenced through this consolidated evidence and existing body"
+    },
+    "compiler_check": {
+      "exit_code": 0,
+      "sources": 81,
+      "excluded": 37,
+      "documents": 44,
+      "fragments": 46,
+      "catalog_release": "nodia-ai-business-pos/4",
+      "mode": "check only; no build or publication",
+      "release_id_omitted": "compiler input includes this evidence; avoid a self-referential receipt hash"
+    }
+  },
+  "limitations": [
+    "No physical phone verification",
+    "No commercial save tested this round",
+    "No inference performed by this visual delivery",
+    "NativeR15 timeout followup is separate and pending verified receipts"
+  ],
+  "source_receipts": [
+    {
+      "path": "ops/lab/artifacts/product-price-result-alignment-20261107-r01/operation/local-checks.json",
+      "sha256": "62798d7d86217971cfa13369e92b1b4b3ae539388a2b164cd763e970943e67ad"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-result-alignment-20261107-r01/client-r37-r01/build-receipt.json",
+      "sha256": "2b5d342a8760a600737ec0d58e1d055776192363e8d75cdd59b1fbdcd9790918"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-result-alignment-20261107-r01/client-r37-r01/remote-activation.json",
+      "sha256": "8052474d0e3d5fe2acd36e8d64c540621385f85adf3bb8fa4df08574c00d93e9"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-result-alignment-20261107-r01/client-r37-r01/remote-reconcile-readonly.json",
+      "sha256": "0874216493a6804e8f6cec4beac1b5a44227ab5e8d047d4f897e66636c8e415a"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-result-alignment-20261107-r01/client-r37-r01/remote-activation-r02.json",
+      "sha256": "ff6c18a18884840dd567e45e2092e46ea3a0eb2c3209a14f21a8b1997f76b22b"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-result-alignment-20261107-r01/client-r37-r01/release-manifest.json",
+      "sha256": "9f879442c5afab38a79b123843850a6391b19109f3ce99addc1a86f0579cb4ab"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-result-alignment-20261107-r01/client-r37-r01/source-freeze.json",
+      "sha256": "6af8b77eff714d6d6dfa3dbe32c98efebc78fc6c01b1e00ecb3e385581fe1209"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-result-alignment-20261107-r01/browser/vm-aligned-price-1088.png",
+      "sha256": "39563f8bfae7360f93b9473f7981026118205639718eba8a882bd5480b9f6523"
+    },
+    {
+      "path": "ops/lab/artifacts/product-price-result-alignment-20261107-r01/browser/vm-aligned-price-320.png",
+      "sha256": "6094c166195b3c29b14d95047da1b7078387f423899541d7208bbfdf0d356450"
+    }
+  ],
+  "consolidated_log_fingerprints": [
+    {
+      "name": "price-result-alignment-full-typecheck.log",
+      "sha256": "e7bf9235c4b3d2f32ae91ad79594338311c7f2da0e9371d85417552aaa0b1865",
+      "bytes": 46,
+      "retention": "ephemeral log; result consolidated here"
+    },
+    {
+      "name": "price-result-alignment-full-lint.log",
+      "sha256": "ffd8fd64020e579eedde270479fe815463785d7fafad2537f697ac8c68b27abe",
+      "bytes": 43,
+      "retention": "ephemeral log; result consolidated here"
+    },
+    {
+      "name": "price-result-alignment-tests.log",
+      "sha256": "6a5b8ed401064010c2eeb2606e38418cb57a8001857599beb601fabafaa4e752",
+      "bytes": 406,
+      "retention": "ephemeral log; result consolidated here"
+    },
+    {
+      "name": "price-result-alignment-typecheck.log",
+      "sha256": "edde001a3c199c42ce747fb7932dd59d8044914a56c840df33bf4196e81ebc05",
+      "bytes": 121,
+      "retention": "ephemeral log; result consolidated here"
+    },
+    {
+      "name": "price-result-alignment-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "retention": "ephemeral log; result consolidated here"
+    }
+  ]
+}

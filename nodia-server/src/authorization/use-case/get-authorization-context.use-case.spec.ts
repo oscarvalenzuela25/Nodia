@@ -39,7 +39,7 @@ describe('GetAuthorizationContextUseCase', () => {
           modules: [
             {
               key: 'users',
-              link: '/general-settings/users',
+              link: '/users',
               translates: [{ key: 'key', es: 'Usuarios', en: 'Users' }],
             },
           ],

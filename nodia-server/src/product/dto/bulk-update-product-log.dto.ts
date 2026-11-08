@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { ArrayNotEmpty, IsArray, IsNotEmpty, IsUUID, ValidateNested } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsUUID,
+  ValidateNested,
+} from 'class-validator';
 import { UpdateProductLogDto } from './update-product-log.dto.js';
 
 export class BulkUpdateProductLogItemDto extends UpdateProductLogDto {

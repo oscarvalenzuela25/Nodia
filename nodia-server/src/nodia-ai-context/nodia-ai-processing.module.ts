@@ -13,9 +13,11 @@ import { BuildNodiaAiCompactionUseCase } from './use-case/build-nodia-ai-compact
 import { LoadNodiaAiRecoveryRefsUseCase } from './use-case/load-nodia-ai-recovery-refs.use-case.js';
 import { NodiaAiProposalModule } from '../nodia-ai-proposal/nodia-ai-proposal.module.js';
 import { NodiaAiConfirmationModule } from '../nodia-ai-confirmation/nodia-ai-confirmation.module.js';
+import { NodiaAiInvoiceOcrModule } from '../nodia-ai-invoice-ocr/nodia-ai-invoice-ocr.module.js';
 
 @Module({
   imports: [
+    NodiaAiInvoiceOcrModule,
     NodiaAiContextSnapshotModule,
     NodiaAiProposalModule,
     NodiaAiConfirmationModule,

@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "verification_date": "2026-10-25",
+  "scope": "Local Client attachment policy recovery; no VM, inference, upload or browser acceptance from this delivery.",
+  "problem": "HTTP200 with no verified MIME was a successful query without a local explicit recheck action; main eligibility and attachment policy are independent reads.",
+  "behavior": [
+    "One scoped policy query is shared by the panel and the draft readiness calculation.",
+    "A READY unreviewed original offers an explicit policy GET; controls and admission remain blocked while fetching.",
+    "A positive exact MIME re-enables original references; empty/error responses never manufacture native availability.",
+    "The existing File, local ID, server attachment ID and unaccepted interpretation remain intact. No review, upload or inference is repeated.",
+    "Explicit recheck feedback is fenced by actor/session/chat/revision; cancelled or pending observer results never emit success."
+  ],
+  "production_lineage": [
+    {
+      "path": "src/modules/nodiaAi/components/Attachments/hooks/useAttachmentDrafts.ts",
+      "before_sha256": "27b930835f8c4d3b5e28571817cf3120878eb984e5a7e9d991616a7163c1e0d6",
+      "after_sha256": "4d06fd7fb73673a419d94824f503d8066f7e3edf70b188ac078fecfcaea1c9eb",
+      "before_file": "ops/lab/artifacts/c03-attachment-policy-retry-source-lineage-r01/before/src/modules/nodiaAi/components/Attachments/hooks/useAttachmentDrafts.ts",
+      "source": "Reconstructed by reversing only this task exact edits; prior dirty edits retained.",
+      "matches_client_R07_source_pin": true
+    },
+    {
+      "path": "src/modules/nodiaAi/components/Attachments/Attachments.tsx",
+      "before_sha256": "d526e02910981a8df5bee5e30c497784ae5bb022d1c1bc90651ff1764970867c",
+      "after_sha256": "6b4ccf6c6296da969d273768e5260680ef02d8114ff8b1feff181a87bc0831ef",
+      "before_file": "ops/lab/artifacts/c03-attachment-policy-retry-source-lineage-r01/before/src/modules/nodiaAi/components/Attachments/Attachments.tsx",
+      "source": "Reconstructed by reversing only this task exact edits; prior dirty edits retained.",
+      "matches_client_R07_source_pin": true
+    },
+    {
+      "path": "src/translate/es/nodiaAi.json",
+      "before_sha256": "7f8f97b3343a79285a66cd8cd60b87d9048dda9db1553180ebc8e75a566733cd",
+      "after_sha256": "b4e3bd4735181f37baa808bf96c1f71b60ccbf42d27e0602390c8405bc55f319",
+      "before_file": "ops/lab/artifacts/c03-attachment-policy-retry-source-lineage-r01/before/src/translate/es/nodiaAi.json",
+      "source": "Reconstructed by reversing only this task exact edits; prior dirty edits retained.",
+      "matches_client_R07_source_pin": true
+    },
+    {
+      "path": "src/translate/en/nodiaAi.json",
+      "before_sha256": "f27b913afd4d3c7e2db25629a933e39214363dab52072b2f893a37dfda7b67e8",
+      "after_sha256": "305025c832f4cdea78b35c31f784665f9e4093f6b879364886fa48faddee4f0e",
+      "before_file": "ops/lab/artifacts/c03-attachment-policy-retry-source-lineage-r01/before/src/translate/en/nodiaAi.json",
+      "source": "Reconstructed by reversing only this task exact edits; prior dirty edits retained.",
+      "matches_client_R07_source_pin": true
+    }
+  ],
+  "validation": {
+    "full_Client_after_epoch_fix": {
+      "tests": 1995,
+      "files": 246,
+      "passed": true,
+      "isolated_from_heavy_builds": true
+    },
+    "post_epoch_fix_focal": {
+      "tests": 12,
+      "files": 2,
+      "passed": true
+    },
+    "typecheck_exit": 0,
+    "full_lint_exit": 0,
+    "isolated_build_exit": 0,
+    "verification_order": [
+      "baseline build by packaging lane completed",
+      "isolated full Client test suite",
+      "full lint",
+      "final build including typecheck"
+    ],
+    "initial_lint_failure": "Test harness assigned an external variable during render; corrected using an effect, original log retained.",
+    "initial_full_suite": "Passed 1994/246 while a build ran concurrently; superseded by the isolated final run under Client AGENTS185. Not a performance measurement.",
+    "independent_review": "A peer identified and then re-reviewed the policy-revision race; no remaining blocker reported for the four production paths.",
+    "checks": {
+      "tests-r04-isolated.log": {
+        "path": "ops/lab/artifacts/c03-attachment-policy-retry-source-lineage-r01/checks/tests-r04-isolated.log",
+        "sha256": "4e732118916824c72d7cb679cb5f9def42a6ecc4bdf3bab4dbd9fadbd5be162e"
+      },
+      "lint-r04.log": {
+        "path": "ops/lab/artifacts/c03-attachment-policy-retry-source-lineage-r01/checks/lint-r04.log",
+        "sha256": "ffd8fd64020e579eedde270479fe815463785d7fafad2537f697ac8c68b27abe"
+      },
+      "build-r04.log": {
+        "path": "ops/lab/artifacts/c03-attachment-policy-retry-source-lineage-r01/checks/build-r04.log",
+        "sha256": "3885f25e279240407242ce9b9e2ad2536fd182fe03bfa485290a71c2d61ac35d"
+      },
+      "retry-tests-r03.log": {
+        "path": "ops/lab/artifacts/c03-attachment-policy-retry-source-lineage-r01/checks/retry-tests-r03.log",
+        "sha256": "89f44be5342b1f5227231fcb1ab7a77936e9a003c5c94e7eccc1a194cb29b0f0"
+      }
+    }
+  },
+  "knowledge_impact": {
+    "classification": "Recovery of an existing Client read, not exclusively styling.",
+    "existing_feature": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+    "approved_feature_edited": false,
+    "product_draft_updated": true,
+    "new_contracts_or_tools": false,
+    "new_permissions": false,
+    "knowledge_rebuilt": false,
+    "published_knowledge_preserved": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+    "published_capabilities": 151,
+    "published_fragments": 42
+  },
+  "draft_loss_investigation": {
+    "confirmed_source": "Per-chat hook state survives search-parameter changes; AttachmentsLoader key only resets the panel intent.",
+    "hypothesis": "GuardStrict returns a loader when session restoration/expiry makes hasValidatedSession false, unmounting local attachment drafts while the separate text draft can restore.",
+    "observed_VM_cause_proven": false,
+    "auth_or_draft_persistence_changed": false
+  },
+  "limits": [
+    "No VM deployment or provider inference was performed by this implementation lane.",
+    "No viewport, physical keyboard or focus restoration acceptance is claimed; tests preserve the editor DOM identity and draft values.",
+    "No File is stored in sessionStorage/localStorage or another global persistent store.",
+    "Browser/router/authentication remount preservation remains outside this policy recheck fix."
+  ],
+  "generated_by": {
+    "path": "ops/lab/artifacts/c03-attachment-policy-retry-source-lineage-r01/consolidate-impact-r02.py",
+    "sha256": "33b8ef5532d8302bf1b7b5d9ad6df309ac90d87ba4a3bcda2eb81f3edb8e6e4f"
+  },
+  "supersedes_local_receipt": {
+    "path": "docs/evidence/nodia-ai-attachment-policy-retry-impact-r01.json",
+    "sha256": "0ca4e62c52afceecabc035cc614bb7ee9f044941ab321dad74b2757c55d7f780",
+    "reason": "Adds the same-chat policy-revision fence and completes isolated full verification."
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "schema": "teacher-detail-ui-annotations/1",
+  "checked_on": "2026-11-04",
+  "status": "implemented_and_verified_in_VM",
+  "document_approval": false,
+  "knowledge_publication": false,
+  "scope": "Six visual annotations on the plan detail; static Client R07 only",
+  "annotations": {
+    "detail_group_gap_px": 8,
+    "logo_font": "Shared Karmatic Arcade from R06, verified in detail",
+    "plan_title_weight": 700,
+    "session_chip": "Shared state color map from cards; completed success.main verified",
+    "refresh": "RefreshOutlined startIcon, existing read handler preserved",
+    "outline_height": "Grid alignItems start; own content height, no fixed height or resize observer"
+  },
+  "source_scope": {
+    "added_paths": [],
+    "frozen_UI_sources": {
+      "src/modules/teacher/components/JobPanel/JobPanel.tsx": {
+        "after_bytes": 2409,
+        "after_sha256": "679767468a552c3ba4a8143ee47e6e56a000917cdd08f44d967ff1ccde2bfef3",
+        "before_sha256": "6cedef858221343c117c5c077a2eb2c1ed5f82b1328c3e765141739d87a7d373"
+      },
+      "src/modules/teacher/pages/Teacher/Teacher.tsx": {
+        "after_bytes": 35397,
+        "after_sha256": "6c08c925a7619b40076632ab83ce919e653f9391981f8a1f0d0d22799cf8c960",
+        "before_sha256": "a6768dfc18e803029dbece092331086a11590151d6ce54588609452b2909caf7"
+      },
+      "src/modules/teacher/pages/Teacher/styles.ts": {
+        "after_bytes": 2986,
+        "after_sha256": "766cbf6f0b3edccfcc9e84216aa9cf712f7905ebe241dd9f85475285e18a8373",
+        "before_sha256": "27f38dd2570e06a1a6e99b208dde966838ddaa00d60b484cf2d9f5a6ee92edf8"
+      }
+    },
+    "global_working_tree_copied": false,
+    "outside_whitelist_delta": 0,
+    "owner_delta_sha256": "6f4ef6422e4811f80e94fe7afae51d0c9ae038806bf643e6a8dda6a5b94c786b",
+    "paths": [
+      "src/modules/teacher/components/JobPanel/JobPanel.tsx",
+      "src/modules/teacher/pages/Teacher/Teacher.tsx",
+      "src/modules/teacher/pages/Teacher/styles.ts"
+    ],
+    "production_paths": 3,
+    "removed_paths": [],
+    "source_input_count": 1340,
+    "unchanged_R06_source_inputs": 1337
+  },
+  "checks": {
+    "Teacher_regression_tests": 46,
+    "Teacher_test_files": 12,
+    "all_baseline_inputs_rehashed_before_after": true,
+    "assets": 179,
+    "isolated_build_ms": 15554,
+    "isolated_typecheck_diagnostics": 0,
+    "operator_tests": 4,
+    "public_configuration_preserved": true,
+    "scoped_lint_diagnostics": 0,
+    "unchanged_dist_files": 144,
+    "workspace_typecheck_diagnostics": 0
+  },
+  "deployment": {
+    "Native_restart": false,
+    "Server_manifest_sha256": "fe1fa26d3148d062cba09ed5bfa1f8a6dd11f64ac2601eb277961e9d644c3442",
+    "Server_restart": false,
+    "backup_workflow_actions": 0,
+    "canonical_state_sha256": "a70bcd42cb012f3c07cd4f30abece1b4e8122ed2a1f906d472a9d1d784220496",
+    "database_access": false,
+    "legacy_R06_asset_fallback_retained": true,
+    "new_assets_verified": 179,
+    "old_assets_verified": 175,
+    "one_Nginx_reload": true,
+    "phase": "Client_R07_active_static_and_legacy_assets_verified",
+    "private_recovery_workflows": 0,
+    "protected_runtime_snapshot_unchanged": true,
+    "provider_requests": 0,
+    "stdout_receipt_sha256": "f96c1c18996404d8640cacee88060cec752f35de49d9a39f715bdfffd8e74786",
+    "success": true
+  },
+  "release": "/opt/nodia/releases/nodia-client-teacher-20261104-r07",
+  "release_manifest_sha256": "88d156c413981ee0de6bdfee34d7614e61ed34fc4c1d870d6b7dfccac862215b",
+  "source_receipts": [
+    {
+      "path": "ops/lab/artifacts/teacher-detail-ui-20261104-r01/client-r07/delivery.json",
+      "bytes": 6249,
+      "sha256": "64f87468c78667de37a3b56c21419ef600a8f133ba10b54bd65c676a055055a7"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-detail-ui-20261104-r01/browser-verification.json",
+      "bytes": 3012,
+      "sha256": "d05c06acd29be2d6056d9499fa300ea1e0914d086253b67e44c55488715e7435"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-detail-ui-20261104-r01/knowledge-check.json",
+      "bytes": 439,
+      "sha256": "6ca13899d5f9ea2b1ba59a3c19466336c3e7af03de2b221cab07f7379fcb037b"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-detail-ui-20261104-r01/catalog.json",
+      "bytes": 2174,
+      "sha256": "a17eba9dfe03860fc2ecf14023e97f2292e83df555deea0947106478ade7476c"
+    }
+  ],
+  "edited_files": [
+    {
+      "path": "nodia-client/src/modules/teacher/components/JobPanel/JobPanel.tsx",
+      "bytes": 2409,
+      "sha256": "679767468a552c3ba4a8143ee47e6e56a000917cdd08f44d967ff1ccde2bfef3"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/pages/Teacher/Teacher.tsx",
+      "bytes": 35397,
+      "sha256": "6c08c925a7619b40076632ab83ce919e653f9391981f8a1f0d0d22799cf8c960"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/pages/Teacher/styles.ts",
+      "bytes": 2986,
+      "sha256": "766cbf6f0b3edccfcc9e84216aa9cf712f7905ebe241dd9f85475285e18a8373"
+    },
+    {
+      "path": "nodia-client/DESIGN.md",
+      "bytes": 91384,
+      "sha256": "6c826bcb481b227c7a0a16db4e286e7b340fe2ce372167056fd7af10ed6e7a2f"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/studies/features/adaptive-plans-and-day-material.md",
+      "bytes": 25135,
+      "sha256": "ffd2d8a1439fe495d0ac4870d1d476196b6e16f4d2332cc6c596b714abfae938"
+    }
+  ],
+  "QA_closes_delivery_snapshot_remaining_validation": true,
+  "remaining": [],
+  "limits": [
+    "Responsive reads can overlap the existing accordion animation; precise heights are asserted only for the settled desktop sample.",
+    "No physical phone, touch gestures or full accessibility audit.",
+    "Material-availability refresh icon checked in source/typecheck; the real JobPanel refresh was clicked.",
+    "Theme palette and brand mapping reuse R06, whose light/dark verification remains separate.",
+    "Server outage/invalid payload/auth renewal not reinjected for this visual-only change; existing Teacher regressions were run."
+  ]
+}

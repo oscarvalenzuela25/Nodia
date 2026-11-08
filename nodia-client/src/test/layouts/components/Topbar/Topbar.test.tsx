@@ -20,7 +20,7 @@ afterEach(() => useAuthStore.getState().logout());
 const signIn = () => useAuthStore.getState().login({ token: "jwt", user: { id: "42", name: "Oscar", email: "user@gmail.com", image_url: "https://example.com/avatar.png" } });
 
 describe("Topbar", () => {
-  it("only mounts health indicators with a validated session, AI action and module access", () => {
+  it("mounts health indicators by module without requiring an AI action and removes them on module revocation", () => {
     signIn();
     useAuthStore.setState({ expiresAt: Date.now() + 60000 });
     const context = { roles: [], actions: [{ key: "ai:manage", description: null, translates: [] }], modules: [{ module_group_key: "settings", translates: [], modules: [{ key: "ai-providers", translates: [] }] }] };
@@ -29,7 +29,7 @@ describe("Topbar", () => {
     expect(screen.getByRole("group", { name: "AI indicators" })).toBeInTheDocument();
     useGeneralSettingsStore.getState().setContext({ ...context, actions: [] });
     rerender(<MemoryRouter><Topbar onDrawerToggle={vi.fn()} /></MemoryRouter>);
-    expect(screen.queryByRole("group", { name: "AI indicators" })).not.toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "AI indicators" })).toBeInTheDocument();
     useGeneralSettingsStore.getState().setContext({ ...context, modules: [] });
     rerender(<MemoryRouter><Topbar onDrawerToggle={vi.fn()} /></MemoryRouter>);
     expect(screen.queryByRole("group", { name: "AI indicators" })).not.toBeInTheDocument();
@@ -38,19 +38,20 @@ describe("Topbar", () => {
     renderTopbar();
     expect(screen.getByLabelText("Cambiar tema")).toBeInTheDocument();
     expect(screen.getByText("Ingresar")).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "AI indicators" })).not.toBeInTheDocument();
   });
 
-  it("honors the server super_admin permission without an ai:manage action row", () => {
+  it("honors super_admin bypass without an action or module assignment", () => {
     signIn();
     useAuthStore.setState({ expiresAt: Date.now() + 60000 });
-    const context = { roles: ["super_admin"], actions: [], modules: [{ module_group_key: "settings", translates: [], modules: [{ key: "ai-providers", link: "/settings/ai-providers", translates: [] }] }] };
+    const context = { roles: ["super_admin"], actions: [], modules: [{ module_group_key: "settings", translates: [], modules: [{ key: "ai-providers", link: "/ai-providers", translates: [] }] }] };
     useGeneralSettingsStore.getState().setContext(context);
     const { rerender } = renderTopbar();
     expect(screen.getByRole("group", { name: "AI indicators" })).toBeInTheDocument();
     useGeneralSettingsStore.getState().setContext({ ...context, modules: [] });
     rerender(<MemoryRouter><Topbar onDrawerToggle={vi.fn()} /></MemoryRouter>);
-    expect(screen.queryByRole("group", { name: "AI indicators" })).not.toBeInTheDocument();
-    useGeneralSettingsStore.getState().setContext({ ...context, roles: ["admin"] });
+    expect(screen.getByRole("group", { name: "AI indicators" })).toBeInTheDocument();
+    useGeneralSettingsStore.getState().setContext({ ...context, roles: ["admin"], modules: [] });
     rerender(<MemoryRouter><Topbar onDrawerToggle={vi.fn()} /></MemoryRouter>);
     expect(screen.queryByRole("group", { name: "AI indicators" })).not.toBeInTheDocument();
   });

@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DataSource, In } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { createHash } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 import { isUUID } from 'class-validator';
@@ -18,12 +18,14 @@ import {
   validateVersion,
 } from '../../provider-contact/use-case/contact-validation.js';
 import type { ImportProvidersDto } from '../dto/import-providers.dto.js';
+import type { ActorReference } from '../../authorization/authority-transaction.js';
+import { assertBusinessesAccess } from '../../business-access/business-access.js';
 
 @Injectable()
 export class ImportProvidersUseCase {
   constructor(private readonly source: DataSource) {}
 
-  async execute(dto: ImportProvidersDto) {
+  async execute(dto: ImportProvidersDto, actor?: ActorReference) {
     if (
       !Array.isArray(dto.items) ||
       !dto.items.length ||
@@ -91,6 +93,9 @@ export class ImportProvidersUseCase {
       throw new BadRequestException('Too many contacts in import');
 
     return this.source.transaction(async (manager) => {
+      await assertBusinessesAccess(manager, actor!, [businessId], {
+        lock: true,
+      });
       // All imports of a business serialize; row locks coordinate with ordinary editors.
       await manager.query(
         'SELECT pg_advisory_xact_lock(hashtextextended($1, 0))',
@@ -123,7 +128,16 @@ export class ImportProvidersUseCase {
         (p) => p.contacts?.flatMap((c) => (c.id ? [c.id] : [])) ?? [],
       );
       const existingContacts = ids.length
-        ? await contacts.findBy({ id: In(ids) })
+        ? await contacts
+            .createQueryBuilder('contact')
+            .innerJoin(
+              Provider,
+              'provider',
+              'provider.id = contact.provider_id',
+            )
+            .where('contact.id IN (:...ids)', { ids })
+            .andWhere('provider.business_id = :businessId', { businessId })
+            .getMany()
         : [];
       const contactById = new Map(existingContacts.map((c) => [c.id, c]));
       for (const item of items) {

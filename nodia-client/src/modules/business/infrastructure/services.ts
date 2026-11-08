@@ -60,6 +60,7 @@ export const assignCollaborators = async (
 // ----------------------------------------------------
 // Product Services
 // ----------------------------------------------------
+export const getProductAvailability = async (businessId: string) => (await mainInstance.get<{ total: number; available: number; unavailable: number; unknown: number; activity: string }>(apiPath("/products/availability-summary"), { params: { business_id: businessId, activity: "active" } })).data;
 export const getProducts = async (
   params?: import("./types").GetProductsParams
 ): Promise<import("./types").GetProductsResponse> => {
@@ -288,9 +289,10 @@ export const analyzeInvoice = async (
   return data;
 };
 
-export const verifyIaProviders = async (): Promise<import("./types").VerifyIaProvidersResponse> => {
+export const verifyIaProviders = async (mode?: import("./types").InvoiceAiConnectionMode): Promise<import("./types").VerifyIaProvidersResponse> => {
   const { data } = await mainInstance.get<import("./types").VerifyIaProvidersResponse>(
-    apiPath("/invoices/verify-ia-providers")
+    apiPath("/invoices/verify-ia-providers"),
+    { params: mode ? { mode } : undefined },
   );
   return data;
 };
@@ -334,17 +336,20 @@ export const createInvoiceWithFile = async (
 // Product Log Services
 // ----------------------------------------------------
 export const queryProductLogs = async (
-  payload: import("./types").QueryProductLogsPayload
+  payload: import("./types").QueryProductLogsPayload,
+  signal?: AbortSignal
 ): Promise<import("./types").GetProductLogsResponse> => {
   const { data } = await mainInstance.post<import("./types").GetProductLogsResponse>(
     apiPath("/product-logs/query"),
-    payload
+    payload,
+    { signal }
   );
   return data;
 };
 
 export const getProductLogs = async (
-  params?: import("./types").GetProductLogsParams
+  params?: import("./types").GetProductLogsParams,
+  signal?: AbortSignal
 ): Promise<import("./types").GetProductLogsResponse> => {
   const productIds = params?.q?.product_id_in;
   if (Array.isArray(productIds) && productIds.length > 10) {
@@ -357,12 +362,12 @@ export const getProductLogs = async (
       limit: params?.limit,
       includes: params?.includes,
       s: (params?.q?.s as string) || undefined,
-    });
+    }, signal);
   }
 
   const { data } = await mainInstance.get<import("./types").GetProductLogsResponse>(
     apiPath("/product-logs"),
-    { params }
+    { params, signal }
   );
   return data;
 };

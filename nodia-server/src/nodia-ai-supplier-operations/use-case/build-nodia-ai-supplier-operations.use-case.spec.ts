@@ -17,6 +17,8 @@ import { BuildNodiaAiSupplierOperationsUseCase } from './build-nodia-ai-supplier
 const business = '11111111-1111-4111-8111-111111111111';
 const destination = '22222222-2222-4222-8222-222222222222';
 function fixture() {
+  const visibleBusinesses = new Set([business, destination]);
+  let superAdmin = false;
   const provider: NodiaAiJsonObject = {
     id: '7',
     business_id: business,
@@ -43,13 +45,41 @@ function fixture() {
     exists = true,
     contactExists = true;
   const query = vi.fn(async (sql: string, params: unknown[] = []) => {
+    const visible = (id: string) => superAdmin || visibleBusinesses.has(id);
+    if (sql.includes('authority_locks')) return [{ authority_locks: 9 }];
+    if (sql.includes('FROM businesses WHERE id=ANY'))
+      return (params[0] as string[]).map((id) => ({ id }));
+    if (sql.includes('FROM businesses business'))
+      return (params[0] as string[]).filter(visible).map((id) => ({ id }));
+    if (sql.startsWith('SELECT id::text FROM providers WHERE id=ANY'))
+      return exists && (params[0] as string[]).includes(String(provider.id))
+        ? [{ id: provider.id }]
+        : [];
+    if (
+      sql.startsWith('SELECT id::text FROM personal_info_provider WHERE id=ANY')
+    )
+      return contactExists &&
+        (params[0] as string[]).includes(String(contact.id))
+        ? [{ id: contact.id }]
+        : [];
+    if (sql.includes('FROM providers resource'))
+      return exists && visible(String(provider.business_id))
+        ? [{ id: provider.id }]
+        : [];
+    if (sql.includes('FROM personal_info_provider resource'))
+      return contactExists &&
+        exists &&
+        contact.provider_id === provider.id &&
+        visible(String(provider.business_id))
+        ? [{ id: contact.id }]
+        : [];
     if (sql.includes('AS product_count'))
       return [
         { product_count: blockedTransfer ? '1' : '0', invoice_count: '0' },
       ];
     if (sql.startsWith('SELECT u.id'))
       return authenticated
-        ? [{ actorId: '1', sessionId: business, isSuperAdmin: false }]
+        ? [{ actorId: '1', sessionId: business, isSuperAdmin: superAdmin }]
         : [];
     if (sql.includes('FROM businesses WHERE'))
       return [
@@ -87,11 +117,15 @@ function fixture() {
       { id: '1', business_id: '11111111-1111-4111-8111-111111111111' },
     ]),
     lockBusinesses: vi.fn(async () => undefined),
+    assertBusinessAccess: vi.fn(async () => undefined),
     lockProvider: vi.fn(async () => structuredClone(provider)),
     create: vi.fn(async (dto) => ({ ...dto, id: '10' })),
     update: vi.fn(async (id, dto) => ({ ...provider, ...dto, id })),
   };
   const contactService = {
+    withAccess: vi.fn(async (_provider, _actor, transaction, work) =>
+      work(transaction),
+    ),
     providerExists: vi.fn(async () => true),
     createOnce: vi.fn(
       async (provider_id, creation_key, creation_hash, values) => ({
@@ -128,7 +162,7 @@ function fixture() {
       isSuperAdmin: false,
       modules: [],
     },
-    moduleRoutes: ['/tools/business'],
+    moduleRoutes: ['/business'],
     conversationId: business,
     maxCollectionItems: 128,
   };
@@ -168,6 +202,11 @@ function fixture() {
     revoke: () => {
       authenticated = false;
     },
+    hideBusiness: (id: string) => visibleBusinesses.delete(id),
+    showBusiness: (id: string) => visibleBusinesses.add(id),
+    setSuperAdmin: (value = true) => {
+      superAdmin = value;
+    },
   };
 }
 
@@ -175,18 +214,55 @@ describe('Typed future supplier output for a dependent contact', () => {
   async function future() {
     const f = fixture();
     const producer = await f.prepared('providers_prepare_create', {
-      business_id: business, name: 'supplier', fields: { price: 'Precio' },
+      business_id: business,
+      name: 'supplier',
+      fields: { price: 'Precio' },
     });
     const operation = f.op('provider_contacts_prepare_create');
-    const incomplete = await operation.prepare({ business_id: business, name: 'Contact' }, f.context);
-    if (incomplete.status !== 'needs_clarification') throw Error('Expected missing provider');
-    const binding = { target_field_key: 'provider_id', from_step_id: producer.step.id, output_key: 'id', source: producer.step };
-    const result = await operation.prepareWithBindings!(incomplete.partial, [binding], f.context);
-    if (result.status !== 'ready') throw Error('Expected complete known values');
+    const incomplete = await operation.prepare(
+      { business_id: business, name: 'Contact' },
+      f.context,
+    );
+    if (incomplete.status !== 'needs_clarification')
+      throw Error('Expected missing provider');
+    const binding = {
+      target_field_key: 'provider_id',
+      from_step_id: producer.step.id,
+      output_key: 'id',
+      source: producer.step,
+    };
+    const result = await operation.prepareWithBindings!(
+      incomplete.partial,
+      [binding],
+      f.context,
+    );
+    if (result.status !== 'ready')
+      throw Error('Expected complete known values');
     const step: StoredProposalStep = {
-      ...result, id: destination, toolName: operation.toolName, contractHash: operation.contractHash,
-      position: 2, outputBindings: [{ target_field_key: 'provider_id', from_step_id: producer.step.id, output_key: 'id' }],
-      publicStep: { ...result.publicStep, step_id: destination, depends_on: [producer.step.id], output_bindings: [{ target_field_key: 'provider_id', from_step_id: producer.step.id, output_key: 'id' }] },
+      ...result,
+      id: destination,
+      toolName: operation.toolName,
+      contractHash: operation.contractHash,
+      position: 2,
+      outputBindings: [
+        {
+          target_field_key: 'provider_id',
+          from_step_id: producer.step.id,
+          output_key: 'id',
+        },
+      ],
+      publicStep: {
+        ...result.publicStep,
+        step_id: destination,
+        depends_on: [producer.step.id],
+        output_bindings: [
+          {
+            target_field_key: 'provider_id',
+            from_step_id: producer.step.id,
+            output_key: 'id',
+          },
+        ],
+      },
     };
     return { ...f, producer, operation, incomplete, binding, step };
   }
@@ -194,73 +270,190 @@ describe('Typed future supplier output for a dependent contact', () => {
     const f = await future();
     expect(f.step.commandTemplate.provider_id).toBeUndefined();
     expect(f.step.scope).toEqual({ business_id: business });
-    expect(f.step.publicStep.changes).toContainEqual({ field_key: 'provider_id', before: null, before_present: false, after: null, after_present: false, origin: 'future_step' });
-    expect(f.query.mock.calls.filter(([sql]) => sql.includes('FROM providers WHERE'))).toHaveLength(0);
+    expect(f.step.publicStep.changes).toContainEqual({
+      field_key: 'provider_id',
+      before: null,
+      before_present: false,
+      after: null,
+      after_present: false,
+      origin: 'future_step',
+    });
+    expect(
+      f.query.mock.calls.filter(([sql]) =>
+        sql.includes('FROM providers WHERE'),
+      ),
+    ).toHaveLength(0);
     expect(f.contactService.createOnce).not.toHaveBeenCalled();
-    expect((f.step.commandTemplate.command as NodiaAiJsonObject).request_key).toEqual((f.incomplete.partial.command as NodiaAiJsonObject).request_key);
+    expect(
+      (f.step.commandTemplate.command as NodiaAiJsonObject).request_key,
+    ).toEqual((f.incomplete.partial.command as NodiaAiJsonObject).request_key);
   });
   it('binds a verified exact ID once without changing contact payload or native intent key', async () => {
     const f = await future();
-    const bound = await f.operation.bindOutputs!(f.step, { provider_id: { value: '7', source: f.producer.step } }, f.context);
+    const bound = await f.operation.bindOutputs!(
+      f.step,
+      { provider_id: { value: '7', source: f.producer.step } },
+      f.context,
+    );
     expect(bound.commandTemplate.provider_id).toBe('7');
-    expect(bound.commandTemplate.command).toEqual(f.step.commandTemplate.command);
+    expect(bound.commandTemplate.command).toEqual(
+      f.step.commandTemplate.command,
+    );
     expect(bound.scope).toEqual({ business_id: business, provider_id: '7' });
     expect(bound.publicStep).toEqual(f.step.publicStep);
     expect(bound.preconditions.provider).toEqual(f.provider);
     expect(f.contactService.createOnce).not.toHaveBeenCalled();
   });
   it('rejects a producer materially changed after its committed creation', async () => {
-    const f = await future(); f.provider.name = 'changed';
-    await expect(f.operation.bindOutputs!(f.step, { provider_id: { value: '7', source: f.producer.step } }, f.context)).rejects.toMatchObject({ status: 409 });
+    const f = await future();
+    f.provider.name = 'changed';
+    await expect(
+      f.operation.bindOutputs!(
+        f.step,
+        { provider_id: { value: '7', source: f.producer.step } },
+        f.context,
+      ),
+    ).rejects.toMatchObject({ status: 409 });
     expect(f.contactService.createOnce).not.toHaveBeenCalled();
   });
   it('can freshly prepare a new contact proposal from a known receipt ID after a parent change, without relaxing strict old binding', async () => {
     const f = await future();
     f.provider.name = 'changed after commit';
-    await expect(f.operation.bindOutputs!(f.step, { provider_id: { value: '7', source: f.producer.step } }, f.context)).rejects.toMatchObject({ status: 409 });
-    const result = await f.operation.reprepareStored!({ ...f.step.commandTemplate, provider_id: '7' }, f.context);
+    await expect(
+      f.operation.bindOutputs!(
+        f.step,
+        { provider_id: { value: '7', source: f.producer.step } },
+        f.context,
+      ),
+    ).rejects.toMatchObject({ status: 409 });
+    const result = await f.operation.reprepareStored!(
+      { ...f.step.commandTemplate, provider_id: '7' },
+      f.context,
+    );
     expect(result.status).toBe('ready');
     if (result.status !== 'ready') throw Error('Expected ready');
     expect(result.preconditions.provider).toEqual(f.provider);
-    expect(result.commandTemplate.command).toEqual(f.step.commandTemplate.command);
+    expect(result.commandTemplate.command).toEqual(
+      f.step.commandTemplate.command,
+    );
     expect(result.scope).toEqual({ business_id: business, provider_id: '7' });
     expect(f.contactService.createOnce).not.toHaveBeenCalled();
   });
-  it.each(['absent', 'moved', 'cross-business'] as const)('rejects fresh receipt-based preparation if the provider is %s', async (kind) => {
-    const f = await future();
-    if (kind === 'absent') f.setMissing();
-    if (kind === 'moved') f.provider.business_id = destination;
-    await expect(f.operation.reprepareStored!({ ...f.step.commandTemplate,
-      business_id: kind === 'cross-business' ? destination : business, provider_id: '7' }, f.context)).rejects.toMatchObject({ status: 404 });
-    expect(f.contactService.createOnce).not.toHaveBeenCalled();
-  });
+  it.each(['absent', 'moved', 'cross-business'] as const)(
+    'rejects fresh receipt-based preparation if the provider is %s',
+    async (kind) => {
+      const f = await future();
+      if (kind === 'absent') f.setMissing();
+      if (kind === 'moved') f.provider.business_id = destination;
+      await expect(
+        f.operation.reprepareStored!(
+          {
+            ...f.step.commandTemplate,
+            business_id: kind === 'cross-business' ? destination : business,
+            provider_id: '7',
+          },
+          f.context,
+        ),
+      ).rejects.toMatchObject({ status: 404 });
+      expect(f.contactService.createOnce).not.toHaveBeenCalled();
+    },
+  );
   it('rejects an absent materialized provider without guessing another ID', async () => {
     const f = await future();
-    await expect(f.operation.bindOutputs!(f.step, { provider_id: { value: '999', source: f.producer.step } }, f.context)).rejects.toMatchObject({ status: 404 });
+    await expect(
+      f.operation.bindOutputs!(
+        f.step,
+        { provider_id: { value: '999', source: f.producer.step } },
+        f.context,
+      ),
+    ).rejects.toMatchObject({ status: 404 });
   });
-  it.each([['wrong-type', 7], ['noncanonical', '07'], ['missing', null]])('rejects invalid output %s', async (_name, value) => {
+  it.each([
+    ['wrong-type', 7],
+    ['noncanonical', '07'],
+    ['missing', null],
+  ])('rejects invalid output %s', async (_name, value) => {
     const f = await future();
-    await expect(f.operation.bindOutputs!(f.step, { provider_id: { value, source: f.producer.step } }, f.context)).rejects.toMatchObject({ status: 400 });
+    await expect(
+      f.operation.bindOutputs!(
+        f.step,
+        { provider_id: { value, source: f.producer.step } },
+        f.context,
+      ),
+    ).rejects.toMatchObject({ status: 400 });
   });
   it('cannot override a concrete provider or use a producer from another business', async () => {
     const f = await future();
-    await expect(f.operation.prepareWithBindings!({ business_id: business, provider_id: '7', name: 'Contact' }, [f.binding], f.context)).rejects.toMatchObject({ status: 400 });
-    await expect(f.operation.prepareWithBindings!({ business_id: destination, name: 'Contact' }, [f.binding], f.context)).rejects.toMatchObject({ status: 400 });
+    await expect(
+      f.operation.prepareWithBindings!(
+        { business_id: business, provider_id: '7', name: 'Contact' },
+        [f.binding],
+        f.context,
+      ),
+    ).rejects.toMatchObject({ status: 400 });
+    await expect(
+      f.operation.prepareWithBindings!(
+        { business_id: destination, name: 'Contact' },
+        [f.binding],
+        f.context,
+      ),
+    ).rejects.toMatchObject({ status: 400 });
   });
   it('cannot replace a provider-create source with an update or change the source identity', async () => {
     const f = await future();
-    await expect(f.operation.prepareWithBindings!(f.incomplete.partial, [{ ...f.binding, source: { ...f.producer.step, toolName: 'nodia_providers_prepare_update' } }], f.context)).rejects.toMatchObject({ status: 400 });
-    await expect(f.operation.bindOutputs!(f.step, { provider_id: { value: '7', source: { ...f.producer.step, id: destination } } }, f.context)).rejects.toMatchObject({ status: 409 });
+    await expect(
+      f.operation.prepareWithBindings!(
+        f.incomplete.partial,
+        [
+          {
+            ...f.binding,
+            source: {
+              ...f.producer.step,
+              toolName: 'nodia_providers_prepare_update',
+            },
+          },
+        ],
+        f.context,
+      ),
+    ).rejects.toMatchObject({ status: 400 });
+    await expect(
+      f.operation.bindOutputs!(
+        f.step,
+        {
+          provider_id: {
+            value: '7',
+            source: { ...f.producer.step, id: destination },
+          },
+        },
+        f.context,
+      ),
+    ).rejects.toMatchObject({ status: 409 });
   });
   it('still requires every other mandatory field and preserves native key when edited', async () => {
     const f = await future();
-    const missing = await f.operation.prepareWithBindings!({ business_id: business }, [f.binding], f.context);
+    const missing = await f.operation.prepareWithBindings!(
+      { business_id: business },
+      [f.binding],
+      f.context,
+    );
     expect(missing.status).toBe('needs_clarification');
-    if (missing.status === 'needs_clarification') expect(missing.missingFields).toEqual(['name']);
-    const edited = await f.operation.applyEdits(f.step.commandTemplate, [{ step_id: f.step.id, field_key: 'name', value: 'Corrected' }], f.context);
-    const refreshed = await f.operation.reprepareWithBindings!(edited, [f.binding], f.context);
+    if (missing.status === 'needs_clarification')
+      expect(missing.missingFields).toEqual(['name']);
+    const edited = await f.operation.applyEdits(
+      f.step.commandTemplate,
+      [{ step_id: f.step.id, field_key: 'name', value: 'Corrected' }],
+      f.context,
+    );
+    const refreshed = await f.operation.reprepareWithBindings!(
+      edited,
+      [f.binding],
+      f.context,
+    );
     expect(refreshed.status).toBe('ready');
-    if (refreshed.status === 'ready') expect((refreshed.commandTemplate.command as NodiaAiJsonObject).request_key).toBe((f.step.commandTemplate.command as NodiaAiJsonObject).request_key);
+    if (refreshed.status === 'ready')
+      expect(
+        (refreshed.commandTemplate.command as NodiaAiJsonObject).request_key,
+      ).toBe((f.step.commandTemplate.command as NodiaAiJsonObject).request_key);
   });
 });
 describe('AI-22 supplier operations', () => {
@@ -375,6 +568,11 @@ describe('AI-22 supplier operations', () => {
         is_active: false,
       }),
       f.manager,
+      {
+        userId: f.context.actor.actorId,
+        sessionId: f.context.actor.sessionId,
+        transaction: f.manager,
+      },
     );
   });
   it('preserves omitted tax and column mappings when updating the supplier name', async () => {
@@ -390,6 +588,11 @@ describe('AI-22 supplier operations', () => {
       '7',
       expect.objectContaining({ name: 'renamed' }),
       f.manager,
+      {
+        userId: f.context.actor.actorId,
+        sessionId: f.context.actor.sessionId,
+        transaction: f.manager,
+      },
     );
     const command = f.providerService.update.mock.calls[0][1];
     expect(command).not.toHaveProperty('tax');
@@ -563,8 +766,8 @@ describe('AI-22 supplier operations', () => {
     expect(
       f.query.mock.calls.every(
         ([sql]) =>
-          !sql.includes('FROM providers WHERE') &&
-          !sql.includes('FROM personal_info_provider'),
+          !sql.includes('business_id::text,name,tax') &&
+          !sql.includes('provider_id::text,name,phone'),
       ),
     ).toBe(true);
   });
@@ -632,5 +835,132 @@ describe('AI-22 supplier operations', () => {
     await expect(
       operation.executeConfirmed(step, { ...f.context, moduleRoutes: [] }),
     ).rejects.toThrow('nodia_ai:capability_denied');
+  });
+});
+
+describe('Supplier proposal and receipt privacy', () => {
+  it.each([
+    [
+      'providers_prepare_update',
+      { business_id: business, id: '7', name: 'New' },
+    ],
+    [
+      'provider_contacts_prepare_update',
+      { business_id: business, provider_id: '7', id: '8', name: 'New' },
+    ],
+  ] as const)(
+    'rejects a foreign %s before loading preview fields',
+    async (tool, input) => {
+      const f = fixture();
+      f.hideBusiness(business);
+      await expect(f.op(tool).prepare(input, f.context)).rejects.toThrow(
+        'business:resource_not_found',
+      );
+      expect(
+        f.query.mock.calls.some(
+          ([sql]) =>
+            sql.includes('business_id::text,name,tax') ||
+            sql.includes('provider_id::text,name,phone'),
+        ),
+      ).toBe(false);
+    },
+  );
+
+  it('requires current access to a proposed transfer destination before showing its preview', async () => {
+    const f = fixture();
+    f.hideBusiness(destination);
+    await expect(
+      f
+        .op('providers_prepare_update')
+        .prepare(
+          {
+            business_id: business,
+            id: '7',
+            destination_business_id: destination,
+          },
+          f.context,
+        ),
+    ).rejects.toThrow('business:resource_not_found');
+    expect(f.providerService.update).not.toHaveBeenCalled();
+  });
+
+  it('denies a stored receipt when the actor loses business membership', async () => {
+    const f = fixture(),
+      { operation, step } = await f.prepared('providers_prepare_update', {
+        business_id: business,
+        id: '7',
+        name: 'New',
+      });
+    f.hideBusiness(business);
+    await expect(operation.verifyAuthority(step, f.context)).rejects.toThrow(
+      'business:resource_not_found',
+    );
+  });
+
+  it('checks the current supplier parent rather than trusting the stored scope', async () => {
+    const f = fixture(),
+      { operation, step } = await f.prepared('providers_prepare_update', {
+        business_id: business,
+        id: '7',
+        name: 'New',
+      });
+    f.provider.business_id = '33333333-3333-4333-8333-333333333333';
+    f.query.mockClear();
+    await expect(operation.verifyAuthority(step, f.context)).rejects.toThrow(
+      'business:resource_not_found',
+    );
+    expect(
+      f.query.mock.calls.some(([sql]) =>
+        sql.includes('business_id::text,name,tax'),
+      ),
+    ).toBe(false);
+  });
+
+  it('denies a contact moved under a provider outside the authorized business', async () => {
+    const f = fixture(),
+      { operation, step } = await f.prepared(
+        'provider_contacts_prepare_update',
+        { business_id: business, provider_id: '7', id: '8', name: 'New' },
+      );
+    f.contact.provider_id = '99';
+    await expect(operation.verifyAuthority(step, f.context)).rejects.toThrow(
+      'business:resource_not_found',
+    );
+  });
+
+  it('allows historical recovery after authorized data changes without requiring old preconditions', async () => {
+    const f = fixture(),
+      { operation, step } = await f.prepared('providers_prepare_update', {
+        business_id: business,
+        id: '7',
+        name: 'New',
+      });
+    f.provider.name = 'Changed since the receipt';
+    f.provider.updated_at = '2026-10-25T12:00:00.000Z';
+    await expect(
+      operation.verifyAuthority(step, f.context),
+    ).resolves.toBeUndefined();
+    await expect(
+      operation.verifyPreconditions(step, f.context),
+    ).rejects.toThrow('nodia_ai:preconditions_changed');
+  });
+
+  it('uses the current database superadministrator privilege rather than a cached actor flag', async () => {
+    const f = fixture();
+    f.hideBusiness(business);
+    f.setSuperAdmin();
+    const { operation, step } = await f.prepared('providers_prepare_update', {
+      business_id: business,
+      id: '7',
+      name: 'New',
+    });
+    await expect(
+      operation.verifyAuthority(step, f.context),
+    ).resolves.toBeUndefined();
+    f.setSuperAdmin(false);
+    f.context.actor.isSuperAdmin = true;
+    await expect(operation.verifyAuthority(step, f.context)).rejects.toThrow(
+      'business:resource_not_found',
+    );
   });
 });

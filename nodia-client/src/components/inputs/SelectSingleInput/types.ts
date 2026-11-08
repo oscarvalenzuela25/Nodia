@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export type SelectSingleOption = {
   value: string;
   label: string;
@@ -7,6 +9,7 @@ export type SelectSingleOption = {
 export type SelectSingleInputProps = {
   id?: string;
   label?: string;
+  labelAdornment?: ReactNode;
   options: (SelectSingleOption | string)[];
   value: string | null;
   onChange: (value: string | null) => void;

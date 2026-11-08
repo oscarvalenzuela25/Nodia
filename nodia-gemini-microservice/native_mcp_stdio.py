@@ -22,6 +22,14 @@ RPC_DIAGNOSTIC_METHODS = {
     "initialize": "initialize", "notifications/initialized": "notifications_initialized",
     "tools/list": "tools_list", "tools/call": "tools_call", "ping": "ping",
 }
+CLOSED_RPC_METHODS = {**RPC_DIAGNOSTIC_METHODS,
+    "resources/list": "resources_list", "resources/templates/list": "resources_templates_list",
+    "prompts/list": "prompts_list", "logging/setLevel": "logging_set_level",
+    "notifications/progress": "notifications_progress", "notifications/cancelled": "notifications_cancelled",
+    "notifications/tools/list_changed": "notifications_tools_list_changed"}
+CLOSED_RPC_REASONS = frozenset({"unknown", "envelope", "initialize_params", "pre_ready",
+    "unsupported_method", "invalid_tool_params", "replayed_identity", "rpc_budget", "tool_budget",
+    "initialize", "notification", "tools_list", "ping", "tool_result"})
 
 
 def rpc_result(identity, value):
@@ -148,6 +156,37 @@ class StdioBridge:
         self.ready = False
         self.receipts = {}
         self.deadline = time.monotonic() + self.policy["timeout_seconds"]
+        self._diagnostic_started = self.deadline - self.policy["timeout_seconds"]
+        self._closed_rpc = None
+
+    def _record_closed(self, publish=True, **updates):
+        # Independent best-effort sidecar: never republish a domain callback or
+        # change protocol, context accounting, completion, or cleanup on failure.
+        try:
+            self._closed_rpc.update(updates)
+            if self._closed_rpc["elapsed_ms"] is None:
+                self._closed_rpc["elapsed_ms"] = max(0, min(2147483647,
+                    round((time.monotonic() - self._diagnostic_started) * 1000)))
+            if not publish: return
+            directory = self.directory / "rpc-diagnostics"
+            directory.mkdir(exist_ok=True)
+            atomic(directory / (str(self.rpc_messages).zfill(4) + ".json"), self._closed_rpc, max_bytes=2048)
+        except Exception:
+            pass
+
+    def write_reply(self, reply, output):
+        """Observe the original single write/flush; flush is not CLI consumption."""
+        raw = wire_reply_bytes(reply)
+        updates = {"write_completed": False, "flush_completed": False}
+        try:
+            written = output.write(raw)
+            updates["write_completed"] = type(written) is int and written == len(raw)
+            output.flush()
+            updates["flush_completed"] = True
+        finally:
+            # No diagnostic filesystem operation may separate protocol write/flush.
+            try: self._record_closed(**updates)
+            except Exception: pass  # Preserve the exact original transport exception.
 
     def _persist_context(self):
         atomic(self.directory / "context-budget.json", {"schema_version": 1,
@@ -162,6 +201,7 @@ class StdioBridge:
             raise ValueError("Controlled context budget exhausted")
         self.context_used += cost
         self._persist_context()
+        self._record_closed(publish=False, response_utf8_bytes=cost)
         return reply
 
     def handle(self, request):
@@ -175,10 +215,17 @@ class StdioBridge:
         event = {"kind": "rpc", "rpc_messages": self.rpc_messages,
                  "tool_requests": self.tool_calls}
         method = request.get("method") if isinstance(request, dict) else None
+        self._closed_rpc = {"ordinal": self.rpc_messages, "elapsed_ms": None,
+            "method": CLOSED_RPC_METHODS.get(method, "other") if isinstance(method, str) else "other",
+            "response": "unknown", "reason": "unknown", "error_code": None,
+            "constructed": False, "write_completed": False, "flush_completed": False,
+            "response_utf8_bytes": None}
+        self._record_closed()
         event["rpc_diagnostic"] = {"method": RPC_DIAGNOSTIC_METHODS.get(method, "other") if isinstance(method, str) else "other",
                                    "response": None, "error_code": None}
         target = self.directory / "requests" / (str(self.rpc_messages).zfill(4) + ".json")
         if self.tool_calls > self.policy["tool_budget"]:
+            self._record_closed(reason="tool_budget")
             atomic(target,event)
             raise ValueError("Tool budget exhausted")
         identity = request.get("id") if isinstance(request, dict) else None
@@ -191,13 +238,15 @@ class StdioBridge:
             event["rpc_diagnostic"].update(response=kind, error_code=code)
             try: atomic(target,event)
             except (ValueError,OSError): pass
-        def result(value):
+        def result(value, reason):
             reply=self._reply(rpc_result(identity, value))
             record_response("success")
+            self._record_closed(response="success", reason=reason, constructed=True)
             return reply
-        def error(code):
+        def error(code, reason):
             reply=self._reply({"jsonrpc":"2.0", "id":identity, "error":{"code":code,"message":"Nodia MCP request rejected"}})
             record_response("error",code)
+            self._record_closed(response="error", reason=reason, error_code=code, constructed=True)
             return reply
         if (not isinstance(request, dict) or request.get("jsonrpc") != "2.0"
                 or set(request)-{"jsonrpc","id","method","params"}
@@ -206,53 +255,56 @@ class StdioBridge:
                 or (type(identity) is int and abs(identity) > MAX_RPC_ID_INTEGER)):
             identity = None
             atomic(target,event)
-            return error(-32600)
+            return error(-32600, "envelope")
         method = request.get("method")
         params = request.get("params",{})
         if method == "initialize":
             atomic(target,event)
             if self.initialized or not isinstance(params,dict) or params.get("protocolVersion") not in ("2025-11-25","2025-06-18","2025-03-26","2024-11-05"):
-                return error(-32602)
+                return error(-32602, "initialize_params")
             self.initialized=True
-            return result({"protocolVersion":params["protocolVersion"],"capabilities":{"tools":{}},"serverInfo":{"name":"nodia-runtime","version":"1"}})
+            return result({"protocolVersion":params["protocolVersion"],"capabilities":{"tools":{}},"serverInfo":{"name":"nodia-runtime","version":"1"}}, "initialize")
         if method == "notifications/initialized" and self.initialized:
             self.ready=True
             atomic(target,event)
             record_response("notification")
+            self._record_closed(response="notification", reason="notification")
             return None
         if method == "notifications/cancelled":
             atomic(target,event)
             record_response("notification")
+            self._record_closed(response="notification", reason="notification")
             return None
         if identity is None:
             atomic(target,event)
             record_response("notification")
+            self._record_closed(response="notification", reason="notification")
             return None
         if not self.ready:
             atomic(target,event)
-            return error(-32000)
+            return error(-32000, "pre_ready")
         if method == "ping":
             atomic(target,event)
-            return result({})
+            return result({}, "ping")
         if method == "tools/list":
             atomic(target,event)
-            return result({"tools":[{"name":item["name"],"description":item["description"],"inputSchema":item["input_schema"]} for item in self.tools.values()]})
+            return result({"tools":[{"name":item["name"],"description":item["description"],"inputSchema":item["input_schema"]} for item in self.tools.values()]}, "tools_list")
         if method != "tools/call" or not isinstance(params,dict) or set(params)-{"name","arguments","_meta"} or params.get("name") not in self.tools:
             atomic(target,event)
-            return error(-32602)
+            return error(-32602, "unsupported_method" if method != "tools/call" else "invalid_tool_params")
         arguments = params.get("arguments")
         if isinstance(arguments,str) and self.policy["cli_json_string_arguments"]:
             arguments=bounded_json(arguments.encode())
         if not isinstance(arguments,dict):
             atomic(target,event)
-            return error(-32602)
+            return error(-32602, "invalid_tool_params")
         canonical=json.dumps({"name":params["name"],"arguments":arguments},sort_keys=True,separators=(",",":"))
         fingerprint=hashlib.sha256(canonical.encode()).hexdigest()
         receipt_key=json.dumps(identity)
         previous=self.receipts.get(receipt_key)
         if previous is not None:
             atomic(target,event)
-            return result(previous[1]) if previous[0]==fingerprint else error(-32600)
+            return result(previous[1], "tool_result") if previous[0]==fingerprint else error(-32600, "replayed_identity")
         call_id=str(uuid4())
         event.update(kind="tool_request",call_id=call_id,name=params["name"],arguments=arguments)
         # Domain callback payloads retain their exact pre-diagnostic envelope and
@@ -269,7 +321,7 @@ class StdioBridge:
             raise ValueError("Invalid callback response")
         payload={"content":[{"type":"text","text":json.dumps(value["result"],ensure_ascii=False)}],"structuredContent":value["result"],"isError":False}
         self.receipts[receipt_key]=(fingerprint,payload)
-        return result(payload)
+        return result(payload, "tool_result")
 
 
 def gate_detail(payload, tools, documents=()):
@@ -338,8 +390,7 @@ def main():
         while raw:=sys.stdin.buffer.readline(MAX_BYTES+1):
             reply=bridge.handle(bounded_json(raw))
             if reply is not None:
-                sys.stdout.buffer.write(wire_reply_bytes(reply))
-                sys.stdout.buffer.flush()
+                bridge.write_reply(reply, sys.stdout.buffer)
         return 0
     except (ValueError,OSError,KeyError,TypeError):
         return 2

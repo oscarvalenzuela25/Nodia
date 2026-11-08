@@ -55,7 +55,7 @@ try {
   );
   const selection = {
     connection_id: provider.id,
-    mode: 'token_plan_agentic',
+    mode: 'agentic',
     model_id: 'synthetic-ai16-selected-model',
     effort_id: null,
   };

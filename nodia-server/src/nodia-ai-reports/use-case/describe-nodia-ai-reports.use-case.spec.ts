@@ -16,18 +16,18 @@ const registry = new NodiaAiReportRegistryUseCase(
 );
 function fixture() {
   const modules = [
-    { id: '1', key: 'nodia_ai', route: '/tools/nodia-ai', assigned: true },
+    { id: '1', key: 'nodia_ai', route: '/nodia-ai', assigned: true },
     {
       id: '2',
       key: 'personal_finance',
-      route: '/tools/finances-personal',
+      route: '/finances-personal',
       assigned: true,
     },
-    { id: '3', key: 'businesses', route: '/tools/business', assigned: false },
+    { id: '3', key: 'businesses', route: '/business', assigned: false },
     {
       id: '4',
       key: 'rental_reservations',
-      route: '/tools/reservations',
+      route: '/reservations',
       assigned: false,
     },
   ];

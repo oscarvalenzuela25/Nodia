@@ -25,8 +25,8 @@ export class NodiaAiBusinessCatalogService {
     if (resource === 'businesses') return this.business(manager, id, true);
     const rows: NodiaAiJsonObject[] = await manager.query(
       resource === 'products'
-        ? 'SELECT id::text,business_id::text,provider_id::text,code,name,cost_price,cost_price_tax,profit_percentage,sale_price,stock,is_active,updated_at::text FROM products WHERE id=$1 FOR UPDATE'
-        : 'SELECT id::text,product_id::text,code,name,cost_price,cost_price_tax,profit_percentage,sale_price,stock,updated_at::text FROM product_logs WHERE id=$1 FOR UPDATE',
+        ? 'SELECT id::text,business_id::text,provider_id::text,code,barcode,name,cost_price,cost_price_tax,sale_price,offer_price,is_offer_enabled,has_stock,version,stock,is_active,updated_at::text FROM products WHERE id=$1 FOR UPDATE'
+        : 'SELECT id::text,product_id::text,code,barcode,name,cost_price,cost_price_tax,sale_price,offer_price,is_offer_enabled,has_stock,product_version,stock,updated_at::text FROM product_logs WHERE id=$1 FOR UPDATE',
       [id],
     );
     return rows[0] ?? null;
@@ -36,7 +36,7 @@ export class NodiaAiBusinessCatalogService {
     id: string,
   ): Promise<NodiaAiJsonObject | null> {
     const rows: NodiaAiJsonObject[] = await manager.query(
-      'SELECT id::text,business_id::text,provider_id::text,code,name,cost_price,cost_price_tax,profit_percentage,sale_price,stock,is_active,updated_at::text FROM products WHERE id=$1 FOR SHARE',
+      'SELECT id::text,business_id::text,provider_id::text,code,barcode,name,cost_price,cost_price_tax,sale_price,offer_price,is_offer_enabled,has_stock,version,stock,is_active,updated_at::text FROM products WHERE id=$1 FOR SHARE',
       [id],
     );
     return rows[0] ?? null;

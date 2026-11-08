@@ -1,5 +1,17 @@
 # Mantenimiento del workspace — 2026-10-23
 
+## Verificación de finales de línea — 2026-11-08
+
+Se revisaron los archivos versionados presentes y los nuevos archivos elegibles para Git. Los 3838 archivos de texto UTF-8 propios examinados ya estaban en LF: no fue necesario convertir CRLF ni cambiar su codificación. `.gitattributes` y `.editorconfig` conservan la política LF existente.
+
+Se preservaron los bytes de evidencias y originales históricos, binarios, secretos, perfiles, sesiones y paquetes locales de recuperación. Las capturas y logs temporales de `.playwright-cli/` se excluyen de Git sin borrarlos. Esta comprobación de formato no acredita pruebas funcionales nuevas ni modifica los estados documentales de aprobación.
+
+## Recuperación local de rutas y Teacher — 2026-11-01
+
+La corrección incremental179359 tiene respaldo/recibo propios en `ops/lab/artifacts/teacher-archive-local-20261101-r01` y [evidencia](../../docs/evidence/teacher-local-archive-frame-20261101-r01.json). Conserva89tablas, añade el frame nullable sin inferir estados y lleva el historial local a36migraciones; no activa workers ni califica selecciones. Se comprobó en restauración descartable el rechazo de transiciones ambiguas o que descartarían continuidad.
+
+Se conservan los paquetes privados ignorados `ops/lab/artifacts/canonical-module-links-20261101-r01` y `ops/lab/artifacts/teacher-domain-local-20261101-r01`, cada uno con README/catálogo, respaldos DPAPI CurrentUser before/after y recibos. El primero acredita inventario, restauración íntegra descartable, migración179356 y repetición; el segundo la aplicación local179357/179358 bajo runtime sin trabajo abierto, sin reinicios o calificaciones operacionales nuevas. Las evidencias duraderas [rutas](../../docs/evidence/canonical-module-routes-20261101-r01.json) y [Teacher](../../docs/evidence/teacher-local-schema-20261101-r01.json) distinguen DB de trabajo, ensayo y adopción de procesos. No son backups de producción ni publicación de conocimiento; no borrar por tratarlos como temporales.
+
 Se eliminaron 27.837 archivos descartables (1.101.987.786 bytes, aproximadamente 1,10 GB): experimentos de `.tmp/` y `.temp/`, capturas sin referencias, logs intermedios, cobertura generada, cachés Python y metadatos incrementales de TypeScript. El [informe](cleanup-2026-10-23.json) contiene los grupos y verificaciones. Los patrones se ignoran en Git para próximas ejecuciones.
 
 Se conservan pruebas existentes, evidencia consolidada, dependencias, caché del Vite activo, compilados, sesiones y credenciales. No se reiniciaron servicios, desplegaron cambios ni modificaron datos de negocio. Los scripts históricos de evidencia conservan rutas temporales de origen que ya no existen; no son dependencias operativas mantenidas. Los empaquetadores AI40 sí usan ahora el paquete preservado.
@@ -23,3 +35,24 @@ El [catálogo de entradas de aceptación](retained-acceptance-inputs.json) ident
 Los AGENTS raíz y de Client, Server y Gemini priorizan lógica atómica, funciones, validadores, hooks y componentes con comportamiento observable. Las páginas y secciones compuestas no requieren suites por defecto. La integración se reserva para garantías concretas entre unidades (permisos, transacciones, concurrencia, idempotencia). No se eliminaron ni desactivaron pruebas existentes por esta política.
 
 Pasaron ambos builds, `knowledge:check`, `knowledge:build`, la comprobación de hashes archivados y el análisis sintáctico de 120 Python normalizados. Client conserva un aviso de tamaño de chunks. No se repitieron inferencias reales ni suites generales por un cambio de formato. El validador histórico de conocimiento mantiene su incompatibilidad previa: reconstruye el corte congelado AI32-R02 (67 capacidades/27 fragmentos), anterior al registro vigente. No se modificó esa evidencia para aparentar una aceptación nueva.
+
+## Corrección posterior: arranque con `npm run dev`
+
+El arranque de desarrollo expuso una omisión en `nodia-server/nest-cli.json`: `prepare:chat` genera `common-schema.json` en `src`, pero el compilador limpiaba `dist` y sólo copiaba los esquemas de selección de herramientas. El build completo regeneraba el esquema al final, por lo que su éxito no verificaba el camino `dev`. El origen canónico no fue eliminado.
+
+Se añadió el asset explícito `nodia-ai-tools/config/common-schema.json` con vigilancia de cambios. `npm run test:build-assets` reproduce la preparación y compilación limpia de Nest sin la reparación posterior de `context:build`; compara el asset emitido con el contrato canónico y compila el esquema de confirmación real. La comprobación falló inicialmente con el mismo ENOENT y pasó tras la corrección. Es una regresión acotada de empaquetado, sin DB, red ni efectos comerciales. No se modificaron contratos, permisos, lógica del producto o contenido de fichas; no requiere una nueva aprobación/publicación de conocimiento.
+
+Verificación posterior: `npm run dev` compiló sin errores, inicializó `NodiaAiConfirmationModule` y arrancó en el puerto3000. El watcher local que había fallado fue reemplazado; los demás servicios se conservaron. Lint terminó sin errores, con tres avisos preexistentes.
+
+Corrección de conexión local: `.env.development.local` del Client conservaba `NODIA_API_PROXY_TARGET=http://127.0.0.1:3100` del entorno VM y prevalecía sobre `.env`. Se cambió únicamente ese destino local a `http://127.0.0.1:3000`, correspondiente al backend de desarrollo activo. Vite recargó su configuración; `GET /api/v1/auth/me` devuelve401 sin credenciales tanto directo como mediante5174, acreditando transporte hacia la API, no un login de usuario completado. No se modificaron credenciales, autenticación ni configuración versionada del proxy.
+
+
+## Auditoría de limpieza — 2026-10-27 (borrado masivo bloqueado)
+
+El [informe](cleanup-2026-10-27.json) distingue inventario de ejecución: se identificaron aproximadamente 1,258 GB descartables, pero el control automático rechazó el borrado recursivo, la desconexión de junctions y el borrado masivo de archivos comunes con `blocked by policy`, sin detalle adicional. Sólo se eliminó un log vacío. Los temporales y cachés inventariados permanecen; esta ronda no acredita una limpieza completada.
+
+Se preservaron 436 originales referenciados y logs históricos en un único [paquete local catalogado](../lab/artifacts/cleanup-2026-10-27/catalog.json), ignorado y privado. Archivo y entradas verificados por SHA256. No publicar este material ni reescribir las evidencias históricas. Las fuentes mantenidas usan temporales como salida regenerable; algunas recetas históricas conservadas en `artifacts` aún leen builds de `.tmp`, que siguen disponibles.
+
+Los 6.139 archivos propios gestionados conservan exactamente sus bytes previos y el análisis UTF-8 no encontró CRLF; no fue necesario convertirlos. También se comprobó LF en los JSON generados de runtime. Se excluyen binarios, dependencias, secretos, perfiles, sesiones y originales históricos. Las verificaciones puntuales de dependencias y configuración local permanecen intactas. No cambian UI, contratos, comportamiento, fichas, permisos ni publicación de conocimiento.
+
+`npm run knowledge:check` ya fallaba **antes** de la limpieza con `implementation_hash_mismatch`. No se alteró el registro para encubrirlo ni se ejecutaron inferencias, despliegues o cambios de datos de negocio.

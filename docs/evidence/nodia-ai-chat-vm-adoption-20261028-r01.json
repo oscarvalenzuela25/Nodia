@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-28",
+  "status": "adopted_on_vm_ready_for_human_chat_testing",
+  "request": "Run the complete current chat on the VM; Agentic operates there.",
+  "authorization": "Explicit user request; no inferred production or document approval.",
+  "url": "http://localhost:5174/tools/nodia-ai",
+  "topology": {
+    "windows": "SSH forward only for this browser route; previous Windows Vite5174 stopped",
+    "forward": "localhost:5174 -> VM 127.0.0.1:8080",
+    "vm": [
+      "Nginx static Client and same-origin /api/v1 proxy",
+      "Nest API3000 and separate worker under systemd",
+      "PostgreSQL16 and Redis7 containers",
+      "Existing private Native container and Codex Linux runtime"
+    ],
+    "external_listeners_changed": false
+  },
+  "server": {
+    "release": "/opt/nodia/releases/nodia-server-chat-redesign-r01",
+    "manifest_sha256": "b9dca3f8c6e184d6ab379ac243053e56ed76a7faeebff9365edbf8a728107220",
+    "baseline": "/opt/nodia/releases/nodia-server-codex-model-catalog-r01",
+    "baseline_manifest_sha256": "2125f948dfc34b33d0fb10027d5a2407a442279f840f2e9b0bd88870e3b8a713",
+    "production_sources_changed": 4,
+    "additional_test_fixture_changed": 1,
+    "preserved_files": 4124,
+    "modified_files": 16,
+    "added_files": 4,
+    "removed_files": 0,
+    "unlisted_files": 0,
+    "compile_linux": "passed",
+    "focal_tests": {
+      "passed": 63,
+      "files": 4,
+      "describe_suites": 8
+    },
+    "compiled_di_checks": 6,
+    "procfs_fix_preserved": true,
+    "shared_dependencies_preserved": true,
+    "runtime_overlay_catalog": "ops/lab/artifacts/chat-redesign-vm-server-20261028-r01/catalog.json",
+    "runtime_overlay_catalog_sha256": "c6e72200447c4bcc02fda451d5ed54f44ff094f76c5789fbe2778d83c7af2555"
+  },
+  "client": {
+    "release": "/opt/nodia/releases/nodia-client-chat-redesign-r01",
+    "manifest_sha256": "b93fe7184311a182850b9a1fa243c7ade4dafe2635973253db2f1a897dd0fcfa",
+    "archive_sha256": "664ee8a2054529e8769bb0b56b8eae59409e3c8e1fe71c1f6a7539c592e7040e",
+    "dist_files": 171,
+    "build": "TypeScript and Vite passed",
+    "api_url": "/api/v1",
+    "warning": "Pre-existing chunk size warning above500kB remains.",
+    "served_initial_assets_verified": 25,
+    "served_index_sha256": "14a155a56495d3e0e556cc1095804b3d5ceeccef6d8a3599b574fe56d12fc911",
+    "fixture_or_development_entry": false,
+    "legacy_asset_fallback_chain_preserved": true,
+    "catalog": "ops/lab/artifacts/chat-redesign-vm-client-20261028-r01/catalog.json",
+    "catalog_sha256": "2e54c9765356d52739f688d7a8b4d9f6fee7a903499b5a8478e5c5c5494f6a67"
+  },
+  "adoption": {
+    "success": true,
+    "phase": "activated",
+    "state_sha256": "9113476a9425c508aa2df9dbe1f0150a1af40f4633d852c033d83ebbdcbd7377",
+    "readiness": {
+      "pids": {
+        "nodia-api.service": "1732064",
+        "nodia-ai-worker.service": "1732065"
+      },
+      "stable_seconds": 30.201689379988238
+    },
+    "server": "/opt/nodia/releases/nodia-server-chat-redesign-r01",
+    "client": "/opt/nodia/releases/nodia-client-chat-redesign-r01",
+    "native_restarted": false,
+    "provider_requests": 0,
+    "database_mutations": 0,
+    "all_65_tables_preserved": true,
+    "knowledge_preserved": true,
+    "timers_restored": true,
+    "nginx_sha256": "b85c30164bcc71d93fd1de253ec15c0c33f59e46322f167201d6ffa3a953b918"
+  },
+  "preservation": {
+    "database_tables_fingerprinted": 65,
+    "migration_records": 32,
+    "all_table_data_and_schema_fingerprints_preserved_during_adoption": true,
+    "migrations_executed": 0,
+    "provider_configuration_and_encrypted_api_keys_preserved": true,
+    "server_private_environment_preserved": true,
+    "native_epoch_preserved": true,
+    "native_restarted": false,
+    "knowledge": {
+      "release_id": "ad41d3b87e27dde7d4c2db2283d5a27ed1be50ddd5aae44cc6dece160aafd5e5",
+      "documents": 43,
+      "fragments": 45,
+      "capabilities": 151,
+      "changed": false
+    },
+    "new_draft_published": false
+  },
+  "readiness": {
+    "checked_at_vm_utc": "2026-10-28T18:46:44.791658+00:00",
+    "services": {
+      "nodia-ai-worker.service": {
+        "ActiveState": "active",
+        "MainPID": "1732065",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-chat-redesign-r01",
+        "executable": "/opt/node-v24.20.0-linux-x64/bin/node",
+        "start_ticks": "59451221"
+      },
+      "nodia-api.service": {
+        "ActiveState": "active",
+        "MainPID": "1732064",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-chat-redesign-r01",
+        "executable": "/opt/node-v24.20.0-linux-x64/bin/node",
+        "start_ticks": "59451220"
+      }
+    },
+    "containers": [
+      {
+        "image": "4b990e3e8c60",
+        "name": "nodia-gemini-microservice",
+        "status": "Up 24 hours (healthy)"
+      },
+      {
+        "image": "postgres:16-alpine",
+        "name": "nodia-lab-postgres-1",
+        "status": "Up 12 days (healthy)"
+      },
+      {
+        "image": "redis:7-alpine",
+        "name": "nodia-lab-redis-1",
+        "status": "Up 12 days (healthy)"
+      }
+    ],
+    "http": {
+      "api_3000": {
+        "body_bytes": 12,
+        "status": 200
+      },
+      "api_8080": {
+        "body_bytes": 12,
+        "status": 200
+      },
+      "cors": {
+        "allow_origin_matches_localhost5174": true,
+        "credentials_allowed": true,
+        "status": 204
+      },
+      "first_module": {
+        "asset": "/assets/index-Bgza8Fxs.js",
+        "matches_manifest": true,
+        "sha256": "37bf98192d89d53ca62be1316148ca163740214f3e6ea7224a89665698442f69",
+        "status": 200
+      },
+      "protected_chat": {
+        "no_authorization_supplied": true,
+        "status": 401
+      },
+      "spa_/": {
+        "index_sha256": "14a155a56495d3e0e556cc1095804b3d5ceeccef6d8a3599b574fe56d12fc911",
+        "matches_manifest": true,
+        "status": 200
+      },
+      "spa_/tools/nodia-ai": {
+        "index_sha256": "14a155a56495d3e0e556cc1095804b3d5ceeccef6d8a3599b574fe56d12fc911",
+        "matches_manifest": true,
+        "status": 200
+      }
+    },
+    "local_forward_http": {
+      "api": {
+        "status": 200,
+        "allowed_origin": "http://localhost:5174"
+      },
+      "protected_chat": {
+        "status": 401,
+        "allowed_origin": "http://localhost:5174"
+      }
+    },
+    "local_forward_server": "nginx/1.24.0 (Ubuntu)",
+    "database": {
+      "healthy": true,
+      "migration_count": 32,
+      "read_only": true
+    },
+    "redis": {
+      "automatic_retries": 0,
+      "healthy": true,
+      "reply": "PONG"
+    },
+    "native_health": {
+      "healthy": true,
+      "http_status": 200
+    },
+    "native_agentic_observation": {
+      "active_session_reported": true,
+      "available_reported": true,
+      "capabilities_qualified": false,
+      "http_status": 200,
+      "inference_checked": false,
+      "model_display_reported": null,
+      "model_metadata_count": 6,
+      "model_reported": null,
+      "profile_or_session_contents_emitted": false,
+      "reason_code": null,
+      "service_authentication_accepted": true
+    },
+    "backup_timers": {
+      "nodia-ai-backup-rotate.timer": {
+        "ActiveState": "active",
+        "SubState": "waiting"
+      },
+      "nodia-ai-backup.timer": {
+        "ActiveState": "active",
+        "SubState": "waiting"
+      }
+    },
+    "persisted_default": {
+      "matching_default_rows": 1,
+      "selection": {
+        "connection_id": "1",
+        "effort_id": "medium",
+        "mode": "agentic",
+        "model_id": "gpt-6.1-sol"
+      },
+      "source": "persisted connection/mode/model/effort only; no inference or availability assertion"
+    }
+  },
+  "backups": {
+    "before": {
+      "backup": {
+        "backup_id": "8a8b2090-2d47-465e-83f2-45dfcb24ac46",
+        "captured_at": "2026-10-28T18:36:46.482Z",
+        "cipher_bytes": 2682062,
+        "cipher_sha256": "34f915effbddca4351901f1460105cb43d6060e8eccbec2223a983680211254e",
+        "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+        "expires_at": "2026-11-04T18:36:46.482Z",
+        "journal_sequence": 1,
+        "status": "ready"
+      },
+      "encrypted_object_verified": true,
+      "live_writer_guard_passed": true,
+      "retention_exactly_seven_days": true,
+      "object_read_operations": {
+        "get": 1,
+        "head": 1,
+        "if_match": true
+      }
+    },
+    "after": {
+      "backup": {
+        "backup_id": "20a503ee-0660-462c-b9cc-4e8ee22760a2",
+        "captured_at": "2026-10-28T18:45:41.320Z",
+        "cipher_bytes": 2682062,
+        "cipher_sha256": "e351d6fdae1866e8ce6712ffc3458cea935b8f31882943d2cca0bdd05580cd3d",
+        "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+        "expires_at": "2026-11-04T18:45:41.320Z",
+        "journal_sequence": 1,
+        "status": "ready"
+      },
+      "encrypted_object_verified": true,
+      "live_writer_guard_passed": true,
+      "retention_exactly_seven_days": true,
+      "object_read_operations": {
+        "get": 1,
+        "head": 1,
+        "if_match": true
+      }
+    },
+    "restoration_performed": false
+  },
+  "operator_effects": {
+    "inference_requests": 0,
+    "provider_logins": 0,
+    "model_syncs": 0,
+    "user_jwts_created": 0,
+    "business_writes": 0,
+    "provider_selection_changes": 0,
+    "windows_credentials_or_database_copied_to_vm": false
+  },
+  "limits": [
+    "HTTP health, configuration and observed session are not model/tool/MIME inference qualification.",
+    "No real conversation message was sent by the operator. Human provider tests remain separate.",
+    "Google/user login and microphone/Safari/virtual keyboard on a physical phone were not exercised.",
+    "The local desktop must keep its strict SSH tunnel running for localhost5174 access.",
+    "Client authoring tree is dirty; server deployment is a bounded overlay of the actual VM release, not a wholesale checkout replacement.",
+    "No draft knowledge content or document approval was published."
+  ],
+  "durable_operator_catalog": "ops/lab/artifacts/chat-redesign-vm-20261028-r01/catalog.json",
+  "related_evidence": [
+    "docs/evidence/nodia-ai-chat-redesign-verification-20261028-r01.json",
+    "docs/evidence/nodia-ai-chat-refinement-verification-20261028-r02.json",
+    "docs/evidence/nodia-ai-local-backend-startup-20261028-r01.json"
+  ],
+  "receipt_hashes": {
+    "preflight.json": "c88d26a978dd750e62924e5b73373148b6038264210d1f79f5a5e7170d988f9d",
+    "deployment.json": "f7b1dcea38ed94ecd86c0f54559bd138763d6d06a18d3a06fbb769231c651acb",
+    "readiness-vm.json": "a36614514720722231dc731eaa56d61acd8d4f3fe3a424d9142d40fed9c9842d",
+    "web-readiness.json": "b6263b8c2cd8910f06570b4c050e458101e80f2eb048c8aa1dcfa58ae9d59d40",
+    "prebackup.json": "8750550fca1b395fcaf69c6bcbff7f65182f4cb93cd9ae01aff1e2afbed56676",
+    "postbackup.json": "81bea343a4b35c6e9a49ed7d2a1bd56b6257dc9fcecf07e784e5aafe1a052b13",
+    "tunnel-receipt.json": "05512193aece98d27bee959674b67bff796ba27f6827c2b189b47f6e55ebcffe"
+  }
+}

@@ -25,7 +25,7 @@ export default function ConversationManagement({ operation, busy, error, onApply
   const form = useForm({ resolver: zodResolver(schema), defaultValues: { title: operation.chat.title ?? "" } });
   const blocked = busy || form.formState.isSubmitting;
   const apply = async (input: NodiaAiConversationUpdateInput) => { try { await onApply(input); } catch { /* Parent retains operation/draft and hook owns mutation feedback. */ } };
-  const errorBlock = error && <Alert severity="error" action={<Button disabled={blocked} onClick={onRefresh}>{t("organization.review_latest")}</Button>}>{error}</Alert>;
+  const errorBlock = error && <Alert severity="error" action={<Button variant="contained" disabled={blocked} onClick={onRefresh}>{t("organization.review_latest")}</Button>}>{error}</Alert>;
   if (operation.action !== "rename") {
     const action = operation.action === "pin" ? operation.chat.is_pinned ? "unpin" : "pin" : operation.chat.is_archived ? "unarchive" : "archive";
     return <ConfirmDialog open onClose={onClose} title={t(`organization.${action}`)} isLoading={blocked}
@@ -39,7 +39,7 @@ export default function ConversationManagement({ operation, busy, error, onApply
       <Controller name="title" control={form.control} render={({ field, fieldState }) => <TextInput {...field} label={t("organization.title")} disabled={blocked}
         error={!!fieldState.error} helperText={fieldState.error ? t("organization.title_limit") : t("organization.title_help")} />} />
       <Typography variant="caption" color="text.secondary">{t("organization.retention_unchanged")}</Typography>
-      <Actions><Button onClick={onClose} disabled={blocked}>{t("close")}</Button><Button variant="contained" type="submit" disabled={blocked}>{t("organization.save")}</Button></Actions>
+      <Actions><Button variant="contained" onClick={onClose} disabled={blocked}>{t("close")}</Button><Button variant="contained" type="submit" disabled={blocked}>{t("organization.save")}</Button></Actions>
     </Form>
   </BaseModal>;
 }

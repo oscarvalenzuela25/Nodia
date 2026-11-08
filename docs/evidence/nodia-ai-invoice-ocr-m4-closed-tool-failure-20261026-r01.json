@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "date_local": "2026-10-26",
+  "status": "closed_tool_failure_observed_not_causal_code_or_argument_proof",
+  "receipt": {
+    "path": "ops/lab/artifacts/invoice-ocr-m4-tool-failure-verification-r01/m4-journal-VM-r03.json",
+    "sha256": "9394756f8a8c4ebd5c6ab40dfeb80d322db44cbfb7ab3926f80ed2e8cba6fb5b",
+    "bytes": 914
+  },
+  "literal_sanitized_result": {
+    "status": "closed_API_tool_failures_read",
+    "Server": "/opt/nodia/releases/nodia-server-invoice-ocr-r02",
+    "manifest_sha256": "2402115284e4e4d310c21a17e1ad98b4ca97fa392f6d5a7e99b2137c5f917831",
+    "consumer_pids": {
+      "nodia-api": "437702",
+      "nodia-ai-worker": "437703"
+    },
+    "since_utc": "2026-10-26T04:52:05+00:00",
+    "until_utc": "2026-10-26T05:22:05+00:00",
+    "matched_journal_records": 1,
+    "rejected_records": 0,
+    "rows": [
+      {
+        "timestamp_utc": "2026-10-26T05:05:23.927483+00:00",
+        "unit": "nodia-ai-worker.service",
+        "pid": 437703,
+        "phase": "external",
+        "error_type": "ForbiddenException",
+        "error_code": null,
+        "sql_state": null
+      }
+    ],
+    "scope_limit": "PID/time-window only; current logger has no run/call ID. No failed callback arguments are reconstructed.",
+    "truncation_possible_at_record_limit": false,
+    "raw_messages_emitted": false,
+    "SQL_queries": 0,
+    "SQL_writes": 0,
+    "SDK_calls": 0,
+    "provider_generations": 0,
+    "automatic_retries": 0
+  },
+  "context_run_under_investigation": "526d8fb7-bca8-4a93-b933-c09670e1b636",
+  "limits": {
+    "run_ID_present_in_log": false,
+    "callback_arguments_present_in_log": false,
+    "error_code_observed": null,
+    "SQL_state_observed": null,
+    "specific_invoice_ocr_invalid_code_proven_by_this_log": false,
+    "TTL_cause_proven_by_this_log": false,
+    "no_read_receipt_does_not_mean_no_callback": true,
+    "SQL_queries": 0,
+    "SDK_calls": 0,
+    "provider_generations": 0
+  },
+  "source_reading": {
+    "execute_tool": "Reserve budget commits before main checkpoint. External.prepare may reject before the receipt is saved; its transaction rolls back. Logger emits phase + sanitized failure categories.",
+    "no_argument_reconstruction": "Rejected callback arguments are not in a completed tool receipt; the private Codex journal intentionally stores no prompt/catalog/arguments/results. Existing M3 arguments used for separate rollback diagnosis remain explicitly labeled."
+  },
+  "independent_TTL_evidence_reference": "docs/evidence/nodia-ai-invoice-ocr-ready-retention-fix-20261026-r01.json",
+  "root_operated_receipt": true,
+  "local_review_VM_calls": 0
+}

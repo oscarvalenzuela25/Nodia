@@ -43,7 +43,7 @@ function SourceReport({ source, busy }: { source: NodiaAiReportSource; busy: boo
       : <Typography variant="caption" color="text.secondary">{t("reports.no_period")}</Typography>}
     {Object.entries(source.scope).map(([name, value]) => <Typography key={name} variant="caption" color="text.secondary">{t(`reports.scope.${name}`, { value })}</Typography>)}
     <Typography variant="caption" color="text.secondary"><time dateTime={source.observed_at}>{t("reports.observed", { date })}</time></Typography>
-    <Button disabled={busy} aria-expanded={details} aria-controls={detailsId} onClick={() => setDetails(value => !value)}>{t(details ? "reports.hide_details" : "reports.details")}</Button>
+    <Button variant="contained" disabled={busy} aria-expanded={details} aria-controls={detailsId} onClick={() => setDetails(value => !value)}>{t(details ? "reports.hide_details" : "reports.details")}</Button>
     {details && <div id={detailsId}>
       <Typography variant="body2" color="text.secondary">{t("reports.totals_complete")}</Typography>
       {source.rows.length ? <ReportTable columns={source.columns} rows={source.rows} busy={busy} /> : <Typography variant="body2">{t("reports.no_groups")}</Typography>}
@@ -60,7 +60,7 @@ export default function ReportObservation({ resultRef }: { resultRef: NodiaAiToo
   const report = query.data;
   return <ReportWrapper aria-label={t("reports.title")}>
     {query.isFetching && !query.isLoading && <LinearProgress aria-label={t("refreshing")} />}
-    {query.isError && <Alert severity="error" action={<Button disabled={query.isFetching} onClick={() => void query.refetch()}>{t("retry")}</Button>}>{t(query.accessRejected ? "observation.result_restricted" : "observation.result_error")}</Alert>}
+    {query.isError && <Alert severity="error" action={<Button variant="contained" disabled={query.isFetching} onClick={() => void query.refetch()}>{t("retry")}</Button>}>{t(query.accessRejected ? "observation.result_restricted" : "observation.result_error")}</Alert>}
     <Skeleton loading={query.isLoading}>
       {!report && !query.isLoading && !query.isError && <Typography variant="body2">{t("reports.unavailable")}</Typography>}
       {report && <>
@@ -71,7 +71,7 @@ export default function ReportObservation({ resultRef }: { resultRef: NodiaAiToo
         {report.source_results.map(source => <SourceReport key={source.source_alias} source={source} busy={query.isFetching} />)}
         {report.source_errors.map(item => <Alert severity="warning" key={item.source_alias}>{t("reports.failed_source", { alias: item.source_alias })}</Alert>)}
         {report.combine === "compare_compatible" && report.source_results.length > 0 && <>
-          <Button disabled={query.isFetching} aria-expanded={compare} aria-controls={comparisonId} onClick={() => setCompare(value => !value)}>{t(compare ? "reports.hide_comparison" : "reports.comparison")}</Button>
+          <Button variant="contained" disabled={query.isFetching} aria-expanded={compare} aria-controls={comparisonId} onClick={() => setCompare(value => !value)}>{t(compare ? "reports.hide_comparison" : "reports.comparison")}</Button>
           {compare && <div id={comparisonId}><Typography variant="body2">{t("reports.comparison_note")}</Typography><ReportTable columns={report.columns} rows={report.rows} busy={query.isFetching} /></div>}
         </>}
       </>}

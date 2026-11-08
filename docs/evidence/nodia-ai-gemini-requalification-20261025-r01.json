@@ -1,0 +1,473 @@
+{
+  "schema_version": 1,
+  "verification_date": "2026-10-25",
+  "scope": "Post-adoption Gemini native MCP, Web text and untouched Agentic attachment canaries; no UI/R2 or domain acceptance implied",
+  "status": "Agentic_MCP_and_four_MIME_passed_Web_failed_closed",
+  "sources": {
+    "cohort.json": {
+      "remote_path": "/opt/nodia/verification/c03-requalification-live-r02/cohort.json",
+      "sha256": "ff932a90c730818fcf37dd3cec0512b9d46a052f23e5721d13a76e1e7ceb0882",
+      "bytes": 1168,
+      "raw_copied_to_repository": false
+    },
+    "web-text.json": {
+      "remote_path": "/opt/nodia/verification/c03-requalification-live-r02/web-text.json",
+      "sha256": "5880ff6c50b4b8e22f1cb19d3e68f75bf88805d7b41a4fa6024296414c027a9c",
+      "bytes": 3528,
+      "raw_copied_to_repository": false
+    },
+    "mcp/public-report.json": {
+      "remote_path": "/opt/nodia/verification/c03-requalification-live-r02/mcp/public-report.json",
+      "sha256": "6a4ef2ddf735eabc8262a2682ea008eb4713dd3d339869ada7b5d45e88765ac2",
+      "bytes": 3727,
+      "raw_copied_to_repository": false
+    }
+  },
+  "sanitized_sources": {
+    "artifact_directory": "ops/lab/artifacts/c03-gemini-requalification-20261025-r01",
+    "catalog": "sources-catalog.json",
+    "catalog_sha256": "ddda4d58a0407f59500d19d4b2efabc3e52c17d90484b5978a4bb66f0b8ec774"
+  },
+  "accounting": {
+    "predecessor_generation_slots_reserved": 2,
+    "predecessor_actual_provider_generation_requests": null,
+    "predecessor_driver_declared_generation_requests": {
+      "MCP": 1,
+      "Web_text": 1
+    },
+    "MCP_real_provider_dispatch_requests_verified": 1,
+    "automatic_cohort_inference_retries": 0,
+    "all_case_actual_provider_generations_total": null,
+    "limits": "Web dispatch outcome is unknown. HTTP request counts and SDK recovery_calls are not generation counts; total provider requests remain unknown.",
+    "Agentic_MIME_provider_generation_requests": 4,
+    "Agentic_verified_provider_requests_including_MCP": 5
+  },
+  "MCP": {
+    "status": "passed",
+    "attempt_id": "640f9c0d-fe3a-4c8f-8e5a-1d23629c48eb",
+    "real_provider_dispatch_requests": 1,
+    "nonce_verified": true,
+    "callbacks": 1,
+    "terminal_proof_acknowledged": true,
+    "native_pending_identity": false,
+    "inference_replayed": false,
+    "supports_mcp_before": false,
+    "supports_mcp_after": true,
+    "HTTP_endpoint_requests": {
+      "observe": 2,
+      "start": 1,
+      "events": 435,
+      "results": 1,
+      "attest": 1,
+      "cancel": 0,
+      "reconcile": 0,
+      "acknowledge": 1
+    },
+    "configured_database_read_only": true,
+    "configured_database_modified": false
+  },
+  "Web_text": {
+    "status": "failed_closed_unknown",
+    "attempt_id": "7286591d-8bcb-490a-9636-a8596ba10e5f",
+    "HTTP_status": 502,
+    "application_error_code": "chat_result_unknown",
+    "application_error_code_source": "Pinned native ChatAdapter converts errors after dispatch to HTTP502/chat_result_unknown; public report captured HTTP502 and APIError",
+    "cohort_failure_code": "canary_gates_open_no_replay",
+    "elapsed_seconds": 117.98,
+    "native_outcome": "abandoned_unknown",
+    "native_acknowledged": true,
+    "reconciliation_HTTP_status": 200,
+    "semantic_control_matches": false,
+    "same_session_available_after": false,
+    "observation_after": {
+      "available": true,
+      "reason": null,
+      "http_status": 200
+    },
+    "generation_diagnostic": {
+      "http_status": 200,
+      "upstream_eof_seen": false,
+      "upstream_eof_elapsed_ms": null,
+      "candidate_outputs": 0,
+      "recovery_calls": 5,
+      "client_close_calls": 3,
+      "byte_chunks": 2,
+      "body_bytes": 224,
+      "text_outputs": 0,
+      "structured_text": {
+        "applied": true,
+        "last_equal": null,
+        "candidate_checks": 0,
+        "protected_ampersands_total": 0,
+        "unprotected_html_would_change_outputs": 0,
+        "last_source": null,
+        "last_output": null,
+        "preparser_equal_to_source": null,
+        "last_preparser": null
+      },
+      "body_pacing": {
+        "first_chunk_elapsed_ms": 1980,
+        "last_chunk_elapsed_ms": 60698,
+        "max_inter_chunk_gap_ms": 58718
+      },
+      "uploads": {
+        "requests": 0,
+        "roundtrips_completed": 0,
+        "failed": 0,
+        "cancelled": 0,
+        "sink_errors": 0,
+        "metadata_errors": 0,
+        "records": []
+      },
+      "audio_transport": {
+        "scoped": false,
+        "applied": false,
+        "input_files": null,
+        "audio_files": null,
+        "audio_media_types": [],
+        "descriptor_version": null
+      }
+    },
+    "exception_type": "APIError",
+    "returned_provider_text_saved": false,
+    "separate_successor_reconciliation_created": false
+  },
+  "quiet_after": {
+    "SQL": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "held_or_unknown_slots": 0
+    },
+    "native_unknown_markers": 0,
+    "native_attempt_receipts": 0,
+    "original_native_receipts_present": {
+      "7286591d-8bcb-490a-9636-a8596ba10e5f": false,
+      "640f9c0d-fe3a-4c8f-8e5a-1d23629c48eb": false
+    },
+    "requalification_driver_processes": [],
+    "limits": "Filesystem receipts and acknowledged terminal proofs establish closure of these attempts; no direct read of live in-memory maps was performed."
+  },
+  "Agentic_MIME": {
+    "status": "passed",
+    "maximum_generations": 4,
+    "actual_generation_requests": 4,
+    "generation_slots_reserved": 4,
+    "native_completed_and_acknowledged": 4,
+    "semantic_and_exact_format_verified": 4,
+    "automatic_inference_retries": 0,
+    "Web_or_MCP_repeated": false,
+    "cohort_source": {
+      "remote_path": "/opt/nodia/verification/c03-agentic-media-live-r01/cohort.json",
+      "sha256": "e5eae922f9c0aafa9f2dfa5bbc8ad8078b0cda19bdbcdd9045f250b37d449770",
+      "bytes": 2518
+    },
+    "cohort_raw_copied_to_repository": false,
+    "same_epoch_after": true,
+    "epoch": {
+      "container_id": "b4375ef639fd03c5955abe5c7c6c491908d8fe4e0a0aa28e5cd162e17d11442c",
+      "image_id": "sha256:8320b3cbaee7a2f49fe845481e5f07bcb5d72c82684909bab408ece9711b1b1d",
+      "started_at_utc": "2026-10-25T17:45:34.206184136Z"
+    },
+    "binding": {
+      "selections": {
+        "agentic": {
+          "connection_id": "2",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high",
+          "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b"
+        }
+      },
+      "binding": {
+        "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+        "session_generation": "9cf64d5c9e964c41aa4c4d46eaec9ed8"
+      }
+    },
+    "cases": [
+      {
+        "remote_path": "/opt/nodia/verification/c03-agentic-media-live-r01/agentic-png.json",
+        "sha256": "9c62e4afecd98ed43604040389f3edfe71917e2961f01a8829f6a2208022b8ac",
+        "bytes": 3175,
+        "status": "passed",
+        "generation_requests": 1,
+        "automatic_inference_retries": 0,
+        "provider_response_text_stored": false,
+        "reply_kind": "answer",
+        "probe": {
+          "engine": "agentic",
+          "kind": "image",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high",
+          "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+          "attempt_id": "4bbe6c41-b680-4ba5-be25-cb2dfdbb2456",
+          "file_bytes": 11456,
+          "media_type": "image/png",
+          "file_sha256": "21176e7476cb136311de4d37ebf993bf4bd4de49f4fb9841c732d54000405fa0",
+          "expected_answer_sha256": "c87f273bc6280fd1a14c408ec8ca394d9b2b889047c8155763faf5573890a2f3",
+          "answer_sha256": "c87f273bc6280fd1a14c408ec8ca394d9b2b889047c8155763faf5573890a2f3",
+          "answer_normalization": "literal",
+          "native_acknowledged": true,
+          "semantic_canary_matches": true,
+          "verified": true,
+          "http_status": 200,
+          "elapsed_seconds": 22.53,
+          "native_outcome": "completed",
+          "cached_modality_verified": true,
+          "exact_format_verified": true
+        },
+        "reference": {
+          "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+          "session_generation": "9cf64d5c9e964c41aa4c4d46eaec9ed8",
+          "operation_ref": "4bbe6c41-b680-4ba5-be25-cb2dfdbb2456"
+        },
+        "observation_after": {
+          "http_status": 200,
+          "available": true,
+          "reason": null,
+          "verified_modalities": [
+            "image"
+          ],
+          "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+          "session_generation": "9cf64d5c9e964c41aa4c4d46eaec9ed8",
+          "supports_mcp": true,
+          "verified_attachment_media_types": [
+            "image/png"
+          ]
+        },
+        "quiet_after": {
+          "pending_jobs": 0,
+          "open_attempts": 0,
+          "held_or_unknown_slots": 0
+        }
+      },
+      {
+        "remote_path": "/opt/nodia/verification/c03-agentic-media-live-r01/agentic-pdf.json",
+        "sha256": "1494a3002497bec24b29d659747f6be3a4e8b771802121041187a814899e040e",
+        "bytes": 3215,
+        "status": "passed",
+        "generation_requests": 1,
+        "automatic_inference_retries": 0,
+        "provider_response_text_stored": false,
+        "reply_kind": "answer",
+        "probe": {
+          "engine": "agentic",
+          "kind": "pdf",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high",
+          "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+          "attempt_id": "829abde8-622f-4add-b640-076c9e6eea7b",
+          "file_bytes": 672,
+          "media_type": "application/pdf",
+          "file_sha256": "cea5a3102e649dbab961a1fb4233c7bf683676af8de38a83060d41315c706b9b",
+          "expected_answer_sha256": "6ec53a14d000f67a29238a4b2b9ff11562a81b851425cedbfe60aeb2ce2ebea7",
+          "answer_sha256": "6ec53a14d000f67a29238a4b2b9ff11562a81b851425cedbfe60aeb2ce2ebea7",
+          "answer_normalization": "literal",
+          "native_acknowledged": true,
+          "semantic_canary_matches": true,
+          "verified": true,
+          "http_status": 200,
+          "elapsed_seconds": 20.45,
+          "native_outcome": "completed",
+          "cached_modality_verified": true,
+          "exact_format_verified": true
+        },
+        "reference": {
+          "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+          "session_generation": "9cf64d5c9e964c41aa4c4d46eaec9ed8",
+          "operation_ref": "829abde8-622f-4add-b640-076c9e6eea7b"
+        },
+        "observation_after": {
+          "http_status": 200,
+          "available": true,
+          "reason": null,
+          "verified_modalities": [
+            "image",
+            "pdf"
+          ],
+          "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+          "session_generation": "9cf64d5c9e964c41aa4c4d46eaec9ed8",
+          "supports_mcp": true,
+          "verified_attachment_media_types": [
+            "image/png",
+            "application/pdf"
+          ]
+        },
+        "quiet_after": {
+          "pending_jobs": 0,
+          "open_attempts": 0,
+          "held_or_unknown_slots": 0
+        }
+      },
+      {
+        "remote_path": "/opt/nodia/verification/c03-agentic-media-live-r01/agentic-wav.json",
+        "sha256": "f278293e3bac3abf6ac93b17224f49562109c167a3708ddc0ad4640a472fe2d1",
+        "bytes": 3318,
+        "status": "passed",
+        "generation_requests": 1,
+        "automatic_inference_retries": 0,
+        "provider_response_text_stored": false,
+        "reply_kind": "answer",
+        "probe": {
+          "engine": "agentic",
+          "kind": "audio",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high",
+          "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+          "attempt_id": "6dbf1cad-de32-4308-be63-c1b7e9bfd3fa",
+          "file_bytes": 114886,
+          "media_type": "audio/wav",
+          "file_sha256": "ded0091808665288f22fcc8947ffa098ef1149bd12a42591708856f50816abf0",
+          "expected_answer_sha256": "d1d983dc01270064fa19a1e2b741b87ab4b1107edb06208f7d4ca72b7f5453ad",
+          "answer_sha256": "d1d983dc01270064fa19a1e2b741b87ab4b1107edb06208f7d4ca72b7f5453ad",
+          "answer_normalization": "speech_words_v1",
+          "native_acknowledged": true,
+          "semantic_canary_matches": true,
+          "verified": true,
+          "http_status": 200,
+          "elapsed_seconds": 21.66,
+          "native_outcome": "completed",
+          "cached_modality_verified": true,
+          "exact_format_verified": true
+        },
+        "reference": {
+          "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+          "session_generation": "9cf64d5c9e964c41aa4c4d46eaec9ed8",
+          "operation_ref": "6dbf1cad-de32-4308-be63-c1b7e9bfd3fa"
+        },
+        "observation_after": {
+          "http_status": 200,
+          "available": true,
+          "reason": null,
+          "verified_modalities": [
+            "image",
+            "pdf",
+            "audio"
+          ],
+          "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+          "session_generation": "9cf64d5c9e964c41aa4c4d46eaec9ed8",
+          "supports_mcp": true,
+          "verified_attachment_media_types": [
+            "image/png",
+            "application/pdf",
+            "audio/wav"
+          ]
+        },
+        "quiet_after": {
+          "pending_jobs": 0,
+          "open_attempts": 0,
+          "held_or_unknown_slots": 0
+        }
+      },
+      {
+        "remote_path": "/opt/nodia/verification/c03-agentic-media-live-r01/agentic-webm.json",
+        "sha256": "50ef15811192757eb6d87e66e3a1503f9a6c6a6a314c514b10f25ad3fe2d0bd8",
+        "bytes": 3334,
+        "status": "passed",
+        "generation_requests": 1,
+        "automatic_inference_retries": 0,
+        "provider_response_text_stored": false,
+        "reply_kind": "answer",
+        "probe": {
+          "engine": "agentic",
+          "kind": "audio",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high",
+          "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+          "attempt_id": "6c31e7e9-137c-4d81-8126-8ccd3bbfa186",
+          "file_bytes": 29743,
+          "media_type": "audio/webm",
+          "file_sha256": "6faf3d9f76e7216b105a3b9291f9f671dcfb8edee74818108225405be260d8b0",
+          "expected_answer_sha256": "d1d983dc01270064fa19a1e2b741b87ab4b1107edb06208f7d4ca72b7f5453ad",
+          "answer_sha256": "d1d983dc01270064fa19a1e2b741b87ab4b1107edb06208f7d4ca72b7f5453ad",
+          "answer_normalization": "speech_words_v1",
+          "native_acknowledged": true,
+          "semantic_canary_matches": true,
+          "verified": true,
+          "http_status": 200,
+          "elapsed_seconds": 26.08,
+          "native_outcome": "completed",
+          "cached_modality_verified": true,
+          "exact_format_verified": true
+        },
+        "reference": {
+          "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+          "session_generation": "9cf64d5c9e964c41aa4c4d46eaec9ed8",
+          "operation_ref": "6c31e7e9-137c-4d81-8126-8ccd3bbfa186"
+        },
+        "observation_after": {
+          "http_status": 200,
+          "available": true,
+          "reason": null,
+          "verified_modalities": [
+            "image",
+            "pdf",
+            "audio"
+          ],
+          "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+          "session_generation": "9cf64d5c9e964c41aa4c4d46eaec9ed8",
+          "supports_mcp": true,
+          "verified_attachment_media_types": [
+            "image/png",
+            "application/pdf",
+            "audio/wav",
+            "audio/webm"
+          ]
+        },
+        "quiet_after": {
+          "pending_jobs": 0,
+          "open_attempts": 0,
+          "held_or_unknown_slots": 0
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "Web is not requalified; authenticated/available observation does not establish successful inference.",
+    "No raw provider replies, prompts, profiles, credentials or private-native-report were copied.",
+    "No UI, R2, application file transfer or domain write is proved by these native canaries."
+  ],
+  "quiet_after_four_MIME": {
+    "SQL": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "held_or_unknown_slots": 0
+    },
+    "native": {
+      "exists": true,
+      "unknown_markers": 0,
+      "attempt_receipts": 0
+    },
+    "services_and_timers": {
+      "nodia-api": {
+        "returncode": 0,
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "nodia-ai-worker": {
+        "returncode": 0,
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "nodia-gemini-lab": {
+        "returncode": 0,
+        "ActiveState": "active",
+        "SubState": "exited"
+      },
+      "nginx": {
+        "returncode": 0,
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "nodia-ai-backup.timer": {
+        "returncode": 0,
+        "ActiveState": "active",
+        "SubState": "waiting"
+      },
+      "nodia-ai-backup-rotate.timer": {
+        "returncode": 0,
+        "ActiveState": "active",
+        "SubState": "running"
+      }
+    },
+    "native_container_running": true
+  }
+}

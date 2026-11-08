@@ -88,7 +88,7 @@ try {
     ['object_routes', { schema_version: 1, module_routes: {} }],
     ['null_routes', { schema_version: 1, module_routes: null }],
     ['non_string_route', { schema_version: 1, module_routes: [1] }],
-    ['overlong_routes', { schema_version: 1, module_routes: Array(65).fill('/tools/nodia-ai') }],
+    ['overlong_routes', { schema_version: 1, module_routes: Array(65).fill('/nodia-ai') }],
   ]) {
     const invalid = await chat();
     await text(invalid, 'MalformedScope' + label, { scope });

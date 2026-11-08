@@ -1,0 +1,656 @@
+{
+  "schema_version": 1,
+  "stage": "AI40",
+  "status": "two_closed_native_attempts_audio_not_accepted_R05_preserved",
+  "date_UTC": "2026-10-23",
+  "scope": "Original WAV PCM localAudio semantics in the exact installed Codex CLI/account selection; no API/realtime fallback or deployment.",
+  "protocol_evidence": {
+    "path": "docs/evidence/nodia-ai-ai40-document-audio-protocol-r01.json",
+    "sha256": "610dd4b97d2bdd022ff5b337db0e2431cc0bd5397d049d8205199f618be8b1e8"
+  },
+  "artifact_catalogue": [
+    {
+      "path": "ops/lab/artifacts/ai40-audio-candidate-r01.tar.gz",
+      "sha256": "d39b9c3e80c036530d60475b535c28ee82383803929f533c7f141773d3b02658",
+      "bytes": 1949330,
+      "contains_private_synthetic_fixture_oracle": true,
+      "ignored_local_recovery_only": true
+    },
+    {
+      "path": "ops/lab/artifacts/ai40-audio-candidate-r02.tar.gz",
+      "sha256": "715b46fa452f9e917e32743507ce870174644c37b166baf8f159e42ec0730b6e",
+      "bytes": 1925750,
+      "contains_private_synthetic_fixture_oracle": true,
+      "ignored_local_recovery_only": true
+    }
+  ],
+  "source_pins_sha256": {
+    "docs/evidence/scripts/nodia-ai-ai40-audio-operator-r01.py": "5023fbbb419a0312c7611869293761c98be8f1cde6a7c14c810a8f1707e044e2",
+    "docs/evidence/scripts/nodia-ai-ai40-audio-candidate-freeze-r01.py": "6f577dd2d7fc6bf0f9f324a95e47c64c9ff4421ee5a6eb9262d120771449d2ab",
+    "docs/evidence/scripts/nodia-ai-ai40-audio-native-inspect-r01.mjs": "e4cde4334cdd0a10ac0c94026bd7d79c68afd24bdf38298280366b1398f828fc",
+    "docs/evidence/scripts/nodia-ai-ai40-audio-scope-r01.mjs": "0b07a1ce73d37207b82cfe5d16d28f53cd6f87f45906bc796a02868c7b76ee24",
+    "nodia-server/test/nodia-ai-ai40-audio-diagnostic.mjs": "ec79eb2205fa6419cdd6e20661817ab54ea9db0c338209017ed191a8ea97cae8",
+    "nodia-server/test/nodia-ai-ai40-audio-diagnostic.spec.mjs": "576a8e5aad0e152a7f6a82848609fa161a32167076dc8ebda583e8f45e2b1444",
+    "nodia-server/test/nodia-ai-ai40-real-canary.mjs": "f436741d485333853989899769d146f6bd508f081a548c79141b34d1c4e54483",
+    "nodia-server/test/nodia-ai-ai40-real-canary-parent.mjs": "e5b17813c07cb5ca5317ceac243de9b68311a079930b122d24f9378b1bab357f"
+  },
+  "operator_lineage_originals": [
+    {
+      "path": "ops/lab/artifacts/ai40-audio-candidate-freezer-r01-original.py",
+      "sha256": "01286e13c467ba3272191b876eb0accddbb7513b8b5bd59bcace04196fa46952",
+      "ignored_original_preserved": true
+    },
+    {
+      "path": "ops/lab/artifacts/ai40-audio-scope-r01-original.mjs",
+      "sha256": "628c9df795d0eaf06000d5b14d531b44b274ef7a2e0d24a81d2274083e3bd130",
+      "ignored_original_preserved": true
+    },
+    {
+      "path": "ops/lab/artifacts/ai40-audio-native-inspect-r01-original.mjs",
+      "sha256": "624ca3cc6891a960a8b50f8943f224987d64db4dcb2b94ae68002016eeed837b",
+      "ignored_original_preserved": true
+    }
+  ],
+  "scope_and_build": {
+    "Windows_build_exit_code": 0,
+    "Linux_rebuild": false,
+    "production_source_hashes_R01_R02_identical": 949,
+    "compiled_dist_outputs_R01_R02_identical": 2902,
+    "only_snapshot_code_delta": [
+      "test/nodia-ai-ai40-real-canary.mjs modified",
+      "test/nodia-ai-ai40-audio-diagnostic.mjs added"
+    ],
+    "candidate_runtime_fingerprint": "bdb7c04e235fc54ec67f0cf7617ec949846d09ca34846bac8120dda9ecb64504",
+    "R05_runtime_fingerprint": "51a284da7f892943e9101d08af7513f405b81034c7b85f7c05517d0daab82543",
+    "same_native_ELF_Node_V8_policy": true,
+    "production_QA_reported_by_root": {
+      "tests_passed": 352,
+      "test_files": 10,
+      "tsc_build_lint_exit_code": 0
+    }
+  },
+  "R05_proofs_before_and_after_both_attempts": {
+    "mcp": {
+      "sha256": "9bb580493f20a2d0c66a5f8311b9ebadd089a4afebba89cec80036eca126a26d",
+      "scope": {
+        "connectionId": "1",
+        "resourceKey": "codex-profile:c17db95bfdfba4ffee919e03da6cc09443c0c337a66ec234c4fef830ae2507f6",
+        "sessionGeneration": "2a552f6b8a434521b8b438a8f7b01dca",
+        "configurationGeneration": "981def76e9ee3f9579b881a8941435be942e9e1b3af728815dfe63c66cb5f095",
+        "modelId": "gpt-6.1-sol",
+        "effortId": null,
+        "runtimeFingerprint": "51a284da7f892943e9101d08af7513f405b81034c7b85f7c05517d0daab82543"
+      },
+      "terminal_proof_id": "5071d135-06b4-46dd-8530-eb675488938f"
+    },
+    "-image-png": {
+      "sha256": "bc2d3ba98fece9901af9dff92102b989b82e5244e18efd0f6db29571fc0ac3e8",
+      "scope": {
+        "connectionId": "1",
+        "resourceKey": "codex-profile:c17db95bfdfba4ffee919e03da6cc09443c0c337a66ec234c4fef830ae2507f6",
+        "sessionGeneration": "2a552f6b8a434521b8b438a8f7b01dca",
+        "configurationGeneration": "981def76e9ee3f9579b881a8941435be942e9e1b3af728815dfe63c66cb5f095",
+        "modelId": "gpt-6.1-sol",
+        "effortId": null,
+        "runtimeFingerprint": "51a284da7f892943e9101d08af7513f405b81034c7b85f7c05517d0daab82543"
+      },
+      "terminal_proof_id": "5981562b-f6e3-4209-a50e-1c3dca2954dc"
+    },
+    "-image-jpeg": {
+      "sha256": "71a70ca36af02b1be7303aa3542520f35b2187c966051548adaeda4b4c5dc908",
+      "scope": {
+        "connectionId": "1",
+        "resourceKey": "codex-profile:c17db95bfdfba4ffee919e03da6cc09443c0c337a66ec234c4fef830ae2507f6",
+        "sessionGeneration": "2a552f6b8a434521b8b438a8f7b01dca",
+        "configurationGeneration": "981def76e9ee3f9579b881a8941435be942e9e1b3af728815dfe63c66cb5f095",
+        "modelId": "gpt-6.1-sol",
+        "effortId": null,
+        "runtimeFingerprint": "51a284da7f892943e9101d08af7513f405b81034c7b85f7c05517d0daab82543"
+      },
+      "terminal_proof_id": "d84fa91c-74a1-4230-830c-5cfe885223ab"
+    },
+    "-image-webp": {
+      "sha256": "3b81f1952a72d466516dc1f10ff91cfbbc9d7038c206f7b4e86b9c1a5875e9d3",
+      "scope": {
+        "connectionId": "1",
+        "resourceKey": "codex-profile:c17db95bfdfba4ffee919e03da6cc09443c0c337a66ec234c4fef830ae2507f6",
+        "sessionGeneration": "2a552f6b8a434521b8b438a8f7b01dca",
+        "configurationGeneration": "981def76e9ee3f9579b881a8941435be942e9e1b3af728815dfe63c66cb5f095",
+        "modelId": "gpt-6.1-sol",
+        "effortId": null,
+        "runtimeFingerprint": "51a284da7f892943e9101d08af7513f405b81034c7b85f7c05517d0daab82543"
+      },
+      "terminal_proof_id": "bd2e6ea0-b604-4982-8683-7a9eef59e9de"
+    }
+  },
+  "dependencies_verified_installed_against_lock_9_of_9": [
+    {
+      "name": "@nestjs/common",
+      "version": "12.0.1",
+      "package_json_sha256": "7ac7e54dc5d8fc3f1f9691fa97ac8a1c82fa36e5f7359cdc662580d3e885026e"
+    },
+    {
+      "name": "@nestjs/core",
+      "version": "12.0.1",
+      "package_json_sha256": "04e7898c21c9881299385f2ed5b671638baec0a2198646caeb5513f492b89545"
+    },
+    {
+      "name": "@nestjs/testing",
+      "version": "12.0.1",
+      "package_json_sha256": "5fec5086a9432dfe6bf6388dcb8c804f87e2599928e0de93b1cd61dd8d86ee24"
+    },
+    {
+      "name": "@nestjs/typeorm",
+      "version": "12.0.1",
+      "package_json_sha256": "04a8054d71c5040baee18aeb2d6c09ee0f38b95898f9470b3798f1e585db1a2d"
+    },
+    {
+      "name": "typeorm",
+      "version": "1.1.1",
+      "package_json_sha256": "86dc58a47ca3b17a980b2813818f8441b9973ac0bf2de521380c04de4f23d7a5"
+    },
+    {
+      "name": "reflect-metadata",
+      "version": "0.2.2",
+      "package_json_sha256": "e0f6d5cf809e02e338f501d3030e917fa57e3a10044387de890cbf142b4f4083"
+    },
+    {
+      "name": "dotenv",
+      "version": "17.4.2",
+      "package_json_sha256": "7e57c7c7b3c5fe5dd127091aeacadec3e144fd290988c61c184876c1b8bda819"
+    },
+    {
+      "name": "@openai/codex",
+      "version": "0.161.0",
+      "package_json_sha256": "66977445fa766ffe4639ec5440e4b351f2cb882407bd296415211df3af001398"
+    },
+    {
+      "name": "@openai/codex-linux-x64",
+      "version": "0.161.0-linux-x64",
+      "package_json_sha256": "d502635cbcc30f4e283b525095c624287584d9ae135e3cea47c979410210f424"
+    }
+  ],
+  "observational_wrapper_QA": {
+    "command": "node --test test/nodia-ai-ai40-audio-diagnostic.spec.mjs",
+    "cwd": "nodia-server",
+    "exit_code": 0,
+    "atomic_tests": 6,
+    "lint_exit_code": 0,
+    "guarantees": [
+      "Exactly one Reflect.apply delegates original receiver and argument objects.",
+      "Returns the identical original Promise; fulfillment/rejection objects preserved.",
+      "Observation .then branch has its own catch and cannot replace provider success/error.",
+      "Hostile diagnostic getters and projection failures do not replace the original exception/result.",
+      "No transcript or oracle text in the emitted metrics; codes use a closed adapter allowlist or technical namespace.",
+      "Exact oracle comparison takes precedence; refusal phrase match and unclassified mismatch are distinct diagnostics.",
+      "Restore removes the instance shadow of the prototype method."
+    ],
+    "DI_and_prototype_asserted_before_wrapping": true,
+    "fingerprint_changed_by_diagnostic_wrapper": false,
+    "acceptance_criteria_relaxed": false
+  },
+  "cases": [
+    {
+      "attempt": "r01",
+      "candidate_freeze": {
+        "schema": "nodia-ai-ai40-audio-freeze-v1",
+        "candidate_root": "/opt/nodia/verification/ai40-audio-candidate-r01",
+        "candidate_manifest_sha256": "5012094d9aa2c3a6744a5a9ad6d2a5f2a51a67dec9b71b8dcf4cf2e941552136",
+        "archive_sha256": "d39b9c3e80c036530d60475b535c28ee82383803929f533c7f141773d3b02658",
+        "archive_bytes": 1949330,
+        "source_hashes": 949,
+        "server_files": 2908,
+        "dist_outputs": 2902,
+        "knowledge_release": "72f25fac97ad75915b2d5b7aa2ea88d997e58318487d523c3db162218dd5a895",
+        "audio_fixture_sha256": "cd1e23420dcc51edcdabd3388c52958b9d9049bd8ec4c45ff849058e8bf950e3",
+        "audio_fixture_bytes": 162936,
+        "duration_seconds": 3.6936961451247163,
+        "normalized_expected_sha256": "1ee5938c9273a302f3d8d6a7e2312227e84986a2bc337079a904d8fe8898f42c",
+        "production_decoder_accepted": true,
+        "private_expected_transcript_emitted": false,
+        "provider_requests": 0,
+        "operational_adoption": false
+      },
+      "executed_candidate_boundaries_sha256": {
+        "dist/common/ai/codex/codex-chat-acceptance.js": "a992b270b959dd580c5deabe4abf6e9b3e95faa492297ed107cad8cd276199b1",
+        "dist/common/ai/codex/codex-chat-runtime.js": "cd4d67de2d8caa48a4d82c7505b4a726a74ebebec24aa75da5c6fa79660f0757",
+        "dist/nodia-ai-adapter/use-case/codex-nodia-ai-adapter.use-case.js": "eda4ad66ce2824678357907aecf27bd90c5d846799c356acdaecdaa15b33fbf3",
+        "test/nodia-ai-ai40-real-canary-parent.mjs": "e5b17813c07cb5ca5317ceac243de9b68311a079930b122d24f9378b1bab357f",
+        "test/nodia-ai-ai40-real-canary.mjs": "49f58223636e00948f5270e930deb746c012a0985806ca09e1855422286f4008"
+      },
+      "candidate_scope": {
+        "schema": "nodia-ai-ai40-audio-candidate-scope-v1",
+        "status": "passed",
+        "candidate_root": "/opt/nodia/verification/ai40-audio-candidate-r01/server",
+        "candidate_manifest_sha256": "5012094d9aa2c3a6744a5a9ad6d2a5f2a51a67dec9b71b8dcf4cf2e941552136",
+        "files_verified": 2908,
+        "native_binary_sha256": "9a820c17865fa825d04db416818679a9d63bd72e50835c396f496e5684626c9c",
+        "node": "v24.20.0",
+        "v8": "13.6.233.17-node.53",
+        "platform": "linux",
+        "architecture": "x64",
+        "runtime_base_fingerprint": "3e8a8dddbc75e4919aa3a5d63b2c8ad3ded210e4ed70051eff5c74e84e4ff469",
+        "runtime_fingerprint": "bdb7c04e235fc54ec67f0cf7617ec949846d09ca34846bac8120dda9ecb64504",
+        "runtime_policy_asset_sha256": "7ff3c624496ace6514100d03b2e1f236683b235bfe7d4fa68da7cd268c419521",
+        "validated_policy_sha256": "f682c1a54b16f2e7e3db161445a8b638c77caa55b3f7f1c6161bf92790eae49f",
+        "fingerprint_implementation_sha256": "a992b270b959dd580c5deabe4abf6e9b3e95faa492297ed107cad8cd276199b1",
+        "source_sha256": "628c9df795d0eaf06000d5b14d531b44b274ef7a2e0d24a81d2274083e3bd130",
+        "provider_observations": 0,
+        "provider_generations": 0,
+        "operational_profile_reads": 0,
+        "services_changed": false
+      },
+      "operator_receipt_sha256": "b0b75b53cddf0b7085865d63915f0e221fde9e62a0b2982998be77b5aaf290b0",
+      "operator_status": "failed",
+      "parent_full_sanitized_receipt": {
+        "schema": "nodia-ai-ai40-real-canary-parent-v1",
+        "status": "failed",
+        "phase": "complete",
+        "started_at_utc": "2026-10-23T18:35:17.950Z",
+        "finished_at_utc": "2026-10-23T18:35:43.141Z",
+        "error": null,
+        "native_process_user": "nodia",
+        "root_only_disposable_provisioning": true,
+        "docker_permissions_changed": false,
+        "private_db_options_emitted": false,
+        "child_exit_code": 1,
+        "child_exit_signal": null,
+        "child_timed_out": false,
+        "child_stdout_bytes": 2692,
+        "child_stdout_sha256": "aa375f3c112f9c38f2634384be11d3809f95d316b4d64e7bbad85c030018e6f0",
+        "child_stderr_bytes": 0,
+        "child_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "child_stderr_withheld": true,
+        "child": {
+          "schema": "nodia-ai-ai40-real-canary-v1",
+          "status": "failed",
+          "phase": "one_real_audio_generation",
+          "started_at_utc": "2026-10-23T18:35:20.451Z",
+          "finished_at_utc": "2026-10-23T18:35:42.895Z",
+          "error": {
+            "name": "AssertionError",
+            "code": null
+          },
+          "adapter_error": {
+            "name": "NodiaAiAdapterError",
+            "code": null
+          },
+          "checks": 5,
+          "passed": [
+            "Installed real Codex executable matches the operator pin",
+            "Actual account, model and effort are available without a readiness override",
+            "Native formats remain limited to independently accepted image or WAV MIME proofs",
+            "Unmodified production context stage prepares the admitted run",
+            "Codex schema2 descriptor is durable before the real generation"
+          ],
+          "selection": {
+            "connection_id": "1",
+            "mode": "token_plan_agentic",
+            "model_id": "gpt-6.1-sol",
+            "effort_id": null
+          },
+          "provider_dispatches_armed": 1,
+          "gateway_callbacks": 0,
+          "operational_database_accessed": false,
+          "disposable_sql_real": true,
+          "readiness_overridden": false,
+          "executable_overridden": false,
+          "publication_overridden": false,
+          "live_account_observation_received": true,
+          "credential_bytes_read_or_copied": false,
+          "initial_mcp_accepted": false,
+          "final_mcp_accepted": null,
+          "acceptance_kind": "audio_original",
+          "image_media_type": null,
+          "image_source_sha256": null,
+          "audio_media_type": "audio/wav",
+          "audio_source_sha256": "cd1e23420dcc51edcdabd3388c52958b9d9049bd8ec4c45ff849058e8bf950e3",
+          "audio_oracle_normalization": "normalizeCodexChatAudioTranscript:NFKC/lower/fixed-punctuation/whitespace",
+          "final_verified_image_media_types": [],
+          "final_verified_audio_media_types": [],
+          "final_verified_attachment_media_types": [],
+          "run_state": "failed",
+          "assistant_message_sealed": false,
+          "terminal_proof_id": null,
+          "response_sha256": null,
+          "disposable_lifecycle": "root_operator_parent",
+          "fixture_sql_safe_to_remove": true,
+          "fixture_resources_removed": false,
+          "retained_disposable_container": null,
+          "operational_profile_removed": false,
+          "limits": [
+            "Exactly one explicitly authorized generation; failures are reconciled, never retried.",
+            "Real account/native binary and PostgreSQL gateway with fixture actor/grant and mirrored public configuration.",
+            "Operator-only inference handler reuses compiled production lease/progress methods; not UI or autonomous worker acceptance.",
+            "Only the exact synthetic WAV PCM is probed; no PDF, other audio formats, realtime, R2 upload, UI or autonomous worker acceptance is implied.",
+            "Scoped technical acceptance persists only after the production journal ACK; operational SQL was not accessed."
+          ]
+        },
+        "fixture_resources_removed": true,
+        "retained_disposable_container": null,
+        "operational_profile_removed": false,
+        "operational_database_accessed": false
+      },
+      "native_reconciliation_receipt_sha256": "f70acc798a95db408bd9ad1fc5c44522a6379307e9f959e04700fa98c3e02083",
+      "native_reconciliation": {
+        "schema": "nodia-ai-ai40-audio-native-reconciliation-v1",
+        "status": "passed_closed_not_audio_accepted",
+        "observed_at_VM_utc": "2026-10-23T18:39:05.083Z",
+        "attempt_id": "3b2e399f-c7fb-4eba-92e8-3a9aa2532e90",
+        "parent_receipt_sha256": "b0b75b53cddf0b7085865d63915f0e221fde9e62a0b2982998be77b5aaf290b0",
+        "journal_record_sha256": "6ba31a9604091e24596fb66a1c39a2a631531b973a4b9503c0c11c79328ddfa3",
+        "terminal_proof_id": "dbe90c3d-4dda-40c1-8c5a-107906139edf",
+        "terminal_observed_at": "2026-10-23T18:35:42.804Z",
+        "native_state": "completed",
+        "native_outcome": "completed",
+        "acknowledged": true,
+        "process_closed": true,
+        "exact_process_absent": true,
+        "owned_process_group_empty": true,
+        "unforwarded_requests": 0,
+        "rpc_count": 0,
+        "protocol_frames": 34,
+        "protocol_bytes": 29190,
+        "attempt_audio_staging_absent": true,
+        "audio_staging_entries": 0,
+        "audio_acceptance_file_absent": true,
+        "raw_reply_or_error_code_stored_in_journal": false,
+        "semantic_transcription_acceptance": false,
+        "source_sha256": "624ca3cc6891a960a8b50f8943f224987d64db4dcb2b94ae68002016eeed837b",
+        "candidate_manifest_sha256": "5012094d9aa2c3a6744a5a9ad6d2a5f2a51a67dec9b71b8dcf4cf2e941552136",
+        "provider_observations": 0,
+        "provider_generations": 0,
+        "operational_SQL_writes": 0,
+        "services_changed": false
+      },
+      "SQL_before_and_after_equal": {
+        "chats": 1,
+        "messages": 19,
+        "runs": 10,
+        "dispatches": 10,
+        "tool_receipts": 8,
+        "executions": 1,
+        "effect_receipts": 1,
+        "financial_effects": 1,
+        "pending_jobs": 0,
+        "open_attempts": 0,
+        "retained_slots": 0
+      },
+      "services_before_and_after_equal": {
+        "nodia-api": {
+          "pid": 3194456,
+          "active": "active",
+          "working_directory": "/opt/nodia/releases/nodia-server-ai40-r05"
+        },
+        "nodia-ai-worker": {
+          "pid": 3194457,
+          "active": "active",
+          "working_directory": "/opt/nodia/releases/nodia-server-ai40-r05"
+        },
+        "nodia-keyring": {
+          "pid": 3083921,
+          "active": "active",
+          "working_directory": ""
+        }
+      },
+      "R05_MCP_and_image_proofs_preserved": true,
+      "audio_proof_absent": true,
+      "same_generation_replayed": false,
+      "runtime_error_code_recoverable": false
+    },
+    {
+      "attempt": "r02",
+      "candidate_freeze": {
+        "schema": "nodia-ai-ai40-audio-freeze-v1",
+        "candidate_root": "/opt/nodia/verification/ai40-audio-candidate-r02",
+        "candidate_manifest_sha256": "0b66a1c9a90875536fab7570426e96d0f745201b1fc486c9e48ba0e31d582426",
+        "archive_sha256": "715b46fa452f9e917e32743507ce870174644c37b166baf8f159e42ec0730b6e",
+        "archive_bytes": 1925750,
+        "source_hashes": 949,
+        "server_files": 2909,
+        "dist_outputs": 2902,
+        "knowledge_release": "72f25fac97ad75915b2d5b7aa2ea88d997e58318487d523c3db162218dd5a895",
+        "audio_fixture_sha256": "472c377e650f44b44a8d32508e0c4e7fbb480bdfe332302657cbb897afd5ddfd",
+        "audio_fixture_bytes": 137316,
+        "duration_seconds": 3.1127437641723357,
+        "normalized_expected_sha256": "09b29bc4001dff47a92a65f1606a3935c57e91eef4c4a9df19c4ecfb959f4125",
+        "production_decoder_accepted": true,
+        "private_expected_transcript_emitted": false,
+        "provider_requests": 0,
+        "operational_adoption": false
+      },
+      "executed_candidate_boundaries_sha256": {
+        "dist/common/ai/codex/codex-chat-acceptance.js": "a992b270b959dd580c5deabe4abf6e9b3e95faa492297ed107cad8cd276199b1",
+        "dist/common/ai/codex/codex-chat-runtime.js": "cd4d67de2d8caa48a4d82c7505b4a726a74ebebec24aa75da5c6fa79660f0757",
+        "dist/nodia-ai-adapter/use-case/codex-nodia-ai-adapter.use-case.js": "eda4ad66ce2824678357907aecf27bd90c5d846799c356acdaecdaa15b33fbf3",
+        "test/nodia-ai-ai40-audio-diagnostic.mjs": "ec79eb2205fa6419cdd6e20661817ab54ea9db0c338209017ed191a8ea97cae8",
+        "test/nodia-ai-ai40-real-canary-parent.mjs": "e5b17813c07cb5ca5317ceac243de9b68311a079930b122d24f9378b1bab357f",
+        "test/nodia-ai-ai40-real-canary.mjs": "f436741d485333853989899769d146f6bd508f081a548c79141b34d1c4e54483"
+      },
+      "candidate_scope": {
+        "schema": "nodia-ai-ai40-audio-candidate-scope-v1",
+        "status": "passed",
+        "candidate_root": "/opt/nodia/verification/ai40-audio-candidate-r02/server",
+        "candidate_manifest_sha256": "0b66a1c9a90875536fab7570426e96d0f745201b1fc486c9e48ba0e31d582426",
+        "files_verified": 2909,
+        "native_binary_sha256": "9a820c17865fa825d04db416818679a9d63bd72e50835c396f496e5684626c9c",
+        "node": "v24.20.0",
+        "v8": "13.6.233.17-node.53",
+        "platform": "linux",
+        "architecture": "x64",
+        "runtime_base_fingerprint": "3e8a8dddbc75e4919aa3a5d63b2c8ad3ded210e4ed70051eff5c74e84e4ff469",
+        "runtime_fingerprint": "bdb7c04e235fc54ec67f0cf7617ec949846d09ca34846bac8120dda9ecb64504",
+        "runtime_policy_asset_sha256": "7ff3c624496ace6514100d03b2e1f236683b235bfe7d4fa68da7cd268c419521",
+        "validated_policy_sha256": "f682c1a54b16f2e7e3db161445a8b638c77caa55b3f7f1c6161bf92790eae49f",
+        "fingerprint_implementation_sha256": "a992b270b959dd580c5deabe4abf6e9b3e95faa492297ed107cad8cd276199b1",
+        "source_sha256": "0b07a1ce73d37207b82cfe5d16d28f53cd6f87f45906bc796a02868c7b76ee24",
+        "provider_observations": 0,
+        "provider_generations": 0,
+        "operational_profile_reads": 0,
+        "services_changed": false
+      },
+      "operator_receipt_sha256": "ea517809a75876f4ffa3f1063b655247dea717161447a4cfd1dc04dcb208cf74",
+      "operator_status": "failed",
+      "parent_full_sanitized_receipt": {
+        "schema": "nodia-ai-ai40-real-canary-parent-v1",
+        "status": "failed",
+        "phase": "complete",
+        "started_at_utc": "2026-10-23T18:47:26.798Z",
+        "finished_at_utc": "2026-10-23T18:47:52.498Z",
+        "error": null,
+        "native_process_user": "nodia",
+        "root_only_disposable_provisioning": true,
+        "docker_permissions_changed": false,
+        "private_db_options_emitted": false,
+        "child_exit_code": 1,
+        "child_exit_signal": null,
+        "child_timed_out": false,
+        "child_stdout_bytes": 3839,
+        "child_stdout_sha256": "fcef219f6edc3c2ad8d55c571e0f67e53656388c4de00eda4ecbf75ebbdd1fd9",
+        "child_stderr_bytes": 0,
+        "child_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "child_stderr_withheld": true,
+        "child": {
+          "schema": "nodia-ai-ai40-real-canary-v1",
+          "status": "failed",
+          "phase": "one_real_audio_generation",
+          "started_at_utc": "2026-10-23T18:47:29.281Z",
+          "finished_at_utc": "2026-10-23T18:47:52.210Z",
+          "error": {
+            "name": "AssertionError",
+            "code": null,
+            "outcome": null
+          },
+          "adapter_error": {
+            "name": "NodiaAiAdapterError",
+            "code": "audio_probe_unverified",
+            "outcome": "unknown"
+          },
+          "checks": 5,
+          "passed": [
+            "Installed real Codex executable matches the operator pin",
+            "Actual account, model and effort are available without a readiness override",
+            "Native formats remain limited to independently accepted image or WAV MIME proofs",
+            "Unmodified production context stage prepares the admitted run",
+            "Codex schema2 descriptor is durable before the real generation"
+          ],
+          "selection": {
+            "connection_id": "1",
+            "mode": "token_plan_agentic",
+            "model_id": "gpt-6.1-sol",
+            "effort_id": null
+          },
+          "provider_dispatches_armed": 1,
+          "gateway_callbacks": 0,
+          "operational_database_accessed": false,
+          "disposable_sql_real": true,
+          "readiness_overridden": false,
+          "executable_overridden": false,
+          "publication_overridden": false,
+          "live_account_observation_received": true,
+          "credential_bytes_read_or_copied": false,
+          "initial_mcp_accepted": false,
+          "final_mcp_accepted": null,
+          "acceptance_kind": "audio_original",
+          "image_media_type": null,
+          "image_source_sha256": null,
+          "audio_media_type": "audio/wav",
+          "audio_source_sha256": "472c377e650f44b44a8d32508e0c4e7fbb480bdfe332302657cbb897afd5ddfd",
+          "audio_oracle_normalization": "normalizeCodexChatAudioTranscript:NFKC/lower/fixed-punctuation/whitespace",
+          "final_verified_image_media_types": [],
+          "final_verified_audio_media_types": [],
+          "final_verified_attachment_media_types": [],
+          "run_state": "failed",
+          "assistant_message_sealed": false,
+          "terminal_proof_id": null,
+          "attempt_id": "ebd294bc-9b5c-4791-a4a5-336103b495af",
+          "run_id": "5374520c-2a4e-45c2-a446-64ceb7edb08d",
+          "job_id": "1ee01791-0bf8-499c-b142-ab441f727389",
+          "audio_runtime_diagnostic": {
+            "native_execute_calls": 1,
+            "original_arguments_forwarded": true,
+            "original_receiver_forwarded": true,
+            "original_promise_returned": true,
+            "original_reply_observed": true,
+            "original_error_preserved": false,
+            "runtime_reply_received": true,
+            "audio_count": 1,
+            "image_count": 0,
+            "request_audio_sha256_matches": true,
+            "request_audio_media_type": "audio/wav",
+            "attempt_id": "ebd294bc-9b5c-4791-a4a5-336103b495af",
+            "text_sha256": "766096e74ba2133261cee6bd90932f752f7e6fac85efdc8a10cd8c72b444ac1a",
+            "normalized_text_sha256": "6493a6354b67dc2cfdebbf8c30700973ab8363de074fe283dea2773cf4686173",
+            "text_utf8_bytes": 53,
+            "normalized_words": 8,
+            "exact_oracle_match": false,
+            "response_category": "explicit_audio_refusal_phrase",
+            "terminal_proof_id": "faa2888e-fbd5-4d77-890c-1d2b0a4ae25b",
+            "native_outcome": "completed"
+          },
+          "response_sha256": null,
+          "disposable_lifecycle": "root_operator_parent",
+          "fixture_sql_safe_to_remove": true,
+          "fixture_resources_removed": false,
+          "retained_disposable_container": null,
+          "operational_profile_removed": false,
+          "limits": [
+            "Exactly one explicitly authorized generation; failures are reconciled, never retried.",
+            "Real account/native binary and PostgreSQL gateway with fixture actor/grant and mirrored public configuration.",
+            "Operator-only inference handler reuses compiled production lease/progress methods; not UI or autonomous worker acceptance.",
+            "Only the exact synthetic WAV PCM is probed; no PDF, other audio formats, realtime, R2 upload, UI or autonomous worker acceptance is implied.",
+            "Scoped technical acceptance persists only after the production journal ACK; operational SQL was not accessed."
+          ]
+        },
+        "fixture_resources_removed": true,
+        "retained_disposable_container": null,
+        "operational_profile_removed": false,
+        "operational_database_accessed": false
+      },
+      "native_reconciliation_receipt_sha256": "2099d9b8cbc27e92e3ad95a9035a15e1da0107abe3700712f88d3a190603b94f",
+      "native_reconciliation": {
+        "schema": "nodia-ai-ai40-audio-native-reconciliation-v1",
+        "status": "passed_closed_not_audio_accepted",
+        "observed_at_VM_utc": "2026-10-23T18:48:44.165Z",
+        "attempt_id": "ebd294bc-9b5c-4791-a4a5-336103b495af",
+        "parent_receipt_sha256": "ea517809a75876f4ffa3f1063b655247dea717161447a4cfd1dc04dcb208cf74",
+        "journal_record_sha256": "f68d2e256ef9c76f4091e18ee5c474fe25902b35c0360837c7ec04d0a826d58b",
+        "terminal_proof_id": "faa2888e-fbd5-4d77-890c-1d2b0a4ae25b",
+        "terminal_observed_at": "2026-10-23T18:47:52.124Z",
+        "native_state": "completed",
+        "native_outcome": "completed",
+        "acknowledged": true,
+        "process_closed": true,
+        "exact_process_absent": true,
+        "owned_process_group_empty": true,
+        "unforwarded_requests": 0,
+        "rpc_count": 0,
+        "protocol_frames": 37,
+        "protocol_bytes": 29982,
+        "attempt_audio_staging_absent": true,
+        "audio_staging_entries": 0,
+        "audio_acceptance_file_absent": true,
+        "raw_reply_or_error_code_stored_in_journal": false,
+        "semantic_transcription_acceptance": false,
+        "source_sha256": "e4cde4334cdd0a10ac0c94026bd7d79c68afd24bdf38298280366b1398f828fc",
+        "candidate_manifest_sha256": "0b66a1c9a90875536fab7570426e96d0f745201b1fc486c9e48ba0e31d582426",
+        "provider_observations": 0,
+        "provider_generations": 0,
+        "operational_SQL_writes": 0,
+        "services_changed": false
+      },
+      "SQL_before_and_after_equal": {
+        "chats": 1,
+        "messages": 19,
+        "runs": 10,
+        "dispatches": 10,
+        "tool_receipts": 8,
+        "executions": 1,
+        "effect_receipts": 1,
+        "financial_effects": 1,
+        "pending_jobs": 0,
+        "open_attempts": 0,
+        "retained_slots": 0
+      },
+      "services_before_and_after_equal": {
+        "nodia-api": {
+          "pid": 3194456,
+          "active": "active",
+          "working_directory": "/opt/nodia/releases/nodia-server-ai40-r05"
+        },
+        "nodia-ai-worker": {
+          "pid": 3194457,
+          "active": "active",
+          "working_directory": "/opt/nodia/releases/nodia-server-ai40-r05"
+        },
+        "nodia-keyring": {
+          "pid": 3083921,
+          "active": "active",
+          "working_directory": ""
+        }
+      },
+      "R05_MCP_and_image_proofs_preserved": true,
+      "audio_proof_absent": true,
+      "same_generation_replayed": false,
+      "runtime_error_code_recoverable": true
+    }
+  ],
+  "conclusion": {
+    "PDF_raw": "The same CLI decoder rejects input_file before model generation; no PDF-native support. Reviewed extracted text is a separate path, accepted in the UI by root.",
+    "WAV_R01": "Native completed and ACKed; semantic acceptance failed. The original safeError filter discarded its exact adapter code, and the runtime journal stores no raw reply; cause remains unknown.",
+    "WAV_R02": "Exact audio SHA reached the real original runtime once. Native returned a nonempty completed reply; fixed oracle mismatch produced audio_probe_unverified. Observed reply metrics matched the closed explicit_audio_refusal_phrase classifier, not the expected phrase.",
+    "interpretation_limit": "A phrase classifier match in one returned reply does not establish a global technical cause, entitlement, provider/model capability or general ASR accuracy. No raw reply is exposed.",
+    "enabled_audio": false,
+    "audio_acceptance_file_written": false,
+    "R05_MCP_images_configs_sessions_services_preserved": true,
+    "further_generations_performed": false,
+    "recovery": "Both exact native attempts completed/ACKed, owned processes/groups absent, audio staging empty, unforwarded requests0, disposable SQL containers removed after independent control; operational SQL counts preserved."
+  },
+  "services_or_configuration_changed": false,
+  "operational_SQL_writes": 0,
+  "credential_bytes_read_or_copied": false,
+  "oracle_or_transcript_text_emitted": false,
+  "private_candidate_fixtures_retained_for_traceability": true,
+  "new_scope_MCP_or_image_proofs_modified": false,
+  "candidate_adopted": false
+}

@@ -1,0 +1,271 @@
+{
+  "schema_version": 1,
+  "domainTools": [
+    {
+      "name": "nodia_invoices_ocr",
+      "kind": "analyze_attachment",
+      "resourceKey": "invoices",
+      "targetModuleRoute": "/tools/business",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "InvoiceController.analyze"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "InvoiceController.analyze identifica el origen funcional del OCR de Productos. La nueva operación usa su núcleo compartido mediante identidad nativa durable después del terminal/ACK de planificación; no invoca el handler HTTP legacy ni reentra a AnalyzeInvoiceUseCase o sus defaults."
+      },
+      "inputContract": {
+        "actions": [
+          "prepare",
+          "request",
+          "read"
+        ],
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "retention",
+          "native_identity",
+          "runtime_slot",
+          "configuration_generation",
+          "confirmation"
+        ]
+      },
+      "outputContract": "durable_invoice_ocr_result_without_business_write",
+      "implementationContract": {
+        "stage": "ADR-080",
+        "capabilityId": "nodia_invoices_ocr",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-invoice-ocr/contracts/invoice-ocr.json",
+        "inputSchema": {
+          "definition": "InvoiceOcrInput",
+          "sha256": "daf9d297054173c2c3c794bfc8a1cb5338256c879d8ada2058ab3b1c0065c7c5"
+        },
+        "outputSchema": {
+          "definition": "InvoiceOcrResult",
+          "sha256": "daf9d297054173c2c3c794bfc8a1cb5338256c879d8ada2058ab3b1c0065c7c5"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-invoice-ocr/use-case/build-nodia-ai-invoice-ocr-tool.use-case.ts",
+          "nodia-server/src/nodia-ai-invoice-ocr/use-case/snapshot-nodia-ai-invoice-ocr.use-case.ts",
+          "nodia-server/src/nodia-ai-invoice-ocr/use-case/process-nodia-ai-invoice-ocr-stage.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/tools/business"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_partial_not_adopted",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "business_and_attachment_authority",
+          "fresh_exact_selection",
+          "planner_terminal_and_ack_before_ocr",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      },
+      "impact": "external_inference_and_durable_intention_result_storage_without_business_write"
+    },
+    {
+      "name": "nodia_sales_get",
+      "kind": "read",
+      "resourceKey": "sales",
+      "targetModuleRoute": "/tools/business",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "SaleController.get"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "New business sales resource of plan94. Conversational adapter uses the same authorized native case of use with the inherited manager; it never calls arbitrary HTTP or confirms through model text."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "current_prices",
+          "product_versions",
+          "confirmation"
+        ]
+      },
+      "outputContract": "authorized_frozen_sale_projection",
+      "implementationContract": {
+        "stage": "POS-07",
+        "capabilityId": "nodia_sales_get",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/sales.schema.json",
+        "inputSchema": {
+          "definition": "SalesGetInput",
+          "sha256": "8194a596e0b46949ad7ad1b53467f1bbf4659beb27633e01c1177239cbe64256"
+        },
+        "outputSchema": {
+          "definition": "SalesGetResult",
+          "sha256": "8194a596e0b46949ad7ad1b53467f1bbf4659beb27633e01c1177239cbe64256"
+        },
+        "handlerSources": [
+          "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "nodia-server/src/business-access/business-access.ts",
+          "nodia-server/src/nodia-ai-products/business/sales-tool-family.ts",
+          "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts",
+          "nodia-server/src/sale/policies/sale-policy.ts",
+          "nodia-server/src/sale/sale-authority.ts",
+          "nodia-server/src/sale/sale.controller.ts",
+          "nodia-server/src/sale/sale.service.ts",
+          "nodia-server/src/sale/use-case/read-sales.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/tools/business"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_verified_candidate_no_provider_acceptance",
+        "requires": [
+          "approved_exact_document",
+          "compiled_binding",
+          "current_session_and_module_business_scope"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_sales_list",
+      "kind": "read",
+      "resourceKey": "sales",
+      "targetModuleRoute": "/tools/business",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "SaleController.list"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "New business sales resource of plan94. Conversational adapter uses the same authorized native case of use with the inherited manager; it never calls arbitrary HTTP or confirms through model text."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "current_prices",
+          "product_versions",
+          "confirmation"
+        ]
+      },
+      "outputContract": "authorized_frozen_sale_projection",
+      "implementationContract": {
+        "stage": "POS-07",
+        "capabilityId": "nodia_sales_list",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/sales.schema.json",
+        "inputSchema": {
+          "definition": "SalesListInput",
+          "sha256": "8194a596e0b46949ad7ad1b53467f1bbf4659beb27633e01c1177239cbe64256"
+        },
+        "outputSchema": {
+          "definition": "SalesListResult",
+          "sha256": "8194a596e0b46949ad7ad1b53467f1bbf4659beb27633e01c1177239cbe64256"
+        },
+        "handlerSources": [
+          "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "nodia-server/src/business-access/business-access.ts",
+          "nodia-server/src/nodia-ai-products/business/sales-tool-family.ts",
+          "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts",
+          "nodia-server/src/sale/policies/sale-policy.ts",
+          "nodia-server/src/sale/sale-authority.ts",
+          "nodia-server/src/sale/sale.controller.ts",
+          "nodia-server/src/sale/sale.service.ts",
+          "nodia-server/src/sale/use-case/read-sales.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/tools/business"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_verified_candidate_no_provider_acceptance",
+        "requires": [
+          "approved_exact_document",
+          "compiled_binding",
+          "current_session_and_module_business_scope"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    }
+  ],
+  "handlerCoverage": [
+    {
+      "operationId": "InvoiceController.analyze",
+      "toolNames": [
+        "nodia_invoices_ocr"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "InvoiceController.analyze identifica el origen funcional del OCR de Productos. La nueva operación usa su núcleo compartido mediante identidad nativa durable después del terminal/ACK de planificación; no invoca el handler HTTP legacy ni reentra a AnalyzeInvoiceUseCase o sus defaults."
+      }
+    },
+    {
+      "operationId": "SaleController.get",
+      "toolNames": [
+        "nodia_sales_get"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "New business sales resource of plan94. Conversational adapter uses the same authorized native case of use with the inherited manager; it never calls arbitrary HTTP or confirms through model text."
+      }
+    },
+    {
+      "operationId": "SaleController.list",
+      "toolNames": [
+        "nodia_sales_list"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "New business sales resource of plan94. Conversational adapter uses the same authorized native case of use with the inherited manager; it never calls arbitrary HTTP or confirms through model text."
+      }
+    }
+  ],
+  "newHandlers": [
+    {
+      "operationId": "SaleController.get",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/sale/sale.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/businesses/:businessId/sales/:id"
+    },
+    {
+      "operationId": "SaleController.list",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/sale/sale.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/businesses/:businessId/sales"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-25",
+  "status": "same_Codex_chat_persisted_after_Gemini_native_adoption_and_UI_reload",
+  "conversation_id": "1fe12085-233b-458c-bf53-e083894816fa",
+  "scope": [
+    "UI reload restored authenticated chat title, five-turn history, Agentic selection and stored CSV result",
+    "Existing five-run SQL readback is byte-identical; no new message, confirmation or execution",
+    "Native Gemini changed image/epoch, API/worker PIDs changed by explicit rollout; Server source and Client package unchanged"
+  ],
+  "runs_completed": 5,
+  "business_executions": 0,
+  "remaining_slots": 0,
+  "unrevoked_grants": 0,
+  "non_chat_tables_unchanged": true,
+  "changed_tables_since_four_turn_cut": [
+    "nodia_ai_conversations",
+    "nodia_ai_events",
+    "nodia_ai_execution_grants",
+    "nodia_ai_job_attempts",
+    "nodia_ai_jobs",
+    "nodia_ai_message_parts",
+    "nodia_ai_messages",
+    "nodia_ai_runs",
+    "nodia_ai_runtime_slots",
+    "nodia_ai_tool_calls"
+  ],
+  "original_groups_and_modules_order_unchanged": true,
+  "client": "/opt/nodia/releases/nodia-client-core-fx04-pagination-r07",
+  "client_manifest_sha256": "56f0f9e1418a827cbe0b67455e88b0aca230a236a8933c1667feb6d3f655954b",
+  "assets_verified_by_readonly_helper": 171,
+  "services": {
+    "nodia-api": {
+      "MainPID": "39465",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+      "ActiveState": "active"
+    },
+    "nodia-ai-worker": {
+      "MainPID": "39466",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+      "ActiveState": "active"
+    }
+  },
+  "screenshot": {
+    "path": "docs/evidence/nodia-ai-c05-continuity-after-native-adoption-r01.png",
+    "sha256": "8f03cbb72f09ba7c93ad18b13cfc05142330c4b1da2064b84a1175afc416a4e4"
+  },
+  "materials": [
+    {
+      "path": "ops/lab/artifacts/c05-native-continuity-r01/after-native-adoption.json",
+      "sha256": "5ba8ba9b31f00161ae65a5826661b63ea280b5c088dc680c52a252aa5f9fb87e"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-native-continuity-r01/domain-after-native-adoption.json",
+      "sha256": "da80b8608cc8dfa045ccd8d4067e9580ee01d7108536b47eb89b57f9b310452d"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-native-continuity-r01/domain-after.json",
+      "sha256": "e033ae8d8945ff115fb5a72432876921e9a5e3b0ab7cd1618ff494c283ba706b"
+    },
+    {
+      "path": "ops/lab/artifacts/c05-native-continuity-r01/readback.py",
+      "sha256": "e90f952e5f0f96b6358c0366267ac686385c06daca03e402e3a0c0917109054b"
+    }
+  ],
+  "limitations": [
+    "No new Codex generation, MCP or media qualification by reloading the chat",
+    "Does not certify all 150 capabilities, other roles or production",
+    "Original proposals remain unconfirmed and subject to native expiry; no cancellation asserted"
+  ]
+}

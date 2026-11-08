@@ -25,11 +25,9 @@ export class AiProviderCatalog {
   @Column({ type: 'boolean', default: false })
   can_use_api_key: boolean;
 
-  @Column({ type: 'boolean', default: false })
-  can_use_token_plan_web: boolean;
 
   @Column({ type: 'boolean', default: false })
-  can_use_token_plan_agentic: boolean;
+  can_use_agentic: boolean;
 
   @Column({ type: 'boolean', default: true })
   is_active: boolean;

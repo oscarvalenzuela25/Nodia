@@ -1,3 +1,4 @@
+import { moduleRouteIncluded } from '../../authorization/canonical-module-route.js';
 import {
   Inject,
   Injectable,
@@ -211,7 +212,7 @@ export class GetNodiaAiToolResultUseCase {
         if (
           !moduleRoute ||
           !selected.requiredModuleRoutes.every((route) =>
-            routes.includes(route),
+            moduleRouteIncluded(routes, route),
           )
         )
           return absent();
@@ -248,7 +249,7 @@ export class GetNodiaAiToolResultUseCase {
             !selected.requiredModuleRoutes.every(
               (route) =>
                 manifest.module_routes instanceof Array &&
-                manifest.module_routes.includes(route),
+                moduleRouteIncluded(manifest.module_routes, route),
             )
           )
             throw Error();

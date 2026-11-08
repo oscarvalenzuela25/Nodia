@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-25",
+  "status": "implemented_and_deployed_visual_change",
+  "change": "Removed redundant group name/key columns and mobile fields; module headers and empty state span seven cells, or eight in ordering mode. Group relation, filters and forms unchanged.",
+  "client_release": "/opt/nodia/releases/nodia-client-core-fx04-columns-r05",
+  "client_manifest_sha256": "b5cabb58b8d0ec13fabf3f9c9a2773365992053979f6d5000f4f798b5ba132ab",
+  "HTTP_assets_SHA_MIME": 171,
+  "server_before": {
+    "nodia-api": {
+      "MainPID": "4143736",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+      "ActiveState": "active"
+    },
+    "nodia-ai-worker": {
+      "MainPID": "4143737",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+      "ActiveState": "active"
+    }
+  },
+  "server_after": {
+    "nodia-api": {
+      "MainPID": "4143736",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+      "ActiveState": "active"
+    },
+    "nodia-ai-worker": {
+      "MainPID": "4143737",
+      "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+      "ActiveState": "active"
+    }
+  },
+  "server_restarts": 0,
+  "migrations": 0,
+  "SQL_writes": 0,
+  "AI_generations": 0,
+  "checks": {
+    "existing_focal_tests": 24,
+    "suites": 2,
+    "build_and_types": true,
+    "ESLint_focal": true,
+    "no_new_tests": true
+  },
+  "UI": {
+    "authenticated_tab_reloaded": true,
+    "module_headers": [
+      "Id",
+      "Ícono",
+      "Nombre",
+      "Identificador",
+      "Ruta",
+      "Activo",
+      "Acciones"
+    ],
+    "module_data_rows": 9,
+    "cells_per_row": 7,
+    "group_heading_colSpan": 7,
+    "group_headings": [
+      "Finanzas",
+      "Herramientas",
+      "Administrador General"
+    ],
+    "screenshot": {
+      "path": "docs/evidence/core-module-columns-r01.png",
+      "sha256": "a8b873577180586a078cae9a4f69366d29d3c51b3c04dc2f3f8926ebef5117bc"
+    }
+  },
+  "impact": "Presentation only; no new knowledge capability or MCP publication. FX04 remains partial.",
+  "materials": [
+    {
+      "path": "ops/lab/artifacts/module-columns-r01/client.tar.gz",
+      "sha256": "e618559fcb31e4ca953fe9d54da1d130a938a8e4aa37764dcc2a67f82033f18c"
+    },
+    {
+      "path": "ops/lab/artifacts/module-columns-r01/plan.json",
+      "sha256": "ef731495c2f1821d594aeb7dcc08a7b961a2e98d35b1c3c03d6207d49aab0a92"
+    },
+    {
+      "path": "ops/lab/artifacts/module-columns-r01/adopt.py",
+      "sha256": "f412498e7889ad99bc569f36393413140cd89f2060238424d614a5a61a7ba001"
+    },
+    {
+      "path": "ops/lab/artifacts/module-columns-r01/adopt.json",
+      "sha256": "3a2bb6b2050fba642bdc87e3cf498c137ac99c15e9c8e4277eb1467c0aeb2b85"
+    }
+  ],
+  "cleanup": {
+    "status": "own_upload_removed",
+    "files": 3,
+    "bytes": 2143149,
+    "active_and_prior_releases_retained": true,
+    "private_operator_and_receipts_retained": true
+  }
+}

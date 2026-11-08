@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { reserveChatGeneration } from '../../ai-generation/chat-generation-ownership.js';
 import { CheckpointNodiaAiJobUseCase } from './checkpoint-nodia-ai-job.use-case.js';
 import {
   NODIA_AI_RUNTIME_POLICY,
@@ -52,6 +53,9 @@ export class ReserveNodiaAiRuntimeSlotUseCase {
       );
       if (updated.length !== 1)
         throw new NodiaAiKnownPreDispatchError('nodia_ai:runtime_busy', true);
+      if(await reserveChatGeneration(manager,claim,resourceKey,updated[0].fence)) {
+        await manager.query('UPDATE nodia_ai_runtime_slots SET generation_operation_id=$2 WHERE resource_key=$1',[resourceKey,claim.attempt.id]);
+      }
       return { resourceKey, fence: updated[0].fence, operationRef };
     });
   }

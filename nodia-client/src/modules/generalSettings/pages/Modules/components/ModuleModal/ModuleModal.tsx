@@ -8,6 +8,7 @@ import TranslationInput from "../../../../../../components/inputs/TranslationInp
 import IconSelect from "../../../../../../components/inputs/IconSelect";
 import { useModuleGroups, useModules } from "../../infrastructure/useServices";
 import { APP_AVAILABLE_ROUTES } from "../../constants/routes";
+import { canonicalModuleDestination } from "../../../../../../routes/moduleDestinations";
 import type { ModuleModalProps, ModuleFormData } from "./types";
 import {
   FormContainer,
@@ -44,7 +45,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
     initialData?.isActive ?? true,
   );
   const [moduleKey, setModuleKey] = useState<string>(initialData?.key ?? "");
-  const [link, setLink] = useState<string>(initialData?.link ?? "");
+  const [link, setLink] = useState<string>(initialData?.link ? canonicalModuleDestination(initialData.link) : "");
   const [icon, setIcon] = useState<string | null>(initialData?.icon ?? null);
   const [moduleGroupId, setModuleGroupId] = useState<string | null>(
     initialData?.module_group_id ?? null,
@@ -82,21 +83,14 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
         continue;
       }
       if (mod.link) {
-        const norm = mod.link.trim().startsWith("/")
-          ? mod.link.trim()
-          : `/${mod.link.trim()}`;
-        set.add(norm);
+        set.add(canonicalModuleDestination(mod.link.trim()));
       }
     }
     return set;
   }, [modulesResponse?.data, isEditing, initialData?.id]);
 
   const routeOptions = useMemo(() => {
-    const currentLink = initialData?.link
-      ? initialData.link.trim().startsWith("/")
-        ? initialData.link.trim()
-        : `/${initialData.link.trim()}`
-      : null;
+    const currentLink = initialData?.link ? canonicalModuleDestination(initialData.link) : null;
 
     const available = APP_AVAILABLE_ROUTES.filter(
       (r) => !occupiedLinks.has(r.value) || r.value === currentLink,

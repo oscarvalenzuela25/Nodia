@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "status": "offline_closed_observability_candidate_not_deployed",
+  "date": "2026-10-25",
+  "scope": [
+    "native_mcp_stdio.py",
+    "native_mcp_sessions.py"
+  ],
+  "source_epoch": {
+    "container_id": "5f77cc37e60dd21ed69f318c8c4891df886923d7fb5a0fcad77b5babd5cb0588",
+    "image_id": "sha256:cf5a6120e26a0cdf0ffd08a8efc80e7a393612faa672ea3187a7c256b76d4b1b",
+    "started_at_utc": "2026-10-25T23:24:23.136960345Z"
+  },
+  "current_unknown_attempt": {
+    "attempt_id": "9e161c28-a3ed-4d38-9cfb-69065c524f13",
+    "result": "mcp_result_unknown",
+    "closed_and_acknowledged": true,
+    "callbacks": 0,
+    "RPC_messages": 6,
+    "tools_list_successes": 1,
+    "tools_call": 0,
+    "native_elapsed_ms": 119042,
+    "last_CLI_event_age_ms": 114401,
+    "CLI_result_seen": false,
+    "cause": "undetermined",
+    "tools_list_boundary": "constructed reply does not prove write, flush or CLI consumption"
+  },
+  "historical_negative_control": {
+    "path": "docs/evidence/nodia-ai-ai38-mcp-post-list-r01.md",
+    "facts": [
+      "Same timeout aggregate preceded a successful MCP in the same epoch, session, selection and adapter without an additional causal patch.",
+      "Successful IPC also included an initial other/-32000 before initialize; this error alone is not a sufficient cause.",
+      "No free unknown-method name or exact historical failure order can be recovered from purged IPC."
+    ]
+  },
+  "new_diagnostics": {
+    "RPC": "nested rpc.closed_observation: closed enum method/reason/code, ordinal, relative monotonic receipt time, constructed/write/flush, response byte count",
+    "init": "nested cli.init_identity: count and boolean/null expected agent/model matches at receipt",
+    "wire_write_flush": "No diagnostic publication between original single write and flush; finally publication preserves original transport exception",
+    "sensitive_content_saved": false,
+    "callbacks_republished": false,
+    "flush_completed_is_CLI_consumption": false,
+    "failure_of_diagnostics_changes_authorization": false
+  },
+  "preserved": [
+    "CLI1.3.1",
+    "roles/permissions",
+    "64KiB callback/RPC limit",
+    "context/tool/RPC budgets",
+    "deadlines/retry policy",
+    "terminal validation/attestation",
+    "quarantine/reconcile/ACK",
+    "49 other deployed public modules",
+    "Server4276/fda/C03rev3"
+  ],
+  "validation": {
+    "schema_version": 1,
+    "platform": "Windows/local",
+    "provider_CLI_or_SDK_executions": 0,
+    "network_calls": 0,
+    "VM_operations": 0,
+    "candidate_stdlib_tests": {
+      "passed": 22,
+      "failed": 0,
+      "unit_tests": 19,
+      "wire_parity_tests": 3,
+      "candidate_modules_only": true
+    },
+    "focused_repository_tests_final": {
+      "passed": 73,
+      "failed": 0,
+      "log": ".tmp/c03-continuation-r01/mcp-closed-diagnostics-focused-r04.txt"
+    },
+    "history_not_hidden": {
+      "initial_focused": "69/69 passed",
+      "second_focused": "68/69 passed; existing real-stdio synthetic integration failed",
+      "after_race_debug": "38/40 passed;2 WinError5 replacing context-budget.json",
+      "before_race_debug": "38/40 passed;2 identical WinError5 replacing context-budget.json",
+      "debug_boundary": "traceback enabled only in temporary synthetic copies; original candidate not altered; supervisor candidate held constant",
+      "cause": "Windows reader/replacer file sharing race in existing atomic context accounting; not fixed here",
+      "linux_live_cause_not_inferred": true
+    },
+    "module_compile_and_non_diagnostic_AST": {
+      "native_mcp_stdio.py": {
+        "before_sha256": "37b77325fff33b8b53ce30bc33c55ae3dd54e2f1e480fb7d515595e44c6cdd20",
+        "after_sha256": "5022f53a0f1267202adb56f5c72d0a4ec4f61822d3a73add795fab9d588a9564",
+        "non_diagnostic_AST_equal": true,
+        "compiles": true
+      },
+      "native_mcp_sessions.py": {
+        "before_sha256": "4e05adbd35fd2391e05f54952d839bbb3d7c14d3145609474ee6b2a1f6cbbb20",
+        "after_sha256": "15e99643a39fdaec47605698815eaef915c19f5b62cbb50d80340c2e48626a89",
+        "non_diagnostic_AST_equal": true,
+        "compiles": true
+      }
+    },
+    "log_sha256": {
+      ".tmp/c03-continuation-r01/mcp-closed-diagnostics-focused-r01.txt": "55023b2c4990df550b76133bbd2d7567232fc9d7e8a62a4fb1f3fffbc6597391",
+      ".tmp/c03-continuation-r01/mcp-closed-diagnostics-focused-r02.txt": "2b77745ed8e311eaa30e330b6199c7b9f7df77c52566fa8020d6c652f125a1c2",
+      ".tmp/c03-continuation-r01/mcp-closed-diagnostics-focused-r03.txt": "f311ea31d466ee9f2520e4537fa99285d2b716768ce490ad63c5b8e425813132",
+      ".tmp/c03-continuation-r01/mcp-closed-diagnostics-stdio-race-r01.txt": "5f28c310a170f090bf1dfc13ef23d05b2091b75383efb664b483cc594fbac5df",
+      ".tmp/c03-continuation-r01/mcp-closed-diagnostics-stdio-race-r02.txt": "308de7a4d81ad66a70444af4d6204b63f1b1bd04e82c120bb49a1d7a314f06dd",
+      ".tmp/c03-continuation-r01/mcp-closed-diagnostics-stdio-race-before-r01.txt": "84527c0f1c2d2e37cc4532e930f40453ac85891401734a85b0a99477555e9b52",
+      ".tmp/c03-continuation-r01/mcp-closed-diagnostics-focused-r04.txt": "2d0264bfec5b77dbbf7ed82829f45c89bf5e9f3c48fd41dbc497835a9297895f"
+    },
+    "limits": [
+      "No Linux/provider acceptance",
+      "No causal fix or proof of upstream cause",
+      "No whole-checkout runtime build/adoption",
+      "Final passing run does not prove Windows race resolved"
+    ],
+    "explicit_installed_root_test": {
+      "passed": 22,
+      "root_boundary": "explicit C03_MCP_SERVICE_ROOT; runtime module and unchanged progress hashes checked before import; no app/provider imports"
+    }
+  },
+  "sources": {
+    "package": "ops/lab/artifacts/c03-mcp-closed-diagnostics-r01",
+    "manifest_sha256": "3eee3ff80c2a246409b519f0f919d9f26272dd9265316a64b05ce059c5dc5d39",
+    "current_closed_terminal": {
+      "path": ".tmp/c03-continuation-r01/cache-mcp-terminal-r01.json",
+      "sha256": "a70f2cccde2db2d5d3568f071a0023a803dffb36c93ef9eb3c50d7d635647a74"
+    },
+    "current_public_projection": {
+      "path": ".tmp/c03-continuation-r01/cache-mcp-public-projection-r02.json",
+      "sha256": "e3aad647463c7d3d588b39ec5a08d470a16d12fa8e54cc4e41983b2bacf10f2f"
+    },
+    "durable_current_stop": {
+      "path": "docs/evidence/nodia-ai-c03-cache-metadata-and-mcp-stop-20261025-r01.json",
+      "sha256": "8264e051198bc07b6bb4990beffa519712faee702f29f217da073e7a158d6f84"
+    }
+  },
+  "next_boundary": "Root reviews and may build/adopt an immutable epoch before any deliberate new control; no replay of closed attempt/cohort. Instrumentation does not itself prove causality.",
+  "new_product_or_document_approval": false,
+  "effects": {
+    "VM_operations": 0,
+    "provider_generations": 0,
+    "SDK_executions": 0,
+    "SQL_writes": 0,
+    "service_restarts": 0
+  }
+}

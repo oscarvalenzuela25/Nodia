@@ -163,7 +163,7 @@ class InvoiceMcpHttpContractTests(AppTestCase):
             self.assertEqual(normalized.status_code, 200)
             self.assertEqual(set(normalized.json()), {"contract_version", "extraction"})
             self.assertEqual(normalized.json()["extraction"]["data"]["items"][0]["quantity"], 0)
-        self.web.analyze_invoice.assert_not_awaited()
+        self.agentic.analyze_invoice.assert_not_awaited()
         self.assertEqual(list(Path(self.directory).iterdir()), [])
 
     def test_64k_actual_body_limit_is_enforced_before_parser(self):

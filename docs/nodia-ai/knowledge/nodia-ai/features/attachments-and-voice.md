@@ -4,13 +4,13 @@
   "document_id": "nodia-ai.attachments-and-voice",
   "product_id": "nodia-ai",
   "kind": "feature",
-  "revision": 10,
+  "revision": 11,
   "document_status": "approved",
   "implementation": {
     "status": "partial",
-    "notes": "AI36-C05 publica sólo el fragmento mínimo y los contratos enumerados de este lote bajo autorización humana específica. La evidencia interna C01/C04 no equivale a inferencia o aceptación productiva; otras funciones descritas históricamente conservan sus gates."
+    "notes": "API chat code and common permission/confirmation/runtime contracts implemented. Real provider/model/media qualification and VM adoption require their separate receipts; documentary approval does not certify all151 operations."
   },
-  "integration_status": "published",
+  "integration_status": "verified",
   "maintainer": "Mantenimiento NodiaAI conforme AGENTS",
   "sources": [
     {
@@ -28,10 +28,22 @@
     {
       "path": "nodia-server/src/nodia-ai-common-reads/use-case/build-nodia-ai-common-read-tools.use-case.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/92-nodia-ai-api-chat-parity.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-084-nodia-ai-api-chat-common-runtime.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/mvp/89-module-access-and-user-data-scope.md",
+      "kind": "specification"
     }
   ],
   "verification": {
-    "checked_on": "2026-10-18",
+    "checked_on": "2026-10-27",
     "evidence_paths": [
       "docs/evidence/nodia-ai-ai32-validation.json",
       "docs/evidence/nodia-ai-ai32-sql-validation.json",
@@ -58,19 +70,43 @@
       "docs/evidence/nodia-ai-ai32-r06-validation.json",
       "docs/evidence/nodia-ai-ai32-r07-validation.json",
       "docs/evidence/nodia-ai-ai36-c04-validation.json",
-      "docs/evidence/nodia-ai-ai36-c01-validation.json"
+      "docs/evidence/nodia-ai-ai36-c01-validation.json",
+      "docs/evidence/api-chat-knowledge-review-r01.json",
+      "docs/evidence/api-chat-knowledge-review-r02.json",
+      "docs/evidence/api-chat-sql-runtime-r01.json",
+      "docs/evidence/api-chat-knowledge-human-approval-r01.json"
     ],
-    "notes": "Contratos cerrados y adaptadores reales con integración SQL aislada C01/C04. C05 revisa publicación de este lote; las pruebas de proveedor y dependencias se registran separadamente, sin convertir fixtures o health200 en aceptación generativa. Los estados anteriores de los apartados históricos no sustituyen el frontmatter y el fragmento publicado actuales."
+    "notes": "Approved successor/new explanatory revision;19 real isolated PostgreSQL runtime checks and local source/contract regressions verified. Full common-gateway SQL, live API/media and coordinated adoption are separate technical gates. Approved body unchanged from R02."
   },
   "approval": {
-    "reference": "docs/evidence/nodia-ai-ai36-c05-publication-authorization.md",
-    "revision": 10,
-    "content_sha256": "3983dfbcc4951b3d0c3d70ae22a97d4f5ca792ed1d20aceadfd8e1360b5b30b9"
+    "reference": "docs/evidence/api-chat-knowledge-human-approval-r01.json",
+    "revision": 11,
+    "content_sha256": "a7d8507feb6a8cb999df5220362f8e47c297a8ab60ebc1b442a748b2c844b9eb"
   }
 }
 ---
 
 # Adjuntos y notas de voz
+
+## Ampliación API key — 2026-10-27
+
+[Plan92](../../../../mvp/92-nodia-ai-api-chat-parity.md), [ADR-084](../../../../architecture/decisions/ADR-084-nodia-ai-api-chat-common-runtime.md) y [paridad API](api-key-chat-parity.md) definen esta ampliación. Aprobación documental, implementación, calificación técnica y adopción por entorno se acreditan por separado en sus metadatos e informes fechados. Los [originales anteriores](../../../../evidence/api-chat-knowledge-originals-catalog-r01.json) conservan sus bytes y aprobaciones históricas; no se revocan ni se sustituyen sus evidencias por un resultado inventado.
+
+API OpenAI/Gemini reutiliza catálogo, ToolGateway, grants, permisos y confirmación comunes. Aplican [contratos41](../../../../mvp/41-nodia-ai-v1-contracts.md) y [política89](../../../../mvp/89-module-access-and-user-data-scope.md): módulo NodiaAI y destinos autorizados, propietario/colaborador y bypass legítimo de super_admin sin omitir invariantes o botón humano. Las acciones históricas de roles no añaden un bloqueo contrario a89. Seleccionar capacidades o escribir «sí» no confirma una propuesta ni ejecuta efectos; revisión/hash, ejecución idempotente y recibos permanecen independientes del modo.
+
+`supports_tools` describe soporte de solicitudes de herramientas; API usa function calling y mantiene `supports_mcp:false`. Configuración/catálogo listos no son health remoto ni éxito de inferencia. Conexión/modelo/esfuerzo son explícitos y dinámicos, sin defaults de modelo ni fallback API↔Agentic. Los tres envíos generativos actuales por run incluyen cada POST API y sus continuaciones, reservados durablemente antes de transmitir; reiniciar o reintentar no devuelve presupuesto.
+
+El ledger HTTP y descriptor privado schema3 distinguen cierre local (`local_transport_closed`) de resultado remoto (`remote_outcome:completed|unknown`); no simulan un proceso nativo cerrado. Timeout/abort/crash no prueban cancelación remota ni coste cero. Conciliación/ACK exigen identidad y cierre local demostrados, sin autoretry de inferencia incierta. Las pruebas y publicación se cierran por separado con [plan91](../../../../mvp/91-ai-provider-onboarding-verification.md), sin aceptar todas las operaciones por un success acotado.
+
+API conserva el mismo upload/inspector privado, parser/firma/tamaño, propiedad, borrador, revisión de texto, descarga, expiración y contexto. Subir un archivo o tener clave/modelo configurados no habilita el original. Sólo la calificación interna real por selección/configuración/generaciones/modelo/esfuerzo/MIME exactos, proof terminal durable y hashes de solicitud/respuesta/contenido publica `native_media_types`. Cambios incompatibles invalidan esa evidencia; un PNG no habilita JPEG/PDF/audio ni la visión acredita generación de imágenes.
+
+OpenAI no implementa entrada audio en este carril Responses. El transporte Gemini implementa WAV, Ogg, WebM y MPEG; cada formato requiere calificación propia con contenido conocido y prueba terminal exacta. No habilitar MP4 por categoría. Ninguna de estas afirmaciones prueba micrófono físico, transcripción real o todos los modelos. Cuando no hay original habilitado, el texto realmente interpretado/revisado conserva su ruta; no se fabrica una transcripción ni se convierte el formato o cambia de modo automáticamente.
+
+El OCR conversacional API usa `ApiProviderService` y ledger de su etapa separada, con `invoice_ocr` autorizada y límite propio10MiB; no extiende por ello la modalidad nativa del chat ni cambia los límites generales20MiB de política50. Comparación y guardado mantienen permisos/propuesta/confirmación. Imágenes generadas usan su carril y calificación propios. SQL, MIME/voz/imágenes API, Stop/unknown/reload y adopción por entorno requieren sus recibos propios. Las evidencias R01..R07 y Agentic inferiores mantienen sus fechas/alcances anteriores y no califican otro modo.
+
+## Cortes anteriores conservados
+
+> Las secciones inferiores conservan decisiones, pruebas y estados del corte anterior a esta ampliación API. Sus expresiones «actual», API posterior, permisos por acciones o publicación se leen en su fecha histórica, no como prohibición o aceptación del contrato nuevo. La regla vigente de esta revisión es el bloque API superior; las evidencias originales no se reescriben.
 
 Estado actual AI36-C05: sólo se publica la sección «Metadatos de adjuntos publicados en AI36-C05». Los apartados anteriores documentan etapas históricas; sus referencias a draft o publicación pendiente no revocan este fragmento ni habilitan otras capacidades.
 

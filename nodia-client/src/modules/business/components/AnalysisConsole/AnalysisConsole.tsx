@@ -5,7 +5,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlined";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import { useTranslation } from "react-i18next";
-import type { ConsoleView } from "./types";
+import { isActiveAnalysisPhase, type ConsoleView } from "./types";
 import { ConsolePaper, EventLog } from "./styles";
 
 export default function AnalysisConsole({ view }: { view: ConsoleView }) {
@@ -14,7 +14,7 @@ export default function AnalysisConsole({ view }: { view: ConsoleView }) {
   const follows = useRef(true);
   const [showRecent, setShowRecent] = useState(false);
   const [now, setNow] = useState(() => Date.now());
-  const busy = ['reserving', 'analyzing', 'preparing'].includes(view.phase);
+  const busy = isActiveAnalysisPhase(view.phase);
   const lastEventKey = view.events.at(-1)?.key;
   useEffect(() => {
     if (!busy) return;
@@ -50,6 +50,7 @@ export default function AnalysisConsole({ view }: { view: ConsoleView }) {
         {t("business:analysis_console_disconnected")}
       </Alert>}
       {view.phase === 'uncertain' && <Alert severity="warning">{t("business:analysis_console_uncertain")}</Alert>}
+      {view.phase === 'cancelled' && <Alert severity="info">{t("business:invoice_analysis_cancelled_description")}</Alert>}
       {view.gap && <Alert severity="info">{t("business:analysis_console_gap")}</Alert>}
       <EventLog ref={log} role="log" aria-label={t("business:analysis_console_events")} aria-live="polite" aria-relevant="additions" tabIndex={0}
         onScroll={() => { if (!log.current) return; follows.current = log.current.scrollHeight - log.current.scrollTop - log.current.clientHeight < 40; setShowRecent(!follows.current); }}>

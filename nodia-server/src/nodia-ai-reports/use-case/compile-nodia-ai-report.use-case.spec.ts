@@ -137,7 +137,7 @@ describe('CompileNodiaAiReportUseCase', () => {
       filters: {
         all: [
           { field_key: 'is_active', operator: 'eq', value: false },
-          { field_key: 'stock', operator: 'gte', value: 0 },
+          { field_key: 'sale_price', operator: 'gte', value: 0 },
         ],
       },
     };

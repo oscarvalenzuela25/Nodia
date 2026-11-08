@@ -1,0 +1,64 @@
+# Incorporar o modificar un proveedor IA: verificación obligatoria
+
+Fecha: 2026-10-27. Estado: en revisión; flujo técnico reusable solicitado expresamente. Aplica a nuevos proveedores (por ejemplo DeepSeek), nuevo modo/adaptador y cambios de contratos. [Retirada de Web](90-agentic-api-only-web-retirement.md). Las capacidades reales dependen de proveedor, modelo, cuenta, modo y entorno; no se deducen por nombre ni se exigen mediante fallbacks.
+
+## Evidencia mínima por combinación
+
+Registrar proveedor/catalog_id/connection_id, modo `agentic` o `api_key`, ID de modelo descubierto y elegido, esfuerzo si comprobado, versión/hash de cada proyecto, SO/entorno, fecha real de observación, configuración sin secretos, operación, resultado, request/run/attempt IDs públicos permitidos, pruebas ejecutadas y pendientes. Nunca guardar prompt privado, archivo comercial, key/token, cookies ni stdout/stderr crudos del proveedor en el reporte público.
+
+Cada celda se marca `pass`, `fail`, `blocked` o `unsupported` con motivo comprobable. `configured`, `authenticated`, `discovered` y `inference_success` son hechos separados. No declarar proveedor integrado mientras falten los gates aplicables; unsupported visible no debe convertirse en success. Una inferencia puede validar un camino happy-path, no todas las funcionalidades.
+
+## Matriz de aceptación
+
+| ID | Prueba | Resultado exigido |
+|---|---|---|
+| P01 | Catálogo/configuración | Identidad estable y soporte declarativo por modo; no listas cerradas/fallbacks de modelo; catálogo ajeno intacto. |
+| P02 | Credenciales | API cifrada/mascarada y aislamiento por instancia; Agentic login oficial/ownership/cancelación; auth no equivale a inferencia. |
+| P03 | Descubrimiento | Catálogo real, selección explícita, modelo inexistente/ausente rechazado antes de inferir; cero/null conservados en cuotas y opciones. |
+| P04 | Configuración/histórico | Guardar/reabrir/reload/selección concurrente; no heredar modelo o clave de otro modo; migración limpia/histórica con conflicto/rollback. |
+| P05 | Salud y topbar | Sólo Agentic/API key; API verde por key guardada con tooltip preciso; estados pendientes/caída/sin permisos, sin verde ficticio por caché. |
+| P06 | Inferencia texto | Una solicitud real con modelo explícito completa y salida válida/no vacía; registrar estado terminal y no usar un simple GET200 como éxito. |
+| P07 | OCR e importación | PNG/PDF según soporte probado; esquema estricto, campos faltantes/null, cero, inválidos, comparación con productos y SAME sin escritura; extracción es borrador. |
+| P08 | Adjuntos/contexto | Formatos reales soportados por selección; validación firma/tamaño, upload/download/reload/expiración, lectura verificada y context budget. Audio/voz sólo con capacidad real. |
+| P09 | Herramientas/lecturas | Protocolo real calificado, autorización por módulo/propietario/colaborador/super_admin, catálogo cerrado, límites/callbacks/replays, sin SQL/HTTP/shell desde Markdown. |
+| P10 | Propuestas/escrituras | Preparar→revisar→confirmar humano→ejecutar una vez; idempotencia/concurrencia, recibo y readback; sin confirmación implícita por elegir modo. |
+| P11 | Imágenes/artefactos | Sólo si implementado y autorizado: generación privada, contenido válido, ver/descargar/reload, retención y cleanup. No asumir modalidad por nombre de modelo. |
+| P12 | Negativos y coste | Clave inválida/expirada, cuota/rate-limit, modelo inválido, servicio caído, respuesta inválida/excesiva; sin fallback de proveedor/modo y sin retry incierto. |
+| P13 | Cancelación/recuperación | Stop/timeout/desconexión, cierre local probado según transporte (proceso Agentic o ejecutor HTTP API), resultado remoto incierto conservado, reconciliación/ACK exactos y reinicio sin replay; jobs/attempts/slots propios quiet. |
+| P14 | Seguridad/regresión | Secretos no expuestos; permisos/CSRF/origin privados cuando aplican; datos ajenos/stock/margen/pagado intactos; no URLs arbitrarias. |
+| P15 | UI | ES/EN, móvil/escritorio/teclado; carga inicial, soft-refetch, vacío/error/retry; mutación fallida conserva modal y borrador; toasts internacionales. |
+| P16 | Retirada de modo | Nuevas solicitudes Web rechazadas; datos históricos legibles y selección requiere reconfiguración; sin alias ejecutable ni switch de delegación. |
+
+## Contratos adicionales para chat API key
+
+Al incorporar o cambiar un adaptador de chat API, ejecutar A01..A08 además de P01..P16 aplicables, conforme al [plan92](92-nodia-ai-api-chat-parity.md). Son requisitos de verificación, no resultados aceptados. Registrar por separado unidades/contratos simulados, PostgreSQL aislado, proveedor real y adopción/UI del entorno; un success acotado no acepta todas las capacidades del catálogo.
+
+| ID | Pruebas obligatorias y relación con la matriz | Garantía observable |
+|---|---|---|
+| A01 | Elegibilidad y frontera Client, P03/P05/P15 | Selección exacta por conexión/modo/modelo/esfuerzo en consulta, respuesta y caché. `supports_tools` independiente de `supports_mcp:false` en API; booleanos estrictos, ausencia histórica explícita y false sin coerción ni disponibilidad prestada. Configuración/catálogo, topbar por key guardada y `api_configuration_and_catalog` no prueban health remoto ni inferencia. |
+| A02 | Gateway y autoridad comunes, P09/P14 | Function calling entra por el mismo ToolGateway, catálogo cerrado, allowlist/grants y permisos41/89 que Agentic. Rechazar actor/ámbito ajeno, capability no seleccionada, argumentos/resultado inválidos y callbacks tardíos o repetidos sin repetir efectos; seleccionar no amplía el grant de una generación activa. API no simula MCP ni obtiene herramientas hospedadas, SQL/HTTP/shell arbitrario o permisos desde Markdown. |
+| A03 | Presupuesto HTTP durable, P12/P13 | Reservar antes de cada POST generativo real, incluidas continuaciones de funciones y etapas/compactación aplicables, bajo el presupuesto acumulado de política50 (actualmente tres envíos por run). SQL/concurrencia/reinicio prueban que ni crash ni otra invocación reinician el contador o devuelven reservas inciertas. Cero retries de inferencia del SDK/transporte; no ocultar múltiples POST bajo un único dispatch. |
+| A04 | Identidad y prueba HTTP schema3, P04/P13 | Descriptor cerrado `engine:api_key` ligado a proveedor/contrato/conexión/intento/recurso/generación/operación y payload. Rechazar prueba de otro intento/configuración y booleans fabricados. `local_transport_closed:true` no se intercambia con `process_closed` Agentic ni demuestra `remote_outcome:completed`. Abort, response lost y worker caído conservan unknown remoto; lease/deadline no prueban cierre. Conciliación/ACK exactos, fence y dueño local demostrados, sin POST de replay ni reutilización del resultado incierto. Mantener lectura/recuperación histórica Agentic compatible. |
+| A05 | Propuesta, confirmación y flujo seguro, P02/P10/P14 | La función del proveedor prepara/consulta y no confirma. Revisión/hash/challenge, botón humano autenticado, permiso actual, escritor nativo, idempotencia/concurrencia, recibo y readback prueban el efecto una sola vez. Texto «sí», elegir API o completar un flujo seguro no confirman otros cambios. Keys/códigos sólo en el canal seguro y fuera de contexto/logs/proyecciones; fallo mantiene formulario/borrador. |
+| A06 | Calificación de originales e imagen generada, P08/P11 | Cada selección/configuración/generación/modelo/esfuerzo/MIME/versión requiere resultado real y prueba durable ligados a hashes de solicitud/respuesta/contenido del mismo intento. Rechazar evidence ajena, response inventada o sólo un flag; PNG no habilita PDF/audio ni visión habilita generación. `/imagen` usa carril/prompt explícitos y modelo capaz calificado sin fallback. OpenAI audio no se anuncia en el carril Responses no implementado; Gemini u otro proveedor sólo anuncia sus formatos realmente calificados. |
+| A07 | OCR y comparación comunes, P07/P10/P13 | API usa el core `ApiProviderService` y ledger de la etapa OCR con selección/key/modelo explícitos; planificación terminal/ACK antes del OCR separado cuando aplique. Probar proveedor comercial/archivo/hash autorizados, cero/null, comparación fresca de Productos y reload del mismo resultado sin otra extracción. `invoice_ocr` no califica MIME nativo del chat. Guardar conserva propuesta/botón/recibo; no inventar stock, sale_price, impuestos o defaults ni rotar key/canal en mitad de un intento incierto. |
+| A08 | Negativos y UI proporcional, P12/P15 | Credencial/cuota/modelo/esfuerzo inválidos, respuesta incompleta/excesiva y capacidad cambiada devuelven categorías seguras sin upstream/secretos. API `supports_image_generation:false` muestra aviso traducido y conserva texto; no bloquea por nombre de modelo ni habilita generación por visión. Aplicar/cancelar/cambiar modo conserva identidad, borrador, foco y retry local; ES/EN y móvil/escritorio con datos sintéticos separados de proveedor/SQL reales. |
+
+Regresión obligatoria del flujo OCR API, recuperada de la ronda real: los resultados cerrados `awaiting_supplier`, `requested` y `analyzed` deben admitir el modo exacto API/Agentic y rechazar Web. Probar discovery→request persistido→ACK→OCR sin gastar una continuación narrativa descartada: máximo tres POST por run, sin cortar un batch pendiente ni aceptar un recibo de otra selección. El planner debe probarse con el catálogo técnico completo real; una función canary simple exitosa no acepta los esquemas de discovery. Separar planner real, extracción real con planner sintético y MIME nativo; comparar/readback no vuelven a inferir. Registrar HTTP400/429 como bloqueo real y no probar modelos alternativos automáticamente. Referencia: [matriz OCR/multimedia](../evidence/api-ocr-media-verification-r01.json).
+
+Los nombres OpenAI/Gemini describen adaptadores concretos, no una lista cerrada de modelos ni una capacidad heredable por un proveedor nuevo. Para otro adaptador, probar su transporte y formatos efectivos o registrar `unsupported`/`blocked` con motivo; nunca fabricar un success para completar la matriz. La aprobación documental, la publicación del contexto, el código implementado y las aceptaciones por selección/entorno requieren recibos distintos.
+
+## Ejecución por capas y comandos
+
+1. Unitarias/contratos: usar pruebas de lógica atómica existentes y nuevas del cambio; integración focal para SQL, locks, transacciones, idempotencia y autorización real. No duplicar suites de páginas por rutina.
+2. Client: `npm run typecheck`, `npm run lint`, `npm test -- --run`, `npm run build` en `nodia-client`; acotar las regresiones durante desarrollo y ejecutar la suite final que justifique el cambio transversal.
+3. Server: `npm run lint`, `npm test -- --run`, `npm run build`, `npm run knowledge:check` y `npm run test:build-assets`; integración en PostgreSQL desechable con fixtures sintéticas. No usar la BD operativa para tests de migración destructivos.
+4. Microservicio: `.venv/Scripts/python.exe run_tests.py` en Windows o `.venv/bin/python run_tests.py` en Linux; imports/compile sintáctico/pip check y rutas privadas. No cuentas/red/Chrome en unitarias.
+5. VM Linux: observar estado/fuente actual/quiet, preservar overlay y datos, backup fresco, instalar paquete revisado de cada proyecto, migración aplicada una sola vez y health/HTTP/UI desde Server autenticado. No exponer FastAPI ni credenciales al navegador.
+6. Pruebas reales separadas: seleccionar conexión/modo/modelo exactos, obtener salida completada válida, verificar persistencia/reload y las modalidades aplicables. Control MCP Agentic y function calling API por su transporte/selección/generación, independientes del login y de la inferencia texto. No inferir éxito de otros proveedores/modos.
+7. API key: introducirla mediante gestión segura de la aplicación; descubrir y seleccionar el modelo solicitado por el usuario, sin defaults. Una inferencia económica acotada para P06/P07; no loops ni consumo sin autorización. Si falta la clave, estado blocked:credential_required.
+8. Consolidar evidencia sanitizada en `docs/evidence/` y artefactos locales útiles catalogados en `ops/lab/artifacts/`; temporales en `.tmp/`. Actualizar contrato, fichas, progreso y checklist con límites exactos. No aprobar/publicar fichas automáticamente.
+
+## Puerta para proveedores futuros
+
+Añadir una fila proveedor/modo en el reporte con P01..P16, adjuntar ejecución real de las capacidades que anuncia y declarar explícitamente las no soportadas. No copiar Gemini/OpenAI como capacidad supuesta; reutilizar el contrato y adaptar autenticación, descubrimiento y transporte reales. Añadir regresiones antes de habilitar el modo en catálogo; el flag de catálogo nunca prueba disponibilidad. Un adaptador API compatible debe probar salida real, opciones, errores y cancelación con su endpoint real. El proveedor queda listo sólo para las operaciones y el entorno realmente verificados.

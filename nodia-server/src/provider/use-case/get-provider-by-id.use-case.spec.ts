@@ -10,7 +10,9 @@ describe('GetProviderByIdUseCase', () => {
     providerServiceMock = {
       findOne: vi.fn(),
     };
-    useCase = new GetProviderByIdUseCase(providerServiceMock as ProviderService);
+    useCase = new GetProviderByIdUseCase(
+      providerServiceMock as ProviderService,
+    );
   });
 
   it('should be defined', () => {
@@ -28,12 +30,14 @@ describe('GetProviderByIdUseCase', () => {
       updated_at: new Date(),
     };
 
-    vi.mocked(providerServiceMock.findOne!).mockResolvedValue(mockProvider as any);
+    vi.mocked(providerServiceMock.findOne!).mockResolvedValue(
+      mockProvider as any,
+    );
 
     const result = await useCase.execute(id);
 
     expect(providerServiceMock.findOne).toHaveBeenCalledTimes(1);
-    expect(providerServiceMock.findOne).toHaveBeenCalledWith(id);
+    expect(providerServiceMock.findOne).toHaveBeenCalledWith(id, undefined);
     expect(result).toEqual(mockProvider);
   });
 });

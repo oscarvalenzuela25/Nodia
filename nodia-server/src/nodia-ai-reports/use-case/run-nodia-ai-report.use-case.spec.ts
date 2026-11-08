@@ -35,6 +35,7 @@ function fixture(resultBytes = policy.results.tool_result_utf8_bytes) {
     sqlError: null as Error | null,
     nativeSession: true,
     businessExists: true,
+    businessAccess: true,
     providerExists: true,
     collaborator: true,
     propertyOwner: '2',
@@ -46,23 +47,23 @@ function fixture(resultBytes = policy.results.tool_result_utf8_bytes) {
       isSuperAdmin: false,
       actionKeys: [],
       modules: [
-        { id: '1', key: 'nodia_ai', route: '/tools/nodia-ai', assigned: true },
+        { id: '1', key: 'nodia_ai', route: '/nodia-ai', assigned: true },
         {
           id: '2',
           key: 'personal_finance',
-          route: '/tools/finances-personal',
+          route: '/finances-personal',
           assigned: true,
         },
         {
           id: '3',
           key: 'businesses',
-          route: '/tools/business',
+          route: '/business',
           assigned: true,
         },
         {
           id: '4',
           key: 'rental_reservations',
-          route: '/tools/reservations',
+          route: '/reservations',
           assigned: true,
         },
       ],
@@ -87,8 +88,12 @@ function fixture(resultBytes = policy.results.tool_result_utf8_bytes) {
         : [];
     if (sql.startsWith('SELECT EXISTS(SELECT 1 FROM users'))
       return [{ exists: true }];
-    if (sql.startsWith('SELECT id FROM businesses'))
+    if (sql.startsWith('SELECT id::text FROM businesses'))
       return state.businessExists ? [{ id: businessId }] : [];
+    if (sql.startsWith('SELECT business.id::text'))
+      return state.businessExists && state.businessAccess
+        ? [{ id: businessId }]
+        : [];
     if (sql.startsWith('SELECT id::text FROM providers'))
       return state.providerExists ? [{ id: '3' }] : [];
     return [];
@@ -291,7 +296,7 @@ describe('RunNodiaAiReportUseCase', () => {
     const f = fixture();
     f.state.businessExists = false;
     await expect(f.useCase.execute(identity, f.business())).rejects.toThrow(
-      'business:not_found',
+      'business:resource_not_found',
     );
     f.state.businessExists = true;
     f.state.providerExists = false;
@@ -303,6 +308,17 @@ describe('RunNodiaAiReportUseCase', () => {
     expect(
       f.query.mock.calls.some(([sql]) => sql.startsWith('WITH filtered')),
     ).toBe(false);
+  });
+  it('rejects a revoked business membership before reading aggregates', async () => {
+    const f = fixture();
+    f.state.businessAccess = false;
+    await expect(f.useCase.execute(identity, f.business())).rejects.toThrow(
+      'business:resource_not_found',
+    );
+    expect(f.manager.query).not.toHaveBeenCalledWith(
+      expect.stringContaining('WITH filtered'),
+      expect.anything(),
+    );
   });
   it('uses the actual rental collaborator boundary and sees current collaborator revocation', async () => {
     const f = fixture();

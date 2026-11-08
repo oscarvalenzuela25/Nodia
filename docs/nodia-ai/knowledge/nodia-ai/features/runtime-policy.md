@@ -4,11 +4,11 @@
   "document_id": "nodia-ai.runtime-policy",
   "product_id": "nodia-ai",
   "kind": "feature",
-  "revision": 19,
+  "revision": 20,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "AI-38: observador acotado de frames y presupuesto de recuperación del mismo chat adoptados selectivamente en R04, sin ampliar 120 s ni regenerar. Texto Web R05 completado en la sesión vigente; PNG anterior sin candidata pese a cinco consultas de historial, conciliado con ACK. Web sigue sin formatos verificados. MCP High y PNG/PDF/WAV/WebM Agentic acreditados en la nueva época. Doce generaciones: ocho completadas, cuatro desconocidas cerradas con ACK, sin replay o efectos comerciales nuevos; SQL/configuración conservados y cero pendientes. 496 pruebas Linux; 527 Windows, dos omisiones históricas. Sin nueva aceptación UI/R2/micrófono. AI-38 parcial; sin publicación."
+    "notes": "AI-38: observador acotado de frames y presupuesto de recuperación del mismo chat adoptados selectivamente en R04, sin ampliar 120 s ni regenerar. Texto Web R05 completado en la sesión vigente; PNG anterior sin candidata pese a cinco consultas de historial, conciliado con ACK. Web sigue sin formatos verificados. MCP High y PNG/PDF/WAV/WebM Agentic acreditados en la nueva época. Doce generaciones: ocho completadas, cuatro desconocidas cerradas con ACK, sin replay o efectos comerciales nuevos; SQL/configuración conservados y cero pendientes. 496 pruebas Linux; 527 Windows, dos omisiones históricas. Sin nueva aceptación UI/R2/micrófono. AI-38 parcial; sin publicación. Client R38 adoptado: presentación compacta de propuestas, comparación por contenedor, detalles exactos plegables y etiquetas históricas de ventas de sólo lectura. Conserva borrador/guards de fetch e incertidumbre, confirmación exacta y autoridad; confirmed no acredita efecto aplicado. No cambia otras tarjetas de resultados, registro, capacidades o publicación."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento NodiaAI conforme AGENTS",
@@ -128,12 +128,19 @@
     {
       "path": "docs/evidence/nodia-ai-ai38-web-stream-r01.md",
       "kind": "implementation"
+    },
+    {
+      "path": "docs/features/nodia-ai/proposal-review-presentation.md",
+      "kind": "specification"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/historicalProposalPresentation.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-10-22",
+    "checked_on": "2026-11-07",
     "evidence_paths": [
-      "docs/evidence/nodia-ai-ai04-runtime-policy-validation.json",
       "docs/evidence/nodia-ai-ai09-persistence-validation.json",
       "docs/evidence/nodia-ai-ai36-c05-r05-validation.json",
       "docs/evidence/nodia-ai-ai37-operations.json",
@@ -164,9 +171,10 @@
       "docs/evidence/nodia-ai-ai38-journal-validation-r02.json",
       "docs/evidence/nodia-ai-ai38-legacy-delete-validation-r01.json",
       "docs/evidence/nodia-ai-ai38-users-scope-fix-r01.json",
-      "docs/evidence/nodia-ai-ai38-web-recovery-validation-r01.json"
+      "docs/evidence/nodia-ai-ai38-web-recovery-validation-r01.json",
+      "docs/evidence/nodia-ai-proposal-ui-20261107-r01.json"
     ],
-    "notes": "Cadena previa preservada y aceptación MCP/Agentic actual; IPC ordinal1 pre-ready, initialize3/list5/callback7, sin atribuir tiempos exactos o UUID a archivos por coincidencia. Web perdió sucesivamente sus pruebas al cerrar tres timeouts de generación; no JSON corrupto demostrado ni causa concreta de SDK/proveedor. Dos cohortes y PNG final se conservan, PDF final no iniciado. Once intentos nuevos únicos/once ACK, ocho completados/tres desconocidos, cero pendientes. Sin modelos alternativos, publicación o aprobación:31 fichas/74 capacidades y77 candidatas conservadas."
+    "notes": "Cadena previa preservada y aceptación MCP/Agentic actual; IPC ordinal1 pre-ready, initialize3/list5/callback7, sin atribuir tiempos exactos o UUID a archivos por coincidencia. Web perdió sucesivamente sus pruebas al cerrar tres timeouts de generación; no JSON corrupto demostrado ni causa concreta de SDK/proveedor. Dos cohortes y PNG final se conservan, PDF final no iniciado. Once intentos nuevos únicos/once ACK, ocho completados/tres desconocidos, cero pendientes. Sin modelos alternativos, publicación o aprobación:31 fichas/74 capacidades y77 candidatas conservadas. R38: 218 regresiones/4 archivos (9 helper incluidos); últimos ajustes sólo visuales revisados, tipos/lint finales correctos y build aislado 1401/185. QA sintética y autenticada de propuesta expirada a 320 px, sin overflow, mensajes IA, confirmaciones o mutaciones comerciales; 185 outputs/20 versiones históricas y miss404 verificados. No acredita teléfono físico, efecto comercial ni inferencia."
   },
   "approval": null
 }
@@ -395,3 +403,9 @@ La adopción selectiva R04 conserva configuración, selección, dependencias, Se
 El texto R04 completó en 42,6 s sin usar recuperación; el PNG posterior terminó sin candidata a 119,3 s pese a cinco lecturas de historial, con conciliación y ACK. Ese fallo renueva la generación Web, por lo que los positivos anteriores no acreditan modalidades actuales. No se despacharon los otros tres formatos Web. MCP High completó una llamada real en la nueva época; el error RPC -32000 también aparece antes de initialize en ese éxito y no explica por sí solo el timeout histórico. La evidencia final discrimina formatos y sesiones; metadatos/autenticación no se toman como inferencia exitosa. Se conserva el estado parcial y no se publica esta ficha ni herramientas nuevas.
 
 El cierre de esta continuación acredita texto Web R05 en 4,67 s (sesión renovada y cero recuperación), MCP High y PNG/PDF/WAV/WebM Agentic vigentes. Los bindings finales posteriores a los canarios y el inventario de la misma época conservan selección/configuración, cero pendientes y la proyección SQL histórica exacta; doce generaciones nuevas, ocho completadas/cuatro desconocidas cerradas con ACK, sin efectos comerciales. La lista de MIME Web sigue vacía.
+
+## Presentación de propuestas R38 — 2026-11-07
+
+Client R38 está adoptado en la VM: cabecera compacta de propuesta con icono, estado, revisión y fechas; control outlined de 44 px y detalles técnicos plegables con identidad/hash/catálogo exactos. Antes/Después usa dos columnas desde un contenedor de 560 px y se apila por debajo; la ausencia ocupa menos espacio sin perder el valor presente ni confundir null, cero, false, strings o IDs. Confirmar/guardar es contained y editar/cerrar outlined. Se conserva el borrador visitado al plegar y se bloquea el plegado durante fetch de propuesta/revisión o incertidumbre humana. El estado de propuesta confirmada acredita admisión, no efecto aplicado; otros resultados de herramientas/ejecuciones conservan su presentación. Las cinco preparaciones históricas de ventas sólo reciben etiquetas de lectura, sin registro, preparación o ejecución nuevos.
+
+Pasaron 218 regresiones en 4 archivos (los 9 casos del helper están incluidos), tipos/lint globales y build aislado de 1401 entradas/185 outputs. Los últimos ajustes sólo visuales posteriores a esa corrida se revisaron sin cambio de lógica; tipos/lint finales cubren los pins finales, sin afirmar otro rerun de las 218 pruebas. QA sintética ES/EN y claro/oscuro verificó comparación, borrador, teclado y valores; QA autenticada de una propuesta expirada verificó sólo lectura, hash completo y plegado. A 320 px, documento de 310 px, región de 212 px sin desbordamiento y control de 212×44 px. La operación estática hizo una activación/recarga Nginx, verificó 185 outputs y assets de 20 versiones anteriores, miss404 y API200/401; no reinició Server/Native ni emitió SQL o solicitudes de proveedor. Las lecturas autenticadas del navegador son un alcance separado. No hubo mensajes IA, confirmaciones o mutaciones comerciales en esa QA; pestaña/borrador originales intactos. [Manual visual](../../../../features/nodia-ai/proposal-review-presentation.md) y [evidencia](../../../../evidence/nodia-ai-proposal-ui-20261107-r01.json). Evaluación de impacto: no cambia conceptos de autoridad, operaciones disponibles, proyección exacta ni reglas de confirmación/recuperación. La ficha sigue draft/unregistered/approval:null; no habilita ventas históricas, herramientas o publicación.

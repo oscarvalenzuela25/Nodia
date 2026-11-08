@@ -36,7 +36,7 @@ function fixture(rows: Record<string, unknown>[]) {
       isSuperAdmin: true,
       modules: [],
     },
-    moduleRoutes: ['/settings/ai-providers'],
+    moduleRoutes: ['/ai-providers'],
   };
   const registry = new NodiaAiToolRegistryUseCase(
     [createNodiaAiAiSettingsReadFamily()],
@@ -153,8 +153,7 @@ describe('ReadNodiaAiAiSettingsUseCase', () => {
         is_active: true,
         is_default: false,
         use_api_key: true,
-        use_token_plan_web: false,
-        use_token_plan_agentic: false,
+        use_agentic: false,
         default_mode: null,
         auto_rotate_api_keys: false,
         catalog: { id: '2', key: 'openai' },

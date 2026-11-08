@@ -383,30 +383,14 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "source_mode",
-        "target_mode",
-        "same_connection_only",
-        "default_enabled",
-        "return_to_base_next_turn",
+        "enabled",
         "fallback_on_error",
         "switch_confirms_writes",
         "api_delegation_enabled"
       ],
       "properties": {
-        "source_mode": {
-          "const": "token_plan_web"
-        },
-        "target_mode": {
-          "const": "token_plan_agentic"
-        },
-        "same_connection_only": {
-          "const": true
-        },
-        "default_enabled": {
+        "enabled": {
           "const": false
-        },
-        "return_to_base_next_turn": {
-          "const": true
         },
         "fallback_on_error": {
           "const": false

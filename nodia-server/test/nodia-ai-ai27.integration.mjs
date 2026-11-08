@@ -78,9 +78,9 @@ try {
   await db.query("SELECT setval(pg_get_serial_sequence('users','id'),(SELECT max(id) FROM users))");
   const [group] = await db.query("SELECT module_group_id AS id FROM modules WHERE key='nodia_ai'");
   const destinations = new Map();
-  for (const [key, route] of [['users','/settings/users'],['roles','/settings/roles'],['actions','/settings/actions'],['modules','/settings/modules']]) {
+  for (const [key, route] of [['users','/users'],['roles','/roles'],['actions','/actions'],['modules','/modules']]) {
     let [row] = await db.query('SELECT id::text FROM modules WHERE link=$1',[route]);
-    if (!row) [row] = await db.query('INSERT INTO modules(key,link,module_group_id) VALUES($1,$2,$3) RETURNING id::text',['synthetic_ai27_'+key,route,group.id]);
+    if (!row) [row] = await db.query('INSERT INTO modules(key,link,module_group_id,sort_order) VALUES($1,$2,$3,(SELECT COALESCE(MAX(sort_order),-1)+1 FROM modules WHERE module_group_id=$3)) RETURNING id::text',['synthetic_ai27_'+key,route,group.id]);
     destinations.set(key,row.id);
     await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1),(2,$1) ON CONFLICT DO NOTHING',[row.id]);
   }

@@ -84,14 +84,10 @@ export interface NodiaAiRuntimePolicy {
     readonly cleanup_delay_seconds: readonly number[];
   };
   readonly routing: {
-    readonly source_mode: string;
-    readonly target_mode: string;
-    readonly same_connection_only: boolean;
-    readonly default_enabled: boolean;
-    readonly return_to_base_next_turn: boolean;
-    readonly fallback_on_error: boolean;
-    readonly switch_confirms_writes: boolean;
-    readonly api_delegation_enabled: boolean;
+    readonly enabled: false;
+    readonly fallback_on_error: false;
+    readonly switch_confirms_writes: false;
+    readonly api_delegation_enabled: false;
   };
   readonly search: {
     readonly query_utf8_bytes: number;

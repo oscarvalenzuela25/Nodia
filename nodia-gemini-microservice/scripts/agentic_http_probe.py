@@ -12,15 +12,6 @@ from main import create_app
 from service_errors import ServiceError
 
 
-class OfflineWeb:
-    async def init_client(self):
-        return None
-
-    async def get_status(self):
-        raise ServiceError("probe_web_offline", "Synthetic Web outage")
-
-    async def close(self):
-        return None
 
 
 if __name__ == "__main__":
@@ -31,7 +22,7 @@ if __name__ == "__main__":
         listener.bind(("127.0.0.1", 0))
         listener.listen(32)
         print(f"PROBE_PORT={listener.getsockname()[1]}", flush=True)
-        app = create_app(web_service=OfflineWeb(), temp_dir=Path(directory), load_environment=False)
+        app = create_app(temp_dir=Path(directory), load_environment=False)
         server = uvicorn.Server(uvicorn.Config(app, log_level="warning", access_log=False))
         @app.post("/_probe/shutdown")
         async def shutdown():

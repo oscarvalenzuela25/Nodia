@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "title": "Antigravity Agentic: adopción nativa acotada de caché de evidencia de opciones",
+  "status": "adopted_not_inference_qualified",
+  "observed_at": "2026-10-26T18:37:50.302070+00:00",
+  "source": {
+    "Server_manifest_sha256": "8f83d1525802a08f468e8132ff496a0976493e3b32941366888b631e56273bc8",
+    "knowledge_release": "607b9d24fb64ad69f81576c1a80000a95d8c7f601a40ebe505ff0a06d1339001",
+    "Client_manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+    "nginx_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac",
+    "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105"
+  },
+  "native": {
+    "epoch_before": {
+      "container_id": "ae8b025b5910da6bb27a96dee881411a3c66d62fdcf612cf61013841d064f091",
+      "image_id": "sha256:6401f3576bc6eaba31afc47a6f1ba3f6ff397e966465d5cd6da573adc9a8ff93",
+      "started_at_utc": "2026-10-26T16:56:35.276313977Z"
+    },
+    "epoch_after": {
+      "id": "65862c1a1853322c0cd4734a06c96cf8b6d01bc7ca4bd4f9e5cb2eaa027fc72a",
+      "image": "sha256:706f34fcf3586f4fd5476d6d3fd8ff04185ede838fb77620e611fef37f010e28",
+      "started_at": "2026-10-26T18:37:06.112041394Z",
+      "descriptor_sha256": "1f38ad45a615c374374638f59ea7d699b781cebbfd0315362da84fe6a562fd5d"
+    },
+    "public_modules": 52,
+    "changed_modules": {
+      "agentic_service.py": "1ade06aae2fa77534ef2cea84e25d83fb3f6b9050feecb4a3e27547865cd0017",
+      "nodia_ai_chat.py": "d40ddf734749d8f72bfe7e8fee0625a8962f244bb336a867a1817d9945fb8fd5"
+    },
+    "unchanged_modules": 50,
+    "single_COPY_layer": true,
+    "same_image_and_runtime_configuration": true,
+    "CLI_changed": false,
+    "historical_CLI_version": "1.3.1",
+    "new_CLI_version_probe_performed": false,
+    "actual_image_size_delta_bytes": 90352
+  },
+  "offline_validation": {
+    "network_none": true,
+    "read_only_container_no_profiles": true,
+    "FakeRunner_suites": {
+      "status": "offline_candidate_tests",
+      "tests": 20,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "SDK_calls": 0,
+      "provider_generations": 0,
+      "suites": [
+        {
+          "name": "option_cache",
+          "status": "offline_candidate_tests",
+          "before_control": false,
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "SDK_calls": 0,
+          "provider_generations": 0
+        },
+        {
+          "name": "core_regressions",
+          "status": "offline_candidate_tests",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "SDK_calls": 0,
+          "provider_generations": 0
+        }
+      ]
+    },
+    "real_account_inference": false
+  },
+  "lifecycle": {
+    "plan_sha256": "0996e51fc922f7581643bd49d1c31ffb6f7ba765ebba73083099cc5fc3e0076c",
+    "operator_sha256": "a51b073ed3049f592342a7daadc178e49a17072ef52008f8032b70a607d8d90d",
+    "source_pids": {
+      "nodia-api": 641018,
+      "nodia-ai-worker": 641021
+    },
+    "actual_consumers_after": {
+      "nodia-api": 657975,
+      "nodia-ai-worker": 657976
+    },
+    "SQL61_schema_and_configuration_preservation_checks_passed": true,
+    "quiet_after": {
+      "native": {
+        "unknown_markers": 0,
+        "armed_native_proofs": 0,
+        "terminal_native_proofs": 0,
+        "invalid_native_proofs": 0,
+        "temporary_attachment_directories": 0,
+        "temporary_cli_directories": 0,
+        "agentic_home_configured": true,
+        "stage": "AI-32-R04",
+        "scope": "read_only_native_runtime_artifact_counts",
+        "observed_at_utc": "2026-10-26T18:37:49Z",
+        "provider_calls": 0,
+        "configured_database_modified": false,
+        "profile_bytes_read": false
+      },
+      "SQL": {
+        "stage": "AI-36-C05",
+        "scope": "post_disposable_live_read_only_operational_quiescence",
+        "status": "passed",
+        "observed_at_utc": "2026-10-26T18:37:49.470Z",
+        "pending_jobs": 0,
+        "open_attempts": 0,
+        "retained_slots": 0,
+        "preserved_r05_chat": 1,
+        "configured_SQL_writes": 0,
+        "provider_requests": 0,
+        "storage_operations": 0,
+        "services_restarted": false,
+        "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+      }
+    },
+    "timers_restored": true,
+    "fresh_backup": {
+      "backup_id": "0bc7b4fe-a3f5-4e2d-bb61-40fe195dec93",
+      "status": "ready",
+      "captured_at": "2026-10-26T18:36:56.901Z",
+      "expires_at": "2026-11-02T18:36:56.901Z",
+      "cipher_bytes": 1701900,
+      "cipher_sha256": "889d8def24195bbb6c5d4a77000002cb7545c53b3c3377e2ffdc15bb57c11b72"
+    },
+    "SQL_writes": 0,
+    "provider_generation_requests": 0,
+    "business_effects": 0,
+    "automatic_replay_or_SQL_restore": false
+  },
+  "limits": [
+    "This is code/image adoption plus offline FakeRunner validation, not real MCP/OCR qualification on the new epoch.",
+    "Previous6401/session3db MCP/PNG proofs are historical and cannot qualify706f or a new session/configuration.",
+    "No vendor cost or runtime latency improvement is claimed from these offline tests.",
+    "ServerR05 delivery, subsequent provider selection/metadata and UI acceptance require their own real receipts.",
+    "Web/API-key modes are outside the current acceptance scope; no approved feature or contract changed."
+  ],
+  "receipts": {
+    "build-bootstrap": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-cache-native-adoption-verification-r01/receipts/antigravity-option-cache-build-bootstrap-VM-r01.json",
+      "sha256": "1e07b677aaebf66161fb15ede89a8513a226a6e31dd17d34cae7a96c71a07073"
+    },
+    "source-observe": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-cache-native-adoption-verification-r01/receipts/antigravity-option-cache-source-observe-VM-r01.json",
+      "sha256": "297e46aa9ef2bb5001ae712ce7c25fb3d9e467d06886c9a636cecb84a6971241"
+    },
+    "build-preflight": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-cache-native-adoption-verification-r01/receipts/antigravity-option-cache-build-preflight-VM-r01.json",
+      "sha256": "e1a6fef53cd87707afdade4df029780cdd321da65e312d3c7151ec776df4fddf"
+    },
+    "build-execute": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-cache-native-adoption-verification-r01/receipts/antigravity-option-cache-build-execute-VM-r01.json",
+      "sha256": "18a9a07b636995083eeb8fab5757ed3cb1e9368c1db5e43593c9e18000dd572c"
+    },
+    "adopt-bootstrap": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-cache-native-adoption-verification-r01/receipts/antigravity-option-cache-adopt-bootstrap-VM-r01.json",
+      "sha256": "13844fc9a0d7a1e468a7cc32565d8381d73acc49e022d8f519829adcbb33a3ad"
+    },
+    "adopt-preflight": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-cache-native-adoption-verification-r01/receipts/antigravity-option-cache-adopt-preflight-VM-r01.json",
+      "sha256": "c01fc8281f5d2ffbe2c343790ce1401def62b1d6935e819848a196a161d2ceb2"
+    },
+    "adopt-execute": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-cache-native-adoption-verification-r01/receipts/antigravity-option-cache-adopt-execute-VM-r01.json",
+      "sha256": "8e80604332124127de08309d033a6a93b3afc4385c3531c60b2de863328c0662"
+    },
+    "runtime-identity": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-cache-native-adoption-verification-r01/receipts/antigravity-option-cache-runtime-identity-VM-r01.json",
+      "sha256": "02afb2147c87599b36a81578f33e9d559d21e2ed7b607a72e3230b7545937131"
+    }
+  }
+}

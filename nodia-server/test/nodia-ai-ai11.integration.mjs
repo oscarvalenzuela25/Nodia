@@ -165,7 +165,7 @@ async function seed(owner = '1', overrides = {}) {
     jobId = randomUUID();
   const selection = {
     connection_id: '1',
-    mode: 'token_plan_web',
+    mode: 'agentic',
     model_id: 'synthetic-not-an-operational-model',
     effort_id: null,
   };
@@ -280,7 +280,7 @@ try {
   passed.push('old worker cannot commit after another stage claims its job');
   const reservation = await reserve.execute(second, key, second.attempt.id);
   const secondProof = {
-    engine: 'web',
+    engine: 'agentic',
     attemptId: second.attempt.id,
     operationRef: reservation.operationRef,
     resourceKey: reservation.resourceKey,
@@ -444,7 +444,7 @@ try {
   await assert.rejects(
     () =>
       release.execute(unknown, uncertainReservation, {
-        engine: 'web',
+        engine: 'agentic',
         attemptId: unknown.attempt.id,
         operationRef: uncertainReservation.operationRef,
         resourceKey: uncertainReservation.resourceKey,

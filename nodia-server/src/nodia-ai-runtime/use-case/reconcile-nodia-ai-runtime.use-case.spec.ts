@@ -10,7 +10,7 @@ function setup() {
   const f = runtimeFixture();
   f.job.state = 'unknown';
   const request = {
-    engine: 'web' as const,
+    engine: 'agentic' as const,
     attemptId: f.attempt.id,
     operationRef: f.attempt.id,
     resourceKey: 'gemini-profile:' + 'a'.repeat(64),
@@ -233,4 +233,66 @@ describe('ReconcileNodiaAiRuntimeUseCase', () => {
     expect(f.native.reconcile).not.toHaveBeenCalled();
     expect(f.cleanup.execute).toHaveBeenCalledWith(f.job.id, true);
   });
+});
+
+it('reconciles an API local closure while retaining remote unknown and serializing schema3 ACK', async () => {
+  const f = setup();
+  f.admin();
+  const request = {
+    engine: 'api_key' as const,
+    attemptId: f.attempt.id,
+    operationRef: f.attempt.id,
+    resourceKey: 'api-connection:' + 'a'.repeat(64),
+    sessionGeneration: 'b'.repeat(32),
+    adapterIdentity: {
+      providerKey: 'gemini' as const,
+      contractVersion: 'nodia-ai-api-chat/1' as const,
+      connectionId: '2',
+    },
+  };
+  f.job.recovery_descriptor = runtimeProofDescriptor(request);
+  f.attempt.runtime_resource_key = request.resourceKey;
+  f.runtime.findSlot.mockResolvedValue({
+    resource_key: request.resourceKey,
+    state: 'unknown',
+    fence: '1',
+    external_operation_ref: request.operationRef,
+  });
+  f.native.reconcile.mockResolvedValue({
+    ...request,
+    terminalProofId: f.proof.terminalProofId,
+    localTransportClosed: true,
+    remoteOutcome: 'unknown',
+    outcome: 'abandoned_unknown',
+    observedAt: f.now,
+  });
+  const original = f.query.getMockImplementation()!;
+  f.query.mockImplementation(async (sql, args) =>
+    sql.startsWith('SELECT fence::text,state,external_operation_ref')
+      ? [
+          {
+            fence: '1',
+            state: 'unknown',
+            external_operation_ref: request.operationRef,
+          },
+        ]
+      : original(sql, args),
+  );
+  await f.usecase.execute(
+    { userId: '1', sessionId: f.grant.session_public_id! },
+    f.job.id,
+  );
+  expect(f.cleanup.execute).toHaveBeenCalledExactlyOnceWith(f.job.id);
+  const write = f.query.mock.calls.find(([sql]) =>
+    sql.includes("kind='reconcile'"),
+  );
+  const descriptor = JSON.parse(String(write?.[1]?.[1]));
+  expect(descriptor.schema_version).toBe(3);
+  expect(descriptor.terminal_proof).toMatchObject({
+    outcome: 'abandoned_unknown',
+    local_transport_closed: true,
+    remote_outcome: 'unknown',
+  });
+  expect(f.run.error_code).toBe('nodia_ai:outcome_unknown');
+  expect(JSON.stringify(descriptor)).not.toContain('process_closed');
 });

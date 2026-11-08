@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T01:45:24.216551+00:00",
+  "status": "local_candidate_validation_only",
+  "capability_id": "nodia_invoices_ocr",
+  "contract": {
+    "source": "nodia-server/src/nodia-ai-invoice-ocr/contracts/invoice-ocr.json",
+    "definitions": [
+      "InvoiceOcrInput",
+      "InvoiceOcrResult"
+    ],
+    "actions": [
+      "prepare",
+      "request",
+      "read"
+    ],
+    "prepare_result": "awaiting_supplier; stable analysis_id, no OCR",
+    "request": "Explicit provider_id in authorized business; exact preparation consumed once under lock, separate request_id",
+    "read": "Fresh authorization; optional compare_prices:true reads stored extraction and current product prices, no OCR",
+    "comparison_observed_at": "Required; null before comparison, server ISO after comparison; later comparison returns its own time without changing stored extraction"
+  },
+  "validated_local_rules": [
+    "Current original image/PDF <=10MiB; historical source only through exact preparation, hash and retention binding",
+    "No supplier default; active business membership/owner check and provider business binding",
+    "Planner terminal/release followed by native ACK before OCR reserve/arm; one port invocation, no replay after uncertain call",
+    "Existing three-dispatch budget retained, including acknowledged delegation continuation",
+    "Result whitelist preserves real zero and unknown null; net compared to net, gross to gross; ambiguous codes never select a product",
+    "Comparison bounded to min(100,policy); Math.trunc percentage and zero-denominator unknown retained",
+    "Private result plus hash and attempt identity stored in tool receipt; sealed assistant keeps canonical two-key source scope"
+  ],
+  "sql_result_provenance": {
+    "source": "nodia-server/src/nodia-ai-invoice-ocr/use-case/process-nodia-ai-invoice-ocr-stage.use-case.ts",
+    "entry": "ProcessNodiaAiInvoiceOcrStageUseCase.execute persist",
+    "storage": "NodiaAiToolCall.scope_manifest.invoice_ocr_result + invoice_ocr_result_hash + invoice_ocr_attempt_id",
+    "assistant": "Sealed deterministic summary, same run, no fourth generation",
+    "observed_in_tests": "In-memory manager/repository double captured persistence fields, real0/null, proof release and event; not a live database assertion"
+  },
+  "commands": [
+    {
+      "cwd": "nodia-server",
+      "command": "node node_modules/vitest/vitest.mjs run src/nodia-ai-invoice-ocr/compare-invoice-prices.spec.ts src/nodia-ai-invoice-ocr/use-case/build-nodia-ai-invoice-ocr-tool.use-case.spec.ts src/nodia-ai-invoice-ocr/use-case/snapshot-nodia-ai-invoice-ocr.use-case.spec.ts src/nodia-ai-invoice-ocr/use-case/process-nodia-ai-invoice-ocr-stage.use-case.spec.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.spec.ts",
+      "exit_code": 0,
+      "result": {
+        "files_passed": 6,
+        "tests_passed": 231
+      },
+      "cut": "Before final timestamp field; superseded changed units covered below",
+      "transcript": {
+        "path": ".tmp/c03-natural-invoice-ocr-r01/worker-tests-r04.txt",
+        "sha256": "1a9cd6e2b854152b8ea01e7c80e0bb9c1c0051c057811d3d9462e7909592fbf0",
+        "bytes": 468
+      }
+    },
+    {
+      "cwd": "nodia-server",
+      "command": "node node_modules/vitest/vitest.mjs run src/nodia-ai-invoice-ocr/use-case/build-nodia-ai-invoice-ocr-tool.use-case.spec.ts src/nodia-ai-invoice-ocr/use-case/snapshot-nodia-ai-invoice-ocr.use-case.spec.ts src/nodia-ai-invoice-ocr/use-case/process-nodia-ai-invoice-ocr-stage.use-case.spec.ts",
+      "exit_code": 0,
+      "result": {
+        "files_passed": 3,
+        "tests_passed": 41
+      },
+      "cut": "Final comparison_observed_at schema/Stage/read changes",
+      "transcript": {
+        "path": ".tmp/c03-natural-invoice-ocr-r01/comparison-time-tests-final.txt",
+        "sha256": "759694293a1dc2cc0a1f6cb6094064aa2088dfc418395ce059e2e06e939242c8",
+        "bytes": 466
+      }
+    },
+    {
+      "cwd": ".",
+      "command": "node nodia-server/node_modules/typescript/bin/tsc -p .tmp/c03-natural-invoice-ocr-r01/tsconfig.atomic.json",
+      "exit_code": 0,
+      "stdout": "",
+      "record_basis": "Observed tool completion after rootDir/typeRoots correction and final timestamp changes; success had empty output",
+      "configuration": {
+        "path": ".tmp/c03-natural-invoice-ocr-r01/tsconfig.atomic.json",
+        "sha256": "91ca19c1ec859347b05a68d230bdbbc082b24793a22c5199a27664c516f41362",
+        "bytes": 658
+      }
+    },
+    {
+      "cwd": "nodia-server",
+      "command": "node node_modules/typescript/bin/tsc -p tsconfig.build.json --noEmit --incremental false",
+      "exit_code": 0,
+      "stdout": "",
+      "cut": "Earlier runtime check; final timestamp units are included in later atomic typecheck"
+    },
+    {
+      "cwd": "nodia-server",
+      "command": "node node_modules/oxlint/bin/oxlint src/nodia-ai-invoice-ocr/types src/nodia-ai-invoice-ocr/use-case src/nodia-ai-invoice-ocr/compare-invoice-prices.ts src/nodia-ai-invoice-ocr/compare-invoice-prices.spec.ts src/nodia-ai-invoice-ocr/nodia-ai-invoice-ocr.module.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.ts src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.spec.ts",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "cwd": "nodia-server",
+      "command": "node node_modules/vitest/vitest.mjs run src/nodia-ai-invoice-ocr/use-case/snapshot-nodia-ai-invoice-ocr.use-case.spec.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts",
+      "exit_code": 0,
+      "result": {
+        "files_passed": 2,
+        "tests_passed": 157
+      },
+      "cut": "Final private context refs/through-sequence/publication/fresh-reference checks",
+      "transcript": {
+        "path": ".tmp/c03-natural-invoice-ocr-r01/context-references-tests-final.txt",
+        "sha256": "6d00a377676b64ada054614ad1476871c77f8de576b4812d16331cfa01d22b76",
+        "bytes": 468
+      }
+    },
+    {
+      "cwd": ".",
+      "command": "node nodia-server/node_modules/typescript/bin/tsc -p .tmp/c03-natural-invoice-ocr-r01/tsconfig.atomic.json",
+      "exit_code": 0,
+      "stdout": "",
+      "cut": "Final private-reference changes; observed completion1981cb"
+    },
+    {
+      "cwd": "nodia-server",
+      "command": "node node_modules/oxlint/bin/oxlint src/nodia-ai-invoice-ocr/types/invoice-ocr-references.ts src/nodia-ai-invoice-ocr/use-case/snapshot-nodia-ai-invoice-ocr.use-case.ts src/nodia-ai-invoice-ocr/use-case/snapshot-nodia-ai-invoice-ocr.use-case.spec.ts src/nodia-ai-invoice-ocr/use-case/process-nodia-ai-invoice-ocr-stage.use-case.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts",
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "candidate_runtime_sources": [
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/contracts/invoice-ocr.json",
+      "sha256": "daf9d297054173c2c3c794bfc8a1cb5338256c879d8ada2058ab3b1c0065c7c5",
+      "bytes": 19510
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/types/invoice-ocr-port.ts",
+      "sha256": "0ec731dca2f9d09793709ae5a08dc36c158f0187b9eae804119e526511a8c93a",
+      "bytes": 2038
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/types/invoice-ocr-state.ts",
+      "sha256": "98df6d4b81a95a28ce5351c72affba459bb39f947bba21ea030e179029d7de35",
+      "bytes": 2197
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/use-case/build-nodia-ai-invoice-ocr-tool.use-case.ts",
+      "sha256": "5b250f4ac1a5fdee1e8a8692ed6079b3564c176f06657dc11ba45cd03647eb54",
+      "bytes": 6087
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/use-case/snapshot-nodia-ai-invoice-ocr.use-case.ts",
+      "sha256": "4f645c9b8587c80e01dba4275327f8a8289ee20b90b0eb66dc4933c17cc7bc15",
+      "bytes": 22001
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/use-case/process-nodia-ai-invoice-ocr-stage.use-case.ts",
+      "sha256": "6932f6f3442bec6da3d655e74786211f1a9d5d57acf75b833b54e77a6c0b1277",
+      "bytes": 15549
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/compare-invoice-prices.ts",
+      "sha256": "e60addafae492d44df1dad74033ac5c045375862ce1662250fb9e7026ad1355d",
+      "bytes": 2714
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/format-invoice-ocr-result.ts",
+      "sha256": "b6c2eddc7e64a7991f4d798584ebb2eb6f99285ace4e2193a705b741ade83e72",
+      "bytes": 3099
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/nodia-ai-invoice-ocr.module.ts",
+      "sha256": "92fb32ce37cd534d10e7109462a3e42162cfcc8c5b164f3e846f38c998f713a4",
+      "bytes": 1630
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+      "sha256": "a57d473c04d2a7b7c2f5c33d993e110417224c5389b9d4222e49a8b1ff954094",
+      "bytes": 46107
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.ts",
+      "sha256": "a856c4d4d0211cc8f372f21e7a66dee0c73f771d8fe23c2e85da50175a1a8fc8",
+      "bytes": 20550
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/types/invoice-ocr-references.ts",
+      "sha256": "3741e9f2e52574dd17aaf68488b63111b3ba6438337aff48b2b16df3b97b9d10",
+      "bytes": 498
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts",
+      "sha256": "81cf95911460986df1f739e8ec9d5bc5daa3d183e232e36559f199eee1187265",
+      "bytes": 15220
+    }
+  ],
+  "limitations": [
+    "Local mocks/doubles only; no Nest DI bootstrapping or real DB transaction/concurrency validation in this lane",
+    "No VM/browser/SDK/provider inference, deploy, native acceptance, or publication performed",
+    "No business product/invoice/stock writes; proposal creation and human confirmation remain separate",
+    "Full repository test typecheck is not green due existing and independently owned spec typing; no global typecheck success claimed",
+    "Earlier types-atomic-final.txt retains initial temporary config failure because Tee-Object did not truncate on later empty successful output; it is not positive evidence",
+    "New candidate capability does not modify or approve historical C03 r3; docs/catalog publication and runtime integration remain separate"
+  ],
+  "retained_negative": {
+    "path": ".tmp/c03-natural-invoice-ocr-r01/types-atomic-final.txt",
+    "sha256": "13608e043068e5898de629ea328aec73e4f295d977b28c117b9e32be14dbcd7b",
+    "bytes": 3054
+  },
+  "previous_revision_sha256": "91220d73d22aaaff230c96686e57438d4e6970525ef0d05116625ec4cea3018d",
+  "updated_at_utc": "2026-10-26T01:57:28.342115+00:00",
+  "private_context_recovery": {
+    "path": "recovery_refs.invoice_ocr_references",
+    "source": "SnapshotNodiaAiInvoiceOcrUseCase.loadReferences -> ProcessNodiaAiStageUseCase.loadRecoveryReferences",
+    "publication_gate": "knowledge.manifest.capability_contracts contains nodia_invoices_ocr publication=published and business scope is currently admitted",
+    "projection": [
+      "analysis_id",
+      "business_id",
+      "attachment_id",
+      "source_message_seq",
+      "provider_id",
+      "state_hint"
+    ],
+    "bounds": "One SQL query, min(50,list_default_rows,json_collection_items)+1 rows, 16KiB context envelope; no extraction/private snapshot/provider config in projection",
+    "authority": "Same owner chat and run actor, current business owner/active collaborator/superadmin business rule, active retention, ready original, generation/content hash/MIME/bytes/file-name binding and canonical visible message scope",
+    "through_sequence": "Required run.input_through_seq bounds both original m.seq and consuming request run input_through_seq; exact parameter tested",
+    "dispatch_guard": "Fresh references compared again by checkSources before dispatch; references are never permission to replay OCR",
+    "ux": "Later user supplier selection or compare request can use private preparation reference without copying a UUID or reattaching the same pending original",
+    "sql_validation_limit": "Query/projection tests use an in-memory SQL dependency; PostgreSQL execution/transaction/concurrency remain unobserved in this lane"
+  },
+  "independent_root_sql_plan": {
+    "receipt_path": ".tmp/invoice-ocr-review-r01/sql-plan-receipt-r01.json",
+    "receipt_sha256": "276de27a295cfb9577d0b2269682dbb0aa2b630ac043ff1860a7c90c47de86a8",
+    "reported_by": "root operator; read-only VM EXPLAIN, not executed by pending_gates",
+    "receipt": {
+      "schema_version": 1,
+      "check": "invoice_ocr_references_sql_plan",
+      "sql_sha256": "7e566d8630b6afc6b1b62badb972ccdad6f97c06a2c4a0c11513c39992a627d0",
+      "read_only": true,
+      "explain_passed": true,
+      "SDK_requests": 0,
+      "provider_generations": 0,
+      "domain_writes": 0
+    },
+    "limit": "Parsing/planning succeeded; no real row-authority assertions, Nest DI validation, concurrent transaction guarantee or provider acceptance follows from EXPLAIN"
+  }
+}

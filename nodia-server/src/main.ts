@@ -1,4 +1,5 @@
 import cookieParser from 'cookie-parser';
+import { teacherBodyParser } from './teacher/teacher-body-parser.js';
 import { createNodiaAiConversationBodyParser } from './nodia-ai-conversation/nodia-ai-conversation-body-parser.js';
 import { NODIA_AI_RUNTIME_POLICY, type NodiaAiRuntimePolicy } from './nodia-ai-runtime/config/runtime-policy.js';
 import { providerImportBodyParser } from './provider/provider-import-body-parser.js';
@@ -47,6 +48,7 @@ async function bootstrap() {
   app.setGlobalPrefix('/api/v1');
   // Installed before Nest's default parser; rental payloads are bounded before parsing.
   app.use('/api/v1/rental', rentalBodyParser);
+  app.use('/api/v1/teacher', teacherBodyParser);
   app.use(['/api/v1/providers/import', '/api/v1/provider/import'], providerImportBodyParser);
   app.use('/api/v1/nodia-ai', createNodiaAiConversationBodyParser(app.get<NodiaAiRuntimePolicy>(NODIA_AI_RUNTIME_POLICY).admission.http_json_bytes));
 

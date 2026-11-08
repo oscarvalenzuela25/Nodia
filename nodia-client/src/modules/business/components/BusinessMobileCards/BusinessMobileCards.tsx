@@ -15,7 +15,9 @@ import type {
   ProductLogEntity,
   InvoiceEntity,
 } from "../../infrastructure/types";
-import { calculatePriceDiff } from "../../pages/BusinessDetail/components/ProductsTab/helpers";
+import { calculatePriceDiff, priceMeasurementsComparable } from "../../pages/BusinessDetail/components/ProductsTab/helpers";
+import ProductImageThumbnail from "../../pages/BusinessDetail/components/ProductsTab/components/ProductImageThumbnail";
+import ProductSalePrice from "../../pages/BusinessDetail/components/ProductsTab/components/ProductSalePrice";
 
 function Status({ active }: { active: boolean }) {
   const { t } = useTranslation("business");
@@ -227,6 +229,7 @@ export function ProductMobileCard({
   onExpand,
   onEdit,
   onToggle,
+  onImage,
 }: {
   product: ProductEntity;
   historical?: ProductLogEntity | null;
@@ -236,32 +239,32 @@ export function ProductMobileCard({
   onExpand: () => void;
   onEdit: (product: ProductEntity) => void;
   onToggle: (product: ProductEntity) => void;
+  onImage?: (product: ProductEntity) => void;
 }) {
   const { t } = useTranslation("business");
   const actions = useRecordActions(product, onEdit, onToggle);
-  const diff = calculatePriceDiff(product.sale_price, historical?.sale_price);
-  const fields = (item: ProductEntity | ProductLogEntity) => [
-    { key: "code", label: t("product_code"), value: item.code },
+  const comparable = !historical || priceMeasurementsComparable(product, historical);
+  const diff = comparable ? calculatePriceDiff(product.sale_price, historical?.sale_price) : null;
+  const fields = (item: ProductEntity | ProductLogEntity, current = false) => [
+    { key: "code", label: t("product_code"), value: item.code ?? "—", fullWidth: true },
     {
       key: "cost",
       label: t("product_cost_tax"),
       value: `$${Number(item.cost_price_tax).toLocaleString()}`,
-    },
-    {
-      key: "margin",
-      label: t("product_profit_margin"),
-      value: `${item.profit_percentage}%`,
+      fullWidth: true,
     },
     {
       key: "price",
       label: t("product_sale_price"),
-      value: `$${Number(item.sale_price).toLocaleString()}`,
+      value: <ProductSalePrice measurementUnit={item.measurement_unit} salePrice={item.sale_price} offerPrice={current ? item.offer_price : undefined} offerEnabled={current && item.is_offer_enabled === true} />,
+      fullWidth: true,
     },
-    { key: "stock", label: t("product_stock"), value: item.stock },
+    { key: "availability", label: t("pos.availability"), value: t(item.has_stock === true ? "pos.available" : item.has_stock === false ? "pos.unavailable" : "pos.availability_unknown") },
     {
       key: "updated",
       label: t("product_updated_at"),
       value: formatDate(item.updated_at || item.created_at),
+      fullWidth: true,
     },
   ];
   return (
@@ -271,11 +274,13 @@ export function ProductMobileCard({
         status={<Status active={product.is_active} />}
         disabled={disabled}
         fields={[
-          ...fields(product),
+          ...(onImage ? [{ key: "image", label: t("pos.image_column"), value: <ProductImageThumbnail name={product.name} image={product.image} disabled={disabled} onOpen={() => onImage(product)} /> }] : []),
+          ...fields(product, true),
           {
             key: "provider",
             label: t("product_provider"),
             value: product.provider?.name ?? "—",
+            fullWidth: true,
           },
           ...(diff
             ? [

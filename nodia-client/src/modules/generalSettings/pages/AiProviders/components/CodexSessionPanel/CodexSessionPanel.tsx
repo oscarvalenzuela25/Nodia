@@ -24,6 +24,7 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
   const {
     t,
     currentSession,
+    connectionState,
     runtimeUnavailable,
     canConnect,
     startError,
@@ -67,7 +68,7 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
           >
             {t("ai_providers:codex.manage")}
           </Button>
-          {currentSession?.authenticated && (
+          {connectionState === "connected" && (
             <Button
               color="error"
               disabled={busy}
@@ -82,17 +83,38 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
       {!open && runtimeUnavailable && (
         <Alert severity="warning">{t("ai_providers:codex.runtime_unavailable")}</Alert>
       )}
+      {!open && sessionObservation.isError && (
+        <Alert severity="error" sx={{
+          flexWrap: { xs: "wrap", sm: "nowrap" },
+          "& .MuiAlert-message": { flex: 1 },
+          "& .MuiAlert-action": { width: { xs: "100%", sm: "auto" }, pl: { xs: 0, sm: 2 }, mr: { xs: 0, sm: -1 }, pt: { xs: 1, sm: 0 } },
+        }} action={
+          <Button disabled={busy} onClick={checkSession} sx={{ width: { xs: "100%", sm: "auto" } }}>
+            {t("ai_providers:codex.check_status")}
+          </Button>
+        }>
+          {t("core:server_error_toast")}
+        </Alert>
+      )}
+      {!open && sessionObservation.isFetching && !sessionObservation.isLoading && <LinearProgress />}
       <Skeleton loading={sessionObservation.isLoading}>
         <Box>
           <Typography role="status">
             {t(
-              currentSession?.authenticated === true
+              connectionState === "connected"
                 ? "ai_providers:codex.connected"
-                : currentSession?.authenticated === false
+                : connectionState === "disconnected"
                   ? "ai_providers:codex.session_required"
-                  : "ai_providers:codex.unknown",
+                  : connectionState === "busy"
+                    ? "ai_providers:codex.busy"
+                    : "ai_providers:codex.unknown",
             )}
           </Typography>
+          {currentSession?.checkedAt && (
+            <Typography variant="body2" color="text.secondary">
+              {t("ai_providers:codex.checked_at", { date: currentSession.checkedAt })}
+            </Typography>
+          )}
           <Typography variant="body2" color="text.secondary">
             {currentSession?.lastInferenceAt
               ? t("ai_providers:codex.inference_observed", {
@@ -160,6 +182,7 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
           }
         >
           <SessionContent>
+            {connectionState === "busy" && <Alert severity="info">{t("ai_providers:codex.busy")}</Alert>}
             {runtimeUnavailable && (
               <Alert severity="warning" sx={{
                 flexWrap: { xs: "wrap", sm: "nowrap" },

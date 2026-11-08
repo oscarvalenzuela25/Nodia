@@ -1,0 +1,2308 @@
+{
+  "schema": "teacher-Gemini-complete-journey-evidence/1",
+  "checked_on": "2026-11-03",
+  "status": "complete_Gemini_journey_runtime_operational_DB_restore_and_independent_configuration_recovery_verified",
+  "document_approval": null,
+  "knowledge_publication": false,
+  "product_V1_accepted": false,
+  "scope": {
+    "session_id": "ddf4eb65-89ad-4363-a837-fea2be50a443",
+    "actor_user_id": "1",
+    "provider": "gemini",
+    "mode": "agentic",
+    "connection_id": "2",
+    "selection_model_and_effort_unchanged": true
+  },
+  "prior_technical_closure": {
+    "path": "docs/evidence/teacher-v1-vm-process-20261103-r01.json",
+    "sha256": "b36deae02b11e77db648bc52d403073e842ded59665e9bc6a55a45029cf4d81a",
+    "scope_note": "Previous technical closure preserves its explicit limit: complete Gemini assessment was unproven."
+  },
+  "confirmed_observations": [
+    {
+      "source": "Root live authenticated UI and CDP observation reported during journey",
+      "phase": "Gemini_unit_practice_in_progress",
+      "first_four_answers_correct": true,
+      "first_four_awarded_points": 8,
+      "first_four_possible_points": 8,
+      "fifth_written_response_not_yet_submitted": true,
+      "new_generation_jobs_in_this_journey_before_written_response": 0,
+      "HTTP_429_confirmed_during_fourth_submit_then_fifth_question_navigation": true,
+      "GET_resource_categories": [
+        "unit_material",
+        "latest_terminal_job",
+        "question",
+        "attempt"
+      ],
+      "prior_historical_unknown_causes_reclassified": false,
+      "candidate_fix_scope": "Client redundant reads and broad invalidations under audit; no backend throttle change authorized by this finding"
+    },
+    {
+      "source": "Root live authenticated UI observation reported during journey",
+      "phase": "Gemini_fifth_written_practice_answer",
+      "answer_text_saved_in_technical_evidence": false,
+      "draft_atomic_pause_reload_resume_preserved_question_and_value": true,
+      "dispatch_count_during_draft_resume": 4,
+      "submit_intents": 1,
+      "feedback_pending_explicit": true,
+      "final_grade_not_claimed_while_pending": true,
+      "question_answer_keys_read_before_answer": false
+    },
+    {
+      "source": "Root live authenticated UI observation reported during journey",
+      "phase": "Gemini_unit_practice_completed",
+      "questions_total": 5,
+      "deterministic_correct": 4,
+      "deterministic_points": 8,
+      "written_feedback_real_Gemini_ready": true,
+      "written_points": 6,
+      "written_possible_points": 6,
+      "written_rubric_components": [
+        2,
+        2,
+        2
+      ],
+      "practice_earned": 14,
+      "practice_possible": 14,
+      "practice_completed_by_explicit_finalize": true,
+      "dispatch_count": 5,
+      "written_feedback_coherence_reviewed": true,
+      "lesson_or_answer_text_saved": false,
+      "observed_UI_same_attempt_feedback_ready_reset_question_to_first": true,
+      "candidate_Client_fix": "Preserve focused question when READY refers to the same attempt"
+    },
+    {
+      "source": "Root authenticated UI and readonly terminal reported during journey",
+      "phase": "first_Gemini_section_assessment_generation",
+      "state": "failed_known",
+      "error_code": "invalid_generated_content",
+      "remote_call_completed": true,
+      "local_closed": true,
+      "both_ACK": true,
+      "duration_seconds": 166.063618,
+      "duration_semantics": "Local attempt wall time, not provider latency",
+      "assessment_published": false,
+      "practice_grade_preserved": [
+        14,
+        14
+      ],
+      "dispatch_count": 6,
+      "timeout_or_UNKNOWN": false,
+      "historical_unknowns_reclassified": false,
+      "new_generation_or_replay_requested_after_failure": false,
+      "diagnosis_scope": "Private model response validation; only sanitized paths/codes/counts may be persisted",
+      "job_id_prefix": "3a1be0d1",
+      "operation_id_prefix": "311d1712"
+    },
+    {
+      "source": "Root live authenticated UI and bounded CDP sample reported during journey",
+      "phase": "first_published_section_final_submission",
+      "attempt_id_prefix": "66f9",
+      "all_public_question_prompts_reviewed": 12,
+      "question_kinds_verified": {
+        "single_choice": 6,
+        "completion": 2,
+        "short_text": 4
+      },
+      "six_unit2_answers_explicit_dont_know_for_QA_reinforcement": true,
+      "unit1_answers_authored_without_reading_keys": true,
+      "early_answer_keys_or_corrections_visible": false,
+      "hints_or_assistance_requested": false,
+      "all_drafts_saved_pause_reload_resume_question12_and_values_verified": true,
+      "dispatch_count_during_resume": 7,
+      "whole_submit_intents": 1,
+      "grade_pending_explicit": true,
+      "dont_know_zero_points_visible_only_after_submit": true,
+      "final_grade_not_assumed": true,
+      "CDP_sample": {
+        "Teacher_responses_observed": 140,
+        "errors_observed": 0,
+        "older_buffer_truncated": true,
+        "complete_traffic_capture_claimed": false
+      },
+      "same_attempt_READY_focus_check": "pending_batch_feedback"
+    },
+    {
+      "source": "Root live authenticated UI after real batch feedback",
+      "phase": "first_final_grade_and_same_attempt_READY_focus",
+      "earned_points": 20,
+      "possible_points": 40,
+      "section_requires_reinforcement": true,
+      "grade_pending": false,
+      "same_question12_remained_visible_when_READY": true,
+      "dispatch_count": 8,
+      "written_feedback_reviewed_after_delivery": 2,
+      "written_rubric_each": [
+        2,
+        2,
+        2
+      ],
+      "feedback_core_TTL_and_authority_roles_coherent": true,
+      "answer_or_feedback_text_saved": false
+    },
+    {
+      "source": "Root authenticated UI and manual content review",
+      "phase": "focal_unit2_material_and_practice_in_progress",
+      "all_new_blocks_reviewed": 6,
+      "reading_points_marked_explicitly": 6,
+      "core_A_AAAA_CNAME_and_documentation_address_examples_coherent": true,
+      "content_limits": [
+        "Physical-server IP wording is a simplification for virtual hosts and endpoints",
+        "Statements about absent address records require alias-chain qualification",
+        "Dual-stack DNS by itself does not guarantee web reachability"
+      ],
+      "live_DNS_or_web_resolution_claimed": false,
+      "practice_first_four_correct": true,
+      "practice_first_four_points": 8,
+      "practice_first_four_possible": 8,
+      "practice_fifth_written_submit_intents": 1,
+      "practice_fifth_feedback_pending": true,
+      "practice_grade_not_assumed": true,
+      "previous_final_grade_preserved": [
+        20,
+        40
+      ],
+      "raw_text_answers_or_keys_saved": false
+    },
+    {
+      "source": "Root authenticated UI after real written feedback and explicit finalize",
+      "phase": "focal_unit2_practice_complete_and_retry_requested",
+      "practice_finalized": true,
+      "practice_earned_points": 14,
+      "practice_possible_points": 14,
+      "written_earned_points": 6,
+      "written_rubric": [
+        2,
+        2,
+        2
+      ],
+      "written_feedback_coherence_A_vs_CNAME_reviewed": true,
+      "same_question5_retained_when_READY": true,
+      "reading_markers_confirmed": 6,
+      "dispatch_count_after_practice": 10,
+      "existing_unit2_material_opened_without_generation": true,
+      "new_final_after_study_intents": 1,
+      "new_final_state": "queued_no_result_assumed",
+      "prior_final_grade_preserved": [
+        20,
+        40
+      ],
+      "transient_health_header_during_disabled_metadata_fetch_resolved": true,
+      "persistent_disconnection_not_observed": true,
+      "raw_question_answers_feedback_not_saved": true
+    },
+    {
+      "source": "Root live authenticated UI and truncated bounded CDP sample",
+      "phase": "attempt2_first_draft_uncertain_save_recovery",
+      "attempt_id_prefix": "5697",
+      "operator_draft_save_actions": 1,
+      "uncertain_state_blocked_navigation": true,
+      "operator_receipt_consultation_GET_actions": 1,
+      "receipt_recovered_and_controls_enabled": true,
+      "draft_answer_preserved": true,
+      "operator_save_resend_actions": 0,
+      "HTTP401_observed_for_response_POST": true,
+      "CDP_older_buffer_truncated": true,
+      "complete_network_causal_chain_or_automatic_transport_retries_inferred": false,
+      "HTTP500_inferred": false,
+      "authentication_sessions_created": 0,
+      "tokens_read": false,
+      "metadata_receipt_confirmation": "pending_B"
+    },
+    {
+      "source": "Root authenticated UI and manual question review",
+      "phase": "after_study_retake_whole_submission",
+      "all_public_questions_reviewed": 12,
+      "own_answers_saved": 12,
+      "written_responses": 4,
+      "hints_or_assistance_requested": false,
+      "early_keys_or_corrections_seen": false,
+      "whole_submit_intents": 1,
+      "batch_written_feedback_pending": true,
+      "dispatch_count_expected_after_admission": 12,
+      "final_grade_not_assumed": true,
+      "raw_answers_not_saved": true
+    },
+    {
+      "source": "Root final authenticated UI and post-delivery written-feedback review",
+      "phase": "course_completed_UI_verified",
+      "UI_completed_header": true,
+      "UI_section_passed": true,
+      "earned_points": 40,
+      "possible_points": 40,
+      "same_question12_remained_visible_on_READY": true,
+      "written_feedback_items_reviewed": 4,
+      "written_points_each": 6,
+      "in_app_assistance_used": false,
+      "personal_skill_certification_claimed": false,
+      "new_inference_for_review": false
+    }
+  ],
+  "source_receipts": [
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/practice-written-feedback-summary.json",
+      "sha256": "c898ce0f0295af37927e12b31a52a226e4a4d26835045c1db3a5bc0ecce5f7f7",
+      "bytes": 3639
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/candidate/client-r04/local-delivery.json",
+      "sha256": "1ea345855b211b2a570371c2022a6a856d2416c37cd74512d4045abef40f87e5",
+      "bytes": 3687
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/first-final-assessment-summary.json",
+      "sha256": "e51ed58dd57df0278ec3b6e9cda790868c0b18a679c12ca3248cc498c5cf822e",
+      "bytes": 2092
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/first-final-validation-safe-metadata.json",
+      "sha256": "2d77575aad00010dd5880243903be1d6b76c5edfd24d2557ee7d5002a6180a38",
+      "bytes": 2728
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/first-final-output-retention-metadata.json",
+      "sha256": "633cfb74b2a96b3c00edfcb4e03a98d4d2d3e9745825debe7ed6e19a5d2ccc7e",
+      "bytes": 413
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/client-r04-final-operator-bindings.json",
+      "sha256": "fedbaf0a4d75c997823f89e0057f60cf8859c45fd147e1e0db2085f17ae02956",
+      "bytes": 1539
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/client-r04-browser-comparison.json",
+      "sha256": "fd44c0341122068cca077a1a6e3083b0e8c5479c3d7988e03ce795c63919a91c",
+      "bytes": 1800
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/implementation-r02/logic-freeze.json",
+      "sha256": "7ddbaebde85fe496230762e09b84cd6d65fb0da3479bb231d8058686fe8a4629",
+      "bytes": 5175
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/pre-R04-database-receipt.json",
+      "sha256": "c8d599495fcbe1c96180691a818fc2b046f90c182e8f8df654439bc4c4035983",
+      "bytes": 1938
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/pre-R04-database-restore-verified.json",
+      "sha256": "ce645b7b3dd67d4c8dabfab2a60dcd890ea41889dc50d04e4eeaa7405b17ca94",
+      "bytes": 9623
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/pre-R04-database-restore-independent-summary.json",
+      "sha256": "30fc9a6f751bc9ce26c0561eefdbc0db5926d08739efa6d2960995440a68adbd",
+      "bytes": 1430
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/server-r04/prebackup-receipt.json",
+      "sha256": "f838e8ac868f13433223219f696ecae848775fec1fc2f9ae0930a580aa608415",
+      "bytes": 1850
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/R04-new-final-assessment-summary.json",
+      "sha256": "3d319b7b35539e351abe1a32dcfbdd5b88ba2bc9501e1a1b70a4a3696440cffa",
+      "bytes": 8451
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/R04-final-grade-summary.json",
+      "sha256": "6c0d14b0c704220a1149d9daaeec03ea15e44618bf395d95ec87337521a2629c",
+      "bytes": 4964
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/pre-R05-database-receipt.json",
+      "sha256": "94b7a1c23b3e1425a43795337ff42f10f52de65ad34a9b5d9e8a2101b69b0e7e",
+      "bytes": 1945
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/pre-R05-database-source-before.json",
+      "sha256": "2fb146bf6cb775b0cfc0094499dc01e50dec22fc3891118a45edb61fe29bc28f",
+      "bytes": 507262
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/pre-R05-database-restore-verified.json",
+      "sha256": "7f28c104acb5a8dc3f921d642a5ab5b607d9e97ef376f0453cd9e8a808f784c5",
+      "bytes": 9624
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/pre-R05-database-restore-independent-summary.json",
+      "sha256": "6d0cbb9150167479c00f30944548fa7e26aef8d637a413cbdbb613cc078d5e20",
+      "bytes": 1497
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/R04-reinforcement-preparation-NOT-EXECUTED.json",
+      "sha256": "906d63c31a7a798377e58f5abf431de50702d817a7d19ab77b0c13cef16aac31",
+      "bytes": 489
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/server-r05-final-operator-bindings.json",
+      "sha256": "bc82452e68df982c36ebc855fb5c85395fe0ce7b97777705eb23b7558ad5ad54",
+      "bytes": 2406
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/client-r05-final-operator-bindings.json",
+      "sha256": "7ec689299191a03fbdcfd2f6f5f6ab19414f17ae2417d7f1890a1702efa98481",
+      "bytes": 1539
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/R05-Unit2-material-summary.json",
+      "sha256": "5e5b85f6db9a21b8ff1162b1cb18c44dfe29e2d8102db246daa359ad989b7135",
+      "bytes": 4166
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/R05-final-DB-adoption-binding.json",
+      "sha256": "674319f7254d294d535aecc3d05b900655f9762f982461b0740c2b12925d9fdd",
+      "bytes": 946
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/refuerzo-browser-verification.json",
+      "sha256": "3622f822a2df66b7b86109a5380458966da88107bf19447b63899731bb8c6f4a",
+      "bytes": 1777
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/refuerzo-r05/delivery.json",
+      "sha256": "6cece0dd8ea29f0b1ca0714953dfda21efc1efb6d34711ff408aa676b44f90b6",
+      "bytes": 12608
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/R05-Unit2-practice-written-summary.json",
+      "sha256": "bd1e21b400c2a1c63c31d234a5166835891978bad0448f8bcc547705181ad971",
+      "bytes": 4517
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/R05-after-study-final-summary.json",
+      "sha256": "bdcb9d5397c0aa2404907a9f7091203539de0d9e84f1fae9534050c83ec15e43",
+      "bytes": 9834
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/R05-after-study-draft-recovery-summary.json",
+      "sha256": "d0d06c9f60a969141829567792ed41981b831496abae2ea74215b79296c0e77a",
+      "bytes": 1244
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/R05-course-completed-summary.json",
+      "sha256": "cafe0d6cc585a6650072590e731332e33f3c305c5d5aebf20253583820e69664",
+      "bytes": 7502
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/R05-Codex-current-eligibility.json",
+      "sha256": "92783043c6f7c8d27b55d5e732b1e82a2fc474dbab0726500c30c1b3366eb156",
+      "bytes": 1943
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-browser-verification.json",
+      "sha256": "8a921a1dc21f3bca3f91483d2d980f201e1e1fcd18a8acdfd9b0be75a47b80a8",
+      "bytes": 1351
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-configuration-public-stage.json",
+      "sha256": "939b2ec368f1d54da65c902d9c8c2a063bf67225059a2e684b8e17072ef94254",
+      "bytes": 809
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/candidate/final-recovery-r01/delivery.json",
+      "sha256": "d5ace6814b9a1ff12bd8fc73c34e6485983fe01b5063701037a9748f97d4e9d8",
+      "bytes": 1723
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/final-R05-database-receipt.json",
+      "sha256": "24b2f714fbf0408608df773543e2a3dc744a393ebe71afa2dfbac1d523e2d1e5",
+      "bytes": 1945
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/final-R05-database-restore-verified.json",
+      "sha256": "3ede1349b9ecab65b1aede16fe2e5e76d9b9aeb75e0cb78c4516e82430c57c52",
+      "bytes": 9624
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/observer/final-R05-database-restore-independent-summary.json",
+      "sha256": "8135d34208233be15ec1cbad5af8976708f67a4e300d00d17ec3db2ec356c8ea",
+      "bytes": 1770
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-configuration-capture.json",
+      "sha256": "1326a4c58af04d5fcbe175194c089ed54e8448e864c41e3272a609354f4a81e6",
+      "bytes": 395
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-maintenance-precondition-diagnostic-r02.json",
+      "sha256": "28b74df0aa71a661f76bb58f8fac05eddcb7d742565363ce5d10033fb9229aca",
+      "bytes": 1715
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-backup-exit75-diagnostic.json",
+      "sha256": "8c7e918bf4d3d6bf36d4c3bcbdd068888f265ccbe74c04c42153fd22b94e3a17",
+      "bytes": 782
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-rotate-timestamp-diagnostic.json",
+      "sha256": "5803014e66e0d0731b7dfec1ab0834aca4746ce1d62293d00bb560c76c466681",
+      "bytes": 263
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-backup-failed-marker-reconciled.json",
+      "sha256": "048a3405094b9a0f54a6eec05d60bc480eb2216dcbb861c04fecabff975421a6",
+      "bytes": 575
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-backup-definition-diagnostic.json",
+      "sha256": "b7b9e52cf8e80df4d69aebaf51f54c55fe292629426ea0ae41c4df74515c7196",
+      "bytes": 478
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/duplicate-cipher-retired.json",
+      "sha256": "2ec19b6e4a88550da2dbcb773e0541ec46271c5ce5f92e1029778c7fb102fa2c",
+      "bytes": 997
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/candidate/storage-final-r01/fresh-local-rehash.json",
+      "sha256": "852b12297376ee5cb6649309a93ea2be93a325427ccfb3fbdffbddd400d24b06",
+      "bytes": 780
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/candidate/final-recovery-r02/delivery.json",
+      "sha256": "a9e2400412577d1d8897e1b7c998f39e36056a75f5cb1014542b645fda94f430",
+      "bytes": 1741
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/candidate/final-recovery-r02/policy-test-result.json",
+      "sha256": "471d0d49510d5a3b607f8f9b18860f888feed42b32d3c26b3d5a2d1cb1cf6524",
+      "bytes": 274
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/candidate/final-recovery-r02/flow-test-result.json",
+      "sha256": "6ea6366ccdadb887e934c5cdd238e4c7e9e6de68ad70462a96dc811823b999ac",
+      "bytes": 244
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-configuration-r02-public-stage.json",
+      "sha256": "86e121538a933e5bb4085980d65f457a816fcbe118602d046758d60ad5e91abd",
+      "bytes": 601
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-configuration-r02-preparation.json",
+      "sha256": "bcb833bca2144daa98b907fe8345e395c8955d684d7f06a43d3099ccc349e25e",
+      "bytes": 2637
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-configuration-r02-preflight.json",
+      "sha256": "bfedc88ed3e4b3b312bdedcc7242dfaafe1a4b7bac4b14da4e7c6e365b33dca9",
+      "bytes": 12368
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-configuration-r02-capture.json",
+      "sha256": "ba0ccbb7147eb5eefeec00fa1cd80b5b475f0d03c5c6dabff302e297487a0e78",
+      "bytes": 438
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-r17-resume-diagnostic.json",
+      "sha256": "0183b68ed5d78c443d8b0c5e59fbf86018fa74ab872f70e35fc6a0a7ab3a5ce2",
+      "bytes": 3048
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/candidate/reconcile-r17-runtime.mjs",
+      "sha256": "9e4186d5345b9aaebe6abc74975a03171a36d901e0fbae3e60f2b2a33720125b",
+      "bytes": 8144
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-r17-runtime-reconciled.json",
+      "sha256": "838aa3083d9575d58c521265fdbb6cf30e6776ae832bbe44e14c8a6162f91591",
+      "bytes": 1366
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/candidate/audit-r17-existing-ciphers.mjs",
+      "sha256": "0ecca6b39899a745ef713181c315d68d84f3018ab7760265070d34bf47efe648",
+      "bytes": 6393
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-r17-existing-cipher-audit.json",
+      "sha256": "7abd8a10e0f1cd7073cea6645684390664161884c5e85a3079d6d5bf188c32d7",
+      "bytes": 1446
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/backups/final-gemini-journey-configuration-local-verified.json",
+      "sha256": "72528bc669d8ccf07cb44f1622f291929729d9065e1193604f392e9ec5e40b61",
+      "bytes": 1553
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/backups/final-gemini-journey-configuration-copy.json",
+      "sha256": "14484744ad8d93d68217dc0bd540c5e5d700f8a1b98f5cef4aa9c4a5ed4edc81",
+      "bytes": 896
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/copy-audited-configuration-ciphers.py",
+      "sha256": "b8d96783f3235cf0fb004ab3341dcd5d0c3362f837c3363ec94d2be7c5242b5d",
+      "bytes": 4061
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/verify-audited-configuration-local.mjs",
+      "sha256": "27c3dc621c0c0390a5c2089c2749f60155165cc16337c7986379bba07abca89e",
+      "bytes": 6115
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-r17-local-validation-history.json",
+      "sha256": "b7e09220e355211e42f85dbcb601e17a1b4f7cb38aa60129caf055b82707a39e",
+      "bytes": 652
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/final-r17-canonical-audit.json",
+      "sha256": "f2d4f671a8fb4b0ff6d374fb333240bfe9683bc00bfc9624ee394456f1002ee4",
+      "bytes": 3463
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/post-recovery-browser-verification.json",
+      "sha256": "d06f44f86c20b59ec7b63f66e01b1af22e9ba08c88fb43f95ffeb95e8cc9c297",
+      "bytes": 1004
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-gemini-journey-20261103-r01/knowledge-validation-final.json",
+      "sha256": "1a77b4f880197b8a26767c2160cdb2ac2c6cdd7d428ed51a12e8427008443504",
+      "bytes": 522
+    }
+  ],
+  "remaining": [],
+  "no_inference_replay": true,
+  "practice_written_feedback_confirmed": {
+    "job_id": "84c83316-944b-41a7-922f-632a7e0daff4",
+    "operation_id": "0b32c17a-5fda-48da-8e31-7adfadd0d929",
+    "purpose": "written_feedback",
+    "state": "ready",
+    "remote_outcome": "completed",
+    "phase": "closed",
+    "attempt_no": 1,
+    "duration_seconds": 84.492786,
+    "reserved_exchanges": 1,
+    "started_exchanges": 1,
+    "acknowledged_at": "2026-11-04T01:03:22.830Z",
+    "agentic_acknowledged_at": "2026-11-04T01:03:22.844Z",
+    "terminal_proof_sha256": "f4241998dbe9ae27dde728ab1c89c72f9b0a9ab2f904f1d086625ea359fd7637",
+    "SDK": {
+      "provider_dispatches": 1,
+      "local_attempts": 1,
+      "upstream_status": 200,
+      "finish_done": true,
+      "known_child_closed": true,
+      "record_sha256": "a4bdf0ce046fc9cd25ed55fe0f1505c0de6e88ff1fa8e810585b834604f72c44",
+      "native_retired_sha256": "acc9bd1f63895ba7346959b72cc2e2b172489125fea7875b3ba966c9e9e6c693"
+    },
+    "practice_attempt": {
+      "id": "0084f8ad-8568-45ad-841d-6077df5b3742",
+      "assessment_id": "297a32bd-1ee6-49ee-b2ce-9176c83361d0",
+      "scope": "unit_practice",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "unit_id": "1c117816-7b7a-40e6-8107-cfd7e1e35502",
+      "attempt_no": 1,
+      "entry_route": "practice",
+      "state": "graded",
+      "is_active": false,
+      "result": null,
+      "revision": 10,
+      "assisted": false,
+      "denominator_points": 14,
+      "earned_points": 14,
+      "threshold_percent": null,
+      "submitted_at": "2026-11-04T01:04:23.032Z",
+      "graded_at": "2026-11-04T01:04:23.034Z",
+      "closed_at": "2026-11-04T01:04:23.034Z",
+      "closure_reason": null,
+      "created_at": "2026-11-04T00:02:14.996Z",
+      "updated_at": "2026-11-04T01:04:23.034Z",
+      "response_count": 5,
+      "draft_count": 5,
+      "submitted_response_count": 5,
+      "graded_response_count": 5,
+      "pending_response_count": 0,
+      "percentage": 100,
+      "integer_grade_ratio": {
+        "numerator": 14,
+        "denominator": 14
+      },
+      "passed": null,
+      "grade_pending": false
+    },
+    "duration_semantics": "Local SQL attempt wall time, not provider latency"
+  },
+  "Client_R04_local": {
+    "delivery_path": "ops/lab/artifacts/teacher-v1-process-20261103-r01/candidate/client-r04/local-delivery.json",
+    "delivery_sha256": "1ea345855b211b2a570371c2022a6a856d2416c37cd74512d4045abef40f87e5",
+    "candidate_manifest_sha256": "56d308be23dedc2a09ca8311f85fc941ef29f3b50acabeebdf845ffb95298202",
+    "candidate_source_plan_sha256": "48ec04b7085bffc424762317f7d2b3494347ee265e925bcd6b5695890b584043",
+    "local_Teacher_tests_passed": 33,
+    "production_typecheck_and_scoped_lint_passed": true,
+    "VM_staged": true,
+    "VM_active": true,
+    "fix_scope": [
+      "refresh only resource affected by cursor/draft/submit",
+      "preserve focused question for feedback of same attempt"
+    ],
+    "Backend_throttle_changed": false,
+    "AI_capabilities_changed": false,
+    "release": "/opt/nodia/releases/nodia-client-teacher-20261103-r04",
+    "activation_state_sha256": "ecea2f3da279889b27bfd6de75ecdd56a0cce4335604d2415bc2860c08c75467",
+    "nginx_after_sha256": "71dfe23eceb2bce3d94581b0737fa38f605595b38bb973daa81293911a81e266",
+    "new_assets_HTTP_verified": 179,
+    "old_assets_HTTP_verified": 175,
+    "entry_routes_HTTP200": 5,
+    "SQL_writes": 0,
+    "provider_requests": 0,
+    "Server_Native_unchanged_during_static_adoption": true,
+    "integrated_request_count_429_and_focus_comparison": {
+      "source": "Root live authenticated UI/CDP observation after static adoption",
+      "sample_count": 4,
+      "transitions": "question5_to2_to3_to4_to5",
+      "each_transition": [
+        "GET_question_200",
+        "PATCH_cursor_200",
+        "GET_session_200"
+      ],
+      "observed_material_GET": 0,
+      "observed_job_GET": 0,
+      "observed_attempt_GET": 0,
+      "observed_HTTP429": 0,
+      "observed_errors": 0,
+      "last_two_transitions_batch_seconds": 0.7,
+      "batch_time_not_per_action_latency": true,
+      "same_submit_before_after_compared": false,
+      "same_attempt_READY_focus_verification": "Root UI PASS question12 remained visible on real feedback READY",
+      "practice_grade_preserved": [
+        14,
+        14
+      ],
+      "dispatch_count_unchanged": 6
+    }
+  },
+  "historical_observation_correction": {
+    "source_receipt_path": "docs/evidence/teacher-v1-vm-process-20261103-r01.json",
+    "source_receipt_sha256": "b36deae02b11e77db648bc52d403073e842ded59665e9bc6a55a45029cf4d81a",
+    "historical_Codex_kind_mix_claim": {
+      "single_choice": 6,
+      "completion": 4,
+      "short_answer": 2
+    },
+    "status": "unsupported_and_arithmetically_inconsistent_with_observed_denominator_40_under_2_2_6_weights",
+    "receipt_preserved_unchanged": true,
+    "metadata_receipt_audited": "ops/lab/artifacts/teacher-v1-process-20261103-r01/codex-assessment-ready-readonly.json",
+    "audited_receipt_contains_kind_counts": false,
+    "no_replacement_Codex_kind_counts_inferred": true,
+    "retained_confirmed_Codex_facts": {
+      "item_count": 12,
+      "earned_points": 12,
+      "denominator_points": 40,
+      "score_percent": 30
+    },
+    "current_DNS_blueprint_verified_by_B": {
+      "single_choice": 6,
+      "completion": 2,
+      "short_text": 4,
+      "denominator_points": 40
+    },
+    "old_manual_review_sample_not_expanded": true
+  },
+  "first_final_generation_confirmed": {
+    "job": {
+      "id": "3a1be0d1-1ea5-474c-a9e9-40cb8430adf3",
+      "purpose": "assessment_only",
+      "state": "failed_known",
+      "blocks_duplicate": false,
+      "dispatches_used": 1,
+      "dispatch_limit": 1,
+      "created_at": "2026-11-04T01:04:31.246Z",
+      "updated_at": "2026-11-04T01:07:19.054Z",
+      "deadline_at": "2026-11-04T01:14:31.246Z",
+      "available_at": "2026-11-04T01:04:31.246Z",
+      "lease_owner": null,
+      "lease_until": null,
+      "error_code": "invalid_generated_content"
+    },
+    "attempt": {
+      "id": "311d1712-1f19-4923-a107-f20c83e3cf25",
+      "job_id": "3a1be0d1-1ea5-474c-a9e9-40cb8430adf3",
+      "worker_id": "b2523646-c3f7-47bd-92e8-471bae10267e",
+      "phase": "terminal",
+      "attempt_no": 1,
+      "started_at": "2026-11-04T01:04:32.991377+00:00",
+      "ended_at": "2026-11-04T01:07:19.054995+00:00",
+      "duration_seconds": 166.063618
+    },
+    "operation": {
+      "id": "311d1712-1f19-4923-a107-f20c83e3cf25",
+      "teacher_job_id": "3a1be0d1-1ea5-474c-a9e9-40cb8430adf3",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "reserved_exchanges": 1,
+      "started_exchanges": 1,
+      "created_at": "2026-11-04T01:04:32.979Z",
+      "updated_at": "2026-11-04T01:07:19.038Z",
+      "acknowledged_at": "2026-11-04T01:07:19.055Z",
+      "agentic_acknowledged_at": "2026-11-04T01:07:19.095Z",
+      "terminal_proof_sha256": "693a0894339102a268570698ee88155da681b62cd66094f7e08eaad0c1ac06f2"
+    },
+    "provider_dispatches": 1,
+    "local_attempts": 1,
+    "upstream_status": 200,
+    "finish_done": true,
+    "known_child_closed": true,
+    "SDK_record_sha256": "7328e7b4d4dd674638f9e31cc5a041a0a728cfac2d70a7e53c316432af1b2725",
+    "native_retired_sha256": "7a08b90cf3549102bb4f5e2f5da1441cffbc4bd04356e17f0296b8bc531d6911",
+    "final_assessment_published": false,
+    "observer_generation_calls": 0,
+    "observer_course_mutations": 0,
+    "exact_historical_rejection_rule": "not_recoverable_after_ACK_payload_purge",
+    "synthetic_hint_false_positive_is_not_diagnosis_of_historical_payload": true
+  },
+  "recovery_cuts": {
+    "prior_full_configuration_baseline": "NativeR11_ServerR03_ClientR03",
+    "prior_receipt_sha256": "e14fd70009b810e0b404ff062d31d66cb790cac436050fa398c2dba80c05470b",
+    "prior_local_GCM_sha256": "4d67421a6ede026ac257ebc83988158186f17b77f4e7540b0d09e57e3a75150b",
+    "prior_CFG_contains_Client_R04": false,
+    "prior_CFG_contains_new_Native_retired_records": false,
+    "current_Client_R04_recoverability": "Immutable ClientR03 baseline plus frozen hash-bound ClientR04 public delta and manifest; separate from older CFG",
+    "new_PRE_DB_before_Server_R04": "one_capture_download_full_GCM_restore_passed",
+    "new_final_POST_DB_and_full_CFG": "after_journey_and_all_ACK_then_one_bounded_derivation",
+    "new_PRE_DB_restore": {
+      "tables": 94,
+      "migrations": 43,
+      "rows_sequences_FK_equal": true,
+      "CHECK_semantic_equal": 22,
+      "legacy_schema_text_equal": false,
+      "four_owned_Docker_resources_absent": true
+    },
+    "PRE_adoption_combined_receipt_sha256": "f838e8ac868f13433223219f696ecae848775fec1fc2f9ae0930a580aa608415",
+    "PRE_R05_adoption": {
+      "status": "fresh_DB_capture_download_full_GCM_restore_passed",
+      "source_phase_preserved": "post",
+      "operational_role": "PRE_R05_adoption",
+      "baseline_Server_manifest_sha256": "f768a295729d46f4d3811667eec6c2b9f5a80297ae29f82d15f0049b581a1a54",
+      "baseline_Server_adoption_sha256": "0ceebaf01b254e9b2edaf4e6b8b23ef47689b1278470765b27dfb79f90be1b3f",
+      "backup_starts": 1,
+      "source_DB_before_after_unchanged": true,
+      "final_CFG_not_yet_captured": true,
+      "tables": 94,
+      "migrations": 43,
+      "rows_sequences_FK_equal": true,
+      "CHECK_semantic_equal": 22,
+      "legacy_schema_text_equal": false,
+      "four_owned_Docker_resources_absent": true
+    }
+  },
+  "Server_R04_local": {
+    "logic_freeze_sha256": "7ddbaebde85fe496230762e09b84cd6d65fb0da3479bb231d8058686fe8a4629",
+    "local_tests_passed": 23,
+    "scoped_lint_errors": 0,
+    "production_type_diagnostics": 0,
+    "compiled_Node_helper_verified": true,
+    "publication_diagnostic_owned_frames_maximum": 4,
+    "publication_diagnostic_code": "publication_failure_located",
+    "exception_body_message_stack_keys_logged": false,
+    "diagnostic_logger_failure_nonblocking": true,
+    "optional_suspect_hint_omitted_whole": true,
+    "valid_safe_hint_preserved": true,
+    "malformed_hint_rejected": true,
+    "VM_adopted": true,
+    "historical_failed_known_cause_not_inferred": true,
+    "release": "/opt/nodia/releases/nodia-server-teacher-20261103-r04",
+    "manifest_sha256": "f768a295729d46f4d3811667eec6c2b9f5a80297ae29f82d15f0049b581a1a54",
+    "adoption_state_sha256": "0ceebaf01b254e9b2edaf4e6b8b23ef47689b1278470765b27dfb79f90be1b3f"
+  },
+  "second_final_generation_after_explicit_new_intent": {
+    "schema": "teacher-Gemini-R04-final-assessment-generation/1",
+    "job": {
+      "id": "679e260a-250c-4093-a0a6-781b70e7442e",
+      "purpose": "assessment_only",
+      "state": "ready",
+      "blocks_duplicate": false,
+      "dispatches_used": 1,
+      "dispatch_limit": 1,
+      "selection_matches_current": true,
+      "created_at": "2026-11-04T01:31:15.247Z",
+      "updated_at": "2026-11-04T01:34:30.877Z",
+      "deadline_at": "2026-11-04T01:41:15.247Z",
+      "available_at": "2026-11-04T01:31:15.247Z",
+      "lease_owner": null,
+      "lease_until": null,
+      "error_code": null
+    },
+    "operation": {
+      "id": "d6de848e-794b-48df-9f30-4a762ce32f77",
+      "teacher_job_id": "679e260a-250c-4093-a0a6-781b70e7442e",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "reserved_exchanges": 1,
+      "started_exchanges": 1,
+      "created_at": "2026-11-04T01:31:15.370Z",
+      "updated_at": "2026-11-04T01:34:30.839Z",
+      "acknowledged_at": "2026-11-04T01:34:30.878Z",
+      "agentic_acknowledged_at": "2026-11-04T01:34:30.902Z",
+      "terminal_proof_sha256": "87d03e7ba13af165621304d3309404d4769ca8e75e23c96d90b21d4edba792ab"
+    },
+    "generation_attempt": {
+      "id": "d6de848e-794b-48df-9f30-4a762ce32f77",
+      "job_id": "679e260a-250c-4093-a0a6-781b70e7442e",
+      "worker_id": "18b85d49-f7da-49ac-bbb6-b275565502d0",
+      "phase": "terminal",
+      "attempt_no": 1,
+      "started_at": "2026-11-04T01:31:15.393092+00:00",
+      "ended_at": "2026-11-04T01:34:30.877869+00:00",
+      "duration_seconds": 195.484777
+    },
+    "selection": {
+      "mode": "agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high",
+      "connection_id": "2"
+    },
+    "assessment": {
+      "id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+      "scope": "section_final",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "unit_id": null,
+      "content_version_id": null,
+      "version_no": 1,
+      "generation_job_id": "679e260a-250c-4093-a0a6-781b70e7442e",
+      "status": "ready",
+      "created_at": "2026-11-04T01:34:30.856Z",
+      "item_count": 12
+    },
+    "item_order_metadata": [
+      {
+        "id": "736c56cf-990c-4d8b-a1c1-d2090f91f3b4",
+        "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+        "ordinal": 1,
+        "kind": "single_choice",
+        "max_points": 2,
+        "item_fingerprint": "88e1aaf0d9c27c3e5f229d6170a4f69985f4f53622cf39d36a74d58468735a24",
+        "variant_group": "35ff302716f8933c75f5f3e36a6120f36a1199b57eade9883ae792a07638fddc"
+      },
+      {
+        "id": "9927fd1d-2d4e-4faa-8607-e815da7ab806",
+        "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+        "ordinal": 2,
+        "kind": "single_choice",
+        "max_points": 2,
+        "item_fingerprint": "86f983a55db34513714e0638c9f6c2d0cfc226237d42a7450f1633367e80c690",
+        "variant_group": "3205e8522ac3b62cf130fcc93e467353dd336b1e54f8d1a4aac029b8848159aa"
+      },
+      {
+        "id": "44e77bd5-f2c2-421b-a455-c5e6bf53203a",
+        "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+        "ordinal": 3,
+        "kind": "single_choice",
+        "max_points": 2,
+        "item_fingerprint": "248da734d72f6b42590853906dc33091faea39e5d04ab4fd984d5836ea0b949c",
+        "variant_group": "e8f31398e876c7e97605111af5fa03ea48dc5013080ef08726629c0495d8a4c0"
+      },
+      {
+        "id": "0b9b7cc0-0da9-4fa7-980d-0cad3b268bb4",
+        "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+        "ordinal": 4,
+        "kind": "single_choice",
+        "max_points": 2,
+        "item_fingerprint": "c3e5aaffd4f5ba6bc46bdd7200327b880b40d55be14c539632cdb2a7bc65b674",
+        "variant_group": "7e89902d6b5ddd3cfe99b72254ea932553d6b5954d086e960145a2bf1bba7de9"
+      },
+      {
+        "id": "975e44cb-74c3-4142-9fe7-a3532600d7c6",
+        "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+        "ordinal": 5,
+        "kind": "single_choice",
+        "max_points": 2,
+        "item_fingerprint": "b4f2f0e6f163f6f9c3d2a38ddb700cb9c829299d2887e90bc91ef31d8ed88c5b",
+        "variant_group": "35297b2885bc19d22a966bee43b2fa56877d2a301e47d0e3ab33db36860c3536"
+      },
+      {
+        "id": "1ea6f6d9-861d-4f29-93c9-dc9141c2dd46",
+        "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+        "ordinal": 6,
+        "kind": "single_choice",
+        "max_points": 2,
+        "item_fingerprint": "45a5a7f025e7b4f99eb1a52d44bcec86a35d9e17309227b92c80e397510f15a1",
+        "variant_group": "63c8845d6f23dffb0334ec8e1d4937475fedb0ad8986c7e7a5ff6ecbb9ab21c5"
+      },
+      {
+        "id": "250cd24c-3a5f-431e-accd-871bde6cba27",
+        "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+        "ordinal": 7,
+        "kind": "completion",
+        "max_points": 2,
+        "item_fingerprint": "25714dba132b820e1b1bf90a3f1715fcb5c61fabd6cc0ff7ea8244ceb6a82d01",
+        "variant_group": "9b9f8810a28a8a6c092b2993c42c7be08624be3faaee02045603c3a8066788b8"
+      },
+      {
+        "id": "33395285-a5fc-4e19-8b65-9a77a1f97c60",
+        "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+        "ordinal": 8,
+        "kind": "completion",
+        "max_points": 2,
+        "item_fingerprint": "a7edada8d2ac7f523b497613bb3aabd5541c9e22082bde244c1d37b945f8f427",
+        "variant_group": "2db1b9354f3fffa5926f16a354973016ff3e1e1e92f37ea62bffa34e6b2a0041"
+      },
+      {
+        "id": "d8639bf3-9e77-49a8-9c96-4c8f9ba8be66",
+        "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+        "ordinal": 9,
+        "kind": "short_text",
+        "max_points": 6,
+        "item_fingerprint": "c0432a83ecb499d9fbf3c407c0487b41ffd0265f3e35c6c454614127b06db559",
+        "variant_group": "d70d7e0108f1f7d454b0e6efc1cff4b8932e7dc0dfbbeb9360fc97f089daf66a"
+      },
+      {
+        "id": "d79d4af4-bd7f-4791-a3be-f598a85d1b65",
+        "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+        "ordinal": 10,
+        "kind": "short_text",
+        "max_points": 6,
+        "item_fingerprint": "d1b1c0b96b4186855873c43eb2523aaa6885d5369b17ae831a10b5c27fe8d3c0",
+        "variant_group": "8b68da471a1d55436debefd99f5ebab8aef4566c61d5ed6e27a85b9893a81d6e"
+      },
+      {
+        "id": "36c5fff3-c65f-40f3-bdbd-f2f2300761fe",
+        "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+        "ordinal": 11,
+        "kind": "short_text",
+        "max_points": 6,
+        "item_fingerprint": "c51652c7a0b22d05966dd20e122e82f2536e13a843768abfa6d01741b68b7945",
+        "variant_group": "750e60cc95971d005689d2a2a094a5154390f116effbc81e31cf5964b90b020e"
+      },
+      {
+        "id": "19293488-faee-4bc8-abda-d69af37cadf5",
+        "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+        "ordinal": 12,
+        "kind": "short_text",
+        "max_points": 6,
+        "item_fingerprint": "c11ecf0cdaa04399e2c2e24c67a86040258248144d6188a66288217c559b5282",
+        "variant_group": "0526a5a3178a2b3ce457f0379e92ca5faf7533af8d59a07025a8cc9ab8eb6940"
+      }
+    ],
+    "student_attempt": {
+      "id": "66f9c648-13dd-4102-b449-4daa21181206",
+      "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+      "scope": "section_final",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "unit_id": null,
+      "attempt_no": 1,
+      "entry_route": "direct",
+      "state": "in_progress",
+      "is_active": true,
+      "result": "pending",
+      "revision": 1,
+      "assisted": false,
+      "denominator_points": 40,
+      "earned_points": null,
+      "threshold_percent": 90,
+      "submitted_at": null,
+      "graded_at": null,
+      "closed_at": null,
+      "closure_reason": null,
+      "created_at": "2026-11-04T01:34:30.871Z",
+      "updated_at": "2026-11-04T01:34:30.871Z",
+      "response_count": 12,
+      "draft_count": 0,
+      "submitted_response_count": 0,
+      "graded_response_count": 0,
+      "pending_response_count": 0,
+      "percentage": null,
+      "integer_grade_ratio": {
+        "numerator": null,
+        "denominator": 40
+      },
+      "passed": null,
+      "grade_pending": false
+    },
+    "denominator_from_items": 40,
+    "provider_dispatches": 1,
+    "local_attempts": 1,
+    "upstream_status": 200,
+    "finish_done": true,
+    "known_child_closed": true,
+    "Native_retired_sha256": "98ab9c1260aab89547a4321e26ee9ad39efe043cba5cfe4e70a3d414b28d4b58",
+    "SDK_record_sha256": "651fa5610e472abd42007a26a60bf2ece15ac947efa95183dc99d1eec9f904e7",
+    "SQL_receipt_sha256": "3a3a29479dbc1a1d1a0f268c699cebf19ca3091ddab55b18c0afed97b80ccd48",
+    "SDK_receipt_sha256": "bdd02e30612c3b07c75ff34682c24346a1df313c7d843c541b8874f28ab0a509",
+    "historical_failed_job_unchanged": true,
+    "historical_failure_cause_not_proven": true,
+    "observer_inference_calls": 0
+  },
+  "focal_reinforcement_gap": {
+    "source": "A readonly contract and runtime audit confirmed by Root",
+    "expected_contract": "95 section17 and AC11",
+    "current_behavior_before_R05": "ReviewTheory clears attempt and keeps last unit; no weak-objective projection in DTO",
+    "prior_technical_observation_did_not_establish_focal_targeting": true,
+    "prior_signed_receipts_unchanged": true,
+    "approved_fix_scope": "Read-only projection of fully graded failed final objective points deficit and canonical frozen-plan unit targets, explicit navigation with saved cursor and no inference",
+    "new_per_objective_90_percent_threshold": false,
+    "grades_privileges_or_migrations_changed": false,
+    "R05_delivery_adoption": "Server_and_Client_actual_adopted",
+    "B_prepared_projection_observer_executed_on_R04": false,
+    "gap_attribution": "A code/contract audit confirmed by Root; not inferred from B unexecuted R05 observer helper",
+    "R05_UI_verified": {
+      "source": "Root authenticated UI",
+      "one_weak_objective_only": true,
+      "earned_points": 0,
+      "possible_points": 20,
+      "canonical_target_unit_id": "84bca777-7236-4db1-ba34-6b68d05d5b33",
+      "strong_unit1_not_targeted": true,
+      "explicit_target_navigation_sequence": [
+        "GET_unit_200",
+        "PATCH_cursor_200",
+        "GET_session_200",
+        "GET_unit_200"
+      ],
+      "material_not_prepared": true,
+      "generation_count_before_and_after": 8,
+      "navigation_generations": 0,
+      "pause_reload_retains_unit2_setup": true,
+      "old_final_READY_did_not_override_cursor": true,
+      "mobile_viewport": [
+        390,
+        844
+      ],
+      "mobile_button_width": 314,
+      "mobile_parent_width": 314,
+      "document_width": 380,
+      "horizontal_overflow": false,
+      "desktop_viewport_reset": true,
+      "preparing_material_requires_separate_explicit_action": true
+    },
+    "real_new_unit2_material_ready": true
+  },
+  "first_final_grade_confirmed": {
+    "schema": "teacher-Gemini-R04-final-grade-summary/1",
+    "job": {
+      "id": "aca8cd2f-fa12-44f1-bfb1-8c2b6f374fa6",
+      "purpose": "written_feedback",
+      "state": "ready",
+      "blocks_duplicate": false,
+      "dispatches_used": 1,
+      "dispatch_limit": 1,
+      "selection_matches_current": true,
+      "created_at": "2026-11-04T01:38:37.146Z",
+      "updated_at": "2026-11-04T01:39:59.669Z",
+      "deadline_at": "2026-11-04T01:48:37.146Z",
+      "available_at": "2026-11-04T01:38:37.146Z",
+      "lease_owner": null,
+      "lease_until": null,
+      "error_code": null
+    },
+    "generation_attempt": {
+      "id": "917692e1-f694-4082-a927-26bb187ed28d",
+      "job_id": "aca8cd2f-fa12-44f1-bfb1-8c2b6f374fa6",
+      "worker_id": "ec7cfb95-5d9a-4437-9e68-7fe8f9fdb982",
+      "phase": "terminal",
+      "attempt_no": 1,
+      "started_at": "2026-11-04T01:38:41.379281+00:00",
+      "ended_at": "2026-11-04T01:39:59.669513+00:00",
+      "duration_seconds": 78.290232
+    },
+    "operation": {
+      "id": "917692e1-f694-4082-a927-26bb187ed28d",
+      "teacher_job_id": "aca8cd2f-fa12-44f1-bfb1-8c2b6f374fa6",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "reserved_exchanges": 1,
+      "started_exchanges": 1,
+      "created_at": "2026-11-04T01:38:41.367Z",
+      "updated_at": "2026-11-04T01:39:59.652Z",
+      "acknowledged_at": "2026-11-04T01:39:59.670Z",
+      "agentic_acknowledged_at": "2026-11-04T01:39:59.686Z",
+      "terminal_proof_sha256": "d3c721352c2724163728f26e9574e877a6815f2587c6fc2e4689fefe102890aa"
+    },
+    "final_attempt": {
+      "id": "66f9c648-13dd-4102-b449-4daa21181206",
+      "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+      "scope": "section_final",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "unit_id": null,
+      "attempt_no": 1,
+      "entry_route": "direct",
+      "state": "graded",
+      "is_active": false,
+      "result": "not_passed",
+      "revision": 16,
+      "assisted": false,
+      "denominator_points": 40,
+      "earned_points": 20,
+      "threshold_percent": 90,
+      "submitted_at": "2026-11-04T01:38:37.132Z",
+      "graded_at": "2026-11-04T01:39:59.668Z",
+      "closed_at": "2026-11-04T01:39:59.668Z",
+      "closure_reason": null,
+      "created_at": "2026-11-04T01:34:30.871Z",
+      "updated_at": "2026-11-04T01:39:59.668Z",
+      "response_count": 12,
+      "draft_count": 12,
+      "submitted_response_count": 12,
+      "graded_response_count": 12,
+      "pending_response_count": 0,
+      "percentage": 50,
+      "integer_grade_ratio": {
+        "numerator": 20,
+        "denominator": 40
+      },
+      "passed": false,
+      "grade_pending": false
+    },
+    "numeric_response_grades": [
+      {
+        "ordinal": 1,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 2,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 0,
+        "max_points": 2
+      },
+      {
+        "ordinal": 3,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 4,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 0,
+        "max_points": 2
+      },
+      {
+        "ordinal": 5,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 6,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 0,
+        "max_points": 2
+      },
+      {
+        "ordinal": 7,
+        "kind": "completion",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 8,
+        "kind": "completion",
+        "grade_state": "graded",
+        "earned_points": 0,
+        "max_points": 2
+      },
+      {
+        "ordinal": 9,
+        "kind": "short_text",
+        "grade_state": "graded",
+        "earned_points": 6,
+        "max_points": 6
+      },
+      {
+        "ordinal": 10,
+        "kind": "short_text",
+        "grade_state": "graded",
+        "earned_points": 0,
+        "max_points": 6
+      },
+      {
+        "ordinal": 11,
+        "kind": "short_text",
+        "grade_state": "graded",
+        "earned_points": 6,
+        "max_points": 6
+      },
+      {
+        "ordinal": 12,
+        "kind": "short_text",
+        "grade_state": "graded",
+        "earned_points": 0,
+        "max_points": 6
+      }
+    ],
+    "cursor_ordinal": 12,
+    "cursor_revision": 32,
+    "provider_dispatches": 1,
+    "local_attempts": 1,
+    "upstream_status": 200,
+    "finish_done": true,
+    "known_child_closed": true,
+    "SDK_record_sha256": "b64484c9cd214774a86d07ae592c0dcdbe03628a2dc9b9046008893e3b300238",
+    "Native_retired_sha256": "cf9c2ad0d9ae388a4322dd7b537fdad44d478a6be654be43aba7ab9704401a76",
+    "SQL_receipt_sha256": "993d7776fdcf49688cbda95964467d980ad535137aefba7b35ced095a154eb8c",
+    "SDK_receipt_sha256": "ad82a29b4d2bdff9801225d7bfcc1c44b31991d2865c00494a0ff27d89a20f98",
+    "observer_inference_calls": 0,
+    "observer_course_mutations": 0
+  },
+  "content_review": {
+    "public_final_questions_reviewed_before_submit": 12,
+    "written_feedback_reviewed_after_submit": 2,
+    "status": "core_coherent_with_limits",
+    "limits": [
+      "CNAME wording about requests can be confused with HTTP redirection",
+      "Authoritative-source wording should not imply guaranteed factual correctness",
+      "No live DNS query, universal accuracy claim or psychometric calibration",
+      "A numeric-looking unqualified CNAME target is not necessarily invalid zone-file syntax: it can be parsed as a relative DNS name; address-mapping semantics remain distinct",
+      "Alias resolution need not entail an extra network round trip when target data is cached or co-returned",
+      "Written correction still overstates standards-invalidity for a numeric-looking relative CNAME target",
+      "Dual-stack reachability explanation is simplified rather than an availability guarantee",
+      "All six retake choice items lacked positional variation in their correct alternatives"
+    ],
+    "reference_context": [
+      "https://www.rfc-editor.org/rfc/rfc1034.html",
+      "https://www.iana.org/help/example-domains",
+      "https://www.rfc-editor.org/rfc/rfc1035.html#section-5.1"
+    ],
+    "raw_model_text_or_answers_in_evidence": false,
+    "retake_public_questions_reviewed": 12,
+    "retake_written_feedbacks_reviewed_after_submit": 4,
+    "choice_correct_positions_unique_count": 1,
+    "choice_correct_positions_or_answer_keys_stored": false
+  },
+  "R05_adoption": {
+    "Server_release": "/opt/nodia/releases/nodia-server-teacher-20261103-r05",
+    "Server_manifest_sha256": "fe1fa26d3148d062cba09ed5bfa1f8a6dd11f64ac2601eb277961e9d644c3442",
+    "Server_adoption_sha256": "cb7f56092bb1787201485266a70b3445001890ad22ed042d32e4794fd762f1f8",
+    "Client_release": "/opt/nodia/releases/nodia-client-teacher-20261103-r05",
+    "Client_manifest_sha256": "b3e579e902a1181b90b3b7549f86fee7d14e89d2c841c5a9c6f1aed7a4c9ca82",
+    "Client_activation_sha256": "c6384061d95eb35830e90f5cb7330b60ebc7f585492f6efd2491711d2be9a852",
+    "nginx_after_sha256": "1310fcde958775a99f32b80e0d5904f0890a117daf6e100b2e6c26f78f56d17e",
+    "API_PID": "703042",
+    "Worker_PID": "703043",
+    "stable_seconds": 30,
+    "Native_unchanged": true,
+    "adoption_inferences": 0,
+    "adoption_SQL_mutations": 0
+  },
+  "focal_material_generation_confirmed": {
+    "schema": "teacher-R05-Gemini-targeted-reinforcement-material/1",
+    "job": {
+      "id": "8c066a62-f053-4833-9f5e-7e89edb10501",
+      "purpose": "learning_packet",
+      "state": "ready",
+      "unit_id": "84bca777-7236-4db1-ba34-6b68d05d5b33",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "attempt_id": null,
+      "blocks_duplicate": false,
+      "dispatches_used": 1,
+      "dispatch_limit": 1,
+      "selection_matches_current": true,
+      "created_at": "2026-11-04T01:59:07.303Z",
+      "updated_at": "2026-11-04T02:01:17.272Z",
+      "deadline_at": "2026-11-04T02:09:07.303Z",
+      "available_at": "2026-11-04T01:59:07.303Z",
+      "lease_owner": null,
+      "lease_until": null,
+      "error_code": null
+    },
+    "operation": {
+      "id": "91099046-844c-40e3-953a-8f0e9bc02190",
+      "teacher_job_id": "8c066a62-f053-4833-9f5e-7e89edb10501",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "reserved_exchanges": 1,
+      "started_exchanges": 1,
+      "created_at": "2026-11-04T01:59:11.078Z",
+      "updated_at": "2026-11-04T02:01:17.246Z",
+      "acknowledged_at": "2026-11-04T02:01:17.273Z",
+      "agentic_acknowledged_at": "2026-11-04T02:01:17.290Z",
+      "terminal_proof_sha256": "9a2753da41dd4f9182049084fca6a0921a97d8752ecb2ca4aba2e1740caa08ca"
+    },
+    "generation_attempt": {
+      "id": "91099046-844c-40e3-953a-8f0e9bc02190",
+      "job_id": "8c066a62-f053-4833-9f5e-7e89edb10501",
+      "worker_id": "df3aa21c-c8c1-4f3c-8312-bf71867745b3",
+      "phase": "terminal",
+      "attempt_no": 1,
+      "started_at": "2026-11-04T01:59:11.101167+00:00",
+      "ended_at": "2026-11-04T02:01:17.27309+00:00",
+      "duration_seconds": 126.171923
+    },
+    "packet": {
+      "id": "99c6f11a-a2f4-46d2-b908-aa85b366f1b9",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "unit_id": "84bca777-7236-4db1-ba34-6b68d05d5b33",
+      "version_no": 1,
+      "generation_job_id": "8c066a62-f053-4833-9f5e-7e89edb10501",
+      "content_hash": "27a837614b0893ca8349c4bd11c764575cc1a807ae0ed7ceef2c002f4c6cd09b",
+      "publication_state": "current",
+      "block_count": 6,
+      "created_at": "2026-11-04T02:01:17.261Z"
+    },
+    "practice_assessment": {
+      "id": "f20af1fe-2076-4b3b-ab2e-d7c73d115da2",
+      "scope": "unit_practice",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "unit_id": "84bca777-7236-4db1-ba34-6b68d05d5b33",
+      "content_version_id": "99c6f11a-a2f4-46d2-b908-aa85b366f1b9",
+      "version_no": 1,
+      "generation_job_id": "8c066a62-f053-4833-9f5e-7e89edb10501",
+      "status": "ready",
+      "created_at": "2026-11-04T02:01:17.265Z",
+      "item_count": 5
+    },
+    "recommendation_from_actual_R05_policy": [
+      {
+        "attempt_id": "66f9c648-13dd-4102-b449-4daa21181206",
+        "projection": {
+          "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+          "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+          "navigation": "current_plan",
+          "objectives": [
+            {
+              "objective_id": "8dec87f3-5d8c-473c-80ee-6423711cb610",
+              "earned_points": 0,
+              "possible_points": 20,
+              "unit_ids": [
+                "84bca777-7236-4db1-ba34-6b68d05d5b33"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "actual_policy_sha256": "6a8b376a944c2f71516214b704ba260b9297f0fb60dc2ccceb1141c7ee2f2c13",
+    "selection": {
+      "mode": "agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high",
+      "connection_id": "2"
+    },
+    "course_dispatches_used": 9,
+    "provider_dispatches": 1,
+    "local_attempts": 1,
+    "upstream_status": 200,
+    "finish_done": true,
+    "known_child_closed": true,
+    "Native_retired_sha256": "2ec313aeebdc1f469c173360a3376e2b94ed21c62db6cd46e15658843c75a29b",
+    "SDK_record_sha256": "d19c0f8f76b74ba57c476b54d434cdc30543a74d3567c69d1e8a5972409c3957",
+    "SQL_receipt_sha256": "547abe0a59391f9c3b671e6637d537f3340b57e8d295c876d563b81bec9b8844",
+    "SDK_receipt_sha256": "57c1b0190e2a342c2cfeaa847aa203e3c0b4f96036256d009d40a78fed666787",
+    "original_packet_preserved": true,
+    "observer_inference_calls": 0,
+    "observer_course_mutations": 0
+  },
+  "unit2_written_feedback_confirmed": {
+    "schema": "teacher-R05-Unit2-real-written-feedback/1",
+    "job": {
+      "id": "a57e4fb9-0b10-4e30-95dd-0bb7031bb618",
+      "purpose": "written_feedback",
+      "state": "ready",
+      "unit_id": "84bca777-7236-4db1-ba34-6b68d05d5b33",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "attempt_id": "7536f455-af43-4e13-a2d7-d736efeb50cc",
+      "blocks_duplicate": false,
+      "dispatches_used": 1,
+      "dispatch_limit": 1,
+      "selection_matches_current": true,
+      "created_at": "2026-11-04T02:04:15.137Z",
+      "updated_at": "2026-11-04T02:05:41.691Z",
+      "deadline_at": "2026-11-04T02:14:15.137Z",
+      "available_at": "2026-11-04T02:04:15.137Z",
+      "lease_owner": null,
+      "lease_until": null,
+      "error_code": null
+    },
+    "operation": {
+      "id": "8d708b30-c3dd-4a3b-bdfd-83f9e8289d92",
+      "teacher_job_id": "a57e4fb9-0b10-4e30-95dd-0bb7031bb618",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "reserved_exchanges": 1,
+      "started_exchanges": 1,
+      "created_at": "2026-11-04T02:04:16.732Z",
+      "updated_at": "2026-11-04T02:05:41.678Z",
+      "acknowledged_at": "2026-11-04T02:05:41.693Z",
+      "agentic_acknowledged_at": "2026-11-04T02:05:41.707Z",
+      "terminal_proof_sha256": "1a04265249639d39b66a7b8f7dfd8739443b03d0a665810088b1b5ee8f6e334e"
+    },
+    "generation_attempt": {
+      "id": "8d708b30-c3dd-4a3b-bdfd-83f9e8289d92",
+      "job_id": "a57e4fb9-0b10-4e30-95dd-0bb7031bb618",
+      "worker_id": "7d7e8009-1231-482b-aa64-d2d04fa8be95",
+      "phase": "terminal",
+      "attempt_no": 1,
+      "started_at": "2026-11-04T02:04:16.745001+00:00",
+      "ended_at": "2026-11-04T02:05:41.692318+00:00",
+      "duration_seconds": 84.947317
+    },
+    "practice_attempt": {
+      "id": "7536f455-af43-4e13-a2d7-d736efeb50cc",
+      "assessment_id": "f20af1fe-2076-4b3b-ab2e-d7c73d115da2",
+      "scope": "unit_practice",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "unit_id": "84bca777-7236-4db1-ba34-6b68d05d5b33",
+      "attempt_no": 1,
+      "entry_route": "practice",
+      "state": "in_progress",
+      "is_active": true,
+      "result": null,
+      "revision": 6,
+      "assisted": false,
+      "denominator_points": 14,
+      "earned_points": null,
+      "threshold_percent": null,
+      "submitted_at": null,
+      "graded_at": null,
+      "closed_at": null,
+      "closure_reason": null,
+      "created_at": "2026-11-04T02:03:26.267Z",
+      "updated_at": "2026-11-04T02:04:15.142Z",
+      "response_count": 5,
+      "draft_count": 5,
+      "submitted_response_count": 5,
+      "graded_response_count": 5,
+      "pending_response_count": 0,
+      "percentage": null,
+      "integer_grade_ratio": {
+        "numerator": null,
+        "denominator": 14
+      },
+      "passed": null,
+      "grade_pending": false
+    },
+    "numeric_response_grades": [
+      {
+        "ordinal": 1,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 2,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 3,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 4,
+        "kind": "completion",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 5,
+        "kind": "short_text",
+        "grade_state": "graded",
+        "earned_points": 6,
+        "max_points": 6
+      }
+    ],
+    "unit_progress": [
+      {
+        "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+        "unit_id": "84bca777-7236-4db1-ba34-6b68d05d5b33",
+        "content_version_id": "99c6f11a-a2f4-46d2-b908-aa85b366f1b9",
+        "revision": 6,
+        "state": "in_progress",
+        "visited_block_count": 6,
+        "completed_at": null,
+        "updated_at": "2026-11-04T02:03:25.919Z"
+      }
+    ],
+    "provider_dispatches": 1,
+    "local_attempts": 1,
+    "upstream_status": 200,
+    "finish_done": true,
+    "known_child_closed": true,
+    "SDK_record_sha256": "6cdf091cf04b90043510c53f785e5a6a4508e691b725dd5dc2ba515561871d7f",
+    "Native_retired_sha256": "1f20c508de1eb8a56e6f1d6a8656b8046137e6061d1bfec711e7aaf715551103",
+    "SQL_receipt_sha256": "be6134cf5d7d4b5b48360aadd3bead2c016c14c9aa511a934a71c552bbeb731d",
+    "SDK_receipt_sha256": "335b26dec38d6431b11308ca85bf982c0159f268cc3d900f480e80b8f33d78ab",
+    "observer_inference_calls": 0,
+    "observer_course_mutations": 0
+  },
+  "new_final_variants_confirmed": {
+    "schema": "teacher-R05-real-after-study-final-variants/1",
+    "job": {
+      "id": "09e9fd57-6286-496f-9457-34faf665eb70",
+      "purpose": "assessment_only",
+      "state": "ready",
+      "unit_id": null,
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "attempt_id": null,
+      "blocks_duplicate": false,
+      "dispatches_used": 1,
+      "dispatch_limit": 1,
+      "selection_matches_current": true,
+      "created_at": "2026-11-04T02:07:28.369Z",
+      "updated_at": "2026-11-04T02:11:15.247Z",
+      "deadline_at": "2026-11-04T02:17:28.369Z",
+      "available_at": "2026-11-04T02:07:28.369Z",
+      "lease_owner": null,
+      "lease_until": null,
+      "error_code": null
+    },
+    "operation": {
+      "id": "b1a95098-aa9c-4f73-af5f-e89163ed925b",
+      "teacher_job_id": "09e9fd57-6286-496f-9457-34faf665eb70",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "reserved_exchanges": 1,
+      "started_exchanges": 1,
+      "created_at": "2026-11-04T02:07:31.922Z",
+      "updated_at": "2026-11-04T02:11:15.211Z",
+      "acknowledged_at": "2026-11-04T02:11:15.249Z",
+      "agentic_acknowledged_at": "2026-11-04T02:11:15.265Z",
+      "terminal_proof_sha256": "f05749c4db68fad969a7d3f7a61a2ec7e5d824c1fdc34b5666e00196b2fe291e"
+    },
+    "generation_attempt": {
+      "id": "b1a95098-aa9c-4f73-af5f-e89163ed925b",
+      "job_id": "09e9fd57-6286-496f-9457-34faf665eb70",
+      "worker_id": "7d7e8009-1231-482b-aa64-d2d04fa8be95",
+      "phase": "terminal",
+      "attempt_no": 1,
+      "started_at": "2026-11-04T02:07:31.933892+00:00",
+      "ended_at": "2026-11-04T02:11:15.24814+00:00",
+      "duration_seconds": 223.314248
+    },
+    "assessment": {
+      "id": "52c86144-6718-478f-9719-a733e2fa28a1",
+      "scope": "section_final",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "unit_id": null,
+      "content_version_id": null,
+      "version_no": 2,
+      "generation_job_id": "09e9fd57-6286-496f-9457-34faf665eb70",
+      "status": "ready",
+      "created_at": "2026-11-04T02:11:15.226Z",
+      "item_count": 12
+    },
+    "student_attempt": {
+      "id": "5697bcc7-59ae-4de5-b87b-4868a0bf6797",
+      "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+      "scope": "section_final",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "unit_id": null,
+      "attempt_no": 2,
+      "entry_route": "after_study",
+      "state": "in_progress",
+      "is_active": true,
+      "result": "pending",
+      "revision": 1,
+      "assisted": false,
+      "denominator_points": 40,
+      "earned_points": null,
+      "threshold_percent": 90,
+      "submitted_at": null,
+      "graded_at": null,
+      "closed_at": null,
+      "closure_reason": null,
+      "created_at": "2026-11-04T02:11:15.241Z",
+      "updated_at": "2026-11-04T02:11:15.241Z",
+      "response_count": 12,
+      "draft_count": 0,
+      "submitted_response_count": 0,
+      "graded_response_count": 0,
+      "pending_response_count": 0,
+      "percentage": null,
+      "integer_grade_ratio": {
+        "numerator": null,
+        "denominator": 40
+      },
+      "passed": null,
+      "grade_pending": false
+    },
+    "item_metadata": [
+      {
+        "id": "a1832f01-caae-4b3f-8c39-ec5862c0958a",
+        "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+        "ordinal": 1,
+        "kind": "single_choice",
+        "max_points": 2,
+        "item_fingerprint": "400ae7207adbc17940bf688948ca2621011baa54eea868d0d0012a2b91191d65",
+        "variant_group": "0547855cb8ba256335db932962c6aa28c0a840dd7a6522b1b5d1a691c03565c5"
+      },
+      {
+        "id": "f5a873c4-d8e2-497e-92e2-15f03f3ec938",
+        "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+        "ordinal": 2,
+        "kind": "single_choice",
+        "max_points": 2,
+        "item_fingerprint": "93eb5b699452530918dda0203123b260421f0854b8f809df5f3d0c46f42f0567",
+        "variant_group": "f50157804bb68d2e383f13bca2c89e7d6af78ef0ad331913d0eb3ab173fd5680"
+      },
+      {
+        "id": "7b342433-eeb8-417c-9816-438ac69ac468",
+        "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+        "ordinal": 3,
+        "kind": "single_choice",
+        "max_points": 2,
+        "item_fingerprint": "f2fee535c504d29f2b27f441da7f32c4aa41ba09d28047bda5b16a27174f6b81",
+        "variant_group": "6f24b28642929d380c518d452a1fd7290c1595ffad209474ed193231ed15b1ae"
+      },
+      {
+        "id": "e267116b-ec4a-41b1-bad0-6bb22652cdb2",
+        "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+        "ordinal": 4,
+        "kind": "single_choice",
+        "max_points": 2,
+        "item_fingerprint": "37f4795e63d751b5b8e1c3b74e8c8e8bb83a5e04144fd525ef2346cbba7fbec3",
+        "variant_group": "19f15cd8f0f9b88e85c25d6821d481c3c3b65ac5feb88c90f624ad13c951413c"
+      },
+      {
+        "id": "f76231f2-8ec1-41b3-96ec-34fe515de14b",
+        "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+        "ordinal": 5,
+        "kind": "single_choice",
+        "max_points": 2,
+        "item_fingerprint": "22263550ba227677123dda54e2c31db47b6e5abc8235a35396c8cf50540f3506",
+        "variant_group": "7d68bcec94392bca899fe5aa3ec9d5c07c0f021084bd243b5f2b5090b42c2a91"
+      },
+      {
+        "id": "b28f1acd-02e5-4bae-8d18-0e4bf2d84b61",
+        "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+        "ordinal": 6,
+        "kind": "single_choice",
+        "max_points": 2,
+        "item_fingerprint": "253b9b84e9c0831dbd73732043c7f214e817716e80bc0b5520e534b18afc26dc",
+        "variant_group": "b1b79656abe22c66f42581da5b2e642da27492b772eb2583174d6e1b0993aeeb"
+      },
+      {
+        "id": "4e8418c6-7407-4f7c-a22d-83e23206325d",
+        "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+        "ordinal": 7,
+        "kind": "completion",
+        "max_points": 2,
+        "item_fingerprint": "04e1beb651612925a4488b1cb420c66016c10870d4d83ffe353e1714b1730151",
+        "variant_group": "efe2bbab3d734a8518501a38285ec5acf36d2d87cf3439adbb8f7ff5bf1d7084"
+      },
+      {
+        "id": "67a46f08-ea5f-463e-a4cb-37fb1376987e",
+        "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+        "ordinal": 8,
+        "kind": "completion",
+        "max_points": 2,
+        "item_fingerprint": "a463c1f77c41bb5e763936ee5e85f980a0d473660e8ebc64b21ff8cc4d940a0d",
+        "variant_group": "aba13a4645a7d04b1d07dcdd6390cbb5dfaf878cf746cb3386ee72e3a220de64"
+      },
+      {
+        "id": "1316803a-b7d3-4646-9697-306de8842ace",
+        "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+        "ordinal": 9,
+        "kind": "short_text",
+        "max_points": 6,
+        "item_fingerprint": "f9a73360cce960f20faf694b8d9f467c27e4d1bad2c3634c22653b3c3f84ad44",
+        "variant_group": "f1064c2e19d3b57ffa6af966cca783a7241193e39da21ab2cf8b9a0447dc02b5"
+      },
+      {
+        "id": "d85e417c-4f48-4c08-8301-2fc19c3ae845",
+        "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+        "ordinal": 10,
+        "kind": "short_text",
+        "max_points": 6,
+        "item_fingerprint": "3379c746c8eeb2e760a353ea3f18996ee3463eeabde040af17da998059c7abf2",
+        "variant_group": "0fd79acf404a76da91fc5f54ff1b89cc8b5c45af9e70ef44f4403aaef24a1c95"
+      },
+      {
+        "id": "5b0b717e-04a4-41e7-896c-0c62967b1cc1",
+        "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+        "ordinal": 11,
+        "kind": "short_text",
+        "max_points": 6,
+        "item_fingerprint": "3836ce6f7a7f5811b28527b6ff8784ed5a204622d725d18b13b1ab2b6cc64401",
+        "variant_group": "82b58f5dd664ffb7be82ce90e20894d19ff5c4f74e28552e8fd75cbd6bdd2e22"
+      },
+      {
+        "id": "471765a6-b90e-449a-96d8-81f253b7cb24",
+        "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+        "ordinal": 12,
+        "kind": "short_text",
+        "max_points": 6,
+        "item_fingerprint": "4dce3558a7fd881ea341971cdb0c252db4ebdc3bb23578919f435ef047fc4fc9",
+        "variant_group": "41671526d2383cb33582ce70d44c7eaca53acf2c1d47a680973f5102651d46b0"
+      }
+    ],
+    "coverage": {
+      "88c0893b-c545-4fff-8886-6b3921b45a78": {
+        "items": 6,
+        "possible_points": 20
+      },
+      "8dec87f3-5d8c-473c-80ee-6423711cb610": {
+        "items": 6,
+        "possible_points": 20
+      }
+    },
+    "new_vs_all_prior_item_fingerprint_overlap": 0,
+    "new_vs_all_prior_variant_group_overlap": 0,
+    "prior_final_attempt": {
+      "id": "66f9c648-13dd-4102-b449-4daa21181206",
+      "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+      "scope": "section_final",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "unit_id": null,
+      "attempt_no": 1,
+      "entry_route": "direct",
+      "state": "graded",
+      "is_active": false,
+      "result": "not_passed",
+      "revision": 16,
+      "assisted": false,
+      "denominator_points": 40,
+      "earned_points": 20,
+      "threshold_percent": 90,
+      "submitted_at": "2026-11-04T01:38:37.132Z",
+      "graded_at": "2026-11-04T01:39:59.668Z",
+      "closed_at": "2026-11-04T01:39:59.668Z",
+      "closure_reason": null,
+      "created_at": "2026-11-04T01:34:30.871Z",
+      "updated_at": "2026-11-04T01:39:59.668Z",
+      "response_count": 12,
+      "draft_count": 12,
+      "submitted_response_count": 12,
+      "graded_response_count": 12,
+      "pending_response_count": 0,
+      "percentage": 50,
+      "integer_grade_ratio": {
+        "numerator": 20,
+        "denominator": 40
+      },
+      "passed": false,
+      "grade_pending": false
+    },
+    "provider_dispatches": 1,
+    "local_attempts": 1,
+    "upstream_status": 200,
+    "finish_done": true,
+    "known_child_closed": true,
+    "SDK_record_sha256": "a92f6afe5b96258ac106b3f01ab98d7b4206f6ea244e06aecfaa1c837b52e471",
+    "Native_retired_sha256": "dbb2326d30448d92846f0eaa01f6689bb80473f569f053a24fe9c98bbefe27f8",
+    "SQL_receipt_sha256": "3c2655091ad31a2a183d521b0a017ea8874e5558895d01efa39224e68c841062",
+    "SDK_receipt_sha256": "600e0a74d71d3d2c46454191ae8db80c37468e1b1fa518ad086ebd8ce69c3530",
+    "observer_inference_calls": 0,
+    "observer_course_mutations": 0
+  },
+  "attempt2_draft_receipt_recovery_confirmed": {
+    "schema": "teacher-R05-real-draft-receipt-recovery/1",
+    "attempt_id": "5697bcc7-59ae-4de5-b87b-4868a0bf6797",
+    "question_id": "a1832f01-caae-4b3f-8c39-ec5862c0958a",
+    "question_ordinal": 1,
+    "response_revision": 2,
+    "has_saved_draft": true,
+    "submitted_at": null,
+    "grade_state": "unsubmitted",
+    "matching_completed_write_receipts": 1,
+    "receipt_metadata": {
+      "operation": "patch_responses",
+      "http_status": 200,
+      "attempt_id": "5697bcc7-59ae-4de5-b87b-4868a0bf6797",
+      "attempt_revision": 2,
+      "completed_at": "2026-11-04T02:13:12.930Z",
+      "response_count": 1,
+      "request_key_sha256": "3a6f2a4bd87c12738bdb9d8371b9d359384b231c2bace34e0e37f98cf4d652f3",
+      "target_question_response_revision": 2
+    },
+    "course_dispatches_used": 11,
+    "SQL_receipt_sha256": "41c94682b1844d8736565dc213dd72cec3168757d9bbc646a17f0e4c133a34db",
+    "source_auth_semantics": "One retry is allowed only after401 by authSession, with sameAxiosconfig; Teacher mutation retryfalse. Root observed receipt recovery viaGET. Original completebrowsernetworksequence not captured by this observer.",
+    "auth_cause_proven": false,
+    "request_body_answer_or_auth_emitted": false,
+    "observer_inference_calls": 0,
+    "observer_course_mutations": 0
+  },
+  "course_completion_confirmed": {
+    "schema": "teacher-Gemini-full-journey-real-completion/1",
+    "session_id": "ddf4eb65-89ad-4363-a837-fea2be50a443",
+    "session_state": "completed",
+    "course_dispatches_used": 12,
+    "selection": {
+      "mode": "agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high",
+      "connection_id": "2"
+    },
+    "job": {
+      "id": "d877e60e-13d4-425e-938b-23b259026a67",
+      "purpose": "written_feedback",
+      "state": "ready",
+      "unit_id": null,
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "attempt_id": "5697bcc7-59ae-4de5-b87b-4868a0bf6797",
+      "blocks_duplicate": false,
+      "dispatches_used": 1,
+      "dispatch_limit": 1,
+      "selection_matches_current": true,
+      "created_at": "2026-11-04T02:18:10.813Z",
+      "updated_at": "2026-11-04T02:19:45.621Z",
+      "deadline_at": "2026-11-04T02:28:10.813Z",
+      "available_at": "2026-11-04T02:18:10.813Z",
+      "lease_owner": null,
+      "lease_until": null,
+      "error_code": null
+    },
+    "operation": {
+      "id": "63adc61e-d779-47d3-9922-6080353737c8",
+      "teacher_job_id": "d877e60e-13d4-425e-938b-23b259026a67",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "reserved_exchanges": 1,
+      "started_exchanges": 1,
+      "created_at": "2026-11-04T02:18:11.036Z",
+      "updated_at": "2026-11-04T02:19:45.599Z",
+      "acknowledged_at": "2026-11-04T02:19:45.623Z",
+      "agentic_acknowledged_at": "2026-11-04T02:19:45.637Z",
+      "terminal_proof_sha256": "dab0cf39c598d587cceadd9cd66c9f804f708906db349ff58a2d9d6f974ae43f"
+    },
+    "generation_attempt": {
+      "id": "63adc61e-d779-47d3-9922-6080353737c8",
+      "job_id": "d877e60e-13d4-425e-938b-23b259026a67",
+      "worker_id": "7d7e8009-1231-482b-aa64-d2d04fa8be95",
+      "phase": "terminal",
+      "attempt_no": 1,
+      "started_at": "2026-11-04T02:18:11.048813+00:00",
+      "ended_at": "2026-11-04T02:19:45.622364+00:00",
+      "duration_seconds": 94.573551
+    },
+    "retake": {
+      "id": "5697bcc7-59ae-4de5-b87b-4868a0bf6797",
+      "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+      "scope": "section_final",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "unit_id": null,
+      "attempt_no": 2,
+      "entry_route": "after_study",
+      "state": "graded",
+      "is_active": false,
+      "result": "passed",
+      "revision": 16,
+      "assisted": false,
+      "denominator_points": 40,
+      "earned_points": 40,
+      "threshold_percent": 90,
+      "submitted_at": "2026-11-04T02:18:10.797Z",
+      "graded_at": "2026-11-04T02:19:45.618Z",
+      "closed_at": "2026-11-04T02:19:45.618Z",
+      "closure_reason": null,
+      "created_at": "2026-11-04T02:11:15.241Z",
+      "updated_at": "2026-11-04T02:19:45.618Z",
+      "response_count": 12,
+      "draft_count": 12,
+      "submitted_response_count": 12,
+      "graded_response_count": 12,
+      "pending_response_count": 0,
+      "percentage": 100,
+      "integer_grade_ratio": {
+        "numerator": 40,
+        "denominator": 40
+      },
+      "passed": true,
+      "grade_pending": false
+    },
+    "prior_final_attempt": {
+      "id": "66f9c648-13dd-4102-b449-4daa21181206",
+      "assessment_id": "d2889ba3-be35-47d3-b13a-c5bb6fdc8eba",
+      "scope": "section_final",
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "unit_id": null,
+      "attempt_no": 1,
+      "entry_route": "direct",
+      "state": "graded",
+      "is_active": false,
+      "result": "not_passed",
+      "revision": 16,
+      "assisted": false,
+      "denominator_points": 40,
+      "earned_points": 20,
+      "threshold_percent": 90,
+      "submitted_at": "2026-11-04T01:38:37.132Z",
+      "graded_at": "2026-11-04T01:39:59.668Z",
+      "closed_at": "2026-11-04T01:39:59.668Z",
+      "closure_reason": null,
+      "created_at": "2026-11-04T01:34:30.871Z",
+      "updated_at": "2026-11-04T01:39:59.668Z",
+      "response_count": 12,
+      "draft_count": 12,
+      "submitted_response_count": 12,
+      "graded_response_count": 12,
+      "pending_response_count": 0,
+      "percentage": 50,
+      "integer_grade_ratio": {
+        "numerator": 20,
+        "denominator": 40
+      },
+      "passed": false,
+      "grade_pending": false
+    },
+    "numeric_retake_grades": [
+      {
+        "ordinal": 1,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 2,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 3,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 4,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 5,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 6,
+        "kind": "single_choice",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 7,
+        "kind": "completion",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 8,
+        "kind": "completion",
+        "grade_state": "graded",
+        "earned_points": 2,
+        "max_points": 2
+      },
+      {
+        "ordinal": 9,
+        "kind": "short_text",
+        "grade_state": "graded",
+        "earned_points": 6,
+        "max_points": 6
+      },
+      {
+        "ordinal": 10,
+        "kind": "short_text",
+        "grade_state": "graded",
+        "earned_points": 6,
+        "max_points": 6
+      },
+      {
+        "ordinal": 11,
+        "kind": "short_text",
+        "grade_state": "graded",
+        "earned_points": 6,
+        "max_points": 6
+      },
+      {
+        "ordinal": 12,
+        "kind": "short_text",
+        "grade_state": "graded",
+        "earned_points": 6,
+        "max_points": 6
+      }
+    ],
+    "section_verifications": [
+      {
+        "id": "c0928f22-8adc-493f-8bad-f417ddf64696",
+        "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+        "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+        "source_attempt_id": "5697bcc7-59ae-4de5-b87b-4868a0bf6797",
+        "source_verification_id": null,
+        "verified_at": "2026-11-04T02:19:45.619Z"
+      }
+    ],
+    "cursor": {
+      "session_id": "ddf4eb65-89ad-4363-a837-fea2be50a443",
+      "revision": 59,
+      "plan_revision_id": "7245f345-b562-4004-b60d-93cfc2508dd0",
+      "section_id": "335ce0a5-a0bd-494b-a3b5-a6b0d93ec23b",
+      "unit_id": null,
+      "content_version_id": null,
+      "attempt_id": "5697bcc7-59ae-4de5-b87b-4868a0bf6797",
+      "item_id": "471765a6-b90e-449a-96d8-81f253b7cb24",
+      "assessment_id": "52c86144-6718-478f-9719-a733e2fa28a1",
+      "phase": "final",
+      "block_id": null,
+      "updated_at": "2026-11-04T02:17:43.974Z"
+    },
+    "cursor_ordinal": 12,
+    "provider_dispatches": 1,
+    "local_attempts": 1,
+    "upstream_status": 200,
+    "finish_done": true,
+    "known_child_closed": true,
+    "SDK_record_sha256": "825e55c52a78904da106abfb973766e96192cd81e937d5460174cc0e00ab5b71",
+    "Native_retired_sha256": "48137af69e11f7200537311f74d3192aa0d4e50b6e080e8b1f3e7b43bdad0c30",
+    "SQL_receipt_sha256": "944aa32fa439ff57c73b61a2a395e07657f0b5861c664188643608ab3fd07f77",
+    "SDK_receipt_sha256": "ce80d1bc85d577ef35f4a7a93b5407c5d8915ea34856a337d9be3a1222ad0573",
+    "all_operations_closed_with_both_ACK": true,
+    "active_jobs": 0,
+    "observer_inference_calls": 0,
+    "observer_course_mutations": 0
+  },
+  "Codex_current_R05_eligibility_confirmed": {
+    "success": true,
+    "read_only_before_initialize": true,
+    "database_mutations": 0,
+    "generative_provider_requests": 0,
+    "provider_metadata_HTTP_requests": null,
+    "data": {
+      "owned_course_id": "ffb6f108-ca29-4221-a784-2d8a874e8aa5",
+      "actual_current_actor_and_Teacher_authority": true,
+      "actual_ReadTeacherUseCase_eligibility": true,
+      "selection": {
+        "connection_id": "1",
+        "mode": "agentic",
+        "model_id": "gpt-6.1-sol",
+        "effort_id": "medium"
+      },
+      "eligibility": {
+        "eligible": true,
+        "reason_code": null,
+        "checked_at": "2026-11-01T22:47:44.052Z",
+        "selection": {
+          "mode": "agentic",
+          "model_id": "gpt-6.1-sol",
+          "effort_id": "medium",
+          "connection_id": "1"
+        }
+      },
+      "qualification": {
+        "operation_id": "987006af-72e9-4f88-a7ae-e6032bfcc0d1",
+        "scope_hash": "63509e2fd06e6d43c4b3cb0946835863089e7132091ee47d1bea46d5a84a66a4",
+        "selection_hash": "90b53678d64b2745d448c8d777295580edebbd1dec9332f8fa7d143f26befe00",
+        "configuration_generation": "afae5ab51445a125a20ede614a4cb931876fd2e60a0c3bdaa37e14c60dfa2332",
+        "observed_at": "2026-11-01T22:47:44.052Z",
+        "current_runtime_descriptor_matches": true
+      },
+      "host_observation": {
+        "available": true,
+        "reason": null,
+        "observed_at": "2026-11-04T02:24:32.657Z",
+        "runtime_hash": "7291470aa3905492350a6fcc6698867048f57b6a42621558472c9390dfb45682",
+        "policy_hash": "6ff59ae868a330f7f574908d3632dd994f9db3795ed51f9e0116414b9eb26618",
+        "session_generation": "bb6d5442e14045ed866dac3d36265d84",
+        "tool_policy": "none",
+        "native_io": false
+      },
+      "generation_jobs_before": 5,
+      "generation_jobs_after": 5,
+      "metadata_RPC_methods": {
+        "initialize": 1,
+        "config/read": 1,
+        "account/read": 1,
+        "account/rateLimits/read": 1,
+        "model/list": 1
+      },
+      "generative_RPC_methods_forbidden": true,
+      "generative_provider_requests": 0,
+      "new_auth_sessions": 0,
+      "new_JWTs": 0,
+      "new_drafts": 0,
+      "new_canary_jobs": 0
+    },
+    "api": {
+      "active": true,
+      "pid": 703042,
+      "birth": 7416687,
+      "uid": 10000
+    },
+    "worker": {
+      "active": true,
+      "pid": 703043,
+      "birth": 7416688,
+      "uid": 10000
+    },
+    "same_services_after": true
+  },
+  "functional_journey_complete": true,
+  "technical_delivery_closed": true,
+  "human_document_approval": null,
+  "configuration_recovery_prepared": {
+    "source_delivery_sha256": "d5ace6814b9a1ff12bd8fc73c34e6485983fe01b5063701037a9748f97d4e9d8",
+    "public_stage_passed": true,
+    "final_controls": 239,
+    "retained_current_controls": 206,
+    "superseded_direct_controls_in_prior_authenticated_capture": 50,
+    "current_external_controls": 22,
+    "own_helper_controls": 10,
+    "sidecar_controls": 1,
+    "hard_cap": 256,
+    "release_roots": 12,
+    "public_archives": 14,
+    "lineage_sha256": "65064b767e9f110b923e11e376f8d720972df2b29567e5cc7b55e38ad949884f",
+    "prepare_preflight_capture_not_yet_executed": false,
+    "active_variant": "R02_explicit_exact_idle_backup_history",
+    "prepared_config_sha256": "db2b832dd9ce19ef0ec05b06fcb32d1020fada0182029bf1731cb144f751ef9c",
+    "preflight_passed": true,
+    "capture_currently_running": false,
+    "local_copy_GCM_pending": false,
+    "source_capture_success": false,
+    "source_capture_failed_stage": "resume_original_runtime",
+    "actual_cipher_pairs_created": 1,
+    "independent_runtime_reconciliation_passed": true,
+    "independent_existing_cipher_audit_passed": true,
+    "independent_local_full_GCM_passed": true
+  },
+  "final_POST_database": {
+    "backup_id": "40d3f164-3369-44ae-a1a8-cda2dd60f8a1",
+    "receipt_sha256": "24b2f714fbf0408608df773543e2a3dc744a393ebe71afa2dfbac1d523e2d1e5",
+    "cipher_sha256": "20ad3b728a24275f01324b09e2b9f172f0e2d81920b33fffe0d2dc09cf1a05e1",
+    "canonical_starts": 1,
+    "download_if_match": true,
+    "before_after_inventory_unchanged": true,
+    "full_GCM_and_restore_passed": true,
+    "tables": 94,
+    "migrations": 43,
+    "raw_rows_sequences_FK_equal": true,
+    "CHECK_semantically_equal": 22,
+    "legacy_textual_equality_false_preserved": true,
+    "four_owned_local_resources_independently_absent": true,
+    "private_key_exported": false,
+    "plaintext_files": 0
+  },
+  "configuration_recovery_incident": {
+    "first_config": "r16",
+    "failed_execute_sha256": "1326a4c58af04d5fcbe175194c089ed54e8448e864c41e3272a609354f4a81e6",
+    "failure_before_maintenance_state_stop_or_intent": true,
+    "exact_condition": "Idle backup unit retained failed historical exit75 while all consumers were active",
+    "exit75_canonical_meaning": "flock nonblocking conflict before backup child",
+    "concurrent_rotate_overlap_observed": true,
+    "unique_lock_holder_proven": false,
+    "only_unit_failed_marker_reset": true,
+    "status75_preserved_after_reset": true,
+    "no_extra_backup_started": true,
+    "sealed_exception_scope": "Only exact backup.service inactive+success+PID0+historical75+start/exit+definitione85; rotate/default0; same history invariant before/after",
+    "new_config": "r17",
+    "new_capture_intent_fresh": true,
+    "old_config_failure_and_receipts_unchanged": true
+  },
+  "storage_retirement": {
+    "only_VM_duplicate_profiles_cipher_removed": true,
+    "old_capture": "post-r15",
+    "cipher_bytes": 567687256,
+    "cipher_sha256": "191bb271cd6c5d885c38e7d77f9f2d1fd2617b04e3328441098b8ba6ed55baf9",
+    "both_local_ciphers_freshly_rehashed": true,
+    "prior_full_GCM_sha256": "4d67421a6ede026ac257ebc83988158186f17b77f4e7540b0d09e57e3a75150b",
+    "references_zero_and_inode_CAS": true,
+    "local_copies_journal_receipts_DB_history_retained": true,
+    "free_after_bytes": 2243145728,
+    "disk_guard_strictly_greater_than": 2164260864,
+    "guard_lowered": false
+  },
+  "final_configuration_failed_source_and_salvage": {
+    "source_operation_success": false,
+    "source_failure_sha256": "ba0ccbb7147eb5eefeec00fa1cd80b5b475f0d03c5c6dabff302e297487a0e78",
+    "source_stage": "resume_original_runtime",
+    "source_producer_sha256": "4708473aff80a83776a42018152a3243237b1ffb74a72abe59eeafc2a50a24f9",
+    "source_intent_sha256": "afaab78555bb78de045df63e427bb2dc3bf459ba2b225d4d30896518444c9557",
+    "original_failed_state_sha256": "d99b18371623912d8c5e1f0dd70324b50b0d145b1edc382f1571432d5c7e7f38",
+    "source_original_failure_and_flags_preserved": true,
+    "resume_failure_cause": "Consistent with automatic rotate activity immediately after restoring timers; discarded error stack does not establish exact original assertion line",
+    "separate_fresh_runtime_resume_sha256": "570006bf4ac84d0e1315272f80aab60234f8186796b8a35bf88660b39cba52cf",
+    "separate_resume_apps": [
+      "739892",
+      "739893"
+    ],
+    "separate_resume_stable_seconds": 30,
+    "timers_restored_and_automatic_work_settled": true,
+    "recaptures": 0,
+    "manual_backup_starts_during_reconciliation": 0,
+    "provider_requests": 0,
+    "audit_schema": "teacher-failed-capture-audit/1",
+    "independent_audit_sha256": "f2d4f671a8fb4b0ff6d374fb333240bfe9683bc00bfc9624ee394456f1002ee4",
+    "audit_success_scope": "Independent metadata/hash audit; source capture remains failed",
+    "archive_cipher_bytes": 579032345,
+    "archive_cipher_sha256": "3bb4f4daad723fc9a635a2885523dbdf1770c198eee70ab695488f46e6829031",
+    "journal_cipher_bytes": 19325,
+    "journal_cipher_sha256": "720bc1a3db6f1b2ce6d175f4065c2802cd573114faccdc2ca2e6d59d693a9657",
+    "current_external_journal_sha256_observed_in_RAM": "9c9b5a35138217c2f387aa2388c0576eba98f5bbc04faa816262b839071fc70a",
+    "captured_plaintext_SHA_unknown_until_GCM": false,
+    "capture_source_assertion_reachability": "Control-flow inference from pinned producer reaching resume after cipher/pin/tree/journal assertions; original RAM snapshots not reconstructed",
+    "local_cipher_copy_verified": true,
+    "both_full_GCM_verified": true,
+    "independent_local_GCM_sha256": "72528bc669d8ccf07cb44f1622f291929729d9065e1193604f392e9ec5e40b61",
+    "captured_external_backup_catalog_sha256": "e1d94d99df171fd01f72d3fbd5c138462e264aed18ff3daf33dab494799ce12a",
+    "captured_external_backup_catalog_matches_current": false,
+    "journal_kind": "External backup catalog snapshot, not Teacher inference journal",
+    "snapshot_cut": "Frozen snapshot before original timer restoration and later automatic rotation; not claimed identical to current catalog",
+    "source_original_capture_success_still_false": true,
+    "private_key_exported": false,
+    "plaintext_files": 0
+  },
+  "product_V1_accepted_scope_note": "No formal approval of all V1 documents, modalities or pedagogical efficacy is recorded. The functional and operational scope evidenced here is complete.",
+  "operational_followup_separate_from_completed_journey": {
+    "automatic_capture_resume_idle_wait": "Future maintained operator should wait boundedly for ordinary timer-triggered rotation to become idle after restoring timers. Fresh Root reconciliation already verified this behavior; original failed capture is not reclassified.",
+    "recapture_required_for_current_delivery": false,
+    "content_quality_limits_recorded": true
+  },
+  "post_recovery_UI": {
+    "source_receipt_sha256": "d06f44f86c20b59ec7b63f66e01b1af22e9ba08c88fb43f95ffeb95e8cc9c297",
+    "real_Oscar_authentication_preserved": true,
+    "module_access_resolved": true,
+    "completed_header": true,
+    "section_passed": true,
+    "grade": [
+      40,
+      40
+    ],
+    "question12_preserved": true,
+    "written_score": [
+      6,
+      6
+    ],
+    "dispatch_count": 12,
+    "saved_result_visible": true,
+    "tab_left_visible_for_user": true,
+    "new_inferences": 0
+  },
+  "final_knowledge_validation": {
+    "receipt_sha256": "1a77b4f880197b8a26767c2160cdb2ac2c6cdd7d428ed51a12e8427008443504",
+    "documents": 44,
+    "fragments": 46,
+    "approved_document_and_asset_bytes_unchanged": true,
+    "Teacher_published": false,
+    "shared_dist_modified": false,
+    "VM_changes": 0
+  }
+}

@@ -78,11 +78,7 @@ export class GetNodiaAiProposalUseCase {
       revision,
       knownChat,
     );
-    const projection = this.validate.compile(
-      loaded.proposal,
-      loaded.revision,
-      loaded.steps,
-    );
+    const projection = loaded.projection;
     if (loaded.revision.state === 'confirmed') {
       const executions: { id: string }[] = await manager.query(
         `SELECT id FROM nodia_ai_executions WHERE proposal_id=$1 AND origin_proposal_id=$1 AND origin_proposal_revision=$2 AND proposal_hash=$3 AND conversation_id=$4`,
@@ -104,6 +100,8 @@ export class GetNodiaAiProposalUseCase {
       loaded.now >= loaded.revision.expires_at
     )
       projection.state = 'expired';
+    else if (!loaded.catalogCompatible && loaded.revision.state === 'ready')
+      projection.state = 'invalidated';
     return projection;
   }
   /** Shared by human mutations in their short, already fenced transaction. */
@@ -136,7 +134,11 @@ export class GetNodiaAiProposalUseCase {
     );
     if (!revision) throw new NotFoundException('nodia_ai:proposal_not_found');
     const steps = await this.store.steps(manager, id, revision.revision);
-    this.validate.compile(proposal, revision, steps);
+    const catalogCompatible = this.validate.isCompatible(revision, steps);
+    const historical = mode === 'read' && !catalogCompatible;
+    const projection = historical
+      ? this.validate.compileHistorical(proposal, revision, steps)
+      : this.validate.compile(proposal, revision, steps);
     const context: ProposalPreparerContext = {
       manager,
       actor: authorized.actor,
@@ -146,10 +148,9 @@ export class GetNodiaAiProposalUseCase {
       maxCollectionItems: this.policy.results.json_collection_items,
     };
     for (const step of steps) {
-      const preparer = this.validate.preparer(
-        step.tool_name,
-        step.contract_hash,
-      );
+      const preparer = historical
+        ? this.validate.historicalPreparer(step.tool_name)
+        : this.validate.preparer(step.tool_name, step.contract_hash);
       await this.authorize.execute(
         identity,
         {
@@ -158,8 +159,21 @@ export class GetNodiaAiProposalUseCase {
         },
         manager,
       );
-      await preparer.verifyAuthority(storedStep(step), context);
+      if (historical)
+        await preparer.verifyHistoricalReadAuthority!(
+          storedStep(step),
+          context,
+        );
+      else await preparer.verifyAuthority(storedStep(step), context);
     }
-    return { proposal, revision, steps, ...authorized, context };
+    return {
+      proposal,
+      revision,
+      steps,
+      ...authorized,
+      context,
+      catalogCompatible,
+      projection,
+    };
   }
 }

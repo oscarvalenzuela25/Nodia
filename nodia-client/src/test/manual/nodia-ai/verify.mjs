@@ -16,7 +16,7 @@ const syntheticModelLabel = "Modelo sintético alternativo / Synthetic alternati
 async function open(page, { width = 390, theme = "dark", lang = "es", scenario = "default" } = {}) {
   await page.setViewportSize({ width, height: 900 });
   await page.goto(`${origin}/src/test/manual/nodia-ai/index.html?theme=${theme}&lang=${lang}&scenario=${scenario}`);
-  await page.getByRole("heading", { name: "NodiaAI", level: 1 }).waitFor();
+  await page.getByRole("heading", { name: "Nodia AI", level: 1 }).waitFor();
   await page.evaluate(() => document.fonts.ready);
   await page.getByText("[QA SINTÉTICO / SYNTHETIC QA]", { exact: false }).waitFor();
   if (scenario !== "unknown" && scenario !== "read-only") await page.getByRole("button", { name: translations[lang].send, exact: true }).waitFor({ state: "visible" });
@@ -28,7 +28,7 @@ async function settings(page, lang) {
   await trigger.click();
   const dialog = page.getByRole("dialog", { name: t.configuration.title });
   await dialog.waitFor();
-  await page.getByRole("switch", { name: t.configuration.automatic_agentic }).waitFor();
+  assert.equal(await page.getByRole("switch").count(), 0);
   await page.waitForFunction(() => {
     const paper = document.querySelector("[role=dialog]");
     return paper && getComputedStyle(paper).transform === "none";
@@ -105,13 +105,13 @@ try {
   await page.setViewportSize({ width: 390, height: 900 });
   await dialog.getByRole("button", { name: t.configuration.mode, exact: true }).click();
   await page.getByRole("option", { name: t.modes.api_key, exact: true }).click();
-  await dialog.getByText(t.configuration.api_deferred, { exact: true }).waitFor();
+  await dialog.getByRole("button", { name: t.configuration.model, exact: true }).waitFor();
   assert(await dialog.getByRole("button", { name: t.configuration.apply, exact: true }).isDisabled());
   assert.equal(await page.getByRole("switch").count(), 0);
   await dialog.getByRole("button", { name: t.configuration.mode, exact: true }).click();
-  await page.getByRole("option", { name: t.modes.token_plan_web, exact: true }).click();
-  await page.getByRole("switch", { name: t.configuration.automatic_agentic }).waitFor();
-  interactions.push("API is explicitly deferred, blocks Apply and never exposes Agentic switching");
+  await page.getByRole("option", { name: t.modes.agentic, exact: true }).click();
+  assert.equal(await page.getByRole("switch").count(), 0);
+  interactions.push("Unconfigured API keeps its model unassigned and blocks Apply; Agentic does not expose delegation");
   await dialog.getByRole("button", { name: t.configuration.model, exact: true }).click();
   await page.getByRole("option", { name: syntheticModelLabel, exact: true }).click();
   await dialog.getByRole("button", { name: t.configuration.apply, exact: true }).waitFor();

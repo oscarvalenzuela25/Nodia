@@ -4,6 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import type { EntityManager } from 'typeorm';
+import { canonicalModuleRoute } from '../../authorization/canonical-module-route.js';
 import { NodiaAiAuthorizationService } from '../nodia-ai-authorization.service.js';
 import {
   NODIA_AI_MODULE_KEY,
@@ -101,8 +102,9 @@ export class AuthorizeNodiaAiUseCase {
       )
     )
       throw denied();
+    const modules = current.modules.map(module => ({ ...module, route: canonicalModuleRoute(module.route) }));
     const byRoute = new Map<string, typeof current.modules>();
-    for (const module of current.modules) {
+    for (const module of modules) {
       const matching = byRoute.get(module.route) ?? [];
       matching.push(module);
       byRoute.set(module.route, matching);
@@ -114,7 +116,7 @@ export class AuthorizeNodiaAiUseCase {
       (!current.isSuperAdmin && !nodia[0].assigned)
     )
       throw denied();
-    for (const route of new Set(routes)) {
+    for (const route of new Set(routes.map(canonicalModuleRoute))) {
       const matching = byRoute.get(route);
       if (
         matching?.length !== 1 ||
@@ -122,17 +124,13 @@ export class AuthorizeNodiaAiUseCase {
       )
         throw denied();
     }
-    if (
-      !current.isSuperAdmin &&
-      actions.some((key) => !current.actionKeys.includes(key))
-    )
-      throw denied();
+    // Role actions remain registration metadata; current product access is module-based.
     return Object.freeze({
       actorId: current.actorId,
       sessionId: current.sessionId,
       isSuperAdmin: current.isSuperAdmin,
       // Discovery/context consumers get only unambiguous, currently permitted destinations.
-      modules: Object.freeze(current.modules
+      modules: Object.freeze(modules
         .filter(
           (module) =>
             byRoute.get(module.route)?.length === 1 &&

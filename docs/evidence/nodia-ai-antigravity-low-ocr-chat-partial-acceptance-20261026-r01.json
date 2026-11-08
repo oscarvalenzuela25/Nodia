@@ -1,0 +1,442 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "status": "LOW_partial_MCP_and_request_passed_shared_OCR_core_failed_closed_reconciled",
+  "full_Antigravity_OCR_acceptance": false,
+  "conversation": {
+    "id": "8aba6588-a785-4a82-abdc-1bb2ec334620",
+    "owner_id": "1",
+    "lifecycle": "active"
+  },
+  "title": "Verificación Antigravity OCR Low 20261026 R04",
+  "saved_selection_origin": {
+    "path": "ops/lab/artifacts/antigravity-low-selection-qualification-r01/materials/low-chat-selection.json",
+    "sha256": "46e2f39881682c799c8ebfa41f45e1361694118660e39e6787192e1b6e6e9ee4",
+    "bytes": 580
+  },
+  "source": {
+    "Server": {
+      "release": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+      "manifest_sha256": "8f83d1525802a08f468e8132ff496a0976493e3b32941366888b631e56273bc8",
+      "files_verified": 4234,
+      "knowledge_release": "607b9d24fb64ad69f81576c1a80000a95d8c7f601a40ebe505ff0a06d1339001",
+      "knowledge_manifest_sha256": "26d30f27c929cc356ef5adca13507b425267470b604d3bae7335a9fd3faf40ac",
+      "capabilities": 152,
+      "fragments": 43
+    },
+    "Client": {
+      "release": "/opt/nodia/releases/nodia-client-invoice-ocr-r01",
+      "manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+      "files_verified": 183
+    },
+    "native": {
+      "id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+      "image": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+      "started_at": "2026-10-26T03:06:18.949917773Z",
+      "descriptor_sha256": "d27816454ab40e774919a16d3b99da50ccdc3c1e570ef244832b30b46a95f89d"
+    },
+    "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "nginx_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac"
+  },
+  "receipts_and_UI": [
+    {
+      "path": "ops/lab/artifacts/antigravity-low-invoice-ocr-acceptance-r01/antigravity-low-M1-supplier-list-UI-AX-r01.txt",
+      "sha256": "f192ad848976b9ee1bf3c691fc8d23e10b3bb1372558291b7186b64f253dfbe8",
+      "bytes": 8759
+    },
+    {
+      "path": "ops/lab/artifacts/antigravity-low-invoice-ocr-acceptance-r01/antigravity-low-M1-supplier-list-UI-r01.png",
+      "sha256": "38e6eb035573845fe2825814b74301d5982e2d9384eb7b314d20c1b5639b1d78",
+      "bytes": 99589
+    },
+    {
+      "path": "ops/lab/artifacts/antigravity-low-invoice-ocr-acceptance-r01/antigravity-low-ocr-after-reconcile-domain-VM-r04.json",
+      "sha256": "c12faae1f4784ad7cc0b7e33b4fdfd3b3c7233ec2d6bad1f1a96f432a098588b",
+      "bytes": 8503
+    },
+    {
+      "path": "ops/lab/artifacts/antigravity-low-invoice-ocr-acceptance-r01/antigravity-low-ocr-closed-diagnostic-VM-r01.json",
+      "sha256": "5650695f9b84e2fed0fc5a1b1ceea806eeb04c4aa3ed41c4081d61c36fea10df",
+      "bytes": 1480
+    },
+    {
+      "path": "ops/lab/artifacts/antigravity-low-invoice-ocr-acceptance-r01/antigravity-low-ocr-reconcile-execute-VM-r04.json",
+      "sha256": "30ede652ae2787cf7b7f7035bed01332c731c05ad8efbe822b09183464118e3c",
+      "bytes": 16459
+    },
+    {
+      "path": "ops/lab/artifacts/antigravity-low-invoice-ocr-acceptance-r01/antigravity-low-ocr-reconcile-witness-VM-r04.jsonl",
+      "sha256": "0aa34113e3cf8ee594fee6605eb3bfdd241598807b117bdce24ce4788b6fec65",
+      "bytes": 2104
+    },
+    {
+      "path": "ops/lab/artifacts/antigravity-low-invoice-ocr-acceptance-r01/antigravity-low-ui-M1-completed-VM-r01.json",
+      "sha256": "37f687f2492c5a4a375b55a2cd92ded9156de244caa45d09cb6962e68a7771e1",
+      "bytes": 6574
+    },
+    {
+      "path": "ops/lab/artifacts/antigravity-low-invoice-ocr-acceptance-r01/antigravity-low-ui-M2-state-VM-r01.json",
+      "sha256": "ac43e86501ef820fabd015c7409f80f97c86498c03b9ee046b9af95b65336c19",
+      "bytes": 9989
+    }
+  ],
+  "M1": {
+    "accepted_scope": "Natural discovery/execution asked for explicit commercial supplier before OCR",
+    "run": {
+      "id": "8b0a1d23-6b78-420d-ae5a-3557a1d69950",
+      "actor_id": "1",
+      "state": "completed",
+      "stage": "inference",
+      "input_through_seq": "1",
+      "provider_dispatches_used": 2,
+      "tool_calls_used": 4
+    },
+    "tool_names": [
+      "nodia_capabilities_select",
+      "nodia_businesses_list",
+      "nodia_invoices_ocr",
+      "nodia_providers_list"
+    ],
+    "invoice_OCR_stages": 0,
+    "preparation_id": "d00dce3d-1fb6-449a-b456-41068b945d57",
+    "original_attachment": [
+      {
+        "id": "2ca23b5f-6a5e-45dc-8508-8430bf9f04b6",
+        "state": "ready",
+        "byte_count": "148100",
+        "media_type": "image/png",
+        "content_hash": "0723e3c8fc45e6bbed58e91e16e7d18f55b2a1423ee007342b793f66c057d98b",
+        "interpretation_reviewed": false
+      }
+    ],
+    "quiet_after": {
+      "proposals": 0,
+      "executions": 0,
+      "effects": 0,
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0,
+      "unrevoked_grants": 0
+    },
+    "independent_historical_MCP_ACK": null
+  },
+  "M2": {
+    "accepted_scope": "Natural technical selection and OCR request consumed preparation once with explicit provider1",
+    "run_before_reconciliation": {
+      "id": "ed75d4b5-986c-40c1-a1f0-4a5fec25d655",
+      "actor_id": "1",
+      "state": "unknown",
+      "stage": "invoice_ocr",
+      "input_through_seq": "3",
+      "provider_dispatches_used": 3,
+      "tool_calls_used": 2
+    },
+    "completed_MCP_attempts": [
+      {
+        "id": "c8c50473-9470-4ea0-97ed-ba4ce072e1da",
+        "run_id": "ed75d4b5-986c-40c1-a1f0-4a5fec25d655",
+        "stage": "inference",
+        "seq": 2,
+        "phase": "completed",
+        "runtime_engine": "gemini",
+        "ended": true,
+        "pending_ack_jobs": 0,
+        "acknowledged": null
+      },
+      {
+        "id": "d9d569d8-f70c-4ad0-bf84-1296dfa57a06",
+        "run_id": "ed75d4b5-986c-40c1-a1f0-4a5fec25d655",
+        "stage": "inference",
+        "seq": 4,
+        "phase": "completed",
+        "runtime_engine": "gemini",
+        "ended": true,
+        "pending_ack_jobs": 0,
+        "acknowledged": null
+      }
+    ],
+    "completed_tools": [
+      {
+        "id": "a27b8fa8-eae4-4a8c-9861-19f85cf0d871",
+        "run_id": "ed75d4b5-986c-40c1-a1f0-4a5fec25d655",
+        "tool_name": "nodia_capabilities_select",
+        "state": "completed",
+        "action": null,
+        "analysis_id": null,
+        "request_id": null,
+        "business_id": null,
+        "provider_id": null,
+        "public_status": null,
+        "stored_result_present": false,
+        "result_hash": null,
+        "ocr_attempt_id": null,
+        "consumed_by": null,
+        "attachment_id": null,
+        "fixture_original_matches": false,
+        "extraction": null,
+        "comparison": null,
+        "comparison_observed_at": null
+      },
+      {
+        "id": "f5dcf779-9adb-4de7-bcd6-558c7feeb942",
+        "run_id": "ed75d4b5-986c-40c1-a1f0-4a5fec25d655",
+        "tool_name": "nodia_invoices_ocr",
+        "state": "completed",
+        "action": "request",
+        "analysis_id": "d00dce3d-1fb6-449a-b456-41068b945d57",
+        "request_id": "f5dcf779-9adb-4de7-bcd6-558c7feeb942",
+        "business_id": "5af15373-3638-4a02-a015-4e72c433fc11",
+        "provider_id": "1",
+        "public_status": "requested",
+        "stored_result_present": false,
+        "result_hash": null,
+        "ocr_attempt_id": null,
+        "consumed_by": "f5dcf779-9adb-4de7-bcd6-558c7feeb942",
+        "attachment_id": "2ca23b5f-6a5e-45dc-8508-8430bf9f04b6",
+        "fixture_original_matches": true,
+        "extraction": null,
+        "comparison": null,
+        "comparison_observed_at": null
+      }
+    ],
+    "preparation": {
+      "id": "d00dce3d-1fb6-449a-b456-41068b945d57",
+      "run_id": "8b0a1d23-6b78-420d-ae5a-3557a1d69950",
+      "tool_name": "nodia_invoices_ocr",
+      "state": "completed",
+      "action": "prepare",
+      "analysis_id": "d00dce3d-1fb6-449a-b456-41068b945d57",
+      "request_id": null,
+      "business_id": "5af15373-3638-4a02-a015-4e72c433fc11",
+      "provider_id": null,
+      "public_status": "awaiting_supplier",
+      "stored_result_present": false,
+      "result_hash": null,
+      "ocr_attempt_id": null,
+      "consumed_by": "f5dcf779-9adb-4de7-bcd6-558c7feeb942",
+      "attachment_id": "2ca23b5f-6a5e-45dc-8508-8430bf9f04b6",
+      "fixture_original_matches": true,
+      "extraction": null,
+      "comparison": null,
+      "comparison_observed_at": null
+    },
+    "invoice_OCR_stage": {
+      "id": "c8a3b958-554b-412b-8849-7feed189450d",
+      "run_id": "ed75d4b5-986c-40c1-a1f0-4a5fec25d655",
+      "stage": "invoice_ocr",
+      "seq": 5,
+      "phase": "unknown",
+      "runtime_engine": "gemini",
+      "ended": true,
+      "pending_ack_jobs": 0,
+      "acknowledged": null
+    },
+    "extraction": null,
+    "comparison": null,
+    "core_diagnostic": {
+      "status": "closed_existing_OCR_log_projection",
+      "native_epoch": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a|sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779|2026-10-26T03:06:18.949917773Z",
+      "native_core_sha256": "b20f724a3bcdcf3ba433a11c19474fc2cd9d4f2e02edb155eed317494daa3a03",
+      "attempt_id_context": "c8a3b958-554b-412b-8849-7feed189450d",
+      "single_interval_observed": true,
+      "rows": [
+        {
+          "timestamp_utc": "2026-10-26T16:17:25.897011555Z",
+          "kind": "started",
+          "cli_configured_timeout_seconds": 240.0
+        },
+        {
+          "timestamp_utc": "2026-10-26T16:17:26.288548531Z",
+          "kind": "progress",
+          "outcome": "failed",
+          "summary": {
+            "stage": "result",
+            "events": 1,
+            "invalid_lines": 0,
+            "stdout_bytes": 266,
+            "last_event_age_ms": 57,
+            "initialized": false,
+            "document_read_completed": false,
+            "result_seen": true
+          }
+        },
+        {
+          "timestamp_utc": "2026-10-26T16:17:26.288570132Z",
+          "kind": "finished",
+          "core_elapsed_ms": 392
+        }
+      ],
+      "log_bytes_admitted": 917651,
+      "log_tail_limit": 5000,
+      "process_output_limit_bytes": 8388608,
+      "association_limit": "Core log carries no attempt identity; only a sole matching OCR interval can be associated using the operator current closed-ledger context. Multiple/missing intervals are inconclusive.",
+      "timing_limit": "Core configured CLI timeout and core elapsed are not native request budget or vendor latency.",
+      "cause_verified": false,
+      "SDK_calls": 0,
+      "provider_observations": 0,
+      "provider_generations": 0,
+      "SQL_queries": 0,
+      "raw_logs_emitted": false
+    },
+    "reconciliation": {
+      "status": "reconciled_ACK_verified",
+      "terminal": {
+        "engine": "agentic",
+        "attemptId": "c8a3b958-554b-412b-8849-7feed189450d",
+        "resourceKey": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+        "sessionGeneration": "0ea0c22e7d6747f19f7ac0d96c23e585",
+        "operationRef": "c8a3b958-554b-412b-8849-7feed189450d",
+        "terminalProofId": "622ac2dc-cca4-4149-b003-6f3e15dcba18",
+        "processClosed": true,
+        "outcome": "abandoned_unknown",
+        "observedAt": "2026-10-26T16:17:26.290Z"
+      },
+      "reconcile_calls": 1,
+      "acknowledge_calls": 1,
+      "acknowledged": true,
+      "final": {
+        "jobs": 0,
+        "slots": 0,
+        "active_job_id": null,
+        "run_state": "failed",
+        "error_code": "nodia_ai:outcome_unknown"
+      },
+      "witness": {
+        "path": "ops/lab/artifacts/antigravity-low-invoice-ocr-acceptance-r01/antigravity-low-ocr-reconcile-witness-VM-r04.jsonl",
+        "sha256": "0aa34113e3cf8ee594fee6605eb3bfdd241598807b117bdce24ce4788b6fec65",
+        "bytes": 2104
+      },
+      "witness_events": [
+        "execute_intent",
+        "native_terminal_observed",
+        "before_native_ACK",
+        "native_ACK_verified",
+        "compiled_reconciliation_verified"
+      ],
+      "protected_tables": 58,
+      "protected_before_equals_after": true,
+      "worker_paused_and_resumed": true,
+      "API_state_unchanged": true,
+      "native_epoch_unchanged": true,
+      "business_SQL_writes": 0,
+      "provider_generations_from_reconciliation": 0
+    }
+  },
+  "final_domain_runtime": {
+    "status": "final_domain_and_runtime_verified",
+    "checks": {
+      "domain_and_schema_match": true,
+      "Server_processes_active_exact_release": true,
+      "native_epoch_unchanged": true,
+      "configuration_unchanged": true,
+      "nginx_unchanged": true,
+      "SQL_quiet": true,
+      "native_quiet": true,
+      "Codex_pending_zero": true,
+      "backup_timers_active": true,
+      "backup_reserve_preserved": true,
+      "journal_unconfirmed_zero": true,
+      "journal_coverage_preserved": true,
+      "operator_configuration_preserved": true,
+      "backup_runner_private": true
+    },
+    "domain_comparison": {
+      "matches": true,
+      "baseline_tables": 40,
+      "current_tables": 40,
+      "missing": [],
+      "added": [],
+      "changed": [],
+      "schema_matches": true,
+      "exclusions": [
+        "auth_sessions",
+        "nodia_ai_*"
+      ]
+    },
+    "schema_sha256": "82753ec54d69006d2850dd62173093c03086e43a37af62e2a3dba1c5da5b4b87",
+    "processes": {
+      "nodia-api": {
+        "active": "active",
+        "sub": "running",
+        "pid": 545973,
+        "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+        "argv_exact_match": true
+      },
+      "nodia-ai-worker": {
+        "active": "active",
+        "sub": "running",
+        "pid": 585832,
+        "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+        "argv_exact_match": true
+      }
+    },
+    "SQL_quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "native_quiet": {
+      "attempt_receipts": 0,
+      "unknown_markers": 0,
+      "temporary_directories": 0,
+      "active_native_processes": 0
+    },
+    "codex": {
+      "profile_absent": false,
+      "pending": 0,
+      "locks_or_sockets": 0,
+      "records": 3,
+      "sdk_arg0_links": 0,
+      "sdk_binary": null
+    },
+    "timers": {
+      "nodia-ai-backup.timer": {
+        "active": "active",
+        "sub": "waiting",
+        "pid": 0,
+        "working_directory": ""
+      },
+      "nodia-ai-backup-rotate.timer": {
+        "active": "active",
+        "sub": "waiting",
+        "pid": 0,
+        "working_directory": ""
+      }
+    },
+    "available_bytes": 3670421504,
+    "reserve_bytes": 268443676,
+    "baseline_sha256": "0b992d8c25da11c52fc3b34ace156c1a96fe6809026b35b990f61e166e1a0236"
+  },
+  "dispatch_accounting": {
+    "M1_run_budget_dispatches": 2,
+    "M2_run_budget_dispatches": 3,
+    "M2_invoice_OCR_stage_attempts": 1,
+    "provider_internal_calls": null,
+    "actual_provider_generations": null,
+    "provider_cost": null
+  },
+  "limits": [
+    "LOW selection was explicitly saved from UI discovery in a separate chat. The global provider configuration remained unchanged; this was not fallback or replay of HIGH unknown attempts.",
+    "MCP and natural request progressed successfully. OCR then failed in the shared Products core: sole392ms interval,outcome failed,one266-byte result,initializedfalse/document_read_completedfalse. This is distinct from119sMCP timeouts.",
+    "Core log carries no attempt_id; its sole interval is associated with the exact closed OCR ledger/SQL identity under the Root-reported only-OCR window. No raw CLI error or authentication cause was exported.",
+    "The missing temporary-profile credential links and absent owned-reader role are independently observed source defects under separate fix review; these logs alone do not establish an internal provider/authentication cause. No corrected-core adoption or successful OCR is claimed.",
+    "Completed MCP stage progression/quiet is policy-progress evidence; independently retained historical MCP ACK remains null after cleaned receipts. Only this failed OCR reconciliation has explicit proof/ACK witness retained.",
+    "The preparation was consumed once and remains consumed; failed OCR was not replayed. No extraction, comparison/reload acceptance, price-change proposal or business save was produced.",
+    "Final40domain hashes/schema match with auth_sessions/nodia_ai_* excluded by design; separate reconciliation protects58tables and own metadata including the preparation/request history.",
+    "Actual provider internal generations/calls/cost remain unknown. Run-budget counters and a native OCR attempt are not vendor-internal generation counts.",
+    "Root alone operated UI/VM/SDK. Local work authored readers/reconcile and consolidated evidence only. No global model/effort/permission/deadline change or causal hint claim."
+  ],
+  "qualification_evidence": {
+    "path": "docs/evidence/nodia-ai-antigravity-low-mcp-qualification-20261026-r01.json",
+    "sha256": "91d9bd82e728acb82cf2c92b54338f89d6e2bb4e5b0a5ce4090485ddd882b486",
+    "bytes": 7071
+  }
+}

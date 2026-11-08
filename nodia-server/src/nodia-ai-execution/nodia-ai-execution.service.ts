@@ -39,6 +39,7 @@ export class NodiaAiExecutionService {
     ownerLimit: number,
     waitSeconds: number,
   ) {
+    const teacher = await hasGenerationBridge(manager);
     const rows: {
       id: string;
       execution_id: string;
@@ -52,9 +53,9 @@ export class NodiaAiExecutionService {
          AND j.available_at<=clock_timestamp() AND j.deadline_at>clock_timestamp()
          AND j.available_at+$3*interval '1 second'>clock_timestamp()
          AND c.expires_at>clock_timestamp() AND c.lifecycle='active'
-         AND (SELECT count(*) FROM nodia_ai_jobs a WHERE a.state='leased')<$1
-         AND (SELECT count(*) FROM nodia_ai_jobs a JOIN nodia_ai_conversations ac ON ac.id=a.conversation_id
-              WHERE a.state IN ('leased','unknown') AND ac.owner_id=c.owner_id)<$2
+           AND ((SELECT count(*) FROM nodia_ai_jobs a WHERE a.state='leased')${teacher ? "+(SELECT count(*) FROM teacher_generation_jobs WHERE state='running')" : ''})<$1
+           AND ((SELECT count(*) FROM nodia_ai_jobs a JOIN nodia_ai_conversations ac ON ac.id=a.conversation_id
+                WHERE a.state IN ('leased','unknown') AND ac.owner_id=c.owner_id)${teacher ? "+(SELECT count(*) FROM teacher_generation_jobs WHERE state IN ('running','unknown') AND blocks_duplicate=true AND actor_id=c.owner_id)" : ''})<$2
        ORDER BY j.available_at,j.id LIMIT 1`,
       [globalLimit, ownerLimit, waitSeconds],
     );
@@ -232,3 +233,4 @@ export class NodiaAiExecutionService {
     }
   }
 }
+import { hasGenerationBridge } from '../ai-generation/chat-generation-ownership.js';

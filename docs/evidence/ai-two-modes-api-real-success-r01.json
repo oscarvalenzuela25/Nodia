@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-27T17:01:26.742Z",
+  "scope": "Real Nodia ApiProviderService discovery and synthetic-PDF extraction; not full UI/DB/chat acceptance",
+  "credentialsStoredInFiles": false,
+  "credentialsStoredInDatabase": false,
+  "automaticRetries": 0,
+  "posts": {
+    "openai": {
+      "total": 1,
+      "completed": 1
+    },
+    "gemini": {
+      "total": 5,
+      "completed": 1,
+      "rejected400": 3,
+      "unavailable503": 1
+    }
+  },
+  "actualBilledAmount": null,
+  "usageTokens": null,
+  "results": [
+    {
+      "provider": "openai",
+      "exitCode": 0,
+      "result": {
+        "success": true,
+        "provider": "openai",
+        "mode": "api_key",
+        "model": "gpt-6-luna",
+        "discovered": true,
+        "completed_and_schema_valid": true,
+        "items": 1,
+        "fixture_checks": 12,
+        "result_sha256": "0fad35e06bee5734389c91a09e8007d0c73a50a50f000892af6677fd708c0ee0",
+        "inference_calls": 1,
+        "inference_retries": 0,
+        "usage": null,
+        "scope": "real API discovery/extraction; does not attest DB encryption, UI or NodiaAI chat"
+      },
+      "privateStderrBytes": 0,
+      "fixtureSha256": "9f9a32bd46ebfcb1063e7d1bf4e067f91ff5e5c5d82e1536c2d9725f84917e59",
+      "finishedAt": "2026-10-27T16:28:00.237Z"
+    },
+    {
+      "provider": "gemini",
+      "exitCode": 0,
+      "result": {
+        "success": true,
+        "provider": "gemini",
+        "mode": "api_key",
+        "model": "gemini-3.1-flash-lite",
+        "discovered": true,
+        "completed_and_schema_valid": true,
+        "items": 1,
+        "fixture_checks": 12,
+        "result_sha256": "0fad35e06bee5734389c91a09e8007d0c73a50a50f000892af6677fd708c0ee0",
+        "inference_calls": 1,
+        "inference_retries": 0,
+        "usage": null,
+        "scope": "real API discovery/extraction; does not attest DB encryption, UI or NodiaAI chat"
+      },
+      "privateStderrBytes": 0,
+      "fixtureSha256": "9f9a32bd46ebfcb1063e7d1bf4e067f91ff5e5c5d82e1536c2d9725f84917e59",
+      "finishedAt": "2026-10-27T16:58:36.843Z"
+    }
+  ],
+  "negativeEvidenceFiles": [
+    ".tmp/ai-two-modes/api-smoke-r01.json",
+    ".tmp/ai-two-modes/gemini-rejection-diagnostic-r01.json",
+    ".tmp/ai-two-modes/gemini-corrected-api-smoke-r01.json",
+    ".tmp/ai-two-modes/gemini-minimal-model-diagnostic-r01.json"
+  ],
+  "noFurtherPaidInferencePlanned": true
+}

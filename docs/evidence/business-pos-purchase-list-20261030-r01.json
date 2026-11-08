@@ -1,0 +1,1147 @@
+{
+  "schema_version": 1,
+  "status": "implemented_verified_and_adopted",
+  "updated_on": "2026-10-30",
+  "implementation": "implemented",
+  "scope": [
+    "R14 manual product form defaults Available and sale-price inverse assistance preserving margin/tax and legacy edit values",
+    "Products table/mobile50px thumbnail using existing viewer, name-only field and enabled real offer above normal with error.main",
+    "POS selected purchase list only on the left, payment summary on the right ordered total/payment/confirmation, equal panel heights",
+    "Collapsed business header by default; existing local multi-sale identity, recovery and checkout contracts preserved"
+  ],
+  "source": {
+    "capture": {
+      "path": "ops/lab/artifacts/business-pos-purchase-list-20261030-r01/client/build-inputs.json",
+      "bytes": 247607,
+      "sha256": "58528000a302c238429b3bb8d7991f7c4d2dbf6e46ab5d5a13c61ea00d71b273"
+    },
+    "fingerprint": "fd413ac20ddeed8ce6fdb43490fd4cadfd9a6b0a4ebd39150eb2461d81499286",
+    "captured_files": 1231,
+    "delta": {
+      "added": [
+        "src/modules/business/infrastructure/useSaleLineImages.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductImageThumbnail/ProductImageThumbnail.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductImageThumbnail/index.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductImageThumbnail/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/productPricing.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductSalePrice/ProductSalePrice.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductSalePrice/index.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductSalePrice/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SaleLineList/SaleLineList.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SaleLineList/index.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SaleLineList/styles.ts",
+        "src/test/modules/business/infrastructure/useSaleLineImages.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductImageThumbnail/ProductImageThumbnail.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/productPricing.test.ts",
+        "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductSalePrice/ProductSalePrice.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/SaleLineList/SaleLineList.test.tsx"
+      ],
+      "changed": [
+        "src/modules/business/components/BusinessMobileCards/BusinessMobileCards.tsx",
+        "src/modules/business/infrastructure/usePosCatalog.ts",
+        "src/modules/business/pages/BusinessDetail/BusinessDetail.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/ProductsTab.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductModal.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/PosProductCatalog/PosProductCatalog.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesWorkspace.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/styles.ts",
+        "src/test/modules/business/components/BusinessMobileCards/BusinessMobileCards.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/BusinessDetail.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/ProductModal.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/ProductsTab.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/PosProductCatalog/PosProductCatalog.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesWorkspace.test.tsx",
+        "src/translate/en/business.json",
+        "src/translate/es/business.json"
+      ],
+      "outside_authorized_scope": [],
+      "removed": []
+    },
+    "mismatches": [],
+    "utf8_lf_no_bom_owned_paths": 32,
+    "git_diff_check": "passed",
+    "previous_preparatory_captures": [
+      {
+        "path": "ops/lab/artifacts/business-pos-purchase-list-20261030-r01/client/build-inputs-before-scroll-fix.json",
+        "bytes": 247485,
+        "sha256": "22572161950278b88d091a7eb8222b43e93d428852be0912d975beb4d3ff7cea"
+      },
+      {
+        "path": "ops/lab/artifacts/business-pos-purchase-list-20261030-r01/client/build-inputs-before-offer-emphasis.json",
+        "bytes": 247607,
+        "sha256": "0b8dd94019be355973e0ef63bd30e78580f22d3260d6c3d600e8d80e64eca567"
+      }
+    ],
+    "preparatory_limit": "First build/capture was rejected during native QA before packaging or VM staging; only final capture was packaged."
+  },
+  "verification": {
+    "full_client_suite": {
+      "status": "passed",
+      "tests": 2354,
+      "files": 282,
+      "duration_seconds": 234.37,
+      "log_sha256": "69d99354b41df43140f48eb5cebb4a4813e61695169e774147f907d18bff7920"
+    },
+    "consolidated_focused": {
+      "status": "passed",
+      "tests": 235,
+      "files": 24,
+      "duration_seconds": 32,
+      "log_sha256": "a00202cf4e36320058c0f37073a89fbe30054c142096731d8b50b1caedc60d5c",
+      "scope": "Before final scoped popup retention changes; final full suite and later focused QA are separate."
+    },
+    "later_focused": {
+      "products_focused_before_final_emphasis": {
+        "passed": 29,
+        "files": 4,
+        "seconds": 15.45
+      },
+      "final_price_and_catalog_focused": {
+        "passed": 14,
+        "files": 2,
+        "seconds": 7.24,
+        "log_sha256": "78aa3db4eb9bf2611c5172a89944dba2de03b8b85c956aa8d4167fdc10f94184"
+      },
+      "catalog_focused_after_scroll_search_fixes": {
+        "passed": 9,
+        "files": 1,
+        "seconds": 7.21
+      },
+      "final_scoped_lint": {
+        "exit_code": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "global_suite_types_build_deployment": "Owned and reported separately by root; not duplicated by this QA agent.",
+      "captures_inspected": [
+        "qa-r14-390-es-dark-selected.png",
+        "qa-r14-1569-en-light-both.png",
+        "qa-r14-320-products-light.png"
+      ]
+    },
+    "typecheck_lint_build": {
+      "status": "passed",
+      "typecheck_log_sha256": "e7bf9235c4b3d2f32ae91ad79594338311c7f2da0e9371d85417552aaa0b1865",
+      "lint_log_sha256": "ffd8fd64020e579eedde270479fe815463785d7fafad2537f697ac8c68b27abe",
+      "final_build_includes_typecheck": true,
+      "build_log_sha256": "39664eafdc80e69e6a7c5037b834e4677027db65db102b07013772795c4a826d",
+      "scope": "Final build after20px/700 offer emphasis; final14 focused tests after that purely visual adjustment."
+    },
+    "browser_qa": {
+      "status": "passed",
+      "receipt": {
+        "path": "ops/lab/artifacts/business-pos-purchase-list-20261030-r01/client/qa-r14-receipt.json",
+        "bytes": 27123,
+        "sha256": "c73daba9798ed8ce543efcc845995629599101048774e4761f74da79d9521c02"
+      },
+      "manifest": {
+        "path": "ops/lab/artifacts/business-pos-purchase-list-20261030-r01/client/qa-r14-manifest.json",
+        "bytes": 3923,
+        "sha256": "5a7e4ea4c74a7df0f4d27bb4d7a398a635e2022873e98fa48a43bc7783714408"
+      },
+      "environment": {
+        "origin": "http://127.0.0.1:5196",
+        "browser": "Microsoft Edge 156.0.4314.50 headless",
+        "session": "pos-r14-ui",
+        "pos_widths": [
+          320,
+          390,
+          600,
+          1569
+        ],
+        "height": 1000,
+        "profiles": [
+          "es-dark",
+          "en-light"
+        ],
+        "additional_price_views": [
+          "es-light table 1569",
+          "es-light mobile 320"
+        ]
+      },
+      "observations": {
+        "initial_geometry_and_selection": {
+          "passed": true,
+          "synthetic": true,
+          "initialHeaderCollapsed": true,
+          "emptyPaymentHasNoRows": true,
+          "selectionOnceThenTwoScansQuantity3": true,
+          "freshImageBatchGets": 0,
+          "headerTogglePreserves20LinesAndBarcode": true,
+          "samples": [
+            {
+              "width": 320,
+              "left": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "regionHeight": 372,
+                "regionScroll": 5421,
+                "regionTop": 5049,
+                "rows": 20,
+                "counters": 20,
+                "regionOverflow": 0,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "htmlHeight": 1572,
+                "bodyHeight": 1572,
+                "documentOverflow": 0
+              },
+              "right": {
+                "height": 780,
+                "rows": 0,
+                "totalBeforePaymentBeforeConfirm": true,
+                "ctaHeight": 56,
+                "panelOverflow": 0,
+                "documentOverflow": 0
+              }
+            },
+            {
+              "width": 390,
+              "left": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "regionHeight": 412,
+                "regionScroll": 4780,
+                "regionTop": 4368,
+                "rows": 20,
+                "counters": 20,
+                "regionOverflow": 0,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "htmlHeight": 1572,
+                "bodyHeight": 1572,
+                "documentOverflow": 0
+              },
+              "right": {
+                "height": 780,
+                "rows": 0,
+                "totalBeforePaymentBeforeConfirm": true,
+                "ctaHeight": 56,
+                "panelOverflow": 0,
+                "documentOverflow": 0
+              }
+            },
+            {
+              "width": 600,
+              "left": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "regionHeight": 431,
+                "regionScroll": 4213,
+                "regionTop": 3782,
+                "rows": 20,
+                "counters": 20,
+                "regionOverflow": 0,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "htmlHeight": 2049,
+                "bodyHeight": 2049,
+                "documentOverflow": 0
+              },
+              "right": {
+                "height": 780,
+                "rows": 0,
+                "totalBeforePaymentBeforeConfirm": true,
+                "ctaHeight": 56,
+                "panelOverflow": 0,
+                "documentOverflow": 0
+              }
+            },
+            {
+              "width": 1569,
+              "left": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "regionHeight": 431,
+                "regionScroll": 2333,
+                "regionTop": 1902,
+                "rows": 20,
+                "counters": 20,
+                "regionOverflow": 0,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "htmlHeight": 1277,
+                "bodyHeight": 1277,
+                "documentOverflow": 0
+              },
+              "right": {
+                "height": 780,
+                "rows": 0,
+                "totalBeforePaymentBeforeConfirm": true,
+                "ctaHeight": 56,
+                "panelOverflow": 0,
+                "documentOverflow": 0
+              }
+            }
+          ]
+        },
+        "eight_final_pos_profiles": {
+          "passed": true,
+          "synthetic": true,
+          "profiles": [
+            {
+              "lang": "es",
+              "theme": "dark",
+              "width": 320,
+              "left": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "listHeight": 372,
+                "listScroll": 5421,
+                "listOverflow": 0,
+                "rows": 20,
+                "quantities": 20,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "codesVisible": false
+              },
+              "right": {
+                "panelHeight": 780,
+                "rows": 0,
+                "buttons": 5,
+                "paymentHeights": [
+                  84,
+                  84,
+                  84,
+                  84
+                ],
+                "order": true,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "documentOverflow": 0,
+                "htmlHeight": 1572,
+                "bodyHeight": 1572
+              },
+              "dropdown": {
+                "count": 24,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "overflow": 0,
+                "anchor": "none"
+              }
+            },
+            {
+              "lang": "es",
+              "theme": "dark",
+              "width": 390,
+              "left": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "listHeight": 412,
+                "listScroll": 4780,
+                "listOverflow": 0,
+                "rows": 20,
+                "quantities": 20,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "codesVisible": false
+              },
+              "right": {
+                "panelHeight": 780,
+                "rows": 0,
+                "buttons": 5,
+                "paymentHeights": [
+                  84,
+                  84,
+                  84,
+                  84
+                ],
+                "order": true,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "documentOverflow": 0,
+                "htmlHeight": 1572,
+                "bodyHeight": 1572
+              },
+              "dropdown": {
+                "count": 24,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "overflow": 0,
+                "anchor": "none"
+              }
+            },
+            {
+              "lang": "es",
+              "theme": "dark",
+              "width": 600,
+              "left": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "listHeight": 431,
+                "listScroll": 4213,
+                "listOverflow": 0,
+                "rows": 20,
+                "quantities": 20,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "codesVisible": false
+              },
+              "right": {
+                "panelHeight": 780,
+                "rows": 0,
+                "buttons": 5,
+                "paymentHeights": [
+                  84,
+                  84,
+                  84,
+                  84
+                ],
+                "order": true,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "documentOverflow": 0,
+                "htmlHeight": 2049,
+                "bodyHeight": 2049
+              },
+              "dropdown": {
+                "count": 24,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "overflow": 0,
+                "anchor": "none"
+              }
+            },
+            {
+              "lang": "es",
+              "theme": "dark",
+              "width": 1569,
+              "left": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "listHeight": 431,
+                "listScroll": 2333,
+                "listOverflow": 0,
+                "rows": 20,
+                "quantities": 20,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "codesVisible": false
+              },
+              "right": {
+                "panelHeight": 780,
+                "rows": 0,
+                "buttons": 5,
+                "paymentHeights": [
+                  84,
+                  84,
+                  84,
+                  84
+                ],
+                "order": true,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "documentOverflow": 0,
+                "htmlHeight": 1277,
+                "bodyHeight": 1277
+              },
+              "dropdown": {
+                "count": 24,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "overflow": 0,
+                "anchor": "none"
+              }
+            },
+            {
+              "lang": "en",
+              "theme": "light",
+              "width": 320,
+              "left": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "listHeight": 412,
+                "listScroll": 5441,
+                "listOverflow": 0,
+                "rows": 20,
+                "quantities": 20,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "codesVisible": false
+              },
+              "right": {
+                "panelHeight": 780,
+                "rows": 0,
+                "buttons": 5,
+                "paymentHeights": [
+                  84,
+                  84,
+                  84,
+                  84
+                ],
+                "order": true,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "documentOverflow": 0,
+                "htmlHeight": 1597,
+                "bodyHeight": 1597
+              },
+              "dropdown": {
+                "count": 48,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "overflow": 0,
+                "anchor": "none"
+              }
+            },
+            {
+              "lang": "en",
+              "theme": "light",
+              "width": 390,
+              "left": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "listHeight": 412,
+                "listScroll": 4780,
+                "listOverflow": 0,
+                "rows": 20,
+                "quantities": 20,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "codesVisible": false
+              },
+              "right": {
+                "panelHeight": 780,
+                "rows": 0,
+                "buttons": 5,
+                "paymentHeights": [
+                  84,
+                  84,
+                  84,
+                  84
+                ],
+                "order": true,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "documentOverflow": 0,
+                "htmlHeight": 1572,
+                "bodyHeight": 1572
+              },
+              "dropdown": {
+                "count": 48,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "overflow": 0,
+                "anchor": "none"
+              }
+            },
+            {
+              "lang": "en",
+              "theme": "light",
+              "width": 600,
+              "left": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "listHeight": 431,
+                "listScroll": 4213,
+                "listOverflow": 0,
+                "rows": 20,
+                "quantities": 20,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "codesVisible": false
+              },
+              "right": {
+                "panelHeight": 780,
+                "rows": 0,
+                "buttons": 5,
+                "paymentHeights": [
+                  84,
+                  84,
+                  84,
+                  84
+                ],
+                "order": true,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "documentOverflow": 0,
+                "htmlHeight": 2049,
+                "bodyHeight": 2049
+              },
+              "dropdown": {
+                "count": 48,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "overflow": 0,
+                "anchor": "none"
+              }
+            },
+            {
+              "lang": "en",
+              "theme": "light",
+              "width": 1569,
+              "left": {
+                "panelHeight": 780,
+                "panelClient": 778,
+                "panelScroll": 778,
+                "listHeight": 431,
+                "listScroll": 2333,
+                "listOverflow": 0,
+                "rows": 20,
+                "quantities": 20,
+                "image": {
+                  "width": 80,
+                  "height": 80
+                },
+                "codesVisible": false
+              },
+              "right": {
+                "panelHeight": 780,
+                "rows": 0,
+                "buttons": 5,
+                "paymentHeights": [
+                  84,
+                  84,
+                  84,
+                  84
+                ],
+                "order": true,
+                "ctaHeight": 56,
+                "ctaVisible": true,
+                "ctaUnobscured": true,
+                "documentOverflow": 0,
+                "htmlHeight": 1277,
+                "bodyHeight": 1277
+              },
+              "dropdown": {
+                "count": 48,
+                "interactiveChildren": 0,
+                "codesVisible": false,
+                "overflow": 0,
+                "anchor": "none"
+              }
+            }
+          ],
+          "infinite": {
+            "before": {
+              "top": 2187,
+              "height": 400,
+              "scroll": 2587
+            },
+            "after": {
+              "sameElement": true,
+              "top": 2187,
+              "count": 48
+            },
+            "sharedQuery": true,
+            "noEagerThirdPage": true
+          },
+          "nativeApiResources": 0
+        },
+        "products_and_pricing_form": {
+          "passed": true,
+          "synthetic": true,
+          "desktop": {
+            "name": "Producto sintético 001 con descripción larga para comprobar la presentación y selección del catálogo",
+            "code": "QA-PRODUCTO-001",
+            "barcodeVisible": false,
+            "image": {
+              "width": 50,
+              "height": 50
+            },
+            "offerAbove": true,
+            "offerColor": "rgb(248, 113, 113)"
+          },
+          "mobile": {
+            "name": "Producto sintético 001 con descripción larga para comprobar la presentación y selección del catálogo",
+            "barcodeVisible": false,
+            "imageWidth": 50,
+            "imageHeight": 50,
+            "documentOverflow": 0
+          },
+          "modalOverflow": 0,
+          "enabledZeroAndInactiveAlternatesCorrect": true,
+          "createDefaultAvailable": true,
+          "reverse": {
+            "sale": "1516",
+            "base": "980",
+            "taxed": "1166",
+            "margin": "30",
+            "tax": "19"
+          },
+          "forward": {
+            "sale": "1547",
+            "base": "1000",
+            "taxed": "1190"
+          },
+          "saleZeroKeepsZeroCosts": true,
+          "mutationsDuringOpeningEditingCancelling": 0
+        },
+        "two_carts_before_reload": {
+          "passed": true,
+          "synthetic": true,
+          "searchKeepsPopupAndFocus": true,
+          "searchRuntimeErrors": [],
+          "noExtraImageReadsFromSelection": true,
+          "zeroRemovesOnlyOneLine": true,
+          "emptyQuantityRetainedAndBlocksCheckout": true,
+          "newSaleCashDefault": true,
+          "stored": {
+            "active": 1,
+            "sessions": [
+              {
+                "number": 1,
+                "lineCount": 19,
+                "firstQuantity": 3,
+                "barcode": "1111",
+                "payment": "credit_card",
+                "drafts": {
+                  "401": ""
+                }
+              },
+              {
+                "number": 2,
+                "lineCount": 1,
+                "firstQuantity": 1,
+                "barcode": "2222",
+                "payment": "debit_card",
+                "drafts": {}
+              }
+            ]
+          }
+        },
+        "restored_carts_images_and_checkout_recovery": {
+          "passed": true,
+          "synthetic": true,
+          "twoCartsRestoredWithPaymentsBarcodeAndIncompleteQuantity": true,
+          "imageBatches": [
+            {
+              "ids": 19,
+              "limit": 100,
+              "includes": true
+            }
+          ],
+          "restoredImageDecoded": true,
+          "knownFailureKeepsConfirmation": true,
+          "uncertainFailureKeepsCartAndBlocksClose": true,
+          "completedOnlyOriginCart2": true,
+          "operatorResume": "Corrected the localized receipt-button selector after both synthetic intents had reached a terminal response; issued only one GET, no checkout replay.",
+          "trace": {
+            "writes": [
+              {
+                "method": "post",
+                "url": "/businesses/9007199254740993/sales/checkout",
+                "key": "25d76fa7-25ae-4b9f-9d2c-227c12a01e74"
+              },
+              {
+                "method": "post",
+                "url": "/businesses/9007199254740993/sales/checkout",
+                "key": "1999addd-6074-4f75-99e6-b8e7f5d42ed6"
+              }
+            ],
+            "receiptGets": 1,
+            "sales": [
+              {
+                "status": "completed",
+                "total": "1500",
+                "payment": "debit_card"
+              }
+            ]
+          }
+        },
+        "final_offer_emphasis_light": {
+          "passed": true,
+          "synthetic": true,
+          "theme": "light",
+          "offerUsesErrorMain": true,
+          "wcagLargeBoldTextMinimumContrast": 3,
+          "desktop": {
+            "color": "rgb(239, 68, 68)",
+            "background": "rgb(255, 255, 255)",
+            "fontSize": 20,
+            "fontWeight": 700,
+            "contrast": 3.763127680148142,
+            "offerAboveNormal": true,
+            "ownOverflow": 0,
+            "documentOverflow": 0,
+            "thumbnail": [
+              {
+                "width": 50,
+                "height": 50
+              }
+            ]
+          },
+          "mobile": {
+            "color": "rgb(239, 68, 68)",
+            "background": "rgb(255, 255, 255)",
+            "fontSize": 20,
+            "fontWeight": 700,
+            "contrast": 3.763127680148142,
+            "offerAboveNormal": true,
+            "ownOverflow": 0,
+            "documentOverflow": 0,
+            "thumbnail": [
+              {
+                "width": 50,
+                "height": 50
+              }
+            ]
+          }
+        },
+        "final_hygiene": {
+          "passed": true,
+          "synthetic": true,
+          "untranslatedVisibleKeys": [],
+          "documentOverflow": 0,
+          "nativeApiResources": 0,
+          "syntheticWrites": [
+            "/businesses/9007199254740993/sales/checkout",
+            "/businesses/9007199254740993/sales/checkout"
+          ],
+          "syntheticReceiptGets": 1
+        }
+      },
+      "resolved_defects": [
+        {
+          "problem": "Appending popup options kept the UL but reset native scrollTop 2165→0.",
+          "fix_owner": "root",
+          "fix": "Retain the intentional append position in the same actor/session/business/mode/search context; restore after layout and animation frame, cancel across close/context changes.",
+          "final_native": "Same UL, options 24→48, scrollTop 2187→2187, no eager third page.",
+          "unit_regressions": "An emulated MUI DOM reset is restored; a queued restoration is not applied to a different search."
+        },
+        {
+          "problem": "Disabling an already-focused Autocomplete on a subsequent search caused MUI blur/onClose during rendering, a React cross-component warning and a closed popup.",
+          "fix_owner": "root",
+          "fix": "Whole-instance loading disable is limited to first unopened load; later loading retains popup and uses HTML readonly, busy state and disabled options/indicators.",
+          "final_native": "New search after append keeps focus/popup, no React console errors and one selection increment."
+        },
+        {
+          "problem": "The requested light-theme error.main color has 3.763:1 contrast on white, below normal 14px text AA.",
+          "fix": "Keep the requested exact theme color and make the offer 20px/700, with normal price below.",
+          "final_native": "Table and mobile use effective white backgrounds, 20px/700, 3.763127680148142:1 and no overflow; the large bold text threshold is 3:1."
+        }
+      ],
+      "operator_corrections": [
+        "Initial HMR and selector probes were excluded from final PASS samples. Native input number semantics, asynchronous route-blocker rendering, actual modal titles and localized button labels were then used.",
+        "The original beforeunload accept listener survived a reload without a dialog; on the next reload a duplicate accept reported already-handled. The reload completed into the fresh isolated fixture and both carts were then checked. No domain mutation occurred in that phase.",
+        "After known 400 and lost 503 checkout responses, an incorrect localized receipt-button selector stopped the probe. Recovery resumed from the preserved journal with one GET only; no checkout was replayed."
+      ],
+      "limits": [
+        "Eight desktop-browser viewports are not physical phone, touch keyboard or scanner hardware acceptance.",
+        "All domain transport is explicit simulation. Two human-confirmed POSTs are mock-only: one known pre-commit rejection and one lost response after a single mock commit. This does not prove Server durability or a real payment.",
+        "Native reload returns the memory-router fixture to Overview; POS was reopened before checking stored carts. This does not prove production URL persistence.",
+        "Restored image metadata was checked with 19 IDs in one limit 100 batch. Image decoding uses synthetic SVGs; no real private storage URL, upload, MIME admission or image mutation is claimed.",
+        "No whole-catalog or arbitrary-scale performance benchmark was performed.",
+        "The light-theme offer contrast result applies to the measured 20px bold label; it is not a global WCAG certification."
+      ],
+      "cleanup": {
+        "edge_session_closed": true,
+        "own_server_5196_stopped": true,
+        "port_5196_listening": false,
+        "other_sessions_5174_vm_changed_by_agent": false
+      }
+    },
+    "actual_vm_ui": {
+      "status": "passed",
+      "receipt": {
+        "path": "ops/lab/artifacts/business-pos-purchase-list-20261030-r01/client/live-ui-receipt.json",
+        "bytes": 2323,
+        "sha256": "998e7559e30c6061bad6022244001835995229d9786335d303038a0513bd8207"
+      },
+      "observations": {
+        "schema_version": 1,
+        "status": "passed",
+        "environment": "Authenticated actual VM R14 via localhost:5174, own IAB tab12",
+        "pos": {
+          "headerCollapsed": true,
+          "horizontalOverflow": 0,
+          "panels": {
+            "leftHeight": 620,
+            "rightHeight": 620
+          },
+          "payment": {
+            "amount": "$3.032",
+            "amountFont": "48px",
+            "buttons": 5,
+            "containsProductName": false,
+            "inputs": 0,
+            "labelFont": "28px"
+          },
+          "selected": {
+            "images": [
+              {
+                "height": 80,
+                "loaded": true,
+                "width": 80
+              }
+            ],
+            "inputs": [
+              "2"
+            ],
+            "rows": 1
+          },
+          "viewport": {
+            "height": 720,
+            "width": 1270
+          }
+        },
+        "productTable": {
+          "alternativeTextVisible": false,
+          "nameOnly": "Barra Protein",
+          "offerTextVisible": false,
+          "thumbnail": {
+            "height": 50,
+            "loaded": true,
+            "width": 50
+          }
+        },
+        "productForm": {
+          "availability": "Disponible",
+          "costWithTax": "1166",
+          "costWithoutTax": "980",
+          "margin": "30",
+          "sale": "1516"
+        },
+        "checks": [
+          "Empty sale shows only an empty selected list; header collapsed and scanner focused",
+          "Two real barcode lookups of existing Barra Protein produce one selected line quantity2 and total3032CLP",
+          "Left and right panels both620px; right has no product line or quantity input, with exactly4payment buttons andConfirm",
+          "Zero removes selected line without a dialog; closing empty last sale produces freshSale1",
+          "Real50px thumbnail opens existing image viewer with Save disabled; closed without changes",
+          "New manual form defaults Available, margin30/tax19; sale1516 updates costs1166and980; cancelled without Save"
+        ],
+        "commercial_sale_saved": false,
+        "product_or_image_saved": false,
+        "provider_inference_performed": false,
+        "owned_local_cart_removed": true,
+        "owned_tab_closed": true,
+        "user_original_tab_untouched": true,
+        "limits": [
+          "No actual checkout, product/image write, physical scanner or phone tested; those positive writes used synthetic transport in QA.",
+          "Active red offer presentation is fixture-verified; actual inspected product had its alternate price disabled and correctly hidden."
+        ],
+        "screenshots": [
+          "live-pos-final.png",
+          "live-product-pricing.png"
+        ]
+      },
+      "screenshots": [
+        {
+          "path": "ops/lab/artifacts/business-pos-purchase-list-20261030-r01/client/live-pos-final.png",
+          "bytes": 69977,
+          "sha256": "bce1480bb88f36e669d98b7f743ab40458a99cfbbdb6f00af4289513ba7f4f50"
+        },
+        {
+          "path": "ops/lab/artifacts/business-pos-purchase-list-20261030-r01/client/live-product-pricing.png",
+          "bytes": 75102,
+          "sha256": "5fb924b63bddba9177b17bbb7b04cabcdc55d19bba5bfa07cf01bbf4c1ff99c4"
+        }
+      ]
+    },
+    "operators_offline_tests": {
+      "passed": 10,
+      "recovery_catalog": {
+        "path": "ops/lab/artifacts/business-pos-purchase-list-20261030-r01/client/catalog.json",
+        "bytes": 7815,
+        "sha256": "039a0cfa6abd4432c267d98affee53590fc527282013bd32cb950c48278c8593"
+      }
+    },
+    "knowledge": {
+      "status": "passed",
+      "fixtures": 58,
+      "source_documents_global": 75,
+      "excluded_global": 31,
+      "approved_documents": 44,
+      "fragments": 46,
+      "capabilities": 158,
+      "local_authoring_release_id": "1572cbb17ee04b57e1d9103ee3b5db2973f2187e1045c7c6aa0944a7ee56643f",
+      "deployed_knowledge_release_id_unchanged": "cde7fab20277d8c6a4e670e6df18e886cd72641135a044776cf8889d054213c5",
+      "pins_checked": [
+        "src",
+        "dist"
+      ],
+      "local_links_checked": 1568,
+      "source_paths_added_by_r14": 0,
+      "independent_studies_sources_preserved": 4,
+      "log_sha256": "2bd7189e734cdda41b4e8cce716b8df132116e5cc459dfbcb7157ee4a9abb168"
+    }
+  },
+  "approved_document_integrity": {
+    "approved_files": 44,
+    "mismatches": 0,
+    "aggregate_format": "sha256 of UTF8 sorted(path + NUL + full_file_sha256 + LF)",
+    "aggregate_sha256": "ed28119a33cf89230c5ecbaef1c371fe21b2f6e709b8c71fdf47ce755dbb3373",
+    "durable_baseline": {
+      "path": "docs/evidence/business-pos-multi-sale-20261029-r01.json",
+      "bytes": 63463,
+      "sha256": "88884aa2216e067e89704393f5eb2db1a32d8ef00738e286afbc8e8c945d8fce"
+    },
+    "note": "Full-file hashes are retained in the durable R13 receipt and were checked again for R14."
+  },
+  "delivery": {
+    "status": "active_verified",
+    "candidate": "/opt/nodia/releases/nodia-client-business-pos-purchase-list-20261030-r01",
+    "manifest_sha256": "b67a244aad6c94e783a5b2835aa318f1129c0c198970dce4a82e754adb9da4e6",
+    "config_sha256": "7d706afdd37d04e7dd3c386ab504ee10d11ceca1dd4dd201ba6142f67c4b27c2",
+    "index": {
+      "bytes": 2973,
+      "sha256": "13fdfbfb960c02f6f17dd8581cc02387344261a1a9f0a661aed997c6aa36cf3c"
+    },
+    "nginx_before_sha256": "29107e88f002d2c078c3d766bd48adc966920303df5095779c7695c515fb0893",
+    "nginx_after_sha256": "9a99aef77531dab8c645314c401629334119b7a394436561e138d49470718c30",
+    "static_files": 173,
+    "http": {
+      "current_assets": 169,
+      "previous_assets": 47,
+      "protected": [
+        {
+          "route": "/api/v1",
+          "status": 200
+        },
+        {
+          "route": "/api/v1/nodia-ai/connections",
+          "status": 401
+        },
+        {
+          "route": "/api/v1/products",
+          "status": 401
+        }
+      ],
+      "spa": [
+        {
+          "route": "/",
+          "sha256": "13fdfbfb960c02f6f17dd8581cc02387344261a1a9f0a661aed997c6aa36cf3c",
+          "status": 200
+        },
+        {
+          "route": "/tools/nodia-ai",
+          "sha256": "13fdfbfb960c02f6f17dd8581cc02387344261a1a9f0a661aed997c6aa36cf3c",
+          "status": 200
+        },
+        {
+          "route": "/tools/business",
+          "sha256": "13fdfbfb960c02f6f17dd8581cc02387344261a1a9f0a661aed997c6aa36cf3c",
+          "status": 200
+        }
+      ]
+    },
+    "previous_release_preserved": true,
+    "backup_configuration": "/opt/nodia/operations/business-pos-purchase-list-20261030-r01/client/nginx-before.conf",
+    "protected_runtime_preserved": true,
+    "protected_runtime": {
+      "services": {
+        "nodia-api.service": {
+          "MainPID": "2263533",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-business-pos-accessibility-20261029-r01",
+          "ActiveState": "active",
+          "SubState": "running",
+          "executable": "/opt/node-v24.20.0-linux-x64/bin/node",
+          "start_ticks": "65459257"
+        },
+        "nodia-ai-worker.service": {
+          "MainPID": "2263534",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-business-pos-accessibility-20261029-r01",
+          "ActiveState": "active",
+          "SubState": "running",
+          "executable": "/opt/node-v24.20.0-linux-x64/bin/node",
+          "start_ticks": "65459259"
+        },
+        "nodia-keyring.service": {
+          "MainPID": "1029625",
+          "WorkingDirectory": "",
+          "ActiveState": "active",
+          "SubState": "running"
+        },
+        "nodia-gemini-lab.service": {
+          "MainPID": "0",
+          "WorkingDirectory": "/opt/nodia/nodia-gemini-microservice",
+          "ActiveState": "active",
+          "SubState": "exited"
+        },
+        "nodia-ai-backup.timer": {
+          "ActiveState": "active",
+          "SubState": "waiting"
+        },
+        "nodia-ai-backup-rotate.timer": {
+          "ActiveState": "active",
+          "SubState": "waiting"
+        }
+      },
+      "server_manifest_sha256": "73be36b2117d96fc3ffc8e8bc07303b7dbcc68093fb852d80ee37c3d85d7ddef",
+      "knowledge_files": {
+        "src/nodia-ai/knowledge/manifest.json": "bec4d635beed80a5be18ca1b7fb5518f229146a641c18e2df86e6296369a082c",
+        "dist/nodia-ai/knowledge/manifest.json": "bec4d635beed80a5be18ca1b7fb5518f229146a641c18e2df86e6296369a082c",
+        "src/nodia-ai-context/config/knowledge-pin.json": "e70446455105423eef211c94d3aa6b502075cc482d894753d6f8f40068c960f3",
+        "dist/nodia-ai-context/config/knowledge-pin.json": "e70446455105423eef211c94d3aa6b502075cc482d894753d6f8f40068c960f3"
+      },
+      "native": {
+        "id": "b3dcf9d350532da2965a62cc276b8f5b81b935a23374c5c67f1bfe974c0be186",
+        "image": "sha256:4b990e3e8c60077fceb06ac5018025a5ef80353297fe92affc8b20fe53915fa9",
+        "started_at": "2026-10-27T18:32:11.657816024Z",
+        "status": "running",
+        "health": "healthy"
+      }
+    },
+    "reload_exit_code": 0,
+    "operator_requests": {
+      "api_or_worker_restart_requests": 0,
+      "auth_requests": 0,
+      "cloud_backup_requests": 0,
+      "native_restart_requests": 0,
+      "provider_requests": 0,
+      "sql_queries": 0
+    },
+    "receipts": {
+      "activate-receipt.json": {
+        "path": "ops/lab/artifacts/business-pos-purchase-list-20261030-r01/client/activate-receipt.json",
+        "bytes": 4276,
+        "sha256": "b5332b1fbedc7cbee52ab1d403a9eb7ca8952a4004e6a18ab60b524aac73e142"
+      },
+      "status-receipt.json": {
+        "path": "ops/lab/artifacts/business-pos-purchase-list-20261030-r01/client/status-receipt.json",
+        "bytes": 6225,
+        "sha256": "e478a4b284baa8e67a2db7a6951a364db4a4d1d5ec6bdc6b2e7bad80bcbe5a2e"
+      }
+    }
+  },
+  "documentary_approval": false,
+  "knowledge_publication": "Candidate revision2 remains draft/unregistered/approval:null; no new publication, tool binding, capability or VM knowledge adoption. Local authoring metadata checked separately.",
+  "limitations": [
+    "Manual form default applies only to new UI products; historical false/null, CSV, OCR and Server required-field rules are preserved.",
+    "Cost fields remain independent stored integers; UI inverse assistance does not promise an exact algebraic roundtrip after rounding or normalize historical CSV tax interpretations.",
+    "Real VM inspection prepared/removed a local cart and cancelled product/image editors without saving. Positive mutations and uncertain-result recovery used synthetic transport.",
+    "Active red offer evidence is synthetic; the actual inspected product had the alternate disabled and correctly hidden.",
+    "No physical scanner/phone, real payment, provider inference, migration, Server code deployment or direct database query was performed.",
+    "Offer contrast3.763:1 applies to20px/700 large text, not4.5:1 normal text or global WCAG certification.",
+    "Current runtime VM knowledge remains controlled cde7; local authoring release includes existing independent Studies drafts without approving or publishing them."
+  ]
+}

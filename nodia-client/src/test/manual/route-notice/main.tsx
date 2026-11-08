@@ -42,7 +42,7 @@ const context = {
       modules: [
         {
           key: "rental_reservations",
-          link: "/tools/reservations",
+          link: "/reservations",
           translates: [],
         },
       ],
@@ -121,7 +121,7 @@ if (params.get("cached") === "1") {
     .catch(() => undefined);
 }
 const router = createMemoryRouter(productionRouter.routes, {
-  initialEntries: ["/tools/reservations"],
+  initialEntries: ["/reservations"],
 });
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={client}>

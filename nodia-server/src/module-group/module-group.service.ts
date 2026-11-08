@@ -11,6 +11,7 @@ import { TranslationService } from '../translation/translation.service.js';
 import { GetModuleGroupsDto } from './dto/get-module-groups.dto.js';
 import { ModuleGroup } from './entities/module-group.entity.js';
 import { GetModuleGroupsResponse } from './types/module-group.types.js';
+import { assertOrderView, attachGroupOrderMetadata } from '../module-order/order-metadata.js';
 
 @Injectable()
 export class ModuleGroupService {
@@ -22,17 +23,23 @@ export class ModuleGroupService {
   ) {}
 
   async findAll(
-    { page = 1, limit = 10, all = false, q }: GetModuleGroupsDto,
+    { page = 1, limit = 10, all = false, ordering = false, q }: GetModuleGroupsDto,
     manager?: EntityManager,
   ): Promise<GetModuleGroupsResponse> {
+    assertOrderView({ ordering, all, limit, q });
+    if (ordering && !manager) {
+      return this.moduleGroupRepository.manager.transaction('REPEATABLE READ', (snapshot) =>
+        this.findAll({ page, limit, all, ordering, q }, snapshot),
+      );
+    }
     const qb = (
       manager?.getRepository(ModuleGroup) ?? this.moduleGroupRepository
     ).createQueryBuilder('module_group');
     validateRansackEnvelope(q);
 
     applyRansack(qb, q, 'module_group', RANSACK_POLICIES.module_group);
-    if (manager && !/^id\s/i.test(String(q?.s ?? '')))
-      qb.addOrderBy('module_group.id', 'ASC');
+    if (!q?.s) qb.addOrderBy('module_group.sort_order', 'ASC');
+    if (!/^id(?:\s|$)/i.test(String(q?.s ?? '').trim())) qb.addOrderBy('module_group.id', 'ASC');
 
     if (all) {
       const rawData = await qb.getMany();
@@ -65,7 +72,9 @@ export class ModuleGroupService {
     const total_pages = Math.ceil(total_items / limit);
 
     return {
-      data: data as any,
+      data: ordering
+        ? await attachGroupOrderMetadata(manager!, data)
+        : data,
       meta: {
         page,
         limit,

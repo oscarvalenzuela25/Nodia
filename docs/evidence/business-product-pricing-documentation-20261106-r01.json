@@ -1,0 +1,170 @@
+{
+  "schema": "business-product-pricing-documentation/1",
+  "date": "2026-11-06",
+  "scope": "Contract documentation and selective context audit; implementation ongoing, no deployment or publication",
+  "functional_instruction": "explicit user request for independent sale price/local calculator and reviewed manual OCR binding",
+  "ADR_status": "proposed",
+  "candidate_status": "draft/planned/unregistered/approval:null",
+  "approved_documents_byte_identical": 44,
+  "approved_source_sha256": {
+    "docs/nodia-ai/knowledge/reservations/features/audit-and-recovery.md": "0d379d0948dfad1fa0b9a0892dbd2d6fb3a442a9806c9e302f230898e1dbf396",
+    "docs/nodia-ai/knowledge/reservations/features/availability-and-calendar.md": "95448f5b58cb0b7b6f701f0d20a83d2394aa3635e190b0aa36d941ed7878df72",
+    "docs/nodia-ai/knowledge/reservations/features/blocks.md": "1795ea88e34afdc856a143544426220218ef87be597a21f0c6bce7c4f5451667",
+    "docs/nodia-ai/knowledge/reservations/features/cancellation-policies.md": "0815af692ff10bb58e9e1d15aa6c4a1df94c2ec40f31d7f594e6ab0093e5a84f",
+    "docs/nodia-ai/knowledge/reservations/features/confirmed-configuration.md": "f00421e4c280a42d9f9de24b44b96c0b07c2de2bd29db3d782c3e971541163a4",
+    "docs/nodia-ai/knowledge/reservations/features/confirmed-money.md": "ce730177fe59cf91b336b2b65ea600f23a2eb21e78d841a32a268854a2587ae6",
+    "docs/nodia-ai/knowledge/reservations/features/confirmed-occupancy-preparation.md": "78aabb97b599d462971a9935eb8afe340b6b999b3fe6998c8a7fbf6035a5b35a",
+    "docs/nodia-ai/knowledge/reservations/features/confirmed-reservation-lifecycle.md": "44d21e71f8d6e2afce5cd7a7cb4b3da16b60490a630080eb80c9ce6931fe9353",
+    "docs/nodia-ai/knowledge/reservations/features/expenses.md": "bc5442eb08b65cf01ab3fa4ef6bb5ccce2b15d8434002f1e7801e832bee90765",
+    "docs/nodia-ai/knowledge/reservations/features/payments-and-refunds.md": "75c27849aa84993d66398e675e32a6fba44b06101f7915809280d8329e0b97a5",
+    "docs/nodia-ai/knowledge/reservations/features/preparation.md": "bc6a729fa3565bdc258a058027cbf3324a730cea3fdeea3764758b432cade882",
+    "docs/nodia-ai/knowledge/reservations/features/properties-and-collaborators.md": "379f8962d7f150d84f378ce0e383c73877fa241d9a39ccf34fddd8ae71ff3931",
+    "docs/nodia-ai/knowledge/reservations/features/reservations.md": "705e990e4e2927902372e520eb79ad021928fc194b4416dc3884edfb04efa12f",
+    "docs/nodia-ai/knowledge/personal-finance/features/categories-and-groups.md": "5d463297e54867a1e2132a650a6ef479f8fd088b47e9c5286d764d58fb2d0826",
+    "docs/nodia-ai/knowledge/personal-finance/features/confirmed-movement-effect.md": "d27f52845b5b02815736577366d9559af874281c345a9b9b63f9b29dd5929ddc",
+    "docs/nodia-ai/knowledge/personal-finance/features/movements.md": "674ccdbd457adc321dbe35ce0ed6a35d5cec20cddf2a590b3f4da15a8ae0af9a",
+    "docs/nodia-ai/knowledge/personal-finance/features/obligations.md": "3c86175ea8e8f5689952254b4775ae23be89c441fe02b80475fa5d2b96398be8",
+    "docs/nodia-ai/knowledge/personal-finance/features/summaries.md": "e3540cc2c23686d7d41f09762a8b42f7f3496d81eccf4317ca8552d1a40375e5",
+    "docs/nodia-ai/knowledge/nodia-ai/features/accepted-preferences.md": "62964211264988e62aa32f06b8ba956beccec14275f31e26d44d6959fa20daa8",
+    "docs/nodia-ai/knowledge/nodia-ai/features/api-key-chat-parity.md": "e60ef90981e3af1380e52d748e32900cc260d099e1532dee97ed0ec1b0a38da8",
+    "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md": "201dc70bfebb2263722d295413d511e5c196eaa354d98bb10cba5c1fe5d85474",
+    "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md": "e4a5a64e0ccad3318cf7528dc4d7e07c199a5e696f2c4b373a998c7798da5634",
+    "docs/nodia-ai/knowledge/nodia-ai/features/image-generation.md": "2377c2b2cb4cadc4d76c5ef3f2137e7e2c6857e0e23239eff1bcdef17e635675",
+    "docs/nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md": "ed074df8f77b4f44eac5bcde3e55c270c167bf605b628d43aa32744500098482",
+    "docs/nodia-ai/knowledge/general-settings/features/actions-and-business-actions.md": "c05efe40f9fee14bf9996f9395c0c700a8cc4229000da7a2eb41923ebc5da7f0",
+    "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md": "af94d4e2d7004f6fbdcf475f6e49372a9856428c65d2eaa72a55cdc46aa03eb5",
+    "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md": "d1d6d0e9cf82ede8a73bb4db01f9e8c200848b0694b808c276d30e1f0e840f1f",
+    "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md": "6c44a005ce7e8b73273c416e0fb24fb9a880ef9eb82ee7b8de526eb1359a543f",
+    "docs/nodia-ai/knowledge/general-settings/features/confirmed-administration.md": "bda80d67cf8fccc06ad4a26d5d60e296ab041c91e13df2e5c2aa91cb4b2f4283",
+    "docs/nodia-ai/knowledge/general-settings/features/confirmed-ai-configuration.md": "a2e63fa9692dffd862665db972218d6199e84b4c18253fac17ff781cad2ed24c",
+    "docs/nodia-ai/knowledge/general-settings/features/modules-and-groups.md": "8c4458fb045dc4ff4a5e47be3ff1b375ff8bdf0e3bc1d877af8fee32fab1ad6c",
+    "docs/nodia-ai/knowledge/general-settings/features/roles.md": "06cb6bf7babed7893123a42f53696a28a156c9bb5d3e31aa8bb70b51fb4f6909",
+    "docs/nodia-ai/knowledge/general-settings/features/secure-ai-interaction.md": "34d82697caeecf33d4a8616cb87069cd12299ade15017ca7982351be7c5372e2",
+    "docs/nodia-ai/knowledge/general-settings/features/users.md": "a8617b1ab2635798da0d607c47af3c4d2389dbb93595fcd69c7bd89bdfcd9b63",
+    "docs/nodia-ai/knowledge/businesses/features/active-invoice-analysis.md": "6842a0905033365ebdefa597c36c9e3de8e9208df883985fe9d9b6fd90f400a7",
+    "docs/nodia-ai/knowledge/businesses/features/businesses-and-collaborators.md": "671f85892afd38ac710e00fb02207d7822826fdcc0f0c7726565dcb5e7daa6f1",
+    "docs/nodia-ai/knowledge/businesses/features/confirmed-business-effects.md": "47ae5d238d8815a0643a25700c15e1a6a684430a804f87f3aecc9b6b5e70d9d8",
+    "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md": "c2e3301a26d81272bd9c72440f92a8e994cfefb539a43f29520e53b38ca5e1ff",
+    "docs/nodia-ai/knowledge/businesses/features/invoices-and-files.md": "7313d14131119ca57e8a8472a9a24343fe2f76fac7fe0801215054c89edc3e11",
+    "docs/nodia-ai/knowledge/businesses/features/point-of-sale-and-sales.md": "95440a9ab70da9ce3acfa4439077011d2c9ea8453cf486b877d4d85829f46211",
+    "docs/nodia-ai/knowledge/businesses/features/product-logs.md": "851e62ea11b212d54edf50a8c445bdf73efe1e0deffc951431665a33cf719ae2",
+    "docs/nodia-ai/knowledge/businesses/features/products.md": "fc22bcd7dc2cab1fe69c83d4440c11c3e06a6b76344620b4dda3d55ce243c0df",
+    "docs/nodia-ai/knowledge/businesses/features/supplier-contacts.md": "554dcb858cd39d34b30af5237aafd733fbc00dd8ebbb27c061cefd3060562744",
+    "docs/nodia-ai/knowledge/businesses/features/suppliers.md": "b0109877c253168b32390a30f29514cf4d39c8c2b46eff5958768e51f182409a"
+  },
+  "registry_before_runtime_freeze_sha256": "c6af2f77ab77c0a69765597e9962e263e529054aa4ac5c72af3615aa406b08d1",
+  "bindings_checked": 46,
+  "affected_bindings_review": [
+    {
+      "document_id": "businesses.product-logs",
+      "fragment_id": "ai15-reads",
+      "source": "docs/nodia-ai/knowledge/businesses/features/product-logs.md",
+      "approved_source_sha256": "851e62ea11b212d54edf50a8c445bdf73efe1e0deffc951431665a33cf719ae2",
+      "selected_sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "selected_rendered_text_sha256": "ff6de30b95564987e7511fbad4a5fe4bce4b64f996ce69602baa0974607bc264",
+      "selected_rendered_text_bytes": 2130,
+      "result": "compatible: no assertion of persisted markup or automatic inverse price calculation"
+    },
+    {
+      "document_id": "businesses.products",
+      "fragment_id": "ai15-reads",
+      "source": "docs/nodia-ai/knowledge/businesses/features/products.md",
+      "approved_source_sha256": "fc22bcd7dc2cab1fe69c83d4440c11c3e06a6b76344620b4dda3d55ce243c0df",
+      "selected_sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "selected_rendered_text_sha256": "7363649f57438fbcb219e40b30ac818f9962c2d93afce824e2357527f6c619ea",
+      "selected_rendered_text_bytes": 2307,
+      "result": "compatible: no assertion of persisted markup or automatic inverse price calculation"
+    },
+    {
+      "document_id": "nodia-ai.invoice-ocr-product-comparison",
+      "fragment_id": "invoice-ocr-product-comparison",
+      "source": "docs/nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md",
+      "approved_source_sha256": "ed074df8f77b4f44eac5bcde3e55c270c167bf605b628d43aa32744500098482",
+      "selected_sections": [
+        "Ampliación API key — 2026-10-27",
+        "Uso del OCR de Productos en el chat"
+      ],
+      "selected_rendered_text_sha256": "2c4c35afd07e07d1e97453b324e2feeef7f332451ca6ef541dafc821166372d8",
+      "selected_rendered_text_bytes": 6865,
+      "result": "compatible: no assertion of persisted markup or automatic inverse price calculation"
+    }
+  ],
+  "selected_profit_percentage_mentions": [],
+  "OCR_margin_phrase_classification": "no inventa sale_price, margen o impuesto is a compatible prohibition; it does not assert a persisted margin field",
+  "obsolete_full_document_sections": "Unselected, preserved historically; not emitted by these bindings",
+  "compatible_bindings_removed": 0,
+  "capabilities_removed": 0,
+  "new_bindings_added": 0,
+  "new_draft_source_path": "docs/nodia-ai/knowledge/businesses/features/product-price-calculator-and-invoice-binding.md",
+  "metadata_validation": "3 drafts checked against native compiler metadata schema",
+  "links_existing": 141,
+  "UTF8_LF": true,
+  "knowledge_check": {
+    "command": "npm run knowledge:check",
+    "exit": 1,
+    "error": "implementation_hash_mismatch",
+    "unique_implementation_or_schema_paths": [
+      "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
+      "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+      "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+      "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
+      "nodia-server/src/product/entities/product-log.entity.ts",
+      "nodia-server/src/product/entities/product.entity.ts",
+      "nodia-server/src/product/product-catalog.ts",
+      "nodia-server/src/product/product.service.ts",
+      "nodia-server/src/product/use-case/export-products-csv.use-case.ts"
+    ],
+    "status": "Known development-time failure; exact repins only after frozen backend Root review; no automatic pin rewrite"
+  },
+  "pending": [
+    "Final Client/Server implementation and regression/SQL receipts",
+    "Frozen backend review followed by exact implementation/schema repins and knowledge check/build",
+    "Migration recovery and authorized adoption/QA gates; not demonstrated by this documentation"
+  ],
+  "files": {
+    "docs/architecture/decisions/ADR-095-independent-product-prices-and-reviewed-invoice-binding.md": {
+      "bytes": 7730,
+      "sha256": "ebee8fb4b031d777aacfbc0facab91ffbc46112becb2cdf8e8197eb53c7b8244"
+    },
+    "docs/mvp/94-business-point-of-sale-and-product-refactor.md": {
+      "bytes": 203021,
+      "sha256": "d2b2f899bddc76920bf0529f2ba64af636c434fb942ef9ecd1d7838181bfb066"
+    },
+    "docs/mvp/README.md": {
+      "bytes": 187788,
+      "sha256": "9eb1d5461e03bfff71158a64ed4916c05fb0033f9c6974310a784e7de553aa98"
+    },
+    "docs/mvp/00-progress.md": {
+      "bytes": 358801,
+      "sha256": "06ec991747496cb98f40fdb17ade741fef1544e1cc4b95d72a3a2e136b35ce9b"
+    },
+    "docs/nodia-ai/knowledge/README.md": {
+      "bytes": 101691,
+      "sha256": "6c7a7737d81189252041b3c5001bfd19abf45565babc6b180350bd9a8771a9e5"
+    },
+    "docs/nodia-ai/knowledge/businesses/README.md": {
+      "bytes": 81361,
+      "sha256": "31e32534de3b819001550671216ecaa5352a3f8036c1b21919912c2950238d2c"
+    },
+    "docs/nodia-ai/knowledge/businesses/features/multi-sale-workspace.md": {
+      "bytes": 45789,
+      "sha256": "1bdcfec0ee7accd9e13454dd5a6036f6a40fb39a1fb309473a883e03bc22196a"
+    },
+    "docs/nodia-ai/knowledge/businesses/features/product-price-calculator-and-invoice-binding.md": {
+      "bytes": 10046,
+      "sha256": "a0472d9c71614e69cd9d332543b2d8d069e77bac8d6f8dcb70298286832a170a"
+    },
+    "nodia-server/config/nodia-ai-knowledge.registry.json": {
+      "bytes": 335544,
+      "sha256": "c6af2f77ab77c0a69765597e9962e263e529054aa4ac5c72af3615aa406b08d1"
+    }
+  },
+  "VM_operations": 0,
+  "provider_requests": 0,
+  "business_mutations": 0,
+  "publication": false
+}

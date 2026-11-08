@@ -21,6 +21,6 @@ export default function ReportObservationLoader({ resultRef }: { resultRef: Nodi
     return () => { current = false; };
   }, [attempt]);
   if (state.Panel) return <state.Panel resultRef={resultRef} />;
-  if (state.failed) return <Alert severity="error" action={<Button onClick={() => { setState({ failed: false }); setAttempt(value => value + 1); }}>{t("retry")}</Button>}>{t("reports.load_error")}</Alert>;
+  if (state.failed) return <Alert severity="error" action={<Button variant="contained" onClick={() => { setState({ failed: false }); setAttempt(value => value + 1); }}>{t("retry")}</Button>}>{t("reports.load_error")}</Alert>;
   return <Skeleton loading><Typography variant="body2">{t("reports.loading")}</Typography></Skeleton>;
 }

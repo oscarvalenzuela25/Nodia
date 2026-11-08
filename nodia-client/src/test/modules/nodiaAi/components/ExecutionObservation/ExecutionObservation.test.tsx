@@ -30,6 +30,33 @@ afterEach(() => { client.clear(); useAuthStore.setState({ token: null, user: nul
 function open() { render(<QueryClientProvider client={client}><MemoryRouter><ExecutionObservation conversationId={chatId} run={{ ...run, state: "completed" }} /></MemoryRouter></QueryClientProvider>); }
 
 describe("NodiaAI query observations", () => {
+  it("prevents collapsing an initially loading proposal until both authorized reads finish, without issuing writes", async () => {
+    mocks.getNodiaAiEvents.mockResolvedValue({ conversation_id: chatId, items: [proposalEvent], next_cursor: "synthetic-checkpoint", cursor_state: "current", has_more: false });
+    let resolveProposal!: (value: typeof editableProposal) => void;
+    let resolveReview!: (value: typeof editableReview) => void;
+    mocks.getNodiaAiProposal.mockReturnValue(new Promise<typeof editableProposal>(resolve => { resolveProposal = resolve; }));
+    mocks.getNodiaAiProposalReview.mockReturnValue(new Promise<typeof editableReview>(resolve => { resolveReview = resolve; }));
+    const user = userEvent.setup(); open();
+    await user.click(await screen.findByRole("button", { name: "Ver propuesta" }));
+    const toggle = screen.getByRole("button", { name: "Ocultar propuesta" });
+    await waitFor(() => expect(toggle).toBeDisabled());
+    expect(mocks.getNodiaAiProposal).toHaveBeenCalledOnce();
+    expect(mocks.getNodiaAiProposalReview).not.toHaveBeenCalled();
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    resolveProposal(editableProposal);
+    await waitFor(() => expect(mocks.getNodiaAiProposalReview).toHaveBeenCalledOnce());
+    expect(toggle).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Corregir propuesta" })).not.toBeInTheDocument();
+    resolveReview(editableReview);
+    await waitFor(() => expect(toggle).toBeEnabled());
+    expect(await screen.findByRole("button", { name: "Corregir propuesta" })).toBeEnabled();
+    expect(mocks.getNodiaAiProposal).toHaveBeenCalledOnce();
+    expect(mocks.getNodiaAiProposalReview).toHaveBeenCalledOnce();
+    expect(mocks.updateNodiaAiProposal).not.toHaveBeenCalled();
+    expect(mocks.challengeNodiaAiProposal).not.toHaveBeenCalled();
+    expect(mocks.confirmNodiaAiProposal).not.toHaveBeenCalled();
+  });
   it("keeps an uncertain revision mounted and prevents both activity and preview collapse from discarding its recovery state", async () => {
     mocks.getNodiaAiEvents.mockResolvedValue({ conversation_id: chatId, items: [proposalEvent], next_cursor: "synthetic-checkpoint", cursor_state: "current", has_more: false });
     let reject!: (error: Error) => void;
@@ -146,7 +173,7 @@ describe("NodiaAI query observations", () => {
     expect(screen.queryByText(observation.result_ref.tool_name)).not.toBeInTheDocument();
     expect(screen.getByText(/Los datos actuales pueden haber cambiado/)).toBeInTheDocument();
     expect(document.querySelector(`time[datetime="${observation.observed_at}"]`)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Synthetic business" })).toHaveAttribute("href", `/tools/business/${chatId}`);
+    expect(screen.getByRole("link", { name: "Synthetic business" })).toHaveAttribute("href", `/business/${chatId}`);
     expect(mocks.getNodiaAiObservation).toHaveBeenCalledTimes(1);
   });
   it("does not manufacture missing totals or display destinations from arbitrary provider/model URLs", async () => {
@@ -157,22 +184,23 @@ describe("NodiaAI query observations", () => {
     expect(screen.queryByText(/^Total:/)).not.toBeInTheDocument();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
-  it("shows empty and failed observations distinctly and retries a read without repeating an action", async () => {
+  it("shows a read failure and retries without repeating an action, then removes empty completed activity", async () => {
     mocks.getNodiaAiEvents.mockRejectedValueOnce(new Error("synthetic network failure")).mockResolvedValue({ conversation_id: chatId, items: [], next_cursor: "checkpoint", cursor_state: "current", has_more: false });
     const user = userEvent.setup(); open();
     expect(await screen.findByText(/No pudimos actualizar la actividad/)).toBeInTheDocument();
     expect(screen.queryByText("Aún no hay actividad publicada para este turno.")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Reintentar" }));
-    await waitFor(() => expect(screen.getByText("Aún no hay actividad publicada para este turno.")).toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText(/No pudimos actualizar la actividad/)).not.toBeInTheDocument());
+    expect(screen.queryByLabelText("Actividad y resultados")).not.toBeInTheDocument();
     expect(mocks.getNodiaAiObservation).not.toHaveBeenCalled();
   });
   it("resolves only registered module routes and valid IDs", () => {
-    const module = { kind: "module" as const, id: null, module_route: "/settings/users", label: null };
-    expect(nodiaAiObservationDestination(module)).toBe("/settings/users");
+    const module = { kind: "module" as const, id: null, module_route: "/users", label: null };
+    expect(nodiaAiObservationDestination(module)).toBe("/users");
     expect(nodiaAiObservationDestination({ ...module, module_route: "//example.invalid" })).toBeNull();
-    expect(nodiaAiObservationDestination({ ...module, kind: "business_detail", module_route: "/tools/business", id: "../../settings/users" })).toBeNull();
-    expect(nodiaAiObservationDestination({ ...module, kind: "business_detail", module_route: "/tools/business", id: "123e4567-e89b-12d3-a456-426614174000" })).toBe("/tools/business/123e4567-e89b-12d3-a456-426614174000");
-    expect(nodiaAiObservationDestination({ ...module, kind: "rental_property", module_route: "/tools/reservations", id: "9007199254740993" })).toBe("/tools/reservations?property=9007199254740993");
-    expect(nodiaAiObservationDestination({ ...module, kind: "rental_property", module_route: "/tools/reservations", id: "9223372036854775808" })).toBeNull();
+    expect(nodiaAiObservationDestination({ ...module, kind: "business_detail", module_route: "/business", id: "../../users" })).toBeNull();
+    expect(nodiaAiObservationDestination({ ...module, kind: "business_detail", module_route: "/business", id: "123e4567-e89b-12d3-a456-426614174000" })).toBe("/business/123e4567-e89b-12d3-a456-426614174000");
+    expect(nodiaAiObservationDestination({ ...module, kind: "rental_property", module_route: "/reservations", id: "9007199254740993" })).toBe("/reservations?property=9007199254740993");
+    expect(nodiaAiObservationDestination({ ...module, kind: "rental_property", module_route: "/reservations", id: "9223372036854775808" })).toBeNull();
   });
 });

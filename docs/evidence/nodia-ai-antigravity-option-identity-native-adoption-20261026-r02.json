@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "title": "Antigravity Agentic: adopción nativa P1 de identidad/freshness — alcance operativo",
+  "status": "adopted_not_inference_qualified",
+  "observed_at": "2026-10-26T20:17:21.863580+00:00",
+  "source": {
+    "Server_manifest_sha256": "01afbfa3fe33adaa8b67748efb09e94f1e5f18e3a774826ad8574001ae15d0c9",
+    "knowledge_release": "b90f2c50757cbe0f408fd385549eba0b7f9c09f97ae12a41491d973175e85daf",
+    "Client_manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+    "nginx_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac",
+    "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105"
+  },
+  "native": {
+    "epoch_before": {
+      "container_id": "65862c1a1853322c0cd4734a06c96cf8b6d01bc7ca4bd4f9e5cb2eaa027fc72a",
+      "image_id": "sha256:706f34fcf3586f4fd5476d6d3fd8ff04185ede838fb77620e611fef37f010e28",
+      "started_at_utc": "2026-10-26T18:37:06.112041394Z"
+    },
+    "epoch_after": {
+      "container_id": "c962df9182e2b6df08ccde0d8326fb3e1b61ddb0d400b429be0bda040da4d0e2",
+      "image_id": "sha256:46952b1fa6f2987080ae0d6643a49e297ccc85df636c0e748c119d7c47deb3bc",
+      "started_at_utc": "2026-10-26T20:16:37.619860578Z"
+    },
+    "new_descriptor_sha256": null,
+    "public_modules": 52,
+    "changed_module": {
+      "path": "agentic_service.py",
+      "before_sha256": "1ade06aae2fa77534ef2cea84e25d83fb3f6b9050feecb4a3e27547865cd0017",
+      "after_sha256": "03507ea9327d6454f41394871052793529b650caf4cf841623efbe35b26b1a08"
+    },
+    "unchanged_modules": 51,
+    "single_COPY_layer": true,
+    "configuration_and_mounts_preserved": true,
+    "CLI_changed": false,
+    "historical_CLI_version": "1.3.1",
+    "new_CLI_probe_performed": false,
+    "actual_image_size_delta_bytes": 43840
+  },
+  "offline_validation": {
+    "network_none": true,
+    "read_only_no_profiles": true,
+    "FakeRunner_suites": {
+      "status": "offline_candidate_tests",
+      "tests": 49,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "SDK_calls": 0,
+      "provider_generations": 0,
+      "suites": [
+        {
+          "name": "freshness",
+          "suite": "freshness",
+          "before_control": false,
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "SDK_calls": 0,
+          "provider_generations": 0
+        },
+        {
+          "name": "option_cache",
+          "suite": "cache",
+          "before_control": false,
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "SDK_calls": 0,
+          "provider_generations": 0
+        },
+        {
+          "name": "status",
+          "suite": "status",
+          "before_control": false,
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "SDK_calls": 0,
+          "provider_generations": 0
+        },
+        {
+          "name": "core_regressions",
+          "suite": "core",
+          "before_control": false,
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "SDK_calls": 0,
+          "provider_generations": 0
+        }
+      ]
+    },
+    "real_account_inference": false
+  },
+  "lifecycle": {
+    "plan_sha256": "18ee7b74c8167db49cd966a08e32c48c19d17c328436a9a0e61edcaf3c3a1626",
+    "operator_sha256": "d8ca1e361dce5862ca011eebb0411f8fc960a0fb2b8a1cf333aa14e4d730b165",
+    "source_pids": {
+      "nodia-api": 660393,
+      "nodia-ai-worker": 687114
+    },
+    "actual_consumers_after": {
+      "nodia-api": 724319,
+      "nodia-ai-worker": 724320
+    },
+    "SQL61_schema_and_configuration_preservation_checks_passed": true,
+    "quiet_after": {
+      "native": {
+        "unknown_markers": 0,
+        "armed_native_proofs": 0,
+        "terminal_native_proofs": 0,
+        "invalid_native_proofs": 0,
+        "temporary_attachment_directories": 0,
+        "temporary_cli_directories": 0,
+        "agentic_home_configured": true,
+        "stage": "AI-32-R04",
+        "scope": "read_only_native_runtime_artifact_counts",
+        "observed_at_utc": "2026-10-26T20:17:20Z",
+        "provider_calls": 0,
+        "configured_database_modified": false,
+        "profile_bytes_read": false
+      },
+      "SQL": {
+        "stage": "AI-36-C05",
+        "scope": "post_disposable_live_read_only_operational_quiescence",
+        "status": "passed",
+        "observed_at_utc": "2026-10-26T20:17:20.920Z",
+        "pending_jobs": 0,
+        "open_attempts": 0,
+        "retained_slots": 0,
+        "preserved_r05_chat": 1,
+        "configured_SQL_writes": 0,
+        "provider_requests": 0,
+        "storage_operations": 0,
+        "services_restarted": false,
+        "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+      }
+    },
+    "timers_restored": true,
+    "fresh_backup": {
+      "backup_id": "3b51dad9-2613-4b78-a826-14febff70c7a",
+      "status": "ready",
+      "captured_at": "2026-10-26T20:16:28.416Z",
+      "expires_at": "2026-11-02T20:16:28.416Z",
+      "cipher_bytes": 1814234,
+      "cipher_sha256": "cda5e810ca9a6a5465ff1d1964b724adaf479395f3a537904df2adb46c1e72f7"
+    },
+    "journal_catalog_backups": 51,
+    "expired_backups": 0,
+    "unconfirmed_journal_entries": 0,
+    "SQL_writes": 0,
+    "provider_generation_requests": 0,
+    "business_effects": 0,
+    "automatic_replay_or_SQL_restore": false
+  },
+  "preserved_preflight_failure": {
+    "receipt_sha256": "230978fabfd9311b786a55aab91138e9604b6c21a1e3ebc950f2afff56179d60",
+    "cause_confirmed_by_Root": "R01 expected R05 SHA955251 at the distinct immutable legacy r04-state.py path, whose real SHA is33df.",
+    "before_mutations": true,
+    "R02_correction": "Only legacy expected pin33df, companion/operator pins and new WORK/dropin. R05 DELIVERY955251, build/payload/image/plan and all legacy files unchanged.",
+    "local_atomic_binding_regressions_passed": 2
+  },
+  "limits": [
+    "Adoption and49FakeRunner cases do not qualify real MCP/OCR, latency, cost or the provider selection on this new epoch.",
+    "Previous706f/6401/session3db proofs remain historical; new native descriptor/session/selection need their own Root readback and qualification.",
+    "No published feature/contract or knowledge-source pin changed; current R05 registry/src+dist manifests contain no agentic_service.py reference.",
+    "Seven-day backup expiry and51catalog backups do not establish seven days of observed retention, physical24h cleanup or all external copies.",
+    "Web/API-key modes and global NodiaAI acceptance remain outside this scoped delivery."
+  ],
+  "receipts": {
+    "antigravity-option-identity-adopt-bootstrap-VM-r01.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-identity-native-adoption-verification-r02/receipts/antigravity-option-identity-adopt-bootstrap-VM-r01.json",
+      "sha256": "077bb58cf8699d519b1cc3a866b131e4705098e6554d5d0fb48105dd571c4345"
+    },
+    "antigravity-option-identity-adopt-bootstrap-VM-r02.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-identity-native-adoption-verification-r02/receipts/antigravity-option-identity-adopt-bootstrap-VM-r02.json",
+      "sha256": "1415902fd13379c76e7ca0b66b06dc1a9fe6ae6cf758c9577030b4b1d33ff724"
+    },
+    "antigravity-option-identity-adopt-execute-VM-r02.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-identity-native-adoption-verification-r02/receipts/antigravity-option-identity-adopt-execute-VM-r02.json",
+      "sha256": "205faf980c643020b019bcf0eff9b946997dc8e7eba208f09c46436852e9046c"
+    },
+    "antigravity-option-identity-adopt-preflight-VM-r01.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-identity-native-adoption-verification-r02/receipts/antigravity-option-identity-adopt-preflight-VM-r01.json",
+      "sha256": "230978fabfd9311b786a55aab91138e9604b6c21a1e3ebc950f2afff56179d60"
+    },
+    "antigravity-option-identity-adopt-preflight-VM-r02.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-identity-native-adoption-verification-r02/receipts/antigravity-option-identity-adopt-preflight-VM-r02.json",
+      "sha256": "5dee3684892386a1100e833113999ad579b35de55ea192ea984380c9652353b1"
+    },
+    "antigravity-option-identity-build-bootstrap-VM-r01.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-identity-native-adoption-verification-r02/receipts/antigravity-option-identity-build-bootstrap-VM-r01.json",
+      "sha256": "dfc148926c97b59507295dc23ae35f09eeeea44e155e98e4b49a664172af9ae3"
+    },
+    "antigravity-option-identity-build-execute-VM-r01.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-identity-native-adoption-verification-r02/receipts/antigravity-option-identity-build-execute-VM-r01.json",
+      "sha256": "cc4d43a2cc5fb98ec65981a314ac4722ccc988f00e83a00c62136509e2844dd2"
+    },
+    "antigravity-option-identity-build-preflight-VM-r01.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-identity-native-adoption-verification-r02/receipts/antigravity-option-identity-build-preflight-VM-r01.json",
+      "sha256": "d3c235f03f91d933ebd04348ecb53efc1e0b6e400164c412cbe914d785e7e918"
+    },
+    "antigravity-option-identity-build-verify-VM-r01.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-identity-native-adoption-verification-r02/receipts/antigravity-option-identity-build-verify-VM-r01.json",
+      "sha256": "6757690e8c1a13ab48f75f0b60018dcff70cc2912632779e912ebfe5432f4150"
+    },
+    "antigravity-option-identity-source-observe-VM-r01.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-identity-native-adoption-verification-r02/receipts/antigravity-option-identity-source-observe-VM-r01.json",
+      "sha256": "b948535dd1bfdfba037b9c925c251cba537e1f61cb631dbe9ee812ce3c485ebb"
+    },
+    "option-identity-durable-helper-identity-VM-r01.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-identity-native-adoption-verification-r02/receipts/option-identity-durable-helper-identity-VM-r01.json",
+      "sha256": "4b856b22e239d47f6f48bdb75aeb2dd2cac628df27d06170573e8dc32c0f8ff0"
+    },
+    "R05-native-adoption-helper-identity-VM-r01.json": {
+      "path": "ops/lab/artifacts/invoice-ocr-option-identity-native-adoption-verification-r02/receipts/R05-native-adoption-helper-identity-VM-r01.json",
+      "sha256": "5255a836ecc377287367324016bbeda5d97de0c7484a7280206467d821e30217"
+    }
+  }
+}

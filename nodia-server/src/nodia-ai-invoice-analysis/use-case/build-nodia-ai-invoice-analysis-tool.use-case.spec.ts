@@ -102,7 +102,7 @@ function fixture() {
     toolCallId = randomUUID();
   const selection: NodiaAiSelection = {
     connection_id: '2',
-    mode: 'token_plan_agentic',
+    mode: 'agentic',
     model_id: 'fixture-model',
     effort_id: null,
   };
@@ -240,7 +240,7 @@ function fixture() {
       isSuperAdmin: false,
       modules: [],
     },
-    moduleRoutes: ['/tools/nodia-ai', '/tools/business'],
+    moduleRoutes: ['/nodia-ai', '/business'],
     conversationId,
     runId,
     attemptId,
@@ -309,7 +309,7 @@ describe('Invoice analysis MCP contract and publication', () => {
       families,
       'fixture-catalog',
     );
-    expect(registry.list(['/tools/business'])).toHaveLength(1);
+    expect(registry.list(['/business'])).toHaveLength(1);
     expect(tool.kind).toBe('analyze_attachment');
     expect(tool.actionKeys).toEqual([]);
     expect(vi.mocked(native.prepare)).not.toHaveBeenCalled();
@@ -373,13 +373,13 @@ describe('Invoice analysis MCP contract and publication', () => {
     const read = {
       familyKey: 'read',
       modules: [
-        { key: 'business', route: '/tools/business', label: 'Negocios' },
+        { key: 'business', route: '/business', label: 'Negocios' },
       ],
       resources: [
         {
           key: 'invoices',
           label: 'Facturas',
-          requiredModuleRoutes: ['/tools/business'],
+          requiredModuleRoutes: ['/business'],
         },
       ],
       capabilities: [
@@ -535,14 +535,14 @@ describe('Current-generation invoice provenance and completion', () => {
     f.run.routing_snapshot.target = {
       selection: {
         ...f.attempt.selection_snapshot,
-        mode: 'token_plan_agentic',
+        mode: 'agentic',
       },
       session_generation: 's'.repeat(32),
       configuration_generation: 'c'.repeat(64),
     };
     f.run.selection_snapshot = {
       ...f.run.selection_snapshot,
-      mode: 'token_plan_web',
+      mode: 'agentic',
     };
     await tool.verifyAuthority(f.input, f.context);
     expect(configuration).toHaveBeenLastCalledWith(
@@ -579,7 +579,7 @@ describe('Current-generation invoice provenance and completion', () => {
     [
       'web mode',
       (f: ReturnType<typeof fixture>) => {
-        f.attempt.selection_snapshot.mode = 'token_plan_web';
+        f.attempt.selection_snapshot.mode = 'token_plan_web' as never;
       },
     ],
     [
@@ -760,5 +760,42 @@ describe('Invoice contract HTTP transport through the MCP use case', () => {
       'nodia_ai:invoice_analysis_contract_unavailable',
     );
     expect(fetcher).not.toHaveBeenCalled();
+  });
+});
+
+
+describe('API invoice analysis uses the same private provenance and normalization', () => {
+  function apiFixture() { const f = fixture(); f.run.selection_snapshot.mode = 'api_key'; return f; }
+  it('prepares a scoped API generation without relabeling it Agentic or spending another inference', async () => {
+    const f = apiFixture(); const prepared = await f.prepare();
+    expect(prepared.result.extraction_source).toBe('active_api_generation');
+    expect(prepared.result.selection).toMatchObject({ mode: 'api_key', connection_id: '2', model_id: 'fixture-model' });
+    expect(compileNodiaAiToolSchema(tool.outputSchema).validate(prepared.result)).toBe(true);
+    expect(compileNodiaAiToolSchema(tool.outputSchema).validate({ ...prepared.result, extraction_source: 'active_agentic_generation' })).toBe(false);
+    await expect(tool.verifyResultAuthority!(f.input, { ...prepared.result, extraction_source: 'active_agentic_generation' }, f.context)).rejects.toThrow('invalid_tool_output');
+    expect(vi.mocked(native.prepare)).toHaveBeenCalledOnce(); expect(vi.mocked(native.normalize)).not.toHaveBeenCalled();
+  });
+  it('normalizes API extraction once and preserves the immutable prepared receipt', async () => {
+    const f = apiFixture(); const prepared = await f.prepare(); const original = JSON.stringify(prepared.row.public_result);
+    const context = { ...f.context, toolCallId: randomUUID() }, input = { action: 'complete', analysis_id: f.context.toolCallId!, extraction };
+    const operation = await tool.external!.prepare(input, context); const result = await operation.execute(context.signal!);
+    const receipt = f.receipt(context.toolCallId, input); await tool.verifyResultAuthority!(input, result, context);
+    Object.assign(receipt, { state: 'completed', public_result: result });
+    expect(result.extraction_source).toBe('active_api_generation'); expect(result.extraction).toEqual(extraction);
+    expect(compileNodiaAiToolSchema(tool.outputSchema).validate(result)).toBe(true);
+    expect(JSON.stringify(prepared.row.public_result)).toBe(original); expect(vi.mocked(native.normalize)).toHaveBeenCalledOnce();
+  });
+  it('reopens a historical API receipt after terminal closure without replacing provenance', async () => {
+    const f = apiFixture(); const prepared = await f.prepare(); const original = JSON.stringify(prepared.row.public_result);
+    f.run.state = 'completed'; f.run.deadline_at = new Date(0); Object.assign(f.attempt, { phase: 'completed', ended_at: new Date() });
+    const context = { ...f.context, attemptId: undefined }; await tool.verifyAuthority(f.input, context);
+    await tool.verifyResultAuthority!(f.input, prepared.result, context);
+    expect(JSON.stringify(prepared.row.public_result)).toBe(original); expect(prepared.result.extraction_source).toBe('active_api_generation');
+    await expect(tool.external!.prepare(f.input, context)).rejects.toThrow();
+  });
+  it('rejects a different mode on the source attempt before preparing anything', async () => {
+    const f = apiFixture(); f.attempt.selection_snapshot = { ...f.attempt.selection_snapshot, mode: 'agentic' };
+    await expect(tool.external!.prepare(f.input, f.context)).rejects.toThrow();
+    expect(vi.mocked(native.prepare)).not.toHaveBeenCalled(); expect(f.saves).toHaveLength(0);
   });
 });

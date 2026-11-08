@@ -12,11 +12,14 @@ import rolesEs from "./es/roles.json";
 import actionsEs from "./es/actions.json";
 import modulesEs from "./es/modules.json";
 import businessEs from "./es/business.json";
+import productEs from "./es/product.json";
 import aiProvidersEs from "./es/ai_providers.json";
 import financeEs from "./es/finance.json";
 import rentalEs from "./es/rental.json";
 import providerContactsEs from "./es/provider_contacts.json";
 import nodiaAiEs from "./es/nodiaAi.json";
+import nodiaAiErrorsEs from "./es/nodia_ai.json";
+import teacherEs from "./es/teacher.json";
 
 // en
 import authEn from "./en/auth.json";
@@ -29,11 +32,14 @@ import rolesEn from "./en/roles.json";
 import actionsEn from "./en/actions.json";
 import modulesEn from "./en/modules.json";
 import businessEn from "./en/business.json";
+import productEn from "./en/product.json";
 import aiProvidersEn from "./en/ai_providers.json";
 import financeEn from "./en/finance.json";
 import rentalEn from "./en/rental.json";
 import providerContactsEn from "./en/provider_contacts.json";
 import nodiaAiEn from "./en/nodiaAi.json";
+import nodiaAiErrorsEn from "./en/nodia_ai.json";
+import teacherEn from "./en/teacher.json";
 
 export const SUPPORTED_LANGUAGES = ["es", "en"] as const;
 export const DEFAULT_LANGUAGE = "es";
@@ -80,11 +86,14 @@ const resources = {
     actions: actionsEs,
     modules: modulesEs,
     business: businessEs,
+    product: productEs,
     ai_providers: aiProvidersEs,
     finance: financeEs,
     rental: rentalEs,
     provider_contacts: providerContactsEs,
     nodiaAi: nodiaAiEs,
+    nodia_ai: nodiaAiErrorsEs,
+    teacher: teacherEs,
   },
   en: {
     auth: authEn,
@@ -97,11 +106,14 @@ const resources = {
     actions: actionsEn,
     modules: modulesEn,
     business: businessEn,
+    product: productEn,
     ai_providers: aiProvidersEn,
     finance: financeEn,
     rental: rentalEn,
     provider_contacts: providerContactsEn,
     nodiaAi: nodiaAiEn,
+    nodia_ai: nodiaAiErrorsEn,
+    teacher: teacherEn,
   },
 };
 
@@ -123,11 +135,14 @@ i18n
       "actions",
       "modules",
       "business",
+      "product",
       "ai_providers",
       "finance",
       "rental",
       "provider_contacts",
       "nodiaAi",
+      "nodia_ai",
+      "teacher",
     ],
     defaultNS: "home",
     interpolation: {

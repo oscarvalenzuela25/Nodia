@@ -73,7 +73,8 @@ describe("Product Log Services", () => {
         product_ids: productIds,
         all: true,
         s: "created_at desc",
-      })
+      }),
+      { signal: undefined }
     );
     expect(mainInstance.get).not.toHaveBeenCalled();
     expect(result).toEqual(mockResponse);
@@ -95,8 +96,20 @@ describe("Product Log Services", () => {
 
     expect(mainInstance.post).toHaveBeenCalledWith(
       apiPath("/product-logs/query"),
-      payload
+      payload,
+      { signal: undefined }
     );
     expect(result).toEqual(mockResponse);
+  });
+  it.each([1, 11])('propagates the preparation cancellation signal with %i product IDs', async count => {
+    const controller = new AbortController();
+    const response = { data: [], meta: { total_items: 0 } };
+    vi.mocked(mainInstance.get).mockResolvedValue({ data: response });
+    vi.mocked(mainInstance.post).mockResolvedValue({ data: response });
+    await getProductLogs({ q: { product_id_in: Array.from({ length: count }, (_, i) => String(i + 1)) } }, controller.signal);
+    const configuration = count > 10 ? vi.mocked(mainInstance.post).mock.calls[0][2] : vi.mocked(mainInstance.get).mock.calls[0][1];
+    expect(configuration?.signal).toBe(controller.signal);
+    controller.abort();
+    expect(configuration?.signal?.aborted).toBe(true);
   });
 });

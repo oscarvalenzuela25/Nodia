@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "observation_date": "2026-10-25",
+  "status": "open",
+  "approval": null,
+  "scope": "Observación de pérdida de adjunto en borrador tras idle y diagnóstico offline; separado del paquete Client de retry explícito de política.",
+  "conversation_id": "86606071-eaf3-483d-8859-eb5b3bc45f72",
+  "confirmed_observations": [
+    {
+      "fact": "El operador principal observó previamente un PNG READY en el borrador; tras idle sin navegación, reload ni acción de mutación del usuario, el panel se cerró y la tarjeta desapareció; el texto permaneció.",
+      "basis": "AX de CUA mostrado durante esta sesión al operador principal: tarjeta de 148100 B, Archivo validado, texto no aceptado. No hay captura persistida de esa tarjeta; el consolidador recibió la observación de root."
+    },
+    {
+      "fact": "Root reabrió Adjuntar tras el idle y confirmó que no había tarjeta: no era solamente un panel cerrado.",
+      "basis": "Confirmación humana más captura posterior y AX; el AX conserva texto, encabezado Adjuntos y notas de voz, Elegir archivos/Grabar, y Enviar mensaje, sin tarjeta del borrador."
+    },
+    {
+      "fact": "El registro SQL READY propio permanecía intacto según el operador principal.",
+      "basis": "Readback comunicado por root; el snapshot local citado abajo acredita la existencia READY previa, pero no constituye un par SQL antes/después del idle."
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "docs/evidence/nodia-ai-attachment-session-continuity-after-20261025-r01.png",
+      "sha256": "3cf292e838c0fc6fde7cc40a0f8e413466d899aeddb7fe9c074dd88ca8663203",
+      "bytes": 77897,
+      "source": {
+        "path": ".tmp/c03-continuation-r01/draft-after-idle-r01.png",
+        "sha256": "3cf292e838c0fc6fde7cc40a0f8e413466d899aeddb7fe9c074dd88ca8663203",
+        "bytes": 77897
+      },
+      "caption": "Después del idle: panel de adjuntos abierto, sin tarjeta visible; texto del borrador conservado.",
+      "privacy_review": "Píxeles inspeccionados: datos sintéticos del laboratorio; sin tokens, cookies, claves, correo o rutas privadas de almacenamiento visibles."
+    }
+  ],
+  "source_records": {
+    "after_idle_accessibility": {
+      "path": ".tmp/c03-continuation-r01/draft-after-idle-ax-r01.txt",
+      "sha256": "5490620b6db4f54796b9d379fefd81676bcb4a51c84a872cec15d4e32c3ff11c",
+      "bytes": 5013,
+      "durable_projection": {
+        "draft_text_present": true,
+        "attachment_panel_heading_present": true,
+        "attachment_card_present": false,
+        "send_button_present": true,
+        "choose_and_record_buttons": "disabled en este AX; no inferir su estado en instantes distintos"
+      }
+    },
+    "readonly_latency": {
+      "path": ".tmp/c03-continuation-r01/observation-latency-r05.json",
+      "sha256": "2872942d55b0fdd39bdaa41f101420ecba79c8581011404f2f59d48e7bee14ff",
+      "bytes": 4938
+    },
+    "prior_SQL_readback": {
+      "path": ".tmp/c03-continuation-r01/before-instrumented-png-r01.json",
+      "sha256": "0b7759ded4ce003fe7cb4e5ee08e9efe59fe7a7c6c98695cb38f815d8873b465",
+      "bytes": 11485,
+      "attachment_projection": {
+        "id": "8c96838d-c871-410e-9dec-3359afea1216",
+        "kind": "image",
+        "state": "ready",
+        "byte_count": "148100",
+        "media_type": "image/png",
+        "content_hash": "0723e3c8fc45e6bbed58e91e16e7d18f55b2a1423ee007342b793f66c057d98b",
+        "page_count": null,
+        "duration_seconds": null,
+        "interpretation_revision": 0,
+        "interpretation_reviewed": false,
+        "interpretation_origin": null,
+        "interpretation_present": false
+      },
+      "temporal_limit": "Snapshot previo al ensayo instrumental; no prueba igualdad SQL después de este idle.",
+      "attachment_has_sealed_message_part": false
+    },
+    "before_context_only": {
+      "path": ".tmp/c03-continuation-r01/policy-blocked-before-client-fix.png",
+      "sha256": "5cc28163becaf9234ce2710582ad6244ed1053ffb86c3da9e31d4db69c03b472",
+      "bytes": 64037,
+      "limit": "La tarjeta READY no aparece en el viewport. Se conserva sólo referencia y hash de la captura temporal; no se copia como evidencia visual duradera."
+    }
+  },
+  "refresh_observations": {
+    "events": [
+      {
+        "at_microseconds": "1792960805151484",
+        "method": "POST",
+        "category": "refresh",
+        "status": 200,
+        "duration_ms": 9,
+        "recorded_at_UTC": "2026-10-25T20:40:05.151484+00:00"
+      },
+      {
+        "at_microseconds": "1792961706031367",
+        "method": "POST",
+        "category": "refresh",
+        "status": 200,
+        "duration_ms": 13,
+        "recorded_at_UTC": "2026-10-25T20:55:06.031367+00:00"
+      },
+      {
+        "at_microseconds": "1792962614679406",
+        "method": "POST",
+        "category": "refresh",
+        "status": 200,
+        "duration_ms": 13,
+        "recorded_at_UTC": "2026-10-25T21:10:14.679406+00:00"
+      }
+    ],
+    "interval_seconds": [
+      900.879883,
+      908.648039
+    ],
+    "last_recorded_at_microseconds": "1792962614679406",
+    "last_status": 200,
+    "last_duration_ms": 13,
+    "causality": "No acreditada. El log no incluye expiresAt del cliente, sessionStatus, origen del refresh ni mount/unmount. Su timestamp no se interpreta como inicio de petición sin contrato de captura."
+  },
+  "offline_source_findings": [
+    {
+      "path": "nodia-client/src/providers/AuthSessionProvider.tsx",
+      "sha256": "690fe849421554279167e087094bcce58488b17eaef58935932fb0cef97578e8",
+      "bytes": 1677,
+      "finding": "restoring/unavailable reemplaza children por pantalla de sesión; desmonta RouterProvider.",
+      "matches_observed_R07_source_pin": true
+    },
+    {
+      "path": "nodia-client/src/routes/GuardStrict.tsx",
+      "sha256": "5eeb21cbe8bf056545d4191586de82e1c39e43c04056bb641f126956d07e5552",
+      "bytes": 2377,
+      "finding": "!isSessionValid reemplaza children; con JWT vigente conserva vista inert durante isRefreshing.",
+      "matches_observed_R07_source_pin": true
+    },
+    {
+      "path": "nodia-client/src/providers/hooks/useSessionLifecycle.ts",
+      "sha256": "102c2e910acde72945643ea7ce24bd5b4c5889f508579b7bae0cc3aaba14bedc",
+      "bytes": 2415,
+      "finding": "Programa renovación anticipada y foco; un timer puede ejecutarse después de su plazo.",
+      "matches_observed_R07_source_pin": true
+    },
+    {
+      "path": "nodia-client/src/config/authSession.ts",
+      "sha256": "3051ebbc439e3b2f2f51dc5f3e68649ac0e4e6c944e3d4500a5cbaed16c54889",
+      "bytes": 7541,
+      "finding": "refresh activa isRefreshing;401 inicia restoring; rechazo401/403 limpia sesión; cancelación por cambio de época/token.",
+      "matches_observed_R07_source_pin": true
+    },
+    {
+      "path": "nodia-client/src/store/authStore.tsx",
+      "sha256": "0987cec1c9a02d48d2f8d4bc7cd1d1ff8346f3b21360756e34fc2f5c35fd461f",
+      "bytes": 4311,
+      "finding": "hasValidatedSession exige expiresAt futuro; logout/cambio de actor purga y cambia sessionVersion; credenciales rehidratadas distintas requieren restoring.",
+      "matches_observed_R07_source_pin": true
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Attachments/hooks/useAttachmentDrafts.ts",
+      "sha256": "4d06fd7fb73673a419d94824f503d8066f7e3edf70b188ac078fecfcaea1c9eb",
+      "bytes": 9482,
+      "finding": "File y tarjeta viven en useState por chat; un remount del propietario inicializa all vacío.",
+      "matches_observed_R07_source_pin": false
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/useConversationDraft.ts",
+      "sha256": "aeb892cb783dbddc1aefece82dca98fc8c60c42de3080b6afc285e9e7130c721",
+      "bytes": 4597,
+      "finding": "Texto vive fuera del montaje mediante store externo/sessionStorage; se limpia ante logout/cambio de actor.",
+      "matches_observed_R07_source_pin": true
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+      "sha256": "12b42d7c2e9e9afa75ae3fd63e118b7a2c2387151c54129899f2b9f8d873efc6",
+      "bytes": 33005,
+      "finding": "ChatPage propietario de useAttachmentDrafts está ligado a actor/sessionVersion; attachments.clear sólo sigue admisión exitosa en la ruta examinada.",
+      "matches_observed_R07_source_pin": true
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "late_refresh_after_access_expiry",
+      "status": "compatible, no correlacionada con el evento real",
+      "mechanism": "Al iniciar refresh con expiresAt<=Date.now(), setRefreshing vuelve a evaluar hasValidatedSession=false; GuardStrict sustituye el árbol. Login posterior remonta ChatPage vacío aunque el refresh200 dure milisegundos."
+    },
+    {
+      "id": "restoring_or_unavailable",
+      "status": "ruta real de código, no correlacionada con el evento real",
+      "mechanism": "401 protegido, restore explícito o rehidratación de credenciales distintas puede llevar a restoring; AuthSessionProvider desmonta todo el router. Un error transitorio puede llevar a unavailable."
+    },
+    {
+      "id": "ordinary_preexpiry_refresh",
+      "status": "no basta para explicar el desmontaje",
+      "mechanism": "isRefreshing con JWT todavía vigente mantiene la vista inert en GuardStrict; un POST refresh200 aislado no demuestra pérdida."
+    }
+  ],
+  "authentication_contract": {
+    "sources": [
+      {
+        "path": "docs/mvp/14-authentication.md",
+        "sha256": "9ed6f7c77916031bef55be21877c1b5b927213f7be456fa0007a963f71defad0",
+        "bytes": 24899,
+        "document_status": "en revisión; implementación autorizada, no documento aprobado"
+      },
+      {
+        "path": "docs/architecture/decisions/ADR-004-auth-sessions.md",
+        "sha256": "173d255bc085b9d26df4881ae47ea2cf55d9e0bf233de72b0a1a3f38f058d09c",
+        "bytes": 7086,
+        "document_status": "implementado; revisión documental pendiente"
+      }
+    ],
+    "preserve": [
+      "No montar inicialmente datos protegidos antes de validar sesión y módulo.",
+      "No enviar datos sin sesión activa ni extender vigencia de credenciales.",
+      "Conservar bloqueo de transporte, descarte de respuestas tardías y limpieza de caché/contexto/borradores tras logout o cambio de identidad.",
+      "Una renovación o lectura de estado no autoriza reenvío de generación, upload, confirmación ni efecto comercial."
+    ]
+  },
+  "future_alternatives_not_implemented": [
+    {
+      "alternative": "Continuidad del árbol previamente validado durante revalidación del mismo actor/época",
+      "requirements": [
+        "Retener sólo el subtree ya autorizado, oculto/bloqueado durante suspensión; ninguna página nueva adquiere permiso por el estado retenido.",
+        "Mantener gates HTTP/queries, comprobar portales/foco/efectos y purgar ante logout, cambio de actor/época o rechazo definitivo.",
+        "ADR y evaluación transversal antes de cambiar límites globales de montaje."
+      ],
+      "risk": "Inert en un wrapper no cubre por sí solo los portales de MUI; mantener componentes montados tampoco detiene efectos."
+    },
+    {
+      "alternative": "Recuperación específica de adjuntos mediante propietario de memoria por actor/época/chat fuera del subtree desmontable",
+      "requirements": [
+        "Nunca persistir File en storage global ni conservarlo tras logout/cambio de identidad.",
+        "Purga, cancelación y respuestas tardías explícitas; consumo sólo tras lectura/autorización fresca."
+      ],
+      "risk": "Introduce otro ciclo de vida y no soluciona continuidad de otros formularios."
+    }
+  ],
+  "required_atomic_regressions_not_executed_here": [
+    "Renovación anticipada con JWT vigente: mismo nodo/formulario y File; controles bloqueados durante petición.",
+    "Timer deliberadamente posterior a expiresAt y refresh200 diferido: preservar o recuperar sólo estado permitido; cero peticiones de datos antes de validación.",
+    "401 protegido→restoring→refresh200 y recuperación transitoria unavailable→retry; texto/adjunto/foco según contrato futuro.",
+    "Cold restore sin validación previa: no montar contenido protegido ni permitir nuevas rutas/módulos.",
+    "Logout, rechazo401/403, cambio de identidad/época o storage entre pestañas durante petición: purgar File/draft y descartar respuesta tardía.",
+    "Revocación de módulo/objeto y portales/teclado durante suspensión: ninguna interacción autorizada por caché o árbol retenido."
+  ],
+  "limits": {
+    "causal_fix_claimed": false,
+    "plans_approved": false,
+    "ADR_created": false,
+    "auth_or_persistence_changes": false,
+    "four_frozen_Client_production_sources_changed": false,
+    "VM_or_browser_actions_by_consolidator": 0,
+    "new_provider_generations_by_consolidator": 0,
+    "new_SQL_queries_by_consolidator": 0,
+    "runtime_retry_package_scope_expanded": false,
+    "acceptance": "Continuidad de formularios ante expiración/restoring permanece abierta; este recibo no acredita solución ni aceptación de C03."
+  },
+  "observed_Client_lineage": {
+    "release": "/opt/nodia/releases/nodia-client-core-fx04-pagination-r07",
+    "manifest_sha256": "56f0f9e1418a827cbe0b67455e88b0aca230a236a8933c1667feb6d3f655954b",
+    "local_manifest_path": ".tmp/c03-continuation-r01/client-r07-release-manifest.json",
+    "note": "AuthSessionProvider, GuardStrict, lifecycle, authSession, authStore, conversation text owner and ChatPage match the observed R07 source_files pins. Current attachment hook is the frozen retry successor; its state ownership is also checked against the preserved R07 before source.",
+    "attachment_hook_before": {
+      "path": "ops/lab/artifacts/c03-attachment-policy-retry-source-lineage-r01/before/src/modules/nodiaAi/components/Attachments/hooks/useAttachmentDrafts.ts",
+      "sha256": "27b930835f8c4d3b5e28571817cf3120878eb984e5a7e9d991616a7163c1e0d6",
+      "same_local_state_owner": true
+    }
+  }
+}

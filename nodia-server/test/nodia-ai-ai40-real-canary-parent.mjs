@@ -28,7 +28,19 @@ try {
   assert.equal(config.schema_version, 1); assert.equal(config.authorize_one_real_generation, true);
   assert.equal(Object.hasOwn(config, 'provided_fixture'), false, 'Only this root parent provisions the fixture');
   const expectedKeys = ['schema_version', 'authorize_one_real_generation', 'selection', 'provider', 'expected_binary_sha256'];
+  if (Object.hasOwn(config, 'image_probe')) expectedKeys.push('image_probe');
+  if (Object.hasOwn(config, 'audio_probe')) expectedKeys.push('audio_probe');
+  assert.equal(Object.hasOwn(config, 'image_probe') && Object.hasOwn(config, 'audio_probe'), false,
+    'Only one independently scoped media probe is allowed');
   assert.equal(Object.keys(config).sort().join(','), expectedKeys.sort().join(','));
+  if (Object.hasOwn(config, 'audio_probe')) {
+    const probe = config.audio_probe;
+    assert.ok(probe && typeof probe === 'object' && !Array.isArray(probe));
+    assert.equal(Object.keys(probe).sort().join(','), 'expected_transcript,media_type,path,sha256');
+    assert.equal(probe.media_type, 'audio/wav'); assert.match(probe.sha256, /^[a-f0-9]{64}$/u);
+    assert.ok(typeof probe.expected_transcript === 'string' && Buffer.byteLength(probe.expected_transcript) <= 512);
+    assert.ok(typeof probe.path === 'string' && resolve(probe.path) === probe.path && Buffer.byteLength(probe.path) <= 4096);
+  }
   const account = execFileSync('getent', ['passwd', 'nodia'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim().split(':');
   assert.equal(account.length, 7); assert.equal(account[0], 'nodia');
   const nativeUid = Number(account[2]);

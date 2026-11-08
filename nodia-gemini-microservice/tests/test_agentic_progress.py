@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 from agentic_cli import CliConfig, CliRunner
-from agentic_progress import CliProgress
+from agentic_progress import CliProgress, NativeFileCliProgress
 from service_errors import ServiceError
 
 
@@ -50,6 +50,46 @@ class AgenticProgressTest(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(progress.summary()["initialized"])
         self.assertEqual(progress.summary()["invalid_lines"], 1)
         self.assertEqual(progress.summary()["stage"], "initialized")
+
+    def test_failed_reads_never_publish_a_completed_callback_or_erase_prior_reads(self):
+        for progress_type in (CliProgress, NativeFileCliProgress):
+            for error in ({}, [], False, 0, "", {"message": "permission denied PRIVATE_DOCUMENT"}):
+                with self.subTest(progress_type=progress_type.__name__, error=error):
+                    callbacks = []
+                    progress = progress_type(callbacks.append)
+                    failed = {"event": "step_update", "step_update": {"tool_name": "view_file", "state": "DONE",
+                              "tool_info": {"error": error, "output": "PRIVATE_DOCUMENT"}}}
+                    progress.feed((json.dumps(failed) + "\n").encode())
+                    self.assertFalse(progress.summary()["document_read_completed"])
+                    self.assertEqual(progress.summary()["stage"], "document_read_failed")
+                    self.assertEqual(callbacks, [])
+                    progress.feed(b'{"event":"step_update","step_update":{"tool_name":"view_file","state":"DONE"}}\n')
+                    self.assertEqual(callbacks, ["document_read_completed"])
+                    progress.feed((json.dumps(failed) + "\n").encode())
+                    self.assertTrue(progress.summary()["document_read_completed"])
+                    self.assertEqual(progress.summary()["stage"], "document_read_failed")
+                    self.assertEqual(callbacks, ["document_read_completed"])
+                    self.assertNotIn("PRIVATE_DOCUMENT", json.dumps(progress.summary()))
+
+    def test_native_progress_reports_finish_and_result_counts_with_fixed_callbacks_only(self):
+        callbacks = []
+        progress = NativeFileCliProgress(callbacks.append)
+        events = [
+            {"event": "init", "init": {"token": "PRIVATE_TOKEN"}},
+            {"event": "step_update", "step_update": {"tool_name": "view_file", "state": "ACTIVE"}},
+            {"event": "step_update", "step_update": {"tool_name": "view_file", "state": "DONE"}},
+            {"event": "step_update", "step_update": {"tool_name": "finish", "state": "DONE"}},
+            {"event": "result", "result": {"status": "SUCCESS", "response": "PRIVATE_DOCUMENT"}},
+        ]
+        for event in events:
+            progress.feed((json.dumps(event) + "\n").encode())
+        summary = progress.summary()
+        self.assertEqual(callbacks, ["cli_initialized", "document_read_started", "document_read_completed"])
+        self.assertEqual(summary["tool_completed_counts"], {"view_file": 1, "finish": 1})
+        self.assertEqual(summary["result_event_count"], 1)
+        self.assertEqual(summary["result_status"], "SUCCESS")
+        self.assertTrue(summary["result_seen"])
+        self.assertNotIn("PRIVATE_", json.dumps(summary))
 
     async def test_real_transport_timeout_keeps_progress_and_reaps_owned_process(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -8,11 +8,11 @@ import { actorFixture } from '../../authorization/use-case/authority.fixture.js'
 describe('Authorized NodiaAI effect boundary', () => {
   const actor = actorFixture('1');
   const modules = [
-    { id: '10', key: 'nodia_ai', route: '/tools/nodia-ai', assigned: true },
+    { id: '10', key: 'nodia_ai', route: '/nodia-ai', assigned: true },
     {
       id: '11',
       key: 'finance',
-      route: '/tools/finances-personal',
+      route: '/finances-personal',
       assigned: true,
     },
   ];
@@ -47,7 +47,7 @@ describe('Authorized NodiaAI effect boundary', () => {
     source,
     new AuthorizeNodiaAiUseCase(new NodiaAiAuthorizationService(source)),
   );
-  const requirements = { moduleRoutes: ['/tools/finances-personal'] };
+  const requirements = { moduleRoutes: ['/finances-personal'] };
   beforeEach(() => {
     vi.clearAllMocks();
     modules[1].assigned = true;

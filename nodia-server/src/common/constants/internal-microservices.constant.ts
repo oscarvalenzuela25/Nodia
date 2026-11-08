@@ -10,46 +10,31 @@ export enum InternalMicroserviceKey {
   // TRANSCRIPTION = 'transcription',
 }
 
-/**
- * Motores de ejecución y planes de cuota soportados por el microservicio Gemini.
- * Ambos operan bajo la suscripción Google One AI Premium ($20 USD/mes), con CERO API Keys.
- */
+/** Agentic runtime metadata is descriptive; quotas and availability require observation. */
 export enum GeminiEnginePlan {
-  AGENTIC = 'agentic', // Token Plan Agéntico: Antigravity SDK con sesión local (cuota 5h / 1 sem)
-  WEB = 'web',         // Token Plan Web: gemini_webapi con cookies de sesión (cuota 2400 créditos)
+  AGENTIC = 'agentic',
 }
-
-export type GeminiExecutionEngine = 'agentic' | 'web';
-
-/**
- * Metadata descriptiva de cada motor/plan de cuota de IA.
- */
+export type GeminiExecutionEngine = 'agentic';
 export interface GeminiEnginePlanDef {
   key: GeminiEnginePlan;
-  planId: 'token_plan_agentic' | 'token_plan_web';
+  planId: 'agentic';
   name: string;
   description: string;
   quotaSource: string;
   requiresApiKey: false;
 }
-
-export const GEMINI_ENGINE_PLANS: Record<GeminiEnginePlan, GeminiEnginePlanDef> = {
+export const GEMINI_ENGINE_PLANS: Record<
+  GeminiEnginePlan,
+  GeminiEnginePlanDef
+> = {
   [GeminiEnginePlan.AGENTIC]: {
     key: GeminiEnginePlan.AGENTIC,
-    planId: 'token_plan_agentic',
-    name: 'Token Plan Agéntico (Antigravity)',
+    planId: 'agentic',
+    name: 'Agentic',
     description:
-      'Motor agéntico local basado en el SDK google-antigravity con OCR multimodal nativo y tokens de razonamiento extendido.',
-    quotaSource: 'Cuota agéntica local (límites de 5 horas y 1 semana de Google One AI Premium)',
-    requiresApiKey: false,
-  },
-  [GeminiEnginePlan.WEB]: {
-    key: GeminiEnginePlan.WEB,
-    planId: 'token_plan_web',
-    name: 'Token Plan Web (Cookies)',
-    description:
-      'Motor web basado en cookies autenticadas de navegador (__Secure-1PSID / TS) y persistencia en sesión.',
-    quotaSource: 'Cuota web de gemini.google.com (2400 créditos/peticiones por ventana de reseteo)',
+      'Runtime Agentic con autenticacion y descubrimiento comprobados por sesion.',
+    quotaSource:
+      'Observacion real del proveedor; desconocida si no se entrega.',
     requiresApiKey: false,
   },
 };
@@ -80,7 +65,7 @@ export const INTERNAL_MICROSERVICES: Record<
     envUrlKey: 'GEMINI_MICROSERVICE_URL',
     envTokenKey: 'GEMINI_SERVICE_TOKEN',
     serviceHeader: 'X-Nodia-Service-Token',
-    supportedEngines: [GeminiEnginePlan.AGENTIC, GeminiEnginePlan.WEB],
+    supportedEngines: [GeminiEnginePlan.AGENTIC],
     defaultEngine: GeminiEnginePlan.AGENTIC,
   },
 };
@@ -88,14 +73,15 @@ export const INTERNAL_MICROSERVICES: Record<
 /**
  * Lista de microservicios internos registrados en el servidor.
  */
-export const REGISTERED_INTERNAL_MICROSERVICES: InternalMicroserviceDef[] = Object.values(
-  INTERNAL_MICROSERVICES,
-);
+export const REGISTERED_INTERNAL_MICROSERVICES: InternalMicroserviceDef[] =
+  Object.values(INTERNAL_MICROSERVICES);
 
 /**
  * Validador para determinar si una clave corresponde a un microservicio interno registrado.
  */
-export function isInternalMicroservice(key: string): key is InternalMicroserviceKey {
+export function isInternalMicroservice(
+  key: string,
+): key is InternalMicroserviceKey {
   return Object.values(InternalMicroserviceKey).includes(
     key as InternalMicroserviceKey,
   );

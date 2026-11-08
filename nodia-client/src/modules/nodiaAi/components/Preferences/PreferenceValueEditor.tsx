@@ -25,7 +25,7 @@ export default function PreferenceValueEditor({ proposal, stepId, value, onChang
   const items = options.map(item => ({ value: item.id, label: item.label }));
   if (!query.isError && typeof currentLabel === "string" && value === get("value") && !items.some(item => item.value === value)) items.unshift({ value, label: currentLabel });
   return <Box sx={{ minWidth: 0 }}>
-    {query.isError && <Alert severity="error" action={<Button disabled={query.isFetching || disabled} onClick={() => void query.refetch()}>{t("retry")}</Button>}>{t("preferences.options_error")}</Alert>}
+    {query.isError && <Alert severity="error" action={<Button variant="contained" disabled={query.isFetching || disabled} onClick={() => void query.refetch()}>{t("retry")}</Button>}>{t("preferences.options_error")}</Alert>}
     <SelectSingleInput label={label} value={query.isError ? null : value || null} options={items} onChange={onChange} clearable={false} disabled={disabled || query.isFetching || query.isError || !scopeKey.success || !key.success}
       error={error} onSearchChange={setSearch} loadingOptions={query.isFetching} hasMore={query.hasNextPage} onLoadMore={() => { if (!query.isFetching) void query.fetchNextPage(); }} />
   </Box>;

@@ -56,7 +56,7 @@ import type {
   NodiaAiRentalConfigurationResource,
 } from '../types/rental-configuration-operation.types.js';
 
-const route = '/tools/reservations';
+const route = '/reservations';
 type Resource = NodiaAiRentalConfigurationResource;
 type Operation = 'create' | 'update';
 interface Input {

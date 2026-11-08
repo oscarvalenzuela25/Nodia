@@ -1,0 +1,191 @@
+{
+  "schema": "teacher-message-gap/1",
+  "local_date": "2026-11-05",
+  "status": "Client_R22_active_geometry_verified",
+  "client_release": "/opt/nodia/releases/nodia-client-teacher-20261105-r22",
+  "client_manifest_sha256": "dd6e63c44f89856dc4705719a7d7f8a6fe9ddaa34943db4313b6bacc0d43bab5",
+  "source_delta": {
+    "changed_existing": 1,
+    "unchanged_inputs": 1376,
+    "total_inputs": 1377,
+    "new": 0,
+    "deleted": 0,
+    "global_working_tree_copied": false
+  },
+  "validation": {
+    "path": "ops/lab/artifacts/teacher-message-gap-20261105-r01/client-r22-r01/Root-validation.json",
+    "bytes": 569,
+    "sha256": "2f0c6f2bf1c608c4f853f07919b4e3e8b00bfca5998a4d29b56b1995c1012dee"
+  },
+  "operations": {
+    "delivery.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap-20261105-r01/client-r22-r01/delivery.json",
+      "bytes": 11193,
+      "sha256": "6d68c3d25593e2789eca362c62ab4dc168ab49b08bb33a6720c9a8dfa12e8e1a"
+    },
+    "activation-state.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap-20261105-r01/client-r22-r01/activation-state.json",
+      "bytes": 698,
+      "sha256": "9357029655708445f7761e7fe7f1372421396990e0a407a4b1a3974c56487d2a"
+    },
+    "final-health.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap-20261105-r01/client-r22-r01/final-health.json",
+      "bytes": 1454,
+      "sha256": "1740dd0ad896f31515fd45882b7a2457bf04e2b0728e7c6026dbbc607fedf7a2"
+    },
+    "release-manifest.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap-20261105-r01/client-r22-r01/release-manifest.json",
+      "bytes": 30708,
+      "sha256": "dd6e63c44f89856dc4705719a7d7f8a6fe9ddaa34943db4313b6bacc0d43bab5"
+    },
+    "root-review.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap-20261105-r01/client-r22-r01/root-review.json",
+      "bytes": 3806,
+      "sha256": "8c79f835866905ea073bb6fdae5a53fbfc1cafc87eaa0e6cb6b3c62911834c10"
+    },
+    "source-plan.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap-20261105-r01/client-r22-r01/source-plan.json",
+      "bytes": 250745,
+      "sha256": "c30315f493ff811e0f0cdd0da855e2c4adbf0b3a7e82b8301a3c233a5a954574"
+    },
+    "source-freeze.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap-20261105-r01/client-r22-r01/source-freeze.json",
+      "bytes": 723,
+      "sha256": "0cd6371ee11300f8dc535dc373a20e2bbdac7419f9978f3dc577b4700394cdbe"
+    }
+  },
+  "browser": {
+    "browser-verification.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap-20261105-r01/browser/browser-verification.json",
+      "bytes": 1333,
+      "sha256": "b0d211a1710ee74f912ab4f1367f816d6d1a07f9b7600a9ca0b57f465428b752"
+    },
+    "message-gap-desktop.jpg": {
+      "path": "ops/lab/artifacts/teacher-message-gap-20261105-r01/browser/message-gap-desktop.jpg",
+      "bytes": 83157,
+      "sha256": "6fa78f459a4a0e38db868036666147d8ccb8939eec42e225e1c282aa8e418586"
+    },
+    "message-gap-mobile.jpg": {
+      "path": "ops/lab/artifacts/teacher-message-gap-20261105-r01/browser/message-gap-mobile.jpg",
+      "bytes": 39305,
+      "sha256": "a9c1cbb9a9ff053bca286a35f4887c486fa75ad3ccf53490757268939d70c827"
+    }
+  },
+  "geometry": {
+    "schema": "teacher-message-gap-browser/1",
+    "release": "ClientR22",
+    "before": {
+      "budget": "Generaciones reservadas: 2 de 200 del lÃƒÂ­mite de esta sesiÃƒÂ³n. Cada solicitud genera sÃƒÂ³lo el recurso indicado.",
+      "draftLength": 0,
+      "gaps": [
+        0
+      ],
+      "parentDisplay": "block",
+      "viewport": [
+        1088,
+        892
+      ]
+    },
+    "desktop": {
+      "bubbleGaps": [
+        8
+      ],
+      "budget": "Generaciones reservadas: 2 de 200 del lÃƒÂ­mite de esta sesiÃƒÂ³n. Cada solicitud genera sÃƒÂ³lo el recurso indicado.",
+      "documentWidth": 1078,
+      "draftLength": 0,
+      "margins": [
+        "8px"
+      ],
+      "rowGaps": [
+        8
+      ],
+      "scrollWidth": 1078,
+      "viewport": [
+        1088,
+        892
+      ]
+    },
+    "mobile": {
+      "bubbleGaps": [
+        8
+      ],
+      "documentWidth": 310,
+      "draftLength": 0,
+      "margins": [
+        "8px"
+      ],
+      "rowGaps": [
+        8
+      ],
+      "scrollWidth": 310,
+      "viewport": [
+        320,
+        892
+      ]
+    },
+    "final": {
+      "budget": "Generaciones reservadas: 2 de 200 del lÃƒÂ­mite de esta sesiÃƒÂ³n. Cada solicitud genera sÃƒÂ³lo el recurso indicado.",
+      "draftLength": 0,
+      "gaps": [
+        8
+      ],
+      "viewport": [
+        1088,
+        892
+      ]
+    },
+    "minimumGapPx": 8,
+    "viewportRestored": true,
+    "newMessages": 0,
+    "newProviderRequests": 0,
+    "physicalPhoneTested": false
+  },
+  "contracts": [
+    {
+      "path": "docs/mvp/96-nodia-teacher-implementation-plan.md",
+      "bytes": 182135,
+      "sha256": "649bfa53d9978320b275a76b259f4076ebb38cc7a94c2b405fa826860bdaba09"
+    },
+    {
+      "path": "nodia-client/DESIGN.md",
+      "bytes": 104879,
+      "sha256": "a3e01badb80e172eeddb256d609ebbf8af70cc8de42471527266e83142c2809c"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/studies/features/session-setup-and-planning.md",
+      "bytes": 34883,
+      "sha256": "178d54de93eba82fc00da48448613e3c977d8c3278c8790dfafb0230d47da353"
+    }
+  ],
+  "deployment_direct_SQL_calls": 0,
+  "new_agent_provider_inferences": 0,
+  "new_agent_messages": 0,
+  "server_native_SDK_auth_configuration_changes": false,
+  "knowledge": {
+    "impact": "visual only, no functional context change",
+    "feature_revision": 20,
+    "product_revision": 24,
+    "published": false,
+    "check": {
+      "schema": "teacher-message-gap-knowledge-check/1",
+      "exit_code": 0,
+      "mode": "check",
+      "sources": 80,
+      "excluded": 36,
+      "documents": 44,
+      "fragments": 46,
+      "catalogRelease": "nodia-ai-business-pos/4",
+      "releaseId": "ca3b8d894cbfc3780698e15b1b19c62a4554b00911af7893024fd025c6f948af",
+      "published": false
+    },
+    "receipt": {
+      "path": "ops/lab/artifacts/teacher-message-gap-20261105-r01/knowledge-check.json",
+      "bytes": 318,
+      "sha256": "ea6dc22ebe32eacee28b2cb99b354d12db2f3acb62262c56f0675f1a20b87728"
+    }
+  },
+  "limitations": [
+    "Real geometry checked in a resized browser, not a physical phone.",
+    "Only style changed; no new provider qualification or resolution of prior Gemini blockers."
+  ]
+}

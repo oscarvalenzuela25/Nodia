@@ -102,7 +102,7 @@ describe("NodiaAI human secure channel", () => {
   });
   it.each([
     ["api_key_delete", "Eliminar credencial confirmada", "delete"], ["sync_models", "Sincronizar modelos del modo confirmado", "sync"],
-    ["codex_logout", "Cerrar sesión del proveedor", "logout"], ["gemini_web_logout", "Cerrar sesión del proveedor", "logout"],
+    ["codex_logout", "Cerrar sesión del proveedor", "logout"],
   ])("requires human intent for %s without logging out the Nodia actor", async (kind, name, action) => {
     const flow = { ...secureFlowFixture.flow, kind };
     mocks.getNodiaAiSecureFlow.mockResolvedValue({ flow });
@@ -120,7 +120,7 @@ describe("NodiaAI human secure channel", () => {
     expect(screen.getByRole("button", { name: "Recuperar estado del flujo" })).toBeEnabled();
   });
   it("recovers a pending login after reopening without offering a second start", async () => {
-    mocks.getNodiaAiSecureFlow.mockResolvedValue({ flow: { ...secureFlowFixture.flow, kind: "connection_login", mode: "token_plan_agentic", status: "pending" } });
+    mocks.getNodiaAiSecureFlow.mockResolvedValue({ flow: { ...secureFlowFixture.flow, kind: "connection_login", mode: "agentic", status: "pending" } });
     open(); await userEvent.click(screen.getByRole("button", { name: "Abrir canal seguro" }));
     expect(await screen.findByRole("button", { name: "Iniciar login" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Consultar login" })).toBeEnabled();
@@ -137,7 +137,7 @@ describe("NodiaAI human secure channel", () => {
     expect(screen.getByRole("button", { name: "Recuperar estado del flujo" })).toBeEnabled();
   });
   it("opens only the official Gemini authorization and keeps a rejected code outside caches", async () => {
-    const flow = { ...secureFlowFixture.flow, kind: "connection_login", mode: "token_plan_agentic" };
+    const flow = { ...secureFlowFixture.flow, kind: "connection_login", mode: "agentic" };
     const authorization_url = "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=https%3A%2F%2Fantigravity.google%2Foauth-callback&response_type=code&code_challenge_method=S256&client_id=synthetic&state=synthetic&code_challenge=synthetic&scope=synthetic";
     mocks.getNodiaAiSecureFlow.mockResolvedValue({ flow });
     mocks.actNodiaAiSecureFlow.mockResolvedValueOnce({ flow: { ...flow, status: "pending", revision: 4 }, interaction: { kind: "gemini_agentic", data: { id: "a".repeat(32), state: "waiting_code", authorization_url, reason: null } } });
@@ -152,7 +152,7 @@ describe("NodiaAI human secure channel", () => {
     expect(mocks.actNodiaAiSecureFlow).toHaveBeenLastCalledWith(execution.execution_id, expect.objectContaining({ revision: 4 }), "code", expect.any(String), { code: "synthetic-code" });
   });
   it("shows a Codex device code only in the human modal and clears it after observed completion", async () => {
-    const flow = { ...secureFlowFixture.flow, kind: "connection_login", provider_key: "openai", mode: "token_plan_agentic" };
+    const flow = { ...secureFlowFixture.flow, kind: "connection_login", provider_key: "openai", mode: "agentic" };
     mocks.getNodiaAiSecureFlow.mockResolvedValue({ flow });
     mocks.actNodiaAiSecureFlow.mockResolvedValueOnce({ flow: { ...flow, status: "pending", revision: 4 }, interaction: { kind: "codex", data: { id: chatId, state: "waiting_authorization", verificationUrl: "https://auth.openai.com/codex/device", userCode: "SYNTH-123", reason: null } } });
     open(); await userEvent.click(screen.getByRole("button", { name: "Abrir canal seguro" }));

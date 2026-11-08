@@ -1,0 +1,284 @@
+{
+  "schema_version": 1,
+  "status": "implemented_and_vm_verified",
+  "updated_at": "2026-10-29T20:58:16.134153+00:00",
+  "scope": [
+    "Nine POS adjustments requested by the user, documented in plan94 section21",
+    "New manual sales saved as completed by one atomic checkout, without a persisted draft step",
+    "Historical sales and existing IA preparation contracts preserved"
+  ],
+  "implementation": {
+    "header": "implemented",
+    "pos_checkout_and_catalog": "implemented",
+    "manual_checkout_endpoint": "POST /businesses/:businessId/sales/checkout",
+    "confirmation": "Human review before transport; no automatic sale save",
+    "payment_methods": [
+      "cash",
+      "debit_card",
+      "credit_card",
+      "bank_transfer",
+      "other"
+    ],
+    "default_payment": "cash",
+    "currency": "CLP",
+    "timezone": "America/Santiago",
+    "other_description": "Optional, up to500 characters",
+    "catalogue": "Shared bounded infinite query for selector and list, images80px, server search/order, dedupe and context isolation",
+    "scanner_focus": "On entry, product add/scan and new sale; catalogue query does not disable independent reader"
+  },
+  "verification": {
+    "client_full_suite": {
+      "passed": 2261,
+      "files": 273,
+      "scope": "Full run before the final R02 pure layout change; subsequent18 focal tests, lint, build/types and three native browser profiles rechecked the final style"
+    },
+    "server_full_suite": {
+      "passed": 5682,
+      "skipped_existing": 1,
+      "files": 313
+    },
+    "atomic_sale_policy_tests": {
+      "passed": 45
+    },
+    "checkout_sql": {
+      "status": "passed",
+      "checks": 34,
+      "environment": "Disposable PostgreSQL16 in VM, immutable image ID and loopback only",
+      "covers": [
+        "single completed insert and receipt/event in one transaction",
+        "concurrent same-key replay and different-payload conflict",
+        "stale/foreign/unavailable/zero rejection with no committed rows",
+        "late event failure rolls back sale/items/receipt",
+        "uncommitted receipt remains unconfirmed and is reconciled",
+        "session/module authority revocation and product lock races",
+        "completed sale appears in summary/ranking",
+        "legacy create and IA ports remain compatible"
+      ],
+      "commercial_database_fixture_writes": 0,
+      "provider_requests": 0
+    },
+    "knowledge": {
+      "compiler_and_pin_fixtures_passed": 58,
+      "controlled_technical_successor_guards_passed": 11,
+      "counts": [
+        70,
+        26,
+        158,
+        44,
+        46
+      ],
+      "current_checker_after_final_documents": "passed",
+      "local_authoring_release_id": "0c40378ddf21c37bac5729ad29032ba7606cfcdcaa6c92e5335fa5c72004c696",
+      "local_pins": "src/dist coherent; local authoring release is distinct from the controlled deployed VM release"
+    },
+    "typecheck": "passed",
+    "client_lint": "passed",
+    "server_lint": {
+      "exit_code": 0,
+      "existing_warning": "no-unsafe-finally in unrelated live-unknown fixture"
+    },
+    "client_and_server_build": "passed",
+    "client_build_warning": "Existing large chunks warning; no new performance acceptance claimed",
+    "browser_ui": {
+      "synthetic_profiles": 8,
+      "widths": [
+        320,
+        390,
+        600,
+        1569
+      ],
+      "languages": [
+        "es",
+        "en"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "r02_profiles": [
+        320,
+        600,
+        1280
+      ],
+      "r02_focal_passed": 18,
+      "horizontal_overflow": 0,
+      "payment_button_min_height": 84,
+      "primary_cta_height": 56,
+      "images": [
+        80,
+        80
+      ],
+      "no_auto_save_before_confirm": true,
+      "known_rejection_preserves_dialog_and_values": true,
+      "lost_response_after_commit_reconciled_without_replay": true,
+      "checkout_post_requests": 3,
+      "legacy_create_or_complete_posts": 0,
+      "real_api_or_commercial_writes": 0,
+      "defects_corrected": [
+        "Scroll anchoring fetched every page after one scroll; overflow-anchor:none preserves position and requests one page",
+        "Mobile Actions minimum44px overrode large56px controls; selector now preserves large actions",
+        "R01 Transferencia label broke into fragments; R02 uses wider secondary columns and full-width mobile rows"
+      ]
+    },
+    "authenticated_vm_ui": {
+      "status": "passed",
+      "viewport": [
+        1280,
+        720
+      ],
+      "initial_reader_focus": true,
+      "header_collapse_and_tabs": true,
+      "image_loaded": [
+        80,
+        80
+      ],
+      "five_payment_buttons": true,
+      "r02_transfer_label_lines": 1,
+      "transfer_button_width": 162.59375,
+      "confirm_full_width": 333.203125,
+      "sales_count": 0,
+      "report_total_clp": "0",
+      "report_units": "0",
+      "report_ranking": "empty",
+      "report_timezone": "America/Santiago",
+      "product_cart_or_sale_edits": 0,
+      "confirmations": 0,
+      "inferences": 0,
+      "original_user_tab_modified": false,
+      "temporary_tabs_closed": [
+        8,
+        9,
+        10
+      ]
+    }
+  },
+  "vm_adoption": {
+    "server": {
+      "backup_metadata_after": {
+        "ActiveState": "inactive",
+        "ExecMainStatus": "1",
+        "InvocationID": "1daf79d976014474ab99efcc9f590a80",
+        "Result": "success"
+      },
+      "backup_start_requests": 0,
+      "client_delivery_managed_separately": true,
+      "core_pids": {
+        "nodia-ai-worker.service": "2263534",
+        "nodia-api.service": "2263533"
+      },
+      "final_quiet": {
+        "active_chats": 0,
+        "attempts": 0,
+        "jobs": 0,
+        "slots": 0,
+        "unacknowledged_api": 0
+      },
+      "knowledge_release_id": "cde7fab20277d8c6a4e670e6df18e886cd72641135a044776cf8889d054213c5",
+      "migrations": 35,
+      "phase": "activated_verified_postbackup",
+      "postbackup_id": "1c3d1d39-f001-4681-aed9-224590353a4b",
+      "postbackup_reconciled_without_replay": true,
+      "protected_runtime_preserved": true,
+      "provider_requests": 0,
+      "sales_created": 0,
+      "server_manifest_sha256": "73be36b2117d96fc3ffc8e8bc07303b7dbcc68093fb852d80ee37c3d85d7ddef",
+      "success": true,
+      "tables_preserved_at_migration": 70
+    },
+    "migration": {
+      "before": 34,
+      "after": 35,
+      "name": "AddDirectSaleCheckout1793420000000",
+      "tables_compared": 70,
+      "unchanged_domain_tables": 69,
+      "domain_rows_columns_indexes_preserved": true,
+      "changed_checks": [
+        "sale_mutation_requests_operation_check",
+        "sale_events_event_type_check"
+      ],
+      "no_schema_down_or_data_rewrite": true
+    },
+    "client": {
+      "release": "/opt/nodia/releases/nodia-client-business-pos-accessibility-20261029-r02",
+      "manifest_sha256": "08dcdfbcba9873d91d51c56a0bccf031bc2b15b4ba71a10f9a918e034f41ece9",
+      "nginx_sha256": "0ffab07d5dbd20a7d810854fbfa4183caf19dbc5f64e4528062b85dcf832273e",
+      "index_sha256": "f35d3dcbaf35f010dcc8c90fe40e92721b36b35d1780044c0d72c5a674117a72",
+      "files": 173,
+      "current_assets": 169,
+      "previous_assets_verified": 32,
+      "previous_releases_and_full_fallback_chain_preserved": true,
+      "protected_runtime_preserved": true,
+      "source_entries": 1199,
+      "source_fingerprint_sha256": "43ff99d57ce6216d2bfa9e93d48e132f20d279e058be190318af7822a81c201a",
+      "r01_source_paths_changed_or_added": 24,
+      "r02_only_changed_path": "PaymentMethodButtons/styles.ts",
+      "tunnel5174_verified": true
+    },
+    "backups": {
+      "prior": {
+        "backup_id": "51c0c07f-3b1c-439e-b66b-621cbb8cc126",
+        "captured_at": "2026-10-29T20:38:32.426Z",
+        "cipher_bytes": 2804935,
+        "cipher_sha256": "d5471d3a1669ad775ae89dd0e2b146deea93e6ee3613d0375d4509fce6ede2eb",
+        "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+        "expires_at": "2026-11-05T20:38:32.426Z",
+        "journal_sequence": 1,
+        "status": "ready"
+      },
+      "prior_encrypted_object_verified": true,
+      "configuration_and_release_bundle": {
+        "cipher_bytes": 6782538,
+        "cipher_sha256": "f54a5bb0ae43a570a44b7e18fe3759f55921784b25b8f70a06de7e48b36a8e9f",
+        "encrypted": true,
+        "local_cipher_copy_verified": true,
+        "plaintext_archive_persisted": false
+      },
+      "posterior": {
+        "backup_id": "1c3d1d39-f001-4681-aed9-224590353a4b",
+        "captured_at": "2026-10-29T20:45:59.271Z",
+        "cipher_bytes": 2805054,
+        "cipher_sha256": "d957b3a8c8cf6e65d76dd01962b917e2fb7236bba5194473ea44e9a6cd3f3b4b",
+        "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+        "status": "ready"
+      },
+      "posterior_encrypted_object_verified": true,
+      "posterior_reconciled_existing_backup": true,
+      "posterior_extra_creation_requests": 0,
+      "no_backup_replay": true,
+      "original_postbackup_ack_read_error": "nodia_ai:recovery_read_unavailable",
+      "failed_service_history_preserved": true,
+      "reset_failed_after_verified_ready_only": true,
+      "object_verification": "HEAD + GET with IfMatch and exact ciphertext integrity",
+      "restore_drill_performed": false
+    }
+  },
+  "knowledge_publication": {
+    "technical_release_id": "cde7fab20277d8c6a4e670e6df18e886cd72641135a044776cf8889d054213c5",
+    "published_capabilities": 158,
+    "approved_documents": 44,
+    "fragments": 46,
+    "approved_files_identical": 44,
+    "physical_implementation_sources_rebound": 3,
+    "pin_entries_rebound": 19,
+    "schemas_revisions_io_and_existing_bindings_unchanged": true,
+    "new_tools": 0,
+    "new_candidate_published": false,
+    "new_candidate_document_status": "draft",
+    "new_candidate_approval": null,
+    "adr087_status": "proposed"
+  },
+  "documentary_approval": false,
+  "recovery_artifacts": "ops/lab/artifacts/business-pos-accessibility-20261029-r01/README.md",
+  "screenshots": [
+    "ops/lab/artifacts/business-pos-accessibility-20261029-r01/client-r02/live-pos-final.png",
+    "ops/lab/artifacts/business-pos-accessibility-20261029-r01/client/live-reports-r12.png"
+  ],
+  "limits": [
+    "No physical reader or phone tested.",
+    "Commercial writes were tested only with synthetic UI transport and isolated PostgreSQL; no sale was created in the business in use.",
+    "Real catalogue contains one available product; infinite paging proved with96 synthetic products, not by reclassifying the six older products.",
+    "Historical drafts and IA prepare-create retain their existing contract; this change removes draft persistence from new manual POS sales.",
+    "Backups have verified ciphertext integrity; no restore drill was performed.",
+    "No provider inferencing, new documentary approval or new tool publication; no production performance acceptance."
+  ]
+}

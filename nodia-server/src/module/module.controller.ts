@@ -23,6 +23,8 @@ import { CreateModuleUseCase } from './use-case/create-module.use-case.js';
 import { UpdateModuleUseCase } from './use-case/update-module.use-case.js';
 import { DeleteModuleUseCase } from './use-case/delete-module.use-case.js';
 import { CatalogIdDto } from '../common/dto/catalog-id.dto.js';
+import { MoveModuleOrderDto } from './dto/move-module-order.dto.js';
+import { MoveModuleOrderUseCase } from './use-case/move-module-order.use-case.js';
 
 @Controller(['module', 'modules'])
 export class ModuleController {
@@ -32,6 +34,7 @@ export class ModuleController {
     private readonly createModuleUseCase: CreateModuleUseCase,
     private readonly updateModuleUseCase: UpdateModuleUseCase,
     private readonly deleteModuleUseCase: DeleteModuleUseCase,
+    private readonly moveModuleOrderUseCase: MoveModuleOrderUseCase,
   ) {}
 
   @Post()
@@ -86,6 +89,19 @@ export class ModuleController {
   remove(@Param() params: CatalogIdDto, @Req() request: AuthRequest) {
     return this.deleteModuleUseCase.execute(
       params.id,
+      actorReference(request.auth),
+    );
+  }
+
+  @Patch(':id/order')
+  moveOrder(
+    @Param() params: CatalogIdDto,
+    @Body() command: MoveModuleOrderDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.moveModuleOrderUseCase.execute(
+      params.id,
+      command,
       actorReference(request.auth),
     );
   }

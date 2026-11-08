@@ -237,11 +237,11 @@ try {
       deferred[0].condeferred,
   );
   let [destination] = await db.query(
-    "SELECT id FROM modules WHERE link='/tools/finances-personal'",
+    "SELECT id FROM modules WHERE link='/finances-personal'",
   );
   if (!destination)
     [destination] = await db.query(
-      "INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/tools/finances-personal','synthetic_ai17_finance' FROM modules WHERE key='nodia_ai' RETURNING id",
+      "INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/finances-personal','synthetic_ai17_finance' FROM modules WHERE key='nodia_ai' RETURNING id",
     );
   await db.query(
     'INSERT INTO user_modules(user_id,module_id) VALUES(1,$1),(2,$1) ON CONFLICT DO NOTHING',
@@ -815,11 +815,11 @@ try {
     );
   }
   const [connection] = await db.query(
-    "INSERT INTO ai_providers(catalog_id,name,fields,use_token_plan_web) SELECT id,'Synthetic AI17 no inference','{}',true FROM ai_provider_catalog WHERE key='gemini' RETURNING id",
+    "INSERT INTO ai_providers(catalog_id,name,fields,use_agentic) SELECT id,'Synthetic AI17 no inference','{}',true FROM ai_provider_catalog WHERE key='gemini' RETURNING id",
   );
   const selection = {
     connection_id: connection.id,
-    mode: 'token_plan_web',
+    mode: 'agentic',
     model_id: 'synthetic-ai17-no-inference',
     effort_id: null,
   };
@@ -873,7 +873,7 @@ try {
         native.contractHash,
         knowledgeHash(JSON.stringify({ ...partial, status: 'paid' })),
         { ...partial, status: 'paid' },
-        { schema_version: 1, module_routes: ['/tools/finances-personal'] },
+        { schema_version: 1, module_routes: ['/finances-personal'] },
       ],
     );
     return id;
@@ -909,7 +909,7 @@ try {
     published.run_id === sourceRun &&
       published.seq === '1' &&
       published.scope_manifest.module_routes.includes(
-        '/tools/finances-personal',
+        '/finances-personal',
       ),
   );
   await db.transaction((manager) =>
@@ -921,7 +921,7 @@ try {
         actor_id: '1',
       },
       linkedProposal,
-      ['/tools/finances-personal'],
+      ['/finances-personal'],
       policy.results.outbox_events_per_activity,
     ),
   );

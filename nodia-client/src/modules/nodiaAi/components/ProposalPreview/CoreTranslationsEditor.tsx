@@ -15,9 +15,9 @@ export default function CoreTranslationsEditor({ label, value, onChange, disable
     {value.map((row, index) => <Box key={row.row_id} sx={{ minWidth: 0 }}>
       <TranslationInput label={t("proposal.core_translation", { position: index + 1 })} value={row.key} translations={{ es: row.es, en: row.en }} defaultExpanded required disabled={disabled} error={error}
         onChangeKey={key => change(row.row_id, { key })} onChangeTranslations={translations => change(row.row_id, { es: translations.es, en: translations.en })} />
-      <ReviewActions><Button type="button" disabled={disabled} onClick={() => onChange(value.filter(item => item.row_id !== row.row_id))}>{t("proposal.core_remove_translation", { position: index + 1 })}</Button></ReviewActions>
+      <ReviewActions><Button variant="contained" type="button" disabled={disabled} onClick={() => onChange(value.filter(item => item.row_id !== row.row_id))}>{t("proposal.core_remove_translation", { position: index + 1 })}</Button></ReviewActions>
     </Box>)}
     {error && <Alert severity="error">{t("proposal.core_translations_invalid")}</Alert>}
-    <ReviewActions><Button type="button" disabled={disabled || maximum !== null && BigInt(value.length) >= BigInt(maximum)} onClick={() => onChange([...value, { row_id: crypto.randomUUID(), key: "", es: "", en: "" }])}>{t("proposal.core_add_translation")}</Button></ReviewActions>
+    <ReviewActions><Button variant="contained" type="button" disabled={disabled || maximum !== null && BigInt(value.length) >= BigInt(maximum)} onClick={() => onChange([...value, { row_id: crypto.randomUUID(), key: "", es: "", en: "" }])}>{t("proposal.core_add_translation")}</Button></ReviewActions>
   </Box>;
 }

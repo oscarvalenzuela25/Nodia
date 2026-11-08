@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "status": "Codex_secure_login_and_fresh_Agentic_MCP_verified",
+  "observed_date": "2026-10-27",
+  "source_manifest_sha256": "e1f0fff9ef23922b486ae148a7bd4a44ab6d695d29e180eaa877c1fd99f4bb9f",
+  "human_authentication": {
+    "operator": "Root/user",
+    "proposal_id": "d7fabd31-8f37-4ad8-8381-8744acc2273d",
+    "SQL_execution_id": "01c79962-fc45-4302-ac68-b1969a5a2144",
+    "UI_secure_flow_receipt_id": "64ab673e-65c5-40ba-8567-98f4b3b6fe98",
+    "Root_report": "Fresh current device code plus user MFA; official portal reported signed in and Nodia showed completed. No code, auth URL, cookie or token retained.",
+    "visible_completed_screenshot": {
+      "path": "docs/evidence/nodia-ai-codex-secure-login-completed-20261027-r01.png",
+      "sha256": "963cfb28608b6e66ab369e969f36b189a917bbbb31f1a96dc23d4c1be08d1077"
+    },
+    "SQL_and_native_readback": {
+      "status": "Codex_secure_login_completed_ACK_verified",
+      "source_manifest_sha256": "e1f0fff9ef23922b486ae148a7bd4a44ab6d695d29e180eaa877c1fd99f4bb9f",
+      "SQL_readonly": true,
+      "SQL": [
+        {
+          "id": "01c79962-fc45-4302-ac68-b1969a5a2144",
+          "chat_id": "58b2d3e9-3748-461a-af25-f23982ebb665",
+          "origin_proposal_id": "d7fabd31-8f37-4ad8-8381-8744acc2273d",
+          "state": "completed",
+          "revision": 7,
+          "created_at": "2026-10-27T04:22:24.818+00:00",
+          "step_state": "completed",
+          "error_code": null,
+          "descriptor_status": "completed",
+          "flow_kind": "connection_login",
+          "request_action": "start",
+          "expires_at": "2026-10-27T04:27:26.728Z",
+          "native_reference": {
+            "mode": "token_plan_agentic",
+            "job_id": "9314b7ca-c93f-4938-b50b-0c7d82f8f86c",
+            "provider_id": "1",
+            "provider_key": "openai"
+          },
+          "native_request_present": false,
+          "connection_id": "2",
+          "mode": "token_plan_agentic",
+          "model_id": "gemini-3.8-flash-low",
+          "effort_id": "low"
+        }
+      ],
+      "native_journal": {
+        "job_id": "9314b7ca-c93f-4938-b50b-0c7d82f8f86c",
+        "state": "succeeded",
+        "reason": null,
+        "acknowledged": true,
+        "expires_at": "2026-10-27T04:27:26.728Z",
+        "owner_alive": false,
+        "native_alive": false,
+        "native_identity_present": false,
+        "profile_lock_present": false
+      },
+      "SDK_or_RPC_calls": 0,
+      "auth_secret_files_read": 0
+    }
+  },
+  "post_login_fresh_MCP_qualification": {
+    "operator": "Root",
+    "actual_discovered_persisted_selection_and_binding": {
+      "schema_version": 1,
+      "source_manifest_sha256": "e1f0fff9ef23922b486ae148a7bd4a44ab6d695d29e180eaa877c1fd99f4bb9f",
+      "selection": {
+        "connection_id": "1",
+        "mode": "token_plan_agentic",
+        "model_id": "gpt-6.1-sol",
+        "effort_id": null
+      },
+      "authority_hash": "dab2d576cd3753a70b725d91990213875dda1217a0eb4faa856ad3b032b75865",
+      "resource_key": "codex-profile:c17db95bfdfba4ffee919e03da6cc09443c0c337a66ec234c4fef830ae2507f6",
+      "session_generation": "bb6d5442e14045ed866dac3d36265d84",
+      "configuration_generation": "981def76e9ee3f9579b881a8941435be942e9e1b3af728815dfe63c66cb5f095"
+    },
+    "before": {
+      "available": true,
+      "supports_mcp": false
+    },
+    "execute": {
+      "status": "MCP_nonce_completed_ACK_qualified",
+      "phase": "acceptance",
+      "native_dispatch_intents": 1,
+      "maximum_native_dispatch_intents": 1,
+      "native_pending_identity": false,
+      "acknowledged": true,
+      "qualification_accepted": true,
+      "callback_count": 1,
+      "configured_SQL_writes": 0,
+      "business_tool_dispatches": 0,
+      "automatic_inference_retries": 0,
+      "provider_internal_calls_or_cost": null
+    },
+    "business_writes": 0,
+    "fallback_or_API_Web": false,
+    "provider_internal_calls_or_cost": null
+  },
+  "operational_prerequisite": {
+    "path": "docs/evidence/nodia-ai-codex-private-keyring-repair-20261027-r01.json",
+    "sha256": "591bec279709eab462d023be7564992f49e36bd260a7df3e34b2c953f7910e22",
+    "keyring_v2_owner_MainPID_at_handoff": 1029625,
+    "Native_Docker_not_restarted_by_keyring_repair": true
+  },
+  "reader_negative_cuts": [
+    {
+      "receipt": "nodia-ai-six-codex-login-success-VM-r01",
+      "result": "Read-only guard failed with no stdout; not a login failure. Reader initially confused UI flow receipt ID with SQL execution ID and expected native completed instead of existing succeeded enum."
+    },
+    {
+      "receipt": "nodia-ai-six-codex-login-success-VM-r02",
+      "result": "Closed SQL projection demonstrated completed execution01c79962…, so exact guard was corrected; no SQL mutation or SDK call."
+    }
+  ],
+  "guarantees": [
+    "Exact existing execution/step/descriptor completed; native_request cleared.",
+    "Native login journal succeeded, acknowledged true; owner/native process identities not alive and profile lock absent at readback.",
+    "Root performed one fresh nonce MCP dispatch/callback and accepted qualification/ACK after this new login; no business tool calls.",
+    "This subagent only performed SELECT read-only SQL and bounded NOFOLLOW journal file reads; no SDK/RPC/auth-secret files read."
+  ],
+  "limits": [
+    "Facts describe this completed login and its subsequent qualification; later logout or credential-generation changes may invalidate current availability.",
+    "No portal success alone is used as native success proof; independent SQL and journal support completion.",
+    "Chat selected connection2 is the agent that prepared the secure flow; native_reference explicitly targets OpenAI connection1. Do not confuse initiating chat selection with login target.",
+    "Earlier failed and expired login attempts remain historical negatives.",
+    "Root MFA/device interaction was reported and successful completion is visible; no provider credential contents were inspected."
+  ],
+  "receipts": {
+    "nodia-ai-six-codex-login-success-VM-r01": {
+      "path": "ops/lab/artifacts/nodia-ai-six-codex-login-acceptance-r01/receipts/nodia-ai-six-codex-login-success-VM-r01.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "nodia-ai-six-codex-login-success-VM-r02": {
+      "path": "ops/lab/artifacts/nodia-ai-six-codex-login-acceptance-r01/receipts/nodia-ai-six-codex-login-success-VM-r02.json",
+      "bytes": 871,
+      "sha256": "ab4fb787836255f0fec6ecd7dc73f580db2ae089f2202c43640c71ecb63ab5a6"
+    },
+    "nodia-ai-six-codex-login-success-VM-r03": {
+      "path": "ops/lab/artifacts/nodia-ai-six-codex-login-acceptance-r01/receipts/nodia-ai-six-codex-login-success-VM-r03.json",
+      "bytes": 1232,
+      "sha256": "5a3b02237399c6f8039dc8de70fb7e574f5cc5d1714a2e02b57a6b38e6db9c99"
+    },
+    "nodia-ai-six-codex-qual-observe-r03": {
+      "path": "ops/lab/artifacts/nodia-ai-six-codex-login-acceptance-r01/receipts/nodia-ai-six-codex-qual-observe-r03.json",
+      "bytes": 1105,
+      "sha256": "cf97163e3a8ed4df34de73b03680fbfe798e31dc4f92fcadfeb2782c6ad3c798"
+    },
+    "nodia-ai-six-codex-qual-execute-r03": {
+      "path": "ops/lab/artifacts/nodia-ai-six-codex-login-acceptance-r01/receipts/nodia-ai-six-codex-qual-execute-r03.json",
+      "bytes": 524,
+      "sha256": "47ec283d752b13f8ddf0aca4d0c33bbe0cb4bccac060899f421036cf8cae8020"
+    }
+  }
+}

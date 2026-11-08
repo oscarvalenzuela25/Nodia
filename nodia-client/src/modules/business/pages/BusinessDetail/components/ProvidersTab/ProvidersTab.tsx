@@ -1,4 +1,5 @@
 import BusinessPagination from "../../../../components/BusinessPagination";
+import { TABLE_PANEL_RADIUS } from "../../../../../../theme/tablePanel";
 import BusinessStatusFilter from "../../../../components/BusinessStatusFilter/BusinessStatusFilter";
 import { ProviderMobileCard } from "../../../../components/BusinessMobileCards/BusinessMobileCards";
 import { useMediaQuery, useTheme } from "@mui/material";
@@ -404,7 +405,7 @@ export const ProvidersTab: FC<Props> = ({
       {/* Table */}
       <Paper
         sx={{
-          borderRadius: 3,
+          borderRadius: TABLE_PANEL_RADIUS,
           p: { xs: 0, sm: 0 },
           border: (theme) =>
             mobile ? "none" : `1px solid ${theme.palette.divider}`,

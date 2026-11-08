@@ -73,7 +73,7 @@ describe('DiscoverNodiaAiToolsUseCase', () => {
       await f.discovery.execute(f.manager, f.actor, [], 'search', {}),
     ).toMatchObject({ items: [] });
   });
-  it('does not advertise an action denied to an ordinary actor; super_admin remains transversal', async () => {
+  it('advertises assigned modules without role actions and hides revoked destinations', async () => {
     const f = toolFixture();
     f.actions.clear();
     expect(
@@ -84,7 +84,14 @@ describe('DiscoverNodiaAiToolsUseCase', () => {
         'search',
         {},
       ),
-    ).toMatchObject({ items: [] });
+    ).toMatchObject({ items: expect.arrayContaining([
+      expect.objectContaining({ tool_name: f.call.name }),
+    ]) });
+    const assigned = f.actor.modules;
+    f.actor.modules = f.actor.modules.filter((module) => module.route !== '/tools/fixture');
+    expect(await f.discovery.execute(f.manager, f.actor, ['/tools/fixture'], 'search', {}))
+      .toMatchObject({ items: [] });
+    f.actor.modules = assigned;
     f.actor.isSuperAdmin = true;
     expect(
       (

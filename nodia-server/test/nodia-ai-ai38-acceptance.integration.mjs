@@ -55,13 +55,13 @@ try {
   ]);
   const migrations = await db.query('SELECT name FROM migrations ORDER BY timestamp,id');
   check('clean installation applies the 29 existing migrations', migrations.length === 29);
-  let [financeModule] = await db.query("SELECT id::text FROM modules WHERE link='/tools/finances-personal'");
-  if (!financeModule) [financeModule] = await db.query("INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/tools/finances-personal','personal_finance' FROM modules WHERE key='nodia_ai' RETURNING id::text");
+  let [financeModule] = await db.query("SELECT id::text FROM modules WHERE link='/finances-personal'");
+  if (!financeModule) [financeModule] = await db.query("INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/finances-personal','personal_finance' FROM modules WHERE key='nodia_ai' RETURNING id::text");
   await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1),(2,$1) ON CONFLICT DO NOTHING', [financeModule.id]);
   const [category] = await db.query("INSERT INTO finance_categories(user_id,name,key) VALUES(1,'Synthetic AI38 food','ai38_food') RETURNING id::text");
   const conversationId = randomUUID();
   await db.query("INSERT INTO nodia_ai_conversations(id,owner_id,client_request_id,creation_request_hash,title,expires_at) VALUES($1,1,$2,$3,'Synthetic AI38 acceptance',clock_timestamp()+interval '90 days')", [conversationId, randomUUID(), 'a'.repeat(64)]);
-  const [message] = await db.query("INSERT INTO nodia_ai_messages(id,conversation_id,seq,role,author_id,client_message_id,status,source_scope_manifest,sealed_at,input_hash) VALUES($1,$2,1,'user',1,$3,'sealed',$4,clock_timestamp(),$5) RETURNING id", [randomUUID(), conversationId, randomUUID(), { schema_version: 1, module_routes: ['/tools/finances-personal'] }, 'b'.repeat(64)]);
+  const [message] = await db.query("INSERT INTO nodia_ai_messages(id,conversation_id,seq,role,author_id,client_message_id,status,source_scope_manifest,sealed_at,input_hash) VALUES($1,$2,1,'user',1,$3,'sealed',$4,clock_timestamp(),$5) RETURNING id", [randomUUID(), conversationId, randomUUID(), { schema_version: 1, module_routes: ['/finances-personal'] }, 'b'.repeat(64)]);
   await db.query("INSERT INTO nodia_ai_message_parts(message_id,conversation_id,part_index,kind,text) VALUES($1,$2,0,'text','Synthetic AI38 earlier owner message')", [message.id, conversationId]);
   const partial = { name: 'Synthetic AI38 visible expense', amount: '20000', category_id: category.id, type: 'expense', status: 'paid' };
   const prepared = await db.transaction(manager => prepare.execute(manager, identities.get('1'), { conversationId, toolName: 'nodia_finance_movements_prepare_create', partial }));

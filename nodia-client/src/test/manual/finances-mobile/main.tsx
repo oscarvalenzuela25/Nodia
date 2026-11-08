@@ -54,7 +54,7 @@ const context = {
       modules: [
         {
           key: "personal_finance",
-          link: "/tools/finances-personal",
+          link: "/finances-personal",
           translates: [],
         },
       ],
@@ -386,7 +386,7 @@ const client = new QueryClient({
 client.setQueryData(["authorization", "context", actorId], context);
 const router = createMemoryRouter(productionRouter.routes, {
   initialEntries: [
-    "/tools/finances-personal" +
+    "/finances-personal" +
       (params.get("tab") ? "?tab=" + params.get("tab") : ""),
   ],
 });

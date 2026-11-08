@@ -61,9 +61,9 @@ export class NodiaAiPreferenceService {
         JSON.stringify(values),
         actor.actorId,
         actor.isSuperAdmin,
-        routes.includes('/tools/finances-personal'),
-        routes.includes('/tools/business'),
-        routes.includes('/tools/reservations'),
+        routes.includes('/finances-personal'),
+        routes.includes('/business'),
+        routes.includes('/reservations'),
       ],
     );
   }

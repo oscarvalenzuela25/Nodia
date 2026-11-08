@@ -1,20 +1,22 @@
 import type { ProviderReadExecution } from '../../ai-provider/types/provider-read-execution.types.js';
-import { BadGatewayException, HttpException, Injectable, Optional } from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  HttpException,
+  Injectable,
+  Optional,
+} from '@nestjs/common';
 import { GeminiService } from '../../common/ai/gemini.service.js';
 import {
-  VerifyIaProvidersResponse,
-} from '../types/invoice.types.js';
+  geminiAdmissionReason,
+  type GeminiAdmissionReason,
+} from '../../common/ai/gemini-upstream.exception.js';
+import { VerifyIaProvidersResponse } from '../types/invoice.types.js';
 import { AiProviderService } from '../../ai-provider/ai-provider.service.js';
-import {
-  AiConnectionMode,
-} from '../../ai-provider/types/ai-provider.types.js';
 import { ApiProviderService } from '../../common/ai/api-provider.service.js';
 import { observedModels } from '../../ai-provider/helpers/model-observation.helper.js';
 import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
-import { observedWebThinkingLevels } from '../../common/ai/gemini-engine-status.js';
-
-type ConnectionChannel = 'api_key' | 'token_plan_web' | 'token_plan_agentic';
-
+type ConnectionChannel = 'api_key' | 'agentic';
 interface ResolvedModeData {
   mode: ConnectionChannel;
   defaultModel: string;
@@ -23,33 +25,39 @@ interface ResolvedModeData {
   extendedThinkingEnabled: boolean;
   availableModels: any[];
 }
-
 @Injectable()
 export class VerifyIaProvidersUseCase {
   constructor(
     private readonly geminiService: GeminiService,
     @Optional()
     private readonly aiProviderService?: AiProviderService,
-    @Optional() private readonly apiService?: ApiProviderService,
-    @Optional() private readonly codex?: CodexRuntimeService,
+    @Optional()
+    private readonly apiService?: ApiProviderService,
+    @Optional()
+    private readonly codex?: CodexRuntimeService,
   ) {}
-
-  async execute(execution?: ProviderReadExecution): Promise<VerifyIaProvidersResponse> {
+  async execute(
+    execution?: ProviderReadExecution,
+    selectedMode?: ConnectionChannel,
+  ): Promise<VerifyIaProvidersResponse> {
+    if (
+      selectedMode !== undefined &&
+      !['agentic', 'api_key'].includes(selectedMode)
+    )
+      throw new BadRequestException('ai_provider:invalid_mode');
     const result: VerifyIaProvidersResponse = [];
-
     if (!this.aiProviderService) {
       return result;
     }
-
     try {
       execution?.signal.throwIfAborted();
-      const providersResponse = execution ? { data: execution.providers } : await this.aiProviderService.findAllProviders({
-        all: true,
-        includes: true,
-      });
-
+      const providersResponse = execution
+        ? { data: execution.providers }
+        : await this.aiProviderService.findAllProviders({
+            all: true,
+            includes: true,
+          });
       const providers = providersResponse.data || [];
-
       for (const prov of providers) {
         execution?.signal.throwIfAborted();
         const provKey = (prov.key || prov.catalog?.key || '').toLowerCase();
@@ -61,17 +69,11 @@ export class VerifyIaProvidersUseCase {
             : provKey === 'mistral'
               ? 'Mistral AI'
               : prov.key || 'Proveedor AI');
-
-
-        const useApiKey = Boolean(prov.use_api_key ?? (prov.mode !== AiConnectionMode.WEB_SESSION));
-        const useTokenPlanWeb = Boolean(
-          prov.use_token_plan_web ??
-            (prov.mode === AiConnectionMode.WEB_SESSION),
-        );
-        const useTokenPlanAgentic = Boolean(prov.use_token_plan_agentic);
-        const configuredDefaultMode = (prov.default_mode as ConnectionChannel) || null;
+        const useApiKey = prov.use_api_key === true;
+        const useTokenPlanAgentic = Boolean(prov.use_agentic);
+        const configuredDefaultMode =
+          (prov.default_mode as ConnectionChannel) || null;
         const isDefault = Boolean(prov.is_default);
-
         // 1. Verificar si el proveedor está activo
         if (!prov.is_active) {
           result.push({
@@ -80,8 +82,7 @@ export class VerifyIaProvidersUseCase {
             name: provName,
             mode: configuredDefaultMode || prov.mode || 'api_key',
             use_api_key: useApiKey,
-            use_token_plan_web: useTokenPlanWeb,
-            use_token_plan_agentic: useTokenPlanAgentic,
+            use_agentic: useTokenPlanAgentic,
             default_mode: configuredDefaultMode,
             active_mode: null,
             is_default: isDefault,
@@ -96,13 +97,10 @@ export class VerifyIaProvidersUseCase {
           });
           continue;
         }
-
         // 2. Obtener modos registrados en true
         const registeredModes: ConnectionChannel[] = [];
-        if (useTokenPlanAgentic) registeredModes.push('token_plan_agentic');
-        if (useTokenPlanWeb) registeredModes.push('token_plan_web');
+        if (useTokenPlanAgentic) registeredModes.push('agentic');
         if (useApiKey) registeredModes.push('api_key');
-
         if (registeredModes.length === 0) {
           result.push({
             id: String(prov.id),
@@ -110,8 +108,7 @@ export class VerifyIaProvidersUseCase {
             name: provName,
             mode: configuredDefaultMode || prov.mode || 'api_key',
             use_api_key: false,
-            use_token_plan_web: false,
-            use_token_plan_agentic: false,
+            use_agentic: false,
             default_mode: configuredDefaultMode,
             active_mode: null,
             is_default: isDefault,
@@ -126,76 +123,105 @@ export class VerifyIaProvidersUseCase {
           });
           continue;
         }
-
         // 3. Orden de evaluación: primero el default (si está habilitado), luego los demás
-        const candidateModes: ConnectionChannel[] = provKey === 'openai'
-          ? configuredDefaultMode
-            ? registeredModes.includes(configuredDefaultMode) ? [configuredDefaultMode] : []
-            : registeredModes.length === 1 ? registeredModes : []
-          : configuredDefaultMode && registeredModes.includes(configuredDefaultMode)
-            ? this.resolveModeData(prov, configuredDefaultMode)
-              ? [configuredDefaultMode, ...registeredModes.filter((m) => m !== configuredDefaultMode)]
-              : [configuredDefaultMode]
-            : registeredModes;
-
+        const requestedMode = selectedMode ?? configuredDefaultMode;
+        const candidateModes: ConnectionChannel[] =
+          requestedMode && registeredModes.includes(requestedMode)
+            ? [requestedMode]
+            : [];
         let selectedActiveMode: ConnectionChannel | null = null;
         let selectedModeData: ResolvedModeData | null = null;
-        let firstModeWithModels: { mode: ConnectionChannel; data: ResolvedModeData; error: string } | null = null;
-
+        let firstModeWithModels: {
+          mode: ConnectionChannel;
+          data: ResolvedModeData;
+          error: string;
+          reason?: GeminiAdmissionReason | null;
+        } | null = null;
         for (const candidateMode of candidateModes) {
           const modeData = this.resolveModeData(prov, candidateMode);
           if (!modeData) {
             // Este modo no tiene modelos configurados, continúa con el siguiente modo
             continue;
           }
-
-
           // Verificar credenciales / conectividad para este modo
-          const catalogRejectsApi = candidateMode === 'api_key' && ['gemini', 'openai'].includes(provKey)
-            && (prov.catalog && (prov.catalog?.can_use_api_key === false || prov.catalog?.is_active === false));
-          const catalogRejectsCodex = provKey === 'openai' && candidateMode === 'token_plan_agentic'
-            && (prov.catalog?.can_use_token_plan_agentic !== true || prov.catalog?.is_active === false || !useTokenPlanAgentic);
-          const credCheck = catalogRejectsApi || catalogRejectsCodex
-            ? { valid: false, error: 'El catálogo no permite ejecutar el canal elegido de esta conexión.', models: undefined }
-            : await this.verifyModeCredentials(candidateMode, provKey, String(prov.id), execution);
+          const catalogRejectsApi =
+            candidateMode === 'api_key' &&
+            ['gemini', 'openai'].includes(provKey) &&
+            prov.catalog &&
+            (prov.catalog?.can_use_api_key === false ||
+              prov.catalog?.is_active === false);
+          const catalogRejectsCodex =
+            provKey === 'openai' &&
+            candidateMode === 'agentic' &&
+            (prov.catalog?.can_use_agentic !== true ||
+              prov.catalog?.is_active === false ||
+              !useTokenPlanAgentic);
+          const credCheck =
+            catalogRejectsApi || catalogRejectsCodex
+              ? {
+                  valid: false,
+                  error:
+                    'El catálogo no permite ejecutar el canal elegido de esta conexión.',
+                  models: undefined,
+                }
+              : await this.verifyModeCredentials(
+                  candidateMode,
+                  provKey,
+                  String(prov.id),
+                  execution,
+                );
           if (credCheck.valid) {
             const match = (selection: string) => {
-              const matches = credCheck.models?.filter((model) => model.id === selection || (!(provKey === 'openai' && candidateMode === 'token_plan_agentic') && model.name === selection)) ?? [];
+              const matches =
+                credCheck.models?.filter(
+                  (model) =>
+                    model.id === selection ||
+                    (!(provKey === 'openai' && candidateMode === 'agentic') &&
+                      model.name === selection),
+                ) ?? [];
               return matches.length === 1 ? matches[0] : null;
             };
             const liveModel = match(modeData.defaultModel);
             const liveOcr = match(modeData.ocrModel);
-            if (!liveModel || !liveOcr || (provKey === 'openai' && candidateMode === 'token_plan_agentic' && !liveOcr.capabilities.includes('vision'))) {
-              firstModeWithModels ??= { mode: candidateMode, data: modeData, error: 'El modelo configurado no está en el catálogo descubierto de esta sesión.' };
+            if (
+              !liveModel ||
+              !liveOcr ||
+              (provKey === 'openai' &&
+                candidateMode === 'agentic' &&
+                !liveOcr.capabilities.includes('vision'))
+            ) {
+              firstModeWithModels ??= {
+                mode: candidateMode,
+                data: modeData,
+                error:
+                  'El modelo configurado no está en el catálogo descubierto de esta sesión.',
+              };
               continue;
             }
-            if (provKey === 'openai' && candidateMode === 'token_plan_agentic') {
-              const scoped = prov.fields?.token_plan_agentic ?? {};
+            if (provKey === 'openai' && candidateMode === 'agentic') {
+              const scoped = prov.fields?.agentic ?? {};
               const levels = scoped.thinking_levels ?? {};
-              const effort = Object.hasOwn(levels, liveOcr.id) ? levels[liveOcr.id] : scoped.thinking_level;
-              if (effort != null && !liveOcr.supportedReasoningEfforts?.includes(effort)) {
-                firstModeWithModels ??= { mode: candidateMode, data: modeData, error: 'El esfuerzo configurado no está disponible para el modelo Codex elegido.' }; continue;
+              const effort = Object.hasOwn(levels, liveOcr.id)
+                ? levels[liveOcr.id]
+                : scoped.thinking_level;
+              if (
+                effort != null &&
+                !liveOcr.supportedReasoningEfforts?.includes(effort)
+              ) {
+                firstModeWithModels ??= {
+                  mode: candidateMode,
+                  data: modeData,
+                  error:
+                    'El esfuerzo configurado no está disponible para el modelo Codex elegido.',
+                };
+                continue;
               }
             }
-            if (candidateMode === 'token_plan_web') {
-              const fields = prov.fields?.[candidateMode] ?? prov.fields ?? {};
-              const levels = fields.thinking_levels ?? {};
-              if (typeof levels !== 'object' || Array.isArray(levels)) {
-                firstModeWithModels ??= { mode: candidateMode, data: modeData, error: 'La configuración de niveles Web es inválida.' }; continue;
-              }
-              const level = Object.hasOwn(levels, liveOcr.id) ? levels[liveOcr.id] : fields.thinking_level;
-              if (level != null && (!['low', 'medium', 'high'].includes(level) || !credCheck.levelsByModel?.[liveOcr.id]?.includes(level))) {
-                firstModeWithModels ??= { mode: candidateMode, data: modeData,
-                  error: 'El nivel configurado no tiene un protocolo Web comprobado para el modelo elegido.' }; continue;
-              }
-            }
-            modeData.supportsThinking = candidateMode === 'token_plan_web'
-              ? Boolean(credCheck.levelsByModel?.[liveOcr.id]?.length) || credCheck.extendedThinking === true : liveModel.capabilities.includes('reasoning');
+            modeData.supportsThinking =
+              liveModel.capabilities.includes('reasoning');
             modeData.defaultModel = liveModel.id;
             modeData.ocrModel = liveOcr.id;
-            const fields = prov.fields?.[candidateMode] ?? prov.fields ?? {};
-            const hasLevelPreference = Object.hasOwn(fields.thinking_levels ?? {}, liveOcr.id) || Object.hasOwn(fields, 'thinking_level');
-            modeData.extendedThinkingEnabled = credCheck.extendedThinking === true && !hasLevelPreference && fields.enable_extended_thinking === true;
+            modeData.extendedThinkingEnabled = false;
             selectedActiveMode = candidateMode;
             selectedModeData = modeData;
             break;
@@ -204,12 +230,13 @@ export class VerifyIaProvidersUseCase {
               firstModeWithModels = {
                 mode: candidateMode,
                 data: modeData,
-                error: credCheck.error || 'Credenciales no válidas para este modo.',
+                error:
+                  credCheck.error || 'Credenciales no válidas para este modo.',
+                reason: 'reason' in credCheck ? credCheck.reason : null,
               };
             }
           }
         }
-
         if (selectedActiveMode && selectedModeData) {
           result.push({
             id: String(prov.id),
@@ -217,8 +244,7 @@ export class VerifyIaProvidersUseCase {
             name: provName,
             mode: selectedActiveMode,
             use_api_key: useApiKey,
-            use_token_plan_web: useTokenPlanWeb,
-            use_token_plan_agentic: useTokenPlanAgentic,
+            use_agentic: useTokenPlanAgentic,
             default_mode: configuredDefaultMode,
             active_mode: selectedActiveMode,
             is_default: isDefault,
@@ -238,19 +264,20 @@ export class VerifyIaProvidersUseCase {
             name: provName,
             mode: firstModeWithModels.mode,
             use_api_key: useApiKey,
-            use_token_plan_web: useTokenPlanWeb,
-            use_token_plan_agentic: useTokenPlanAgentic,
+            use_agentic: useTokenPlanAgentic,
             default_mode: configuredDefaultMode,
             active_mode: null,
             is_default: isDefault,
             is_active: true,
             can_use_model: false,
             error: firstModeWithModels.error,
+            availability_reason: firstModeWithModels.reason ?? null,
             fields: prov.fields || {},
             default_model: firstModeWithModels.data.defaultModel,
             ocr_model: firstModeWithModels.data.ocrModel,
             supports_thinking: firstModeWithModels.data.supportsThinking,
-            extended_thinking_enabled: firstModeWithModels.data.extendedThinkingEnabled,
+            extended_thinking_enabled:
+              firstModeWithModels.data.extendedThinkingEnabled,
           });
         } else {
           result.push({
@@ -259,8 +286,7 @@ export class VerifyIaProvidersUseCase {
             name: provName,
             mode: candidateModes[0] || 'api_key',
             use_api_key: useApiKey,
-            use_token_plan_web: useTokenPlanWeb,
-            use_token_plan_agentic: useTokenPlanAgentic,
+            use_agentic: useTokenPlanAgentic,
             default_mode: configuredDefaultMode,
             active_mode: null,
             is_default: isDefault,
@@ -275,58 +301,53 @@ export class VerifyIaProvidersUseCase {
           });
         }
       }
-
       execution?.signal.throwIfAborted();
       result.sort((a, b) => (b.is_default ? 1 : 0) - (a.is_default ? 1 : 0));
       return result;
     } catch (error) {
       execution?.signal.throwIfAborted();
       if (error instanceof HttpException) throw error;
-      throw new BadGatewayException('No se pudo comprobar el estado de los proveedores IA.');
+      throw new BadGatewayException(
+        'No se pudo comprobar el estado de los proveedores IA.',
+      );
     }
   }
-
   private resolveModeData(
     prov: any,
     mode: ConnectionChannel,
   ): ResolvedModeData | null {
     const fields = prov.fields || {};
-    const hasScoped = Boolean(fields.token_plan_web || fields.token_plan_agentic || fields.api_key);
+    const hasScoped = Boolean(fields.agentic || fields.api_key);
     const modeFields = fields[mode] ?? (hasScoped ? {} : fields);
-
     // Buscar modelo default del modo
     const rawSelectedModel =
       modeFields?.selected_model ||
       modeFields?.default_model ||
       modeFields?.model ||
       null;
-
-    const availableModels: any[] =
-      Array.isArray(modeFields?.available_models)
-        ? modeFields.available_models
-        : [];
-
+    const availableModels: any[] = Array.isArray(modeFields?.available_models)
+      ? modeFields.available_models
+      : [];
     const defaultModel = rawSelectedModel;
-
-    if (!defaultModel || typeof defaultModel !== 'string' || defaultModel.trim() === '') {
+    if (
+      !defaultModel ||
+      typeof defaultModel !== 'string' ||
+      defaultModel.trim() === ''
+    ) {
       return null;
     }
-
     // Modelo OCR: específico para OCR si existe, de lo contrario fallback al modelo por defecto
     const rawOcrModel =
-      modeFields?.ocr_focus_model ||
-      modeFields?.ocr_model ||
-      null;
-
+      modeFields?.ocr_focus_model || modeFields?.ocr_model || null;
     const ocrModel =
-      rawOcrModel && typeof rawOcrModel === 'string' && rawOcrModel.trim() !== ''
+      rawOcrModel &&
+      typeof rawOcrModel === 'string' &&
+      rawOcrModel.trim() !== ''
         ? rawOcrModel
         : defaultModel;
-
     // Thinking
     const supportsThinking = false;
     const extendedThinkingEnabled = false;
-
     return {
       mode,
       defaultModel,
@@ -336,60 +357,104 @@ export class VerifyIaProvidersUseCase {
       availableModels,
     };
   }
-
   private async verifyModeCredentials(
     mode: ConnectionChannel,
     provKey: string,
     providerId: string,
     execution?: ProviderReadExecution,
-  ): Promise<{ valid: boolean; error?: string; models?: (ReturnType<typeof observedModels>[number] & { supportedReasoningEfforts?: string[] })[]; extendedThinking?: boolean;
-    levelsByModel?: Record<string, ('low' | 'medium' | 'high')[]> | null }> {
-    if (mode === 'token_plan_agentic') {
+  ): Promise<{
+    valid: boolean;
+    reason?: GeminiAdmissionReason | null;
+    error?: string;
+    models?: (ReturnType<typeof observedModels>[number] & {
+      supportedReasoningEfforts?: string[];
+    })[];
+    extendedThinking?: boolean;
+    levelsByModel?: Record<string, ('low' | 'medium' | 'high')[]> | null;
+  }> {
+    if (mode === 'agentic') {
       if (provKey === 'openai' && this.codex) {
-        const session = await this.codex.observe(providerId, ...(execution ? [execution.signal] : []));
-        if (!session.available || !session.authenticated) return { valid: false, error: 'Conecte la cuenta Codex de esta instancia.' };
-        if (session.usageAllowed === false) return { valid: false, error: 'Codex no permite uso ordinario actualmente.' };
-        return { valid: true, models: await this.codex.listModels(providerId, ...(execution ? [execution.signal] : [])) };
-      }
-      if (provKey === 'gemini') {
-        const discovery = await this.geminiService.getModelsAndQuota('agentic', ...(execution ? [execution.signal] : []));
-        const isAgenticActive = discovery?.available === true && discovery?.authenticated === true;
-        if (!isAgenticActive) {
+        const session = await this.codex.observe(
+          providerId,
+          ...(execution ? [execution.signal] : []),
+        );
+        if (!session.available || !session.authenticated)
           return {
             valid: false,
-            error: 'La sesión de Gemini Agentic no está activa o requiere inicio de sesión.',
+            error: 'Conecte la cuenta Codex de esta instancia.',
+          };
+        if (session.usageAllowed === false)
+          return {
+            valid: false,
+            error: 'Codex no permite uso ordinario actualmente.',
+          };
+        return {
+          valid: true,
+          models: await this.codex.listModels(
+            providerId,
+            ...(execution ? [execution.signal] : []),
+          ),
+        };
+      }
+      if (provKey === 'gemini') {
+        const discovery = await this.geminiService.getModelsAndQuota(
+          'agentic',
+          ...(execution ? [execution.signal] : []),
+        );
+        const isAgenticActive =
+          discovery?.available === true && discovery?.authenticated === true;
+        if (!isAgenticActive) {
+          const reason = geminiAdmissionReason(discovery?.reason);
+          return {
+            valid: false,
+            reason,
+            error:
+              reason === 'runtime_busy'
+                ? 'El perfil de Gemini está ocupado o pendiente de conciliación. La factura se conserva; no es necesario volver a cargarla ni iniciar sesión.'
+                : reason
+                  ? 'Gemini requiere comprobar el cierre de una operación anterior. La factura se conserva.'
+                  : 'No se pudo confirmar la disponibilidad de Gemini Agentic. Revisa su estado antes de analizar.',
           };
         }
-        return { valid: true, models: observedModels(discovery.models ?? []), extendedThinking: discovery.supported_options?.extended_thinking === true };
+        return { valid: true, models: observedModels(discovery.models ?? []) };
       }
       return { valid: false, error: 'Proveedor no soportado en modo agentic.' };
     }
-
-    if (mode === 'token_plan_web') {
-      if (provKey === 'gemini') {
-        const discovery = await this.geminiService.getModelsAndQuota('web', ...(execution ? [execution.signal] : []));
-        const isWebActive = discovery?.authenticated === true;
-        if (!isWebActive) {
-          return {
-            valid: false,
-            error: 'La sesión de Gemini requiere renovación o inicio de sesión.',
-          };
-        }
-        return { valid: true, models: observedModels(discovery.models ?? []), extendedThinking: discovery.supported_options?.extended_thinking === true,
-          levelsByModel: observedWebThinkingLevels(discovery.supported_options?.thinking_levels_by_model) };
-      }
-      return { valid: false, error: 'Proveedor no soportado en modo web.' };
-    }
-
     if (mode === 'api_key') {
-      if (!['gemini', 'openai'].includes(provKey)) return { valid: false, error: 'El modo API Key no tiene una integración de sesión admitida.' };
-      if (!this.apiService || !this.aiProviderService) return { valid: false, error: 'Adaptador API no disponible.' };
-      const secret = await (execution ? execution.selectedSecret(providerId) : this.aiProviderService.getActiveApiKeySecret(providerId));
-      if (!secret) return { valid: false, error: 'Debe agregar y seleccionar una API key activa.' };
-      try { return { valid: true, models: await this.apiService.listModels(provKey, secret, ...(execution ? [execution.signal] : [])) }; }
-      catch (error) { return { valid: false, error: error instanceof HttpException ? error.message : 'No se pudo verificar el catálogo API.' }; }
+      if (!['gemini', 'openai'].includes(provKey))
+        return {
+          valid: false,
+          error: 'El modo API Key no tiene una integración de sesión admitida.',
+        };
+      if (!this.apiService || !this.aiProviderService)
+        return { valid: false, error: 'Adaptador API no disponible.' };
+      const secret = await (execution
+        ? execution.selectedSecret(providerId)
+        : this.aiProviderService.getActiveApiKeySecret(providerId));
+      if (!secret)
+        return {
+          valid: false,
+          error: 'Debe agregar y seleccionar una API key activa.',
+        };
+      try {
+        return {
+          valid: true,
+          models: await this.apiService.listModels(
+            provKey,
+            secret,
+            ...(execution ? [execution.signal] : []),
+          ),
+        };
+      } catch (error) {
+        return {
+          valid: false,
+          error:
+            error instanceof HttpException
+              ? error.message
+              : 'No se pudo verificar el catálogo API.',
+        };
+      }
     }
-
     return { valid: false, error: 'Modo de conexión no compatible.' };
   }
 }

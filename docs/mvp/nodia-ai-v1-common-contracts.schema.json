@@ -39,8 +39,7 @@
           "type": "string",
           "enum": [
             "api_key",
-            "token_plan_web",
-            "token_plan_agentic"
+            "agentic"
           ]
         },
         "model_id": {
@@ -417,6 +416,31 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/DimensionRequest"
+          }
+        },
+        "order_by": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "output_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "direction": {
+                "enum": [
+                  "asc",
+                  "desc"
+                ]
+              }
+            },
+            "required": [
+              "output_key",
+              "direction"
+            ]
           }
         }
       },
@@ -878,8 +902,7 @@
           "type": "string",
           "enum": [
             "api_key",
-            "token_plan_web",
-            "token_plan_agentic"
+            "agentic"
           ]
         },
         "label": {
@@ -2604,7 +2627,7 @@
           "$ref": "#/$defs/PositiveRevision"
         },
         "selection": {
-          "$ref": "#/$defs/ExactSelection"
+          "$ref": "#/$defs/HistoricalRunSelection"
         },
         "catalog_version": {
           "$ref": "#/$defs/CatalogVersion"
@@ -2653,7 +2676,7 @@
           ]
         },
         "routing": {
-          "$ref": "#/$defs/RoutingSnapshot"
+          "$ref": "#/$defs/HistoricalRunRoutingSnapshot"
         },
         "budget_limits": {
           "$ref": "#/$defs/RunBudgetSnapshot"
@@ -3158,8 +3181,7 @@
           "type": "string",
           "enum": [
             "api_key",
-            "token_plan_web",
-            "token_plan_agentic"
+            "agentic"
           ]
         },
         "configuration": {
@@ -4054,8 +4076,7 @@
           "type": "string",
           "enum": [
             "api_key",
-            "token_plan_web",
-            "token_plan_agentic"
+            "agentic"
           ]
         },
         "model_id": {
@@ -4095,7 +4116,7 @@
           "$ref": "#/$defs/BigintId"
         },
         "mode": {
-          "const": "token_plan_agentic"
+          "const": "agentic"
         },
         "model_id": {
           "type": "string",
@@ -4160,20 +4181,13 @@
           "const": 1
         },
         "enabled": {
-          "type": "boolean"
+          "const": false
         },
         "revision": {
           "$ref": "#/$defs/PositiveRevision"
         },
         "target": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/RoutingTarget"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": "null"
         }
       },
       "required": [
@@ -4181,24 +4195,6 @@
         "enabled",
         "revision",
         "target"
-      ],
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "enabled": {
-                "const": true
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "target": {
-                "$ref": "#/$defs/RoutingTarget"
-              }
-            }
-          }
-        }
       ]
     },
     "RoutingUpdateRequest": {
@@ -4212,17 +4208,10 @@
           "$ref": "#/$defs/PositiveRevision"
         },
         "enabled": {
-          "type": "boolean"
+          "const": false
         },
         "target": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/RoutingTarget"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": "null"
         }
       },
       "required": [
@@ -4230,24 +4219,6 @@
         "expected_routing_revision",
         "enabled",
         "target"
-      ],
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "enabled": {
-                "const": true
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "target": {
-                "$ref": "#/$defs/RoutingTarget"
-              }
-            }
-          }
-        }
       ]
     },
     "RunBudgetSnapshot": {
@@ -4350,7 +4321,7 @@
           ]
         },
         "selection": {
-          "$ref": "#/$defs/ExactSelection"
+          "$ref": "#/$defs/HistoricalRunSelection"
         }
       },
       "required": [
@@ -4499,8 +4470,7 @@
           "type": "string",
           "enum": [
             "api_key",
-            "token_plan_web",
-            "token_plan_agentic"
+            "agentic"
           ]
         },
         "model_id": {
@@ -5026,7 +4996,8 @@
             "product_logs",
             "providers",
             "provider_contacts",
-            "invoices"
+            "invoices",
+            "sales"
           ]
         },
         "operation": {
@@ -5034,7 +5005,10 @@
             "create",
             "update",
             "set_collaborators",
-            "set_active"
+            "set_active",
+            "complete",
+            "cancel",
+            "discard"
           ]
         },
         "resource_id": {
@@ -5057,6 +5031,45 @@
         "operation",
         "resource_id",
         "business_id"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "resource_key": {
+                "const": "sales"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation": {
+                "enum": [
+                  "create",
+                  "update",
+                  "complete",
+                  "cancel",
+                  "discard"
+                ]
+              },
+              "resource_id": {
+                "$ref": "#/$defs/DomainUuid"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "operation": {
+                "enum": [
+                  "create",
+                  "update",
+                  "set_collaborators",
+                  "set_active"
+                ]
+              }
+            }
+          }
+        }
       ]
     },
     "RemainingWorkflowPrepareInput": {
@@ -5358,7 +5371,8 @@
             "codex_logout",
             "gemini_web_logout",
             "sync_models"
-          ]
+          ],
+          "description": "Historical receipt kind may include removed Web logout; no current tool or writable mode is enabled by this receipt."
         }
       }
     },
@@ -5900,6 +5914,101 @@
         "owner_id",
         "revision"
       ]
+    },
+    "HistoricalRunSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "connection_id": {
+          "$ref": "#/$defs/BigintId"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "api_key",
+            "agentic",
+            "retired"
+          ]
+        },
+        "model_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Configured/discovered exact model, no default or static model enum; application additionally caps UTF-8 bytes at1024",
+          "pattern": "\\S",
+          "maxLength": 1024
+        },
+        "effort_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "\\S",
+              "description": "Exact optional provider-defined effort identifier; no universal level or default."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "connection_id",
+        "mode",
+        "model_id",
+        "effort_id"
+      ],
+      "description": "Read-only run provenance; retired means a removed historical mode and never authorizes execution."
+    },
+    "HistoricalRunRoutingSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "revision": {
+          "$ref": "#/$defs/PositiveRevision"
+        },
+        "target": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RoutingTarget"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "enabled",
+        "revision",
+        "target"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/RoutingTarget"
+              }
+            }
+          }
+        }
+      ],
+      "description": "Read-only historical routing provenance; does not enable delegation on new turns."
     }
   },
   "description": " AI-09 adds typed routing/effort/stage/budget contracts. Cross-connection consent, bytes, permissions and used<=limits are application invariants, not proved by JSON Schema."

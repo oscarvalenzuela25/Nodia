@@ -1,6 +1,7 @@
 import type { FC, MouseEvent } from "react";
-import { useState, useMemo, useCallback } from "react";
+import { Fragment, useState, useMemo, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Box,
   Chip,
@@ -54,6 +55,12 @@ import ConfirmDialog from "../../../../components/ConfirmDialog";
 import MobileRecordCard from "../../../../components/MobileRecordCard";
 import ModuleModal from "./components/ModuleModal";
 import ModuleGroupModal from "./components/ModuleGroupModal";
+import DragOrderHandle from "./components/DragOrderHandle";
+import { useOrderDrag, type DragOrderItem } from "./hooks/useOrderDrag";
+import { startsModuleGroup } from "./moduleGrouping";
+import { getModules, getModuleGroups } from "./infrastructure/services";
+import useAuthStore from "../../../../store/authStore";
+import { claimHttpErrorNotification, getHttpErrorMessage } from "../../../../config/httpFeedback";
 import { getModuleIcon, getGroupIcon } from "../../../../store/generalSettings";
 import type {
   ModuleEntity,
@@ -61,6 +68,8 @@ import type {
   ModuleGroupEntity,
   ModuleGroupFormData,
   ModuleGroupSummary,
+  MoveOrderCommand,
+  MoveModuleOrderCommand,
 } from "./types";
 import {
   useModules,
@@ -71,7 +80,11 @@ import {
   useUpdateModuleGroup,
   useDeleteModule,
   useDeleteModuleGroup,
+  useMoveModuleOrder,
+  useMoveModuleGroupOrder,
   deleteErrorMessage,
+  moduleKeys,
+  moduleGroupKeys,
 } from "./infrastructure/useServices";
 import {
   PageHeader,
@@ -90,17 +103,29 @@ import {
   StyledTableContainer,
   KeyBadge,
   ListPagination,
+  GroupSectionHeading,
+  DragOrderTableRow,
+  DragOrderCard,
+  DragHandleCell,
 } from "./styles";
 
 type ViewMode = "split" | "modules" | "groups";
 
 const Modules: FC = () => {
   const { t, i18n } = useTranslation(["modules", "core"]);
+  const queryClient = useQueryClient();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Perspective view mode: split, modules, groups
   const [viewMode, setViewMode] = useState<ViewMode>("split");
+  const [isOrdering, setIsOrdering] = useState(false);
+  const orderRequestRef = useRef(false);
+  const orderAnchorRef = useRef<string | undefined>(undefined);
+  const orderGroupLocationRef = useRef<{ id: string; page: number } | undefined>(undefined);
+  const [orderLocationFailed, setOrderLocationFailed] = useState(false);
+  const [isLocatingOrder, setIsLocatingOrder] = useState(false);
+  const normalPagesRef = useRef<{ page: number; pageGroups: number; rowsPerPage: number; rowsPerPageGroups: number } | null>(null);
   const [isGroupsExpanded, setIsGroupsExpanded] = useState<boolean>(true);
 
   // Search and Pagination for Modules
@@ -213,14 +238,14 @@ const Modules: FC = () => {
     data: allModulesResponse,
     isLoading: isLoadingAllModules,
     isFetching: isFetchingAllModules,
-  } = useModules({ all: true, includes: false });
+  } = useModules({ all: true, includes: false }, { enabled: !isOrdering });
 
   // Query: All module groups for filter dropdowns
   const {
     data: allGroupsResponse,
     isLoading: isLoadingAllGroups,
     isFetching: isFetchingAllGroups,
-  } = useModuleGroups({ all: true });
+  } = useModuleGroups({ all: true }, { enabled: !isOrdering });
 
   const allModulesData = allModulesResponse?.data;
   // Key filter options for modules
@@ -285,7 +310,8 @@ const Modules: FC = () => {
     page: page + 1,
     size: rowsPerPage,
     includes: true,
-    q: ransackQueryModules,
+    q: isOrdering ? undefined : ransackQueryModules,
+    ...(isOrdering ? { ordering: true } : {}),
   });
 
   // Ransack query for paginated module groups
@@ -310,8 +336,15 @@ const Modules: FC = () => {
   } = useModuleGroups({
     page: pageGroups + 1,
     limit: rowsPerPageGroups,
-    q: ransackQueryGroups,
+    q: isOrdering ? undefined : ransackQueryGroups,
+    ...(isOrdering ? { ordering: true } : {}),
   });
+
+  const moveModuleMutation = useMoveModuleOrder();
+  const moveGroupMutation = useMoveModuleGroupOrder();
+  const isOrderPending = moveModuleMutation.isPending || moveGroupMutation.isPending;
+  const needsOrderRecovery = moveModuleMutation.recoveryRequired || moveGroupMutation.recoveryRequired;
+  const isRecoveringOrder = moveModuleMutation.isRecovering || moveGroupMutation.isRecovering;
 
   // Module Mutations
   const createModuleMutation = useCreateModule();
@@ -320,7 +353,7 @@ const Modules: FC = () => {
   const isMutatingModule =
     createModuleMutation.isPending ||
     updateModuleMutation.isPending ||
-    deleteModuleMutation.isPending;
+    deleteModuleMutation.isPending || isOrderPending || isRecoveringOrder;
 
   // Group Mutations
   const createGroupMutation = useCreateModuleGroup();
@@ -329,7 +362,7 @@ const Modules: FC = () => {
   const isMutatingGroup =
     createGroupMutation.isPending ||
     updateGroupMutation.isPending ||
-    deleteGroupMutation.isPending;
+    deleteGroupMutation.isPending || isOrderPending || isRecoveringOrder;
   const isBusyModules =
     isLoadingModules ||
     isFetchingModules ||
@@ -337,6 +370,11 @@ const Modules: FC = () => {
     isMutatingGroup;
   const isBusyGroups =
     isLoadingGroups || isFetchingGroups || isMutatingGroup || isMutatingModule;
+
+  const isCrudBusyModules = isBusyModules || isOrdering;
+  const isCrudBusyGroups = isBusyGroups || isOrdering;
+  const isOrderDisabled = isBusyModules || isBusyGroups || isErrorModules || isErrorGroups
+    || needsOrderRecovery || orderLocationFailed || isLocatingOrder;
 
   const modulesList: ModuleEntity[] = useMemo(
     () => modulesResponse?.data ?? [],
@@ -349,14 +387,6 @@ const Modules: FC = () => {
     [groupsResponse?.data],
   );
   const totalGroupsCount = groupsResponse?.meta?.total_items ?? 0;
-
-  const handleCopyId = (id: string) => {
-    navigator.clipboard.writeText(id);
-    sileo.info({
-      title: t("modules:copy"),
-      description: t("modules:copied"),
-    });
-  };
 
   const domain =
     typeof window !== "undefined" && window.location?.origin
@@ -572,6 +602,7 @@ const Modules: FC = () => {
 
   // Quick filter modules by group from groups table row
   const handleQuickFilterByGroup = (groupId: string) => {
+    if (isOrdering) return;
     setAppliedFilterGroupIds([groupId]);
     setPage(0);
     if (viewMode === "groups") {
@@ -640,6 +671,207 @@ const Modules: FC = () => {
     }
   };
 
+  const toggleOrdering = () => {
+    if (isBusyModules || isBusyGroups || isLocatingOrder || orderRequestRef.current) return;
+    if (!isOrdering) {
+      setOrderLocationFailed(false);
+      orderAnchorRef.current = undefined;
+      orderGroupLocationRef.current = undefined;
+      normalPagesRef.current = { page, pageGroups, rowsPerPage, rowsPerPageGroups };
+      setPage(0);
+      setPageGroups(0);
+      setRowsPerPage((value) => Math.min(value, 100));
+      setRowsPerPageGroups((value) => Math.min(value, 100));
+      handleCloseActionMenu();
+      handleCloseGroupActionMenu();
+      setIsOrdering(true);
+    } else {
+      const previous = normalPagesRef.current;
+      if (previous) {
+        setPage(previous.page);
+        setPageGroups(previous.pageGroups);
+        setRowsPerPage(previous.rowsPerPage);
+        setRowsPerPageGroups(previous.rowsPerPageGroups);
+      }
+      setIsOrdering(false);
+    }
+  };
+
+  const locateMovedModule = async (anchor: string) => {
+    const sessionVersion = useAuthStore.getState().sessionVersion;
+    setIsLocatingOrder(true);
+    try {
+      const response = await getModules({ ordering: true, locate_id: anchor, size: rowsPerPage, includes: true });
+      if (useAuthStore.getState().sessionVersion !== sessionVersion) return;
+      queryClient.setQueryData(moduleKeys.list({
+        page: response.meta.page, size: rowsPerPage, includes: true, q: undefined, ordering: true,
+      }), response);
+      setPage(response.meta.page - 1);
+      setOrderLocationFailed(false);
+    } catch (error) {
+      if (useAuthStore.getState().sessionVersion !== sessionVersion) return;
+      setOrderLocationFailed(true);
+      if (claimHttpErrorNotification(error)) sileo.error({ title: t("modules:notifications.error_title"), description: getHttpErrorMessage(error) });
+    } finally {
+      setIsLocatingOrder(false);
+    }
+  };
+
+  const reconcileMovedGroup = async (id: string, groupPage: number) => {
+    const sessionVersion = useAuthStore.getState().sessionVersion;
+    orderGroupLocationRef.current = { id, page: groupPage };
+    setIsLocatingOrder(true);
+    try {
+      const response = await getModuleGroups({ ordering: true, page: groupPage, limit: rowsPerPageGroups });
+      if (useAuthStore.getState().sessionVersion !== sessionVersion) return;
+      queryClient.setQueryData(moduleGroupKeys.list({
+        page: response.meta.page, limit: rowsPerPageGroups, q: undefined, ordering: true,
+      }), response);
+      setPageGroups(response.meta.page - 1);
+      setOrderLocationFailed(false);
+      if (!response.data.some((item) => item.id === id)) {
+        sileo.info({ title: t("modules:order_conflict") });
+      }
+    } catch (error) {
+      if (useAuthStore.getState().sessionVersion !== sessionVersion) return;
+      setOrderLocationFailed(true);
+      if (claimHttpErrorNotification(error)) sileo.error({ title: t("modules:notifications.error_title"), description: getHttpErrorMessage(error) });
+    } finally {
+      setIsLocatingOrder(false);
+    }
+  };
+
+  const executeModuleMove = async (module: ModuleEntity, command: MoveModuleOrderCommand) => {
+    if (!isOrdering || isOrderDisabled || orderRequestRef.current) return;
+    orderRequestRef.current = true;
+    const sessionVersion = useAuthStore.getState().sessionVersion;
+    orderAnchorRef.current = module.id;
+    orderGroupLocationRef.current = undefined;
+    try {
+      await moveModuleMutation.mutateAsync({ id: module.id, command });
+      if (useAuthStore.getState().sessionVersion === sessionVersion) await locateMovedModule(module.id);
+    } catch {
+      // Reconcile by reading; an uncertain drop never repeats a PATCH.
+      if (useAuthStore.getState().sessionVersion === sessionVersion) await locateMovedModule(module.id);
+    } finally {
+      orderRequestRef.current = false;
+    }
+  };
+
+  const executeGroupMove = async (group: Pick<ModuleGroupEntity, "id">, command: MoveOrderCommand) => {
+    if (!isOrdering || isOrderDisabled || orderRequestRef.current) return;
+    orderRequestRef.current = true;
+    const sessionVersion = useAuthStore.getState().sessionVersion;
+    orderAnchorRef.current = undefined;
+    orderGroupLocationRef.current = { id: group.id, page: pageGroups + 1 };
+    try {
+      const response = await moveGroupMutation.mutateAsync({ id: group.id, command });
+      if (useAuthStore.getState().sessionVersion !== sessionVersion) return;
+      await reconcileMovedGroup(group.id, response.page);
+    } catch {
+      if (useAuthStore.getState().sessionVersion === sessionVersion)
+        await reconcileMovedGroup(group.id, orderGroupLocationRef.current?.page ?? pageGroups + 1);
+    } finally {
+      orderRequestRef.current = false;
+    }
+  };
+
+  const moveModule = async (module: ModuleEntity, direction: "up" | "down") => {
+    if (!module.ordering || module.sort_order === undefined || module.module_group_id === undefined) return;
+    const neighbor = direction === "up" ? module.ordering.previous : module.ordering.next;
+    if (!neighbor) return;
+    await executeModuleMove(module, { direction, expected_sort_order: module.sort_order,
+      expected_module_group_id: module.module_group_id, expected_neighbor: neighbor, page_size: rowsPerPage });
+  };
+
+  const moveGroup = async (group: ModuleGroupEntity, direction: "up" | "down") => {
+    if (!group.ordering || group.sort_order === undefined) return;
+    const neighbor = direction === "up" ? group.ordering.previous : group.ordering.next;
+    if (!neighbor) return;
+    await executeGroupMove(group, { direction, expected_sort_order: group.sort_order,
+      expected_neighbor: neighbor, page_size: rowsPerPageGroups });
+  };
+
+  const dragItems = useMemo<DragOrderItem[]>(() => [
+    ...modulesList.flatMap((module): DragOrderItem[] =>
+      module.sort_order === undefined || !module.ordering || module.module_group_id === undefined ? [] : [{
+        kind: "module", id: module.id, groupId: module.module_group_id,
+        sortOrder: module.sort_order, label: getModuleDisplayName(module),
+      }]),
+    ...groupsList.flatMap((group): DragOrderItem[] => group.sort_order === undefined || !group.ordering ? [] : [{
+      kind: "group", id: group.id, sortOrder: group.sort_order, label: getGroupDisplayName(group),
+    }]),
+  ], [modulesList, groupsList, getModuleDisplayName, getGroupDisplayName]);
+  const dragItemsById = useMemo(() => new Map(dragItems.map((item) => [`${item.kind}:${item.id}`, item])), [dragItems]);
+  const actorVersion = useAuthStore((state) => state.sessionVersion);
+  const drag = useOrderDrag({
+    items: dragItems, disabled: !isOrdering || isOrderDisabled, contextKey: actorVersion,
+    onDrop: (source, target, placement) => {
+      if (source.kind !== target.kind || source.id === target.id) return;
+      if (source.kind === "module") {
+        const module = modulesList.find((item) => item.id === source.id);
+        if (!module || !source.groupId || source.groupId !== target.groupId) return;
+        void executeModuleMove(module, { direction: placement, expected_sort_order: source.sortOrder,
+          expected_module_group_id: source.groupId, expected_neighbor: { id: target.id, sort_order: target.sortOrder },
+          page_size: rowsPerPage });
+      } else {
+        const group = groupsList.find((item) => item.id === source.id);
+        if (!group) return;
+        void executeGroupMove(group, { direction: placement, expected_sort_order: source.sortOrder,
+          expected_neighbor: { id: target.id, sort_order: target.sortOrder }, page_size: rowsPerPageGroups });
+      }
+    },
+    onStep: (item, direction) => {
+      if (item.kind === "module") {
+        const module = modulesList.find((row) => row.id === item.id);
+        if (module) void moveModule(module, direction);
+      } else {
+        const group = groupsList.find((row) => row.id === item.id);
+        if (group) void moveGroup(group, direction);
+      }
+    },
+  });
+  const isDragging = Boolean(drag.dragState);
+  const renderDragHandle = (kind: "module" | "group", id: string) => {
+    const item = dragItemsById.get(`${kind}:${id}`);
+    if (!isOrdering || !item) return null;
+    return <DragOrderHandle item={item} disabled={isOrderDisabled}
+      dragging={drag.dragState?.source.kind === kind && drag.dragState.source.id === id}
+      bindings={drag.getHandleProps(item)} />;
+  };
+  const dragRowProps = (kind: "module" | "group", id: string) => {
+    const item = dragItemsById.get(`${kind}:${id}`);
+    return isOrdering && item ? drag.getRowProps(item) : {};
+  };
+
+  const recoverOrdering = async () => {
+    if (orderRequestRef.current || isRecoveringOrder || isLocatingOrder) return;
+    orderRequestRef.current = true;
+    try {
+      if (moveModuleMutation.recoveryRequired && !await moveModuleMutation.recover()) return;
+      if (moveGroupMutation.recoveryRequired && !await moveGroupMutation.recover()) return;
+      if (orderLocationFailed) {
+        if (orderAnchorRef.current) await locateMovedModule(orderAnchorRef.current);
+        else if (orderGroupLocationRef.current) await reconcileMovedGroup(orderGroupLocationRef.current.id, orderGroupLocationRef.current.page);
+      }
+    } catch {
+      // Failed read-only recovery remains visible and keeps movement disabled.
+    } finally {
+      orderRequestRef.current = false;
+    }
+  };
+
+  const renderModuleGroupHeading = (module: ModuleEntity) => {
+    const group = module.module_group;
+    return (
+      <GroupSectionHeading>
+        <Typography component="h3" variant="subtitle2" sx={{ fontWeight: 700 }}>
+          {getGroupDisplayName(group)}
+        </Typography>
+      </GroupSectionHeading>
+    );
+  };
+
   return (
     <Box>
       <HeaderRow>
@@ -651,6 +883,12 @@ const Modules: FC = () => {
           <PageSubtitle>{t("modules:subtitle")}</PageSubtitle>
         </PageHeader>
 
+        <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
+          <Button variant="contained" onClick={toggleOrdering}
+            disabled={isDragging || isBusyModules || isBusyGroups || isLocatingOrder || isModuleModalOpen || isGroupModalOpen || Boolean(moduleToDelete || groupToDelete)}
+            sx={{ minHeight: 44, width: { xs: "100%", sm: "auto" } }}>
+            {t(isOrdering ? "modules:ordering.finish" : "modules:ordering.start")}
+          </Button>
         <ViewModeContainer>
           <ToggleButtonGroup
             value={viewMode}
@@ -660,7 +898,7 @@ const Modules: FC = () => {
             }}
             size="small"
             aria-label={t("modules:views.label")}
-            disabled={isBusyModules || isBusyGroups}
+            disabled={isDragging || isBusyModules || isBusyGroups}
             sx={{
               "& .MuiToggleButton-root": {
                 border: 0,
@@ -713,7 +951,14 @@ const Modules: FC = () => {
             </ToggleButton>
           </ToggleButtonGroup>
         </ViewModeContainer>
+        </Box>
       </HeaderRow>
+      {!isOrdering && <Alert severity="info" sx={{ mb: 3 }}>{t("modules:ordering.drag_start_hint")}</Alert>}
+      {isOrdering && <Alert severity="info" sx={{ mb: 3 }}>{t("modules:ordering.help")}</Alert>}
+      {isOrdering && (needsOrderRecovery || orderLocationFailed) && <Alert severity="error" sx={{ mb: 3 }} action={
+        <Button variant="contained" color="inherit" disabled={isRecoveringOrder || isLocatingOrder}
+          onClick={() => { void recoverOrdering(); }}>{t("modules:ordering.recovery_retry")}</Button>
+      }>{t("modules:ordering.recovery_required")}</Alert>}
 
       {/* ========================================================================= */}
       {/* MODULE GROUPS SECTION                                                     */}
@@ -753,7 +998,7 @@ const Modules: FC = () => {
                 color="primary"
                 startIcon={<AddCircleOutlinedIcon />}
                 onClick={handleOpenCreateGroupModal}
-                disabled={isBusyGroups}
+                disabled={isCrudBusyGroups}
                 sx={(theme) => ({
                   borderRadius: 2,
                   color: theme.palette.primary.contrastText,
@@ -780,7 +1025,7 @@ const Modules: FC = () => {
                           ? "modules:views.collapse_groups"
                           : "modules:views.expand_groups",
                       )}
-                      disabled={isBusyGroups}
+                      disabled={isDragging || isBusyGroups}
                     >
                       {isGroupsExpanded ? (
                         <ExpandLessIcon />
@@ -795,6 +1040,7 @@ const Modules: FC = () => {
           </GroupsSectionHeader>
 
           <Collapse in={viewMode === "groups" || isGroupsExpanded}>
+            {!isOrdering && (
             <Box sx={{
               p: 2,
               display: "flex",
@@ -815,13 +1061,13 @@ const Modules: FC = () => {
                     "Buscar grupo...",
                   )}
                   fullWidth
-                  disabled={isBusyGroups}
+                  disabled={isCrudBusyGroups}
                 />
               </Box>
               <ToggleButtonGroup
                 value={groupActiveFilter}
                 exclusive
-                disabled={isBusyGroups}
+                disabled={isCrudBusyGroups}
                 aria-label={t("modules:groups.status_filter")}
                 onChange={(_, value: "active" | "inactive" | "all" | null) => {
                   if (value) {
@@ -845,6 +1091,7 @@ const Modules: FC = () => {
                 </ToggleButton>
               </ToggleButtonGroup>
             </Box>
+            )}
             {isErrorGroups && (
               <Box sx={{ p: 2 }}>
                 <Alert
@@ -867,7 +1114,7 @@ const Modules: FC = () => {
                     )}
                   </AlertTitle>
                   {groupsError instanceof Error
-                    ? groupsError.message
+                    ? (i18n.exists(groupsError.message) ? i18n.t(groupsError.message) : groupsError.message)
                     : t("core:server_error_toast")}
                 </Alert>
               </Box>
@@ -899,7 +1146,7 @@ const Modules: FC = () => {
                         <Button
                           fullWidth
                           variant="contained"
-                          disabled={isBusyGroups}
+                          disabled={isCrudBusyGroups}
                           onClick={handleOpenCreateGroupModal}
                         >
                           {t("modules:groups.empty_state.cta")}
@@ -907,10 +1154,13 @@ const Modules: FC = () => {
                       </Box>
                     )}
                   {groupsList.map((group) => (
+                    <DragOrderCard key={group.id} {...dragRowProps("group", group.id)}
+                      sx={{ display: "grid", gridTemplateColumns: isOrdering ? "44px minmax(0, 1fr)" : "minmax(0, 1fr)", alignItems: "start", gap: 1 }}>
+                    {isOrdering && renderDragHandle("group", group.id)}
                     <MobileRecordCard
                       key={group.id}
                       title={getGroupDisplayName(group)}
-                      disabled={isBusyGroups}
+                      disabled={isCrudBusyGroups}
                       status={
                         <Box
                           sx={{
@@ -969,12 +1219,6 @@ const Modules: FC = () => {
                           onClick: () => handleRequestToggleActiveGroup(group),
                         },
                         {
-                          key: "copy",
-                          label: t("modules:copy"),
-                          icon: <ContentCopyIcon />,
-                          onClick: () => handleCopyId(group.id),
-                        },
-                        {
                           key: "delete",
                           label: t("modules:actions_menu.delete"),
                           icon: <DeleteOutlinedIcon />,
@@ -983,6 +1227,7 @@ const Modules: FC = () => {
                         },
                       ]}
                     />
+                    </DragOrderCard>
                   ))}
                 </Box>
               ) : (
@@ -998,6 +1243,7 @@ const Modules: FC = () => {
                       }}
                     >
                       <TableRow>
+                        {isOrdering && <DragHandleCell variant="head">{t("modules:ordering.drag_column")}</DragHandleCell>}
                         <TableCell>
                           {t("modules:groups.table.id", "Id")}
                         </TableCell>
@@ -1024,7 +1270,7 @@ const Modules: FC = () => {
                       groupsList.length === 0 ? (
                         <TableRow>
                           <TableCell
-                            colSpan={6}
+                            colSpan={isOrdering ? 7 : 6}
                             align="center"
                             sx={{ py: 4, color: "text.secondary" }}
                           >
@@ -1064,7 +1310,7 @@ const Modules: FC = () => {
                                 color="primary"
                                 startIcon={<AddCircleOutlinedIcon />}
                                 onClick={handleOpenCreateGroupModal}
-                                disabled={isBusyGroups}
+                                disabled={isCrudBusyGroups}
                                 sx={(theme) => ({
                                   mt: 0.5,
                                   borderRadius: 2,
@@ -1088,8 +1334,8 @@ const Modules: FC = () => {
                           );
 
                           return (
-                            <TableRow
-                              key={g.id}
+                            <DragOrderTableRow
+                              key={g.id} {...dragRowProps("group", g.id)}
                               hover
                               sx={{
                                 bgcolor: isFiltered
@@ -1100,6 +1346,7 @@ const Modules: FC = () => {
                                 },
                               }}
                             >
+                              {isOrdering && <DragHandleCell>{renderDragHandle("group", g.id)}</DragHandleCell>}
                               <TableCell
                                 sx={{
                                   color: "text.secondary",
@@ -1117,28 +1364,6 @@ const Modules: FC = () => {
                                   {g.id.includes("-")
                                     ? `${g.id.split("-")[0]}...`
                                     : g.id}
-                                  <Tooltip
-                                    title={t("modules:copy")}
-                                    arrow
-                                    placement="top"
-                                  >
-                                    <Box
-                                      component="span"
-                                      sx={{ display: "inline-flex" }}
-                                    >
-                                      <IconButton
-                                        size="small"
-                                        onClick={() => handleCopyId(g.id)}
-                                        aria-label={t("modules:copy")}
-                                        disabled={isBusyGroups}
-                                      >
-                                        <ContentCopyIcon
-                                          fontSize="small"
-                                          sx={{ fontSize: "0.95rem" }}
-                                        />
-                                      </IconButton>
-                                    </Box>
-                                  </Tooltip>
                                 </Box>
                               </TableCell>
                               <TableCell align="center">
@@ -1181,7 +1406,7 @@ const Modules: FC = () => {
                                   >
                                     {displayName}
                                   </Typography>
-                                  {showModules && (
+                                  {showModules && !isOrdering && (
                                     <Tooltip
                                       title={
                                         isFiltered
@@ -1254,12 +1479,12 @@ const Modules: FC = () => {
                                   onClick={(e) =>
                                     handleOpenGroupActionMenu(e, g)
                                   }
-                                  disabled={isBusyGroups}
+                                  disabled={isCrudBusyGroups}
                                 >
                                   <MoreVertIcon fontSize="small" />
                                 </IconButton>
                               </TableCell>
-                            </TableRow>
+                            </DragOrderTableRow>
                           );
                         })
                       )}
@@ -1280,7 +1505,7 @@ const Modules: FC = () => {
                 setPageGroups(0);
               }}
               rowsPerPageOptions={[5, 10, 20]}
-              disabled={isBusyGroups}
+              disabled={isDragging || isBusyGroups || isLocatingOrder || needsOrderRecovery}
               labelRowsPerPage={t("core:pagination.rows_per_page")}
               labelDisplayedRows={({ from, to, count }) =>
                 `${from}–${to} ${t("core:pagination.of")} ${
@@ -1299,9 +1524,10 @@ const Modules: FC = () => {
       {/* ========================================================================= */}
       {showModules && (
         <Box>
+          {!isOrdering && (
           <FilterRow>
             <Filter
-              disabled={isBusyModules}
+              disabled={isCrudBusyModules}
               applyDisabled={isBusyModules}
               onOpen={() => setDraftFilterActive(appliedFilterActive)}
                 onFilter={handleApplyFilters}
@@ -1335,12 +1561,13 @@ const Modules: FC = () => {
               <ActiveStatusSelect
                 value={draftFilterActive === null ? "all" : draftFilterActive ? "active" : "inactive"}
                 onChange={(value) => setDraftFilterActive(value === "all" ? null : value === "active")}
-                disabled={isBusyModules}
+                disabled={isCrudBusyModules}
               />
             </Filter>
           </FilterRow>
+          )}
 
-          {activeFiltersCount > 0 && (
+          {!isOrdering && activeFiltersCount > 0 && (
             <ActiveFilters>
               {appliedFilterKeys.map((key) => {
                 const matched = allModulesResponse?.data?.find(
@@ -1349,7 +1576,7 @@ const Modules: FC = () => {
                 const label = matched ? getModuleDisplayName(matched) : key;
                 return (
                   <FilterChips
-                    disabled={isBusyModules}
+                    disabled={isCrudBusyModules}
                     key={`mod-key-${key}`}
                     label={t("modules:filter_chips.key", {
                       value: label !== "-" ? `${label} (${key})` : key,
@@ -1377,7 +1604,7 @@ const Modules: FC = () => {
 
                 return (
                   <FilterChips
-                    disabled={isBusyModules}
+                    disabled={isCrudBusyModules}
                     key={`mod-group-${groupId}`}
                     label={t("modules:filter_chips.group", {
                       value: displayLabel,
@@ -1393,7 +1620,7 @@ const Modules: FC = () => {
               })}
               {appliedFilterActive !== null && (
                 <FilterChips
-                  disabled={isBusyModules}
+                  disabled={isCrudBusyModules}
                   label={
                     appliedFilterActive
                       ? t("modules:filter_chips.active_only")
@@ -1430,7 +1657,7 @@ const Modules: FC = () => {
                   )}
                 </AlertTitle>
                 {modulesError instanceof Error
-                  ? modulesError.message
+                  ? (i18n.exists(modulesError.message) ? i18n.t(modulesError.message) : modulesError.message)
                   : t(
                       "modules:error_state.description",
                       "No se pudo obtener el listado de módulos desde el servidor.",
@@ -1440,6 +1667,7 @@ const Modules: FC = () => {
           )}
 
           <TableTopBar>
+            {!isOrdering && (
             <Box sx={{ width: { xs: "100%", sm: "360px" } }}>
               <InputSearch
                 value={searchTerm}
@@ -1449,15 +1677,16 @@ const Modules: FC = () => {
                 }}
                 placeholder={t("modules:search_placeholder")}
                 fullWidth
-                disabled={isBusyModules}
+                disabled={isCrudBusyModules}
               />
             </Box>
+            )}
             <Button
               variant="contained"
               color="primary"
               startIcon={<AddCircleOutlinedIcon />}
               onClick={handleOpenCreateModal}
-              disabled={isBusyModules}
+              disabled={isCrudBusyModules}
               sx={(theme) => ({
                 borderRadius: 2,
                 color: theme.palette.primary.contrastText,
@@ -1495,18 +1724,23 @@ const Modules: FC = () => {
                         <Button
                           fullWidth
                           variant="contained"
-                          disabled={isBusyModules}
+                          disabled={isCrudBusyModules}
                           onClick={handleOpenCreateModal}
                         >
                           {t("modules:empty_state.cta")}
                         </Button>
                       </Box>
                     )}
-                  {modulesList.map((module) => (
+                  {modulesList.map((module, index) => (
+                    <Fragment key={module.id}>
+                    {startsModuleGroup(module, modulesList[index - 1]) && renderModuleGroupHeading(module)}
+                    <DragOrderCard {...dragRowProps("module", module.id)}
+                      sx={{ display: "grid", gridTemplateColumns: isOrdering ? "44px minmax(0, 1fr)" : "minmax(0, 1fr)", alignItems: "start", gap: 1 }}>
+                    {isOrdering && renderDragHandle("module", module.id)}
                     <MobileRecordCard
                       key={module.id}
                       title={getModuleDisplayName(module)}
-                      disabled={isBusyModules}
+                      disabled={isCrudBusyModules}
                       status={
                         <Box
                           sx={{
@@ -1540,18 +1774,6 @@ const Modules: FC = () => {
                           key: "key",
                           label: t("modules:table.key"),
                           value: module.key,
-                        },
-                        {
-                          key: "group",
-                          label: t("modules:table.group_name"),
-                          value: getGroupDisplayName(module.module_group),
-                        },
-                        {
-                          key: "group-key",
-                          label: t("modules:table.group_key"),
-                          value:
-                            module.module_group?.key ??
-                            t("modules:empty_value"),
                         },
                         {
                           key: "link",
@@ -1590,12 +1812,6 @@ const Modules: FC = () => {
                           ),
                           onClick: () => handleRequestToggleActive(module),
                         },
-                        {
-                          key: "copy",
-                          label: t("modules:copy"),
-                          icon: <ContentCopyIcon />,
-                          onClick: () => handleCopyId(module.id),
-                        },
                         ...(module.link
                           ? [
                               {
@@ -1616,6 +1832,8 @@ const Modules: FC = () => {
                         },
                       ]}
                     />
+                    </DragOrderCard>
+                    </Fragment>
                   ))}
                 </Box>
               ) : (
@@ -1631,6 +1849,7 @@ const Modules: FC = () => {
                       }}
                     >
                       <TableRow>
+                        {isOrdering && <DragHandleCell variant="head">{t("modules:ordering.drag_column")}</DragHandleCell>}
                         <TableCell>{t("modules:table.id")}</TableCell>
                         <TableCell align="center">
                           {t("modules:table.icon", "Ícono")}
@@ -1638,8 +1857,6 @@ const Modules: FC = () => {
                         <TableCell>{t("modules:table.name")}</TableCell>
                         <TableCell>{t("modules:table.key")}</TableCell>
                         <TableCell>{t("modules:table.link", "Ruta")}</TableCell>
-                        <TableCell>{t("modules:table.group_name")}</TableCell>
-                        <TableCell>{t("modules:table.group_key")}</TableCell>
                         <TableCell>{t("modules:table.active")}</TableCell>
                         <TableCell align="center">
                           {t("modules:table.actions")}
@@ -1652,7 +1869,7 @@ const Modules: FC = () => {
                       modulesList.length === 0 ? (
                         <TableRow>
                           <TableCell
-                            colSpan={9}
+                            colSpan={isOrdering ? 8 : 7}
                             align="center"
                             sx={{ py: 6, color: "text.secondary" }}
                           >
@@ -1689,7 +1906,7 @@ const Modules: FC = () => {
                                 color="primary"
                                 startIcon={<AddCircleOutlinedIcon />}
                                 onClick={handleOpenCreateModal}
-                                disabled={isBusyModules}
+                                disabled={isCrudBusyModules}
                                 sx={(theme) => ({
                                   mt: 1,
                                   borderRadius: 2,
@@ -1705,15 +1922,19 @@ const Modules: FC = () => {
                           </TableCell>
                         </TableRow>
                       ) : (
-                        modulesList.map((m) => {
+                        modulesList.map((m, index) => {
                           const displayName = getModuleDisplayName(m);
-                          const groupName = getGroupDisplayName(m.module_group);
-                          const groupKey = m.module_group?.key || null;
                           const isRowActive = m.is_active ?? true;
 
                           return (
-                            <TableRow
-                              key={m.id}
+                            <Fragment key={m.id}>
+                            {startsModuleGroup(m, modulesList[index - 1]) && <TableRow>
+                              <TableCell component="th" scope="rowgroup" colSpan={isOrdering ? 8 : 7} sx={{ p: 0 }}>
+                                {renderModuleGroupHeading(m)}
+                              </TableCell>
+                            </TableRow>}
+                            <DragOrderTableRow
+                              key={m.id} {...dragRowProps("module", m.id)}
                               hover
                               sx={{
                                 "&:last-child td, &:last-child th": {
@@ -1721,6 +1942,7 @@ const Modules: FC = () => {
                                 },
                               }}
                             >
+                              {isOrdering && <DragHandleCell>{renderDragHandle("module", m.id)}</DragHandleCell>}
                               <TableCell
                                 sx={{
                                   color: "text.secondary",
@@ -1738,28 +1960,6 @@ const Modules: FC = () => {
                                   {m.id.includes("-")
                                     ? `${m.id.split("-")[0]}...`
                                     : m.id}
-                                  <Tooltip
-                                    title={t("modules:copy")}
-                                    arrow
-                                    placement="top"
-                                  >
-                                    <Box
-                                      component="span"
-                                      sx={{ display: "inline-flex" }}
-                                    >
-                                      <IconButton
-                                        size="small"
-                                        onClick={() => handleCopyId(m.id)}
-                                        aria-label={t("modules:copy")}
-                                        disabled={isBusyModules}
-                                      >
-                                        <ContentCopyIcon
-                                          fontSize="small"
-                                          sx={{ fontSize: "1rem" }}
-                                        />
-                                      </IconButton>
-                                    </Box>
-                                  </Tooltip>
                                 </Box>
                               </TableCell>
                               <TableCell align="center">
@@ -1877,26 +2077,6 @@ const Modules: FC = () => {
                                 )}
                               </TableCell>
                               <TableCell>
-                                <Typography
-                                  variant="body2"
-                                  sx={{ fontWeight: 500 }}
-                                >
-                                  {groupName}
-                                </Typography>
-                              </TableCell>
-                              <TableCell>
-                                {groupKey ? (
-                                  <Chip
-                                    label={groupKey}
-                                    size="small"
-                                    variant="outlined"
-                                    color="primary"
-                                  />
-                                ) : (
-                                  t("modules:empty_value")
-                                )}
-                              </TableCell>
-                              <TableCell>
                                 <Chip
                                   label={
                                     isRowActive
@@ -1919,12 +2099,13 @@ const Modules: FC = () => {
                                   color="primary"
                                   aria-label={t("modules:table.actions")}
                                   onClick={(e) => handleOpenActionMenu(e, m)}
-                                  disabled={isBusyModules}
+                                  disabled={isCrudBusyModules}
                                 >
                                   <MoreVertIcon fontSize="small" />
                                 </IconButton>
                               </TableCell>
-                            </TableRow>
+                            </DragOrderTableRow>
+                            </Fragment>
                           );
                         })
                       )}
@@ -1945,7 +2126,7 @@ const Modules: FC = () => {
                 setPage(0);
               }}
               rowsPerPageOptions={[5, 10, 25, 50]}
-              disabled={isBusyModules}
+              disabled={isDragging || isBusyModules || isLocatingOrder || needsOrderRecovery}
               labelRowsPerPage={t("core:pagination.rows_per_page")}
               labelDisplayedRows={({ from, to, count }) =>
                 `${from}–${to} ${t("core:pagination.of")} ${
@@ -1990,7 +2171,7 @@ const Modules: FC = () => {
         <MenuItem
           onClick={() => handleOpenEditModal()}
           sx={{ borderRadius: 1 }}
-          disabled={isBusyModules}
+          disabled={isCrudBusyModules}
         >
           <ListItemIcon>
             <EditOutlinedIcon fontSize="small" color="primary" />
@@ -2001,7 +2182,7 @@ const Modules: FC = () => {
           <MenuItem
             onClick={() => handleRequestToggleActive(targetModule)}
             sx={{ borderRadius: 1 }}
-            disabled={isBusyModules}
+            disabled={isCrudBusyModules}
           >
             <ListItemIcon>
               {(targetModule.is_active ?? true) ? (
@@ -2025,7 +2206,7 @@ const Modules: FC = () => {
         {targetModule && (
           <MenuItem
             onClick={() => requestDeleteModule(targetModule)}
-            disabled={isBusyModules}
+            disabled={isCrudBusyModules}
             sx={{ borderRadius: 1, color: "error.main" }}
           >
             <ListItemIcon>
@@ -2070,7 +2251,7 @@ const Modules: FC = () => {
         <MenuItem
           onClick={() => handleOpenEditGroupModal()}
           sx={{ borderRadius: 1 }}
-          disabled={isBusyGroups}
+          disabled={isCrudBusyGroups}
         >
           <ListItemIcon>
             <EditOutlinedIcon fontSize="small" color="primary" />
@@ -2081,7 +2262,7 @@ const Modules: FC = () => {
           <MenuItem
             onClick={() => handleRequestToggleActiveGroup(targetGroup)}
             sx={{ borderRadius: 1 }}
-            disabled={isBusyGroups}
+            disabled={isCrudBusyGroups}
           >
             <ListItemIcon>
               {(targetGroup.is_active ?? true) ? (
@@ -2105,7 +2286,7 @@ const Modules: FC = () => {
         {targetGroup && (
           <MenuItem
             onClick={() => requestDeleteGroup(targetGroup)}
-            disabled={isBusyGroups}
+            disabled={isCrudBusyGroups}
             sx={{ borderRadius: 1, color: "error.main" }}
           >
             <ListItemIcon>

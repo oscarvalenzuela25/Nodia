@@ -44,7 +44,7 @@ function armed(f: ReturnType<typeof setup>) {
     request_id: f.step.native_request_key,
     provider_id: '31',
     provider_key: 'gemini',
-    mode: 'token_plan_agentic',
+    mode: 'agentic',
   };
   f.descriptor.status = 'invoking';
   f.descriptor.request_id = randomUUID();
@@ -62,7 +62,7 @@ describe('Durable secure login recovery by immutable native request', () => {
         request_id: f.step.native_request_key,
         provider_id: '31',
         provider_key: 'gemini',
-        mode: 'token_plan_agentic',
+        mode: 'agentic',
       });
       expect(f.step.native_request_key).not.toBe(request.client_request_id);
       return initial();
@@ -72,7 +72,7 @@ describe('Durable secure login recovery by immutable native request', () => {
       .execute(f.identity, f.execution.id, f.flowId, 'start', request);
     expect(f.native.start).toHaveBeenCalledWith(
       '31',
-      'token_plan_agentic',
+      'agentic',
       f.identity,
       f.step.native_request_key,
       f.descriptor.expires_at,
@@ -187,12 +187,16 @@ describe('Durable secure login recovery by immutable native request', () => {
             ? '999'
             : field === 'provider_key'
               ? 'openai'
-              : 'token_plan_web';
+              : 'api_key';
       await expect(
         f
           .manage()
           .execute(f.identity, f.execution.id, f.flowId, 'status', f.request()),
-      ).rejects.toThrow('nodia_ai:operation_not_found');
+      ).rejects.toThrow(
+        field === 'mode'
+          ? 'nodia_ai:invalid_persisted_state'
+          : 'nodia_ai:operation_not_found',
+      );
       expect(f.native.observeRequest).not.toHaveBeenCalled();
     },
   );

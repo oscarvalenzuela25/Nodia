@@ -1,0 +1,1561 @@
+{
+  "acceptance": {
+    "document_approval": false,
+    "operational_acceptance": false,
+    "teacher_agentic_selection_qualification": {
+      "gemini": false,
+      "openai": true
+    },
+    "teacher_knowledge_publication": false
+  },
+  "candidate": {
+    "active_server_manifest_sha256": "db80f2d1587b0e611be9adda1335f1ca5465e299a0c4b5ab1a616161f2712887",
+    "approved_documents_byte_identical": 44,
+    "client_api_url": "/api/v1",
+    "client_frozen_inputs": 1328,
+    "client_manifest_sha256": "b3ae7d3b4f71200346a52cade6b63074c6199720daa445ebec792fc9d1dd76e7",
+    "client_outputs": 179,
+    "controlled_sources": 71,
+    "excluded": 27,
+    "knowledge_release_id": "a8ce4973204fceac43f3c7ce3820751a195e54d706779c0600c7725b652a3444",
+    "published_fragments_identical": 46,
+    "server_manifest_lineage": {
+      "change": "One operator CLI truthfulness metadata script; other 4511 files preserved; compiled runtime unchanged",
+      "final": "e08cd2384b45108143e10d4e1d9e4cdd4ee50c481e0bc92ef0ac7f9d7d3651af",
+      "initial_stage": "1746c4d61aceb2d3b35873410f88ae5af4a929878e8038f3dd5a2a2720dcfce4",
+      "r02": "db80f2d1587b0e611be9adda1335f1ca5465e299a0c4b5ab1a616161f2712887"
+    },
+    "server_manifest_sha256": "e08cd2384b45108143e10d4e1d9e4cdd4ee50c481e0bc92ef0ac7f9d7d3651af",
+    "server_typecheck_diagnostics": 0,
+    "teacher_knowledge_published": false
+  },
+  "checks": {
+    "actual_candidate_postgres": {
+      "agentic_checks": 32,
+      "api_checks": 29,
+      "configured_database_modified": false,
+      "external_provider_requests": 0
+    },
+    "closed_unknown_quiescence": {
+      "passed": 28,
+      "qualification_inferred": false,
+      "source_sha256": "a4cb489930adbc27974fe27d12bb27a406162331f53061d37d93bb7c8570cbaf",
+      "state_changed": false
+    },
+    "codex_official_core_offline": {
+      "cancel_loop_closed": true,
+      "clippy_and_format": "pass",
+      "extra_generation_before_transmission_rejected": true,
+      "passed": 11,
+      "real_account_used": false,
+      "reasoning_effort_remap_before_transmission_rejected": true,
+      "synthetic_backend_maximum_posts": 1,
+      "tools_empty": true,
+      "unexpected_tool_call_rejected": true
+    },
+    "native_python_suite": {
+      "passed": 511,
+      "real_account_used": false,
+      "seconds": 23.3,
+      "skipped": 4,
+      "total": 515
+    },
+    "native_python_suite_r02_diagnostics": {
+      "passed": 515,
+      "real_account_used": false,
+      "seconds": 20.925,
+      "skipped": 4,
+      "total": 519
+    },
+    "native_python_suite_r04": {
+      "focused_passed": 28,
+      "historical_skips": true,
+      "passed": 522,
+      "real_account_used": false,
+      "seconds": 21.432,
+      "skipped": 4,
+      "total": 526
+    },
+    "native_python_suite_r05": {
+      "focused_passed": 29,
+      "historical_skips": true,
+      "passed": 523,
+      "real_account_used": false,
+      "seconds": 20.235,
+      "skipped": 4,
+      "total": 527
+    },
+    "post_configuration_readonly_preflight": {
+      "all_20_observations_passed": true,
+      "captured_roots": 15,
+      "earlier_failed_readonly_preflight_preserved": {
+        "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-quiesced-r05-production-tree-preflight.json",
+        "sha256": "ff1b7aad6480bab1aa7a9dc876516a518ee53c75fa00dea0c314975f747bf113"
+      },
+      "exact_socket_identities": 11,
+      "service_mutations": 0,
+      "source": {
+        "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-quiesced-r05-production-tree-preflight-r02.json",
+        "sha256": "197313d20efe9506e1714a23aea7dff1be0fd7e78894399efd38f6818045a458"
+      },
+      "success": true
+    },
+    "post_database_restore": {
+      "migration_UP_DOWN_executions": 0,
+      "provider_requests": 0,
+      "raw_rows_equal": true,
+      "raw_schema_definition_text_equal": false,
+      "reparsed_checks_count": 22,
+      "reparsed_checks_equal": true,
+      "schema_exact_except_reparsed_checks": true,
+      "sequences_equal": true,
+      "source": {
+        "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/post-restore-rehearsal.json",
+        "sha256": "d74991160043f486ca5ddf6326fbdf1406432e3e6e6c88f5b764e13dd7141f15"
+      },
+      "success": true
+    },
+    "post_deployment_configuration_backup": {
+      "both_ciphertexts_GCM_verified": true,
+      "capture_receipt": {
+        "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/post-configuration-quiesced-r05-backup.json",
+        "sha256": "ec130fbd962c2f688e9aefa8047746ff93d1516a530696015bc95ce8c21433d9"
+      },
+      "captured_roots": 15,
+      "local_copy_receipt": {
+        "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/post-configuration-quiesced-r05-local-verified.json",
+        "sha256": "763f4d4b6af44489e7bd4daa361eed2ee60196b167779a12205b1bb160e3857c"
+      },
+      "original_failed_captures_preserved": true,
+      "plaintext_files": 0,
+      "private_key_exported": false,
+      "quiesced_capture": true,
+      "restore_drill_performed": false,
+      "runtime_socket_payload_archived": false,
+      "runtime_socket_restore_disposition": "runtime_recreate",
+      "services_restored": true,
+      "success": true
+    },
+    "pre_deployment_backup_restore": {
+      "backup_create_requests": 1,
+      "backup_receipt": {
+        "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/prebackup-verified.json",
+        "sha256": "3d77b5c303c0d28861e1372fc2232ffbdad6d881959094b633ee308353400b97"
+      },
+      "captured_at_vm_utc": "2026-11-01T21:34:18.858Z",
+      "check_comparison": "Original and restored CHECK expressions independently reparsed by the same PostgreSQL engine in temporary clones; no literal replacement or skipped checks",
+      "cipher_bytes": 2828538,
+      "configured_database_modified_by_rehearsal": false,
+      "encrypted_object_verified": true,
+      "five_migrations_up_down_up": true,
+      "gcm_verified_before_restore": true,
+      "owned_resources_removed": true,
+      "provider_requests": 0,
+      "raw_rows_equal": true,
+      "raw_schema_definition_text_equal": false,
+      "reparsed_checks_count": 22,
+      "reparsed_checks_equal": true,
+      "restore_receipt": {
+        "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/pre-restore-rehearsal.json",
+        "sha256": "715dfcc56c3967227c0a74fd37f4848e7aee6148cffaf92ae325732fadf03497"
+      },
+      "retries": 0,
+      "schema_exact_except_reparsed_checks": true,
+      "sequences_equal": true,
+      "success": true,
+      "workers_started": 0
+    },
+    "pre_deployment_configuration_backup": {
+      "API_and_keyring_effective_HOME_and_private_profile_sources_included": true,
+      "archive": {
+        "cipher_bytes": 555778012,
+        "cipher_sha256": "8da514a7caf371af46632b552647eeebeb5d4ccbedcacb2fc86db60ca30cb991",
+        "gcm_verified": true
+      },
+      "captured_at_vm_utc": "2026-11-01T21:53:05.547Z",
+      "configuration_receipt": {
+        "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/configuration-backup.json",
+        "sha256": "ee51ea9d5a81ffbde32650814eae6b6d21449f9348af9b1f29e86df93f05f962"
+      },
+      "independent_local_copy_verified": true,
+      "journal": {
+        "cipher_bytes": 23928,
+        "cipher_sha256": "f46b6419c22aa7d354977dfea3ae6a51e6b878afefbc5c8d7201f4c1fef58e36",
+        "gcm_verified": true
+      },
+      "local_copy_receipt": {
+        "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/local-configuration-copy-verified.json",
+        "sha256": "a5cd4eae3304aa466259fbaa9a01ef6ba318fdb909e63cab43f376601b76fd38"
+      },
+      "native_cutover_bindings_included": true,
+      "original_VM_receipt_local_copy_flag": false,
+      "original_VM_receipt_preserved": true,
+      "persistent_compose_binding_included": true,
+      "plaintext_files": 0,
+      "private_key_exported": false,
+      "success": true
+    },
+    "qualification_cli_operation_mode": {
+      "database_calls": 0,
+      "passed": 2,
+      "provider_posts": 0
+    },
+    "server_full_unit_suite": {
+      "files": 326,
+      "passed": 5831,
+      "seconds": 436.56,
+      "skipped": 1,
+      "source_note": "Full suite before final cross-process Codex ACK correction; correction separately covered by focused regression."
+    },
+    "server_lint": {
+      "exit_code": 0,
+      "historical_warnings": 1
+    },
+    "server_types": {
+      "isolated_emit_diagnostics": 0
+    },
+    "teacher_agentic_postgres": {
+      "checks": 32,
+      "configured_database_modified": false,
+      "native_provider_port": "synthetic",
+      "provider_requests": 0,
+      "real_postgresql": true
+    },
+    "teacher_api_postgres_regression": {
+      "checks": 29,
+      "configured_database_modified": false,
+      "http_provider": "synthetic",
+      "real_postgresql": true
+    },
+    "worker_operator_dual_request_hash_namespace": {
+      "actual_database_preflight_passed": true,
+      "core_proof_bound_to_SQL_request": true,
+      "descriptor_hash_IDs_and_fences_preserved": true,
+      "native_proof_bound_to_descriptor_request": true,
+      "node_unit_passed": 9,
+      "normal_worker_result_verified": true,
+      "python_unit_passed": 2,
+      "same_hash_between_contracts_not_required": true
+    }
+  },
+  "final_evidence_catalog": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/catalog.json",
+  "final_evidence_catalog_cut": {
+    "Gemini_Teacher_inference_authorized_by_catalog": false,
+    "additional_failed_receipts": [
+      {
+        "facts": {
+          "VM_mutations": 0,
+          "actual_frozen_temporal_guarantee_claimed": false,
+          "captures_performed": 0,
+          "maintenance_state_created": false,
+          "provider_requests": 0,
+          "schema": "teacher-quiesced-r05-production-tree-readonly-preflight/1",
+          "service_mutations": 0,
+          "success": false
+        },
+        "source": {
+          "bytes": 8385,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-quiesced-r05-production-tree-preflight.json",
+          "sha256": "ff1b7aad6480bab1aa7a9dc876516a518ee53c75fa00dea0c314975f747bf113"
+        },
+        "state": "failed_historical"
+      }
+    ],
+    "approved_knowledge": {
+      "baseline": {
+        "bytes": 9202,
+        "path": "ops/lab/artifacts/pos-price-editor-20261031-r26/quality/approved-full-files.json",
+        "sha256": "3d69c98f7a68df71921c2895b7d5b9a65a5a95b7a4d49207430739330398dfeb"
+      },
+      "baseline_aggregate_sha256": "ed28119a33cf89230c5ecbaef1c371fe21b2f6e709b8c71fdf47ce755dbb3373",
+      "byte_identical": true,
+      "documents": 44,
+      "publication_performed": false
+    },
+    "historical_original_capture_success_inferred": false,
+    "new_configuration_backup_complete": true,
+    "no_VM_or_provider_calls_by_catalog_writer": true,
+    "normal_chat_qualification_is_not_Teacher_qualification": true,
+    "operational_acceptance_all_Teacher_providers": false,
+    "operational_receipts_clock_preserved": true,
+    "optional_current_evidence": {
+      "current_config": {
+        "facts": {
+          "automatic_retry": false,
+          "local_cipher_copy_verified": false,
+          "phase": "post",
+          "provider_requests": 0,
+          "schema": "teacher-private-configuration-capture/1",
+          "success": true
+        },
+        "source": {
+          "bytes": 45355,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/post-configuration-quiesced-r05-backup.json",
+          "sha256": "ec130fbd962c2f688e9aefa8047746ff93d1516a530696015bc95ce8c21433d9"
+        },
+        "state": "passed_at_receipt"
+      },
+      "current_config_local": {
+        "facts": {
+          "local_cipher_copy_verified": true,
+          "phase": "post",
+          "plaintext_files": 0,
+          "private_key_exported": false,
+          "provider_requests": 0,
+          "schema": "teacher-private-configuration-local-verification/1",
+          "success": true
+        },
+        "source": {
+          "bytes": 967,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/post-configuration-quiesced-r05-local-verified.json",
+          "sha256": "763f4d4b6af44489e7bd4daa361eed2ee60196b167779a12205b1bb160e3857c"
+        },
+        "state": "passed_at_receipt"
+      },
+      "final_knowledge": {
+        "facts": {
+          "counts": {},
+          "schema": "teacher-final-knowledge-validation/1",
+          "success": true
+        },
+        "source": {
+          "bytes": 522,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-final-knowledge-validation.json",
+          "sha256": "e6200db4f23b7396e0121ef7786e4fd819a6eedc7bfc094c8bac8299dbe2beae"
+        },
+        "state": "passed_at_receipt"
+      },
+      "final_status": {
+        "facts": {
+          "observed_at": "2026-11-02T01:45:49.444426+00:00",
+          "provider_requests": 0,
+          "schema": "teacher-final-readonly-status/1",
+          "service_mutations": 0,
+          "success": true
+        },
+        "source": {
+          "bytes": 1087,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-final-runtime-status.json",
+          "sha256": "f2b2a2a1b3b66c3b5c4bd994d0ec2c565f430e96e4ab101df03bf071780c5e5d"
+        },
+        "state": "passed_at_receipt"
+      },
+      "final_ui": {
+        "facts": {
+          "Teacher_current_eligibility_observed": false,
+          "account_connected_text_visible": true,
+          "connection_id": 1,
+          "credentials_exported": false,
+          "disconnect_button_enabled": true,
+          "effort_checked": true,
+          "effort_id": "medium",
+          "model_id": "gpt-6.1-sol",
+          "new_inference_requests": 0,
+          "new_login_requests": 0,
+          "schema": "teacher-authenticated-codex-UI-observation/1",
+          "session_checked_at": "2026-11-02T01:46:36.105Z",
+          "success": true,
+          "temporary_tab_closed": true,
+          "user_tab_preserved": true
+        },
+        "source": {
+          "bytes": 670,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-final-post-maintenance-Codex-UI.json",
+          "sha256": "c3e1e43ce453c4ee256ad69a7e3d726b7d93555d253cd2a38c89a49d6b89aece"
+        },
+        "state": "passed_at_receipt"
+      }
+    },
+    "receipt_states": [
+      {
+        "facts": {
+          "acknowledged": true,
+          "automatic_inference_retries": 0,
+          "business_tool_dispatches": 0,
+          "callback_count": 1,
+          "native_dispatch_intents": 1,
+          "provider": "openai",
+          "provider_internal_calls_or_cost": null,
+          "qualification_accepted": true,
+          "status": "MCP_text_nonce_completed_ACK_current"
+        },
+        "id": "chat_openai",
+        "original_source": {
+          "bytes": 654,
+          "path": ".tmp/teacher-vm-chat-openai-execute-r03.json",
+          "sha256": "943d52b85ad3437c5160ba9ef93f18f2046fa631e304d3f7ce473735ea82e482"
+        },
+        "scope": "normal_NodiaAI_chat_MCP_text",
+        "source": {
+          "bytes": 654,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-chat-openai-execute-r03.json",
+          "sha256": "943d52b85ad3437c5160ba9ef93f18f2046fa631e304d3f7ce473735ea82e482"
+        },
+        "state": "passed_current_at_receipt"
+      },
+      {
+        "facts": {
+          "acknowledged": true,
+          "automatic_inference_retries": 0,
+          "business_tool_dispatches": 0,
+          "callback_count": 1,
+          "native_dispatch_intents": 1,
+          "provider": "gemini",
+          "provider_internal_calls_or_cost": null,
+          "qualification_accepted": true,
+          "status": "MCP_text_nonce_completed_ACK_current"
+        },
+        "id": "chat_gemini",
+        "original_source": {
+          "bytes": 647,
+          "path": ".tmp/teacher-vm-chat-gemini-execute-r03.json",
+          "sha256": "4333fdb2d85aab75e56ff4d56a510f700e0b765fce78d6312d0d7ba11e5156b1"
+        },
+        "scope": "normal_NodiaAI_chat_MCP_text",
+        "source": {
+          "bytes": 647,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-chat-gemini-execute-r03.json",
+          "sha256": "4333fdb2d85aab75e56ff4d56a510f700e0b765fce78d6312d0d7ba11e5156b1"
+        },
+        "state": "passed_current_at_receipt"
+      },
+      {
+        "facts": {
+          "historical_unknown_jobs_preserved": 2,
+          "histories_preserved": true,
+          "provider_requests": 0,
+          "ready_jobs_preserved": 2,
+          "technical_drafts_archived": 3
+        },
+        "id": "archives",
+        "original_source": {
+          "bytes": 1767,
+          "path": ".tmp/teacher-vm-archive-owned-drafts-r01.json",
+          "sha256": "cc1f1b26ac62822e5bdb3600c502b0000a17c35201ec22cb0c7386ae53b9ebba"
+        },
+        "source": {
+          "bytes": 1767,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-archive-owned-drafts-r01.json",
+          "sha256": "cc1f1b26ac62822e5bdb3600c502b0000a17c35201ec22cb0c7386ae53b9ebba"
+        },
+        "state": "passed"
+      },
+      {
+        "facts": {
+          "backup_create_requests": 1,
+          "checked_at_vm_utc": "2026-11-02T00:13:34.517061+00:00",
+          "encrypted_object_verified": true,
+          "provider_requests": 0,
+          "retention_exactly_seven_days": true,
+          "retries": 0,
+          "success": true
+        },
+        "id": "post_database_backup",
+        "source": {
+          "bytes": 974,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/postbackup-verified.json",
+          "sha256": "915b86a0e51de556b5f3a21fadaba57abbc7000f2211fae9a05774da704cffa8"
+        },
+        "state": "passed"
+      },
+      {
+        "facts": {
+          "CHECK_comparison": "same_engine_canonical_parse_AST_not_raw_deparser_text",
+          "configured_database_modified": false,
+          "plaintext_dump_files": 0,
+          "post_native_proofs_and_ACKs_verified": true,
+          "post_teacher_rows_retained": true,
+          "raw_rows_equal": true,
+          "reparsed_CHECK_count": 22,
+          "reparsed_checks_equal": true,
+          "restored_qualification_is_not_live_provider_qualification": true,
+          "restored_raw_rows_schema_sequences_equal": false,
+          "schema_exact_except_reparsed_checks": true,
+          "sequences_equal": true,
+          "success": true
+        },
+        "id": "post_database_restore",
+        "source": {
+          "bytes": 9532,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/post-restore-rehearsal.json",
+          "sha256": "d74991160043f486ca5ddf6326fbdf1406432e3e6e6c88f5b764e13dd7141f15"
+        },
+        "state": "passed"
+      },
+      {
+        "facts": {
+          "Gemini_Teacher_qualified": false,
+          "advertised_inventory": 60,
+          "binary_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+          "effective_finish_only_proven": false,
+          "inventory_is_not_effective_scope": true,
+          "zero_native_IO_proven": false
+        },
+        "id": "static_cli",
+        "source": {
+          "bytes": 2184,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/native-probes/cli-static-contract-r01/summary.json",
+          "sha256": "912c77cbde0dd1a73ecd1996bc7ecdb7c28d8f927a0db039b5569d3e71f9bb92"
+        },
+        "state": "incomplete_Gemini_effective_restriction"
+      },
+      {
+        "facts": {
+          "archived_journal_matches_current": false,
+          "audit_completed": true,
+          "new_capture_performed": false,
+          "original_capture_success": false,
+          "original_capture_temporal_checks_unproven": true,
+          "original_input_ciphers_unchanged": true,
+          "original_receipt_created_or_modified": false,
+          "plaintext_files": 0,
+          "private_key_exported": false,
+          "tar": {
+            "all_control_contents_equal": true,
+            "all_control_metadata_equal": true,
+            "all_operator_trees_equal": true,
+            "all_profile_trees_equal": false,
+            "archive_extracted": false,
+            "original_temporal_before_after_guarantee_recovered": false,
+            "success": true
+          }
+        },
+        "id": "independent_post_configuration_audit",
+        "source": {
+          "bytes": 125509,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/post-configuration-independent-audit.json",
+          "sha256": "3e1b1eb54763c548d177e02f978d32bb0d6d452bac67e75b6985dad72d204424"
+        },
+        "state": "failed_historical_capture_independently_audited"
+      },
+      {
+        "facts": {
+          "PRE_valid_cipher_preserved": true,
+          "cipher_bytes": 559819239,
+          "cipher_sha256": "028819213696aa86fc9e10519d5e9e22a1ec69ff7965247070b33fc2477c5d31",
+          "independent_local_GCM_receipt_sha256": "3e1b1eb54763c548d177e02f978d32bb0d6d452bac67e75b6985dad72d204424",
+          "journal_and_original_intent_preserved": true,
+          "local_recovery_replica": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/post-configuration-profiles.enc",
+          "original_capture_success": false,
+          "retired": true
+        },
+        "id": "failed_spool_retirement",
+        "original_source": {
+          "bytes": 709,
+          "path": ".tmp/teacher-vm-failed-spool-retirement-r01.json",
+          "sha256": "feef06125e6dfb733bd23b43330d81f07b091db8d7f62acba9f6f49d39b9c4c9"
+        },
+        "source": {
+          "bytes": 709,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-failed-spool-retirement-r01.json",
+          "sha256": "feef06125e6dfb733bd23b43330d81f07b091db8d7f62acba9f6f49d39b9c4c9"
+        },
+        "state": "passed_retirement_of_failed_spool"
+      },
+      {
+        "facts": {
+          "capture_retry": false,
+          "consumer_start_repeated": false,
+          "database_mutations": 0,
+          "new_capture": false,
+          "original_failure_preserved": true,
+          "original_services_and_timers_restored": true,
+          "provider_requests": 0,
+          "stable_seconds": 30,
+          "success": true,
+          "tail_correction": "health_function_import_name_collision"
+        },
+        "id": "manual_resume_r02",
+        "original_source": {
+          "bytes": 663,
+          "path": ".tmp/teacher-vm-maintenance-resume-tail-r02.json",
+          "sha256": "63bdf9028dfa05ecd8ca8046638ca2be5c19b1407946282d2df4f54946d94334"
+        },
+        "source": {
+          "bytes": 663,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-maintenance-resume-tail-r02.json",
+          "sha256": "63bdf9028dfa05ecd8ca8046638ca2be5c19b1407946282d2df4f54946d94334"
+        },
+        "state": "passed_manual_resume_after_failed_capture"
+      },
+      {
+        "facts": {
+          "automatic_retry": false,
+          "maintenance_recovery": {
+            "attempted": true,
+            "consumers_stable_seconds": 30,
+            "maintenance_state_sha256": "cb55d0bf41e74ed877f17d930c5a51d58ffa731978e4f97bbbf70c3b24bcf280",
+            "original_runtime_states_restored": true,
+            "timers_restored": true
+          },
+          "maintenance_step": "verify_after_stop",
+          "stage": "frozen_snapshot_before_capture",
+          "success": false
+        },
+        "id": "automatic_resume_r03",
+        "original_source": {
+          "bytes": 538,
+          "path": ".tmp/teacher-vm-postconfiguration-quiesced-r03.json",
+          "sha256": "036b5d72ad984c1709a0c430248c3a0c890ce296e13e8438c9fa0c02a66d7e87"
+        },
+        "source": {
+          "bytes": 538,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-postconfiguration-quiesced-r03.json",
+          "sha256": "036b5d72ad984c1709a0c430248c3a0c890ce296e13e8438c9fa0c02a66d7e87"
+        },
+        "state": "failed_historical_capture_with_passed_automatic_resume"
+      },
+      {
+        "facts": {
+          "automatic_retry": false,
+          "stage": "captured_binding_and_journal_recheck",
+          "success": false
+        },
+        "id": "failed_original_post_configuration",
+        "original_source": {
+          "bytes": 276,
+          "path": ".tmp/teacher-vm-postconfiguration-operation-r05.json",
+          "sha256": "98444af78ed222ad54c1a5d3752b65652823c12f21aed1084bc2670502959243"
+        },
+        "source": {
+          "bytes": 276,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-postconfiguration-operation-r05.json",
+          "sha256": "98444af78ed222ad54c1a5d3752b65652823c12f21aed1084bc2670502959243"
+        },
+        "state": "failed_historical"
+      },
+      {
+        "facts": {
+          "automatic_retry": false,
+          "stage": "prepare_reversible_maintenance",
+          "success": false
+        },
+        "id": "failed_quiesced_r02",
+        "original_source": {
+          "bytes": 389,
+          "path": ".tmp/teacher-vm-postconfiguration-quiesced-r02.json",
+          "sha256": "c986dba5f232c74fc27ae9027476ccaf7cbbf78ad5d2d602efa12a69d6e3ece2"
+        },
+        "source": {
+          "bytes": 389,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-postconfiguration-quiesced-r02.json",
+          "sha256": "c986dba5f232c74fc27ae9027476ccaf7cbbf78ad5d2d602efa12a69d6e3ece2"
+        },
+        "state": "failed_historical"
+      },
+      {
+        "facts": {
+          "VM_mutations": 0,
+          "actual_frozen_temporal_guarantee_claimed": false,
+          "captures_performed": 0,
+          "maintenance_state_created": false,
+          "provider_requests": 0,
+          "schema": "teacher-quiesced-r04-production-tree-readonly-preflight/1",
+          "service_mutations": 0,
+          "success": false
+        },
+        "id": "failed_readonly_r04",
+        "original_source": {
+          "bytes": 4917,
+          "path": ".tmp/teacher-vm-quiesced-r04-production-tree-preflight.json",
+          "sha256": "70973365ed941cf966fba90e644695c05e5b97ea4f63e388f0e4b3ad374744c8"
+        },
+        "source": {
+          "bytes": 4917,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-quiesced-r04-production-tree-preflight.json",
+          "sha256": "70973365ed941cf966fba90e644695c05e5b97ea4f63e388f0e4b3ad374744c8"
+        },
+        "state": "failed_historical"
+      },
+      {
+        "facts": {
+          "current_UI_created_socket_inferred": false,
+          "file_contents_read": false,
+          "generic_socket_allowlist_authorized": false,
+          "socket_opened_or_connected": false,
+          "source_constructor_attribution": "not_proven_metadata_shape_matches_login_requests",
+          "special_files": 11
+        },
+        "id": "runtime_specials_readonly",
+        "original_source": {
+          "bytes": 9293,
+          "path": ".tmp/teacher-vm-runtime-specials-readonly-r01.json",
+          "sha256": "eb2b4f02d51a855b395157e0fdbbc6132c7d3a385365f14cc9c6ec6560ce0c67"
+        },
+        "source": {
+          "bytes": 9293,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-runtime-specials-readonly-r01.json",
+          "sha256": "eb2b4f02d51a855b395157e0fdbbc6132c7d3a385365f14cc9c6ec6560ce0c67"
+        },
+        "state": "passed_readonly_metadata_only"
+      },
+      {
+        "facts": {
+          "Teacher_current_eligibility_observed": false,
+          "account_connected_text_visible": true,
+          "connection_id": 1,
+          "credentials_exported": false,
+          "disconnect_button_enabled": true,
+          "effort_checked": true,
+          "effort_id": "medium",
+          "model_id": "gpt-6.1-sol",
+          "new_inference_requests": 0,
+          "new_login_requests": 0,
+          "schema": "teacher-authenticated-codex-UI-observation/1",
+          "session_checked_at": "2026-11-02T01:29:18.122Z",
+          "success": true,
+          "temporary_tab_closed": true,
+          "user_tab_preserved": true
+        },
+        "id": "authenticated_Codex_UI",
+        "source": {
+          "bytes": 626,
+          "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-final-codex-UI-observation.json",
+          "sha256": "c0fa528f4be0c9f881a5d800926f6f5b7f2726e35176daa917bd33c5a36fbad4"
+        },
+        "state": "passed_Codex_UI_only_Teacher_eligibility_not_observed"
+      }
+    ],
+    "recorded_at_local_utc": "2026-11-02T01:41:03.605364+00:00",
+    "schema_version": 1,
+    "state": "Codex_Teacher_and_both_normal_chat_MCP_verified_Gemini_Teacher_restriction_incomplete"
+  },
+  "historical_cuts": [
+    {
+      "host_staging": {
+        "bytes": 238268256,
+        "capabilities_match": true,
+        "path": "/opt/nodia/native/teacher-codex-20261101-r01/nodia-teacher-codex-host",
+        "profiles_read": false,
+        "provider_requests": 0,
+        "service_changes": 0,
+        "sha256": "9b949cb27efc9385a8ae23d2f255968cfe6b427f8f071f1a0d04366dda00c9a3",
+        "sha512": "1de89ae8d82da01520f3bea2dcc6cf95273727e8a7c12ed2e758b90614715b5bd1e9480aa97799c22086aa8b0a5043b2189eeeacf05abe9abb9647ab6f4f04ec",
+        "status": "host_staged_not_selected"
+      },
+      "plaintext_profiles_or_credentials_exported": false,
+      "recorded_at": "2026-11-01T21:06:58.106653+00:00",
+      "release_staging": [
+        {
+          "active_runtime_unchanged": true,
+          "automatic_activation": false,
+          "database_access": false,
+          "files": 4512,
+          "kind": "server",
+          "manifest_sha256": "1746c4d61aceb2d3b35873410f88ae5af4a929878e8038f3dd5a2a2720dcfce4",
+          "outside_allowlist_baseline_files_preserved": true,
+          "payload_files": 634,
+          "provider_requests": 0,
+          "release": "/opt/nodia/releases/nodia-server-teacher-20261101-r01",
+          "status": "staged_not_activated",
+          "success": true
+        },
+        {
+          "active_runtime_unchanged": true,
+          "automatic_activation": false,
+          "database_access": false,
+          "files": 179,
+          "kind": "client",
+          "manifest_sha256": "b3ae7d3b4f71200346a52cade6b63074c6199720daa445ebec792fc9d1dd76e7",
+          "outside_allowlist_baseline_files_preserved": true,
+          "payload_files": 179,
+          "provider_requests": 0,
+          "release": "/opt/nodia/releases/nodia-client-teacher-20261101-r01",
+          "status": "staged_not_activated",
+          "success": true
+        }
+      ],
+      "scope": "Original host/release staging before coordinated adoption",
+      "services_restarted": 0,
+      "status": "integration_in_progress_not_operationally_accepted"
+    },
+    {
+      "adoption_phase": "failed_closed_readonly_reconciliation_required",
+      "client": {
+        "candidate_manifest_sha256": "b3ae7d3b4f71200346a52cade6b63074c6199720daa445ebec792fc9d1dd76e7",
+        "cutover_completed": true,
+        "nginx_sha256": "9844da0d117cada4403b5cfb1b6ee88259de33a683c8be88a552d63810759892",
+        "spa_index_sha256": "b71f1e61c6e59174a67d19a536dee7f2011cb3f7ef0e690e94108cb5fda0edd8"
+      },
+      "readiness": {
+        "accepted": false,
+        "automatic_old_runtime_restart": false,
+        "fail_closed": true,
+        "migration_replay_permitted": false,
+        "observed_failure": "ConnectionRefused during startup readiness check",
+        "recovery_tail_pending": true
+      },
+      "recorded_at": "2026-11-01T22:00:40.664560+00:00",
+      "status": "vm_schema_and_native_adopted_node_readiness_recovery_pending"
+    },
+    {
+      "native": {
+        "health": "healthy",
+        "id": "ea47a2973ba27cb915e4b8c4651c8269260d239098326137cfaf97353845700f",
+        "image": "sha256:0041913524badff867a9ffd7203d8ed602fa77b719178742a312819778713509",
+        "started_at": "2026-11-01T22:02:06.274648656Z",
+        "status": "running"
+      },
+      "scope": "Previous Native activation preserved before R04 metadata diagnostic"
+    },
+    {
+      "native": {
+        "health": "healthy",
+        "id": "2c01339a65d06b02aa802d8c76d15a53f75f33b3b93270cb1bd8608f45b38f29",
+        "image": "sha256:9ba0a2845629712ee4c8f0fcab0304f028077ce524616a363ffa7c31095de950",
+        "started_at": "2026-11-01T23:31:04.814133113Z",
+        "status": "running"
+      },
+      "scope": "Native R04 before isolated global-role adoption R05"
+    }
+  ],
+  "limitations": [
+    "Installed/adopted runtimes and schema do not establish provider availability or operational acceptance.",
+    "One real Gemini Teacher attempt ended closed unknown with both SQL and Native ACK; no result or success is inferred and the original request is never replayed.",
+    "The original staging and failed startup/reload verification receipts retain their historical scope.",
+    "Codex spawn failure without verified native identity remains fenced; EOF or missing PID does not release it.",
+    "Draft ADR/Teacher knowledge approval and publication remain independent.",
+    "The initial operator account/read used a service-private DBus target outside its mount namespace. A subsequent namespace-correct observation verified the preserved authenticated session; no product unit or credentials were changed."
+  ],
+  "operational_receipts": [
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-finish-execute-r02.json",
+      "sha256": "fd4bd2bcc1c9fc2072085ddec3d18744e7a32ec53677a3aa8e816f6754035038"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-register-r02.json",
+      "sha256": "f7923d3b7365e7b3bdafa80c88924a9f0a0b1c74b26383f786a4a082b439f6eb"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-prepare-r01.json",
+      "sha256": "6b46ef4bf1d8aa9614b7c6a12912ebeb3b665dee54a034ee5542a44b7000948e"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-observe-openai-r01.json",
+      "sha256": "909be52103cafc9d41d4f703ae9cc292e2ce93ddb30f6a50d30b795ff86a116a"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-native-job-r02.json",
+      "sha256": "65bdb2a6d426ea3bb51f3a08760c4a3bc30bf71f447a2eff60b059b59db3f456"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-current-node-units-r01.txt",
+      "sha256": "1ec05d7ca1889ed4ae60abac8ca6c69a6a4cbe67b84699368996ee45ccd78e6d"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-server-r02-activate-execute.json",
+      "sha256": "7400b7596c97a2b4378e47ed6129f5c38d923d9af5d62e701a66781c5296c969"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-server-r02-stage-execute.json",
+      "sha256": "50b84843089998b03d66d4b1ad41f2fded70282e523ab627f5d5b5aba1ff0727"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-native-r02-image-stage.json",
+      "sha256": "b0f7706705f264533ed671369829ad3375d0050f66dc9ffd6a592984f97c357b"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-parser-before-r01.json",
+      "sha256": "2f9efad712e0dce2c6b025830a167805cf56e0b7d8a75e7e54183391e489c178"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-keyring-namespace-r01.json",
+      "sha256": "7cb1eaee66d9bf17fbe0d394a32fccbcda157272cdf562adf3598732bd82f193"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-codex-live-keyring-observed-r01.json",
+      "sha256": "f49e597de5491aea2e89f0772234285d6f9c0836099b9f7d9c9a03391544e206"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-native-r04-coordinate-execute.json",
+      "sha256": "260be41bc16b873d75083094b8685b55b812401e5fe62a67f6dee633594fde28"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-gemini-eof-catalog-r04.json",
+      "sha256": "9ee1ac1cbf2152e5da7bb82d635a9171badef478e8aec057927df5d815aedbbe"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-qualify-keyring-openai-r02.json",
+      "sha256": "193ee4ff549995d67504186eed08a19f217edfd51d769f877e3d84610eba94c5"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-client-r02-activate-execute.json",
+      "sha256": "8f36cf31bf197a9a0b88d6ac0d6f9ed03a95f9e29b0f46559132ead6619ea321"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-gemini-r02-failure.json",
+      "sha256": "f2a77e5e52f0cb46222a751cc6570360406d2360fbd21d175ae0709860cc9c50"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-worker-openai-enqueue-r01.json",
+      "sha256": "6c5f760cb2dd165e7a703a4a93b1d5cf2348d6e09b71164992a9c8051954aa7b"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-worker-openai-history-r03.json",
+      "sha256": "0fbaa0733a680095d6168321cb289068e3d1719b26c0be15ee97a0facafbcd44"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-native-r05-coordinate-execute.json",
+      "sha256": "682aa41fdd5af8229de62abddd6949be9d1fb125e03d2f2b1895dcc9c79153c4"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-gemini-eof-catalog-r05.json",
+      "sha256": "3e1f008fb9a9f4bf5f8bb4feb14e73c0fe474a6db6742e9c92f672045fd2671c"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-agent-discovery-isolated-r04c.json",
+      "sha256": "d818abb7b56e95fb280793f6966c691ec92ff7482c607e9b4bff61c5fcd27741"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-worker-openai-r02-predicates.json",
+      "sha256": "9837b39c8e1598599311c40062a49ceb3b67f82ae3eb453162507b2b5d77c557"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-worker-openai-preflight-r03.json",
+      "sha256": "89443976302334d3aeac6af37253142a909fe7bc4dc70d8d59d4187ab99042c5"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-worker-openai-enqueue-r03.json",
+      "sha256": "c2cf848e1f881e6646ec6e113e3559fa6ce0b31af52ecfe8ce9e653870f4019f"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-worker-openai-inspect-r03.json",
+      "sha256": "27c16fdb9f3ea57735cbaf44433fb7c77305f6887113d185c6ac4db3522791e1"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-quiesced-r05-staged.json",
+      "sha256": "b4c8ac4d12df62eef38148841a72f6c126b2b1d580f9c3b87ec3af697d4700a4"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-quiesced-r05-production-tree-preflight.json",
+      "sha256": "ff1b7aad6480bab1aa7a9dc876516a518ee53c75fa00dea0c314975f747bf113"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-quiesced-r05-production-tree-preflight-r02.json",
+      "sha256": "197313d20efe9506e1714a23aea7dff1be0fd7e78894399efd38f6818045a458"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-quiet-leaf-r05.json",
+      "sha256": "6adc072bac1717480018701c3f8ba8c6ae3e291499b2c606d2c58a9b049bd8ca"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-postconfiguration-quiesced-r05.json",
+      "sha256": "b7f6a57a3e0743386c5ab6dfe41f8173fb42c2c5d892f0def8e8c8f3ac1e7c5d"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-chat-openai-execute-r03.json",
+      "sha256": "943d52b85ad3437c5160ba9ef93f18f2046fa631e304d3f7ce473735ea82e482"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-chat-gemini-execute-r03.json",
+      "sha256": "4333fdb2d85aab75e56ff4d56a510f700e0b765fce78d6312d0d7ba11e5156b1"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-archive-owned-drafts-r01.json",
+      "sha256": "cc1f1b26ac62822e5bdb3600c502b0000a17c35201ec22cb0c7386ae53b9ebba"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/postbackup-verified.json",
+      "sha256": "915b86a0e51de556b5f3a21fadaba57abbc7000f2211fae9a05774da704cffa8"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/post-restore-rehearsal.json",
+      "sha256": "d74991160043f486ca5ddf6326fbdf1406432e3e6e6c88f5b764e13dd7141f15"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/native-probes/cli-static-contract-r01/summary.json",
+      "sha256": "912c77cbde0dd1a73ecd1996bc7ecdb7c28d8f927a0db039b5569d3e71f9bb92"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/backups/post-configuration-independent-audit.json",
+      "sha256": "3e1b1eb54763c548d177e02f978d32bb0d6d452bac67e75b6985dad72d204424"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-failed-spool-retirement-r01.json",
+      "sha256": "feef06125e6dfb733bd23b43330d81f07b091db8d7f62acba9f6f49d39b9c4c9"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-maintenance-resume-tail-r02.json",
+      "sha256": "63bdf9028dfa05ecd8ca8046638ca2be5c19b1407946282d2df4f54946d94334"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-postconfiguration-quiesced-r03.json",
+      "sha256": "036b5d72ad984c1709a0c430248c3a0c890ce296e13e8438c9fa0c02a66d7e87"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-postconfiguration-operation-r05.json",
+      "sha256": "98444af78ed222ad54c1a5d3752b65652823c12f21aed1084bc2670502959243"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-postconfiguration-quiesced-r02.json",
+      "sha256": "c986dba5f232c74fc27ae9027476ccaf7cbbf78ad5d2d602efa12a69d6e3ece2"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-quiesced-r04-production-tree-preflight.json",
+      "sha256": "70973365ed941cf966fba90e644695c05e5b97ea4f63e388f0e4b3ad374744c8"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-vm-runtime-specials-readonly-r01.json",
+      "sha256": "eb2b4f02d51a855b395157e0fdbbc6132c7d3a385365f14cc9c6ec6560ce0c67"
+    },
+    {
+      "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-final-codex-UI-observation.json",
+      "sha256": "c0fa528f4be0c9f881a5d800926f6f5b7f2726e35176daa917bd33c5a36fbad4"
+    }
+  ],
+  "recorded_at": "2026-11-01T23:59:13.844659+00:00",
+  "remaining_gates": [
+    "Prove effective Gemini Teacher finish-only capabilities and zero native I/O independently of the global init inventory.",
+    "Only after that restriction is verified, qualify the exact persisted Gemini Teacher selection and complete its normal Worker/publisher proof."
+  ],
+  "request": {
+    "agentic_providers_requested": [
+      "openai",
+      "gemini"
+    ],
+    "previous_local_only_limit_superseded": true,
+    "vm_deployment_authorized": true
+  },
+  "schema_version": 1,
+  "status": "codex_connected_Teacher_verified_both_normal_chat_MCP_verified_Gemini_Teacher_effective_restriction_pending",
+  "timestamp_scope": {
+    "VM_clock_changed": false,
+    "note": "VM clock was observed ahead of the operator clock. Source timestamps are retained verbatim; adoption freshness was checked with the VM clock.",
+    "operational_receipts_clock": "VM UTC",
+    "recorded_at_clock": "Windows operator UTC"
+  },
+  "vm": {
+    "adoption_phase": "activated_pending_teacher_qualification_and_postbackup",
+    "authenticated_teacher_UI": {
+      "UI_messages_sent": 0,
+      "canonical_route": "/nodia-teacher",
+      "exact_Codex_selection_visible": true,
+      "existing_real_session": true,
+      "module_in_studies_menu": true,
+      "new_auth_sessions": 0,
+      "normal_worker_assistant_reply_visible": true,
+      "temporary_agent_tab_closed": true,
+      "user_provider_tab_preserved": true,
+      "verified": true
+    },
+    "client": {
+      "candidate_manifest_sha256": "b3ae7d3b4f71200346a52cade6b63074c6199720daa445ebec792fc9d1dd76e7",
+      "cutover_completed": true,
+      "nginx_sha256": "9844da0d117cada4403b5cfb1b6ee88259de33a683c8be88a552d63810759892",
+      "spa_index_sha256": "b71f1e61c6e59174a67d19a536dee7f2011cb3f7ef0e690e94108cb5fda0edd8"
+    },
+    "client_r02": {
+      "Native_restart": false,
+      "database_access": false,
+      "manifest_sha256": "8f2a8117eb473abb89f3fc9e494be652b36be7e288fb57b77a438327738156c7",
+      "new_assets_verified": 179,
+      "old_asset_fallback_retained": true,
+      "old_assets_verified": 175,
+      "phase": "Client_R02_active_static_and_legacy_assets_verified",
+      "provider_requests": 0,
+      "receipt_sha256": "d085c26530e4bc4f93aa5c4aa471910dd6922ec3e315d30d5dadc199ca6d100a",
+      "server_restart": false,
+      "success": true
+    },
+    "codex_connection_ui": {
+      "account_authenticated": true,
+      "actual_IAB_verified": true,
+      "automatic_inference": false,
+      "configured_model_effort_preserved": true,
+      "session_checked_at_VM_UTC": "2026-11-01T23:37:54.813Z",
+      "stale_health_not_treated_as_disconnection": true,
+      "tests_passed": 64,
+      "types_and_lint_errors": 0,
+      "visible_text": "Cuenta Codex conectada"
+    },
+    "codex_host_installed": {
+      "bound_in_new_service_configuration": true,
+      "path": "/opt/nodia/native/teacher-codex-20261101-r01/nodia-teacher-codex-host",
+      "sha256": "9b949cb27efc9385a8ae23d2f255968cfe6b427f8f071f1a0d04366dda00c9a3",
+      "sha512": "1de89ae8d82da01520f3bea2dcc6cf95273727e8a7c12ed2e758b90614715b5bd1e9480aa97799c22086aa8b0a5043b2189eeeacf05abe9abb9647ab6f4f04ec",
+      "teacher_inference_verified": false
+    },
+    "codex_keyring_namespace": {
+      "UI_intent_read_fix_pending": true,
+      "UI_stale_health_after_seconds": 30,
+      "actual_session_authenticated": true,
+      "collections_unlocked": true,
+      "credential_or_unit_changes": false,
+      "daemon_store_reachable": true,
+      "inference_dispatches": 0,
+      "items_total": 1,
+      "operator_original_namespace_wrong": true,
+      "production_binding_correct": true,
+      "profile_and_epoch_unchanged": true,
+      "service_bind_target_is_socket": true
+    },
+    "current_authenticated_UI": {
+      "Teacher_qualified_selection": {
+        "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-final-selection-UI-observation.json",
+        "sha256": "1db61e15e18aeef69cbd5fc569ed3b49d69c847a8c25b8a4db6fc7b4ec13f9ae"
+      },
+      "codex_account": {
+        "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-final-codex-UI-observation.json",
+        "sha256": "c0fa528f4be0c9f881a5d800926f6f5b7f2726e35176daa917bd33c5a36fbad4"
+      },
+      "codex_account_after_API_Worker_resume": {
+        "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-final-post-maintenance-Codex-UI.json",
+        "sha256": "c3e1e43ce453c4ee256ad69a7e3d726b7d93555d253cd2a38c89a49d6b89aece"
+      },
+      "new_inferences": 0,
+      "new_messages": 0,
+      "user_tab_preserved": true
+    },
+    "encrypted_private_backup_copied_and_GCM_verified_locally": true,
+    "final_runtime_status": {
+      "SQL_queries": 0,
+      "actor_cookie_UI_verified": false,
+      "consumers": {
+        "nodia-ai-worker.service": {
+          "active": true,
+          "cwd": "/opt/nodia/releases/nodia-server-teacher-20261101-r02",
+          "pid": 3837365,
+          "uid": 10000
+        },
+        "nodia-api.service": {
+          "active": true,
+          "cwd": "/opt/nodia/releases/nodia-server-teacher-20261101-r02",
+          "pid": 3837364,
+          "uid": 10000
+        }
+      },
+      "credential_or_profile_reads": 0,
+      "http_methods": [
+        "GET"
+      ],
+      "login_requests": 0,
+      "native_r05": {
+        "health": "healthy",
+        "id": "d12f6781d5a0ee5b0747471c89ea1b7f3f7cda58f070f3c299746434fb828001",
+        "image": "sha256:8b22de6fa9eb465f806107bc90d3011f190ddb3b6c76223fe710e4ef7579304d",
+        "started_at": "2026-11-01T23:55:03.283771832Z",
+        "status": "running"
+      },
+      "observed_at": "2026-11-02T01:45:49.444426+00:00",
+      "protected_anonymous_status": 401,
+      "provider_requests": 0,
+      "public_status": 200,
+      "release_manifest_sha256": "db80f2d1587b0e611be9adda1335f1ca5465e299a0c4b5ab1a616161f2712887",
+      "schema": "teacher-final-readonly-status/1",
+      "service_mutations": 0,
+      "source": {
+        "path": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/operational/teacher-final-runtime-status.json",
+        "sha256": "f2b2a2a1b3b66c3b5c4bd994d0ec2c565f430e96e4ab101df03bf071780c5e5d"
+      },
+      "success": true,
+      "timers": {
+        "nodia-ai-backup-rotate.timer": "active",
+        "nodia-ai-backup.timer": "active"
+      }
+    },
+    "local_tunnel": {
+      "api_public_http_status": 200,
+      "destination_vm_port": 8080,
+      "local_vite_stopped": true,
+      "url": "http://localhost:5174"
+    },
+    "migration": {
+      "committed": true,
+      "explicit_timestamps": [
+        1793560000000,
+        1793570000000,
+        1793580000000,
+        1793590000000,
+        1793600000000
+      ],
+      "guarantees": {
+        "after_migrations": 43,
+        "after_tables": 94,
+        "all_preexisting_rows_preserved": true,
+        "before_migrations": 38,
+        "before_tables": 70,
+        "changed_module_links_only_frozen_map": true,
+        "module_ids_keys_assignments_preserved": true,
+        "new_tables_empty_except_route_ledger": true,
+        "preserved_table_count": 69
+      },
+      "post_commit_rows_equal_migration_result": true
+    },
+    "native_current": {
+      "health": "healthy",
+      "id": "d12f6781d5a0ee5b0747471c89ea1b7f3f7cda58f070f3c299746434fb828001",
+      "image": "sha256:8b22de6fa9eb465f806107bc90d3011f190ddb3b6c76223fe710e4ef7579304d",
+      "started_at": "2026-11-01T23:55:03.283771832Z",
+      "status": "running"
+    },
+    "native_r02_staged": {
+      "COPY_only": true,
+      "changes": "Closed enum-only failure diagnostic persisted before cleanup and retained in original ACK tombstone",
+      "image": "sha256:b82c12671a4dda9dd506c82309c4aa7c8497317af9bd91fe7523412018422efa",
+      "provider_requests": 0,
+      "selected": false,
+      "source_files_changed": 2
+    },
+    "native_r04": {
+      "adopted": true,
+      "catalog_metadata": {
+        "binary_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+        "catalog": {
+          "container_type": "array",
+          "entry_count": 60,
+          "finish_object_name_count": 0,
+          "finish_string_count": 1,
+          "known_tool_names": [
+            "ask_permission",
+            "call_mcp_tool",
+            "define_subagent",
+            "find_by_name",
+            "finish",
+            "generate_image",
+            "grep_search",
+            "invoke_subagent",
+            "list_dir",
+            "multi_replace_file_content",
+            "read_url_content",
+            "replace_file_content",
+            "run_command",
+            "view_file",
+            "write_to_file"
+          ],
+          "object_count": 0,
+          "other_count": 0,
+          "over_limit": false,
+          "string_count": 60,
+          "unrecognized_name_count": 45
+        },
+        "contract": "teacher-agentic-text-catalog/1",
+        "exit_code": 0,
+        "init_count": 1,
+        "local_closed": true,
+        "model_matches": true,
+        "num_turns": null,
+        "policy_hash": "cdb0ac10d54f8f814882f65757089e27d67f63ff78d1c69f44c2771cfa01c8b8",
+        "provider_internal_generation_posts": null,
+        "qualification_inferred": false,
+        "reason": "catalog_observed",
+        "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+        "role_matches": true,
+        "runtime_hash": "e98e60b44a2577ddcb92ae6df1da02bc3d21fe23c6f4a44e64ea0f4f27bad64e",
+        "session_generation": "0519af42098748c2b78de12461a8aefe",
+        "status": "observed",
+        "step_events_observed": 0,
+        "tool_events_observed": 0,
+        "user_events_observed": 0,
+        "user_events_sent": 0
+      },
+      "compose_sha256": "372f8fe20e3a00d635e91519ffebdd098b226bd8ec225d02b1e1e25bb769831c",
+      "new_generation_attempted": false,
+      "role_loading_not_proven_by_init_agent_name": true
+    },
+    "native_r05": {
+      "adopted": true,
+      "catalog_metadata": {
+        "binary_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+        "catalog": {
+          "container_type": "array",
+          "entry_count": 60,
+          "finish_object_name_count": 0,
+          "finish_string_count": 1,
+          "known_tool_names": [
+            "ask_permission",
+            "call_mcp_tool",
+            "define_subagent",
+            "find_by_name",
+            "finish",
+            "generate_image",
+            "grep_search",
+            "invoke_subagent",
+            "list_dir",
+            "multi_replace_file_content",
+            "read_url_content",
+            "replace_file_content",
+            "run_command",
+            "view_file",
+            "write_to_file"
+          ],
+          "object_count": 0,
+          "other_count": 0,
+          "over_limit": false,
+          "string_count": 60,
+          "unrecognized_name_count": 45
+        },
+        "contract": "teacher-agentic-text-catalog/1",
+        "exit_code": 0,
+        "init_count": 1,
+        "local_closed": true,
+        "model_matches": true,
+        "num_turns": null,
+        "policy_hash": "b70447855477df4d7c5a3d50d42fcc0e26d57d54d0dff5f4afd2457010df768a",
+        "provider_internal_generation_posts": null,
+        "qualification_inferred": false,
+        "reason": "catalog_observed",
+        "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+        "role_matches": true,
+        "runtime_hash": "f67058cc9bfc3f031bd67b38227bd32b7b49bc28ba695acd1397053636566d75",
+        "session_generation": "c810a28683c44dfb97b1906c1ec9dc25",
+        "status": "observed",
+        "step_events_observed": 0,
+        "tool_events_observed": 0,
+        "user_events_observed": 0,
+        "user_events_sent": 0
+      },
+      "compose_sha256": "9b468cc985904cd3038bbd67c2e3343a791b987c118f3d5908d1a7ef78310382",
+      "effective_model_tool_catalog_not_proven": true,
+      "generation_attempted": false,
+      "only_source_delta": "Teacher role in isolated HOME global customization path; explicit empty workspace MCP directory"
+    },
+    "node_services": {
+      "nodia-ai-worker.service": {
+        "main_pid": 3714011,
+        "state": "active",
+        "substate": "running",
+        "working_directory": "/opt/nodia/releases/nodia-server-teacher-20261101-r02"
+      },
+      "nodia-api.service": {
+        "main_pid": 3714010,
+        "state": "active",
+        "substate": "running",
+        "working_directory": "/opt/nodia/releases/nodia-server-teacher-20261101-r02"
+      }
+    },
+    "normal_worker_admission_diagnostic": {
+      "history_preserved": true,
+      "jobs": 1,
+      "mutations": 0,
+      "node_intent_present": false,
+      "reason": "qualification_publisher_message_must_be_validated_not_assumed_absent",
+      "setup_messages": 1
+    },
+    "normal_worker_verification": {
+      "openai": {
+        "action": "inspect",
+        "after": {
+          "active": true,
+          "cwd": "/opt/nodia/releases/nodia-server-teacher-20261101-r02",
+          "entry_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+          "pid": 3773595,
+          "start_ticks": "82634372",
+          "uid": 10000
+        },
+        "before": {
+          "active": true,
+          "cwd": "/opt/nodia/releases/nodia-server-teacher-20261101-r02",
+          "entry_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+          "pid": 3773595,
+          "start_ticks": "82634372",
+          "uid": 10000
+        },
+        "operator_inference_dispatches": 0,
+        "provider": "openai",
+        "release_manifest": "db80f2d1587b0e611be9adda1335f1ca5465e299a0c4b5ab1a616161f2712887",
+        "result": {
+          "action": "inspect",
+          "admitted": true,
+          "archive_receipt_present": false,
+          "attempts": [
+            {
+              "fence": "1",
+              "id": "01ff1155-bea7-4e60-ac0f-1cac0049ca66",
+              "phase": "terminal",
+              "worker_id": "c051e56e-c51e-44e7-8dc9-06f5e5865c20"
+            }
+          ],
+          "completed": true,
+          "dispatches_used": 1,
+          "error_code": null,
+          "job_id": "924a7a49-b1f1-4b32-9c26-c539d2f547c2",
+          "operations": [
+            {
+              "id": "01ff1155-bea7-4e60-ac0f-1cac0049ca66",
+              "native_ack": true,
+              "owner_fence": "1",
+              "phase": "closed",
+              "remote_outcome": "completed",
+              "response_hash": "faf142c74790f7820c90dc4d225da1a6a48b6f7259c204749d43cedaaf70ddf0",
+              "runtime_fence": "115",
+              "sql_ack": true,
+              "terminal_proof_hash": "7dfb213d563b94c86c74aff1adbd79f17440acb61dfe6f50c4e39534f2f4b61f",
+              "worker_id": "c051e56e-c51e-44e7-8dc9-06f5e5865c20"
+            }
+          ],
+          "operator_inference_dispatches": 0,
+          "provider": "openai",
+          "purpose": "setup_reply",
+          "replay": false,
+          "session_id": "78daaa67-bbc8-4067-a9db-ce607f8b7342",
+          "session_state": "draft",
+          "state": "ready"
+        },
+        "same_worker_service_process": true,
+        "same_worker_since_admission": true,
+        "worker_execution_correlated": true,
+        "worker_uuid_to_pid_attestation": false
+      }
+    },
+    "plaintext_profiles_or_credentials_exported": false,
+    "readiness": {
+      "accepted": true,
+      "migration_replay": false,
+      "native_replay": false,
+      "original_histories_preserved": true,
+      "recovery_tail_pending": false,
+      "stable_seconds": 30
+    },
+    "registration": {
+      "actor_id": "1",
+      "assignment_id": "16",
+      "auth_sessions_created": 0,
+      "context_cache_invalidated": true,
+      "group_id": "7",
+      "jwts_created": 0,
+      "module_id": "10",
+      "previous_assignments_preserved": 8,
+      "roles_preserved": true
+    },
+    "selection_checks": {
+      "gemini": {
+        "EOF_metadata_only": {
+          "binary_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+          "catalog": {
+            "container_type": "array",
+            "entry_count": 60,
+            "finish_object_name_count": 0,
+            "finish_string_count": 1,
+            "known_tool_names": [
+              "ask_permission",
+              "call_mcp_tool",
+              "define_subagent",
+              "find_by_name",
+              "finish",
+              "generate_image",
+              "grep_search",
+              "invoke_subagent",
+              "list_dir",
+              "multi_replace_file_content",
+              "read_url_content",
+              "replace_file_content",
+              "run_command",
+              "view_file",
+              "write_to_file"
+            ],
+            "object_count": 0,
+            "other_count": 0,
+            "over_limit": false,
+            "string_count": 60,
+            "unrecognized_name_count": 45
+          },
+          "contract": "teacher-agentic-text-catalog/1",
+          "exit_code": 0,
+          "init_count": 1,
+          "local_closed": true,
+          "model_matches": true,
+          "num_turns": null,
+          "policy_hash": "b70447855477df4d7c5a3d50d42fcc0e26d57d54d0dff5f4afd2457010df768a",
+          "provider_internal_generation_posts": null,
+          "qualification_inferred": false,
+          "reason": "catalog_observed",
+          "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+          "role_matches": true,
+          "runtime_hash": "f67058cc9bfc3f031bd67b38227bd32b7b49bc28ba695acd1397053636566d75",
+          "session_generation": "c810a28683c44dfb97b1906c1ec9dc25",
+          "status": "observed",
+          "step_events_observed": 0,
+          "tool_events_observed": 0,
+          "user_events_observed": 0,
+          "user_events_sent": 0
+        },
+        "R03_or_R04_generation_dispatches": 0,
+        "R03_through_R05_generation_dispatches": 0,
+        "SQL_acknowledged": true,
+        "diagnosis_pending": true,
+        "diagnostic_failure": {
+          "code": "tool_catalog_mismatch",
+          "stage": "terminal"
+        },
+        "distinct_diagnostic_job_preserved": true,
+        "effective_model_tool_catalog_not_proven": true,
+        "local_process_closed": true,
+        "native_acknowledged": true,
+        "native_dispatches": 2,
+        "original_job_preserved": true,
+        "qualified": false,
+        "remote_outcome": "unknown",
+        "replay": false,
+        "response_hash": null
+      },
+      "openai": {
+        "authenticated": true,
+        "exact_model_effort_supported": true,
+        "last_qualification": {
+          "configuration_generation": "afae5ab51445a125a20ede614a4cb931876fd2e60a0c3bdaa37e14c60dfa2332",
+          "contract": "teacher-agentic-text/1",
+          "dispatched_now": true,
+          "evidence_hash": "1be5e0e67eb38bd21654bb8df71b116d7441d60f275b48a5cf83dc9c4ddcd445",
+          "job_id": "33554695-5cd1-43aa-8108-a00de01e2358",
+          "local_closed": true,
+          "native_dispatches": 1,
+          "operation_id": "987006af-72e9-4f88-a7ae-e6032bfcc0d1",
+          "posts": null,
+          "provider_internal_generation_posts": null,
+          "remote_outcome": "completed",
+          "selection": {
+            "connection_id": "1",
+            "effort_id": "medium",
+            "mode": "agentic",
+            "model_id": "gpt-6.1-sol"
+          }
+        },
+        "model_catalog_count": 8,
+        "native_dispatch_scope": "One successful qualification and one distinct normal Teacher setup reply; preflight diagnostics did not dispatch",
+        "native_dispatches": 2,
+        "normal_worker_verification_completed": true,
+        "operator_namespace_misread_corrected": true,
+        "qualification_scope": "Teacher structured text exact persisted selection in VM; not universal modalities",
+        "qualified": true,
+        "reason": null,
+        "selection": {
+          "connection_id": "1",
+          "effort_id": "medium",
+          "model_id": "gpt-6.1-sol"
+        },
+        "session_available": true,
+        "user_reconnection_requested": false
+      }
+    },
+    "server_r02": {
+      "adopted": true,
+      "body_parser_regression": {
+        "cause": "The scoped middleware directly reused Express jsonParser name, causing Nest to skip the global JSON parser",
+        "fixed": "A separately named Teacher wrapper preserves automatic global parser registration",
+        "login_correct_body_before_fix_http_status": 400,
+        "negative_probe_after_fix": {
+          "auth_session_created": false,
+          "credential_errors": 0,
+          "provider_errors": 1,
+          "real_credentials_used": false,
+          "status": 400,
+          "upstream_auth_called": false
+        },
+        "real_Nest_tests_passed": 4,
+        "real_user_login_pending": true
+      },
+      "changed_files": 3,
+      "client_binding_changed": false,
+      "files": 4512,
+      "manifest_sha256": "db80f2d1587b0e611be9adda1335f1ca5465e299a0c4b5ab1a616161f2712887",
+      "migration_replay": false,
+      "native_replay": false,
+      "release": "/opt/nodia/releases/nodia-server-teacher-20261101-r02",
+      "unchanged_files": 4509
+    },
+    "source_preflight_sha256": "cad52af1d17543a0e447a6cea7addc9debcf1916c0a69df4dea4fa8040c5b160",
+    "teacher_agentic_selections_qualified": false,
+    "teacher_module_assigned": true,
+    "teacher_schema_adopted": true
+  }
+}

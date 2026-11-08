@@ -12,10 +12,15 @@ import { PERSONAL_FINANCE_ROUTE } from "../modules/finances/constants/routes";
 import { RENTAL_RESERVATIONS_ROUTE } from "../modules/rentals/constants/routes";
 import { BUSINESS_ROUTE } from "../modules/business/constants/routes";
 import { NODIA_AI_ROUTE } from "../modules/nodiaAi/constants/routes";
+import { NODIA_TEACHER_ROUTE, TEACHER_NEW_ROUTE, TEACHER_SESSION_ROUTE } from "../modules/teacher/constants/routes";
+import { ADMIN_ROUTES, LEGACY_MODULE_DESTINATIONS } from "./moduleDestinations";
+import LegacyModuleRedirect from "./LegacyModuleRedirect";
 
 // Lazy-loaded route pages (Code Splitting per route)
 const Home = lazyWithRetry(() => import("../modules/home/pages/Home"));
 const NodiaAI = lazyWithRetry(() => import("../modules/nodiaAi/pages/NodiaAI"));
+const Teacher = lazyWithRetry(() => import("../modules/teacher/pages/Teacher"));
+const TeacherNew = lazyWithRetry(() => import("../modules/teacher/pages/TeacherNew"));
 const RentalReservations = lazyWithRetry(
   () => import("../modules/rentals/pages/RentalReservations"),
 );
@@ -62,6 +67,34 @@ const router = createBrowserRouter([
     path: "/",
     errorElement: <RouteError />,
     children: [
+      ...Object.entries(LEGACY_MODULE_DESTINATIONS).map(([path, destination]) => ({
+        path,
+        element: <LegacyModuleRedirect destination={destination} />,
+      })),
+      {
+        path: "/tools/business/:id",
+        element: <LegacyModuleRedirect destination={BUSINESS_ROUTE} />,
+      },
+      ...[NODIA_TEACHER_ROUTE, TEACHER_SESSION_ROUTE].map(path => ({
+        path,
+        element: (
+          <BaseLayout>
+            <GuardStrict modulePath={NODIA_TEACHER_ROUTE}>
+              {renderLazyPage(<Teacher />)}
+            </GuardStrict>
+          </BaseLayout>
+        ),
+      })),
+      {
+        path: TEACHER_NEW_ROUTE,
+        element: (
+          <BaseLayout>
+            <GuardStrict modulePath={NODIA_TEACHER_ROUTE}>
+              {renderLazyPage(<TeacherNew />)}
+            </GuardStrict>
+          </BaseLayout>
+        ),
+      },
       {
         path: NODIA_AI_ROUTE,
         element: (
@@ -121,50 +154,50 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "settings/users",
+        path: ADMIN_ROUTES.users,
         element: (
           <BaseLayout>
-            <GuardStrict modulePath="/settings/users">
+            <GuardStrict modulePath="/users">
               {renderLazyPage(<Users />)}
             </GuardStrict>
           </BaseLayout>
         ),
       },
       {
-        path: "settings/roles",
+        path: ADMIN_ROUTES.roles,
         element: (
           <BaseLayout>
-            <GuardStrict modulePath="/settings/roles">
+            <GuardStrict modulePath="/roles">
               {renderLazyPage(<Roles />)}
             </GuardStrict>
           </BaseLayout>
         ),
       },
       {
-        path: "settings/actions",
+        path: ADMIN_ROUTES.actions,
         element: (
           <BaseLayout>
-            <GuardStrict modulePath="/settings/actions">
+            <GuardStrict modulePath="/actions">
               {renderLazyPage(<Actions />)}
             </GuardStrict>
           </BaseLayout>
         ),
       },
       {
-        path: "settings/modules",
+        path: ADMIN_ROUTES.modules,
         element: (
           <BaseLayout>
-            <GuardStrict modulePath="/settings/modules">
+            <GuardStrict modulePath="/modules">
               {renderLazyPage(<Modules />)}
             </GuardStrict>
           </BaseLayout>
         ),
       },
       {
-        path: "settings/ai-providers",
+        path: ADMIN_ROUTES.aiProviders,
         element: (
           <BaseLayout>
-            <GuardStrict modulePath="/settings/ai-providers">
+            <GuardStrict modulePath="/ai-providers">
               {renderLazyPage(<AiProviders />)}
             </GuardStrict>
           </BaseLayout>

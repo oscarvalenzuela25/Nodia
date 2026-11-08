@@ -1,1 +1,1 @@
-export const BUSINESS_ROUTE = "/tools/business";
+export const BUSINESS_ROUTE = "/business";

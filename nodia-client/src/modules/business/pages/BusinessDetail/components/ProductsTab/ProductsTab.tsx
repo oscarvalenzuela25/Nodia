@@ -1,4 +1,5 @@
 import BusinessPagination from "../../../../components/BusinessPagination";
+import { TABLE_PANEL_RADIUS } from "../../../../../../theme/tablePanel";
 import { ProductMobileCard } from "../../../../components/BusinessMobileCards/BusinessMobileCards";
 import { useMediaQuery, useTheme } from "@mui/material";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
@@ -43,6 +44,8 @@ import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined
 import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import RemoveRoundedIcon from "@mui/icons-material/RemoveRounded";
 import { Skeleton } from "boneyard-js/react";
 import { sileo } from "sileo";
 
@@ -59,7 +62,6 @@ import {
   useCreateProduct,
   useUpdateProduct,
   useExportProductsCsv,
-  useProductLogs,
 } from "../../../../infrastructure/useServices";
 import type {
   ProductEntity,
@@ -68,6 +70,10 @@ import type {
   UpdateProductPayload,
 } from "../../../../infrastructure/types";
 import ProductModal, { type ProductFormData } from "./components/ProductModal";
+import ProductImageModal from "./components/ProductImageModal";
+import ProductImageThumbnail from "./components/ProductImageThumbnail";
+import ProductSalePrice from "./components/ProductSalePrice";
+import type { ProductSaveTarget } from "./components/ProductModal/hooks/useDeferredProductSave";
 import ProductBulkImport from "./components/ProductBulkImport";
 import ProductInvoiceImport from "./components/ProductInvoiceImport";
 import {
@@ -78,15 +84,23 @@ import {
   calculatePriceDiff,
   resolveHistoricalLog,
   getPriceChangeStatus,
+  priceMeasurementsComparable,
   type PriceChangeStatus,
 } from "./helpers";
-import { StatusDot, StockDot } from "../../styles";
+import { StatusDot } from "../../styles";
 
 const ActiveFilters = styled(Box)(({ theme }) => ({
   display: "flex",
   flexWrap: "wrap",
   gap: theme.spacing(1),
   alignItems: "center",
+}));
+
+const AdditionalColumnHeader = styled(TableCell)(({ theme }) => ({
+  "&&": {
+    backgroundColor: theme.palette.primary.dark,
+    color: theme.palette.getContrastText(theme.palette.primary.dark),
+  },
 }));
 
 interface Props {
@@ -122,6 +136,7 @@ export const ProductsTab: FC<Props> = ({
   };
 
   const [search, setSearch] = useState("");
+  const [showAdditionalColumns, setShowAdditionalColumns] = useState(false);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(25);
   const [isBulkMode, setIsBulkMode] = useState(false);
@@ -130,6 +145,9 @@ export const ProductsTab: FC<Props> = ({
   const [downloadMenuAnchorEl, setDownloadMenuAnchorEl] =
     useState<null | HTMLElement>(null);
   const [isSingleModalOpen, setIsSingleModalOpen] = useState(false);
+  const [imageProduct, setImageProduct] = useState<ProductEntity | null>(null);
+  const [imageBusinessId, setImageBusinessId] = useState(businessId);
+  if (imageBusinessId !== businessId) { setImageBusinessId(businessId); setImageProduct(null); }
   const [selectedProduct, setSelectedProduct] = useState<ProductEntity | null>(
     null,
   );
@@ -150,7 +168,7 @@ export const ProductsTab: FC<Props> = ({
     [],
   );
   const [draftFilterStock, setDraftFilterStock] = useState<
-    ("out" | "low" | "normal")[]
+    ("available" | "unavailable" | "unknown")[]
   >([]);
   const [draftFilterActive, setDraftFilterActive] = useState<
     "active" | "inactive" | null
@@ -166,7 +184,7 @@ export const ProductsTab: FC<Props> = ({
     string[]
   >([]);
   const [appliedFilterStock, setAppliedFilterStock] = useState<
-    ("out" | "low" | "normal")[]
+    ("available" | "unavailable" | "unknown")[]
   >([]);
   const [appliedFilterActive, setAppliedFilterActive] = useState<
     "active" | "inactive" | null
@@ -193,9 +211,9 @@ export const ProductsTab: FC<Props> = ({
 
   const stockOptions = useMemo(
     () => [
-      { value: "out", label: t("business:stock_variant_out") },
-      { value: "low", label: t("business:stock_variant_low") },
-      { value: "normal", label: t("business:stock_variant_normal") },
+      { value: "unavailable", label: t("business:pos.unavailable") },
+      { value: "unknown", label: t("business:pos.availability_unknown") },
+      { value: "available", label: t("business:pos.available") },
     ],
     [t],
   );
@@ -239,6 +257,7 @@ export const ProductsTab: FC<Props> = ({
   } = useProducts({
     page: page + 1,
     limit: rowsPerPage,
+    includes: true,
     q: {
       business_id_eq: businessId,
       name_cont:
@@ -247,7 +266,7 @@ export const ProductsTab: FC<Props> = ({
       code_in: appliedFilterCodes.length > 0 ? appliedFilterCodes : undefined,
       provider_id_in:
         appliedFilterProviders.length > 0 ? appliedFilterProviders : undefined,
-      stock_status_in:
+      availability_in:
         appliedFilterStock.length > 0 ? appliedFilterStock : undefined,
       price_change_in:
         appliedFilterPriceChange.length > 0
@@ -267,26 +286,8 @@ export const ProductsTab: FC<Props> = ({
     [productsData?.data],
   );
 
-  // Fetch product logs for currently displayed products
-  const productIds = useMemo(
-    () => products.map((p) => p.id).filter(Boolean),
-    [products],
-  );
-
-  const { data: productLogsData } = useProductLogs(
-    {
-      all: true,
-      q: {
-        product_id_in: productIds.length > 0 ? productIds : undefined,
-        s: "created_at desc",
-      },
-    },
-    { enabled: productIds.length > 0 },
-  );
-  const productLogs = useMemo(
-    () => productLogsData?.data ?? [],
-    [productLogsData?.data],
-  );
+  // Server supplies one bounded, authoritative previous normal-price snapshot per product.
+  const productLogs = useMemo(() => products.flatMap((product) => product.previous_price_snapshot ? [product.previous_price_snapshot] : []), [products]);
 
   const logsByProductId = useMemo(() => {
     const map = new Map<string, ProductLogEntity[]>();
@@ -315,9 +316,10 @@ export const ProductsTab: FC<Props> = ({
     if (appliedFilterPriceChange.length === 0) return products;
     return products.filter((prod) => {
       const pLogs = (logsByProductId.get(prod.id) || []).concat(
-        logsByCode.get(prod.code?.trim().toLowerCase()) || [],
+        (prod.code ? logsByCode.get(prod.code.trim().toLowerCase()) : undefined) || [],
       );
       const histLog = resolveHistoricalLog(prod, pLogs);
+      if (histLog && !priceMeasurementsComparable(prod, histLog)) return false;
       const status = getPriceChangeStatus(prod, histLog);
       return appliedFilterPriceChange.includes(status);
     });
@@ -458,42 +460,44 @@ export const ProductsTab: FC<Props> = ({
     setPage(0);
   };
 
-  const handleFormSubmit = async (data: ProductFormData) => {
-    try {
-      if (selectedProduct) {
+  const handleFormSubmit = async (data: ProductFormData, target?: ProductSaveTarget): Promise<ProductEntity> => {
+      if (data.has_stock === null) throw new Error(t("business:pos.choose_availability"));
+      const productId = target?.id ?? selectedProduct?.id;
+      if (productId) {
         const payload: UpdateProductPayload = {
+          expected_version: target?.version ?? data.expected_version ?? selectedProduct?.version,
           code: data.code,
+          measurement_unit: data.measurement_unit,
           name: data.name,
           cost_price: data.cost_price,
           cost_price_tax: data.cost_price_tax,
-          profit_percentage: data.profit_percentage,
           sale_price: data.sale_price,
-          stock: data.stock,
+          barcode: data.barcode,
+          offer_price: data.offer_price,
+          is_offer_enabled: data.is_offer_enabled,
+          has_stock: data.has_stock ?? undefined,
           provider_id: data.provider_id || null,
           is_active: data.is_active,
         };
-        await updateMutation.mutateAsync({ id: selectedProduct.id, payload });
+        return updateMutation.mutateAsync({ id: productId, payload });
       } else {
         const payload: CreateProductPayload = {
           business_id: businessId,
           code: data.code,
+          measurement_unit: data.measurement_unit,
           name: data.name,
           cost_price: data.cost_price,
           cost_price_tax: data.cost_price_tax,
-          profit_percentage: data.profit_percentage,
           sale_price: data.sale_price,
-          stock: data.stock,
+          barcode: data.barcode,
+          offer_price: data.offer_price,
+          is_offer_enabled: data.is_offer_enabled,
+          has_stock: data.has_stock,
           provider_id: data.provider_id || null,
           is_active: data.is_active,
         };
-        await createMutation.mutateAsync(payload);
+        return createMutation.mutateAsync(payload);
       }
-      setIsSingleModalOpen(false);
-      setSelectedProduct(null);
-      if (onCloseDirectCreateModal) onCloseDirectCreateModal();
-    } catch {
-      // Do not close modal on error, allowing user to correct fields
-    }
   };
 
   // If bulk import view is active
@@ -582,12 +586,12 @@ export const ProductsTab: FC<Props> = ({
           />
 
           <SelectMultipleInput
-            label={t("business:filter_stock_label")}
+            label={t("business:pos.availability")}
             placeholder={t("business:filter_stock_placeholder")}
             options={stockOptions}
             value={draftFilterStock}
             onChange={(vals) =>
-              setDraftFilterStock(vals as ("out" | "low" | "normal")[])
+              setDraftFilterStock(vals as ("available" | "unavailable" | "unknown")[])
             }
             disabled={isLoading || isFetching}
           />
@@ -657,12 +661,7 @@ export const ProductsTab: FC<Props> = ({
             );
           })}
           {appliedFilterStock.map((stockVariant) => {
-            const stockLabel =
-              stockVariant === "out"
-                ? t("business:stock_variant_out")
-                : stockVariant === "low"
-                  ? t("business:stock_variant_low")
-                  : t("business:stock_variant_normal");
+            const stockLabel = t(`business:pos.${stockVariant === "unknown" ? "availability_unknown" : stockVariant}`);
             return (
               <FilterChips
                 key={`stock-${stockVariant}`}
@@ -844,7 +843,7 @@ export const ProductsTab: FC<Props> = ({
       {/* Products Table */}
       <Paper
         sx={{
-          borderRadius: 3,
+          borderRadius: TABLE_PANEL_RADIUS,
           p: { xs: 0, sm: 0 },
           border: (theme) =>
             mobile ? "none" : `1px solid ${theme.palette.divider}`,
@@ -861,13 +860,15 @@ export const ProductsTab: FC<Props> = ({
                 { width: 48, align: "center" },
                 { header: t("business:product_code") },
                 { header: t("business:product_name") },
+                { align: "center", header: t("business:pos.image_column") },
                 { header: t("business:product_provider") },
                 { align: "right", header: t("business:product_cost_tax") },
-                { align: "right", header: t("business:product_profit_margin") },
                 { align: "right", header: t("business:product_sale_price") },
-                { align: "right", header: t("business:product_stock") },
-                { align: "center", header: t("business:product_status") },
-                { align: "center", header: t("business:product_updated_at") },
+                ...(showAdditionalColumns ? [
+                  { align: "right" as const, header: t("business:pos.availability") },
+                  { align: "center" as const, header: t("business:product_status") },
+                  { align: "center" as const, header: t("business:product_updated_at") },
+                ] : []),
                 { align: "right", header: t("core:actions") },
               ]}
               rows={rowsPerPage > 10 ? 10 : rowsPerPage}
@@ -893,13 +894,14 @@ export const ProductsTab: FC<Props> = ({
                     disabled={isBusy}
                     formatDate={formatDateTime}
                     onEdit={handleOpenEdit}
+                    onImage={setImageProduct}
                     onToggle={setConfirmToggleProduct}
                     expanded={Boolean(expandedRows[prod.id])}
                     onExpand={() => handleToggleExpand(prod.id)}
                     historical={resolveHistoricalLog(
                       prod,
                       (logsByProductId.get(prod.id) || []).concat(
-                        logsByCode.get(prod.code?.trim().toLowerCase()) || [],
+                        (prod.code ? logsByCode.get(prod.code.trim().toLowerCase()) : undefined) || [],
                       ),
                     )}
                   />
@@ -914,32 +916,49 @@ export const ProductsTab: FC<Props> = ({
                     <TableCell sx={{ width: 48, p: 0.5 }} align="center" />
                     <TableCell>{t("business:product_code")}</TableCell>
                     <TableCell>{t("business:product_name")}</TableCell>
+                    <TableCell align="center">{t("business:pos.image_column")}</TableCell>
                     <TableCell>{t("business:product_provider")}</TableCell>
                     <TableCell align="right">
                       {t("business:product_cost_tax")}
                     </TableCell>
                     <TableCell align="right">
-                      {t("business:product_profit_margin")}
+                      <Box component="span" sx={{ display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: .5 }}>
+                        {t("business:product_sale_price")}
+                        <Tooltip title={t(showAdditionalColumns ? "product:table_hide_additional_columns" : "product:table_show_additional_columns")}>
+                          <Box component="span" sx={{ display: "inline-flex" }}>
+                          <IconButton
+                            color="inherit"
+                            size="small"
+                            aria-label={t(showAdditionalColumns ? "product:table_hide_additional_columns" : "product:table_show_additional_columns")}
+                            aria-expanded={showAdditionalColumns}
+                            disabled={isBusy}
+                            onClick={() => setShowAdditionalColumns((shown) => !shown)}
+                            sx={{ width: 44, height: 44, flexShrink: 0 }}
+                          >
+                            {showAdditionalColumns ? <RemoveRoundedIcon fontSize="small" /> : <AddRoundedIcon fontSize="small" />}
+                          </IconButton>
+                          </Box>
+                        </Tooltip>
+                      </Box>
                     </TableCell>
-                    <TableCell align="right">
-                      {t("business:product_sale_price")}
-                    </TableCell>
-                    <TableCell align="right">
-                      {t("business:product_stock")}
-                    </TableCell>
-                    <TableCell align="center">
+                    {showAdditionalColumns && <>
+                    <AdditionalColumnHeader align="right">
+                      {t("business:pos.availability")}
+                    </AdditionalColumnHeader>
+                    <AdditionalColumnHeader align="center">
                       {t("business:product_status")}
-                    </TableCell>
-                    <TableCell align="center">
+                    </AdditionalColumnHeader>
+                    <AdditionalColumnHeader align="center">
                       {t("business:product_updated_at")}
-                    </TableCell>
+                    </AdditionalColumnHeader>
+                    </>}
                     <TableCell align="right">{t("core:actions")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {!isLoading && displayedProducts.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={11} align="center" sx={{ py: 6 }}>
+                      <TableCell colSpan={showAdditionalColumns ? 11 : 8} align="center" sx={{ py: 6 }}>
                         <Typography
                           variant="subtitle1"
                           sx={{ fontWeight: 600, mb: 0.5 }}
@@ -954,13 +973,11 @@ export const ProductsTab: FC<Props> = ({
                   ) : (
                     displayedProducts.map((prod) => {
                       const pLogs = (logsByProductId.get(prod.id) || []).concat(
-                        logsByCode.get(prod.code?.trim().toLowerCase()) || [],
+                        (prod.code ? logsByCode.get(prod.code.trim().toLowerCase()) : undefined) || [],
                       );
                       const historicalLog = resolveHistoricalLog(prod, pLogs);
-                      const priceDiff = calculatePriceDiff(
-                        prod.sale_price,
-                        historicalLog?.sale_price,
-                      );
+                      const comparable = !historicalLog || priceMeasurementsComparable(prod, historicalLog);
+                      const priceDiff = comparable ? calculatePriceDiff(prod.sale_price, historicalLog?.sale_price) : null;
                       const isExpanded = Boolean(expandedRows[prod.id]);
 
                       return (
@@ -1004,16 +1021,14 @@ export const ProductsTab: FC<Props> = ({
                                 </span>
                               </Tooltip>
                             </TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>
-                              {prod.code}
+                            <TableCell sx={{ fontWeight: 600, maxWidth: 200, overflowWrap: "anywhere" }}>
+                              {prod.code ?? "—"}
                             </TableCell>
-                            <TableCell>{prod.name}</TableCell>
-                            <TableCell>{prod.provider?.name ?? "-"}</TableCell>
+                            <TableCell sx={{ maxWidth: 280, overflowWrap: "anywhere" }}><Typography variant="body2">{prod.name}</Typography></TableCell>
+                            <TableCell align="center"><ProductImageThumbnail name={prod.name} image={prod.image} disabled={isBusy} onOpen={() => setImageProduct(prod)} /></TableCell>
+                            <TableCell sx={{ maxWidth: 220, overflowWrap: "anywhere" }}>{prod.provider?.name ?? "-"}</TableCell>
                             <TableCell align="right">
                               ${(prod.cost_price_tax || 0).toLocaleString()}
-                            </TableCell>
-                            <TableCell align="right">
-                              {prod.profit_percentage}%
                             </TableCell>
                             <TableCell align="right" sx={{ fontWeight: 700 }}>
                               <Box
@@ -1021,11 +1036,10 @@ export const ProductsTab: FC<Props> = ({
                                   display: "flex",
                                   flexDirection: "column",
                                   alignItems: "flex-end",
+                                  minWidth: "max-content",
                                 }}
                               >
-                                <span>
-                                  ${(prod.sale_price || 0).toLocaleString()}
-                                </span>
+                                <ProductSalePrice measurementUnit={prod.measurement_unit} salePrice={prod.sale_price} offerPrice={prod.offer_price} offerEnabled={prod.is_offer_enabled} />
                                 {priceDiff && (
                                   <Tooltip
                                     title={
@@ -1072,6 +1086,7 @@ export const ProductsTab: FC<Props> = ({
                                 )}
                               </Box>
                             </TableCell>
+                            {showAdditionalColumns && <>
                             <TableCell align="right">
                               <Box
                                 sx={{
@@ -1081,38 +1096,7 @@ export const ProductsTab: FC<Props> = ({
                                   justifyContent: "flex-end",
                                 }}
                               >
-                                <span>{prod.stock}</span>
-                                {(() => {
-                                  const stock = prod.stock;
-                                  const status =
-                                    stock <= 0
-                                      ? "out"
-                                      : stock < 10
-                                        ? "low"
-                                        : "normal";
-                                  const label =
-                                    status === "out"
-                                      ? t("business:stock_out_of_stock")
-                                      : status === "low"
-                                        ? t("business:stock_low")
-                                        : t("business:stock_normal");
-                                  return (
-                                    <Tooltip title={label} arrow>
-                                      <Box
-                                        component="span"
-                                        sx={{
-                                          display: "inline-flex",
-                                          alignItems: "center",
-                                        }}
-                                      >
-                                        <StockDot
-                                          status={status}
-                                          data-testid={`stock-dot-${prod.id}`}
-                                        />
-                                      </Box>
-                                    </Tooltip>
-                                  );
-                                })()}
+                                <Chip size="small" label={t(prod.has_stock === true ? "business:pos.available" : prod.has_stock === false ? "business:pos.unavailable" : "business:pos.availability_unknown")} color={prod.has_stock === true ? "success" : prod.has_stock === false ? "error" : "default"} />
                               </Box>
                             </TableCell>
                             <TableCell align="center">
@@ -1147,6 +1131,7 @@ export const ProductsTab: FC<Props> = ({
                                 prod.updated_at || prod.created_at,
                               )}
                             </TableCell>
+                            </>}
                             <TableCell align="right">
                               <IconButton
                                 size="small"
@@ -1197,7 +1182,7 @@ export const ProductsTab: FC<Props> = ({
                                     gap: 1,
                                   }}
                                 >
-                                  <span>{historicalLog.code}</span>
+                                  <span>{historicalLog.code ?? "—"}</span>
                                   <Chip
                                     label={t("business:historical_badge")}
                                     size="small"
@@ -1222,6 +1207,7 @@ export const ProductsTab: FC<Props> = ({
                                   {historicalLog.name}
                                 </Typography>
                               </TableCell>
+                              <TableCell align="center" sx={{ color: "text.secondary" }}>—</TableCell>
                               <TableCell sx={{ color: "text.secondary" }}>
                                 -
                               </TableCell>
@@ -1236,27 +1222,16 @@ export const ProductsTab: FC<Props> = ({
                               </TableCell>
                               <TableCell
                                 align="right"
-                                sx={{ color: "text.secondary" }}
-                              >
-                                {historicalLog.profit_percentage}%
-                              </TableCell>
-                              <TableCell
-                                align="right"
                                 sx={{
                                   color: "text.secondary",
                                   fontWeight: 500,
                                 }}
                               >
-                                $
-                                {(
-                                  historicalLog.sale_price || 0
-                                ).toLocaleString()}
+                                <ProductSalePrice measurementUnit={historicalLog.measurement_unit} salePrice={historicalLog.sale_price} />
                               </TableCell>
-                              <TableCell
-                                align="right"
-                                sx={{ color: "text.secondary" }}
-                              >
-                                {historicalLog.stock}
+                              {showAdditionalColumns && <>
+                              <TableCell align="right" sx={{ color: "text.secondary" }}>
+                                {t(historicalLog.has_stock === true ? "business:pos.available" : historicalLog.has_stock === false ? "business:pos.unavailable" : "business:pos.availability_unknown")}
                               </TableCell>
                               <TableCell
                                 align="center"
@@ -1277,6 +1252,7 @@ export const ProductsTab: FC<Props> = ({
                                     historicalLog.updated_at,
                                 )}
                               </TableCell>
+                              </>}
                               <TableCell align="right">
                                 <Typography
                                   variant="caption"
@@ -1414,8 +1390,10 @@ export const ProductsTab: FC<Props> = ({
       />
 
       {/* Single Product Modal */}
+      {imageProduct && <ProductImageModal key={`${businessId}:${imageProduct.id}`} open businessId={businessId} product={imageProduct} onClose={() => setImageProduct(null)} />}
       {(isSingleModalOpen || isCreateModalOpenDirectly) && (
         <ProductModal
+          businessId={businessId}
           open={isSingleModalOpen || isCreateModalOpenDirectly}
           onClose={() => {
             setIsSingleModalOpen(false);

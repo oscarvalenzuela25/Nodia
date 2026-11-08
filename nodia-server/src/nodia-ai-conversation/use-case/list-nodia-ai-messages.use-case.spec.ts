@@ -145,7 +145,7 @@ describe('ListNodiaAiMessagesUseCase', () => {
     { schema_version: 1, module_routes: ['/finances/personal'] },
     { schema_version: 1, module_routes: [2] },
   ])('restricts invalid or no longer authorized manifests %j', (input) => {
-    expect(canReadNodiaAiManifest(input, ['/tools/nodia-ai'])).toBe(false);
+    expect(canReadNodiaAiManifest(input, ['/nodia-ai'])).toBe(false);
   });
   it('permits closed empty or currently authorized source manifests', () => {
     expect(
@@ -153,8 +153,8 @@ describe('ListNodiaAiMessagesUseCase', () => {
     ).toBe(true);
     expect(
       canReadNodiaAiManifest(
-        { schema_version: 1, module_routes: ['/tools/nodia-ai'] },
-        ['/tools/nodia-ai'],
+        { schema_version: 1, module_routes: ['/nodia-ai'] },
+        ['/nodia-ai'],
       ),
     ).toBe(true);
   });

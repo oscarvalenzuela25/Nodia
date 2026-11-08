@@ -1,0 +1,341 @@
+{
+  "schema_version": 1,
+  "recorded_on": "2026-11-01",
+  "scope": "local_routes_and_link_migration_only",
+  "migration": "CanonicalModuleLinks1793560000000",
+  "migration_sha256": "267c021efdbf185eb0ef4c60d81a01f201529cda52f72a0a767aca73668ed27b",
+  "environment": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "nodia_db",
+    "container": "nodia_postgres",
+    "scope": "local_working_database_only"
+  },
+  "map": [
+    [
+      "/tools/nodia-ai",
+      "/nodia-ai"
+    ],
+    [
+      "/tools/reservations",
+      "/reservations"
+    ],
+    [
+      "/tools/finances-personal",
+      "/finances-personal"
+    ],
+    [
+      "/tools/business",
+      "/business"
+    ],
+    [
+      "/settings/users",
+      "/users"
+    ],
+    [
+      "/settings/roles",
+      "/roles"
+    ],
+    [
+      "/settings/actions",
+      "/actions"
+    ],
+    [
+      "/settings/modules",
+      "/modules"
+    ],
+    [
+      "/settings/ai-providers",
+      "/ai-providers"
+    ],
+    [
+      "/general-settings/users",
+      "/users"
+    ],
+    [
+      "/general-settings/roles",
+      "/roles"
+    ],
+    [
+      "/general-settings/actions",
+      "/actions"
+    ],
+    [
+      "/general-settings/modules",
+      "/modules"
+    ],
+    [
+      "/general-settings/ai-providers",
+      "/ai-providers"
+    ]
+  ],
+  "detail_alias": {
+    "from": "/tools/business/:id",
+    "to": "/business/:id"
+  },
+  "new_destinations": [
+    "/nodia-teacher",
+    "/nodia-teacher/:sessionId"
+  ],
+  "database": {
+    "original_tables": 66,
+    "after_tables": 67,
+    "changed_links": [
+      {
+        "id": "10",
+        "key": "actions",
+        "from": "/settings/actions",
+        "to": "/actions"
+      },
+      {
+        "id": "11",
+        "key": "roles",
+        "from": "/settings/roles",
+        "to": "/roles"
+      },
+      {
+        "id": "12",
+        "key": "businesses",
+        "from": "/tools/business",
+        "to": "/business"
+      },
+      {
+        "id": "13",
+        "key": "ai-providers",
+        "from": "/settings/ai-providers",
+        "to": "/ai-providers"
+      },
+      {
+        "id": "14",
+        "key": "perfonal_finance",
+        "from": "/tools/finances-personal",
+        "to": "/finances-personal"
+      },
+      {
+        "id": "15",
+        "key": "reservas",
+        "from": "/tools/reservations",
+        "to": "/reservations"
+      },
+      {
+        "id": "16",
+        "key": "nodiaai",
+        "from": "/tools/nodia-ai",
+        "to": "/nodia-ai"
+      },
+      {
+        "id": "21",
+        "key": "nodia_ai",
+        "from": "/tools/nodia-ai",
+        "to": "/nodia-ai"
+      },
+      {
+        "id": "8",
+        "key": "modules",
+        "from": "/settings/modules",
+        "to": "/modules"
+      },
+      {
+        "id": "9",
+        "key": "users",
+        "from": "/settings/users",
+        "to": "/users"
+      }
+    ],
+    "all_original_module_fields_except_link_identical": true,
+    "other_original_tables_preserved": [
+      "actions",
+      "ai_api_keys",
+      "ai_mode_retirement_backup",
+      "ai_provider_catalog",
+      "ai_provider_events",
+      "ai_providers",
+      "auth_sessions",
+      "business_actions",
+      "business_collaborators",
+      "businesses",
+      "finance_categories",
+      "finance_category_group_memberships",
+      "finance_category_groups",
+      "finance_movements",
+      "finance_obligations",
+      "invoice_items",
+      "invoice_uploads",
+      "invoices",
+      "module_groups",
+      "nodia_ai_api_acceptances",
+      "nodia_ai_api_dispatches",
+      "nodia_ai_attachments",
+      "nodia_ai_audit_events",
+      "nodia_ai_confirmation_challenges",
+      "nodia_ai_context_snapshots",
+      "nodia_ai_conversations",
+      "nodia_ai_drafts",
+      "nodia_ai_events",
+      "nodia_ai_execution_grants",
+      "nodia_ai_execution_steps",
+      "nodia_ai_executions",
+      "nodia_ai_job_attempts",
+      "nodia_ai_jobs",
+      "nodia_ai_message_parts",
+      "nodia_ai_messages",
+      "nodia_ai_preferences",
+      "nodia_ai_proposal_revisions",
+      "nodia_ai_proposal_steps",
+      "nodia_ai_proposals",
+      "nodia_ai_runs",
+      "nodia_ai_runtime_slots",
+      "nodia_ai_tool_calls",
+      "nodia_codex_catalog_rollback",
+      "personal_info_provider",
+      "product_logs",
+      "products",
+      "providers",
+      "rental_audit_events",
+      "rental_blocks",
+      "rental_cancellation_policies",
+      "rental_cancellation_rules",
+      "rental_collaborators",
+      "rental_expenses",
+      "rental_operations",
+      "rental_payments",
+      "rental_properties",
+      "rental_reservations",
+      "rental_turnovers",
+      "role_actions",
+      "roles",
+      "translations",
+      "user_modules",
+      "user_roles",
+      "users"
+    ],
+    "original_migration_records": 32,
+    "after_migration_records": 33,
+    "ledger_rows": 10,
+    "persisted_legacy_route_columns_before": [
+      {
+        "table_name": "modules",
+        "column_name": "link",
+        "count": 10
+      }
+    ],
+    "repeat_application": {
+      "already_applied": true,
+      "changed_links": 0
+    },
+    "new_assignments": 0,
+    "recreated_modules": 0,
+    "seed_executed": false
+  },
+  "preexisting_ambiguity": {
+    "destination": "/nodia-ai",
+    "module_ids": [
+      "16",
+      "21"
+    ],
+    "keys": [
+      "nodiaai",
+      "nodia_ai"
+    ],
+    "preserved": true,
+    "sql_denies_even_if_both_assigned": true,
+    "administrative_resolution_pending": true
+  },
+  "rehearsal": {
+    "full_snapshot_restored": true,
+    "original_table_count": 66,
+    "assertions": [
+      "exact_mapping",
+      "module_ids_fields_and_relationships_preserved",
+      "all_other_table_fingerprints_preserved",
+      "repeat_up",
+      "repeat_down",
+      "rollback_refuses_new_edits",
+      "collision_atomic_rollback",
+      "full_snapshot_restore",
+      "up_down_up_down",
+      "real_sql_authority_before_and_after",
+      "group_rename_and_module_move_preserve_access",
+      "revocation_denies",
+      "preexisting_ambiguity_still_denies"
+    ],
+    "disposable_database_cleanup": "dropped_after_run"
+  },
+  "backups": {
+    "protection": "Windows DPAPI CurrentUser",
+    "before": {
+      "file": "before.pgdump.dpapi",
+      "protection": "Windows DPAPI CurrentUser",
+      "plaintext_bytes": 312367,
+      "plaintext_sha256": "38c93e18544c376e3e09c0c8092270a804906c740132ebffff38c4417e27e302",
+      "ciphertext_bytes": 312582,
+      "ciphertext_sha256": "1b7e8a158e3dad44d5850d68079548d455a1631c0de5a6cfd156cf7d58bb4f6c",
+      "decrypt_verified": true,
+      "archive_toc_verified": true,
+      "archive_toc_entries": 642
+    },
+    "after": {
+      "file": "after.pgdump.dpapi",
+      "protection": "Windows DPAPI CurrentUser",
+      "plaintext_bytes": 314016,
+      "plaintext_sha256": "c72816837d8b3a12c1078013a05c0358a206b805ee8c297a44cc0c57d5a8f99a",
+      "ciphertext_bytes": 314246,
+      "ciphertext_sha256": "6b86f1026dd063ffe6ace87af000f4887302bd3bd88bb30a2049910a853b1469",
+      "decrypt_verified": true,
+      "archive_toc_verified": true,
+      "archive_toc_entries": 645
+    },
+    "plaintext_on_disk": false,
+    "local_package": "ops/lab/artifacts/canonical-module-links-20261101-r01"
+  },
+  "verification": {
+    "client": {
+      "command": "npx vitest run src/test/routes src/test/layouts/components/MobileBottomNav src/test/layouts/components/Sidenav/Sidenav.test.tsx src/test/layouts/components/Topbar/Topbar.test.tsx src/test/layouts/components/Topbar/components/AiProviderIndicators/AiProviderIndicators.test.tsx src/test/store/generalSettingsStore.test.ts src/test/store/mobileNavigationStore.test.ts src/test/modules/nodiaAi/components/ExecutionObservation/ExecutionObservation.test.tsx",
+      "passed": 143,
+      "files": 22
+    },
+    "server_compatibility": {
+      "passed": 428,
+      "files": 10
+    },
+    "server_authority_loaders": {
+      "passed": 148,
+      "files": 7
+    },
+    "lint": "targeted Client ESLint and Server Oxlint passed; one unused helper removed after report",
+    "client_final_authority_regression": {
+      "passed": 49,
+      "files": 6,
+      "includes": "duplicate canonical identity fails closed after alias projection"
+    },
+    "production_composition_regression": {
+      "passed": 54,
+      "files": 2,
+      "scope": "historical wire requirements composed with canonical modules; stable v1 hashes"
+    },
+    "completed_receipt_regression": {
+      "passed": 77,
+      "files": 1,
+      "scope": "historical authority hash retained, completed receipt only, fresh resource authority and no second handler"
+    },
+    "module_maintainer_regression": {
+      "passed": 27,
+      "files": 2,
+      "scope": "canonical selector labels and occupied legacy aliases cannot create another identity"
+    }
+  },
+  "historical_contracts": {
+    "signed_json_and_approved_markdown_rewritten": false,
+    "scope_hashes_recomputed": false,
+    "v1_tool_contract_route_encoding_preserved": true,
+    "v1_observation_wire_routes_resolved_to_canonical_href": true
+  },
+  "limits": [
+    "No VM/production deployment",
+    "This operation did not apply Teacher migrations",
+    "No inference or mode availability demonstrated by this evidence",
+    "No new documentary approval or knowledge publication",
+    "Preexisting NodiaAI module ambiguity remains an administrative pending item"
+  ],
+  "knowledge_reconciliation": "docs/evidence/canonical-route-knowledge-reconciliation-20261101-r01.json"
+}

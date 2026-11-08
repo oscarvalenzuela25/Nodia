@@ -14,12 +14,19 @@ const contact = {
   version: 1,
 };
 describe('Update provider contact', () => {
-  const service = { find: vi.fn(), updateVersion: vi.fn() };
+  const service = {
+    withAccess: vi.fn(),
+    find: vi.fn(),
+    updateVersion: vi.fn(),
+  };
   const useCase = new UpdateProviderContactUseCase(
     service as unknown as ProviderContactService,
   );
   beforeEach(() => {
     vi.resetAllMocks();
+    service.withAccess.mockImplementation(async (_id, _actor, _manager, work) =>
+      work(undefined),
+    );
     service.find.mockResolvedValue(contact);
     service.updateVersion.mockResolvedValue(true);
   });

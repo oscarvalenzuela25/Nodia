@@ -44,7 +44,7 @@ function fixture() {
   };
   const businesses: NodiaAiJsonObject[] = [business, destination].map((id) => ({
     id,
-    owner_id: '99',
+    owner_id: '1',
     name: id,
     is_active: true,
     updated_at: '2026-10-17 12:00:00.123456',
@@ -67,7 +67,25 @@ function fixture() {
     content_hash: 'a'.repeat(64),
   };
   let exists = true;
+  let isSuperAdmin = false;
   const query = vi.fn(async (sql: string, args: unknown[] = []) => {
+    if (sql.includes('AS authority_locks')) return [{ authority_locks: 9 }];
+    if (sql.includes('AS "actorId"'))
+      return [
+        {
+          actorId: '1',
+          sessionId: '33333333-3333-4333-8333-333333333333',
+          isSuperAdmin,
+        },
+      ];
+    if (sql.includes('FROM businesses business'))
+      return businesses
+        .filter(
+          (item) =>
+            (args[0] as string[]).includes(String(item.id)) &&
+            (isSuperAdmin || item.owner_id === '1'),
+        )
+        .map((item) => ({ id: item.id }));
     if (sql.includes('FROM nodia_ai_attachments'))
       return [structuredClone(attachment)];
     if (sql.includes('FROM nodia_ai_execution_steps')) return [];
@@ -93,7 +111,7 @@ function fixture() {
       isSuperAdmin: false,
       modules: [],
     },
-    moduleRoutes: ['/tools/business'],
+    moduleRoutes: ['/business'],
     conversationId: '44444444-4444-4444-8444-444444444444',
     maxCollectionItems: 128,
   };
@@ -124,6 +142,9 @@ function fixture() {
     operations: factory.operations,
     missing: () => {
       exists = false;
+    },
+    setSuper: () => {
+      isSuperAdmin = true;
     },
   };
 }
@@ -334,8 +355,16 @@ describe('BuildNodiaAiInvoiceOperationsUseCase', () => {
     ).rejects.toThrow('transaction_required');
     expect(f.query).not.toHaveBeenCalled();
   });
-  it('preserves authorized global access without requiring business ownership or changing it', async () => {
+  it('rejects a foreign invoice preview and allows a live superadministrator without changing ownership', async () => {
     const f = fixture();
+    f.businesses[0].owner_id = '99';
+    await expect(
+      f.operations[0].prepare(
+        { business_id: business, code: 'INV' },
+        f.context,
+      ),
+    ).rejects.toMatchObject({ status: 404 });
+    f.setSuper();
     const step = await prepared(
       f.operations[0],
       { business_id: business, code: 'INV' },
@@ -349,6 +378,11 @@ describe('BuildNodiaAiInvoiceOperationsUseCase', () => {
       expect.objectContaining({ business_id: business, path_storage: '' }),
       undefined,
       f.manager,
+      {
+        userId: f.context.actor.actorId,
+        sessionId: f.context.actor.sessionId,
+        transaction: f.manager,
+      },
     );
   });
   it('preserves file association and replaces data exactly using the inherited writer manager', async () => {
@@ -377,6 +411,11 @@ describe('BuildNodiaAiInvoiceOperationsUseCase', () => {
       '7',
       { data: {}, is_active: false, total_amount: 0 },
       f.manager,
+      {
+        userId: f.context.actor.actorId,
+        sessionId: f.context.actor.sessionId,
+        transaction: f.manager,
+      },
     );
   });
   it('requires actual changes and an existing target in the source business', async () => {
@@ -559,6 +598,11 @@ describe('BuildNodiaAiInvoiceOperationsUseCase', () => {
         path_storage: stage.storage_key,
       },
       f.manager,
+      {
+        userId: f.context.actor.actorId,
+        sessionId: f.context.actor.sessionId,
+        transaction: f.manager,
+      },
     );
     expect(f.query).toHaveBeenCalledWith(
       'DELETE FROM invoice_uploads WHERE storage_key=$1',
@@ -674,7 +718,13 @@ describe('BuildNodiaAiInvoiceOperationsUseCase', () => {
     f.missing();
     const calls = f.query.mock.calls.length;
     await expect(op.verifyAuthority(step, f.context)).resolves.toBeUndefined();
-    expect(f.query).toHaveBeenCalledTimes(calls);
+    expect(
+      f.query.mock.calls
+        .slice(calls)
+        .some(([sql]) => sql.includes('AS "actorId"')),
+    ).toBe(true);
+    expect(f.create).not.toHaveBeenCalled();
+    expect(f.update).not.toHaveBeenCalled();
   });
   it('rejects another scope, contract, immutable target and unverified native output', async () => {
     const f = fixture();

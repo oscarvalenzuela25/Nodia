@@ -1,4 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { armChatGeneration,finishChatGeneration } from '../../ai-generation/chat-generation-ownership.js';
+import { assertNativeDispatchRejection } from '../types/native-dispatch-rejection.js';
 import type { EntityManager } from 'typeorm';
 import { lockAuthority } from '../../authorization/authority-transaction.js';
 import { AuthorizeNodiaAiUseCase } from '../../nodia-ai/use-case/authorize-nodia-ai.use-case.js';
@@ -25,8 +27,6 @@ import {
 } from './runtime-reconciliation-descriptor.js';
 import { randomUUID } from 'node:crypto';
 import { publishNodiaAiRunChanged } from '../../nodia-ai-run/event-journal.js';
-import { nodiaAiToolSelectionState } from '../../nodia-ai-tools/types/tool-selection.types.js';
-
 @Injectable()
 export class CheckpointNodiaAiJobUseCase {
   constructor(
@@ -145,91 +145,88 @@ export class CheckpointNodiaAiJobUseCase {
         left.model_id === right.model_id &&
         left.effort_id === right.effort_id;
       const delegated = !sameSelection(selection, claim.run.selection_snapshot);
-      if (delegated && (runtime?.adapterIdentity !== undefined || claim.run.context_manifest.adapter_identity !== undefined))
+      if (
+        delegated &&
+        (runtime?.adapterIdentity !== undefined ||
+          claim.run.context_manifest.adapter_identity !== undefined)
+      )
         rejectBeforeArming('nodia_ai:invalid_selection');
-      if (delegated) {
-        const target = claim.run.routing_snapshot.target;
-        const conversation = await this.runtime.lockConversation(
-          manager,
-          claim.job.conversation_id!,
-        );
-        if (
-          !claim.run.routing_snapshot.enabled ||
-          !target ||
-          selection.mode !== 'token_plan_agentic' ||
-          claim.run.selection_snapshot.mode !== 'token_plan_web' ||
-          selection.connection_id !==
-            claim.run.selection_snapshot.connection_id ||
-          !sameSelection(selection, target.selection) ||
-          !conversation?.routing_enabled ||
-          conversation.routing_revision !== claim.run.routing_snapshot.revision
-        )
-          rejectBeforeArming('nodia_ai:invalid_selection');
-        // A second Agentic generation continues the already charged delegation only
-        // after the discovery attempt completed and its native proof was acknowledged.
-        // Every generation still reserves its own provider-dispatch budget below.
-        const currentRun = await this.runtime.findRun(manager, claim.run.id);
-        const toolSelection = nodiaAiToolSelectionState(currentRun?.context_manifest.tool_selection);
-        let continuingDelegation = false;
-        if (toolSelection?.phase === 'execution' && toolSelection.request) {
-          const request = toolSelection.request;
-          const source: { id: string }[] = await manager.query(
-            `SELECT a.id FROM nodia_ai_job_attempts a
-            JOIN nodia_ai_tool_calls c ON c.id=$2 AND c.run_id=$4
-            WHERE a.id=$1 AND a.job_id=$3 AND a.phase='completed' AND a.ended_at IS NOT NULL
-              AND a.stage_key='delegated_inference' AND a.routing_phase='delegated'
-              AND a.stage_seq+2=$5 AND a.selection_snapshot=$6::jsonb
-              AND a.runtime_resource_key=$7
-              AND c.state='completed' AND c.tool_name='nodia_capabilities_select'
-              AND (c.arguments->'capability_ids') @> $8::jsonb
-              AND $8::jsonb @> (c.arguments->'capability_ids')
-              AND NOT EXISTS(SELECT 1 FROM nodia_ai_jobs WHERE dedup_key=$9)`,
-            [request.attempt_id, request.tool_call_id, claim.job.id, claim.run.id,
-              claim.job.stage_seq, JSON.stringify(selection), runtime?.resourceKey ?? null,
-              JSON.stringify(request.capability_ids), 'ack:' + request.attempt_id],
-          );
-          if (claim.job.stage_key !== 'delegated_inference' || source.length !== 1)
-            rejectBeforeArming('nodia_ai:invalid_selection');
-          continuingDelegation = true;
-        }
-        const reserved: { id: string }[] = continuingDelegation ? [{ id: claim.run.id }] : await manager.query(
-          "WITH changed AS (UPDATE nodia_ai_runs SET delegations_used=delegations_used+1 WHERE id=$1 AND delegations_used<(budget_snapshot->>'delegations')::integer RETURNING id) SELECT id FROM changed",
-          [claim.run.id],
-        );
-        if (reserved.length !== 1) rejectBeforeArming('nodia_ai:execution_limit');
-      }
-      if (selection.mode !== 'api_key' && !runtime)
-        throw new NodiaAiLostLeaseError();
-      const sessionGeneration = delegated
-        ? claim.run.routing_snapshot.target?.session_generation
-        : claim.run.context_manifest.session_generation;
+      if (
+        claim.job.stage_key === 'delegated_inference' ||
+        claim.attempt.routing_phase === 'delegated' ||
+        claim.run.routing_snapshot.enabled ||
+        claim.run.routing_snapshot.target !== null
+      )
+        rejectBeforeArming('nodia_ai:mode_retired');
+      if (delegated) rejectBeforeArming('nodia_ai:invalid_selection');
+      if (!['agentic', 'api_key'].includes(selection.mode)) rejectBeforeArming('nodia_ai:mode_retired');
+      if (!runtime) throw new NodiaAiLostLeaseError();
+      const sessionGeneration = claim.run.context_manifest.session_generation;
       let descriptor: ReturnType<typeof runtimeProofDescriptor> | undefined;
-      if (runtime?.adapterIdentity !== undefined || claim.run.context_manifest.adapter_identity !== undefined) {
+      if (
+        runtime?.adapterIdentity !== undefined ||
+        claim.run.context_manifest.adapter_identity !== undefined
+      ) {
         const identity = runtime?.adapterIdentity;
         const stored = claim.run.context_manifest.adapter_identity;
-        if (delegated || selection.mode !== 'token_plan_agentic' || !runtime || !identity ||
-          !stored || typeof stored !== 'object' || Array.isArray(stored) || Object.keys(stored).length !== 3 ||
-          stored.provider_key !== identity.providerKey || stored.contract_version !== identity.contractVersion ||
-          stored.connection_id !== identity.connectionId || identity.connectionId !== selection.connection_id ||
-          runtime.sessionGeneration !== sessionGeneration || typeof sessionGeneration !== 'string')
+        if (
+          delegated ||
+          selection.mode !==
+            (identity?.contractVersion === 'nodia-ai-api-chat/1'
+              ? 'api_key'
+              : 'agentic') ||
+          !runtime ||
+          !identity ||
+          !stored ||
+          typeof stored !== 'object' ||
+          Array.isArray(stored) ||
+          Object.keys(stored).length !== 3 ||
+          stored.provider_key !== identity.providerKey ||
+          stored.contract_version !== identity.contractVersion ||
+          stored.connection_id !== identity.connectionId ||
+          identity.connectionId !== selection.connection_id ||
+          runtime.sessionGeneration !== sessionGeneration ||
+          typeof sessionGeneration !== 'string'
+        )
           rejectBeforeArming('nodia_ai:eligibility_changed');
         try {
-          descriptor = runtimeProofDescriptor({ engine: 'agentic', adapterIdentity: identity,
-            attemptId: claim.attempt.id, operationRef: runtime.operationRef,
-            resourceKey: runtime.resourceKey, sessionGeneration });
+          const reference = {
+            attemptId: claim.attempt.id,
+            operationRef: runtime.operationRef,
+            resourceKey: runtime.resourceKey,
+            sessionGeneration,
+          };
+          descriptor = runtimeProofDescriptor(
+            identity.contractVersion === 'nodia-ai-api-chat/1'
+              ? { ...reference, engine: 'api_key', adapterIdentity: identity }
+              : { ...reference, engine: 'agentic', adapterIdentity: identity },
+          );
         } catch {
           rejectBeforeArming('nodia_ai:eligibility_changed');
         }
-      } else if (runtime?.resourceKey.startsWith('codex-profile:')) {
+      } else if (
+        runtime?.resourceKey.startsWith('codex-profile:') ||
+        selection.mode === 'api_key'
+      ) {
         // A Codex resource without an explicit identity must never become a Gemini descriptor.
         rejectBeforeArming('nodia_ai:eligibility_changed');
-      } else if (runtime && typeof sessionGeneration === 'string' && /^[a-f0-9]{32}$/.test(sessionGeneration) && selection.mode !== 'api_key') {
-        descriptor = runtimeProofDescriptor({ engine: selection.mode === 'token_plan_web' ? 'web' : 'agentic',
-          attemptId: claim.attempt.id, operationRef: runtime.operationRef,
-          resourceKey: runtime.resourceKey, sessionGeneration });
+      } else if (
+        runtime &&
+        typeof sessionGeneration === 'string' &&
+        /^[a-f0-9]{32}$/.test(sessionGeneration)
+      ) {
+        descriptor = runtimeProofDescriptor({
+          engine: 'agentic',
+          attemptId: claim.attempt.id,
+          operationRef: runtime.operationRef,
+          resourceKey: runtime.resourceKey,
+          sessionGeneration,
+        });
       }
       if (runtime) {
-        const slots: { resource_key: string }[] = await manager.query(
+        const slots: {
+          resource_key: string;
+        }[] = await manager.query(
           "SELECT resource_key FROM nodia_ai_runtime_slots WHERE resource_key=$1 AND state='held' AND job_id=$2 AND holder_worker_id=$3 AND fence=$4 AND external_operation_ref=$5 AND lease_until>clock_timestamp() FOR UPDATE",
           [
             runtime.resourceKey,
@@ -246,7 +243,9 @@ export class CheckpointNodiaAiJobUseCase {
         )
           throw new NodiaAiLostLeaseError();
       }
-      const changed: { id: string }[] = await manager.query(
+      const changed: {
+        id: string;
+      }[] = await manager.query(
         "WITH changed AS (UPDATE nodia_ai_runs SET provider_dispatches_used=provider_dispatches_used+1 WHERE id=$1 AND provider_dispatches_used < (budget_snapshot->>'provider_dispatches')::integer RETURNING id) SELECT id FROM changed",
         [claim.run.id],
       );
@@ -268,6 +267,7 @@ export class CheckpointNodiaAiJobUseCase {
           [claim.job.id, JSON.stringify(descriptor)],
         );
       }
+      await armChatGeneration(manager,claim.attempt.id);
     });
   }
   async finish(
@@ -293,6 +293,19 @@ export class CheckpointNodiaAiJobUseCase {
       );
       const terminalProof =
         'terminalProof' in outcome ? outcome.terminalProof : undefined;
+      const rejectionProof =
+        outcome.status === 'failed' ? outcome.rejectionProof : undefined;
+      if (
+        rejectionProof &&
+        (terminalProof ||
+          currentAttempt?.phase !== 'dispatch_armed' ||
+          claim.run.selection_snapshot.mode !== 'agentic' ||
+          rejectionProof.attemptId !== claim.attempt.id ||
+          outcome.status !== 'failed' ||
+          outcome.errorCode !== 'nodia_ai:runtime_busy' ||
+          outcome.persist !== undefined)
+      )
+        throw Error('nodia_ai:invalid_dispatch_rejection');
       if (terminalProof && currentAttempt?.phase !== 'dispatch_armed')
         throw Error('nodia_ai:invalid_terminal_proof');
       if (currentAttempt?.phase === 'claimed' && outcome.status !== 'unknown') {
@@ -306,16 +319,53 @@ export class CheckpointNodiaAiJobUseCase {
         currentAttempt?.phase === 'dispatch_armed'
       ) {
         const job = await this.runtime.lockJob(manager, claim.job.id);
-        if (!terminalProof || !job)
+        if ((!terminalProof && !rejectionProof) || !job)
           throw Error('nodia_ai:terminal_proof_required');
         const request = readRuntimeProofRequest(job.recovery_descriptor);
-        assertRuntimeTerminalProof(request, terminalProof);
-        if (terminalProof.attemptId !== claim.attempt.id ||
-          (outcome.status === 'failed' && terminalProof.outcome !== 'completed'))
-          throw Error('nodia_ai:invalid_terminal_proof');
+        if (rejectionProof) {
+          assertNativeDispatchRejection(
+            request,
+            rejectionProof,
+            claim.run.context_manifest.configuration_generation,
+          );
+          const released: {
+            resource_key: string;
+          }[] = await manager.query(
+            `WITH changed AS (UPDATE nodia_ai_runtime_slots SET state='free',fence=fence+1,conversation_id=NULL,job_id=NULL,holder_worker_id=NULL,lease_until=NULL,external_operation_ref=NULL,updated_at=clock_timestamp()
+             WHERE resource_key=$1 AND state='held' AND job_id=$2 AND holder_worker_id=$3
+               AND fence=$4 AND external_operation_ref=$5 AND lease_until>clock_timestamp() RETURNING resource_key) SELECT resource_key FROM changed`,
+            [
+              request.resourceKey,
+              claim.job.id,
+              claim.attempt.worker_id,
+              currentAttempt.runtime_fence,
+              request.operationRef,
+            ],
+          );
+          if (released.length !== 1) throw new NodiaAiLostLeaseError();
+          await manager.query(
+            'UPDATE nodia_ai_jobs SET recovery_descriptor=$2::jsonb WHERE id=$1',
+            [
+              claim.job.id,
+              JSON.stringify({
+                ...job.recovery_descriptor,
+                known_rejection: rejectionProof,
+              }),
+            ],
+          );
+        } else {
+          assertRuntimeTerminalProof(request, terminalProof!);
+          if (
+            terminalProof!.attemptId !== claim.attempt.id ||
+            (outcome.status === 'failed' &&
+              terminalProof!.outcome !== 'completed')
+          )
+            throw Error('nodia_ai:invalid_terminal_proof');
+        }
       }
       if ('persist' in outcome && outcome.persist)
         await outcome.persist(manager);
+      if(terminalProof)await finishChatGeneration(manager,claim.attempt.id,terminalProof);
       if ('terminalProof' in outcome && outcome.terminalProof) {
         const proof = outcome.terminalProof;
         await manager.query(

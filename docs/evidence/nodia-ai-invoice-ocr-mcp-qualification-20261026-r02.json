@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "status": "passed_native_MCP_only",
+  "execution_date_utc": "2026-10-26",
+  "exact_completion_timestamp_utc": null,
+  "operator": "Root; unique VM lane",
+  "consolidation": "Offline copies of exact operator receipts; no new VM/provider operations",
+  "source_runtime": {
+    "schema_version": 1,
+    "shared_VM_window_released": true,
+    "epoch": {
+      "container_id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+      "image_id": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+      "started_at_utc": "2026-10-26T03:06:18.949917773Z"
+    },
+    "server": {
+      "path": "/opt/nodia/releases/nodia-server-module-access-privacy-r01",
+      "manifest_sha256": "2029c0155988ea16373afcef0f86fde5eb7ee8c794453fa90289c71872937386"
+    },
+    "client": {
+      "path": "/opt/nodia/releases/nodia-client-module-access-privacy-r01",
+      "manifest_sha256": "eada6b5226b3f1d7ba31ef702047f1d9f9a4c4ce3c03b6a80ce448b790eb57a1"
+    },
+    "nginx": {
+      "path": "/etc/nginx/sites-available/nodia-lab",
+      "sha256": "c312445f1b8c3438ea1471c6f5cbdc4940c50402a8691ebd78092824549ba4a2"
+    },
+    "knowledge_release": "b21babc5a17f6303d557f4e745704b3c115eab2558d77bb05e6a6f069a2e2a7f"
+  },
+  "operator_source_sha256": "60c9d8ec08f1260c5c5fa3164ba9cdf0a8f4a64b71ccab231412095368988c20",
+  "operator_catalog_sha256": "8581d4bec806ac8305913b666ac698ef2597aa848e82ab296f1f77325865de84",
+  "frozen_plan_sha256": "825daba4bf250c67c297b7ee190b13fc2f130d2f85d79200d5ea6f6478fea264",
+  "runtime_binding_sha256": "142ed32a67997684997389b7f74f79d3f6f2ae1d39be7fa92fc73b197d260682",
+  "control_receipt": {
+    "path": "ops/lab/artifacts/invoice-ocr-mcp-qualification-verification-r02/receipts/mcp-control-r02.json",
+    "sha256": "7e8c18999d398b13f5c47e156ceed6d016eed1a7e1c8813932dd6026aed1eac9"
+  },
+  "control": {
+    "maximum_authorized_native_dispatches": 1,
+    "native_dispatch_intents_reserved": 1,
+    "actual_native_dispatch_requests": 1,
+    "automatic_inference_retries": 0,
+    "provider_internal_calls": null,
+    "provider_cost": null,
+    "business_writes": 0,
+    "MIME_cases": 0,
+    "native_control": {
+      "dispatch_requests_observed": 1,
+      "terminal_ACK": true,
+      "pending_identity": false,
+      "report": "/opt/nodia/verification/invoice-ocr-mcp-qualification-r02-live/mcp/public-report.json",
+      "sha256": "911bb74be65e4e5062dcc86fd7467f7e00a990a1f469ab83c3c7341f091cf62e",
+      "attempt_id": "b16cf00c-d2ae-41c9-ab70-04a36663f420"
+    },
+    "quiet_before": {
+      "native": {
+        "attempt_receipts": 0,
+        "unknown_markers": 0,
+        "temporary_directories": 0,
+        "active_native_processes": 0
+      },
+      "SQL": {
+        "pending_jobs": 0,
+        "open_attempts": 0,
+        "held_or_unknown_slots": 0
+      }
+    },
+    "quiet_after": {
+      "native": {
+        "attempt_receipts": 0,
+        "unknown_markers": 0,
+        "temporary_directories": 0,
+        "active_native_processes": 0
+      },
+      "SQL": {
+        "pending_jobs": 0,
+        "open_attempts": 0,
+        "held_or_unknown_slots": 0
+      }
+    },
+    "services": {
+      "nodia-api": {
+        "MainPID": "377214",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-module-access-privacy-r01",
+        "ActiveState": "active"
+      },
+      "nodia-ai-worker": {
+        "MainPID": "377221",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-module-access-privacy-r01",
+        "ActiveState": "active"
+      }
+    }
+  },
+  "metadata_by_phase": {
+    "observe_binding": {
+      "attempts": 1,
+      "retries": 0
+    },
+    "preflight": {
+      "attempts": 1,
+      "retries": 0
+    },
+    "execute": {
+      "attempts": 2,
+      "retries": 0
+    }
+  },
+  "verification": {
+    "Linux_operator_tests": 14,
+    "Linux_operator_tests_exit": 0,
+    "client_files_byte_and_sha_verified": 184,
+    "source_and_epoch_preserved": true
+  },
+  "historical_failure_preserved": {
+    "receipt": "receipts/mcp-binding-r01.json",
+    "code": "release_file_changed",
+    "scope": "R01 client manifest schema mismatch; stopped before SDK, not a failed native generation"
+  },
+  "limits": [
+    "Only the MCP nonce control is qualified for this exact account/selection/resource/session/configuration/image/epoch.",
+    "No PNG/PDF/WAV/WebM qualification, original read, invoice OCR, NodiaAI worker chat or UI acceptance was performed.",
+    "No commercial writes, inference retries, fallback, native restart or application adoption occurred in this control.",
+    "Provider internal calls and cost remain unknown. Durable dispatch intent and actual native dispatch request are distinct evidence fields.",
+    "Native public report remains a remote pointer plus hash in the exact receipt; its raw body was not exported into this package.",
+    "No exact control completion timestamp is present in the supplied receipt; the epoch start is not a control completion time.",
+    "AI-36/C05 and AI-38 remain open. AI-40 Linux, current CSV and scoped RAM/remount evidence retain their earlier scope."
+  ]
+}

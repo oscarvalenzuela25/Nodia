@@ -97,6 +97,7 @@ export const SwitchWrapper = styled(Box)(({ theme }) => {
     justifyContent: "space-between",
     padding: theme.spacing(0.5, 1.5),
     minHeight: 38,
+    [theme.breakpoints.down("sm")]: { minHeight: 44 },
     boxSizing: "border-box",
     borderRadius:
       typeof theme.shape.borderRadius === "number"
@@ -137,13 +138,13 @@ export const StyledSwitch = styled(Switch)(({ theme }) => ({
 
 export const CardsGrid = styled(Box)(({ theme }) => ({
   display: "grid",
-  gridTemplateColumns: "repeat(1, 1fr)",
+  gridTemplateColumns: "minmax(0, 1fr)",
   gap: theme.spacing(3),
   [theme.breakpoints.up("sm")]: {
-    gridTemplateColumns: "repeat(2, 1fr)",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
   },
   [theme.breakpoints.up("md")]: {
-    gridTemplateColumns: "repeat(3, 1fr)",
+    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
   },
 }));
 
@@ -217,6 +218,10 @@ export const BusinessName = styled(Typography)(({ theme }) => ({
   overflow: "hidden",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
+  [theme.breakpoints.down("sm")]: {
+    whiteSpace: "normal",
+    overflowWrap: "anywhere",
+  },
 }));
 
 export const DescriptionLine = styled(Typography)(({ theme }) => ({
@@ -227,6 +232,10 @@ export const DescriptionLine = styled(Typography)(({ theme }) => ({
   whiteSpace: "nowrap",
   marginBottom: theme.spacing(2),
   cursor: "default",
+  [theme.breakpoints.down("sm")]: {
+    whiteSpace: "normal",
+    overflowWrap: "anywhere",
+  },
 }));
 
 export const ChipsContainer = styled(Box)(({ theme }) => ({

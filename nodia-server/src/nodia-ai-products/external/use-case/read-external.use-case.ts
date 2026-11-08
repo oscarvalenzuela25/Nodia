@@ -62,13 +62,13 @@ function engines(source: unknown): NodiaAiJsonValue {
     return {
       available: value(item, 'available'),
       // The private adapter's busy response does not inspect the account.
-      authenticated: item.reason === 'runtime_busy' ? null : value(item, 'authenticated'),
+      authenticated:
+        item.reason === 'runtime_busy' ? null : value(item, 'authenticated'),
       quota_observed_at: quotaObservedAt(item.quota_observed_at),
     };
   };
   return {
     active_engine: value(row, 'active_engine'),
-    web: engine(row.web),
     agentic: engine(row.agentic),
   };
 }
@@ -259,8 +259,7 @@ export class ReadNodiaAiExternalUseCase {
               provider_id: input.provider_id as string,
               ...(input.mode
                 ? {
-                    mode: input.mode as
-                      'api_key' | 'token_plan_web' | 'token_plan_agentic',
+                    mode: input.mode as 'api_key' | 'agentic',
                   }
                 : {}),
             },

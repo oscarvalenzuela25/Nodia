@@ -25,7 +25,6 @@ describe('CreateProductLogUseCase', () => {
       name: 'Coca Cola 1.5L',
       cost_price: 1000,
       cost_price_tax: 190,
-      profit_percentage: 30,
       sale_price: 1547,
       stock: 50,
     };
@@ -37,7 +36,9 @@ describe('CreateProductLogUseCase', () => {
       updated_at: new Date(),
     };
 
-    vi.mocked(productServiceMock.createLog!).mockResolvedValue(mockCreated as any);
+    vi.mocked(productServiceMock.createLog!).mockResolvedValue(
+      mockCreated as any,
+    );
 
     const result = await useCase.execute(dto);
 

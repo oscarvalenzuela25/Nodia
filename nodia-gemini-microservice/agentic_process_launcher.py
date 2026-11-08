@@ -1,4 +1,4 @@
-"""Windows handshake: native CLI cannot start before its job is assigned."""
+"""Gated CLI launch: containment is assigned before native code can start."""
 import os
 import subprocess
 import sys

@@ -23,8 +23,8 @@ describe('GetAiProvidersHealthUseCase', () => {
             key: 'gemini',
             is_active: true,
             is_default: true,
-            mode: AiConnectionMode.WEB_SESSION,
-            use_token_plan_web: true,
+            mode: AiConnectionMode.AGENTIC,
+            use_agentic: true,
             fields: { selected_model: 'gemini-flash' },
             api_keys: [],
           },
@@ -60,8 +60,9 @@ describe('GetAiProvidersHealthUseCase', () => {
     };
 
     geminiServiceMock = {
-      getModelsAndQuota: vi.fn().mockResolvedValue({
-        authenticated: false,
+      getModelsAndQuota: vi.fn(),
+      getDualEngineStatus: vi.fn().mockResolvedValue({
+        agentic: { available: false, authenticated: false },
       }),
     };
 
@@ -71,7 +72,7 @@ describe('GetAiProvidersHealthUseCase', () => {
     );
   });
 
-  it('detects unauthenticated web session and generates incident alert', async () => {
+  it('detects unavailable Agentic adapter and generates incident alert', async () => {
     const result = await useCase.execute();
 
     expect(result.overallStatus).toBe('incident');
@@ -79,14 +80,14 @@ describe('GetAiProvidersHealthUseCase', () => {
 
     const geminiHealth = result.providers.find((p) => p.key === 'gemini');
     expect(geminiHealth?.status).toBe('expired');
-    expect(geminiHealth?.statusBadge).toBe('REQUIERE INICIAR SESIÓN');
+    expect(geminiHealth?.statusBadge).toBe('INCIDENTE ACTIVO');
     expect(geminiHealth?.is_default).toBe(true);
 
     const incidentAlert = result.alerts.find((a) => a.provider === 'gemini');
     expect(incidentAlert).toBeDefined();
     expect(incidentAlert?.title).toContain('INCIDENTE ACTIVO');
-    expect(incidentAlert?.title).toContain('SESIÓN WEB');
-    expect(incidentAlert?.actionType).toBe('renew_session');
+    expect(incidentAlert?.title).toContain('MODO AGÉNTICO');
+    expect(incidentAlert?.actionType).toBe('check_status');
   });
   it('checks independent Codex profiles and Gemini concurrently, retaining each session identity', async () => {
     const pending = new Map<
@@ -110,24 +111,24 @@ describe('GetAiProvidersHealthUseCase', () => {
           id: '41',
           key: 'openai',
           is_active: true,
-          use_token_plan_agentic: true,
-          default_mode: 'token_plan_agentic',
+          use_agentic: true,
+          default_mode: 'agentic',
           fields: {},
         },
         {
           id: '42',
           key: 'openai',
           is_active: true,
-          use_token_plan_agentic: true,
-          default_mode: 'token_plan_agentic',
+          use_agentic: true,
+          default_mode: 'agentic',
           fields: {},
         },
         {
           id: '43',
           key: 'gemini',
           is_active: true,
-          use_token_plan_web: true,
-          default_mode: 'token_plan_web',
+          use_agentic: true,
+          default_mode: 'agentic',
           fields: {},
         },
       ] as unknown as AiProvider[],
@@ -181,9 +182,9 @@ describe('GetAiProvidersHealthUseCase', () => {
     expect(failoverAlert).toBeUndefined();
   });
 
-  it('reports a real healthy Web session while legacy API integration stays unverified', async () => {
-    (geminiServiceMock.getModelsAndQuota as any).mockResolvedValue({
-      authenticated: true,
+  it('reports a real healthy Agentic session while legacy API integration stays unverified', async () => {
+    (geminiServiceMock.getDualEngineStatus as any).mockResolvedValue({
+      agentic: { available: true, authenticated: true },
     });
     (aiProviderServiceMock.findAllProviders as any).mockResolvedValue({
       data: [
@@ -191,8 +192,8 @@ describe('GetAiProvidersHealthUseCase', () => {
           id: '1',
           key: 'gemini',
           is_active: true,
-          use_token_plan_web: true,
-          mode: AiConnectionMode.WEB_SESSION,
+          use_agentic: true,
+          mode: AiConnectionMode.AGENTIC,
           api_keys: [],
         },
         {
@@ -221,9 +222,8 @@ describe('GetAiProvidersHealthUseCase', () => {
   });
 
   it('detects unavailable agentic session and generates agentic incident alert', async () => {
-    (geminiServiceMock.getModelsAndQuota as any).mockResolvedValue({
-      authenticated: false,
-      available: false,
+    (geminiServiceMock.getDualEngineStatus as any).mockResolvedValue({
+      agentic: { available: false, authenticated: false },
     });
     (aiProviderServiceMock.findAllProviders as any).mockResolvedValue({
       data: [
@@ -231,8 +231,7 @@ describe('GetAiProvidersHealthUseCase', () => {
           id: '1',
           key: 'gemini',
           is_active: true,
-          use_token_plan_agentic: true,
-          use_token_plan_web: false,
+          use_agentic: true,
           use_api_key: false,
           fields: { selected_model: 'gemini-3.1-pro' },
           api_keys: [],
@@ -255,47 +254,27 @@ describe('GetAiProvidersHealthUseCase', () => {
     expect(agenticAlert?.reason).toBe('agentic_adapter_unavailable');
   });
 
-  it('reports degraded when dual mode has one working and one failing engine', async () => {
-    (geminiServiceMock.getModelsAndQuota as any).mockImplementation(
-      (engine: string) => {
-        if (engine === 'agentic') {
-          return Promise.resolve({
-            authenticated: true,
-            available: true,
-            has_active_session: true,
-          });
-        }
-        return Promise.resolve({ authenticated: false });
-      },
-    );
-
-    (aiProviderServiceMock.findAllProviders as any).mockResolvedValue({
+  it('ignores retired Web status when Agentic is independently healthy', async () => {
+    geminiServiceMock.getDualEngineStatus = vi.fn().mockResolvedValue({
+      agentic: { available: true, authenticated: true },
+      web: { authenticated: false },
+    });
+    vi.mocked(aiProviderServiceMock.findAllProviders!).mockResolvedValue({
       data: [
         {
           id: '1',
           key: 'gemini',
           is_active: true,
-          use_token_plan_agentic: true,
-          use_token_plan_web: true,
-          use_api_key: false,
+          use_agentic: true,
+          default_mode: 'agentic',
           fields: {},
-          api_keys: [],
         },
       ],
-    });
-
+    } as never);
     const result = await useCase.execute();
-    const geminiHealth = result.providers.find((p) => p.key === 'gemini');
-    expect(geminiHealth?.status).toBe('degraded');
-    expect(geminiHealth?.statusBadge).toBe('DEGRADADO');
-    expect(geminiHealth?.serviceState).toContain('Sesión Web inactiva');
-
-    const webAlert = result.alerts.find(
-      (a) => a.provider === 'gemini' && a.id.includes('web'),
-    );
-    expect(webAlert).toBeDefined();
+    expect(result.providers[0].status).toBe('healthy');
+    expect(result.alerts).toEqual([]);
   });
-
   it('generates warning alert when provider is active but has no connection modes enabled', async () => {
     (aiProviderServiceMock.findAllProviders as any).mockResolvedValue({
       data: [
@@ -303,8 +282,7 @@ describe('GetAiProvidersHealthUseCase', () => {
           id: '1',
           key: 'gemini',
           is_active: true,
-          use_token_plan_agentic: false,
-          use_token_plan_web: false,
+          use_agentic: false,
           use_api_key: false,
           api_keys: [],
         },
@@ -323,40 +301,25 @@ describe('GetAiProvidersHealthUseCase', () => {
     expect(unconfiguredAlert?.severity).toBe('warning');
   });
 
-  it('detects unauthenticated web session via getDualEngineStatus and generates web incident alert', async () => {
-    geminiServiceMock.getDualEngineStatus = vi.fn().mockResolvedValue({
-      active_engine: 'agentic',
-      agentic: { available: true, authenticated: true },
-      web: { authenticated: false },
-    });
-    (aiProviderServiceMock.findAllProviders as any).mockResolvedValue({
+  it('does not revive a retired Web-only connection from historical flags', async () => {
+    vi.mocked(aiProviderServiceMock.findAllProviders!).mockResolvedValue({
       data: [
         {
           id: '1',
           key: 'gemini',
           is_active: true,
-          use_token_plan_agentic: true,
           use_token_plan_web: true,
-          use_api_key: false,
+          default_mode: 'token_plan_web',
           fields: {},
-          api_keys: [],
         },
       ],
-    });
-
+    } as never);
     const result = await useCase.execute();
-    const geminiHealth = result.providers.find((p) => p.key === 'gemini');
-    expect(geminiHealth?.status).toBe('degraded');
-    expect(geminiHealth?.statusBadge).toBe('DEGRADADO');
-    expect(geminiHealth?.serviceState).toContain('Sesión Web inactiva');
-
-    const webAlert = result.alerts.find(
-      (a) => a.provider === 'gemini' && a.id.includes('web-expired'),
-    );
-    expect(webAlert).toBeDefined();
-    expect(webAlert?.actionType).toBe('renew_session');
+    expect(result.providers[0].hasConnection).toBe(false);
+    expect(result.providers[0].status).toBe('unconfigured');
+    expect(result.alerts[0].actionType).toBe('configure');
+    expect(geminiServiceMock.getDualEngineStatus).not.toHaveBeenCalled();
   });
-
   it.each([true, false])(
     'does not mark an agentic adapter without a session healthy (dual status=%s)',
     async (dual) => {
@@ -366,7 +329,7 @@ describe('GetAiProvidersHealthUseCase', () => {
             id: '1',
             key: 'gemini',
             is_active: true,
-            use_token_plan_agentic: true,
+            use_agentic: true,
             fields: {},
           },
         ],
@@ -382,9 +345,9 @@ describe('GetAiProvidersHealthUseCase', () => {
           .fn()
           .mockResolvedValue({ active_engine: 'agentic', agentic, web: {} });
       } else {
-        vi.mocked(geminiServiceMock.getModelsAndQuota!).mockResolvedValue(
-          agentic,
-        );
+        geminiServiceMock.getDualEngineStatus = vi
+          .fn()
+          .mockResolvedValue({ agentic });
       }
       const result = await useCase.execute();
       expect(result.providers[0].status).not.toBe('healthy');
@@ -410,7 +373,7 @@ describe('GetAiProvidersHealthUseCase', () => {
             key: 'gemini',
             name: 'Second connection',
             is_active: true,
-            use_token_plan_agentic: true,
+            use_agentic: true,
           },
         ],
         meta: { page: 1, limit: 1, total_items: 1, total_pages: 1 },
@@ -438,12 +401,12 @@ describe('GetAiProvidersHealthUseCase', () => {
           id: '1',
           key: 'gemini',
           is_active: true,
-          use_token_plan_web: true,
-          default_mode: 'token_plan_web',
+          use_agentic: true,
+          default_mode: 'agentic',
           fields: {
             selected_model: 'other-mode-model',
             available_models: [{ id: 'other-mode-model' }],
-            token_plan_web: { available_models: [{ id: 'discovered-flash' }] },
+            agentic: { available_models: [{ id: 'discovered-flash' }] },
           },
         },
       ],
@@ -469,8 +432,7 @@ describe('GetAiProvidersHealthUseCase', () => {
           is_active: true,
           use_api_key: true,
           default_mode: 'api_key',
-          use_token_plan_agentic: true,
-          use_token_plan_web: true,
+          use_agentic: true,
         },
       ],
       meta: { page: 1, limit: 1, total_items: 1, total_pages: 1 },
@@ -633,14 +595,13 @@ describe('GetAiProvidersHealthUseCase', () => {
     expect(deactivated?.isActive).toBe(false);
   });
 
-  it('shares one session check across many Gemini connections and both modes', async () => {
+  it('shares one session check across many Gemini connections with one Agentic observation', async () => {
     vi.mocked(aiProviderServiceMock.findAllProviders!).mockResolvedValue({
       data: Array.from({ length: 10 }, (_, index) => ({
         id: String(index),
         key: 'gemini',
         is_active: true,
-        use_token_plan_agentic: true,
-        use_token_plan_web: true,
+        use_agentic: true,
         fields: {},
       })),
       meta: { page: 1, limit: 10, total_items: 10, total_pages: 1 },
@@ -653,7 +614,7 @@ describe('GetAiProvidersHealthUseCase', () => {
     const result = await useCase.execute();
     expect(result.providers).toHaveLength(10);
     expect(
-      result.providers.every((provider) => provider.status === 'degraded'),
+      result.providers.every((provider) => provider.status === 'healthy'),
     ).toBe(true);
     expect(geminiServiceMock.getDualEngineStatus).toHaveBeenCalledTimes(1);
     expect(geminiServiceMock.getModelsAndQuota).not.toHaveBeenCalled();

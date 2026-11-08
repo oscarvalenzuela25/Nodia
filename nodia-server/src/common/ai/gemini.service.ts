@@ -8,16 +8,15 @@ import {
   GatewayTimeoutException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { GeminiUpstreamException } from './gemini-upstream.exception.js';
+import {
+  GeminiUpstreamException,
+  geminiAdmissionReason,
+} from './gemini-upstream.exception.js';
 import {
   parseGeminiAgenticLoginJob,
   type GeminiAgenticLoginJob,
 } from './gemini-agentic-login.js';
-import {
-  parseGeminiLoginFrame,
-  type GeminiLoginInput,
-  type GeminiLoginFrame,
-} from './gemini-login-viewer.js';
+
 import {
   normalizeGeminiEngineStatus,
   isAgenticSessionActive,
@@ -27,6 +26,7 @@ import { envs } from '../../config/envs.config.js';
 import { randomUUID } from 'node:crypto';
 import type { AnalysisProgress } from './analysis-progress.js';
 import { observeGeminiProgress } from './gemini-progress-bridge.js';
+import { parseGeminiInvoiceExtraction } from './invoice-extraction.js';
 import {
   type ExtractedInvoiceData,
   type ExtractedInvoiceItem,
@@ -61,7 +61,7 @@ export class GeminiService {
     method: 'GET' | 'POST',
     path: string,
     actor: string,
-    payload?: GeminiLoginInput,
+    payload?: Record<string, unknown>,
     providerId?: string,
     expiresAt?: string,
   ): Promise<unknown> {
@@ -84,7 +84,7 @@ export class GeminiService {
           ...(payload ? { 'Content-Type': 'application/json' } : {}),
         },
         ...(payload ? { body: JSON.stringify(payload) } : {}),
-        signal: AbortSignal.timeout(path === '/auth/logout' ? 15_000 : 5000),
+        signal: AbortSignal.timeout(5000),
       });
     } catch (error) {
       this.logger.warn(
@@ -96,27 +96,17 @@ export class GeminiService {
     }
 
     if (!response.ok) await response.body?.cancel().catch(() => undefined);
-    if (response.status === 409) {
+    if (response.status === 409)
       throw new ConflictException(
-        path === '/auth/logout'
-          ? 'La sesión Web está ocupada o su limpieza quedó pendiente. Cancela el login en curso, espera a que termine el análisis o reintenta la limpieza.'
-          : path === '/auth/login/start'
-            ? 'Ya hay un inicio de sesión Gemini en curso. Cancélalo desde el panel que lo inició o espera hasta cinco minutos.'
-            : 'El intento está ocupado o la pantalla cambió. Actualiza el visor antes de continuar.',
+        'El inicio de sesión Agentic está ocupado. Revisa el intento vigente antes de continuar.',
       );
-    }
     if (response.status === 404) {
       throw new NotFoundException('La sesión de login Gemini no existe.');
     }
-    if (response.status === 503 || response.status === 504) {
-      if (path === '/auth/logout')
-        throw new ServiceUnavailableException(
-          'No se pudo confirmar la limpieza de Gemini Web. Reintenta antes de conectar otra cuenta.',
-        );
+    if (response.status === 503 || response.status === 504)
       throw new ServiceUnavailableException(
-        'No se pudo confirmar la operación del visor. Revisa la pantalla y reintenta.',
+        'No se pudo confirmar la operación de inicio de sesión Agentic.',
       );
-    }
     if (!response.ok) {
       throw new BadGatewayException(
         'Gemini no pudo gestionar el inicio de sesión.',
@@ -128,7 +118,7 @@ export class GeminiService {
       if (!reader) throw new Error('Empty login response');
       const chunks: Uint8Array[] = [];
       let size = 0;
-      const limit = path.endsWith('/frame') ? 1_049_600 : 16_384;
+      const limit = 16_384;
       try {
         while (true) {
           const chunk = await reader.read();
@@ -154,33 +144,9 @@ export class GeminiService {
     return job;
   }
 
-  private parseLoginJob(job: unknown): GeminiLoginJob {
-    if (
-      !job ||
-      typeof job !== 'object' ||
-      !('id' in job) ||
-      typeof job.id !== 'string' ||
-      !/^[0-9a-f]{32}$/.test(job.id) ||
-      !('state' in job) ||
-      typeof job.state !== 'string' ||
-      !['running', 'succeeded', 'failed', 'cancelled'].includes(job.state)
-    ) {
-      throw new BadGatewayException(
-        'Gemini devolvió un estado de login inválido.',
-      );
-    }
-    return { id: job.id, state: (job as GeminiLoginJob).state };
-  }
-
-  async startInteractiveLogin(actor: string): Promise<GeminiLoginJob> {
-    return this.parseLoginJob(
-      await this.loginRequest('POST', '/auth/login/start', actor),
-    );
-  }
-
   /** Private durable login protocol. Request identity is persisted by the caller before IO. */
   async durableLoginRequest(
-    engine: 'web' | 'agentic',
+    engine: 'agentic',
     action: 'start' | 'status' | 'cancel',
     requestId: string,
     providerId: string,
@@ -188,7 +154,7 @@ export class GeminiService {
     expiresAt?: string,
   ): Promise<GeminiLoginJob | GeminiAgenticLoginJob> {
     if (
-      !['web', 'agentic'].includes(engine) ||
+      !['agentic'].includes(engine) ||
       !['start', 'status', 'cancel'].includes(action) ||
       !/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(requestId) ||
       !/^[1-9][0-9]*$/.test(providerId) ||
@@ -205,7 +171,7 @@ export class GeminiService {
     ) {
       throw new ConflictException('ai_provider:invalid_login_deadline');
     }
-    const prefix = engine === 'web' ? '/auth/login' : '/agentic/auth/login';
+    const prefix = '/agentic/auth/login';
     const path = `${prefix}/requests/${requestId.toLowerCase()}${action === 'cancel' ? '/cancel' : ''}`;
     const value = await this.loginRequest(
       action === 'status' ? 'GET' : 'POST',
@@ -223,10 +189,7 @@ export class GeminiService {
     ) {
       throw new ConflictException('ai_provider:login_unknown');
     }
-    const job =
-      engine === 'web'
-        ? this.parseLoginJob(value)
-        : parseGeminiAgenticLoginJob(value);
+    const job = parseGeminiAgenticLoginJob(value);
     if (job.id !== requestId.toLowerCase().replaceAll('-', '')) {
       throw new BadGatewayException('ai_provider:invalid_login_observation');
     }
@@ -235,19 +198,19 @@ export class GeminiService {
 
   /** ACK retires a proof already settled in SQL; absence is an idempotent no-op, not a login result. */
   async acknowledgeLoginRequest(
-    engine: 'web' | 'agentic',
+    engine: 'agentic',
     requestId: string,
     providerId: string,
     actor: string,
   ): Promise<void> {
     if (
-      !['web', 'agentic'].includes(engine) ||
+      !['agentic'].includes(engine) ||
       !/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(requestId) ||
       !/^[1-9][0-9]*$/.test(providerId) ||
       !/^[1-9][0-9]*$/.test(actor)
     )
       throw new ConflictException('ai_provider:invalid_login_request');
-    const prefix = engine === 'web' ? '/auth/login' : '/agentic/auth/login';
+    const prefix = '/agentic/auth/login';
     const result = await this.loginRequest(
       'POST',
       `${prefix}/requests/${requestId.toLowerCase()}/ack`,
@@ -265,65 +228,6 @@ export class GeminiService {
       throw new BadGatewayException(
         'ai_provider:invalid_login_acknowledgement',
       );
-  }
-
-  async disconnectWebSession(
-    actor: string,
-  ): Promise<{ status: 'disconnected' }> {
-    const result = await this.loginRequest('POST', '/auth/logout', actor);
-    if (
-      !result ||
-      typeof result !== 'object' ||
-      !('status' in result) ||
-      result.status !== 'disconnected'
-    ) {
-      throw new BadGatewayException(
-        'Gemini devolvió un estado de desconexión inválido.',
-      );
-    }
-    return { status: 'disconnected' };
-  }
-
-  async getInteractiveLoginStatus(
-    jobId: string,
-    actor: string,
-  ): Promise<GeminiLoginJob> {
-    return this.parseLoginJob(
-      await this.loginRequest('GET', `/auth/login/${jobId}`, actor),
-    );
-  }
-
-  async cancelInteractiveLogin(
-    jobId: string,
-    actor: string,
-  ): Promise<GeminiLoginJob> {
-    return this.parseLoginJob(
-      await this.loginRequest('POST', `/auth/login/${jobId}/cancel`, actor),
-    );
-  }
-
-  async getInteractiveLoginFrame(
-    jobId: string,
-    actor: string,
-  ): Promise<GeminiLoginFrame> {
-    return parseGeminiLoginFrame(
-      await this.loginRequest('GET', `/auth/login/${jobId}/frame`, actor),
-    );
-  }
-
-  async sendInteractiveLoginInput(
-    jobId: string,
-    actor: string,
-    payload: GeminiLoginInput,
-  ): Promise<GeminiLoginJob> {
-    return this.parseLoginJob(
-      await this.loginRequest(
-        'POST',
-        `/auth/login/${jobId}/input`,
-        actor,
-        payload,
-      ),
-    );
   }
 
   async agenticLoginRequest(
@@ -418,7 +322,7 @@ export class GeminiService {
     }
 
     try {
-      const endpoint = engine ? `/${engine}/status` : '/auth/status';
+      const endpoint = '/agentic/status';
       const response = await fetch(`${baseUrl}${endpoint}`, {
         method: 'GET',
         headers: this.serviceHeaders(),
@@ -522,7 +426,7 @@ export class GeminiService {
     }
 
     try {
-      const endpoint = engine ? `/${engine}/models` : '/models';
+      const endpoint = '/agentic/models';
       const response = await fetch(`${baseUrl}${endpoint}`, {
         method: 'GET',
         headers: this.serviceHeaders(),
@@ -565,6 +469,7 @@ export class GeminiService {
           return {
             engine: 'agentic',
             available: body.available,
+            reason: geminiAdmissionReason(body.reason),
             authenticated,
             models: authenticated
               ? body.models.map((model: { id: string; name: string }) => ({
@@ -582,8 +487,10 @@ export class GeminiService {
         return body;
       }
 
-      if (engine === 'agentic')
-        throw new BadGatewayException('Descubrimiento agéntico no disponible.');
+      if (engine === 'agentic') {
+        await response.body?.cancel().catch(() => undefined);
+        throw GeminiUpstreamException.fromResponse(response);
+      }
 
       // Fallback to status endpoint
       const fallbackEndpoint = engine ? `/${engine}/status` : '/auth/status';
@@ -621,6 +528,20 @@ export class GeminiService {
       this.logger.warn(
         `Gemini getModelsAndQuota failed: ${error instanceof Error ? error.name : 'UnknownError'}`,
       );
+      if (engine === 'agentic' && error instanceof GeminiUpstreamException) {
+        const reason = geminiAdmissionReason(error.upstreamErrorCode);
+        if (reason)
+          return {
+            engine: 'agentic',
+            available: false,
+            authenticated: false,
+            reason,
+            models: [],
+            active_model: null,
+            usage_info: null,
+            quotas: null,
+          };
+      }
     }
 
     return {
@@ -653,7 +574,9 @@ export class GeminiService {
       );
     }
 
-    const targetEngine = engine || providerFields?.engine || 'web';
+    const targetEngine = engine ?? 'agentic';
+    if (targetEngine !== 'agentic')
+      throw new UnprocessableEntityException('ai_provider:retired_mode');
     if (!selectedModel?.trim()) {
       throw new UnprocessableEntityException(
         'Configure un modelo antes de analizar.',
@@ -700,10 +623,7 @@ export class GeminiService {
           )
         : undefined;
     try {
-      const endpoint =
-        targetEngine === 'agentic'
-          ? '/agentic/analyze-invoice'
-          : '/analyze-invoice';
+      const endpoint = '/agentic/analyze-invoice';
       response = await fetch(`${baseUrl}${endpoint}`, {
         method: 'POST',
         headers: {
@@ -735,6 +655,7 @@ export class GeminiService {
 
     if (!response.ok) {
       this.logger.warn(`Gemini microservice returned HTTP ${response.status}`);
+      await response.body?.cancel().catch(() => undefined);
       throw GeminiUpstreamException.fromResponse(response);
     }
 
@@ -744,79 +665,8 @@ export class GeminiService {
     } catch {
       throw new BadGatewayException('Gemini devolvió una respuesta inválida.');
     }
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      throw new BadGatewayException('Gemini devolvió una respuesta inválida.');
-    }
-    const body = parsed as Record<string, unknown>;
-    if (
-      !body.data ||
-      typeof body.data !== 'object' ||
-      Array.isArray(body.data)
-    ) {
-      throw new BadGatewayException('Gemini devolvió una respuesta inválida.');
-    }
-    const data = body.data as Record<string, unknown>;
-    const rawItems = data.items;
-    if (!Array.isArray(rawItems) || rawItems.length === 0) {
-      throw new BadGatewayException(
-        'Gemini no pudo extraer productos de la imagen.',
-      );
-    }
-
-    const items = this.normalizeItems(rawItems);
+    const extraction = parseGeminiInvoiceExtraction(parsed);
     progress?.emit('response_received');
-    const total = this.numericValue(body.total_amount);
-    if (body.code != null && typeof body.code !== 'string') {
-      throw new BadGatewayException('Gemini devolvió un folio inválido.');
-    }
-    const issueDate = data.issue_date;
-    if (issueDate != null && typeof issueDate !== 'string') {
-      throw new BadGatewayException('Gemini devolvió una fecha inválida.');
-    }
-    return {
-      code: typeof body.code === 'string' ? body.code.trim() : '',
-      total_amount: total,
-      issue_date: typeof issueDate === 'string' ? issueDate : undefined,
-      items,
-    };
-  }
-
-  private numericValue(value: unknown): number | null {
-    if (value === null || value === undefined) return null;
-    if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
-      throw new BadGatewayException(
-        'Gemini devolvió valores numéricos inválidos.',
-      );
-    }
-    return value;
-  }
-
-  private normalizeItems(rawItems: unknown[]): ExtractedInvoiceItem[] {
-    return rawItems.map((raw) => {
-      if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-        throw new BadGatewayException('Gemini devolvió un producto inválido.');
-      }
-      const item = raw as Record<string, unknown>;
-      if (
-        typeof item.name !== 'string' ||
-        !item.name.trim() ||
-        (item.code != null && typeof item.code !== 'string')
-      ) {
-        throw new BadGatewayException('Gemini devolvió un producto inválido.');
-      }
-      // Python validates the extraction. Preserve missing/zero values here;
-      // the review form owns explicitly configured net/gross calculations.
-      return {
-        code: typeof item.code === 'string' ? item.code.trim() : null,
-        name: item.name.trim(),
-        quantity: this.numericValue(item.quantity),
-        packages: this.numericValue(item.packages),
-        units_per_package: this.numericValue(item.units_per_package),
-        cost_price: this.numericValue(item.cost_price),
-        cost_price_tax: this.numericValue(item.cost_price_tax),
-        unit_price: this.numericValue(item.unit_price),
-        total_price: this.numericValue(item.total_price),
-      };
-    });
+    return extraction;
   }
 }

@@ -97,21 +97,20 @@ export class ObserveNodiaAiProposalsUseCase {
       .getRepository(NodiaAiProposalRevision)
       .find({ where: keys });
     const maxSteps = keys.length * this.policy.budget.steps_per_proposal;
-    const steps = await manager
-      .getRepository(NodiaAiProposalStep)
-      .find({
-        where: keys.map((key) => ({
-          proposal_id: key.proposal_id,
-          proposal_revision: key.revision,
-        })),
-        order: { position: 'ASC' },
-        take: maxSteps + 1,
-      });
+    const steps = await manager.getRepository(NodiaAiProposalStep).find({
+      where: keys.map((key) => ({
+        proposal_id: key.proposal_id,
+        proposal_revision: key.revision,
+      })),
+      order: { position: 'ASC' },
+      take: maxSteps + 1,
+    });
     if (steps.length > maxSteps) fail();
     const candidates: {
       ref: ProposalEventReference;
       selected: NodiaAiProposalStep[];
       preparers: ReturnType<ValidateNodiaAiProposalUseCase['preparer']>[];
+      historical: boolean;
     }[] = [];
     for (const ref of unique) {
       const proposal = own.find((row) => row.id === ref.proposal_id);
@@ -127,11 +126,16 @@ export class ObserveNodiaAiProposalsUseCase {
           row.proposal_revision === ref.revision,
       );
       try {
-        this.validate.compile(proposal, revision, selected);
+        const historical = !this.validate.isCompatible(revision, selected);
+        if (historical)
+          this.validate.compileHistorical(proposal, revision, selected);
+        else this.validate.compile(proposal, revision, selected);
         const preparers = selected.map((step) =>
-          this.validate.preparer(step.tool_name, step.contract_hash),
+          historical
+            ? this.validate.historicalPreparer(step.tool_name)
+            : this.validate.preparer(step.tool_name, step.contract_hash),
         );
-        candidates.push({ ref, selected, preparers });
+        candidates.push({ ref, selected, preparers, historical });
       } catch (error) {
         if (!denied(error)) throw error;
       }
@@ -163,14 +167,21 @@ export class ObserveNodiaAiProposalsUseCase {
       maxCollectionItems: this.policy.results.json_collection_items,
     };
     let offset = 0;
-    for (const { ref, selected, preparers } of candidates) {
+    for (const { ref, selected, preparers, historical } of candidates) {
       const permitted = access.allowed.slice(offset, offset + preparers.length);
       offset += preparers.length;
       if (permitted.length !== preparers.length || !permitted.every(Boolean))
         continue;
       try {
-        for (const [index, step] of selected.entries())
-          await preparers[index].verifyAuthority(storedStep(step), context);
+        for (const [index, step] of selected.entries()) {
+          if (historical)
+            await preparers[index].verifyHistoricalReadAuthority!(
+              storedStep(step),
+              context,
+            );
+          else
+            await preparers[index].verifyAuthority(storedStep(step), context);
+        }
         allowed.add(proposalEventKey(ref));
       } catch (error) {
         if (!denied(error)) throw error;

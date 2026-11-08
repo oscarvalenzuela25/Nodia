@@ -1,4 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { compatibleModuleRoutes } from '../../authorization/canonical-module-route.js';
 import type { EntityManager } from 'typeorm';
 import {
   isNodiaAiScopeVisible,
@@ -75,7 +76,7 @@ export class LoadNodiaAiContextHistoryUseCase {
         COALESCE((max(seq) FILTER (WHERE bytes<=$6::bigint-2))::text,$5::text) AS through_seq
       FROM costed`,
       [input.conversationId, input.throughSeq, input.actorId,
-        [...input.moduleRoutes], after, input.maxBytes],
+        compatibleModuleRoutes(input.moduleRoutes), after, input.maxBytes],
     );
     if (!row || !Array.isArray(row.history) || typeof row.complete !== 'boolean' ||
       typeof row.through_seq !== 'string' || !sequence.test(row.through_seq) ||

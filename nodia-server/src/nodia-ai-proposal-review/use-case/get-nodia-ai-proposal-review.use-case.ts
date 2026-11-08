@@ -63,6 +63,7 @@ export class GetNodiaAiProposalReviewUseCase {
         revision,
       );
       const readonly =
+        !loaded.catalogCompatible ||
         loaded.actor.actorId !== loaded.chat.owner_id ||
         loaded.proposal.current_revision !== loaded.revision.revision ||
         loaded.revision.state !== 'ready' ||

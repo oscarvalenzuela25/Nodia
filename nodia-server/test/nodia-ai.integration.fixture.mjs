@@ -28,7 +28,7 @@ export async function createNodiaAiIntegrationFixture(stage = 'ai10') {
       if (db?.isInitialized) await db.destroy();
     } finally {
       if (started) {
-        docker('rm', '-f', container);
+        docker('rm', '-f', '--volumes', container);
         started = false;
       }
     }

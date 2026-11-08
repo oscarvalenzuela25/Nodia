@@ -217,7 +217,7 @@ describe('Common MCP preparation candidates', () => {
     ]);
     for (const tool of f.tools.values()) {
       expect(compileNodiaAiToolSchema(tool.outputSchema)).toBeDefined();
-      expect(tool.requiredModuleRoutes).toEqual(['/tools/nodia-ai']);
+      expect(tool.requiredModuleRoutes).toEqual(['/nodia-ai']);
     }
     expect(f.preference.inputSchema.sourceJson).toContain(
       f.build.operations[0].contractHash,
@@ -312,7 +312,7 @@ describe('Common MCP preparation candidates', () => {
   it('rechecks target module and actor-only memory using native rules', async () => {
     const f = fixture();
     f.actor.modules = f.actor.modules.filter(
-      (m) => m.route !== '/tools/finances-personal',
+      (m) => m.route !== '/finances-personal',
     );
     await expect(
       f.preference.handler(
@@ -382,7 +382,7 @@ describe('Common MCP preparation candidates', () => {
       args = { operation: 'create', partial: f.create };
     const result = await f.preference.handler(args, f.context);
     f.actor.modules = f.actor.modules.filter(
-      (m) => m.route !== '/tools/finances-personal',
+      (m) => m.route !== '/finances-personal',
     );
     await expect(
       f.preference.verifyResultAuthority!(args, result, f.context),

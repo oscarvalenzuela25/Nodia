@@ -104,8 +104,8 @@ try {
     report.HTTP_requests.push({ method: body === undefined ? 'GET' : 'POST', endpoint: route.replace(/[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/gu, ':uuid').replace(/\/\d+$/u, '/:id'), status: response.status });
     assert.equal(response.status, expected); save(); return await response.json();
   };
-  let [financeModule] = await db.query("SELECT id::text FROM modules WHERE link='/tools/finances-personal'");
-  if (!financeModule) [financeModule] = await db.query("INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/tools/finances-personal','personal_finance' FROM modules WHERE key='nodia_ai' RETURNING id::text");
+  let [financeModule] = await db.query("SELECT id::text FROM modules WHERE link='/finances-personal'");
+  if (!financeModule) [financeModule] = await db.query("INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/finances-personal','personal_finance' FROM modules WHERE key='nodia_ai' RETURNING id::text");
   await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1) ON CONFLICT DO NOTHING', [financeModule.id]);
   const [category] = await db.query("INSERT INTO finance_categories(user_id,name,key) VALUES(1,'Disposable worker food','ai38_worker_food') RETURNING id::text");
   const chat = randomUUID();

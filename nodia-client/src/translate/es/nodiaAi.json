@@ -1,5 +1,4 @@
 {
-  "subtitle": "Conversaciones conectadas con Nodia",
   "settings": "Configuración",
   "conversations": "Conversaciones",
   "new_chat": "Nuevo chat",
@@ -14,7 +13,7 @@
   "more_conversations": "Cargar más conversaciones",
   "welcome": "Tu espacio de conversación",
   "welcome_message": "Conversa con NodiaAI",
-  "welcome_detail": "Crea un chat y elige la conexión, el modo y el modelo. Las herramientas disponibles dependen de tus permisos y de la verificación de Agentic.",
+  "welcome_detail": "Cada conversación comienza con tu configuración predeterminada. Puedes cambiar proveedor, modo, modelo e intensidad entre mensajes.",
   "invalid_chat": "El identificador de esta conversación no es válido.",
   "detail_error": "No pudimos recuperar este chat. Puede haber expirado o ya no estar autorizado.",
   "checking_selection": "Comprobando la disponibilidad de esta selección…",
@@ -30,7 +29,8 @@
     "model_unavailable": "El modelo elegido no está disponible en esta conexión.",
     "option_unsupported": "El proveedor no admite la combinación de modelo e intensidad elegida.",
     "protocol_unverified": "La integración necesaria para este modo todavía no está verificada.",
-    "invalid_observation": "La comprobación del proveedor devolvió una respuesta inválida."
+    "invalid_observation": "La comprobación del proveedor devolvió una respuesta inválida.",
+    "api_credential_required": "Configura una API key disponible para esta conexión."
   },
   "catalog_error": "No pudimos consultar las conexiones de NodiaAI.",
   "messages": "Mensajes del chat",
@@ -41,6 +41,10 @@
   "messages_error": "No pudimos recuperar el historial. Los mensajes ya cargados se conservan.",
   "more_messages": "Cargar mensajes anteriores",
   "message": "Mensaje",
+  "image_generation": {
+    "command_hint": "Para pedir una imagen en este chat, escribe /imagen y una descripción, sin adjuntos.",
+    "unverified": "La generación de imágenes no está verificada para esta selección. Puedes seguir usando el chat de texto."
+  },
   "send": "Enviar mensaje",
   "recover_send": "Comprobar el mismo envío",
   "send_uncertain": "No se confirmó la recepción del envío. Puedes comprobarlo con la misma clave, sin iniciar una intención nueva.",
@@ -74,13 +78,19 @@
   },
   "modes": {
     "api_key": "API key",
-    "token_plan_web": "Web",
-    "token_plan_agentic": "Agentic"
+    "agentic": "Agentic",
+    "retired": "Modo retirado"
   },
   "effort_levels": {
     "low": "Bajo",
     "medium": "Medio",
     "high": "Alto"
+  },
+  "activity": {
+    "title": "Actividad de NodiaAI",
+    "steps_label": "Pasos del turno",
+    "steps_one": "{{count}} paso",
+    "steps_other": "{{count}} pasos"
   },
   "observation": {
     "title": "Actividad y resultados",
@@ -134,14 +144,10 @@
     "missing_model": "Modelo no disponible ({{id}})",
     "missing_effort": "Intensidad no disponible ({{id}})",
     "selection_missing": "La selección guardada ya no está en el catálogo. Revísala antes de continuar.",
-    "api_deferred": "El modo API se habilitará en una etapa posterior.",
     "mode_disabled": "La conexión o este modo están deshabilitados en su configuración. Revisa Ajustes IA antes de continuar.",
-    "openai_web_disabled": "OpenAI Web no está habilitado para NodiaAI. Selecciona Agentic para utilizar Codex.",
     "codex_description": "Codex Agentic utiliza la cuenta de esta conexión. El catálogo guardado no comprueba que el modelo pueda responder.",
     "codex_manage": "Gestionar cuenta Codex en otra pestaña",
     "codex_private_login": "El acceso se realiza en el canal seguro de Ajustes IA. No envíes códigos ni credenciales al chat. Después, vuelve a comprobar la selección.",
-    "mcp_verified": "Herramientas MCP verificadas para esta selección. Los cambios requieren tu confirmación sobre la propuesta exacta.",
-    "mcp_unverified": "Las herramientas MCP todavía no están verificadas para esta selección. La disponibilidad del chat no las habilita.",
     "checking": "Comprobando esta selección…",
     "check_again": "Volver a comprobar",
     "available": "Esta selección está disponible para el chat.",
@@ -153,9 +159,61 @@
     "routing_unavailable": "El destino Agentic ya no está disponible. Desactiva la alternancia para continuar.",
     "scope": "Estos cambios afectan solo a esta conversación; no modifican la configuración global del proveedor.",
     "cancel": "Cancelar",
-    "apply": "Aplicar configuración"
+    "apply": "Aplicar configuración",
+    "tools_unverified": "Las herramientas todavía no están verificadas para esta selección. La disponibilidad del chat no las habilita.",
+    "api_available": "Esta selección API key está disponible para el chat.",
+    "tools_supported": "Esta selección admite solicitudes de herramientas. Los cambios requieren tu confirmación sobre la propuesta exacta."
   },
   "proposal": {
+    "historical_sales": {
+      "operations": {
+        "create": "Crear borrador de venta",
+        "update": "Actualizar borrador de venta",
+        "complete": "Confirmar venta",
+        "cancel": "Anular venta",
+        "discard": "Descartar borrador de venta"
+      },
+      "fields": {
+        "id": "ID del registro",
+        "business_id": "ID del negocio",
+        "sale_id": "ID de la venta",
+        "product_id": "ID del producto",
+        "items": "Productos solicitados",
+        "quantity": "Cantidad",
+        "payment_method": "Medio de pago",
+        "payment_method_description": "Descripción del medio de pago",
+        "cancellation_reason": "Motivo de anulación",
+        "sale_pricing_snapshot": "Precios y condiciones guardados",
+        "currency": "Moneda",
+        "version_before": "Versión anterior",
+        "state_before": "Estado anterior",
+        "lines": "Detalle de productos",
+        "total_amount": "Importe total",
+        "state_after": "Estado resultante",
+        "expected_product_version": "Versión del producto revisada",
+        "expected_unit_price": "Precio unitario revisado",
+        "code": "Código de factura / proveedor",
+        "barcode": "Código de barras",
+        "name": "Nombre del producto",
+        "regular_unit_price": "Precio unitario normal",
+        "offer_price": "Precio de oferta",
+        "is_offer_enabled": "Oferta activa",
+        "price_source": "Origen del precio",
+        "line_total": "Subtotal",
+        "product_version": "Versión guardada del producto",
+        "product_code_snapshot": "Código de factura / proveedor guardado",
+        "product_barcode_snapshot": "Código de barras guardado",
+        "product_name_snapshot": "Nombre del producto guardado",
+        "offer_price_snapshot": "Precio de oferta guardado",
+        "is_offer_enabled_snapshot": "Oferta activa guardada",
+        "unit_price": "Precio unitario aplicado"
+      },
+      "price_sources": {
+        "regular": "Normal",
+        "offer": "Oferta",
+        "manual": "Manual"
+      }
+    },
     "available": "Propuesta disponible para revisión",
     "show": "Ver propuesta",
     "hide": "Ocultar propuesta",
@@ -623,11 +681,9 @@
       "is_active": "Activo",
       "is_default": "Conexión predeterminada",
       "use_api_key": "API habilitada",
-      "use_token_plan_web": "Web habilitado",
-      "use_token_plan_agentic": "Agentic habilitado",
+      "use_agentic": "Agentic habilitado",
       "can_use_api_key": "API configurable",
-      "can_use_token_plan_web": "Web configurable",
-      "can_use_token_plan_agentic": "Agentic configurable",
+      "can_use_agentic": "Agentic configurable",
       "auto_rotate_api_keys": "Rotación de claves API",
       "translates": "Traducciones",
       "es": "Español",
@@ -644,14 +700,10 @@
       "api_key.ocr_model": "API · Modelo OCR",
       "api_key.ocr_focus_model": "API · Modelo de enfoque OCR",
       "api_key.thinking_level": "API · Intensidad",
-      "token_plan_web.selected_model": "Web · Modelo seleccionado",
-      "token_plan_web.ocr_model": "Web · Modelo OCR",
-      "token_plan_web.ocr_focus_model": "Web · Modelo de enfoque OCR",
-      "token_plan_web.thinking_level": "Web · Intensidad",
-      "token_plan_agentic.selected_model": "Agentic · Modelo seleccionado",
-      "token_plan_agentic.ocr_model": "Agentic · Modelo OCR",
-      "token_plan_agentic.ocr_focus_model": "Agentic · Modelo de enfoque OCR",
-      "token_plan_agentic.thinking_level": "Agentic · Intensidad",
+      "agentic.selected_model": "Agentic · Modelo seleccionado",
+      "agentic.ocr_model": "Agentic · Modelo OCR",
+      "agentic.ocr_focus_model": "Agentic · Modelo de enfoque OCR",
+      "agentic.thinking_level": "Agentic · Intensidad",
       "affected_connections": "Conexiones afectadas",
       "availability": "Disponibilidad",
       "changes_chat_configuration": "Cambia la selección de este chat",
@@ -672,8 +724,7 @@
     "ai_provider_configuration_note": "Guardar configuración no comprueba disponibilidad, autenticación ni ejecución del modelo. Las credenciales se gestionan en su canal seguro.",
     "ai_provider_modes": {
       "api_key": "API",
-      "token_plan_web": "Web",
-      "token_plan_agentic": "Agentic"
+      "agentic": "Agentic"
     },
     "ai_provider_values": {
       "unknown": "Desconocida"
@@ -699,7 +750,17 @@
       "nodia_preferences_prepare_create": "Recordar una preferencia",
       "nodia_preferences_prepare_update": "Cambiar una preferencia",
       "nodia_preferences_prepare_delete": "Olvidar una preferencia"
-    }
+    },
+    "card_title": "Propuesta de cambios",
+    "card_description": "Revisa el detalle y las acciones disponibles.",
+    "step_count_one": "{{count}} paso",
+    "step_count_other": "{{count}} pasos",
+    "created_label": "Creada",
+    "expires_label": "Válida hasta",
+    "technical_details": "Detalles de la propuesta",
+    "proposal_id": "Identificador de propuesta:",
+    "catalog_version": "Versión del catálogo:",
+    "historical_sales_label": "Venta histórica · Sólo lectura"
   },
   "execution": {
     "title": "Ejecución confirmada",
@@ -811,7 +872,6 @@
       "nodia_logout": "Cerrar únicamente mi sesión actual de Nodia",
       "api_key_delete": "Eliminar la credencial confirmada",
       "codex_logout": "Cerrar la sesión Codex de la conexión confirmada",
-      "gemini_web_logout": "Cerrar la sesión compartida de Gemini Web",
       "sync_models": "Consultar y guardar el catálogo remoto del modo confirmado"
     },
     "status": {
@@ -922,6 +982,7 @@
     "action_error": "No pudimos completar la acción. Conservamos el borrador.",
     "pending": "Sube los adjuntos y acepta su texto, o utiliza un formato verificado para la selección actual.",
     "view": "Ver archivo",
+    "image_preview": "Vista previa de {{name}}",
     "download": "Descargar archivo privado",
     "unavailable": "No pudimos recuperar este archivo o ya no tienes acceso.",
     "bytes": "{{count}} bytes",
@@ -941,15 +1002,24 @@
       "audio": "Audio"
     },
     "capabilities_error": "No pudimos consultar las condiciones de los adjuntos. Reintenta para continuar.",
+    "recheck_capabilities": "Volver a comprobar formatos",
+    "capabilities_refreshed": "Compatibilidad de adjuntos actualizada",
+    "invoice_ocr_reference": "Archivo disponible para solicitar extracción de factura",
     "native_ready": "Este formato está verificado para la selección actual. Puedes enviar el archivo original sin escribir una interpretación; no implica una transcripción disponible.",
     "discard_edit": "Descartar edición del texto",
     "edit_discarded": "Edición del texto descartada",
     "text_too_large": "El mensaje y los textos aceptados de los adjuntos superan 32 KiB. Reduce el texto antes de enviarlo.",
-    "file_name_invalid": "El nombre del archivo debe tener contenido y no superar 256 bytes UTF-8. Renómbralo antes de adjuntarlo."
+    "file_name_invalid": "El nombre del archivo debe tener contenido y no superar 256 bytes UTF-8. Renómbralo antes de adjuntarlo.",
+    "preview_unavailable": "Vista previa no disponible",
+    "review_content": "Revisar contenido",
+    "audio_preview_label": "Reproductor de audio: {{name}}",
+    "audio_preview_error": "No se pudo reproducir este audio en este navegador.",
+    "audio_preview_retry": "Reintentar reproducción",
+    "audio_preview_unavailable": "La vista previa de audio no está disponible. Puedes descargar el archivo."
   },
   "preferences": {
     "title": "Preferencias",
-    "description": "NodiaAI solo recuerda lo que aceptes. Puedes revisar o borrar tus preferencias; conservarlas no concede permisos ni confirma operaciones. Las preferencias permanecen al expirar el chat. Si pierdes acceso al módulo, dejan de usarse; puedes olvidarlas.",
+    "description": "NodiaAI recuerda solo las preferencias que confirmas y puede usarlas en otros chats. Por ejemplo, tu categoría habitual de gastos. Usa «Proponer cambio» para elegir otra o «Proponer borrado» para olvidarla. Revisa y confirma la propuesta para aplicar el cambio.",
     "loading": "Abriendo preferencias…",
     "chunk_error": "No pudimos abrir las preferencias. Reintenta sin recargar la página.",
     "chat_required": "Para proponer cambios, abre un chat propio disponible y espera a que termine su actividad.",
@@ -989,6 +1059,8 @@
     "changed": "Las preferencias cambiaron durante el turno. El historial original se conserva y la solicitud no se repetirá automáticamente. Puedes enviar una nueva petición para usar su versión actual."
   },
   "organization": {
+    "show_filters": "Mostrar filtros de conversaciones",
+    "hide_filters": "Ocultar filtros de conversaciones",
     "search": "Buscar por título o texto",
     "archive_filter": "Conversaciones",
     "archive_active": "Sin archivar",
@@ -1012,12 +1084,95 @@
     "unarchive_confirm": "¿Desarchivar «{{title}}»?",
     "title": "Título de la conversación",
     "title_limit": "El título admite hasta 256 bytes UTF-8.",
+    "current_title": "Título actual: {{title}}",
+    "title_changed": "La conversación cambió. Revisa el estado actual antes de guardar.",
     "title_help": "Déjalo vacío para mostrar «Conversación sin título».",
     "save": "Guardar título",
     "review_latest": "Revisar estado actual",
     "retention_unchanged": "Organizar una conversación no renueva su plazo de conservación.",
     "search_limit": "La búsqueda no se aplicó: admite hasta 256 bytes UTF-8.",
     "access_rejected": "Esta conversación ya no está disponible para tu sesión. Su contenido se ha ocultado.",
-    "partial_message": "Respuesta parcial: este mensaje no se completó."
+    "partial_message": "Respuesta parcial: este mensaje no se completó.",
+    "saved_preferences": "Preferencias guardadas"
+  },
+  "artifacts": {
+    "tools": {
+      "nodia_products_export_csv": "Exportación de productos",
+      "nodia_providers_export_csv": "Exportación de proveedores",
+      "nodia_invoices_file": "Archivo de la factura"
+    },
+    "current_on_download": "La descarga vuelve a comprobar tus permisos. Los CSV se generan con los datos actuales.",
+    "download": "Descargar archivo privado",
+    "retry": "Reintentar descarga",
+    "download_ready": "Archivo listo para descargar",
+    "download_error": "No pudimos descargar este archivo. Comprueba que la conversación y tus permisos sigan vigentes e inténtalo de nuevo."
+  },
+  "run_control": {
+    "title": "Control del turno",
+    "stop": "Detener respuesta",
+    "requested": "Solicitud de detención enviada",
+    "already_terminal": "Se consultó el estado actual del turno",
+    "waiting": "Esperando que termine el cierre del turno. La solicitud no revierte cambios ya realizados.",
+    "uncertain": "No pudimos confirmar si se recibió la solicitud. Comprueba el estado antes de volver a intentarlo.",
+    "check": "Comprobar estado del turno",
+    "retry": "Reintentar la misma solicitud",
+    "retry_note": "El turno sigue activo. Puedes volver a enviar la misma solicitud de detención."
+  },
+  "api_errors": {
+    "rate_limited": "El proveedor API rechazó la solicitud por un límite de uso. No se repetirá automáticamente.",
+    "credential_rejected": "El proveedor rechazó la credencial API. Revisa la clave de esta conexión; la solicitud no se repetirá automáticamente.",
+    "provider_rejected": "El proveedor API rechazó la solicitud. Revisa la selección y sus opciones; no se cambiará de modelo ni se repetirá automáticamente.",
+    "response_invalid": "No recibimos una respuesta API completa y válida dentro de los límites. La solicitud no se reenviará automáticamente.",
+    "exchange_invalid": "El intercambio API no cumple el formato o los límites requeridos. No se repetirá automáticamente.",
+    "budget_exhausted": "El turno alcanzó su presupuesto de solicitudes o herramientas. No se realizarán más envíos en este turno.",
+    "image_invalid": "No pudimos validar la imagen recibida del proveedor API. No se generará otra automáticamente.",
+    "image_effort_unsupported": "Este carril de generación de imágenes no admite la intensidad configurada. Revisa la selección y sus opciones.",
+    "result_unknown": "No se conoce el resultado remoto de la solicitud API. No se repetirá durante su conciliación.",
+    "runtime_start_failed": "No pudimos iniciar el ejecutor API. Comprueba el estado antes de enviar una petición nueva.",
+    "acceptance_invalid": "La evidencia de esta capacidad API no es válida para la selección actual. Debe verificarse antes de utilizarla."
+  },
+  "dictation": {
+    "start": "Dictar mensaje",
+    "stop": "Terminar dictado",
+    "cancel": "Cancelar dictado",
+    "requesting": "Preparando dictado…",
+    "listening": "Escuchando · {{time}}",
+    "stopping": "Terminando dictado…",
+    "notice": "El navegador convierte tu voz en texto y puede usar su servicio de reconocimiento. Revisa el texto antes de enviarlo.",
+    "unsupported": "Este navegador no ofrece dictado por voz. Puedes escribir el mensaje.",
+    "activity_label": "Actividad del micrófono",
+    "activity_waiting": "Esperando acceso al micrófono",
+    "activity_unavailable": "No se pudo mostrar la actividad del micrófono.",
+    "errors": {
+      "dictation_unavailable": "El dictado no está disponible en este navegador.",
+      "microphone_denied": "No se concedió acceso al micrófono. Revisa el permiso del navegador.",
+      "dictation_network": "El servicio de dictado del navegador no pudo conectarse. Conservamos el texto obtenido.",
+      "dictation_service_unavailable": "El servicio de dictado no está disponible en este navegador o está deshabilitado.",
+      "dictation_no_speech": "No se reconoció voz. Puedes volver a dictar.",
+      "dictation_language_unsupported": "El servicio del navegador no admite el idioma seleccionado para el dictado.",
+      "dictation_audio_capture": "No se pudo acceder a una entrada de audio para dictar.",
+      "dictation_failed": "No se pudo completar el dictado. Conservamos el texto obtenido.",
+      "text_too_large": "El dictado se detuvo al alcanzar el límite de texto del mensaje. Conservamos lo escrito.",
+      "dictation_stop_timeout": "El navegador no confirmó el cierre del dictado. Se detuvo la captura local y conservamos el texto obtenido."
+    }
+  },
+  "composer": {
+    "actions": "Añadir al mensaje",
+    "attach_file": "Adjuntar archivo",
+    "title": "Escribir un mensaje",
+    "placeholder": "Escribe a Nodia AI…",
+    "context": "Contexto",
+    "context_detail": "Nodia AI utiliza el historial autorizado de esta conversación y los archivos admitidos del mensaje. Revisa los adjuntos antes de enviarlos.",
+    "selection_scope": "La selección se aplica a los próximos mensajes. Los mensajes anteriores conservan su ejecución original.",
+    "files_one": "{{count}} archivo",
+    "files_other": "{{count}} archivos",
+    "files_ready": "Listos para enviar",
+    "files_review": "Revisar adjuntos",
+    "recording": "Grabando · {{time}}",
+    "unassigned_effort": "Sin asignar"
+  },
+  "markdown": {
+    "table_region": "Tabla del mensaje",
+    "code_region": "Bloque de código del mensaje"
   }
 }

@@ -1,0 +1,366 @@
+{
+  "QA": {
+    "PDFs": [
+      {
+        "bytes": 32129,
+        "has_details": false,
+        "height_mm": 69.51132980555555,
+        "native_print_calls": 0,
+        "pages": 1,
+        "path": "C:\\Users\\Oscar\\Desktop\\Nodia\\output\\pdf\\pos-r24-vale-80mm.pdf",
+        "render_verified": "PNG150dpi visual inspection; no clipping, overlap, missing glyphs",
+        "sha256": "25412bde6a5b8d0a69626856f749d486d4b33d123961a9fe0a9c1787bd74e079",
+        "text_matches_saved_receipt": true,
+        "width_mm": 80.09466313888888
+      },
+      {
+        "bytes": 42660,
+        "has_details": true,
+        "height_mm": 98.46733333333333,
+        "native_print_calls": 0,
+        "pages": 1,
+        "path": "C:\\Users\\Oscar\\Desktop\\Nodia\\output\\pdf\\pos-r24-detalle-80mm.pdf",
+        "render_verified": "PNG150dpi visual inspection; no clipping, overlap, missing glyphs",
+        "sha256": "3a30365816bd0d294842d2a845f5b50e90382f635734fae6a2ed8ae8182c6a0c",
+        "text_matches_saved_receipt": true,
+        "width_mm": 80.09466313888888
+      }
+    ],
+    "languages": [
+      "es-dark",
+      "en-light"
+    ],
+    "native_print_calls": 0,
+    "outcomes": {
+      "checkout_manual": "override900 expected_catalog1200 product_version2 quantity1.125 -> total1013, source manual",
+      "confirmation": "detailed preview always, no switch; Cancel and Confirm plus two explicit print actions",
+      "dirty_exit": "cancel preserves both carts; confirm discards all, return emptySale1; two empty tabs leave without dialog/reset",
+      "geometry": "same editor node/value/focus on all width transitions; iconbuttons44x44; mainConfirm56; no horizontal clipping/overlap; preview amounts17px/total18px; actual print amounts16px/total17px",
+      "leading_period": "select1 -> dot0. -> .125 -> rescan1.125",
+      "list200": "font36px, no document overflow; maxscroll at320 puts qty bottom797 below nav top905 (accessible)",
+      "local_price": "500 leaves total563 with zero HTTP calls",
+      "native_print_calls": 0,
+      "permanent_price": "first synthetic400 preserves editor1200/cart563; explicit retry patch sale1200/gross1000/net840/offerenabledfalse/expected_version1 -> version2/cart1350",
+      "print_documents_per_language": 4,
+      "print_persistence_order": "each checkout200 precedes matching print; two reprints use GET only",
+      "print_rows_per_language": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "real_auth_calls": 0,
+      "real_backend_mutations": 0,
+      "saved_reprint_identity": "sameSale1 id/date/total/payment retained between vale and detailed",
+      "second_checkout": "human current-price review removes old version; quantity1/catalog1200/version2 -> total1200",
+      "synthetic_checkout_count_per_language": 2,
+      "synthetic_product_put_count_per_language": 2,
+      "tab_alternation": "line1.125 and override500 preserved",
+      "vm_calls": 0
+    },
+    "receipt": "ops/lab/artifacts/business-pos-usability-20261031-r24/qa/price-print-qa-final-r01.json",
+    "root_visual_inspection": "Both rendered receipt PDFs inspected: no overlap, missing glyphs or clipping; amount hierarchy visible",
+    "screenshots": {
+      "POS": 24,
+      "product_columns": 14
+    },
+    "status": "passed",
+    "widths": [
+      320,
+      390,
+      600,
+      1569
+    ]
+  },
+  "SQL_integration": {
+    "checks": [
+      "migration changes only the price CHECKs and preserves legacy rows, receipts and replay hashes",
+      "rollback refuses manual history after a draft has removed every current manual item",
+      "concurrent identical manual checkouts commit one rounded sale, immutable audit and exact receipt",
+      "a different manual price with the same request identity conflicts without another sale",
+      "zero manual lines remain valid alongside a positive line but an all-zero checkout rolls back",
+      "manual draft partial updates and confirmation retain the original catalog observation and final manual price",
+      "invalid prices and stale observations cannot leave a sale, receipt or audit side effect",
+      "SQL rejects inconsistent regular/offer claims, missing enabled offers and unknown manual sources",
+      "reads and reports retain manual price provenance and aggregate the final recorded amounts",
+      "changed catalog versions block manual draft confirmation without refreshing its chosen sale price",
+      "manual rollback remains blocked and preserves its ledger and domain data"
+    ],
+    "disposable_migrations": 38,
+    "owned_container_removed": true,
+    "providers_called": 0,
+    "status": "passed",
+    "usage_database_used": false
+  },
+  "cleanup": {
+    "Vite_identity_checked_and_stopped": true,
+    "own_CLI_sessions_closed": true,
+    "own_QA_Vite_pid": 163428,
+    "user_tabs_and_tunnel_preserved": true
+  },
+  "date": "2026-10-31",
+  "delivery_catalogs": [
+    {
+      "bytes": 879387,
+      "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/server/catalog-delivery.json",
+      "sha256": "5ecdeddd78cfbe69ab8346a9acbdeeac4805101f56d90021c1d8431947a97328"
+    },
+    {
+      "bytes": 8310,
+      "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/client/catalog-delivery-r01.json",
+      "sha256": "dadc83d8ca4c8ef46779d452cd150fe1674ece3f2fdfa4fcea61eab3149fb813"
+    },
+    {
+      "bytes": 2687,
+      "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/qa/catalog.json",
+      "sha256": "9524de410897bb27d81175514bad3105ef3594d024946f20b776c793d117a77f"
+    }
+  ],
+  "deployment": {
+    "AI_inferences": 0,
+    "backups": {
+      "configuration": "encrypted and exact local copy verified",
+      "post_DB": "encrypted external HEAD+GET verified, journal unconfirmed0, retries0",
+      "pre_DB": "encrypted external HEAD+GET verified, journal unconfirmed0, retries0"
+    },
+    "client_index_sha256": "7c4de199396311c23a10bacb647d86d228b684d39f0a29ca094f0af83e65c7b0",
+    "client_manifest_sha256": "4a8b3461e094d62e48b9c069d45811f140f130d93a92c9763320a8c1a819e27e",
+    "client_release": "/opt/nodia/releases/nodia-client-business-pos-usability-20261031-r24",
+    "client_static_files": 173,
+    "consecutive_correct_SPA_rounds": 3,
+    "current_assets": 169,
+    "local_tunnel_index_verified": true,
+    "migration": {
+      "all_domain_rows_preserved": true,
+      "all_existing_columns_and_indexes_preserved": true,
+      "applied": "AddManualSaleLinePrices1793450000000",
+      "domain_tables": 69,
+      "ledger_after": 38,
+      "ledger_before": 37,
+      "only_two_checks_replaced": true,
+      "tables": 70
+    },
+    "nginx_reloads": 1,
+    "nginx_sha256": "9d5fe83537aa644b61691affe65f55e51c598cf0465bb4ec8a5a74f17714e059",
+    "previous_assets": 46,
+    "protected_runtime_preserved": true,
+    "real_commercial_mutations": 0,
+    "server_manifest_sha256": "30fc573803727d41ffd61ee26c2448387c0d4d16bc88e7b608dd230e3d2b793c",
+    "server_pids": {
+      "nodia-ai-worker.service": "3044841",
+      "nodia-api.service": "3044840"
+    },
+    "server_release": "/opt/nodia/releases/nodia-server-business-pos-usability-20261031-r24",
+    "source_freeze": {
+      "added": 7,
+      "changed": 25,
+      "fingerprint_sha256": "940ec20bf1ab56d8cc9caaafb768d763c111d8d20969f00ae0803533fa783b17",
+      "inputs": 1274,
+      "paths": 32,
+      "removed": 0
+    },
+    "stable_seconds": 31.94727577501908,
+    "status": "completed"
+  },
+  "final_quality_receipt": {
+    "bytes": 5850,
+    "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/quality/verification.json",
+    "sha256": "7dfad0599a83ad53f62c2179c5a0787f964ddce916caa7a5c252258680962c31"
+  },
+  "knowledge": {
+    "approved_cohort_aggregate_sha256": "ed28119a33cf89230c5ecbaef1c371fe21b2f6e709b8c71fdf47ce755dbb3373",
+    "approved_markdown_bytes_preserved": 44,
+    "authoring_checks": {
+      "compiler_pin_tests": 58,
+      "current_knowledge_check": "passed",
+      "knowledge_check": "passed",
+      "prepare_chat": "passed",
+      "prior_current_check": "58 compiler/pin tests passed; checker refused stale local dist pin; official context:build refreshed derived pin, then entire command passed; VM untouched"
+    },
+    "authoring_corpus_deployed": false,
+    "authoring_excluded": 35,
+    "authoring_release_id": "1bb6e3bfc9685b7481e41a13ac242585d819b48f2bdc8460d053ca82f6e89240",
+    "authoring_sources": 79,
+    "capabilities": 153,
+    "catalog": "nodia-ai-business-pos/4",
+    "documents": 44,
+    "drafts_remain_unregistered": true,
+    "fragments": 46,
+    "local_links_checked": 1625,
+    "new_approvals": 0,
+    "new_markdown_bodies_published": 0,
+    "runtime_excluded": 27,
+    "runtime_release_id": "f89593b1da6ae409391e178c9719817f21dc85aac1032ae482ffa0c60ebf4024",
+    "runtime_sources": 71,
+    "sales_read_tools": [
+      "nodia_sales_get",
+      "nodia_sales_list"
+    ],
+    "sales_write_tools": 0,
+    "schema": "sales-read/3",
+    "technical_document_source_hash_repins": 4
+  },
+  "limits": [
+    "No physical phone or native printer/spooler/cutter qualified.",
+    "No real commercial sale/product mutation or new AI inference performed for QA.",
+    "Chrome kiosk preparation predates R24; Opera and physical80mm acceptance remain pending.",
+    "No document/ADR approval or draft publication inferred from implementation."
+  ],
+  "local_validation": {
+    "client_global_final": {
+      "files": 296,
+      "seconds": 432.49,
+      "status": "passed",
+      "tests": 2479,
+      "workers": 4
+    },
+    "client_global_original": {
+      "failed": 1,
+      "passed": 2477,
+      "reason": "Unchanged NodiaAI invoice OCR readiness assertion timed out; exact intermittent cause unproven",
+      "seconds": 421.87
+    },
+    "controlled_builds": {
+      "both_exit_code": 0,
+      "client_seconds": 44.523,
+      "server_seconds": 86.83
+    },
+    "global_checks": "passed on final frozen scope; original failed attempt preserved",
+    "global_types_and_lint": "passed for Client and Server",
+    "products_columns_QA": "ES-dark/EN-light at 320/390/600/1569 passed; 44px controls and preserved identity/state/queries",
+    "products_columns_focals": {
+      "files": 1,
+      "seconds": 17.96,
+      "status": "passed",
+      "tests": 18
+    },
+    "root_price_and_exit_unit_checks": {
+      "final_parent_integration": {
+        "files": 2,
+        "seconds": 13.66,
+        "status": "passed",
+        "tests": 20
+      },
+      "independent_source_audit": "PASS; no actionable findings"
+    },
+    "server_focals": {
+      "files": 4,
+      "seconds": 2.51,
+      "status": "passed",
+      "tests": 93
+    },
+    "server_global": {
+      "files": 317,
+      "seconds": 308.6,
+      "skipped": 1,
+      "status": "passed",
+      "tests": 5773
+    },
+    "server_typecheck": "passed",
+    "unchanged_OCR_focal": {
+      "files": 1,
+      "seconds": 79.84,
+      "status": "passed",
+      "tests": 59
+    }
+  },
+  "preserved_attempts": [
+    {
+      "phase": "server_stage_R01",
+      "result": "disk_reserve_low before candidate/state; no service or DB changes"
+    },
+    {
+      "phase": "cache_maintenance_R01",
+      "result": "initial inspector refused existing OPS before apt clean; zero cache mutation"
+    },
+    {
+      "phase": "cache_maintenance_R02",
+      "result": "apt-get clean recovered367788032bytes; packages/app/runtime preserved"
+    },
+    {
+      "phase": "client_activation_R01",
+      "result": "protected_runtime_binding_changed before activation-state/backup/reload; exact differing field not captured"
+    },
+    {
+      "phase": "client_reconciliation",
+      "result": "original Nginx, state/backup absent, exact current runtime in3rounds; no write intent consumed"
+    },
+    {
+      "phase": "client_activation_R02",
+      "result": "explicit action with unchanged pins/guards succeeded; one reload, no rollback"
+    },
+    {
+      "phase": "local_harness",
+      "result": [
+        "Earlier failed harness attempts are preserved: premature rescan assertion, mojibake ES selector, exact URL mismatch, post-navigation timing. Final assertions await response/selected tab and passed without production changes.",
+        "PDF rendering serializes actual document outerHTML with its original HTML5 doctype; page dimensions chosen by80mm width and measured content height, no replacement template."
+      ]
+    }
+  ],
+  "receipt_paths": [
+    {
+      "bytes": 5475,
+      "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/server/stage-state.json",
+      "sha256": "72db4be0684658626d46fb8b4def000d0ff1ed6de9903a7a71e27cb47254e69d"
+    },
+    {
+      "bytes": 4786,
+      "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/server/isolated-sql-state.json",
+      "sha256": "1036de6b7c082392a9deb4df656aa3a9ee829b52c1d47ce6c0d19dd21218febb"
+    },
+    {
+      "bytes": 102238,
+      "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/server/adoption-state-final.json",
+      "sha256": "d3961e7d5e9d375971e77f199ca06b4388357fac4a1043c455233af56230da74"
+    },
+    {
+      "bytes": 974,
+      "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/server/prebackup-verified.json",
+      "sha256": "c3ae2f66166f5618cbbcd157c73822f3c906af9d7de2880593f20cefd0ceed2a"
+    },
+    {
+      "bytes": 6528,
+      "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/server/configuration-backup.json",
+      "sha256": "154d84ba0766b4284e0620f79b1b3f052c50ca518306b9e79b4cbdf54331e775"
+    },
+    {
+      "bytes": 974,
+      "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/server/postbackup-verified.json",
+      "sha256": "15c3f2223a45977b053dd4e2637a4a9d4de1c4a5e6cb8b316e00bac65125149c"
+    },
+    {
+      "bytes": 12892,
+      "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/client/activation-state-final.json",
+      "sha256": "7b22aba3133ba8b89637035c9fc243603e37833ad927018fc7630b961f276791"
+    },
+    {
+      "bytes": 723,
+      "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/client/reconciliation-observed-root-r01.json",
+      "sha256": "9e099807a68af21315a10893b093c472e54880d8ad452c7e3cb616b977a5f269"
+    },
+    {
+      "bytes": 283,
+      "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/client/local-tunnel-observed-root-r01.json",
+      "sha256": "393d987dbbe70e3c19033be7a69fd819d2738f07a40a283f422960b907c1cfbe"
+    },
+    {
+      "bytes": 11887,
+      "path": "ops/lab/artifacts/business-pos-usability-20261031-r24/client/source-scope-r01.json",
+      "sha256": "bc480dff1935f02f5be34cf76751a96f10ea03780adf8c4a1b1ca17d97beb66d"
+    }
+  ],
+  "schema_version": 1,
+  "scope": [
+    "Initial decimal shortcut . to 0.",
+    "Explicit manual per-sale unit price with immutable original catalog snapshots",
+    "Permanent product price through existing version-checked product mutation",
+    "Larger receipt amounts and explicit confirm-and-print slip/detail actions",
+    "Confirmed discard when leaving POS; pending commercial intentions cannot be discarded",
+    "Default-collapsed availability, activity and last-updated product columns"
+  ],
+  "status": "implemented_tested_and_deployed_in_usage_VM_physical_acceptance_pending",
+  "user_decisions": {
+    "exit_POS": "Confirm discarding local sales when leaving POS; preserve carts when switching Sale1/Sale2; return to empty Sale1 after exit.",
+    "permanent_price": "Save regular product price, disable offer and derive costs with existing ProductModal pricing assistance."
+  }
+}

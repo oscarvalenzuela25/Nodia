@@ -6,7 +6,6 @@ import {
   type AiProviderSecureReference,
 } from './manage-ai-provider-secure-session.use-case.js';
 import { configurationFixture } from '../../../test/fixtures/ai-provider-configuration.fixture.js';
-import type { ManageGeminiLoginUseCase } from './manage-gemini-login.use-case.js';
 import type { ManageGeminiAgenticLoginUseCase } from './manage-gemini-agentic-login.use-case.js';
 import type { ManageCodexSessionUseCase } from './manage-codex-session.use-case.js';
 import type { SyncAiProviderModelsUseCase } from './sync-ai-provider-models.use-case.js';
@@ -15,22 +14,8 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
   const fixture = () => {
     const f = configurationFixture();
     f.existing.use_api_key = true;
-    f.existing.use_token_plan_agentic = true;
+    f.existing.use_agentic = true;
     const native = { id: 'a'.repeat(32), state: 'running' };
-    const web = {
-      start: vi.fn(async () => native),
-      status: vi.fn(async () => native),
-      cancel: vi.fn(async () => ({ ...native, state: 'cancelled' })),
-      frame: vi.fn(async () => ({
-        ready: false,
-        frame_id: null,
-        image: null,
-        width: 1280,
-        height: 850,
-      })),
-      input: vi.fn(async () => native),
-      disconnect: vi.fn(async () => ({ status: 'disconnected' })),
-    };
     const agentic = {
       start: vi.fn(async () => native),
       status: vi.fn(async () => native),
@@ -70,7 +55,7 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
     const ref: AiProviderSecureReference = {
       provider_id: f.existing.id,
       provider_key: 'gemini',
-      mode: 'token_plan_web',
+      mode: 'agentic',
       job_id: native.id,
     };
     const update = vi.fn(async () => undefined);
@@ -81,14 +66,9 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
         ...native,
         id: id.replaceAll('-', ''),
       })),
-      getInteractiveLoginStatus: web.status,
-      cancelInteractiveLogin: web.cancel,
-      getInteractiveLoginFrame: web.frame,
-      sendInteractiveLoginInput: web.input,
     };
     const uc = new ManageAiProviderSecureSessionUseCase(
       f.source,
-      web as unknown as ManageGeminiLoginUseCase,
       agentic as unknown as ManageGeminiAgenticLoginUseCase,
       codex as unknown as ManageCodexSessionUseCase,
       sync as unknown as SyncAiProviderModelsUseCase,
@@ -98,7 +78,6 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
       ...f,
       native,
       codexNative,
-      web,
       agentic,
       codex,
       sync,
@@ -115,12 +94,12 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
       f.manager,
       f.actor,
       f.existing.id,
-      'token_plan_web',
+      'agentic',
     );
     expect(result).toEqual({
       id: f.existing.id,
       key: 'gemini',
-      mode: 'token_plan_web',
+      mode: 'agentic',
     });
     expect(f.source.transaction).not.toHaveBeenCalled();
     expect(JSON.stringify(result)).not.toContain('private');
@@ -138,14 +117,14 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
         sqlOpen = false;
       }
     });
-    f.web.start.mockImplementationOnce(async () => {
+    f.agentic.start.mockImplementationOnce(async () => {
       expect(sqlOpen).toBe(false);
       return f.native;
     });
-    const result = await f.uc.start(f.existing.id, 'token_plan_web', f.actor);
+    const result = await f.uc.start(f.existing.id, 'agentic', f.actor);
     expect(result.state).toBe('pending');
     expect(result.reference).toEqual(f.ref);
-    expect(f.web.start).toHaveBeenCalledWith(f.actor.userId);
+    expect(f.agentic.start).toHaveBeenCalledWith(f.actor.userId);
   });
   it('routes Gemini Agentic independently and keeps the native URL in human response only', async () => {
     const f = fixture();
@@ -154,13 +133,9 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
       state: 'waiting_code',
       authorization_url: 'synthetic-human-only',
     } as never);
-    const result = await f.uc.start(
-      f.existing.id,
-      'token_plan_agentic',
-      f.actor,
-    );
+    const result = await f.uc.start(f.existing.id, 'agentic', f.actor);
     expect(result.human.kind).toBe('gemini_agentic');
-    expect(f.web.start).not.toHaveBeenCalled();
+    expect(f.codex.start).not.toHaveBeenCalled();
     expect(JSON.stringify(result.reference)).not.toContain(
       'synthetic-human-only',
     );
@@ -168,11 +143,7 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
   it('routes Codex to the exact provider id and actor', async () => {
     const f = fixture();
     f.catalog.key = 'openai';
-    const result = await f.uc.start(
-      f.existing.id,
-      'token_plan_agentic',
-      f.actor,
-    );
+    const result = await f.uc.start(f.existing.id, 'agentic', f.actor);
     expect(result.human.kind).toBe('codex');
     expect(f.codex.start).toHaveBeenCalledWith(f.existing.id, f.actor.userId);
   });
@@ -180,7 +151,7 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
     'maps actual observed %s without client asserted success',
     async (state) => {
       const f = fixture();
-      f.web.status.mockResolvedValueOnce({ ...f.native, state });
+      f.agentic.status.mockResolvedValueOnce({ ...f.native, state });
       const result = await f.uc.status(f.ref, f.actor);
       expect(result.state).toBe(
         state === 'succeeded'
@@ -194,12 +165,12 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
   it('refuses network IO under the coordinator transaction', async () => {
     const f = fixture();
     await expect(
-      f.uc.start(f.existing.id, 'token_plan_web', {
+      f.uc.start(f.existing.id, 'agentic', {
         ...f.actor,
         transaction: f.manager,
       }),
     ).rejects.toThrow('external_transaction_forbidden');
-    expect(f.web.start).not.toHaveBeenCalled();
+    expect(f.agentic.start).not.toHaveBeenCalled();
   });
   it('revalidates permission and current session before every native action', async () => {
     const f = fixture();
@@ -207,70 +178,59 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
     await expect(f.uc.status(f.ref, f.actor)).rejects.toThrow(
       'session_expired',
     );
-    expect(f.web.status).not.toHaveBeenCalled();
+    expect(f.agentic.status).not.toHaveBeenCalled();
     f.setSession(true);
     f.setAdmin(false);
-    f.setPermission(false);
+    f.setModule(false);
     await expect(f.uc.cancel(f.ref, f.actor)).rejects.toThrow(
-      'manage_required',
+      'core:module_access_required',
     );
-    expect(f.web.cancel).not.toHaveBeenCalled();
+    expect(f.agentic.cancel).not.toHaveBeenCalled();
   });
-  it.each(['is_active', 'use_token_plan_web'])(
+  it.each(['is_active', 'use_agentic'])(
     'blocks a disabled connection flag %s before native IO',
     async (flag) => {
       const f = fixture();
       Object.assign(f.existing, { [flag]: false });
       await expect(
-        f.uc.start(f.existing.id, 'token_plan_web', f.actor),
+        f.uc.start(f.existing.id, 'agentic', f.actor),
       ).rejects.toThrow('channel_disabled');
-      expect(f.web.start).not.toHaveBeenCalled();
+      expect(f.agentic.start).not.toHaveBeenCalled();
     },
   );
   it('does not bypass native busy/quarantine or silently fall back', async () => {
     const f = fixture();
-    f.web.start.mockRejectedValueOnce(new Error('runtime_busy'));
-    await expect(
-      f.uc.start(f.existing.id, 'token_plan_web', f.actor),
-    ).rejects.toThrow('runtime_busy');
-    expect(f.web.start).toHaveBeenCalledOnce();
-    expect(f.agentic.start).not.toHaveBeenCalled();
+    f.agentic.start.mockRejectedValueOnce(new Error('runtime_busy'));
+    await expect(f.uc.start(f.existing.id, 'agentic', f.actor)).rejects.toThrow(
+      'runtime_busy',
+    );
+    expect(f.agentic.start).toHaveBeenCalledOnce();
     expect(f.codex.start).not.toHaveBeenCalled();
   });
   it('allows observing and cancelling a known login after the connection or channel is disabled', async () => {
     const f = fixture();
     f.existing.is_active = false;
-    f.existing.use_token_plan_web = false;
-    f.catalog.can_use_token_plan_web = false;
+    f.existing.use_agentic = false;
+    f.catalog.can_use_agentic = false;
     await expect(f.uc.status(f.ref, f.actor)).resolves.toMatchObject({
       state: 'pending',
     });
     await expect(f.uc.cancel(f.ref, f.actor)).resolves.toMatchObject({
       state: 'cancelled',
     });
-    await expect(
-      f.uc.logout(f.existing.id, 'token_plan_web', f.actor),
-    ).resolves.toEqual({ disconnected: true });
-    await expect(
-      f.uc.start(f.existing.id, 'token_plan_web', f.actor),
-    ).rejects.toThrow('channel_disabled');
-    await expect(
-      f.uc.input(
-        f.ref,
-        { frame_id: 'a'.repeat(32), action: 'text', text: 'Synthetic' },
-        f.actor,
-      ),
-    ).rejects.toThrow('channel_disabled');
-    expect(f.web.start).not.toHaveBeenCalled();
+    await expect(f.uc.start(f.existing.id, 'agentic', f.actor)).rejects.toThrow(
+      'channel_disabled',
+    );
+    expect(f.agentic.start).not.toHaveBeenCalled();
   });
   it('disabled channel cleanup still requires current permission and the exact provider reference', async () => {
     const f = fixture();
-    f.existing.use_token_plan_web = false;
+    f.existing.use_agentic = false;
     f.setSession(false);
     await expect(f.uc.cancel(f.ref, f.actor)).rejects.toThrow(
       'session_expired',
     );
-    expect(f.direct.cancelInteractiveLogin).not.toHaveBeenCalled();
+    expect(f.agentic.cancel).not.toHaveBeenCalled();
   });
   it('does not resend a start with unknown result', async () => {
     const f = fixture();
@@ -281,7 +241,7 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
     await expect(
       f.uc.start(
         f.existing.id,
-        'token_plan_agentic',
+        'agentic',
         f.actor,
         f.actor.sessionId,
         expiresAt,
@@ -303,7 +263,7 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
     const target = {
       provider_id: f.existing.id,
       provider_key: 'gemini' as const,
-      mode: 'token_plan_web' as const,
+      mode: 'agentic' as const,
       request_id: f.actor.sessionId,
     };
     await expect(
@@ -314,14 +274,14 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
     });
     await f.uc.cancelRequest(target, f.actor.userId);
     expect(f.direct.durableLoginRequest).toHaveBeenLastCalledWith(
-      'web',
+      'agentic',
       'cancel',
       target.request_id,
       target.provider_id,
       f.actor.userId,
     );
     expect(f.source.transaction).not.toHaveBeenCalled();
-    expect(f.web.start).not.toHaveBeenCalled();
+    expect(f.agentic.start).not.toHaveBeenCalled();
   });
   it('does not reinterpret missing native proof as terminal cancellation', async () => {
     const f = fixture();
@@ -333,26 +293,26 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
         {
           provider_id: f.existing.id,
           provider_key: 'gemini',
-          mode: 'token_plan_agentic',
+          mode: 'agentic',
           request_id: f.actor.sessionId,
         },
         f.actor.userId,
       ),
     ).rejects.toThrow('native unknown');
     expect(f.agentic.start).not.toHaveBeenCalled();
-    expect(f.web.disconnect).not.toHaveBeenCalled();
+    expect(f.codex.logout).not.toHaveBeenCalled();
   });
   it('forwards a post-commit acknowledgement without starting login or asserting a new result', async () => {
     const f = fixture();
     const target = {
       provider_id: f.existing.id,
       provider_key: 'gemini' as const,
-      mode: 'token_plan_web' as const,
+      mode: 'agentic' as const,
       request_id: f.actor.sessionId,
     };
     await f.uc.acknowledgeRequest(target, f.actor.userId);
     expect(f.direct.acknowledgeLoginRequest).toHaveBeenLastCalledWith(
-      'web',
+      'agentic',
       target.request_id,
       target.provider_id,
       f.actor.userId,
@@ -363,7 +323,7 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
     await expect(
       f.uc.acknowledgeRequest(target, f.actor.userId),
     ).rejects.toThrow('ACK response lost');
-    expect(f.web.start).not.toHaveBeenCalled();
+    expect(f.agentic.start).not.toHaveBeenCalled();
   });
   it('rejects expired or missing native deadlines before dispatch and binds successful starts to the stable request id', async () => {
     const f = fixture();
@@ -376,7 +336,7 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
       await expect(
         f.uc.start(
           f.existing.id,
-          'token_plan_web',
+          'agentic',
           f.actor,
           f.actor.sessionId,
           deadline,
@@ -388,7 +348,7 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
     await expect(
       f.uc.start(
         f.existing.id,
-        'token_plan_web',
+        'agentic',
         f.actor,
         f.actor.sessionId,
         new Date(Date.now() + 290_000).toISOString(),
@@ -400,12 +360,12 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
     const target = {
       provider_id: f.existing.id,
       provider_key: 'gemini' as const,
-      mode: 'token_plan_web' as const,
+      mode: 'agentic' as const,
       request_id: f.actor.sessionId,
     };
     for (const invalid of [
       { ...target, request_id: '../unsafe' },
-      { ...target, provider_key: 'openai' },
+      { ...target, provider_key: 'google' },
       { ...target, extra: 'denied' },
     ]) {
       await expect(
@@ -421,59 +381,22 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
       state: 'cancelled',
     });
     expect(f.source.transaction).not.toHaveBeenCalled();
-    expect(f.web.cancel).toHaveBeenCalledWith(f.ref.job_id, f.actor.userId);
-    expect(f.web.start).not.toHaveBeenCalled();
-    expect(f.web.disconnect).not.toHaveBeenCalled();
+    expect(f.agentic.cancel).toHaveBeenCalledWith(f.ref.job_id, f.actor.userId);
+    expect(f.agentic.start).not.toHaveBeenCalled();
+    expect(f.codex.logout).not.toHaveBeenCalled();
   });
-  it('Web observations and cleanup survive a Node process with no local login owner map', async () => {
+  it('keeps Agentic observation and cleanup bound to native ownership', async () => {
     const f = fixture();
-    f.web.status = vi.fn(async () => {
-      throw new Error('Node owner map absent');
-    });
-    f.web.cancel = vi.fn(async () => {
-      throw new Error('Node owner map absent');
-    });
-    f.web.frame = vi.fn(async () => {
-      throw new Error('Node owner map absent');
-    });
-    f.web.input = vi.fn(async () => {
-      throw new Error('Node owner map absent');
-    });
-    await expect(f.uc.status(f.ref, f.actor)).resolves.toMatchObject({
-      state: 'pending',
-    });
-    await f.uc.frame(f.ref, f.actor);
-    await f.uc.input(
-      f.ref,
-      {
-        frame_id: 'a'.repeat(32),
-        action: 'text',
-        text: 'Synthetic viewer input',
-      },
-      f.actor,
-    );
-    await expect(f.uc.cleanup(f.ref, f.actor.userId)).resolves.toMatchObject({
-      state: 'cancelled',
-    });
-    expect(f.web.status).not.toHaveBeenCalled();
-    expect(f.web.cancel).not.toHaveBeenCalled();
-    expect(f.web.frame).not.toHaveBeenCalled();
-    expect(f.web.input).not.toHaveBeenCalled();
-    expect(f.direct.getInteractiveLoginStatus).toHaveBeenCalledWith(
-      f.ref.job_id,
-      f.actor.userId,
-    );
+    await f.uc.status(f.ref, f.actor);
+    await f.uc.cleanup(f.ref, f.actor.userId);
+    expect(f.agentic.status).toHaveBeenCalledWith(f.ref.job_id, f.actor.userId);
+    expect(f.agentic.cancel).toHaveBeenCalledWith(f.ref.job_id, f.actor.userId);
+    expect(f.agentic.start).not.toHaveBeenCalled();
   });
-  it('Web direct input still enforces the native bounded viewer contract before transport', async () => {
+  it('has no browser viewer transport in the Agentic session manager', () => {
     const f = fixture();
-    await expect(
-      f.uc.input(
-        f.ref,
-        { frame_id: 'a'.repeat(32), action: 'text', text: 'x'.repeat(2049) },
-        f.actor,
-      ),
-    ).rejects.toThrow('visor');
-    expect(f.direct.sendInteractiveLoginInput).not.toHaveBeenCalled();
+    expect(f.uc).not.toHaveProperty('frame');
+    expect(f.uc).not.toHaveProperty('input');
   });
   it('does not claim Codex cleanup succeeded when a restarted process no longer owns the native job', async () => {
     const f = fixture();
@@ -485,7 +408,7 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
         {
           ...f.ref,
           provider_key: 'openai',
-          mode: 'token_plan_agentic',
+          mode: 'agentic',
           job_id: f.codexNative.id,
         },
         f.actor.userId,
@@ -500,7 +423,7 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
       f.uc.cleanup({ ...f.ref, mode: 'api_key' }, f.actor.userId),
     ).rejects.toThrow('invalid_login_reference');
     await expect(f.uc.cleanup(f.ref, '0')).rejects.toThrow('invalid_actor');
-    expect(f.web.cancel).not.toHaveBeenCalled();
+    expect(f.agentic.cancel).not.toHaveBeenCalled();
   });
   it('rejects malformed or cross-provider native references before status', async () => {
     const f = fixture();
@@ -511,79 +434,70 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
       await expect(f.uc.status(ref, f.actor)).rejects.toThrow(
         'invalid_login_reference',
       );
-    expect(f.web.status).not.toHaveBeenCalled();
+    expect(f.agentic.status).not.toHaveBeenCalled();
   });
   it('rejects native job identity or state changes rather than reporting success', async () => {
     const f = fixture();
-    f.web.status.mockResolvedValueOnce({
+    f.agentic.status.mockResolvedValueOnce({
       id: 'b'.repeat(32),
       state: 'succeeded',
     });
     await expect(f.uc.status(f.ref, f.actor)).rejects.toThrow(
       'invalid_login_observation',
     );
-    f.web.status.mockResolvedValueOnce({ ...f.native, state: 'invented' });
+    f.agentic.status.mockResolvedValueOnce({ ...f.native, state: 'invented' });
     await expect(f.uc.status(f.ref, f.actor)).rejects.toThrow(
       'invalid_login_observation',
     );
   });
   it('forwards secret authorization code only to the native Agentic input', async () => {
     const f = fixture();
-    const ref = { ...f.ref, mode: 'token_plan_agentic' as const };
+    const ref = { ...f.ref, mode: 'agentic' as const };
     await f.uc.submitCode(ref, 'synthetic-secret-code', f.actor);
     expect(f.agentic.submit).toHaveBeenCalledWith(ref.job_id, f.actor.userId, {
       code: 'synthetic-secret-code',
     });
-    await expect(f.uc.submitCode(f.ref, 'synthetic', f.actor)).rejects.toThrow(
-      'code_unsupported',
-    );
-  });
-  it('uses native viewer frame and input and refuses Agentic browser emulation', async () => {
-    const f = fixture();
-    await f.uc.frame(f.ref, f.actor);
-    const command = {
-      frame_id: f.ref.job_id,
-      action: 'text' as const,
-      text: 'synthetic-input',
-    };
-    await f.uc.input(f.ref, command, f.actor);
-    expect(f.web.input).toHaveBeenCalledWith(
-      f.ref.job_id,
-      f.actor.userId,
-      command,
-    );
+    f.catalog.key = 'openai';
     await expect(
-      f.uc.frame({ ...f.ref, mode: 'token_plan_agentic' }, f.actor),
-    ).rejects.toThrow('viewer_unsupported');
+      f.uc.submitCode(
+        { ...f.ref, provider_key: 'openai', job_id: f.codexNative.id },
+        'synthetic',
+        f.actor,
+      ),
+    ).rejects.toThrow('code_unsupported');
+  });
+  it('rejects retired Web references before any session transport', async () => {
+    const f = fixture();
+    await expect(
+      f.uc.status({ ...f.ref, mode: 'token_plan_web' } as never, f.actor),
+    ).rejects.toThrow('invalid_mode');
+    expect(f.agentic.status).not.toHaveBeenCalled();
+    expect(f.codex.status).not.toHaveBeenCalled();
   });
   it('delegates actual ownership and TTL rejection instead of replacing the native job', async () => {
     const f = fixture();
-    f.web.status.mockRejectedValueOnce(
+    f.agentic.status.mockRejectedValueOnce(
       new Error('native job expired or other owner'),
     );
     await expect(f.uc.status(f.ref, f.actor)).rejects.toThrow(
       'expired or other owner',
     );
-    expect(f.web.start).not.toHaveBeenCalled();
+    expect(f.agentic.start).not.toHaveBeenCalled();
   });
   it('logs out only supported independent profiles', async () => {
     const f = fixture();
     await expect(
-      f.uc.logout(f.existing.id, 'token_plan_web', f.actor),
-    ).resolves.toEqual({ disconnected: true });
-    expect(f.web.disconnect).toHaveBeenCalledWith(f.actor.userId);
-    await expect(
-      f.uc.logout(f.existing.id, 'token_plan_agentic', f.actor),
+      f.uc.logout(f.existing.id, 'agentic', f.actor),
     ).rejects.toThrow('logout_unsupported');
     f.catalog.key = 'openai';
-    await f.uc.logout(f.existing.id, 'token_plan_agentic', f.actor);
+    await f.uc.logout(f.existing.id, 'agentic', f.actor);
     expect(f.codex.logout).toHaveBeenCalledWith(f.existing.id);
   });
   it('discovers outside SQL without persisting a remote snapshot prematurely', async () => {
     const f = fixture();
-    await f.uc.discover(f.existing.id, 'token_plan_web', f.actor);
+    await f.uc.discover(f.existing.id, 'agentic', f.actor);
     expect(f.sync.execute).toHaveBeenCalledWith(f.existing.id, {
-      mode: 'token_plan_web',
+      mode: 'agentic',
       persist: false,
     });
     expect(f.update).not.toHaveBeenCalled();
@@ -595,16 +509,14 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
       f.manager,
       f.actor,
       f.existing.id,
-      'token_plan_web',
+      'agentic',
       f.models,
     );
     expect(f.source.transaction).not.toHaveBeenCalled();
     const fields = f.update.mock.calls[0][1].fields;
     expect(fields.legacy).toEqual(previous.legacy);
-    expect(fields.token_plan_web.selected_model).toBe('synthetic-model');
-    expect(fields.token_plan_web.available_models[0].id).toBe(
-      'synthetic-discovered',
-    );
+    expect(fields.agentic.selected_model).toBe('synthetic-model');
+    expect(fields.agentic.available_models[0].id).toBe('synthetic-discovered');
   });
   it('revocation prevents persisting discovery even after remote work completed', async () => {
     const f = fixture();
@@ -614,7 +526,7 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
         f.manager,
         f.actor,
         f.existing.id,
-        'token_plan_web',
+        'agentic',
         f.models,
       ),
     ).rejects.toThrow('session_expired');
@@ -629,7 +541,7 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
           f.manager,
           f.actor,
           f.existing.id,
-          'token_plan_web',
+          'agentic',
           models as never,
         ),
       ).rejects.toThrow('invalid_models');
@@ -642,7 +554,7 @@ describe('ManageAiProviderSecureSessionUseCase', () => {
       await expect(
         f.uc.start(f.existing.id, mode as AiProviderSecureMode, f.actor),
       ).rejects.toThrow();
-      expect(f.web.start).not.toHaveBeenCalled();
+      expect(f.agentic.start).not.toHaveBeenCalled();
     },
   );
 });

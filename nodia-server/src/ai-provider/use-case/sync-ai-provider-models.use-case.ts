@@ -10,7 +10,6 @@ import { AiProviderService } from '../ai-provider.service.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
 import type { GeminiExecutionEngine } from '../../common/ai/ai.types.js';
 import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
-
 export interface DiscoveredModelInfo {
   id: string;
   name: string;
@@ -21,29 +20,28 @@ export interface DiscoveredModelInfo {
   isRecommended: boolean;
   role?: 'chat' | 'multimodal' | 'ocr';
 }
-
 export interface SyncModelsResult {
   providerId: string;
   providerName: string;
   currentSelectedModel: string | null;
   isSelectedModelAvailable: boolean;
   models: DiscoveredModelInfo[];
-  tokenPlan?: {
+  agenticPlan?: {
     tier: string;
     planLabel: string;
     authenticated: boolean;
   } | null;
 }
-
 @Injectable()
 export class SyncAiProviderModelsUseCase {
   constructor(
     private readonly aiProviderService: AiProviderService,
     private readonly geminiService: GeminiService,
-    @Optional() private readonly apiService?: ApiProviderService,
-    @Optional() private readonly codex?: CodexRuntimeService,
+    @Optional()
+    private readonly apiService?: ApiProviderService,
+    @Optional()
+    private readonly codex?: CodexRuntimeService,
   ) {}
-
   async execute(
     providerId: string,
     options?: {
@@ -59,46 +57,34 @@ export class SyncAiProviderModelsUseCase {
         `AiProvider with ID "${providerId}" not found`,
       );
     }
-
     const engineKey = (
       provider.catalog?.key ||
       provider.key ||
       ''
     ).toLowerCase();
     const configuredMode =
-      options?.mode || provider.default_mode || provider.mode || 'api_key';
-
-    const targetMode =
-      configuredMode === 'web_session' ? 'token_plan_web' : configuredMode;
-    if (
-      options?.engine &&
-      options.engine !==
-        (targetMode === 'token_plan_agentic' ? 'agentic' : 'web')
-    ) {
+      options?.mode ?? provider.default_mode ?? provider.mode;
+    if (!configuredMode || !['agentic', 'api_key'].includes(configuredMode))
+      throw new BadRequestException('ai_provider:mode_required');
+    const targetMode = configuredMode;
+    if (options?.engine && options.engine !== 'agentic') {
       throw new BadRequestException(
         'El motor solicitado no corresponde al modo de sesión.',
       );
     }
     const targetEngine: GeminiExecutionEngine | undefined =
       options?.engine ||
-      (targetMode === 'token_plan_agentic'
+      (targetMode === 'agentic'
         ? 'agentic'
-        : targetMode === 'token_plan_web'
-          ? 'web'
-          : (provider.fields?.engine as GeminiExecutionEngine) || undefined);
-
+        : (provider.fields?.engine as GeminiExecutionEngine) || undefined);
     const modeFields =
       (provider.fields?.[targetMode] as Record<string, any>) || {};
     const hasAnyModeScoped =
-      Boolean(provider.fields?.token_plan_agentic) ||
-      Boolean(provider.fields?.token_plan_web) ||
-      Boolean(provider.fields?.api_key);
-
+      Boolean(provider.fields?.agentic) || Boolean(provider.fields?.api_key);
     const currentSelectedModel =
       modeFields.selected_model ||
       (!hasAnyModeScoped ? provider.fields?.selected_model : null) ||
       null;
-
     if (targetMode === 'api_key') {
       if (
         options?.engine ||
@@ -136,18 +122,18 @@ export class SyncAiProviderModelsUseCase {
           (model) => model.id === currentSelectedModel,
         ),
         models,
-        tokenPlan: null,
+        agenticPlan: null,
       };
     }
-    if (!['token_plan_web', 'token_plan_agentic'].includes(targetMode))
+    if (!['agentic'].includes(targetMode))
       throw new BadRequestException('Modo de sesión inválido.');
-    if (engineKey === 'openai' && targetMode === 'token_plan_agentic') {
+    if (engineKey === 'openai' && targetMode === 'agentic') {
       if (
         !this.codex ||
         provider.is_active === false ||
         provider.catalog?.is_active === false ||
-        provider.use_token_plan_agentic !== true ||
-        provider.catalog?.can_use_token_plan_agentic !== true
+        provider.use_agentic !== true ||
+        provider.catalog?.can_use_agentic !== true
       )
         throw new BadRequestException('El canal Codex no está habilitado.');
       const models = await this.codex.listModels(provider.id);
@@ -156,7 +142,7 @@ export class SyncAiProviderModelsUseCase {
       if (shouldPersist)
         await this.aiProviderService.mergeDiscoveredModels(
           provider.id,
-          'token_plan_agentic',
+          'agentic',
           models,
         );
       const session = await this.codex.observe(provider.id);
@@ -168,7 +154,7 @@ export class SyncAiProviderModelsUseCase {
           (m) => m.id === currentSelectedModel,
         ),
         models,
-        tokenPlan: session.planType
+        agenticPlan: session.planType
           ? {
               tier: session.planType,
               planLabel: session.planType,
@@ -182,73 +168,55 @@ export class SyncAiProviderModelsUseCase {
         'Este proveedor no tiene una integración de sesión verificada.',
       );
     }
-
     let discoveredModels: DiscoveredModelInfo[] = [];
-    let tokenPlan: SyncModelsResult['tokenPlan'] = null;
-
+    let agenticPlan: SyncModelsResult['agenticPlan'] = null;
     if (
       (engineKey === 'gemini' && targetMode !== 'api_key') ||
-      targetMode === 'token_plan_web' ||
-      targetMode === 'token_plan_agentic'
+      targetMode === 'agentic'
     ) {
       const quotaData =
         await this.geminiService.getModelsAndQuota(targetEngine);
-
       if (
         !quotaData ||
         quotaData.authenticated !== true ||
         (targetEngine === 'agentic' && quotaData.available !== true)
       ) {
         throw new BadRequestException(
-          targetEngine === 'agentic'
-            ? 'El entorno de Antigravity (Agentic) no está disponible o no tiene sesión activa.'
-            : 'La sesión web de Gemini no está activa o no ha sido autenticada en el microservicio.',
+          'Agentic no esta disponible o no tiene sesion activa.',
         );
       }
-
-      tokenPlan = {
+      agenticPlan = {
         tier: quotaData.tier || 'UNKNOWN',
-        planLabel:
-          quotaData.plan_label ||
-          (targetEngine === 'agentic'
-            ? 'Token Plan (Agentic)'
-            : 'Token Plan (Web)'),
+        planLabel: quotaData.plan_label || 'Agentic',
         authenticated: Boolean(quotaData.authenticated),
       };
-
       discoveredModels = observedModels(quotaData.models ?? []);
     } else {
-      throw new BadRequestException(
-        'Solo se admiten sesiones Gemini Web o Antigravity; el modo API Key no está habilitado.',
-      );
+      throw new BadRequestException('ai_provider:invalid_mode');
     }
-
     if (discoveredModels.length === 0) {
       throw new BadRequestException(
         `No se encontraron modelos disponibles para el proveedor "${provider.name || provider.key}".`,
       );
     }
-
     if (shouldPersist) {
       await this.aiProviderService.mergeDiscoveredModels(
         provider.id,
-        targetMode as 'token_plan_web' | 'token_plan_agentic',
+        targetMode as 'agentic',
         discoveredModels,
       );
     }
-
     const isSelectedModelAvailable = Boolean(
       currentSelectedModel &&
       discoveredModels.some((m) => m.id === currentSelectedModel),
     );
-
     return {
       providerId: provider.id,
       providerName: provider.name || provider.key || 'Proveedor',
       currentSelectedModel,
       isSelectedModelAvailable,
       models: discoveredModels,
-      tokenPlan,
+      agenticPlan,
     };
   }
 }

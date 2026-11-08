@@ -7,6 +7,10 @@ import { CreateBulkProductsUseCase } from './create-bulk-products.use-case.js';
 import { UpdateBulkProductsUseCase } from './update-bulk-products.use-case.js';
 const businessA = '11111111-1111-4111-8111-111111111111';
 const businessB = '11111111-1111-4111-8111-111111111112';
+const actor = {
+  userId: '12',
+  sessionId: '11111111-1111-4111-8111-111111111113',
+};
 const base = {
   business_id: businessA,
   provider_id: '7',
@@ -14,9 +18,9 @@ const base = {
   name: 'Product',
   cost_price: 1,
   cost_price_tax: 2,
-  profit_percentage: 3,
   sale_price: 4,
   stock: 5,
+  has_stock: true,
   is_active: true,
 };
 function fixture() {
@@ -74,6 +78,17 @@ function fixture() {
     }),
   };
   const query = vi.fn(async (sql: string, args: unknown[]) => {
+    if (sql.includes('AS authority_locks')) return [{ authority_locks: 9 }];
+    if (sql.includes('AS "actorId"'))
+      return [
+        {
+          actorId: actor.userId,
+          sessionId: actor.sessionId,
+          isSuperAdmin: true,
+        },
+      ];
+    if (sql.includes('FROM businesses business'))
+      return (args[0] as string[]).map((id) => ({ id }));
     if (sql.includes('FROM businesses')) {
       calls.push('businesses');
       return (args[0] as string[]).map((id) => ({ id }));
@@ -110,6 +125,7 @@ function fixture() {
   const service = new ProductService(
     globalProduct as unknown as ConstructorParameters<typeof ProductService>[0],
     globalLog as unknown as ConstructorParameters<typeof ProductService>[1],
+    { execute: vi.fn(async () => undefined) } as unknown as ConstructorParameters<typeof ProductService>[2],
   );
   return {
     service,
@@ -127,11 +143,30 @@ function fixture() {
   };
 }
 describe('Legacy product bulk relation integrity through native use cases', () => {
+  it('keeps input/output order when several products have no supplier code', async () => {
+    const f = fixture();
+    const result = await f.service.createBulkProducts({ items: [
+      { ...base, name: 'First', code: null, measurement_unit: 'kg' },
+      { ...base, name: 'Second', code: '  ', measurement_unit: 'g' },
+    ] }, f.manager, actor);
+    expect(result.map(({ id, name, code, measurement_unit }) => ({ id, name, code, measurement_unit }))).toEqual([
+      { id: '20', name: 'First', code: null, measurement_unit: 'kg' },
+      { id: '21', name: 'Second', code: null, measurement_unit: 'g' },
+    ]);
+    expect(f.logs.save).toHaveBeenCalledWith([
+      expect.objectContaining({ product_id: '20', name: 'First', code: null, measurement_unit: 'kg' }),
+      expect.objectContaining({ product_id: '21', name: 'Second', code: null, measurement_unit: 'g' }),
+    ]);
+  });
   it('validates all references before creating any record and uses one transaction for products and derived logs', async () => {
     const f = fixture();
-    const result = await new CreateBulkProductsUseCase(f.service).execute({
-      items: [{ ...base, business_id: businessB, provider_id: '8' }, base],
-    });
+    const result = await new CreateBulkProductsUseCase(f.service).execute(
+      {
+        items: [{ ...base, business_id: businessB, provider_id: '8' }, base],
+      },
+      undefined,
+      actor,
+    );
     expect(f.transaction).toHaveBeenCalledTimes(1);
     expect(result.map((item) => item.business_id)).toEqual([
       businessB,
@@ -143,9 +178,13 @@ describe('Legacy product bulk relation integrity through native use cases', () =
       'save-products',
       'save-logs',
     ]);
-    expect(f.query.mock.calls[0][1]).toEqual([[businessA, businessB]]);
-    expect(f.query.mock.calls[1][1]).toEqual([['7', '8']]);
-    expect(f.query.mock.calls.every(([sql]) => sql.includes('FOR SHARE'))).toBe(
+    const relationReads = f.query.mock.calls.filter(
+      ([sql]) =>
+        sql.includes('FROM businesses WHERE') || sql.includes('FROM providers'),
+    );
+    expect(relationReads[0][1]).toEqual([[businessA, businessB]]);
+    expect(relationReads[1][1]).toEqual([['7', '8']]);
+    expect(relationReads.every(([sql]) => sql.includes('FOR SHARE'))).toBe(
       true,
     );
     expect(f.logs.save).toHaveBeenCalledWith(
@@ -159,21 +198,29 @@ describe('Legacy product bulk relation integrity through native use cases', () =
   it('rejects a mismatched provider in any create item before persisting the otherwise valid first item', async () => {
     const f = fixture();
     await expect(
-      new CreateBulkProductsUseCase(f.service).execute({
-        items: [base, { ...base, code: 'P2', provider_id: '8' }],
-      }),
+      new CreateBulkProductsUseCase(f.service).execute(
+        {
+          items: [base, { ...base, code: 'P2', provider_id: '8' }],
+        },
+        undefined,
+        actor,
+      ),
     ).rejects.toMatchObject({ status: 400 });
     expect(f.products.save).not.toHaveBeenCalled();
     expect(f.logs.save).not.toHaveBeenCalled();
   });
   it('locks product PKs numerically in ascending order but preserves caller response order and omitted current values', async () => {
     const f = fixture();
-    const result = await new UpdateBulkProductsUseCase(f.service).execute({
-      items: [
-        { id: '10', stock: 0 },
-        { id: '2', name: 'Edited', is_active: false },
-      ],
-    });
+    const result = await new UpdateBulkProductsUseCase(f.service).execute(
+      {
+        items: [
+          { id: '10', stock: 0 },
+          { id: '2', name: 'Edited', is_active: false },
+        ],
+      },
+      undefined,
+      actor,
+    );
     expect(f.calls).toEqual([
       'product:2',
       'product:10',
@@ -200,12 +247,16 @@ describe('Legacy product bulk relation integrity through native use cases', () =
   it('rejects a mismatched update without mutating another loaded entity or creating a derived log', async () => {
     const f = fixture();
     await expect(
-      new UpdateBulkProductsUseCase(f.service).execute({
-        items: [
-          { id: '2', name: 'Should not persist' },
-          { id: '10', business_id: businessB },
-        ],
-      }),
+      new UpdateBulkProductsUseCase(f.service).execute(
+        {
+          items: [
+            { id: '2', name: 'Should not persist' },
+            { id: '10', business_id: businessB },
+          ],
+        },
+        undefined,
+        actor,
+      ),
     ).rejects.toMatchObject({ status: 400 });
     expect(f.records.get('2')?.name).toBe('Product');
     expect(f.records.get('10')?.business_id).toBe(businessA);
@@ -214,12 +265,16 @@ describe('Legacy product bulk relation integrity through native use cases', () =
   });
   it('allows an explicit coherent transfer with a replacement provider and preserves null for an explicit unlink', async () => {
     const f = fixture();
-    const result = await new UpdateBulkProductsUseCase(f.service).execute({
-      items: [
-        { id: '2', business_id: businessB, provider_id: '8' },
-        { id: '10', provider_id: null },
-      ],
-    });
+    const result = await new UpdateBulkProductsUseCase(f.service).execute(
+      {
+        items: [
+          { id: '2', business_id: businessB, provider_id: '8' },
+          { id: '10', provider_id: null },
+        ],
+      },
+      undefined,
+      actor,
+    );
     expect(result[0]).toMatchObject({
       business_id: businessB,
       provider_id: '8',
@@ -230,9 +285,13 @@ describe('Legacy product bulk relation integrity through native use cases', () =
     const f = fixture();
     f.providers[0].business_id = businessB;
     await expect(
-      new UpdateBulkProductsUseCase(f.service).execute({
-        items: [{ id: '2', name: 'Race candidate' }],
-      }),
+      new UpdateBulkProductsUseCase(f.service).execute(
+        {
+          items: [{ id: '2', name: 'Race candidate' }],
+        },
+        undefined,
+        actor,
+      ),
     ).rejects.toMatchObject({ status: 400 });
     expect(f.products.save).not.toHaveBeenCalled();
   });
@@ -240,28 +299,40 @@ describe('Legacy product bulk relation integrity through native use cases', () =
     const f = fixture();
     f.logs.save.mockRejectedValue(new Error('derived log unavailable'));
     await expect(
-      new CreateBulkProductsUseCase(f.service).execute({ items: [base] }),
+      new CreateBulkProductsUseCase(f.service).execute(
+        { items: [base] },
+        undefined,
+        actor,
+      ),
     ).rejects.toThrow('derived log unavailable');
     expect(f.transaction).toHaveBeenCalledTimes(1);
   });
   it('rejects duplicate logical targets and missing records before any effect', async () => {
     const f = fixture();
     await expect(
-      new UpdateBulkProductsUseCase(f.service).execute({
-        items: [
-          { id: '2', stock: 0 },
-          { id: '02', stock: 9 },
-        ],
-      }),
+      new UpdateBulkProductsUseCase(f.service).execute(
+        {
+          items: [
+            { id: '2', stock: 0 },
+            { id: '02', stock: 9 },
+          ],
+        },
+        undefined,
+        actor,
+      ),
     ).rejects.toMatchObject({ status: 400 });
     expect(f.products.findOne).not.toHaveBeenCalled();
     await expect(
-      new UpdateBulkProductsUseCase(f.service).execute({
-        items: [
-          { id: '2', stock: 0 },
-          { id: '30', stock: 9 },
-        ],
-      }),
+      new UpdateBulkProductsUseCase(f.service).execute(
+        {
+          items: [
+            { id: '2', stock: 0 },
+            { id: '30', stock: 9 },
+          ],
+        },
+        undefined,
+        actor,
+      ),
     ).rejects.toMatchObject({ status: 404 });
     expect(f.products.save).not.toHaveBeenCalled();
     expect(f.logs.save).not.toHaveBeenCalled();
@@ -269,14 +340,19 @@ describe('Legacy product bulk relation integrity through native use cases', () =
   it('refuses a supplied manager outside a transaction and never opens a second transaction when valid', async () => {
     const f = fixture();
     await expect(
-      new CreateBulkProductsUseCase(f.service).execute({ items: [base] }, {
-        ...f.manager,
-        queryRunner: { isTransactionActive: false },
-      } as unknown as EntityManager),
+      new CreateBulkProductsUseCase(f.service).execute(
+        { items: [base] },
+        {
+          ...f.manager,
+          queryRunner: { isTransactionActive: false },
+        } as unknown as EntityManager,
+        actor,
+      ),
     ).rejects.toMatchObject({ status: 400 });
     await new CreateBulkProductsUseCase(f.service).execute(
       { items: [base] },
       f.manager,
+      actor,
     );
     expect(f.transaction).not.toHaveBeenCalled();
   });

@@ -24,6 +24,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
   children,
   confirmText,
   cancelText,
+  additionalActions,
   isLoading = false,
   confirmDisabled = false,
   size = "sm",
@@ -88,6 +89,8 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
             size="small"
             sx={(theme) => ({
               color: theme.palette.text.secondary,
+              ...(additionalActions ? { width: 44, height: 44, flexShrink: 0 } : {}),
+              [theme.breakpoints.down("sm")]: { width: 44, height: 44, flexShrink: 0 },
               transition: theme.transitions.create(
                 ["color", "background-color"],
                 {
@@ -115,7 +118,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
         </DialogBody>
       )}
 
-      <DialogActionsContainer>
+      <DialogActionsContainer sx={additionalActions ? { "& button": { minHeight: 44 } } : undefined}>
         <CancelButton
           variant="contained"
           onClick={handleCancel}
@@ -130,6 +133,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
         >
           {confirmText ?? t("core:confirm")}
         </ConfirmButton>
+        {additionalActions}
       </DialogActionsContainer>
     </StyledDialog>
   );

@@ -21,7 +21,7 @@ vi.mock('../../config/envs.config.js', () => ({
 
 const selection: NodiaAiSelection = {
   connection_id: '9007199254740993',
-  mode: 'token_plan_web',
+  mode: 'agentic',
   model_id: 'fixture-discovered-model',
   effort_id: null,
 };
@@ -31,12 +31,10 @@ function fixture() {
     is_active: true,
     catalog_active: true,
     provider_key: 'gemini',
-    use_token_plan_web: true,
-    use_token_plan_agentic: true,
-    can_use_token_plan_web: true,
-    can_use_token_plan_agentic: true,
+    use_agentic: true,
+    can_use_agentic: true,
     fields: {
-      token_plan_web: {
+      agentic: {
         selected_model: selection.model_id,
         available_models: [{ id: selection.model_id }],
         thinking_levels: { [selection.model_id]: null },
@@ -92,40 +90,227 @@ function fixture() {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('Gemini NodiaAI adapter use case', () => {
+  it('routes explicit image generation to its isolated lane and verifies bytes, MIME, hash and terminal identity', async () => {
+    const f = fixture();
+    Object.assign(f.row.fields, { agentic: f.row.fields.agentic });
+    const selected: NodiaAiSelection = { ...selection, mode: 'agentic' };
+    const observed = await f.execute.observe(selected);
+    const contentBase64 =
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=';
+    const sha256 = createHash('sha256')
+      .update(Buffer.from(contentBase64, 'base64'))
+      .digest('hex');
+    f.respond({
+      kind: 'answer',
+      text: 'Synthetic image',
+      generated_image: {
+        content_base64: contentBase64,
+        media_type: 'image/png',
+        sha256,
+      },
+    });
+    const result = await f.execute.execute({
+      attemptId: randomUUID(),
+      selection: selected,
+      canonicalPrompt: '/imagen synthetic square',
+      imageGeneration: { prompt: 'Synthetic square' },
+      deadlineAt: new Date(Date.now() + 60000),
+      resourceKey: observed.resourceKey,
+      sessionGeneration: observed.sessionGeneration,
+      configurationGeneration: observed.configurationGeneration,
+    });
+    expect(result).toMatchObject({
+      kind: 'answer',
+      generatedImage: { contentBase64, mediaType: 'image/png', sha256 },
+    });
+    expect(String(f.fetch.mock.calls.at(-1)?.[0])).toBe(
+      'http://127.0.0.1:8000/nodia-ai/agentic/image/turn',
+    );
+    expect(
+      JSON.parse(String(f.fetch.mock.calls.at(-1)?.[1].body)),
+    ).toMatchObject({ prompt: 'Synthetic square', effort_id: null });
+  });
+  it.each(['wrong_hash', 'wrong_mime', 'text_not_image'])(
+    'rejects malformed generated image %s with uncertain outcome',
+    async (change) => {
+      const f = fixture();
+      Object.assign(f.row.fields, { agentic: f.row.fields.agentic });
+      const selected: NodiaAiSelection = { ...selection, mode: 'agentic' };
+      const observed = await f.execute.observe(selected);
+      const raw =
+        change === 'text_not_image'
+          ? Buffer.from('not an image')
+          : Buffer.from(
+              'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=',
+              'base64',
+            );
+      f.respond({
+        kind: 'answer',
+        text: '',
+        generated_image: {
+          content_base64: raw.toString('base64'),
+          media_type: change === 'wrong_mime' ? 'image/jpeg' : 'image/png',
+          sha256:
+            change === 'wrong_hash'
+              ? '0'.repeat(64)
+              : createHash('sha256').update(raw).digest('hex'),
+        },
+      });
+      await expect(
+        f.execute.execute({
+          attemptId: randomUUID(),
+          selection: selected,
+          canonicalPrompt: '/imagen square',
+          imageGeneration: { prompt: 'Square' },
+          deadlineAt: new Date(Date.now() + 60000),
+          resourceKey: observed.resourceKey,
+          sessionGeneration: observed.sessionGeneration,
+          configurationGeneration: observed.configurationGeneration,
+        }),
+      ).rejects.toMatchObject({
+        code: 'adapter_invalid_generated_image',
+        outcome: 'unknown',
+      });
+    },
+  );
+  it('rejects Web image generation before configuration lookup or provider dispatch', async () => {
+    const f = fixture();
+    await expect(
+      f.execute.execute({
+        attemptId: randomUUID(),
+        selection: { ...selection, mode: 'token_plan_web' } as never,
+        canonicalPrompt: '/imagen square',
+        imageGeneration: { prompt: 'Square' },
+        deadlineAt: new Date(Date.now() + 60000),
+        resourceKey: f.observation.resource_key,
+        sessionGeneration: f.observation.session_generation,
+        configurationGeneration: 'a'.repeat(64),
+      }),
+    ).rejects.toMatchObject({
+      code: 'adapter_mode_unsupported',
+      outcome: 'not_dispatched',
+    });
+    expect(f.query).not.toHaveBeenCalled();
+    expect(f.fetch).not.toHaveBeenCalled();
+  });
+  it('cancels the exact native image after HTTP abort using an independent cleanup signal without replay', async () => {
+    const f = fixture();
+    Object.assign(f.row.fields, { agentic: f.row.fields.agentic });
+    const selected: NodiaAiSelection = { ...selection, mode: 'agentic' };
+    const observed = await f.execute.observe(selected);
+    const controller = new AbortController();
+    const attemptId = randomUUID();
+    f.fetch.mockImplementation(async (url: URL, options: RequestInit) => {
+      if (String(url).endsWith('/image/turn')) {
+        controller.abort();
+        throw new DOMException('Aborted', 'AbortError');
+      }
+      expect(String(url)).toBe(
+        `http://127.0.0.1:8000/nodia-ai/agentic/attempts/${attemptId}/image/cancel`,
+      );
+      expect(JSON.parse(String(options.body))).toEqual({
+        resource_key: observed.resourceKey,
+        session_generation: observed.sessionGeneration,
+        operation_ref: attemptId,
+      });
+      expect(options.signal?.aborted).toBe(false);
+      return new Response(
+        JSON.stringify({ attempt_id: attemptId, state: 'abandoned_unknown' }),
+      );
+    });
+    await expect(
+      f.execute.execute(
+        {
+          attemptId,
+          selection: selected,
+          canonicalPrompt: '/imagen square',
+          imageGeneration: { prompt: 'Square' },
+          deadlineAt: new Date(Date.now() + 60000),
+          resourceKey: observed.resourceKey,
+          sessionGeneration: observed.sessionGeneration,
+          configurationGeneration: observed.configurationGeneration,
+        },
+        controller.signal,
+      ),
+    ).rejects.toMatchObject({
+      code: 'adapter_transport_unavailable',
+      outcome: 'unknown',
+    });
+    const calls = f.fetch.mock.calls.filter((call) =>
+      String(call[0]).includes('/image/'),
+    );
+    expect(calls.map((call) => String(call[0]).split('/').at(-1))).toEqual([
+      'turn',
+      'cancel',
+    ]);
+  });
   const measured = (canonicalPrompt = 'Contexto ñ') => ({
-    measurement_contract_version: 'nodia-ai-context-budget/1', measurement_scope: 'initial_native_prompt',
-    measurement_kind: 'exact', canonical_utf8_bytes: Buffer.byteLength(canonicalPrompt, 'utf8'),
-    catalog_utf8_bytes: 0, overhead_utf8_bytes: 1000,
-    total_utf8_bytes: Buffer.byteLength(canonicalPrompt, 'utf8') + 1000, max_utf8_bytes: 262144,
+    measurement_contract_version: 'nodia-ai-context-budget/1',
+    measurement_scope: 'initial_native_prompt',
+    measurement_kind: 'exact',
+    canonical_utf8_bytes: Buffer.byteLength(canonicalPrompt, 'utf8'),
+    catalog_utf8_bytes: 0,
+    overhead_utf8_bytes: 1000,
+    total_utf8_bytes: Buffer.byteLength(canonicalPrompt, 'utf8') + 1000,
+    max_utf8_bytes: 262144,
     model_context_tokens: null,
     first_mcp_listing_upper_bound_utf8_bytes: 0,
   });
   it('measures a pure initial native prompt through the private authenticated route without querying configuration or invoking generation', async () => {
-    const f = fixture(); f.fetch.mockResolvedValueOnce(new Response(JSON.stringify(measured())));
-    const result = await f.execute.measureContext({ selection, canonicalPrompt: 'Contexto ñ' });
-    expect(result).toEqual({ measurementContractVersion: 'nodia-ai-context-budget/1', measurementScope: 'initial_native_prompt',
-      measurementKind: 'exact', canonicalUtf8Bytes: Buffer.byteLength('Contexto ñ', 'utf8'), catalogUtf8Bytes: 0,
-      overheadUtf8Bytes: 1000, totalUtf8Bytes: Buffer.byteLength('Contexto ñ', 'utf8') + 1000,
-      maxUtf8Bytes: 262144, modelContextTokens: null, firstMcpListingUpperBoundUtf8Bytes: 0 });
+    const f = fixture();
+    f.fetch.mockResolvedValueOnce(new Response(JSON.stringify(measured())));
+    const result = await f.execute.measureContext({
+      selection,
+      canonicalPrompt: 'Contexto ñ',
+    });
+    expect(result).toEqual({
+      measurementContractVersion: 'nodia-ai-context-budget/1',
+      measurementScope: 'initial_native_prompt',
+      measurementKind: 'exact',
+      canonicalUtf8Bytes: Buffer.byteLength('Contexto ñ', 'utf8'),
+      catalogUtf8Bytes: 0,
+      overheadUtf8Bytes: 1000,
+      totalUtf8Bytes: Buffer.byteLength('Contexto ñ', 'utf8') + 1000,
+      maxUtf8Bytes: 262144,
+      modelContextTokens: null,
+      firstMcpListingUpperBoundUtf8Bytes: 0,
+    });
     expect(f.query).not.toHaveBeenCalled();
-    expect(String(f.fetch.mock.calls[0][0])).toBe('http://127.0.0.1:8000/nodia-ai/web/measure-context');
+    expect(String(f.fetch.mock.calls[0][0])).toBe(
+      'http://127.0.0.1:8000/nodia-ai/agentic/measure-context',
+    );
     const body = JSON.parse(String(f.fetch.mock.calls[0][1].body));
-    expect(body).toEqual({ model_id: selection.model_id, effort_id: null, canonical_prompt: 'Contexto ñ', tools: [], attachments: [] });
+    expect(body).toEqual({
+      model_id: selection.model_id,
+      effort_id: null,
+      canonical_prompt: 'Contexto ñ',
+      tools: [],
+      attachments: [],
+    });
     expect(f.fetch).toHaveBeenCalledOnce();
   });
   it('returns a measured overflow for the orchestrator to compact instead of truncating history', async () => {
-    const f = fixture(); const raw = measured(); raw.overhead_utf8_bytes = 300000;
+    const f = fixture();
+    const raw = measured();
+    raw.overhead_utf8_bytes = 300000;
     raw.total_utf8_bytes = raw.canonical_utf8_bytes + raw.overhead_utf8_bytes;
     f.fetch.mockResolvedValueOnce(new Response(JSON.stringify(raw)));
-    const result = await f.execute.measureContext({ selection, canonicalPrompt: 'Contexto ñ' });
+    const result = await f.execute.measureContext({
+      selection,
+      canonicalPrompt: 'Contexto ñ',
+    });
     expect(result.totalUtf8Bytes).toBeGreaterThan(result.maxUtf8Bytes);
     expect(result.modelContextTokens).toBeNull();
   });
   it('accepts an explicitly declared Agentic attachment bound without sending original bytes or requiring MIME inspection', async () => {
-    const f = fixture(); const raw = { ...measured(), measurement_kind: 'upper_bound' };
+    const f = fixture();
+    const raw = { ...measured(), measurement_kind: 'upper_bound' };
     f.fetch.mockResolvedValueOnce(new Response(JSON.stringify(raw)));
-    const result = await f.execute.measureContext({ selection: { ...selection, mode: 'token_plan_agentic' },
-      canonicalPrompt: 'Contexto ñ', attachments: [{ kind: 'audio' }] });
+    const result = await f.execute.measureContext({
+      selection: { ...selection, mode: 'agentic' },
+      canonicalPrompt: 'Contexto ñ',
+      attachments: [{ kind: 'audio' }],
+    });
     expect(result.measurementKind).toBe('upper_bound');
     const body = JSON.parse(String(f.fetch.mock.calls[0][1].body));
     expect(body.attachments).toEqual([{ kind: 'audio' }]);
@@ -133,17 +318,32 @@ describe('Gemini NodiaAI adapter use case', () => {
     expect(body).not.toHaveProperty('session_generation');
   });
   it.each([
-    { model_context_tokens: 1000000 }, { max_utf8_bytes: 9999999 }, { total_utf8_bytes: 1 },
-    { catalog_utf8_bytes: 12 }, { canonical_utf8_bytes: 1 }, { overhead_utf8_bytes: -1 },
-    { overhead_utf8_bytes: 1.5 }, { measurement_kind: 'unknown' }, { measurement_scope: 'all_provider_tokens' },
+    { model_context_tokens: 1000000 },
+    { max_utf8_bytes: 9999999 },
+    { total_utf8_bytes: 1 },
+    { catalog_utf8_bytes: 12 },
+    { canonical_utf8_bytes: 1 },
+    { overhead_utf8_bytes: -1 },
+    { overhead_utf8_bytes: 1.5 },
+    { measurement_kind: 'unknown' },
+    { measurement_scope: 'all_provider_tokens' },
     { secret: 'fixture-secret' },
-  ])('rejects untrusted context measurements %j without claiming provider capacity', async (change) => {
-    const f = fixture(); f.fetch.mockResolvedValueOnce(new Response(JSON.stringify({ ...measured(), ...change })));
-    await expect(f.execute.measureContext({ selection, canonicalPrompt: 'Contexto ñ' })).rejects.toMatchObject({
-      code: 'adapter_invalid_context_measurement', outcome: 'not_dispatched',
-    });
-    expect(f.query).not.toHaveBeenCalled();
-  });
+  ])(
+    'rejects untrusted context measurements %j without claiming provider capacity',
+    async (change) => {
+      const f = fixture();
+      f.fetch.mockResolvedValueOnce(
+        new Response(JSON.stringify({ ...measured(), ...change })),
+      );
+      await expect(
+        f.execute.measureContext({ selection, canonicalPrompt: 'Contexto ñ' }),
+      ).rejects.toMatchObject({
+        code: 'adapter_invalid_context_measurement',
+        outcome: 'not_dispatched',
+      });
+      expect(f.query).not.toHaveBeenCalled();
+    },
+  );
   it('binds exact bigint connection, mode, dynamic model and truthful observation', async () => {
     const f = fixture();
     const observed = await f.execute.observe(selection);
@@ -153,7 +353,7 @@ describe('Gemini NodiaAI adapter use case', () => {
     expect(observed.configurationGeneration).toMatch(/^[0-9a-f]{64}$/);
     expect(f.query.mock.calls[0][1]).toEqual([selection.connection_id]);
     expect(String(f.fetch.mock.calls[0][0])).toBe(
-      'http://127.0.0.1:8000/nodia-ai/web/observe',
+      'http://127.0.0.1:8000/nodia-ai/agentic/observe',
     );
     expect(JSON.parse(f.fetch.mock.calls[0][1].body)).toEqual({
       model_id: selection.model_id,
@@ -179,8 +379,8 @@ describe('Gemini NodiaAI adapter use case', () => {
     { provider_key: 'openai' },
     { is_active: false },
     { catalog_active: false },
-    { use_token_plan_web: false },
-    { can_use_token_plan_web: false },
+    { use_agentic: false },
+    { can_use_agentic: false },
   ])(
     'rejects stale/foreign configuration %j without provider request',
     async (patch) => {
@@ -214,7 +414,7 @@ describe('Gemini NodiaAI adapter use case', () => {
     expect(observed.resourceKey).toBeNull();
   });
   it.each([
-    { supports_mcp: true },
+    { supports_mcp: 'true' },
     { available: true, reason: 'unverified' },
     { source: 'invented' },
     { session_generation: null },
@@ -243,7 +443,7 @@ describe('Gemini NodiaAI adapter use case', () => {
     );
     expect(f.fetch).toHaveBeenCalledTimes(count);
     expect(f.query.mock.calls.at(-1)?.[0]).toContain('FOR SHARE OF p,c');
-    f.row.fields.token_plan_web.selected_model = 'changed';
+    f.row.fields.agentic.selected_model = 'changed';
     await expect(
       f.execute.verifyConfiguration(
         selection,
@@ -330,40 +530,27 @@ describe('Gemini NodiaAI adapter use case', () => {
       }),
     ).rejects.toMatchObject({ outcome: 'unknown' });
   });
-  it('Web delegation is only a typed request; Agentic cannot recursively delegate', async () => {
+  it('rejects delegation requests from Agentic without opening another inference', async () => {
     const f = fixture();
     const observation = await f.execute.observe(selection);
-    const request = {
-      attemptId: randomUUID(),
-      selection,
-      canonicalPrompt: 'x',
-      deadlineAt: new Date(Date.now() + 60000),
-      resourceKey: observation.resourceKey!,
-      sessionGeneration: observation.sessionGeneration,
-      configurationGeneration: observation.configurationGeneration,
-    };
-    f.respond({
-      kind: 'delegation_request',
-      reason: 'Needs authorized tools',
-    });
-    await expect(f.execute.execute(request)).resolves.toMatchObject({
-      kind: 'delegation_request',
-      reason: 'Needs authorized tools',
-    });
-    const agentic = { ...selection, mode: 'token_plan_agentic' } as const;
-    const target = await f.execute.observe(agentic);
-    f.respond({ kind: 'delegation_request', reason: 'Again' });
+    f.respond({ kind: 'delegation_request', reason: 'Needs authorized tools' });
     await expect(
       f.execute.execute({
-        ...request,
         attemptId: randomUUID(),
-        selection: agentic,
-        configurationGeneration: target.configurationGeneration,
+        selection,
+        canonicalPrompt: 'x',
+        deadlineAt: new Date(Date.now() + 60000),
+        resourceKey: observation.resourceKey!,
+        sessionGeneration: observation.sessionGeneration,
+        configurationGeneration: observation.configurationGeneration,
       }),
     ).rejects.toMatchObject({
       code: 'adapter_invalid_reply',
       outcome: 'unknown',
     });
+    expect(
+      f.fetch.mock.calls.filter(([url]) => String(url).endsWith('/turn')),
+    ).toHaveLength(1);
   });
   it('rejects expired deadline before dispatch', async () => {
     const f = fixture();
@@ -414,7 +601,7 @@ function mcpFixture() {
   ];
   const request = {
     attemptId,
-    selection: { ...selection, mode: 'token_plan_agentic' } as NodiaAiSelection,
+    selection: { ...selection, mode: 'agentic' } as NodiaAiSelection,
     canonicalPrompt: 'Synthetic fixture only',
     deadlineAt: new Date(Date.now() + 60000),
     resourceKey: f.observation.resource_key,
@@ -535,13 +722,11 @@ describe('Gemini NodiaAI bounded native MCP loop', () => {
       {} as ConstructorParameters<typeof NodiaAiReportToolsUseCase>[2],
     );
     candidateTools.push(
-      ...reports
-        .descriptors()
-        .map((tool) => ({
-          name: tool.name,
-          description: tool.description,
-          input_schema: tool.inputSchema,
-        })),
+      ...reports.descriptors().map((tool) => ({
+        name: tool.name,
+        description: tool.description,
+        input_schema: tool.inputSchema,
+      })),
     );
     expect(candidateTools).toHaveLength(74);
     expect(candidateTools.at(-1)?.name).toBe('nodia_reports_run');
@@ -802,10 +987,9 @@ describe('Gemini NodiaAI bounded native MCP loop', () => {
   });
   it('Web cannot receive MCP descriptors even with opt-in or a callback', async () => {
     const f = mcpFixture();
-    f.request.selection = selection;
-    await f.configure();
+    f.request.selection = { ...selection, mode: 'token_plan_web' } as never;
     await expect(f.execute.execute(f.request)).rejects.toMatchObject({
-      code: 'web_tools_prohibited',
+      code: 'adapter_mode_unsupported',
       outcome: 'not_dispatched',
     });
     expect(
@@ -834,12 +1018,27 @@ describe('AI-32 native private attachment protocol', () => {
   it('validates optional MIME evidence without promoting legacy summaries', async () => {
     const f = fixture();
     Object.assign(f.observation, { verified_modalities: ['audio'] });
-    expect((await f.execute.observe(selection)).verifiedAttachmentMediaTypes).toEqual([]);
-    Object.assign(f.observation, { verified_attachment_media_types: ['audio/wav'] });
-    expect((await f.execute.observe(selection)).verifiedAttachmentMediaTypes).toEqual(['audio/wav']);
-    for (const formats of [['audio/wav', 'audio/wav'], ['audio/invented'], [7], null]) {
-      Object.assign(f.observation, { verified_attachment_media_types: formats });
-      await expect(f.execute.observe(selection)).rejects.toMatchObject({ code: 'adapter_invalid_observation' });
+    expect(
+      (await f.execute.observe(selection)).verifiedAttachmentMediaTypes,
+    ).toEqual([]);
+    Object.assign(f.observation, {
+      verified_attachment_media_types: ['audio/wav'],
+    });
+    expect(
+      (await f.execute.observe(selection)).verifiedAttachmentMediaTypes,
+    ).toEqual(['audio/wav']);
+    for (const formats of [
+      ['audio/wav', 'audio/wav'],
+      ['audio/invented'],
+      [7],
+      null,
+    ]) {
+      Object.assign(f.observation, {
+        verified_attachment_media_types: formats,
+      });
+      await expect(f.execute.observe(selection)).rejects.toMatchObject({
+        code: 'adapter_invalid_observation',
+      });
     }
   });
   it('binds a native payload and exact configuration to one Web attempt', async () => {

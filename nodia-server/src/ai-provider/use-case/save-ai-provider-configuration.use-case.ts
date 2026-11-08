@@ -36,8 +36,7 @@ export class SaveAiProviderConfigurationUseCase {
       dto.fields === null ||
       [
         'use_api_key',
-        'use_token_plan_web',
-        'use_token_plan_agentic',
+        'use_agentic',
         'auto_rotate_api_keys',
         'is_default',
         'is_active',

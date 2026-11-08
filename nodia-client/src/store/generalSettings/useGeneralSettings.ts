@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import useAuth from "../../hooks/useAuth";
 import useGeneralSettingsStore from "./generalSettingsStore";
+import { canAccessModule } from "./helpers";
 import type {
   ActionContext,
   AuthorizationContextResponse,
@@ -40,9 +41,22 @@ export const useVisibleModules = (): ModuleGroupContext[] => {
   const { isSessionValid } = useAuth();
   const modules = useUserModules();
   const isLoaded = useGeneralSettingsStore((state) => state.isLoaded);
-  return useMemo(() => isSessionValid && isLoaded
-    ? modules.filter((group) => group.modules.length > 0)
-    : [], [isSessionValid, isLoaded, modules]);
+  return useMemo(
+    () =>
+      isSessionValid && isLoaded
+        ? modules.filter((group) => group.modules.length > 0)
+        : [],
+    [isSessionValid, isLoaded, modules],
+  );
+};
+
+/** Module access never depends on action assignments; require validated context. */
+export const useCanAccessModule = (path: string): boolean => {
+  const { isSessionValid } = useAuth();
+  const allowed = useGeneralSettingsStore(
+    (state) => state.isLoaded && canAccessModule(state, path),
+  );
+  return isSessionValid && allowed;
 };
 
 /**
@@ -64,7 +78,7 @@ export const useUserActions = (): ActionContext[] => {
  */
 export const useHasAction = (actionKey: string): boolean => {
   return useGeneralSettingsStore((state) =>
-    state.actions.some((a) => a.key === actionKey)
+    state.actions.some((a) => a.key === actionKey),
   );
 };
 
@@ -72,11 +86,8 @@ export const useHasAction = (actionKey: string): boolean => {
  * Hook to check if the user has a specific role.
  */
 export const useHasRole = (roleKey: string): boolean => {
-  return useGeneralSettingsStore((state) =>
-    state.roles.includes(roleKey)
-  );
+  return useGeneralSettingsStore((state) => state.roles.includes(roleKey));
 };
-
 
 /**
  * Hook to access only the store handlers/mutators.
@@ -89,7 +100,7 @@ export const useGeneralSettingsHandlers = () => {
     (data: AuthorizationContextResponse) => {
       setContext(data);
     },
-    [setContext]
+    [setContext],
   );
 
   const handleClearContext = useCallback(() => {

@@ -43,16 +43,16 @@ export function createNodiaAiExternalReadFamily(
     modules: [
       {
         key: 'ai_providers',
-        route: '/settings/ai-providers',
+        route: '/ai-providers',
         label: 'AI connection administration',
       },
-      { key: 'businesses', route: '/tools/business', label: 'Negocios' },
+      { key: 'businesses', route: '/business', label: 'Negocios' },
     ],
     resources: NODIA_AI_EXTERNAL_READS.map(([, operation]) => ({
       key: `external_${operation}`,
       label: `External ${operation}`,
       requiredModuleRoutes: [
-        operation === 'eligible' ? '/tools/business' : '/settings/ai-providers',
+        operation === 'eligible' ? '/business' : '/ai-providers',
       ],
     })),
     capabilities: NODIA_AI_EXTERNAL_READS.map(
@@ -69,9 +69,10 @@ export function createNodiaAiExternalReadFamily(
         description: `Observe ${operation} through the existing provider adapter outside SQL. Session, configuration and discovery do not prove inference. Unknown remains null; no automatic provider change.`,
         requiredModuleRoutes: [
           operation === 'eligible'
-            ? '/tools/business'
-            : '/settings/ai-providers',
+            ? '/business'
+            : '/ai-providers',
         ],
+        // Legacy publication metadata; authorization uses assigned modules.
         actionKeys: operation === 'eligible' ? [] : ['ai:manage'],
         effectKey: 'read:external_provider',
         inputSchema: { sourceJson, definition: input, sha256: hash },

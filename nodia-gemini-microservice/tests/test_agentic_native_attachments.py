@@ -136,8 +136,8 @@ class AgenticNativeLifecycleTests(unittest.IsolatedAsyncioTestCase):
         self.home = self.root / "cli"
         self.home.mkdir()
         self.runner = SimpleNamespace(config=CliConfig(Path(sys.executable), "", self.home), run=AsyncMock())
-        self.profiles = ProfileAdmission(self.root / "web", self.home, self.root / "state")
-        self.adapter = ChatAdapter(None, SimpleNamespace(runner=self.runner), self.profiles)
+        self.profiles = ProfileAdmission(self.home, self.root / "state")
+        self.adapter = ChatAdapter(SimpleNamespace(runner=self.runner), self.profiles)
         self.request = ChatRequest(attempt_id=str(uuid4()), model_id="fixture-model", effort_id="high",
             canonical_prompt="synthetic prompt", resource_key=self.profiles.identity("agentic"),
             session_generation="a" * 32, timeout_seconds=5)
@@ -275,8 +275,8 @@ class AgenticNativeMcpLifecycleTests(unittest.IsolatedAsyncioTestCase):
         document = root / "synthetic.pdf"
         document.write_bytes(b"synthetic pdf")
         runner = SimpleNamespace(config=CliConfig(Path(sys.executable), "", home), run=AsyncMock())
-        profiles = ProfileAdmission(root / "web", home, root / "state")
-        adapter = ChatAdapter(None, SimpleNamespace(runner=runner), profiles)
+        profiles = ProfileAdmission(home, root / "state")
+        adapter = ChatAdapter(SimpleNamespace(runner=runner), profiles)
         sessions = NativeMcpSessions(adapter)
         self.addAsyncCleanup(sessions.close)
         request = McpChatRequest(attempt_id=str(uuid4()), model_id="fixture-model", effort_id=None,

@@ -7,6 +7,7 @@ import type { AxiosAdapter, AxiosResponse } from "axios";
 import type { NodiaAiConversation, NodiaAiEligibility, NodiaAiMessagePage, NodiaAiRun, NodiaAiSelection, NodiaAiExecutionStatus, NodiaAiReviewValue, NodiaAiPublicProposal } from "../../../modules/nodiaAi/infrastructure/types";
 import { nodiaAiRoutingInputSchema, nodiaAiSelectionInputSchema } from "../../../modules/nodiaAi/infrastructure/schemas";
 import { queryClient } from "../../../config/reactQuery";
+import { attachmentCreateSchema, type NodiaAiAttachment } from "../../../modules/nodiaAi/infrastructure/attachmentSchemas";
 import { proposal as syntheticProposal, editableProposal, editableReview, readonlyReview, execution as syntheticExecution } from "../../modules/nodiaAi/infrastructure/proposalFixtures";
 import { financialObligationProposal, financialObligationReview, financialGroupDeletion } from "./financial-fixtures";
 import { partialWorkflow, workflowProposal, workflowReview } from "../../modules/nodiaAi/infrastructure/workflowFixtures";
@@ -14,11 +15,12 @@ import { rentalPolicyProposal, rentalPolicyReview, rentalReservationProposal, re
 import { rentalPaymentProposal, rentalPaymentReview, rentalRefundProposal, rentalVoidProposal, rentalVoidReview, rentalExpenseProposal, rentalExpenseReview, rentalExpensePayProposal, rentalExpensePayReview, rentalBlockProposal, rentalBlockReview, rentalPreparationProposal, rentalPreparationReview, rentalApprovalProposal } from "../../modules/nodiaAi/infrastructure/rentalMoneyPreparationFixtures";
 
 export const CHAT_ID = "10000000-0000-4000-8000-000000000001";
-export const WEB_SELECTION: NodiaAiSelection = { connection_id: "90000000991", mode: "token_plan_web", model_id: "qa-synthetic-web", effort_id: null };
-const AGENTIC_SELECTION = { ...WEB_SELECTION, mode: "token_plan_agentic" as const, model_id: "qa-synthetic-agentic", effort_id: "qa-deliberate" };
+export const BASE_SELECTION: NodiaAiSelection = { connection_id: "90000000991", mode: "agentic", model_id: "qa-synthetic-base", effort_id: null };
+const AGENTIC_SELECTION = { ...BASE_SELECTION, mode: "agentic" as const, model_id: "qa-synthetic-agentic", effort_id: "qa-deliberate" };
+const API_SELECTION: NodiaAiSelection = { ...BASE_SELECTION, mode: "api_key", model_id: "qa-synthetic-api", effort_id: null };
 const timestamp = "2026-10-16T00:00:00Z";
-export const QA_MODEL_LABEL = "Modelo sintético alternativo / Synthetic alternative model";
-export const QA_HISTORY_TITLE = "QA sintético: productos, reservas y finanzas / Synthetic QA: products, reservations and finances";
+export const QA_MODEL_LABEL = "Modelo sintÃ©tico alternativo / Synthetic alternative model";
+export const QA_HISTORY_TITLE = "QA sintÃ©tico: productos, reservas y finanzas / Synthetic QA: products, reservations and finances";
 const modeMetadata = { configuration: "configured", authentication: "unknown", inference: "unknown", tools: "unknown", observed_at: null, block_reason: null };
 
 // Synthetic projection only. The real server computes this from its native
@@ -33,7 +35,7 @@ function projectProviderFixture(changes: NodiaAiPublicProposal["steps"][number][
       return { ...field, value: { ...preferences, items: preferences.items.map(item => {
         if (!item || typeof item !== "object" || item.kind !== "object") return item;
         const mode = item.fields.find(entry => entry.field_key === "mode")?.value;
-        if (typeof mode !== "string" || !["api_key", "token_plan_web", "token_plan_agentic"].includes(mode)) return item;
+        if (typeof mode !== "string" || !["api_key", "agentic"].includes(mode)) return item;
         const selected = changes.find(entry => entry.field_key === `${mode}.selected_model`);
         const level = changes.find(entry => entry.field_key === `${mode}.thinking_level`);
         return { ...item, fields: item.fields.map(entry => {
@@ -49,6 +51,11 @@ function projectProviderFixture(changes: NodiaAiPublicProposal["steps"][number][
 
 export function installFixture(scenario: string | null) {
   const requests: { method: string; path: string }[] = [];
+  // Browser-only upload storage: no network, cloud files or provider qualification.
+  const attachments = new Map<string, NodiaAiAttachment>();
+  const attachmentRequests = new Map<string, string>();
+  const attachmentContents = new Map<string, Blob>();
+  let attachmentSequence = 0;
   let nextFailure: string | null = null;
   const canConfirmScenario = scenario === "confirmation-ready" || scenario === "core-delete";
   const workflowScenario = scenario === "workflow" || scenario === "workflow-partial";
@@ -91,7 +98,7 @@ export function installFixture(scenario: string | null) {
   const initialRef = { proposal_id: reviewedProposal.proposal_id, revision: reviewedProposal.revision, hash: reviewedProposal.hash };
   let conversation: NodiaAiConversation = {
     conversation_id: CHAT_ID, owner_user_id: "90000000991", title: QA_HISTORY_TITLE,
-    is_pinned: false, is_archived: false, revision: 1, selection: scenario === "observation" || proposalScenario ? AGENTIC_SELECTION : WEB_SELECTION,
+    is_pinned: false, is_archived: false, revision: 1, selection: scenario === "observation" || proposalScenario ? AGENTIC_SELECTION : BASE_SELECTION,
     routing: { schema_version: 1, enabled: false, revision: 1, target: null },
     last_owner_message_at: timestamp, expires_at: "2099-01-01T00:00:00Z", created_at: timestamp, updated_at: timestamp,
     read_only: scenario === "read-only",
@@ -99,7 +106,7 @@ export function installFixture(scenario: string | null) {
   const run: NodiaAiRun | null = scenario === "unknown" || scenario === "observation" || proposalScenario || scenario === "clarification" ? {
     run_id: "10000000-0000-4000-8000-000000000002", conversation_id: CHAT_ID,
     user_message_id: "10000000-0000-4000-8000-000000000003", assistant_message_id: null,
-    revision: 1, selection: WEB_SELECTION, catalog_version: "qa-synthetic-catalog",
+    revision: 1, selection: BASE_SELECTION, catalog_version: "qa-synthetic-catalog",
     state: scenario === "unknown" ? "unknown" : scenario === "clarification" ? "waiting_for_user" : "completed", phase: "qa-synthetic-state", deadline_at: timestamp, created_at: timestamp, completed_at: scenario === "unknown" || scenario === "clarification" ? null : timestamp,
     error: null, routing: conversation.routing,
     budget_limits: { schema_version: 1, tool_calls: 12, mcp_rpc_messages: 128, provider_dispatches: 3, compactions: 1, delegations: 1 },
@@ -107,10 +114,34 @@ export function installFixture(scenario: string | null) {
   } : null;
   const messages: NodiaAiMessagePage = { conversation_id: CHAT_ID, next_cursor: null, items: [
     { message_id: "10000000-0000-4000-8000-000000000003", run_id: null, seq: "1", role: "user", status: "sealed", visibility: "visible", author_user_id: "90000000991", sealed_at: timestamp, created_at: timestamp,
-      parts: [{ kind: "text", text: "[QA SINTÉTICO / SYNTHETIC QA] Muéstrame el total por proveedor del mes. Esta conversación y sus datos existen solamente en el adaptador de pruebas." }] },
+      parts: [{ kind: "text", text: "[QA SINTÃ‰TICO / SYNTHETIC QA] MuÃ©strame el total por proveedor del mes. Esta conversaciÃ³n y sus datos existen solamente en el adaptador de pruebas." }] },
     { message_id: "10000000-0000-4000-8000-000000000004", run_id: null, seq: "2", role: "assistant", status: "sealed", visibility: "visible", author_user_id: null, sealed_at: timestamp, created_at: timestamp,
-      parts: [{ kind: "text", text: "[RESPUESTA SINTÉTICA / SYNTHETIC RESPONSE] Este contenido permite revisar lectura, contraste y scroll. No se consultó Gemini ni una base de datos.\n\n" + "Detalle sintético de prueba con texto extenso que conserva la información al cambiar de ancho. / Synthetic detail retained across viewport changes.\n".repeat(12) }] },
+      parts: [{ kind: "text", text: "[RESPUESTA SINTÃ‰TICA / SYNTHETIC RESPONSE] Este contenido permite revisar lectura, contraste y scroll. No se consultÃ³ Gemini ni una base de datos.\n\n" + "Detalle sintÃ©tico de prueba con texto extenso que conserva la informaciÃ³n al cambiar de ancho. / Synthetic detail retained across viewport changes.\n".repeat(12) }] },
   ] };
+  if (scenario === "chat-redesign") {
+    conversation = { ...conversation, title: "Tu espacio de trabajo · QA" };
+    messages.items = messages.items.map((message, index) => message.visibility === "visible"
+      ? { ...message, parts: [{ kind: "text", text: index === 0
+        ? "Preparemos las tareas de hoy. ¿Por dónde empezamos?"
+        : "Podemos empezar por lo más importante para tu negocio.\n\nCuéntame qué necesitas revisar y avanzamos paso a paso.\n\nEsta es una conversación sintética para revisar el diseño." }] } : message);
+  }
+  if (scenario === "chat-markdown") {
+    conversation = { ...conversation, title: "Markdown · QA sintético" };
+    messages.items = messages.items.map(message => ({ ...message, parts: [{ kind: "text", text: message.role === "user"
+      ? "**Texto literal del usuario** · QA sin proveedor ni datos reales."
+      : [
+        "### Propuesta sintética para revisión",
+        "**Negocio:** Laboratorio de QA. Texto de prueba, sin venta ni propuesta real.",
+        "| Producto | Cantidad | Precio CLP | Disponibilidad |\n| :--- | ---: | ---: | :---: |\n| Producto de prueba | 2 | 1200 | Disponible |\n| Producto sin precio | 0 | null | Por confirmar |",
+        "**Total de prueba: $2.400 CLP**",
+        "- Efectivo informativo.\n- La venta **no se ha guardado ni confirmado**.\n- [x] Revisión de presentación\n- [ ] Confirmación humana pendiente",
+        "> El Markdown presenta información; no confirma operaciones.",
+        "```json\n{ \"fixture\": true, \"description\": \"" + "synthetic_code_".repeat(20) + "\" }\n```",
+        "Enlace de prueba: [Documentación](https://example.com/docs). Texto largo: " + "palabra".repeat(45),
+        "![Imagen de prueba sin carga](https://markdown-resource.invalid/should-not-load.png)",
+        "<img src=\"https://markdown-resource.invalid/raw.png\" onerror=\"alert('fixture')\">\nContenido HTML literal preservado.",
+      ].join("\n\n") }] }));
+  }
   const adapter: AxiosAdapter = async config => {
     const path = config.url ?? "";
     const method = (config.method ?? "get").toUpperCase();
@@ -121,20 +152,74 @@ export function installFixture(scenario: string | null) {
       || nextFailure === "selection" && path.endsWith("/selection")
       || nextFailure === "detail" && path.endsWith(`/${CHAT_ID}`)
       || nextFailure === "proposal" && path.includes("/proposals/")
+      || nextFailure === "attachment-intent" && path.endsWith("/attachments") && method === "POST"
+      || nextFailure === "attachment-upload" && path.includes("/attachments/") && path.endsWith("/content") && method === "PUT"
+      || nextFailure === "attachment-review" && path.includes("/attachments/") && path.endsWith("/interpretation") && method === "PATCH"
+      || nextFailure === "attachment-remove" && path.includes("/attachments/") && method === "DELETE"
       || nextFailure === "proposal-edit" && path.includes("/proposals/") && method === "PATCH";
     if (failureMatches) {
       nextFailure = null;
-      throw new AxiosError("Synthetic fixture failure", "ERR_BAD_RESPONSE", config, undefined, response({ message: "Fallo sintético recuperable / Recoverable synthetic failure" }, 503));
+      throw new AxiosError("Synthetic fixture failure", "ERR_BAD_RESPONSE", config, undefined, response({ message: "Fallo sintÃ©tico recuperable / Recoverable synthetic failure" }, 503));
     }
+    if (method === "GET" && path.endsWith("/attachments/capabilities")) return response({
+      limits: { file_bytes: 20971520, files_per_message: 4, message_files_bytes: 41943040, audio_seconds: 300, pdf_pages: 50, image_pixels: 40000000 },
+      reviewed_text: true, native_modalities: { image: null, pdf: null, audio: null }, native_media_types: [],
+    });
+    if (method === "POST" && path === "/nodia-ai/attachments") {
+      const input = attachmentCreateSchema.parse(JSON.parse(String(config.data)));
+      if (input.conversation_id !== CHAT_ID) throw new Error("Unexpected synthetic attachment conversation");
+      const priorId = attachmentRequests.get(input.client_request_id);
+      const prior = priorId ? attachments.get(priorId) : undefined;
+      const attachment: NodiaAiAttachment = prior ?? {
+        attachment_id: `50000000-0000-4000-8000-${String(++attachmentSequence).padStart(12, "0")}`,
+        conversation_id: CHAT_ID, kind: input.kind, state: "uploading", file_name: input.file_name,
+        media_type: null, byte_count: null, page_count: null, duration_seconds: null, interpretation: null,
+      };
+      attachments.set(attachment.attachment_id, attachment);
+      attachmentRequests.set(input.client_request_id, attachment.attachment_id);
+      return response({ attachment, upload: { method: "PUT", path: `/nodia-ai/attachments/${attachment.attachment_id}/content`, expires_at: "2099-01-01T00:00:00Z" } });
+    }
+    const attachmentPath = /^\/nodia-ai\/attachments\/([0-9a-f-]+)(?:\/(content|interpretation))?$/.exec(path);
+    if (attachmentPath) {
+      const [, id, operation] = attachmentPath;
+      const stored = attachments.get(id);
+      if (!stored) throw new AxiosError("Missing synthetic attachment", "ERR_BAD_REQUEST", config, undefined, response({ message: "Synthetic attachment not found" }, 404));
+      if (method === "GET" && !operation) return response(stored);
+      if (method === "DELETE" && !operation) {
+        attachments.delete(id); attachmentContents.delete(id);
+        return response({ deleted: true });
+      }
+      if (method === "PUT" && operation === "content") {
+        if (!(config.data instanceof Blob)) throw new Error("Synthetic upload expects a browser Blob");
+        const content = config.data;
+        const ready: NodiaAiAttachment = { ...stored, state: "ready", media_type: content.type.split(";")[0], byte_count: content.size };
+        attachments.set(id, ready); attachmentContents.set(id, content);
+        if (nextFailure === "attachment-upload-response-lost") {
+          nextFailure = null;
+          throw new AxiosError("Synthetic upload response lost", "ERR_NETWORK", config);
+        }
+        return response(ready);
+      }
+      if (method === "GET" && operation === "content") return response(attachmentContents.get(id));
+      if (method === "PATCH" && operation === "interpretation") {
+        const input = JSON.parse(String(config.data)) as { text: string; expected_revision: number };
+        if (input.expected_revision !== (stored.interpretation?.revision ?? 0)) throw new AxiosError("Synthetic interpretation revision conflict", "ERR_BAD_REQUEST", config, undefined, response({ message: "Synthetic interpretation revision conflict" }, 409));
+        const reviewed: NodiaAiAttachment = { ...stored, interpretation: { text: input.text, origin: "user_reviewed", reviewed: true, revision: input.expected_revision + 1 } };
+        attachments.set(id, reviewed);
+        return response(reviewed);
+      }
+    }
+    if (method === "GET" && path === "/nodia-ai/preferences") return response({ items: [], next_cursor: null });
+    if (method === "GET" && path === "/nodia-ai/preferences/catalog") return response({ items: [] });
     if (method === "GET" && path.endsWith("/connections")) return response({ next_cursor: null, items: [{
-      connection_id: WEB_SELECTION.connection_id, label: "Conexión sintética QA / Synthetic QA connection", provider_key: "gemini", is_active: true,
+      connection_id: BASE_SELECTION.connection_id, label: scenario === "chat-redesign" ? "Nodia · QA" : "ConexiÃ³n sintÃ©tica QA / Synthetic QA connection", provider_key: "gemini", is_active: true, is_default: true, default_mode: "agentic",
       modes: [
-        { ...modeMetadata, mode: "token_plan_web", configured_selection: WEB_SELECTION, models: [
-          { model_id: WEB_SELECTION.model_id, label: "Modelo Web sintético / Synthetic Web model", efforts: [] },
+        { ...modeMetadata, mode: "agentic", configured_selection: BASE_SELECTION, models: [
+          { model_id: BASE_SELECTION.model_id, label: scenario === "chat-redesign" ? "Modelo de prueba" : "Modelo Agentic base sintÃ©tico / Synthetic base Agentic model", efforts: [] },
+          { model_id: AGENTIC_SELECTION.model_id, label: "Modelo Agentic sintÃ©tico / Synthetic Agentic model", efforts: [{ effort_id: "qa-deliberate", label: "Intensidad sintÃ©tica / Synthetic intensity" }] },
           { model_id: "qa-synthetic-alternative", label: QA_MODEL_LABEL, efforts: [] },
         ] },
-        { ...modeMetadata, mode: "token_plan_agentic", configured_selection: AGENTIC_SELECTION, models: [{ model_id: AGENTIC_SELECTION.model_id, label: "Modelo Agentic sintético / Synthetic Agentic model", efforts: [{ effort_id: "qa-deliberate", label: "Intensidad sintética / Synthetic intensity" }] }] },
-        { ...modeMetadata, configuration: "incomplete", tools: "unsupported", mode: "api_key", configured_selection: null, models: [] },
+        { ...modeMetadata, mode: "api_key", configured_selection: API_SELECTION, models: [{ model_id: API_SELECTION.model_id, label: "Modelo API sintético / Synthetic API model", efforts: [] }] },
       ],
     }] });
     if (method === "GET" && path.endsWith("/events")) return response({ conversation_id: CHAT_ID, items: scenario === "observation" ? [{
@@ -192,15 +277,16 @@ export function installFixture(scenario: string | null) {
     if (method === "GET" && path.endsWith("/observation") && scenario === "observation") return response({
       result_ref: { tool_call_id: "10000000-0000-4000-8000-000000000006", tool_name: "qa_synthetic_businesses_list", contract_hash: "a".repeat(64) },
       observed_at: timestamp, source: { module_key: "businesses", resource_key: "businesses", operation_key: "list", description_key: "synthetic.qa.source" },
-      summary: { total: 0, returned: 0 }, navigation: [{ kind: "business_detail", id: "10000000-0000-4000-8000-000000000007", module_route: "/tools/business", label: "Negocio sintético / Synthetic business" }],
+      summary: { total: 0, returned: 0 }, navigation: [{ kind: "business_detail", id: "10000000-0000-4000-8000-000000000007", module_route: "/business", label: "Negocio sintÃ©tico / Synthetic business" }],
     });
     if (method === "GET" && path.endsWith("/eligibility")) {
       const params = config.params as Partial<NodiaAiSelection>;
-      const selection: NodiaAiSelection = { connection_id: WEB_SELECTION.connection_id, mode: params.mode ?? "token_plan_web", model_id: params.model_id ?? WEB_SELECTION.model_id, effort_id: params.effort_id ?? null };
+      const selection: NodiaAiSelection = { connection_id: BASE_SELECTION.connection_id, mode: params.mode ?? "agentic", model_id: params.model_id ?? BASE_SELECTION.model_id, effort_id: params.effort_id ?? null };
       const data: NodiaAiEligibility = {
-        selection, available: selection.mode !== "api_key", reason: null, observed_at: timestamp,
-        supports_mcp: selection.mode === "token_plan_agentic",
-        routing_target: selection.mode === "token_plan_web" ? { selection: AGENTIC_SELECTION, configuration_generation: "qa-synthetic-configuration", session_generation: "qa-synthetic-session" } : null,
+        selection, available: scenario !== "chat-markdown", reason: scenario === "chat-markdown" ? "nodia_ai:runtime_busy" : null, observed_at: timestamp,
+        supports_tools: true,
+        supports_mcp: selection.mode === "agentic",
+        routing_target: null,
       };
       return response(data);
     }

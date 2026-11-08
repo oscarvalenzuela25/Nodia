@@ -76,3 +76,14 @@ Guardar genera revisión/hash nuevos; `failNext("proposal-edit")` prueba rechazo
 `secure-key` monta una ejecución ya confirmada y pausada, con target bigint exacto. Abrir canal seguro carga el formulario local; guardar usa exclusivamente el adaptador sintético y devuelve un recibo UUID. `secure-key-error` rechaza el primer POST con422 sin cerrar la modal ni borrar su input; el siguiente envío explícito completa la fixture. Ninguna entrada se envía a un backend/proveedor o se persiste fuera de la memoria transitoria de la página.
 
 `secure-login` muestra el login Gemini Agentic con enlace oficial sintético; `secure-codex` muestra el código de dispositivo SYNTH-123 y URL oficial. No completar autorizaciones reales desde fixtures. `secure-delete`, `secure-sync` y `secure-logout` representan sus acciones humanas correspondientes; no acreditan efectos remotos ni login de una cuenta real. El descriptor y las interacciones se mantienen fuera de QueryCache/MutationCache; el harness de ejecución sí contiene estado público no secreto. Todos los escenarios requieren el origen aislado5194 y admiten ES/EN/claro/oscuro/móvil.
+
+
+## Compositor conversacional — 2026-10-28
+
+`?scenario=chat-redesign&lang=es&theme=dark` muestra un chat breve sintético para revisar burbujas y compositor en móvil/escritorio. El adaptador ofrece política de adjuntos sintética y cambios de selección, sin admisión de mensajes ni upload real. Proveedor/modo/modelo/intensidad y pegado de un archivo local reutilizan la UI productiva. [Evidencia](../../../../../docs/evidence/nodia-ai-chat-redesign-verification-20261028-r01.json).
+
+### Revisión del compositor — adjuntos automáticos y menú
+
+El mismo escenario simula intención/subida/lectura/revisión/eliminación de adjuntos en memoria del adaptador: no envía archivos al backend ni a cloud. Pegar/elegir inicia la subida automática de la UI; PNG/JPEG/WebP mantienen la miniatura desde el archivo local. El texto revisado sigue siendo explícito y las modalidades nativas de la fixture permanecen desconocidas (`native_media_types: []`). El menú de cada conversación abre las preferencias guardadas con un listado vacío sintético.
+
+`failNext("attachment-intent"|"attachment-upload"|"attachment-review"|"attachment-remove")` rechaza sólo la siguiente operación correspondiente. `failNext("attachment-upload-response-lost")` conserva un resultado `ready` sintético y pierde la respuesta para comprobar recuperación por lectura sin repetir el PUT. No afirma idempotencia SQL, R2, inferencia ni micrófono real. El estado de estos adjuntos existe únicamente durante la vida de esa instancia de la fixture.

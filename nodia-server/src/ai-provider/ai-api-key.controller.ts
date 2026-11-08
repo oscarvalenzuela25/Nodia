@@ -19,9 +19,7 @@ import { GetAllAiApiKeysUseCase } from './use-case/get-all-ai-api-keys.use-case.
 import { CreateAiApiKeyUseCase } from './use-case/create-ai-api-key.use-case.js';
 import { UpdateAiApiKeyUseCase } from './use-case/update-ai-api-key.use-case.js';
 import { DeleteAiApiKeyUseCase } from './use-case/delete-ai-api-key.use-case.js';
-import { RequireAction } from '../authorization/action-permission.guard.js';
 
-@RequireAction('ai:manage')
 @Controller(['ai-api-key', 'ai-api-keys'])
 export class AiApiKeyController {
   constructor(

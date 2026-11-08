@@ -1,4 +1,5 @@
 import { InvoiceMobileCard } from "../../../../components/BusinessMobileCards/BusinessMobileCards";
+import { TABLE_PANEL_RADIUS } from "../../../../../../theme/tablePanel";
 import { useMediaQuery, useTheme } from "@mui/material";
 import type { FC, MouseEvent } from "react";
 import { useState, useMemo } from "react";
@@ -38,13 +39,14 @@ import { sileo } from "sileo";
 
 import {
   useProducts,
+  useProductAvailability,
   useProviders,
   useInvoices,
 } from "../../../../infrastructure/useServices";
 import type { InvoiceEntity } from "../../../../infrastructure/types";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import { Skeleton } from "boneyard-js/react";
-import { KpiCardsGridSkeleton, TableSkeleton } from "../../../../../../components/skeletons";
+import { KpiCardSkeleton, TableSkeleton } from "../../../../../../components/skeletons";
 import InvoicePreviewModal from "../InvoicesTab/components/InvoicePreviewModal/InvoicePreviewModal";
 import {
   KpiCard,
@@ -74,9 +76,10 @@ export const OverviewTab: FC<Props> = ({
 }) => {
   const { t, i18n } = useTranslation(["business", "core"]);
   const mobile = useMediaQuery(useTheme().breakpoints.down("sm"));
+  const availability = useProductAvailability(businessId);
 
   const { data: productsData, isLoading: isLoadingProducts, isError: productsError, isFetching: productsFetching, refetch: refetchProducts } = useProducts({
-    all: true,
+    limit: 1,
     q: {
       business_id_eq: businessId,
       s: "created_at desc",
@@ -105,11 +108,10 @@ export const OverviewTab: FC<Props> = ({
 
   const isLoadingOverview = isLoadingProducts || isLoadingProviders || isLoadingInvoices;
 
-  const products = useMemo(() => productsData?.data ?? [], [productsData?.data]);
   const providers = useMemo(() => providersData?.data ?? [], [providersData?.data]);
   const invoices = useMemo(() => invoicesData?.data ?? [], [invoicesData?.data]);
   const recentInvoices = useMemo(() => (recentQuery.data?.data ?? []).filter((invoice) => invoice.is_active).slice(0, 10), [recentQuery.data?.data]);
-  const productsComplete = !productsError && !!productsData && (productsData.meta?.total_items ?? 0) <= products.length;
+  const productsComplete = !productsError && !!productsData;
   const providersComplete = !providersError && !!providersData && (providersData.meta?.total_items ?? 0) <= providers.length;
   const invoicesComplete = !invoicesError && !!invoicesData && (invoicesData.meta?.total_items ?? 0) <= invoices.length;
   const isFetchingOverview = productsFetching || providersFetching || invoicesFetching;
@@ -165,25 +167,10 @@ export const OverviewTab: FC<Props> = ({
   };
 
   // Metrics calculation
-  const totalProducts = productsData?.meta?.total_items ?? products.length;
-  const normalStockCount = products.filter(
-    (p) => Number(p.stock || 0) >= 10
-  ).length;
-  const lowStockCount = products.filter(
-    (p) => Number(p.stock || 0) > 0 && Number(p.stock || 0) < 10
-  ).length;
-  const outOfStockCount = products.filter(
-    (p) => Number(p.stock || 0) <= 0
-  ).length;
-
+  const totalProducts = productsData?.meta?.total_items ?? 0;
   const activeProvidersList = providers.filter((p) => p.is_active);
   const activeProviders = activeProvidersList.length;
   const inactiveProviders = providers.filter((p) => !p.is_active).length;
-
-  const totalStock = products.reduce(
-    (acc, p) => acc + Number(p.stock || 0),
-    0
-  );
 
   const formatMonthLabel = (monthKey: string, lang: string): string => {
     const [yearStr, monthStr] = monthKey.split("-");
@@ -248,187 +235,218 @@ export const OverviewTab: FC<Props> = ({
       {!isLoadingOverview && (!productsComplete || !providersComplete || !invoicesComplete) && (
         <Typography color="text.secondary" role="status">{t("business:aggregates_unavailable")}</Typography>
       )}
-      {/* 3 Top KPI Cards */}
-      <Skeleton
-        loading={isLoadingOverview}
-        fallback={<KpiCardsGridSkeleton />}
-      >
-        <Grid container spacing={3}>
+      {/* Desktop rows: catalog/performance, registered/key providers, recent invoices. */}
+      <Grid container rowSpacing={3} columnSpacing={2}>
         {/* KPI 1: Catálogo de Productos */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <KpiCard>
-            <Box>
-              <KpiTop>
-                <KpiTitle sx={{ mb: 0 }}>{t("business:kpi_products_label")}</KpiTitle>
-                <Inventory2OutlinedIcon color="primary" fontSize="small" />
-              </KpiTop>
-              <KpiValue>
-                {productsError ? "—" : totalProducts}
-                <Typography component="span" variant="subtitle2" color="text.secondary">
-                  {t("business:kpi_products_unit", "productos")}
-                </Typography>
-              </KpiValue>
-              {productsComplete && <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}>
-                <Chip
-                  label={t("business:kpi_products_stock_normal", {
-                    count: normalStockCount,
-                    defaultValue: `${normalStockCount} stock normal`,
-                  })}
-                  size="small"
-                  color="success"
-                  variant="outlined"
-                  sx={{ height: 22, fontSize: "0.75rem", fontWeight: 600 }}
-                  data-testid="kpi-stock-normal-chip"
-                />
-                <Chip
-                  label={t("business:kpi_products_stock_low_badge", {
-                    count: lowStockCount,
-                    defaultValue: `${lowStockCount} stock bajo`,
-                  })}
-                  size="small"
-                  color="warning"
-                  variant="outlined"
-                  sx={{ height: 22, fontSize: "0.75rem", fontWeight: 600 }}
-                  data-testid="kpi-stock-low-chip"
-                />
-                <Chip
-                  label={t("business:kpi_products_stock_out", {
-                    count: outOfStockCount,
-                    defaultValue: `${outOfStockCount} sin stock`,
-                  })}
-                  size="small"
-                  color="error"
-                  variant="outlined"
-                  sx={{ height: 22, fontSize: "0.75rem", fontWeight: 600 }}
-                  data-testid="kpi-stock-out-chip"
-                />
-              </Box>}
-            </Box>
-          </KpiCard>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Skeleton loading={isLoadingOverview} fallback={<KpiCardSkeleton />}>
+            <KpiCard>
+              <Box>
+                <KpiTop>
+                  <KpiTitle sx={{ mb: 0 }}>{t("business:kpi_products_label")}</KpiTitle>
+                  <Inventory2OutlinedIcon color="primary" fontSize="small" />
+                </KpiTop>
+                <KpiValue>
+                  {productsError ? "—" : totalProducts}
+                  <Typography component="span" variant="subtitle2" color="text.secondary">
+                    {t("business:kpi_products_unit", "productos")}
+                  </Typography>
+                </KpiValue>
+                {availability.isError && <Typography color="error">{t("business:pos.availability_error")}</Typography>}
+                {availability.data && <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}>
+                  <Typography variant="caption" sx={{ width: "100%" }}>{t("business:pos.active_products")}</Typography>
+                  <Chip size="small" color="success" variant="outlined" label={`${t("business:pos.available")}: ${availability.data.available}`} />
+                  <Chip size="small" color="error" variant="outlined" label={`${t("business:pos.unavailable")}: ${availability.data.unavailable}`} />
+                  <Chip size="small" variant="outlined" label={`${t("business:pos.availability_unknown")}: ${availability.data.unknown}`} />
+                </Box>}
+              </Box>
+            </KpiCard>
+          </Skeleton>
         </Grid>
 
-        {/* KPI 2: Cadena de Abastecimiento */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <KpiCard>
-            <Box>
-              <KpiTop>
-                <KpiTitle sx={{ mb: 0 }}>{t("business:kpi_providers_label")}</KpiTitle>
-                <StorefrontOutlinedIcon color="primary" fontSize="small" />
-              </KpiTop>
-              {providersComplete && <Box
-                sx={{
-                  display: "flex",
-                  gap: 1,
-                  flexWrap: "wrap",
-                  alignItems: "center",
-                  mt: 1.5,
-                  minHeight: 40,
-                }}
-              >
-                <Chip
-                  label={
-                    activeProviders === 1
-                      ? t("business:kpi_providers_active_single", {
-                          count: activeProviders,
-                          defaultValue: "1 Proveedor activo",
-                        })
-                      : t("business:kpi_providers_active_plural", {
-                          count: activeProviders,
-                          defaultValue: `${activeProviders} Proveedores activos`,
-                        })
-                  }
-                  size="small"
-                  color="success"
-                  variant="outlined"
-                  sx={{ height: 26, fontSize: "0.8rem", fontWeight: 600 }}
-                  data-testid="kpi-providers-active-chip"
-                />
-                <Chip
-                  label={
-                    inactiveProviders === 1
-                      ? t("business:kpi_providers_inactive_single", {
-                          count: inactiveProviders,
-                          defaultValue: "1 Proveedor inactivo",
-                        })
-                      : t("business:kpi_providers_inactive_plural", {
-                          count: inactiveProviders,
-                          defaultValue: `${inactiveProviders} Proveedores inactivos`,
-                        })
-                  }
-                  size="small"
-                  color="default"
-                  variant="outlined"
-                  sx={{ height: 26, fontSize: "0.8rem", fontWeight: 600 }}
-                  data-testid="kpi-providers-inactive-chip"
-                />
-              </Box>}
-            </Box>
-          </KpiCard>
-        </Grid>
-
-        {/* KPI 3: Rendimiento Comercial */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <KpiCard>
-            <Box>
-              <KpiTop>
-                <KpiLabel>{t("business:kpi_invoices_title")}</KpiLabel>
-                <ReceiptLongOutlinedIcon color="primary" fontSize="small" />
-              </KpiTop>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  flexWrap: "wrap",
-                  gap: 1,
-                  mb: 0.5,
-                }}
-              >
-                <KpiTitle sx={{ mb: 0 }}>{t("business:kpi_invoices_label")}</KpiTitle>
-                <Select
-                  size="small"
-                  disabled={isFetchingOverview}
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  data-testid="kpi-invoices-month-select"
+        {/* Commercial performance beside the product catalog */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Skeleton loading={isLoadingOverview} fallback={<KpiCardSkeleton />}>
+            <KpiCard>
+              <Box>
+                <KpiTop>
+                  <KpiLabel>{t("business:kpi_invoices_title")}</KpiLabel>
+                  <ReceiptLongOutlinedIcon color="primary" fontSize="small" />
+                </KpiTop>
+                <Box
                   sx={{
-                    height: 28,
-                    fontSize: "0.75rem",
-                    fontWeight: 600,
-                    borderRadius: 2,
-                    "& .MuiSelect-select": { py: 0.25, px: 1 },
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    gap: 1,
+                    mb: 0.5,
                   }}
                 >
-                  {availableMonths.map((m) => (
-                    <MenuItem key={m} value={m} sx={{ fontSize: "0.8rem" }}>
-                      {formatMonthLabel(m, i18n.language)}
-                    </MenuItem>
-                  ))}
-                </Select>
+                  <KpiTitle sx={{ mb: 0 }}>{t("business:kpi_invoices_label")}</KpiTitle>
+                  <Select
+                    size="small"
+                    disabled={isFetchingOverview}
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    data-testid="kpi-invoices-month-select"
+                    sx={{
+                      height: 28,
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      borderRadius: 2,
+                      "& .MuiSelect-select": { py: 0.25, px: 1 },
+                    }}
+                  >
+                    {availableMonths.map((m) => (
+                      <MenuItem key={m} value={m} sx={{ fontSize: "0.8rem" }}>
+                        {formatMonthLabel(m, i18n.language)}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: "block" }}
+                  data-testid="kpi-invoices-month-caption"
+                >
+                  {t("business:kpi_invoices_month_caption", {
+                    month: formatMonthLabel(selectedMonth, i18n.language),
+                    defaultValue: `Facturas correspondientes a ${formatMonthLabel(selectedMonth, i18n.language)}`,
+                  })}
+                </Typography>
+                <KpiValue sx={{ mt: 1 }} data-testid="kpi-invoiced-current-month">
+                  {invoicesComplete ? `$${Math.round(selectedMonthInvoiced).toLocaleString()}` : "—"}
+                </KpiValue>
               </Box>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ display: "block" }}
-                data-testid="kpi-invoices-month-caption"
-              >
-                {t("business:kpi_invoices_month_caption", {
-                  month: formatMonthLabel(selectedMonth, i18n.language),
-                  defaultValue: `Facturas correspondientes a ${formatMonthLabel(selectedMonth, i18n.language)}`,
-                })}
-              </Typography>
-              <KpiValue sx={{ mt: 1 }} data-testid="kpi-invoiced-current-month">
-                {invoicesComplete ? `$${Math.round(selectedMonthInvoiced).toLocaleString()}` : "—"}
-              </KpiValue>
-            </Box>
-          </KpiCard>
+            </KpiCard>
+          </Skeleton>
         </Grid>
-      </Grid>
-      </Skeleton>
 
-      {/* Middle Section: Recent Invoices (8 cols) & Key Providers (4 cols) */}
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 12, md: 7, lg: 8 }}>
+        {/* Registered providers beside key providers */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Skeleton loading={isLoadingOverview} fallback={<KpiCardSkeleton />}>
+            <KpiCard>
+              <Box>
+                <KpiTop>
+                  <KpiTitle sx={{ mb: 0 }}>{t("business:kpi_providers_label")}</KpiTitle>
+                  <StorefrontOutlinedIcon color="primary" fontSize="small" />
+                </KpiTop>
+                {providersComplete && <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    mt: 1.5,
+                    minHeight: 40,
+                  }}
+                >
+                  <Chip
+                    label={
+                      activeProviders === 1
+                        ? t("business:kpi_providers_active_single", {
+                            count: activeProviders,
+                            defaultValue: "1 Proveedor activo",
+                          })
+                        : t("business:kpi_providers_active_plural", {
+                            count: activeProviders,
+                            defaultValue: `${activeProviders} Proveedores activos`,
+                          })
+                    }
+                    size="small"
+                    color="success"
+                    variant="outlined"
+                    sx={{ height: 26, fontSize: "0.8rem", fontWeight: 600 }}
+                    data-testid="kpi-providers-active-chip"
+                  />
+                  <Chip
+                    label={
+                      inactiveProviders === 1
+                        ? t("business:kpi_providers_inactive_single", {
+                            count: inactiveProviders,
+                            defaultValue: "1 Proveedor inactivo",
+                          })
+                        : t("business:kpi_providers_inactive_plural", {
+                            count: inactiveProviders,
+                            defaultValue: `${inactiveProviders} Proveedores inactivos`,
+                          })
+                    }
+                    size="small"
+                    color="default"
+                    variant="outlined"
+                    sx={{ height: 26, fontSize: "0.8rem", fontWeight: 600 }}
+                    data-testid="kpi-providers-inactive-chip"
+                  />
+                </Box>}
+              </Box>
+            </KpiCard>
+          </Skeleton>
+        </Grid>
+
+        {/* Key Providers Widget */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <SectionCard sx={{ height: "100%" }}>
+            <SectionHeader>
+              <SectionTitle>
+                <StorefrontOutlinedIcon color="primary" fontSize="small" />
+                {t("business:key_providers_title")}
+              </SectionTitle>
+              <Chip
+                label={providersComplete ? t("business:kpi_providers_active_plural", { count: activeProviders }) : "—"}
+                size="small"
+                color="success"
+                variant="outlined"
+              />
+            </SectionHeader>
+
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: "block", mb: 2, mt: -1 }}
+              data-testid="key-providers-explanation"
+            >
+              {t("business:pos.providers_explanation")}
+            </Typography>
+
+            <ScrollablePanelContent data-testid="key-providers-scroll-panel">
+              <Stack spacing={2.5} sx={{ pr: 0.5 }}>
+                {activeProvidersList.length > 0 ? (
+                  activeProvidersList.map((prov) => {
+                    return (
+                      <Box key={prov.id} data-testid={`key-provider-progress-${prov.id}`}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            mb: 0.5,
+                          }}
+                        >
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            {prov.name}
+                          </Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {prov.is_active ? t("business:status_active") : t("business:status_inactive")}
+                          </Typography>
+                        </Box>
+
+                      </Box>
+                    );
+                  })
+                ) : (
+                  <Box sx={{ py: 3, textAlign: "center" }}>
+                    <Typography variant="body2" color="text.secondary">
+                      {t("business:no_active_providers")}
+                    </Typography>
+                  </Box>
+                )}
+              </Stack>
+            </ScrollablePanelContent>
+          </SectionCard>
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
           <SectionCard>
             <SectionHeader>
               <SectionTitle>
@@ -461,7 +479,7 @@ export const OverviewTab: FC<Props> = ({
                     { align: "right", header: t("core:actions") },
                   ]}
                   rows={4}
-                  paperSx={{ borderRadius: 2 }}
+                  paperSx={{ borderRadius: TABLE_PANEL_RADIUS }}
                 />
               }
             >
@@ -471,7 +489,7 @@ mobile ? <Box sx={{ display: "grid", gap: 2 }}>
                 </Box> : (                <TableContainer
                   component={Paper}
                   sx={{
-                    borderRadius: 3,
+                    borderRadius: TABLE_PANEL_RADIUS,
                     border: (theme) => `1px solid ${theme.palette.divider}`,
                     boxShadow: "none",
                     overflowX: "auto",
@@ -636,79 +654,6 @@ mobile ? <Box sx={{ display: "grid", gap: 2 }}>
                 </Box>
               )}
             </Skeleton>
-          </SectionCard>
-        </Grid>
-
-        {/* Key Providers Widget */}
-        <Grid size={{ xs: 12, md: 5, lg: 4 }}>
-          <SectionCard sx={{ height: "100%" }}>
-            <SectionHeader>
-              <SectionTitle>
-                <StorefrontOutlinedIcon color="primary" fontSize="small" />
-                {t("business:key_providers_title")}
-              </SectionTitle>
-              <Chip
-                label={providersComplete ? t("business:kpi_providers_active_plural", { count: activeProviders }) : "—"}
-                size="small"
-                color="success"
-                variant="outlined"
-              />
-            </SectionHeader>
-
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ display: "block", mb: 2, mt: -1 }}
-              data-testid="key-providers-explanation"
-            >
-              {t(
-                "business:key_providers_progress_explanation",
-                "Las barras de progreso indican el porcentaje del stock total de inventario asociado a cada proveedor."
-              )}
-            </Typography>
-
-            <ScrollablePanelContent data-testid="key-providers-scroll-panel">
-              <Stack spacing={2.5} sx={{ pr: 0.5 }}>
-                {activeProvidersList.length > 0 ? (
-                  activeProvidersList.map((prov) => {
-                    const provStock = products
-                      .filter((p) => String(p.provider_id) === String(prov.id))
-                      .reduce((acc, p) => acc + (Number(p.stock) || 0), 0);
-                    const pct =
-                      totalStock > 0 ? Math.round((provStock / totalStock) * 100) : 0;
-                    return (
-                      <Box key={prov.id} data-testid={`key-provider-progress-${prov.id}`}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            mb: 0.5,
-                          }}
-                        >
-                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {prov.name}
-                          </Typography>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {pct}%
-                          </Typography>
-                        </Box>
-                        <LinearProgress
-                          variant="determinate"
-                          value={pct}
-                          sx={{ height: 6, borderRadius: 3 }}
-                        />
-                      </Box>
-                    );
-                  })
-                ) : (
-                  <Box sx={{ py: 3, textAlign: "center" }}>
-                    <Typography variant="body2" color="text.secondary">
-                      {t("business:no_active_providers")}
-                    </Typography>
-                  </Box>
-                )}
-              </Stack>
-            </ScrollablePanelContent>
           </SectionCard>
         </Grid>
       </Grid>

@@ -5,6 +5,10 @@ export const FormContainer = styled("form")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(2.5),
+  minWidth: 0,
+  "& label, & .MuiGrid-root, & .MuiFormControl-root": { minWidth: 0 },
+  "& label": { overflowWrap: "anywhere" },
+  [theme.breakpoints.down("sm")]: { "& .MuiButton-root": { minHeight: 44, whiteSpace: "normal", overflowWrap: "anywhere" } },
 }));
 
 export const SwitchWrapper = styled(Box)(({ theme }) => {
@@ -12,6 +16,7 @@ export const SwitchWrapper = styled(Box)(({ theme }) => {
 
   return {
     display: "flex",
+    minWidth: 0,
     alignItems: "center",
     justifyContent: "space-between",
     padding: theme.spacing(1, 1.5),
@@ -31,10 +36,14 @@ export const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
   margin: 0,
   width: "100%",
   justifyContent: "space-between",
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: { minHeight: 44 },
   "& .MuiFormControlLabel-label": {
     fontWeight: 600,
     fontSize: "0.875rem",
     color: theme.palette.text.primary,
+    minWidth: 0,
+    overflowWrap: "anywhere",
   },
 }));
 

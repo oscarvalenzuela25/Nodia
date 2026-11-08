@@ -103,10 +103,10 @@ describe("ModuleModal", () => {
     await user.click(linkSelectTrigger);
 
     await waitFor(() => {
-      expect(screen.getByText(/Usuarios \(\/settings\/users\)/i)).toBeInTheDocument();
+      expect(screen.getByText(/Usuarios \(\/users\)/i)).toBeInTheDocument();
     });
 
-    const routeOption = screen.getByText(/Usuarios \(\/settings\/users\)/i);
+    const routeOption = screen.getByText(/Usuarios \(\/users\)/i);
     await user.click(routeOption);
 
     // Enabled now
@@ -117,7 +117,7 @@ describe("ModuleModal", () => {
     expect(handleSubmit).toHaveBeenCalledWith({
       key: "analytics",
       module_group_id: "grp-reports",
-      link: "/settings/users",
+      link: "/users",
       icon: null,
       isActive: true,
       nameTranslations: { es: "", en: "" },
@@ -132,10 +132,10 @@ describe("ModuleModal", () => {
     expect(handleClose).not.toHaveBeenCalled();
   });
 
-  it("does not show occupied routes in the route options dropdown", async () => {
+  it("does not offer a second identity for an occupied route, including stale aliases", async () => {
     mockModulesData = [
       { id: "mod-1", link: "/settings/users" },
-      { id: "mod-2", link: "/settings/roles" },
+      { id: "mod-2", link: "/general-settings/roles" },
     ];
 
     const user = userEvent.setup();
@@ -152,15 +152,16 @@ describe("ModuleModal", () => {
     await user.click(linkSelectTrigger);
 
     await waitFor(() => {
-      expect(screen.getByText(/Acciones \(\/settings\/actions\)/i)).toBeInTheDocument();
+      expect(screen.getByText(/Acciones \(\/actions\)/i)).toBeInTheDocument();
     });
 
     // Occupied routes should NOT be in the document
-    expect(screen.queryByText(/Usuarios \(\/settings\/users\)/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Roles \(\/settings\/roles\)/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Inicio \(\/\)/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Usuarios \(\/users\)/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Roles \(\/roles\)/i)).not.toBeInTheDocument();
     // Free route should be available
-    expect(screen.getByText(/Acciones \(\/settings\/actions\)/i)).toBeInTheDocument();
-    expect(screen.getByText(/Proveedores de IA \(\/settings\/ai-providers\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Acciones \(\/actions\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Proveedores de IA \(\/ai-providers\)/i)).toBeInTheDocument();
   });
 
   it("calls onClose when cancel button is clicked", async () => {
@@ -183,8 +184,8 @@ describe("ModuleModal", () => {
 
   it("renders edit modal with pre-populated data and allows updating", async () => {
     mockModulesData = [
-      { id: "mod-123", link: "/settings/users" },
-      { id: "mod-456", link: "/settings/roles" },
+      { id: "mod-123", link: "/users" },
+      { id: "mod-456", link: "/roles" },
     ];
 
     const handleSubmit = vi.fn();
@@ -213,7 +214,7 @@ describe("ModuleModal", () => {
       screen.getByRole("heading", { name: "Actualizar Módulo" })
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue("users")).toBeInTheDocument();
-    expect(screen.getByText(/Usuarios \(\/settings\/users\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Usuarios \(\/users\)/i)).toBeInTheDocument();
     expect(
       screen.getByText("Administración (administration)")
     ).toBeInTheDocument();
@@ -226,7 +227,7 @@ describe("ModuleModal", () => {
     expect(handleSubmit).toHaveBeenCalledWith({
       id: "mod-123",
       key: "users",
-      link: "/settings/users",
+      link: "/users",
       module_group_id: "grp-admin",
       icon: null,
       nameTranslations: {
@@ -254,7 +255,7 @@ describe("ModuleModal", () => {
         initialData={{
           id: "mod-123",
           key: "users",
-          link: "/settings/users",
+          link: "/users",
           module_group_id: "grp-admin",
           nameTranslations: { es: "", en: "" },
           isActive: true,

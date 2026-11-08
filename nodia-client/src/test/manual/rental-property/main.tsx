@@ -38,7 +38,7 @@ const context = {
       module_group_key: "tools",
       translates: [],
       modules: [
-        { key: "reservations", link: "/tools/reservations", translates: [] },
+        { key: "reservations", link: "/reservations", translates: [] },
       ],
     },
   ],

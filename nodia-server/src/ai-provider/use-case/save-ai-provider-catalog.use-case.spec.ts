@@ -43,7 +43,6 @@ describe('SaveAiProviderCatalogUseCase', () => {
       key: 'gemini',
       is_active: false,
       can_use_api_key: false,
-      can_use_token_plan_web: true,
     });
   });
   it('preserves omitted fields in the full REST projection when an ES2023 DTO owns undefined fields', async () => {
@@ -58,8 +57,7 @@ describe('SaveAiProviderCatalogUseCase', () => {
       name: 'Synthetic provider',
       is_active: true,
       can_use_api_key: false,
-      can_use_token_plan_web: true,
-      can_use_token_plan_agentic: true,
+      can_use_agentic: true,
     });
   });
   it('rejects a key change and unknown properties before starting SQL', async () => {
@@ -77,17 +75,17 @@ describe('SaveAiProviderCatalogUseCase', () => {
     ).rejects.toThrow('ai_provider:catalog_not_found');
     expect(f.catalogRepo.save).not.toHaveBeenCalled();
   });
-  it('denies revoked current permissions even in an inherited transaction', async () => {
+  it('denies revoked current modules even in an inherited transaction', async () => {
     const f = fixture();
     f.setAdmin(false);
-    f.setPermission(false);
+    f.setModule(false);
     await expect(
       f.uc.execute(
         '2',
         { name: 'Forbidden' },
         { ...f.actor, transaction: f.manager },
       ),
-    ).rejects.toThrow('ai_provider:manage_required');
+    ).rejects.toThrow('core:module_access_required');
     expect(f.catalogRepo.findOneBy).not.toHaveBeenCalled();
   });
   it('does not reset the coordinator deadline or open a nested transaction', async () => {
@@ -113,25 +111,26 @@ describe('SaveAiProviderCatalogUseCase', () => {
       );
     expect(f.catalogRepo.save).not.toHaveBeenCalled();
   });
-  it('rejects explicit ChatGPT Web activation in a new or historical OpenAI catalog', async () => {
-    const f = fixture();
-    await expect(
-      f.uc.execute(
-        undefined,
-        { key: ' OpenAI ', name: 'OpenAI', can_use_token_plan_web: true },
-        f.actor,
-      ),
-    ).rejects.toThrow('ai_provider:web_integration_disabled');
-    f.catalog.key = 'openai';
-    f.catalog.can_use_token_plan_web = true;
-    await expect(
-      f.uc.execute('2', { can_use_token_plan_web: true }, f.actor),
-    ).rejects.toThrow('ai_provider:web_integration_disabled');
-    const result = await f.uc.execute(
-      '2',
-      { name: 'Historical preserved' },
-      f.actor,
-    );
-    expect(result.can_use_token_plan_web).toBe(true);
-  });
+  it.each(['gemini', 'openai'])(
+    'rejects retired Web flags for %s before SQL',
+    async (key) => {
+      const f = fixture();
+      await expect(
+        f.uc.execute(
+          undefined,
+          {
+            key,
+            name: key,
+            can_use_token_plan_web: true,
+          } as never,
+          f.actor,
+        ),
+      ).rejects.toThrow('ai_provider:invalid_catalog');
+      await expect(
+        f.uc.execute('2', { can_use_token_plan_web: true } as never, f.actor),
+      ).rejects.toThrow('ai_provider:invalid_catalog');
+      expect(f.source.transaction).not.toHaveBeenCalled();
+      expect(f.catalogRepo.save).not.toHaveBeenCalled();
+    },
+  );
 });

@@ -131,7 +131,9 @@ describe("ProvidersTab Component", () => {
     await screen.findByText("Lácteos del Sur");
     expect(contactServices.getContacts).not.toHaveBeenCalled();
     await user.click(screen.getByTestId("provider-contacts-prov-102"));
-    await screen.findByText("Contactos de Envases Modernos");
+    // The first intent loads and transforms the real lazy contacts module;
+    // allow its cold import under parallel suite load without preloading it.
+    await screen.findByText("Contactos de Envases Modernos", {}, { timeout: 5000 });
     expect(contactServices.getContacts).toHaveBeenCalledWith("prov-102", expect.objectContaining({ page: 1, limit: 25 }), expect.any(AbortSignal));
     await user.click(screen.getByRole("button", { name: "Volver a proveedores" }));
     expect(screen.getByText("Lácteos del Sur")).toBeInTheDocument();

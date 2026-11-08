@@ -12,12 +12,11 @@ function setup(key = 'openai') {
     name: 'Configured API',
     is_active: true,
     use_api_key: true,
-    use_token_plan_web: false,
-    use_token_plan_agentic: false,
+    use_agentic: false,
     default_mode: 'api_key',
     catalog: { key, can_use_api_key: true },
     fields: {
-      token_plan_web: { selected_model: 'other-mode' },
+      agentic: { selected_model: 'other-mode' },
       api_key: {
         selected_model: 'live-account-model',
         available_models: [{ id: 'live-account-model' }],
@@ -93,7 +92,7 @@ describe('API models discovered through use cases', () => {
           model.contextWindow === null && model.capabilities.length === 0,
       ),
     ).toBe(true);
-    expect(result.tokenPlan).toBeNull();
+    expect(result.agenticPlan).toBeNull();
     expect(service.mergeDiscoveredModels).not.toHaveBeenCalled();
     await sync.execute('42', { mode: 'api_key' });
     expect(service.mergeDiscoveredModels).toHaveBeenCalledWith(

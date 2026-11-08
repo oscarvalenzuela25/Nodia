@@ -1,5 +1,7 @@
 # Especificación Técnica: Pipeline de Facturas e Inteligencia Artificial (OCR)
 
+> Cambio solicitado el 2026-10-27: retirar Web y conservar sólo Agentic (`agentic`) y API key (`api_key`), conforme [plan90](../../mvp/90-agentic-api-only-web-retirement.md) y [pruebas91](../../mvp/91-ai-provider-onboarding-verification.md). Los apartados inferiores conservan contratos/evidencias anteriores por fecha y no habilitan Web. Implementación y aceptación en curso; ningún cambio automático de proveedor, modelo o modo por error.
+
 > Estado: borrador preliminar para contraste con base de datos
 > Fecha de creación: 2026-09-15
 > Tecnologías: Gemini Web (microservicio Python), Cloudflare R2 / S3 Storage, TypeScript

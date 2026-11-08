@@ -60,6 +60,125 @@ describe("NodiaAI data lifecycle", () => {
     expect(mocks.admitNodiaAiMessage).not.toHaveBeenCalled();
   });
 
+  it("does not authorize draft restoration from cached detail after a remount", async () => {
+    mocks.getNodiaAiConversation.mockResolvedValueOnce(detail);
+    const first = renderHook(() => useNodiaAiConversation(chatId), {wrapper: Wrapper});
+    await waitFor(() => expect(first.result.current.draftAuthorized).toBe(true));
+    first.unmount();
+    let resolve: (value: typeof detail) => void = () => {};
+    mocks.getNodiaAiConversation.mockReturnValue(new Promise<typeof detail>(done => {resolve = done;}));
+    const second = renderHook(() => useNodiaAiConversation(chatId), {wrapper: Wrapper});
+    expect(second.result.current.data).toEqual(detail);
+    expect(second.result.current.draftAuthorized).toBe(false);
+    await act(async () => {resolve(detail);});
+    await waitFor(() => expect(second.result.current.draftAuthorized).toBe(true));
+    expect(mocks.admitNodiaAiMessage).not.toHaveBeenCalled();
+  });
+
+  it("revalidates draft authority on resume, retaining cache through transient errors without authorizing it", async () => {
+    mocks.getNodiaAiConversation.mockResolvedValueOnce(detail);
+    const view = renderHook(() => useNodiaAiConversation(chatId), {wrapper: Wrapper});
+    await waitFor(() => expect(view.result.current.draftAuthorized).toBe(true));
+    let reject: (error: Error) => void = () => {};
+    mocks.getNodiaAiConversation.mockReturnValue(new Promise<typeof detail>((_, fail) => {reject = fail;}));
+    act(() => window.dispatchEvent(new Event("blur")));
+    expect(view.result.current.draftAuthorized).toBe(false);
+    act(() => window.dispatchEvent(new Event("focus")));
+    await waitFor(() => expect(mocks.getNodiaAiConversation).toHaveBeenCalledTimes(2));
+    expect(view.result.current.draftAuthorized).toBe(false);
+    await act(async () => {reject(new Error("Synthetic offline"));});
+    await waitFor(() => expect(view.result.current.isError).toBe(true));
+    expect(view.result.current.data).toEqual(detail);
+    expect(view.result.current.draftAuthorized).toBe(false);
+    mocks.getNodiaAiConversation.mockResolvedValue(detail);
+    await act(() => view.result.current.refetch());
+    await waitFor(() => expect(view.result.current.draftAuthorized).toBe(true));
+    expect(mocks.admitNodiaAiMessage).not.toHaveBeenCalled();
+  });
+
+  it("does not let a GET started before suspension authorize a later resume", async () => {
+    let oldResolve: (value: typeof detail) => void = () => {};
+    let freshResolve: (value: typeof detail) => void = () => {};
+    mocks.getNodiaAiConversation
+      .mockReturnValueOnce(new Promise<typeof detail>(done => {oldResolve = done;}))
+      .mockReturnValueOnce(new Promise<typeof detail>(done => {freshResolve = done;}));
+    const view = renderHook(() => useNodiaAiConversation(chatId), {wrapper: Wrapper});
+    act(() => window.dispatchEvent(new Event("blur")));
+    act(() => window.dispatchEvent(new Event("focus")));
+    await waitFor(() => expect(mocks.getNodiaAiConversation).toHaveBeenCalledTimes(2));
+    await act(async () => {oldResolve(detail);});
+    expect(view.result.current.draftAuthorized).toBe(false);
+    await act(async () => {freshResolve(detail);});
+    await waitFor(() => expect(view.result.current.draftAuthorized).toBe(true));
+  });
+
+  it("authorizes shared observers by reading again when their deduplicated GET began before the later mount", async () => {
+    let resolve: (value: typeof detail) => void = () => {};
+    let freshResolve: (value: typeof detail) => void = () => {};
+    mocks.getNodiaAiConversation
+      .mockReturnValueOnce(new Promise<typeof detail>(done => {resolve = done;}))
+      .mockReturnValueOnce(new Promise<typeof detail>(done => {freshResolve = done;}));
+    const first = renderHook(() => useNodiaAiConversation(chatId), {wrapper: Wrapper});
+    const second = renderHook(() => useNodiaAiConversation(chatId), {wrapper: Wrapper});
+    expect(first.result.current.draftAuthorized).toBe(false);
+    expect(second.result.current.draftAuthorized).toBe(false);
+    await act(async () => {resolve(detail);});
+    await waitFor(() => expect(mocks.getNodiaAiConversation).toHaveBeenCalledTimes(2));
+    expect(second.result.current.draftAuthorized).toBe(false);
+    await act(async () => {freshResolve(detail);});
+    await waitFor(() => expect(second.result.current.draftAuthorized).toBe(true));
+    expect(first.result.current.draftAuthorized).toBe(true);
+  });
+
+  it("never treats a local cache update as a successful detail authorization", async () => {
+    mocks.getNodiaAiConversation.mockReturnValue(new Promise(() => {}));
+    const view = renderHook(() => useNodiaAiConversation(chatId), {wrapper: Wrapper});
+    act(() => client.setQueryData(["nodia-ai", "9", 1, "detail", chatId], detail));
+    await waitFor(() => expect(view.result.current.data).toEqual(detail));
+    expect(view.result.current.draftAuthorized).toBe(false);
+  });
+
+  it("does not restore or read again while hidden and requires a fresh GET when visible", async () => {
+    mocks.getNodiaAiConversation.mockResolvedValue(detail);
+    const view = renderHook(() => useNodiaAiConversation(chatId), {wrapper: Wrapper});
+    await waitFor(() => expect(view.result.current.draftAuthorized).toBe(true));
+    const visibility = vi.spyOn(document, "visibilityState", "get");
+    try {
+      visibility.mockReturnValue("hidden");
+      act(() => document.dispatchEvent(new Event("visibilitychange")));
+      expect(view.result.current.draftAuthorized).toBe(false);
+      await act(async () => {await Promise.resolve();});
+      expect(mocks.getNodiaAiConversation).toHaveBeenCalledTimes(1);
+      let resolve: (value: typeof detail) => void = () => {};
+      mocks.getNodiaAiConversation.mockReturnValue(new Promise<typeof detail>(done => {resolve = done;}));
+      visibility.mockReturnValue("visible");
+      act(() => document.dispatchEvent(new Event("visibilitychange")));
+      await waitFor(() => expect(mocks.getNodiaAiConversation).toHaveBeenCalledTimes(2));
+      expect(view.result.current.draftAuthorized).toBe(false);
+      await act(async () => {resolve(detail);});
+      await waitFor(() => expect(view.result.current.draftAuthorized).toBe(true));
+    } finally { visibility.mockRestore(); }
+  });
+
+  it("requires a new authorized GET when returning to a chat already read during this mount", async () => {
+    const otherId = "44444444-4444-4444-8444-444444444444";
+    const otherDetail = {...detail, conversation: {...conversation, conversation_id: otherId}};
+    mocks.getNodiaAiConversation.mockImplementation(async (id: string) => id === chatId ? detail : otherDetail);
+    const view = renderHook(({id}) => useNodiaAiConversation(id), {initialProps: {id: chatId}, wrapper: Wrapper});
+    await waitFor(() => expect(view.result.current.draftAuthorized).toBe(true));
+    view.rerender({id: otherId});
+    await waitFor(() => expect(view.result.current.draftAuthorized).toBe(true));
+    mocks.getNodiaAiConversation.mockRejectedValue(new Error("Synthetic transient outage on returning"));
+    view.rerender({id: chatId});
+    expect(view.result.current.draftAuthorized).toBe(false);
+    await waitFor(() => expect(view.result.current.isError).toBe(true));
+    expect(view.result.current.data).toEqual(detail);
+    expect(view.result.current.draftAuthorized).toBe(false);
+    mocks.getNodiaAiConversation.mockResolvedValue(detail);
+    await act(() => view.result.current.refetch());
+    await waitFor(() => expect(view.result.current.draftAuthorized).toBe(true));
+  });
+
   it.each([401, 403, 404, 410])("discards private chat caches after HTTP %s without replaying or reloading", async status => {
     const page = {conversation_id: chatId, items: [{message_id: messageId, parts: [{kind: "text", text: "Private synthetic text"}]}], next_cursor: null};
     mocks.getNodiaAiConversation.mockResolvedValue(detail);
@@ -157,6 +276,7 @@ describe("NodiaAI data lifecycle", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     await act(() => result.current.refetch());
     expect(result.current.data).toEqual(detail);
+    expect(result.current.draftAuthorized).toBe(true);
     expect(result.current.accessRejected).toBe(false);
     expect(isNodiaAiAccessDenied(Object.assign(new Error("cancelled"), {isAxiosError: true, code: "ERR_CANCELED"}))).toBe(false);
   });

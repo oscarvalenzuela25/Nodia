@@ -1,0 +1,34 @@
+{
+  "success": true,
+  "http_status": 200,
+  "required_agentic_paths": [
+    {
+      "path": "/agentic/status",
+      "present": true
+    },
+    {
+      "path": "/agentic/models",
+      "present": true
+    },
+    {
+      "path": "/agentic/auth/login/start",
+      "present": true
+    },
+    {
+      "path": "/agentic/analyze-invoice",
+      "present": true
+    },
+    {
+      "path": "/nodia-ai/agentic/mcp/start",
+      "present": true
+    }
+  ],
+  "retired_paths_absent": true,
+  "web_paths": [],
+  "shared_invoice_alias_present": true,
+  "schema_path_count": 34,
+  "provider_inferences": 0,
+  "profile_observations": 0,
+  "configuration_read_in_memory": true,
+  "secrets_emitted": false
+}

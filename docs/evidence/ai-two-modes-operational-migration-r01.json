@@ -1,0 +1,25 @@
+{
+  "success": true,
+  "action": "up",
+  "migration_name": "RetireWebAiModes1793300000000",
+  "migration_sha256": "65a4c4afc7eea9bc618d0bfe996805f8789ce2e2a1a2ae96ab595cf7746acbd5",
+  "stages": [
+    "canonical_readonly_baseline",
+    "fresh_private_backup_600",
+    "transactional_up_complete",
+    "canonical_integrity_verified"
+  ],
+  "integrity": {
+    "unchanged_tables": 58,
+    "differences": []
+  },
+  "backup": {
+    "private_path": "/var/lib/nodia/ai-mode-retirement-r01/before-up-1793125930406-aa2ce37436.dump",
+    "bytes": 655054,
+    "sha256": "2cb2059dc45e7258475c8dcb8177cdc5403cdbe0be05593313aabcdf8cd4573f",
+    "mode": "600",
+    "exported": false
+  },
+  "migration_committed": true,
+  "provider_inferences": 0
+}

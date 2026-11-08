@@ -1,0 +1,109 @@
+{
+  "task": "module_access_and_user_data_scope",
+  "checked_on_local": "2026-10-25",
+  "timezone": "America/Santiago",
+  "checked_at_utc": "2026-10-26T02:20:30.158Z",
+  "scope": "local_candidate_only",
+  "policy": "docs/mvp/89-module-access-and-user-data-scope.md",
+  "decision": "docs/architecture/decisions/ADR-081-module-access-and-business-data-scope.md",
+  "rules": [
+    "module assignments enable functionality for ordinary users",
+    "role actions do not block operations",
+    "active super_admin bypasses assignment/action permissions and has global data visibility",
+    "ordinary users remain within owner or explicitly shared collaborator data scopes",
+    "missing module redirects navigation home and blocks direct HTTP access",
+    "human confirmation, resource integrity and actor attribution remain mandatory"
+  ],
+  "checks": {
+    "client": {
+      "command": "npm run test -- --maxWorkers=2",
+      "files": 249,
+      "tests": 2027,
+      "passed": true,
+      "typecheck": true,
+      "lint": true,
+      "build": true
+    },
+    "server": {
+      "command": "npm run test -- --maxWorkers=4",
+      "files": 279,
+      "tests": 5225,
+      "passed": true,
+      "build": true,
+      "lint": {
+        "errors": 0,
+        "existing_warnings": 3
+      }
+    },
+    "http_modules": {
+      "command": "node test/http-module-access.integration.mjs",
+      "passed": true,
+      "checks": 22,
+      "boundary": "real Nest routing, guards and use case; synthetic token/session/database boundaries"
+    },
+    "http_invoices": {
+      "command": "node test/invoice-access.integration.mjs",
+      "passed": true,
+      "scope": "aliases, modules, no role action, authentication, observation ownership, validation and one synthetic principal inference"
+    },
+    "wire_and_catalog": {
+      "command": "node scripts/check-nodia-ai-contracts.mjs",
+      "passed": true,
+      "common_definitions": 148,
+      "fixture_assertions": 504,
+      "candidate_release": "c2cb980965b31366662db93c896186a76958c5530823fcda8a264f1dbc07ad89",
+      "approved_documents_compiled": 40,
+      "fragments_compiled": 42,
+      "capabilities": 151
+    },
+    "source_encoding": {
+      "utf8_lf_checked_files": 84,
+      "bom": false,
+      "diff_check": true
+    }
+  },
+  "exercised_guarantees": [
+    "direct navigation waits for context before mounting the protected page or its data queries",
+    "ordinary module access succeeds without roles/actions; superadministrator access succeeds without assignments",
+    "HTTP aliases, shared selector lists, unknown controller families and database failure are classified explicitly",
+    "SQL scope construction precedes pagination/export and groups OR predicates without widening ownership",
+    "source and destination ownership, mixed bulk rejection and inherited transactional managers",
+    "invoice upload preflight, file namespace and signed URL privacy",
+    "preview and cached result/receipt reauthorization, collaborator revocation and resource reparenting",
+    "own historical receipts survive deletion while the original business remains authorized"
+  ],
+  "limitations": [
+    "PostgreSQL execution/locks/concurrency of the new queries have not been verified against a real engine in this task: host Linux Docker daemon and local PostgreSQL binaries are unavailable.",
+    "Disposable SQL harnesses are prepared, not represented as passed.",
+    "No authenticated browser acceptance of an adopted candidate, real provider inference or production deployment.",
+    "Navigation caches do not provide push revocation; HTTP authority is rechecked. Invalidate auth:context:* when adopting.",
+    "New knowledge revisions remain draft/unregistered and require explicit publication review; approved historical documents and approval hashes were preserved.",
+    "Previously delivered signed URLs retain their native expiry; immediate revocation is not promised."
+  ],
+  "operational_changes": {
+    "configured_database": false,
+    "redis": false,
+    "migrations": false,
+    "deployed": false,
+    "provider_sessions": false,
+    "human_document_approval_created": false
+  },
+  "source_sha256": {
+    "nodia-client/src/routes/GuardStrict.tsx": "0b623cf7b253d569f268cc56565538bf73860075f80993234f399c1828b7d307",
+    "nodia-client/src/store/generalSettings/helpers.ts": "b2cefaff2098021fbd81070c6ef74582120e448e25fffa3e1fe02799b69cf792",
+    "nodia-client/src/store/generalSettings/useGeneralSettings.ts": "900741f69b46f5181222e21f4466eb72bdb15c99b5675833ae6d65b5b2edc5b7",
+    "nodia-server/src/app.module.ts": "08c24cc50f796fbefcbd5ced627742e3ba9bec6b0d2e90111d7b302b302c31bc",
+    "nodia-server/src/authorization/http-module-policy.ts": "6be6ea13fa3ed6d210e86493a9932bc73854c89296ed89b8095156895eed329b",
+    "nodia-server/src/authorization/module-access.guard.ts": "493a3fe04b28b1701541243cb4ad1497f727d62c7d752ecccedcbb18877e432a",
+    "nodia-server/src/authorization/use-case/check-module-access.use-case.ts": "29afb31c93ba33f643ae6dbad30ac0874855f2d93663a027ffefe204999ea972",
+    "nodia-server/src/business-access/business-access.ts": "8fb26d8e5751fa3333800d05f962454dc75b0026e3c6236539479fe127ca053a",
+    "nodia-server/src/product/product.service.ts": "38e4a3a18399b8abee5e6e23332aa85433850946bd9bda3078af60bf83df7e0a",
+    "nodia-server/src/provider/provider.service.ts": "8d861b165afadcb7011cfb893f00076365aefcda8bc50c784b4eaabb3b867505",
+    "nodia-server/src/provider-contact/provider-contact.service.ts": "276254ce70698e2537252da9b64690449903e662069e21db9939da181813660b",
+    "nodia-server/src/invoice/invoice.service.ts": "a02c48715c10c9ca982de9414d4e2622bd250373e14396c57085683345e953c8",
+    "nodia-server/src/invoice/invoice-file-scope.ts": "1d794f31033c6cfad45e6cdcd9ce29c99358592702273ed326805ad2d4346fe5",
+    "nodia-server/src/nodia-ai/use-case/authorize-nodia-ai.use-case.ts": "8ccb10b97c2b95a345757a985a4f61bb0b84cd981bb3526db081055591ae468b",
+    "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts": "f0f7b9fd2eecd692e3431bc66cea3e970c2b33b5c1bab62699222ed64f986924",
+    "nodia-server/src/nodia-ai-products/artifacts/use-case/execute-nodia-ai-artifact.use-case.ts": "0a71ecd264ad91307940a6ba5686a632d304c248f84c8b0af779804739af8249"
+  }
+}

@@ -1,5 +1,9 @@
+import { CodexChatImageAcceptanceStore } from '../../common/ai/codex/codex-chat-image-acceptance.js';
+import { CodexChatAudioAcceptanceStore } from '../../common/ai/codex/codex-chat-audio-acceptance.js';
+import { CODEX_CHAT_AUDIO_MIMES } from '../../common/ai/codex/codex-chat-audio.js';
+import { CODEX_CHAT_IMAGE_MIMES } from '../../common/ai/codex/codex-chat-images.js';
 import { describe, expect, it, vi } from 'vitest';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import type { DataSource, EntityManager } from 'typeorm';
 import { CodexChatRuntime } from '../../common/ai/codex/codex-chat-runtime.js';
 import {
@@ -30,7 +34,7 @@ import type { NodiaAiRuntimeTerminalProof } from '../../nodia-ai-runtime/types/r
 function fixture() {
   const selection = {
     connection_id: '9007199254740993',
-    mode: 'token_plan_agentic' as const,
+    mode: 'agentic' as const,
     model_id: 'fixture-discovered-model',
     effort_id: 'new_effort',
   };
@@ -39,11 +43,11 @@ function fixture() {
     provider_key: 'openai',
     is_active: true,
     catalog_active: true,
-    use_token_plan_agentic: true,
-    can_use_token_plan_agentic: true,
+    use_agentic: true,
+    can_use_agentic: true,
     updated_at: '2026-10-22T00:00:00Z',
     fields: {
-      token_plan_agentic: {
+      agentic: {
         selected_model: selection.model_id,
         thinking_levels: { [selection.model_id]: selection.effort_id },
       },
@@ -115,11 +119,35 @@ function fixture() {
   vi.spyOn(acceptance, 'write').mockImplementation(async (value) => {
     storedAcceptance = acceptance.decode(value);
   });
+  const imageStores = new Map(
+    CODEX_CHAT_IMAGE_MIMES.map((mime) => {
+      const store = new CodexChatImageAcceptanceStore(mime);
+      let proof: ReturnType<typeof store.decode> | null = null;
+      vi.spyOn(store, 'read').mockImplementation(async () => proof);
+      vi.spyOn(store, 'write').mockImplementation(async (value) => {
+        proof = store.decode(value);
+      });
+      vi.spyOn(store, 'invalidate').mockImplementation(async () => {
+        proof = null;
+      });
+      return [mime, store] as const;
+    }),
+  );
+  const audioStores = new Map(CODEX_CHAT_AUDIO_MIMES.map((mime) => {
+    const store = new CodexChatAudioAcceptanceStore(mime);
+    let proof: ReturnType<typeof store.decode> | null = null;
+    vi.spyOn(store, 'read').mockImplementation(async () => proof);
+    vi.spyOn(store, 'write').mockImplementation(async (value) => { proof = store.decode(value); });
+    vi.spyOn(store, 'invalidate').mockImplementation(async () => { proof = null; });
+    return [mime, store] as const;
+  }));
   const adapter = new CodexNodiaAiAdapterUseCase(
     { manager: { query } } as unknown as DataSource,
     runtime as unknown as CodexChatRuntime,
     new ValidateNodiaAiRuntimePolicyUseCase().execute(policyEnvelope()),
     acceptance,
+    imageStores,
+    audioStores,
   );
   const request = async (): Promise<NodiaAiAdapterRequest> => {
     const observation = await adapter.observe(selection);
@@ -144,8 +172,118 @@ function fixture() {
     adapter,
     request,
     acceptance,
+    imageStores,
+    audioStores,
   };
 }
+
+describe('Codex explicit image generation adapter lane', () => {
+  const contentBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+X2ioAAAAASUVORK5CYII=';
+  const generatedImage = () => ({ contentBase64, mediaType: 'image/png' as const,
+    sha256: createHash('sha256').update(Buffer.from(contentBase64, 'base64')).digest('hex') });
+  it('returns one verified image without requiring text/MCP or changing the selected model', async () => {
+    const f = fixture(), request = await f.request();
+    request.imageGeneration = { prompt: 'Generate a synthetic circle' };
+    const original = f.runtime.execute.getMockImplementation()!;
+    f.runtime.execute.mockImplementationOnce(async (...args) => ({ ...await original(...args), text: '',
+      generatedImage: { ...generatedImage(), savedPath: '/private/not-public', revisedPrompt: 'not-public' } }));
+    const reply = await f.adapter.execute(request);
+    expect(reply).toMatchObject({ kind: 'answer', text: '', generatedImage: generatedImage() });
+    if (reply.kind === 'answer') expect(reply.generatedImage).toEqual(generatedImage());
+    expect(f.runtime.execute.mock.calls[0][0]).toMatchObject({ modelId: request.selection.model_id,
+      effort: request.selection.effort_id, prompt: request.imageGeneration.prompt,
+      imageGeneration: request.imageGeneration, tools: [] });
+    expect(f.acceptance.write).not.toHaveBeenCalled();
+  });
+  it('rejects mixed tool authority before entering the runtime', async () => {
+    const f = fixture(), request = await f.request();
+    request.imageGeneration = { prompt: 'Synthetic image' };
+    request.tools = [{ name: 'fixture_tool', description: 'Synthetic', inputSchema: { type: 'object', additionalProperties: false } }];
+    await expect(f.adapter.execute(request)).rejects.toMatchObject({ outcome: 'not_dispatched' });
+    expect(f.runtime.execute).not.toHaveBeenCalled();
+  });
+  it('missing image remains unknown without invalidating unrelated MCP/image qualifications', async () => {
+    const f = fixture(), request = await f.request();
+    request.imageGeneration = { prompt: 'Synthetic image' };
+    await expect(f.adapter.execute(request)).rejects.toMatchObject({ outcome: 'unknown' });
+    expect(f.acceptance.invalidate).not.toHaveBeenCalled();
+    for (const store of f.imageStores.values()) expect(store.invalidate).not.toHaveBeenCalled();
+  });
+  it('rejects forged MIME/hash and unsolicited images in the ordinary lane', async () => {
+    for (const optIn of [true, false]) {
+      const f = fixture(), request = await f.request();
+      if (optIn) request.imageGeneration = { prompt: 'Synthetic image' };
+      const original = f.runtime.execute.getMockImplementation()!;
+      f.runtime.execute.mockImplementationOnce(async (...args) => ({ ...await original(...args),
+        generatedImage: { ...generatedImage(), sha256: '0'.repeat(64) } }));
+      await expect(f.adapter.execute(request)).rejects.toMatchObject({ outcome: 'unknown' });
+    }
+  });
+});
+
+describe('Codex empty response after acknowledged technical selection', () => {
+  const ids = ['nodia_finance_movements_list', 'nodia_products_list'];
+  const ack = () => ({ status: 'selection_requested', selected_capability_ids: [...ids], next_action: 'finish_current_generation', business_effects: false });
+  async function selectionFixture(result: unknown = ack(), options: {
+    invoke?: boolean; name?: string; args?: unknown; replyText?: string;
+    proof?: (proof: NodiaAiRuntimeTerminalProof) => NodiaAiRuntimeTerminalProof;
+    mutateArguments?: (args: unknown) => void;
+  } = {}) {
+    const f = fixture(), request = await f.request();
+    const name = options.name ?? 'nodia_capabilities_select';
+    const args = options.args ?? { catalog_version: 'fixture-catalog', capability_ids: [...ids].reverse() };
+    request.tools = [{ name, description: 'Published technical selection fixture', inputSchema: { type: 'object', additionalProperties: false, properties: {} } }];
+    request.onToolCall = vi.fn(async (call) => { options.mutateArguments?.(call.arguments); return result; });
+    const execute = f.runtime.execute.getMockImplementation()!;
+    f.runtime.execute.mockImplementationOnce(async (native, callbacks) => {
+      if (options.invoke !== false) await callbacks.onToolCall({ callId: 'fixture-real-selection-callback', name, arguments: args }, native.signal);
+      const reply = await execute(native, callbacks);
+      return { ...reply, text: options.replyText ?? '', terminalProof: options.proof?.(reply.terminalProof) ?? reply.terminalProof };
+    });
+    return { ...f, request };
+  }
+  it('accepts exactly empty text only after the real forwarded selection callback acknowledged the same unique capability set', async () => {
+    const f = await selectionFixture();
+    const reply = await f.adapter.execute(f.request);
+    expect(reply).toMatchObject({ kind: 'answer', text: '', terminalProof: { processClosed: true, outcome: 'completed' } });
+    expect(f.request.onToolCall).toHaveBeenCalledOnce(); expect(f.runtime.execute).toHaveBeenCalledOnce();
+    expect(f.runtime.reconcile).not.toHaveBeenCalled(); expect(f.runtime.acknowledge).not.toHaveBeenCalled();
+  });
+  it.each([
+    { label: 'no callback', options: { invoke: false } },
+    { label: 'another granted tool', options: { name: 'fixture_read' } },
+    { label: 'whitespace content', options: { replyText: ' \n ' } },
+    { label: 'missing requested IDs', options: { args: { catalog_version: 'fixture-catalog' } } },
+    { label: 'duplicate requested IDs', options: { args: { catalog_version: 'fixture-catalog', capability_ids: [ids[0], ids[0]] } } },
+    { label: 'extra argument field', options: { args: { catalog_version: 'fixture-catalog', capability_ids: ids, execute: true } } },
+  ])('rejects empty ordinary or unverified responses: $label', async ({ options }) => {
+    const f = await selectionFixture(ack(), options);
+    await expect(f.adapter.execute(f.request)).rejects.toMatchObject({ code: 'adapter_invalid_reply', outcome: 'unknown' });
+    expect(f.runtime.execute).toHaveBeenCalledOnce();
+  });
+  it.each([
+    { status: 'completed' }, { next_action: 'execute' }, { business_effects: true },
+    { selected_capability_ids: [ids[0]] }, { selected_capability_ids: [...ids, 'nodia_users_list'] },
+    { selected_capability_ids: [ids[0], ids[0]] }, { selected_capability_ids: [] },
+    { selected_capability_ids: 'not-an-array' }, { extra: true },
+  ])('rejects a malformed or mismatching selection ACK %j', async (change) => {
+    const f = await selectionFixture({ ...ack(), ...change });
+    await expect(f.adapter.execute(f.request)).rejects.toMatchObject({ code: 'adapter_invalid_reply', outcome: 'unknown' });
+  });
+  it('snapshots requested IDs before the gateway awaits and cannot authorize a mutated intent', async () => {
+    const f = await selectionFixture({ ...ack(), selected_capability_ids: ['nodia_users_list'] }, {
+      mutateArguments: args => { (args as { capability_ids: string[] }).capability_ids = ['nodia_users_list']; },
+    });
+    await expect(f.adapter.execute(f.request)).rejects.toMatchObject({ code: 'adapter_invalid_reply', outcome: 'unknown' });
+  });
+  it.each(['not_closed', 'abandoned_unknown', 'future_proof'] as const)('still requires exact completed closed native proof after a valid ACK: %s', async change => {
+    const f = await selectionFixture(ack(), { proof: proof => ({ ...proof,
+      ...(change === 'not_closed' ? { processClosed: false as never } :
+        change === 'abandoned_unknown' ? { outcome: 'abandoned_unknown' as const } : { observedAt: new Date(Date.now() + 60000) }),
+    }) });
+    await expect(f.adapter.execute(f.request)).rejects.toMatchObject({ outcome: 'unknown' });
+  });
+});
 
 async function acceptedProbe() {
   const f = fixture(),
@@ -211,6 +349,80 @@ async function acceptedProbe() {
   });
   const answer = await f.adapter.probeMcp(request);
   return { ...f, answer, receipt: () => record };
+}
+
+function fixtureWav() {
+  const bytes = Buffer.alloc(44 + 3200);
+  bytes.write('RIFF', 0); bytes.writeUInt32LE(bytes.length - 8, 4); bytes.write('WAVEfmt ', 8);
+  bytes.writeUInt32LE(16, 16); bytes.writeUInt16LE(1, 20); bytes.writeUInt16LE(1, 22);
+  bytes.writeUInt32LE(16000, 24); bytes.writeUInt32LE(32000, 28);
+  bytes.writeUInt16LE(2, 32); bytes.writeUInt16LE(16, 34);
+  bytes.write('data', 36); bytes.writeUInt32LE(3200, 40);
+  return bytes;
+}
+async function imageProbe(kind: 'image' | 'audio' = 'image') {
+  const f = fixture(),
+    request = await f.request();
+  const bytes = kind === 'audio' ? fixtureWav() : Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==',
+    'base64',
+  );
+  const { createHash } = await import('node:crypto');
+  request.attachments = [
+    {
+      kind,
+      media_type: kind === 'image' ? 'image/png' : 'audio/wav',
+      sha256: createHash('sha256').update(bytes).digest('hex'),
+      content_base64: bytes.toString('base64'),
+    },
+  ];
+  const expected = kind === 'image' ? 'SYNTHETICIMAGECODE123456' : 'El velero naranja visita la isla tranquila';
+  let record: CodexChatRecord;
+  vi.spyOn(f.runtime.journal, 'admission').mockImplementation(async (work) =>
+    work(),
+  );
+  vi.spyOn(f.runtime.journal, 'identity').mockImplementation(async () => ({
+    resourceKey: f.observed.resourceKey,
+    runtimeSessionId: f.observed.runtimeSessionId,
+  }));
+  vi.spyOn(f.runtime.journal, 'read').mockImplementation(async () => record);
+  f.runtime.execute.mockImplementationOnce(async (native, callbacks) => {
+    expect(native.prompt).not.toContain(expected);
+    expect(native.tools).toEqual([]);
+    expect((kind === 'image' ? native.images : native.audio)?.[0].sha256).toBe(request.attachments![0].sha256);
+    await callbacks.onPrepared(native.identity);
+    record = {
+      version: 1,
+      identity: native.identity,
+      expiresAt: native.deadlineAt.toISOString(),
+      owner: {
+        pid: 42,
+        group: 42,
+        birth: '123',
+        boot: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+      },
+      native: {
+        pid: 43,
+        group: 43,
+        birth: '124',
+        boot: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+      },
+      state: 'completed',
+      payloadSha256: 'a'.repeat(64),
+      rpcCount: 0,
+      frames: 10,
+      bytes: 300,
+      unforwardedRequests: 0,
+      cancelRequested: false,
+      terminalProofId: randomUUID(),
+      observedAt: new Date().toISOString(),
+      acknowledged: false,
+    };
+    return { text: expected, terminalProof: f.runtime.journal.proof(record) };
+  });
+  const reply = kind === 'image' ? await f.adapter.probeImage(request, expected)
+    : await f.adapter.probeAudio(request, expected);
+  return { ...f, request, reply, receipt: () => record };
 }
 
 describe('Codex NodiaAI adapter use case', () => {
@@ -460,7 +672,8 @@ describe('Codex NodiaAI adapter use case', () => {
     );
     const before = await f.adapter.observe(f.selection);
     const priorWrites = vi.mocked(f.acceptance.write).mock.calls.length;
-    const priorInvalidations = vi.mocked(f.acceptance.invalidate).mock.calls.length;
+    const priorInvalidations = vi.mocked(f.acceptance.invalidate).mock.calls
+      .length;
     f.runtime.observe.mockRejectedValueOnce(
       codexError('codex_profile_busy', 409),
     );
@@ -524,7 +737,7 @@ describe('Codex NodiaAI adapter use case', () => {
       { model_id: '' },
       { effort_id: '' },
       { connection_id: '04' },
-      { mode: 'token_plan_web' as const },
+      { mode: 'api_key' as const },
     ])
       await expect(
         f.adapter.observe({ ...f.selection, ...changed }),
@@ -560,6 +773,23 @@ describe('Codex NodiaAI adapter use case', () => {
     expect(query.mock.calls[0][0]).toContain('FOR SHARE OF p,c');
     expect(f.query).not.toHaveBeenCalled();
     expect(f.runtime.observe).not.toHaveBeenCalled();
+  });
+  it('measures unresolved current-turn image references without inventing a MIME or granting original authority', async () => {
+    const f = fixture(),
+      native = new CodexChatRuntime({} as CodexRuntimeService);
+    f.runtime.measure.mockImplementation((payload) => native.measure(payload));
+    const result = await f.adapter.measureContext({
+      selection: f.selection,
+      canonicalPrompt: 'synthetic',
+      attachments: [{ kind: 'image' }, { kind: 'image' }],
+    });
+    expect(result.maxUtf8Bytes).toBe(262144);
+    expect(f.runtime.measure).toHaveBeenCalledWith(
+      expect.objectContaining({ images: [{}, {}] }),
+    );
+    expect(f.runtime.observe).not.toHaveBeenCalled();
+    expect(f.runtime.execute).not.toHaveBeenCalled();
+    expect(f.imageStores.get('image/png')!.read).not.toHaveBeenCalled();
   });
   it('measures the runtime native payload with explicit dynamic IDs and no fabricated model token context', async () => {
     const f = fixture();
@@ -855,5 +1085,259 @@ describe('Codex NodiaAI adapter use case', () => {
     ).rejects.toThrow();
     expect(f.runtime.reconcile).not.toHaveBeenCalled();
     expect(f.runtime.acknowledge).not.toHaveBeenCalled();
+  });
+});
+
+describe('Codex original WAV acceptance', () => {
+  it('cannot erase another runtime fingerprint acceptance after an uncertain candidate turn', async () => {
+    const f = await imageProbe('audio'); f.receipt().acknowledged = true;
+    await f.adapter.acceptAudioProbe(f.reply.terminalProof, AbortSignal.timeout(1000));
+    f.runtime.fingerprint.mockResolvedValue('e'.repeat(64));
+    const request = { ...f.request, attachments: undefined };
+    f.runtime.execute.mockRejectedValueOnce(new CodexChatRuntimeError('candidate_unknown', 'unknown'));
+    await expect(f.adapter.execute(request)).rejects.toMatchObject({ outcome: 'unknown' });
+    f.runtime.fingerprint.mockResolvedValue('f'.repeat(64));
+    expect((await f.adapter.observe(f.selection)).verifiedAttachmentMediaTypes).toEqual(['audio/wav']);
+    expect(f.runtime.execute).toHaveBeenCalledTimes(2);
+  });
+  it('requires semantic result and exact ACK before granting only WAV, independently of MCP', async () => {
+    const f = await imageProbe('audio');
+    expect((await f.adapter.observe(f.selection)).verifiedAttachmentMediaTypes).toEqual([]);
+    await expect(f.adapter.acceptAudioProbe(f.reply.terminalProof, AbortSignal.timeout(1000)))
+      .rejects.toMatchObject({ code: 'mcp_probe_unverified' });
+    f.receipt().acknowledged = true;
+    await expect(f.adapter.acceptImageProbe(f.reply.terminalProof, AbortSignal.timeout(1000)))
+      .rejects.toMatchObject({ code: 'mcp_probe_unverified' });
+    await expect(f.adapter.acceptMcpProbe(f.reply.terminalProof, AbortSignal.timeout(1000)))
+      .rejects.toMatchObject({ code: 'mcp_probe_unverified' });
+    await f.adapter.acceptAudioProbe(f.reply.terminalProof, AbortSignal.timeout(1000));
+    expect(await f.adapter.observe(f.selection)).toMatchObject({
+      verifiedAttachmentMediaTypes: ['audio/wav'], verifiedModalities: ['audio'], supportsMcp: false,
+    });
+    await f.adapter.measureContext({ selection: f.selection, canonicalPrompt: 'bounded recording',
+      attachments: [{ kind: 'audio', media_type: 'audio/wav' }] });
+    expect(f.runtime.measure).toHaveBeenLastCalledWith(expect.objectContaining({
+      audio: [{ mediaType: 'audio/wav' }], mediaOrder: ['audio'],
+    }));
+    await f.adapter.execute(f.request);
+    const native = f.runtime.execute.mock.lastCall![0];
+    expect(native.audio?.[0].contentBase64).toBe(f.request.attachments![0].content_base64);
+    expect(native.images).toBeUndefined();
+    expect(native.audioLimits?.seconds).toBe(300);
+    for (const mime of ['audio/webm', 'audio/ogg', 'audio/mpeg', 'audio/mp4', 'application/pdf']) {
+      await expect(f.adapter.execute({ ...f.request, attachments: [{ ...f.request.attachments![0], media_type: mime }] }))
+        .rejects.toMatchObject({ code: 'adapter_attachments_unverified', outcome: 'not_dispatched' });
+    }
+  });
+  it.each(['runtime', 'session', 'model', 'configuration'] as const)('does not inherit WAV after a %s change', async (change) => {
+    const f = await imageProbe('audio'); f.receipt().acknowledged = true;
+    await f.adapter.acceptAudioProbe(f.reply.terminalProof, AbortSignal.timeout(1000));
+    if (change === 'runtime') f.runtime.fingerprint.mockResolvedValue('e'.repeat(64));
+    if (change === 'session') f.observed.runtimeSessionId = 'c'.repeat(32);
+    if (change === 'model') { f.selection.model_id += '-changed'; f.observed.models[0].id = f.selection.model_id; }
+    if (change === 'configuration') f.row.updated_at = '2026-10-23T03:00:00Z';
+    expect((await f.adapter.observe(f.selection)).verifiedAttachmentMediaTypes).toEqual([]);
+    expect(f.runtime.execute).toHaveBeenCalledOnce();
+  });
+  it('keeps audio unverified on semantic mismatch and rejects expected words in the prompt before dispatch', async () => {
+    const f = fixture(), request = await f.request();
+    const bytes = fixtureWav(), { createHash } = await import('node:crypto');
+    request.attachments = [{ kind: 'audio', media_type: 'audio/wav',
+      sha256: createHash('sha256').update(bytes).digest('hex'), content_base64: bytes.toString('base64') }];
+    await expect(f.adapter.probeAudio({ ...request, canonicalPrompt: 'El velero naranja visita la isla tranquila.' },
+      'El velero naranja visita la isla tranquila')).rejects.toMatchObject({ code: 'audio_probe_invalid' });
+    expect(f.runtime.execute).not.toHaveBeenCalled();
+    await expect(f.adapter.probeAudio(request, 'El velero naranja visita la isla tranquila'))
+      .rejects.toMatchObject({ code: 'audio_probe_unverified', outcome: 'unknown' });
+    expect(f.runtime.execute).toHaveBeenCalledOnce();
+    expect(f.audioStores.get('audio/wav')!.write).not.toHaveBeenCalled();
+  });
+  it('invalidates a WAV proof after an uncertain generation without replay', async () => {
+    const f = await imageProbe('audio'); f.receipt().acknowledged = true;
+    await f.adapter.acceptAudioProbe(f.reply.terminalProof, AbortSignal.timeout(1000));
+    f.runtime.execute.mockRejectedValueOnce(new CodexChatRuntimeError('fixture_unknown', 'unknown'));
+    await expect(f.adapter.execute(f.request)).rejects.toMatchObject({ outcome: 'unknown' });
+    expect((await f.adapter.observe(f.selection)).verifiedAttachmentMediaTypes).toEqual([]);
+    expect(f.runtime.execute).toHaveBeenCalledTimes(2);
+  });
+  it('measures an untyped audio reference without granting original-file authority', async () => {
+    const f = fixture();
+    await f.adapter.measureContext({ selection: f.selection, canonicalPrompt: 'budget', attachments: [{ kind: 'audio' }] });
+    expect(f.runtime.measure).toHaveBeenLastCalledWith(expect.objectContaining({ audio: [{}], mediaOrder: ['audio'] }));
+    await expect(f.adapter.measureContext({ selection: f.selection, canonicalPrompt: 'budget',
+      attachments: [{ kind: 'audio', media_type: 'audio/wav' }] }))
+      .rejects.toMatchObject({ code: 'adapter_attachments_unverified' });
+    expect(f.runtime.execute).not.toHaveBeenCalled();
+  });
+});
+
+describe('Codex original image acceptance', () => {
+  it('enables only the proved MIME after exact completed receipt and ACK, separately from MCP', async () => {
+    const f = await imageProbe();
+    expect(
+      (await f.adapter.observe(f.selection)).verifiedAttachmentMediaTypes,
+    ).toEqual([]);
+    await expect(
+      f.adapter.acceptImageProbe(
+        f.reply.terminalProof,
+        new AbortController().signal,
+      ),
+    ).rejects.toMatchObject({ code: 'mcp_probe_unverified' });
+    f.receipt().acknowledged = true;
+    await f.adapter.acceptImageProbe(
+      f.reply.terminalProof,
+      new AbortController().signal,
+    );
+    const observed = await f.adapter.observe(f.selection);
+    expect(observed).toMatchObject({
+      verifiedAttachmentMediaTypes: ['image/png'],
+      verifiedModalities: ['image'],
+      supportsMcp: false,
+    });
+    await f.adapter.measureContext({
+      selection: f.selection,
+      canonicalPrompt: 'synthetic',
+      attachments: [{ kind: 'image', media_type: 'image/png' }],
+    });
+    expect(f.runtime.measure).toHaveBeenLastCalledWith(
+      expect.objectContaining({ images: [{ mediaType: 'image/png' }] }),
+    );
+    await f.adapter.execute(f.request);
+    await expect(
+      f.adapter.execute({
+        ...f.request,
+        attachments: [
+          { ...f.request.attachments![0], media_type: 'image/jpeg' },
+        ],
+      }),
+    ).rejects.toMatchObject({ code: 'adapter_attachments_unverified' });
+    expect(f.imageStores.get('image/jpeg')!.write).not.toHaveBeenCalled();
+  });
+  it('rejects cross-purpose proofs, altered terminal identity and configuration after probing', async () => {
+    const f = await imageProbe();
+    f.receipt().acknowledged = true;
+    await expect(
+      f.adapter.acceptMcpProbe(
+        f.reply.terminalProof,
+        new AbortController().signal,
+      ),
+    ).rejects.toMatchObject({ code: 'mcp_probe_unverified' });
+    await expect(
+      f.adapter.acceptImageProbe(
+        { ...f.reply.terminalProof, terminalProofId: randomUUID() },
+        new AbortController().signal,
+      ),
+    ).rejects.toThrow();
+    f.row.updated_at = '2026-10-23T01:00:00Z';
+    await expect(
+      f.adapter.acceptImageProbe(
+        f.reply.terminalProof,
+        new AbortController().signal,
+      ),
+    ).rejects.toThrow();
+    expect(f.imageStores.get('image/png')!.write).not.toHaveBeenCalled();
+  });
+  it.each(['model', 'effort', 'session', 'runtime', 'configuration'] as const)(
+    'does not inherit an image proof after changing %s',
+    async (change) => {
+      const f = await imageProbe();
+      f.receipt().acknowledged = true;
+      await f.adapter.acceptImageProbe(
+        f.reply.terminalProof,
+        new AbortController().signal,
+      );
+      if (change === 'model') {
+        f.selection.model_id += '-new';
+        f.observed.models[0].id = f.selection.model_id;
+      }
+      if (change === 'effort') {
+        f.selection.effort_id = 'other_effort';
+        f.observed.models[0].supportedReasoningEfforts.push('other_effort');
+      }
+      if (change === 'session') f.observed.runtimeSessionId = 'c'.repeat(32);
+      if (change === 'runtime')
+        f.runtime.fingerprint.mockResolvedValue('e'.repeat(64));
+      if (change === 'configuration') f.row.updated_at = '2026-10-23T02:00:00Z';
+      expect(
+        (await f.adapter.observe(f.selection)).verifiedAttachmentMediaTypes,
+      ).toEqual([]);
+    },
+  );
+  it('invalidates accepted original formats after an uncertain native generation without replay', async () => {
+    const f = await imageProbe();
+    f.receipt().acknowledged = true;
+    await f.adapter.acceptImageProbe(
+      f.reply.terminalProof,
+      new AbortController().signal,
+    );
+    f.runtime.execute.mockRejectedValueOnce(
+      new CodexChatRuntimeError('codex_runtime_unavailable', 'unknown'),
+    );
+    await expect(f.adapter.execute(f.request)).rejects.toMatchObject({
+      code: 'codex_result_unknown',
+      outcome: 'unknown',
+    });
+    expect(
+      (await f.adapter.observe(f.selection)).verifiedAttachmentMediaTypes,
+    ).toEqual([]);
+    expect(f.runtime.execute).toHaveBeenCalledTimes(2);
+    expect(f.runtime.acknowledge).not.toHaveBeenCalled();
+  });
+  it('does not accept a completed turn whose answer fails the image-only semantic challenge', async () => {
+    const f = fixture(),
+      request = await f.request();
+    const bytes = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==',
+      'base64',
+    );
+    const { createHash } = await import('node:crypto');
+    request.attachments = [
+      {
+        kind: 'image',
+        media_type: 'image/png',
+        sha256: createHash('sha256').update(bytes).digest('hex'),
+        content_base64: bytes.toString('base64'),
+      },
+    ];
+    await expect(
+      f.adapter.probeImage(request, 'SYNTHETICCODE1234'),
+    ).rejects.toMatchObject({
+      code: 'image_probe_unverified',
+      outcome: 'unknown',
+    });
+    expect(f.runtime.execute).toHaveBeenCalledOnce();
+    expect(f.imageStores.get('image/png')!.write).not.toHaveBeenCalled();
+  });
+  it('does not create a proof for incorrect semantics or PDF/audio or a code present in the prompt', async () => {
+    const f = fixture(),
+      request = await f.request();
+    request.attachments = [
+      {
+        kind: 'image',
+        media_type: 'image/png',
+        sha256: 'a'.repeat(64),
+        content_base64: 'AAAA',
+      },
+    ];
+    for (const change of [
+      { kind: 'pdf', media_type: 'application/pdf' },
+      { kind: 'audio', media_type: 'audio/wav' },
+    ] as const)
+      await expect(
+        f.adapter.probeImage(
+          {
+            ...request,
+            attachments: [{ ...request.attachments[0], ...change }],
+          },
+          'SYNTHETICCODE1234',
+        ),
+      ).rejects.toMatchObject({ code: 'image_probe_invalid' });
+    await expect(
+      f.adapter.probeImage(
+        { ...request, canonicalPrompt: 'SYNTHETICCODE1234' },
+        'SYNTHETICCODE1234',
+      ),
+    ).rejects.toMatchObject({ code: 'image_probe_invalid' });
+    expect(f.runtime.execute).not.toHaveBeenCalled();
   });
 });

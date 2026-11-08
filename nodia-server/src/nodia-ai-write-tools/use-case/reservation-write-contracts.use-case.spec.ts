@@ -403,7 +403,7 @@ describe('Reservation write contracts — AI36-C01', () => {
         query,
         queryRunner: { isTransactionActive: true },
       } as unknown as EntityManager,
-      moduleRoutes: ['/tools/reservations'],
+      moduleRoutes: ['/reservations'],
       actionKeys: [],
       statementTimeoutMs: 1000,
     } as unknown as ProposalPreparerContext;

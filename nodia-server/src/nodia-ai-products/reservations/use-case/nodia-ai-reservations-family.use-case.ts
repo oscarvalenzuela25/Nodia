@@ -142,7 +142,7 @@ export class NodiaAiReservationsFamilyUseCase {
       operationKey: operation,
       descriptionKey: `nodia_ai:${name}`,
       description: `Nodia Reservas: ${resource} / ${operation}. Lectura autorizada sin modificar datos.`,
-      requiredModuleRoutes: ['/tools/reservations'],
+      requiredModuleRoutes: ['/reservations'],
       actionKeys: [],
       effectKey: 'read',
       inputSchema: {
@@ -543,7 +543,7 @@ export class NodiaAiReservationsFamilyUseCase {
       modules: [
         {
           key: 'rental_reservations',
-          route: '/tools/reservations',
+          route: '/reservations',
           label: 'Reservas',
         },
       ],
@@ -551,7 +551,7 @@ export class NodiaAiReservationsFamilyUseCase {
         (key) => ({
           key,
           label: key,
-          requiredModuleRoutes: ['/tools/reservations'],
+          requiredModuleRoutes: ['/reservations'],
         }),
       ),
       capabilities,

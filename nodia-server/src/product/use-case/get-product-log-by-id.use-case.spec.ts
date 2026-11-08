@@ -10,7 +10,9 @@ describe('GetProductLogByIdUseCase', () => {
     productServiceMock = {
       findOneLog: vi.fn(),
     };
-    useCase = new GetProductLogByIdUseCase(productServiceMock as ProductService);
+    useCase = new GetProductLogByIdUseCase(
+      productServiceMock as ProductService,
+    );
   });
 
   it('should be defined', () => {
@@ -26,7 +28,6 @@ describe('GetProductLogByIdUseCase', () => {
       name: 'Coca Cola 1.5L',
       cost_price: 1000,
       cost_price_tax: 190,
-      profit_percentage: 30,
       sale_price: 1547,
       stock: 50,
       created_at: new Date(),

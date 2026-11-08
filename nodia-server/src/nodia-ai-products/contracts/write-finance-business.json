@@ -775,9 +775,6 @@
           "cost_price_tax": {
             "$ref": "#/$defs/WriteInteger"
           },
-          "profit_percentage": {
-            "$ref": "#/$defs/WriteInteger"
-          },
           "sale_price": {
             "$ref": "#/$defs/WriteInteger"
           },
@@ -795,6 +792,28 @@
             ]
           },
           "is_active": {
+            "type": "boolean"
+          },
+          "barcode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "offer_price": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 2147483647
+          },
+          "is_offer_enabled": {
+            "type": "boolean"
+          },
+          "has_stock": {
             "type": "boolean"
           }
         },
@@ -825,9 +844,6 @@
               "cost_price_tax": {
                 "$ref": "#/$defs/WriteInteger"
               },
-              "profit_percentage": {
-                "$ref": "#/$defs/WriteInteger"
-              },
               "sale_price": {
                 "$ref": "#/$defs/WriteInteger"
               },
@@ -848,6 +864,28 @@
                 ]
               },
               "is_active": {
+                "type": "boolean"
+              },
+              "barcode": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 255
+              },
+              "offer_price": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 2147483647
+              },
+              "is_offer_enabled": {
+                "type": "boolean"
+              },
+              "has_stock": {
                 "type": "boolean"
               }
             },
@@ -876,9 +914,6 @@
           "cost_price_tax": {
             "$ref": "#/$defs/WriteInteger"
           },
-          "profit_percentage": {
-            "$ref": "#/$defs/WriteInteger"
-          },
           "sale_price": {
             "$ref": "#/$defs/WriteInteger"
           },
@@ -887,6 +922,34 @@
           },
           "product_id": {
             "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "barcode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "offer_price": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 2147483647
+          },
+          "is_offer_enabled": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "has_stock": {
+            "type": [
+              "boolean",
+              "null"
+            ]
           }
         },
         "required": [],
@@ -913,9 +976,6 @@
           "cost_price_tax": {
             "$ref": "#/$defs/WriteInteger"
           },
-          "profit_percentage": {
-            "$ref": "#/$defs/WriteInteger"
-          },
           "sale_price": {
             "$ref": "#/$defs/WriteInteger"
           },
@@ -924,6 +984,34 @@
           },
           "product_id": {
             "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "barcode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "offer_price": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 2147483647
+          },
+          "is_offer_enabled": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "has_stock": {
+            "type": [
+              "boolean",
+              "null"
+            ]
           }
         },
         "required": [],

@@ -4,19 +4,11 @@ import {
   type OnModuleDestroy,
 } from '@nestjs/common';
 import { createRequire } from 'node:module';
-import { dirname, join, resolve, relative } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { homedir } from 'node:os';
-import {
-  mkdir,
-  lstat,
-  open,
-  realpath,
-  rm,
-  writeFile,
-  mkdtemp,
-  type FileHandle,
-} from 'node:fs/promises';
+import { lstat, open, rm, type FileHandle } from 'node:fs/promises';
 import { CodexRpc } from './codex-rpc.js';
+import { acquireCodexProfileLease, type CodexProfileLease } from './codex-profile-lease.js';
 import { CodexChatAdmissionError } from './codex-chat-contract.js';
 import { CodexChatJournal } from './codex-chat-journal.js';
 import { codexChatRuntimeFingerprint } from './codex-chat-acceptance.js';
@@ -69,141 +61,20 @@ export class CodexRuntimeService implements OnModuleDestroy {
   private async create(
     id: string,
     signal?: AbortSignal,
-    beforeNativeStart?: (
-      identity: CodexProcessIdentity,
-      rpc: CodexRpc,
-    ) => Promise<void>,
+    beforeNativeStart?: (identity: CodexProcessIdentity, rpc: CodexRpc) => Promise<void>,
     chat = false,
   ): Promise<Profile> {
-    signal?.throwIfAborted();
-    if (
-      process.env.NODIA_CODEX_ENABLED !== 'true' ||
-      process.platform === 'win32'
-    )
-      throw codexError('codex_runtime_unavailable');
-    const root = resolve(
-      process.env.NODIA_CODEX_PROFILE_ROOT ||
-        join(homedir(), '.local', 'share', 'nodia', 'codex'),
-    );
-    const repo = resolve(process.cwd(), '..');
-    if (!relative(repo, root).startsWith('..') || root === homedir())
-      throw codexError('codex_runtime_unavailable');
-    await mkdir(root, { recursive: true, mode: 0o700 });
-    const rootInfo = await lstat(root);
-    const owner = process.getuid?.();
-    if (
-      owner == null ||
-      rootInfo.uid !== owner ||
-      rootInfo.isSymbolicLink() ||
-      !rootInfo.isDirectory() ||
-      (rootInfo.mode & 0o077) !== 0
-    )
-      throw codexError('codex_runtime_unavailable');
-    if ((await realpath(root)) !== root)
-      throw codexError('codex_runtime_unavailable');
-    const profile = join(root, id);
-    await mkdir(profile, { recursive: true, mode: 0o700 });
-    const info = await lstat(profile);
-    if (
-      info.uid !== owner ||
-      info.isSymbolicLink() ||
-      (info.mode & 0o077) !== 0
-    )
-      throw codexError('codex_runtime_unavailable');
-    const lockPath = join(profile, 'nodia.lock');
-    let lock: FileHandle;
-    try {
-      lock = await open(lockPath, 'wx', 0o600);
-    } catch {
-      throw codexError('codex_profile_busy', 409);
-    }
-    // Fail closed on stale locks. A dead supervisor PID does not prove its
-    // detached native child is dead; automatic reclamation can share a profile.
-    let cwd: string | undefined;
+    let lease: CodexProfileLease | undefined;
     let rpc: CodexRpc | undefined;
-    const cancel = () => {
-      void rpc?.close().catch(() => undefined);
-    };
+    const cancel = () => { void rpc?.close().catch(() => undefined); };
     try {
-      const serverIdentity =
-        process.platform === 'linux'
-          ? await codexProcessIdentity(process.pid)
-          : null;
-      await lock.writeFile(
-        JSON.stringify({
-          serverPid: process.pid,
-          runtimePid: null,
-          gated: !!beforeNativeStart,
-          ...(serverIdentity
-            ? {
-                serverBirth: serverIdentity.birth,
-                serverBoot: serverIdentity.boot,
-              }
-            : {}),
-        }),
-      );
-      await lock.sync();
-      const directory = await open(profile, 'r');
-      try {
-        await directory.sync();
-      } finally {
-        await directory.close();
-      }
-      // Nodia-owned profiles never import global auth/config, plugins or tools.
-      for (const name of ['config.toml', 'auth.json']) {
-        try {
-          const info = await lstat(join(profile, name));
-          if (info.isSymbolicLink() || name === 'auth.json')
-            throw codexError('codex_runtime_unavailable');
-        } catch (error) {
-          if (!(
-            error &&
-            typeof error === 'object' &&
-            'code' in error &&
-            error.code === 'ENOENT'
-          ))
-            throw error;
-        }
-      }
-      await writeFile(join(profile, 'config.toml'), '', { mode: 0o600 });
-      cwd = await mkdtemp(join(profile, 'work-'));
-      signal?.throwIfAborted();
-      const executable = this.executable();
-      rpc = new CodexRpc(
-        executable,
-        cwd,
-        profile,
-        homedir(),
-        !!beforeNativeStart,
-      );
+      lease = await acquireCodexProfileLease(id, !!beforeNativeStart, signal);
+      rpc = new CodexRpc(this.executable(), lease.cwd, lease.profilePath, homedir(), !!beforeNativeStart);
       signal?.addEventListener('abort', cancel, { once: true });
       signal?.throwIfAborted();
-      const runtimeIdentity =
-        process.platform === 'linux' && rpc.ownedPid
-          ? await codexProcessIdentity(rpc.ownedPid)
-          : null;
-      const ownership = Buffer.from(
-        JSON.stringify({
-          serverPid: process.pid,
-          runtimePid: rpc.ownedPid,
-          gated: !!beforeNativeStart,
-          ...(serverIdentity
-            ? {
-                serverBirth: serverIdentity.birth,
-                serverBoot: serverIdentity.boot,
-              }
-            : {}),
-          ...(runtimeIdentity
-            ? {
-                runtimeBirth: runtimeIdentity.birth,
-                runtimeBoot: runtimeIdentity.boot,
-              }
-            : {}),
-        }),
-      );
-      await lock.truncate(0);
-      await lock.write(ownership, 0, ownership.length, 0);
-      await lock.sync();
+      const runtimeIdentity = process.platform === 'linux' && rpc.ownedPid
+        ? await codexProcessIdentity(rpc.ownedPid) : null;
+      await lease.bindRuntime(rpc.ownedPid, runtimeIdentity);
       if (beforeNativeStart) {
         if (!runtimeIdentity) throw codexError('codex_login_unknown', 409);
         await beforeNativeStart(runtimeIdentity, rpc);
@@ -212,27 +83,14 @@ export class CodexRuntimeService implements OnModuleDestroy {
       }
       await rpc.initialize(chat ? { experimentalChatApi: true } : undefined);
       signal?.throwIfAborted();
-      return {
-        rpc,
-        cwd,
-        lock,
-        lockPath,
-        busy: false,
-        lastUsed: Date.now(),
-        lastInferenceAt: null,
-        chat,
-      };
+      return { rpc, cwd: lease.cwd, lock: lease.lock, lockPath: lease.lockPath,
+        busy: false, lastUsed: Date.now(), lastInferenceAt: null, chat };
     } catch (error) {
+      // A failed native close keeps the profile barrier; absence of the parent is not closure.
       await rpc?.close();
-      if (cwd) await rm(cwd, { recursive: true, force: true });
-      await lock.close();
-      await rm(lockPath, { force: true });
-      if (chat)
-        throw new CodexChatAdmissionError(
-          error instanceof CodexOperationException
-            ? error.code
-            : 'codex_runtime_unavailable',
-        );
+      await lease?.release();
+      if (chat) throw new CodexChatAdmissionError(error instanceof CodexOperationException
+        ? error.code : 'codex_runtime_unavailable');
       throw error;
     } finally {
       signal?.removeEventListener('abort', cancel);
@@ -403,6 +261,14 @@ export class CodexRuntimeService implements OnModuleDestroy {
   }
   /** Caller has already proved the old native group empty; never reclaim a live owner. */
   async recoverClosedChat(
+    id: string,
+    owner: CodexProcessIdentity,
+    native: CodexProcessIdentity,
+  ) {
+    return this.recoverClosedProfile(id, owner, native);
+  }
+  /** Generic profile barrier recovery; the caller supplies its real native owner, never a chat alias. */
+  async recoverClosedProfile(
     id: string,
     owner: CodexProcessIdentity,
     native: CodexProcessIdentity,

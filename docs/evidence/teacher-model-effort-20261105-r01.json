@@ -1,0 +1,189 @@
+{
+  "schema": "teacher-model-effort/1",
+  "local_date": "2026-11-05",
+  "status": "Client_R24_active_model_effort_UI_verified",
+  "request": "One Gemini model option followed by a separate intensity selector in Teacher.",
+  "scope": {
+    "client_only": true,
+    "shared_Teacher_SelectionPanel": true,
+    "NodiaAI_selectors_unchanged": true,
+    "api_and_codex_unchanged": true,
+    "runtime_and_credentials_unchanged": true
+  },
+  "presentation_contract": {
+    "source": "Existing shared /teacher/connections projection; provider_key from Server, exact model_id/label/efforts from configured discovered catalog.",
+    "grouping": "Lexical presentation only: Gemini Agentic labels ending in an offered effort and matching the literal ID suffix; at least two unambiguous observed variants. No model versions or base executable IDs created.",
+    "explicit_intensity_change": "Select existing variant ID plus that effort, then require exact eligibility and ordinary explicit Apply. No qualification transfer or equivalent-model claim.",
+    "historical_mismatch_or_collision": "Remain flat and literal; no automatic remap.",
+    "unassigned_intensity": "No eligibility request or save for an incomplete grouped selection."
+  },
+  "source_freeze": {
+    "path": "output/teacher-model-effort-20261105-source-freeze-r01.json",
+    "bytes": 1700,
+    "sha256": "c81c6366a8cc941f43ccf4558b10eb45ba062c2b14474e5c46ad81c98fdba678"
+  },
+  "validation": {
+    "path": "output/teacher-model-effort-20261105-validation-r01.json",
+    "bytes": 1207,
+    "sha256": "00a77dece0a780e03b879dc37badcd9895569a554b3ab4a9871bf430aac43599"
+  },
+  "local": {
+    "suites": 2,
+    "tests": 28,
+    "typecheck_exit": 0,
+    "targeted_lint_exit": 0,
+    "UTF8_LF": true,
+    "independent_review_blockers": 0,
+    "isolated_build": {
+      "typecheck_diagnostics": 0,
+      "vite_seconds": 14.055,
+      "outputs": 184,
+      "receipt": {
+        "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/client-r24-r01/build-receipt.json",
+        "bytes": 30821,
+        "sha256": "f4177ac819e296a2c5c91d3d2547e219aedd0b16df472e683c3f003f2abafa92"
+      }
+    }
+  },
+  "operations": {
+    "delivery.json": {
+      "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/client-r24-r01/delivery.json",
+      "bytes": 11801,
+      "sha256": "71d9d83490a2758db3d8788c2febc69586359e90a85dead20c52ca73f3b59a2d"
+    },
+    "operations-catalog.json": {
+      "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/client-r24-r01/operations-catalog.json",
+      "bytes": 2147,
+      "sha256": "781efcd02f1fb36805eb882f2b77ea22631b8f9c5adbcfe0eef4a1abf42c3d3f"
+    },
+    "activation-state.json": {
+      "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/client-r24-r01/activation-state.json",
+      "bytes": 699,
+      "sha256": "b257ab455699b6c3432114f123ca73d6b188f51f8454d680d347f2188f5a0893"
+    },
+    "activation-full-actual-CLI-check.jsonl": {
+      "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/client-r24-r01/activation-full-actual-CLI-check.jsonl",
+      "bytes": 10073,
+      "sha256": "fd2a19f29d0e4d320167e8baa982dc9aa340eda1d06fe04efca27942fbaeffb6"
+    },
+    "final-health.json": {
+      "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/client-r24-r01/final-health.json",
+      "bytes": 1491,
+      "sha256": "d20249d7836d8cb6c94a35667e06e7c37df0c6072f3433e6b1e74a00f640a791"
+    },
+    "release-manifest.json": {
+      "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/client-r24-r01/release-manifest.json",
+      "bytes": 30709,
+      "sha256": "6fc4d619b0a850186ec0e4cfb3a8df6c92b798c0588776c3ea2db6dde86e36a2"
+    },
+    "Root-package-review.json": {
+      "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/client-r24-r01/Root-package-review.json",
+      "bytes": 543,
+      "sha256": "6e286eba0103c3f91bc77ba7e9e186cbffe6c0d4c1bac9067e95ded4d9dead26"
+    },
+    "source-plan.json": {
+      "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/client-r24-r01/source-plan.json",
+      "bytes": 251033,
+      "sha256": "ac5834f60b067f5d131d61ad1b05c62e90b9a1378d1f2a54c37f829e4e6ab92b"
+    }
+  },
+  "browser": {
+    "proof": {
+      "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/browser/browser-verification.json",
+      "bytes": 1245,
+      "sha256": "86f1a31d14ce481bf3ed786540d755bbdbbe64cea2174f02966900887a9e6b92"
+    },
+    "screenshots": {
+      "model-options-desktop.jpg": {
+        "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/browser/model-options-desktop.jpg",
+        "bytes": 95647,
+        "sha256": "51296e1f866f97fc446d9bf545a2e66cdbd78028f61d9ebddd3a52b9c456ee91"
+      },
+      "effort-options-desktop.jpg": {
+        "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/browser/effort-options-desktop.jpg",
+        "bytes": 95864,
+        "sha256": "eee8e40478f60a2f0d256ea0939569d133a6e2fcc12de4d11a8235c3d4961926"
+      },
+      "model-effort-mobile.jpg": {
+        "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/browser/model-effort-mobile.jpg",
+        "bytes": 30269,
+        "sha256": "fb66d8b7d38f75f2397e469f5ad883460cc1c9aba5f9ead1b447237abe495e80"
+      },
+      "model-effort-desktop.jpg": {
+        "path": "ops/lab/artifacts/teacher-model-effort-20261105-r01/browser/model-effort-desktop.jpg",
+        "bytes": 83545,
+        "sha256": "ce1404e64d76ea6d209ff3af987c9f62157ce5642b0ee8ab246d48c9401b33e4"
+      }
+    },
+    "summary": {
+      "model_options": [
+        "Gemini 3.8 Flash"
+      ],
+      "intensity_options": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "desktop_width": 1088,
+      "mobile_width": 320,
+      "mobile_document_scroll_widths": [
+        310,
+        310
+      ],
+      "desktop_document_scroll_widths": [
+        1078,
+        1078
+      ],
+      "adjacent_message_gap_px": 16,
+      "low_choice": "Exact selection unqualified; Save/Implement disabled. No Apply pressed. Cancel restored high.",
+      "draft_length_before_after": [
+        0,
+        0
+      ],
+      "generation_counter_before_after": [
+        2,
+        2
+      ],
+      "viewport_restored": true,
+      "new_messages": 0,
+      "submitted_plans": 0
+    }
+  },
+  "provider_dispatches": 0,
+  "selection_mutations": 0,
+  "new_inference_qualification": false,
+  "previous_V1_blockers_unchanged": true,
+  "document_approval_or_knowledge_publication": false,
+  "client_manifest_sha256": "6fc4d619b0a850186ec0e4cfb3a8df6c92b798c0588776c3ea2db6dde86e36a2",
+  "source_delta": {
+    "changed_existing": 2,
+    "new": 1,
+    "deleted": 0,
+    "unchanged_inputs": 1375,
+    "total_inputs": 1378,
+    "global_working_tree_copied": false
+  },
+  "operations_summary": {
+    "staging_executions": 1,
+    "activation_executions": 1,
+    "nginx_reloads": 1,
+    "complete_CAS_and_CLI_pin_verified": true,
+    "protected_identities_preserved": true,
+    "timers_unchanged": true,
+    "legacy_assets_per_release": 180,
+    "legacy_releases": [
+      "R23",
+      "R22",
+      "R21",
+      "R20",
+      "R19",
+      "R17"
+    ],
+    "backend_or_auth_mutations": 0
+  },
+  "notes": [
+    "Catalog labels are organized for presentation, not certified equivalent models.",
+    "Low lacks its own current Teacher proof and was correctly blocked; no inference or requalification was requested.",
+    "Previous Gemini final-journey blockers are unchanged."
+  ]
+}

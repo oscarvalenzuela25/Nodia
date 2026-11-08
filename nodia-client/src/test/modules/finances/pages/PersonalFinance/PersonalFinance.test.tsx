@@ -46,7 +46,7 @@ function Location() {
   return <output data-testid="location">{location.search}</output>;
 }
 
-const renderPage = (path = "/tools/finances-personal") =>
+const renderPage = (path = "/finances-personal") =>
   render(
     <MemoryRouter initialEntries={[path]}>
       <PersonalFinance />
@@ -67,18 +67,18 @@ describe("PersonalFinance", () => {
   });
 
   it("supports direct links and safely falls back on an invalid tab", () => {
-    const view = renderPage("/tools/finances-personal?tab=movements");
+    const view = renderPage("/finances-personal?tab=movements");
     expect(screen.getByTestId("resource-panel")).toHaveTextContent(
       "movements:active",
     );
     expect(screen.queryByTestId("general-panel")).not.toBeInTheDocument();
     view.unmount();
-    renderPage("/tools/finances-personal?tab=unknown");
+    renderPage("/finances-personal?tab=unknown");
     expect(screen.getByTestId("general-panel")).toBeInTheDocument();
   });
 
   it("preserves filters separately while unmounting hidden data consumers", async () => {
-    renderPage("/tools/finances-personal?tab=movements&other=keep");
+    renderPage("/finances-personal?tab=movements&other=keep");
     const user = userEvent.setup();
     await user.click(
       screen.getByRole("button", { name: "Change section filter" }),
@@ -116,7 +116,7 @@ describe("PersonalFinance", () => {
 it("uses one mobile section selector and preserves route/filter while resizing to tabs", async () => {
   mocks.mobile = true;
   const user = userEvent.setup();
-  const view = renderPage("/tools/finances-personal?tab=movements&other=keep");
+  const view = renderPage("/finances-personal?tab=movements&other=keep");
   expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
   await user.click(
     screen.getByRole("button", { name: "Change section filter" }),

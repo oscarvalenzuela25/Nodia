@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { canonicalModuleRoute, canonicalModuleRoutes, moduleRouteIncluded } from '../../authorization/canonical-module-route.js';
 import type {
   NodiaAiToolFamily,
   NodiaAiToolModuleRegistration,
@@ -11,9 +12,9 @@ function invalid(): never {
 }
 const sameRoutes = (a: readonly string[], b: readonly string[]): boolean =>
   a.length === b.length &&
-  new Set(a).size === a.length &&
-  new Set(b).size === b.length &&
-  a.every((route) => b.includes(route));
+  new Set(canonicalModuleRoutes(a)).size === a.length &&
+  new Set(canonicalModuleRoutes(b)).size === b.length &&
+  a.every((route) => moduleRouteIncluded(b, route));
 type MutableFamily = {
   familyKey: string;
   modules: NodiaAiToolModuleRegistration[];
@@ -49,16 +50,17 @@ export class ComposeNodiaAiPublishedFamiliesUseCase {
       if (familyKeys.has(family.familyKey)) invalid();
       familyKeys.add(family.familyKey);
       for (const module of family.modules) {
-        const byRoute = modulesByRoute.get(module.route),
+        const destination = canonicalModuleRoute(module.route);
+        const byRoute = modulesByRoute.get(destination),
           byKey = modulesByKey.get(module.key);
         if (
           (byRoute &&
             (byRoute.key !== module.key || byRoute.label !== module.label)) ||
           (byKey &&
-            (byKey.route !== module.route || byKey.label !== module.label))
+            (canonicalModuleRoute(byKey.route) !== destination || byKey.label !== module.label))
         )
           invalid();
-        modulesByRoute.set(module.route, module);
+        modulesByRoute.set(destination, module);
         modulesByKey.set(module.key, module);
       }
       for (const resource of family.resources) {
@@ -81,11 +83,11 @@ export class ComposeNodiaAiPublishedFamiliesUseCase {
       for (const module of source.modules) {
         if (localModules.has(module.key)) invalid();
         const sameKey = modulesByKey.get(module.key),
-          sameRoute = modulesByRoute.get(module.route);
-        if (sameKey && sameKey.route !== module.route) invalid();
+          sameRoute = modulesByRoute.get(canonicalModuleRoute(module.route));
+        if (sameKey && canonicalModuleRoute(sameKey.route) !== canonicalModuleRoute(module.route)) invalid();
         const canonical = sameRoute ?? module;
         localModules.set(module.key, canonical);
-        modulesByRoute.set(canonical.route, canonical);
+        modulesByRoute.set(canonicalModuleRoute(canonical.route), canonical);
         modulesByKey.set(canonical.key, canonical);
       }
       for (const resource of source.resources) {
@@ -106,9 +108,9 @@ export class ComposeNodiaAiPublishedFamiliesUseCase {
         if (
           !resource ||
           !module ||
-          !capability.requiredModuleRoutes.includes(module.route) ||
+          !moduleRouteIncluded(capability.requiredModuleRoutes, module.route) ||
           resource.requiredModuleRoutes.some(
-            (route) => !capability.requiredModuleRoutes.includes(route),
+            (route) => !moduleRouteIncluded(capability.requiredModuleRoutes, route),
           )
         )
           invalid();
@@ -144,10 +146,10 @@ export class ComposeNodiaAiPublishedFamiliesUseCase {
           ...resource.requiredModuleRoutes,
           ...capability.requiredModuleRoutes,
         ])) {
-          const metadata = modulesByRoute.get(route);
+          const metadata = modulesByRoute.get(canonicalModuleRoute(route));
           if (
             !metadata ||
-            ![...localModules.values()].some((item) => item.route === route)
+            ![...localModules.values()].some((item) => canonicalModuleRoute(item.route) === canonicalModuleRoute(route))
           )
             invalid();
           if (!target.family.modules.some((item) => item.key === metadata.key))

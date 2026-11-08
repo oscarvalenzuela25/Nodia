@@ -1,5 +1,7 @@
 # NodiaAI — catálogo de herramientas v1
 
+> Decisión vigente R17 (2026-10-30): NodiaAI sólo consulta y muestra ventas/reportes; se retiran las cinco preparaciones comerciales de ventas, incluso para propuestas antiguas. El POS y la gestión manual se conservan. Véase [Plan94 §26](94-business-point-of-sale-and-product-refactor.md#26-nodiaai-ventas-y-reportes-de-solo-lectura--r17-2026-10-30). Las referencias inferiores al CRUD de ventas mediante IA son históricas y no lo rehabilitan.
+
 > Estado: catálogo en revisión; tres ayudantes comunes y 67 lecturas/artefactos candidatos implementados, ninguna herramienta de negocio publicada
 > Fecha: 2026-10-14
 > Dependencias: [plan38](38-nodia-ai-research-and-v1-plan.md), [inventario39](39-nodia-ai-current-capabilities-inventory.md), [contrato IA](ai-provider-feature-contract.md), [ADR-032](../architecture/decisions/ADR-032-nodia-ai-domain-tools-and-conversation.md)
@@ -15,6 +17,14 @@ El catálogo propone **156 nombres**: **141 herramientas de dominio**, **11 herr
 Las 141 herramientas de dominio se distribuyen en 73 preparaciones de cambios, 64 lecturas, 3 lecturas de artefactos y 1 análisis de archivo. Estos números describen una propuesta derivada de fuentes, no disponibilidad real. El [manifiesto JSON](nodia-ai-v1-tool-catalog.json) contiene cada enlace con métodos/rutas, DTOs, archivos/líneas y destinos del backend; [los contratos41](41-nodia-ai-v1-contracts.md) definen su coordinación y condiciones de publicación.
 
 Las siete escrituras masivas/importación quedan fuera de v1 por decisión expresa. Exportar CSV sigue siendo una lectura candidata acotada. Un flujo con varias operaciones individuales dependientes pertenece a v1: el usuario confirmó ejecución secuencial, resultados por paso y conservación de lo ya creado si falla otro paso, con recuperación sin duplicados.
+
+## Catálogo histórico y extensiones explícitas
+
+El [JSON de 156 candidatos](nodia-ai-v1-tool-catalog.json), sus conteos y sus evidencias conservan el corte histórico. Las operaciones semánticas posteriores se declaran en [extensiones del catálogo](nodia-ai-v1-tool-catalog.extensions.json). La auditoría actual fusiona una copia sólo en memoria: rechaza nombres duplicados, handlers desconocidos o excluidos y cobertura no recíproca; no reescribe el baseline ni sus cifras. Los totales actuales de la auditoría se calculan desde la unión, separados de los conteos históricos conservados.
+
+`nodia_invoices_ocr` deriva semánticamente del OCR de Productos identificado por `InvoiceController.analyze`; no añade un handler HTTP ni invoca su endpoint legacy. `backendBindings:[]` hace explícita esa separación. Su [contrato cerrado](../../nodia-server/src/nodia-ai-invoice-ocr/contracts/invoice-ocr.json) contiene `prepare/request/read`; la etapa OCR durable reutiliza el núcleo después del terminal/ACK de planificación, sin HTTP arbitrario, defaults del caso de uso legacy o escrituras comerciales implícitas. La cobertura del handler sólo añade esta procedencia semántica y conserva la asociación histórica de C03.
+
+El flag `published:false` de la extensión no concede ni retira autoridad de ejecución: la publicación efectiva procede exclusivamente del registro explícito y del conocimiento aprobado compilado. La extensión es un insumo de auditoría, sin permisos adicionales; no sustituye elegibilidad actual, autoridad por chat/negocio/archivo o confirmación humana para los efectos de Productos. La [ficha aprobada del recorrido](../nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md) y su evidencia mantienen separados aprobación, implementación local, publicación y aceptación real.
 
 ## Cómo conoce NodiaAI los productos
 

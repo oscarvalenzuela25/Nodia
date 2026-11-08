@@ -1,0 +1,196 @@
+{
+  "schema": "teacher-ui-controls/1",
+  "local_date": "2026-11-06",
+  "status": "Client_R25_active_UI_verified",
+  "scope": [
+    "Teacher action Buttons explicit contained/outlined; PlanReview contained, 22px/700 title",
+    "Boneyard visible initial informational loading; cached refetch content/forms retained",
+    "Reusable TextInput multiline root owns padding; inner textarea zero"
+  ],
+  "source_freeze": {
+    "path": "output/teacher-ui-controls-20261106-source-freeze-r01.json",
+    "bytes": 4222,
+    "sha256": "6cad3068b92f9faa00176f40e44f948bad076c8e2384ac79fd0910c476d7dba8"
+  },
+  "validation": {
+    "path": "output/teacher-ui-controls-20261106-validation-r01.json",
+    "bytes": 708,
+    "sha256": "df7a4716e0f3d4985215c8aa90a94977a66b933a936dcf97c21486a8e1c518b0"
+  },
+  "checks": {
+    "unique_tests": 83,
+    "unique_suites": 12,
+    "typecheck_exit": 0,
+    "eslint_exit": 0,
+    "Buttons_with_explicit_non_text_variant": 47
+  },
+  "runtime_or_business_contract_changes": false,
+  "new_inference_or_qualification": false,
+  "personal_course_mutations": 0,
+  "knowledge_publication_or_approval": false,
+  "previous_V1_blockers_unchanged": true,
+  "operations": {
+    "delivery.json": {
+      "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/client-r25-r01/delivery.json",
+      "bytes": 12935,
+      "sha256": "70f3d11b8c87ad92657e19bba9f41e19c6d54b76e21b1eb92f085b13d37e2ce8"
+    },
+    "activation-state.json": {
+      "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/client-r25-r01/activation-state.json",
+      "bytes": 698,
+      "sha256": "44ab033dd88952a9b5eff21830b0397327c8a6a999b28c2d494e3810fba6d27d"
+    },
+    "activation-full-actual-CLI-check.jsonl": {
+      "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/client-r25-r01/activation-full-actual-CLI-check.jsonl",
+      "bytes": 10072,
+      "sha256": "f643094204494f46e33810b7e8b51cec1776939914465039c29b2d2146d7726b"
+    },
+    "final-health.json": {
+      "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/client-r25-r01/final-health.json",
+      "bytes": 1502,
+      "sha256": "1f20c40a3f090dee3932e7386132a6063bfae0b43db4c2a3b48bc955d76c0f03"
+    },
+    "release-manifest.json": {
+      "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/client-r25-r01/release-manifest.json",
+      "bytes": 30708,
+      "sha256": "132b3ad1e9b76e9158fdbc0df056bd604fcfa0ad27cc2830701a5eace4757404"
+    },
+    "Root-package-review.json": {
+      "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/client-r25-r01/Root-package-review.json",
+      "bytes": 335,
+      "sha256": "b815f2ce682f1d56f9cbf67c3b6c8198afee3aadf14d00ba8097fcb05c100679"
+    },
+    "source-freeze.json": {
+      "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/client-r25-r01/source-freeze.json",
+      "bytes": 4222,
+      "sha256": "6cad3068b92f9faa00176f40e44f948bad076c8e2384ac79fd0910c476d7dba8"
+    },
+    "source-plan.json": {
+      "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/client-r25-r01/source-plan.json",
+      "bytes": 252215,
+      "sha256": "4f2d4436dfe92573cda770d3a6aa013b51793f411408d5ed7c30169acf4fe365"
+    },
+    "Root-validation.json": {
+      "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/client-r25-r01/Root-validation.json",
+      "bytes": 708,
+      "sha256": "df7a4716e0f3d4985215c8aa90a94977a66b933a936dcf97c21486a8e1c518b0"
+    },
+    "build-receipt.json": {
+      "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/client-r25-r01/build-receipt.json",
+      "bytes": 30821,
+      "sha256": "707b280ce2be84a4425be10865ccd090ce110eededa8188b400b4f2bf7dbbe50"
+    }
+  },
+  "browser": {
+    "proof": {
+      "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/browser/browser-verification.json",
+      "bytes": 980,
+      "sha256": "cbaefe646152fcd3d09758a0540fc989f2331dfd6b14beaddc059de15d801077"
+    },
+    "screenshots": {
+      "teacher-actions-desktop.jpg": {
+        "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/browser/teacher-actions-desktop.jpg",
+        "bytes": 94420,
+        "sha256": "5d13ab65f76c7dd51fff17403d52ff917f00123eedb2abd71f1af7e722d3bc12"
+      },
+      "new-form-desktop.jpg": {
+        "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/browser/new-form-desktop.jpg",
+        "bytes": 54415,
+        "sha256": "06a9ae8f6081ea15a3fd5e99acf98143a3a15c0aa010435c52a0901297b68e9c"
+      },
+      "new-form-mobile.jpg": {
+        "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/browser/new-form-mobile.jpg",
+        "bytes": 36211,
+        "sha256": "62e275246dcdb959f556390f22e87f062989997308616a3d15cd8fb8f019c56e"
+      },
+      "initial-skeleton-desktop.jpg": {
+        "path": "ops/lab/artifacts/teacher-ui-controls-20261106-r01/browser/initial-skeleton-desktop.jpg",
+        "bytes": 81079,
+        "sha256": "ddde320d964707f5e192162dc4ffd83f6f4624e80afc67a010c3312bafb7f044"
+      }
+    },
+    "summary": {
+      "schema": "teacher-ui-controls-browser/1",
+      "module": {
+        "buttons": 19,
+        "docWidth": 1078,
+        "scrollWidth": 1078,
+        "textButtons": [],
+        "width": 1088
+      },
+      "mobile": {
+        "docWidth": 310,
+        "scrollWidth": 310,
+        "width": 320
+      },
+      "padding": {
+        "rootPadding": "10px 14px",
+        "textareaPadding": "0px"
+      },
+      "singleLine": {
+        "padding": "10px 14px"
+      },
+      "initialLoading": {
+        "bones": [
+          {
+            "height": 32,
+            "width": 160
+          },
+          {
+            "height": 160,
+            "width": 675.828125
+          }
+        ],
+        "busyRegions": 4,
+        "overlays": 2
+      },
+      "refetch": {
+        "materialPresent": true,
+        "overlays": 0,
+        "progressCount": 1
+      },
+      "networkEmulationRestored": true,
+      "viewportRestored": true,
+      "personalSessionState": "paused",
+      "generationCounter": 7,
+      "formsSubmitted": 0,
+      "inferences": 0,
+      "PlanReview": "Source and existing component regressions; user plan already accepted, no reopening for screenshot."
+    }
+  },
+  "client_manifest_sha256": "132b3ad1e9b76e9158fdbc0df056bd604fcfa0ad27cc2830701a5eace4757404",
+  "source_delta": {
+    "existing_changed": 10,
+    "new": 3,
+    "deleted": 0,
+    "unchanged_inputs": 1368,
+    "total_inputs": 1381
+  },
+  "build": {
+    "outputs": 184,
+    "vite_seconds": 14.837,
+    "typecheck_diagnostics": 0,
+    "OPS_guard_tests": 5
+  },
+  "operations_summary": {
+    "activation_executions": 1,
+    "nginx_reloads": 1,
+    "complete_CAS_Root_verified": "e63c8dcd240ae1a04009eb1d9af502bc15fb25ec3eef096208f7523d4fdf95e9",
+    "Server_Native_auth_DB_unchanged": true,
+    "legacy_assets_per_release": 180,
+    "legacy_versions": [
+      "R24",
+      "R23",
+      "R22",
+      "R21",
+      "R20",
+      "R19",
+      "R17"
+    ]
+  },
+  "limitations": [
+    "PlanReview title/variants verified by source and component regressions; personal plan already accepted, not reopened or mutated for a screenshot.",
+    "Network latency was temporarily emulated solely in the separate QA tab for initial/refetch observation, restored and tab closed. Original user tab untouched.",
+    "Existing personal course paused/schema failure and V1 runtime blockers remain outside this visual task."
+  ]
+}

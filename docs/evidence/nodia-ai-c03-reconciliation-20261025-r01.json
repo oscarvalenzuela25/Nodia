@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "verification_date": "2026-10-25",
+  "status": "original_uncertain_C03_run_reconciled_without_replay",
+  "scope": "One original PDF run in the local Linux VM; reconciliation only, no invoice-analysis acceptance.",
+  "sources": {
+    "artifact_directory": "ops/lab/artifacts/c03-continuation-verification-r01",
+    "catalog": "ops/lab/artifacts/c03-continuation-verification-r01/catalog.json",
+    "catalog_sha256": "173c6538617ca0800d92226d56a824f3bd6a4250d18bd94a136b2907e4999d99",
+    "generator": "ops/lab/artifacts/c03-continuation-verification-r01/consolidate-r01.py",
+    "source_receipts_are_captured_not_live": true
+  },
+  "release": "/opt/nodia/releases/nodia-server-ai36-c03-publication-r01",
+  "manifest_sha256": "dbacaab63ab521b6e6ad3eb89c8c8c1c2f1968ae098c61ee70c016ef127e7ccf",
+  "chat_id": "86606071-eaf3-483d-8859-eb5b3bc45f72",
+  "run_id": "6c5b6cc4-22d4-4628-80a5-8b3de13c61fc",
+  "job_id": "aaa41d9e-b21d-48b9-afd0-ef1d406abeaa",
+  "attempt_id": "bde2336b-0f40-4ca5-a0d2-e092482788b5",
+  "before": {
+    "state": "unknown",
+    "provider_dispatches": 1,
+    "tools_completed": [
+      "nodia_capabilities_select"
+    ],
+    "mcp_rpc_messages": 7,
+    "retained_slots": 1
+  },
+  "native_terminal": {
+    "terminal_proof_id": "4b2dfc32-1208-4902-88a3-d11bc9b577ea",
+    "outcome": "abandoned_unknown",
+    "process_closed": true,
+    "observed_at": "2026-10-25T19:23:26.618081+00:00"
+  },
+  "reconciliation": {
+    "compiled_use_cases_only": true,
+    "resolved": true,
+    "cleanup_pending": false,
+    "acknowledged": true,
+    "reconcile_calls": 1,
+    "acknowledge_calls": 1,
+    "terminal_witness_sha256": "588df98ccdd53f272272356afc66192707ddf567eea998e86ecc4cc29f0f4d29",
+    "provider_generations": 0,
+    "business_SQL_writes": 0,
+    "worker_paused_and_resumed": true,
+    "API_state_unchanged": true
+  },
+  "after": {
+    "jobs": 0,
+    "slots": 0,
+    "active_job_id": null,
+    "run_state": "failed",
+    "error_code": "nodia_ai:outcome_unknown"
+  },
+  "preserved": {
+    "protected_table_projections": 58,
+    "all_protected_before_after_equal": true,
+    "own_message_metadata_equal": true,
+    "attachment": {
+      "id": "00c15669-7b94-485e-90ce-fb844a07989b",
+      "kind": "pdf",
+      "state": "ready",
+      "byte_count": "43102",
+      "media_type": "application/pdf",
+      "content_hash": "9f9a32bd46ebfcb1063e7d1bf4e067f91ff5e5c5d82e1536c2d9725f84917e59",
+      "page_count": 1,
+      "duration_seconds": null,
+      "interpretation_revision": 1,
+      "interpretation_reviewed": false,
+      "interpretation_origin": "extracted",
+      "interpretation_present": true
+    },
+    "proposals": 0,
+    "executions": 0
+  },
+  "observed_diagnostic": {
+    "attempt_id": "bde2336b-0f40-4ca5-a0d2-e092482788b5",
+    "phase": "validating_hook",
+    "state": "unknown",
+    "exception_type": "ValueError",
+    "elapsed_ms": 89567,
+    "rpc_messages": 7,
+    "callbacks": 1,
+    "exit_code": 0,
+    "gate_verified": false,
+    "cli": {
+      "stage": "result",
+      "events": 9,
+      "invalid_lines": 0,
+      "stdout_bytes": 6253,
+      "initialized": true,
+      "document_read_completed": false,
+      "result_seen": true,
+      "last_event_age_ms": 127,
+      "phase": "result",
+      "result_status": "SUCCESS",
+      "denied_actions_count": null,
+      "tool_error_categories": [],
+      "tool_event_counts": {
+        "call_mcp_tool": 2,
+        "finish": 1
+      },
+      "tool_completed_counts": {
+        "call_mcp_tool": 1
+      },
+      "tool_error_counts": {},
+      "tool_steps": 3,
+      "last_tool": "finish",
+      "terminal_status": "SUCCESS",
+      "denied_count": 0,
+      "stderr_bytes": 0,
+      "error_indicator_interpretation": "text_indicator_not_verified_cause",
+      "stderr_error_categories": [],
+      "result_error_categories": [],
+      "result_error_json_utf8_bytes": null
+    },
+    "hook": {
+      "receipt_class": "verified",
+      "decision_count": 2,
+      "rejected_count": 0,
+      "categories_state": "valid",
+      "categories": {
+        "allowed_registered": 1,
+        "allowed_finish": 1
+      }
+    },
+    "cli_log": {
+      "state": "observed",
+      "interpretation": "text_indicator_not_verified_cause",
+      "bytes_read": 33263,
+      "lines_scanned": 128,
+      "truncated": true,
+      "transport_indicators": [],
+      "provider_error_indicators": [],
+      "http_statuses": []
+    },
+    "rpc": {
+      "scope": "bridge_reply_constructed_not_cli_consumption",
+      "state": "observed",
+      "events": 7,
+      "unknown_events": 1,
+      "methods": {
+        "initialize": 1,
+        "notifications_initialized": 1,
+        "tools_list": 1,
+        "tools_call": 1,
+        "ping": 0,
+        "other": 3
+      },
+      "responses": {
+        "success": 2,
+        "error": 1,
+        "notification": 3,
+        "unknown": 1
+      },
+      "tools_list_successes": 1,
+      "last_response": {
+        "method": "tools_call",
+        "response": null,
+        "error_code": null
+      }
+    },
+    "controlled_context": {
+      "scope": "initial_prompt_and_mcp_stdout",
+      "initial_utf8_bytes": 73904,
+      "used_utf8_bytes": 87548,
+      "maximum_utf8_bytes": 262144,
+      "provider_internal_context_tokens": null
+    }
+  },
+  "diagnostic_interpretation": {
+    "observed": "CLI SUCCESS/exit0 reached validating_hook; ValueError, gate_verified:false and document_read_completed:false.",
+    "inference": "Consistent with missing original-attachment read proof (attachment_0) during discovery. This receipt does not capture the rejected hook payload or prove the later fix.",
+    "fix_delivery": "Separate source/runtime change and acceptance; not claimed by reconciliation."
+  },
+  "limits": [
+    "The native outcome abandoned_unknown does not prove provider analysis failure or success.",
+    "No prepare/complete analyzer call, extracted invoice result, new assistant message or business effect is accepted here.",
+    "Provider_generations:0 describes this reconciliation operator; the original run retains its one earlier dispatch.",
+    "Initial snapshot harness failures are preserved in failed-preflight-inventory-r01.json; they occurred before reconcile/ACK and did not authorize replay.",
+    "Protected hashes compare 58 SQL projections under the recorded exclusions; not every database table or R2 object.",
+    "No new Web inference or availability, other accounts, production, Windows or API acceptance."
+  ]
+}

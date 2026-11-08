@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "stage": "NR-32",
+  "scope": "Real PostgreSQL disposable mechanism regression on exact R03 compiled source; no operational hot release or UI acceptance",
+  "status": "isolated_mechanism_verified_operational_acceptance_pending",
+  "source_manifest_sha256": "605ef5533af3c8ffbffde33ce13275d966b9271f34a2ee0f8a17c609c02308c1",
+  "source_files_verified": 4230,
+  "execution": {
+    "operator": "Root",
+    "started_at_utc": "2026-10-26T14:02:20.742Z",
+    "completed_at_utc": "2026-10-26T14:02:25.321Z",
+    "receipt": {
+      "path": "ops/lab/artifacts/nr32-incompatible-regression-verification-r01/nr32-incompatible-regression-VM-r01.json",
+      "sha256": "34b170f73c81509dbfcf068497bcf64b0774271b729d5d82774ebd52d74a84fe"
+    },
+    "command": "node /opt/nodia/verification/nr32-incompatible-regression-r01/nr32.mjs --source /opt/nodia/releases/nodia-server-invoice-ocr-r03",
+    "exit_code": 0,
+    "checks_count": 22,
+    "cleanup_complete": true
+  },
+  "guarantees": {
+    "old_contract_challenge_and_confirmation_rejected": true,
+    "old_hash_revision_token_rejected_before_effect": true,
+    "new_explicit_preview_and_revision_required": true,
+    "new_exact_challenge_and_confirmation_required": true,
+    "one_execution_per_confirmed_intent_and_no_effect_replay": true,
+    "historical_projection_sha256_before": "a6e57480f7a3ff4d6e773a6c8f7b1daaf8145981280db08f1ed772bd0c51e74f",
+    "historical_projection_sha256_after": "a6e57480f7a3ff4d6e773a6c8f7b1daaf8145981280db08f1ed772bd0c51e74f",
+    "pending_projection_sha256_before": "04d771fb67ab2246a08c01d4c7d99c53bc6bf9cca342756d47e3dfe2bd03b4a7",
+    "pending_projection_sha256_after": "04d771fb67ab2246a08c01d4c7d99c53bc6bf9cca342756d47e3dfe2bd03b4a7"
+  },
+  "catalogs": {
+    "A": {
+      "contract_hash": "63b080f395a438b59b7384de849b7c407335690c839664e87d4794a7800fd88d",
+      "catalog_version": "nodia-ai-ai19-finance-effect/1"
+    },
+    "B": {
+      "contract_hash": "2ef3dc0c91697396b128fd16eea1e6aabfa4dfe46ff373a2b33f603b73a6fa0b",
+      "catalog_version": "nodia-ai-ai19-finance-effect/1/nr32-controlled-revision-2"
+    }
+  },
+  "final_counts": {
+    "effects": 2,
+    "completed_executions": 2,
+    "pending_jobs": 0,
+    "runtime_slots": 0
+  },
+  "limits": {
+    "disposable_postgresql": true,
+    "actual_database_used": false,
+    "SDK_or_provider_calls": 0,
+    "provider_observation": false,
+    "UI": false,
+    "operational_deployment": false,
+    "controlled_registration_identity_only": true,
+    "automatic_migration_of_old_preview": false,
+    "operational_NR32_acceptance": false
+  },
+  "pending": [
+    "Two real incompatible deployments with an in-flight or ready proposal in the offered environment.",
+    "Operational UI renders unavailability and a new review/confirmation without rewriting old receipts.",
+    "No global AI36/C05/AI38 closure or provider inference acceptance from this isolated test."
+  ],
+  "materials": {
+    "operator_path": "ops/lab/artifacts/nr32-incompatible-regression-r01/nr32.mjs",
+    "operator_sha256": "1080bde8571565f54603c86d2e03c7a02eb06e58d0b4d2a08846302e40c02084",
+    "original_authoring_catalog_sha256": "ff7c75bab1e51948b10f4642df46f9a50e92d37f818172efd415385a341e9490"
+  }
+}

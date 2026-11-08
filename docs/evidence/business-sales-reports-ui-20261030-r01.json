@@ -1,0 +1,616 @@
+{
+  "schema_version": 1,
+  "status": "implemented_verified_and_adopted",
+  "updated_on": "2026-10-30",
+  "scope": {
+    "specification": "docs/mvp/94-business-point-of-sale-and-product-refactor.md#24-filtros-tablas-y-entrada-de-productos--r15-2026-10-30",
+    "client_only": true,
+    "requests": [
+      "Breadcrumb row bottom margin0",
+      "Shared standard table radius8px",
+      "Barcode first/fullwidth and one autofocus per product-modal opening",
+      "Centered readable empty-sale instructions",
+      "Sales shared Filter, chips, InputSearch, standard table/server pagination; no duplicate title/create action",
+      "Reports shared Filter and independent metric cards with human average-per-sale copy",
+      "Top10 ranking uses standard table without unsupported pagination"
+    ],
+    "new_dependencies": 0,
+    "server_code_changes": 0,
+    "new_migrations": 0,
+    "new_capabilities": 0
+  },
+  "source": {
+    "capture": {
+      "path": "ops/lab/artifacts/business-sales-reports-ui-20261030-r01/client/build-inputs.json",
+      "bytes": 253583,
+      "sha256": "34e76a3ca16e44fe499edeede8a631390802ebb2de9d6ec62956e206fd926b91"
+    },
+    "fingerprint": "74316213136994af608d52c8b6ed78b11ad05e9e984e792dcc3bbc2255b3a171",
+    "captured_files": 1251,
+    "authorized_paths": 42,
+    "delta": {
+      "added": [
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportFilters/SalesReportFilters.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportFilters/filters.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportFilters/index.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportFilters/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportMetrics/SalesReportMetrics.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportMetrics/index.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportMetrics/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportRanking/SalesReportRanking.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportRanking/index.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportRanking/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/salesRecordFilters.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/salesRecordsStyles.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/useSalesReports.ts",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesRecords.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportFilters/SalesReportFilters.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportMetrics/SalesReportMetrics.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReportRanking/SalesReportRanking.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/salesRecordFilters.test.ts",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/useSalesReports.test.tsx",
+        "src/theme/tablePanel.ts"
+      ],
+      "changed": [
+        "src/components/skeletons/TableSkeleton/TableSkeleton.tsx",
+        "src/modules/business/pages/BusinessDetail/components/CollaboratorsTab/CollaboratorsTab.tsx",
+        "src/modules/business/pages/BusinessDetail/components/InvoicesTab/InvoicesTab.tsx",
+        "src/modules/business/pages/BusinessDetail/components/OverviewTab/OverviewTab.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/ProductsTab.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductModal.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProvidersTab/ProvidersTab.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SaleLineList/SaleLineList.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SaleLineList/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesRecords.tsx",
+        "src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReports.tsx",
+        "src/modules/business/pages/BusinessDetail/styles.ts",
+        "src/modules/finances/components/FinanceTable/styles.ts",
+        "src/modules/generalSettings/pages/Actions/styles.ts",
+        "src/modules/generalSettings/pages/Modules/styles.ts",
+        "src/modules/generalSettings/pages/Roles/styles.ts",
+        "src/modules/generalSettings/pages/Users/styles.ts",
+        "src/modules/rentals/components/RentalTable/styles.ts",
+        "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/ProductModal.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/SalesWorkspace/SaleLineList/SaleLineList.test.tsx",
+        "src/translate/en/business.json",
+        "src/translate/es/business.json"
+      ],
+      "outside_authorized_scope": [],
+      "removed": []
+    },
+    "final_bundle_source_binding": true,
+    "source_fixes_before_capture": [
+      "Use explicitly typed MUI component props to preserve Card/Typography rendering",
+      "Remove native heading margin and retain Typography for centered empty state"
+    ]
+  },
+  "verification": {
+    "full_client_suite": {
+      "tests_passed": 2386,
+      "files_passed": 288,
+      "duration_seconds": 210.8,
+      "exit_code": 0,
+      "log": {
+        "path": ".tmp/pos-r15-client-final.log",
+        "bytes": 720,
+        "sha256": "19fdfba6ba25abeeb2b2135be8c856f7080b7d74fa0b1281383c14b6f04011f1"
+      },
+      "timing_note": "Full suite completed before the final MUI polymorphic-prop/empty-heading visual adjustments. Affected component checks and production compilation were run afterwards."
+    },
+    "focused_after_final_changes": [
+      {
+        "scope": "Reports hook/filters/metrics/ranking",
+        "tests_passed": 12,
+        "files_passed": 4,
+        "duration_seconds": 6.3,
+        "exit_code": 0,
+        "log": {
+          "path": ".tmp/pos-r15-reports-mui-final.log",
+          "bytes": 241,
+          "sha256": "e5997dd7761d239692ec8a99c95578c7dc532be881280a86f31b90143282a853"
+        }
+      },
+      {
+        "scope": "Empty-list final Typography render",
+        "tests_passed": 3,
+        "files_passed": 1,
+        "duration_seconds": 3.8,
+        "source": "qa-r15-receipt.json"
+      }
+    ],
+    "other_focused_checks": {
+      "product_and_list": 25,
+      "sales_filters_and_wiring": 17,
+      "note": "These are scoped regression runs, not additional unique tests to add to the full-suite count."
+    },
+    "typecheck": {
+      "exit_code": 0,
+      "log": {
+        "path": ".tmp/pos-r15-types-mui-final.log",
+        "bytes": 46,
+        "sha256": "e7bf9235c4b3d2f32ae91ad79594338311c7f2da0e9371d85417552aaa0b1865"
+      },
+      "final_current_source_compilation_also_in_production_build": true
+    },
+    "lint": {
+      "global_exit_code": 0,
+      "global_log": {
+        "path": ".tmp/pos-r15-lint.log",
+        "bytes": 43,
+        "sha256": "ffd8fd64020e579eedde270479fe815463785d7fafad2537f697ac8c68b27abe"
+      },
+      "final_owned_code_exit_code": 0,
+      "final_owned_code_files": 40,
+      "final_owned_code_log": {
+        "path": ".tmp/pos-r15-owned-code-lint.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "translations": "13 new keys present in both es/en business JSON, parsed separately; ESLint has no JSON configuration."
+    },
+    "build": {
+      "exit_code": 0,
+      "vite_seconds": 12.25,
+      "log": {
+        "path": ".tmp/pos-r15-delivery-build.log",
+        "bytes": 23060,
+        "sha256": "1c0c7b1dd33e3820baabbe5b7d0713958039f3bc2c1a99436e301aac67ed2116"
+      },
+      "warnings": "The pre-existing >500kB API chunk warning remains (629.60kB now, 628.01kB in R14); Rolldown plugin timing diagnostics are informational. No performance acceptance is claimed."
+    },
+    "offline_operator_tests": {
+      "passed": 10,
+      "note": "Containment, exact pins/scope, fallback preservation, CAS and configuration-only rollback. Not a substitute for runtime/product tests."
+    },
+    "native_qa": {
+      "receipt": {
+        "path": "ops/lab/artifacts/business-sales-reports-ui-20261030-r01/client/qa-r15-receipt.json",
+        "bytes": 5622,
+        "sha256": "9bde451b4a535c12672cad82e44661fb54c8a4f021134896ded4221d19eedcc2"
+      },
+      "manifest": {
+        "path": "ops/lab/artifacts/business-sales-reports-ui-20261030-r01/client/qa-r15-manifest.json",
+        "bytes": 2244,
+        "sha256": "ffd6a1d7a38f571cd657f486114a8357e204de9e76237d2d81683248672cf760"
+      },
+      "status": "PASS_WITH_DOCUMENTED_EXISTING_LIMITATION",
+      "lab": {
+        "origin": "http://127.0.0.1:5196",
+        "browser": "156.0.4314.50",
+        "session": "pos-r15-ui",
+        "real_browser": true,
+        "transport": "Explicit synthetic Axios adapter, 96 products and 55 sales; all non-GET requests rejected.",
+        "fake_actor": "business-qa",
+        "profile_matrix": {
+          "widths": [
+            320,
+            390,
+            600,
+            1569
+          ],
+          "height": 1000,
+          "language_theme": [
+            "es/dark",
+            "en/light"
+          ],
+          "profiles": 8,
+          "section_samples": 24
+        },
+        "real_api_resources": 0,
+        "mutation_attempts": 0,
+        "inferences": 0,
+        "hardware_or_microphone": false,
+        "production_or_vm_access": false
+      },
+      "verified": [
+        "Empty sale region centered at all eight profiles: maximum vertical delta 0.0078125px; title20px/help16px; breadcrumb bottom margin0; no page overflow or trailing HTML/body height difference.",
+        "Sales and ranking table wrappers8px. Native Products wrapper8px. Other standard wrappers use the shared token and passed scoped lint/build integration; they were not separately browsed in this fixture.",
+        "Sales: server pagination25+19 of44, mobile cards below600, table min650 and local scroll from600, external reachable pagination; resize creates no duplicate sales reads.",
+        "Reports: four Material Card/Paper metric cards, average-per-sale rounded display and explanatory copy, top10 server ranking without fake pagination, min650 local scroll and keyboard ArrowRight.",
+        "Sales and Reports filters: invalid ranges disabled, draft Cancel performs no reads, Apply scoped parameters, Clear defaults, state retained while reopening/resizing; Reports calendars exercised on desktop and mobile.",
+        "Read failures preserve existing sales/ranking rows. Retry soft-loading disables controls and retains data. Public QueryClient invalidation in the synthetic harness triggers read-only refetch; temporary prototype observation was restored before invalidation.",
+        "Product modal barcode first/fullwidth/text/autofocus at320/390/600/1569. Edit selects existing code, leading zeros survive Enter, no automatic submit, reopen focuses again. Image GET failure/retry preserves local name and does not refocus barcode.",
+        "No visible untranslated namespace keys in final Products view. No application runtime errors observed; isolated favicon404 and expected synthetic-error toast rendering were present."
+      ],
+      "limitations": [
+        "Existing Products table with13columns and very long synthetic names makes the zero-offer price cell narrow and wraps its label over several lines at1569. This historical layout was observed and left unchanged by R15; no blanket Products-cell legibility PASS is claimed.",
+        "Standard pagination targets remain44px in xs and40px fromsm, preserving the existing shared component contract.",
+        "No persistence between Sales and Reports section unmounts is asserted; only applied state on reopen/cancel/resize was required.",
+        "No checkout, product save, upload, image delete, backend authorization, real totals database accuracy, R2, production delivery or VM behavior is exercised here.",
+        "The first Reports pending-state helper assertion ran before React committed the state. A held native snapshot and continuation verified disabled filters and ten retained rows; no source defect or write occurred.",
+        "Clearing Sales filters reused a valid default-query cache; no unnecessary GET was required. UI defaults and25rows verified."
+      ],
+      "cleanup": {
+        "browser_cli": "Browser pos-r15-ui closed",
+        "own_vite_pid": 155504,
+        "own_port": 5196,
+        "listener_after_exit": 0,
+        "user_port_5174_touched": false,
+        "vm_touched": false
+      }
+    },
+    "live_vm_ui": {
+      "receipt": {
+        "path": "ops/lab/artifacts/business-sales-reports-ui-20261030-r01/client/live-ui-receipt.json",
+        "bytes": 3664,
+        "sha256": "c1c97e6ddd9276e65a20c8830a2079337b3774f21946b4e9a039f0aeea5b9975"
+      },
+      "observations": {
+        "schema_version": 1,
+        "status": "verified_read_only_ui",
+        "date": "2026-10-30",
+        "source_input_fingerprint_sha256": "74316213136994af608d52c8b6ed78b11ad05e9e984e792dcc3bbc2255b3a171",
+        "client_manifest_sha256": "709147650581f565b69d23474875b6fee770cef7a53ead8d05d957965f24ddf3",
+        "environment": {
+          "browser": "authenticated in-app browser",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "language": "es",
+          "theme": "dark",
+          "origin": "http://localhost:5174",
+          "source": "actual VM services and current laboratory records; no network mocks"
+        },
+        "reports": {
+          "summary": {
+            "registered_clp": "6064",
+            "sales_count": "2",
+            "units_sold": "4",
+            "rounded_average_clp": "3032"
+          },
+          "material_cards": 4,
+          "card_width_px": 221.5,
+          "ranking_rows": 1,
+          "ranking_bound": 10,
+          "table_radius_px": 8,
+          "table_width_px": 932,
+          "document_horizontal_overflow_px": 0,
+          "redundant_reports_heading": false,
+          "filter_opened_with": [
+            "from",
+            "through_inclusive",
+            "metric"
+          ],
+          "filter_closed": "Cancel without Apply"
+        },
+        "sales": {
+          "rows": 2,
+          "amounts_clp": [
+            "4548",
+            "1516"
+          ],
+          "table_radius_px": 8,
+          "search_label": "Buscar ventas",
+          "redundant_section_headings": 0,
+          "create_action_present": false,
+          "document_horizontal_overflow_px": 0,
+          "filter_opened_with": [
+            "commercial_status",
+            "from",
+            "through_inclusive"
+          ],
+          "default_status_note": "omitted status excludes discarded",
+          "filter_closed": "Cancel without Apply"
+        },
+        "breadcrumb": {
+          "observed_bottom_margins_px": [
+            0,
+            0,
+            0
+          ],
+          "business_header_collapsed": true
+        },
+        "empty_pos": {
+          "sale_label": "Venta 1",
+          "line_count": 0,
+          "region_height_px": 285.4375,
+          "center_delta_x_px": -0.0078125,
+          "center_delta_y_px": 0,
+          "title_size_px": 20,
+          "help_size_px": 16,
+          "scanner_focused_on_entry": true
+        },
+        "products": {
+          "observed_rows": 8,
+          "table_radius_px": 8,
+          "document_horizontal_overflow_px": 0,
+          "new_form_first_fields": [
+            "product-barcode",
+            "product-name",
+            "product-code"
+          ],
+          "first_three_input_widths_px": [
+            582,
+            582,
+            582
+          ],
+          "focused_on_open": "product-barcode",
+          "local_barcode_test": "0000123456789",
+          "after_enter": {
+            "dialog_open": true,
+            "focus": "product-barcode",
+            "value": "0000123456789",
+            "new_validation_errors_observed": false
+          },
+          "closed_by": "Cancel",
+          "product_count_after_cancel": 8
+        },
+        "actions": {
+          "save_product_clicked": false,
+          "confirm_sale_clicked": false,
+          "image_changed": false,
+          "message_sent": false,
+          "provider_inference_started": false,
+          "network_mutations_instrumented": false,
+          "note": "The operator used only navigation, open/Cancel and local barcode input/Enter. No Save or Confirm was clicked; this UI receipt does not claim a network counter."
+        },
+        "cleanup": {
+          "own_tab": 4,
+          "own_tab_closed": true,
+          "user_tabs_closed_or_reloaded": false,
+          "global_viewport_override_created": false
+        },
+        "screenshots": {
+          "reports_final": {
+            "path": "ops/lab/artifacts/business-sales-reports-ui-20261030-r01/client/live-reports-final.png",
+            "bytes": 103435,
+            "sha256": "18559fb8e83b86bcef99d5044c0907013ea4b9984f1fc8ed6f228df1e73e5bb0"
+          },
+          "product_barcode": {
+            "path": "ops/lab/artifacts/business-sales-reports-ui-20261030-r01/client/live-product-barcode.png",
+            "bytes": 47146,
+            "sha256": "d46bc8ab5e284b0e8f61d9e39e3e55b7abfd5e21d18b300755d94e40329aa982"
+          }
+        }
+      }
+    }
+  },
+  "delivery": {
+    "client_release": "/opt/nodia/releases/nodia-client-business-sales-reports-ui-20261030-r01",
+    "manifest_sha256": "709147650581f565b69d23474875b6fee770cef7a53ead8d05d957965f24ddf3",
+    "index_sha256": "35ac6ba59e71b393c3cc37f46ef90f9ad97336f8fd1be3c8f1d9847552d1d691",
+    "nginx_sha256": "2b20b450aba4ab7b964110d55ab967db81be3e31294b46e3aaa512bc22116752",
+    "config_sha256": "25677d1baab554849c4d5c0991c915906d786443c51ad70ef58d28fbfa612a3f",
+    "artifact": {
+      "bytes": 2192853,
+      "members": 173,
+      "sha256": "0f72af4d57a17907a309231897d4fbd8a9e8983c05625e65829b3dd71b41e4d7",
+      "unpacked_bytes": 4930342
+    },
+    "http": {
+      "current_assets": 169,
+      "previous_assets": 47,
+      "protected": [
+        {
+          "route": "/api/v1",
+          "status": 200
+        },
+        {
+          "route": "/api/v1/nodia-ai/connections",
+          "status": 401
+        },
+        {
+          "route": "/api/v1/products",
+          "status": 401
+        }
+      ],
+      "spa": [
+        {
+          "route": "/",
+          "sha256": "35ac6ba59e71b393c3cc37f46ef90f9ad97336f8fd1be3c8f1d9847552d1d691",
+          "status": 200
+        },
+        {
+          "route": "/tools/nodia-ai",
+          "sha256": "35ac6ba59e71b393c3cc37f46ef90f9ad97336f8fd1be3c8f1d9847552d1d691",
+          "status": 200
+        },
+        {
+          "route": "/tools/business",
+          "sha256": "35ac6ba59e71b393c3cc37f46ef90f9ad97336f8fd1be3c8f1d9847552d1d691",
+          "status": 200
+        }
+      ]
+    },
+    "backup": {
+      "path": "/opt/nodia/operations/business-sales-reports-ui-20261030-r01/client/nginx-before.conf",
+      "sha256": "9a99aef77531dab8c645314c401629334119b7a394436561e138d49470718c30",
+      "previous_client_preserved": true
+    },
+    "reload": {
+      "dispatched": true,
+      "exit_code": 0
+    },
+    "protected_runtime_equal_before_after_and_to_R14": true,
+    "protected_runtime": {
+      "services": {
+        "nodia-api.service": {
+          "MainPID": "2263533",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-business-pos-accessibility-20261029-r01",
+          "ActiveState": "active",
+          "SubState": "running",
+          "executable": "/opt/node-v24.20.0-linux-x64/bin/node",
+          "start_ticks": "65459257"
+        },
+        "nodia-ai-worker.service": {
+          "MainPID": "2263534",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-business-pos-accessibility-20261029-r01",
+          "ActiveState": "active",
+          "SubState": "running",
+          "executable": "/opt/node-v24.20.0-linux-x64/bin/node",
+          "start_ticks": "65459259"
+        },
+        "nodia-keyring.service": {
+          "MainPID": "1029625",
+          "WorkingDirectory": "",
+          "ActiveState": "active",
+          "SubState": "running"
+        },
+        "nodia-gemini-lab.service": {
+          "MainPID": "0",
+          "WorkingDirectory": "/opt/nodia/nodia-gemini-microservice",
+          "ActiveState": "active",
+          "SubState": "exited"
+        },
+        "nodia-ai-backup.timer": {
+          "ActiveState": "active",
+          "SubState": "waiting"
+        },
+        "nodia-ai-backup-rotate.timer": {
+          "ActiveState": "active",
+          "SubState": "waiting"
+        }
+      },
+      "server_manifest_sha256": "73be36b2117d96fc3ffc8e8bc07303b7dbcc68093fb852d80ee37c3d85d7ddef",
+      "knowledge_files": {
+        "src/nodia-ai/knowledge/manifest.json": "bec4d635beed80a5be18ca1b7fb5518f229146a641c18e2df86e6296369a082c",
+        "dist/nodia-ai/knowledge/manifest.json": "bec4d635beed80a5be18ca1b7fb5518f229146a641c18e2df86e6296369a082c",
+        "src/nodia-ai-context/config/knowledge-pin.json": "e70446455105423eef211c94d3aa6b502075cc482d894753d6f8f40068c960f3",
+        "dist/nodia-ai-context/config/knowledge-pin.json": "e70446455105423eef211c94d3aa6b502075cc482d894753d6f8f40068c960f3"
+      },
+      "native": {
+        "id": "b3dcf9d350532da2965a62cc276b8f5b81b935a23374c5c67f1bfe974c0be186",
+        "image": "sha256:4b990e3e8c60077fceb06ac5018025a5ef80353297fe92affc8b20fe53915fa9",
+        "started_at": "2026-10-27T18:32:11.657816024Z",
+        "status": "running",
+        "health": "healthy"
+      }
+    },
+    "operations": {
+      "provider_requests": 0,
+      "direct_sql_queries": 0,
+      "auth_requests": 0,
+      "cloud_backup_requests": 0,
+      "api_or_worker_restart_requests": 0,
+      "native_restart_requests": 0
+    },
+    "receipts": {
+      "bootstrap-receipt.json": {
+        "path": "ops/lab/artifacts/business-sales-reports-ui-20261030-r01/client/bootstrap-receipt.json",
+        "bytes": 378,
+        "sha256": "f9191dac23ae477734c7024de115588bdcdeb4ffc792c995c19e00ee40052f72"
+      },
+      "preflight-receipt.json": {
+        "path": "ops/lab/artifacts/business-sales-reports-ui-20261030-r01/client/preflight-receipt.json",
+        "bytes": 2912,
+        "sha256": "5d5f88541d2349eff5dd4fecc22dda5cbbe064993e001605e131a8034bc02d98"
+      },
+      "stage-receipt.json": {
+        "path": "ops/lab/artifacts/business-sales-reports-ui-20261030-r01/client/stage-receipt.json",
+        "bytes": 179,
+        "sha256": "fa0136cbaa5e521379820d934866c573a29d1f9a4ad596ea95489e428e34c020"
+      },
+      "activate-receipt.json": {
+        "path": "ops/lab/artifacts/business-sales-reports-ui-20261030-r01/client/activate-receipt.json",
+        "bytes": 4278,
+        "sha256": "39237b2c7892be7fc68ad7fe73f8f4a9baa993c8c9250efe10522a9049e18c82"
+      },
+      "status-receipt.json": {
+        "path": "ops/lab/artifacts/business-sales-reports-ui-20261030-r01/client/status-receipt.json",
+        "bytes": 6227,
+        "sha256": "fe1cc6e8fed00483138723d3f0770bb37c548968d00bedbe5a509ac583b65243"
+      }
+    },
+    "recovery_catalog": {
+      "path": "ops/lab/artifacts/business-sales-reports-ui-20261030-r01/client/catalog.json",
+      "bytes": 5690,
+      "sha256": "b5f20b2409126973b533f001f70b8955fb5e7f14f2291c7826814d5d91ff41ca"
+    },
+    "operators_consumed_do_not_replay": true
+  },
+  "approved_document_integrity": {
+    "approved_files": 44,
+    "mismatches": 0,
+    "aggregate_format": "sha256 of UTF8 sorted(path + NUL + full_file_sha256 + LF)",
+    "aggregate_sha256": "ed28119a33cf89230c5ecbaef1c371fe21b2f6e709b8c71fdf47ce755dbb3373",
+    "durable_baseline": {
+      "path": "docs/evidence/business-pos-multi-sale-20261029-r01.json",
+      "bytes": 63463,
+      "sha256": "88884aa2216e067e89704393f5eb2db1a32d8ef00738e286afbc8e8c945d8fce"
+    }
+  },
+  "documentary_approval": {
+    "businesses_revision": 33,
+    "multi_sale_feature_revision": 3,
+    "status": "draft",
+    "integration": "unregistered",
+    "approval": null,
+    "approved_POS_revision5_changed": false
+  },
+  "authoring_knowledge_validation": {
+    "status": "verified_local_only",
+    "release_id": "3d408494acdfcfaf5057a0f145ffeee025cd9526d034529cfe2d744f07374788",
+    "sources": 75,
+    "excluded_drafts": 31,
+    "approved_documents": 44,
+    "fragments": 46,
+    "capabilities": 158,
+    "compiler_tests_passed": 58,
+    "tests_failed": 0,
+    "source_and_dist_pins_coherent": true,
+    "logs": [
+      {
+        "path": ".tmp/pos-r15-knowledge-prepare.log",
+        "bytes": 566,
+        "sha256": "a1ff10365e09b6099776e2c79307a861cb1169f2bc91aa2c5f1aba363cc5c828"
+      },
+      {
+        "path": ".tmp/pos-r15-knowledge-context.log",
+        "bytes": 228,
+        "sha256": "05238ee4946be4905e531a92233ab0cbbfa774576db803d005867bfea94d700e"
+      },
+      {
+        "path": ".tmp/pos-r15-knowledge-tests.log",
+        "bytes": 4745,
+        "sha256": "aea89894d7f6f02bcf0da9658e230a77edb819ff4971108b6ff2b16850a73c87"
+      }
+    ],
+    "vm_knowledge_release_preserved": "cde7fab20277d8c6a4e670e6df18e886cd72641135a044776cf8889d054213c5",
+    "new_publication": false,
+    "note": "The local authoring bundle/pins are distinct from the controlled VM bundle. No new draft document, binding, capability or VM knowledge release was published."
+  },
+  "limitations": [
+    "No physical barcode reader, mobile keyboard, payment processing or provider inference acceptance is added.",
+    "Static UI deployment does not requalify SQL authorization, checkout atomicity or commercial cancellation. Server contracts and existing regressions are preserved.",
+    "UI real checks opened/cancelled filters, typed a local barcode and pressed Enter, then cancelled product creation. No Save or Confirm was clicked; no network mutation counter was attached to this actual-browser pass.",
+    "Existing narrow Products offer cell under long-name/13-column synthetic stress remains; no exhaustive Products-cell legibility claim."
+  ],
+  "documentation": [
+    {
+      "path": "docs/mvp/README.md",
+      "bytes": 153653,
+      "sha256": "aa8179eac43d9fb732ac805591cb6d2e1eb4b5f32804013d080b4f493984214f"
+    },
+    {
+      "path": "docs/mvp/00-progress.md",
+      "bytes": 319561,
+      "sha256": "dd3bc8abf73dcd9d26b9aecb24e8b53f0d2320ce5f7060f6a01b88e8d7d9941d"
+    },
+    {
+      "path": "docs/mvp/94-business-point-of-sale-and-product-refactor.md",
+      "bytes": 148821,
+      "sha256": "2c37960636aa2b483a6a2226acd82e211d1eaf5ab637d31cd877f0874e58577a"
+    },
+    {
+      "path": "docs/mvp/07-design-constraints.md",
+      "bytes": 17735,
+      "sha256": "1b1e2d43d5028db999de6cc6eb733f82f64f5be4841f8790210899ce115ba450"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/README.md",
+      "bytes": 77038,
+      "sha256": "91cf4c518c4af4d47e63bc5757789178fa11a20481678f4084ada630b4741cc7"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/multi-sale-workspace.md",
+      "bytes": 27634,
+      "sha256": "7f4069993ab6c7d3414694fc3b1ee6952d2ef16a98ef0cb56145fe8375c1b4b6"
+    },
+    {
+      "path": "nodia-client/DESIGN.md",
+      "bytes": 76980,
+      "sha256": "6b3cf8bbca3ddd63ba3b3411c8ecd7fd197ad1171d92816fb3eb6cca8fe2ff99"
+    }
+  ]
+}

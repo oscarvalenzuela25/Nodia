@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "status": "real_technical_schema_synthetic_handler_control_passed",
+  "receipts": [
+    {
+      "path": "ops/lab/artifacts/antigravity-real-selection-control-verification-r01/antigravity-selection-bootstrap-VM-r01.json",
+      "sha256": "c14edc05be08e6df9e563e0a37033edf9c111d0b28639718886ed22bbc670f79",
+      "bytes": 754
+    },
+    {
+      "path": "ops/lab/artifacts/antigravity-real-selection-control-verification-r01/antigravity-selection-C-preflight-VM-r01.json",
+      "sha256": "b9177416a0f0be590f5fad606e4e57c7cdd35add25a7b07dbd05a41442ad326f",
+      "bytes": 3963
+    },
+    {
+      "path": "ops/lab/artifacts/antigravity-real-selection-control-verification-r01/antigravity-selection-C-execute-VM-r01.json",
+      "sha256": "08d7327cef9c12105cd4daddea5e9a621828b900a4c574c02b8d0a0c422b4ccf",
+      "bytes": 4510
+    }
+  ],
+  "plan": {
+    "path": "ops/lab/artifacts/antigravity-real-selection-control-r01/plan.json",
+    "sha256": "674f7cb621725a5747ed5e6750d477d6518c7a21fa2bfeeaa9fdbcdb5c4a9558",
+    "bytes": 11010
+  },
+  "operator": {
+    "path": "ops/lab/artifacts/antigravity-real-selection-control-r01/control-operator.py",
+    "sha256": "dff8fba2ee3976b7e63f65ca8355e5400d21ab5c5f28779ddd4cce15765e2556",
+    "bytes": 12170
+  },
+  "control": {
+    "path": "ops/lab/artifacts/antigravity-real-selection-control-r01/control.mjs",
+    "sha256": "5497133faea52872b1137fd24faa929283a67cf39b6e5d42f5604cf6771a9bb6",
+    "bytes": 15623
+  },
+  "bootstrap": {
+    "path": "ops/lab/artifacts/antigravity-real-selection-control-r01/bootstrap.py",
+    "sha256": "10a6137296356611e01036a187c73056df41b745462a4d14e856d3ea4a0807ad",
+    "bytes": 87284
+  },
+  "catalog": {
+    "path": "ops/lab/artifacts/antigravity-real-selection-control-r01/catalog.json",
+    "sha256": "212dff68e445c71464252e5da4cc25cb675ce37e12b6aaea78f6c683c038d323",
+    "bytes": 1208
+  },
+  "observed": {
+    "case": "C",
+    "attempt_id": "7ad890f6-7acc-4b1b-a393-f321d1a341f6",
+    "status": "passed",
+    "start_requests": 1,
+    "tool_count": 9,
+    "padding_ASCII_bytes": 70000,
+    "expected_public_call": {
+      "name": "nodia_capabilities_select",
+      "arguments": {
+        "capability_ids": [
+          "nodia_invoices_ocr"
+        ],
+        "catalog_version": "nodia-ai-ai15-reads/1"
+      }
+    },
+    "actual_public_callback_arguments": {
+      "capability_ids": [
+        "nodia_invoices_ocr"
+      ],
+      "catalog_version": "nodia-ai-ai15-reads/1"
+    },
+    "production_schema_validated": true,
+    "canonical_prompt_utf8_bytes": 70520,
+    "native_measurement": {
+      "measurementContractVersion": "nodia-ai-context-budget/1",
+      "measurementScope": "initial_native_prompt",
+      "measurementKind": "exact",
+      "canonicalUtf8Bytes": 70520,
+      "catalogUtf8Bytes": 12708,
+      "overheadUtf8Bytes": 1312,
+      "totalUtf8Bytes": 84540,
+      "maxUtf8Bytes": 262144,
+      "modelContextTokens": null,
+      "firstMcpListingUpperBoundUtf8Bytes": 15832
+    },
+    "actual_native_timeout_seconds": 119,
+    "fixture_accepted": 1,
+    "fixture_rejected": 0,
+    "acknowledged": true,
+    "pending_identity": false,
+    "terminal": {
+      "engine": "agentic",
+      "attempt_id": "7ad890f6-7acc-4b1b-a393-f321d1a341f6",
+      "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+      "session_generation": "0ea0c22e7d6747f19f7ac0d96c23e585",
+      "operation_ref": "7ad890f6-7acc-4b1b-a393-f321d1a341f6",
+      "terminal_proof_id": "10bd8964-ab23-44ed-8f8a-cbfb3be99b8c",
+      "process_closed": true,
+      "outcome": "completed"
+    },
+    "SQL_quiet_after": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "quiet_verified_after": true,
+    "business_tool_dispatches": 0,
+    "business_writes": 0,
+    "SQL_writes": 0,
+    "automatic_inference_retries": 0,
+    "provider_internal_calls": null,
+    "provider_generations": null,
+    "provider_cost": null
+  },
+  "binding": {
+    "selection": {
+      "connection_id": "2",
+      "effort_id": "high",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high"
+    },
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+    "session_generation": "0ea0c22e7d6747f19f7ac0d96c23e585"
+  },
+  "runtime_after": {
+    "services": {
+      "nodia-api": {
+        "MainPID": "454497",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r03",
+        "ActiveState": "active"
+      },
+      "nodia-ai-worker": {
+        "MainPID": "529979",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r03",
+        "ActiveState": "active"
+      },
+      "nginx": {
+        "MainPID": "3630787",
+        "WorkingDirectory": "",
+        "ActiveState": "active"
+      },
+      "nodia-keyring": {
+        "MainPID": "3630841",
+        "WorkingDirectory": "",
+        "ActiveState": "active"
+      }
+    },
+    "native": {
+      "id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+      "image": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+      "started_at": "2026-10-26T03:06:18.949917773Z",
+      "descriptor_sha256": "d27816454ab40e774919a16d3b99da50ccdc3c1e570ef244832b30b46a95f89d"
+    },
+    "server_manifest_sha256": "605ef5533af3c8ffbffde33ce13275d966b9271f34a2ee0f8a17c609c02308c1",
+    "native_source_count": 52,
+    "client_manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+    "nginx_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac",
+    "environment_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "native_quiet": {
+      "attempt_receipts": 0,
+      "unknown_markers": 0,
+      "temporary_directories": 0,
+      "active_native_processes": 0
+    },
+    "codex": {
+      "profile_absent": false,
+      "pending": 0,
+      "locks_or_sockets": 0,
+      "records": 4,
+      "sdk_arg0_links": 0,
+      "sdk_binary": null
+    }
+  },
+  "scope": [
+    "One new independent diagnostic native intent, gated on both A+B completed proofs/ACK/quiet and current runtime/SQL/native/Codex quiet. No replay of natural unknown attempts.",
+    "Same nine advertised descriptors as A/B, including unused custom nonce descriptor, with70000 inert ASCII bytes. This time the exact original nodia_capabilities_select name/schema and published catalog_version/capability_id were used.",
+    "Production compileNodiaAiToolSchema from pinned Source605 compiled SelectCapabilitiesInput, checked descriptor equality and validated the callback; fixture then enforced exact public arguments once and returned only a synthetic receipt and random nonce.",
+    "One native start, one accepted callback, zero rejected callbacks, closed completed terminal and one explicit ACK; no pending identity, business handler or SQL mutation. Native request119s, unchanged nominal120s and model/effort."
+  ],
+  "limits": [
+    "The callback was synthetic; actual authorized selector persistence, business operations, OCR and natural workflow continuation were not exercised.",
+    "This disproves an unconditional inability in this configured path to call the original technical tool name/schema with these arguments; it does not identify the cause of either natural-chat timeout.",
+    "Natural context content/structure, actual planning and stochastic provider behavior remain distinct variables. ASCII padding above64KiB is not equivalent to a natural prompt. No prompt loss, provider cause or semantic deadlock is proved.",
+    "Provider internal generation/call counts, tokens and cost remain null. Root alone operated VM/SDK; local work only authored/tests/consolidation. No production fix, acceptance or new diagnostic intent is implied."
+  ],
+  "prior_evidence": [
+    {
+      "path": "docs/evidence/nodia-ai-antigravity-catalog-volume-control-20261026-r01.json",
+      "sha256": "0d3d01c650e0f2932105d0fefb19e5f5fca8a01ffd7afebfca0e83617236ee10",
+      "bytes": 11898
+    },
+    {
+      "path": "docs/evidence/nodia-ai-antigravity-natural-chat-reconciliation-20261026-r02.json",
+      "sha256": "67c75abe4095b7729592434a683ffeb70075fd9dc18bfdd55968ab386bcea9ea",
+      "bytes": 13985
+    }
+  ],
+  "local_validation": {
+    "Node_atomic_tests": 2,
+    "Python_atomic_tests": 1,
+    "result": "passed",
+    "production_validator_bytes_from_Source605": true,
+    "VM_SDK_or_generation": false,
+    "harness_initial_failure": "Isolated published-source snapshot lacked node_modules; before tests. Corrected by separately copying exact pinned validator files under.tmp and junctioning existing Server dependencies. No runtime/source snapshot edit."
+  }
+}

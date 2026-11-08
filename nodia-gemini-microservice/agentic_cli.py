@@ -14,6 +14,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Mapping
 
+from owned_process import OwnedProcessOwner
+from cli_execution_receipt import CliExecutionReceipt
+from login_cgroups import LoginCgroups
 from service_errors import ServiceError
 
 
@@ -75,10 +78,32 @@ def permission_path(path: Path) -> str:
     return value[2:] if len(value) > 2 and value[1] == ":" else value
 
 
-def prepare_cli_home(home: Path, document: Path | None = None) -> None:
+def prepare_cli_home(home: Path, document: Path | None = None, *, account_home: Path | None = None) -> None:
     """Only our dedicated home is mutable; never modify the user's CLI settings."""
     settings = home / ".gemini" / "antigravity-cli" / "settings.json"
+    bindings: list[tuple[Path, Path]] = []
+    if account_home is not None:
+        if (not home.is_absolute() or not account_home.is_absolute() or not account_home.is_dir()
+                or home.resolve() == account_home.resolve()
+                or not settings.parent.resolve().is_relative_to(home.resolve())):
+            raise ValueError("A separate private CLI home is required")
+        for name in ("antigravity-oauth-token", "installation_id"):
+            source = account_home.resolve() / ".gemini" / "antigravity-cli" / name
+            destination = settings.parent / name
+            if destination.exists() or destination.is_symlink():
+                raise ValueError("Account binding destination already exists")
+            if source.is_file():
+                bindings.append((source, destination))
     settings.parent.mkdir(parents=True, exist_ok=True)
+    linked: list[Path] = []
+    try:
+        for source, destination in bindings:
+            destination.symlink_to(source)
+            linked.append(destination)
+    except OSError:
+        for destination in linked:
+            destination.unlink()
+        raise
     policy = {"toolPermission": "request-review", "notifications": False, "showTips": False,
               "useG1Credits": False, "enableTerminalSandbox": True,
               "permissions": {"allow": [f"read_file({permission_path(document)})"] if document else [],
@@ -102,13 +127,90 @@ def prepare_cli_home(home: Path, document: Path | None = None) -> None:
         hooks.write_text(json.dumps(definitions), encoding="utf-8")
 
 
-class CliRunner:
+class CliRunner(OwnedProcessOwner):
     def __init__(self, config: CliConfig):
+        super().__init__()
         self.config = config
-        self._processes: set[asyncio.subprocess.Process] = set()
         self._jobs: dict[asyncio.subprocess.Process, object] = {}
-        self._closed = False
         self._verified_stat: tuple[int, int] | None = None
+        self._closure_receipts: dict[asyncio.subprocess.Process, CliExecutionReceipt] = {}
+        self._receipt_cgroups: dict[asyncio.subprocess.Process, tuple[dict, bool]] = {}
+        self._receipt_containment = LoginCgroups()
+        self._prepared_receipts: dict[str, tuple[CliExecutionReceipt, dict]] = {}
+
+    def prepare_closure(self, receipt: CliExecutionReceipt) -> None:
+        """Verify containment before the caller arms or announces dispatch."""
+        receipt.claim()
+        if sys.platform != "linux":
+            raise ServiceError("native_proof_missing", "La contención del análisis no está verificada en este entorno.", 409)
+        try:
+            containment = self._receipt_containment.create(receipt.operation_id.replace("-", ""))
+        except ServiceError:
+            raise ServiceError("native_proof_missing", "La contención local del análisis no está disponible.", 409) from None
+        self._prepared_receipts[receipt.operation_id] = (receipt, containment)
+
+    def discard_prepared_closure(self, receipt: CliExecutionReceipt) -> None:
+        current = self._prepared_receipts.get(receipt.operation_id)
+        if current is not None and current[0] is receipt:
+            self._prepared_receipts.pop(receipt.operation_id)
+            self._receipt_containment.remove(current[1])  # Never spawned or gated.
+
+    async def _shutdown_owned(self, process: asyncio.subprocess.Process) -> bool:
+        terminated = False
+        contained_closed = False
+        tasks = self._io_tasks.get(process, ())
+        try:
+            containment = self._receipt_cgroups.get(process)
+            if containment is None:
+                await self._terminate(process)
+            else:
+                # The shared owner budgets termination once, then IO draining.
+                # Do not multiply that deadline by containment + leader wait.
+                # Reserve scheduling/removal margin inside the outer owner's
+                # TERMINATE + DRAIN deadline (2.4 + 1 within 4 seconds today).
+                async with asyncio.timeout(self._TERMINATE_SECONDS * 0.8):
+                    if not containment[1]:
+                        # The known launcher never received its gate byte.
+                        await self._terminate(process)
+                    contained_closed = await self._receipt_containment.close(containment[0])
+                    if contained_closed:
+                        await process.wait()
+            terminated = process.returncode is not None
+        except Exception:
+            pass
+        finally:
+            for task in tasks:
+                task.cancel()
+                task.add_done_callback(self._observe_task)
+        pending = set()
+        if tasks:
+            _, pending = await asyncio.wait(tasks, timeout=self._DRAIN_SECONDS)
+        self._io_tasks[process] = tuple(pending)
+        receipt = self._closure_receipts.get(process)
+        if terminated and not pending and (receipt is None or contained_closed):
+            if receipt is not None:
+                containment = self._receipt_cgroups[process]
+                self._receipt_containment.remove(containment[0])
+                # remove() is deliberately best-effort for older consumers.
+                # OCR must prove its own group is absent before certifying or
+                # dropping any handles, including a swallowed remove failure.
+                target = self._receipt_containment.root / containment[0]["name"]
+                try:
+                    target.lstat()
+                except FileNotFoundError:
+                    pass
+                else:
+                    raise ServiceError("agentic_process_cleanup_unknown", "No se verificó la limpieza del análisis.", 502)
+            self._io_tasks.pop(process, None)
+            self._processes.discard(process)
+            if receipt is not None:
+                receipt.record_contained_closure()
+                self._closure_receipts.pop(process, None)
+                self._receipt_cgroups.pop(process)
+            return True
+        self._closed = True
+        return False  # Retain the process/handles; do not re-kill a stale PID.
+
 
     async def initialize(self) -> None:
         def checksum() -> str:
@@ -124,9 +226,10 @@ class CliRunner:
             raise ServiceError("agentic_cli_incompatible", "La versión del CLI agéntico no es compatible.")
 
     async def _terminate(self, process: asyncio.subprocess.Process) -> None:
-        job = self._jobs.pop(process, None)
+        job = self._jobs.get(process)
         if job is not None:
             job.close()
+            self._jobs.pop(process, None)
         if os.name != "nt":
             try:
                 os.killpg(process.pid, signal.SIGKILL)
@@ -134,12 +237,13 @@ class CliRunner:
                 pass
         elif process.returncode is None:
             process.kill()
-        await process.wait()
+        await asyncio.wait_for(process.wait(), self._TERMINATE_SECONDS)
 
     async def run(self, args: list[str], *, stdin: bytes | None = None,
                   cwd: Path | None = None, home: Path | None = None,
                   timeout: float = 4, stdout_observer: Callable[[bytes], None] | None = None,
-                  stderr_observer: Callable[[bytes], None] | None = None) -> tuple[str, int]:
+                  stderr_observer: Callable[[bytes], None] | None = None,
+                  closure_receipt: CliExecutionReceipt | None = None) -> tuple[str, int]:
         if self._closed:
             raise ServiceError("agentic_unavailable", "El motor agéntico está detenido.")
         if self._verified_stat is not None:
@@ -147,6 +251,15 @@ class CliRunner:
             if (info.st_mtime_ns, info.st_size) != self._verified_stat:
                 raise ServiceError("agentic_cli_incompatible", "El binario agéntico cambió; requiere nueva verificación.")
         command = [str(self.config.binary), *args]
+        containment = None
+        if closure_receipt is not None:
+            prepared = self._prepared_receipts.get(closure_receipt.operation_id)
+            if prepared is None or prepared[0] is not closure_receipt:
+                raise ServiceError("native_proof_missing", "La invocación no tiene una reserva de contención propia.", 409)
+            self._prepared_receipts.pop(closure_receipt.operation_id)
+            containment = prepared[1]
+            # The attested cgroup contains descendants even after setsid.
+            command = [sys.executable, str(Path(__file__).with_name("agentic_process_launcher.py")), *command]
         if os.name == "nt":
             # A Windows venv python.exe is itself a redirector. Its interpreter
             # can start before assignment; launch the base interpreter directly.
@@ -154,31 +267,37 @@ class CliRunner:
             if not interpreter.is_file():
                 raise ServiceError("agentic_process_isolation", "No se pudo aislar el proceso agéntico.")
             command = [str(interpreter), str(Path(__file__).with_name("agentic_process_launcher.py")), *command]
-        spawn = asyncio.create_task(asyncio.create_subprocess_exec(
-            *command, cwd=cwd or self.config.home,
+        def register_receipt(process: asyncio.subprocess.Process) -> None:
+            self._closure_receipts[process] = closure_receipt
+            self._receipt_cgroups[process] = (containment, False)
+
+        process, cancelled = await self._spawn_owned(command, dict(cwd=cwd or self.config.home,
             env=cli_environment(home or self.config.home),
-            stdin=asyncio.subprocess.PIPE if stdin is not None or os.name == "nt" else asyncio.subprocess.DEVNULL,
+            stdin=asyncio.subprocess.PIPE if stdin is not None or os.name == "nt" or containment is not None else asyncio.subprocess.DEVNULL,
             stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
             **({"start_new_session": True} if os.name != "nt" else {}),
-        ))
-        cancelled = False
-        try:
-            process = await asyncio.shield(spawn)
-        except asyncio.CancelledError:
-            process = await spawn
-            cancelled = True
-        self._processes.add(process)
+        ), timeout, on_owned=register_receipt if closure_receipt is not None else None)
+        if closure_receipt is not None:
+            try:
+                self._receipt_containment.attach(containment, process.pid)
+                self._receipt_cgroups[process] = (containment, True)
+            except BaseException:
+                await self._finish_process(process)
+                raise
+        if cancelled or self._closed:
+            await self._finish_process(process)
+            if cancelled:
+                raise asyncio.CancelledError()
+            raise ServiceError("agentic_unavailable", "El motor agéntico está detenido.")
         if os.name == "nt":
             from windows_process_job import WindowsProcessJob
             try:
                 self._jobs[process] = WindowsProcessJob(process.pid)
             except OSError:
-                await self._terminate(process)
-                self._processes.discard(process)
+                await self._finish_process(process)
                 raise ServiceError("agentic_process_isolation", "No se pudo aislar el proceso agéntico.") from None
         if cancelled or self._closed:
-            await self._terminate(process)
-            self._processes.discard(process)
+            await self._finish_process(process)
             if cancelled:
                 raise asyncio.CancelledError()
             raise ServiceError("agentic_unavailable", "El motor agéntico está detenido.")
@@ -199,7 +318,7 @@ class CliRunner:
             if process.stdin is not None:
                 try:
                     # Releasing the launcher is safe only after job assignment.
-                    process.stdin.write((b"\x01" if os.name == "nt" else b"") + (stdin or b""))
+                    process.stdin.write((b"\x01" if os.name == "nt" or containment is not None else b"") + (stdin or b""))
                     await process.stdin.drain()
                 except (BrokenPipeError, ConnectionResetError):
                     pass
@@ -208,6 +327,7 @@ class CliRunner:
 
         tasks = [asyncio.create_task(read(process.stdout, stdout_observer)), asyncio.create_task(read(process.stderr, stderr_observer)),
                  asyncio.create_task(write()), asyncio.create_task(process.wait())]
+        self._io_tasks[process] = tuple(tasks)
         try:
             output, _, _, code = await asyncio.wait_for(asyncio.gather(*tasks), timeout)
             return output.decode("utf-8", errors="strict"), code
@@ -216,11 +336,7 @@ class CliRunner:
         except UnicodeError:
             raise ServiceError("agentic_invalid_response", "Respuesta agéntica inválida.", 502) from None
         finally:
-            await self._terminate(process)
-            for task in tasks:
-                task.cancel()
-            await asyncio.gather(*tasks, return_exceptions=True)
-            self._processes.discard(process)
+            await self._finish_process(process, tasks)
 
     async def remote_login(self, codes: asyncio.Queue[str],
                            on_event: Callable[[dict], None]) -> None:
@@ -236,21 +352,15 @@ class CliRunner:
                        str(self.config.binary), str(self.config.home), str(Path(directory) / "cli.log")]
             if os.name == "nt":
                 command = [str(interpreter), str(Path(__file__).with_name("agentic_process_launcher.py")), *command]
-            spawn = asyncio.create_task(asyncio.create_subprocess_exec(
-                *command, cwd=self.config.home, env=cli_environment(self.config.home),
+            process, cancelled = await self._spawn_owned(command, dict(cwd=self.config.home, env=cli_environment(self.config.home),
                 stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.DEVNULL,
                 **({"start_new_session": True} if os.name != "nt" else {}),
-            ))
-            cancelled = False
-            try:
-                process = await asyncio.shield(spawn)
-            except asyncio.CancelledError:
-                process = await spawn
-                cancelled = True
-            self._processes.add(process)
+            ), self._SPAWN_SECONDS)
             tasks = []
             try:
+                if cancelled or self._closed:
+                    raise asyncio.CancelledError()
                 if os.name == "nt":
                     from windows_process_job import WindowsProcessJob
                     self._jobs[process] = WindowsProcessJob(process.pid)
@@ -281,18 +391,23 @@ class CliRunner:
                     raise ServiceError("agentic_login_failed", "El CLI no pudo completar el login remoto.", 502)
 
                 tasks = [asyncio.create_task(write_codes()), asyncio.create_task(read_events())]
+                self._io_tasks[process] = tuple(tasks)
                 # write_codes ends after one submission; the owned reader stays live.
                 await tasks[1]
             except (ValueError, OSError, UnicodeError):
                 raise ServiceError("agentic_login_failed", "El CLI no pudo completar el login remoto.", 502) from None
             finally:
                 process.stdin.close()
-                await self._terminate(process)
-                for task in tasks:
-                    task.cancel()
-                await asyncio.gather(*tasks, return_exceptions=True)
-                self._processes.discard(process)
+                await self._finish_process(process, tasks)
 
     async def close(self) -> None:
         self._closed = True
-        await asyncio.gather(*(self._terminate(p) for p in tuple(self._processes)))
+        deadline = asyncio.get_running_loop().time() + self._SPAWN_SECONDS
+        for spawn in tuple(self._spawns):
+            self._spawns[spawn] = True
+            await self._wait_owned(spawn, deadline)
+        results = await asyncio.gather(*(self._finish_process(p) for p in tuple(self._processes)), return_exceptions=True)
+        if asyncio.current_task().cancelling():
+            raise asyncio.CancelledError()
+        if self._spawns or self._processes or any(isinstance(result, BaseException) for result in results):
+            raise ServiceError("agentic_process_cleanup_unknown", "No se verificó el cierre del proceso agéntico.", 502)

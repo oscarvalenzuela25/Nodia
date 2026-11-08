@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { PRODUCT_MEASUREMENT_UNITS } from '../../product/product-measurement-unit.js';
 import type {
   ReportFieldDefinition,
   ReportFilterOperator,
@@ -75,6 +76,8 @@ function measure(
     unit?: 'money' | 'peso' | 'count' | 'units';
     currency?: string | null;
     unsupportedReason?: string;
+    scale?: number;
+    requiredDimensionKey?: string;
   } = {},
 ): ReportMeasureDefinition {
   const unit = options.unit ?? 'money';
@@ -84,7 +87,7 @@ function measure(
       aggregations: unit === 'count' ? ['count'] : ['sum'],
       unit,
       currency: options.currency ?? null,
-      scale: 0,
+      scale: options.scale ?? 0,
       semantic,
       grain,
       nullable: false,
@@ -92,6 +95,9 @@ function measure(
       unsupported_reason: options.unsupportedReason ?? null,
     },
     expressionSql: sql,
+    ...(options.requiredDimensionKey
+      ? { requiredDimensionKey: options.requiredDimensionKey }
+      : {}),
   };
 }
 
@@ -109,6 +115,7 @@ function source(config: {
   relationships?: readonly ReportRelationshipDescriptor[];
   limitations?: readonly string[];
   predicates?: readonly string[];
+  publicationDocumentId?: string;
 }): ReportSourceDefinition {
   const measures = [
     measure('records', '1', config.grain, 'base_record_count', {
@@ -119,6 +126,9 @@ function source(config: {
   const relationships = config.relationships ?? [];
   return {
     sourceKey: config.key,
+    ...(config.publicationDocumentId
+      ? { publicationDocumentId: config.publicationDocumentId }
+      : {}),
     moduleKey: config.module,
     requiredModuleRoutes: [config.route],
     fromSql: config.fromSql,
@@ -152,19 +162,19 @@ function source(config: {
 
 const finance = {
   module: 'personal_finance',
-  route: '/tools/finances-personal',
+  route: '/finances-personal',
   scope: 'personal' as const,
   scopeSql: 'r.user_id',
 };
 const business = {
   module: 'businesses',
-  route: '/tools/business',
+  route: '/business',
   scope: 'business' as const,
   scopeSql: 'r.business_id',
 };
 const rental = {
   module: 'rental_reservations',
-  route: '/tools/reservations',
+  route: '/reservations',
   scope: 'rental' as const,
   scopeSql: 'r.property_id',
 };
@@ -303,7 +313,10 @@ export const NODIA_AI_REPORT_SOURCES: readonly ReportSourceDefinition[] =
       fields: [
         field('id', 'bigint_id', 'r.id'),
         field('provider_id', 'bigint_id', 'r.provider_id', { nullable: true }),
-        field('code', 'string', 'r.code'),
+        field('code', 'string', 'r.code', { nullable: true }),
+        field('measurement_unit', 'string', 'r.measurement_unit', {
+          values: PRODUCT_MEASUREMENT_UNITS,
+        }),
         active(),
         localRecordedAt(),
       ],
@@ -336,7 +349,13 @@ export const NODIA_AI_REPORT_SOURCES: readonly ReportSourceDefinition[] =
         field('provider_id', 'bigint_id', 'r.provider_id', { nullable: true }),
         field('code', 'string', 'r.code'),
         field('name', 'string', 'r.name'),
-        field('stock', 'integer', 'r.stock'),
+        field('barcode', 'string', 'r.barcode', { nullable: true }),
+        field('has_stock', 'boolean', 'r.has_stock', {
+          nullable: true,
+          semantics: 'manual_availability_not_inventory_units',
+        }),
+        field('is_offer_enabled', 'boolean', 'r.is_offer_enabled'),
+        field('sale_price', 'integer', 'r.sale_price', { groupable: false }),
         active(),
         localRecordedAt(),
         field('log_name', 'string', 'pl.name', {
@@ -345,15 +364,6 @@ export const NODIA_AI_REPORT_SOURCES: readonly ReportSourceDefinition[] =
             correlationSql: 'pl.product_id = r.id',
           },
         }),
-      ],
-      measures: [
-        measure(
-          'stock_units',
-          'r.stock',
-          'one_current_product',
-          'current_recorded_stock_units',
-          { unit: 'units' },
-        ),
       ],
       relationships: [
         {
@@ -366,7 +376,7 @@ export const NODIA_AI_REPORT_SOURCES: readonly ReportSourceDefinition[] =
       ],
       limitations: [
         ...legacyLimits,
-        'Stock is the current snapshot, not an inventory event ledger. Prices have no typed currency and are not monetary measures.',
+        'Availability is manual, not inventory units. Product prices are not completed sales and are not monetary aggregates.',
       ],
     }),
     source({
@@ -387,6 +397,114 @@ export const NODIA_AI_REPORT_SOURCES: readonly ReportSourceDefinition[] =
         ...legacyLimits,
         'Historical snapshots are not sales or inventory movements; stocks across snapshots must not be summed.',
         'Business is resolved through the current parent product; historic provider ownership is not stored.',
+      ],
+    }),
+    source({
+      ...business,
+      key: 'business_sales',
+      publicationDocumentId: 'businesses.point-of-sale-and-sales',
+      fromSql: 'sales r',
+      grain: 'one_business_sale',
+      basis: 'completed_at',
+      fields: [
+        field('id', 'uuid', 'r.id'),
+        field('status', 'string', 'r.status', {
+          values: ['draft', 'completed', 'cancelled', 'discarded'],
+        }),
+        field('payment_method', 'string', 'r.payment_method', {
+          values: [
+            'cash',
+            'bank_transfer',
+            'debit_card',
+            'credit_card',
+            'other',
+          ],
+          semantics: 'informational_method_not_evidence_of_collection',
+        }),
+        field('completed_at', 'datetime', 'r.completed_at', {
+          nullable: true,
+          temporal: 'instant',
+        }),
+        field('cancelled_at', 'datetime', 'r.cancelled_at', {
+          nullable: true,
+          temporal: 'instant',
+        }),
+        recordedAt(),
+      ],
+      measures: [
+        measure(
+          'registered_sale_amount',
+          "CASE WHEN r.status = 'completed' THEN r.total_amount ELSE 0 END",
+          'one_business_sale',
+          'currently_non_cancelled_registered_sale_amount_not_collected_money',
+          { currency: 'CLP' },
+        ),
+      ],
+      limitations: [
+        'Recorded sales are not collections, bank income or fiscal documents.',
+        'Only completed sales contribute monetary effect. A later cancellation removes the sale from its original period; no immutable closing report is implied.',
+        'America/Santiago governs calendar reporting; completed_at is the server confirmation instant.',
+      ],
+    }),
+    source({
+      ...business,
+      key: 'business_sale_items',
+      publicationDocumentId: 'businesses.point-of-sale-and-sales',
+      fromSql:
+        'sale_items r INNER JOIN sales sale ON sale.id=r.sale_id AND sale.business_id=r.business_id',
+      grain: 'one_business_sale_item',
+      basis: 'completed_at',
+      fields: [
+        field('sale_id', 'uuid', 'r.sale_id'),
+        field('product_id', 'bigint_id', 'r.product_id'),
+        field('product_code', 'string', 'r.product_code_snapshot', {
+          nullable: true,
+          groupable: false,
+        }),
+        field('measurement_unit', 'string', 'r.measurement_unit_snapshot', {
+          values: PRODUCT_MEASUREMENT_UNITS,
+          semantics: 'frozen_product_measurement_unit_no_automatic_conversion',
+        }),
+        field('product_barcode', 'string', 'r.product_barcode_snapshot', {
+          nullable: true,
+          groupable: false,
+        }),
+        field('product_name', 'string', 'r.product_name_snapshot', {
+          groupable: false,
+        }),
+        field('price_source', 'string', 'r.price_source', {
+          values: ['regular', 'offer', 'manual'],
+        }),
+        field('status', 'string', 'sale.status', {
+          values: ['draft', 'completed', 'cancelled', 'discarded'],
+        }),
+        field('completed_at', 'datetime', 'sale.completed_at', {
+          nullable: true,
+          temporal: 'instant',
+        }),
+      ],
+      measures: [
+        measure(
+          'sold_units',
+          "CASE WHEN sale.status = 'completed' THEN r.quantity ELSE 0 END",
+          'one_business_sale_item',
+          'currently_completed_sale_quantity_in_frozen_measurement_unit',
+          { unit: 'units', scale: 3, requiredDimensionKey: 'measurement_unit' },
+        ),
+        measure(
+          'registered_line_amount',
+          "CASE WHEN sale.status = 'completed' THEN r.line_total ELSE 0 END",
+          'one_business_sale_item',
+          'currently_completed_effective_frozen_line_amount',
+          { currency: 'CLP' },
+        ),
+      ],
+      limitations: [
+        'Rank by stable product_id and frozen measurement_unit, never group by names/codes, current unit or current offer.',
+        'sold_units requires group_by measurement_unit or an explicit all/eq measurement_unit filter. Quantities appear in rows only, never in scalar totals; kilograms, grams, units and other measures are not added or converted.',
+        'Amounts use the effective frozen price, not the current catalog or an inferred discount/profit.',
+        'Lines and sale headers have different grains: never join line aggregates to sum header totals.',
+        'America/Santiago governs sale periods.',
       ],
     }),
     source({

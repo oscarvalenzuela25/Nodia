@@ -15,6 +15,7 @@ export const FilterTrigger = styled(ButtonBase, {
     fontSize: "0.875rem",
     fontWeight: 600,
     lineHeight: 1.5,
+    [theme.breakpoints.down("sm")]: { minHeight: 44 },
     cursor: "pointer",
     backgroundColor: hasActiveFilters
       ? alpha(theme.palette.primary.main, 0.12)
@@ -88,6 +89,7 @@ export const FilterRightActions = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     width: "100%",
     gap: theme.spacing(1.5),
+    flexDirection: "column-reverse",
     "& button": {
       flex: 1,
     },

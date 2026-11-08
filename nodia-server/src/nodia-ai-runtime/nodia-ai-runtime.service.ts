@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { hasGenerationBridge } from '../ai-generation/chat-generation-ownership.js';
 import { DataSource, type EntityManager } from 'typeorm';
 import { NodiaAiRun } from '../nodia-ai-run/entities/nodia-ai-run.entity.js';
 import { NodiaAiConversation } from '../nodia-ai-conversation/entities/nodia-ai-conversation.entity.js';
@@ -52,24 +53,26 @@ export class NodiaAiRuntimeService {
     activePerOwner: number,
     waitSeconds: number,
   ): Promise<string | null> {
+    const teacher = await hasGenerationBridge(manager);
     const rows: { id: string }[] = await manager.query(
       `WITH active_owner_counts AS MATERIALIZED (
-        SELECT owner.owner_id,COUNT(*) AS active_count
-        FROM nodia_ai_jobs active JOIN nodia_ai_conversations owner ON owner.id=active.conversation_id
-        WHERE active.kind IN ('turn','execution') AND active.state IN ('leased','unknown')
-        GROUP BY owner.owner_id
+        SELECT owner_id,COUNT(*) AS active_count FROM (
+          SELECT owner.owner_id FROM nodia_ai_jobs active JOIN nodia_ai_conversations owner ON owner.id=active.conversation_id
+          WHERE active.kind IN ('turn','execution') AND active.state IN ('leased','unknown')
+          ${teacher ? "UNION ALL SELECT actor_id AS owner_id FROM teacher_generation_jobs WHERE state IN ('running','unknown') AND blocks_duplicate=true" : ''}
+        ) work GROUP BY owner_id
       )
       SELECT c.id FROM nodia_ai_conversations c
       JOIN nodia_ai_jobs j ON j.id=c.active_job_id
       LEFT JOIN active_owner_counts ON active_owner_counts.owner_id=c.owner_id
       JOIN nodia_ai_runs r ON r.id=j.run_id
-      WHERE j.kind='turn' AND j.state='ready' AND j.available_at<=clock_timestamp()
+      WHERE j.kind='turn' AND j.state='ready' AND r.state='queued' AND j.available_at<=clock_timestamp()
       AND NOT COALESCE(j.recovery_descriptor ? 'restore_quarantined',false)
       AND j.deadline_at>clock_timestamp() AND c.lifecycle='active' AND c.expires_at>clock_timestamp()
       AND r.policy_hash=$1 AND r.catalog_version=ANY($2::text[])
       AND (r.provider_dispatches_used>0 OR r.created_at+$5*interval '1 second'>clock_timestamp())
       AND (j.stage_key<>'inference' OR NOT EXISTS(SELECT 1 FROM nodia_ai_runtime_slots s WHERE s.resource_key=r.context_manifest->>'resource_key' AND s.state IN ('held','unknown')))
-      AND (SELECT COUNT(*) FROM nodia_ai_jobs active WHERE active.kind IN ('turn','execution') AND active.state='leased')<$3
+      AND ((SELECT COUNT(*) FROM nodia_ai_jobs active WHERE active.kind IN ('turn','execution') AND active.state='leased')${teacher ? "+(SELECT count(*) FROM teacher_generation_jobs WHERE state='running')" : ''})<$3
       AND COALESCE(active_owner_counts.active_count,0)<$4
       ORDER BY j.available_at,j.id FOR UPDATE OF c SKIP LOCKED LIMIT 1`,
       [policyHash, catalogs, foregroundWorkers, activePerOwner, waitSeconds],

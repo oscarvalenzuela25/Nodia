@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "scope": "AI-40 artifact boundary negatives on compiled Linux R08, isolated PostgreSQL and synthetic object storage",
+  "status": "passed_isolated_pg",
+  "operator": {
+    "path": "docs/evidence/scripts/nodia-ai-ai40-r08-artifact-negatives-r01.py",
+    "sha256": "36e2160fb576408170b15bd6fc63594bff602388851750cb89a082717a21d2fb"
+  },
+  "release": {
+    "root": "/opt/nodia/releases/nodia-server-ai40-r08",
+    "manifest_sha256": "08145edaefff382ba2ccbbf8d51c325de630feeef5b67a1834651b1cdd6577bc",
+    "archive_sha256": "af30358cc246f676398b91e9ce5d89d1315a0a4c9896685b03e9bfda2399da0e",
+    "inherited_files": [
+      {
+        "path": "test/nodia-ai-ai15-artifacts.integration.mjs",
+        "sha256": "94dafb25924f02cb987f7827e886c883359f7f16f88cb32d002325a843e22d3e",
+        "bytes": 15462
+      },
+      {
+        "path": "test/nodia-ai.integration.fixture.mjs",
+        "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df",
+        "bytes": 3373
+      },
+      {
+        "path": "dist/nodia-ai-products/artifacts/use-case/download-nodia-ai-artifact.use-case.js",
+        "sha256": "b22b643e27416484ee718aba3581d9a5dbe14fafb73956ed0db2d1a8204b1bd3",
+        "bytes": 7025
+      },
+      {
+        "path": "dist/nodia-ai-products/artifacts/use-case/execute-nodia-ai-artifact.use-case.js",
+        "sha256": "6d4a5cab38a5865d48cc639f6b81e21071b7462f9dcf9877d32d8bb433f8902b",
+        "bytes": 9101
+      },
+      {
+        "path": "dist/nodia-ai-products/artifacts/nodia-ai-artifacts.controller.js",
+        "sha256": "a7b8a854453bca4e0de999e80461977ef53d575220bbbb68e0376542c5eada55",
+        "bytes": 2867
+      },
+      {
+        "path": "dist/nodia-ai-runtime/config/runtime-policy.json",
+        "sha256": "7ff3c624496ace6514100d03b2e1f236683b235bfe7d4fa68da7cd268c419521",
+        "bytes": 12097
+      }
+    ]
+  },
+  "execution": {
+    "source_path": ".tmp/ai40-artifacts-r01/artifact-pg24-r01.json",
+    "sha256": "8883d3631f87274e434ef96a51b079157d3aef47789eb8e9af92b300f0693ca2",
+    "receipt": {
+      "schema": "nodia-ai-ai40-r08-artifact-negatives-v1",
+      "status": "passed_isolated_pg",
+      "operator_sha256": "36e2160fb576408170b15bd6fc63594bff602388851750cb89a082717a21d2fb",
+      "manifest_sha256": "08145edaefff382ba2ccbbf8d51c325de630feeef5b67a1834651b1cdd6577bc",
+      "immutable_test_sha256": {
+        "nodia-ai-ai15-artifacts.integration.mjs": "94dafb25924f02cb987f7827e886c883359f7f16f88cb32d002325a843e22d3e",
+        "nodia-ai.integration.fixture.mjs": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+      },
+      "node_version": "v24.20.0",
+      "PostgreSQL_image_id": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+      "services_before": {
+        "nodia-api": "MainPID=3741433\nWorkingDirectory=/opt/nodia/releases/nodia-server-ai40-r08\nActiveState=active",
+        "nodia-ai-worker": "MainPID=3741434\nWorkingDirectory=/opt/nodia/releases/nodia-server-ai40-r08\nActiveState=active",
+        "nodia-keyring": "MainPID=3630841\nWorkingDirectory=\nActiveState=active",
+        "nginx": "MainPID=3630787\nWorkingDirectory=\nActiveState=active",
+        "nodia-gemini-lab": "MainPID=0\nWorkingDirectory=/opt/nodia/nodia-gemini-microservice\nActiveState=active"
+      },
+      "operational_database_accessed": false,
+      "operational_SQL_writes": 0,
+      "fixture_SQL_writes": true,
+      "JWT_tested": false,
+      "real_R2": false,
+      "SDK_requests": 0,
+      "provider_requests": 0,
+      "native_profile_accessed": false,
+      "native_quiet_proof_external": true,
+      "no_replay": true,
+      "child_pid": 3744136,
+      "child_exit": 0,
+      "observed_fixture_containers": {
+        "template_ai15_3744136_8ed6159a": "a3436f7253c9"
+      },
+      "remaining_fixture_containers": {},
+      "services_after": {
+        "nodia-api": "MainPID=3741433\nWorkingDirectory=/opt/nodia/releases/nodia-server-ai40-r08\nActiveState=active",
+        "nodia-ai-worker": "MainPID=3741434\nWorkingDirectory=/opt/nodia/releases/nodia-server-ai40-r08\nActiveState=active",
+        "nodia-keyring": "MainPID=3630841\nWorkingDirectory=\nActiveState=active",
+        "nginx": "MainPID=3630787\nWorkingDirectory=\nActiveState=active",
+        "nodia-gemini-lab": "MainPID=0\nWorkingDirectory=/opt/nodia/nodia-gemini-microservice\nActiveState=active"
+      },
+      "private_stderr_bytes": 0,
+      "private_output_emitted": false,
+      "checks": 24,
+      "passed": [
+        "real StorageService accepts exact byte boundary without a ContentLength and closes the stream",
+        "real StorageService rejects an oversized ContentLength before consuming and closes the body",
+        "real StorageService bounds bytes incrementally when ContentLength is absent",
+        "real StorageService rejects a body larger than a falsely small ContentLength",
+        "real StorageService cancellation destroys the body without returning a partial buffer",
+        "all three reference issuances store metadata only, never CSV/storage URL/content",
+        "artifact download requires a current authenticated session",
+        "invoice proxy returns private bounded binary with no-store headers",
+        "ordinary destination-assigned user cannot download another owner chat reference",
+        "super_admin can inspect the reference with the existing minimal audit",
+        "product export uses native CSV, formula protection, zero and inactive rows",
+        "reference explicitly regenerates current records instead of falsely promising an old snapshot",
+        "provider export retains native CSV v2, zero tax and inactive supplier",
+        "product export rejects 101 records without returning a truncated file",
+        "provider export bounds legacy JSON bytes before hydration and never emits a partial CSV",
+        "persisted path traversal is rejected before object storage I/O",
+        "destination revocation committed during storage I/O prevents delivering the downloaded bytes",
+        "invoice replacement during storage I/O prevents returning the old file",
+        "chat expiry during storage I/O invalidates the reference before delivery",
+        "session revocation during storage I/O denies the final response",
+        "request cancellation after storage I/O discards bytes without deleting business files or receipts",
+        "real SQL chat purge cascades receipts and discards an in-flight artifact result",
+        "purged CSV references are unavailable without additional storage work",
+        "chat purge preserves independently retained native business records"
+      ],
+      "synthetic_storage_calls": 8,
+      "report_sha256": "b70c5bb98dee946f44c8891ba949015a6f2fc92cbbd862aea6aed6c09e4741a8",
+      "fixture_container_removed": true,
+      "child_process_absent": true,
+      "real_HTTP_authority_rechecked": true,
+      "synthetic_session_guard": true
+    }
+  },
+  "external_read_only_postflight": {
+    "source_path": ".tmp/ai40-ui-stop-r01/post-PG-readonly-r01.json",
+    "sha256": "380c86143a7c2a613e835181b02d99f05d591c8fe96fad40b0a578026d86f9e2",
+    "receipt": {
+      "schema": "nodia-ai-ai40-R08-post-PG-quiet-v1",
+      "status": "observed_read_only",
+      "snapshot": {
+        "services": {
+          "nodia-api": {
+            "pid": 3741433,
+            "active": "active",
+            "working_directory": "/opt/nodia/releases/nodia-server-ai40-r08"
+          },
+          "nodia-ai-worker": {
+            "pid": 3741434,
+            "active": "active",
+            "working_directory": "/opt/nodia/releases/nodia-server-ai40-r08"
+          },
+          "nodia-keyring": {
+            "pid": 3630841,
+            "active": "active",
+            "working_directory": ""
+          }
+        },
+        "protected": {
+          "nginx": "Type=forking\nRemainAfterExit=no\nMainPID=3630787\nActiveState=active\n",
+          "nodia-gemini-lab": "Type=oneshot\nRemainAfterExit=yes\nMainPID=0\nActiveState=active\n"
+        },
+        "Gemini_epoch_sha256": "36dcad33281960bfece08250f0ee59520758ecd056f1b23e3475853a34422d8d",
+        "SQL": {
+          "chats": 1,
+          "messages": 46,
+          "runs": 24,
+          "dispatches": 35,
+          "tool_receipts": 46,
+          "executions": 2,
+          "effect_receipts": 3,
+          "financial_effects": 1,
+          "pending_jobs": 0,
+          "open_attempts": 0,
+          "retained_slots": 0
+        },
+        "physical_Codex": {
+          "profile_absent": false,
+          "pending": 0,
+          "locks_or_sockets": 0,
+          "records": 3,
+          "sdk_arg0_links": 0,
+          "sdk_binary": null
+        },
+        "domain": {
+          "preferences": 2,
+          "preferences_sha256": "b3cffd91df324d06e640ff3c9e169db2d2fb5a24692ff11dbbc2cc7297443237",
+          "finance_count": 2,
+          "finance_sha256": "5335e312c7b542552f924cf266fc007ff1a3691e522e6c682bb20e374b5b7871",
+          "attachments": 6
+        },
+        "public_configuration_sha256": "506e4c436bc22152c9aa632565d470450206d5ffdb1c9b976c0d0c7b5116f8b2",
+        "proof_sha256": {
+          "mcp": "970510a8b38137e3168c74c8322bd33b90994659523977d492339cba6501cf0a",
+          "mcp-image-png": "6f72f27340f46a397954b6a6e2b024fd117a617cfbe7cddd64ab429c6f030cc7",
+          "mcp-image-jpeg": "7f196301cd8cc616f090d478622e59f4a0eb60d86b5400f2bb1e4e4decaefff5",
+          "mcp-image-webp": "b33981d06c07e487c841a088c938446fb8920b00a646509e401fbe8beb08a35c"
+        },
+        "scope": {
+          "connectionId": "1",
+          "resourceKey": "codex-profile:c17db95bfdfba4ffee919e03da6cc09443c0c337a66ec234c4fef830ae2507f6",
+          "sessionGeneration": "2a552f6b8a434521b8b438a8f7b01dca",
+          "configurationGeneration": "981def76e9ee3f9579b881a8941435be942e9e1b3af728815dfe63c66cb5f095",
+          "modelId": "gpt-6.1-sol",
+          "effortId": null,
+          "runtimeFingerprint": "1233a6c04a7d215994bfb7f40f41eef5e0d44935532fce8a8f092fdf1c57d11a"
+        },
+        "status_read_attempts": [
+          {
+            "call": 1,
+            "attempt": 1,
+            "outcome": "ok"
+          }
+        ]
+      },
+      "SDK_requests": 0,
+      "SQL_writes": 0
+    }
+  },
+  "guarantees": [
+    "Immutable existing integration executed exactly once; no test or product source modification.",
+    "Disposable PostgreSQL uses real migrations, native authority and Nest HTTP handlers. Only its synthetic database is mutated.",
+    "An ordinary destination-assigned synthetic user is denied a foreign owner reference; synthetic super_admin follows the audited route.",
+    "Final response rechecks authority after storage I/O and rejects module/session revocation, chat expiry/purge and changed invoice binding.",
+    "The own fixture container and child process were observed and removed; active application services remained identical."
+  ],
+  "limits": [
+    "The explicit fixture authentication header maps to disposable real DB sessions; this is not production JWT/OAuth acceptance.",
+    "Storage is synthetic: no real R2 invoice or object-store credentials were accessed.",
+    "No model, native provider, SDK, MCP generation, operative database or user CSV download is executed by this operator.",
+    "The 24 checks are boundary guarantees and do not imply every artifact UI variant, invoice R2 or all published capabilities are accepted.",
+    "Raw child logs remain private and are not embedded or printed. Native proof/quiet status is credited only to the independent read-only witness."
+  ],
+  "replay_policy": "Intent and receipt are consumed. Never rerun this operator/work directory to improve evidence; a future changed candidate needs a new reviewed descriptor and explicit authorization."
+}

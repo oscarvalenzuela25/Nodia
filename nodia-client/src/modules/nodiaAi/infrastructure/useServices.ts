@@ -1,6 +1,6 @@
 import { hashKey, useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { InfiniteData, MutateOptions, QueryClient, QueryKey } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { isAxiosError } from "axios";
 import { sileo } from "sileo";
 import useAuth from "../../../hooks/useAuth";
@@ -36,6 +36,11 @@ const useScope = () => {
   const { user, sessionVersion, isSessionActive } = useAuth();
   return { scope: [user?.id ?? null, sessionVersion] as const, enabled: isSessionActive && Boolean(user?.id) };
 };
+
+// Shared by observers of the same Query; setQueryData is not an authorized GET.
+// Weak keys retain no chat payload and disappear with the Query itself.
+let detailReadSequence = 0;
+const completedDetailReads = new WeakMap<object, number>();
 
 export const isNodiaAiAccessDenied = (error: unknown): boolean =>
   isAxiosError(error) && [401, 403, 404, 410].includes(error.response?.status ?? 0);
@@ -91,9 +96,22 @@ export function useNodiaAiCatalog(active = true) {
 }
 export function useNodiaAiConversation(id: string | null) {
   const { scope, enabled } = useScope();
+  const client = useQueryClient();
+  const [actorId, sessionVersion] = scope;
+  const scopeKey = hashKey(nodiaAiKeys.detail(scope, id));
+  const [validation, setValidation] = useState(() => ({ scopeKey, minimumRead: detailReadSequence + 1, refresh: false, suspended: document.visibilityState !== "visible" }));
+  if (validation.scopeKey !== scopeKey) {
+    setValidation({ scopeKey, minimumRead: detailReadSequence + 1, refresh: false, suspended: document.visibilityState !== "visible" });
+  }
   const query = useQuery<NodiaAiDetail | null>({
     queryKey: nodiaAiKeys.detail(scope, id), queryFn: async ({ signal, queryKey, client }) => {
-      try { return await getNodiaAiConversation(id!, signal); }
+      const startedRead = ++detailReadSequence;
+      try {
+        const result = await getNodiaAiConversation(id!, signal);
+        const current = client.getQueryCache().find({ queryKey, exact: true });
+        if (!signal.aborted && current) completedDetailReads.set(current, Math.max(completedDetailReads.get(current) ?? 0, startedRead));
+        return result;
+      }
       catch (error) {
         if (id !== null && isNodiaAiAccessDenied(error)) await discardRejectedContent(client, scope, queryKey, id);
         throw error;
@@ -103,8 +121,48 @@ export function useNodiaAiConversation(id: string | null) {
     refetchInterval: (query) => !query.state.error && (isNodiaAiRunActive(query.state.data?.current_run?.state)
       || isNodiaAiExecutionActive(query.state.data?.active_execution?.state)) ? 2000 : false,
   });
+  const completedRead = useSyncExternalStore(listener => client.getQueryCache().subscribe(listener), () => {
+    const current = client.getQueryCache().get(scopeKey);
+    return current ? completedDetailReads.get(current) ?? 0 : 0;
+  }, () => 0);
+  const refetch = query.refetch;
+  useEffect(() => {
+    const suspend = () => setValidation(current => ({ ...current, minimumRead: detailReadSequence + 1, refresh: false, suspended: true }));
+    const resume = () => {
+      if (document.visibilityState === "visible") setValidation(current => ({ ...current, minimumRead: detailReadSequence + 1, refresh: true, suspended: false }));
+    };
+    const visibility = () => document.visibilityState === "visible" ? resume() : suspend();
+    window.addEventListener("blur", suspend);
+    window.addEventListener("focus", resume);
+    document.addEventListener("visibilitychange", visibility);
+    return () => {
+      window.removeEventListener("blur", suspend);
+      window.removeEventListener("focus", resume);
+      document.removeEventListener("visibilitychange", visibility);
+    };
+  }, []);
+  useEffect(() => {
+    if (!enabled || id === null || !validation.refresh) return;
+    let current = true;
+    // Even an initial GET begun before suspension must not satisfy this epoch.
+    void client.cancelQueries({ queryKey: nodiaAiKeys.detail([actorId, sessionVersion], id), exact: true }).then(async () => {
+      if (current) {
+        await refetch({ cancelRefetch: false });
+        if (current) setValidation(value => value === validation ? { ...value, refresh: false } : value);
+      }
+    });
+    return () => { current = false; };
+  }, [actorId, client, enabled, id, refetch, sessionVersion, validation]);
+  useEffect(() => {
+    // A later observer may deduplicate against a GET begun before it mounted.
+    // Once that read settles, obtain a fresh GET for this observer's fence.
+    if (enabled && id !== null && !validation.suspended && query.isSuccess && !query.isFetching && completedRead < validation.minimumRead)
+      void refetch({ cancelRefetch: false });
+  }, [completedRead, enabled, id, query.isFetching, query.isSuccess, refetch, validation.minimumRead, validation.suspended]);
   const accessRejected = isNodiaAiAccessDenied(query.error);
-  return { data: accessRejected ? undefined : query.data ?? undefined, accessRejected, error: query.error,
+  const draftAuthorized = enabled && !validation.suspended && !accessRejected && query.isFetchedAfterMount && !!query.data && !query.data.conversation.read_only
+    && validation.scopeKey === scopeKey && completedRead >= validation.minimumRead;
+  return { data: accessRejected ? undefined : query.data ?? undefined, draftAuthorized, accessRejected, error: query.error,
     isLoading: query.isLoading, isFetching: query.isFetching, isError: query.isError, isSuccess: query.isSuccess, refetch: query.refetch };
 }
 export function useNodiaAiMessages(id: string | null, polling = false) {

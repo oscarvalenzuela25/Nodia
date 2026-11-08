@@ -1,0 +1,288 @@
+{
+  "schema_version": 1,
+  "task": "business-point-of-sale-plan94",
+  "checked_on": "2026-10-28",
+  "status": "passed",
+  "specification": "docs/mvp/94-business-point-of-sale-and-product-refactor.md",
+  "accepted_scope": "Plan94 R04 implemented locally in R05; R06 adds explicitly authorized local publication, separate from deployment and provider acceptance",
+  "environment": "Windows local workspace, isolated PostgreSQL16-alpine, real R2 synthetic objects and Edge headless with synthetic HTTP fixtures",
+  "verified": {
+    "server_full_suite": {
+      "command": "npm test -- --reporter=dot",
+      "files_passed": 313,
+      "tests_passed": 5675,
+      "tests_skipped": 1,
+      "failed": 0,
+      "duration_seconds": "151.63",
+      "after_final_sales_preparer_query_change": "Seven focal sales tests and final TypeScript emission passed; compiled query was verified before the 25 SQL checks"
+    },
+    "client_full_suite": {
+      "command": "npm test -- --reporter=dot",
+      "files_passed": 258,
+      "tests_passed": 2099,
+      "failed": 0,
+      "duration_seconds": "166.73"
+    },
+    "builds_and_static_checks": {
+      "server_build": "npm run build: exit0",
+      "server_final_types_and_emission": "npx --no-install tsc -p tsconfig.build.json: exit0",
+      "server_lint": "npm run lint: exit0; one existing no-unsafe-finally warning in test/nodia-ai-live-unknown.fixture.mjs, outside POS changes",
+      "client_build": "npm run build (tsc -b and vite build): exit0",
+      "client_lint": "npm run lint: exit0",
+      "pos_scoped_diff_check": "passed"
+    },
+    "sale_policy_units": {
+      "command": "npx --no-install vitest run src/sale/policies/sale-policy.spec.ts",
+      "passed": 38,
+      "scope": "synthetic atomic policy, exact amounts, observations, lifecycle and input boundaries"
+    },
+    "postgres_http_and_candidate_ai": {
+      "command": "node test/business-sales.integration.mjs",
+      "passed": 25,
+      "scope": "disposable PostgreSQL16, compiled Nest DI, HTTP, native sales and backend-owned candidate AI fixtures",
+      "storage": "synthetic; lost PUT response and late PUT cleanup tested",
+      "application_database_modified": false,
+      "provider_inference": false,
+      "key_guarantees": [
+        "same/different request identity concurrency",
+        "actor-private receipts and revoked authority",
+        "native effect and AI witness rollback boundary",
+        "immutable completed snapshots and cancellation",
+        "full-population ranking and sums beyond Number.MAX_SAFE_INTEGER",
+        "fresh aggregate after waiting for concurrent draft update",
+        "previous-price baseline ignores availability/alternative but preserves cost changes",
+        "additive up/down/up and conservative rollback",
+        "HTTP rejects price/date overrides"
+      ]
+    },
+    "r2_real": {
+      "command": "node test/business-sales.integration.mjs --real-r2",
+      "passed": 23,
+      "single_attempt_puts": 2,
+      "verified": [
+        "optimized object readback",
+        "attachment",
+        "replacement",
+        "private URL generation",
+        "removal",
+        "GET not-found after deletion"
+      ],
+      "synthetic_objects_removed": true,
+      "disposable_postgres_removed": true,
+      "credentials_or_private_urls_in_evidence": false,
+      "provider_inference": false
+    },
+    "browser": {
+      "browser": "Edge headless",
+      "transport": "synthetic in-memory HTTP fixtures; no application-domain records or provider inference",
+      "widths_px": [
+        320,
+        390,
+        599,
+        600,
+        1280
+      ],
+      "languages": [
+        "es",
+        "en"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "flows": [
+        "two equal scans add quantity2",
+        "alternate2000 selected above regular1500",
+        "draft to completed cash4000CLP and reports",
+        "lost POST response after fixture commit and original-identity recovery",
+        "bank_transfer preserved on recovery",
+        "cancellation reason and reports zero",
+        "unknown barcode linked explicitly, 409 preserves dialog, retry and rescan",
+        "focus returns after association query settles",
+        "no horizontal overflow at tested widths"
+      ],
+      "captures": [
+        "output/playwright/pos-cart-390-dark.png",
+        "output/playwright/pos-receipt-1280-dark-es.png",
+        "output/playwright/pos-reports-320-dark-es.png",
+        "output/playwright/pos-pending-320-light-en.png",
+        "output/playwright/pos-reports-320-light-en.png"
+      ],
+      "limits": "In-memory browser fixtures do not prove persistence after reload; SQL and hook checks cover durable recovery separately. No physical scanner or phone acceptance."
+    },
+    "knowledge_and_common_contracts": {
+      "commands": [
+        "npm run knowledge:check",
+        "npm run knowledge:build",
+        "node scripts/check-nodia-ai-contracts.mjs",
+        "node scripts/check-nodia-ai-catalog.mjs",
+        "node scripts/check-nodia-ai-pos-candidate.mjs"
+      ],
+      "published_release_id": "975e7e855c0d9b11b1f6da905217b463d29d1c2b6b75d6e731b98d87f9314963",
+      "source_documents": 69,
+      "excluded_documents": 26,
+      "published_documents": 43,
+      "published_fragments": 45,
+      "published_capabilities": 151,
+      "existing_approved_documents_byte_identical": 43,
+      "common_definitions_compiled": 150,
+      "common_fixture_assertions": 506,
+      "common_schema_sha256": "7e6c521c843e8bcf6889803036c542bc3a1d734d987c672372261a21f0b768d9",
+      "candidate_tools": 7,
+      "candidate_closed_contracts": 14,
+      "candidate_prospective_capabilities": 158,
+      "live_sale_capabilities": 0,
+      "review_document_revision": 5,
+      "review_document_content_sha256": "7759966f3bfa8e4faef84185d86e34b5c1b462e65b0deb7c35136fc92aff363c",
+      "human_document_approval_created": false,
+      "publication_applied": false,
+      "verification_cut": "R05 verification before human approval and publication; current R06 publication is recorded below"
+    }
+  },
+  "pending": [
+    "natural conversational acceptance with actual selected provider/mode and human confirmation",
+    "physical scanner acceptance",
+    "target database backup, migration, deployment and authenticated smoke",
+    "classify historical availability and explicitly associate real barcodes; remove old numeric-stock compatibility only with consumer evidence"
+  ],
+  "notes": "Passed covers local implementation R05 and explicitly authorized local publication R06, with separate verification cuts. No application database migration, real sale, payment, provider inference, fabricated approval or deployment. Real R2 synthetic objects were verified removed; publication SQL fixtures and containers were removed. Temporary logs are not runtime dependencies.",
+  "source_sha256": {
+    "nodia-server/src/sale/use-case/mutate-sale.use-case.ts": "93dddccb16e63a32ee8e30b899d8571a8e735e3ad66ea7415e3c78a659c300f5",
+    "nodia-server/src/sale/use-case/read-sales.use-case.ts": "f2183f7dfd39068f53072c9786fb56b185464cd172d91755b027872c85f9a3f4",
+    "nodia-server/src/sale/sale.service.ts": "cc08f5829af81f9b6ccb437e96e1ad774b3e49fca7f9466dfd80e5916e84cc25",
+    "nodia-server/src/sale/sale-authority.ts": "390f88b336dd9a3d9bff7da1a7a97e1886f4ac702e90fade0b6a656ded1f0d0f",
+    "nodia-server/src/sale/policies/sale-policy.ts": "8a295eb834a6e7deba192b684c378f4078a6c51b1d09220443baf2f1e4a40850",
+    "nodia-server/src/sale/reporting/compile-sales-report.ts": "a2a997c1d9d3431c561f25308f2e74f8ff0c2c2c38a34062b3736bbf1a3a83d5",
+    "nodia-server/src/product/product.service.ts": "55ef10d142d1dcd3b095de062bf21b9a4fa28e80666f8d4e326ff28bcebb1d2c",
+    "nodia-server/src/product/product-catalog.ts": "2279ae60fbe3599726c3cbe5980f5d5978f3a22f0ed164abb7e6c92fe3b8241a",
+    "nodia-server/src/product-image/use-case/manage-product-image.use-case.ts": "225d6a3eac7782ecd53db40bbfc65d573eb1dcd9fceb631d1442d2b9802b4d25",
+    "nodia-server/src/migrations/1793400000000-AddProductPosCatalog.ts": "89ade95b00fad44f55890a020246614f8bab654b180bf59ffc6451a97782bad3",
+    "nodia-server/src/migrations/1793410000000-CreateBusinessSales.ts": "47328295f7cad50a4d0d4ad5d3fc45e0603e8f6300896f7b66effe73db2353bd",
+    "nodia-server/src/nodia-ai-sales/use-case/build-nodia-ai-sales-operations.use-case.ts": "0163aa6e3dec7abea9386aa128326ab963c9681fe18dd539563cee9798e01145",
+    "nodia-server/config/nodia-ai-pos-publication.candidate.json": "e164f5da3f658977ea93005c0b5b78bb13693e16e9cae7f9a8202a7664aa860e",
+    "nodia-server/scripts/check-nodia-ai-pos-candidate.mjs": "9b49f26980dd66418e715c9eb5a8700f29e59a31d445afdaa6bf62402583d8e6",
+    "nodia-server/test/business-sales.integration.mjs": "80557d8ce267e1abf4756b0ae0426b3ff4549173865b0650b876c9eb23885d49",
+    "nodia-client/src/modules/business/infrastructure/useSaleDraft.ts": "13c977dbab470644ad0a4145fd507efdcabc806c1a37ecce510b7f49caafa5b0",
+    "nodia-client/src/modules/business/infrastructure/salesPolicies.ts": "7ff03d08b70954ba83491f1ea617fae3deece51fa03d26441bbdeb9f4a846a94",
+    "nodia-client/src/modules/business/infrastructure/salesDates.ts": "70fb6ab3e170c9280cf7e160d77e559fa52f767403ac0f8342fd346dc9d04027",
+    "nodia-client/src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesWorkspace.tsx": "ab7dd1f9f583ca3bb88d883a62b68660dcc0219525f22ee2aae67b5eb795a074",
+    "nodia-server/config/nodia-ai-knowledge.registry.json": "12f7b32ca163d5e86c9cf99f4be389e4201b4b7ce7bbd86f6aa08131c44fd0f2",
+    "docs/mvp/nodia-ai-v1-tool-catalog.extensions.json": "3ff631bbeecd7d1ab95fd2753b328c163ab9d5c4ca3ec7657a11c3ed76771a30",
+    "nodia-server/src/nodia-ai-products/contracts/pos-common-preparation.schema.json": "bd50ade027abc93901da88ceeb14d3a2f26012d70f74612aeacb69f7b3b85368",
+    "nodia-server/test/nodia-ai-pos-publication.integration.mjs": "2e7a7085415f9f8000780b7d35092389dba9da1ebc09e1ec6fe85ccc75a10ec1",
+    "nodia-server/test/fixtures/published-canary-catalog.mjs": "750d3398eeeec4df4f7fad417add76d1a28bf5e0c603accaff7e6cdddacbaf5b",
+    "nodia-server/test/published-canary-catalog.spec.mjs": "dabdc25204e7e85c5a94dbd68ea424adf55145261286652e79b900993258cdab"
+  },
+  "publication_r06": {
+    "status": "passed",
+    "recorded_at_utc": "2026-10-28T22:23:43.011Z",
+    "scope": "Authorized authoring and compiled local runtime with disposable PostgreSQL; no target deployment or provider inference",
+    "authorization_reference": "docs/evidence/business-pos-knowledge-publication-authorization-20261028-r01.json",
+    "exact_human_reply": "Aprobar ficha revisión 5 y publicación",
+    "approved_document": {
+      "path": "docs/nodia-ai/knowledge/businesses/features/point-of-sale-and-sales.md",
+      "revision": 5,
+      "content_sha256": "148a52fe4478f514b20283f0d6df5ac6db39c1f7340169e0afab5aab9f603a40",
+      "file_sha256": "95440a9ab70da9ce3acfa4439077011d2c9ea8453cf486b877d4d85829f46211",
+      "reviewed_body_preserved": true
+    },
+    "candidate_applied": true,
+    "registry_sha256": "12f7b32ca163d5e86c9cf99f4be389e4201b4b7ce7bbd86f6aa08131c44fd0f2",
+    "catalog_extension_sha256": "3ff631bbeecd7d1ab95fd2753b328c163ab9d5c4ca3ec7657a11c3ed76771a30",
+    "release_id": "45695b4bea2020faabab3ea23c57586f4a401dd8e620a75eb0d3e9c0d4457ceb",
+    "catalog_release": "nodia-ai-business-pos/1",
+    "sources": 69,
+    "excluded": 25,
+    "documents": 44,
+    "fragments": 46,
+    "published_capabilities": 158,
+    "closed_contracts": 316,
+    "capability_ids": [
+      "nodia_sales_get",
+      "nodia_sales_list",
+      "nodia_sales_prepare_create",
+      "nodia_sales_prepare_update",
+      "nodia_sales_prepare_complete",
+      "nodia_sales_prepare_cancel",
+      "nodia_sales_prepare_discard"
+    ],
+    "report_sources": [
+      "business_sales",
+      "business_sale_items"
+    ],
+    "technical_schema_reconciliation": {
+      "path": "nodia-server/src/nodia-ai-products/contracts/pos-common-preparation.schema.json",
+      "sha256": "bd50ade027abc93901da88ceeb14d3a2f26012d70f74612aeacb69f7b3b85368",
+      "capabilities": [
+        "nodia_preferences_prepare",
+        "nodia_workflows_prepare"
+      ],
+      "reason": "The expanded common POS definitions changed the complete factory-generated preparation schema. Regenerated the static schema and both capability/binding pins to match the actual runtime; no TypeScript or approved document body changed.",
+      "runtime_manifest_equality_verified": true
+    },
+    "verification": {
+      "build": "npm run build: exit0",
+      "tools_reports_sales_focal": {
+        "files": 17,
+        "passed": 394,
+        "failed": 0
+      },
+      "common_preparation_and_loader_focal": {
+        "files": 2,
+        "passed": 44,
+        "failed": 0
+      },
+      "knowledge_and_catalog_node_tests": {
+        "passed": 110,
+        "failed": 0
+      },
+      "canary_catalog_guard_tests": {
+        "passed": 6,
+        "failed": 0,
+        "real_canaries_executed": false
+      },
+      "common_contract_assertions": 506,
+      "candidate_check": "passed; approval present, seven sales capabilities published",
+      "compiled_runtime": {
+        "task": "business_pos_published_runtime",
+        "status": "passed",
+        "checks": 12,
+        "results": [
+          "actual Nest registry and pinned loader agree with every published ID, schema hash, kind and route",
+          "sales reads and five preparations compose under the same registered sales resource",
+          "registry route projection cannot expose POS without Business",
+          "the real ReportsModule derives both sale sources from the actual published document",
+          "actual selector admits all seven discovered POS IDs and rejects selection without current Business authority",
+          "an authenticated actor without Business cannot discover POS",
+          "authorized report discovery includes exactly the two published POS sources",
+          "DI-injected native get/list pass closed schemas and preserve distinct codes and exact enabled prices",
+          "a published read still rejects foreign business scope",
+          "current module revocation removes every POS capability and both report sources",
+          "revoked session cannot discover tools or report metadata",
+          "metadata and read smoke performs no AI work or preparation mutation and no external IO"
+        ],
+        "release_id": "45695b4bea2020faabab3ea23c57586f4a401dd8e620a75eb0d3e9c0d4457ceb",
+        "published_capabilities": 158,
+        "documents": 44,
+        "fragments": 46,
+        "pos_tools": 7,
+        "pos_report_sources": 2,
+        "actual_registry_and_reports_DI": true,
+        "synthetic_publication_override": false,
+        "configured_database_used": false,
+        "provider_inference": false,
+        "native_fixture_mutations": 1,
+        "external_calls": 0,
+        "cleanup_completed_before_report": true
+      },
+      "previous_approved_documents_byte_identical": 43,
+      "scoped_lint_diff_utf8_lf": "passed"
+    },
+    "limits": [
+      "No provider/model/mode or natural human-button acceptance inferred",
+      "No migration or deployment to the application database",
+      "No real sale or payment",
+      "No approval of ADR085 or other documents"
+    ]
+  }
+}

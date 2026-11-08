@@ -9,7 +9,6 @@ import {
   UpdateDateColumn,
   type Relation,
 } from 'typeorm';
-import { AiConnectionMode } from '../types/ai-provider.types.js';
 import { AiApiKey } from './ai-api-key.entity.js';
 import { AiProviderEvent } from './ai-provider-event.entity.js';
 import { AiProviderCatalog } from './ai-provider-catalog.entity.js';
@@ -37,24 +36,17 @@ export class AiProvider {
   use_api_key: boolean;
 
   @Column({ type: 'boolean', default: false })
-  use_token_plan_web: boolean;
-
-  @Column({ type: 'boolean', default: false })
-  use_token_plan_agentic: boolean;
+  use_agentic: boolean;
 
   @Column({ type: 'varchar', length: 32, nullable: true, default: null })
-  default_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
+  default_mode?: 'api_key' | 'agentic' | null;
 
   get key(): string | undefined {
     return this.catalog?.key;
   }
 
   get mode(): string | null {
-    if (this.default_mode) return this.default_mode;
-    if (this.use_token_plan_agentic) return 'token_plan_agentic';
-    if (this.use_token_plan_web) return 'web_session';
-    if (this.use_api_key) return 'api_key';
-    return null;
+    return this.default_mode ?? null;
   }
 
   @Column({ type: 'boolean', default: false })

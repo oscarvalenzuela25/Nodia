@@ -1,16 +1,31 @@
-import type { ModuleContext, ModuleGroupContext, TranslateItem } from "./types";
+import type {
+  AuthorizationContextResponse,
+  ModuleContext,
+  ModuleGroupContext,
+  TranslateItem,
+} from "./types";
 import { BUSINESS_ROUTE } from "../../modules/business/constants/routes";
+import { canonicalModuleDestination } from "../../routes/moduleDestinations";
+import { NODIA_TEACHER_ROUTE } from "../../modules/teacher/constants/routes";
 
 const normalizeModulePath = (path: string) => {
-  const pathname = path.trim().split(/[?#]/, 1)[0];
+  const pathname = canonicalModuleDestination(path.trim()).split(/[?#]/, 1)[0];
   return `/${pathname.replace(/^\/+|\/+$/g, "")}`.toLowerCase();
 };
 
 /** Match an assigned module's destination, never a group or a path prefix. */
 export const hasModuleAccess = (groups: ModuleGroupContext[], path: string) =>
-  Array.isArray(groups) && groups.some((group) => Array.isArray(group.modules) && group.modules.some((module) =>
-    normalizeModulePath(getModulePath(module)) === normalizeModulePath(path)
-  ));
+  Array.isArray(groups) &&
+  groups.flatMap(group => Array.isArray(group.modules) ? group.modules : [])
+    .filter(module => normalizeModulePath(getModulePath(module)) === normalizeModulePath(path)).length === 1;
+
+/** Access is granted by a module or the active superadministrator context. */
+export const canAccessModule = (
+  context: Pick<AuthorizationContextResponse, "roles" | "modules">,
+  path: string,
+) =>
+  (Array.isArray(context.roles) && context.roles.includes("super_admin")) ||
+  hasModuleAccess(context.modules, path);
 
 /**
  * Normalizes and returns the navigation path for a module.
@@ -19,14 +34,23 @@ export const hasModuleAccess = (groups: ModuleGroupContext[], path: string) =>
 export const getModulePath = (module: ModuleContext): string => {
   const link = module.link?.trim();
   if (link) {
-    return link.startsWith("/") ? link : `/${link}`;
+    return canonicalModuleDestination(link);
   }
   const normalized = module.key.toLowerCase();
-  if (normalized === "users" || normalized === "usuarios") return "/settings/users";
-  if (normalized === "roles") return "/settings/roles";
-  if (normalized === "actions" || normalized === "acciones") return "/settings/actions";
-  if (normalized === "modules" || normalized === "modulos") return "/settings/modules";
-  if (normalized === "business" || normalized === "businesses" || normalized === "negocios") return BUSINESS_ROUTE;
+  if (normalized === "users" || normalized === "usuarios")
+    return "/users";
+  if (normalized === "roles") return "/roles";
+  if (normalized === "actions" || normalized === "acciones")
+    return "/actions";
+  if (normalized === "modules" || normalized === "modulos")
+    return "/modules";
+  if (normalized === "nodia_teacher") return NODIA_TEACHER_ROUTE;
+  if (
+    normalized === "business" ||
+    normalized === "businesses" ||
+    normalized === "negocios"
+  )
+    return BUSINESS_ROUTE;
   if (
     normalized === "ai-providers" ||
     normalized === "ai_providers" ||
@@ -35,7 +59,7 @@ export const getModulePath = (module: ModuleContext): string => {
     normalized === "proveedores_ia" ||
     normalized === "proveedores-ia"
   ) {
-    return "/settings/ai-providers";
+    return "/ai-providers";
   }
   return "/";
 };
@@ -47,7 +71,7 @@ export const getModulePath = (module: ModuleContext): string => {
 export const getTranslatedName = (
   translates: TranslateItem[] | undefined,
   defaultKey: string,
-  lang: string
+  lang: string,
 ): string => {
   if (translates && translates.length > 0) {
     const isEn = lang.startsWith("en");

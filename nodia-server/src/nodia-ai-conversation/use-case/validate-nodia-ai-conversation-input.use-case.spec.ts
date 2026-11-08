@@ -4,7 +4,7 @@ import { ValidateNodiaAiConversationInputUseCase } from './validate-nodia-ai-con
 const client_request_id = '15f71e5b-1a66-4a9d-8d79-dc64358adac7';
 const selected = {
   connection_id: '9223372036854775807',
-  mode: 'token_plan_web',
+  mode: 'agentic',
   model_id: 'synthetic-configured-model',
 };
 const subject = new ValidateNodiaAiConversationInputUseCase();

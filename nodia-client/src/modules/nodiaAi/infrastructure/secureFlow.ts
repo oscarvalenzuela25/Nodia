@@ -2,17 +2,16 @@ import { z } from "zod";
 import { isAxiosError } from "axios";
 import { mainInstance } from "../../../config/api";
 import { geminiAgenticLoginSchema } from "../../generalSettings/pages/AiProviders/infrastructure/agenticLogin";
-import { geminiWebLoginSchema, geminiLoginFrameSchema } from "../../generalSettings/pages/AiProviders/infrastructure/webLogin";
 import { codexJobSchema } from "../../generalSettings/pages/AiProviders/infrastructure/codexSession";
 
 const uuid = z.uuid();
 const id = z.string().regex(/^[1-9]\d{0,18}$/).refine(value => /^[1-9]\d{0,18}$/.test(value) && BigInt(value) <= 9223372036854775807n);
 export const secureFlowSchema = z.object({
   reference: uuid,
-  kind: z.enum(["api_key_create", "api_key_update", "api_key_delete", "connection_login", "nodia_logout", "codex_logout", "gemini_web_logout", "sync_models"]),
+  kind: z.enum(["api_key_create", "api_key_update", "api_key_delete", "connection_login", "nodia_logout", "codex_logout", "sync_models"]),
   provider_id: id.nullable(), key_id: id.nullable(),
   provider_key: z.string().min(1).max(64).nullable(),
-  mode: z.enum(["api_key", "token_plan_web", "token_plan_agentic"]).nullable(),
+  mode: z.enum(["api_key", "agentic"]).nullable(),
   expires_at: z.iso.datetime({ offset: true }),
   status: z.enum(["waiting", "invoking", "pending", "completed", "unknown", "cancelled", "expired", "failed"]),
   revision: z.number().int().positive(),
@@ -20,23 +19,19 @@ export const secureFlowSchema = z.object({
   : flow.provider_id !== null && (flow.kind === "api_key_update" || flow.kind === "api_key_delete" ? flow.key_id !== null : flow.key_id === null));
 export const secureFlowResponseSchema = z.object({ flow: secureFlowSchema,
   interaction: z.discriminatedUnion("kind", [
-    z.object({ kind: z.literal("gemini_web"), data: geminiWebLoginSchema }).strict(),
     z.object({ kind: z.literal("gemini_agentic"), data: geminiAgenticLoginSchema }).strict(),
     z.object({ kind: z.literal("codex"), data: codexJobSchema }).strict(),
   ]).optional(),
-  frame: geminiLoginFrameSchema.optional(),
 }).strict().refine(value => !value.interaction || value.flow.kind === "connection_login" && (
-  value.interaction.kind === "gemini_web" && value.flow.provider_key === "gemini" && value.flow.mode === "token_plan_web"
-  || value.interaction.kind === "gemini_agentic" && value.flow.provider_key === "gemini" && value.flow.mode === "token_plan_agentic"
-  || value.interaction.kind === "codex" && value.flow.provider_key === "openai" && value.flow.mode === "token_plan_agentic"))
-  .refine(value => value.frame === undefined || value.flow.kind === "connection_login" && value.flow.provider_key === "gemini" && value.flow.mode === "token_plan_web");
+  value.interaction.kind === "gemini_agentic" && value.flow.provider_key === "gemini" && value.flow.mode === "agentic"
+  || value.interaction.kind === "codex" && value.flow.provider_key === "openai" && value.flow.mode === "agentic"));
 export type SecureFlow = z.infer<typeof secureFlowSchema>;
 export type SecureFlowResponse = z.infer<typeof secureFlowResponseSchema>;
-export type SecureFlowAction = "key" | "delete" | "sync" | "start" | "status" | "code" | "frame" | "input" | "cancel" | "logout";
+export type SecureFlowAction = "key" | "delete" | "sync" | "start" | "status" | "code" | "cancel" | "logout";
 export type SecureFlowPayload = Record<string, string | number | undefined>;
 const path = (executionId: string) => `/nodia-ai/operations/${encodeURIComponent(uuid.parse(executionId))}/secure-flow`;
 
-/** Direct human transport. Secret/code/frame values never enter the query or mutation caches. */
+/** Direct human transport. Secret/code values never enter the query or mutation caches. */
 export async function getNodiaAiSecureFlow(executionId: string, signal?: AbortSignal): Promise<SecureFlowResponse> {
   const { data } = await mainInstance.get<unknown>(path(executionId), { signal });
   return z.object({ flow: secureFlowSchema }).strict().parse(data);

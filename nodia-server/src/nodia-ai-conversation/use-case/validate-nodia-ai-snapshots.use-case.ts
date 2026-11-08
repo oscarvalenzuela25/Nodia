@@ -40,18 +40,7 @@ export class ValidateNodiaAiSnapshotsUseCase {
     const maximum = validateNodiaAiDto(NodiaAiBudgetSnapshotDto, maximumBudget);
     const invalid = () => new BadRequestException('nodia_ai:invalid_input');
     exactSelection(dto.base_selection);
-    if (dto.routing.enabled && !dto.routing.target) throw invalid();
-    const target = dto.routing.target;
-    let targetSelection: NodiaAiSelection | null = null;
-    if (target) {
-      exactSelection(target.selection);
-      targetSelection = target.selection;
-      if (
-        target.selection.mode !== 'token_plan_agentic' ||
-        target.selection.connection_id !== dto.base_selection.connection_id
-      )
-        throw invalid();
-    }
+    if (dto.routing.enabled || dto.routing.target !== null) throw invalid();
     for (const key of budgetKeys)
       if (dto.budget[key] > maximum[key] || dto.usage[key] > dto.budget[key])
         throw invalid();
@@ -66,14 +55,7 @@ export class ValidateNodiaAiSnapshotsUseCase {
       if (dto.stage.routing_phase === 'base') {
         if (!sameSelection(dto.stage.selection, dto.base_selection))
           throw invalid();
-      } else if (
-        !dto.routing.enabled ||
-        !targetSelection ||
-        dto.base_selection.mode !== 'token_plan_web' ||
-        dto.usage.delegations !== 1 ||
-        !sameSelection(dto.stage.selection, targetSelection)
-      )
-        throw invalid();
+      } else throw invalid();
     }
     return dto;
   }

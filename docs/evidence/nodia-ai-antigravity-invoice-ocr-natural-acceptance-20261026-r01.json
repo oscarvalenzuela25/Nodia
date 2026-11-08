@@ -1,0 +1,524 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "status": "scoped_Agentic_LOW_natural_PDF_OCR_read_reload_and_domain_verified",
+  "scope": {
+    "current_epoch_acceptance": "Gemini Antigravity Agentic, explicit persisted LOW/LOW selection: fresh standard PDF attachment/preparation, human commercial supplier choice before OCR, one OCR stage, fresh authorized read/comparison and reload. Technical MCP qualification is separate.",
+    "current_original_format": "PDF original, not accepted/reviewed text and not generic native MIME qualification",
+    "historical_706_PNG_natural_acceptance": "M1/M2/M3/reload passed in706/session7be; preserved as history, not inherited as PNG acceptance in469.",
+    "global_NodiaAI_completion_claimed": false,
+    "Web_API_or_all_models_qualified": false,
+    "new_documentary_approval": false
+  },
+  "runtime": {
+    "Server": {
+      "release": "/opt/nodia/releases/nodia-server-invoice-ocr-r05",
+      "manifest_sha256": "01afbfa3fe33adaa8b67748efb09e94f1e5f18e3a774826ad8574001ae15d0c9",
+      "files_verified": 4238,
+      "knowledge_release": "b90f2c50757cbe0f408fd385549eba0b7f9c09f97ae12a41491d973175e85daf",
+      "knowledge_manifest_sha256": "5c0633f7da84885890e640790e84693f21861dd91b778b37bcc687f80ea6c3f1",
+      "capabilities": 152,
+      "fragments": 43
+    },
+    "Client": {
+      "release": "/opt/nodia/releases/nodia-client-invoice-ocr-r01",
+      "manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+      "files_verified": 183
+    },
+    "native": {
+      "id": "c962df9182e2b6df08ccde0d8326fb3e1b61ddb0d400b429be0bda040da4d0e2",
+      "image": "sha256:46952b1fa6f2987080ae0d6643a49e297ccc85df636c0e748c119d7c47deb3bc",
+      "started_at": "2026-10-26T20:16:37.619860578Z",
+      "descriptor_sha256": "bc77e76800e28c4f68de27d31691152f1c36da0a99cb45528799862b83944e2a"
+    },
+    "native_session_generation": "87e5bb1f12484dae8e90761a9cb4a773",
+    "public_Python_modules": 52,
+    "changed_native_modules": [
+      "agentic_service.py"
+    ],
+    "agentic_service_sha256": "03507ea9327d6454f41394871052793529b650caf4cf841623efbe35b26b1a08",
+    "selection": {
+      "connection_id": "2",
+      "effort_id": "low",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-low"
+    },
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+    "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "nginx_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac",
+    "processes": {
+      "nodia-api": {
+        "active": "active",
+        "sub": "running",
+        "pid": 724319,
+        "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r05",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+        "argv_exact_match": true
+      },
+      "nodia-ai-worker": {
+        "active": "active",
+        "sub": "running",
+        "pid": 724320,
+        "working_directory": "/opt/nodia/releases/nodia-server-invoice-ocr-r05",
+        "recovery_config_path_verified": true,
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+        "argv_exact_match": true
+      }
+    },
+    "backup_runner_sha256_observed_only": "d9a06fd1f5120441d349ce02cab1198dd5c37366f5ce607b6a79124568ab2153",
+    "global_connection_default_HIGH_automatically_changed": false,
+    "fallback_used": false
+  },
+  "P1_fix_validation": {
+    "before_image": "sha256:706f34fcf3586f4fd5476d6d3fd8ff04185ede838fb77620e611fef37f010e28",
+    "before_module_sha256": "1ade06aae2fa77534ef2cea84e25d83fb3f6b9050feecb4a3e27547865cd0017",
+    "one_module_selective_COPY": true,
+    "remaining_51_module_hashes_unchanged": true,
+    "image_configuration_and_source_layer_prefix_preserved": true,
+    "Linux_atomic_tests": 49,
+    "Linux_failures": 0,
+    "Linux_errors": 0,
+    "Linux_skips": 0,
+    "before_value_controls_expected_failures": 3,
+    "TTL_seconds": 30,
+    "status_budget_seconds": 12,
+    "option_budget_seconds": 10,
+    "FIFO_budget_seconds": 18,
+    "metadata_preparation_per_cache_miss_maximum": 1,
+    "cache_hit_extra_CLI": 0,
+    "generation_retry_added": false,
+    "known_code_defect": "A missing option evidence identity could previously return true. Missing/changed identity now fails closed; early discard/one bounded metadata renewal prevents a demonstrated aging race without extending TTL.",
+    "historical_cause_limit": "The standard-PDF failure6a1 in706 was observed as eligibility_changed/agentic_session_unverified before dispatch. Its exact native branch was not retained; successful P1 QA does not certify that failure was caused by TTL."
+  },
+  "current_MCP_qualification": {
+    "receipt": "receipts/antigravity-P1-qual-execute-VM-r01.json",
+    "status": "passed",
+    "start_requests": 1,
+    "production_schema_validated": true,
+    "fixture_accepted": 1,
+    "fixture_rejected": 0,
+    "terminal": {
+      "engine": "agentic",
+      "attempt_id": "a260d523-3abb-42e1-a2d1-ed7a642ddd34",
+      "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+      "session_generation": "87e5bb1f12484dae8e90761a9cb4a773",
+      "operation_ref": "a260d523-3abb-42e1-a2d1-ed7a642ddd34",
+      "terminal_proof_id": "e3ad96a3-0e14-47f5-8e59-40b7f89522b9",
+      "process_closed": true,
+      "outcome": "completed"
+    },
+    "ACK_independently_verified": true,
+    "pending_identity": false,
+    "quiet_verified": true,
+    "business_effects": 0,
+    "operator_probe_elapsed_ms_not_vendor_latency": 9622,
+    "old_epoch_qualification_not_inherited": true
+  },
+  "natural_PDF": {
+    "chat_id": "58b2d3e9-3748-461a-af25-f23982ebb665",
+    "title": "Verificación Antigravity OCR final 20261026 R06",
+    "original": {
+      "attachment_id": "2d496c6d-09ca-4d8f-9b69-b4a99887c72d",
+      "sha256": "9f9a32bd46ebfcb1063e7d1bf4e067f91ff5e5c5d82e1536c2d9725f84917e59",
+      "bytes": 43102,
+      "media_type": "application/pdf",
+      "reviewed_text_accepted": false
+    },
+    "M1": {
+      "run_id": "5573db5b-98f2-4907-819b-797c4c477781",
+      "state": "completed",
+      "fresh_preparation_id": "03cf7d5f-033c-4b6d-a73c-d1dccfc0e876",
+      "supplier_id": null,
+      "status_at_prepare": "awaiting_supplier",
+      "OCR_stage_for_this_preparation": 0,
+      "old_preparation_cf3_reused": false
+    },
+    "M2": {
+      "run_id": "7088ffce-1e29-4285-9274-64aaf793f8d0",
+      "state": "completed",
+      "human_explicit_commercial_supplier_id": "1",
+      "business_id": "5af15373-3638-4a02-a015-4e72c433fc11",
+      "request_id": "07b858c6-0bc6-4938-bf1e-167fb12d34c4",
+      "preparation_consumed_once": true,
+      "stored_result_present": true,
+      "result_hash": "6babc708e8beb467de5ea309d17db96727486b9b27e2723614edf4ffe1714f49",
+      "OCR_attempt_id": "01c6b3be-b2e2-4dba-9b90-42f4fb8fccc8",
+      "application_invoice_OCR_stage_attempts_for_this_preparation": 1,
+      "extraction": {
+        "code": "C03-PDF-R01",
+        "total_amount": 0,
+        "data": {
+          "issue_date": "2026-10-25",
+          "items": [
+            {
+              "name": "Agua C03 PDF",
+              "code": "SKU-PDF-C03",
+              "quantity": 0,
+              "packages": null,
+              "units_per_package": null,
+              "cost_price": null,
+              "cost_price_tax": null,
+              "unit_price": 0,
+              "total_price": 0
+            }
+          ]
+        },
+        "numeric_values": {
+          "zero": 4,
+          "unknown": 4
+        }
+      },
+      "comparison": [
+        {
+          "index": 0,
+          "product_id": null,
+          "match": "unmatched",
+          "net": {
+            "direction": "unknown",
+            "previous": null,
+            "current": null,
+            "delta": null,
+            "percent": null
+          },
+          "gross": {
+            "direction": "unknown",
+            "previous": null,
+            "current": null,
+            "delta": null,
+            "percent": null
+          }
+        }
+      ],
+      "comparison_observed_at": "2026-10-26T20:29:13.826Z"
+    },
+    "M3": {
+      "run_id": "31d73ff3-03db-4eba-a5cf-a602ca065747",
+      "state": "completed",
+      "read_tool_id": "00968c8f-a9e6-4114-9847-295c86dc4ea7",
+      "same_preparation_request_original_attachment_result_hash_and_OCR_attempt": true,
+      "extraction_deep_equal_M2_M3": true,
+      "comparison_observed_at": "2026-10-26T20:37:22.367Z",
+      "comparison_timestamp_later_than_M2": true,
+      "no_additional_invoice_OCR_stage": true,
+      "state_and_reload_receipts_byteidentical_sha256": "120e7ec4fc496e2dad5cfefdfd4460aeac7d14b69fe2cae9bc453eec21f75310"
+    },
+    "proposals": 0,
+    "executions": 0,
+    "business_effects": 0,
+    "P1_successful_run_budget_sum": 7,
+    "chat_global_run_budget_counter_sum_including_history": 18,
+    "chat_global_invoice_OCR_stage_attempts_including_historical_PNG": 2,
+    "actual_provider_generations": null,
+    "provider_internal_calls": null,
+    "provider_cost": null,
+    "historical_UI_stage_Gemini_ACK": null,
+    "ACK_limit": "UI SQL projection retains no independent historical Gemini ACK receipt and yields null. Compiled completion policy, subsequent admission and final quiet are distinct evidence. Explicit MCP qualification ACK and NR26 recovery ACK apply only to their own attempts."
+  },
+  "protected_final_readback": {
+    "receipt": "receipts/antigravity-P1-final-domain-VM-r01.json",
+    "status": "final_domain_and_runtime_verified",
+    "domain_comparison": {
+      "matches": true,
+      "baseline_tables": 40,
+      "current_tables": 40,
+      "missing": [],
+      "added": [],
+      "changed": [],
+      "schema_matches": true,
+      "exclusions": [
+        "auth_sessions",
+        "nodia_ai_*"
+      ]
+    },
+    "schema_sha256": "82753ec54d69006d2850dd62173093c03086e43a37af62e2a3dba1c5da5b4b87",
+    "checks": {
+      "domain_and_schema_match": true,
+      "Server_processes_active_exact_release": true,
+      "native_epoch_unchanged": true,
+      "OCR_temporary_profiles_zero": true,
+      "configuration_unchanged": true,
+      "nginx_unchanged": true,
+      "SQL_quiet": true,
+      "native_quiet": true,
+      "Codex_pending_zero": true,
+      "backup_timers_active": true,
+      "backup_reserve_preserved": true,
+      "journal_unconfirmed_zero": true,
+      "journal_coverage_preserved": true,
+      "operator_configuration_preserved": true,
+      "backup_runner_private": true
+    },
+    "SQL_quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "native_quiet": {
+      "attempt_receipts": 0,
+      "unknown_markers": 0,
+      "temporary_directories": 0,
+      "active_native_processes": 0
+    },
+    "Codex_pending": 0,
+    "available_bytes": 3215560704,
+    "reserve_bytes": 268443676,
+    "business_table_counts": {
+      "businesses": 1,
+      "invoice_uploads": 0,
+      "invoices": 1,
+      "migrations": 30,
+      "product_logs": 0,
+      "products": 0,
+      "providers": 1
+    },
+    "SQL_business_writes_by_readers": 0,
+    "SDK_calls_by_final_domain_reader": 0
+  },
+  "history_preserved": {
+    "706_PNG_scope_cut": "cut-before-standard-PDF.json",
+    "NR26_natural_planning": {
+      "run_id": "01b56364-77e0-469d-9193-700b414edcf1",
+      "attempt_id": "98ef48c4-e89d-4f5a-9d8d-c26046abd92d",
+      "status": "failed_planning_no_OCR",
+      "CLI_exit_code": 1,
+      "CLI_result_status": "ERROR",
+      "elapsed_ms": 73741,
+      "timeout_claim": false,
+      "RPC_messages": 5,
+      "tools_list_reply_utf8_bytes": 17507,
+      "tools_call": 0,
+      "callbacks": 0,
+      "internal_cause": "not_established",
+      "normalized_error": "unclassified",
+      "normal_reconciliation_ACK_verified": true,
+      "reconcile_calls": 1,
+      "ACK_calls": 1,
+      "terminal": {
+        "engine": "agentic",
+        "attemptId": "98ef48c4-e89d-4f5a-9d8d-c26046abd92d",
+        "resourceKey": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+        "sessionGeneration": "7be67cab98524258bbe7e379b3d32227",
+        "operationRef": "98ef48c4-e89d-4f5a-9d8d-c26046abd92d",
+        "terminalProofId": "efac01fa-a51e-41e2-b5a0-626461ba3af8",
+        "processClosed": true,
+        "outcome": "abandoned_unknown",
+        "observedAt": "2026-10-26T19:14:02.518Z"
+      },
+      "protected_before_after_equal": true,
+      "witness_sha256": "cf3e3640f7f6b1b1d07b35df01de5de376be5a813903dfd32ee50cc6d3eb89f0",
+      "local_witness_copy_present": false,
+      "planning_replayed": false
+    },
+    "NR26_independent_706_Products_core_PDF": {
+      "status": "component_OCR_completed_ACK_verified",
+      "separate_attempt": "b4bc2d1c-bd61-4ce9-8f25-45e4c3d78892",
+      "fixture_exact_values_verified": true,
+      "native_start_requests": 1,
+      "ACK_calls": 1,
+      "SQL_writes": 0,
+      "UI_MCP_or_current_P1_NR26_acceptance": false
+    },
+    "standard_PDF_706_M2": {
+      "run_id": "6a1a29d6-bb29-4a3c-8416-e9cff4ad3287",
+      "state": "failed_known_before_dispatch",
+      "dispatches": 0,
+      "tools": 0,
+      "OCR": 0,
+      "native_identity_present": false,
+      "persisted_error": "nodia_ai:eligibility_changed",
+      "closed_reason": "agentic_session_unverified",
+      "all_identity_config_matches": true,
+      "signal_aborted": false,
+      "lost_lease": false,
+      "no_native_ACK_fabricated": true,
+      "same_key_admission_check_did_not_replay_inference": true
+    },
+    "qualification_harness_failures": {
+      "R01": "private layout mismatch, no start",
+      "R02": "observe completed but exact negative assertion/reason not retained; no start",
+      "R04": "stale supportsMcp=false expectation; actual fresh observation true/true and exact binding. Unknown did not automatically invalidate the same-epoch verified tuple; no start."
+    },
+    "direct_PDF_harness_R01": "plan refused before execute; Node phase/result not retained. R02 corrected UTF8 labels and retained closed diagnostic; historical failure cause not inferred."
+  },
+  "limitations": [
+    "Products catalog is empty: unmatched/unknown is expected. No current matched-product rise/fall, price write, invoice creation, proposal confirmation or execution was exercised.",
+    "Four actual numeric zeros and four unknown/null fields were deep-checked; unknown costs were not coerced to zero.",
+    "Internal analysis UUID, literal Markdown/technical comparison tokens and a model-chip encoding artifact remain visible in screenshots/AX; no hidden-ID or visual-polish claim.",
+    "PNG passed naturally only in prior706. Current P1 acceptance is standardPDF; generic adopter receipt lists a PNG requalification recommendation, not an enforced gate or a fulfilled current PNG test. Root explicitly bounded this QA to standardPDF, and no other format/MIME proof is inherited.",
+    "NR26 natural planning remains negative; a separate direct OCR success does not establish full adversarial chat resistance or repair that planning failure.",
+    "Configured models and explicit live evidence apply to the tested LOW tuple, not HIGH/all providers/all modes or future perpetual availability.",
+    "No approved knowledge/ficha/document status is changed by this evidence."
+  ],
+  "images": [
+    {
+      "path": "docs/evidence/nodia-ai-antigravity-p1-pdf-ocr-20261026-r01.png",
+      "sha256": "ba226925c6f506dbbeb0e735a56a1fd7918ba339c542d87f0c2fdec0c4586abc",
+      "bytes": 88969,
+      "visual_review_by_author": true,
+      "scope": "Current P1 after reload"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-antigravity-p1-pdf-comparison-reload-20261026-r01.png",
+      "sha256": "5ee5ed9c09364d0fd3580db956b2922dfe0f568d25ec77290f3592b4fa983d64",
+      "bytes": 103966,
+      "visual_review_by_author": true,
+      "scope": "Current P1 after reload"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-antigravity-invoice-ocr-natural-comparison-reload-20261026-r01.png",
+      "sha256": "53e35cf79e1f6708c3b87e4224c7b7605d006cd93808a3b28b0afb1b4aa1aa8a",
+      "bytes": 98235,
+      "visual_review_by_author": true,
+      "scope": "Historical706PNG after reload"
+    }
+  ],
+  "evidence_package": "ops/lab/artifacts/antigravity-invoice-ocr-final-acceptance-r01",
+  "receipt_files": {
+    "receipts/antigravity-final-before-M1-VM-r01.json": {
+      "sha256": "631c2077fe2dfef36c5b0c067b89a7701d56f366b82cbdbbe1209ae575da3690",
+      "bytes": 2595
+    },
+    "receipts/antigravity-final-core-PDF-bootstrap-VM-r01.json": {
+      "sha256": "7a4bf13a50fdfd08b84ca962c0d841c41df3165a8a472b9462357c6ffdf8adff",
+      "bytes": 195
+    },
+    "receipts/antigravity-final-core-PDF-bootstrap-VM-r02.json": {
+      "sha256": "c9c8c86ea05e95c4ceb8a92709adb4e684b07591ba110692156303a34d06eeaf",
+      "bytes": 195
+    },
+    "receipts/antigravity-final-core-PDF-execute-VM-r02.json": {
+      "sha256": "93249981b6b8d6a816dbe309c110f8000099adc295a4bc9b1bfea3182c3b5cd9",
+      "bytes": 1891
+    },
+    "receipts/antigravity-final-core-PDF-plan-VM-r01.json": {
+      "sha256": "f019f24bc1bcf3d15436d5546342400f5153847dfa25084abfe45f60c2b68a57",
+      "bytes": 226
+    },
+    "receipts/antigravity-final-core-PDF-plan-VM-r02.json": {
+      "sha256": "ef3110ef3e47a534b78add973af03fceb284ea26c3b93b463f3b83f2dd8cd51c",
+      "bytes": 165
+    },
+    "receipts/antigravity-final-domain-after-core-PDF-VM-r01.json": {
+      "sha256": "5132607a473b65b5e17832b3af0cbedceaa6623b924d26d1932f1ae8fbec61dc",
+      "bytes": 8540
+    },
+    "receipts/antigravity-final-M1-completed-VM-r01.json": {
+      "sha256": "ac7c5b39804a14ef58324eef75f2e5b1dd4c48e6fcbbfd7b2f75cd154678bac3",
+      "bytes": 6603
+    },
+    "receipts/antigravity-final-M2-completed-VM-r01.json": {
+      "sha256": "ac39e3fbe5197db04866cb3ae14086ffdf85c7e023c740dd77b32415bcc7f00c",
+      "bytes": 10914
+    },
+    "receipts/antigravity-final-M3-reload-VM-r01.json": {
+      "sha256": "f8867f285053e07ed0a23bbbd31e5b78d85b86b5fc377abf57f4d569f3db679e",
+      "bytes": 14671
+    },
+    "receipts/antigravity-final-M3-state-VM-r01.json": {
+      "sha256": "f8867f285053e07ed0a23bbbd31e5b78d85b86b5fc377abf57f4d569f3db679e",
+      "bytes": 14671
+    },
+    "receipts/antigravity-final-metadata-after-qual-failure-VM-r01.json": {
+      "sha256": "194bcc23a85084ebae11ddb99f1e102d1e3df667fe910e780d58912db00acf56",
+      "bytes": 2578
+    },
+    "receipts/antigravity-final-NR26-closed-diagnostic-VM-r01.json": {
+      "sha256": "fcb149ef3a2ca439acc1bd7dd42b8d86f8f637f56c548f45021140d17b685835",
+      "bytes": 4000
+    },
+    "receipts/antigravity-final-NR26-reconcile-execute-VM-r06.json": {
+      "sha256": "de6e4ef30e033fec74910b57e3981d4af1a812752f79c478e3aef8eb8645147e",
+      "bytes": 32852
+    },
+    "receipts/antigravity-final-NR26-reconciled-VM-r01.json": {
+      "sha256": "93bbf429e3d23a8837ee353f6df891470fb43e286b10a81929e6560edfe6ce11",
+      "bytes": 15718
+    },
+    "receipts/antigravity-final-NR26-state-VM-r04.json": {
+      "sha256": "89b5bd5b2c09491eed7957802c3c4de47e7dda7bc88d967cd722986bbd429f56",
+      "bytes": 17185
+    },
+    "receipts/antigravity-final-qual-execute-VM-r02.json": {
+      "sha256": "ff2cb1c472c78b295caecc5fce9452d9bede633450d24a509b91c6f0f7b5a435",
+      "bytes": 3259
+    },
+    "receipts/antigravity-final-qual-execute-VM-r03.json": {
+      "sha256": "00c44776f5d7b44d70e80e7fc10bf113db47d422e36db3a30e8551e44b2c5ee7",
+      "bytes": 4988
+    },
+    "receipts/antigravity-final-qual-preflight-VM-r01.json": {
+      "sha256": "7942a4892320da39ed0ca079a3a5784e433fc0ec0344c543ab683763ae61223e",
+      "bytes": 99
+    },
+    "receipts/antigravity-final-qual-preflight-VM-r04.json": {
+      "sha256": "3a74a36333fbc5c95af9b99b521f2a34b2d2205688d75c9e774f64fc09857039",
+      "bytes": 3542
+    },
+    "receipts/antigravity-final-standard-PDF-failure-VM-r01.json": {
+      "sha256": "42d1602fd88eef6224e0aa9be81b9ac5e52876fbcfc53c61b346ff27f1afeeb2",
+      "bytes": 810
+    },
+    "receipts/antigravity-final-standard-PDF-M1-state-VM-r01.json": {
+      "sha256": "6ea3743ecba91ee1ec2589c264e072ab3ccaf3e7f3ede627617a13a2d11bb63e",
+      "bytes": 19979
+    },
+    "receipts/antigravity-final-standard-PDF-M2-state-VM-r01.json": {
+      "sha256": "6ea3743ecba91ee1ec2589c264e072ab3ccaf3e7f3ede627617a13a2d11bb63e",
+      "bytes": 19979
+    },
+    "receipts/antigravity-final-standard-PDF-M2-state-VM-r02.json": {
+      "sha256": "0bb86f7450ca09a3b82df7bea60e2bfb78af4eee7518147beab0baecffdfd170",
+      "bytes": 20893
+    },
+    "receipts/antigravity-final-standard-PDF-worker-diagnostic-VM-r02.json": {
+      "sha256": "22ca51c3a6c7b3ce9583ac7daf858f69109bd08a441d90729366b1caf2a5dbf8",
+      "bytes": 1555
+    },
+    "receipts/antigravity-option-identity-adopt-execute-VM-r02.json": {
+      "sha256": "205faf980c643020b019bcf0eff9b946997dc8e7eba208f09c46436852e9046c",
+      "bytes": 25496
+    },
+    "receipts/antigravity-option-identity-build-execute-VM-r01.json": {
+      "sha256": "cc4d43a2cc5fb98ec65981a314ac4722ccc988f00e83a00c62136509e2844dd2",
+      "bytes": 47821
+    },
+    "receipts/antigravity-P1-final-domain-VM-r01.json": {
+      "sha256": "a7db1483bb21dc3b43594128417d92604212fa706fdad18c0ca3d43339c660f8",
+      "bytes": 8540
+    },
+    "receipts/antigravity-P1-metadata-VM-r01.json": {
+      "sha256": "c191e2584a883629b6b85ca15d280933963c8bf84e575b2e2addcfb0b08d896a",
+      "bytes": 2578
+    },
+    "receipts/antigravity-P1-PDF-M1-state-VM-r01.json": {
+      "sha256": "e0e922174e3037816331989c45e721d226ad1e18a2de5701c28a39869548f9d7",
+      "bytes": 24648
+    },
+    "receipts/antigravity-P1-PDF-M2-state-VM-r02.json": {
+      "sha256": "15f70e5cc8c88727fabef7c2f6400630ed421bd9bed82893b3cb3201e0e6ae64",
+      "bytes": 28957
+    },
+    "receipts/antigravity-P1-PDF-M3-reload-VM-r01.json": {
+      "sha256": "120e7ec4fc496e2dad5cfefdfd4460aeac7d14b69fe2cae9bc453eec21f75310",
+      "bytes": 32712
+    },
+    "receipts/antigravity-P1-PDF-M3-state-VM-r01.json": {
+      "sha256": "120e7ec4fc496e2dad5cfefdfd4460aeac7d14b69fe2cae9bc453eec21f75310",
+      "bytes": 32712
+    },
+    "receipts/antigravity-P1-qual-execute-VM-r01.json": {
+      "sha256": "3a325c4ac830ff897238fb1c7ebe9761a86cefd1b7e951ca6008e0d63eef832d",
+      "bytes": 4985
+    }
+  },
+  "operators": {
+    "Root": "All real VM/UI/provider/build/adopt operations and explicit same-key admission checks",
+    "this_author": "Local selective code/tests, read-only copies/hash/deep checks and visual review only; no VM/SDK/browser/provider calls"
+  }
+}

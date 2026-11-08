@@ -44,12 +44,12 @@ describe("Home", () => {
             modules: [
               {
                 key: "users",
-                link: "/settings/users",
+                link: "/users",
                 translates: [{ key: "key", es: "Usuarios", en: "Users" }],
               },
               {
                 key: "roles",
-                link: "/settings/roles",
+                link: "/roles",
                 translates: [{ key: "key", es: "Roles", en: "Roles" }],
               },
             ],
@@ -141,7 +141,7 @@ describe("Home", () => {
             modules: [
               {
                 key: "businesses",
-                link: "/tools/business",
+                link: "/business",
                 translates: [{ key: "key", es: "Mis Negocios", en: "My Businesses" }],
               },
             ],

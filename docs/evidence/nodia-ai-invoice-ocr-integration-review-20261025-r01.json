@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T02:02:22.725313+00:00",
+  "status": "implemented_locally_unpublished_not_deployed",
+  "scope": "Conversational reuse of Products OCR with explicit commercial supplier and reusable authorized comparisons",
+  "server": {
+    "offline_build_exit": 0,
+    "focal_tests": {
+      "passed": 412,
+      "files": 15
+    },
+    "lint_exit": 0,
+    "nest_packaged_contracts": [
+      "common-schema",
+      "invoice-ocr"
+    ],
+    "catalog_audit": "passed for existing published corpus; does not publish the new OCR capability",
+    "review_cohort": "Full current checkout snapshot, including unrelated ongoing access/privacy changes; not a selective deployment package",
+    "earlier_build_failures": "Preserved in .tmp logs: metadata limits were repaired; an earlier snapshot with two restored sources became stale after concurrent unrelated registry updates. Final snapshot has all 31 pinned implementation sources matching."
+  },
+  "knowledge_review_build": {
+    "release_id": "f872a8e735bdfbaf81825ab1eec47204040424f0c038260592ec0049799604cf",
+    "documents": 40,
+    "fragments": 42,
+    "capabilities": 151,
+    "new_ocr_capability_exposed": false,
+    "approval_written": false
+  },
+  "sources": [
+    {
+      "path": "nodia-server/nest-cli.json",
+      "sha256": "78448d5cd4b562eb77d211dea7e4bdb7e9becaf070574bcf40ed472b4095ed51"
+    },
+    {
+      "path": "nodia-server/src/ai-provider/use-case/execute-codex-invoice.use-case.ts",
+      "sha256": "2c7b94774f5e89f3996f00227d8f11ab1496e10ac09e208c3bcdf7e6da5618a5"
+    },
+    {
+      "path": "nodia-server/src/common/ai/api-invoice-contract.ts",
+      "sha256": "8d60bcab0dfe6e56c9e10c46249dbce9d135555c660089c9832d5fdb23727ba8"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/invoice-native-runtime.ts",
+      "sha256": "d35e36d32b50cc76c4f66dab777edb094b0b2de7cca9fae85d3c380623b692f5"
+    },
+    {
+      "path": "nodia-server/src/common/ai/gemini.service.ts",
+      "sha256": "a5046c08a8ed2eaf5845cb7cdf727c7ab2779271eaacb267557f4d98d21e5531"
+    },
+    {
+      "path": "nodia-server/src/common/ai/invoice-extraction.ts",
+      "sha256": "5693a22963c990dae55a70a0defbd12bb426cb297691bb63f4285a12b46362d3"
+    },
+    {
+      "path": "nodia-server/src/invoice/invoice-analysis-response.ts",
+      "sha256": "8044dca594761b496d33b31b8816859587384109047682196846ff895daf7ceb"
+    },
+    {
+      "path": "nodia-server/src/invoice/use-case/analyze-invoice.use-case.ts",
+      "sha256": "26437bcba8212945182a890b86e9b9d7db6c248e2cc51e1d0fa8a67012de90a5"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/nodia-ai-processing.module.ts",
+      "sha256": "20b4b5cc94de8e9d8d7ef8268900386c4a08fe4037d3e8991733b10df20d17cb"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts",
+      "sha256": "81cf95911460986df1f739e8ec9d5bc5daa3d183e232e36559f199eee1187265"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.ts",
+      "sha256": "a52014d7ef10280c0bec2d35803e4b14a2cd16bd67dbafc6df4750804a047a96"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+      "sha256": "a57d473c04d2a7b7c2f5c33d993e110417224c5389b9d4222e49a8b1ff954094"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-conversation/use-case/admit-nodia-ai-message.use-case.ts",
+      "sha256": "a64c1081f49fc4244fae96da79d7872e1ab1c1828f8ad2fd12828da405130685"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-conversation/use-case/observe-nodia-ai-eligibility.use-case.ts",
+      "sha256": "4e8d473b447998a263f2ba0312ee659a02f61260f2ab05117b4eac3843bdedaf"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/adapters/products-invoice-ocr.adapter.ts",
+      "sha256": "2424a48b9eafa4d5d3c9d3e8c2800e31f40a61e27ae55affd2ae8e2f206a801c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/compare-invoice-prices.ts",
+      "sha256": "e60addafae492d44df1dad74033ac5c045375862ce1662250fb9e7026ad1355d"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/contracts/invoice-ocr.json",
+      "sha256": "daf9d297054173c2c3c794bfc8a1cb5338256c879d8ada2058ab3b1c0065c7c5"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/format-invoice-ocr-result.ts",
+      "sha256": "b6c2eddc7e64a7991f4d798584ebb2eb6f99285ace4e2193a705b741ade83e72"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/invoice-ocr-delivery.ts",
+      "sha256": "6bff13d02de42295598e8d2614223bf7acfd636748c53e2c124ebbb9198faa72"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/nodia-ai-invoice-ocr.module.ts",
+      "sha256": "92fb32ce37cd534d10e7109462a3e42162cfcc8c5b164f3e846f38c998f713a4"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/types/invoice-ocr-port.ts",
+      "sha256": "0ec731dca2f9d09793709ae5a08dc36c158f0187b9eae804119e526511a8c93a"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/types/invoice-ocr-references.ts",
+      "sha256": "3741e9f2e52574dd17aaf68488b63111b3ba6438337aff48b2b16df3b97b9d10"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/types/invoice-ocr-state.ts",
+      "sha256": "98df6d4b81a95a28ce5351c72affba459bb39f947bba21ea030e179029d7de35"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/use-case/build-nodia-ai-invoice-ocr-tool.use-case.ts",
+      "sha256": "5b250f4ac1a5fdee1e8a8692ed6079b3564c176f06657dc11ba45cd03647eb54"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/use-case/process-nodia-ai-invoice-ocr-stage.use-case.ts",
+      "sha256": "6932f6f3442bec6da3d655e74786211f1a9d5d57acf75b833b54e77a6c0b1277"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-ocr/use-case/snapshot-nodia-ai-invoice-ocr.use-case.ts",
+      "sha256": "4f645c9b8587c80e01dba4275327f8a8289ee20b90b0eb66dc4933c17cc7bc15"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.ts",
+      "sha256": "a856c4d4d0211cc8f372f21e7a66dee0c73f771d8fe23c2e85da50175a1a8fc8"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-tools/nodia-ai-tool-registry.module.ts",
+      "sha256": "366f47d4346ca0ec18ad65a885b30896d520ef94dd3321b700304773d1c9f6de"
+    }
+  ],
+  "independent_evidence": [
+    {
+      "path": "docs/evidence/nodia-ai-invoice-ocr-native-validation-20261025-r01.json",
+      "sha256": "f1036a69b60ca58e2202747c5e3d85fb36edd8d584628ebf2571228b0d25bac3"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-invoice-ocr-client-validation-20261025-r01.json",
+      "sha256": "3acba5ff274a64bb3fbe7853b42a4fe5d386ab208bb70b075f769fc809ffc976"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-invoice-ocr-workflow-validation-20261025-r01.json",
+      "sha256": "7f0d9c19e59780d01fb9466b6dcd0dfc6971e4a48bf590b857f69b692c7d57b6"
+    }
+  ],
+  "sql_plan": {
+    "schema_version": 1,
+    "check": "invoice_ocr_references_sql_plan",
+    "sql_sha256": "7e566d8630b6afc6b1b62badb972ccdad6f97c06a2c4a0c11513c39992a627d0",
+    "read_only": true,
+    "explain_passed": true,
+    "SDK_requests": 0,
+    "provider_generations": 0,
+    "domain_writes": 0
+  },
+  "sql_limit": "EXPLAIN without ANALYZE validates SQL syntax/schema on the VM; it does not prove row authority, concurrency or business effects",
+  "log_fingerprints": {
+    "server-build-r02.log": "0cd23d80d5242aeaafc099a34a0b0b523ae31f18dacb79975dc9c1d69e57b3d9",
+    "server-focal-final.log": "769b78d61c816e66604d2c9b6684c604d309c3fa07b62474eef15073ee1ad12f",
+    "server-lint-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "runtime_actions": {
+    "deployment": false,
+    "migrations": 0,
+    "business_writes": 0,
+    "provider_generations": 0,
+    "SDK_requests": 0
+  },
+  "remaining": [
+    "Human approval of the exact new feature content before publication (contract52)",
+    "Selective release packaging, adoption and real chat/provider acceptance after publication authorization",
+    "Real concurrent database/DI and durable recovery acceptance beyond isolated unit cases",
+    "Existing Gemini Agentic availability and other open AI36/AI38 gates; no full NodiaAI completion claimed"
+  ],
+  "last_known_provider_evidence": "docs/evidence/nodia-ai-c03-agentic-observe-timeouts-20261025-r01.json"
+}

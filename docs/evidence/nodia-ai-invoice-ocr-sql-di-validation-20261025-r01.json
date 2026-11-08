@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "recorded_on": "2026-10-25",
+  "recorded_at_utc": "2026-10-26T02:39:07Z",
+  "status": "internal_SQL_DI_integration_passed_not_inference_or_adoption",
+  "source": "Real isolated VM PostgreSQL/Nest validation executed by the root operator; consolidated offline by publication_docs",
+  "scope": "Real Nest dependency composition and SQL authority/locking for prepare, supplier-turn request and private recovery; planner provenance is synthetic",
+  "successful_receipt": {
+    "path": ".tmp/invoice-ocr-release-r01/sql-di-VM-receipt-r03.json",
+    "sha256": "349daababcd06ec3bee6f2e1a0fc822ebab8de9e98136564fb526ed0ee951828",
+    "bytes": 2053
+  },
+  "receipt": {
+    "status": "passed",
+    "configured_database_used": false,
+    "active_runtime_changed": false,
+    "archive_sha256": "b3e2fbbde4f8a5e8de4fda533fd1c4761604eab3dd1e8d46f17ebc7db502f47f",
+    "exit": 0,
+    "stdout_sha256": "9406fac70fa5fec130dfae7c45b674b74d4151de234e883cbf0de65c0b8becda",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "container_inventory_preserved": true,
+    "native_epoch_preserved": true,
+    "test": {
+      "stage": "AI42-invoice-ocr-sql-di",
+      "status": "passed",
+      "configured_database_used": false,
+      "provider_generations": 0,
+      "ocr_port_calls": 0,
+      "external_calls": 0,
+      "planner": "synthetic_SQL_provenance",
+      "boundary": "real_registration_callbacks_and_SQL_not_MCP_transport",
+      "checks": 16,
+      "check_names": [
+        "Nest resolves OCR module, Processing, OCR stage and Snapshot without a DI cycle",
+        "prepare persists awaiting_supplier without OCR",
+        "pending analysis is recovered privately before the supplier turn",
+        "foreign commercial supplier cannot consume the preparation",
+        "new turn requests the same original without reattachment and freezes commercial zero/config",
+        "repeated same request identity preserves one completed receipt",
+        "throughSeq excludes the future supplier decision even when its preparation is older",
+        "current bound exposes only the scoped request hint, no extraction or private configuration",
+        "another actor cannot recover references from an owned chat",
+        "business revocation immediately removes private references",
+        "unknown OCR intent remains visible as a hint without being replayable",
+        "concurrent requests use two real PostgreSQL connections",
+        "second production verification actually waits for the preparation lock",
+        "exactly one concurrent consumer commits and the loser cannot create an OCR request",
+        "neither sequential nor concurrent preparation reserves an OCR dispatch budget",
+        "all preparation/recovery/concurrency checks perform zero OCR, external I/O and business writes"
+      ],
+      "cleanup_complete": true
+    },
+    "test_overlay_sha256": "c15d0548eebc76b5b091c33faa0b8d391dddbcb44275ec133a1deef8dd244741"
+  },
+  "maintained_test": {
+    "path": "nodia-server/test/nodia-ai-invoice-ocr.integration.mjs",
+    "sha256": "c15d0548eebc76b5b091c33faa0b8d391dddbcb44275ec133a1deef8dd244741",
+    "bytes": 20048
+  },
+  "previous_negative_attempts": [
+    {
+      "receipt": {
+        "path": ".tmp/invoice-ocr-release-r01/sql-di-VM-receipt-r01.json",
+        "sha256": "ac5b2825c38015aa64a9ee12286b86231edbeb1d8c0b74e01a0a437d8976f793",
+        "bytes": 986
+      },
+      "result": {
+        "status": "failed",
+        "configured_database_used": false,
+        "active_runtime_changed": false,
+        "archive_sha256": "b3e2fbbde4f8a5e8de4fda533fd1c4761604eab3dd1e8d46f17ebc7db502f47f",
+        "exit": 1,
+        "stdout_sha256": "b264246fcc8a52aafe70ce673d4525b2cc25e0cc5c74cadfd18c36448603a3c2",
+        "stderr_sha256": "3dd70497aadc251acefdbe57dd55ee1ca69d3a5c140e248dd1f7877de768d29d",
+        "container_inventory_preserved": true,
+        "native_epoch_preserved": true,
+        "test": {
+          "stage": "AI42-invoice-ocr-sql-di",
+          "status": "failed",
+          "configured_database_used": false,
+          "provider_generations": 0,
+          "ocr_port_calls": 0,
+          "external_calls": 0,
+          "planner": "synthetic_SQL_provenance",
+          "boundary": "real_registration_callbacks_and_SQL_not_MCP_transport",
+          "checks": 1,
+          "check_names": [
+            "Nest resolves OCR module, Processing, OCR stage and Snapshot without a DI cycle"
+          ],
+          "cleanup_complete": true,
+          "error": {
+            "name": "QueryFailedError",
+            "message": "null value in column \"sort_order\" of relation \"modules\" violates not-null constraint"
+          }
+        }
+      },
+      "classification": "isolated_fixture_seed_failure_not_provider_or_active_runtime_failure",
+      "explanation": "Synthetic fixture seed omitted required modules.sort_order; failed before prepare/request checks.",
+      "inference_replay": false,
+      "note": "No inference occurred in these attempts; R03 is a separate corrected isolated test, not replay of an unknown OCR/provider operation."
+    },
+    {
+      "receipt": {
+        "path": ".tmp/invoice-ocr-release-r01/sql-di-VM-receipt-r02.json",
+        "sha256": "5e059cb19b74ea8a1b03c8fe376a176bbdb25b45f2047bc2aea226c192924595",
+        "bytes": 1103
+      },
+      "result": {
+        "status": "failed",
+        "configured_database_used": false,
+        "active_runtime_changed": false,
+        "archive_sha256": "b3e2fbbde4f8a5e8de4fda533fd1c4761604eab3dd1e8d46f17ebc7db502f47f",
+        "exit": 1,
+        "stdout_sha256": "13f30b913983ca11fa722cbc036a84dd8c845631d6029bb0260eaf6580fbb06a",
+        "stderr_sha256": "21a1aaabc708c87094cb147b33df6186af29516a9c4c70772ee3882abd072d06",
+        "container_inventory_preserved": true,
+        "native_epoch_preserved": true,
+        "test": {
+          "stage": "AI42-invoice-ocr-sql-di",
+          "status": "failed",
+          "configured_database_used": false,
+          "provider_generations": 0,
+          "ocr_port_calls": 0,
+          "external_calls": 0,
+          "planner": "synthetic_SQL_provenance",
+          "boundary": "real_registration_callbacks_and_SQL_not_MCP_transport",
+          "checks": 1,
+          "check_names": [
+            "Nest resolves OCR module, Processing, OCR stage and Snapshot without a DI cycle"
+          ],
+          "cleanup_complete": true,
+          "error": {
+            "name": "QueryFailedError",
+            "message": "new row for relation \"nodia_ai_attachments\" violates check constraint \"nodia_ai_attachments_storage_key_check\""
+          }
+        },
+        "test_overlay_sha256": "d847f425ad2de677cb15431d0ef0e97e38490b4d7bec54a7255faa9d3de0718e"
+      },
+      "classification": "isolated_fixture_seed_failure_not_provider_or_active_runtime_failure",
+      "explanation": "Synthetic fixture attachment storage key violated the existing check constraint; failed before prepare/request checks.",
+      "inference_replay": false,
+      "note": "No inference occurred in these attempts; R03 is a separate corrected isolated test, not replay of an unknown OCR/provider operation."
+    }
+  ],
+  "proved_boundaries": {
+    "real_Nest_OCR_and_Processing_composition": true,
+    "real_two_connection_PostgreSQL_wait_verified_by_pg_blocking_pids": true,
+    "single_consumer_transaction_commit": true,
+    "prepare_request_same_original_in_later_turn_without_reattachment": true,
+    "commercial_zero_and_configuration_snapshot": true,
+    "private_references_owner_business_revocation_through_sequence_checks": true,
+    "configured_database_used": false,
+    "active_runtime_changed": false,
+    "container_inventory_preserved": true,
+    "native_epoch_preserved": true,
+    "disposable_fixture_cleanup_complete": true,
+    "provider_generations": 0,
+    "OCR_port_calls": 0,
+    "external_calls": 0,
+    "operational_or_external_business_writes": 0
+  },
+  "limitations": [
+    "This is internal SQL/DI integration, not a live MCP/planner transport or an invoice OCR inference.",
+    "Fixture seed and transaction writes occur only in disposable PostgreSQL; zero writes is not claimed for that synthetic database.",
+    "No original-storage/R2 or real provider credentials/session operation was exercised.",
+    "The assertions cover the listed two-connection preparation-consumption race; they do not establish all workflow concurrency or recovery outcomes.",
+    "No runtime deployment/adoption, provider/MIME/account acceptance, confirmed Product/invoice/stock effects, C03 acceptance or global AI-36/AI-38 closure is inferred."
+  ],
+  "hash_graph_note": "This evidence contains no feature-document content/file hash and does not depend on approval metadata; the feature may reference it without a hash cycle."
+}

@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import type { EntityManager } from 'typeorm';
+import { assertCoreAuthorityTransaction } from '../authorization/core-authority-transaction.js';
+import {
+  nextModuleGroupSortOrder,
+  nextModuleSortOrder,
+} from '../module-order/next-sort-order.js';
 import {
   NODIA_AI_MODULE_KEY,
   NODIA_AI_MODULE_ROUTE,
@@ -10,15 +15,31 @@ export class NodiaAiNavigationService {
   async register(
     manager: EntityManager,
   ): Promise<{ group_id: string; module_id: string }> {
+    assertCoreAuthorityTransaction(manager);
+    const [existingGroup] = await manager.query<
+      { id: string; sort_order: number }[]
+    >('SELECT id,sort_order FROM module_groups WHERE key=$1', ['tools']);
+    const groupOrder =
+      existingGroup?.sort_order ?? (await nextModuleGroupSortOrder(manager));
     const [group]: { id: string }[] = await manager.query(
-      `INSERT INTO module_groups(key,icon,is_active) VALUES ('tools','BuildOutlined',true)
+      `INSERT INTO module_groups(key,icon,is_active,sort_order) VALUES ('tools','BuildOutlined',true,$1)
        ON CONFLICT(key) DO UPDATE SET key=EXCLUDED.key RETURNING id`,
+      [groupOrder],
     );
+    const [existingModule] = await manager.query<
+      { id: string; module_group_id: string; sort_order: number }[]
+    >('SELECT id,module_group_id,sort_order FROM modules WHERE key=$1', [
+      NODIA_AI_MODULE_KEY,
+    ]);
+    const moduleOrder =
+      existingModule?.module_group_id === group.id
+        ? existingModule.sort_order
+        : await nextModuleSortOrder(manager, group.id);
     const [module]: { id: string }[] = await manager.query(
-      `INSERT INTO modules(key,module_group_id,link,icon,is_active) VALUES ($1,$2,$3,'AutoAwesomeOutlined',true)
+      `INSERT INTO modules(key,module_group_id,link,icon,is_active,sort_order) VALUES ($1,$2,$3,'AutoAwesomeOutlined',true,$4)
        ON CONFLICT(key) DO UPDATE SET module_group_id=EXCLUDED.module_group_id,
-         link=EXCLUDED.link,updated_at=now() RETURNING id`,
-      [NODIA_AI_MODULE_KEY, group.id, NODIA_AI_MODULE_ROUTE],
+         sort_order=EXCLUDED.sort_order,link=EXCLUDED.link,updated_at=now() RETURNING id`,
+      [NODIA_AI_MODULE_KEY, group.id, NODIA_AI_MODULE_ROUTE, moduleOrder],
     );
     for (const [entity, id, es, en] of [
       ['module_groups', group.id, 'Herramientas', 'Tools'],

@@ -81,7 +81,7 @@ mainInstance.defaults.adapter = async request => {
 };
 useAuthStore.getState().login({token:"synthetic-qa-only-not-a-real-credential",user:{id:"90000000991",name:"Synthetic QA"},expiresAt:Date.now()+3600000});
 const reset=()=>{failList=false;failPrepare=false;failConfirm=false;void queryClient.invalidateQueries();};
-createRoot(document.getElementById("root")!).render(<QueryClientProvider client={queryClient}><MemoryRouter initialEntries={[`/tools/nodia-ai?chat=${CHAT_ID}`]}><MUIProvider>
+createRoot(document.getElementById("root")!).render(<QueryClientProvider client={queryClient}><MemoryRouter initialEntries={[`/nodia-ai?chat=${CHAT_ID}`]}><MUIProvider>
   <Box sx={{p:2,display:"flex",flexWrap:"wrap",gap:1}}><Typography sx={{width:"100%"}}>QA SINTÉTICO AI-33 · SIN BD NI PROVEEDOR / NO DATABASE OR PROVIDER</Typography>
     <Button onClick={()=>void i18n.changeLanguage("es")}>ES</Button><Button onClick={()=>void i18n.changeLanguage("en")}>EN</Button><Button onClick={()=>useThemeStore.setState({themeType:"light"})}>Claro / Light</Button><Button onClick={()=>useThemeStore.setState({themeType:"dark"})}>Oscuro / Dark</Button>
     <Button onClick={()=>{failList=true;void queryClient.invalidateQueries();}}>Fallo lista</Button><Button onClick={()=>{failPrepare=true;}}>Fallo preparación</Button><Button onClick={()=>{failConfirm=true;}}>Fallo confirmación</Button><Button onClick={reset}>Restablecer fallos</Button>

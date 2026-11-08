@@ -1,0 +1,323 @@
+{
+  "schema": "ai-topbar-manual-refresh/1",
+  "status": "IMPLEMENTED_DEPLOYED_AND_VERIFIED_SELECTED_SCOPE",
+  "requested_behavior": "Manual refresh adjacent to authenticated AI mode indicators",
+  "runtime": {
+    "manifest_sha256": "40612459a49e465df9a6b8d5a2c5a09538e0548d49869eed4ed2d33d3e1000f0",
+    "Nginx_sha256": "901b0b83fb2b3a72ed9f0fa171f9e3071bf615b9d2bf53883a283b1972ccf7bf",
+    "current_outputs": 185,
+    "activation_executions": 1,
+    "Nginx_reloads": 1,
+    "Server_Native_SDK_preserved": true,
+    "timers_flags_auth_environment_preserved": true
+  },
+  "source": {
+    "path": "ops/lab/artifacts/ai-topbar-manual-refresh-20261106-r01/source-freeze.json",
+    "bytes": 1312,
+    "sha256": "8ae7316b175d3e9e1b65f12a73051b8d7ffc20e9bb638320832afe9bc2821734"
+  },
+  "validation": {
+    "path": "ops/lab/artifacts/ai-topbar-manual-refresh-20261106-r01/validation-code.json",
+    "bytes": 905,
+    "sha256": "4c82a22c7e9db929c02bc6c30c6e9118fcdd8ba5f306cfb82a29ada0a3bf9021"
+  },
+  "checks": {
+    "unit_passed": 17,
+    "unit_files": 2,
+    "typecheck_exit": 0,
+    "eslint_exit": 0,
+    "isolated_production_build": true,
+    "operator_tests": 5,
+    "inherited_inputs_identical": 1394,
+    "production_overlays": 3,
+    "new_dependencies": 0
+  },
+  "adoption": {
+    "path": "ops/lab/artifacts/ai-topbar-manual-refresh-20261106-r01/client-r32-r01/delivery.json",
+    "bytes": 9617,
+    "sha256": "aa13f03f1bd5b00984ab4d0b17c544d7e6a911d8b8508ee99866ce5edf160005"
+  },
+  "static_health": {
+    "path": "ops/lab/artifacts/ai-topbar-manual-refresh-20261106-r01/client-r32-r01/final-health.json",
+    "bytes": 21730,
+    "sha256": "545cc485e4ef1edfcccb9b2379c631ea82c965432352c20c61c429a4b360f411"
+  },
+  "browser": {
+    "schema": "ai-topbar-manual-refresh-browser/1",
+    "authenticated": true,
+    "theme": "dark",
+    "language": "es",
+    "manualRefreshClicks": 1,
+    "manualNetworkWindow": [
+      {
+        "event": "request",
+        "id": "20428.388",
+        "method": "GET",
+        "path": "/api/v1/ai-providers/health",
+        "timestamp": 379829.139667
+      },
+      {
+        "event": "responseReceived",
+        "id": "20428.388",
+        "status": 200,
+        "timestamp": 379829.171672
+      },
+      {
+        "event": "loadingFinished",
+        "id": "20428.388",
+        "timestamp": 379829.171209
+      }
+    ],
+    "successToastObserved": "Estado de IA actualizado",
+    "livePendingObserved": false,
+    "livePendingLimitation": "The health read completed before the DOM snapshot; pending/error/rapid-click behavior is verified by unit tests.",
+    "keyboardFocusReturnedToRefresh": true,
+    "measurements": [
+      {
+        "buttons": [
+          {
+            "height": 44,
+            "name": "Laboratorio Ubuntu gemini · API key: Necesita revisión. Abrir ajustes de este modo",
+            "width": 90.671875,
+            "x": 608.078125,
+            "y": 22
+          },
+          {
+            "height": 44,
+            "name": "Laboratorio Ubuntu gemini · Agentic: Sesión disponible; no acredita inferencia. Abrir ajustes de este modo",
+            "width": 93.828125,
+            "x": 702.75,
+            "y": 22
+          },
+          {
+            "height": 44,
+            "name": "Actualizar estado de IA",
+            "width": 44,
+            "x": 800.578125,
+            "y": 22
+          }
+        ],
+        "documentWidth": 1078,
+        "group": {
+          "height": 44,
+          "width": 756.578125,
+          "x": 88,
+          "y": 22
+        },
+        "scrollWidth": 1078,
+        "viewport": 1088
+      },
+      {
+        "buttons": [
+          {
+            "height": 44,
+            "name": "Laboratorio Ubuntu gemini · API key: Necesita revisión. Abrir ajustes de este modo",
+            "width": 90.671875,
+            "x": 57.5,
+            "y": 76
+          },
+          {
+            "height": 44,
+            "name": "Laboratorio Ubuntu gemini · Agentic: Sesión disponible; no acredita inferencia. Abrir ajustes de este modo",
+            "width": 93.828125,
+            "x": 152.171875,
+            "y": 76
+          },
+          {
+            "height": 44,
+            "name": "Actualizar estado de IA",
+            "width": 44,
+            "x": 250,
+            "y": 76
+          }
+        ],
+        "documentWidth": 310,
+        "group": {
+          "height": 44,
+          "width": 278,
+          "x": 16,
+          "y": 76
+        },
+        "scrollWidth": 310,
+        "viewport": 320
+      },
+      {
+        "buttons": [
+          {
+            "height": 44,
+            "name": "Laboratorio Ubuntu gemini · API key: Necesita revisión. Abrir ajustes de este modo",
+            "width": 90.671875,
+            "x": 336.5,
+            "y": 76
+          },
+          {
+            "height": 44,
+            "name": "Laboratorio Ubuntu gemini · Agentic: Sesión disponible; no acredita inferencia. Abrir ajustes de este modo",
+            "width": 93.828125,
+            "x": 431.171875,
+            "y": 76
+          },
+          {
+            "height": 44,
+            "name": "Actualizar estado de IA",
+            "width": 44,
+            "x": 529,
+            "y": 76
+          }
+        ],
+        "documentWidth": 589,
+        "group": {
+          "height": 44,
+          "width": 557,
+          "x": 16,
+          "y": 76
+        },
+        "scrollWidth": 589,
+        "viewport": 599
+      },
+      {
+        "buttons": [
+          {
+            "height": 44,
+            "name": "Laboratorio Ubuntu gemini · API key: Necesita revisión. Abrir ajustes de este modo",
+            "width": 90.671875,
+            "x": 136.078125,
+            "y": 18
+          },
+          {
+            "height": 44,
+            "name": "Laboratorio Ubuntu gemini · Agentic: Sesión disponible; no acredita inferencia. Abrir ajustes de este modo",
+            "width": 93.828125,
+            "x": 230.75,
+            "y": 18
+          },
+          {
+            "height": 44,
+            "name": "Actualizar estado de IA",
+            "width": 44,
+            "x": 328.578125,
+            "y": 18
+          }
+        ],
+        "documentWidth": 590,
+        "group": {
+          "height": 44,
+          "width": 300.578125,
+          "x": 72,
+          "y": 18
+        },
+        "scrollWidth": 590,
+        "viewport": 600
+      }
+    ],
+    "noInferenceTriggered": true,
+    "noBusinessMutationTriggered": true,
+    "originalUserTabModified": false,
+    "viewportOverrideRestored": true
+  },
+  "browser_receipt": {
+    "path": "ops/lab/artifacts/ai-topbar-manual-refresh-20261106-r01/browser/qa-summary.json",
+    "bytes": 4407,
+    "sha256": "ba5d8716ca4ca8c977f9a2acb97f966730d78a61a4a2c738d10f1eabfe84db5d"
+  },
+  "screenshots": [
+    {
+      "path": "ops/lab/artifacts/ai-topbar-manual-refresh-20261106-r01/browser/topbar-refresh-1088.png",
+      "bytes": 66711,
+      "sha256": "a298d6057a9d958af0d04ba5ce9facf0c0c523a91d3a8aae8b7ac0229e1f535e"
+    },
+    {
+      "path": "ops/lab/artifacts/ai-topbar-manual-refresh-20261106-r01/browser/topbar-refresh-320-r02.png",
+      "bytes": 28375,
+      "sha256": "6fcadb36285e241d87cc0b5eba2bdd5c52bf5b225579fdef858febcb6f3c04ab"
+    },
+    {
+      "path": "ops/lab/artifacts/ai-topbar-manual-refresh-20261106-r01/browser/topbar-refresh-599.png",
+      "bytes": 35442,
+      "sha256": "90026bca5ce8541b2f7018b9af4c7cdf486a31d440c41f8c08e0a70a48897848"
+    },
+    {
+      "path": "ops/lab/artifacts/ai-topbar-manual-refresh-20261106-r01/browser/topbar-refresh-600.png",
+      "bytes": 46733,
+      "sha256": "de333336740a7caa1ab38ecfb746ec2fd86c1f0d21c8549a8064411f0c999933"
+    }
+  ],
+  "capture_correction": {
+    "path": "ops/lab/artifacts/ai-topbar-manual-refresh-20261106-r01/browser/mobile-capture-note.json",
+    "bytes": 401,
+    "sha256": "aa4d1e306669ac7288eae798869143a0dbcfb355af54e1fdc6348f0c9d40e993"
+  },
+  "behavior": {
+    "shared_query_key": "ai-providers-health",
+    "method": "GET",
+    "endpoint": "/api/v1/ai-providers/health",
+    "polling_stale_ms": 120000,
+    "pending_content_retained": true,
+    "pending_buttons_disabled": true,
+    "same_turn_duplicate_guard": true,
+    "cancelRefetch": false,
+    "manual_success_only_observation_updated": true,
+    "error_notification_owner": "QueryCache",
+    "visitor_mount": false,
+    "authorization_widened": false,
+    "new_inference": false,
+    "credentials_or_selection_changed": false
+  },
+  "scope_limits": [
+    "Live pending was too brief to observe; unit tests cover pending/error/rapid clicks.",
+    "Live visual verification ES/dark only; EN labels and feedback tested in unit.",
+    "Resized Chromium viewport, not physical mobile acceptance.",
+    "Health may use existing backend/provider caches and does not certify inference."
+  ],
+  "history": {
+    "initial_fake_timer_userEvent_worker_stopped_by_exact_identity": true,
+    "initial_results_preserved": true,
+    "fake_timer_click_replaced_with_act_fireEvent": true,
+    "asynchronous_query_notification_awaited_in_rapid_click_test": true,
+    "no_production_change_for_test_harness": true
+  },
+  "knowledge": {
+    "parent_revision": 21,
+    "parent_state": "draft/partial/unregistered/approval:null",
+    "approved_files": 44,
+    "approved_bytes_unchanged": true,
+    "approved_baseline": {
+      "path": "ops/lab/artifacts/ai-topbar-manual-refresh-20261106-r01/approved-bodies-before.json",
+      "bytes": 7662,
+      "sha256": "076daeaca9288c2b87551849896df67fa83e26157fcddcf5f65d2977a8c45b87"
+    },
+    "new_authority_or_publication": false
+  },
+  "edited_documents": [
+    {
+      "path": "docs/features/ai-providers/topbar-mode-health.md",
+      "bytes": 10559,
+      "sha256": "2756db69530286e52ec9a5a3c1cf27a12a7f9ce326ad82cd0645da3a3b2abb74"
+    },
+    {
+      "path": "docs/mvp/ai-provider-feature-contract.md",
+      "bytes": 49459,
+      "sha256": "4eaa7b062ca32d6da5d0462f68508f0fc90406fc9dcdbde0402e9d87bcc484e2"
+    },
+    {
+      "path": "docs/mvp/README.md",
+      "bytes": 192125,
+      "sha256": "f7bef3521607fba786ad5f984bc40dec0361ce72f9a5e446bd70258fa2f6ed75"
+    },
+    {
+      "path": "docs/mvp/00-progress.md",
+      "bytes": 363209,
+      "sha256": "7cccb65d67ecbc9a9ebe68a1775335632f90133e4cb94eb706f50e6c0a9b1fb5"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/README.md",
+      "bytes": 26085,
+      "sha256": "2986026b570795163d47e1c2d910b6c83c1bdddf87d5cbb07f1548620a49fe79"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/README.md",
+      "bytes": 105586,
+      "sha256": "6df64be8bb3a33c711834431d1cba7d572e5d268df448eda8166cecd0e213eb2"
+    }
+  ]
+}

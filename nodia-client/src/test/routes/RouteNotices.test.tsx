@@ -39,7 +39,7 @@ const context = {
     {
       module_group_key: "settings",
       translates: [],
-      modules: [{ key: "users", link: "/settings/users", translates: [] }],
+      modules: [{ key: "users", link: "/users", translates: [] }],
     },
   ],
 };
@@ -95,15 +95,15 @@ afterEach(() => {
 
 describe("authorization notices in production routes", () => {
   it.each([
-    "/tools/reservations",
-    "/tools/finances-personal",
-    "/tools/business",
-    "/tools/business/1",
-    "/settings/users",
-    "/settings/roles",
-    "/settings/actions",
-    "/settings/modules",
-    "/settings/ai-providers",
+    "/reservations",
+    "/finances-personal",
+    "/business",
+    "/business/1",
+    "/users",
+    "/roles",
+    "/actions",
+    "/modules",
+    "/ai-providers",
   ])(
     "retains the header and shows an initial failure in content on %s",
     async (path) => {
@@ -136,7 +136,7 @@ describe("authorization notices in production routes", () => {
       return response(config, { data: [] });
     });
     mainInstance.defaults.adapter = adapter;
-    openRoute("/settings/users");
+    openRoute("/users");
     await screen.findByRole("alert");
     const header = screen.getByRole("banner");
     pause = true;
@@ -180,7 +180,7 @@ describe("authorization notices in production routes", () => {
       }
       return response(config, { data: [] });
     };
-    openRoute("/settings/users");
+    openRoute("/users");
     const draft = await screen.findByRole("textbox", { name: "Unsaved draft" });
     const user = userEvent.setup();
     await user.type(draft, "Keep this draft");

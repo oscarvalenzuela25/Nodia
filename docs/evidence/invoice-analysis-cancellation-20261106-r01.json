@@ -1,0 +1,115 @@
+{
+  "schema": "invoice-analysis-cancellation-delivery/1",
+  "status": "Client_R30_active_verified",
+  "date": "2026-11-06",
+  "Client_manifest_sha256": "7a36756e446eff5210ff4fbcbd49868d8a05cea625e5f05aed4a1bae9b2185b3",
+  "Server_preserved": "R11",
+  "contract": {
+    "busy_phases": [
+      "reserving",
+      "analyzing",
+      "preparing"
+    ],
+    "disabled": [
+      "file/replacement/drop",
+      "supplier",
+      "AIconnection",
+      "mode",
+      "analyze",
+      "draft_edit/save"
+    ],
+    "cancel": "aborts local reservation/principal/history transports; preserves file/selection/last complete draft; token-bound late callback rejection",
+    "renewal": "same actor with token and sessionVersion retains current execution during credential renewal; new requests/poll require active session",
+    "remote_provider_stopped_claimed": false,
+    "durable_cancel_or_cleanup_ACK_claimed": false
+  },
+  "verification": {
+    "Client_tests_passed": 75,
+    "file_suites": 6,
+    "typecheck_exit": 0,
+    "scoped_eslint_exit": 0,
+    "isolated_build": "passed",
+    "operators": 5,
+    "Server_audit_existing_local_tests": {
+      "Vitest": 5,
+      "suites": 3,
+      "Python": 2,
+      "new_provider_calls": 0
+    },
+    "CUA_fixture": "real page/hooks, synthetic transports/auth, reservation/analysis/history cancellation and late response/new intent verified",
+    "CUA_mobile": {
+      "viewport": [
+        320,
+        892
+      ],
+      "cancel_button": [
+        210,
+        44
+      ],
+      "document_client_scroll": [
+        310,
+        310
+      ]
+    },
+    "CUA_VM": "authenticated initial importer opened read-only; no file uploaded or analysis started",
+    "production_to_provider_abort_tested": false,
+    "business_writes": 0,
+    "user_existing_job_interrupted": false,
+    "delivery_pins_verified": 34,
+    "knowledge_check_exit": 0
+  },
+  "history": "Initial harness assertion/microtask and test import-path errors corrected and retained under output; no production workaround, retries or provider fallback",
+  "references": [
+    {
+      "path": "ops/lab/artifacts/invoice-analysis-cancellation-20261106-r01/source-freeze.json",
+      "bytes": 4183,
+      "sha256": "a1e0d8c7221864324a43746d00af0389998fd6193e69de65abb2b0bae20286bc"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-analysis-cancellation-20261106-r01/unit-tests.json",
+      "bytes": 11762,
+      "sha256": "79b6577191f592e76b2a39ef47220ad3d1bacfb280ba7202679b2c0c5887477b"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-analysis-cancellation-20261106-r01/page-tests.json",
+      "bytes": 17065,
+      "sha256": "7cdb238e839043105dc7e3c633d27b51696b3eea2612e303a84671f91b9289da"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-analysis-cancellation-20261106-r01/server-audit.json",
+      "bytes": 4330,
+      "sha256": "a8dd564e11ed328214bf326920880040fcf8868f2b09d367e884c2365cf02928"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-analysis-cancellation-20261106-r01/browser/fixture-verification.json",
+      "bytes": 1226,
+      "sha256": "8193daff6737470abb478e425fa2bf4c34e3a785d0e36ba3d8be9c095c50b78b"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-analysis-cancellation-20261106-r01/browser/vm-readonly-verification.json",
+      "bytes": 663,
+      "sha256": "e8330aec9388aa76d247ac61ddabf922d14808ca18437269144d64428f8b9768"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-analysis-cancellation-20261106-r01/browser/reserving.png",
+      "bytes": 63423,
+      "sha256": "c8b3a54f94484e73731ed7a4cd585be98e01c8daeea3dd4c637d64bb98539acd"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-analysis-cancellation-20261106-r01/browser/preparing-mobile.png",
+      "bytes": 29459,
+      "sha256": "c030fb90a9ee67e176259052886c1d2380f4c2a44a196597aa3c0a352ae0fdd0"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-analysis-cancellation-20261106-r01/client-r30-r01/delivery.json",
+      "bytes": 13198,
+      "sha256": "228576425182dedf793c7165b3cc5edef8d3274ef7b3f3c40ed3bf87d5e3f69a"
+    },
+    {
+      "path": "ops/lab/artifacts/invoice-analysis-cancellation-20261106-r01/client-r30-r01/catalog.json",
+      "bytes": 9004,
+      "sha256": "76af11c7873890848b83b43e5265e70b8b34070e12b3ec7cf1a615242cc51af0"
+    }
+  ],
+  "document_status": "existing feature remains draft/partial/unregistered/approval:null; no published tool or authority changes"
+}

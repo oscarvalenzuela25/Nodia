@@ -1,3 +1,5 @@
+import { moduleRouteIncluded } from '../../authorization/canonical-module-route.js';
+import { projectHistoricalAiSnapshots } from '../../nodia-ai-conversation/use-case/historical-ai-snapshots.js';
 import {
   BadRequestException,
   Inject,
@@ -7,6 +9,7 @@ import {
 } from '@nestjs/common';
 import type { ValidateFunction } from 'ajv';
 import { createHash } from 'node:crypto';
+import type { EntityManager } from 'typeorm';
 import { lockAuthority } from '../../authorization/authority-transaction.js';
 import type { NodiaAiActorReference } from '../../nodia-ai/types/nodia-ai-authorization.types.js';
 import { AuthorizeNodiaAiConversationUseCase } from '../../nodia-ai-conversation/use-case/authorize-nodia-ai-conversation.use-case.js';
@@ -28,6 +31,12 @@ import {
 import { NODIA_AI_TOOL_COMMON_SCHEMA } from '../../nodia-ai-tools/use-case/discover-nodia-ai-tools.use-case.js';
 import { compileNodiaAiToolSchema } from '../../nodia-ai-tools/use-case/nodia-ai-tool-registry.use-case.js';
 import { NodiaAiToolRegistryUseCase } from '../../nodia-ai-tools/use-case/nodia-ai-tool-registry.use-case.js';
+import { NodiaAiReportToolsUseCase } from '../../nodia-ai-tools/use-case/nodia-ai-report-tools.use-case.js';
+import { NodiaAiToolCall } from '../../nodia-ai-run/entities/nodia-ai-tool-call.entity.js';
+import {
+  canonicalKnowledge,
+  knowledgeHash,
+} from '../../nodia-ai-context/use-case/load-nodia-ai-knowledge.use-case.js';
 import { AuthorizeNodiaAiUseCase } from '../../nodia-ai/use-case/authorize-nodia-ai.use-case.js';
 import { NodiaAiObservationService } from '../nodia-ai-observation.service.js';
 import { GetNodiaAiToolResultUseCase } from './get-nodia-ai-tool-result.use-case.js';
@@ -63,6 +72,7 @@ export class ObserveNodiaAiRunUseCase {
     private readonly registry: NodiaAiToolRegistryUseCase,
     private readonly authorize: AuthorizeNodiaAiUseCase,
     private readonly proposals: ObserveNodiaAiProposalsUseCase,
+    private readonly reports: NodiaAiReportToolsUseCase,
   ) {
     this.eventPage = compileNodiaAiToolSchema({
       sourceJson: source,
@@ -136,6 +146,29 @@ export class ObserveNodiaAiRunUseCase {
         initial.chat.id,
         'read',
       );
+      // Technical reports are not published product tools. Recheck their exact
+      // receipt and native domain authority with this same transaction manager.
+      // Preserve the reader/writer chat -> domain lock order. This is an
+      // authority-only check, without an aggregate, dispatch or nested reader.
+      const reportRefs = initial.refs.filter(
+        (ref) => permitted.has(ref.id) && this.reports.handles(ref.tool_name),
+      );
+      for (const ref of reportRefs) {
+        try {
+          await this.verifyReport(
+            manager,
+            identity,
+            chat.id,
+            chat.owner_id,
+            key,
+            ref,
+            actor.modules.map((module) => module.route),
+          );
+        } catch (error) {
+          if (!hidden(error)) throw error;
+          permitted.delete(ref.id);
+        }
+      }
       const registered = initial.refs.map((ref) =>
         this.registry.get(ref.tool_name),
       );
@@ -148,7 +181,10 @@ export class ObserveNodiaAiRunUseCase {
         manager,
       );
       initial.refs.forEach((ref, index) => {
-        if (!registered[index] || !current.allowed[index])
+        if (
+          !this.reports.handles(ref.tool_name) &&
+          (!registered[index] || !current.allowed[index])
+        )
           permitted.delete(ref.id);
       });
       const proposalRows = await this.data.proposalEvents(
@@ -208,7 +244,11 @@ export class ObserveNodiaAiRunUseCase {
       const visibility = cursorScope({
         routes: actor.modules.map((module) => module.route).sort(),
         restrictedResults: initial.refs
-          .filter((ref, index) => registered[index] && !permitted.has(ref.id))
+          .filter(
+            (ref, index) =>
+              (registered[index] || this.reports.handles(ref.tool_name)) &&
+              !permitted.has(ref.id),
+          )
           .map((ref) => ref.id)
           .sort(),
         restrictedProposals: [
@@ -244,7 +284,15 @@ export class ObserveNodiaAiRunUseCase {
       let scanned = position;
       let hasMore = rows.length > limit;
       for (const row of window) {
-        const payload = row.public_payload;
+        const payload = structuredClone(row.public_payload);
+        if (payload.kind === 'run_stage_changed') {
+          const value = payload.payload;
+          if (!value || typeof value !== 'object' || Array.isArray(value) || !value.stage || typeof value.stage !== 'object' || Array.isArray(value.stage))
+            throw new InternalServerErrorException('nodia_ai:invalid_persisted_state');
+          try { value.stage.selection = projectHistoricalAiSnapshots(value.stage.selection,
+            { schema_version: 1, enabled: false, revision: 1, target: null }).selection; }
+          catch { throw new InternalServerErrorException('nodia_ai:invalid_persisted_state'); }
+        }
         const resultRef =
           payload.payload &&
           typeof payload.payload === 'object' &&
@@ -310,6 +358,75 @@ export class ObserveNodiaAiRunUseCase {
         has_more: hasMore,
       });
     });
+  }
+  private async verifyReport(
+    manager: EntityManager,
+    identity: NodiaAiActorReference,
+    chatId: string,
+    ownerId: string,
+    runId: string,
+    ref: { id: string; tool_name: string; contract_hash: string },
+    currentRoutes: readonly string[],
+  ): Promise<void> {
+    const [isolation]: { transaction_isolation: string }[] =
+      await manager.query('SHOW transaction_isolation');
+    if (isolation?.transaction_isolation !== 'read committed')
+      throw new InternalServerErrorException(
+        'nodia_ai:invalid_persisted_state',
+      );
+    if (ref.contract_hash !== this.reports.contractHash(ref.tool_name))
+      throw new NotFoundException('nodia_ai:tool_result_not_found');
+    const call = await manager
+      .getRepository(NodiaAiToolCall)
+      .findOneBy({ id: ref.id });
+    if (
+      !call ||
+      call.run_id !== runId ||
+      call.conversation_id !== chatId ||
+      call.tool_name !== ref.tool_name ||
+      call.contract_hash !== ref.contract_hash ||
+      call.state !== 'completed' ||
+      !call.completed_at ||
+      !Number.isFinite(call.completed_at.getTime()) ||
+      !call.public_result
+    )
+      throw new NotFoundException('nodia_ai:tool_result_not_found');
+    for (const [value, maximum] of [
+      [call.arguments, this.policy.results.tool_arguments_utf8_bytes],
+      [call.public_result, this.policy.results.tool_result_utf8_bytes],
+    ] as const) {
+      if (Buffer.byteLength(JSON.stringify(value), 'utf8') > maximum)
+        throw new InternalServerErrorException(
+          'nodia_ai:invalid_persisted_state',
+        );
+    }
+    const input = this.reports.validateInput(call.tool_name, call.arguments);
+    if (knowledgeHash(canonicalKnowledge(input)) !== call.arguments_hash)
+      throw new InternalServerErrorException(
+        'nodia_ai:invalid_persisted_state',
+      );
+    const routes = call.scope_manifest.module_routes;
+    if (
+      call.scope_manifest.schema_version !== 1 ||
+      !Array.isArray(routes) ||
+      routes.some((route) => typeof route !== 'string')
+    )
+      throw new InternalServerErrorException(
+        'nodia_ai:invalid_persisted_state',
+      );
+    const authorizedRoutes = (routes as string[]).filter((route) =>
+      moduleRouteIncluded(currentRoutes, route),
+    );
+    this.reports.assertGranted(input, authorizedRoutes);
+    await this.reports.verifyResult(
+      identity,
+      call.tool_name,
+      input,
+      call.public_result,
+      manager,
+      authorizedRoutes,
+      ownerId,
+    );
   }
   private checked(page: NodiaAiJsonObject) {
     if (!this.eventPage(page))

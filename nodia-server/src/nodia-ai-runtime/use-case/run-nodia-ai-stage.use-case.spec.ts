@@ -302,7 +302,7 @@ describe('RunNodiaAiStageUseCase', () => {
   });
   it('forwards a private completion proof on a known local extraction failure without retrying the model', async () => {
     const proof: NodiaAiRuntimeTerminalProof = {
-      engine: 'web', attemptId: '8e687984-ebbd-46cd-977c-279207164d69',
+      engine: 'agentic', attemptId: '8e687984-ebbd-46cd-977c-279207164d69',
       operationRef: '8e687984-ebbd-46cd-977c-279207164d69',
       resourceKey: 'gemini-profile:' + 'a'.repeat(64), sessionGeneration: 'b'.repeat(32),
       terminalProofId: '236d31be-2cd0-4925-977f-8930be2896c2',

@@ -1,4 +1,5 @@
 import type { FC } from "react";
+import { TABLE_PANEL_RADIUS } from "../../../theme/tablePanel";
 import {
   Paper,
   Table,
@@ -156,7 +157,7 @@ export const TableSkeleton: FC<TableSkeletonProps> = ({
     <Paper
       data-testid="table-skeleton"
       sx={{
-        borderRadius: 3,
+        borderRadius: TABLE_PANEL_RADIUS,
         border: (theme) => `1px solid ${theme.palette.divider}`,
         boxShadow: "none",
         overflow: "hidden",

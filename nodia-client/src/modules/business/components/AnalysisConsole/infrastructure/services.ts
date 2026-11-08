@@ -3,7 +3,7 @@ import { mainInstance } from "../../../../../config/api";
 import { apiPath } from "../../../../../config/apiPath";
 import type { AnalyzeInvoiceParams } from "../../../infrastructure/types";
 import { snapshotSchema } from "../types";
-export type RequestedContext = Omit<AnalyzeInvoiceParams, 'file' | 'analysisId' | 'signal' | 'onUploadProgress'>;
+export type RequestedContext = Omit<AnalyzeInvoiceParams, 'file' | 'analysisId' | 'signal' | 'onUploadProgress' | 'isCurrent'>;
 export async function reserveObservation(context: RequestedContext, signal: AbortSignal) {
   const { data } = await mainInstance.post(apiPath("/invoices/analysis-observations"), context, { signal });
   return z.object({ version: z.literal(1), id: z.uuid() }).parse(data);

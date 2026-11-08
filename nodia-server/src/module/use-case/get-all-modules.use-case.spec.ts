@@ -45,7 +45,7 @@ describe('GetAllModulesUseCase', () => {
           id: '2',
           key: 'users',
           module_group_id: '1',
-          link: '/general-settings/users',
+          link: '/users',
           is_active: true,
           created_at: new Date(),
           updated_at: new Date(),

@@ -1,0 +1,8 @@
+FROM rust:1.95-slim-bookworm@sha256:6f9e63259f12e1e599296f5ecfed2bae46de4af0ee0525dd8b89c046e236d5c5
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates git pkg-config libssl-dev clang cmake make protobuf-compiler \
+    && rm -rf /var/lib/apt/lists/*
+RUN rustup component add clippy rustfmt --toolchain 1.95.0
+ENV CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0
+ENV RUSTUP_TOOLCHAIN=1.95.0
+WORKDIR /source

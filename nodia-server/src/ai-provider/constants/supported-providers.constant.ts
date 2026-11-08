@@ -35,14 +35,14 @@ export const SUPPORTED_AI_PROVIDERS: SupportedProviderDef[] = [
     name: 'Google Gemini',
     description:
       'Gemini API, sesión Web y Antigravity. El catálogo define modos configurables; disponibilidad y modelos se comprueban por canal.',
-    defaultMode: AiConnectionMode.WEB_SESSION,
-    supportedModes: [AiConnectionMode.WEB_SESSION, AiConnectionMode.API_KEY],
+    defaultMode: AiConnectionMode.AGENTIC,
+    supportedModes: [AiConnectionMode.AGENTIC, AiConnectionMode.API_KEY],
     microserviceKey: InternalMicroserviceKey.GEMINI,
-    supportedEngines: [GeminiEnginePlan.AGENTIC, GeminiEnginePlan.WEB],
-    defaultEngine: GeminiEnginePlan.WEB,
+    supportedEngines: [GeminiEnginePlan.AGENTIC],
+    defaultEngine: GeminiEnginePlan.AGENTIC,
   },
   {
     key: 'openai', name: 'OpenAI', description: 'API key y Codex Agentic por conexión. Configuración, sesión y ejecución se comprueban por separado.',
-    defaultMode: AiConnectionMode.API_KEY, supportedModes: [AiConnectionMode.API_KEY, AiConnectionMode.TOKEN_PLAN_AGENTIC],
+    defaultMode: AiConnectionMode.API_KEY, supportedModes: [AiConnectionMode.API_KEY, AiConnectionMode.AGENTIC],
   },
 ];

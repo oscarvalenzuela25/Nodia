@@ -74,8 +74,8 @@ try {
     assert.equal(response.status, status, `${method} ${path}: ${response.status} ${JSON.stringify(value)}`);
     return value;
   }
-  let [destination] = await db.query("SELECT id FROM modules WHERE link='/tools/reservations'");
-  if (!destination) [destination] = await db.query("INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/tools/reservations','synthetic_ai24_reservations' FROM modules WHERE key='nodia_ai' RETURNING id");
+  let [destination] = await db.query("SELECT id FROM modules WHERE link='/reservations'");
+  if (!destination) [destination] = await db.query("INSERT INTO modules(module_group_id,sort_order,link,key) SELECT module_group_id,(SELECT COALESCE(MAX(m.sort_order),-1)+1 FROM modules m WHERE m.module_group_id=modules.module_group_id),'/reservations','synthetic_ai24_reservations' FROM modules WHERE key='nodia_ai' RETURNING id");
   await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1),(2,$1) ON CONFLICT DO NOTHING', [destination.id]);
   const toolName = (resource, operation) => `nodia_${resource}_prepare_${operation}`;
   async function proposal(resource, operation, partial, actor = '1', expectedStatus = 'ready') {

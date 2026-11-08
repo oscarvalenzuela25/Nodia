@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
+import { GenerationWorkerSourceRegistry } from '../../ai-generation/worker-source-registry.js';
 import { RunNodiaAiExecutionUseCase } from '../../nodia-ai-execution/use-case/run-nodia-ai-execution.use-case.js';
 import { RecoverNodiaAiExecutionsUseCase } from '../../nodia-ai-execution/use-case/recover-nodia-ai-executions.use-case.js';
 import { ReportNodiaAiOperationsUseCase } from '../../nodia-ai-operations/use-case/report-nodia-ai-operations.use-case.js';
@@ -34,6 +35,7 @@ export class RunNodiaAiWorkerUseCase {
     private readonly recoverExecutions: RecoverNodiaAiExecutionsUseCase,
     @Inject(ReportNodiaAiOperationsUseCase)
     private readonly operations: Pick<ReportNodiaAiOperationsUseCase, 'execute'>,
+    @Optional() private readonly generation?: GenerationWorkerSourceRegistry,
   ) {}
   start(): void {
     if (this.started) return;
@@ -67,18 +69,17 @@ export class RunNodiaAiWorkerUseCase {
     }
   }
   private async foreground(workerId: string): Promise<void> {
-    let executionFirst = true;
+    let sourceIndex = 0;
     let claimUnavailable = false;
     while (!this.stopping) {
       let worked = false;
       try {
-        const first = executionFirst ? this.execution : this.stage;
-        const second = first === this.stage ? this.execution : this.stage;
-        worked = await first.execute(workerId, this.abort.signal);
-        if (!worked && !this.stopping)
-          worked = await second.execute(workerId, this.abort.signal);
+        const sources = [this.execution,this.stage,...(this.generation?[this.generation]:[])];
+        for(let offset=0;offset<sources.length&&!worked&&!this.stopping;offset++) {
+          worked=await sources[(sourceIndex+offset)%sources.length].execute(workerId,this.abort.signal);
+        }
         if (this.stopping) break;
-        executionFirst = !executionFirst;
+        sourceIndex=(sourceIndex+1)%sources.length;
         if (claimUnavailable) {
           this.logger.log({ event: 'nodia_ai_claim_recovered' });
           claimUnavailable = false;
@@ -103,6 +104,7 @@ export class RunNodiaAiWorkerUseCase {
         () => this.recoverExecutions.execute(),
         () => this.maintenance.execute(),
         () => this.operations.execute(),
+        () => this.generation?.recover() ?? Promise.resolve(),
       ]) {
         if (this.stopping) break;
         try { await action(); } catch { unavailable = true; }

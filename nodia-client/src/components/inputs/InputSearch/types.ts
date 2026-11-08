@@ -15,4 +15,5 @@ export type InputSearchProps = {
   onFocus?: (e: FocusEvent<HTMLInputElement>) => void;
   onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
   autoFocus?: boolean;
+  searchIconPosition?: "start" | "end";
 };

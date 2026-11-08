@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "status": "Gemini_UI_attempt_unknown_exactly_reconciled_no_OCR_acceptance",
+  "execution_date_utc": "2026-10-26",
+  "exact_reconcile_completion_utc": null,
+  "operator": "Root; unique VM/UI lane",
+  "consolidation": "Offline only; exact safe receipts copied, no runtime operation or global documentation update",
+  "runtime": {
+    "server": "/opt/nodia/releases/nodia-server-invoice-ocr-r01",
+    "server_manifest_sha256": "50ce9c572f3cf8648815afcc91ba637b0b499d5a46c9610f0c1d0c4cb38c51c9",
+    "knowledge_release": "46405d3078a9c065bc3c5c6e4f5758b71b101dd2ea06abdcb017eb6b96f8364e",
+    "client_manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+    "nginx_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac",
+    "native_epoch": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a|sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779|2026-10-26T03:06:18.949917773Z",
+    "environment_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "post_recovery_services": {
+      "nodia-api": {
+        "MainPID": "407781",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r01",
+        "ActiveState": "active"
+      },
+      "nodia-ai-worker": {
+        "MainPID": "420396",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r01",
+        "ActiveState": "active"
+      }
+    }
+  },
+  "identity": {
+    "conversation_id": "f74b6d6c-a861-4132-a168-1010bdfadf06",
+    "owner_id": "1",
+    "run_id": "f776e595-04dc-4535-ae5e-2798d9eca163",
+    "job_id": "9368fe9c-759c-4d54-9686-9736f529dc0e",
+    "attempt_id": "57cc354d-0ecb-4f6a-80d4-f01494d1a3a2"
+  },
+  "UI_attempt": {
+    "intent": "Natural invoice price-analysis request in the explicitly named synthetic laboratory business; supplier not yet selected",
+    "baseline": {
+      "messages": 0,
+      "runs": 0,
+      "attachments": 1
+    },
+    "attachment": {
+      "id": "531157b4-d7d7-4358-8d55-64466f21b963",
+      "state": "ready",
+      "byte_count": "148100",
+      "media_type": "image/png",
+      "content_hash": "0723e3c8fc45e6bbed58e91e16e7d18f55b2a1423ee007342b793f66c057d98b",
+      "interpretation_reviewed": false
+    },
+    "dispatch_budget_used": 1,
+    "native_attempts_admitted": 1,
+    "actual_provider_generations": null,
+    "provider_internal_calls": null,
+    "provider_cost": null,
+    "tool_calls": 0,
+    "OCR_stage_attempts": 0,
+    "assistant_messages": 0,
+    "before_recovery_run_state": "unknown",
+    "after_recovery_run_state": "failed",
+    "generation_replay_performed": false
+  },
+  "closed_diagnostic": {
+    "receipt": {
+      "path": "ops/lab/artifacts/invoice-ocr-gemini-ui-reconciliation-verification-r01/receipts/ui-native-diagnostic-VM-r01.json",
+      "bytes": 3752,
+      "sha256": "683ae430237b3e6242992a543ee71a0859613c3dc36b7fe45e647298d97398b9"
+    },
+    "phase": "running_cli",
+    "state": "unknown",
+    "exception_type": "TimeoutError",
+    "elapsed_ms": 119031,
+    "callbacks": 0,
+    "rpc_messages": 6,
+    "gate_verified": false,
+    "cli_stage": "prompt_received",
+    "cli_events": 2,
+    "stderr_bytes": 0,
+    "tools_list_response_utf8_bytes": 12527,
+    "tools_list_write_and_flush_completed": true,
+    "pre_ready_error_before_initialization": -32000,
+    "initial_context_utf8_bytes": 75912,
+    "used_context_utf8_bytes": 88696,
+    "maximum_context_utf8_bytes": 262144,
+    "cause_verified": false,
+    "limits": "Bridge flush is not proof of CLI/model consumption; transport indicators are not a demonstrated cause."
+  },
+  "exact_recovery": {
+    "readiness": {
+      "path": "ops/lab/artifacts/invoice-ocr-gemini-ui-reconciliation-verification-r01/receipts/exact-reconcile-readiness-VM-r01.json",
+      "bytes": 13385,
+      "sha256": "7ba7e147d27f6e1d04a364603c97a22d9b8a6c037440e9e1c904ab17de532279"
+    },
+    "execution": {
+      "path": "ops/lab/artifacts/invoice-ocr-gemini-ui-reconciliation-verification-r01/receipts/exact-reconcile-execute-VM-r01.json",
+      "bytes": 18731,
+      "sha256": "49a26ee0fbccf21e2b4a3c7ddf1d9908e81b95533b4981f78605dce6ddd85dc0"
+    },
+    "post_readback": {
+      "path": "ops/lab/artifacts/invoice-ocr-gemini-ui-reconciliation-verification-r01/receipts/ui-first-turn-reconciled-VM-r01.json",
+      "bytes": 2350,
+      "sha256": "1c3c3247f19a5b1bf5cfd865dfb7ae3fd764b9001757131309c025a5f2f624b4"
+    },
+    "result": {
+      "job_id": "9368fe9c-759c-4d54-9686-9736f529dc0e",
+      "resolved": true,
+      "cleanup_pending": false
+    },
+    "final": {
+      "jobs": 0,
+      "slots": 0,
+      "active_job_id": null,
+      "run_state": "failed",
+      "error_code": "nodia_ai:outcome_unknown"
+    },
+    "terminal": {
+      "engine": "agentic",
+      "attemptId": "57cc354d-0ecb-4f6a-80d4-f01494d1a3a2",
+      "resourceKey": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+      "sessionGeneration": "0ea0c22e7d6747f19f7ac0d96c23e585",
+      "operationRef": "57cc354d-0ecb-4f6a-80d4-f01494d1a3a2",
+      "terminalProofId": "87dd7b3c-f8b4-4e2b-8d6b-accf8d5b4245",
+      "processClosed": true,
+      "outcome": "abandoned_unknown",
+      "observedAt": "2026-10-26T04:24:56.378Z"
+    },
+    "acknowledged": true,
+    "reconcile_calls": 1,
+    "acknowledge_calls": 1,
+    "provider_generations": 0,
+    "business_SQL_writes": 0,
+    "API_state_unchanged": true,
+    "native_epoch_unchanged": true,
+    "worker_paused_and_resumed": true,
+    "protected_table_projections_equal": true,
+    "protected_table_projection_count": 58,
+    "witness": {
+      "remote_directory": "/opt/nodia/verification/invoice-ocr-ui-exact-reconcile-r01",
+      "sha256": "278d5358deee15d2030219e8bf836c4553d53c5667a58ce42ff10161d461dfdc",
+      "raw_body_exported_to_this_package": false
+    }
+  },
+  "post_snapshot": {
+    "messages": 1,
+    "runs": 1,
+    "tools": 0,
+    "jobs": 0,
+    "attempts": 0,
+    "attachments": 1,
+    "counts": {
+      "proposals": 0,
+      "executions": 0,
+      "effects": 0,
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0,
+      "unrevoked_grants": 0
+    },
+    "native_attempt_receipts": 0,
+    "native_unknown_markers": 0
+  },
+  "limits": [
+    "This is a failed UI planner attempt followed by successful exact technical recovery, not successful OCR. No prepare/request/read, extraction/comparison or commercial proposal/effect was produced.",
+    "The positive earlier MCP nonce control remains evidence for its own scope; it did not prove semantic automatic capability selection in this larger UI context.",
+    "Recovery ACK is explicitly witnessed by the compiled use cases. The later filesystem/SQL absence is corroborating readback, not the sole ACK proof.",
+    "The zero generation fields in readback/recovery describe those operations; they do not assert zero provider activity for the preceding UI attempt.",
+    "No automatic inference replay, fallback, model change or manual SQL slot release is credited.",
+    "Only the worker was paused and resumed; its PID changed deliberately. API/native image/epoch remained unchanged.",
+    "Protected snapshot equality has the operator-defined exclusions for expected technical state changes, auth sessions and heartbeats; it is not an unconditional equality claim over every SQL row.",
+    "No new MIME, C03-original, OCR, Codex/PDF, global AI-36/C05 or AI-38 acceptance. The forthcoming independent Codex case is outside this cut.",
+    "The exact recovery completion timestamp and raw remote witness are absent from supplied local receipts; neither is invented."
+  ]
+}

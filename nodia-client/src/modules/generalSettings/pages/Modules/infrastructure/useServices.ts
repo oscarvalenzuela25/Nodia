@@ -1,14 +1,19 @@
 import useAuth from "../../../../../hooks/useAuth";
-import type { AxiosError } from "axios";
+import { CanceledError, isAxiosError, isCancel, type AxiosError } from "axios";
+import { useRef, useState } from "react";
 import {
   keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
+  type MutateOptions,
 } from "@tanstack/react-query";
 import { sileo } from "sileo";
 import i18n from "../../../../../translate";
 import { authorizationKeys } from "../../../../../services/authorizationService";
+import useAuthStore from "../../../../../store/authStore";
+import { claimHttpErrorNotification } from "../../../../../config/httpFeedback";
+import { InvalidOrderResponseError } from "./orderSchemas";
 import {
   createModule,
   getModules,
@@ -18,6 +23,8 @@ import {
   updateModuleGroup,
   deleteModule,
   deleteModuleGroup,
+  moveModuleOrder,
+  moveModuleGroupOrder,
 } from "./services";
 import type {
   CreateModulePayload,
@@ -26,6 +33,9 @@ import type {
   CreateModuleGroupPayload,
   GetModuleGroupsParams,
   UpdateModuleGroupPayload,
+  MoveOrderCommand,
+  MoveModuleOrderCommand,
+  OrderMoveResult,
 } from "../types";
 
 export const moduleKeys = {
@@ -255,3 +265,110 @@ export const useDeleteModuleGroup = () => {
     },
   });
 };
+
+type OrderActor = { userId: string | null; sessionVersion: number };
+const orderActor = (): OrderActor => {
+  const state = useAuthStore.getState();
+  return { userId: state.user?.id ?? null, sessionVersion: state.sessionVersion };
+};
+const matchesOrderActor = (actor: OrderActor) => {
+  const state = useAuthStore.getState();
+  return Boolean(state.token) && state.sessionStatus === "authenticated" &&
+    state.sessionVersion === actor.sessionVersion && (state.user?.id ?? null) === actor.userId;
+};
+const sameOrderActor = (left: OrderActor | null, right: OrderActor) =>
+  left?.userId === right.userId && left?.sessionVersion === right.sessionVersion;
+
+function moveErrorMessage(error: unknown): string {
+  if (error instanceof InvalidOrderResponseError) return i18n.t("modules:ordering.invalid_response");
+  if (isAxiosError(error)) {
+    const message: unknown = error.response?.data?.message;
+    const messages = (Array.isArray(message) ? message : [message]).filter(
+      (value): value is string => typeof value === "string" && Boolean(value.trim()),
+    );
+    if (messages.length) return messages.map((value) => i18n.exists(value) ? i18n.t(value) : value).join(". ");
+    if (!error.response || error.response.status >= 500) return i18n.t("modules:ordering.uncertain");
+  }
+  return i18n.t("modules:ordering.error");
+}
+
+function useOrderMutation<TCommand extends MoveOrderCommand>(
+  send: (id: string, command: TCommand) => Promise<OrderMoveResult>,
+) {
+  const client = useQueryClient();
+  const { user, sessionVersion } = useAuth();
+  const actor = { userId: user?.id ?? null, sessionVersion };
+  const [recovery, setRecovery] = useState<OrderActor | null>(null);
+  const [recovering, setRecovering] = useState<OrderActor | null>(null);
+  const recoveryPromise = useRef<Promise<boolean> | null>(null);
+
+  const refresh = async (owner: OrderActor): Promise<boolean> => {
+    if (!matchesOrderActor(owner)) return false;
+    const results = await Promise.allSettled([
+      client.invalidateQueries({ queryKey: moduleKeys.all }, { throwOnError: true }),
+      client.invalidateQueries({ queryKey: moduleGroupKeys.all }, { throwOnError: true }),
+      client.invalidateQueries({ queryKey: authorizationKeys.all }, { throwOnError: true }),
+    ]);
+    if (!matchesOrderActor(owner)) return false;
+    const successful = results.every((result) => result.status === "fulfilled");
+    setRecovery(successful ? null : owner);
+    return successful;
+  };
+
+  type Variables = { id: string; command: TCommand };
+  type ScopedVariables = Variables & { owner: OrderActor };
+  type Options = MutateOptions<OrderMoveResult, unknown, Variables, OrderActor>;
+  const mutation = useMutation<OrderMoveResult, unknown, ScopedVariables, OrderActor>({
+    mutationFn: ({ id, command, owner }) => {
+      if (!matchesOrderActor(owner)) throw new CanceledError("Session changed");
+      return send(id, command);
+    },
+    retry: false,
+    onMutate: ({ owner }) => {
+      if (!matchesOrderActor(owner)) throw new CanceledError("Session changed");
+      if (sameOrderActor(recovery, owner)) throw new Error("modules:ordering.recovery_failed");
+      return owner;
+    },
+    onSuccess: async (result, _variables, owner) => {
+      if (!owner || !matchesOrderActor(owner)) return;
+      await refresh(owner);
+      if (!matchesOrderActor(owner)) return;
+      sileo.success({
+        title: i18n.t("modules:notifications.success_title"),
+        description: i18n.t(result.status === "moved" ? "modules:ordering.save_success" : "modules:ordering.unchanged"),
+      });
+    },
+    onError: async (error, _variables, owner) => {
+      if (!owner || !matchesOrderActor(owner) || isCancel(error)) return;
+      if (claimHttpErrorNotification(error)) sileo.error({
+        title: i18n.t("modules:notifications.error_title"),
+        description: moveErrorMessage(error),
+      });
+      await refresh(owner);
+    },
+  });
+
+  const recover = (): Promise<boolean> => {
+    if (recoveryPromise.current) return recoveryPromise.current;
+    const owner = orderActor();
+    setRecovering(owner);
+    const operation = refresh(owner).finally(() => {
+      if (recoveryPromise.current === operation) recoveryPromise.current = null;
+      setRecovering(null);
+    });
+    recoveryPromise.current = operation;
+    return operation;
+  };
+
+  return {
+    ...mutation,
+    mutate: (variables: Variables, options?: Options) => mutation.mutate({ ...variables, owner: orderActor() }, options),
+    mutateAsync: (variables: Variables, options?: Options) => mutation.mutateAsync({ ...variables, owner: orderActor() }, options),
+    recoveryRequired: sameOrderActor(recovery, actor),
+    isRecovering: sameOrderActor(recovering, actor),
+    recover,
+  };
+}
+
+export const useMoveModuleOrder = () => useOrderMutation<MoveModuleOrderCommand>(moveModuleOrder);
+export const useMoveModuleGroupOrder = () => useOrderMutation<MoveOrderCommand>(moveModuleGroupOrder);

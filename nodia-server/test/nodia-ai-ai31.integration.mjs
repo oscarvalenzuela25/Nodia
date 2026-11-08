@@ -183,9 +183,9 @@ try {
   );
   const moduleIds = new Map();
   for (const [key, route] of [
-    ['personal_finance', '/tools/finances-personal'],
-    ['businesses', '/tools/business'],
-    ['rental_reservations', '/tools/reservations'],
+    ['personal_finance', '/finances-personal'],
+    ['businesses', '/business'],
+    ['rental_reservations', '/reservations'],
   ]) {
     let [module] = await db.query(
       'SELECT id::text FROM modules WHERE link=$1',
@@ -224,9 +224,9 @@ try {
     );
   const version = (await describe.execute(identities.get('1'))).catalog_version;
   const moduleRoutes = [
-    '/tools/finances-personal',
-    '/tools/business',
-    '/tools/reservations',
+    '/finances-personal',
+    '/business',
+    '/reservations',
   ];
   const technical = reportTools.descriptors();
   check(
@@ -252,7 +252,7 @@ try {
     identities.get('1'),
     'nodia_reports_describe',
     {},
-    { allowedModuleRoutes: ['/tools/finances-personal'] },
+    { allowedModuleRoutes: ['/finances-personal'] },
   );
   check(
     'technical discovery also honors frozen run modules instead of expanding to all current assignments',
@@ -423,7 +423,7 @@ try {
     client_request_id: randomUUID(),
     selection: {
       connection_id: provider.id,
-      mode: 'token_plan_agentic',
+      mode: 'agentic',
       model_id: 'synthetic-ai31-model',
       effort_id: null,
     },

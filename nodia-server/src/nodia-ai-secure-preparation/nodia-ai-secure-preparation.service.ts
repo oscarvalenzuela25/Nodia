@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import type { EntityManager } from 'typeorm';
 import type { NodiaAiJsonObject } from '../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
-
 /** Explicit safe columns only. Ciphertext, fingerprints and native login tokens never enter a proposal. */
 @Injectable()
 export class NodiaAiSecurePreparationService {
@@ -14,7 +13,7 @@ export class NodiaAiSecurePreparationService {
     id: string,
   ): Promise<NodiaAiJsonObject> {
     const rows: NodiaAiJsonObject[] = await manager.query(
-      `SELECT p.id::text,p.name,p.is_active,p.use_api_key,p.use_token_plan_web,p.use_token_plan_agentic,c.key AS provider_key,c.is_active AS catalog_active,c.can_use_api_key,c.can_use_token_plan_web,c.can_use_token_plan_agentic FROM ai_providers p JOIN ai_provider_catalog c ON c.id=p.catalog_id WHERE p.id=$1`,
+      `SELECT p.id::text,p.name,p.is_active,p.use_api_key,p.use_agentic,c.key AS provider_key,c.is_active AS catalog_active,c.can_use_api_key,c.can_use_agentic FROM ai_providers p JOIN ai_provider_catalog c ON c.id=p.catalog_id WHERE p.id=$1`,
       [id],
     );
     if (!rows[0])

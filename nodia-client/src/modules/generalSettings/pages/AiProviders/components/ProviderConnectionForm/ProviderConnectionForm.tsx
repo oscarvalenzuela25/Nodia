@@ -26,7 +26,6 @@ import {
 const schema = z.object({
   catalogId: z.string(),
   name: z.string().trim(),
-  web: z.boolean(),
   agentic: z.boolean(),
   active: z.boolean(),
   isDefault: z.boolean(),
@@ -56,8 +55,7 @@ const ProviderConnectionForm: FC<Props> = ({
     defaultValues: {
       catalogId: provider?.catalog_id ?? provider?.catalog?.id ?? "",
       name: provider?.name ?? "",
-      web: provider?.use_token_plan_web ?? false,
-      agentic: provider?.use_token_plan_agentic ?? false,
+      agentic: provider?.use_agentic ?? false,
       active: provider?.isActive ?? true,
       isDefault: provider?.is_default ?? totalProviders === 0,
       api: provider?.use_api_key ?? false,
@@ -76,31 +74,25 @@ const ProviderConnectionForm: FC<Props> = ({
   const busy = pending || catalogQuery.isLoading || catalogQuery.isFetching;
   const submit = handleSubmit(async (values) => {
     if (busy || !catalog || catalogQuery.isError) return;
-    const web = values.web && catalog.can_use_token_plan_web === true;
     const agentic =
-      values.agentic && catalog.can_use_token_plan_agentic === true;
+      values.agentic && catalog.can_use_agentic === true;
     const api = values.api && catalog.can_use_api_key === true;
     const previous = provider?.default_mode;
     const defaultMode =
-      previous === "token_plan_web" && web
+      previous === "agentic" && agentic
         ? previous
-        : previous === "token_plan_agentic" && agentic
+        : previous === "api_key" && api
           ? previous
-          : previous === "api_key" && api
-            ? previous
-            : agentic
-              ? "token_plan_agentic"
-              : web
-                ? "token_plan_web"
-                : api
-                  ? "api_key"
-                  : null;
+          : !provider && agentic
+            ? "agentic"
+            : !provider && api
+              ? "api_key"
+              : null;
     const payload = {
       name: values.name || undefined,
       use_api_key: api,
       auto_rotate_api_keys: values.rotate,
-      use_token_plan_web: web,
-      use_token_plan_agentic: agentic,
+      use_agentic: agentic,
       default_mode: defaultMode,
       is_active: values.active,
       is_default: values.isDefault,
@@ -193,21 +185,18 @@ const ProviderConnectionForm: FC<Props> = ({
                     (item) =>
                       item.is_active !== false &&
                       (item.can_use_api_key ||
-                        item.can_use_token_plan_web ||
-                        item.can_use_token_plan_agentic),
+                        item.can_use_agentic),
                   )
                   .map((item) => ({ value: item.id, label: item.name }))}
                 onChange={(value) => {
                   field.onChange(value ?? "");
                   const next = catalogs.find((item) => item.id === value);
                   if (!next?.can_use_api_key) setValue("api", false);
-                  if (!next?.can_use_token_plan_web) setValue("web", false);
-                  if (!next?.can_use_token_plan_agentic)
+                  if (!next?.can_use_agentic)
                     setValue("agentic", false);
                   if (
                     next?.can_use_api_key &&
-                    !next.can_use_token_plan_web &&
-                    !next.can_use_token_plan_agentic
+                    !next.can_use_agentic
                   )
                     setValue("api", true);
                 }}
@@ -236,7 +225,6 @@ const ProviderConnectionForm: FC<Props> = ({
         {(
           [
             "api",
-            "web",
             "agentic",
             ...(apiEnabled ? ["rotate"] : []),
             "isDefault",
@@ -248,7 +236,7 @@ const ProviderConnectionForm: FC<Props> = ({
             control={control}
             name={
               name as
-                "api" | "web" | "agentic" | "rotate" | "active" | "isDefault"
+                "api" | "agentic" | "rotate" | "active" | "isDefault"
             }
             render={({ field }) => (
               <SwitchWrapper>
@@ -262,9 +250,8 @@ const ProviderConnectionForm: FC<Props> = ({
                       disabled={
                         busy ||
                         (name === "api" && !catalog?.can_use_api_key) ||
-                        (name === "web" && !catalog?.can_use_token_plan_web) ||
                         (name === "agentic" &&
-                          !catalog?.can_use_token_plan_agentic)
+                          !catalog?.can_use_agentic)
                       }
                     />
                   }

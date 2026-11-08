@@ -536,11 +536,11 @@ try {
 
   // Worker-style NodiaAI execution and the finance port reuse one EntityManager/commit.
   await db.query(
-    "INSERT INTO user_modules(user_id,module_id) SELECT 1,id FROM modules WHERE key='nodia_ai' OR link='/tools/finances-personal'",
+    "INSERT INTO user_modules(user_id,module_id) SELECT 1,id FROM modules WHERE key='nodia_ai' OR link='/finances-personal'",
   );
   const executor = app.get(ExecuteAuthorizedNodiaAiUseCase),
     createMovement = app.get(CreateFinanceMovementUseCase);
-  const req = { moduleRoutes: ['/tools/finances-personal'] };
+  const req = { moduleRoutes: ['/finances-personal'] };
   const Overview = await load(
     'finance-overview/use-case/get-finance-overview.use-case',
     'GetFinanceOverviewUseCase',
@@ -604,7 +604,7 @@ try {
       .count === beforeRollback.count,
   );
   await db.query(
-    "DELETE FROM user_modules WHERE user_id=1 AND module_id IN(SELECT id FROM modules WHERE link='/tools/finances-personal')",
+    "DELETE FROM user_modules WHERE user_id=1 AND module_id IN(SELECT id FROM modules WHERE link='/finances-personal')",
   );
   await assert.rejects(
     () => executor.execute(identities.get('1'), req, () => Promise.resolve()),

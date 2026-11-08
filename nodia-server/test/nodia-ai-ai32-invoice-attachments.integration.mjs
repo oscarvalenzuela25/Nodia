@@ -53,8 +53,8 @@ try {
   const prepare=compiled.get(Prepare),challenge=compiled.get(Challenge),confirm=compiled.get(Confirm),worker=compiled.get(Run),get=compiled.get(Get);
   const stage=compiled.get(Stage),claim=compiled.get(Claim),policy=compiled.get(Policy);
   const identity=identities.get('1');
-  let [module]=await db.query("SELECT id FROM modules WHERE link='/tools/business'");
-  if(!module)[module]=await db.query("INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/tools/business','synthetic_ai32_business' FROM modules WHERE key='nodia_ai' RETURNING id");
+  let [module]=await db.query("SELECT id FROM modules WHERE link='/business'");
+  if(!module)[module]=await db.query("INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/business','synthetic_ai32_business' FROM modules WHERE key='nodia_ai' RETURNING id");
   await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1) ON CONFLICT DO NOTHING',[module.id]);
   const business=randomUUID();await db.query("INSERT INTO businesses(id,owner_id,name) VALUES($1,1,'Synthetic AI32 invoices')",[business]);
   const bytes=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO/a4WQAAAAASUVORK5CYII=','base64');

@@ -57,11 +57,56 @@ function fixture() {
   return { ...f, job, step, uc, store };
 }
 describe('RecoverNodiaAiExecutionsUseCase local witness', () => {
+  it.each(['create', 'update', 'complete', 'cancel', 'discard'])(
+    'closes a retired queued sales %s without replay and releases the conversation',
+    async (operation) => {
+      const f = fixture();
+      f.step.tool_name = `nodia_sales_prepare_${operation}`;
+      expect(await f.uc.execute(undefined, 'nodia_ai:catalog_changed')).toBe(1);
+      const calls = vi.mocked(f.manager.query).mock.calls;
+      expect(
+        calls.find(([sql]) =>
+          sql.startsWith('UPDATE nodia_ai_execution_steps'),
+        )?.[1],
+      ).toEqual([
+        f.step.id,
+        'failed',
+        'nodia_ai:catalog_changed',
+        JSON.stringify({
+          schema_version: 1,
+          kind: 'local_transaction_rolled_back',
+        }),
+      ]);
+      expect(
+        calls.some(([sql]) =>
+          sql.startsWith('UPDATE nodia_ai_execution_grants SET revoked_at='),
+        ),
+      ).toBe(true);
+      expect(
+        calls.some(([sql]) =>
+          sql.startsWith(
+            'UPDATE nodia_ai_conversations SET active_job_id=NULL',
+          ),
+        ),
+      ).toBe(true);
+      expect(
+        calls.some(([sql]) =>
+          /^(INSERT INTO|UPDATE|DELETE FROM) (sales|sale_items)\b/.test(sql),
+        ),
+      ).toBe(false);
+    },
+  );
   it('does not infer a SQL rollback from a restored copy even when its dispatch fields are empty', async () => {
     const f = fixture();
-    Object.assign(f.job, { recovery_descriptor: { restore_quarantined: true } });
+    Object.assign(f.job, {
+      recovery_descriptor: { restore_quarantined: true },
+    });
     expect(await f.uc.execute()).toBe(0);
-    expect(vi.mocked(f.manager.query).mock.calls.some(([sql]) => sql.startsWith('UPDATE nodia_ai_'))).toBe(false);
+    expect(
+      vi
+        .mocked(f.manager.query)
+        .mock.calls.some(([sql]) => sql.startsWith('UPDATE nodia_ai_')),
+    ).toBe(false);
   });
   it('records known rollback only after reacquiring the SQL identity and fences the abandoned delivery', async () => {
     const f = fixture();

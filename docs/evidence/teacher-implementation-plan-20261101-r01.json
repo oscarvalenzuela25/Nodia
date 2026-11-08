@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "date": "2026-11-01",
+  "scope": "documentation_only",
+  "documents": 10,
+  "diagrams": 11,
+  "diagram_validation": "source_structure_only_not_rendered",
+  "local_links": 103,
+  "local_anchors": 13,
+  "strict_json_examples": 0,
+  "implementation_tasks": 16,
+  "task_dependencies": "acyclic",
+  "acceptance_criteria": 16,
+  "gates": 7,
+  "approved_documents_unchanged": 44,
+  "published_documents": 44,
+  "published_fragments": 46,
+  "published_capabilities": 153,
+  "candidate_release_id": "502030f2b557796c4996024c04e0c3a7c1a3a21758ee03b3d1f1253da6fde6b8",
+  "runtime_execution": false,
+  "provider_inference": false,
+  "database_migration": false,
+  "vm_deployment": false,
+  "limits": [
+    "No Teacher code, DTO runtime, SQL, UI, provider or pedagogical acceptance was executed.",
+    "Draft Teacher documents remain excluded; handoff98 is not runtime context."
+  ]
+}

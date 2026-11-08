@@ -63,7 +63,7 @@ export class DownloadNodiaAiArtifactUseCase {
       signal.throwIfAborted();
       await lockAuthority(manager, false, this.policy.timing.read_query_seconds * 1000);
       // Authenticate before looking up a private reference; no resource IDs come from a query string.
-      await this.authorize.execute(identity, { moduleRoutes: ['/tools/business'] }, manager);
+      await this.authorize.execute(identity, { moduleRoutes: ['/business'] }, manager);
       const call = await manager.getRepository(NodiaAiToolCall).findOneBy({ id: reference });
       if (!call || call.state !== 'completed' || !call.completed_at)
         throw new NotFoundException('nodia_ai:artifact_not_found');

@@ -48,37 +48,37 @@ function ExecutionPanel({ conversationId, executionId, observed = true }: { conv
             <Typography variant="body2">{t("execution.ai_provider_receipt", { id: ref.id, resource: t(`execution.ai_provider_resources.${ref.resource_key}`) })}</Typography>
             <Typography variant="caption" component="p">{t("execution.historical_receipt")}</Typography>
             <Typography variant="caption" component="p">{t("proposal.ai_provider_configuration_note")}</Typography>
-            <Actions><Button component={Link} to={nodiaAiProviderRoute(ref.resource_key, ref.id)!} disabled={busy}>{t("execution.open_ai_providers")}</Button></Actions>
+            <Actions><Button variant="contained" component={Link} to={nodiaAiProviderRoute(ref.resource_key, ref.id)!} disabled={busy}>{t("execution.open_ai_providers")}</Button></Actions>
           </Box>)}
           {step.state === "completed" && step.result_refs.filter(ref => nodiaAiCoreResources.some(resource => ref.resource_key === resource)).map(ref => <Box key={`${ref.resource_key}:${ref.id}`}>
             <Typography variant="body2">{t("execution.core_receipt", { id: ref.id, resource: t(`execution.core_resources.${ref.resource_key}`) })}</Typography>
             <Typography variant="caption" component="p">{t("execution.historical_receipt")}</Typography>
-            <Actions><Button component={Link} to={nodiaAiCoreRoute(ref.resource_key)!} disabled={busy}>{t("execution.open_core")}</Button></Actions>
+            <Actions><Button variant="contained" component={Link} to={nodiaAiCoreRoute(ref.resource_key)!} disabled={busy}>{t("execution.open_core")}</Button></Actions>
           </Box>)}
           {step.state === "completed" && step.result_refs.filter(ref => nodiaAiFinanceResources.some(resource => ref.resource_key === resource)).map(ref => <Box key={`${ref.resource_key}:${ref.id}`}>
             <Typography variant="body2">{t("execution.financial_receipt", { id: ref.id, resource: t(`execution.financial_resources.${ref.resource_key}`) })}</Typography>
             <Typography variant="caption" component="p">{t("execution.historical_receipt")}</Typography>
-            <Actions><Button component={Link} to="/tools/finances-personal" disabled={busy}>{t("execution.open_finances")}</Button></Actions>
+            <Actions><Button variant="contained" component={Link} to="/finances-personal" disabled={busy}>{t("execution.open_finances")}</Button></Actions>
           </Box>)}
           {step.state === "completed" && step.result_refs.filter(ref => nodiaAiBusinessResources.some(resource => ref.resource_key === resource)).map(ref => <Box key={`${ref.resource_key}:${ref.id}`}>
             <Typography variant="body2">{t("execution.business_receipt", { id: ref.id, resource: t(`execution.business_resources.${ref.resource_key}`) })}</Typography>
             <Typography variant="caption" component="p">{t("execution.historical_receipt")}</Typography>
-            <Actions><Button component={Link} to="/tools/business" disabled={busy}>{t("execution.open_business")}</Button></Actions>
+            <Actions><Button variant="contained" component={Link} to="/business" disabled={busy}>{t("execution.open_business")}</Button></Actions>
           </Box>)}
           {step.state === "completed" && step.result_refs.filter(ref => nodiaAiRentalResources.some(resource => ref.resource_key === resource)).map(ref => <Box key={`${ref.resource_key}:${ref.id}`}>
             <Typography variant="body2">{t("execution.rental_receipt", { id: ref.id, resource: t(`execution.rental_resources.${ref.resource_key}`) })}</Typography>
             <Typography variant="caption" component="p">{t("execution.historical_receipt")}</Typography>
-            <Actions><Button component={Link} to={RENTAL_RESERVATIONS_ROUTE} disabled={busy}>{t("execution.open_rentals")}</Button></Actions>
+            <Actions><Button variant="contained" component={Link} to={RENTAL_RESERVATIONS_ROUTE} disabled={busy}>{t("execution.open_rentals")}</Button></Actions>
           </Box>)}
         </Box>)}
         {!query.readOnly && execution.state !== "waiting_for_user" && <Actions>
-          {canCancel && <Button disabled={busy || query.uncertain || query.isError} onClick={() => void query.control("cancel")}>{t("execution.cancel")}</Button>}
+          {canCancel && <Button variant="contained" disabled={busy || query.uncertain || query.isError} onClick={() => void query.control("cancel")}>{t("execution.cancel")}</Button>}
           {execution.can_resume && <Button variant="outlined" disabled={busy || query.uncertain || query.isError} onClick={() => void query.control("resume")}>{t("execution.resume")}</Button>}
-          {query.canRetry && <Button disabled={busy} onClick={() => void query.retry()}>{t("execution.retry_control")}</Button>}
+          {query.canRetry && <Button variant="contained" disabled={busy} onClick={() => void query.retry()}>{t("execution.retry_control")}</Button>}
         </Actions>}
         {execution.can_resume && execution.steps.some(step => step.state === "completed") && <Typography variant="caption" component="p">{t("execution.resume_pending")}</Typography>}
       </>}
     </Skeleton>
-    <Actions><Button disabled={busy} onClick={() => void query.recover()}>{t("refresh_status")}</Button></Actions>
+    <Actions><Button variant="contained" disabled={busy} onClick={() => void query.recover()}>{t("refresh_status")}</Button></Actions>
   </Panel>;
 }

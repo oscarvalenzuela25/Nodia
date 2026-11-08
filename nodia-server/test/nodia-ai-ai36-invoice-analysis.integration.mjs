@@ -181,7 +181,9 @@ try {
   };
   let external;
   const setup = builder([AnalysisModule.forPublication([name]), Attachment]);
-  setup.overrideProvider(Adapter).useValue({ verifyConfiguration: (...args) => external.verifyConfiguration(...args) });
+  setup.overrideProvider(Adapter).useValue({
+    verifyConfiguration: (...args) => external.verifyConfiguration(...args),
+  });
   setup.overrideProvider(Storage).useValue(storage);
   setup.overrideProvider(Inspector).useValue({
     async inspect() {
@@ -227,14 +229,14 @@ try {
     },
     async verifyConfiguration(selection, _generation, manager) {
       const [row] = await (manager ?? db).query(
-        'SELECT p.is_active,p.use_token_plan_agentic,c.is_active AS catalog_active,c.can_use_token_plan_agentic FROM ai_providers p JOIN ai_provider_catalog c ON c.id=p.catalog_id WHERE p.id=$1',
+        'SELECT p.is_active,p.use_agentic,c.is_active AS catalog_active,c.can_use_agentic FROM ai_providers p JOIN ai_provider_catalog c ON c.id=p.catalog_id WHERE p.id=$1',
         [selection.connection_id],
       );
       if (
         !row?.is_active ||
         !row.catalog_active ||
-        !row.use_token_plan_agentic ||
-        !row.can_use_token_plan_agentic
+        !row.use_agentic ||
+        !row.can_use_agentic
       )
         throw Error('nodia_ai:eligibility_changed');
     },
@@ -331,11 +333,11 @@ try {
     "SELECT module_group_id AS id FROM modules WHERE key='nodia_ai'",
   );
   let [destination] = await db.query(
-    "SELECT id::text FROM modules WHERE link='/tools/business'",
+    "SELECT id::text FROM modules WHERE link='/business'",
   );
   if (!destination)
     [destination] = await db.query(
-      "INSERT INTO modules(key,link,module_group_id) VALUES('synthetic_ai3603_business','/tools/business',$1) RETURNING id::text",
+      "INSERT INTO modules(key,link,module_group_id) VALUES('synthetic_ai3603_business','/business',$1) RETURNING id::text",
       [group.id],
     );
   await db.query(
@@ -357,15 +359,15 @@ try {
     [otherBusiness],
   );
   const [catalog] = await db.query(
-    "INSERT INTO ai_provider_catalog(key,name,can_use_token_plan_agentic) VALUES('gemini','Synthetic invoice catalog',true) ON CONFLICT(key) DO UPDATE SET is_active=true,can_use_token_plan_agentic=true RETURNING id::text",
+    "INSERT INTO ai_provider_catalog(key,name,can_use_agentic) VALUES('gemini','Synthetic invoice catalog',true) ON CONFLICT(key) DO UPDATE SET is_active=true,can_use_agentic=true RETURNING id::text",
   );
   const [provider] = await db.query(
-    "INSERT INTO ai_providers(catalog_id,name,use_token_plan_agentic,fields,default_mode) VALUES($1,'Synthetic invoice connection',true,'{}','token_plan_agentic') RETURNING id::text",
+    "INSERT INTO ai_providers(catalog_id,name,use_agentic,fields,default_mode) VALUES($1,'Synthetic invoice connection',true,'{}','agentic') RETURNING id::text",
     [catalog.id],
   );
   const selection = {
     connection_id: provider.id,
-    mode: 'token_plan_agentic',
+    mode: 'agentic',
     model_id: 'synthetic-ai3603-model',
     effort_id: null,
   };
@@ -822,7 +824,7 @@ try {
       );
     assert.equal(completed.status, 'analyzed');
     await db.query(
-      'UPDATE ai_provider_catalog SET can_use_token_plan_agentic=false WHERE id=$1',
+      'UPDATE ai_provider_catalog SET can_use_agentic=false WHERE id=$1',
       [catalog.id],
     );
     await reject(
@@ -830,7 +832,7 @@ try {
       () => call(request, completeArgs(prepared.analysis_id), completeId),
     );
     await db.query(
-      'UPDATE ai_provider_catalog SET can_use_token_plan_agentic=true WHERE id=$1',
+      'UPDATE ai_provider_catalog SET can_use_agentic=true WHERE id=$1',
       [catalog.id],
     );
   });

@@ -1,0 +1,765 @@
+{
+  "schema_version": 1,
+  "status": "implemented_and_static_vm_adopted",
+  "updated_at": "2026-10-29T18:38:37.876204+00:00",
+  "scope": [
+    "Assistant message Markdown rendering",
+    "Header recheck reload icon at right",
+    "Requested microphone permission reset attempt"
+  ],
+  "microphone_permission": {
+    "origin": "http://localhost:5174",
+    "before_observed_state": "granted",
+    "observation_method": "native Runtime.evaluate navigator.permissions.query via supported CDP capability",
+    "reset_requested_by_user": true,
+    "reset_method_attempted": "Browser.setPermission microphone prompt scoped to origin",
+    "reset_outcome": "tool_method_not_supported",
+    "reset_confirmed": false,
+    "broader_permission_changes": false,
+    "dictation_or_capture_started": false,
+    "limitations": "The permission was already granted. A service/network speech recognition error is a distinct issue; no positive ASR claimed.",
+    "after_observed_state": "granted"
+  },
+  "implementation": {
+    "markdown": "implemented_and_vm_adopted",
+    "reload_icon": "implemented_and_vm_adopted",
+    "runtime_dependency_additions": {
+      "react-markdown": "10.1.0",
+      "remark-gfm": "4.0.1"
+    }
+  },
+  "verification": {
+    "local_full_suite": {
+      "files_passed": 264,
+      "tests_passed": 2187,
+      "failed": 0,
+      "max_workers": 4,
+      "exit_code": 0
+    },
+    "typecheck": {
+      "exit_code": 0
+    },
+    "lint": {
+      "exit_code": 0
+    },
+    "build": {
+      "exit_code": 0,
+      "api_base_url": "/api/v1",
+      "out_dir": ".tmp/dist-chat-markdown-20261029-r01"
+    },
+    "browser_ui": {
+      "schema_version": 1,
+      "verified_at_utc": "2026-10-29T18:33:20.658253+00:00",
+      "browser": {
+        "channel": "msedge",
+        "version": "156.0.4314.50",
+        "mode": "headless isolated development profile",
+        "cli_version": "0.1.22"
+      },
+      "origin": "http://127.0.0.1:5194",
+      "scenario": "chat-markdown",
+      "transport": "Synthetic Axios; actual React/MUI/ReactMarkdown/remark-gfm components",
+      "source_note": "Verified after final null-text attachment Markdown-boundary fix; source remained frozen throughout browser QA.",
+      "samples": [
+        {
+          "language": "es",
+          "theme": "dark",
+          "layouts": [
+            {
+              "width": 320,
+              "overflow": 0,
+              "alert": {
+                "left": 33,
+                "right": 287,
+                "height": 108.0625
+              },
+              "reload": {
+                "width": 44,
+                "height": 44,
+                "left": 235,
+                "right": 279,
+                "rightInset": 8
+              },
+              "composer": {
+                "sameDom": true,
+                "valuePreserved": true,
+                "disabled": true,
+                "top": 548,
+                "bottom": 725,
+                "sendBottom": 601
+              },
+              "localScroll": {
+                "table": {
+                  "client": 206,
+                  "scroll": 650,
+                  "afterArrowRight": 1
+                },
+                "code": {
+                  "client": 206,
+                  "scroll": 2653,
+                  "afterArrowRight": 1
+                }
+              },
+              "screenshot": "C:/Users/Oscar/Desktop/Nodia/.tmp/chat-markdown-ui-320-es-dark.png"
+            },
+            {
+              "width": 390,
+              "overflow": 0,
+              "alert": {
+                "left": 33,
+                "right": 357,
+                "height": 88.046875
+              },
+              "reload": {
+                "width": 44,
+                "height": 44,
+                "left": 305,
+                "right": 349,
+                "rightInset": 8
+              },
+              "composer": {
+                "sameDom": true,
+                "valuePreserved": true,
+                "disabled": true,
+                "top": 554,
+                "bottom": 725,
+                "sendBottom": 607
+              },
+              "localScroll": {
+                "table": {
+                  "client": 276,
+                  "scroll": 650,
+                  "afterArrowRight": 1
+                },
+                "code": {
+                  "client": 276,
+                  "scroll": 2653,
+                  "afterArrowRight": 1
+                }
+              },
+              "screenshot": null
+            },
+            {
+              "width": 600,
+              "overflow": 0,
+              "alert": {
+                "left": 49,
+                "right": 551,
+                "height": 68.03125
+              },
+              "reload": {
+                "width": 44,
+                "height": 44,
+                "left": 499,
+                "right": 543,
+                "rightInset": 8
+              },
+              "composer": {
+                "sameDom": true,
+                "valuePreserved": true,
+                "disabled": true,
+                "top": 580,
+                "bottom": 759,
+                "sendBottom": 637
+              },
+              "localScroll": {
+                "table": {
+                  "client": 424,
+                  "scroll": 650,
+                  "afterArrowRight": 2
+                },
+                "code": {
+                  "client": 424,
+                  "scroll": 2653,
+                  "afterArrowRight": 5
+                }
+              },
+              "screenshot": null
+            },
+            {
+              "width": 1088,
+              "overflow": 0,
+              "alert": {
+                "left": 333,
+                "right": 1031,
+                "height": 56
+              },
+              "reload": {
+                "width": 44,
+                "height": 44,
+                "left": 979,
+                "right": 1023,
+                "rightInset": 8
+              },
+              "composer": {
+                "sameDom": true,
+                "valuePreserved": true,
+                "disabled": true,
+                "top": 638,
+                "bottom": 767,
+                "sendBottom": 695
+              },
+              "localScroll": {
+                "table": {
+                  "client": 620,
+                  "scroll": 650,
+                  "afterArrowRight": 3
+                },
+                "code": {
+                  "client": 620,
+                  "scroll": 2653,
+                  "afterArrowRight": 1
+                }
+              },
+              "screenshot": null
+            },
+            {
+              "width": 1569,
+              "overflow": 0,
+              "alert": {
+                "left": 333,
+                "right": 1512,
+                "height": 56
+              },
+              "reload": {
+                "width": 44,
+                "height": 44,
+                "left": 1460,
+                "right": 1504,
+                "rightInset": 8
+              },
+              "composer": {
+                "sameDom": true,
+                "valuePreserved": true,
+                "disabled": true,
+                "top": 638,
+                "bottom": 767,
+                "sendBottom": 695
+              },
+              "localScroll": {
+                "table": {
+                  "client": 818,
+                  "scroll": 818,
+                  "afterArrowRight": 0
+                },
+                "code": {
+                  "client": 818,
+                  "scroll": 2653,
+                  "afterArrowRight": 8
+                }
+              },
+              "screenshot": null
+            }
+          ],
+          "checks": {
+            "semanticMarkdown": true,
+            "exactCells0Null1200": true,
+            "total2400Formatted": true,
+            "userLiteral": true,
+            "rawHtmlLiteral": true,
+            "noImageDomOrResourceLoads": true,
+            "localKeyboardScroll": true,
+            "translatedTooltip": "Volver a comprobar"
+          },
+          "proof": {
+            "requestsAfterClick": [
+              {
+                "method": "GET",
+                "path": "/nodia-ai/connections/90000000991/eligibility"
+              }
+            ],
+            "eligibilityReads": 1,
+            "mutations": [],
+            "resourceAttempts": [],
+            "microphoneRequests": 0,
+            "speechStarts": 0,
+            "pageErrors": [],
+            "composerSameDom": true,
+            "textPreserved": true,
+            "initialTextLength": 0,
+            "tableSameDom": true,
+            "images": 0
+          }
+        },
+        {
+          "language": "en",
+          "theme": "light",
+          "layouts": [
+            {
+              "width": 320,
+              "overflow": 0,
+              "alert": {
+                "left": 33,
+                "right": 287,
+                "height": 108.0625
+              },
+              "reload": {
+                "width": 44,
+                "height": 44,
+                "left": 235,
+                "right": 279,
+                "rightInset": 8
+              },
+              "composer": {
+                "sameDom": true,
+                "valuePreserved": true,
+                "disabled": true,
+                "top": 554,
+                "bottom": 725,
+                "sendBottom": 607
+              },
+              "localScroll": {
+                "table": {
+                  "client": 206,
+                  "scroll": 650,
+                  "afterArrowRight": 1
+                },
+                "code": {
+                  "client": 206,
+                  "scroll": 2653,
+                  "afterArrowRight": 1
+                }
+              },
+              "screenshot": null
+            },
+            {
+              "width": 390,
+              "overflow": 0,
+              "alert": {
+                "left": 33,
+                "right": 357,
+                "height": 88.046875
+              },
+              "reload": {
+                "width": 44,
+                "height": 44,
+                "left": 305,
+                "right": 349,
+                "rightInset": 8
+              },
+              "composer": {
+                "sameDom": true,
+                "valuePreserved": true,
+                "disabled": true,
+                "top": 554,
+                "bottom": 725,
+                "sendBottom": 607
+              },
+              "localScroll": {
+                "table": {
+                  "client": 276,
+                  "scroll": 650,
+                  "afterArrowRight": 3
+                },
+                "code": {
+                  "client": 276,
+                  "scroll": 2653,
+                  "afterArrowRight": 7
+                }
+              },
+              "screenshot": null
+            },
+            {
+              "width": 600,
+              "overflow": 0,
+              "alert": {
+                "left": 49,
+                "right": 551,
+                "height": 68.03125
+              },
+              "reload": {
+                "width": 44,
+                "height": 44,
+                "left": 499,
+                "right": 543,
+                "rightInset": 8
+              },
+              "composer": {
+                "sameDom": true,
+                "valuePreserved": true,
+                "disabled": true,
+                "top": 580,
+                "bottom": 759,
+                "sendBottom": 637
+              },
+              "localScroll": {
+                "table": {
+                  "client": 424,
+                  "scroll": 650,
+                  "afterArrowRight": 6
+                },
+                "code": {
+                  "client": 424,
+                  "scroll": 2653,
+                  "afterArrowRight": 5
+                }
+              },
+              "screenshot": null
+            },
+            {
+              "width": 1088,
+              "overflow": 0,
+              "alert": {
+                "left": 333,
+                "right": 1031,
+                "height": 56
+              },
+              "reload": {
+                "width": 44,
+                "height": 44,
+                "left": 979,
+                "right": 1023,
+                "rightInset": 8
+              },
+              "composer": {
+                "sameDom": true,
+                "valuePreserved": true,
+                "disabled": true,
+                "top": 638,
+                "bottom": 767,
+                "sendBottom": 695
+              },
+              "localScroll": {
+                "table": {
+                  "client": 620,
+                  "scroll": 650,
+                  "afterArrowRight": 2
+                },
+                "code": {
+                  "client": 620,
+                  "scroll": 2653,
+                  "afterArrowRight": 1
+                }
+              },
+              "screenshot": null
+            },
+            {
+              "width": 1569,
+              "overflow": 0,
+              "alert": {
+                "left": 333,
+                "right": 1512,
+                "height": 56
+              },
+              "reload": {
+                "width": 44,
+                "height": 44,
+                "left": 1460,
+                "right": 1504,
+                "rightInset": 8
+              },
+              "composer": {
+                "sameDom": true,
+                "valuePreserved": true,
+                "disabled": true,
+                "top": 638,
+                "bottom": 767,
+                "sendBottom": 695
+              },
+              "localScroll": {
+                "table": {
+                  "client": 818,
+                  "scroll": 818,
+                  "afterArrowRight": 0
+                },
+                "code": {
+                  "client": 818,
+                  "scroll": 2653,
+                  "afterArrowRight": 3
+                }
+              },
+              "screenshot": "C:/Users/Oscar/Desktop/Nodia/.tmp/chat-markdown-ui-1569-en-light.png"
+            }
+          ],
+          "checks": {
+            "semanticMarkdown": true,
+            "exactCells0Null1200": true,
+            "total2400Formatted": true,
+            "userLiteral": true,
+            "rawHtmlLiteral": true,
+            "noImageDomOrResourceLoads": true,
+            "localKeyboardScroll": true,
+            "translatedTooltip": "Check again"
+          },
+          "proof": {
+            "requestsAfterClick": [
+              {
+                "method": "GET",
+                "path": "/nodia-ai/connections/90000000991/eligibility"
+              }
+            ],
+            "eligibilityReads": 1,
+            "mutations": [],
+            "resourceAttempts": [],
+            "microphoneRequests": 0,
+            "speechStarts": 0,
+            "pageErrors": [],
+            "composerSameDom": true,
+            "textPreserved": true,
+            "initialTextLength": 0,
+            "tableSameDom": true,
+            "images": 0
+          }
+        }
+      ],
+      "visual_review": {
+        "screenshots": [
+          {
+            "path": ".tmp\\chat-markdown-ui-320-es-dark.png",
+            "sha256": "e8f61c5ab88d8f5d07a3db448a348f043f7b1818b645ce7cd72ae7f17707f167"
+          },
+          {
+            "path": ".tmp\\chat-markdown-ui-1569-en-light.png",
+            "sha256": "20aa1ca21ee9b15036d5282cd62cade864ac09bec87c395373daf0816d6e78b0"
+          }
+        ],
+        "inspected": true,
+        "mobile_capture_table_scroll_left": 0
+      },
+      "observations": [
+        "Table cells0/null/1200 preserved.2400 is the formatted bold total $2.400 CLP in this fixture, not an extra table cell.",
+        "Table has local overflow at320/390/600/1088 and fits at1569. Long code has local overflow in all ten samples; ArrowRight moved local scroll without page overflow.",
+        "One recheck click per language made exactly one synthetic eligibility GET, with no other request in each measured delta and zero POST/mutations.",
+        "Composer is disabled by the busy fixture. Existing empty value and DOM were preserved across resize/refetch; an edited nonempty draft was not forced into a disabled input.",
+        "Observed development console: existing ChatPage setState-in-render coordination warning and Emotion first-child SSR advisory. No pageerror exception, HTML execution or Markdown resource request occurred.",
+        "No source fixes were made during QA; SSR advisory was reported to root."
+      ],
+      "limits": [
+        "No app5174, production APIs, provider inference, microphone, external link navigation or deployment.",
+        "These are local synthetic browser checks, not real AI/output acceptance, physical touch/Safari or performance measurements."
+      ],
+      "cleanup": {
+        "chat_markdown_ui_session_closed": true,
+        "remaining_cli_sessions": 0,
+        "production_source_changes": 0,
+        "test_server_shutdown_owned_by_root": true
+      }
+    },
+    "markdown_atomic_tests": {
+      "passed": 30,
+      "failed": 0
+    },
+    "recheck_page_tests": {
+      "passed": 59,
+      "failed": 0
+    },
+    "initial_full_suite": {
+      "files": 264,
+      "passed": 2185,
+      "failed": 2,
+      "notes": "Run overlapped the final Markdown boundary fix and new regression. Also observed a 1-second lazy provider-editor wait timeout in unchanged ProvidersTab. A final full run against frozen sources is running with4workers; neither failure is being waived."
+    },
+    "typecheck_before_final_boundary_fix": {
+      "exit_code": 0
+    },
+    "lint_before_final_boundary_fix": {
+      "exit_code": 0
+    },
+    "authenticated_history_ui": {
+      "checked_at_utc": "2026-10-29T18:37:56.021Z",
+      "authenticated_history": true,
+      "origin": "http://localhost:5174",
+      "checks": {
+        "boldNodes": 11,
+        "editorEmpty": true,
+        "noVisibleAudioPlayer": true,
+        "proposalHeading": true,
+        "tables": 1,
+        "articleElements": 9
+      },
+      "new_chat_messages_sent": false,
+      "proposal_or_confirmation_controls_clicked": false,
+      "observation_or_recheck_controls_clicked": false,
+      "dictation_started": false,
+      "original_work_tab_preserved": true
+    },
+    "operator_tests": {
+      "passed": 10,
+      "failed": 0
+    },
+    "knowledge_check": {
+      "exit_code": 0,
+      "sources": 69,
+      "excluded": 25,
+      "documents": 44,
+      "fragments": 46,
+      "local_candidate_release_id": "7ebac892c65d461eccc53c18a6efff958a653ac3ec1575e224f7081905c3faf5",
+      "published_or_adopted": false
+    },
+    "approved_bodies_integrity": {
+      "checked": 44,
+      "changed": 0
+    },
+    "utf8_lf_files_checked": 14,
+    "diff_check_exit_code": 0,
+    "docs_utf8_lf_files_checked": 8
+  },
+  "vm_adoption": {
+    "status": "activated_verified",
+    "release": "/opt/nodia/releases/nodia-client-chat-markdown-20261029-r01",
+    "manifest_sha256": "3283c4287f777b9a191786823220d0231ec992ac8a36b097a2d67899d4d29d9b",
+    "nginx_before_sha256": "0bb23e7bf30cfd28052f2a17ff298aab076b8e241b03d97fce027e830c6d4738",
+    "nginx_after_sha256": "641fbdc74cef03959b66551b3a35252dee11019ddcf93c4c746e85e7586ecab9",
+    "nginx_backup": "/opt/nodia/operations/nodia-ai-chat-markdown-20261029-r01/nginx-before.conf",
+    "prior_release_preserved": true,
+    "runtime_protected_preserved": true,
+    "status_runtime_equals_before": true,
+    "api_pid": 1864113,
+    "worker_pid": 1864114,
+    "server_manifest_sha256": "22f928167d186565cb08fed6eb0572d43263e0a0a424f235aad26e0c7063ef24",
+    "knowledge_release_id": "b49fde74a53483fad4fe80b8175b36bb7c337415097dd9cfa4349285f9e1e2ea",
+    "http": {
+      "current_assets": 169,
+      "previous_assets": 46,
+      "protected": [
+        {
+          "route": "/api/v1",
+          "status": 200
+        },
+        {
+          "route": "/api/v1/nodia-ai/connections",
+          "status": 401
+        },
+        {
+          "route": "/api/v1/products",
+          "status": 401
+        }
+      ],
+      "spa": [
+        {
+          "route": "/",
+          "sha256": "928f675f4de86dcb2c7b95f20c4d08ee861ba33f4e6a3b202f3a83c0836c49bf",
+          "status": 200
+        },
+        {
+          "route": "/tools/nodia-ai",
+          "sha256": "928f675f4de86dcb2c7b95f20c4d08ee861ba33f4e6a3b202f3a83c0836c49bf",
+          "status": 200
+        },
+        {
+          "route": "/tools/business",
+          "sha256": "928f675f4de86dcb2c7b95f20c4d08ee861ba33f4e6a3b202f3a83c0836c49bf",
+          "status": 200
+        }
+      ]
+    },
+    "tunnel_http": {
+      "read_only": true,
+      "origin": "http://localhost:5174",
+      "checks": [
+        {
+          "route": "/tools/nodia-ai",
+          "status": 200,
+          "sha256": "928f675f4de86dcb2c7b95f20c4d08ee861ba33f4e6a3b202f3a83c0836c49bf",
+          "bytes": 2973
+        },
+        {
+          "route": "/tools/business",
+          "status": 200,
+          "sha256": "928f675f4de86dcb2c7b95f20c4d08ee861ba33f4e6a3b202f3a83c0836c49bf",
+          "bytes": 2973
+        },
+        {
+          "route": "/api/v1",
+          "status": 200,
+          "sha256": "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
+          "bytes": 12
+        }
+      ]
+    },
+    "sql_queries": 0,
+    "auth_requests": 0,
+    "inference_requests": 0,
+    "server_or_native_restart_requests": 0
+  },
+  "documentary_approval": false,
+  "dependency_audit": {
+    "new_direct_packages": 2,
+    "new_locked_packages": 97,
+    "existing_versions_upgraded": 0,
+    "existing_packages_removed": 0,
+    "existing_classification_only_changes": [
+      "@types/estree",
+      "dequal"
+    ],
+    "production_advisory_counts": {
+      "high": 3,
+      "moderate": 0
+    },
+    "existing_advisory_package_names": [
+      "follow-redirects",
+      "vite",
+      "zod"
+    ],
+    "new_markdown_package_advisories": [],
+    "autofix_executed": false
+  },
+  "static_artifact": {
+    "source_input_fingerprint_sha256": "79de674437cea1a9ceb2948b837a7ff6c9d72b84f72946dda9900d83ac84b544",
+    "config_sha256": "5ece97e4699b6f714b9b61f766597354512b1ad41ff19116e38ec3fc3d891c75",
+    "manifest_sha256": "3283c4287f777b9a191786823220d0231ec992ac8a36b097a2d67899d4d29d9b",
+    "release": "/opt/nodia/releases/nodia-client-chat-markdown-20261029-r01",
+    "members": 173,
+    "archive_sha256": "bbfde49c24807986046df9675bb44a055b06a50d32857cab5ee1369a482fda88"
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/nodia-ai-chat-markdown-320-es-dark-20261029.png",
+      "sha256": "e8f61c5ab88d8f5d07a3db448a348f043f7b1818b645ce7cd72ae7f17707f167",
+      "kind": "isolated_synthetic_ui"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-chat-markdown-1569-en-light-20261029.png",
+      "sha256": "20aa1ca21ee9b15036d5282cd62cade864ac09bec87c395373daf0816d6e78b0",
+      "kind": "isolated_synthetic_ui"
+    }
+  ],
+  "operational_receipts": {
+    "bootstrap-receipt.json": {
+      "path": "ops/lab/artifacts/nodia-ai-chat-markdown-20261029-r01/bootstrap-receipt.json",
+      "sha256": "370a56217862536aadd6736965520ef48ea45f6d744c74055360e91b3186f12f"
+    },
+    "preflight-receipt.json": {
+      "path": "ops/lab/artifacts/nodia-ai-chat-markdown-20261029-r01/preflight-receipt.json",
+      "sha256": "1baed0ec2b82116da88eb5efcd05aa2f1322cca97c53dbbfe1c3366387bd168b"
+    },
+    "stage-receipt.json": {
+      "path": "ops/lab/artifacts/nodia-ai-chat-markdown-20261029-r01/stage-receipt.json",
+      "sha256": "cdac6834959d8cb9a641a53e5d1d0b04485d01a19d3dfbd0df4ee30d692fb68a"
+    },
+    "activation-receipt.json": {
+      "path": "ops/lab/artifacts/nodia-ai-chat-markdown-20261029-r01/activation-receipt.json",
+      "sha256": "0701b3e9f40700f7a8f24f67db108c8070d7796524d70c948a46dc3129bde9d8"
+    },
+    "status-receipt.json": {
+      "path": "ops/lab/artifacts/nodia-ai-chat-markdown-20261029-r01/status-receipt.json",
+      "sha256": "0d6967e53f1d9e3d13ab75c9528d99ff1f135a7ae2d3a0d08da29bb41b289257"
+    },
+    "tunnel-http-receipt.json": {
+      "path": "ops/lab/artifacts/nodia-ai-chat-markdown-20261029-r01/tunnel-http-receipt.json",
+      "sha256": "feb96b1b0d75a7bd9ed025004b26512d63e9ce49dd6497752e3d368ec71c5cfe"
+    },
+    "live-ui-receipt.json": {
+      "path": "ops/lab/artifacts/nodia-ai-chat-markdown-20261029-r01/live-ui-receipt.json",
+      "sha256": "b1a94919e829d589d62afbae8a105e3bd4f4a511cf0a12d2ee4bc2a7d279a207"
+    }
+  },
+  "private_live_screenshot": {
+    "path": "ops/lab/artifacts/nodia-ai-chat-markdown-20261029-r01/live-history.png",
+    "sha256": "86758406c87ac3c2ee39c00b5cbaadd3c053a11e061ba5e73b8c63f65a767137"
+  },
+  "limitations": [
+    "Microphone reset could not be applied: the native state was granted before and after the unsupported scoped reset method. No microphone capture or recognition was started in this delivery.",
+    "Positive speech recognition remains unverified; renderer changes do not change the chosen dictation engine.",
+    "Responsive QA used isolated desktop browser viewports and synthetic transport, not a physical phone or virtual keyboard.",
+    "Development console retained the pre-existing ChatPage coordination warning and an Emotion SSR warning for :first-child in Markdown styles; the deployed app is a SPA, no SSR acceptance is claimed.",
+    "The Markdown parser adds runtime bytes to the lazy chat route: NodiaAI bundle grew from110.81kB/36.85kB gzip to278.52kB/87.99kB gzip in these builds. This is a feature addition, not a measured performance optimization."
+  ],
+  "cleanup": {
+    "qa_browser_closed": true,
+    "live_verification_tab_closed": true,
+    "original_user_work_tab_preserved": true,
+    "qa_server": "verified_5194_not_listening",
+    "vm_app_and_tunnel_kept_running": true
+  }
+}

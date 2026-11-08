@@ -1,0 +1,440 @@
+{
+  "schema_version": 1,
+  "stage": "Core module drag/drop",
+  "observed_on": "2026-10-25",
+  "status": "implemented_deployed_and_verified_by_scope_FX04_global_acceptance_remains_partial",
+  "request": "Remove Copy ID from modules/groups; use a grab handle before Id and drag modules within their own group. Groups reorder globally in their administration.",
+  "behavior": [
+    "Explicit Ordenar mode reveals 44px handles before Id; mobile uses the same handle beside the card. Normal mode explains how to activate dragging.",
+    "Pointer capture with6px threshold, source/destination mark, autoscroll and before/after placement; invalid parent/kind/self drops do not dispatch.",
+    "ArrowUp/ArrowDown on focused handle uses existing global-neighbor command; Escape/lost capture cancels. Disabled/context change cancels capture and animation.",
+    "One PATCH on release, never a chain of adjacent writes. Backend CAS validates source/target ranks and parent; rotates only affected interval via one UPDATE unnest under existing Core frontier/deferrable uniqueness.",
+    "Existing ranks/gaps and inactive records retained; adjacent desired position returns unchanged, with no SQL UPDATE or Redis invalidation.",
+    "Both hooks still invalidate modules, groups and authorization context feeding Sidenav, without generic background permissions success. No write retry on uncertainty.",
+    "Copy ID removed from both desktop tables and mobile actions; Id remains displayed, Copy URL retained. Drag only targets loaded rows; keyboard can cross page boundaries."
+  ],
+  "current": {
+    "origin": "http://localhost:5174/settings/modules",
+    "server": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+    "server_manifest_sha256": "023d984ce52573c526a982ce54672aee949fd53ce498a2cd079345a3a6bcb9b1",
+    "client": "/opt/nodia/releases/nodia-client-core-fx04-dnd-r02",
+    "client_manifest_sha256": "e4f296c0d7e868dd9b1acb7acf371fe42dfd352054258704e4822e80b51742c0",
+    "processes": {
+      "nodia-api": {
+        "pid": 4143736,
+        "actual_cwd": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+        "uid": 10000,
+        "expected_entrypoint": true
+      },
+      "nodia-ai-worker": {
+        "pid": 4143737,
+        "actual_cwd": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+        "uid": 10000,
+        "expected_entrypoint": true
+      }
+    },
+    "server_delta": [
+      {
+        "path": "src/module-order/order-policy.ts",
+        "old_sha256": "dacd66a8fe6c88697800b04088b39acc0dd33bb0dd74b361f222cf394bd27c6d",
+        "sha256": "b5f1f7ecf466ef55a4787f7081f08c7bfa99517ce441963752c4c8866f438dd8"
+      },
+      {
+        "path": "dist/module-order/order-policy.js",
+        "old_sha256": "9689df57280882fa449204983aaa9e937972a08b7f20554420212380a5aa85ba",
+        "sha256": "5ed8f8cf01c333a39f9a965baa0396f4f86d86a9aabb558ed8e4e5c328b45c75"
+      },
+      {
+        "path": "dist/module-order/order-policy.js.map",
+        "old_sha256": "321191a4c8cd0b9fa185555bb79218311735e2e28fcae60e01ebf840dadc4738",
+        "sha256": "c8163d535bd641c7e2bbd5038850837edda342ec0d2daa95a7c7a61780a1f6c8"
+      },
+      {
+        "path": "dist/module-order/order-policy.d.ts",
+        "old_sha256": "1600f576451cb16f62686dd03ea2289f4b23729b32139f3f5362bcf2fb8d089b",
+        "sha256": "0fc6440df5ff52433650d59092fcc8775707e8824c93795b517bee18dee88d81"
+      },
+      {
+        "path": "src/module-order/move-order.dto.ts",
+        "old_sha256": "9ffa10eba52490eb13f6701bae1e0238159124618f075b323b556748f8f7b9ed",
+        "sha256": "31026a91d620a828ffdec8d08d18695a0b7880d3d5dbdebde133f6284c5e5d25"
+      },
+      {
+        "path": "dist/module-order/move-order.dto.js",
+        "old_sha256": "4ec68cdf81c480f1396f21dcc7685a0b9f854f9370a74b1bf528011c621eae8f",
+        "sha256": "c07da496699769ef3c67f62c72048ee53b441f5e8b5e3284f1c6c1f9bb460467"
+      },
+      {
+        "path": "dist/module-order/move-order.dto.js.map",
+        "old_sha256": "f57d517aa0714c81a5fe00d570f6007677b20a01d6d98cd2267048b59baab866",
+        "sha256": "ad91edb2ced455064fe474979cf3515a162982c61e9780bb6c7114c992a13fe2"
+      },
+      {
+        "path": "dist/module-order/move-order.dto.d.ts",
+        "old_sha256": "6fbb181e788523f9220c1a8830ffddef29572d7078351bcdcb181e1f0c5376a7",
+        "sha256": "e85b1a263a63d8dbe17f975ee14a9ad2edfdc33237ac38ac54478573720d4a33"
+      },
+      {
+        "path": "src/module-order/move-catalog-order.ts",
+        "old_sha256": "f27cf3d56421a781c662028d4a0d8aa668d2a70f1cee4d267f053bad6aac2775",
+        "sha256": "de9e4f54cdad0d66aa9a35c84c0f362c23d5b7d850cd3fdc992dc205b7b970a2"
+      },
+      {
+        "path": "dist/module-order/move-catalog-order.js",
+        "old_sha256": "3563e2066c4506891a2e035b7a63a68dc8bc35ef65f5477ded97ed884fd7abdb",
+        "sha256": "ad285140651e54ccfb7c5d7807870914ab45b3992af510b87899e7fe08945a0a"
+      },
+      {
+        "path": "dist/module-order/move-catalog-order.js.map",
+        "old_sha256": "a1c49ab406d86c6e235c562799182318af7c439d3af3834f5277180ddae577b7",
+        "sha256": "de57526510887c36d0ad13cdb570ede14b4e6ffdc8f38b4d1b4901a99f9e3327"
+      }
+    ],
+    "MCP_tools_added": 0,
+    "migrations": 0,
+    "migration_history_preserved": 30,
+    "AI_generations": 0
+  },
+  "checks": {
+    "client_focal": {
+      "tests": 73,
+      "suites": 8,
+      "command": "npm run test -- src/test/modules/generalSettings/pages/Modules",
+      "log": {
+        "path": ".tmp/module-dnd-client-tests-final.log",
+        "bytes": 336,
+        "sha256": "73f932680574112483bd3b694ee7c53c8749b51cb98bf41da3a9f4bf6164c5f7"
+      }
+    },
+    "client_build_and_types": "npm run build passed, final Tooltip fix included.",
+    "client_lint": "npm run lint and final component/test ESLint passed.",
+    "server_focal": {
+      "tests": 71,
+      "suites": 3,
+      "build_and_production_types": true,
+      "lint": true
+    },
+    "SQL_disposable": {
+      "receipt": {
+        "path": ".tmp/core-dnd-integration-r01/order-run-r01.json",
+        "bytes": 1113,
+        "sha256": "729bd016bc4aab68cbc09d7a8fd3e8fe98e6545a3beb798f0bcad344e81a2229"
+      },
+      "result": {
+        "result": "passed",
+        "checks": 99,
+        "requests": 64,
+        "invalidations": 18,
+        "query_counts": {
+          "one_row": 9,
+          "many_rows": 9
+        },
+        "scope": "compiled Nest HTTP/Core + disposable PostgreSQL16 + real migration/bootstrap; synthetic identity/cache only",
+        "configured_database_used": false,
+        "actual_AI_generations": 0
+      },
+      "cleanup": {
+        "status": "own_stage_removed",
+        "bytes_before_cleanup": 10932625,
+        "own_fixture_containers_remaining": 0,
+        "new_fixture_volumes_remaining": 0,
+        "dependency_target_exists": true,
+        "free_bytes": 465334272,
+        "compiled_sha256": {
+          "dist/module-order/order-policy.js": "5ed8f8cf01c333a39f9a965baa0396f4f86d86a9aabb558ed8e4e5c328b45c75",
+          "dist/module-order/move-order.dto.js": "c07da496699769ef3c67f62c72048ee53b441f5e8b5e3284f1c6c1f9bb460467",
+          "dist/module-order/move-catalog-order.js": "ad285140651e54ccfb7c5d7807870914ab45b3992af510b87899e7fe08945a0a"
+        },
+        "services_observed": {
+          "nodia-api": "MainPID=4125765\nWorkingDirectory=/opt/nodia/releases/nodia-server-core-fx04-r02\nActiveState=active\n",
+          "nodia-ai-worker": "MainPID=4125768\nWorkingDirectory=/opt/nodia/releases/nodia-server-core-fx04-r02\nActiveState=active\n"
+        },
+        "services_equal_preflight": true,
+        "configured_database_used": false,
+        "provider_generations": 0
+      }
+    }
+  },
+  "browser_isolated": {
+    "pointer_module_move": "Users dragged after Modules across Roles; table and Sidenav become Roles,Modules,Users.",
+    "pointer_group_move": "Administration dragged after Tools; group list, module grouping and Sidenav reorder together.",
+    "mobile_visual": "390px viewport, cards/handle visible and no document overflow; no claim of physical touch acceptance.",
+    "touch_input_verification": "Input.dispatchTouchEvent unsupported in in-app browser; no touch gesture was performed. Emulation cleared, viewport restored.",
+    "tooltip_issue": "An initial unadopted package exposed a controlled/uncontrolled Tooltip warning. Fixed before adoption by consistently uncontrolled Tooltip, with a dedicated atomic regression; initial candidates retired without service changes.",
+    "QA_server_stopped": true
+  },
+  "browser_real": {
+    "authenticated": true,
+    "drops": [
+      {
+        "request": {
+          "id": "118164.170",
+          "url": "http://localhost:5174/api/v1/module-group/2/order",
+          "method": "PATCH",
+          "body": {
+            "expected_sort_order": 0,
+            "page_size": 5,
+            "direction": "before",
+            "expected_neighbor": {
+              "id": "4",
+              "sort_order": 1
+            }
+          }
+        },
+        "response": {
+          "status": "unchanged",
+          "id": "2",
+          "sort_order": 0,
+          "previous": null,
+          "next": {
+            "id": "4",
+            "sort_order": 1
+          },
+          "position": 1,
+          "page": 1
+        }
+      },
+      {
+        "request": {
+          "id": "118164.175",
+          "url": "http://localhost:5174/api/v1/module/6/order",
+          "method": "PATCH",
+          "body": {
+            "expected_sort_order": 0,
+            "page_size": 10,
+            "direction": "before",
+            "expected_neighbor": {
+              "id": "7",
+              "sort_order": 1
+            },
+            "expected_module_group_id": "2"
+          }
+        },
+        "response": {
+          "status": "unchanged",
+          "id": "6",
+          "module_group_id": "2",
+          "sort_order": 0,
+          "previous": null,
+          "next": {
+            "id": "7",
+            "sort_order": 1
+          },
+          "position": 1,
+          "page": 1
+        }
+      }
+    ],
+    "positive_reorder_effects_performed": false,
+    "SQL_after_noops": {
+      "status": "verified_no_real_order_or_business_effects",
+      "SQL_tables_preserved": 60,
+      "migrations": 30,
+      "groups": [
+        {
+          "id": "2",
+          "key": "tools",
+          "is_active": true,
+          "sort_order": 0
+        },
+        {
+          "id": "4",
+          "key": "finances",
+          "is_active": true,
+          "sort_order": 1
+        },
+        {
+          "id": "1",
+          "key": "general_settings",
+          "is_active": true,
+          "sort_order": 2
+        }
+      ],
+      "modules": [
+        {
+          "id": "6",
+          "key": "business",
+          "module_group_id": "2",
+          "is_active": true,
+          "sort_order": 0
+        },
+        {
+          "id": "7",
+          "key": "nodia_ai",
+          "module_group_id": "2",
+          "is_active": true,
+          "sort_order": 1
+        },
+        {
+          "id": "9",
+          "key": "rental_reservations",
+          "module_group_id": "2",
+          "is_active": true,
+          "sort_order": 2
+        },
+        {
+          "id": "8",
+          "key": "personal_finance",
+          "module_group_id": "4",
+          "is_active": true,
+          "sort_order": 0
+        },
+        {
+          "id": "1",
+          "key": "actions",
+          "module_group_id": "1",
+          "is_active": true,
+          "sort_order": 0
+        },
+        {
+          "id": "2",
+          "key": "roles",
+          "module_group_id": "1",
+          "is_active": true,
+          "sort_order": 1
+        },
+        {
+          "id": "3",
+          "key": "users",
+          "module_group_id": "1",
+          "is_active": true,
+          "sort_order": 2
+        },
+        {
+          "id": "4",
+          "key": "modules",
+          "module_group_id": "1",
+          "is_active": true,
+          "sort_order": 3
+        },
+        {
+          "id": "5",
+          "key": "ai_providers",
+          "module_group_id": "1",
+          "is_active": true,
+          "sort_order": 4
+        }
+      ],
+      "quiet": {
+        "chats": 1,
+        "messages": 64,
+        "runs": 34,
+        "dispatches": 51,
+        "tool_receipts": 60,
+        "executions": 4,
+        "effect_receipts": 5,
+        "financial_effects": 1,
+        "pending_jobs": 0,
+        "open_attempts": 0,
+        "retained_slots": 0
+      },
+      "services": {
+        "nodia-api": {
+          "MainPID": "4143736",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+          "ActiveState": "active"
+        },
+        "nodia-ai-worker": {
+          "MainPID": "4143737",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-core-fx04-dnd-r03",
+          "ActiveState": "active"
+        }
+      }
+    },
+    "tab_left_open_in_order_mode": true,
+    "copy_ID_absent": true,
+    "screenshots": [
+      {
+        "path": "docs/evidence/core-module-drag-modules-live-r01.png",
+        "bytes": 76192,
+        "sha256": "ff9a88017f07c138b90e69a831e6c7ccec9e5b7c99cf2b837c4a895609ff1ba0"
+      },
+      {
+        "path": "docs/evidence/core-module-drag-groups-live-r01.png",
+        "bytes": 72047,
+        "sha256": "1fb7a1e9f4b2d1624ef670ea69ac4ef05eb8a108ca722b1ae9955996f66441c3"
+      },
+      {
+        "path": "docs/evidence/core-module-drag-mobile-r01.png",
+        "bytes": 26065,
+        "sha256": "92f4e2addd4014ffff486ddaac7c38f716065c988de59c4cc39c9f166026a835"
+      }
+    ]
+  },
+  "preservation": {
+    "SQL_before_equals_after_deployment": true,
+    "all_60_table_hashes_preserved_excluding_normal_auth_sessions": true,
+    "SQL_after_real_noops_equals_deployment": true,
+    "knowledge_150_contracts_and41_fragments_unchanged": true,
+    "source_and_compiled_publication_match": {
+      "nodia-ai/knowledge/manifest.json": {
+        "source_equals_compiled": true,
+        "sha256": "47ce3339cd92bd6cef1e24065e7d6f7798010d0d23dca542f6162974e2bde347"
+      },
+      "nodia-ai-context/config/knowledge-pin.json": {
+        "source_equals_compiled": true,
+        "sha256": "ba9407cf2e6891ef305b649ef2de46e4849b3796c1de2fe698db12baab65e674"
+      }
+    },
+    "Gemini_epoch_and_configuration_preserved": true,
+    "backup": {
+      "schema_version": 1,
+      "operation": "backup",
+      "backup_id": "c0aaa154-72f1-4a4b-a229-d9b333742966",
+      "status": "ready",
+      "captured_at": "2026-10-25T06:52:11.059Z",
+      "expires_at": "2026-11-01T06:52:11.059Z",
+      "cipher_bytes": 1183389,
+      "cipher_sha256": "b4d3692cbe78d194483130ad1c3d3c75145da35bcb32b1fdd6b291899cf4e675",
+      "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+      "journal_sequence": 1,
+      "rotated": {
+        "removed": 0,
+        "pending_recovered": 0,
+        "retained": 31
+      }
+    },
+    "journal": {
+      "operation": "status",
+      "coverage_from": "2026-10-20T23:52:27.154Z",
+      "updated_at": "2026-10-25T06:52:16.821Z",
+      "first_sequence": 1,
+      "last_sequence": 1,
+      "entries": 1,
+      "unconfirmed": 0,
+      "coverage_closed_at": null,
+      "backups": 32,
+      "expired_backups": 0,
+      "release_authorized": false
+    },
+    "timers_restored": true,
+    "spool_only_backup_lock": true
+  },
+  "recovery": {
+    "prior_packages_retained": true,
+    "rollback_prepared_same_schema_not_executed": true,
+    "no_automatic_restore_or_replay": true,
+    "catalog": {
+      "path": "ops/lab/artifacts/core-module-dnd-r01/catalog.json",
+      "bytes": 2579,
+      "sha256": "e0116a007c4619f60e8b2b2dd2cf992bbe299e246f8be603bd640ccbf888b2d7"
+    },
+    "operator": {
+      "path": "docs/evidence/scripts/core-module-drag-delivery-r01.py",
+      "bytes": 9800,
+      "sha256": "5d9c34eecfa7d4d1731d830eccded6570b9180894e81398d06df4fc4b109d785"
+    }
+  },
+  "limitations": [
+    "Real UI acceptance here covers two native unchanged drops; positive effects and concurrent writers were verified with disposable SQL/synthetic browser separately.",
+    "No physical touch device, real multi-admin UI concurrency or full session-renewal cycle accepted in this change. FX04 retains those gates.",
+    "No new MCP exposure or AI availability proof; no secrets, session tokens or full DB exported."
+  ],
+  "cleanup": {
+    "status": "own_upload_removed",
+    "files": 3,
+    "bytes": 2354706,
+    "active_and_prior_releases_retained": true,
+    "private_operator_and_receipts_retained": true
+  }
+}

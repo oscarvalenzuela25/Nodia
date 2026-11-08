@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import { Ajv2020 } from 'ajv/dist/2020.js';
+import { canonicalKnowledge } from '../../nodia-ai-context/use-case/load-nodia-ai-knowledge.use-case.js';
 import {
   NodiaAiToolRegistryUseCase,
   compileNodiaAiToolSchema,
@@ -54,7 +55,7 @@ function fixture(
       { key: 'finance', route: '/tools/finance', label: 'Synthetic finance' },
       {
         key: 'business',
-        route: '/tools/business',
+        route: '/business',
         label: 'Synthetic business',
       },
     ],
@@ -93,6 +94,25 @@ const registry = (family = fixture()) =>
   new NodiaAiToolRegistryUseCase([family], 'synthetic-v1');
 
 describe('NodiaAiToolRegistryUseCase', () => {
+  it('keeps historical v1 contract hashes when canonical navigation changes', () => {
+    const original = fixture();
+    const family: NodiaAiToolFamily = { ...original,
+      modules: original.modules.map((module, index) => index === 0 ? { ...module, route: '/finances-personal' } : module),
+      resources: original.resources.map(resource => ({ ...resource, requiredModuleRoutes: ['/finances-personal'] })),
+      capabilities: original.capabilities.map(tool => ({ ...tool, requiredModuleRoutes: ['/finances-personal'] })),
+    };
+    const subject = registry(family);
+    const tool = subject.get('nodia_synthetic_expenses_list')!;
+    const { contractHash, handler: _handler, verifyAuthority: _authority,
+      verifyResultAuthority: _resultAuthority, external: _external, ...metadata } = tool;
+    const historicalHash = createHash('sha256').update(canonicalKnowledge({ catalogVersion: 'synthetic-v1',
+      ...metadata, requiredModuleRoutes: ['/tools/finances-personal'],
+    })).digest('hex');
+    expect(contractHash).toBe(historicalHash);
+    expect(tool.requiredModuleRoutes).toEqual(['/finances-personal']);
+    expect(subject.list(['/tools/finances-personal'])).toHaveLength(1);
+    expect(subject.list(['/business'])).toHaveLength(0);
+  });
   it('accepts an empty deployment without inventing business capabilities or modules', () => {
     const subject = new NodiaAiToolRegistryUseCase([], 'synthetic-v1');
     expect(subject.requirements()).toEqual([]);
@@ -126,20 +146,20 @@ describe('NodiaAiToolRegistryUseCase', () => {
   });
   it('filters all required modules and exposes modules/resources only for available registered capabilities', () => {
     const subject = registry(
-      fixture({ requiredModuleRoutes: ['/tools/finance', '/tools/business'] }),
+      fixture({ requiredModuleRoutes: ['/tools/finance', '/business'] }),
     );
     expect(subject.list(['/tools/finance'])).toEqual([]);
     expect(subject.modules(['/tools/finance'])).toEqual([]);
     expect(subject.resources(['/tools/finance'])).toEqual([]);
-    expect(subject.list(['/tools/business', '/tools/finance'])).toHaveLength(1);
+    expect(subject.list(['/business', '/tools/finance'])).toHaveLength(1);
     expect(
       subject
-        .modules(['/tools/business', '/tools/finance'])
+        .modules(['/business', '/tools/finance'])
         .map((module) => module.key),
     ).toEqual(['finance']);
     expect(
       subject
-        .resources(['/tools/business', '/tools/finance'])
+        .resources(['/business', '/tools/finance'])
         .map((resource) => resource.key),
     ).toEqual(['expenses']);
   });
@@ -159,7 +179,7 @@ describe('NodiaAiToolRegistryUseCase', () => {
     ['execute write kind', { kind: 'execute_change' }],
     ['unknown module', { moduleKey: 'unknown' }],
     ['unknown resource', { resourceKey: 'unknown' }],
-    ['missing target route', { requiredModuleRoutes: ['/tools/business'] }],
+    ['missing target route', { requiredModuleRoutes: ['/business'] }],
     [
       'unknown target route',
       { requiredModuleRoutes: ['/tools/finance', '/unknown'] },
@@ -304,10 +324,10 @@ describe('NodiaAiToolRegistryUseCase', () => {
       { revision: 2 },
       { effectKey: 'observe' },
       { actionKeys: ['finance:manage'] },
-      { requiredModuleRoutes: ['/tools/finance', '/tools/business'] },
+      { requiredModuleRoutes: ['/tools/finance', '/business'] },
     ])
       expect(
-        registry(fixture(patch)).list(['/tools/finance', '/tools/business'])[0]
+        registry(fixture(patch)).list(['/tools/finance', '/business'])[0]
           .contractHash,
       ).not.toBe(baseline);
     expect(

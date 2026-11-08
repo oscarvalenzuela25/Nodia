@@ -95,16 +95,18 @@ async function startApplication(builder) {
 }
 const unpublished = await createNodiaAiUnpublishedFixture();
 const builder = (...imports) =>
-  unpublished.override(Test.createTestingModule({
-    imports: [
-      TypeOrmModule.forRootAsync({
-        useFactory: () => options,
-        dataSourceFactory: async () => db,
-      }),
-      ...imports,
-    ],
-    providers: imports.includes(Processing) ? [Stage] : [],
-  }));
+  unpublished.override(
+    Test.createTestingModule({
+      imports: [
+        TypeOrmModule.forRootAsync({
+          useFactory: () => options,
+          dataSourceFactory: async () => db,
+        }),
+        ...imports,
+      ],
+      providers: imports.includes(Processing) ? [Stage] : [],
+    }),
+  );
 
 try {
   const empty = await startApplication(builder(Module));
@@ -262,7 +264,7 @@ try {
   );
   const selection = {
     connection_id: provider.id,
-    mode: 'token_plan_agentic',
+    mode: 'agentic',
     model_id: 'synthetic-ai14-model',
     effort_id: null,
   };

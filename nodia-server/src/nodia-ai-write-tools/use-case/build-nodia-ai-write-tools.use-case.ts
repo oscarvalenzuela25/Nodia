@@ -35,6 +35,13 @@ import {
   type WriteToolContract,
 } from '../types/write-tool-contract.types.js';
 
+const productCatalogRevisionTwoTools = new Set([
+  'nodia_products_prepare_create',
+  'nodia_products_prepare_update',
+  'nodia_product_logs_prepare_create',
+  'nodia_product_logs_prepare_update',
+]);
+
 const invalid = (): never => {
   throw new BadRequestException('nodia_ai:invalid_tool_input');
 };
@@ -153,7 +160,7 @@ export class BuildNodiaAiWriteToolsUseCase {
           name,
           registrationRoutes: preparer.moduleRoutes.length
             ? preparer.moduleRoutes
-            : ['/tools/nodia-ai'],
+            : ['/nodia-ai'],
         };
       });
       const sourceJson = JSON.stringify({
@@ -202,7 +209,7 @@ export class BuildNodiaAiWriteToolsUseCase {
               output = compileNodiaAiToolSchema(outputSchema);
             return {
               capabilityId: tool.tool_name,
-              revision: 1,
+              revision: productCatalogRevisionTwoTools.has(tool.tool_name) ? 2 : 1,
               publication: 'published' as const,
               toolName: tool.tool_name,
               kind: tool.kind ?? ('prepare_change' as const),

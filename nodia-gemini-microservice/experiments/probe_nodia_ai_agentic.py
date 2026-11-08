@@ -77,7 +77,7 @@ async def probe(model_id: str, connection_id: str, thinking_level: str | None = 
     from experiments.nodia_ai_agentic_diagnostics import SafeTrace
 
     evidence: dict[str, object] = {"task": "AI-03", "observed_at": datetime.now(timezone.utc).isoformat(),
-        "selection": {"connection_id": connection_id, "mode": "token_plan_agentic", "model_id": model_id},
+        "selection": {"connection_id": connection_id, "mode": "agentic", "model_id": model_id},
         "protocol": "mcp-stdio-synthetic", "checks": [], "fixture_only": True,
         "business_writes": 0, "published_capabilities": 0, "generation_processes": 0}
     evidence["configured_thinking_level"] = thinking_level

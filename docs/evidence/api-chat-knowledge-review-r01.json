@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "status": "ready_for_human_review_not_approved_not_published",
+  "scope": "Six exact successor/new knowledge drafts for API key chat parity. Source implementation is distinct from SQL/live/VM qualification and human documentary approval.",
+  "originals_catalog": "ops/lab/artifacts/api-chat-parity-r01/catalog.json",
+  "originals_catalog_sha256": "a75e6dd931f4a577f21a7265b0e67e1aa52c64fb5cc481cb80d5ab03bbbe2bf6",
+  "originals_archive": "ops/lab/artifacts/api-chat-parity-r01/knowledge-originals.zip",
+  "originals_archive_sha256": "8338e702dc10783182b5c29ef54e10159d9e349155e8e15eda39c64d0e635fdb",
+  "original_members_byte_exact_roundtrip_verified": 9,
+  "revisions": [
+    {
+      "document_id": "general-settings.secure-ai-interaction",
+      "revision": 5,
+      "path": "docs/nodia-ai/knowledge/general-settings/features/secure-ai-interaction.md",
+      "document_status": "draft",
+      "implementation_status": "partial",
+      "integration_status": "unregistered",
+      "approval": null,
+      "draft_file_sha256": "f00b57906bd21074a8986af971cc6104401f0b1786329497084891e77975772b",
+      "content_sha256": "2561de5600016656ae27cf877e40fc6a884df1cd6dd0cbed6bb0131eec7abf28",
+      "content_hash_algorithm": "official frontmatter.cjs contentHash over draft metadata excluding approval and normalized body",
+      "original": {
+        "revision": 4,
+        "file_sha256": "e2d13cc3eebc01bb344aa9814c65fec33fcc6758d3b0b1bfb25254eced2f18f7",
+        "document_status": "approved",
+        "integration_status": "published",
+        "approval": {
+          "reference": "docs/evidence/ai-two-modes-knowledge-human-approval-r01.json",
+          "revision": 4,
+          "content_sha256": "e42b4e545d652b8c1fbac6479b1968f0965cd9cf06b1acaa9f00b0945591a5a0"
+        },
+        "archive_member": "docs/nodia-ai/knowledge/general-settings/features/secure-ai-interaction.md"
+      },
+      "summary": "API chat prepares the same secure flows; human confirmation and secret input stay separate, with current module/privacy authority."
+    },
+    {
+      "document_id": "nodia-ai.conversation-coordination",
+      "revision": 18,
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md",
+      "document_status": "draft",
+      "implementation_status": "partial",
+      "integration_status": "unregistered",
+      "approval": null,
+      "draft_file_sha256": "1883cdcae8bd2abfef27ca40bab43b1b6de23f846f4906677affec9613192eb6",
+      "content_sha256": "0267ac0e6d4c37ac059ba0c8edc53ea88686ff02b9c03b27333cfc07b9458c9f",
+      "content_hash_algorithm": "official frontmatter.cjs contentHash over draft metadata excluding approval and normalized body",
+      "original": {
+        "revision": 17,
+        "file_sha256": "4fec68d7475b06a06243671739101ab0a1e7177e879a28464fc03e05ec31dd95",
+        "document_status": "approved",
+        "integration_status": "published",
+        "approval": {
+          "reference": "docs/evidence/nodia-ai-ai36-c05-publication-authorization.md",
+          "revision": 17,
+          "content_sha256": "6fd431a73c54a4d84e1e84d5ff9531792227db317214e424718dabf396f64fb7"
+        },
+        "archive_member": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md"
+      },
+      "summary": "Common conversation, catalog/grants, proposal/confirmation/effect runtime; durable HTTP budget and honest local closure/remote uncertainty."
+    },
+    {
+      "document_id": "nodia-ai.invoice-ocr-product-comparison",
+      "revision": 2,
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md",
+      "document_status": "draft",
+      "implementation_status": "partial",
+      "integration_status": "unregistered",
+      "approval": null,
+      "draft_file_sha256": "47cafb05738b5a20ae32bb281dcb7ace02afb4251a3147298b1ea53f77945737",
+      "content_sha256": "e6601213d291879a8cb37798abea178a66eac537463285f332c5587453b854fb",
+      "content_hash_algorithm": "official frontmatter.cjs contentHash over draft metadata excluding approval and normalized body",
+      "original": {
+        "revision": 1,
+        "file_sha256": "9d93844d136b9aa056bdffdf5be60495fa474d06de08a911d53dfba6f2e33a6f",
+        "document_status": "approved",
+        "integration_status": "verified",
+        "approval": {
+          "reference": "docs/evidence/nodia-ai-invoice-ocr-publication-authorization-20261025-r01.json",
+          "revision": 1,
+          "content_sha256": "48398b99493ff8dc54d7c3113c78621d32647b2dfcd1be93a3d6bdb514c90df9"
+        },
+        "archive_member": "docs/nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md"
+      },
+      "summary": "API OCR uses ApiProviderService and its ledger; exact source, zero/null and current Product comparison, with unchanged human-confirmed writes."
+    },
+    {
+      "document_id": "nodia-ai.image-generation",
+      "revision": 4,
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/image-generation.md",
+      "document_status": "draft",
+      "implementation_status": "partial",
+      "integration_status": "unregistered",
+      "approval": null,
+      "draft_file_sha256": "60b4edf5be9dfc0267c179c6fd3651955b58b7e908575551c671f64a6145bcd6",
+      "content_sha256": "f5fc91166fedcba04a611c8cb0b3f10ee709a193ea4dbde812801e8ac74c75f0",
+      "content_hash_algorithm": "official frontmatter.cjs contentHash over draft metadata excluding approval and normalized body",
+      "original": {
+        "revision": 3,
+        "file_sha256": "89026836bc51f46bc688a3ce6686ac4abd641c9922a6b9927cf9bce6f01f024e",
+        "document_status": "approved",
+        "integration_status": "verified",
+        "approval": {
+          "reference": "docs/evidence/nodia-ai-image-generation-publication-authorization-20261026-r01.json",
+          "revision": 3,
+          "content_sha256": "892673eab89682e1bc642ed436970524ef9c9349391f975480c5fd36a79549ef"
+        },
+        "archive_member": "docs/nodia-ai/knowledge/nodia-ai/features/image-generation.md"
+      },
+      "summary": "Explicit prompt lane and exact qualified capable model; image evidence separate from vision/text; no regeneration/fallback or business association."
+    },
+    {
+      "document_id": "nodia-ai.attachments-and-voice",
+      "revision": 11,
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+      "document_status": "draft",
+      "implementation_status": "partial",
+      "integration_status": "unregistered",
+      "approval": null,
+      "draft_file_sha256": "4744d0edc0797d94419aa2809e3ab3ae3de9af4c5bcf54eeedd99c3aca904ee3",
+      "content_sha256": "59c7303066cab5e0bbdbfadc585ee0954a85eebc0597936e36912401d0414e92",
+      "content_hash_algorithm": "official frontmatter.cjs contentHash over draft metadata excluding approval and normalized body",
+      "original": {
+        "revision": 10,
+        "file_sha256": "a98368e3e3113fc254b200708b8c5b5aada9fe6668845f6a2aef9502e99057fa",
+        "document_status": "approved",
+        "integration_status": "published",
+        "approval": {
+          "reference": "docs/evidence/nodia-ai-ai36-c05-publication-authorization.md",
+          "revision": 10,
+          "content_sha256": "3983dfbcc4951b3d0c3d70ae22a97d4f5ca792ed1d20aceadfd8e1360b5b30b9"
+        },
+        "archive_member": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md"
+      },
+      "summary": "Exact configuration/MIME/payload-bound qualification; OpenAI Responses audio unsupported and Gemini implemented audio formats still unqualified."
+    },
+    {
+      "document_id": "nodia-ai.api-key-chat-parity",
+      "revision": 1,
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/api-key-chat-parity.md",
+      "document_status": "draft",
+      "implementation_status": "partial",
+      "integration_status": "unregistered",
+      "approval": null,
+      "draft_file_sha256": "854dde6daeb4adc3a4138e2dfc115c761e04e74d5824c3cf8eaabc16615ec0ed",
+      "content_sha256": "3a1f5e42c70403e23373a9f37029aac1b9354d24589943838dfdccd53215f653",
+      "content_hash_algorithm": "official frontmatter.cjs contentHash over draft metadata excluding approval and normalized body",
+      "original": {
+        "state": "absent_before",
+        "revision": null
+      },
+      "summary": "Complete new functional card for API chat parity, common authority/tools, private keys, HTTP proof3/ledger/budget and separate SQL/live/VM/publication gates."
+    }
+  ],
+  "supporting_draft_changes": [
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/capability-registry-gateway.md",
+      "document_id": "nodia-ai.capability-registry-gateway",
+      "revision": 10,
+      "document_status": "draft",
+      "integration_status": "unregistered",
+      "approval": null,
+      "file_sha256": "2e89102089212ad4465d11a55ed9f608cbc8cf66ff25c5cfa81ea628945805f7",
+      "content_sha256": "03016ee6e5491d073e202b472826baa81c0154a7f4ac65a91fd6def9868d37d7",
+      "included_in_six_revision_approval_request": false
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/README.md",
+      "document_id": "general-settings",
+      "revision": 20,
+      "document_status": "draft",
+      "integration_status": "unregistered",
+      "approval": null,
+      "file_sha256": "cf8073cba9b5adf6bfe61efcff27b51786c56eaca335f07acc1eba890246ecf3",
+      "content_sha256": "b424f83d96833818abdb354a27edcd1cb4312afffda15120698a7bbaab47e6d7",
+      "included_in_six_revision_approval_request": false
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/README.md",
+      "document_id": "nodia-ai",
+      "revision": 69,
+      "document_status": "draft",
+      "integration_status": "unregistered",
+      "approval": null,
+      "file_sha256": "5f5dd8328c085bf90e74d7533776cbf9ef53ade1a92db98b9594c2d779c77480",
+      "content_sha256": "a0f71e3e9e752e5ecca49f5f3a8120cc0cfd3bb112bfc125667692600a4b22ab",
+      "included_in_six_revision_approval_request": false
+    }
+  ],
+  "parent_index": {
+    "path": "docs/nodia-ai/knowledge/README.md",
+    "file_sha256": "c4c3d19410ed31c7044b5e2b19d2120da88e3708044b06ba24547d94eac33d99",
+    "approval": null
+  },
+  "verification": {
+    "strict_frontmatter_and_metadata_schema": "pass for nine metadata documents",
+    "new_card_complete_template_sections": "pass",
+    "utf8_lf": "pass for ten knowledge files",
+    "source_and_evidence_paths": "pass",
+    "registry_modified": false,
+    "knowledge_build_or_publication_run": false,
+    "SQL_or_provider_or_VM_or_UI_acceptance_claimed": false,
+    "missing_links": []
+  },
+  "shared_contracts": [
+    "Same catalog/ToolGateway/grants, contracts41 and current module/privacy policy89, native business rules and human-confirmed idempotent effects.",
+    "API supports_tools is transport-independent and supports_mcp stays false; configuration/catalog are not remote health or inference success.",
+    "Exact dynamic connection/model/effort, encrypted private keys, no hardcoded model fallback or mode/provider switch.",
+    "Current three generative dispatches per run include every API POST/tool continuation, reserved durably before sending.",
+    "Private schema3 HTTP proof separates local_transport_closed from remote_outcome unknown, with exact reconcile/ACK and no uncertain inference autoretry.",
+    "Native media/image generation require exact scope/MIME/proof and request/response/payload hash binding; vision/text do not qualify generation.",
+    "API OCR uses existing ApiProviderService and ledger, preserves zero/null/current Product comparisons and human-confirmed writes."
+  ],
+  "limits": [
+    "No keys, network, real inference, SQL/VM operation, deployment, approval or publication performed by this documentary task.",
+    "Earlier Agentic/Web/API OCR observations remain historical with original bytes archived; they do not accept API chat or all151 published capabilities.",
+    "The six content_sha256 values bind draft metadata/body. Promoting status after explicit human approval creates a distinct approved content hash which must be calculated then; do not substitute the draft hash.",
+    "Gateway and parent index drafts are supporting changes, outside the six-revision approval request.",
+    "Owner must register new source path/reconcile bindings and run final knowledge checks; adding a draft path never publishes it."
+  ],
+  "approval": null,
+  "secrets_included": false
+}

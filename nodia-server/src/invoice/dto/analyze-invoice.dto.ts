@@ -38,18 +38,20 @@ export class AnalyzeInvoiceDto {
 
   @IsOptional()
   @IsBoolean()
-  @Transform(({ value }) => value === 'true' ? true : value === 'false' ? false : value)
+  @Transform(({ value }) =>
+    value === 'true' ? true : value === 'false' ? false : value,
+  )
   extended_thinking?: boolean;
 
   @IsOptional()
   @IsString()
-  @IsIn(['agentic', 'web'])
-  engine?: 'agentic' | 'web';
+  @IsIn(['agentic'])
+  engine?: 'agentic';
 
   @IsOptional()
   @IsString()
-  @IsIn(['api_key', 'token_plan_web', 'token_plan_agentic'])
-  mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic';
+  @IsIn(['api_key', 'agentic'])
+  mode?: 'api_key' | 'agentic';
 
   @IsOptional()
   @IsString()

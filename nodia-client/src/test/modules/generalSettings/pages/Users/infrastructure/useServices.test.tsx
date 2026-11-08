@@ -15,6 +15,7 @@ import {
   useUsers,
 } from "../../../../../../modules/generalSettings/pages/Users/infrastructure/useServices";
 import type { User } from "../../../../../../modules/generalSettings/pages/Users/types";
+import i18n from "../../../../../../translate";
 
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 
@@ -30,7 +31,7 @@ const updatedContext: AuthorizationContextResponse = {
   modules: [{
     module_group_key: "settings",
     translates: [],
-    modules: [{ key: "usuarios", link: "/settings/users", translates: [] }],
+    modules: [{ key: "usuarios", link: "/users", translates: [] }],
   }],
 };
 const savedUser: User = {
@@ -123,6 +124,10 @@ describe("user updates and authorization context", () => {
     expect(requests.findIndex((url) => url.endsWith(`/user/${userId}`)))
       .toBeLessThan(requests.findLastIndex((url) => url.endsWith("/authorization/context")));
     expect(result.current.update.isSuccess).toBe(true);
+    expect(sileo.success).toHaveBeenCalledTimes(1);
+    expect(sileo.success).toHaveBeenCalledWith(expect.objectContaining({
+      description: i18n.t("users:notifications.updated_success"),
+    }));
   });
 
   it("does not refresh context or users when the update is rejected", async () => {
@@ -141,6 +146,7 @@ describe("user updates and authorization context", () => {
     expect(requests.filter((url) => url.endsWith("/users"))).toHaveLength(1);
     expect(result.current.context.data).toEqual(initialContext);
     expect(sileo.error).toHaveBeenCalledWith(expect.objectContaining({ description: "Write rejected" }));
+    expect(sileo.success).not.toHaveBeenCalled();
   });
 
   it("keeps the confirmed write successful if context reload fails and allows retrying the read", async () => {
@@ -154,7 +160,8 @@ describe("user updates and authorization context", () => {
       expect(result.current.context.isError).toBe(true);
     });
     expect(requests.filter((url) => url.startsWith("put "))).toHaveLength(1);
-    expect(sileo.error).toHaveBeenCalled();
+    expect(sileo.error).toHaveBeenCalledTimes(1);
+    expect(sileo.success).toHaveBeenCalledTimes(1);
     mainInstance.defaults.adapter = async (config) => response(config, updatedContext);
     await act(() => result.current.context.refetch());
     await waitFor(() => expect(result.current.context.data).toEqual(updatedContext));

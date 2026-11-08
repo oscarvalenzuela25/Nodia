@@ -56,7 +56,7 @@ describe('NodiaAI trusted human secure flows', () => {
       f.descriptor.native_reference = {
         provider_id: '31',
         provider_key: 'gemini',
-        mode: 'token_plan_web',
+        mode: 'agentic',
         job_id: 'a'.repeat(32),
       };
       const request = {
@@ -79,7 +79,7 @@ describe('NodiaAI trusted human secure flows', () => {
       f.descriptor.native_reference = {
         provider_id: '31',
         provider_key: 'gemini',
-        mode: 'token_plan_agentic',
+        mode: 'agentic',
         job_id: 'a'.repeat(32),
       };
       await expect(
@@ -219,7 +219,7 @@ describe('NodiaAI trusted human secure flows', () => {
     f.descriptor.native_reference = {
       provider_id: '31',
       provider_key: 'gemini',
-      mode: 'token_plan_agentic',
+      mode: 'agentic',
       job_id: 'a'.repeat(32),
     };
     const result = await f.uc.get(f.identity, f.execution.id);
@@ -419,7 +419,7 @@ describe('NodiaAI trusted human secure flows', () => {
     await f.uc.execute(f.identity, f.execution.id, f.flowId, 'start', request);
     expect(f.native.start).toHaveBeenCalledTimes(1);
   });
-  it.each(['codex_logout', 'gemini_web_logout', 'sync_models'] as const)(
+  it.each(['codex_logout', 'sync_models'] as const)(
     'blocks replay of an uncertain %s command',
     async (kind) => {
       const f = setup(kind);
@@ -470,7 +470,7 @@ describe('NodiaAI trusted human secure flows', () => {
         reference: {
           provider_id: '31',
           provider_key: 'gemini',
-          mode: 'token_plan_agentic',
+          mode: 'agentic',
           job_id: 'a'.repeat(32),
         },
         state: 'completed',

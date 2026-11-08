@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "stage": "AI36-C05-CRUD-publication",
+  "status": "CRUD_publication_delivered_in_local_Linux_VM_with_representative_real_Codex_human_acceptance",
+  "observed_on": "2026-10-24",
+  "scope": {
+    "previous_capabilities": 74,
+    "added_domain_preparations": 72,
+    "added_secure_preparations": 4,
+    "published_source_capabilities": 150,
+    "source_fragments": 41,
+    "bulk_writes_excluded": true,
+    "unpublished_capability": "nodia_invoices_analyze",
+    "new_tables": 0,
+    "new_HTTP_routes": 0,
+    "runtime_TS_changes_for_this_delivery": 0
+  },
+  "source_evidence": [
+    "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
+    "docs/evidence/nodia-ai-ai36-c05-secure-publication-r03-validation.json"
+  ],
+  "atomic_regression_runs": [
+    {
+      "scope": "staged_selection_and_context",
+      "suites_passed": 3,
+      "tests_passed": 103,
+      "tests_failed": 0
+    },
+    {
+      "scope": "write_contracts_adapters_provider_and_secure_preparers",
+      "suites_passed": 8,
+      "tests_passed": 478,
+      "tests_failed": 0
+    },
+    {
+      "scope": "native_finance_business_rental_Core_and_publication_composition",
+      "suites_passed": 11,
+      "tests_passed": 532,
+      "tests_failed": 0
+    }
+  ],
+  "isolated_SQL": {
+    "status": "passed_disposable_PostgreSQL_on_byte_exact_R08_runtime",
+    "evidence_path": "docs/evidence/nodia-ai-ai36-c05-crud-sql-r01.json",
+    "evidence_sha256": "3a31c75144ece81b68e63da8c6921076aa32b66ac60586c33cc99f957f933f61",
+    "domain_writes_checks": 30,
+    "C02_checks": 31,
+    "AI29_checks": 55,
+    "actual_provider_generations": 0,
+    "configured_database_used_by_tests": false,
+    "fixtures_removed": true
+  },
+  "immutable_package": {
+    "status": "adopted_in_local_Linux_VM",
+    "path": "ops/lab/artifacts/ai36-c05-server-r09-r01/server-r09.tar.gz",
+    "sha256": "df03a59909f2a9e396ad0e23e583b0539dc41834b39773854d7abf405917e3db",
+    "manifest_sha256": "edd279fa5f5f99a7529adcf4cf75b7016505bf6581fc57cb85a3000cf802ff85",
+    "files": 4102,
+    "knowledge_release": "6763cef6423d2cc511844351a384358e0e5141e4f597d19a291a5cf1feeb3c73",
+    "plan_sha256": "505fa8dca968e6ddd6b8c9e36aa98302fff8e6018962eca74c3b124b2773e170",
+    "original_74_contracts_exact": true,
+    "new_76_implementation_sources_exact_R08": true,
+    "runtime_TS_JS_policy_dependencies_unchanged": true,
+    "metadata_only_reference_files_not_packaged": 13,
+    "build_inputs_archive": "ops/lab/artifacts/ai36-c05-r09-build-inputs-3225020b.tar.gz",
+    "build_inputs_archive_sha256": "4d5bb656dc65d844a3eed161e57e6beb9e1d712325e025bd37e05dbeaa97daf5",
+    "build_inputs_include_frozen_in_progress_delivery_report": true,
+    "build_inputs_are_not_runtime_package_contents": true
+  },
+  "VM_delivery": {
+    "status": "R09_active_in_local_Linux_VM",
+    "evidence_path": "docs/evidence/nodia-ai-ai36-c05-crud-deployment-r01.json",
+    "evidence_sha256": "43727704ade3ec58a5d969a913129f81f4c5f83080c0c5095e81527d11050520",
+    "continuation_operator_sha256": "b1881202ce745d3bf2fc45bd736ef9a4fe6f3af782de90172a2348719c65a3e5",
+    "remote_authority_receipt_sha256": "2aead759366bfc4522e5b76db6484adbe541eb6214caca49fe8228daacebeef8",
+    "API_PID": 3982963,
+    "worker_PID": 3982964,
+    "SQL_restore_or_migration": false,
+    "backup_replayed": false,
+    "immediate_rollback_preflight_passed_without_actual_rollback": true
+  },
+  "registry_DI": {
+    "status": "passed_actual_R09_registry_DI_isolated",
+    "evidence_path": "docs/evidence/nodia-ai-ai36-c05-crud-registry-di-r02.json",
+    "evidence_sha256": "9528f21f3f42d2adac7712da6494963d48897bfc2068826e5e4ae0593dcaa34c",
+    "actual_registry_and_pinned_knowledge": true,
+    "synthetic_publication_override": false,
+    "checks_passed": 12,
+    "provider_generations_and_domain_handler_calls": 0,
+    "ordinary_actor_destination_module_action_revocation_and_own_logout_checked": true,
+    "external_calls_asserted_after_teardown": true,
+    "stderr_bytes": 0,
+    "original_DI_fixture_and_report_preserved": true
+  },
+  "VM_preflight": {
+    "status": "passed_read_only",
+    "source_receipt_sha256": "77643e1d6345f60a1149ea22cb578b5ff0a08569bfa67084df502c1e81453ef7",
+    "adopter_sha256": "36a90a5f15128147f219e9d33d08a330c33e72e4b597fb13922c67c61e918770",
+    "source": "/opt/nodia/releases/nodia-server-ai40-r08",
+    "target": "/opt/nodia/releases/nodia-server-ai36-c05-r09",
+    "pending_jobs_open_attempts_retained_slots": 0,
+    "services_or_data_changed": false,
+    "proofs_copied_or_recreated": false
+  },
+  "real_account_acceptance": {
+    "status": "create_update_physical_delete_and_readback_verified",
+    "evidence_path": "docs/evidence/nodia-ai-ai36-c05-crud-real-acceptance-r01.json",
+    "evidence_sha256": "8734affe4333bf4150cd6cca16fd93e825d3a012e5b4c7174585c65d8085b46f",
+    "conversation_id": "c17fc842-1148-4bc5-b752-288cec2d35ff",
+    "marker": "AI36-C05-CRUD-UI-R01",
+    "provider_connection_id": "1",
+    "mode": "token_plan_agentic",
+    "model_from_persisted_catalog_and_UI": "gpt-6.1-sol",
+    "effort": null,
+    "representative_resource": "finance_categories",
+    "original_AI40_conversation_preserved_separately": true,
+    "new_chat_messages": 8,
+    "new_chat_runs": 4,
+    "new_chat_dispatches": 8,
+    "new_chat_tool_receipts": 14,
+    "native_closure_CREATE_UPDATE": "G2_composite_with_original_native_UUID_retention_limit",
+    "native_closure_DELETE_READBACK": "G1_direct_typed_ACK_witnesses",
+    "all_150_capabilities_live_accepted": false
+  },
+  "human_business_confirmation": {
+    "status": "three_physical_user_confirmations_verified_against_SQL_receipts",
+    "confirmed_proposals": 3,
+    "completed_executions": 3,
+    "atomic_effect_receipts": 3,
+    "one_consumed_challenge_per_exact_revision": true,
+    "agent_clicked_or_submitted_a_confirmation": false,
+    "test_category_3_physically_removed_after_validation": true,
+    "original_categories_preferences_and_movements_preserved": true
+  },
+  "final_baseline": {
+    "source_receipt_sha256": "00ad41f4a9e352c772a41e255a5807d5a62ba1f7ce5074e8a90fe13a56121dcd",
+    "status": "verified_read_only_after_readback_and_clean_DI",
+    "original_AI40_messages_runs_dispatches": [64, 34, 51],
+    "new_C05_messages_runs_dispatches": [8, 4, 8],
+    "pending_jobs_open_attempts_retained_slots": 0,
+    "test_category_id_and_key_matches": 0,
+    "surviving_original_category_ids": ["1", "2"],
+    "accepted_preference_revision": 2,
+    "accepted_preference_value": "2",
+    "finance_sha256": "5335e312c7b542552f924cf266fc007ff1a3691e522e6c682bb20e374b5b7871",
+    "preference_sha256": "711cd7844676b8ae7e427c8af60a8f846b3050a8ca7847c1b62ae20ee390d98b",
+    "current_services_configuration_and_four_proofs_preserved": true
+  },
+  "final_UI_continuity": {
+    "authenticated_reload_verified": true,
+    "conversation_id_preserved": "c17fc842-1148-4bc5-b752-288cec2d35ff",
+    "four_user_messages_and_four_assistant_messages_visible": true,
+    "mode_and_model_preserved": ["token_plan_agentic", "gpt-6.1-sol"],
+    "readback_zero_matches_and_completed_historical_receipt_preserved": true,
+    "composer_enabled_with_empty_draft": true,
+    "temporary_Finance_verification_tab_closed": true,
+    "no_new_messages_confirmations_or_business_effects_during_reload": true
+  },
+  "experimental_operator_cleanup": {
+    "source_files_archived_and_removed": 7,
+    "archive": "ops/lab/artifacts/ai36-c05-server-r09-r01/operator-history.tar",
+    "archive_sha256": "4c6d5657de38d9ded3459148e367f41cf2f8c30d3f43bcd5387f1a12c8b72fb7",
+    "catalog_sha256": "84d77ddb66ee30b010ab99fe30959214d90548362aac08217b6bf142ecffe589",
+    "maintained_adopters_registry_test_caller_authoring_and_atomic_test_sources_preserved": true,
+    "partial_empty_duplicate_archive_removed": true
+  },
+  "limitations": [
+    "Publication is distinct from current provider availability and real-account acceptance.",
+    "Every effect retains exact human confirmation, native validation and current authorization.",
+    "Secret values are entered through the authenticated human channel, never MCP arguments.",
+    "Physical deletion is exposed only for resources whose native operation supports it.",
+    "AI36-C05 and AI38 remain open; this report does not approve the complete v1."
+  ]
+}

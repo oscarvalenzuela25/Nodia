@@ -47,7 +47,7 @@ function capability(
   name: string,
   resource = 'actions',
   moduleKey = 'actions',
-  route = '/settings/actions',
+  route = '/actions',
 ): NodiaAiToolRegistration {
   return {
     capabilityId: name,
@@ -76,7 +76,7 @@ function fixture() {
       modules: [
         {
           key: 'actions',
-          route: '/settings/actions',
+          route: '/actions',
           label: 'Canonical actions',
         },
       ],
@@ -84,7 +84,7 @@ function fixture() {
         {
           key: 'actions',
           label: 'Actions',
-          requiredModuleRoutes: ['/settings/actions'],
+          requiredModuleRoutes: ['/actions'],
           resolveCapabilityId: 'nodia_actions_list',
         },
       ],
@@ -105,7 +105,7 @@ function fixture() {
       modules: [
         {
           key: 'write_actions',
-          route: '/settings/actions',
+          route: '/actions',
           label: 'Candidate actions',
         },
       ],
@@ -113,7 +113,7 @@ function fixture() {
         {
           key: 'actions',
           label: 'Candidate actions',
-          requiredModuleRoutes: ['/settings/actions'],
+          requiredModuleRoutes: ['/actions'],
         },
       ],
       capabilities: [
@@ -129,6 +129,25 @@ function fixture() {
 }
 
 describe('ComposeNodiaAiPublishedFamiliesUseCase', () => {
+  it('composes historical wire requirements with canonical modules without mutating either contract', () => {
+    const { reads, writes, compose } = fixture();
+    const historical = writes.map(family => ({ ...family,
+      modules: family.modules.map(module => ({ ...module, route: '/settings/actions' })),
+      resources: family.resources.map(resource => ({ ...resource, requiredModuleRoutes: ['/settings/actions'] })),
+      capabilities: family.capabilities.map(tool => ({ ...tool, requiredModuleRoutes: ['/settings/actions'] })),
+    }));
+    const before = JSON.stringify(historical);
+    const mixed = compose.execute(reads, historical);
+    const canonical = compose.execute(reads, writes);
+    const registry = new NodiaAiToolRegistryUseCase(mixed, 'synthetic-release');
+    const canonicalRegistry = new NodiaAiToolRegistryUseCase(canonical, 'synthetic-release');
+    expect(registry.get('nodia_actions_prepare_create')?.requiredModuleRoutes).toEqual(['/settings/actions']);
+    expect(registry.get('nodia_actions_prepare_create')?.contractHash).toBe(canonicalRegistry.get('nodia_actions_prepare_create')?.contractHash);
+    expect(registry.list(['/actions'])).toHaveLength(2);
+    expect(registry.list(['/settings/actions'])).toHaveLength(2);
+    expect(registry.list(['/users'])).toHaveLength(0);
+    expect(JSON.stringify(historical)).toBe(before);
+  });
   it('compiles the empty publication module with no proposal, SQL, Redis or runtime dependencies', async () => {
     const empty = NodiaAiWriteToolsModule.forPublication([]);
     expect(empty.imports).toBeUndefined();
@@ -169,7 +188,7 @@ describe('ComposeNodiaAiPublishedFamiliesUseCase', () => {
       ]),
     ).toThrow('nodia_ai:knowledge_release_invalid');
   });
-  it('builds the unchanged 73-contract bundles plus four separate secure contracts and selects only requested exports with stable hashes', () => {
+  it('builds the unchanged 72-contract bundles plus four separate secure contracts and selects only requested exports with stable hashes', () => {
     const { writes } = fixture();
     const candidates = [
       {
@@ -205,10 +224,20 @@ describe('ComposeNodiaAiPublishedFamiliesUseCase', () => {
       },
     }) as readonly NodiaAiToolFamily[];
     expect(captured).toHaveLength(4);
-    expect(captured.flatMap((bundle) => bundle.tools)).toHaveLength(77);
-    expect(captured.slice(0, 3).flatMap((bundle) => bundle.tools)).toHaveLength(
-      73,
-    );
+    expect(captured.flatMap((bundle) => bundle.tools)).toHaveLength(76);
+    expect(
+      captured
+        .flatMap((bundle) => bundle.tools)
+        .filter(
+          (tool) =>
+            !tool.kind && !tool.tool_name.startsWith('nodia_sales_prepare_'),
+        ),
+    ).toHaveLength(72);
+    expect(
+      captured
+        .flatMap((bundle) => bundle.tools)
+        .filter((tool) => tool.tool_name.startsWith('nodia_sales_prepare_')),
+    ).toHaveLength(0);
     expect(
       captured[3].tools.every((tool) => tool.kind === 'prepare_secure_flow'),
     ).toBe(true);
@@ -247,9 +276,9 @@ describe('ComposeNodiaAiPublishedFamiliesUseCase', () => {
       'synthetic-release',
     );
     expect(
-      second.list(['/settings/actions']).map((entry) => entry.contractHash),
+      second.list(['/actions']).map((entry) => entry.contractHash),
     ).toEqual(
-      first.list(['/settings/actions']).map((entry) => entry.contractHash),
+      first.list(['/actions']).map((entry) => entry.contractHash),
     );
   });
   it('attaches a writer to the existing resource without changing native authority or read contracts', () => {
@@ -274,7 +303,7 @@ describe('ComposeNodiaAiPublishedFamiliesUseCase', () => {
       result,
       'synthetic-release',
     );
-    expect(registry.list(['/settings/actions'])).toHaveLength(2);
+    expect(registry.list(['/actions'])).toHaveLength(2);
     expect(registry.findCapability('nodia_actions_list')?.contractHash).toBe(
       prior.findCapability('nodia_actions_list')?.contractHash,
     );
@@ -287,7 +316,7 @@ describe('ComposeNodiaAiPublishedFamiliesUseCase', () => {
         {
           key: 'action_groups',
           label: 'Groups',
-          requiredModuleRoutes: ['/settings/actions'],
+          requiredModuleRoutes: ['/actions'],
         },
       ],
       capabilities: [
@@ -304,7 +333,7 @@ describe('ComposeNodiaAiPublishedFamiliesUseCase', () => {
     expect(result[1].capabilities[0].moduleKey).toBe('actions');
     expect(
       new NodiaAiToolRegistryUseCase(result, 'synthetic-release').list([
-        '/settings/actions',
+        '/actions',
       ]),
     ).toHaveLength(2);
   });
@@ -322,13 +351,13 @@ describe('ComposeNodiaAiPublishedFamiliesUseCase', () => {
     expect(result[0].resources).toHaveLength(1);
     expect(
       new NodiaAiToolRegistryUseCase(result, 'synthetic-release').list([
-        '/settings/actions',
+        '/actions',
       ]),
     ).toHaveLength(2);
   });
   it('rejects conflicting resource scope or resolver instead of broadening an existing resource', () => {
     for (const patch of [
-      { requiredModuleRoutes: ['/settings/users'] },
+      { requiredModuleRoutes: ['/users'] },
       { resolveCapabilityId: 'nodia_unknown_list' },
     ]) {
       const { reads, writes, compose } = fixture();
@@ -387,7 +416,7 @@ describe('ComposeNodiaAiPublishedFamiliesUseCase', () => {
     writes[0] = {
       ...writes[0],
       modules: [
-        { key: 'actions', route: '/settings/users', label: 'Conflict' },
+        { key: 'actions', route: '/users', label: 'Conflict' },
       ],
     };
     expect(() => compose.execute(reads, writes)).toThrow(
@@ -401,7 +430,7 @@ describe('ComposeNodiaAiPublishedFamiliesUseCase', () => {
         {
           key: 'new_resource',
           label: 'New',
-          requiredModuleRoutes: ['/settings/actions'],
+          requiredModuleRoutes: ['/actions'],
         },
       ],
       capabilities: [

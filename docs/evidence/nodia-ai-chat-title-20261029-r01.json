@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "observed_at": "2026-10-29T16:29:16.858070+00:00",
+  "status": "inline_conversation_title_adopted_on_usage_vm",
+  "behavior": [
+    "Lápiz junto al título; TextInput y dos IconButtons44px aceptar/cancelar durante edición.",
+    "Enter guarda y Escape cancela sin blur-save. IME/repetición y solicitudes pendientes no duplican la operación.",
+    "Título recortado<=256bytes UTF-8; vacío se guarda null. Revisión fijada al abrir; revalidar explícitamente antes de aplicar sobre una revisión nueva.",
+    "Errores conservan borrador; éxito refleja nombre en cabecera/historial. Readonly/autoridad/run activo conservan bloqueos."
+  ],
+  "contract": {
+    "existing_endpoint": "PATCH /nodia-ai/conversations/:id",
+    "mutation_hook": "useUpdateNodiaAiConversation",
+    "server_unchanged": true,
+    "new_ai_tools": 0,
+    "human_commercial_confirmation_unchanged": true
+  },
+  "validation": {
+    "client_tests": {
+      "success": true,
+      "numTotalTests": 2126,
+      "numPassedTests": 2126,
+      "numFailedTests": 0,
+      "startTime": 1793290682061,
+      "files": 260
+    },
+    "atomic_title_cases": 8,
+    "typecheck_exit": 0,
+    "lint_exit": 0,
+    "build_exit": 0,
+    "operator_offline_cases": 10,
+    "browser": {
+      "matrix": [
+        {
+          "width": 320,
+          "theme": "dark",
+          "lang": "es",
+          "targets44": true,
+          "noOverflow": true,
+          "draftPreservedOnResize": true,
+          "escapeRestoresFocus": true
+        },
+        {
+          "width": 390,
+          "theme": "light",
+          "lang": "en",
+          "targets44": true,
+          "noOverflow": true,
+          "draftPreservedOnResize": true,
+          "escapeRestoresFocus": true
+        },
+        {
+          "width": 600,
+          "theme": "dark",
+          "lang": "es",
+          "targets44": true,
+          "noOverflow": true,
+          "draftPreservedOnResize": true,
+          "escapeRestoresFocus": true
+        },
+        {
+          "width": 1088,
+          "theme": "dark",
+          "lang": "es",
+          "targets44": true,
+          "noOverflow": true,
+          "draftPreservedOnResize": true,
+          "escapeRestoresFocus": true
+        },
+        {
+          "width": 1569,
+          "theme": "light",
+          "lang": "en",
+          "targets44": true,
+          "noOverflow": true,
+          "draftPreservedOnResize": true,
+          "escapeRestoresFocus": true
+        }
+      ],
+      "syntheticPatchAttempts": 2,
+      "automaticRetries": 0,
+      "failurePreservesDraft": true,
+      "savedHeaderAndSidebar": true,
+      "saveRestoresFocus": true,
+      "noVmMutations": true,
+      "noProviderRequests": true,
+      "engine": "Microsoft Edge/Chromium via Playwright CLI",
+      "transport": "isolated synthetic 127.0.0.1:5194"
+    },
+    "notes": [
+      "El primer typecheck detectó dos accesos opcionales a chat en una rama donde ya era undefined. Se retiraron sin alterar el resultado de esa rama; captura anterior conservada, captura final nueva vinculada al build. Tipado/build final y QA final correctos.",
+      "El primer script de navegador usaba un label abreviado. Se corrigió al nombre accesible existente Título de la conversación/Conversation title sin alterar la UI.",
+      "Se conserva el aviso de desarrollo setState-during-render previamente documentado y el favicon404 del harness. No se atribuye causa nueva ni corrección de esos avisos.",
+      "El build conserva el aviso previo de chunk>500kB. No se usaron cifras de rendimiento ni hardware real."
+    ],
+    "knowledge_check": {
+      "task": "AI-06",
+      "mode": "check",
+      "sources": 69,
+      "excluded": 25,
+      "documents": 44,
+      "fragments": 46,
+      "catalogRelease": "nodia-ai-business-pos/1",
+      "releaseId": "8a7c2acab58c8ab78dfd5db5660c442702f5abf0ca5ac58c810c3ad60909e2ba",
+      "exit": 0,
+      "emitted_or_adopted": false
+    }
+  },
+  "delivery": {
+    "url": "http://localhost:5174/tools/nodia-ai?chat=7b6d989f-c211-4bc6-9ce9-8077e9008748",
+    "release": "/opt/nodia/releases/nodia-client-chat-title-20261029-r01",
+    "manifest_sha256": "311fc432f14d2c6bd54b7054b4e2835f8e7c1033769fa9772529adc4b5fe905e",
+    "artifact": {
+      "bytes": 2102413,
+      "members": 172,
+      "sha256": "06f10a536797f5df25f44dacdcc0822f757a16e56c0bf3bc7ab2b0ff6eef8260",
+      "unpacked_bytes": 4639763
+    },
+    "source_input_fingerprint_sha256": "a032b233e59acb15c56c97f10c0c618054caad28994964258052926975b535a9",
+    "source_delta": {
+      "added": [
+        "src/modules/nodiaAi/components/ConversationTitle/ConversationTitle.tsx",
+        "src/modules/nodiaAi/components/ConversationTitle/index.ts",
+        "src/modules/nodiaAi/components/ConversationTitle/styles.ts",
+        "src/modules/nodiaAi/components/ConversationTitle/types.ts",
+        "src/test/modules/nodiaAi/components/ConversationTitle/ConversationTitle.test.tsx"
+      ],
+      "changed": [
+        "src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+        "src/translate/en/nodiaAi.json",
+        "src/translate/es/nodiaAi.json"
+      ],
+      "outside_authorized_scope": [],
+      "removed": []
+    },
+    "nginx_sha256": "95c2c165009f3ca041d22b3748de17b902a08f507b49eb5688b5a88a1dd09568",
+    "http": {
+      "current_assets": 168,
+      "previous_assets": 46,
+      "protected": [
+        {
+          "route": "/api/v1",
+          "status": 200
+        },
+        {
+          "route": "/api/v1/nodia-ai/connections",
+          "status": 401
+        },
+        {
+          "route": "/api/v1/products",
+          "status": 401
+        }
+      ],
+      "spa": [
+        {
+          "route": "/",
+          "sha256": "708a47e4e82c36951c9ddb19cdab9404c6bc32a54f972b5971962be8d9dd525a",
+          "status": 200
+        },
+        {
+          "route": "/tools/nodia-ai",
+          "sha256": "708a47e4e82c36951c9ddb19cdab9404c6bc32a54f972b5971962be8d9dd525a",
+          "status": 200
+        },
+        {
+          "route": "/tools/business",
+          "sha256": "708a47e4e82c36951c9ddb19cdab9404c6bc32a54f972b5971962be8d9dd525a",
+          "status": 200
+        }
+      ]
+    },
+    "local_index_sha256": "708a47e4e82c36951c9ddb19cdab9404c6bc32a54f972b5971962be8d9dd525a",
+    "protected_runtime_preserved": true,
+    "server_manifest_sha256": "22f928167d186565cb08fed6eb0572d43263e0a0a424f235aad26e0c7063ef24",
+    "knowledge_release_id": "b49fde74a53483fad4fe80b8175b36bb7c337415097dd9cfa4349285f9e1e2ea",
+    "backup": {
+      "nginx_before_sha256": "0fc64047518292922ecdc19ba0d6b88fdc7864dbb968c80003871009036091e7",
+      "configuration": "/opt/nodia/operations/nodia-ai-chat-title-20261029-r01/nginx-before.conf",
+      "previous_client": "/opt/nodia/releases/nodia-client-chat-feedback-20261029-r01",
+      "previous_client_verified_and_preserved": true
+    },
+    "api_worker_native_restarts": 0,
+    "sql_queries": 0,
+    "auth_requests": 0,
+    "provider_requests": 0,
+    "receipts": [
+      {
+        "path": "ops/lab/artifacts/nodia-ai-chat-title-20261029-r01/preflight-receipt.json",
+        "sha256": "14cd66af6b675671d0d21274af682fd3dff27d851919a21c66ea4ab816f64d28",
+        "bytes": 2830
+      },
+      {
+        "path": "ops/lab/artifacts/nodia-ai-chat-title-20261029-r01/stage-receipt.json",
+        "sha256": "fd732f0c16c5fe211701210bbcd60548b6ec606031552f0665e48da94cfdc4cd",
+        "bytes": 164
+      },
+      {
+        "path": "ops/lab/artifacts/nodia-ai-chat-title-20261029-r01/activation-receipt.json",
+        "sha256": "473a9734203d6c545f0b580c5bb74dde75b8eb9727d9650d2f23730070477c7b",
+        "bytes": 4181
+      },
+      {
+        "path": "ops/lab/artifacts/nodia-ai-chat-title-20261029-r01/status-receipt.json",
+        "sha256": "c9c98900748968065cb89b86104ae49bef8eb2c5ea476c5cece1475712b97950",
+        "bytes": 6084
+      }
+    ]
+  },
+  "knowledge": {
+    "approved_bodies_unchanged": 44,
+    "candidate_revision": 6,
+    "document_status": "draft",
+    "integration_status": "unregistered",
+    "approval": null,
+    "published": false,
+    "impact": "Acceso inline al renombrado existente; no nuevas operaciones/permisos/interpretación de datos o herramientas."
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/nodia-ai-chat-title-desktop-20261029.png",
+      "sha256": "1b033c05fd4e4119272cb56e7b27e7f1c7d926e0a9da43e9ef1eaee71510b67f",
+      "bytes": 76368
+    },
+    {
+      "path": "docs/evidence/nodia-ai-chat-title-mobile-20261029.png",
+      "sha256": "41f60dc8b765542b1f1cb2613afe1e79bc7bda75bd21637f6d59ab2f79d01a9f",
+      "bytes": 59553
+    }
+  ],
+  "limits": [
+    "Interacción verificada con datos/transporte sintéticos; no se cambió el título de un chat real durante QA.",
+    "No acepta nueva inferencia, proveedor, confirmación comercial, teléfono físico o teclado virtual/IME real.",
+    "HTTP/delivery de VM comprobados; no recorrido autenticado de esta edición en VM."
+  ]
+}

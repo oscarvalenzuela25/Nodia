@@ -39,7 +39,7 @@ function fixture() {
     actorId: '1',
     sessionId: randomUUID(),
     isSuperAdmin: false,
-    modules: [{ id: '1', key: 'nodia_ai', route: '/tools/nodia-ai' }],
+    modules: [{ id: '1', key: 'nodia_ai', route: '/nodia-ai' }],
   };
   const tools = [tool];
   const discovery = {
@@ -73,7 +73,7 @@ function fixture() {
   );
   const selection = {
     connection_id: '2',
-    mode: 'token_plan_agentic',
+    mode: 'agentic',
     model_id: 'synthetic-model',
     effort_id: null,
   };
@@ -84,7 +84,7 @@ function fixture() {
     selection_snapshot: selection,
     routing_snapshot: { enabled: false },
     context_manifest: {
-      module_routes: ['/tools/nodia-ai'],
+      module_routes: ['/nodia-ai'],
       tool_selection: {
         schema_version: 1,
         phase: 'discovery',
@@ -97,7 +97,7 @@ function fixture() {
     new NodiaAiExecutionGrant(),
     {
       run_id: run.id,
-      allowed_modules: ['/tools/nodia-ai'],
+      allowed_modules: ['/nodia-ai'],
       allowed_operations: ['chat:respond', NODIA_AI_SELECT_CAPABILITIES_TOOL],
       actor_id: actor.actorId,
       session_public_id: actor.sessionId,
@@ -171,7 +171,7 @@ function fixture() {
     arguments: { catalog_version: 'synthetic/1', capability_ids: [id] },
   };
   const request = () =>
-    flow.requestSelection(manager, claim, actor, ['/tools/nodia-ai'], call);
+    flow.requestSelection(manager, claim, actor, ['/nodia-ai'], call);
   const pendingAck = async () => {
     await request();
     const state = nodiaAiToolSelectionState(
@@ -438,7 +438,7 @@ describe('complete authorized discovery index', () => {
     expect(f.receiptRepo.save).not.toHaveBeenCalled();
     expect(JSON.stringify(index)).not.toContain('inputSchema');
     expect(f.discovery.visible).toHaveBeenCalledWith(f.manager, f.actor, [
-      '/tools/nodia-ai',
+      '/nodia-ai',
     ]);
   });
   it('groups a complete 151-capability catalog without a collection larger than 128 or a truncated prefix', async () => {
@@ -509,7 +509,7 @@ describe('complete authorized discovery index', () => {
     const index = await f.flow.discoveryIndex(f.manager, f.claim);
     expect(JSON.stringify(index)).not.toContain(unpublished.capabilityId);
     expect(f.discovery.visible).toHaveBeenCalledWith(f.manager, f.actor, [
-      '/tools/nodia-ai',
+      '/nodia-ai',
     ]);
     f.discovery.visible.mockResolvedValue([]);
     expect((await f.flow.discoveryIndex(f.manager, f.claim))!.modules).toEqual(
@@ -541,9 +541,9 @@ describe('complete authorized discovery index', () => {
   });
   it('omits discovery data in Web and execution without consulting the catalog or granting tools', async () => {
     const f = fixture();
-    f.run.selection_snapshot.mode = 'token_plan_web';
+    f.run.selection_snapshot.mode = 'token_plan_web' as never;
     expect(await f.flow.discoveryIndex(f.manager, f.claim)).toBeUndefined();
-    f.run.selection_snapshot.mode = 'token_plan_agentic';
+    f.run.selection_snapshot.mode = 'agentic';
     f.run.context_manifest.tool_selection = {
       schema_version: 1,
       phase: 'execution',

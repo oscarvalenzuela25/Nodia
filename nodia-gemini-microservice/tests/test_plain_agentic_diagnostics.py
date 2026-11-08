@@ -24,8 +24,7 @@ class PlainAgenticDiagnosticsTests(unittest.IsolatedAsyncioTestCase):
         self.home = self.root / "profile"
         self.home.mkdir()
         self.runner = SimpleNamespace(config=CliConfig(Path(sys.executable), "", self.home), run=AsyncMock())
-        self.adapter = ChatAdapter(None, SimpleNamespace(runner=self.runner),
-            ProfileAdmission(self.root / "web", self.home, self.root / "state"))
+        self.adapter = ChatAdapter(SimpleNamespace(runner=self.runner), ProfileAdmission(self.home, self.root / "state"))
         self.request = ChatRequest(attempt_id=str(uuid4()), model_id="synthetic-model", effort_id="synthetic-effort",
             canonical_prompt="private-canonical-message", resource_key="gemini-profile:" + "a" * 64,
             session_generation="b" * 32, timeout_seconds=5)

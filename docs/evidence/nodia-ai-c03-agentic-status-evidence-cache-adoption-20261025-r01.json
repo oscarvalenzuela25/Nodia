@@ -1,0 +1,507 @@
+{
+  "acceptance_at_adoption_cut": {
+    "AI36_closed": false,
+    "AI38_closed": false,
+    "C03_accepted": false,
+    "CF652_cohort_5f35_is_historical": true,
+    "MCP_current_epoch": "pending",
+    "PDF_current_epoch": "pending",
+    "PNG_current_epoch": "pending",
+    "WAV_current_epoch": "pending",
+    "WebM_current_epoch": "pending",
+    "approved_C03_revision3_hash_and_knowledge_fda_unchanged": true,
+    "authenticated_attachment_retry_UI": "pending",
+    "cases_executed": 0,
+    "future_new_cohort_has_separate_receipts": true,
+    "provider_availability_claimed": false,
+    "required_requalification": [
+      "MCP",
+      "PNG",
+      "PDF",
+      "WAV",
+      "WebM"
+    ]
+  },
+  "backup": {
+    "backup_id": "53f4c6f7-dea8-4158-ae07-1b3b81e33992",
+    "captured_at": "2026-10-25T23:24:14.521Z",
+    "cipher_bytes": 1403763,
+    "cipher_sha256": "b6343485e8e00f3173552d83e69c7134e82f959a45437444405354d8a7d2f3e0",
+    "encryption_key_id": "1284f64d8f1c1c38247d96da802a9bbd7261fab19c0a403872754cf6c517a860",
+    "expires_at": "2026-11-01T23:24:14.521Z",
+    "journal_sequence": 1,
+    "operation": "backup",
+    "rotated": {
+      "pending_recovered": 0,
+      "removed": 0,
+      "retained": 38
+    },
+    "schema_version": 1,
+    "status": "ready"
+  },
+  "build": {
+    "COPY_only_new_layers": 1,
+    "FakeRunner_cases_fixture_sha256": "9899233832190908d855f87b76b035af83925809c6808c66f044149a45fd5fbe",
+    "FakeRunner_fixture_sha256": "613088feb39d769bc5f60b3453433d00ea82096ab9ddf22e11dca731ef0bf457",
+    "FakeRunner_output_sha256": "d91112fbbb2d5179fa5f2042f900f163b36375785564610d380df1bb4dfbdd51",
+    "FakeRunner_tests_passed": 20,
+    "actual_filesystem_free_delta_bytes": 147456,
+    "build_continuation": "evidence-cache-r01",
+    "builder": "legacy_local_only",
+    "docker_version": {
+      "client": "29.9.0",
+      "server": "29.9.0"
+    },
+    "image_configuration_preserved": true,
+    "image_size_delta_bytes": 34209,
+    "network": "none",
+    "pull": false,
+    "source_alias": "nodia-gemini-c03-evidence-cache-source:r01-cf652",
+    "source_alias_ID_before_after": "sha256:cf652cf6c005fcdb4baacca123d76897ca6fe55cd4c3db9758ae260ff802d930",
+    "source_image_id": "sha256:cf652cf6c005fcdb4baacca123d76897ca6fe55cd4c3db9758ae260ff802d930",
+    "source_layers_prefix_preserved": true,
+    "space_after": {
+      "additional_phase_overhead_bytes": 8388608,
+      "available_bytes": 4426235904,
+      "future_cleanup_credited": false,
+      "required_bytes": 276832284,
+      "reserve_bytes": 268443676
+    },
+    "target_image_id": "sha256:cf5a6120e26a0cdf0ffd08a8efc80e7a393612faa672ea3187a7c256b76d4b1b"
+  },
+  "build_network_boundary": "legacy backend environment only for build subprocess; networknone does not isolate all daemon activity",
+  "capacity_after": {
+    "additional_phase_overhead_bytes": 2097152,
+    "available_bytes": 4425900032,
+    "future_cleanup_credited": false,
+    "required_bytes": 270540828,
+    "reserve_bytes": 268443676
+  },
+  "capacity_recovery": {
+    "expansion_cancelled_no_resize": true,
+    "merge_AccessDenied_pending_separate_from_active_runtime": true,
+    "separate_evidence": "docs/evidence/nodia-ai-unused-build-cache-retirement-20261025-r01.json",
+    "unused_builder_cache_only": true
+  },
+  "checked_on": "2026-10-25",
+  "effects": {
+    "SQL_restore": false,
+    "business_effects": 0,
+    "configured_SQL_writes": 0,
+    "inference_replay": false,
+    "migrations": 0,
+    "non_generative_startup_checks_not_counted": true,
+    "orderly_stop_may_cancel_nongenerative_metadata_checks": true,
+    "provider_generations": 0
+  },
+  "environment": "local_Linux_VM",
+  "epoch_after": {
+    "container_id": "5f77cc37e60dd21ed69f318c8c4891df886923d7fb5a0fcad77b5babd5cb0588",
+    "image_id": "sha256:cf5a6120e26a0cdf0ffd08a8efc80e7a393612faa672ea3187a7c256b76d4b1b",
+    "started_at_utc": "2026-10-25T23:24:23.136960345Z"
+  },
+  "epoch_before": {
+    "container_id": "138e361d0a084c853e96d0ae40eb2aca642a22d49384f5c1535e3b942b65bb17",
+    "image_id": "sha256:cf652cf6c005fcdb4baacca123d76897ca6fe55cd4c3db9758ae260ff802d930",
+    "started_at_utc": "2026-10-25T22:13:11.898521833Z"
+  },
+  "observed_at_VM_utc": "2026-10-25T23:25:06.016371+00:00",
+  "operator_sha256": "28efe2bb57d38209dfa74eae0f0119d45b1a6234dcf832a60e86904145992b93",
+  "plan_sha256": "1e5a40020aac59a0624680667b283395a935cdcf3d7cc0ad4ff44319aafb96f7",
+  "preservation": {
+    "Codex_after": "Completion requires pinned barrier again; post counters not duplicated",
+    "Codex_before": {
+      "locks_or_sockets": 0,
+      "pending": 0,
+      "profile_absent": false,
+      "records": 3,
+      "sdk_arg0_links": 0,
+      "sdk_binary": null
+    },
+    "consumers_after": {
+      "nodia-ai-worker": {
+        "active": "active",
+        "argv_exact_match": true,
+        "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "pid": 239973,
+        "recovery_config_path_verified": true,
+        "sub": "running",
+        "working_directory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01"
+      },
+      "nodia-api": {
+        "active": "active",
+        "argv_exact_match": true,
+        "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+        "original_dotenv_path_verified": true,
+        "other_environment_fields_emitted": false,
+        "pid": 239972,
+        "recovery_config_path_verified": true,
+        "sub": "running",
+        "working_directory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01"
+      }
+    },
+    "coordinated_Server_consumer_restart": true,
+    "drained": {
+      "SQL": {
+        "configured_SQL_writes": 0,
+        "observed_at_utc": "2026-10-25T23:24:21.280Z",
+        "open_attempts": 0,
+        "pending_jobs": 0,
+        "preserved_r05_chat": 1,
+        "provider_requests": 0,
+        "retained_slots": 0,
+        "scope": "post_disposable_live_read_only_operational_quiescence",
+        "services_restarted": false,
+        "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395",
+        "stage": "AI-36-C05",
+        "status": "passed",
+        "storage_operations": 0
+      },
+      "native": {
+        "agentic_home_configured": true,
+        "armed_native_proofs": 0,
+        "configured_database_modified": false,
+        "invalid_native_proofs": 0,
+        "observed_at_utc": "2026-10-25T23:24:21Z",
+        "profile_bytes_read": false,
+        "provider_calls": 0,
+        "scope": "read_only_native_runtime_artifact_counts",
+        "stage": "AI-32-R04",
+        "temporary_attachment_directories": 0,
+        "temporary_cli_directories": 0,
+        "terminal_native_proofs": 0,
+        "unknown_markers": 0
+      }
+    },
+    "during_transition_comparison": "Pinned adopter requires equality before native transition and after target start; post snapshot is not duplicated in receipt",
+    "journal_after": {
+      "backups": 39,
+      "coverage_closed_at": null,
+      "coverage_from": "2026-10-20T23:52:27.154Z",
+      "entries": 1,
+      "expired_backups": 0,
+      "first_sequence": 1,
+      "last_sequence": 1,
+      "operation": "status",
+      "release_authorized": false,
+      "unconfirmed": 0,
+      "updated_at": "2026-10-25T23:24:19.725Z"
+    },
+    "journal_before": {
+      "backups": 38,
+      "coverage_closed_at": null,
+      "coverage_from": "2026-10-20T23:52:27.154Z",
+      "entries": 1,
+      "expired_backups": 0,
+      "first_sequence": 1,
+      "last_sequence": 1,
+      "operation": "status",
+      "release_authorized": false,
+      "unconfirmed": 0,
+      "updated_at": "2026-10-25T23:23:21.461Z"
+    },
+    "mounts_environment_resources": "Exact semantic equality required by pinned operator",
+    "preflight_and_adoption_baselines_equal": true,
+    "protected_before_snapshot": {
+      "protected_domain_and_preferences": {
+        "SQL_writes": 0,
+        "domain": {
+          "actions": {
+            "rows": 2,
+            "sha256": "23b2cbae5fe4d28d6c7209428d9348291cee5d0ecfd437b655fe8f53e9a186dd"
+          },
+          "ai_api_keys": {
+            "rows": 1,
+            "sha256": "4da1084212a4890de725cb72ce8ecd3354b3f051cc74b9066711cdfaba6568a0"
+          },
+          "ai_provider_catalog": {
+            "rows": 17,
+            "sha256": "d419c60662c952500a5fd1f9ccabdbf9a4757ea0214d45e0a7224b9a7e6bf5bc"
+          },
+          "ai_provider_events": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "ai_providers": {
+            "rows": 2,
+            "sha256": "30a4673f62a1b6ea3688665208385bc029c6ee809daef79ad0ca12ffddaea9b2"
+          },
+          "business_actions": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "business_collaborators": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "businesses": {
+            "rows": 1,
+            "sha256": "cdaa78dbff634f8eed1d05ab828df25459609b7bf4f932ff3c20c103fc96d05f"
+          },
+          "finance_categories": {
+            "rows": 2,
+            "sha256": "3024c1e13a82d6232c09f79601a3d8cdda76c00e6f7134b874fba804fc239996"
+          },
+          "finance_category_group_memberships": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "finance_category_groups": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "finance_movements": {
+            "rows": 2,
+            "sha256": "5335e312c7b542552f924cf266fc007ff1a3691e522e6c682bb20e374b5b7871"
+          },
+          "finance_obligations": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "invoice_uploads": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "invoices": {
+            "rows": 1,
+            "sha256": "969a3181fc5bf4098c84ad9bfc60410d25131541df5904fde4288d322bb31351"
+          },
+          "migrations": {
+            "rows": 30,
+            "sha256": "f5a11689be060f8de77306d426d2ac084982bf6ff553a1b9603aa64b4c240b82"
+          },
+          "module_groups": {
+            "rows": 3,
+            "sha256": "e91f13cc01e041ccb08d15356f76381f8548407c0f863d9c7069ff4cc45d252e"
+          },
+          "modules": {
+            "rows": 9,
+            "sha256": "bb4e19aaf2906a5755943710649572a5c70a0e46ff5f1c346f5cfe3521459b28"
+          },
+          "nodia_ai_preferences": {
+            "rows": 1,
+            "sha256": "c3ec6b40c6975557202b188118d5701db1aa357624ae18f7cfdcd0fd3029456a"
+          },
+          "nodia_codex_catalog_rollback": {
+            "rows": 1,
+            "sha256": "0926d9d8aa406442a82e85cf48d3b04ea7f0c5fd56d088478160ac106b24cbf3"
+          },
+          "personal_info_provider": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "product_logs": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "products": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "providers": {
+            "rows": 1,
+            "sha256": "05574765e95e43175e202040304c6dc3933bf9c694d4628d6ac157ddc7f95bd7"
+          },
+          "rental_audit_events": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "rental_blocks": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "rental_cancellation_policies": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "rental_cancellation_rules": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "rental_collaborators": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "rental_expenses": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "rental_operations": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "rental_payments": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "rental_properties": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "rental_reservations": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "rental_turnovers": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "role_actions": {
+            "rows": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "roles": {
+            "rows": 1,
+            "sha256": "07ff2fbde402038411cd4f320f2462120b78ea7f6b3b6ab1bc18c92c1f235a06"
+          },
+          "translations": {
+            "rows": 30,
+            "sha256": "48310ee9a1d3478891c2ca332e2e1a3988e5c624a6f507f08f099ebc8f3bdc4d"
+          },
+          "user_modules": {
+            "rows": 8,
+            "sha256": "96d43ec5380d4042e508a14fcceaa7df4bcb6fc6d03ef501aa27dd6a6514022f"
+          },
+          "user_roles": {
+            "rows": 1,
+            "sha256": "4acfc3d1452dbbfd9acc09bf01753ad99fe8782455e4411e55e252929b485657"
+          },
+          "users": {
+            "rows": 1,
+            "sha256": "f401ede3581da12bc3dd44de0d6ecb6d705885e0fd546907d09faff714572972"
+          }
+        },
+        "provider_generations": 0,
+        "readonly": true
+      },
+      "schema_and_provider_configuration": {
+        "migration_ledger_sha256": "22ae960a022dc6fc5fbc191779a76f4c45c87d042a75ef003441fd92890c8dcd",
+        "migrations": 30,
+        "provider_configuration_sha256": "0991f942e121ae3c3aa8afe7ce1c28e1ef5a18ddf17b03e727c872930aadc126",
+        "read_only": true,
+        "schema_sha256": "82753ec54d69006d2850dd62173093c03086e43a37af62e2a3dba1c5da5b4b87"
+      },
+      "static_pins": {
+        "Client_manifest_sha256": "17f0acd53cbfc04fad73f00bbfaed37e2d5a50d131b84333c50b49b5272363cb",
+        "Server_manifest_sha256": "4276fd7091f3d7f36604ba355895a2e43054bcbcec7b87ee5f0d897a42a41549",
+        "knowledge_release": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+        "nginx_sha256": "8ea8a9517a3362c8df0a6e35b09d3a0870ebae657001d3752cd2faf15e90fc21"
+      }
+    },
+    "quiet_after": {
+      "SQL": {
+        "configured_SQL_writes": 0,
+        "observed_at_utc": "2026-10-25T23:25:05.033Z",
+        "open_attempts": 0,
+        "pending_jobs": 0,
+        "preserved_r05_chat": 1,
+        "provider_requests": 0,
+        "retained_slots": 0,
+        "scope": "post_disposable_live_read_only_operational_quiescence",
+        "services_restarted": false,
+        "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395",
+        "stage": "AI-36-C05",
+        "status": "passed",
+        "storage_operations": 0
+      },
+      "native": {
+        "agentic_home_configured": true,
+        "armed_native_proofs": 0,
+        "configured_database_modified": false,
+        "invalid_native_proofs": 0,
+        "observed_at_utc": "2026-10-25T23:25:04Z",
+        "profile_bytes_read": false,
+        "provider_calls": 0,
+        "scope": "read_only_native_runtime_artifact_counts",
+        "stage": "AI-32-R04",
+        "temporary_attachment_directories": 0,
+        "temporary_cli_directories": 0,
+        "terminal_native_proofs": 0,
+        "unknown_markers": 0
+      }
+    },
+    "quiet_before": {
+      "SQL": {
+        "configured_SQL_writes": 0,
+        "observed_at_utc": "2026-10-25T23:24:12.471Z",
+        "open_attempts": 0,
+        "pending_jobs": 0,
+        "preserved_r05_chat": 1,
+        "provider_requests": 0,
+        "retained_slots": 0,
+        "scope": "post_disposable_live_read_only_operational_quiescence",
+        "services_restarted": false,
+        "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395",
+        "stage": "AI-36-C05",
+        "status": "passed",
+        "storage_operations": 0
+      },
+      "native": {
+        "agentic_home_configured": true,
+        "armed_native_proofs": 0,
+        "configured_database_modified": false,
+        "invalid_native_proofs": 0,
+        "observed_at_utc": "2026-10-25T23:24:12Z",
+        "profile_bytes_read": false,
+        "provider_calls": 0,
+        "scope": "read_only_native_runtime_artifact_counts",
+        "stage": "AI-32-R04",
+        "temporary_attachment_directories": 0,
+        "temporary_cli_directories": 0,
+        "terminal_native_proofs": 0,
+        "unknown_markers": 0
+      }
+    },
+    "read_only_helpers": "durable exact original bytes and quiet assertions; no query rewrite",
+    "timers_restored": true
+  },
+  "schema_version": 1,
+  "scope": {
+    "CLI_dependencies_profiles_Server_Client_knowledge_changes": false,
+    "after_sha256": "b20f724a3bcdcf3ba433a11c19474fc2cd9d4f2e02edb155eed317494daa3a03",
+    "before_sha256": "a626e350f6063432291d8dbf74091f7570c7d976976c8ffa970c8ef302dc6bd5",
+    "behavior": "Validated usage/models pieces, original TTL30 and earliest expiry, runner/session invalidation, unchanged12/18s budgets; final eligibility is not cached",
+    "changed_runtime_module": "agentic_service.py",
+    "public_modules": 51,
+    "unchanged_other_modules": 50
+  },
+  "sources": {
+    "adopt": {
+      "path": "ops/lab/artifacts/c03-agentic-status-evidence-cache-adoption-verification-r01/receipts/cache-adopt-r01.json",
+      "sha256": "854acb4ef016c7734dff747b9a58aba88837733c0e7a0388d5bd2866c0e189d2"
+    },
+    "adopt-preflight": {
+      "path": "ops/lab/artifacts/c03-agentic-status-evidence-cache-adoption-verification-r01/receipts/cache-adopt-preflight-r01.json",
+      "sha256": "8bc6c2d694f5598fd8ddf2211ea256a80647a9bdc5ed55ed429a45eb3ff8ad58"
+    },
+    "bootstrap": {
+      "path": "ops/lab/artifacts/c03-agentic-status-evidence-cache-adoption-verification-r01/receipts/cache-bootstrap-r01.json",
+      "sha256": "1ddc236e4d764575a3e2edee10f6c66f94849062a56ab53ce2118cf82dfe6209"
+    },
+    "build": {
+      "path": "ops/lab/artifacts/c03-agentic-status-evidence-cache-adoption-verification-r01/receipts/cache-build-r01.json",
+      "sha256": "b2cad8babf53471905b4944cf5f32f672cbb4f090d6f957b5c1316c65d5feec4"
+    },
+    "build-preflight": {
+      "path": "ops/lab/artifacts/c03-agentic-status-evidence-cache-adoption-verification-r01/receipts/cache-build-preflight-r01.json",
+      "sha256": "dce9a0eabb38cb4dbc96290d80441dd0d3517ddbb12b205f0fe9d82bb7e2698a"
+    },
+    "operator-linux-tests": {
+      "path": "ops/lab/artifacts/c03-agentic-status-evidence-cache-adoption-verification-r01/receipts/cache-operator-linux-tests-r01.json",
+      "sha256": "b3b2c527846b622502eba9f8a36123f90e8c7658f655450d56f7c800c17dffd3"
+    },
+    "pin-plan": {
+      "path": "ops/lab/artifacts/c03-agentic-status-evidence-cache-adoption-verification-r01/receipts/cache-pin-plan-r01.json",
+      "sha256": "29bde026a8ada2324c3c81b949aceb327b99224307b55ce282eb7dc6164869a2"
+    }
+  },
+  "status": "validated_metadata_evidence_cache_adopted",
+  "validation": {
+    "candidate_Linux_FakeRunner_passed": 20,
+    "operator_Linux_passed": 29,
+    "operator_Linux_skipped": 0,
+    "provider_acceptance_inferred_from_tests": false
+  }
+}

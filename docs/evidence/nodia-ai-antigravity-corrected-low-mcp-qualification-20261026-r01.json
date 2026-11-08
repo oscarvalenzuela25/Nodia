@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "status": "real_MCP_qualification_passed_for_exact_6401_epoch_and_saved_LOW_selection",
+  "source": {
+    "services": {
+      "nodia-api": {
+        "MainPID": "598878",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+        "ActiveState": "active"
+      },
+      "nodia-ai-worker": {
+        "MainPID": "598879",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+        "ActiveState": "active"
+      },
+      "nginx": {
+        "MainPID": "3630787",
+        "WorkingDirectory": "",
+        "ActiveState": "active"
+      },
+      "nodia-keyring": {
+        "MainPID": "3630841",
+        "WorkingDirectory": "",
+        "ActiveState": "active"
+      }
+    },
+    "native": {
+      "id": "ae8b025b5910da6bb27a96dee881411a3c66d62fdcf612cf61013841d064f091",
+      "image": "sha256:6401f3576bc6eaba31afc47a6f1ba3f6ff397e966465d5cd6da573adc9a8ff93",
+      "started_at": "2026-10-26T16:56:35.276313977Z",
+      "descriptor_sha256": "f0bfd32c0af03e3e564c47e1ff83433fe18416e612f620a2558dcf2b07af1584"
+    },
+    "server_manifest_sha256": "8f83d1525802a08f468e8132ff496a0976493e3b32941366888b631e56273bc8",
+    "native_source_count": 52,
+    "client_manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+    "nginx_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac",
+    "environment_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "native_quiet": {
+      "attempt_receipts": 0,
+      "unknown_markers": 0,
+      "temporary_directories": 0,
+      "active_native_processes": 0
+    },
+    "codex": {
+      "profile_absent": false,
+      "pending": 0,
+      "locks_or_sockets": 0,
+      "records": 3,
+      "sdk_arg0_links": 0,
+      "sdk_binary": null
+    }
+  },
+  "binding": {
+    "selection": {
+      "connection_id": "2",
+      "effort_id": "low",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-low"
+    },
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+    "session_generation": "3db7658859884fee8821166b4fd1d66a"
+  },
+  "control": {
+    "attempt_id": "f813d29d-dc50-4263-a817-9d21766fa6b5",
+    "plan_sha256": "f4e6be1d738cf98399f687ab4eaafe1d34b10bad01634d0f1aa87ee17adbd872",
+    "operator_sha256": "9a6dd3dc6f233fbb49b33f51bacf634dd79337cd5d1dbc251c87bc549acf24d5",
+    "tool_count": 9,
+    "padding_ASCII_bytes": 0,
+    "real_provider_start_requests": 1,
+    "actual_public_callback_arguments": {
+      "capability_ids": [
+        "nodia_invoices_ocr"
+      ],
+      "catalog_version": "nodia-ai-ai15-reads/1"
+    },
+    "production_schema_validated": true,
+    "fixture_accepted": 1,
+    "fixture_rejected": 0,
+    "business_dispatches": 0,
+    "business_writes": 0,
+    "SQL_writes": 0,
+    "automatic_inference_retries": 0
+  },
+  "terminal": {
+    "engine": "agentic",
+    "attempt_id": "f813d29d-dc50-4263-a817-9d21766fa6b5",
+    "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+    "session_generation": "3db7658859884fee8821166b4fd1d66a",
+    "operation_ref": "f813d29d-dc50-4263-a817-9d21766fa6b5",
+    "terminal_proof_id": "197521a5-a461-4bce-a064-d3106c9d9e93",
+    "process_closed": true,
+    "outcome": "completed"
+  },
+  "acknowledged": true,
+  "pending_identity": false,
+  "endpoint_counts": {
+    "observe": {
+      "requests": 1,
+      "completed": 1,
+      "failed": 0
+    },
+    "measure": {
+      "requests": 1,
+      "completed": 1,
+      "failed": 0
+    },
+    "start": {
+      "requests": 1,
+      "completed": 1,
+      "failed": 0
+    },
+    "events": {
+      "requests": 101,
+      "completed": 101,
+      "failed": 0
+    },
+    "results": {
+      "requests": 1,
+      "completed": 1,
+      "failed": 0
+    },
+    "attest": {
+      "requests": 1,
+      "completed": 1,
+      "failed": 0
+    },
+    "cancel": {
+      "requests": 0,
+      "completed": 0,
+      "failed": 0
+    },
+    "reconcile": {
+      "requests": 0,
+      "completed": 0,
+      "failed": 0
+    },
+    "acknowledge": {
+      "requests": 1,
+      "completed": 1,
+      "failed": 0
+    }
+  },
+  "operator_probe_elapsed_ms": 10346,
+  "elapsed_limit": "monotonic duration around the operator probe; not vendor latency or cost",
+  "provider_internal_calls": null,
+  "provider_cost": null,
+  "preceding_operator_failure": {
+    "R02_preflight_receipt_sha256": "713fbd979238b4933371f38cc89e6f619ec0c339d41030efca846a087a50fcdf",
+    "no_start_or_intent": true,
+    "cause": "Source helper native_quiet compared old global descriptor d278 despite current epoch comparison f0bf matching",
+    "correction": "R03 verifies source helper hash then explicitly binds NATIVE_DESCRIPTOR_SHA to real current plan f0bf; no native service or Mounts normalization",
+    "diagnostic_receipt_sha256": "a04b323d8be616db64125a716e56fe2a5a9c01879721e558bee6a18ce5b37422",
+    "bootstrap_metadata_correction": "R02 top plan report used old hash while embedded plan/operator actual hash matched; R03 top metadata derives actual payload hash",
+    "R03_source_helper_rebind_test": "real maintained function with checked stub verifies current descriptor; bootstrap metadata test verifies actual payload plan hash"
+  },
+  "limits": [
+    "This qualifies a real technical capability-select call with a synthetic handler and nine public descriptors; it is not natural chat, OCR, MIME or business workflow acceptance.",
+    "LOW model/effort originate from explicitly persisted discovery selection, not global fallback; global HIGH connection configuration remains unchanged.",
+    "The proof applies only to image6401/CIDae8/session3db and cannot be inherited by a future epoch.",
+    "A later natural M1 was separately rejected by receiver runtime_busy; qualification success does not guarantee later physical profile availability.",
+    "No account, VM, SDK or inference was operated by this consolidating author."
+  ],
+  "receipt_sha256": {
+    "antigravity-corrected-metadata-VM-r01.json": "7720a396773abd6c6a02d6a2ac03cc2118d8a1551741ba63ae6a4e05bb6b342a",
+    "antigravity-corrected-qual-bootstrap-VM-r02.json": "605dc2067c4185f452813b29299a9d981e1b43de73aa196ca22b64d4517e86b2",
+    "antigravity-corrected-qual-preflight-VM-r02.json": "713fbd979238b4933371f38cc89e6f619ec0c339d41030efca846a087a50fcdf",
+    "native-qual-guard-diagnostic-VM-r01.json": "a04b323d8be616db64125a716e56fe2a5a9c01879721e558bee6a18ce5b37422",
+    "native-descriptor-binding-diagnostic-VM-r01.json": "85e8508a910fc4a43262ab4d6e6b63f8383e0369f1cf00a4f9482c4593d70f54",
+    "antigravity-corrected-qual-bootstrap-VM-r03.json": "b86ab414969e4d526aedb69f3f6d1c168084c249d2671375e60cbf80b7d94975",
+    "antigravity-corrected-qual-preflight-VM-r03.json": "68e7f1f1b701ba4d272d7e5fff9de076468d90afce3ef8a4711143a6a3cda443",
+    "antigravity-corrected-qual-execute-VM-r03.json": "358f4e5f4ac625cb80ac414bacae86105dde6f0cb864ce77371ef88d2eb60114"
+  },
+  "artifact": "ops/lab/artifacts/antigravity-corrected-low-qualification-verification-r01"
+}

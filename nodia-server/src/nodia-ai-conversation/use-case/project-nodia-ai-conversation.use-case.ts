@@ -78,9 +78,7 @@ export class ProjectNodiaAiConversationUseCase {
             !/\S/u.test(entity.selected_model_id) ||
             Buffer.byteLength(entity.selected_model_id, 'utf8') > 1024)) ||
         (entity.selected_mode !== null &&
-          !['api_key', 'token_plan_web', 'token_plan_agentic'].includes(
-            entity.selected_mode,
-          )) ||
+          !['api_key', 'agentic'].includes(entity.selected_mode)) ||
         (entity.selected_mode === null && entity.selected_effort_id !== null)
       )
         throw Error();
@@ -89,7 +87,7 @@ export class ProjectNodiaAiConversationUseCase {
       if (
         result.routing.target &&
         (result.routing.target.selection.effort_id === undefined ||
-          result.routing.target.selection.mode !== 'token_plan_agentic' ||
+          result.routing.target.selection.mode !== 'agentic' ||
           (entity.selected_connection_id !== null &&
             result.routing.target.selection.connection_id !==
               entity.selected_connection_id))

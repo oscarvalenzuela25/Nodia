@@ -55,7 +55,7 @@ describe('RevokeOwnAuthSessionUseCase', () => {
   it('allows an ordinary user to revoke their own session without ai:manage', async () => {
     const f = fixture();
     f.setAdmin(false);
-    f.setPermission(false);
+    f.setModule(false);
     await f.uc.execute(f.actor);
     expect(f.update).toHaveBeenCalledOnce();
   });

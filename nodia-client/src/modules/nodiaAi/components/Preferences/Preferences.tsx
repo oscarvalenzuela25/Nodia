@@ -1,5 +1,6 @@
 import { useId, useState } from "react";
-import { Alert, Box, Button, LinearProgress, Typography } from "@mui/material";
+import { Alert, Box, Button, IconButton, LinearProgress, Typography } from "@mui/material";
+import CloseRounded from "@mui/icons-material/CloseRounded";
 import { useIsFetching } from "@tanstack/react-query";
 import { Skeleton } from "boneyard-js/react";
 import { useTranslation } from "react-i18next";
@@ -42,7 +43,7 @@ export default function Preferences({ open, onClose, conversationId, disabled }:
   };
   return <PreferencesDrawer anchor="right" open={open} onClose={() => { if (!busy) onClose(); }}
     slotProps={{ root: { keepMounted: true }, paper: { role: "dialog", "aria-modal": true, "aria-labelledby": titleId } }}>
-    <Header><Typography id={titleId} component="h2" variant="h6">{t("preferences.title")}</Typography><Button disabled={busy} onClick={onClose}>{t("close")}</Button></Header>
+    <Header><Typography id={titleId} component="h2" variant="h6">{t("preferences.title")}</Typography><IconButton aria-label={t("close")} title={t("close")} disabled={busy} onClick={onClose} sx={{ width: 44, height: 44 }}><CloseRounded /></IconButton></Header>
     <Content>
       <Typography variant="body2">{t("preferences.description")}</Typography>
       {(fetching || preparing.isPending) && <LinearProgress aria-label={t("refreshing")} />}
@@ -50,9 +51,9 @@ export default function Preferences({ open, onClose, conversationId, disabled }:
       {error && <Alert severity="error">{error}</Alert>}
       {proposal && conversationId ? <>
         <ProposalPreview conversationId={conversationId} proposalRef={proposal} visible={open} onBusyChange={setProposalBusy} />
-        <Actions><Button disabled={busy} onClick={() => { setProposal(null); setError(null); }}>{t("preferences.back")}</Button></Actions>
+        <Actions><Button variant="contained" disabled={busy} onClick={() => { setProposal(null); setError(null); }}>{t("preferences.back")}</Button></Actions>
       </> : <>
-        {(list.isError || catalog.isError) && <Alert severity="error" action={<Button disabled={busy} onClick={() => { if (list.isError) void list.refetch(); if (catalog.isError) void catalog.refetch(); }}>{t("retry")}</Button>}>{t("preferences.load_error")}</Alert>}
+        {(list.isError || catalog.isError) && <Alert severity="error" action={<Button variant="contained" disabled={busy} onClick={() => { if (list.isError) void list.refetch(); if (catalog.isError) void catalog.refetch(); }}>{t("retry")}</Button>}>{t("preferences.load_error")}</Alert>}
         <Skeleton loading={list.isLoading || catalog.isLoading}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
             {!rows.length && !list.isError && <Typography>{t("preferences.empty")}</Typography>}
@@ -62,17 +63,17 @@ export default function Preferences({ open, onClose, conversationId, disabled }:
               {item.scope_label && <Typography variant="caption">{t("preferences.scope", { value: item.scope_label })}</Typography>}
               {!item.available && <Alert severity="info">{t("preferences.unavailable")}</Alert>}
               <Actions>
-                <Button disabled={disabled || busy || !item.available || !definitions.some(definition => definition.scope_key === item.scope_key && definition.key === item.key)} onClick={() => { setError(null); setEditor({ preference: item }); }}>{t("preferences.edit")}</Button>
-                <Button color="error" disabled={disabled || busy || !conversationId} onClick={() => { if (conversationId) void prepare({ conversation_id: conversationId, operation: "delete", preference_id: item.preference_id, expected_revision: item.revision }); }}>{t("preferences.delete")}</Button>
+                <Button variant="contained" disabled={disabled || busy || !item.available || !definitions.some(definition => definition.scope_key === item.scope_key && definition.key === item.key)} onClick={() => { setError(null); setEditor({ preference: item }); }}>{t("preferences.edit")}</Button>
+                <Button variant="contained" color="error" disabled={disabled || busy || !conversationId} onClick={() => { if (conversationId) void prepare({ conversation_id: conversationId, operation: "delete", preference_id: item.preference_id, expected_revision: item.revision }); }}>{t("preferences.delete")}</Button>
               </Actions>
             </Card>)}
-            {list.hasNextPage && <Button disabled={busy} onClick={() => void list.fetchNextPage()}>{t("preferences.more")}</Button>}
+            {list.hasNextPage && <Button variant="contained" disabled={busy} onClick={() => void list.fetchNextPage()}>{t("preferences.more")}</Button>}
           </Box>
         </Skeleton>
         {editor && conversationId ? <Card>
           <Typography component="h3" variant="subtitle2">{t(editor.preference ? "preferences.edit" : "preferences.new")}</Typography>
           <PreferenceEditor key={editor.preference ? `${editor.preference.preference_id}:${editor.preference.revision}` : "new"} definitions={definitions} preference={editor.preference} conversationId={conversationId} disabled={disabled || busy} active={open} onPrepare={prepare} onCancel={() => setEditor(null)} />
-        </Card> : <Actions><Button disabled={disabled || busy || !definitions.length || list.isError || catalog.isError} onClick={() => { setError(null); setEditor({}); }}>{t("preferences.new")}</Button></Actions>}
+        </Card> : <Actions><Button variant="contained" disabled={disabled || busy || !definitions.length || list.isError || catalog.isError} onClick={() => { setError(null); setEditor({}); }}>{t("preferences.new")}</Button></Actions>}
       </>}
     </Content>
   </PreferencesDrawer>;

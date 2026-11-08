@@ -39,7 +39,7 @@ describe("human-only secure flow boundary", () => {
     expect(JSON.stringify(error.response?.data)).not.toContain("synthetic-private-value");
     expect(error.message).not.toContain("synthetic-private-value");
   });
-  it.each([{ reference: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb" }, { provider_id: "9007199254740994" }, { key_id: "10" }, { mode: "token_plan_agentic" }, { revision: 2 }])("rejects a late response for a different binding %j", async patch => {
+  it.each([{ reference: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb" }, { provider_id: "9007199254740994" }, { key_id: "10" }, { mode: "agentic" }, { revision: 2 }])("rejects a late response for a different binding %j", async patch => {
     http.post.mockResolvedValue({ data: { flow: { ...secureFlowFixture.flow, ...patch } }, config: {} });
     await expect(actNodiaAiSecureFlow(execution.execution_id, secureFlowFixture.flow, "status", execution.execution_id)).rejects.toThrow();
   });

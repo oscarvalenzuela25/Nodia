@@ -4,6 +4,7 @@ import {
   NodiaAiRuntimeReconciliationPort,
   type NodiaAiRuntimeProofRequest,
   type NodiaAiRuntimeTerminalProof,
+  type NodiaAiGeminiRuntimeProofRequest,
 } from '../../nodia-ai-runtime/types/reconciliation.types.js';
 
 function record(input: unknown): Record<string, unknown> | null {
@@ -12,7 +13,7 @@ function record(input: unknown): Record<string, unknown> | null {
     : null;
 }
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-function valid(request: NodiaAiRuntimeProofRequest): void {
+function valid(request: NodiaAiRuntimeProofRequest): asserts request is NodiaAiGeminiRuntimeProofRequest {
   if (
     request.adapterIdentity !== undefined ||
     !['web', 'agentic'].includes(request.engine) ||

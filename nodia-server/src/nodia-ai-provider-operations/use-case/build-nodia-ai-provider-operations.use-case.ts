@@ -46,15 +46,13 @@ import type {
   NodiaAiProviderOperation,
   NodiaAiProviderResource as Resource,
 } from '../types/provider-operation.types.js';
-
-const route = '/settings/ai-providers';
-const modes = ['api_key', 'token_plan_web', 'token_plan_agentic'] as const;
+const route = '/ai-providers';
+const modes = ['api_key', 'agentic'] as const;
 const modelFields = ['selected_model', 'ocr_model', 'ocr_focus_model'] as const;
 const connectionFields: Readonly<Record<string, string>> = {
   name: 'string',
   use_api_key: 'boolean',
-  use_token_plan_web: 'boolean',
-  use_token_plan_agentic: 'boolean',
+  use_agentic: 'boolean',
   default_mode: 'nullable_mode',
   auto_rotate_api_keys: 'boolean',
   is_default: 'boolean',
@@ -64,8 +62,7 @@ const connectionFields: Readonly<Record<string, string>> = {
 const catalogFields: Readonly<Record<string, string>> = {
   name: 'string',
   can_use_api_key: 'boolean',
-  can_use_token_plan_web: 'boolean',
-  can_use_token_plan_agentic: 'boolean',
+  can_use_agentic: 'boolean',
 };
 interface Input {
   id?: string;
@@ -76,7 +73,9 @@ type Writer = (
   i: Input,
   context: ProposalPreparerContext,
   nativeCommand: NodiaAiJsonObject,
-) => Promise<{ id: string }>;
+) => Promise<{
+  id: string;
+}>;
 const invalid = (): never => {
   throw new BadRequestException('nodia_ai:invalid_input');
 };
@@ -141,13 +140,11 @@ function modeFields(
     return scoped;
   const historicalMode =
     target.default_mode ??
-    (target.use_token_plan_agentic === true
-      ? 'token_plan_agentic'
-      : target.use_token_plan_web === true
-        ? 'token_plan_web'
-        : target.use_api_key === true
-          ? 'api_key'
-          : null);
+    (target.use_agentic === true
+      ? 'agentic'
+      : target.use_api_key === true
+        ? 'api_key'
+        : null);
   return historicalMode === mode ? fields : {};
 }
 function viewField(target: NodiaAiJsonObject, field: string): NodiaAiJsonValue {
@@ -168,11 +165,11 @@ function viewField(target: NodiaAiJsonObject, field: string): NodiaAiJsonValue {
   }
   return typeof scoped[key] === 'string' ? scoped[key] : null;
 }
-
 class ProviderOperation implements NodiaAiProviderOperation {
   readonly catalogVersion = 'nodia-ai-ai28-providers/1';
   readonly toolName: string;
   readonly moduleRoutes = [route];
+  // Legacy publication metadata; role actions do not gate module-based access.
   readonly actionKeys = ['ai:manage'];
   readonly bindableFields: Readonly<Record<string, string>> = {};
   readonly outputKeys: Readonly<Record<string, string>>;
@@ -363,12 +360,13 @@ class ProviderOperation implements NodiaAiProviderOperation {
     )
       await lockAuthority(c.manager, false, c.statementTimeoutMs);
     const actor = await currentActor(c.manager, identity(c));
-    const [access]: { module: boolean; action: boolean }[] =
-      await c.manager.query(
-        `SELECT (SELECT count(DISTINCT m.link)=2 FROM modules m JOIN module_groups g ON g.id=m.module_group_id WHERE m.link=ANY($2::text[]) AND m.is_active=true AND g.is_active=true AND ($3::boolean OR EXISTS(SELECT 1 FROM user_modules um WHERE um.user_id=$1 AND um.module_id=m.id AND um.is_active=true))) AS module, EXISTS(SELECT 1 FROM user_roles ur JOIN roles r ON r.id=ur.role_id AND r.is_active=true JOIN role_actions ra ON ra.role_id=r.id AND ra.is_active=true JOIN actions a ON a.id=ra.action_id AND a.is_active=true WHERE ur.user_id=$1 AND ur.is_active=true AND a.key='ai:manage') AS action`,
-        [actor.actorId, [route, '/tools/nodia-ai'], actor.isSuperAdmin],
-      );
-    if (!access?.module || (!actor.isSuperAdmin && !access.action))
+    const [access]: {
+      module: boolean;
+    }[] = await c.manager.query(
+      `SELECT (SELECT count(DISTINCT m.link)=2 FROM modules m JOIN module_groups g ON g.id=m.module_group_id WHERE m.link=ANY($2::text[]) AND m.is_active=true AND g.is_active=true AND ($3::boolean OR EXISTS(SELECT 1 FROM user_modules um WHERE um.user_id=$1 AND um.module_id=m.id AND um.is_active=true))) AS module`,
+      [actor.actorId, [route, '/nodia-ai'], actor.isSuperAdmin],
+    );
+    if (!access?.module)
       throw new ForbiddenException('nodia_ai:capability_denied');
   }
   async prepare(
@@ -521,8 +519,7 @@ class ProviderOperation implements NodiaAiProviderOperation {
         throw new ConflictException('nodia_ai:preconditions_changed');
       const effective: NodiaAiJsonObject = {
         can_use_api_key: false,
-        can_use_token_plan_web: false,
-        can_use_token_plan_agentic: false,
+        can_use_agentic: false,
         ...raw,
         ...i.command,
       };
@@ -829,7 +826,9 @@ class ProviderOperation implements NodiaAiProviderOperation {
   async executeConfirmed(
     step: StoredProposalStep,
     c: ProposalPreparerContext,
-  ): Promise<{ id: string }> {
+  ): Promise<{
+    id: string;
+  }> {
     await this.verifyAuthority(step, c);
     await c.manager.query(
       'LOCK TABLE ai_provider_catalog, ai_providers IN SHARE ROW EXCLUSIVE MODE',
@@ -851,7 +850,6 @@ class ProviderOperation implements NodiaAiProviderOperation {
     return { id: result.id };
   }
 }
-
 @Injectable()
 export class BuildNodiaAiProviderOperationsUseCase {
   readonly operations: readonly NodiaAiProviderOperation[];

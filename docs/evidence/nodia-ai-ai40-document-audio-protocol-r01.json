@@ -1,0 +1,1177 @@
+{
+  "schema_version": 1,
+  "stage": "AI40",
+  "scope": "Installed Codex CLI app-server PDF/audio protocol investigation; no operational account observation or inference",
+  "status": "PDF_raw_rejected_audio_candidate_not_accepted",
+  "inspector_source_pins_sha256": {
+    "docs/evidence/scripts/nodia-ai-ai40-document-audio-schema-inspect-r01.py": "ac9831cc5772e22c9d6f1fa4911943b1a6ed8d1bd0e280056a54cdd5b5fe265a",
+    "docs/evidence/scripts/nodia-ai-ai40-offline-file-admission-r01.py": "0c58046be2fe837545e86c710dbd61781f27b10a877b773500df88bfa6734f26",
+    "docs/evidence/scripts/nodia-ai-ai40-offline-file-admission-diagnostic-r02.py": "3d08ce54f72f5892d5432a6cfc222da8114f8dadaf468ca0429f7083784d0b40",
+    "docs/evidence/scripts/nodia-ai-ai40-offline-file-admission-driver.py": "0ffe09a49e2d0194ccb33d6e768b866dd730eb90f450d9e3ba7824d506656a54",
+    "docs/evidence/scripts/nodia-ai-ai40-offline-cli-help-r01.py": "42cc9604d2dd5818c077ffec7324dc1a26ea1f94b681a6a234d95dd68af2d5fc"
+  },
+  "schema_inspection_receipt_sha256": "98347c0c7beae38e1a5440e5f2e0cc9b8b354d370a45fa52a62e450affe330be",
+  "protocol": {
+    "binary_path": "/opt/nodia/nodia-server/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex",
+    "binary_sha256": "9a820c17865fa825d04db416818679a9d63bd72e50835c396f496e5684626c9c",
+    "packages": {
+      "codex": {
+        "version": "0.161.0",
+        "package_manifest_sha256": "66977445fa766ffe4639ec5440e4b351f2cb882407bd296415211df3af001398"
+      },
+      "codex-linux-x64": {
+        "version": "0.161.0-linux-x64",
+        "package_manifest_sha256": "d502635cbcc30f4e283b525095c624287584d9ae135e3cea47c979410210f424"
+      }
+    },
+    "active_release_pin_read": "/opt/nodia/releases/nodia-server-ai40-r05",
+    "schema_provenance": [
+      {
+        "root": "/opt/nodia/verification/ai39-native-protocol-r01/schemas",
+        "count": 315,
+        "manifest_sha256": "5166c32910f3716024fc1b1e4107bb6992dd7a499b54447e907e72d07d365ae9",
+        "turn_start_schema_sha256": "f938082a79859cb113b695a996b760f904b5caf55760b539a1d9b1865ab13fc6"
+      },
+      {
+        "root": "/opt/nodia/verification/ai39-experimental-protocol-r02/schemas",
+        "count": 445,
+        "manifest_sha256": "8256cbaac59b86eaa64394cee94291cc78de95780dc650c4953fde396619c01e",
+        "turn_start_schema_sha256": "f4a07f33f33d5962bf5a770d1c1bb6a6de1412ccef9fb62705c4d9a83a956dbf"
+      }
+    ],
+    "user_input_stable_and_experimental_identical": true,
+    "UserInput": {
+      "oneOf": [
+        {
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "text_elements": {
+              "default": [],
+              "description": "UI-defined spans within `text` used to render or persist special elements.",
+              "items": {
+                "$ref": "#/definitions/TextElement"
+              },
+              "type": "array"
+            },
+            "type": {
+              "enum": [
+                "text"
+              ],
+              "title": "TextUserInputType",
+              "type": "string"
+            }
+          },
+          "required": [
+            "text",
+            "type"
+          ],
+          "title": "TextUserInput",
+          "type": "object"
+        },
+        {
+          "anyOf": [
+            {
+              "properties": {
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "url"
+              ],
+              "title": "UrlUserInput",
+              "type": "object"
+            },
+            {
+              "properties": {
+                "fileId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "fileId"
+              ],
+              "title": "FileIdUserInput",
+              "type": "object"
+            }
+          ],
+          "properties": {
+            "detail": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageDetail"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "type": {
+              "enum": [
+                "image"
+              ],
+              "title": "ImageUserInputType",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "title": "ImageUserInput",
+          "type": "object"
+        },
+        {
+          "properties": {
+            "detail": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageDetail"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "path": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "localImage"
+              ],
+              "title": "LocalImageUserInputType",
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "type"
+          ],
+          "title": "LocalImageUserInput",
+          "type": "object"
+        },
+        {
+          "properties": {
+            "type": {
+              "enum": [
+                "audio"
+              ],
+              "title": "AudioUserInputType",
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "url"
+          ],
+          "title": "AudioUserInput",
+          "type": "object"
+        },
+        {
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "localAudio"
+              ],
+              "title": "LocalAudioUserInputType",
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "type"
+          ],
+          "title": "LocalAudioUserInput",
+          "type": "object"
+        },
+        {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "skill"
+              ],
+              "title": "SkillUserInputType",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "path",
+            "type"
+          ],
+          "title": "SkillUserInput",
+          "type": "object"
+        },
+        {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "mention"
+              ],
+              "title": "MentionUserInputType",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "path",
+            "type"
+          ],
+          "title": "MentionUserInput",
+          "type": "object"
+        }
+      ]
+    },
+    "ContentItem": {
+      "oneOf": [
+        {
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "input_text"
+              ],
+              "title": "InputTextContentItemType",
+              "type": "string"
+            }
+          },
+          "required": [
+            "text",
+            "type"
+          ],
+          "title": "InputTextContentItem",
+          "type": "object"
+        },
+        {
+          "anyOf": [
+            {
+              "properties": {
+                "image_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "image_url"
+              ],
+              "title": "ImageUrlContentItem",
+              "type": "object"
+            },
+            {
+              "properties": {
+                "file_id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "file_id"
+              ],
+              "title": "FileIdContentItem",
+              "type": "object"
+            }
+          ],
+          "properties": {
+            "detail": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageDetail"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": {
+              "enum": [
+                "input_image"
+              ],
+              "title": "InputImageContentItemType",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "title": "InputImageContentItem",
+          "type": "object"
+        },
+        {
+          "properties": {
+            "audio_url": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "input_audio"
+              ],
+              "title": "InputAudioContentItemType",
+              "type": "string"
+            }
+          },
+          "required": [
+            "audio_url",
+            "type"
+          ],
+          "title": "InputAudioContentItem",
+          "type": "object"
+        },
+        {
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "output_text"
+              ],
+              "title": "OutputTextContentItemType",
+              "type": "string"
+            }
+          },
+          "required": [
+            "text",
+            "type"
+          ],
+          "title": "OutputTextContentItem",
+          "type": "object"
+        }
+      ]
+    },
+    "thread_inject_items": {
+      "sha256": "8d7e754402a2bb71bd817882076d2f8ac4cd75d4573306db082a83b841aa3532",
+      "schema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "properties": {
+          "items": {
+            "description": "Raw Responses API items to append to the thread's model-visible history.",
+            "items": true,
+            "type": "array"
+          },
+          "threadId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "items",
+          "threadId"
+        ],
+        "title": "ThreadInjectItemsParams",
+        "type": "object"
+      }
+    },
+    "realtime_methods_experimental_only": {
+      "thread/realtime/start": {
+        "$ref": "#/definitions/ThreadRealtimeStartParams"
+      },
+      "thread/realtime/appendAudio": {
+        "$ref": "#/definitions/ThreadRealtimeAppendAudioParams"
+      },
+      "thread/realtime/appendText": {
+        "$ref": "#/definitions/ThreadRealtimeAppendTextParams"
+      },
+      "thread/realtime/appendSpeech": {
+        "$ref": "#/definitions/ThreadRealtimeAppendSpeechParams"
+      },
+      "thread/realtime/stop": {
+        "$ref": "#/definitions/ThreadRealtimeStopParams"
+      },
+      "thread/realtime/listVoices": {
+        "$ref": "#/definitions/ThreadRealtimeListVoicesParams"
+      }
+    },
+    "stable_realtime_request_methods": {},
+    "transcription_request_method": null,
+    "realtime_selected_schemas": {
+      "v2/ThreadRealtimeStartParams.json": {
+        "sha256": "2f9b3fa80b3b91a646e3f7c6f8a58cd232951bc221535b541872c12c4a17b28e",
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "definitions": {
+            "CodexResponseHandoffMode": {
+              "enum": [
+                "thinking",
+                "commentary",
+                "bemTags"
+              ],
+              "type": "string"
+            },
+            "ConversationTextRole": {
+              "enum": [
+                "user",
+                "developer",
+                "assistant"
+              ],
+              "type": "string"
+            },
+            "RealtimeConversationVersion": {
+              "enum": [
+                "v1",
+                "v2",
+                "v3"
+              ],
+              "type": "string"
+            },
+            "RealtimeOutputModality": {
+              "enum": [
+                "text",
+                "audio"
+              ],
+              "type": "string"
+            },
+            "RealtimeVoice": {
+              "enum": [
+                "alloy",
+                "arbor",
+                "ash",
+                "ballad",
+                "breeze",
+                "cedar",
+                "coral",
+                "cove",
+                "echo",
+                "ember",
+                "juniper",
+                "maple",
+                "marin",
+                "sage",
+                "shimmer",
+                "sol",
+                "spruce",
+                "vale",
+                "verse"
+              ],
+              "type": "string"
+            },
+            "ThreadRealtimeInitialItem": {
+              "description": "EXPERIMENTAL - role-bearing text item included when a realtime V3 session starts.",
+              "properties": {
+                "role": {
+                  "$ref": "#/definitions/ConversationTextRole"
+                },
+                "text": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "role",
+                "text"
+              ],
+              "type": "object"
+            },
+            "ThreadRealtimeStartTransport": {
+              "description": "EXPERIMENTAL - transport used by thread realtime.",
+              "oneOf": [
+                {
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "websocket"
+                      ],
+                      "title": "WebsocketThreadRealtimeStartTransportType",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "title": "WebsocketThreadRealtimeStartTransport",
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "sdp": {
+                      "description": "SDP offer generated by a WebRTC RTCPeerConnection after configuring audio and the realtime events data channel.",
+                      "type": "string"
+                    },
+                    "type": {
+                      "enum": [
+                        "webrtc"
+                      ],
+                      "title": "WebrtcThreadRealtimeStartTransportType",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "sdp",
+                    "type"
+                  ],
+                  "title": "WebrtcThreadRealtimeStartTransport",
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "callId": {
+                      "description": "Identifier of a realtime call already created and negotiated by the client.",
+                      "type": "string"
+                    },
+                    "type": {
+                      "enum": [
+                        "existingCall"
+                      ],
+                      "title": "ExistingCallThreadRealtimeStartTransportType",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "callId",
+                    "type"
+                  ],
+                  "title": "ExistingCallThreadRealtimeStartTransport",
+                  "type": "object"
+                }
+              ]
+            }
+          },
+          "description": "EXPERIMENTAL - start a thread-scoped realtime session.",
+          "properties": {
+            "backendReasoningStatus": {
+              "description": "Relays public reasoning summaries as quiet context for realtime V3 delegations. Defaults to false.",
+              "type": "boolean"
+            },
+            "clientManagedHandoffs": {
+              "description": "Leaves Codex response handoffs to the client's explicit append calls instead of forwarding them automatically. Defaults to false.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "codexResponseHandoffChannelPrefixes": {
+              "additionalProperties": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "description": "Overrides BEM channel prefixes by `analysis`, `commentary`, or `final`. Omitted channels retain their default uppercase bracketed prefixes.",
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "codexResponseHandoffMode": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/CodexResponseHandoffMode"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Selects how automatic Codex responses are routed in Frameless Bidi sessions. Omitted values default to `thinking`. Realtime V1 and V2 ignore this setting."
+            },
+            "codexResponseItemPrefix": {
+              "description": "Optional prefix added to automatic Codex response items when `codexResponsesAsItems` is true.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "codexResponsesAsItems": {
+              "description": "Sends automatic Codex responses as realtime conversation items instead of handoff appends.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "delegationAckFiller": {
+              "description": "Controls whether a realtime V3 delegation produces an acknowledgement filler. Omitted values preserve the Realtime API's default behavior.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "flushTranscriptTailOnSessionEnd": {
+              "description": "Routes any transcript tail remaining at session end through Codex. Defaults to false. TODO: Remove this rollout knob once transcript-tail flushing is always enabled.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "includeStartupContext": {
+              "description": "Set to false to start without Codex's startup context. Omitted or null includes it.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "initialItems": {
+              "description": "Adds complete role-bearing text items to the initial Frameless Bidi session history. This is only supported by realtime V3 and is sent during session startup. Requests are limited to 128 items and 8,192 estimated text tokens in total.",
+              "items": {
+                "$ref": "#/definitions/ThreadRealtimeInitialItem"
+              },
+              "type": [
+                "array",
+                "null"
+              ]
+            },
+            "model": {
+              "description": "Overrides the configured realtime model for this session only.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "outputModality": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/RealtimeOutputModality"
+                }
+              ],
+              "description": "Selects text or audio output for the realtime session. Transport and voice stay independent so clients can choose how they connect separately from what the model emits."
+            },
+            "prompt": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "realtimeEndInstructions": {
+              "description": "Developer instructions given to the backing Codex model when this realtime session ends.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "realtimeSessionId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "realtimeStartInstructions": {
+              "description": "Developer instructions given to the backing Codex model when this realtime session starts.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "threadId": {
+              "type": "string"
+            },
+            "transport": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ThreadRealtimeStartTransport"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "version": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/RealtimeConversationVersion"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Overrides the configured realtime protocol version for this session only."
+            },
+            "voice": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/RealtimeVoice"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "outputModality",
+            "threadId"
+          ],
+          "title": "ThreadRealtimeStartParams",
+          "type": "object"
+        }
+      },
+      "v2/ThreadRealtimeAppendAudioParams.json": {
+        "sha256": "10e3a38def5978afe7417d5754f28fda86863126ba7ae2746e77d56520c84130",
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "definitions": {
+            "ThreadRealtimeAudioChunk": {
+              "description": "EXPERIMENTAL - thread realtime audio chunk.",
+              "properties": {
+                "data": {
+                  "type": "string"
+                },
+                "itemId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "numChannels": {
+                  "format": "uint16",
+                  "minimum": 0.0,
+                  "type": "integer"
+                },
+                "sampleRate": {
+                  "format": "uint32",
+                  "minimum": 0.0,
+                  "type": "integer"
+                },
+                "samplesPerChannel": {
+                  "format": "uint32",
+                  "minimum": 0.0,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "data",
+                "numChannels",
+                "sampleRate"
+              ],
+              "type": "object"
+            }
+          },
+          "description": "EXPERIMENTAL - append audio input to thread realtime.",
+          "properties": {
+            "audio": {
+              "$ref": "#/definitions/ThreadRealtimeAudioChunk"
+            },
+            "threadId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "audio",
+            "threadId"
+          ],
+          "title": "ThreadRealtimeAppendAudioParams",
+          "type": "object"
+        }
+      },
+      "v2/ThreadRealtimeStopParams.json": {
+        "sha256": "da0e765e71d37c3c0b331e7666ad5c32483e2b0775e8439b642ec63602c974cb",
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "description": "EXPERIMENTAL - stop thread realtime.",
+          "properties": {
+            "threadId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "threadId"
+          ],
+          "title": "ThreadRealtimeStopParams",
+          "type": "object"
+        }
+      },
+      "v2/ThreadRealtimeAppendTextParams.json": {
+        "sha256": "27f2531b0b441253ad3adfc03fa3c75e4063005aeabddbf0ca2eac1e56d19b46",
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "definitions": {
+            "ConversationTextRole": {
+              "enum": [
+                "user",
+                "developer",
+                "assistant"
+              ],
+              "type": "string"
+            }
+          },
+          "description": "EXPERIMENTAL - append text input to thread realtime.",
+          "properties": {
+            "role": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/ConversationTextRole"
+                }
+              ],
+              "default": "user"
+            },
+            "text": {
+              "type": "string"
+            },
+            "threadId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "text",
+            "threadId"
+          ],
+          "title": "ThreadRealtimeAppendTextParams",
+          "type": "object"
+        }
+      },
+      "v2/ThreadRealtimeAppendSpeechParams.json": {
+        "sha256": "864db8a10d2a390e257db29eb0530e80f4e3e569b0d29011b1893083deeab926",
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "description": "EXPERIMENTAL - append speakable text to thread realtime.",
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "threadId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "text",
+            "threadId"
+          ],
+          "title": "ThreadRealtimeAppendSpeechParams",
+          "type": "object"
+        }
+      }
+    }
+  },
+  "local_installed_packages": {
+    "@openai/codex": "0.161.0",
+    "@openai/codex-win32-x64": "0.161.0-win32-x64",
+    "@openai/codex-sdk_installed_under_server": false,
+    "local_wrapper_sha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+    "Windows_binary_sha256": "a0f89acca07a511734cac7fddee26b2106fab68918717bc90df16104a0760a30",
+    "Windows_binary_executed": false
+  },
+  "official_sources": [
+    {
+      "url": "https://learn.chatgpt.com/docs/app-server",
+      "retrieved_UTC_date": "2026-10-23",
+      "claims": [
+        "Version-specific JSON Schema generation is documented.",
+        "thread/inject_items appends raw items without starting a user turn.",
+        "Public guide userMessage examples describe text/image/localImage; it does not establish localAudio MIME or account support."
+      ]
+    },
+    {
+      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli",
+      "retrieved_UTC_date": "2026-10-23",
+      "claims": [
+        "--image documented for image inputs.",
+        "No claim of PDF/audio file support or quota derived from this CLI reference."
+      ]
+    }
+  ],
+  "findings": {
+    "PDF": {
+      "turn_start_file_variant": false,
+      "typed_ContentItem_input_file_variant": false,
+      "inject_schema_items_are_untyped_JSON": true,
+      "real_offline_decoder_result": "Rejected -32600 unknown variant input_file, expected input_text/input_image/input_audio/output_text. Positive input_text control accepted.",
+      "PDF_native_integration_candidate": false,
+      "supported_implementation_option": "Keep raw PDF blocked; existing reviewed extracted-text path can supply accepted text with provenance. Rendered-page image conversion would be a separately specified, bounded and verified transformation, not native PDF support.",
+      "no_API_authentication_endpoint_or_token_workaround": true
+    },
+    "audio": {
+      "turn_start_audio_url_variant": true,
+      "turn_start_localAudio_path_variant": true,
+      "MIME_formats_guaranteed_by_schema": null,
+      "duration_bytes_sample_rate_limits_for_localAudio_in_schema": null,
+      "native_transcription_method_in_ClientRequest": null,
+      "schema_support_is_not_account_or_semantic_acceptance": true,
+      "implementable_candidate": "A narrowly accepted audio/wav PCM transport using localAudio, private staged file, exact scope and native journal ownership/terminal/ACK, followed by human transcript review. No realtime or API fallback.",
+      "realtime_separate_channel": "Experimental thread/realtime/* chunked transport; not the same operation, acceptance or model selection as localAudio. Do not use it silently for voice notes.",
+      "realtime_chunk_schema": "data:string, numChannels:uint16, sampleRate:uint32, samplesPerChannel:uint32|null; no codec/MIME/max audio byte/duration guarantee in schema.",
+      "realtime_start_initialItems_limit_only": {
+        "items": 128,
+        "estimated_text_tokens": 8192,
+        "source": "ThreadRealtimeStartParams.properties.initialItems.description",
+        "not_an_audio_duration_or_file_size_limit": true
+      }
+    }
+  },
+  "candidate_semantic_canary_proposal": {
+    "executed": false,
+    "preconditions": [
+      "Freeze QA-passed audio runtime candidate; exact source/build/dependency/ELF/Node/policy pins.",
+      "Observe same dynamically persisted connection/model/effort/session/config scope using actual adapter, exclusively after browser polling stops.",
+      "Check no jobs/open attempts/retained slots or native pending jobs, owning profile lease and attempt-specific exclusive intent.",
+      "A runtime fingerprint change must not inherit old MCP/image acceptance by copying or overriding proof files. Revalidate required capabilities under that exact scope."
+    ],
+    "fixture": "Short private synthetic spoken phrase in WAV PCM, locally synthesized without external API; expected phrase stays private and appears only in waveform, not prompt or stdout. Parse bytes/channels/rate/duration in the narrow helper before staging.",
+    "dispatch": "One localAudio turn using existing authenticated Codex transport, same selection, no provider/mode fallback; disposable canary SQL if existing harness requires. Zero domain tools initially.",
+    "acceptance": [
+      "Native semantic reply equals private expected phrase after a declared bounded normalization.",
+      "One armed attempt, exact terminal proof, durable journal ACK, closed owned native process/group, zero unforwarded calls.",
+      "Private attempt staging removed only after terminal ownership reconciliation; no outstanding work."
+    ],
+    "unknown": "Never replay uncertain generation; reconcile the same attempt/terminal/native process identity. Preserve private receipt and lock semantics until resolved.",
+    "followup": "Only after real scope acceptance: deploy guarded successor and verify UI\u2192R2 original integrity\u2192worker\u2192transcript review; separate case combining an audio input with one harmless MCP read."
+  },
+  "receipts": {
+    "offline_PDF_admission": {
+      "sha256": "32e6bd8350da33497d94458383f624d0fc267a8c418e905de3be12c14ee9407e",
+      "receipt": {
+        "schema": "nodia-ai-ai40-offline-file-admission-v1",
+        "status": "admission_observed_not_model_support",
+        "source_sha256": "0c58046be2fe837545e86c710dbd61781f27b10a877b773500df88bfa6734f26",
+        "binary_sha256": "9a820c17865fa825d04db416818679a9d63bd72e50835c396f496e5684626c9c",
+        "network_namespace": true,
+        "empty_isolated_HOME": "/opt/nodia/verification/ai40-offline-file-admission-r04/home",
+        "methods": [
+          "initialize",
+          "initialized",
+          "thread/start",
+          "thread/inject_items",
+          "thread/inject_items",
+          "thread/read"
+        ],
+        "results": {
+          "initialize": {
+            "result_received": true,
+            "error_code": null,
+            "error_message": null
+          },
+          "thread_start": {
+            "result_received": true,
+            "error_code": null,
+            "error_message": null
+          },
+          "text_positive_control": {
+            "result_received": true,
+            "error_code": null,
+            "error_message": null
+          },
+          "PDF_fixture": {
+            "bytes": 77,
+            "sha256": "68d3dbe223d4659eb030429ecc280a437eb6e9b042a59797cbbd9e16f56c1d56",
+            "personal_data": false
+          },
+          "PDF_input_file": {
+            "result_received": false,
+            "error_code": -32600,
+            "error_message": "items[0] is not a valid response item: unknown variant `input_file`, expected one of `input_text`, `input_image`, `input_audio`, `output_text`"
+          },
+          "thread_read_after_injection": {
+            "result_received": false,
+            "error_code": -32600,
+            "error_message": "ephemeral threads do not support includeTurns"
+          },
+          "read_projection": {
+            "input_file_tag_present": false,
+            "PDF_filename_present": false,
+            "PDF_data_uri_present": false,
+            "control_text_present": false
+          }
+        },
+        "synthetic_auth_file_created": false,
+        "native_child_exit_code": 0,
+        "native_process_group_absent": true,
+        "private_stderr_bytes": 332,
+        "private_stderr_emitted": false,
+        "provider_observations": 0,
+        "provider_generations": 0,
+        "operational_profile_reads": 0,
+        "SQL_writes": 0,
+        "services_changed": false,
+        "upstream_PDF_inference_proven": false
+      }
+    },
+    "offline_cli_help": {
+      "sha256": "86b71a582d22d71ee9a584e69e37cac375a5e122255d759b66459dc8f7993e11",
+      "receipt": {
+        "schema": "nodia-ai-ai40-offline-cli-help-v1",
+        "status": "passed",
+        "binary_sha256": "9a820c17865fa825d04db416818679a9d63bd72e50835c396f496e5684626c9c",
+        "network_namespace": true,
+        "isolated_empty_profile": "/opt/nodia/verification/ai40-document-audio-help-r01/empty-codex",
+        "results": [
+          {
+            "argv_suffix": [
+              "--version"
+            ],
+            "exit_code": 0,
+            "stdout_sha256": "22054e4b428e0a164a766c17aa80feb64ce2fab392aa0abb260d2164b10e4f18",
+            "stdout_bytes": 18,
+            "private_stderr_bytes": 0,
+            "version": "codex-cli 0.161.0",
+            "relevant_lines": []
+          },
+          {
+            "argv_suffix": [
+              "--help"
+            ],
+            "exit_code": 0,
+            "stdout_sha256": "75c90681ba095160666d9884d1eccce391be95c80da27641a3c8e1481bb02fac",
+            "stdout_bytes": 5769,
+            "private_stderr_bytes": 0,
+            "version": null,
+            "relevant_lines": [
+              "app-server        [experimental] Run the app server or related tooling",
+              "remote-control    [experimental] Manage the app-server daemon with remote control enabled",
+              "cloud             [EXPERIMENTAL] Browse tasks from Codex Cloud and apply changes locally",
+              "exec-server       [EXPERIMENTAL] Run the standalone exec-server service",
+              "-i, --image <FILE>..."
+            ]
+          },
+          {
+            "argv_suffix": [
+              "exec",
+              "--help"
+            ],
+            "exit_code": 0,
+            "stdout_sha256": "df0d864ca2076f7654288c6a1e3394e3eaa2ea8f15021df2524efdd90c70986c",
+            "stdout_bytes": 4331,
+            "private_stderr_bytes": 0,
+            "version": null,
+            "relevant_lines": [
+              "-i, --image <FILE>...",
+              "Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to"
+            ]
+          },
+          {
+            "argv_suffix": [
+              "app-server",
+              "--help"
+            ],
+            "exit_code": 0,
+            "stdout_sha256": "4226dbf080b9d3a620385fba067bd3b8ac3c76654f28c3bd4d92ae20df2b03d2",
+            "stdout_bytes": 3214,
+            "private_stderr_bytes": 0,
+            "version": null,
+            "relevant_lines": [
+              "[experimental] Run the app server or related tooling",
+              "generate-ts           [experimental] Generate TypeScript bindings for the app server protocol",
+              "generate-json-schema  [experimental] Generate JSON Schema for the app server protocol"
+            ]
+          }
+        ],
+        "auth_file_created": false,
+        "provider_generations": 0,
+        "provider_observations": 0,
+        "operational_profile_reads": 0,
+        "services_changed": false
+      }
+    },
+    "initial_diagnostic": {
+      "sha256": "a70c33305b2d3a3677602dbd340ddb7adc792a2d74f8ea2f292cbd59f6d75761",
+      "receipt": {
+        "schema": "nodia-ai-ai40-offline-file-admission-diagnostic-v1",
+        "status": "offline_probe_failed",
+        "source_sha256": "3d08ce54f72f5892d5432a6cfc222da8114f8dadaf468ca0429f7083784d0b40",
+        "original_source_sha256": "0c58046be2fe837545e86c710dbd61781f27b10a877b773500df88bfa6734f26",
+        "only_change": "fresh isolated ROOT suffix r02",
+        "exception_class": "AssertionError",
+        "source_frames": [
+          {
+            "line": 83,
+            "function": "<module>"
+          },
+          {
+            "line": 60,
+            "function": "request"
+          }
+        ],
+        "methods": [
+          "initialize"
+        ],
+        "results_completed": {},
+        "native_child_exit_code": 1,
+        "last_safe_response": {
+          "result_received": false,
+          "error_code": null,
+          "error_message": null
+        },
+        "native_group_absent": true,
+        "private_details_emitted": false,
+        "provider_generations": 0,
+        "provider_observations": 0,
+        "operational_profile_reads": 0
+      }
+    },
+    "isolated_setup_diagnostic": {
+      "sha256": "97a2c3de82feba244eeb4223d3ffc5d90ce801f540fa363b3b932c7a72a29f95",
+      "receipt": {
+        "schema": "nodia-ai-ai40-offline-file-admission-diagnostic-v1",
+        "status": "offline_probe_failed",
+        "source_sha256": "c15268722436f6b686fba3a4a353f94cf9bc805c4947f932bd7f676d8534793e",
+        "attempt": "r03",
+        "original_source_sha256": "0c58046be2fe837545e86c710dbd61781f27b10a877b773500df88bfa6734f26",
+        "exception_class": "AssertionError",
+        "source_frames": [
+          {
+            "line": 83,
+            "function": "<module>"
+          },
+          {
+            "line": 60,
+            "function": "request"
+          }
+        ],
+        "methods": [
+          "initialize"
+        ],
+        "results_completed": {},
+        "native_child_exit_code": 1,
+        "stderr_classifications": {
+          "network_namespace_permission": false,
+          "operation_not_permitted": false,
+          "config_load": false,
+          "toml": false,
+          "invalid_value": false,
+          "unknown_variant": false,
+          "unknown_field": false,
+          "keyring": false,
+          "provider": false,
+          "missing_required": false,
+          "usage": false,
+          "unexpected_argument": false,
+          "url": false,
+          "read_only_fs": false,
+          "permission_denied": false
+        },
+        "last_safe_response": {
+          "result_received": false,
+          "error_code": null,
+          "error_message": null
+        },
+        "native_group_absent": true,
+        "private_details_emitted": false,
+        "provider_generations": 0,
+        "provider_observations": 0,
+        "operational_profile_reads": 0
+      }
+    }
+  },
+  "diagnostic_lineage": {
+    "first_stdout_0B_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "first_receipt": ".tmp/ai40-offline-file-admission-r01.json",
+    "initial_setup_missing_private_CODEX_HOME_directory": true,
+    "followup_change": "Fresh isolated ROOT and mkdir(empty-codex,0700) before launch; no account/config copying. Then initialize+ephemeral thread succeeded. Earlier stderr was never emitted.",
+    "initial_driver_original_retained": "ops/lab/artifacts/ai40-offline-file-admission-driver-r01-original.py",
+    "initial_driver_original_sha256": "c15268722436f6b686fba3a4a353f94cf9bc805c4947f932bd7f676d8534793e",
+    "ephemeral_read_limitation": "thread/read includeTurns rejected for ephemeral thread; read absence does not independently prove PDF removal. PDF rejection itself is explicit at decoder boundary.",
+    "native_cleanup": "Terminal probe exit0; all diagnostic child process groups absent; no operational profile was opened."
+  },
+  "provider_generations": 0,
+  "provider_account_or_model_requests": 0,
+  "services_or_provider_settings_changed": false,
+  "credentials_read_or_exported": false,
+  "runtime_code_modified_by_this_investigation": false
+}

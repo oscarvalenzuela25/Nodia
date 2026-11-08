@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "environment": "disposable PostgreSQL16 Docker, compiled domain/HTTP, synthetic transport only",
+  "checks": [
+    "Teacher DDL empty up/down/up, twenty durable tables",
+    "Create request races, exact bigint identity, immutable receipt and payload conflict",
+    "Ownership, active superadmin bypass and module revocation use current SQL authority",
+    "Draft pause/resume preserves cursor without generation; group moves preserve authority",
+    "Versioned setup brief survives beyond the last12 messages without repeating generation",
+    "Manual revision uses no inference; exact acceptance is idempotent even without provider",
+    "Direct final creates only assessment, one concurrent intention and no lesson dependency",
+    "Final public index/questions hide keys, points and explanations before full submit",
+    "Response CAS and full submission freeze all answers; 90 exact remains pending until mixed rubric feedback",
+    "One packet publication, private practice keys, cursor and response drafts pause atomically",
+    "Unknown feedback stays pending, needs demonstrated local closure and never replays same responses",
+    "Durable versions, compound FKs, atomic pause and rollback reject cross-session/late writes",
+    "Manual future revisions preserve history and reuse only unchanged semantic verification",
+    "HTTP runs compiled DTOs with unknown-field rejection, UTF8/body bound and real session ownership"
+  ],
+  "limitations": [
+    "Does not qualify any real provider or runtime slot/proof behavior.",
+    "No operational DB, migration adoption, publication or deployment."
+  ]
+}

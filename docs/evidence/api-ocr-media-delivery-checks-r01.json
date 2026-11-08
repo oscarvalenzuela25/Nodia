@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "success": true,
+  "utf8_lf_json_checked_paths": 21,
+  "issues": [],
+  "diff_check_exit": 0,
+  "approved_six_files_unchanged": [
+    "general-settings.secure-ai-interaction",
+    "nodia-ai.conversation-coordination",
+    "nodia-ai.invoice-ocr-product-comparison",
+    "nodia-ai.image-generation",
+    "nodia-ai.attachments-and-voice",
+    "nodia-ai.api-key-chat-parity"
+  ],
+  "knowledge_authoring_check": {
+    "task": "AI-06",
+    "mode": "check",
+    "sources": 67,
+    "excluded": 24,
+    "documents": 43,
+    "fragments": 45,
+    "catalogRelease": "nodia-ai-api-chat/1",
+    "releaseId": "9ec491ba80c64f407307c0915e5e01f477b7bb839b5e16aa9ad1825a31eda086"
+  },
+  "authoring_check_is_not_deployed_release": true,
+  "deployed_knowledge_release_id": "ad41d3b87e27dde7d4c2db2283d5a27ed1be50ddd5aae44cc6dece160aafd5e5",
+  "notes": "Only task source/docs checked; historical originals, binary fixtures and unrelated dirty files preserved."
+}

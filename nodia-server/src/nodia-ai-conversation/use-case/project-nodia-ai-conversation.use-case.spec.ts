@@ -68,7 +68,7 @@ describe('ProjectNodiaAiConversationUseCase', () => {
       routing_target_selection: {
         selection: {
           connection_id: '1',
-          mode: 'token_plan_agentic',
+          mode: 'agentic',
           model_id: 'synthetic',
         },
         configuration_generation: '1',
@@ -106,12 +106,12 @@ describe('ProjectNodiaAiConversationUseCase', () => {
     const result = new ProjectNodiaAiConversationUseCase().execute(
       entity({
         selected_connection_id: '1',
-        selected_mode: 'token_plan_web',
+        selected_mode: 'agentic',
         selected_model_id: 'configured-source',
         routing_target_selection: {
           selection: {
             connection_id: '1',
-            mode: 'token_plan_agentic',
+            mode: 'agentic',
             model_id: 'configured-target',
             effort_id: null,
             api_key: 'synthetic-private-key',

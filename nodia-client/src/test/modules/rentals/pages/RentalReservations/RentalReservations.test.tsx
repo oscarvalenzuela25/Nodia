@@ -7,7 +7,7 @@ import RentalReservations from "../../../../../modules/rentals/pages/RentalReser
 import i18n from "../../../../../translate";
 beforeEach(resetUI);
 it("renders the selection instruction once and a contained accommodation creation button", () => {
-  renderRoute(<RentalReservations />, "/tools/reservations");
+  renderRoute(<RentalReservations />, "/reservations");
   expect(
     screen.getAllByText(i18n.t("rental:select_property_help")),
   ).toHaveLength(1);
@@ -18,7 +18,7 @@ it("renders the selection instruction once and a contained accommodation creatio
 it("rejects invalid property IDs before enabling dependent views", () => {
   renderRoute(
     <RentalReservations />,
-    "/tools/reservations?property=1e2&tab=payments",
+    "/reservations?property=1e2&tab=payments",
   );
   expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
   expect(screen.getByText(i18n.t("rental:invalid_input"))).toBeInTheDocument();
@@ -37,7 +37,7 @@ it("protects navigation while an operation is unresolved", async () => {
 it("preserves an edited form through a temporary house read failure and recovery", async () => {
   const { router } = renderRoute(
     <RentalReservations />,
-    "/tools/reservations?property=1&tab=reservations",
+    "/reservations?property=1&tab=reservations",
   );
   await userEvent.click(
     screen.getByRole("button", { name: i18n.t("rental:create") }),

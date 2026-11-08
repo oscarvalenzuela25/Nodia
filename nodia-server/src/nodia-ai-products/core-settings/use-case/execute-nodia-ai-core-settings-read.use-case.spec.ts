@@ -18,6 +18,7 @@ import type { NodiaAiToolHandlerContext } from '../../../nodia-ai-tools/types/to
 import { NodiaAiToolRegistryUseCase } from '../../../nodia-ai-tools/use-case/nodia-ai-tool-registry.use-case.js';
 import { createNodiaAiCoreSettingsReadFamily } from '../core-settings-read.family.js';
 import { ExecuteNodiaAiCoreSettingsReadUseCase } from './execute-nodia-ai-core-settings-read.use-case.js';
+import { contractModuleRoute } from '../../../authorization/canonical-module-route.js';
 
 function fixture() {
   const dates = {
@@ -44,7 +45,7 @@ function fixture() {
       id: '7',
       key: 'users',
       module_group_id: '8',
-      link: '/settings/users',
+      link: '/users',
       icon: null,
       is_active: true,
       ...dates,
@@ -78,6 +79,7 @@ function fixture() {
   const orders: unknown[][] = [];
   let currentRow: ObjectLiteral | undefined;
   const qb = {
+    leftJoin: vi.fn(() => qb),
     getParameters: vi.fn(() => ({})),
     andWhere: vi.fn((sql: string) => {
       clauses.push(sql);
@@ -90,6 +92,8 @@ function fixture() {
     orderBy: vi.fn(() => qb),
     skip: vi.fn(() => qb),
     take: vi.fn(() => qb),
+    offset: vi.fn(() => qb),
+    limit: vi.fn(() => qb),
     getManyAndCount: vi.fn(async () =>
       currentRow ? [[currentRow], 1] : [[], 0],
     ),
@@ -190,10 +194,10 @@ function fixture() {
       modules: [],
     },
     moduleRoutes: [
-      '/settings/users',
-      '/settings/roles',
-      '/settings/modules',
-      '/settings/actions',
+      '/users',
+      '/roles',
+      '/modules',
+      '/actions',
     ],
   };
   return {
@@ -265,6 +269,22 @@ describe('ExecuteNodiaAiCoreSettingsReadUseCase', () => {
         registry.validateOutput(tool, { credentials: 'hidden' }),
       ).toThrow('nodia_ai:invalid_tool_output');
     }
+  });
+  it('publishes canonical Core metadata with the exact historical v1 contract hashes', () => {
+    const { family, registry } = fixture();
+    const legacy = { ...family,
+      modules: family.modules.map(module => ({ ...module, route: contractModuleRoute(module.route) })),
+      resources: family.resources.map(resource => ({ ...resource, requiredModuleRoutes: resource.requiredModuleRoutes.map(contractModuleRoute) })),
+      capabilities: family.capabilities.map(tool => ({ ...tool, requiredModuleRoutes: tool.requiredModuleRoutes.map(contractModuleRoute) })),
+    };
+    const historical = new NodiaAiToolRegistryUseCase([legacy], 'test-v1');
+    const routes = [...family.modules.map(module => module.route),
+      ...family.resources.flatMap(resource => resource.requiredModuleRoutes),
+      ...family.capabilities.flatMap(tool => tool.requiredModuleRoutes)];
+    expect(routes.every(route => /^\/(actions|modules|roles|users)$/.test(route))).toBe(true);
+    expect(registry.list(['/users']).map(tool => tool.toolName)).toEqual(['nodia_users_list']);
+    for (const capability of family.capabilities) expect(registry.get(capability.toolName)?.contractHash)
+      .toBe(historical.get(capability.toolName)?.contractHash);
   });
 
   it.each([

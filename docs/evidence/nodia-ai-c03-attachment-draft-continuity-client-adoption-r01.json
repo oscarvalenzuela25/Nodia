@@ -1,0 +1,296 @@
+{
+  "acceptance_at_this_cut": {
+    "AI36_closed": false,
+    "AI38_closed": false,
+    "C03_accepted": false,
+    "C03_new_PNG_PDF_domain_acceptance": "pending",
+    "File_after_full_browser_reload_supported": false,
+    "authenticated_File_continuity_UI": "pending",
+    "new_provider_generation_accepted": false,
+    "provider_available_inferred_from_static_delivery": false
+  },
+  "capacity": {
+    "after_adoption": {
+      "archive_bytes": 2113997,
+      "available_bytes": 4412530688,
+      "backup_reserve_bytes": 268443676,
+      "extraction_allocated_upper_bound": 5042176,
+      "required_free_bytes": 275861993,
+      "stage": "after_adoption",
+      "working_buffer_bytes": 262144
+    },
+    "after_extraction": {
+      "archive_bytes": 2113997,
+      "available_bytes": 4412690432,
+      "backup_reserve_bytes": 268443676,
+      "extraction_allocated_upper_bound": 5042176,
+      "required_free_bytes": 275861993,
+      "stage": "after_extraction",
+      "working_buffer_bytes": 262144
+    },
+    "backup_reserve_or_retention_reduced": false,
+    "before_extraction": {
+      "archive_bytes": 2113997,
+      "available_bytes": 4417744896,
+      "backup_reserve_bytes": 268443676,
+      "extraction_allocated_upper_bound": 5042176,
+      "required_free_bytes": 275861993,
+      "stage": "before_prepare",
+      "working_buffer_bytes": 262144
+    },
+    "retained_releases_removed": false
+  },
+  "client": {
+    "archive_bytes": 2113997,
+    "archive_members": 173,
+    "archive_sha256": "44034b1d8e45640ff2aa336839ba9ad3dc26f62e6ffd403ad2c8e334477a2b25",
+    "baseline_runtime_sources": 718,
+    "modified_runtime_sources": 2,
+    "new_runtime_sources": 1,
+    "retained_releases": [
+      {
+        "fallback_assets_verified": 37,
+        "manifest_sha256": "17f0acd53cbfc04fad73f00bbfaed37e2d5a50d131b84333c50b49b5272363cb",
+        "path": "/opt/nodia/releases/nodia-client-c03-attachment-policy-r01",
+        "retired": false
+      },
+      {
+        "fallback_assets_verified": 59,
+        "manifest_sha256": "56f0f9e1418a827cbe0b67455e88b0aca230a236a8933c1667feb6d3f655954b",
+        "path": "/opt/nodia/releases/nodia-client-core-fx04-pagination-r07",
+        "retired": false
+      }
+    ],
+    "source": "/opt/nodia/releases/nodia-client-c03-attachment-policy-r01",
+    "source_manifest_sha256": "17f0acd53cbfc04fad73f00bbfaed37e2d5a50d131b84333c50b49b5272363cb",
+    "target": "/opt/nodia/releases/nodia-client-c03-attachment-draft-continuity-r01",
+    "target_manifest_sha256": "b7acc13f2e383bac6ff034bb1706d4cb9223e4b3fe2cddacbd34b29f59d2a963",
+    "target_runtime_sources": 719,
+    "target_static_files": 172,
+    "unchanged_runtime_sources": 716
+  },
+  "current_epoch_binding_sha256": "fc8a04bff18558f843e24120420c90b41a53bb09835aef4ec13514d2acd6d8a3",
+  "effects": {
+    "Client_operator_SDK_requests": 0,
+    "Client_operator_SQL_calls": 0,
+    "Client_operator_SQL_writes": 0,
+    "Client_operator_Server_restarts": 0,
+    "Client_operator_provider_generations": 0,
+    "external_quiet_readers_SQL_reads": "Read-only operational checks recorded in the exact receipts",
+    "new_VM_HTTP_SQL_SDK_calls_by_consolidator": 0
+  },
+  "frozen_delivery_catalog_sha256": "132b97258c4c3ca3c3b5684ae65629bc87d2a16150e6b1fed96d6dd90218bf3c",
+  "nginx_HTTP": {
+    "API_proxy_body_SHA_unchanged": true,
+    "Client17_fallback_assets_verified": 37,
+    "R07_assets_after_verified": 59,
+    "R07_assets_before_verified": 59,
+    "actual_total_HTTP_requests_not_derived": true,
+    "adopted_nginx_sha256": "1dbc5b36d3e61541fae29939a365c53ad913c14ab62b55c4097a11234b15f2da",
+    "all_shared_immutable_SHA_identical": true,
+    "fallback_scope": "Only hashed /assets regex: target to Client17 to R07; no old index or generic asset fallback",
+    "no_repeated_CAS_reload_adoption_or_inference": true,
+    "operator_assertions_passed": [
+      "HTTP200 and exact body SHA",
+      "MIME",
+      "COOP same-origin-allow-popups",
+      "hashed assets immutable cache",
+      "HTML no-cache",
+      "missing un-hashed and fake-hash assets HTTP404"
+    ],
+    "raw_HTTP_headers_archived": false,
+    "rollback_invoked": false,
+    "shared_source_target_immutable_assets": 131,
+    "source_assets_verified": 172,
+    "source_nginx_sha256": "8ea8a9517a3362c8df0a6e35b09d3a0870ebae657001d3752cd2faf15e90fc21",
+    "successful_HTTP_batch_convergence": {
+      "attempts": 2,
+      "backoff_seconds": 0.2,
+      "maximum_attempts": 5,
+      "maximum_backoff_seconds": 0.8,
+      "scope": "HTTP_reads_only",
+      "verified": true
+    },
+    "target_assets_verified": 172
+  },
+  "observed_interval_UTC": {
+    "after_quiet": "2026-10-26T00:30:31.447Z",
+    "before_quiet": "2026-10-26T00:30:15.702Z"
+  },
+  "quiet_external": {
+    "after": {
+      "SQL": {
+        "configured_SQL_writes": 0,
+        "observed_at_utc": "2026-10-26T00:30:31.447Z",
+        "open_attempts": 0,
+        "pending_jobs": 0,
+        "preserved_r05_chat": 1,
+        "provider_requests": 0,
+        "retained_slots": 0,
+        "scope": "post_disposable_live_read_only_operational_quiescence",
+        "services_restarted": false,
+        "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395",
+        "stage": "AI-36-C05",
+        "status": "passed",
+        "storage_operations": 0
+      },
+      "SQL_writes": 0,
+      "native": {
+        "agentic_home_configured": true,
+        "armed_native_proofs": 0,
+        "configured_database_modified": false,
+        "invalid_native_proofs": 0,
+        "observed_at_utc": "2026-10-26T00:30:31Z",
+        "profile_bytes_read": false,
+        "provider_calls": 0,
+        "scope": "read_only_native_runtime_artifact_counts",
+        "stage": "AI-32-R04",
+        "temporary_attachment_directories": 0,
+        "temporary_cli_directories": 0,
+        "terminal_native_proofs": 0,
+        "unknown_markers": 0
+      },
+      "provider_generations": 0,
+      "services_restarted": false,
+      "source_epoch": {
+        "container_id": "1dc08be23adcecce38e4bb591fe43b12eb6d5f480a455fe23488f160d4a871bb",
+        "image_id": "sha256:56f6d5c48f81056968f02aa89b51192900e38251c35f9d499089244f2af323b5",
+        "started_at": "2026-10-26T00:21:42.03765925Z"
+      },
+      "status": "quiet_verified"
+    },
+    "before": {
+      "SQL": {
+        "configured_SQL_writes": 0,
+        "observed_at_utc": "2026-10-26T00:30:15.702Z",
+        "open_attempts": 0,
+        "pending_jobs": 0,
+        "preserved_r05_chat": 1,
+        "provider_requests": 0,
+        "retained_slots": 0,
+        "scope": "post_disposable_live_read_only_operational_quiescence",
+        "services_restarted": false,
+        "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395",
+        "stage": "AI-36-C05",
+        "status": "passed",
+        "storage_operations": 0
+      },
+      "SQL_writes": 0,
+      "native": {
+        "agentic_home_configured": true,
+        "armed_native_proofs": 0,
+        "configured_database_modified": false,
+        "invalid_native_proofs": 0,
+        "observed_at_utc": "2026-10-26T00:30:15Z",
+        "profile_bytes_read": false,
+        "provider_calls": 0,
+        "scope": "read_only_native_runtime_artifact_counts",
+        "stage": "AI-32-R04",
+        "temporary_attachment_directories": 0,
+        "temporary_cli_directories": 0,
+        "terminal_native_proofs": 0,
+        "unknown_markers": 0
+      },
+      "provider_generations": 0,
+      "services_restarted": false,
+      "source_epoch": {
+        "container_id": "1dc08be23adcecce38e4bb591fe43b12eb6d5f480a455fe23488f160d4a871bb",
+        "image_id": "sha256:56f6d5c48f81056968f02aa89b51192900e38251c35f9d499089244f2af323b5",
+        "started_at": "2026-10-26T00:21:42.03765925Z"
+      },
+      "status": "quiet_verified"
+    },
+    "scope_limit": "Recorded operational job/attempt/slot counters and native artifact counts, not a full domain database hash comparison"
+  },
+  "runtime_unchanged_during_adoption": {
+    "Gemini_epoch": {
+      "id": "1dc08be23adcecce38e4bb591fe43b12eb6d5f480a455fe23488f160d4a871bb",
+      "image": "sha256:56f6d5c48f81056968f02aa89b51192900e38251c35f9d499089244f2af323b5",
+      "running": true,
+      "started_at": "2026-10-26T00:21:42.03765925Z"
+    },
+    "SDK_requests": 0,
+    "SQL_calls": 0,
+    "configuration_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+    "keyring": {
+      "ActiveState": "active",
+      "MainPID": "3630841",
+      "WorkingDirectory": ""
+    },
+    "knowledge_release": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+    "nginx": {
+      "ActiveState": "active",
+      "MainPID": "3630787",
+      "WorkingDirectory": ""
+    },
+    "server_consumers": {
+      "nodia-ai-worker": {
+        "ActiveState": "active",
+        "MainPID": "274162",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01"
+      },
+      "nodia-api": {
+        "ActiveState": "active",
+        "MainPID": "274161",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-ai36-c03-eligibility-diagnostic-r01"
+      }
+    },
+    "server_manifest_sha256": "4276fd7091f3d7f36604ba355895a2e43054bcbcec7b87ee5f0d897a42a41549"
+  },
+  "schema_version": 1,
+  "scope": "Recorded Linux Client-only static adoption; this consolidator is offline",
+  "sources": {
+    "adopt": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-adoption-verification-r01/receipts/client-draft-adopt-r01.json",
+      "sha256": "a94985717c06031d7cb017b9e9e6f7366c6032ec9aa2304babfcfdd1856ee45e"
+    },
+    "after-quiet": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-adoption-verification-r01/receipts/client-draft-after-quiet-r01.json",
+      "sha256": "fbe83220f3632bdf96cf03935b722c6bef4f94f749d2ab393bd1ed1ea245ac8c"
+    },
+    "before-quiet": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-adoption-verification-r01/receipts/client-draft-before-quiet-r01.json",
+      "sha256": "b88be40961ed52cc4390bb83d0ce1b75b5d560d9ec600e2b5bc1c0bf1ea96169"
+    },
+    "bind": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-adoption-verification-r01/receipts/client-draft-bind-r01.json",
+      "sha256": "b0e578e4fb1c8463fdeb2efebf4a18669c5d470f7a550924366ac954631d9418"
+    },
+    "binding": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-adoption-verification-r01/receipts/client-draft-binding-r01.json",
+      "sha256": "fc8a04bff18558f843e24120420c90b41a53bb09835aef4ec13514d2acd6d8a3"
+    },
+    "bootstrap": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-adoption-verification-r01/receipts/client-draft-bootstrap-r01.json",
+      "sha256": "233a3c1054998a8f0a8cf4d216c82a9ea771230132775e20524dcb2e183fa1b7"
+    },
+    "linux-tests": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-adoption-verification-r01/receipts/client-draft-linux-tests-r01.json",
+      "sha256": "59f6625cdece2dafe0120017e4e790034ca5be9c323e49cb1c09098dd7aaabab"
+    },
+    "observe": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-adoption-verification-r01/receipts/client-draft-observe-r01.json",
+      "sha256": "4a317ed0b580ea042fc2686d10dac5ce7ca0538fc253bd45a69004a68ce96e29"
+    },
+    "preflight": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-adoption-verification-r01/receipts/client-draft-preflight-r01.json",
+      "sha256": "ef291b0d7eab436757ca3971c3fc7974fb960b8d5a9360fbfcb4f95332758b32"
+    },
+    "prepare": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-adoption-verification-r01/receipts/client-draft-prepare-r01.json",
+      "sha256": "ace5bceefde1aa0f468567b76e2a93ab0cc92829d0e08a8f9372fdb1bb0cef60"
+    },
+    "upload": {
+      "path": "ops/lab/artifacts/c03-attachment-draft-continuity-client-adoption-verification-r01/receipts/client-draft-upload-r01.json",
+      "sha256": "76b6e92caf2b6e39afebaecb84cb10350c0f5c07a3538ddcc9fd615125915ab7"
+    }
+  },
+  "status": "client_static_delivery_adopted_verified_UI_pending",
+  "validation": {
+    "Linux_root_operator_tests_passed": 16,
+    "Linux_root_operator_tests_skipped": 0,
+    "Windows_Client_test_files": 247,
+    "Windows_prepared_Client_tests_passed": 2005,
+    "independent_final_static_builds_equal": 2
+  }
+}

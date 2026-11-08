@@ -1,0 +1,455 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-28",
+  "status": "adopted_on_vm_ready_for_human_pos_testing",
+  "authorization": "Explicit request to apply migrations and deploy POS with prior backup and verify products, sales and reports; subsequent clarification covers barcode creation/import/edit capture",
+  "url": "http://localhost:5174/tools/business",
+  "specification": "docs/mvp/94-business-point-of-sale-and-product-refactor.md",
+  "topology": {
+    "browser": "Windows localhost5174 SSH forward to VM Nginx8080",
+    "api_worker_database_native": "existing Linux VM services/containers",
+    "new_external_listeners": false
+  },
+  "server": {
+    "release": "/opt/nodia/releases/nodia-server-business-pos-r02",
+    "manifest_sha256": "22f928167d186565cb08fed6eb0572d43263e0a0a424f235aad26e0c7063ef24",
+    "baseline_release": "/opt/nodia/releases/nodia-server-chat-redesign-r01",
+    "first_pos_release_manifest": "b060752ba42c9b4bc0b06aec8cf12838f772760d6d9fab6940153e185ab9691f",
+    "compile_linux": true,
+    "readiness": {
+      "pids": {
+        "nodia-api.service": "1864113",
+        "nodia-ai-worker.service": "1864114"
+      },
+      "stable_seconds": "30.969940245966427"
+    },
+    "isolated_di_checks": 6,
+    "shared_dependencies_unchanged": true,
+    "multipart_followup": {
+      "changed_files": [
+        {
+          "path": "dist/product-image/product-image.controller.js",
+          "before_sha256": "2973e1376f945eb93f9e49dee0d7de1d139fc3be877230d5812b0bbe8d5616ea",
+          "sha256": "9cba8939255b9f6a11563737e951ec177960bd77c13a5d020c2416bf4e8e289a"
+        },
+        {
+          "path": "dist/product-image/product-image.controller.js.map",
+          "before_sha256": "7270daaf785822d9e423e1a06f92533a04f5a7b90e657aa5be8a16d8135e8b96",
+          "sha256": "32ee755a5a7a3d8902e14f4bf70a8e433b6f33f454584b1ccfe290570db7be94"
+        },
+        {
+          "path": "src/product-image/product-image.controller.ts",
+          "before_sha256": "5ba48aa755938cd771626495d430040fa1ad693d862105cc986530c5f82aaad2",
+          "sha256": "4588e3bedb0c45e5e69668016a56cba02e0030f2478c3f9202138acab63bc03a"
+        }
+      ],
+      "rule": "one file, zero text fields; parser part ceiling2 permits the single file before Busboy boundary notification",
+      "real_parser_regressions_passed": 4,
+      "schema_or_migration_change": false
+    }
+  },
+  "client": {
+    "release": "/opt/nodia/releases/nodia-client-business-pos-20261028-r02",
+    "manifest_sha256": "b2043f5c54117fb3bc2bd38cd71435247e94d2d684a8f7d42af60943f753f7e7",
+    "source_chat_files_preserved": 172,
+    "static_files_verified": 172,
+    "legacy_chat_assets_verified": 46,
+    "spa_routes_verified": 4,
+    "authenticated_browser_ui_claimed": false,
+    "protected_endpoints_without_token": "products/sales/report summary/top/chat401; health200",
+    "barcode_refinement": "deployed: optional text barcode, select on focus, consume Enter without submitting, explicit save",
+    "full_suite_tests": 2101,
+    "full_suite_files": 258,
+    "focal_tests": 15,
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "browser_refinement_checks": {
+      "engine": "Microsoft Edge156.0.4314.50",
+      "transport": "Synthetic Axios adapter, no real account/database/API mutation",
+      "real_click_selects_existing_barcode": true,
+      "scan_preserves_initial_zeroes_and_replaces_current": true,
+      "enter_submit_events": 0,
+      "explicit_save_persisted_in_synthetic_catalog": true,
+      "viewports": [
+        1280,
+        600,
+        390,
+        320
+      ],
+      "themes_locales": [
+        "dark/es",
+        "light/en"
+      ],
+      "document_width_equals_viewport": true,
+      "draft_preserved_on_resize": true,
+      "save_action_visible": true,
+      "captures": [
+        {
+          "path": "output/playwright/pos-barcode-r02/edit-320-dark-es.png",
+          "sha256": "34756d27fba1b5501ce5f6f692da82e2109836bb90a167542b4b5f64c80e7637",
+          "bytes": 54031,
+          "visually_inspected": true
+        },
+        {
+          "path": "output/playwright/pos-barcode-r02/edit-390-dark-es.png",
+          "sha256": "0c3dcef5d012510c3c86ad8419a3d5df02aac7b9a3d70e76d93087f7def1973a",
+          "bytes": 56525,
+          "visually_inspected": false
+        },
+        {
+          "path": "output/playwright/pos-barcode-r02/edit-600-dark-es.png",
+          "sha256": "d089b459186230510caf3234b7ba4e1f8793f575350e11fb5cde728f4f084ddd",
+          "bytes": 69527,
+          "visually_inspected": false
+        },
+        {
+          "path": "output/playwright/pos-barcode-r02/edit-1280-dark-es.png",
+          "sha256": "614ba75e120583ccfde0daacffd055493d00a383896da9a7c451ef998767fcb9",
+          "bytes": 139633,
+          "visually_inspected": true
+        },
+        {
+          "path": "output/playwright/pos-barcode-r02/create-320-light-en.png",
+          "sha256": "52797dd32cb7b682d039ace31207d98191ff5a7d80cd940e75a15ccd25d2adbf",
+          "bytes": 56526,
+          "visually_inspected": true
+        }
+      ]
+    },
+    "final_delivery": {
+      "current_static_assets_verified": 172,
+      "spa_routes_verified": 4,
+      "prior_asset_fallback_samples_verified": 4,
+      "receipt_sha256": "0354c9620c4ba63a43e43ce5cc38b7c028fe9d67128f103432b8af83efae0b77"
+    },
+    "adoption": {
+      "schema_version": 1,
+      "success": true,
+      "phase": "activated_verified_barcode_client",
+      "checked_at_vm_utc": "2026-10-28T23:19:47.557064+00:00",
+      "client": "/opt/nodia/releases/nodia-client-business-pos-20261028-r02",
+      "manifest_sha256": "b2043f5c54117fb3bc2bd38cd71435247e94d2d684a8f7d42af60943f753f7e7",
+      "served": [
+        {
+          "path": "/tools/business",
+          "status": 200,
+          "index_sha256": "648d9af389e2360cb53fc78056df99f0a89c737929edb8c66cd330b7b3f9d07d"
+        },
+        {
+          "path": "/tools/nodia-ai",
+          "status": 200,
+          "index_sha256": "648d9af389e2360cb53fc78056df99f0a89c737929edb8c66cd330b7b3f9d07d"
+        }
+      ],
+      "nginx_before_sha256": "006579cc2b8e26ab784a846be5a37750dd351bda28bef12c84575edb23276c01",
+      "nginx_sha256": "a25c7f75a5470e0892ad0cf29def3f43f3e496c5fa94e09d9c47d490a09aaa77",
+      "api_worker_pids": {
+        "nodia-api.service": "1864113",
+        "nodia-ai-worker.service": "1864114"
+      },
+      "api_or_worker_restarted": false,
+      "native_restarted": false,
+      "database_mutations": 0,
+      "provider_requests": 0,
+      "backup_timers_preserved": true,
+      "legacy_fallback_preserved": true,
+      "read_only_reconciliation": true,
+      "configuration_reconstructed_exactly": true,
+      "activation_replayed": false,
+      "reload_repeated": false,
+      "initial_immediate_postcheck": "unlabelled AssertionError after the reload; complete read-only reconciliation subsequently confirmed every final byte/index/runtime condition"
+    }
+  },
+  "knowledge": {
+    "release_id": "b49fde74a53483fad4fe80b8175b36bb7c337415097dd9cfa4349285f9e1e2ea",
+    "reviewed_local_release": "45695b4bea2020faabab3ea23c57586f4a401dd8e620a75eb0d3e9c0d4457ceb",
+    "published_capabilities": 158,
+    "documents": 44,
+    "fragments": 46,
+    "sales_tools": 7,
+    "sales_report_sources": 2,
+    "approved_document_bodies_and_revisions_preserved": 44,
+    "fragment_contracts_preserved": 46,
+    "implementation_pin_delta": [
+      {
+        "capability_id": "nodia_invoices_file",
+        "sources": [
+          {
+            "path": "nodia-server/src/nodia-ai-products/artifacts/use-case/execute-nodia-ai-artifact.use-case.ts",
+            "before_sha256": "e7547d80ca9d66d21067324c10588d5602bc96d0f5837954096231da62d72591",
+            "sha256": "df65945b4d9196010318cfbc8accc69fa348bf80d3d50ff86a325838e6e7b2b9"
+          }
+        ]
+      },
+      {
+        "capability_id": "nodia_products_export_csv",
+        "sources": [
+          {
+            "path": "nodia-server/src/nodia-ai-products/artifacts/use-case/execute-nodia-ai-artifact.use-case.ts",
+            "before_sha256": "e7547d80ca9d66d21067324c10588d5602bc96d0f5837954096231da62d72591",
+            "sha256": "df65945b4d9196010318cfbc8accc69fa348bf80d3d50ff86a325838e6e7b2b9"
+          }
+        ]
+      },
+      {
+        "capability_id": "nodia_providers_export_csv",
+        "sources": [
+          {
+            "path": "nodia-server/src/nodia-ai-products/artifacts/use-case/execute-nodia-ai-artifact.use-case.ts",
+            "before_sha256": "e7547d80ca9d66d21067324c10588d5602bc96d0f5837954096231da62d72591",
+            "sha256": "df65945b4d9196010318cfbc8accc69fa348bf80d3d50ff86a325838e6e7b2b9"
+          }
+        ]
+      },
+      {
+        "capability_id": "nodia_invoices_ocr",
+        "sources": [
+          {
+            "path": "nodia-server/src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.ts",
+            "before_sha256": "85da446ee69a2fcb0cacdc963ba6d920570bad11e40a6df2ad53fdddd36939c2",
+            "sha256": "17ca29c958abb14722482cc4b413e18e0eb2bccb9f4dc44f7ee61b1a27ca7ae4"
+          }
+        ]
+      }
+    ],
+    "approved_traceability_delta": [
+      {
+        "document_id": "businesses.invoices-and-files",
+        "sources": [
+          {
+            "path": "nodia-server/src/nodia-ai-products/artifacts/use-case/execute-nodia-ai-artifact.use-case.ts",
+            "sha256": "df65945b4d9196010318cfbc8accc69fa348bf80d3d50ff86a325838e6e7b2b9"
+          }
+        ]
+      },
+      {
+        "document_id": "businesses.products",
+        "sources": [
+          {
+            "path": "nodia-server/src/nodia-ai-products/artifacts/use-case/execute-nodia-ai-artifact.use-case.ts",
+            "sha256": "df65945b4d9196010318cfbc8accc69fa348bf80d3d50ff86a325838e6e7b2b9"
+          }
+        ]
+      },
+      {
+        "document_id": "businesses.suppliers",
+        "sources": [
+          {
+            "path": "nodia-server/src/nodia-ai-products/artifacts/use-case/execute-nodia-ai-artifact.use-case.ts",
+            "sha256": "df65945b4d9196010318cfbc8accc69fa348bf80d3d50ff86a325838e6e7b2b9"
+          }
+        ]
+      },
+      {
+        "document_id": "nodia-ai.image-generation",
+        "sources": [
+          {
+            "path": "nodia-server/src/common/ai/codex/codex-chat-runtime.ts",
+            "sha256": "e216514b7ccef5520ca67f9fe338ba36ec113c9130bedcd29478a22d0c66c7c0"
+          }
+        ]
+      }
+    ],
+    "reason_for_distinct_delivery_release": "Controlled VM+POS overlay preserves deployed provider/media source instead of copying unrelated dirty workspace changes; four implementation pins reflect exact delivered source bytes"
+  },
+  "migration": {
+    "success": true,
+    "applied": [
+      "AddProductPosCatalog1793400000000",
+      "CreateBusinessSales1793410000000"
+    ],
+    "transaction": "all",
+    "committed": true,
+    "before_migrations": 32,
+    "after_migrations": 34,
+    "provider_requests": 0,
+    "domain_fixture_writes": 0
+  },
+  "preservation_before_smoke": {
+    "success": true,
+    "legacy_table_count": 65,
+    "new_table_count": 5,
+    "migration_count": 34,
+    "differences": [],
+    "checks": {
+      "legacy_products_reinterpreted": "0",
+      "legacy_logs_reinterpreted": "0",
+      "unexpected_business_timezone": "0",
+      "append_only_triggers": "1"
+    }
+  },
+  "preservation_after_smoke": {
+    "success": true,
+    "read_only": true,
+    "migrations": 34,
+    "tables": 70,
+    "original_tables_compared": 64,
+    "migration_ledger_verified_separately": true,
+    "original_data_preserved": true,
+    "differences": [],
+    "scope": {
+      "business_id": "3f72b551-e2eb-4a07-a295-28a85f8960fe",
+      "business_inactive": true,
+      "products_inactive": 2,
+      "sale_statuses": [
+        "cancelled",
+        "discarded"
+      ],
+      "completed_sales": {
+        "count": "0",
+        "amount": "0"
+      },
+      "temporary_sessions_revoked": 4,
+      "image_attempts": 3,
+      "image_objects_verified_absent": 3
+    },
+    "legacy_products": {
+      "original_products": 6,
+      "unclassified": 6
+    },
+    "provider_requests": 0,
+    "secrets_emitted": false,
+    "domain_mutations": 0
+  },
+  "backup": {
+    "encrypted_streaming": true,
+    "plaintext_dump_on_vm": false,
+    "restore_test_performed": false,
+    "receipts": {
+      "before_migrations": {
+        "captured_at": "2026-10-28T22:37:20.899Z",
+        "backup_id": "1cf76462-200f-4d77-95e0-b0b6d5e399ff",
+        "cipher_bytes": 2682332,
+        "cipher_sha256": "e1f1ae909f4f781daedbdb8be91d66af4c66fe8601c698b853f3b6e46754e0c9",
+        "expires_at": "2026-11-04T22:37:20.899Z",
+        "object_verified": true,
+        "inspection": {
+          "get": 1,
+          "head": 1,
+          "if_match": true
+        },
+        "journal_unconfirmed": 0
+      },
+      "before_multipart_followup": {
+        "captured_at": "2026-10-28T22:55:54.368Z",
+        "backup_id": "51dbeb65-796e-45ec-b21b-895a63e79882",
+        "cipher_bytes": 2727578,
+        "cipher_sha256": "5525ee6e09a0583745455632c3b44032aa8b85ef5c3349a67c428fbd92c61b1e",
+        "expires_at": "2026-11-04T22:55:54.368Z",
+        "object_verified": true,
+        "inspection": {
+          "get": 1,
+          "head": 1,
+          "if_match": true
+        },
+        "journal_unconfirmed": 0
+      },
+      "after_smoke": {
+        "captured_at": "2026-10-28T23:04:54.748Z",
+        "backup_id": "5b8b6e58-3e4a-40ae-98e0-a81dbbe423a5",
+        "cipher_bytes": 2730306,
+        "cipher_sha256": "926517b8a77c3418b1a9e72dd4b8179a9db7e1665a94812b677a7d81fc232ded",
+        "expires_at": "2026-11-04T23:04:54.748Z",
+        "object_verified": true,
+        "inspection": {
+          "get": 1,
+          "head": 1,
+          "if_match": true
+        },
+        "journal_unconfirmed": 0
+      }
+    },
+    "timers_restored": {
+      "nodia-ai-backup.timer": "active",
+      "nodia-ai-backup-rotate.timer": "active"
+    },
+    "initial_capture_contention": {
+      "exit_code": 75,
+      "cause": "same lock held by a concurrent rotation before timers were paused",
+      "no_backup_reserved_by_rejected_invocation": true,
+      "diagnostic_sha256": "0d4500ee11dda557a9903e008641496d44feca5b2c982dcabd9cc1c42d7f157b"
+    }
+  },
+  "http_smoke": {
+    "scope": "one newly created, unmistakably marked business; two own products only",
+    "business_id": "3f72b551-e2eb-4a07-a295-28a85f8960fe",
+    "verified": [
+      "optional/barcode catalog fields and exact lookup with separate invoice code",
+      "enabled alternative1200 above regular1100 selected exactly",
+      "cash default",
+      "draft3200 then edit2200",
+      "original mutation identity replay/receipt",
+      "complete and global report1/2200CLP/2units",
+      "catalog change preserves historical1200 snapshot",
+      "cancel with reason and report0",
+      "empty draft discarded"
+    ],
+    "cleanup_complete": true,
+    "temporary_sessions_revoked": 4,
+    "roles_users_credentials_changed": false,
+    "known_read_throttle": {
+      "status": 429,
+      "stage": "read during cleanup after every business assertion passed",
+      "resolved": "waited for quota and resumed only cleanup using the same journal; no product/business/sale create replay and no quota configuration or Redis clearing"
+    }
+  },
+  "image_smoke": {
+    "success": true,
+    "input": "synthetic PNG69B",
+    "normalized": {
+      "mime_type": "image/jpeg",
+      "byte_size": 759,
+      "width": 1,
+      "height": 1
+    },
+    "content_put_dispatches_in_successful_intent": 1,
+    "private_get": {
+      "status": 200,
+      "byte_size": 759,
+      "sha256": "17756029a742683dfe68104fb6d86645f10d5a37e65fb3d8f983e878fe97d43a"
+    },
+    "unsigned_get_status": 400,
+    "unsigned_response_not_image": true,
+    "signed_url_or_token_recorded": false,
+    "current_image_removed": true,
+    "deleted_verified": true,
+    "all_synthetic_image_attempt_keys_verified_absent": 3,
+    "earlier_checks": {
+      "multipart_rejection": "HTTP400 before upload use case; reserved metadata expired normally, no object PUT",
+      "url_guard": "test helper initially assumed path-style S3 URL; corrected to exact endpoint/bucket host variants; successful prior image was unlinked and verified removed",
+      "uncertain_put_replayed": false
+    }
+  },
+  "native": {
+    "restarted": false,
+    "epoch_preserved": true,
+    "provider_configuration_and_keys_preserved": true,
+    "operator_inferences": 0
+  },
+  "initial_legacy_availability": {
+    "original_products": 6,
+    "unclassified": 6
+  },
+  "remaining": [
+    "Manual availability classification and barcode assignment for the six original products",
+    "Physical HID reader/phone acceptance",
+    "Natural NodiaAI conversation with selected actual provider/mode and human confirmation",
+    "POS-09 removal of deprecated numeric-stock compatibility after consumer evidence"
+  ],
+  "artifacts": {
+    "root": "ops/lab/artifacts/business-pos-deployment-20261028-r01",
+    "catalog": "ops/lab/artifacts/business-pos-deployment-20261028-r01/catalog.json",
+    "private_vm_operations": "/opt/nodia/operations/business-pos-20261028-r01",
+    "private_smoke_journals": "/opt/nodia/verification/business-pos-20261028-r01/smoke"
+  },
+  "limits": "Deployed environment and exact operator checks; not provider/model qualification, physical scanner acceptance, full restore rehearsal or global production acceptance. Cancelled/discarded test traces remain append-only; test business/products are inactive.",
+  "barcode_flows": {
+    "individual": "New/Edit: optional barcode text field accepts HID keyboard input while focused",
+    "csv": "Optional barcode header, textual values preserve leading zeroes; missing values are not inferred from invoice code",
+    "existing_product": "Edit preloads barcode; focus selects current text for replacement and Enter is consumed without propagation/submission",
+    "persistence": "Explicit Save; existing version and uniqueness rules unchanged",
+    "backend_contract_changed": false,
+    "new_global_scan_listener": false
+  }
+}

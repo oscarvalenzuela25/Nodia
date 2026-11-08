@@ -4,6 +4,7 @@ import { UpdateProviderUseCase } from './update-provider.use-case.js';
 import type { ProviderService } from '../provider.service.js';
 import type { UpdateProviderDto } from '../dto/update-provider.dto.js';
 
+const transactionManager = {} as EntityManager;
 describe('UpdateProviderUseCase', () => {
   let useCase: UpdateProviderUseCase;
   let providerServiceMock: Partial<ProviderService>;
@@ -11,6 +12,15 @@ describe('UpdateProviderUseCase', () => {
   beforeEach(() => {
     providerServiceMock = {
       update: vi.fn(),
+      transaction: vi.fn(async (_manager, work) => work(transactionManager)),
+      assertBusinessAccess: vi.fn(),
+      scopes: vi.fn(async () => [
+        { id: '1', business_id: '11111111-1111-4111-8111-111111111111' },
+      ]),
+      lockProvider: vi.fn(async () => ({
+        id: '1',
+        business_id: '11111111-1111-4111-8111-111111111111',
+      })) as unknown as ProviderService['lockProvider'],
     };
     useCase = new UpdateProviderUseCase(providerServiceMock as ProviderService);
   });
@@ -41,10 +51,15 @@ describe('UpdateProviderUseCase', () => {
 
     expect(dto.name).toBe('proveedor actualizado');
     expect(providerServiceMock.update).toHaveBeenCalledTimes(1);
-    expect(providerServiceMock.update).toHaveBeenCalledWith(id, {
-      name: 'proveedor actualizado',
-      is_active: false,
-    });
+    expect(providerServiceMock.update).toHaveBeenCalledWith(
+      id,
+      {
+        name: 'proveedor actualizado',
+        is_active: false,
+      },
+      transactionManager,
+      undefined,
+    );
     expect(result).toEqual(updated);
   });
   it.each(['product_count', 'invoice_count'])(
@@ -62,7 +77,7 @@ describe('UpdateProviderUseCase', () => {
         scopes: vi.fn(async () => [
           { id: '1', business_id: '11111111-1111-4111-8111-111111111111' },
         ]),
-        lockBusinesses: vi.fn(),
+        assertBusinessAccess: vi.fn(),
         lockProvider: vi.fn(async () => ({
           id: '1',
           business_id: '11111111-1111-4111-8111-111111111111',
@@ -95,7 +110,7 @@ describe('UpdateProviderUseCase', () => {
       scopes: vi.fn(async () => [
         { id: '1', business_id: '11111111-1111-4111-8111-111111111111' },
       ]),
-      lockBusinesses: vi.fn(),
+      assertBusinessAccess: vi.fn(),
       lockProvider: vi.fn(async () => ({
         id: '1',
         business_id: '11111111-1111-4111-8111-111111111111',
@@ -111,6 +126,7 @@ describe('UpdateProviderUseCase', () => {
       '1',
       { business_id: destination },
       manager,
+      undefined,
     );
     expect(service.lockProvider.mock.invocationCallOrder[0]).toBeLessThan(
       query.mock.invocationCallOrder[0],

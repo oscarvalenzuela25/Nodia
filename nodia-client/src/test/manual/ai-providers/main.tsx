@@ -44,7 +44,7 @@ const context = {
       module_group_key: "general_settings",
       translates: [],
       modules: [
-        { key: "ai-providers", link: "/settings/ai-providers", translates: [] },
+        { key: "ai-providers", link: "/ai-providers", translates: [] },
       ],
     },
   ],
@@ -56,8 +56,7 @@ const catalog = [
     key: "gemini",
     name: "Google Gemini",
     can_use_api_key: true,
-    can_use_token_plan_web: true,
-    can_use_token_plan_agentic: true,
+    can_use_agentic: true,
     is_active: true,
     created_at: "",
     updated_at: "",
@@ -67,8 +66,7 @@ const catalog = [
     key: "openai",
     name: "OpenAI",
     can_use_api_key: true,
-    can_use_token_plan_web: false,
-    can_use_token_plan_agentic: true,
+    can_use_agentic: false,
     is_active: true,
     created_at: "",
     updated_at: "",
@@ -112,12 +110,10 @@ let providers: AiProviderEntity[] = catalog.map((item, i) => ({
   mode: "api_key",
   default_mode: "api_key",
   use_api_key: true,
-  use_token_plan_web: i === 0,
-  use_token_plan_agentic: true,
+  use_agentic: i === 0,
   fields: {
     api_key: modeFields,
-    token_plan_web: { ...modeFields, thinking_level: undefined },
-    token_plan_agentic: modeFields,
+    agentic: { ...modeFields, thinking_level: undefined },
   },
   auto_rotate_api_keys: false,
   api_keys: keys,
@@ -133,13 +129,8 @@ const health = (): AiProvidersHealthResponse => ({
     params.get("unknown") === "1"
       ? null
       : {
-          active_engine: "web",
-          web: { engine: "web", available: true, authenticated: true },
-          agentic: {
-            engine: "agentic",
-            available: false,
-            authenticated: false,
-          },
+          active_engine: "agentic",
+          agentic: { engine: "agentic", available: true, authenticated: true },
         },
   providers: empty
     ? []
@@ -152,8 +143,7 @@ const health = (): AiProvidersHealthResponse => ({
         isActive: p.is_active,
         is_default: p.is_default,
         use_api_key: p.use_api_key,
-        use_token_plan_web: p.use_token_plan_web,
-        use_token_plan_agentic: p.use_token_plan_agentic,
+        use_agentic: p.use_agentic,
         default_mode: p.default_mode!,
         mode: "api_key",
         fields: p.fields,
@@ -265,7 +255,7 @@ const client = new QueryClient({
 client.setQueryData(["authorization", "context", actorId], context);
 const router = createMemoryRouter(productionRouter.routes, {
   initialEntries: [
-    "/settings/ai-providers" +
+    "/ai-providers" +
       (params.get("detail")
         ? "?provider=" +
           params.get("detail") +

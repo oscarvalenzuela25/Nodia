@@ -16,7 +16,6 @@ import type {
   NodiaAiJsonObject,
   NodiaAiJsonValue,
 } from '../../../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
-
 export type AiSettingsOperation =
   'providers' | 'keys' | 'events' | 'catalog' | 'supported';
 function object(value: unknown): Record<string, unknown> {
@@ -38,7 +37,6 @@ const projection = (
   const row = object(value);
   return Object.fromEntries(fields.map((key) => [key, nullable(row[key])]));
 };
-
 /** Local configuration is not evidence of authentication, health or inference. */
 @Injectable()
 export class ReadNodiaAiAiSettingsUseCase {
@@ -78,8 +76,8 @@ export class ReadNodiaAiAiSettingsUseCase {
             'name',
             'is_active',
             'can_use_api_key',
-            'can_use_token_plan_web',
-            'can_use_token_plan_agentic',
+
+            'can_use_agentic',
           ]),
         ),
       };
@@ -112,8 +110,8 @@ export class ReadNodiaAiAiSettingsUseCase {
             'is_active',
             'is_default',
             'use_api_key',
-            'use_token_plan_web',
-            'use_token_plan_agentic',
+
+            'use_agentic',
             'default_mode',
             'auto_rotate_api_keys',
           ]

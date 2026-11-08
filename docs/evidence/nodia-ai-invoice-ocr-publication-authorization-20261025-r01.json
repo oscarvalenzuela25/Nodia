@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "recorded_on": "2026-10-25",
+  "recorded_at_utc": "2026-10-26T02:05:22Z",
+  "status": "explicit_human_authorization_recorded",
+  "source": "Exact human reply relayed by the root agent in this same conversation",
+  "exact_human_reply": "Sí, aprobar y habilitar este flujo",
+  "scope": {
+    "document_id": "nodia-ai.invoice-ocr-product-comparison",
+    "path": "docs/nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md",
+    "revision": 1,
+    "reviewed_document_status": "draft",
+    "reviewed_content_sha256": "b2de96c22d94bf88bdf4f2dc531f5683d2022186c55413cb78f2190d596b6981",
+    "reviewed_file_sha256": "660d93d3fda5c3fcecba2c23b49f335a34e16bfa9ce6b960eb3effd358e349ec",
+    "approved_document_status": "approved",
+    "approved_content_sha256": "49ffe2f7b802bfc20fc756bfeb9ec512806396cc38f7bfed3d80975ca1499f6b",
+    "approved_file_sha256": "a4e1f18e233a3bb3b08f25aa3ca0cdcfc0891deee02f4f32bb0efe71702cb828",
+    "selected_section": "Uso del OCR de Productos en el chat",
+    "selected_fragment_sha256": "e7345cb177a0def47b469773c3bf13222ca73709a576948548ccdc37e4f1ad0b",
+    "capability_id": "nodia_invoices_ocr",
+    "actions": [
+      "prepare",
+      "request",
+      "read"
+    ],
+    "publication_and_enablement_of_reviewed_flow_authorized": true,
+    "business_effects_authorized_by_this_approval": false
+  },
+  "metadata_transition": {
+    "document_status": {
+      "before": "draft",
+      "after": "approved"
+    },
+    "approval": {
+      "before": null,
+      "after": {
+        "reference": "docs/evidence/nodia-ai-invoice-ocr-publication-authorization-20261025-r01.json",
+        "revision": 1,
+        "content_sha256": "49ffe2f7b802bfc20fc756bfeb9ec512806396cc38f7bfed3d80975ca1499f6b"
+      }
+    },
+    "implementation_status_preserved": "partial",
+    "integration_status_preserved": "unregistered",
+    "revision_preserved": 1,
+    "body_byte_identical": true,
+    "runtime_section_byte_identical": true,
+    "note": "Only document_status and approval metadata changed. Draft/approval-null descriptions retained in reviewed body and verification notes describe the prior validation cut; current authorization is the frontmatter approval object and this record."
+  },
+  "does_not_approve": [
+    "Business Product/invoice/stock writes or implicit human confirmations",
+    "Other documents or ADRs",
+    "Global AI-36/C05 or AI-38 closure",
+    "Provider/MIME/account/environment acceptance inferred from local checks",
+    "A claim that publication, enablement or VM adoption has already occurred"
+  ],
+  "execution_scope_of_this_record": {
+    "authoring_only": true,
+    "registry_or_pin_changes": false,
+    "runtime_or_catalog_changes": false,
+    "VM_changes": 0,
+    "SDK_or_provider_requests": 0,
+    "provider_generations": 0,
+    "domain_writes": 0,
+    "historical_C03_revision3_or_fda_publication_changed": false
+  },
+  "validation_boundaries": {
+    "implementation": "partial local; Client/native/workflow checks are documented separately",
+    "integration": "unregistered; source-path validation is not published capability registration",
+    "deployment_or_VM_acceptance_proved": false
+  },
+  "metadata_evolution": [
+    {
+      "recorded_at_utc": "2026-10-26T02:39:07Z",
+      "kind": "factual_metadata_internal_SQL_DI_verification",
+      "authority": "Same explicit human approval to approve and enable this flow; root requested the factual integration-state update after actual isolated SQL/DI verification. No new product semantics or human approval is inferred.",
+      "before_content_sha256": "49ffe2f7b802bfc20fc756bfeb9ec512806396cc38f7bfed3d80975ca1499f6b",
+      "before_file_sha256": "a4e1f18e233a3bb3b08f25aa3ca0cdcfc0891deee02f4f32bb0efe71702cb828",
+      "after_content_sha256": "48398b99493ff8dc54d7c3113c78621d32647b2dfcd1be93a3d6bdb514c90df9",
+      "after_file_sha256": "9d93844d136b9aa056bdffdf5be60495fa474d06de08a911d53dfba6f2e33a6f",
+      "document_id": "nodia-ai.invoice-ocr-product-comparison",
+      "revision": 1,
+      "document_status": "approved",
+      "implementation_status": "partial",
+      "integration_status": "verified",
+      "verification_scope": "Internal isolated SQL/DI only; not provider inference or runtime VM adoption",
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-invoice-ocr-sql-di-validation-20261025-r01.json",
+        "sha256": "1bf50f21bd7840d4dcbaee366ff89fb4be258217b8a06ca1717825136f5d12db",
+        "bytes": 8808
+      },
+      "changes": {
+        "integration_status": {
+          "before": "unregistered",
+          "after": "verified"
+        },
+        "implementation_notes": {
+          "before": "Implementación local parcial: prepare/awaiting_supplier/request/read, etapa OCR después del terminal/ACK, núcleo de Productos compartido, comparación neto/bruto y referencias privadas acotadas para turnos posteriores. Client, núcleo nativo y workflow tienen pruebas aisladas y compilación; build Server final comunicado por el owner. No es paquete de despliegue, no acredita OCR real, concurrencia/DI o guardado confirmado del nuevo recorrido. C03 aprobado3/fda permanecen independientes.",
+          "after": "Implementación parcial: prepare/awaiting_supplier/request/read, OCR separado tras terminal/ACK, núcleo de Productos, comparación neto/bruto y referencias privadas entre turnos. Client/nativo/workflow y build local verificados; integración interna SQL/DI real aislada:16checks, dos conexiones PostgreSQL con espera de lock y consumidor único. No es paquete de despliegue, OCR real, adopción de runtime ni guardado confirmado; C03 aprobado3/fda conservan su alcance."
+        },
+        "verification_notes": {
+          "before": "Client2027/249 y build/tsc/lint focal correctos; nativo y workflow con dobles aislados, tipado/compilación y controles negativos conservados. Referencias privadas finales157/2 y SQL EXPLAIN readonly del owner: valida plan SQL, no filas reales/autorización concurrente. Build Server aislado final exitoso del checkout completo incluye FX04 previo y no es paquete de despliegue. Path validado como fuente; integración unregistered, capacidad OCR sin exponer/publicar y approval null. No VM/SDK/proveedor/UI real del recorrido nuevo en estos carriles.",
+          "after": "Client2027/249 y build/tsc/lint focal correctos; nativo/workflow aislados y referencias privadas157/2. SQL/DI real en PostgreSQL/Nest desechables:16checks, owner/revocación/throughSeq, selección comercial explícita y un consumidor con bloqueo visible; seed failures R01/R02 conservados,0OCR/SDK/externalcalls y BD configurada sin usar. Build Server local incluye FX04 previo y no es paquete de despliegue. verified acredita integración interna SQL/DI, no inferencia, UI, VMadoption o aceptación del recorrido; implementación partial."
+        },
+        "verification_evidence_paths": {
+          "before": [
+            "docs/evidence/nodia-ai-invoice-ocr-client-validation-20261025-r01.json",
+            "docs/evidence/nodia-ai-invoice-ocr-native-validation-20261025-r01.json",
+            "docs/evidence/nodia-ai-invoice-ocr-workflow-validation-20261025-r01.json"
+          ],
+          "after": [
+            "docs/evidence/nodia-ai-invoice-ocr-client-validation-20261025-r01.json",
+            "docs/evidence/nodia-ai-invoice-ocr-native-validation-20261025-r01.json",
+            "docs/evidence/nodia-ai-invoice-ocr-workflow-validation-20261025-r01.json",
+            "docs/evidence/nodia-ai-invoice-ocr-sql-di-validation-20261025-r01.json"
+          ]
+        },
+        "approval": {
+          "before": {
+            "reference": "docs/evidence/nodia-ai-invoice-ocr-publication-authorization-20261025-r01.json",
+            "revision": 1,
+            "content_sha256": "49ffe2f7b802bfc20fc756bfeb9ec512806396cc38f7bfed3d80975ca1499f6b"
+          },
+          "after": {
+            "reference": "docs/evidence/nodia-ai-invoice-ocr-publication-authorization-20261025-r01.json",
+            "revision": 1,
+            "content_sha256": "48398b99493ff8dc54d7c3113c78621d32647b2dfcd1be93a3d6bdb514c90df9"
+          }
+        }
+      },
+      "approved_body_byte_identical": true,
+      "approved_body_sha256": "9c5901a91d83e340d7b41dfee9ac2f6fba5847813e71991b8b09b47cd95446ce",
+      "runtime_section_byte_identical": true,
+      "runtime_fragment_sha256": "e7345cb177a0def47b469773c3bf13222ca73709a576948548ccdc37e4f1ad0b",
+      "approved_business_semantics_unchanged": true,
+      "other_document_or_ADR_approval": false,
+      "global_AI36_AI38_acceptance": false
+    }
+  ],
+  "current_document": {
+    "path": "docs/nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md",
+    "revision": 1,
+    "document_status": "approved",
+    "implementation_status": "partial",
+    "integration_status": "verified",
+    "content_sha256": "48398b99493ff8dc54d7c3113c78621d32647b2dfcd1be93a3d6bdb514c90df9",
+    "file_sha256": "9d93844d136b9aa056bdffdf5be60495fa474d06de08a911d53dfba6f2e33a6f",
+    "body_sha256": "9c5901a91d83e340d7b41dfee9ac2f6fba5847813e71991b8b09b47cd95446ce",
+    "note": "scope.approved_content_sha256 and the original metadata_transition preserve the first human-authorized approval cut. This current hash reflects only the subsequent factual metadata evolution recorded above."
+  }
+}

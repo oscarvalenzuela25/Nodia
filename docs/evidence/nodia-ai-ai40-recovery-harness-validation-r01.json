@@ -1,0 +1,387 @@
+{
+  "schema": "nodia-ai-ai40-recovery-harness-validation-v1",
+  "recorded_at_utc": "2026-10-24T02:39:43.868624+00:00",
+  "status": "partial_failed_cancel_attempt_closed_without_replay",
+  "active_release": {
+    "path": "/opt/nodia/releases/nodia-server-ai40-r07",
+    "manifest_sha256": "1799e821e6c2f668989a972fde26b162772e02e821ce9744fbe431894dfce476",
+    "runtime_fingerprint": "1233a6c04a7d215994bfb7f40f41eef5e0d44935532fce8a8f092fdf1c57d11a"
+  },
+  "acceptance": {
+    "cancel_scenario_accepted": false,
+    "permission_revocation_accepted": false,
+    "five_consumer_exclusion_accepted": false,
+    "full_C40_09_accepted": false,
+    "completed_attempt_reconciliation_accepted": true,
+    "operational_database_or_configuration_mutated": false
+  },
+  "scope": {
+    "real_account": true,
+    "real_compiled_R07_Create_Admit_RunStage_context": true,
+    "inference_handler": "Explicit operator-only diagnostic handler; delegates real adapter, runtime, authorization, reservation, checkpoint and gateway. It is not the production inference handler or daemon/UI stop flow.",
+    "fixture": "Disposable PostgreSQL provider mirror, synthetic actor1 and super_admin3; synthetic Redis event bus.",
+    "provider_generation_budget_per_scenario": 1,
+    "no_implicit_generation_retry": true,
+    "production_sources_modified_by_this_harness": false
+  },
+  "qa": {
+    "focused_atomic_runtime": {
+      "passed": 147,
+      "failed": 0,
+      "files": [
+        {
+          "path": "nodia-server/src/ai-provider/use-case/codex-chat-runtime.use-case.spec.ts",
+          "sha256": "6a868c1043362fd52980d1d73d79a7d889ea65ebdedf7ade3f7b3d2c9654b07d",
+          "bytes": 34483,
+          "passed": 33
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-adapter/use-case/reconcile-codex-nodia-ai-runtime.use-case.spec.ts",
+          "sha256": "0f5107810a2aad47b1e479db76be82e3320bb817fd3f10f236cb28e70e2da247",
+          "bytes": 8478,
+          "passed": 18
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.spec.ts",
+          "sha256": "62ebbdad03eff2fb21f14ba2dc8c4e30add95717440b9a97fa4a2ded0f25b25a",
+          "bytes": 25728,
+          "passed": 56
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.spec.ts",
+          "sha256": "ed3b0defeb35b8d5f7c998ff3aaaaafa6ccf3b46a6d9993d92f4a5ad5f89a8e6",
+          "bytes": 25948,
+          "passed": 40
+        }
+      ],
+      "raw_report": {
+        "path": ".tmp/ai40-recovery-r01/focused-runtime-tests-r01.json",
+        "sha256": "a385f30ebd126f76e083da14000c167d4e11231ea43021a972927fd2b0851a5b"
+      },
+      "scope": "Local working-tree atomic cohort. The tests include the unadopted media candidate; this does not certify WAV or imply a full/global suite pass.",
+      "exact_command_not_stored_in_raw_report": true
+    },
+    "pure_recovery_helpers": {
+      "command": "node --test nodia-server/test/nodia-ai-ai40-recovery-contract.spec.mjs",
+      "passed": 5,
+      "failed": 0,
+      "raw_report": {
+        "path": ".tmp/ai40-recovery-r01/contract-qa-r02.json",
+        "sha256": "d5d6c1dd44ee24a19da7b8dce0b5715adc88881c84cee2d3a9424db166a03a91"
+      },
+      "no_VM_DB_SDK_account_calls": true
+    },
+    "status_only_retry": {
+      "command": "python docs/evidence/scripts/nodia-ai-ai40-journal-status-read-tests-r01.py",
+      "passed": 6,
+      "failed": 0,
+      "raw_report": {
+        "path": ".tmp/ai40-recovery-r01/status-successor-offline-r01.json",
+        "sha256": "67272775455aaee17fcc295b436b696e1f4ac23c8dc5457c9006212c811f680f"
+      },
+      "retry_policy": "At most three journal status reads for command_failed or TimeoutExpired; every other command runs once, validation errors propagate, original journal function is restored in finally.",
+      "no_parent_or_inference_retry": true
+    }
+  },
+  "durable_sources": [
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-recovery-sources-r01.mjs",
+      "sha256": "0affd05b19c7c2bdfff9f839a212392b484241e055ef34f501512340d58fa12d",
+      "bytes": 8207
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-recovery-child-r01.mjs",
+      "sha256": "73b7bafd1867ee92170ca2afe0d4de2f1dc7ed7ce4c27091e2fffd8298ff3815",
+      "bytes": 24521
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-recovery-parent-r01.mjs",
+      "sha256": "6f15b7807ba3f952113e971edd11ae993b7af480f8df13d7ff9cc2e2710a9927",
+      "bytes": 11595
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-recovery-contenders-r01.mjs",
+      "sha256": "cc1445395a4627b692491d09ed4f1b7dda53c19dd1b41272c12e8915dd360019",
+      "bytes": 19842
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-recovery-contenders-r02.mjs",
+      "sha256": "4e144a07813ca7396b39221826a9e9ac3254c54542438cce14235f1a2fc7306a",
+      "bytes": 22707
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-recovery-operator-r01.py",
+      "sha256": "46970b7d22a1ec2f271d819b2327170de40336cfbae95f07c3658d8f50177435",
+      "bytes": 17537
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-recovery-operator-r02.py",
+      "sha256": "925dc149e47dc51620a10f64137a944499e8a45536d07e15f164e733d3204066",
+      "bytes": 3403
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-recovery-operator-r03.py",
+      "sha256": "d178b66ff3f2ab594bb1b8a7a65d81071bde35e7966e0c12cc80f4ec3b72fce2",
+      "bytes": 4223
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-journal-status-read-r01.py",
+      "sha256": "5e5b710b0210e82228593401f0480e54970666ef4151251e930c16bb85da6c38",
+      "bytes": 1907
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-journal-status-read-tests-r01.py",
+      "sha256": "96de8466a6ed46955fdb34621e3a8780d99e48874f4e86d32969dbfa181ad8ea",
+      "bytes": 4142
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-recovery-exact-reconcile-r01.mjs",
+      "sha256": "04a490584227e81e0f80179de1ece6102d7ec80c6d3851557e0c1d13a2e0f24b",
+      "bytes": 8941
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-recovery-exact-reconcile-r01.py",
+      "sha256": "bb994b2b75cf8c8f44a67d1bd7ab2a467620be555e301d786469b4b38854bdd6",
+      "bytes": 6863
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-recovery-mcp-operator-r01.py",
+      "sha256": "213da8db160e8490240b45c3734c200ceed3782f61524985e7bc341128776ee0",
+      "bytes": 3102
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai40-recovery-contract.spec.mjs",
+      "sha256": "e9df523216fd8a26ed0aa9337b677043396adc4640b34872c8401a7d1651e39c",
+      "bytes": 6227
+    }
+  ],
+  "pre_generation_guard_failures": {
+    "provider_generations": 0,
+    "live_intent_created": false,
+    "located_failure": {
+      "command": "nodia-ai-journal.mjs status",
+      "returncode": 1,
+      "stdout_bytes": 0,
+      "stderr_bytes": 35,
+      "stderr_sha256": "68eb26b4b04d6761d8fe5ffc4e3d56379dac595ab20d3d736e6dafcdf322b51e",
+      "closed_category": "service_unavailable",
+      "stack": [
+        "journal-activate.checked:59",
+        "journal-activate.journal:188",
+        "adopt.journal_open:174",
+        "image.public_preflight:118",
+        "recovery.run:100"
+      ]
+    },
+    "raw_trace": {
+      "path": ".tmp/ai40-recovery-r01/cli-guard-command-trace-r02.json",
+      "sha256": "9838c08e6f377b9b9fa921064181c3000c4e6634a57664fb3cf2ca31f5b3b1eb"
+    },
+    "causal_limits": [
+      "The trace locates a failed read-only journal status dependency, not a provider generation.",
+      "It does not establish an R2 outage, backup race, CLI/import difference or permanent infrastructure failure."
+    ],
+    "successful_zero_generation_bootstraps": [
+      {
+        "raw": {
+          "path": ".tmp/ai40-recovery-r01/cancel-bootstrap-r02.json",
+          "sha256": "3f75e8633c32e7c35cbf000442a092a6a216201777a2c5ce6a37121783a0f9a9"
+        },
+        "operator_sha256": "46970b7d22a1ec2f271d819b2327170de40336cfbae95f07c3658d8f50177435",
+        "fixture_removed": true
+      },
+      {
+        "raw": {
+          "path": ".tmp/ai40-recovery-r01/cancel-bootstrap-r03.json",
+          "sha256": "55a981059d9b283963c7f6bb5dd398827ddb272f09564c9c86c35e4711b60688"
+        },
+        "operator_sha256": "925dc149e47dc51620a10f64137a944499e8a45536d07e15f164e733d3204066",
+        "fixture_removed": true
+      }
+    ],
+    "successor": "R02 uses a fresh WORK and its own bootstrap. R01 files/intents remain unchanged."
+  },
+  "cancel_R02_attempt": {
+    "raw_parent": {
+      "path": ".tmp/ai40-recovery-r01/cancel-parent-r02.json",
+      "sha256": "700066180fd06a14e0074055d358223354b5266294d8ee24eeb2da150f8338db"
+    },
+    "status": "failed",
+    "run_id": "b4815402-d9dd-4afd-8e06-e486b975edf9",
+    "job_id": "eda1889e-e710-4b2e-ab14-e094a6420850",
+    "attempt_id": "caa4505e-6566-470a-8438-fdcb64dc67b6",
+    "armed_dispatches": 1,
+    "real_provider_callbacks": 1,
+    "SQL_tool_receipts": 0,
+    "business_effects": 0,
+    "completed_contenders": [
+      {
+        "case": "chat",
+        "result": "passed",
+        "code": "codex_profile_busy",
+        "owner_witness_unchanged": true,
+        "provider_generations": 0
+      },
+      {
+        "case": "discovery",
+        "result": "passed",
+        "code": "codex_profile_busy",
+        "owner_witness_unchanged": true,
+        "provider_generations": 0
+      },
+      {
+        "case": "ocr",
+        "result": "failed",
+        "code": "ERR_ASSERTION",
+        "owner_witness_unchanged": null,
+        "provider_generations": null
+      }
+    ],
+    "logout_executed": false,
+    "login_start_executed": false,
+    "native_cancel_requested": false,
+    "late_revocation_executed": false,
+    "terminal_reconciliation_in_initial_harness": false,
+    "initial_fixture_retained": true,
+    "native_handler_result": "Adapter returned answer after the failed contender callback; diagnostic handler rejected the unexpected answer and SQL retained unknown. This is not an accepted cancellation."
+  },
+  "OCR_assertion_investigation": {
+    "real_fixture_readonly": {
+      "path": ".tmp/ai40-recovery-r01/retained-fixture-readonly-r02.json",
+      "sha256": "48a3dfe6cfcb23d58ea4d877cf55b15bc1fb8c1792e3e661b541106dec4632b3"
+    },
+    "real_fixture_projection": {
+      "raw_sha256": "bdd981ef1ca102a68f2fac1effc089f9cd9cd1e9148089615ef89861dcee0990",
+      "public_service_sha256": "b2c155836ec5c4ae9692ebb9251c03223d1e012ea6bdd9e4d63ed37370d06f7f",
+      "byte_json_equal": false,
+      "raw_key_count": 4,
+      "public_key_count": 4,
+      "fields_emitted": false
+    },
+    "offline_R07_reproduction": {
+      "path": ".tmp/ai40-recovery-r01/ocr-public-projection-reproduction-r01.json",
+      "sha256": "6728077852d51f29b649b55a0a943a0e854b2eb35281a43603df2a68e657230d"
+    },
+    "compiled_R07_boundaries": [
+      {
+        "path": "dist/ai-provider/ai-provider.service.js",
+        "sha256": "9262c98799165c1c557b0ae5273c3de1c0b8377b77e3eb3aec63c1061b0f61ed"
+      },
+      {
+        "path": "dist/translation/translation.service.js",
+        "sha256": "e6436c2e93acadc3242bade2fc1c1edab834076aa9661ce202900b9e91abfe11"
+      },
+      {
+        "path": "dist/ai-provider/helpers/supported-providers.helper.js",
+        "sha256": "1fce4b395e7165e2d1b9c13934ca83d71ff3bb05665052ee517fe7a2d7f5aac1"
+      },
+      {
+        "path": "dist/ai-provider/helpers/model-observation.helper.js",
+        "sha256": "90793b9dc0507451469df44919155e1bc88ae75d6bef8d662e6efdb6c54132fc"
+      },
+      {
+        "path": "dist/ai-provider/use-case/execute-codex-invoice.use-case.js",
+        "sha256": "0fac256b6c0d9bc4c3355afd3591281efdd285732d27f1ee31a606eb4e22f1c6"
+      },
+      {
+        "path": "dist/common/ai/codex/codex-contract.js",
+        "sha256": "e97179aa078373f05431e7d8af428965d1ca34ced8be5e1614ea71351dbd6590"
+      }
+    ],
+    "established": [
+      "Raw descriptor and real AiProviderService public projection differ in this retained fixture.",
+      "The compiled sanitizer configuredModelFields removes historical observational metadata while preserving the selected model.",
+      "R01 compared the public projection directly to raw fields; that equality assertion is defective and would fail on this fixture.",
+      "R02 separately validates raw SQL fields against the descriptor and the public service result against configuredModelFields(raw)."
+    ],
+    "causal_limit": "The initial failed OCR receipt did not retain an assertion stack/check code. This proves a harness assertion defect, not that it was the exclusive first cause of the historical contender failure.",
+    "candidate": {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-recovery-contenders-r02.mjs",
+      "sha256": "4e144a07813ca7396b39221826a9e9ac3254c54542438cce14235f1a2fc7306a",
+      "bytes": 22707
+    },
+    "candidate_not_accepted_live_at_this_cut": true,
+    "source_alias_contract": {
+      "local_source": "docs/evidence/scripts/nodia-ai-ai40-recovery-contenders-r02.mjs",
+      "remote_basename": "nodia-ai-ai40-recovery-contenders-r01.mjs",
+      "new_materials_directory": "/opt/nodia/verification/ai40-recovery-materials-r02",
+      "other_three_materials": "Historical sources/child/parent bytes unchanged and independently pinned; old materials directory is never overwritten."
+    }
+  },
+  "exact_completed_reconciliation": {
+    "raw": {
+      "path": ".tmp/ai40-recovery-r01/exact-reconcile-execute-r01.json",
+      "sha256": "9f4c881486e40fff70c16e30d3afc55bcdb349bf0bf62a24eb952c0dbae73514"
+    },
+    "provider_generations": 0,
+    "RunStage_called": false,
+    "normal_compiled_use_case": "ReconcileNodiaAiRuntimeUseCase, current fixture super_admin3; native proof returned from the existing terminal journal.",
+    "attempt_id": "caa4505e-6566-470a-8438-fdcb64dc67b6",
+    "terminal_proof_id": "ff69868c-11eb-4e98-8c9e-eee9a017f497",
+    "native_outcome": "completed",
+    "exact_completed_ACK": true,
+    "process_and_owned_group_closed": true,
+    "staging": {
+      "nodia-chat-images": {
+        "entries": 0
+      },
+      "nodia-chat-audio": {
+        "entries": 0
+      }
+    },
+    "reconciliation": {
+      "job_id": "eda1889e-e710-4b2e-ab14-e094a6420850",
+      "resolved": true,
+      "cleanup_pending": false
+    },
+    "final_run": {
+      "state": "failed",
+      "error_code": "nodia_ai:response_unavailable",
+      "provider_dispatches_used": 1
+    },
+    "final_fixture_counts": {
+      "jobs": 0,
+      "slots": 0,
+      "open_attempts": 0,
+      "effects": 0,
+      "executions": 0,
+      "tools": 0,
+      "assistant_messages": 0
+    },
+    "proofs_preserved": {
+      "mcp": "b6350cbf7e22eadca280a521c8479e0a6827b2ab8b4e38826de386091d17e60d",
+      "mcp-image-png": "a77568201ca09d0eed26bbf009bdcc7bd918e98d8cf8b82ed76dcafb1bfdf731",
+      "mcp-image-jpeg": "af0f70dd2eb9c22988b34401fd7a11d6ae7f7fbd4e68631d9165a64cfe692241",
+      "mcp-image-webp": "92b588d4ab8471205f903463fa91d9ae175bda2d7c0091a8ac3d4b8c929b9be3"
+    },
+    "response_or_assistant_recovered": false,
+    "replayed_generation": false,
+    "fixture_safe_to_remove": true
+  },
+  "disposable_fixture_cleanup": {
+    "raw": {
+      "path": ".tmp/ai40-recovery-r01/exact-fixture-removal-r01.json",
+      "sha256": "e3503c2b46b832a95c130d7950edebc35ce52f9f0050e1d26a47cee43e94c0df"
+    },
+    "status": "removed_after_exact_ACK_and_zero_SQL_checks",
+    "container": "template_ai40_3503696_c1fef0e4",
+    "container_absent_after": true,
+    "proofs_unchanged_after": true,
+    "provider_generations": 0,
+    "operational_SQL_writes": 0
+  },
+  "pending_at_this_cut": [
+    "New explicit CANCEL run using R03 and corrected contender bytes; it is a new intention, not replay of the consumed R02 attempt.",
+    "Five-way real contender acceptance including OCR, logout and failed/closed login_start.",
+    "Real native cancellation plus abandoned_unknown terminal ACK and zero effects.",
+    "Separate permission-revocation scenario with actual Core module removal and late-checkpoint/gateway rejection.",
+    "Fresh MCP qualification after any scoped acceptance invalidation; fresh image probes if needed."
+  ],
+  "limits": [
+    "No public chat Stop endpoint or UI cancellation was introduced or accepted.",
+    "The chat/discovery passes demonstrate pending-journal fencing; physical O_EXCL contention was not exercised.",
+    "No successful login/logout, credential mutation, account rotation or contender cancellation was accepted.",
+    "The consolidated facts and durable source pins are sufficient to interpret this report; raw receipts are retained by hash as audit inputs, not the sole statement of outcome.",
+    "No secrets, transcript contents, credential material or database passwords are included."
+  ]
+}

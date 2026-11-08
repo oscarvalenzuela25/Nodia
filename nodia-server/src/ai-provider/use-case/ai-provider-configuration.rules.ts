@@ -4,61 +4,49 @@ import type { UpdateAiProviderDto } from '../dto/update-ai-provider.dto.js';
 import type { AiProvider } from '../entities/ai-provider.entity.js';
 import type { AiProviderCatalog } from '../entities/ai-provider-catalog.entity.js';
 import { getSupportedProviderByKey } from '../helpers/supported-providers.helper.js';
-
-/** ChatGPT Web was explicitly withdrawn; historical omitted flags remain readable. */
+const modes = ['api_key', 'agentic'] as const;
+/** Retired channels cannot be reintroduced through arbitrary configuration JSON. */
+function validateFields(value: Record<string, unknown> | undefined): void {
+  if (!value) return;
+  if (
+    ['token_plan_web', 'token_plan_agentic'].some((key) =>
+      Object.hasOwn(value, key),
+    )
+  )
+    throw new BadRequestException('ai_provider:retired_mode');
+}
 export function validateAiProviderCatalogPolicy(
-  key: string,
-  patch: { can_use_token_plan_web?: boolean },
+  _key: string,
+  patch: object,
 ): void {
   if (
-    key.trim().toLowerCase() === 'openai' &&
-    patch.can_use_token_plan_web === true
+    Object.hasOwn(patch, 'can_use_token_plan_web') ||
+    Object.hasOwn(patch, 'can_use_token_plan_agentic')
   )
-    throw new BadRequestException('ai_provider:web_integration_disabled');
+    throw new BadRequestException('ai_provider:retired_mode');
 }
-
-function validateConnectionWebPolicy(
-  dto: CreateAiProviderDto | UpdateAiProviderDto,
-  catalog: AiProviderCatalog | null,
-) {
-  if (
-    catalog?.key.trim().toLowerCase() === 'openai' &&
-    dto.use_token_plan_web === true
-  )
-    throw new BadRequestException('ai_provider:web_integration_disabled');
-}
-
 function validateChannels(
   value: Partial<AiProvider>,
   catalog: AiProviderCatalog | null,
 ) {
   for (const [enabled, permitted] of [
     ['use_api_key', 'can_use_api_key'],
-    ['use_token_plan_web', 'can_use_token_plan_web'],
-    ['use_token_plan_agentic', 'can_use_token_plan_agentic'],
-  ] as const) {
+    ['use_agentic', 'can_use_agentic'],
+  ] as const)
     if (value[enabled] && catalog && !catalog[permitted])
       throw new BadRequestException('ai_provider:channel_not_allowed');
-  }
-  const enabled =
-    value.default_mode === 'api_key'
-      ? value.use_api_key
-      : value.default_mode === 'token_plan_web'
-        ? value.use_token_plan_web
-        : value.default_mode === 'token_plan_agentic'
-          ? value.use_token_plan_agentic
-          : true;
-  if (!enabled)
+  if (
+    value.default_mode &&
+    (!modes.includes(value.default_mode) || !value[`use_${value.default_mode}`])
+  )
     throw new BadRequestException('ai_provider:default_mode_disabled');
 }
-
-/** Configuration only: catalog flags never prove a working session or model. */
 export function resolveAiProviderCreate(
   dto: CreateAiProviderDto,
   catalog: AiProviderCatalog | null,
   existingCount: number,
 ): Partial<AiProvider> {
-  validateConnectionWebPolicy(dto, catalog);
+  validateFields(dto.fields);
   if (!catalog || !catalog.is_active)
     throw new BadRequestException(
       'Seleccione un proveedor activo del catálogo.',
@@ -69,7 +57,7 @@ export function resolveAiProviderCreate(
     );
   const { key: _key, mode: _mode, translates: _translates, ...rest } = dto;
   const provided = Object.fromEntries(
-    Object.entries(rest).filter(([, value]) => value !== undefined),
+    Object.entries(rest).filter(([, v]) => v !== undefined),
   );
   const fields: Record<string, unknown> = {
     ...dto.fields,
@@ -77,9 +65,8 @@ export function resolveAiProviderCreate(
   };
   for (const key of ['selected_model', 'ocr_model', 'ocr_focus_model'])
     delete fields[key];
-  const useApi = dto.use_api_key ?? false;
-  const useWeb = dto.use_token_plan_web ?? false;
-  const useAgentic = dto.use_token_plan_agentic ?? false;
+  const api = dto.use_api_key ?? false,
+    agentic = dto.use_agentic ?? false;
   const result: Partial<AiProvider> = {
     ...provided,
     catalog_id: catalog.id,
@@ -87,38 +74,34 @@ export function resolveAiProviderCreate(
     auto_rotate_api_keys: dto.auto_rotate_api_keys ?? true,
     is_active: dto.is_active ?? true,
     fields,
-    use_api_key: useApi,
-    use_token_plan_web: useWeb,
-    use_token_plan_agentic: useAgentic,
+    use_api_key: api,
+    use_agentic: agentic,
     default_mode:
-      dto.default_mode ||
-      (useAgentic
-        ? 'token_plan_agentic'
-        : useWeb
-          ? 'token_plan_web'
-          : useApi
+      dto.default_mode !== undefined
+        ? dto.default_mode
+        : agentic
+          ? 'agentic'
+          : api
             ? 'api_key'
-            : null),
+            : null,
     is_default: dto.is_default ?? existingCount === 0,
   };
   validateChannels(result, catalog);
   return result;
 }
-
-/** Preserve historical fields byte-for-byte unless the caller explicitly patches them. */
 export function resolveAiProviderUpdate(
   dto: UpdateAiProviderDto,
   existing: AiProvider,
   catalog: AiProviderCatalog | null,
 ): Partial<AiProvider> {
-  validateConnectionWebPolicy(dto, catalog);
+  validateFields(dto.fields);
   if (dto.catalog_id && dto.catalog_id !== existing.catalog_id)
     throw new BadRequestException(
       'El proveedor de catálogo de una conexión no se puede cambiar.',
     );
   const { key: _key, mode: _mode, translates: _translates, ...rest } = dto;
   const provided = Object.fromEntries(
-    Object.entries(rest).filter(([, value]) => value !== undefined),
+    Object.entries(rest).filter(([, v]) => v !== undefined),
   );
   const result: Partial<AiProvider> = {
     ...provided,
@@ -126,22 +109,11 @@ export function resolveAiProviderUpdate(
     name: dto.name ?? existing.name,
   };
   if (dto.fields !== undefined) {
-    const previousFields: Record<string, unknown> = { ...existing.fields };
-    const modes = ['api_key', 'token_plan_web', 'token_plan_agentic'];
-    const hasScoped = modes.some((mode) => previousFields[mode]);
-    const introducesScoped = modes.some((mode) => dto.fields?.[mode]);
-    // Old flat preferences belong to the original configured mode. Introducing
-    // any scoped channel must not silently disable those existing preferences.
-    const originalMode =
-      existing.default_mode ??
-      (existing.use_token_plan_agentic
-        ? 'token_plan_agentic'
-        : existing.use_token_plan_web
-          ? 'token_plan_web'
-          : existing.use_api_key
-            ? 'api_key'
-            : null);
-    if (!hasScoped && introducesScoped && originalMode) {
+    const previous: Record<string, unknown> = { ...existing.fields };
+    const hasScoped = modes.some((mode) => previous[mode]);
+    const introduces = modes.some((mode) => dto.fields?.[mode]);
+    const original = existing.default_mode;
+    if (!hasScoped && introduces && original) {
       const legacy: Record<string, unknown> = {};
       for (const key of [
         'selected_model',
@@ -152,39 +124,33 @@ export function resolveAiProviderUpdate(
         'enable_extended_thinking',
         'available_models',
       ])
-        if (Object.hasOwn(previousFields, key))
-          legacy[key] = previousFields[key];
-      previousFields[originalMode] = legacy;
+        if (Object.hasOwn(previous, key)) legacy[key] = previous[key];
+      previous[original] = legacy;
     }
-    const fields: Record<string, unknown> = {
-      ...previousFields,
-      ...dto.fields,
-    };
-    for (const mode of ['api_key', 'token_plan_web', 'token_plan_agentic']) {
-      const patch: unknown = dto.fields[mode];
-      const previous: unknown = previousFields[mode];
+    const fields: Record<string, unknown> = { ...previous, ...dto.fields };
+    for (const mode of modes) {
+      const patch: unknown = dto.fields[mode],
+        old: unknown = previous[mode];
       if (
         patch &&
         typeof patch === 'object' &&
         !Array.isArray(patch) &&
-        previous &&
-        typeof previous === 'object' &&
-        !Array.isArray(previous)
+        old &&
+        typeof old === 'object' &&
+        !Array.isArray(old)
       ) {
-        const merged: Record<string, unknown> = { ...previous, ...patch };
-        const patchLevels: unknown = (patch as Record<string, unknown>)
-          .thinking_levels;
-        const oldLevels: unknown = (previous as Record<string, unknown>)
-          .thinking_levels;
+        const merged: Record<string, unknown> = { ...old, ...patch };
+        const levels = (patch as Record<string, unknown>).thinking_levels,
+          oldLevels = (old as Record<string, unknown>).thinking_levels;
         if (
-          patchLevels &&
-          typeof patchLevels === 'object' &&
-          !Array.isArray(patchLevels) &&
+          levels &&
+          typeof levels === 'object' &&
+          !Array.isArray(levels) &&
           oldLevels &&
           typeof oldLevels === 'object' &&
           !Array.isArray(oldLevels)
         )
-          merged.thinking_levels = { ...oldLevels, ...patchLevels };
+          merged.thinking_levels = { ...oldLevels, ...levels };
         fields[mode] = merged;
       }
     }

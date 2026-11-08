@@ -78,12 +78,6 @@ class LoginSupervisor:
         if self.manager is None or self.done.is_set() or self.current()["state"] != "running" and action != "code":
             raise ServiceError("login_not_ready", "El login no admite esa interacción.", 409)
         payload = request.get("payload")
-        if action == "frame" and self.record["engine"] == "web":
-            return (await self.service.browser_manager.viewer.frame()).model_dump()
-        if action == "input" and self.record["engine"] == "web":
-            from login_viewer import LoginInput
-            await self.service.browser_manager.viewer.input(LoginInput.model_validate(payload))
-            return self.current()
         if action == "code" and self.record["engine"] == "agentic":
             from schemas import AgenticLoginCode
             code = AgenticLoginCode.model_validate(payload).code
@@ -108,28 +102,14 @@ class LoginSupervisor:
 
     async def login(self) -> None:
         try:
-            if self.record["engine"] == "web":
-                from gemini_service import GeminiWebService
-                from interactive_login import InteractiveLoginManager
-                self.service = GeminiWebService()
-                self.manager = InteractiveLoginManager()
-                async def runner():
-                    self.service.assert_login_allowed()
-                    result = await self.service.browser_manager.login_interactive(
-                        timeout_seconds=max(1, int(self.record["expires_at"] - time.time())))
-                    cookies = result.get("cookies", {})
-                    if not result.get("success") or not cookies.get("secure_1psid") or not cookies.get("secure_1psidts"):
-                        return False
-                    await self.service.reload_cookies(cookies["secure_1psid"], cookies["secure_1psidts"])
-                    return self.service.is_initialized
-                self.manager.start(runner, self.record["actor"], job_id=self.key)
-            else:
-                from agentic_service import AntigravityAgentService
-                from agentic_login import AgenticLoginManager
-                self.service = AntigravityAgentService()
-                await self.service.initialize()
-                self.manager = AgenticLoginManager(self.service, timeout=max(1, self.record["expires_at"] - time.time()))
-                await self.manager.start(self.record["actor"], job_id=self.key)
+            if self.record["engine"] != "agentic":
+                raise ServiceError("invalid_engine", "Unsupported execution mode.", 422)
+            from agentic_service import AntigravityAgentService
+            from agentic_login import AgenticLoginManager
+            self.service = AntigravityAgentService()
+            await self.service.initialize()
+            self.manager = AgenticLoginManager(self.service, timeout=max(1, self.record["expires_at"] - time.time()))
+            await self.manager.start(self.record["actor"], job_id=self.key)
             while not self.done.is_set():
                 job = self.manager.status(self.key, self.record["actor"])
                 if job and job["state"] in TERMINAL:

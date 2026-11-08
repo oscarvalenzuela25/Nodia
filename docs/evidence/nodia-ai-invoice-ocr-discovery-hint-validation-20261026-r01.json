@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "status": "local_candidate_validated_not_deployed",
+  "source_server_manifest_sha256": "605ef5533af3c8ffbffde33ce13275d966b9271f34a2ee0f8a17c609c02308c1",
+  "before": {
+    "src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts": "81cf95911460986df1f739e8ec9d5bc5daa3d183e232e36559f199eee1187265"
+  },
+  "after": {
+    "src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts": {
+      "sha256": "1b033b772b5e4d4766a42c2f08ae41c2b122e81d8ca02475e19f4a995279ef3f",
+      "bytes": 16159
+    },
+    "src/nodia-ai-context/types/invoice-ocr-discovery-hint.ts": {
+      "sha256": "f164f87700ed1dd520461201c589090fa9943496939b72be8c2f663760c4a2a3",
+      "bytes": 5711
+    },
+    "src/nodia-ai-context/types/invoice-ocr-discovery-hint.spec.ts": {
+      "sha256": "0503891f07b45e474594fd1516be6971a4a2efb0805018dfcddead057f45f7da",
+      "bytes": 9321
+    }
+  },
+  "production_delta": [
+    "src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts",
+    "src/nodia-ai-context/types/invoice-ocr-discovery-hint.ts"
+  ],
+  "new_export": "invoiceOcrDiscoveryHint",
+  "tests": {
+    "command": "node_modules/.bin/vitest run src/nodia-ai-context/types/invoice-ocr-discovery-hint.spec.ts src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.spec.ts --maxWorkers=2",
+    "files": 2,
+    "passed": 65,
+    "failed": 0
+  },
+  "lint": {
+    "tool": "oxlint",
+    "scope": [
+      "src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts",
+      "src/nodia-ai-context/types/invoice-ocr-discovery-hint.ts",
+      "src/nodia-ai-context/types/invoice-ocr-discovery-hint.spec.ts"
+    ],
+    "exit_code": 0
+  },
+  "typecheck": {
+    "command": "nodia-server/node_modules/.bin/tsc -p .tmp/antigravity-ocr-discovery-hint-r01/typecheck.json --pretty false",
+    "exit_code": 0,
+    "first_harness_failure": "Temporary config initially resolved types/rootDir relative to.tmp; explicit existing dependency type paths/rootDir corrected, no production change."
+  },
+  "limits": [
+    "No VM/SDK/inference/deploy or knowledge build",
+    "No authority or tool grant changes; hint is metadata only from the current authorized index",
+    "Complete index and recovery reference values remain unchanged; no private reference IDs in hint",
+    "Unknown/failed/cancelled/requested recovery-only references do not emit hint; multiple relevant references are not selected"
+  ],
+  "UTF8_LF": true,
+  "date": "2026-10-26",
+  "scope": "Pure optional discovery planning metadata and one BuildContext integration; no authority, grant, selection or domain execution change.",
+  "feature_document_impact": "No approved ficha or published knowledge bytes changed locally. Hint is derived from existing published/authorized metadata and adds no capability. Packaging/publication/real evaluation remains separate.",
+  "validation_interpretation": "Local tests/typecheck/lint only; no claim to resolve the previous Antigravity natural-chat timeout.",
+  "followup_contract": "Snapshot.loadReferences projection: only awaiting_supplier or stored_result enables a recovery-only hint. No reference or business chosen, no IDs copied into hint.",
+  "local_harness_note": "An initial test-writing shell used the wrong cwd and wrote no file; the existing BuildContext39 tests passed alone. After creating the adjacent spec correctly,65 tests across2files passed. Temporary typecheck config first failed dependency type/rootDir resolution, then passed with explicit existing type paths/rootDir. No production fallback or suppression."
+}

@@ -1,0 +1,307 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "status": "implemented_and_deployed",
+  "change": "Two saved-sale actions use MUI contained; cancellation keeps error color.",
+  "functional_contract_changes": false,
+  "ai_knowledge_impact": "Visual only; NodiaAI sales read-only boundary unchanged. Draft workspace6 records assessment.",
+  "approved_documents_modified": 0,
+  "source": "nodia-client/src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesWorkspace.tsx",
+  "source_sha256": "c49031f28b91e1049b5eaa8a3d6412f8dda8f4fcb7261cc23a5bf75aedc1da6a",
+  "verification": {
+    "typecheck_exit": 0,
+    "lint_exit": 0,
+    "client_suite": {
+      "passed": 2389,
+      "files": 288,
+      "seconds": 202.03
+    },
+    "build_exit": 0,
+    "build_seconds": 12.66,
+    "build_warning": "Existing api629.68kB chunk and timing warning; no performance improvement claimed.",
+    "operator_guards_passed": 10,
+    "browser_QA": {
+      "passed": true,
+      "synthetic": true,
+      "browser": "156.0.4314.50",
+      "samples": [
+        {
+          "width": 1569,
+          "height": 892,
+          "lang": "es",
+          "theme": "dark",
+          "actions": [
+            {
+              "text": "Anular venta",
+              "width": 123.875,
+              "height": 36.5,
+              "x": 1067.1875,
+              "y": 559.0625,
+              "background": "rgb(248, 113, 113)",
+              "color": "rgb(0, 0, 0)",
+              "variant": true,
+              "disabled": false,
+              "parentWidth": 453
+            },
+            {
+              "text": "Consultar venta guardada",
+              "width": 219.953125,
+              "height": 36.5,
+              "x": 1199.0625,
+              "y": 559.0625,
+              "background": "rgb(129, 140, 248)",
+              "color": "rgb(0, 0, 0)",
+              "variant": true,
+              "disabled": false,
+              "parentWidth": 453
+            }
+          ],
+          "overflow": 0
+        },
+        {
+          "width": 320,
+          "height": 844,
+          "lang": "es",
+          "theme": "dark",
+          "actions": [
+            {
+              "text": "Anular venta",
+              "width": 254,
+              "height": 44,
+              "x": 33,
+              "y": 427.71875,
+              "background": "rgb(248, 113, 113)",
+              "color": "rgb(0, 0, 0)",
+              "variant": true,
+              "disabled": false,
+              "parentWidth": 254
+            },
+            {
+              "text": "Consultar venta guardada",
+              "width": 254,
+              "height": 44,
+              "x": 33,
+              "y": 479.71875,
+              "background": "rgb(129, 140, 248)",
+              "color": "rgb(0, 0, 0)",
+              "variant": true,
+              "disabled": false,
+              "parentWidth": 254
+            }
+          ],
+          "overflow": 0
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "lang": "en",
+          "theme": "light",
+          "actions": [
+            {
+              "text": "Cancel sale",
+              "width": 324,
+              "height": 44,
+              "x": 33,
+              "y": 446.703125,
+              "background": "rgb(239, 68, 68)",
+              "color": "rgb(255, 255, 255)",
+              "variant": true,
+              "disabled": false,
+              "parentWidth": 324
+            },
+            {
+              "text": "Review saved sale",
+              "width": 324,
+              "height": 44,
+              "x": 33,
+              "y": 498.703125,
+              "background": "rgb(79, 70, 229)",
+              "color": "rgb(255, 255, 255)",
+              "variant": true,
+              "disabled": false,
+              "parentWidth": 324
+            }
+          ],
+          "overflow": 0
+        },
+        {
+          "width": 600,
+          "height": 844,
+          "lang": "en",
+          "theme": "light",
+          "actions": [
+            {
+              "text": "Cancel sale",
+              "width": 115.359375,
+              "height": 36.5,
+              "x": 41,
+              "y": 567.0625,
+              "background": "rgb(239, 68, 68)",
+              "color": "rgb(255, 255, 255)",
+              "variant": true,
+              "disabled": false,
+              "parentWidth": 518
+            },
+            {
+              "text": "Review saved sale",
+              "width": 161.765625,
+              "height": 36.5,
+              "x": 164.359375,
+              "y": 567.0625,
+              "background": "rgb(79, 70, 229)",
+              "color": "rgb(255, 255, 255)",
+              "variant": true,
+              "disabled": false,
+              "parentWidth": 518
+            }
+          ],
+          "overflow": 0
+        }
+      ],
+      "requiredReasonPreserved": true,
+      "busyGuardsPreserved": true,
+      "commercialMutationAttempts": 0
+    },
+    "knowledge_context_prepare_build_check_exit": 0,
+    "local_authoring_knowledge": "8bcb5ad8d0b4668a1bbbcfc435f7901afea028a418c4c038ff33b98161412766",
+    "local_authoring_not_deployed": true
+  },
+  "deployment": {
+    "api_or_worker_restart_requests": 0,
+    "auth_requests": 0,
+    "baseline": {
+      "client_index_sha256": "c732dd46473ff188906df6099aabb98ce3f9a0b082c58ff3df526f356cf4fbcf",
+      "client_manifest_sha256": "a22f0170dccb90239aa438f98daedda38076978ed050a3b8bd0a9f1cbb198985",
+      "client_release": "/opt/nodia/releases/nodia-client-business-mobile-20261030-r01",
+      "knowledge_release_id": "ea03686c1176f6cc781500552f55aebcfbb8fd9c19670bee620fe1e71869fe5b",
+      "nginx_path": "/etc/nginx/sites-available/nodia-lab",
+      "nginx_sha256": "78b91adc85cc225bf3d3ac19a105669dc0245ac259623101df83bb3929262933",
+      "public_google_client_id_sha256": "92d734acd9f93db3084a903aebff28adaf5f83d9dca318c7ddf19ed7a4ab7e3a",
+      "server_manifest_sha256": "c38b16bdc888c5b6d6ae4e16e310336c965e199b0ce975d9c4fa499b2017c231",
+      "server_release": "/opt/nodia/releases/nodia-server-business-sales-readonly-20261030-r01",
+      "source_input_fingerprint_sha256": "b1681a64187ba287ace280f8377258e210c89989e50de179f9abc78db7ea1537",
+      "source_inputs_sha256": "d8ed56bd1127d877609854f34d5294684937c20d6169d2bc682c2726b39883ea"
+    },
+    "before": {
+      "knowledge_files": {
+        "dist/nodia-ai-context/config/knowledge-pin.json": "5783e70a9f46a114fb47505da1cf93bbcb78ea009d1ceeaa2cb6be18fb3774fc",
+        "dist/nodia-ai/knowledge/manifest.json": "cf4805fe3716f8deb035cf0c595dbf803cee7e18851df73fdb6ee6e1ba6320a9",
+        "src/nodia-ai-context/config/knowledge-pin.json": "5783e70a9f46a114fb47505da1cf93bbcb78ea009d1ceeaa2cb6be18fb3774fc",
+        "src/nodia-ai/knowledge/manifest.json": "cf4805fe3716f8deb035cf0c595dbf803cee7e18851df73fdb6ee6e1ba6320a9"
+      },
+      "native": {
+        "health": "healthy",
+        "id": "b3dcf9d350532da2965a62cc276b8f5b81b935a23374c5c67f1bfe974c0be186",
+        "image": "sha256:4b990e3e8c60077fceb06ac5018025a5ef80353297fe92affc8b20fe53915fa9",
+        "started_at": "2026-10-27T18:32:11.657816024Z",
+        "status": "running"
+      },
+      "server_manifest_sha256": "c38b16bdc888c5b6d6ae4e16e310336c965e199b0ce975d9c4fa499b2017c231",
+      "services": {
+        "nodia-ai-backup-rotate.timer": {
+          "ActiveState": "active",
+          "SubState": "waiting"
+        },
+        "nodia-ai-backup.timer": {
+          "ActiveState": "active",
+          "SubState": "waiting"
+        },
+        "nodia-ai-worker.service": {
+          "ActiveState": "active",
+          "MainPID": "2644484",
+          "SubState": "running",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-business-sales-readonly-20261030-r01",
+          "executable": "/opt/node-v24.20.0-linux-x64/bin/node",
+          "start_ticks": "69857935"
+        },
+        "nodia-api.service": {
+          "ActiveState": "active",
+          "MainPID": "2644483",
+          "SubState": "running",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-business-sales-readonly-20261030-r01",
+          "executable": "/opt/node-v24.20.0-linux-x64/bin/node",
+          "start_ticks": "69857933"
+        },
+        "nodia-gemini-lab.service": {
+          "ActiveState": "active",
+          "MainPID": "0",
+          "SubState": "exited",
+          "WorkingDirectory": "/opt/nodia/nodia-gemini-microservice"
+        },
+        "nodia-keyring.service": {
+          "ActiveState": "active",
+          "MainPID": "1029625",
+          "SubState": "running",
+          "WorkingDirectory": ""
+        }
+      }
+    },
+    "candidate_manifest_sha256": "ae1164f7cc4c6ad3861cf3231fc58d547c3283a124420f89ae990aa0956ed117",
+    "candidate_root": "/opt/nodia/releases/nodia-client-business-pos-sale-actions-20261030-r01",
+    "cloud_backup_requests": 0,
+    "config_sha256": "d96ae1c86e01eb6a8b30c61407446fad5e177b850727a5dc4c610648c2c13fbc",
+    "http": {
+      "current_assets": 169,
+      "previous_assets": 32,
+      "protected": [
+        {
+          "route": "/api/v1",
+          "status": 200
+        },
+        {
+          "route": "/api/v1/nodia-ai/connections",
+          "status": 401
+        },
+        {
+          "route": "/api/v1/products",
+          "status": 401
+        }
+      ],
+      "spa": [
+        {
+          "route": "/",
+          "sha256": "b8d6a7fceefa83762485aa6bffe9f16c1a521ddf43b62a3966a0b9da2342f524",
+          "status": 200
+        },
+        {
+          "route": "/tools/nodia-ai",
+          "sha256": "b8d6a7fceefa83762485aa6bffe9f16c1a521ddf43b62a3966a0b9da2342f524",
+          "status": 200
+        },
+        {
+          "route": "/tools/business",
+          "sha256": "b8d6a7fceefa83762485aa6bffe9f16c1a521ddf43b62a3966a0b9da2342f524",
+          "status": 200
+        }
+      ]
+    },
+    "native_restart_requests": 0,
+    "nginx_after_sha256": "e37cfb8695b15acf5489e197b70a19e11641861e34a85ddf360ff06ef0376b59",
+    "nginx_before_sha256": "78b91adc85cc225bf3d3ac19a105669dc0245ac259623101df83bb3929262933",
+    "original_release_preserved": true,
+    "phase": "activated_verified",
+    "protected_runtime_preserved": true,
+    "provider_requests": 0,
+    "reload_dispatched": true,
+    "reload_exit_code": 0,
+    "schema_version": 1,
+    "sql_queries": 0,
+    "success": true,
+    "updated_at_utc": "2026-10-30T19:12:49.955936+00:00"
+  },
+  "runtime_status_preserved": true,
+  "limits": [
+    "Browser QA uses isolated synthetic data and Edge156 viewports; no physical phone acceptance or real sale cancellation.",
+    "No SQL, provider inference, authentication exchange, or API/worker restart in this static release."
+  ],
+  "delivery_catalog": {
+    "path": "ops/lab/artifacts/business-pos-sale-actions-20261030-r01/client/catalog.json",
+    "sha256": "eb2d9e8ad1ad27952e6cb15403d288e05318c071f388dfffed05f245461b6f19",
+    "files": 30
+  },
+  "approved_document_integrity": {
+    "count": 44,
+    "mismatches": 0,
+    "aggregate_sha256": "ed28119a33cf89230c5ecbaef1c371fe21b2f6e709b8c71fdf47ce755dbb3373"
+  }
+}

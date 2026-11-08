@@ -4,15 +4,19 @@
   "document_id": "general-settings.ai-models-and-health",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 8,
+  "revision": 9,
   "document_status": "approved",
   "implementation": {
     "status": "partial",
-    "notes": "Publicación AI-15 de las lecturas/referencias expresamente enumeradas mediante contratos cerrados y reglas nativas. Las escrituras y otras etapas del producto no se habilitan. La disponibilidad de cada dependencia se observa por separado; no se promete éxito de toda inferencia ni acceso a contenido R2 no configurado."
+    "notes": "Agentic and API key only. Existing publication fragments retained; implementation verification and live operational acceptance are separate. Human documentary approval recorded 2026-10-27."
   },
   "integration_status": "published",
   "maintainer": "Mantenimiento de Ajustes Generales y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/mvp/90-agentic-api-only-web-retirement.md",
+      "kind": "specification"
+    },
     {
       "path": "docs/mvp/02-prd-v1.md",
       "kind": "specification"
@@ -59,7 +63,7 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-10-16",
+    "checked_on": "2026-10-27",
     "evidence_paths": [
       "docs/mvp/51-nodia-ai-ai05-product-knowledge.md",
       "docs/evidence/nodia-ai-ai05-knowledge-validation.json",
@@ -72,19 +76,26 @@
       "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
       "docs/evidence/nodia-ai-ai15-live-external-final.json",
       "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
-      "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json",
+      "docs/evidence/ai-two-modes-knowledge-review-r01.json"
     ],
-    "notes": "Gemini Agentic real completó un turno de cinco familias SQL (10 comprobaciones) y otro de tres referencias (12): dos CSV autenticados correctos; factura devuelve 503 por R2 sin configurar. La emisión de referencia no certifica bytes disponibles. Routing real completó Web conversacional y delegación opt-in SQL; el siguiente turno Web quedó unknown/502 y se concilió sin replay. El ensayo externo final completó recibos health/engines y luego quedó unknown; no se registra como aceptación generativa completa. La regresión Gateway de las cinco salidas usa observaciones sintéticas y cero inferencias. Los fallos permanecen en sus informes, sin atribuirlos a causa no observada. Las demás lecturas conservan su evidencia aislada SQL/HTTP; publicar no garantiza que el modelo siempre construya llamadas válidas. Pulido documental: evidencia aislada anterior etiquetada como histórica y referencia Codex alineada con su publicación real. Sin nuevas observaciones, herramientas, contratos ni cambios de fragmentos publicados."
+    "notes": "Gemini Agentic real completó un turno de cinco familias SQL (10 comprobaciones) y otro de tres referencias (12): dos CSV autenticados correctos; factura devuelve 503 por R2 sin configurar. La emisión de referencia no certifica bytes disponibles. Routing real completó Web conversacional y delegación opt-in SQL; el siguiente turno Web quedó unknown/502 y se concilió sin replay. El ensayo externo final completó recibos health/engines y luego quedó unknown; no se registra como aceptación generativa completa. La regresión Gateway de las cinco salidas usa observaciones sintéticas y cero inferencias. Los fallos permanecen en sus informes, sin atribuirlos a causa no observada. Las demás lecturas conservan su evidencia aislada SQL/HTTP; publicar no garantiza que el modelo siempre construya llamadas válidas. Pulido documental: evidencia aislada anterior etiquetada como histórica y referencia Codex alineada con su publicación real. Sin nuevas observaciones, herramientas, contratos ni cambios de fragmentos publicados. Two-mode source review on 2026-10-27; new runtime/VM/API acceptance is separate and pending."
   },
   "approval": {
-    "reference": "docs/evidence/nodia-ai-ai15-publication-authorization.md",
-    "revision": 8,
-    "content_sha256": "74dfd67d083201669caedf986e616fba5e9571f23a0ae28f51f54e6a9ff711de"
+    "reference": "docs/evidence/ai-two-modes-knowledge-human-approval-r01.json",
+    "revision": 9,
+    "content_sha256": "942cfef6916bbdd0bcdba7616e6747b615c750f22432d5f4d0333feb5023fdd0"
   }
 }
 ---
 
 # Modelos, salud y eventos de IA — contexto funcional para NodiaAI
+
+## Modos vigentes solicitados el 2026-10-27
+
+Sólo **Agentic** (`agentic`) y **API key** (`api_key`), conforme al [plan90](../../../../mvp/90-agentic-api-only-web-retirement.md). Flags `use_agentic`/`can_use_agentic`, `use_api_key`/`can_use_api_key`; configuración por `fields.agentic` y `fields.api_key`. Los defaults/selecciones Web se desasignan y requieren elección explícita; no se convierten en otra modalidad. El historial anterior conserva su evidencia y no habilita Web.
+
+La revisión aprobada anterior 8 se conserva byte exacta; el [informe de revisión](../../../../evidence/ai-two-modes-knowledge-review-r01.json) identifica originales y cambios. La disponibilidad de cada funcionalidad se verifica por proveedor/modo/modelo con el [plan91](../../../../mvp/91-ai-provider-onboarding-verification.md); las pruebas históricas de Web no acreditan API ni Agentic actual.
 
 Estado actual: esta revisión publica sólo el fragmento «Lecturas disponibles en AI-15». Las secciones de implementación/evidencia anteriores a ese fragmento conservan la trazabilidad de entregas iniciales; sus frases históricas sobre publicación pendiente no sustituyen el frontmatter actual ni habilitan escrituras.
 
@@ -132,7 +143,7 @@ Actor, permisos efectivos, claves de intención, versiones de concurrencia y ref
 
 ## Reglas, acceso y restricciones
 
-getHealth unifica estado/engines observados; getGeminiEngines es ruta de compatibilidad, no segunda consulta paralela obligatoria. Configurar/sincronizar catálogo no prueba inferencia. Topbar API verde significa key configurada según contrato, no salud del motor. API OpenAI/Agentic y Web Gemini tienen pruebas/disponibilidad distintas; Web OpenAI retirado. AI-03 sólo verifica spike exacto en VM, no runtime MCP productivo ni todos los modelos.
+getHealth unifica estado/engines observados; getGeminiEngines es ruta de compatibilidad, no segunda consulta paralela obligatoria. Configurar/sincronizar catálogo no prueba inferencia. Topbar API verde significa key configurada según contrato, no salud del motor. Agentic y API key tienen pruebas/disponibilidad distintas por proveedor; Web retirado. AI-03 sólo verifica spike exacto en VM, no runtime MCP productivo ni todos los modelos.
 
 Cinco destinos distintos: /settings/users, /settings/roles, /settings/actions, /settings/modules y /settings/ai-providers. No habilitar todos por asignar uno. Administración global autenticada intencional en19, sin inventar permisos por acción; IA conserva su requisito real ai:manage o super_admin. NodiaAI aplica su módulo más cada destino (AI-07) y salvaguardas NI-13/AI-08.
 
@@ -146,7 +157,7 @@ El nuevo registro combinable de [contratos41](../../../../mvp/41-nodia-ai-v1-con
 
 Lectura de health/modelos no confirma negocio; syncModels es mutación/coste de integración y debe tener preview/identidad adecuada en chat. Fallo conserva configuración, marca observación inválida/desconocida y nunca hace fallback ni inferencia artificial de salud.
 
-Desde NodiaAI, preparar es distinto de ejecutar: cambios requieren vista previa exacta y botón humano de41; el switch Web→Agentic no confirma. Conservar efectos completados si falla un paso dependiente y no reenviar un resultado desconocido. Payload del chat caduca según50 sin borrar registros de dominio ni sus journals nativos.
+Desde NodiaAI, preparar es distinto de ejecutar: cambios requieren vista previa exacta y botón humano de41; elegir Agentic o API key no confirma. Conservar efectos completados si falla un paso dependiente y no reenviar un resultado desconocido. Payload del chat caduca según50 sin borrar registros de dominio ni sus journals nativos.
 
 ## Integración y evidencia
 
@@ -178,7 +189,7 @@ libera al finalizar realmente y el resultado generativo incierto queda en
 cuarentena sin reenvío. El marcador técnico mínimo no contiene mensajes o datos
 de negocio y no se elimina por vencer un chat.
 
-Web sólo conversa o pide delegación tipada. Agentic sin herramientas usa MCP
+Agentic se elige directamente; Web no es una opción ejecutable. Agentic sin herramientas usa MCP
 vacío y hook sólo `finish`. El loop técnico registrado por Server admite un catálogo
 cerrado, callbacks con autorización/fence vigente y presupuestos de RPC/llamadas;
 no admite URLs de retorno ni herramientas shell/archivos/HTTP. El gateway de
@@ -234,7 +245,7 @@ Resolver entidades, destinatario, intervalo y filtros ambiguos antes de llamar. 
 
 Server valida sesión, módulo NodiaAI y todos los módulos destino actuales para usuarios ordinarios; super_admin conserva transversalidad y las reglas de dominio. Datos privados y autoridad se revalidan al devolver o recuperar resultados. Finanzas permite owner_id ajeno sólo a super_admin; Reservas conserva autoridad actual del alojamiento; administración IA conserva ai:manage. No construir SQL libre ni pedir tokens, cookies o secretos.
 
-Esta publicación incluye lecturas y referencias privadas, no preparaciones ni ejecución de escrituras. Cualquier creación, edición, eliminación o confirmación conserva sus herramientas y etapas posteriores. No anunciar informes cruzados, un total por proveedor u otros filtros/agrupaciones si el schema o caso de uso no los soporta. Web permanece conversacional; MCP sólo se ejecuta mediante Agentic verificado, con delegación Web→Agentic opt-in de la misma conexión.
+Esta publicación incluye lecturas y referencias privadas, no preparaciones ni ejecución de escrituras. Cualquier creación, edición, eliminación o confirmación conserva sus herramientas y etapas posteriores. No anunciar informes cruzados, un total por proveedor u otros filtros/agrupaciones si el schema o caso de uso no los soporta. Web se retira conforme al plan90; MCP requiere Agentic verificado elegido directamente, sin delegación ni fallback de modo.
 
 Las observaciones externas se ejecutan fuera de SQL, con deadline/cancelación y verificación posterior de autoridad y configuración. La recuperación de una llamada completada no repite red; una llamada interrumpida no se reintenta ciegamente. Los artefactos son referencias privadas current_on_download: la descarga humana reautoriza chat/recurso, rechaza exceso sin truncar y no conserva el archivo al expirar el chat; el original de factura pertenece al negocio.
 

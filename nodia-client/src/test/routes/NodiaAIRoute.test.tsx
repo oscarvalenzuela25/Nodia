@@ -25,7 +25,7 @@ function openRoute() {
   const testRouter = createMemoryRouter([
     nodiaRoute,
     { path: "/login", element: <p>Sign in</p> },
-    { path: "/404", element: <p>Access denied</p> },
+    { path: "/", element: <p>Home page</p> },
   ], { initialEntries: [NODIA_AI_ROUTE] });
   render(<QueryClientProvider client={queryClient}><RouterProvider router={testRouter} /></QueryClientProvider>);
 }
@@ -56,16 +56,16 @@ describe("NodiaAI route", () => {
     expect(await screen.findByText("Sign in")).toBeInTheDocument();
     expect(transport).not.toHaveBeenCalled();
   });
-  it.each([{ roles: [] }, { roles: ["super_admin"] }])("preserves assignment-based navigation for roles $roles", async ({ roles }) => {
+  it.each([{ roles: [] }, { roles: ["admin"] }])("requires the module for ordinary roles $roles", async ({ roles }) => {
     useAuthStore.getState().login({ token: "fixture", expiresAt: Date.now() + 900000, user: { id: "1", name: "Fixture" } });
     adapter(false, roles); openRoute();
-    expect(await screen.findByText("Access denied")).toBeInTheDocument();
+    expect(await screen.findByText("Home page")).toBeInTheDocument();
   });
   it.each(["es", "en"])("opens the assigned page in %s with read-only coordination requests and no inference", async language => {
     await i18n.changeLanguage(language);
     useAuthStore.getState().login({ token: "fixture", expiresAt: Date.now() + 900000, user: { id: "1", name: "Fixture" } });
     const transport = adapter(true); openRoute();
-    expect(await screen.findByRole("heading", { name: "NodiaAI", level: 1 })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Nodia AI", level: 1 })).toBeInTheDocument();
     expect(await screen.findByText(i18n.t("nodiaAi:welcome_message"))).toBeInTheDocument();
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
     expect(transport.mock.calls.every(([config]) => config.method === "get")).toBe(true);

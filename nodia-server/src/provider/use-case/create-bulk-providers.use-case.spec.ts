@@ -11,7 +11,9 @@ describe('CreateBulkProvidersUseCase', () => {
     providerServiceMock = {
       createBulk: vi.fn(),
     };
-    useCase = new CreateBulkProvidersUseCase(providerServiceMock as ProviderService);
+    useCase = new CreateBulkProvidersUseCase(
+      providerServiceMock as ProviderService,
+    );
   });
 
   it('should be defined', () => {
@@ -43,13 +45,18 @@ describe('CreateBulkProvidersUseCase', () => {
       },
     ];
 
-    vi.mocked(providerServiceMock.createBulk!).mockResolvedValue(mockCreated as any);
+    vi.mocked(providerServiceMock.createBulk!).mockResolvedValue(
+      mockCreated as any,
+    );
 
     const result = await useCase.execute(bulkDto);
 
     expect(bulkDto.items[0].name).toBe('proveedor central');
     expect(providerServiceMock.createBulk).toHaveBeenCalledTimes(1);
-    expect(providerServiceMock.createBulk).toHaveBeenCalledWith(bulkDto);
+    expect(providerServiceMock.createBulk).toHaveBeenCalledWith(
+      bulkDto,
+      undefined,
+    );
     expect(result).toEqual(mockCreated);
   });
 });

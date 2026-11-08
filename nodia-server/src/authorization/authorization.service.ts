@@ -13,6 +13,8 @@ import { Action } from '../action/entities/action.entity.js';
 import { Module } from '../module/entities/module.entity.js';
 import { ModuleGroup } from '../module-group/entities/module-group.entity.js';
 import { RedisService } from '../common/redis/redis.service.js';
+import { compareCatalogOrder } from '../module-order/compare-catalog-order.js';
+import { canonicalModuleRoute } from './canonical-module-route.js';
 
 @Injectable()
 export class AuthorizationService {
@@ -32,7 +34,9 @@ export class AuthorizationService {
     const cached =
       await this.redisService.get<AuthorizationContextResponse>(cacheKey);
     if (cached) {
-      return cached;
+      return { ...cached, modules: cached.modules.map(group => ({ ...group,
+        modules: group.modules.map(module => ({ ...module, link: typeof module.link === 'string' ? canonicalModuleRoute(module.link) : module.link })),
+      })) };
     }
 
     const user = await this.userRepository
@@ -89,15 +93,21 @@ export class AuthorizationService {
       translates: act.translates ?? [],
     }));
 
-    // 3. Modules: Get unique active modules assigned to user
+    // Ordinary users receive assignments; super_admin sees the active catalog.
     const activeUserModules = (user.user_modules ?? []).filter(
       (um) =>
         um.is_active !== false && um.module && um.module.is_active !== false,
     );
 
     const activeModulesMap = new Map<string, Module>();
-    for (const um of activeUserModules) {
-      activeModulesMap.set(String(um.module.id), um.module);
+    const visibleModules = roleKeys.includes('super_admin')
+      ? await this.userRepository.manager.getRepository(Module).find({
+          where: { is_active: true },
+          relations: { module_group: true },
+        })
+      : activeUserModules.map((assignment) => assignment.module);
+    for (const module of visibleModules) {
+      activeModulesMap.set(String(module.id), module);
     }
 
     // Resolve module groups (either from relation or by fetching missing module_group_id)
@@ -126,12 +136,16 @@ export class AuthorizationService {
     }
 
     // Filter modules to only those whose group is found and active
-    const validModules = Array.from(activeModulesMap.values()).filter((mod) => {
-      const groupId = String(mod.module_group?.id || mod.module_group_id);
-      return activeGroupsMap.has(groupId);
-    });
+    const validModules = Array.from(activeModulesMap.values())
+      .filter((mod) => {
+        const groupId = String(mod.module_group?.id || mod.module_group_id);
+        return activeGroupsMap.has(groupId);
+      })
+      .sort(compareCatalogOrder);
 
-    const rawGroups = Array.from(activeGroupsMap.values());
+    const rawGroups = Array.from(activeGroupsMap.values()).sort(
+      compareCatalogOrder,
+    );
 
     const translatedGroups =
       rawGroups.length > 0
@@ -157,7 +171,7 @@ export class AuthorizationService {
       }
       modulesByGroupId.get(groupId)!.push({
         key: m.key,
-        link: m.link,
+        link: canonicalModuleRoute(m.link),
         icon: m.icon ?? null,
         translates: m.translates ?? [],
       });

@@ -1,5 +1,15 @@
 # Sitemap — Nodia Parte 1
 
+## URLs estables y Teacher — implementación local, 2026-11-01
+
+La navegación actual usa `/users`, `/roles`, `/actions`, `/modules`, `/ai-providers`, `/business` (detalle `/business/:id`), `/finances-personal`, `/reservations`, `/nodia-ai` y `/nodia-teacher` (detalle `/nodia-teacher/:sessionId`). El grupo del menú no forma parte de la identidad de la ruta ni del filesystem. Los aliases anteriores sólo redirigen al destino canónico, que vuelve a comprobar su guard. APIs de dominio conservadas.
+
+[ADR092](../architecture/decisions/ADR-092-stable-module-navigation-routes.md) y [evidencia de migración](../evidence/canonical-module-routes-20261101-r01.json) documentan el mapa explícito, respaldo/ensayo y aplicación **local** de diez enlaces preservando IDs, relaciones y permisos. La duplicidad NodiaAI anterior no se fusionó ni concedió acceso: sigue denegada por ambigüedad. Las URLs con prefijos de los cortes fechados inferiores son históricas, no destinos nuevos ejecutables.
+
+Teacher tiene dominio propio Client/Server, módulo `/nodia-teacher`, sesiones privadas y autoridad89; no requiere módulos de chat o administración IA. El mantenedor ofrece su URL para asignación individual. [97](97-nodia-teacher-technical-contracts.md) describe los contratos; [96](96-nodia-teacher-implementation-plan.md#21-implementación-local-y-evidencia) mantiene la verificación local y los pendientes de calificación/adopción. Implementación no aprueba ni publica documentos.
+
+Punto de venta2026-10-28: [plan94 R07](94-business-point-of-sale-and-product-refactor.md#16-adopción-en-vm-r07) implementa y despliega secciones Punto de venta/Ventas/Reportes en /tools/business/:id, query section estable y un único carrito responsive por empresa. Entrada humana http://localhost:5174/tools/business hacia VM/Nginx; módulo Negocios y autoridad89. Smoke real y entrega SPA/assets verificados; hardware/proveedor reales pendientes, sin extender aprobación al sitemap completo.
+
 > Estado: en revisión — ampliaciones IA, Finanzas personales y Reservas; aprobación histórica 2026-08-21 conservada
 > Última actualización: 2026-10-09
 > Dependencias: 04-prd-v2.md aprobado, 03-domain-model-erd.md aprobado

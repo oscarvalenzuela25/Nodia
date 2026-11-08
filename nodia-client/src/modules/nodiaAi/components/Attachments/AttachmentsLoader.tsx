@@ -8,7 +8,7 @@ import type { AttachmentPanelProps } from "./types";
 
 export default function AttachmentsLoader(props: AttachmentPanelProps) {
   const { t } = useTranslation("nodiaAi");
-  const [intent, setIntent] = useState(false);
+  const [intent, setIntent] = useState(props.reviewOnly === true);
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<{ Panel?: ComponentType<AttachmentPanelProps>; failed: boolean }>({ failed: false });
   useEffect(() => {
@@ -20,6 +20,6 @@ export default function AttachmentsLoader(props: AttachmentPanelProps) {
   if (state.Panel) return <state.Panel {...props} />;
   return <AttachmentPanel>
     {state.failed && <Alert severity="error">{t("attachments.load_error")}</Alert>}
-    <Button disabled={props.disabled || (intent && !state.failed)} onClick={() => { setState({ failed: false }); setIntent(true); setAttempt(value => value + 1); }}>{t(state.failed ? "retry" : intent ? "attachments.loading" : "attachments.open")}</Button>
+    <Button variant="contained" disabled={props.disabled || (intent && !state.failed)} onClick={() => { setState({ failed: false }); setIntent(true); setAttempt(value => value + 1); }}>{t(state.failed ? "retry" : intent ? "attachments.loading" : "attachments.open")}</Button>
   </AttachmentPanel>;
 }

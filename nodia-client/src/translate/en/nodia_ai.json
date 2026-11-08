@@ -1,0 +1,5 @@
+{
+  "invalid_image_generation_request": "Type /imagen followed by a description between 1 and 8,000 UTF-8 bytes, without attachments.",
+  "invalid_generated_image": "We could not validate the image received from the provider.",
+  "generated_image_storage_unavailable": "We could not store the generated image. Check the conversation status before requesting another one."
+}

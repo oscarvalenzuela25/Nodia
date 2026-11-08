@@ -1,4 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { moduleRouteIncluded } from '../../authorization/canonical-module-route.js';
 import type { EntityManager } from 'typeorm';
 import { lockAuthority } from '../../authorization/authority-transaction.js';
 import { AuthorizeNodiaAiUseCase } from '../../nodia-ai/use-case/authorize-nodia-ai.use-case.js';
@@ -86,7 +87,7 @@ export class NodiaAiPreferenceReaderUseCase {
     await this.store.lockOwner(manager, actor.actorId);
     const allowed = actor.modules
       .map((module) => module.route)
-      .filter((route) => routes.includes(route));
+      .filter((route) => moduleRouteIncluded(routes, route));
     const projected = await this.project(
       manager,
       actor,

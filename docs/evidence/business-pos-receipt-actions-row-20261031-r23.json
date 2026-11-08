@@ -1,0 +1,299 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "status": "implemented_deployed_verified",
+  "scope": {
+    "changed_production_paths": [
+      "nodia-client/src/modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesWorkspace.tsx"
+    ],
+    "logic_or_contract_changes": false,
+    "columns": {
+      "xs": 1,
+      "sm_up": 2
+    },
+    "gap_px": 8,
+    "minimum_button_height": 44,
+    "saved_sale_panel_unchanged": true
+  },
+  "knowledge_impact": "Visual layout only; same concepts, print formats, handlers, totals, HTTP and read-only AI scope. Evaluation appended to existing draft; no new document/tool/approval/publication.",
+  "validation": {
+    "global_R01": {
+      "exit": 1,
+      "passed": 2457,
+      "failed": 1,
+      "files_passed": 292,
+      "files_failed": 1,
+      "seconds": 246.91,
+      "failure": "ProductBulkImport.test.tsx:363 immediately queries submit after upload before asynchronous parsed state appears",
+      "interpretation": "Intermittent test timing observed; exact cause not proven. No test/source change or weakened assertion."
+    },
+    "related_R02": {
+      "exit": 0,
+      "tests": 32,
+      "files": 2,
+      "seconds": 11.18
+    },
+    "global_R02": {
+      "exit": 0,
+      "tests": 2458,
+      "files": 293,
+      "seconds": 392.93,
+      "max_workers": 4,
+      "same_sources": true
+    },
+    "types_exit": 0,
+    "lint_exit": 0,
+    "build": {
+      "exit": 0,
+      "seconds": 33.13
+    },
+    "QA": {
+      "status": "PASS",
+      "widths": [
+        320,
+        390,
+        599,
+        600,
+        1569
+      ],
+      "profiles": 10,
+      "language_theme": [
+        "es-dark",
+        "en-light"
+      ],
+      "gap_px": 8,
+      "height_px": 44,
+      "same_nodes_and_state": true,
+      "keyboard_order": true,
+      "clipping_or_intersections": false,
+      "print_requests": 0,
+      "physical_prints": 0,
+      "real_commercial_writes": 0,
+      "summary_sha256": "5e49ce83d742a7c34e55dacf166c313a64d3ce55546f1580f35aea8b9e9e0355"
+    },
+    "git_diff_check_exit": 0,
+    "UTF8_LF_no_BOM_files": 7
+  },
+  "deployment": {
+    "status": "activated_verified",
+    "client_only": true,
+    "kit": "ops/lab/artifacts/business-pos-receipt-actions-row-20261031-r23",
+    "release": "/opt/nodia/releases/nodia-client-business-pos-receipt-actions-row-20261031-r23",
+    "manifest_sha256": "9550444ae79908a1fe10cc76ae095516f2f0e39e1dc95230e6625781198d672e",
+    "index_sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+    "nginx_sha256": "736c744ac4b3101179407f9e92ec88b70a3edd1f90e96bc5a4bc0c7e45bc2a9a",
+    "source_fingerprint_sha256": "4d27cd8765784f5c0d70a80f830c4ed3fa3628064602656b8e04f328ef3453cf",
+    "source_inputs": 1267,
+    "changed_production_paths": 1,
+    "changed_tests": 0,
+    "static_files": 173,
+    "current_assets": 169,
+    "previous_assets": 32,
+    "reloads": 1,
+    "backup_before": true,
+    "fallback_R22_preserved": true,
+    "protected_runtime_preserved": true,
+    "SQL_auth_inference_server_restarts": 0,
+    "candidate_stabilization": {
+      "required_consecutive_rounds": 3,
+      "rounds": [
+        {
+          "consecutive": 0,
+          "round": 1,
+          "spa": [
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "route": "/",
+              "sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "status": 200,
+              "verified": false
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "route": "/tools/nodia-ai",
+              "sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "status": 200,
+              "verified": false
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "route": "/tools/business",
+              "sha256": "927d21d0c82671fd3ab53bff3d4bc7be3afa0adc53c48b30498499b43436c782",
+              "status": 200,
+              "verified": false
+            }
+          ]
+        },
+        {
+          "consecutive": 1,
+          "round": 2,
+          "spa": [
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "route": "/",
+              "sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "status": 200,
+              "verified": true
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "route": "/tools/nodia-ai",
+              "sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "status": 200,
+              "verified": true
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "route": "/tools/business",
+              "sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "status": 200,
+              "verified": true
+            }
+          ]
+        },
+        {
+          "consecutive": 2,
+          "round": 3,
+          "spa": [
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "route": "/",
+              "sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "status": 200,
+              "verified": true
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "route": "/tools/nodia-ai",
+              "sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "status": 200,
+              "verified": true
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "route": "/tools/business",
+              "sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "status": 200,
+              "verified": true
+            }
+          ]
+        },
+        {
+          "consecutive": 3,
+          "round": 4,
+          "spa": [
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "route": "/",
+              "sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "status": 200,
+              "verified": true
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "route": "/tools/nodia-ai",
+              "sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "status": 200,
+              "verified": true
+            },
+            {
+              "bytes": 2973,
+              "cache_control_matches": true,
+              "coop_matches": true,
+              "expected_sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "route": "/tools/business",
+              "sha256": "4d41729829a67f60fce480f42255d253b2e50cb2543fa9b18f5b31ca7f33a345",
+              "status": 200,
+              "verified": true
+            }
+          ]
+        }
+      ]
+    },
+    "receipts": [
+      {
+        "path": "client/bootstrap-observed-root-r01.json",
+        "sha256": "16c718b3c528cd068741bccf233348941fd387093bdff8917e32c2be4ce8ec5f"
+      },
+      {
+        "path": "client/preflight-bound-root-r01.json",
+        "sha256": "ebb8cc2e12dedbf7f2a59cc10b7d9d9431ac51f9393cbc1cfbbeafaa147a6056"
+      },
+      {
+        "path": "client/stage-observed-root-r01.json",
+        "sha256": "0a06987355db17779be96dfc55e4928b46893f6b9d97ad27cb68cd6b1335fbba"
+      },
+      {
+        "path": "client/activate-observed-root-r01.json",
+        "sha256": "5129b38623ff8b701e401dd5f7ff28ace2681662d74d29afe0b7db8beaab4bf7"
+      },
+      {
+        "path": "client/status-observed-root-r01.json",
+        "sha256": "bd44fca85aade05ad6845d33b29aeff69b98cc9fe5aa9a4e9ff33ad8394f7454"
+      }
+    ],
+    "client_catalog_sha256": "bb1192334e67ebfa045295018635009413476037e609cbd8a2c0471e89e128a5",
+    "kit_catalog_sha256": "cc0b6fefdffb53592ae3f8e0a52c2f8c11f10f4d84a1431e5e4a06405f0c46a7"
+  },
+  "cleanup": {
+    "CLI_closed": 2,
+    "verified_owned_Vite_stopped": 164376,
+    "port": 5196,
+    "user_tabs_and_5174_tunnel_preserved": true
+  },
+  "knowledge": {
+    "approved_byte_identical": 44,
+    "new_documents_tools_or_approval": 0,
+    "visual_impact_recorded_in_existing_draft": true,
+    "active_runtime_release_preserved": "070212946febc8cb3315d5115093b95c93cf23efab88076acc4f57836069dc75",
+    "final_authoring_check": {
+      "prepare_exit": 0,
+      "check_exit": 0,
+      "release_id": "948254bfca4efc4da48a422151e1e6501695e4f3ddf73c677ef83e67b36dfde7",
+      "sources": 78,
+      "excluded": 34,
+      "documents": 44,
+      "fragments": 46,
+      "capability_contracts": 153,
+      "runtime_publication": false
+    }
+  },
+  "limits": [
+    "Synthetic Edge resized viewports, no physical phone/keyboard.",
+    "No print request or physical printer test; transport unchanged.",
+    "Initial full-suite intermittent CSV test failure preserved and reconciled without changing sources."
+  ]
+}

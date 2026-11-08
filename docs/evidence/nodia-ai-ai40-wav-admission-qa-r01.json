@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "scope": "Codex exact WAV admission and existing generic attachment dispatch fences",
+  "source_files": [
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.ts",
+      "sha256": "a281a639752fc0813f939ba283273fb7b9842f363718a879519d2b082fff09b9",
+      "crlf_count": 0
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.spec.ts",
+      "sha256": "bec5fe3763dc0ac2268d07a58730d6b4674a148a67add6dd4a601d7253642cec",
+      "crlf_count": 0
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts",
+      "sha256": "76aa7a5203c1a80ff9a8d3eb7f47897f8d9be2c16be2102154740911454bf7b7",
+      "crlf_count": 0
+    }
+  ],
+  "production_process_stage": {
+    "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+    "changed_for_audio": false,
+    "sha256": "3fc0c3ee8a5464f76f5f0088fc6220d1d56179216c9caed4763be31cf1922c19",
+    "reason": "Generic kind/MIME/SHA/private read/measure/checkpoint/reserve/arm/execute mapping already supports audio; no new fields or bypasses needed."
+  },
+  "commands": [
+    {
+      "command": "npx vitest run src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.spec.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts --silent",
+      "cwd": "nodia-server",
+      "exit_code": 0,
+      "test_files_passed": 2,
+      "tests_passed": 150,
+      "duration_seconds": 13.57
+    },
+    {
+      "command": "npx tsc --noEmit -p tsconfig.build.json",
+      "cwd": "nodia-server",
+      "exit_code": 0
+    },
+    {
+      "command": "npx oxlint src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.ts src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.spec.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts",
+      "cwd": "nodia-server",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check -- src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.ts src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.spec.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts",
+      "cwd": "nodia-server",
+      "exit_code": 0
+    }
+  ],
+  "guarantees": [
+    "Exact accepted image/WAV MIME filters define Codex categories; category-only claims cannot admit originals.",
+    "WAV current-turn reference survives context measurement, persistence, exact MIME measurement and fenced inference without invented transcription.",
+    "Proof disappears between context/inference: fail before reading original, reservation or dispatch.",
+    "Authority revoked after private WAV read: checkpoint rejects before reservation/arm.",
+    "Unproved/categorized-only WAV and unreviewedPDF fail before private I/O.",
+    "ReviewedPDF text is context data and never triggers nativePDF object read or attachment payload.",
+    "Prepare observation clone does not inherit later mutation of upstream formats array."
+  ],
+  "attestation_read_only_review": {
+    "source": "nodia-server/src/nodia-ai-context/use-case/attest-nodia-ai-native-sources.use-case.ts",
+    "finding": "Source attestation compares kind/MIME/SHA/bytecount/generation/epoch under current transaction generically, not a decoder or modality grant.",
+    "consumer_guard": "nodia-server/src/nodia-ai-invoice-analysis/use-case/snapshot-nodia-ai-invoice-analysis.use-case.ts explicitly accepts only image/PDF and their allowedMIMEs; WAV does not gain invoice analysis authority.",
+    "modified": false
+  },
+  "limits": {
+    "audio_decoder_tested_here": false,
+    "native_transport_tested_here": false,
+    "real_provider_tested_here": false,
+    "deployment_or_vm_changes": false,
+    "database_metadata_changes": false,
+    "pdf_native_enabled": false
+  },
+  "status": "passed_scoped_admission_unit_qa",
+  "evidence_scope": "Atomic tests of admission and generic worker attachment fences. Synthetic adapter/storage ports; no PCM decoder, CLI, account, R2 or live-provider acceptance in this receipt.",
+  "original_receipt_sha256": "44d500448dca65b49e0556d568f9825f1c67f18c4b7ec449da376d3c3098c036"
+}

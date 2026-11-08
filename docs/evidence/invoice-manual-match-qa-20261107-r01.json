@@ -1,0 +1,1781 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-07",
+  "scope": "manual_invoice_product_binding_review_only",
+  "result": "passed_local_draft_and_comparison",
+  "summary": "QA autenticada de vinculación manual en VM el 2026-11-07: un OCR Gemini Agentic de factura sintética, búsqueda por nombre y relectura exacta del producto9 del mismo negocio. Cancelar conserva la fila detectada. Preparar actualización sólo cambia el borrador: costo neto1000→900 y bruto1190→1071; código, nombre y venta1200 conservados. Reabrir consulta otra vez el producto y muestra los valores originales. No se pulsó Guardar Factura y Productos ni hubo mutaciones comerciales. ServerR12, ClientR33 y NativeR14 sin nueva adopción. Tabla provisional con columnas demasiado estrechas observada; pendiente visual. No acredita guardado final, concurrencia, atomicidad global ni otros proveedores.",
+  "fixture": {
+    "synthetic": true,
+    "image": "ops/lab/artifacts/invoice-manual-match-qa-20261107-r01/factura-vinculacion-sintetica.png",
+    "sha256": "238313a381a615801196aeb1dae35e71b56227ac888c05e5bc5f9f79bcf018da",
+    "intended_existing_QA_product": "Prueba NodiaAI POS 20261028",
+    "invoice_code": "QA-MATCH-20261107-1",
+    "net_cost": 900,
+    "gross_cost": 1071,
+    "quantity": 1,
+    "total": 1071,
+    "real_business_save_authorized_for_this_QA": false
+  },
+  "before": {
+    "product_id": 9,
+    "net": 1000,
+    "gross": 1190,
+    "sale": 1200
+  },
+  "prepared_local": {
+    "net": 900,
+    "gross": 1071,
+    "sale": 1200,
+    "code_preserved": true,
+    "name_preserved": true
+  },
+  "browser": {
+    "date": "2026-11-07",
+    "result": "pass_local_draft_and_review",
+    "url": "http://localhost:5174/business/5af15373-3638-4a02-a015-4e72c433fc11?section=products",
+    "fixture": "factura-vinculacion-sintetica.png",
+    "publicAnalysisId": "6440b6ae-a304-4c97-994f-0d713f9f6432",
+    "publicAnalyzePosts": 1,
+    "productId": 9,
+    "originalCatalogRow": "\tPRUEBA-IA-POS-20261028-38ff7f89-3db4-4d7f-8273-7f12304ce483\t\n\nPrueba NodiaAI POS 20261028\n\n\t\n\t-\t$1,190\t\n$1.200 x unidad\n\t",
+    "detectedRow": "\t\nNuevo\n\tQA-MATCH-20261107-1\tPrueba NodiaAI POS 20261028\t$900\t$1,071\t\n-\n\t1\t\nDisponibilidad\n\nSeleccione la disponibilidad manualmente.\n\n\t\n\t",
+    "initialComparison": "Vincular con un producto existente\n\nBusca por nombre y elige qué valores de la factura quieres preparar para ese producto. Se guardarán al confirmar la factura y sus productos.\n\nProducto existente\n\nPrueba NodiaAI POS 20261028 · PRUEBA-IA-POS-20261028-38ff7f89-3db4-4d7f-8273-7f12304ce483\n\nPrueba NodiaAI POS 20261028\n\nCódigo de factura / proveedor\nActual\n\nPRUEBA-IA-POS-20261028-38ff7f89-3db4-4d7f-8273-7f12304ce483\n\n→\n\nFactura\n\nQA-MATCH-20261107-1\n\nNombre del Producto\nActual\n\nPrueba NodiaAI POS 20261028\n\n→\n\nFactura\n\nPrueba NodiaAI POS 20261028\n\nCosto Base sin Impuesto\nActual\n\n1000\n\n→\n\nFactura\n\n900\n\nCosto Base con Impuestos\nActual\n\n1190\n\n→\n\nFactura\n\n1071\n\nPrecio Venta\nActual\n\n1200\n\n→\n\nFactura\n\nSin valor\n\nSólo se actualizarán los campos seleccionados. Código de barras, unidad de medida, oferta, disponibilidad, proveedor y stock se conservarán. La cantidad de la factura no modifica el inventario.\nCancelar\nPreparar actualización",
+    "defaultChecks": [
+      {
+        "checked": true,
+        "disabled": false,
+        "name": "Código de factura / proveedor"
+      },
+      {
+        "checked": false,
+        "disabled": false,
+        "name": "Nombre del Producto"
+      },
+      {
+        "checked": true,
+        "disabled": false,
+        "name": "Costo Base sin Impuesto"
+      },
+      {
+        "checked": true,
+        "disabled": false,
+        "name": "Costo Base con Impuestos"
+      },
+      {
+        "checked": false,
+        "disabled": true,
+        "name": "Precio Venta"
+      }
+    ],
+    "selectedChecks": [
+      {
+        "checked": false,
+        "disabled": false,
+        "name": "Código de factura / proveedor"
+      },
+      {
+        "checked": false,
+        "disabled": false,
+        "name": "Nombre del Producto"
+      },
+      {
+        "checked": true,
+        "disabled": false,
+        "name": "Costo Base sin Impuesto"
+      },
+      {
+        "checked": true,
+        "disabled": false,
+        "name": "Costo Base con Impuestos"
+      },
+      {
+        "checked": false,
+        "disabled": true,
+        "name": "Precio Venta"
+      }
+    ],
+    "cancelPreservedDetectedRow": true,
+    "preparedRows": [
+      "ActualizarPRUEBA-IA-POS-20261028-38ff7f89-3db4-4d7f-8273-7f12304ce483Prueba NodiaAI POS 20261028$900$1,071$1,2001DisponibilidadDisponible",
+      "HistóricoPRUEBA-IA-POS-20261028-38ff7f89-3db4-4d7f-8273-7f12304ce483Prueba NodiaAI POS 20261028$1,000$1,190$1,200——--"
+    ],
+    "finalComparison": "Vincular con un producto existente\n\nBusca por nombre y elige qué valores de la factura quieres preparar para ese producto. Se guardarán al confirmar la factura y sus productos.\n\nProducto existente\n\nPrueba NodiaAI POS 20261028 · PRUEBA-IA-POS-20261028-38ff7f89-3db4-4d7f-8273-7f12304ce483\n\nPrueba NodiaAI POS 20261028\n\nCódigo de factura / proveedor\nActual\n\nPRUEBA-IA-POS-20261028-38ff7f89-3db4-4d7f-8273-7f12304ce483\n\n→\n\nFactura\n\nPRUEBA-IA-POS-20261028-38ff7f89-3db4-4d7f-8273-7f12304ce483\n\nNombre del Producto\nActual\n\nPrueba NodiaAI POS 20261028\n\n→\n\nFactura\n\nPrueba NodiaAI POS 20261028\n\nCosto Base sin Impuesto\nActual\n\n1000\n\n→\n\nFactura\n\n900\n\nCosto Base con Impuestos\nActual\n\n1190\n\n→\n\nFactura\n\n1071\n\nPrecio Venta\nActual\n\n1200\n\n→\n\nFactura\n\n1200\n\nSólo se actualizarán los campos seleccionados. Código de barras, unidad de medida, oferta, disponibilidad, proveedor y stock se conservarán. La cantidad de la factura no modifica el inventario.\nCancelar\nPreparar actualización",
+    "finalChecks": [
+      {
+        "checked": false,
+        "disabled": false,
+        "name": "Código de factura / proveedor"
+      },
+      {
+        "checked": false,
+        "disabled": false,
+        "name": "Nombre del Producto"
+      },
+      {
+        "checked": true,
+        "disabled": false,
+        "name": "Costo Base sin Impuesto"
+      },
+      {
+        "checked": true,
+        "disabled": false,
+        "name": "Costo Base con Impuestos"
+      },
+      {
+        "checked": false,
+        "disabled": false,
+        "name": "Precio Venta"
+      }
+    ],
+    "commercialSaveClicked": false,
+    "network": [
+      {
+        "event": "request",
+        "id": "23512.208",
+        "method": "POST",
+        "path": "/api/v1/invoices/analysis-observations",
+        "timestamp": 386167.806295
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.208",
+        "status": 201,
+        "timestamp": 386167.857709
+      },
+      {
+        "event": "request",
+        "id": "23512.209",
+        "method": "POST",
+        "path": "/api/v1/invoices/analyze",
+        "timestamp": 386167.860903
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.208",
+        "timestamp": 386167.856906
+      },
+      {
+        "event": "request",
+        "id": "23512.210",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386167.880662
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.210",
+        "status": 200,
+        "timestamp": 386167.90393
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.210",
+        "timestamp": 386167.9032
+      },
+      {
+        "event": "request",
+        "id": "23512.211",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386169.906998
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.211",
+        "status": 200,
+        "timestamp": 386169.91893
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.211",
+        "timestamp": 386169.917349
+      },
+      {
+        "event": "request",
+        "id": "23512.212",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386171.920403
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.212",
+        "status": 200,
+        "timestamp": 386171.931425
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.212",
+        "timestamp": 386171.929582
+      },
+      {
+        "event": "request",
+        "id": "23512.213",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386173.937558
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.213",
+        "status": 200,
+        "timestamp": 386173.951426
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.213",
+        "timestamp": 386173.95086
+      },
+      {
+        "event": "request",
+        "id": "23512.214",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386175.955499
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.214",
+        "status": 200,
+        "timestamp": 386175.965132
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.214",
+        "timestamp": 386175.964572
+      },
+      {
+        "event": "request",
+        "id": "23512.215",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386177.967626
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.215",
+        "status": 200,
+        "timestamp": 386177.977324
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.215",
+        "timestamp": 386177.976785
+      },
+      {
+        "event": "request",
+        "id": "23512.216",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386179.980147
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.216",
+        "status": 200,
+        "timestamp": 386179.991879
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.216",
+        "timestamp": 386179.989797
+      },
+      {
+        "event": "request",
+        "id": "23512.217",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386181.996247
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.217",
+        "status": 200,
+        "timestamp": 386182.010324
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.217",
+        "timestamp": 386182.008339
+      },
+      {
+        "event": "request",
+        "id": "23512.218",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386184.015915
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.218",
+        "status": 200,
+        "timestamp": 386184.024954
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.218",
+        "timestamp": 386184.024422
+      },
+      {
+        "event": "request",
+        "id": "23512.219",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386186.02799
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.219",
+        "status": 200,
+        "timestamp": 386186.039946
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.219",
+        "timestamp": 386186.038106
+      },
+      {
+        "event": "request",
+        "id": "23512.220",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386188.046086
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.220",
+        "status": 200,
+        "timestamp": 386188.055157
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.220",
+        "timestamp": 386188.054522
+      },
+      {
+        "event": "request",
+        "id": "23512.221",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386190.058329
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.221",
+        "status": 200,
+        "timestamp": 386190.067687
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.221",
+        "timestamp": 386190.067099
+      },
+      {
+        "event": "request",
+        "id": "23512.222",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386192.070303
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.222",
+        "status": 200,
+        "timestamp": 386192.082393
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.222",
+        "timestamp": 386192.080564
+      },
+      {
+        "event": "request",
+        "id": "23512.223",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386194.088731
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.223",
+        "status": 200,
+        "timestamp": 386194.100614
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.223",
+        "timestamp": 386194.09966
+      },
+      {
+        "event": "request",
+        "id": "23512.224",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386196.107032
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.224",
+        "status": 200,
+        "timestamp": 386196.119016
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.224",
+        "timestamp": 386196.116838
+      },
+      {
+        "event": "request",
+        "id": "23512.225",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386198.124889
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.225",
+        "status": 200,
+        "timestamp": 386198.133668
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.225",
+        "timestamp": 386198.133068
+      },
+      {
+        "event": "request",
+        "id": "23512.226",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386200.137093
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.226",
+        "status": 200,
+        "timestamp": 386200.149087
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.226",
+        "timestamp": 386200.14798
+      },
+      {
+        "event": "request",
+        "id": "23512.227",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386202.155206
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.227",
+        "status": 200,
+        "timestamp": 386202.164365
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.227",
+        "timestamp": 386202.163786
+      },
+      {
+        "event": "request",
+        "id": "23512.228",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386204.167797
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.228",
+        "status": 200,
+        "timestamp": 386204.180284
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.228",
+        "timestamp": 386204.179143
+      },
+      {
+        "event": "request",
+        "id": "23512.229",
+        "method": "GET",
+        "path": "/api/v1/ai-providers/health",
+        "timestamp": 386205.197743
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.229",
+        "status": 200,
+        "timestamp": 386205.216295
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.229",
+        "timestamp": 386205.21413
+      },
+      {
+        "event": "request",
+        "id": "23512.230",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386206.183414
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.230",
+        "status": 200,
+        "timestamp": 386206.193196
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.230",
+        "timestamp": 386206.191886
+      },
+      {
+        "event": "request",
+        "id": "23512.231",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386208.197572
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.231",
+        "status": 200,
+        "timestamp": 386208.206858
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.231",
+        "timestamp": 386208.206292
+      },
+      {
+        "event": "request",
+        "id": "23512.232",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386210.209642
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.232",
+        "status": 200,
+        "timestamp": 386210.219252
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.232",
+        "timestamp": 386210.21867
+      },
+      {
+        "event": "request",
+        "id": "23512.233",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386212.221513
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.233",
+        "status": 200,
+        "timestamp": 386212.231793
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.233",
+        "timestamp": 386212.231204
+      },
+      {
+        "event": "request",
+        "id": "23512.234",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386214.233773
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.234",
+        "status": 200,
+        "timestamp": 386214.243
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.234",
+        "timestamp": 386214.242076
+      },
+      {
+        "event": "request",
+        "id": "23512.235",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386216.245984
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.235",
+        "status": 200,
+        "timestamp": 386216.256037
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.235",
+        "timestamp": 386216.254559
+      },
+      {
+        "event": "request",
+        "id": "23512.236",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386218.25826
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.236",
+        "status": 200,
+        "timestamp": 386218.270091
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.236",
+        "timestamp": 386218.268402
+      },
+      {
+        "event": "request",
+        "id": "23512.237",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386220.275842
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.237",
+        "status": 200,
+        "timestamp": 386220.288341
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.237",
+        "timestamp": 386220.286201
+      },
+      {
+        "event": "request",
+        "id": "23512.238",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386222.293749
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.238",
+        "status": 200,
+        "timestamp": 386222.304461
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.238",
+        "timestamp": 386222.303854
+      },
+      {
+        "event": "request",
+        "id": "23512.239",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386224.307149
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.239",
+        "status": 200,
+        "timestamp": 386224.318449
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.239",
+        "timestamp": 386224.31653
+      },
+      {
+        "event": "request",
+        "id": "23512.240",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386226.324639
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.240",
+        "status": 200,
+        "timestamp": 386226.349281
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.240",
+        "timestamp": 386226.348146
+      },
+      {
+        "event": "request",
+        "id": "23512.241",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386228.355422
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.241",
+        "status": 200,
+        "timestamp": 386228.364881
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.241",
+        "timestamp": 386228.364316
+      },
+      {
+        "event": "request",
+        "id": "23512.242",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386230.366991
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.242",
+        "status": 200,
+        "timestamp": 386230.378613
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.242",
+        "timestamp": 386230.377335
+      },
+      {
+        "event": "request",
+        "id": "23512.243",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386232.384942
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.243",
+        "status": 200,
+        "timestamp": 386232.395015
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.243",
+        "timestamp": 386232.394452
+      },
+      {
+        "event": "request",
+        "id": "23512.244",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386234.397246
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.244",
+        "status": 200,
+        "timestamp": 386234.408951
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.244",
+        "timestamp": 386234.407238
+      },
+      {
+        "event": "request",
+        "id": "23512.245",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386236.41543
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.245",
+        "status": 200,
+        "timestamp": 386236.429724
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.245",
+        "timestamp": 386236.429147
+      },
+      {
+        "event": "request",
+        "id": "23512.246",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386238.43378
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.246",
+        "status": 200,
+        "timestamp": 386238.445438
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.246",
+        "timestamp": 386238.443492
+      },
+      {
+        "event": "request",
+        "id": "23512.247",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386240.448925
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.247",
+        "status": 200,
+        "timestamp": 386240.460879
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.247",
+        "timestamp": 386240.460318
+      },
+      {
+        "event": "request",
+        "id": "23512.248",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386242.464976
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.248",
+        "status": 200,
+        "timestamp": 386242.476438
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.248",
+        "timestamp": 386242.475298
+      },
+      {
+        "event": "request",
+        "id": "23512.249",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386244.482191
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.249",
+        "status": 200,
+        "timestamp": 386244.494186
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.249",
+        "timestamp": 386244.493366
+      },
+      {
+        "event": "request",
+        "id": "23512.250",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386246.499784
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.250",
+        "status": 200,
+        "timestamp": 386246.512047
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.250",
+        "timestamp": 386246.510262
+      },
+      {
+        "event": "request",
+        "id": "23512.251",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386248.516329
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.251",
+        "status": 200,
+        "timestamp": 386248.526042
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.251",
+        "timestamp": 386248.525479
+      },
+      {
+        "event": "request",
+        "id": "23512.252",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386250.530285
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.252",
+        "status": 200,
+        "timestamp": 386250.540278
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.252",
+        "timestamp": 386250.539704
+      },
+      {
+        "event": "request",
+        "id": "23512.253",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386252.543158
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.253",
+        "status": 200,
+        "timestamp": 386252.55704
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.253",
+        "timestamp": 386252.555507
+      },
+      {
+        "event": "request",
+        "id": "23512.254",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386254.560285
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.254",
+        "status": 200,
+        "timestamp": 386254.572361
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.254",
+        "timestamp": 386254.570037
+      },
+      {
+        "event": "request",
+        "id": "23512.255",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386256.578737
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.255",
+        "status": 200,
+        "timestamp": 386256.590426
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.255",
+        "timestamp": 386256.58864
+      },
+      {
+        "event": "request",
+        "id": "23512.256",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386258.593921
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.256",
+        "status": 200,
+        "timestamp": 386258.622668
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.256",
+        "timestamp": 386258.622113
+      },
+      {
+        "event": "request",
+        "id": "23512.257",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386260.626976
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.257",
+        "status": 200,
+        "timestamp": 386260.635997
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.257",
+        "timestamp": 386260.635456
+      },
+      {
+        "event": "request",
+        "id": "23512.258",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386262.639282
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.258",
+        "status": 200,
+        "timestamp": 386262.651587
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.258",
+        "timestamp": 386262.650801
+      },
+      {
+        "event": "request",
+        "id": "23512.259",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386264.655176
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.259",
+        "status": 200,
+        "timestamp": 386264.665361
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.259",
+        "timestamp": 386264.664663
+      },
+      {
+        "event": "request",
+        "id": "23512.260",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386266.669463
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.260",
+        "status": 200,
+        "timestamp": 386266.681572
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.260",
+        "timestamp": 386266.679545
+      },
+      {
+        "event": "request",
+        "id": "23512.261",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386268.687448
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.261",
+        "status": 200,
+        "timestamp": 386268.696719
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.261",
+        "timestamp": 386268.696152
+      },
+      {
+        "event": "request",
+        "id": "23512.262",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386270.6993
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.262",
+        "status": 200,
+        "timestamp": 386270.71177
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.262",
+        "timestamp": 386270.709881
+      },
+      {
+        "event": "request",
+        "id": "23512.263",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386272.71358
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.263",
+        "status": 200,
+        "timestamp": 386272.724887
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.263",
+        "timestamp": 386272.724214
+      },
+      {
+        "event": "request",
+        "id": "23512.264",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386274.729729
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.264",
+        "status": 200,
+        "timestamp": 386274.741497
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.264",
+        "timestamp": 386274.739894
+      },
+      {
+        "event": "request",
+        "id": "23512.265",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386276.747823
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.265",
+        "status": 200,
+        "timestamp": 386276.760058
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.265",
+        "timestamp": 386276.757936
+      },
+      {
+        "event": "request",
+        "id": "23512.266",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386278.766038
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.266",
+        "status": 200,
+        "timestamp": 386278.776013
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.266",
+        "timestamp": 386278.775429
+      },
+      {
+        "event": "request",
+        "id": "23512.267",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386280.778279
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.267",
+        "status": 200,
+        "timestamp": 386280.790377
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.267",
+        "timestamp": 386280.788894
+      },
+      {
+        "event": "request",
+        "id": "23512.268",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386282.796515
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.268",
+        "status": 200,
+        "timestamp": 386282.806284
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.268",
+        "timestamp": 386282.805686
+      },
+      {
+        "event": "request",
+        "id": "23512.269",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386284.808723
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.269",
+        "status": 200,
+        "timestamp": 386284.818149
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.269",
+        "timestamp": 386284.81761
+      },
+      {
+        "event": "request",
+        "id": "23512.270",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386286.820569
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.270",
+        "status": 200,
+        "timestamp": 386286.830207
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.270",
+        "timestamp": 386286.829652
+      },
+      {
+        "event": "request",
+        "id": "23512.271",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386288.832574
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.271",
+        "status": 200,
+        "timestamp": 386288.841236
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.271",
+        "timestamp": 386288.840673
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.209",
+        "status": 201,
+        "timestamp": 386290.737351
+      },
+      {
+        "event": "request",
+        "id": "23512.272",
+        "method": "GET",
+        "path": "/api/v1/invoices/analysis-observations/6440b6ae-a304-4c97-994f-0d713f9f6432",
+        "timestamp": 386290.739764
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.209",
+        "timestamp": 386290.736709
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.272",
+        "status": 200,
+        "timestamp": 386290.790217
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.272",
+        "timestamp": 386290.748293
+      },
+      {
+        "event": "request",
+        "id": "23512.273",
+        "method": "GET",
+        "path": "/api/v1/ai-providers/health",
+        "timestamp": 386325.233251
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.273",
+        "status": 200,
+        "timestamp": 386330.395564
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.273",
+        "timestamp": 386330.39469
+      },
+      {
+        "event": "request",
+        "id": "23512.274",
+        "method": "GET",
+        "path": "/api/v1/products",
+        "timestamp": 386373.835325,
+        "parameters": [
+          [
+            "page",
+            "1"
+          ],
+          [
+            "limit",
+            "25"
+          ],
+          [
+            "q[business_id_eq]",
+            "5af15373-3638-4a02-a015-4e72c433fc11"
+          ],
+          [
+            "q[s]",
+            "name asc"
+          ]
+        ]
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.274",
+        "status": 200,
+        "timestamp": 386373.879198
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.274",
+        "timestamp": 386373.878435
+      },
+      {
+        "event": "request",
+        "id": "23512.275",
+        "method": "GET",
+        "path": "/api/v1/products",
+        "timestamp": 386383.964673,
+        "parameters": [
+          [
+            "page",
+            "1"
+          ],
+          [
+            "limit",
+            "25"
+          ],
+          [
+            "q[business_id_eq]",
+            "5af15373-3638-4a02-a015-4e72c433fc11"
+          ],
+          [
+            "q[name_cont]",
+            "Prueba NodiaAI POS"
+          ],
+          [
+            "q[s]",
+            "name asc"
+          ]
+        ]
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.275",
+        "status": 200,
+        "timestamp": 386384.003773
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.275",
+        "timestamp": 386384.003233
+      },
+      {
+        "event": "request",
+        "id": "23512.276",
+        "method": "GET",
+        "path": "/api/v1/products",
+        "timestamp": 386396.161621,
+        "parameters": [
+          [
+            "page",
+            "1"
+          ],
+          [
+            "limit",
+            "1"
+          ],
+          [
+            "q[business_id_eq]",
+            "5af15373-3638-4a02-a015-4e72c433fc11"
+          ],
+          [
+            "q[id_in][0]",
+            "9"
+          ]
+        ]
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.276",
+        "status": 200,
+        "timestamp": 386396.202619
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.276",
+        "timestamp": 386396.202054
+      },
+      {
+        "event": "request",
+        "id": "23512.277",
+        "method": "GET",
+        "path": "/api/v1/products",
+        "timestamp": 386396.465436,
+        "parameters": [
+          [
+            "page",
+            "1"
+          ],
+          [
+            "limit",
+            "25"
+          ],
+          [
+            "q[business_id_eq]",
+            "5af15373-3638-4a02-a015-4e72c433fc11"
+          ],
+          [
+            "q[s]",
+            "name asc"
+          ]
+        ]
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.277",
+        "status": 200,
+        "timestamp": 386396.500823
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.277",
+        "timestamp": 386396.500284
+      },
+      {
+        "event": "request",
+        "id": "23512.278",
+        "method": "GET",
+        "path": "/api/v1/products",
+        "timestamp": 386443.88417,
+        "parameters": [
+          [
+            "page",
+            "1"
+          ],
+          [
+            "limit",
+            "25"
+          ],
+          [
+            "q[business_id_eq]",
+            "5af15373-3638-4a02-a015-4e72c433fc11"
+          ],
+          [
+            "q[s]",
+            "name asc"
+          ]
+        ]
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.278",
+        "status": 200,
+        "timestamp": 386443.927034
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.278",
+        "timestamp": 386443.926137
+      },
+      {
+        "event": "request",
+        "id": "23512.279",
+        "method": "GET",
+        "path": "/api/v1/ai-providers/health",
+        "timestamp": 386450.403206
+      },
+      {
+        "event": "request",
+        "id": "23512.280",
+        "method": "GET",
+        "path": "/api/v1/products",
+        "timestamp": 386450.776608,
+        "parameters": [
+          [
+            "page",
+            "1"
+          ],
+          [
+            "limit",
+            "1"
+          ],
+          [
+            "q[business_id_eq]",
+            "5af15373-3638-4a02-a015-4e72c433fc11"
+          ],
+          [
+            "q[id_in][0]",
+            "9"
+          ]
+        ]
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.280",
+        "status": 200,
+        "timestamp": 386450.809025
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.280",
+        "timestamp": 386450.808509
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.279",
+        "status": 200,
+        "timestamp": 386455.613337
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.279",
+        "timestamp": 386455.612592
+      },
+      {
+        "event": "request",
+        "id": "23512.281",
+        "method": "GET",
+        "path": "/api/v1/products",
+        "timestamp": 386548.41407,
+        "parameters": [
+          [
+            "page",
+            "1"
+          ],
+          [
+            "limit",
+            "25"
+          ],
+          [
+            "q[business_id_eq]",
+            "5af15373-3638-4a02-a015-4e72c433fc11"
+          ],
+          [
+            "q[s]",
+            "name asc"
+          ]
+        ]
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.281",
+        "status": 200,
+        "timestamp": 386548.471322
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.281",
+        "timestamp": 386548.470807
+      },
+      {
+        "event": "request",
+        "id": "23512.282",
+        "method": "GET",
+        "path": "/api/v1/ai-providers/health",
+        "timestamp": 386575.618156
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.282",
+        "status": 200,
+        "timestamp": 386580.811647
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.282",
+        "timestamp": 386580.810935
+      },
+      {
+        "event": "request",
+        "id": "23512.283",
+        "method": "GET",
+        "path": "/api/v1/products",
+        "timestamp": 386684.308401,
+        "parameters": [
+          [
+            "page",
+            "1"
+          ],
+          [
+            "limit",
+            "1"
+          ],
+          [
+            "q[business_id_eq]",
+            "5af15373-3638-4a02-a015-4e72c433fc11"
+          ],
+          [
+            "q[id_in][0]",
+            "9"
+          ]
+        ]
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.283",
+        "status": 200,
+        "timestamp": 386684.354331
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.283",
+        "timestamp": 386684.353648
+      },
+      {
+        "event": "request",
+        "id": "23512.284",
+        "method": "GET",
+        "path": "/api/v1/ai-providers/health",
+        "timestamp": 386700.817549
+      },
+      {
+        "event": "responseReceived",
+        "id": "23512.284",
+        "status": 200,
+        "timestamp": 386706.496431
+      },
+      {
+        "event": "loadingFinished",
+        "id": "23512.284",
+        "timestamp": 386706.495483
+      }
+    ],
+    "limitations": [
+      "Only local draft prepared; final invoice/product persistence was not exercised.",
+      "Provisional table columns wrap excessively with sidebar at desktop width.",
+      "Initial mouse file chooser timed out; Enter opened chooser. No cause established.",
+      "One batched select/uncheck interaction did not change checkbox; state inspected then standalone interaction verified before preparation.",
+      "Public POST and Native execution counts do not establish upstream provider HTTP count."
+    ]
+  },
+  "runtime_observer": {
+    "Native_attempt_UUID": "8edc5cc8-65b8-4b36-aa22-3ed6ba40504e",
+    "Native_healthy_and_API_Worker_Native_identities_preserved": true,
+    "Root_UI_correlation_id": "6440b6ae-a304-4c97-994f-0d713f9f6432",
+    "Root_UI_reported": {
+      "further_analysis_planned": false,
+      "local_UI_elapsed_seconds": 122,
+      "manual_match_review_continues_via_GET_and_local_draft": true,
+      "single_analysis_POST": true,
+      "validated_extraction_draft": true
+    },
+    "after_local_quiet": true,
+    "baseline_local_quiet": true,
+    "during_exact_UUID_marker_proof_group_match": true,
+    "execution_release": {
+      "elapsed_ms": 122833,
+      "engine": "agentic",
+      "event": "release",
+      "observed_log_time": "2026-11-07 03:49:52.350",
+      "owner_engine": "agentic",
+      "owner_purpose": "execution",
+      "purpose": "execution",
+      "quarantined": false,
+      "reason": null,
+      "reservation_nonce": "8de84bb95ae549e6ba4d4b49686cf194"
+    },
+    "final_counts": {
+      "CLI": 0,
+      "cgroup_owners": 0,
+      "manual_proofs": 0,
+      "unknown_markers": 0
+    },
+    "limits": {
+      "HTTP_status_not_independently_read": true,
+      "SQL_business_state_not_queried": true,
+      "business_matching_or_before_after_values_not_audited_by_this_observer": true,
+      "direct_terminal_receipt_payload_not_observed": true,
+      "external_ACK_not_called_or_claimed": true,
+      "extraction_document_response_body_not_read": true,
+      "local_receipt_retirement_after_closure_observed": true,
+      "provider_billing_or_latency_not_inferred_from_UI_duration": true
+    },
+    "observed_execution_acquire_count": 1,
+    "observer_effects": {
+      "SQL_queries_or_writes": 0,
+      "auth_cookie_argv_environ_or_document_content_recorded": false,
+      "cancellations": 0,
+      "profile_state_writes": 0,
+      "provider_requests": 0,
+      "raw_logs_persisted": false,
+      "reconciliations": 0,
+      "remote_metadata_samples": 3,
+      "service_or_timer_mutations": 0
+    },
+    "reservation_nonce": "8de84bb95ae549e6ba4d4b49686cf194",
+    "samples": [
+      {
+        "bytes": 7397,
+        "observed_at": "2026-11-07T03:45:44.568991+00:00",
+        "path": "ops/lab/artifacts/invoice-manual-match-qa-20261107-r01/runtime/baseline.json",
+        "sha256": "46981bded416b703603528d93c3eacad6aac7f622dd87ca2957101a43586f596"
+      },
+      {
+        "bytes": 9053,
+        "observed_at": "2026-11-07T03:48:05.404920+00:00",
+        "path": "ops/lab/artifacts/invoice-manual-match-qa-20261107-r01/runtime/during.json",
+        "sha256": "ade147e06a7110486890d1b5283a454031e28db8f3e10c887ec957df91fdcac7"
+      },
+      {
+        "bytes": 10338,
+        "observed_at": "2026-11-07T03:51:08.665162+00:00",
+        "path": "ops/lab/artifacts/invoice-manual-match-qa-20261107-r01/runtime/after.json",
+        "sha256": "734b5ac650b04d7355c277d3b0ebbbdb437962b2056487783551a3cb63488960"
+      }
+    ],
+    "schema_version": 1,
+    "scope": "read_only_runtime_metadata_for_manual_invoice_match_QA",
+    "source_pins_verified_each_sample": 9
+  },
+  "artifacts_catalog": {
+    "path": "ops/lab/artifacts/invoice-manual-match-qa-20261107-r01/catalog.json",
+    "sha256": "d49f6fb6e03da5e22b39cd7ef06ab6426f9b31ccf41629339d20fe76d98d0d34"
+  },
+  "source_or_deployment_changes": false,
+  "knowledge": {
+    "candidate_revision": 7,
+    "business_revision": 44,
+    "approval_changed": false,
+    "publication_performed": false,
+    "validation": {
+      "command": "npm run knowledge:check",
+      "exit_code": 0,
+      "sources": 81,
+      "excluded": 37,
+      "documents": 44,
+      "fragments": 46,
+      "approved_files_byte_identical": 44,
+      "utf8_lf": true
+    }
+  },
+  "verification_checks": {
+    "observed_responses_200": 75,
+    "observed_responses_201": 2,
+    "new_local_links_valid": 9,
+    "commercial_save": false
+  }
+}

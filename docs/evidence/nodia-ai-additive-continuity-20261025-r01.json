@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "verification_date": "2026-10-25",
+  "status": "one_real_additive_summary_turn_verified_partial_NR31_NR32",
+  "scope": "One existing Codex chat, unchanged recorded selection and account, local Linux VM.",
+  "sources": {
+    "artifact_directory": "ops/lab/artifacts/c03-continuation-verification-r01",
+    "catalog": "ops/lab/artifacts/c03-continuation-verification-r01/catalog.json",
+    "catalog_sha256": "173c6538617ca0800d92226d56a824f3bd6a4250d18bd94a136b2907e4999d99",
+    "generator": "ops/lab/artifacts/c03-continuation-verification-r01/consolidate-r01.py",
+    "source_receipts_are_captured_not_live": true
+  },
+  "chat_id": "1fe12085-233b-458c-bf53-e083894816fa",
+  "run": {
+    "id": "c4e30763-a6af-423d-928f-d45b049d9e34",
+    "actor_id": "1",
+    "user_message_id": "301cedee-32b8-4896-8a60-f88f7ac39f0f",
+    "assistant_message_id": "9ecd2622-484f-4934-8be7-c3c86ddcbdc2",
+    "state": "completed",
+    "phase": "inference",
+    "error_code": null,
+    "connection_id": "1",
+    "catalog_version": "nodia-ai-ai15-reads/1",
+    "policy_version": "nodia-ai-runtime/1",
+    "input_through_seq": "11",
+    "provider_dispatches_used": 2,
+    "tool_calls_used": 4,
+    "mcp_rpc_messages_used": 4,
+    "compactions_used": 0,
+    "delegations_used": 0,
+    "knowledge_release": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+    "context_sha256": "3c84e8d29f58964758481af1206a0c32859cf98867c74a470444b98a11553131",
+    "context_bytes": "64795",
+    "through_seq": "11",
+    "selection": {
+      "mode": "token_plan_agentic",
+      "model_id": "gpt-6.1-sol",
+      "effort_id": null,
+      "connection_id": "1"
+    }
+  },
+  "baseline_sha256": "a9993a0d046c8b01182bca29aa4ef7f0eb6c8edf466ae14fd1cfffe82c7b0b4f",
+  "fresh_baseline_exact_to_handoff": true,
+  "knowledge": {
+    "before": "df1780ad39433af1671467cc3f93285b01b0596155518f6c14330e27b65b80ba",
+    "after": "fda677f49788f6dcfd250660f20a0483695969c23083044edb301052b415aefd",
+    "previous_contracts_preserved": 150,
+    "new_capabilities": [
+      "nodia_invoices_analyze"
+    ]
+  },
+  "history": {
+    "prior_runs_preserved": 5,
+    "prior_messages_preserved": 10,
+    "prior_parts_preserved": 10,
+    "new_sealed_messages": [
+      {
+        "id": "301cedee-32b8-4896-8a60-f88f7ac39f0f",
+        "seq": "11",
+        "role": "user",
+        "status": "sealed",
+        "sealed": true,
+        "input_hash": "4a1ab14236e7554292019f110b4a2877762181538c84dc8d6d9e41d6f31c1fa1"
+      },
+      {
+        "id": "9ecd2622-484f-4934-8be7-c3c86ddcbdc2",
+        "seq": "12",
+        "role": "assistant",
+        "status": "sealed",
+        "sealed": true,
+        "input_hash": null
+      }
+    ],
+    "selection_preserved": {
+      "mode": "token_plan_agentic",
+      "model_id": "gpt-6.1-sol",
+      "effort_id": null,
+      "connection_id": "1"
+    }
+  },
+  "tools": [
+    {
+      "tool_name": "nodia_capabilities_select",
+      "state": "completed",
+      "id": "dfa59054-ab53-4c30-8275-549072127d7a"
+    },
+    {
+      "tool_name": "nodia_proposals_get",
+      "state": "completed",
+      "id": "11d5a4ac-fe48-442a-8165-505d17ecfca5"
+    },
+    {
+      "tool_name": "nodia_proposals_get",
+      "state": "completed",
+      "id": "0aec0412-042f-419b-984f-024ee845514e"
+    },
+    {
+      "tool_name": "nodia_proposals_get",
+      "state": "completed",
+      "id": "6c30378f-bf80-4864-bb1d-d70bbce6fdb0"
+    }
+  ],
+  "proposals": {
+    "ids": [
+      "7ce39dc2-b5ff-4cd8-8512-47f2cd0207d4",
+      "00a03d67-f108-4238-9cfc-6a0de8a5d61e",
+      "03059e9c-40dc-4b35-b5b1-e21102e3e6e8"
+    ],
+    "new": 0,
+    "executions": 0,
+    "stored_revisions_unchanged": [
+      {
+        "proposal_id": "7ce39dc2-b5ff-4cd8-8512-47f2cd0207d4",
+        "revision": 1,
+        "state": "ready",
+        "hash": "1ef34d89464850bf932e0c83f30bcb37589f96562837062620fcfc5e9c8e8b4e"
+      },
+      {
+        "proposal_id": "00a03d67-f108-4238-9cfc-6a0de8a5d61e",
+        "revision": 1,
+        "state": "ready",
+        "hash": "2ac9c2a4fd0068af7d242a32e04bad77d85014cfbffddf0eaaf85a6cb79edda1"
+      },
+      {
+        "proposal_id": "03059e9c-40dc-4b35-b5b1-e21102e3e6e8",
+        "revision": 1,
+        "state": "ready",
+        "hash": "11485e9a2332af3168aa102a0e623d5bc2059a824dc056d41a47fa508abdbf5b"
+      }
+    ],
+    "observed_current_public_status": "expired",
+    "current_status_source": "Authenticated UI and three native proposal reads reviewed by root; stored revision snapshots remain ready.",
+    "confirmation_attempted": false
+  },
+  "native_closure": [
+    {
+      "attempt_id": "4b5ea142-d65f-45dd-a2fd-c02d38e99adb",
+      "job_id": "f66aa876-295d-4ad5-8f66-a6016514b947",
+      "job_fence": "2",
+      "runtime_fence": "70",
+      "terminal_proof_id": "f720dacc-756a-43d1-b1d8-1bbf74a8b319",
+      "outcome": "completed",
+      "process_closed": true,
+      "acknowledged": true,
+      "rpc_count": 1,
+      "unforwarded_requests": 0
+    },
+    {
+      "attempt_id": "6be9adec-f3bf-479e-8dcd-02f64393d808",
+      "job_id": "f66aa876-295d-4ad5-8f66-a6016514b947",
+      "job_fence": "4",
+      "runtime_fence": "71",
+      "terminal_proof_id": "3fb4c218-e53b-4748-b661-e18ffbacff28",
+      "outcome": "completed",
+      "process_closed": true,
+      "acknowledged": true,
+      "rpc_count": 3,
+      "unforwarded_requests": 0
+    }
+  ],
+  "quiet": {
+    "retained_slots": 0,
+    "unrevoked_grants": 0
+  },
+  "preserved_domain": {
+    "tables_compared": 41,
+    "rows_and_hashes_equal": true,
+    "comparison_source": "reconciliation-execute-r01.json protected_after -> domain-native-after-continuity-r01.json domain",
+    "includes": [
+      "provider configuration",
+      "business records",
+      "finance records",
+      "Core ordering",
+      "preferences"
+    ],
+    "R2_compared": false
+  },
+  "UI": {
+    "response_sha256": "d7229799ff041129f839fe09b8a638719737f14eccfc7ffb21dc89a8f2b81c5b",
+    "explicit_review": {
+      "observer": "root, UI autenticada y tres consultas de propuestas observadas el 2026-10-25",
+      "existing_proposal_ids": [
+        "7ce39dc2-b5ff-4cd8-8512-47f2cd0207d4",
+        "00a03d67-f108-4238-9cfc-6a0de8a5d61e",
+        "03059e9c-40dc-4b35-b5b1-e21102e3e6e8"
+      ],
+      "summary_matches_existing_proposals": true,
+      "no_execution_claim": true
+    },
+    "semantic_acceptance": "Recorded explicit narrow review; not inferred from hashes or completion.",
+    "reload_result_and_selection_preserved": "Observed by root and relayed to consolidating agent; no extra reload is performed here.",
+    "screenshot": "docs/evidence/nodia-ai-additive-continuity-20261025-r01.png",
+    "screenshot_sha256": "6cfd5701e98146455c958660d6b848530190ac1597e17a00289aca2cf962f122",
+    "second_visible_detail": "ops/lab/artifacts/c03-continuation-verification-r01/continuity-summary-visible-r01.png"
+  },
+  "limits": [
+    "One compatible additive publication and one summary turn; NR31/NR32 remain partial.",
+    "No incompatible contract change, capability removal, proposal invalidation/reconfirmation, other roles or accounts, or production acceptance.",
+    "Three proposal preparations remain unexecuted and are expired under native/current public policy; stored ready snapshots are not rewritten.",
+    "41 SQL projections match by the same row-count/hash algorithm; no R2 byte/header/object comparison or global database identity is claimed.",
+    "Two provider dispatches belong to this summary turn; captured read-only helpers themselves made zero generations/SDK requests.",
+    "Web current inference is not accepted by this Codex turn; no provider or mode fallback.",
+    "AI-36/C05 and AI-38 are not completed by publication151 or this single continuity result."
+  ]
+}

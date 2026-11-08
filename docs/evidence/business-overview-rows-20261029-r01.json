@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "status": "implemented_and_deployed_verified",
+  "updated_at": "2026-10-29T18:59:12.729720+00:00",
+  "scope": "business_overview_visual_layout_only",
+  "requested_desktop_rows": [
+    [
+      "product_catalog",
+      "commercial_performance"
+    ],
+    [
+      "registered_providers",
+      "key_providers"
+    ],
+    [
+      "recent_invoices_full_width"
+    ]
+  ],
+  "mobile_order": [
+    "product_catalog",
+    "commercial_performance",
+    "registered_providers",
+    "key_providers",
+    "recent_invoices"
+  ],
+  "contracts_changed": false,
+  "query_filters_or_calculations_changed": false,
+  "documentation_approval": false,
+  "knowledge_publication": false,
+  "verification": {
+    "existing_overview_tests": {
+      "passed": 11,
+      "failed": 0
+    },
+    "full_client_suite": {
+      "files_passed": 264,
+      "tests_passed": 2187,
+      "failed": 0,
+      "max_workers": 8,
+      "exit_code": 0,
+      "heavy_builds_concurrent": false
+    },
+    "typecheck": {
+      "exit_code": 0
+    },
+    "lint": {
+      "exit_code": 0
+    },
+    "build": {
+      "exit_code": 0,
+      "api_url": "/api/v1",
+      "static_files": 173,
+      "source_input_fingerprint_sha256": "f15ef97fed76d324b69c79ad03fbab6d546d86bb9411ce037a9cd4c61c2f6bbb",
+      "existing_warning": "Vite chunk larger than 500kB; no performance acceptance claimed"
+    },
+    "browser_ui": {
+      "mode": "isolated_synthetic_transport",
+      "samples_passed": 12,
+      "widths": [
+        320,
+        390,
+        600,
+        900,
+        1088,
+        1569
+      ],
+      "language_theme_pairs": [
+        "es/dark",
+        "en/light"
+      ],
+      "desktop_rows": [
+        2,
+        2,
+        1
+      ],
+      "desktop_min_width": 900,
+      "mobile_single_column": true,
+      "horizontal_gap": 16,
+      "vertical_gap": 24,
+      "page_horizontal_overflow": 0,
+      "month_preserved_on_resize_and_refetch": true,
+      "fixture_month": "2026-10",
+      "fixture_amount": 42000,
+      "resize_queries": 0,
+      "refetch_distinct_get_queries": 6,
+      "refetch_initial_skeletons": 0,
+      "initial_kpi_skeletons": 3,
+      "grid_dom_preserved": true,
+      "mutations": 0,
+      "actions": {
+        "invoice_preview_open_and_close": true,
+        "invoice_preview_binary_verified": false,
+        "view_all_invoices_navigation": true
+      },
+      "receipt_sha256": "f55f414fc562d7400395b3c9c56f7435ede1c04e1d972b05619110ced2d80de2",
+      "screenshots": [
+        {
+          "path": ".tmp\\overview-rows-ui-390-en-light.png",
+          "sha256": "5e89f83ba09d0fb1c630ca06d7ea70b34e3278c2b27937c9036a6fd9ba3bc790",
+          "bytes": 367469,
+          "visualInspection": true
+        },
+        {
+          "path": ".tmp\\overview-rows-ui-1569-en-light.png",
+          "sha256": "d0305542a5c20db6e83b88633b042eb733dbe0da5bbc62ba89b9b62a828b24bc",
+          "bytes": 303268,
+          "visualInspection": true
+        }
+      ],
+      "date_control": "Browser Date fixed to November only to expose October fixture invoices; timers and OS/VM clock unchanged",
+      "retained_private_receipt": "ops/lab/artifacts/business-overview-rows-20261029-r01/browser-ui-receipt.json",
+      "retained_private_screenshots_directory": "ops/lab/artifacts/business-overview-rows-20261029-r01/"
+    },
+    "source_scope": {
+      "changed": [
+        "nodia-client/src/modules/business/pages/BusinessDetail/components/OverviewTab/OverviewTab.tsx",
+        "nodia-client/src/test/modules/business/pages/BusinessDetail/components/OverviewTab/OverviewTab.test.tsx"
+      ],
+      "added": [],
+      "removed": [],
+      "outside_authorized_scope": []
+    },
+    "operator_tests": {
+      "passed": 10,
+      "failed": 0
+    },
+    "source_utf8_lf_files_checked": 2,
+    "approved_bodies_unchanged": 44,
+    "diff_check_exit_code": 0,
+    "knowledge_check": {
+      "mode": "check_only",
+      "exit_code": 0,
+      "sources": 69,
+      "excluded": 25,
+      "documents": 44,
+      "fragments": 46,
+      "authoring_release_id": "3eff1db54539993f042cb9400d0e7fd3ba9e822d631b01ce5a6d7f81ee50c5c3",
+      "runtime_knowledge_changed": false,
+      "final_document_states_checked": true
+    },
+    "live_authenticated_ui": {
+      "read_only": true,
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      },
+      "rows_verified": true,
+      "page_horizontal_overflow": 0,
+      "screenshot_sha256": "bb3ff279f8a4e75c66203f0c525484a1d7708c8002cc85e7cb707d81c54c63d8",
+      "receipt_sha256": "3f68879112dd4179e0e75f2397faa70cccd58616d7084f4805337073bedf6121",
+      "temporary_tab_closed": true,
+      "user_tab_untouched": true
+    },
+    "final_utf8_lf_files_checked": 8,
+    "frozen_source_inputs_unchanged": 1175
+  },
+  "vm_adoption": {
+    "status": "activated_verified",
+    "client_release": "/opt/nodia/releases/nodia-client-business-overview-rows-20261029-r01",
+    "manifest_sha256": "493c901b65817c3a9045849e42142289dbe59bd6446e1e14ea2b3a5b24c8d1ff",
+    "config_sha256": "6817f676131160e6dc315553d5c83781873f1c876a731c553990c9fde0ef4a5c",
+    "artifact_sha256": "b66afdea3e2a434d6d16c7db817e050e02b4ce447bae59c53c2fe48fd2996d2f",
+    "nginx_before_sha256": "641fbdc74cef03959b66551b3a35252dee11019ddcf93c4c746e85e7586ecab9",
+    "nginx_after_sha256": "3597d224df2dae4999768fae8d38087d535bab8f9bdb83fa0ce3383200cdb248",
+    "index_sha256": "1d7925efd54cc78a3a9a0beb2fbbfa820f04479a3e689c38527fec0fc25d4323",
+    "current_assets_verified": 169,
+    "previous_assets_verified": 33,
+    "original_release_preserved": true,
+    "nginx_exact_backup": true,
+    "protected_runtime_preserved": true,
+    "read_only_status_runtime_exactly_matches_before": true,
+    "api_pid": "1864113",
+    "worker_pid": "1864114",
+    "server_manifest_sha256": "22f928167d186565cb08fed6eb0572d43263e0a0a424f235aad26e0c7063ef24",
+    "runtime_knowledge_release_id": "b49fde74a53483fad4fe80b8175b36bb7c337415097dd9cfa4349285f9e1e2ea",
+    "restart_requests": 0,
+    "sql_queries": 0,
+    "provider_requests": 0,
+    "activation_receipt_sha256": "dd872732aef9fc9c02d70d98bc24d30a3b7664f3b33006bdd981df7d172ef7f0",
+    "status_receipt_sha256": "99035d6440abeffb0866efe5b8ea1bc376507f0fc6fed4f1ac0d5822cf7a2de3",
+    "tunnel_http": [
+      {
+        "route": "/tools/business/5af15373-3638-4a02-a015-4e72c433fc11",
+        "status": 200,
+        "sha256": "1d7925efd54cc78a3a9a0beb2fbbfa820f04479a3e689c38527fec0fc25d4323",
+        "bytes": 2973
+      },
+      {
+        "route": "/api/v1",
+        "status": 200,
+        "sha256": "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
+        "bytes": 12
+      }
+    ],
+    "private_recovery_package": "ops/lab/artifacts/business-overview-rows-20261029-r01/"
+  },
+  "limits": [
+    "Physical phone, virtual keyboard and performance not qualified by responsive browser samples.",
+    "Synthetic preview fixture has no view-url endpoint; open/close verified, no PDF binary or download.",
+    "No domain, API, provider, knowledge publication or permission changes."
+  ],
+  "cleanup": {
+    "isolated_qa_browser_closed": true,
+    "qa_server_5194_stopped": true,
+    "user_tunnel_5174_preserved": true
+  }
+}

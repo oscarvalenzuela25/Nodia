@@ -77,8 +77,8 @@ try {
     assert.equal(response.status, status, buffer.toString());
     return { response, buffer, text: buffer.toString() };
   };
-  let [destination] = await db.query("SELECT id FROM modules WHERE link='/tools/business'");
-  if (!destination) [destination] = await db.query("INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/tools/business','ai15_artifact_businesses' FROM modules WHERE key='nodia_ai' RETURNING id");
+  let [destination] = await db.query("SELECT id FROM modules WHERE link='/business'");
+  if (!destination) [destination] = await db.query("INSERT INTO modules(module_group_id,link,key) SELECT module_group_id,'/business','ai15_artifact_businesses' FROM modules WHERE key='nodia_ai' RETURNING id");
   await db.query('INSERT INTO user_modules(user_id,module_id) VALUES(1,$1),(2,$1) ON CONFLICT DO NOTHING', [destination.id]);
   const [business] = await db.query("INSERT INTO businesses(name,owner_id) VALUES('Synthetic artifact business',2) RETURNING id");
   const key = `invoices/${business.id}/synthetic.pdf`;
@@ -95,8 +95,8 @@ try {
     const id = randomUUID();
     const result = await db.transaction(async (manager) => {
       await lockAuthority(manager);
-      const actor = await compiled.get(Authorize).execute(identities.get('1'), { moduleRoutes: ['/tools/business'] }, manager);
-      const prepared = await compiled.get(ArtifactExecutor).prepare(operation, args, { manager, actor, moduleRoutes: ['/tools/business'], conversationId: chat, runId: run, toolCallId: id });
+      const actor = await compiled.get(Authorize).execute(identities.get('1'), { moduleRoutes: ['/business'] }, manager);
+      const prepared = await compiled.get(ArtifactExecutor).prepare(operation, args, { manager, actor, moduleRoutes: ['/business'], conversationId: chat, runId: run, toolCallId: id });
       return prepared;
     });
     const publicResult = await result.execute(new AbortController().signal);

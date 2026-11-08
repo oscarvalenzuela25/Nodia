@@ -1,4 +1,4 @@
-export type NodiaAiMode = "api_key" | "token_plan_web" | "token_plan_agentic";
+export type NodiaAiMode = "api_key" | "agentic";
 export interface NodiaAiSelection {
   connection_id: string;
   mode: NodiaAiMode;
@@ -6,7 +6,7 @@ export interface NodiaAiSelection {
   effort_id: string | null;
 }
 export interface NodiaAiRoutingTarget {
-  selection: NodiaAiSelection & { mode: "token_plan_agentic" };
+  selection: NodiaAiSelection & { mode: "agentic" };
   configuration_generation: string;
   session_generation: string;
 }
@@ -39,13 +39,15 @@ export interface NodiaAiBudget {
   compactions: number;
   delegations: number;
 }
+/** A historical projection is read-only and cannot be sent as a new selection. */
+export type NodiaAiRunSelection = Omit<NodiaAiSelection, "mode"> & { mode: NodiaAiMode | "retired" };
 export interface NodiaAiRun {
   run_id: string;
   conversation_id: string;
   user_message_id: string;
   assistant_message_id: string | null;
   revision: number;
-  selection: NodiaAiSelection;
+  selection: NodiaAiRunSelection;
   catalog_version: string;
   state: NodiaAiRunState;
   phase: string;
@@ -85,6 +87,8 @@ export interface NodiaAiConnection {
   label: string;
   provider_key: string;
   is_active: boolean;
+  is_default?: boolean;
+  default_mode?: NodiaAiMode | null;
   modes: {
     mode: NodiaAiMode;
     configuration: "configured" | "incomplete" | "disabled";
@@ -98,13 +102,21 @@ export interface NodiaAiConnection {
   }[];
 }
 export type NodiaAiCatalog = NodiaAiPage<NodiaAiConnection>;
+export interface NodiaAiInvoiceOcrEligibility {
+  media_types: ("image/png" | "image/jpeg" | "image/webp" | "application/pdf")[];
+  file_bytes: number;
+}
 export interface NodiaAiEligibility {
   selection: NodiaAiSelection;
   available: boolean;
   reason: string | null;
   observed_at: string | null;
+  /** Optional only for compatibility with Server releases before API chat support. */
+  supports_tools?: boolean;
+  supports_image_generation?: boolean;
   supports_mcp: boolean;
   routing_target: NodiaAiRoutingTarget | null;
+  invoice_ocr?: NodiaAiInvoiceOcrEligibility | null;
 }
 export interface NodiaAiListParams {
   view?: "own" | "all";
@@ -138,7 +150,7 @@ export type NodiaAiEvent = NodiaAiEventBase & (
   | { kind: "run_changed"; payload: { revision: number; state: NodiaAiRunState; error: NodiaAiRun["error"] } }
   | { kind: "message_sealed"; payload: { message_id: string; status: "sealed" | "partial" } }
   | { kind: "tool_completed"; payload: { result_ref: NodiaAiToolResultRef; state: "completed" | "rejected" | "unknown"; error: NodiaAiRun["error"] } }
-  | { kind: "run_stage_changed"; payload: { stage: { stage_seq: number; stage_key: string; routing_phase: "base" | "delegated"; selection: NodiaAiSelection } } }
+  | { kind: "run_stage_changed"; payload: { stage: { stage_seq: number; stage_key: string; routing_phase: "base" | "delegated"; selection: NodiaAiRunSelection } } }
   | { kind: "proposal_ready"; payload: NodiaAiProposalRef }
 );
 export interface NodiaAiEventPage extends NodiaAiPage<NodiaAiEvent> { conversation_id: string; cursor_state: "current" | "reset_required"; has_more: boolean }

@@ -1,0 +1,840 @@
+{
+  "schema": "teacher-final-qa/1",
+  "local_date": "2026-11-05",
+  "status": "QA_completed_with_Gemini_blockers",
+  "scope": {
+    "environment": "Hyper-V VM nodia-vps-lab",
+    "origin": "http://localhost:5174",
+    "Gemini_QA_session": "28bd3a3d-1951-41bc-ae04-14901c5835fc",
+    "Codex_QA_session": "ba1f8968-edf0-448d-b78d-026409054e2a",
+    "personal_sessions_preserved": [
+      "65b0f2ce-8f99-442c-81f9-e1d1b0c2e5b0",
+      "904c19d5-ba6a-4b97-a29c-26e7c44cc59a"
+    ],
+    "personal_proficiency_claimed": false,
+    "global_V1_acceptance_claimed": false
+  },
+  "Client_change": {
+    "freeze": {
+      "path": "output/teacher-final-qa-20261105-client-source-freeze-r01.json",
+      "bytes": 1992,
+      "sha256": "28e600283f2ec54cd4f4fb2e653c861fd0e1dc14ffc5d0ace769a844ea16b2ad"
+    },
+    "definition_generating_states": [
+      "queued",
+      "running"
+    ],
+    "disabled_controls": [
+      "send_message",
+      "propose_plan",
+      "adjust_plan"
+    ],
+    "preserved_controls": [
+      "private_draft_input",
+      "save_private_draft",
+      "pause",
+      "receipt_recovery"
+    ],
+    "historical_closed_unknowns_do_not_block": true,
+    "terminal_without_publication_refreshes_session_once": true,
+    "Server_contract_changed": false
+  },
+  "checks": {
+    "Server_atomic_files": 6,
+    "Server_atomic_tests": 37,
+    "Server_exit": 0,
+    "Client_final_atomic_files": 8,
+    "Client_final_atomic_tests": 49,
+    "Client_exit": 0,
+    "Client_fix_tests_included_not_summed": 27,
+    "typecheck_exit": 0,
+    "scoped_lint_exit": 0,
+    "isolated_build_passed": true,
+    "operator_tests": 5,
+    "UTF8_LF_final_audit_pending": false,
+    "knowledge_check_pending": false,
+    "knowledge_check": {
+      "exit_code": 0,
+      "sources": 80,
+      "excluded": 36,
+      "documents": 44,
+      "fragments": 46,
+      "releaseId": "ca3b8d894cbfc3780698e15b1b19c62a4554b00911af7893024fd025c6f948af",
+      "published": false
+    },
+    "editable_files_UTF8_LF_checked": 16,
+    "frozen_Client_source_and_test_pins_reverified": 7,
+    "OPS_delivery_refs_rehashed": 28,
+    "SDK_review_refs_rehashed": 10,
+    "public_evidence_local_refs_rehashed_before_final_write": 27,
+    "new_local_document_links_verified": 16,
+    "formal_document_approval": false,
+    "knowledge_publication": false
+  },
+  "operations": {
+    "delivery": {
+      "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/client-r16-r01/delivery.json",
+      "bytes": 8780,
+      "sha256": "7fe5197ca925894138c130afd4087771e0d83dc3877526183e8f23d40c3c1179"
+    },
+    "activation": {
+      "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/client-r16-r01/activation-state.json",
+      "bytes": 706,
+      "sha256": "bb82e634b1105c40704053a774609e27c1706c569a41590cc52414c4594c4ffb"
+    },
+    "health": {
+      "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/client-r16-r01/final-health-r02.json",
+      "bytes": 1368,
+      "sha256": "94e4d8f0ee0da11df79923d03dc61d0ca8b5d581b14a294e02f84e1d352644e6"
+    },
+    "Client_R16_manifest_sha256": "cee41dd3465da15941514c167a9badebf6d1117275394e148efe34c74b2b2380",
+    "Server_R08_manifest_sha256": "1a644aff453811b04d0e74206f494e737d231d9595d7ee6868ff308255dc5897",
+    "new_stage_executions": 1,
+    "nginx_reloads": 1,
+    "Server_Native_restarts": 0,
+    "new_DB_CFG_captures": 0,
+    "provider_calls_by_operators": 0,
+    "old_R15_assets_HTTP_hash_verified": 180,
+    "current_outputs_HTTP_hash_verified": 184
+  },
+  "UI": {
+    "new_route_created_and_queued_once": true,
+    "plan_manually_reviewed_and_accepted_Gemini_only": true,
+    "Gemini_policy": {
+      "practice_counts": {
+        "single_choice": 1,
+        "completion": 1,
+        "short_text": 1
+      },
+      "final_counts": {
+        "single_choice": 8,
+        "completion": 1,
+        "short_text": 1
+      }
+    },
+    "reading_point_saved_and_restored": {
+      "block_id": "block_guided_practice_work_works",
+      "top_after_reload_CSS_px": -0.421875,
+      "counter_before_after": 2
+    },
+    "practice_pause_reload_preserved_unsubmitted_choice": true,
+    "practice_result": {
+      "earned": 10,
+      "denominator": 10,
+      "written_feedback_earned": 6,
+      "written_feedback_denominator": 6
+    },
+    "final1": {
+      "attempt_id": "fe90029f-917e-4eda-ae60-99a9bc8b1a36",
+      "answer_kind_all": "dont_know",
+      "answers": 10,
+      "feedback_visible_before_submit": false,
+      "earned": 0,
+      "denominator": 24,
+      "result": "not_passed",
+      "assisted": false
+    },
+    "reinforcement": {
+      "objective_points_to_recover": 24,
+      "opened_canonical_unit": true,
+      "reused_current_material_v1": true,
+      "new_material_generated": false,
+      "counter_stayed": 4
+    },
+    "final2": {
+      "entry_route": "direct",
+      "new_intention_button": "Ir a la prueba final",
+      "new_attempt_flag": false,
+      "seen_items_count": 13,
+      "reviewed_questions": 10,
+      "feedback_visible_before_submit": false,
+      "paused_reloaded_written_draft_preserved": true,
+      "submitted_once": true,
+      "result_pending": true,
+      "generation_job_prefix": "9c81463f",
+      "generation_state": "unknown",
+      "public_error_code": "provider_outcome_unknown",
+      "Native_lifecycle": "cli_timeout",
+      "local_work_seconds": 123.493,
+      "provider_upstream_calls": null,
+      "provider_terminal_received": false,
+      "local_closed": true,
+      "native_process_closed": true,
+      "SQL_and_Native_ACK": true,
+      "deterministic_points_preserved": 18,
+      "aggregate_earned": null,
+      "result": "pending",
+      "active_after_close_pending": false,
+      "closure_reason": "feedback_unknown_unrecoverable",
+      "written_inference_replayed": false,
+      "attempt_id": "75ad1fd2-46bd-40ba-bce9-67ec44f498be",
+      "generation_job_id": "9c81463f-5e6d-43a1-bba7-d8b060747807"
+    },
+    "Codex": {
+      "explicit_connection_selection": 1,
+      "provider_defaults_changed": false,
+      "proposal_reviewed": true,
+      "adjustment_reviewed_and_applied": true,
+      "revision_after_apply": 3,
+      "plan_accepted": false,
+      "material_generated": false,
+      "private_draft_not_sent": true,
+      "draft_preserved_after_reload_and_pause_archive_restore": true,
+      "final_state": "archived"
+    },
+    "R16_queued_definition": {
+      "propose_enabled": false,
+      "pause_enabled": true,
+      "draft_editable": true,
+      "save_with_dirty_text_enabled": true,
+      "send_with_dirty_text_enabled": false
+    },
+    "mobile_Codex_definition": {
+      "viewport_width": 320,
+      "viewport_height": 892,
+      "document_client_width": 310,
+      "document_scroll_width": 310,
+      "action_width": 244,
+      "action_height": 44,
+      "same_private_draft_preserved": true,
+      "viewport_restored": true,
+      "physical_phone_tested": false
+    },
+    "final3": {
+      "status": "unknown_reply_framing_no_attempt_published",
+      "generation_job_prefix": "3aad0c15",
+      "entry_route": "direct",
+      "seen_items_count": 23,
+      "same_selection_preserved": true,
+      "same_unknown_feedback_replayed": false,
+      "generation_job_id": "3aad0c15-a395-4497-becf-4f20c0937abd",
+      "upstream_calls": 1,
+      "local_sdk_attempts": 1,
+      "HTTP_status": 200,
+      "finish_done": false,
+      "SDK_terminal_captured": true,
+      "local_closed": true,
+      "both_ACK": true,
+      "new_attempt_published": false,
+      "causal_original_response_body_not_available": true
+    },
+    "Gemini_QA_final_state": "archived",
+    "no_course_approval_claimed": true,
+    "browser_proof": {
+      "path": "output/teacher-final-qa-20261105-r01/root-ui-proof.json",
+      "bytes": 3442,
+      "sha256": "a69578e7bb396324e6514c48af75f30c25c4ff1e59c176dd8009c0c4ba36057b"
+    }
+  },
+  "HTTP_recovery": {
+    "earlier_GET_failure_cause": "unknown_not_attributed_to_reload_or_provider",
+    "earlier_GET_recovery_status": 200,
+    "later_observed_statuses": [
+      401,
+      429
+    ],
+    "auth_refresh_status": 200,
+    "rate_limit_retry_after_seconds": 10,
+    "specific_rate_limit_policy": "not_observed",
+    "rate_limit_config_changed": false,
+    "explicit_GET_retry_recovered": true,
+    "uncertain_inferences_replayed": false
+  },
+  "limits": [
+    "QA of these configured Agentic selections, not all models or API key modalities.",
+    "English grammar/text sample only; no pronunciation, proficiency or psychometric certification.",
+    "Refuerzo reused existing material; no fresh reinforcement packet generated in this run.",
+    "Codex verified proposal and adjustment, not a new complete Codex assessment journey.",
+    "Historical backups do not cover new QA history; no new DB/CFG capture requested or created.",
+    "A transient earlier GET failure recovered but its concrete cause was not captured.",
+    "Provider latency and cost are not inferred from local work durations.",
+    "ADR and knowledge remain proposed/draft; no approval or publication inferred.",
+    "Final2 written feedback timed out and remains unknown; close-pending retained its pending grade without replay.",
+    "Final3 failed with reply_framing after a captured HTTP200; no new attempt was published and no framing body causal claim is made."
+  ],
+  "observed_at_VM_UTC": "2026-11-05T18:35:27.743Z",
+  "observer": {
+    "summary": {
+      "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/final-summary-after-archive.json",
+      "bytes": 19304,
+      "sha256": "e57935541ad9c06b3560a408510cb49f3d8d821e006bb1a0c205b3ac9e8633dd"
+    },
+    "snapshot": {
+      "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/final-cohort-after-archive.json",
+      "bytes": 111102,
+      "sha256": "68481b4476e962ee9eb90167421da5697531404045c2b3b222248a906a667eff"
+    },
+    "health": {
+      "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/final-health-r01.json",
+      "bytes": 1405,
+      "sha256": "e4df477332611a324166fd997e22b230005e696cb0515ea3321023093948ddf6"
+    }
+  },
+  "cohort": {
+    "personal_session_ids": [
+      "65b0f2ce-8f99-442c-81f9-e1d1b0c2e5b0",
+      "904c19d5-ba6a-4b97-a29c-26e7c44cc59a"
+    ],
+    "QA_session_ids": [
+      "28bd3a3d-1951-41bc-ae04-14901c5835fc",
+      "ba1f8968-edf0-448d-b78d-026409054e2a"
+    ],
+    "personal_jobs": 9,
+    "QA_jobs": 9,
+    "QA_jobs_by_state": {
+      "ready": 7,
+      "unknown": 2
+    },
+    "all_jobs": 18,
+    "all_operations": 18,
+    "all_operations_locally_closed_and_both_ACK": true,
+    "QA_pending_generation_ids": [],
+    "QA_pending_grade_attempt_ids": [
+      "75ad1fd2-46bd-40ba-bce9-67ec44f498be"
+    ],
+    "QA_active_pending_grade_attempt_ids": [],
+    "QA_inactive_pending_grade_attempt_ids": [
+      "75ad1fd2-46bd-40ba-bce9-67ec44f498be"
+    ],
+    "unknown_job_ids_preserved_without_replay": [
+      "9c81463f-5e6d-43a1-bba7-d8b060747807",
+      "3aad0c15-a395-4497-becf-4f20c0937abd"
+    ]
+  },
+  "personal_course_preservation": {
+    "sessions": true,
+    "jobs": true,
+    "operations": true,
+    "generation_attempts": true,
+    "messages": true,
+    "plans": true,
+    "materials": true,
+    "assessments": true,
+    "student_attempts": true,
+    "response_status": true,
+    "cursors": true,
+    "units": true,
+    "requests": true
+  },
+  "runtime": {
+    "Native": {
+      "id": "39499a997622e9874565b9c9f39159d68b1c4b1f996c33abbdff740bfce6e60d",
+      "image": "sha256:a48549816df414b93e6fba0964dacdef6d0d9504f541f0aa85e9f9ca6e87e39a",
+      "started_at": "2026-11-05T05:11:42.761920459Z",
+      "status": "running",
+      "health": "healthy",
+      "paused": false,
+      "restarting": false
+    },
+    "api": {
+      "active": true,
+      "pid": 1366591,
+      "birth": 14805723,
+      "uid": 10000
+    },
+    "worker": {
+      "active": true,
+      "pid": 1366592,
+      "birth": 14805724,
+      "uid": 10000
+    },
+    "same_services_after": true,
+    "Server_manifest_sha256": "1a644aff453811b04d0e74206f494e737d231d9595d7ee6868ff308255dc5897"
+  },
+  "QA_sessions": [
+    {
+      "id": "28bd3a3d-1951-41bc-ae04-14901c5835fc",
+      "state": "archived",
+      "resume_state": "active",
+      "revision": 11,
+      "current_plan_revision_id": "2e1ab7f6-8335-4863-ac44-d69a42477b2e",
+      "selection": {
+        "mode": "agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high",
+        "connection_id": "2"
+      },
+      "dispatches_used": 7,
+      "setup_draft_revision": 0,
+      "setup_draft_characters": 0,
+      "setup_draft_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "ba1f8968-edf0-448d-b78d-026409054e2a",
+      "state": "archived",
+      "resume_state": "draft",
+      "revision": 6,
+      "current_plan_revision_id": null,
+      "selection": {
+        "mode": "agentic",
+        "model_id": "gpt-6.1-sol",
+        "effort_id": "medium",
+        "connection_id": "1"
+      },
+      "dispatches_used": 2,
+      "setup_draft_revision": 3,
+      "setup_draft_characters": 59,
+      "setup_draft_sha256": "6ac2f407da4f7d1e972b7b13860c34ea13553b70096f2f48b1c22cef71654723"
+    }
+  ],
+  "student_attempts": [
+    {
+      "id": "8622c0ec-08d0-4191-9026-35b5c9059835",
+      "session_id": "28bd3a3d-1951-41bc-ae04-14901c5835fc",
+      "assessment_id": "e5d363e3-39b7-4435-bce7-be77eb1871db",
+      "scope": "unit_practice",
+      "attempt_no": 1,
+      "entry_route": "practice",
+      "state": "graded",
+      "is_active": false,
+      "result": null,
+      "assisted": false,
+      "denominator_points": 10,
+      "earned_points": 10,
+      "threshold_percent": null,
+      "closure_reason": null
+    },
+    {
+      "id": "fe90029f-917e-4eda-ae60-99a9bc8b1a36",
+      "session_id": "28bd3a3d-1951-41bc-ae04-14901c5835fc",
+      "assessment_id": "5cff8953-dda2-4613-b0d1-5499a4802f20",
+      "scope": "section_final",
+      "attempt_no": 1,
+      "entry_route": "after_study",
+      "state": "graded",
+      "is_active": false,
+      "result": "not_passed",
+      "assisted": false,
+      "denominator_points": 24,
+      "earned_points": 0,
+      "threshold_percent": 90,
+      "closure_reason": null
+    },
+    {
+      "id": "75ad1fd2-46bd-40ba-bce9-67ec44f498be",
+      "session_id": "28bd3a3d-1951-41bc-ae04-14901c5835fc",
+      "assessment_id": "b6205ccc-1410-4de2-92a9-58bc0482fe20",
+      "scope": "section_final",
+      "attempt_no": 2,
+      "entry_route": "direct",
+      "state": "grading_pending",
+      "is_active": false,
+      "result": "pending",
+      "assisted": false,
+      "denominator_points": 24,
+      "earned_points": null,
+      "threshold_percent": 90,
+      "closure_reason": "feedback_unknown_unrecoverable"
+    }
+  ],
+  "section_verifications": [],
+  "generative_jobs": [
+    {
+      "id": "d5fe8ec8-46fb-4371-aef1-faf5487fc7ae",
+      "session_id": "28bd3a3d-1951-41bc-ae04-14901c5835fc",
+      "purpose": "plan_outline",
+      "state": "ready",
+      "error_code": null,
+      "selection_matches_current": true,
+      "template_hash": "7c0969138a33b2808b5b2c32d4e7f1cbf0b545d54c27734119d7fd8bcc95351c",
+      "dispatches_used": 1,
+      "operation_id": "f29237e6-ba30-4e6a-91f4-baa93a35b346",
+      "local_attempts": 1,
+      "operation": {
+        "phase": "closed",
+        "remote_outcome": "completed",
+        "local_transport_closed": "true",
+        "native_process_closed": "true",
+        "acknowledged_at": "2026-11-05T18:00:39.996Z",
+        "agentic_acknowledged_at": "2026-11-05T18:00:40.011Z",
+        "proof_sha256": "d11f73da90dceed6a733bfde0f12952bc8089a46f18875d510a1df02d38ebd55"
+      },
+      "local_work_seconds": 159.086,
+      "provider_upstream_dispatches": 1,
+      "SDK_source": "f59394d73d37713fd76843e090ead68c5e3fe587b3ac1b065ae367353c9a6e38",
+      "SDK": {
+        "journal_phase": "captured",
+        "diagnostic_sha256": "c63c85d701389d3f6b738ca4996f5b43aa2699b05a7c41f841018ee3bba8eeec",
+        "native_retired_failure": null,
+        "finish_done": true,
+        "known_child_closed": true,
+        "upstream_status": 200,
+        "upstream_local_attempts": 1
+      }
+    },
+    {
+      "id": "7b8e39ac-5654-4d38-832d-5fe24b8dad48",
+      "session_id": "28bd3a3d-1951-41bc-ae04-14901c5835fc",
+      "purpose": "learning_packet",
+      "state": "ready",
+      "error_code": null,
+      "selection_matches_current": true,
+      "template_hash": "6644bcd778c026cb3fb77a8b333f566dafffcbbfb468c7105a5372bf16973a68",
+      "dispatches_used": 1,
+      "operation_id": "2470b6ac-a885-42a0-98fd-9cdb410e0b7b",
+      "local_attempts": 1,
+      "operation": {
+        "phase": "closed",
+        "remote_outcome": "completed",
+        "local_transport_closed": "true",
+        "native_process_closed": "true",
+        "acknowledged_at": "2026-11-05T18:04:44.354Z",
+        "agentic_acknowledged_at": "2026-11-05T18:04:44.371Z",
+        "proof_sha256": "185e87db479f168602e920097736119c6c454c9703a0701ad7df1f8d5dc3ae61"
+      },
+      "local_work_seconds": 194.233,
+      "provider_upstream_dispatches": 1,
+      "SDK_source": "36436be843add75bbd425c8adda6d8b7abe0e068b12a546e5e4b16a286a93c75",
+      "SDK": {
+        "journal_phase": "captured",
+        "diagnostic_sha256": "b93ffa9dfc271a8298d52215e3c6ac27ff3946bf4f9ca20d2949a1eabd366e05",
+        "native_retired_failure": null,
+        "finish_done": true,
+        "known_child_closed": true,
+        "upstream_status": 200,
+        "upstream_local_attempts": 1
+      }
+    },
+    {
+      "id": "368dca1b-7a0c-4c41-b92c-1dd65a8b0762",
+      "session_id": "ba1f8968-edf0-448d-b78d-026409054e2a",
+      "purpose": "plan_outline",
+      "state": "ready",
+      "error_code": null,
+      "selection_matches_current": true,
+      "template_hash": "7c0969138a33b2808b5b2c32d4e7f1cbf0b545d54c27734119d7fd8bcc95351c",
+      "dispatches_used": 1,
+      "operation_id": "2401cc68-96ac-4475-a084-72b1913fa215",
+      "local_attempts": 1,
+      "operation": {
+        "phase": "closed",
+        "remote_outcome": "completed",
+        "local_transport_closed": "true",
+        "native_process_closed": "true",
+        "acknowledged_at": "2026-11-05T18:05:02.955Z",
+        "agentic_acknowledged_at": "2026-11-05T18:05:03.108Z",
+        "proof_sha256": "b1d346a3676b9902956de9896dbed289b8db672d5663ba1cdb452e27babeb56e"
+      },
+      "local_work_seconds": 18.571,
+      "provider_upstream_dispatches": null,
+      "SDK_source": null,
+      "provider_count_source": "not_observed_by_this_reader_Codex_upstream_count_not_inferred_from_CLI_attempts"
+    },
+    {
+      "id": "ae3121ef-c8fb-4663-9060-bed0ce58a1e4",
+      "session_id": "28bd3a3d-1951-41bc-ae04-14901c5835fc",
+      "purpose": "written_feedback",
+      "state": "ready",
+      "error_code": null,
+      "selection_matches_current": true,
+      "template_hash": "9700ee30ffa03fc100aeb650fd358c7b58aade290f2f2644f723e8e899be9c26",
+      "dispatches_used": 1,
+      "operation_id": "36286ab6-a7df-4cf3-bed9-6bbeb82380e2",
+      "local_attempts": 1,
+      "operation": {
+        "phase": "closed",
+        "remote_outcome": "completed",
+        "local_transport_closed": "true",
+        "native_process_closed": "true",
+        "acknowledged_at": "2026-11-05T18:08:07.696Z",
+        "agentic_acknowledged_at": "2026-11-05T18:08:07.711Z",
+        "proof_sha256": "f6dec549b62b0909873d2ad904382cbecd953abeb13199c40e96fb6adf9de20e"
+      },
+      "local_work_seconds": 60.702,
+      "provider_upstream_dispatches": 1,
+      "SDK_source": "723d0909c4a54db594560ef00441df29683cc019988381ce2d80bbc03a72e29e",
+      "SDK": {
+        "journal_phase": "captured",
+        "diagnostic_sha256": "3111291158164abf6b845980c69577fe7bc20bb04752ae5cc525a03e809ce69b",
+        "native_retired_failure": null,
+        "finish_done": true,
+        "known_child_closed": true,
+        "upstream_status": 200,
+        "upstream_local_attempts": 1
+      }
+    },
+    {
+      "id": "3381cfb9-ee8d-40d4-b04e-79d9397ea563",
+      "session_id": "28bd3a3d-1951-41bc-ae04-14901c5835fc",
+      "purpose": "assessment_only",
+      "state": "ready",
+      "error_code": null,
+      "selection_matches_current": true,
+      "template_hash": "da0d4efa66f6fcb8f9931574a849e2209529f72d2b5c61c5d2b09326b64e4466",
+      "dispatches_used": 1,
+      "operation_id": "ca65d997-5da7-41d5-902e-d3ed0dfef554",
+      "local_attempts": 1,
+      "operation": {
+        "phase": "closed",
+        "remote_outcome": "completed",
+        "local_transport_closed": "true",
+        "native_process_closed": "true",
+        "acknowledged_at": "2026-11-05T18:11:35.362Z",
+        "agentic_acknowledged_at": "2026-11-05T18:11:35.375Z",
+        "proof_sha256": "119249f381afc00e19cf5d4cc5175a48fb933bc896d2a41e00ec7c4dc2ef6952"
+      },
+      "local_work_seconds": 157.54,
+      "provider_upstream_dispatches": 1,
+      "SDK_source": "632eb5ff559db344ed4ecbf6cc14519689e1da92379f2c33170ece86c77b6e92",
+      "SDK": {
+        "journal_phase": "captured",
+        "diagnostic_sha256": "77b84b1941368359c4a28f2de7adaa40400c5e48044b22aedda65b6a39031dc1",
+        "native_retired_failure": null,
+        "finish_done": true,
+        "known_child_closed": true,
+        "upstream_status": 200,
+        "upstream_local_attempts": 1
+      }
+    },
+    {
+      "id": "a2913677-eb8c-46e7-87c9-bfb0b11e818f",
+      "session_id": "ba1f8968-edf0-448d-b78d-026409054e2a",
+      "purpose": "plan_adjustment",
+      "state": "ready",
+      "error_code": null,
+      "selection_matches_current": true,
+      "template_hash": "9eaf628ee3079eacf0557e803f264d6bc3fca068019609c9d36942c7aac64d78",
+      "dispatches_used": 1,
+      "operation_id": "64291a15-806d-45f8-80ac-1bb2d832ad83",
+      "local_attempts": 1,
+      "operation": {
+        "phase": "closed",
+        "remote_outcome": "completed",
+        "local_transport_closed": "true",
+        "native_process_closed": "true",
+        "acknowledged_at": "2026-11-05T18:11:54.572Z",
+        "agentic_acknowledged_at": "2026-11-05T18:11:54.684Z",
+        "proof_sha256": "06791976068cdd56d4dc152f886892adcfc541ef0ca3c0468a381f9e1092da97"
+      },
+      "local_work_seconds": 19.183,
+      "provider_upstream_dispatches": null,
+      "SDK_source": null,
+      "provider_count_source": "not_observed_by_this_reader_Codex_upstream_count_not_inferred_from_CLI_attempts"
+    },
+    {
+      "id": "89c70f79-ab19-42fb-b54f-2e662ac6bcd5",
+      "session_id": "28bd3a3d-1951-41bc-ae04-14901c5835fc",
+      "purpose": "assessment_only",
+      "state": "ready",
+      "error_code": null,
+      "selection_matches_current": true,
+      "template_hash": "da0d4efa66f6fcb8f9931574a849e2209529f72d2b5c61c5d2b09326b64e4466",
+      "dispatches_used": 1,
+      "operation_id": "e7e02620-4ac1-435e-a8bf-edb72bbf581a",
+      "local_attempts": 1,
+      "operation": {
+        "phase": "closed",
+        "remote_outcome": "completed",
+        "local_transport_closed": "true",
+        "native_process_closed": "true",
+        "acknowledged_at": "2026-11-05T18:19:41.321Z",
+        "agentic_acknowledged_at": "2026-11-05T18:19:41.335Z",
+        "proof_sha256": "93c4e5242ea6d31f7c5be23db8397bd640b87a6f75535e61e9d9ea448e65bc75"
+      },
+      "local_work_seconds": 196.948,
+      "provider_upstream_dispatches": 1,
+      "SDK_source": "178466dd4759314b4892a155621179ba770d9ae8e8f27d902f0d2c6279c645d0",
+      "SDK": {
+        "journal_phase": "captured",
+        "diagnostic_sha256": "cb9294e12b73bb3207d25b6096c3657db01b035f9c902c3cd4e1825fb55b2e6b",
+        "native_retired_failure": null,
+        "finish_done": true,
+        "known_child_closed": true,
+        "upstream_status": 200,
+        "upstream_local_attempts": 1
+      }
+    },
+    {
+      "id": "9c81463f-5e6d-43a1-bba7-d8b060747807",
+      "session_id": "28bd3a3d-1951-41bc-ae04-14901c5835fc",
+      "purpose": "written_feedback",
+      "state": "unknown",
+      "error_code": "provider_outcome_unknown",
+      "selection_matches_current": true,
+      "template_hash": "9700ee30ffa03fc100aeb650fd358c7b58aade290f2f2644f723e8e899be9c26",
+      "dispatches_used": 1,
+      "operation_id": "47e80553-4ad4-49a4-b503-f28763fafad4",
+      "local_attempts": 1,
+      "operation": {
+        "phase": "closed",
+        "remote_outcome": "unknown",
+        "local_transport_closed": "true",
+        "native_process_closed": "true",
+        "acknowledged_at": "2026-11-05T18:25:19.439Z",
+        "agentic_acknowledged_at": "2026-11-05T18:25:19.458Z",
+        "proof_sha256": "47208123c898a9624756907859b3642a54f28ab2e58db8476c8a83d89d5404fa"
+      },
+      "local_work_seconds": 123.493,
+      "provider_upstream_dispatches": null,
+      "SDK_source": "68481b4476e962ee9eb90167421da5697531404045c2b3b222248a906a667eff",
+      "SDK": {
+        "journal_phase": "reserved",
+        "diagnostic_sha256": "6d71841ac2705b5d6487f103689b12e0e66b3bc589f1f758e59da60cbe61913c",
+        "native_retired_failure": {
+          "stage": "lifecycle",
+          "code": "cli_timeout",
+          "exit_code": null
+        },
+        "finish_done": null,
+        "known_child_closed": null,
+        "upstream_status": null,
+        "upstream_local_attempts": null
+      }
+    },
+    {
+      "id": "3aad0c15-a395-4497-becf-4f20c0937abd",
+      "session_id": "28bd3a3d-1951-41bc-ae04-14901c5835fc",
+      "purpose": "assessment_only",
+      "state": "unknown",
+      "error_code": "provider_outcome_unknown",
+      "selection_matches_current": true,
+      "template_hash": "da0d4efa66f6fcb8f9931574a849e2209529f72d2b5c61c5d2b09326b64e4466",
+      "dispatches_used": 1,
+      "operation_id": "608d0b9c-ebde-4053-b4a5-7c7621ca7800",
+      "local_attempts": 1,
+      "operation": {
+        "phase": "closed",
+        "remote_outcome": "unknown",
+        "local_transport_closed": "true",
+        "native_process_closed": "true",
+        "acknowledged_at": "2026-11-05T18:30:34.171Z",
+        "agentic_acknowledged_at": "2026-11-05T18:30:34.187Z",
+        "proof_sha256": "342e4913de30b173fcaee97615e048e1d8455c014a79e5e8538133ebff38ca39"
+      },
+      "local_work_seconds": 122.832,
+      "provider_upstream_dispatches": 1,
+      "SDK_source": "a3c4d55b1753a91a6e1879222cd10f7d011c480481716039c1b4258bf4f5d58f",
+      "SDK": {
+        "journal_phase": "captured",
+        "diagnostic_sha256": "c0593bb162429d26adf49a27f82a66560c9b4b003b91bcd2ba1d5aa42ebe791a",
+        "native_retired_failure": {
+          "stage": "terminal",
+          "code": "runtime_failed",
+          "exit_code": null
+        },
+        "finish_done": false,
+        "known_child_closed": true,
+        "upstream_status": 200,
+        "upstream_local_attempts": 1
+      }
+    }
+  ],
+  "sources": {
+    "final_snapshot": {
+      "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/final-cohort-after-archive.json",
+      "bytes": 111102,
+      "sha256": "68481b4476e962ee9eb90167421da5697531404045c2b3b222248a906a667eff"
+    },
+    "baseline": {
+      "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/baseline-courses.json",
+      "bytes": 41310,
+      "sha256": "dfe8e38b5ff1fd5c30ff41684a51c855ba6a22e09edead4135aaf42d9cda5617"
+    },
+    "SDK_terminal_sources": [
+      {
+        "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/qa-plan-r05.json",
+        "bytes": 46704,
+        "sha256": "f59394d73d37713fd76843e090ead68c5e3fe587b3ac1b065ae367353c9a6e38"
+      },
+      {
+        "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/qa-dual-r03.json",
+        "bytes": 55216,
+        "sha256": "36436be843add75bbd425c8adda6d8b7abe0e068b12a546e5e4b16a286a93c75"
+      },
+      {
+        "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/qa-practice-r02.json",
+        "bytes": 60247,
+        "sha256": "723d0909c4a54db594560ef00441df29683cc019988381ce2d80bbc03a72e29e"
+      },
+      {
+        "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/qa-final-r03.json",
+        "bytes": 68890,
+        "sha256": "632eb5ff559db344ed4ecbf6cc14519689e1da92379f2c33170ece86c77b6e92"
+      },
+      {
+        "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/qa-variant-r03.json",
+        "bytes": 93655,
+        "sha256": "178466dd4759314b4892a155621179ba770d9ae8e8f27d902f0d2c6279c645d0"
+      },
+      {
+        "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/final-cohort-after-archive.json",
+        "bytes": 111102,
+        "sha256": "68481b4476e962ee9eb90167421da5697531404045c2b3b222248a906a667eff"
+      },
+      {
+        "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/qa-final3-r02.json",
+        "bytes": 109828,
+        "sha256": "a3c4d55b1753a91a6e1879222cd10f7d011c480481716039c1b4258bf4f5d58f"
+      }
+    ],
+    "variant-comparison.json": {
+      "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/variant-comparison.json",
+      "bytes": 826,
+      "sha256": "74eae64f1e003f3b267b7a821de9f028c4c50aaef1288d62b78d3323bdb91030"
+    },
+    "final-health-r01.json": {
+      "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/final-health-r01.json",
+      "bytes": 1405,
+      "sha256": "e4df477332611a324166fd997e22b230005e696cb0515ea3321023093948ddf6"
+    },
+    "resource-metadata-r01.json": {
+      "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/observer/resource-metadata-r01.json",
+      "bytes": 734,
+      "sha256": "36ed7feff3b2c098318896306596d78779d7d6ffadaa7ac4035dbaca2b2b5382"
+    }
+  },
+  "visual_evidence": [
+    {
+      "path": "output/teacher-final-qa-20261105-r01/preparing.jpg",
+      "bytes": 56918,
+      "sha256": "e6c261baa36ee90fc648ab2b3d3d38f08df295c869e0cee36d3b35c34774e33f"
+    },
+    {
+      "path": "output/teacher-final-qa-20261105-r01/mobile-draft.jpg",
+      "bytes": 43393,
+      "sha256": "6e749931f2640d968a7c2ea4db25698efaef89fe1193b7df093c606721b3e6ad"
+    },
+    {
+      "path": "output/teacher-final-qa-20261105-r01/gemini-final-blocker.jpg",
+      "bytes": 101118,
+      "sha256": "7fe60c3e4a87425edb25b88b2c4e294553312245259559e2f89dc7044446dc57"
+    }
+  ],
+  "next_fix_scope_review": {
+    "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/sdk-adoption-options-readonly.json",
+    "bytes": 9050,
+    "sha256": "c23a9bb089b6460c5bb6454ee161e3e53c9d491c48b026f17a8c0de2d88b17c9"
+  },
+  "SDK_parser_review": {
+    "status": "proposed_only_not_adopted",
+    "review": {
+      "path": "output/teacher-final-qa-20261105-sse-review-r01/review.json",
+      "bytes": 4327,
+      "sha256": "c5376752907eebb6c5974e3b79f8ffc7e568df975848d4e73e846ab1c609a491"
+    },
+    "patch": {
+      "path": "output/teacher-final-qa-20261105-sse-review-r01/proposed-keepalive-only.patch",
+      "bytes": 698,
+      "sha256": "f5f595d7a03a3b5fe96e53ab8cfdb20a3fc43a0931b75268cb095a1bbd0e4fd5"
+    },
+    "baseline_expected_red_exit": 1,
+    "candidate_exit": 0,
+    "candidate_tests": 16,
+    "unchanged_security_methods_included": 8,
+    "production_SDK_unchanged": true,
+    "primary_source": {
+      "url": "https://html.spec.whatwg.org/multipage/server-sent-events.html",
+      "sections": [
+        "9.2.5",
+        "9.2.6"
+      ],
+      "support": "SSE comment lines are ignored. Standard metadata fields exist, but this proposal deliberately retains the closed adapter rejection for event/id/retry. Existing pinned SDK EOF tolerance is preserved, not redefined as full EventSource behavior."
+    },
+    "live_framing_cause_proven": false
+  },
+  "artifact_catalog": {
+    "path": "ops/lab/artifacts/teacher-final-qa-20261105-r01/catalog.json",
+    "bytes": 2240,
+    "sha256": "89af714eeefa86ce35ce72acc1a1badb677331fd49625ebd2493d18dbebd8029"
+  }
+}

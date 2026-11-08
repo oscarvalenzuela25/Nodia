@@ -1,4 +1,5 @@
 {
+  "module_access_required": "No tienes acceso a este módulo.",
   "nodia_ai_title": "NodiaAI",
   "nodia_ai_unavailable": "El chat todavía no está disponible.",
   "nodia_ai_preparation": "Este espacio se habilitará cuando estén listas las conversaciones y sus herramientas.",
@@ -75,5 +76,33 @@
   "time_label": "Hora",
   "data_owner": "Usuario propietario de los datos",
   "search_owner_email": "Buscar por correo",
-  "invalid_input": "Los datos enviados no son válidos."
+  "invalid_input": "Los datos enviados no son válidos.",
+  "message_composer": {
+    "dictation": {
+      "start": "Dictar mensaje",
+      "stop": "Terminar dictado",
+      "cancel": "Cancelar dictado",
+      "requesting": "Preparando dictado…",
+      "listening": "Escuchando · {{time}}",
+      "stopping": "Terminando dictado…",
+      "notice": "El navegador convierte tu voz en texto y puede usar su servicio de reconocimiento. Revisa el texto antes de enviarlo.",
+      "unsupported": "Este navegador no ofrece dictado por voz. Puedes escribir el mensaje.",
+      "activity_label": "Actividad del micrófono",
+      "activity_waiting": "Esperando acceso al micrófono",
+      "activity_unavailable": "No se pudo mostrar la actividad del micrófono.",
+      "errors": {
+        "dictation_unavailable": "El dictado no está disponible en este navegador.",
+        "microphone_denied": "No se concedió acceso al micrófono. Revisa el permiso del navegador.",
+        "dictation_network": "El servicio de dictado del navegador no pudo conectarse. Conservamos el texto obtenido.",
+        "dictation_service_unavailable": "El servicio de dictado no está disponible en este navegador o está deshabilitado.",
+        "dictation_no_speech": "No se reconoció voz. Puedes volver a dictar.",
+        "dictation_language_unsupported": "El servicio del navegador no admite el idioma seleccionado para el dictado.",
+        "dictation_audio_capture": "No se pudo acceder a una entrada de audio para dictar.",
+        "dictation_failed": "No se pudo completar el dictado. Conservamos el texto obtenido.",
+        "text_too_large": "El dictado se detuvo al alcanzar el límite de texto del mensaje. Conservamos lo escrito.",
+        "dictation_stop_timeout": "El navegador no confirmó el cierre del dictado. Se detuvo la captura local y conservamos el texto obtenido."
+      }
+    },
+    "text_too_large": "El mensaje supera el límite de texto permitido. Conservamos lo escrito para que puedas revisarlo."
+  }
 }

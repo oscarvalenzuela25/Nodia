@@ -39,8 +39,6 @@ import type {
 } from '../../ai-provider/use-case/manage-ai-provider-secure-session.use-case.js';
 import type { CreateAiApiKeyDto } from '../../ai-provider/dto/create-ai-api-key.dto.js';
 import type { UpdateAiApiKeyDto } from '../../ai-provider/dto/update-ai-api-key.dto.js';
-import type { GeminiLoginInput } from '../../common/ai/gemini-login-viewer.js';
-import { validateGeminiLoginInput } from '../../ai-provider/use-case/manage-gemini-login.use-case.js';
 import { NodiaAiSecureFlowActionDto } from '../dto/nodia-ai-secure-flow.dto.js';
 import { RevokeOwnAuthSessionUseCase } from '../../auth/use-case/revoke-own-auth-session.use-case.js';
 import {
@@ -55,13 +53,12 @@ import {
   secureFlowAcknowledgement,
   type SecureFlowAcknowledgement,
 } from '../acknowledge-secure-flow.js';
-
 type Request = {
   expected_execution_revision: number;
   client_request_id: string;
   payload?: NodiaAiJsonObject;
 };
-const readActions: readonly SecureFlowAction[] = ['status', 'frame'];
+const readActions: readonly SecureFlowAction[] = ['status'];
 /** Trusted human channel. Secret payloads are consumed once in memory, never persisted or journaled. */
 @Injectable()
 export class ManageNodiaAiSecureFlowUseCase {
@@ -75,7 +72,6 @@ export class ManageNodiaAiSecureFlowUseCase {
     @Inject(NODIA_AI_RUNTIME_POLICY)
     private readonly policy: NodiaAiRuntimePolicy,
   ) {}
-
   async get(identity: NodiaAiActorReference, executionId: string) {
     return this.store.transaction(async (manager) => {
       await lockAuthority(
@@ -103,8 +99,6 @@ export class ManageNodiaAiSecureFlowUseCase {
         'start',
         'status',
         'code',
-        'frame',
-        'input',
         'cancel',
         'logout',
         'sync',
@@ -468,18 +462,11 @@ export class ManageNodiaAiSecureFlowUseCase {
       }
       const kind = flow.descriptor.flow_kind;
       if (
-        ![
-          'connection_login',
-          'codex_logout',
-          'gemini_web_logout',
-          'sync_models',
-        ].includes(kind) ||
+        !['connection_login', 'codex_logout', 'sync_models'].includes(kind) ||
         (kind !== 'connection_login' &&
           action !== (kind === 'sync_models' ? 'sync' : 'logout')) ||
         (kind === 'connection_login' &&
-          !['start', 'status', 'frame', 'code', 'input', 'cancel'].includes(
-            action,
-          ))
+          !['start', 'status', 'code', 'cancel'].includes(action))
       )
         throw new BadRequestException('nodia_ai:invalid_input');
       if (
@@ -492,19 +479,18 @@ export class ManageNodiaAiSecureFlowUseCase {
             ['status', 'cancel'].includes(action)
           )) ||
         (flow.descriptor.status === 'unknown' &&
-          !['status', 'frame', 'cancel'].includes(action)) ||
+          !['status', 'cancel'].includes(action)) ||
         (action === 'start' &&
           (flow.descriptor.status !== 'waiting' ||
             flow.descriptor.native_reference !== null ||
             flow.descriptor.native_request != null)) ||
-        (['frame', 'code', 'input'].includes(action) &&
-          !flow.descriptor.native_reference) ||
+        (['code'].includes(action) && !flow.descriptor.native_reference) ||
         (['status', 'cancel'].includes(action) &&
           !flow.descriptor.native_reference &&
           !flow.descriptor.native_request)
       )
         throw new ConflictException('nodia_ai:secure_flow_busy');
-      if (!['code', 'input'].includes(action) && request.payload !== undefined)
+      if (!['code'].includes(action) && request.payload !== undefined)
         throw new BadRequestException('nodia_ai:invalid_input');
       if (
         action === 'code' &&
@@ -516,7 +502,7 @@ export class ManageNodiaAiSecureFlowUseCase {
       if (action === 'code') {
         if (
           flow.descriptor.native_reference?.provider_key !== 'gemini' ||
-          flow.descriptor.native_reference.mode !== 'token_plan_agentic'
+          flow.descriptor.native_reference.mode !== 'agentic'
         )
           throw new BadRequestException('nodia_ai:invalid_input');
         const code = String(request.payload!.code).trim();
@@ -524,31 +510,8 @@ export class ManageNodiaAiSecureFlowUseCase {
           throw new BadRequestException('nodia_ai:invalid_input');
         request.payload!.code = code;
       }
-      if (action === 'input') {
-        if (
-          !request.payload ||
-          Object.keys(request.payload).some(
-            (key) =>
-              ![
-                'action',
-                'frame_id',
-                'x',
-                'y',
-                'text',
-                'key',
-                'delta',
-              ].includes(key),
-          ) ||
-          typeof request.payload.action !== 'string' ||
-          typeof request.payload.frame_id !== 'string' ||
-          flow.descriptor.native_reference?.provider_key !== 'gemini' ||
-          flow.descriptor.native_reference.mode !== 'token_plan_web'
-        )
-          throw new BadRequestException('nodia_ai:invalid_input');
-        validateGeminiLoginInput(
-          request.payload as unknown as GeminiLoginInput,
-        );
-      }
+      if (action === 'input' || action === 'frame')
+        throw new BadRequestException('nodia_ai:mode_retired');
       if (action !== 'cancel' && !readActions.includes(action))
         await this.proposals
           .preparer(flow.source.tool_name, flow.source.contract_hash)
@@ -561,14 +524,14 @@ export class ManageNodiaAiSecureFlowUseCase {
           if (
             typeof providerId !== 'string' ||
             !['gemini', 'openai'].includes(String(key)) ||
-            !['token_plan_web', 'token_plan_agentic'].includes(String(mode))
+            !['agentic'].includes(String(mode))
           )
             throw new ConflictException('nodia_ai:execution_conflict');
           flow.descriptor.native_request = {
             request_id: flow.step.native_request_key,
             provider_id: providerId,
             provider_key: key as 'gemini' | 'openai',
-            mode: mode as 'token_plan_web' | 'token_plan_agentic',
+            mode: mode as 'agentic',
           };
           secureDescriptor(flow.descriptor);
         }
@@ -587,10 +550,7 @@ export class ManageNodiaAiSecureFlowUseCase {
     const flow = admitted.flow,
       template = flow.source.command_template,
       providerId = String(template.provider_id),
-      mode = (template.mode ??
-        (flow.descriptor.flow_kind === 'gemini_web_logout'
-          ? 'token_plan_web'
-          : 'token_plan_agentic')) as AiProviderSecureMode;
+      mode = (template.mode ?? 'agentic') as AiProviderSecureMode;
     const ref = flow.descriptor
       .native_reference as unknown as AiProviderSecureReference;
     let observedReference: NodiaAiJsonObject | undefined;
@@ -599,12 +559,9 @@ export class ManageNodiaAiSecureFlowUseCase {
       let result:
         | Awaited<ReturnType<ManageAiProviderSecureSessionUseCase['start']>>
         | undefined;
-      let frame: unknown,
-        discovered:
-          | Awaited<
-              ReturnType<ManageAiProviderSecureSessionUseCase['discover']>
-            >
-          | undefined;
+      let discovered:
+        | Awaited<ReturnType<ManageAiProviderSecureSessionUseCase['discover']>>
+        | undefined;
       if (action === 'start')
         result = await this.native.start(
           providerId,
@@ -629,11 +586,7 @@ export class ManageNodiaAiSecureFlowUseCase {
           identity,
         );
       else if (action === 'input')
-        result = await this.native.input(
-          ref,
-          request.payload as unknown as GeminiLoginInput,
-          identity,
-        );
+        throw new BadRequestException('nodia_ai:mode_retired');
       else if (action === 'cancel')
         result = flow.descriptor.native_request
           ? await this.native.cancelRequest(
@@ -642,7 +595,7 @@ export class ManageNodiaAiSecureFlowUseCase {
             )
           : await this.native.cancel(ref, identity);
       else if (action === 'frame')
-        frame = await this.native.frame(ref, identity);
+        throw new BadRequestException('nodia_ai:mode_retired');
       else if (action === 'logout')
         await this.native.logout(providerId, mode, identity);
       else if (action === 'sync')
@@ -734,7 +687,6 @@ export class ManageNodiaAiSecureFlowUseCase {
         return {
           flow: this.project(current),
           ...(result ? { interaction: result.human } : {}),
-          ...(frame !== undefined ? { frame } : {}),
         };
       });
       await acknowledgeSecureFlow(this.store, this.native, acknowledgement);

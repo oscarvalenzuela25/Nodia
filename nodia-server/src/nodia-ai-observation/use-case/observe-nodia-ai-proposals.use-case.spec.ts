@@ -180,6 +180,31 @@ function fixture() {
 }
 
 describe('ObserveNodiaAiProposalsUseCase', () => {
+  it('keeps opted-in historical activity visible after a contract change using fresh batched authority', async () => {
+    const f = fixture();
+    f.preparer.verifyHistoricalReadAuthority = vi.fn(async () => undefined);
+    Object.assign(f.preparer, {
+      contractHash: 'b'.repeat(64),
+      catalogVersion: 'test/2',
+    });
+    expect(await f.execute()).toEqual(new Set([proposalEventKey(f.ref)]));
+    expect(f.getRepository).toHaveBeenCalledTimes(3);
+    expect(f.filterAuthorized).toHaveBeenCalledOnce();
+    expect(f.preparer.verifyHistoricalReadAuthority).toHaveBeenCalledOnce();
+    expect(f.preparer.verifyAuthority).not.toHaveBeenCalled();
+    expect(f.preparer.prepare).not.toHaveBeenCalled();
+    f.filterAuthorized.mockResolvedValue({ actor: f.actor, allowed: [false] });
+    expect(await f.execute()).toEqual(new Set());
+    expect(f.preparer.verifyHistoricalReadAuthority).toHaveBeenCalledOnce();
+  });
+  it('hides older activity when its explicit scope reader denies current ownership', async () => {
+    const f = fixture();
+    f.preparer.verifyHistoricalReadAuthority = vi.fn(async () => {
+      throw new ForbiddenException('revoked');
+    });
+    Object.assign(f.preparer, { contractHash: 'b'.repeat(64) });
+    expect(await f.execute()).toEqual(new Set());
+  });
   it('does no work for an empty feed', async () => {
     const f = fixture();
     expect(await f.execute([])).toEqual(new Set());

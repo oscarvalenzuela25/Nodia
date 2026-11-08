@@ -90,7 +90,7 @@ function fixture() {
   const context = {
     manager: base.manager,
     actor: { actorId: '1', sessionId: 'session-1' },
-    moduleRoutes: ['/tools/finances-personal'],
+    moduleRoutes: ['/finances-personal'],
     conversationId: 'chat-1',
     statementTimeoutMs: 1000,
   } as ProposalPreparerContext;

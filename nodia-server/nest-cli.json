@@ -6,6 +6,10 @@
     "deleteOutDir": true,
     "assets": [
       {
+        "include": "nodia-ai-tools/config/common-schema.json",
+        "watchAssets": true
+      },
+      {
         "include": "nodia-ai-tools/config/tool-selection*.json",
         "watchAssets": true
       },
@@ -19,6 +23,10 @@
       },
       {
         "include": "nodia-ai-products/contracts/*.json",
+        "watchAssets": true
+      },
+      {
+        "include": "nodia-ai-invoice-ocr/contracts/*.json",
         "watchAssets": true
       },
       {

@@ -64,7 +64,7 @@ import type {
   NodiaAiRentalResource,
 } from '../types/rental-operation.types.js';
 
-const route = '/tools/reservations';
+const route = '/reservations';
 interface Input {
   property?: string;
   id?: string;

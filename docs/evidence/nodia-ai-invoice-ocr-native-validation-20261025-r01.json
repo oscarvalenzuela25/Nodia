@@ -1,0 +1,286 @@
+{
+  "schema_version": 1,
+  "status": "offline_native_ocr_candidate_validation_only",
+  "recorded_at_utc": "2026-10-26T01:40:56.663681+00:00",
+  "scope": "Reutilización del OCR real de Productos bajo identidad nativa durable separada de la generación planificadora.",
+  "sources": {
+    "python": [
+      {
+        "path": "nodia-gemini-microservice/native_invoice_analysis.py",
+        "sha256": "2008bf97aadbff3dc7d50254e5adf9dde4af9781a38372521f66f115302f430b",
+        "bytes": 9887
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_native_invoice_analysis.py",
+        "sha256": "60bb58f7103835dd6419ff983a3a80b54e5fe307c55be875c632f7403af07a80",
+        "bytes": 17708
+      },
+      {
+        "path": "nodia-gemini-microservice/main.py",
+        "sha256": "d6924b722c6fef67c76dbfe052f0f5c17f9a77f18f32c30d0f589087b413bb5a",
+        "bytes": 31998
+      },
+      {
+        "path": "nodia-gemini-microservice/request_guard.py",
+        "sha256": "7f31bee5c94fa7fe217526bfc52a52c6bf5da442a546f648862d43aad6e8c541",
+        "bytes": 9869
+      }
+    ],
+    "codex": [
+      {
+        "path": "nodia-server/src/common/ai/codex/invoice-native-runtime.ts",
+        "sha256": "d35e36d32b50cc76c4f66dab777edb094b0b2de7cca9fae85d3c380623b692f5",
+        "bytes": 10861
+      },
+      {
+        "path": "nodia-server/src/common/ai/codex/invoice-native-runtime.spec.ts",
+        "sha256": "c7f5c84780398a07e1ef51861fcf02456c4808de635fb15907c2526b54ba68c3",
+        "bytes": 17983
+      },
+      {
+        "path": "nodia-server/src/ai-provider/use-case/execute-codex-invoice.use-case.ts",
+        "sha256": "2c7b94774f5e89f3996f00227d8f11ab1496e10ac09e208c3bcdf7e6da5618a5",
+        "bytes": 14607
+      },
+      {
+        "path": "nodia-server/src/common/ai/api-invoice-contract.ts",
+        "sha256": "8d60bcab0dfe6e56c9e10c46249dbce9d135555c660089c9832d5fdb23727ba8",
+        "bytes": 3750
+      }
+    ]
+  },
+  "executed_checks": [
+    {
+      "kind": "python_focused",
+      "cwd": "nodia-gemini-microservice",
+      "command_prefix": ".venv/Scripts/python.exe -c",
+      "executed_python_operations": [
+        "import test_support before unittest discovery",
+        "unittest.defaultTestLoader.discover for each listed pattern",
+        "unittest.TextTestRunner(verbosity=2).run(combined_suite)"
+      ],
+      "test_patterns": [
+        "test_native_invoice_analysis.py",
+        "test_native_attempts.py",
+        "test_request_guard.py",
+        "test_invoice_mcp_contract.py",
+        "test_agentic_cli.py"
+      ],
+      "result": "PASS",
+      "new_tests": 19,
+      "total_tests": 69,
+      "duration_seconds": 2.376,
+      "log": {
+        "path": ".tmp/c03-native-invoice-analysis-r01/focused-tests-r02.log",
+        "sha256": "aa570be89ca8bb261eb4a8e25978b4c2f0e43c92e28180cd7405c195192df3e2",
+        "bytes": 12356
+      },
+      "note": "La ejecución focal emitió un RuntimeWarning de AsyncMock no esperado en profile_admission.py:84; no fallaron pruebas. No se usa como prueba de cuenta o runtime desplegado."
+    },
+    {
+      "kind": "python_compile",
+      "cwd": "nodia-gemini-microservice",
+      "command_prefix": ".venv/Scripts/python.exe -c",
+      "executed_python_operations": [
+        "py_compile.compile(path,cfile=temporary_output,doraise=True)"
+      ],
+      "paths": [
+        "native_invoice_analysis.py",
+        "tests/test_native_invoice_analysis.py",
+        "main.py",
+        "request_guard.py"
+      ],
+      "result": "PASS"
+    },
+    {
+      "kind": "codex_focused",
+      "cwd": "nodia-server",
+      "command": ".\\node_modules\\.bin\\vitest.cmd run src/common/ai/codex/invoice-native-runtime.spec.ts src/ai-provider/use-case/execute-codex-invoice.use-case.spec.ts --silent",
+      "result": "PASS",
+      "new_tests": 15,
+      "total_tests": 35,
+      "duration_seconds": 3.04,
+      "log": {
+        "path": ".tmp/c03-native-invoice-analysis-r01/codex-focused-tests-r01.log",
+        "sha256": "c73593312369e53b98560fff43d05cb9e25b539dca53dd487c1cb5729e999d2c",
+        "bytes": 7524
+      }
+    },
+    {
+      "kind": "codex_types",
+      "cwd": "nodia-server",
+      "command": ".\\node_modules\\.bin\\tsc.cmd -p ../.tmp/c03-native-invoice-analysis-r01/codex-spec-tsconfig.json",
+      "scope": "Nuevo spec y su cierre de dependencias de producción; no proyecto completo.",
+      "result": "PASS",
+      "configuration": {
+        "path": ".tmp/c03-native-invoice-analysis-r01/codex-spec-tsconfig.json",
+        "sha256": "dfe3e081c89b5573cbdda7779d075b9fb473287b9b2192f7bac62727916722f8",
+        "bytes": 476
+      }
+    },
+    {
+      "kind": "codex_lint",
+      "cwd": "nodia-server",
+      "command": ".\\node_modules\\.bin\\oxlint.cmd src/common/ai/codex/invoice-native-runtime.ts src/common/ai/codex/invoice-native-runtime.spec.ts src/ai-provider/use-case/execute-codex-invoice.use-case.ts src/common/ai/api-invoice-contract.ts",
+      "result": "PASS"
+    },
+    {
+      "kind": "integrated_typecheck_attempt",
+      "cwd": "nodia-server",
+      "command": ".\\node_modules\\.bin\\tsc.cmd -p tsconfig.build.json --noEmit --incremental false",
+      "result_at_execution": "FAIL",
+      "detail": "En ese corte sólo reportó source posiblemente undefined/model nullable en el adapter concurrente y code opcional en ProcessInvoiceStage. No se modificaron esos archivos desde este lane ni se afirma build integrado final."
+    },
+    {
+      "kind": "generic_typecheck_attempt",
+      "cwd": "nodia-server",
+      "command": ".\\node_modules\\.bin\\tsc.cmd --noEmit --incremental false",
+      "result_at_execution": "FAIL",
+      "detail": "Incluyó numerosos fixtures/specs ajenos y errores del spec nuevo posteriormente corregidos. El tipado aislado final pasó; no se declara que el comando global haya pasado."
+    }
+  ],
+  "verified_guarantees": [
+    "Python arma marcador con identidad y ledger dentro de la única reserva de perfil antes de parser/preflight/core. Un fallo aceptado de preflight puede conciliarse con abandoned_unknown cerrado sin afirmar generación.",
+    "El callback provider_request_started permite una sola generación; bloquea también un segundo envío desde recuperación AuthError interna de Web.",
+    "Después de envío, cancelación/error no reenvían OCR; un proceso sin cierre acreditado o una escritura terminal fallida conserva estado pendiente/cuarentena.",
+    "Los recibos no contienen documento, prompt, respuesta ni configuración comercial: sólo identidad, digest y estado terminal mínimo.",
+    "Codex reutiliza codexDocument, invoicePrompt, API_INVOICE_SCHEMA y parseApiInvoice del caso de uso de Productos. Null de esfuerzo evita fallback configurado; impuesto null y cero permanecen distintos.",
+    "Codex reserva el journal chat/1 antes de adquirir, persiste certificado hijo antes del start gate y submitted antes de un único turn/start; sólo crea terminal después de runtime.stop y antes de liberar el lease.",
+    "La prueba Codex recorre el reconciliador y ACK existentes. Se comprueban mutación posterior del caller, cancelación remota por journal, sesión cambiada y límite de salida64KiB."
+  ],
+  "limits": [
+    "Cero VM, SDK, CLI real, inferencia de cuenta o adopción en estas comprobaciones.",
+    "Python usa parser/proveedor simulados y ledger/admisión reales en temporales. Codex simula RPC, persistencia del journal y certificados OS; conserva parser/core y validadores/proof/reconcile/ACK reales.",
+    "El documento/PDF real y el cierre de grupos Linux del candidato no quedan aceptados por estas pruebas.",
+    "Las pruebas focales Python usan el checkout local. La compatibilidad con el core b20 se establece por fuente/AST y pins, no por inferencia desplegada.",
+    "No se habilitan nativeMIME chat, permisos, fallback de proveedor/modo, ni una nueva versión CLI. No se cierra C03 ni se afirma causa de la latencia metadata observada.",
+    "No se repitieron suites durante la consolidación. Publicación, DI/integración SQL y validación operativa quedan en evidencias separadas del root."
+  ],
+  "python_overlay_over_current_56f6": {
+    "baseline_image_id": "sha256:56f6d5c48f81056968f02aa89b51192900e38251c35f9d499089244f2af323b5",
+    "baseline_reference": {
+      "path": "ops/lab/artifacts/c03-mcp-closed-diagnostics-delivery-r01/prepared-plan.json",
+      "sha256": "a977ae9d05e0bfd5f0dad9c8973aa380c5bc9d43a1bca0e04d11e63c242965b1",
+      "bytes": 14760
+    },
+    "adoption_reference": {
+      "path": "docs/evidence/nodia-ai-c03-mcp-closed-diagnostics-adoption-20261025-r02.json",
+      "sha256": "525a48f947f538371a1f0cee82f5ac4ab8b73903bda8814bcf0dca9d87a66849",
+      "bytes": 25009
+    },
+    "runtime_delta_paths": [
+      "native_invoice_analysis.py",
+      "main.py",
+      "request_guard.py"
+    ],
+    "before_files": [
+      {
+        "path": "ops/lab/artifacts/ai36-c03-native-contract-r01/main.py",
+        "sha256": "65dbd7cb69ec6afce140f97b88e097e4070595a7032f084988ad2654e1f92ef4",
+        "bytes": 31793
+      },
+      {
+        "path": "ops/lab/artifacts/ai36-c03-native-contract-r01/request_guard.py",
+        "sha256": "5393c138c9c4b294b0a3283dabedb9027ae2abfc4291048d059d79b206c94c46",
+        "bytes": 9596
+      }
+    ],
+    "new_test_is_not_runtime_payload": "tests/test_native_invoice_analysis.py",
+    "main_delta": "Importar servicio/registro, construir NativeInvoiceAnalysis(state.chat) y registrar ruta; run.py intacto.",
+    "request_guard_delta": "Admitir sólo /nodia-ai/web/invoice/turn y /nodia-ai/agentic/invoice/turn con límite 10MiB base64+64KiB, conservando autenticación.",
+    "existing_dependencies": [
+      {
+        "module": "invoice_mcp_contract.py",
+        "baseline_sha256": "17011344639028e005606baa6ad86a2e8cb6ce364adfbbd77e71118b55872640",
+        "local_sha256": "17011344639028e005606baa6ad86a2e8cb6ce364adfbbd77e71118b55872640",
+        "same_bytes": true,
+        "same_normalized_text": true
+      },
+      {
+        "module": "native_attachments.py",
+        "baseline_sha256": "d7d2df584668d4d88250cbadad6997758a96e49b86a7c55b71f3c02ee70b06c4",
+        "local_sha256": "d7d2df584668d4d88250cbadad6997758a96e49b86a7c55b71f3c02ee70b06c4",
+        "same_bytes": true,
+        "same_normalized_text": true
+      },
+      {
+        "module": "native_attempts.py",
+        "baseline_sha256": "102cd400cd5400798984ae37fb4b497f3cb58cc5420488e62360134a46615f60",
+        "local_sha256": "94f5f5f64176f7d7e681ec5205e8e2f03d936396bd4c1af5867a70a9a32051da",
+        "same_bytes": false,
+        "same_normalized_text": true
+      },
+      {
+        "module": "native_mcp_stdio.py",
+        "baseline_sha256": "5022f53a0f1267202adb56f5c72d0a4ec4f61822d3a73add795fab9d588a9564",
+        "local_sha256": "5022f53a0f1267202adb56f5c72d0a4ec4f61822d3a73add795fab9d588a9564",
+        "same_bytes": true,
+        "same_normalized_text": true
+      },
+      {
+        "module": "schemas.py",
+        "baseline_sha256": "858fe66b93466347d634a58dbe4d5cdf50703a2db585b0b38a98d9db54694320",
+        "local_sha256": "858fe66b93466347d634a58dbe4d5cdf50703a2db585b0b38a98d9db54694320",
+        "same_bytes": true,
+        "same_normalized_text": true
+      },
+      {
+        "module": "service_errors.py",
+        "baseline_sha256": "4876a8bf47e3a2bd882a21d9dd5ad19d6aea22967f6875ef29c956d327e55068",
+        "local_sha256": "4876a8bf47e3a2bd882a21d9dd5ad19d6aea22967f6875ef29c956d327e55068",
+        "same_bytes": true,
+        "same_normalized_text": true
+      },
+      {
+        "module": "profile_admission.py",
+        "baseline_sha256": "a68d9127f396fa90ae291d46d8a1061418e2054266b0d7517ae520dc48d9d34b",
+        "local_sha256": "a68d9127f396fa90ae291d46d8a1061418e2054266b0d7517ae520dc48d9d34b",
+        "same_bytes": true,
+        "same_normalized_text": true
+      }
+    ],
+    "extra_third_party_dependencies": [],
+    "b20_core": {
+      "path": "ops/lab/artifacts/c03-agentic-status-evidence-cache-r01/after/agentic_service.py",
+      "sha256": "b20f724a3bcdcf3ba433a11c19474fc2cd9d4f2e02edb155eed317494daa3a03",
+      "bytes": 18494,
+      "analyze_invoice_parameters": [
+        "self",
+        "file_path",
+        "provider_fields",
+        "provider_tax",
+        "model",
+        "extended_thinking",
+        "thinking_level",
+        "progress_callback"
+      ],
+      "progress_callback_supported": true,
+      "provider_request_started_immediately_before_runner_run": true,
+      "on_generation_parameter_present": false,
+      "on_generation_required_by_wrapper": false,
+      "agentic_service_delta_required": false
+    },
+    "shared_chat_adapter": {
+      "baseline_path": ".tmp/c03-continuation-r01/native-deployed-r01/nodia_ai_chat.py",
+      "baseline_sha256": "e96753763b141dd1d726957d3005a3b0bc42f2b463a544f02ab743ba9d616dd7",
+      "consumed_methods_ast_equal": [
+        "__init__",
+        "session_generation",
+        "web_options",
+        "native_operation_closed",
+        "reconcile",
+        "acknowledge"
+      ],
+      "delta_required": false
+    },
+    "excluded_runtime_changes": [
+      "agentic_service.py",
+      "agentic_cli.py",
+      "gemini_service.py",
+      "nodia_ai_chat.py",
+      "native_attempts.py",
+      "run.py"
+    ],
+    "byte_lineage_note": "Los before históricos permanecen intactos. main/request_guard locales sin las líneas OCR coinciden textualmente tras lectura universal de finales de línea con los before pinneados; no sustituyen sus bytes históricos. native_attempts y gemini_service difieren localmente sólo por LF frente CRLF histórico. No portar el checkout completo."
+  }
+}

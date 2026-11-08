@@ -39,21 +39,22 @@ Los ejemplos genéricos de las skills no son configuración obligatoria. En part
 
 ## Restricciones locales de IA y estado operativo
 
-- Este microservicio opera exclusivamente con sesiones Gemini Web y Antigravity; no introducir API keys, rutas de inferencia por key ni consumo pay-as-you-go. Un ejemplo genérico de una skill/SDK no autoriza cambiar esta política.
-- Mantener identidad, autenticación, catálogo, configuración y cuotas separados por motor/sesión. La existencia de un perfil/directorio, variable o cliente Web no demuestra sesión Antigravity.
+- Desde la decisión explícita del2026-10-27, este microservicio opera exclusivamente con **Agentic** (Antigravity); API key se ejecuta en Nodia Server. No restaurar Web, su SDK/login/visor, aliases ejecutables o fallback. Aplicar [plan90](../docs/mvp/90-agentic-api-only-web-retirement.md).
+- Al incorporar un proveedor, modo, adaptador o cambiar sus contratos, ejecutar y registrar los casos aplicables del [plan obligatorio de verificación91](../docs/mvp/91-ai-provider-onboarding-verification.md). Diferenciar catálogo, autenticación e inferencia real; una capacidad no soportada se declara, nunca se simula.
+- Mantener identidad, autenticación, catálogo, configuración y cuotas vinculados al perfil/sesión Agentic real. La existencia de un directorio o variable no demuestra una sesión disponible.
 - Agentic utiliza el CLI oficial autorizado en ADR-016/plan 32. Sin configuración/sesión comprobadas permanece indisponible. Seguir `../docs/mvp/agentic-cli-runbook.md`; evidencia Windows no autentica ni certifica Linux-VPS. Nunca delegar Agentic a Web ni atribuir cuotas/capacidades no observadas.
-- El login Agentic de Ajustes utiliza el flujo remoto oficial con enlace/código, separado de Web. Consultar `../docs/features/ai-providers/gemini-agentic-authentication.md` y ADR-017; conservar sesión compartida explícita, ownership del actor, verificación no generativa y limpieza al cancelar. No exponer terminal ni tokens, purgar credenciales globales o sustituir el adaptador por OAuth no comprobado.
+- El login Agentic de Ajustes utiliza el flujo remoto oficial con enlace/código. Consultar `../docs/features/ai-providers/gemini-agentic-authentication.md` y ADR-017; conservar sesión compartida explícita, ownership del actor, verificación no generativa y limpieza al cancelar. No exponer terminal ni tokens, purgar credenciales globales o sustituir el adaptador por OAuth no comprobado.
 - El análisis requiere modelo explícito con resolución exacta contra descubrimiento activo, sin nombres/versiones de respaldo ni catálogos artificiales. Recuperar autenticación conserva el mismo ID; no inferir capacidades de razonamiento por el nombre ni sustituir motor/modelo tras un error.
 - Conservar cero, faltante e inválido diferenciados en el contrato de extracción y sus consumidores Server/Client. No fabricar precios, cantidades, totales o estado de éxito; la extracción es un borrador y no confirma factura/stock.
 - Mantener un solo worker mientras perfil, sesión, caché, locks y admisión sean locales al proceso. La verificación Linux local no sustituye login/renovación/restauración y aislamiento comprobados en VPS.
 
 ## Reglas de implementación
 
-- Los endpoints delegan el trabajo de navegador y Gemini a módulos separados. Tipar las firmas y definir modelos de respuesta para contratos estables; no devolver cookies, tokens ni respuestas crudas del proveedor.
+- Los endpoints delegan el trabajo Agentic a módulos separados. Tipar las firmas y definir modelos de respuesta para contratos estables; no devolver tokens ni respuestas crudas del proveedor.
 - Todo navegador, cliente Gemini, archivo temporal, tarea y semáforo debe liberarse también ante error, timeout o cancelación. Una tarea de login no debe dejar el perfil bloqueado.
-- `.env` es semilla de login y configuración; `session_state/` conserva cookies rotadas. Actualizar credenciales de forma atómica, preservando otras claves y permisos, sin reescribir el archivo con contenido parcial.
+- `.env` conserva configuración de servicio; `session_state/` conserva journals/recibos de admisión y login, y el perfil privado nativo conserva autenticación. No leer, borrar ni migrar cookies/perfiles Web históricos al retirar sus consumidores. Preservar estado incierto y permisos.
 - Validar archivos por tamaño y firma antes de enviarlos a Gemini. Acotar simultaneidad y tiempo de espera; comunicar fallos esperados con códigos HTTP precisos y sin detalles sensibles.
-- Auditar una variable por todos sus consumidores (`run.py`, `auth.py`, `browser_manager.py`, `gemini_service.py`, `service_auth.py`, Compose y documentación) antes de borrarla de `.env` o `.env.example`.
+- Auditar una variable por todos sus consumidores (`run.py`, `agentic_cli.py`, `agentic_service.py`, `service_auth.py`, Compose y documentación) antes de retirarla de `.env.example`; no reescribir el `.env` privado al retirar consumidores.
 
 ## Verificación
 
@@ -77,7 +78,7 @@ Los ejemplos genéricos de las skills no son configuración obligatoria. En part
 - Antes de inferencia, armar el marcador mínimo persistente; resultado incierto
   queda en cuarentena sin reenvío y bloquea también consumidores previos. No limpiar
   `.unknown` por TTL, borrado de chat, nuevo login o reinicio. Conciliar primero.
-- Web sólo conversa y solicita delegación tipada. Agentic sin herramientas mantiene
+- Agentic sin herramientas mantiene
   MCP vacío/hook sólo `finish`; con MCP, aceptar exclusivamente descriptores
   registrados por Server y callbacks por el loop privado supervisado. No aceptar
   URLs de callback, shell, archivos, HTTP ni herramientas obtenidas de Markdown.

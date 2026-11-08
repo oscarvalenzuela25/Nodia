@@ -29,7 +29,7 @@ const identity = {
 };
 const selection: NodiaAiSelection = {
   connection_id: '2',
-  mode: 'token_plan_web',
+  mode: 'agentic',
   model_id: 'fixture-model',
   effort_id: null,
 };
@@ -126,7 +126,7 @@ function fixture() {
     id: 'chat',
     revision: 4,
     selected_connection_id: '2',
-    selected_mode: 'token_plan_web',
+    selected_mode: 'agentic',
     selected_model_id: 'fixture-model',
     selected_effort_id: null,
   } as NodiaAiConversation;
@@ -136,7 +136,7 @@ function fixture() {
     isSuperAdmin: false,
     modules: [
       { id: '2', key: 'finance', route: '/finance' },
-      { id: '1', key: 'nodia_ai', route: '/tools/nodia-ai' },
+      { id: '1', key: 'nodia_ai', route: '/nodia-ai' },
     ],
   };
   const manager = {} as EntityManager;
@@ -158,32 +158,177 @@ function fixture() {
 describe('Prepare NodiaAI admission', () => {
   it('freezes a private Codex identity independently from mutable adapter objects', async () => {
     const f = fixture();
-    f.summary.selection!.mode = 'token_plan_agentic'; f.chat.selected_mode = 'token_plan_agentic';
-    const identityValue = { providerKey: 'openai', contractVersion: 'nodia-ai-codex-chat/1', connectionId: '2' };
-    Object.assign(f.eligibility, { resourceKey: 'codex-profile:' + 'a'.repeat(64),
-      source: 'codex_live_session_and_catalog', adapterContractVersion: 'nodia-ai-codex-chat/1', adapterIdentity: identityValue,
-      verifiedModalities: ['image'], verifiedAttachmentMediaTypes: ['image/png'] });
+    f.summary.selection!.mode = 'agentic';
+    f.chat.selected_mode = 'agentic';
+    const identityValue = {
+      providerKey: 'openai',
+      contractVersion: 'nodia-ai-codex-chat/1',
+      connectionId: '2',
+    };
+    Object.assign(f.eligibility, {
+      resourceKey: 'codex-profile:' + 'a'.repeat(64),
+      source: 'codex_live_session_and_catalog',
+      adapterContractVersion: 'nodia-ai-codex-chat/1',
+      adapterIdentity: identityValue,
+      verifiedModalities: ['image'],
+      verifiedAttachmentMediaTypes: ['image/png'],
+    });
     const observation = await f.subject.observe(identity, f.summary);
     identityValue.connectionId = '4';
-    const prepared = await f.subject.prepare(f.manager, f.actor, f.chat, now, observation);
-    expect(prepared.contextManifest.adapter_identity).toEqual({ provider_key: 'openai', contract_version: 'nodia-ai-codex-chat/1', connection_id: '2' });
+    const prepared = await f.subject.prepare(
+      f.manager,
+      f.actor,
+      f.chat,
+      now,
+      observation,
+    );
+    expect(prepared.contextManifest.adapter_identity).toEqual({
+      provider_key: 'openai',
+      contract_version: 'nodia-ai-codex-chat/1',
+      connection_id: '2',
+    });
     expect(Object.isFrozen(observation.eligibility.adapterIdentity)).toBe(true);
+    expect(prepared.contextManifest.verified_modalities).toEqual(['image']);
+    expect(prepared.contextManifest.verified_attachment_media_types).toEqual([
+      'image/png',
+    ]);
+    expect(prepared.allowedOperations).toEqual(
+      expect.arrayContaining(['chat:respond']),
+    );
+  });
+  it('never carries Codex PDF, unsupported audio or category-only claims into admission', async () => {
+    const f = fixture();
+    f.summary.selection!.mode = 'agentic';
+    f.chat.selected_mode = 'agentic';
+    Object.assign(f.eligibility, {
+      resourceKey: 'codex-profile:' + 'a'.repeat(64),
+      source: 'codex_live_session_and_catalog',
+      adapterContractVersion: 'nodia-ai-codex-chat/1',
+      adapterIdentity: {
+        providerKey: 'openai',
+        contractVersion: 'nodia-ai-codex-chat/1',
+        connectionId: '2',
+      },
+      verifiedModalities: ['image', 'pdf', 'audio'],
+      verifiedAttachmentMediaTypes: ['application/pdf', 'audio/webm'],
+    });
+    const observed = await f.subject.observe(identity, f.summary);
+    const prepared = await f.subject.prepare(
+      f.manager,
+      f.actor,
+      f.chat,
+      now,
+      observed,
+    );
     expect(prepared.contextManifest.verified_modalities).toEqual([]);
-    expect(prepared.contextManifest.verified_attachment_media_types).toEqual([]);
-    expect(prepared.allowedOperations).toEqual(expect.arrayContaining(['chat:respond']));
+    expect(prepared.contextManifest.verified_attachment_media_types).toEqual(
+      [],
+    );
   });
-  it.each(['connection', 'source', 'contract', 'web', 'implicit_prefix'])('does not admit a forged Codex %s identity', async (change) => {
-    const f = fixture(); f.summary.selection!.mode = 'token_plan_agentic'; f.chat.selected_mode = 'token_plan_agentic';
-    Object.assign(f.eligibility, { resourceKey: 'codex-profile:' + 'a'.repeat(64), source: 'codex_live_session_and_catalog',
-      adapterContractVersion: 'nodia-ai-codex-chat/1', adapterIdentity: { providerKey: 'openai',
-        contractVersion: 'nodia-ai-codex-chat/1', connectionId: change === 'connection' ? '4' : '2' } });
-    if (change === 'source') Object.assign(f.eligibility, { source: 'gemini_live_session_and_catalog' });
-    if (change === 'contract') Object.assign(f.eligibility, { adapterContractVersion: 'nodia-ai-gemini-chat/1' });
-    if (change === 'web') { f.summary.selection!.mode = 'token_plan_web'; f.chat.selected_mode = 'token_plan_web'; }
-    if (change === 'implicit_prefix') { Reflect.deleteProperty(f.eligibility, 'adapterIdentity'); Reflect.deleteProperty(f.eligibility, 'adapterContractVersion'); }
-    const observation = await f.subject.observe(identity, f.summary);
-    await expect(f.subject.prepare(f.manager, f.actor, f.chat, now, observation)).rejects.toThrow('eligibility_changed');
-  });
+  it.each([
+    {
+      formats: ['audio/wav'],
+      categories: [],
+      expectedFormats: ['audio/wav'],
+      expectedKinds: ['audio'],
+    },
+    {
+      formats: ['image/png', 'audio/wav', 'application/pdf', 'audio/ogg'],
+      categories: ['pdf'],
+      expectedFormats: ['image/png', 'audio/wav'],
+      expectedKinds: ['image', 'audio'],
+    },
+    {
+      formats: [],
+      categories: ['image', 'audio'],
+      expectedFormats: [],
+      expectedKinds: [],
+    },
+    {
+      formats: ['audio/webm', 'audio/mpeg', 'audio/mp4', 'application/pdf'],
+      categories: ['audio', 'pdf'],
+      expectedFormats: [],
+      expectedKinds: [],
+    },
+  ])(
+    'derives Codex kinds only from exact accepted image/WAV formats: $formats',
+    async ({ formats, categories, expectedFormats, expectedKinds }) => {
+      const f = fixture();
+      f.summary.selection!.mode = 'agentic';
+      f.chat.selected_mode = 'agentic';
+      Object.assign(f.eligibility, {
+        resourceKey: 'codex-profile:' + 'a'.repeat(64),
+        source: 'codex_live_session_and_catalog',
+        adapterContractVersion: 'nodia-ai-codex-chat/1',
+        adapterIdentity: {
+          providerKey: 'openai',
+          contractVersion: 'nodia-ai-codex-chat/1',
+          connectionId: '2',
+        },
+        verifiedModalities: categories,
+        verifiedAttachmentMediaTypes: formats,
+      });
+      const observation = await f.subject.observe(identity, f.summary);
+      formats.push('image/jpeg');
+      const prepared = await f.subject.prepare(
+        f.manager,
+        f.actor,
+        f.chat,
+        now,
+        observation,
+      );
+      expect(prepared.contextManifest.verified_attachment_media_types).toEqual(
+        expectedFormats,
+      );
+      expect(prepared.contextManifest.verified_modalities).toEqual(
+        expectedKinds,
+      );
+    },
+  );
+  it.each(['connection', 'source', 'contract', 'agentic', 'implicit_prefix'])(
+    'does not admit a forged Codex %s identity',
+    async (change) => {
+      const f = fixture();
+      f.summary.selection!.mode = 'agentic';
+      f.chat.selected_mode = 'agentic';
+      Object.assign(f.eligibility, {
+        resourceKey: 'codex-profile:' + 'a'.repeat(64),
+        source: 'codex_live_session_and_catalog',
+        adapterContractVersion: 'nodia-ai-codex-chat/1',
+        adapterIdentity: {
+          providerKey: 'openai',
+          contractVersion: 'nodia-ai-codex-chat/1',
+          connectionId: change === 'connection' ? '4' : '2',
+        },
+      });
+      if (change === 'source')
+        Object.assign(f.eligibility, {
+          source: 'gemini_live_session_and_catalog',
+        });
+      if (change === 'contract')
+        Object.assign(f.eligibility, {
+          adapterContractVersion: 'nodia-ai-gemini-chat/1',
+        });
+      if (change === 'agentic') {
+        f.summary.selection!.mode = 'api_key';
+        f.chat.selected_mode = 'api_key';
+      }
+      if (change === 'implicit_prefix') {
+        Reflect.deleteProperty(f.eligibility, 'adapterIdentity');
+        Reflect.deleteProperty(f.eligibility, 'adapterContractVersion');
+      }
+      if (change === 'agentic') {
+        await expect(f.subject.observe(identity, f.summary)).rejects.toThrow(
+          'eligibility_changed',
+        );
+        return;
+      }
+      const observation = await f.subject.observe(identity, f.summary);
+      await expect(
+        f.subject.prepare(f.manager, f.actor, f.chat, now, observation),
+      ).rejects.toThrow('eligibility_changed');
+    },
+  );
   it('freezes verified technical contracts without granting unpublished business operations', async () => {
     const f = fixture();
     const observation = await f.subject.observe(identity, f.summary);
@@ -206,7 +351,7 @@ describe('Prepare NodiaAI admission', () => {
     expect(prepared.contextManifest.tool_contracts).toEqual(
       expect.objectContaining({ nodia_capabilities_search: '4'.repeat(64) }),
     );
-    expect(prepared.allowedModules).toEqual(['/finance', '/tools/nodia-ai']);
+    expect(prepared.allowedModules).toEqual(['/finance', '/nodia-ai']);
     expect(prepared.contextManifest.session_generation).toBe('3'.repeat(32));
     expect(f.selector.execute).toHaveBeenCalledTimes(1);
     expect(prepared.contextManifest.tool_selection_profile).toEqual({
@@ -310,11 +455,11 @@ describe('Prepare NodiaAI admission', () => {
     expect(f.tools.visible).toHaveBeenCalledExactlyOnceWith(
       f.manager,
       f.actor,
-      ['/finance', '/tools/nodia-ai'],
+      ['/finance', '/nodia-ai'],
     );
   });
-  it.each([null, { ...selection, mode: 'api_key' }])(
-    'rejects missing/API selection before live observation',
+  it.each([null])(
+    'rejects missing selection before live observation',
     async (rejected) => {
       const f = fixture();
       f.summary.selection = rejected as NodiaAiSelection | null;
@@ -356,7 +501,7 @@ describe('Prepare NodiaAI admission', () => {
     if (field === 'revision') f.chat.revision++;
     if (field === 'connection') f.chat.selected_connection_id = '3';
     if (field === 'model') f.chat.selected_model_id = 'another-model';
-    if (field === 'mode') f.chat.selected_mode = 'token_plan_agentic';
+    if (field === 'mode') f.chat.selected_mode = 'api_key';
     if (field === 'effort') f.chat.selected_effort_id = 'high';
     await expect(
       f.subject.prepare(f.manager, f.actor, f.chat, now, observation),
@@ -432,6 +577,84 @@ describe('Prepare NodiaAI admission', () => {
       await expect(
         f.subject.prepare(f.manager, f.actor, f.chat, now, observation),
       ).rejects.toMatchObject({ status });
+    },
+  );
+});
+
+describe('API admission binding', () => {
+  function apiFixture() {
+    const f = fixture();
+    f.summary.selection!.mode = 'api_key';
+    f.chat.selected_mode = 'api_key';
+    Object.assign(f.eligibility, {
+      source: 'api_configuration_and_catalog',
+      adapterContractVersion: 'nodia-ai-api-chat/1',
+      supportsMcp: false,
+      supportsTools: true,
+      resourceKey: 'api-connection:' + 'a'.repeat(64),
+      adapterIdentity: {
+        providerKey: 'openai',
+        contractVersion: 'nodia-ai-api-chat/1',
+        connectionId: '2',
+      },
+      verifiedModalities: [],
+      verifiedAttachmentMediaTypes: [],
+    });
+    return f;
+  }
+  it('freezes API function-calling identity and the same scoped grant without claiming native capabilities', async () => {
+    const f = apiFixture();
+    const observed = await f.subject.observe(identity, f.summary);
+    const prepared = await f.subject.prepare(
+      f.manager,
+      f.actor,
+      f.chat,
+      now,
+      observed,
+    );
+    expect(prepared.selection.mode).toBe('api_key');
+    expect(prepared.contextManifest.adapter_identity).toEqual({
+      provider_key: 'openai',
+      contract_version: 'nodia-ai-api-chat/1',
+      connection_id: '2',
+    });
+    expect(prepared.contextManifest.verified_attachment_media_types).toEqual(
+      [],
+    );
+    expect(prepared.allowedOperations).toContain('nodia_knowledge_index');
+    expect(prepared.grantScope).toEqual({
+      schema_version: 1,
+      module_routes: ['/finance', '/nodia-ai'],
+    });
+    expect(f.adapter.verifyConfiguration).toHaveBeenCalledWith(
+      f.summary.selection,
+      '2'.repeat(64),
+      f.manager,
+    );
+  });
+  it.each(['connection', 'contract', 'resource', 'fake_mcp'] as const)(
+    'rejects forged API %s before admission',
+    async (change) => {
+      const f = apiFixture();
+      if (change === 'connection')
+        Object.assign(f.eligibility, {
+          adapterIdentity: {
+            providerKey: 'openai',
+            contractVersion: 'nodia-ai-api-chat/1',
+            connectionId: '9',
+          },
+        });
+      if (change === 'contract')
+        Object.assign(f.eligibility, {
+          adapterContractVersion: 'nodia-ai-codex-chat/1',
+        });
+      if (change === 'resource')
+        f.eligibility.resourceKey = 'codex-profile:' + 'a'.repeat(64);
+      if (change === 'fake_mcp') f.eligibility.supportsMcp = true;
+      await expect(f.subject.observe(identity, f.summary)).rejects.toThrow(
+        'eligibility_changed',
+      );
+      expect(f.adapter.verifyConfiguration).not.toHaveBeenCalled();
     },
   );
 });

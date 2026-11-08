@@ -1,0 +1,153 @@
+{
+  "schema": "teacher-study-journey/1",
+  "local_date": "2026-11-06",
+  "status": "active_Server_R09_Client_R26_verified",
+  "scope": {
+    "journey": "Compact numbered section accordions, section objectives disclosure, current-unit highlight; IDs/cursor/actions unchanged.",
+    "buttons": "Contained new generation and centered auto-width contained material status, including explicit mobile exception.",
+    "background_list": "Manual return to plans remains available. Authorized page batch adds latest_job with queued/running priority; separate chip, visible-only GET polling5s while active, terminal/error stop, last-known failure feedback. No automatic redirect or worker cancellation on leaving route."
+  },
+  "client_freeze": {
+    "path": "output/teacher-study-journey-20261106-client-freeze-r03.json",
+    "sha256": "08069927c4a63f6b19002e0c81dbc406b833c1c272342b4ae85ea66a773a9a60",
+    "bytes": 3526
+  },
+  "server_freeze": {
+    "path": "output/teacher-study-journey-20261106-server-freeze-r01.json",
+    "sha256": "0d9e9d5c8be5a7ec63a499514cb215fc6472e841a3962a3bc8951c7d31708b8f",
+    "bytes": 1001
+  },
+  "validation": {
+    "path": "output/teacher-study-journey-20261106-validation-r01.json",
+    "sha256": "822ac1ecec93049d4bea53a7739777edf4fa7f3c7bfb6e27eea6f7c51882a6c7",
+    "bytes": 635
+  },
+  "checks": {
+    "Client_tests": 50,
+    "Client_suites": 8,
+    "Server_tests": 2,
+    "Server_suites": 1,
+    "Client_typecheck_exit": 0,
+    "Client_eslint_exit": 0,
+    "Server_typecheck_exit": 0,
+    "Server_oxlint_exit": 0,
+    "SQL_isolated_integration": {
+      "passed": 5,
+      "auth_module_guards_exercised": false,
+      "operational_database_used": false,
+      "cleanup_verified": true
+    },
+    "Root_final_source_freeze_and_delivery_refs_verified": true
+  },
+  "provider_inferences": 0,
+  "personal_course_writes": 0,
+  "knowledge_publication_or_approval": false,
+  "V1_previous_blockers_unchanged": true,
+  "operations": {
+    "Server_release": "/opt/nodia/releases/nodia-server-teacher-20261106-r09",
+    "Client_release": "/opt/nodia/releases/nodia-client-teacher-20261106-r26",
+    "Server_manifest": {
+      "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/server-r09-r01/release-manifest.json",
+      "sha256": "a71dbde714c01d92ca6f11e16f23c70020235f53097ccf8b354456f430de5d31",
+      "bytes": 601141
+    },
+    "Client_manifest": {
+      "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/client-r26-r01/release-manifest.json",
+      "sha256": "c5533cd6e9487b5b03808b269de5bbde039db2af9d9e2858da3b5807e10f7246",
+      "bytes": 30710
+    },
+    "Client_delivery": {
+      "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/client-r26-r01/delivery.json",
+      "sha256": "bc525839ddd15707d15e983e0f809542f6dca20a4857376ccbb66810910db808",
+      "bytes": 14148
+    },
+    "Client_health": {
+      "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/client-r26-r01/final-health.json",
+      "sha256": "c05ceb480ab1dff6ef9bc2aab9752f0f2f23503257179fc52f97539fa19f9bcf",
+      "bytes": 1516
+    },
+    "Client_activation": {
+      "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/client-r26-r01/activation-state.json",
+      "sha256": "2f20ac128a3e01e6ff3e1d2061b4fce747f0fcbeca733ea896305fdec274f2c7",
+      "bytes": 700
+    },
+    "Server_adoption": {
+      "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/server-r09-r01/adoption-executed.json",
+      "sha256": "5efce30e5da6bf566802ef7bb36fbd4f1abbc071685aaf71f3fde1b5d3f73b83",
+      "bytes": 1916
+    },
+    "Server_journal": {
+      "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/server-r09-r01/adoption-state.json",
+      "sha256": "a6385b46de38e4880cfd6c8f9d8522a32660ee2e4379d295f62ea68a9e5a009e",
+      "bytes": 2601
+    },
+    "Server_health": {
+      "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/server-r09-r01/final-health.json",
+      "sha256": "8c119b881d5390d65ae4ed6f297a3be5e2ef541a50cbb992fa18d737fef2e97e",
+      "bytes": 1778
+    },
+    "Server_traceability_limit": "Full raw precommit baseline was not captured externally. Pinned adopter enforced CAS internally; preflight digest and resulting journal are preserved. Independent canonical reconstruction of the Server precommit baseline is not claimed. Client full metadata and CLI baseline were captured.",
+    "Native_SDK_provider_auth_model_effort_changed": false,
+    "schema_unchanged": {
+      "migrations": 44,
+      "tables": 94
+    },
+    "SQL_fixture_history": [
+      {
+        "receipt": {
+          "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/server-r09-r01/fixture-executed.json",
+          "sha256": "50e30cbda416e89bcebe179f66dce28534ee8a7b9fb0185f3a4949f3e02f4d15",
+          "bytes": 826
+        },
+        "result": "failed; cause unknown; cleanup verified"
+      },
+      {
+        "receipt": {
+          "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/server-r09-r01/fixture-r02/executed.json",
+          "sha256": "4710e029ad539055de04568c2e0226e7dd2b61bf2604ff3bf14063baf6a20ab6",
+          "bytes": 1384
+        },
+        "result": "failed before assertions; fixture insert parameters inverted; fixture-only correction; cleanup verified"
+      },
+      {
+        "receipt": {
+          "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/server-r09-r01/fixture-r03/executed.json",
+          "sha256": "8bdec30b0e73741e8bcc273b3057c0082da6290c012169f5db09f7c2d826d330",
+          "bytes": 1237
+        },
+        "result": "passed all five assertions; isolated real PostgreSQL; cleanup verified"
+      }
+    ]
+  },
+  "browser": {
+    "receipt": {
+      "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/browser/browser-verification.json",
+      "sha256": "3ecf680bd4aa7f08ac63ca5762ef784ba19d148ab6ca44ab7c3325fd7e436dbc",
+      "bytes": 2061
+    },
+    "screenshots": [
+      {
+        "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/browser/journey-desktop.png",
+        "sha256": "c10f9f2045a6949265339436e187eef21eb720a656c466ea588bff61965a0a29",
+        "bytes": 81751
+      },
+      {
+        "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/browser/journey-mobile.png",
+        "sha256": "e59f4c1b2f6df1bda6830a0ecccf9ace4cc71e69ea37d3e625f27219aee154e8",
+        "bytes": 44953
+      },
+      {
+        "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/browser/plans-desktop.png",
+        "sha256": "25dd998f2136ae508f8e6b6338200e7ad0be8caafda7fce7b7a5649a24a9f5ae",
+        "bytes": 145399
+      },
+      {
+        "path": "ops/lab/artifacts/teacher-study-journey-20261106-r01/browser/plans-mobile.png",
+        "sha256": "ef8b421e848ca1abaadb264774b58bb0fdd599607f92503d61b66a1264f8e997",
+        "bytes": 39264
+      }
+    ],
+    "active_generation_observed": false,
+    "limitation": "Real terminal states were observed. Active state selection/polling was verified by atomic tests and isolated PostgreSQL; no provider generation was started for browser QA."
+  }
+}

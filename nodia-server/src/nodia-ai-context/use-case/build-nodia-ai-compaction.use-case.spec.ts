@@ -28,7 +28,7 @@ const previous = (): NodiaAiCompactionSnapshot => ({
 
 describe('BuildNodiaAiCompactionUseCase', () => {
   it('builds an extraction-only request with canonical roles, exact selection hash and no tools or accepted preferences', () => {
-    const result = new BuildNodiaAiCompactionUseCase(policy).execute(fixture());
+    const result = new BuildNodiaAiCompactionUseCase(policy).execute(fixture(), 'gemini_answer_envelope');
     const request = JSON.parse(result.prompt);
     expect(request.task).toBe('compact_conversation');
     expect(request.source_hash).toBe('a'.repeat(64));
@@ -47,6 +47,30 @@ describe('BuildNodiaAiCompactionUseCase', () => {
     expect(result).toEqual(summary());
     expect(result.facts[0].text).toBe('CLP 20.000');
     expect(result.decisions[0].source_seqs).toEqual(['2']);
+  });
+  it('does not require a transport answer envelope inside the common adapter reply text', () => {
+    const builder = new BuildNodiaAiCompactionUseCase(policy);
+    const prompt = JSON.parse(builder.execute(fixture(), 'plain_text').prompt);
+    // The native Codex adapter returns its agent text directly; Gemini's outer
+    // transport unwraps its answer.text before returning the same port contract.
+    // A common prompt must not force a second kind/text envelope into that text.
+    expect(prompt.instructions).not.toContain('Cumple el envelope JSON del transporte con kind="answer"');
+    expect(prompt.instructions).toContain('sin markdown, envelope kind/text ni texto externo');
+    const content = JSON.stringify(summary());
+    expect(builder.parse({ ...fixture(), text: content })).toEqual(summary());
+    expect(() => builder.parse({ ...fixture(), text: JSON.stringify({ kind: 'answer', text: content }) }))
+      .toThrow('nodia_ai:compaction_invalid');
+  });
+  it('keeps the Gemini answer envelope requirement explicit while parsing only its already-unwrapped text', () => {
+    const builder = new BuildNodiaAiCompactionUseCase(policy);
+    const request = JSON.parse(builder.execute(fixture(), 'gemini_answer_envelope').prompt);
+    expect(request.instructions).toContain('Cumple el envelope JSON del transporte con kind="answer"');
+    expect(request.instructions).toContain('response_schema describe el contenido de text, no sustituye el envelope');
+    const geminiTransportReply = { kind: 'answer', text: JSON.stringify(summary()) };
+    expect(builder.parse({ ...fixture(), text: geminiTransportReply.text })).toEqual(summary());
+  });
+  it.each([undefined, null, 'unknown_transport'])('rejects an omitted or unrecognized response transport %s instead of assuming Gemini', transport => {
+    expect(() => new BuildNodiaAiCompactionUseCase(policy).execute(fixture(), transport as never)).toThrow('nodia_ai:compaction_invalid');
   });
   it('rejects an otherwise grounded summary that drops an entire new decision message', () => {
     const input = fixture();
@@ -118,7 +142,7 @@ describe('BuildNodiaAiCompactionUseCase', () => {
   it('does not accept a quote from a revoked source even when its raw text is provided', () => {
     const input = fixture(); input.moduleRoutes = [];
     const builder = new BuildNodiaAiCompactionUseCase(policy);
-    expect(builder.execute(input).prompt).not.toContain('CLP 20.000');
+    expect(builder.execute(input, 'gemini_answer_envelope').prompt).not.toContain('CLP 20.000');
     expect(() => builder.parse({ ...input, text: JSON.stringify(summary()) })).toThrow('nodia_ai:compaction_invalid');
   });
   it('accepts more than 128 small source messages without an arbitrary chat message limit', () => {
@@ -128,7 +152,7 @@ describe('BuildNodiaAiCompactionUseCase', () => {
       parts: [{ kind: 'text', text: `Mensaje ${index + 1}` }],
     }));
     input.throughSeq = '160';
-    expect(JSON.parse(new BuildNodiaAiCompactionUseCase(policy).execute(input).prompt).messages).toHaveLength(160);
+    expect(JSON.parse(new BuildNodiaAiCompactionUseCase(policy).execute(input, 'gemini_answer_envelope').prompt).messages).toHaveLength(160);
   });
   it('preserves every previous categorized quote and permits grounded new memory', () => {
     const input = fixture(); input.previousSnapshot = previous();
@@ -143,11 +167,11 @@ describe('BuildNodiaAiCompactionUseCase', () => {
   it('rejects a previous snapshot whose scope was revoked', () => {
     const input = fixture(); input.previousSnapshot = previous(); input.throughSeq = '3'; input.history = [];
     input.moduleRoutes = [];
-    expect(() => new BuildNodiaAiCompactionUseCase(policy).execute(input)).toThrow('nodia_ai:context_snapshot_invalid');
+    expect(() => new BuildNodiaAiCompactionUseCase(policy).execute(input, 'gemini_answer_envelope')).toThrow('nodia_ai:context_snapshot_invalid');
   });
   it('does not fabricate transcripts or resend historical file originals during extraction', () => {
     const input = fixture(); input.history[0].parts = [{ kind: 'audio', text: null, attachment_id: 'source-audio' }];
-    const request = JSON.parse(new BuildNodiaAiCompactionUseCase(policy).execute(input).prompt);
+    const request = JSON.parse(new BuildNodiaAiCompactionUseCase(policy).execute(input, 'gemini_answer_envelope').prompt);
     expect(request.messages[0].content).toContain('historical_file_not_resent');
     const next = summary(); next.facts = [{ text: 'source-audio', source_seqs: ['1'] }];
     expect(() => new BuildNodiaAiCompactionUseCase(policy).parse({ ...input, text: JSON.stringify(next) }))
@@ -157,10 +181,10 @@ describe('BuildNodiaAiCompactionUseCase', () => {
     const builder = new BuildNodiaAiCompactionUseCase(policy);
     expect(() => builder.parse({ ...fixture(), text: 'ñ'.repeat(17000) })).toThrow('nodia_ai:compaction_invalid');
     const input = fixture(); input.history[0].parts[0].text = 'ñ'.repeat(140000);
-    expect(() => builder.execute(input)).toThrow('nodia_ai:context_limit');
+    expect(() => builder.execute(input, 'gemini_answer_envelope')).toThrow('nodia_ai:context_limit');
   });
   it.each([['2', '1'], ['1', '1'], ['0'], ['3']])('rejects noncanonical source sequences %j', (...seqs) => {
     const input = fixture(); input.history = seqs.map((seq) => ({ ...input.history[0], seq }));
-    expect(() => new BuildNodiaAiCompactionUseCase(policy).execute(input)).toThrow('nodia_ai:invalid_history');
+    expect(() => new BuildNodiaAiCompactionUseCase(policy).execute(input, 'gemini_answer_envelope')).toThrow('nodia_ai:invalid_history');
   });
 });

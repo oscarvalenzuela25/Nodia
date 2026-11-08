@@ -12,8 +12,11 @@ const prices = {
   name: 'text',
   cost_price: 'number',
   cost_price_tax: 'number',
-  profit_percentage: 'number',
   sale_price: 'number',
+  barcode: 'text',
+  offer_price: 'number',
+  is_offer_enabled: 'boolean',
+  has_stock: 'boolean',
   stock: 'number',
 } as const;
 
@@ -38,7 +41,7 @@ export const RANSACK_POLICIES = {
     has_description: 'boolean',
   },
   provider: { ...common, business_id: 'uuid', name: 'text', tax: 'number' },
-  product: { ...common, ...prices, business_id: 'uuid', provider_id: 'bigint' },
+  product: { ...common, ...prices, business_id: 'uuid', provider_id: 'bigint', version: 'number' },
   product_log: {
     id: 'uuid',
     created_at: 'date',

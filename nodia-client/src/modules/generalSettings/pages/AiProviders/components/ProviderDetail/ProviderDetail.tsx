@@ -28,19 +28,16 @@ import { useTheme } from "@mui/material/styles";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import LanguageOutlinedIcon from "@mui/icons-material/LanguageOutlined";
 import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import DocumentScannerOutlinedIcon from "@mui/icons-material/DocumentScannerOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import SpeedOutlinedIcon from "@mui/icons-material/SpeedOutlined";
 import { Skeleton } from "boneyard-js/react";
 import { sileo } from "sileo";
 import AlertBanner from "../AlertBanner";
 import SyncModelsModal from "./components/SyncModelsModal";
 import AgenticLoginModal from "../AgenticLoginModal";
 import CodexSessionPanel from "../CodexSessionPanel";
-import GeminiWebAccountButton from "../GeminiWebAccountButton";
 import {
   useAiProviders,
   useAiProvidersHealth,
@@ -52,10 +49,10 @@ import {
 } from "../../infrastructure/useServices";
 import type { SupportedModelDef } from "../../infrastructure/types";
 import {
-  getObservedWebQuota,
-  getWebQuotaLabelKey,
   getObservedSessionStatus,
 } from "../../infrastructure/observations";
+import { useCodexSessionObservation } from "../../infrastructure/useCodexSessionObservation";
+import { codexConnectionState, codexDetailStatus, codexModelObservationEnabled, selectCodexSession } from "../../infrastructure/codexSessionState";
 import type { ProviderDetailProps } from "./types";
 import {
   DetailContainer,
@@ -82,21 +79,15 @@ import {
   MetricColumn,
   MetricTitle,
   MetricVal,
-  WebSessionBanner,
-  CloudBridgeBox,
   SwitchWrapper,
   StyledFormControlLabel,
   StyledSwitch,
-  QuotaGrid,
-  QuotaCard,
-  QuotaHeader,
 } from "./styles";
 
 const ProviderDetail: FC<ProviderDetailProps> = ({
   providerId,
   initialMode,
   onBack,
-  onRenewSession,
   onConfigure,
 }) => {
   const { t, i18n } = useTranslation(["ai_providers", "core"]);
@@ -144,75 +135,23 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     enabled: providerKey.toLowerCase() === "gemini",
   });
 
-  const useTokenPlanWeb = Boolean(
-    currentDbProvider?.use_token_plan_web !== undefined
-      ? currentDbProvider.use_token_plan_web
-      : currentHealthProvider?.use_token_plan_web !== undefined
-        ? currentHealthProvider.use_token_plan_web
-        : currentDbProvider?.mode === "web_session",
-  );
-  const useTokenPlanAgentic = Boolean(
-    currentDbProvider?.use_token_plan_agentic !== undefined
-      ? currentDbProvider.use_token_plan_agentic
-      : currentHealthProvider?.use_token_plan_agentic !== undefined
-        ? currentHealthProvider.use_token_plan_agentic
-        : currentDbProvider?.default_mode === "token_plan_agentic",
+  const useAgentic = Boolean(
+    currentDbProvider?.use_agentic !== undefined
+      ? currentDbProvider.use_agentic
+      : currentHealthProvider?.use_agentic !== undefined
+        ? currentHealthProvider.use_agentic
+        : currentDbProvider?.default_mode === "agentic",
   );
 
-  const currentProviderAlerts = useMemo(() => {
-    const alerts = (healthResponse?.alerts || []).filter(
-      (a) => a.provider.toLowerCase() === providerKey.toLowerCase(),
-    );
-
-    if (providerKey.toLowerCase() === "gemini" && useTokenPlanWeb) {
-      if (
-        geminiEnginesData?.web?.available === false ||
-        geminiEnginesData?.web?.authenticated === false
-      ) {
-        const hasWebAlert = alerts.some(
-          (a) =>
-            a.id.includes("web-expired") || a.actionType === "renew_session",
-        );
-        if (!hasWebAlert && (currentDbProvider || currentHealthProvider)) {
-          const providerName =
-            currentDbProvider?.name ||
-            currentHealthProvider?.name ||
-            "Google Gemini";
-          const providerId =
-            currentDbProvider?.id || currentHealthProvider?.id || "gemini";
-          alerts.unshift({
-            id: `alert-${providerId}-web-expired`,
-            provider: "gemini",
-            type: "incident",
-            severity: "error",
-            title: t("ai_providers:alerts.web_expired_title", {
-              provider: providerName,
-            }),
-            message: t("ai_providers:alerts.web_expired_message"),
-            timeAgo: t("ai_providers:alerts.recent"),
-            actionType: "renew_session",
-            actionLabel: t(
-              "ai_providers:alerts.renew_session_now",
-              "Renovar Sesión Ahora",
-            ),
-          });
-        }
-      }
-    }
-
-    return alerts;
-  }, [
-    healthResponse?.alerts,
-    providerKey,
-    useTokenPlanWeb,
-    geminiEnginesData,
-    currentDbProvider,
-    currentHealthProvider,
-    t,
-  ]);
+  const currentProviderAlerts = useMemo(
+    () => (healthResponse?.alerts ?? []).filter(
+      alert => alert.provider.toLowerCase() === providerKey.toLowerCase(),
+    ),
+    [healthResponse?.alerts, providerKey],
+  );
 
   const useApiKey = currentDbProvider?.use_api_key === true;
-  type ModeTabKey = "api_key" | "token_plan_web" | "token_plan_agentic";
+  type ModeTabKey = "api_key" | "agentic";
 
   interface ModeTabItem {
     key: ModeTabKey;
@@ -228,25 +167,18 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         label: t("ai_providers:connection.api"),
         icon: <VpnKeyOutlinedIcon fontSize="small" />,
       });
-    if (useTokenPlanWeb) {
+    if (useAgentic) {
       tabs.push({
-        key: "token_plan_web",
-        label: t("ai_providers:detail.tab_token_plan_web", "Token Plan (Web)"),
-        icon: <LanguageOutlinedIcon fontSize="small" />,
-      });
-    }
-    if (useTokenPlanAgentic) {
-      tabs.push({
-        key: "token_plan_agentic",
+        key: "agentic",
         label: t(
-          "ai_providers:detail.tab_token_plan_agentic",
-          "Token Plan (Agentic)",
+          "ai_providers:detail.tab_agentic",
+          "Agentic",
         ),
         icon: <PsychologyOutlinedIcon fontSize="small" />,
       });
     }
     return tabs;
-  }, [useApiKey, useTokenPlanWeb, useTokenPlanAgentic, t]);
+  }, [useApiKey, useAgentic, t]);
 
   const [selectedTab, setSelectedTab] = useState<ModeTabKey | null>(
     initialMode ?? null,
@@ -263,6 +195,19 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     }
     return availableTabs[0]?.key || "";
   }, [selectedTab, availableTabs, currentDbProvider?.default_mode]);
+
+  const codexObservation = useCodexSessionObservation(
+    providerId,
+    providerKey === "openai" && activeTab === "agentic" && Boolean(currentDbProvider),
+  );
+  const codexSession = selectCodexSession(codexObservation.data, currentHealthProvider?.codexSession);
+  // The visible Codex panel owns live session feedback. Cached aggregate-health
+  // alerts cannot turn its unknown/busy or verified auth into "disconnected".
+  const visibleProviderAlerts = providerKey === "openai" && activeTab === "agentic"
+    ? currentProviderAlerts.filter(alert => alert.providerId !== providerId || ![
+      "service_status_unknown", "agentic_session_required", "agentic_adapter_unavailable",
+    ].includes(alert.reason ?? ""))
+    : currentProviderAlerts;
 
   const supportedDef = useMemo(() => {
     return supportedProviders.find(
@@ -281,8 +226,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const modeFields = useMemo(() => {
     if (!activeTab || !providerFields) return {};
     const scoped = Boolean(
-      providerFields.token_plan_web ||
-      providerFields.token_plan_agentic ||
+      providerFields.agentic ||
       providerFields.api_key,
     );
     return (
@@ -299,13 +243,14 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     refetch: refetchModels,
   } = useSelectableModels(
     { provider_id: currentDbProvider?.id, mode: activeTab || undefined },
-    { enabled: Boolean(currentDbProvider?.id && activeTab) },
+    { enabled: Boolean(currentDbProvider?.id && activeTab) && (
+      providerKey !== "openai" || activeTab !== "agentic" ||
+      codexModelObservationEnabled(codexSession, codexObservation)
+    ) },
   );
-  const webQuotas = getObservedWebQuota(geminiEnginesData?.web);
   const availableModels: SupportedModelDef[] = useMemo(() => {
     const hasScoped = Boolean(
-      providerFields?.token_plan_agentic ||
-      providerFields?.token_plan_web ||
+      providerFields?.agentic ||
       providerFields?.api_key,
     );
     const saved = Array.isArray(modeFields.available_models)
@@ -350,8 +295,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
       return modeFields.selected_model;
     }
     const hasAnyModeScoped =
-      Boolean(providerFields?.token_plan_agentic) ||
-      Boolean(providerFields?.token_plan_web) ||
+      Boolean(providerFields?.agentic) ||
       Boolean(providerFields?.api_key);
     if (
       !hasAnyModeScoped &&
@@ -398,6 +342,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     isFetchingEngines ||
     modelsLoading ||
     modelsFetching ||
+    codexObservation.isFetching ||
     updateProviderMutation.isPending ||
     syncModelsMutation.isPending;
 
@@ -406,7 +351,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
       codexLoginIntent.current = null;
       return;
     }
-    if (!isBusy && providerKey === "openai" && activeTab === "token_plan_agentic" && codexLoginRef.current) {
+    if (!isBusy && providerKey === "openai" && activeTab === "agentic" && codexLoginRef.current) {
       codexLoginIntent.current = null;
       codexLoginRef.current.manage();
     }
@@ -422,8 +367,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
 
     const modeKey = activeTab || currentDbProvider.default_mode || null;
     if (
-      modeKey !== "token_plan_web" &&
-      modeKey !== "token_plan_agentic" &&
+      modeKey !== "agentic" &&
       modeKey !== "api_key"
     )
       return;
@@ -472,8 +416,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     const newFocus = ocrFocusedModelId === modelId ? null : modelId;
     const modeKey = activeTab || currentDbProvider.default_mode || null;
     if (
-      modeKey !== "token_plan_web" &&
-      modeKey !== "token_plan_agentic" &&
+      modeKey !== "agentic" &&
       modeKey !== "api_key"
     )
       return;
@@ -525,8 +468,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
       return;
     const modeKey = activeTab || currentDbProvider.default_mode || null;
     if (
-      modeKey !== "token_plan_web" &&
-      modeKey !== "token_plan_agentic" &&
+      modeKey !== "agentic" &&
       modeKey !== "api_key"
     )
       return;
@@ -602,6 +544,11 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
 
   const handleVerify = async () => {
     try {
+      if (providerKey === "openai" && activeTab === "agentic") {
+        // The session panel owns this query's error toast; never duplicate it.
+        const observed = await codexObservation.refetch();
+        if (observed.isError) return;
+      }
       await refetchHealth({ throwOnError: true });
       sileo.success({
         title: t(
@@ -614,12 +561,12 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     }
   };
 
-  const defaultChannel = currentDbProvider?.default_mode ?? (currentHealthProvider?.mode === "web_session"
-    ? "token_plan_web" : currentHealthProvider?.mode);
-  const statusType = activeTab !== defaultChannel && (activeTab === "token_plan_web" || activeTab === "token_plan_agentic")
-    ? getObservedSessionStatus(activeTab === "token_plan_web" ? geminiEnginesData?.web
-      : providerKey === "openai" ? currentHealthProvider?.codexSession : geminiEnginesData?.agentic)
-    : currentHealthProvider?.status || "unconfigured";
+  const defaultChannel = currentDbProvider?.default_mode ?? currentHealthProvider?.mode;
+  const statusType = activeTab === "agentic" && providerKey === "openai"
+    ? codexDetailStatus(codexSession)
+    : activeTab !== defaultChannel && activeTab === "agentic"
+      ? getObservedSessionStatus(geminiEnginesData?.agentic)
+      : currentHealthProvider?.status || "unconfigured";
   const statusLabel =
     statusType === "healthy"
       ? t("ai_providers:detail.status_healthy", "Disponible")
@@ -631,23 +578,14 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
             ? t("ai_providers:detail.status_unverified")
             : t("ai_providers:detail.status_unconfigured", "Sin Configurar");
 
-  // The default channel's health (e.g. API without a key) does not authenticate Web.
-  const isWebSessionActive =
-    providerKey.toLowerCase() === "gemini" &&
-    geminiEnginesData?.web?.available === true &&
-    geminiEnginesData?.web?.authenticated === true;
-
-  // Operational check:
-  // Each subscription mode must have an explicitly operational session.
-  // Token plan agentic mode requires agentic environment available.
   const isAgenticSessionActive =
     providerKey === "openai"
-      ? currentHealthProvider?.codexSession?.authenticated === true
+      ? codexConnectionState(codexSession) === "connected"
       : geminiEnginesData?.agentic?.available === true &&
         geminiEnginesData.agentic.authenticated === true;
   const isAgenticStatusKnown =
     providerKey === "openai"
-      ? typeof currentHealthProvider?.codexSession?.authenticated === "boolean"
+      ? ["connected", "disconnected"].includes(codexConnectionState(codexSession))
       : typeof geminiEnginesData?.agentic?.available === "boolean" &&
         typeof geminiEnginesData.agentic.authenticated === "boolean";
   const agenticStatusLabel = t(
@@ -658,9 +596,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         : "ai_providers:detail.agentic_status_inactive_badge",
   );
   const isModeOperational =
-    activeTab === "token_plan_web"
-      ? isWebSessionActive
-      : activeTab === "token_plan_agentic"
+    activeTab === "agentic"
         ? isAgenticSessionActive
         : activeTab === "api_key" &&
           (currentDbProvider?.api_keys?.some(
@@ -674,19 +610,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const syncDisabledReason = useMemo(() => {
     if (isModeOperational) return "";
     if (activeTab === "api_key") return t("ai_providers:api_keys.required");
-    if (activeTab === "token_plan_web") {
-      if (!isWebSessionActive) {
-        return t(
-          "ai_providers:detail.sync_disabled_unauthenticated",
-          "El token del plan web no está autenticado o la sesión expiró. Debe autenticarse primero en el navegador remoto antes de sincronizar modelos.",
-        );
-      }
-      return t(
-        "ai_providers:detail.sync_requires_operational",
-        "Para actualizar modelos, la sesión web debe estar operativa. Inicia sesión en el navegador remoto primero.",
-      );
-    }
-    if (activeTab === "token_plan_agentic") {
+    if (activeTab === "agentic") {
       return t(
         !isAgenticStatusKnown
           ? "ai_providers:detail.agentic_desc_unknown"
@@ -700,7 +624,6 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   }, [
     isModeOperational,
     activeTab,
-    isWebSessionActive,
     isAgenticStatusKnown,
     t,
   ]);
@@ -762,7 +685,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                 />
               )}
             </Box>
-            {(activeTab === "token_plan_web" || activeTab === "token_plan_agentic") && (
+            {activeTab === "agentic" && (
               <StatusPill statusType={statusType}>{statusLabel}</StatusPill>
             )}
           </BreadcrumbBox>
@@ -909,18 +832,18 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         )}
       </TopHeaderPanel>
 
-      {currentProviderAlerts.length > 0 && (
+      {visibleProviderAlerts.length > 0 && (
         <Box sx={{ mb: 2 }}>
           <AlertBanner
-            alerts={currentProviderAlerts}
+            alerts={visibleProviderAlerts}
             disabled={isBusy}
             onAuthenticateAgentic={
               providerKey === "openai"
                 ? () => {
-                    if (activeTab === "token_plan_agentic") codexLoginRef.current?.manage();
+                    if (activeTab === "agentic") codexLoginRef.current?.manage();
                     else {
                       codexLoginIntent.current = providerId;
-                      setSelectedTab("token_plan_agentic");
+                      setSelectedTab("agentic");
                     }
                   }
                 : providerKey === "gemini"
@@ -928,8 +851,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                   : undefined
             }
             onCheckStatus={handleVerify}
-            onRenewSession={onRenewSession}
-            onConfigure={() => {
+              onConfigure={() => {
               if (onConfigure && currentHealthProvider) {
                 onConfigure(currentHealthProvider);
               }
@@ -965,7 +887,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
             >
               {t(
                 "ai_providers:detail.no_active_modes_desc",
-                "Active un modo Web o Agentic para gestionar los modelos y la sesión de esta conexión.",
+                "Active un modo Agentic o API key para gestionar los modelos y la sesión de esta conexión.",
               )}
             </Typography>
             {currentHealthProvider && onConfigure && (
@@ -1242,12 +1164,12 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                     const isSelected = selectedModel === model.id;
                     const codexModel =
                       providerKey === "openai" &&
-                      activeTab === "token_plan_agentic";
+                      activeTab === "agentic";
                     const levels =
                       (modeFields.thinking_levels as Record<string, unknown>) ??
                       {};
                     const savedThinkingLevel =
-                      (codexModel || activeTab === "token_plan_web") && Object.hasOwn(levels, model.id)
+                      codexModel && Object.hasOwn(levels, model.id)
                         ? levels[model.id]
                         : (levels[model.id] ??
                           (isSelected ? modeFields.thinking_level : undefined));
@@ -1472,8 +1394,8 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                         </Box>
 
                         {/* API and Agentic reasoning preference per model */}
-                        {(activeTab === "token_plan_agentic" ||
-                          activeTab === "token_plan_web" || activeTab === "api_key") && (
+                        {(activeTab === "agentic" ||
+                          activeTab === "api_key") && (
                           <Box
                             sx={(theme) => ({
                               display: "flex",
@@ -1516,7 +1438,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                               <Tooltip
                                 title={t(
                                   providerKey === "openai" &&
-                                    activeTab === "token_plan_agentic"
+                                    activeTab === "agentic"
                                     ? "ai_providers:codex.reasoning_desc"
                                     : "ai_providers:detail.reasoning_level_desc",
                                 )}
@@ -1559,7 +1481,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                               }}
                             >
                               {(providerKey === "openai" &&
-                              activeTab === "token_plan_agentic"
+                              activeTab === "agentic"
                                 ? (model.supportedReasoningEfforts ?? [])
                                 : ["low", "medium", "high"]
                               ).map((level) => (
@@ -1568,7 +1490,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                                   value={level}
                                   data-testid={`thinking-level-${level}-${model.id}`}
                                 >
-                                  {t(`ai_providers:detail.${activeTab === "token_plan_web" ? "web_level" : "level"}_${level}`, {
+                                  {t(`ai_providers:detail.level_${level}`, {
                                     defaultValue: level,
                                   })}
                                 </ToggleButton>
@@ -1613,16 +1535,14 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
               )}
             </Skeleton>
 
-            {/* EXTENDED THINKING SECTION (WEB MODE ONLY) */}
-            {(activeTab === "api_key" || activeTab === "token_plan_web" ||
-              (activeTab === "token_plan_agentic" &&
+            {/* Mode-scoped reasoning preferences */}
+            {(activeTab === "api_key" ||
+              (activeTab === "agentic" &&
                 providerKey !== "openai")) && (
               <Box sx={{ mt: 1 }}>
                 <Typography variant="body2" color="text.secondary">
                   {t(
-                    activeTab === "token_plan_web"
-                      ? "ai_providers:detail.web_reasoning_preference"
-                      : activeTab === "api_key"
+                    activeTab === "api_key"
                       ? "ai_providers:detail.api_reasoning_preference"
                       : "ai_providers:detail.agentic_reasoning_preference",
                   )}
@@ -1643,21 +1563,17 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                   >
                     {(["low", "medium", "high"] as const).map((level) => (
                       <ToggleButton key={level} value={level}>
-                        {t(`ai_providers:detail.${activeTab === "token_plan_web" ? "web_level" : "level"}_${level}`)}
+                        {t(`ai_providers:detail.level_${level}`)}
                       </ToggleButton>
                     ))}
                   </ToggleButtonGroup>
                 )}
               </Box>
             )}
-            {activeTab === "token_plan_web" && typeof modeFields.enable_extended_thinking === "boolean"
-              && modeFields.thinking_level === undefined && (
-              <Alert severity="info">{t("ai_providers:detail.web_legacy_reasoning")}</Alert>
-            )}
 
           </DetailPanel>
 
-          {/* SUBPANEL: REMOTE WEB SESSION */}
+          {/* SUBPANEL: API KEY */}
           {activeTab === "api_key" && currentDbProvider && (
             <DetailPanel>
               <ApiKeyManager
@@ -1667,213 +1583,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
               />
             </DetailPanel>
           )}
-          {activeTab === "token_plan_web" && (
-            <DetailPanel>
-              <WebSessionBanner>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                  <StatusDot
-                    color={isWebSessionActive ? "#10b981" : "#f59e0b"}
-                  />
-                  <Box>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                      {t(
-                        "ai_providers:detail.web_session_status",
-                        "Estado de la Sesión Web",
-                      )}
-                      :{" "}
-                      {isWebSessionActive
-                        ? t("ai_providers:detail.web_session_healthy")
-                        : t(
-                            "ai_providers:detail.status_expired",
-                            "Requiere Iniciar Sesión",
-                          )}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {t("ai_providers:detail.web_session_desc")}
-                    </Typography>
-                  </Box>
-                </Box>
-
-                <Chip
-                  size="small"
-                  label={t(
-                    isWebSessionActive
-                      ? "ai_providers:detail.web_authenticated"
-                      : "ai_providers:detail.web_authentication_required",
-                  )}
-                  color={isWebSessionActive ? "success" : "warning"}
-                  sx={{ fontWeight: 700, fontSize: "0.75rem" }}
-                />
-              </WebSessionBanner>
-
-              {/* CLOUD AUTHENTICATION BRIDGE */}
-              <CloudBridgeBox>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 1,
-                    maxWidth: 650,
-                  }}
-                >
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: "primary.main",
-                      fontWeight: 800,
-                      letterSpacing: "0.06em",
-                    }}
-                  >
-                    {t(
-                      "ai_providers:detail.cloud_bridge_badge",
-                      "PUENTE DE AUTENTICACIÓN CLOUD",
-                    )}
-                  </Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                    {t(
-                      "ai_providers:detail.cloud_bridge_title",
-                      "Iniciar Sesión Segura en Navegador Remoto",
-                    )}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ lineHeight: 1.6 }}
-                  >
-                    {t("ai_providers:detail.cloud_bridge_desc")}
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      mt: 0.5,
-                    }}
-                  >
-                    <ShieldOutlinedIcon
-                      sx={{ fontSize: 16, color: "success.main" }}
-                    />
-                    <Typography variant="caption" color="text.secondary">
-                      {t(
-                        "ai_providers:detail.cloud_bridge_security",
-                        "Abre el navegador remoto habilitado por el servicio para autenticar la sesión de Google.",
-                      )}
-                    </Typography>
-                  </Box>
-                </Box>
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 0.75,
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    startIcon={<LanguageOutlinedIcon />}
-                    onClick={onRenewSession}
-                    disabled={isBusy}
-                    sx={{
-                      py: 1.5,
-                      px: 3,
-                      fontWeight: 700,
-                      borderRadius: 2,
-                      textTransform: "none",
-                      boxShadow: 3,
-                    }}
-                  >
-                    {t(
-                      "ai_providers:detail.launch_remote_browser",
-                      "Iniciar Sesión en Navegador Remoto",
-                    )}
-                  </Button>
-                  {providerKey === "gemini" && onRenewSession && <GeminiWebAccountButton key={providerId} disabled={isBusy} onLogin={onRenewSession} />}
-                  <Typography variant="caption" color="text.secondary">
-                    {t(
-                      "ai_providers:detail.remote_browser_caption",
-                      "Abre popup WebRTC seguro (no-vnc)",
-                    )}
-                  </Typography>
-                </Box>
-              </CloudBridgeBox>
-
-              {/* QUOTA METRICS: WEB REQUEST LIMITS (FLASH & PRO) */}
-              <Box sx={{ mt: 1 }}>
-                <Box sx={{ mb: 2 }}>
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      fontWeight: 700,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                    }}
-                  >
-                    <SpeedOutlinedIcon fontSize="small" color="primary" />
-                    {t("ai_providers:detail.quota_title")}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {t("ai_providers:detail.quota_web_desc")}
-                  </Typography>
-                </Box>
-
-                <QuotaGrid>
-                  {webQuotas.map((quota) => (
-                    <QuotaCard key={quota.key} elevation={0}>
-                      <QuotaHeader>
-                        <Tooltip title={quota.key} describeChild>
-                          <Typography
-                            variant="subtitle2"
-                            sx={{ fontWeight: 700 }}
-                          >
-                            {t(
-                              getWebQuotaLabelKey(quota.key) ??
-                                "ai_providers:detail.reported_quota_bucket",
-                              { bucket: quota.key },
-                            )}
-                          </Typography>
-                        </Tooltip>
-                        <Chip size="small" label={quota.percentage + "%"} />
-                      </QuotaHeader>
-                      {quota.remaining !== null && (
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ display: "block", mb: 1 }}
-                        >
-                          {quota.total !== null
-                            ? t("ai_providers:detail.quota_remaining_units", {
-                                remaining: quota.remaining,
-                                total: quota.total,
-                              })
-                            : t("ai_providers:detail.quota_reported_units", {
-                                remaining: quota.remaining,
-                              })}
-                        </Typography>
-                      )}
-                      <LinearProgress
-                        variant="determinate"
-                        value={quota.percentage}
-                        sx={{ height: 6, borderRadius: 3 }}
-                      />
-                    </QuotaCard>
-                  ))}
-                  {!webQuotas.length && (
-                    <Typography color="text.secondary">
-                      {t("ai_providers:detail.quota_unavailable")}
-                    </Typography>
-                  )}
-                </QuotaGrid>
-              </Box>
-            </DetailPanel>
-          )}
-
-          {/* SUBPANEL: AGENTIC STATUS */}
-          {activeTab === "token_plan_agentic" && providerKey !== "openai" && (
+          {activeTab === "agentic" && providerKey !== "openai" && (
             <DetailPanel>
               <PanelHeader>
                 <Box>
@@ -1964,12 +1674,12 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         </>
       )}
 
-      {providerKey === "openai" && activeTab === "token_plan_agentic" && currentDbProvider && (
+      {providerKey === "openai" && activeTab === "agentic" && currentDbProvider && (
         <CodexSessionPanel
           ref={codexLoginRef}
           key={providerId}
           providerId={providerId}
-          session={currentHealthProvider?.codexSession}
+          session={codexSession}
           disabled={isBusy}
         />
       )}

@@ -64,7 +64,7 @@
         }
       },
       "Mode": {
-        "enum": ["api_key", "token_plan_web", "token_plan_agentic"]
+        "enum": ["api_key", "agentic"]
       },
       "ModelPreference": {
         "anyOf": [
@@ -536,10 +536,7 @@
           "use_api_key": {
             "type": "boolean"
           },
-          "use_token_plan_web": {
-            "type": "boolean"
-          },
-          "use_token_plan_agentic": {
+          "use_agentic": {
             "type": "boolean"
           },
           "default_mode": {
@@ -586,10 +583,7 @@
           "can_use_api_key": {
             "type": "boolean"
           },
-          "can_use_token_plan_web": {
-            "type": "boolean"
-          },
-          "can_use_token_plan_agentic": {
+          "can_use_agentic": {
             "type": "boolean"
           }
         },
@@ -614,28 +608,16 @@
           "api_key.thinking_level": {
             "$ref": "#/$defs/ThinkingPreference"
           },
-          "token_plan_web.selected_model": {
+          "agentic.selected_model": {
             "$ref": "#/$defs/ModelPreference"
           },
-          "token_plan_web.ocr_model": {
+          "agentic.ocr_model": {
             "$ref": "#/$defs/ModelPreference"
           },
-          "token_plan_web.ocr_focus_model": {
+          "agentic.ocr_focus_model": {
             "$ref": "#/$defs/ModelPreference"
           },
-          "token_plan_web.thinking_level": {
-            "$ref": "#/$defs/ThinkingPreference"
-          },
-          "token_plan_agentic.selected_model": {
-            "$ref": "#/$defs/ModelPreference"
-          },
-          "token_plan_agentic.ocr_model": {
-            "$ref": "#/$defs/ModelPreference"
-          },
-          "token_plan_agentic.ocr_focus_model": {
-            "$ref": "#/$defs/ModelPreference"
-          },
-          "token_plan_agentic.thinking_level": {
+          "agentic.thinking_level": {
             "$ref": "#/$defs/ThinkingPreference"
           },
           "name": {
@@ -647,10 +629,7 @@
           "use_api_key": {
             "type": "boolean"
           },
-          "use_token_plan_web": {
-            "type": "boolean"
-          },
-          "use_token_plan_agentic": {
+          "use_agentic": {
             "type": "boolean"
           },
           "default_mode": {
@@ -697,10 +676,7 @@
           "can_use_api_key": {
             "type": "boolean"
           },
-          "can_use_token_plan_web": {
-            "type": "boolean"
-          },
-          "can_use_token_plan_agentic": {
+          "can_use_agentic": {
             "type": "boolean"
           }
         },
@@ -892,12 +868,6 @@
       "input_definition": "AiProvidersPrepareCodexLogoutPartial",
       "resource_key": "ai_providers",
       "description": "Prepara el cierre de sesión Codex de la conexión explícita para revisión humana. No realiza la operación y necesita el botón de confirmación sobre la propuesta exacta."
-    },
-    {
-      "tool_name": "nodia_ai_providers_prepare_gemini_web_logout",
-      "input_definition": "AiProvidersPrepareGeminiWebLogoutPartial",
-      "resource_key": "ai_providers",
-      "description": "Prepara el cierre de sesión Gemini Web de la conexión explícita para revisión humana. No realiza la operación y necesita el botón de confirmación sobre la propuesta exacta."
     },
     {
       "tool_name": "nodia_ai_providers_prepare_sync_models",

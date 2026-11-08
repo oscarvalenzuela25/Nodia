@@ -81,7 +81,7 @@ describe('NodiaAI recovery identity contracts', () => {
       readRuntimeProofRequest({ schema_version: 2, runtime }),
     ).toThrow('reconciliation_identity_missing');
   });
-  it.each(['web', 'agentic'] as const)(
+  it.each(['agentic', 'agentic'] as const)(
     'preserves historical Gemini schema 1 for %s',
     (engine) => {
       const request = { ...gemini(), engine };

@@ -11,7 +11,11 @@ import {
   NODIA_AI_RUNTIME_POLICY,
   type NodiaAiRuntimePolicy,
 } from '../../nodia-ai-runtime/config/runtime-policy.js';
-import type { NodiaAiSelection } from '../types/nodia-ai-persistence.types.js';
+import {
+  configurationRecord,
+  configuredNodiaAiSelection,
+} from './nodia-ai-configured-selection.js';
+export { configurationRecord } from './nodia-ai-configured-selection.js';
 import {
   NodiaAiConnectionsService,
   type NodiaAiConnectionConfiguration,
@@ -23,12 +27,6 @@ import {
   decodeCursor,
   encodeCursor,
 } from './nodia-ai-pagination.js';
-
-export function configurationRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {};
-}
 function identifier(value: unknown, maximum: number): value is string {
   return (
     typeof value === 'string' &&
@@ -36,7 +34,7 @@ function identifier(value: unknown, maximum: number): value is string {
     Buffer.byteLength(value, 'utf8') <= maximum
   );
 }
-const modes = ['api_key', 'token_plan_web', 'token_plan_agentic'] as const;
+const modes = ['api_key', 'agentic'] as const;
 /** Own selector transport bound; independent from provider quotas and model context limits. */
 export const NODIA_AI_CONNECTION_PAGE_UTF8_BYTES = 1024 * 1024;
 function effortPreferences(preferred: unknown) {
@@ -73,6 +71,11 @@ export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
     label: row.label,
     provider_key: row.provider_key,
     is_active: row.is_active && row.catalog_active,
+    is_default: row.is_default,
+    default_mode:
+      row.default_mode === 'agentic' || row.default_mode === 'api_key'
+        ? row.default_mode
+        : null,
     modes: modes.map((mode) => {
       const modeFields = configurationRecord(fields[mode]);
       const selected = identifier(modeFields.selected_model, 1024)
@@ -83,16 +86,7 @@ export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
         selected && Object.hasOwn(levels, selected)
           ? levels[selected]
           : (modeFields.thinking_level ?? null);
-      const validEffort = rawEffort === null || identifier(rawEffort, 256);
-      const configuredSelection: NodiaAiSelection | null =
-        selected && validEffort
-          ? {
-              connection_id: row.id,
-              mode,
-              model_id: selected,
-              effort_id: rawEffort as string | null,
-            }
-          : null;
+      const configuredSelection = configuredNodiaAiSelection(row, mode);
       const enabled =
         row.is_active &&
         row.catalog_active &&
@@ -103,7 +97,10 @@ export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
         {
           model_id: string;
           label: string;
-          efforts: Array<{ effort_id: string; label: string }>;
+          efforts: Array<{
+            effort_id: string;
+            label: string;
+          }>;
         }
       >();
       // Runtime-owned response bound, not a provider quota. Never hide valid models by silently truncating them.
@@ -131,10 +128,8 @@ export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
               ? model.name
               : model.id,
           efforts:
-            row.provider_key === 'openai'
-              ? mode === 'token_plan_agentic'
-                ? codexEfforts(model.supportedReasoningEfforts)
-                : []
+            row.provider_key === 'openai' && mode === 'agentic'
+              ? codexEfforts(model.supportedReasoningEfforts)
               : effortPreferences(preferred),
         });
       }
@@ -144,7 +139,9 @@ export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
           label: selected,
           // An orphaned selection stays visible for correction, without inventing options.
           efforts:
-            row.provider_key === 'openai' ? [] : effortPreferences(rawEffort),
+            row.provider_key === 'openai' && mode === 'agentic'
+              ? []
+              : effortPreferences(rawEffort),
         });
       return {
         mode,
@@ -155,12 +152,9 @@ export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
             : ('incomplete' as const),
         authentication: 'unknown' as const,
         inference: 'unknown' as const,
-        tools:
-          mode === 'token_plan_web' ||
-          mode === 'api_key' ||
-          !['gemini', 'openai'].includes(row.provider_key)
-            ? ('unsupported' as const)
-            : ('unknown' as const),
+        tools: !['gemini', 'openai'].includes(row.provider_key)
+          ? ('unsupported' as const)
+          : ('unknown' as const),
         observed_at: null,
         block_reason: null,
         configured_selection: configuredSelection,
@@ -169,7 +163,6 @@ export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
     }),
   };
 }
-
 @Injectable()
 export class ListNodiaAiConnectionsUseCase {
   constructor(

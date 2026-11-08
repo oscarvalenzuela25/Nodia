@@ -3,17 +3,17 @@ import { Box, Button, LinearProgress, Typography } from "@mui/material";
 import { Skeleton } from "boneyard-js/react";
 import { Navigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import useAuth from "../hooks/useAuth";
+import useRetainedSessionView from "../providers/hooks/useRetainedSessionView";
 import { useAuthorizationContext } from "../services/authorizationService";
-import { hasModuleAccess } from "../store/generalSettings/helpers";
+import { canAccessModule } from "../store/generalSettings/helpers";
 import { GuardNotice } from "./styles";
 
 type Props = PropsWithChildren<{ modulePath: string }>;
 
 export default function GuardStrict({ children, modulePath }: Props) {
-  const { isDemo, isSessionValid, isSessionActive, isRefreshing } = useAuth();
+  const { isDemo, canMount, actorScope, isSessionActive, isRefreshing } = useRetainedSessionView();
   const { t } = useTranslation(["auth", "core"]);
-  const context = useAuthorizationContext({ enabled: isSessionActive });
+  const context = useAuthorizationContext({ enabled: isSessionActive && Boolean(actorScope) });
   const isBusy = !isSessionActive || context.isFetching;
   // A retry without cached data resets query status to pending; retain its notice.
   const hasContextError =
@@ -21,7 +21,7 @@ export default function GuardStrict({ children, modulePath }: Props) {
     (!context.data && context.isFetching && context.errorUpdatedAt > 0);
 
   if (isDemo) return <Navigate to="/login" replace />;
-  if (!isSessionValid)
+  if (!canMount)
     return <LinearProgress aria-label={t("auth:session_restoring")} />;
 
   const error = hasContextError && (
@@ -55,15 +55,15 @@ export default function GuardStrict({ children, modulePath }: Props) {
     );
   }
 
-  if (!hasModuleAccess(context.data.modules, modulePath))
-    return <Navigate to="/404" replace />;
+  if (!canAccessModule(context.data, modulePath))
+    return <Navigate to="/" replace />;
 
   // Keep the authorized view mounted during refresh, with its controls disabled.
   return (
     <Box aria-busy={isBusy}>
       {(context.isFetching || isRefreshing) && <LinearProgress />}
       {error}
-      <Box inert={isBusy || context.isError}>{children}</Box>
+      <Box key={actorScope} inert={isBusy || context.isError}>{children}</Box>
     </Box>
   );
 }

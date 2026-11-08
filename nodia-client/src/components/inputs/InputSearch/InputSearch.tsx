@@ -22,6 +22,7 @@ const InputSearch: FC<InputSearchProps> = ({
   onFocus,
   onBlur,
   autoFocus = false,
+  searchIconPosition = "start",
 }) => {
   const { t } = useTranslation("core");
   const [prevValue, setPrevValue] = useState<string>(value);
@@ -129,14 +130,15 @@ const InputSearch: FC<InputSearchProps> = ({
       slotProps={{
         htmlInput: { "aria-label": ariaLabel ?? placeholder ?? t("search") },
         input: {
-          startAdornment: (
+          startAdornment: searchIconPosition === "start" ? (
             <InputAdornment position="start">
               <SearchIcon fontSize="small" sx={{ color: "text.secondary", mr: 0.5 }} />
             </InputAdornment>
-          ),
-          endAdornment: internalValue ? (
+          ) : null,
+          endAdornment: internalValue || searchIconPosition === "end" ? (
             <InputAdornment position="end">
-              <IconButton
+              {searchIconPosition === "end" && <SearchIcon fontSize="small" sx={{ color: "text.secondary" }} />}
+              {internalValue && <IconButton
                 size="small"
                 aria-label={t("clear_search")}
                 disabled={disabled}
@@ -146,7 +148,7 @@ const InputSearch: FC<InputSearchProps> = ({
                 sx={{ p: 0.5 }}
               >
                 <CloseIcon fontSize="small" />
-              </IconButton>
+              </IconButton>}
             </InputAdornment>
           ) : null,
         },

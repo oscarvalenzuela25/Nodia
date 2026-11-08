@@ -73,7 +73,7 @@ describe("human proposal confirmation and registered edits", () => {
     await userEvent.click(screen.getByRole("button", { name: "Guardar nueva revisión" }));
     expect(await screen.findByText(description)).toBeInTheDocument();
     expect(name).toHaveValue("[QA] Corrected connection");
-    expect(screen.getByRole("textbox", { name: "Web · Modelo seleccionado" })).toHaveValue("[QA] persisted web model");
+    expect(screen.getByRole("textbox", { name: "API · Modelo seleccionado" })).toHaveValue("[QA] persisted api model");
     expect(mocks.error).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ description }));
     expect(changed).not.toHaveBeenCalled();
     expect(mocks.updateNodiaAiProposal).toHaveBeenCalledOnce();
@@ -81,7 +81,7 @@ describe("human proposal confirmation and registered edits", () => {
   it("validates provider UTF-8 byte bounds and requires explicit null for an empty model", async () => {
     open(aiProviderReview, aiProviderProposal); await userEvent.click(screen.getByRole("button", { name: "Corregir propuesta" }));
     const name = screen.getByRole("textbox", { name: /^Nombre/ });
-    const web = screen.getByRole("textbox", { name: "Web · Modelo seleccionado" });
+    const web = screen.getByRole("textbox", { name: "API · Modelo seleccionado" });
     fireEvent.change(name, { target: { value: "ñ".repeat(65) } });
     await userEvent.click(screen.getByRole("button", { name: "Guardar nueva revisión" }));
     expect(mocks.updateNodiaAiProposal).not.toHaveBeenCalled();
@@ -90,32 +90,32 @@ describe("human proposal confirmation and registered edits", () => {
     fireEvent.change(web, { target: { value: "" } });
     await userEvent.click(screen.getByRole("button", { name: "Guardar nueva revisión" }));
     expect(mocks.updateNodiaAiProposal).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole("button", { name: "Dejar Web · Modelo seleccionado sin valor (null)" }));
+    await userEvent.click(screen.getByRole("button", { name: "Dejar API · Modelo seleccionado sin valor (null)" }));
     mocks.updateNodiaAiProposal.mockResolvedValue({ ...aiProviderProposal, revision: 2, hash: "b".repeat(64) });
     await userEvent.click(screen.getByRole("button", { name: "Guardar nueva revisión" }));
-    await waitFor(() => expect(mocks.updateNodiaAiProposal).toHaveBeenCalledExactlyOnceWith(aiProviderProposal.proposal_id, expect.objectContaining({ edits: [{ step_id: stepId, field_key: "name", value: "ñ".repeat(64) }, { step_id: stepId, field_key: "token_plan_web.selected_model", value: null }] })));
+    await waitFor(() => expect(mocks.updateNodiaAiProposal).toHaveBeenCalledExactlyOnceWith(aiProviderProposal.proposal_id, expect.objectContaining({ edits: [{ step_id: stepId, field_key: "name", value: "ñ".repeat(64) }, { step_id: stepId, field_key: "api_key.selected_model", value: null }] })));
   });
   it("preserves a mode-specific model correction after rejection without copying another mode", async () => {
     mocks.updateNodiaAiProposal.mockRejectedValueOnce(serverError(422, "Synthetic model not found"));
     open(aiProviderReview, aiProviderProposal);
     await userEvent.click(screen.getByRole("button", { name: "Corregir propuesta" }));
-    const web = screen.getByRole("textbox", { name: "Web · Modelo seleccionado" });
+    const web = screen.getByRole("textbox", { name: "API · Modelo seleccionado" });
     const agentic = screen.getByRole("textbox", { name: "Agentic · Modelo seleccionado" });
-    expect(web).toHaveValue("[QA] persisted web model"); expect(agentic).toHaveValue("");
+    expect(web).toHaveValue("[QA] persisted api model"); expect(agentic).toHaveValue("");
     fireEvent.change(web, { target: { value: "[QA] newly discovered model" } });
     await userEvent.click(screen.getByRole("button", { name: "Guardar nueva revisión" }));
     expect(await screen.findByText("Synthetic model not found")).toBeInTheDocument();
     expect(web).toHaveValue("[QA] newly discovered model"); expect(agentic).toHaveValue("");
-    expect(mocks.updateNodiaAiProposal).toHaveBeenCalledExactlyOnceWith(aiProviderProposal.proposal_id, expect.objectContaining({ edits: [{ step_id: stepId, field_key: "token_plan_web.selected_model", value: "[QA] newly discovered model" }] }));
+    expect(mocks.updateNodiaAiProposal).toHaveBeenCalledExactlyOnceWith(aiProviderProposal.proposal_id, expect.objectContaining({ edits: [{ step_id: stepId, field_key: "api_key.selected_model", value: "[QA] newly discovered model" }] }));
     expect(mocks.error).toHaveBeenCalledWith(expect.objectContaining({ description: "Synthetic model not found" }));
     expect(changed).not.toHaveBeenCalled(); expect(screen.getByRole("button", { name: "Confirmar revisión 1" })).toBeDisabled();
   });
   it("sends explicit null to clear only the requested model override", async () => {
     mocks.updateNodiaAiProposal.mockResolvedValue({ ...aiProviderProposal, revision: 2, hash: "b".repeat(64) });
     open(aiProviderReview, aiProviderProposal); await userEvent.click(screen.getByRole("button", { name: "Corregir propuesta" }));
-    await userEvent.click(screen.getByRole("button", { name: "Dejar Web · Modelo seleccionado sin valor (null)" }));
+    await userEvent.click(screen.getByRole("button", { name: "Dejar API · Modelo seleccionado sin valor (null)" }));
     await userEvent.click(screen.getByRole("button", { name: "Guardar nueva revisión" }));
-    await waitFor(() => expect(mocks.updateNodiaAiProposal).toHaveBeenCalledExactlyOnceWith(aiProviderProposal.proposal_id, expect.objectContaining({ edits: [{ step_id: stepId, field_key: "token_plan_web.selected_model", value: null }] })));
+    await waitFor(() => expect(mocks.updateNodiaAiProposal).toHaveBeenCalledExactlyOnceWith(aiProviderProposal.proposal_id, expect.objectContaining({ edits: [{ step_id: stepId, field_key: "api_key.selected_model", value: null }] })));
     expect(mocks.success).toHaveBeenCalled();
   });
   it("confirms an exact Core deletion with an empty command and no editable fields", async () => {

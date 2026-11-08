@@ -1,4 +1,5 @@
 import { styled, alpha } from "@mui/material/styles";
+import { TABLE_PANEL_RADIUS } from "../../../../theme/tablePanel";
 import {
   Box,
   Typography,
@@ -87,10 +88,7 @@ export const StyledTableContainer = styled(Box)(({ theme }) => {
   const borderColor = theme.palette.border?.default ?? theme.palette.divider;
 
   return {
-    borderRadius:
-      typeof theme.shape.borderRadius === "number"
-        ? theme.shape.borderRadius * 2
-        : 16,
+    borderRadius: TABLE_PANEL_RADIUS,
     overflow: "hidden",
     boxShadow: theme.shadows[2],
     backgroundColor: theme.palette.background.paper,

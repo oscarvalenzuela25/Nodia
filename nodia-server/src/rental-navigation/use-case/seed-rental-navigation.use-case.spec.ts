@@ -7,13 +7,16 @@ function fixture(failTranslation = false) {
   let writes = 0,
     committed = 0;
   const manager = {
+    queryRunner: { isTransactionActive: true },
     async query(sql: string) {
       if (sql.startsWith('SET LOCAL')) return [];
+      if (sql.startsWith('LOCK TABLE')) return [];
       if (sql.includes('translations') && failTranslation)
         throw new Error('Synthetic translation failure');
       if (sql.startsWith('INSERT')) writes++;
-      if (sql.includes('module_groups')) return [{ id: '30' }];
-      if (sql.includes('modules')) return [{ id: '31' }];
+      if (sql.includes('module_groups')) return [{ id: '30', sort_order: 8 }];
+      if (sql.includes('modules'))
+        return [{ id: '31', module_group_id: '30', sort_order: 12 }];
       return [];
     },
   } as unknown as EntityManager;

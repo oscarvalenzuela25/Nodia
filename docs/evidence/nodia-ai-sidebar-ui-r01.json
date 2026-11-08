@@ -1,0 +1,455 @@
+{
+  "schema_version": 1,
+  "task": "nodia_ai_sidebar_ui_r01",
+  "checked_on": "2026-10-27",
+  "status": "implemented_deployed_and_browser_verified_by_scope",
+  "request": [
+    "Existing logo font for NodiaAI",
+    "Remove subtitle",
+    "Search icon at end",
+    "Additional filters initially folded with accessible arrow",
+    "Pinned filter as switch"
+  ],
+  "source_files": [
+    {
+      "path": "nodia-client/src/components/inputs/InputSearch/InputSearch.tsx",
+      "sha256": "028b6ccfc937c9db8f9507eccdd6652b9d685958320509ccbe203e166482dd52",
+      "UTF8_LF": true
+    },
+    {
+      "path": "nodia-client/src/components/inputs/InputSearch/types.ts",
+      "sha256": "ba4442c5df09e45bae5d177265b9f5fbe7e894736aff966c461b5418746db4f1",
+      "UTF8_LF": true
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConversationHistory/ConversationHistory.tsx",
+      "sha256": "8d7cc04e7d8e46653ba698bde01699f9d399030ee250be5aa81c83598805d285",
+      "UTF8_LF": true
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConversationHistory/styles.ts",
+      "sha256": "117e2c7a29dc5ce94bdc26928e8d0cd56e295ddbfc85d7ec21a82d4d72da3aaf",
+      "UTF8_LF": true
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConversationHistory/types.ts",
+      "sha256": "9c169483517423a91a3e8f9c9de1577e8fa4e0d85d9ab9b94c69e38f6bad33a8",
+      "UTF8_LF": true
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+      "sha256": "06b7c7b8a032c4e198c2cb1a57b2e23020cacfaac7a4750c3d28ab1ce6ff3562",
+      "UTF8_LF": true
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/styles.ts",
+      "sha256": "9e2a8582c121869700dada2c3e8752bbe17dbd26ae4d4e80f2aa6e2a3c6d43ca",
+      "UTF8_LF": true
+    },
+    {
+      "path": "nodia-client/src/translate/en/nodiaAi.json",
+      "sha256": "fe9128bfada8ed42cf4e20a4febbd2ef84b433f7d52daeede4ab5de44143e01e",
+      "UTF8_LF": true
+    },
+    {
+      "path": "nodia-client/src/translate/es/nodiaAi.json",
+      "sha256": "9fd115fad633370ef4e65832583f3a9dee9f5cde2157b2bc1fe91d268c43fffd",
+      "UTF8_LF": true
+    },
+    {
+      "path": "nodia-client/src/test/components/inputs/InputSearch/InputSearch.test.tsx",
+      "sha256": "098ecbcfe2516b79f89bbd9dcb73fd2a249bb85238c8333096e536a531bd54d4",
+      "UTF8_LF": true
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/components/ConversationHistory/ConversationHistory.test.tsx",
+      "sha256": "44369ed1dab2feb4ea1d1bfa34c88af4f3d788fc7b5dcb78a8a737e698005f7d",
+      "UTF8_LF": true
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/pages/NodiaAI/NodiaAI.test.tsx",
+      "sha256": "e8626ea228b95202fb254742ced70aaf931d11cc0e3c844f2160844bbd415f71",
+      "UTF8_LF": true
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-organization.md",
+      "sha256": "5ae8cafac64a9b12a8e0672f6a26219df761668e267fc16df175542225c60884",
+      "UTF8_LF": true
+    },
+    {
+      "path": "docs/mvp/81-nodia-ai-ai35-conversation-organization.md",
+      "sha256": "a4347daffc1190372e0560749af25a2b310e83bd0b71ff0a29fe1e455a1b44ae",
+      "UTF8_LF": true
+    }
+  ],
+  "verification": {
+    "schema_version": 1,
+    "task": "nodia_ai_sidebar_ui_r01",
+    "checked_on": "2026-10-27",
+    "focal_final": {
+      "files": 3,
+      "passed": 72,
+      "failed": 0
+    },
+    "typecheck_exit": 0,
+    "lint_exit": 0,
+    "full_suite": {
+      "files_passed": 246,
+      "files_failed": 1,
+      "tests_passed": 2033,
+      "tests_failed": 1,
+      "failure": "useObservation.test.tsx:52 accessRejected expected true, received false",
+      "isolated_rerun": {
+        "passed": 10,
+        "failed": 0
+      },
+      "classification": "intermittent failure observed; cause not confirmed; no assertions, timeouts or unrelated runtime changed",
+      "title_style_final_adjustment_after_full_suite": true
+    },
+    "runtime_overlay_count": 9,
+    "other_runtime_sources_preserved": 702,
+    "paid_API_calls": 0,
+    "logs": {
+      "client-suite.log": {
+        "sha256": "edb90f7c0dda9b16c4165af75616f1a223f7356ba4308a5982089553bb840386"
+      },
+      "observation-isolated.log": {
+        "sha256": "535f8e376b57c6f36b6c380c5cb738c0f1978a909de94e0f9d26ac5e7e7b412a"
+      },
+      "client-typecheck-r03.log": {
+        "sha256": "e7bf9235c4b3d2f32ae91ad79594338311c7f2da0e9371d85417552aaa0b1865"
+      },
+      "client-lint.log": {
+        "sha256": "ffd8fd64020e579eedde270479fe815463785d7fafad2537f697ac8c68b27abe"
+      },
+      "focal-final.log": {
+        "sha256": "4947fb99f26aa4a3e86c4879f00b378e6643acf10c2444efa63a5330285265c7"
+      }
+    }
+  },
+  "final_build": {
+    "status": "candidate_built_prepared_only",
+    "manifest_sha256": "b25a9a593a12d8d1fbe5157526afda28333d925026547945c280d96ed3a8477b",
+    "source_files": 711,
+    "unchanged_R01": 702,
+    "modified_runtime": 9,
+    "added_runtime": 0,
+    "build_config_unchanged": 7,
+    "public_unchanged": 3,
+    "static_files": 182,
+    "graph_module_count": 2721,
+    "public_environment_hashes_match_R01": true,
+    "asset_prefix": "nodia-ai-sidebar-r01-",
+    "deployment_performed": false
+  },
+  "deployment": {
+    "status": "adopted_Client_only",
+    "client_manifest_sha256": "b25a9a593a12d8d1fbe5157526afda28333d925026547945c280d96ed3a8477b",
+    "nginx_before_sha256": "4b0a02d547a06fc09fb9b2ce7fa22ef15e0d631b27aa2689307e100c4ae192ea",
+    "nginx_after_sha256": "0a231ec4d6496b2ebeea8ef36eff1d65c508a8ab1fffc7bc4fd221b7e0a35f49",
+    "mime_types_sha256": "29f1bffad725815beb52aa8d01823a3d85d6613f43466dfab79762c55bd9f096",
+    "legacy_roots_in_order": [
+      "/opt/nodia/releases/nodia-client-nodia-ai-sidebar-r01/dist",
+      "/opt/nodia/releases/nodia-client-api-chat-r01/dist",
+      "/opt/nodia/releases/nodia-client-agentic-api-r01/dist",
+      "/opt/nodia/releases/nodia-client-image-generation-r03/dist",
+      "/opt/nodia/releases/nodia-client-module-access-privacy-r01/dist",
+      "/opt/nodia/releases/nodia-client-c03-attachment-draft-continuity-r01/dist",
+      "/opt/nodia/releases/nodia-client-c03-attachment-policy-r01/dist",
+      "/opt/nodia/releases/nodia-client-core-fx04-pagination-r07/dist"
+    ],
+    "readiness_HTTP_GETs": 6,
+    "readiness_receipt_sha256": "991f4a0032de2b481ff75912a0b0b7f1fc2e3707cb931744ef3266fb1b5330ac",
+    "HTTP_verified": {
+      "passed": 363,
+      "failed": 0,
+      "receipt_sha256": "c1693f6014df928168b4f7690334dceb4e3613f21d0924a0f0b20a686ac24024"
+    },
+    "server_manifest_sha256_unchanged": "f1bd47cb3fb56beec240972edc55feb2825c2e48f24672dce9c10d100ae38af6",
+    "services_before_and_after_equal": true,
+    "services": {
+      "nodia-api.service": {
+        "MainPID": "1395812",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-api-conversational-ocr-r02",
+        "ActiveState": "active",
+        "FragmentPath": "/etc/systemd/system/nodia-api.service",
+        "DropInPaths": "/etc/systemd/system/nodia-api.service.d/ai15-release.conf /etc/systemd/system/nodia-api.service.d/zz-ai38-journal.conf /etc/systemd/system/nodia-api.service.d/zzzz-ai41.conf /etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzz-ai-two-modes.conf /etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzz-api-chat.conf /etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzz-api-ocr.conf",
+        "configuration_sha256": {
+          "/etc/systemd/system/nodia-api.service": "25c58c4bbe418fc573f24a573665bb0b894761981ac1855b7ffac687c70fd4d2",
+          "/etc/systemd/system/nodia-api.service.d/ai15-release.conf": "3b3c3c985bc9d2b14a2f4f9f7ede6185a31df920b617b2294c98ddfe886a5615",
+          "/etc/systemd/system/nodia-api.service.d/zz-ai38-journal.conf": "9a7efcc91d74cdf4313239374be621acdd1ded34054e7b9ae4c8be3e38fe8f85",
+          "/etc/systemd/system/nodia-api.service.d/zzzz-ai41.conf": "7e12f6b88552b1e0dd77d995a91213f146adfa18fcf06b684381a90783e8d0dc",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzz-ai-two-modes.conf": "d7ac4935a645f881dd641dffee4f8d213933c40d1b84a7ed049e7308a7fe61a4",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzz-api-chat.conf": "06b3a67d18add14f4937883e935c53f93b47b0511a2e5d7186cd05d856b00e31",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzz-api-ocr.conf": "bf95fa4d5faba4a700f898b64659308c4148b233052da3337619708238ca685e"
+        }
+      },
+      "nodia-ai-worker.service": {
+        "MainPID": "1395813",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-api-conversational-ocr-r02",
+        "ActiveState": "active",
+        "FragmentPath": "/etc/systemd/system/nodia-ai-worker.service",
+        "DropInPaths": "/etc/systemd/system/nodia-ai-worker.service.d/zz-ai38-journal.conf /etc/systemd/system/nodia-ai-worker.service.d/zzzz-ai41.conf /etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzz-ai-two-modes.conf /etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzz-api-chat.conf /etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzz-api-ocr.conf",
+        "configuration_sha256": {
+          "/etc/systemd/system/nodia-ai-worker.service": "b8b105a4f8986a187a01a4389d152f4066290d4ae2c8d025b2d0e68d568d2366",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zz-ai38-journal.conf": "b6f92337d70812be38aabd59279796642876b833a01074219845784c371b16b8",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzz-ai41.conf": "551c2246d1ad19d8aae9704134844590dfd5114116a57cd22be7b1fb0ba1d3ed",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzz-ai-two-modes.conf": "a452f36a58076adb29d62037cf9dad99e519f194ed1844c9c65ea795f9a7d1d3",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzz-api-chat.conf": "223d24550f95b6c5bfdd33c2d310da33f1a04401e3e0b5f400fa129d68fe3aca",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzz-api-ocr.conf": "c3780a20b72f7c9d61f957842d47e5e8f2dc0b74e1e7ac4e7b9c1e2777b0febe"
+        }
+      },
+      "nodia-gemini-lab.service": {
+        "MainPID": "0",
+        "WorkingDirectory": "/opt/nodia/nodia-gemini-microservice",
+        "ActiveState": "active",
+        "FragmentPath": "/etc/systemd/system/nodia-gemini-lab.service",
+        "DropInPaths": "/etc/systemd/system/nodia-gemini-lab.service.d/40-ai29-durable-login.conf /etc/systemd/system/nodia-gemini-lab.service.d/ai36-c05-role.conf /etc/systemd/system/nodia-gemini-lab.service.d/ai38-mcp-r01.conf /etc/systemd/system/nodia-gemini-lab.service.d/zz-ai38-profile-reservation-diag.conf /etc/systemd/system/nodia-gemini-lab.service.d/zz-ai38-profile-reservation-fix.conf /etc/systemd/system/nodia-gemini-lab.service.d/zz-ai38-web-stream-diag.conf /etc/systemd/system/nodia-gemini-lab.service.d/zz-ai38-web-stream-recovery-fix.conf /etc/systemd/system/nodia-gemini-lab.service.d/zz-ai40-chat-host.conf /etc/systemd/system/nodia-gemini-lab.service.d/zz-ai40-chat-image.conf /etc/systemd/system/nodia-gemini-lab.service.d/zzz-ai36-c03-native-contract-fix-r05.conf /etc/systemd/system/nodia-gemini-lab.service.d/zzzz-c03-agentic-status-timeout-r02.conf /etc/systemd/system/nodia-gemini-lab.service.d/zzzzz-c03-agentic-status-evidence-cache-r01.conf /etc/systemd/system/nodia-gemini-lab.service.d/zzzzzz-c03-mcp-closed-diagnostics-r01.conf /etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzz-invoice-ocr-native-r01.conf /etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzz-invoice-ocr-native-core-r03.conf /etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzzz-invoice-ocr-option-cache-r01.conf /etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzzzz-invoice-ocr-option-identity-r02.conf /etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzzzzz-ai41-image-generation.conf /etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzzzzzzzzzzzzzz-ai-two-modes.conf",
+        "configuration_sha256": {
+          "/etc/systemd/system/nodia-gemini-lab.service": "793e5ace81e7fe7da7718c7afacc80d6049bde7c3b86e733ead85117e97d67c9",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/40-ai29-durable-login.conf": "a1ce4e6efcc27ef37c0a445f05b0f040ccb9a80066fd4ce2f8be1cfe5087e31d",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/ai36-c05-role.conf": "4d322139517dbcf55a0750af722ed9b54719bcc49ea60f52545225ace8054a87",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/ai38-mcp-r01.conf": "f78d1c4dfd8c57e4a9a89ba212cd07e3cb3d28fe22f9743199beb0dab46d487f",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zz-ai38-profile-reservation-diag.conf": "b402f84a16a0b8bb9e18ebac0cf0b97fbbe47bf8fa2f0066ae38ecf297bf2093",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zz-ai38-profile-reservation-fix.conf": "155a296a2d047cd8698448790a2d1b6e135c1504d4dc7365644a63869cac208b",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zz-ai38-web-stream-diag.conf": "2883993560718c08ecb218c1fc87c54eea8ce5be82e6703314248f547e094c61",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zz-ai38-web-stream-recovery-fix.conf": "c96d75173077fd655f6823361ca63979217dce26015488a67c820254890e4245",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zz-ai40-chat-host.conf": "83c6ff131ef888b033abd774f45a276d5645ef37d4d6a6b23e021698ce8e0e80",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zz-ai40-chat-image.conf": "a6242b6434ecfeb48d5b53fac3ae61f8b9c60155b3e1710097b23bb7018211fb",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzz-ai36-c03-native-contract-fix-r05.conf": "0df9ccb6d551fe95a39554930c9dfa0f31d2ec7f92d9f08ab427484e9ebd5fa9",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzz-c03-agentic-status-timeout-r02.conf": "6c6de60fe8cecbafbc96e2c8cb9d8636a6dd835c61679b41334dcdbc129e45b7",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzz-c03-agentic-status-evidence-cache-r01.conf": "9cc1224e59696469b509f15d3751bc2ae69bbdaf93208f405432c184650488aa",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzz-c03-mcp-closed-diagnostics-r01.conf": "2c69fef209ca3aaf57b37ad7e15404a3d9cc73cbec85e01b3bfa0739735fa5c7",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzz-invoice-ocr-native-r01.conf": "01c7d52616c51c11a012484679d2b8d2a513057cc5b6b9d3d530570db5646e22",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzz-invoice-ocr-native-core-r03.conf": "1996a2d991ae90e2f5058629ce394e83227288cba89c325185741aa0c7378f70",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzzz-invoice-ocr-option-cache-r01.conf": "636fafde92c9d5423344a859a69eb59bd7821034cbf4b4a884d3e9d51aea292e",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzzzz-invoice-ocr-option-identity-r02.conf": "4de6bd15ece68e47449977691ed78a2d12c79390522033cd1f2aae2f79f5272b",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzzzzz-ai41-image-generation.conf": "8b65f6fe51be54aa54143f3de6681312f10d05c5f7dbbd8bed85c7aa0da4e727",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzzzzzzzzzzzzzz-ai-two-modes.conf": "f4539d4d7244553bb9db995d4db5555f14de9f8b9e03cd7390fdf081458a3a3d"
+        }
+      },
+      "nodia-ai-backup.timer": {
+        "ActiveState": "active",
+        "FragmentPath": "/etc/systemd/system/nodia-ai-backup.timer",
+        "DropInPaths": "",
+        "configuration_sha256": {
+          "/etc/systemd/system/nodia-ai-backup.timer": "dbb0c32942b3584726610f782119f094b66fa3a92317c0885526c9e70eb97ba6"
+        }
+      },
+      "nodia-ai-backup-rotate.timer": {
+        "ActiveState": "active",
+        "FragmentPath": "/etc/systemd/system/nodia-ai-backup-rotate.timer",
+        "DropInPaths": "",
+        "configuration_sha256": {
+          "/etc/systemd/system/nodia-ai-backup-rotate.timer": "18566fa701d99f6bb2c763e32d89bc3fced751d65ab3b02fdda680f54a3eeea1"
+        }
+      }
+    },
+    "native_before_and_after_equal": true,
+    "native": {
+      "id": "b3dcf9d350532da2965a62cc276b8f5b81b935a23374c5c67f1bfe974c0be186",
+      "image": "sha256:4b990e3e8c60077fceb06ac5018025a5ef80353297fe92affc8b20fe53915fa9",
+      "started_at": "2026-10-27T18:32:11.657816024Z",
+      "health": "healthy",
+      "status": "running"
+    },
+    "SQL_calls": 0,
+    "provider_calls": 0,
+    "Server_or_Native_restarts": 0,
+    "limit": "Client static adoption only; browser behavior verified separately."
+  },
+  "browser": {
+    "engine": "Chromium, Codex in-app browser",
+    "theme": "dark",
+    "locale": "es",
+    "route": "/tools/nodia-ai",
+    "initial_font": "DM Sans",
+    "final_font": "Karmatic Arcade",
+    "subtitle_removed": true,
+    "search_icon_end_adornment": true,
+    "search_icon_x": 507,
+    "input_right": 499,
+    "arrow_hit_area": {
+      "width": 44,
+      "height": 44
+    },
+    "keyboard_toggle": "Enter",
+    "initial_filters_collapsed": true,
+    "fold_preserves_search_and_pinned": true,
+    "breakpoint_preserves_expansion_and_filters": true,
+    "final_filters_restored": {
+      "search": "",
+      "archive": "active",
+      "view": "own",
+      "pinned": false,
+      "expanded": false
+    },
+    "screens": [
+      {
+        "clientWidth": 899,
+        "documentWidth": 899,
+        "expanded": "true",
+        "font": "\"Karmatic Arcade\", monospace, sans-serif",
+        "overflow": false,
+        "pinned": true,
+        "search": "Verificación",
+        "viewport": {
+          "height": 892,
+          "width": 899
+        }
+      },
+      {
+        "clientWidth": 320,
+        "documentWidth": 320,
+        "expanded": "true",
+        "font": "\"Karmatic Arcade\", monospace, sans-serif",
+        "overflow": false,
+        "pinned": true,
+        "search": "Verificación",
+        "viewport": {
+          "height": 892,
+          "width": 320
+        }
+      },
+      {
+        "clientWidth": 310,
+        "documentWidth": 310,
+        "expanded": null,
+        "font": "\"Karmatic Arcade\", monospace, sans-serif",
+        "overflow": false,
+        "pinned": null,
+        "search": null,
+        "viewport": {
+          "height": 892,
+          "width": 320
+        }
+      },
+      {
+        "clientWidth": 900,
+        "documentWidth": 900,
+        "expanded": "true",
+        "font": "\"Karmatic Arcade\", monospace, sans-serif",
+        "overflow": false,
+        "pinned": true,
+        "search": "Verificación",
+        "viewport": {
+          "height": 892,
+          "width": 900
+        }
+      },
+      {
+        "clientWidth": 1569,
+        "documentWidth": 1569,
+        "expanded": null,
+        "font": "\"Karmatic Arcade\", monospace, sans-serif",
+        "overflow": false,
+        "pinned": false,
+        "search": "",
+        "viewport": {
+          "height": 892,
+          "width": 1569
+        }
+      }
+    ],
+    "paid_API_calls": 0,
+    "messages_sent": 0,
+    "business_mutations": 0,
+    "limitations": [
+      "Sólo tema oscuro/ES en navegador real; ES/EN en recursos de traducción.",
+      "Viewport redimensionado; sin teléfono físico ni teclado virtual.",
+      "No se probaron inferencias ni se modificaron permisos o confirmaciones."
+    ]
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/nodia-ai-sidebar-desktop-r01.png",
+      "sha256": "e9df1b68bc9f6b2ac58aa64d982af6f96b849a768e5bde18cead3b47cb5ecef3"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-sidebar-mobile-r01.png",
+      "sha256": "908d1a2df5e092780d2cee04b1cc2157e31c15fa28b887f025aa90d37ec5b48d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-sidebar-collapsed-r01.png",
+      "sha256": "fda314f2fbf8a32e8c2975dd3eaa573685925c47222af7a9a1a69c26f1a2a7f9"
+    }
+  ],
+  "knowledge_approved_hash_check": {
+    "status": "six_approved_revisions_byte_identical",
+    "approval_receipt": "docs/evidence/api-chat-knowledge-human-approval-r01.json",
+    "approval_receipt_sha256": "28f1dc189174ce6bbf881cf6a26f0e4e299cfcc06153b04cf774ad91d0f3abc8",
+    "checks": [
+      {
+        "document_id": "general-settings.secure-ai-interaction",
+        "revision": 5,
+        "path": "docs/nodia-ai/knowledge/general-settings/features/secure-ai-interaction.md",
+        "expected_sha256": "34d82697caeecf33d4a8616cb87069cd12299ade15017ca7982351be7c5372e2",
+        "sha256": "34d82697caeecf33d4a8616cb87069cd12299ade15017ca7982351be7c5372e2",
+        "matches": true
+      },
+      {
+        "document_id": "nodia-ai.conversation-coordination",
+        "revision": 18,
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md",
+        "expected_sha256": "e4a5a64e0ccad3318cf7528dc4d7e07c199a5e696f2c4b373a998c7798da5634",
+        "sha256": "e4a5a64e0ccad3318cf7528dc4d7e07c199a5e696f2c4b373a998c7798da5634",
+        "matches": true
+      },
+      {
+        "document_id": "nodia-ai.invoice-ocr-product-comparison",
+        "revision": 2,
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md",
+        "expected_sha256": "ed074df8f77b4f44eac5bcde3e55c270c167bf605b628d43aa32744500098482",
+        "sha256": "ed074df8f77b4f44eac5bcde3e55c270c167bf605b628d43aa32744500098482",
+        "matches": true
+      },
+      {
+        "document_id": "nodia-ai.image-generation",
+        "revision": 4,
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/image-generation.md",
+        "expected_sha256": "2377c2b2cb4cadc4d76c5ef3f2137e7e2c6857e0e23239eff1bcdef17e635675",
+        "sha256": "2377c2b2cb4cadc4d76c5ef3f2137e7e2c6857e0e23239eff1bcdef17e635675",
+        "matches": true
+      },
+      {
+        "document_id": "nodia-ai.attachments-and-voice",
+        "revision": 11,
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+        "expected_sha256": "201dc70bfebb2263722d295413d511e5c196eaa354d98bb10cba5c1fe5d85474",
+        "sha256": "201dc70bfebb2263722d295413d511e5c196eaa354d98bb10cba5c1fe5d85474",
+        "matches": true
+      },
+      {
+        "document_id": "nodia-ai.api-key-chat-parity",
+        "revision": 1,
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/api-key-chat-parity.md",
+        "expected_sha256": "e60ef90981e3af1380e52d748e32900cc260d099e1532dee97ed0ec1b0a38da8",
+        "sha256": "e60ef90981e3af1380e52d748e32900cc260d099e1532dee97ed0ec1b0a38da8",
+        "matches": true
+      }
+    ],
+    "publications": 0,
+    "source_mutations": 0
+  },
+  "functional_impact": "Presentation and filter discovery only; query contracts, permissions, confirmations, provider modes and business operations unchanged. Draft knowledge impact recorded without publication.",
+  "operational_history": {
+    "stage_R01": "Rejected public source .envs.ts by overly broad startswith guard before release creation; R02 excludes actual .env/.env.* only, retaining archive hashes.",
+    "adoption_R01": "Static verification failed; automatic rollback restored and reloaded prior Nginx config.",
+    "static_diagnostic": "119 prefix GETs returned404 and59 returned200. Compatible with asynchronous reload; internal cause not conclusively confirmed.",
+    "adoption_R02": "Strict bounded hash/bytes/MIME readiness gate before unchanged363 static checks;6 readiness GETs and363 full checks passed.",
+    "no_hidden_failures": true
+  },
+  "recovery": {
+    "path": "ops/lab/artifacts/nodia-ai-sidebar-r01/recovery-catalog.json",
+    "sha256": "89f2eb4c00eec9bd910cf655b7f34dce4a7335ef3959002011eb51314bae5c19",
+    "includes": "Frozen source/runtime, operators, old failure and rollback receipts, final stage/adoption/readiness/HTTP receipts, logs and focused tests"
+  },
+  "limits": [
+    "General suite had one intermittent existing useObservation assertion failure (2033/2034); isolated rerun10/10 passed without changing it. Cause remains unconfirmed.",
+    "Browser checks cover dark/ES and resized Chromium viewports; no physical mobile keyboard or light/EN browser acceptance.",
+    "No provider inference was run, no new model/provider acceptance is claimed."
+  ],
+  "paid_API_calls": 0,
+  "business_mutations": 0,
+  "migrations": 0
+}

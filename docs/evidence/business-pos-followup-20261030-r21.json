@@ -1,0 +1,397 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "status": "implemented_deployed_verified_direct_print_configuration_prepared",
+  "requests": [
+    "remove redundant saved-sale lookup from POS panel",
+    "cancel and print actions equal size",
+    "wrap open sales across rows",
+    "direct printing with Chrome or Opera"
+  ],
+  "scope": "Client presentation plus local Chrome cash-register shortcut; existing print transport retained",
+  "direct_printing": {
+    "browser_selected": "Chrome (installed) or Opera (not qualified)",
+    "chrome_version": "156.0.8078.79",
+    "windows_default_printer": "POS-80",
+    "driver": "POS-80 11.3.0.1",
+    "driver_paper_size": "UNKNOWN",
+    "paper_dimensions_mm": null,
+    "shortcut": {
+      "schema_version": 1,
+      "action": "desktop_shortcut_created_and_readback_verified",
+      "shortcut": "C:\\Users\\Oscar\\Desktop\\Nodia Caja (Chrome).lnk",
+      "executable": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "chrome_version": "156.0.8078.79",
+      "arguments": "--user-data-dir=\"C:\\Users\\Oscar\\AppData\\Local\\Nodia\\ChromeCaja\" --kiosk-printing --app=\"http://localhost:5174/tools/business/5af15373-3638-4a02-a015-4e72c433fc11?section=pos\"",
+      "profile": "C:\\Users\\Oscar\\AppData\\Local\\Nodia\\ChromeCaja",
+      "default_printer_observed": "POS-80",
+      "printer_settings_modified": false,
+      "registry_modified": false,
+      "browser_launched": false,
+      "physical_prints": 0,
+      "authentication_copied": false,
+      "shortcut_sha256": "d7fccab86b7cdc299a3d474e178439e04d5ec31f65ca70a44a2356f67df70158"
+    },
+    "physical_prints": 0,
+    "registry_or_driver_changes": false,
+    "browser_launches": 0,
+    "auth_copied": false,
+    "source": "https://github.com/chromium/chromium/blob/main/chrome/common/chrome_switches.h",
+    "driver_print_ticket_media_mm": {
+      "width": 71.988,
+      "height": 3275.974
+    },
+    "driver_print_ticket_evidence": "ops/lab/artifacts/business-pos-followup-20261030-r21/printing/page-media-size-observed.json",
+    "physical_paper_mm_confirmed_by_user": 80,
+    "driver_or_physical_80mm_qualification": "pending physical validation; WMI unknown, PrintTicket values recorded separately",
+    "desktop_shortcut_bytes_rechecked": true
+  },
+  "server_or_database_changes": false,
+  "provider_inferences": 0,
+  "NodiaAI_sales_read_only": true,
+  "approved_documents_modified": 0,
+  "client_checks": {
+    "global_R01": {
+      "files": 293,
+      "tests": 2450,
+      "seconds": 300.28,
+      "scope": "preceded final CSS specificity correction"
+    },
+    "final_R02": {
+      "focal_files": 2,
+      "focal_tests": 13,
+      "seconds": 12.83,
+      "types": "pass",
+      "lint": "pass",
+      "build": {
+        "dist": ".tmp/business-pos-followup-client-build-r02/dist",
+        "elapsed_seconds": 34.65,
+        "exit_code": 0,
+        "log": ".tmp/business-pos-followup-client-build-r02.log",
+        "log_sha256": "012e501870217bb631849eee48112314b00caea063c833d417a1cb98362ceee9",
+        "phase": "client_r21_local_build_r02",
+        "public_configuration": {
+          "api_url": "/api/v1",
+          "google_client_id_sha256": "92d734acd9f93db3084a903aebff28adaf5f83d9dca318c7ddf19ed7a4ab7e3a",
+          "vite_keys": [
+            "VITE_API_URL",
+            "VITE_GOOGLE_CLIENT_ID"
+          ]
+        },
+        "remote_actions": 0,
+        "schema_version": 1,
+        "source_input_fingerprint_sha256": "8dfe0d1cb2e509e2acb3243610030142ac1e63899ebffdf22ea5017ab7845942",
+        "source_inputs": 1267,
+        "source_unchanged_before_after": true,
+        "success": true,
+        "validation_scope": {
+          "final_r02": "13 tests / 2 suites, global types and lint passed per Root; no duplicate full-suite claim",
+          "full_suite": "R01: 2450 tests / 293 suites, passed before narrowed CSS selector"
+        }
+      }
+    },
+    "source_delta": {
+      "changed": 2,
+      "added": 0,
+      "removed": 0,
+      "tests_changed": 0,
+      "inputs": 1267,
+      "fingerprint_sha256": "8dfe0d1cb2e509e2acb3243610030142ac1e63899ebffdf22ea5017ab7845942"
+    }
+  },
+  "deployment": {
+    "status": "activated_verified",
+    "client_only": true,
+    "release": "/opt/nodia/releases/nodia-client-business-pos-followup-20261030-r21",
+    "manifest_sha256": "be7f937e027beb13fa590d41cc0f323c8f86e6696c31102d686a5b37be2aa61b",
+    "index_sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+    "nginx_sha256": "f9dda4e46303d48b8eacadde3777d189ec4a50bcb2ae372b7d8818d7836e7bcd",
+    "protected_runtime_sha256": "27b9f30c4c6985c4ddbb8f7cf5c6b20bbffaa56be37c4bed02dce3e593f763ed",
+    "runtime_preserved": true,
+    "R01_result": "failed_configuration_rollback_verified",
+    "R01_original_failure_cause": "not recorded by original operator; no exact attribution",
+    "recovery_R02": "independent activation; no restage or original-intent replay",
+    "stabilization_rounds": [
+      {
+        "consecutive": 0,
+        "round": 1,
+        "spa": [
+          {
+            "bytes": 2973,
+            "cache_control_matches": true,
+            "coop_matches": true,
+            "expected_sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "route": "/",
+            "sha256": "6fd5af6092d0af6f8a3f5767fdd5d9fab1c09488a561176e674adf47b63fb2f3",
+            "status": 200,
+            "verified": false
+          },
+          {
+            "bytes": 2973,
+            "cache_control_matches": true,
+            "coop_matches": true,
+            "expected_sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "route": "/tools/nodia-ai",
+            "sha256": "6fd5af6092d0af6f8a3f5767fdd5d9fab1c09488a561176e674adf47b63fb2f3",
+            "status": 200,
+            "verified": false
+          },
+          {
+            "bytes": 2973,
+            "cache_control_matches": true,
+            "coop_matches": true,
+            "expected_sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "route": "/tools/business",
+            "sha256": "6fd5af6092d0af6f8a3f5767fdd5d9fab1c09488a561176e674adf47b63fb2f3",
+            "status": 200,
+            "verified": false
+          }
+        ]
+      },
+      {
+        "consecutive": 1,
+        "round": 2,
+        "spa": [
+          {
+            "bytes": 2973,
+            "cache_control_matches": true,
+            "coop_matches": true,
+            "expected_sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "route": "/",
+            "sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "status": 200,
+            "verified": true
+          },
+          {
+            "bytes": 2973,
+            "cache_control_matches": true,
+            "coop_matches": true,
+            "expected_sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "route": "/tools/nodia-ai",
+            "sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "status": 200,
+            "verified": true
+          },
+          {
+            "bytes": 2973,
+            "cache_control_matches": true,
+            "coop_matches": true,
+            "expected_sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "route": "/tools/business",
+            "sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "status": 200,
+            "verified": true
+          }
+        ]
+      },
+      {
+        "consecutive": 2,
+        "round": 3,
+        "spa": [
+          {
+            "bytes": 2973,
+            "cache_control_matches": true,
+            "coop_matches": true,
+            "expected_sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "route": "/",
+            "sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "status": 200,
+            "verified": true
+          },
+          {
+            "bytes": 2973,
+            "cache_control_matches": true,
+            "coop_matches": true,
+            "expected_sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "route": "/tools/nodia-ai",
+            "sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "status": 200,
+            "verified": true
+          },
+          {
+            "bytes": 2973,
+            "cache_control_matches": true,
+            "coop_matches": true,
+            "expected_sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "route": "/tools/business",
+            "sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "status": 200,
+            "verified": true
+          }
+        ]
+      },
+      {
+        "consecutive": 3,
+        "round": 4,
+        "spa": [
+          {
+            "bytes": 2973,
+            "cache_control_matches": true,
+            "coop_matches": true,
+            "expected_sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "route": "/",
+            "sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "status": 200,
+            "verified": true
+          },
+          {
+            "bytes": 2973,
+            "cache_control_matches": true,
+            "coop_matches": true,
+            "expected_sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "route": "/tools/nodia-ai",
+            "sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "status": 200,
+            "verified": true
+          },
+          {
+            "bytes": 2973,
+            "cache_control_matches": true,
+            "coop_matches": true,
+            "expected_sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "route": "/tools/business",
+            "sha256": "66b3aa6eccde451990203afd355fc67286f088b731cb2449904063a6b01678a1",
+            "status": 200,
+            "verified": true
+          }
+        ]
+      }
+    ],
+    "nginx_reload_requests_total": 3,
+    "static_files": 173,
+    "current_assets": 169,
+    "previous_assets": 32,
+    "sql_queries": 0,
+    "server_or_native_restarts": 0,
+    "provider_requests": 0,
+    "R01_journal_sha256": "3297c68d6021b7da67f7e9078e990aa956c82488aa1d3ea6db8f897519b23036",
+    "receipts": [
+      {
+        "path": "ops/lab/artifacts/business-pos-followup-20261030-r21/client/activate-observed-root-r01.json",
+        "sha256": "aabe9f30a96b8ac2d509553c38fb3b3591a6a99baf7b19997e8afe60645a52c7"
+      },
+      {
+        "path": "ops/lab/artifacts/business-pos-followup-20261030-r21/client/status-after-activation-root-r01.json",
+        "sha256": "98eaa0546d7905fac821c21cdf318ec5931bd8307c3ab66f0fdbfe46d8a52e5a"
+      },
+      {
+        "path": "ops/lab/artifacts/business-pos-followup-20261030-r21/client/diagnosis-observed-root-r01.json",
+        "sha256": "956ac727df42b938ed788191d1641eaba9040988075d9f43ac62c657fe6c3f36"
+      },
+      {
+        "path": "ops/lab/artifacts/business-pos-followup-20261030-r21/client/recovery-r02/bootstrap-observed-root.json",
+        "sha256": "a0d9c178f7c231a3a39f1db04202497c2fef1800dafbf96977ba18180f3cf250"
+      },
+      {
+        "path": "ops/lab/artifacts/business-pos-followup-20261030-r21/client/recovery-r02/preflight-observed-root.json",
+        "sha256": "fa1d01e9e031981d1bbc7633810eefa2b8941f435f369f588cad4ffe720fbc32"
+      },
+      {
+        "path": "ops/lab/artifacts/business-pos-followup-20261030-r21/client/recovery-r02/activate-observed-root.json",
+        "sha256": "f226b718af951cd550f83b211aa07cc055a029f439c59269a3ce9a4535cd7e65"
+      },
+      {
+        "path": "ops/lab/artifacts/business-pos-followup-20261030-r21/client/recovery-r02/status-observed-root.json",
+        "sha256": "b3e13d6db0b66e2226dbc48d51b521348815f29f40e3a6575dc2f00b96a81435"
+      }
+    ]
+  },
+  "limits": [
+    "Native/physical output remains untested. Shortcut creation and readback do not prove a printer job.",
+    "Opera behavior is unqualified; user can use Chrome through the prepared separate profile.",
+    "WMI did not expose dimensions; PrintTicket declares71.988×3275.974mm. Physical80mm paper, feed/cut and geometry remain unverified; no driver defaults changed.",
+    "No registry policy, driver setting, real sale mutation, authentication copying or print job performed."
+  ],
+  "browser_qa": {
+    "engine": "Edge156.0.4314.50",
+    "synthetic": {
+      "widths": [
+        320,
+        390,
+        600,
+        1569
+      ],
+      "sales": 14,
+      "wrap_rows": [
+        14,
+        7,
+        7,
+        3
+      ],
+      "document_and_tablist_overflow": 0,
+      "same_dom_nodes_after_resize": 14,
+      "keyboard": "Home/End/Left/Right and row crossing preserve focus/selection/qty",
+      "cancel_print_height": 44,
+      "confirm_height": 56,
+      "writes": 0,
+      "print_requests": 0
+    },
+    "live": {
+      "synthetic": false,
+      "source": "Authenticated own IAB tab9 read-only; closed after DOM/AX observation",
+      "viewport": [
+        1280,
+        720
+      ],
+      "document_width": 1270,
+      "open_sales_visible": 1,
+      "tablist_flex_wrap": "wrap",
+      "tablist_overflow_x": "visible",
+      "confirm_height": 56,
+      "commercial_mutations": 0,
+      "local_sales_created": 0,
+      "printing_requests": 0,
+      "saved_controls_measurement": "synthetic only, no live saved sale modified",
+      "own_tab_closed": true,
+      "original_tabs_preserved": true
+    },
+    "artifacts": "ops/lab/artifacts/business-pos-followup-20261030-r21/qa"
+  },
+  "knowledge": {
+    "draft_revisions": {
+      "businesses": 38,
+      "businesses.multi-sale-workspace": 9,
+      "businesses.manual-sale-ticket-printing": 2
+    },
+    "approval": null,
+    "published_runtime_release_unchanged": "070212946febc8cb3315d5115093b95c93cf23efab88076acc4f57836069dc75",
+    "local_final_check": {
+      "status": "pass",
+      "release_id": "82a53112763f1abfc76d3d311fd031e52d47d02289b058895b4abf70fd291b5e",
+      "sources": 78,
+      "excluded": 34,
+      "documents": 44,
+      "fragments": 46,
+      "capabilities": 153,
+      "scope": "local authoring only; active Server KB070 preserved"
+    },
+    "approved_documents": 44
+  },
+  "cleanup": {
+    "own_IAB_tab9_closed": true,
+    "original_tabs_preserved": true,
+    "own_CLI_closed": true,
+    "owned_Vite_5196_pid_161248_stopped_after_identity_check": true,
+    "usage_tunnel5174_preserved": true,
+    "Chrome_not_launched_by_agent": true,
+    "physical_print_jobs_sent_by_agent": 0
+  },
+  "source_integrity": {
+    "source_inputs_unchanged_after_build_and_deployment": 1267,
+    "productive_delta_paths": 2,
+    "editable_UTF8_LF_no_BOM_paths_checked": 12,
+    "git_diff_check": "pass",
+    "approved_documents_byte_identical": 44,
+    "proof": "ops/lab/artifacts/business-pos-followup-20261030-r21/qa/approved-documents-integrity.json"
+  },
+  "verification_receipts": {
+    "client_packaged": {
+      "path": "ops/lab/artifacts/business-pos-followup-20261030-r21/client/verification-packaged-r02.json",
+      "sha256": "898c05f84ae0b699ee00eaa59ea964a2627287299fd5df5731c76198941fb371"
+    },
+    "recovery_deployed": {
+      "path": "ops/lab/artifacts/business-pos-followup-20261030-r21/client/recovery-r02/verification-deployed-r02.json",
+      "sha256": "6689d4f18348fbc34683f7e98921b613b1f652fafd4aa505a5d6b2292aff99e8"
+    }
+  }
+}

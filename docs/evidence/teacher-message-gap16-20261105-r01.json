@@ -1,0 +1,175 @@
+{
+  "schema": "teacher-message-gap16/1",
+  "local_date": "2026-11-05",
+  "status": "Client_R23_active_geometry_verified",
+  "client_manifest_sha256": "53c4e2606128984e79fa6c1bb8c58ae6b1d072bc754c251da6ae3dbd10c7871e",
+  "source_delta": {
+    "changed_existing": 1,
+    "unchanged_inputs": 1376,
+    "total_inputs": 1377,
+    "new": 0,
+    "deleted": 0,
+    "global_working_tree_copied": false
+  },
+  "validation": {
+    "path": "ops/lab/artifacts/teacher-message-gap16-20261105-r01/client-r23-r01/Root-validation.json",
+    "bytes": 549,
+    "sha256": "10bdb4c188f2c157964e021543302bbe3f45113e0e2ed4e486f19683f3ddaf20"
+  },
+  "operations": {
+    "delivery.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap16-20261105-r01/client-r23-r01/delivery.json",
+      "bytes": 11279,
+      "sha256": "4f3c88d89a8b7f5839f751c21163534200ad4321794f06c924f91a77ea2a1777"
+    },
+    "activation-state.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap16-20261105-r01/client-r23-r01/activation-state.json",
+      "bytes": 700,
+      "sha256": "396691d16ed29da48a0e1698a2fbb4cd7e60da9959163cf2fd8232aaf215247e"
+    },
+    "final-health.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap16-20261105-r01/client-r23-r01/final-health.json",
+      "bytes": 1468,
+      "sha256": "d1d227ea6845ee5c146f00d61b5426c0cdaf7306a931bf94a7416ff8037bafbc"
+    },
+    "release-manifest.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap16-20261105-r01/client-r23-r01/release-manifest.json",
+      "bytes": 30710,
+      "sha256": "53c4e2606128984e79fa6c1bb8c58ae6b1d072bc754c251da6ae3dbd10c7871e"
+    },
+    "source-plan.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap16-20261105-r01/client-r23-r01/source-plan.json",
+      "bytes": 250745,
+      "sha256": "debd3270cd609d5b9a7c3c2f57b59128d1d98d3f82e988d3671b549ac1a48802"
+    },
+    "source-freeze.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap16-20261105-r01/client-r23-r01/source-freeze.json",
+      "bytes": 685,
+      "sha256": "77a065df52d49f68db22284bcc17b39ef252be84d6cd63b2d55e4692e3c876d3"
+    }
+  },
+  "browser": {
+    "browser-verification.json": {
+      "path": "ops/lab/artifacts/teacher-message-gap16-20261105-r01/browser/browser-verification.json",
+      "bytes": 1234,
+      "sha256": "4b3da6c193befe78eabc51f70ace67879e87137fe35ddba34d2b7313c8fc9c83"
+    },
+    "message-gap16-desktop.jpg": {
+      "path": "ops/lab/artifacts/teacher-message-gap16-20261105-r01/browser/message-gap16-desktop.jpg",
+      "bytes": 83402,
+      "sha256": "a7a91b84186d3ec3684964f245cfcc195639c69e84bb7f3c34377ee5894414de"
+    },
+    "message-gap16-mobile.jpg": {
+      "path": "ops/lab/artifacts/teacher-message-gap16-20261105-r01/browser/message-gap16-mobile.jpg",
+      "bytes": 42955,
+      "sha256": "32094c86b136d90b5cacb35d6a73c528455869721abc593b966479828a213797"
+    }
+  },
+  "geometry": {
+    "schema": "teacher-message-gap16-browser/1",
+    "release": "ClientR23",
+    "before": {
+      "budget": "Generaciones reservadas: 2 de 200 del lÃƒÂ­mite de esta sesiÃƒÂ³n. Cada solicitud genera sÃƒÂ³lo el recurso indicado.",
+      "draftLength": 0,
+      "gaps": [
+        8
+      ],
+      "viewport": [
+        1088,
+        892
+      ]
+    },
+    "desktop": {
+      "bubbleGaps": [
+        16
+      ],
+      "budget": "Generaciones reservadas: 2 de 200 del lÃƒÂ­mite de esta sesiÃƒÂ³n. Cada solicitud genera sÃƒÂ³lo el recurso indicado.",
+      "documentWidth": 1078,
+      "draftLength": 0,
+      "margins": [
+        "16px"
+      ],
+      "rowGaps": [
+        16
+      ],
+      "scrollWidth": 1078,
+      "viewport": [
+        1088,
+        892
+      ]
+    },
+    "mobile": {
+      "bubbleGaps": [
+        16
+      ],
+      "documentWidth": 310,
+      "draftLength": 0,
+      "rowGaps": [
+        16
+      ],
+      "scrollWidth": 310,
+      "viewport": [
+        320,
+        892
+      ]
+    },
+    "final": {
+      "budget": "Generaciones reservadas: 2 de 200 del lÃƒÂ­mite de esta sesiÃƒÂ³n. Cada solicitud genera sÃƒÂ³lo el recurso indicado.",
+      "draftLength": 0,
+      "viewport": [
+        1088,
+        892
+      ]
+    },
+    "viewportRestored": true,
+    "newAgentMessages": 0,
+    "newAgentProviderRequests": 0,
+    "physicalPhoneTested": false
+  },
+  "contracts": [
+    {
+      "path": "docs/mvp/96-nodia-teacher-implementation-plan.md",
+      "bytes": 183621,
+      "sha256": "7e77f9fc8765811f8b9d2625351d51fede2b7dc2d113e92ed633b5a56beb8ce0"
+    },
+    {
+      "path": "nodia-client/DESIGN.md",
+      "bytes": 105401,
+      "sha256": "e839c08fc5b926ff13dffffce8e866facf275d9dd598cca789a9a3bf99e35012"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/studies/features/session-setup-and-planning.md",
+      "bytes": 36059,
+      "sha256": "9209a634b2ee47eec6e4ff5eef4f662636e9b0ae7384078ba73adc51e42c686a"
+    }
+  ],
+  "deployment_direct_SQL_calls": 0,
+  "new_agent_provider_inferences": 0,
+  "new_agent_messages": 0,
+  "server_native_SDK_auth_configuration_changes": false,
+  "knowledge": {
+    "impact": "visual only, no functional context change",
+    "feature_revision": 21,
+    "product_revision": 24,
+    "published": false,
+    "check": {
+      "exit_code": 0,
+      "mode": "check",
+      "sources": 80,
+      "excluded": 36,
+      "documents": 44,
+      "fragments": 46,
+      "releaseId": "ca3b8d894cbfc3780698e15b1b19c62a4554b00911af7893024fd025c6f948af",
+      "published": false
+    },
+    "receipt": {
+      "path": "ops/lab/artifacts/teacher-message-gap16-20261105-r01/knowledge-check.json",
+      "bytes": 218,
+      "sha256": "2e825e9db31f0abb05bb8dd1d2c9202975903c3c7be69a1664d5976a8d6f64e1"
+    }
+  },
+  "limitations": [
+    "Resized browser viewport, not a physical phone.",
+    "No new provider qualification or resolution of earlier Gemini blockers."
+  ]
+}

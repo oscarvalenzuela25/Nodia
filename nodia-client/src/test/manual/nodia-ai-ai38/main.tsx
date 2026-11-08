@@ -41,7 +41,7 @@ mainInstance.defaults.baseURL = "/api/v1";
 mainInstance.defaults.headers.common["x-fixture-actor"] = actor;
 useAuthStore.getState().login({ token: "synthetic-ai38-not-a-real-credential", user: { id: actor, name: "Synthetic AI38" }, expiresAt: Date.now() + 3600000 });
 useGeneralSettingsStore.setState({ isLoaded: true, roles: actor === "3" ? ["super_admin"] : [], modules: [], actions: [] });
-const route = view === "finance" ? "/tools/finances-personal?tab=movements" : `/tools/nodia-ai?chat=${manifest.conversation_id}`;
+const route = view === "finance" ? "/finances-personal?tab=movements" : `/nodia-ai?chat=${manifest.conversation_id}`;
 export const ReviewFixture = () => {
   // Match the real page's authoritative chat observer. Execution controls stay
   // read-only until the real HTTP detail query confirms the owner and access.

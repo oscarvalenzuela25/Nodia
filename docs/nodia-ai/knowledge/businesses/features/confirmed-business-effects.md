@@ -4,13 +4,13 @@
   "document_id": "businesses.confirmed-business-effects",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 4,
-  "document_status": "draft",
+  "revision": 5,
+  "document_status": "approved",
   "implementation": {
     "status": "partial",
-    "notes": "Catorce puertos internos de AI-22; AI-32 copia adjuntos nuevos a factura con key independiente e intent/recibo atómicos. R02 admite destino público al editar y traslado del archivo legacy existente, copia acotada fuera de SQL y descriptor v2 compatible con v1; valida precondiciones, permisos y recuperación. Sin nuevas tablas. Preparadores MCP y R2 real conservan gates. R06 verifica purga y copias/traslado de facturas con R2 e inspector reales y SQL desechable, incluido reemplazo PNG por PDF y conservación de factura al expirar el chat. Los gates técnicos de esos flujos cierran en laboratorio; publicación MCP/descarga nativa y aceptación productiva siguen separados."
+    "notes": "AI36-C05 publica sólo la sección adicional enumerada bajo autorización humana específica; los apartados previos conservan su fecha y alcance. Contratos internos y publicación no prueban despliegue, inferencia o aceptación productiva."
   },
-  "integration_status": "unregistered",
+  "integration_status": "published",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
   "sources": [
     {
@@ -40,19 +40,29 @@
     {
       "path": "docs/mvp/78-nodia-ai-ai32-attachments-voice.md",
       "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-10-18",
+    "checked_on": "2026-10-24",
     "evidence_paths": [
       "docs/mvp/68-nodia-ai-ai22-business-operations.md",
       "docs/evidence/nodia-ai-ai32-r02-legacy-sql-attempt01.json",
       "docs/evidence/nodia-ai-ai32-r02-sql-regression.json",
-      "docs/evidence/nodia-ai-ai32-r06-validation.json"
+      "docs/evidence/nodia-ai-ai32-r06-validation.json",
+      "docs/evidence/nodia-ai-ai36-c01-validation.json",
+      "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json"
     ],
-    "notes": "Catorce puertos SQL verificados con PostgreSQL, HTTP y procesos; recibos atómicos, revisión humana, permisos, recuperación y relaciones comprobados. UI sintética ES/EN/móvil y suites registradas en68 con sus evidencias. No se afirma inferencia, publicación MCP, R2 real ni aprobación documental. R02:33 checks focales de traslado y102 regresiones de adjuntos/promoción con PostgreSQL desechable/storage sintético, primer intento.60 tests focales y build/lint correctos; suiteServer3336. No prueba cloud real ni preparación por Gemini. R06:16 comprobaciones finales de purga,16 funcionales de facturas y cinco guardas offline. Fallos de fixture/teardown resueltos sin replay; diez objetos eliminados, cero cambios en BD operativa o aplicación e inferencias. Sin aprobación/publicación nueva."
+    "notes": "Publicación offline con builders nativos y schemas cerrados. El fragmento adicional es el único alcance nuevo; no equivale a cuenta real ni a una aceptación de todos sus efectos."
   },
-  "approval": null
+  "approval": {
+    "reference": "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-authorization.md",
+    "revision": 5,
+    "content_sha256": "24f5392a70b035e7de8bd49353554e5fec794ef015e1e7e9f1b36e271da1c203"
+  }
 }
 ---
 
@@ -142,3 +152,26 @@ R02: `destination_business_id` indica destino de update; el origen es inmutable 
 ## Revalidación AI-32-R06
 
 Purga por generación y copias de factura verificadas con R2 real, casos de uso compilados y SQL desechable; la copia de factura sobrevive a la expiración del chat. Reemplazo con contenido distinto, traslado legacy, rollback y recuperación conservan sus contratos. No se equipara esta prueba con publicación MCP o aceptación productiva. [Entrega R06](../../../../mvp/78-nodia-ai-ai32-attachments-voice.md#revalidación-ai-32-r06--purga-y-copias-de-factura-con-r2-real) mantiene evidencia y límites. Ficha draft/unregistered y approval null conservados.
+
+## Negocios: preparaciones publicadas en AI36-C05
+
+Este fragmento añade sólo estas preparaciones publicadas:
+
+- `nodia_businesses_prepare_create`
+- `nodia_businesses_prepare_set_collaborators`
+- `nodia_businesses_prepare_update`
+- `nodia_invoices_prepare_create`
+- `nodia_invoices_prepare_update`
+- `nodia_product_logs_prepare_create`
+- `nodia_product_logs_prepare_update`
+- `nodia_products_prepare_create`
+- `nodia_products_prepare_update`
+- `nodia_provider_contacts_prepare_create`
+- `nodia_provider_contacts_prepare_set_active`
+- `nodia_provider_contacts_prepare_update`
+- `nodia_providers_prepare_create`
+- `nodia_providers_prepare_update`
+
+Cada herramienta recibe un partial cerrado, devuelve mínimos faltantes o propuesta revisable y permite continuar sólo con draft_id/revisión CAS exactos. No aplica el cambio de dominio. Consulta las referencias reales; nunca inventes IDs o enlaces. Sólo el botón humano sobre revisión/hash exactos admite la ejecución y su recibo nativo. No se aceptan SQL, comandos arbitrarios, secretos ni bulk/importación. No existe borrado físico de negocios, productos, logs, proveedores, contactos o facturas en estos preparadores. Actividad y set_active conservan su semántica; no simular DELETE. Archivos de factura sólo usan referencias acreditadas y el protocolo de adjuntos existente.
+
+El backend exige NodiaAI y cada módulo/acción de destino vigentes, reautoriza al ejecutar y conserva recuperación/idempotencia. Publicación, selección del intento, disponibilidad, despliegue y aceptación real son estados distintos. Los apartados anteriores son históricos y no amplían este lote.

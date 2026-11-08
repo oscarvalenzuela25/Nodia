@@ -18,11 +18,22 @@ const payload = (): CreateProviderContactDto => ({
   request_key: '36d6d027-7e83-46df-86ab-75c929e9e10d',
 });
 describe('Create provider contact', () => {
-  const service = { providerExists: vi.fn(), createOnce: vi.fn() };
+  const service = {
+    withAccess: vi.fn(),
+    providerExists: vi.fn(),
+    createOnce: vi.fn(),
+  };
   let useCase: CreateProviderContactUseCase;
   beforeEach(() => {
     vi.resetAllMocks();
     service.providerExists.mockResolvedValue(true);
+    service.withAccess.mockImplementation(
+      async (_id, _actor, _manager, work) => {
+        if (!(await service.providerExists()))
+          throw new NotFoundException('Provider not found');
+        return work(undefined);
+      },
+    );
     service.createOnce.mockImplementation(
       async (provider_id, creation_key, creation_hash, values) => ({
         ...values,

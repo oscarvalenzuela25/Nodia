@@ -11,7 +11,9 @@ describe('UpdateBulkProductsUseCase', () => {
     productServiceMock = {
       updateBulkProducts: vi.fn(),
     };
-    useCase = new UpdateBulkProductsUseCase(productServiceMock as ProductService);
+    useCase = new UpdateBulkProductsUseCase(
+      productServiceMock as ProductService,
+    );
   });
 
   it('should be defined', () => {
@@ -38,7 +40,6 @@ describe('UpdateBulkProductsUseCase', () => {
         name: 'Coca Cola 1.5L',
         cost_price: 1000,
         cost_price_tax: 190,
-        profit_percentage: 30,
         sale_price: 2200,
         stock: 60,
         is_active: true,
@@ -47,7 +48,9 @@ describe('UpdateBulkProductsUseCase', () => {
       },
     ];
 
-    vi.mocked(productServiceMock.updateBulkProducts!).mockResolvedValue(mockUpdated as any);
+    vi.mocked(productServiceMock.updateBulkProducts!).mockResolvedValue(
+      mockUpdated as any,
+    );
 
     const result = await useCase.execute(bulkDto);
 

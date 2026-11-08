@@ -1,18 +1,15 @@
 import { Invoice } from '../entities/invoice.entity.js';
 import { ExtractedInvoiceItem } from '../../common/ai/gemini.service.js';
-
 export type PaginationMeta = {
   page: number;
   limit: number;
   total_items: number;
   total_pages: number;
 };
-
 export type GetInvoicesResponse = {
   data: Invoice[];
   meta: PaginationMeta;
 };
-
 export interface AnalyzeInvoiceResponse {
   business_id: string;
   provider_id: string | null;
@@ -25,20 +22,20 @@ export interface AnalyzeInvoiceResponse {
     [key: string]: any;
   };
 }
-
 export interface VerifyIaProviderItem {
   id: string;
   key: string;
   name: string;
   mode: string;
   use_api_key?: boolean;
-  use_token_plan_web?: boolean;
-  use_token_plan_agentic?: boolean;
+  use_agentic?: boolean;
   default_mode?: string | null;
-  active_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
+  active_mode?: 'api_key' | 'agentic' | null;
   is_default?: boolean;
   is_active: boolean;
   can_use_model: boolean;
+  availability_reason?:
+    'runtime_busy' | 'native_proof_missing' | 'native_proof_mismatch' | null;
   error?: string | null;
   fields?: {
     selected_model?: string | null;
@@ -53,5 +50,4 @@ export interface VerifyIaProviderItem {
   supports_thinking?: boolean;
   extended_thinking_enabled?: boolean;
 }
-
 export type VerifyIaProvidersResponse = VerifyIaProviderItem[];

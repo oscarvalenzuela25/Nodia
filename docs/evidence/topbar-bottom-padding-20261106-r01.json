@@ -1,0 +1,463 @@
+{
+  "schema": "topbar-bottom-padding/1",
+  "status": "IMPLEMENTED_DEPLOYED_AND_VISUALLY_VERIFIED",
+  "source": {
+    "path": "ops/lab/artifacts/topbar-bottom-padding-20261106-r01/source-freeze.json",
+    "bytes": 564,
+    "sha256": "56a38008dc4eab6ea51758aec274b7faec165eb9dd28f4b4e0e86fa6ef1b3993"
+  },
+  "checks": {
+    "path": "ops/lab/artifacts/topbar-bottom-padding-20261106-r01/validation-code.json",
+    "bytes": 241,
+    "sha256": "d88610c968b917cb8ce2fcb7dc1de78428d3f94ed7cf9c5edf734351a84a0296"
+  },
+  "tests": {
+    "existing_cases_passed": 17,
+    "files": 2,
+    "types_exit": 0,
+    "lint_exit": 0,
+    "new_style_mirror_tests": false
+  },
+  "adoption": {
+    "path": "ops/lab/artifacts/topbar-bottom-padding-20261106-r01/client-r33-r01/delivery.json",
+    "bytes": 9558,
+    "sha256": "2b210141199989340daaf52419e14e8b156a3bfe2226fab0f5be40cbb2f25d01"
+  },
+  "runtime_manifest": "ad520604765d3680c6015109879e2a2b911e64854aa64a8b696fdc9e32cdeb55",
+  "Nginx_sha256": "1761cfd7caefd11a24ca7b5e180f79ccd1aa667dc26bfa28888c36260ad12257",
+  "browser": {
+    "schema": "topbar-bottom-padding-browser/1",
+    "authenticated": true,
+    "language": "es",
+    "theme": "dark",
+    "before": [
+      {
+        "buttons": [
+          {
+            "height": 40,
+            "label": "Alternar menú",
+            "width": 40,
+            "x": 32,
+            "y": 24
+          },
+          {
+            "height": 0,
+            "label": "Colapsar menú",
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "height": 44,
+            "label": "Laboratorio Ubuntu gemini · API key: Necesita revisión. Abrir ajustes de este modo",
+            "width": 90.671875,
+            "x": 608.078125,
+            "y": 22
+          },
+          {
+            "height": 44,
+            "label": "Laboratorio Ubuntu gemini · Agentic: Sesión disponible; no acredita inferencia. Abrir ajustes de este modo",
+            "width": 93.828125,
+            "x": 702.75,
+            "y": 22
+          },
+          {
+            "height": 44,
+            "label": "Actualizar estado de IA",
+            "width": 44,
+            "x": 800.578125,
+            "y": 22
+          },
+          {
+            "height": 36.5,
+            "label": "ES · Cambiar idioma",
+            "width": 57.421875,
+            "x": 860.578125,
+            "y": 25.75
+          },
+          {
+            "height": 56,
+            "label": "Abrir menú de cuenta",
+            "width": 56,
+            "x": 990,
+            "y": 16
+          }
+        ],
+        "documentWidth": 1078,
+        "headerHeight": 88,
+        "minHeight": "64px",
+        "paddingBottom": "16px",
+        "paddingLeft": "32px",
+        "paddingRight": "32px",
+        "paddingTop": "16px",
+        "scrollWidth": 1078,
+        "viewport": 1088
+      },
+      {
+        "buttons": [
+          {
+            "height": 40,
+            "label": "Alternar menú",
+            "width": 40,
+            "x": 16,
+            "y": 20
+          },
+          {
+            "height": 0,
+            "label": "Colapsar menú",
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "height": 44,
+            "label": "Laboratorio Ubuntu gemini · API key: Necesita revisión. Abrir ajustes de este modo",
+            "width": 90.671875,
+            "x": 57.5,
+            "y": 76
+          },
+          {
+            "height": 44,
+            "label": "Laboratorio Ubuntu gemini · Agentic: Sesión disponible; no acredita inferencia. Abrir ajustes de este modo",
+            "width": 93.828125,
+            "x": 152.171875,
+            "y": 76
+          },
+          {
+            "height": 44,
+            "label": "Actualizar estado de IA",
+            "width": 44,
+            "x": 250,
+            "y": 76
+          },
+          {
+            "height": 36.5,
+            "label": "ES · Cambiar idioma",
+            "width": 57.421875,
+            "x": 124.578125,
+            "y": 21.75
+          },
+          {
+            "height": 56,
+            "label": "Abrir menú de cuenta",
+            "width": 56,
+            "x": 238,
+            "y": 12
+          }
+        ],
+        "documentWidth": 310,
+        "headerHeight": 132,
+        "minHeight": "56px",
+        "paddingBottom": "12px",
+        "paddingLeft": "16px",
+        "paddingRight": "16px",
+        "paddingTop": "12px",
+        "scrollWidth": 310,
+        "viewport": 320
+      },
+      {
+        "buttons": [
+          {
+            "height": 40,
+            "label": "Alternar menú",
+            "width": 40,
+            "x": 16,
+            "y": 20
+          },
+          {
+            "height": 0,
+            "label": "Colapsar menú",
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "height": 44,
+            "label": "Laboratorio Ubuntu gemini · API key: Necesita revisión. Abrir ajustes de este modo",
+            "width": 90.671875,
+            "x": 136.078125,
+            "y": 18
+          },
+          {
+            "height": 44,
+            "label": "Laboratorio Ubuntu gemini · Agentic: Sesión disponible; no acredita inferencia. Abrir ajustes de este modo",
+            "width": 93.828125,
+            "x": 230.75,
+            "y": 18
+          },
+          {
+            "height": 44,
+            "label": "Actualizar estado de IA",
+            "width": 44,
+            "x": 328.578125,
+            "y": 18
+          },
+          {
+            "height": 36.5,
+            "label": "ES · Cambiar idioma",
+            "width": 57.421875,
+            "x": 388.578125,
+            "y": 21.75
+          },
+          {
+            "height": 56,
+            "label": "Abrir menú de cuenta",
+            "width": 56,
+            "x": 518,
+            "y": 12
+          }
+        ],
+        "documentWidth": 590,
+        "headerHeight": 80,
+        "minHeight": "64px",
+        "paddingBottom": "12px",
+        "paddingLeft": "16px",
+        "paddingRight": "16px",
+        "paddingTop": "12px",
+        "scrollWidth": 590,
+        "viewport": 600
+      }
+    ],
+    "after": [
+      {
+        "buttons": [
+          {
+            "height": 40,
+            "label": "Alternar menú",
+            "width": 40,
+            "x": 32,
+            "y": 24
+          },
+          {
+            "height": 0,
+            "label": "Colapsar menú",
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "height": 44,
+            "label": "Laboratorio Ubuntu gemini · API key: Necesita revisión. Abrir ajustes de este modo",
+            "width": 90.671875,
+            "x": 608.078125,
+            "y": 22
+          },
+          {
+            "height": 44,
+            "label": "Laboratorio Ubuntu gemini · Agentic: Sesión disponible; no acredita inferencia. Abrir ajustes de este modo",
+            "width": 93.828125,
+            "x": 702.75,
+            "y": 22
+          },
+          {
+            "height": 44,
+            "label": "Actualizar estado de IA",
+            "width": 44,
+            "x": 800.578125,
+            "y": 22
+          },
+          {
+            "height": 36.5,
+            "label": "ES · Cambiar idioma",
+            "width": 57.421875,
+            "x": 860.578125,
+            "y": 25.75
+          },
+          {
+            "height": 56,
+            "label": "Abrir menú de cuenta",
+            "width": 56,
+            "x": 990,
+            "y": 16
+          }
+        ],
+        "documentWidth": 1078,
+        "headerHeight": 72,
+        "minHeight": "64px",
+        "paddingBottom": "0px",
+        "paddingLeft": "32px",
+        "paddingRight": "32px",
+        "paddingTop": "16px",
+        "scrollWidth": 1078,
+        "viewport": 1088
+      },
+      {
+        "buttons": [
+          {
+            "height": 40,
+            "label": "Alternar menú",
+            "width": 40,
+            "x": 16,
+            "y": 20
+          },
+          {
+            "height": 0,
+            "label": "Colapsar menú",
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "height": 44,
+            "label": "Laboratorio Ubuntu gemini · API key: Necesita revisión. Abrir ajustes de este modo",
+            "width": 90.671875,
+            "x": 57.5,
+            "y": 76
+          },
+          {
+            "height": 44,
+            "label": "Laboratorio Ubuntu gemini · Agentic: Sesión disponible; no acredita inferencia. Abrir ajustes de este modo",
+            "width": 93.828125,
+            "x": 152.171875,
+            "y": 76
+          },
+          {
+            "height": 44,
+            "label": "Actualizar estado de IA",
+            "width": 44,
+            "x": 250,
+            "y": 76
+          },
+          {
+            "height": 36.5,
+            "label": "ES · Cambiar idioma",
+            "width": 57.421875,
+            "x": 124.578125,
+            "y": 21.75
+          },
+          {
+            "height": 56,
+            "label": "Abrir menú de cuenta",
+            "width": 56,
+            "x": 238,
+            "y": 12
+          }
+        ],
+        "documentWidth": 310,
+        "headerHeight": 120,
+        "minHeight": "56px",
+        "paddingBottom": "0px",
+        "paddingLeft": "16px",
+        "paddingRight": "16px",
+        "paddingTop": "12px",
+        "scrollWidth": 310,
+        "viewport": 320
+      },
+      {
+        "buttons": [
+          {
+            "height": 40,
+            "label": "Alternar menú",
+            "width": 40,
+            "x": 16,
+            "y": 20
+          },
+          {
+            "height": 0,
+            "label": "Colapsar menú",
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "height": 44,
+            "label": "Laboratorio Ubuntu gemini · API key: Necesita revisión. Abrir ajustes de este modo",
+            "width": 90.671875,
+            "x": 136.078125,
+            "y": 18
+          },
+          {
+            "height": 44,
+            "label": "Laboratorio Ubuntu gemini · Agentic: Sesión disponible; no acredita inferencia. Abrir ajustes de este modo",
+            "width": 93.828125,
+            "x": 230.75,
+            "y": 18
+          },
+          {
+            "height": 44,
+            "label": "Actualizar estado de IA",
+            "width": 44,
+            "x": 328.578125,
+            "y": 18
+          },
+          {
+            "height": 36.5,
+            "label": "ES · Cambiar idioma",
+            "width": 57.421875,
+            "x": 388.578125,
+            "y": 21.75
+          },
+          {
+            "height": 56,
+            "label": "Abrir menú de cuenta",
+            "width": 56,
+            "x": 518,
+            "y": 12
+          }
+        ],
+        "documentWidth": 590,
+        "headerHeight": 68,
+        "minHeight": "64px",
+        "paddingBottom": "0px",
+        "paddingLeft": "16px",
+        "paddingRight": "16px",
+        "paddingTop": "12px",
+        "scrollWidth": 590,
+        "viewport": 600
+      }
+    ],
+    "viewportReset": true,
+    "ownTabClosed": true,
+    "originalUserTabModified": false,
+    "noBusinessMutationOrInferenceTriggered": true
+  },
+  "browser_receipt": {
+    "path": "ops/lab/artifacts/topbar-bottom-padding-20261106-r01/browser/qa-summary.json",
+    "bytes": 9379,
+    "sha256": "1fab69d5e211da7f7f04c2328121ed085375bcd31e2ffce7925b0e6fc94f3e5b"
+  },
+  "screenshots": [
+    {
+      "path": "ops/lab/artifacts/topbar-bottom-padding-20261106-r01/browser/topbar-padding-1088.png",
+      "bytes": 81733,
+      "sha256": "359f6f9f96fd67dba1648837843e37ccba18207e0ffad1acfeee3b58c4347892"
+    },
+    {
+      "path": "ops/lab/artifacts/topbar-bottom-padding-20261106-r01/browser/topbar-padding-320.png",
+      "bytes": 33944,
+      "sha256": "80000799d2758e2244b997808758daa121feb0382b79079d50072dbdb715965c"
+    }
+  ],
+  "scope": "One shared Topbar stylesheet; padding-bottom0 only at existing responsive rules. No query/authorization/data changes.",
+  "approved_bodies_unchanged": 44,
+  "knowledge_parent_revision": 22,
+  "new_approval_or_publication": false,
+  "physical_mobile_acceptance": false,
+  "edited_documents": [
+    {
+      "path": "docs/mvp/README.md",
+      "bytes": 192672,
+      "sha256": "6e2e6cfe0ddd6f459462021a256ff4863e724cce63ce1a08cd993356adcb8a27"
+    },
+    {
+      "path": "docs/mvp/00-progress.md",
+      "bytes": 363756,
+      "sha256": "221501f5c2f01a49673a725f8d7d4ce74941fa91e1bb19de1179a054e6d4d097"
+    },
+    {
+      "path": "docs/features/ai-providers/topbar-mode-health.md",
+      "bytes": 11418,
+      "sha256": "2447c7aaf74f4f899c97cd291d629e9ecccc387913c53925f9053ec8006b1946"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/README.md",
+      "bytes": 27470,
+      "sha256": "656ff78162258cc0ed5222a6b1942b9eafab64390c02710920f1141077f8a788"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/README.md",
+      "bytes": 106116,
+      "sha256": "20efc506988ba2033809d509249390e77ea7c8d5e1a6d9a5240babb510aa9123"
+    }
+  ]
+}

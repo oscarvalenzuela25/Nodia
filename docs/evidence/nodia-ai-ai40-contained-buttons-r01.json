@@ -1,0 +1,422 @@
+{
+  "schema": "nodia-ai-ai40-contained-buttons-acceptance-v1",
+  "status": "implemented_compiled_adopted_desktop_UI_verified",
+  "recorded_date": "2026-10-24",
+  "request": "Use contained instead of text Buttons within NodiaAI.",
+  "source_changes": [
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/Attachments/AttachmentMessage.tsx",
+      "changes": 3,
+      "before_sha256": "963987f5669ad74d6b99fa704c887bb6286a74e774991c4d5a3e7a17a109d994",
+      "after_sha256": "200012196b67c2248412a43a180fd40cfbba64f6c822b80fa80e2dac9419e4a4"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/Attachments/Attachments.tsx",
+      "changes": 7,
+      "before_sha256": "44b2d9a86debe745fd59c99f0c63e4143ec3b3c8349c91c77b057fe6a1bcb1cc",
+      "after_sha256": "d526e02910981a8df5bee5e30c497784ae5bb022d1c1bc90651ff1764970867c"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/Attachments/AttachmentsLoader.tsx",
+      "changes": 1,
+      "before_sha256": "765b043b9f309acfd571cf91274b8f44578b9af2742b946ceec5536a45d903a5",
+      "after_sha256": "758a6dfed34e70b978c6160846552e372d9aaabc67bbb7e7d35c217b5f81fe97"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ConfigurationDrawer/ConfigurationDrawer.tsx",
+      "changes": 6,
+      "before_sha256": "2ebd50efcd9ee5341e850f99be26f1089f6a0ad1d92148dcbef58b0a90c22c54",
+      "after_sha256": "11b4a5a29abfd240b932563970d4303e59f5b3a2aa984db116ce752637059ab2"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ConfirmedExecution/ConfirmedExecution.tsx",
+      "changes": 8,
+      "before_sha256": "6e8f15ba86bf80fcc53d922bcfd3dfa3a7d3bfcb5587abe90a88880f280604c8",
+      "after_sha256": "3c244f7d4ba1c2da56c3f849a9a013b5444cc984d601b781fffc05d0b6261c31"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ConversationHistory/ConversationHistory.tsx",
+      "changes": 2,
+      "before_sha256": "c3498fd989f474818f2dace9bb390f93a1867f19cf6077d6c6988ac96be5fe4b",
+      "after_sha256": "8336be492a0a9f1dca75ff4dab1afa5386243fa507948232d0f432e92b48812a"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ConversationManagement/ConversationManagement.tsx",
+      "changes": 2,
+      "before_sha256": "5c1b721953ca0d09e786bcf64174aaf7af83608a6113a3ebb739414e2cd2134c",
+      "after_sha256": "491bd0b6594f526a74261343bf962930db2767c36ab70e59256f7ed565bce22b"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ExecutionObservation/ExecutionObservation.tsx",
+      "changes": 7,
+      "before_sha256": "0c75b647e74514ba3249ccf51d3b59dbe694b535589c0010f15a376401830076",
+      "after_sha256": "feddfe995c0a71e71b0245ac9a4b75cbbfb743db39c2fc9b87adf26955d78d89"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/Preferences/index.tsx",
+      "changes": 2,
+      "before_sha256": "7cad9eeaa812d33bdaf3708aaf94160ff8dfbabdff7c0eea14be5f22c60abf34",
+      "after_sha256": "da324721c1e85cf4affaa3c356f2dea094636d2177ffee5d1acf4b3cb5160a36"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/Preferences/PreferenceEditor.tsx",
+      "changes": 2,
+      "before_sha256": "95de21911c9fd02050cd318846bbb5d107acf142a7ef4babc054448239dcf14e",
+      "after_sha256": "32a50527d21ad27e20edbe723a0dcbe7252f75d6a279e2d0d4193e99593e7db7"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/Preferences/Preferences.tsx",
+      "changes": 7,
+      "before_sha256": "a7a6c0a46f68d1335ef5dc4ec94b6531cfcf15051b60fa80fdb1e1d64697573d",
+      "after_sha256": "6b27d6eb8ec0ff196c522a5e7b83123daf85317c5e9aa9f48897bbafcbec36a3"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/Preferences/PreferenceValueEditor.tsx",
+      "changes": 1,
+      "before_sha256": "8a43086c1649cea3cc06df07ca1037f32d8d91a2cf126f77dcf3d0d33080e1ef",
+      "after_sha256": "781db5b791e58c36892a8150704f713392596a5d2bcfa643879e15c01864fe9a"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/CancellationRulesEditor.tsx",
+      "changes": 2,
+      "before_sha256": "bdd4bfb9a22778aa8990f647823520f644eff5e2e37f8685ccb113bf3717fe42",
+      "after_sha256": "10a6bcbf3effb277d7c736e8c97e59d9a1cbb89c89f5c33f679f2f5505fe7bd9"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/CoreAssociationsEditor.tsx",
+      "changes": 1,
+      "before_sha256": "826a2dd3523ebbdd6fc08f77c036633c6de5aaa6ff332d926fcc3ec2c70d3df1",
+      "after_sha256": "53c569c716fd52bf8a4613572c86f3e5add924f26d121d2fcda46fcd1ca1c4d3"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/CoreTranslationsEditor.tsx",
+      "changes": 2,
+      "before_sha256": "871089901867be5fe63591078ebc41755c6b40b0a126a0956c46bd477f543578",
+      "after_sha256": "c5bbe67e7d37e613db070033de2aa46c8c0fae1d279a21765fe798be84cc54cd"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/HumanProposalReview.tsx",
+      "changes": 5,
+      "before_sha256": "b058b14c95e8891c184b66af18ba95a9e59164731acd2d40204bd15afa2cdb4d",
+      "after_sha256": "202d44f1bbecb78c85e297e966382561de160c77bc583078aaab5eff37646128"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/ProposalPreview.tsx",
+      "changes": 2,
+      "before_sha256": "50b72da28d065ed756093b2b6085b94c45bd92ce812cf074ab80e695ae712514",
+      "after_sha256": "5c8f59da835ae954a643de0e8ab974dc296ea22e4a08b8759a257c3d6597ec11"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ReportObservation/ReportObservation.tsx",
+      "changes": 3,
+      "before_sha256": "b1fac46bae6450b45fb40781f4bd084f7fd34181a838c7ea0e1967698dd124d0",
+      "after_sha256": "51f5deca9d316d096183ac5a3784225c9e2123b15ddac48673f8c3ab3e63d65f"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ReportObservation/ReportObservationLoader.tsx",
+      "changes": 1,
+      "before_sha256": "370987b64452fdea3b57f26e63a15184e192b5d4d8179a8fb546af8a01d1dd36",
+      "after_sha256": "d9c961d5b5d5684defdf4cb7160e876516e652cf89231bf0259a72420d3e89e7"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/SecureInteraction/SecureInteraction.tsx",
+      "changes": 8,
+      "before_sha256": "7fbdf8b59a83b0ed613acee68e365ac4cad8cb14b72ffc2e9aa79f52f212bacd",
+      "after_sha256": "fc983f404f3a4dbfbaaf49fd39ab4646b2366dc2068ae29407cfbc4368df6320"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+      "changes": 12,
+      "before_sha256": "eb9e50c1377671267e27e861255b0604876c2ea2678a5152900e4751bf632dcc",
+      "after_sha256": "ea438bd307acf4e7812458048b3ec300e9fc9421d7748a9e17274d1ee32a1921"
+    }
+  ],
+  "QA": {
+    "schema_version": 1,
+    "scope": "nodia-client/src/modules/nodiaAi/** only",
+    "source_frozen": true,
+    "source_change_count": 21,
+    "only_variant_attributes_changed_vs_preexisting_dirty_source": true,
+    "preexisting_dirty_preserved": true,
+    "checks": [
+      {
+        "command": "node node_modules/eslint/bin/eslint.js <21 changed paths>",
+        "cwd": "nodia-client",
+        "exit_code": 0
+      },
+      {
+        "command": "npm run typecheck",
+        "cwd": "nodia-client",
+        "exit_code": 0
+      },
+      {
+        "command": "node node_modules/vitest/vitest.mjs run src/test/modules/nodiaAi/components/Preferences/PreferenceEditor.test.tsx src/test/modules/nodiaAi/components/ProposalPreview/HumanProposalReview.test.tsx src/test/modules/nodiaAi/components/Attachments/AttachmentMessage.test.tsx src/test/modules/nodiaAi/components/ReportObservation/ReportObservationLoader.test.tsx --maxWorkers=2",
+        "cwd": "nodia-client",
+        "exit_code": 0,
+        "test_files": 4,
+        "tests_passed": 98,
+        "tests_failed": 0
+      },
+      {
+        "command": "git diff --check -- nodia-client/src/modules/nodiaAi",
+        "exit_code": 0
+      },
+      {
+        "command": "node .tmp/nodia-ai-contained-r01/audit.mjs",
+        "exit_code": 0
+      },
+      {
+        "command": "node .tmp/nodia-ai-contained-r01/verify-and-receipt.mjs",
+        "exit_code": 0
+      }
+    ],
+    "ast": {
+      "buttons": 99,
+      "contained": 93,
+      "outlined": 6,
+      "text_or_omitted": 0,
+      "icon_buttons": 2,
+      "all_changed_files_match_frozen_sha256": true,
+      "crlf_files": [],
+      "files_changed": 21,
+      "buttons_changed": 84
+    },
+    "shared_wrappers": {
+      "ConfirmDialog": "already contained; no change",
+      "BaseModal": "IconButton only; no change",
+      "global_theme": "unchanged"
+    },
+    "anchor_buttons": {
+      "count": 3,
+      "variant": "contained",
+      "href_target_rel_preserved": true
+    },
+    "inherit_alert_buttons": {
+      "count": 5,
+      "color_preserved": true,
+      "theme_logic_inspected": true,
+      "method": "MUI9 Button.js inherits Alert foreground and uses theme grey300(light)/grey800(dark); calculated theme values separately, not browser acceptance",
+      "browser_contrast_verified": false
+    },
+    "visual_browser_acceptance": false,
+    "mobile_visual_acceptance": false,
+    "deployed": false,
+    "no_new_tests": true,
+    "no_handlers_or_contract_changes": true,
+    "source_manifest": "changes.json"
+  },
+  "QA_scope": "Existing focused atomic regressions, not a new page suite or a claim that every repository test passed.",
+  "build": {
+    "manifest": {
+      "path": "ops/lab/artifacts/ai40-client-buttons-r01/manifest.json",
+      "sha256": "65c1e83a9ab9219fcd02af6c766e6dd8b5f6c14bc6a12f25abf8e79bdefde8dd",
+      "bytes": 223506
+    },
+    "catalog": {
+      "path": "ops/lab/artifacts/ai40-client-buttons-r01/catalog.json",
+      "sha256": "7c4fc93d26c6826cd87d8849c611f7320e6193b146a483699bd7a529359abfa6",
+      "bytes": 3830
+    },
+    "qa": {
+      "node": "v24.20.0",
+      "platform": "win32",
+      "arch": "x64",
+      "typecheck_exit_code": 0,
+      "production_builds": 2,
+      "repeated_build_byte_identical": true,
+      "application_sources_changed": false,
+      "deployment_performed": false,
+      "HTTP_requests": 0,
+      "provider_requests": 0
+    },
+    "served_files": 172
+  },
+  "delivery": {
+    "status": "adopted_verified",
+    "operator_sha256": "2aad45bfaa6be9ae283ad5e9157b56f58fc7b8161491a4e31178089aedb3de38",
+    "parent_operator_sha256": "60660f0c5b4f1383f910bbdc0068e97b8f08212f3bfb3e6228ad9fed38b722b0",
+    "old_manifest_sha256": "5e30dc8ee9879eab0aed715ea76226efc6da0cb910eee2b254ce260a5bf194e0",
+    "new_manifest_sha256": "65c1e83a9ab9219fcd02af6c766e6dd8b5f6c14bc6a12f25abf8e79bdefde8dd",
+    "site_old_sha256": "f22baabdc2f9b8c063b3bffb9268472456e99fbf89d41e491f1cbc34f44d7343",
+    "site_new_sha256": "3bb3822773cb679a1c7201d77e04f59ab7dcaee939b69217f7453c08393bd82f",
+    "nginx_reload_commands": 1,
+    "HTTP": {
+      "root_status": 200,
+      "API_status": 200,
+      "deep_link_SHA_matches": true,
+      "missing_asset_status": 404,
+      "compiled_files_served": 172,
+      "JS_CSS_SVG_font_MIME_verified": true,
+      "public_origin_to_verify_in_browser": "http://localhost:5174"
+    },
+    "SDK_requests": 0,
+    "SQL_writes": 0,
+    "API_worker_restarted": false,
+    "previous_operator_intents_modified": false
+  },
+  "adoption_receipt": {
+    "path": ".tmp/ai40-client-buttons-r01/nginx-adopt-r01.json",
+    "sha256": "34cf81752245adaca492705d0b0c99e7dc59c50eaae17266997b5ff92e2c9a86",
+    "bytes": 5538
+  },
+  "preserved": {
+    "SQL": {
+      "chats": 1,
+      "messages": 38,
+      "runs": 20,
+      "dispatches": 28,
+      "tool_receipts": 35,
+      "executions": 2,
+      "effect_receipts": 3,
+      "financial_effects": 1,
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "domain": {
+      "preferences": 2,
+      "preferences_sha256": "b3cffd91df324d06e640ff3c9e169db2d2fb5a24692ff11dbbc2cc7297443237",
+      "finance_count": 2,
+      "finance_sha256": "5335e312c7b542552f924cf266fc007ff1a3691e522e6c682bb20e374b5b7871",
+      "attachments": 6
+    },
+    "public_configuration_sha256": "506e4c436bc22152c9aa632565d470450206d5ffdb1c9b976c0d0c7b5116f8b2",
+    "proof_sha256": {
+      "mcp": "970510a8b38137e3168c74c8322bd33b90994659523977d492339cba6501cf0a",
+      "mcp-image-png": "6f72f27340f46a397954b6a6e2b024fd117a617cfbe7cddd64ab429c6f030cc7",
+      "mcp-image-jpeg": "7f196301cd8cc616f090d478622e59f4a0eb60d86b5400f2bb1e4e4decaefff5",
+      "mcp-image-webp": "b33981d06c07e487c841a088c938446fb8920b00a646509e401fbe8beb08a35c"
+    },
+    "Gemini_epoch_sha256": "36dcad33281960bfece08250f0ee59520758ecd056f1b23e3475853a34422d8d"
+  },
+  "snapshots_before_after_equal": true,
+  "UI": {
+    "browser": "Chromium in-app browser",
+    "origin": "http://localhost:5174",
+    "route": "/tools/nodia-ai?chat=ec626b72-1f32-4486-9f3a-8263cffce267",
+    "entry_script_observed": "/assets/index-CEnMM2vw.js",
+    "viewport_CSS_pixels": {
+      "width": 1045,
+      "height": 892
+    },
+    "theme": "dark",
+    "language": "es",
+    "normal_reload_authenticated_same_chat_and_selection": true,
+    "accepted_preferences_visible_after_reload": 2,
+    "preferences": {
+      "visible_contained_buttons": 6,
+      "min_observed_height_CSS_px": 44,
+      "destructive_color_preserved": true
+    },
+    "configuration": {
+      "visible_contained_buttons": 3,
+      "includes_account_anchor": true,
+      "cancel_without_apply_verified": true,
+      "min_observed_height_CSS_px": 44
+    },
+    "attachments": {
+      "visible_contained_buttons": 2,
+      "enabled_after_capability_fetch": true,
+      "local_composer_scroll_reaches_actions": true,
+      "min_observed_height_CSS_px": 44,
+      "uploaded_or_recorded": false
+    },
+    "document_scrollWidth_equals_innerWidth": true,
+    "new_messages_confirmations_or_provider_inferences": 0,
+    "screenshots": [
+      {
+        "path": "docs/evidence/nodia-ai-ai40-contained-preferences-r01.png",
+        "sha256": "a70bfe42db6b5b65abdb13f18fe3f908e73fe8c3fd7c03c926f1c83bb0b60386",
+        "bytes": 74817
+      },
+      {
+        "path": "docs/evidence/nodia-ai-ai40-contained-drawer-r01.png",
+        "sha256": "7697d654f9af4c2d8fbfe3c5bb3935534f82852cf04c2a774ded83194ce3ada5",
+        "bytes": 86950
+      },
+      {
+        "path": "docs/evidence/nodia-ai-ai40-contained-attachments-r01.png",
+        "sha256": "50607b5655d8641d1e685ac8f48aad3bdf4def273c3f815fbde6beff7c981513",
+        "bytes": 98924
+      }
+    ],
+    "physical_mobile_or_resized_viewport_verified": false,
+    "error_alert_contrast_browser_acceptance": false
+  },
+  "knowledge_impact": "Visual-only variant attributes: no change to concepts, fields, operations, permissions, tool publication, human confirmation or context. Draft cards record impact; approved cards and registry remain unchanged.",
+  "rollback": {
+    "prepared": true,
+    "executed": false,
+    "operator": {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-client-buttons-adopt-r01.py",
+      "sha256": "2aad45bfaa6be9ae283ad5e9157b56f58fc7b8161491a4e31178089aedb3de38",
+      "bytes": 11459
+    },
+    "previous_Client_retained": true
+  },
+  "limits": [
+    "Only NodiaAI MUI Buttons with text/default variant changed. Existing outlined variants and IconButtons remain.",
+    "The real MCP/preferences acceptance occurred on the preceding Client manifest5e30; this visual successor adds no new SDK inference.",
+    "Desktop dark/ES UI verified. Mobile, physical touch, other themes/languages and error-Alert visual states not newly accepted by these screenshots.",
+    "AI-40 remains partial; no plan approval, capability publication or production delivery."
+  ],
+  "post_UI_readonly_baseline": {
+    "source": {
+      "path": ".tmp/ai40-client-buttons-r01/post-ui-baseline-r01.json",
+      "sha256": "2dea05ed07c6cbd042b7ad90dbd3f659b7b9d6596c8202334fae7468762e9c7e",
+      "bytes": 7096
+    },
+    "SQL": {
+      "chats": 1,
+      "messages": 38,
+      "runs": 20,
+      "dispatches": 28,
+      "tool_receipts": 35,
+      "executions": 2,
+      "effect_receipts": 3,
+      "financial_effects": 1,
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "domain": {
+      "attachments": 6,
+      "original_movement_id2": 1,
+      "original_marker_count": 1,
+      "accepted_preferences": 2,
+      "preferences_sha256": "b3cffd91df324d06e640ff3c9e169db2d2fb5a24692ff11dbbc2cc7297443237",
+      "finance_count": 2,
+      "finance_sha256": "5335e312c7b542552f924cf266fc007ff1a3691e522e6c682bb20e374b5b7871",
+      "current_workflow_exact_execution": 1,
+      "current_workflow_execution_count": 1,
+      "old_workflow_execution_count": 0,
+      "old_workflow_expired": 1
+    },
+    "provider_requests": 0,
+    "SQL_writes": 0,
+    "services_changed": false
+  },
+  "documentation_verification": {
+    "knowledge_check": {
+      "exit_code": 0,
+      "sources": 61,
+      "excluded": 30,
+      "documents": 31,
+      "fragments": 31,
+      "working_tree_release_id": "72f25fac97ad75915b2d5b7aa2ea88d997e58318487d523c3db162218dd5a895",
+      "active_release_unchanged": "5c83848c6eb1a6ce77fa63ad9de38f4dea556f260b6a9646cfceaaf4850db994"
+    },
+    "initial_failure_preserved": {
+      "code": "metadata_schema_invalid",
+      "cause": "Adding two evidence paths exceeded the existing maximum32. Historical references were retained as sources instead; schema unchanged.",
+      "runtime_or_publication_change": false
+    },
+    "draft_revisions_same_delivery": [
+      57,
+      32
+    ],
+    "approval_or_registry_changes": false,
+    "UTF8_LF": true,
+    "diff_check_exit_code": 0
+  }
+}

@@ -20,6 +20,8 @@ import { ListNodiaAiMessagesUseCase } from './use-case/list-nodia-ai-messages.us
 import { AdmitNodiaAiMessageUseCase } from './use-case/admit-nodia-ai-message.use-case.js';
 import { ExpireNodiaAiConversationsUseCase } from './use-case/expire-nodia-ai-conversations.use-case.js';
 import { NodiaAiConversationController } from './nodia-ai-conversation.controller.js';
+import { NodiaAiRunControlController } from './nodia-ai-run-control.controller.js';
+import { CancelNodiaAiRunUseCase } from './use-case/cancel-nodia-ai-run.use-case.js';
 import { NodiaAiRuntimePolicyModule } from '../nodia-ai-runtime/config/runtime-policy.module.js';
 import { NodiaAiContextModule } from '../nodia-ai-context/nodia-ai-context.module.js';
 import { NodiaAiAdapterModule } from '../nodia-ai-adapter/nodia-ai-adapter.module.js';
@@ -48,7 +50,11 @@ import {
       NodiaAiMessagePart,
     ]),
   ],
-  controllers: [NodiaAiConversationController, NodiaAiConnectionsController],
+  controllers: [
+    NodiaAiConversationController,
+    NodiaAiConnectionsController,
+    NodiaAiRunControlController,
+  ],
   providers: [
     NodiaAiConversationService,
     CreateNodiaAiConversationUseCase,
@@ -62,6 +68,7 @@ import {
     UpdateNodiaAiConversationUseCase,
     ListNodiaAiMessagesUseCase,
     AdmitNodiaAiMessageUseCase,
+    CancelNodiaAiRunUseCase,
     ExpireNodiaAiConversationsUseCase,
     UpdateNodiaAiRoutingUseCase,
     NodiaAiConnectionsService,

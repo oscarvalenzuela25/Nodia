@@ -1,0 +1,121 @@
+{
+  "schema": "nodia-ai-ai40-draft-browser-evidence-v1",
+  "task": "AI-40",
+  "checked_on": "2026-10-23",
+  "observed_at_host_utc": "2026-10-23T15:38:20.755952+00:00",
+  "status": "scoped_browser_draft_acceptance_passed",
+  "runtime_adoption": false,
+  "capability_publication": false,
+  "approval_granted": false,
+  "prior_implementation_evidence": "docs/evidence/nodia-ai-ai40-implementation-r03.json",
+  "source_sha256": {
+    "nodia-client/src/modules/nodiaAi/infrastructure/useServices.ts": "bf1698b03f8c9433b67b422bcc798174b4b03aff88b17bae78d9aed40c6988e2",
+    "nodia-client/src/modules/nodiaAi/infrastructure/useConversationDraft.ts": "aeb892cb783dbddc1aefece82dca98fc8c60c42de3080b6afc285e9e7130c721",
+    "nodia-client/src/modules/nodiaAi/infrastructure/conversationDrafts.ts": "cc811164a962772e07e584624b9980af52f6a124f1433b47626dafcda02068f1",
+    "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx": "eb9e50c1377671267e27e861255b0604876c2ea2678a5152900e4751bf632dcc",
+    "nodia-client/src/test/modules/nodiaAi/infrastructure/useServices.test.tsx": "b24f1b2199c26810564d37f4ac7329c13e5b0e0cdc84107d8bfb289f272b1bc0",
+    "nodia-client/src/test/modules/nodiaAi/infrastructure/useConversationDraft.test.tsx": "d501a44277d314efd7a1eeb926ad7b28e58a6f916bd2020959307c1984a0f7a6",
+    "nodia-client/src/test/modules/nodiaAi/infrastructure/conversationDrafts.test.ts": "2477b4a4185421b29cede4f28f027313f2e57adafa661f9afecfb23d3ce6edfb",
+    "nodia-client/src/test/store/authStore.test.ts": "8445d2939584d45f66b228598dfcb7503701721627f7c72f1b670eaa9d25d0c7"
+  },
+  "qa": {
+    "atomic_tests_passed": 73,
+    "atomic_test_files": 4,
+    "existing_page_regressions_passed": 54,
+    "new_page_suites": 0,
+    "final_global_suite_claimed": false,
+    "lint": "passed, five affected files",
+    "typecheck": "passed in final npm run build",
+    "build": {
+      "command": "npm run build",
+      "exit_code": 0,
+      "transformed_modules": 2712,
+      "vite_duration_seconds": 11.33,
+      "warning": "Existing minified chunk above 500kB; no new performance acceptance claimed.",
+      "index_html_sha256": "200384c98c34b78615c2754064ed8d428dc1c08d1f8855d7f2ac857608b1ccd8"
+    }
+  },
+  "browser": {
+    "surface": "real in-app browser, authenticated Vite client against Linux VM R03",
+    "base_url": "http://localhost:5174",
+    "proxy_override": "process-only loopback 3100 tunnel to VM3000; persisted local .env unchanged",
+    "chat_id": "ec626b72-1f32-4486-9f3a-8263cffce267",
+    "synthetic_text": "AI40-BORRADOR-A · café, acción y continuidad 🧭\nSólo texto sin enviar.",
+    "checks_passed": [
+      "Exact multiline Unicode draft survives full reload after authorized detail",
+      "Drawer open/cancel preserves draft, selection and controls; apply never clicked",
+      "Internal SPA navigation Inicio → NodiaAI → same chat restores exact draft after remount",
+      "Changing A → B does not expose A text in B; returning to A restores A text",
+      "Final remount screenshot shows exact text and enabled editor/send control",
+      "Operator clears only own unsent marker; reload observes empty field"
+    ],
+    "other_chat": {
+      "id": "a160f615-ea41-4a05-831d-acdbb413ec4d",
+      "draft_empty": true,
+      "provider_available": false,
+      "new_text_entered": false,
+      "limitation": "No acceptance of simultaneous editing of two usable real chats; Gemini connection was not changed."
+    },
+    "screenshot": "docs/evidence/nodia-ai-ai40-draft-browser-r01.jpg",
+    "screenshot_sha256": "491809d6d6dd7767427a6883d7d54d71244eca39c66772a941c0fb2bc4b0fc08",
+    "draft_sent": false,
+    "configuration_applied": false,
+    "auth_storage_or_tokens_extracted": false,
+    "direct_storage_injection": false,
+    "markers_retired": true
+  },
+  "native_image_evidence": {
+    "path": "docs/evidence/nodia-ai-ai40-native-images-r01.json",
+    "sha256": "bbc93a97374abf032b40231f03108232c6e044fb68c19b422b5ffa0a8a4769e8",
+    "real_generations": 3,
+    "exact_mimes": [
+      "image/png",
+      "image/jpeg",
+      "image/webp"
+    ],
+    "adopted_into_active_R03": false
+  },
+  "limits": [
+    "Browser acceptance is Vite against authenticated Linux backend, not compiled nginx delivery or Windows native Codex.",
+    "No live logout/account-switch/revocation/90-day-expiry simulation; atomic tests cover corresponding draft logic where stated.",
+    "Initial same-actor session renewal toast was observed before the final code fence; no final-code forced token-renewal acceptance claimed.",
+    "Existing host/VM clock skew is not corrected; no cross-clock temporal expiry guarantee.",
+    "General cached-history freshness on resume is outside this draft fix.",
+    "No browser message admission, MCP call or business write was requested; native probes use disposable SQL and diagnostic handler.",
+    "Native image transport proof does not accept R2 upload, real attachment admission, autonomous worker, UI images or images combined with MCP."
+  ],
+  "operational_post_browser": {
+    "chats": 1,
+    "messages": 10,
+    "runs": 5,
+    "dispatches": 6,
+    "tool_receipts": 7,
+    "executions": 1,
+    "effect_receipts": 1,
+    "financial_effects": 1,
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0,
+    "new_messages_runs_or_effects": 0
+  },
+  "knowledge_validation": {
+    "check": "passed",
+    "build": "passed",
+    "context_build": "passed",
+    "source_documents": 60,
+    "excluded_documents": 29,
+    "published_fragments": 31,
+    "published_capabilities": 74,
+    "release_id": "aa65da06b352743b1f937e8613c3c34bc0caf86db94be4993954a1b7814113d0",
+    "unchanged_from_candidate_build": true,
+    "new_publication": false
+  },
+  "final_repository_checks": {
+    "git_diff_check": "passed",
+    "changed_text_files_checked_UTF8_LF": 48,
+    "CRLF_files": 0,
+    "source_hash_mismatches": 0,
+    "affected_ficha_and_delivery_missing_links": 0,
+    "approved_attachments_byte_identical_to_HEAD": true
+  }
+}

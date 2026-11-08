@@ -10,8 +10,6 @@ import re
 import unicodedata
 from contextlib import asynccontextmanager
 from pathlib import Path
-from mimetypes import guess_type as guess_upload_mime
-from mimetypes import add_type as register_upload_mime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -58,23 +56,10 @@ def attachment_digest(attachments: list[NativeAttachment]) -> str | None:
         for item in attachments], sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
-def prepare_web_native_names() -> None:
-    """Register only the standard audio-WebM extension at explicit Web use.
-
-    Python's built-in/system MIME tables differ across hosts. An absent .weba
-    registration can be supplied through the public MIME API; a conflicting
-    existing registration is rejected instead of changing another MIME mapping.
-    Importing this module never mutates the process MIME database.
-    """
-    observed = guess_upload_mime("attachment.weba")[0]
-    if observed is None:
-        register_upload_mime("audio/webm", ".weba")
-    if guess_upload_mime("attachment.weba")[0] != "audio/webm":
-        raise ServiceError("attachment_adapter_unverified", "El transporte Web no conserva el tipo de audio validado.", 409)
 
 
 @asynccontextmanager
-async def materialize(attachments: list[NativeAttachment], inspector: AttachmentInspector | None, *, web_upload: bool = False):
+async def materialize(attachments: list[NativeAttachment], inspector: AttachmentInspector | None):
     if not attachments:
         yield []
         return
@@ -89,12 +74,6 @@ async def materialize(attachments: list[NativeAttachment], inspector: Attachment
         total = 0
         for index, item in enumerate(attachments):
             suffix = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp", "application/pdf": ".pdf", "audio/wav": ".wav", "audio/ogg": ".ogg", "audio/webm": ".webm", "audio/mpeg": ".mp3", "audio/mp4": ".m4a"}[item.media_type]
-            if web_upload and item.kind == "audio" and item.media_type == "audio/webm":
-                # gemini-webapi 2.1.1 derives multipart MIME from this private
-                # filename. .webm guesses video/webm; .weba preserves audio/webm
-                # without transcoding or changing the content/hash contract.
-                suffix = ".weba"
-                prepare_web_native_names()
             path = Path(directory) / (str(index) + suffix)
             digest = hashlib.sha256()
             size = 0
@@ -175,7 +154,7 @@ class NativeAttachmentProofs:
 
     @staticmethod
     def key(engine, resource, session, model, effort, configuration, kind, media_type):
-        return (engine, resource, session, model, effort, configuration, kind, media_type, "gemini-webapi/2.1.1" if engine == "web" else "antigravity-cli/1.3.1", "nodia-ai-native-attachments/4")
+        return (engine, resource, session, model, effort, configuration, kind, media_type, "antigravity-cli/1.3.1", "nodia-ai-native-attachments/4")
 
     def supports(self, engine, request, kind, media_type: str | None = None) -> bool:
         # A kind-only query is a display summary. Admission always supplies the

@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "status": "independent_UI_saved_LOW_selection_MCP_qualification_passed",
+  "receipts": [
+    {
+      "path": "ops/lab/artifacts/antigravity-low-qualification-verification-r01/antigravity-low-qualification-bootstrap-VM-r01.json",
+      "sha256": "b8e324dd45955605ab44fddcaaca5b43b1555431fcd4fb8460078e0e7ef0e929",
+      "bytes": 1054
+    },
+    {
+      "path": "ops/lab/artifacts/antigravity-low-qualification-verification-r01/antigravity-low-qualification-preflight-VM-r01.json",
+      "sha256": "3cb892b9cddc64eb3b9a285ce2806d4de4696ad32f08355f45a9a06de02de119",
+      "bytes": 4133
+    },
+    {
+      "path": "ops/lab/artifacts/antigravity-low-qualification-verification-r01/antigravity-low-qualification-execute-VM-r01.json",
+      "sha256": "e24d2e265750a8f7bfb1b0589d1cfd6e28fdb67993560765ebc1b869c533551a",
+      "bytes": 4681
+    }
+  ],
+  "operator": {
+    "path": "ops/lab/artifacts/antigravity-low-selection-qualification-r01/control-operator.py",
+    "sha256": "a8c2ba664cf68ff6d604d78401d06409d318039b3acfa77de0f9856bab49aeb6",
+    "bytes": 13181
+  },
+  "plan": {
+    "path": "ops/lab/artifacts/antigravity-low-selection-qualification-r01/plan.json",
+    "sha256": "21f4be540a4ef7b0f799db02374f05b1548026fcb84c03010df3dbbf0629825c",
+    "bytes": 10420
+  },
+  "control": {
+    "path": "ops/lab/artifacts/antigravity-low-selection-qualification-r01/control.mjs",
+    "sha256": "4a089cdff7b92be70faaa7eb6927e481868a6587398cb82e1e9492a700b935d1",
+    "bytes": 16554
+  },
+  "bootstrap": {
+    "path": "ops/lab/artifacts/antigravity-low-selection-qualification-r01/bootstrap.py",
+    "sha256": "ee27a8bb228e4b7861b1528f9053f65661530255c1b54609c4df5acae87720dd",
+    "bytes": 129005
+  },
+  "saved_selection_origin": {
+    "path": "ops/lab/artifacts/antigravity-low-selection-qualification-r01/materials/low-chat-selection.json",
+    "sha256": "46e2f39881682c799c8ebfa41f45e1361694118660e39e6787192e1b6e6e9ee4",
+    "bytes": 580
+  },
+  "observed": {
+    "case": "L",
+    "attempt_id": "6f18c67c-534e-47d5-8904-b3e41b3fcbf2",
+    "status": "passed",
+    "start_requests": 1,
+    "fixture_accepted": 1,
+    "fixture_rejected": 0,
+    "expected_public_call": {
+      "name": "nodia_capabilities_select",
+      "arguments": {
+        "capability_ids": [
+          "nodia_invoices_ocr"
+        ],
+        "catalog_version": "nodia-ai-ai15-reads/1"
+      }
+    },
+    "actual_public_callback_arguments": {
+      "capability_ids": [
+        "nodia_invoices_ocr"
+      ],
+      "catalog_version": "nodia-ai-ai15-reads/1"
+    },
+    "production_schema_validated": true,
+    "padding_ASCII_bytes": 0,
+    "native_measurement": {
+      "measurementContractVersion": "nodia-ai-context-budget/1",
+      "measurementScope": "initial_native_prompt",
+      "measurementKind": "exact",
+      "canonicalUtf8Bytes": 438,
+      "catalogUtf8Bytes": 12708,
+      "overheadUtf8Bytes": 1312,
+      "totalUtf8Bytes": 14458,
+      "maxUtf8Bytes": 262144,
+      "modelContextTokens": null,
+      "firstMcpListingUpperBoundUtf8Bytes": 15832
+    },
+    "operator_probe_elapsed_ms": 11166,
+    "operator_probe_elapsed_scope": "adapter.probeMcp_call_including_protocol_and_cleanup_not_vendor_latency",
+    "actual_native_timeout_seconds": 119,
+    "terminal": {
+      "engine": "agentic",
+      "attempt_id": "6f18c67c-534e-47d5-8904-b3e41b3fcbf2",
+      "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+      "session_generation": "0ea0c22e7d6747f19f7ac0d96c23e585",
+      "operation_ref": "6f18c67c-534e-47d5-8904-b3e41b3fcbf2",
+      "terminal_proof_id": "956ccd60-0c2a-427d-94c7-81b07248c943",
+      "process_closed": true,
+      "outcome": "completed"
+    },
+    "acknowledged": true,
+    "pending_identity": false,
+    "binding": {
+      "selection": {
+        "connection_id": "2",
+        "effort_id": "low",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-low"
+      },
+      "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+      "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+      "session_generation": "0ea0c22e7d6747f19f7ac0d96c23e585"
+    },
+    "quiet_verified_after": true,
+    "SQL_quiet_after": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "runtime_after": {
+      "services": {
+        "nodia-api": {
+          "MainPID": "545973",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+          "ActiveState": "active"
+        },
+        "nodia-ai-worker": {
+          "MainPID": "557212",
+          "WorkingDirectory": "/opt/nodia/releases/nodia-server-invoice-ocr-r04",
+          "ActiveState": "active"
+        },
+        "nginx": {
+          "MainPID": "3630787",
+          "WorkingDirectory": "",
+          "ActiveState": "active"
+        },
+        "nodia-keyring": {
+          "MainPID": "3630841",
+          "WorkingDirectory": "",
+          "ActiveState": "active"
+        }
+      },
+      "native": {
+        "id": "dfd70b10424c1aad90e26897166b7d7cfc00471a68c3c974a81884d9209fdd7a",
+        "image": "sha256:e3b5f1ecc329ca1c1d81e20785734e4647e0b61e3aa4df428949e735cfc9e779",
+        "started_at": "2026-10-26T03:06:18.949917773Z",
+        "descriptor_sha256": "d27816454ab40e774919a16d3b99da50ccdc3c1e570ef244832b30b46a95f89d"
+      },
+      "server_manifest_sha256": "8f83d1525802a08f468e8132ff496a0976493e3b32941366888b631e56273bc8",
+      "native_source_count": 52,
+      "client_manifest_sha256": "4157efa4be5e68ff6de2058910da4ae058e76f9d4ecbb40434a305809c8d4bdf",
+      "nginx_sha256": "9f946a943a7502207903ca06771954f28d423b6ffac23f5ab4a0103b5e2cd3ac",
+      "environment_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+      "native_quiet": {
+        "attempt_receipts": 0,
+        "unknown_markers": 0,
+        "temporary_directories": 0,
+        "active_native_processes": 0
+      },
+      "codex": {
+        "profile_absent": false,
+        "pending": 0,
+        "locks_or_sockets": 0,
+        "records": 3,
+        "sdk_arg0_links": 0,
+        "sdk_binary": null
+      }
+    },
+    "provider_internal_calls": null,
+    "provider_generations": null,
+    "provider_cost": null
+  },
+  "limits": [
+    "11166ms measures monotonic adapter.probeMcp protocol/cleanup elapsed, not vendor latency.",
+    "This is a new diagnostic intent using the actual UI-saved/discovered LOW model/effort; no global provider-field overwrite, automatic fallback or replay of previous HIGH attempts.",
+    "Same9descriptors, no70000-byte padding, actual production selection schema validated; the handler was synthetic and made no business request or OCR.",
+    "Closed completed proof/explicit ACK/quiet applies to this qualification identity only. No natural conversational OCR acceptance follows from this probe.",
+    "Provider internal calls/generations/tokens/cost remain unknown/null. Root operated real SDK/VM; consolidation local only."
+  ]
+}

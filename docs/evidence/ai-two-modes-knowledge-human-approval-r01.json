@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "authority": "Explicit human reply in this task",
+  "statement": "Apruebo las seis revisiones documentales",
+  "review_report": "docs/evidence/ai-two-modes-knowledge-review-r01.json",
+  "scope": "Six listed successor revisions and their existing publication fragments. Documentary approval does not certify operational VM acceptance or new capabilities.",
+  "revisions": [
+    {
+      "document_id": "general-settings.ai-connections",
+      "revision": 7,
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
+      "approved_review_draft_sha256": "0a6eb03766e64ff72c474ed99d96c7e6d2dbe34317dbe95572a201288f17ac08",
+      "content_sha256": "7356cc5b7fa06997c0f79de70eb5ac1d8031e66baa007b3c4ba08e938a95d2a1",
+      "approved_file_sha256": "af94d4e2d7004f6fbdcf475f6e49372a9856428c65d2eaa72a55cdc46aa03eb5"
+    },
+    {
+      "document_id": "general-settings.ai-models-and-health",
+      "revision": 9,
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+      "approved_review_draft_sha256": "cd6667b59ec5d38829f490224b20e21ff3d2fa1c47bbd0bd05664727aec8d9d3",
+      "content_sha256": "942cfef6916bbdd0bcdba7616e6747b615c750f22432d5f4d0333feb5023fdd0",
+      "approved_file_sha256": "6c44a005ce7e8b73273c416e0fb24fb9a880ef9eb82ee7b8de526eb1359a543f"
+    },
+    {
+      "document_id": "general-settings.ai-credentials-and-sessions",
+      "revision": 9,
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
+      "approved_review_draft_sha256": "1e01457d15da44d741946d5a1478c783a7222427743c0781d9b684e6ef82b21c",
+      "content_sha256": "7da7f1b4aba33b5eaa4d9a2c33d3ea086eb5416ed2aff296d925992cf589c001",
+      "approved_file_sha256": "d1d6d0e9cf82ede8a73bb4db01f9e8c200848b0694b808c276d30e1f0e840f1f"
+    },
+    {
+      "document_id": "general-settings.confirmed-ai-configuration",
+      "revision": 3,
+      "path": "docs/nodia-ai/knowledge/general-settings/features/confirmed-ai-configuration.md",
+      "approved_review_draft_sha256": "a2388617cd9c44f33309ef5ef4875d7bf8f2be84c7aa1391b7136c8963fe009f",
+      "content_sha256": "9d42d48d2367e1c4ca73ef479ed31563794e49a48b7f979505e912848015734d",
+      "approved_file_sha256": "a2e63fa9692dffd862665db972218d6199e84b4c18253fac17ff781cad2ed24c"
+    },
+    {
+      "document_id": "general-settings.secure-ai-interaction",
+      "revision": 4,
+      "path": "docs/nodia-ai/knowledge/general-settings/features/secure-ai-interaction.md",
+      "approved_review_draft_sha256": "0cf30458ec3e8ec0884dbf81a0fe4639b8ebdeb282ced1a9fdfc38889ac7926d",
+      "content_sha256": "e42b4e545d652b8c1fbac6479b1968f0965cd9cf06b1acaa9f00b0945591a5a0",
+      "approved_file_sha256": "e2d13cc3eebc01bb344aa9814c65fec33fcc6758d3b0b1bfb25254eced2f18f7"
+    },
+    {
+      "document_id": "businesses.invoice-analysis",
+      "revision": 5,
+      "path": "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md",
+      "approved_review_draft_sha256": "22abbaff96d6251ad0d5d61ed29e4d8dbe0401b4faf91aa4bdf5da288276683d",
+      "content_sha256": "4a424ef77d6d144c4b324fce3d2ef05e9d7314d3b6571fcef238817f56b212f2",
+      "approved_file_sha256": "c2e3301a26d81272bd9c72440f92a8e994cfefb539a43f29520e53b38ca5e1ff"
+    }
+  ]
+}

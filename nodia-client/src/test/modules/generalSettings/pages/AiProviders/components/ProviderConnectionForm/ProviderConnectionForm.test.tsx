@@ -15,14 +15,14 @@ vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 
 const catalog = {
   id: "catalog-google", key: "gemini", name: "Google Gemini", is_active: true,
-  can_use_api_key: true, can_use_token_plan_web: true, can_use_token_plan_agentic: false,
+  can_use_api_key: true, can_use_agentic: true,
   created_at: "", updated_at: "",
 };
 const provider: AiProviderHealthItem = {
   id: "second-connection", key: "gemini", name: "Secondary", catalog_id: catalog.id, catalog,
   isActive: true, status: "healthy", statusBadge: "", serviceState: "", lastCheck: "",
-  latencyMs: 0, mode: "web_session", use_token_plan_web: true, use_token_plan_agentic: false,
-  default_mode: "token_plan_web", hasConnection: true,
+  latencyMs: 0, mode: "agentic", use_agentic: true,
+  default_mode: "agentic", hasConnection: true,
 };
 const renderForm = (onClose: () => void, editing = false) => render(
   <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })}>
@@ -33,7 +33,7 @@ const renderForm = (onClose: () => void, editing = false) => render(
 describe("ProviderConnectionForm", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.mocked(services.getAiProviderCatalog).mockResolvedValue([catalog, { ...catalog, id: "api-only", name: "API only", can_use_token_plan_web: false }]);
+    vi.mocked(services.getAiProviderCatalog).mockResolvedValue([catalog, { ...catalog, id: "api-only", name: "API only", can_use_agentic: false }]);
     vi.mocked(services.createAiProvider).mockResolvedValue({ id: "created", key: "gemini", is_active: true, created_at: "", updated_at: "" });
     vi.mocked(services.updateAiProvider).mockResolvedValue({ id: provider.id, key: "gemini", is_active: true, created_at: "", updated_at: "" });
   });
@@ -45,12 +45,13 @@ describe("ProviderConnectionForm", () => {
     await user.click(screen.getByRole("button", { name: "Proveedor" }));
     expect(screen.getByText("API only")).toBeInTheDocument();
     await user.click(screen.getByText("Google Gemini"));
-    expect(screen.getByRole("switch", { name: "Sesión Agéntica" })).toBeDisabled();
-    await user.click(screen.getByRole("switch", { name: /Web/i }));
+    expect(screen.getByRole("switch", { name: "Agentic" })).toBeEnabled();
+    expect(screen.queryByRole("switch", { name: /Web/i })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("switch", { name: "Agentic" }));
     await user.click(screen.getByRole("button", { name: "Guardar" }));
     await waitFor(() => expect(services.createAiProvider).toHaveBeenCalledWith(expect.objectContaining({
       catalog_id: catalog.id, use_api_key: false, auto_rotate_api_keys: false,
-      use_token_plan_web: true, use_token_plan_agentic: false, default_mode: "token_plan_web",
+      use_agentic: true, default_mode: "agentic",
     })));
     expect(close).toHaveBeenCalledOnce();
     expect(sileo.success).toHaveBeenCalledOnce();
@@ -58,18 +59,18 @@ describe("ProviderConnectionForm", () => {
 
   it("creates an OpenAI API connection without offering unsupported subscription modes", async () => {
     const user = userEvent.setup(), close = vi.fn();
-    vi.mocked(services.getAiProviderCatalog).mockResolvedValue([{ ...catalog, id: "openai-catalog", key: "openai", name: "OpenAI", can_use_token_plan_web: false, can_use_token_plan_agentic: false }]);
+    vi.mocked(services.getAiProviderCatalog).mockResolvedValue([{ ...catalog, id: "openai-catalog", key: "openai", name: "OpenAI", can_use_agentic: false, }]);
     renderForm(close);
     await waitFor(() => expect(screen.getByRole("button", { name: "Proveedor" })).toHaveAttribute("aria-disabled", "false"));
     await user.click(screen.getByRole("button", { name: "Proveedor" })); await user.click(screen.getByText("OpenAI"));
     expect(screen.getByRole("switch", { name: "API key" })).toBeChecked();
-    expect(screen.getByRole("switch", { name: /Web/i })).toBeDisabled();
-    expect(screen.getByRole("switch", { name: "Sesión Agéntica" })).toBeDisabled();
+    expect(screen.queryByRole("switch", { name: /Web/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("switch", { name: "Agentic" })).toBeDisabled();
     const defaultSwitch = screen.getByRole("switch", { name: "Predeterminado" });
     expect(defaultSwitch.compareDocumentPosition(screen.getByRole("switch", { name: "Activo" })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     await user.click(defaultSwitch);
     await user.click(screen.getByRole("button", { name: "Guardar" }));
-    await waitFor(() => expect(services.createAiProvider).toHaveBeenCalledWith(expect.objectContaining({ catalog_id: "openai-catalog", use_api_key: true, default_mode: "api_key", use_token_plan_web: false, use_token_plan_agentic: false, is_default: true })));
+    await waitFor(() => expect(services.createAiProvider).toHaveBeenCalledWith(expect.objectContaining({ catalog_id: "openai-catalog", use_api_key: true, default_mode: "api_key", use_agentic: false, is_default: true })));
   });
 
   it("keeps API enabled and rotation intact when editing a historical connection", async () => {

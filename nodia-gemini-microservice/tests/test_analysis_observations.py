@@ -54,11 +54,11 @@ class ObservationHTTPTest(AppTestCase):
         self.assertEqual(snapshot.json()['events'][-1]['stage'], 'extraction_validated')
         self.assertEqual(self.client.get(f'/analysis-observations/{uuid4()}', headers=HEADERS).status_code, 404)
         self.assertEqual(self.client.post('/analyze-invoice', headers=headers).status_code, 409)
-        self.assertEqual(self.web.analyze_invoice.await_count, 1)
+        self.assertEqual(self.agentic.analyze_invoice.await_count, 1)
 
     def test_multipart_validation_failure_is_observed_before_inference(self):
         identifier = str(uuid4())
         self.assertEqual(self.client.post('/analyze-invoice', headers={**HEADERS, 'X-Nodia-Analysis-Id': identifier}).status_code, 422)
         snapshot = self.client.get(f'/analysis-observations/{identifier}', headers=HEADERS).json()
         self.assertEqual(snapshot['state'], 'failed')
-        self.web.analyze_invoice.assert_not_awaited()
+        self.agentic.analyze_invoice.assert_not_awaited()

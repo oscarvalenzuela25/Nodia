@@ -1,4 +1,5 @@
 import BusinessStatusFilter from "../../../../components/BusinessStatusFilter/BusinessStatusFilter";
+import { TABLE_PANEL_RADIUS } from "../../../../../../theme/tablePanel";
 import InputSearch from "../../../../../../components/inputs/InputSearch";
 import MobileRecordCard from "../../../../../../components/MobileRecordCard";
 import { useMediaQuery, useTheme } from "@mui/material";
@@ -202,7 +203,7 @@ mobile ? <Box sx={{ display: "grid", gap: 2 }}>
           </Box> : (          <TableContainer
             component={Paper}
             variant="outlined"
-            sx={{ borderRadius: 2, overflowX: "auto" }}
+            sx={{ borderRadius: TABLE_PANEL_RADIUS, overflowX: "auto" }}
           >
             <Table>
               <TableHead>

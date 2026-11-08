@@ -1,6 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import type { NodiaAiJsonObject } from '../../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
-
 export type SecureFlowKind =
   | 'api_key_create'
   | 'api_key_update'
@@ -35,7 +34,7 @@ export type SecureFlowNativeRequest = NodiaAiJsonObject & {
   request_id: string;
   provider_id: string;
   provider_key: 'gemini' | 'openai';
-  mode: 'token_plan_web' | 'token_plan_agentic';
+  mode: 'agentic';
 };
 export type SecureFlowDescriptor = NodiaAiJsonObject & {
   schema_version: 1;
@@ -166,11 +165,8 @@ export function secureDescriptor(value: unknown): SecureFlowDescriptor {
       !/^[1-9][0-9]{0,18}$/.test(request.provider_id) ||
       BigInt(request.provider_id) > 9223372036854775807n ||
       !['gemini', 'openai'].includes(String(request.provider_key)) ||
-      !['token_plan_web', 'token_plan_agentic'].includes(
-        String(request.mode),
-      ) ||
-      (request.provider_key === 'openai' &&
-        request.mode !== 'token_plan_agentic')
+      !['agentic'].includes(String(request.mode)) ||
+      (request.provider_key === 'openai' && request.mode !== 'agentic')
     )
       return invalid();
   }
@@ -183,7 +179,7 @@ export function secureDescriptor(value: unknown): SecureFlowDescriptor {
       typeof ref.provider_id !== 'string' ||
       !/^[1-9][0-9]{0,18}$/.test(ref.provider_id) ||
       !['gemini', 'openai'].includes(String(ref.provider_key)) ||
-      !['token_plan_web', 'token_plan_agentic'].includes(String(ref.mode)) ||
+      !['agentic'].includes(String(ref.mode)) ||
       typeof ref.job_id !== 'string' ||
       !/^[a-zA-Z0-9_-]{1,128}$/.test(ref.job_id)
     )
@@ -209,4 +205,37 @@ export function secureFlowReceipt(
     id: descriptor.reference,
     operation: descriptor.flow_kind,
   };
+}
+
+/** Read-only validation of immutable pre-retirement receipts; never authorizes native I/O. */
+export function historicalSecureDescriptor(
+  value: unknown,
+): SecureFlowDescriptor {
+  if (!secureObject(value)) return secureDescriptor(value);
+  const projected = structuredClone(value);
+  const request = projected.native_request;
+  const reference = projected.native_reference;
+  if (
+    secureObject(request) &&
+    secureObject(reference) &&
+    request.mode !== reference.mode
+  )
+    throw new InternalServerErrorException('nodia_ai:invalid_persisted_state');
+  for (const witness of [request, reference]) {
+    if (!secureObject(witness)) continue;
+    if (
+      witness.mode === 'token_plan_agentic' ||
+      witness.mode === 'token_plan_web'
+    ) {
+      if (
+        witness.mode === 'token_plan_web' &&
+        witness.provider_key !== 'gemini'
+      )
+        throw new InternalServerErrorException(
+          'nodia_ai:invalid_persisted_state',
+        );
+      witness.mode = 'agentic';
+    }
+  }
+  return secureDescriptor(projected);
 }

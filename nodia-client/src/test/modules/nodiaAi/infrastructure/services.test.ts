@@ -143,17 +143,30 @@ describe("NodiaAI HTTP boundary", () => {
     http.get.mockResolvedValue({data: {...observation, selection: {...selection, model_id: "another-synthetic-model"}}});
     await expect(getNodiaAiEligibility(selection)).rejects.toThrow("nodia_ai:invalid_response");
   });
+  it("retains API tools availability without MCP and rejects another mode's observation", async () => {
+    const api = { ...selection, mode: "api_key" as const };
+    const result = { selection: api, available: true, reason: null, observed_at: null,
+      supports_tools: true, supports_mcp: false, routing_target: null };
+    http.get.mockResolvedValue({ data: result });
+    expect(await getNodiaAiEligibility(api)).toEqual(result);
+    expect(http.get).toHaveBeenCalledExactlyOnceWith(`/nodia-ai/connections/${api.connection_id}/eligibility`, {
+      params: { mode: "api_key", model_id: api.model_id }, signal: undefined,
+    });
+    http.get.mockResolvedValue({ data: { ...result, selection } });
+    await expect(getNodiaAiEligibility(api)).rejects.toThrow("nodia_ai:invalid_response");
+  });
   it("does not infer execution availability from a catalog entry", async () => {
     const catalog = {items: [{connection_id: selection.connection_id, label: "Synthetic", provider_key: "gemini", is_active: true, modes: [{mode: selection.mode, configured_selection: null, configuration: "incomplete", authentication: "unknown", inference: "unknown", tools: "unsupported", observed_at: null, block_reason: null, models: []}]}], next_cursor: null};
     http.get.mockResolvedValue({data: catalog});
     expect(await getNodiaAiCatalog()).toEqual(catalog);
     expect(catalog.items[0]).not.toHaveProperty("available");
   });
-  it("passes the same idempotency identity on explicit retry after an uncertain admission", async () => {
+  it("allows the local admission budget and preserves the same identity on an explicit uncertain retry", async () => {
     const input = {client_message_id: messageId, expected_conversation_revision: 1, parts: [{kind: "text" as const, text: "Synthetic request"}]};
     http.post.mockRejectedValueOnce(new Error("network timeout"));
     await expect(admitNodiaAiMessage(chatId, input)).rejects.toThrow("network timeout");
     expect(http.post).toHaveBeenCalledTimes(1);
+    expect(http.post).toHaveBeenCalledWith(`/nodia-ai/conversations/${chatId}/messages`, input, {timeout: 45_000});
     http.post.mockResolvedValue({data: {message_id: messageId, conversation_revision: 2, run}});
     await admitNodiaAiMessage(chatId, input);
     expect(http.post.mock.calls[0]).toEqual(http.post.mock.calls[1]);

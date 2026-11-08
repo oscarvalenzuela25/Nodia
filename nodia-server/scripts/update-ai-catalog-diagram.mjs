@@ -12,7 +12,7 @@ assert(provider, 'ai_providers must already exist.');
 const removed = provider.fields.filter((field) => ['key', 'mode', 'fields_version'].includes(field.name));
 for (const field of removed) assert(!JSON.stringify(updated.references).includes(field.id), `Referenced legacy column: ${field.name}`);
 provider.fields = provider.fields.filter((field) => !removed.includes(field));
-for (const name of ['use_api_key', 'use_token_plan_web', 'use_token_plan_agentic', 'is_default']) {
+for (const name of ['use_api_key', 'use_agentic', 'is_default']) {
   if (!provider.fields.some((field) => field.name === name)) provider.fields.push({
     id: `AiProv_${name}`, name, type: 'BOOLEAN', default: 'false', check: '', primary: false,
     unique: false, notNull: true, increment: false, comment: 'Configuración de la instancia; no acredita disponibilidad del servicio.',
@@ -21,16 +21,15 @@ for (const name of ['use_api_key', 'use_token_plan_web', 'use_token_plan_agentic
 if (!provider.fields.some((field) => field.name === 'default_mode')) provider.fields.push({
   id: 'AiProv_default_mode', name: 'default_mode', type: 'VARCHAR', size: '32', default: '', check: '',
   primary: false, unique: false, notNull: false, increment: false,
-  comment: 'Modo preferido entre los use_* habilitados: api_key / token_plan_web / token_plan_agentic.',
+  comment: 'Modo preferido entre los use_* habilitados: api_key / agentic.',
 });
 const definitions = {
   can_use_api_key: 'Permite configurar API; no certifica disponibilidad. Gemini y OpenAI: true.',
-  can_use_token_plan_web: 'Permite configurar sesión Web. Gemini: true; OpenAI: false.',
-  can_use_token_plan_agentic: 'Permite configurar Agentic. Gemini y OpenAI: true en catálogo objetivo (migración Codex). No demuestra sesión ni inferencia.',
+  can_use_agentic: 'Permite configurar Agentic. Gemini y OpenAI: true en catálogo objetivo (migración Codex). No demuestra sesión ni inferencia.',
 };
 for (const [name, comment] of Object.entries(definitions)) {
   const existing = catalog.fields.find((field) => field.name === name);
-  if (existing) { if (name === 'can_use_token_plan_agentic') existing.comment = comment; continue; }
+  if (existing) { if (name === 'can_use_agentic') existing.comment = comment; continue; }
   catalog.fields.push({ id: `AiCat_${name}`, name, type: 'BOOLEAN', default: 'false',
     check: '', primary: false, unique: false, notNull: true, increment: false, comment });
 }

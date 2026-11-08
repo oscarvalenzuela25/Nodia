@@ -1,0 +1,24 @@
+{
+  "deleted_exact_unreferenced_volumes": [
+    "5e3f681d61e7fa1b31e6a912eab9c7cdea8e5c6c8a7d298aa1fb077e92761073",
+    "01a1753bab92be8024b0e8a8a55eef77fccc19e2406898b1a0541e81a294cd44"
+  ],
+  "preserved_verified_off_vm": true,
+  "catalog_sha256": "1fa91de120a74ce271c29e7214a081051a8a5093c38acec1688cad696870c03c",
+  "bytes_available_before": 774152192,
+  "bytes_available_after": 3164958720,
+  "health_http": {
+    "http://127.0.0.1:8080/": 200,
+    "http://127.0.0.1:8000/health": 200
+  },
+  "service_restarts": 0,
+  "database_schema_or_rows_changed": false,
+  "schema_version": 1,
+  "recorded_on": "2026-11-01",
+  "scope": "VM disk capacity prerequisite for authorized Teacher deployment",
+  "original_volume_provenance": "unknown; treated as private data",
+  "private_recovery_catalog": "ops/lab/artifacts/teacher-vm-deployment-20261101-r01/storage/catalog.json",
+  "recovery_verification": "AES-256-GCM authenticated, DPAPI CurrentUser key wrapping, producer/receiver digest equality and complete isolated local restoration with byte/uid/gid/mode/mtime_ns/xattr comparison for both volumes",
+  "releases_profiles_active_pgdata_and_redis_preserved": true,
+  "force_or_prune_used": false
+}

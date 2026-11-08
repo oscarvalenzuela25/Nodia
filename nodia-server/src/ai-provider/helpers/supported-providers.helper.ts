@@ -4,16 +4,13 @@ import {
 } from '../constants/supported-providers.constant.js';
 import type { AiProvider } from '../entities/ai-provider.entity.js';
 import { configuredModelFields } from './model-observation.helper.js';
-
 export const getSupportedAiProviders = (): SupportedProviderDef[] => {
   const envVal = process.env.SUPPORTED_AI_PROVIDERS;
   if (!envVal || envVal.trim() === '') {
     return SUPPORTED_AI_PROVIDERS;
   }
-
   const raw = envVal.trim();
   let keys: string[] = [];
-
   if (raw.startsWith('[') && raw.endsWith(']')) {
     try {
       const parsed = JSON.parse(raw);
@@ -29,16 +26,13 @@ export const getSupportedAiProviders = (): SupportedProviderDef[] => {
       .map((item) => item.trim().toLowerCase())
       .filter((item) => item.length > 0);
   }
-
   if (keys.length === 0) {
     return SUPPORTED_AI_PROVIDERS;
   }
-
   return SUPPORTED_AI_PROVIDERS.filter((p) =>
     keys.includes(p.key.toLowerCase()),
   );
 };
-
 export const getSupportedProviderByKey = (
   key: string,
 ): SupportedProviderDef | undefined => {
@@ -46,7 +40,6 @@ export const getSupportedProviderByKey = (
     (p) => p.key.toLowerCase() === key.trim().toLowerCase(),
   );
 };
-
 export const sanitizeProviderFields = <T extends Partial<AiProvider>>(
   provider: T,
 ) => {
@@ -57,18 +50,11 @@ export const sanitizeProviderFields = <T extends Partial<AiProvider>>(
     ...provider,
     key: provider.catalog?.key ?? provider.key,
     mode:
-      provider.default_mode ??
-      provider.mode ??
-      (provider.use_token_plan_agentic
-        ? 'token_plan_agentic'
-        : provider.use_token_plan_web
-          ? 'web_session'
-          : provider.use_api_key
-            ? 'api_key'
-            : null),
+      provider.default_mode !== undefined
+        ? provider.default_mode
+        : (provider.mode ?? null),
     fields: configuredModelFields(provider.fields ?? {}),
   };
-
   // Ensure available_models is an array if present, but never inject default models
   if (
     result.fields.available_models &&
@@ -76,7 +62,6 @@ export const sanitizeProviderFields = <T extends Partial<AiProvider>>(
   ) {
     result.fields.available_models = [];
   }
-
   // Mask any direct sensitive keys in fields if any exist
   const sensitiveKeys = [
     'secret',

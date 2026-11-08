@@ -1,0 +1,315 @@
+{
+  "schema_version": 1,
+  "task": "api_chat_selective_server_candidate_verification",
+  "status": "passed",
+  "installed_new_release": "/opt/nodia/releases/nodia-server-api-chat-r01",
+  "release_manifest_sha256": "ceb774256fd8c2030ece02c37fa872d819c2963c8f00fc71de7933de92b04451",
+  "base_manifest_sha256": "5771c60b6ab896a51f5486ac0082c0d5a91c9a3d54b2a992004632cb4509dfad",
+  "knowledge_release_id": "184d9c344b3b0d48362143d700e961fa596fd307cd5251609eb00ab2dfbf30e3",
+  "capabilities": 151,
+  "runtime_files": 4140,
+  "production_scope_files": 42,
+  "artifact_runtime": {
+    "path": "/opt/nodia/operations/api-chat-r01/artifacts/nodia-server-api-chat-r01.runtime.tar.gz",
+    "sha256": "d4184676b6f2104bc55ba14f9630c06ed15b6c65b0a0f5851181443e55feece4",
+    "bytes": 2892364
+  },
+  "artifact_source": {
+    "path": "/opt/nodia/operations/api-chat-r01/artifacts/nodia-server-api-chat-r01.source-r02.tar.gz",
+    "sha256": "612e52b92de416f107af33503765d0bce15fee52717b18f7425ea4b67bccd1b9",
+    "bytes": 7610208,
+    "source_manifest_sha256": "4c99d91d65a2bad77f4be599d0a45dd85df07d79714aeb99fbc6a3d55a8fab8e",
+    "rebuild_script": "rebuild-selective-candidate.py",
+    "expected_knowledge_release_id": "184d9c344b3b0d48362143d700e961fa596fd307cd5251609eb00ab2dfbf30e3"
+  },
+  "verification": {
+    "linux_fullbuild": true,
+    "typescript_program_excludes_buildonly": true,
+    "buildonly_not_emitted": true,
+    "frozen8_preserved": true,
+    "di_api_provider_single_instance": true,
+    "sql_runtime_checks": 19,
+    "sql_gateway_checks": 16,
+    "owned_test_containers_remaining": 0,
+    "real_provider_requests": 0
+  },
+  "operational_adoption": false,
+  "production_database_accessed": false,
+  "services_nginx_timers_changed": false,
+  "runtime_excludes": [
+    "documents",
+    "tests",
+    "build-only snapshots",
+    "maintenance runner",
+    "credentials",
+    ".env"
+  ],
+  "migration_sha256": "db1fc373db7068275bf39689d951a4fb72d1407d371c276755639fec1de94e6e",
+  "checked_at_vm_utc": "2026-10-27T21:21:30.804611+00:00",
+  "build": {
+    "task": "selective_api_candidate_fullbuild",
+    "base_manifest_sha256": "5771c60b6ab896a51f5486ac0082c0d5a91c9a3d54b2a992004632cb4509dfad",
+    "production_modified": false,
+    "checks": [
+      {
+        "name": "input_hashes",
+        "passed": true
+      },
+      {
+        "name": "frozen_runtime_sources",
+        "passed": true
+      },
+      {
+        "name": "snapshot_not_in_typescript_program",
+        "passed": true
+      },
+      {
+        "name": "fullbuild",
+        "passed": true
+      },
+      {
+        "name": "snapshot_not_emitted",
+        "passed": true
+      },
+      {
+        "name": "151_actual_capabilities",
+        "passed": true
+      }
+    ],
+    "implementation_repins": [
+      {
+        "capability_id": "nodia_invoices_ocr",
+        "path": "nodia-server/src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.ts",
+        "previous": "85da446ee69a2fcb0cacdc963ba6d920570bad11e40a6df2ad53fdddd36939c2",
+        "candidate": "17ca29c958abb14722482cc4b413e18e0eb2bccb9f4dc44f7ee61b1a27ca7ae4"
+      }
+    ],
+    "build_exit_code": 0,
+    "knowledge": {
+      "release_id": "184d9c344b3b0d48362143d700e961fa596fd307cd5251609eb00ab2dfbf30e3",
+      "documents": 43,
+      "fragments": 45,
+      "capabilities": 151
+    },
+    "status": "passed",
+    "snapshots_absent_after_build": true
+  },
+  "dependency_injection": {
+    "task": "selective_candidate_DI",
+    "status": "passed",
+    "checks": [
+      "ApiNodiaAiAdapterUseCase",
+      "ApiNodiaAiRuntimeService",
+      "ApiNodiaAiCredentialsService",
+      "ApiNodiaAiAcceptanceService",
+      "ApiProviderService"
+    ],
+    "apiProviderInstances": 1,
+    "providerRequests": 0,
+    "nativeSupervisorsMocked": true,
+    "databaseCalls": 0
+  },
+  "isolated_sql": [
+    {
+      "success": true,
+      "checks": [
+        "fresh installation includes additive API migration once",
+        "two executors race: only one durable attempt can start",
+        "a second module instance cannot reconcile a live physical executor",
+        "concurrent exchanges spend exactly the persisted HTTP dispatch budget",
+        "initial arm is not charged twice and failed over-budget exchange is rolled back",
+        "completed HTTP proof separates local closure from native process claims",
+        "qualification cannot replace original content or a returned nonce after completion",
+        "common checkpoint accepts API proof and ACK is idempotent",
+        "forged closure cannot acknowledge a proof",
+        "rollback refuses to discard recovery metadata after API dispatch",
+        "armed-before-start crash produces a closed unknown tombstone without dispatch/replay",
+        "a stale worker cannot dispatch after reconciliation has fenced its job",
+        "common administrative reconciliation closes the unknown run and releases its SQL slot",
+        "failed terminal SQL rolls back its physical row without inventing a durable proof",
+        "only the same executor with attested completed local work can recover failed terminal persistence",
+        "positive local closure recovery retains payload binding and never replays a request",
+        "completed response with failed SQL persistence settles through common recovery without another generation",
+        "HTTP cannot start from claimed phase before durable arming",
+        "no provider or HTTP requests were attempted during SQL verification"
+      ],
+      "checks_passed": 19,
+      "api_dispatch_rows_observed": 1,
+      "provider_http_requests": 0,
+      "real_credentials": false,
+      "postgres": "16 disposable",
+      "operational_database_accessed": false,
+      "cleanup": "owned container and its volumes removed in finally"
+    },
+    {
+      "success": true,
+      "task": "api_chat_common_gateway_sql",
+      "checks": [
+        "compiled production publication supplies actual read/preparation contracts without fixture registration overrides",
+        "real API adapter and durable runtime consume exactly three shared POST dispatches across discovery and tool continuation",
+        "real ToolGateway persists a preparation receipt without modifying accepted preference state",
+        "API continuation receives actual gateway output rather than mock domain data",
+        "prepared command is bound to the exact synthetic category and owner scope",
+        "anonymous foreign owner wrong hash and fabricated token cannot authorize any execution",
+        "human HTTP confirmation consumes the exact challenge idempotently and never sends another provider request",
+        "confirmed native executor writes one exact SQL preference and committed receipt remains idempotent on replay",
+        "a separate realistic single-function API turn reads the actual committed SQL effect within the same three-POST budget",
+        "API function callback cannot read another owners proposal and leaves no public receipt",
+        "module revocation between HTTP dispatch and callback is revalidated before preparing a new change",
+        "revoked invocation grant cannot borrow a previously frozen tool or create a receipt",
+        "provider-supplied confirmation tool is absent from the catalog and rejected before any gateway or consent action",
+        "missing NodiaAI module rejects admission without contacting a provider",
+        "all API attempts close and ACK through real reconciliation without replay and final SQL is quiet",
+        "no real provider destination or credential was used"
+      ],
+      "checks_passed": 16,
+      "cases": [
+        {
+          "actor": "1",
+          "success_expected": true,
+          "terminal_run_state": "completed",
+          "error_code": null,
+          "synthetic_provider_posts": 3,
+          "provider_dispatches_used": 3,
+          "receipt_tools": [
+            "nodia_capabilities_select",
+            "nodia_preferences_prepare"
+          ],
+          "phases": [
+            "discovery",
+            "execution",
+            "execution"
+          ]
+        },
+        {
+          "actor": "1",
+          "success_expected": true,
+          "terminal_run_state": "completed",
+          "error_code": null,
+          "synthetic_provider_posts": 3,
+          "provider_dispatches_used": 3,
+          "receipt_tools": [
+            "nodia_capabilities_select",
+            "nodia_preferences_list"
+          ],
+          "phases": [
+            "discovery",
+            "execution",
+            "execution"
+          ]
+        },
+        {
+          "actor": "2",
+          "success_expected": false,
+          "terminal_run_state": "unknown",
+          "error_code": "nodia_ai:outcome_unknown",
+          "synthetic_provider_posts": 2,
+          "provider_dispatches_used": 2,
+          "receipt_tools": [
+            "nodia_capabilities_select"
+          ],
+          "phases": [
+            "discovery",
+            "execution"
+          ]
+        },
+        {
+          "actor": "1",
+          "success_expected": false,
+          "terminal_run_state": "unknown",
+          "error_code": "nodia_ai:outcome_unknown",
+          "synthetic_provider_posts": 2,
+          "provider_dispatches_used": 2,
+          "receipt_tools": [
+            "nodia_capabilities_select"
+          ],
+          "phases": [
+            "discovery",
+            "execution"
+          ]
+        },
+        {
+          "actor": "1",
+          "success_expected": false,
+          "terminal_run_state": "unknown",
+          "error_code": "nodia_ai:outcome_unknown",
+          "synthetic_provider_posts": 2,
+          "provider_dispatches_used": 2,
+          "receipt_tools": [
+            "nodia_capabilities_select"
+          ],
+          "phases": [
+            "discovery",
+            "execution"
+          ]
+        },
+        {
+          "actor": "1",
+          "success_expected": false,
+          "terminal_run_state": "unknown",
+          "error_code": "nodia_ai:outcome_unknown",
+          "synthetic_provider_posts": 2,
+          "provider_dispatches_used": 2,
+          "receipt_tools": [
+            "nodia_capabilities_select"
+          ],
+          "phases": [
+            "discovery",
+            "execution"
+          ]
+        }
+      ],
+      "synthetic_provider_http_posts": 14,
+      "real_provider_http_requests": 0,
+      "forbidden_network_requests": 0,
+      "real_credentials": false,
+      "synthetic_http_actor": true,
+      "physical_user_click": false,
+      "production_database_accessed": false,
+      "production_gateway_and_api_adapter": true,
+      "durable_api_runtime": true,
+      "production_publication": true,
+      "preference_effects": 1,
+      "sql_quiet": {
+        "active_jobs": 0,
+        "open_attempts": 0,
+        "busy_slots": 0,
+        "api_pending": 0
+      },
+      "postgres": "16 disposable",
+      "cleanup": "owned container and volumes removed in finally"
+    }
+  ],
+  "reproducibility": {
+    "rebuild_exit_code": 0,
+    "rebuild_log_sha256": "05bf4736ccb545c66c147534ed53d96d3c5a9974b0408651be2630ffc1feb45f",
+    "source_artifact_contains_public_rebuild_helper_and_hashed_inputs": true,
+    "snapshots_materialized_only_during_build_and_removed_in_finally": true,
+    "rebuild_requires_unchanged_external_node_modules": true,
+    "expected_node_major": 24
+  },
+  "verification_limits": [
+    "SQL provider HTTP is synthetic and whitelisted; this candidate verification performs no real paid inference.",
+    "Human confirmation uses real production use cases with synthetic authenticated HTTP driver; no physical user click is asserted.",
+    "Nest DI substitutes Native supervisors and database boundaries; production API providers and shared module graph remain real.",
+    "New release directory is staged only. Operational adoption, production migration, services, timers and nginx remain Root coordinated.",
+    "Approved historical document-source snapshots are retained only in source artifact; runtime keeps baseline Codex audio paths absent."
+  ],
+  "local_artifacts": {
+    "runtime": {
+      "path": "ops/lab/artifacts/api-chat-server-r01-runtime.tar.gz",
+      "sha256": "d4184676b6f2104bc55ba14f9630c06ed15b6c65b0a0f5851181443e55feece4",
+      "bytes": 2892364
+    },
+    "source": {
+      "path": "ops/lab/artifacts/api-chat-server-r01-source.tar.gz",
+      "sha256": "612e52b92de416f107af33503765d0bce15fee52717b18f7425ea4b67bccd1b9",
+      "bytes": 7610208
+    },
+    "manifest": {
+      "path": "ops/lab/artifacts/api-chat-server-r01-manifest.json",
+      "sha256": "ceb774256fd8c2030ece02c37fa872d819c2963c8f00fc71de7933de92b04451",
+      "bytes": 559581
+    }
+  }
+}

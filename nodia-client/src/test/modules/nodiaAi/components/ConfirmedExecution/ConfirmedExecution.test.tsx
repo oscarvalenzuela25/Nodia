@@ -69,8 +69,8 @@ describe("confirmed execution observation and human controls", () => {
     expect(mocks.controlNodiaAiExecution).not.toHaveBeenCalled();
   });
   it.each([
-    ["ai_providers", "Conexión IA", "/settings/ai-providers?provider=9007199254740993"],
-    ["ai_provider_catalog", "Entrada del catálogo IA", "/settings/ai-providers"],
+    ["ai_providers", "Conexión IA", "/ai-providers?provider=9007199254740993"],
+    ["ai_provider_catalog", "Entrada del catálogo IA", "/ai-providers"],
   ])("shows %s history and refreshes configuration without changing the current chat selection", async (resource_key, label, route) => {
     const invalidation = vi.spyOn(client, "invalidateQueries");
     const detail = client.getQueryData(nodiaAiKeys.detail(["9", 1], chatId));
@@ -80,7 +80,7 @@ describe("confirmed execution observation and human controls", () => {
     expect(screen.getByRole("link", { name: "Abrir proveedores IA" })).toHaveAttribute("href", route);
     expect(screen.getByText(/Guardar configuración no comprueba disponibilidad/)).toBeInTheDocument();
     await waitFor(() => expect(invalidation).toHaveBeenCalledWith({ queryKey: ["ai-providers"] }));
-    for (const key of ["ai-provider-catalog", "ai-providers-health", "ai-selectable-models", "ai-enabled-web-providers", "ai-supported-providers", "ai-provider-events"]) expect(invalidation).toHaveBeenCalledWith({ queryKey: [key] });
+    for (const key of ["ai-provider-catalog", "ai-providers-health", "ai-selectable-models", "ai-supported-providers", "ai-provider-events"]) expect(invalidation).toHaveBeenCalledWith({ queryKey: [key] });
     expect(invalidation).toHaveBeenCalledWith({ queryKey: nodiaAiKeys.all(["9", 1]) });
     expect(invalidation).not.toHaveBeenCalledWith({ queryKey: ["ai-api-keys"] });
     expect(invalidation).not.toHaveBeenCalledWith({ queryKey: ["authorization", "context", "9"] });
@@ -95,8 +95,8 @@ describe("confirmed execution observation and human controls", () => {
   });
 
   it.each([
-    ["users", "Usuario", "/settings/users"], ["roles", "Rol", "/settings/roles"], ["actions", "Acción", "/settings/actions"],
-    ["business_actions", "Acción de negocio", "/settings/actions"], ["modules", "Módulo", "/settings/modules"], ["module_groups", "Grupo de módulos", "/settings/modules"],
+    ["users", "Usuario", "/users"], ["roles", "Rol", "/roles"], ["actions", "Acción", "/actions"],
+    ["business_actions", "Acción de negocio", "/actions"], ["modules", "Módulo", "/modules"], ["module_groups", "Grupo de módulos", "/modules"],
   ])("shows %s history and refreshes the current actor authority without granting it", async (resource_key, label, route) => {
     const invalidation = vi.spyOn(client, "invalidateQueries");
     mocks.getNodiaAiExecution.mockResolvedValue({ ...completed, steps: [{ ...completed.steps[0], result_refs: [{ resource_key, id: "9007199254740993" }] }] });
@@ -117,7 +117,7 @@ describe("confirmed execution observation and human controls", () => {
     mocks.getNodiaAiExecution.mockResolvedValue({ ...completed, steps: [{ ...completed.steps[0], result_refs: [{ resource_key, id: "9007199254740993" }] }] });
     open();
     expect(await screen.findByText(`Operación verificada · ${label}: 9007199254740993`)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Abrir Reservas" })).toHaveAttribute("href", "/tools/reservations");
+    expect(screen.getByRole("link", { name: "Abrir Reservas" })).toHaveAttribute("href", "/reservations");
     await waitFor(() => expect(invalidation).toHaveBeenCalledExactlyOnceWith({ queryKey: ["rental", "9"] }));
     expect(mocks.controlNodiaAiExecution).not.toHaveBeenCalled();
   });
@@ -206,7 +206,7 @@ describe("confirmed execution observation and human controls", () => {
     mocks.getNodiaAiExecution.mockResolvedValue({ ...completed, steps: [{ ...completed.steps[0], result_refs: [{ resource_key, id }] }] });
     open();
     expect(await screen.findByText(`Operación verificada · ${label}: ${id}`)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Abrir Negocios" })).toHaveAttribute("href", "/tools/business");
+    expect(screen.getByRole("link", { name: "Abrir Negocios" })).toHaveAttribute("href", "/business");
     await waitFor(() => expect(invalidation).toHaveBeenCalledTimes(prefixes.length));
     for (const prefix of prefixes) expect(invalidation).toHaveBeenCalledWith({ queryKey: prefix === "provider-contacts" ? [prefix, "9"] : [prefix] });
     expect(invalidation).not.toHaveBeenCalledWith({ queryKey: ["finance", "9"] });
@@ -233,7 +233,7 @@ describe("confirmed execution observation and human controls", () => {
     expect(await screen.findByText(`Operación verificada · ${label}: 9007199254740993`)).toBeInTheDocument();
     expect(screen.getByText(/El registro puede haber cambiado o haberse eliminado después/)).toBeInTheDocument();
     expect(screen.queryByText(/cread[oa]|actualizad[oa]|eliminad[oa]:/)).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Abrir Finanzas" })).toHaveAttribute("href", "/tools/finances-personal");
+    expect(screen.getByRole("link", { name: "Abrir Finanzas" })).toHaveAttribute("href", "/finances-personal");
     await waitFor(() => expect(invalidation).toHaveBeenCalledWith({ queryKey: ["finance", "9"] }));
     expect(invalidation).not.toHaveBeenCalledWith({ queryKey: ["finance"] });
     expect(mocks.controlNodiaAiExecution).not.toHaveBeenCalled();
@@ -288,7 +288,7 @@ describe("confirmed execution observation and human controls", () => {
     mocks.getNodiaAiExecution.mockResolvedValue(completed);
     await userEvent.click(screen.getByRole("button", { name: "Actualizar estado" }));
     expect(await screen.findByText("Operación verificada · Movimiento: 9007199254740993")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Abrir Finanzas" })).toHaveAttribute("href", "/tools/finances-personal");
+    expect(screen.getByRole("link", { name: "Abrir Finanzas" })).toHaveAttribute("href", "/finances-personal");
     expect(screen.queryByRole("button", { name: "Reintentar la misma solicitud" })).not.toBeInTheDocument();
     await waitFor(() => expect(invalidation).toHaveBeenCalledWith({ queryKey: ["finance", "9"] }));
     expect(mocks.controlNodiaAiExecution).toHaveBeenCalledTimes(1);
@@ -327,7 +327,7 @@ describe("confirmed execution observation and human controls", () => {
     await i18n.changeLanguage("en");
     mocks.getNodiaAiExecution.mockResolvedValue({ ...completed, steps: [{ ...completed.steps[0], result_refs: [{ resource_key: "invoices", id: "9007199254740993" }] }] });
     open(); expect(await screen.findByText("Verified operation · Invoice: 9007199254740993")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Open Businesses" })).toHaveAttribute("href", "/tools/business");
+    expect(screen.getByRole("link", { name: "Open Businesses" })).toHaveAttribute("href", "/business");
   });
   it("uses English labels for recovery and preserves exact bigint references", async () => {
     await i18n.changeLanguage("en"); mocks.getNodiaAiExecution.mockResolvedValue(completed); open();

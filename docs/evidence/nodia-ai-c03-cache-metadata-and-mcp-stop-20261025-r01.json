@@ -1,0 +1,102 @@
+{
+  "MCP": {
+    "acknowledge": {
+      "completed": 1,
+      "failed": 0,
+      "requests": 1
+    },
+    "actual_dispatch_basis": "Public harness native_result reports real_provider_dispatch_requests=1 and start endpoint completed/running",
+    "attempt_id": "9e161c28-a3ed-4d38-9cfb-69065c524f13",
+    "automatic_inference_retries": 0,
+    "callbacks": 0,
+    "cancel": {
+      "completed": 1,
+      "failed": 0,
+      "requests": 1
+    },
+    "error_code": "mcp_result_unknown",
+    "events_requests": 1155,
+    "execute_wrapper_actual_dispatch_field": null,
+    "inference_replayed": false,
+    "last_rpc_messages": 6,
+    "native_dispatch_intents_reserved": 1,
+    "native_pending_identity": false,
+    "native_start_admitted": 1,
+    "native_terminal_proof_acknowledged": true,
+    "provider_cost": null,
+    "provider_internal_calls": null,
+    "qualified": false,
+    "reconcile": {
+      "completed": 1,
+      "failed": 0,
+      "requests": 1
+    },
+    "terminal_proof_id_in_public_projection": null,
+    "valid_progress_snapshots": 1155
+  },
+  "acceptance": {
+    "AI36_closed": false,
+    "AI38_closed": false,
+    "C03_accepted": false,
+    "MCP_accepted": false,
+    "MIME_accepted_by_this_cohort": false,
+    "UI_retry_accepted": false,
+    "metadata_observed_positive": true
+  },
+  "cohort_plan_sha256": "5bdbe5b0423d7a74701dffc02f42b68fcee72cf4e507469230a667101a1aa0a1",
+  "effects": {
+    "business_effects": 0,
+    "configured_SQL_writes": 0,
+    "configured_database_modified": false,
+    "configured_selection_modified": false,
+    "services_restarted": false
+  },
+  "environment": "local_Linux_VM",
+  "epoch_binding_boundary": "Projection strips epoch_before fields but reports same_native_epoch_after; exact image/CID/start come from adoption evidence",
+  "epoch_from_real_adoption": {
+    "container_id": "5f77cc37e60dd21ed69f318c8c4891df886923d7fb5a0fcad77b5babd5cb0588",
+    "image_id": "sha256:cf5a6120e26a0cdf0ffd08a8efc80e7a393612faa672ea3187a7c256b76d4b1b",
+    "started_at_utc": "2026-10-25T23:24:23.136960345Z"
+  },
+  "metadata": {
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "configured_selection_from_database": true,
+    "does_not_prove_MCP_or_MIME": true,
+    "execute_metadata_observation_attempts": 3,
+    "execute_metadata_retry_count": 1,
+    "metadata_retry_scope_only": true,
+    "preflight_observation_attempts": 1,
+    "preflight_passed": true,
+    "preflight_retries": 0,
+    "session_generation": "52323bbbde3c4dd298438877c178cc4f"
+  },
+  "next_boundary": "Root records safe terminal diagnostics before further inference; no service stop or MCP replay authorized by this evidence",
+  "public_report_sha256": "35bb64335017ddcec6788acc0f8b72c7c910508aaf732dfdc8e7ccacbc444856",
+  "raw_stdout_stderr_saved": false,
+  "schema_version": 1,
+  "sources": {
+    "cache-mcp-public-projection-r02.json": {
+      "path": "ops/lab/artifacts/c03-agentic-evidence-cache-requalification-verification-r01/receipts/cache-mcp-public-projection-r02.json",
+      "sha256": "e3aad647463c7d3d588b39ec5a08d470a16d12fa8e54cc4e41983b2bacf10f2f"
+    },
+    "cache-requal-execute-r01.json": {
+      "path": "ops/lab/artifacts/c03-agentic-evidence-cache-requalification-verification-r01/receipts/cache-requal-execute-r01.json",
+      "sha256": "7aa1fa1242fc793d5fb1742746cdc43b4549931a586de1552f596393a1d7f559"
+    },
+    "cache-requal-metadata-preflight-r01.json": {
+      "path": "ops/lab/artifacts/c03-agentic-evidence-cache-requalification-verification-r01/receipts/cache-requal-metadata-preflight-r01.json",
+      "sha256": "76da477216b4b2a06043e3a834650d2d52b4962d6a8756cf5723adf7cd739055"
+    },
+    "cache-requal-plan-r01.json": {
+      "path": "ops/lab/artifacts/c03-agentic-evidence-cache-requalification-verification-r01/receipts/cache-requal-plan-r01.json",
+      "sha256": "714f168b32622d14064c584a6df56fc77ce8051dd33315cce60ea885fe557bf0"
+    }
+  },
+  "status": "metadata_positive_MCP_unknown_closed_cohort_stopped",
+  "stopped_cases_not_attempted": [
+    "PNG",
+    "PDF",
+    "WAV",
+    "WebM"
+  ]
+}

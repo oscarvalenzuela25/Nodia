@@ -1,0 +1,264 @@
+{
+  "schema_version": 1,
+  "status": "implemented_and_deployed_verified",
+  "updated_at": "2026-10-29T19:51:22.621754+00:00",
+  "scope": [
+    "Image eye action in product table and mobile cards; remove thumbnail from name",
+    "Large product-image modal using the existing preview pattern",
+    "Image-only persistence through the existing deferred engine, without saving product fields"
+  ],
+  "contract_decisions": {
+    "fresh_product_read_on_open": true,
+    "product_identity": "existing decimal product id in the selected business",
+    "version_precondition": "known positive product version, revalidated server-side",
+    "local_file_until_save": true,
+    "cancel_before_save_image_writes": 0,
+    "missing_image": "explicit empty state with add action when authorized",
+    "product_field_post_or_put": "not part of this image-only flow",
+    "backend_permissions_and_ai_tools": "unchanged"
+  },
+  "implementation": "completed",
+  "verification": {
+    "global_client_suite": {
+      "files_passed": 268,
+      "tests_passed": 2234,
+      "failed": 0,
+      "duration_seconds": 197.95,
+      "max_workers": 8,
+      "exit_code": 0,
+      "heavy_builds_concurrent": false
+    },
+    "focused_tests": {
+      "deferred_save_hook": 21,
+      "image_modal": 9,
+      "mobile_product_card": 3,
+      "products_tab_and_existing_editor_and_draft": 35,
+      "failed": 0
+    },
+    "typecheck": {
+      "exit_code": 0
+    },
+    "lint": {
+      "exit_code": 0
+    },
+    "build": {
+      "exit_code": 0,
+      "api_url": "/api/v1",
+      "static_files": 173,
+      "existing_large_chunk_warning": true
+    },
+    "browser_ui": {
+      "transport": "synthetic_adapter_only",
+      "browser": "156.0.4314.50",
+      "profiles": [
+        {
+          "width": 320,
+          "lang": "es",
+          "theme": "dark"
+        },
+        {
+          "width": 390,
+          "lang": "es",
+          "theme": "dark"
+        },
+        {
+          "width": 600,
+          "lang": "en",
+          "theme": "light"
+        },
+        {
+          "width": 1569,
+          "lang": "es",
+          "theme": "dark"
+        },
+        {
+          "width": 1569,
+          "lang": "en",
+          "theme": "light"
+        }
+      ],
+      "checks": {
+        "five_visual_profiles": true,
+        "no_inline_thumbnails": true,
+        "no_per_product_reads_before_open": true,
+        "opens_one_product_and_one_image_read": true,
+        "eye_44_all_profiles": true,
+        "image_contains_complete_content": true,
+        "large_frame_responsive": true,
+        "no_page_horizontal_overflow": true,
+        "cancel_selection_no_mutation": true,
+        "save_only_image_pipeline": true,
+        "missing_image_can_add": true,
+        "no_product_field_writes": true,
+        "resize_preserves_file_without_reads": true,
+        "lost_put_preserves_modal_and_preview": true,
+        "lost_put_recovers_without_replay": true,
+        "cas_review_explicit_version_and_same_upload": true,
+        "history_twelve_columns_align": true,
+        "mobile_eye_direct": true,
+        "controls_lock_while_reading": true
+      },
+      "check_count": 19,
+      "receipt_sha256": "93f862ff8d948b5671e50d0999ae6b77f46bca804cacd124d04c8cc49f0de045",
+      "image_writes_to_real_server": 0,
+      "temporary_browser_closed": true
+    },
+    "live_authenticated_ui": {
+      "read_only": true,
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      },
+      "image": {
+        "containerHeight": 386.796875,
+        "containerWidth": 740,
+        "height": 386.796875,
+        "loaded": true,
+        "objectFit": "contain",
+        "width": 740
+      },
+      "save_disabled_without_change": true,
+      "change_button_present": true,
+      "page_horizontal_overflow": 0,
+      "edits": 0,
+      "saves": 0,
+      "receipt_sha256": "5c92c02dcf834b07979e5cb4229cd05ebaf497b7353208e185b6ad93490869d7",
+      "list_screenshot_sha256": "6b46055c345ac1d8131f18ca34a220ac2f35a6213a8bde4c4e698fee0f5a4449",
+      "viewer_screenshot_sha256": "2acdba94b5df6fa492a5337e149e01bd0e5fd5ab1596cc2bec17a11182ea7cd9",
+      "temporary_tab_closed": true,
+      "user_tab_untouched": true
+    },
+    "operator_tests": {
+      "passed": 10,
+      "failed": 0
+    },
+    "source_scope": {
+      "added": [
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductImageModal/ProductImageModal.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductImageModal/index.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductImageModal/styles.ts",
+        "src/test/modules/business/components/BusinessMobileCards/BusinessMobileCards.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductImageModal/ProductImageModal.test.tsx"
+      ],
+      "changed": [
+        "src/modules/business/components/BusinessMobileCards/BusinessMobileCards.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/ProductsTab.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductImageDraft/ProductImageDraft.tsx",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductImageDraft/styles.ts",
+        "src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/hooks/useDeferredProductSave.ts",
+        "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/ProductsTab.test.tsx",
+        "src/test/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/hooks/useDeferredProductSave.test.tsx",
+        "src/translate/en/business.json",
+        "src/translate/es/business.json"
+      ],
+      "outside_authorized_scope": [],
+      "removed": []
+    },
+    "source_input_fingerprint_sha256": "df9518f52ea885ab28ab0ef827b4562dea960070b1f68eaa93e63871b9a8f567",
+    "frozen_source_inputs_unchanged": 1187,
+    "source_utf8_lf_checked": 14,
+    "approved_files_unchanged": 44,
+    "diff_check_exit_code": 0,
+    "knowledge_check": {
+      "mode": "check_only",
+      "exit_code": 0,
+      "sources": 69,
+      "excluded": 25,
+      "documents": 44,
+      "fragments": 46,
+      "authoring_release_id": "9c43d3a914545c6d4c8056ab15bf6f7b00b507a05fdd0d87ca012d65414ae2d3",
+      "runtime_knowledge_changed": false
+    },
+    "final_document_utf8_lf_checked": 6
+  },
+  "vm_adoption": {
+    "status": "activated_verified",
+    "release": "/opt/nodia/releases/nodia-client-product-image-viewer-20261029-r01",
+    "manifest_sha256": "d1562b322555176b73fd88045781d6e56bf9db07f9121b7f8d2268550ff6cddf",
+    "config_sha256": "7352a398f803044b5afc902d40e82db9b1b7a759551b18a6c2979aa75ad7315d",
+    "artifact": {
+      "bytes": 2165401,
+      "members": 173,
+      "sha256": "f5cb3b9f439e80e7abc4b02427b8f3e504ada5a5ede7d93f6337da1b796463c1",
+      "unpacked_bytes": 4847287
+    },
+    "nginx_before_sha256": "edcab6c255254aef27ffbcbddadde14e877f39d9fae2491253140eed2f052998",
+    "nginx_after_sha256": "6852333611f49b53586b58322db876b3e655ea6696c9a43c7d4eec62e93321cf",
+    "index_sha256": "75c142b341d3c1b521d93b28b03450f011a2df32d1eba821b1028a8ad7a89e78",
+    "http": {
+      "current_assets": 169,
+      "previous_assets": 46,
+      "protected": [
+        {
+          "route": "/api/v1",
+          "status": 200
+        },
+        {
+          "route": "/api/v1/nodia-ai/connections",
+          "status": 401
+        },
+        {
+          "route": "/api/v1/products",
+          "status": 401
+        }
+      ],
+      "spa": [
+        {
+          "route": "/",
+          "sha256": "75c142b341d3c1b521d93b28b03450f011a2df32d1eba821b1028a8ad7a89e78",
+          "status": 200
+        },
+        {
+          "route": "/tools/nodia-ai",
+          "sha256": "75c142b341d3c1b521d93b28b03450f011a2df32d1eba821b1028a8ad7a89e78",
+          "status": 200
+        },
+        {
+          "route": "/tools/business",
+          "sha256": "75c142b341d3c1b521d93b28b03450f011a2df32d1eba821b1028a8ad7a89e78",
+          "status": 200
+        }
+      ]
+    },
+    "nginx_backup_and_previous_release_preserved": true,
+    "protected_runtime_preserved": true,
+    "status_runtime_exactly_matches_before": true,
+    "api_pid": "1864113",
+    "worker_pid": "1864114",
+    "server_manifest_sha256": "22f928167d186565cb08fed6eb0572d43263e0a0a424f235aad26e0c7063ef24",
+    "knowledge_release_id": "b49fde74a53483fad4fe80b8175b36bb7c337415097dd9cfa4349285f9e1e2ea",
+    "sql_queries": 0,
+    "provider_requests": 0,
+    "restart_requests": 0,
+    "activation_receipt_sha256": "a5efa3e76355d694188d76f5b8d83a552ed8f90e97724972465b221c6f12686e",
+    "status_receipt_sha256": "14c2b09ddda555c2b289b30d2fa43fcfdf0ecbe013c0d38af4d3fb53a2d4dcd3",
+    "tunnel": [
+      {
+        "route": "/tools/business/5af15373-3638-4a02-a015-4e72c433fc11?section=products",
+        "status": 200,
+        "sha256": "75c142b341d3c1b521d93b28b03450f011a2df32d1eba821b1028a8ad7a89e78",
+        "bytes": 2973
+      },
+      {
+        "route": "/api/v1",
+        "status": 200,
+        "sha256": "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
+        "bytes": 12
+      }
+    ],
+    "private_recovery_package": "ops/lab/artifacts/product-image-viewer-20261029-r01/"
+  },
+  "documentary_approval": false,
+  "knowledge_publication": "unchanged",
+  "limitations": [
+    "Image save/recovery flows were tested through synthetic transport; the live VM check only opened and viewed the existing image, with no business or storage mutation.",
+    "Existing version checks, request identity and unknown-result recovery remain in use; no schema, backend, permissions or AI tools were added.",
+    "Physical phone, scanner and performance are not qualified by these responsive browser checks."
+  ],
+  "cleanup": {
+    "synthetic_browser_closed": true,
+    "temporary_live_tab_closed": true,
+    "qa_server_5194_stopped": true,
+    "user_tunnel_5174_preserved": true
+  }
+}

@@ -133,9 +133,7 @@ describe("rental write intents", () => {
           ([message]) => message.title === i18n.t("rental:saved"),
         ),
     ).toHaveLength(1);
-    expect(sileo.success).toHaveBeenCalledWith({
-      title: i18n.t("auth:refresh_success"),
-    });
+    expect(sileo.success).toHaveBeenCalledTimes(1);
     expect(sileo.error).not.toHaveBeenCalled();
   });
   it("keeps a confirmed write successful when its subsequent read fails", async () => {

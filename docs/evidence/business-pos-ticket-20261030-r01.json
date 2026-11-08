@@ -1,0 +1,321 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "status": "implemented_deployed_verified",
+  "paper_width_mm_confirmed_by_user": 80,
+  "requests": [
+    "x unit display",
+    "hide noncomparable notice but preserve policy",
+    "collaborators final desktop/xs section",
+    "quantity red error without helper",
+    "visual input width about five digits without truncation",
+    "image scales with list percentage",
+    "review and scale IconButton hover/focus",
+    "80mm ticket preview",
+    "Cancel / Confirm / Confirm and print"
+  ],
+  "client_validation": {
+    "test_files": 293,
+    "tests": 2450,
+    "seconds": 247.62,
+    "typecheck": "pass",
+    "lint": "pass",
+    "scope": "final production and test sources before build",
+    "build": {
+      "success": true,
+      "exit_code": 0,
+      "phase": "separate_local_isolated_client_build_not_packaged",
+      "seconds": 34.62,
+      "dist": "C:\\Users\\Oscar\\Desktop\\Nodia\\.tmp\\business-pos-ticket-client-build-r01\\dist",
+      "source_input_fingerprint_sha256": "62352979fd888ecfe06ad39fb4467c492dc9fb7b2c7a5d51f7739001b84d23c8",
+      "build_log": ".tmp/business-pos-ticket-client-build-r01.log",
+      "build_log_sha256": "bd2b3d6de983e47f21bd61708a9c0ca4161bd74c0dfbdd0ba35afad663c0a5fe",
+      "api_base_url": "/api/v1",
+      "sources_unchanged": true,
+      "VM_operations": 0,
+      "provider_requests": 0,
+      "warnings": [
+        "existing api chunk greater than 500kB",
+        "rolldown plugin timing warning; no performance improvement claimed"
+      ]
+    }
+  },
+  "browser_qa": {
+    "synthetic": true,
+    "profiles": [
+      {
+        "width": 320,
+        "documentWidth": 320,
+        "dialogWidth": 288,
+        "buttons": [
+          {
+            "text": "",
+            "label": "Cerrar",
+            "w": 44,
+            "h": 44
+          },
+          {
+            "text": "Cancelar",
+            "label": null,
+            "w": 256,
+            "h": 44
+          },
+          {
+            "text": "Confirmar",
+            "label": null,
+            "w": 256,
+            "h": 44
+          },
+          {
+            "text": "Confirmar e imprimir",
+            "label": null,
+            "w": 256,
+            "h": 44
+          }
+        ],
+        "receiptWidth": 256
+      },
+      {
+        "width": 390,
+        "documentWidth": 390,
+        "dialogWidth": 358,
+        "buttons": [
+          {
+            "text": "",
+            "label": "Cerrar",
+            "w": 44,
+            "h": 44
+          },
+          {
+            "text": "Cancelar",
+            "label": null,
+            "w": 326,
+            "h": 44
+          },
+          {
+            "text": "Confirmar",
+            "label": null,
+            "w": 326,
+            "h": 44
+          },
+          {
+            "text": "Confirmar e imprimir",
+            "label": null,
+            "w": 326,
+            "h": 44
+          }
+        ],
+        "receiptWidth": 302.359375
+      },
+      {
+        "width": 600,
+        "documentWidth": 600,
+        "dialogWidth": 536,
+        "buttons": [
+          {
+            "text": "",
+            "label": "Cerrar",
+            "w": 44,
+            "h": 44
+          },
+          {
+            "text": "Cancelar",
+            "label": null,
+            "w": 104.96875,
+            "h": 44
+          },
+          {
+            "text": "Confirmar",
+            "label": null,
+            "w": 112.984375,
+            "h": 44
+          },
+          {
+            "text": "Confirmar e imprimir",
+            "label": null,
+            "w": 206.859375,
+            "h": 44
+          }
+        ],
+        "receiptWidth": 302.359375
+      },
+      {
+        "width": 1569,
+        "documentWidth": 1569,
+        "dialogWidth": 560,
+        "buttons": [
+          {
+            "text": "",
+            "label": "Cerrar",
+            "w": 44,
+            "h": 44
+          },
+          {
+            "text": "Cancelar",
+            "label": null,
+            "w": 104.96875,
+            "h": 44
+          },
+          {
+            "text": "Confirmar",
+            "label": null,
+            "w": 112.984375,
+            "h": 44
+          },
+          {
+            "text": "Confirmar e imprimir",
+            "label": null,
+            "w": 206.859375,
+            "h": 44
+          }
+        ],
+        "receiptWidth": 302.359375
+      }
+    ],
+    "checkout_posts": 1,
+    "print_requests": 2,
+    "physical_prints": 0,
+    "first_print_failed_then_reprint": true,
+    "frames_remaining": 0,
+    "evidence": "ops/lab/artifacts/business-pos-ticket-20261030-r01/qa",
+    "visual_evidence": "ops/lab/artifacts/business-pos-ticket-20261030-r01/qa/visual/qa-summary.json",
+    "live_read_only_evidence": "ops/lab/artifacts/business-pos-ticket-20261030-r01/qa/live-read-only-r01.json"
+  },
+  "pdf": {
+    "synthetic": true,
+    "pages": 1,
+    "width_mm": 80.09,
+    "height_mm": 89.24,
+    "actual_print_html": true,
+    "visually_reviewed": true,
+    "physical_printer_tested": false
+  },
+  "print_guarantees": [
+    "confirmed native Sale before first print",
+    "fresh authorized GET and status/id/business validation on explicit reprint",
+    "saved snapshot names/unit/quantity/prices, no catalog reconstruction",
+    "no extra POST for print failure, cancel or reprint",
+    "actor/business scope cleanup",
+    "escaped HTML and sandboxed isolated iframe",
+    "print-request toast does not claim physical printing"
+  ],
+  "server_changes": false,
+  "sql_or_migrations_run": false,
+  "real_commercial_mutations_in_qa": 0,
+  "provider_inferences": 0,
+  "NodiaAI_sales_read_only_preserved": true,
+  "knowledge": {
+    "new_document": "docs/nodia-ai/knowledge/businesses/features/manual-sale-ticket-printing.md",
+    "new_document_status": "draft/implemented/unregistered/approval:null",
+    "local_authoring_source_only": true,
+    "published_runtime_release_unchanged": "070212946febc8cb3315d5115093b95c93cf23efab88076acc4f57836069dc75",
+    "approved_document_count": 44,
+    "approved_document_mismatches": [],
+    "draft_revisions": {
+      "businesses": 37,
+      "businesses.multi-sale-workspace": 8,
+      "businesses.product-units-and-fractional-sales": 2,
+      "businesses.manual-sale-ticket-printing": 1
+    },
+    "local_authoring_check": {
+      "status": "pass",
+      "release_id": "d680d7270543865194564c3431ece1fb665ecf8562658a00498e177169218497",
+      "sources": 78,
+      "excluded": 34,
+      "published_documents": 44,
+      "published_fragments": 46,
+      "capabilities": 153,
+      "scope": "local authoring artifacts only; active Server KB070 unchanged"
+    }
+  },
+  "limits": [
+    "Browser print transport is simulated for deterministic failure/retry proof; native system dialog not accepted by QA.",
+    "80mm PDF geometry and raster verified; physical printer, paper feed, driver margins and copies remain untested.",
+    "No real sale saved or cancelled during QA; existing checkout/idempotency contracts and tests reused.",
+    "No new AI model/provider qualification or knowledge publication."
+  ],
+  "deployment": {
+    "status": "activated_verified",
+    "client_only": true,
+    "client_release": "/opt/nodia/releases/nodia-client-business-pos-ticket-20261030-r01",
+    "manifest_sha256": "6e141c5abccd0a8ab927e9059e620e04879fc068aec59695a19efcb38c92ff8f",
+    "index_sha256": "6fd5af6092d0af6f8a3f5767fdd5d9fab1c09488a561176e674adf47b63fb2f3",
+    "tunnel_port_5174_index_sha256_verified": true,
+    "nginx_before_sha256": "fe2a7d67d1bbf0e0acaf12c65f1e93fe9792edab3e2c3adcb3b194b453aa85a2",
+    "nginx_after_sha256": "02166ae67a6a1a4ee3a3f2dc64feeadd2ed01b5f688f10446dba73ed12d0bacb",
+    "nginx_configuration_backup": "/opt/nodia/operations/business-pos-ticket-20261030-r01/client/nginx-before.conf",
+    "nginx_reload_requests": 1,
+    "old_release_preserved": true,
+    "protected_runtime_preserved": true,
+    "current_assets": 169,
+    "previous_assets": 47,
+    "static_files": 173,
+    "server_restarts": 0,
+    "sql_queries": 0,
+    "provider_requests": 0,
+    "source_delta_paths": 31,
+    "source_input_count": 1267,
+    "source_input_fingerprint_sha256": "62352979fd888ecfe06ad39fb4467c492dc9fb7b2c7a5d51f7739001b84d23c8",
+    "protected_runtime_sha256": "27b9f30c4c6985c4ddbb8f7cf5c6b20bbffaa56be37c4bed02dce3e593f763ed",
+    "receipts": [
+      {
+        "path": "ops/lab/artifacts/business-pos-ticket-20261030-r01/client/preflight-observed-root-r01.json",
+        "sha256": "07e45356598b9f03ebafe42c8529bc18d8db8dc7c645a922cb5ec0140e876728"
+      },
+      {
+        "path": "ops/lab/artifacts/business-pos-ticket-20261030-r01/client/bootstrap-observed-root-r01.json",
+        "sha256": "658366dc7d522f313ba7e4d1ed409a0302e28ea4bd8446e8f9f9ee937d690a7b"
+      },
+      {
+        "path": "ops/lab/artifacts/business-pos-ticket-20261030-r01/client/preflight-bound-root-r01.json",
+        "sha256": "60d1fe31d8846f7d937d2ba253331bcc853123dfdad5d9148901fdc98e60b225"
+      },
+      {
+        "path": "ops/lab/artifacts/business-pos-ticket-20261030-r01/client/stage-observed-root-r01.json",
+        "sha256": "d9b223ea5b8daeda8bf0c85fc9e0f0cc697a84f7c8e6e5c0f20ebf793a599917"
+      },
+      {
+        "path": "ops/lab/artifacts/business-pos-ticket-20261030-r01/client/activate-observed-root-r01.json",
+        "sha256": "a81acc2f6e5328987524a1948e9646471a4db41a70a61c80d16a19639e8a37ff"
+      },
+      {
+        "path": "ops/lab/artifacts/business-pos-ticket-20261030-r01/client/status-observed-root-r01.json",
+        "sha256": "6a9303769db5a60276fbf495c879ce94916a78bd48b72b9e16b50c4936db75af"
+      }
+    ]
+  },
+  "documentation_check_iterations": [
+    {
+      "attempt": 1,
+      "result": "metadata_schema_invalid",
+      "cause": "Parent verification evidence array reached33; bounded to32 by removing an older metadata reference only, preserving historical receipt and its links."
+    },
+    {
+      "attempt": 2,
+      "result": "prepare and check pass",
+      "authoring_release_id": "723bd0d82ef822107606aa133967eb61c0ecc3d920713fd8569aa97358f84e4a",
+      "note": "before final metadata status update; final check separately recorded"
+    }
+  ],
+  "source_integrity": {
+    "frozen_paths": 31,
+    "unchanged_after_build_and_deployment": true,
+    "utf8_lf_no_bom_paths_checked": 42,
+    "git_diff_check": "pass",
+    "approved_documents_byte_identical": 44,
+    "proof": "ops/lab/artifacts/business-pos-ticket-20261030-r01/qa/approved-documents-integrity.json"
+  },
+  "cleanup": {
+    "own_CUA_tab_7_closed": true,
+    "user_tab_6_preserved": true,
+    "own_Playwright_session_pos_r20_final_closed": true,
+    "owned_vite_5196_pid_154500_stopped_after_identity_check": true,
+    "usage_tunnel_5174_preserved": true
+  },
+  "static_operator_verification": {
+    "postpackage_tests": 12,
+    "local_verification_sha256": "3f1444b696a884d44045431495685473afad58c452636dfdc032365d36357a7a",
+    "deployment_verification_sha256": "b41bf779c71d5a6125f76026124e66635f4eb24dc023a001a80b4709186446a6",
+    "catalog_sha256": "bf1c25c1df7aa5ebcaed7bb781a87c7d526989ed44ccf6f7b441604bd212dcb5"
+  }
+}

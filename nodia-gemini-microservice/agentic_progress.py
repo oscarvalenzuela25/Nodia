@@ -60,8 +60,11 @@ class CliProgress:
                 return
             if step.get("tool_name") == "view_file":
                 completed = step.get("state") == "DONE"
-                self.document_read_completed |= completed
-                self.stage = "document_read_completed" if completed else "document_read_started"
+                info = step.get("tool_info")
+                failed = completed and isinstance(info, dict) and info.get("error") is not None
+                self.document_read_completed |= completed and not failed
+                self.stage = ("document_read_failed" if failed else
+                              "document_read_completed" if completed else "document_read_started")
             elif step.get("tool_name") == "finish":
                 self.stage = "finish"
             elif step.get("step_type") == "agent_response":
@@ -85,8 +88,9 @@ class CliProgress:
 
 class NativeFileCliProgress(CliProgress):
     """Closed structural evidence for native files; never retain content/paths."""
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, callback: Callable[[str], None] | None = None) -> None:
+        super().__init__(callback)
+        self.result_event_count = 0
         self.result_status: str | None = None
         self.denied_actions_count: int | None = None
         self.tool_error_categories: set[str] = set()
@@ -95,13 +99,13 @@ class NativeFileCliProgress(CliProgress):
         self.tool_error_counts: dict[str, int] = {}
 
     def _consume(self, line: bytes) -> None:
-        previously_read = self.document_read_completed
         super()._consume(line)
         try:
             event = json.loads(line)
             if not isinstance(event, dict):
                 return
             if event.get("event") == "result":
+                self.result_event_count += 1
                 result = event.get("result")
                 if not isinstance(result, dict):
                     return
@@ -126,9 +130,6 @@ class NativeFileCliProgress(CliProgress):
                 error = info.get("error") if isinstance(info, dict) else None
                 if error is None:
                     return
-                if step.get("tool_name") == "view_file" and step.get("state") == "DONE":
-                    self.document_read_completed = previously_read
-                    self.stage = "document_read_failed"
                 values = [error] if isinstance(error, str) else [value for key, value in error.items() if key in ("type", "message") and isinstance(value, str)] if isinstance(error, dict) else []
                 text = " ".join(values).lower()
                 patterns = {"permission": ("permission", "denied"), "unsupported": ("unsupported", "not supported"),
@@ -141,6 +142,7 @@ class NativeFileCliProgress(CliProgress):
 
     def summary(self) -> dict[str, object]:
         return {**super().summary(), "phase": self.stage, "result_status": self.result_status,
+                "result_event_count": self.result_event_count,
                 "denied_actions_count": self.denied_actions_count, "tool_error_categories": sorted(self.tool_error_categories),
                 "tool_event_counts": dict(self.tool_event_counts), "tool_completed_counts": dict(self.tool_completed_counts),
                 "tool_error_counts": dict(self.tool_error_counts)}

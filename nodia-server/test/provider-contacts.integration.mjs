@@ -1,3 +1,7 @@
+import {
+  installBusinessAccessFixture,
+  businessAccessTestPrincipal,
+} from './fixtures/business-access.fixture.mjs';
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { randomBytes, randomUUID } from 'node:crypto';
@@ -54,7 +58,17 @@ try {
   };
   for (let attempt = 0; attempt < 30; attempt++) {
     try {
-      docker('exec', container, 'pg_isready', '-h', '127.0.0.1', '-U', 'contacts_test', '-d', 'contacts_test');
+      docker(
+        'exec',
+        container,
+        'pg_isready',
+        '-h',
+        '127.0.0.1',
+        '-U',
+        'contacts_test',
+        '-d',
+        'contacts_test',
+      );
       break;
     } catch (error) {
       if (attempt === 29) throw error;
@@ -69,6 +83,13 @@ try {
   await db.query(
     `INSERT INTO providers(business_id,name) VALUES ('11111111-1111-4111-8111-111111111111','Distribuidora Los Andes'), ('11111111-1111-4111-8111-111111111111','Envases del Sur')`,
   );
+  await installBusinessAccessFixture(db);
+  await db.query(
+    "INSERT INTO businesses(id,owner_id) VALUES ('11111111-1111-4111-8111-111111111111',1),('22222222-2222-4222-8222-222222222222',2)",
+  );
+  const [foreignProvider] = await db.query(
+    "INSERT INTO providers(business_id,name) VALUES ('22222222-2222-4222-8222-222222222222','Private supplier') RETURNING id::text",
+  );
   const migration = new CreateProviderContacts1791220000000();
   const runner = db.createQueryRunner();
   await migration.up(runner);
@@ -77,11 +98,13 @@ try {
   await runner.release();
   class SyntheticGuard {
     canActivate(context) {
+      const request = context.switchToHttp().getRequest();
       if (
         context.switchToHttp().getRequest().headers['x-contact-test-actor'] !==
         '1'
       )
         throw new UnauthorizedException();
+      request.auth = businessAccessTestPrincipal();
       return true;
     }
   }
@@ -125,6 +148,7 @@ try {
     description: 'Pedidos y coordinación de despacho.',
     is_active: true,
   };
+  assert.equal((await call(`${foreignProvider.id}/contacts`)).status, 404);
   assert.equal((await call('1/contacts', 'GET', undefined, false)).status, 401);
   assert.equal((await call('999/contacts')).status, 404);
   assert.equal((await call('1/contacts?limit=101')).status, 400);

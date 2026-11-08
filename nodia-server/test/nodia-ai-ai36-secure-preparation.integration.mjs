@@ -229,6 +229,7 @@ try {
   composition.overrideProvider(Gemini).useValue({
     async acknowledgeLoginRequest() {},
     async durableLoginRequest(engine, action, id, provider, actor) {
+      assert.equal(engine, 'agentic');
       const key = id.replaceAll('-', '');
       if (action === 'start') {
         nativeStarts++;
@@ -241,25 +242,16 @@ try {
       }
       return nativeJob(key, actor);
     },
-    async getInteractiveLoginStatus(id, actor) {
-      return nativeJob(id, actor);
-    },
-    async cancelInteractiveLogin(id, actor) {
+    async agenticLoginRequest(method, path, actor) {
+      const match = path.match(/^\/([0-9a-f]{32})(\/cancel|\/code)?$/);
+      assert.ok(
+        match,
+        'Only an existing owned Agentic login can be observed or changed',
+      );
+      const id = match[1];
       nativeJob(id, actor);
-      nativeJobs.get(id).state = 'cancelled';
-      return nativeJob(id, actor);
-    },
-    async getInteractiveLoginFrame(id, actor) {
-      nativeJob(id, actor);
-      return {
-        ready: false,
-        frame_id: null,
-        image: null,
-        width: 1280,
-        height: 850,
-      };
-    },
-    async sendInteractiveLoginInput(id, actor) {
+      if (method === 'POST' && match[2] === '/cancel')
+        nativeJobs.get(id).state = 'cancelled';
       return nativeJob(id, actor);
     },
   });
@@ -317,11 +309,11 @@ try {
     "SELECT module_group_id AS id FROM modules WHERE key='nodia_ai'",
   );
   let [destination] = await db.query(
-    "SELECT id::text FROM modules WHERE link='/settings/ai-providers'",
+    "SELECT id::text FROM modules WHERE link='/ai-providers'",
   );
   if (!destination)
     [destination] = await db.query(
-      "INSERT INTO modules(key,link,module_group_id) VALUES('synthetic_ai3602_providers','/settings/ai-providers',$1) RETURNING id::text",
+      "INSERT INTO modules(key,link,module_group_id) VALUES('synthetic_ai3602_providers','/ai-providers',$1) RETURNING id::text",
       [group.id],
     );
   await db.query(
@@ -347,15 +339,15 @@ try {
     [role.id],
   );
   const [catalog] = await db.query(
-    "INSERT INTO ai_provider_catalog(key,name,can_use_api_key,can_use_token_plan_web,can_use_token_plan_agentic) VALUES('gemini','Synthetic secure catalog',true,true,true) ON CONFLICT(key) DO UPDATE SET is_active=true,can_use_api_key=true,can_use_token_plan_web=true,can_use_token_plan_agentic=true RETURNING id::text",
+    "INSERT INTO ai_provider_catalog(key,name,can_use_api_key,can_use_agentic) VALUES('gemini','Synthetic secure catalog',true,true) ON CONFLICT(key) DO UPDATE SET is_active=true,can_use_api_key=true,can_use_agentic=true RETURNING id::text",
   );
   const [provider] = await db.query(
-    "INSERT INTO ai_providers(catalog_id,name,use_api_key,use_token_plan_web,use_token_plan_agentic,default_mode) VALUES($1,'Synthetic AI36 secure connection',true,true,true,'token_plan_web') RETURNING id::text",
+    "INSERT INTO ai_providers(catalog_id,name,use_api_key,use_agentic,default_mode) VALUES($1,'Synthetic AI36 secure connection',true,true,'agentic') RETURNING id::text",
     [catalog.id],
   );
   const selection = {
     connection_id: provider.id,
-    mode: 'token_plan_agentic',
+    mode: 'agentic',
     model_id: 'synthetic-ai3602-mcp-model',
     effort_id: null,
   };
@@ -576,7 +568,7 @@ try {
     );
     loginPreparation = assertPublic(
       await call(request, names[2], {
-        partial: { provider_id: provider.id, mode: 'token_plan_web' },
+        partial: { provider_id: provider.id, mode: 'agentic' },
       }),
     );
     logoutPreparation = assertPublic(
@@ -782,7 +774,7 @@ try {
     try {
       await assert.rejects(
         call(request, names[2], {
-          partial: { provider_id: provider.id, mode: 'token_plan_web' },
+          partial: { provider_id: provider.id, mode: 'agentic' },
         }),
         /invalid_tool_output/u,
       );
@@ -856,7 +848,7 @@ try {
   check(
     'only the authenticated human login action starts the exact configured native connection',
     nativeStarts === 1 &&
-      startedLogin.interaction.kind === 'gemini_web' &&
+      startedLogin.interaction.kind === 'gemini_agentic' &&
       privateLogin.recovery_descriptor.native_reference.provider_id ===
         provider.id,
   );

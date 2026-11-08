@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  Optional,
   InternalServerErrorException,
 } from '@nestjs/common';
 import type { ValidateFunction } from 'ajv';
@@ -14,6 +15,7 @@ import {
 } from '../../nodia-ai-runtime/config/runtime-policy.js';
 import {
   NODIA_AI_PROPOSAL_PREPARERS,
+  NODIA_AI_HISTORICAL_PROPOSAL_READERS,
   type NodiaAiProposalPreparer,
   type StoredProposalStep,
 } from '../types/proposal-preparer.types.js';
@@ -42,6 +44,10 @@ export function storedStep(row: NodiaAiProposalStep): StoredProposalStep {
 export class ValidateNodiaAiProposalUseCase {
   private readonly schemas = new Map<string, ValidateFunction>();
   private readonly preparers = new Map<string, NodiaAiProposalPreparer>();
+  private readonly historicalReaders = new Map<
+    string,
+    NodiaAiProposalPreparer
+  >();
   constructor(
     @Inject(NODIA_AI_PROPOSAL_PREPARERS)
     preparers: readonly NodiaAiProposalPreparer[],
@@ -49,7 +55,18 @@ export class ValidateNodiaAiProposalUseCase {
     @Inject(NODIA_AI_RUNTIME_POLICY)
     private readonly policy: NodiaAiRuntimePolicy,
     private readonly canonical: CanonicalizeNodiaAiProposalUseCase,
+    @Optional()
+    @Inject(NODIA_AI_HISTORICAL_PROPOSAL_READERS)
+    historicalReaders: readonly NodiaAiProposalPreparer[] = [],
   ) {
+    for (const reader of historicalReaders) {
+      if (
+        !reader.verifyHistoricalReadAuthority ||
+        this.historicalReaders.has(reader.toolName)
+      )
+        throw new Error('nodia_ai:invalid_historical_reader');
+      this.historicalReaders.set(reader.toolName, reader);
+    }
     for (const preparer of preparers) {
       if (
         this.preparers.has(preparer.toolName) ||
@@ -127,6 +144,42 @@ export class ValidateNodiaAiProposalUseCase {
     steps: readonly NodiaAiProposalStep[],
     verifyHash = true,
   ): NodiaAiJsonObject {
+    return this.compileSnapshot(proposal, revision, steps, verifyHash, false);
+  }
+  isCompatible(
+    revision: NodiaAiProposalRevision,
+    steps: readonly NodiaAiProposalStep[],
+  ) {
+    return steps.every((step) => {
+      const preparer = this.preparers.get(step.tool_name);
+      return (
+        preparer?.contractHash === step.contract_hash &&
+        (preparer.catalogVersion === revision.catalog_version ||
+          revision.catalog_version === NODIA_AI_WORKFLOW_CATALOG_VERSION)
+      );
+    });
+  }
+  historicalPreparer(name: string) {
+    const preparer = this.historicalReaders.get(name) ?? this.preparer(name);
+    if (!preparer.verifyHistoricalReadAuthority)
+      throw new BadRequestException('nodia_ai:catalog_changed');
+    return preparer;
+  }
+  /** Frozen schema/hash validation only; callers must reauthorize through the explicit historical port. */
+  compileHistorical(
+    proposal: NodiaAiProposal,
+    revision: NodiaAiProposalRevision,
+    steps: readonly NodiaAiProposalStep[],
+  ) {
+    return this.compileSnapshot(proposal, revision, steps, true, true);
+  }
+  private compileSnapshot(
+    proposal: NodiaAiProposal,
+    revision: NodiaAiProposalRevision,
+    steps: readonly NodiaAiProposalStep[],
+    verifyHash: boolean,
+    historical: boolean,
+  ): NodiaAiJsonObject {
     const invalid = (): never => {
       throw new InternalServerErrorException(
         'nodia_ai:invalid_persisted_state',
@@ -141,7 +194,9 @@ export class ValidateNodiaAiProposalUseCase {
       invalid();
     const prior = new Map<string, NodiaAiProposalStep>();
     for (const [index, step] of steps.entries()) {
-      const registration = this.preparer(step.tool_name, step.contract_hash);
+      const registration = historical
+        ? this.historicalPreparer(step.tool_name)
+        : this.preparer(step.tool_name, step.contract_hash);
       this.assert('PublicStep', step.public_step, true);
       const changes = step.public_step.changes;
       if (!Array.isArray(changes)) return invalid();
@@ -177,11 +232,18 @@ export class ValidateNodiaAiProposalUseCase {
         this.canonical.execute(step.public_step.output_bindings) !==
           this.canonical.execute(step.output_bindings) ||
         prior.has(step.id) ||
-        (registration.catalogVersion !== revision.catalog_version &&
+        (!historical &&
+          registration.catalogVersion !== revision.catalog_version &&
           revision.catalog_version !== NODIA_AI_WORKFLOW_CATALOG_VERSION)
       )
         invalid();
       const deps = step.public_step.depends_on;
+      // Historical ports currently support independent sealed steps only, never rebinding an old workflow.
+      if (
+        historical &&
+        (step.output_bindings.length || !Array.isArray(deps) || deps.length)
+      )
+        throw new BadRequestException('nodia_ai:catalog_changed');
       if (
         !Array.isArray(deps) ||
         deps.some((dep) => typeof dep !== 'string' || !prior.has(dep))

@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "recorded_on": "2026-10-26",
+  "status": "explicit_contextual_human_authorization_recorded",
+  "source": "Exact human instruction and immediately preceding six-point context relayed by Root in this same task",
+  "exact_human_reply": "Entonces termina esos seis puntos usando solo Codex y Antigravity agénticos, sin Web ni API key. Hazlo rápido y sin más rodeos, que quede pendiente solo la comprobación real de la retención.",
+  "immediately_preceding_context": [
+    "OCR → comparación → guardado completo: probar una factura con productos coincidentes y precios que suban/bajen. Hasta ahora probamos OCR y guardado por separado; los cuatro guardados usaron una tabla manual.",
+    "Acciones restantes: completar confirmación y ejecución de las familias publicadas que todavía tienen únicamente vistas previas o pruebas aisladas.",
+    "Canales seguros: probar el recorrido completo de iniciar sesión en una conexión agéntica y cerrar la sesión propia desde una propuesta.",
+    "Seguridad e imágenes: completar la factura maliciosa con Antigravity y los casos pendientes de permisos, fallos de almacenamiento y archivos huérfanos de imágenes.",
+    "Cambio de versión: probar dos despliegues incompatibles con una propuesta pendiente, conservando historial y exigiendo una revisión nueva.",
+    "Cierre de imágenes: completar su aceptación y aprobar/publicar la ficha, que sigue como borrador aunque la generación ya funciona."
+  ],
+  "authorization_kind": "Explicit contextual instruction to complete point6 including approval/publication; no fabricated standalone approval quotation.",
+  "scope": {
+    "document_id": "nodia-ai.image-generation",
+    "path": "docs/nodia-ai/knowledge/nodia-ai/features/image-generation.md",
+    "revision": 3,
+    "initial_document_snapshot": {
+      "revision": 2,
+      "document_status": "draft",
+      "file_sha256": "053d39f001e92d710c54aa5ec9efdf2dcbcf237f320d0e383e9af39a07a6712e",
+      "content_sha256": "925bb74d238f4ada11429b528dbcb910f0824ccdaa0ec152b09bc0d3097cd340"
+    },
+    "approved_content_sha256": "892673eab89682e1bc642ed436970524ef9c9349391f975480c5fd36a79549ef",
+    "approved_file_sha256": "89026836bc51f46bc688a3ce6686ac4abd641c9922a6b9927cf9bce6f01f024e",
+    "implementation_status": "partial",
+    "integration_status": "verified",
+    "selected_section": "Uso de /imagen en el chat",
+    "explanatory_publication_authorized": true,
+    "runtime_tool_addition_authorized_by_this_record": false,
+    "business_confirmation_authorized_by_this_record": false
+  },
+  "binding_semantics": {
+    "requires_existing_capability": "nodia_attachments_describe",
+    "module": "/tools/nodia-ai",
+    "purpose": "feature_explanation",
+    "new_MCP_image_tool": false,
+    "capabilities_preserved": 152
+  },
+  "evidence_paths": [
+    "docs/evidence/nodia-ai-agentic-image-generation-20261026-r01.json",
+    "docs/evidence/nodia-ai-agentic-commercial-cancellation-retention-20261026-r01.json",
+    "docs/evidence/nodia-ai-agentic-image-security-validation-20261026-r01.json"
+  ],
+  "not_approved": [
+    "Other feature documents or ADRs",
+    "Approved OCR feature/hash9d938 changes",
+    "Web/API execution or automatic fallback",
+    "Image editing/variants/business association",
+    "Global AI36/C05/AI38/NodiaAI closure or calendar retention facts not yet observed"
+  ],
+  "execution_scope": {
+    "authoring_only": true,
+    "global_registry_or_build_modified": false,
+    "VM_changes": 0,
+    "SDK_requests": 0,
+    "provider_generations": 0,
+    "publication_or_deployment_completed_here": false
+  }
+}

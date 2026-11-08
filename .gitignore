@@ -50,6 +50,7 @@ Thumbs.db
 .ruff_cache/
 .vitest/
 playwright-report/
+.playwright-cli/
 test-results/
 htmlcov/
 .coverage

@@ -163,15 +163,15 @@ describe('Codex profile observation use cases', () => {
             {
               id: '4',
               is_active: true,
-              use_token_plan_agentic: true,
-              default_mode: 'token_plan_agentic',
+              use_agentic: true,
+              default_mode: 'agentic',
               catalog: {
                 key: 'openai',
                 is_active: true,
-                can_use_token_plan_agentic: true,
+                can_use_agentic: true,
               },
               fields: {
-                token_plan_agentic: { selected_model: 'synthetic-model' },
+                agentic: { selected_model: 'synthetic-model' },
               },
             },
           ],
@@ -182,7 +182,7 @@ describe('Codex profile observation use cases', () => {
       f.runtime,
     );
     expect(
-      await catalog.execute({ provider_id: '4', mode: 'token_plan_agentic' }),
+      await catalog.execute({ provider_id: '4', mode: 'agentic' }),
     ).toMatchObject([
       {
         providerId: '4',

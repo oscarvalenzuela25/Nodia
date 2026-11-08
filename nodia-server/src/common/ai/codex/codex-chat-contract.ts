@@ -1,4 +1,10 @@
 import type { CodexSession, CodexModel } from './codex-contract.js';
+import type {
+  CodexChatImage,
+  CodexChatImageLimits,
+  CodexChatImageMime,
+} from './codex-chat-images.js';
+import type { CodexChatAudio, CodexChatAudioLimits, CodexChatAudioMime } from './codex-chat-audio.js';
 import type { CodexChatToolCall } from '../../../ai-provider/use-case/codex-chat-tool-channel.use-case.js';
 import type {
   NodiaAiCodexRuntimeProofRequest,
@@ -7,9 +13,16 @@ import type {
 
 export type CodexChatIdentity = NodiaAiCodexRuntimeProofRequest;
 export interface CodexChatPayload {
+  /** Explicit image-only lane; never inferred from ordinary chat text. */
+  readonly imageGeneration?: { readonly prompt: string };
   readonly modelId: string;
   readonly effort?: string;
   readonly prompt: string;
+  /** Context measurement knows only count before reading private originals. */
+  readonly images?: readonly { mediaType?: CodexChatImageMime }[];
+  readonly audio?: readonly { mediaType?: CodexChatAudioMime }[];
+  /** Preserve the original order of mixed attachments, independently of staging. */
+  readonly mediaOrder?: readonly ('image' | 'audio')[];
   readonly tools: readonly {
     name: string;
     description: string;
@@ -17,6 +30,10 @@ export interface CodexChatPayload {
   }[];
 }
 export interface CodexChatRequest extends CodexChatPayload {
+  readonly images?: readonly CodexChatImage[];
+  readonly imageLimits?: CodexChatImageLimits;
+  readonly audio?: readonly CodexChatAudio[];
+  readonly audioLimits?: CodexChatAudioLimits;
   readonly identity: CodexChatIdentity;
   readonly deadlineAt: Date;
   readonly signal: AbortSignal;
@@ -86,5 +103,6 @@ export interface CodexChatMeasurement {
 }
 export interface CodexChatReply {
   text: string;
+  generatedImage?: CodexChatImage;
   terminalProof: NodiaAiRuntimeTerminalProof;
 }

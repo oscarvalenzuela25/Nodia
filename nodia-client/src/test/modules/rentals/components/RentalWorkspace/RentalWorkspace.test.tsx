@@ -18,7 +18,7 @@ beforeEach(resetUI);
 it("mounts only the visible tab and ignores an invalid tab query", async () => {
   const { router } = renderRoute(
     <RentalWorkspace property={property} />,
-    "/tools/reservations?tab=invalid&property=1",
+    "/reservations?tab=invalid&property=1",
   );
   expect(
     screen.getByRole("tab", { name: i18n.t("rental:tabs.calendar") }),
@@ -41,7 +41,7 @@ it.each(["collaborators", "configuration"] as const)(
   async (tab) => {
     const { router } = renderRoute(
       <RentalWorkspace property={property} />,
-      "/tools/reservations?property=1",
+      "/reservations?property=1",
     );
     const tabName = i18n.t(`rental:tabs.${tab}`);
     const calendarName = i18n.t("rental:tabs.calendar");
@@ -102,7 +102,7 @@ it.each(["reservations", "blocks"] as const)(
         isError: kind === resource && !!id && failed,
       }),
     );
-    const url = `/tools/reservations?property=1&tab=${resource === "reservations" ? "reservations" : "calendar"}`;
+    const url = `/reservations?property=1&tab=${resource === "reservations" ? "reservations" : "calendar"}`;
     const { router } = renderRoute(
       <RentalWorkspace property={property} />,
       url,

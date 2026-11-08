@@ -168,11 +168,11 @@ export const paymentAck = ackSchema.parse(
 );
 export function renderRoute(
   element: ReactNode,
-  url = "/tools/reservations?property=1",
+  url = "/reservations?property=1",
 ) {
   const router = createMemoryRouter(
     [
-      { path: "/tools/reservations", element },
+      { path: "/reservations", element },
       { path: "/elsewhere", element: <p>Elsewhere</p> },
     ],
     { initialEntries: [url] },

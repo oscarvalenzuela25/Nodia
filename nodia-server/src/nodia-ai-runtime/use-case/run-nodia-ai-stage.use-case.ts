@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { NodiaAiAdapterError } from '../../nodia-ai-adapter/types/nodia-ai-adapter.types.js';
 import { ClaimNodiaAiJobUseCase } from './claim-nodia-ai-job.use-case.js';
 import { CheckpointNodiaAiJobUseCase } from './checkpoint-nodia-ai-job.use-case.js';
 import { RetryNodiaAiJobUseCase } from './retry-nodia-ai-job.use-case.js';
@@ -212,7 +213,9 @@ export class RunNodiaAiStageUseCase {
           (await this.retry.execute(claim, error.errorCode))
         )
           return true;
-        outcome = {
+        outcome = error instanceof NodiaAiAdapterError && error.outcome === 'not_dispatched' && error.rejectionProof
+          ? { status: 'failed', errorCode: 'nodia_ai:runtime_busy', rejectionProof: error.rejectionProof }
+          : {
           status: dispatched ? 'unknown' : 'failed',
           errorCode: dispatched
             ? 'nodia_ai:outcome_unknown'
@@ -225,7 +228,7 @@ export class RunNodiaAiStageUseCase {
       } else outcome = settled.value;
       // A handler cannot downgrade a potentially sent operation without the private terminal receipt.
       // The checkpoint validates every proof field before committing any known failure or cleanup.
-      if (dispatched && outcome.status === 'failed' && !outcome.terminalProof)
+      if (dispatched && outcome.status === 'failed' && !outcome.terminalProof && !outcome.rejectionProof)
         outcome = { status: 'unknown', errorCode: 'nodia_ai:outcome_unknown' };
       await this.checkpoint.finish(claim, outcome);
       return true;

@@ -1,14 +1,13 @@
-import { getObservedWebQuota, getWebQuotaLabelKey, getObservedSessionStatus } from "../../infrastructure/observations";
+import { getObservedSessionStatus } from "../../infrastructure/observations";
 import type { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Typography, Box, LinearProgress, Chip, Tooltip } from "@mui/material";
+import { Button, Typography, Box, Chip } from "@mui/material";
 import { sileo } from "sileo";
 import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
 import HubOutlinedIcon from "@mui/icons-material/HubOutlined";
 import SmartToyOutlinedIcon from "@mui/icons-material/SmartToyOutlined";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
-import DevicesOutlinedIcon from "@mui/icons-material/DevicesOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
@@ -47,7 +46,6 @@ import {
 interface ProviderCardProps {
   provider: AiProviderHealthItem;
   totalProviders?: number;
-  onRenewSession?: (provider: AiProviderHealthItem) => void;
   onViewModels?: (provider: AiProviderHealthItem) => void;
   onConfigure?: (provider: AiProviderHealthItem) => void;
   onGoToDetail?: (provider: AiProviderHealthItem) => void;
@@ -56,7 +54,6 @@ interface ProviderCardProps {
 const ProviderCard: FC<ProviderCardProps> = ({
   provider,
   totalProviders,
-  onRenewSession,
   onViewModels,
   onConfigure,
   onGoToDetail,
@@ -65,7 +62,6 @@ const ProviderCard: FC<ProviderCardProps> = ({
 
   const isGemini = provider.key.toLowerCase().includes("gemini");
   const isMistral = provider.key.toLowerCase().includes("mistral");
-  const isWebMode = provider.mode === "web_session";
 
   const { data: geminiEnginesData } = useGeminiEngines({
     enabled: isGemini,
@@ -73,10 +69,7 @@ const ProviderCard: FC<ProviderCardProps> = ({
 
   const isAgenticActive = isGemini && geminiEnginesData?.agentic?.available === true
     && geminiEnginesData.agentic.authenticated === true;
-  const isWebActive = isGemini && geminiEnginesData?.web?.available === true
-    && geminiEnginesData.web.authenticated === true;
 
-  const webQuotas = getObservedWebQuota(geminiEnginesData?.web);
 
   // Provider Icon
   const renderProviderIcon = () => {
@@ -130,18 +123,15 @@ const ProviderCard: FC<ProviderCardProps> = ({
 
   const hasAnyConfiguredChannel = Boolean(
     provider.use_api_key ||
-    provider.use_token_plan_web ||
-    provider.use_token_plan_agentic
+    provider.use_agentic
   );
-  const hasTokenPlanChannel = Boolean(
-    (provider.use_token_plan_web ?? isWebMode) ||
-    (provider.use_token_plan_agentic ?? (provider.mode === "token_plan_agentic"))
+  const hasAgenticChannel = Boolean(
+    (provider.use_agentic ?? (provider.mode === "agentic"))
   );
   const subscriptionStatuses = [
-    ...(provider.use_token_plan_web ? [getObservedSessionStatus(geminiEnginesData?.web)] : []),
-    ...(provider.use_token_plan_agentic ? [getObservedSessionStatus(isGemini ? geminiEnginesData?.agentic : provider.codexSession)] : []),
+    ...(provider.use_agentic ? [getObservedSessionStatus(isGemini ? geminiEnginesData?.agentic : provider.codexSession)] : []),
   ];
-  const apiDefaultWithSubscription = provider.isActive && hasTokenPlanChannel
+  const apiDefaultWithSubscription = provider.isActive && hasAgenticChannel
     && (provider.default_mode ?? provider.mode) === "api_key";
   const headerStatus = apiDefaultWithSubscription
     ? subscriptionStatuses.length > 0 && subscriptionStatuses.every(status => status === "healthy") ? "healthy"
@@ -180,7 +170,7 @@ const ProviderCard: FC<ProviderCardProps> = ({
               </TagRow>
             </TitleBox>
           </ProviderInfo>
-          {hasTokenPlanChannel && <StatusPill statusType="unconfigured">
+          {hasAgenticChannel && <StatusPill statusType="unconfigured">
             <StatusDot color="#64748b" />
             {t("ai_providers:cards.status_unconfigured", "SIN CONFIGURAR")}
           </StatusPill>}
@@ -190,7 +180,7 @@ const ProviderCard: FC<ProviderCardProps> = ({
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {t(
               "ai_providers:cards.unconfigured_desc",
-              "Configure una sesión Web o Agentic para habilitar esta conexión."
+              "Configure Agentic o API key para habilitar esta conexión."
             )}
           </Typography>
           {Boolean(totalProviders && totalProviders > 1) && (
@@ -265,8 +255,7 @@ const ProviderCard: FC<ProviderCardProps> = ({
               <SubtitleTag>
                 {(() => {
                   const modes: string[] = [];
-                  if (provider.use_token_plan_agentic) modes.push(t("ai_providers:cards.channel_agentic", "Agentic"));
-                  if (provider.use_token_plan_web) modes.push(t("ai_providers:cards.channel_web", "Plan Web"));
+                  if (provider.use_agentic) modes.push(t("ai_providers:cards.channel_agentic", "Agentic"));
                   if (provider.use_api_key) modes.push(t("ai_providers:cards.channel_api_key", "API Key"));
 
                   if (modes.length === 1) {
@@ -275,16 +264,14 @@ const ProviderCard: FC<ProviderCardProps> = ({
                   if (modes.length > 1) {
                     return t("ai_providers:cards.configured_modes", { modes: modes.join(" • ") });
                   }
-                  return isWebMode
-                    ? t("ai_providers:cards.mode_web", "Modo: Sesión Web Headless")
-                    : t("ai_providers:connection.no_modes");
+                  return t("ai_providers:connection.no_modes");
                 })()}
               </SubtitleTag>
             </TagRow>
           </TitleBox>
         </ProviderInfo>
 
-        {hasTokenPlanChannel && <StatusPill statusType={headerStatus}>
+        {hasAgenticChannel && <StatusPill statusType={headerStatus}>
           <StatusDot color={getStatusDotColor()} />
           {headerStatusLabel}
         </StatusPill>}
@@ -332,21 +319,18 @@ const ProviderCard: FC<ProviderCardProps> = ({
 
         {/* MODES PANELS ROW */}
         {(() => {
-          const hasScopedFields = Boolean(provider.fields?.token_plan_agentic || provider.fields?.token_plan_web || provider.fields?.api_key);
-          const agenticFields = (provider.fields?.token_plan_agentic as Record<string, unknown>) || {};
+          const hasScopedFields = Boolean(provider.fields?.agentic || provider.fields?.api_key);
+          const agenticFields = (provider.fields?.agentic as Record<string, unknown>) || {};
           const agenticModel =
             (agenticFields.selected_model as string) ||
-            (!hasScopedFields && provider.default_mode === "token_plan_agentic" ? provider.selectedModel : undefined);
+            (!hasScopedFields && provider.default_mode === "agentic" ? provider.selectedModel : undefined);
 
-          const webFields = (provider.fields?.token_plan_web as Record<string, unknown>) || {};
-          const webModel =
-            (webFields.selected_model as string) ||
-            (!hasScopedFields && provider.default_mode === "token_plan_web" ? provider.selectedModel : undefined);
+
 
           return (
             <ModesPanelsRow>
               {/* MODO 1: AGENTIC */}
-              {Boolean(provider.use_token_plan_agentic) && (
+              {Boolean(provider.use_agentic) && (
                 <ModePanelCard>
                   <ModePanelHeader>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -389,74 +373,13 @@ const ProviderCard: FC<ProviderCardProps> = ({
                 </ModePanelCard>
               )}
 
-              {/* MODO 2: WEB */}
-              {Boolean(provider.use_token_plan_web) && (
-                <ModePanelCard>
-                  <ModePanelHeader>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <DevicesOutlinedIcon sx={{ fontSize: 18, color: "info.main" }} />
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: "text.primary" }}>
-                        {t("ai_providers:cards.panel_web_title")}
-                      </Typography>
-                    </Box>
-                    <CodeBadge
-                      sx={{
-                        backgroundColor:
-                          !isWebActive
-                            ? "rgba(245, 158, 11, 0.1)"
-                            : "rgba(16, 185, 129, 0.1)",
-                        color: !isWebActive ? "#f59e0b" : "#10b981",
-                        borderColor:
-                          !isWebActive
-                            ? "rgba(245, 158, 11, 0.2)"
-                            : "rgba(16, 185, 129, 0.2)",
-                      }}
-                    >
-                      {!isWebActive
-                        ? t("ai_providers:cards.panel_web_inactive", "Requiere Login")
-                        : t("ai_providers:cards.panel_web_active", "Autenticada")}
-                    </CodeBadge>
-                  </ModePanelHeader>
-                  <ModePanelBody>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
-                      <Typography variant="caption" color="text.secondary">
-                        {t("ai_providers:cards.model_label", "Modelo")}:
-                      </Typography>
-                      <CodeBadge sx={{ fontStyle: webModel ? "normal" : "italic", opacity: webModel ? 1 : 0.7 }}>
-                        {webModel || t("ai_providers:status_not_configured", "Sin asignar")}
-                      </CodeBadge>
-                    </Box>
-                    <Typography variant="caption" color="text.secondary">
-                      {t(
-                        "ai_providers:cards.panel_web_desc",
-                        "Sesión de navegador para modelos web"
-                      )}
-                    </Typography>
-
-                    {webQuotas.map((quota) => {
-                      const labelKey = getWebQuotaLabelKey(quota.key);
-                      return <Box key={quota.key} sx={{ mt: 0.5, width: "100%" }}>
-                      <Tooltip title={quota.key}>
-                        <Typography variant="caption" color="text.secondary">
-                          {t("ai_providers:detail.reported_quota_bucket", {
-                            bucket: labelKey ? t(labelKey) : quota.key,
-                          })}: {quota.percentage}%
-                        </Typography>
-                      </Tooltip>
-                      <LinearProgress variant="determinate" value={quota.percentage} sx={{ height: 4, borderRadius: 2 }} />
-                    </Box>;
-                    })}
-                  </ModePanelBody>
-                </ModePanelCard>
-              )}
-
               {/* MODO 3: API KEY */}
               {Boolean(provider.use_api_key) && (() => {
                 const apiFields = (provider.fields?.api_key as Record<string, unknown>) || {};
                 const apiModel =
                   (apiFields.selected_model as string) ||
                   (!hasScopedFields && provider.default_mode === "api_key" ? provider.selectedModel : undefined) ||
-                  (provider.selectedModel && provider.use_api_key && !provider.use_token_plan_web && !provider.use_token_plan_agentic
+                  (provider.selectedModel && provider.use_api_key && !provider.use_agentic
                     ? provider.selectedModel
                     : undefined);
 
@@ -624,8 +547,7 @@ const ProviderCard: FC<ProviderCardProps> = ({
               })()}
 
               {/* SIN MODOS ACTIVOS */}
-              {!provider.use_token_plan_agentic &&
-                !provider.use_token_plan_web &&
+              {!provider.use_agentic &&
                 !provider.use_api_key && (
                   <ModePanelCard sx={{ gridColumn: "1 / -1" }}>
                     <ModePanelHeader>
@@ -705,27 +627,7 @@ const ProviderCard: FC<ProviderCardProps> = ({
 
         {/* Primary CTA buttons */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {Boolean(provider.use_token_plan_web && provider.status === "expired") && (
-            <Button
-              variant="contained"
-              size="small"
-              startIcon={<DevicesOutlinedIcon />}
-              onClick={() => onRenewSession?.(provider)}
-              sx={{
-                backgroundColor: "#6366f1",
-                color: "#ffffff",
-                fontWeight: 600,
-                textTransform: "none",
-                borderRadius: 1.5,
-                px: 2,
-                "&:hover": {
-                  backgroundColor: "#4f46e5",
-                },
-              }}
-            >
-              {t("ai_providers:cards.renew_session_button", "Renovar Sesión (Navegador Remoto)")}
-            </Button>
-          )}
+
 
 
         </Box>

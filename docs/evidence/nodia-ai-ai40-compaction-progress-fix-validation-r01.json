@@ -1,0 +1,164 @@
+{
+  "schema": "nodia-ai-ai40-compaction-progress-fix-validation-v1",
+  "status": "local_verified_not_adopted_no_real_compaction_acceptance",
+  "cut_host_date": "2026-10-23",
+  "baseline_release_manifest": {
+    "path": "ops/lab/artifacts/ai40-server-r06-manifest.json",
+    "sha256": "5aa5b74dd43cfbc61615f766ba8e17dd12bb3c8bb0a695bd85fc68c6d519c2bd",
+    "bytes": 537468
+  },
+  "production_fix": {
+    "scope": "Two production sources only. No new imports, runtime/adapter/diagnostic/audio changes, contracts, policy limits or tool publication changes.",
+    "before": "Context compaction uses ordinary inference-only tool progress; the first native zero-RPC startup callback rejects with capability_denied.",
+    "after": "The compaction callback verifies the exact held runtime reservation before and after a context-only Agentic gateway. The gateway uses the existing fenced monotonic knowledge ledger, admits only zero/zero, and commits any unexpected RPC/tool delta before rejecting tool use.",
+    "ordinary_tool_progress_and_execution_guards_unchanged": true,
+    "compaction_tools_or_callbacks_enabled": false,
+    "source_pins": [
+      {
+        "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+        "sha256": "d0548d240a6cf2c051054e1cca4b25c02c8a5b6948f4ffd81b356ed53c874a1d",
+        "bytes": 42209
+      },
+      {
+        "path": "nodia-server/src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.ts",
+        "sha256": "9d101bb0779aa32a7ed99e4ae3b82cb2bd45184dbd5b464180b651f5d1b3a1b0",
+        "bytes": 37616
+      },
+      {
+        "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts",
+        "sha256": "1592246bd3a6d99967f17d15d96b7fecc555d43b333d5c13b9ba486279937e00",
+        "bytes": 92154
+      },
+      {
+        "path": "nodia-server/src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.spec.ts",
+        "sha256": "e24873626274c1710ea9dcdc95308717e25922a69ff2d4b39c9887ee64c9ede1",
+        "bytes": 44451
+      }
+    ],
+    "selective_source_port": {
+      "schema": "nodia-ai-ai40-r07-compaction-progress-source-port-v1",
+      "baseline_manifest_sha256": "5aa5b74dd43cfbc61615f766ba8e17dd12bb3c8bb0a695bd85fc68c6d519c2bd",
+      "production_files": [
+        {
+          "path": "src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+          "baseline_sha256": "2ce8f0661c25f0b8d48e59de8e3801f6180ecf8151c0d79397c5e167ad8d2965",
+          "target_sha256": "d0548d240a6cf2c051054e1cca4b25c02c8a5b6948f4ffd81b356ed53c874a1d",
+          "target_bytes": 42209,
+          "source_port": ".tmp/ai40-r07-source-port-r01/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+          "LF": true,
+          "imports_changed": false
+        },
+        {
+          "path": "src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.ts",
+          "baseline_sha256": "91e1e396e45d131b6aa5d15d1e7de082a1296c64eb1ca3081c2a1a049d661dde",
+          "target_sha256": "9d101bb0779aa32a7ed99e4ae3b82cb2bd45184dbd5b464180b651f5d1b3a1b0",
+          "target_bytes": 37616,
+          "source_port": ".tmp/ai40-r07-source-port-r01/src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.ts",
+          "LF": true,
+          "imports_changed": false
+        }
+      ],
+      "new_dependencies": [],
+      "audio_diagnostic_runtime_adapter_changes_included": false,
+      "account_actions": 0,
+      "deployment": false
+    },
+    "source_port_receipt": {
+      "path": ".tmp/ai40-r07-source-port-r01/source-pins-r01.json",
+      "sha256": "44763adea76b92070dde8fbcf32ec7eee5e585c8866edfb824c3c31017290e1c",
+      "bytes": 1278
+    }
+  },
+  "QA": {
+    "red_before_green": {
+      "stage_regression": "Before the dedicated callback patch, the Stage test using actual ExecuteTool.progress and actual ledger failed with nodia_ai:capability_denied. The five new Stage cases initially failed; Tool cases initially failed because compactionProgress did not exist. These were local atomic executions, not native/account probes."
+    },
+    "focused_tests": {
+      "command": "npx vitest run src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.spec.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts src/nodia-ai-context/use-case/execute-nodia-ai-knowledge-tool.use-case.spec.ts src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.spec.ts --reporter=json --outputFile=../.tmp/ai40-r07-selective-r01/focused-tests-r01.json",
+      "exit_code": 0,
+      "passed": 265,
+      "failed": 0,
+      "pending": 0,
+      "report": {
+        "path": ".tmp/ai40-r07-selective-r01/focused-tests-r01.json",
+        "sha256": "4b13337a58b4caea950a2e309fe9f3fdaca4fb2a919792d4744b16e47b69d6b3",
+        "bytes": 93479
+      },
+      "per_file": [
+        {
+          "path": "nodia-server/src/nodia-ai-context/use-case/execute-nodia-ai-knowledge-tool.use-case.spec.ts",
+          "tests": 16,
+          "status": "passed"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts",
+          "tests": 124,
+          "status": "passed"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.spec.ts",
+          "tests": 56,
+          "status": "passed"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.spec.ts",
+          "tests": 69,
+          "status": "passed"
+        }
+      ]
+    },
+    "production_types": {
+      "command": "npx tsc --noEmit --incremental false --project tsconfig.build.json",
+      "exit_code": 0,
+      "emitted_build": false
+    },
+    "oxlint": {
+      "command": "npx oxlint src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.ts src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.spec.ts",
+      "exit_code": 0,
+      "diagnostics": 0
+    },
+    "whole_tree_spec_typecheck_not_a_green_gate": {
+      "command": "npx tsc --noEmit --incremental false --project tsconfig.json",
+      "exit_code": 1,
+      "reported_typescript_errors": 202,
+      "report": {
+        "path": ".tmp/ai40-r07-selective-r01/working-tree-spec-typecheck-r01.txt",
+        "sha256": "70d9186faf11091550b3bfa13a4d338e3b2dcae054c015adba4ee1e937329b7c",
+        "bytes": 75840
+      },
+      "limitation": "This includes repository-wide test fixtures and fails. No new diagnostic was reported in the edited progress tests; the sole diagnostic in the two changed specs is an unchanged native-media map callback outside this fix. Do not describe this command as passing or as a baseline comparison."
+    },
+    "atomic_guarantees": [
+      "Actual context-only ExecuteTool gateway and actual Knowledge ledger are connected to the compact Stage callback; startup zero/zero succeeds without descriptors/onToolCall or tools.",
+      "Positive RPC/unforwarded tool progress is charged once, monotonic replay is not charged twice, decreasing totals fail, and all positive requests are rejected.",
+      "Wrong stages, Web mode, invalid numeric/budget limits, revoked checkpoints, runtime lease loss before/after checkpoint and aborted callbacks fail closed.",
+      "Ordinary context tool execution and ordinary progress remain denied. Real Checkpoint regression cases retain actor/grant/session/fence/deadline/revocation checks."
+    ],
+    "LF_UTF8": true,
+    "tests_mock_native_transport": true,
+    "tests_do_not_prove_provider_completion_or_historical_causality": true
+  },
+  "negative_real_attempt_and_offline_reproduction": {
+    "path": "docs/evidence/nodia-ai-ai40-compaction-validation-r01.json",
+    "sha256": "11a65df7e6d5f40e06c0ddb7d23ac9a54b188e873de8124b954e3323b805dc9e",
+    "bytes": 22361
+  },
+  "operational_actions": {
+    "VM_accesses": 0,
+    "account_reads": 0,
+    "provider_generations": 0,
+    "SQL_accesses": 0,
+    "proof_mutations": 0,
+    "deployment": false,
+    "native_compaction_snapshot_or_reuse_accepted": false
+  },
+  "pending": [
+    "Parent-reviewed selective R07 package compile/import validation from immutable R06 archive.",
+    "Reviewed adoption and a fresh bounded real compaction/continuation/reuse acceptance; no consumed R01/R02 probe may be replayed."
+  ],
+  "references": [
+    "docs/mvp/43-nodia-ai-execution-architecture.md",
+    "docs/mvp/50-nodia-ai-ai04-runtime-policy.md",
+    "docs/mvp/80-nodia-ai-ai34-long-context-compaction.md"
+  ]
+}

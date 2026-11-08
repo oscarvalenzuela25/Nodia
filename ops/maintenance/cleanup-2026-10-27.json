@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-27",
+  "status": "blocked_by_automatic_execution_policy",
+  "requested": "Eliminar temporales y residuos prescindibles; convertir CRLF a LF después.",
+  "execution": {
+    "bulk_deletion_completed": false,
+    "deleted_files": 1,
+    "deleted_bytes": 0,
+    "deleted_paths": [
+      "docs/evidence/nodia-ai-ai36-c05-cases-control-attempt01-finance-stderr.log"
+    ],
+    "blocked_actions": [
+      "Eliminación recursiva de temporales y cachés inventariados",
+      "Desconexión no recursiva de junctions temporales",
+      "Eliminación masiva no recursiva de archivos comunes inventariados"
+    ],
+    "automatic_review_reason": "blocked by policy; sin explicación adicional",
+    "no_further_bulk_deletion_attempted": true
+  },
+  "eligible_inventory_not_deleted": {
+    "files": 129378,
+    "bytes": 1258006269,
+    "temporary_links_to_preserve_targets": 30,
+    "scope": [
+      ".tmp/ salvo intermediarios de esta auditoría",
+      "output/",
+      "nodia-gemini-microservice/.tmp/",
+      "__pycache__ propios",
+      "logs históricos ignorados de docs/evidence/ archivados",
+      "metadatos incrementales *.tsbuildinfo"
+    ],
+    "preserved": [
+      "Fuentes, tests y cambios previos",
+      "Dependencias y entornos Python",
+      "Dist de Client y Server",
+      "Secretos, sesiones y perfiles",
+      "Paquetes de recuperación y originales históricos de LF"
+    ],
+    "historical_recipes": "Algunas recetas conservadas en artifacts leen builds históricos de .tmp; no son dependencias del runtime actual. No se han eliminado esos builds."
+  },
+  "lf": {
+    "managed_files_verified": 6139,
+    "utf8_text_files_verified": 5914,
+    "crlf_remaining_managed": 0,
+    "generated_runtime_json_crlf": 0,
+    "converted_files": 0,
+    "reason": "El texto propio gestionado ya estaba en LF; no reescribir archivos sin cambios necesarios.",
+    "excluded": "Binarios, dependencias, secretos, perfiles, sesiones, archivos originales y paquetes de recuperación."
+  },
+  "integrity": {
+    "baseline_managed_files_byte_identical": 6139,
+    "protected_file_probes_unchanged": 9,
+    "archive_entries_verified": 436
+  },
+  "preserved_archive": {
+    "catalog": "ops/lab/artifacts/cleanup-2026-10-27/catalog.json",
+    "sha256": "ec7b7d1047d1f7b75c54d42b1ec25defa46bb1e3c6c2a01d9db598c193f3d67f",
+    "files": 436,
+    "source_bytes": 5986216,
+    "archive_bytes": 2937060
+  },
+  "preexisting_validation": {
+    "exit_code": 1,
+    "error": "implementation_hash_mismatch",
+    "observed_before_cleanup": true
+  },
+  "knowledge_impact": "Sin cambios de producto, contratos, comportamiento ni UI; fichas y publicaciÃƒÂ³n intactas."
+}

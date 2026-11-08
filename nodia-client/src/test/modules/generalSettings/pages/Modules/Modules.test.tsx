@@ -33,6 +33,8 @@ vi.mock(
     updateModuleGroup: vi.fn(),
     deleteModule: vi.fn(),
     deleteModuleGroup: vi.fn(),
+    moveModuleOrder: vi.fn(),
+    moveModuleGroupOrder: vi.fn(),
   }),
 );
 
@@ -67,7 +69,7 @@ const mockModules: ModuleEntity[] = [
   {
     id: "m1",
     key: "users",
-    link: "/settings/users",
+    link: "/users",
     module_group_id: "mg1",
     module_group: mockGroups[0],
     is_active: true,
@@ -82,7 +84,7 @@ const mockModules: ModuleEntity[] = [
   {
     id: "m2",
     key: "roles",
-    link: "/settings/roles",
+    link: "/roles",
     module_group_id: "mg1",
     module_group: mockGroups[0],
     is_active: true,
@@ -182,8 +184,8 @@ describe("Modules Page", () => {
     await waitFor(() => {
       // Module table headers
       expect(screen.getByText("Ruta")).toBeInTheDocument();
-      expect(screen.getByText("Nombre de Grupo")).toBeInTheDocument();
-      expect(screen.getByText("Identificador Grupal")).toBeInTheDocument();
+      expect(screen.queryByText("Nombre de Grupo")).not.toBeInTheDocument();
+      expect(screen.queryByText("Identificador Grupal")).not.toBeInTheDocument();
 
       // Module group table header
       expect(screen.getByText("Nombre del Grupo")).toBeInTheDocument();
@@ -196,7 +198,7 @@ describe("Modules Page", () => {
       ).toBeGreaterThanOrEqual(2);
       expect(
         screen.getAllByText("administration").length,
-      ).toBeGreaterThanOrEqual(2);
+      ).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -206,7 +208,7 @@ describe("Modules Page", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Grupos de Módulos")).toBeInTheDocument();
-      expect(screen.getByText("Nombre de Grupo")).toBeInTheDocument();
+      expect(screen.getByText("Ruta")).toBeInTheDocument();
     });
 
     // Switch to "Solo Módulos"
@@ -216,21 +218,21 @@ describe("Modules Page", () => {
     await user.click(modulesOnlyBtn);
 
     expect(screen.queryByText("Grupos de Módulos")).not.toBeInTheDocument();
-    expect(screen.getByText("Nombre de Grupo")).toBeInTheDocument();
+    expect(screen.getByText("Ruta")).toBeInTheDocument();
 
     // Switch to "Solo Grupos"
     const groupsOnlyBtn = screen.getByRole("button", { name: /Solo Grupos/i });
     await user.click(groupsOnlyBtn);
 
     expect(screen.getByText("Grupos de Módulos")).toBeInTheDocument();
-    expect(screen.queryByText("Nombre de Grupo")).not.toBeInTheDocument();
+    expect(screen.queryByText("Ruta")).not.toBeInTheDocument();
 
     // Switch back to "Vista Conjunta"
     const splitBtn = screen.getByRole("button", { name: /Vista Conjunta/i });
     await user.click(splitBtn);
 
     expect(screen.getByText("Grupos de Módulos")).toBeInTheDocument();
-    expect(screen.getByText("Nombre de Grupo")).toBeInTheDocument();
+    expect(screen.getByText("Ruta")).toBeInTheDocument();
   });
 
   it("fetches modules and groups with appropriate parameters", async () => {
@@ -405,7 +407,7 @@ describe("Modules Page", () => {
     vi.mocked(services.createModule).mockResolvedValue({
       id: "m4",
       key: "billing",
-      link: "/settings/billing",
+      link: "/ai-providers",
       module_group_id: "mg1",
       is_active: true,
     });
@@ -446,12 +448,12 @@ describe("Modules Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Proveedores de IA \(\/settings\/ai-providers\)/i),
+        screen.getByText(/Proveedores de IA \(\/ai-providers\)/i),
       ).toBeInTheDocument();
     });
 
     const routeOption = screen.getByText(
-      /Proveedores de IA \(\/settings\/ai-providers\)/i,
+      /Proveedores de IA \(\/ai-providers\)/i,
     );
     await user.click(routeOption);
 
@@ -462,7 +464,7 @@ describe("Modules Page", () => {
       expect(services.createModule).toHaveBeenCalledWith({
         key: "billing",
         module_group_id: "mg1",
-        link: "/settings/ai-providers",
+        link: "/ai-providers",
         icon: null,
         is_active: true,
         translates: [
@@ -481,7 +483,7 @@ describe("Modules Page", () => {
     vi.mocked(services.updateModule).mockResolvedValue({
       id: "m1",
       key: "users",
-      link: "/settings/users",
+      link: "/users",
       is_active: false,
     });
 
@@ -516,7 +518,7 @@ describe("Modules Page", () => {
     });
   });
 
-  it("copies module id to clipboard and displays sileo toast", async () => {
+  it("keeps link copying without offering redundant ID copy actions", async () => {
     const user = userEvent.setup();
     const writeTextMock = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", {
@@ -533,13 +535,14 @@ describe("Modules Page", () => {
       expect(screen.getByText("users")).toBeInTheDocument();
     });
 
-    const copyButtons = screen.getAllByRole("button", { name: "Copiar ID" });
-    await user.click(copyButtons[0]);
+    expect(screen.queryByRole("button", { name: "Copiar ID" })).not.toBeInTheDocument();
+    const usersRow = screen.getByText("users").closest("tr")!;
+    await user.click(within(usersRow).getByRole("button", { name: "Copiar enlace" }));
 
-    expect(writeTextMock).toHaveBeenCalledWith("mg1");
+    expect(writeTextMock).toHaveBeenCalledWith(`${window.location.origin}/users`);
     expect(sileo.info).toHaveBeenCalledWith({
-      title: "Copiar ID",
-      description: "Copiado al portapapeles",
+      title: "Enlace copiado",
+      description: "La URL del módulo ha sido copiada al portapapeles.",
     });
   });
 
@@ -770,7 +773,7 @@ describe("Modules Page", () => {
     renderWithClient(<Modules />);
     const card = await screen.findByRole("article", { name: "Usuarios" });
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
-    expect(within(card).getByText("/settings/users")).toBeInTheDocument();
+    expect(within(card).getByText("/users")).toBeInTheDocument();
     expect(
       within(card).getByText("Activo", { exact: true }),
     ).toBeInTheDocument();

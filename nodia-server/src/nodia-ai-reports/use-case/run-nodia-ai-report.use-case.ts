@@ -12,6 +12,7 @@ import {
   runFinanceScope,
 } from '../../authorization/authority-transaction.js';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
+import { assertBusinessesAccess } from '../../business-access/business-access.js';
 import { AuthorizeNodiaAiUseCase } from '../../nodia-ai/use-case/authorize-nodia-ai.use-case.js';
 import type { NodiaAiActorReference } from '../../nodia-ai/types/nodia-ai-authorization.types.js';
 import {
@@ -114,7 +115,7 @@ export class RunNodiaAiReportUseCase {
       )
         throw new NodiaAiReportQueryError('invalid_input', 'scope');
     }
-    const source = this.registry.get(request.source_key);
+    const source = this.registry.getPublished(request.source_key);
     const timeout = this.policy.timing.read_query_seconds * 1000;
     const work = async (manager: EntityManager) => {
       if (!manager.queryRunner?.isTransactionActive)
@@ -249,14 +250,32 @@ export class RunNodiaAiReportUseCase {
           'needs_clarification',
           'scope.business_id',
         );
-      // Native product/invoice/provider reads intentionally have global authenticated access.
-      // A business filter narrows their population; it must not invent a membership restriction.
-      const businesses: { id: string }[] = await manager.query(
-        'SELECT id FROM businesses WHERE id=$1 FOR SHARE',
-        [scope.business_id],
-      );
-      if (businesses.length !== 1)
-        throw new NotFoundException('business:not_found');
+      await assertBusinessesAccess(manager, identity, [scope.business_id], {
+        lock: true,
+      });
+      if (
+        source.sourceKey === 'business_sales' ||
+        source.sourceKey === 'business_sale_items'
+      ) {
+        const [business]: { sales_timezone: string }[] = await manager.query(
+          'SELECT sales_timezone FROM businesses WHERE id=$1',
+          [scope.business_id],
+        );
+        if (business?.sales_timezone !== 'America/Santiago')
+          throw new NodiaAiReportQueryError(
+            'needs_clarification',
+            'business.sales_timezone',
+          );
+        if (
+          request.period &&
+          request.period.timezone !== business.sales_timezone
+        )
+          throw new NodiaAiReportQueryError(
+            'unsupported_semantics',
+            'period.timezone',
+          );
+        return run(scope.business_id, business.sales_timezone);
+      }
       return run(scope.business_id);
     };
     try {
@@ -298,7 +317,9 @@ export class RunNodiaAiReportUseCase {
     )
       invalid();
     const aggregates = query.columns.filter(
-      (column) => column.measure_key !== undefined,
+      (column) =>
+        column.measure_key !== undefined &&
+        !query.omittedTotalKeys?.includes(column.sql_key),
     );
     const totals = row.totals as Record<string, unknown>;
     if (

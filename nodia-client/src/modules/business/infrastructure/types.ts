@@ -1,3 +1,4 @@
+import type { MeasurementUnit } from "./measurementUnits";
 export interface TranslateItem {
   key: string;
   es: string;
@@ -100,11 +101,20 @@ export interface ProductEntity {
   id: string;
   business_id: string;
   provider_id?: string | null;
-  code: string;
+  code: string | null;
+  measurement_unit?: MeasurementUnit;
+  barcode?: string | null;
+  offer_price?: number | null;
+  is_offer_enabled?: boolean;
+  has_stock?: boolean | null;
+  version?: number;
+  effective_price?: string | null;
+  price_source?: "regular" | "offer" | null;
+  image?: { id: string; url: string; mime_type: string; width: number; height: number; byte_size: number } | null;
+  previous_price_snapshot?: ProductLogEntity | null;
   name: string;
   cost_price: number;
   cost_price_tax: number;
-  profit_percentage: number;
   sale_price: number;
   stock: number;
   is_active: boolean;
@@ -116,25 +126,32 @@ export interface ProductEntity {
 export interface CreateProductPayload {
   business_id: string;
   provider_id?: string | null;
-  code: string;
+  code?: string | null;
+  measurement_unit?: MeasurementUnit;
+  barcode?: string | null;
+  offer_price?: number | null;
+  is_offer_enabled?: boolean;
+  has_stock: boolean;
   name: string;
   cost_price: number;
   cost_price_tax: number;
-  profit_percentage: number;
   sale_price: number;
-  stock?: number;
   is_active?: boolean;
 }
 
 export interface UpdateProductPayload {
+  expected_version?: number;
+  barcode?: string | null;
+  offer_price?: number | null;
+  is_offer_enabled?: boolean;
+  has_stock?: boolean;
   provider_id?: string | null;
-  code?: string;
+  code?: string | null;
+  measurement_unit?: MeasurementUnit;
   name?: string;
   cost_price?: number;
   cost_price_tax?: number;
-  profit_percentage?: number;
   sale_price?: number;
-  stock?: number;
   is_active?: boolean;
 }
 
@@ -153,6 +170,7 @@ export interface GetProductsParams {
   all?: boolean;
   includes?: boolean;
   q?: {
+    id_in?: string | string[];
     business_id_eq?: string;
     provider_id_eq?: string;
     provider_id_in?: string[];
@@ -334,6 +352,7 @@ export interface AnalyzeInvoiceResponse {
 export interface AnalyzeInvoiceParams {
   analysisId?: string;
   signal?: AbortSignal;
+  isCurrent?: () => boolean;
   onUploadProgress?: (event: import('axios').AxiosProgressEvent) => void;
   file: File;
   business_id: string;
@@ -343,10 +362,12 @@ export interface AnalyzeInvoiceParams {
   model?: string;
   model_type?: 'default' | 'ocr';
   extended_thinking?: boolean;
-  engine?: 'agentic' | 'web';
-  mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic';
+  engine?: 'agentic';
+  mode?: 'api_key' | 'agentic';
   thinking_level?: string;
 }
+
+export type InvoiceAiConnectionMode = "agentic" | "api_key";
 
 export interface VerifyIaProviderItem {
   id: string;
@@ -354,13 +375,13 @@ export interface VerifyIaProviderItem {
   name: string;
   mode: string;
   use_api_key?: boolean;
-  use_token_plan_web?: boolean;
-  use_token_plan_agentic?: boolean;
+  use_agentic?: boolean;
   default_mode?: string | null;
-  active_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
+  active_mode?: 'api_key' | 'agentic' | null;
   is_default?: boolean;
   is_active: boolean;
   can_use_model: boolean;
+  availability_reason?: import("./invoiceAiFailure").InvoiceAiAvailabilityReason | null;
   error?: string | null;
   fields?: {
     selected_model?: string | null;
@@ -399,11 +420,16 @@ export interface CreateInvoiceWithFileParams {
 export interface ProductLogEntity {
   id: string;
   product_id: string;
-  code: string;
+  code: string | null;
+  measurement_unit?: MeasurementUnit;
+  barcode?: string | null;
+  offer_price?: number | null;
+  is_offer_enabled?: boolean | null;
+  has_stock?: boolean | null;
+  product_version?: number | null;
   name: string;
   cost_price: number;
   cost_price_tax: number;
-  profit_percentage: number;
   sale_price: number;
   stock: number;
   created_at: string;

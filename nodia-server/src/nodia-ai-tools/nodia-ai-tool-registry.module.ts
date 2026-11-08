@@ -37,6 +37,9 @@ import {
   NODIA_AI_CANDIDATE_COMMON_PREPARATION_FAMILIES,
 } from '../nodia-ai-common-preparation/nodia-ai-common-preparation.module.js';
 import { NODIA_AI_COMMON_PREPARATION_TOOL_NAMES } from '../nodia-ai-common-preparation/types/common-preparation-contract.types.js';
+import { NodiaAiInvoiceOcrModule } from '../nodia-ai-invoice-ocr/nodia-ai-invoice-ocr.module.js';
+import { BuildNodiaAiInvoiceOcrToolUseCase } from '../nodia-ai-invoice-ocr/use-case/build-nodia-ai-invoice-ocr-tool.use-case.js';
+import { NODIA_AI_INVOICE_OCR_TOOL } from '../nodia-ai-invoice-ocr/types/invoice-ocr-port.js';
 
 const publishedIds = compiledNodiaAiCapabilityIds();
 const writeCandidates = new Set(
@@ -60,12 +63,14 @@ const readIds = publishedIds.filter(
   (id) =>
     !writeCandidates.has(id) &&
     id !== NODIA_AI_INVOICE_ANALYSIS_TOOL &&
+    id !== NODIA_AI_INVOICE_OCR_TOOL &&
     !commonReads.has(id) &&
     !commonPreparations.has(id),
 );
 
 @Module({
   imports: [
+    NodiaAiInvoiceOcrModule,
     NodiaAiProductReadsModule.forPublication(readIds),
     NodiaAiWriteToolsModule.forPublication(writeIds),
     NodiaAiInvoiceAnalysisModule.forPublication(analysisIds),
@@ -82,6 +87,7 @@ const readIds = publishedIds.filter(
         NODIA_AI_CANDIDATE_COMMON_READ_FAMILIES,
         NODIA_AI_CANDIDATE_COMMON_PREPARATION_FAMILIES,
         ComposeNodiaAiPublishedFamiliesUseCase,
+        BuildNodiaAiInvoiceOcrToolUseCase,
       ],
       useFactory: (
         reads: readonly NodiaAiToolFamily[],
@@ -90,12 +96,14 @@ const readIds = publishedIds.filter(
         commonReadFamilies: readonly NodiaAiToolFamily[],
         commonPreparationFamilies: readonly NodiaAiToolFamily[],
         compose: ComposeNodiaAiPublishedFamiliesUseCase,
+        invoiceOcr: BuildNodiaAiInvoiceOcrToolUseCase,
       ) =>
         compose.execute(reads, [
           ...writes,
           ...analyses,
           ...commonReadFamilies,
           ...commonPreparationFamilies,
+          ...(publishedIds.includes(NODIA_AI_INVOICE_OCR_TOOL) ? invoiceOcr.execute() : []),
         ]),
     },
     {
