@@ -1,7 +1,7 @@
 # Stack DevOps — Nodia Parte 1
 
 > Estado: en revisión — ampliación IA y cambio de despliegue 2026-09-25; aprobación histórica del MVP conservada
-> Última actualización: 2026-10-10
+> Última actualización: 2026-11-08
 > Dependencias: 08-stack-frontend.md y 09-stack-backend.md aprobados
 
 ## Objetivo
@@ -36,10 +36,11 @@ Definir la estructura del repositorio, la infraestructura de despliegue, y las h
 - **Justificación:** Excelente capa gratuita para MVPs, distribución global (CDN rápida), integraciones nativas con repositorios y tiempos de compilación muy rápidos para proyectos Vite/React.
 
 ### Backend y Base de Datos
+- **Destino productivo confirmado el 2026-11-08:** Truobox para API/Worker con systemd y Redis local privado; PostgreSQL Northflank Free conservado por elección explícita del usuario para feedback de stakeholders, inicialmente dos personas. Proveedor/tier de datos se reevaluará si sus límites lo exigen. Instabox Free queda histórico por pausas/max-run. [Plan99 y checklist](99-production-deployment-and-cicd-plan.md): plan/región/Ubuntu LTS, cotización, TLS, seguridad, cuotas y recuperación pendientes; sin compra o despliegue. Destino productivo no significa aceptación de disponibilidad/capacidad ya comprobada.
 - **API NestJS y microservicio Gemini:** VPS gestionado por el proyecto. La elección del VPS responde también al objetivo de aprender su operación.
-- **Proveedor elegido (2026-10-10):** Truobox, por confirmación explícita del usuario. Plan, región, arquitectura efectiva y contratación siguen sin comprobarse. Las comparaciones anteriores se conservan como historial.
-- **PostgreSQL:** servicio gestionado externo, pendiente de escoger entre Neon y Northflank.
-- **Redis:** servicio gestionado externo; proveedor y parámetros operativos pendientes.
+- **Proveedor del piloto productivo:** Truobox, seleccionado inicialmente el 2026-10-10 y confirmado el 2026-11-08 tras evaluar Instabox Free. Comparaciones históricas no acreditan contratación o precio mensual real.
+- **PostgreSQL:** Northflank Free elegido para el piloto productivo; límites/recuperación por verificar y migración futura si se necesita, sin upgrade automático.
+- **Redis:** local privado en el VPS Truobox; parámetros operativos y persistencia por verificar.
 - **Archivos de facturas:** Cloudflare R2, sin cambio.
 - **Diseño operativo detallado:** proxy/TLS, red privada entre NestJS y microservicio, backups, despliegue y recuperación pendientes en [la especificación IA](16-ai-provider-management-handoff.md).
 - **Límite de acceso Gemini:** [ADR-007](../architecture/decisions/ADR-007-gemini-internal-access.md) fija que solo NestJS consume directamente FastAPI. El navegador y Postman usan Nodia Server. La topología concreta depende de si NestJS corre en el host o en Docker.
@@ -47,14 +48,15 @@ Definir la estructura del repositorio, la infraestructura de despliegue, y las h
 
 ## 3. Contenedores (Docker)
 
-- **Decisión actual:** el microservicio Gemini se ejecutará en Docker en el VPS con volumen persistente para perfil de navegador y sesión. La forma de ejecutar NestJS en el VPS se definirá en el plan operativo.
+- **Destino actual:** microservicio Gemini en Docker privado con perfiles/sesiones persistentes; API y Worker NestJS como servicios systemd del mismo paquete. Empaquetado y activación por versión según [plan99](99-production-deployment-and-cicd-plan.md); no se modifica el laboratorio ni se acredita despliegue.
 - **Decisión histórica:** Docker se había excluido en la Parte 1, antes de incorporar el microservicio con sesión web.
 - **Configuración local actual:** Compose publica FastAPI solo en `127.0.0.1:8000` y exige un token de servicio compartido. Si NestJS pasa a Docker, se debe retirar `ports` y conectar ambos servicios a una red dedicada. La verificación de firewall y puertos desde Internet sigue pendiente.
 
 ## 4. Integración y Entrega Continua (CI/CD)
 
 ### GitHub Actions (Automatización de Despliegues)
-- Cloudflare Pages mantiene el despliegue del frontend. La entrega de NestJS y microservicio al VPS queda pendiente de diseñar (pipeline, despliegue seguro y rollback).
+- [Plan99](99-production-deployment-and-cicd-plan.md) y [ADR097 propuesto](../architecture/decisions/ADR-097-monorepo-production-release-pipeline.md): develop predeterminada/integración, master producción; Actions valida componentes y dependencias, publica artefactos del SHA final y coordina VPS/Pages. Preferir assets Client precompilados con Direct Upload desde Actions para evitar auto-deploy duplicado o frontend antes del backend compatible. El proyecto Pages real aún no fue inspeccionado.
+- GitHub aún tiene default main y ramas main/advances. No hay workflows versionados; crear/reconciliar ramas, reglas, check CI, paquetes y secretos sigue pendiente. Un build verde no aprueba recuperación/infraestructura ni disponibilidad IA.
 
 ### Pre-commit Hooks (Calidad Local)
 - **Herramienta:** `Husky` + `lint-staged`.
@@ -66,10 +68,10 @@ Definir la estructura del repositorio, la infraestructura de despliegue, y las h
 - Monorepo con carpetas separadas para frontend, backend y microservicio Gemini.
 - Frontend alojado en Cloudflare Pages.
 - NestJS y microservicio Gemini en VPS.
-- PostgreSQL gestionado externamente (Neon o Northflank por decidir); Redis gestionado externamente.
-- Despliegue automático del frontend; pipeline hacia VPS pendiente de especificar.
-- Control de calidad local (lint/test) mediante pre-commit hooks (Husky).
-- Docker para microservicio y volumen de sesión; ejecución de NestJS por definir.
+- PostgreSQL Northflank Free confirmado para piloto con stakeholders; Redis local privado propuesto en Truobox.
+- CI/CD por Actions y entregas coordinadas VPS/Pages especificados como propuesta en99; implementación y configuración remota pendientes.
+- Hooks Husky/lint-staged previstos, no instalados/configurados según inspección anterior; no sustituyen CI obligatorio.
+- Docker para servicio interno/perfiles y systemd para API/Worker del mismo paquete; operación destino pendiente.
 
 ## Preguntas abiertas
 

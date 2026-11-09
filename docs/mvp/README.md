@@ -1,5 +1,9 @@
 # Especificación del MVP — Nodia
 
+> Mantenimiento, 2026-11-09: [plan100 de limpieza y consolidación](100-repository-cleanup-and-documentation-consolidation-plan.md), solicitado para reducir temporales y fuentes documentales repetidas. Inventario preliminar y dependencias de conservación registrados; primera fase propuesta: índices/progreso. No hubo borrados, movimientos ni cambios de aprobación/publicación.
+
+> Piloto productivo, 2026-11-08: usuario elige Truobox y mantiene Northflank Free para feedback de stakeholders, inicialmente dos personas. develop será predeterminada/integración y master producción; GitHub todavía usa main. [Plan99 de pendientes y CI/CD del monorepo](99-production-deployment-and-cicd-plan.md) y [ADR097 propuesto](../architecture/decisions/ADR-097-monorepo-production-release-pipeline.md): Actions por componentes/dependencias, artefactos identificados y entrega coordinada. Instabox y ensayos quedan históricos; sin compras, workflows implementados o cambios remotos. El destino solicitado no acredita preparación/aceptación productiva.
+
 > NodiaAI — Client R38, 2026-11-07: propuestas compactas, Antes/Después responsive y detalles exactos plegables; borrador y guards conservados. 218 pruebas, tipos/lint/build y QA sintética/autenticada correctos. Ventas históricas sólo lectura; sin confirmar, ejecutar o ampliar autoridad. [Evidencia](../evidence/nodia-ai-proposal-ui-20261107-r01.json).
 
 > OCR Gemini — NativeR16, 2026-11-07: diagnóstico seguro adoptado y660Linux correctos; la nueva intención real volvió a504/240s tras leer el archivo sin finish/resultado. Cierre local yPNG conservado; causa no aislada, sin replay ni guardado. La extracción sigue bloqueada. [Evidencia R16](../evidence/invoice-gemini-timeout-20261107-r02.json).

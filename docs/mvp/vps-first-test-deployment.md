@@ -1,4 +1,105 @@
-# Primer despliegue de prueba en un VPS
+# Despliegue de Nodia: destino productivo y antecedentes
+
+## Destino vigente: piloto productivo Truobox — 2026-11-08
+
+El usuario cambia el alcance: desplegar directamente un ambiente productivo para feedback de stakeholders, inicialmente dos personas, con VPS Truobox. Confirma conservar PostgreSQL en Northflank Free por ahora y evaluar migración a otro servicio o al VPS si sus límites lo requieren. La limitación de cortes/max-run discutida corresponde a **Instabox Free**, no a Truobox. Instabox queda como antecedente de laboratorio y no como hosting del piloto.
+
+La lista vigente de pendientes, CI/CD propuesto y migración de ramas están en [plan99](99-production-deployment-and-cicd-plan.md), con [ADR097 propuesto](../architecture/decisions/ADR-097-monorepo-production-release-pipeline.md). develop será predeterminada/integración y master producción; GitHub aún usa main y no hay workflows versionados. API/Worker con systemd, Redis local privado y Client Pages conservan la distribución prevista. No hay compra, ajustes remotos, despliegue ni aceptación productiva acreditada por esta actualización. La elección de Northflank Free es explícita para el piloto; sus límites, condiciones y recuperación deben verificarse sin inventar garantías o subir de plan automáticamente.
+
+Los procedimientos y checklists que siguen conservan su alcance histórico; no ejecutar sus comandos sin reconciliarlos con plan99 y el release actual.
+
+## Ensayo histórico: Truobox y Northflank Sandbox — 2026-11-08
+
+**Cambio solicitado por el usuario:** actualizar el ensayo para usar un VPS [Truobox](https://www.truobox.com/vps-barato/) ante las pausas obligatorias de Instabox Free, manteniendo dos personas y PostgreSQL en Northflank Sandbox. Instabox queda como alternativa para sesiones de laboratorio; la consulta sobre ajustar el Worker no autoriza alterar sus tiempos ni elimina los límites del proveedor. No se ha contratado un plan ni autorizado una compra concreta.
+
+**Distribución vigente:** Client en Cloudflare Pages; API y Worker en el VPS con systemd; Redis local privado y persistente; único addon Northflank para PostgreSQL, con TLS validado en aplicación, migraciones y recuperación. Adaptadores IA internos conforme a ADR-008 y calificación por entorno de plan91. R2/backup cifrado/journal conservan sus contratos. No se modifica el laboratorio activo, la BD ni el runtime.
+
+### Por qué ajustar el Worker no elimina el límite de Instabox
+
+El [max-run de Instabox](https://instabox.sh/docs/machines/auto-pause) mide tiempo continuo de la máquina en ejecución, incluso ocupada; no horas de CPU ni una bolsa de ocho horas al día. En la modalidad dinámica publicada el máximo por ejecución es ocho horas, con ventanas iniciales menores y cooldown. Una pausa afecta también a API, Redis y procesos IA. Quitar el Worker o reducir su polling no mantiene la API disponible durante esa pausa. Instabox sigue siendo utilizable para ensayos por sesiones que toleren interrupciones y se prueben al reanudar; no se introducen mecanismos para eludir límites.
+
+### Funcionamiento e impacto de los intervalos del Worker
+
+Hechos confirmados por inspección de `nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-worker.use-case.ts`, `run-nodia-ai-stage.use-case.ts`, `validate-nodia-ai-runtime-policy.use-case.ts` y `docs/mvp/nodia-ai-v1-runtime-policy.json`:
+
+- Proceso separado sin listener HTTP; PostgreSQL conserva identidad/capacidad durables. La política configura dos consumidores de primer plano y un bucle de mantenimiento; no son tres máquinas ni tres procesos Worker.
+- Cada consumidor intenta obtener trabajo de las fuentes registradas. Si no trabajó, espera cinco segundos; si trabajó, vuelve al ciclo sin esa espera en reposo. No se hace una inferencia nueva sólo por comprobar la cola.
+- Mantenimiento ejecuta recuperación, limpieza/retención y observación, y después espera cinco segundos. La cantidad de ciclos no equivale a número de consultas SQL ni llamadas al proveedor.
+- `timing.heartbeat_seconds = 5` se comparte entre la espera en reposo, mantenimiento y renovación de la reserva de etapas activas. `lease_seconds = 30`; el validador exige `heartbeat_seconds * 3 < lease_seconds`. Subir directamente heartbeat a 10, 30 o 60 segundos es inválido con esa reserva y compromete la coordinación si se omiten los guards. No se modifica.
+- Una mejora futura separaría polling de cola en reposo, intervalo de mantenimiento y heartbeat activo; conservaría reservas, fencing, deadlines, cancelación y no-replay. Requiere medir carga real y probar admisión, recuperación y apagado antes de adoptarla; no está implementada ni constituye solución al max-run.
+
+Ejemplos exclusivamente para un polling de cola separado, con capacidad libre y sin contar tiempo de SQL/planificación: pasar de 5 a 30 segundos reduce rondas en reposo de 720 a 120 por hora y por consumidor, pero aumenta la espera adicional de recogida de hasta aproximadamente 5 a 30 segundos. No acelera un trabajo ya iniciado ni reduce por sí solo las inferencias o la RAM del proceso. Retrasar mantenimiento también demora recuperación/limpieza; aumentar una reserva demora detección de un proceso perdido. No extrapolar este cálculo a carga total, costos o aceptación medida.
+
+### Truobox: selección y precio aún por concretar
+
+La [página oficial](https://www.truobox.com/vps-barato/) publica Pro S (2 vCPU/4 GB/60 GB) y Pro M (4 vCPU/8 GB/120 GB). Pro M es un candidato para medir API/Worker/Redis y adaptadores, no un tamaño aceptado o requisito deducido de dos usuarios. La tarjeta de Pro M anuncia US$8,25 mensuales equivalentes por tres años; otra tabla lo llama anual y el enlace de compra usa `triennially`. No es una cotización de pago mes a mes. Región, versión exacta de Ubuntu LTS, recursos disponibles, impuestos, renovación, anticipo y precio mensual real se verifican en el carrito antes de decidir una compra. El objetivo de disponibilidad anunciado no acredita continuidad efectiva de Nodia.
+
+### Continuidad del ensayo
+
+- [x] Registrar cambio de destino a Truobox; selección Instabox anterior conservada como historial.
+- [x] Verificar código del Worker y distinguir polling, heartbeat, lease y límite de la máquina.
+- [ ] Concretar plan/región/Ubuntu LTS y cotización de Truobox; sin compra ejecutada.
+- [ ] Comprobar acceso, límites efectivos y estado de seguridad actual de Northflank; la revisión anterior dejó un incidente en seguimiento, sin aceptación de seguridad.
+- [ ] Preparar TLS PostgreSQL, roles/pools y recuperación; verificar cuotas gratuitas de addon y backups sin asumir 30 días incluidos.
+- [ ] Adaptar el release, secretos, systemd, Redis privado, proxy/TLS, auth/orígenes y almacenamiento; las recetas de octubre no son ejecutables sin reconciliación con el release vigente.
+- [ ] Verificar dos usuarios, aislamiento, fallos DB/Redis, reinicio de host/servicios, recuperación sin replay, modalidades IA reales y backup/restore aislado.
+- [ ] Medir RAM/CPU/latencia/consultas antes de optimizar polling o recomendar plan comercial. Los checklists inferiores son históricos, no aceptación de este destino.
+
+Impacto de conocimiento NodiaAI: sólo selección de infraestructura y explicación del runtime existente; no cambia capacidades, herramientas, autoridad o contratos. No hay publicación nueva de fichas.
+
+## Ensayo histórico: Instabox Free y Northflank Sandbox — 2026-11-08
+
+> Sustituido para el destino de despliegue por Truobox en la revisión superior de la misma fecha. Límites y pendientes siguientes son el registro de aquella alternativa; no son instrucciones vigentes para provisionar Instabox.
+
+**Confirmado por el usuario:** probar Nodia con dos personas usando exclusivamente planes gratuitos de Instabox y Northflank, antes de contratar un tier comercial o cambiar de proveedor. Esta selección sustituye Truobox y PostgreSQL local para este ensayo; no selecciona la infraestructura comercial ni aprueba el lanzamiento.
+
+**Estado:** elección de proveedores registrada; distribución técnica propuesta, sin cuentas inspeccionadas, recursos provisionados, cambios de runtime, migraciones ni aceptación de capacidad o seguridad. Los comandos de la guía de octubre que sigue son históricos y no deben ejecutarse como receta de este entorno.
+
+### Distribución propuesta
+
+| Componente | Destino | Alcance |
+| --- | --- | --- |
+| Client | Cloudflare Pages Free | Mantener la intención previa; proyecto, dominios y límites efectivos pendientes |
+| API y Worker | Una máquina Instabox Free, servicios systemd separados | Procesos disponibles sólo mientras la máquina esté activa |
+| Redis | Contenedor privado en esa máquina | Loopback, autenticación, persistencia y claves de rate limiting sin expulsión; no es un segundo addon Northflank |
+| PostgreSQL | Único addon Northflank Developer Sandbox | Conexión externa TLS validada; endpoint y puerto reales del panel |
+| Adaptadores IA internos | Instabox, sólo si caben y se califican en ese entorno | Sin inferencia o disponibilidad acreditada por instalar herramientas o iniciar sesión |
+| Archivos y recuperación | Conservar contratos R2 y NodiaAI existentes | Cuenta, cuotas gratuitas, claves y recuperación objetivo sin validar |
+
+### Hechos comprobados en documentación oficial
+
+- [Instabox Free](https://instabox.sh/docs/account/pricing): una máquina, 4 vCPU/8 GiB, disco de datos de 20 GiB, cinco snapshots y 100 GiB de salida mensual. Las cuotas efectivas de la cuenta y cualquier comportamiento ante excedentes deben comprobarse antes de operar; no se autoriza contratar Pro ni consumo pago.
+- [Instabox limits](https://instabox.sh/docs/account/limits): la plantilla habitual `agent-browser` es Debian 13 con systemd y Docker; no asumir que la máquina creada será Ubuntu ni que sus herramientas preinstaladas satisfacen el release de Nodia. Persistir recursos propios en paths inventariados; `/data` no equivale a un respaldo externo.
+- [Auto-pause y max-run](https://instabox.sh/docs/machines/auto-pause): Free impone pausas. La modalidad dinámica comienza con dos horas y puede extenderse según actividad, con máximo de ocho horas por ejecución. Un max-run puede imponer cooldown de 5–20 minutos, ampliado por pausas consecutivas. Una petición al URL HTTP puede despertar una pausa por inactividad, pero no anula una pausa manual o cooldown; puede recibir 503/Retry-After. Verificar la modalidad/valores efectivos de la máquina. No prometer 24/7 ni introducir keepalives para eludir límites.
+- Una espera silenciosa de un trabajo puede ser considerada inactividad. El mecanismo oficial de activity leases existe para trabajo real, pero no está integrado ni validado en Nodia y no extiende el límite máximo. systemd reinicia servicios al arrancar el huésped; no controla la suspensión del proveedor.
+- [Northflank Sandbox](https://northflank.com/docs/v1/application/billing/pricing-on-northflank): dos servicios, dos jobs y un addon. PostgreSQL y Redis administrados necesitarían dos addons, por lo que esta propuesta conserva Redis en Instabox. CPU/RAM/disco y disponibilidad regional del addon gratuito pendientes de comprobar en la cuenta.
+- [PostgreSQL en Northflank](https://northflank.com/docs/v1/application/databases-and-persistence/deploy-databases-on-northflank/deploy-postgresql-on-northflank): admite conexión externa TLS; no asumir puerto externo 5432. No hay configuración TLS explícita en `nodia-server/src/config/db.config.ts` ni `data-source.ts`; preparar ambos consumidores y la recuperación antes de usar el destino.
+- [Backups Northflank](https://northflank.com/docs/v1/application/databases-and-persistence/backup-restore-and-import-data): backup/restore y horarios están documentados, pero no se ha acreditado una cuota o retención gratuita para Sandbox. No prometer 30 días gratuitos ni sustituir el backup cifrado/journal de NodiaAI, cuya retención actual es de siete días.
+- [Pricing](https://northflank.com/pricing) dice que no hace falta tarjeta, mientras la guía de billing exige método de pago. Onboarding real pendiente; no introducir datos de pago ni habilitar un plan comercial automáticamente.
+
+### Seguridad y límites del ensayo
+
+El [estado oficial de Northflank](https://status.northflank.com/) consultado el 2026-11-08 mantiene un incidente de seguridad en seguimiento; última actualización observada 2026-11-06 10:09 UTC, investigación/forense abiertas. El proveedor comunica parche aplicado y ausencia de evidencia de acceso a workloads/datos hasta ese corte, no ausencia demostrada de compromiso. Recomienda rotar secretos afectados. Comprobar el estado al provisionar y usar credenciales exclusivas del ensayo; si ya hubo secretos allí, evaluar y rotar los alcanzados. No registrar secretos en estas fuentes.
+
+Dos usuarios delimitan el ensayo, pero no prueban capacidad, compatibilidad IA ni continuidad. Pausar la máquina también pausa API, Worker, Redis y servicios internos; PostgreSQL externo no los ejecuta. Al reanudar pueden haberse vencido conexiones, sesiones o leases: comprobar recuperación sin replay de inferencias ni escrituras inciertas. No restaurar snapshots de la máquina sobre un PostgreSQL externo más reciente sin conciliar las identidades y el journal. No alterar contratos ni relajar auth, rate limiting o permisos para adaptarse a Free.
+
+Evaluación de conocimiento NodiaAI: cambio de infraestructura de ensayo, sin modificación de capacidades funcionales, catálogo de herramientas, modalidades ni autoridad. No requiere publicar fichas nuevas; cualquier adaptación de contratos posterior debe evaluar sus fichas y pruebas propias.
+
+### Primer paso pendiente y comprobaciones
+
+- [x] Registrar elección explícita Instabox Free + Northflank Sandbox, dos usuarios y ausencia de autorización de cargos.
+- [x] Contrastar límites publicados y distinguirlos de recursos realmente disponibles.
+- [ ] Comprobar cuentas/acceso del operador, plan gratuito efectivo, región, cuotas, almacenamiento, backups y condiciones de facturación, sin compartir claves por chat.
+- [ ] Preparar paquete reproducible del release y secretos propios del ensayo; conservar el laboratorio actual.
+- [ ] Preparar TLS PostgreSQL para API, migraciones y recuperación, roles y pools acotados; no desactivar la validación del certificado.
+- [ ] Configurar entrada HTTPS/orígenes/cookies/Google OAuth y TRUST_PROXY con la cadena real de Instabox/Pages; los servicios internos permanecen privados.
+- [ ] Provisionar el único addon y la máquina sólo después de concretar esos valores; inicializar la BD destino de forma controlada sin copiar datos privados por defecto.
+- [ ] Comprobar login de las dos personas, aislamiento, errores DB/Redis, reinicio, pausa/despertar/cooldown y tareas interrumpidas sin replay.
+- [ ] Calificar cada modalidad/proveedor IA que se vaya a usar conforme a plan91; la evidencia del laboratorio no se transfiere al nuevo entorno.
+- [ ] Ensayar backup cifrado, restauración aislada y conciliación del journal; inventariar secretos, adjuntos y configuración fuera de snapshots.
+- [ ] Medir consumo, latencia y estabilidad reales antes de recomendar tier comercial o migración. No asumir que el plan gratis acredita aceptación productiva.
+
+## Procedimiento histórico — 2026-10-10
 
 > Estado: procedimiento propuesto y revisado contra el código; no ejecutado en un VPS.
 > Fecha: 2026-10-10.

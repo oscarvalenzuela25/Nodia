@@ -1,5 +1,7 @@
 # Runbook de despliegue seguro — Nodia Server y Gemini
 
+> Destino productivo, 2026-11-08: Truobox y PostgreSQL Northflank Free confirmados para feedback de stakeholders, inicialmente dos personas; Instabox queda histórico. Seguir [plan99](99-production-deployment-and-cicd-plan.md) y [ADR097 propuesto](../architecture/decisions/ADR-097-monorepo-production-release-pipeline.md): develop/master, CI/CD, compra/plan/región, TLS externo, proxy, seguridad/cuotas, backups y recuperación pendientes. Recetas de octubre no listas para ejecutar. La elección del destino no acredita gates de lanzamiento ni cambia runtime, heartbeat o aprobaciones documentales.
+
 > Estado: en revisión; guía operativa aún no ejecutada en VPS
 
 > Revisión 2026-10-10: el bloqueo inicial de BD vacía quedó resuelto localmente con 18 migraciones y bootstrap Core desde entorno; ver [instalación](database-installation.md). Infraestructura, secretos, dependencia vulnerable, restauración y operación IA real siguen pendientes; consultar [revisión de VPS](19-prelaunch-review.md#revisión-de-instalación-vacía-y-vps--2026-10-10) antes de abrir acceso general. El usuario eligió PostgreSQL/Redis en el mismo VPS **solo para el ensayo**: [paso a paso de prueba](vps-first-test-deployment.md), API en host/systemd y Gemini en Docker. Esto no sustituye automáticamente la decisión de producción sobre datos gestionados.

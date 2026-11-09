@@ -1,10 +1,12 @@
 # Arquitectura Inicial — Nodia Parte 1
 
 > Estado: en revisión — ampliaciones auth, IA y Reservas y cambio de despliegue; aprobación histórica del MVP conservada
-> Última actualización: 2026-10-04
+> Última actualización: 2026-11-08
 > Dependencias: Documentos 01 al 10 aprobados.
 
 ## Objetivo
+
+Actualización de despliegue 2026-11-08: piloto productivo para stakeholders en Truobox, PostgreSQL Northflank Free por elección explícita y Redis local privado; Client Pages y servicios IA internos. develop predeterminada/integración y master producción solicitadas, todavía no configuradas. El [plan99](99-production-deployment-and-cicd-plan.md) y [ADR097 propuesto](../architecture/decisions/ADR-097-monorepo-production-release-pipeline.md) contienen CI/CD y verificación por realizar. Diagramas/cortes inferiores históricos no acreditan infraestructura ni aceptación actuales.
 
 Ampliación del 2026-10-14: [NodiaAI38](38-nodia-ai-research-and-v1-plan.md) planifica chat/MCP con herramientas de dominio e historial propio; [ADR-032](../architecture/decisions/ADR-032-nodia-ai-domain-tools-and-conversation.md) propuesto. [Catálogo40](40-nodia-ai-tool-catalog-v1.md)/[contratos41](41-nodia-ai-v1-contracts.md) derivan156 herramientas candidatas y coordinación confirmada funcionalmente: botón sobre preview exacta, ejecución secuencial con efectos parciales recuperables e informes compatibles con procedencia separada; [ADR-033](../architecture/decisions/ADR-033-nodia-ai-confirmation-and-sequential-recovery.md) propuesto. El usuario confirma autoridad transversal de `super_admin` sobre chats y datos/operaciones, incluidas Finanzas/Reservas; contratos22/28 reabren autorización. ERD/diagramas/runtime, esquemas por dominio, política compartida de actor/destinatario, cachés y consumidores necesitan reconciliación; no se implementó la ampliación ni se aprobó arquitectura nueva.
 
@@ -71,7 +73,7 @@ flowchart TD
 - **Límite de futuros microservicios:** solo Nodia Server los consume mediante red privada y credencial independiente por servicio. Los clientes se autentican y autorizan en NestJS. Ver [ADR-008](../architecture/decisions/ADR-008-internal-microservices-only.md) y la [guía de implementación](../architecture/internal-microservice-security.md). La comprobación operativa del VPS sigue pendiente.
 
 ### 2.3. Persistencia (Base de Datos)
-- **Motor:** PostgreSQL gestionado externamente; Neon o Northflank por decidir. Redis gestionado externamente y Cloudflare R2 para archivos.
+- **Motor/destino del piloto:** PostgreSQL Northflank Free, Redis local privado en Truobox y Cloudflare R2 para archivos; configuración/TLS/recuperación por verificar según99.
 - **Diseño (ERD):** Implementa claves foráneas estrictas, índices únicos compuestos para evitar permisos y roles duplicados, y borrado lógico (`is_active = false`) en las entidades pertinentes. El modelo actual adopta `BIGINT` autoincremental para claves primarias; ver `03-domain-model-erd.md`.
 
 ## 3. Flujo Crítico de Autenticación y Autorización
@@ -85,8 +87,8 @@ flowchart TD
 ## 4. Estrategia de CI/CD y DevOps
 
 - **Estructura:** Monorepo (`nodia-client`, `nodia-server` y `nodia-gemini-microservice`).
-- **Pruebas Locales:** Uso de `Husky` y `lint-staged` para forzar linting y pre-commits locales, garantizando calidad del código antes del *push*.
-- **Despliegue Continuo:** Cloudflare Pages conserva la entrega del frontend. El pipeline/rollback de NestJS y microservicio en VPS está pendiente de diseñar y probar.
+- **Pruebas Locales:** `Husky` y `lint-staged` previstos, sin configuración acreditada; hooks locales no reemplazan CI obligatorio.
+- **Despliegue Continuo propuesto:** Actions con jobs por componente/dependencia y gate CI; develop integra y master publica artefactos identificados hacia Truobox/Pages. API/Worker comparten paquete; contratos/políticas/conocimiento también pueden invalidar builds. Secuencia, manifest y rollback en [plan99](99-production-deployment-and-cicd-plan.md), pendiente de implementación/prueba.
 
 ## Preguntas abiertas
 

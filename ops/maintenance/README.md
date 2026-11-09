@@ -1,5 +1,9 @@
 # Mantenimiento del workspace — 2026-10-23
 
+## Plan de limpieza y consolidación — 2026-11-09
+
+El [plan100](../../docs/mvp/100-repository-cleanup-and-documentation-consolidation-plan.md) centraliza candidatos, límites de conservación, mapa documental y checklist L01–L05. La revisión actual sólo inventaría/prepara: no ejecuta limpieza ni convierte los tamaños de auditorías anteriores en ahorro. Conservar originales, catálogos y dependencias mantenidas en `ops/lab/artifacts` hasta clasificarlos. Registrar cierres consolidados por lote aquí sin duplicar reportes intermedios.
+
 ## Verificación de finales de línea — 2026-11-08
 
 Se revisaron los archivos versionados presentes y los nuevos archivos elegibles para Git. Los 3838 archivos de texto UTF-8 propios examinados ya estaban en LF: no fue necesario convertir CRLF ni cambiar su codificación. `.gitattributes` y `.editorconfig` conservan la política LF existente.
