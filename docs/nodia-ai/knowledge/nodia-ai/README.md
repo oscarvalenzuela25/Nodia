@@ -4,7 +4,7 @@
   "document_id": "nodia-ai",
   "product_id": "nodia-ai",
   "kind": "product",
-  "revision": 72,
+  "revision": 73,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -264,9 +264,13 @@
 }
 ---
 
+## Referencias locales de recuperación — 2026-11-10
+
+Las rutas de `ops/lab/artifacts/` citadas debajo identifican originales locales ignorados por Git; no se distribuyen con un checkout ni con el paquete productivo. Se conservan sus nombres, hechos y fuentes portables ya enlazadas, sin copiar originales, alterar evidencias o ampliar aprobación/publicación. Esta revisión sólo corrige su presentación documental y sigue draft/unregistered, con approval:null.
+
 ## Ampliación candidata: chat API key — 2026-10-27
 
-[Paridad API key](features/api-key-chat-parity.md), [coordinación revisión18](features/conversation-coordination.md), [OCR/comparación revisión2](features/invoice-ocr-product-comparison.md), [imágenes revisión4](features/image-generation.md) y [adjuntos revisión11](features/attachments-and-voice.md) son borradores para revisión humana conforme [plan92](../../../mvp/92-nodia-ai-api-chat-parity.md). El [gateway común draft](features/capability-registry-gateway.md) permite API sin afirmar MCP; comparte grants, permisos41/89 y confirmación, ledger/proof HTTP3 y presupuesto por POST. Código implementado con ensayos SQL/API/VM aún pendientes. Los originales aprobados se conservan en [catálogo privado](../../../../ops/lab/artifacts/api-chat-parity-r01/catalog.json); no se hereda su aceptación de Agentic a API ni se declaran 151 operaciones reales verificadas. Este índice permanece draft/unregistered/approval:null. Los cortes inferiores conservan sus fechas y alcances anteriores.
+[Paridad API key](features/api-key-chat-parity.md), [coordinación revisión18](features/conversation-coordination.md), [OCR/comparación revisión2](features/invoice-ocr-product-comparison.md), [imágenes revisión4](features/image-generation.md) y [adjuntos revisión11](features/attachments-and-voice.md) son borradores para revisión humana conforme [plan92](../../../mvp/92-nodia-ai-api-chat-parity.md). El [gateway común draft](features/capability-registry-gateway.md) permite API sin afirmar MCP; comparte grants, permisos41/89 y confirmación, ledger/proof HTTP3 y presupuesto por POST. Código implementado con ensayos SQL/API/VM aún pendientes. Los originales aprobados se conservan en el catálogo privado local `ops/lab/artifacts/api-chat-parity-r01/catalog.json` (ignorado por Git); no se hereda su aceptación de Agentic a API ni se declaran 151 operaciones reales verificadas. Este índice permanece draft/unregistered/approval:null. Los cortes inferiores conservan sus fechas y alcances anteriores.
 
 [Informe de revisión API](../../../evidence/api-chat-knowledge-review-r01.json). El índice conserva sus 32 referencias de evidencia histórica en metadata; este informe nuevo queda enlazado sin borrar las anteriores.
 
@@ -286,7 +290,7 @@ El PDF adversarial NR26 del chat anterior quedó negativo en planificación, sin
 
 Pendientes priorizados por dependencia:
 
-- **Técnicos autónomos:** matrices Agentic restantes y NR26 natural pendiente; [NR32](../../../evidence/nodia-ai-nr32-incompatible-isolated-validation-20261026-r01.json) valida el mecanismo en PG aislado, pero faltan dos despliegues incompatibles/UI. El [desfase de tiempos de admisión20s/observe30s](../../../../ops/lab/artifacts/nodia-ai-admission-timeout-contract-audit-r01/README.md) es un finding de fuentes; falta correlación HTTP/commit para atribuir causa, sin cambio de timeout ni replay automático.
+- **Técnicos autónomos:** matrices Agentic restantes y NR26 natural pendiente; [NR32](../../../evidence/nodia-ai-nr32-incompatible-isolated-validation-20261026-r01.json) valida el mecanismo en PG aislado, pero faltan dos despliegues incompatibles/UI. El desfase de tiempos de admisión20s/observe30s (archivo local ignorado por Git `ops/lab/artifacts/nodia-ai-admission-timeout-contract-audit-r01/README.md`) es un finding de fuentes; falta correlación HTTP/commit para atribuir causa, sin cambio de timeout ni replay automático.
 - **Humanos:** confirmación exacta para guardar cambios comerciales y completar canales seguros; las vistas previas y pruebas aisladas no la sustituyen. Variaciones reales requieren productos coincidentes y datos autorizados, sin defaults.
 - **Temporales/externos:** [AI38](../../../evidence/nodia-ai-ai38-current-retention-observation-20261026-r02.json) conserva una observación puntual de46backups ready y primera expiración `2026-10-27T23:58:20.785Z`; no es inventario vivo. Faltan siete días continuos, limpieza física dentro de24h, todos los destinos/versiones y eliminación remota comprobable según proveedor.
 

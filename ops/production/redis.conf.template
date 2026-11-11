@@ -1,0 +1,15 @@
+# The bootstrap appends a random requirepass value on the VPS only.
+bind 0.0.0.0
+protected-mode yes
+port 6379
+daemonize no
+logfile ""
+dir /data
+appendonly yes
+appendfsync everysec
+no-appendfsync-on-rewrite no
+aof-load-truncated no
+save ""
+maxmemory 256mb
+maxmemory-policy noeviction
+maxclients 256

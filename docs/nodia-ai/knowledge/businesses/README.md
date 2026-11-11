@@ -4,7 +4,7 @@
   "document_id": "businesses",
   "product_id": "businesses",
   "kind": "product",
-  "revision": 49,
+  "revision": 50,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -239,6 +239,10 @@
   "approval": null
 }
 ---
+
+## Referencias locales de recuperación — 2026-11-10
+
+Las rutas de `ops/lab/artifacts/` citadas debajo identifican originales locales ignorados por Git; no se distribuyen con un checkout ni con el paquete productivo. Se conservan sus nombres, hechos y fuentes portables ya enlazadas, sin copiar originales, alterar evidencias o ampliar aprobación/publicación. Esta revisión sólo corrige su presentación documental y sigue draft/unregistered, con approval:null.
 # Negocios — contexto de producto para NodiaAI
 
 ## Regla nueva de Productos — 2026-11-06
@@ -356,7 +360,7 @@ La [aprobación específica POS rev5](../../../evidence/business-pos-knowledge-p
 
 La [aclaración de plan94](../../../mvp/94-business-point-of-sale-and-product-refactor.md#aclaración-de-registro-de-barcode-durante-el-despliegue) conserva alta individual, CSV y edición posterior con barcode opcional, textual e independiente de code. Nuevo/Editar producto muestra ayuda ES/EN: enfocar el campo y escanear/escribir; al enfocarlo selecciona el valor para sustituirlo. El Enter del lector HID sólo se consume en ese input: no envía el formulario ni se propaga como acción POS. Guardar permanece explícito; no hay escucha global ni asignación automática desde code. CSV mantiene valores suministrados, ceros y omisiones; puede asignarse después de importar.
 
-[Verificación local R02](../../../../ops/lab/artifacts/business-pos-deployment-20261028-r01/barcode-client-r02/client-followup-verification.json): 15 pruebas focales y suite completa2101/258 archivos, tipos/lint/build correctos; Edge sintético en320/390/600/1280px, ES oscuro/EN claro, con cero submits al escanear y borrador conservado. Client `/opt/nodia/releases/nodia-client-business-pos-20261028-r02` adoptado y conciliado por lectura, con API `/api/v1`, sin repetir activación/reload ni reiniciar API/worker/Native. La [verificación HTTP final](../../../../ops/lab/artifacts/business-pos-deployment-20261028-r01/barcode-client-r02/client-web-final-readonly.json) acredita 172 estáticos actuales y cuatro SPA con hash exacto, BusinessDetail y ayudas barcode ES/EN actuales, cuatro muestras de fallback R01/chat, health200 y productos/ventas/reportes401 sin JWT; no hubo429. Impacto de contexto: refinamiento de interacción/ayuda de una capacidad existente, sin nuevos datos, reglas comerciales, permisos, herramientas ni fuentes. Las44 fichas aprobadas permanecen byteidénticas; no se reconstruye knowledge por estos índices. Lector y móvil físicos conservan su aceptación pendiente.
+La verificación local R02 (archivo local ignorado por Git `ops/lab/artifacts/business-pos-deployment-20261028-r01/barcode-client-r02/client-followup-verification.json`): 15 pruebas focales y suite completa2101/258 archivos, tipos/lint/build correctos; Edge sintético en320/390/600/1280px, ES oscuro/EN claro, con cero submits al escanear y borrador conservado. Client `/opt/nodia/releases/nodia-client-business-pos-20261028-r02` adoptado y conciliado por lectura, con API `/api/v1`, sin repetir activación/reload ni reiniciar API/worker/Native. La verificación HTTP final (archivo local ignorado por Git `ops/lab/artifacts/business-pos-deployment-20261028-r01/barcode-client-r02/client-web-final-readonly.json`) acredita 172 estáticos actuales y cuatro SPA con hash exacto, BusinessDetail y ayudas barcode ES/EN actuales, cuatro muestras de fallback R01/chat, health200 y productos/ventas/reportes401 sin JWT; no hubo429. Impacto de contexto: refinamiento de interacción/ayuda de una capacidad existente, sin nuevos datos, reglas comerciales, permisos, herramientas ni fuentes. Las44 fichas aprobadas permanecen byteidénticas; no se reconstruye knowledge por estos índices. Lector y móvil físicos conservan su aceptación pendiente.
 
 ### Corte R06 anterior al despliegue
 
@@ -493,7 +497,7 @@ La [aceptación técnica AI-40](../../../mvp/86-nodia-ai-ai40-codex-acceptance.m
 
 El [primer PDF C03 al traspaso](../../../evidence/nodia-ai-c03-handoff-readback-20261025-r01.json) quedó unknown después de un dispatch y una selección completada, con un slot retenido y cero propuestas/ejecuciones. Ese corte precede a la [conciliación nativa sin replay](../../../evidence/nodia-ai-c03-reconciliation-20261025-r01.json), con terminal/ACK y liberación técnica, sin análisis acreditado. La [continuidad aditiva Codex](../../../evidence/nodia-ai-additive-continuity-20261025-r01.json) conserva historial/selección, resume tres propuestas expired sin ejecutar y carga knowledge fda en un turno nuevo; sólo acredita el cambio compatible acotado, no NR-32 incompatible.
 
-El [arreglo de lectura original](../../../evidence/nodia-ai-c03-original-read-fix-adoption-20261025-r01.json) alinea descubrimiento y prueba nativa sin OCR adicional. Los [ensayos nuevos PNG/PDF](../../../evidence/nodia-ai-c03-originals-eligibility-gate-20261025-r01.json), originales actuales con hashes exactos y sin texto aceptado, completan descubrimiento/ACK/selección pero fallan eligibility_changed antes del segundo dispatch. No llegan a prepare/complete ni normalización cero/null o resultado autenticado aceptado; no crean propuestas, facturas, productos o movimientos. La [instrumentación diagnóstica4276](../../../evidence/nodia-ai-c03-eligibility-diagnostic-adoption-20261025-r02.json) está adoptada, preserva la publicación/ficha3 y reglas, y mantiene causa pendiente al adoptar. Source6ef ya no está desplegado en su ruta VM; se conserva en un [archivo propio recuperable](../../../../ops/lab/artifacts/c03-first-fix-recovery-r01/README.md), sin reducir retención de backups. El siguiente ensayo necesita evidencia propia y no usa fallback/retry incierto.
+El [arreglo de lectura original](../../../evidence/nodia-ai-c03-original-read-fix-adoption-20261025-r01.json) alinea descubrimiento y prueba nativa sin OCR adicional. Los [ensayos nuevos PNG/PDF](../../../evidence/nodia-ai-c03-originals-eligibility-gate-20261025-r01.json), originales actuales con hashes exactos y sin texto aceptado, completan descubrimiento/ACK/selección pero fallan eligibility_changed antes del segundo dispatch. No llegan a prepare/complete ni normalización cero/null o resultado autenticado aceptado; no crean propuestas, facturas, productos o movimientos. La [instrumentación diagnóstica4276](../../../evidence/nodia-ai-c03-eligibility-diagnostic-adoption-20261025-r02.json) está adoptada, preserva la publicación/ficha3 y reglas, y mantiene causa pendiente al adoptar. Source6ef ya no está desplegado en su ruta VM; se conserva en un archivo propio recuperable local e ignorado por Git, `ops/lab/artifacts/c03-first-fix-recovery-r01/README.md`, sin reducir retención de backups. El siguiente ensayo necesita evidencia propia y no usa fallback/retry incierto.
 
 AI-36/C05 y AI-38 siguen abiertos. Este índice draft no concede aprobación ni acceso MCP; la autorización C03 está registrada separadamente y no aprueba el producto completo. Las evidencias y fichas aprobadas conservan sus hashes.
 

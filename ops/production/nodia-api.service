@@ -1,0 +1,40 @@
+[Unit]
+Description=Nodia API
+Wants=network-online.target
+After=network-online.target docker.service
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=exec
+User=nodia
+Group=nodia
+WorkingDirectory=/opt/nodia/current
+Environment=NODE_ENV=production
+Environment=HOME=/var/lib/nodia/home
+Environment=NODIA_CODEX_PROFILE_ROOT=/var/lib/nodia/codex
+Environment=PGSSLMODE=verify-full
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=/etc/nodia/runtime.env
+EnvironmentFile=/etc/nodia/redis.env
+ExecStartPre=/usr/local/bin/node /usr/local/lib/nodia/validate-runtime-env.mjs api
+ExecStart=/usr/local/bin/node dist/main.js
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGTERM
+KillMode=mixed
+TimeoutStopSec=180
+UMask=0077
+NoNewPrivileges=true
+CapabilityBoundingSet=
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadOnlyPaths=/var/lib/nodia/config
+ReadWritePaths=/var/lib/nodia/home /var/lib/nodia/codex
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nodia-api
+
+[Install]
+WantedBy=multi-user.target
