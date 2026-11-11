@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-11",
+  "scope": "isolated_backend_first_install_and_backup_tls_preparation",
+  "status": "candidate_rehearsal_passed_exact_master_release_pending",
+  "candidate_rehearsal": {
+    "schema_version": 1,
+    "status": "passed",
+    "session": "9a846f728d86d01a",
+    "started_at_utc": "2026-11-11T21:48:26.720Z",
+    "package_sha256": "9a2df3918462bc7d000c2fab51de3bcbfc532ff2b0768aec1e97d2cd1dd9218b",
+    "node_archive_sha256": "42470e1e3abab4adb85eb4681189e1872aa24362b2a35bffb8b4ef56b68cde2d",
+    "node_original_archive_sha256": "48cc0e21e048790e54c0cf5749c2725005313d652651c40b7a21feb9697aaf75",
+    "images": {
+      "postgres": "sha256:75f5a96988cdf694a215073c3e9c001b706b371e2f94df3967f2efdec2787f6b",
+      "redis": "sha256:5509c0097c6064aa8a3b1df58f1d950e67090fffa6678ae8f3f1dc2385f12deb",
+      "runner": "sha256:60ce2f4bb2920909e5abf19f515c41fc38b59f26ef69a61498e28c67322db5fd"
+    },
+    "transferred_archive_digests_verified": true,
+    "probe": {
+      "schema_version": 1,
+      "status": "passed",
+      "source_sha": "ba8ebfa00b55f103465d0ab533a802152944d224",
+      "release_id": "backend-candidate-ba8ebfa00b55-e61ee5a268e7",
+      "deployment_eligible": false,
+      "node_executable_sha256": "904a6d3484241d466989f9df9ba3aab822b1496191bdb28230eb491a55c32a52",
+      "postgres_version_num": 160015,
+      "migrations_verified": 45,
+      "entity_tables_verified": 68,
+      "checks": [
+        "linux_node_version",
+        "node_executable_matches_package_provenance",
+        "disposable_connections_only",
+        "no_production_or_provider_configuration",
+        "synchronize_disabled",
+        "postgres16_expected_database_schema",
+        "destination_initially_empty",
+        "compiled_migration_inventory_loaded",
+        "exact_migration_ledger",
+        "no_pending_migrations",
+        "all_entity_tables_and_columns_present",
+        "required_extensions_in_public",
+        "one_admin_four_assignments_no_provider_credentials",
+        "synthetic_identity_normalized",
+        "active_super_admin_role",
+        "four_canonical_core_accesses",
+        "repeat_preserves_core_rows_and_ledger",
+        "different_bootstrap_identity_rejected",
+        "identity_rejection_preserves_rows",
+        "missing_identity_rejected",
+        "invalid_identity_preserves_rows",
+        "existing_partial_schema_rejected",
+        "partial_fixture_preserved_no_migrations_executed"
+      ],
+      "application_started": false,
+      "worker_started": false,
+      "journal_initialized": false,
+      "production_connections_requested": false,
+      "provider_inference_requested": false
+    },
+    "cleanup": {
+      "containers": 4,
+      "networks": 1,
+      "volumes": 2,
+      "errors": []
+    },
+    "finished_at_utc": "2026-11-11T21:49:11.665Z"
+  },
+  "backup_tls_fixture": {
+    "schema_version": 1,
+    "scope": "disposable_postgresql16_libpq_TLS_only",
+    "checks": [
+      "real_pg_dump_succeeds_with_matching_CA_and_hostname",
+      "real_pg_dump_rejects_foreign_CA",
+      "real_pg_dump_rejects_hostname_mismatch"
+    ],
+    "image_id": "sha256:75f5a96988cdf694a215073c3e9c001b706b371e2f94df3967f2efdec2787f6b",
+    "pg_dump_version": "pg_dump (PostgreSQL) 16.15",
+    "dump_bytes": 1665,
+    "dump_sha256": "41c143a58ea9f3f39a153b60c10ca369c63da624cba5b3fad96144deb6184b65",
+    "operational_database_access": false,
+    "provider_calls": 0,
+    "r2_access": false,
+    "published_ports": 0,
+    "fixture_resources_removed": true
+  },
+  "focused_tests": {
+    "node": 28,
+    "python_stage": 15,
+    "python_configuration": 5,
+    "passed": true
+  },
+  "deployment": {
+    "api_started": false,
+    "worker_started": false,
+    "production_migrations_executed": false,
+    "journal_initialized": false,
+    "operational_backup_created": false
+  },
+  "limitations": [
+    "Rehearsal uses disposable PostgreSQL16.15; Northflank reports16.14 and normal-role privileges need their own read-only inspection.",
+    "The tested candidate has documentation overlays; version and test the exact master package before adoption.",
+    "TLS fixture does not demonstrate encrypted backup, R2 writes, journal coverage or restore.",
+    "Teacher working changes remain outside the production branch."
+  ]
+}

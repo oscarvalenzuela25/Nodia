@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-10",
+  "client_timezone": "America/Santiago",
+  "scope": "postgres_transport_and_psql_readonly_authentication",
+  "host": "primary.nodia-db--8hqb8b7kvmx4.addon.code.run",
+  "external_port": 29102,
+  "internal_port_from_screenshot": 5432,
+  "database_from_screenshot": "nodia_db",
+  "vps_observation": {
+    "dns_ipv4": [
+      "35.193.113.78"
+    ],
+    "tcp_connected": true,
+    "postgres_starttls": true,
+    "tls_protocol": "TLSv1.3",
+    "cipher": "TLS_AES_256_GCM_SHA384",
+    "certificate_chain_validation": "OK",
+    "verified_peername": "*.nodia-db--8hqb8b7kvmx4.addon.code.run",
+    "hostname_verification_enabled": true,
+    "verify_return_error_enabled": true,
+    "openssl_exit_code": 0,
+    "credentials_sent": false,
+    "phase": "initial_credential_free_transport_probe"
+  },
+  "external_pc_probe": {
+    "postgres_ssl_request_response": "S",
+    "egress_ip_differs_from_vps": true,
+    "credentials_sent": false
+  },
+  "network_limit": {
+    "source": "user_account_observation",
+    "ip_policies_require_paid_plan_in_user_account": true,
+    "paid_upgrade_performed": false,
+    "vps_only_allowlist_accredited": false
+  },
+  "credential_rotation": {
+    "status": "deferred_by_explicit_user_instruction_for_this_connectivity_test",
+    "required_before_stakeholder_opening": true
+  },
+  "prepared_probe": {
+    "script_sha256": "57cadf50f75f83273eb21c2d151fc59980a33903cc0d47310c7538cce3314f89",
+    "sql_sha256": "08fd1c9f3cf17a83d4f05aeca19088f447636ceb72918f4549dfb289486ecfa1",
+    "bash_and_python_syntax": "passed",
+    "local_remote_hashes": "matched",
+    "metadata_parser_cases": [
+      "success",
+      "wrong_database_rejected",
+      "writable_transaction_rejected"
+    ],
+    "metadata_parser_python_optimization_enabled": true,
+    "executed_against_database": true,
+    "dns_and_tls_before_credentials": "actual_source_preflight_passed_without_credentials",
+    "hostaddr": "resolved_afresh_per_run_only; PGHOST_keeps_hostname_for_verify_full"
+  },
+  "limitations": [
+    "Verification applies to psql, not deployed Node/API/Worker.",
+    "No business rows, migrations, seeds, backup or restore were executed.",
+    "Zero user-table count does not establish an empty migration baseline.",
+    "Initial DNS failure recovered; root cause unconfirmed; per-run hostaddr changes only this probe, not application DNS behavior.",
+    "IP policies unavailable in user Free account according to user; public endpoint is not restricted to the VPS.",
+    "Credential rotation explicitly deferred; remains pending before stakeholders."
+  ],
+  "client_installation": {
+    "psql_version": "18.6",
+    "ubuntu_package_version": "18.6-0ubuntu0.26.04.1",
+    "source": "operator_output_and_read_only_SSH_psql_version"
+  },
+  "attempts": [
+    {
+      "probe_script_sha256": "34cc75aebaeecff7cb6da369a354394dbb98c097bfc4c736621604e672174f23",
+      "outcome": "failed_before_authentication",
+      "failure": "could_not_translate_host_name",
+      "exit_code": 2,
+      "old_script_line": 76,
+      "credentials_transmitted_to_server": false,
+      "sql_executed": false,
+      "source": "operator_output_and_status_json"
+    },
+    {
+      "probe_script_sha256": "57cadf50f75f83273eb21c2d151fc59980a33903cc0d47310c7538cce3314f89",
+      "outcome": "complete",
+      "source": "operator_report_and_status_json",
+      "credentials_persisted": false,
+      "queries": "read_only_metadata_only",
+      "migrations_or_seeds_requested": false
+    }
+  ],
+  "dns_recheck": {
+    "vps_getent_and_resolvectl": "resolved",
+    "google_doh": "NOERROR",
+    "cloudflare_doh": "NOERROR",
+    "cname": "lb.686e8db5561d701a95e205d8.northflank.com",
+    "ipv4": "35.193.113.78",
+    "ttl_observed_seconds": 60,
+    "openssl_tls_chain_and_hostname": "passed_again",
+    "cause_of_prior_dns_failure": "unconfirmed"
+  },
+  "status": "psql_readonly_connection_verified",
+  "authenticated_probe_result": {
+    "source": "operator_report_and_read_only_SSH_status_json",
+    "script_sha256": "57cadf50f75f83273eb21c2d151fc59980a33903cc0d47310c7538cce3314f89",
+    "result": {
+      "updated_at_utc": "2026-11-11T02:31:17.896957+00:00",
+      "host": "primary.nodia-db--8hqb8b7kvmx4.addon.code.run",
+      "port": 29102,
+      "phase": "complete",
+      "client_tls_mode": "verify-full",
+      "client_ca": "/etc/ssl/certs/ca-certificates.crt",
+      "metadata": {
+        "database": "nodia_db",
+        "server_version": "16.14 (Ubuntu 16.14-1.pgdg22.04+1)",
+        "wal_level": "replica",
+        "in_recovery": false,
+        "transaction_read_only": "on",
+        "backend_tls": {
+          "ssl": true,
+          "version": "TLSv1.3",
+          "cipher": "TLS_AES_256_GCM_SHA384",
+          "bits": 256
+        },
+        "user_table_count": 0
+      },
+      "limitations": "psql probe only; Node API/Worker, migrations, backup/restore and rotation remain pending. Table count does not establish a migration baseline."
+    }
+  }
+}
