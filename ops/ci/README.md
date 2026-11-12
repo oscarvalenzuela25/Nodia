@@ -424,3 +424,17 @@ Referencias: [eventos Actions](https://docs.github.com/en/actions/reference/work
 [environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments),
 [Pages Direct Upload con CI](https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/)
 y [API create deployment](https://developers.cloudflare.com/api/resources/pages/subresources/projects/subresources/deployments/methods/create/).
+
+## Primera integración en GitHub: PR3 — 2026-11-12
+
+[PR3 a development](https://github.com/oscarvalenzuela25/Nodia/pull/3) contiene
+el snapshot completo autorizado del proyecto. El primer run real detectó skip
+transitivo: baseline productivo se omite correctamente en PR, pero las lanes
+descendientes sin status check explícito se omitían incluso con changes exitoso.
+Las lanes usan !cancelled() y comprueban changes.result=success, manteniendo
+selección por outputs. El agregador CI conserva always() para reportar fallos.
+No usar always() en builds largos: impediría su cancelación ante otro push.
+La validación relevante es la ejecución en GitHub de esta condición; actionlint
+comprueba sintaxis, no reproduce el planificador remoto. No se afirma todavía
+CI integral verde ni se promueve master.
+Fuente: [cancelación Actions](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).

@@ -835,3 +835,28 @@ reales, sin sobreescribirlos por copiar árboles.
 recorrido. No se movió ningún branch, creó commit/push ni ejecutó un apply de
 otra aplicación. Producción conserva f01; la instalación del transporte sí quedó
 aplicada y verificada en15.2. ADR097 sigue propuesto.
+
+## 16. PR completo hacia development y primera ejecución GitHub — 2026-11-12
+
+El usuario autoriza publicar todos los cambios actuales para observar CI antes
+de integrar en development. Se preparó una copia aislada en la rama
+codex/development-ci-validation, dejando el checkout development y su WIP
+intactos. Snapshot inicial:308archivos, commit6b6448b132ec7e1a14caa38f2dce4f87b3e291c2.
+Se revisaron patrones de secretos y los cuatro ZIP históricos: sólo contienen
+helpers/units/templates con sus manifiestos. Se corrigieron únicamente saltos
+de línea finales antes de publicar.
+
+[PR3](https://github.com/oscarvalenzuela25/Nodia/pull/3) apunta a development;
+sin merge automático, cambio del remoto development/master ni entrega productiva.
+El primer run43316161643 pasó Changes/pipeline y seleccionó todos los componentes,
+pero GitHub omitió Server/Python/native por el skip transitivo del baseline
+productivo. El agregador CI no los acepta como aprobados. La corrección explícita
+del estado de los jobs evita el success() implícito; se conserva el requisito
+needs.changes.result=success y se usa !cancelled() para permitir cancelar builds
+obsoletos. always() permanece sólo en el agregador final del CI.
+
+Los intentos anteriores se conservan como evidencia, no como verde integral.
+La nueva ejecución se consulta en Checks del PR. Se mantiene TypeScript una vez
+por build, sin introducir typecheck adicional ni desplegar a producción desde
+esta PR. El siguiente gate es verificar las lanes reales y corregir fallos
+observados antes de considerar listo el merge a development.
