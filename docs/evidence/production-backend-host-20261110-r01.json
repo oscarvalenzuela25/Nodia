@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-10",
+  "client_timezone": "America/Santiago",
+  "scope": "backend_host_identity_and_inactive_systemd_units",
+  "status": "prepared_verified_inactive",
+  "bootstrap": {
+    "file": "ops/production/bootstrap-backend-host.sh",
+    "sha256": "576daef30956bca003f1e7382e627a6e4e47547e154e9c586b8aabb5cd52cb2b",
+    "server_status_recorded_at_utc": "2026-11-11T02:52:00.590964+00:00",
+    "phase": "complete",
+    "source": "operator_report_and_read_only_SSH_status_json"
+  },
+  "identity": {
+    "user": "nodia",
+    "group": "nodia",
+    "uid": 900,
+    "gid": 900,
+    "groups": [
+      "nodia"
+    ],
+    "home": "/var/lib/nodia/home",
+    "shell": "/usr/sbin/nologin",
+    "password_locked": "checked_by_bootstrap",
+    "sudo_or_docker_groups": false
+  },
+  "units": {
+    "nodia-api.service": {
+      "sha256": "048bd72f3288228dbc9a53b6dd751ed0efdf728e1356cb3b1e45da6bbb8c2c2d",
+      "enabled": "disabled",
+      "active": "inactive"
+    },
+    "nodia-ai-worker.service": {
+      "sha256": "aa92c33e4d8b088d9f6d87f84669c46752308b488ef106d79b66a4fcbda4f126",
+      "enabled": "disabled",
+      "active": "inactive"
+    }
+  },
+  "validator_sha256": "58300cdd1528fb25d6db517891a7a5ab645790c7b00c40c870aa1d9bc6cb932c",
+  "configuration": {
+    "cwd": "/opt/nodia/current",
+    "environment_files": [
+      "/etc/nodia/runtime.env",
+      "/etc/nodia/redis.env"
+    ],
+    "shared_recovery_config_path": "/var/lib/nodia/config/recovery.json",
+    "timeout_stop_seconds": 180,
+    "worker_current_drain_seconds": 150,
+    "kill_mode": "mixed",
+    "type": "exec",
+    "root_owned_release_parent": "/opt/nodia/releases",
+    "writable_state": [
+      "/var/lib/nodia/home",
+      "/var/lib/nodia/codex"
+    ]
+  },
+  "permission_tests": {
+    "source": "reviewed_root_bootstrap_completed_path",
+    "state_file_create_remove": "passed",
+    "release_and_config_write_denied": "passed",
+    "private_env_parent_and_docker_socket_access_denied": "passed",
+    "administrator_direct_stat_of_private_state_children": "permission_denied_expected"
+  },
+  "checks": {
+    "bash_python_node_syntax": "passed",
+    "vps_systemd_analyze_verify_exit": 0,
+    "unrelated_system_unit_warning": "CPUAccounting removed in xfs units",
+    "linux_small_unit_tests_passed": 9
+  },
+  "user_configuration": {
+    "bootstrap_email_supplied_privately": true,
+    "file_storage_bucket": "nodia-production",
+    "r2_account_reported_ready": true,
+    "secrets_provisioned": false
+  },
+  "limitations": [
+    "No release installed or current symlink activated.",
+    "No runtime secrets, journal initialization, migrations or seeds performed.",
+    "No API/Worker process started; readiness and drain not proven.",
+    "Native provider compatibility, Node DB/Redis TLS, recovery/backup and rollout acceptance remain pending.",
+    "NTP/expiry/log alerting and CI/CD retain their separate gates."
+  ]
+}

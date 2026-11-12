@@ -1,0 +1,1843 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-11",
+  "scope": "isolated_backend_first_install_and_backup_tls_preparation",
+  "status": "deployed_transport_and_restore_verified_functional_login_pending",
+  "candidate_rehearsal": {
+    "schema_version": 1,
+    "status": "passed",
+    "session": "9a846f728d86d01a",
+    "started_at_utc": "2026-11-11T21:48:26.720Z",
+    "package_sha256": "9a2df3918462bc7d000c2fab51de3bcbfc532ff2b0768aec1e97d2cd1dd9218b",
+    "node_archive_sha256": "42470e1e3abab4adb85eb4681189e1872aa24362b2a35bffb8b4ef56b68cde2d",
+    "node_original_archive_sha256": "48cc0e21e048790e54c0cf5749c2725005313d652651c40b7a21feb9697aaf75",
+    "images": {
+      "postgres": "sha256:75f5a96988cdf694a215073c3e9c001b706b371e2f94df3967f2efdec2787f6b",
+      "redis": "sha256:5509c0097c6064aa8a3b1df58f1d950e67090fffa6678ae8f3f1dc2385f12deb",
+      "runner": "sha256:60ce2f4bb2920909e5abf19f515c41fc38b59f26ef69a61498e28c67322db5fd"
+    },
+    "transferred_archive_digests_verified": true,
+    "probe": {
+      "schema_version": 1,
+      "status": "passed",
+      "source_sha": "ba8ebfa00b55f103465d0ab533a802152944d224",
+      "release_id": "backend-candidate-ba8ebfa00b55-e61ee5a268e7",
+      "deployment_eligible": false,
+      "node_executable_sha256": "904a6d3484241d466989f9df9ba3aab822b1496191bdb28230eb491a55c32a52",
+      "postgres_version_num": 160015,
+      "migrations_verified": 45,
+      "entity_tables_verified": 68,
+      "checks": [
+        "linux_node_version",
+        "node_executable_matches_package_provenance",
+        "disposable_connections_only",
+        "no_production_or_provider_configuration",
+        "synchronize_disabled",
+        "postgres16_expected_database_schema",
+        "destination_initially_empty",
+        "compiled_migration_inventory_loaded",
+        "exact_migration_ledger",
+        "no_pending_migrations",
+        "all_entity_tables_and_columns_present",
+        "required_extensions_in_public",
+        "one_admin_four_assignments_no_provider_credentials",
+        "synthetic_identity_normalized",
+        "active_super_admin_role",
+        "four_canonical_core_accesses",
+        "repeat_preserves_core_rows_and_ledger",
+        "different_bootstrap_identity_rejected",
+        "identity_rejection_preserves_rows",
+        "missing_identity_rejected",
+        "invalid_identity_preserves_rows",
+        "existing_partial_schema_rejected",
+        "partial_fixture_preserved_no_migrations_executed"
+      ],
+      "application_started": false,
+      "worker_started": false,
+      "journal_initialized": false,
+      "production_connections_requested": false,
+      "provider_inference_requested": false
+    },
+    "cleanup": {
+      "containers": 4,
+      "networks": 1,
+      "volumes": 2,
+      "errors": []
+    },
+    "finished_at_utc": "2026-11-11T21:49:11.665Z"
+  },
+  "backup_tls_fixture": {
+    "schema_version": 1,
+    "scope": "disposable_postgresql16_libpq_TLS_only",
+    "checks": [
+      "real_pg_dump_succeeds_with_matching_CA_and_hostname",
+      "real_pg_dump_rejects_foreign_CA",
+      "real_pg_dump_rejects_hostname_mismatch"
+    ],
+    "image_id": "sha256:75f5a96988cdf694a215073c3e9c001b706b371e2f94df3967f2efdec2787f6b",
+    "pg_dump_version": "pg_dump (PostgreSQL) 16.15",
+    "dump_bytes": 1665,
+    "dump_sha256": "41c143a58ea9f3f39a153b60c10ca369c63da624cba5b3fad96144deb6184b65",
+    "operational_database_access": false,
+    "provider_calls": 0,
+    "r2_access": false,
+    "published_ports": 0,
+    "fixture_resources_removed": true
+  },
+  "focused_tests": {
+    "node": 28,
+    "python_stage": 15,
+    "python_configuration": 5,
+    "passed": true
+  },
+  "deployment": {
+    "api_started": true,
+    "worker_started": true,
+    "production_migrations_executed": true,
+    "journal_initialized": true,
+    "operational_backup_created": true,
+    "offhost_restore_verified": true,
+    "public_api_proxy_enabled": true,
+    "api_worker_enabled_on_boot": true,
+    "backup_timers_enabled": true,
+    "frontend_linked_to_vps": true,
+    "google_browser_login_verified": false
+  },
+  "limitations": [
+    "Rehearsal uses disposable PostgreSQL16.15; production16.14 installation and normal-role checks are separately recorded.",
+    "The TLS fixture alone does not demonstrate encrypted backup, R2 backup writes or restore. Production journal initialization is separately recorded; backup/restore remain pending.",
+    "Teacher working changes remain outside the production branch.",
+    "The infrastructure profile matches observed metadata and is not a provider security attestation. Application activation, encrypted configuration custody, offline key duplication, backup/restore and stakeholder acceptance remain pending.",
+    "Client18.6 restore to PostgreSQL16.15 failed before DDL in an isolated fixture; major16 dump/restore client provisioning in production remains pending."
+  ],
+  "source_promotion": {
+    "pull_request": "https://github.com/oscarvalenzuela25/Nodia/pull/1",
+    "branch_commit": "681a74a4b6b0e4325d33526b18f316d7f6664593",
+    "master_commit": "f01b493336883403a84b1c80759ce4fc43cbd370",
+    "merged": true,
+    "teacher_changes_included": false,
+    "development_worktree_preserved": true
+  },
+  "release": {
+    "release_id": "backend-f01b49333688-ff33b6fdbbbc",
+    "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+    "source_provenance": "git_archive",
+    "deployment_eligible": true,
+    "package_tree_sha256": "ff33b6fdbbbc05167745da9c2fde5f3d19355baf51d51214bbc7121cb6ea1e6f",
+    "runtime": {
+      "node": "v24.22.2",
+      "npm": "11.19.1",
+      "executable_sha256": "904a6d3484241d466989f9df9ba3aab822b1496191bdb28230eb491a55c32a52",
+      "platform": "linux",
+      "arch": "x64",
+      "glibc": "2.39"
+    },
+    "compiled_assets": {
+      "knowledge_release_id": "e6ae42867985c95eade143a8e9e548b80f33b4a8aa5324555e1fefcfc450f0c7",
+      "catalog_release": "nodia-ai-business-pos/4",
+      "knowledge_fragments": 46,
+      "common_schema_sha256": "7e6c521c843e8bcf6889803036c542bc3a1d734d987c672372261a21f0b768d9",
+      "runtime_policy_sha256": "5f6c02901a3257f1e884f3edb2fe862caf6dc4ccddb3c9a4b64d395220faecbb"
+    },
+    "checks": {
+      "status": "passed",
+      "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+      "checks": [
+        "full_nest_and_postbuild_assets",
+        "context_build_owned_source_pins",
+        "backend_lint",
+        "catalog_units",
+        "knowledge_compiler_and_pin",
+        "common_contract_fixtures",
+        "runtime_policy_and_knowledge_units",
+        "compiled_asset_contracts"
+      ],
+      "database_or_inference_executed": false
+    },
+    "tooling": [
+      {
+        "path": "package-backend-release.mjs",
+        "sha256": "843ed0fce980fa684c0a5de60885cfc4437f025b1aa62d2562565447c2ecf5b5"
+      },
+      {
+        "path": "build-backend-release.sh",
+        "sha256": "618a474568a42c1027db13052e4eb0b49a85aa3ae7c9964bce42f7cf778af0ee"
+      }
+    ],
+    "archive_sha256": "b8ac639b2cc032839dd17769b81f1da85cb16263f39594230e06ed2e1f1b7f38",
+    "archive_bytes": 210068457,
+    "files_verified": 24491,
+    "all_file_hashes_and_tar_modes_verified": true,
+    "get_tar_commit_id_verified": true,
+    "builder_and_packager_from_same_commit": true,
+    "staged_in_vps": true,
+    "uploaded_to_vps": true,
+    "remote_archive_admission": "passed",
+    "uploaded_hashes_verified": true
+  },
+  "master_release_rehearsal": {
+    "schema_version": 1,
+    "status": "passed",
+    "session": "e600a74d132e626d",
+    "started_at_utc": "2026-11-11T21:55:54.523Z",
+    "package_sha256": "b8ac639b2cc032839dd17769b81f1da85cb16263f39594230e06ed2e1f1b7f38",
+    "node_archive_sha256": "42470e1e3abab4adb85eb4681189e1872aa24362b2a35bffb8b4ef56b68cde2d",
+    "node_original_archive_sha256": null,
+    "images": {
+      "postgres": "sha256:75f5a96988cdf694a215073c3e9c001b706b371e2f94df3967f2efdec2787f6b",
+      "redis": "sha256:5509c0097c6064aa8a3b1df58f1d950e67090fffa6678ae8f3f1dc2385f12deb",
+      "runner": "sha256:60ce2f4bb2920909e5abf19f515c41fc38b59f26ef69a61498e28c67322db5fd"
+    },
+    "transferred_archive_digests_verified": true,
+    "probe": {
+      "schema_version": 1,
+      "status": "passed",
+      "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+      "release_id": "backend-f01b49333688-ff33b6fdbbbc",
+      "deployment_eligible": true,
+      "node_executable_sha256": "904a6d3484241d466989f9df9ba3aab822b1496191bdb28230eb491a55c32a52",
+      "postgres_version_num": 160015,
+      "migrations_verified": 45,
+      "entity_tables_verified": 68,
+      "checks": [
+        "linux_node_version",
+        "node_executable_matches_package_provenance",
+        "disposable_connections_only",
+        "no_production_or_provider_configuration",
+        "synchronize_disabled",
+        "postgres16_expected_database_schema",
+        "destination_initially_empty",
+        "compiled_migration_inventory_loaded",
+        "exact_migration_ledger",
+        "no_pending_migrations",
+        "all_entity_tables_and_columns_present",
+        "required_extensions_in_public",
+        "one_admin_four_assignments_no_provider_credentials",
+        "synthetic_identity_normalized",
+        "active_super_admin_role",
+        "four_canonical_core_accesses",
+        "repeat_preserves_core_rows_and_ledger",
+        "different_bootstrap_identity_rejected",
+        "identity_rejection_preserves_rows",
+        "missing_identity_rejected",
+        "invalid_identity_preserves_rows",
+        "existing_partial_schema_rejected",
+        "partial_fixture_preserved_no_migrations_executed"
+      ],
+      "application_started": false,
+      "worker_started": false,
+      "journal_initialized": false,
+      "production_connections_requested": false,
+      "provider_inference_requested": false
+    },
+    "cleanup": {
+      "containers": 4,
+      "networks": 1,
+      "volumes": 2,
+      "errors": []
+    },
+    "finished_at_utc": "2026-11-11T21:56:39.303Z"
+  },
+  "operator_handoff": {
+    "phase": "preparing_read_only_first_installation_reconciliation",
+    "sudo_noninteractive_available": false,
+    "source_provenance": "git_archive",
+    "archive_staged": true,
+    "api_worker_state": "inactive",
+    "current_exists": false,
+    "stage_helper_sha256": "f3b96b790ac1c98d69614f72e1a839ca791f47e0729e100e5f0ec10dc287b723",
+    "dependency_probe_sha256": "d8063829b6a1a55c9b0ad6bd394e9cae313f7d1e0a387ff935d80f829c4a95f3",
+    "postgres_inspection_helper_sha256": "0f75b5d9dddcc08e0722274d0df37f1b5ffef7cc828bd293ed8a62097ed6cb7b",
+    "postgres_inspection_wrapper_sha256": "42c8562eb88b6c482c1ae050ec5286cdcff8c6f03354ceb98e7ca5512eee284a"
+  },
+  "master_release_staging": {
+    "source": "operator_output_and_read_only_SSH_confirmation",
+    "result": {
+      "schema_version": 1,
+      "archive_sha256": "b8ac639b2cc032839dd17769b81f1da85cb16263f39594230e06ed2e1f1b7f38",
+      "deployment_eligible": true,
+      "application_started": false,
+      "migrations_executed": false,
+      "phase": "dependencies_verified",
+      "updated_at_utc": "2026-11-11T23:29:20.969202+00:00",
+      "release_id": "backend-f01b49333688-ff33b6fdbbbc",
+      "files_expected": 24491,
+      "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+      "source_provenance": "git_archive",
+      "candidate_staged": true,
+      "dependency_probe": {
+        "schema_version": 1,
+        "status": "verified",
+        "checks": {
+          "local_configuration": "passed",
+          "postgres": {
+            "status": "passed",
+            "database_matched": true,
+            "server_version_num": 160014,
+            "transaction_read_only": true,
+            "client_tls_authorized": true,
+            "client_tls_protocol": "TLSv1.3",
+            "backend_tls": true
+          },
+          "redis": {
+            "status": "passed",
+            "authenticated_ping": true
+          },
+          "r2": {
+            "status": "passed",
+            "head_bucket": true
+          }
+        },
+        "application_started": false,
+        "migrations_executed": false,
+        "mutations_requested": false
+      }
+    },
+    "temporary_probe_units_loaded": 0,
+    "temporary_probe_unit_files": 0,
+    "api_worker_units": "disabled_and_inactive",
+    "current_exists": false
+  },
+  "postgres_installation_inspection": {
+    "source": "operator_supplied_stdout",
+    "result": {
+      "schema_version": 1,
+      "status": "inspected",
+      "postgres": {
+        "database_matched": true,
+        "server_version_num": 160014,
+        "transaction_read_only": true,
+        "client_tls_authorized": true,
+        "client_tls_protocol": "TLSv1.3",
+        "backend_tls": true
+      },
+      "privileges": {
+        "database_create": false,
+        "public_schema_present": true,
+        "public_schema_usage": true,
+        "public_schema_create": true
+      },
+      "inventory": {
+        "user_schemas": 1,
+        "relations": 0,
+        "routines": 1,
+        "types": 0,
+        "unexpected_extensions": 2
+      },
+      "extensions": [
+        {
+          "name": "uuid-ossp",
+          "available": true,
+          "default_version": "1.1",
+          "trusted": true,
+          "installed": false,
+          "installed_version": null,
+          "installed_in_public": null
+        },
+        {
+          "name": "pg_trgm",
+          "available": true,
+          "default_version": "1.6",
+          "trusted": true,
+          "installed": false,
+          "installed_version": null,
+          "installed_in_public": null
+        }
+      ],
+      "gates": {
+        "empty_destination": false,
+        "public_schema_writable": true,
+        "default_schema_public": true,
+        "required_extensions_installable": false,
+        "first_installation_preconditions": false
+      },
+      "application_started": false,
+      "migrations_executed": false,
+      "mutations_requested": false
+    },
+    "timestamp_utc": null,
+    "installed_helper_sha256_confirmed_by_ssh": "0f75b5d9dddcc08e0722274d0df37f1b5ffef7cc828bd293ed8a62097ed6cb7b",
+    "post_inspection_ssh": {
+      "api_worker": "inactive",
+      "current_exists": false,
+      "temporary_inspection_units_loaded": 0
+    },
+    "diagnosis": {
+      "normal_role_database_create": false,
+      "required_extensions_installed": false,
+      "unclassified_catalog_objects": true,
+      "provider_origin_confirmed": false
+    },
+    "next_action": "Read-only bounded catalog details before deciding baseline or administrative extension provisioning."
+  },
+  "catalog_diagnostic_preparation": {
+    "status": "executed_operator_reported_catalog_identified",
+    "mode": "--catalog-details",
+    "helper_sha256": "54b743132c49e27e8400de6151dfa4181014e110ea7537fdc960cd104a5428e9",
+    "wrapper_sha256": "126b784fbf67acd979f3a6f3d33688267a1eda8068d8e987d63148cefc7aa06a",
+    "uploaded_hashes_verified": true,
+    "unit_tests_passed": 10,
+    "fixture": {
+      "fixture": "local_disposable_postgresql_catalog_diagnostics",
+      "image_id": "sha256:75f5a96988cdf694a215073c3e9c001b706b371e2f94df3967f2efdec2787f6b",
+      "server_version_num": 160015,
+      "network": "none",
+      "real_credentials_used": false,
+      "empty": {
+        "inventory": {
+          "user_schemas": "0",
+          "relations": "0",
+          "routines": "0",
+          "types": "0",
+          "unexpected_extensions": "0"
+        },
+        "catalog_details": {
+          "types": [],
+          "schemas": [],
+          "routines": [],
+          "relations": [],
+          "unexpected_extensions": []
+        }
+      },
+      "with_synthetic_schema_routine_and_extensions": {
+        "inventory": {
+          "user_schemas": "1",
+          "relations": "0",
+          "routines": "1",
+          "types": "0",
+          "unexpected_extensions": "2"
+        },
+        "catalog_details": {
+          "types": [],
+          "schemas": [
+            {
+              "name": "fixture_platform",
+              "owner_is_current": true
+            }
+          ],
+          "routines": [
+            {
+              "kind": "f",
+              "name": "fixture_catalog_helper",
+              "schema": "fixture_platform",
+              "language": "sql",
+              "signature": "",
+              "owner_is_current": true,
+              "security_definer": false
+            }
+          ],
+          "relations": [],
+          "unexpected_extensions": [
+            {
+              "name": "hstore",
+              "schema": "public",
+              "version": "1.8",
+              "owner_is_current": true
+            },
+            {
+              "name": "pgcrypto",
+              "schema": "public",
+              "version": "1.3",
+              "owner_is_current": true
+            }
+          ]
+        }
+      },
+      "container_removed": true,
+      "parser_composition": {
+        "real_sql_rows_checked": true,
+        "synthetic_privilege_and_tls_metadata": true,
+        "empty_fixture_gate": true,
+        "nonempty_fixture_gate": false,
+        "no_tls_connection_claimed": true
+      }
+    },
+    "admission_gates_changed": false,
+    "provider_baseline_assumed": false,
+    "remote_query_executed": false
+  },
+  "extension_maintenance_preparation": {
+    "status": "uploaded_hashes_verified_operator_reported_complete",
+    "fixture": {
+      "schema_version": 1,
+      "status": "passed",
+      "started_at_utc": "2026-11-11T23:42:08.284Z",
+      "image": "sha256:75f5a96988cdf694a215073c3e9c001b706b371e2f94df3967f2efdec2787f6b",
+      "helper_sha256": "6c03c428aa25f4693f5b971e6d41f7bc52c869d0b4535a04ddf98cce6ac2f590",
+      "sql_sha256": "4cfeda235aa6cc5860c41835b34aa80323d22a13a8f0f97d17c540ed903a029c",
+      "scope": "disposable_permission_and_extension_contract",
+      "checks": [
+        "postgres16",
+        "normal_role_has_schema_create_without_database_create",
+        "normal_role_extension_install_rejected",
+        "rejected_install_left_no_extensions",
+        "admin_installed_both_extensions_in_public",
+        "repeated_admin_maintenance_preserves_extension_identities",
+        "normal_role_database_create_still_denied",
+        "normal_role_uses_uuid_function_trigram_function_and_operator_class",
+        "extension_usage_does_not_escalate_database_privilege",
+        "maintenance_creates_no_application_tables",
+        "existing_extension_in_other_schema_rejected",
+        "wrong_schema_rejection_does_not_move_or_partially_install_extensions"
+      ],
+      "postgres_version_num": 160015,
+      "authentication_or_tls_qualified": false,
+      "production_connections_requested": false,
+      "cleanup": {
+        "containers_removed": 1,
+        "errors": []
+      },
+      "finished_at_utc": "2026-11-11T23:42:13.231Z"
+    },
+    "admin_credentials_requested_in_chat": false,
+    "database_privileges_granted": false
+  },
+  "catalog_diagnostic_result": {
+    "source": "operator_supplied_stdout",
+    "result": {
+      "schema_version": 1,
+      "status": "inspected",
+      "postgres": {
+        "database_matched": true,
+        "server_version_num": 160014,
+        "transaction_read_only": true,
+        "client_tls_authorized": true,
+        "client_tls_protocol": "TLSv1.3",
+        "backend_tls": true
+      },
+      "privileges": {
+        "database_create": false,
+        "public_schema_present": true,
+        "public_schema_usage": true,
+        "public_schema_create": true
+      },
+      "inventory": {
+        "user_schemas": 1,
+        "relations": 0,
+        "routines": 1,
+        "types": 0,
+        "unexpected_extensions": 2
+      },
+      "extensions": [
+        {
+          "name": "uuid-ossp",
+          "available": true,
+          "default_version": "1.1",
+          "trusted": true,
+          "installed": false,
+          "installed_version": null,
+          "installed_in_public": null
+        },
+        {
+          "name": "pg_trgm",
+          "available": true,
+          "default_version": "1.6",
+          "trusted": true,
+          "installed": false,
+          "installed_version": null,
+          "installed_in_public": null
+        }
+      ],
+      "gates": {
+        "empty_destination": false,
+        "public_schema_writable": true,
+        "default_schema_public": true,
+        "required_extensions_installable": false,
+        "first_installation_preconditions": false
+      },
+      "application_started": false,
+      "migrations_executed": false,
+      "mutations_requested": false,
+      "catalog_details": {
+        "limit_per_category": 100,
+        "schemas": {
+          "total_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "items": [
+            {
+              "name": "pooler",
+              "owner_is_current": false
+            }
+          ]
+        },
+        "relations": {
+          "total_count": 0,
+          "returned_count": 0,
+          "truncated": false,
+          "items": []
+        },
+        "routines": {
+          "total_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "items": [
+            {
+              "schema": "pooler",
+              "name": "user_lookup",
+              "signature": "i_username text, OUT uname text, OUT phash text",
+              "kind": "f",
+              "language": "plpgsql",
+              "security_definer": true,
+              "owner_is_current": false
+            }
+          ]
+        },
+        "types": {
+          "total_count": 0,
+          "returned_count": 0,
+          "truncated": false,
+          "items": []
+        },
+        "unexpected_extensions": {
+          "total_count": 2,
+          "returned_count": 2,
+          "truncated": false,
+          "items": [
+            {
+              "name": "pg_stat_kcache",
+              "version": "2.3.2",
+              "schema": "public",
+              "owner_is_current": false
+            },
+            {
+              "name": "pg_stat_statements",
+              "version": "1.10",
+              "schema": "public",
+              "owner_is_current": false
+            }
+          ]
+        }
+      }
+    },
+    "routine_executed": false,
+    "routine_definition_read": false,
+    "infrastructure_origin": "inferred_from_observed_metadata_and_primary_upstream_sources_not_provider_attestation",
+    "references": [
+      "https://github.com/zalando/postgres-operator/blob/master/pkg/cluster/database.go",
+      "https://www.postgresql.org/docs/16/pgstatstatements.html",
+      "https://github.com/powa-team/pg_stat_kcache"
+    ]
+  },
+  "extension_maintenance_result": {
+    "source": "operator_supplied_completion_message",
+    "required_extensions_reported_installed_in_public": true,
+    "application_migrations_requested": false,
+    "seeds_requested": false,
+    "permission_grants_requested": false,
+    "runtime_environment_credentials_changed": false,
+    "admin_credentials_saved": false,
+    "normal_role_postcheck_pending": false,
+    "installed_versions_confirmed": true
+  },
+  "normal_role_baseline_recheck": {
+    "source": "operator_supplied_stdout",
+    "result": {
+      "schema_version": 1,
+      "status": "inspected",
+      "postgres": {
+        "database_matched": true,
+        "server_version_num": 160014,
+        "transaction_read_only": true,
+        "client_tls_authorized": true,
+        "client_tls_protocol": "TLSv1.3",
+        "backend_tls": true
+      },
+      "privileges": {
+        "database_create": false,
+        "public_schema_present": true,
+        "public_schema_usage": true,
+        "public_schema_create": true
+      },
+      "inventory": {
+        "user_schemas": 1,
+        "relations": 0,
+        "routines": 1,
+        "types": 0,
+        "unexpected_extensions": 2
+      },
+      "extensions": [
+        {
+          "name": "uuid-ossp",
+          "available": true,
+          "default_version": "1.1",
+          "trusted": true,
+          "installed": true,
+          "installed_version": "1.1",
+          "installed_in_public": true
+        },
+        {
+          "name": "pg_trgm",
+          "available": true,
+          "default_version": "1.6",
+          "trusted": true,
+          "installed": true,
+          "installed_version": "1.6",
+          "installed_in_public": true
+        }
+      ],
+      "gates": {
+        "empty_destination": false,
+        "public_schema_writable": true,
+        "default_schema_public": true,
+        "required_extensions_installable": true,
+        "first_installation_preconditions": true,
+        "provider_baseline_matches": true,
+        "application_destination_empty": true
+      },
+      "application_started": false,
+      "migrations_executed": false,
+      "mutations_requested": false,
+      "catalog_details": {
+        "limit_per_category": 100,
+        "schemas": {
+          "total_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "items": [
+            {
+              "name": "pooler",
+              "owner_is_current": false
+            }
+          ]
+        },
+        "relations": {
+          "total_count": 0,
+          "returned_count": 0,
+          "truncated": false,
+          "items": []
+        },
+        "routines": {
+          "total_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "items": [
+            {
+              "schema": "pooler",
+              "name": "user_lookup",
+              "signature": "i_username text, OUT uname text, OUT phash text",
+              "kind": "f",
+              "language": "plpgsql",
+              "security_definer": true,
+              "owner_is_current": false
+            }
+          ]
+        },
+        "types": {
+          "total_count": 0,
+          "returned_count": 0,
+          "truncated": false,
+          "items": []
+        },
+        "unexpected_extensions": {
+          "total_count": 2,
+          "returned_count": 2,
+          "truncated": false,
+          "items": [
+            {
+              "name": "pg_stat_kcache",
+              "version": "2.3.2",
+              "schema": "public",
+              "owner_is_current": false
+            },
+            {
+              "name": "pg_stat_statements",
+              "version": "1.10",
+              "schema": "public",
+              "owner_is_current": false
+            }
+          ]
+        }
+      },
+      "provider_baseline": {
+        "profile_id": "nodia-northflank-observed-catalog-20261111-r01",
+        "profile_sha256": "7f4977ac62b5bae24e193f8848b7ec6dd1fda8b3e94cdb19a76c554a5e69dd7f",
+        "destination_fingerprint_sha256": "93e318438e06c7e441f2c4d6f15035b9dd7fac3a83549115419f4e64dc56f5d2",
+        "destination_matched": true,
+        "server_version_matched": true,
+        "metadata_only": true,
+        "provider_origin_attested": false
+      }
+    },
+    "helper_sha256": "d720a261ddb9d414949b395c6a10fcb05faccf67b57ac48bbaf3072f189d05d3",
+    "wrapper_sha256": "2e8a0f4d5b016b3cb08f7be2726334f9d7d0415848e2039be1e793931ec70ff1",
+    "profile_sha256": "7f4977ac62b5bae24e193f8848b7ec6dd1fda8b3e94cdb19a76c554a5e69dd7f",
+    "baseline_unit_tests_passed": 16,
+    "uploaded_hashes_verified": true
+  },
+  "journal_preparation": {
+    "status": "executed_ready_confirmed_by_ssh",
+    "helper_sha256": "dd3a1e39cb13daaa6b7607a6685ef8a2f59d953ddc712c3fa27d225a69ee6ac9",
+    "tests_passed": 12,
+    "remote_syntax_and_hash_verified": true,
+    "live_systemd_and_r2_execution_pending": false,
+    "intent_durable_before_put": true,
+    "uncertain_write_replayed": false
+  },
+  "database_installation_preparation": {
+    "status": "executed_then_reconciled_read_only_without_sql_replay",
+    "helper_sha256": "6fd3ba48c49730bf6879ff7cb2ca3bc2c47b3c8c414f25e154de575fe8aa8ebd",
+    "action_sha256": "cb1bfcfbd6895b0c30c406fd33187d526e8c239fecd4f99c36f0d4cd62ee2406",
+    "node_tests_passed": 4,
+    "python_tests_passed": 4,
+    "remote_hashes_and_syntax_verified": true,
+    "sql_reader_fixture": {
+      "schema_version": 1,
+      "status": "passed",
+      "session": "de87c6a46e3f72d6",
+      "started_at_utc": "2026-11-12T00:07:42.398Z",
+      "package_sha256": "b8ac639b2cc032839dd17769b81f1da85cb16263f39594230e06ed2e1f1b7f38",
+      "node_archive_sha256": "42470e1e3abab4adb85eb4681189e1872aa24362b2a35bffb8b4ef56b68cde2d",
+      "node_original_archive_sha256": null,
+      "images": {
+        "postgres": "sha256:75f5a96988cdf694a215073c3e9c001b706b371e2f94df3967f2efdec2787f6b",
+        "redis": "sha256:5509c0097c6064aa8a3b1df58f1d950e67090fffa6678ae8f3f1dc2385f12deb",
+        "runner": "sha256:60ce2f4bb2920909e5abf19f515c41fc38b59f26ef69a61498e28c67322db5fd"
+      },
+      "transferred_archive_digests_verified": true,
+      "probe": {
+        "schema_version": 1,
+        "status": "passed",
+        "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+        "release_id": "backend-f01b49333688-ff33b6fdbbbc",
+        "deployment_eligible": true,
+        "node_executable_sha256": "904a6d3484241d466989f9df9ba3aab822b1496191bdb28230eb491a55c32a52",
+        "postgres_version_num": 160015,
+        "migrations_verified": 45,
+        "entity_tables_verified": 68,
+        "checks": [
+          "linux_node_version",
+          "node_executable_matches_package_provenance",
+          "disposable_connections_only",
+          "no_production_or_provider_configuration",
+          "synchronize_disabled",
+          "postgres16_expected_database_schema",
+          "destination_initially_empty",
+          "compiled_migration_inventory_loaded",
+          "exact_migration_ledger",
+          "exact_new_installer_SQL_reader_45_migrations_68_entities_identity_and_destination",
+          "no_pending_migrations",
+          "all_entity_tables_and_columns_present",
+          "required_extensions_in_public",
+          "one_admin_four_assignments_no_provider_credentials",
+          "synthetic_identity_normalized",
+          "active_super_admin_role",
+          "four_canonical_core_accesses",
+          "repeat_preserves_core_rows_and_ledger",
+          "different_bootstrap_identity_rejected",
+          "identity_rejection_preserves_rows",
+          "missing_identity_rejected",
+          "invalid_identity_preserves_rows",
+          "existing_partial_schema_rejected",
+          "partial_fixture_preserved_no_migrations_executed"
+        ],
+        "application_started": false,
+        "worker_started": false,
+        "journal_initialized": false,
+        "production_connections_requested": false,
+        "provider_inference_requested": false
+      },
+      "cleanup": {
+        "containers": 4,
+        "networks": 1,
+        "volumes": 2,
+        "errors": []
+      },
+      "finished_at_utc": "2026-11-12T00:08:25.498Z"
+    },
+    "live_systemd_and_sql_installation_pending": false,
+    "requires_existing_pristine_open_journal": true
+  },
+  "recovery_key_custody": {
+    "source": "local_windows_generation_and_node_oaep_roundtrip",
+    "metadata": {
+      "schema_version": 1,
+      "purpose": "production_recovery",
+      "created_at_utc": "2026-11-12T00:11:02.7072126+00:00",
+      "rsa_bits": 3072,
+      "private_format": "PKCS8_PEM_UNENCRYPTED",
+      "public_format": "SPKI_PEM",
+      "wrapping": "RSA-OAEP-SHA256",
+      "encryption_key_id_sha256_spki_der": "f7af9aea7868daa71a9500f9bbd91f35a3fe6fea396f82d5f5a9c78ab8510bbd",
+      "private_file_encryption": false,
+      "file_protection": "Windows_current_user_only_protected_DACL",
+      "key_pair_oaep_roundtrip_verified": true,
+      "private_key_exported_to_vps": false
+    },
+    "local_custody_directory": "UserProfile/.nodia/production-recovery",
+    "private_content_recorded": false,
+    "private_key_exported_to_vps": false,
+    "public_key_uploaded_to_operator_setup": true,
+    "public_spki_der_sha256_verified_on_vps": "f7af9aea7868daa71a9500f9bbd91f35a3fe6fea396f82d5f5a9c78ab8510bbd",
+    "public_key_installed_for_backup_runner": false,
+    "node_oaep_sha256_roundtrip": true,
+    "offline_duplicate_confirmed": false
+  },
+  "restore_scope_investigation": {
+    "source": "disposable_postgresql16_fixture",
+    "status": "application_public_restore_strategy_tested_only",
+    "receipt": {
+      "schema_version": 1,
+      "scope": "synthetic_local_dump_scope_fixture_only",
+      "image_id": "sha256:75f5a96988cdf694a215073c3e9c001b706b371e2f94df3967f2efdec2787f6b",
+      "pg_dump_version": "pg_dump (PostgreSQL) 16.15",
+      "network": "none",
+      "real_credentials_used": false,
+      "pg_dump_help_extension_flags": [
+        "-e, --extension=PATTERN      dump the specified extension(s) only"
+      ],
+      "results": {
+        "whole": {
+          "dump_bytes": 4456,
+          "sha256": "1a7b2fdd34fa45c4e5838279ab2b05aa43b5c4a08345ea32bb339067998cb6d6",
+          "interesting_toc": [
+            "9; 2615 16511 SCHEMA - pooler fixture_provider",
+            "4; 3079 16480 EXTENSION - pg_stat_statements ",
+            "3531; 0 0 COMMENT - EXTENSION pg_stat_statements ",
+            "3; 3079 16399 EXTENSION - pg_trgm ",
+            "3532; 0 0 COMMENT - EXTENSION pg_trgm ",
+            "2; 3079 16388 EXTENSION - uuid-ossp ",
+            "3533; 0 0 COMMENT - EXTENSION \"uuid-ossp\" ",
+            "277; 1255 16512 FUNCTION pooler user_lookup(text) fixture_provider",
+            "278; 1255 16522 FUNCTION public app_fixture_normalize(text) fixture_admin",
+            "221; 1259 16513 TABLE public app_fixture fixture_admin",
+            "3524; 0 16513 TABLE DATA public app_fixture fixture_admin",
+            "3377; 2606 16520 CONSTRAINT public app_fixture app_fixture_pkey fixture_admin",
+            "3378; 1259 16521 INDEX public app_fixture_trgm fixture_admin"
+          ],
+          "restore_exit_code": 1,
+          "restore_stderr": "pg_restore: error: could not execute query: ERROR:  permission denied to create extension \"pg_stat_statements\"\nHINT:  Must be superuser to create this extension.\nCommand was: CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;\n\n\n"
+        },
+        "public": {
+          "dump_bytes": 2936,
+          "sha256": "99a7e4e2b6c4cc52e7cf37d4681d9715cb32a26fd7b77be15fae60279391de9a",
+          "interesting_toc": [
+            "7; 2615 2200 SCHEMA - public pg_database_owner",
+            "278; 1255 16522 FUNCTION public app_fixture_normalize(text) fixture_admin",
+            "221; 1259 16513 TABLE public app_fixture fixture_admin",
+            "3524; 0 16513 TABLE DATA public app_fixture fixture_admin",
+            "3377; 2606 16520 CONSTRAINT public app_fixture app_fixture_pkey fixture_admin",
+            "3378; 1259 16521 INDEX public app_fixture_trgm fixture_admin"
+          ],
+          "restore_exit_code": 1,
+          "restore_stderr": "pg_restore: error: could not execute query: ERROR:  schema \"public\" already exists\nCommand was: CREATE SCHEMA public;\n\n\n"
+        },
+        "whole_admin_restore": {
+          "exit_code": 0,
+          "stderr": ""
+        },
+        "source_app": {
+          "ordered_rows": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "label": "Alpha"
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000002",
+              "label": "Beta"
+            }
+          ],
+          "extension_names": [
+            "pg_stat_statements",
+            "pg_trgm",
+            "plpgsql",
+            "uuid-ossp"
+          ],
+          "gin_index_present": true,
+          "function_sha256_not_available_md5": "92054d99389a56f894cc2248ff1f35e8"
+        },
+        "whole_admin_restored_app": {
+          "ordered_rows": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "label": "Alpha"
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000002",
+              "label": "Beta"
+            }
+          ],
+          "extension_names": [
+            "pg_stat_statements",
+            "pg_trgm",
+            "plpgsql",
+            "uuid-ossp"
+          ],
+          "gin_index_present": true,
+          "function_sha256_not_available_md5": "92054d99389a56f894cc2248ff1f35e8"
+        },
+        "whole_admin_restored_pooler": {
+          "present": true,
+          "security_definer": true,
+          "owner_is_provider": false,
+          "fixture_client_has_schema_usage": false,
+          "fixture_client_can_execute_function": true
+        },
+        "source_pooler": {
+          "present": true,
+          "security_definer": true,
+          "owner_is_provider": true,
+          "fixture_client_has_schema_usage": true,
+          "fixture_client_can_execute_function": false
+        },
+        "kcache_available_in_local_image": false
+      },
+      "container_removed": true,
+      "restore_scope_followup": {
+        "network": "none",
+        "outcomes": {
+          "public_archive_restore_schema_public": {
+            "exit_code": 0,
+            "stderr": "",
+            "state": {
+              "extensions": [
+                "pg_trgm",
+                "plpgsql",
+                "uuid-ossp"
+              ],
+              "function_md5": "92054d99389a56f894cc2248ff1f35e8",
+              "ordered_rows": [
+                {
+                  "id": "00000000-0000-4000-8000-000000000001",
+                  "label": "Alpha"
+                },
+                {
+                  "id": "00000000-0000-4000-8000-000000000002",
+                  "label": "Beta"
+                }
+              ],
+              "gin_index_present": true,
+              "pooler_schema_present": false,
+              "app_rows_equal_source": true,
+              "app_function_equal_source": true
+            }
+          },
+          "whole_archive_restore_schema_public": {
+            "exit_code": 0,
+            "stderr": "",
+            "state": {
+              "extensions": [
+                "pg_trgm",
+                "plpgsql",
+                "uuid-ossp"
+              ],
+              "function_md5": "92054d99389a56f894cc2248ff1f35e8",
+              "ordered_rows": [
+                {
+                  "id": "00000000-0000-4000-8000-000000000001",
+                  "label": "Alpha"
+                },
+                {
+                  "id": "00000000-0000-4000-8000-000000000002",
+                  "label": "Beta"
+                }
+              ],
+              "gin_index_present": true,
+              "pooler_schema_present": false,
+              "app_rows_equal_source": true,
+              "app_function_equal_source": true
+            }
+          },
+          "public_archive_restore_filtered_schema_toc": {
+            "exit_code": 0,
+            "stderr": ""
+          },
+          "outside_application_schema_must_block_public_only_scope": {
+            "outside_public_relations": 2,
+            "outside_public_schema_names": [
+              "additional_app"
+            ]
+          }
+        },
+        "container_removed": true,
+        "no_production_data_or_r2": true
+      }
+    },
+    "production_backup_or_restore_performed": false,
+    "requires_matching_dump_restore_client_and_application_scope_inventory": true
+  },
+  "journal_bootstrap_result": {
+    "source": "operator_stdout_and_read_only_SSH_status",
+    "result": {
+      "schema_version": 1,
+      "status": "ready",
+      "release_id": "backend-f01b49333688-ff33b6fdbbbc",
+      "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+      "tree_sha256": "ff33b6fdbbbc05167745da9c2fde5f3d19355baf51d51214bbc7121cb6ea1e6f",
+      "fresh_preflight_passed": true,
+      "put_requested_this_run": true,
+      "application_started": false,
+      "worker_started": false,
+      "migrations_executed": false,
+      "backup_created": false,
+      "historical_coverage_claimed": false,
+      "release_authorized": false,
+      "adopted_existing": false,
+      "journal": {
+        "coverage_from": "2026-11-12T00:30:06.249Z",
+        "updated_at": "2026-11-12T00:30:06.249Z",
+        "first_sequence": 1,
+        "last_sequence": 0,
+        "entries": 0,
+        "unconfirmed": 0,
+        "coverage_closed_at": null,
+        "backups": 0,
+        "expired_backups": 0
+      }
+    },
+    "temporary_units_loaded": 0,
+    "temporary_unit_files": 0,
+    "api_worker": "disabled_and_inactive",
+    "current_exists": false
+  },
+  "first_sql_attempt": {
+    "source": "operator_failure_and_read_only_SSH_public_status",
+    "python_helper_sha256": "6fd3ba48c49730bf6879ff7cb2ca3bc2c47b3c8c414f25e154de575fe8aa8ebd",
+    "action_sha256": "cb1bfcfbd6895b0c30c406fd33187d526e8c239fecd4f99c36f0d4cd62ee2406",
+    "error_code": "unsafe_probe_unit_cleanup",
+    "failed_status_updated_at_utc": "2026-11-12T00:33:01.039983+00:00",
+    "orphan_unit": "nodia-first-install-754fde749121495eb858f4fb5fc8630e.service",
+    "orphan_file_root_owned_0644_nlink1": true,
+    "observed_active_state": "inactive",
+    "observed_main_pid": 0,
+    "api_worker": "inactive",
+    "sql_outcome": "verified_by_closed_original_result_and_fresh_read_only_reconciliation",
+    "unit_properties_alone_prove_sql_success": false,
+    "root_cause": "Installation unit used a cleanup helper whose namespace accepts only backend-check units; finally masked the action outcome and skipped log adoption.",
+    "automatic_sql_retry_allowed": false,
+    "next_action": "Completed by explicit read-only reconciliation; no SQL retry performed."
+  },
+  "database_reconciliation": {
+    "source": "operator_stdout_and_read_only_SSH_public_status",
+    "python_helper_sha256": "6d0762b999143fb43d00936774de59838ab6ad9037d68f6a0fab16c02d04b26f",
+    "focused_python_tests_passed": 17,
+    "real_pid1_tests_included": 2,
+    "status": {
+      "schema_version": 1,
+      "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+      "release_id": "backend-f01b49333688-ff33b6fdbbbc",
+      "archive_sha256": "b8ac639b2cc032839dd17769b81f1da85cb16263f39594230e06ed2e1f1b7f38",
+      "action_sha256": "cb1bfcfbd6895b0c30c406fd33187d526e8c239fecd4f99c36f0d4cd62ee2406",
+      "stage_helper_sha256": "f3b96b790ac1c98d69614f72e1a839ca791f47e0729e100e5f0ec10dc287b723",
+      "reconcile_only": true,
+      "migrations_requested": false,
+      "original_attempt": {
+        "phase": "failed",
+        "error_code": "unsafe_probe_unit_cleanup",
+        "updated_at_utc": "2026-11-12T00:33:01.039983+00:00"
+      },
+      "original_action_result_adopted": true,
+      "original_action_result": {
+        "schema_version": 1,
+        "status": "verified",
+        "mode": "install",
+        "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+        "release_id": "backend-f01b49333688-ff33b6fdbbbc",
+        "migrations_verified": 45,
+        "entity_tables_verified": 68,
+        "migration_ledger_sha256": "bfcf649647ee1812496a0cf71cf6bafab39412f7802cee789d65e66c66f28818",
+        "users": 1,
+        "core_assignments": 4,
+        "provider_credentials": 0,
+        "migration_names": [
+          "AddDirectSaleCheckout1793420000000",
+          "AddFractionalSaleQuantities1793440000000",
+          "AddIconToModulesAndModuleGroups1789257700000",
+          "AddIsDefaultToAiProviders1790553800000",
+          "AddManualSaleLinePrices1793450000000",
+          "AddModuleSortOrder1793200000000",
+          "AddNodiaAiApiChatRuntime1793310000000",
+          "AddNodiaAiTextSearchIndex1793100000000",
+          "AddNodiaAiWorkflowBindings1792700000000",
+          "AddProductMeasurementUnits1793430000000",
+          "AddProductPosCatalog1793400000000",
+          "AddTokenPlanFlagsToCatalogAndProviders1790553700000",
+          "AuthSessions1789257600000",
+          "CanonicalModuleLinks1793560000000",
+          "CompleteAiProviderCatalog1791640000000",
+          "CreateAiProviderCatalogAndRefactorAiProviders1789257800000",
+          "CreateBusinessSales1793410000000",
+          "CreateInvoiceUploads1791630000000",
+          "CreateNodiaAiAttachments1792800000000",
+          "CreateNodiaAiConfirmationPersistence1792500000000",
+          "CreateNodiaAiContextSnapshots1793000000000",
+          "CreateNodiaAiConversationPersistence1792200000000",
+          "CreateNodiaAiPreferences1792900000000",
+          "CreateNodiaAiProposalPersistence1792400000000",
+          "CreatePersonalFinance1791085000000",
+          "CreateProviderContacts1791220000000",
+          "CreateRentalReservations1791146000000",
+          "CreateTeacherDomain1793570000000",
+          "EnableCodexAgenticCatalog1791450000000",
+          "FreezeNodiaAiFinancialWitness1792600000000",
+          "HardenAiApiKeyEncryption1790553600000",
+          "IndexNodiaAiRunEvents1792300000000",
+          "InitialBusinessAiSchema1789257500000",
+          "InitialCoreSchema1789257400000",
+          "OptionalRentalPropertyTimes1791540000000",
+          "PersistTeacherSetupDraft1793610000000",
+          "PreserveTeacherArchivedPauseState1793590000000",
+          "RegisterNodiaAiNavigation1792100000000",
+          "RemoveProductProfitPercentage1793620000000",
+          "RestoreAiApiCatalog1791320000000",
+          "RetireWebAiModes1793300000000",
+          "SeedSecurityActions1790553500000",
+          "SelectSoleAiApiKey1791330000000",
+          "SharedAiGenerationOwnership1793580000000",
+          "TeacherAgenticTextOwnership1793600000000"
+        ],
+        "journal": {
+          "first_sequence": 1,
+          "last_sequence": 0,
+          "entries": 0,
+          "backups": 0,
+          "open": true
+        },
+        "application_started": false,
+        "worker_started": false,
+        "migrations_requested": true,
+        "postcheck_read_only": true,
+        "client_tls_authorized": true
+      },
+      "phase": "complete",
+      "updated_at_utc": "2026-11-12T00:49:42.103712+00:00",
+      "result": {
+        "schema_version": 1,
+        "status": "verified",
+        "mode": "verify",
+        "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+        "release_id": "backend-f01b49333688-ff33b6fdbbbc",
+        "migrations_verified": 45,
+        "entity_tables_verified": 68,
+        "migration_ledger_sha256": "bfcf649647ee1812496a0cf71cf6bafab39412f7802cee789d65e66c66f28818",
+        "users": 1,
+        "core_assignments": 4,
+        "provider_credentials": 0,
+        "migration_names": [
+          "AddDirectSaleCheckout1793420000000",
+          "AddFractionalSaleQuantities1793440000000",
+          "AddIconToModulesAndModuleGroups1789257700000",
+          "AddIsDefaultToAiProviders1790553800000",
+          "AddManualSaleLinePrices1793450000000",
+          "AddModuleSortOrder1793200000000",
+          "AddNodiaAiApiChatRuntime1793310000000",
+          "AddNodiaAiTextSearchIndex1793100000000",
+          "AddNodiaAiWorkflowBindings1792700000000",
+          "AddProductMeasurementUnits1793430000000",
+          "AddProductPosCatalog1793400000000",
+          "AddTokenPlanFlagsToCatalogAndProviders1790553700000",
+          "AuthSessions1789257600000",
+          "CanonicalModuleLinks1793560000000",
+          "CompleteAiProviderCatalog1791640000000",
+          "CreateAiProviderCatalogAndRefactorAiProviders1789257800000",
+          "CreateBusinessSales1793410000000",
+          "CreateInvoiceUploads1791630000000",
+          "CreateNodiaAiAttachments1792800000000",
+          "CreateNodiaAiConfirmationPersistence1792500000000",
+          "CreateNodiaAiContextSnapshots1793000000000",
+          "CreateNodiaAiConversationPersistence1792200000000",
+          "CreateNodiaAiPreferences1792900000000",
+          "CreateNodiaAiProposalPersistence1792400000000",
+          "CreatePersonalFinance1791085000000",
+          "CreateProviderContacts1791220000000",
+          "CreateRentalReservations1791146000000",
+          "CreateTeacherDomain1793570000000",
+          "EnableCodexAgenticCatalog1791450000000",
+          "FreezeNodiaAiFinancialWitness1792600000000",
+          "HardenAiApiKeyEncryption1790553600000",
+          "IndexNodiaAiRunEvents1792300000000",
+          "InitialBusinessAiSchema1789257500000",
+          "InitialCoreSchema1789257400000",
+          "OptionalRentalPropertyTimes1791540000000",
+          "PersistTeacherSetupDraft1793610000000",
+          "PreserveTeacherArchivedPauseState1793590000000",
+          "RegisterNodiaAiNavigation1792100000000",
+          "RemoveProductProfitPercentage1793620000000",
+          "RestoreAiApiCatalog1791320000000",
+          "RetireWebAiModes1793300000000",
+          "SeedSecurityActions1790553500000",
+          "SelectSoleAiApiKey1791330000000",
+          "SharedAiGenerationOwnership1793580000000",
+          "TeacherAgenticTextOwnership1793600000000"
+        ],
+        "journal": {
+          "first_sequence": 1,
+          "last_sequence": 0,
+          "entries": 0,
+          "backups": 0,
+          "open": true
+        },
+        "application_started": false,
+        "worker_started": false,
+        "migrations_requested": false,
+        "postcheck_read_only": true,
+        "client_tls_authorized": true
+      },
+      "completion_kind": "reconciled_read_only"
+    },
+    "postcheck": {
+      "api_worker": "disabled_and_inactive",
+      "current_exists": false,
+      "temporary_units_loaded": 0,
+      "temporary_unit_files": 0
+    },
+    "backup_acceptance": false
+  },
+  "backup_client_major_compatibility": {
+    "source": "isolated_official_postgres_container_fixture",
+    "receipt_sha256": "95ea53f938cd000eef22d382a4f322204c8f585de855fd8269b98f9f6498497c",
+    "client_version": "18.6",
+    "source_and_restore_server_version": "16.15",
+    "dump_succeeded": true,
+    "restore_succeeded": false,
+    "restore_error": "unrecognized configuration parameter transaction_timeout",
+    "restore_stopped_before_application_ddl": true,
+    "application_rows_indexes_and_scope_not_verified_by_failed_restore": true,
+    "no_production_or_r2_access": true,
+    "resources_removed": {
+      "containers": 3,
+      "networks": 1,
+      "volumes": 1,
+      "errors": []
+    },
+    "decision": "Provision matching major16 dump and restore clients; retain exit-on-error and unmodified archives.",
+    "production_client16_provisioned": false,
+    "primary_source": "https://www.postgresql.org/docs/18/app-pgdump.html#APP-PGDUMP-NOTES"
+  },
+  "backup_configuration_preparation": {
+    "status": "configured_on_vps_and_configuration_custody_verified_offhost",
+    "python_helper_sha256": "ee87cd58428584ab391091257e79862df69b4aabdd3a50e3b6137163fccacf53",
+    "action_sha256": "764e7de11f880b0c14f67e445607ee6b430aedce13fc3ce10622c6f427a1847b",
+    "private_config_and_public_key_owned_by_runtime_uid": 900,
+    "config_mode": "0600",
+    "public_key_mode": "0400",
+    "spool_mode": "0700",
+    "intended_pg_dump_binary": "/usr/lib/postgresql/16/bin/pg_dump",
+    "custody_format": "NODCFG01",
+    "custody_plaintext_files": [
+      "runtime.env",
+      "redis.env",
+      "recovery.json"
+    ],
+    "private_rsa_key_required_on_vps": false,
+    "production_execution_requested": true,
+    "remote_storage_calls_requested": false,
+    "peer_review_compared_to_release_source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+    "focused_tests_passed": 11,
+    "functional_fixture": {
+      "receipt_sha256": "8cf38c1482f3eb6e285d1b93b6e74928f93ebb37def6097f8b8004d128363e4d",
+      "result": {
+        "schema_version": 1,
+        "status": "passed",
+        "session": "49a919eaad0b44369e36ff57499b56b6",
+        "action_sha256": "764e7de11f880b0c14f67e445607ee6b430aedce13fc3ce10622c6f427a1847b",
+        "result": {
+          "status": "passed",
+          "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+          "node_executable_sha256": "904a6d3484241d466989f9df9ba3aab822b1496191bdb28230eb491a55c32a52",
+          "generated_as_uid": 900,
+          "private_stdout_uid": 0,
+          "private_stdout_mode": "0600",
+          "public_key_uid": 900,
+          "public_key_mode": "0400",
+          "config_uid": 900,
+          "config_mode": "0600",
+          "spool_uid": 900,
+          "spool_mode": "0700",
+          "loader_actual_package": true,
+          "normal_credentials_exact": true,
+          "tls_contract": "verify-full",
+          "network": "none",
+          "postgres_binary_metadata_fixture_only": true,
+          "actual_pg_dump_qualified": false,
+          "backup_requested": false,
+          "remote_calls_requested": false
+        },
+        "cleanup": {
+          "containers_removed": 2,
+          "volumes_removed": 6,
+          "errors": []
+        }
+      }
+    },
+    "pid1_fd_environment_fixture": {
+      "receipt_sha256": "5793f4ca3d7c77c084a75ff9ed985320a3042833a066edd1328756f889f9ee44",
+      "result": {
+        "schema_version": 1,
+        "status": "passed",
+        "scope": "isolated_wsl_pid1_fd_and_environment_fixture",
+        "unit": "nodia-backup-fd-fixture-2b0517492d0b45858db1b0d367bb0d1a.service",
+        "result": {
+          "status": "passed",
+          "uid": 1000,
+          "gid": 1000,
+          "stdout_owner": 0,
+          "stdout_mode": "600",
+          "environment_literal_preserved": true,
+          "tls_environment_preserved": true
+        },
+        "node_executable_sha256": "904a6d3484241d466989f9df9ba3aab822b1496191bdb28230eb491a55c32a52",
+        "application_paths_touched": false,
+        "remote_calls_requested": false,
+        "cleanup": {
+          "unit_absent_inactive_pid0": true,
+          "fixture_directory_removed": true
+        }
+      }
+    },
+    "integration_limits": [
+      "The Docker functional fixture used the actual f01 loader and UID900 but a metadata-only pg_dump stand-in; no dump compatibility claim.",
+      "The WSL PID1 fixture used existing UID1000 for FD and EnvironmentFile semantics; UID900 is separately tested in Docker and already exists on the VPS.",
+      "An earlier WSL UID900 attempt failed USER217 because that fixture account was absent; temporary resources were removed and no account was created.",
+      "No remote PostgreSQL/R2, API/worker activation or production configuration writes in these fixtures."
+    ],
+    "remote_helpers_copied_and_syntax_digest_verified": true,
+    "operator_command_prepared": true,
+    "private_authentication_needed": "Linux sudo in operator Warp terminal",
+    "upload_permissions_prepared": {
+      "source": "canonical_path_and_current_owner_validated_before_chmod",
+      "home_directory_mode": "0750",
+      "setup_directory_mode": "0755",
+      "backend_setup_directory_mode": "0755",
+      "public_key_upload_mode": "0644",
+      "change": "Removed group/other write permissions on operator-owned setup directories and public key; no credential contents read."
+    },
+    "original_python_helper_sha256": "fe2af13c0a42e181e18a32a3a82f6cf8b6eb994309b5bf35bc28016179f48fb1",
+    "new_helper_copied_to_vps": true,
+    "first_attempt": {
+      "source": "operator_JSON",
+      "phase": "blocked",
+      "error_code": "file_owner_or_mode_invalid",
+      "automatic_retry_allowed": false,
+      "backup_requested": false,
+      "remote_calls_requested": false,
+      "root_cause_from_code_and_regression": "The generic non-empty configuration validator was also used on the legitimate empty installation.lock; this fails before backup config state creation.",
+      "remote_private_lock_metadata_not_yet_inspected": false,
+      "api_worker_independent_postcheck": "inactive",
+      "actual_lock_confirmed": {
+        "uid": 0,
+        "gid": 0,
+        "mode": "0600",
+        "bytes": 0,
+        "links": 1
+      }
+    },
+    "correction": {
+      "validate_open_lock_fd_regular_root_root_0600_nlink1": true,
+      "empty_lock_accepted": true,
+      "unsafe_mode_rejected_by_test": true,
+      "python_unit_tests_passed": 5,
+      "full_orchestration_test_pending": false
+    },
+    "corrected_full_wrapper_fixture": {
+      "receipt_sha256": "5b186375d5d04d7b3515543fda3dd5e0cc8dbeb6f9218473a0462d6168434582",
+      "result": {
+        "schema_version": 1,
+        "status": "passed",
+        "image": "sha256:34ecc35a411eeab6f8d86582edcafcd890ff8b74a76fa59902490f617513c275",
+        "package_sha256": "b8ac639b2cc032839dd17769b81f1da85cb16263f39594230e06ed2e1f1b7f38",
+        "result": {
+          "status": "passed",
+          "launcher_sha256": "ee87cd58428584ab391091257e79862df69b4aabdd3a50e3b6137163fccacf53",
+          "action_sha256": "764e7de11f880b0c14f67e445607ee6b430aedce13fc3ce10622c6f427a1847b",
+          "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+          "node_sha256": "904a6d3484241d466989f9df9ba3aab822b1496191bdb28230eb491a55c32a52",
+          "zero_byte_lock_accepted_and_preserved": true,
+          "full_real_manifest_inventory_validated": true,
+          "actual_main_executed": true,
+          "actual_uid900_action_and_package_loader": true,
+          "root_fd_private_json_to_nodia_config": true,
+          "cipher_export_admin600": true,
+          "repeat_refused_without_overwrite": true,
+          "raw_secret_not_in_public_stdout": true,
+          "original_configuration_bytes_unchanged": true,
+          "no_api_worker_or_timer_action_requested": true,
+          "custody": {
+            "custody_roundtrip_exact": true,
+            "files": [
+              "runtime.env",
+              "redis.env",
+              "recovery.json"
+            ],
+            "cipher_digest_pinned": true,
+            "private_key_synthetic": true
+          },
+          "systemd_control_mocked": true,
+          "pid1_qualified_by_this_fixture": false,
+          "postgres_clients_metadata_fixture_only": true,
+          "network": "none",
+          "remote_calls_requested": false,
+          "units_cleaned": true
+        },
+        "cleanup": {
+          "container_removed": true
+        }
+      }
+    },
+    "private_configuration_before_retry": {
+      "backup_json_exists": false,
+      "backup_public_exists": false,
+      "cipher_exists": false,
+      "backup_preparation_status_exists": false,
+      "normal_runtime_and_recovery_files_unchanged_metadata": true
+    },
+    "result": {
+      "schema_version": 1,
+      "phase": "complete",
+      "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+      "tree_sha256": "ff33b6fdbbbc05167745da9c2fde5f3d19355baf51d51214bbc7121cb6ea1e6f",
+      "release_id": "backend-f01b49333688-ff33b6fdbbbc",
+      "key_id": "f7af9aea7868daa71a9500f9bbd91f35a3fe6fea396f82d5f5a9c78ab8510bbd",
+      "helper_sha256": "ee87cd58428584ab391091257e79862df69b4aabdd3a50e3b6137163fccacf53",
+      "action_sha256": "764e7de11f880b0c14f67e445607ee6b430aedce13fc3ce10622c6f427a1847b",
+      "application_started": false,
+      "worker_started": false,
+      "backup_requested": false,
+      "remote_calls_requested": false,
+      "restore_verified": false,
+      "configured": true,
+      "public_key_owner": 900,
+      "public_key_mode": "0400",
+      "configuration_owner": 900,
+      "configuration_mode": "0600",
+      "postgres_client_major": 16,
+      "max_dump_bytes": 268435456,
+      "timeout_seconds": 300,
+      "custody": {
+        "format": "NODCFG01",
+        "purpose": "nodia_configuration_custody",
+        "cipher_bytes": 3852,
+        "cipher_sha256": "4283b1c2c301c6ef4334a0382711a3ba2a05d272ee024745a9bedf7cc8711004",
+        "key_id": "f7af9aea7868daa71a9500f9bbd91f35a3fe6fea396f82d5f5a9c78ab8510bbd",
+        "files": [
+          "runtime.env",
+          "redis.env",
+          "recovery.json"
+        ],
+        "export_file": "/home/nodia-admin/nodia-setup/backend/recovery-config-custody.enc",
+        "plaintext_exported": false,
+        "postgres_dump": false,
+        "offline_decryption_verified": false
+      }
+    },
+    "configuration_custody_download": {
+      "local_directory": "UserProfile/.nodia/production-recovery",
+      "file": "recovery-config-custody.enc",
+      "cipher_sha256": "4283b1c2c301c6ef4334a0382711a3ba2a05d272ee024745a9bedf7cc8711004",
+      "bytes": 3852,
+      "digest_matches_root_receipt": true,
+      "offline_decryption_verified": true,
+      "embedded_file_digests_verified": true,
+      "files": [
+        "runtime.env",
+        "redis.env",
+        "recovery.json"
+      ],
+      "plaintext_written_to_disk": false,
+      "private_rsa_exported": false,
+      "database_dump": false,
+      "additional_offline_device_copy_confirmed": false
+    }
+  },
+  "postgres_client16_preparation": {
+    "status": "installed_and_independently_verified",
+    "script_sha256": "dcfbb2465cec7bb46e4a47ce3dd480f318a803cfd8a1a6b1e2d206cc5249bde9",
+    "client_package": "postgresql-client-16",
+    "reviewed_version": "16.15-1.pgdg26.04+2",
+    "remote_script": "/home/nodia-admin/nodia-setup/backend/prepare-postgres-client.sh",
+    "remote_syntax_and_digest_verified": true,
+    "policy_tests_passed": 5,
+    "signed_repository_audit": {
+      "schema_version": 1,
+      "status": "signed_repository_and_package_verified_no_installation",
+      "client_date": "2026-11-11",
+      "observed_at_utc": "2026-11-12T01:01:18.415941+00:00",
+      "suite": "resolute-pgdg",
+      "architecture": "amd64",
+      "repository_key_fingerprint": "B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8",
+      "InRelease_signature_verified": true,
+      "compressed_and_uncompressed_Packages_hashes_verified": true,
+      "package": {
+        "Package": "postgresql-client-16",
+        "Version": "16.15-1.pgdg26.04+2",
+        "Architecture": "amd64",
+        "Depends": "libpq5 (>= 16.15), postgresql-client-common (>= 182~), sensible-utils, libc6 (>= 2.38), liblz4-1 (>= 0.0~r127), libreadline8t64 (>= 6.0), libssl3t64 (>= 3.0.0), libzstd1 (>= 1.5.5), zlib1g (>= 1:1.1.4)",
+        "Filename": "pool/main/p/postgresql-16/postgresql-client-16_16.15-1.pgdg26.04+2_amd64.deb",
+        "Size": "1951732",
+        "SHA256": "52fd38615ce65bd9b0442a21e611986e0cc7b87e1143e2464668be17fcb77314"
+      },
+      "package_file_downloaded_and_hash_verified": true,
+      "installed_host_dependencies_read_only": {
+        "libc6": "2.43-2ubuntu2.4",
+        "libpq5": "18.6-0ubuntu0.26.04.1",
+        "postgresql-client-common": "290ubuntu1",
+        "sensible-utils": "0.0.26build1",
+        "liblz4-1": "1.10.0-8",
+        "libreadline8t64": "8.3-4",
+        "libssl3t64": "3.5.5-1ubuntu3.7",
+        "libzstd1": "1.5.7+dfsg-3",
+        "zlib1g": "1:1.3.dfsg+really1.3.1-1ubuntu3.2"
+      },
+      "APT_simulation_executed_on_VPS": false,
+      "installation_executed": false,
+      "primary_sources": [
+        "https://www.postgresql.org/download/linux/ubuntu/",
+        "https://apt.postgresql.org/pub/repos/apt/dists/resolute-pgdg/InRelease",
+        "https://apt.postgresql.org/pub/repos/apt/dists/resolute-pgdg/main/binary-amd64/Packages.gz"
+      ]
+    },
+    "installation_performed": true,
+    "database_operation_requested": false,
+    "original_script_sha256": "af381e021a200c6d93208110687a242f028046792fc93cba701ba737a27f6e92",
+    "first_attempt": {
+      "operator_last_output": "Reading package lists... Done",
+      "operator_exit_code_reported": null,
+      "read_only_postcheck_client16_installed": false,
+      "setup_process_still_running": false,
+      "client18_and_libpq_preserved": true,
+      "candidate_pipeline_SIGPIPE_reproduced_exit_code": 141,
+      "root_cause": "awk exited at first Candidate line, apt-cache received SIGPIPE and pipefail aborted before simulation/install.",
+      "database_or_application_mutation_observed": false
+    },
+    "correction": {
+      "parser_consumes_full_policy_output": true,
+      "candidate_remote_read_only_pipeline_exit": 0,
+      "remote_simulation_exit": 0,
+      "remote_simulation_changes": [
+        "postgresql-client-16"
+      ],
+      "remote_simulation_removals": 0,
+      "remote_simulation_upgrades": 0,
+      "large_producer_regression_test_passed": true,
+      "remote_syntax_and_digest_verified": true,
+      "installation_performed": false
+    },
+    "result": {
+      "source": "operator_stdout_and_read_only_SSH_package_binary_postcheck",
+      "package": "postgresql-client-16",
+      "version": "16.15-1.pgdg26.04+2",
+      "binaries": {
+        "pg_dump": "16.15",
+        "pg_restore": "16.15",
+        "psql": "16.15"
+      },
+      "binary_directory": "/usr/lib/postgresql/16/bin",
+      "binary_owner": "root:root",
+      "binary_mode": "0755",
+      "client18_preserved": "18.6-0ubuntu0.26.04.1",
+      "libpq5_preserved": "18.6-0ubuntu0.26.04.1",
+      "api_worker": "inactive",
+      "current_exists": false,
+      "server_installation_requested": false,
+      "database_operation_requested": false,
+      "backup_requested": false
+    }
+  },
+  "autonomous_administration_preparation": {
+    "user_requested": true,
+    "status": "same_tmux_pty_sudo_verified",
+    "method": "Reuse the same nodia-admin tmux PTY authenticated with sudo-v; send sudo-n jobs through SSH/tmux.",
+    "tmux_version": "3.6",
+    "sudo_implementation": "sudo-rs0.2.13-0ubuntu1.2",
+    "sudo_realpath": "/usr/lib/cargo/bin/sudo",
+    "sudoers_changed": false,
+    "NOPASSWD_requested": false,
+    "root_SSH_requested": false,
+    "password_in_chat_requested": false,
+    "proposed_global_cache_abandoned_without_deployment": true,
+    "normal_timestamp_default_minutes": 15,
+    "session_socket": "nodia-deploy",
+    "session_name": "setup",
+    "ready_marker": "@nodia-ready=yes only after successful sudo-v",
+    "session_created": true,
+    "authentication_completed": true,
+    "will_invalidate_timestamp_and_close_session_on_completion": true,
+    "official_sudo_rs_source": "https://raw.githubusercontent.com/trifectatechfoundation/sudo-rs/v0.2.13/docs/man/sudoers.5.md",
+    "same_pty_sudo_noninteractive_verified": true,
+    "pane_id": "%0",
+    "pane_pid": 217363,
+    "pane_tty": "/dev/pts/7",
+    "socket_owner_uid": 1000,
+    "socket_parent_mode": "0700"
+  },
+  "first_start_preflight": {
+    "source": "real_PID1_UID900_VPS_read_only_probe",
+    "script_sha256": "ab7c2825b227682d47056dcaa86cfb277fed52fa4d0e416fd7579a3415596096",
+    "result": {
+      "schema_version": 1,
+      "status": "ready_to_start_empty",
+      "postgres": {
+        "database_matched": true,
+        "server_version_num": 160014,
+        "transaction_read_only": true,
+        "isolation_level": "repeatable read",
+        "client_tls_authorized": true,
+        "client_tls_protocol": "TLSv1.3"
+      },
+      "scope": {
+        "provider_schema_count": 1,
+        "nonpublic_relations": 0,
+        "nonpublic_types": 0,
+        "large_objects": 0
+      },
+      "migrations": {
+        "expected": 45,
+        "observed": 45,
+        "ledger_sha256": "bfcf649647ee1812496a0cf71cf6bafab39412f7802cee789d65e66c66f28818"
+      },
+      "entity_tables_expected": 68,
+      "counters": {
+        "nodia_ai_conversations_total": 0,
+        "nodia_ai_jobs_total": 0,
+        "nodia_ai_job_attempts_total": 0,
+        "nodia_ai_runs_total": 0,
+        "nodia_ai_executions_total": 0,
+        "nodia_ai_execution_steps_total": 0,
+        "nodia_ai_runtime_slots_total": 0,
+        "nodia_ai_attachments_total": 0,
+        "nodia_ai_preferences_total": 0,
+        "nodia_ai_confirmation_challenges_total": 0,
+        "nodia_ai_proposals_total": 0,
+        "nodia_ai_proposal_revisions_total": 0,
+        "nodia_ai_proposal_steps_total": 0,
+        "nodia_ai_drafts_total": 0,
+        "teacher_sessions_total": 0,
+        "teacher_generation_jobs_total": 0,
+        "teacher_generation_attempts_total": 0,
+        "teacher_attempts_total": 0,
+        "ai_generation_operations_total": 0,
+        "nodia_ai_api_dispatches_total": 0,
+        "invoice_uploads_total": 0,
+        "product_images_total": 0,
+        "ai_providers_total": 0,
+        "ai_api_keys_total": 0,
+        "jobs_ready": 0,
+        "jobs_leased": 0,
+        "jobs_waiting": 0,
+        "jobs_unknown": 0,
+        "runs_queued": 0,
+        "runs_running": 0,
+        "runs_cancel_requested": 0,
+        "runs_unknown": 0,
+        "executions_queued": 0,
+        "executions_running": 0,
+        "executions_waiting_for_user": 0,
+        "executions_unknown": 0,
+        "generation_operations_unclosed": 0,
+        "teacher_jobs_queued": 0,
+        "teacher_jobs_running": 0,
+        "teacher_jobs_paused": 0,
+        "teacher_jobs_unknown": 0,
+        "teacher_attempts_in_progress": 0,
+        "invoice_uploads_due": 0,
+        "product_image_cleanup_due": 0
+      },
+      "gates": {
+        "provider_scope_matches": true,
+        "no_large_objects": true,
+        "public_entity_schema_matches": true,
+        "exact_migration_ledger": true,
+        "persisted_runtime_empty": true
+      },
+      "application_started": false,
+      "worker_started": false,
+      "mutations_requested": false,
+      "provider_inference_requested": false,
+      "boot_performs_no_writes_claimed": false,
+      "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+      "release_id": "backend-f01b49333688-ff33b6fdbbbc"
+    }
+  },
+  "release_adoption": {
+    "schema_version": 1,
+    "phase": "complete",
+    "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+    "package_tree_sha256": "ff33b6fdbbbc05167745da9c2fde5f3d19355baf51d51214bbc7121cb6ea1e6f",
+    "release_id": "backend-f01b49333688-ff33b6fdbbbc",
+    "candidate_path": "/opt/nodia/candidates/backend-f01b49333688-ff33b6fdbbbc",
+    "release_path": "/opt/nodia/releases/backend-f01b49333688-ff33b6fdbbbc",
+    "current_path": "/opt/nodia/current",
+    "archive_sha256": "b8ac639b2cc032839dd17769b81f1da85cb16263f39594230e06ed2e1f1b7f38",
+    "helper_sha256": "ca0b260e9fca877f1c46cdea57cd667a246814321c72caf05b09fc0d9bb85e26",
+    "guard_sha256": "dd3a1e39cb13daaa6b7607a6685ef8a2f59d953ddc712c3fa27d225a69ee6ac9",
+    "stage_sha256": "f3b96b790ac1c98d69614f72e1a839ca791f47e0729e100e5f0ec10dc287b723",
+    "application_started": false,
+    "worker_started": false,
+    "services_enabled": false,
+    "migrations_requested": false,
+    "remote_calls_requested": false,
+    "automatic_retry_allowed": false,
+    "current_created_this_run": true,
+    "updated_at_utc": "2026-11-12T02:10:55.603545+00:00",
+    "files_verified": 24491,
+    "candidate_preserved": true,
+    "current_target_verified": true
+  },
+  "backup_units": {
+    "bootstrap_sha256": "5b29ca43d701f9c4dac604adc6efd5db9eb2e7e2a885a158fc2dc987b557f528",
+    "installed_and_verified": true,
+    "timers_enabled": false,
+    "timers_active": false,
+    "backup_requires_successful_journal_reconcile": true,
+    "rotate_wants_journal_reconcile_without_hiding_failure": true,
+    "uid": 900,
+    "spool": "/var/lib/nodia/backups/spool",
+    "cwd": "/opt/nodia/current"
+  },
+  "local_application_start": {
+    "source": "real_start_loopback_CORS_and_redacted_journal_observation",
+    "api_active": true,
+    "worker_active": true,
+    "api_pid": 223080,
+    "worker_pid": 223554,
+    "systemd_services_enabled": false,
+    "loopback_get_api_v1_http": 200,
+    "expected_body_matches": true,
+    "cors_origin_matches_frontend": true,
+    "cors_credentials": true,
+    "worker_database_observed": true,
+    "worker_operations_snapshots_seen": 1,
+    "claim_unavailable_events": 0,
+    "maintenance_unavailable_events": 0,
+    "observation_unavailable_events": 0,
+    "restart_count_both": 0,
+    "nginx_api_proxy_published": false,
+    "ufw_ports": [
+      22,
+      80,
+      443
+    ],
+    "backend_public_port_opened": false,
+    "provider_inference_requested": false,
+    "backup_acceptance": false
+  },
+  "backup_canonical_paths_correction": {
+    "source": "real_systemd_success_without_ready_receipt_followed_by_fresh_external_status_and_isolated_reproduction",
+    "first_unit_status": "success_exit0_no_backup",
+    "external_backups_before_retry": 0,
+    "external_journal_updated_at_unchanged": true,
+    "source_script_unchanged": true,
+    "pin_helper_sha256": "5a50dc35734007e6b4e6b870e11ed5fa28fec96ce791cc91c16604a3ffca3e72",
+    "before_environment_sha256": "b9f427f2f81afa484b6a647bd2a792fabdade0782166730eb06a7b41d8543111",
+    "after_environment_sha256": "e147e622d3f0da993c3756f1ea1e747d0cf89429b33589b3a842c33b6a8bc2bf",
+    "canonical_scripts_pinned_to_adopted_release": true,
+    "root_original_preserved": true,
+    "timers_enabled": false
+  },
+  "source_data_fingerprint_before_backup": {
+    "tables": 94,
+    "total_rows": 122,
+    "aggregate_sha256": "44e5f0240b6ba99f36467c4205af12bd33ec3f8eb02b11d2914389c4ced45e03",
+    "file_sha256": "fc0cdb10f06e9f59df2f5771b7bb4dc17ab8015b94f59eb4586aa58c8178288d",
+    "postgres_read_only": true,
+    "client_tls_authorized": true,
+    "rows_exposed": false,
+    "DDL_and_sequences_attested_by_fingerprint": false
+  },
+  "last_update_client_date": "2026-11-12",
+  "live_deployment_evidence": "production-backend-live-20261112-r01.json",
+  "latest_continuation": {
+    "requested_by_user": "Verify application works now; CI/CD, logs, monitoring, error inspection and further security later.",
+    "next": "Real Google login and functional checks from public frontend."
+  }
+}

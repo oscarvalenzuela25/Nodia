@@ -1,0 +1,1265 @@
+{
+  "schema_version": 1,
+  "report_id": "teacher-upgrade-ui-qa-20261111-r02",
+  "recorded_at": "2026-11-11T20:56:45.794Z",
+  "scope": "Client Teacher integrated UI, recovery, accessibility and matched laboratory performance; not an independent acceptance of all 55 criteria",
+  "environment": {
+    "os": "Windows",
+    "browser": "157.0.8103.39",
+    "route": "/nodia-teacher/:sessionId",
+    "surface": "Actual Teacher page inside ignored QA entry, MUIProvider, TanStack Query, MemoryRouter, actual Axios HTTP client",
+    "http": "Real Nest original Teacher/Learning/Enrichment controllers, DTO validation and use cases, isolated PostgreSQL container",
+    "authentication": "Real signed expiring fixture JWT, fresh random key in memory; no production auth bypass or operational credentials",
+    "generation": "Explicit synthetic generation port and delayed synthetic helper publisher; no transport mock; zero remote inference POSTs",
+    "fixture": "All titles, source text, questions and actors synthetic, private disposable lab",
+    "maintained_server": "nodia-server/test/helpers/teacher-upgrade-browser-lab.mjs",
+    "server_command": "node test/helpers/teacher-upgrade-browser-lab.mjs --serve-isolated-browser-qa",
+    "binding": "127.0.0.1, ephemeral port, CORS local QA origins only, opt-in guard; SIGINT/SIGTERM cleanup",
+    "secrets": "JWT only ignored .tmp fixture file; never recorded in this evidence"
+  },
+  "fixes": [
+    "Historical unsupported activity/visual projections remain readable, no controls or unsafe payload interpretation; supported malformed payloads still reject.",
+    "Panel intention race discards stale imports; retained editor draft, caret and trigger focus survive hide/reopen and query revalidation. Delayed disabled→enabled restoration does not steal newer focus.",
+    "Read-only controls stay available when paused/archived; mutation forms stay disabled and server authority still applies.",
+    "Review dates use stored IANA zone rather than browser zone; unknown scheduling policy stays readable with ratings disabled.",
+    "Focal concept inspection exposes distinct observed/unknown learning states, original response, proposed conjunction relations, exact source quote/hash/page, and equivalence history.",
+    "Material now supplies bounded current-version lesson interactions in one query; BlockLearningTools avoids GET learning waterfall and first-load per-block skeleton shifts. Legacy absent field is explicitly unknown.",
+    "Block drafts scoped by session/content version/block; returning restores matching draft, stale editor import cannot attach to changed context.",
+    "Semantic headings h1/h2/h3/h4; absent concept observations translated as no recorded evidence rather than independence status."
+  ],
+  "scenarios": [
+    {
+      "id": "E0-03-two-tabs-public-option-order",
+      "status": "passed_in_isolated_browser_http_sql_lab",
+      "evidence": [
+        "Same attempt in two tabs exposed identical id+label order: partial/all/dont_know. IDs and order unchanged after reload; submitted all frozen with 2 points.",
+        "No test relied on array position as answer identity."
+      ]
+    },
+    {
+      "id": "E3-08-delayed-autosave-CAS",
+      "status": "passed_in_isolated_browser_http_sql_lab",
+      "evidence": [
+        "Tab A PATCH delayed 7000ms before server admission; tab B opened old revision. A committed, B save returned 409.",
+        "B retained local all selection and exposed remote partial conflict. Explicit save reconciled revision; no silent overwrite or duplicate submission."
+      ]
+    },
+    {
+      "id": "E3-05-unanswered-navigation",
+      "status": "passed_in_isolated_browser_http_sql_lab",
+      "evidence": [
+        "Navigated to question2 without answering; paused and archived.",
+        "Actual attempt GET: q2 answer_status empty, response_revision1; attempt result/earned_points/percentage null, denominator4. No zero assigned to omission."
+      ]
+    },
+    {
+      "id": "E3-reflection-confidence-zero",
+      "status": "passed_in_isolated_browser_http_sql_lab",
+      "evidence": [
+        "Saved answer all, incoherent declared reasoning and confidence0; submit blocked until reflection save.",
+        "Actual learning GET: earned2/max2, confidence0, self_explanation exact, assistedfalse/independenttrue; grade not derived from declaration. Frozen fields after grade."
+      ]
+    },
+    {
+      "id": "HTTP-uncertain-command-recovery",
+      "status": "passed_in_isolated_browser_http_sql_lab",
+      "evidence": [
+        "Source POST actually committed200 then browser route aborted response. UI retained fields and uncertain intent notice; commands locked.",
+        "Consult saved status used receipt GET. Lab metrics: one source command POST, one resulting source, zero remote posts; no replay."
+      ]
+    },
+    {
+      "id": "E4-block-prediction",
+      "status": "passed_in_isolated_browser_http_sql_lab",
+      "evidence": [
+        "Typed prediction, saved through actual HTTP, reload displayed exact saved text for exact current content/block.",
+        "Inline history cannot mix other content versions; unit regression preserves separate drafts."
+      ]
+    },
+    {
+      "id": "panel-retention-focus",
+      "status": "passed_in_isolated_browser_http_sql_lab",
+      "evidence": [
+        "Source title/body retained hide/reopen. Hide returned trigger focus; reopening after refetch restored textarea focus and selection4..12 with exact text.",
+        "Initial defect reproduced in browser (disabled during refetch prevented focus); MutationObserver fix and regression passed."
+      ]
+    },
+    {
+      "id": "E6-E7-paused-archived-historical-read",
+      "status": "passed_in_isolated_browser_http_sql_lab",
+      "evidence": [
+        "Paused source title enabled, exact page text read; creation controls disabled. Archived source and thread selectors enabled, thread textbox/send disabled.",
+        "Valid thread_message POST with Idempotency-Key while archived returned409 with explicit archived message. Anonymous401, signed other-owner404, no-module403 verified separately.",
+        "Nonempty helper transcript remained visible with input disabled after Pause and save. Archived thread selector and disabled form were observed separately before helper publication; no claim that a full nonempty archived-thread reload was exercised."
+      ]
+    },
+    {
+      "id": "E7-helper-late-panel-change",
+      "status": "passed_in_isolated_browser_http_sql_lab",
+      "evidence": [
+        "Sent synthetic helper question on exact content/block selection, switched to sources before delayed publication.",
+        "Reopened same thread: exactly user question+assistant synthetic reply, original selection preserved. No reopening obsolete panel or attaching to unrelated anchor. Read helper is no comprehension credit."
+      ]
+    },
+    {
+      "id": "E5-review-zone-and-self-rating",
+      "status": "passed_in_isolated_browser_http_sql_lab",
+      "evidence": [
+        "Review showed New and date in America/Santiago; reveal displayed answer, then Forgot saved.",
+        "Actual GET: learning, reviews1, interval_days0, due_at2026-11-11T21:04:41.683Z, stored timezone America/Santiago. No final verification asserted."
+      ]
+    },
+    {
+      "id": "E8-focused-concept-inspection",
+      "status": "passed_in_isolated_browser_http_sql_lab",
+      "evidence": [
+        "Objective-bound Atomicidad showed visited/check/independent observed and 2/2 evidence; retention/final without evidence.",
+        "Created Consistencia QA by actual HTTP with proposed support relation to Atomicidad and exact owner source/hash/page quote. UI rendered conjunctive proposed/user authored semantics, conditions and quote; Inspect source and pages fetched original page in EN/light."
+      ]
+    },
+    {
+      "id": "Q0-Q10-responsive-accessible-controls",
+      "status": "passed_in_isolated_browser_http_sql_lab",
+      "evidence": [
+        "320x850 ES/dark and1280x900 EN/light; document widths310/1280, no horizontal document overflow.",
+        "Actual browser accessibility snapshots: h1 title,h2 workspace/practice,h3 concept/form,h4 reflection; question radiogroup named; completion textbox named; ordering buttons Subir/Bajar + item named; classification COMMIT/ROLLBACK triggers named; error line selector named.",
+        "Keyboard: completion typing then Tab to Submit; ordering focus+Enter moved Iniciar below Escribir; classification Enter opened selector, Tab into option then Enter selected Confirmar; error-location Enter/Tab/ArrowDown/Enter selected line2.",
+        "Bar chart and timeline exposed figure names and list values including real0. Unknown activity prompt and visual title plus safe notices remained readable without grading/executable content."
+      ]
+    }
+  ],
+  "verification": {
+    "focal_latest": {
+      "command": "npx vitest run src/test/modules/teacher/components/AdaptiveWorkspace/UnavailableRecords.test.tsx src/test/modules/teacher/components/AdaptiveWorkspace/useRetainedPanelFocus.test.tsx src/test/modules/teacher/components/AdaptiveWorkspace/useEnrichment.test.ts src/test/modules/teacher/components/AdaptiveWorkspace/BlockLearningTools.test.tsx src/test/modules/teacher/infrastructure/reviewPresentation.test.ts",
+      "files": 5,
+      "tests": 12,
+      "status": "passed"
+    },
+    "eslint": "Scoped production Teacher components/infrastructure passed after final unknown-state translation fix",
+    "typecheck": "Passed before final translation/heading-only edits; root runs final shared typecheck/build/suite",
+    "earlier_teacher_suite": {
+      "files": 33,
+      "tests": 183,
+      "status": "passed_before_last_three_regressions_added",
+      "not_final_count": true
+    },
+    "builds": "Isolated baseline and candidate whole-app builds plus matched reader builds passed; root final workspace build authoritative"
+  },
+  "performance": {
+    "baseline_commit": "ba8ebfa00b55f103465d0ab533a802152944d224",
+    "comparison": "Matched production reader harness actual HTTP/SQL, isolated git archive baseline + unchanged dependency junction; active checkout untouched",
+    "method": "3 alternating cold-cache rounds per variant/profile; fresh browser, CPU+network CDP throttles, same fixture/schema/env/lockfile; exact ready text then networkidle, force GC before heap measurement",
+    "profiles": {
+      "mobile320": {
+        "cpu": 4,
+        "latency": 150,
+        "downloadBytesPerSec": 200000
+      },
+      "desktop1280": {
+        "cpu": 1,
+        "latency": 20,
+        "downloadBytesPerSec": 1250000
+      }
+    },
+    "medians": {
+      "mobile320": {
+        "baseline": {
+          "ready_ms": 4187.19999999553,
+          "lcp_ms": 4196,
+          "fcp_ms": 3560,
+          "cls": 0.01845842776816609,
+          "long_task_excess_ms": 408,
+          "heap_used_bytes": 10840984,
+          "api_requests": 7,
+          "encoded_asset_bytes": 511384
+        },
+        "current": {
+          "ready_ms": 4250,
+          "lcp_ms": 4236,
+          "fcp_ms": 3568,
+          "cls": 0.013147058823529413,
+          "long_task_excess_ms": 362,
+          "heap_used_bytes": 11702028,
+          "api_requests": 6,
+          "encoded_asset_bytes": 528837
+        }
+      },
+      "desktop1280": {
+        "baseline": {
+          "ready_ms": 801,
+          "lcp_ms": 812,
+          "fcp_ms": 660,
+          "cls": 0.008846146392822265,
+          "long_task_excess_ms": 9,
+          "heap_used_bytes": 10896328,
+          "api_requests": 8,
+          "encoded_asset_bytes": 511384
+        },
+        "current": {
+          "ready_ms": 835.5,
+          "lcp_ms": 840,
+          "fcp_ms": 672,
+          "cls": 0.005813389756944445,
+          "long_task_excess_ms": 0,
+          "heap_used_bytes": 12012008,
+          "api_requests": 8,
+          "encoded_asset_bytes": 528837
+        }
+      }
+    },
+    "runs": [
+      {
+        "variant": "baseline",
+        "profile": "mobile320",
+        "round": 1,
+        "ready_ms": 3912.0999999940395,
+        "heap_used_bytes": 10940784,
+        "api_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          }
+        ],
+        "lcp": 3880,
+        "cls": 0.015519673442906574,
+        "longTasks": 65,
+        "fcp": 3296,
+        "document_width": 320,
+        "viewport": 320,
+        "resources": [
+          {
+            "name": "/assets/index-CSni7Ry1.js",
+            "encoded": 511384,
+            "decoded": 1674119,
+            "transfer": 511684
+          }
+        ]
+      },
+      {
+        "variant": "current",
+        "profile": "mobile320",
+        "round": 1,
+        "ready_ms": 4264.89999999851,
+        "heap_used_bytes": 11931320,
+        "api_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          }
+        ],
+        "lcp": 4260,
+        "cls": 0.013147058823529413,
+        "longTasks": 366,
+        "fcp": 3576,
+        "document_width": 320,
+        "viewport": 320,
+        "resources": [
+          {
+            "name": "/assets/index-DyA_v1tC.js",
+            "encoded": 134607,
+            "decoded": 430416,
+            "transfer": 134907
+          },
+          {
+            "name": "/assets/TeacherLoading-BXuFavdS.js",
+            "encoded": 316317,
+            "decoded": 1040257,
+            "transfer": 316617
+          },
+          {
+            "name": "/assets/Checkbox-J47Alj2Y.js",
+            "encoded": 2095,
+            "decoded": 5086,
+            "transfer": 2395
+          },
+          {
+            "name": "/assets/FormControlLabel-DGiyX_Q0.js",
+            "encoded": 1196,
+            "decoded": 2568,
+            "transfer": 1496
+          },
+          {
+            "name": "/assets/SelectSingleInput-Bw101X2b.js",
+            "encoded": 5250,
+            "decoded": 14734,
+            "transfer": 5550
+          },
+          {
+            "name": "/assets/LessonMarkdown-BcnlGiAP.js",
+            "encoded": 47742,
+            "decoded": 152749,
+            "transfer": 48042
+          },
+          {
+            "name": "/assets/Chip-DDjSkmVq.js",
+            "encoded": 2643,
+            "decoded": 8002,
+            "transfer": 2943
+          },
+          {
+            "name": "/assets/JobPanel-N06Mpr-D.js",
+            "encoded": 2781,
+            "decoded": 8041,
+            "transfer": 3081
+          },
+          {
+            "name": "/assets/SelectMultipleInput-DbmmzZ28.js",
+            "encoded": 3679,
+            "decoded": 11112,
+            "transfer": 3979
+          },
+          {
+            "name": "/assets/zod-DLMFJ8aW.js",
+            "encoded": 12527,
+            "decoded": 35871,
+            "transfer": 12827
+          }
+        ]
+      },
+      {
+        "variant": "baseline",
+        "profile": "mobile320",
+        "round": 2,
+        "ready_ms": 4187.19999999553,
+        "heap_used_bytes": 10840984,
+        "api_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          }
+        ],
+        "lcp": 4196,
+        "cls": 0.01845842776816609,
+        "longTasks": 412,
+        "fcp": 3560,
+        "document_width": 320,
+        "viewport": 320,
+        "resources": [
+          {
+            "name": "/assets/index-CSni7Ry1.js",
+            "encoded": 511384,
+            "decoded": 1674119,
+            "transfer": 511684
+          }
+        ]
+      },
+      {
+        "variant": "current",
+        "profile": "mobile320",
+        "round": 2,
+        "ready_ms": 4206.20000000298,
+        "heap_used_bytes": 11662600,
+        "api_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          }
+        ],
+        "lcp": 4200,
+        "cls": 0.021911764705882353,
+        "longTasks": 362,
+        "fcp": 3552,
+        "document_width": 320,
+        "viewport": 320,
+        "resources": [
+          {
+            "name": "/assets/index-DyA_v1tC.js",
+            "encoded": 134607,
+            "decoded": 430416,
+            "transfer": 134907
+          },
+          {
+            "name": "/assets/Checkbox-J47Alj2Y.js",
+            "encoded": 2095,
+            "decoded": 5086,
+            "transfer": 2395
+          },
+          {
+            "name": "/assets/TeacherLoading-BXuFavdS.js",
+            "encoded": 316317,
+            "decoded": 1040257,
+            "transfer": 316617
+          },
+          {
+            "name": "/assets/FormControlLabel-DGiyX_Q0.js",
+            "encoded": 1196,
+            "decoded": 2568,
+            "transfer": 1496
+          },
+          {
+            "name": "/assets/SelectSingleInput-Bw101X2b.js",
+            "encoded": 5250,
+            "decoded": 14734,
+            "transfer": 5550
+          },
+          {
+            "name": "/assets/LessonMarkdown-BcnlGiAP.js",
+            "encoded": 47742,
+            "decoded": 152749,
+            "transfer": 48042
+          },
+          {
+            "name": "/assets/Chip-DDjSkmVq.js",
+            "encoded": 2643,
+            "decoded": 8002,
+            "transfer": 2943
+          },
+          {
+            "name": "/assets/JobPanel-N06Mpr-D.js",
+            "encoded": 2781,
+            "decoded": 8041,
+            "transfer": 3081
+          },
+          {
+            "name": "/assets/SelectMultipleInput-DbmmzZ28.js",
+            "encoded": 3679,
+            "decoded": 11112,
+            "transfer": 3979
+          },
+          {
+            "name": "/assets/zod-DLMFJ8aW.js",
+            "encoded": 12527,
+            "decoded": 35871,
+            "transfer": 12827
+          }
+        ]
+      },
+      {
+        "variant": "baseline",
+        "profile": "mobile320",
+        "round": 3,
+        "ready_ms": 4213.5,
+        "heap_used_bytes": 10839880,
+        "api_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          }
+        ],
+        "lcp": 4224,
+        "cls": 0.01845842776816609,
+        "longTasks": 408,
+        "fcp": 3588,
+        "document_width": 320,
+        "viewport": 320,
+        "resources": [
+          {
+            "name": "/assets/index-CSni7Ry1.js",
+            "encoded": 511384,
+            "decoded": 1674119,
+            "transfer": 511684
+          }
+        ]
+      },
+      {
+        "variant": "current",
+        "profile": "mobile320",
+        "round": 3,
+        "ready_ms": 4250,
+        "heap_used_bytes": 11702028,
+        "api_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          }
+        ],
+        "lcp": 4236,
+        "cls": 0.01005363321799308,
+        "longTasks": 338,
+        "fcp": 3568,
+        "document_width": 320,
+        "viewport": 320,
+        "resources": [
+          {
+            "name": "/assets/index-DyA_v1tC.js",
+            "encoded": 134607,
+            "decoded": 430416,
+            "transfer": 134907
+          },
+          {
+            "name": "/assets/TeacherLoading-BXuFavdS.js",
+            "encoded": 316317,
+            "decoded": 1040257,
+            "transfer": 316617
+          },
+          {
+            "name": "/assets/Checkbox-J47Alj2Y.js",
+            "encoded": 2095,
+            "decoded": 5086,
+            "transfer": 2395
+          },
+          {
+            "name": "/assets/FormControlLabel-DGiyX_Q0.js",
+            "encoded": 1196,
+            "decoded": 2568,
+            "transfer": 1496
+          },
+          {
+            "name": "/assets/SelectSingleInput-Bw101X2b.js",
+            "encoded": 5250,
+            "decoded": 14734,
+            "transfer": 5550
+          },
+          {
+            "name": "/assets/LessonMarkdown-BcnlGiAP.js",
+            "encoded": 47742,
+            "decoded": 152749,
+            "transfer": 48042
+          },
+          {
+            "name": "/assets/Chip-DDjSkmVq.js",
+            "encoded": 2643,
+            "decoded": 8002,
+            "transfer": 2943
+          },
+          {
+            "name": "/assets/JobPanel-N06Mpr-D.js",
+            "encoded": 2781,
+            "decoded": 8041,
+            "transfer": 3081
+          },
+          {
+            "name": "/assets/SelectMultipleInput-DbmmzZ28.js",
+            "encoded": 3679,
+            "decoded": 11112,
+            "transfer": 3979
+          },
+          {
+            "name": "/assets/zod-DLMFJ8aW.js",
+            "encoded": 12527,
+            "decoded": 35871,
+            "transfer": 12827
+          }
+        ]
+      },
+      {
+        "variant": "baseline",
+        "profile": "desktop1280",
+        "round": 1,
+        "ready_ms": 803.1999999955297,
+        "heap_used_bytes": 10896328,
+        "api_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          }
+        ],
+        "lcp": 824,
+        "cls": 0.008846146392822265,
+        "longTasks": 9,
+        "fcp": 656,
+        "document_width": 1280,
+        "viewport": 1280,
+        "resources": [
+          {
+            "name": "/assets/index-CSni7Ry1.js",
+            "encoded": 511384,
+            "decoded": 1674119,
+            "transfer": 511684
+          }
+        ]
+      },
+      {
+        "variant": "current",
+        "profile": "desktop1280",
+        "round": 1,
+        "ready_ms": 834.5,
+        "heap_used_bytes": 11997032,
+        "api_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          }
+        ],
+        "lcp": 836,
+        "cls": 0.005813389756944445,
+        "longTasks": 0,
+        "fcp": 672,
+        "document_width": 1280,
+        "viewport": 1280,
+        "resources": [
+          {
+            "name": "/assets/index-DyA_v1tC.js",
+            "encoded": 134607,
+            "decoded": 430416,
+            "transfer": 134907
+          },
+          {
+            "name": "/assets/TeacherLoading-BXuFavdS.js",
+            "encoded": 316317,
+            "decoded": 1040257,
+            "transfer": 316617
+          },
+          {
+            "name": "/assets/FormControlLabel-DGiyX_Q0.js",
+            "encoded": 1196,
+            "decoded": 2568,
+            "transfer": 1496
+          },
+          {
+            "name": "/assets/Checkbox-J47Alj2Y.js",
+            "encoded": 2095,
+            "decoded": 5086,
+            "transfer": 2395
+          },
+          {
+            "name": "/assets/SelectSingleInput-Bw101X2b.js",
+            "encoded": 5250,
+            "decoded": 14734,
+            "transfer": 5550
+          },
+          {
+            "name": "/assets/Chip-DDjSkmVq.js",
+            "encoded": 2643,
+            "decoded": 8002,
+            "transfer": 2943
+          },
+          {
+            "name": "/assets/LessonMarkdown-BcnlGiAP.js",
+            "encoded": 47742,
+            "decoded": 152749,
+            "transfer": 48042
+          },
+          {
+            "name": "/assets/JobPanel-N06Mpr-D.js",
+            "encoded": 2781,
+            "decoded": 8041,
+            "transfer": 3081
+          },
+          {
+            "name": "/assets/SelectMultipleInput-DbmmzZ28.js",
+            "encoded": 3679,
+            "decoded": 11112,
+            "transfer": 3979
+          },
+          {
+            "name": "/assets/zod-DLMFJ8aW.js",
+            "encoded": 12527,
+            "decoded": 35871,
+            "transfer": 12827
+          }
+        ]
+      },
+      {
+        "variant": "baseline",
+        "profile": "desktop1280",
+        "round": 2,
+        "ready_ms": 801,
+        "heap_used_bytes": 10899288,
+        "api_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          }
+        ],
+        "lcp": 812,
+        "cls": 0.008846146392822265,
+        "longTasks": 9,
+        "fcp": 660,
+        "document_width": 1280,
+        "viewport": 1280,
+        "resources": [
+          {
+            "name": "/assets/index-CSni7Ry1.js",
+            "encoded": 511384,
+            "decoded": 1674119,
+            "transfer": 511684
+          }
+        ]
+      },
+      {
+        "variant": "current",
+        "profile": "desktop1280",
+        "round": 2,
+        "ready_ms": 897.9000000059605,
+        "heap_used_bytes": 12012008,
+        "api_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          }
+        ],
+        "lcp": 840,
+        "cls": 0.005813389756944445,
+        "longTasks": 0,
+        "fcp": 672,
+        "document_width": 1280,
+        "viewport": 1280,
+        "resources": [
+          {
+            "name": "/assets/FormControlLabel-DGiyX_Q0.js",
+            "encoded": 1196,
+            "decoded": 2568,
+            "transfer": 1496
+          },
+          {
+            "name": "/assets/Checkbox-J47Alj2Y.js",
+            "encoded": 2095,
+            "decoded": 5086,
+            "transfer": 2395
+          },
+          {
+            "name": "/assets/index-DyA_v1tC.js",
+            "encoded": 134607,
+            "decoded": 430416,
+            "transfer": 134907
+          },
+          {
+            "name": "/assets/TeacherLoading-BXuFavdS.js",
+            "encoded": 316317,
+            "decoded": 1040257,
+            "transfer": 316617
+          },
+          {
+            "name": "/assets/SelectSingleInput-Bw101X2b.js",
+            "encoded": 5250,
+            "decoded": 14734,
+            "transfer": 5550
+          },
+          {
+            "name": "/assets/Chip-DDjSkmVq.js",
+            "encoded": 2643,
+            "decoded": 8002,
+            "transfer": 2943
+          },
+          {
+            "name": "/assets/JobPanel-N06Mpr-D.js",
+            "encoded": 2781,
+            "decoded": 8041,
+            "transfer": 3081
+          },
+          {
+            "name": "/assets/LessonMarkdown-BcnlGiAP.js",
+            "encoded": 47742,
+            "decoded": 152749,
+            "transfer": 48042
+          },
+          {
+            "name": "/assets/SelectMultipleInput-DbmmzZ28.js",
+            "encoded": 3679,
+            "decoded": 11112,
+            "transfer": 3979
+          },
+          {
+            "name": "/assets/zod-DLMFJ8aW.js",
+            "encoded": 12527,
+            "decoded": 35871,
+            "transfer": 12827
+          }
+        ]
+      },
+      {
+        "variant": "baseline",
+        "profile": "desktop1280",
+        "round": 3,
+        "ready_ms": 795.2000000029802,
+        "heap_used_bytes": 10871440,
+        "api_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          }
+        ],
+        "lcp": 812,
+        "cls": 0.012743815104166667,
+        "longTasks": 9,
+        "fcp": 664,
+        "document_width": 1280,
+        "viewport": 1280,
+        "resources": [
+          {
+            "name": "/assets/index-CSni7Ry1.js",
+            "encoded": 511384,
+            "decoded": 1674119,
+            "transfer": 511684
+          }
+        ]
+      },
+      {
+        "variant": "current",
+        "profile": "desktop1280",
+        "round": 3,
+        "ready_ms": 835.5,
+        "heap_used_bytes": 12045140,
+        "api_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/messages"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/sessions/65563514-1c4f-4be0-ad8f-0da9487b1bc1/units/798d355d-8bf3-4898-8d89-820bce2ff55e"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/teacher/jobs/7fca9961-e001-4d83-bcae-08c84512736a"
+          }
+        ],
+        "lcp": 840,
+        "cls": 0.005813389756944445,
+        "longTasks": 0,
+        "fcp": 676,
+        "document_width": 1280,
+        "viewport": 1280,
+        "resources": [
+          {
+            "name": "/assets/index-DyA_v1tC.js",
+            "encoded": 134607,
+            "decoded": 430416,
+            "transfer": 134907
+          },
+          {
+            "name": "/assets/TeacherLoading-BXuFavdS.js",
+            "encoded": 316317,
+            "decoded": 1040257,
+            "transfer": 316617
+          },
+          {
+            "name": "/assets/FormControlLabel-DGiyX_Q0.js",
+            "encoded": 1196,
+            "decoded": 2568,
+            "transfer": 1496
+          },
+          {
+            "name": "/assets/Checkbox-J47Alj2Y.js",
+            "encoded": 2095,
+            "decoded": 5086,
+            "transfer": 2395
+          },
+          {
+            "name": "/assets/SelectSingleInput-Bw101X2b.js",
+            "encoded": 5250,
+            "decoded": 14734,
+            "transfer": 5550
+          },
+          {
+            "name": "/assets/LessonMarkdown-BcnlGiAP.js",
+            "encoded": 47742,
+            "decoded": 152749,
+            "transfer": 48042
+          },
+          {
+            "name": "/assets/Chip-DDjSkmVq.js",
+            "encoded": 2643,
+            "decoded": 8002,
+            "transfer": 2943
+          },
+          {
+            "name": "/assets/JobPanel-N06Mpr-D.js",
+            "encoded": 2781,
+            "decoded": 8041,
+            "transfer": 3081
+          },
+          {
+            "name": "/assets/SelectMultipleInput-DbmmzZ28.js",
+            "encoded": 3679,
+            "decoded": 11112,
+            "transfer": 3979
+          },
+          {
+            "name": "/assets/zod-DLMFJ8aW.js",
+            "encoded": 12527,
+            "decoded": 35871,
+            "transfer": 12827
+          }
+        ]
+      }
+    ],
+    "rejected_variant_medians": {
+      "mobile320": {
+        "baseline": {
+          "ready_ms": 4171.39999999851,
+          "lcp_ms": 4168,
+          "fcp_ms": 3556,
+          "cls": 0.01845842776816609,
+          "long_task_excess_ms": 383,
+          "heap_used_bytes": 10664196,
+          "api_requests": 6,
+          "encoded_asset_bytes": 511384
+        },
+        "current": {
+          "ready_ms": 4277.10000000149,
+          "lcp_ms": 4216,
+          "fcp_ms": 3564,
+          "cls": 0.1036703592668685,
+          "long_task_excess_ms": 360,
+          "heap_used_bytes": 11961620,
+          "api_requests": 8,
+          "encoded_asset_bytes": 528788
+        }
+      },
+      "desktop1280": {
+        "baseline": {
+          "ready_ms": 805.5999999940395,
+          "lcp_ms": 820,
+          "fcp_ms": 656,
+          "cls": 0.008846146392822265,
+          "long_task_excess_ms": 9,
+          "heap_used_bytes": 10900848,
+          "api_requests": 8,
+          "encoded_asset_bytes": 511384
+        },
+        "current": {
+          "ready_ms": 850.8999999985099,
+          "lcp_ms": 860,
+          "fcp_ms": 676,
+          "cls": 0.12688370736440022,
+          "long_task_excess_ms": 0,
+          "heap_used_bytes": 12134012,
+          "api_requests": 9,
+          "encoded_asset_bytes": 528788
+        }
+      }
+    },
+    "rejected_reason": "Extra GET learning initiated with block skeletons shifted downstream reader; mobile CLS0.10367/desktop0.12688. Removed waterfall using bounded inline current-version material history, measured corrected variant.",
+    "conclusion": "Corrected CLS below0.1 for both lab profiles. Expanded feature initial encoded JS +17453bytes (3.4%). Mobile ready +62.8ms and LCP+40ms; desktop ready+34.5ms/LCP+28ms. No overall speed, memory or mobile LCP target improvement claim.",
+    "limits": [
+      "Mobile throttled LCP4.236s remains above2.5s; baseline4.196s.",
+      "longTasks is sum(max(duration-50,0)), not Lighthouse TBT; no Lighthouse score or field INP.",
+      "Minimal Teacher QA entry excludes BaseLayout/auth restoration and unrelated modules; not production real-user evidence.",
+      "Vendor packages bundled with own code; no unsupported separation of own/vendor bytes. No third-party or extension remote activity included.",
+      "Measured candidate precedes final retained-panel deferred caret restoration and copy/heading changes; those paths do not run in initial collapsed workspace. No repeated full benchmark solely for them."
+    ],
+    "reproduction": {
+      "callback": "async (page) => {\n  const cdp=await page.context().newCDPSession(page);\n  await cdp.send('Network.enable');\n  await cdp.send('Network.setCacheDisabled',{cacheDisabled:true});\n  await page.addInitScript(()=>{\n    window.__teacherPerf={lcp:null,cls:0,longTasks:0};\n    new PerformanceObserver(list=>{for(const entry of list.getEntries())window.__teacherPerf.lcp=entry.startTime;}).observe({type:'largest-contentful-paint',buffered:true});\n    new PerformanceObserver(list=>{for(const entry of list.getEntries())if(!entry.hadRecentInput)window.__teacherPerf.cls+=entry.value;}).observe({type:'layout-shift',buffered:true});\n    new PerformanceObserver(list=>{for(const entry of list.getEntries())window.__teacherPerf.longTasks+=Math.max(0,entry.duration-50);}).observe({type:'longtask',buffered:true});\n  });\n  const all=[];let requests=[];\n  page.on('request',request=>{if(request.url().includes('/api/v1/teacher/'))requests.push({method:request.method(),path:new URL(request.url()).pathname});});\n  for(const profile of [{name:'mobile320',width:320,height:850,cpu:4,latency:150,download:200000,upload:93750},{name:'desktop1280',width:1280,height:900,cpu:1,latency:20,download:1250000,upload:1250000}]){\n    await page.setViewportSize({width:profile.width,height:profile.height});\n    await cdp.send('Emulation.setCPUThrottlingRate',{rate:profile.cpu});\n    await cdp.send('Network.emulateNetworkConditions',{offline:false,latency:profile.latency,downloadThroughput:profile.download,uploadThroughput:profile.upload});\n    for(let round=0;round<3;round++)for(const [variant,port] of [['baseline',5183],['current',5184]]){\n      await page.goto('about:blank');await cdp.send('Network.clearBrowserCache');requests=[];\n      await page.goto(`http://127.0.0.1:${port}/.tmp/teacher-upgrade-integrated/index.html`,{waitUntil:'domcontentloaded'});\n      await page.getByText('Una transacción atómica aplica todos los cambios o ninguno. Si falla la segunda escritura, se revierten ambas.',{exact:true}).waitFor({state:'visible',timeout:60000});\n      const ready=await page.evaluate(()=>performance.now());\n      await page.waitForLoadState('networkidle');\n      await cdp.send('HeapProfiler.collectGarbage');\n      const heap=await cdp.send('Runtime.getHeapUsage');\n      const data=await page.evaluate(()=>({\n        ...window.__teacherPerf,fcp:performance.getEntriesByName('first-contentful-paint')[0]?.startTime??null,\n        document_width:document.documentElement.scrollWidth,viewport:innerWidth,\n        resources:performance.getEntriesByType('resource').filter(r=>r.name.includes('/assets/')).map(r=>({name:new URL(r.name).pathname,encoded:r.encodedBodySize,decoded:r.decodedBodySize,transfer:r.transferSize})),\n      }));\n      all.push({variant,profile:profile.name,round:round+1,ready_ms:ready,heap_used_bytes:heap.usedSize,api_requests:requests,...data});\n    }\n  }\n  await cdp.send('Emulation.setCPUThrottlingRate',{rate:1});\n  await cdp.send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});\n  return {task:'teacher_reader_comparison',browser:await page.context().browser().version(),profiles:{mobile320:{cpu:4,latency:150,downloadBytesPerSec:200000},desktop1280:{cpu:1,latency:20,downloadBytesPerSec:1250000}},runs:all};\n}\n",
+      "callback_sha256": "7fdfc3ab5c6fe9e9bcbd88984fd726e5bd1ee19da8d3c8f49b9ad4a2ff20c197",
+      "steps": [
+        "Start maintained isolated browser QA server from emitted server build; inject signed ephemeral fixture only into ignored frontend QA entry.",
+        "git archive baseline commit to isolated .tmp tree; use same installed dependencies via junction. Copy same actual-Teacher entry into baseline and candidate. Set VITE_API_URL=/api/v1 identically.",
+        "Build production Reader entry in each tree with original Vite config merged with custom entry/outDir; gzip/no-store static localhost5183 baseline and5184 candidate. The fixture uses same real loopback backend.",
+        "Run embedded callback with playwright-cli run-code --filename against clean browser; callback contains profile, route, ready and metric definitions; no app auth secrets are persisted in metrics."
+      ]
+    }
+  },
+  "artifacts": {
+    "ignored_screenshots": [
+      "output/playwright/teacher-upgrade-r02/activities-es-dark-mobile.png",
+      "output/playwright/teacher-upgrade-r02/concepts-en-light-desktop.png"
+    ],
+    "snapshots": "Playwright CLI snapshots in ignored .playwright-cli; durable semantic observations retained above, no token in artifacts",
+    "raw_perf": "All12 final measurements consolidated in performance.runs; rejected medians retained rather than erased"
+  },
+  "explicit_limits": [
+    "This UI agent did not perform a complete final-assessment browser submission; root owns real-provider final and core HTTP/SQL evidence.",
+    "No JAWS/NVDA session or universal WCAG certification; actual Chromium accessibility tree, focus and keyboard operations only.",
+    "Real provider qualification intentionally outside this UI lab. Synthetic content is not evidence of pedagogical effectiveness or real inference.",
+    "VM/productive deployment, field performance and human learning outcomes are not demonstrated by this local QA.",
+    "Final optional nonempty archived-thread reload assertion was interrupted by closing the browser; paused nonempty transcript, archived thread read controls and archived server409 are independently observed."
+  ],
+  "open_ui_defects": [],
+  "cleanup": {
+    "status": "completed",
+    "operational_data_touched": false,
+    "browsers": "Owned UI/performance browser sessions closed",
+    "listeners": "No listeners remain on owned ports5181/5183/5184/63334/64118",
+    "fixture_token_file": "Removed by orderly lab shutdown, existence check false",
+    "containers": "Owned synthetic QA containers stopped and removed; root real-provider lab preserved",
+    "harness_correction": "Windows shell Ctrl+C killed child before cleanup. Added authenticated fixture-owner-only loopback POST /api/v1/__qa/shutdown, permitting orderly close and finally cleanup without OS signal forwarding.",
+    "shutdown_regression": {
+      "fresh_lab_started": true,
+      "anonymous_status": 401,
+      "other_actor_status": 403,
+      "owner_status": 202,
+      "process_exit": 0,
+      "fixture_removed": true,
+      "container_removed": true
+    },
+    "earlier_force_cleanup": "Combined force-removal command was policy-rejected; used graceful docker stop for exact owned synthetic QA container names after verifying their session IDs/titles. No production or unrelated container touched."
+  }
+}

@@ -541,7 +541,8 @@ export function assessment(
           .toLowerCase()
           .includes(a.normalize('NFC').toLowerCase()),
       )
-      ? undefined : hint;
+        ? undefined
+        : hint;
     return {
       local_ref: ref,
       objective_id: slot.objective_id,
@@ -575,11 +576,22 @@ export function packet(
     teacherError('invalid_generated_content', 422);
   const ids = new Set<string>();
   const blocks = array(v.blocks, 1, 16).map((raw) => {
-    const b = object(raw, ['id', 'kind', 'title', 'body_markdown']);
+    const b = object(raw, [
+      'id',
+      'kind',
+      'title',
+      'body_markdown',
+      'citations',
+    ]);
     if (
-      !['explanation', 'example', 'guided_practice', 'summary'].includes(
-        String(b.kind),
-      )
+      ![
+        'explanation',
+        'example',
+        'guided_practice',
+        'summary',
+        'prediction',
+        'check',
+      ].includes(String(b.kind))
     )
       teacherError('invalid_generated_content', 422);
     const id = text(b.id, 1, 64, false);
@@ -593,6 +605,32 @@ export function packet(
       kind: b.kind as LearningPacket['blocks'][number]['kind'],
       title: text(b.title, 1, 160),
       body_markdown: body,
+      ...(b.citations === undefined
+        ? {}
+        : {
+            citations: array(b.citations, 0, 16).map((raw) => {
+              const c = object(raw, [
+                'source_id',
+                'content_hash',
+                'page',
+                'quote',
+              ]);
+              if (
+                !Number.isInteger(c.page) ||
+                Number(c.page) < 1 ||
+                Number(c.page) > 1000 ||
+                typeof c.content_hash !== 'string' ||
+                !/^[0-9a-f]{64}$/.test(c.content_hash)
+              )
+                teacherError('invalid_generated_content', 422);
+              return {
+                source_id: requireUuid(c.source_id),
+                content_hash: c.content_hash,
+                page: Number(c.page),
+                quote: text(c.quote, 1, 2000, false),
+              };
+            }),
+          }),
     };
   });
   return {

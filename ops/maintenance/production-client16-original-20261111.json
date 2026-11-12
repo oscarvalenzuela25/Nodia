@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-11",
+  "scope": "original_client16_helper_before_SIGPIPE_correction",
+  "archive": "production-client16-original-20261111.zip",
+  "archive_sha256": "aed560a7a3326b58c6bdd4e69e89c0775221acd486ad690cb0faed815ebf4813",
+  "entries": [
+    {
+      "path": "prepare-postgres-client.sh",
+      "sha256": "af381e021a200c6d93208110687a242f028046792fc93cba701ba737a27f6e92"
+    }
+  ],
+  "replacement_sha256": "dcfbb2465cec7bb46e4a47ce3dd480f318a803cfd8a1a6b1e2d206cc5249bde9",
+  "reason": "Early-exit Candidate parser closed the pipe while apt-cache still wrote; pipefail propagated SIGPIPE exit141 before installation."
+}

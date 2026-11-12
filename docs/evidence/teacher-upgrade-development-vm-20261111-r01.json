@@ -1,0 +1,1362 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-12T01:15:01.771500+00:00",
+  "status": "development_vm_upgrade_validated",
+  "environment": "development_vm",
+  "branch": "development",
+  "master_promotion": false,
+  "documentary_approval": false,
+  "vm_start": {
+    "id": "b940595d-892f-4235-9b08-59d2e777d696",
+    "name": "nodia-vps-lab",
+    "ipv4": [
+      "172.26.15.46"
+    ],
+    "success": true,
+    "checked_at": "2026-11-11T21:48:57.1169996Z",
+    "state": "Running"
+  },
+  "baseline": {
+    "server_manifest_sha256": "efbd76523322642c580c799640af01ab5626aa56ac72b0ef9104a11da6fd76e0",
+    "client_manifest_sha256": "0af574a3795579f0522aa70352e99d8039eb49fedde446837c555436ade5fdb9",
+    "historical_teacher_unknown_closed_preserved": 13
+  },
+  "migration": {
+    "baseline_count": 45,
+    "pending_teacher_count": 3,
+    "applied_in_vm": true,
+    "applied_count": 3,
+    "ledger_after": 48,
+    "tables_after": 102,
+    "historical_tables_preserved": 93
+  },
+  "new_provider_inferences": 10,
+  "authentication": "Normal Google sign-in and authenticated UI observed, including reload after final maintenance; no synthetic auth/JWT created",
+  "current_services": "API and Worker R14, Native same container/image healthy, both keyrings and backup timers active; no active jobs, open operations or missing applicable ACK",
+  "limits": [
+    "55/55 acceptance R02 belongs to Windows and its exact API key selection; this VM campaign is a separate integration scope, not 55 newly repeated VM tests.",
+    "Only the persisted OpenAI Agentic/model/medium selection and the tested text purposes are accredited here; no extrapolation to Gemini, other models, efforts, modalities or production.",
+    "The diagnostic bank was manually authored and its answers known to QA; assisted evidence and declared confidence zero are preserved.",
+    "Final passed/assisted=false describes assistance registered in this product attempt. Agents QA entered synthetic answers; no human independence, retention or educational efficacy is established.",
+    "This VM material sample contains zero prediction blocks and zero structured citations; those optional outputs are not accredited by this sample.",
+    "Final recovery restored encrypted DB/configuration in isolation. It is composed and self_contained=false; external runtime/dependencies/images/legacy assets/roles/DPAPI custody are separate requirements.",
+    "No master promotion, production change, knowledge publication or new documentary approval. ADR098 remains proposed."
+  ],
+  "verification_corrections": [
+    {
+      "scope": "read-only backup inventory",
+      "issue": "Explicit Nginx root symlink and 11 inactive Unix IPC socket exclusions needed",
+      "operational_data_changed": false
+    },
+    {
+      "scope": "isolated migration rehearsal and adoption verifier",
+      "issue": "Text migration IDs interleave new entries; compare original identities and separate numeric new IDs",
+      "operational_data_changed": false
+    },
+    {
+      "scope": "adoption preparation",
+      "issue": "Preserve application-owned environment metadata and existing baseline hardlinks; use POSIX paths in Windows preview",
+      "operational_data_changed": false
+    }
+  ],
+  "pending_work": [],
+  "authenticated_campaign": {
+    "normal_google_login_observed": true,
+    "synthetic_auth_or_jwt_created": false,
+    "selection": {
+      "mode": "agentic",
+      "model_id": "gpt-6.1-sol",
+      "effort_id": "medium",
+      "connection_id": "1"
+    },
+    "setup_transport": {
+      "schema": "teacher-vm-official-qualification-receipt/1",
+      "success": true,
+      "config_sha256": "93d0c97b6f14bedde5f3d26c6da9b86d9d0f462e24a53aef364789ee6ee0a813",
+      "purpose": "setup_reply",
+      "result": {
+        "contract": "teacher-agentic-text/1",
+        "job_id": "916b76f0-ee27-4d56-9b62-fd41c13da3f2",
+        "operation_id": "fe190d20-d457-4045-8a8c-b7510ba7cdb8",
+        "configuration_generation": "afae5ab51445a125a20ede614a4cb931876fd2e60a0c3bdaa37e14c60dfa2332",
+        "selection": {
+          "mode": "agentic",
+          "model_id": "gpt-6.1-sol",
+          "effort_id": "medium",
+          "connection_id": "1"
+        },
+        "local_closed": true,
+        "remote_outcome": "completed",
+        "posts": null,
+        "evidence_hash": "03cd094c4e0650fc28e29ef7294d7db455f89ae342a530d11d60eec0db32bf5f",
+        "teacher_policy_hash": "5c37c4194d11ed8b9f40f065b4289f772bfba080fef7147878223e6060edf524",
+        "qualified_current_policy": true,
+        "qualification_scope": "text_transport_only",
+        "excluded_purposes": [
+          "contextual_reply"
+        ],
+        "native_dispatches": 1,
+        "provider_internal_generation_posts": null,
+        "dispatched_now": true
+      },
+      "stdout_sha256": "6fd3e494d97b7987e7f0126ef3c375d457c9326e3b6f66db459a2381ccd77978",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reserved_operator_dispatches": 1,
+      "automatic_retry": false,
+      "credential_values_emitted": false
+    },
+    "initial_snapshot_sha256": "e48fa02888a23fcb8830719e0b81f94f3c25ee4e0a871faa6d0ecdfb05d76236",
+    "initial_review": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa/initial-review.json",
+    "initial_review_sha256": "8d221a21ff7a4b08fc37b7f044f14c181cef0c224f62da919383014b068d82cc",
+    "diagnostic": {
+      "state": "graded",
+      "earned_points": 2,
+      "denominator_points": 4,
+      "evidence_rows": 2,
+      "all_evidence_assisted": true,
+      "explicit_confidence_zero_preserved": true,
+      "human_learning_efficacy_claimed": false
+    },
+    "first_plan_request": {
+      "job_id": "cb326540-812c-4ef7-af71-47adb5d969a4",
+      "operation_id": "ac27b3e1-5cb3-4776-9c59-88d373814066",
+      "state": "failed_known",
+      "error_code": "agentic_preflight_failed",
+      "reserved_exchanges": 1,
+      "started_exchanges": 0,
+      "transport_not_started": true,
+      "local_closed_and_both_acknowledged": true,
+      "replayed": false,
+      "root_cause_confirmed": false
+    },
+    "manual_ui_observed": [
+      "private text source saved and form cleared after receipt",
+      "manual review card saved and voluntarily revealed",
+      "manual concept saved with conditions and no learning credit",
+      "manual completion activity answered and shown as matching stored solution",
+      "declarative chart saved with exact three labels and 10/20/30 values",
+      "graded diagnostic and frozen responses retained after reload"
+    ],
+    "current_client_release": "/opt/nodia/releases/nodia-client-teacher-upgrade-20261111-r41",
+    "current_client_manifest_sha256": "3b4e1358cf8fc24d3184576272e380a9290dbc2995ad1667461559f78bfac048",
+    "cache_contention": {
+      "mechanism_reproduced_without_inference": true,
+      "original_inner_exception_unrecoverable": true,
+      "correction": "R40-r02 educational and terminal-job refresh excludes provider observation; response/attempt completion refreshes derived evidence",
+      "review": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa/client-r40-r02-cache-review.json",
+        "sha256": "8dd1cad0ba471a555807f30723f33738dd8a5ed0ff0b7acefc6a46e49101570f",
+        "result": {
+          "schema": "teacher-R40-r02-independent-cache-review/1",
+          "recorded_at_utc": "2026-11-11T23:52:06.868328+00:00",
+          "review_status": "no_blocking_code_findings",
+          "human_documentary_approval": false,
+          "VM_operations": 0,
+          "SDK_observations": 0,
+          "sources": {
+            "src/modules/teacher/infrastructure/refresh.ts": "75b788493600b915225976d4b4d077852674135248f8b2012f8f7f3433d3027f",
+            "src/modules/teacher/pages/Teacher/Teacher.tsx": "f8e8da6e3a1e1e36e1144d8eb4ac98c9bd5a6d7639630d3990b6acf9f695d491",
+            "src/test/modules/teacher/infrastructure/refresh.test.ts": "e88234911d626b9648a3156c211e1abb25476d475e1e4f10c3efc792775c16c1"
+          },
+          "candidate_manifest_sha256": "c42eb2741174061c6b4b85f1929af9fc811b583efd0931ff3adb49080e0b5181",
+          "confirmed_by_code_review": [
+            "Every production call to command.refresh in Teacher now passes a command path; completed/terminal jobs use jobs/id, and attempt results use the attempt authority path",
+            "Successful mutations, conflict refresh and GET-only receipt reconciliation all preserve command.path",
+            "Study commands, create-session and job callbacks omit only provider catalog/eligibility invalidation; other study queries remain refreshed under the exact actor/sessionVersion prefix",
+            "Draft responses refresh their attempt/questions only; submissions also refresh session, learning evidence and enrichment; terminal attempt refresh adds session lists and units/material",
+            "Bare sessions/id edits intentionally retain provider invalidation because they may change persisted selection",
+            "JobPanel delivered.current prevents repeat terminal delivery after its job query is refreshed",
+            "Question/material/plan and owner contracts remain server-owned and no payload, authorization or replay behavior changes"
+          ],
+          "limits": [
+            "The correction removes the observed Client invalidation trigger; it does not create universal backend exclusion against deliberate/manual or other consumers of provider observation",
+            "Code review does not replace the integrated HTTP/UI/Worker validation of this candidate",
+            "The generic refresh API still allows explicit global refresh when invoked without a command path, but no remaining production Teacher caller uses it for job completion"
+          ],
+          "validation_evidence_owned_by_builder": [
+            "build/client-r40-r02/catalog.json",
+            "build/client-r40-r02/build-receipt.json",
+            "build/client-r40-r02/checks.json"
+          ],
+          "reviewer_reran_builder_suites": false
+        }
+      },
+      "setup_runtime_timing": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa/setup-timing.json",
+        "sha256": "d67626d991294f7f9dcdfa1c7f81677f0ac820932fd80425a0675f00772fd35d",
+        "result": {
+          "schema": "teacher-R40-command-provider-observation-timing/1",
+          "fixture_session_id": "6e944c6b-7a40-4ab2-8fdf-965ee3748b01",
+          "fixture_job_id": "f4c29ce1-4349-40f8-b2a6-49cdb8be68df",
+          "command_path": "/api/v1/teacher/sessions/6e944c6b-7a40-4ab2-8fdf-965ee3748b01/messages",
+          "guest_window_utc": {
+            "start": "2026-11-12T00:02:50+00:00",
+            "end": "2026-11-12T00:03:41+00:00"
+          },
+          "client_manifest_sha256": "c42eb2741174061c6b4b85f1929af9fc811b583efd0931ff3adb49080e0b5181",
+          "nginx_sha256": "b30b6cc4c36cc202c566e13fdf864234036ccc4c5ba473b873afcc34ed7c06a4",
+          "job": {
+            "id": "f4c29ce1-4349-40f8-b2a6-49cdb8be68df",
+            "session_id": "6e944c6b-7a40-4ab2-8fdf-965ee3748b01",
+            "purpose": "setup_reply",
+            "state": "ready",
+            "error_code": null,
+            "created_at": "2026-11-12T00:02:56.765104+00:00",
+            "updated_at": "2026-11-12T00:03:17.255989+00:00",
+            "dispatches_used": 1,
+            "connection_id": "1"
+          },
+          "HTTP_metadata_only": [
+            {
+              "method": "POST",
+              "path": "/api/v1/teacher/sessions/6e944c6b-7a40-4ab2-8fdf-965ee3748b01/messages",
+              "status": 202,
+              "duration_ms": 27,
+              "started_approx_utc": "2026-11-12T00:02:56.742122+00:00",
+              "logged_at_utc": "2026-11-12T00:02:56.769122+00:00"
+            },
+            {
+              "method": "GET",
+              "path": "/api/v1/teacher/sessions/6e944c6b-7a40-4ab2-8fdf-965ee3748b01/messages",
+              "status": 200,
+              "duration_ms": 14,
+              "started_approx_utc": "2026-11-12T00:02:56.822357+00:00",
+              "logged_at_utc": "2026-11-12T00:02:56.836357+00:00"
+            },
+            {
+              "method": "GET",
+              "path": "/api/v1/teacher/sessions/6e944c6b-7a40-4ab2-8fdf-965ee3748b01/messages",
+              "status": 200,
+              "duration_ms": 23,
+              "started_approx_utc": "2026-11-12T00:03:17.340472+00:00",
+              "logged_at_utc": "2026-11-12T00:03:17.363472+00:00"
+            }
+          ],
+          "provider_GETs_started_between_POST202_and_ready": 0,
+          "provider_GETs_overlapping_job_interval": 0,
+          "passed": true,
+          "scope": "one fixture command/job and its exact connection within the supplied guest UTC window; no payloads or auth values read",
+          "inspection_operations": {
+            "provider_requests": 0,
+            "SQL_mutations": 0,
+            "SDK_observations": 0
+          }
+        }
+      },
+      "plan_runtime_timing": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa/plan-timing.json",
+        "sha256": "40789492abd91d9dfc44136bc8899f712797643fec2dc89bdf3cc6d2aaa8b617",
+        "result": {
+          "schema": "teacher-R40-command-provider-observation-timing/1",
+          "fixture_session_id": "6e944c6b-7a40-4ab2-8fdf-965ee3748b01",
+          "fixture_job_id": "e8a0b715-e6d8-49f8-af58-f82cfbe9d42c",
+          "command_path": "/api/v1/teacher/sessions/6e944c6b-7a40-4ab2-8fdf-965ee3748b01/plan-proposals",
+          "guest_window_utc": {
+            "start": "2026-11-12T00:04:01+00:00",
+            "end": "2026-11-12T00:07:37+00:00"
+          },
+          "client_manifest_sha256": "c42eb2741174061c6b4b85f1929af9fc811b583efd0931ff3adb49080e0b5181",
+          "nginx_sha256": "b30b6cc4c36cc202c566e13fdf864234036ccc4c5ba473b873afcc34ed7c06a4",
+          "job": {
+            "id": "e8a0b715-e6d8-49f8-af58-f82cfbe9d42c",
+            "session_id": "6e944c6b-7a40-4ab2-8fdf-965ee3748b01",
+            "purpose": "plan_outline",
+            "state": "ready",
+            "error_code": null,
+            "created_at": "2026-11-12T00:04:09.374624+00:00",
+            "updated_at": "2026-11-12T00:04:33.011592+00:00",
+            "dispatches_used": 1,
+            "connection_id": "1"
+          },
+          "HTTP_metadata_only": [
+            {
+              "method": "POST",
+              "path": "/api/v1/teacher/sessions/6e944c6b-7a40-4ab2-8fdf-965ee3748b01/plan-proposals",
+              "status": 202,
+              "duration_ms": 51,
+              "started_approx_utc": "2026-11-12T00:04:09.328217+00:00",
+              "logged_at_utc": "2026-11-12T00:04:09.379217+00:00"
+            }
+          ],
+          "provider_GETs_started_between_POST202_and_ready": 0,
+          "provider_GETs_overlapping_job_interval": 0,
+          "passed": true,
+          "scope": "one fixture command/job and its exact connection within the supplied guest UTC window; no payloads or auth values read",
+          "inspection_operations": {
+            "provider_requests": 0,
+            "SQL_mutations": 0,
+            "SDK_observations": 0
+          }
+        }
+      }
+    },
+    "integrated_observed": {
+      "plan_accepted": true,
+      "diagnostic_objective_mappings": 2,
+      "wrong_assisted_diagnostic_recommends": "reinforce/discrimination",
+      "correct_assisted_diagnostic_recommends": "independent_check/composition",
+      "material_job_id": "4917903e-fa9b-46ee-b367-9e8a02a10b4a",
+      "material_ready": true,
+      "public_blocks": 6,
+      "practice_items": 5,
+      "practice_denominator": 14,
+      "public_SQL_examples_reviewed": 5,
+      "generated_prediction_blocks": 0,
+      "structured_citations": 0,
+      "prediction_and_citations_optional_and_not_accredited_by_this_VM_sample": true,
+      "check_response_saved_without_grading": true,
+      "practice_draft_and_confidence_zero_survived_reload": true,
+      "first_practice_response_deliberately_wrong_graded": {
+        "earned": 0,
+        "max": 2
+      },
+      "current_practice_state": "graded",
+      "practice_result": {
+        "earned": 12,
+        "possible": 14,
+        "assisted": true,
+        "written_feedback_earned": 6,
+        "written_feedback_possible": 6
+      },
+      "session_final_state": "completed",
+      "final_attempt_id": "8f40fa3f-3541-4d83-b1a1-0597d029d0aa",
+      "final_result": {
+        "earned": 40,
+        "possible": 40,
+        "result": "passed",
+        "assisted_in_product": false,
+        "human_efficacy_claimed": false,
+        "written_items": 4,
+        "written_earned": 24,
+        "written_possible": 24
+      },
+      "final_question_draft_survived_reload": true,
+      "new_contextual_reply_disabled_during_final": true,
+      "existing_thread_readable_during_final": true,
+      "final_answers_frozen_before_feedback": true,
+      "post_maintenance_authenticated_reload_retained_completed_40_of_40": true
+    },
+    "contextual_original_probe": {
+      "job_id": "1cf5bd4d-aa8a-46ab-903d-429e7f360dcf",
+      "operation_id": "65a1b880-0297-475f-8475-e62120bce1c5",
+      "state": "ready",
+      "remote_outcome": "completed",
+      "native_dispatches": 1,
+      "both_acknowledged": true,
+      "response_hash": "b64298e6b203bb64fd5a2731baa3e1a957243413db707676b1f0ff0fdd87fefa",
+      "purpose_qualification_pending": false,
+      "verifier_failure": "published reply canonical trim versus frozen raw selected passage with trailing newlines",
+      "raw_selection_length": 176,
+      "canonical_published_reply_length": 174,
+      "original_anchor_snapshot_or_hash_modified": false,
+      "replayed": false,
+      "completed_without_new_dispatch": true,
+      "completion_receipt": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa/complete-context-result.json",
+      "completion_receipt_sha256": "b81b0307ff0c631ec9cc39b7c9d0c75978eb373b8ee61654f9248814a4a1b45b",
+      "recovery": "R14 adopted; official --complete-job-id completed qualification on the same ready job with zero new dispatch and original anchor/input/response unchanged."
+    },
+    "current_server_release": "/opt/nodia/releases/nodia-server-teacher-upgrade-20261111-r14",
+    "current_server_manifest_sha256": "e2f3b3d987c214e5c5e5bd010beeb2eea8ac2876da3447abea9006ad11bf4190",
+    "real_contextual_helper": {
+      "job_id": "8af5b67a-7b73-401c-9b5a-8dc8684073d3",
+      "state": "ready",
+      "closed_and_both_acknowledged": true,
+      "SQL_explanation_reviewed": true,
+      "learning_credit_granted": false
+    },
+    "written_feedback": {
+      "job_id": "6560e0ad-1ba9-4fd9-89fd-27a565e77036",
+      "state": "ready",
+      "closed_and_both_acknowledged": true,
+      "frozen_response_preserved": true
+    },
+    "historical_readback": {
+      "observed_in_UI": true,
+      "scope": "Existing completed DNS session, 40/40, 12 reserved generations; read during initial R39 authenticated traversal. Historical course not used as a mutation fixture.",
+      "old_and_new_sessions_separate": true
+    },
+    "plan_adjustment": {
+      "job_id": "f99b9813-d329-4255-93d6-215c51caa869",
+      "candidate_id": "bf01b304-4227-4e77-849d-cdde6c8656dd",
+      "state": "ready",
+      "candidate_activated": false,
+      "only_unit_title_changed": true,
+      "objectives_and_policy_preserved": true,
+      "accepted_plan_id": "94802aac-0a16-4865-81d9-5d8d27abca2d",
+      "accepted_plan_hash": "f411234188a80247ee9cf6025ed5f3c348c7b2b108ce6bdbe8b83a486a626a33",
+      "UI_compared_and_kept_previous": true,
+      "review": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa/plan-adjustment-r41-review.json",
+        "sha256": "21e61f91b302c8fa7358e430e2704b5a5c97fcdb180be01108cb0ed1e4dbab74"
+      },
+      "selection_guard_before": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa/plan-adjustment-guard-before.json",
+        "sha256": "cd48aa43b47bf44405fb0e4231eb081a056cddd8a0eaa2b0b2915b019231b77e"
+      },
+      "selection_guard_after": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa/plan-adjustment-guard-after.json",
+        "sha256": "67f2c5f1ed61893e41d5bfe58e5bac34a98c45abecbffd4d0cb635d222e2da64"
+      }
+    },
+    "final_independent_review": {
+      "receipt": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa/final-attempt-independent-review.json",
+        "sha256": "3aaad3aca5bf15270fb54ce67d61a0db78de3c9439d3baacad8a40f6e92db163"
+      },
+      "findings": [],
+      "items": 12,
+      "written_rubrics": 4,
+      "objective_coverage": [
+        {
+          "items": 6,
+          "points": 20
+        },
+        {
+          "items": 6,
+          "points": 20
+        }
+      ],
+      "technical_product_independence_is_not_human_learning_efficacy": true
+    },
+    "dispatch_accounting": {
+      "reserved": 11,
+      "native_started": 10,
+      "ready": 10,
+      "failed_known_before_dispatch": 1,
+      "new_unknown": 0,
+      "provider_internal_HTTP_generation_POSTs": null,
+      "limit_reserved": 12,
+      "automatic_replay": false,
+      "completion_qualification_added_without_native_dispatch": true,
+      "jobs": [
+        {
+          "id": "916b76f0-ee27-4d56-9b62-fd41c13da3f2",
+          "purpose": "setup_reply",
+          "state": "ready",
+          "error_code": null,
+          "operation_id": "fe190d20-d457-4045-8a8c-b7510ba7cdb8",
+          "reserved": 1,
+          "native_started": 1,
+          "closed_and_both_ACK": true,
+          "response_hash": "46a8f04ae9517eb79d0a309d3e5a5790a194ae4147ce400166f84da077e97ecf"
+        },
+        {
+          "id": "cb326540-812c-4ef7-af71-47adb5d969a4",
+          "purpose": "plan_outline",
+          "state": "failed_known",
+          "error_code": "agentic_preflight_failed",
+          "operation_id": "ac27b3e1-5cb3-4776-9c59-88d373814066",
+          "reserved": 1,
+          "native_started": 0,
+          "closed_and_both_ACK": true,
+          "response_hash": null
+        },
+        {
+          "id": "f4c29ce1-4349-40f8-b2a6-49cdb8be68df",
+          "purpose": "setup_reply",
+          "state": "ready",
+          "error_code": null,
+          "operation_id": "95278fd9-c74c-4a00-b7f8-2fb5873a4300",
+          "reserved": 1,
+          "native_started": 1,
+          "closed_and_both_ACK": true,
+          "response_hash": "64e716af8d55a0340f1425f14eac60585341cce456f0a34d22b891ab6805506e"
+        },
+        {
+          "id": "e8a0b715-e6d8-49f8-af58-f82cfbe9d42c",
+          "purpose": "plan_outline",
+          "state": "ready",
+          "error_code": null,
+          "operation_id": "1753f15b-e5b8-47eb-8033-744ebdcbfc5e",
+          "reserved": 1,
+          "native_started": 1,
+          "closed_and_both_ACK": true,
+          "response_hash": "a05c6c3af7d488a5533ff5b0b8a91fd4f4b29d121267dbb48c31cce6bbbfbc6a"
+        },
+        {
+          "id": "4917903e-fa9b-46ee-b367-9e8a02a10b4a",
+          "purpose": "learning_packet",
+          "state": "ready",
+          "error_code": null,
+          "operation_id": "7fb1a2c6-2de9-43dc-985f-4433175dde96",
+          "reserved": 1,
+          "native_started": 1,
+          "closed_and_both_ACK": true,
+          "response_hash": "c144b48244a2fc356c5221534be7242d7ef08dd4f3af74add918892151d66a9d"
+        },
+        {
+          "id": "1cf5bd4d-aa8a-46ab-903d-429e7f360dcf",
+          "purpose": "contextual_reply",
+          "state": "ready",
+          "error_code": null,
+          "operation_id": "65a1b880-0297-475f-8475-e62120bce1c5",
+          "reserved": 1,
+          "native_started": 1,
+          "closed_and_both_ACK": true,
+          "response_hash": "b64298e6b203bb64fd5a2731baa3e1a957243413db707676b1f0ff0fdd87fefa"
+        },
+        {
+          "id": "8af5b67a-7b73-401c-9b5a-8dc8684073d3",
+          "purpose": "contextual_reply",
+          "state": "ready",
+          "error_code": null,
+          "operation_id": "b2d835e0-1ee7-4875-a694-71153e43a02e",
+          "reserved": 1,
+          "native_started": 1,
+          "closed_and_both_ACK": true,
+          "response_hash": "b3e2441a4420dca5a1e58ee6a3140bfcf3683a64c3653bfa8421b080c887efdd"
+        },
+        {
+          "id": "6560e0ad-1ba9-4fd9-89fd-27a565e77036",
+          "purpose": "written_feedback",
+          "state": "ready",
+          "error_code": null,
+          "operation_id": "0a922d45-ff3f-466a-89de-79621b947898",
+          "reserved": 1,
+          "native_started": 1,
+          "closed_and_both_ACK": true,
+          "response_hash": "2b42d7d103957c515d8e41518604fb51b870e3250b446faf33c32e23cfcf15a6"
+        },
+        {
+          "id": "f99b9813-d329-4255-93d6-215c51caa869",
+          "purpose": "plan_adjustment",
+          "state": "ready",
+          "error_code": null,
+          "operation_id": "52f76284-2f12-41cd-938f-19f9a33afa62",
+          "reserved": 1,
+          "native_started": 1,
+          "closed_and_both_ACK": true,
+          "response_hash": "fa7b4a48e9c7f79ceafeb10e77691f184b638c8af6bf7f929f5b9ee41be9e005"
+        },
+        {
+          "id": "bf313da8-a438-433d-8dc6-1ee840291676",
+          "purpose": "assessment_only",
+          "state": "ready",
+          "error_code": null,
+          "operation_id": "48bc8504-960e-437e-ae47-68a24bf9c700",
+          "reserved": 1,
+          "native_started": 1,
+          "closed_and_both_ACK": true,
+          "response_hash": "9c6de4054daed12e2961d74e240f33a3859df6ed499c4a08cf42079f18e914f4"
+        },
+        {
+          "id": "28432f2b-c092-4b51-b904-0e2ba4fd3c83",
+          "purpose": "written_feedback",
+          "state": "ready",
+          "error_code": null,
+          "operation_id": "a9b802e6-c200-4f82-99a1-df9063f90733",
+          "reserved": 1,
+          "native_started": 1,
+          "closed_and_both_ACK": true,
+          "response_hash": "cf635802248aa38da76afbf6ccef3a0d1fe4948fc80d87ea13e3f5178bc06020"
+        }
+      ]
+    }
+  },
+  "client_R40_effective_adoption": {
+    "package": {
+      "schema": "teacher-upgrade-vm-client-r40-r02-package/1",
+      "release": "/opt/nodia/releases/nodia-client-teacher-upgrade-20261111-r40",
+      "base_release": "/opt/nodia/releases/nodia-client-teacher-upgrade-20261111-r39",
+      "base_manifest_sha256": "cace496597f1b65662b7eeed946b41055e04f165f94193bfbafff46ba0f99d98",
+      "archive": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/build/client-r40-r02/client.tar.gz",
+      "archive_sha256": "095f4fa50085520e5c07ccbcba7377a2fb99a0d0261268d3e5597556dd2df542",
+      "archive_bytes": 2336768,
+      "manifest_sha256": "c42eb2741174061c6b4b85f1929af9fc811b583efd0931ff3adb49080e0b5181",
+      "files": 202,
+      "source_delta_paths": [
+        "src/modules/teacher/infrastructure/refresh.ts",
+        "src/modules/teacher/pages/Teacher/Teacher.tsx",
+        "src/test/modules/teacher/infrastructure/refresh.test.ts"
+      ],
+      "all_archive_members_verified": true,
+      "archive_file_mode": "0644",
+      "archive_uid_gid": "0:0",
+      "no_env_profiles_dependencies": true,
+      "nginx_requires_prior_assets_fallback": [
+        "R39",
+        "R38",
+        "existing prior releases"
+      ],
+      "checks": {
+        "schema": "teacher-upgrade-vm-client-r40-r02-checks/1",
+        "success": true,
+        "source_delta_paths": [
+          "src/modules/teacher/infrastructure/refresh.ts",
+          "src/modules/teacher/pages/Teacher/Teacher.tsx",
+          "src/test/modules/teacher/infrastructure/refresh.test.ts"
+        ],
+        "baseline_input_count": 1438,
+        "preserved_inputs": 1435,
+        "production_typecheck_roots": 889,
+        "regressions": {
+          "files": 34,
+          "tests": 194,
+          "focused_refresh_tests": 13
+        },
+        "lint_errors": 0,
+        "configuration_and_dependencies_unchanged": true,
+        "job_completion_refresh_is_scoped": true,
+        "undefined_explicit_refresh_remains_global": true,
+        "provider_requests": 0,
+        "VM_operations": 0,
+        "scope": "Remove educational-command and automatic job-completion invalidation of provider observations. Actual profile contention was separately reproduced without inference; the original generic exception subtype was not retained."
+      },
+      "supersedes_unadopted_archive_sha256": "574a596fc61af6038cfa74a22b338e6ffe504e5dc0af0f10d2e5bb39737e16c5",
+      "previous_candidate_preserved": true,
+      "deployed": false
+    },
+    "original_activation_preserved": true,
+    "original_missing_asset_check_failed_500": true,
+    "nginx_static_repair": {
+      "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa-client-r40-nginx-r02/verify-result.json",
+      "sha256": "d546a6230489af8ae76c5f135d533d41aa01dacfce2cc7eadd41048fc4143fda",
+      "result": {
+        "HTTP_verified": {
+          "R38": 181,
+          "R39": 198,
+          "R40": 202
+        },
+        "Native_restarts": 0,
+        "SQL_queries": 0,
+        "Server_restarts": 0,
+        "anonymous_teacher_status": 401,
+        "automatic_retry": false,
+        "config_sha256": "8b00e4b255b1a294861936ffbba221f57fbd06cd1b29dd2ada7119cc7d4f8291",
+        "missing_asset_status": 404,
+        "nginx_reloads": 0,
+        "nginx_sha256": "26057aa36a90ef3b32eb6d8ee11e641ef43481f54e891ac6973bc06af0305285",
+        "original_R40_activation_receipts_rewritten": false,
+        "provider_requests": 0,
+        "roots_validated": 76,
+        "schema": "teacher-r40-flat-static-fallback-stage/1",
+        "stage": "verify",
+        "success": true
+      }
+    },
+    "new_nginx_sha256": "26057aa36a90ef3b32eb6d8ee11e641ef43481f54e891ac6973bc06af0305285"
+  },
+  "campaign_dispatches_reserved": 11,
+  "provider_internal_generation_posts": null,
+  "initial_candidate": {
+    "server": {
+      "archive": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/build/server/server.tar.gz",
+      "archive_sha256": "27644f1db586fb2d2207d8f0e4ff8f358a6fbd4aca887715ed6a17f85eaabc39",
+      "archive_bytes": 3725334,
+      "manifest_sha256": "65bc9f7de10b625b2a2674ca56063fe57bee5c28c1d931f07fe94f59e37369ff",
+      "files": 4664
+    },
+    "client": {
+      "archive": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/build/client/client.tar.gz",
+      "archive_sha256": "610ed9813f98c482bd6648dddcf19757845f0f7ec955898cf6c330cfd38f369e",
+      "archive_bytes": 2336238,
+      "manifest_sha256": "cace496597f1b65662b7eeed946b41055e04f165f94193bfbafff46ba0f99d98",
+      "files": 202
+    },
+    "schema": "teacher-upgrade-vm-candidate-packages/1",
+    "branch": "development",
+    "source": "VM baseline plus QA R02 explicit Teacher overlays",
+    "workspace_global_copy": false,
+    "other_runtime_outputs_preserved": true,
+    "provider_requests": 0,
+    "VM_operations": 0,
+    "checks": {
+      "server_compile": true,
+      "server_tests": {
+        "files": 12,
+        "tests": 67
+      },
+      "server_lint": true,
+      "client_build": true,
+      "client_production_typecheck_roots": 889,
+      "client_tests": {
+        "files": 34,
+        "tests": 186
+      },
+      "client_lint": true
+    }
+  },
+  "pre_upgrade_backups": {
+    "database": {
+      "cipher_bytes": 1118072,
+      "cipher_sha256": "e32e1cbc1db698bd40ebb71e3bfa614f1b25eb5f514a7488e3bbd086f50c1c8b",
+      "captured": true,
+      "restored": true,
+      "tables": 94,
+      "sequences": 37,
+      "constraints_equal": true,
+      "reparsed_checks": 22,
+      "migration_rehearsal": {
+        "schema": "teacher-upgrade-three-migration-rehearsal/1",
+        "success": true,
+        "candidate_server_manifest_sha256": "65bc9f7de10b625b2a2674ca56063fe57bee5c28c1d931f07fe94f59e37369ff",
+        "migrations": [
+          "TeacherLearningEvidence1793630000000",
+          "TeacherLearningEnrichment1793640000000",
+          "TeacherPurposeQualification1793650000000"
+        ],
+        "ledger_before": 45,
+        "ledger_after": 48,
+        "tables_before": 94,
+        "tables_after": 102,
+        "historical_tables_preserved": 93,
+        "original_columns_and_rows_preserved": true,
+        "original_constraints_preserved_except_declared_purpose_extension": true,
+        "original_column_contracts_preserved_except_declared_diagnostic_nullable_origin": true,
+        "original_nonledger_sequences_preserved": true,
+        "application_processes_started": false,
+        "provider_requests": 0,
+        "operational_database_modified": false
+      }
+    },
+    "configuration": {
+      "cipher_bytes": 46881164,
+      "cipher_sha256": "247e414a00c3e444a99c357ac232e455564bb6d33764ef987bc2a3bfef04781f",
+      "restored": true,
+      "entries": 8752,
+      "file_bytes": 554212092,
+      "metadata_equal": true,
+      "excluded_nonpersistent_unix_sockets": 11,
+      "excluded_sockets_deleted": false
+    },
+    "format": "AES-256-GCM; key protected with Windows DPAPI CurrentUser",
+    "catalog": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/operation/local-config.json"
+  },
+  "initial_adoption": {
+    "stage": {
+      "success": true,
+      "receipt_sha256": "c4d59ccbdf79dea3eed35cbd2579e8b2120abeccdefc67a19d24e3dc94fa91ef"
+    },
+    "migrate": {
+      "success": true,
+      "receipt_sha256": "ca051fae41a14859802ccc1cad50bef96ec6db239e7297fed5db3c41aeaa4695"
+    },
+    "activate-api": {
+      "success": true,
+      "receipt_sha256": "baeb2b0fe747aeb643544aa4157fa28e658ddc6d79262581a289fc241b00b2b0"
+    },
+    "activate-client": {
+      "success": true,
+      "receipt_sha256": "39337e85dc1a17067eb9f47163520ac8b7bde727c34fe3fb214cfb15e0696629"
+    },
+    "activate-worker": {
+      "success": true,
+      "receipt_sha256": "8b8294295f80f447962616b86945ce83ce34e935c063b13b8959ab5e24928bd7"
+    }
+  },
+  "pre_authenticated_health": {
+    "migrations": 48,
+    "tables": 102,
+    "teacher_active": 0,
+    "teacher_unknown_closed": 13,
+    "open_operations": 0,
+    "auth_sessions_usable": 0,
+    "services": {
+      "nodia-api": {
+        "MainPID": "100211",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-teacher-upgrade-20261111-r13",
+        "ActiveState": "active"
+      },
+      "nodia-ai-worker": {
+        "MainPID": "102730",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-teacher-upgrade-20261111-r13",
+        "ActiveState": "active"
+      },
+      "nodia-gemini-lab": {
+        "MainPID": "0",
+        "WorkingDirectory": "/opt/nodia/nodia-gemini-microservice",
+        "ActiveState": "active"
+      },
+      "nodia-keyring": {
+        "MainPID": "100190",
+        "WorkingDirectory": "",
+        "ActiveState": "active"
+      },
+      "nodia-gemini-keyring": {
+        "MainPID": "101096",
+        "WorkingDirectory": "",
+        "ActiveState": "active"
+      },
+      "nodia-ai-backup.timer": {
+        "ActiveState": "active"
+      },
+      "nodia-ai-backup-rotate.timer": {
+        "ActiveState": "active"
+      }
+    },
+    "native": {
+      "id": "112ba2c36b3112dae5457364a73bfe5fbee7abd20702b9fb13055e5b3077e005",
+      "image": "sha256:87a0f2230e338b72c8305432d6aeaed3ac60b503c3e05af4f13c65af0491d712",
+      "running": true,
+      "health": "healthy"
+    },
+    "recorded_at": "2026-11-11T22:44:28.743903+00:00",
+    "nginx_sha256": "f78fb57916b5e0e4eeb9edf9fb9b35f7ba34bbb88e6759de3747c5c7088444da",
+    "historical_observation_not_current": true
+  },
+  "initial_static_http": {
+    "current_files_http_hash_verified": 202,
+    "previous_hashed_assets_http_hash_verified": 181,
+    "/nodia-teacher": 200,
+    "/api/v1/teacher/sessions": 401,
+    "schema_version": 1,
+    "recorded_at": "2026-11-11T22:35:48.917926+00:00",
+    "scope": "VM Nginx current public files, legacy hashed assets and anonymous authorization boundary",
+    "authenticated_ui": false,
+    "provider_requests": 0,
+    "historical_observation_not_current": true
+  },
+  "current_release": {
+    "server": "/opt/nodia/releases/nodia-server-teacher-upgrade-20261111-r14",
+    "server_manifest_sha256": "e2f3b3d987c214e5c5e5bd010beeb2eea8ac2876da3447abea9006ad11bf4190",
+    "client": "/opt/nodia/releases/nodia-client-teacher-upgrade-20261111-r41",
+    "client_manifest_sha256": "3b4e1358cf8fc24d3184576272e380a9290dbc2995ad1667461559f78bfac048",
+    "nginx_sha256": "1b267e7385da058a359fd6153b90b8ac147a91f04fc2dd4f1277c410f8cab450",
+    "migrations": 48,
+    "tables": 102,
+    "server_checks": {
+      "schema": "teacher-upgrade-vm-server-r14-checks/1",
+      "success": true,
+      "compiled": true,
+      "tests": 79,
+      "test_files": 12,
+      "lint_errors": 0,
+      "base_files": 4664,
+      "preserved_files": 4656,
+      "changed_files": [
+        "dist/ai-generation/teacher-contextual-qualification-policy.d.ts",
+        "dist/ai-generation/teacher-contextual-qualification-policy.js",
+        "dist/ai-generation/teacher-contextual-qualification-policy.js.map",
+        "dist/ai-generation/teacher-generation-runtime.service.js",
+        "dist/ai-generation/teacher-generation-runtime.service.js.map",
+        "src/ai-generation/teacher-contextual-qualification-policy.spec.ts",
+        "src/ai-generation/teacher-contextual-qualification-policy.ts",
+        "src/ai-generation/teacher-generation-runtime.service.ts"
+      ],
+      "source_delta": [
+        {
+          "path": "src/ai-generation/teacher-contextual-qualification-policy.ts",
+          "before_sha256": "1ae6ca308e9dcc8d19678cacded3db2511f4c153ac3a7043ab71dc72bd480052",
+          "after_sha256": "437b9fad95a89a4b523294dd1e8bb5e6f3601ad1a96ce702a21c894feaf95326"
+        },
+        {
+          "path": "src/ai-generation/teacher-contextual-qualification-policy.spec.ts",
+          "before_sha256": "3f398316009c898f02c206a7bd0edf5c34cba76c38560b900b0defc0b41e7623",
+          "after_sha256": "47e06bd3f5acec913f15d29ed8b7b2ae437a5e072d764b684be1a43de28e1b8d"
+        },
+        {
+          "path": "src/ai-generation/teacher-generation-runtime.service.ts",
+          "before_sha256": "1afcfd7b16a8d04bb8bbe426a3db396dcdd0044f7abac5e43ded1981e48b743e",
+          "after_sha256": "e38ce7f0ca37cf0b7f3b73c66c8f06ec56a8fe16bdb077960f3623bc6be33ee5"
+        }
+      ],
+      "teacher_policy_hash": "5c37c4194d11ed8b9f40f065b4289f772bfba080fef7147878223e6060edf524",
+      "qualification_and_dependency_bytes_preserved": {
+        "src/teacher/policies/teacher-prompts.ts": "3be36ff67e8d7e5bc8c19faa7109bbf50858f54d32834a08165781a6b0f5defb",
+        "src/ai-generation/teacher-qualification-policy.ts": "0972cfae171901f1e7ca8cdfd0ca10f46185bb2a60cf231fe9bd39d068479606",
+        "dist/teacher/policies/teacher-prompts.js": "ad7b0b7ab662c05498cd8566566cac7ea12ed0a5bbcfd14e2a99cadbd7763529",
+        "dist/ai-generation/teacher-qualification-policy.js": "cd00f249f6b473e06bf58e1d08657719e6df2855c6d18b9e4e78bd280e616318",
+        "package.json": "1fb4b9ec25f6f694765dca43d2c29132a69b75659cf4c60561885612e43db55f",
+        "package-lock.json": "da6aa3011319ef898404fe1cbca16d740b8aebf05ac4be341d95dba1cc4d12bd"
+      },
+      "native_fingerprint_bytes_preserved": {
+        "dist/ai-generation/codex-teacher-text-transport.js": "5e96a70df4adffdd29d3c1fe4a67d2a909fea84e194c7a45e5f53734077844b3",
+        "dist/common/ai/codex/codex-teacher-journal.js": "e23bd6af8e86b356888b01899c328a6348b6b7842aad17f36d00e9f051fd796d",
+        "dist/common/ai/codex/codex-profile-lease.js": "6ede735fd567aa4231a5031597d893fd55100fe814357e6977115e9aa4e5714b",
+        "dist/common/ai/codex/codex-process-ownership.js": "04f76bdffff39359672b5c95edccf4fd1dacb476debb171371ad514910d96f3c",
+        "dist/common/ai/codex/codex-runtime.service.js": "51c121fe170490d4b457dab5f35e9bf47290e875b231fe4b254d8d152cac99e6"
+      },
+      "qualifier_scripts_preserved": true,
+      "new_prompt_or_native_capability": false,
+      "DB_or_DDL_mutations": 0,
+      "provider_requests": 0,
+      "SDK_observations": 0,
+      "VM_operations": 0
+    },
+    "client_checks": {
+      "schema": "teacher-upgrade-vm-client-r41-checks/1",
+      "success": true,
+      "source_delta_paths": [
+        "src/modules/teacher/components/PlanReview/PlanReview.tsx",
+        "src/modules/teacher/pages/Teacher/Teacher.tsx",
+        "src/test/modules/teacher/components/PlanReview/PlanReview.test.tsx"
+      ],
+      "baseline_input_count": 1438,
+      "preserved_inputs": 1435,
+      "production_typecheck_roots": 889,
+      "regressions": {
+        "files": 34,
+        "tests": 195,
+        "plan_review_tests": 3
+      },
+      "lint_errors": 0,
+      "configuration_and_dependencies_unchanged": true,
+      "prior_refresh_fixes_preserved": true,
+      "selection_readiness_checked_in_button_and_handler": true,
+      "manual_editing_independent_of_provider": true,
+      "adjustment_draft_preserved_during_selection_change": true,
+      "provider_requests": 0,
+      "VM_operations": 0,
+      "scope": "Block AI plan adjustment while provider selection is dirty or not ready; preserve manual plan revision and all R40 job refresh optimizations. Live UI/provider integration remains Root-owned."
+    }
+  },
+  "runtime_health": {
+    "SDK_calls": 0,
+    "automatic_retry": false,
+    "baseline_comparison": null,
+    "checks": {
+      "API_http": true,
+      "anonymous_authority": true,
+      "applications_R14": true,
+      "auth_usable": true,
+      "client_http": true,
+      "client_manifest": true,
+      "database_schema": true,
+      "environment": true,
+      "historical_unknown_closed_nonblocking": true,
+      "missing_static": true,
+      "native_healthy": true,
+      "nginx": true,
+      "runtime_quiet": true,
+      "server_manifest": true,
+      "services_active": true
+    },
+    "client_index_sha256": "2ab547332e56b5de0391950a3878517e7f2202a3901614c00be82ea4f50e69ea",
+    "database": {
+      "auth_sessions_usable": 1,
+      "chat_active": 0,
+      "held_slots": 0,
+      "migration_ledger_sha256": "665363e3ee19cf84827fda00ea9b8d9b611bf9ad84bb57ea013e6dbbe22060c4",
+      "migrations": 48,
+      "open_operations": 0,
+      "operations_closed_both_applicable_ACK": 67,
+      "operations_missing_local_ACK": 0,
+      "operations_missing_native_ACK": 0,
+      "operations_total": 67,
+      "tables": 102,
+      "teacher_active": 0,
+      "teacher_attempts": 0,
+      "teacher_unknown_blocking": 0,
+      "teacher_unknown_jobs": 13,
+      "teacher_unknown_metadata_sha256": "bb40f7b58538afc81929332d11e36d3551d83247497d77ed1415a1c17ab101bd",
+      "teacher_unknown_operation_rows": 13,
+      "teacher_unknown_operations_missing_ACK": 0,
+      "teacher_unknown_operations_not_closed": 0,
+      "teacher_unknown_without_operation": 0
+    },
+    "database_mutations": 0,
+    "files": {
+      "client_manifest": {
+        "bytes": 33638,
+        "gid": 0,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": "1794445260361026089",
+        "sha256": "3b4e1358cf8fc24d3184576272e380a9290dbc2995ad1667461559f78bfac048",
+        "uid": 0
+      },
+      "environment": {
+        "bytes": 3624,
+        "gid": 987,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": "1792340473061775506",
+        "sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+        "uid": 10000
+      },
+      "nginx": {
+        "bytes": 7249,
+        "gid": 0,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": "1794445268323116420",
+        "sha256": "1b267e7385da058a359fd6153b90b8ac147a91f04fc2dd4f1277c410f8cab450",
+        "uid": 0
+      },
+      "server_manifest": {
+        "bytes": 615924,
+        "gid": 0,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": "1794444142480166110",
+        "sha256": "e2f3b3d987c214e5c5e5bd010beeb2eea8ac2876da3447abea9006ad11bf4190",
+        "uid": 0
+      }
+    },
+    "http": {
+      "anonymous_teacher": {
+        "body_sha256": "fea10f259693b0bb3381d2a5e0de64d795209c036bb0a322c1d8a11e71d602ab",
+        "status": 401
+      },
+      "api": {
+        "body_sha256": "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
+        "status": 200
+      },
+      "index": {
+        "body_sha256": "2ab547332e56b5de0391950a3878517e7f2202a3901614c00be82ea4f50e69ea",
+        "status": 200
+      },
+      "missing_asset": {
+        "body_sha256": "766c1d6bcb81d3e983fb7adbc19c616d7fc01dafb7893738edc242e2adc59c07",
+        "status": 404
+      }
+    },
+    "native": {
+      "configuration_sha256": "f6bff76c05c89de0202b1bc39a271904d1904590ee6287978f2c11399dec3944",
+      "health": "healthy",
+      "id": "112ba2c36b3112dae5457364a73bfe5fbee7abd20702b9fb13055e5b3077e005",
+      "image": "sha256:87a0f2230e338b72c8305432d6aeaed3ac60b503c3e05af4f13c65af0491d712",
+      "running": true,
+      "started_at": "2026-11-12T01:13:55.06464338Z"
+    },
+    "provider_requests": 0,
+    "recorded_at": "2026-11-12T01:15:01.771500+00:00",
+    "schema": "teacher-final-health-r14-r41/1",
+    "service_mutations": 0,
+    "success": true,
+    "units": {
+      "nodia-ai-backup-rotate.timer": {
+        "ActiveState": "active",
+        "Group": null,
+        "MainPID": null,
+        "User": null,
+        "WorkingDirectory": null,
+        "unit_file_sha256": {
+          "/etc/systemd/system/nodia-ai-backup-rotate.timer": "18566fa701d99f6bb2c763e32d89bc3fced751d65ab3b02fdda680f54a3eeea1"
+        }
+      },
+      "nodia-ai-backup.timer": {
+        "ActiveState": "active",
+        "Group": null,
+        "MainPID": null,
+        "User": null,
+        "WorkingDirectory": null,
+        "unit_file_sha256": {
+          "/etc/systemd/system/nodia-ai-backup.timer": "dbb0c32942b3584726610f782119f094b66fa3a92317c0885526c9e70eb97ba6"
+        }
+      },
+      "nodia-ai-worker": {
+        "ActiveState": "active",
+        "Group": "nodia",
+        "MainPID": "242017",
+        "User": "nodia",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-teacher-upgrade-20261111-r14",
+        "process_cwd": "/opt/nodia/releases/nodia-server-teacher-upgrade-20261111-r14",
+        "process_exe": "/opt/node-v24.20.0-linux-x64/bin/node",
+        "process_uid": 10000,
+        "start_ticks": "1190356",
+        "unit_file_sha256": {
+          "/etc/systemd/system/nodia-ai-worker.service": "b8b105a4f8986a187a01a4389d152f4066290d4ae2c8d025b2d0e68d568d2366",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zz-ai38-journal.conf": "b6f92337d70812be38aabd59279796642876b833a01074219845784c371b16b8",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzz-ai41.conf": "551c2246d1ad19d8aae9704134844590dfd5114116a57cd22be7b1fb0ba1d3ed",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzz-ai-two-modes.conf": "a452f36a58076adb29d62037cf9dad99e519f194ed1844c9c65ea795f9a7d1d3",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzz-api-chat.conf": "223d24550f95b6c5bfdd33c2d310da33f1a04401e3e0b5f400fa129d68fe3aca",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzz-api-ocr.conf": "c3780a20b72f7c9d61f957842d47e5e8f2dc0b74e1e7ac4e7b9c1e2777b0febe",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzz-codex-models.conf": "9c59f47f9d14e3f16c530a7555e577aeac143530f9cc8bc555f6910850b2ee7f",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-chat-redesign.conf": "f0db7b9a83b31b5a803dc8501e7ae043aef99c5f3654d672779203e76b500923",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-business-pos.conf": "1587cc87f84c1fdf5251565403c562453a1c0ce14a6fac8facc6615d4a063e4b",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-business-pos-r02.conf": "db8d37d635183725ab48d4ab43a307c69ab0c97cae4bbc2d6571ca915d99e52a",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-business-pos-checkout.conf": "d78b34255e7dfd320993f5e181fb37b2cc8b4efd9920102077eb1eefbf2c883d",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-business-sales-readonly.conf": "e798ba986f8ea64df169e0005e99f7cf6830d659a53bd3fe1bf8549ff8837a84",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-business-product-units.conf": "ef0d8ba74f83bec5684ea041ca345a7140597ecc9148fbc5cbb1a8088bfc5a56",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-business-pos-usability-r24.conf": "f34a68a70f8655793cd3ee35b19d4cccbce8832fbe1a64960fa1c2bc1b484cea",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261101-r01.conf": "c5834f3fe834ebde7a582d3b7f5bef849ff4cedf2ac2da6b18cd5c90688df0c1",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261101-r02.conf": "edcc8c5b746b346f31f911c7ec74de0c6733780a733133a3f0a4d5961076a40f",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261103-r03.conf": "f881426c254d6d47e677e52edd0354f2ad9e7d62e0491763ab81085bfdc19ee4",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261103-r04.conf": "1a6c3df47da588aec0dd5fd961631bb026b47a30d47f17642ff066cbfa23c7e7",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261103-r05.conf": "b9638896cc7260478af32d4079ff2d1fed59f4c41a5f9b5d4028f021abe21c1a",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261104-r06.conf": "b7de43bbe606adab661b61b8c21591c84b060f41081fc5387fca5012f234732d",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261104-r07.conf": "b806168cbb974771a6d88e13d8790d6229f95b13ca329a4c7ba614c25233df92",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261104-r08.conf": "6770ec23e8a41bef1b8e002be77a8a292f70d36a58212d18db58113d6733e9c8",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261106-r09.conf": "999d4f7fd808f4e3cbc09081f139ccd9a1b817bcfbaa37bef2fc21a975e4d17b",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261106-r10.conf": "d93a65bb07a4a0cd6a89eda2e9b059e47cb46c10e6a886cdb9c82d3db1078649",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261106-r11.conf": "9ff874b62ba51d5d248502485673a3377dfc419ec9121a3fe300ffe3905963fa",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261106-r12.conf": "67fbe7e71e576871f68145cd8ed0197d4fd909c0681ef8cab3c34340e986bf76",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-upgrade-20261111-r13.conf": "7d27e5ba7d6f4ed2a9eb8fbe926f07e19337a24cdc542cccb9b5d5f1f4a9184c",
+          "/etc/systemd/system/nodia-ai-worker.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-upgrade-20261111-r14.conf": "31aa51974e3163a215c983d208fc89a7df3d7144835447000ce430332a45b87f"
+        }
+      },
+      "nodia-api": {
+        "ActiveState": "active",
+        "Group": "nodia",
+        "MainPID": "241925",
+        "User": "nodia",
+        "WorkingDirectory": "/opt/nodia/releases/nodia-server-teacher-upgrade-20261111-r14",
+        "process_cwd": "/opt/nodia/releases/nodia-server-teacher-upgrade-20261111-r14",
+        "process_exe": "/opt/node-v24.20.0-linux-x64/bin/node",
+        "process_uid": 10000,
+        "start_ticks": "1189252",
+        "unit_file_sha256": {
+          "/etc/systemd/system/nodia-api.service": "25c58c4bbe418fc573f24a573665bb0b894761981ac1855b7ffac687c70fd4d2",
+          "/etc/systemd/system/nodia-api.service.d/ai15-release.conf": "3b3c3c985bc9d2b14a2f4f9f7ede6185a31df920b617b2294c98ddfe886a5615",
+          "/etc/systemd/system/nodia-api.service.d/zz-ai38-journal.conf": "9a7efcc91d74cdf4313239374be621acdd1ded34054e7b9ae4c8be3e38fe8f85",
+          "/etc/systemd/system/nodia-api.service.d/zzzz-ai41.conf": "7e12f6b88552b1e0dd77d995a91213f146adfa18fcf06b684381a90783e8d0dc",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzz-ai-two-modes.conf": "d7ac4935a645f881dd641dffee4f8d213933c40d1b84a7ed049e7308a7fe61a4",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzz-api-chat.conf": "06b3a67d18add14f4937883e935c53f93b47b0511a2e5d7186cd05d856b00e31",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzz-api-ocr.conf": "bf95fa4d5faba4a700f898b64659308c4148b233052da3337619708238ca685e",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzz-codex-models.conf": "a840406fe431ebab667ec17f5665514e46cc875476535d186d64cd150336d589",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-chat-redesign.conf": "e03e266b88709bd6b8afa0f2a4ebd6b561e4ed2e004517e17144005e15716f4f",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-business-pos.conf": "70ae7e345984bdd5b8c74af07b4f6bb2846dda2f3dab07cc83d80ba5ffa303ec",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-business-pos-r02.conf": "f026bdff8a5b85a7efcb8fac28b16d9b0087e61e86884868fd9936dc55c40829",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-business-pos-checkout.conf": "435c4b112af8dff0ed268a19236e83a98cb9ce448ef6ab8851b68191cdfe0a92",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-business-sales-readonly.conf": "770bd1ffe9fcd8c5216fe873dbd2af8e31a14ec76348fde34c73729faccb5012",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-business-product-units.conf": "6b49b97dad4632b94a84a51d65e752caee6b5977bf4e2041bc542f6ec1ded18f",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-business-pos-usability-r24.conf": "120ab56df8eca8b8c9191d8a0239701b11e66f54ab880449acee1d73272cd23b",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261101-r01.conf": "c24f2e48f03a8e61dd3db5af22d07d13396349f14147746b76112090d83e673f",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261101-r02.conf": "c892d30173bc77a3a33a04efb0a078c7467b5f58e48d4d193f05aad9b7cb8a79",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261103-r03.conf": "eaef3488eb0c6a1ae2593759f0bcc19a47e19e99dc96b3cc8b5e33dde89daecf",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261103-r04.conf": "a0736204adb589d6f93e3cb6837277600ce3a975745185959f6efc5fa3f27d78",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261103-r05.conf": "5ef6de318fb7ae45bae53c4cb6d08315e82a0e546b69e9501e8a01f19d6be397",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261104-r06.conf": "033a147ce65b02e5f83945ce22064fc94b8438e346be9358d37c01f8f4e7f829",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261104-r07.conf": "229b4e67d381e70b70411eacd9beb999de2ba7335fdd26cc1b98ef5b926adad9",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261104-r08.conf": "fd31695198bbecbb6cf1e3e77c888be573d89fded3d4796c5ea76d2e0009bc41",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261106-r09.conf": "9bb548faaaf5cb7fedc5564b9c62bbe67300d7c1bd22bef7345bf04b6084cfe9",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261106-r10.conf": "70f6d44bc9b5a17e442bb777ea2b31dbd90b463e20ad7e8889419e2d1f17d813",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261106-r11.conf": "a834cce86d76da4804f60b2ec7cd2ad77cea5ac072c87f333605d857ee4bab38",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-20261106-r12.conf": "38957d7ea9439e69c85b8138cde85550acc9ff7cd4e5e1efbe0f507381495647",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-upgrade-20261111-r13.conf": "812aaf679fbb7e97406fe86ade156129fc492c17ff93ff20c77a846497d7aca7",
+          "/etc/systemd/system/nodia-api.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-teacher-upgrade-20261111-r14.conf": "ee939c298f4ba2a55d0a84174a4e517db4301c16b42ff68c2793a1d9ed4552b8"
+        }
+      },
+      "nodia-gemini-keyring": {
+        "ActiveState": "active",
+        "Group": "nodia-gemini",
+        "MainPID": "241490",
+        "User": "nodia-gemini",
+        "WorkingDirectory": "",
+        "process_uid": 10001,
+        "start_ticks": "1186153",
+        "unit_file_sha256": {
+          "/etc/systemd/system/nodia-gemini-keyring.service": "6a64552bcb55d95c4c3f3ee6e2fb9fbc12c306cf3f13ac948373eba3b04c7de5"
+        }
+      },
+      "nodia-gemini-lab": {
+        "ActiveState": "active",
+        "Group": "",
+        "MainPID": "0",
+        "User": "",
+        "WorkingDirectory": "/opt/nodia/nodia-gemini-microservice",
+        "unit_file_sha256": {
+          "/etc/systemd/system/nodia-gemini-lab.service": "793e5ace81e7fe7da7718c7afacc80d6049bde7c3b86e733ead85117e97d67c9",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/40-ai29-durable-login.conf": "a1ce4e6efcc27ef37c0a445f05b0f040ccb9a80066fd4ce2f8be1cfe5087e31d",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/ai36-c05-role.conf": "4d322139517dbcf55a0750af722ed9b54719bcc49ea60f52545225ace8054a87",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/ai38-mcp-r01.conf": "f78d1c4dfd8c57e4a9a89ba212cd07e3cb3d28fe22f9743199beb0dab46d487f",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zz-ai38-profile-reservation-diag.conf": "b402f84a16a0b8bb9e18ebac0cf0b97fbbe47bf8fa2f0066ae38ecf297bf2093",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zz-ai38-profile-reservation-fix.conf": "155a296a2d047cd8698448790a2d1b6e135c1504d4dc7365644a63869cac208b",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zz-ai38-web-stream-diag.conf": "2883993560718c08ecb218c1fc87c54eea8ce5be82e6703314248f547e094c61",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zz-ai38-web-stream-recovery-fix.conf": "c96d75173077fd655f6823361ca63979217dce26015488a67c820254890e4245",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zz-ai40-chat-host.conf": "83c6ff131ef888b033abd774f45a276d5645ef37d4d6a6b23e021698ce8e0e80",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zz-ai40-chat-image.conf": "a6242b6434ecfeb48d5b53fac3ae61f8b9c60155b3e1710097b23bb7018211fb",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzz-ai36-c03-native-contract-fix-r05.conf": "0df9ccb6d551fe95a39554930c9dfa0f31d2ec7f92d9f08ab427484e9ebd5fa9",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzz-c03-agentic-status-timeout-r02.conf": "6c6de60fe8cecbafbc96e2c8cb9d8636a6dd835c61679b41334dcdbc129e45b7",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzz-teacher-sdk-containment-r06.conf": "02a98cd73639a90c996861eae3382042ac699e8f5fa0a501cb7348663fbbadd1",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzz-c03-agentic-status-evidence-cache-r01.conf": "9cc1224e59696469b509f15d3751bc2ae69bbdaf93208f405432c184650488aa",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzz-c03-mcp-closed-diagnostics-r01.conf": "2c69fef209ca3aaf57b37ad7e15404a3d9cc73cbec85e01b3bfa0739735fa5c7",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzz-invoice-ocr-native-r01.conf": "01c7d52616c51c11a012484679d2b8d2a513057cc5b6b9d3d530570db5646e22",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzz-invoice-ocr-native-core-r03.conf": "1996a2d991ae90e2f5058629ce394e83227288cba89c325185741aa0c7378f70",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzzz-invoice-ocr-option-cache-r01.conf": "636fafde92c9d5423344a859a69eb59bd7821034cbf4b4a884d3e9d51aea292e",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzzzz-invoice-ocr-option-identity-r02.conf": "4de6bd15ece68e47449977691ed78a2d12c79390522033cd1f2aae2f79f5272b",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzzzzz-ai41-image-generation.conf": "8b65f6fe51be54aa54143f3de6681312f10d05c5f7dbbd8bed85c7aa0da4e727",
+          "/etc/systemd/system/nodia-gemini-lab.service.d/zzzzzzzzzzzzzzzzzzzz-ai-two-modes.conf": "f4539d4d7244553bb9db995d4db5555f14de9f8b9e03cd7390fdf081458a3a3d"
+        }
+      },
+      "nodia-keyring": {
+        "ActiveState": "active",
+        "Group": "nodia",
+        "MainPID": "241479",
+        "User": "nodia",
+        "WorkingDirectory": "",
+        "process_uid": 10000,
+        "start_ticks": "1186145",
+        "unit_file_sha256": {
+          "/etc/systemd/system/nodia-keyring.service": "671ec86eaa3e44d9c8dcdbe9e38250c881d3b1d35e642b65cff987b5734e402e",
+          "/etc/systemd/system/nodia-keyring.service.d/zz-nodia-private-store-v2.conf": "129b3b5748c805dfcac3169e4a8e5471ae13a253a74c06e344548d45c1ba1d83"
+        }
+      }
+    }
+  },
+  "maintenance_comparison": {
+    "schema": "teacher-final-maintenance-stable-state-comparison/1",
+    "checks": {
+      "both_healthy": true,
+      "release_config_and_env_equal": true,
+      "ledger_equal": true,
+      "unknown_identity_and_metadata_equal": true,
+      "same_native_id_image_configuration": true,
+      "same_schema": true,
+      "unit_files_authority_and_working_directory_equal": true
+    },
+    "success": true,
+    "service_restart_authorized": true,
+    "PID_start_ticks_Native_started_at_expected_to_change": true,
+    "before_sha256": "cf6927a86cce5f64ff3244caee2aefda543e808e847ff45e2e83c16e7b9e62cb",
+    "after_sha256": "2a9bb943792eec1673a6052f6a81f06386b1314822d7b3fe875238a936f95b35",
+    "native_dispatches": 0,
+    "HTTP_mutations": 0
+  },
+  "repository_delivery": {
+    "local_changes_only": true,
+    "commit_created": false,
+    "push_performed": false,
+    "master_promotion": false,
+    "remaining_editorial_work": "Review and version the isolated Teacher source/documentation lot; this is separate from the validated development VM runtime."
+  },
+  "clock_context": {
+    "receipt_bytes_preserved": true,
+    "Windows_clock_observed_behind_VM_by_approximately_seconds": 441,
+    "VM_time_checked_against_external_HTTPS_Date": true,
+    "VM_clock_changed": false,
+    "interpretation": "Local Windows and VM UTC timestamps have different clock origins; use remote capture finished_at and sequential receipts/inventory pins for ordering. No historical timestamps or hashes were rewritten."
+  },
+  "corrective_adoptions": {
+    "server_R14": {
+      "adoption_verify": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa-server-r14/verify-result.json",
+        "sha256": "1848ca8526e8bbf2be81e32fb59b283b68e5f93241209a6d971fcf7475acbe0c"
+      },
+      "contextual_completion": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa/complete-context-result.json",
+        "sha256": "b81b0307ff0c631ec9cc39b7c9d0c75978eb373b8ee61654f9248814a4a1b45b"
+      },
+      "scope": "Exact canonical trim match of published contextual probe reply; raw selected passage/hash and inner whitespace remain strict. Same original job completed without another inference."
+    },
+    "client_R41": {
+      "package": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/build/client-r41/catalog.json",
+        "sha256": "80e3781454f6f73acc5b8e239e8538a85628114447f16c3d58282d22bcd9a2db"
+      },
+      "verify": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa-client-r41/verify-result.json",
+        "sha256": "7ef6a0d40c80b48480836bd7da9ae3a811df2c52e606a28e60d4f5d959fbd9f8"
+      },
+      "initial_activation_result": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa-client-r41/activate-result.json",
+        "sha256": "6dae207d3a51c2a7caee9ae03556db3ad9b429ca391851c6376a8910c82820c0"
+      },
+      "initial_activation_error": "current_entrypoint_http_mismatch after one reload; subsequent verify passed. No second activation/reload; exact cause not established.",
+      "scope": "Block plan-adjustment AI action and callback for unsaved/unavailable selection; manual editing remains available."
+    },
+    "client_R40_cache": {
+      "preserved_in_R41": true,
+      "scope": "Educational/job refresh omits provider observation; evidence/attempt derived queries refresh. Controlled observer contention was reproduced without inference; original lost inner exception cannot be recovered."
+    },
+    "nginx_static": {
+      "verify": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa-client-r40-nginx-r02/verify-result.json",
+        "sha256": "d546a6230489af8ae76c5f135d533d41aa01dacfce2cc7eadd41048fc4143fda"
+      },
+      "scope": "Replaced redirect chain with flat hashed-asset lookup; 77 roots after R41, missing asset404 and anonymous Teacher401."
+    }
+  },
+  "static_http": {
+    "HTTP_files_verified": {
+      "R38": 181,
+      "R39": 198,
+      "R40": 198,
+      "R41": 202
+    },
+    "Native_restarts": 0,
+    "SQL_queries": 0,
+    "Server_Native_keyrings_timers_preserved": true,
+    "Server_restarts": 0,
+    "authentication_changes": 0,
+    "automatic_retry": false,
+    "config_sha256": "13c44ff89aecb48473db278093a01320f4d848431f7da6d1c83c5a8ad9616657",
+    "flat_static_candidates": 77,
+    "legacy_assets_preserved": [
+      "R40",
+      "R39",
+      "R38"
+    ],
+    "nginx_reloads": 0,
+    "nginx_sha256": "1b267e7385da058a359fd6153b90b8ac147a91f04fc2dd4f1277c410f8cab450",
+    "previous_roots_FS_verified": 76,
+    "provider_requests": 0,
+    "schema": "teacher-upgrade-client-r41-stage/1",
+    "stage": "verify",
+    "success": true
+  },
+  "final_backup": {
+    "success": true,
+    "format": "AES-256-GCM; fresh Windows DPAPI CurrentUser wrapped keys",
+    "self_contained": false,
+    "provider_requests": 0,
+    "recovery_catalog": {
+      "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/final-backup/recovery-dependencies.json",
+      "sha256": "82be66b0440d749d17cf863b191ad7a3d7887ce0f63f04279f6fa4793ccf0c23"
+    },
+    "preflight": {
+      "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/final-backup/preflight-final.json",
+      "sha256": "f09469cc8f27da73b85b3f236b668a841be985e9ae26759dfd7d63fe41f88f59"
+    },
+    "source_inventory": {
+      "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/final-backup/source-inventory-final.json",
+      "sha256": "f5aace8b63a3d7c3639a1392ca9893ac98580faa2b39ba2c129212a279c808a7"
+    },
+    "config_sha256": "beeccd522e152892fdc8a2f601f2399aec12eb5ae99174d531ca3456535f9886",
+    "database": {
+      "cipher": {
+        "bytes": 1217294,
+        "sha256": "c59bd97e374322685aca0931e2943996b096422c776c65024e02ca04f5a04f80"
+      },
+      "restore_receipt": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/backups-final/database-restore-receipt.json",
+        "sha256": "a0d2555444e781ac2fc2b38be282f5d1e654a2fd8fb0f7161ea32db09100ce00"
+      },
+      "tables": 102,
+      "sequences": 37,
+      "migrations": 48,
+      "rows_columns_constraints_equal": true,
+      "reparsed_CHECK_constraints": 22,
+      "GCM_authenticated_before_restore": true,
+      "owned_isolated_container_removed": true
+    },
+    "configuration": {
+      "cipher": {
+        "bytes": 47341255,
+        "sha256": "25857d6bb9167ab79de2f9373016865f7431f4765e23d2985be7af79fd4b0df4"
+      },
+      "restore_receipt": {
+        "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/backups-final/configuration-restore-receipt.json",
+        "sha256": "e91a831b813972665d4f5efb475e6ce406755ade036547458a36507ce8ed0a86"
+      },
+      "entries": 8856,
+      "file_bytes": 561105376,
+      "content_and_metadata_equal": true,
+      "excluded_inactive_IPC_sockets": 11,
+      "excluded_sockets_deleted": false,
+      "owned_isolated_volume_removed": true
+    },
+    "applications_or_provider_started_in_restore": false,
+    "restore_network": "none",
+    "plaintext_host_files": 0,
+    "original_pre_upgrade_backups_preserved": true,
+    "quiet_receipt": {
+      "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/final-backup/quiet-result.json",
+      "sha256": "f671f399be8717b88478244f46aa7ad305995148d13cb3431d1e024491c01792"
+    },
+    "resume_receipt": {
+      "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/final-backup/resume-result.json",
+      "sha256": "7b0537cda10c8dc10eb109f73b56cb339fa9e0104df80b6c8d915b72821c1b31"
+    },
+    "health_before": {
+      "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa/final-health-before-backup.json",
+      "sha256": "cf6927a86cce5f64ff3244caee2aefda543e808e847ff45e2e83c16e7b9e62cb"
+    },
+    "health_after": {
+      "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa/final-health-after-backup.json",
+      "sha256": "2a9bb943792eec1673a6052f6a81f06386b1314822d7b3fe875238a936f95b35"
+    },
+    "stable_state_comparison": {
+      "path": "ops/lab/artifacts/teacher-upgrade-vm-20261111-r01/qa/final-health-maintenance-comparison.json",
+      "sha256": "362854bfa837a828bdde57cd8b8dea644bd35da3cecc8408db33101a7bc74d52"
+    }
+  },
+  "UI_proof": {
+    "path": "output/teacher-upgrade-vm/final-development-result.png",
+    "sha256": "d6e7c2ba78b9bc766c0db8f0d9f7bb00100d40ae5829f48c1e21a7d84688ac32",
+    "observed_after_maintenance": true,
+    "shows_completed_and_40_of_40": true,
+    "synthetic_QA_only": true
+  }
+}

@@ -34,6 +34,7 @@ import {
 import type {
   TeacherGenerationJob,
   TeacherGenerationPort,
+  TeacherPurpose,
   TeacherSelection,
 } from '../teacher/types/teacher.types.js';
 import {
@@ -44,8 +45,13 @@ import { GenerationWorkerSourceRegistry } from './worker-source-registry.js';
 import { promptSnapshot } from '../teacher/policies/teacher-prompts.js';
 import { teacherGenerationDeadline } from '../teacher/policies/teacher-generation-deadline.js';
 import { reportTeacherPublicationFailure } from '../teacher/policies/teacher-publication-diagnostic.js';
-import { TeacherAgenticTextService, validateTeacherAgenticDescriptor } from './teacher-agentic-text.service.js';
+import { TeacherAgenticTextService, validateTeacherAgenticDescriptor, teacherAgenticScope } from './teacher-agentic-text.service.js';
 import { TeacherAgenticClosedError, TeacherAgenticUnclosedError, parseTeacherAgenticProof, type TeacherAgenticConfiguration, type TeacherAgenticDescriptor, type TeacherAgenticObservation, type TeacherAgenticProof } from './agentic-text-contract.js';
+
+import { currentTeacherQualificationProbe, teacherApiQualificationScope as scope, teacherPurposeRequiresQualification, teacherPurposeQualificationScope, TEACHER_GENERATION_POLICY_HASH, TEACHER_GENERATION_POLICY } from './teacher-qualification-policy.js';
+
+import { assertContextualQualificationJob, contextualQualificationReplyMatches } from './teacher-contextual-qualification-policy.js';
+import { enrichmentRecord, readAnchor, rejectFinalHelp } from '../teacher/use-case/teacher-enrichment-persistence.js';
 
 function canonical(value: unknown): unknown {
   if (value instanceof Date) return value.toISOString();
@@ -62,13 +68,6 @@ const hash = (value: unknown) =>
   createHash('sha256')
     .update(JSON.stringify(canonical(value)))
     .digest('hex');
-const scope = (selection: TeacherSelection, config: Pick<NodiaAiApiConfiguration, 'configurationGeneration' | 'sessionGeneration'>) =>
-  hash({
-    contract: 'teacher-text/1',
-    selection,
-    configuration: config.configurationGeneration,
-    session: config.sessionGeneration,
-  });
 type Job = TeacherGenerationJob & {
   session_owner_user_id: string;
   configuration_generation: string;
@@ -231,10 +230,12 @@ export class TeacherGenerationRuntimeService
     manager: EntityManager,
     actor: ActorReference,
     selection: TeacherSelection,
+    purpose?: TeacherPurpose,
   ) {
     await this.authority(manager, actor);
     if (selection.mode === 'agentic' && this.agentic) {
       const native = await this.configuration(selection, manager);
+      await this.verifyPurpose(manager, selection, native, purpose);
       return { configuration_generation: native.configurationGeneration, session_generation: native.sessionGeneration };
     }
     if (selection.mode !== 'api_key')
@@ -251,10 +252,26 @@ export class TeacherGenerationRuntimeService
     );
     if (rows.length !== 1)
       throw new ServiceUnavailableException('teacher:adapter_unqualified');
+    await this.verifyPurpose(manager, selection, config, purpose);
     return {
       configuration_generation: config.configurationGeneration,
       session_generation: config.sessionGeneration,
     };
+  }
+  private transportScope(selection: TeacherSelection, config: NodiaAiApiConfiguration | TeacherAgenticConfiguration) {
+    return selection.mode === 'api_key' ? scope(selection, config)
+      : teacherAgenticScope(selection, config as TeacherAgenticConfiguration);
+  }
+  private async verifyPurpose(manager: EntityManager, selection: TeacherSelection,
+    config: NodiaAiApiConfiguration | TeacherAgenticConfiguration, purpose?: TeacherPurpose) {
+    if (!teacherPurposeRequiresQualification(purpose)) return;
+    const rows = await manager.query(`SELECT scope_hash FROM teacher_purpose_qualifications
+      WHERE scope_hash=$1 AND policy_hash=$2 AND purpose='contextual_reply'
+      AND selection_snapshot=$3::jsonb AND configuration_generation=$4
+      AND session_generation IS NOT DISTINCT FROM $5`,
+    [teacherPurposeQualificationScope(this.transportScope(selection, config)), TEACHER_GENERATION_POLICY_HASH,
+      JSON.stringify(selection), config.configurationGeneration, config.sessionGeneration]);
+    if (rows.length !== 1) throw new ServiceUnavailableException('teacher:adapter_unqualified');
   }
   private async claim(
     workerId: string,
@@ -289,8 +306,9 @@ export class TeacherGenerationRuntimeService
           job.session_owner_user_id === current.actorId || current.isSuperAdmin,
           'authority_changed',
         );
+        if (job.purpose === 'contextual_reply') await rejectFinalHelp(manager, job.session_id);
         if (!this.qualificationJobs.has(job.id))
-          await this.verifySelection(manager, actor, job.selection_snapshot);
+          await this.verifySelection(manager, actor, job.selection_snapshot, job.purpose);
         config = await this.configuration(
           job.selection_snapshot,
           manager,
@@ -870,10 +888,11 @@ export class TeacherGenerationRuntimeService
       assert(pending[0]?.n<2,'capacity_unavailable');
       const c = await this.configuration(selection, manager, nativeConfig?.agentic);
       const input = {
-        qualification_probe: { contract: nativeConfig ? 'teacher-agentic-text/1' : 'teacher-text/1', nonce },
+        qualification_probe: { contract: nativeConfig ? 'teacher-agentic-text/1' : 'teacher-text/1', nonce,
+          teacher_policy_hash: TEACHER_GENERATION_POLICY_HASH },
         session: {
           topic: 'Text transport verification',
-          objective: `For this bounded verification return exactly ${nonce} as text, with topic Text transport verification and objective Verify a structured reply.`,
+          objective: 'Verify a structured reply under the bounded internal transport probe contract.',
           explanation_language: 'en',
           context: null,
           declared_base: null,
@@ -938,7 +957,7 @@ export class TeacherGenerationRuntimeService
     return this.source.transaction(async manager => {
       await lockAuthority(manager); await this.authority(manager, actor);
       const config = await this.configuration(selection, manager, live?.agentic);
-      const rows = await manager.query(`SELECT o.*,j.state AS job_state,j.input_snapshot,j.semantic_key,m.text AS reply
+      const rows = await manager.query(`SELECT o.*,j.state AS job_state,j.input_snapshot,j.semantic_key,j.template_hash,m.text AS reply
         FROM ai_generation_operations o JOIN teacher_generation_jobs j ON j.id=o.teacher_job_id
         JOIN teacher_sessions s ON s.id=j.session_id JOIN teacher_setup_messages m ON m.generation_job_id=j.id
         WHERE j.id=$1 AND j.session_id=$2 AND j.actor_id=$3 AND s.owner_user_id=$3 AND s.state='draft'
@@ -951,17 +970,131 @@ export class TeacherGenerationRuntimeService
         op.input_snapshot?.qualification_probe?.nonce === nonce && op.semantic_key === hash({ jobId, nonce }) &&
         op.configuration_generation === config.configurationGeneration && op.session_generation === config.sessionGeneration &&
         op.resource_key === config.resourceKey, 'qualification_failed');
-      const evidenceHash = hash({ contract: live ? 'teacher-agentic-text/1' : 'teacher-text/1', nonce,
+      const qualifiesCurrentPolicy = currentTeacherQualificationProbe(op.input_snapshot.qualification_probe, op.template_hash);
+      const observedPolicyHash = op.input_snapshot.qualification_probe.teacher_policy_hash ?? null;
+      const evidenceHash = hash({ contract: live ? 'teacher-agentic-text/1' : 'teacher-text/1',
+        ...(observedPolicyHash === null ? {} : { teacher_policy_hash: observedPolicyHash }), nonce,
         operation: op.id, request: op.request_hash, response: op.response_hash });
       if (live) {
         assert(op.agentic_acknowledged_at, 'qualification_failed');
-        await this.agentic!.recordQualification(manager, selection, live, op.id, op.response_hash, evidenceHash);
-      } else await manager.query(`INSERT INTO ai_generation_qualifications(scope_hash,contract_version,operation_id,response_hash,evidence_hash)
+        if (qualifiesCurrentPolicy) await this.agentic!.recordQualification(manager, selection, live, op.id, op.response_hash, evidenceHash);
+      } else if (qualifiesCurrentPolicy) await manager.query(`INSERT INTO ai_generation_qualifications(scope_hash,contract_version,operation_id,response_hash,evidence_hash)
         VALUES($1,'teacher-text/1',$2,$3,$4) ON CONFLICT(scope_hash) DO UPDATE SET operation_id=excluded.operation_id,
         response_hash=excluded.response_hash,evidence_hash=excluded.evidence_hash,observed_at=clock_timestamp()`,
       [scope(selection, config), op.id, op.response_hash, evidenceHash]);
       return { job_id: jobId, operation_id: op.id, configuration_generation: config.configurationGeneration,
-        selection, local_closed: true, remote_outcome: 'completed', posts: 1, evidence_hash: evidenceHash };
+        selection, local_closed: true, remote_outcome: 'completed', posts: 1, evidence_hash: evidenceHash,
+        teacher_policy_hash: observedPolicyHash, qualified_current_policy: qualifiesCurrentPolicy,
+        qualification_scope: 'text_transport_only', excluded_purposes: ['contextual_reply'] };
+    });
+  }
+  /** Explicit operator-only anchored protocol probe. Never called by a controller/tool.
+   * Requires current transport qualification and an unused real thread in an owned active lab session. */
+  async qualifyContextualReply(actor: ActorReference, sessionId: string, selection: TeacherSelection,
+    threadId: string, signal: AbortSignal) {
+    const jobId = randomUUID(), nonce = randomUUID();
+    await this.source.transaction(async manager => {
+      await lockAuthority(manager); await lockNodiaAiQueue(manager);
+      const config = await this.verifySelection(manager, actor, selection, 'learning_packet');
+      const [session] = await manager.query('SELECT * FROM teacher_sessions WHERE id=$1 FOR UPDATE', [sessionId]);
+      assert(session?.owner_user_id === actor.userId && session.state === 'active', 'qualification_session_required');
+      assert(hash(session.selection) === hash(selection), 'configuration_changed');
+      await rejectFinalHelp(manager, sessionId);
+      const [busy] = await manager.query(`SELECT EXISTS(SELECT 1 FROM teacher_generation_jobs
+        WHERE session_id=$1 AND blocks_duplicate) AS active,
+        (SELECT count(*)::integer FROM teacher_generation_jobs WHERE actor_id=$2
+          AND state IN ('queued','running','blocked_paused')) AS pending`, [sessionId, actor.userId]);
+      assert(!busy.active && busy.pending < 2, 'capacity_unavailable');
+      await manager.query('SELECT revision FROM teacher_enrichment_states WHERE session_id=$1 FOR UPDATE', [sessionId]);
+      const thread = await enrichmentRecord(manager, sessionId, threadId, 'thread', true);
+      const [used] = await manager.query(`SELECT EXISTS(SELECT 1 FROM teacher_enrichment_events
+        WHERE session_id=$1 AND record_id=$2) OR EXISTS(SELECT 1 FROM teacher_generation_jobs
+        WHERE session_id=$1 AND input_snapshot->>'thread_id'=$2::text) AS exists`, [sessionId, threadId]);
+      assert(!used.exists, 'qualification_session_required');
+      const block = await readAnchor(manager, sessionId, thread.data);
+      const anchorHash = hash({ block, selection: thread.data.selection });
+      const input = { qualification_probe: { contract: 'teacher-contextual-probe/1', purpose: 'contextual_reply',
+          nonce, teacher_policy_hash: TEACHER_GENERATION_POLICY_HASH },
+        thread_id: threadId, visible_context: block, selection: thread.data.selection,
+        anchor_hash: anchorHash, messages: [] };
+      const snapshot = promptSnapshot('contextual_reply', input);
+      await manager.query(`INSERT INTO teacher_generation_jobs(id,session_id,actor_id,auth_session_public_id,
+        purpose,semantic_key,input_snapshot,prompt_snapshot,template_ref,template_version,template_hash,input_hash,
+        selection_snapshot,configuration_generation,session_generation,deadline_at)
+        VALUES($1,$2,$3,$4,'contextual_reply',$5,$6::jsonb,$7,$8,$9,$10,$11,$12::jsonb,$13,$14,clock_timestamp()+interval '120 seconds')`,
+      [jobId, sessionId, actor.userId, actor.sessionId,
+        hash({ jobId, nonce, purpose: 'contextual_reply', threadId, anchorHash }), JSON.stringify(input),
+        snapshot.prompt, snapshot.template_ref, snapshot.template_version, snapshot.template_hash, hash(input),
+        JSON.stringify(selection), config.configuration_generation, config.session_generation]);
+    });
+    this.qualificationJobs.add(jobId);
+    try {
+      await this.run(randomUUID(), signal, jobId);
+      return await this.completeContextualQualification(actor, sessionId, jobId, signal);
+    } finally { this.qualificationJobs.delete(jobId); }
+  }
+  /** Reconcile the same anchored canary after lost ACK/receipt. Never dispatch or replace a job. */
+  async completeContextualQualification(actor: ActorReference, sessionId: string, jobId: string, signal: AbortSignal) {
+    const original = await this.source.transaction(async manager => {
+      await lockAuthority(manager); await this.authority(manager, actor);
+      const [job] = await manager.query(`SELECT j.* FROM teacher_generation_jobs j
+        JOIN teacher_sessions s ON s.id=j.session_id WHERE j.id=$1 AND j.session_id=$2
+        AND j.actor_id=$3 AND s.owner_user_id=$3 AND s.state='active'
+        AND j.purpose='contextual_reply' AND j.selection_snapshot=s.selection`, [jobId, sessionId, actor.userId]);
+      assertContextualQualificationJob(job, jobId);
+      return job;
+    });
+    const selection = original.selection_snapshot as TeacherSelection;
+    // Native ACK belongs to the original persisted descriptor; observing does not dispatch.
+    const live = selection.mode === 'agentic' ? await this.agentic!.observe(selection, signal) : null;
+    if (live) {
+      const operations = await this.source.query('SELECT id FROM ai_generation_operations WHERE teacher_job_id=$1', [jobId]);
+      assert(operations.length === 1 && await this.acknowledgeAgentic(operations[0].id), 'qualification_failed');
+    }
+    signal.throwIfAborted();
+    return this.source.transaction(async manager => {
+      await lockAuthority(manager); await this.authority(manager, actor);
+      const config = await this.configuration(selection, manager, live?.agentic);
+      const [op] = await manager.query(`SELECT o.*,j.purpose,j.state AS job_state,j.input_snapshot,j.semantic_key,j.template_hash,
+        e.data->>'text' AS reply FROM ai_generation_operations o JOIN teacher_generation_jobs j ON j.id=o.teacher_job_id
+        JOIN teacher_sessions s ON s.id=j.session_id JOIN teacher_enrichment_events e
+          ON e.session_id=j.session_id AND e.kind='message' AND e.data->>'role'='assistant' AND e.data->>'job_id'=j.id::text
+        WHERE j.id=$1 AND j.session_id=$2 AND j.actor_id=$3 AND s.owner_user_id=$3 AND s.state='active'
+        AND j.selection_snapshot=s.selection AND o.selection_snapshot=$4::jsonb FOR UPDATE OF o,s`,
+      [jobId, sessionId, actor.userId, JSON.stringify(selection)]);
+      assertContextualQualificationJob(op, jobId);
+      assert(op.job_state === 'ready' && op.phase === 'closed' && op.remote_outcome === 'completed'
+        && op.acknowledged_at && op.started_exchanges === 1 && op.reserved_exchanges === 1
+        && op.terminal_proof?.local_transport_closed === true
+        && (selection.mode !== 'agentic' || op.agentic_acknowledged_at)
+        && contextualQualificationReplyMatches(op.reply, op.input_snapshot.selection)
+        && op.configuration_generation === config.configurationGeneration
+        && op.session_generation === config.sessionGeneration && op.resource_key === config.resourceKey,
+      'qualification_failed');
+      await rejectFinalHelp(manager, sessionId);
+      const thread = await enrichmentRecord(manager, sessionId, op.input_snapshot.thread_id, 'thread');
+      const block = await readAnchor(manager, sessionId, thread.data);
+      assert(hash({ block, selection: thread.data.selection }) === op.input_snapshot.anchor_hash, 'invalid_anchor');
+      const policyCurrent = op.input_snapshot.qualification_probe.teacher_policy_hash === TEACHER_GENERATION_POLICY_HASH
+        && op.template_hash === TEACHER_GENERATION_POLICY.purposes.contextual_reply.template_hash;
+      const transportScope = this.transportScope(selection, config);
+      const evidenceHash = hash({ contract: 'teacher-contextual-probe/1',
+        policy_hash: op.input_snapshot.qualification_probe.teacher_policy_hash,
+        nonce: op.input_snapshot.qualification_probe.nonce, operation: op.id,
+        anchor_hash: op.input_snapshot.anchor_hash, request: op.request_hash, response: op.response_hash });
+      if (policyCurrent) await this.verifySelection(manager, actor, selection, 'learning_packet');
+      if (policyCurrent) await manager.query(`INSERT INTO teacher_purpose_qualifications
+        (scope_hash,policy_hash,transport_scope_hash,purpose,selection_snapshot,configuration_generation,
+          session_generation,operation_id,response_hash,evidence_hash)
+        VALUES($1,$2,$3,'contextual_reply',$4::jsonb,$5,$6,$7,$8,$9)
+        ON CONFLICT(scope_hash) DO UPDATE SET operation_id=excluded.operation_id,response_hash=excluded.response_hash,
+          evidence_hash=excluded.evidence_hash,observed_at=clock_timestamp()`,
+      [teacherPurposeQualificationScope(transportScope), TEACHER_GENERATION_POLICY_HASH, transportScope,
+        JSON.stringify(selection), config.configurationGeneration, config.sessionGeneration, op.id, op.response_hash, evidenceHash]);
+      return { job_id: jobId, operation_id: op.id, selection, local_closed: true, remote_outcome: 'completed',
+        posts: 1, evidence_hash: evidenceHash, teacher_policy_hash: op.input_snapshot.qualification_probe.teacher_policy_hash,
+        qualified_current_policy: policyCurrent, qualification_scope: 'contextual_anchor_protocol_only',
+        purpose: 'contextual_reply', thread_id: thread.id, pedagogical_quality_verified: false };
     });
   }
   async recover(): Promise<void> {

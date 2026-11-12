@@ -1,5 +1,6 @@
 // Operator-only external journal control. Never imported by API/MCP.
 import 'reflect-metadata';
+import { nodiaAiBackupNodeDatabaseOptions } from './nodia-ai-backup-database.mjs';
 import { mkdir, open } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -21,8 +22,7 @@ async function reconcile(store, configFile) {
   const current = await store.snapshot();
   const pending = current.state.entries.filter(entry => entry.confirmed_at === null);
   if (!pending.length) return { confirmed: 0, pending: 0 };
-  const db = new pg.Client({ host: config.database.host, port: config.database.port,
-    user: config.database.username, password: config.database.password, database: config.database.database,
+  const db = new pg.Client({ ...await nodiaAiBackupNodeDatabaseOptions(config.database),
     connectionTimeoutMillis: 5000, query_timeout: 5000, application_name: 'nodia-ai-journal-reconcile-readonly' });
   let result;
   try {

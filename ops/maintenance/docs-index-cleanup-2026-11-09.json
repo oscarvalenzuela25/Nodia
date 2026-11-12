@@ -1,0 +1,685 @@
+{
+  "original_sources": {
+    "progress": {
+      "path": "docs/mvp/00-progress.md",
+      "sha256": "45d2fcc5e68452821ab55f4dca1418c213bb17f9b46e6b93a57f688a7ade3921",
+      "bytes": 367617,
+      "lines": 979
+    },
+    "index": {
+      "path": "docs/mvp/README.md",
+      "sha256": "7fe8e540d7e7be03b7b420caae36ec29c2e8e0d2c655542c38065b6bae09e6d4",
+      "bytes": 196461,
+      "lines": 648
+    }
+  },
+  "after": {
+    "README.md": {
+      "bytes": 18001,
+      "lines": 162,
+      "sha256": "76956dbdb2be79f7e428a8069904c5e47776a7bc2d1495a86f8412d83222ac32"
+    },
+    "00-progress.md": {
+      "bytes": 20964,
+      "lines": 139,
+      "sha256": "b78aecbee1a4f3777919b3142b6b39a16137ca274c6f2490e0fec534e7380304"
+    },
+    "00-progress-history.md": {
+      "bytes": 463559,
+      "lines": 1657,
+      "sha256": "b42d121f409025f9bc64ff2c778296f871051bd632d0773f9c4b431655454fcf"
+    }
+  },
+  "original_nonheading_paragraphs_preserved": true,
+  "legacy_anchors_preserved": 120,
+  "shared_index_block_occurrences_not_duplicated": 132,
+  "active_bytes_before": 564078,
+  "active_bytes_after": 38965,
+  "active_reduction_percent": 93.09,
+  "combined_index_and_history_bytes": 502524,
+  "local_links_checked_after": 1078,
+  "local_fragments_checked_after": 255,
+  "preexisting_link_problems": [
+    {
+      "kind": "fragment",
+      "path": "docs/mvp/86-nodia-ai-ai40-codex-acceptance.md",
+      "fragment": "corte-sucesor-2026-10-24--reversión-del-client-y-matriz-vigente-de-cierre"
+    }
+  ],
+  "new_link_problems": [],
+  "protected_tracked_files_checked": 6863,
+  "protected_tracked_files_changed": [],
+  "date": "2026-11-09",
+  "scope": "plan100 L02; índices MVP, progreso y una historia consolidada",
+  "status": "completed_for_scoped_documentation",
+  "legacy_anchor_map": {
+    "progress": [
+      {
+        "title": "Productos: ServerR11 y ClientR28 activos y comprobados — 2026-11-06",
+        "legacy_anchor": "productos-serverr11-y-clientr28-activos-y-comprobados--2026-11-06",
+        "archive_anchor": "progress-001"
+      },
+      {
+        "title": "Teacher: material Gemini R11 listo y proceso Codex probado — 2026-11-03",
+        "legacy_anchor": "teacher-material-gemini-r11-listo-y-proceso-codex-probado--2026-11-03",
+        "archive_anchor": "progress-002"
+      },
+      {
+        "title": "Gemini Teacher: selección calificada en Native R10 — 2026-11-02",
+        "legacy_anchor": "gemini-teacher-selección-calificada-en-native-r10--2026-11-02",
+        "archive_anchor": "progress-003"
+      },
+      {
+        "title": "Cierre V1 Teacher auditado — R07 unknown / R08 local, 2026-11-02",
+        "legacy_anchor": "cierre-v1-teacher-auditado--r07-unknown--r08-local-2026-11-02",
+        "archive_anchor": "progress-004"
+      },
+      {
+        "title": "Corte histórico: OAuth real y corrección R07 preparada — 2026-11-02",
+        "legacy_anchor": "corte-histórico-oauth-real-y-corrección-r07-preparada--2026-11-02",
+        "archive_anchor": "progress-005"
+      },
+      {
+        "title": "Corte histórico inicial de Teacher VM — 2026-11-01",
+        "legacy_anchor": "corte-histórico-inicial-de-teacher-vm--2026-11-01",
+        "archive_anchor": "progress-006"
+      },
+      {
+        "title": "Teacher en VM con ambos proveedores Agentic — en curso, 2026-11-01",
+        "legacy_anchor": "teacher-en-vm-con-ambos-proveedores-agentic--en-curso-2026-11-01",
+        "archive_anchor": "progress-007"
+      },
+      {
+        "title": "Teacher: activación local por operador — 2026-11-01",
+        "legacy_anchor": "teacher-activación-local-por-operador--2026-11-01",
+        "archive_anchor": "progress-008"
+      },
+      {
+        "title": "Teacher y navegación estable — implementación local2026-11-01",
+        "legacy_anchor": "teacher-y-navegación-estable--implementación-local2026-11-01",
+        "archive_anchor": "progress-009"
+      },
+      {
+        "title": "Teacher: inicio en contexto nuevo y ampliación de rutas — 2026-11-01",
+        "legacy_anchor": "teacher-inicio-en-contexto-nuevo-y-ampliación-de-rutas--2026-11-01",
+        "archive_anchor": "progress-010"
+      },
+      {
+        "title": "Teacher: plan de implementación completo — 2026-11-01",
+        "legacy_anchor": "teacher-plan-de-implementación-completo--2026-11-01",
+        "archive_anchor": "progress-011"
+      },
+      {
+        "title": "Teacher: final de sección y umbral confirmado — R05, 2026-11-01",
+        "legacy_anchor": "teacher-final-de-sección-y-umbral-confirmado--r05-2026-11-01",
+        "archive_anchor": "progress-012"
+      },
+      {
+        "title": "Teacher: ciclo de primera lección — R04, 2026-11-01",
+        "legacy_anchor": "teacher-ciclo-de-primera-lección--r04-2026-11-01",
+        "archive_anchor": "progress-013"
+      },
+      {
+        "title": "Teacher: detalle de revisión y guardado — R03, 2026-11-01",
+        "legacy_anchor": "teacher-detalle-de-revisión-y-guardado--r03-2026-11-01",
+        "archive_anchor": "progress-014"
+      },
+      {
+        "title": "Nodia Teacher — planificación R02, 2026-11-01",
+        "legacy_anchor": "nodia-teacher--planificación-r02-2026-11-01",
+        "archive_anchor": "progress-015"
+      },
+      {
+        "title": "Editor de precio y bloqueo de cambios — R26, 2026-10-31",
+        "legacy_anchor": "editor-de-precio-y-bloqueo-de-cambios--r26-2026-10-31",
+        "archive_anchor": "progress-016"
+      },
+      {
+        "title": "Nombres en el menú lateral colapsado — R25, 2026-10-31",
+        "legacy_anchor": "nombres-en-el-menú-lateral-colapsado--r25-2026-10-31",
+        "archive_anchor": "progress-017"
+      },
+      {
+        "title": "Precios por partida y salida segura del POS — R24, 2026-10-31",
+        "legacy_anchor": "precios-por-partida-y-salida-segura-del-pos--r24-2026-10-31",
+        "archive_anchor": "progress-018"
+      },
+      {
+        "title": "Acciones del último recibo — R23, 2026-10-31",
+        "legacy_anchor": "acciones-del-último-recibo--r23-2026-10-31",
+        "archive_anchor": "progress-019"
+      },
+      {
+        "title": "Vale y detalle opcional — R22 adoptado, 2026-10-30",
+        "legacy_anchor": "vale-y-detalle-opcional--r22-adoptado-2026-10-30",
+        "archive_anchor": "progress-020"
+      },
+      {
+        "title": "Ajustes POS y Chrome de caja — R21 implementado y desplegado, 2026-10-30",
+        "legacy_anchor": "ajustes-pos-y-chrome-de-caja--r21-implementado-y-desplegado-2026-10-30",
+        "archive_anchor": "progress-021"
+      },
+      {
+        "title": "Ticket manual80mm y presentación — R20 implementado y desplegado, 2026-10-30",
+        "legacy_anchor": "ticket-manual80mm-y-presentación--r20-implementado-y-desplegado-2026-10-30",
+        "archive_anchor": "progress-022"
+      },
+      {
+        "title": "Unidades y cantidades de venta — R19 implementado y desplegado, 2026-10-30",
+        "legacy_anchor": "unidades-y-cantidades-de-venta--r19-implementado-y-desplegado-2026-10-30",
+        "archive_anchor": "progress-023"
+      },
+      {
+        "title": "NodiaAI: ventas de solo lectura — R17, 2026-10-30",
+        "legacy_anchor": "nodiaai-ventas-de-solo-lectura--r17-2026-10-30",
+        "archive_anchor": "progress-024"
+      },
+      {
+        "title": "Negocios en móvil — R16, 2026-10-30",
+        "legacy_anchor": "negocios-en-móvil--r16-2026-10-30",
+        "archive_anchor": "progress-025"
+      },
+      {
+        "title": "Ventas y Reportes: filtros y tabla estándar — R15, 2026-10-30",
+        "legacy_anchor": "ventas-y-reportes-filtros-y-tabla-estándar--r15-2026-10-30",
+        "archive_anchor": "progress-026"
+      },
+      {
+        "title": "POS: lista de compra y producto manual — R14, 2026-10-30",
+        "legacy_anchor": "pos-lista-de-compra-y-producto-manual--r14-2026-10-30",
+        "archive_anchor": "progress-027"
+      },
+      {
+        "title": "Estudios e Inglés — borrador R01, 2026-10-29",
+        "legacy_anchor": "estudios-e-inglés--borrador-r01-2026-10-29",
+        "archive_anchor": "progress-028"
+      },
+      {
+        "title": "POS: varias ventas locales — R13, 2026-10-29",
+        "legacy_anchor": "pos-varias-ventas-locales--r13-2026-10-29",
+        "archive_anchor": "progress-029"
+      },
+      {
+        "title": "POS: controles y checkout sin draft UI — R12, 2026-10-29",
+        "legacy_anchor": "pos-controles-y-checkout-sin-draft-ui--r12-2026-10-29",
+        "archive_anchor": "progress-030"
+      },
+      {
+        "title": "Productos: visor y reemplazo de imagen — R11, 2026-10-29",
+        "legacy_anchor": "productos-visor-y-reemplazo-de-imagen--r11-2026-10-29",
+        "archive_anchor": "progress-031"
+      },
+      {
+        "title": "Editor de producto: imagen y recuperación — R10, 2026-10-29",
+        "legacy_anchor": "editor-de-producto-imagen-y-recuperación--r10-2026-10-29",
+        "archive_anchor": "progress-032"
+      },
+      {
+        "title": "Resumen de negocio: filas de paneles — R09, 2026-10-29",
+        "legacy_anchor": "resumen-de-negocio-filas-de-paneles--r09-2026-10-29",
+        "archive_anchor": "progress-033"
+      },
+      {
+        "title": "Presentación Markdown y recarga — R08, 2026-10-29",
+        "legacy_anchor": "presentación-markdown-y-recarga--r08-2026-10-29",
+        "archive_anchor": "progress-034"
+      },
+      {
+        "title": "Dictado: prueba real de la app — 2026-10-29",
+        "legacy_anchor": "dictado-prueba-real-de-la-app--2026-10-29",
+        "archive_anchor": "progress-035"
+      },
+      {
+        "title": "Dictado del navegador — VM R07, 2026-10-29",
+        "legacy_anchor": "dictado-del-navegador--vm-r07-2026-10-29",
+        "archive_anchor": "progress-036"
+      },
+      {
+        "title": "Título editable en cabecera — VM, 2026-10-29",
+        "legacy_anchor": "título-editable-en-cabecera--vm-2026-10-29",
+        "archive_anchor": "progress-037"
+      },
+      {
+        "title": "Ajustes del chat adoptados en VM — 2026-10-29",
+        "legacy_anchor": "ajustes-del-chat-adoptados-en-vm--2026-10-29",
+        "archive_anchor": "progress-038"
+      },
+      {
+        "title": "Punto de venta NodiaAI — verificación natural acotada 2026-10-28",
+        "legacy_anchor": "punto-de-venta-nodiaai--verificación-natural-acotada-2026-10-28",
+        "archive_anchor": "progress-039"
+      },
+      {
+        "title": "Punto de venta y refactor de productos — implementación local 2026-10-28",
+        "legacy_anchor": "punto-de-venta-y-refactor-de-productos--implementación-local-2026-10-28",
+        "archive_anchor": "progress-040"
+      },
+      {
+        "title": "Chat completo en VM para pruebas humanas — 2026-10-28",
+        "legacy_anchor": "chat-completo-en-vm-para-pruebas-humanas--2026-10-28",
+        "archive_anchor": "progress-041"
+      },
+      {
+        "title": "Backend local para prueba humana del chat — 2026-10-28",
+        "legacy_anchor": "backend-local-para-prueba-humana-del-chat--2026-10-28",
+        "archive_anchor": "progress-042"
+      },
+      {
+        "title": "Rediseño local del chat — 2026-10-28",
+        "legacy_anchor": "rediseño-local-del-chat--2026-10-28",
+        "archive_anchor": "progress-043"
+      },
+      {
+        "title": "Ampliación solicitada: API key en el chat — 2026-10-27",
+        "legacy_anchor": "ampliación-solicitada-api-key-en-el-chat--2026-10-27",
+        "archive_anchor": "progress-044"
+      },
+      {
+        "title": "Decisión actual — retirada Web autorizada el 2026-10-27",
+        "legacy_anchor": "decisión-actual--retirada-web-autorizada-el-2026-10-27",
+        "archive_anchor": "progress-045"
+      },
+      {
+        "title": "Adenda vigente: cierre de seis puntos Agentic por alcance — 2026-10-27",
+        "legacy_anchor": "adenda-vigente-cierre-de-seis-puntos-agentic-por-alcance--2026-10-27",
+        "archive_anchor": "progress-046"
+      },
+      {
+        "title": "Adenda anterior Agentic: guardado, idempotencia y cancelación por alcance — 2026-10-26",
+        "legacy_anchor": "adenda-anterior-agentic-guardado-idempotencia-y-cancelación-por-alcance--2026-10-26",
+        "archive_anchor": "progress-047"
+      },
+      {
+        "title": "Corte anterior AI41: imágenes reales Codex y Antigravity verificadas por alcance — 2026-10-26",
+        "legacy_anchor": "corte-anterior-ai41-imágenes-reales-codex-y-antigravity-verificadas-por-alcance--2026-10-26",
+        "archive_anchor": "progress-048"
+      },
+      {
+        "title": "Corte previo OCR: aceptación natural Agentic por alcance; R05 y P1 adoptados — 2026-10-26",
+        "legacy_anchor": "corte-previo-ocr-aceptación-natural-agentic-por-alcance-r05-y-p1-adoptados--2026-10-26",
+        "archive_anchor": "progress-049"
+      },
+      {
+        "title": "Corte anterior R03: aceptación acotada del chat OCR con Codex — 2026-10-26",
+        "legacy_anchor": "corte-anterior-r03-aceptación-acotada-del-chat-ocr-con-codex--2026-10-26",
+        "archive_anchor": "progress-050"
+      },
+      {
+        "title": "Corte anterior R02: OCR publicado y adoptado; comparación en investigación — 2026-10-26",
+        "legacy_anchor": "corte-anterior-r02-ocr-publicado-y-adoptado-comparación-en-investigación--2026-10-26",
+        "archive_anchor": "progress-051"
+      },
+      {
+        "title": "Corte anterior: control MCP real aceptado en la nueva época — 2026-10-26",
+        "legacy_anchor": "corte-anterior-control-mcp-real-aceptado-en-la-nueva-época--2026-10-26",
+        "archive_anchor": "progress-052"
+      },
+      {
+        "title": "Corte anterior56f6: continuidad SPA y observaciones de Gemini",
+        "legacy_anchor": "corte-anterior56f6-continuidad-spa-y-observaciones-de-gemini",
+        "archive_anchor": "progress-053"
+      },
+      {
+        "title": "Cortes anteriores inmediatos: adopciones y control previo",
+        "legacy_anchor": "cortes-anteriores-inmediatos-adopciones-y-control-previo",
+        "archive_anchor": "progress-054"
+      },
+      {
+        "title": "Checklist",
+        "legacy_anchor": "checklist",
+        "archive_anchor": "progress-055"
+      },
+      {
+        "title": "Estado operativo",
+        "legacy_anchor": "estado-operativo",
+        "archive_anchor": "progress-056"
+      },
+      {
+        "title": "Bloqueos actuales",
+        "legacy_anchor": "bloqueos-actuales",
+        "archive_anchor": "progress-057"
+      },
+      {
+        "title": "Decisiones que invalidaron pasos posteriores",
+        "legacy_anchor": "decisiones-que-invalidaron-pasos-posteriores",
+        "archive_anchor": "progress-058"
+      },
+      {
+        "title": "Finanzas personales — estado de Client",
+        "legacy_anchor": "finanzas-personales--estado-de-client",
+        "archive_anchor": "progress-059"
+      },
+      {
+        "title": "Tools — reservas de alojamiento",
+        "legacy_anchor": "tools--reservas-de-alojamiento",
+        "archive_anchor": "progress-060"
+      },
+      {
+        "title": "Próxima acción recomendada",
+        "legacy_anchor": "próxima-acción-recomendada",
+        "archive_anchor": "progress-061"
+      },
+      {
+        "title": "Seguimiento técnico",
+        "legacy_anchor": "seguimiento-técnico",
+        "archive_anchor": "progress-062"
+      },
+      {
+        "title": "Reservas de alojamiento — continuidad",
+        "legacy_anchor": "reservas-de-alojamiento--continuidad",
+        "archive_anchor": "progress-063"
+      }
+    ],
+    "index": [
+      {
+        "title": "Productos: precios independientes y vinculación revisada adoptados — 2026-11-06",
+        "legacy_anchor": "productos-precios-independientes-y-vinculación-revisada-adoptados--2026-11-06",
+        "archive_anchor": "index-001"
+      },
+      {
+        "title": "Teacher: ambos proveedores y recorrido VM comprobados — 2026-11-03",
+        "legacy_anchor": "teacher-ambos-proveedores-y-recorrido-vm-comprobados--2026-11-03",
+        "archive_anchor": "index-002"
+      },
+      {
+        "title": "Teacher en VM con ambos proveedores Agentic — en curso, 2026-11-01",
+        "legacy_anchor": "teacher-en-vm-con-ambos-proveedores-agentic--en-curso-2026-11-01",
+        "archive_anchor": "index-003"
+      },
+      {
+        "title": "Teacher: activación local por operador — 2026-11-01",
+        "legacy_anchor": "teacher-activación-local-por-operador--2026-11-01",
+        "archive_anchor": "index-004"
+      },
+      {
+        "title": "Teacher y navegación estable — implementación local2026-11-01",
+        "legacy_anchor": "teacher-y-navegación-estable--implementación-local2026-11-01",
+        "archive_anchor": "index-005"
+      },
+      {
+        "title": "Teacher y rutas independientes del menú — inicio solicitado, 2026-11-01",
+        "legacy_anchor": "teacher-y-rutas-independientes-del-menú--inicio-solicitado-2026-11-01",
+        "archive_anchor": "index-006"
+      },
+      {
+        "title": "Nodia Teacher: paquete completo para implementar — 2026-11-01",
+        "legacy_anchor": "nodia-teacher-paquete-completo-para-implementar--2026-11-01",
+        "archive_anchor": "index-007"
+      },
+      {
+        "title": "Teacher: práctica y final de sección≥90% — R05, 2026-11-01",
+        "legacy_anchor": "teacher-práctica-y-final-de-sección90--r05-2026-11-01",
+        "archive_anchor": "index-008"
+      },
+      {
+        "title": "Teacher: primera unidad, teoría/quiz y pausa — R04, 2026-11-01",
+        "legacy_anchor": "teacher-primera-unidad-teoríaquiz-y-pausa--r04-2026-11-01",
+        "archive_anchor": "index-009"
+      },
+      {
+        "title": "Teacher: revisión, ajustes y creación del plan — 2026-11-01",
+        "legacy_anchor": "teacher-revisión-ajustes-y-creación-del-plan--2026-11-01",
+        "archive_anchor": "index-010"
+      },
+      {
+        "title": "Nodia Teacher general — flujo y plan de implementación, 2026-11-01",
+        "legacy_anchor": "nodia-teacher-general--flujo-y-plan-de-implementación-2026-11-01",
+        "archive_anchor": "index-011"
+      },
+      {
+        "title": "Editor de precio y bloqueo de cambios — R26, 2026-10-31",
+        "legacy_anchor": "editor-de-precio-y-bloqueo-de-cambios--r26-2026-10-31",
+        "archive_anchor": "index-012"
+      },
+      {
+        "title": "Nombres en el menú lateral colapsado — R25, 2026-10-31",
+        "legacy_anchor": "nombres-en-el-menú-lateral-colapsado--r25-2026-10-31",
+        "archive_anchor": "index-013"
+      },
+      {
+        "title": "Precios por partida y salida segura del POS — R24, 2026-10-31",
+        "legacy_anchor": "precios-por-partida-y-salida-segura-del-pos--r24-2026-10-31",
+        "archive_anchor": "index-014"
+      },
+      {
+        "title": "Acciones del último recibo — R23, 2026-10-31",
+        "legacy_anchor": "acciones-del-último-recibo--r23-2026-10-31",
+        "archive_anchor": "index-015"
+      },
+      {
+        "title": "Vale y detalle opcional — R22 adoptado, 2026-10-30",
+        "legacy_anchor": "vale-y-detalle-opcional--r22-adoptado-2026-10-30",
+        "archive_anchor": "index-016"
+      },
+      {
+        "title": "Ajustes POS y Chrome de caja — R21 implementado y desplegado, 2026-10-30",
+        "legacy_anchor": "ajustes-pos-y-chrome-de-caja--r21-implementado-y-desplegado-2026-10-30",
+        "archive_anchor": "index-017"
+      },
+      {
+        "title": "Ticket manual80mm y presentación — R20 implementado y desplegado, 2026-10-30",
+        "legacy_anchor": "ticket-manual80mm-y-presentación--r20-implementado-y-desplegado-2026-10-30",
+        "archive_anchor": "index-018"
+      },
+      {
+        "title": "Unidades y cantidades de venta — R19 implementado y desplegado, 2026-10-30",
+        "legacy_anchor": "unidades-y-cantidades-de-venta--r19-implementado-y-desplegado-2026-10-30",
+        "archive_anchor": "index-019"
+      },
+      {
+        "title": "NodiaAI: ventas de solo lectura — R17, 2026-10-30",
+        "legacy_anchor": "nodiaai-ventas-de-solo-lectura--r17-2026-10-30",
+        "archive_anchor": "index-020"
+      },
+      {
+        "title": "Negocios en móvil — R16, 2026-10-30",
+        "legacy_anchor": "negocios-en-móvil--r16-2026-10-30",
+        "archive_anchor": "index-021"
+      },
+      {
+        "title": "Filtros, tablas y entrada de productos — R15, 2026-10-30",
+        "legacy_anchor": "filtros-tablas-y-entrada-de-productos--r15-2026-10-30",
+        "archive_anchor": "index-022"
+      },
+      {
+        "title": "POS como lista de compra y edición manual — R14, 2026-10-30",
+        "legacy_anchor": "pos-como-lista-de-compra-y-edición-manual--r14-2026-10-30",
+        "archive_anchor": "index-023"
+      },
+      {
+        "title": "Estudios e Inglés — propuesta inicial 2026-10-29",
+        "legacy_anchor": "estudios-e-inglés--propuesta-inicial-2026-10-29",
+        "archive_anchor": "index-024"
+      },
+      {
+        "title": "Varias ventas locales y presentación del POS — R13, 2026-10-29",
+        "legacy_anchor": "varias-ventas-locales-y-presentación-del-pos--r13-2026-10-29",
+        "archive_anchor": "index-025"
+      },
+      {
+        "title": "POS accesible y checkout atómico — R12, 2026-10-29",
+        "legacy_anchor": "pos-accesible-y-checkout-atómico--r12-2026-10-29",
+        "archive_anchor": "index-026"
+      },
+      {
+        "title": "Visor de imagen desde Productos — R11, 2026-10-29",
+        "legacy_anchor": "visor-de-imagen-desde-productos--r11-2026-10-29",
+        "archive_anchor": "index-027"
+      },
+      {
+        "title": "Editor de producto e imagen al guardar — R10, 2026-10-29",
+        "legacy_anchor": "editor-de-producto-e-imagen-al-guardar--r10-2026-10-29",
+        "archive_anchor": "index-028"
+      },
+      {
+        "title": "Orden visual del resumen de negocio — R09, 2026-10-29",
+        "legacy_anchor": "orden-visual-del-resumen-de-negocio--r09-2026-10-29",
+        "archive_anchor": "index-029"
+      },
+      {
+        "title": "Markdown de respuestas y recarga de cabecera — R08, 2026-10-29",
+        "legacy_anchor": "markdown-de-respuestas-y-recarga-de-cabecera--r08-2026-10-29",
+        "archive_anchor": "index-030"
+      },
+      {
+        "title": "Dictado: intento autenticado negativo — 2026-10-29",
+        "legacy_anchor": "dictado-intento-autenticado-negativo--2026-10-29",
+        "archive_anchor": "index-031"
+      },
+      {
+        "title": "Dictado del navegador a texto — VM R07, 2026-10-29",
+        "legacy_anchor": "dictado-del-navegador-a-texto--vm-r07-2026-10-29",
+        "archive_anchor": "index-032"
+      },
+      {
+        "title": "Título editable en cabecera — VM, 2026-10-29",
+        "legacy_anchor": "título-editable-en-cabecera--vm-2026-10-29",
+        "archive_anchor": "index-033"
+      },
+      {
+        "title": "Ajustes del chat adoptados en VM — 2026-10-29",
+        "legacy_anchor": "ajustes-del-chat-adoptados-en-vm--2026-10-29",
+        "archive_anchor": "index-034"
+      },
+      {
+        "title": "Punto de venta con NodiaAI — prueba real 2026-10-28",
+        "legacy_anchor": "punto-de-venta-con-nodiaai--prueba-real-2026-10-28",
+        "archive_anchor": "index-035"
+      },
+      {
+        "title": "Punto de venta y refactor de productos — implementación local 2026-10-28",
+        "legacy_anchor": "punto-de-venta-y-refactor-de-productos--implementación-local-2026-10-28",
+        "archive_anchor": "index-036"
+      },
+      {
+        "title": "Chat completo en VM para pruebas humanas — 2026-10-28",
+        "legacy_anchor": "chat-completo-en-vm-para-pruebas-humanas--2026-10-28",
+        "archive_anchor": "index-037"
+      },
+      {
+        "title": "Backend local para prueba humana del chat — 2026-10-28",
+        "legacy_anchor": "backend-local-para-prueba-humana-del-chat--2026-10-28",
+        "archive_anchor": "index-038"
+      },
+      {
+        "title": "Rediseño local del chat — 2026-10-28",
+        "legacy_anchor": "rediseño-local-del-chat--2026-10-28",
+        "archive_anchor": "index-039"
+      },
+      {
+        "title": "Ampliación solicitada: API key en el chat — 2026-10-27",
+        "legacy_anchor": "ampliación-solicitada-api-key-en-el-chat--2026-10-27",
+        "archive_anchor": "index-040"
+      },
+      {
+        "title": "Decisión actual — retirada Web autorizada el 2026-10-27",
+        "legacy_anchor": "decisión-actual--retirada-web-autorizada-el-2026-10-27",
+        "archive_anchor": "index-041"
+      },
+      {
+        "title": "Corte vigente: seis puntos cerrados por alcance Agentic de laboratorio — 2026-10-27",
+        "legacy_anchor": "corte-vigente-seis-puntos-cerrados-por-alcance-agentic-de-laboratorio--2026-10-27",
+        "archive_anchor": "index-042"
+      },
+      {
+        "title": "Corte anterior: OCR natural Agentic aceptado por alcance; R05 y P1 adoptados — 2026-10-26",
+        "legacy_anchor": "corte-anterior-ocr-natural-agentic-aceptado-por-alcance-r05-y-p1-adoptados--2026-10-26",
+        "archive_anchor": "index-043"
+      },
+      {
+        "title": "Corte anterior R03: aceptación acotada del chat OCR con Codex — 2026-10-26",
+        "legacy_anchor": "corte-anterior-r03-aceptación-acotada-del-chat-ocr-con-codex--2026-10-26",
+        "archive_anchor": "index-044"
+      },
+      {
+        "title": "Corte anterior R02: OCR publicado y adoptado; comparación en investigación — 2026-10-26",
+        "legacy_anchor": "corte-anterior-r02-ocr-publicado-y-adoptado-comparación-en-investigación--2026-10-26",
+        "archive_anchor": "index-045"
+      },
+      {
+        "title": "Corte anterior: control MCP real aceptado en la nueva época — 2026-10-26",
+        "legacy_anchor": "corte-anterior-control-mcp-real-aceptado-en-la-nueva-época--2026-10-26",
+        "archive_anchor": "index-046"
+      },
+      {
+        "title": "Corte anterior56f6: continuidad SPA y observaciones de Gemini",
+        "legacy_anchor": "corte-anterior56f6-continuidad-spa-y-observaciones-de-gemini",
+        "archive_anchor": "index-047"
+      },
+      {
+        "title": "Cortes anteriores inmediatos: adopciones y control previo",
+        "legacy_anchor": "cortes-anteriores-inmediatos-adopciones-y-control-previo",
+        "archive_anchor": "index-048"
+      },
+      {
+        "title": "Cómo continuar",
+        "legacy_anchor": "cómo-continuar",
+        "archive_anchor": "index-049"
+      },
+      {
+        "title": "Orden de documentos",
+        "legacy_anchor": "orden-de-documentos",
+        "archive_anchor": "index-050"
+      },
+      {
+        "title": "Ampliación previa a producción en revisión",
+        "legacy_anchor": "ampliación-previa-a-producción-en-revisión",
+        "archive_anchor": "index-051"
+      },
+      {
+        "title": "Integraciones pendientes de retomar",
+        "legacy_anchor": "integraciones-pendientes-de-retomar",
+        "archive_anchor": "index-052"
+      },
+      {
+        "title": "Finanzas personales — ampliación y planes",
+        "legacy_anchor": "finanzas-personales--ampliación-y-planes",
+        "archive_anchor": "index-053"
+      },
+      {
+        "title": "Tools — reservas de alojamiento",
+        "legacy_anchor": "tools--reservas-de-alojamiento",
+        "archive_anchor": "index-054"
+      },
+      {
+        "title": "Contactos de proveedores",
+        "legacy_anchor": "contactos-de-proveedores",
+        "archive_anchor": "index-055"
+      },
+      {
+        "title": "Estados",
+        "legacy_anchor": "estados",
+        "archive_anchor": "index-056"
+      },
+      {
+        "title": "Jerarquía de información",
+        "legacy_anchor": "jerarquía-de-información",
+        "archive_anchor": "index-057"
+      }
+    ]
+  },
+  "validation_scope": {
+    "markdown_files": "tres documentos consolidados; referencias locales y fragments sin navegación externa",
+    "protected_files": "archivos versionados presentes antes del lote, excepto los índices y el tracking de mantenimiento declarado",
+    "knowledge": "compileKnowledge en memoria con previousManifest; sin emitBundle/build/inferencia/runtime"
+  },
+  "knowledge": {
+    "unchanged": true,
+    "sources": 81,
+    "excluded": 37,
+    "documents": 44,
+    "fragments": 46,
+    "capabilities": 153,
+    "registry_raw_sha256": "d6301830b97e6e3af36a96655b5351b3365c9d73eaf336ac6c004711c3a4585d",
+    "registry_canonical_sha256": "3b924e70d850a455a72d24c409f5a630ffb6788f354373f95294076235e0f758",
+    "compiled_release_id": "e6ae42867985c95eade143a8e9e548b80f33b4a8aa5324555e1fefcfc450f0c7",
+    "manifest_canonical_sha256": "71a2916181cb208791869056b17df6d2c63c5f60466a4b217fbb68a6d2c10592",
+    "assets_canonical_sha256": "10723b8b4abb6d0e0bf52e8713df54489a045457c0c5872a64da94a5d58e6a4c"
+  },
+  "limitations": [
+    "Un fragmento histórico previo hacia plan86 sigue registrado para revisión; no se altera su fuente hasheada.",
+    "Reducir índices no acredita espacio físico liberado ni reducción del historial Git.",
+    "No se borraron temporales, código, dependencias, evidencia, perfiles, sesiones ni backups.",
+    "No se ejecutó calificación IA, build del producto, DB, VM o despliegue; no se cambiaron aprobaciones."
+  ]
+}

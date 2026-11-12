@@ -95,6 +95,8 @@
     "test:nodia-ai:reports": "npm run build && node test/nodia-ai-ai30.integration.mjs",
     "test:nodia-ai:cross-reports": "npm run build && node test/nodia-ai-ai31.integration.mjs",
     "test:teacher:integration": "npm run build && node test/teacher-domain.integration.mjs && node test/teacher-runtime.integration.mjs",
+    "test:teacher:upgrade": "npm run build && node test/teacher-upgrade.integration.mjs && node test/teacher-learning-evidence.integration.mjs && node test/teacher-enrichment.integration.mjs && node test/teacher-enrichment-qa.integration.mjs && node test/teacher-upgrade-http.integration.mjs && node test/teacher-purpose-qualification.integration.mjs && node --test test/teacher-qualification-args.spec.mjs test/teacher-upgrade-real-args.spec.mjs",
+    "qa:teacher:real": "node scripts/verify-teacher-upgrade-real.mjs",
     "test:teacher:real-api": "npm run build && node test/teacher-runtime.integration.mjs --real-api",
     "qualification:teacher:text": "npm run build && node scripts/qualify-teacher-text.mjs"
   },

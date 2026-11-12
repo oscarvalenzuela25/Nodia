@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-12",
+  "timezone": "America/Santiago",
+  "status": "prepared_locally_not_installed",
+  "branch": "development",
+  "committed": false,
+  "pushed": false,
+  "master_changed": false,
+  "production_source_sha_unchanged": "f01b493336883403a84b1c80759ce4fc43cbd370",
+  "production_writes_requested_this_delivery": false,
+  "updater_installed_on_vps": false,
+  "ssh_gateway_changed": false,
+  "sudo_grant_created": false,
+  "ci": {
+    "workflow": ".github/workflows/ci.yml",
+    "typescript_check": "one build per selected component",
+    "artifact_events": [
+      "push refs/heads/master"
+    ],
+    "artifact_components": [
+      "client",
+      "server"
+    ],
+    "artifact_files": 4,
+    "retention_days": 1,
+    "backup_retention_days_unchanged": 7,
+    "upload_does_not_prove_global_ci_success": true,
+    "actual_github_run_verified_for_this_delivery": false,
+    "production_client_config": "two public VITE environment variables, no production secrets passed to build/tests"
+  },
+  "checks": {
+    "linux_node": {
+      "passed": 48,
+      "failed": 0
+    },
+    "linux_python": {
+      "passed": 17,
+      "failed": 0
+    },
+    "actionlint": {
+      "version": "1.7.12",
+      "workflows": 3,
+      "status": "passed"
+    },
+    "sql": {
+      "checks": 39,
+      "postgres_major": 16,
+      "tls_verify_full": true,
+      "node_uid": 900,
+      "baseline_migrations": 45,
+      "synthetic_target_migrations": 46,
+      "teacher_48_tested": false,
+      "incorrect_tls_hostname_rejected": true,
+      "lock_conflict_rejected": true,
+      "failed_increment_transaction_rolled_back": true,
+      "seed_requested": false,
+      "provider_requests": 0,
+      "receipt_runs": [
+        {
+          "ignored_local_receipt": "output/production/update-backend-sql-6dc3d21ecc09.json",
+          "sha256": "fa136c896d0efb3aa4f3d2aaef6d5d21ab232e47913ac56709a5bc8772adb03c",
+          "checks": 39,
+          "status": "passed"
+        },
+        {
+          "ignored_local_receipt": "output/production/update-backend-sql-4975a6db2027.json",
+          "sha256": "fa136c896d0efb3aa4f3d2aaef6d5d21ab232e47913ac56709a5bc8772adb03c",
+          "checks": 39,
+          "status": "passed"
+        },
+        {
+          "ignored_local_receipt": "output/production/update-backend-sql-7f285994b9ed.json",
+          "sha256": "fa136c896d0efb3aa4f3d2aaef6d5d21ab232e47913ac56709a5bc8772adb03c",
+          "checks": 39,
+          "status": "passed"
+        }
+      ],
+      "maintained_runner_inputs": "explicit runtime-volume or hash-verified runtime-archive; both paths passed"
+    },
+    "nginx": {
+      "real_nginx": true,
+      "api_status_sequence": [
+        200,
+        503,
+        200
+      ],
+      "acme_and_tls_check_preserved": true,
+      "systemctl_reload_stubbed": true,
+      "full_systemd_cutover_tested": false
+    }
+  },
+  "packaging_rehearsal": {
+    "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+    "archive_sha256": "721bd2a9936543a3b40fdf5ab2c865b5e4066d29be9a972026afde70ae6bbc0a",
+    "archive_bytes": 210068473,
+    "inventory_files": 24491,
+    "package_tree_sha256": "ff33b6fdbbbc05167745da9c2fde5f3d19355baf51d51214bbc7121cb6ea1e6f",
+    "production_eligible": false,
+    "context": "synthetic development, not real Actions run",
+    "new_typescript_builds": 0,
+    "native_dependencies_verified": true,
+    "ignored_local_receipt": "output/production/ci-artifact-packaging-rehearsal-20261112-r02.json"
+  },
+  "operator_updater": {
+    "bundle_manifest_sha256": "8c90a8378e39b35b0455f6d93222a51161f64cf0fa0f7378274a65992e592f3f",
+    "bundle_assets": 14,
+    "source_assets_match_prepared_bundle": true,
+    "default_mode": "plan writes private state and candidate only",
+    "apply_requires_new_operation_id": true,
+    "original_github_zip_and_official_digest_required": true,
+    "completed_ci_success_and_current_master_required": true,
+    "source_authentication_before_zip_extraction": true,
+    "official_public_artifacts_api_metadata_read_tested": true,
+    "actual_actions_artifact_download_or_operator_apply_tested": false,
+    "backup_before_stopping_writers": true,
+    "migration_transaction": "all",
+    "automatic_retry": false,
+    "automatic_rollback": false,
+    "current_and_backup_paths_are_cross_file_atomic": false,
+    "live_baseline_read_only_comparison": {
+      "unit_templates_matched": 7,
+      "nginx_site_matched": true
+    }
+  },
+  "pending": [
+    "full real-systemd cutover rehearsal including backup/timers/API/worker",
+    "final development/Teacher48 package rehearsal",
+    "CI actual final integrated source SHA",
+    "master-only Pages/VPS preflight workflow runs",
+    "reviewed updater installation on VPS",
+    "minimal transport and automatic CD orchestration; Pages publication without rebuild"
+  ],
+  "product_knowledge_impact": "deployment tooling only; no product capabilities or AI qualification changes",
+  "source_files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "a1b5f1a844f91f523e3a495b80c546d73c15d91b8adbec51ef633ddff0f3d63f"
+    },
+    {
+      "path": "ops/ci/artifact-release.mjs",
+      "sha256": "8eb4b795085c51ab388679a58a3099c0507ceea5fb2c7b36718b8fc5d9267d45"
+    },
+    {
+      "path": "ops/ci/artifact-release.test.mjs",
+      "sha256": "578e51581d673c5cb07cbb646047745846716a10ee7385bd28cb0a59ebb29094"
+    },
+    {
+      "path": "ops/production/backend_update.py",
+      "sha256": "a6d4f24c6c9a1f10eca8f1a0b78bf637a3cca6bb434c7759709dbdfbd59dcd53"
+    },
+    {
+      "path": "ops/production/update-backend.py",
+      "sha256": "1b7969ae4d1a791c37d233ba89a4d597d0c0c07815d38ca40a69631209e393ee"
+    },
+    {
+      "path": "ops/production/update-backend-action.mjs",
+      "sha256": "0c63a501e61f31ecc350ec8a3d82b54a9fcb9c201c149edf7b1feb0432e66a1a"
+    },
+    {
+      "path": "ops/production/install-backend-updater.py",
+      "sha256": "2a04488fa0a5a5170ccbcc756f3d8e75a3c735380e5dc88b2431d16807854a99"
+    },
+    {
+      "path": "ops/production/tests/test_backend_update.py",
+      "sha256": "ef8eed9ecaa491d19e079fdb47e497cdae2ebf95308714901d6c8adc39d14698"
+    },
+    {
+      "path": "ops/production/tests/test_backend_update_host.py",
+      "sha256": "a0f2208de42d25765df49411d2fd18b0c3b9741d85ad7898d5425da2817b678f"
+    },
+    {
+      "path": "ops/production/tests/update-backend-action.test.mjs",
+      "sha256": "938c88a3ce38931c7ddc444e7a015a4035d449b3890fb8fe706abffffad17543"
+    },
+    {
+      "path": "ops/production/tests/updater-maintenance.integration.sh",
+      "sha256": "9a1023c611ac6f3977a5ba353bc55051595c324295ddc425f2bffa138ac46241"
+    },
+    {
+      "path": "ops/production/tests/update-backend-sql.integration.py",
+      "sha256": "af2e3ee897ba253f09c7605206731c1a1aaee46af993ed17b618f06b58b0ef9f"
+    },
+    {
+      "path": "ops/production/tests/update-backend-sql.integration.mjs",
+      "sha256": "71ee6fd17b5bbb54570a2727ebcadf0c4ae3f2182d509c7e11517b429051b223"
+    }
+  ],
+  "documentation": [
+    "ops/ci/README.md",
+    "ops/production/README.md",
+    "docs/mvp/99-production-deployment-and-cicd-plan.md",
+    "docs/mvp/00-progress.md",
+    "docs/architecture/decisions/ADR-097-monorepo-production-release-pipeline.md",
+    "Obsidian: utils/VPS/DEPLOY VPS.md sections25.13-25.15"
+  ],
+  "delivery_validation": {
+    "scoped_whitespace_check": "passed",
+    "utf8_lf_no_bom_files_checked": 20,
+    "whole_workspace_diff_check": "pre-existing unrelated extra blank line at nodia-client/.env.example:9; preserved"
+  }
+}

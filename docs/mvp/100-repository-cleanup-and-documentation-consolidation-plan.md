@@ -1,6 +1,6 @@
 # Limpieza del repositorio y consolidación documental
 
-> Estado: en revisión. El usuario solicita preparar un plan; no se ejecutan borrados, movimientos, normalización de históricos ni cambios de runtime.
+> Estado: en revisión; ejecución parcial L02 de índices/progreso el 2026-11-09, descrita al final. No se ejecutan borrados de temporales/código, normalización de evidencia histórica ni cambios de runtime.
 > Fecha: 2026-11-09.
 > Dependencias: [reglas raíz](../../AGENTS.md), [progreso](00-progress.md), [índice](README.md), [mantenimiento](../../ops/maintenance/README.md), [estándar de conocimiento](../nodia-ai/knowledge/README.md), [producción/CI99](99-production-deployment-and-cicd-plan.md).
 
@@ -109,12 +109,13 @@ En Windows, antes de cualquier movimiento o borrado recursivo comprobar que el p
 - [ ] Inventariar por lote paths, consumidores, procesos activos, capacidad de regeneración y evidencia única; tamaños recursivos sólo donde sea útil y sin seguir reparse points.
 - [ ] Mapear helpers mantenidos que dependen de paquetes ignorados/temporales y preparar su sustitución antes de retirar originales.
 - [ ] Crear matriz de documentación vigente/histórica, sección canónica, aprobación, hashes/anchors y destino propuesto. No usar edad como decisión automática.
+- [x] Completar el mapa del lote acotado README/00-progress: consumidores, exclusión de fuentes publicadas, párrafos conservados, anclas antiguas y destinos de historia; ver recibo L02.
 
 ### L02 — Entradas y progreso
 
-- [ ] Simplificar README MVP a índice y mover estado actual a00-progress mediante enlaces, conservando contratos/paths registrados.
-- [ ] Consolidar cronología repetida por tema sin perder límites, incidencias o pendientes; medir reducción de bloques repetidos y facilidad de encontrar el primer paso incompleto.
-- [ ] Revisar README raíz y navegación entre planes para que una persona encuentre producto, desarrollo, despliegue y pendientes sin leer cronologías completas.
+- [x] Simplificar README MVP a índice y mover estado actual a00-progress mediante enlaces, conservando contratos/paths registrados.
+- [x] Consolidar las cronologías de estos dos índices sin perder límites, incidencias o pendientes; historia única y métricas en el recibo L02. Los demás planes temáticos se evalúan en L03.
+- [x] Revisar README raíz y navegación: sus rutas estables a MVP/progreso/ADRs/instalación siguen siendo válidas, sin requerir cambios en raíz. Las entradas de dominio, producción y mantenimiento están en el índice simplificado.
 
 ### L03 — Documentación funcional y despliegue
 
@@ -137,10 +138,20 @@ En Windows, antes de cualquier movimiento o borrado recursivo comprobar que el p
 - [ ] Enlazar la política de salidas en CI99: empaquetar fuentes/artefactos explícitos, no todo el workspace con `.tmp`, perfiles o dumps. No automatizar GC destructivo por calendario sin inventario/exclusiones comprobadas.
 - [ ] Registrar cierre por lote en `ops/maintenance`, sin marcar documentos aprobados ni publicar corpus por limpiar.
 
-**Primer paso incompleto:** completar L01 para el primer lote de índices/progreso y salidas cerradas. La limpieza documental puede avanzar junto a ramas/CI de99; no bloquear todo el piloto por reorganizar historia, pero resolver dependencias temporales y exclusiones que afecten al release antes de publicar.
+**Primer paso incompleto:** completar L01 para los siguientes lotes y salidas cerradas; L02 de README/00-progress está cerrado por el alcance registrado abajo. L03 funcional/conocimiento y L04 temporales/código no están ejecutados. La limpieza documental puede avanzar junto a ramas/CI de99; no bloquear todo el piloto por reorganizar historia, pero resolver dependencias temporales y exclusiones que afecten al release antes de publicar.
 
 ## 8. Evaluación de impacto y entrega de esta revisión
 
 Esta revisión sólo crea el plan y enlaces de continuidad. No cambian UI, backend, contratos, permisos ni herramientas NodiaAI; no requiere nuevas fichas/publicación. La ejecución posterior debe evaluar cada fuente y sus fichas conforme al estándar, especialmente si cambia paths/cuerpos compilados o disponibilidad operativa.
 
-Inventario preliminar parcial y comprobaciones documentales diferenciados de ejecución: no se borraron/movieron temporales, no se alteraron archivos históricos ni se verificó recuperación o capacidad de un entorno. Las cifras observadas no acreditan ahorro conseguido.
+Inventario preliminar parcial y comprobaciones documentales diferenciados de ejecución: al crear el plan no se borraron/movieron temporales ni se verificó recuperación o capacidad de un entorno. La ejecución documental posterior tiene su propio recibo; las cifras preliminares de posibles temporales no acreditan ahorro conseguido.
+
+## 9. L02 ejecutado: README y 00-progress — 2026-11-09
+
+Solicitud explícita de retomar la limpieza empezando por estos dos documentos. [README](README.md) queda como índice con estados/jerarquía y [00-progress](00-progress.md) como síntesis vigente/pendientes; [historial único](00-progress-history.md) conserva todos los párrafos previos no encabezado y el contexto de sus secciones, sin repetir 132 bloques compartidos del antiguo índice. Es una consolidación de texto propio editable, no una edición de evidencias originales firmadas o sus manifiestos.
+
+Los dos índices pasan de 564.078 a 38.965 bytes (93,09% menos texto de entrada), conservando 120 anclas antiguas entre secciones vigentes y enlaces explícitos a historia. Índices más historia suman 502.524 bytes: la reducción de las entradas no equivale a borrar toda la historia ni a reducir el historial Git. No se eliminan fuentes funcionales, contratos, ADRs, evidencia, originales de LF, temporales, sesiones o backups.
+
+[Recibo de conservación y verificación](../../ops/maintenance/docs-index-cleanup-2026-11-09.json): cobertura de párrafos, mapa de anclas, comprobaciones de archivos/enlaces/fragments, integridad del resto de fuentes y baseline del compiler. No se introduce ningún problema nuevo de enlace; un fragmento histórico previo hacia86 queda registrado para revisión posterior, sin modificar esa fuente hasheada. El registry, release, manifiesto y assets de conocimiento compilados sólo en memoria son idénticos al baseline (44 documentos/46 fragmentos/153 capacidades); no se emite bundle ni se repiten reconciliadores históricos.
+
+La síntesis no convierte en pendientes actuales las antiguas instrucciones Web/login, instalaciones ya sucedidas o cierres anteriores; conserva los bloqueadores OCR R16, Teacher96§32, aceptación de recuperación y preparación productiva por sus fuentes vigentes. No se cambia aprobación documental ni se acredita nueva aceptación de producto/entorno.

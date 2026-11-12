@@ -1,5 +1,17 @@
 # Mantenimiento del workspace — 2026-10-23
 
+## Original del instalador productivo — 2026-11-11
+
+El [ZIP del helper original](production-first-install-original-20261111.zip) conserva los bytes que se ejecutaron antes de corregir la limpieza de su unidad temporal. El [manifiesto](production-first-install-original-20261111.json) registra origen, tamaño y SHA256 original6fd3ba48, comprobado desde el VPS antes de reemplazarlo; el helper corregido tiene hash distinto. No contiene configuración, credenciales o claves, ni constituye un rollback de base de datos. La incidencia y reconciliación READ ONLY se siguen en [evidencia de primera instalación](../../docs/evidence/production-first-install-20261111-r01.json).
+
+## Índices del MVP consolidados — 2026-11-09
+
+Lote L02 del [plan100](../../docs/mvp/100-repository-cleanup-and-documentation-consolidation-plan.md): [README MVP](../../docs/mvp/README.md) como índice, [progreso](../../docs/mvp/00-progress.md) con estado/pendientes e [historia única](../../docs/mvp/00-progress-history.md) para cortes anteriores. Se preservan los párrafos previos no encabezado, 120 anclas y el contexto de las secciones; 132 bloques compartidos no se duplican en los complementos del índice.
+
+Las entradas pasan de 564.078 a 38.965 bytes (−93,09%); entradas más historia suman 502.524 bytes, sin atribuir reducción del historial Git o espacio físico liberado. El [recibo](docs-index-cleanup-2026-11-09.json) registra fuentes, cobertura, referencias y verificación. Ningún problema nuevo de enlace; un fragmento histórico previo hacia86 queda identificado, sin alterar la fuente o su evidencia. Registry/release/manifiesto/assets compilados en memoria permanecen idénticos, con 44 documentos, 46 fragmentos y 153 capacidades.
+
+No se borran temporales, código, dependencias, perfiles, sesiones, backups o evidencia, ni se cambian runtime/VM/aprobaciones. Los originales y hashes anteriores aLF de las secciones inferiores siguen intactos. L03/L04 y el inventario general L01 continúan pendientes; sus cifras históricas no describen esta ejecución.
+
 ## Plan de limpieza y consolidación — 2026-11-09
 
 El [plan100](../../docs/mvp/100-repository-cleanup-and-documentation-consolidation-plan.md) centraliza candidatos, límites de conservación, mapa documental y checklist L01–L05. La revisión actual sólo inventaría/prepara: no ejecuta limpieza ni convierte los tamaños de auditorías anteriores en ahorro. Conservar originales, catálogos y dependencias mantenidas en `ops/lab/artifacts` hasta clasificarlos. Registrar cierres consolidados por lote aquí sin duplicar reportes intermedios.
@@ -60,3 +72,20 @@ Se preservaron 436 originales referenciados y logs históricos en un único [paq
 Los 6.139 archivos propios gestionados conservan exactamente sus bytes previos y el análisis UTF-8 no encontró CRLF; no fue necesario convertirlos. También se comprobó LF en los JSON generados de runtime. Se excluyen binarios, dependencias, secretos, perfiles, sesiones y originales históricos. Las verificaciones puntuales de dependencias y configuración local permanecen intactas. No cambian UI, contratos, comportamiento, fichas, permisos ni publicación de conocimiento.
 
 `npm run knowledge:check` ya fallaba **antes** de la limpieza con `implementation_hash_mismatch`. No se alteró el registro para encubrirlo ni se ejecutaron inferencias, despliegues o cambios de datos de negocio.
+
+## Original del helper client16 — 2026-11-11
+
+`production-client16-original-20261111.zip` conserva los bytes del script que
+configuró el repositorio pero se detuvo antes de instalar: el parser Candidate
+cerraba el pipe y propagaba SIGPIPE141 bajo pipefail. El manifiesto homónimo
+registra SHA original y reemplazo; no contiene secretos ni datos de PostgreSQL.
+El reemplazo consume toda la salida y conserva las restricciones del plan APT.
+
+## Original del configurador de backups — 2026-11-11
+
+`production-backup-configuration-original-20261111.zip` conserva el helper fe2af13c
+anterior a la corrección del lock vacío; el manifiesto homónimo registra hashes.
+El validador de archivos de configuración exigía contenido y rechazaba el archivo
+installation.lock legítimo de cero bytes. La corrección valida por fstat el FD
+abierto root:root0600/regular/nlink1 y acepta cero bytes, sin relajar otros archivos.
+No contiene secretos/configuración real, sólo código fuente original.

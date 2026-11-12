@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-12",
+  "status": "prepared_in_development_not_run_against_cloudflare",
+  "branch": "development",
+  "user_report": {
+    "production_environment_created": true,
+    "account_and_project_variables_saved": true,
+    "cloudflare_token_saved": true,
+    "values_read": false
+  },
+  "manual_workflow": ".github/workflows/check-production-pages.yml",
+  "remote_calls_per_run": {
+    "method": "GET",
+    "count": 1,
+    "fixed_origin": "https://api.cloudflare.com",
+    "timeout_ms": 15000,
+    "redirects_allowed": false,
+    "automatic_retries": false
+  },
+  "checks": [
+    "recorded_nodia_project_and_pages_domain",
+    "master_production_branch",
+    "recorded_github_integration",
+    "native_production_deployments_disabled",
+    "native_previews_none"
+  ],
+  "evidence_limits": {
+    "remote_run_completed": false,
+    "real_token_validated": false,
+    "write_permission_proven": false,
+    "github_environment_branch_rule_inspected": false,
+    "deployment_performed": false,
+    "builds_or_typescript_checks_run": 0,
+    "master_modified": false,
+    "root_commit_created": false
+  },
+  "local_verification": {
+    "pipeline_tests_total": 27,
+    "passed": 26,
+    "failed": 0,
+    "windows_filename_skip": 1,
+    "new_preflight_tests_passed": 7,
+    "actionlint_version": "1.7.12",
+    "workflows_validated": [
+      "ci.yml",
+      "check-production-pages.yml"
+    ],
+    "fixtures_only": true
+  },
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "7d329c21ac3424bd741fc963e32e48eea18fbcf1ff4a509f346238c8df3eb6df"
+    },
+    {
+      "path": ".github/workflows/check-production-pages.yml",
+      "sha256": "56401d486a5ba331812d9461fd5bdae23148ce139c564051603842b089138ed2"
+    },
+    {
+      "path": "ops/ci/check-pages-access.mjs",
+      "sha256": "fca9a0f5a98dd245317bfee0d3013ef5d6e640103196b211c57007dd5ecc94a4"
+    },
+    {
+      "path": "ops/ci/check-pages-access.test.mjs",
+      "sha256": "0246e47959ff454ca7d80ee493ce71c153b1b0eda0965159ae398bcb44260489"
+    },
+    {
+      "path": "ops/ci/README.md",
+      "sha256": "13421f475937470228e9bb52fe3f0c4a90d11fbfbe62f59a67ae89aa034902b9"
+    }
+  ],
+  "previous_ci_receipt": "production-ci-20261112-r01.json records the earlier CI preparation and failed auxiliary hosted run; this receipt records newer workflow/helper bytes without rewriting that historical run.",
+  "pending": [
+    "public Vite build variables",
+    "environment master-only rule verification",
+    "user commit/push development and later integration in master",
+    "manual real read-only access check",
+    "actual CD artifact handoff and backend update procedure"
+  ]
+}

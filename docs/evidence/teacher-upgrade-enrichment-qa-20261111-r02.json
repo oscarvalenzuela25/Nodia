@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "recorded_on": "2026-11-11",
+  "scope": "Teacher Q4–Q8 / E5–E8 backend; isolated SQL and authored fixtures only",
+  "status": "backend_checks_passed_global_acceptance_requires_other_scopes",
+  "real_provider_used": false,
+  "operational_database_touched": false,
+  "changes": [
+    {
+      "id": "EQA-CAS-SOURCE",
+      "problem": "A stale enrichment revision reached costly PDF extraction before the command rejected it",
+      "correction": "Authority, existing idempotency receipt and expected revision are checked before conversion; transactional authority/CAS remains the second fence",
+      "regression": "A stale command containing a corrupt PDF returns revision_conflict before PDF validation and stores no source"
+    },
+    {
+      "id": "EQA-PDF-CLEANUP",
+      "problem": "PDF parser cleanup could mask no_text and limit failures as invalid_source",
+      "correction": "Capture the extraction outcome before best-effort parser cleanup; always terminate the bounded worker; expose only an allowlisted machine code",
+      "regression": "Actual PDF parser tests cover blank-only, mixed text/blank pages, 13 pages, excessive extracted text, corrupt PDF and successful extraction after failure"
+    },
+    {
+      "id": "EQA-UNSUPPORTED-OCCURRENCE",
+      "problem": "Unknown historical activity/visual type or schema could poison a dashboard or be mistaken for an executable current renderer",
+      "correction": "Public occurrence retains ID/revision/title or prompt/kind, availability=unsupported and empty renderer payload; never exposes solution/executable fields; answer commands reject unsupported versions",
+      "regression": "Unknown plugin, HTML visual and future completion schema remain readable while sentinel private payload is absent and mutation adds no event"
+    },
+    {
+      "id": "EQA-FORGETTING",
+      "problem": "A self-rating of forgetting updated scheduling without a traceable reinforcement recommendation",
+      "correction": "Rating1 stores an explicit self_reported_forgetting recommendation linked to the immutable rating event, with grants_verification=false. Rating events preserve previous schedule. Unknown policy versions do not silently execute the current scheduler Public cards expose availability; the queue orders current-policy ISO deadlines and leaves unsupported policies legible after supported cards.",
+      "regression": "A synthetic final submitted through the actual domain creates a verification; later forgotten-card rating is applied once and retains exactly that verification"
+    },
+    {
+      "id": "EQA-CONCEPT-PROVENANCE",
+      "problem": "Concept projection did not distinguish observed written correctness, independent evidence, reading and section verification or expose origins",
+      "correction": "Focal concept GET and dashboard expose version-scoped learning_state with separate observations, unknown retention, exact response/question/attempt origins, immutable equivalence history and verified source references. Proposed manual relationships preserve all-of target semantics and owner-scoped conditions without becoming facts or advancement gates",
+      "regression": "Unknown state before observation, synthetic domain final evidence after submission, exact original answer readback, joint derivation/contradiction, foreign target denial, exact citation, reversal history and current-version evidence exclusion"
+    },
+    {
+      "id": "EQA-LAB-READY",
+      "problem": "The disposable PostgreSQL readiness check could see the temporary Unix-only initialization server before its restart",
+      "correction": "The lab helper waits on 127.0.0.1 TCP via pg_isready -h; no production code or operational DB is involved"
+    }
+  ],
+  "contracts": {
+    "GET /teacher/sessions/:id/enrichment/concepts/:conceptId": "Owned focal concept, learning_state, evidence_origins, up to8 proposed relations with up to4 all-of target IDs each, source_refs and last12 equivalence events. Does not traverse the graph",
+    "concept_create_optional_relations": "[{kind:support|derivation|contradiction|prerequisite,target_concept_ids:UUID[1..4]}], maximum8; stored as proposed/user_authored/all and never grants advancement",
+    "concept_create_optional_source_refs": "At most3 exact {source_id,content_hash,page,quote}, validated against same-session immutable source snapshot",
+    "learning_state": "policy_version; visited material reference|null; immediate_check observation|null; independent_application correct independent written observation|null; retention:null; section_verification existing proof|null; latest_evidence; evidence_origins; grants_verification:false",
+    "activity_and_visual_availability": "available|unsupported, schema_version1 on new occurrences; known legacy missing version remains readable; unsupported data is never substituted/executed"
+  },
+  "verification": [
+    {
+      "command": "npx tsc -p tsconfig.build.json",
+      "result": "passed"
+    },
+    {
+      "command": "npx oxlint <affected enrichment sources, controller, test and lab helper>",
+      "result": "passed"
+    },
+    {
+      "command": "npx vitest run src/teacher/policies/teacher-enrichment-projections.spec.ts src/teacher/policies/teacher-enrichment-scheduling.spec.ts src/teacher/policies/teacher-enrichment-sources.spec.ts src/teacher/policies/teacher-enrichment-citations.spec.ts src/teacher/policies/teacher-enrichment-activities.spec.ts src/teacher/use-case/teacher-enrichment-persistence.spec.ts",
+      "result": "passed",
+      "tests": 26,
+      "files": 6
+    },
+    {
+      "command": "node test/teacher-enrichment.integration.mjs",
+      "result": "passed",
+      "checks": 10
+    },
+    {
+      "command": "node test/teacher-enrichment-qa.integration.mjs",
+      "result": "passed",
+      "checks": 11,
+      "scenarios": [
+        "Pre-extraction stale CAS",
+        "Source replacement and immutable historical citation",
+        "Historical unsupported occurrence projection and mutation rejection",
+        "Concept states remain unknown without evidence",
+        "Forgetting event preserves existing synthetic final verification and idempotent rating",
+        "Concept response origin readback and separated written/independence/verification/retention",
+        "Joint proposed relations, contradiction, source refs, owner and reversal history",
+        "All four declarative activity contracts with CAS and no verification effects",
+        "Cross-plan reference retains observed date and written modality; reversal and stale revisions exclude it without copying grades",
+        "Constant query count at5 versus500 concepts, bounded20-item page and rejection over500",
+        "Two concurrent anchored thread commands with CAS, revised explicit second intent, lost receipt recovery and reverse-order publication bound to original thread"
+      ]
+    }
+  ],
+  "measurements": {
+    "environment": "Local disposable PostgreSQL16, synthetic authenticated actors, Windows Node; five samples per volume after population, no production claim",
+    "baseline_concepts": 5,
+    "large_concepts": 500,
+    "page_size": 20,
+    "baseline_queries": 22,
+    "large_queries": 22,
+    "baseline_p50_ms": 14.9412999999995,
+    "large_p50_ms": 15.256199999999808,
+    "baseline_max_ms": 15.319700000000012,
+    "large_max_ms": 15.838900000000649,
+    "interpretation": "The actual bounded endpoint projection did not add queries per concept at this volume. This is a volume baseline on the same implementation, not a before/after optimization, a distribution-tail guarantee or evidence of learning benefit"
+  },
+  "tu_backend_mapping": {
+    "TU-E5-01": "Versioned states and actual due dates verified; no retention prediction",
+    "TU-E5-02": "Existing and new SQL verify receipt/CAS, one rating event and current calendar",
+    "TU-E5-03": "DST fall-back/spring-forward, civil-day boundary, fractional zone, unavailable civil date and fixed stored card zone verified",
+    "TU-E5-04": "Not-due rating rejected; reading/reveal is non-mutating; no policy or timezone rewrite endpoint is exposed; unknown policy execution rejected",
+    "TU-E5-05": "Forgetting recommendation references self-rating and preserves existing verification; retention remains unknown",
+    "TU-E5-06": "Manual card/review operations use no generation port; quality of actual cards belongs to pedagogical sample",
+    "TU-E6-01": "Existing anchored thread and publication hash fence remain passed",
+    "TU-E6-02": "Server routes per thread; browser draft/focus/reopen is coordinated separately",
+    "TU-E6-03": "Existing SQL final guard before admission/publication remains passed",
+    "TU-E6-04": "Existing SQL marks pertinent practice assisted without granting verification",
+    "TU-E6-05": "Root observed final SQL11 passed: two concurrent thread commands produce one CAS conflict; second explicit revised intent admits second job; receipt/identical command recovery adds no job; reverse-order replies remain bound to their original threads; zero remote POSTs. Actual provider acceptance remains recorded separately by root.",
+    "TU-E7A-01": "Owner/same-session source snapshots, no host path, foreign concept source/target rejected",
+    "TU-E7A-02": "Old/new same-title source IDs and hashes retained; exact original quote validates only against admitted old source",
+    "TU-E7A-03": "Actual parser negative/partial/limit/recovery checks passed with stable typed error codes",
+    "TU-E7A-04": "Embedded instruction text remains literal source data; provider authority/prompt behavior and UI disconnect belong to real/provider-browser scopes",
+    "TU-E7B-01": "Historical unknown type/schema public safe fallback and no mutation verified",
+    "TU-E7B-02": "Four exact answer contracts, one explicit objective, authored assistance and no independent verification verified",
+    "TU-E7B-03": "Backend occurrence/revision enforced; renderer keyboard/mobile/remount belongs to UI QA",
+    "TU-E7C-01": "Unsupported renderer payload stripped; known validator rejects scripts, unbounded/non-finite values and unknown kinds",
+    "TU-E7C-02": "Stored schema/provenance and textual labels remain; browser memory/bundle/fluency measurements belong to UI QA",
+    "TU-E8-01": "Different concept conditions keep IDs; accepted/rejected/reaccepted history retained and visible in focal inspection",
+    "TU-E8-02": "Owner/current revisions and explicit reviewed mapping; written timestamp preserved, withdrawal/old revision excluded, no grade/verification copy. No universal age/mastery inference",
+    "TU-E8-03": "Visited material, immediate written check, independent correct observation, unknown retention and existing section proof are separate",
+    "TU-E8-04": "Exact origin response/question/attempt, source quote and proposed contradiction/all-of relation targets inspectable; no automatic fact/contradiction extraction",
+    "TU-E8-05": "Focal endpoint and bounded preview/page, constant query budget at500 concepts verified; browser focus/search/usefulness belongs to UI QA"
+  },
+  "limits": [
+    "No provider inference, operational account, native profile, operational DB, deployment or publication used by this subtask",
+    "No educational effectiveness, psychometric calibration, official level, retention probability or automatic hypothesis assertion",
+    "Proposed concept relations are manually authored, immutable content claims. They do not create advancement dependencies or automatically rewrite generations",
+    "A source is retained as extracted text/pages/hash, not an original downloadable PDF binary; no OCR is claimed",
+    "Global55TU acceptance must combine these backend results with root real-provider/pedagogical QA and integrated browser checks"
+  ],
+  "final_root_revalidation": {
+    "command": "node test/teacher-enrichment-qa.integration.mjs",
+    "expected_macro_checks": 11,
+    "added_scenario": "Two distinct anchored threads: concurrent global CAS gives one conflict, explicit revised second intent admits a second queued job; original receipt and byte-identical command reuse original jobs; reverse-order deterministic replies resolve only their original thread; no ai_generation_operation/POST",
+    "syntax_check": "passed",
+    "scoped_oxlint": "passed",
+    "production_code_changed": false,
+    "result": "passed",
+    "observed_by": "root",
+    "macro_checks": 11,
+    "no_remote_posts": true,
+    "notes": "Final root revalidation passed after addition. Its timing overlapped Client build and does not replace the controlled five-sample benchmark already documented."
+  }
+}

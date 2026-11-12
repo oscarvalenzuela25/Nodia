@@ -4,11 +4,11 @@
   "document_id": "studies.diagnostic-and-skip-assessment",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 15,
+  "revision": 20,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Recorrido Gemini completo y runtime operativo: práctica14/14 → final20/40 → refuerzo focal unidad2/material/práctica14/14 → nuevo intento40/40, sección verificada/sesión completed. Codex elegible actual/calificaciónNov1 preservada y0generación. R05Client/Server adoptados, Native intacto; foco/borrador/pausa/móvil/recovery y UI final verificados. DB POST/restore y CFGcopias/GCM íntegro pasaron mediante auditoría/reanudación fresh independientes; captura original permanece fallida y catálogo cifrado es snapshot anterior. QA/contenido tienen límites, sin certificación personal, aprobación o publicación."
+    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
@@ -76,23 +76,82 @@
     {
       "path": "nodia-client/src/modules/teacher/components/ReinforcementPanel/ReinforcementPanel.tsx",
       "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/101-nodia-teacher-adaptive-upgrade-plan.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md",
+      "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/teacher/use-case/teacher-learning.use-case.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/teacher/use-case/execute-teacher-command.use-case.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/teacher/use-case/teacher-attempt-persistence.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/DiagnosticBankForm.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/102-nodia-teacher-phased-implementation-and-final-qa.md",
+      "kind": "specification"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-03",
+    "checked_on": "2026-11-11",
     "evidence_paths": [
       "docs/evidence/teacher-local-implementation-20261101-r01.json",
       "docs/evidence/teacher-local-activation-20261101-r01.json",
       "docs/evidence/teacher-agentic-vm-20261101-r01.json",
       "docs/evidence/teacher-gemini-sdk-vm-20261102-r01.json",
       "docs/evidence/teacher-v1-vm-process-20261103-r01.json",
-      "docs/evidence/teacher-gemini-journey-20261103-r01.json"
+      "docs/evidence/teacher-gemini-journey-20261103-r01.json",
+      "docs/evidence/teacher-upgrade-local-20261111-r01.json",
+      "docs/evidence/teacher-upgrade-local-20261111-r02.json",
+      "docs/evidence/teacher-upgrade-acceptance-20261111-r02.md",
+      "docs/evidence/teacher-upgrade-development-vm-20261111-r01.json"
     ],
-    "notes": "Recorrido Gemini completo y runtime operativo: práctica14/14 → final20/40 → refuerzo focal unidad2/material/práctica14/14 → nuevo intento40/40, sección verificada/sesión completed. Codex elegible actual/calificaciónNov1 preservada y0generación. R05Client/Server adoptados, Native intacto; foco/borrador/pausa/móvil/recovery y UI final verificados. DB POST/restore y CFGcopias/GCM íntegro pasaron mediante auditoría/reanudación fresh independientes; captura original permanece fallida y catálogo cifrado es snapshot anterior. QA/contenido tienen límites, sin certificación personal, aprobación o publicación."
+    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente."
   },
   "approval": null
 }
 ---
+
+> Continuidad VM del2026-11-11: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. [Recibo VM](../../../../evidence/teacher-upgrade-development-vm-20261111-r01.json). El cierre55/55 R02 conserva su alcance Windows/API key; este recorrido no representa55pruebas nuevas en VM ni eficacia educativa humana. Sin promoción a master, aprobación documental o publicación. Los cortes inferiores conservan sus fechas.
+
+## Diagnóstico de banco revisado local — 2026-11-11
+
+## Recorrido VM por alcance — 2026-11-11
+
+Diagnóstico manual revisado2/4, confianza0 y asistencia por observación conservados; dos mapeos explícitos precedieron la aceptación del plan. Final SQL entregada40/40, incluida corrección escrita24/24 y passed/assisted=false persistido. Ese estado técnico procede de respuestas del agente de QA y no prueba aprendizaje o independencia humana. [Recibo VM](../../../../evidence/teacher-upgrade-development-vm-20261111-r01.json).
+
+## Cierre vigente del upgrade — 2026-11-11
+
+Los55criterios quedaron verificados para el alcance Windows/API key configurado; [evidencia R02](../../../../evidence/teacher-upgrade-local-20261111-r02.json) y [matriz](../../../../evidence/teacher-upgrade-acceptance-20261111-r02.md) separan pruebas, muestras y límites. No se copian aceptaciones a operación, no hay nueva herramienta/binding y se conservan draft/unregistered/approval:null. Los apartados inferiores son cortes anteriores o detalle funcional no sustituido.
+
+El inicio diagnóstico utiliza un banco manual versionado con1–4dimensiones descriptivas y1–12ítems de selección/completar, revisado explícitamente por el actor. Sin banco revisado no genera preguntas ni inventa habilidades: muestra no disponible y conserva creación del plan sin diagnóstico. El assessment tiene origen de banco, sin job ficticio o POST. Mapeos a objetivos de candidatas/planes aceptados son explícitos. Al conocer el autor la solución, la evidencia se marca asistida, no aplicación independiente alta; nunca aprueba sección. Se conservan final directa,≥90% exacto, claves privadas, pendientes y notas por intento.
+
+Corte histórico de construcción local y QA parcial: las comprobaciones sintéticas y los pendientes registrados entonces se conservan como historia. El cierre R02 y la continuación VM superiores contienen la evidencia posterior; no habilitan herramientas NodiaAI ni implican aprobación o publicación. Contratos en [97](../../../../mvp/97-nodia-teacher-technical-contracts.md), alcance/criterios en [101](../../../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y campaña en [102](../../../../mvp/102-nodia-teacher-phased-implementation-and-final-qa.md).
+
+
+## Upgrade por etapas: diagnóstico sustentado — 2026-11-11
+
+El [upgrade101](../../../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) prioriza diagnóstico, [evidencia por objetivo](learning-evidence-and-recommendations.md) y práctica adaptativa. La base V1 de evaluación tiene implementación parcial y evidencia histórica; E0 conserva sus bloqueadores vigentes. Las afirmaciones inferiores de ausencia de implementación pertenecen a sus cortes iniciales y no acreditan ni descartan por sí mismas operación actual.
+
+E2 concreta una brecha del diseño95§4 y96: dimensiones con significado, blueprint diagnóstico independiente del plan aún no aceptado, ítems/respuestas revisados y observaciones ligadas a respuestas/versiones. El generador no puede acreditar comprensión mediante una conclusión libre sin referencias. El diagnóstico termina por límites explícitos de preguntas/tiempo/presupuesto que deberán versionarse, incluso si no encuentra el techo del alumno; lo no observado queda desconocido.
+
+La correspondencia del diagnóstico a objetivos del plan será explícita y revisable. Sus resultados alimentarán la propuesta de plan y el material mediante snapshots acotados; nunca conceden aprobación automática. Explicación del alumno y confianza son opcionales, no penalizan por ausencia y la confianza sin declarar permanece `null`.
+
+La final directa conserva cobertura, prerrequisitos, independencia, claves privadas en Server y ≥90% exacto. Diagnóstico, repaso y sensaciones de comprensión no sustituyen esa verificación. Ayuda vista, feedback pendiente, dato ausente e ítem inválido conservan estados distintos. E2 no inventa nivel global o competencia oral desde evidencia escrita. AC/dependencias de E1/E2 en101 pendientes, sin nuevos endpoints/herramientas o publicación.
 
 ## Gemini Teacher: selección calificada en Native R10 — 2026-11-02
 

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-11",
+  "scope": "original_backup_configuration_helper_before_empty_lock_validation_fix",
+  "archive": "production-backup-configuration-original-20261111.zip",
+  "archive_sha256": "8ba376c9067e6c18ced2e0628c69f1c0f3d064387c390ab0941b352b046b649b",
+  "entries": [
+    {
+      "path": "configure-production-backups.py",
+      "sha256": "fe2af13c0a42e181e18a32a3a82f6cf8b6eb994309b5bf35bc28016179f48fb1"
+    }
+  ],
+  "replacement_sha256": "ee87cd58428584ab391091257e79862df69b4aabdd3a50e3b6137163fccacf53",
+  "reason": "Empty installation.lock passed to a non-empty config file validator; root lock FD validation must accept zero bytes."
+}

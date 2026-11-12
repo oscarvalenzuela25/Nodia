@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-12",
+  "status": "crlf_parser_corrected_copied_awaiting_operator_retry",
+  "branch": "development",
+  "root_cause": "Original parser rejected CR in the single terminal Windows CRLF emitted by ssh-keygen; raw SHA256 already matched.",
+  "failure_before_mutation_confirmed": {
+    "account_absent": true,
+    "protected_home_absent": true,
+    "gateway_absent": true
+  },
+  "key_unchanged": {
+    "public_size": 107,
+    "public_cr_count": 1,
+    "public_lf_count": 1,
+    "original_sha256": "a308de574e3b951e7d80d6d579d8738f2dcea39b56f41241d0d2970bac7288e4",
+    "private_read": false,
+    "private_or_public_regenerated": false,
+    "raw_file_normalized": false,
+    "public_fingerprint": "SHA256:g3gyUmcKBJmtgjFvcWiQeJXwZfxMET7YKRmOxTSKzpg"
+  },
+  "validation": {
+    "accepts": "one optional LF or CRLF terminator",
+    "rejects": [
+      "embedded CR",
+      "additional lines",
+      "key options",
+      "wrong key algorithm",
+      "invalid wire format"
+    ],
+    "hash_uses_original_bytes": true
+  },
+  "tests": {
+    "format_units_passed": 4,
+    "loopback_ssh_integration_checks_passed": 28,
+    "ubuntu": "26.04",
+    "actual_public_file_accepted_without_provision": true,
+    "production_credentials_used_in_fixture": false,
+    "container_removed": true
+  },
+  "vps_copy": {
+    "helper_sha256": "f5c780dce11a302b25118703bf9ca9720fd5f2a0accd33cea2632fb4e472144f",
+    "helper_sha256_matches_local": true,
+    "mode": "0600",
+    "public_key_sha256_unchanged": true
+  },
+  "service_observations": {
+    "initial_worker_is_active_output": "inactive",
+    "subsequent_property_checks": 2,
+    "latest_api": "active/running; Result=success",
+    "latest_worker": "active/running; Result=success",
+    "worker_nrestarts_first_property_check": 0,
+    "services_restarted_by_agent": false,
+    "initial_observation_cause": "unidentified; no causal claim"
+  },
+  "files": [
+    {
+      "path": "ops/production/bootstrap-deploy-identity.py",
+      "sha256": "f5c780dce11a302b25118703bf9ca9720fd5f2a0accd33cea2632fb4e472144f"
+    },
+    {
+      "path": "ops/production/tests/deploy-identity.integration.sh",
+      "sha256": "e8255f7e439129cd7bc5f33eefc6ac5b90a88e5dc832b6501b826fa068f85838"
+    },
+    {
+      "path": "ops/production/tests/test_deploy_identity_public_key.py",
+      "sha256": "d4a6952e601fce0d401ae586942bc28cb997a1af35161db848588680fd0e5bfb"
+    }
+  ],
+  "historical_receipt_preserved": "production-deploy-identity-preparation-20261112-r01.json",
+  "account_created": false,
+  "actual_deploy_key_ssh_verified": false,
+  "sudo_grant_created": false,
+  "application_deployed": false,
+  "next": "Operator reruns the same bootstrap command; requires private sudo authentication."
+}

@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-12",
+  "status": "prepared_in_development_awaiting_user_commit_and_full_corrected_ci",
+  "user_instructions": {
+    "phase": "CI first; automatic deployment later",
+    "keep_current_branch": "development",
+    "promote_to_master": false,
+    "preserve_other_pending_changes": true,
+    "branch_clarification": "Only development and master; develop removed from current workflow on 2026-11-12"
+  },
+  "working_copy": {
+    "branch": "development",
+    "head_sha_unchanged": "ba8ebfa00b55f103465d0ab533a802152944d224",
+    "new_root_commit_created": false,
+    "workflow_uncommitted": true,
+    "teacher_work_preserved": true
+  },
+  "remote": {
+    "master_unchanged": "f01b493336883403a84b1c80759ce4fc43cbd370",
+    "development_unchanged": "ba8ebfa00b55f103465d0ab533a802152944d224",
+    "auxiliary_validation_branch": "codex/monorepo-ci",
+    "auxiliary_validation_commit": "00d14ae2c36980597ad8478bc4203e52e97dbc16",
+    "auxiliary_pr": 2,
+    "auxiliary_pr_state": "closed",
+    "auxiliary_pr_merged": false
+  },
+  "ci": {
+    "workflow": ".github/workflows/ci.yml",
+    "push_branches": [
+      "development",
+      "master"
+    ],
+    "pull_request_targets": [
+      "development",
+      "master"
+    ],
+    "typecheck": "Only in each component build; Client tsc -b, Server Nest/TypeScript production project",
+    "node": "24.22.2",
+    "python": "3.12",
+    "rust": "1.95.0",
+    "vitest_max_workers": 2,
+    "cargo_build_jobs": 1,
+    "build_node_heap_mib": 4096,
+    "deploy_jobs": false,
+    "production_secrets_used": false,
+    "build_artifact_uploads": false,
+    "stable_check": "CI",
+    "selected_jobs_must_succeed": true
+  },
+  "billing": {
+    "repository_visibility_verified": "public",
+    "standard_hosted_runners": "ubuntu-24.04",
+    "included_private_quota_or_remaining_minutes_read": false,
+    "budget_or_paid_runner_changes": false,
+    "source": "https://docs.github.com/en/billing/concepts/product-billing/github-actions"
+  },
+  "initial_hosted_execution": {
+    "id": 43229534436,
+    "status": "completed",
+    "conclusion": "failure",
+    "url": "https://github.com/oscarvalenzuela25/Nodia/actions/runs/43229534436",
+    "head_sha": "00d14ae2c36980597ad8478bc4203e52e97dbc16",
+    "created_at": "2026-11-12T13:40:31Z",
+    "updated_at": "2026-11-12T13:56:43Z",
+    "jobs": [
+      {
+        "id": 131220789912,
+        "name": "Changes and pipeline checks",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-12T13:40:36Z",
+        "completed_at": "2026-11-12T13:40:46Z",
+        "last_step": null
+      },
+      {
+        "id": 131220953076,
+        "name": "Python adapter - isolated unit tests",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-12T13:40:49Z",
+        "completed_at": "2026-11-12T13:41:23Z",
+        "last_step": null
+      },
+      {
+        "id": 131220953079,
+        "name": "Client - lint, build and unit tests",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-12T13:40:48Z",
+        "completed_at": "2026-11-12T13:49:13Z",
+        "last_step": null
+      },
+      {
+        "id": 131220953098,
+        "name": "Server and worker - build, contracts and tests",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-12T13:40:48Z",
+        "completed_at": "2026-11-12T13:41:21Z",
+        "last_step": null
+      },
+      {
+        "id": 131220953117,
+        "name": "Native host - compile and test the default SDK feature",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-12T13:40:49Z",
+        "completed_at": "2026-11-12T13:56:31Z",
+        "last_step": null
+      },
+      {
+        "id": 131229882882,
+        "name": "CI",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-12T13:56:36Z",
+        "completed_at": "2026-11-12T13:56:43Z",
+        "last_step": null
+      }
+    ]
+  },
+  "initial_hosted_results": {
+    "pipeline_tests": {
+      "passed": 20,
+      "failed": 0
+    },
+    "python": {
+      "passed": 660,
+      "failed": 0
+    },
+    "native": {
+      "default_sdk_feature": true,
+      "unit_tests_passed": 9,
+      "cli_tests_passed": 2,
+      "provider_account_used": false,
+      "external_inference_requested": false
+    },
+    "client": {
+      "lint": "passed",
+      "build_and_typecheck": "passed",
+      "unit_tests_passed": 2798,
+      "unit_tests_failed": 4,
+      "failures": "Environment locale formatting and stale integer-CLP validation message expectations"
+    },
+    "server": {
+      "lint": "passed",
+      "production_typescript_build": "passed",
+      "offline_node_tests_passed": 139,
+      "offline_node_tests_failed": 5,
+      "later_unit_and_sql_steps": "skipped after the offline test failure",
+      "failures": "Archived recovery contract fixture mixed with modern mode and retired POS catalog revision assumption"
+    },
+    "overall": "failure; no successful corrected hosted run claimed"
+  },
+  "local_revalidation": {
+    "platform": "Windows, Node24.20.0; unchanged f01 application source in isolated worktree",
+    "compiled_artifact": "Verified f01 release dist reused; no extra TypeScript compilation for these runtime checks",
+    "pipeline_tests": {
+      "passed": 19,
+      "failed": 0,
+      "windows_filename_case_skipped": 1,
+      "linux_classifier_tests_passed": 14
+    },
+    "actionlint": {
+      "version": "1.7.12",
+      "status": "passed"
+    },
+    "client_regressions": {
+      "files": 2,
+      "tests_passed": 32,
+      "eslint": "passed",
+      "locale": "es-CL; new expectations use the environment formatter; corrected hosted en-US run still pending"
+    },
+    "server_offline_node": {
+      "tests": 148,
+      "passed": 146,
+      "failed": 0,
+      "windows_platform_skips": 2,
+      "assets_contracts_and_knowledge_readers": "passed"
+    },
+    "server_vitest": {
+      "initial_attempt": {
+        "files_passed": 327,
+        "files_failed": 11,
+        "tests_passed": 5663,
+        "tests_failed": 28,
+        "skipped": 1,
+        "cause": "Local artifact-reuse setup omitted generated source runtime policy; CI full build already prepares it"
+      },
+      "correction": "Ran conversation-policy:prepare and runtime-policy:prepare; no TypeScript compilation",
+      "affected_files_rerun": 11,
+      "affected_tests_passed": 273,
+      "affected_tests_failed": 0,
+      "single_full_corrected_run_claimed": false
+    },
+    "database_installation": {
+      "checks_passed": 39,
+      "postgres": "Docker disposable16",
+      "production_database_used": false,
+      "container_removed": true,
+      "baseline_adoption": "Only complete baseline-era schema; current incomplete history remains rejected by the shipped CLI",
+      "frozen_migrations_changed": false
+    }
+  },
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "dafb632c5ce9a78f50c2b0060f15e8301b66e7b4590692fd31b6a85bbe2f9407"
+    },
+    {
+      "path": "ops/ci/README.md",
+      "sha256": "c595b6165cfb3a87430f91b22bc027f3eb5803a008114bae1fece812ad047910"
+    },
+    {
+      "path": "ops/ci/classify-changes.mjs",
+      "sha256": "fcfc7840ce6e220bfddb41ec668d4e2ed2e4a0d7fb62c88b59841575b179fd6f"
+    },
+    {
+      "path": "ops/ci/classify-changes.test.mjs",
+      "sha256": "fad7dc463cae5b256401c4463c97c121c9e444dce17a853df17a92cb543a16a8"
+    },
+    {
+      "path": "ops/ci/check-results.mjs",
+      "sha256": "79a2c55f64d3f494dfbc60145fd84191ec096a19213b20913f1db270cdf1c1ec"
+    },
+    {
+      "path": "ops/ci/check-results.test.mjs",
+      "sha256": "59da4f79466dc8d50cf766bb5b0306c8f3eed99d909ad3e295079bf89e500695"
+    },
+    {
+      "path": "ops/ci/run-server-checks.sh",
+      "sha256": "3ddf765540968b8582ae7be3029064856d62b7c8c82a17cbc2cf1d5fc43e33a5"
+    },
+    {
+      "path": "nodia-server/test/database-setup.integration.mjs",
+      "sha256": "66c46f363fe837628f37411bf49b9ff641fb20aa820c8aea2533c76c90312238"
+    },
+    {
+      "path": "nodia-server/scripts/check-nodia-ai-pos-candidate.mjs",
+      "sha256": "80346b9a1c6edac859bf32343f5a088dbf226ecee43bcef0b1f8bfba532c7340"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai40-recovery-contract.spec.mjs",
+      "sha256": "7af5cf0df31fd418473769f16399ec0a2d578b7f2de258b5343595741eee6206"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-sales-readonly-publication.spec.mjs",
+      "sha256": "4dec9554fb4bbd93c8c7b07420acc9f12fbc891774ef9b01af9654929cd3364d"
+    },
+    {
+      "path": "nodia-client/src/test/modules/business/pages/BusinessDetail/components/OverviewTab/OverviewTab.test.tsx",
+      "sha256": "175da14f7f89863a65d6fd96d4547c11c2e1987ec1600d2ad234fe99bbaf38ce"
+    },
+    {
+      "path": "nodia-client/src/test/modules/business/pages/BusinessDetail/components/ProductsTab/ProductBulkImport.test.tsx",
+      "sha256": "98a2795167a864ecf0109582e291815697c2903e5634930d36fd1ba1070039e6"
+    }
+  ],
+  "deployment": {
+    "requested": false,
+    "vps_changed": false,
+    "pages_changed": false,
+    "ai_services_configured": false,
+    "inference_qualification_claimed": false
+  },
+  "next": "User finishes and commits/pushes development; verify CI for that full SHA before planning CD or promoting master.",
+  "temporary_cleanup": {
+    "client_and_server_junctions_unlinked": true,
+    "recursive_delete_used": false,
+    "original_node_modules_preserved": true,
+    "dedicated_test_cache_retained_as_ignored_cache": true,
+    "note": "Generic shell junction cleanup was rejected by automatic review; a verified link-only fs.unlink operation removed the reparse points without traversing dependency directories."
+  }
+}

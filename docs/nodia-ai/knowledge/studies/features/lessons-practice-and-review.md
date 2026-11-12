@@ -4,11 +4,11 @@
   "document_id": "studies.lessons-practice-and-review",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 19,
+  "revision": 24,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "ClientR27 activo: LessonMarkdown local con fenced/indentados monoespaciados, extensión sólo declarada/alias y copia del texto renderizado sin cabecera.6pruebas/1suite9,88s, tipos/lint/build y adopción correctos. CUA1088/320 observó5controles44px CSS/JS, código179chars intacto, scroll horizontal local/teclado y toast tras Clipboard.writeTextfulfilled. No se verificaron bytes del clipboard OS: lectura0/pastevirtual vacío; exactitud y ausencia/rechazo cubiertos sintéticamente. Material preexistente, curso En curso/conteo8 y ServerR09/Native/timers conservados, sin POST personal/inferencia. Sin dependencias/highlight/ejecución o cambios NodiaAI; bloqueadoresV1 y aprobación/publicación pendientes."
+    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
@@ -116,10 +116,34 @@
     {
       "path": "nodia-client/src/modules/teacher/components/LessonMarkdown/styles.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/101-nodia-teacher-adaptive-upgrade-plan.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md",
+      "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/teacher/policies/teacher-learning.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/teacher/use-case/teacher-learning-persistence.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/LearningPanel.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/102-nodia-teacher-phased-implementation-and-final-qa.md",
+      "kind": "specification"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-06",
+    "checked_on": "2026-11-11",
     "evidence_paths": [
       "docs/evidence/teacher-local-implementation-20261101-r01.json",
       "docs/evidence/teacher-local-activation-20261101-r01.json",
@@ -128,13 +152,46 @@
       "docs/evidence/teacher-v1-vm-process-20261103-r01.json",
       "docs/evidence/teacher-gemini-journey-20261103-r01.json",
       "docs/evidence/teacher-study-journey-20261106-r01.json",
-      "docs/evidence/teacher-code-blocks-20261106-r01.json"
+      "docs/evidence/teacher-code-blocks-20261106-r01.json",
+      "docs/evidence/teacher-upgrade-local-20261111-r01.json",
+      "docs/evidence/teacher-upgrade-local-20261111-r02.json",
+      "docs/evidence/teacher-upgrade-acceptance-20261111-r02.md",
+      "docs/evidence/teacher-upgrade-development-vm-20261111-r01.json"
     ],
-    "notes": "ClientR27 activo,6pruebas/1suite9,88s y tipos/lint/build correctos. Desktop1088 documento1078/1078/pre626/626, mobile320 documento310/310/pre242/312 y ArrowRight scrollLeft40; copiar44x44 y toast Código copiado tras writeTextfulfilled. Browser clipboardread0 y pastewrapper rechazado por virtualclipboard vacío impiden afirmar bytes OS verificados; exactcopy/newline/missing/rejected sólo en6tests. Material ya disponible antes del arreglo, En curso/conteo8, Root sóloGET y copia local; sin atribuir generación o reparación. Evidencia final SHA2562c46753164964afe4fc04ba6e6aa2142df3d7b4ebe2f997a449820c52e62c71b,4129bytes; draft/partial/unregistered/approvalnull y bloqueadores conservados."
+    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente."
   },
   "approval": null
 }
 ---
+
+> Continuidad VM del2026-11-11: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. [Recibo VM](../../../../evidence/teacher-upgrade-development-vm-20261111-r01.json). El cierre55/55 R02 conserva su alcance Windows/API key; este recorrido no representa55pruebas nuevas en VM ni eficacia educativa humana. Sin promoción a master, aprobación documental o publicación. Los cortes inferiores conservan sus fechas.
+
+## Práctica adaptativa y enseñanza locales — 2026-11-11
+
+## Recorrido VM por alcance — 2026-11-11
+
+Práctica SQL entregada12/14 y respuesta escrita6/6, con evidencia/feedback guardados y asistencia por respuesta; la observación anterior a la ayuda no se reescribió como asistida. El check cambia contexto, pero la muestra y las respuestas del agente no acreditan transferencia o retención humanas. Final40/40 separada de la práctica;0bloques prediction en el material revisado. [Recibo VM](../../../../evidence/teacher-upgrade-development-vm-20261111-r01.json).
+
+## Cierre vigente del upgrade — 2026-11-11
+
+Los55criterios quedaron verificados para el alcance Windows/API key configurado; [evidencia R02](../../../../evidence/teacher-upgrade-local-20261111-r02.json) y [matriz](../../../../evidence/teacher-upgrade-acceptance-20261111-r02.md) separan pruebas, muestras y límites. No se copian aceptaciones a operación, no hay nueva herramienta/binding y se conservan draft/unregistered/approval:null. Los apartados inferiores son cortes anteriores o detalle funcional no sustituido.
+
+Política teacher-learning/1 propone refuerzo, comprobación independiente, recuperación o evidencia insuficiente a partir de respuestas pertinentes; muestra objetivo, motivo y modo recall/discrimination/composition. La nueva preparación recibe respuesta/error y pide variar el contexto, sin rebajar cobertura/final. Razón/confianza y ayuda conservan sus condiciones. Predicciones/checks se guardan sin nota. No se acredita transferencia real por la instrucción al modelo o por variantes sintéticas; la muestra pedagógica permanece pendiente. Repaso manual usa política propia teacher-intervals/1, no FSRS.
+
+Corte histórico de construcción local y QA parcial: las comprobaciones sintéticas y los pendientes registrados entonces se conservan como historia. El cierre R02 y la continuación VM superiores contienen la evidencia posterior; no habilitan herramientas NodiaAI ni implican aprobación o publicación. Contratos en [97](../../../../mvp/97-nodia-teacher-technical-contracts.md), alcance/criterios en [101](../../../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y campaña en [102](../../../../mvp/102-nodia-teacher-phased-implementation-and-final-qa.md).
+
+
+## Upgrade por etapas: práctica adaptativa prioritaria — 2026-11-11
+
+El [upgrade101](../../../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) prioriza E1 evidencia por objetivo, E2 diagnóstico conectado y E3 práctica adaptativa. V1 conserva su implementación parcial, evaluación/continuidad y evidencia histórica por alcance; los apartados inferiores mantienen sus fechas. El refuerzo V1 conecta objetivos fallados con unidades, sin ser todavía un scheduler ni selección generativa basada en la confusión concreta.
+
+E3 propone recuperar conocimientos, discriminar qué técnica usar y combinar objetivos en situaciones nuevas. La política de selección explica por qué ofrece una actividad a partir de respuestas reales/versiones, sin usar porcentajes arbitrarios de dominio. Explicación y confianza del alumno son opcionales; confianza no declarada es `null`, y una hipótesis de error no modifica por sí sola la nota.
+
+Las ayudas se gradúan y registran antes de volver a comprobar en otro contexto. Un acierto después de ayuda no cuenta como desempeño independiente. Se puede ver un ejemplo resuelto, volver a fundamentos, pausar o terminar; no se mantiene al alumno indefinidamente hasta acertar. Final independiente, ≥90% exacto, cobertura y no-replay se conservan.
+
+E4 agrega predicciones/checks en puntos útiles sin fragmentar obligatoriamente cada paso o generar por interacción. La permutación de opciones será persistida por intento/IDs y compatible con el significado del ítem; no aleatorizar al renderizar. Se deben detectar opciones que dependan de «primera», «anterior» o un orden semántico antes de barajar.
+
+E5 [repaso espaciado](spaced-repetition.md) amplía el repaso V1 sin calendario; E6 [aclaraciones ancladas](contextual-clarifications.md) registra ayuda y bloquea el nuevo ayudante durante finales. E7b/E7c [actividades/visuales](activity-types-and-visuals.md) y E8 [mapa/memoria](concept-memory-and-map.md) quedan posteriores. AC por etapa en101 pendientes; ninguna capacidad, herramienta o publicación se habilita por estas fichas.
 
 ## Bloques de código y copia literal local — 2026-11-06
 

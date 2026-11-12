@@ -1,0 +1,47 @@
+name: template_nodia_redis
+
+services:
+  redis:
+    image: redis:7.4.12-alpine@sha256:7b1753b4c5ad8458906c272a8132b8c15f5557b000379eb115fb239706a384b7
+    container_name: template_redis
+    user: '999:1000'
+    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
+    restart: unless-stopped
+    read_only: true
+    cap_drop: ['ALL']
+    security_opt: ['no-new-privileges:true']
+    cpus: 1.0
+    mem_limit: 1g
+    pids_limit: 100
+    stop_grace_period: 30s
+    ports:
+      - '127.0.0.1:6379:6379'
+    volumes:
+      - /etc/nodia/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - /opt/nodia/redis/redis-cli-auth.sh:/usr/local/bin/nodia-redis-cli:ro
+      - template_redis_data:/data
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    healthcheck:
+      test: ['CMD', '/usr/local/bin/nodia-redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: local
+      options:
+        max-size: '10m'
+        max-file: '3'
+    networks: [redis_private]
+
+volumes:
+  template_redis_data:
+    name: template_redis_data
+
+networks:
+  redis_private:
+    name: template_redis_private
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: '127.0.0.1'

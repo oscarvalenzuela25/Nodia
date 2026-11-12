@@ -3,6 +3,10 @@ import { AuthorizationModule } from '../authorization/authorization.module.js';
 import { AiGenerationModule } from '../ai-generation/ai-generation.module.js';
 import { TeacherService } from './teacher.service.js';
 import { TeacherController } from './teacher.controller.js';
+import { TeacherLearningController } from './teacher-learning.controller.js';
+import { TeacherEnrichmentController } from './teacher-enrichment.controller.js';
+import { TeacherLearningUseCase } from './use-case/teacher-learning.use-case.js';
+import { TeacherEnrichmentUseCase } from './use-case/teacher-enrichment.use-case.js';
 import { TeacherReceiptStatusInterceptor } from './teacher-receipt-status.interceptor.js';
 import { ExecuteTeacherCommandUseCase } from './use-case/execute-teacher-command.use-case.js';
 import { ReadTeacherUseCase } from './use-case/read-teacher.use-case.js';
@@ -25,9 +29,11 @@ class TeacherPublisherRegistration implements OnModuleInit {
 }
 @Module({
   imports: [AuthorizationModule, AiGenerationModule],
-  controllers: [TeacherController],
+  controllers: [TeacherController, TeacherLearningController, TeacherEnrichmentController],
   providers: [
     TeacherService,
+    TeacherLearningUseCase,
+    TeacherEnrichmentUseCase,
     ExecuteTeacherCommandUseCase,
     ReadTeacherUseCase,
     PublishTeacherUseCase,

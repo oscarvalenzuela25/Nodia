@@ -10,8 +10,8 @@ import { Actions } from "../../pages/Teacher/styles";
 import { SectionEditor } from "./styles";
 import AssessmentPolicyEditor from "../AssessmentPolicyEditor";
 
-type Props = { plan: Plan; busy: boolean; canAccept: boolean; futureRevision?: boolean; onSave: (outline: Outline) => Promise<void>; onAccept: () => Promise<void>; onAdjust: (text: string) => Promise<void> };
-export default function PlanReview({ plan, busy, canAccept, futureRevision = false, onSave, onAccept, onAdjust }: Props) {
+type Props = { plan: Plan; busy: boolean; canAccept: boolean; canAdjust: boolean; futureRevision?: boolean; onSave: (outline: Outline) => Promise<void>; onAccept: () => Promise<void>; onAdjust: (text: string) => Promise<void> };
+export default function PlanReview({ plan, busy, canAccept, canAdjust, futureRevision = false, onSave, onAccept, onAdjust }: Props) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState(() => structuredClone(plan.outline));
   const [adjustment, setAdjustment] = useState("");
@@ -60,7 +60,7 @@ export default function PlanReview({ plan, busy, canAccept, futureRevision = fal
     <Actions><Button variant="contained" disabled={busy || !changed || !policyValid} onClick={() => void save()}>{t("teacher:save_changes")}</Button><Button variant="contained" disabled={busy || changed || !canAccept || !policyValid} onClick={() => void onAccept()}>{t(futureRevision ? "teacher:activate_revision" : "teacher:create_plan")}</Button></Actions>
     <SectionEditor>
       <TextInput label={t("teacher:adjustment")} value={adjustment} onChange={event => setAdjustment(event.target.value)} multiline minRows={2} disabled={busy} />
-      <Button variant="contained" disabled={busy || changed || !adjustment.trim()} onClick={() => void onAdjust(adjustment)}>{t("teacher:ask_adjustment")}</Button>
+      <Button variant="contained" disabled={busy || changed || !canAdjust || !adjustment.trim()} onClick={() => void onAdjust(adjustment)}>{t("teacher:ask_adjustment")}</Button>
     </SectionEditor>
   </Stack>;
 }

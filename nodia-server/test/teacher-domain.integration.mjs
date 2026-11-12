@@ -9,6 +9,9 @@ import { Module, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { CreateTeacherDomain1793570000000 } from '../dist/migrations/1793570000000-CreateTeacherDomain.js';
 import { PreserveTeacherArchivedPauseState1793590000000 } from '../dist/migrations/1793590000000-PreserveTeacherArchivedPauseState.js';
+import { PersistTeacherSetupDraft1793610000000 } from '../dist/migrations/1793610000000-PersistTeacherSetupDraft.js';
+import { TeacherLearningEvidence1793630000000 } from '../dist/migrations/1793630000000-TeacherLearningEvidence.js';
+import { TeacherLearningEnrichment1793640000000 } from '../dist/migrations/1793640000000-TeacherLearningEnrichment.js';
 import { CheckModuleAccessUseCase } from '../dist/authorization/use-case/check-module-access.use-case.js';
 import { TeacherService } from '../dist/teacher/teacher.service.js';
 import { ReadTeacherUseCase } from '../dist/teacher/use-case/read-teacher.use-case.js';
@@ -126,6 +129,11 @@ try {
       assert.equal(row.n, 20);
     },
   );
+  // Preserve the baseline up/down/up assertion above; exercise current commands
+  // against the additive current schema rather than a historical installation.
+  await new PersistTeacherSetupDraft1793610000000().up(q);
+  await new TeacherLearningEvidence1793630000000().up(q);
+  await new TeacherLearningEnrichment1793640000000().up(q);
   await q.release();
   // Minimal neutral read-side fixture. Shared-runtime proofs/capacity are tested separately.
   await db.query(

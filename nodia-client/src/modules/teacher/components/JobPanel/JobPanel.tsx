@@ -11,15 +11,15 @@ import { Actions } from "../../pages/Teacher/styles";
 import { InlineStatusRow, InlineStatusValue, ProgressSpace, StateChip, Status } from "./styles";
 import { jobErrorKey } from "./presentation";
 
-type Props = { presentation?: "panel" | "inline"; jobId: string; paused: boolean; busy: boolean; onReady: (job: Job) => void; onTerminal?: (job: Job) => void; onContinue: (job: Job) => Promise<void>; onNew: (job: Job) => Promise<void> };
-export default function JobPanel({ presentation = "panel", jobId, paused, busy, onReady, onTerminal, onContinue, onNew }: Props) {
+type Props = { allowNew?: boolean; presentation?: "panel" | "inline"; jobId: string; paused: boolean; busy: boolean; onReady: (job: Job) => void; onTerminal?: (job: Job) => void; onContinue: (job: Job) => Promise<void>; onNew: (job: Job) => Promise<void> };
+export default function JobPanel({ allowNew = true, presentation = "panel", jobId, paused, busy, onReady, onTerminal, onContinue, onNew }: Props) {
   const { t } = useTranslation();
   const query = useTeacherJob(jobId, paused);
   const delivered = useRef<string | null>(null);
   const job = query.data;
   const preparing = !paused && (job?.state === "queued" || job?.state === "running");
   const errorKey = jobErrorKey(job?.error_code ?? null, job?.state === "failed_known");
-  const canRequestNew = enabled(job?.allowed_actions ?? {}, "request_new_generation");
+  const canRequestNew = allowNew && enabled(job?.allowed_actions ?? {}, "request_new_generation");
   const disabled = busy || query.isFetching;
   useEffect(() => {
     if (!job || ["queued", "running", "blocked_paused"].includes(job.state) || delivered.current === job.job_id) return;
