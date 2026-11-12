@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "production_frontend_verified",
+  "checked_at_utc": "2026-11-12T03:37:15.764845+00:00",
+  "project": "nodia",
+  "production_url": "https://nodia-1ge.pages.dev",
+  "deployment_id": "214e120b-b6e5-400f-a70a-5cb77aa4d3d7",
+  "deployment_url": "https://214e120b.nodia-1ge.pages.dev",
+  "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+  "artifact_manifest_sha256": "4c4a1faf8fd922dc83df75264d37828c6e0321dfaea0fe4e36ae589504721b7c",
+  "api_url": "https://166.0.112.187/api/v1",
+  "public_google_id_matches_backend": true,
+  "critical_live_assets": [
+    {
+      "path": "assets/api-CrHsiq8H.js",
+      "sha256": "627ac2f3677303c71ae329bdd6329e0ec2dd3b3873fcd6149e1ae36f62ef0266",
+      "http_status": 200
+    },
+    {
+      "path": "index.html",
+      "sha256": "15fefe94fe3d1d77303ee873d04ffda50b9360b28edc5fe3e9b1d9b16d58c865",
+      "http_status": 200
+    }
+  ],
+  "native_production_auto_deploy_enabled": false,
+  "native_preview_setting": "none",
+  "google_browser_login_verified": false,
+  "github_actions_configured": false
+}

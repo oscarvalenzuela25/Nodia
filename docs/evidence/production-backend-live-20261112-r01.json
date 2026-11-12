@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-12",
+  "status": "deployed_transport_and_restore_verified_functional_login_pending",
+  "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+  "runtime_release": "backend-f01b49333688-ff33b6fdbbbc",
+  "frontend_evidence": "production-frontend-live-20261112-r01.json",
+  "frontend_url": "https://nodia-1ge.pages.dev",
+  "api_url": "https://166.0.112.187/api/v1",
+  "external_transport": {
+    "schema_version": 1,
+    "status": "verified_external_https_transport",
+    "checked_at_utc": "2026-11-12T03:32:40.797698+00:00",
+    "api_url": "https://166.0.112.187/api/v1",
+    "root_http": 200,
+    "expected_body": true,
+    "curl_default_configuration_disabled": true,
+    "insecure_TLS_flags_used": false,
+    "standard_curl_TLS_verification": true,
+    "frontend_cors_exact": true,
+    "credentialed_cors": true,
+    "login_preflight_http": 204,
+    "unauthenticated_me_http": 401,
+    "prefix_boundary_http": 404,
+    "ports_reachable_from_pc": {
+      "443": true,
+      "3000": false,
+      "6379": false
+    },
+    "google_login_performed": false,
+    "business_mutations_requested": false
+  },
+  "live_services": {
+    "checked_at_utc": "2026-11-12T03:46:13.777847+00:00",
+    "status": "live_services_verified",
+    "units": {
+      "nodia-api.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled",
+        "Result": "success",
+        "NRestarts": "0"
+      },
+      "nodia-ai-worker.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled",
+        "Result": "success",
+        "NRestarts": "0"
+      },
+      "nginx.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled",
+        "Result": "success",
+        "NRestarts": "0"
+      },
+      "nodia-ai-backup.timer": {
+        "ActiveState": "active",
+        "SubState": "waiting",
+        "UnitFileState": "enabled",
+        "Result": "success"
+      },
+      "nodia-ai-backup-rotate.timer": {
+        "ActiveState": "active",
+        "SubState": "waiting",
+        "UnitFileState": "enabled",
+        "Result": "success"
+      },
+      "snap.certbot.renew.timer": {
+        "ActiveState": "active",
+        "SubState": "waiting",
+        "UnitFileState": "enabled",
+        "Result": "success"
+      }
+    },
+    "root_cleanup_performed": false
+  },
+  "postgres": {
+    "server_major": 16,
+    "migrations": 45,
+    "entity_mappings": 68,
+    "physical_public_tables": 94,
+    "source_rows_at_backup": 122,
+    "tls_verify_full": true
+  },
+  "backup": {
+    "status": "ready",
+    "backup_id": "c2e5b337-3f3f-48db-b70a-71cfc15d00f7",
+    "captured_at": "2026-11-12T02:42:48.187Z",
+    "expires_at": "2026-11-19T02:42:48.187Z",
+    "cipher_sha256": "b4c01712c79ae6109e8b2ff7cefee66fc82648a81c49eaba702c1826c9d34b4f",
+    "cipher_bytes": 463512,
+    "daily_schedule_utc": "02:30",
+    "rotation_interval_minutes": 5,
+    "timers_enabled": true,
+    "canonical_release_script_paths_required": true
+  },
+  "offhost_restore": {
+    "status": "verified",
+    "receipt_sha256": "da56aeb08b6f4448ea072f0d217eb453bced9da5e8ca442466929787a050bdd0",
+    "public_tables_verified": 94,
+    "migrations_verified": 45,
+    "source_fingerprint_sha256": "44e5f0240b6ba99f36467c4205af12bd33ec3f8eb02b11d2914389c4ced45e03",
+    "quarantine_dispatches": 0,
+    "release_authorized": false,
+    "private_key_copied_to_vps": false,
+    "plaintext_test_volumes_removed": true,
+    "historical_r01_clock_guard_failure_preserved": true
+  },
+  "administrative_session": {
+    "sudo_cache_invalidated": true,
+    "owned_tmux_session_closed": true,
+    "sudoers_changed": false,
+    "root_ssh_enabled": false
+  },
+  "custody": {
+    "private_key_outside_repository_and_vps": true,
+    "encrypted_configuration_downloaded_and_decrypted_offline": true,
+    "secondary_offline_copy_confirmed": false
+  },
+  "next_step": "Owner tests Google login and normal application flows from the public frontend.",
+  "deferred_by_user": [
+    "GitHub Actions CI/CD",
+    "log consultation and error diagnosis",
+    "monitoring and alerting",
+    "further security configuration"
+  ],
+  "limitations": [
+    "Real Google login, refresh and browser cross-site cookie behavior not yet verified.",
+    "Previously exposed PostgreSQL normal and administrative credentials remain unrotated by explicit user deferral.",
+    "No AI provider inference or operational qualification performed in this destination.",
+    "Seven-day retention and physical removal within 24h require future evidence.",
+    "Temporary encrypted restore exports and metadata remain; attempted privileged cleanup stopped before changes because sudo authentication expired.",
+    "No new Git commit, PR or CI/CD configuration was performed in this final publication step."
+  ]
+}

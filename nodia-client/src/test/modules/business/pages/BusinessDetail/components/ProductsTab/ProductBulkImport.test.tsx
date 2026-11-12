@@ -57,7 +57,7 @@ describe("ProductBulkImport Helpers", () => {
       expect(result.errors.length).toBeGreaterThan(0);
       expect(result.errors).not.toContain("Código es requerido");
       expect(result.errors).toContain("Nombre es requerido");
-      expect(result.errors).toContain("Costo debe ser un número finito >= 0");
+      expect(result.errors).toContain("Costo debe ser un importe entero CLP válido");
     });
 
     it("returns valid when all required numeric and string fields are correct", () => {
@@ -94,7 +94,7 @@ describe("ProductBulkImport Helpers", () => {
       // The invalid row MUST be sorted to index 0!
       expect(rows[0].isValid).toBe(false);
       expect(rows[0].name).toBe("Producto Sin Codigo");
-      expect(rows[0].errors).toContain("Costo debe ser un número finito >= 0");
+      expect(rows[0].errors).toContain("Costo debe ser un importe entero CLP válido");
 
       // Valid rows follow
       expect(rows[1].isValid).toBe(true);

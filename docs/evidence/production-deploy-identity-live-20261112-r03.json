@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-12",
+  "status": "restricted_ssh_verified_from_pc_github_secret_pending",
+  "branch": "development",
+  "user_report": {
+    "identity_prepared": true,
+    "user": "nodia-deploy",
+    "public_key_fingerprint": "SHA256:g3gyUmcKBJmtgjFvcWiQeJXwZfxMET7YKRmOxTSKzpg"
+  },
+  "actual_ssh": {
+    "dedicated_identity_used": true,
+    "identity_agent_disabled": true,
+    "identities_only": true,
+    "batch_mode": true,
+    "strict_host_key_checking": true,
+    "dedicated_known_hosts_used": true,
+    "status": {
+      "exit_code": 0,
+      "status": "identity_verified",
+      "user": "nodia-deploy",
+      "forced_command": true,
+      "privileged_helper_enabled": false,
+      "deployment_implemented": false
+    },
+    "negative_commands": [
+      {
+        "command": "id",
+        "exit_code": 64,
+        "error_code": "only_status_is_enabled"
+      },
+      {
+        "command": "sudo -n true",
+        "exit_code": 64,
+        "error_code": "only_status_is_enabled"
+      }
+    ],
+    "private_contents_printed": false,
+    "verification_origin": "user PC; not a GitHub runner"
+  },
+  "administrative_read_checks": {
+    "gateway_and_authorized_keys_hashes_match": true,
+    "home_owner_mode": "root:root 0755",
+    "ssh_directory_owner_mode": "root:root 0755",
+    "authorized_keys_owner_mode": "root:root 0644",
+    "gateway_owner_mode": "root:root 0755",
+    "account_groups": [
+      "nodia-deploy"
+    ],
+    "api": "active/running; Result=success",
+    "worker": "active/running; Result=success",
+    "services_changed": false
+  },
+  "github_pending": {
+    "secret": "VPS_SSH_PRIVATE_KEY",
+    "variables": [
+      "VPS_HOST",
+      "VPS_PORT",
+      "VPS_USER",
+      "VPS_KNOWN_HOSTS"
+    ],
+    "private_uploaded": false,
+    "configuration_user_confirmed": false,
+    "runner_access_verified": false
+  },
+  "previous_receipts": [
+    "production-deploy-identity-preparation-20261112-r01.json",
+    "production-deploy-identity-correction-20261112-r02.json"
+  ],
+  "limits": {
+    "complete_sudoers_audit": false,
+    "privileged_updater_implemented": false,
+    "deployment_performed": false,
+    "master_modified": false,
+    "root_commit_created": false
+  }
+}

@@ -4,7 +4,7 @@
   "document_id": "nodia-ai.capability-registry-gateway",
   "product_id": "nodia-ai",
   "kind": "feature",
-  "revision": 10,
+  "revision": 11,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -75,11 +75,15 @@
 }
 ---
 
+## Referencias locales de recuperación — 2026-11-10
+
+Las rutas de `ops/lab/artifacts/` citadas debajo identifican originales locales ignorados por Git; no se distribuyen con un checkout ni con el paquete productivo. Se conservan sus nombres, hechos y fuentes portables ya enlazadas, sin copiar originales, alterar evidencias o ampliar aprobación/publicación. Esta revisión sólo corrige su presentación documental y sigue draft/unregistered, con approval:null.
+
 # Registro de capacidades y acceso a herramientas
 
 ## Ampliación API key — 2026-10-27
 
-[Plan92](../../../../mvp/92-nodia-ai-api-chat-parity.md), [ADR-084 propuesto](../../../../architecture/decisions/ADR-084-nodia-ai-api-chat-common-runtime.md) y [paridad API candidata](api-key-chat-parity.md) describen código implementado con ensayo real/VM todavía pendiente. Esta revisión es **draft/partial/unregistered, approval:null**. Los [originales anteriores](../../../../../ops/lab/artifacts/api-chat-parity-r01/catalog.json) conservan sus bytes y aprobaciones históricas; no se revocan ni se sustituyen sus evidencias por un resultado inventado.
+[Plan92](../../../../mvp/92-nodia-ai-api-chat-parity.md), [ADR-084 propuesto](../../../../architecture/decisions/ADR-084-nodia-ai-api-chat-common-runtime.md) y [paridad API candidata](api-key-chat-parity.md) describen código implementado con ensayo real/VM todavía pendiente. Esta revisión es **draft/partial/unregistered, approval:null**. Los originales anteriores (catálogo local ignorado por Git `ops/lab/artifacts/api-chat-parity-r01/catalog.json`) conservan sus bytes y aprobaciones históricas; no se revocan ni se sustituyen sus evidencias por un resultado inventado.
 
 API OpenAI/Gemini reutiliza catálogo, ToolGateway, grants, permisos y confirmación comunes. Aplican [contratos41](../../../../mvp/41-nodia-ai-v1-contracts.md) y [política89](../../../../mvp/89-module-access-and-user-data-scope.md): módulo NodiaAI y destinos autorizados, propietario/colaborador y bypass legítimo de super_admin sin omitir invariantes o botón humano. Las acciones históricas de roles no añaden un bloqueo contrario a89. Seleccionar capacidades o escribir «sí» no confirma una propuesta ni ejecuta efectos; revisión/hash, ejecución idempotente y recibos permanecen independientes del modo.
 

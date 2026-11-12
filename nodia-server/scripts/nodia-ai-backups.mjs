@@ -11,6 +11,7 @@ import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectComm
 import { EncryptNodiaAiBackupUseCase } from '../dist/nodia-ai-recovery/use-case/encrypt-nodia-ai-backup.use-case.js';
 import { ManageNodiaAiBackupsUseCase } from '../dist/nodia-ai-recovery/use-case/manage-nodia-ai-backups.use-case.js';
 import { loadNodiaAiExternalRecoveryConfig, createNodiaAiExternalRecovery } from '../dist/nodia-ai-recovery/nodia-ai-external-recovery.factory.js';
+import { validateNodiaAiBackupDatabaseCertificate, nodiaAiBackupDumpEnvironment } from './nodia-ai-backup-database.mjs';
 
 const uuid = /^[a-f\d]{8}-[a-f\d]{4}-4[a-f\d]{3}-[89ab][a-f\d]{3}-[a-f\d]{12}$/u;
 const fail = code => { throw Error(`nodia_ai:backup_${code}`); };
@@ -25,15 +26,12 @@ export async function loadNodiaAiBackupConfiguration(path) {
   await ownedFile(path);
   const config = JSON.parse(await readFile(path, 'utf8'));
   const fields = ['recovery_config', 'public_key_file', 'spool_directory', 'pg_dump_binary', 'database', 'max_dump_bytes', 'timeout_seconds'];
-  const dbFields = ['host', 'port', 'username', 'password', 'database'];
   if (!config || Object.keys(config).length !== fields.length || fields.some(key => !Object.hasOwn(config, key)) ||
-    !config.database || Object.keys(config.database).length !== dbFields.length || dbFields.some(key => !Object.hasOwn(config.database, key)) ||
-    !['host', 'username', 'password', 'database'].every(key => typeof config.database[key] === 'string' && config.database[key].length > 0 && config.database[key].length <= 4096 && !config.database[key].includes('\0')) ||
-    !Number.isSafeInteger(config.database.port) || config.database.port < 1 || config.database.port > 65535 ||
     !Number.isSafeInteger(config.max_dump_bytes) || config.max_dump_bytes < 1 || config.max_dump_bytes > 1024 ** 3 ||
     !Number.isSafeInteger(config.timeout_seconds) || config.timeout_seconds < 1 || config.timeout_seconds > 3600 ||
     typeof config.spool_directory !== 'string' || !config.spool_directory.startsWith('/') ||
     !/^\/usr\/(?:bin|lib\/postgresql\/\d+\/bin)\/pg_dump$/u.test(config.pg_dump_binary)) return fail('configuration_invalid');
+  await validateNodiaAiBackupDatabaseCertificate(config.database);
   await ownedFile(config.public_key_file, { privateFile: false, maxBytes: 16384 });
   const binary = await lstat(config.pg_dump_binary);
   if (!binary.isFile() || binary.uid !== 0 || (binary.mode & 0o022) !== 0) return fail('dump_binary_invalid');
@@ -113,7 +111,7 @@ export function createNodiaAiBackupPorts(config, external, bucket, publicKeyPem,
       const file = await open(path, 'wx', 0o600); await file.close();
       const child = spawn(config.pg_dump_binary, ['--format=custom', '--no-owner', '--no-acl', '--compress=0', '--no-password', '--host', config.database.host, '--port', String(config.database.port), '--username', config.database.username, '--dbname', config.database.database], {
         stdio: ['ignore', 'pipe', 'ignore'], shell: false,
-        env: { PATH: '/usr/bin:/bin', LANG: 'C', PGPASSWORD: config.database.password, PGCONNECT_TIMEOUT: String(Math.min(30, config.timeout_seconds)), PGAPPNAME: 'nodia-ai-encrypted-backup' },
+        env: nodiaAiBackupDumpEnvironment(config.database, config.timeout_seconds),
       });
       let childError;
       const closed = new Promise(resolveChild => {

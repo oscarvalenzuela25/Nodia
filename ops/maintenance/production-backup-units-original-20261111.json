@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-11",
+  "archive": "production-backup-units-original-20261111.zip",
+  "archive_sha256": "904bad5bb60a194b5c58b330a5269de50d41a559e4003379511dd6a93d5dbd2d",
+  "entries": [
+    {
+      "path": "bootstrap-backup-units.sh",
+      "sha256": "5b29ca43d701f9c4dac604adc6efd5db9eb2e7e2a885a158fc2dc987b557f528"
+    },
+    {
+      "path": "backup-runner.env.template",
+      "sha256": "b9f427f2f81afa484b6a647bd2a792fabdade0782166730eb06a7b41d8543111"
+    },
+    {
+      "path": "nodia-ai-backup.service",
+      "sha256": "d17c834da6b2deddb478c15278e8cc0c1a116f65f6912bcbf2bcfe2e5fc83aff"
+    },
+    {
+      "path": "nodia-ai-backup-rotate.service",
+      "sha256": "f8b0927126777dcc66c4214fcee9ec548a53b0eef7f380a8cee55005bc5e9426"
+    },
+    {
+      "path": "nodia-ai-journal-reconcile.service",
+      "sha256": "f513f2c789ae9c50f8a4b150da667a8b5fd5f256bc0e6edcb269cc7250f93d94"
+    },
+    {
+      "path": "nodia-ai-backup.timer",
+      "sha256": "5518c067135b13bcaf7cc43b242f82f9aaea531b77e2ad8e5b3a64aacab5f402"
+    },
+    {
+      "path": "nodia-ai-backup-rotate.timer",
+      "sha256": "965af7d305291ed48c60bb2cf1ca4489cd2663600ef221ed3f54055a39c10921"
+    }
+  ],
+  "reason": "First runner environment used current symlink; f01 CLI main guard compares unresolved argv against real ESM URL, resulting in silent no-op. Canonical adopted release paths are required."
+}

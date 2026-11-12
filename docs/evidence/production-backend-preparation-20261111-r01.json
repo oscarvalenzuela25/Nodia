@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-11",
+  "client_timezone": "America/Santiago",
+  "scope": "linux_backend_candidate_staging_and_read_only_dependency_verification",
+  "status": "candidate_staged_dependencies_verified",
+  "host_identity_evidence": "production-backend-host-20261110-r01.json",
+  "release_id": "backend-candidate-ba8ebfa00b55-e61ee5a268e7",
+  "source_sha": "ba8ebfa00b55f103465d0ab533a802152944d224",
+  "source_provenance": "workspace_documentation_candidate",
+  "source": {
+    "source_sha": "ba8ebfa00b55f103465d0ab533a802152944d224",
+    "archive_sha256": "0832fad616c00f0dc5e750cd5932b4d782153df1fb568c5310806a5e421c56ad",
+    "source_manifest_sha256": "29515eb0ddd3b1c253c3f57d0257d9d21269387e87d52e6b854ffa58c77c96f6",
+    "snapshot_tree_sha256": "acf758514d0af3c2bee787e8b81ddf69b7997c2782b2c08365dc389adc852a6f",
+    "files_verified": 6867,
+    "source_provenance": "workspace_documentation_candidate",
+    "deployment_eligible": false,
+    "overlay": [
+      {
+        "path": "docs/nodia-ai/knowledge/businesses/README.md",
+        "base_sha256": "aa3902871297d2a80918a489adcd63bcf6bc18c1a72056ea5c175db16d660a3d",
+        "sha256": "68db593dd994842c34e41dfc4d027890a1e6efe1ca56596839db8aa0c261b9df"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/README.md",
+        "base_sha256": "dd7403e788b1893400645101d4282cdb210c5781b64a1d0215292f88247d9460",
+        "sha256": "ea858210f9bb7af71199a05e7fea25c4bec6643256d6746c28d9c14134aec9de"
+      },
+      {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/capability-registry-gateway.md",
+        "base_sha256": "2e89102089212ad4465d11a55ed9f608cbc8cf66ff25c5cfa81ea628945805f7",
+        "sha256": "da1f07c4e910c8ffb5fbc0f73bbdb4ce901eb379c26f59b20c890c0b928b5e5c"
+      }
+    ]
+  },
+  "deployment_eligible": false,
+  "archive_sha256": "9a2df3918462bc7d000c2fab51de3bcbfc532ff2b0768aec1e97d2cd1dd9218b",
+  "archive_bytes": 210068023,
+  "runtime": {
+    "node": "v24.22.2",
+    "npm": "11.19.1",
+    "executable_sha256": "904a6d3484241d466989f9df9ba3aab822b1496191bdb28230eb491a55c32a52",
+    "platform": "linux",
+    "arch": "x64",
+    "glibc": "2.39"
+  },
+  "native_packages": [
+    {
+      "name": "@napi-rs/canvas-linux-x64-gnu",
+      "version": "1.0.10"
+    },
+    {
+      "name": "@openai/codex-linux-x64",
+      "version": "0.161.0-linux-x64"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "package-backend-release.mjs",
+      "sha256": "45124b500c96a8d86e00659c01f6b34c335f2fc2df18d00da4c987a7a33e5e85"
+    },
+    {
+      "path": "build-backend-release.sh",
+      "sha256": "618a474568a42c1027db13052e4eb0b49a85aa3ae7c9964bce42f7cf778af0ee"
+    }
+  ],
+  "compiled_assets": {
+    "knowledge_release_id": "e6ae42867985c95eade143a8e9e548b80f33b4a8aa5324555e1fefcfc450f0c7",
+    "catalog_release": "nodia-ai-business-pos/4",
+    "knowledge_fragments": 46,
+    "common_schema_sha256": "7e6c521c843e8bcf6889803036c542bc3a1d734d987c672372261a21f0b768d9",
+    "runtime_policy_sha256": "5f6c02901a3257f1e884f3edb2fe862caf6dc4ccddb3c9a4b64d395220faecbb"
+  },
+  "checks": {
+    "status": "passed",
+    "source_sha": "ba8ebfa00b55f103465d0ab533a802152944d224",
+    "checks": [
+      "full_nest_and_postbuild_assets",
+      "context_build_owned_source_pins",
+      "backend_lint",
+      "catalog_units",
+      "knowledge_compiler_and_pin",
+      "common_contract_fixtures",
+      "runtime_policy_and_knowledge_units",
+      "compiled_asset_contracts"
+    ],
+    "database_or_inference_executed": false
+  },
+  "independent_archive_verification": {
+    "inventory_entries": 24490,
+    "all_file_hashes_verified": true,
+    "embedded_and_sidecar_manifest_identical": true,
+    "paths_types_internal_links_checked": true,
+    "directories_mode": "0755",
+    "regular_file_modes": [
+      "0644",
+      "0755"
+    ]
+  },
+  "builder": {
+    "os": "Ubuntu24.04_WSL_local",
+    "secrets_and_provider_environment": "cleared",
+    "node_tar_sha256": "48cc0e21e048790e54c0cf5749c2725005313d652651c40b7a21feb9697aaf75",
+    "tooling_frozen_before_build": true,
+    "compiled_in_vps": false
+  },
+  "configuration": {
+    "source": "operator_report_of_configure_backend_completion",
+    "helper_sha256": "2c34503c6ca052cf69b70c045a21e16004c57fce08d7a6578c6eff492a8df36c",
+    "state": "configured_locally",
+    "file_bucket": "nodia-production",
+    "bootstrap_email_value_recorded": false,
+    "secret_values_recorded": false,
+    "root_file_and_recovery_owners_checked_by_helper": true,
+    "systemd_environment_fixture_checked_before_secrets": true,
+    "remote_validation_performed": true,
+    "node_dependency_validation_pending": false,
+    "journal_bootstrapped": false
+  },
+  "resolved_build_findings": [
+    "Separate npm user/global configuration files; /dev/null cannot be loaded twice.",
+    "Prepare source knowledge pins omitted from git archive using existing context:prepare.",
+    "Six ignored-lab links corrected in three draft/unregistered docs; overlay explicitly marks non-deployable candidate.",
+    "Freeze tooling bytes before execution; superseded race/EOF output excluded.",
+    "Normalize file and directory modes before manifest/tar; independent archive recheck."
+  ],
+  "limitations": [
+    "Candidate only; three documentation corrections are not committed/promoted to master.",
+    "API/Worker remain disabled/inactive; current not activated.",
+    "No production migrations, seeds, journal initialization, backups or provider inference.",
+    "R2 HEAD does not demonstrate write access, journal or restore readiness.",
+    "Isolated first-install, actual app boot/drain and UI auth remain pending.",
+    "Credential rotation and Free-plan IP restriction limitation retain their recorded scope."
+  ],
+  "candidate_probe_attempt": {
+    "source": "operator_output_and_read_only_SSH_public_results",
+    "status_file_phase": "failed",
+    "status_file_error_code": "probe_unit_cleanup_failed",
+    "status_file_updated_at_utc": "2026-11-11T03:49:58.182007+00:00",
+    "candidate_staged": true,
+    "dependency_result": {
+      "schema_version": 1,
+      "status": "verified",
+      "checks": {
+        "local_configuration": "passed",
+        "postgres": {
+          "status": "passed",
+          "database_matched": true,
+          "server_version_num": 160014,
+          "transaction_read_only": true,
+          "client_tls_authorized": true,
+          "client_tls_protocol": "TLSv1.3",
+          "backend_tls": true
+        },
+        "redis": {
+          "status": "passed",
+          "authenticated_ping": true
+        },
+        "r2": {
+          "status": "passed",
+          "head_bucket": true
+        }
+      },
+      "application_started": false,
+      "migrations_executed": false,
+      "mutations_requested": false
+    },
+    "post_failure_inspection": {
+      "temporary_probe_units_loaded": 0,
+      "temporary_probe_unit_files": 0,
+      "api_worker_units": "disabled_and_inactive"
+    },
+    "cleanup_helper_correction_pending": false,
+    "resolution": "Corrected cleanup classification; a complete rerun succeeded. Initial failed status retained as history."
+  },
+  "final_candidate_probe": {
+    "source": "operator_output_and_read_only_SSH_public_results",
+    "phase": "dependencies_verified",
+    "updated_at_utc": "2026-11-11T03:58:22.350240+00:00",
+    "candidate_path": "/opt/nodia/candidates/backend-candidate-ba8ebfa00b55-e61ee5a268e7",
+    "candidate_staged": true,
+    "stage_helper_sha256": "8c6c0b6a58fd972237639e976dc47687cbd5d530414967807a26cfc68e201a32",
+    "probe_sha256": "d8063829b6a1a55c9b0ad6bd394e9cae313f7d1e0a387ff935d80f829c4a95f3",
+    "dependency_result": {
+      "schema_version": 1,
+      "status": "verified",
+      "checks": {
+        "local_configuration": "passed",
+        "postgres": {
+          "status": "passed",
+          "database_matched": true,
+          "server_version_num": 160014,
+          "transaction_read_only": true,
+          "client_tls_authorized": true,
+          "client_tls_protocol": "TLSv1.3",
+          "backend_tls": true
+        },
+        "redis": {
+          "status": "passed",
+          "authenticated_ping": true
+        },
+        "r2": {
+          "status": "passed",
+          "head_bucket": true
+        }
+      },
+      "application_started": false,
+      "migrations_executed": false,
+      "mutations_requested": false
+    },
+    "cleanup_regression_tests_passed": 12,
+    "temporary_probe_units_loaded": 0,
+    "temporary_probe_unit_files": 0,
+    "current_link_exists": false,
+    "api_worker_units": "disabled_and_inactive",
+    "deployment_eligible": false,
+    "cleanup_resolution": "Check inactive/PID zero/absent unit fragment and removed transient file; already-unloaded stop/reset-failed exit codes alone are not failures."
+  }
+}

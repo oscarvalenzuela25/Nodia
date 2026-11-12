@@ -1,9 +1,10 @@
 // Explicit operator canary. No HTTP/tool entry point, auth impersonation, auto-selection or retry.
-// Requires an owned dedicated draft with the exact selection already persisted, created via
+// Requires an owned dedicated draft for setup, or active session + unused anchored thread for helper, created via
 // the UI or explicitly authorized operator setup under the same validated actor reference.
 // Neither setup path creates auth sessions, impersonates another actor or forges JWTs.
 import 'reflect-metadata';
 import {readFile} from 'node:fs/promises';
+import {parseTeacherQualificationArgs} from './teacher-qualification-args.mjs';
 import source from '../dist/config/data-source.js';
 import {TeacherGenerationRuntimeService} from '../dist/ai-generation/teacher-generation-runtime.service.js';
 import {ApiTextGenerationService} from '../dist/ai-generation/api-text-generation.service.js';
@@ -16,13 +17,12 @@ import {PublishTeacherUseCase} from '../dist/teacher/use-case/publish-teacher.us
 import {TeacherService} from '../dist/teacher/teacher.service.js';
 import {AssertNodiaAiOperationModeUseCase} from '../dist/nodia-ai-runtime/use-case/assert-nodia-ai-operation-mode.use-case.js';
 
-const args=new Map(process.argv.slice(2).map(value=>{const at=value.indexOf('=');return [value.slice(0,at),value.slice(at+1)];}));
-const sessionId=args.get('--session-id'),userId=args.get('--user-id'),authSession=args.get('--auth-session-public-id');
-const originalJobId=args.get('--complete-job-id');
-const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+let parsed;
+try { parsed=parseTeacherQualificationArgs(process.argv.slice(2)); } catch { parsed=null; }
+const {sessionId,userId,authSession,originalJobId,purpose,threadId}=parsed??{};
 let codexRuntime, codexTeacher;
-if(![3,4].includes(args.size)||(args.size===4&&!uuid.test(originalJobId??''))||!uuid.test(sessionId??'')||!uuid.test(authSession??'')||!/^[1-9][0-9]{0,18}$/.test(userId??'')){
-  console.error('Required: --session-id=<dedicated draft UUID> --user-id=<authenticated owner bigint> --auth-session-public-id=<their current authenticated session UUID>');
+if(!parsed){
+  console.error('Required: --session-id=<owned dedicated session UUID> --user-id=<authenticated owner bigint> --auth-session-public-id=<their current session UUID>; optional --purpose=setup_reply|contextual_reply, --complete-job-id=<original UUID>; a new contextual probe also requires --thread-id=<unused anchored thread UUID>');
   process.exitCode=2;
 }else try{
   new AssertNodiaAiOperationModeUseCase().execute(process.env);
@@ -52,8 +52,12 @@ if(![3,4].includes(args.size)||(args.size===4&&!uuid.test(originalJobId??''))||!
   const runtime=new TeacherGenerationRuntimeService(source,access,credentials,new NodiaAiConnectionsService(source),new GenerationWorkerSourceRegistry(),route??api,policy,agentic);
   const publisher=new PublishTeacherUseCase();runtime.setPublisher(publisher.publish.bind(publisher));
   const result=originalJobId
-    ?await runtime.completeTextQualification(actor,sessionId,originalJobId,AbortSignal.timeout(40000))
-    :await runtime.qualifyText(actor,sessionId,selection,AbortSignal.timeout(125000));
+    ?await (purpose==='contextual_reply'
+      ?runtime.completeContextualQualification(actor,sessionId,originalJobId,AbortSignal.timeout(40000))
+      :runtime.completeTextQualification(actor,sessionId,originalJobId,AbortSignal.timeout(40000)))
+    :await (purpose==='contextual_reply'
+      ?runtime.qualifyContextualReply(actor,sessionId,selection,threadId,AbortSignal.timeout(125000))
+      :runtime.qualifyText(actor,sessionId,selection,AbortSignal.timeout(125000)));
   console.log(JSON.stringify({contract:selection.mode==='agentic'?'teacher-agentic-text/1':'teacher-text/1',...result,
     ...(selection.mode==='agentic'?{posts:null,native_dispatches:1,provider_internal_generation_posts:null}:{}),
     dispatched_now:!originalJobId}));

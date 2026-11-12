@@ -7,6 +7,8 @@ import type {
 import { hash, teacherError } from '../policies/teacher-validation.js';
 import { promptSnapshot } from '../policies/teacher-prompts.js';
 import { latestTeacherSetupSummary } from './teacher-setup-summary.js';
+import { learningGenerationContext } from './teacher-learning-persistence.js';
+import { enrichmentGenerationContext } from './teacher-enrichment-persistence.js';
 
 export async function admitTeacherGeneration(
   scope: TeacherScope,
@@ -34,7 +36,29 @@ export async function admitTeacherGeneration(
   ].includes(purpose)
     ? await latestTeacherSetupSummary(m, s.id)
     : null;
+  const pedagogicalEvidence = [
+    'plan_outline',
+    'plan_adjustment',
+    'learning_packet',
+    'assessment_only',
+  ].includes(purpose)
+    ? await learningGenerationContext(
+        m,
+        s,
+        target.plan_revision_id ?? s.current_plan_revision_id,
+        target.unit_id ?? null,
+      )
+    : null;
+  const enrichmentContext = [
+    'plan_outline',
+    'plan_adjustment',
+    'learning_packet',
+  ].includes(purpose)
+    ? await enrichmentGenerationContext(m, s)
+    : null;
   const inputSnapshot = {
+    ...(enrichmentContext ? { enrichment_context: enrichmentContext } : {}),
+    ...(pedagogicalEvidence ? { learning_evidence: pedagogicalEvidence } : {}),
     ...input,
     ...(['setup_reply', 'plan_outline', 'plan_adjustment'].includes(purpose)
       ? { setup_summary: setupSummary }
@@ -67,7 +91,12 @@ export async function admitTeacherGeneration(
     [actor.actorId],
   );
   if (Number(count.n) >= 2) teacherError('capacity_unavailable', 429);
-  const resolved = await port.verifySelection(m, reference, s.selection);
+  const resolved = await port.verifySelection(
+    m,
+    reference,
+    s.selection,
+    purpose,
+  );
   const snapshot = promptSnapshot(purpose, inputSnapshot);
   const id = randomUUID();
   await m.query(

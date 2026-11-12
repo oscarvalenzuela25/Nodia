@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-10",
+  "client_timezone": "America/Santiago",
+  "scope": "initial_private_redis_infrastructure_only",
+  "status": "bootstrap_complete_external_port_unreachable_from_tested_client",
+  "vps_ip": "166.0.112.187",
+  "bootstrap_sha256": "a8893ae6ae12d143030572dbf6e882b8b58c1ca8081b8223da1f1553bede6a34",
+  "compose_sha256": "330e6397b69dc25ef88377d5fcba1072875e5653c617d1cd25079cc17f1fefb9",
+  "image": "redis:7.4.12-alpine@sha256:7b1753b4c5ad8458906c272a8132b8c15f5557b000379eb115fb239706a384b7",
+  "container": "template_redis",
+  "volume": "template_redis_data",
+  "network": "template_redis_private",
+  "bootstrap_result": {
+    "source": "operator_report_and_read_only_SSH_status_json",
+    "server_recorded_at_utc": "2026-11-11T01:56:36.445325+00:00",
+    "phase": "complete",
+    "authenticated_ping": true,
+    "anonymous_ping_rejected": true,
+    "host_loopback_authenticated_connection": true,
+    "effective_config_checked": true,
+    "lua_ping": true,
+    "temporary_key_aof_acknowledged_on_same_connection": true,
+    "temporary_key_survived_container_recreation": true,
+    "temporary_key_deleted": true,
+    "credential_and_config_files_preserved_by_internal_hash_comparison": true,
+    "checks_interpretation": "Successful checked path of the reviewed bootstrap, not an independent rerun of privileged commands."
+  },
+  "read_only_host_observations": {
+    "listener": "127.0.0.1:6379",
+    "vm_overcommit_memory": 1,
+    "docker": "active",
+    "nginx": "active"
+  },
+  "external_tcp_probe": {
+    "client": "Windows_PC",
+    "timeout_seconds": 4,
+    "port_22": "connected",
+    "port_443": "connected",
+    "port_6379": "TimeoutError",
+    "interpretation": "6379 was unreachable from this client/network at the time of the check; does not prove universal isolation."
+  },
+  "configured_limits": {
+    "redis_maxmemory_bytes": 268435456,
+    "memory_policy": "noeviction",
+    "container_memory_bytes": 1073741824,
+    "container_cpus": 1,
+    "aof_fsync": "everysec"
+  },
+  "initial_failure": {
+    "detail": "internal Docker network did not publish the port; healthy/authentication inside container passed before the bootstrap stopped at old line 52.",
+    "resolution": "Narrow resume-network path preserved empty volume and credentials, switched to dedicated bridge with explicit loopback publication, then completed checks."
+  },
+  "time_sources": {
+    "note": "Server and client clocks differ; timestamps retain their source and are not used to infer elapsed durations.",
+    "server_ntp_synchronized": true,
+    "server_chrony_reference": "ntp-nts-2.ps6.canonical.com",
+    "server_chrony_leap_status": "Normal",
+    "server_clock_matched_external_https_date_header_at_check": true
+  },
+  "limitations": [
+    "API/Worker are not deployed or integrated with Redis.",
+    "No backup/restore, crash recovery, load/OOM, memory calibration or alerting acceptance.",
+    "AOF everysec and a local named volume do not protect against losing the VPS.",
+    "Application cache reconnection after its finite retry budget remains to be verified/resolved.",
+    "Bootstrap status text retains external-port-pending because the external probe was performed outside the root script."
+  ]
+}

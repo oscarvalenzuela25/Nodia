@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "recorded_on": "2026-11-11",
+  "scope": "Teacher Q1–Q3/E0–E4 backend evidence, diagnosis, practice and lesson-interaction regression",
+  "status": "technical_scope_passed_requires_common_acceptance_consolidation",
+  "environment": "Compiled real Teacher domain and PostgreSQL16 disposable Docker; synthetic generation port only",
+  "operational_database_touched": false,
+  "provider_credentials_used": false,
+  "remote_generation_posts": 0,
+  "source_files": [
+    "nodia-server/src/teacher/use-case/teacher-learning-persistence.ts",
+    "nodia-server/src/teacher/use-case/teacher-learning.use-case.ts",
+    "nodia-server/src/teacher/use-case/teacher-attempt-persistence.ts",
+    "nodia-server/src/teacher/use-case/read-teacher.use-case.ts",
+    "nodia-server/test/teacher-learning-evidence.integration.mjs"
+  ],
+  "defects": [
+    {
+      "id": "CORE-READER-INTERACTION-PACKET",
+      "priority": "P2",
+      "before": "Reader block tools requested learning history after the material had rendered, adding a request and temporary per-block skeleton whose replacement shifted the layout in the Client laboratory.",
+      "after": "The material response includes lesson_interactions for the exact content version in one bounded query, ordered by created_at DESC and id DESC with LIMIT40, with ISO timestamps. Client consumes this admitted history without a learning request per block. The backend regression checks version isolation and ownership; actual layout and network savings belong to the Client performance campaign.",
+      "status": "corrected_backend_contract_revalidated_client_measured_separately",
+      "criteria": ["TU-E1-07", "TU-E4-02"]
+    },
+    {
+      "id": "CORE-INTERACTION-ANCHOR",
+      "priority": "P2",
+      "before": "A new prediction/check accepted a superseded or other-plan content version and a kind different from its actual block, provided the session and block ID existed.",
+      "after": "A new interaction requires the current accepted plan, current content publication and exact block kind. Existing history remains readable under its original version; no response is migrated.",
+      "status": "corrected_revalidated",
+      "criteria": ["TU-E4-01", "TU-E4-02", "TU-E4-03"]
+    },
+    {
+      "id": "CORE-INTERACTION-TIME",
+      "priority": "P2",
+      "before": "The generative lesson-interaction query omitted created_at, losing temporal provenance in the admitted snapshot.",
+      "after": "The query selects created_at and normalizes it to ISO before canonical prompt/hash serialization. The SQL regression checks the actual timestamp survives canonicalization.",
+      "status": "corrected_revalidated",
+      "criteria": ["TU-E1-05", "TU-E4-02"]
+    },
+    {
+      "id": "CORE-REPEATED-INDEPENDENCE",
+      "priority": "P2",
+      "before": "A newly published unit-practice assessment could reuse an already answered task with another item ID and report its correct response as independent application.",
+      "after": "At attempt admission, same-owner prior submitted tasks are matched by item fingerprint or prompt variant group. The new response records previously_seen_item and the prior response ID; the attempt is assisted. A later genuinely distinct occurrence can retain independence. Original observations and scores are not rewritten.",
+      "status": "corrected_revalidated",
+      "criteria": ["TU-E1-04", "TU-E3-02", "TU-E3-04", "TU-E3-06"]
+    },
+    {
+      "id": "CORE-EVIDENCE-ROUNDTRIPS",
+      "priority": "P2",
+      "before": "Refreshing128 eligible responses made one SELECT plus128 individual INSERT statements inside the authority transaction.",
+      "after": "One bounded INSERT SELECT preserves the128-row cap, exact source fields and unique grading-event key; duplicate refreshes do not create events again.",
+      "status": "corrected_revalidated_and_compared",
+      "criteria": ["TU-E1-04", "TU-E1-07", "TU-E3-08"]
+    },
+    {
+      "id": "CORE-FOCUS-BEFORE-LIMIT",
+      "priority": "P2",
+      "before": "Generation selected the global last100 observations and filtered revision/unit afterward.100 newer unrelated observations could hide valid evidence for the requested unit and produce insufficient_evidence.",
+      "after": "Generation filters exact revision or explicit mapping and the requested unit's objectives before the100-observation cap. The public historical projection is unchanged.112 newer observations from another objective no longer displace target evidence.",
+      "status": "corrected_revalidated",
+      "criteria": ["TU-E1-01", "TU-E1-06", "TU-E1-07", "TU-E3-01"]
+    }
+  ],
+  "verification": [
+    {
+      "command": "npx tsc -p tsconfig.build.json; npx tsc --noEmit -p tsconfig.build.json",
+      "result": "passed"
+    },
+    {
+      "command": "npx oxlint src/teacher/use-case/teacher-learning.use-case.ts src/teacher/use-case/teacher-learning-persistence.ts src/teacher/use-case/teacher-attempt-persistence.ts src/teacher/use-case/read-teacher.use-case.ts test/teacher-learning-evidence.integration.mjs",
+      "result": "passed"
+    },
+    {
+      "command": "node test/teacher-learning-evidence.integration.mjs --baseline-module=../.tmp/teacher-upgrade-core-qa/baseline-refresh.mjs",
+      "result": "passed",
+      "checks": 6,
+      "guarantees": [
+        "Diagnostic pause/resume preserves answer, confidence zero, self-explanation, cursor and recovered receipt without inference. Correct exact answer remains2points despite an incoherent self-explanation; authored diagnosis remains assisted.",
+        "Mappings reject another session and nonexistent objective; an unchanged objective ID in another plan revision does not carry mapping/evidence implicitly. A manual plan can be accepted while an optional diagnostic remains available.",
+        "Lesson interactions require exact current version/kind, recover one durable event, race through session CAS, keep history across reload and reject superseded writes; generative timestamps remain ISO. Material projection returns only its exact version's interactions, excludes another unit's history and rejects another owner.",
+        "An error, a subsequent assisted success, a repeated known task and a distinct new occurrence have separate immutable provenance; none creates section verification.",
+        "Refreshing128 eligible responses uses one SQL statement and is idempotent, with field-for-field output equivalent to the previous implementation.",
+        "Target generation retains12 relevant observations and concrete response details even when112 newer unrelated observations fill the historical last100 view."
+      ]
+    },
+    {
+      "command": "node test/teacher-learning-evidence.integration.mjs",
+      "result": "passed_after_reader_material_projection",
+      "checks": 6,
+      "includes": "Self-contained rerun without optional baseline module, including material lesson_interactions contract, exact content-version isolation and owner boundary. Production compile and scoped lint also passed after this additive change."
+    },
+    {
+      "command": "node test/teacher-upgrade.integration.mjs",
+      "result": "passed",
+      "checks": 8,
+      "includes": "Frozen generation evidence/hash remains unchanged after a later response; ownership, reviewed bank, private keys, null/zero, CAS and rollback preservation."
+    },
+    {
+      "command": "node test/teacher-domain.integration.mjs",
+      "result": "passed_after_final_core_changes",
+      "checks": 14,
+      "includes": "Final90 exact, pending not zero, private answers until full submission, archive/pause/cursor, revision/fences, manual acceptance and unknown without replay."
+    },
+    {
+      "command": "npx vitest run src/teacher/policies/teacher-learning.spec.ts",
+      "result": "passed",
+      "tests": 4,
+      "files": 1
+    },
+    {
+      "command": "git diff --check (owned scope) and fatal UTF-8/LF byte check",
+      "result": "passed"
+    }
+  ],
+  "comparison": {
+    "operation": "refreshLearningEvidence with128 eligible graded responses",
+    "baseline": "Compiled previous refresh implementation captured before editing; experiment file ignored, permanent integration runs without this optional baseline dependency",
+    "baseline_sha256": "2f77c4f7f7bfffe046989ddd2955e5efd41a6b3ff47f46ddf9d2c7f5776e3041",
+    "same_source_rows_same_connection_profile": true,
+    "transaction_rolled_back_between_samples": true,
+    "all_selected_source_fields_equal": true,
+    "before_queries": [129, 129, 129],
+    "after_queries": [1, 1, 1],
+    "before_elapsed_ms": [73.903, 71.678, 74.919],
+    "after_elapsed_ms": [11.211, 11.465, 11.827],
+    "before_median_ms": 73.903,
+    "after_median_ms": 11.465,
+    "limitations": "Local SQL latency with synthetic rows, no remote-provider time, production load or UI-route performance claim. Query-count reduction is directly observed; educational efficacy is not measured."
+  },
+  "criterion_mapping": [
+    {"tu": "TU-E0-02", "evidence": ["historical_domain14", "new_core6"], "technical_result": "passed", "common_review": "Integrated UI/runtime/selection acceptance belongs to root campaign."},
+    {"tu": "TU-E0-03", "evidence": ["historical_core8", "learning_policy4"], "technical_result": "passed", "common_review": "Browser reload and two-tab traversal remains a separate UI check."},
+    {"tu": "TU-E1-01", "evidence": ["new_core6:incompatible_mappings", "new_core6:focus_before_limit"], "technical_result": "passed"},
+    {"tu": "TU-E1-02", "evidence": ["new_core6:pause_and_metadata", "historical_core8", "learning_policy4"], "technical_result": "passed", "common_review": "Real form drafts/errors are checked by UI campaign."},
+    {"tu": "TU-E1-03", "evidence": ["new_core6:incoherent_explanation_keeps_exact_grade"], "technical_result": "passed", "common_review": "No automatic interpretation or structured misconception is claimed; semantic quality requires reviewed sample."},
+    {"tu": "TU-E1-04", "evidence": ["new_core6:help_repeat_novel_occurrence", "new_core6:idempotent_events"], "technical_result": "passed"},
+    {"tu": "TU-E1-05", "evidence": ["historical_core8:frozen_snapshot_later_response", "new_core6:iso_interaction_time"], "technical_result": "passed", "common_review": "Provider output use of the evidence belongs to real campaign."},
+    {"tu": "TU-E1-06", "evidence": ["learning_policy4:unknown_pending_and_obsolete", "new_core6:focus_before_limit"], "technical_result": "passed", "common_review": "No universal expiration window or automatic contradictory hypothesis is invented."},
+    {"tu": "TU-E1-07", "evidence": ["new_core6:128row_comparison", "new_core6:focus_before_limit"], "technical_result": "passed_for_measured_refresh_scope", "common_review": "Client route/bundle/map costs are measured separately."},
+    {"tu": "TU-E2-01", "evidence": ["historical_core8:blueprint_before_plan", "new_core6:diagnostic_pause_resume"], "technical_result": "passed"},
+    {"tu": "TU-E2-02", "evidence": ["historical_core8:reviewed_bank_boundary"], "technical_result": "passed", "common_review": "Pedagogical review and topic validity cannot be inferred from SQL declaration reviewed=true."},
+    {"tu": "TU-E2-03", "evidence": ["new_core6:diagnostic_pause_resume_manual_acceptance"], "technical_result": "passed", "common_review": "The finite manual bank is not a calibrated adaptive probing algorithm or official level assessment."},
+    {"tu": "TU-E2-04", "evidence": ["new_core6:incompatible_mappings"], "technical_result": "passed", "common_review": "Semantic interpretation of results remains distinct from observed answers."},
+    {"tu": "TU-E2-06", "evidence": ["historical_domain14:versioned_acceptance_and_late_writes", "new_core6:manual_acceptance"], "technical_result": "passed"},
+    {"tu": "TU-E3-01", "evidence": ["learning_policy4", "new_core6:focus_before_limit"], "technical_result": "passed", "common_review": "Reason usefulness in reviewed real content belongs to root sample."},
+    {"tu": "TU-E3-02", "evidence": ["new_core6:help_repeat_novel_occurrence"], "technical_result": "passed", "common_review": "Mechanics distinguish tasks; no causal transfer efficacy is claimed."},
+    {"tu": "TU-E3-04", "evidence": ["new_core6:help_repeat_novel_occurrence"], "technical_result": "passed"},
+    {"tu": "TU-E3-05", "evidence": ["new_core6:diagnostic_pause_resume", "historical_domain14:atomic_pause_drafts"], "technical_result": "passed_for_state_preservation", "common_review": "Leaving/choosing saved reading is not graded abandonment; complete navigation is a UI check."},
+    {"tu": "TU-E3-06", "evidence": ["historical_domain14:final_and_private_keys", "new_core6:no_verification_by_practice"], "technical_result": "passed"},
+    {"tu": "TU-E3-07", "evidence": ["new_core6:zero_remote_posts", "historical_core8:diagnostic_no_job"], "technical_result": "passed_for_deterministic_domain", "common_review": "Actual dispatch/reserve/no-replay is checked by root runtime/provider campaign."},
+    {"tu": "TU-E3-08", "evidence": ["new_core6:interaction_CAS_and_idempotence", "historical_core8:frozen_snapshot"], "technical_result": "passed", "common_review": "Actual two-browser-tab behavior is separate."},
+    {"tu": "TU-E4-01", "evidence": ["new_core6:prediction_check_kind_and_no_verification"], "technical_result": "passed", "common_review": "Reviewed pedagogical placement and optional UI reading require common sample."},
+    {"tu": "TU-E4-02", "evidence": ["new_core6:version_CAS_history_and_time"], "technical_result": "passed"},
+    {"tu": "TU-E4-03", "evidence": ["new_core6:distinct_interactions_visible_block_and_time"], "technical_result": "passed_for_snapshot_provenance", "common_review": "Actual corrective teaching is validated on real material by root."}
+  ],
+  "outside_this_agent_scope": [
+    "TU-E0-01 and TU-E0-04: final candidate/environment/provider acceptance and consolidated baseline",
+    "TU-E2-05, TU-E2-07 and TU-E3-03: real provider contrast/failures and reviewed two-topic teaching/transfer sample",
+    "TU-E4-04: frontend route/profile comparison beyond measured SQL refresh",
+    "All UI keyboard/screen reader/two-tab and real-provider claims"
+  ],
+  "lab_observation": "One initial extended disposable run ended with PostgreSQL connection terminated unexpectedly; no cause established. A fresh isolated run passed all six checks and three comparative pairs; no provider request or operational state was involved or replayed.",
+  "approval_or_publication": false
+}

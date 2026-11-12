@@ -65,6 +65,34 @@ async function fixture() {
 }
 
 describe('Teacher Agentic identity, qualification and native closure', () => {
+  it('rejects a legacy transport-only scope and accepts only the current application-policy scope', async () => {
+    const f = await fixture();
+    const { observed_at: _ignored, ...observationIdentity } = f.observed;
+    const legacyScope = agenticHash({
+      contract: TEACHER_AGENTIC_CONTRACT,
+      selection,
+      configuration: f.config.configurationGeneration,
+      observation: observationIdentity,
+    });
+    const qualified = {
+      contract_version: TEACHER_AGENTIC_CONTRACT,
+      provider_key: 'gemini',
+      selection_snapshot: selection,
+      configuration_generation: f.config.configurationGeneration,
+      observation_snapshot: structuredClone(f.observed),
+    };
+    f.setQualifications([{ ...qualified, scope_hash: legacyScope }]);
+    await expect(f.service.configuration(selection)).rejects.toThrow(
+      'adapter_unqualified',
+    );
+    f.setQualifications([
+      { ...qualified, scope_hash: teacherAgenticScope(selection, f.config) },
+    ]);
+    expect(
+      (await f.service.configuration(selection)).configurationGeneration,
+    ).toBe(f.config.configurationGeneration);
+    expect(f.native.observe).not.toHaveBeenCalled();
+  });
   it('configuration is pure SQL under the caller manager and shares the exact chat generation rule', async () => {
     const f = await fixture();
     const transaction = { query: f.query, queryRunner: { isTransactionActive: true } } as unknown as EntityManager;

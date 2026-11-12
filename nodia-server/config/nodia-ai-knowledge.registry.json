@@ -81,9 +81,15 @@
     "docs/nodia-ai/knowledge/reservations/features/reservations.md",
     "docs/nodia-ai/knowledge/studies/README.md",
     "docs/nodia-ai/knowledge/studies/features/adaptive-plans-and-day-material.md",
+    "docs/nodia-ai/knowledge/studies/features/activity-types-and-visuals.md",
+    "docs/nodia-ai/knowledge/studies/features/concept-memory-and-map.md",
+    "docs/nodia-ai/knowledge/studies/features/contextual-clarifications.md",
     "docs/nodia-ai/knowledge/studies/features/diagnostic-and-skip-assessment.md",
+    "docs/nodia-ai/knowledge/studies/features/learning-evidence-and-recommendations.md",
+    "docs/nodia-ai/knowledge/studies/features/learning-sources.md",
     "docs/nodia-ai/knowledge/studies/features/lessons-practice-and-review.md",
-    "docs/nodia-ai/knowledge/studies/features/session-setup-and-planning.md"
+    "docs/nodia-ai/knowledge/studies/features/session-setup-and-planning.md",
+    "docs/nodia-ai/knowledge/studies/features/spaced-repetition.md"
   ],
   "capabilities": [
     {

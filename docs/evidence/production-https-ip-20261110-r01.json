@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-10",
+  "client_timezone": "America/Santiago",
+  "scope": "initial_public_https_transport_only",
+  "status": "externally_verified",
+  "ip": "166.0.112.187",
+  "bootstrap_sha256": "13aeb1f4d1ae81131591c3d3ecf8ac7e8e25cfbd632c812e1fbb73d52c3e48e7",
+  "bootstrap_status": {
+    "phase": "complete",
+    "server_recorded_at_utc": "2026-11-11T00:26:14.704559+00:00",
+    "source": "read_only_SSH_status_file"
+  },
+  "http01": {
+    "external_probe_exit_code": 0,
+    "external_probe_body": "nodia-acme-ok",
+    "temporary_bootstrap_files_remaining_after_completion": 0,
+    "public_webroot_directory_modes": ["0755", "0755", "0755"]
+  },
+  "external_https": {
+    "url": "https://166.0.112.187/tls-check",
+    "curl_exit_code": 0,
+    "http_status": 200,
+    "body": "nodia-https-ok",
+    "certificate_validation_disabled": false,
+    "independent_client": "Windows_SslStream_with_default_certificate_validation",
+    "authenticated": true,
+    "negotiated_protocol": "TLS1.2",
+    "certificate": {
+      "issuer": "CN=YE2, O=Let's Encrypt, C=US",
+      "san_ip": "166.0.112.187",
+      "not_before_utc": "2026-11-10T23:27:34Z",
+      "not_after_utc": "2026-11-17T15:27:33Z",
+      "sha256": "4417DD7C8922096250B7A463D643D250E33BED9C6A25C3B9F6B43B7F825FC772"
+    }
+  },
+  "routing": {
+    "external_http_root_status": 308,
+    "external_http_root_location": "https://166.0.112.187/",
+    "external_https_root_status": 404,
+    "api_proxy_deployed": false
+  },
+  "renewal": {
+    "operator_reported_dry_run": "all_simulated_renewals_succeeded",
+    "server": "https://acme-staging-v02.api.letsencrypt.org/directory",
+    "run_deploy_hooks": true,
+    "nginx_reload_result": "success",
+    "nginx_reload_exit_status": 0,
+    "nginx_reload_time_utc": "2026-11-11T00:26:14Z",
+    "timer": "snap.certbot.renew.timer",
+    "timer_active": true,
+    "timer_enabled": true,
+    "timer_next_run_utc_observed": "2026-11-11T06:54:00Z",
+    "future_scheduled_renewal_observed": false
+  },
+  "limits": [
+    "This verifies HTTPS transport, not API, database, Redis, authentication or application readiness.",
+    "A successful renewal rehearsal and enabled timer do not prove a future scheduled renewal or implemented expiration alerting.",
+    "Production certificate validity is recorded from the certificate itself; no validity period is inferred from a profile label.",
+    "No private key, account registration data, password or database connection string is included."
+  ]
+}

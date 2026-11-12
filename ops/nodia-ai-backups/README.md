@@ -6,6 +6,39 @@ El operador ejecuta `nodia-server/scripts/nodia-ai-backups.mjs backup /ruta/conf
 
 La configuración JSON privada tiene exclusivamente `recovery_config`, `public_key_file`, `spool_directory`, `pg_dump_binary`, `database`, `max_dump_bytes` y `timeout_seconds`. `database` contiene `host`, `port`, `username`, `password`, `database`. Los valores se provisionan fuera del repositorio. La configuración y la de recuperación son archivos regulares propios de modo 0600; la clave pública RSA (SPKI/PEM, al menos 3072 bits) no permite escritura de grupo/otros. El directorio de spool es propio, 0700 y sin symlinks; el ejecutable pg_dump es uno de los paths del sistema admitidos, propiedad de root sin escritura de grupo/otros. El límite de dump es explícito, positivo y no mayor de 1 GiB; no se confunde con el límite de adjuntos del producto.
 
+Para PostgreSQL remoto, configurar además `database.tls` con exactamente
+`{"mode":"verify-full","root_cert_file":"/etc/ssl/certs/ca-certificates.crt"}`.
+Sólo se admite `verify-full`; no `require`, `prefer`, `disable` o valores heredados
+del entorno de la API. El CA debe ser una ruta absoluta canónica a un archivo
+regular no vacío, de root o del usuario del runner, sin escritura de grupo/otros.
+Se conserva el contrato anterior de cinco campos para instalaciones existentes;
+omitir `tls` **no acredita TLS verificado** y no sirve para aceptar el backup de
+Northflank productivo. El valor `database.database` es sólo el nombre de la base:
+se rechazan URI/conninfo porque `pg_dump --dbname` puede expandirlos y sobrescribir
+parámetros de conexión. Con TLS no se permiten sockets locales ni listas de hosts.
+
+El runner construye un entorno cerrado para pg_dump y propaga `PGSSLMODE=verify-full`,
+`PGSSLROOTCERT` y `PGGSSENCMODE=disable` desde ese contrato. No hereda `PGSERVICE`,
+`PGOPTIONS`, `PGHOSTADDR` o `NODE_EXTRA_CA_CERTS`; la CA de Node y la de libpq son
+configuraciones distintas. El paquete debe incluir también
+`scripts/nodia-ai-backup-database.mjs`. La validación local del archivo CA no prueba
+que su contenido o el certificado del servidor sean válidos: libpq los comprueba
+al conectar. Ver [opciones libpq](https://www.postgresql.org/docs/18/libpq-connect.html#LIBPQ-PARAMKEYWORDS)
+y [pg_dump](https://www.postgresql.org/docs/18/app-pgdump.html).
+
+La conciliación del journal que reutiliza esta configuración también aplica
+`database.tls` a Node/pg mediante `rejectUnauthorized: true` y la CA explícita;
+no acepta el campo para luego ignorarlo en ese proceso.
+
+Regresión local: `node --test test/nodia-ai-backup-database.spec.mjs` desde Server.
+La integración `test/nodia-ai-backup-tls.integration.mjs` requiere opt-in explícito
+`NODIA_AI_BACKUP_TLS_FIXTURE=1`, Docker y `NODIA_AI_POSTGRES_IMAGE` con un image ID
+SHA-256 local de PostgreSQL 16 Alpine. Usa OpenSSL (`NODIA_AI_OPENSSL_BINARY` si
+su ejecutable no está en PATH), CA efímera y un contenedor exclusivo sin red ni
+puertos publicados; verifica dump correcto, CA ajena y hostname incorrecto.
+Elimina contenedor, volumen y certificados al terminar. No conecta R2, journal
+o base operativa y no demuestra un backup/restore productivo completo.
+
 La **clave RSA privada se conserva fuera de la VM y de estos backups**, bajo custodia del operador; sólo su pública llega a la VM. Debe ensayarse la recuperación con esa clave antes de aceptar continuidad. No imprimir PEM privados, contraseñas, configuración, payloads o dumps. El backup contiene un DEK aleatorio AES-256 por copia, envuelto con RSA-OAEP-SHA256, nonce GCM aleatorio de 12 bytes y tag de 16 bytes. El identificador de clave es SHA-256 de su pública SPKI DER. Conservar las privadas anteriores fuera de la VM mientras haya copias vigentes que las requieran.
 
 El sobre empieza con ocho bytes ASCII `NODAI38B`, longitud de cabecera uint32 BE y JSON cerrado de hasta 8 KiB: `schema_version`, `backup_id`, `algorithm`, `wrapping`, `encryption_key_id`, `wrapped_key` y `nonce`. Ese prefijo completo es AAD autenticado; sigue ciphertext y tag GCM final. La clave descifradora sólo se usa en el entorno aislado del operador. Descifrar siempre a cuarentena privada: ninguna salida anterior a verificar el tag se considera válida ni se publica. GCM detecta alteraciones del sobre/ciphertext ligados a su DEK; el digest fijado en el catálogo externo evita sustituirlo por otro sobre cifrado con la pública. Ninguno demuestra que PostgreSQL pueda restaurar el dump.

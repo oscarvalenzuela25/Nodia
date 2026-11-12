@@ -1,0 +1,10 @@
+[Unit]
+Description=Nodia five-minute encrypted backup retention reconciliation (production)
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=5min
+Unit=nodia-ai-backup-rotate.service
+
+[Install]
+WantedBy=timers.target

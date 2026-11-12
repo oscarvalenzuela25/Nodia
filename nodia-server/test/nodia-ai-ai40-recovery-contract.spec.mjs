@@ -1,4 +1,5 @@
-// Operator boundary tests only: no SDK, provider, PostgreSQL, account or real profile.
+// Archived AI40-r01 operator contract only, not a current recovery entry point.
+// Its frozen legacy payload is test data; no SDK, DB, provider or profile is opened.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { randomUUID } from 'node:crypto';
@@ -7,14 +8,14 @@ import { join } from 'node:path';
 import { validateRecoveryInput, safeRecoveryError, settledWithin, waitForNativeAbort, inspectRecoveryAck,
   RECOVERY_CONTENDER_CASES } from '../../docs/evidence/scripts/nodia-ai-ai40-recovery-sources-r01.mjs';
 
-const input = () => ({ schema_version: 1, authorize_recovery_workflow: true, scenario: 'cancel', execution_mode: 'bootstrap',
+const historicalInput = () => ({ schema_version: 1, authorize_recovery_workflow: true, scenario: 'cancel', execution_mode: 'bootstrap',
   max_provider_dispatches: 1, blocked_login_request_id: randomUUID(), expected_binary_sha256: 'a'.repeat(64),
-  selection: { connection_id: '1', mode: 'agentic', model_id: 'synthetic-discovered-model', effort_id: null },
-  provider: { is_active: true, catalog_active: true, use_agentic: true, can_use_agentic: true,
+  selection: { connection_id: '1', mode: 'token_plan_agentic', model_id: 'synthetic-discovered-model', effort_id: null },
+  provider: { is_active: true, catalog_active: true, use_token_plan_agentic: true, can_use_token_plan_agentic: true,
     updated_at: '2026-10-23T00:00:00.000Z', agentic_fields: {} } });
 
-test('only an explicit one-dispatch scenario with durable login identity enters the workflow', () => {
-  const valid = input(); assert.equal(validateRecoveryInput(valid), valid);
+test('historical AI40 input requires an explicit one-dispatch scenario and durable login identity', () => {
+  const valid = historicalInput(); assert.equal(validateRecoveryInput(valid), valid);
   assert.deepEqual(RECOVERY_CONTENDER_CASES, ['chat', 'discovery', 'ocr', 'logout', 'login_start']);
   assert.throws(() => validateRecoveryInput({ ...valid, blocked_login_request_id: null }));
   assert.throws(() => validateRecoveryInput({ ...valid, scenario: 'revoke' }));
@@ -25,8 +26,19 @@ test('only an explicit one-dispatch scenario with durable login identity enters 
   assert.throws(() => validateRecoveryInput({ ...valid, readiness_override: true }));
 });
 
-test('fixture must be the disposable PostgreSQL port with exact isolated entities and identities', () => {
-  const supplied = { ...input(), provided_fixture: { schema_version: 1, container_name: 'template_ai40_123_abcdef12',
+test('the archived helper cannot be presented as a validator of the current Agentic contract', () => {
+  const legacy = historicalInput();
+  const current = { ...legacy,
+    selection: { ...legacy.selection, mode: 'agentic' },
+    provider: { is_active: true, catalog_active: true, use_agentic: true, can_use_agentic: true,
+      updated_at: legacy.provider.updated_at, agentic_fields: {} } };
+  assert.throws(() => validateRecoveryInput(current));
+  assert.equal(current.selection.mode, 'agentic');
+  assert.equal(Object.hasOwn(current.provider, 'use_token_plan_agentic'), false);
+});
+
+test('historical fixture requires the disposable port and exact archived entities and identities', () => {
+  const supplied = { ...historicalInput(), provided_fixture: { schema_version: 1, container_name: 'template_ai40_123_abcdef12',
     options: { type: 'postgres', host: '127.0.0.1', port: 40001, username: 'ai40', password: 'a'.repeat(40), database: 'ai40',
       synchronize: false, entities: ['/opt/nodia/releases/nodia-server-ai40-r07/dist/**/*.entity.js'],
       migrations: ['/opt/nodia/releases/nodia-server-ai40-r07/dist/migrations/*.js'] },

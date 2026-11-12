@@ -4,11 +4,11 @@
   "document_id": "studies.session-setup-and-planning",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 24,
+  "revision": 29,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "ClientR26/ServerR09 activos: StudyJourney compacto22px/700, acordeones/objetivos/selección reales sin progreso inventado y callbacks/IDs/CAS intactos; Actualizar material contained auto/centrado y nueva generación contained. Mis planes permite retorno manual y chip del trabajo por batch autorizado, prioridad queued/running y pollingGET5s visible; error conserva último estado, navegar no cancela Worker.50pruebas Client/8suites y2Server/1suite, tipos/lint/build y SQL aisladoR03(5checks) correctos. CUA desktop1915 título22/700, acordeones, material177,47px centrado en panel1183px y nueva generación contained; móvil320 sin overflow310/310. Fallos de fixtureR01/R02 conservados y corregida sólo preparación; sin nueva inferencia, migración o aprobación/publicación. BloqueadoresV1 intactos."
+    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Nodia Teacher y NodiaAI conforme AGENTS",
@@ -180,10 +180,34 @@
     {
       "path": "nodia-server/src/teacher/use-case/teacher-session-jobs.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/101-nodia-teacher-adaptive-upgrade-plan.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md",
+      "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/teacher/use-case/teacher-generation-admission.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/teacher/use-case/teacher-learning-persistence.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/LearningPanel.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/102-nodia-teacher-phased-implementation-and-final-qa.md",
+      "kind": "specification"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-06",
+    "checked_on": "2026-11-11",
     "evidence_paths": [
       "docs/evidence/teacher-local-implementation-20261101-r01.json",
       "docs/evidence/teacher-local-activation-20261101-r01.json",
@@ -200,13 +224,44 @@
       "docs/evidence/teacher-message-gap16-20261105-r01.json",
       "docs/evidence/teacher-model-effort-20261105-r01.json",
       "docs/evidence/teacher-ui-controls-20261106-r01.json",
-      "docs/evidence/teacher-study-journey-20261106-r01.json"
+      "docs/evidence/teacher-study-journey-20261106-r01.json",
+      "docs/evidence/teacher-upgrade-local-20261111-r01.json",
+      "docs/evidence/teacher-upgrade-local-20261111-r02.json",
+      "docs/evidence/teacher-upgrade-acceptance-20261111-r02.md",
+      "docs/evidence/teacher-upgrade-development-vm-20261111-r01.json"
     ],
-    "notes": "ClientR26/ServerR09 adoptados,50pruebas Client/8suites y2Server/1suite; fixturePG realR03 pasó5checks de prioridad activa/latest/tie/batch50/ownerSQL con fachada de autoridad sustituida, sin acreditar auth/guards. R01fallo causaunknown/R02parámetrosfixture invertidos preservados; Root corrigió sólofixture, producción/aserciones intactas. CUA1915/320 confirmó recorrido/acordeones/controles sin atribuir progreso; cuatro tarjetas reales mostraron estados ready/failed_known separados del estado de sesión; actividad cubierta por tests/PG, sin generación activa observable en CUA. Server sólo conserva digestpreflight y CLI/journal+CAS completo enforced, sin rawbaselineprecommit externo completo para reconstrucción canónica independiente; Client sí fullmetadata+CLI. Evidencia final SHA256ea85e2313572d8c98d13cb879f14fd20b34aa9fe00c5b54ac83a57999460a84a,7055bytes; estadosdraft/partial/unregistered/approvalnull y bloqueadoresV1 conservados."
+    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente."
   },
   "approval": null
 }
 ---
+
+> Continuidad VM del2026-11-11: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. [Recibo VM](../../../../evidence/teacher-upgrade-development-vm-20261111-r01.json). El cierre55/55 R02 conserva su alcance Windows/API key; este recorrido no representa55pruebas nuevas en VM ni eficacia educativa humana. Sin promoción a master, aprobación documental o publicación. Los cortes inferiores conservan sus fechas.
+
+## Definición y personalización locales — 2026-11-11
+
+## Recorrido VM por alcance — 2026-11-11
+
+La definición y propuesta reales recibieron evidencia/fuentes del snapshot. R41 bloqueó el ajuste IA con selección no lista o borrador low sin guardar, conservando edición manual; cancelar el borrador devolvió medium disponible y permitió el ajuste real. La candidata posterior sólo cambió título y no se activó; objetivos/política y plan aceptado intactos. [Recibo VM](../../../../evidence/teacher-upgrade-development-vm-20261111-r01.json).
+
+## Cierre vigente del upgrade — 2026-11-11
+
+Los55criterios quedaron verificados para el alcance Windows/API key configurado; [evidencia R02](../../../../evidence/teacher-upgrade-local-20261111-r02.json) y [matriz](../../../../evidence/teacher-upgrade-acceptance-20261111-r02.md) separan pruebas, muestras y límites. No se copian aceptaciones a operación, no hay nueva herramienta/binding y se conservan draft/unregistered/approval:null. Los apartados inferiores son cortes anteriores o detalle funcional no sustituido.
+
+Las generaciones de propuesta/ajuste y material reciben snapshot de evidencia/objetivos/revisión y contexto pertinente de fuentes/conceptos. El motivo y el hash quedan guardados al admitir. Diagnóstico omitido o sin banco conserva desconocidos; el plan mantiene revisión y aceptación humana. Las respuestas/interpretaciones nuevas no sobrescriben la candidata ya admitida ni crean un cambio silencioso de objetivos.
+
+Corte histórico de construcción local y QA parcial: las comprobaciones sintéticas y los pendientes registrados entonces se conservan como historia. El cierre R02 y la continuación VM superiores contienen la evidencia posterior; no habilitan herramientas NodiaAI ni implican aprobación o publicación. Contratos en [97](../../../../mvp/97-nodia-teacher-technical-contracts.md), alcance/criterios en [101](../../../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y campaña en [102](../../../../mvp/102-nodia-teacher-phased-implementation-and-final-qa.md).
+
+
+## Upgrade por etapas: definición y personalización — 2026-11-11
+
+El [upgrade101](../../../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) propone priorizar E1/E2/E3. La base V1 tiene implementación parcial y evidencia histórica por alcance en los cortes inferiores; esos cortes no acreditan el upgrade ni el cierre integral actual. E0 debe reconciliar los gates vigentes de96 antes de habilitar ampliaciones.
+
+E2 conectará diagnóstico y propuesta de plan mediante un snapshot de [evidencia por objetivo](learning-evidence-and-recommendations.md). La base declarada se conserva como declaración; no equivale a conocimiento demostrado. El diagnóstico es opcional y omitirlo deja desconocidos, sin imponer entrevista o certificación universal.
+
+Antes de existir un plan aceptado, el diagnóstico necesita su blueprint propio versionado, dimensiones descriptivas e ítems revisados conforme95§4. La correspondencia posterior con objetivos del plan se registra explícitamente: no por títulos parecidos ni IDs inventados sin significado. La propuesta explica qué observaciones cambian la secuencia o recomiendan apoyo. Conocimiento insuficiente no autoriza al modelo a marcar prerrequisitos verificados.
+
+Modificar objetivos/cobertura continúa produciendo una revisión que el usuario revisa y acepta; ninguna recomendación acepta o reescribe el plan. Los contratos nuevos de E1/E2, sus límites y AC quedan en101/ADR098 propuesto, pendientes de implementación y calificación. No se añaden herramientas o endpoints mediante esta ficha.
 
 ## Mis planes durante una generación admitida — 2026-11-06
 

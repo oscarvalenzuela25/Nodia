@@ -1,0 +1,10 @@
+[Unit]
+Description=Nodia daily encrypted backup schedule (production)
+
+[Timer]
+OnCalendar=*-*-* 02:30:00 UTC
+Persistent=true
+Unit=nodia-ai-backup.service
+
+[Install]
+WantedBy=timers.target

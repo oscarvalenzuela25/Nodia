@@ -11,7 +11,8 @@ export type TeacherPurpose =
   | 'plan_adjustment'
   | 'learning_packet'
   | 'assessment_only'
-  | 'written_feedback';
+  | 'written_feedback'
+  | 'contextual_reply';
 export interface TeacherSelection {
   connection_id: string;
   mode: 'agentic' | 'api_key';
@@ -112,9 +113,21 @@ export interface AssessmentCandidate {
 }
 export interface PublicBlock {
   id: string;
-  kind: 'explanation' | 'example' | 'guided_practice' | 'summary';
+  kind:
+    | 'explanation'
+    | 'example'
+    | 'guided_practice'
+    | 'summary'
+    | 'prediction'
+    | 'check';
   title: string;
   body_markdown: string;
+  citations?: {
+    source_id: string;
+    content_hash: string;
+    page: number;
+    quote: string;
+  }[];
 }
 export interface LearningPacket {
   schema_version: 1;
@@ -200,6 +213,7 @@ export interface TeacherGenerationPort {
     manager: EntityManager,
     actor: ActorReference,
     selection: TeacherSelection,
+    purpose?: TeacherPurpose,
   ): Promise<{
     configuration_generation: string;
     session_generation: string | null;

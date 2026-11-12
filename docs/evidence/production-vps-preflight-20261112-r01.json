@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-12",
+  "status": "manual_vps_preflight_prepared_not_run_in_github",
+  "branch": "development",
+  "github_user_report": {
+    "private_key_secret_saved": true,
+    "four_ssh_variables_saved": true,
+    "vite_variables_saved": true,
+    "production_master_only": true,
+    "github_values_read": false,
+    "runner_access_verified": false
+  },
+  "workflow": {
+    "path": ".github/workflows/check-production-vps.yml",
+    "event": "workflow_dispatch",
+    "ref": "refs/heads/master",
+    "environment": "production",
+    "permissions": {
+      "contents": "read"
+    },
+    "builds": 0,
+    "deployments_requested": false,
+    "privileged_commands": false
+  },
+  "helper": {
+    "recorded_destination_only": true,
+    "recorded_ed25519_pin_required": true,
+    "remote_command": "status",
+    "private_key_bytes_preserved": true,
+    "credential_environment_not_inherited_by_ssh": true,
+    "temporary_directory_mode": "0700",
+    "temporary_files_mode": "0600",
+    "normal_and_caught_error_cleanup": "two unlink plus empty rmdir; no recursive delete",
+    "abrupt_termination_cleanup_guaranteed": false,
+    "command_timeout_ms": 20000,
+    "connection_timeout_s": 10,
+    "output_limit_bytes": 16384,
+    "raw_remote_error_logged": false
+  },
+  "verification": {
+    "new_unit_cases_windows": 4,
+    "new_unit_cases_linux": 4,
+    "all_pipeline_tests_linux": {
+      "tests": 31,
+      "passed": 31,
+      "failed": 0,
+      "skipped": 0,
+      "node": "24.22.2",
+      "image": "node:24.22.2-bookworm",
+      "image_digest": "sha256:8fa96264f302f58bbb13aa7339c541547b56975766ce956c875da149452a3e40",
+      "runtime_network": "none",
+      "fixtures_only": true
+    },
+    "all_pipeline_tests_windows": {
+      "tests": 31,
+      "passed": 30,
+      "failed": 0,
+      "skipped": 1
+    },
+    "actionlint": {
+      "version": "1.7.12",
+      "workflows": [
+        "ci.yml",
+        "check-production-pages.yml",
+        "check-production-vps.yml"
+      ],
+      "passed": true
+    },
+    "exact_cli_real_vps_connection": {
+      "origin": "Windows PC; not GitHub",
+      "status": "ssh_access_verified",
+      "deployment_requested": false,
+      "private_printed": false
+    },
+    "initial_local_setup_corrections": [
+      "Preserve only named Windows OS/profile runtime environment variables needed by OpenSSH; no workflow secrets inherited.",
+      "First complete Linux test mount lacked native TS source inputs; corrected mount passed31/31 without changing or excluding tests."
+    ],
+    "timeout_and_output_overflow_tests": "Options and simulated executor failure; no real remote timeout/overflow induced.",
+    "independent_review": "No blockers; preserve cleanup and verification limits."
+  },
+  "files": [
+    {
+      "path": ".github/workflows/check-production-vps.yml",
+      "sha256": "2f9476ef9e843732694204887e1116607012edbe800cfea30dbd09b367c6bd60"
+    },
+    {
+      "path": "ops/ci/check-vps-access.mjs",
+      "sha256": "f5301df009b489d4d26030ba2b324ea23920ee35df75c12fdac7d4b60cd473a9"
+    },
+    {
+      "path": "ops/ci/check-vps-access.test.mjs",
+      "sha256": "9f81f8b8f31b06c66b1c94c00dc64d96e10c6636fea680d19a2308a493db2e45"
+    },
+    {
+      "path": "ops/ci/README.md",
+      "sha256": "a5c8ae3151c3f22a47a48a008584b4bedfd8cf54dc21cebb3cf5ea427c8febbc"
+    }
+  ],
+  "deployment": {
+    "performed": false,
+    "master_modified": false,
+    "root_commit_created": false,
+    "source_still_development": true,
+    "updater_implemented": false
+  },
+  "next": "User finishes/versions development and later integrates master; run both preflights. Implement artifact handoff and coordinated backend updater without repeating build or TypeScript."
+}

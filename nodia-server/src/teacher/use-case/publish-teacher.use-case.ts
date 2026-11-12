@@ -1,3 +1,8 @@
+import { refreshLearningEvidence } from './teacher-learning-persistence.js';
+import {
+  publishEnrichmentReply,
+  validateEnrichmentCitations,
+} from './teacher-enrichment-persistence.js';
 import { Injectable } from '@nestjs/common';
 import type { EntityManager } from 'typeorm';
 import { randomUUID } from 'node:crypto';
@@ -43,6 +48,8 @@ export class PublishTeacherUseCase {
       [job.session_id],
     );
     if (!s) teacherError('not_found', 404);
+    if (job.purpose === 'contextual_reply')
+      return publishEnrichmentReply(m, job, output);
     const data = parseJsonOutput(output),
       input = job.input_snapshot;
     if (job.purpose === 'setup_reply') {
@@ -175,6 +182,7 @@ export class PublishTeacherUseCase {
         );
       }
       if (a.state === 'grading_pending') await updateAttemptGrade(m, s, a.id);
+      await refreshLearningEvidence(m, s.id);
       return { attempt_id: a.id };
     }
     const slots = input.blueprint as BlueprintSlot[],
@@ -188,6 +196,14 @@ export class PublishTeacherUseCase {
         plan_revision_id: job.plan_revision_id!,
         section_id: job.section_id!,
       });
+      for (const block of parsed.blocks)
+        if (block.citations)
+          await validateEnrichmentCitations(
+            m,
+            s.id,
+            block.citations,
+            job.input_snapshot.enrichment_context,
+          );
       const [last]: { n: number }[] = await m.query(
         'SELECT coalesce(max(version_no),0)::integer AS n FROM teacher_content_versions WHERE session_id=$1 AND plan_revision_id=$2 AND unit_id=$3',
         [s.id, job.plan_revision_id, job.unit_id],

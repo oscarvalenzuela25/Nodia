@@ -1,0 +1,343 @@
+name: Nodia CI
+
+on:
+  pull_request:
+    branches: [development, master]
+  push:
+    branches: [development, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: 'true'
+  NODE_VERSION: '24.22.2'
+
+jobs:
+  production-baselines:
+    name: Read deployed production versions before selecting artifacts
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    environment: production
+    outputs:
+      client_sha: ${{ steps.client.outputs.source_sha }}
+      server_sha: ${{ steps.server.outputs.source_sha }}
+      config_changed: ${{ steps.client.outputs.config_changed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Read canonical Pages source and public configuration fingerprint
+        id: client
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
+        run: node ops/ci/cd-pages.mjs baseline
+      - name: Read verified running backend source through restricted SSH
+        id: server
+        env:
+          VPS_SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          VPS_HOST: ${{ vars.VPS_HOST }}
+          VPS_PORT: ${{ vars.VPS_PORT }}
+          VPS_USER: ${{ vars.VPS_USER }}
+          VPS_KNOWN_HOSTS: ${{ vars.VPS_KNOWN_HOSTS }}
+        run: node ops/ci/cd-vps.mjs baseline
+
+  changes:
+    name: Changes and pipeline checks
+    needs: production-baselines
+    if: always() && (needs.production-baselines.result == 'success' || needs.production-baselines.result == 'skipped')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    outputs:
+      client: ${{ steps.changes.outputs.client }}
+      server: ${{ steps.changes.outputs.server }}
+      python: ${{ steps.changes.outputs.python }}
+      native: ${{ steps.changes.outputs.native }}
+      contracts: ${{ steps.changes.outputs.contracts }}
+      docs: ${{ steps.changes.outputs.docs }}
+      ci: ${{ steps.changes.outputs.ci }}
+      docs_only: ${{ steps.changes.outputs.docs_only }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Install locked static asset hash tools without lifecycle scripts
+        run: npm ci --prefix ops/ci/pages-assets --ignore-scripts --no-audit --no-fund
+      - name: Test change selection and required-check rules
+        run: node --test ops/ci/*.test.mjs
+      - name: Test migration policy and updater effect ordering without services
+        run: |
+          node --test ops/production/tests/update-backend-action.test.mjs
+          python -B -m unittest discover -s ops/production/tests -p 'test_backend_update*.py'
+          python -B -m unittest discover -s ops/production/tests -p 'test_deploy_receiver.py'
+      - name: Validate workflow syntax and expressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/actionlint.tar.gz"
+          curl --fail --silent --show-error --location \
+            https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz \
+            --output "$archive"
+          printf '%s  %s\n' 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8 "$archive" | sha256sum --check --status
+          tar -xzf "$archive" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint" .github/workflows/*.yml
+      - name: Select checks from the complete Git diff
+        id: changes
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          EVENT_HEAD_SHA: ${{ github.sha }}
+          CLIENT_BASE_SHA: ${{ needs.production-baselines.outputs.client_sha }}
+          SERVER_BASE_SHA: ${{ needs.production-baselines.outputs.server_sha }}
+          PRODUCTION_CONFIG_CHANGED: ${{ needs.production-baselines.outputs.config_changed }}
+        run: |
+          set -euo pipefail
+          base="$EVENT_BASE_SHA"
+          if [[ "$EVENT_NAME" == workflow_dispatch ]]; then
+            base="$(git rev-parse "$EVENT_HEAD_SHA^")"
+          fi
+          baseline_args=()
+          if [[ "$EVENT_NAME" == push && "$GITHUB_REF" == refs/heads/master ]]; then
+            baseline_args=(--client-base "$CLIENT_BASE_SHA" --server-base "$SERVER_BASE_SHA" --force-client "$PRODUCTION_CONFIG_CHANGED")
+          fi
+          node ops/ci/cd-selection.mjs \
+            --base "$base" --head "$EVENT_HEAD_SHA" "${baseline_args[@]}" \
+            --github-output "$GITHUB_OUTPUT" --summary "$GITHUB_STEP_SUMMARY"
+          git diff --check "$base" "$EVENT_HEAD_SHA"
+
+  production-client-config:
+    name: Read public production build configuration
+    needs: changes
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.changes.outputs.client == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    environment: production
+    outputs:
+      api_url: ${{ steps.public.outputs.api_url }}
+      google_client_id: ${{ steps.public.outputs.google_client_id }}
+    steps:
+      - name: Export only the two validated public build variables
+        id: public
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
+        run: |
+          python3 - <<'PY'
+          import os,re
+          api=os.environ['VITE_API_URL']; client=os.environ['VITE_GOOGLE_CLIENT_ID']
+          assert api=='https://166.0.112.187/api/v1'
+          assert re.fullmatch(r'[A-Za-z0-9_-]+\.apps\.googleusercontent\.com',client)
+          with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as f:
+              f.write('api_url='+api+'\ngoogle_client_id='+client+'\n')
+          PY
+
+  client:
+    name: Client - lint, build and unit tests
+    needs: [changes, production-client-config]
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.client == 'true' && (needs.production-client-config.result == 'success' || needs.production-client-config.result == 'skipped')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: nodia-client
+    env:
+      VITE_API_URL: ${{ needs.production-client-config.outputs.api_url }}
+      VITE_GOOGLE_CLIENT_ID: ${{ needs.production-client-config.outputs.google_client_id }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: nodia-client/package-lock.json
+      - name: Capture committed source identity before installation and build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: node ../ops/ci/artifact-release.mjs capture --root "$GITHUB_WORKSPACE" --source-sha "$GITHUB_SHA" --output "$RUNNER_TEMP/nodia-client-artifact" --component client
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Lint without a second typecheck
+        run: npm run lint
+      - name: Build including the single TypeScript check
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: npm run build
+      - name: Run unit tests without TypeScript checking
+        run: npm test -- --maxWorkers=2
+      - name: Package the already validated frontend without rebuilding
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: node ../ops/ci/artifact-release.mjs package --root "$GITHUB_WORKSPACE" --source-sha "$GITHUB_SHA" --output "$RUNNER_TEMP/nodia-client-artifact" --component client
+      - name: Verify archive contents and run identity without extracting or building
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: node ../ops/ci/artifact-release.mjs verify --root "$GITHUB_WORKSPACE" --source-sha "$GITHUB_SHA" --output "$RUNNER_TEMP/nodia-client-artifact" --component client
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          name: client-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/nodia-client-artifact/client-*.tar.gz
+            ${{ runner.temp }}/nodia-client-artifact/client-*.manifest.json
+            ${{ runner.temp }}/nodia-client-artifact/build-metadata.json
+            ${{ runner.temp }}/nodia-client-artifact/artifact-result.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+
+  server:
+    name: Server and worker - build, contracts and tests
+    needs: changes
+    if: needs.changes.outputs.server == 'true' || needs.changes.outputs.contracts == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: nodia-server
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: nodia-server/package-lock.json
+      - name: Capture committed source identity before installation and build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: node ../ops/ci/artifact-release.mjs capture --root "$GITHUB_WORKSPACE" --source-sha "$GITHUB_SHA" --output "$RUNNER_TEMP/nodia-server-artifact" --component server
+      - name: Install locked dependencies
+        run: npm ci --include=optional --no-audit --no-fund
+      - name: Prepare build-owned source assets
+        run: npm run context:prepare
+      - name: Lint without TypeScript compilation
+        run: npm run lint
+      - name: Compile TypeScript once and build publication assets
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: npm run build
+      - name: Verify the compiled assets and offline contracts
+        run: bash ../ops/ci/run-server-checks.sh
+      - name: Run atomic unit tests without another build
+        run: npm test -- --maxWorkers=2
+      - name: Verify schema installation on disposable PostgreSQL
+        env:
+          DOTENV_CONFIG_PATH: /dev/null
+        run: node test/database-setup.integration.mjs
+      - name: Package the validated backend and Linux production dependencies without another build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: node ../ops/ci/artifact-release.mjs package --root "$GITHUB_WORKSPACE" --source-sha "$GITHUB_SHA" --output "$RUNNER_TEMP/nodia-server-artifact" --component server
+      - name: Verify archive contents and run identity without extracting or building
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: node ../ops/ci/artifact-release.mjs verify --root "$GITHUB_WORKSPACE" --source-sha "$GITHUB_SHA" --output "$RUNNER_TEMP/nodia-server-artifact" --component server
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          name: server-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/nodia-server-artifact/backend-*.tar.gz
+            ${{ runner.temp }}/nodia-server-artifact/backend-*.manifest.json
+            ${{ runner.temp }}/nodia-server-artifact/build-metadata.json
+            ${{ runner.temp }}/nodia-server-artifact/artifact-result.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+
+  python:
+    name: Python adapter - isolated unit tests
+    needs: changes
+    if: needs.changes.outputs.python == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: nodia-gemini-microservice
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: nodia-gemini-microservice/requirements.txt
+      - name: Install pinned Python dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Check installed dependency consistency
+        run: python -m pip check
+      - name: Test with isolation installed before discovery
+        run: python run_tests.py
+
+  native:
+    name: Native host - compile and test the default SDK feature
+    needs: changes
+    if: needs.changes.outputs.native == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: nodia-server/native/teacher-codex-host
+    env:
+      CARGO_BUILD_JOBS: '1'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      RUST_MIN_STACK: '8388608'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install native build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes pkg-config libssl-dev clang cmake make protobuf-compiler
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            nodia-server/native/teacher-codex-host/target
+          key: ${{ runner.os }}-native-host-v1-${{ hashFiles('nodia-server/native/teacher-codex-host/Cargo.lock', 'nodia-server/native/teacher-codex-host/rust-toolchain.toml') }}
+      - name: Fetch the locked native dependencies
+        run: cargo fetch --locked
+      - name: Test the real default SDK against local fixtures
+        run: cargo test --locked --offline
+
+  ci:
+    name: CI
+    if: always()
+    needs: [changes, client, server, python, native]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Require all selected checks and justify skipped checks
+        env:
+          CI_NEEDS_JSON: ${{ toJSON(needs) }}
+        run: node ops/ci/check-results.mjs

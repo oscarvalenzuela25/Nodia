@@ -102,6 +102,9 @@ const now = new Date();
 const currentYear = now.getFullYear();
 const currentMonthStr = String(now.getMonth() + 1).padStart(2, "0");
 const currentMonthDate = `${currentYear}-${currentMonthStr}-15`;
+// The KPI uses the host number locale; the amount must stay exact on every runner.
+const currentMonthTotal = `$${new Intl.NumberFormat().format(50_000)}`;
+const pastMonthTotal = `$${new Intl.NumberFormat().format(100_000)}`;
 
 const mockInvoices: InvoiceEntity[] = [
   {
@@ -286,11 +289,11 @@ describe("OverviewTab Component", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId("kpi-invoiced-current-month")).toHaveTextContent("$50");
+      expect(screen.getByTestId("kpi-invoiced-current-month")).toHaveTextContent(currentMonthTotal);
     });
 
     // Only current month invoice (50000), not past (100000)
-    expect(screen.getByTestId("kpi-invoiced-current-month")).toHaveTextContent("$50.000");
+    expect(screen.getByTestId("kpi-invoiced-current-month")).toHaveTextContent(currentMonthTotal);
 
     // State chip removed
     expect(screen.queryByText(/% cobrado/i)).not.toBeInTheDocument();
@@ -417,7 +420,7 @@ describe("OverviewTab Component", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId("kpi-invoiced-current-month")).toHaveTextContent("$50.000");
+      expect(screen.getByTestId("kpi-invoiced-current-month")).toHaveTextContent(currentMonthTotal);
     });
 
     // The select should contain available months (including 2024-01 from FAC-PAST)
@@ -427,8 +430,8 @@ describe("OverviewTab Component", () => {
     // Change selected month to 2024-01
     fireEvent.change(nativeInput, { target: { value: "2024-01" } });
 
-    // Amount updates to $100.000 (from FAC-PAST)
-    expect(screen.getByTestId("kpi-invoiced-current-month")).toHaveTextContent("$100.000");
+    // Amount updates to 100000 (from FAC-PAST), using the host's number locale.
+    expect(screen.getByTestId("kpi-invoiced-current-month")).toHaveTextContent(pastMonthTotal);
   });
   it("does not present a partial page as inventory or monthly totals", async () => {
     vi.mocked(businessServices.getProducts).mockResolvedValue({ data: mockProducts, meta: { total_items: 100, page: 1, limit: 50, total_pages: 2 } });

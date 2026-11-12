@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "client_date": "2026-11-11",
+  "scope": "original_operator_installer_before_namespace_cleanup_fix",
+  "source": "SCP from VPS before replacement, no runtime config or secrets",
+  "archive": "production-first-install-original-20261111.zip",
+  "archive_sha256": "437444fae75b76556322718af321995183b810ca113738cb2abb2228cfdb759e",
+  "files": [
+    {
+      "path": "install-backend-database.py",
+      "bytes": 13284,
+      "sha256": "6fd3ba48c49730bf6879ff7cb2ca3bc2c47b3c8c414f25e154de575fe8aa8ebd"
+    }
+  ],
+  "replacement_sha256": "6d0762b999143fb43d00936774de59838ab6ad9037d68f6a0fab16c02d04b26f"
+}
