@@ -130,18 +130,34 @@ try {
   );
   const [initial] =
     await db.query(`SELECT (SELECT count(*)::int FROM roles WHERE key='super_admin') AS roles,
-    (SELECT count(*)::int FROM module_groups WHERE key='general_settings') AS groups,
-    (SELECT count(*)::int FROM modules) AS modules,(SELECT count(*)::int FROM users) AS users,
+    (SELECT count(*)::int FROM users) AS users,
     (SELECT count(*)::int FROM ai_api_keys) AS keys,(SELECT count(*)::int FROM ai_providers) AS connections`);
   check(
     initial.roles === 1 &&
-      initial.groups === 1 &&
-      initial.modules === 4 &&
       initial.users === 0 &&
       initial.keys === 0 &&
       initial.connections === 0,
     'Migrations create Core defaults but never accounts or credentials',
   );
+  assert.deepEqual(
+    await db.query('SELECT key FROM module_groups ORDER BY key'),
+    [{ key: 'general_settings' }, { key: 'tools' }],
+    'Full installation preserves the Core group and registers the NodiaAI navigation group',
+  );
+  checks++;
+  assert.deepEqual(
+    await db.query(`SELECT m.key,g.key AS group_key FROM modules m
+      JOIN module_groups g ON g.id=m.module_group_id ORDER BY m.key`),
+    [
+      { key: 'actions', group_key: 'general_settings' },
+      { key: 'modules', group_key: 'general_settings' },
+      { key: 'nodia_ai', group_key: 'tools' },
+      { key: 'roles', group_key: 'general_settings' },
+      { key: 'users', group_key: 'general_settings' },
+    ],
+    'Migrations register the four Core identities and NodiaAI without granting access',
+  );
+  checks++;
   const catalog = await db.query(
     'SELECT key,can_use_api_key,can_use_agentic FROM ai_provider_catalog ORDER BY key',
   );
@@ -203,13 +219,15 @@ try {
     (error) => error.code === '23505',
   );
   checks++;
-  check(
-    (
-      await db.query(`SELECT count(*)::int AS count FROM user_modules um JOIN modules m ON m.id=um.module_id
-    JOIN module_groups g ON g.id=m.module_group_id WHERE um.is_active AND m.is_active AND g.key='general_settings'`)
-    )[0].count === 4,
-    'Assignments target the four active Core modules in the correct group',
+  assert.deepEqual(
+    await db.query(`SELECT m.key FROM user_modules um JOIN modules m ON m.id=um.module_id
+      JOIN module_groups g ON g.id=m.module_group_id
+      WHERE um.is_active AND m.is_active AND g.is_active AND g.key='general_settings'
+      ORDER BY m.key`),
+    [{ key: 'actions' }, { key: 'modules' }, { key: 'roles' }, { key: 'users' }],
+    'Bootstrap assigns exactly the four active Core identities, without granting NodiaAI access',
   );
+  checks++;
   envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = 'another-owner@example.com';
   await assert.rejects(seed().bootstrap(), /cannot replace or promote/);
   checks++;
