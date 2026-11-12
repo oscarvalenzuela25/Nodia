@@ -129,7 +129,7 @@ jobs:
   production-client-config:
     name: Read public production build configuration
     needs: changes
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.changes.outputs.client == 'true'
+    if: always() && needs.changes.result == 'success' && github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.changes.outputs.client == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     environment: production
@@ -208,7 +208,7 @@ jobs:
   server:
     name: Server and worker - build, contracts and tests
     needs: changes
-    if: needs.changes.outputs.server == 'true' || needs.changes.outputs.contracts == 'true'
+    if: always() && needs.changes.result == 'success' && (needs.changes.outputs.server == 'true' || needs.changes.outputs.contracts == 'true')
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     defaults:
@@ -266,7 +266,7 @@ jobs:
   python:
     name: Python adapter - isolated unit tests
     needs: changes
-    if: needs.changes.outputs.python == 'true'
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.python == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
@@ -291,7 +291,7 @@ jobs:
   native:
     name: Native host - compile and test the default SDK feature
     needs: changes
-    if: needs.changes.outputs.native == 'true'
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.native == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     defaults:
