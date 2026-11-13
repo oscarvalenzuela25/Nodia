@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "scope": "Original public operator source before first-operation lock correction; no private files",
+  "archive": "ops/maintenance/production-ai-login-activation-original-20261112-r01.zip",
+  "archive_sha256": "a758b99deb23b629bb7beaa6c5d716767fbcf778e5475cb26e3cc1aee0e079bc",
+  "original_activation_sha256": "aee6e190c004f8863d15820a8d86ed418b5384877bdc940499b3ab3c14333002",
+  "corrected_activation_sha256": "670009d04626aa40b1bb74ebba26b16b5754e25a3a20389e78363f4cf889da8a",
+  "cause": "The CD installer had not created installation.lock yet; updater creates it on first operation. Initial activation rejected absent lock before SQL, infrastructure start or app restart. Correction claims same protected empty lock and uses flock; active holders remain rejected.",
+  "regression": "Two Linux flock/filesystem tests passed; sixteen operator tests passed overall."
+}

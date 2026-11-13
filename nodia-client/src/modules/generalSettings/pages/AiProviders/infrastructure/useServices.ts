@@ -1,6 +1,6 @@
 import { getAiApiKeys, createAiApiKey, updateAiApiKey, deleteAiApiKey } from "./services";
 import type { GetAiApiKeysParams } from "./types";
-import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient, type QueryFunctionContext } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import useAuthStore, { hasValidatedSession } from "../../../../../store/authStore";
 import {
@@ -102,7 +102,7 @@ export const useAiProviders = (params?: GetAiProvidersParams) => {
 // One HTTP response and one cache entry for badges, alerts and session panels.
 const providerHealthOptions = queryOptions({
   queryKey: ["ai-providers-health"],
-  queryFn: () => getAiProvidersHealth(),
+  queryFn: ({ signal }: QueryFunctionContext) => getAiProvidersHealth(signal),
   staleTime: 120_000,
   retry: false,
   retryOnMount: false,
@@ -116,9 +116,9 @@ const providerHealthOptions = queryOptions({
   },
 });
 
-export const useAiProvidersHealth = () => {
+export const useAiProvidersHealth = (options?: { enabled?: boolean }) => {
   const authenticated = useAuthStore(hasValidatedSession);
-  return useQuery({ ...providerHealthOptions, enabled: authenticated });
+  return useQuery({ ...providerHealthOptions, enabled: authenticated && (options?.enabled ?? true) });
 };
 
 export const useAiProviderEvents = (params?: GetAiProviderEventsParams) => {

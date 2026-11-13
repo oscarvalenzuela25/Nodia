@@ -409,6 +409,17 @@ describe('AI-28 closed configuration operations', () => {
       }),
     ).resolves.toBeDefined();
   });
+  it.each(['xhigh', 'max'])('preserves the OpenAI API preference %s through preparation and confirmed execution', async level => {
+    const f = fixture();
+    f.catalog.key = 'openai';
+    const { port, step } = await f.ready('ai_providers', 'update', { id: '30', 'api_key.thinking_level': level });
+    await port.executeConfirmed(step, f.ctx);
+    expect(f.writers[1].execute.mock.calls[0][1]).toMatchObject({ fields: { api_key: {
+      thinking_level: level, thinking_levels: { 'agent-only': level },
+    } } });
+    const other = fixture();
+    await expect(other.ready('ai_providers', 'update', { id: '30', 'api_key.thinking_level': level })).rejects.toThrow('reasoning_unavailable');
+  });
   it('updates reasoning per selected model without overwriting another model override', async () => {
     const f = fixture(),
       { port, step } = await f.ready('ai_providers', 'update', {

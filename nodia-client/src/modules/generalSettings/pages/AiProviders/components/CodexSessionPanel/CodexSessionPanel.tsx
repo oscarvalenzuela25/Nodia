@@ -78,7 +78,7 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
           }}
         >
           <Button
-            variant="outlined"
+            variant="contained"
             disabled={busy}
             onClick={manage}
             sx={{ width: { xs: "100%", sm: "auto" } }}
@@ -87,6 +87,7 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
           </Button>
           {connectionState === "connected" && (
             <Button
+              variant="contained"
               color="error"
               disabled={busy}
               onClick={() => setDisconnect(true)}
@@ -223,7 +224,7 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
                   href={job.verificationUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  variant="outlined"
+                  variant="contained"
                   disabled={busy}
                 >
                   {t("ai_providers:codex.open_login")}

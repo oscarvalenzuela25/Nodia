@@ -181,7 +181,26 @@ describe('API invoice execution through the real adapter', () => {
     await useCase.execute('42', undefined, file);
     expect(JSON.parse(fetch.mock.calls[3][1].body).reasoning).toEqual({ effort: 'low' });
   });
-  it.each(['max', false, {}, ''])('rejects invalid persisted API reasoning %j before reading secrets or calling the provider', async (level) => {
+  it.each(['xhigh', 'max'] as const)('sends the explicit OpenAI API preference %s without downgrading or borrowing Agentic support', async level => {
+    const fetch = vi.fn().mockImplementation(async () => respond());
+    vi.stubGlobal('fetch', fetch);
+    const { provider, useCase } = setup();
+    Object.assign(provider.fields.api_key, { thinking_levels: { 'account-model': level } });
+    await useCase.execute('42', undefined, file);
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(JSON.parse(fetch.mock.calls[0][1].body).reasoning).toEqual({ effort: level });
+  });
+  it.each(['xhigh', 'max', 'ultra'])('rejects OpenAI-only or unsupported effort %s for Gemini before reading a key', async level => {
+    const fetch = vi.fn();
+    vi.stubGlobal('fetch', fetch);
+    const { provider, providers, useCase } = setup();
+    provider.catalog.key = 'gemini';
+    Object.assign(provider.fields.api_key, { thinking_levels: { 'account-model': level } });
+    await expect(useCase.execute('42', undefined, file)).rejects.toThrow('nivel de razonamiento API');
+    expect(providers.getEligibleApiKeySecrets).not.toHaveBeenCalled();
+    expect(fetch).not.toHaveBeenCalled();
+  });
+  it.each(['ultra', false, {}, ''])('rejects invalid persisted API reasoning %j before reading secrets or calling the provider', async (level) => {
     const fetch = vi.fn();
     vi.stubGlobal('fetch', fetch);
     const { provider, providers, useCase } = setup();

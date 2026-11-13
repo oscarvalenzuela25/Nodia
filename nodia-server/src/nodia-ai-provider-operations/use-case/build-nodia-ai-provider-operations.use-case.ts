@@ -15,6 +15,7 @@ import {
 } from '../../authorization/authority-transaction.js';
 import { isCoreAuthorityTransaction } from '../../authorization/core-authority-transaction.js';
 import { hasAiProviderAuthorityLock } from '../../ai-provider/use-case/ai-provider-configuration-transaction.js';
+import { isApiThinkingLevel } from '../../common/ai/api-reasoning.js';
 import type {
   NodiaAiJsonObject,
   NodiaAiJsonValue,
@@ -545,7 +546,7 @@ class ProviderOperation implements NodiaAiProviderOperation {
     );
     if (!catalog)
       throw new NotFoundException('nodia_ai:domain_target_not_found');
-    const native = this.nativeCommand(i, raw);
+    const native = this.nativeCommand(i, raw, typeof catalog.key === 'string' ? catalog.key : undefined);
     const resolved =
       this.operation === 'create'
         ? resolveAiProviderCreate(
@@ -695,6 +696,7 @@ class ProviderOperation implements NodiaAiProviderOperation {
   private nativeCommand(
     i: Input,
     target: NodiaAiJsonObject | null,
+    providerKey?: string,
   ): NodiaAiJsonObject {
     const native: NodiaAiJsonObject = Object.fromEntries(
       Object.entries(i.command).filter(([key]) => !key.includes('.')),
@@ -737,6 +739,7 @@ class ProviderOperation implements NodiaAiProviderOperation {
         if (
           value !== null &&
           !['low', 'medium', 'high'].includes(String(value)) &&
+          !(mode === 'api_key' && isApiThinkingLevel(providerKey ?? '', value)) &&
           !(typeof model === 'string' && value === levels[model]) &&
           value !== old.thinking_level &&
           (!Array.isArray(available) || !available.includes(value))
@@ -838,11 +841,14 @@ class ProviderOperation implements NodiaAiProviderOperation {
       raw = i.id
         ? await this.store.target(c.manager, this.resourceKey, i.id)
         : null;
+    const catalogId = raw?.catalog_id ?? i.command.catalog_id;
+    const catalog = this.resourceKey === 'ai_providers' && isId(catalogId)
+      ? await this.store.target(c.manager, 'ai_provider_catalog', catalogId) : null;
     const result = await this.writer(
       i,
       c,
       this.resourceKey === 'ai_providers'
-        ? this.nativeCommand(i, raw)
+        ? this.nativeCommand(i, raw, typeof catalog?.key === 'string' ? catalog.key : undefined)
         : i.command,
     );
     if (!isId(result.id) || (i.id && result.id !== i.id))

@@ -422,13 +422,20 @@
     "saved_model_configuration": "Model saved in configuration",
     "quota_remaining_units": "{{remaining}} of {{total}} reported units available",
     "quota_reported_units": "{{remaining}} reported units available",
-    "api_reasoning_preference": "Configure Low, Medium or High per model. The API receives the selected level; compatibility depends on the model and the provider may reject it. Without a selection, the provider's behavior applies.",
+    "api_reasoning_preference": "Configure a reasoning preference per model. The API receives the selected level; compatibility depends on the model and the provider may reject it. Without a selection, the provider behavior applies.",
     "quota_flash_label": "Gemini Flash",
     "quota_pro_label": "Gemini Pro",
     "quota_5h_label": "5h quota",
     "quota_weekly_label": "Weekly quota",
     "agentic_reasoning_preference": "Configure Low, Medium or High. Saving a preference does not enable the adapter or verify reasoning.",
-    "reasoning_model_label": "Reasoning for {{model}}"
+    "reasoning_model_label": "Reasoning for {{model}}",
+    "level_xhigh": "Xhigh",
+    "level_max": "Max",
+    "level_ultra": "Ultra",
+    "api_effort_unsupported": "Ultra is not an accepted effort in the OpenAI API; the Agentic connection uses its own catalog.",
+    "ocr_focus_variant": "Saved OCR focus: {{model}}",
+    "variant_preference_conflict": "The saved configuration for {{model}} uses {{effort}} and differs from its variant. Review reasoning and OCR focus; the values have not been changed.",
+    "invalid_saved_preference": "an invalid value"
   },
   "engine_selection": {
     "title": "Execution Engine",

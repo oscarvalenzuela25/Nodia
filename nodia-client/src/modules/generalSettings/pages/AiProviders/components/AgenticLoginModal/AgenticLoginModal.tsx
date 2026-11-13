@@ -110,7 +110,7 @@ const AgenticLoginModal = ({ onClose }: Props) => {
       {job && <Typography role="status">{t(`ai_providers:agentic_login.states.${job.state}`)}</Typography>}
       {job?.state === "waiting_code" && job.authorization_url && <>
         <Button component="a" href={job.authorization_url} target="_blank" rel="noopener noreferrer"
-          variant="outlined" startIcon={<OpenInNewOutlinedIcon />} disabled={isBusy}>
+          variant="contained" startIcon={<OpenInNewOutlinedIcon />} disabled={isBusy}>
           {t("ai_providers:agentic_login.open_google")}
         </Button>
         <Controller name="code" control={control} render={({ field, fieldState }) => <TextInput

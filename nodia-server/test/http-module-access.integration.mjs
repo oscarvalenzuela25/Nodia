@@ -60,6 +60,12 @@ Module({
     testController('auth', [['me', Get, 'me']]),
     testController('authorization', [['context', Get, 'context']]),
     testController('teacher', [['connections',Get,'connections'],['sessions',Get,'sessions']]),
+    testController('nodia-ai/conversations', [['list', Get, ''], ['create', Post, '']]),
+    testController('nodia-ai/connections', [['list', Get, '']]),
+    testController('nodia-ai/preferences', [['list', Get, '']]),
+    testController('nodia-ai/runs', [['cancel', Post, ':id/cancel']]),
+    testController('nodia-ai/attachments', [['capabilities', Get, 'capabilities']]),
+    testController('nodia-ai-unclassified', [['list', Get, '']]),
     testController('new-unclassified-resource', [['list', Get, '']]),
     testController('public-probe', [['health', Get, '', true]]),
   ],
@@ -123,6 +129,37 @@ try {
   await status('/teacher/sessions',403,'1');
   await status('/teacher/sessions',401);
   await status('/teacher/sessions',200,'3');
+  const nodiaReaders = [
+    '/nodia-ai/conversations', '/nodia-ai/connections',
+    '/nodia-ai/preferences', '/nodia-ai/attachments/capabilities',
+  ];
+  for (const path of nodiaReaders) {
+    const beforeDenied = handlerCalls;
+    await status(path, 401);
+    await status(path, 401, 'revoked');
+    // AI administration and other products do not grant access to the chat.
+    for (const actor of ['2', '6', '1', '7']) await status(path, 403, actor);
+    assert.equal(handlerCalls, beforeDenied, 'NodiaAI denial precedes its domain handler');
+    await status(path, 200, '8');
+    await status(path, 200, '3'); // The confirmed backend super_admin bypass stays intact.
+  }
+  for (const path of ['/nodia-ai/conversations', '/nodia-ai/runs/7/cancel']) {
+    const beforeDenied = handlerCalls;
+    await status(path, 403, '2', 'POST');
+    await status(path, 403, '6', 'POST');
+    assert.equal(handlerCalls, beforeDenied, 'Unassigned NodiaAI writers cannot reach the domain');
+    await status(path, 201, '8', 'POST');
+  }
+  actors.get('8').modules = [];
+  const beforeRevokedModule = handlerCalls;
+  for (const path of nodiaReaders) await status(path, 403, '8');
+  await status('/nodia-ai/conversations', 403, '8', 'POST');
+  await status('/nodia-ai/runs/7/cancel', 403, '8', 'POST');
+  assert.equal(handlerCalls, beforeRevokedModule,
+    'The same valid token cannot reuse authority after its module assignment is revoked');
+  actors.get('8').modules = ['/nodia-ai'];
+  await status('/nodia-ai/conversations', 200, '8');
+  await status('/nodia-ai-unclassified', 403, '8');
   const beforeSessionRoutes = databaseCalls;
   await status('/auth/me', 200, '2');
   await status('/authorization/context', 200, '2');

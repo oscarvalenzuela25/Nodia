@@ -1,0 +1,27 @@
+[Unit]
+Description=Nodia private Antigravity adapter
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+Type=exec
+ExecStartPre=/usr/bin/python3 -I /usr/local/lib/nodia/ai-runtime/gemini-host.py ensure
+ExecStart=/usr/bin/docker start --attach nodia-gemini-microservice
+ExecStartPost=/usr/bin/python3 -I /usr/local/lib/nodia/ai-runtime/gemini-host.py attach
+ExecStartPost=/usr/bin/python3 -I /usr/local/lib/nodia/ai-runtime/gemini-host.py check
+ExecStop=/usr/bin/docker stop --time 30 nodia-gemini-microservice
+ExecStopPost=-/usr/bin/docker stop --time 10 nodia-gemini-microservice
+TimeoutStartSec=120
+TimeoutStopSec=60
+Restart=on-failure
+RestartSec=10
+UMask=0077
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nodia-gemini
+
+[Install]
+WantedBy=multi-user.target

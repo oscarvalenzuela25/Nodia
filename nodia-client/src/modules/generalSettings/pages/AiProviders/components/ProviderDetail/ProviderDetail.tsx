@@ -48,6 +48,7 @@ import {
   useSelectableModels,
 } from "../../infrastructure/useServices";
 import type { SupportedModelDef } from "../../infrastructure/types";
+import { providerModelCards, modelCardContains, modelCardEffort, openAiApiReasoningPreferences } from "../../infrastructure/modelCards";
 import {
   getObservedSessionStatus,
 } from "../../infrastructure/observations";
@@ -326,6 +327,21 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     (modeFields?.ocr_focus_model as string) ||
     (modeFields?.ocr_model as string) ||
     "";
+  const [variantChoices, setVariantChoices] = useState<Record<string, string>>({});
+  const cardScope = `${providerId}:${activeTab}`;
+  const modelCards = useMemo(() => providerModelCards(
+    availableModels, providerKey === "gemini" && activeTab === "agentic",
+    { selectedModel, ocrModel: ocrFocusedModelId, thinkingLevel: modeFields.thinking_level,
+      thinkingLevels: modeFields.thinking_levels as Record<string, unknown> | undefined },
+  ).map(card => {
+    // An unselected family's last human choice is presentation state. It never
+    // changes the selected model or OCR pointer just to collapse catalog rows.
+    const choice = !modelCardContains(card, selectedModel)
+      ? card.variants.find(variant => variant.model.id === variantChoices[`${cardScope}:${card.key}`]) : undefined;
+    return choice ? { ...card, model: choice.model } : card;
+  }), [availableModels, providerKey, activeTab, selectedModel, ocrFocusedModelId,
+    modeFields.thinking_level, modeFields.thinking_levels, cardScope, variantChoices]);
+  const openAiApi = providerKey === "openai" && activeTab === "api_key";
 
   // Mutations
   const updateProviderMutation = useUpdateAiProvider();
@@ -459,6 +475,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const handleSetModelThinkingLevel = async (
     modelId: string,
     level: string | null,
+    selectVariant = false,
   ) => {
     if (
       !currentDbProvider?.id ||
@@ -486,6 +503,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
             ...currentDbProvider.fields,
             [modeKey]: {
               ...currentModeData,
+              ...(selectVariant ? { selected_model: modelId } : {}),
               ...(modelId
                 ? {
                     thinking_levels: {
@@ -494,12 +512,12 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                     },
                   }
                 : {}),
-              ...(!modelId || modelId === selectedModel
+              ...(!modelId || modelId === selectedModel || selectVariant
                 ? { thinking_level: level }
                 : {}),
             },
-            ...(isDefaultMode && modelId === selectedModel
-              ? { thinking_level: level }
+            ...(isDefaultMode && (modelId === selectedModel || selectVariant)
+              ? { thinking_level: level, ...(selectVariant ? { selected_model: modelId } : {}) }
               : {}),
           },
         },
@@ -510,12 +528,15 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
           "Nivel de razonamiento actualizado correctamente",
         ),
       });
+      if (selectVariant) setLocalSelectedModel(modelId);
       refetchProviders();
+      return true;
     } catch (error) {
       sileo.error({
         title: t("core:server_error_toast"),
         description: getHttpErrorMessage(error),
       });
+      return false;
     }
   };
 
@@ -753,7 +774,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
             )}
 
             <Button
-              variant="outlined"
+              variant="contained"
               size="small"
               startIcon={
                 isFetchingHealth ? (
@@ -1031,7 +1052,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                   <Tooltip title={!isModeOperational ? syncDisabledReason : ""}>
                     <span>
                       <Button
-                        variant="outlined"
+                        variant="contained"
                         color="primary"
                         size="small"
                         startIcon={<SyncOutlinedIcon fontSize="small" />}
@@ -1160,20 +1181,23 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                 </Box>
               ) : (
                 <ModelsGrid>
-                  {availableModels.map((model) => {
-                    const isSelected = selectedModel === model.id;
+                  {modelCards.map((card) => {
+                    const model = card.model;
+                    const isSelected = modelCardContains(card, selectedModel);
                     const codexModel =
                       providerKey === "openai" &&
                       activeTab === "agentic";
                     const levels =
                       (modeFields.thinking_levels as Record<string, unknown>) ??
                       {};
-                    const savedThinkingLevel =
-                      codexModel && Object.hasOwn(levels, model.id)
+                    const savedThinkingLevel = card.variants.length
+                      ? card.preferenceConflicts.some(conflict => conflict.modelId === model.id)
+                        ? null : card.variants.find(variant => variant.model.id === model.id)?.effort
+                      : codexModel && Object.hasOwn(levels, model.id)
                         ? levels[model.id]
                         : (levels[model.id] ??
                           (isSelected ? modeFields.thinking_level : undefined));
-                    const isOcrFocused = ocrFocusedModelId === model.id;
+                    const isOcrFocused = modelCardContains(card, ocrFocusedModelId);
                     const badgeAbbr = model.id.toLowerCase().includes("ocr")
                       ? "OCR"
                       : model.id.toLowerCase().includes("pro")
@@ -1197,7 +1221,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                     const capabilities = model.capabilities ?? [];
 
                     return (
-                      <ModelCardPaper key={model.id} selected={isSelected}>
+                      <ModelCardPaper key={card.key} selected={isSelected}>
                         <ModelCardHeader>
                           <Box
                             sx={{
@@ -1220,7 +1244,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                                   variant="subtitle2"
                                   sx={{ fontWeight: 700 }}
                                 >
-                                  {model.displayName || model.name || model.id}
+                                  {card.label}
                                 </Typography>
                                 <StatusDot
                                   color={isSelected ? "#10b981" : "#64748b"}
@@ -1367,7 +1391,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                             control={
                               <StyledSwitch
                                 checked={isOcrFocused}
-                                onChange={() => handleToggleOcrFocus(model.id)}
+                                onChange={() => handleToggleOcrFocus(isOcrFocused ? ocrFocusedModelId : model.id)}
                                 disabled={isBusy}
                                 size="small"
                               />
@@ -1393,6 +1417,22 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                           />
                         </Box>
 
+                        {isOcrFocused && card.variants.length > 0 && ocrFocusedModelId !== model.id && (
+                          <Typography variant="caption" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
+                            {t("ai_providers:detail.ocr_focus_variant", { model: ocrFocusedModelId })}
+                          </Typography>
+                        )}
+
+                        {card.preferenceConflicts.map(conflict => (
+                          <Alert key={conflict.modelId} severity="warning">
+                            {t("ai_providers:detail.variant_preference_conflict", {
+                              model: conflict.modelId,
+                              effort: typeof conflict.savedPreference === "string" ? conflict.savedPreference
+                                : t("ai_providers:detail.invalid_saved_preference"),
+                            })}
+                          </Alert>
+                        ))}
+
                         {/* API and Agentic reasoning preference per model */}
                         {(activeTab === "agentic" ||
                           activeTab === "api_key") && (
@@ -1400,8 +1440,8 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                             sx={(theme) => ({
                               display: "flex",
                               justifyContent: "space-between",
-                              flexDirection: { xs: "column", sm: "row" },
-                              alignItems: { xs: "stretch", sm: "center" },
+                              flexDirection: "column",
+                              alignItems: "stretch",
                               gap: 1,
                               pt: 1.5,
                               mt: 1.5,
@@ -1456,34 +1496,50 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                             <ToggleButtonGroup
                               size="small"
                               exclusive
-                              aria-label={t("ai_providers:detail.reasoning_model_label", { model: model.displayName || model.name || model.id })}
+                              aria-label={t("ai_providers:detail.reasoning_model_label", { model: card.label })}
                               value={savedThinkingLevel ?? null}
-                              onChange={(_, val) => {
-                                if (typeof val === "string")
-                                  void handleSetModelThinkingLevel(
-                                    model.id,
-                                    val,
-                                  );
+                              onChange={async (_, val) => {
+                                if (typeof val !== "string") return;
+                                if (card.variants.length) {
+                                  const variant = modelCardEffort(card, val);
+                                  if (variant && await handleSetModelThinkingLevel(variant.model.id, val, isSelected)) {
+                                    setVariantChoices(current => ({ ...current, [`${cardScope}:${card.key}`]: variant.model.id }));
+                                  }
+                                } else {
+                                  await handleSetModelThinkingLevel(model.id, val);
+                                }
                               }}
                               disabled={isBusy}
                               sx={{
-                                minHeight: { xs: 44, sm: 26 },
-                                width: { xs: "100%", sm: "auto" },
+                                minHeight: 44,
+                                width: "100%",
+                                flexWrap: "wrap",
+                                gap: 0.5,
+                                "& .MuiToggleButtonGroup-grouped": {
+                                  margin: 0, border: "1px solid", borderColor: "divider", borderRadius: 1,
+                                },
+                                "& > span": { display: "inline-flex", flex: "1 0 auto" },
                                 "& .MuiToggleButton-root": {
-                                  flex: { xs: 1, sm: "initial" },
+                                  flex: "1 0 auto",
+                                  minWidth: 44,
+                                  minHeight: 44,
+                                  whiteSpace: "nowrap",
                                   px: 1,
                                   py: 0.25,
                                   fontSize: "0.6875rem",
                                   fontWeight: 600,
                                   textTransform: "capitalize",
-                                  lineHeight: 1,
+                                  lineHeight: 1.2,
                                 },
                               }}
                             >
-                              {(providerKey === "openai" &&
+                              {(card.variants.length
+                                ? card.variants.map(variant => variant.effort).sort((left, right) =>
+                                  ["low", "medium", "high"].indexOf(left) - ["low", "medium", "high"].indexOf(right))
+                                : providerKey === "openai" &&
                               activeTab === "agentic"
                                 ? (model.supportedReasoningEfforts ?? [])
-                                : ["low", "medium", "high"]
+                                : openAiApi ? openAiApiReasoningPreferences : ["low", "medium", "high"]
                               ).map((level) => (
                                 <ToggleButton
                                   key={level}
@@ -1495,6 +1551,15 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                                   })}
                                 </ToggleButton>
                               ))}
+                              {openAiApi && (
+                                <Tooltip title={t("ai_providers:detail.api_effort_unsupported")}>
+                                  <Box component="span" tabIndex={0}>
+                                    <ToggleButton value="ultra" disabled sx={{ width: "100%" }}>
+                                      {t("ai_providers:detail.level_ultra")}
+                                    </ToggleButton>
+                                  </Box>
+                                </Tooltip>
+                              )}
                             </ToggleButtonGroup>
                           </Box>
                         )}
@@ -1557,16 +1622,23 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                     disabled={isBusy}
                     onChange={(
                       _event,
-                      level: "low" | "medium" | "high" | null,
+                      level: string | null,
                     ) => {
                       if (level) void handleSetModelThinkingLevel("", level);
                     }}
                   >
-                    {(["low", "medium", "high"] as const).map((level) => (
+                    {(openAiApi ? openAiApiReasoningPreferences : ["low", "medium", "high"]).map((level) => (
                       <ToggleButton key={level} value={level}>
                         {t(`ai_providers:detail.level_${level}`)}
                       </ToggleButton>
                     ))}
+                    {openAiApi && (
+                      <Tooltip title={t("ai_providers:detail.api_effort_unsupported")}>
+                        <span tabIndex={0}>
+                          <ToggleButton value="ultra" disabled>{t("ai_providers:detail.level_ultra")}</ToggleButton>
+                        </span>
+                      </Tooltip>
+                    )}
                   </ToggleButtonGroup>
                 )}
               </Box>
@@ -1598,7 +1670,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                 </Box>
                 {providerKey === "gemini" && (
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     disabled={isBusy}
                     onClick={() => setAgenticLoginOpen(true)}
                     sx={{ width: { xs: "100%", sm: "auto" } }}

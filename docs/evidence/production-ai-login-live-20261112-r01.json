@@ -1,0 +1,360 @@
+{
+  "schema_version": 1,
+  "record_id": "production-ai-login-live-20261112-r01",
+  "checked_on": "2026-11-12",
+  "timezone": "America/Santiago",
+  "branch": "codex/enable-ai-provider-login",
+  "base_sha": "9495751ad07efa9c399a9e0f342a4ca90a9d8080",
+  "status": "infrastructure_active_both_human_logins_confirmed",
+  "application": {
+    "release_unchanged": "backend-f01b49333688-ff33b6fdbbbc",
+    "activation": {
+      "schema_version": 1,
+      "status": "login_infrastructure_active",
+      "release_unchanged": "backend-f01b49333688-ff33b6fdbbbc",
+      "keyring_persistence_verified": true,
+      "native_codex_handshake_verified": true,
+      "api_liveness_and_anonymous_401_verified": true,
+      "application_restarted": true,
+      "real_login_requested": false,
+      "inference_requested": false,
+      "human_authorization_pending": true
+    },
+    "services": {
+      "nodia-api": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "DropInPaths": "/etc/systemd/system/nodia-api.service.d/70-codex-runtime.conf /etc/systemd/system/nodia-api.service.d/71-gemini-runtime.conf",
+        "UnitFileState": "enabled",
+        "MainPID": "428730",
+        "public_runtime_flags": {
+          "NODIA_CODEX_ENABLED": "true",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/nodia-codex/bus",
+          "XDG_RUNTIME_DIR": "/run/nodia-codex"
+        },
+        "cwd": "/opt/nodia/releases/backend-f01b49333688-ff33b6fdbbbc"
+      },
+      "nodia-ai-worker": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "DropInPaths": "/etc/systemd/system/nodia-ai-worker.service.d/70-codex-runtime.conf /etc/systemd/system/nodia-ai-worker.service.d/71-gemini-runtime.conf",
+        "UnitFileState": "enabled",
+        "MainPID": "428737",
+        "public_runtime_flags": {
+          "NODIA_CODEX_ENABLED": "true",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/nodia-codex/bus",
+          "XDG_RUNTIME_DIR": "/run/nodia-codex"
+        },
+        "cwd": "/opt/nodia/releases/backend-f01b49333688-ff33b6fdbbbc"
+      },
+      "nodia-codex-bus": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "DropInPaths": "",
+        "UnitFileState": "enabled",
+        "MainPID": "425622"
+      },
+      "nodia-codex-keyring": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "DropInPaths": "",
+        "UnitFileState": "enabled",
+        "MainPID": "428520"
+      },
+      "nodia-gemini": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "DropInPaths": "",
+        "UnitFileState": "enabled",
+        "MainPID": "428242"
+      }
+    }
+  },
+  "target_kernel_verification": {
+    "schema_version": 1,
+    "status": "verified",
+    "host": {
+      "stage": "AI-29-R01",
+      "scope": "isolated_ephemeral_docker_cgroup_v2_host_attachment",
+      "checks": 12,
+      "passed": [
+        "an existing unprivileged private container is attached without resource/configuration changes",
+        "repeating attachment of the same generation is idempotent",
+        "UID10001 can close setsid descendants by cgroup.kill and kernel populated zero",
+        "service UID cannot kill the container root cgroup",
+        "public proof is root-owned read-only under a root-owned run directory",
+        "private host state is root-only and contains no profile or credential material",
+        "a different still-running old Docker ID cannot be attested closed",
+        "stopped old Docker generation plus removed/empty cgroup produces exact closure proof",
+        "same Docker ID restart certifies only former roots and never the live current root",
+        "unreferenced operational generations are pruned without touching profile data",
+        "replacement container retains network isolation and original capability/namespace/limits",
+        "no configured container, provider, model, credential or database was changed"
+      ],
+      "real_kernel": true,
+      "network": "none",
+      "configured_gemini_container_changed": false,
+      "native_provider_calls": 0,
+      "database_used": false,
+      "credentials_used": false
+    },
+    "durable_login_fixture": {
+      "response_loss_and_http_restart": {
+        "kernel_cgroup_closed": true,
+        "state": "succeeded"
+      },
+      "supervisor_sigkill_and_pty_descendant_cleanup": {
+        "kernel_cgroup_closed": true,
+        "state": "cancelled"
+      }
+    },
+    "network": "none",
+    "real_credentials_used": false,
+    "configured_profile_changed": false
+  },
+  "cd_compatibility": {
+    "cd_guard": {
+      "status": "strict_runtime_cd_guard_installed",
+      "old_updater_sha256": "5efa496f776f1c9e5a71deecf7c8dfdc6522dbafec49b859d0cd47cf7215a726",
+      "new_updater_sha256": "266d409cfcea4ea05b5704042ef1305afff439a244c0340d2f8f6ff577003b56",
+      "settings_other_fields_preserved": true,
+      "application_restarted": false,
+      "deployment_requested": false
+    },
+    "cd_registration": {
+      "schema_version": 1,
+      "status": "runtime_consumers_verified",
+      "registry_sha256": "fd19a67e88c5b3665fd4fa03921cbd9632333ab654ce481d26f762121837917c",
+      "reviewed_dropin_files": 4,
+      "base_units_unchanged": true,
+      "application_restarted": false,
+      "deployment_requested": false
+    },
+    "new_unit_tests": 10,
+    "existing_host_tests": 10,
+    "existing_policy_tests": 7,
+    "legacy_systemd_pid1_checks": 20,
+    "application_restarted_for_cd_update": false,
+    "public_ssh_or_sudo_rules_changed": false
+  },
+  "functional_observations": {
+    "codex": {
+      "human_report": "listo funciono codex",
+      "login_reported_success": true,
+      "independent_account_read_requested": false,
+      "inference_verified": false
+    },
+    "antigravity": {
+      "private_transport_and_cli_verified": true,
+      "human_login_reported_success": true,
+      "session_observation": "human_reported_success",
+      "inference_verified": false,
+      "human_report": "funciono",
+      "independent_account_read_requested": false
+    }
+  },
+  "external_checks": {
+    "client": "curl8.13 Windows Schannel with default certificate verification",
+    "https_api_liveness": 200,
+    "https_auth_me_without_session": 401,
+    "https_ai_health_without_session": 401,
+    "private_ports_unreachable_from_pc": [
+      3000,
+      6379,
+      8000
+    ],
+    "certificate_ip_matches": true,
+    "certificate_not_after": "2026-11-17T15:27:33Z",
+    "python_client_limitation": "Python3.13/OpenSSL3.0.15 reported certificate-expired for the same public leaf; exact chain cause not established. Schannel HTTPS and VPS OpenSSL verify_ip/verify_return_error passed. No TLS verification disabled for functional requests; unverified handshake used only to compare public certificate metadata."
+  },
+  "local_verification": {
+    "native_tests_linux_network_none": 660,
+    "codex_keyring_tests_linux_network_none": 3,
+    "codex_systemd_pid1_real": true,
+    "operator_regressions_linux_network_none": 17,
+    "typescript_or_app_build_repeated": false,
+    "reason": "Operational Python/systemd changes; no app TypeScript changes or dependency manifest upgrades.",
+    "knowledge": {
+      "metadata_valid": true,
+      "compile_check": "passed",
+      "compiled_release_id": "62adefbb1c84a5421db8dc7965666e79ca489d3cb47ce4bf619bcd53f068f78a",
+      "approved_documents_unchanged": 44,
+      "new_publication": false
+    },
+    "utf8_lf_and_links_checked": true
+  },
+  "installation_provenance": {
+    "initial_bundle": "R02",
+    "initial_bundle_manifest_sha256": "c6c3950e096174bad7bd5c700dc5690ce88bde762caa92c49a7c3ab440104032",
+    "initial_bundle_files": 15,
+    "corrected_fresh_install_bundle": "R03",
+    "corrected_fresh_install_manifest_sha256": "e5ce08c6adf6f7db8b2cc1cc3ad5d3f527378332810097dda3b1b124d3a53113",
+    "corrected_fresh_install_files": 18,
+    "R03_rerun_on_target": false,
+    "live_activation_sha256": "5e0cdc95ee527876a6cf79c6ecacf48800dca17484557dd170b4b65725b78255",
+    "live_gemini_operator_sha256": "dbfabae8443c7db29b6c3da27f8b25f5313214dc430b2c8de2acd7cf0a3e8a51",
+    "original_sources": [
+      "ops/maintenance/production-ai-login-activation-original-20261112-r01.json",
+      "ops/maintenance/production-ai-login-preparation-original-20261112-r01.json",
+      "ops/maintenance/production-ai-login-resume-original-20261112-r01.json",
+      "ops/maintenance/production-ai-login-updater-original-20261112-r01.json"
+    ]
+  },
+  "incidents": [
+    {
+      "event": "apt_suspended",
+      "effect": "package operation suspended after dpkg triggers; exact PID continued and preparation completed",
+      "root_cause": "not established",
+      "application_restarted": false,
+      "shell_job_control_note": "A shell stop status148 was recorded during job-control recovery; final preparation JSON and absence of the installer process established completion. The stopped-shell value is not treated as the final installer exit code."
+    },
+    {
+      "event": "missing_first_operation_lock",
+      "effect": "initial activation rejected before reservation/SQL/start/stop",
+      "correction": "claim protected empty same CD lock; actual flock regression passed"
+    },
+    {
+      "event": "setup_umask_code_directory",
+      "effect": "code directory0700 would prevent service-user access",
+      "correction": "verify public file inventory/hashes; only code directory0755; private state/config unchanged"
+    },
+    {
+      "event": "account_status_used_as_boot_gate",
+      "effect": "unauthenticated usage observation produced504; bounded systemd startup retries stopped only the new adapter",
+      "correction": "verify CLI hash/version, kernel containment and protected docs route without claiming authentication; preserve /agentic/status errors",
+      "resume": "explicit --resume-infrastructure after new READ ONLY gate and unchanged application descriptors; original reservation preserved"
+    }
+  ],
+  "pending": [
+    "Provider/model/modality inference acceptance per plan91",
+    "Encrypted backup/recovery coverage for Codex keyring/password and Antigravity persistent state",
+    "Long-duration refresh/revocation and reboot acceptance with authenticated accounts"
+  ],
+  "limits": {
+    "provider_login_started_by_agent": false,
+    "provider_auth_codes_read_by_agent": false,
+    "provider_credentials_copied_from_pc": false,
+    "inference_requested": false,
+    "database_migration_requested": false,
+    "application_git_release_changed": false,
+    "production_frontend_changed": false,
+    "branch_committed": false,
+    "branch_pushed": false,
+    "human_provider_logins_reported_success": [
+      "codex",
+      "antigravity"
+    ]
+  },
+  "obsidian": "C:/Users/Oscar/Documents/Obsidian Vault/obsidian-notes/utils/VPS/DEPLOY VPS.md#26",
+  "sources": [
+    {
+      "path": "ops/production/ai-runtime/README.md",
+      "sha256": "3766d9da54cf716c8cfdf69b6f092669034de28f0a0dd29d47f88b60eab1b3fb"
+    },
+    {
+      "path": "ops/production/ai-runtime/activate-ai-runtime.py",
+      "sha256": "5e0cdc95ee527876a6cf79c6ecacf48800dca17484557dd170b4b65725b78255"
+    },
+    {
+      "path": "ops/production/ai-runtime/codex-bus.conf",
+      "sha256": "22ef4b01c8b51ee554b423523931fbbaa0ffd642048b3057d3b60eb894bc6ccc"
+    },
+    {
+      "path": "ops/production/ai-runtime/codex-bus.service",
+      "sha256": "d391ec3d6a31b4dee0d1a6b1eb8f3a0caae337f35e9ef48d56fc931cb3a5f12f"
+    },
+    {
+      "path": "ops/production/ai-runtime/codex-keyring.py",
+      "sha256": "2e1e67aa0e2acc9bc1f0f031eae6d1a574cb31a8707a3c0e547d6a7a99bd7ccf"
+    },
+    {
+      "path": "ops/production/ai-runtime/codex-keyring.service",
+      "sha256": "7c3f19c5cdfa73f23c9d5c10b756068c3346104bffde62857e0cfcc27348a3b0"
+    },
+    {
+      "path": "ops/production/ai-runtime/codex-native-probe.mjs",
+      "sha256": "8e6a05887249261392f826f2b5a2ce4511cb26a805c9f0e2740fef4dfe8a778e"
+    },
+    {
+      "path": "ops/production/ai-runtime/codex-provision.py",
+      "sha256": "eff419b0fbece7017bbcfd91aabe17c3222ee46396eb6c8703552d3b69f52d18"
+    },
+    {
+      "path": "ops/production/ai-runtime/codex-runtime.conf",
+      "sha256": "fafcb4dcd2452f554bf010bb0ef755f023cfd4f8d8598b77be39340e5afd2e1d"
+    },
+    {
+      "path": "ops/production/ai-runtime/codex-systemd-test.py",
+      "sha256": "bd2159991adc5605514883a8e037afbdd56ee5ee87259d7ff71f4b3acec5e1a0"
+    },
+    {
+      "path": "ops/production/ai-runtime/codex-tests.Dockerfile",
+      "sha256": "f16f205a5d0f3e61423436bcdd391b528cff0dc2094c96ff44293369601f1747"
+    },
+    {
+      "path": "ops/production/ai-runtime/codex-tests.py",
+      "sha256": "a09a1b3207a129bf970f825c1ef5afb145a4882c1fccfdaf58726b7059baaad9"
+    },
+    {
+      "path": "ops/production/ai-runtime/gemini-host.py",
+      "sha256": "dbfabae8443c7db29b6c3da27f8b25f5313214dc430b2c8de2acd7cf0a3e8a51"
+    },
+    {
+      "path": "ops/production/ai-runtime/nodia-gemini.service",
+      "sha256": "a9fe8902d34e6fdaefc543f8a1148b6926aba874f9a1c4f4aafca45fc6a66aa8"
+    },
+    {
+      "path": "ops/production/ai-runtime/package-ai-runtime.py",
+      "sha256": "2cb833cce2c52a6d9894d2e8f5fce05e42d708e0729d8fdebf79e479344e5093"
+    },
+    {
+      "path": "ops/production/ai-runtime/prepare-ai-runtime.py",
+      "sha256": "5d1e057dd59e303a9a06f62069ae781fca7c515f578c60c6f130c15b96d3815c"
+    },
+    {
+      "path": "ops/production/ai-runtime/register-consumers.py",
+      "sha256": "b8d109193a1094940eb470ddd601562dcd35e636a8e4a82157f9e03656711e38"
+    },
+    {
+      "path": "ops/production/ai-runtime/runtime-preflight.mjs",
+      "sha256": "4b0a927c9e858b734c849cf46e5731d1eb8ca9a06e54d59a7ae7ad67669bea25"
+    },
+    {
+      "path": "ops/production/ai-runtime/test_activate_ai_runtime.py",
+      "sha256": "44249bac2d813caf9c36de56e3024dbb588920c0d918cc26378dc4047db92d58"
+    },
+    {
+      "path": "ops/production/ai-runtime/test_gemini_host.py",
+      "sha256": "144cf266b49f9df8adfff77cb2aa5fc734d03feebc7c4a311226c244725c46e3"
+    },
+    {
+      "path": "ops/production/ai-runtime/test_prepare_ai_runtime.py",
+      "sha256": "13f15725a0aaa0c4ba97313b91b7261bebda5915e1f32c5e7c6b85b2de5d52aa"
+    },
+    {
+      "path": "ops/production/ai-runtime/verify-gemini-host.py",
+      "sha256": "b2d7556a9b3ce3de59f003efa031c7d86d5d2c2d06c9c964a285d2332f2adb74"
+    },
+    {
+      "path": "ops/production/tests/test_ai_runtime_updater.py",
+      "sha256": "9bf81f5329241c6ac4d1b4dcc2d04e9885b5a41c620b8148d9f16ecf87c95c70"
+    },
+    {
+      "path": "ops/production/update-backend.py",
+      "sha256": "266d409cfcea4ea05b5704042ef1305afff439a244c0340d2f8f6ff577003b56"
+    }
+  ],
+  "database_gate": {
+    "read_only": true,
+    "client_tls_authorized": true,
+    "before_and_after_consumer_stop_quiescent": true,
+    "counter_categories": 9,
+    "provider_calls": 0
+  },
+  "administrative_handoff_closed": {
+    "sudo_invalidated": true,
+    "tmux_session_closed": true,
+    "noninteractive_sudo_rejected": true,
+    "background_administrative_jobs": 0
+  }
+}

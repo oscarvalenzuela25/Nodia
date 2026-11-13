@@ -11,7 +11,7 @@ import { createMobilePreferences, mobileStorageKey, useMobileNavigationStore as 
 import { groups, reference } from "./fixtures";
 import i18n from "../../../../translate";
 const context = vi.hoisted(() => ({ isFetching: false, isError: false, refetch: vi.fn() }));
-vi.mock("../../../../services/authorizationService", () => ({ useAuthorizationContext: () => context }));
+vi.mock("../../../../services/authorizationService", () => ({ useAuthorizationContext: () => ({ ...context, data: settings() }) }));
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 const label = (key: string) => i18n.t(`layout:mobile_nav.${key}`);
 const setup = () => render(<ThemeProvider theme={createTheme()}><MemoryRouter><MobileBottomNav /></MemoryRouter></ThemeProvider>);

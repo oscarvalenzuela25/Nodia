@@ -303,7 +303,7 @@ Registrar versión/arquitectura, recursos, puertos ocupados y puerto SSH efectiv
 3. **Redis:** instalación inicial y reparación completadas; [evidencia R01](../evidence/production-redis-20261110-r01.json). Redis 7.4.12 Alpine fijado por digest, bridge dedicado `template_redis_private`, listener exclusivo `127.0.0.1:6379`, contraseña aleatoria sólo en destino, AOF everysec, maxmemory 256 MiB/noeviction, límite de contenedor 1 GiB y vm.overcommit_memory=1. El primer intento falló por publicación en red internal; resume-network conservó volumen y credenciales y superó autenticación, configuración efectiva, conexión TCP del host, Lua y clave temporal persistida tras recreación. Desde el PC, 22/443 conectan y 6379 agota timeout; alcance limitado a esa red/instante. No acredita integración API/Worker ni backup/alertas/carga. RATE_LIMIT_STORAGE=redis obligatorio. Gate de recuperación: limiter reconecta y devuelve 503 durante indisponibilidad, caché actual abandona tras tres intentos; probar/resolver recuperación integral antes del piloto.
 4. **Northflank:** el usuario autoriza probar sólo lectura con las credenciales actuales y pospone rotación/revocación hasta antes de stakeholders. Public/TLS ya permite conectar desde Truobox al hostname `primary.nodia-db--8hqb8b7kvmx4.addon.code.run`, puerto externo29102 (5432 interno): DNS35.193.113.78, TCP y TLS1.3 con cadena/SAN validados por OpenSSL en el ensayo inicial sin credenciales. Desde PC de otra IP también responde al SSLRequest. El usuario informa que Security rules/IP policies requiere plan de pago en su cuenta; mantener Free, sin fingir allowlist ni cambiar plan. [Evidencia de transporte](../evidence/production-postgres-20261110-r01.json). [Prueba psql](../../ops/production/README.md#conexión-postgresql-de-sólo-lectura): cliente18.6 instalado; primer intento detenido por fallo DNS antes de autenticar/consultar SQL. DNS/TLS se recuperaron después (causa sin confirmar). Helper corregido con DNS/TLS antes de credenciales y PGHOSTADDR sólo por ejecución (hostname verificado, sin IP fija) reejecutado satisfactoriamente. psql confirma PostgreSQL16.14, wal_level replica, in_recovery=false, READ ONLY=on y backend TLS1.3; cero tablas de usuario según catálogos, sin acreditar baseline ni permiso automático para migrar. Password privada por TTY, verify-full/CA del sistema y consultas de metadatos en READ ONLY/ROLLBACK. No usar admin ni tratar cero tablas como baseline. Acreditar después runtime Node/Worker/CLI/journal, sin desactivar TLS. El contrato TLS explícito del runner de dumps y la conciliación ya fue implementado/probado localmente; aún falta provisionarlo y aceptar recuperación real en este destino.
 5. **Release e instalación:** PR1 integrada en master f01b493336883403a84b1c80759ce4fc43cbd370; paquete backend-f01b49333688-ff33b6fdbbbc de fuente Git sin overlays construido, verificado y ensayado localmente (45 migraciones/68 tablas, bootstrap e idempotencia), extraído en candidates del VPS y dependencies_verified a 2026-11-11T23:29:20.969202+00:00; pendiente inventario real de instalación ([evidencia](../evidence/production-first-install-20261111-r01.json)). Como antecedente, candidato Linux preparado/verificado, copiado y extraído en /opt/nodia/candidates, sin activarlo: [evidencia](../evidence/production-backend-preparation-20261111-r01.json). Fuente base master ba8ebfa00b55f103465d0ab533a802152944d224 con tres overlays draft de documentación que corrigen seis rutas ignoradas; deployment_eligible=false en ese candidato histórico; la restricción de overlays quedó resuelta en el release Git nuevo tras versionar/promover esos cambios. Build/lint/contratos/conocimiento/unidades offline/nativos e inventario/hash/modos del tar comprobados; no equivale a primera instalación o aplicación operativa. Configuración privada guardada por el operador (bucket de archivos nodia-production y correo de bootstrap definido, sin publicar valores personales/secretos). Preparar artefacto completo identificado por SHA/digest, con dependencias Linux, `dist`, assets/políticas/conocimiento y scripts de operación. El build depende de entradas en la raíz/docs del monorepo. Probar instalación vacía con migraciones vigentes y bootstrap en PostgreSQL desechable antes de aplicar al destino; configurar el correo real del primer superadministrador. Usar primera instalación de P05, no reinstalar ni borrar una DB para solucionar un fallo. No importar datos/perfiles IA del laboratorio por defecto.
-6. **Procesos y recuperación:** usuario nodia UID/GID900, nologin/contraseña bloqueada, sólo grupo nodia, directorios con permisos verificados y unidades instaladas disabled/inactive; [evidencia](../evidence/production-backend-host-20261110-r01.json). Runtime.env/recovery.json guardados privadamente y comprobados por el validador Node; PostgreSQL READ ONLY con verify-full/TLS1.3, Redis AUTH/PING y R2 HEAD superados como nodia. Reejecución final dependencies_verified, sin units temporales ni current; el falso fallo previo de limpieza quedó corregido y cubierto por 12 pruebas. Journal, permisos de escritura R2/restore y release desplegable aún pendientes; no se inicia la app por crear units. API mediante `node dist/main.js` y Worker mediante `node dist/nodia-ai-worker.js`, en servicios systemd `nodia-api`/`nodia-ai-worker` con mismo paquete/cwd y entorno productivo. El Worker es un proceso continuo sin listener HTTP; su parada debe permitir el drenaje vigente. Impedir acceso externo directo a 3000; el código actual no fija host loopback. Adaptadores internos privados según ADR008. Configurar journal/backup y ensayar restore aislado antes de abrir stakeholders; un PID activo o GET raíz no demuestra readiness DB/Redis.
+6. **Procesos y recuperación:** usuario nodia UID/GID900, nologin/contraseña bloqueada, sólo grupo nodia, directorios con permisos verificados y unidades instaladas disabled/inactive; [verificación consolidada](../../ops/production/README.md#baseline-de-identidad-y-unidades--2026-11-10). Runtime.env/recovery.json guardados privadamente y comprobados por el validador Node; PostgreSQL READ ONLY con verify-full/TLS1.3, Redis AUTH/PING y R2 HEAD superados como nodia. Reejecución final dependencies_verified, sin units temporales ni current; el falso fallo previo de limpieza quedó corregido y cubierto por 12 pruebas. Journal, permisos de escritura R2/restore y release desplegable aún pendientes; no se inicia la app por crear units. API mediante `node dist/main.js` y Worker mediante `node dist/nodia-ai-worker.js`, en servicios systemd `nodia-api`/`nodia-ai-worker` con mismo paquete/cwd y entorno productivo. El Worker es un proceso continuo sin listener HTTP; su parada debe permitir el drenaje vigente. Impedir acceso externo directo a 3000; el código actual no fija host loopback. Adaptadores internos privados según ADR008. Configurar journal/backup y ensayar restore aislado antes de abrir stakeholders; un PID activo o GET raíz no demuestra readiness DB/Redis.
 7. **HTTPS y Client:** definir DNS del API, emitir/verificar certificado y preparar Nginx con rutas `/api/v1`, SSE, límites y `TRUST_PROXY` acordes a la cadena real. Configurar orígenes HTTPS exactos, OAuth y cookies según dominios reales. Actualizar `VITE_API_URL` con la URL completa del API y recompilar/publicar Client; no incluir credenciales de DB en variables Vite. Verificar login y acceso de ambos stakeholders, además de reinicio y fallos de dependencias.
 8. **Automatización:** materializar ramas/checks/artefactos y Actions por dependencias según P02/P03/P06, ensayar una entrega controlada y sólo entonces activar CD. Mantener deshabilitado auto-deploy nativo de Pages. El primer despliegue y los siguientes comparten el mismo formato de paquete y manifiesto; no crear un camino manual sin versionado que luego Actions no pueda reproducir.
 
@@ -860,3 +860,62 @@ La nueva ejecución se consulta en Checks del PR. Se mantiene TypeScript una vez
 por build, sin introducir typecheck adicional ni desplegar a producción desde
 esta PR. El siguiente gate es verificar las lanes reales y corregir fallos
 observados antes de considerar listo el merge a development.
+
+## 17. Login de Codex y Antigravity: infraestructura preparada — 2026-11-12
+
+**Estado vigente:** infraestructura instalada y activa; API/worker reiniciados
+con el mismo f01, keyring persistente/handshake nativo/HTTP comprobados. Codex y Antigravity conectan correctamente según pruebas humanas del usuario. Registro estricto de drop-ins y updater compatible
+instalados sin otro reinicio ni despliegue. [Recibo vivo](../evidence/production-ai-login-live-20261112-r01.json).
+Las notas iniciales siguientes conservan el contexto de preparación.
+
+Rama `codex/enable-ai-provider-login` desde origin/development9495751a, en un
+worktree independiente. Los contratos de login ya existen; no se promueve el
+backend de development ni se habilita un proveedor/modelo por un flag.
+
+Inspección inicial SSH de sólo lectura: API/worker activos en f01, sin drop-ins; Codex
+no está habilitado por el bootstrap vigente, el binario nativo sí forma parte
+del paquete; D-Bus instalado, gnome-keyring ausente y sin sudo administrativo
+vigente. No se leyeron secretos ni se usaron credenciales de proveedores.
+
+[Operador versionado](../../ops/production/ai-runtime/README.md): preparación
+sin activar, D-Bus/Secret Service privado persistente, contenedor Antigravity
+sólo loopback con token propio y volúmenes privados. La activación obtiene el
+lock de CD, exige quiescencia SQL READ ONLY, valida infraestructura y coordina
+el reinicio de API/worker sin cambiar current. Cada generación Docker debe
+recibir y verificar su contención cgroup; no se monta Docker/cgroup global en
+el adaptador. Wants/After conserva disponibilidad del resto de la aplicación
+ante caída de un runtime IA.
+
+Validación local: imagen fijada construida,660 pruebas Python Linux sin red ni
+cuentas; keyring probado con systemd PID1 real/LoadCredential y secreto propio
+persistente entre reinicios;14 regresiones del operador. Revisión corrigió
+la carrera entre docker start y attachment, el campo has_active_session y la
+serialización con CD. Paquete R02 de15 archivos transferido con hashes iguales,
+manifiesto c6c3950e096174bad7bd5c700dc5690ce88bde762caa92c49a7c3ab440104032.
+
+**Cierre operativo:** el operador autenticó sudo y se completó preparación,
+12 controles de kernel y dos recorridos durables sintéticos sin red/cuentas,
+persistencia de keyring, handshake nativo y quiescencia SQL con9 contadores en
+cero. API200/auth401 con TLS externo Schannel y OpenSSL; puertos3000/6379/8000
+no accesibles desde PC. Instancia/release y contratos conservados.
+
+Se corrigieron el primer lock ausente, el modo del directorio público de código
+bajo umask0077 y el gate que exigía sesión remota antes del login. APT suspendido
+fue continuado por PID exacto; no se establece la causa. La reserva fallida no se
+borró: continuación explícita sólo con consumidores intactos y nueva revisión
+READ ONLY. Los originales/hashes están archivados en ops/maintenance.
+
+El updater ahora acepta únicamente los dos drop-ins revisados en ambas unidades,
+con registro root0600, rutas/inventario/bytes/SHA exactos y estabilidad entre
+observaciones. Backups/timers no ganan esa excepción. Pasaron10 regresiones
+nuevas,10 existentes de host,7 de política y20 comprobaciones systemd reales;
+la instalación viva conserva los demás campos de settings, hashes base y proxy.
+
+**Pendiente:** inferencias por selección/
+modalidad de plan91, renovación/revocación prolongada y recuperación cifrada de
+keyring/perfiles. Los backups DB/config anteriores no acreditan esa cobertura.
+No se inició login desde el operador, copió sesión del PC, ejecutó inferencia o
+migró datos. Ficha candidata sin aprobación, registro o publicación.
+
+[recibo operativo final](../evidence/production-ai-login-live-20261112-r01.json)
+y [ficha candidata](../nodia-ai/knowledge/general-settings/features/ai-login-host-setup.md).

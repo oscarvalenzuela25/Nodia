@@ -101,12 +101,12 @@ export const updateAiProvider = async (
   return data;
 };
 
-export const getAiProvidersHealth = async (): Promise<AiProvidersHealthResponse> => {
+export const getAiProvidersHealth = async (signal?: AbortSignal): Promise<AiProvidersHealthResponse> => {
   const { data } = await mainInstance.get<AiProvidersHealthResponse>(
     getEndpoint("/ai-providers/health"),
     // Codex account + quota checks may take 30 s; Gemini status has a 15 s
     // server deadline. The aggregate runs them concurrently.
-    { timeout: 45000 }
+    { timeout: 45000, signal }
   );
   return { ...data, providers: data.providers.map((p) => p.codexSession === undefined ? p : { ...p, codexSession: codexSessionSchema.parse(p.codexSession) }) };
 };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sessionSummarySchema, sessionsSchema } from "../../../../modules/teacher/infrastructure/schemas";
+import { createSessionSchema, sessionSummarySchema, sessionsSchema } from "../../../../modules/teacher/infrastructure/schemas";
 
 const session = {
   id: "00000000-0000-4000-8000-000000000001",
@@ -22,5 +22,18 @@ describe("Teacher session job contract", () => {
   it("preserves historical rows without a latest job and rejects an unknown purpose", () => {
     expect(sessionSummarySchema.parse(session).latest_job).toBeUndefined();
     expect(sessionSummarySchema.safeParse({ ...session, latest_job: { job_id: "job", state: "ready", purpose: "unsupported_purpose" } }).success).toBe(false);
+  });
+});
+
+describe("Teacher explanation language tags", () => {
+  const draft = { topic: "DNS", objective: "Understand records", organization: "teacher_suggests", day_count: null };
+  it.each(["es-CL", "xx-Private", "zh-Hant", "en"])("preserves accepted language tag %s", explanation_language => {
+    expect(createSessionSchema.parse({ ...draft, explanation_language }).explanation_language).toBe(explanation_language);
+  });
+  it("trims the tag consistently with Server", () => {
+    expect(createSessionSchema.parse({ ...draft, explanation_language: " es-CL " }).explanation_language).toBe("es-CL");
+  });
+  it.each(["", "e", "Español", "en_US", "es--CL", "123", "en-" + "x".repeat(33)])("rejects malformed language tag %s before submission", explanation_language => {
+    expect(createSessionSchema.safeParse({ ...draft, explanation_language }).success).toBe(false);
   });
 });

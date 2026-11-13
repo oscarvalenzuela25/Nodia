@@ -9,6 +9,12 @@ import { createMemoryRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import i18n from "../../../../translate";
 
+// UI tests provide the current synthetic context explicitly. Actor/query
+// isolation is exercised with the real transport in useVisibleModules tests.
+vi.mock("../../../../services/authorizationService", () => ({
+  useAuthorizationContext: () => ({ data: useGeneralSettingsStore() }),
+}));
+
 describe("Sidenav", () => {
   beforeEach(() => {
     useAuthStore.getState().logout();
@@ -16,6 +22,19 @@ describe("Sidenav", () => {
     act(() => {
       useGeneralSettingsStore.getState().clearContext();
     });
+  });
+
+  it("shows NodiaAI only after the ordinary user's current context assigns its module", async () => {
+    const router = createMemoryRouter([{ path: "*", element: <Sidenav mobileOpen onDrawerToggle={vi.fn()} /> }]);
+    render(<RouterProvider router={router} />);
+    expect(screen.queryByRole("button", { name: "NodiaAI" })).not.toBeInTheDocument();
+    act(() => useGeneralSettingsStore.getState().setContext({ roles: ["admin"], actions: [], modules: [{
+      module_group_key: "tools", translates: [], modules: [{ key: "nodia_ai", link: "/nodia-ai",
+        translates: [{ key: "key", es: "NodiaAI", en: "NodiaAI" }] }],
+    }] }));
+    expect(await screen.findByRole("button", { name: "NodiaAI" })).toBeVisible();
+    act(() => useGeneralSettingsStore.getState().setContext({ roles: ["admin"], actions: [], modules: [] }));
+    expect(screen.queryByRole("button", { name: "NodiaAI" })).not.toBeInTheDocument();
   });
 
   it.each([

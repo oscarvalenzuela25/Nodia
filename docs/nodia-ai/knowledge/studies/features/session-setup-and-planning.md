@@ -4,11 +4,11 @@
   "document_id": "studies.session-setup-and-planning",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 29,
+  "revision": 30,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación."
+    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación. Candidato local2026-11-12: formulario guiado, idioma validado conservando etiqueta histórica y selección IA visible/48px con ayuda; catálogo sin esfuerzos explicado sin inventarlos. Cabecera Codex consulta observación acotada compartida, sin polling. Build/lint,382regresiones/51archivos y QA320/1280 correctos; f01productivo tiene0recibos Agentic y carece de tabla por propósito; sin despliegue/inferencia o publicación del lote."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Nodia Teacher y NodiaAI conforme AGENTS",
@@ -204,10 +204,22 @@
     {
       "path": "docs/mvp/102-nodia-teacher-phased-implementation-and-final-qa.md",
       "kind": "specification"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/SessionForm/SessionFields.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/FieldHelp/FieldHelp.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/infrastructure/schemas.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-11",
+    "checked_on": "2026-11-12",
     "evidence_paths": [
       "docs/evidence/teacher-local-implementation-20261101-r01.json",
       "docs/evidence/teacher-local-activation-20261101-r01.json",
@@ -228,9 +240,10 @@
       "docs/evidence/teacher-upgrade-local-20261111-r01.json",
       "docs/evidence/teacher-upgrade-local-20261111-r02.json",
       "docs/evidence/teacher-upgrade-acceptance-20261111-r02.md",
-      "docs/evidence/teacher-upgrade-development-vm-20261111-r01.json"
+      "docs/evidence/teacher-upgrade-development-vm-20261111-r01.json",
+      "docs/mvp/96-nodia-teacher-implementation-plan.md"
     ],
-    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente."
+    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente. Corte2026-11-12: inspección de contratos y código local; build/lint Client,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado en recibo propio: f01/45migraciones,0recibos Agentic y tabla por propósito ausente, sin trasladar la aceptación anterior."
   },
   "approval": null
 }
@@ -475,3 +488,22 @@ Comprobación de esa evaluación visual: ClientR22 activo,0→8px medidos entre 
 La solicitud posterior cambia el espacio vigente entre mensajes de8px a16px mediante theme.spacing(2) en el mismo selector local. La evaluación y medición de8px anterior conserva su corte R22 histórico. Sigue siendo exclusivamente visual: no afecta conceptos, operaciones o interpretación del contexto, y no modifica borradores, persistencia, consulta, autorización o proveedor. [96§37](../../../../mvp/96-nodia-teacher-implementation-plan.md#37-separación-de-mensajes-ampliada-a16px--2026-11-05) y [evidencia de16px](../../../../evidence/teacher-message-gap16-20261105-r01.json) separan adopción y geometría; sin nuevas herramientas, aprobación o publicación.
 
 Verificación de la preferencia posterior: ClientR23 activo;8→16px entre filas/burbujas en1088×892 y320×892, sin overflow móvil, borrador o contador alterados.17regresiones existentes y tipos/lint/build correctos. Sin nuevas inferencias o publicación.
+
+## Alta guiada y selección IA visible — candidato local, 2026-11-12
+
+El formulario incorpora introducción, cuadrícula responsive y ayudas ES/EN por campo mediante botón44px con tooltip descriptivo y foco de teclado. El idioma usa etiquetas válidas para Server: Client recorta y valida2–35 caracteres y `^[a-zA-Z]{2,8}(?:-[a-zA-Z0-9]{1,8})*$`. Presenta12 idiomas; conserva una etiqueta persistida no listada, incluida regional, hasta que la persona elija otra. No promete calidad/capacidad del proveedor ni modifica el idioma de los menús.
+
+En creación, Selección IA se muestra siempre como sección semántica, sin plegado, con ayuda en conexión/modo/modelo/intensidad. Los cuatro selectores tienen48px locales con/sin valor/limpiar; dos columnas desde600px, una debajo. Los controles compartidos fuera de Teacher conservan sus estilos. La marca Teacher evita recorte usando line-height normal.
+
+| Situación | Interpretación y respuesta segura |
+|---|---|
+| «No puedo elegir intensidad» | Distinguir consulta/guardado en vuelo de catálogo sin esfuerzos. Mantener busy/fetch disabled; sin opciones, explicar ausencia y no fabricarlas. |
+| «Actualiza los niveles de Codex» | Teacher sólo vuelve a leer catálogo persistido. Un administrador debe sincronizar modelos en Ajustes IA, guardarlos y luego actualizar conexiones en Teacher. No conceder el módulo administrativo por esta solicitud. |
+| «El modelo aparece, pero no puedo generar» | Catálogo/preferencia no acredita elegibilidad. Se verifica la tupla exacta y su época/cualificación; otra variante no transfiere su aprobación técnica. |
+| «Quiero explicaciones en otra lengua» | Elegir etiqueta válida; conservar el valor histórico hasta elección explícita. El locale de la interfaz y la calidad del proveedor son independientes. |
+
+Se conserva la elección de esfuerzos reportados incluso si la combinación anterior es inelegible cuando no hay peticiones en vuelo. Guardar/enviar siguen dependiendo de ready y respuesta para conexión/modo/modelo/esfuerzo exactos, con CAS/recibo existentes; sin defaults nuevos ni cambio de presupuestos. Actualizar conexiones no sincroniza modelos, autentica, infiere o escribe configuración automáticamente.
+
+La cabecera incorpora observación acotada compartida de cuenta Codex para complementar el snapshot de salud, aislada por instancia predeterminada activa y sesión actual. Desconocido/error/ausencia no son disponibilidad; denegación explícita de uso/sesión se conserva. No añade polling, login o inferencia.
+
+Evaluación de impacto: ayudas, presentación y explicación del estado sobre operaciones existentes, sin nuevas herramientas o permisos. Implementación local comprobada: build/lint,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado: f01/45migraciones,0recibos Agentic y tabla por propósito ausente; [96§42](../../../../mvp/96-nodia-teacher-implementation-plan.md#42-alta-guiada-selección-visible-y-estado-agentic--candidato-local-2026-11-12), [contrato97](../../../../mvp/97-nodia-teacher-technical-contracts.md#alta-teacher-y-selección-explícita--contrato-client-candidato-2026-11-12) y [verificación consolidada](../../../../mvp/96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13). Revisión30 draft/partial/unregistered/approval:null; no despliegue, inferencia real o aceptación productiva por este lote. Las fuentes aprobadas y gates anteriores siguen intactos.

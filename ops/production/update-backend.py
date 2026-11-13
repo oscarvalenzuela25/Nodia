@@ -36,6 +36,30 @@ BACKUPS = ('nodia-ai-backup.service', 'nodia-ai-backup-rotate.service', 'nodia-a
 SAFE_ENV = {'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
 RELEASE = re.compile(r'backend-[a-f0-9]{12}-[a-f0-9]{12}')
 HEX = re.compile(r'[a-f0-9]{64}')
+SYSTEMD_UNITS = Path('/etc/systemd/system')
+AI_CONSUMERS = Path('/etc/nodia/ai-runtime/consumers.json')
+# Explicitly reviewed runtime-only extensions. This is not a generic permission
+# for root-owned drop-ins: ExecStart/User/environment and all unknown bytes reject.
+AI_RUNTIME_TEMPLATES = {
+    '70-codex-runtime.conf': (
+        b'[Unit]\nWants=nodia-codex-keyring.service\nAfter=nodia-codex-keyring.service\n\n'
+        b'[Service]\nEnvironment=NODIA_CODEX_ENABLED=true\n'
+        b'Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/nodia-codex/bus\n'
+        b'Environment=XDG_RUNTIME_DIR=/run/nodia-codex\n'),
+    '71-gemini-runtime.conf': (
+        b'[Unit]\nWants=nodia-gemini.service\nAfter=nodia-gemini.service\n'),
+}
+AI_RUNTIME_HASHES = {name: hashlib.sha256(value).hexdigest()
+                     for name, value in AI_RUNTIME_TEMPLATES.items()}
+
+
+def ai_runtime_registry(value):
+    """Only the exact two reviewed extensions for both application consumers."""
+    expected = {'schema_version': 1, 'purpose': 'nodia_ai_runtime_consumers',
+                'units': {name: AI_RUNTIME_HASHES for name in SERVICES}}
+    if type(value) is not dict or type(value.get('schema_version')) is not int or value != expected:
+        raise ValueError('ai_runtime_registry_invalid')
+    return value
 
 
 def unique_json(raw):
@@ -98,6 +122,9 @@ class Host:
         self.p, self.stage, self.settings = policy, stage, settings
         self.attempt = None
         self.request = self.candidate = self.current = None
+        self.runtime_registry_seen = False
+        self.runtime_registry_snapshot = None
+        self.service_unit_snapshots = {}
 
     def must(self, condition, code): self.p.require(condition, code)
 
@@ -118,6 +145,49 @@ class Host:
         values = self.command(['/usr/bin/systemctl', 'show', unit, '--no-pager',
             '--property=ActiveState,SubState,Result,MainPID,ExecMainCode,ExecMainStatus,ControlGroup,InvocationID,UnitFileState,DropInPaths'])
         return dict(line.split('=', 1) for line in values.splitlines() if '=' in line)
+
+    def service_overrides(self, unit, state):
+        # Backups/timers never inherit this allowance. Their reviewed unit hashes
+        # and empty DropInPaths continue to be checked by the existing preflight.
+        if unit not in SERVICES:
+            self.must(state.get('DropInPaths') == '', 'installed_service_changed_or_overridden')
+            return
+        base = SYSTEMD_UNITS / unit
+        protected(base, mode=0o644)
+        digest = sha_file(base)
+        reviewed = self.settings.get('service_hashes', {}).get(unit)
+        self.must(reviewed is None or reviewed == digest, 'installed_service_changed_or_overridden')
+        previous = self.service_unit_snapshots.setdefault(unit, digest)
+        self.must(previous == digest, 'installed_service_changed_during_update')
+        registry = None
+        if AI_CONSUMERS.exists() or AI_CONSUMERS.is_symlink():
+            for parent in reversed(AI_CONSUMERS.parents):
+                protected(parent, directory=True)
+            info = protected(AI_CONSUMERS, mode=0o600)
+            self.must(0 < info.st_size <= 16384, 'ai_runtime_registry_size_invalid')
+            raw = AI_CONSUMERS.read_bytes()
+            ai_runtime_registry(unique_json(raw))
+            registry = hashlib.sha256(raw).hexdigest()
+        if not self.runtime_registry_seen:
+            self.runtime_registry_snapshot = registry
+            self.runtime_registry_seen = True
+        self.must(registry == self.runtime_registry_snapshot, 'ai_runtime_registry_changed_during_update')
+        parent = SYSTEMD_UNITS / (unit + '.d')
+        expected = AI_RUNTIME_HASHES if registry is not None else {}
+        paths = [parent / name for name in expected]
+        self.must(state.get('DropInPaths') == ' '.join(str(path) for path in paths),
+                  'installed_service_changed_or_overridden')
+        if parent.exists() or parent.is_symlink():
+            protected(SYSTEMD_UNITS, directory=True)
+            protected(parent, directory=True)
+            self.must({path.name for path in parent.iterdir()} == set(expected),
+                      'ai_runtime_dropin_inventory_changed')
+        else:
+            self.must(not expected, 'ai_runtime_dropin_missing')
+        for path in paths:
+            info = protected(path, mode=0o644)
+            self.must(info.st_size == len(AI_RUNTIME_TEMPLATES[path.name])
+                      and sha_file(path) == expected[path.name], 'ai_runtime_dropin_changed')
 
     def begin(self, request, state):
         protected(STATE, directory=True)
@@ -280,7 +350,8 @@ class Host:
             state = self.show(unit)
             self.must(state.get('ActiveState') == 'active' and state.get('SubState') == 'running' and
                       state.get('Result') == 'success' and state.get('MainPID', '').isdigit() and
-                      int(state['MainPID']) > 1 and state.get('DropInPaths') == '', 'writers_not_running_or_overridden')
+                      int(state['MainPID']) > 1, 'writers_not_running_or_overridden')
+            self.service_overrides(unit, state)
             process = Path('/proc') / state['MainPID']
             self.must(process.stat().st_uid == uid and (process / 'cwd').resolve(strict=True) == release,
                       'writer_identity_or_release_mismatch')
@@ -315,7 +386,8 @@ class Host:
         for name, digest in self.settings['service_hashes'].items():
             unit = Path('/etc/systemd/system') / name
             protected(unit, mode=0o644)
-            self.must(sha_file(unit) == digest and self.show(name).get('DropInPaths') == '', 'installed_service_changed_or_overridden')
+            self.must(sha_file(unit) == digest, 'installed_service_changed_or_overridden')
+            self.service_overrides(name, self.show(name))
         site = Path('/etc/nginx/sites-available/nodia-api.conf')
         protected(site, mode=0o644)
         enabled = Path('/etc/nginx/sites-enabled/nodia-api.conf')

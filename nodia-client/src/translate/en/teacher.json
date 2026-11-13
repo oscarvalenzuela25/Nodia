@@ -60,7 +60,7 @@
   "selection_qualified": "Selection qualified for Teacher.",
   "selection_unqualified": "This selection is not yet available for Teacher.",
   "reasons": {
-    "adapter_unqualified": "The adapter needs a current verification for this selection.",
+    "adapter_unqualified": "Teacher generation needs a current validation for this connection, model and effort. Being signed in does not replace that check.",
     "provider_unavailable": "The provider is unavailable.",
     "no_model": "Configure a model first.",
     "configuration_changed": "The configuration changed; check it again.",
@@ -489,5 +489,42 @@
     },
     "block_history_unavailable": "This material did not include its saved block responses. Their history is unknown in this view."
   },
-  "source_page_without_text": "Some pages have no extractable text. No OCR was performed."
+  "source_page_without_text": "Some pages have no extractable text. No OCR was performed.",
+  "form_heading": "Define your study plan",
+  "form_intro": "Start with the topic and your goal. Optional fields help tailor the proposal; use the help icons for examples.",
+  "field_help_label": "Help: {{field}}",
+  "stored_language": "{{language}} (preserved value)",
+  "languages": {
+    "es": "Spanish",
+    "en": "English",
+    "pt": "Portuguese",
+    "fr": "French",
+    "de": "German",
+    "it": "Italian",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "zh": "Chinese",
+    "ar": "Arabic",
+    "ru": "Russian",
+    "hi": "Hindi"
+  },
+  "form_help": {
+    "topic": "Name the main subject without describing the whole course. Example: networking and DNS. Maximum 240 characters.",
+    "objective": "Describe something specific you want to be able to do. Example: diagnose why a domain does not resolve and check its DNS records. Maximum 2000 characters.",
+    "title": "Optional: a short name to recognize your plan. Example: DNS for my job. Maximum 120 characters.",
+    "declared_base": "Share what you already know and what feels difficult; no proof is needed here. Example: I understand IP addresses but confuse A and CNAME records. Optional, maximum 4000 characters.",
+    "context": "Explain how you will use what you learn. Example: maintain an API on Ubuntu and configure its domain. Avoid passwords or private data. Optional, maximum 4000 characters.",
+    "explanation_language": "Choose the language for the plan explanations. Example: English to practice technical vocabulary. This preference does not change menu language or guarantee provider quality.",
+    "organization": "Let Teacher suggest a structure, or choose days or topics. Example: days to spread out study, or topics to progress through concepts.",
+    "day_count": "When organizing by days, choose between 1 and 365. Example: 10 study days to spread out learning. These are not calendar dates or a guaranteed duration; review the proposal before accepting it."
+  },
+  "selection_description": "Choose the connection, mode, model and reasoning level. Teacher will check this combination before generating.",
+  "selection_help": {
+    "connection": "Select the AI connection to use. Its credentials and session belong to that connection; Teacher will not switch to another automatically.",
+    "mode": "Agentic uses the adapter session; API key uses configured keys. Choose the mode explicitly: saved credentials do not prove generation works.",
+    "model": "Choose a model from this connection and mode catalog. Teacher checks the exact combination; seeing a model here does not guarantee it can generate.",
+    "effort": "Choose a level reported by the catalog for this model. A preference does not prove availability; Teacher checks the selection before generating."
+  },
+  "effort_unreported": "The catalog does not report reasoning levels for this model. Sync and save its models in Provider settings (or ask an administrator), then refresh connections.",
+  "refresh_connections": "Refresh connections"
 }

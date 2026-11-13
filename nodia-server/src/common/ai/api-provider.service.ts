@@ -6,14 +6,14 @@ import {
 } from '@nestjs/common';
 import { observedModels } from '../../ai-provider/helpers/model-observation.helper.js';
 import type { AnalysisProgress } from './analysis-progress.js';
+import { isApiThinkingLevel, type ApiThinkingLevel } from './api-reasoning.js';
+export type { ApiThinkingLevel } from './api-reasoning.js';
 import {
   API_INVOICE_SCHEMA,
   GEMINI_API_INVOICE_SCHEMA,
   invoicePrompt,
   parseApiInvoice,
 } from './api-invoice-contract.js';
-
-export type ApiThinkingLevel = 'low' | 'medium' | 'high';
 
 function object(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value))
@@ -181,6 +181,8 @@ export class ApiProviderService {
   ) {
     if (!model.trim())
       throw new BadRequestException('Sin modelo asignado para API.');
+    if (thinkingLevel !== undefined && !isApiThinkingLevel(key, thinkingLevel))
+      throw new BadRequestException('El nivel de razonamiento API no está implementado para este proveedor.');
     const data = buffer.toString('base64');
     const prompt = invoicePrompt(fields, tax);
     if (key === 'openai') {

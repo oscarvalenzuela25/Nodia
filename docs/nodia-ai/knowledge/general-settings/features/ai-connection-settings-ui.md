@@ -33,7 +33,7 @@
   "verification": {
     "checked_on": "2026-11-12",
     "evidence_paths": [
-      "docs/evidence/ai-provider-ui-state-20261112-r01.json"
+      "docs/mvp/ai-provider-feature-contract.md"
     ],
     "notes": "Synthetic HTTP/component tests and browser fixture; production OAuth, backend configuration and real provider availability not established."
   },
@@ -67,4 +67,4 @@ No añade herramientas o autoridad NodiaAI. Las capacidades existentes conservan
 su catálogo y confirmación; esta ficha es candidata draft/unregistered, sin
 publicación ni aprobación nueva. Las fichas publicadas de conexiones/salud se
 conservan byte a byte. Ver [contrato vigente](../../../../mvp/ai-provider-feature-contract.md)
-y [evidencia local](../../../../evidence/ai-provider-ui-state-20261112-r01.json).
+y [verificación consolidada del alcance PR4](../../../../mvp/ai-provider-feature-contract.md#verificación-consolidada-del-arreglo-ui-incorporado-desde-pr4).

@@ -1,12 +1,10 @@
-import { useRef } from "react";
 import { IconButton, Tooltip } from "@mui/material";
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
 import VpnKeyOutlinedIcon from "@mui/icons-material/VpnKeyOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { sileo } from "sileo";
-import { useAiProvidersHealth } from "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/useServices";
+import { useIndicatorHealth } from "./hooks/useIndicatorHealth";
 import { enabledModes, modeHealth } from "./modeHealth";
 import { Indicators, ModeButton, StatusBadge } from "./styles";
 
@@ -18,22 +16,9 @@ const modeIcons = {
 export default function AiProviderIndicators() {
   const { t } = useTranslation("layout");
   const navigate = useNavigate();
-  const { data, isFetching, isError, refetch } = useAiProvidersHealth();
-  const manualRefreshPending = useRef(false);
-  const refreshHealth = async () => {
-    if (isFetching || manualRefreshPending.current) return;
-    manualRefreshPending.current = true;
-    try {
-      const result = await refetch({ cancelRefetch: false });
-      if (result.isSuccess) sileo.success({ title: t("ai_indicators.refreshed") });
-      // Failed reads use the shared QueryCache error notification.
-    } finally {
-      manualRefreshPending.current = false;
-    }
-  };
-  const provider = data?.providers?.find((item) => item.is_default === true);
+  const { data, provider, isFetching, isError, refreshHealth, isSessionValid } = useIndicatorHealth();
   // This optional group has no empty state when no default is configured.
-  if (!provider || !data) return null;
+  if (!isSessionValid || !provider || !data) return null;
   const modes = enabledModes(provider);
   if (modes.length === 0) return null;
 

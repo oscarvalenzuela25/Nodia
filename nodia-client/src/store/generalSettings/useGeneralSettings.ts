@@ -1,7 +1,9 @@
 import { useCallback, useMemo } from "react";
 import useAuth from "../../hooks/useAuth";
 import useGeneralSettingsStore from "./generalSettingsStore";
-import { canAccessModule } from "./helpers";
+import { canAccessModule, getModulePath, normalizeModulePath } from "./helpers";
+import { useAuthorizationContext } from "../../services/authorizationService";
+import { NODIA_AI_ROUTE } from "../../modules/nodiaAi/constants/routes";
 import type {
   ActionContext,
   AuthorizationContextResponse,
@@ -38,15 +40,17 @@ export const useUserModules = (): ModuleGroupContext[] => {
 
 /** Navigation only exposes assignments belonging to a validated session. */
 export const useVisibleModules = (): ModuleGroupContext[] => {
-  const { isSessionValid } = useAuth();
-  const modules = useUserModules();
-  const isLoaded = useGeneralSettingsStore((state) => state.isLoaded);
+  const { isSessionValid, user } = useAuth();
+  const { data: context } = useAuthorizationContext({ enabled: isSessionValid && Boolean(user?.id) });
   return useMemo(
-    () =>
-      isSessionValid && isLoaded
-        ? modules.filter((group) => group.modules.length > 0)
-        : [],
-    [isSessionValid, isLoaded, modules],
+    () => {
+      if (!isSessionValid || !user?.id || !context) return [];
+      const canOpenNodiaAi = canAccessModule(context, NODIA_AI_ROUTE);
+      return context.modules.map(group => ({ ...group,
+        modules: group.modules.filter(module => normalizeModulePath(getModulePath(module)) !== NODIA_AI_ROUTE || canOpenNodiaAi),
+      })).filter(group => group.modules.length > 0);
+    },
+    [isSessionValid, user?.id, context],
   );
 };
 

@@ -23,6 +23,7 @@ import type {
   AiApiKeyEntity,
 } from "../../../modules/generalSettings/pages/AiProviders/infrastructure/types";
 const params = new URLSearchParams(location.search);
+const codexDefault = params.get("defaultCodex") === "1";
 await i18n.changeLanguage(params.get("lang") === "en" ? "en" : "es");
 document.documentElement.lang = i18n.language;
 config.setState({
@@ -66,7 +67,7 @@ const catalog = [
     key: "openai",
     name: "OpenAI",
     can_use_api_key: true,
-    can_use_agentic: params.get("codexUnavailable") === "1",
+    can_use_agentic: params.get("codex") === "1" || codexDefault || params.get("codexUnavailable") === "1",
     is_active: true,
     created_at: "",
     updated_at: "",
@@ -99,21 +100,33 @@ const modeFields = {
     },
   ],
 };
+const groupedFields = {
+  selected_model: "synthetic-family-high",
+  ocr_model: "synthetic-family-high",
+  thinking_level: "high",
+  available_models: ["high", "medium", "low"].map((effort) => ({
+    id: `synthetic-family-${effort}`,
+    name: `Synthetic Gemini family (${effort[0].toUpperCase()}${effort.slice(1)})`,
+    description: "Synthetic catalog variant; no inference verified.",
+    capabilities: [],
+  })),
+};
 let providers: AiProviderEntity[] = catalog.map((item, i) => ({
   id: String(901 + i),
   catalog_id: item.id,
   catalog: item,
   key: item.key,
   name: i === 0 ? "Gemini · conexión de prueba" : "OpenAI · prueba",
-  is_default: i === 0,
+  is_default: codexDefault ? i === 1 : i === 0,
   is_active: true,
   mode: "api_key",
   default_mode: "api_key",
   use_api_key: true,
-  use_agentic: i === 0 || params.get("codexUnavailable") === "1",
+  use_agentic: i === 0 || params.get("codex") === "1" || codexDefault || params.get("codexUnavailable") === "1",
   fields: {
     api_key: modeFields,
-    agentic: { ...modeFields, thinking_level: undefined },
+    agentic: i === 0 && params.get("grouped") === "1"
+      ? groupedFields : { ...modeFields, thinking_level: undefined },
   },
   auto_rotate_api_keys: false,
   api_keys: keys,
@@ -168,7 +181,10 @@ const health = (): AiProvidersHealthResponse => ({
   },
 });
 let rejected = false;
+const calls: { method: string | undefined; url: string | undefined }[] = [];
+Object.assign(window, { aiProviderQA: { calls } });
 mainInstance.defaults.adapter = async (request) => {
+  calls.push({ method: request.method, url: request.url });
   await new Promise<void>((resolve) => setTimeout(resolve, 250));
   const response = (data: unknown, status = 200) => ({
     config: request,
@@ -188,6 +204,16 @@ mainInstance.defaults.adapter = async (request) => {
   };
   if (request.url?.endsWith("/authorization/context")) return response(context);
   if (params.get("error") === "1") fail();
+  if (request.url?.includes("/session?mode=agentic")) return response({
+    available: params.get("codexUnavailable") !== "1",
+    authenticated: params.get("codexUnavailable") === "1" ? null : true,
+    planType: null, checkedAt: null,
+    reason: params.get("codexUnavailable") === "1" ? "codex_runtime_unavailable" : null,
+    lastInferenceAt: null, usageAllowed: null, quotas: null,
+  });
+  if (request.url?.endsWith("/session/login/current") || request.url?.endsWith("/gemini-agentic-login/current"))
+    return response({ job: null });
+  if (request.url?.endsWith("/gemini-engines")) return response(health().engines);
   if (request.method === "delete" && /ai-api-key/.test(request.url ?? "")) {
     if (params.get("failDelete") === "1" && !rejected) {
       rejected = true;
@@ -226,11 +252,6 @@ mainInstance.defaults.adapter = async (request) => {
   if (request.method !== "get")
     throw new Error("Unexpected synthetic mutation: " + request.url);
   if (request.url?.endsWith("/ai-providers/health")) return response(health());
-  if (request.url?.endsWith("/session?mode=agentic")) return response({
-    available: false, authenticated: null, planType: null, checkedAt: null,
-    reason: "codex_runtime_unavailable", lastInferenceAt: null, quotas: null, usageAllowed: null,
-  });
-  if (request.url?.endsWith("/session/login/current")) return response({ job: null });
   if (request.url?.endsWith("/ai-providers/catalog")) return response(catalog);
   if (request.url?.endsWith("/ai-providers/models")) return response([]);
   if (request.url?.endsWith("/ai-providers"))

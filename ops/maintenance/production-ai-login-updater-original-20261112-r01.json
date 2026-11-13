@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "archive": "ops/maintenance/production-ai-login-updater-original-20261112-r01.zip",
+  "archive_sha256": "74315ad7e5f772ea768d7df1337ec6e8c857155f4ee58114b2215f51568e3a23",
+  "old_updater_sha256": "5efa496f776f1c9e5a71deecf7c8dfdc6522dbafec49b859d0cd47cf7215a726",
+  "new_updater_sha256": "266d409cfcea4ea05b5704042ef1305afff439a244c0340d2f8f6ff577003b56",
+  "purpose": "Strict reviewed AI runtime drop-in allowance; no generic override, base-unit hash, proxy, SSH, request or deployment policy changes."
+}

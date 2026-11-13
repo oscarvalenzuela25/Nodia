@@ -2,6 +2,7 @@ import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { AiProviderService } from '../ai-provider.service.js';
 import { ApiProviderService } from '../../common/ai/api-provider.service.js';
 import type { ApiThinkingLevel } from '../../common/ai/api-provider.service.js';
+import { isApiThinkingLevel } from '../../common/ai/api-reasoning.js';
 import { validateInvoiceFile } from '../../invoice/invoice-file-validation.js';
 import type { AnalysisProgress } from '../../common/ai/analysis-progress.js';
 @Injectable()
@@ -61,12 +62,10 @@ export class ExecuteApiInvoiceUseCase {
           undefined);
     if (
       level !== undefined &&
-      level !== 'low' &&
-      level !== 'medium' &&
-      level !== 'high'
+      !isApiThinkingLevel(key, level)
     ) {
       throw new BadRequestException(
-        'El nivel de razonamiento API debe ser low, medium o high.',
+        'El nivel de razonamiento API no está implementado para este proveedor.',
       );
     }
     const credentials = await this.providers.getEligibleApiKeySecrets(
