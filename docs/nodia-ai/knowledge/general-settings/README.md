@@ -4,7 +4,7 @@
   "document_id": "general-settings",
   "product_id": "general-settings",
   "kind": "product",
-  "revision": 25,
+  "revision": 26,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -13,6 +13,10 @@
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Ajustes Generales y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/mvp/103-pwa-progressive-implementation-plan.md",
+      "kind": "specification"
+    },
     {
       "path": "docs/mvp/90-agentic-api-only-web-retirement.md",
       "kind": "specification"
@@ -280,3 +284,14 @@ es comportamiento local, sin modificar modelos guardados, disponibilidad o
 autoridad. Fichas publicadas conservadas; candidata draft/partial/unregistered,
 approval:null. [Contrato](../../../mvp/ai-provider-feature-contract.md) y
 [verificación consolidada del alcance PR4](../../../mvp/ai-provider-feature-contract.md#verificación-consolidada-del-arreglo-ui-incorporado-desde-pr4).
+
+## Instalación PWA online — planificación, 2026-11-13
+
+[Plan103](../../../mvp/103-pwa-progressive-implementation-plan.md) y
+[ficha candidata](features/pwa-installation.md) separan PWA-001, instalación con
+iconos/ventana propia y funciones online, del backlog de service worker,
+actualizaciones, desconexión, push y datos offline/sincronización. Primera entrega
+prioritaria independiente; no se ha implementado o probado su instalación. La
+ficha es draft/planned/not_applicable para herramientas IA, con approval:null y
+sin publicación. La revisión26 de este índice sólo enlaza la planificación;
+las verificaciones históricas de otras funciones no acreditan disponibilidad PWA.
