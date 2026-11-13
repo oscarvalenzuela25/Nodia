@@ -14,6 +14,8 @@ Parámetros de QA:
 - `defaultCodex=1`: OpenAI sintético predeterminado con Agentic activo. Health no aporta sesión Codex; el topbar debe consultar una vez `902/session?mode=agentic` sin abrir su detalle. El refresh manual añade un GET health y uno de sesión. `window.aiProviderQA.calls` registra sólo método/URL, sin cuerpos ni credenciales.
 - `unknown=1`: sin observación de motores; no inventar disponibilidad/cuotas.
 - `empty=1`: sin conexiones ni claves. `error=1`: GET rechazados.
+- `noModels=1`: Gemini sin modelos; no ofrece controles de potencia ni borra preferencias guardadas.
+- `detail=902&mode=agentic&codexUnavailable=1`: Codex sin runtime, reconsulta compacta con icono/tooltip y Conectar bloqueado.
 - `failSave=1` / `failDelete=1`: primera edición/eliminación rechazada; conservar diálogo/inputs para reintento.
 
 Comprobar320/390/599/600/1280px, temas/idiomas, Agentic y API key, sin controles Web, modelos largos, tarjetas/tabla de claves, página conservada al redimensionar, estado desconocido, confirmación/cancelación/error/reintento y formularios. La sincronización responde con el catálogo sintético; no hay inferencia ni OAuth en este fixture.

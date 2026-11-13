@@ -1,6 +1,6 @@
 import { useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import { getCodexSession } from "./codexSession";
-import useAuthStore from "../../../../../store/authStore";
+import useAuthStore, { hasValidatedSession } from "../../../../../store/authStore";
 
 /** One bounded account read shared by visible session consumers of this instance. */
 export const codexSessionObservationOptions = (providerId: string, sessionVersion: number) => ({
@@ -16,6 +16,7 @@ export const codexSessionObservationOptions = (providerId: string, sessionVersio
 });
 
 export function useCodexSessionObservation(providerId: string, enabled = true) {
+  const authenticated = useAuthStore(hasValidatedSession);
   const sessionVersion = useAuthStore(state => state.sessionVersion);
-  return useQuery({ ...codexSessionObservationOptions(providerId, sessionVersion), enabled });
+  return useQuery({ ...codexSessionObservationOptions(providerId, sessionVersion), enabled: enabled && authenticated });
 }

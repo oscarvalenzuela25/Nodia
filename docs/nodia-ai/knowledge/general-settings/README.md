@@ -4,11 +4,11 @@
   "document_id": "general-settings",
   "product_id": "general-settings",
   "kind": "product",
-  "revision": 24,
+  "revision": 25,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Índice enlaza la ampliación API chat candidata y sus seis revisiones draft; código implementado, ensayos SQL/API/VM pendientes. Sin aprobación o publicación del producto o fichas por actualizar el índice. Cabecera: ClientR32 expone actualización manual de la consulta de salud existente, con17 regresiones y QA autenticada/escritorio/móvil acotada; sin ampliar capacidades o aceptación del resto del producto. ClientR33 retira únicamente el padding inferior del header compartido; evaluación visual sin cambio de conceptos, operaciones o interpretación del contexto. Operación de login: infraestructura activa en VPS; Codex y Antigravity conectados según pruebas humanas; inferencia pendiente, sin publicación. Ajustes locales: acciones contained, contexto del actor e identidad NodiaAI exacta, variantes Gemini con IDs reales/OCR independiente y API OpenAI xhigh/max sin Ultra. Backend verificado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; sin despliegue, inferencia o publicación de este lote."
+    "notes": "Índice enlaza la ampliación API chat candidata y sus seis revisiones draft; código implementado, ensayos SQL/API/VM pendientes. Sin aprobación o publicación del producto o fichas por actualizar el índice. Cabecera: ClientR32 expone actualización manual de la consulta de salud existente, con17 regresiones y QA autenticada/escritorio/móvil acotada; sin ampliar capacidades o aceptación del resto del producto. ClientR33 retira únicamente el padding inferior del header compartido; evaluación visual sin cambio de conceptos, operaciones o interpretación del contexto. Operación de login: infraestructura activa en VPS; Codex y Antigravity conectados según pruebas humanas; inferencia pendiente, sin publicación. Ajustes locales: acciones contained, contexto del actor e identidad NodiaAI exacta, variantes Gemini con IDs reales/OCR independiente y API OpenAI xhigh/max sin Ultra. Backend verificado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; sin despliegue, inferencia o publicación de este lote. UI de conexiones incorporada desde PR4: Gemini sin controles cuando no hay modelos, recarga Codex accesible, lecturas ligadas a sesión y COOP para popups; alcance local previo sin ampliar herramientas o publicación."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Ajustes Generales y NodiaAI conforme AGENTS",
@@ -269,4 +269,14 @@ ClientR33 adoptado con un archivo de estilos,17 regresiones existentes/tipos/lin
 
 ## Interfaz, variantes y acceso — candidato local, 2026-11-12
 
-[Funcionalidad candidata](features/ai-provider-interface-and-module-access.md): acciones contained, variantes Gemini con IDs reales y OCR independiente, API OpenAI xhigh/max (Ultra no admitido), contexto del actor e identidad exacta `nodia_ai`/`/nodia-ai`. Super_admin conserva el bypass; la caché de navegación no concede permisos ni promete revocación visual inmediata. Backend build/autorización60/HTTP74/API249 correctos; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado en [verificación consolidada](../../../mvp/ai-provider-feature-contract.md#verificación-consolidada-de-preferencias-y-acceso--2026-11-12). Producto revisión24 y candidata siguen draft/partial/unregistered/approval:null; fichas aprobadas intactas. Sin despliegue, inferencia o causa productiva del síntoma acreditados.
+[Funcionalidad candidata](features/ai-provider-interface-and-module-access.md): acciones contained, variantes Gemini con IDs reales y OCR independiente, API OpenAI xhigh/max (Ultra no admitido), contexto del actor e identidad exacta `nodia_ai`/`/nodia-ai`. Super_admin conserva el bypass; la caché de navegación no concede permisos ni promete revocación visual inmediata. Backend build/autorización60/HTTP74/API249 correctos; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado en [verificación consolidada](../../../mvp/ai-provider-feature-contract.md#verificación-consolidada-de-preferencias-y-acceso--2026-11-12). Producto revisión25 y candidata siguen draft/partial/unregistered/approval:null; fichas aprobadas intactas. Sin despliegue, inferencia o causa productiva del síntoma acreditados.
+
+## Ajustes de conexiones: ausencia de modelos y reconsulta — 2026-11-12
+
+La [candidata UI](features/ai-connection-settings-ui.md) documenta la nueva
+presentación Gemini y recuperación Codex/autenticación. Evaluación: el icono
+es visual, sin nueva operación; ocultar controles sin modelos y acotar consultas
+es comportamiento local, sin modificar modelos guardados, disponibilidad o
+autoridad. Fichas publicadas conservadas; candidata draft/partial/unregistered,
+approval:null. [Contrato](../../../mvp/ai-provider-feature-contract.md) y
+[verificación consolidada del alcance PR4](../../../mvp/ai-provider-feature-contract.md#verificación-consolidada-del-arreglo-ui-incorporado-desde-pr4).

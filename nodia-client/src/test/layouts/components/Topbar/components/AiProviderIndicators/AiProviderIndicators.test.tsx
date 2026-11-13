@@ -38,11 +38,13 @@ function setup(shared = false, sharedSession = false) {
 const button = (mode: string) => screen.getByRole("button", { name: new RegExp(`${mode}:`) });
 const expectColor = (mode: string, color: string) => expect(button(mode).querySelector(".MuiBadge-badge")).toHaveClass(`MuiBadge-color${color}`);
 beforeEach(async () => {
-  vi.resetAllMocks(); await i18n.changeLanguage("es");
-  useAuthStore.setState({ token: "synthetic-token", expiresAt: Date.now() + 600_000, sessionStatus: "authenticated" });
+  vi.resetAllMocks();
+  useAuthStore.setState({ token: "synthetic-test-token", user: { id: "42", name: "Fixture" },
+    expiresAt: Date.now() + 3_600_000, sessionStatus: "authenticated", isRefreshing: false });
+  await i18n.changeLanguage("es");
   vi.mocked(getAiProvidersHealth).mockResolvedValue(fixture());
 });
-afterEach(() => useAuthStore.setState({ token: null, expiresAt: null, sessionStatus: "anonymous" }));
+afterEach(() => useAuthStore.setState({ token: null, user: null, expiresAt: null, sessionStatus: "anonymous", isRefreshing: false }));
 
 const sessionFixture = (overrides: Partial<CodexSession> = {}): CodexSession => ({
   available: true, authenticated: true, checkedAt: "2026-11-12T12:00:00Z", reason: null,

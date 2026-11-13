@@ -10,6 +10,7 @@ import {
   type CodexSession,
 } from "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/codexSession";
 import i18n from "../../../../../../../translate";
+import useAuthStore from "../../../../../../../store/authStore";
 const mock = vi.hoisted(() => ({
   session: vi.fn(),
   current: vi.fn(),
@@ -81,6 +82,8 @@ const open = async () => {
   );
 };
 beforeEach(() => {
+  useAuthStore.setState({ token: "synthetic-test-token", user: { id: "42", name: "Fixture" },
+    expiresAt: Date.now() + 3_600_000, sessionStatus: "authenticated", isRefreshing: false });
   vi.resetAllMocks();
   mock.session.mockResolvedValue(session);
   mock.current.mockResolvedValue(null);
@@ -103,6 +106,11 @@ describe("Codex session panel", () => {
     await manage();
     const dialog = await screen.findByRole("dialog");
     await waitFor(() => expect(within(dialog).getByRole("button", { name: label("check_status") })).toBeEnabled());
+    const recheck = within(dialog).getByRole("button", { name: label("check_status") });
+    expect(recheck.textContent).toBe("");
+    expect(recheck.querySelector("svg")).not.toBeNull();
+    await userEvent.setup().hover(recheck);
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(label("check_status"));
     expect(within(dialog).getByRole("button", { name: label("connect") })).toBeDisabled();
     expect(mock.start).not.toHaveBeenCalled();
     mock.session.mockResolvedValue(session);

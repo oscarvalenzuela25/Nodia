@@ -1,6 +1,7 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import useAuthStore from "../../../../../store/authStore";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { MemoryRouter } from "react-router";
@@ -226,6 +227,8 @@ describe("AiProviders Page", () => {
     expect(await screen.findByRole("button", { name: /General \(Todos los proveedores\)/ })).toBeInTheDocument();
   });
   beforeEach(() => {
+    useAuthStore.setState({ token: "synthetic-test-token", user: { id: "42", name: "Fixture" },
+      expiresAt: Date.now() + 3_600_000, sessionStatus: "authenticated", isRefreshing: false });
     vi.resetAllMocks();
     vi.mocked(aiServices.getAiProviders).mockResolvedValue({ data: mockProviders, meta: { total_items: 2, total_pages: 1, page: 1, limit: 100 } });
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue(mockHealthData);

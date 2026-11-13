@@ -158,7 +158,7 @@ La síntesis no convierte en pendientes actuales las antiguas instrucciones Web/
 
 ## 9. Lote acotado de evidencia de despliegue e interfaz — 2026-11-13
 
-Solicitud explícita del usuario antes de commit/PR: conservar evidencia útil sin acumular un JSON por verificación. Se consolidan y retiran **cuatro archivos JSON**, uno histórico versionado y tres nuevos sin commit; no se borran código, pruebas, temporales, secretos o backups. No se crea otro JSON/ZIP para conservar las mismas copias.
+Solicitud explícita del usuario antes de commit/PR: conservar evidencia útil sin acumular un JSON por verificación. Se consolidan y retiran **cinco archivos JSON**, dos versionados en sus ramas de origen y tres generados sin llegar a versionarse; no se borran código, pruebas, temporales, secretos o backups. No se crea otro JSON/ZIP para conservar las mismas copias.
 
 | Registro retirado | Destino mantenido y hechos conservados |
 |---|---|
@@ -166,7 +166,10 @@ Solicitud explícita del usuario antes de commit/PR: conservar evidencia útil s
 |Preparación del login IA del2026-11-12|[Recibo operativo final existente](../evidence/production-ai-login-live-20261112-r01.json): ya conserva manifiestos R02/R03, procedencia de instalación, incidencias, límites y pendientes. Se retira el estado intermedio superado, sin modificar sus originales archivados.|
 |Ajustes de proveedores/acceso del2026-11-12|[Contrato y verificación consolidada](ai-provider-feature-contract.md#verificación-consolidada-de-preferencias-y-acceso--2026-11-12): fuentes/pins, pruebas por corte, corrección de fixtures, QA sintética y límites. Las referencias de los7 bindings conservan evidencia sustantiva en ese documento.|
 |Interfaz Teacher/estado Agentic del2026-11-12|[96§42 y diagnóstico del2026-11-13](96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13): pruebas/QA por alcance, f01/45migraciones, TLS READ ONLY, ausencia de recibos/tabla de propósitos, hashes del diagnóstico y continuidad sin inferencia.|
+|Arreglo de estado UI incorporado desde PR4|[Verificación original consolidada en el contrato](ai-provider-feature-contract.md#verificación-consolidada-del-arreglo-ui-incorporado-desde-pr4): alcance de modelos/recarga/consultas/COOP,156 pruebas focales, suite inicial con12 fallos de fixture corregidos sin rerun global, QA sintética y límites. No se presenta ese corte como validación del merge posterior.|
 
 Se migran enlaces de planes/runbooks/índices y evidence_paths de fichas draft hacia archivos reales; en metadata no se usan anchors. El registry técnico migra los7 evidence_paths del lote de proveedores sin cambiar IDs, revisiones, esquemas, módulos o hashes de implementación. No se sustituyen fuentes por stubs ni se simula otra ejecución de pruebas. Se conservan los44 documentos aprobados byte a byte y los cuatro ZIP/manifiestos originales del operador IA; el registro operativo final del login permanece intacto.
+
+El compilador exige que la evidencia de capacidades resida bajo `docs/evidence/` (compiler.mjs, validación capability_evidence_denied). Se conserva allí una única [ficha técnica Markdown compacta](../evidence/ai-provider-settings-and-access-20261112-r01.md), con fuentes/pins, verificaciones y límites reales. Los7 bindings apuntan a ella; el contrato mantiene la explicación funcional. Por tanto se retiran cinco JSON y se añade un comprobante Markdown requerido, sin desactivar la validación ni crear otro reporte JSON/ZIP.
 
 Este lote no completa L01/L03/L05 generales ni cambia runtime, aceptación productiva, aprobación documental o publicación. La comparación de referencias, metadatos/enlaces e integridad de aprobados corresponde al cierre del lote; no requiere repetir TypeScript, inferencias o despliegues.

@@ -295,3 +295,46 @@ Cambio local de acciones contained, identidad ordinaria NodiaAI y preferencias/m
 QA Chromium sintético, a320/1280px: Gemini Agentic y Codex ES/oscuro, OpenAI API EN/claro; documento310/1270px sin overflow. Acciones contained/targets44px comprobados; esfuerzos API envuelven y Ultra permanece deshabilitado. No se usaron cuentas ni inferencias reales y no se aisló una causa productiva del síntoma de acceso.
 
 Los7 bindings técnicos de preparación de proveedores/API keys conservan IDs, revisiones, esquemas de entrada/salida y módulos. El refresco fija `build-nodia-ai-provider-operations.use-case.ts` a `55c264e5d4d97a64b34182cff700493ec220be2bb30c5aef063d00e8f830cb9c` e incorpora `common/ai/api-reasoning.ts` con SHA-256 `eae4856f7a74d37cad55ac72ab03971c5252d5ac75f2406532c622a2931f2b16`. Esta sección conserva la evidencia sustantiva para sus referencias; no es una aprobación documental ni una nueva herramienta. Los44 documentos aprobados siguen intactos; fichas candidatas draft/unregistered/approval:null. Sin despliegue del lote, inferencia real, fallback o nueva publicación solicitada.
+
+## Ajustes de presentación y consultas autenticadas — 2026-11-12
+
+Solicitud explícita vigente: en Gemini, sin modelos disponibles no se muestran
+Low/Medium/High ni la explicación de esa preferencia, en Agentic y API key. La
+capacidad histórica de persistir una preferencia general no obliga a ofrecer
+ese control sin modelos. No borrar thinking_level/thinking_levels existentes,
+asignar un modelo de respaldo ni cambiar la selección al ocultar el bloque.
+Con modelos presentes continúan las preferencias por modelo y su distinción
+respecto de disponibilidad/inferencia. El comportamiento de otros proveedores
+se conserva.
+
+Los avisos Codex de runtime no disponible/error de observación usan recarga
+mediante IconButton de 44×44, nombre accesible y tooltip ES/EN «Volver a comprobar
+estado». Conservan el mensaje y las restricciones de Conectar; se bloquea la
+reconsulta durante la petición. El icono sólo solicita estado y no inicia login,
+inferencia o una configuración del servidor.
+
+Las observaciones health/Codex y lecturas de login esperan una sesión Nodia
+validada. Health deja de sondear tras 401/403 y admite reconsulta explícita;
+los fallos de servicio mantienen su estado real/cadencia existente. Gemini 503
+no se convierte en «sin trabajo» o «sesión cerrada»; puede indicar servicio
+privado no configurado o indisponible y necesita diagnóstico del servidor.
+No se acreditó la causa exacta de los 401 de la captura del usuario.
+
+El frontend Pages declara Cross-Origin-Opener-Policy: same-origin-allow-popups,
+igual que el servidor Vite de desarrollo, para compatibilidad con el popup de
+Google. No se modifica el login, permisos, CORS o política global de sesión.
+El warning del SDK no acredita un fallo de Gemini y no se garantiza su ausencia
+sin comprobar el despliegue y el flujo Google reales. [Fuente Google](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#cross_origin_opener_policy).
+
+Implementación local en codex/fix-ai-provider-state-ui desde development (9495751a);
+sin despliegue/VPS/login/inferencias reales. [Ficha candidata](../nodia-ai/knowledge/general-settings/features/ai-connection-settings-ui.md)
+y [verificación consolidada del alcance PR4](#verificación-consolidada-del-arreglo-ui-incorporado-desde-pr4) separan pruebas
+sintéticas, build y comprobación visual de la aceptación productiva pendiente.
+
+### Verificación consolidada del arreglo UI incorporado desde PR4
+
+Alcance original `codex/fix-ai-provider-state-ui`, base development9495751a: Gemini sin controles de potencia ni explicación cuando no hay modelos en Agentic/API key; recarga Codex por IconButton44px; consultas protegidas por sesión y fin del polling de salud tras401/403;503 conserva error real. Pages incluye el header COOP `same-origin-allow-popups`, con artefacto verificado en build; no acredita el popup Google desplegado ni modifica CORS, login o autorización.
+
+El corte original pasó144 pruebas del directorio IA/13archivos y156 finales IA+cabecera/14archivos. La suite inicial completa tuvo2842 casos/349archivos:2830 correctos y12 fallos de fixture de sesión validada en AiProviderIndicators. El fixture se corrigió y los12 casos quedaron cubiertos por el lote focal final; no se repitió la suite completa. Lint global previo y lint del test corregido correctos. Build correcto, con TypeScript sólo dentro de `npm run build`, warning de chunk grande existente y `_headers` presente. Son resultados del alcance previo, no una revalidación del merge con los cambios posteriores.
+
+QA Playwright CLI con fixture sintético a320/1280px: Gemini vacío sin botones de esfuerzo, documento móvil320/scroll320; recarga Codex44×44 sin texto visible, tooltip/nombre accesibles y Conectar bloqueado cuando el runtime no está disponible. Sin OAuth/cuentas/inferencias reales; correcciones del servidor temporal de QA/ruta simulada no cambiaron la configuración de seguridad de Vite.44 documentos aprobados conservaron sus bytes; la compilación de conocimiento no publicó otra revisión. Causa exacta de los401, disponibilidad real Gemini y warning COOP productivo pendientes de evidencia propia. Ver [ficha candidata](../nodia-ai/knowledge/general-settings/features/ai-connection-settings-ui.md), que sigue draft/partial/unregistered/approval:null.

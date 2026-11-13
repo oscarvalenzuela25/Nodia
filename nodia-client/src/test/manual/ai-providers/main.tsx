@@ -67,7 +67,7 @@ const catalog = [
     key: "openai",
     name: "OpenAI",
     can_use_api_key: true,
-    can_use_agentic: params.get("codex") === "1" || codexDefault,
+    can_use_agentic: params.get("codex") === "1" || codexDefault || params.get("codexUnavailable") === "1",
     is_active: true,
     created_at: "",
     updated_at: "",
@@ -88,10 +88,10 @@ let keys: AiApiKeyEntity[] = Array.from({ length: 12 }, (_, i) => ({
   updated_at: "",
 }));
 const modeFields = {
-  selected_model: modelId,
+  selected_model: params.get("noModels") === "1" ? "" : modelId,
   ocr_model: modelId,
   thinking_level: "low",
-  available_models: [
+  available_models: params.get("noModels") === "1" ? [] : [
     {
       id: modelId,
       name: "Modelo sintético con nombre largo para comprobar la vista móvil",
@@ -122,7 +122,7 @@ let providers: AiProviderEntity[] = catalog.map((item, i) => ({
   mode: "api_key",
   default_mode: "api_key",
   use_api_key: true,
-  use_agentic: i === 0 || params.get("codex") === "1" || codexDefault,
+  use_agentic: i === 0 || params.get("codex") === "1" || codexDefault || params.get("codexUnavailable") === "1",
   fields: {
     api_key: modeFields,
     agentic: i === 0 && params.get("grouped") === "1"
@@ -205,8 +205,11 @@ mainInstance.defaults.adapter = async (request) => {
   if (request.url?.endsWith("/authorization/context")) return response(context);
   if (params.get("error") === "1") fail();
   if (request.url?.includes("/session?mode=agentic")) return response({
-    available: true, authenticated: true, planType: null, checkedAt: null,
-    reason: null, lastInferenceAt: null, usageAllowed: null, quotas: null,
+    available: params.get("codexUnavailable") !== "1",
+    authenticated: params.get("codexUnavailable") === "1" ? null : true,
+    planType: null, checkedAt: null,
+    reason: params.get("codexUnavailable") === "1" ? "codex_runtime_unavailable" : null,
+    lastInferenceAt: null, usageAllowed: null, quotas: null,
   });
   if (request.url?.endsWith("/session/login/current") || request.url?.endsWith("/gemini-agentic-login/current"))
     return response({ job: null });

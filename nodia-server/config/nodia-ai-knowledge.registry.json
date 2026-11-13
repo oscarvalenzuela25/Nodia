@@ -26,6 +26,7 @@
     "docs/nodia-ai/knowledge/general-settings/features/actions-and-business-actions.md",
     "docs/nodia-ai/knowledge/general-settings/features/agentic-api-modes.md",
     "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
+    "docs/nodia-ai/knowledge/general-settings/features/ai-connection-settings-ui.md",
     "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
     "docs/nodia-ai/knowledge/general-settings/features/ai-login-host-setup.md",
     "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
@@ -583,7 +584,7 @@
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
         "docs/evidence/ai-two-modes-contract-integration-r01.json",
-        "docs/mvp/ai-provider-feature-contract.md"
+        "docs/evidence/ai-provider-settings-and-access-20261112-r01.md"
       ]
     },
     {
@@ -626,7 +627,7 @@
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
         "docs/evidence/ai-two-modes-contract-integration-r01.json",
-        "docs/mvp/ai-provider-feature-contract.md"
+        "docs/evidence/ai-provider-settings-and-access-20261112-r01.md"
       ]
     },
     {
@@ -669,7 +670,7 @@
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
         "docs/evidence/ai-two-modes-contract-integration-r01.json",
-        "docs/mvp/ai-provider-feature-contract.md"
+        "docs/evidence/ai-provider-settings-and-access-20261112-r01.md"
       ]
     },
     {
@@ -712,7 +713,7 @@
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
         "docs/evidence/ai-two-modes-contract-integration-r01.json",
-        "docs/mvp/ai-provider-feature-contract.md"
+        "docs/evidence/ai-provider-settings-and-access-20261112-r01.md"
       ]
     },
     {
@@ -755,7 +756,7 @@
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
         "docs/evidence/ai-two-modes-contract-integration-r01.json",
-        "docs/mvp/ai-provider-feature-contract.md"
+        "docs/evidence/ai-provider-settings-and-access-20261112-r01.md"
       ]
     },
     {
@@ -798,7 +799,7 @@
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
         "docs/evidence/ai-two-modes-contract-integration-r01.json",
-        "docs/mvp/ai-provider-feature-contract.md"
+        "docs/evidence/ai-provider-settings-and-access-20261112-r01.md"
       ]
     },
     {
@@ -915,7 +916,7 @@
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
         "docs/evidence/ai-two-modes-contract-integration-r01.json",
-        "docs/mvp/ai-provider-feature-contract.md"
+        "docs/evidence/ai-provider-settings-and-access-20261112-r01.md"
       ]
     },
     {
