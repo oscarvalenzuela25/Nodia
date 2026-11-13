@@ -919,3 +919,34 @@ migró datos. Ficha candidata sin aprobación, registro o publicación.
 
 [recibo operativo final](../evidence/production-ai-login-live-20261112-r01.json)
 y [ficha candidata](../nodia-ai/knowledge/general-settings/features/ai-login-host-setup.md).
+
+## 18. Promoción a master y baseline detenido — 2026-11-13
+
+PR5 quedó integrado en development `80666e6a` y PR6 promovió ese contenido a
+master `7aa1da88`. El [CI43362648327](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43362648327)
+se detuvo en el baseline VPS, antes de build o despliegue. El cliente informó
+`backend_status_failed`; SSH restringido reprodujo `writer_process_not_verified`.
+API y worker continuaban activos en f01. El receptor de transporte conservaba
+la condición antigua de cero drop-ins, incompatible con las cuatro extensiones
+revisadas instaladas en §17; el updater ya aceptaba su registro estricto.
+
+Arreglo preparado en `codex/fix-vps-baseline-status`, desde development. El status
+comparte la política del updater instalado fijado por SHA: exige hashes base,
+registro privado, rutas/inventario/bytes exactos y conserva la identidad completa
+de los procesos. El refresco administrativo reemplaza sólo receptor y su hash,
+con locks, preflight de lectura y originales protegidos; no reinicia aplicaciones
+ni migra. [Procedimiento mantenido](../../ops/production/README.md#baseline-de-cd-y-configuraciones-registradas-de-ia--2026-11-13).
+
+El operador instaló el receptor corregido `25d32d5a…` con sudo privado, sin cambiar
+f01 ni PID de API/worker. SSH restringido nuevo, con clave y host pin productivos,
+confirmó deployment_ready, blocked=false y ambos servicios activos. Se repitieron
+sólo jobs fallidos: el intento2 pasó el baseline completo (job131684277110,
+incluido SSH backend) y continuó Changes/pipeline. Builds y apply conservan sus
+resultados propios; el verde de este gate no los acredita.
+
+Validación local:21 pruebas de receptor,10 del instalador y29 comprobaciones
+SSH/sudo/systemd/Nginx reales aisladas, sin red externa, PostgreSQL/R2/IA.
+La identidad POSIX se verificó como root en contenedor; el runner CI normal sin
+root no demuestra esa parte. [PR7 hacia development](https://github.com/oscarvalenzuela25/Nodia/pull/7)
+versiona el arreglo y el procedimiento, sin merge automático ni nueva evidencia
+JSON versionada. Obsidian26.14 contiene comandos, explicación y contraste EC2.

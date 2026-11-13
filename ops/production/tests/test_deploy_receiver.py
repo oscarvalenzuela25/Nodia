@@ -27,6 +27,7 @@ def load(name, filename):
 
 receiver = load('receiver_fixture', 'deploy-backend-receiver.py')
 gateway = load('gateway_fixture', 'deploy-gateway.py')
+updater = load('receiver_updater_fixture', 'update-backend.py')
 
 
 def upload_message(data=b'original-actions-zip'):
@@ -134,6 +135,121 @@ class RootStateTests(PipeFixture, unittest.TestCase):
         self.ready = {'blocked': False, 'application': {'api_active': True, 'worker_active': True},
                       'current': {'release_id': self.message['expected_current_release'],
                                   'package_tree_sha256': self.message['expected_current_tree_sha256']}}
+        self.real_service_guard = receiver.application_service_guard
+
+    def application_fixture(self, runtimes):
+        """Real protected files; only absolute host paths/systemctl/proc are relocated."""
+        root = Path(tempfile.mkdtemp(dir=self.directory, prefix='application-')).resolve()
+        releases = root / 'releases'; releases.mkdir()
+        release = releases / self.message['expected_current_release']; release.mkdir()
+        current = root / 'current'; current.symlink_to(release)
+        manifest = release / 'release-manifest.json'
+        manifest.write_text(json.dumps({'release_id': release.name, 'source_sha': 'c' * 40,
+                                       'package_tree_sha256': 'd' * 64}), encoding='utf-8')
+        manifest.chmod(0o644)
+        library = root / 'library'; library.mkdir()
+        installed = library / 'update-backend.py'
+        installed.write_bytes((BASE / 'update-backend.py').read_bytes()); installed.chmod(0o644)
+        units = root / 'units'; units.mkdir()
+        registry = root / 'consumers.json'
+        states, processes, hashes = {}, {}, {}
+        for index, (_, unit, entry) in enumerate(receiver.WRITERS):
+            base = units / unit; base.write_bytes((BASE / unit).read_bytes()); base.chmod(0o644)
+            hashes[unit] = hashlib.sha256(base.read_bytes()).hexdigest()
+            process = root / 'proc' / str(20000 + index); process.mkdir(parents=True)
+            os.chown(process, 900, 900)
+            (process / 'cwd').symlink_to(release)
+            (process / 'exe').symlink_to('/usr/local/bin/node')
+            (process / 'cmdline').write_bytes(b'/usr/local/bin/node\0' + entry.encode() + b'\0')
+            paths = []
+            if runtimes:
+                parent = units / (unit + '.d'); parent.mkdir()
+                for name, content in updater.AI_RUNTIME_TEMPLATES.items():
+                    target = parent / name; target.write_bytes(content); target.chmod(0o644)
+                    paths.append(str(target))
+            states[unit] = {'ActiveState': 'active', 'SubState': 'running', 'Result': 'success',
+                            'MainPID': process.name, 'ControlGroup': '/system.slice/' + unit,
+                            'DropInPaths': ' '.join(paths)}
+            processes[unit] = process
+        if runtimes:
+            registry.write_text(json.dumps({'schema_version': 1, 'purpose': 'nodia_ai_runtime_consumers',
+                'units': {unit: updater.AI_RUNTIME_HASHES for _, unit, _ in receiver.WRITERS}}), encoding='utf-8')
+            registry.chmod(0o600)
+        settings = {'schema_version': 1, 'assets': {'update-backend.py': hashlib.sha256(installed.read_bytes()).hexdigest()},
+                    'service_hashes': hashes}
+        settings_file = self.state / 'settings.json'
+        settings_file.write_text(json.dumps(settings), encoding='utf-8'); settings_file.chmod(0o600)
+
+        def relocated_guard():
+            guard = self.real_service_guard()
+            # Retain the executed policy/metadata validation; relocate only its host paths.
+            guard.service_overrides.__func__.__globals__.update(SYSTEMD_UNITS=units, AI_CONSUMERS=registry)
+            return guard
+
+        def mapped_path(value):
+            return {'/opt/nodia/current': current, '/opt/nodia/releases': releases,
+                    '/proc': root / 'proc'}.get(str(value), Path(value))
+        for name, value in [('LIB', library), ('application_service_guard', relocated_guard), ('Path', mapped_path),
+                            ('unit_state', lambda unit: states[unit])]:
+            patcher = patch.object(receiver, name, side_effect=value) if callable(value) else patch.object(receiver, name, value)
+            patcher.start(); self.addCleanup(patcher.stop)
+        patcher = patch.object(receiver.pwd, 'getpwnam', return_value=types.SimpleNamespace(pw_uid=900))
+        patcher.start(); self.addCleanup(patcher.stop)
+        return types.SimpleNamespace(root=root, release=release, units=units, registry=registry,
+                                     states=states, processes=processes, library=library,
+                                     installed=installed, settings=settings, settings_file=settings_file)
+
+    def test_active_status_accepts_no_overrides_or_both_exact_registered_runtime_extensions(self):
+        for runtimes in (False, True):
+            with self.subTest(runtimes=runtimes):
+                fixture = self.application_fixture(runtimes)
+                before = {path: path.read_bytes() for path in fixture.units.rglob('*') if path.is_file()}
+                result = receiver.deployment_status()
+                self.assertEqual(result['status'], 'deployment_ready')
+                self.assertEqual(result['application'], {'api_active': True, 'worker_active': True})
+                self.assertEqual(before, {path: path.read_bytes() for path in fixture.units.rglob('*') if path.is_file()})
+                self.assertEqual(list(fixture.library.iterdir()), [fixture.installed])
+
+    def test_active_status_rejects_missing_altered_extra_unregistered_or_relocated_dropins(self):
+        def missing(f): (f.units / 'nodia-api.service.d/70-codex-runtime.conf').unlink()
+        def altered(f): (f.units / 'nodia-api.service.d/70-codex-runtime.conf').write_bytes(b'[Service]\nUser=root\n')
+        def extra(f): (f.units / 'nodia-api.service.d/99-extra.conf').write_bytes(b'[Service]\nExecStart=/bin/sh\n')
+        def unregistered(f): f.registry.unlink()
+        def loaded_extra(f): f.states['nodia-api.service']['DropInPaths'] += ' /run/systemd/system/99-extra.conf'
+        def relocated(f): f.states['nodia-api.service']['DropInPaths'] = f.states['nodia-api.service']['DropInPaths'].replace(str(f.units), '/run/systemd/system')
+        for change in (missing, altered, extra, unregistered, loaded_extra, relocated):
+            with self.subTest(change=change.__name__):
+                fixture = self.application_fixture(True); change(fixture)
+                with self.assertRaises((ValueError, FileNotFoundError)): receiver.deployment_status()
+
+    def test_active_status_requires_pinned_updater_base_units_and_private_exact_registry(self):
+        def unpinned(f):
+            del f.settings['service_hashes']['nodia-api.service']
+            f.settings_file.write_text(json.dumps(f.settings), encoding='utf-8')
+        def updater_changed(f): f.installed.write_bytes(f.installed.read_bytes() + b'\nraise RuntimeError("must never execute")\n')
+        def base_changed(f): (f.units / 'nodia-api.service').write_bytes(b'[Service]\nUser=root\n')
+        def registry_changed(f): f.registry.write_text('{"schema_version":1,"purpose":"arbitrary_root_dropins","units":{}}', encoding='utf-8')
+        def registry_public(f): f.registry.chmod(0o644)
+        def registry_link(f):
+            target = f.root / 'registry-original.json'; f.registry.rename(target); f.registry.symlink_to(target)
+        for change in (unpinned, updater_changed, base_changed, registry_changed, registry_public, registry_link):
+            with self.subTest(change=change.__name__):
+                fixture = self.application_fixture(True); change(fixture)
+                with self.assertRaises(ValueError): receiver.deployment_status()
+
+    def test_registered_runtime_extensions_never_bypass_process_identity(self):
+        def uid(f): os.chown(f.processes['nodia-api.service'], 0, 0)
+        def cwd(f):
+            target = f.processes['nodia-api.service'] / 'cwd'; target.unlink(); target.symlink_to(f.root)
+        def executable(f):
+            target = f.processes['nodia-api.service'] / 'exe'; target.unlink(); target.symlink_to('/bin/sh')
+        def arguments(f): (f.processes['nodia-api.service'] / 'cmdline').write_bytes(b'/bin/sh\0')
+        def cgroup(f): f.states['nodia-api.service']['ControlGroup'] = '/other.slice/nodia-api.service'
+        for change in (uid, cwd, executable, arguments, cgroup):
+            with self.subTest(change=change.__name__):
+                fixture = self.application_fixture(True); change(fixture)
+                with self.assertRaisesRegex(ValueError, 'writer_(release_identity_mismatch|process_not_verified)'):
+                    receiver.deployment_status()
 
     def archive(self):
         directory = self.incoming / 'server-123-1'; directory.mkdir(mode=0o700)

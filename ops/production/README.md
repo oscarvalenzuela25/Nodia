@@ -1052,3 +1052,59 @@ TeacherPurposeQualification, API/worker activos. La sesión autenticada y el
 catálogo no suplen esa evidencia. Actualizar primero el backend/esquema mediante
 el flujo de release autorizado y después calificar la selección exacta; no copiar
 recibos de laboratorio ni conceder disponibilidad desde Client. [verificación consolidada](../../docs/mvp/96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13).
+
+## Baseline de CD y configuraciones registradas de IA — 2026-11-13
+
+La promoción PR6 alcanzó master `7aa1da88`. El [run43362648327](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43362648327)
+falló antes de construir o desplegar: `cd-vps.mjs baseline` informó
+`backend_status_failed`. La misma consulta con la clave SSH restringida devolvió
+`writer_process_not_verified`. API y worker estaban activos en f01; el receptor
+todavía exigía `DropInPaths` vacío, aunque el updater ya validaba los dos drop-ins
+registrados de Codex/Gemini. No fue un fallo de credenciales SSH ni una migración.
+
+El receptor corregido importa únicamente los bytes del updater instalado,
+protegido root0644 y fijado por SHA en settings root0600. Reutiliza su regla
+`Host.service_overrides`: hashes base obligatorios, registro privado exacto,
+inventario/rutas/bytes de los dos drop-ins y estabilidad entre consumidores.
+Sin registro sólo admite ausencia de overrides. UID, PID, cgroup, cwd, ejecutable
+y argumentos de cada proceso siguen siendo obligatorios. No habilita overrides
+genéricos, cambia las claves ni concede shell al usuario de despliegue.
+
+`refresh-production-cd.py` permite al operador instalar exclusivamente esa
+corrección. Exige sudo privado, digest anterior y nuevo distintos, gateway y
+updater intactos; obtiene ambos locks de receptor e instalación. Antes de escribir
+ejecuta el status de los bytes revisados, conserva originales privados y reemplaza
+únicamente receptor0644 y su pin en receiver-settings0600. Verifica de nuevo el
+release; no cambia current, unidades, secretos, nginx, sudoers, API o worker.
+
+```bash
+sudo python3 -I /home/nodia-admin/nodia-setup/backend/cd-baseline-fix-20261113/refresh-production-cd.py \
+  /home/nodia-admin/nodia-setup/backend/cd-baseline-fix-20261113/deploy-backend-receiver.py \
+  --sha256 25d32d5a6538dea3dde00f3e81f4fb5c15df8287274819bf054280b28b27f764 \
+  --previous-sha256 01f5929c9cb803e3d950674c6d4adc8ba13af012380f05d4b9fd18b2eaac83d3
+```
+
+Los parámetros son hashes de código, no secretos. Revisar los hashes del paquete
+transferido antes de autenticar sudo. Los originales quedan bajo
+`/var/lib/nodia-updates/receiver-refresh-<SHA256>/`, sin sobrescribirse. Si se corta
+entre los dos reemplazos, el receptor rechaza el pin incoherente: conservar el
+estado y reconciliar manualmente, sin repetir automáticamente ni relajar checks.
+Sólo después de comprobar `deployment_ready` por una conexión SSH restringida
+nueva puede repetirse el baseline fallido; no reintentar un apply de resultado
+incierto. La instalación administrativa y la prueba desde GitHub son verificaciones
+distintas y deben registrarse con su resultado efectivo.
+
+Validación local del arreglo:21/21 regresiones del receptor y10/10 del refresco
+en Linux root sin red;29 comprobaciones en el fixture con SSH/sudo/systemd/Nginx
+reales. Las pruebas de propietario/modos requieren ese entorno; el job CI normal
+sin root no demuestra esos permisos. App/manifiesto del fixture son sintéticos;
+no consulta PostgreSQL/R2/IA. Recibo transitorio bajo output/production, sin añadir
+otro JSON versionado. Copia al VPS comprobada por SHA: receptor25d32d5a… y
+helper857d9203…. El operador completó el refresco con sudo privado: nuevo SHA
+instalado, mismo current/f01 y mismos PID428730/428737. Una conexión nueva como
+nodia-deploy con clave/host pin reales devolvió deployment_ready, blocked=false
+y ambos servicios activos. Se relanzaron sólo los jobs fallidos del run original:
+el intento2 pasó el baseline (job131684277110, incluido el paso SSH del backend)
+y continuó Changes/pipeline. Esto no acredita todavía build ni apply completos.
+Código versionado en [PR7 hacia development](https://github.com/oscarvalenzuela25/Nodia/pull/7);
+no se fusionó automáticamente ni se alteraron las ramas del checkout principal.

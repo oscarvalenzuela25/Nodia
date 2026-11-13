@@ -162,6 +162,40 @@ _, status = ssh('status')
 check(status['status'] == 'deployment_ready' and status['forced_command'] and
       status['application'] == {'api_active': True, 'worker_active': True} and not status['blocked'],
       'ssh_forced_command_status_verifies_live_processes')
+
+# Registered runtime-only extensions must not make the same live baseline fail.
+# These synthetic writers do not consume AI or start a provider runtime.
+runtime_policy = load(LIB / 'update-backend.py')
+for unit in runtime_policy.SERVICES:
+    for name, content in runtime_policy.AI_RUNTIME_TEMPLATES.items():
+        write(Path('/etc/systemd/system') / (unit + '.d') / name, content)
+registry = {'schema_version': 1, 'purpose': 'nodia_ai_runtime_consumers',
+            'units': {unit: runtime_policy.AI_RUNTIME_HASHES for unit in runtime_policy.SERVICES}}
+registry_path = Path('/etc/nodia/ai-runtime/consumers.json')
+write(registry_path, json.dumps(registry) + '\n', 0o600)
+run(['systemctl', 'daemon-reload'])
+_, status = ssh('status')
+check(status['status'] == 'deployment_ready' and status['application'] == {'api_active': True, 'worker_active': True},
+      'ssh_status_accepts_only_exact_registered_codex_and_gemini_extensions')
+extra = Path('/etc/systemd/system/nodia-api.service.d/99-unreviewed.conf')
+write(extra, '[Service]\nEnvironment=SYNTHETIC_UNREVIEWED=true\n')
+run(['systemctl', 'daemon-reload'])
+result, denied_status = ssh('status', ok=False)
+check(result.returncode != 0 and denied_status['error_code'] == 'installed_service_changed_or_overridden',
+      'ssh_status_rejects_an_additional_root_owned_loaded_dropin')
+extra.unlink()
+changed = Path('/etc/systemd/system/nodia-api.service.d/70-codex-runtime.conf')
+write(changed, '[Service]\nEnvironment=SYNTHETIC_REPLACED=true\n')
+run(['systemctl', 'daemon-reload'])
+result, denied_status = ssh('status', ok=False)
+check(result.returncode != 0 and denied_status['error_code'] == 'ai_runtime_dropin_changed',
+      'ssh_status_rejects_changed_registered_dropin_bytes')
+write(changed, runtime_policy.AI_RUNTIME_TEMPLATES[changed.name])
+run(['systemctl', 'daemon-reload'])
+_, status = ssh('status')
+check(status['status'] == 'deployment_ready' and
+      run(['systemctl', 'show', 'nodia-api.service', 'nodia-ai-worker.service', '-p', 'MainPID']).stdout == before_pids,
+      'reviewed_runtime_status_checks_preserve_both_writer_processes')
 account = pwd.getpwnam('nodia-deploy')
 check(Path(account.pw_dir).stat().st_uid == 0 and
       Path(account.pw_dir, '.ssh/authorized_keys').stat().st_uid == 0,
