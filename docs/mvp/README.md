@@ -66,6 +66,12 @@ Los únicos modos operativos son Agentic y API key. Las referencias a Web, `toke
 
 [Diseño Client](../../nodia-client/DESIGN.md), [tarjetas/accesos móviles35](35-mobile-cards-shortcuts-plan.md), [rendimiento37](37-web-performance-implementation-plan.md), [compositor93](93-nodia-ai-chat-composer-redesign.md) y [manual de propuestas](../features/nodia-ai/proposal-review-presentation.md).
 
+[PWA103](103-pwa-progressive-implementation-plan.md): primera entrega PWA-001
+independiente y prioritaria, instalable con iconos/ventana propia y funciones
+online. Backlog separado de actualizaciones/caché, desconexión, push y datos
+offline/sincronización. Plan en revisión, sin implementación o instalación
+acreditadas; [ficha candidata](../nodia-ai/knowledge/general-settings/features/pwa-installation.md).
+
 El plan37 tiene autorización explícita para implementación por etapas. Cada optimización conserva contratos y presenta ahorro/QA por perfil y ruta; una medición local no equivale a aceptación productiva completa.
 
 ## Producción y mantenimiento
