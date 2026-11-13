@@ -919,3 +919,24 @@ migró datos. Ficha candidata sin aprobación, registro o publicación.
 
 [recibo operativo final](../evidence/production-ai-login-live-20261112-r01.json)
 y [ficha candidata](../nodia-ai/knowledge/general-settings/features/ai-login-host-setup.md).
+
+## 18. Promoción a master y baseline detenido — 2026-11-13
+
+PR5 quedó integrado en development `80666e6a` y PR6 promovió ese contenido a
+master `7aa1da88`. El [CI43362648327](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43362648327)
+se detuvo en el baseline VPS, antes de build o despliegue. El cliente informó
+`backend_status_failed`; SSH restringido reprodujo `writer_process_not_verified`.
+API y worker continuaban activos en f01. El receptor de transporte conservaba
+la condición antigua de cero drop-ins, incompatible con las cuatro extensiones
+revisadas instaladas en §17; el updater ya aceptaba su registro estricto.
+
+Arreglo preparado en `codex/fix-vps-baseline-status`, desde development. El status
+comparte la política del updater instalado fijado por SHA: exige hashes base,
+registro privado, rutas/inventario/bytes exactos y conserva la identidad completa
+de los procesos. El refresco administrativo reemplaza sólo receptor y su hash,
+con locks, preflight de lectura y originales protegidos; no reinicia aplicaciones
+ni migra. [Procedimiento mantenido](../../ops/production/README.md#baseline-de-cd-y-configuraciones-registradas-de-ia--2026-11-13).
+
+Pendiente de autenticación sudo privada: instalación de la corrección, status
+desde SSH restringido y nueva ejecución del baseline en GitHub. Preparar o probar
+el arreglo local no acredita ninguno de esos tres pasos ni un apply productivo.
