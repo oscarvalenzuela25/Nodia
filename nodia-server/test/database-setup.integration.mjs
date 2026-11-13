@@ -130,18 +130,34 @@ try {
   );
   const [initial] =
     await db.query(`SELECT (SELECT count(*)::int FROM roles WHERE key='super_admin') AS roles,
-    (SELECT count(*)::int FROM module_groups WHERE key='general_settings') AS groups,
-    (SELECT count(*)::int FROM modules) AS modules,(SELECT count(*)::int FROM users) AS users,
+    (SELECT count(*)::int FROM users) AS users,
     (SELECT count(*)::int FROM ai_api_keys) AS keys,(SELECT count(*)::int FROM ai_providers) AS connections`);
   check(
     initial.roles === 1 &&
-      initial.groups === 1 &&
-      initial.modules === 4 &&
       initial.users === 0 &&
       initial.keys === 0 &&
       initial.connections === 0,
     'Migrations create Core defaults but never accounts or credentials',
   );
+  assert.deepEqual(
+    await db.query('SELECT key FROM module_groups ORDER BY key'),
+    [{ key: 'general_settings' }, { key: 'tools' }],
+    'Full installation preserves the Core group and registers the NodiaAI navigation group',
+  );
+  checks++;
+  assert.deepEqual(
+    await db.query(`SELECT m.key,g.key AS group_key FROM modules m
+      JOIN module_groups g ON g.id=m.module_group_id ORDER BY m.key`),
+    [
+      { key: 'actions', group_key: 'general_settings' },
+      { key: 'modules', group_key: 'general_settings' },
+      { key: 'nodia_ai', group_key: 'tools' },
+      { key: 'roles', group_key: 'general_settings' },
+      { key: 'users', group_key: 'general_settings' },
+    ],
+    'Migrations register the four Core identities and NodiaAI without granting access',
+  );
+  checks++;
   const catalog = await db.query(
     'SELECT key,can_use_api_key,can_use_agentic FROM ai_provider_catalog ORDER BY key',
   );
@@ -203,13 +219,15 @@ try {
     (error) => error.code === '23505',
   );
   checks++;
-  check(
-    (
-      await db.query(`SELECT count(*)::int AS count FROM user_modules um JOIN modules m ON m.id=um.module_id
-    JOIN module_groups g ON g.id=m.module_group_id WHERE um.is_active AND m.is_active AND g.key='general_settings'`)
-    )[0].count === 4,
-    'Assignments target the four active Core modules in the correct group',
+  assert.deepEqual(
+    await db.query(`SELECT m.key FROM user_modules um JOIN modules m ON m.id=um.module_id
+      JOIN module_groups g ON g.id=m.module_group_id
+      WHERE um.is_active AND m.is_active AND g.is_active AND g.key='general_settings'
+      ORDER BY m.key`),
+    [{ key: 'actions' }, { key: 'modules' }, { key: 'roles' }, { key: 'users' }],
+    'Bootstrap assigns exactly the four active Core identities, without granting NodiaAI access',
   );
+  checks++;
   envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = 'another-owner@example.com';
   await assert.rejects(seed().bootstrap(), /cannot replace or promote/);
   checks++;
@@ -221,20 +239,57 @@ try {
   await assert.rejects(seed().bootstrap(), /BOOTSTRAP_SUPER_ADMIN_EMAIL/);
   checks++;
 
-  // Preserve an existing complete schema even when the two initial baselines are unrecorded.
-  const before = await db.query(
-    'SELECT id::text,email,is_active FROM users ORDER BY id',
+  // Adoption is scoped to a complete baseline-era schema. Removing ledger rows
+  // from today's evolved schema is not a supported reconciliation procedure.
+  await db.query('CREATE DATABASE baseline_era');
+  const baseline = new DataSource({
+    ...options,
+    database: 'baseline_era',
+    entities: [],
+    migrations: [InitialCoreSchema1789257400000, InitialBusinessAiSchema1789257500000],
+  });
+  connections.push(baseline);
+  await baseline.initialize();
+  const baselineRunner = baseline.createQueryRunner();
+  await baselineRunner.startTransaction();
+  try {
+    await new InitialCoreSchema1789257400000().up(baselineRunner);
+    await new InitialBusinessAiSchema1789257500000().up(baselineRunner);
+    await baselineRunner.commitTransaction();
+  } catch (error) {
+    await baselineRunner.rollbackTransaction();
+    throw error;
+  } finally {
+    await baselineRunner.release();
+  }
+  await baseline.query(
+    "INSERT INTO users(email,name,is_active) VALUES('synthetic-legacy@example.invalid','Preserved baseline-era user',false)",
   );
-  await db.query(
-    `DELETE FROM migrations WHERE name IN ('InitialCoreSchema1789257400000','InitialBusinessAiSchema1789257500000')`,
+  const baselineUsersBefore = await baseline.query('SELECT * FROM users ORDER BY id');
+  const baselineTables = () => baseline.query(`SELECT c.oid::text,c.relname FROM pg_class c
+    JOIN pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND c.relkind='r' AND c.relname<>'migrations' ORDER BY c.relname`);
+  const baselineTablesBefore = await baselineTables();
+  assert.deepEqual(
+    (await baseline.runMigrations()).map(migration => migration.name),
+    ['InitialCoreSchema1789257400000', 'InitialBusinessAiSchema1789257500000'],
+    'A complete baseline-era schema records exactly its two unrecorded baselines',
   );
+  checks++;
   check(
-    (await db.runMigrations()).length === 2,
-    'An existing schema records baselines without recreating tables',
+    (await baseline.runMigrations()).length === 0,
+    'Recorded baseline-era adoption is idempotent',
   );
   assert.deepEqual(
-    await db.query('SELECT id::text,email,is_active FROM users ORDER BY id'),
-    before,
+    await baselineTables(),
+    baselineTablesBefore,
+    'Adopting a baseline-era schema preserves domain table identities',
+  );
+  checks++;
+  assert.deepEqual(
+    await baseline.query('SELECT * FROM users ORDER BY id'),
+    baselineUsersBefore,
+    'Adopting a baseline-era schema preserves existing user fields and activity',
   );
   checks++;
 

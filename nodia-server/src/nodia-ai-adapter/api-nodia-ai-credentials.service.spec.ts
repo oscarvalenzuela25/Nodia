@@ -50,6 +50,19 @@ function setup() {
 beforeEach(() => vi.stubEnv('AI_SECRET_MASTER_KEY', '1'.repeat(64)));
 afterEach(() => vi.unstubAllEnvs());
 describe('API credential/configuration identity', () => {
+  it.each(['xhigh', 'max'])('keeps an OpenAI %s selection exact but rejects it for Gemini before decrypting secrets', async effort => {
+    const f = setup();
+    const exact = { ...selection, effort_id: effort };
+    expect(await f.loader.configuration(exact)).toMatchObject({ providerKey: 'openai' });
+    f.row.provider_key = 'gemini';
+    await expect(f.loader.configuration(exact)).rejects.toMatchObject({ code: 'adapter_invalid_selection', outcome: 'not_dispatched' });
+    expect(f.query.mock.calls.some(([sql]) => sql.includes('SELECT secret_ciphertext'))).toBe(false);
+  });
+  it('rejects an unsupported Ultra API selection before consulting credentials', async () => {
+    const f = setup();
+    await expect(f.loader.configuration({ ...selection, effort_id: 'ultra' })).rejects.toMatchObject({ code: 'adapter_invalid_selection' });
+    expect(f.query).not.toHaveBeenCalled();
+  });
   it('uses exact bigint IDs and returns metadata only; decrypted secret is resolved separately for the same epoch', async () => {
     const f = setup();
     const config = await f.loader.configuration(selection);

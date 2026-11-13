@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "profile_id": "nodia-northflank-observed-catalog-20261111-r01",
+  "observed_on": "2026-11-11",
+  "scope": "observed_catalog_metadata_only",
+  "destination": {
+    "host": "primary.nodia-db--8hqb8b7kvmx4.addon.code.run",
+    "port": 29102,
+    "database": "nodia_db"
+  },
+  "destination_fingerprint_sha256": "93e318438e06c7e441f2c4d6f15035b9dd7fac3a83549115419f4e64dc56f5d2",
+  "server_version_num": 160014,
+  "inventory": {
+    "user_schemas": 1,
+    "relations": 0,
+    "routines": 1,
+    "types": 0,
+    "unexpected_extensions": 2
+  },
+  "catalog": {
+    "schemas": [
+      {
+        "name": "pooler",
+        "owner_is_current": false
+      }
+    ],
+    "relations": [],
+    "routines": [
+      {
+        "schema": "pooler",
+        "name": "user_lookup",
+        "signature": "i_username text, OUT uname text, OUT phash text",
+        "kind": "f",
+        "language": "plpgsql",
+        "security_definer": true,
+        "owner_is_current": false
+      }
+    ],
+    "types": [],
+    "unexpected_extensions": [
+      {
+        "name": "pg_stat_kcache",
+        "version": "2.3.2",
+        "schema": "public",
+        "owner_is_current": false
+      },
+      {
+        "name": "pg_stat_statements",
+        "version": "1.10",
+        "schema": "public",
+        "owner_is_current": false
+      }
+    ]
+  },
+  "provenance": {
+    "observation": "operator_read_only_catalog",
+    "provider_origin": "inferred_not_attested",
+    "security_attestation": false,
+    "product_approval": false,
+    "inference_note": "The observed helper metadata matches a connection-pooler helper published by Zalando postgres-operator. The extension references describe monitoring. These matches support an operational inference only: Northflank ownership/origin, function bodies, ACLs and provider security have not been attested. This profile is not user approval of a product, architecture or security audit.",
+    "references": [
+      {
+        "title": "Zalando postgres-operator pooler helper",
+        "url": "https://github.com/zalando/postgres-operator/blob/master/pkg/cluster/database.go#L68-L84",
+        "relationship": "matching_helper_signature"
+      },
+      {
+        "title": "PostgreSQL 16 pg_stat_statements",
+        "url": "https://www.postgresql.org/docs/16/pgstatstatements.html",
+        "relationship": "extension_monitoring_reference"
+      },
+      {
+        "title": "powa-team pg_stat_kcache",
+        "url": "https://github.com/powa-team/pg_stat_kcache",
+        "relationship": "extension_monitoring_reference"
+      }
+    ]
+  }
+}

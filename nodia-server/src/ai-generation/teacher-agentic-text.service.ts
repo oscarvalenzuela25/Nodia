@@ -3,6 +3,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { DataSource, type EntityManager } from 'typeorm';
 import { AiGenerationPort, type AiGenerationExecutionContext, type AiGenerationResult } from './ai-generation-port.js';
 import type { AiSelection } from './ai-selection.js';
+import { TEACHER_GENERATION_POLICY_HASH, TEACHER_GENERATION_POLICY } from './teacher-qualification-policy.js';
 import { GeminiTeacherTextTransport } from './gemini-teacher-text-transport.js';
 import {
   CODEX_TEACHER_TEXT_TRANSPORT, TEACHER_AGENTIC_CONTRACT,
@@ -31,7 +32,7 @@ function identity(observation: TeacherAgenticObservation) {
   return stable;
 }
 export function teacherAgenticScope(selection: AiSelection, config: TeacherAgenticConfiguration): string {
-  return agenticHash({ contract: TEACHER_AGENTIC_CONTRACT, selection,
+  return agenticHash({ contract: TEACHER_AGENTIC_CONTRACT, policy_hash: TEACHER_GENERATION_POLICY_HASH, selection,
     configuration: config.configurationGeneration, observation: identity(config.agentic) });
 }
 export function validateTeacherAgenticDescriptor(descriptor: unknown): TeacherAgenticDescriptor {
@@ -136,16 +137,20 @@ export class TeacherAgenticTextService extends AiGenerationPort {
     const rows: { scope_hash: string }[] = await manager.query(`INSERT INTO ai_generation_agentic_qualifications
       (scope_hash,contract_version,operation_id,provider_key,selection_hash,selection_snapshot,configuration_generation,observation_snapshot,response_hash,evidence_hash)
       SELECT $1::char(64),$2::text,o.id,$3::text,$4::char(64),$5::jsonb,$6::char(64),$7::jsonb,$8::char(64),$9::char(64) FROM ai_generation_operations o
+      JOIN teacher_generation_jobs j ON j.id=o.teacher_job_id
       WHERE o.id=$10 AND o.owner_kind='teacher' AND o.phase='closed' AND o.remote_outcome='completed'
       AND o.response_hash=$8::text AND o.selection_snapshot=$5::jsonb AND o.configuration_generation=$6::text
       AND o.session_generation=$11 AND o.resource_key=$12 AND o.agentic_acknowledged_at IS NOT NULL
       AND o.agentic_transport_descriptor->'reference'->>'runtime_hash'=$13
       AND o.agentic_transport_descriptor->'reference'->>'policy_hash'=$14
+      AND j.input_snapshot->'qualification_probe'->>'teacher_policy_hash'=$15
+      AND j.template_hash=$16 AND j.purpose='setup_reply'
       ON CONFLICT(scope_hash) DO UPDATE SET operation_id=EXCLUDED.operation_id,response_hash=EXCLUDED.response_hash,
         evidence_hash=EXCLUDED.evidence_hash,observed_at=clock_timestamp() RETURNING scope_hash`,
     [teacherAgenticScope(selection, config), TEACHER_AGENTIC_CONTRACT, config.providerKey, agenticHash(selection),
       JSON.stringify(selection), config.configurationGeneration, JSON.stringify(config.agentic), responseHash, evidenceHash,
-      operationId, config.sessionGeneration, config.resourceKey, config.agentic.runtime_hash, config.agentic.policy_hash]);
+      operationId, config.sessionGeneration, config.resourceKey, config.agentic.runtime_hash, config.agentic.policy_hash,
+      TEACHER_GENERATION_POLICY_HASH, TEACHER_GENERATION_POLICY.purposes.setup_reply.template_hash]);
     if (rows.length !== 1) throw Error('teacher:qualification_failed');
   }
 

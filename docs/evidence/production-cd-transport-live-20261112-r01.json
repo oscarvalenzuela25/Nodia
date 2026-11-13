@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-12",
+  "timezone": "America/Santiago",
+  "status": "transport_installed_new_ssh_verified",
+  "branch": "development",
+  "commit_created": false,
+  "master_changed": false,
+  "application_deployment_requested": false,
+  "bundle_manifest_sha256": "e9690a51721272516741d49f5882275446dc442ae193efbe12c2c805ad88cf16",
+  "updater_manifest_sha256": "18579160e69fa243fdf3f46c99e78a0f19399a23ab69329fd2660e5aaefe105f",
+  "admin_job": "install-production-cd-131c1bbad2b64144ad25167a5c5ff08d",
+  "installer_report": {
+    "fixed_command_sudo_grant_created": true,
+    "arbitrary_shell_enabled": false,
+    "application_services_restarted": false,
+    "deployment_performed": false
+  },
+  "new_ssh_status": {
+    "schema_version": 1,
+    "status": "deployment_ready",
+    "user": "nodia-deploy",
+    "forced_command": true,
+    "privileged_helper_enabled": true,
+    "deployment_implemented": true,
+    "deployment_requested": false,
+    "current": {
+      "release_id": "backend-f01b49333688-ff33b6fdbbbc",
+      "source_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+      "package_tree_sha256": "ff33b6fdbbbc05167745da9c2fde5f3d19355baf51d51214bbc7121cb6ea1e6f"
+    },
+    "blocked": false,
+    "application": {
+      "api_active": true,
+      "worker_active": true
+    }
+  },
+  "arbitrary_sudo_command_via_gateway": "rejected_without_execution",
+  "public_https_http_status_observed_after_installation": 200,
+  "installed_public_asset_hashes_verified": {
+    "deploy-backend-receiver.py": "01f5929c9cb803e3d950674c6d4adc8ba13af012380f05d4b9fd18b2eaac83d3",
+    "deploy-gateway.py": "877fe548164b127d8f3820bafa4b0c44797a8a732a9a829c1c82de098b8e2ab8",
+    "update-backend.py": "5efa496f776f1c9e5a71deecf7c8dfdc6522dbafec49b859d0cd47cf7215a726",
+    "backend_update.py": "a6d4f24c6c9a1f10eca8f1a0b78bf637a3cca6bb434c7759709dbdfbd59dcd53",
+    "update-backend-action.mjs": "0c63a501e61f31ecc350ec8a3d82b54a9fcb9c201c149edf7b1feb0432e66a1a",
+    "stage-backend-candidate.py": "f3b96b790ac1c98d69614f72e1a839ca791f47e0729e100e5f0ec10dc287b723",
+    "probe-backend-dependencies.mjs": "d8063829b6a1a55c9b0ad6bd394e9cae313f7d1e0a387ff935d80f829c4a95f3"
+  },
+  "sudo_invalidated": true,
+  "tmux_session_closed": true,
+  "github_runner_access_tested": false,
+  "github_automatic_deployment_tested": false,
+  "operator_apply_on_production_tested": false,
+  "pending": [
+    "version and promote workflows when user finishes development",
+    "real GitHub CI/CD run for exact promoted SHA",
+    "verify resulting backend and Pages versions and postdeployment smoke"
+  ]
+}

@@ -5,7 +5,6 @@ import type { ActorReference } from '../../authorization/authority-transaction.j
 import { TeacherService, type TeacherScope } from '../teacher.service.js';
 import {
   TEACHER_GENERATION_PORT,
-  type AssessmentPolicy,
   type PrivateKey,
   type TeacherAnswer,
   type TeacherGenerationJob,
@@ -36,6 +35,7 @@ import {
 import {
   activeAttempt,
   startStoredAttempt,
+  publishAssessment,
   updateAttemptGrade,
 } from './teacher-attempt-persistence.js';
 import { pendingClosureReason } from './teacher-pending-closure.js';
@@ -44,6 +44,9 @@ import { isCompleteTeacherAnswer } from '../policies/teacher-answer-completeness
 import { initialPlanInput } from '../policies/teacher-initial-plan.js';
 import { canClearSetupDraft } from '../policies/teacher-setup-draft.js';
 import { saveSetupDraft, setupDraftResult } from './teacher-setup-draft.js';
+import { refreshLearningEvidence } from './teacher-learning-persistence.js';
+import type { LearningBlueprint } from '../types/teacher-learning.types.js';
+import type { BlueprintSlot } from '../types/teacher.types.js';
 
 type Body = Record<string, unknown>;
 type Target = {
@@ -186,7 +189,13 @@ export class ExecuteTeacherCommandUseCase {
       if (b.start_plan === true) {
         scope.session = created;
         return {
-          ...(await admitTeacherGeneration(scope, this.generation, 'plan_outline', planInput, { plan_revision_id: null })),
+          ...(await admitTeacherGeneration(
+            scope,
+            this.generation,
+            'plan_outline',
+            planInput,
+            { plan_revision_id: null },
+          )),
           session_id: id,
           revision: created.revision,
         };
@@ -223,6 +232,7 @@ export class ExecuteTeacherCommandUseCase {
           m,
           scope.reference,
           s.selection,
+          j.purpose,
         );
         const [snapshot]: {
           configuration_generation: string;
@@ -362,7 +372,12 @@ export class ExecuteTeacherCommandUseCase {
         await saveSetupDraft(scope, b.expected_draft_revision, '');
       const revision = await bump(scope);
       if (b.generate_reply === false)
-        return { session_id: s.id, message_id: id, revision, ...setupDraftResult(scope) };
+        return {
+          session_id: s.id,
+          message_id: id,
+          revision,
+          ...setupDraftResult(scope),
+        };
       const messages = await m.query(
         'SELECT id,seq,role,text FROM teacher_setup_messages WHERE session_id=$1 ORDER BY seq DESC LIMIT 12',
         [s.id],
@@ -575,7 +590,11 @@ export class ExecuteTeacherCommandUseCase {
         const pending = b.pending_setup_draft as Body;
         if (!pending || typeof pending !== 'object' || Array.isArray(pending))
           teacherError('invalid_input', 400);
-        await saveSetupDraft(scope, pending.expected_draft_revision, pending.text);
+        await saveSetupDraft(
+          scope,
+          pending.expected_draft_revision,
+          pending.text,
+        );
       }
       if (b.pending_responses) {
         if (typeof b.attempt_id !== 'string')
@@ -768,42 +787,95 @@ export class ExecuteTeacherCommandUseCase {
     editable(scope);
     const { manager: m, session: s } = scope;
     cas(s!.revision, b.expected_session_revision);
-    const diagnostic = op === 'start_diagnostic',
-      revision = diagnostic ? null : requireUuid(b.plan_revision_id),
+    if (op === 'start_diagnostic') {
+      if (b.entry_route !== 'diagnostic') teacherError('invalid_input', 400);
+      const active = await activeAttempt(
+        m,
+        s!.id,
+        'diagnostic',
+        null,
+        null,
+        null,
+      );
+      if (active)
+        return {
+          kind: 'attempt',
+          resource_id: active.id,
+          attempt_id: active.id,
+          revision: active.revision,
+        };
+      const [bank]: LearningBlueprint[] = await m.query(
+        'SELECT * FROM teacher_learning_blueprints WHERE session_id=$1 ORDER BY revision DESC LIMIT 1',
+        [s!.id],
+      );
+      if (!bank?.reviewed) teacherError('help_unavailable');
+      const items = bank.items.map((item, i) => ({
+        local_ref: String(i + 1),
+        objective_id: item.dimension_id,
+        kind: item.kind,
+        prompt: item.prompt,
+        ...(item.options ? { options: item.options } : {}),
+        private_key: item.private_key,
+        explanation: item.explanation,
+      }));
+      const slots: BlueprintSlot[] = items.map((item, i) => ({
+        ordinal: i + 1,
+        objective_id: item.objective_id,
+        kind: item.kind,
+        max_points: 2,
+      }));
+      const policy = defaultPolicy(bank.dimensions.length);
+      policy.diagnostic_counts = {
+        single_choice: items.filter((i) => i.kind === 'single_choice').length,
+        completion: items.filter((i) => i.kind === 'completion').length,
+        short_text: 0,
+      };
+      const assessmentId = await publishAssessment(
+        m,
+        s!,
+        null,
+        {
+          schema_version: 1,
+          scope: 'diagnostic',
+          plan_revision_id: null,
+          section_id: null,
+          unit_id: null,
+          items,
+        },
+        slots,
+        policy,
+        null,
+        bank.id,
+      );
+      return startStoredAttempt(m, s!, assessmentId, 'diagnostic');
+    }
+    const revision = requireUuid(b.plan_revision_id),
       unit = t.unitId ?? null;
     let section = t.sectionId ?? null;
-    if (!diagnostic && revision !== s!.current_plan_revision_id)
+    if (revision !== s!.current_plan_revision_id)
       teacherError('proposal_obsolete');
-    let policy: AssessmentPolicy = defaultPolicy(),
-      objectives: string[] = [];
-    let plan: PlanRevisionRow | null = null;
-    if (!diagnostic) {
-      plan = await this.plan(m, s!.id, revision!);
-      policy = plan.assessment_policy;
-      if (unit) {
-        const [u]: { section_id: string }[] = await m.query(
-          'SELECT section_id FROM teacher_units WHERE session_id=$1 AND plan_revision_id=$2 AND id=$3',
-          [s!.id, revision, unit],
-        );
-        if (!u) teacherError('not_found', 404);
-        section = u.section_id;
-      }
-      const sectionOutline = plan.outline.sections.find(
-        (x) => x.id === section,
+    const plan = await this.plan(m, s!.id, revision);
+    const policy = plan.assessment_policy;
+    if (unit) {
+      const [u]: { section_id: string }[] = await m.query(
+        'SELECT section_id FROM teacher_units WHERE session_id=$1 AND plan_revision_id=$2 AND id=$3',
+        [s!.id, revision, unit],
       );
-      if (!sectionOutline) teacherError('not_found', 404);
-      objectives = unit
-        ? sectionOutline.units.find((u) => u.id === unit)!.objective_ids
-        : sectionOutline.objectives.map((o) => o.id);
-      if (op === 'start_final') {
-        const [blocked]: { n: string }[] = await m.query(
-          'SELECT count(*)::text AS n FROM teacher_section_prerequisites p WHERE p.session_id=$1 AND p.plan_revision_id=$2 AND p.section_id=$3 AND NOT EXISTS(SELECT 1 FROM teacher_section_verifications v WHERE v.session_id=p.session_id AND v.plan_revision_id=p.plan_revision_id AND v.section_id=p.required_section_id)',
-          [s!.id, revision, section],
-        );
-        if (Number(blocked.n)) teacherError('prerequisite_not_verified');
-      }
-    } else
-      objectives = [randomUUID(), randomUUID(), randomUUID(), randomUUID()];
+      if (!u) teacherError('not_found', 404);
+      section = u.section_id;
+    }
+    const sectionOutline = plan.outline.sections.find((x) => x.id === section);
+    if (!sectionOutline) teacherError('not_found', 404);
+    const objectives = unit
+      ? sectionOutline.units.find((u) => u.id === unit)!.objective_ids
+      : sectionOutline.objectives.map((o) => o.id);
+    if (op === 'start_final') {
+      const [blocked]: { n: string }[] = await m.query(
+        'SELECT count(*)::text AS n FROM teacher_section_prerequisites p WHERE p.session_id=$1 AND p.plan_revision_id=$2 AND p.section_id=$3 AND NOT EXISTS(SELECT 1 FROM teacher_section_verifications v WHERE v.session_id=p.session_id AND v.plan_revision_id=p.plan_revision_id AND v.section_id=p.required_section_id)',
+        [s!.id, revision, section],
+      );
+      if (Number(blocked.n)) teacherError('prerequisite_not_verified');
+    }
     if (op === 'material' && b.variant === 'current') {
       const [content] = await m.query(
         "SELECT id FROM teacher_content_versions WHERE session_id=$1 AND plan_revision_id=$2 AND unit_id=$3 AND publication_state='current'",
@@ -816,18 +888,13 @@ export class ExecuteTeacherCommandUseCase {
           content_version_id: content.id,
         };
     }
-    const assessmentScope = diagnostic
-      ? 'diagnostic'
-      : op === 'start_final'
-        ? 'section_final'
-        : 'unit_practice';
+    const assessmentScope =
+      op === 'start_final' ? 'section_final' : 'unit_practice';
     if (op !== 'material') {
       const allowedRoute =
-        assessmentScope === 'diagnostic'
-          ? b.entry_route === 'diagnostic'
-          : assessmentScope === 'unit_practice'
-            ? b.entry_route === 'practice'
-            : ['direct', 'after_study'].includes(String(b.entry_route));
+        assessmentScope === 'unit_practice'
+          ? b.entry_route === 'practice'
+          : ['direct', 'after_study'].includes(String(b.entry_route));
       if (!allowedRoute) teacherError('invalid_input', 400);
       const active = await activeAttempt(
         m,
@@ -1064,6 +1131,7 @@ export class ExecuteTeacherCommandUseCase {
       );
       let job: Body = {};
       if (Number(pending.n)) job = await this.feedbackJob(scope, a.id);
+      await refreshLearningEvidence(m, s!.id);
       await m.query(
         'UPDATE teacher_attempts SET revision=revision+1,updated_at=clock_timestamp() WHERE id=$1',
         [a.id],
@@ -1103,6 +1171,7 @@ export class ExecuteTeacherCommandUseCase {
         [a.id],
       );
       const result = await updateAttemptGrade(m, s!, a.id);
+      await refreshLearningEvidence(m, s!.id);
       const [pending]: { n: string }[] = await m.query(
         "SELECT count(*)::text AS n FROM teacher_responses WHERE attempt_id=$1 AND grade_state='pending'",
         [a.id],

@@ -1,6 +1,7 @@
 import { Skeleton } from "boneyard-js/react";
 import { useImperativeHandle, type Ref } from "react";
-import { Alert, Box, Button, LinearProgress, Typography } from "@mui/material";
+import { Alert, Box, Button, IconButton, LinearProgress, Tooltip, Typography } from "@mui/material";
+import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
 import BaseModal from "../../../../../../components/BaseModal";
 import { ConfirmDialog } from "../../../../../../components/ConfirmDialog/ConfirmDialog";
 import type { CodexSession } from "../../infrastructure/codexSession";
@@ -45,6 +46,22 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
     manage,
   } = useCodexSession(providerId, disabled, session);
   useImperativeHandle(ref, () => ({ manage }));
+  const checkStatusLabel = t("ai_providers:codex.check_status");
+  const checkStatusAction = (
+    <Tooltip title={checkStatusLabel}>
+      <span>
+        <IconButton
+          aria-label={checkStatusLabel}
+          disabled={busy}
+          onClick={checkSession}
+          color="inherit"
+          sx={{ width: 44, height: 44 }}
+        >
+          <RefreshOutlinedIcon />
+        </IconButton>
+      </span>
+    </Tooltip>
+  );
   return (
     <DetailPanel>
       <PanelHeader>
@@ -61,7 +78,7 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
           }}
         >
           <Button
-            variant="outlined"
+            variant="contained"
             disabled={busy}
             onClick={manage}
             sx={{ width: { xs: "100%", sm: "auto" } }}
@@ -70,6 +87,7 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
           </Button>
           {connectionState === "connected" && (
             <Button
+              variant="contained"
               color="error"
               disabled={busy}
               onClick={() => setDisconnect(true)}
@@ -85,14 +103,9 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
       )}
       {!open && sessionObservation.isError && (
         <Alert severity="error" sx={{
-          flexWrap: { xs: "wrap", sm: "nowrap" },
-          "& .MuiAlert-message": { flex: 1 },
-          "& .MuiAlert-action": { width: { xs: "100%", sm: "auto" }, pl: { xs: 0, sm: 2 }, mr: { xs: 0, sm: -1 }, pt: { xs: 1, sm: 0 } },
-        }} action={
-          <Button disabled={busy} onClick={checkSession} sx={{ width: { xs: "100%", sm: "auto" } }}>
-            {t("ai_providers:codex.check_status")}
-          </Button>
-        }>
+          "& .MuiAlert-message": { flex: 1, minWidth: 0 },
+          "& .MuiAlert-action": { alignSelf: "flex-start", pt: 0 },
+        }} action={checkStatusAction}>
           {t("core:server_error_toast")}
         </Alert>
       )}
@@ -185,14 +198,9 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
             {connectionState === "busy" && <Alert severity="info">{t("ai_providers:codex.busy")}</Alert>}
             {runtimeUnavailable && (
               <Alert severity="warning" sx={{
-                flexWrap: { xs: "wrap", sm: "nowrap" },
-                "& .MuiAlert-message": { flex: 1 },
-                "& .MuiAlert-action": { width: { xs: "100%", sm: "auto" }, pl: { xs: 0, sm: 2 }, mr: { xs: 0, sm: -1 }, pt: { xs: 1, sm: 0 } },
-              }} action={
-                <Button disabled={busy} onClick={checkSession} sx={{ width: { xs: "100%", sm: "auto" } }}>
-                  {t("ai_providers:codex.check_status")}
-                </Button>
-              }>
+                "& .MuiAlert-message": { flex: 1, minWidth: 0 },
+                "& .MuiAlert-action": { alignSelf: "flex-start", pt: 0 },
+              }} action={checkStatusAction}>
                 {t("ai_providers:codex.runtime_unavailable")}
               </Alert>
             )}
@@ -216,7 +224,7 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
                   href={job.verificationUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  variant="outlined"
+                  variant="contained"
                   disabled={busy}
                 >
                   {t("ai_providers:codex.open_login")}

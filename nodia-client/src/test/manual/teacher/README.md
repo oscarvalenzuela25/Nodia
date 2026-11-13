@@ -1,16 +1,26 @@
 # Teacher UI synthetic QA
 
-Run the existing Client Vite server and open `/src/test/manual/teacher/index.html`.
+Run the existing Client Vite server in `--mode qa` and open `/src/test/manual/teacher/index.html`.
 All requests are handled by an in-memory Axios adapter in this fixture. It does not
 call providers, the operational Server or a database. It uses the production Teacher
 components and the existing PageContent padding/theme; navigation authority is tested
 separately by the real router/Server checks.
 
-Query parameters: `scenario=list|empty|draft|review|plan|lesson|final|practice|graded|failed|paused|unknown|error`,
+Query parameters: `scenario=new|list|empty|draft|review|plan|lesson|final|practice|graded|failed|paused|unknown|error`,
 `lang=es|en`, `theme=light|dark`, `topic=english` for the second topic/organization,
 `fail=pause` for a rejected pause that preserves the draft, or `fail=lost` for a
 committed command with a lost response recovered only through its original receipt.
 Synthetic model names and illustrative scores exist only in this fixture.
+
+`scenario=new` renders the production creation form; `noEfforts=1` deliberately
+omits reasoning metadata. Eligibility remains false in these synthetic scenarios:
+being signed in or having catalog options must not qualify generation.
+QA2026-11-12/13: Chromium320/1280, ES/dark and EN/light; brand line-height normal,
+AI selectors48px with clear icons or disabled/no-effort state, no horizontal
+document overflow (310/1270px scrollWidth). Language menu exposes12 translated
+options, and field help uses keyboard-accessible question buttons. Form language
+selection and typing were checked without submitting; unit tests cover retained
+historical tags, payloads, busy/error states and exact selection eligibility.
 
 The production client preserves only opaque pending-request metadata in tab-scoped
 sessionStorage. It contains actor scope, request UUID, path and method, with no

@@ -1,17 +1,19 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { Alert, Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Alert, Button, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import CheckOutlined from "@mui/icons-material/CheckOutlined";
 import InfoOutlined from "@mui/icons-material/InfoOutlined";
 import UndoOutlined from "@mui/icons-material/UndoOutlined";
 import ExpandMoreOutlined from "@mui/icons-material/ExpandMoreOutlined";
+import RefreshOutlined from "@mui/icons-material/RefreshOutlined";
 import { useTranslation } from "react-i18next";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import QueryErrorAlert from "../../../../components/QueryErrorAlert";
+import FieldHelp from "../FieldHelp";
 import { connectionsSchema, eligibilitySchema, type Selection } from "../../infrastructure/schemas";
 import { configuredSelection, defaultSelection, emptySelection, sameSelection, validSelection, type SelectionDraft } from "../../infrastructure/selection";
 import { chooseModelEffort, modelOptionComplete, modelOptionEfforts, modelOptionFor, teacherModelOptions } from "../../infrastructure/modelOptions";
 import { useTeacherQuery } from "../../infrastructure/useServices";
-import { ComposerSelectionBar, Details, Fields, SelectionAccordion, Selector, Summary } from "./styles";
+import { ComposerSelectionBar, Details, Fields, SelectionAccordion, SelectionHeader, SelectionSection, Selector, Summary } from "./styles";
 
 type Props = { initial: Selection | null; busy: boolean; presentation?: "panel" | "composer";
   onDirtyChange?: (dirty: boolean) => void; onReadyChange?: (ready: boolean) => void } & (
@@ -74,18 +76,23 @@ export default function SelectionPanel({ initial, busy, onSave, intent = "sessio
   };
   const reason = exactEligibility?.reason_code
     ? t(i18n.exists(`teacher:reasons.${exactEligibility.reason_code}`) ? `teacher:reasons.${exactEligibility.reason_code}` : "teacher:reasons.unknown") : null;
-  const status = t(exactEligibility ? exactEligibility.eligible ? "teacher:selection_qualified" : "teacher:selection_unqualified" : "teacher:checking_selection");
+  const checking = catalog.isLoading || catalog.isFetching || eligibility.isFetching;
+  const status = t(!checking && exactEligibility ? exactEligibility.eligible ? "teacher:selection_qualified" : "teacher:selection_unqualified" : "teacher:checking_selection");
+  const refresh = () => { void catalog.refetch(); if (selection) void eligibility.refetch(); };
+  const help = (field: "connection" | "mode" | "model" | "effort") => presentation === "composer" ? undefined
+    : <FieldHelp label={t(`teacher:${field}`)} message={t(`teacher:selection_help.${field}`)} />;
   const feedback = <>
     <QueryErrorAlert retryVariant="outlined" isError={catalog.isError || eligibility.isError} isFetching={catalog.isFetching || eligibility.isFetching} onRetry={() => { void catalog.refetch(); if (selection) void eligibility.refetch(); }} />
     {staleSelection && <Alert severity="warning">{t("teacher:selection_missing")}</Alert>}
     {!catalog.isLoading && !catalog.isError && !catalog.data?.items.length && <Alert severity="info">{t("teacher:no_connections")}</Alert>}
+    {model && !effortOptions.length && !catalog.isLoading && !catalog.isError && <Alert severity="info">{t("teacher:effort_unreported")}</Alert>}
     {exactEligibility?.eligible === false && <Alert severity="warning">{status}{reason ? ` · ${reason}` : ""}</Alert>}
   </>;
   const controls = <>
-    <Selector compact={presentation === "composer"}><SelectSingleInput label={t("teacher:connection")} value={draft.connection_id || null} clearable={presentation !== "composer"} options={catalog.data?.items.map(item => ({ value: item.connection_id, label: item.label })) ?? []} onChange={value => { if (value !== draft.connection_id) setEdited(configuredSelection(catalog.data?.items.find(item => item.connection_id === value))); }} disabled={disabled} /></Selector>
-    <Selector compact={presentation === "composer"}><SelectSingleInput label={t("teacher:mode")} value={draft.mode} clearable={presentation !== "composer"} options={connection?.modes.map(item => ({ value: item.mode, label: item.mode === "api_key" ? "API key" : "Agentic" })) ?? []} onChange={value => { if (value !== draft.mode) setEdited(configuredSelection(connection, value === "api_key" || value === "agentic" ? value : null)); }} disabled={disabled || !connection} /></Selector>
-    <Selector compact={presentation === "composer"}><SelectSingleInput label={t("teacher:model")} value={modelOption?.value ?? (draft.model_id || null)} clearable={presentation !== "composer"} placeholder={t("teacher:no_model")} options={modelOptions.map(item => ({ value: item.value, label: item.label }))} onChange={value => { if (value === modelOption?.value || value === draft.model_id) return; const saved = selectedMode?.configured_selection; const next = modelOptionFor(modelOptions, value ?? ""); const savedOption = saved ? modelOptionFor(modelOptions, saved.model_id) : undefined; const restore = saved && saved.connection_id === draft.connection_id && saved.mode === draft.mode && next && savedOption === next && modelOptionComplete(next, saved); setEdited({ ...draft, model_id: restore ? saved.model_id : value ?? "", effort_id: restore ? saved.effort_id : null }); }} disabled={disabled || !selectedMode} /></Selector>
-    <Selector compact={presentation === "composer"}><SelectSingleInput label={t("teacher:effort")} value={draft.effort_id} options={effortOptions.map(item => ({ value: item.effort_id, label: item.label }))} onChange={value => setEdited(chooseModelEffort(modelOption, { ...draft }, value))} disabled={disabled || !effortOptions.length} /></Selector>
+    <Selector compact={presentation === "composer"}><SelectSingleInput labelAdornment={help("connection")} label={t("teacher:connection")} value={draft.connection_id || null} clearable={presentation !== "composer"} options={catalog.data?.items.map(item => ({ value: item.connection_id, label: item.label })) ?? []} onChange={value => { if (value !== draft.connection_id) setEdited(configuredSelection(catalog.data?.items.find(item => item.connection_id === value))); }} disabled={disabled} /></Selector>
+    <Selector compact={presentation === "composer"}><SelectSingleInput labelAdornment={help("mode")} label={t("teacher:mode")} value={draft.mode} clearable={presentation !== "composer"} options={connection?.modes.map(item => ({ value: item.mode, label: item.mode === "api_key" ? "API key" : "Agentic" })) ?? []} onChange={value => { if (value !== draft.mode) setEdited(configuredSelection(connection, value === "api_key" || value === "agentic" ? value : null)); }} disabled={disabled || !connection} /></Selector>
+    <Selector compact={presentation === "composer"}><SelectSingleInput labelAdornment={help("model")} label={t("teacher:model")} value={modelOption?.value ?? (draft.model_id || null)} clearable={presentation !== "composer"} placeholder={t("teacher:no_model")} options={modelOptions.map(item => ({ value: item.value, label: item.label }))} onChange={value => { if (value === modelOption?.value || value === draft.model_id) return; const saved = selectedMode?.configured_selection; const next = modelOptionFor(modelOptions, value ?? ""); const savedOption = saved ? modelOptionFor(modelOptions, saved.model_id) : undefined; const restore = saved && saved.connection_id === draft.connection_id && saved.mode === draft.mode && next && savedOption === next && modelOptionComplete(next, saved); setEdited({ ...draft, model_id: restore ? saved.model_id : value ?? "", effort_id: restore ? saved.effort_id : null }); }} disabled={disabled || !selectedMode} /></Selector>
+    <Selector compact={presentation === "composer"}><SelectSingleInput labelAdornment={help("effort")} label={t("teacher:effort")} value={draft.effort_id} options={effortOptions.map(item => ({ value: item.effort_id, label: item.label }))} onChange={value => setEdited(chooseModelEffort(modelOption, { ...draft }, value))} disabled={disabled || !effortOptions.length} /></Selector>
   </>;
 
   if (presentation === "composer") return <ComposerSelectionBar aria-label={t("teacher:ai_selection")}>
@@ -100,9 +107,24 @@ export default function SelectionPanel({ initial, busy, onSave, intent = "sessio
 
   const summary = [connection?.label ?? draft.connection_id, draft.mode === "api_key" ? "API key" : draft.mode === "agentic" ? "Agentic" : null,
     modelOption?.label ?? model?.label ?? draft.model_id, draft.effort_id].filter(Boolean).join(" · ");
+  if (intent === "create") return <SelectionSection aria-labelledby={fieldsId}>
+    <SelectionHeader>
+      <Stack sx={{ gap: .75 }}>
+        <Typography id={fieldsId} component="h2" variant="h6" sx={{ fontWeight: 700, lineHeight: 1.3 }}>{t("teacher:ai_selection")}</Typography>
+        <Typography variant="body2" color="text.secondary">{t("teacher:selection_description")}</Typography>
+      </Stack>
+      <Chip role="status" size="small" variant="outlined" color={ready ? "success" : "default"} label={status} />
+    </SelectionHeader>
+    <Fields>{controls}</Fields>
+    <Stack direction="row" sx={{ alignItems: "center", gap: 1, minWidth: 0 }}>
+      <Typography variant="caption" color="text.secondary" sx={{ flex: 1 }}>{t("teacher:configuration_notice")}</Typography>
+      <Tooltip title={t("teacher:refresh_connections")}><span><IconButton type="button" aria-label={t("teacher:refresh_connections")} disabled={disabled} onClick={refresh}><RefreshOutlined /></IconButton></span></Tooltip>
+    </Stack>
+    {feedback}
+  </SelectionSection>;
   return <SelectionAccordion expanded={expanded} onChange={(_, value) => setOpened(value)} disableGutters elevation={0}>
     <Summary expandIcon={<ExpandMoreOutlined />} aria-controls={fieldsId}>
-      <Stack sx={{ minWidth: 0, gap: 0.5 }}><Typography variant="h6" component="span" sx={{ fontSize: 22, fontWeight: 700, textTransform: "uppercase" }}>{t("teacher:ai_selection")}</Typography>
+      <Stack sx={{ minWidth: 0, gap: 0.5 }}><Typography variant="h6" component="span" sx={{ fontSize: 22, fontWeight: 700 }}>{t("teacher:ai_selection")}</Typography>
         {summary && <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>{summary}</Typography>}
         {!expanded && <Typography variant="caption" color="text.secondary">{t(exactEligibility?.eligible ? "teacher:selection_qualified" : "teacher:checking_selection")}</Typography>}
       </Stack>
@@ -110,7 +132,7 @@ export default function SelectionPanel({ initial, busy, onSave, intent = "sessio
     <Details><Stack sx={{ gap: 2 }}>
       {feedback}
       <Fields>{controls}</Fields>
-      {intent !== "create" && onSave && <Button variant="contained" disabled={!canSave} loading={applying} onClick={() => void save()}>{t("teacher:save_selection")}</Button>}
+      {onSave && <Button variant="contained" disabled={!canSave} loading={applying} onClick={() => void save()}>{t("teacher:save_selection")}</Button>}
     </Stack></Details>
   </SelectionAccordion>;
 }

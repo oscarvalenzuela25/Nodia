@@ -54,6 +54,18 @@ export async function startStoredAttempt(
     [s.id, assessmentId],
   );
   if (!items.length) teacherError('assessment_unavailable');
+  // Repeating an exposed task is useful retrieval practice, but is not a new
+  // independent application even if a later packet gives it another item ID.
+  const seen: { id: string; previous_response_id: string }[] = assessment.scope === 'unit_practice'
+    ? await m.query(
+      `SELECT DISTINCT ON(current.id) current.id,r.id AS previous_response_id
+       FROM teacher_assessment_items current JOIN teacher_assessment_items previous
+         ON previous.session_id=current.session_id AND (previous.item_fingerprint=current.item_fingerprint OR previous.variant_group=current.variant_group)
+       JOIN teacher_responses r ON r.session_id=previous.session_id AND r.item_id=previous.id AND r.submitted_at IS NOT NULL
+       WHERE current.session_id=$1 AND current.assessment_id=$2
+       ORDER BY current.id,r.submitted_at DESC,r.id DESC`, [s.id, assessmentId])
+    : [];
+  const seenByItem = new Map(seen.map(item => [item.id, item.previous_response_id]));
   const [last]: { n: number }[] = await m.query(
     'SELECT coalesce(max(attempt_no),0)::integer AS n FROM teacher_attempts WHERE session_id=$1 AND scope=$2 AND plan_revision_id IS NOT DISTINCT FROM $3::uuid AND section_id IS NOT DISTINCT FROM $4::uuid AND unit_id IS NOT DISTINCT FROM $5::uuid',
     [
@@ -66,7 +78,7 @@ export async function startStoredAttempt(
   );
   const id = randomUUID();
   await m.query(
-    `INSERT INTO teacher_attempts(id,session_id,assessment_id,scope,plan_revision_id,section_id,unit_id,attempt_no,entry_route,result,denominator_points,threshold_percent,policy_snapshot,policy_hash) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+    `INSERT INTO teacher_attempts(id,session_id,assessment_id,scope,plan_revision_id,section_id,unit_id,attempt_no,entry_route,result,denominator_points,threshold_percent,policy_snapshot,policy_hash,assisted) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
     [
       id,
       s.id,
@@ -85,12 +97,14 @@ export async function startStoredAttempt(
       assessment.scope === 'section_final' ? 90 : null,
       assessment.policy_snapshot,
       hash(assessment.policy_snapshot),
+      seen.length > 0,
     ],
   );
   for (const item of items)
     await m.query(
-      'INSERT INTO teacher_responses(id,session_id,attempt_id,assessment_id,item_id) VALUES($1,$2,$3,$4,$5)',
-      [randomUUID(), s.id, id, assessmentId, item.id],
+      'INSERT INTO teacher_responses(id,session_id,attempt_id,assessment_id,item_id,assistance) VALUES($1,$2,$3,$4,$5,$6)',
+      [randomUUID(), s.id, id, assessmentId, item.id,
+        JSON.stringify(seenByItem.has(item.id) ? { previously_seen_item: true, previous_response_id: seenByItem.get(item.id) } : {})],
     );
   return { kind: 'attempt', resource_id: id, attempt_id: id, revision: 1 };
 }
@@ -111,11 +125,12 @@ function fingerprint(item: AssessmentCandidate['items'][number]) {
 export async function publishAssessment(
   m: EntityManager,
   s: TeacherSessionRow,
-  jobId: string,
+  jobId: string | null,
   candidate: AssessmentCandidate,
   slots: BlueprintSlot[],
   policy: AssessmentPolicy,
   contentId: string | null,
+  diagnosticBlueprintId: string | null = null,
 ) {
   const id = randomUUID();
   const allFingerprints = candidate.items.map(fingerprint);
@@ -148,7 +163,7 @@ export async function publishAssessment(
     ],
   );
   await m.query(
-    `INSERT INTO teacher_assessments(id,session_id,plan_revision_id,section_id,unit_id,content_version_id,scope,version_no,policy_version,policy_snapshot,coverage,coverage_hash,generation_job_id,status) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'ready')`,
+    `INSERT INTO teacher_assessments(id,session_id,plan_revision_id,section_id,unit_id,content_version_id,scope,version_no,policy_version,policy_snapshot,coverage,coverage_hash,generation_job_id,status,diagnostic_blueprint_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'ready',$14)`,
     [
       id,
       s.id,
@@ -163,6 +178,7 @@ export async function publishAssessment(
       JSON.stringify(slots),
       hash(slots),
       jobId,
+      diagnosticBlueprintId,
     ],
   );
   for (let i = 0; i < candidate.items.length; i++) {

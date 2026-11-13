@@ -1,6 +1,6 @@
 # Limpieza del repositorio y consolidación documental
 
-> Estado: en revisión. El usuario solicita preparar un plan; no se ejecutan borrados, movimientos, normalización de históricos ni cambios de runtime.
+> Estado: en revisión; ejecución parcial L02 de índices/progreso el 2026-11-09, descrita al final. No se ejecutan borrados de temporales/código, normalización de evidencia histórica ni cambios de runtime.
 > Fecha: 2026-11-09.
 > Dependencias: [reglas raíz](../../AGENTS.md), [progreso](00-progress.md), [índice](README.md), [mantenimiento](../../ops/maintenance/README.md), [estándar de conocimiento](../nodia-ai/knowledge/README.md), [producción/CI99](99-production-deployment-and-cicd-plan.md).
 
@@ -109,12 +109,13 @@ En Windows, antes de cualquier movimiento o borrado recursivo comprobar que el p
 - [ ] Inventariar por lote paths, consumidores, procesos activos, capacidad de regeneración y evidencia única; tamaños recursivos sólo donde sea útil y sin seguir reparse points.
 - [ ] Mapear helpers mantenidos que dependen de paquetes ignorados/temporales y preparar su sustitución antes de retirar originales.
 - [ ] Crear matriz de documentación vigente/histórica, sección canónica, aprobación, hashes/anchors y destino propuesto. No usar edad como decisión automática.
+- [x] Completar el mapa del lote acotado README/00-progress: consumidores, exclusión de fuentes publicadas, párrafos conservados, anclas antiguas y destinos de historia; ver recibo L02.
 
 ### L02 — Entradas y progreso
 
-- [ ] Simplificar README MVP a índice y mover estado actual a00-progress mediante enlaces, conservando contratos/paths registrados.
-- [ ] Consolidar cronología repetida por tema sin perder límites, incidencias o pendientes; medir reducción de bloques repetidos y facilidad de encontrar el primer paso incompleto.
-- [ ] Revisar README raíz y navegación entre planes para que una persona encuentre producto, desarrollo, despliegue y pendientes sin leer cronologías completas.
+- [x] Simplificar README MVP a índice y mover estado actual a00-progress mediante enlaces, conservando contratos/paths registrados.
+- [x] Consolidar las cronologías de estos dos índices sin perder límites, incidencias o pendientes; historia única y métricas en el recibo L02. Los demás planes temáticos se evalúan en L03.
+- [x] Revisar README raíz y navegación: sus rutas estables a MVP/progreso/ADRs/instalación siguen siendo válidas, sin requerir cambios en raíz. Las entradas de dominio, producción y mantenimiento están en el índice simplificado.
 
 ### L03 — Documentación funcional y despliegue
 
@@ -137,10 +138,38 @@ En Windows, antes de cualquier movimiento o borrado recursivo comprobar que el p
 - [ ] Enlazar la política de salidas en CI99: empaquetar fuentes/artefactos explícitos, no todo el workspace con `.tmp`, perfiles o dumps. No automatizar GC destructivo por calendario sin inventario/exclusiones comprobadas.
 - [ ] Registrar cierre por lote en `ops/maintenance`, sin marcar documentos aprobados ni publicar corpus por limpiar.
 
-**Primer paso incompleto:** completar L01 para el primer lote de índices/progreso y salidas cerradas. La limpieza documental puede avanzar junto a ramas/CI de99; no bloquear todo el piloto por reorganizar historia, pero resolver dependencias temporales y exclusiones que afecten al release antes de publicar.
+**Primer paso incompleto:** completar L01 para los siguientes lotes y salidas cerradas; L02 de README/00-progress está cerrado por el alcance registrado abajo. L03 funcional/conocimiento y L04 temporales/código no están ejecutados. La limpieza documental puede avanzar junto a ramas/CI de99; no bloquear todo el piloto por reorganizar historia, pero resolver dependencias temporales y exclusiones que afecten al release antes de publicar.
 
 ## 8. Evaluación de impacto y entrega de esta revisión
 
 Esta revisión sólo crea el plan y enlaces de continuidad. No cambian UI, backend, contratos, permisos ni herramientas NodiaAI; no requiere nuevas fichas/publicación. La ejecución posterior debe evaluar cada fuente y sus fichas conforme al estándar, especialmente si cambia paths/cuerpos compilados o disponibilidad operativa.
 
-Inventario preliminar parcial y comprobaciones documentales diferenciados de ejecución: no se borraron/movieron temporales, no se alteraron archivos históricos ni se verificó recuperación o capacidad de un entorno. Las cifras observadas no acreditan ahorro conseguido.
+Inventario preliminar parcial y comprobaciones documentales diferenciados de ejecución: al crear el plan no se borraron/movieron temporales ni se verificó recuperación o capacidad de un entorno. La ejecución documental posterior tiene su propio recibo; las cifras preliminares de posibles temporales no acreditan ahorro conseguido.
+
+## 9. L02 ejecutado: README y 00-progress — 2026-11-09
+
+Solicitud explícita de retomar la limpieza empezando por estos dos documentos. [README](README.md) queda como índice con estados/jerarquía y [00-progress](00-progress.md) como síntesis vigente/pendientes; [historial único](00-progress-history.md) conserva todos los párrafos previos no encabezado y el contexto de sus secciones, sin repetir 132 bloques compartidos del antiguo índice. Es una consolidación de texto propio editable, no una edición de evidencias originales firmadas o sus manifiestos.
+
+Los dos índices pasan de 564.078 a 38.965 bytes (93,09% menos texto de entrada), conservando 120 anclas antiguas entre secciones vigentes y enlaces explícitos a historia. Índices más historia suman 502.524 bytes: la reducción de las entradas no equivale a borrar toda la historia ni a reducir el historial Git. No se eliminan fuentes funcionales, contratos, ADRs, evidencia, originales de LF, temporales, sesiones o backups.
+
+[Recibo de conservación y verificación](../../ops/maintenance/docs-index-cleanup-2026-11-09.json): cobertura de párrafos, mapa de anclas, comprobaciones de archivos/enlaces/fragments, integridad del resto de fuentes y baseline del compiler. No se introduce ningún problema nuevo de enlace; un fragmento histórico previo hacia86 queda registrado para revisión posterior, sin modificar esa fuente hasheada. El registry, release, manifiesto y assets de conocimiento compilados sólo en memoria son idénticos al baseline (44 documentos/46 fragmentos/153 capacidades); no se emite bundle ni se repiten reconciliadores históricos.
+
+La síntesis no convierte en pendientes actuales las antiguas instrucciones Web/login, instalaciones ya sucedidas o cierres anteriores; conserva los bloqueadores OCR R16, Teacher96§32, aceptación de recuperación y preparación productiva por sus fuentes vigentes. No se cambia aprobación documental ni se acredita nueva aceptación de producto/entorno.
+
+## 9. Lote acotado de evidencia de despliegue e interfaz — 2026-11-13
+
+Solicitud explícita del usuario antes de commit/PR: conservar evidencia útil sin acumular un JSON por verificación. Se consolidan y retiran **cinco archivos JSON**, dos versionados en sus ramas de origen y tres generados sin llegar a versionarse; no se borran código, pruebas, temporales, secretos o backups. No se crea otro JSON/ZIP para conservar las mismas copias.
+
+| Registro retirado | Destino mantenido y hechos conservados |
+|---|---|
+|Baseline del host backend del2026-11-10|[Runbook de identidad/systemd](../../ops/production/README.md#baseline-de-identidad-y-unidades--2026-11-10): fecha, UID/GID/grupos, rutas/permisos, hashes originales bootstrap/unidades/validador, pruebas y límites de ese corte. El recibo posterior de preparación apunta al runbook real.|
+|Preparación del login IA del2026-11-12|[Recibo operativo final existente](../evidence/production-ai-login-live-20261112-r01.json): ya conserva manifiestos R02/R03, procedencia de instalación, incidencias, límites y pendientes. Se retira el estado intermedio superado, sin modificar sus originales archivados.|
+|Ajustes de proveedores/acceso del2026-11-12|[Contrato y verificación consolidada](ai-provider-feature-contract.md#verificación-consolidada-de-preferencias-y-acceso--2026-11-12): fuentes/pins, pruebas por corte, corrección de fixtures, QA sintética y límites. Las referencias de los7 bindings conservan evidencia sustantiva en ese documento.|
+|Interfaz Teacher/estado Agentic del2026-11-12|[96§42 y diagnóstico del2026-11-13](96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13): pruebas/QA por alcance, f01/45migraciones, TLS READ ONLY, ausencia de recibos/tabla de propósitos, hashes del diagnóstico y continuidad sin inferencia.|
+|Arreglo de estado UI incorporado desde PR4|[Verificación original consolidada en el contrato](ai-provider-feature-contract.md#verificación-consolidada-del-arreglo-ui-incorporado-desde-pr4): alcance de modelos/recarga/consultas/COOP,156 pruebas focales, suite inicial con12 fallos de fixture corregidos sin rerun global, QA sintética y límites. No se presenta ese corte como validación del merge posterior.|
+
+Se migran enlaces de planes/runbooks/índices y evidence_paths de fichas draft hacia archivos reales; en metadata no se usan anchors. El registry técnico migra los7 evidence_paths del lote de proveedores sin cambiar IDs, revisiones, esquemas, módulos o hashes de implementación. No se sustituyen fuentes por stubs ni se simula otra ejecución de pruebas. Se conservan los44 documentos aprobados byte a byte y los cuatro ZIP/manifiestos originales del operador IA; el registro operativo final del login permanece intacto.
+
+El compilador exige que la evidencia de capacidades resida bajo `docs/evidence/` (compiler.mjs, validación capability_evidence_denied). Se conserva allí una única [ficha técnica Markdown compacta](../evidence/ai-provider-settings-and-access-20261112-r01.md), con fuentes/pins, verificaciones y límites reales. Los7 bindings apuntan a ella; el contrato mantiene la explicación funcional. Por tanto se retiran cinco JSON y se añade un comprobante Markdown requerido, sin desactivar la validación ni crear otro reporte JSON/ZIP.
+
+Este lote no completa L01/L03/L05 generales ni cambia runtime, aceptación productiva, aprobación documental o publicación. La comparación de referencias, metadatos/enlaces e integridad de aprobados corresponde al cierre del lote; no requiere repetir TypeScript, inferencias o despliegues.

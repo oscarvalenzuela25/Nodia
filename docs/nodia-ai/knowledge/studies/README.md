@@ -4,11 +4,11 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 28,
+  "revision": 35,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "ClientR27 activo: LessonMarkdown local con fenced/indentados monoespaciados, extensión sólo declarada/alias y copia del texto renderizado sin cabecera.6pruebas/1suite9,88s, tipos/lint/build y adopción correctos. CUA1088/320 observó5controles44px CSS/JS, código179chars intacto, scroll horizontal local/teclado y toast tras Clipboard.writeTextfulfilled. No se verificaron bytes del clipboard OS: lectura0/pastevirtual vacío; exactitud y ausencia/rechazo cubiertos sintéticamente. Material preexistente, curso En curso/conteo8 y ServerR09/Native/timers conservados, sin POST personal/inferencia. Sin dependencias/highlight/ejecución o cambios NodiaAI; bloqueadoresV1 y aprobación/publicación pendientes."
+    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación. Candidato local2026-11-12: formulario guiado, idioma validado conservando etiqueta histórica y selección IA visible/48px con ayuda; catálogo sin esfuerzos explicado sin inventarlos. Cabecera Codex consulta observación acotada compartida, sin polling. Build/lint,382regresiones/51archivos y QA320/1280 correctos; f01productivo tiene0recibos Agentic y carece de tabla por propósito; sin despliegue/inferencia o publicación del lote."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
@@ -160,10 +160,62 @@
     {
       "path": "nodia-client/src/modules/teacher/components/LessonMarkdown/styles.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/101-nodia-teacher-adaptive-upgrade-plan.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/mvp/102-nodia-teacher-phased-implementation-and-final-qa.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md",
+      "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/teacher/teacher-learning.controller.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/teacher/teacher-enrichment.controller.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/teacher/use-case/teacher-learning-persistence.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/AdaptiveWorkspace.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/ai-generation/teacher-qualification-policy.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/ai-generation/teacher-contextual-qualification-policy.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/scripts/qualify-teacher-text.mjs",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/SessionForm/SessionFields.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/FieldHelp/FieldHelp.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/infrastructure/schemas.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-06",
+    "checked_on": "2026-11-12",
     "evidence_paths": [
       "docs/evidence/teacher-local-implementation-20261101-r01.json",
       "docs/evidence/teacher-local-activation-20261101-r01.json",
@@ -178,13 +230,49 @@
       "docs/evidence/teacher-model-effort-20261105-r01.json",
       "docs/evidence/teacher-ui-controls-20261106-r01.json",
       "docs/evidence/teacher-study-journey-20261106-r01.json",
-      "docs/evidence/teacher-code-blocks-20261106-r01.json"
+      "docs/evidence/teacher-code-blocks-20261106-r01.json",
+      "docs/evidence/teacher-upgrade-local-20261111-r01.json",
+      "docs/evidence/teacher-upgrade-local-20261111-r02.json",
+      "docs/evidence/teacher-upgrade-acceptance-20261111-r02.md",
+      "docs/evidence/teacher-upgrade-development-vm-20261111-r01.json",
+      "docs/mvp/96-nodia-teacher-implementation-plan.md"
     ],
-    "notes": "ClientR27 activo,6pruebas/1suite9,88s y tipos/lint/build correctos. Desktop1088 documento1078/1078/pre626/626, mobile320 documento310/310/pre242/312 y ArrowRight scrollLeft40; copiar44x44 y toast Código copiado tras writeTextfulfilled. Browser clipboardread0 y pastewrapper rechazado por virtualclipboard vacío impiden afirmar bytes OS verificados; exactcopy/newline/missing/rejected sólo en6tests. Material ya disponible antes del arreglo, En curso/conteo8, Root sóloGET y copia local; sin atribuir generación o reparación. Evidencia final SHA2562c46753164964afe4fc04ba6e6aa2142df3d7b4ebe2f997a449820c52e62c71b,4129bytes; draft/partial/unregistered/approvalnull y bloqueadores conservados."
+    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente. Corte2026-11-12: inspección de contratos y código local; build/lint Client,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado en recibo propio: f01/45migraciones,0recibos Agentic y tabla por propósito ausente, sin trasladar la aceptación anterior."
   },
   "approval": null
 }
 ---
+
+> Continuidad VM del2026-11-11: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. [Recibo VM](../../../evidence/teacher-upgrade-development-vm-20261111-r01.json). El cierre55/55 R02 conserva su alcance Windows/API key; este recorrido no representa55pruebas nuevas en VM ni eficacia educativa humana. Sin promoción a master, aprobación documental o publicación. Los cortes inferiores conservan sus fechas.
+
+## Recorrido VM por alcance — 2026-11-11
+
+Diagnóstico2/4 con confianza0 y asistencia, dos mapeos explícitos, fuente/hash admitidos, material contextual y práctica12/14 con escrita6/6 quedaron comprobados desde UI. La final obtuvo40/40 con escrita24/24 y passed/assisted=false persistido; las respuestas fueron del agente de QA, sin eficacia humana acreditada. La ayuda real quedó anclada y el ajuste candidato sólo cambió título, sin activación. El material revisado emitió0bloques prediction y0citas estructuradas. Fuente, tarjeta/repaso, actividad/visual y concepto manuales conservan sus límites; no hay FSRS, hipótesis pedagógicas automáticas o transferencia de notas/verificaciones. [Recibo VM](../../../evidence/teacher-upgrade-development-vm-20261111-r01.json).
+
+## Upgrade local parcial — 2026-11-11
+
+## Cierre vigente del upgrade — 2026-11-11
+
+Los55criterios quedaron verificados para el alcance Windows/API key configurado; [evidencia R02](../../../evidence/teacher-upgrade-local-20261111-r02.json) y [matriz](../../../evidence/teacher-upgrade-acceptance-20261111-r02.md) separan pruebas, muestras y límites. No se copian aceptaciones a operación, no hay nueva herramienta/binding y se conservan draft/unregistered/approval:null. Los apartados inferiores son cortes anteriores o detalle funcional no sustituido.
+
+El usuario autorizó la implementación de todas las fases de101/102. El código local incorpora evidencia por objetivo, banco diagnóstico manual revisado, personalización/práctica por evidencia y bloques interactivos; además repaso manual con política teacher-intervals/1, aclaraciones con contextual_reply, fuentes textuales/PDF pequeño y citas comprobables, actividades/visuales internos y conceptos/equivalencias privadas. Los modelos, DTOs y límites efectivos se registran en [contratos97](../../../mvp/97-nodia-teacher-technical-contracts.md). Las seis fichas nuevas pasan de planned a partial; las cuatro funciones base siguen partial.
+
+La [evidencia consolidada](../../../evidence/teacher-upgrade-local-20261111-r01.json) recoge comprobaciones técnicas, SQL aislado y QA acotado de paneles en navegador con transporte sintético, sin inferencia real nueva o adopción. No hay55TU íntegramente aceptados. Banco, tarjetas, actividades y conceptos se crean manualmente; conocer la solución impide tratar esas respuestas como independencia acreditada. El scheduler propio no es FSRS; la instrucción de transferencia al modelo no demuestra transferencia real. La integración de fuentes se limita a texto/PDF textual, sin OCR o voz.
+
+Se conserva el dominio `/nodia-teacher`, privacidad89, revisión humana del plan, final independiente≥90%, claves privadas, estado pendiente y recuperación sin replay. Sin cambios de retención, aprobación, herramientas/bindings publicados o despliegue. Los cortes documentales inferiores mantienen su fecha; sus avisos previos de sólo documentación no sustituyen esta autorización posterior ni acreditan funcionalidades por sí mismos.
+
+
+## Upgrade pedagógico por etapas — 2026-11-11
+
+El usuario solicita documentar el [upgrade101](../../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) después del análisis estático de LearnHarness, sin implementar código. [ADR098 propuesto](../../../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md) separa contenido, evidencia y verificación sobre Teacher y su runtime actual. La propuesta está en revisión; no es aprobación documental, despliegue o publicación.
+
+El [plan102](../../../mvp/102-nodia-teacher-phased-implementation-and-final-qa.md) recoge la preferencia posterior confirmada: construir de forma continua por fases, con controles técnicos breves, y concentrar QA integrado/correcciones al final. No se pide aprobación o prueba completa por función. Construcción terminada y aceptación comprobada siguen siendo estados diferentes; los55TU se verifican en una campaña agrupada. Esta revisión sólo cambia el método de entrega y no añade capacidades, evidencia funcional o publicación.
+
+Prioridad: E1 evidencia por objetivo con razonamiento/confianza opcionales, E2 diagnóstico acotado que alimenta plan/material y E3 práctica adaptativa con asistencia/transferencia. E0 conserva los gates operativos vigentes de96; las ampliaciones posteriores son E4 lecciones interactivas, E5 repaso, E6 aclaraciones, E7 fuentes/actividades/visuales y E8 memoria/mapa. Dependencias y AC verificables viven en101; estas fichas explican semántica, límites y solicitudes, sin duplicar sus contratos técnicos.
+
+La evidencia diagnóstica no sustituye la final independiente de ≥90%. Leer, sentirse seguro o ver una idea en un mapa no demuestra aprendizaje. Confianza sin declarar permanece `null`; ayuda, pendiente y desconocido no se convierten en independencia o cero. El historial V1 y los snapshots aceptados se preservan; no se fabrican evidencias retrospectivas para las sesiones existentes.
+
+Las cuatro funciones base conservan estado parcial; las seis nuevas están planned/draft/unregistered/approval:null. El módulo Teacher usa `/nodia-teacher`, propiedad y autoridad89/ADR092; mover el menú no cambia permisos. Sin herramientas NodiaAI nuevas, acceso a otros productos, modelos fijos, fallback o replay de resultados inciertos. El nuevo ayudante queda bloqueado durante finales y los archivos propios/actividades nuevas requieren sus gates específicos. Los cortes inferiores conservan su fecha, sin acreditar cierre V1 o capacidades del upgrade.
 
 ## Código de lecciones con copia local — 2026-11-06
 
@@ -323,14 +411,22 @@ Módulo candidato `nodia_teacher` con ruta confirmada `/nodia-teacher`, aún sin
 
 ## Índice de funcionalidades
 
+La implementación conserva límites parciales por función y evidencia histórica en96. El cierre R02 y el recorrido VM R14/R41 de102§13 se separan por entorno/selección; no implican cierre global de todos los proveedores, eficacia humana o publicación de Teacher. El respaldo/restauración final y la reanudación operativa/UI están comprobados. Revisión/versionado Git editorial pendiente, separado del cierre funcional.
+
 | Función | Ficha relativa | Implementación | Integración NodiaAI | Módulos de destino |
 |---|---|---|---|---|
-| Sesiones, formulario y chat de definición | [Ficha](features/session-setup-and-planning.md) | Propuesta | Sin registrar | Candidato Teacher, sin alta |
-| Diagnóstico y prueba final de sección | [Ficha](features/diagnostic-and-skip-assessment.md) | Propuesta; umbral final confirmado | Sin registrar | PENDIENTES |
-| Planes y material guardado por jornada | [Ficha](features/adaptive-plans-and-day-material.md) | Propuesta | Sin registrar | PENDIENTES |
-| Lecciones, práctica, corrección y repaso | [Ficha](features/lessons-practice-and-review.md) | Propuesta | Sin registrar | PENDIENTES |
+| Sesiones, formulario y chat de definición | [Ficha](features/session-setup-and-planning.md) | Parcial; definición/propuesta/ajuste comprobados en selección VM exacta | Sin registrar | Teacher `/nodia-teacher`, autoridad89/ADR092 |
+| Diagnóstico y prueba final de sección | [Ficha](features/diagnostic-and-skip-assessment.md) | Parcial; diagnóstico y final comprobados por alcance VM | Sin registrar | Teacher `/nodia-teacher` |
+| Planes y material guardado por jornada/tópico | [Ficha](features/adaptive-plans-and-day-material.md) | Parcial; snapshot y muestra SQL VM revisados; prediction/citas no emitidos | Sin registrar | Teacher `/nodia-teacher` |
+| Lecciones, práctica, corrección y refuerzo | [Ficha](features/lessons-practice-and-review.md) | Parcial; práctica12/14 y corrección escrita VM comprobadas | Sin registrar | Teacher `/nodia-teacher` |
+| Evidencia por objetivo y recomendaciones | [Ficha](features/learning-evidence-and-recommendations.md) | Parcial E1/E2/E3; evidencia/mapeos/recomendación VM | Sin registrar | Teacher `/nodia-teacher` |
+| Repaso espaciado | [Ficha](features/spaced-repetition.md) | Parcial E5; tarjeta/repaso manual VM | Sin registrar | Teacher `/nodia-teacher` |
+| Aclaraciones ancladas al material | [Ficha](features/contextual-clarifications.md) | Parcial E6; propósito y ayuda real anclada VM | Sin registrar | Teacher `/nodia-teacher` |
+| Fuentes propias y citas | [Ficha](features/learning-sources.md) | Parcial E7a; fuente textual VM; sin cita emitida | Sin registrar | Teacher `/nodia-teacher` |
+| Tipos internos de actividad y visuales declarativos | [Ficha](features/activity-types-and-visuals.md) | Parcial E7b/E7c; actividad/visual manual VM | Sin registrar | Teacher `/nodia-teacher` |
+| Memoria entre planes y mapa focal | [Ficha](features/concept-memory-and-map.md) | Parcial E8; concepto manual VM; sin equivalencias reutilizadas acreditadas | Sin registrar | Teacher `/nodia-teacher` |
 
-Voz, pronunciación, exportación, uso offline y archivos propios conservan decisiones y verificación pendientes. Los temas libres sí pertenecen al primer alcance propuesto; ninguna capacidad Teacher está disponible por esta documentación.
+Voz, pronunciación, exportación, uso offline, notificaciones, marketplace y ejecución arbitraria de código no se habilitan. Los archivos propios tienen alcance local parcial E7a de texto/PDF textual pequeño; no se reinterpreta su exclusión en las versiones V1 históricas. Cada modalidad conserva contrato y comprobación propios antes de habilitarse en un entorno real.
 
 ## Interpretación de solicitudes que combinan funciones
 
@@ -338,7 +434,7 @@ Voz, pronunciación, exportación, uso offline y archivos propios conservan deci
 
 ## Restricciones y pendientes
 
-La [referencia personal de Obsidian resumida en95 §2](../../../mvp/95-studies-adaptive-learning.md#referencia-de-obsidian-contrastada) no importa progreso ni impone sus90unidades o rúbrica.97 define el blueprint de ERD/DTOs y96 su ejecución; la implementación y sus verificaciones concretas se registran en96 y en la evidencia VM; aceptación integral y revisión pedagógica siguen pendientes. La extracción usa ownership real compartido, sin conversaciones ficticias ni herramientas comerciales/nativas. Modelos dinámicos, presupuesto por POST, selección exacta y recuperación sin replay de91/92. Markdown no concede autoridad. V1 conserva contenido/snapshots bajo autoridad de la sesión con archivo reversible, sin purga automática ni DELETE público.
+La [referencia personal de Obsidian resumida en95 §2](../../../mvp/95-studies-adaptive-learning.md#referencia-de-obsidian-contrastada) no importa progreso ni impone sus90unidades o rúbrica.97 define el blueprint de ERD/DTOs y96 su ejecución; la implementación y sus verificaciones concretas se registran en96 y en la evidencia VM; el cierre funcional incluye respaldo/restauración y reanudación operativa/UI comprobados; revisión/versionado Git editorial pendiente; la revisión pedagógica de esta muestra técnica no acredita eficacia humana o calidad universal. La extracción usa ownership real compartido, sin conversaciones ficticias ni herramientas comerciales/nativas. Modelos dinámicos, presupuesto por POST, selección exacta y recuperación sin replay de91/92. Markdown no concede autoridad. V1 conserva contenido/snapshots bajo autoridad de la sesión con archivo reversible, sin purga automática ni DELETE público.
 
 ## Evolución y trazabilidad
 
@@ -376,3 +472,9 @@ Fuentes: [evidencia de proceso](../../../evidence/teacher-v1-vm-process-20261103
 La práctica real terminó14/14; la primera final20/40 dio refuerzo únicamente al objetivo0/20 y su segunda unidad canónica. Navegar consultó material y guardó el cursor sin generar; preparar fue otra acción. Tras seis bloques/lecturas y práctica14/14, una evaluación nueva conservó cobertura/40p y publicó variantes distintas; el intento2 terminó40/40, verificó sección y dejó la sesión completed. No se sumaron notas ni se usaron ayudas de la aplicación; el recorrido QA no certifica nivel personal.
 
 R05 muestra puntos por recuperar sin umbral por objetivo ni claves, y el histórico no enlaza al plan actual. Conservó foco, borrador, pausa/recarga y destino móvil; un guardado incierto se concilió por receipt sin reenvío manual. Codex conserva elegibilidad actual y su calificación histórica, sin otra generación. Las preguntas/feedback revisados tienen límites DNS y de variación posicional; no se promete eficacia/precisión universal ni calibración. La pista opcional sospechosa se omite sin cambiar rúbrica, pudiendo dejar ayuda no disponible; la causa del primer rechazo histórico no se reconstruye. DB POST/GCM/restore y runtime reanudado pasaron. La captura original falló al reanudar y conserva su estado; auditoría independiente del par cifrado existente, sin recaptura. Ambas copias pasaron GCM íntegro por verificación independiente; el catálogo externo cifrado es un snapshot previo a restaurar timers y no se declara igual al actual. El runtime fresh y la UI final quedaron operativos, sin reclasificar la captura original fallida. [Recorrido27](../../../mvp/96-nodia-teacher-implementation-plan.md#27-recorrido-completo-gemini--continuación-solicitada).
+
+## Alta guiada y estado Agentic — candidato local, 2026-11-12
+
+[96§42](../../../mvp/96-nodia-teacher-implementation-plan.md#42-alta-guiada-selección-visible-y-estado-agentic--candidato-local-2026-11-12) y [funcionalidad revisión30](features/session-setup-and-planning.md#alta-guiada-y-selección-ia-visible--candidato-local-2026-11-12): formulario con ayudas accesibles, idioma validado que conserva etiqueta histórica, selección IA siempre visible al crear y cuatro controles48px responsive. Sin esfuerzos publicados se explica sincronización/guardado administrativo; actualizar conexiones sólo relee catálogo. Se conservan selección exacta/elegibilidad/CAS y bloqueos busy/fetch/envío.
+
+Cabecera Codex distingue snapshot de salud y observación acotada compartida del actor/instancia actuales; desconocido y denegaciones no se convierten en verde. Verificación local: build/lint,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado: f01/45migraciones,0recibos Agentic y tabla por propósito ausente en [verificación consolidada](../../../mvp/96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13); sin polling, inferencia, despliegue o publicación de este lote. Producto revisión35 draft/partial/unregistered/approval:null; evaluación de impacto visual/explicativo sin nueva herramienta, permiso o aceptación productiva.

@@ -1,0 +1,863 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-12",
+  "timezone": "America/Santiago",
+  "status": "code_prepared_transport_installed_real_github_delivery_pending",
+  "branch": "development",
+  "commit_created": false,
+  "pushed": false,
+  "git_refs_changed": false,
+  "github_observed": {
+    "repository": "oscarvalenzuela25/Nodia",
+    "public": true,
+    "default_branch": "development",
+    "master_sha": "f01b493336883403a84b1c80759ce4fc43cbd370",
+    "local_master_sha": "ba8ebfa00b55f103465d0ab533a802152944d224",
+    "observations_read_only": true
+  },
+  "workflow_architecture": {
+    "ci": ".github/workflows/ci.yml",
+    "dispatcher": ".github/workflows/cd-dispatch.yml",
+    "delivery": ".github/workflows/cd.yml",
+    "production_environment": "master only",
+    "dispatcher_actions_write_only": true,
+    "dispatcher_has_production_secrets": false,
+    "ci_reads_actual_baselines_on_master_only": true,
+    "builds_receive_production_secrets": false,
+    "typescript_checks": "one per selected component build; no build in CD",
+    "original_zip_digest_and_ci_current_master_checked": true,
+    "backend_before_client": true,
+    "native_python_runtime_changes_require_coordinated_rollout": true,
+    "cloudflare_and_ssh_secrets_in_separate_steps": true,
+    "artifact_retention_days": 1,
+    "pages_protocol_reference": "published Wrangler4.161.0 source; static Pages API upload",
+    "pages_no_replay_scope": "one POST; marker+retained GitHub CD history; no guarantee against deleted history or external publications"
+  },
+  "validation": {
+    "ops_ci_node_linux": {
+      "passed": 74,
+      "failed": 0,
+      "skipped": 0,
+      "actor": "ci_artifact_packaging"
+    },
+    "actionlint": {
+      "version": "1.7.12",
+      "workflows": 5,
+      "status": "passed"
+    },
+    "python_updater_root_linux": {
+      "passed": 17,
+      "failed": 0
+    },
+    "python_receiver_root_linux": {
+      "passed": 17,
+      "failed": 0
+    },
+    "hosted_ci_receiver_root_metadata_cases": "explicit skips on non-root runner; parser/pipe cases run",
+    "integration_receipts": [
+      {
+        "ignored_local_receipt": "output/production/updater-systemd-c9eca0e76cdd.json",
+        "sha256": "ed5f62d5329dc4d7948bb56e80bfd7d95f621e807f14979f90a80835c3f6e9fd",
+        "checks": 20,
+        "result": {
+          "schema_version": 1,
+          "status": "passed",
+          "checks": 20,
+          "real_systemd_pid1": true,
+          "systemd_version": "systemd 259 (259.9-0ubuntu0.1)",
+          "real_systemctl_and_journalctl": true,
+          "node_version": "v24.22.2",
+          "real_writers_uid": 900,
+          "fresh_backup_invocation_verified": true,
+          "stale_backup_failure_blocked": true,
+          "successful_update": {
+            "schema_version": 1,
+            "operation_id": "2f5b87ce34c1470fa4d41744f127454a",
+            "phase": "complete",
+            "effects_started": true,
+            "migration_requested": true,
+            "automatic_retry_allowed": false,
+            "candidate_release": "backend-333333333333-444444444444",
+            "previous_release": "backend-111111111111-222222222222",
+            "timers_before": {
+              "nodia-ai-backup.timer": {
+                "active": true,
+                "enabled": "enabled"
+              },
+              "nodia-ai-backup-rotate.timer": {
+                "active": false,
+                "enabled": "disabled"
+              }
+            },
+            "backup": {
+              "backup_id": "20cd13b8-cfb5-4f87-91fd-0a72b1fe3e8e",
+              "cipher_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "captured_at": "2026-11-12T20:32:13.901Z",
+              "journal_sequence": 0
+            },
+            "migration_result": {
+              "schema_version": 1,
+              "status": "migrated",
+              "mode": "migrate",
+              "client_tls_authorized": true,
+              "read_only": false,
+              "quiescent": true,
+              "before": 45,
+              "target": 46,
+              "pending": 0,
+              "incremental_migrations": 1,
+              "applied": 1
+            },
+            "deployment_performed": true
+          },
+          "synthetic_boundaries": [
+            "application services and encrypted backup result",
+            "SQL action and remote dependency probe programs",
+            "GitHub artifact prepare",
+            "public HTTP mapped to synthetic local proxy; no Nginx/TLS claim"
+          ],
+          "host_cgroup_bind": false,
+          "host_secrets_mounted": false,
+          "production_accessed": false,
+          "typescript_builds": 0
+        }
+      },
+      {
+        "ignored_local_receipt": "output/production/deploy-transport-8d8acb533836.json",
+        "sha256": "4eca653fb2f1113aad3dc7db5da85bfd94c53d5ad96f178add7fc3428bd7dee1",
+        "checks": 25,
+        "result": {
+          "schema_version": 1,
+          "status": "passed",
+          "checks": 25,
+          "passed": [
+            "real_reviewed_writer_units_active",
+            "dedicated_locked_account_prepared_with_generated_key",
+            "real_bundle_prepare_install_without_deployment",
+            "installed_sudoers_passes_real_visudo",
+            "ssh_forced_command_status_verifies_live_processes",
+            "deploy_identity_cannot_replace_home_or_authorized_keys",
+            "arbitrary_sudo_command_denied",
+            "sudo_receiver_extra_argument_denied",
+            "arbitrary_shell_command_denied",
+            "shell_metacharacters_denied",
+            "interactive_shell_denied",
+            "shell_metacharacters_never_executed",
+            "sftp_subsystem_denied_by_forced_command",
+            "zip_uploaded_exact_bytes_hash_root_owned_private_file",
+            "incoming_directory_private",
+            "duplicate_upload_never_overwrites",
+            "wrong_digest_retains_partial_without_final_zip",
+            "truncated_upload_denied_without_final_zip",
+            "ssh_deploy_submitted_to_real_async_systemd_unit",
+            "offline_github_preflight_failure_has_no_effects",
+            "preflight_reaches_github_after_local_hash_inventory_and_process_checks",
+            "duplicate_operation_consults_durable_status_without_replay",
+            "failed_preflight_preserves_current_and_both_original_writer_pids",
+            "failed_preflight_never_enables_maintenance_or_blocked_marker",
+            "transport_remains_consultable_after_safe_failed_preflight"
+          ],
+          "boundaries": {
+            "ssh_sudo_systemd_nginx": "real",
+            "app_and_manifest": "synthetic",
+            "network": "none_localhost_only",
+            "github": "offline_preflight_failure",
+            "postgres_r2_ai": "not_accessed",
+            "production_secrets": false,
+            "successful_deployment_claimed": false
+          }
+        }
+      },
+      {
+        "ignored_local_receipt": "output/production/update-backend-sql-143032b81c70.json",
+        "sha256": "3637bde9f447a979aff9cdc0a1355f6ac3d423eb8018f37bf80a692ed5acc556",
+        "checks": 47,
+        "result": {
+          "schema_version": 1,
+          "status": "passed",
+          "checks": 47,
+          "teacher": {
+            "tested": true,
+            "fixture_source": "explicit local dist; not committed-source provenance or production release",
+            "baseline": 45,
+            "target": 48,
+            "actions": [
+              {
+                "mode": "inspect",
+                "schema_version": 1,
+                "status": "verified",
+                "before": 45,
+                "target": 48,
+                "pending": 3,
+                "incremental_migrations": 3,
+                "ledger_sha256": "83c8bc91c7250c10e9bbb6dff0ee9492a6e62e0f8a01993330ee2fd70b32562b",
+                "quiescent": true,
+                "counts": {
+                  "jobs": 0,
+                  "runs": 0,
+                  "executions": 0,
+                  "steps": 0,
+                  "slots": 0,
+                  "api_dispatches": 0,
+                  "teacher_jobs": 0,
+                  "teacher_attempts": 0,
+                  "generation_operations": 0
+                },
+                "read_only": true,
+                "client_tls_authorized": true,
+                "migrations_executed": false
+              },
+              {
+                "mode": "migrate",
+                "schema_version": 1,
+                "status": "migrated",
+                "before": 45,
+                "target": 48,
+                "pending": 0,
+                "incremental_migrations": 3,
+                "ledger_sha256": "838429a8dd28adbb37fdea05c0f758010fc71752befa45ee6d51bb16f8ab4067",
+                "applied": 3,
+                "entity_tables_checked": 68,
+                "entity_columns_present": true,
+                "client_tls_authorized": true,
+                "seed_requested": false,
+                "automatic_retry_allowed": false
+              },
+              {
+                "mode": "verify",
+                "schema_version": 1,
+                "status": "verified",
+                "before": 45,
+                "target": 48,
+                "pending": 0,
+                "incremental_migrations": 3,
+                "ledger_sha256": "838429a8dd28adbb37fdea05c0f758010fc71752befa45ee6d51bb16f8ab4067",
+                "quiescent": true,
+                "counts": {
+                  "jobs": 0,
+                  "runs": 0,
+                  "executions": 0,
+                  "steps": 0,
+                  "slots": 0,
+                  "api_dispatches": 0,
+                  "teacher_jobs": 0,
+                  "teacher_attempts": 0,
+                  "generation_operations": 0
+                },
+                "read_only": true,
+                "client_tls_authorized": true,
+                "migrations_executed": false
+              }
+            ],
+            "public_tables_observed": 102,
+            "orm_entity_tables_observed": 68,
+            "migration_files": [
+              {
+                "path": "dist/migrations/1789257400000-InitialCoreSchema.js",
+                "sha256": "1be31bfe392749fe91578d7be01938ba3514ebce07364657fb9312db22fb051c"
+              },
+              {
+                "path": "dist/migrations/1789257500000-InitialBusinessAiSchema.js",
+                "sha256": "26ff7161e69c9b5ac5919647e471309e4180ba57aa0a3b395a1f0fa27982ec5a"
+              },
+              {
+                "path": "dist/migrations/1789257600000-AuthSessions.js",
+                "sha256": "a9908e95a1ca7a77467b323881ca31df1959c5ef415a86db8df367a514366433"
+              },
+              {
+                "path": "dist/migrations/1789257700000-AddIconToModulesAndModuleGroups.js",
+                "sha256": "2061df2da9b91a3b8fa02b29f3651b9d75b069d6754e3cb0bd4ad49487a97351"
+              },
+              {
+                "path": "dist/migrations/1789257800000-CreateAiProviderCatalogAndRefactorAiProviders.js",
+                "sha256": "0504d11bf37b8f2417834186c06f69517290f5b8fe3964e4083703b5beca039d"
+              },
+              {
+                "path": "dist/migrations/1790553500000-SeedSecurityActions.js",
+                "sha256": "f9ddde334f2fb79f8404436f9988d31d0c4e253ce9b9cf501f72656e9cb42840"
+              },
+              {
+                "path": "dist/migrations/1790553600000-HardenAiApiKeyEncryption.js",
+                "sha256": "3e2edbefa17853853058c204ad070e7d6d50471700b66e0392766b02c0ae23c2"
+              },
+              {
+                "path": "dist/migrations/1790553700000-AddTokenPlanFlagsToCatalogAndProviders.js",
+                "sha256": "d75a441041f8364d8feacab5b17fb78d36f41683519030153ad667fffcface80"
+              },
+              {
+                "path": "dist/migrations/1790553800000-AddIsDefaultToAiProviders.js",
+                "sha256": "3d97f6a73895c835c9afe43c4d6892227f64a39868e779bf382b75274663f68e"
+              },
+              {
+                "path": "dist/migrations/1791085000000-CreatePersonalFinance.js",
+                "sha256": "aefa5c3700ca14dfe51107cf7b08a7687f7ef270284c8fe7bd577914fd88ded8"
+              },
+              {
+                "path": "dist/migrations/1791146000000-CreateRentalReservations.js",
+                "sha256": "46798345c5aae3dada71b1fe1db363d7760d5e362fee37ffa47e86fe20301665"
+              },
+              {
+                "path": "dist/migrations/1791220000000-CreateProviderContacts.js",
+                "sha256": "21c2c24670840e44169354a829b89df98ffa4abf2eae3ed6f86f214d75b200f7"
+              },
+              {
+                "path": "dist/migrations/1791320000000-RestoreAiApiCatalog.js",
+                "sha256": "ae9d940d64d3014459d9347965b1c1649304ba65063560424cdeef7dfa0e772e"
+              },
+              {
+                "path": "dist/migrations/1791330000000-SelectSoleAiApiKey.js",
+                "sha256": "42702eca23c7acb1f8794dce0744c5340ed69398958d2196918ca8f38881748a"
+              },
+              {
+                "path": "dist/migrations/1791450000000-EnableCodexAgenticCatalog.js",
+                "sha256": "763156b70714b152cd285bd095579f9ee849f0b628c7b3899369639f612d0204"
+              },
+              {
+                "path": "dist/migrations/1791540000000-OptionalRentalPropertyTimes.js",
+                "sha256": "55db80c8304315b4bfc932b951341c63a002839dbf0cbfcbe6cdee18d188a98c"
+              },
+              {
+                "path": "dist/migrations/1791630000000-CreateInvoiceUploads.js",
+                "sha256": "5524c0518310cad50b48e3a9c213fad6e66a2f44aa7f494f6bbddf684c4fc453"
+              },
+              {
+                "path": "dist/migrations/1791640000000-CompleteAiProviderCatalog.js",
+                "sha256": "96b59f5a4aafb3b5344a8b7203edcb8457a718f8ef3ae1c44acf568a1a37f4d2"
+              },
+              {
+                "path": "dist/migrations/1792100000000-RegisterNodiaAiNavigation.js",
+                "sha256": "b7c752ffcd2e5898ae79cd339bd1eab5edcaa96d6ee4ae7af77b8b04c80efcdb"
+              },
+              {
+                "path": "dist/migrations/1792200000000-CreateNodiaAiConversationPersistence.js",
+                "sha256": "70bfa151638c0841fc3baea57c21a747953de2145f31fcd74fdfbebd10340ede"
+              },
+              {
+                "path": "dist/migrations/1792300000000-IndexNodiaAiRunEvents.js",
+                "sha256": "8cb69d7b946d65152b67b33e6dcff39722b6b367a4b115d58a5a19ca6b454085"
+              },
+              {
+                "path": "dist/migrations/1792400000000-CreateNodiaAiProposalPersistence.js",
+                "sha256": "6787647d93c69662fe3efabe8c4972307b684fa11ac68cd50b585c810111b947"
+              },
+              {
+                "path": "dist/migrations/1792500000000-CreateNodiaAiConfirmationPersistence.js",
+                "sha256": "2d31cc484e0f9dac4544752aa9f95a615345ae9e6891ac87aebe662b2a6430bb"
+              },
+              {
+                "path": "dist/migrations/1792600000000-FreezeNodiaAiFinancialWitness.js",
+                "sha256": "c75dfe1e7bd40ddef11c138e669b93a0a7d17be2ce25d88490bcc5354dcb9e86"
+              },
+              {
+                "path": "dist/migrations/1792700000000-AddNodiaAiWorkflowBindings.js",
+                "sha256": "cc22cd77992db71a9478ea8f990bc704ab65acf098f7d4880b3066f63ffb2b6a"
+              },
+              {
+                "path": "dist/migrations/1792800000000-CreateNodiaAiAttachments.js",
+                "sha256": "aeb2fe529fd2d870a7e2395271026ce70558feaf0eafc7dee9c65a9605182fd5"
+              },
+              {
+                "path": "dist/migrations/1792900000000-CreateNodiaAiPreferences.js",
+                "sha256": "5885a61dbe6dc2ff5b7b466b8dbb995feffcfa3aad8d2a1d0c6108a509291911"
+              },
+              {
+                "path": "dist/migrations/1793000000000-CreateNodiaAiContextSnapshots.js",
+                "sha256": "a7f967ea456565f1fa30190c03ebcb7e454bde6f9bd0c501d9d8c75d9ec187e6"
+              },
+              {
+                "path": "dist/migrations/1793100000000-AddNodiaAiTextSearchIndex.js",
+                "sha256": "de0d03b7fba6316864c9e1439f6c784ef2cc14b4bd55a1fe31c55432c8209181"
+              },
+              {
+                "path": "dist/migrations/1793200000000-AddModuleSortOrder.js",
+                "sha256": "33d05c764d6ad27052263ea59aadf0c9a1c9b1f0f72e056313a48ba3e206e5a2"
+              },
+              {
+                "path": "dist/migrations/1793300000000-RetireWebAiModes.js",
+                "sha256": "65a4c4afc7eea9bc618d0bfe996805f8789ce2e2a1a2ae96ab595cf7746acbd5"
+              },
+              {
+                "path": "dist/migrations/1793310000000-AddNodiaAiApiChatRuntime.js",
+                "sha256": "db1fc373db7068275bf39689d951a4fb72d1407d371c276755639fec1de94e6e"
+              },
+              {
+                "path": "dist/migrations/1793400000000-AddProductPosCatalog.js",
+                "sha256": "fdfbbb5261e897b150fef2799789c7568673c297544dcf69d9692f0b0e48a949"
+              },
+              {
+                "path": "dist/migrations/1793410000000-CreateBusinessSales.js",
+                "sha256": "96d7a6d5b5f291e807b9a0dd32db2ef3e81bbc53584cf63fba7225e973a483db"
+              },
+              {
+                "path": "dist/migrations/1793420000000-AddDirectSaleCheckout.js",
+                "sha256": "547a8b1400762c00170894cc0f0048e057cb3e92d101553e49b305551ef96c33"
+              },
+              {
+                "path": "dist/migrations/1793430000000-AddProductMeasurementUnits.js",
+                "sha256": "b0bb0d7a98c55077242706c073e1bb098e69b03ff212cdaa32e2b75930e2e1fd"
+              },
+              {
+                "path": "dist/migrations/1793440000000-AddFractionalSaleQuantities.js",
+                "sha256": "f94062c99a883c4694a9cbdf5ec0ae07e1cbdf55aad4beb36b0cccd7c09a091e"
+              },
+              {
+                "path": "dist/migrations/1793450000000-AddManualSaleLinePrices.js",
+                "sha256": "d8af7daedc03bf27e8018081da7fdc4a92c017a2c2c56ae49bb22d05f114c740"
+              },
+              {
+                "path": "dist/migrations/1793560000000-CanonicalModuleLinks.js",
+                "sha256": "e710b6def97016dbdcb066a32138636ccc38727fc60904ded7e99052b77f5454"
+              },
+              {
+                "path": "dist/migrations/1793570000000-CreateTeacherDomain.js",
+                "sha256": "8ce687ee64a107bcaa13db2be5f92b73944a242e095495dbfd4fbad22802a60e"
+              },
+              {
+                "path": "dist/migrations/1793580000000-SharedAiGenerationOwnership.js",
+                "sha256": "7531d8e247bb9da8de2c4d9eedbdcc633305858aed3a8ddab6f40a032e858ad1"
+              },
+              {
+                "path": "dist/migrations/1793590000000-PreserveTeacherArchivedPauseState.js",
+                "sha256": "b5a10fb6b7be11d1e7d1ca3fd759bee6949dc998b58fc04bfda70121b38921b5"
+              },
+              {
+                "path": "dist/migrations/1793600000000-TeacherAgenticTextOwnership.js",
+                "sha256": "dd1a9fd5bb9b436295220dc9fbd153b8ceeeba86f419ac0d8c004affe210c621"
+              },
+              {
+                "path": "dist/migrations/1793610000000-PersistTeacherSetupDraft.js",
+                "sha256": "04c6ee1a5b227aa43b989023e35fef5ba8cc984826a1fdb29920714de7581d77"
+              },
+              {
+                "path": "dist/migrations/1793620000000-RemoveProductProfitPercentage.js",
+                "sha256": "ae2b6e5efdbfd724b45c57ea5d43b1416eea636f08f1c22c013ae0e7ea950ad4"
+              },
+              {
+                "path": "dist/migrations/1793630000000-TeacherLearningEvidence.js",
+                "sha256": "1dd2b758d736be6a613d021f7fd3645d050dbf9f419655f1bed5ccdc9a546c03"
+              },
+              {
+                "path": "dist/migrations/1793640000000-TeacherLearningEnrichment.js",
+                "sha256": "e9dd62c07054ae77c505916b33f548df74622dd203ea6014593b080241dec501"
+              },
+              {
+                "path": "dist/migrations/1793650000000-TeacherPurposeQualification.js",
+                "sha256": "52a46c8db34d763988d869ce0f01aaafe48eeba597c09e272a6096701d4dc42e"
+              }
+            ]
+          },
+          "postgres_major": 16,
+          "tls_verify_full": true,
+          "action_uid": 900,
+          "migration_baseline": 45,
+          "migration_target": 46,
+          "migrations_applied": 1,
+          "incorrect_tls_hostname_rejected": true,
+          "database_lock_conflict_rejected": true,
+          "failed_increment_transaction_rolled_back": true,
+          "no_seed_requested": true,
+          "no_typescript_build": true,
+          "provider_requests": 0,
+          "real_schema_and_separate_minimal_gate_database": true,
+          "actions": [
+            {
+              "mode": "inspect",
+              "database": "fixture_update",
+              "exit_code": 0,
+              "schema_version": 1,
+              "status": "verified",
+              "before": 45,
+              "target": 46,
+              "pending": 1,
+              "incremental_migrations": 1,
+              "ledger_sha256": "83c8bc91c7250c10e9bbb6dff0ee9492a6e62e0f8a01993330ee2fd70b32562b",
+              "quiescent": true,
+              "counts": {
+                "jobs": 0,
+                "runs": 0,
+                "executions": 0,
+                "steps": 0,
+                "slots": 0,
+                "api_dispatches": 0,
+                "teacher_jobs": 0,
+                "teacher_attempts": 0,
+                "generation_operations": 0
+              },
+              "read_only": true,
+              "client_tls_authorized": true,
+              "migrations_executed": false
+            },
+            {
+              "mode": "inspect",
+              "database": "fixture_update",
+              "exit_code": 1,
+              "schema_version": 1,
+              "status": "failed",
+              "error_code": "database_update_action_failed",
+              "automatic_retry_allowed": false
+            },
+            {
+              "mode": "inspect",
+              "database": "fixture_update",
+              "exit_code": 1,
+              "schema_version": 1,
+              "status": "failed",
+              "error_code": "historical_migration_changed",
+              "automatic_retry_allowed": false
+            },
+            {
+              "mode": "migrate",
+              "database": "fixture_update",
+              "exit_code": 0,
+              "schema_version": 1,
+              "status": "migrated",
+              "before": 45,
+              "target": 46,
+              "pending": 0,
+              "incremental_migrations": 1,
+              "ledger_sha256": "a88ee5b2183adb33cf3891569a714a84e9694671831c32dfbf87b58a545c2e85",
+              "applied": 1,
+              "entity_tables_checked": 68,
+              "entity_columns_present": true,
+              "client_tls_authorized": true,
+              "seed_requested": false,
+              "automatic_retry_allowed": false
+            },
+            {
+              "mode": "verify",
+              "database": "fixture_update",
+              "exit_code": 0,
+              "schema_version": 1,
+              "status": "verified",
+              "before": 45,
+              "target": 46,
+              "pending": 0,
+              "incremental_migrations": 1,
+              "ledger_sha256": "a88ee5b2183adb33cf3891569a714a84e9694671831c32dfbf87b58a545c2e85",
+              "quiescent": true,
+              "counts": {
+                "jobs": 0,
+                "runs": 0,
+                "executions": 0,
+                "steps": 0,
+                "slots": 0,
+                "api_dispatches": 0,
+                "teacher_jobs": 0,
+                "teacher_attempts": 0,
+                "generation_operations": 0
+              },
+              "read_only": true,
+              "client_tls_authorized": true,
+              "migrations_executed": false
+            },
+            {
+              "mode": "migrate",
+              "database": "fixture_update",
+              "exit_code": 1,
+              "schema_version": 1,
+              "status": "failed",
+              "error_code": "migration_ledger_mismatch",
+              "automatic_retry_allowed": false
+            },
+            {
+              "mode": "verify",
+              "database": "fixture_update",
+              "exit_code": 1,
+              "schema_version": 1,
+              "status": "failed",
+              "error_code": "migration_ledger_mismatch",
+              "automatic_retry_allowed": false
+            },
+            {
+              "mode": "inspect",
+              "database": "fixture_gates",
+              "exit_code": 0,
+              "schema_version": 1,
+              "status": "verified",
+              "before": 45,
+              "target": 46,
+              "pending": 1,
+              "incremental_migrations": 1,
+              "ledger_sha256": "83c8bc91c7250c10e9bbb6dff0ee9492a6e62e0f8a01993330ee2fd70b32562b",
+              "quiescent": false,
+              "counts": {
+                "jobs": 0,
+                "runs": 0,
+                "executions": 0,
+                "steps": 0,
+                "slots": 1,
+                "api_dispatches": 0,
+                "teacher_jobs": 0,
+                "teacher_attempts": 0,
+                "generation_operations": 0
+              },
+              "read_only": true,
+              "client_tls_authorized": true,
+              "migrations_executed": false
+            },
+            {
+              "mode": "migrate",
+              "database": "fixture_gates",
+              "exit_code": 1,
+              "schema_version": 1,
+              "status": "failed",
+              "error_code": "live_or_unconfirmed_runtime_work",
+              "automatic_retry_allowed": false
+            },
+            {
+              "mode": "inspect",
+              "database": "fixture_gates",
+              "exit_code": 1,
+              "schema_version": 1,
+              "status": "failed",
+              "error_code": "database_update_action_failed",
+              "database_sqlstate": "42703",
+              "automatic_retry_allowed": false
+            },
+            {
+              "mode": "migrate",
+              "database": "fixture_rollback",
+              "exit_code": 1,
+              "schema_version": 1,
+              "status": "failed",
+              "error_code": "database_update_lock_busy",
+              "automatic_retry_allowed": false
+            },
+            {
+              "mode": "migrate",
+              "database": "fixture_rollback",
+              "exit_code": 1,
+              "schema_version": 1,
+              "status": "failed",
+              "error_code": "database_update_action_failed",
+              "database_sqlstate": "42P01",
+              "automatic_retry_allowed": false
+            }
+          ]
+        }
+      }
+    ],
+    "exact_cd_read_backend_helper_from_pc": "baseline_verified f01; no deployment",
+    "external_https_statuses": {
+      "api": 200,
+      "frontend": 200
+    },
+    "full_github_ci_run_of_this_code": false,
+    "cloudflare_token_saved_in_github_tested": false,
+    "actual_pages_publication_tested": false,
+    "production_operator_apply_tested": false
+  },
+  "production_transport": {
+    "installed": true,
+    "new_ssh_verified": true,
+    "evidence": "docs/evidence/production-cd-transport-live-20261112-r01.json",
+    "app_source_sha_unchanged": "f01b493336883403a84b1c80759ce4fc43cbd370",
+    "sudo_invalidated": true,
+    "tmux_session_closed": true,
+    "arbitrary_shell_or_sudo_enabled": false,
+    "incoming_limits": {
+      "maximum_zip_mib": 768,
+      "quota_gib": 2,
+      "file_count": 10
+    },
+    "automatic_release_or_incoming_retention_implemented": false
+  },
+  "limits": [
+    "Integration fixtures have explicit synthetic boundaries; see each receipt",
+    "Teacher48 used explicit existing local dist, not a committed-source release package",
+    "No inference, seed or production application update was requested",
+    "Incoming quota/release retention requires reviewed maintenance; partial files are preserved",
+    "First real GitHub run/artifacts/delivery still pending after user finishes/promotes source"
+  ],
+  "documentation": [
+    "docs/mvp/00-progress.md",
+    "docs/mvp/99-production-deployment-and-cicd-plan.md",
+    "docs/architecture/decisions/ADR-097-monorepo-production-release-pipeline.md",
+    "ops/ci/README.md",
+    "ops/production/README.md",
+    "Obsidian: utils/VPS/DEPLOY VPS.md sections25.16-25.17"
+  ],
+  "product_knowledge_impact": "deployment tooling only; no product capability or AI provider qualification changes",
+  "source_files": [
+    {
+      "path": ".github/workflows/cd-dispatch.yml",
+      "sha256": "6dbb2b506c3665fd38c13dae1ebd98740351468b7f9625d3a4cc4fc6c48dd6dd"
+    },
+    {
+      "path": ".github/workflows/cd.yml",
+      "sha256": "6fbacc148571c007b5199b371dff6eb311c5c65d712e6031b281cacfc5f004cd"
+    },
+    {
+      "path": ".github/workflows/check-production-pages.yml",
+      "sha256": "56401d486a5ba331812d9461fd5bdae23148ce139c564051603842b089138ed2"
+    },
+    {
+      "path": ".github/workflows/check-production-vps.yml",
+      "sha256": "2f9476ef9e843732694204887e1116607012edbe800cfea30dbd09b367c6bd60"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "aa0e005e63baf6714281df575e6d7de4fc481e018039dd0be485959730ba4284"
+    },
+    {
+      "path": "ops/ci/artifact-release.mjs",
+      "sha256": "8eb4b795085c51ab388679a58a3099c0507ceea5fb2c7b36718b8fc5d9267d45"
+    },
+    {
+      "path": "ops/ci/artifact-release.test.mjs",
+      "sha256": "578e51581d673c5cb07cbb646047745846716a10ee7385bd28cb0a59ebb29094"
+    },
+    {
+      "path": "ops/ci/cd-github.mjs",
+      "sha256": "e0147ef028bf9dc699e98f5f7d1d4188e08a851f133c92c0599204751e741948"
+    },
+    {
+      "path": "ops/ci/cd-github.test.mjs",
+      "sha256": "776b2f2d8ba6de2a78e7266e3f9c866c5dc56ed94c895258da12e991205b72ad"
+    },
+    {
+      "path": "ops/ci/cd-pages.mjs",
+      "sha256": "8aae1e1836307d7a7a713f1d940ef58ab360e54d6fe402eaa455af9fac70d8cf"
+    },
+    {
+      "path": "ops/ci/cd-pages.test.mjs",
+      "sha256": "c3aaa49dad4552bc2506b450d8c6891c379ea90c7aaaedacee8c259a45824f50"
+    },
+    {
+      "path": "ops/ci/cd-release.mjs",
+      "sha256": "e7802a7f0d8671ad2b97e873a7b4b903a6130f3c10ed08c3b5cc304d9f3303bf"
+    },
+    {
+      "path": "ops/ci/cd-release.test.mjs",
+      "sha256": "6bc2f9695122502357be2e1995cc896fac5249e1ccc586172a33f3195e812c6b"
+    },
+    {
+      "path": "ops/ci/cd-selection.mjs",
+      "sha256": "88ce5679d725e5a50d0b584be9162be80ef8a6c068086861a6ba94d0b6e61c6a"
+    },
+    {
+      "path": "ops/ci/cd-selection.test.mjs",
+      "sha256": "e044a45af6181b4e044d6ac353afcba1a69bd3534c487e32f6ee67c69e4e14be"
+    },
+    {
+      "path": "ops/ci/cd-vps.mjs",
+      "sha256": "3b5e4aaccff111b71cd63eb011da4b8494a5ea44f016c82c44e53e8d4138ad3f"
+    },
+    {
+      "path": "ops/ci/cd-vps.test.mjs",
+      "sha256": "e14e8cf0fadeed05d3f5c9747db4f6a36093f27ec5c238d95fc150c40fba6015"
+    },
+    {
+      "path": "ops/ci/check-pages-access.mjs",
+      "sha256": "fca9a0f5a98dd245317bfee0d3013ef5d6e640103196b211c57007dd5ecc94a4"
+    },
+    {
+      "path": "ops/ci/check-pages-access.test.mjs",
+      "sha256": "0246e47959ff454ca7d80ee493ce71c153b1b0eda0965159ae398bcb44260489"
+    },
+    {
+      "path": "ops/ci/check-results.mjs",
+      "sha256": "79a2c55f64d3f494dfbc60145fd84191ec096a19213b20913f1db270cdf1c1ec"
+    },
+    {
+      "path": "ops/ci/check-results.test.mjs",
+      "sha256": "59da4f79466dc8d50cf766bb5b0306c8f3eed99d909ad3e295079bf89e500695"
+    },
+    {
+      "path": "ops/ci/check-vps-access.mjs",
+      "sha256": "ec3424284c776414974d729bc2ff56b16cea57da290386bbc8ecbc14dde7a263"
+    },
+    {
+      "path": "ops/ci/check-vps-access.test.mjs",
+      "sha256": "4ffeb6e4aa6df5b80765010095f722b2b44954850e52ee634ccb68a694b4b193"
+    },
+    {
+      "path": "ops/ci/classify-changes.mjs",
+      "sha256": "fcfc7840ce6e220bfddb41ec668d4e2ed2e4a0d7fb62c88b59841575b179fd6f"
+    },
+    {
+      "path": "ops/ci/classify-changes.test.mjs",
+      "sha256": "fad7dc463cae5b256401c4463c97c121c9e444dce17a853df17a92cb543a16a8"
+    },
+    {
+      "path": "ops/ci/pages-assets/package-lock.json",
+      "sha256": "6d8f29b55a06e2bf77a0fe10700ae580fd5e36b9a8b36ef73d5fde3769224461"
+    },
+    {
+      "path": "ops/ci/pages-assets/package.json",
+      "sha256": "e29f0c7b301cd7900d078704614bd54c46318ce437e697067da76270203702ae"
+    },
+    {
+      "path": "ops/production/backend_update.py",
+      "sha256": "a6d4f24c6c9a1f10eca8f1a0b78bf637a3cca6bb434c7759709dbdfbd59dcd53"
+    },
+    {
+      "path": "ops/production/deploy-backend-receiver.py",
+      "sha256": "01f5929c9cb803e3d950674c6d4adc8ba13af012380f05d4b9fd18b2eaac83d3"
+    },
+    {
+      "path": "ops/production/deploy-gateway.py",
+      "sha256": "877fe548164b127d8f3820bafa4b0c44797a8a732a9a829c1c82de098b8e2ab8"
+    },
+    {
+      "path": "ops/production/install-backend-updater.py",
+      "sha256": "2a04488fa0a5a5170ccbcc756f3d8e75a3c735380e5dc88b2431d16807854a99"
+    },
+    {
+      "path": "ops/production/install-production-cd.py",
+      "sha256": "32f115b633c7f7b266beecc7c5cd0fb0117125b74e54c2821f31395e199647f0"
+    },
+    {
+      "path": "ops/production/tests/deploy-transport.integration.Dockerfile",
+      "sha256": "796cbd4bcafec278072cc87fdf8e0f818fcebc87eb03d7a8e03f6e9df9c6f539"
+    },
+    {
+      "path": "ops/production/tests/deploy-transport.integration.fixture.py",
+      "sha256": "c352f3100f1e4759aa61a89cbfcb05d8da466e215c14abd622446627aef7c1c6"
+    },
+    {
+      "path": "ops/production/tests/deploy-transport.integration.py",
+      "sha256": "bd83763fc0fdb00fd037cb9a289e5d3491f17c4b08c72008d7d561a05679de5d"
+    },
+    {
+      "path": "ops/production/tests/test_backend_update.py",
+      "sha256": "ef8eed9ecaa491d19e079fdb47e497cdae2ebf95308714901d6c8adc39d14698"
+    },
+    {
+      "path": "ops/production/tests/test_backend_update_host.py",
+      "sha256": "a0f2208de42d25765df49411d2fd18b0c3b9741d85ad7898d5425da2817b678f"
+    },
+    {
+      "path": "ops/production/tests/test_deploy_receiver.py",
+      "sha256": "edfb1d318b87c9bf148200ed90ff5521fa027df519e17f32eb42fbb1a720a900"
+    },
+    {
+      "path": "ops/production/tests/update-backend-sql.integration.mjs",
+      "sha256": "7e1360152b56a2b0e8d0c0f0ed601c31fdc457d7701369263302e8a707a5a5cc"
+    },
+    {
+      "path": "ops/production/tests/update-backend-sql.integration.py",
+      "sha256": "1d9d9275a57a5fb1b7937eece167dc60732d58e6d8a28517489dd6284892281e"
+    },
+    {
+      "path": "ops/production/tests/updater-systemd.integration.Dockerfile",
+      "sha256": "672d0be69c3adbd49cd4e5d2186702ba5db322e9e8ce035b915408171134b8fd"
+    },
+    {
+      "path": "ops/production/tests/updater-systemd.integration.fixture.py",
+      "sha256": "cb428d3e2958bc72d642c87acce31294d59ecd7732b55a309d3973830f749765"
+    },
+    {
+      "path": "ops/production/tests/updater-systemd.integration.py",
+      "sha256": "4b0444283de594add834c95f7913969936092288b91ab9c9aa8f657d2a11c567"
+    },
+    {
+      "path": "ops/production/update-backend-action.mjs",
+      "sha256": "0c63a501e61f31ecc350ec8a3d82b54a9fcb9c201c149edf7b1feb0432e66a1a"
+    },
+    {
+      "path": "ops/production/update-backend.py",
+      "sha256": "5efa496f776f1c9e5a71deecf7c8dfdc6522dbafec49b859d0cd47cf7215a726"
+    }
+  ]
+}

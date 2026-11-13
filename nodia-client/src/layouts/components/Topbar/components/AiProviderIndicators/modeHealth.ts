@@ -28,6 +28,8 @@ export function modeHealth(provider: AiProviderHealthItem, mode: ProviderMode, h
   if (key === "openai" && mode === "agentic"
     && provider.codexSession?.reason === "codex_runtime_unverified"
     && provider.codexSession.authenticated === null && provider.codexSession.usageAllowed !== false) return "unverified";
+  if (key === "openai" && provider.codexSession?.reason === "codex_profile_busy"
+    && provider.codexSession.usageAllowed !== false) return "unverified";
   if (session?.available === false || session?.authenticated === false
     || (key === "openai" && mode === "agentic" && provider.codexSession?.usageAllowed === false)) return "needs_review";
   return session?.available === true && session.authenticated === true ? "session_ready" : "unverified";

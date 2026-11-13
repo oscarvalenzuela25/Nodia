@@ -61,6 +61,16 @@ describe("NodiaAI route", () => {
     adapter(false, roles); openRoute();
     expect(await screen.findByText("Home page")).toBeInTheDocument();
   });
+  it("does not mount chat from a differently identified module pointing to its URL", async () => {
+    useAuthStore.getState().login({ token: "fixture", expiresAt: Date.now() + 900000, user: { id: "1", name: "Fixture" } });
+    const transport = vi.fn(async config => ({ config, status: 200, statusText: "OK", headers: {},
+      data: { roles: [], actions: [], modules: [{ module_group_key: "tools", translates: [],
+        modules: [{ key: "other_module", link: NODIA_AI_ROUTE, translates: [] }] }] } }));
+    mainInstance.defaults.adapter = transport;
+    openRoute();
+    expect(await screen.findByText("Home page")).toBeInTheDocument();
+    expect(transport.mock.calls.every(([config]) => config.url?.includes("/authorization/context"))).toBe(true);
+  });
   it.each(["es", "en"])("opens the assigned page in %s with read-only coordination requests and no inference", async language => {
     await i18n.changeLanguage(language);
     useAuthStore.getState().login({ token: "fixture", expiresAt: Date.now() + 900000, user: { id: "1", name: "Fixture" } });

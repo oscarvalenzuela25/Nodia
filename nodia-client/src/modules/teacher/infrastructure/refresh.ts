@@ -7,14 +7,30 @@ export function refreshTeacherQueries(client: QueryClient, actor: readonly unkno
   const attempt = commandPath?.match(/^((sessions\/[^/]+)\/attempts\/[^/]+)(?:\/.*)?$/);
   const attemptPath = attempt?.[1];
   const draftOnly = commandPath === `${attemptPath}/responses`;
+  const sessionCommand = commandPath?.match(/^(sessions\/[^/]+)(?:\/|$)/);
+  // Session edits can change selection. Educational commands cannot change its
+  // catalog or availability; observing the provider again can contend with a worker.
+  const preserveProviderObservation = commandPath === "sessions" ||
+    Boolean(sessionCommand && commandPath !== sessionCommand[1]) ||
+    Boolean(commandPath?.startsWith("jobs/"));
+  const completesAttempt = Boolean(attemptPath && (
+    commandPath === attemptPath || commandPath === `${attemptPath}/submit` ||
+    commandPath === `${attemptPath}/close-pending`
+  ));
   return client.invalidateQueries({
     queryKey: actor,
     predicate: query => {
       const path = query.queryKey[3];
+      if (preserveProviderObservation && typeof path === "string" && (
+        path === "connections" || path.startsWith("connections/")
+      )) return false;
       if (cursor) return path === cursor[1];
       if (setupDraft) return path === setupDraft[1];
       if (attemptPath && attempt) return typeof path === "string" && (
-        (!draftOnly && path === attempt[2]) || path === attemptPath || path.startsWith(`${attemptPath}/questions/`)
+        path === attemptPath || path.startsWith(`${attemptPath}/questions/`) ||
+        (!draftOnly && (path === attempt[2] || path === `${attempt[2]}/learning` ||
+          path === `${attempt[2]}/enrichment` || path.startsWith(`${attempt[2]}/enrichment/`))) ||
+        (completesAttempt && (path === "sessions" || path.startsWith(`${attempt[2]}/units/`)))
       );
       return true;
     },

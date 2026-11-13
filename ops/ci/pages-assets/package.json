@@ -1,0 +1,11 @@
+{
+  "name": "nodia-pages-static-upload-tools",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Content hashing and MIME lookup only; no application build or deploy scripts.",
+  "dependencies": {
+    "blake3-wasm": "2.1.5",
+    "mime": "4.1.0"
+  }
+}

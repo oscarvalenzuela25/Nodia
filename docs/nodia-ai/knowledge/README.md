@@ -1,5 +1,27 @@
 # Contexto funcional de productos para NodiaAI
 
+## Teacher: alta guiada y observación Agentic — candidato local, 2026-11-12
+
+[Producto draft revisión35](studies/README.md#alta-guiada-y-estado-agentic--candidato-local-2026-11-12) y [ficha revisión30](studies/features/session-setup-and-planning.md#alta-guiada-y-selección-ia-visible--candidato-local-2026-11-12): ayudas, idioma validado, selección visible/48px y explicación del catálogo sin esfuerzos; selección exacta, elegibilidad y autoridad conservadas. Cabecera observa cuenta Codex de forma acotada compartida, sin convertir ausencia/desconocido en disponibilidad. [Verificación local y diagnóstico productivo por alcance](../../mvp/96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13); sin inferencia, despliegue, aprobación o publicación del lote.
+
+## Ajustes locales de proveedores y acceso — 2026-11-12
+
+[Ficha candidata](general-settings/features/ai-provider-interface-and-module-access.md): acciones contained, contexto de navegación del actor e identidad exacta NodiaAI, variantes Gemini con IDs reales/OCR independiente y preferencias API OpenAI xhigh/max; Ultra API no admitido. Super_admin conserva su bypass. Backend comprobado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado. Draft/unregistered/approval:null, sin inferencia, despliegue o publicación de este lote. [verificación consolidada](../../mvp/ai-provider-feature-contract.md#verificación-consolidada-de-preferencias-y-acceso--2026-11-12).
+
+## Login IA: preparación del host — 2026-11-12
+
+[Candidata operativa](general-settings/features/ai-login-host-setup.md): runtime privado para los flujos existentes. Infraestructura activa; Codex y Antigravity conectados según pruebas humanas; inferencia pendiente. Sin nueva herramienta, aprobación o publicación.
+
+## Conexiones IA: ajustes locales de estado — 2026-11-12
+
+[Candidata UI](general-settings/features/ai-connection-settings-ui.md): Gemini oculta potencia sin modelos; Codex usa recarga accesible y las observaciones esperan sesión Nodia. Pruebas y visualización sintéticas; aceptación productiva/Google/proveedores pendiente. Sin nueva herramienta, aprobación, registro o publicación; fichas aprobadas intactas. [Contrato](../../mvp/ai-provider-feature-contract.md) y [verificación consolidada del alcance PR4](../../mvp/ai-provider-feature-contract.md#verificación-consolidada-del-arreglo-ui-incorporado-desde-pr4).
+
+## Teacher: QA por alcance y adopción en development — 2026-11-11
+
+[Plan101](../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) prioriza evidencia por objetivo, diagnóstico conectado y práctica adaptativa. F0–F9 y55criterios cerrados para Windows/API key exacta deR02; [102§13](../../mvp/102-nodia-teacher-phased-implementation-and-final-qa.md#13-cierre-pendiente-en-development--2026-11-11) registra por separado la continuación VM: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. Práctica12/14 y final40/40 corresponden a respuestas del agente de QA, no a eficacia educativa humana ni55nuevas pruebas VM. [Recibo VM](../../evidence/teacher-upgrade-development-vm-20261111-r01.json). No se trasladan aceptaciones entre selecciones o entornos.
+
+[ADR098](../../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md) sigue propuesto; el [producto Teacher](studies/README.md) y sus fichas permanecen draft/partial/unregistered/approval:null, sin herramientas o bindings nuevos ni publicación. Los gates V1/Agentic de96 conservan su alcance propio; adoptar código no acredita inferencia o eficacia educativa.
+
 ## Propuestas: presentación y etiquetas sin nueva autoridad — 2026-11-07
 
 Client R38 adoptado: cabecera y Antes/Después responsive, detalles exactos plegables y borrador protegido. Las ventas históricas sólo reciben etiquetas de lectura; confirmed no acredita efecto aplicado. 218 pruebas/4 archivos, tipos/lint/build y QA sintética/autenticada por alcance correctos, sin confirmación comercial o inferencia nueva. [NodiaAI rev72](nodia-ai/README.md), [política rev20](nodia-ai/features/runtime-policy.md), [manual visual](../../features/nodia-ai/proposal-review-presentation.md) y [evidencia](../../evidence/nodia-ai-proposal-ui-20261107-r01.json). Las 44 fichas aprobadas permanecen intactas; sin aprobación o publicación nueva.
@@ -313,7 +335,7 @@ Todos los productos/módulos actuales pertenecen al alcance funcional confirmado
 
 | Producto | Carpeta documental elegida | Fuentes de partida | Fichas de contexto |
 |---|---|---|---|
-| Nodia Teacher en Estudios (propuesta) | `studies/` | [Especificación95 R02](../../mvp/95-studies-adaptive-learning.md), [plan96](../../mvp/96-nodia-teacher-implementation-plan.md), [ADR089 R02 propuesto](../../architecture/decisions/ADR-089-versioned-study-plans-and-content.md) | [Producto](studies/README.md) y cuatro funciones draft/planned/unregistered; módulo/contratos candidatos, sin implementación/herramientas ni publicación |
+| Nodia Teacher en Estudios | `studies/` | [Especificación95](../../mvp/95-studies-adaptive-learning.md), [plan96](../../mvp/96-nodia-teacher-implementation-plan.md), [upgrade101 en revisión](../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y [ADR098 propuesto](../../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md) | [Producto](studies/README.md), cuatro funciones base parciales y seis nuevas planned; fichas draft/unregistered, sin publicación. Evidencia/gates de V1 no acreditan el upgrade |
 | Negocios | `businesses/` | [PRD](../../features/businesses/01-prd.md), [inventario de endpoints](../../mvp/39-nodia-ai-current-capabilities-inventory.md) | [Producto](businesses/README.md) draft excluido;7 funciones con secciones de lectura publicadas, [preparadores de efectos](businesses/features/confirmed-business-effects.md) publicados y [análisis C03 revisión3](businesses/features/active-invoice-analysis.md) aprobado/publicado con aceptación pendiente |
 | Finanzas personales | `personal-finance/` | [Contratos](../../mvp/22-personal-finance-contracts.md) | [Producto](personal-finance/README.md) excluido;4 funciones con secciones de lectura y [efecto confirmado](personal-finance/features/confirmed-movement-effect.md) publicados |
 | Reservas | `reservations/` | [Especificación](../../mvp/26-rental-reservations-spec.md), [contratos](../../mvp/28-rental-reservations-contracts.md) | [Producto](reservations/README.md) excluido;9 funciones de lectura y secciones publicadas de [configuración](reservations/features/confirmed-configuration.md), [ciclo comercial](reservations/features/confirmed-reservation-lifecycle.md), [dinero](reservations/features/confirmed-money.md) y [ocupación/preparación](reservations/features/confirmed-occupancy-preparation.md) |

@@ -1,0 +1,40 @@
+name: Dispatch production after CI
+
+on:
+  workflow_run:
+    workflows: [Nodia CI]
+    types: [completed]
+    branches: [master]
+
+permissions: {}
+
+jobs:
+  dispatch-master:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'master' && github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Validate the completed CI before dispatching trusted master
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          retries: 0
+          script: |
+            let submitted = false;
+            try {
+              const owner = 'oscarvalenzuela25', repo = 'Nodia';
+              const event = context.payload.workflow_run;
+              if (context.eventName !== 'workflow_run' || context.repo.owner !== owner || context.repo.repo !== repo || !event) throw Error('context');
+              const {data: run} = await github.rest.actions.getWorkflowRun({owner, repo, run_id: event.id, request: {timeout: 20000}});
+              const valid = run.id === event.id && run.run_attempt === event.run_attempt && run.status === 'completed' && run.conclusion === 'success' && run.event === 'push' && run.head_branch === 'master' && run.path === '.github/workflows/ci.yml' && run.name === 'Nodia CI' && run.repository.full_name === owner+'/'+repo && run.head_repository.full_name === owner+'/'+repo && run.head_repository.id === run.repository.id && /^[a-f0-9]{40}$/.test(run.head_sha);
+              if (!valid) throw Error('untrusted_ci');
+              const {data: branch} = await github.rest.git.getRef({owner, repo, ref: 'heads/master', request: {timeout: 20000}});
+              if (branch.object.type !== 'commit' || branch.object.sha !== run.head_sha) throw Error('stale_ci');
+              submitted = true;
+              await github.rest.actions.createWorkflowDispatch({owner, repo, workflow_id: 'cd.yml', ref: 'master', inputs: {ci_run_id: String(run.id), ci_run_attempt: String(run.run_attempt)}, request: {timeout: 20000}});
+              core.info(JSON.stringify({status: 'dispatch_acknowledged', source_sha: run.head_sha, ci_run_id: String(run.id), deployment_confirmed: false}));
+            } catch {
+              core.setFailed(submitted ? 'cd_dispatch_outcome_unknown_do_not_retry_automatically' : 'trusted_master_ci_required_for_dispatch');
+            }

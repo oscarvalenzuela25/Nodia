@@ -1,0 +1,35 @@
+[Unit]
+Description=Nodia Codex private encrypted credential store
+Requires=nodia-codex-bus.service
+After=nodia-codex-bus.service
+
+[Service]
+Type=exec
+User=nodia
+Group=nodia
+Environment=HOME=/var/lib/nodia/home
+Environment=XDG_DATA_HOME=/var/lib/nodia/codex-keyring
+Environment=XDG_RUNTIME_DIR=/run/nodia-codex-keyring
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/nodia-codex/bus
+RuntimeDirectory=nodia-codex-keyring
+RuntimeDirectoryMode=0700
+LoadCredential=password:/etc/nodia/codex-keyring.password
+ExecStart=/usr/bin/python3 -I /usr/local/lib/nodia/ai-runtime/codex-keyring.py run
+ExecStartPost=/usr/bin/python3 -I /usr/local/lib/nodia/ai-runtime/codex-keyring.py initialize $MAINPID
+Restart=on-failure
+RestartSec=2
+TimeoutStartSec=20
+TimeoutStopSec=15
+UMask=0077
+NoNewPrivileges=true
+CapabilityBoundingSet=
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/nodia/codex-keyring
+RestrictAddressFamilies=AF_UNIX
+StandardOutput=null
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

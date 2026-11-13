@@ -17,11 +17,47 @@ function current() {
 
 describe('Sales publication only exposes authorized informational reads', () => {
   it('keeps the two reads and already-approved report semantics without approving a new document', () => {
-    const result = auditSalesReadOnlyPublication(current());
+    const value = current();
+    const result = auditSalesReadOnlyPublication(value);
     assert.deepEqual(result.read_tools, ['nodia_sales_get', 'nodia_sales_list']);
     assert.deepEqual(result.context_sections, ['Filtros e informes']);
     assert.equal(result.approved_document_revision, 5);
     assert.equal(result.approval_created, false);
+    assert.equal(result.retirement_catalog_release, value.candidate.catalog_release);
+    assert.equal(result.catalog_release, value.registry.catalog_release);
+  });
+  it('allows an unrelated catalog revision while preserving the exact sales authority and approved document', () => {
+    const value = current();
+    const binding = structuredClone(value.registry.bindings.find(item => item.fragment_id === 'pos-sales-v1'));
+    const approval = structuredClone(value.document.metadata.approval);
+    value.registry.catalog_release += '-synthetic-unrelated';
+    const result = auditSalesReadOnlyPublication(value);
+    assert.equal(result.catalog_release, value.registry.catalog_release);
+    assert.equal(result.approval_created, false);
+    assert.deepEqual(value.registry.bindings.find(item => item.fragment_id === 'pos-sales-v1'), binding);
+    assert.deepEqual(value.document.metadata.approval, approval);
+  });
+  it('rejects a stale binding revision or schema even when both named capabilities remain reads', () => {
+    for (const field of ['revision', 'input_schema_sha256', 'output_schema_sha256']) {
+      const value = current();
+      const requirement = value.registry.bindings.find(item => item.fragment_id === 'pos-sales-v1').requires[0];
+      requirement[field] = field === 'revision' ? requirement.revision + 1 : '0'.repeat(64);
+      assert.throws(() => auditSalesReadOnlyPublication(value), /sales_read_contract_binding_mismatch/);
+    }
+  });
+  it('rejects changing the required module, fragment purpose or projected document identity', () => {
+    for (const [field, replacement] of [
+      ['required_module_routes', ['/tools/reservations']],
+      ['purpose', 'report_semantics'],
+      ['fragment_id', 'synthetic-replacement'],
+    ]) {
+      const value = current();
+      value.registry.bindings.find(item => item.fragment_id === 'pos-sales-v1')[field] = replacement;
+      assert.throws(() => auditSalesReadOnlyPublication(value), /sales_read_only_binding_invalid/);
+    }
+    const scope = current();
+    scope.registry.capabilities.find(item => item.capability_id === 'nodia_sales_get').required_module_routes = ['/tools/reservations'];
+    assert.throws(() => auditSalesReadOnlyPublication(scope), /sales_read_contract_binding_mismatch/);
   });
   it('rejects a sales writer even when its declaration is structurally valid', () => {
     const value = current();

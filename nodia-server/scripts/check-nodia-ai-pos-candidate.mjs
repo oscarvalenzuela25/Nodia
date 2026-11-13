@@ -27,7 +27,10 @@ export function auditSalesReadOnlyPublication({ candidate, registry, extension, 
   const published = registry.capabilities.filter(capability => capability.capability_id.startsWith('nodia_sales_'));
   ensure(sameNames(published.map(capability => capability.capability_id), readNames)
     && published.every(capability => capability.kind === 'read'), 'sales_write_capability_published');
-  ensure(registry.catalog_release === candidate.catalog_release, 'sales_read_only_release_mismatch');
+  // candidate pins the historical R17 restriction and document approval, not
+  // subsequent compatible revisions of the whole publication catalog.
+  ensure(typeof candidate.catalog_release === 'string' && candidate.catalog_release.trim().length > 0,
+    'sales_read_only_retirement_invalid');
   const review = candidate.document_review;
   ensure(document.metadata.document_id === review.document_id && document.metadata.revision === review.revision
     && document.metadata.document_status === 'approved' && document.metadata.approval?.revision === review.revision
@@ -38,8 +41,16 @@ export function auditSalesReadOnlyPublication({ candidate, registry, extension, 
   const bindings = registry.bindings.filter(binding => binding.document_id === review.document_id);
   ensure(bindings.length === 1 && sameNames(bindings[0].sections, ['Filtros e informes'])
     && sameNames(bindings[0].requires.map(requirement => requirement.capability_id), readNames)
-    && frontmatter.canonical(bindings[0]) === frontmatter.canonical(candidate.required_binding),
+    && frontmatter.canonical(bindings[0]) === frontmatter.canonical({ ...candidate.required_binding, requires: bindings[0].requires }),
   'sales_read_only_binding_invalid');
+  for (const requirement of bindings[0].requires) {
+    const capability = published.find(value => value.capability_id === requirement.capability_id);
+    ensure(capability && requirement.revision === capability.revision
+      && requirement.input_schema_sha256 === capability.input_schema.sha256
+      && requirement.output_schema_sha256 === capability.output_schema.sha256
+      && sameNames(capability.required_module_routes, bindings[0].required_module_routes),
+    'sales_read_contract_binding_mismatch');
+  }
   const salesCandidates = extension.domainTools.filter(tool => tool.resourceKey === 'sales' || tool.name.startsWith('nodia_sales_'));
   ensure(sameNames(salesCandidates.map(tool => tool.name), readNames) && salesCandidates.every(tool => tool.kind === 'read'),
     'sales_write_catalog_candidate_present');
@@ -49,7 +60,8 @@ export function auditSalesReadOnlyPublication({ candidate, registry, extension, 
       .every(handler => sameNames(handler.toolNames, [handler.operationId === 'SaleController.get' ? readNames[0] : readNames[1]])),
   'sales_write_catalog_handler_present');
   return { read_tools: readNames, retired_tools: retiredNames, approved_document_revision: review.revision,
-    context_sections: bindings[0].sections, approval_created: false };
+    context_sections: bindings[0].sections, approval_created: false,
+    retirement_catalog_release: candidate.catalog_release, catalog_release: registry.catalog_release };
 }
 
 export async function checkSalesReadOnlyPublication(args = []) {

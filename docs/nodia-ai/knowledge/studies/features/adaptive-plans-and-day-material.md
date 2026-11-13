@@ -4,11 +4,11 @@
   "document_id": "studies.adaptive-plans-and-day-material",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 24,
+  "revision": 29,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "ServerR08/ClientR14 adoptados: ejemplos ficticios no sensibles, deletreo completo y nueva versión explícita con confirmación/CAS/recuperación GET. Cinco bloques de Inglés revisados; ejemplo incompleto y referencia a compartir credenciales reemplazados. Práctica nueva14/14 con Gemini escrito6/6 y pausa/recargaQ5; práctica anterior14/14 conservada por separado. Sesgo posicional de la muestra registrado, sin certificación personal, curso completo, aprobación formal o publicación."
+    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
@@ -84,10 +84,30 @@
     {
       "path": "nodia-client/src/modules/teacher/components/NewMaterialVersion/NewMaterialVersion.tsx",
       "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/101-nodia-teacher-adaptive-upgrade-plan.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md",
+      "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/teacher/use-case/teacher-generation-admission.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/BlockLearningTools.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/102-nodia-teacher-phased-implementation-and-final-qa.md",
+      "kind": "specification"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-04",
+    "checked_on": "2026-11-11",
     "evidence_paths": [
       "docs/evidence/teacher-local-implementation-20261101-r01.json",
       "docs/evidence/teacher-local-activation-20261101-r01.json",
@@ -95,13 +115,44 @@
       "docs/evidence/teacher-gemini-sdk-vm-20261102-r01.json",
       "docs/evidence/teacher-v1-vm-process-20261103-r01.json",
       "docs/evidence/teacher-gemini-journey-20261103-r01.json",
-      "docs/evidence/teacher-setup-draft-new-page-20261104-r01.json"
+      "docs/evidence/teacher-setup-draft-new-page-20261104-r01.json",
+      "docs/evidence/teacher-upgrade-local-20261111-r01.json",
+      "docs/evidence/teacher-upgrade-local-20261111-r02.json",
+      "docs/evidence/teacher-upgrade-acceptance-20261111-r02.md",
+      "docs/evidence/teacher-upgrade-development-vm-20261111-r01.json"
     ],
-    "notes": "ServerR08/ClientR14 incorporan guía de material con ejemplos ficticios no sensibles, deletreo completo y reemplazo explícito por nueva versión con confirmación/CAS/recuperación. La versión anterior y su práctica se conservan; la práctica de QA anterior terminó14/14 con feedback Gemini real. Ver96§30 para la publicación y revisión del paquete nuevo, sin afirmar calidad universal, nivel personal o curso completo. Draft/unregistered/approval:null, sin publicación nueva."
+    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente."
   },
   "approval": null
 }
 ---
+
+> Continuidad VM del2026-11-11: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. [Recibo VM](../../../../evidence/teacher-upgrade-development-vm-20261111-r01.json). El cierre55/55 R02 conserva su alcance Windows/API key; este recorrido no representa55pruebas nuevas en VM ni eficacia educativa humana. Sin promoción a master, aprobación documental o publicación. Los cortes inferiores conservan sus fechas.
+
+## Material y contexto locales — 2026-11-11
+
+## Recorrido VM por alcance — 2026-11-11
+
+Propuesta/material reales admitieron snapshot con diagnóstico, mapeos, evidencia y fuente por hash. La revisión pública identificó discriminación, composición y un check en otro contexto; cinco ejemplos SQL fueron contrastados de forma independiente. Esta muestra tiene0bloques prediction y0citas estructuradas; no se acredita su generación por disponer del contrato. La candidata de ajuste sólo cambió título y no sustituyó el plan aceptado. [Recibo VM](../../../../evidence/teacher-upgrade-development-vm-20261111-r01.json).
+
+## Cierre vigente del upgrade — 2026-11-11
+
+Los55criterios quedaron verificados para el alcance Windows/API key configurado; [evidencia R02](../../../../evidence/teacher-upgrade-local-20261111-r02.json) y [matriz](../../../../evidence/teacher-upgrade-acceptance-20261111-r02.md) separan pruebas, muestras y límites. No se copian aceptaciones a operación, no hay nueva herramienta/binding y se conservan draft/unregistered/approval:null. Los apartados inferiores son cortes anteriores o detalle funcional no sustituido.
+
+Paquetes admiten bloques prediction/check además de los tipos anteriores, sin exigir respuesta para leer. Interacciones voluntarias ligadas al bloque/versión alimentan reparación en contexto posterior; no asignan nota. La plantilla teacher-text/2 recibe evidencia específica por unidad, respuesta/error, modo y fuentes; citations opcional se valida contra fuente/página/hash/texto exactos antes de publicar. Un material existente se reutiliza sin generar otra vez. La muestra pública SQL de VM se revisó con los límites superiores; no acredita calidad general de nuevas salidas o eficacia humana.
+
+Corte histórico de construcción local y QA parcial: las comprobaciones sintéticas y los pendientes registrados entonces se conservan como historia. El cierre R02 y la continuación VM superiores contienen la evidencia posterior; no habilitan herramientas NodiaAI ni implican aprobación o publicación. Contratos en [97](../../../../mvp/97-nodia-teacher-technical-contracts.md), alcance/criterios en [101](../../../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y campaña en [102](../../../../mvp/102-nodia-teacher-phased-implementation-and-final-qa.md).
+
+
+## Upgrade por etapas: material adaptado a evidencia — 2026-11-11
+
+El [upgrade101](../../../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) amplía la base V1 parcial; conserva sus cortes operativos e históricos inferiores. E1/E2/E3 priorizan [evidencia por objetivo](learning-evidence-and-recommendations.md), diagnóstico y práctica adaptativa. Las garantías descritas de snapshot de evidencia son un requisito de diseño aún por completar en la generación efectiva; guardar respuestas no demuestra que ya alimenten el siguiente material.
+
+Cada preparación futura fijará objetivos/revisión, política y evidencia pertinente en un snapshot reproducible. La nueva evidencia tardía no altera el input ya admitido. Si no hay evidencia, Teacher conserva el desconocido y enseña sin inventar un desempeño inicial. Cambiar la ruta pedagógica no reescribe materiales/intentos; cambios de objetivos/cobertura mantienen revisión y aceptación explícitas.
+
+E4 propone predicción → explicación → comprobación en momentos útiles dentro de unidades versionadas. Lectura continua y final directa permanecen disponibles; una interacción no exige una inferencia por montaje o paso. Bloques/preguntas aptos se guardan por intención y se recuperan sin regenerar.
+
+Fuentes propias (E7a), actividades/visuales (E7b/E7c) y memoria entre planes (E8) tienen sus contratos y gates independientes en las fichas enlazadas desde el producto. No se heredan adjuntos, shell o herramientas del chat por compartir runtime. AC de E1/E2/E3/E4 en101 y ADR098 propuesto, sin implementación o calificación nuevas.
 
 ## Gemini Teacher: selección calificada en Native R10 — 2026-11-02
 

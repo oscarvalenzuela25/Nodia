@@ -1,0 +1,551 @@
+{
+  "schema_version": 1,
+  "recorded_on": "2026-11-11",
+  "status": "local_delivery_with_partial_acceptance",
+  "scope": "Teacher upgrade101/102; local implementation and isolated QA, not deployment",
+  "authorization": "User explicitly requested all phases; previous docs-only restriction superseded",
+  "verified": [
+    {
+      "command": "npx tsc --noEmit -p tsconfig.build.json",
+      "environment": "local Server baseline before changes",
+      "result": "passed"
+    },
+    {
+      "command": "npx vitest run src/teacher src/ai-generation",
+      "environment": "final frozen local Teacher/shared-generation unit tests",
+      "result": "passed",
+      "files": 25,
+      "tests": 133
+    },
+    {
+      "command": "node test/teacher-upgrade.integration.mjs",
+      "environment": "disposable PostgreSQL16; synthetic generation port",
+      "result": "passed",
+      "checks": 8
+    },
+    {
+      "command": "node test/teacher-enrichment.integration.mjs",
+      "environment": "disposable PostgreSQL16; no remote inference",
+      "result": "passed",
+      "checks": 10
+    },
+    {
+      "command": "node test/teacher-domain.integration.mjs",
+      "environment": "compiled domain/HTTP with real isolated SQL, synthetic transport",
+      "result": "passed",
+      "checks": 14
+    },
+    {
+      "command": "npx vitest run src/test/modules/teacher",
+      "environment": "local Client synthetic tests",
+      "result": "passed",
+      "files": 29,
+      "tests": 174
+    },
+    {
+      "command": "node test/teacher-upgrade-http.integration.mjs",
+      "environment": "actual Nest/DTO/parser + disposable PostgreSQL; synthetic auth",
+      "result": "passed",
+      "checks": 9
+    },
+    {
+      "command": "node test/teacher-runtime.integration.mjs",
+      "environment": "shared runtime + disposable PostgreSQL and local synthetic transport",
+      "result": "passed",
+      "checks": 29,
+      "local_synthetic_posts": 3,
+      "remote_posts": 0
+    },
+    {
+      "command": "npm run build (Client)",
+      "environment": "local production build after final Client changes",
+      "result": "passed",
+      "notes": "3220 modules; existing shared chunks >500KB warning, no measured baseline improvement claimed"
+    },
+    {
+      "command": "npm run test:nodia-ai:common-contract-fixtures",
+      "environment": "local retained/current wire contract fixtures",
+      "result": "passed",
+      "tests": 3
+    },
+    {
+      "command": "npm run test:teacher:upgrade",
+      "result": "passed",
+      "environment": "production build + grouped isolated SQL/HTTP/purpose/CLI; no remote service",
+      "checks": {
+        "core": 8,
+        "enrichment": 10,
+        "http": 9,
+        "purpose": 13,
+        "cli_tests": 1,
+        "cli_scenarios": 3
+      }
+    },
+    {
+      "command": "node test/build-assets.integration.mjs",
+      "result": "passed",
+      "checks": 2,
+      "environment": "final Nest schema assets"
+    },
+    {
+      "command": "npm run lint (Server)",
+      "result": "passed",
+      "notes": "Pre-existing no-unsafe-finally warning in unrelated test/nodia-ai-live-unknown.fixture.mjs:269 retained"
+    },
+    {
+      "command": "npm run typecheck + scoped ESLint (Client)",
+      "result": "passed",
+      "environment": "final Client source after contract/heading fixes"
+    }
+  ],
+  "pending": [
+    "Real provider/selection/modified-purpose acceptance91/92; no new qualification claimed",
+    "Reviewed pedagogical sample in two topics and transfer/help quality",
+    "Measured equivalent performance baseline by route/profile/volume",
+    "Integrated authenticated/deployed-environment acceptance and operational backup restore",
+    "Remaining per-TU functional/QA limits explicitly listed in acceptance matrix"
+  ],
+  "limitations": [
+    "No operational database changes, provider credentials or native profiles used for these tests",
+    "No remote inference, publication, deployment or human documentary approval",
+    "No measured educational effectiveness or official language-level claim",
+    "Authored diagnostic banks and activities are explicit; no unreviewed generated bank is treated as reviewed",
+    "Scheduling is teacher-intervals/1; not represented as FSRS"
+  ],
+  "artifacts": "Intermediate logs and disposable harness files live in ignored .tmp or output; this record is the durable consolidated receipt",
+  "browser": {
+    "status": "passed_scoped",
+    "summary": "QA de navegador acotado con componentes reales y transporte sintético: evidencia a320px ES/oscuro y1280px EN/claro sin desborde horizontal; confianza0 visible, banco ausente explícito, borrador diagnóstico conservado al cambiar panel, revelado/rating de tarjeta, estados vacíos y encabezados h2/h3/h4. Fuente: borrador conservado al ocultar/reabrir, éxito con toast y limpieza sólo tras recibo, error400 inyectado con mensaje específico/toast y texto intacto. Capturas inspeccionadas en output/playwright/teacher-upgrade/. No es recorrido autenticado con Server/proveedor real, auditoría WCAG completa o benchmark. La sesión final estable sólo registró favicon404 del harness; los errores de HMR del harness provisional se corrigieron con dispose del root y se repitió en sesión limpia.",
+    "profiles": [
+      "320x850 ES/dark",
+      "1280x900 EN/light"
+    ],
+    "transport": "synthetic Axios adapter; real React/MUI/query components",
+    "artifacts": "output/playwright/teacher-upgrade (ignored)",
+    "exclusions": [
+      "Real JWT/login/backend UI integration",
+      "Screen reader and complete keyboard/WCAG audit",
+      "Performance baseline comparison"
+    ]
+  },
+  "backup_restore": {
+    "status": "passed_isolated",
+    "method": "pg_dump custom + pg_restore --exit-on-error into new database in disposable container",
+    "comparison": "SHA256 of sorted JSON for every public table matched",
+    "includes": [
+      "plans/material/final",
+      "sources/threads/events/equivalences",
+      "idempotency receipts",
+      "synthetic unknown operation",
+      "populated purpose qualification in separate final-purpose suite"
+    ],
+    "operational_restore": false,
+    "workers_started": false,
+    "generation_posts": 0
+  },
+  "corrections": [
+    {
+      "id": "C1-CAS",
+      "status": "corrected_revalidated",
+      "rule": "CTE SELECT returns durable revision receipt; SQL/HTTP"
+    },
+    {
+      "id": "C2-CITATION",
+      "status": "corrected_revalidated",
+      "rule": "Citation must belong to admitted source/page/excerpt and persistent source;6 atomic regressions shared with Date and SQL-E10"
+    },
+    {
+      "id": "C2-DATE",
+      "status": "corrected_revalidated",
+      "rule": "Normalize mapped evidence observed_at to ISO before canonical prompt/hash"
+    },
+    {
+      "id": "C3-LIST",
+      "status": "corrected_revalidated",
+      "rule": "Client latest_job admits contextual_reply;174tests/29suites"
+    },
+    {
+      "id": "C3-HEADINGS",
+      "status": "corrected_revalidated",
+      "rule": "h3/h4 heading hierarchy with unchanged visual variants; browser sampled"
+    },
+    {
+      "id": "C4-QUALIFICATION",
+      "status": "corrected_revalidated",
+      "rule": "API/Agentic manifest-bound scope and separate anchored helper protocol; purpose13 PostgreSQL checks, CLI1 test and shared runtime29 passed"
+    }
+  ],
+  "acceptance_matrix": "docs/evidence/teacher-upgrade-acceptance-20261111.md",
+  "construction": {
+    "phases": "F0–F9 integrated locally",
+    "migrations": [
+      "1793630000000-TeacherLearningEvidence",
+      "1793640000000-TeacherLearningEnrichment",
+      "1793650000000-TeacherPurposeQualification"
+    ],
+    "operational_migrations_applied": false
+  },
+  "qualification": {
+    "policy": "teacher-generation-policy/2",
+    "policy_hash": "160fa23b1dde415cc696611a3cef8043d3cbfcf56bd1bdb5c8016c1343d2ff70",
+    "transport_contracts": [
+      "teacher-text/1",
+      "teacher-agentic-text/1"
+    ],
+    "purpose_protocol": "teacher-contextual-probe/1",
+    "operator_path_implemented": true,
+    "real_provider_qualification": false,
+    "historical_scope_does_not_enable_current_policy": true,
+    "setup_probe_does_not_enable_helper": true,
+    "synthetic_purpose_posts": 3,
+    "synthetic_legacy_runtime_posts": 3,
+    "counts_are_per_final_execution_not_cumulative": true
+  },
+  "knowledge": {
+    "sources": 87,
+    "excluded": 43,
+    "approved_documents": 44,
+    "approved_fragments": 46,
+    "approved_bytes_unchanged": true,
+    "registry_capabilities_and_bindings_unchanged": true,
+    "final_local_release": "1a1489b94fdcc659b8bf728cc6c4671462b275d8e949d879dd6b5f6987c4b956",
+    "runtime_pins_updated": false,
+    "publication_or_deployment": false,
+    "notes": "Build emits local assets from existing approved corpus; Teacher draft files remain excluded. Final knowledge/context assets regenerated after restoring the unchanged shared provider contract source."
+  },
+  "candidate": {
+    "base_commit": "ba8ebfa00b55f103465d0ab533a802152944d224",
+    "clean_checkout": false,
+    "source_sha256": "988d539045968b71079cb847ec5a7dd13dca49a6e412fd8d0cef5994892faa7a",
+    "files": [
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/ActivitiesPanel.tsx",
+        "sha256": "1f3d16c04530a3037833a2a96fc9700c113702462c1a1722be46688a669f3ead"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/ActivityCard.tsx",
+        "sha256": "39bd423f9b7eb295383f65a2d185d00ff75cf9202486d9b3bb70dabd70f26357"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/AdaptiveWorkspace.tsx",
+        "sha256": "ea8d2e30ed47904a938fd52a815a9b8d5c0f56a3514db5fa0d1a34162d077743"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/BlockLearningTools.tsx",
+        "sha256": "e1a992604990cf93ccc8b86e8831727439fef9048dbb1944ea9ce2ffa49f67ba"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/ClarificationPanel.tsx",
+        "sha256": "495a85628d2b493ce4258e06cefa99c431297d7ad8589e6e077f8212598a4adf"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/ConceptTargetPicker.tsx",
+        "sha256": "34780a9f86a96bad53c6868f734ab9bb326f8ddee86832e1f49baa2b798e77b7"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/ConceptsPanel.tsx",
+        "sha256": "f87c456d2ab138f85602e79bbcb5fc6bfd826990178428952b9e585a7f5d83e0"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/DiagnosticBankForm.tsx",
+        "sha256": "c451efb1aa716e309a55ef41c4b3ec7e5f57e43a9a3901d0c0822917f6e58863"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/EnrichmentPaging.tsx",
+        "sha256": "91ec69ea3ca6af0e9623cf3a30dfe864b90afd8015c2c0c7b1e5ef29dd4eef88"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/LearningPanel.tsx",
+        "sha256": "50fb65b42c8bcba9430d793f41f48c2c538ca1b918055bb44b251833d14998b7"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/PanelState.tsx",
+        "sha256": "c27a2f47419c32f82ecf09d7e52b54b1ba3c3867abc8f82318d155e0ef7361a0"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/ResponseReflection.tsx",
+        "sha256": "f612d04f8bd942d5018832e3fce815b98d7f2bad2383c625bd819567f3863b7c"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/ReviewPanel.tsx",
+        "sha256": "85c8b602d138c11f1c59b7b1243721ba1878ffcd088172afa3096de03cf7e08d"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/SourcesPanel.tsx",
+        "sha256": "39f3cd3fbea72b2e378fcec9076ffb8ae46d09ba62a9e0956e7ecc63d5ed0ad6"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/types.ts",
+        "sha256": "ff8fa8df22a2ac9713302b36dfef0dcb995aaec6d59e430f45168e0da6d04373"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/useEnrichment.ts",
+        "sha256": "0bbdc83aecd31fa5bb6706569e040fd0e810cdc990c957270bf1fbac065bfb43"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/JobPanel/JobPanel.tsx",
+        "sha256": "0b51d7228c96495d77df362f987a1291a308675b9657bf1db3a9b6a89fff8014"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/components/QuestionCard/QuestionCard.tsx",
+        "sha256": "8a88f0aef87d6757bf343446cd7c6feeed0d5573754ab73b88e5e8f444b8445a"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/infrastructure/enrichmentSchemas.ts",
+        "sha256": "f5e70c3da037c4e20b3df1df5e4b5ff683468ce38773e09f94922f2bb7914fef"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/infrastructure/learningSchemas.ts",
+        "sha256": "bf0c9b9bc83984613b4a6dc8f4e3225406725e6701bcdeb4fc0a5dad0d67b959"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/infrastructure/schemas.ts",
+        "sha256": "3cb46a4769ce9fbfbedcd291d2cc9db767400323ca81f90e1d6511f21b31114b"
+      },
+      {
+        "path": "nodia-client/src/modules/teacher/pages/Teacher/Teacher.tsx",
+        "sha256": "3e12ff6f02419815a7f5c9f37b91d419fc952f542641952662c94caf4774aa2c"
+      },
+      {
+        "path": "nodia-client/src/test/modules/teacher/components/AdaptiveWorkspace/ResponseReflection.test.tsx",
+        "sha256": "f4a9b444424585c9017beefa0bf417939267da97e88ba5b1dec380d3c5a20854"
+      },
+      {
+        "path": "nodia-client/src/test/modules/teacher/infrastructure/learningSchemas.test.ts",
+        "sha256": "fff32bceef09009519335cb987cfe2a20eae5b4183be187f7cb6e7e7c1438d88"
+      },
+      {
+        "path": "nodia-client/src/test/modules/teacher/infrastructure/schemas.test.ts",
+        "sha256": "990d1d7f58138dbb4961e58d6e6e42872824047fa27bb4b6f6e786b3290d14d2"
+      },
+      {
+        "path": "nodia-client/src/translate/en/teacher.json",
+        "sha256": "4969f0e0a6b721f04ab92daec2aad5a95d3fa7a77ae48d9a8d6fbab00c44ca61"
+      },
+      {
+        "path": "nodia-client/src/translate/es/teacher.json",
+        "sha256": "7813010766f4dcba0e8ef7994a6c06f0656d03cdd592847c73914b3f76fa3ff6"
+      },
+      {
+        "path": "nodia-server/package.json",
+        "sha256": "06cdee92a101fcc3a00802e2366f4decf52f197dd21ec15079057646bd146a2d"
+      },
+      {
+        "path": "nodia-server/scripts/qualify-teacher-text.mjs",
+        "sha256": "202c2160e11d72d0d8e6d6c76e9d5e0d400b0676cae0c19391ec6a6797a33c27"
+      },
+      {
+        "path": "nodia-server/scripts/teacher-qualification-args.mjs",
+        "sha256": "0557a6506ba39b5ccd3d0a2c3e37f4069ff589b419f4ba3c20bc2a0003f843ff"
+      },
+      {
+        "path": "nodia-server/src/ai-generation/teacher-agentic-text.service.spec.ts",
+        "sha256": "5d19409bff3f4c5fc77146bca045899d8971b38482c6992b177930a154471203"
+      },
+      {
+        "path": "nodia-server/src/ai-generation/teacher-agentic-text.service.ts",
+        "sha256": "b62e01daa5afcf61968a010894bdae28c5e6cacd43c7194e9a0711a92c39d546"
+      },
+      {
+        "path": "nodia-server/src/ai-generation/teacher-contextual-qualification-policy.spec.ts",
+        "sha256": "3f398316009c898f02c206a7bd0edf5c34cba76c38560b900b0defc0b41e7623"
+      },
+      {
+        "path": "nodia-server/src/ai-generation/teacher-contextual-qualification-policy.ts",
+        "sha256": "1ae6ca308e9dcc8d19678cacded3db2511f4c153ac3a7043ab71dc72bd480052"
+      },
+      {
+        "path": "nodia-server/src/ai-generation/teacher-generation-runtime.service.ts",
+        "sha256": "a385008693e76620487ee880431bc7dbf0e80ac64adfed18ca746f67d823c1f6"
+      },
+      {
+        "path": "nodia-server/src/ai-generation/teacher-qualification-policy.spec.ts",
+        "sha256": "ee97d91932c3f8ebe07799635db109dee85b486acbe321b18cca675b497e2ffe"
+      },
+      {
+        "path": "nodia-server/src/ai-generation/teacher-qualification-policy.ts",
+        "sha256": "0972cfae171901f1e7ca8cdfd0ca10f46185bb2a60cf231fe9bd39d068479606"
+      },
+      {
+        "path": "nodia-server/src/migrations/1793630000000-TeacherLearningEvidence.ts",
+        "sha256": "4d68facf3b38a04f6fb89925e5096c5129113c2d3f79517c9e2b8853eef21315"
+      },
+      {
+        "path": "nodia-server/src/migrations/1793640000000-TeacherLearningEnrichment.ts",
+        "sha256": "890f0008809e50205a310bc7291c4bc85b4bf22227a768f5460fa55e938b1a52"
+      },
+      {
+        "path": "nodia-server/src/migrations/1793650000000-TeacherPurposeQualification.ts",
+        "sha256": "26d079b32f17bf6ce66d2ea9be4326a0bf0287fc840441ff1c95a0256c127d46"
+      },
+      {
+        "path": "nodia-server/src/teacher/dto/teacher-enrichment.dto.ts",
+        "sha256": "fb14921e2c766e6ff8902d41bea3120bf06570fc7d435714ec32351f2426cc88"
+      },
+      {
+        "path": "nodia-server/src/teacher/dto/teacher-learning.dto.ts",
+        "sha256": "b8025684d3461d8f8314f7ae8164e10bc1958e1773af1d7e694c78d950708455"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-enrichment-activities.spec.ts",
+        "sha256": "773f3b6f244649b32d8f566077fa4ac5cee4f15464eb2caf54ad7273596938d6"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-enrichment-activities.ts",
+        "sha256": "6864f215eb934b5f5bc38626167906a9f0f07c586e34c7a5d178efbabca147f8"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-enrichment-citations.spec.ts",
+        "sha256": "d6b251de2fc1107af47c715dcb6aadbf002d43874942107e8d953380447be30f"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-enrichment-citations.ts",
+        "sha256": "a606b6f2a59fc583681a54273f2deb85bdb2564102f9bff353fdc1580e3d74be"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-enrichment-scheduling.spec.ts",
+        "sha256": "d3377c75cd544a90703d94b0432e2f16861b5e36040cd45261961daf0ee4c49c"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-enrichment-scheduling.ts",
+        "sha256": "4b68c26e32263d9de4626a0b0e559fe73053f63a04d74af352ac5890c0c102ef"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-enrichment-sources.spec.ts",
+        "sha256": "2912bbd12faf9131b5ea78ba330115fd0a80a5a30bb0b30ee571da90a14fdb24"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-enrichment-sources.ts",
+        "sha256": "def75f5aace504193a8c6d7a8f33a1f6a07d617e81db7d0161c2a3a92209e597"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-generation-deadline.spec.ts",
+        "sha256": "f235ef3ef2088d3de96f4dc8b3fd3eccb15bb9b54f1aac02f94b31173a85f94f"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-generation-deadline.ts",
+        "sha256": "56c73fcb805b2afd562176dec1361b372db345223fafe2b8b3f0ac68936ddb29"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-learning.spec.ts",
+        "sha256": "a0536f61ada7eda1b258fcf44c802a0e0e90f1e3c019cf6819eb3d27f9e2e180"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-learning.ts",
+        "sha256": "ab962329314a3e82df9f7e38978f7bff01f54688abddbb803fecbdf37bb602cd"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-prompts.spec.ts",
+        "sha256": "20549c05cf183afa0abd49a137ea1ae005fd755618341f3eccb169cd78a11ff6"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-prompts.ts",
+        "sha256": "1af57139b080a243df0401ba8afe83d00625145728fda2b69e7679767f597118"
+      },
+      {
+        "path": "nodia-server/src/teacher/policies/teacher-validation.ts",
+        "sha256": "a5aa54993131ec69f970555d1785972fa1f2b53b4b73b85ef7bf6fa8290b6db6"
+      },
+      {
+        "path": "nodia-server/src/teacher/teacher-enrichment.controller.ts",
+        "sha256": "e61ce22213df31e733f8e2d95c20d1c8e9f9f581cd3d6d7c878338265ced2032"
+      },
+      {
+        "path": "nodia-server/src/teacher/teacher-learning.controller.ts",
+        "sha256": "eb44d35186f9f7d6f3ee4c466dcd92e666ce39a38219bab982a1f6c44f21d923"
+      },
+      {
+        "path": "nodia-server/src/teacher/teacher.module.ts",
+        "sha256": "948b1e038f93aac7a024a0a686d148cb01aea64b26bcbd591e4c9aef740712e3"
+      },
+      {
+        "path": "nodia-server/src/teacher/types/teacher-enrichment.types.ts",
+        "sha256": "13f62379ef0ab15ea1a1e61c5e95d434f10a410bf67e9b58fc636f400e1a5dd4"
+      },
+      {
+        "path": "nodia-server/src/teacher/types/teacher-learning.types.ts",
+        "sha256": "97711ff0ef9a1f7372239d600c910efc0988d8de0a1956d4c695ec0628a82092"
+      },
+      {
+        "path": "nodia-server/src/teacher/types/teacher.types.ts",
+        "sha256": "fd76790947578292fd517328d12ee8a81f2d8df1a0aae1db1e2f416e15654d73"
+      },
+      {
+        "path": "nodia-server/src/teacher/use-case/execute-teacher-command.use-case.ts",
+        "sha256": "09ec9ef3ec9ed17b6cf5edf1fba3547e849d7773f09daf03440d0ef6a307ec44"
+      },
+      {
+        "path": "nodia-server/src/teacher/use-case/publish-teacher.use-case.ts",
+        "sha256": "95d55f17836cc620127714f53a110633bb28b9245563bb602155289474bf1db0"
+      },
+      {
+        "path": "nodia-server/src/teacher/use-case/read-teacher.use-case.ts",
+        "sha256": "5c78c86ef430427d463ff37e4150a01459d6260cb20222a80b85c2d8fd3f900c"
+      },
+      {
+        "path": "nodia-server/src/teacher/use-case/teacher-attempt-persistence.ts",
+        "sha256": "dac32600019dd0a8f0733cb6b7eba22324acd41a07d3472687ec902a7dff42a0"
+      },
+      {
+        "path": "nodia-server/src/teacher/use-case/teacher-enrichment-persistence.spec.ts",
+        "sha256": "7e10bfef61146edbf9769c80609d5a0db697bec2fb1262d7bdc31e6bc717810b"
+      },
+      {
+        "path": "nodia-server/src/teacher/use-case/teacher-enrichment-persistence.ts",
+        "sha256": "fb96a249e9b43fab985b46bbc6f4bd2b14de41b1b8636182a2a302b7f1598d9e"
+      },
+      {
+        "path": "nodia-server/src/teacher/use-case/teacher-enrichment.use-case.ts",
+        "sha256": "0e819570f957f13c6eb44926c3fc09ba07ccc5b23f79b26be1f4fca20848e2b6"
+      },
+      {
+        "path": "nodia-server/src/teacher/use-case/teacher-generation-admission.ts",
+        "sha256": "38f73c6497afad24557b2f3437ef001ab3e7629ae8c30187f6ce83a34020408e"
+      },
+      {
+        "path": "nodia-server/src/teacher/use-case/teacher-learning-persistence.ts",
+        "sha256": "5daba829c475d8feecf596666eefd672917d94f3227b529f5c29663397ad682f"
+      },
+      {
+        "path": "nodia-server/src/teacher/use-case/teacher-learning.use-case.ts",
+        "sha256": "8a0e0678baf362c55e4982586e442672cce4853aa2fa12cdaf8d742b77f4faa7"
+      },
+      {
+        "path": "nodia-server/test/helpers/teacher-upgrade-lab.mjs",
+        "sha256": "573b7f359cde907824c4454f6497a8ca43bcc5836444e73bab4a01c70677ca07"
+      },
+      {
+        "path": "nodia-server/test/teacher-domain.integration.mjs",
+        "sha256": "53b834d6909bce6cbe3a4fd76b747b7e915b59a8744608c28c19ef8704fa336d"
+      },
+      {
+        "path": "nodia-server/test/teacher-enrichment.integration.mjs",
+        "sha256": "392fcf4567d823a3fa04c327d220eb097a187336bd5cc274ca18a5cdb4c72fa7"
+      },
+      {
+        "path": "nodia-server/test/teacher-purpose-qualification.integration.mjs",
+        "sha256": "413c4c3f9f48b48e54d00691d42ed00e6da99196a75d35aff074f1a3b66c296c"
+      },
+      {
+        "path": "nodia-server/test/teacher-qualification-args.spec.mjs",
+        "sha256": "a70c0fbac00e1ec2706fdb9164dc49e6956f959c9a12f4a25c4c9a0f7e3520fa"
+      },
+      {
+        "path": "nodia-server/test/teacher-upgrade-http.integration.mjs",
+        "sha256": "db32a023c1c1b97eeaa0b507c81b7279cdb5d8cd0ae8e6e24999ec0cc75279b3"
+      },
+      {
+        "path": "nodia-server/test/teacher-upgrade.integration.mjs",
+        "sha256": "2223bd6fa2cde264332f9614a27a3d840eb4cb5d4f1af9d15ae8ad594160371b"
+      }
+    ]
+  },
+  "documentary_integrity": {
+    "matrix_tu": 55,
+    "unique_tu": 55,
+    "approved_knowledge_documents": 44,
+    "approved_bytes_unchanged": true,
+    "registry_except_previously_added_draft_sources_unchanged": true,
+    "own_source_utf8_lf": true
+  }
+}

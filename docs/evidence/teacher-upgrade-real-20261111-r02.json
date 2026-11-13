@@ -1,0 +1,1382 @@
+{
+  "schema_version": 1,
+  "status": "qualified_and_independently_reviewed_for_recorded_scope",
+  "checked_on": "2026-11-11",
+  "environment": "Windows compiled runtime + disposable PostgreSQL16",
+  "operational_database_read_only": true,
+  "operational_writes": 0,
+  "selection": {
+    "connection_id": "4",
+    "mode": "api_key",
+    "model_id": "gpt-6.1-sol",
+    "effort_id": "medium"
+  },
+  "configuration_generation": "b2c337cbbb2724bdea13b7236468e3c60fda79b00b379807051f83f8afd968ce",
+  "session_generation": "f9e45dcb34901297d8798f1a51749bbd",
+  "policy_hash": "5c37c4194d11ed8b9f40f065b4289f772bfba080fef7147878223e6060edf524",
+  "posts": 18,
+  "maximum_posts": 20,
+  "provider_observations": [
+    {
+      "post": 1,
+      "status": 200,
+      "response_id": "resp_095fdc5ddfc8baf2016af4ce32dfec87d1aeeea38be9d65ba3",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 401,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 225,
+        "output_tokens_details": {
+          "reasoning_tokens": 173
+        },
+        "total_tokens": 626
+      }
+    },
+    {
+      "post": 2,
+      "status": 200,
+      "response_id": "resp_0c939887ace8f364016af4ced4cbac87d1be70f64bd01955f1",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 451,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 68,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 519
+      }
+    },
+    {
+      "post": 3,
+      "status": 200,
+      "response_id": "resp_072c8ad2939bc046016af4ceeddb7487d1af9bb5af68683134",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 1320,
+        "input_tokens_details": {
+          "cache_write_tokens": 1317,
+          "cached_tokens": 0
+        },
+        "output_tokens": 1038,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 2358
+      }
+    },
+    {
+      "post": 4,
+      "status": 200,
+      "response_id": "resp_093775380ee3be54016af4cf70fb6c87d1939bacce2d123316",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 2584,
+        "input_tokens_details": {
+          "cache_write_tokens": 2581,
+          "cached_tokens": 0
+        },
+        "output_tokens": 4112,
+        "output_tokens_details": {
+          "reasoning_tokens": 148
+        },
+        "total_tokens": 6696
+      }
+    },
+    {
+      "post": 5,
+      "status": 200,
+      "response_id": "resp_0dda1233feaae675016af4cfc7ce3887d19fa3a3747dc4a797",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 1339,
+        "input_tokens_details": {
+          "cache_write_tokens": 1336,
+          "cached_tokens": 0
+        },
+        "output_tokens": 988,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 2327
+      }
+    },
+    {
+      "post": 6,
+      "status": 200,
+      "response_id": "resp_0029df3feabe81e4016af4cfd3e8c087d19565525924fdbb95",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 2644,
+        "input_tokens_details": {
+          "cache_write_tokens": 2641,
+          "cached_tokens": 0
+        },
+        "output_tokens": 4062,
+        "output_tokens_details": {
+          "reasoning_tokens": 225
+        },
+        "total_tokens": 6706
+      }
+    },
+    {
+      "post": 7,
+      "status": 200,
+      "response_id": "resp_0a520eb3e25e7158016af4d01aed1887d18e3c3a2f8b9f0a1e",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 1298,
+        "input_tokens_details": {
+          "cache_write_tokens": 1295,
+          "cached_tokens": 0
+        },
+        "output_tokens": 1021,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 2319
+      }
+    },
+    {
+      "post": 8,
+      "status": 200,
+      "response_id": "resp_07755b7e5a924ca0016af4d028ca8487d1ad06eb2b96cde30f",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 2552,
+        "input_tokens_details": {
+          "cache_write_tokens": 2549,
+          "cached_tokens": 0
+        },
+        "output_tokens": 2913,
+        "output_tokens_details": {
+          "reasoning_tokens": 157
+        },
+        "total_tokens": 5465
+      }
+    },
+    {
+      "post": 9,
+      "status": 200,
+      "response_id": "resp_0f6d8f3ccdf87792016af4d08a479487d1a77b66401a35c47e",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 1329,
+        "input_tokens_details": {
+          "cache_write_tokens": 1326,
+          "cached_tokens": 0
+        },
+        "output_tokens": 898,
+        "output_tokens_details": {
+          "reasoning_tokens": 48
+        },
+        "total_tokens": 2227
+      }
+    },
+    {
+      "post": 10,
+      "status": 200,
+      "response_id": "resp_0d1c98677783b092016af4d0962c9487d1bc536fe68616d12a",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 2637,
+        "input_tokens_details": {
+          "cache_write_tokens": 2634,
+          "cached_tokens": 0
+        },
+        "output_tokens": 2833,
+        "output_tokens_details": {
+          "reasoning_tokens": 240
+        },
+        "total_tokens": 5470
+      }
+    },
+    {
+      "post": 11,
+      "status": 200,
+      "response_id": "resp_0c1582a68d84e33a016af4d0fa0c1887d1890722ea2f3d67e8",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 2233,
+        "input_tokens_details": {
+          "cache_write_tokens": 2230,
+          "cached_tokens": 0
+        },
+        "output_tokens": 3599,
+        "output_tokens_details": {
+          "reasoning_tokens": 135
+        },
+        "total_tokens": 5832
+      }
+    },
+    {
+      "post": 12,
+      "status": 200,
+      "response_id": "resp_08191e3bbbe09ebb016af4d1853b0887d19fcf0fa66829497c",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 2177,
+        "input_tokens_details": {
+          "cache_write_tokens": 2174,
+          "cached_tokens": 0
+        },
+        "output_tokens": 2348,
+        "output_tokens_details": {
+          "reasoning_tokens": 51
+        },
+        "total_tokens": 4525
+      }
+    },
+    {
+      "post": 13,
+      "status": 200,
+      "response_id": "resp_01641f6df92407c0016af4d1e6726087d1b4472d5f02e6df24",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 3272,
+        "input_tokens_details": {
+          "cache_write_tokens": 3269,
+          "cached_tokens": 0
+        },
+        "output_tokens": 4152,
+        "output_tokens_details": {
+          "reasoning_tokens": 146
+        },
+        "total_tokens": 7424
+      }
+    },
+    {
+      "post": 14,
+      "status": 200,
+      "response_id": "resp_0c2e5478d324525e016af4d242f0f887d1a63fb85bf510c6d9",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 711,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 70,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 781
+      }
+    },
+    {
+      "post": 15,
+      "status": 200,
+      "response_id": "resp_0fc2beec7e850f9c016af4d245661c87d1a287eb37b787614d",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 719,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 387,
+        "output_tokens_details": {
+          "reasoning_tokens": 77
+        },
+        "total_tokens": 1106
+      }
+    },
+    {
+      "post": 16,
+      "status": 200,
+      "response_id": "resp_0242b337bde3f0c4016af4d29e4dd887d18bf3e4da40f2c9fb",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 964,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 250,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1214
+      }
+    },
+    {
+      "post": 17,
+      "status": 200,
+      "response_id": "resp_0b6d2a540b6386b4016af4d2a4067887d18417c2195f621b4f",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 5058,
+        "input_tokens_details": {
+          "cache_write_tokens": 5055,
+          "cached_tokens": 0
+        },
+        "output_tokens": 920,
+        "output_tokens_details": {
+          "reasoning_tokens": 87
+        },
+        "total_tokens": 5978
+      }
+    },
+    {
+      "post": 18,
+      "status": 200,
+      "response_id": "resp_0e6ddfc331f43b41016af4d2b385c087d19328184814e9aca6",
+      "response_model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 6498,
+        "input_tokens_details": {
+          "cache_write_tokens": 6495,
+          "cached_tokens": 0
+        },
+        "output_tokens": 4881,
+        "output_tokens_details": {
+          "reasoning_tokens": 206
+        },
+        "total_tokens": 11379
+      }
+    }
+  ],
+  "previous_policy_probes": [
+    {
+      "policy_hash": "160fa23b1dde415cc696611a3cef8043d3cbfcf56bd1bdb5c8016c1343d2ff70",
+      "error": {
+        "stage": "init",
+        "code": "teacher:qualification_failed",
+        "posts": 1
+      },
+      "original_operations": [
+        "ba824d12-fa1a-464a-956e-87a0d46324b1"
+      ]
+    }
+  ],
+  "budget_changes": [
+    {
+      "from": 16,
+      "to": 20,
+      "reason": "Explicit bounded acceptance campaign; additional required purposes"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "90b87ede-7e88-4c95-bced-34e2f08e3df7",
+      "session_id": "68125820-d8a3-467f-b59e-40fdf8661040",
+      "purpose": "setup_reply",
+      "state": "ready",
+      "input_hash": "f077a7e7fef55863a8dceb16efc983c00ea04e937b736633c49d67806c941d13",
+      "template_hash": "e80d5776325100dd737ce396ff2b5b42672052b53726939534f47de19755d85e",
+      "error_code": null,
+      "operation_id": "ba824d12-fa1a-464a-956e-87a0d46324b1",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:13:53.041Z",
+      "request_hash": "fa1d699a88f55eb208d676c74a517798e1814e47bbf4071d6700c0668048398c",
+      "response_hash": "8993f5d62b3ba29ea9bd355acba8d26ffe1609fa5810b74a8c90f5925f4145be",
+      "owner_fence": "1",
+      "runtime_fence": "1",
+      "terminal_proof": {
+        "owner": {
+          "pid": 22820,
+          "boot": "non-linux",
+          "birth": "1794428020386",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "0b8f1a15-e7a7-4a33-8ed7-22184783d4c5"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:13:53.022Z",
+        "owner_fence": "1",
+        "operation_id": "ba824d12-fa1a-464a-956e-87a0d46324b1",
+        "request_hash": "fa1d699a88f55eb208d676c74a517798e1814e47bbf4071d6700c0668048398c",
+        "response_hash": "8993f5d62b3ba29ea9bd355acba8d26ffe1609fa5810b74a8c90f5925f4145be",
+        "runtime_fence": "1",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "4a6ea8bf-d9b4-4c91-bde1-9612bf8c9b28",
+      "session_id": "d5fd64fb-83ec-4d42-88f8-5eea26d55d75",
+      "purpose": "setup_reply",
+      "state": "ready",
+      "input_hash": "57daec08f47fa79728051328a784edee6da83043615ef15c5318fdbb09810b13",
+      "template_hash": "d033e2ab38084ba4ee53db1261d30d9c478fa6ed248506eb32a61229cdc2d1a1",
+      "error_code": null,
+      "operation_id": "20260852-bccf-481f-8969-7c76af4d7523",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:16:29.820Z",
+      "request_hash": "d2663387c534c163712d37e2ece2be2b3f8df825027596109f7d18efcdace4dd",
+      "response_hash": "51a91e44cbfd060d2dd4a00b08dd3ed3b312e498e8786de21b3089241742dbab",
+      "owner_fence": "1",
+      "runtime_fence": "3",
+      "terminal_proof": {
+        "owner": {
+          "pid": 18136,
+          "boot": "non-linux",
+          "birth": "1794428185790",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "7e5fa333-3a00-44b3-910f-af6a820bffe4"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:16:29.797Z",
+        "owner_fence": "1",
+        "operation_id": "20260852-bccf-481f-8969-7c76af4d7523",
+        "request_hash": "d2663387c534c163712d37e2ece2be2b3f8df825027596109f7d18efcdace4dd",
+        "response_hash": "51a91e44cbfd060d2dd4a00b08dd3ed3b312e498e8786de21b3089241742dbab",
+        "runtime_fence": "3",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "e054a2c4-1938-4ae8-b3b3-f2f8992f58a7",
+      "session_id": "b0634b9f-ac52-44d3-ac36-0957ccf1773f",
+      "purpose": "plan_outline",
+      "state": "ready",
+      "input_hash": "4e171a3dc761ba660d6bfce83dd50ff730d229778523ed653d884b2bdcadfe0a",
+      "template_hash": "fe56124f4b566cc9e5b75f95a6cf1e7ad9c3786d4bdc6ce980232486b51a3eb0",
+      "error_code": null,
+      "operation_id": "c701dc63-417a-4c61-a3db-d35e40189a83",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:17:05.616Z",
+      "request_hash": "eb0cab3a12e9389084277576d184182812a1b80178891fd05b47c73f3d298316",
+      "response_hash": "484bb5b087a9a4af725adbe8dd556397f0cd1aff36c0de0bef9260ee48b1d8ff",
+      "owner_fence": "1",
+      "runtime_fence": "5",
+      "terminal_proof": {
+        "owner": {
+          "pid": 23696,
+          "boot": "non-linux",
+          "birth": "1794428210384",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "91de3969-adff-4e10-bd61-dc2cf5a72568"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:17:05.590Z",
+        "owner_fence": "1",
+        "operation_id": "c701dc63-417a-4c61-a3db-d35e40189a83",
+        "request_hash": "eb0cab3a12e9389084277576d184182812a1b80178891fd05b47c73f3d298316",
+        "response_hash": "484bb5b087a9a4af725adbe8dd556397f0cd1aff36c0de0bef9260ee48b1d8ff",
+        "runtime_fence": "5",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "d8a3c104-ae79-45cc-9e8a-3a5a4d8dd75a",
+      "session_id": "b0634b9f-ac52-44d3-ac36-0957ccf1773f",
+      "purpose": "learning_packet",
+      "state": "ready",
+      "input_hash": "e9954b2b449437b6114369ade18fa1e5b98eb025705cf8e3fffe7d3759cc0972",
+      "template_hash": "903421421754a878d860c9b3abc1dbc5507e2a334040272a9bb20dabfef98a5e",
+      "error_code": null,
+      "operation_id": "c5f20536-07b6-431a-9756-603249b525a8",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:20:02.525Z",
+      "request_hash": "5ef67176d1d90e095bbacf3cd249f54a876f6a5deef95422b9cf38cd30a239f7",
+      "response_hash": "cc46e256de228ace8cf3ea1785e204ae1ab70118f5c3bd8034a8b833ac6177a2",
+      "owner_fence": "1",
+      "runtime_fence": "7",
+      "terminal_proof": {
+        "owner": {
+          "pid": 22724,
+          "boot": "non-linux",
+          "birth": "1794428341865",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "8d87f327-1dc7-4f2e-9ed8-b286945d31b6"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:20:02.492Z",
+        "owner_fence": "1",
+        "operation_id": "c5f20536-07b6-431a-9756-603249b525a8",
+        "request_hash": "5ef67176d1d90e095bbacf3cd249f54a876f6a5deef95422b9cf38cd30a239f7",
+        "response_hash": "cc46e256de228ace8cf3ea1785e204ae1ab70118f5c3bd8034a8b833ac6177a2",
+        "runtime_fence": "7",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "71909df6-6699-4540-acce-48f7b61c52c4",
+      "session_id": "2a404945-fbb9-4c0f-9302-cb5833797e08",
+      "purpose": "plan_outline",
+      "state": "ready",
+      "input_hash": "eb23cad1612c024878df3eb84ff430385d74d0c61819fc6496c78ce50d71ef63",
+      "template_hash": "fe56124f4b566cc9e5b75f95a6cf1e7ad9c3786d4bdc6ce980232486b51a3eb0",
+      "error_code": null,
+      "operation_id": "f6e057bc-378f-449a-a211-0333a566dfc6",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:20:42.488Z",
+      "request_hash": "845f550ae1b326e0d292ea6c15c0ea6a43eeacc9f70528c0a27778ad2b831d5b",
+      "response_hash": "6fc523019bb0e395077ef72ffff956106c3a4cb871bb76a5a67eeaf0f51b0b67",
+      "owner_fence": "1",
+      "runtime_fence": "9",
+      "terminal_proof": {
+        "owner": {
+          "pid": 5204,
+          "boot": "non-linux",
+          "birth": "1794428428467",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "90b7ef25-5a66-471d-9820-05110325834f"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:20:42.469Z",
+        "owner_fence": "1",
+        "operation_id": "f6e057bc-378f-449a-a211-0333a566dfc6",
+        "request_hash": "845f550ae1b326e0d292ea6c15c0ea6a43eeacc9f70528c0a27778ad2b831d5b",
+        "response_hash": "6fc523019bb0e395077ef72ffff956106c3a4cb871bb76a5a67eeaf0f51b0b67",
+        "runtime_fence": "9",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "8721535a-78bb-4759-9147-5db0118ea724",
+      "session_id": "2a404945-fbb9-4c0f-9302-cb5833797e08",
+      "purpose": "learning_packet",
+      "state": "ready",
+      "input_hash": "a56bdf57f7f3ab1c864b2a26a230c3d1ce4748e07be744dfc97ceef62830721f",
+      "template_hash": "903421421754a878d860c9b3abc1dbc5507e2a334040272a9bb20dabfef98a5e",
+      "error_code": null,
+      "operation_id": "9647e736-658e-410b-80c9-add880866825",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:21:43.223Z",
+      "request_hash": "7e6f56c09b05d833d96649e00aee7fa64f0fa3ac3b0c81eaba988bf1ee11f0f6",
+      "response_hash": "89a0abb07d94fab273705ae86d96f0f0f4686f99471af3eab6e5bca98b11d414",
+      "owner_fence": "1",
+      "runtime_fence": "11",
+      "terminal_proof": {
+        "owner": {
+          "pid": 5204,
+          "boot": "non-linux",
+          "birth": "1794428428467",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "90b7ef25-5a66-471d-9820-05110325834f"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:21:43.195Z",
+        "owner_fence": "1",
+        "operation_id": "9647e736-658e-410b-80c9-add880866825",
+        "request_hash": "7e6f56c09b05d833d96649e00aee7fa64f0fa3ac3b0c81eaba988bf1ee11f0f6",
+        "response_hash": "89a0abb07d94fab273705ae86d96f0f0f4686f99471af3eab6e5bca98b11d414",
+        "runtime_fence": "11",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "9bc21a9d-cd2b-449d-be39-f5da9773c820",
+      "session_id": "9365ad3a-138d-4b10-91ae-95374b739ed5",
+      "purpose": "plan_outline",
+      "state": "ready",
+      "input_hash": "14ce8c7b3a4c92f8365e27f36196c854d1a957494ede58b69f2db8235a7c33ae",
+      "template_hash": "fe56124f4b566cc9e5b75f95a6cf1e7ad9c3786d4bdc6ce980232486b51a3eb0",
+      "error_code": null,
+      "operation_id": "8cb0429b-7b6a-4628-af3e-1b0c84cadc95",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:22:07.381Z",
+      "request_hash": "2fd1e39bf517941e2102143335ba005f8dcea5019ee69f1ffb034419080de23e",
+      "response_hash": "0c42b57cc7231872c521a927730e130899f675ac586abe25c828ad3b37b55765",
+      "owner_fence": "1",
+      "runtime_fence": "13",
+      "terminal_proof": {
+        "owner": {
+          "pid": 12220,
+          "boot": "non-linux",
+          "birth": "1794428511573",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "7cc16784-24f7-4094-90fa-542e0f0b76c4"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:22:07.362Z",
+        "owner_fence": "1",
+        "operation_id": "8cb0429b-7b6a-4628-af3e-1b0c84cadc95",
+        "request_hash": "2fd1e39bf517941e2102143335ba005f8dcea5019ee69f1ffb034419080de23e",
+        "response_hash": "0c42b57cc7231872c521a927730e130899f675ac586abe25c828ad3b37b55765",
+        "runtime_fence": "13",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "a6e9fe71-3107-4bd4-a088-63742e357c1a",
+      "session_id": "9365ad3a-138d-4b10-91ae-95374b739ed5",
+      "purpose": "learning_packet",
+      "state": "ready",
+      "input_hash": "c61497e5beef790247baa36b0e1130efc40af7470a86bff1122aa6fdb927bf9b",
+      "template_hash": "903421421754a878d860c9b3abc1dbc5507e2a334040272a9bb20dabfef98a5e",
+      "error_code": null,
+      "operation_id": "d8846542-5db9-4784-925a-f6935b5a98f0",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:22:51.259Z",
+      "request_hash": "989c981bd4cbe20c75702565ac232e841304a4eb560761d1144ddfe053b75cca",
+      "response_hash": "d3204896b54038a0acac5c7813f297020067747546c67d5116dd2ab272b611e8",
+      "owner_fence": "1",
+      "runtime_fence": "15",
+      "terminal_proof": {
+        "owner": {
+          "pid": 12220,
+          "boot": "non-linux",
+          "birth": "1794428511573",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "7cc16784-24f7-4094-90fa-542e0f0b76c4"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:22:51.232Z",
+        "owner_fence": "1",
+        "operation_id": "d8846542-5db9-4784-925a-f6935b5a98f0",
+        "request_hash": "989c981bd4cbe20c75702565ac232e841304a4eb560761d1144ddfe053b75cca",
+        "response_hash": "d3204896b54038a0acac5c7813f297020067747546c67d5116dd2ab272b611e8",
+        "runtime_fence": "15",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "4c18c4c6-8202-4a97-96ae-d56e4940e58f",
+      "session_id": "895da348-aef3-43e2-8952-31cc7d9fec85",
+      "purpose": "plan_outline",
+      "state": "ready",
+      "input_hash": "a1ca3202fe73d45e6933074d144663127ee5fe19e3b1132d68c2254a6731d6fc",
+      "template_hash": "fe56124f4b566cc9e5b75f95a6cf1e7ad9c3786d4bdc6ce980232486b51a3eb0",
+      "error_code": null,
+      "operation_id": "4df488d0-6a24-464e-8cc6-21cf64d366cc",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:23:56.780Z",
+      "request_hash": "764fff88c452c1e276d9c929d3d46a1b3db5061d054d517263cbd8f031c7f18d",
+      "response_hash": "13df5a73cb21149bb3a7d091cddeb7bdb42aa06530528b0e08ec4c46da175db0",
+      "owner_fence": "1",
+      "runtime_fence": "17",
+      "terminal_proof": {
+        "owner": {
+          "pid": 1664,
+          "boot": "non-linux",
+          "birth": "1794428623113",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "01c539f8-69f6-45dd-b4d0-c3c7c7d877f8"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:23:56.760Z",
+        "owner_fence": "1",
+        "operation_id": "4df488d0-6a24-464e-8cc6-21cf64d366cc",
+        "request_hash": "764fff88c452c1e276d9c929d3d46a1b3db5061d054d517263cbd8f031c7f18d",
+        "response_hash": "13df5a73cb21149bb3a7d091cddeb7bdb42aa06530528b0e08ec4c46da175db0",
+        "runtime_fence": "17",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "8a0c404a-01db-446c-9d65-8e9c3f24265b",
+      "session_id": "895da348-aef3-43e2-8952-31cc7d9fec85",
+      "purpose": "learning_packet",
+      "state": "ready",
+      "input_hash": "80e7e710ff8dc674092c407236035f40b552b6cc052d85e54365dd3e2648ab91",
+      "template_hash": "903421421754a878d860c9b3abc1dbc5507e2a334040272a9bb20dabfef98a5e",
+      "error_code": null,
+      "operation_id": "8dd6fcea-58f7-4eaa-8251-1b29047c05fe",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:24:42.261Z",
+      "request_hash": "44622c15e3cb3db941734771578fdb563de054c59b842f38e45eb098d77a3649",
+      "response_hash": "936e4f4d42478ad5b18a07bf31c10daa15870ab9558af7b23b760e595eecef0b",
+      "owner_fence": "1",
+      "runtime_fence": "19",
+      "terminal_proof": {
+        "owner": {
+          "pid": 1664,
+          "boot": "non-linux",
+          "birth": "1794428623113",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "01c539f8-69f6-45dd-b4d0-c3c7c7d877f8"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:24:42.231Z",
+        "owner_fence": "1",
+        "operation_id": "8dd6fcea-58f7-4eaa-8251-1b29047c05fe",
+        "request_hash": "44622c15e3cb3db941734771578fdb563de054c59b842f38e45eb098d77a3649",
+        "response_hash": "936e4f4d42478ad5b18a07bf31c10daa15870ab9558af7b23b760e595eecef0b",
+        "runtime_fence": "19",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "59a1f626-c375-47a9-a097-1f301f0448b4",
+      "session_id": "5e368c34-46fd-4dc5-944b-e0e4c8164f09",
+      "purpose": "learning_packet",
+      "state": "ready",
+      "input_hash": "1920b9d916237af484e924f62ca657e6aa4e94ce4302c9fc287dd4055167a3f4",
+      "template_hash": "903421421754a878d860c9b3abc1dbc5507e2a334040272a9bb20dabfef98a5e",
+      "error_code": null,
+      "operation_id": "94560690-9c19-4aa2-b137-f5669c6ae924",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:26:31.228Z",
+      "request_hash": "ddc18158ee28f93cac4bf65bdca734ad75a4836a8bbab522e5e1a84848931512",
+      "response_hash": "f3f804c809499417a019f066f4eb65a1d93c8e5684f198774bbeec96a71561a6",
+      "owner_fence": "1",
+      "runtime_fence": "21",
+      "terminal_proof": {
+        "owner": {
+          "pid": 4908,
+          "boot": "non-linux",
+          "birth": "1794428734956",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "ea371c2e-f79f-41ce-80bb-72ffb32d883d"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:26:31.199Z",
+        "owner_fence": "1",
+        "operation_id": "94560690-9c19-4aa2-b137-f5669c6ae924",
+        "request_hash": "ddc18158ee28f93cac4bf65bdca734ad75a4836a8bbab522e5e1a84848931512",
+        "response_hash": "f3f804c809499417a019f066f4eb65a1d93c8e5684f198774bbeec96a71561a6",
+        "runtime_fence": "21",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "b7fb6b70-cdc4-41cc-8566-eaec509d9a0d",
+      "session_id": "730e3c63-8318-4d1b-b2f3-956d1b1738fd",
+      "purpose": "learning_packet",
+      "state": "ready",
+      "input_hash": "b3b08701f762cbd359f668f8662d1458a1d03db4e3bc6b586d03aeb0bc6ccae7",
+      "template_hash": "903421421754a878d860c9b3abc1dbc5507e2a334040272a9bb20dabfef98a5e",
+      "error_code": null,
+      "operation_id": "ee85a2fb-c40d-4457-9a97-d02253905d63",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:28:31.888Z",
+      "request_hash": "6a4826a816e440059f3780f7cc2ccad28b4aa7ac610e055a755499fc2af8083e",
+      "response_hash": "3da0681dd2ae06030810a5ac8fa555544640bfd6ab663768b83a06cf1536c002",
+      "owner_fence": "1",
+      "runtime_fence": "23",
+      "terminal_proof": {
+        "owner": {
+          "pid": 25872,
+          "boot": "non-linux",
+          "birth": "1794428874081",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "68790cad-0e71-4987-a961-572052a63c69"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:28:31.853Z",
+        "owner_fence": "1",
+        "operation_id": "ee85a2fb-c40d-4457-9a97-d02253905d63",
+        "request_hash": "6a4826a816e440059f3780f7cc2ccad28b4aa7ac610e055a755499fc2af8083e",
+        "response_hash": "3da0681dd2ae06030810a5ac8fa555544640bfd6ab663768b83a06cf1536c002",
+        "runtime_fence": "23",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "5f4a32d9-121f-4063-bdc1-cc0ec2b61321",
+      "session_id": "b0634b9f-ac52-44d3-ac36-0957ccf1773f",
+      "purpose": "learning_packet",
+      "state": "ready",
+      "input_hash": "3e41311f3803847e1769e2ba0ac5605ccdd758fc5e020a00753cea3fa8078d07",
+      "template_hash": "903421421754a878d860c9b3abc1dbc5507e2a334040272a9bb20dabfef98a5e",
+      "error_code": null,
+      "operation_id": "c2f3b4f9-0591-4770-90c4-01f136ddc224",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:30:31.130Z",
+      "request_hash": "353dd509fb4abb9eb9ca964b001ced33b41543378e11b5de8793531de166597e",
+      "response_hash": "8b97b065345fef1f97beee04cbb927d293ade199b1e2d8a4f552df4cd43fbcab",
+      "owner_fence": "1",
+      "runtime_fence": "25",
+      "terminal_proof": {
+        "owner": {
+          "pid": 26176,
+          "boot": "non-linux",
+          "birth": "1794428970905",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "1ecdd83a-c0d1-4f3a-aec1-02a4274e5ca0"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:30:31.099Z",
+        "owner_fence": "1",
+        "operation_id": "c2f3b4f9-0591-4770-90c4-01f136ddc224",
+        "request_hash": "353dd509fb4abb9eb9ca964b001ced33b41543378e11b5de8793531de166597e",
+        "response_hash": "8b97b065345fef1f97beee04cbb927d293ade199b1e2d8a4f552df4cd43fbcab",
+        "runtime_fence": "25",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "4889cf7e-e7d5-4b3f-9bf4-69d046ba93a0",
+      "session_id": "b0634b9f-ac52-44d3-ac36-0957ccf1773f",
+      "purpose": "contextual_reply",
+      "state": "ready",
+      "input_hash": "adf7055009f457c70e176b01d485d72644c810a64419881661817abf5f611fd7",
+      "template_hash": "36c62d2ca9996d5f243769e1cea6fb7a05a629824bfbc8e543b59bd990f3dbae",
+      "error_code": null,
+      "operation_id": "4dde4f34-fae0-4360-9928-4feb597b49d3",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:31:08.041Z",
+      "request_hash": "6a337676be8ad587c111ada08634353c256653b000d868817f2bd17f6c456194",
+      "response_hash": "9a5d5de5d8e38da5764afefc9674eca577e7f466165d8d2785517af420656da0",
+      "owner_fence": "1",
+      "runtime_fence": "27",
+      "terminal_proof": {
+        "owner": {
+          "pid": 25164,
+          "boot": "non-linux",
+          "birth": "1794429063775",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "18460ba5-2905-4833-b390-392c21f8574e"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:31:08.018Z",
+        "owner_fence": "1",
+        "operation_id": "4dde4f34-fae0-4360-9928-4feb597b49d3",
+        "request_hash": "6a337676be8ad587c111ada08634353c256653b000d868817f2bd17f6c456194",
+        "response_hash": "9a5d5de5d8e38da5764afefc9674eca577e7f466165d8d2785517af420656da0",
+        "runtime_fence": "27",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "a896b8b1-81cd-41e3-99ef-da6172787a55",
+      "session_id": "b0634b9f-ac52-44d3-ac36-0957ccf1773f",
+      "purpose": "contextual_reply",
+      "state": "ready",
+      "input_hash": "86281511b8316da7ecf323f42ba1cba8cb534012d08118589ba28d747b5f59ce",
+      "template_hash": "36c62d2ca9996d5f243769e1cea6fb7a05a629824bfbc8e543b59bd990f3dbae",
+      "error_code": null,
+      "operation_id": "beb610d3-f37d-4bc2-8aee-9197c2156e39",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:31:18.471Z",
+      "request_hash": "925d1468541bbee2a102a52f326b5dd5724ffa473bdb04fd5e6ca6296c5e9972",
+      "response_hash": "4f3ca5befc0fb7c3b9e50d7182f7553ae087910e92c2492676220199ef4d34bb",
+      "owner_fence": "1",
+      "runtime_fence": "29",
+      "terminal_proof": {
+        "owner": {
+          "pid": 25164,
+          "boot": "non-linux",
+          "birth": "1794429063775",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "18460ba5-2905-4833-b390-392c21f8574e"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:31:18.452Z",
+        "owner_fence": "1",
+        "operation_id": "beb610d3-f37d-4bc2-8aee-9197c2156e39",
+        "request_hash": "925d1468541bbee2a102a52f326b5dd5724ffa473bdb04fd5e6ca6296c5e9972",
+        "response_hash": "4f3ca5befc0fb7c3b9e50d7182f7553ae087910e92c2492676220199ef4d34bb",
+        "runtime_fence": "29",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "ef7b3814-2c94-45c3-8956-5450500132a8",
+      "session_id": "b0634b9f-ac52-44d3-ac36-0957ccf1773f",
+      "purpose": "written_feedback",
+      "state": "ready",
+      "input_hash": "8203dc85e79aea946c02742f74f3268288772f85cadb3b07df2357cfe06f0ee6",
+      "template_hash": "76a4e8e54833653c41523a4deb09a46672b7bf21eb8f646348defb85b46a19f4",
+      "error_code": null,
+      "operation_id": "1c44441e-5038-41ff-805b-765c9651b3bc",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:32:42.352Z",
+      "request_hash": "989680c3d051ad907366503432bc139ba3e76358ec96e65c091a02fc5f3ab813",
+      "response_hash": "11f6a8dbfe38c4089e21788c1fc57437614ee61e3e37af6826aabe28ab0d8636",
+      "owner_fence": "1",
+      "runtime_fence": "31",
+      "terminal_proof": {
+        "owner": {
+          "pid": 20172,
+          "boot": "non-linux",
+          "birth": "1794429155358",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "4520e720-486a-4586-88a0-6de839e6e15b"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:32:42.325Z",
+        "owner_fence": "1",
+        "operation_id": "1c44441e-5038-41ff-805b-765c9651b3bc",
+        "request_hash": "989680c3d051ad907366503432bc139ba3e76358ec96e65c091a02fc5f3ab813",
+        "response_hash": "11f6a8dbfe38c4089e21788c1fc57437614ee61e3e37af6826aabe28ab0d8636",
+        "runtime_fence": "31",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "e01d8e84-6a37-4742-a4ec-c6774f237b7b",
+      "session_id": "b0634b9f-ac52-44d3-ac36-0957ccf1773f",
+      "purpose": "plan_adjustment",
+      "state": "ready",
+      "input_hash": "c6759045eb03e11400d05e351e8ba8d3c1beb5498e6b21c095dca097a293042c",
+      "template_hash": "dff2927e8b23cd01c06e0954f1890eb0421cfff7fb288f8278ce4bc6beac6cca",
+      "error_code": null,
+      "operation_id": "5886869c-3dd7-454f-a503-63cfdea087fa",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:32:58.183Z",
+      "request_hash": "d7af0d7bb6ccdb056a41ea8d6a93060e824a62e977a719120ea277860e4e526d",
+      "response_hash": "36aee76f09922a8b2abe43254bd73e0db6a93eb59e44c820580e07648314b76b",
+      "owner_fence": "1",
+      "runtime_fence": "33",
+      "terminal_proof": {
+        "owner": {
+          "pid": 20172,
+          "boot": "non-linux",
+          "birth": "1794429155358",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "4520e720-486a-4586-88a0-6de839e6e15b"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:32:58.164Z",
+        "owner_fence": "1",
+        "operation_id": "5886869c-3dd7-454f-a503-63cfdea087fa",
+        "request_hash": "d7af0d7bb6ccdb056a41ea8d6a93060e824a62e977a719120ea277860e4e526d",
+        "response_hash": "36aee76f09922a8b2abe43254bd73e0db6a93eb59e44c820580e07648314b76b",
+        "runtime_fence": "33",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    },
+    {
+      "id": "e969341b-47d6-4553-866a-81b60ae1bef7",
+      "session_id": "b0634b9f-ac52-44d3-ac36-0957ccf1773f",
+      "purpose": "assessment_only",
+      "state": "ready",
+      "input_hash": "89a32c0c0f02b24528d2e462e424fd979753ffc0e5c4a2e59e9dd06daa5c2dac",
+      "template_hash": "e422742e6f086d3972f4badb9fe54c448b9796b66bb07c801b18a82048abf517",
+      "error_code": null,
+      "operation_id": "a7a03a09-4d4c-4cf4-ac7e-78364743ff9f",
+      "phase": "closed",
+      "remote_outcome": "completed",
+      "started_exchanges": 1,
+      "reserved_exchanges": 1,
+      "acknowledged_at": "2026-11-11T20:34:01.438Z",
+      "request_hash": "aa0d1fb95ca5b5a3617e5617d8f7300d30daba3acda6215495315835b133bf37",
+      "response_hash": "445054caf33e710bd4b0ac6c5bc91e5d9a74ad1d3623069b195f86b154829b6b",
+      "owner_fence": "1",
+      "runtime_fence": "35",
+      "terminal_proof": {
+        "owner": {
+          "pid": 20172,
+          "boot": "non-linux",
+          "birth": "1794429155358",
+          "machine": "d3cebd5d39f8957dd9e28c4b9cd1fd1ca5c47cc71c2947108379f89da4436738",
+          "instance": "4520e720-486a-4586-88a0-6de839e6e15b"
+        },
+        "contract": "teacher-text/1",
+        "error_code": null,
+        "observed_at": "2026-11-11T20:34:01.393Z",
+        "owner_fence": "1",
+        "operation_id": "a7a03a09-4d4c-4cf4-ac7e-78364743ff9f",
+        "request_hash": "aa0d1fb95ca5b5a3617e5617d8f7300d30daba3acda6215495315835b133bf37",
+        "response_hash": "445054caf33e710bd4b0ac6c5bc91e5d9a74ad1d3623069b195f86b154829b6b",
+        "runtime_fence": "35",
+        "remote_outcome": "completed",
+        "schema_version": 1,
+        "predispatch_state": null,
+        "dispatch_not_armed": false,
+        "local_transport_closed": true
+      },
+      "local_closed": "true"
+    }
+  ],
+  "cases": {
+    "sql-error": {
+      "session_id": "b0634b9f-ac52-44d3-ac36-0957ccf1773f",
+      "objective": "6871d214-ad9d-408f-805b-38f07cd5a0ec",
+      "section": "4f449444-2da7-4d00-a2cf-774162fdd0ce",
+      "unit": "3c62584a-97b4-49bb-a850-36bac7f79502",
+      "bank_id": "851a554b-5ca9-44dd-9c84-404009d595ff",
+      "plan_job": "e054a2c4-1938-4ae8-b3b3-f2f8992f58a7",
+      "material_job": "d8a3c104-ae79-45cc-9e8a-3a5a4d8dd75a",
+      "plan_id": "c486277e-e4b1-47ef-a081-b53f2ed9b156",
+      "content_id": "0b5738a9-b1b7-4b96-be2f-3ca3dd6f5a08",
+      "done": true,
+      "original_content_id": "9a82da18-6975-4f4a-b153-97321225e0b1"
+    },
+    "sql-success": {
+      "session_id": "2a404945-fbb9-4c0f-9302-cb5833797e08",
+      "objective": "7d8e0486-d1b8-43a5-a9cb-0182c3f36ec0",
+      "section": "c226f56b-02a8-4ec2-98e4-508fa6e947d2",
+      "unit": "e2a69046-312d-4b32-9208-63f24bac89c0",
+      "bank_id": "accc8cf4-a852-4b46-bab7-557947ccc685",
+      "plan_job": "71909df6-6699-4540-acce-48f7b61c52c4",
+      "material_job": "8721535a-78bb-4759-9147-5db0118ea724",
+      "plan_id": "83f0c5ae-9115-4051-acdf-a0dea6c7e718",
+      "content_id": "01f0b0a6-7d09-4bf6-92bf-1a1cf69b3029",
+      "done": true
+    },
+    "english-error": {
+      "session_id": "9365ad3a-138d-4b10-91ae-95374b739ed5",
+      "objective": "985d97fe-6297-4895-b113-532e94c482b5",
+      "section": "24afeb95-3fc8-4004-9cb6-9a8d5c2676fe",
+      "unit": "bf7ffb65-5b34-441f-ad15-6f8d48048467",
+      "bank_id": "59a1c95b-3464-4d55-b555-a2099a7330d3",
+      "plan_job": "9bc21a9d-cd2b-449d-be39-f5da9773c820",
+      "material_job": "a6e9fe71-3107-4bd4-a088-63742e357c1a",
+      "plan_id": "3d835d23-1214-4f2b-b3a7-2c4b6ab0ca1b",
+      "content_id": "2404797a-f568-42df-8f1b-d8ec993a6a0f",
+      "done": true
+    },
+    "english-success": {
+      "session_id": "895da348-aef3-43e2-8952-31cc7d9fec85",
+      "objective": "1038e9ed-6d4d-4d49-95f0-01f6c152d7d3",
+      "section": "7f142b63-a5a1-4606-8097-97f0cb40e64e",
+      "unit": "1d4bab80-9719-4ea8-933d-1db523ad610e",
+      "bank_id": "f2037b69-a22c-4781-8b78-e040c7b4d7c4",
+      "plan_job": "4c18c4c6-8202-4a97-96ae-d56e4940e58f",
+      "material_job": "8a0c404a-01db-446c-9d65-8e9c3f24265b",
+      "plan_id": "e3c10702-e67c-4ec6-92bc-018e3a1e68bd",
+      "content_id": "45166120-badb-4fed-9574-09c95d4ec6e3",
+      "done": true
+    },
+    "sql-none": {
+      "session_id": "5e368c34-46fd-4dc5-944b-e0e4c8164f09",
+      "objective": "e241fca2-cbda-4512-a9f6-9fd4dbcdb7cd",
+      "section": "68065c30-ea55-4bcf-a7fc-b90701a58b6d",
+      "unit": "593dc67c-c3f9-44fa-803f-1c4a796e6d6f",
+      "material_job": "59a1f626-c375-47a9-a097-1f301f0448b4",
+      "plan_id": "2d45cb3b-0079-43df-b939-60146eef5102",
+      "content_id": "cbcd9892-9bc1-4f1f-a769-91772425b2ed",
+      "done": true
+    },
+    "english-none": {
+      "session_id": "730e3c63-8318-4d1b-b2f3-956d1b1738fd",
+      "plan_id": "daf9833f-bc9a-4f61-aa1f-c87ed2469e01",
+      "objective": "74bc6cee-938b-4174-90be-108c576e2bd1",
+      "section": "1394ccb9-fe4c-4c14-9dad-508b29b23341",
+      "unit": "b858cf7e-b383-425d-9401-b5be8a148ebb",
+      "material_job": "b7fb6b70-cdc4-41cc-8566-eaec509d9a0d",
+      "content_id": "c1870b16-e813-4ca9-acdf-2b062e7da310",
+      "done": true
+    }
+  },
+  "purpose_probe": {
+    "job_id": "4889cf7e-e7d5-4b3f-9bf4-69d046ba93a0",
+    "operation_id": "4dde4f34-fae0-4360-9928-4feb597b49d3",
+    "selection": {
+      "mode": "api_key",
+      "model_id": "gpt-6.1-sol",
+      "effort_id": "medium",
+      "connection_id": "4"
+    },
+    "local_closed": true,
+    "remote_outcome": "completed",
+    "posts": 1,
+    "evidence_hash": "0732a947f30269d2f4fbf7bdf832696639c5ca024847cedc71ba93da257bd013",
+    "teacher_policy_hash": "5c37c4194d11ed8b9f40f065b4289f772bfba080fef7147878223e6060edf524",
+    "qualified_current_policy": true,
+    "qualification_scope": "contextual_anchor_protocol_only",
+    "purpose": "contextual_reply",
+    "thread_id": "87d11e45-e6b6-4bfb-89df-b6b762b35994",
+    "pedagogical_quality_verified": false
+  },
+  "restore": {
+    "status": "passed",
+    "tables": 102,
+    "sequences": 37,
+    "constraints_compared": 827,
+    "all_constraint_names_preserved": true,
+    "check_definitions_reparsed_equal": 27,
+    "constraint_method": "Exact definition comparison; differing associative AND/array-cast CHECKs reparsed through PostgreSQL with each original/restored column type and compared again. No string-token removal or weakened assertion.",
+    "before_sha256": "ad881e8d0007fbcc5bb4e26c7b258b71dc45d0cb80ee5bb250dab2663a53a075",
+    "after_sha256": "ad881e8d0007fbcc5bb4e26c7b258b71dc45d0cb80ee5bb250dab2663a53a075",
+    "provider_posts_before": 18,
+    "provider_posts_after": 18,
+    "workers_started_in_restored_database": false
+  },
+  "sample_review": "passed_for_recorded_fixture_scope",
+  "diagnostic_banks": [
+    {
+      "id": "851a554b-5ca9-44dd-9c84-404009d595ff",
+      "session_id": "b0634b9f-ac52-44d3-ac36-0957ccf1773f",
+      "revision": 1,
+      "title": "Reviewed acceptance bank: sql",
+      "dimensions": [
+        {
+          "id": "a9af7829-c982-407c-8412-4a9bd351bad4",
+          "description": "Explain unmatched left rows and null extension, and distinguish an ON filter from a null-rejecting WHERE filter after LEFT JOIN."
+        }
+      ],
+      "items": [
+        {
+          "kind": "single_choice",
+          "prompt": "Which rows does L LEFT JOIN R ON L.id=R.id preserve before WHERE?",
+          "options": [
+            {
+              "id": "right",
+              "label": "Every left row, with null right columns when unmatched"
+            },
+            {
+              "id": "wrong",
+              "label": "Only rows with a right-side match"
+            }
+          ],
+          "explanation": "Unmatched left rows receive null right columns.",
+          "private_key": {
+            "kind": "single_choice",
+            "option_id": "right"
+          },
+          "dimension_id": "a9af7829-c982-407c-8412-4a9bd351bad4"
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "accc8cf4-a852-4b46-bab7-557947ccc685",
+      "session_id": "2a404945-fbb9-4c0f-9302-cb5833797e08",
+      "revision": 1,
+      "title": "Reviewed acceptance bank: sql",
+      "dimensions": [
+        {
+          "id": "35095232-3db1-4c0d-ba9a-15f16a6950bc",
+          "description": "Explain unmatched left rows and null extension, and distinguish an ON filter from a null-rejecting WHERE filter after LEFT JOIN."
+        }
+      ],
+      "items": [
+        {
+          "kind": "single_choice",
+          "prompt": "Which rows does L LEFT JOIN R ON L.id=R.id preserve before WHERE?",
+          "options": [
+            {
+              "id": "right",
+              "label": "Every left row, with null right columns when unmatched"
+            },
+            {
+              "id": "wrong",
+              "label": "Only rows with a right-side match"
+            }
+          ],
+          "explanation": "Unmatched left rows receive null right columns.",
+          "private_key": {
+            "kind": "single_choice",
+            "option_id": "right"
+          },
+          "dimension_id": "35095232-3db1-4c0d-ba9a-15f16a6950bc"
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "59a1c95b-3464-4d55-b555-a2099a7330d3",
+      "session_id": "9365ad3a-138d-4b10-91ae-95374b739ed5",
+      "revision": 1,
+      "title": "Reviewed acceptance bank: english",
+      "dimensions": [
+        {
+          "id": "3c76dec4-b596-4ff8-86fb-9ab1db68cc4d",
+          "description": "Choose a or an using the following sound, including a university and an hour; apply in new written contexts."
+        }
+      ],
+      "items": [
+        {
+          "kind": "single_choice",
+          "prompt": "Choose the standard English indefinite phrase for one nonspecific institution.",
+          "options": [
+            {
+              "id": "right",
+              "label": "a university"
+            },
+            {
+              "id": "wrong",
+              "label": "an university"
+            }
+          ],
+          "explanation": "University starts with the consonant sound /j/.",
+          "private_key": {
+            "kind": "single_choice",
+            "option_id": "right"
+          },
+          "dimension_id": "3c76dec4-b596-4ff8-86fb-9ab1db68cc4d"
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "f2037b69-a22c-4781-8b78-e040c7b4d7c4",
+      "session_id": "895da348-aef3-43e2-8952-31cc7d9fec85",
+      "revision": 1,
+      "title": "Reviewed acceptance bank: english",
+      "dimensions": [
+        {
+          "id": "fbec2654-8802-44a4-bfb6-b6220adb6737",
+          "description": "Choose a or an using the following sound, including a university and an hour; apply in new written contexts."
+        }
+      ],
+      "items": [
+        {
+          "kind": "single_choice",
+          "prompt": "Choose the standard English indefinite phrase for one nonspecific institution.",
+          "options": [
+            {
+              "id": "right",
+              "label": "a university"
+            },
+            {
+              "id": "wrong",
+              "label": "an university"
+            }
+          ],
+          "explanation": "University starts with the consonant sound /j/.",
+          "private_key": {
+            "kind": "single_choice",
+            "option_id": "right"
+          },
+          "dimension_id": "fbec2654-8802-44a4-bfb6-b6220adb6737"
+        }
+      ],
+      "reviewed": true
+    }
+  ],
+  "limitations": [
+    "Acceptances exist only in the disposable lab, not operational configuration",
+    "No automatic retry, provider/model fallback, key copy, tools or business writes",
+    "Text output and local PDF text extraction only; no OCR/audio/image qualification",
+    "No long-term effectiveness or official level claim"
+  ],
+  "review_evidence": [
+    "docs/evidence/teacher-upgrade-pedagogical-review-20261111-r02.md",
+    "docs/evidence/teacher-upgrade-review-samples-20261111-r02.json"
+  ],
+  "lab_cleanup": "closed after preserving catalogued isolated recovery dump; no operational acceptance transfer"
+}

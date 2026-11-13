@@ -48,6 +48,8 @@ describe('ListNodiaAiConnectionsUseCase', () => {
       'low',
       'medium',
       'high',
+      'xhigh',
+      'max',
     ]);
     expect(api).toMatchObject({
       authentication: 'unknown',
@@ -216,6 +218,8 @@ describe('ListNodiaAiConnectionsUseCase', () => {
           { effort_id: 'low', label: 'low' },
           { effort_id: 'medium', label: 'medium' },
           { effort_id: 'high', label: 'high' },
+          { effort_id: 'xhigh', label: 'xhigh' },
+          { effort_id: 'max', label: 'max' },
         ],
         [{ effort_id: 'future_effort', label: 'future_effort' }],
       ],

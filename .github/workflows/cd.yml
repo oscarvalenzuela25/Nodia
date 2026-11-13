@@ -1,0 +1,137 @@
+name: Nodia production delivery
+run-name: Production from CI ${{ inputs.ci_run_id }} attempt ${{ inputs.ci_run_attempt }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      ci_run_id:
+        description: Completed successful push/master Nodia CI run ID
+        type: string
+        required: true
+      ci_run_attempt:
+        description: Exact latest successful CI run attempt
+        type: string
+        required: true
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: nodia-production
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    name: Verify CI and master before checking out any source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    outputs:
+      source_sha: ${{ steps.gate.outputs.source_sha }}
+      prior_cd_run: ${{ steps.gate.outputs.prior_cd_run }}
+    steps:
+      - name: Validate the original run independently and detect previous deliveries
+        id: gate
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          retries: 0
+          script: |
+            try {
+              const owner = 'oscarvalenzuela25', repo = 'Nodia';
+              const id = context.payload.inputs?.ci_run_id, attempt = context.payload.inputs?.ci_run_attempt;
+              if (context.eventName !== 'workflow_dispatch' || context.ref !== 'refs/heads/master' || context.repo.owner !== owner || context.repo.repo !== repo || process.env.GITHUB_RUN_ATTEMPT !== '1' || !/^[1-9][0-9]{0,19}$/.test(id ?? '') || !/^[1-9][0-9]{0,19}$/.test(attempt ?? '')) throw Error('context');
+              const {data: run} = await github.rest.actions.getWorkflowRun({owner, repo, run_id: id, request: {timeout: 20000}});
+              const valid = String(run.id) === id && String(run.run_attempt) === attempt && run.status === 'completed' && run.conclusion === 'success' && run.event === 'push' && run.head_branch === 'master' && run.path === '.github/workflows/ci.yml' && run.name === 'Nodia CI' && run.repository.full_name === owner+'/'+repo && run.head_repository.full_name === owner+'/'+repo && run.head_repository.id === run.repository.id && /^[a-f0-9]{40}$/.test(run.head_sha);
+              if (!valid) throw Error('untrusted_ci');
+              const {data: branch} = await github.rest.git.getRef({owner, repo, ref: 'heads/master', request: {timeout: 20000}});
+              if (branch.object.type !== 'commit' || branch.object.sha !== run.head_sha) throw Error('stale_ci');
+              const title = `Production from CI ${id} attempt ${attempt}`;
+              let prior = false, complete = false;
+              for (let page = 1; page <= 10; page++) {
+                const {data: history} = await github.rest.actions.listWorkflowRuns({owner, repo, workflow_id: 'cd.yml', event: 'workflow_dispatch', branch: 'master', created: '>='+run.created_at, per_page: 100, page, request: {timeout: 20000}});
+                prior ||= history.workflow_runs.some(other => String(other.id) !== String(context.runId) && other.display_title === title);
+                if (history.workflow_runs.length < 100) {complete = true; break;}
+              }
+              if (!complete) throw Error('history_incomplete');
+              core.setOutput('source_sha', run.head_sha);
+              core.setOutput('prior_cd_run', String(prior));
+            } catch { core.setFailed('trusted_current_master_ci_required_or_cd_reconciliation_needed'); }
+
+  production:
+    name: Apply verified component artifacts without rebuilding
+    needs: gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment: production
+    env:
+      CI_RUN_ID: ${{ inputs.ci_run_id }}
+      CI_RUN_ATTEMPT: ${{ inputs.ci_run_attempt }}
+      CI_SOURCE_SHA: ${{ needs.gate.outputs.source_sha }}
+      CD_PRIOR_RUN: ${{ needs.gate.outputs.prior_cd_run }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.gate.outputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.22.2'
+          cache: npm
+          cache-dependency-path: ops/ci/pages-assets/package-lock.json
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Prepare private delivery metadata directory
+        run: |
+          install -d -m 700 "$RUNNER_TEMP/nodia-production-delivery"
+          echo "CD_WORKSPACE=$RUNNER_TEMP/nodia-production-delivery" >> "$GITHUB_ENV"
+      - name: Read actual deployed frontend version
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
+          CD_STATE_FILE: ${{ runner.temp }}/nodia-production-delivery/client-baseline.json
+        run: node ops/ci/cd-pages.mjs baseline
+      - name: Read actual deployed backend version through restricted SSH
+        env:
+          VPS_SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          VPS_HOST: ${{ vars.VPS_HOST }}
+          VPS_PORT: ${{ vars.VPS_PORT }}
+          VPS_USER: ${{ vars.VPS_USER }}
+          VPS_KNOWN_HOSTS: ${{ vars.VPS_KNOWN_HOSTS }}
+          CD_STATE_FILE: ${{ runner.temp }}/nodia-production-delivery/server-baseline.json
+        run: node ops/ci/cd-vps.mjs baseline
+      - name: Download original Actions ZIPs and verify source, attempts and contents
+        id: plan
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
+        run: node ops/ci/cd-release.mjs prepare
+      - name: Apply or verify backend before frontend publication
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          VPS_SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          VPS_HOST: ${{ vars.VPS_HOST }}
+          VPS_PORT: ${{ vars.VPS_PORT }}
+          VPS_USER: ${{ vars.VPS_USER }}
+          VPS_KNOWN_HOSTS: ${{ vars.VPS_KNOWN_HOSTS }}
+        run: node ops/ci/cd-release.mjs backend
+      - name: Install locked content-hash and MIME tools only
+        if: steps.plan.outputs.client_required == 'true'
+        run: npm ci --prefix ops/ci/pages-assets --ignore-scripts --no-audit --no-fund
+      - name: Publish verified static frontend assets through Pages API
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
+        run: node ops/ci/cd-release.mjs client
+      - name: Record last confirmed state per component
+        if: always()
+        run: node ops/ci/cd-release.mjs summary

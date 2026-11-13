@@ -3,11 +3,32 @@
 set -Eeuo pipefail
 umask 077
 fail() { printf '[Nodia PostgreSQL preflight] %s\n' "$1" >&2; exit 1; }
-[[ $EUID -eq 0 && $(uname -s) == Linux && $# -eq 2 ]] || fail 'root_linux_and_release_path_helper_sha_required'
+[[ $EUID -eq 0 && $(uname -s) == Linux && $# -ge 2 ]] || fail 'root_linux_and_release_path_helper_sha_required'
 RELEASE_PATH=$1
 HELPER_SHA=$2
+shift 2
+MODE=()
+DETAILS_ENABLED=false
+BASELINE_SHA=
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --catalog-details)
+      [[ $DETAILS_ENABLED == false ]] || fail 'duplicate_preflight_mode'
+      DETAILS_ENABLED=true
+      MODE+=(--catalog-details)
+      shift ;;
+    --provider-baseline-sha256)
+      [[ $# -ge 2 && -z $BASELINE_SHA && $2 =~ ^[a-f0-9]{64}$ ]] || fail 'invalid_provider_baseline_sha256'
+      BASELINE_SHA=$2
+      shift 2 ;;
+    *) fail 'invalid_preflight_mode' ;;
+  esac
+done
+[[ -z $BASELINE_SHA || $DETAILS_ENABLED == true ]] || fail 'provider_baseline_requires_catalog_details'
 [[ $RELEASE_PATH =~ ^/opt/nodia/candidates/backend-[a-f0-9]{12}-[a-f0-9]{12}$ && $HELPER_SHA =~ ^[a-f0-9]{64}$ ]] || fail 'invalid_release_path_or_helper_sha'
-HELPER_SOURCE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)/inspect-postgres-installation.mjs
+SOURCE_DIRECTORY=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
+HELPER_SOURCE=$SOURCE_DIRECTORY/inspect-postgres-installation.mjs
+BASELINE_SOURCE=$SOURCE_DIRECTORY/postgres-provider-baseline.json
 PRIVATE=/var/lib/nodia-backend-setup/private
 LIBRARY=/usr/local/lib/nodia
 INSTALLED_HELPER=$LIBRARY/inspect-postgres-installation-$HELPER_SHA.mjs
@@ -73,7 +94,7 @@ cleanup() {
       result=1
     fi
   fi
-  rm -f -- "$STAGING/helper.mjs"
+  rm -f -- "$STAGING/helper.mjs" "$STAGING/baseline.json"
   rmdir -- "$STAGING"
   exit "$result"
 }
@@ -93,6 +114,24 @@ if [[ -e $INSTALLED_HELPER || -L $INSTALLED_HELPER ]]; then
 else
   install -o root -g root -m 0644 -T -- "$STAGING/helper.mjs" "$INSTALLED_HELPER"
 fi
+if [[ -n $BASELINE_SHA ]]; then
+  [[ -f $BASELINE_SOURCE && ! -L $BASELINE_SOURCE ]] || fail 'provider_baseline_regular_file_required'
+  cp --no-dereference --reflink=never -- "$BASELINE_SOURCE" "$STAGING/baseline.json"
+  [[ -f $STAGING/baseline.json && ! -L $STAGING/baseline.json &&
+     $(stat -c '%s' -- "$STAGING/baseline.json") -le 65536 ]] || fail 'provider_baseline_copy_invalid'
+  actual=$(sha256sum -- "$STAGING/baseline.json")
+  [[ ${actual%% *} == "$BASELINE_SHA" ]] || fail 'provider_baseline_sha256_mismatch'
+  INSTALLED_BASELINE=$LIBRARY/postgres-provider-baseline-$BASELINE_SHA.json
+  if [[ -e $INSTALLED_BASELINE || -L $INSTALLED_BASELINE ]]; then
+    [[ -f $INSTALLED_BASELINE && ! -L $INSTALLED_BASELINE &&
+       $(stat -c '%u:%h:%a' -- "$INSTALLED_BASELINE") == 0:1:644 ]] || fail 'unsafe_installed_provider_baseline'
+    actual=$(sha256sum -- "$INSTALLED_BASELINE")
+    [[ ${actual%% *} == "$BASELINE_SHA" ]] || fail 'installed_provider_baseline_sha256_mismatch'
+  else
+    install -o root -g root -m 0644 -T -- "$STAGING/baseline.json" "$INSTALLED_BASELINE"
+  fi
+  MODE+=(--provider-baseline-file "$INSTALLED_BASELINE")
+fi
 UNIT=nodia-postgres-installation-check-$(cat /proc/sys/kernel/random/uuid).service
 set +e
 /usr/bin/systemd-run --quiet --unit="$UNIT" --wait --pipe --collect --service-type=exec \
@@ -104,7 +143,7 @@ set +e
   --property=ProtectSystem=strict --property=ProtectHome=yes --property=PrivateTmp=yes \
   --property=ReadOnlyPaths=/var/lib/nodia --property=RuntimeMaxSec=45s \
   --property=TimeoutStopSec=5s --property=KillMode=control-group \
-  /usr/local/bin/node "$INSTALLED_HELPER"
+  /usr/local/bin/node "$INSTALLED_HELPER" "${MODE[@]}"
 result=$?
 set -e
 exit "$result"

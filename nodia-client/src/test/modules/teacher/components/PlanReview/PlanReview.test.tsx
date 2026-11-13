@@ -9,7 +9,7 @@ describe("Teacher plan assessment policy review", () => {
     const onSave = vi.fn(async () => {});
     const onAdjust = vi.fn(async () => {});
     const onAccept = vi.fn(async () => {});
-    render(<PlanReview plan={planFixture} busy={false} canAccept onSave={onSave} onAdjust={onAdjust} onAccept={onAccept} />);
+    render(<PlanReview plan={planFixture} busy={false} canAccept canAdjust={false} onSave={onSave} onAdjust={onAdjust} onAccept={onAccept} />);
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: "Evaluación" }));
     const field = screen.getByRole("spinbutton", { name: "Práctica de unidad: selección única" });
@@ -22,7 +22,7 @@ describe("Teacher plan assessment policy review", () => {
     expect(onAccept).not.toHaveBeenCalled();
   });
   it("preserves an invalid count while busy/refetch changes and blocks save/accept until corrected", async () => {
-    const props = { plan: planFixture, canAccept: true, onSave: vi.fn(async () => {}), onAdjust: vi.fn(async () => {}), onAccept: vi.fn(async () => {}) };
+    const props = { plan: planFixture, canAccept: true, canAdjust: true, onSave: vi.fn(async () => {}), onAdjust: vi.fn(async () => {}), onAccept: vi.fn(async () => {}) };
     const { rerender } = render(<PlanReview {...props} busy={false} />);
     await userEvent.setup().click(screen.getByRole("button", { name: "Evaluación" }));
     const field = screen.getByRole("spinbutton", { name: "Final de sección: respuesta breve" });
@@ -34,6 +34,25 @@ describe("Teacher plan assessment policy review", () => {
     expect(field).toBeDisabled();
     rerender(<PlanReview {...props} busy={false} />);
     expect(field).toHaveValue(null);
+    expect(props.onSave).not.toHaveBeenCalled();
+    expect(props.onAccept).not.toHaveBeenCalled();
+  });
+  it("preserves the adjustment draft and waits for the selected provider to be ready before requesting it", async () => {
+    const props = { plan: planFixture, busy: false, canAccept: true, onSave: vi.fn(async () => {}), onAdjust: vi.fn(async () => {}), onAccept: vi.fn(async () => {}) };
+    const { rerender } = render(<PlanReview {...props} canAdjust={false} />);
+    const user = userEvent.setup();
+    const text = "Incluye un ejemplo de transferencia antes de la práctica.";
+    const field = screen.getByRole("textbox", { name: "Qué quieres ajustar" });
+    await user.type(field, text);
+    const adjust = screen.getByRole("button", { name: "Pedir un ajuste a Teacher" });
+    expect(adjust).toBeDisabled();
+    fireEvent.click(adjust);
+    expect(props.onAdjust).not.toHaveBeenCalled();
+    rerender(<PlanReview {...props} canAdjust />);
+    expect(field).toHaveValue(text);
+    expect(adjust).toBeEnabled();
+    await user.click(adjust);
+    expect(props.onAdjust).toHaveBeenCalledExactlyOnceWith(text);
     expect(props.onSave).not.toHaveBeenCalled();
     expect(props.onAccept).not.toHaveBeenCalled();
   });

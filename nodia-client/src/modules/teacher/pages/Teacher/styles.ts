@@ -6,6 +6,7 @@ export const ProductBrand = styled(Typography)(({ theme }) => ({
   fontWeight: 400,
   fontSize: "2.125rem",
   letterSpacing: 0,
+  lineHeight: "normal",
   display: "inline-block",
   background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.tertiary?.main ?? theme.palette.secondary.main} 100%)`,
   backgroundClip: "text",

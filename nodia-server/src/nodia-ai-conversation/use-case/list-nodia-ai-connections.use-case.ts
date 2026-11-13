@@ -15,6 +15,7 @@ import {
   configurationRecord,
   configuredNodiaAiSelection,
 } from './nodia-ai-configured-selection.js';
+import { apiReasoningPreferences } from '../../common/ai/api-reasoning.js';
 export { configurationRecord } from './nodia-ai-configured-selection.js';
 import {
   NodiaAiConnectionsService,
@@ -37,10 +38,11 @@ function identifier(value: unknown, maximum: number): value is string {
 const modes = ['api_key', 'agentic'] as const;
 /** Own selector transport bound; independent from provider quotas and model context limits. */
 export const NODIA_AI_CONNECTION_PAGE_UTF8_BYTES = 1024 * 1024;
-function effortPreferences(preferred: unknown) {
+function effortPreferences(preferred: unknown, provider?: string, mode?: string) {
   // ai-provider-feature-contract.md: these are configurable preferences for all three modes,
   // not discovered capabilities. Only an exact non-generative eligibility observation enables execution.
-  const options = new Set(['low', 'medium', 'high']);
+  const options = new Set<string>(mode === 'api_key' && provider === 'openai'
+    ? apiReasoningPreferences(provider) : ['low', 'medium', 'high']);
   if (identifier(preferred, 256)) options.add(preferred);
   return Array.from(options, (effort_id) => ({ effort_id, label: effort_id }));
 }
@@ -130,7 +132,7 @@ export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
           efforts:
             row.provider_key === 'openai' && mode === 'agentic'
               ? codexEfforts(model.supportedReasoningEfforts)
-              : effortPreferences(preferred),
+              : effortPreferences(preferred, row.provider_key, mode),
         });
       }
       if (selected && !modelMap.has(selected))
@@ -141,7 +143,7 @@ export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
           efforts:
             row.provider_key === 'openai' && mode === 'agentic'
               ? []
-              : effortPreferences(rawEffort),
+              : effortPreferences(rawEffort, row.provider_key, mode),
         });
       return {
         mode,

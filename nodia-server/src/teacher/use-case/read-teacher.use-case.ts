@@ -1,3 +1,4 @@
+import { stableOptions } from '../policies/teacher-learning.js';
 import { Inject, Injectable } from '@nestjs/common';
 import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { TeacherService } from '../teacher.service.js';
@@ -15,7 +16,11 @@ import type { GetTeacherSessionsDto } from '../dto/teacher.dto.js';
 import { pendingClosureReason } from './teacher-pending-closure.js';
 import { teacherJobActions } from '../policies/teacher-job-actions.js';
 import { teacherAnswerStatus } from '../policies/teacher-answer-completeness.js';
-import { canProjectReinforcement, projectReinforcement, type ReinforcementGrade } from '../policies/teacher-reinforcement.js';
+import {
+  canProjectReinforcement,
+  projectReinforcement,
+  type ReinforcementGrade,
+} from '../policies/teacher-reinforcement.js';
 import type { TeacherReinforcementDto } from '../dto/teacher-reinforcement.dto.js';
 import { latestSessionJobs } from './teacher-session-jobs.js';
 
@@ -53,14 +58,21 @@ export class ReadTeacherUseCase {
           `SELECT count(*)::text AS total FROM teacher_sessions WHERE ${where}`,
           values,
         );
-        const rows: { id: string; [key: string]: unknown }[] = await manager.query(
-          `SELECT id,title,topic,objective,explanation_language,requested_organization,requested_day_count,state,revision,current_plan_revision_id,dispatch_limit,dispatches_used,created_at,updated_at FROM teacher_sessions WHERE ${where} ORDER BY updated_at DESC,id DESC LIMIT $5 OFFSET $6`,
-          [...values, q.limit, (q.page - 1) * q.limit],
-        );
+        const rows: { id: string; [key: string]: unknown }[] =
+          await manager.query(
+            `SELECT id,title,topic,objective,explanation_language,requested_organization,requested_day_count,state,revision,current_plan_revision_id,dispatch_limit,dispatches_used,created_at,updated_at FROM teacher_sessions WHERE ${where} ORDER BY updated_at DESC,id DESC LIMIT $5 OFFSET $6`,
+            [...values, q.limit, (q.page - 1) * q.limit],
+          );
         const total = Number(count.total);
-        const jobs = await latestSessionJobs(manager, rows.map(row => row.id));
+        const jobs = await latestSessionJobs(
+          manager,
+          rows.map((row) => row.id),
+        );
         return {
-          data: rows.map(row => ({ ...row, latest_job: jobs.get(row.id) ?? null })),
+          data: rows.map((row) => ({
+            ...row,
+            latest_job: jobs.get(row.id) ?? null,
+          })),
           meta: {
             page: q.page,
             limit: q.limit,
@@ -197,7 +209,18 @@ export class ReadTeacherUseCase {
         "SELECT id,public_blocks,version_no,content_hash FROM teacher_content_versions WHERE session_id=$1 AND plan_revision_id=$2 AND unit_id=$3 AND publication_state='current'",
         [id, revision, unitId],
       );
-      if (content)
+      if (content) {
+        const interactions: {
+          id: string;
+          content_version_id: string;
+          block_id: string;
+          kind: 'prediction' | 'check';
+          text: string;
+          created_at: Date | string;
+        }[] = await manager.query(
+          'SELECT id,content_version_id,block_id,kind,text,created_at FROM teacher_learning_interactions WHERE session_id=$1 AND content_version_id=$2 ORDER BY created_at DESC,id DESC LIMIT 40',
+          [id, content.id],
+        );
         return {
           kind: 'material',
           resource_id: content.id,
@@ -207,6 +230,10 @@ export class ReadTeacherUseCase {
           blocks: content.public_blocks,
           version_no: content.version_no,
           content_hash: content.content_hash,
+          lesson_interactions: interactions.map(interaction => ({
+            ...interaction,
+            created_at: new Date(interaction.created_at).toISOString(),
+          })),
           allowed_actions: {
             ...actions(['read_theory'], true),
             ...actions(
@@ -216,6 +243,7 @@ export class ReadTeacherUseCase {
             ),
           },
         };
+      }
       const [job]: TeacherGenerationJob[] = await manager.query(
         "SELECT * FROM teacher_generation_jobs WHERE session_id=$1 AND plan_revision_id=$2 AND unit_id=$3 AND purpose='learning_packet' ORDER BY created_at DESC LIMIT 1",
         [id, revision, unitId],
@@ -313,7 +341,12 @@ export class ReadTeacherUseCase {
           'SELECT p.outline FROM teacher_assessments assessment JOIN teacher_plan_revisions p ON p.session_id=assessment.session_id AND p.id=assessment.plan_revision_id WHERE assessment.session_id=$1 AND assessment.id=$2 AND p.id=$3',
           [id, a.assessment_id, a.plan_revision_id],
         );
-        reinforcement = projectReinforcement(a, session!.current_plan_revision_id, plan?.outline ?? null, rows satisfies ReinforcementGrade[]);
+        reinforcement = projectReinforcement(
+          a,
+          session!.current_plan_revision_id,
+          plan?.outline ?? null,
+          rows satisfies ReinforcementGrade[],
+        );
       }
       return {
         attempt_id: a.id,
@@ -367,7 +400,7 @@ export class ReadTeacherUseCase {
       );
       if (!a) teacherError('not_found', 404);
       const [r] = await manager.query(
-        'SELECT i.id AS question_id,i.ordinal,i.kind,i.public_question,i.max_points,r.id AS response_id,r.revision AS response_revision,r.draft_answer,r.frozen_answer,r.grade_state,r.earned_points,r.feedback,r.submitted_at FROM teacher_assessment_items i JOIN teacher_responses r ON r.item_id=i.id AND r.attempt_id=$2 WHERE i.session_id=$1 AND i.assessment_id=$3 AND i.id=$4',
+        'SELECT i.id AS question_id,i.ordinal,i.kind,i.public_question,i.max_points,r.id AS response_id,r.revision AS response_revision,r.draft_answer,r.frozen_answer,r.grade_state,r.earned_points,r.feedback,r.submitted_at,r.self_explanation,r.confidence FROM teacher_assessment_items i JOIN teacher_responses r ON r.item_id=i.id AND r.attempt_id=$2 WHERE i.session_id=$1 AND i.assessment_id=$3 AND i.id=$4',
         [id, attemptId, a.assessment_id, questionId],
       );
       if (!r) teacherError('not_found', 404);
@@ -387,6 +420,17 @@ export class ReadTeacherUseCase {
         ordinal: r.ordinal,
         kind: r.kind,
         ...r.public_question,
+        ...(r.public_question.options
+          ? {
+              options: stableOptions(
+                r.public_question.options,
+                `${attemptId}:${r.question_id}`,
+                r.public_question.prompt,
+              ),
+            }
+          : {}),
+        self_explanation: r.self_explanation ?? null,
+        confidence: r.confidence ?? null,
         response_id: r.response_id,
         response_revision: r.response_revision,
         draft_answer: r.draft_answer,

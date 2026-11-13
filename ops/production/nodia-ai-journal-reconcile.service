@@ -1,0 +1,32 @@
+[Unit]
+Description=Nodia deletion journal reconciliation (SQL read-only and external confirmations)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=nodia
+Group=nodia
+WorkingDirectory=/opt/nodia/current
+EnvironmentFile=/etc/nodia/backup-runner.env
+Environment=NODE_ENV=production
+Environment=HOME=/var/lib/nodia/home
+Environment=PGSSLMODE=verify-full
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/local/bin/node ${NODIA_AI_JOURNAL_SCRIPT} reconcile ${NODIA_AI_RECOVERY_CONFIG} ${NODIA_AI_BACKUP_CONFIG}
+TimeoutStartSec=120
+TimeoutStopSec=10
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadOnlyPaths=/var/lib/nodia/config /opt/nodia
+ReadWritePaths=/var/lib/nodia/backups/spool
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nodia-ai-journal-reconcile

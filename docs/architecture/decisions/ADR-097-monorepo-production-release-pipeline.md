@@ -1,11 +1,11 @@
-# ADR-097 — Promoción develop/master y entrega coordinada del monorepo
+# ADR-097 — Promoción development/master y entrega coordinada del monorepo
 
 > Estado: propuesto
 > Fecha: 2026-11-08
 
 ## Contexto
 
-El usuario decide un ambiente productivo en Truobox para feedback de stakeholders, manteniendo PostgreSQL en Northflank Free, y solicita develop como rama predeterminada/integración y master para producción. El remoto todavía usa main y no hay workflows versionados. Client, Server/Worker, servicio Python y host nativo Rust tienen empaquetados diferentes pero contratos y dependencias de build compartidos. El corpus/políticas del Server también consumen archivos de docs y referencias de otros componentes.
+El usuario decide un ambiente productivo en Truobox para feedback de stakeholders, manteniendo PostgreSQL en Northflank Free, y solicita development como rama predeterminada/integración y master para producción. En la inspección inicial del2026-11-08, el remoto todavía usaba main y no había workflows versionados; ese corte no describe el estado posterior de desarrollo. Client, Server/Worker, servicio Python y host nativo Rust tienen empaquetados diferentes pero contratos y dependencias de build compartidos. El corpus/políticas del Server también consumen archivos de docs y referencias de otros componentes.
 
 Una automatización que haga git pull, compile en el VPS o despliegue cada carpeta sin coordinar contratos puede publicar assets incompatibles, omitir cambios compartidos o interrumpir una migración/inferencia. La fuente de identidad debe ser el artefacto verificado, no el nombre mutable de una rama o una imagen latest.
 
@@ -30,7 +30,7 @@ Una automatización que haga git pull, compile en el VPS o despliegue cada carpe
 
 Se propone B. Las decisiones humanas de destino y ramas no equivalen a aprobación de todos sus detalles:
 
-1. Features se integran en develop con CI; una PR de promoción a master decide la publicación. El push resultante verifica el SHA final y dispara CD. Merge commit para promoción entre ramas largas y sincronización posterior hacia develop; hotfixes se devuelven a integración.
+1. Features se integran en development con CI; una PR de promoción a master decide la publicación. El push resultante verifica el SHA final y dispara CD. Merge commit para promoción entre ramas largas y sincronización posterior hacia development; hotfixes se devuelven a integración.
 2. CI siempre produce un check estable CI para PR requeridas, con jobs por unidad calculados por dependencias. No filtrar el evento del workflow requerido por paths ni aprobar diffs incompletos.
 3. Construir una vez los artefactos del SHA final, con locks/runtime/base Linux compatibles, y transferirlos por identidad. API/Worker y CLI de recuperación comparten paquete; imágenes Python y host nativo cambian sólo cuando corresponde.
 4. Comparar cada candidato con el manifiesto de unidades realmente desplegadas, registrar estados parciales y serializar activación con concurrency más lock del destino. No cancelar una migración/activación iniciada por un nuevo push ni suponer FIFO.
@@ -49,3 +49,46 @@ Se propone B. Las decisiones humanas de destino y ramas no equivalen a aprobaci�
 - [Plan de producción y CI/CD](../../mvp/99-production-deployment-and-cicd-plan.md).
 - [Stack DevOps](../../mvp/10-stack-devops.md), [historial de despliegue](../../mvp/vps-first-test-deployment.md), [operador de backups](../../../ops/nodia-ai-backups/README.md).
 - [GitHub required checks](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks), [concurrency](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency), [Pages CI](https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/).
+
+## Implementación parcial local — 2026-11-12
+
+Estado del ADR: **propuesto**, sin aprobación documental nueva. Las ramas vigentes
+son development/master. CI y preflights están preparados sin commit; en esta
+continuación se añadieron artefactos selectivos sólo en push master y un updater
+de operador todavía no instalado. La preparación no equivale a CI del SHA final
+ni habilita CD automático o permisos adicionales al gateway SSH.
+
+El build mantiene TypeScript una vez por componente. Client lee sus dos variables
+públicas de production sólo en master y vincula su hash al paquete; no recibe
+secretos productivos. La retención de artefactos CI es un día, independiente de
+backups. Para autenticar origen, el updater exige el ZIP original y digest/ID
+oficiales de GitHub antes de extraer, CI global success del intento exacto y master
+actual. Metadatos dentro del paquete por sí solos no prueban esa procedencia.
+
+Se implementó lock/intención durable, mantenimiento, backup antes de parar,
+gates de cierre local/ACK, migración incremental transaction:all sin seed y
+verificación de versión/readiness; fallos no disparan restore, rollback o replay
+automático. El cambio de current y paths de backup se coordina con escritores
+detenidos; no se afirma atomicidad entre archivos ni entre Pages y VPS.
+Ensayo completo systemd, Teacher48, instalación y CD automático pendientes.
+Evidencia/alcances: [plan99§14](../../mvp/99-production-deployment-and-cicd-plan.md#14-artefactos-del-ci-y-actualizador-de-operador-preparados--2026-11-12).
+
+## Continuación: transporte instalado y contexto de Actions — 2026-11-12
+
+El transporte tipado y updater se instalaron tras autenticación del operador;
+no se publicó otra app. f01 sigue activo. SSH nuevo, host pin, versión/procesos
+y assets fueron comprobados; sudo administrativo invalidado y tmux cerrado.
+La cuenta de deploy tiene exclusivamente el receiver root de argv fijo, con
+JSON acotado y operaciones enum; no shell/SFTP/sudo genérico. Operaciones async
+persisten intención antes de start y no se vuelven a iniciar por repetir ID.
+
+Defaultbranch development verificada. Para respetar environment production
+sólo master se implementa dispatcher workflow_run sin secretos productivos que
+despacha el CD en ref master; el receptor revalida origen/CI/currentmaster.
+La selección CI se amplía con versiones efectivamente desplegadas/configuración
+pública, y CD reutiliza artefactos sin build/TypeScript. Runtimes Python/native
+todavía sin rollout automatizado no se dan por actualizados por publicar Server.
+
+Pruebas systemd20, transporte25 y SQL47 (Teacher45→48,102tablas públicas/68ORM)
+con límites explícitos. Primer run GitHub/entrega real pendientes; no cambia el
+estado **propuesto** del ADR. [Plan99§15](../../mvp/99-production-deployment-and-cicd-plan.md#15-transporte-instalado-y-cierre-de-cicd-en-curso--2026-11-12).

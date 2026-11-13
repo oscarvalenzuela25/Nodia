@@ -1,0 +1,27 @@
+[Unit]
+Description=Nodia Codex private session bus
+Before=nodia-codex-keyring.service
+
+[Service]
+Type=exec
+User=nodia
+Group=nodia
+RuntimeDirectory=nodia-codex
+RuntimeDirectoryMode=0700
+ExecStart=/usr/bin/dbus-daemon --config-file=/usr/local/lib/nodia/ai-runtime/codex-bus.conf --nofork --nopidfile
+ExecStartPost=/usr/bin/python3 -I /usr/local/lib/nodia/ai-runtime/codex-keyring.py bus-ready
+TimeoutStartSec=10
+Restart=on-failure
+RestartSec=2
+UMask=0077
+NoNewPrivileges=true
+CapabilityBoundingSet=
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+RestrictAddressFamilies=AF_UNIX
+StandardOutput=null
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

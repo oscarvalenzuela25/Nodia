@@ -1,4 +1,5 @@
 import i18n from "../../../../../../../translate";
+import useAuthStore from "../../../../../../../store/authStore";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -12,6 +13,7 @@ import {
 import ProviderDetail from "../../../../../../../modules/generalSettings/pages/AiProviders/components/ProviderDetail/ProviderDetail";
 import * as aiServices from "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services";
 import * as codexServices from "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/codexSession";
+import { sileo } from "sileo";
 
 vi.mock("../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/codexSession", async (importOriginal) => ({
   ...await importOriginal<typeof codexServices>(),
@@ -186,6 +188,8 @@ describe("ProviderDetail Component", () => {
     );
   });
   beforeEach(() => {
+    useAuthStore.setState({ token: "synthetic-test-token", user: { id: "42", name: "Fixture" },
+      expiresAt: Date.now() + 3_600_000, sessionStatus: "authenticated", isRefreshing: false });
     vi.resetAllMocks();
     vi.mocked(aiServices.getAiProviders).mockResolvedValue({
       data: mockProviders,
@@ -891,13 +895,15 @@ describe("ProviderDetail Component", () => {
       expect.objectContaining({ q: { provider_id_eq: "prov-1" } }),
     );
   });
-  it("allows an Agentic level preference without assigning a model or enabling its adapter", async () => {
+  it.each(["agentic", "api_key"] as const)("hides Gemini %s reasoning without models and preserves its saved preference", async (mode) => {
     vi.mocked(aiServices.getAiProviders).mockResolvedValue({
       data: [
         {
           ...mockProviders[0],
-          default_mode: "agentic",
-          fields: { agentic: {} },
+          default_mode: mode,
+          use_agentic: true,
+          use_api_key: true,
+          fields: { [mode]: { thinking_level: "high", thinking_levels: { "retired-model": "high" } } },
         },
       ],
       meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 },
@@ -909,24 +915,165 @@ describe("ProviderDetail Component", () => {
         agentic: { engine: "agentic", available: false, authenticated: false },
       },
     });
-    const user = userEvent.setup();
-    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
-    const high = await screen.findByRole("button", { name: "High" });
-    await waitFor(() => expect(high).toBeEnabled());
-    await user.click(high);
-    await waitFor(() =>
-      expect(aiServices.updateAiProvider).toHaveBeenCalledWith(
-        "prov-1",
-        expect.objectContaining({
-          fields: expect.objectContaining({
-            agentic: { thinking_level: "high" },
-          }),
-        }),
-      ),
-    );
-    screen
+    renderWithClient(<ProviderDetail providerId="prov-1" initialMode={mode} onBack={() => {}} />);
+    expect(await screen.findByText("Sin modelos asignados")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "High" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Low" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Medium" })).not.toBeInTheDocument();
+    expect(screen.queryByText(i18n.t(`ai_providers:detail.${mode === "agentic" ? "agentic" : "api"}_reasoning_preference`)))
+      .not.toBeInTheDocument();
+    expect(aiServices.updateAiProvider).not.toHaveBeenCalled();
+    if (mode === "agentic") screen
       .getAllByRole("button", { name: "Actualizar modelos" })
       .forEach((button) => expect(button).toBeDisabled());
+  });
+
+  it("groups Gemini variants into one card and saves the exact effort ID atomically without changing OCR or API settings", async () => {
+    const variants = ["high", "medium", "low"].map(effort => ({
+      id: `fixture-family-${effort}`, displayName: `Fixture Family (${effort})`,
+    }));
+    const fields = {
+      selected_model: variants[0].id,
+      api_key: { selected_model: "fixture-api", thinking_levels: { "fixture-api": "low" } },
+      agentic: {
+        selected_model: variants[0].id,
+        ocr_focus_model: variants[0].id,
+        ocr_model: variants[0].id,
+        thinking_level: "high",
+        thinking_levels: { [variants[0].id]: "high", "fixture-other": "low" },
+        available_models: variants,
+      },
+    };
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({
+      data: [{ ...mockProviders[0], use_api_key: true, fields }],
+      meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 },
+    });
+    const user = userEvent.setup();
+    renderWithClient(<ProviderDetail providerId="prov-1" initialMode="agentic" onBack={() => {}} />);
+    expect(await screen.findByText("Fixture Family")).toBeVisible();
+    expect(screen.queryByText("Fixture Family (medium)")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Medium" })).toHaveLength(1);
+    const medium = screen.getByTestId("thinking-level-medium-fixture-family-high");
+    await waitFor(() => expect(medium).toBeEnabled());
+    await user.click(medium);
+    await waitFor(() => expect(aiServices.updateAiProvider).toHaveBeenCalledOnce());
+    expect(aiServices.updateAiProvider).toHaveBeenCalledWith("prov-1", {
+      fields: {
+        ...fields,
+        selected_model: variants[1].id,
+        thinking_level: "medium",
+        agentic: {
+          ...fields.agentic,
+          selected_model: variants[1].id,
+          thinking_level: "medium",
+          thinking_levels: { ...fields.agentic.thinking_levels, [variants[1].id]: "medium" },
+        },
+      },
+    });
+  });
+
+  it("keeps the selected Gemini variant and OCR focus when the grouped effort update fails", async () => {
+    const fields = {
+      agentic: {
+        selected_model: "fixture-family-high",
+        ocr_focus_model: "fixture-family-high",
+        ocr_model: "fixture-family-high",
+        thinking_level: "high",
+        available_models: ["high", "medium", "low"].map(effort => ({
+          id: `fixture-family-${effort}`, displayName: `Fixture Family (${effort})`,
+        })),
+      },
+    };
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({
+      data: [{ ...mockProviders[0], fields }],
+      meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 },
+    });
+    vi.mocked(aiServices.updateAiProvider).mockRejectedValue(new Error("Synthetic update failure"));
+    const original = structuredClone(fields);
+    const user = userEvent.setup();
+    renderWithClient(<ProviderDetail providerId="prov-1" initialMode="agentic" onBack={() => {}} />);
+    const medium = await screen.findByTestId("thinking-level-medium-fixture-family-high");
+    await waitFor(() => expect(medium).toBeEnabled());
+    await user.click(medium);
+    await waitFor(() => expect(sileo.error).toHaveBeenCalledOnce());
+    expect(aiServices.updateAiProvider).toHaveBeenCalledOnce();
+    expect(screen.getByTestId("thinking-level-high-fixture-family-high")).toHaveAttribute("aria-pressed", "true");
+    expect(medium).toHaveAttribute("aria-pressed", "false");
+    expect(screen.queryByTestId("thinking-level-medium-fixture-family-medium")).not.toBeInTheDocument();
+    screen.getAllByRole("switch", { name: "Predeterminado" }).forEach(control => expect(control).toBeChecked());
+    expect(fields).toEqual(original);
+  });
+
+  it("changes an unselected Gemini family's effort and displayed variant without selecting it or moving OCR", async () => {
+    const fields = {
+      selected_model: "fixture-current",
+      agentic: {
+        selected_model: "fixture-current",
+        ocr_focus_model: "fixture-current",
+        ocr_model: "fixture-current",
+        thinking_level: "high",
+        thinking_levels: { "fixture-current": "high" },
+        available_models: [
+          { id: "fixture-current", displayName: "Fixture Current" },
+          ...["high", "medium", "low"].map(effort => ({
+            id: `fixture-other-${effort}`, displayName: `Fixture Other (${effort})`,
+          })),
+        ],
+      },
+      api_key: { selected_model: "fixture-api" },
+    };
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({
+      data: [{ ...mockProviders[0], fields }],
+      meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 },
+    });
+    const user = userEvent.setup();
+    renderWithClient(<ProviderDetail providerId="prov-1" initialMode="agentic" onBack={() => {}} />);
+    const medium = await screen.findByTestId("thinking-level-medium-fixture-other-high");
+    await waitFor(() => expect(medium).toBeEnabled());
+    await user.click(medium);
+    const updated = await screen.findByTestId("thinking-level-medium-fixture-other-medium");
+    expect(updated).toHaveAttribute("aria-pressed", "true");
+    expect(screen.queryByText("fixture-other-high", { exact: true })).not.toBeInTheDocument();
+    expect(screen.getByText("fixture-current", { exact: true })).toBeVisible();
+    expect(aiServices.updateAiProvider).toHaveBeenCalledExactlyOnceWith("prov-1", {
+      fields: { ...fields, agentic: { ...fields.agentic,
+        thinking_levels: { ...fields.agentic.thinking_levels, "fixture-other-medium": "medium" } } },
+    });
+  });
+
+  it.each(["xhigh", "max"])("saves OpenAI API %s exactly while keeping Ultra disabled and the Agentic configuration unchanged", async effort => {
+    const fields = {
+      api_key: {
+        selected_model: "fixture-api-model",
+        available_models: [{ id: "fixture-api-model", name: "Fixture API model" }],
+        thinking_levels: { "fixture-api-model": "low", "fixture-other": "medium" },
+      },
+      agentic: { selected_model: "fixture-agentic", thinking_level: "high" },
+    };
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({
+      data: [{ ...mockProviders[0], key: "openai", use_api_key: true, default_mode: "api_key", fields }],
+      meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 },
+    });
+    vi.mocked(aiServices.getAiApiKeys).mockResolvedValue({ data: [], meta: { total_items: 0, total_pages: 0, page: 1, limit: 10 } });
+    const user = userEvent.setup();
+    renderWithClient(<ProviderDetail providerId="prov-1" initialMode="api_key" onBack={() => {}} />);
+    const choice = await screen.findByTestId(`thinking-level-${effort}-fixture-api-model`);
+    await waitFor(() => expect(choice).toBeEnabled());
+    const ultra = screen.getByRole("button", { name: "Ultra" });
+    expect(ultra).toBeDisabled();
+    await user.hover(ultra.parentElement!);
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(i18n.t("ai_providers:detail.api_effort_unsupported"));
+    expect(aiServices.updateAiProvider).not.toHaveBeenCalled();
+    await user.click(choice);
+    await waitFor(() => expect(aiServices.updateAiProvider).toHaveBeenCalledOnce());
+    expect(aiServices.updateAiProvider).toHaveBeenCalledWith("prov-1", {
+      fields: {
+        ...fields,
+        thinking_level: effort,
+        api_key: { ...fields.api_key, thinking_level: effort,
+          thinking_levels: { ...fields.api_key.thinking_levels, "fixture-api-model": effort } },
+      },
+    });
   });
   it("does not block authenticated Agentic when the default API channel is unconfigured", async () => {
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
