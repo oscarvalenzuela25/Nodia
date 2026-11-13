@@ -88,8 +88,11 @@ jobs:
       - name: Test migration policy and updater effect ordering without services
         run: |
           node --test ops/production/tests/update-backend-action.test.mjs
-          python -B -m unittest discover -s ops/production/tests -p 'test_backend_update*.py'
-          python -B -m unittest discover -s ops/production/tests -p 'test_deploy_receiver.py'
+          docker run --rm --network none \
+            --mount "type=bind,source=$GITHUB_WORKSPACE/ops/production,target=/repo/ops/production,readonly" \
+            --entrypoint python3 \
+            python:3.12-slim-bookworm@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df \
+            -B /repo/ops/production/tests/run-cd-policy-tests.py
       - name: Validate workflow syntax and expressions
         shell: bash
         run: |

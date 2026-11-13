@@ -148,19 +148,24 @@ def application_service_guard():
     require(isinstance(settings, dict) and type(settings.get('schema_version')) is int and
             settings['schema_version'] == 1, 'invalid_updater_settings')
     assets, services = settings.get('assets'), settings.get('service_hashes')
-    require(isinstance(assets, dict) and isinstance(assets.get('update-backend.py'), str) and
-            re.fullmatch(r'[a-f0-9]{64}', assets['update-backend.py']) and isinstance(services, dict) and
+    require(isinstance(assets, dict) and all(isinstance(assets.get(name), str) and
+            re.fullmatch(r'[a-f0-9]{64}', assets[name]) for name in ('update-backend.py', 'backend_update.py')) and isinstance(services, dict) and
             all(isinstance(services.get(unit), str) and re.fullmatch(r'[a-f0-9]{64}', services[unit])
                 for _, unit, _ in WRITERS), 'updater_service_policy_not_pinned')
-    filename = LIB / 'update-backend.py'
-    require(protect(filename, 0o644).st_size < 100 * 1024, 'updater_service_policy_too_large')
-    source = filename.read_bytes()
-    require(hashlib.sha256(source).hexdigest() == assets['update-backend.py'], 'updater_service_policy_changed')
-    spec = importlib.util.spec_from_file_location('nodia_receiver_service_policy', filename)
-    module = importlib.util.module_from_spec(spec)
-    # Execute the bytes just verified, without reopening the file or writing pyc.
-    exec(compile(source, str(filename), 'exec'), module.__dict__)
-    return module.Host(SimpleNamespace(require=require), None, settings)
+    def load(name):
+        filename = LIB / name
+        require(protect(filename, 0o644).st_size < 100 * 1024, 'updater_service_policy_too_large')
+        source = filename.read_bytes()
+        require(hashlib.sha256(source).hexdigest() == assets[name], 'updater_service_policy_changed')
+        spec = importlib.util.spec_from_file_location('nodia_receiver_' + name.replace('-', '_'), filename)
+        module = importlib.util.module_from_spec(spec)
+        # Execute the bytes just verified, without reopening the file or writing pyc.
+        exec(compile(source, str(filename), 'exec'), module.__dict__)
+        return module
+    module, policy = load('update-backend.py'), load('backend_update.py')
+    return module.Host(SimpleNamespace(require=require, Rejected=policy.Rejected,
+        validate_request=policy.validate_request,
+        validate_pre_migration_reconciliation=policy.validate_pre_migration_reconciliation), None, settings)
 
 
 def deployment_status():
@@ -178,17 +183,25 @@ def deployment_status():
     require(isinstance(source, str) and re.fullmatch(r'[a-f0-9]{40}', source) and
             isinstance(tree, str) and re.fullmatch(r'[a-f0-9]{64}', tree) and
             value.get('release_id') == release.name, 'invalid_current_identity')
-    unresolved = (STATE / 'BLOCKED.json').exists()
+    unresolved = (STATE / 'BLOCKED.json').exists() or (STATE / 'BLOCKED.json').is_symlink()
+    reconciliation_seen = False
     for directory in (STATE / 'attempts').iterdir():
         protect(directory, directory=True)
+        acknowledgment = directory / 'pre-migration-reconciliation.json'
+        reconciliation_seen |= acknowledgment.exists() or acknowledgment.is_symlink()
         state_path = directory / 'state.json'
         if state_path.exists():
             previous = bounded_json(state_path)
             if previous.get('effects_started') is True and previous.get('phase') not in ('complete', 'planned'):
                 unresolved = True
+    service_guard = None
+    if reconciliation_seen:
+        service_guard = application_service_guard()
+        unresolved = service_guard.prior_updates_blocked()
+    # A historical acknowledgment never resolves another pending submission.
     for path in SUBMISSIONS.glob('*.json'):
         if operation_status(path.stem)['phase'] not in ('complete', 'failed'): unresolved = True
-    application, service_guard = {}, None
+    application = {}
     for label, unit, entry in WRITERS:
         state = unit_state(unit)
         application[label] = state.get('ActiveState') == 'active'

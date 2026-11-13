@@ -1,5 +1,7 @@
 """Pure update policy and ordered effects. Host/systemd adapters live separately."""
 import datetime
+import hashlib
+import json
 import re
 
 
@@ -24,6 +26,98 @@ def validate_request(value):
     require(all(isinstance(value[name], str) and re.fullmatch(pattern, value[name])
                 for name, pattern in patterns.items()), 'invalid_update_request_identity')
     return value
+
+
+def blocked_record_bytes(state):
+    """The unchanged original BLOCKED wire format, also bound by reconciliation."""
+    return (json.dumps({'operation_id': state['operation_id'], 'failed_phase': state['failed_phase'],
+                        'error_code': state['error_code']}) + '\n').encode()
+
+
+def validate_pre_migration_reconciliation(receipt, *, state_bytes, request_bytes,
+                                          recovery_bytes, manifest_bytes, blocked_bytes=None):
+    """A root acknowledgment closes one failed history entry; it never replays it.
+
+    Manifest identity is the recovered original release, not the release active
+    after a subsequent successful update. Historical recovery evidence stays bound.
+    """
+    code = 'pre_migration_reconciliation_invalid'
+    def check(condition): require(condition, code)
+    def digest(raw): return hashlib.sha256(raw).hexdigest()
+    def parse(raw, maximum=16384):
+        check(type(raw) is bytes and 0 < len(raw) <= maximum)
+        def pairs(items):
+            result = {}
+            for key, value in items:
+                check(key not in result); result[key] = value
+            return result
+        return json.loads(raw.decode('utf-8'), object_pairs_hook=pairs,
+                          parse_constant=lambda _: check(False))
+    def date(value):
+        check(isinstance(value, str) and len(value) <= 64)
+        result = datetime.datetime.fromisoformat(value.replace('Z', '+00:00'))
+        check(result.tzinfo is not None and result.utcoffset() == datetime.timedelta(0))
+        return result
+    try:
+        fields = {'schema_version', 'status', 'operation_id', 'state_sha256', 'request_sha256',
+                  'blocked_sha256', 'recovery_receipt_sha256', 'current_release_id',
+                  'current_manifest_sha256', 'package_tree_sha256', 'ledger_sha256',
+                  'migration_count', 'acknowledged_at_utc', 'new_operation_allowed',
+                  'original_operation_retry_allowed'}
+        check(type(receipt) is dict and set(receipt) == fields and type(receipt['schema_version']) is int and
+              receipt['schema_version'] == 1 and receipt['status'] == 'same_release_restored_before_migration' and
+              receipt['new_operation_allowed'] is True and receipt['original_operation_retry_allowed'] is False)
+        for name in ('state_sha256', 'request_sha256', 'blocked_sha256', 'recovery_receipt_sha256',
+                     'current_manifest_sha256', 'package_tree_sha256', 'ledger_sha256'):
+            check(isinstance(receipt[name], str) and re.fullmatch(r'[a-f0-9]{64}', receipt[name]))
+        operation = receipt['operation_id']
+        check(isinstance(operation, str) and re.fullmatch(r'[a-f0-9]{32}', operation))
+        state, request = parse(state_bytes), validate_request(parse(request_bytes))
+        recovery, manifest = parse(recovery_bytes), parse(manifest_bytes, 32 * 1024 ** 2)
+        check(state.get('schema_version') == 1 and type(state.get('schema_version')) is int and
+              state.get('operation_id') == request['operation_id'] == operation and state.get('phase') == 'failed' and
+              state.get('failed_phase') == 'stopping_writers' and state.get('error_code') == 'writer_shutdown_not_clean' and
+              state.get('effects_started') is True and state.get('migration_requested') is False and
+              state.get('automatic_retry_allowed') is False and
+              state.get('previous_release') == request['expected_current_release'])
+        check(receipt['state_sha256'] == digest(state_bytes) and receipt['request_sha256'] == digest(request_bytes) and
+              receipt['recovery_receipt_sha256'] == digest(recovery_bytes) and
+              receipt['current_manifest_sha256'] == digest(manifest_bytes) and
+              receipt['blocked_sha256'] == digest(blocked_record_bytes(state)))
+        if blocked_bytes is not None:
+            check(type(blocked_bytes) is bytes and blocked_bytes == blocked_record_bytes(state))
+        recovery_fields = {'schema_version', 'status', 'operation_id', 'resolution', 'started_at', 'state_sha256',
+                           'blocked_sha256', 'release_id', 'package_tree_sha256', 'ledger_sha256',
+                           'migrations_requested', 'deployment_performed', 'cd_unblocked', 'diagnostic_directory',
+                           'completed_at', 'cors_verified', 'timers_restored', 'maintenance_removed',
+                           'failed_attempt_unchanged'}
+        check(type(recovery) is dict and set(recovery) == recovery_fields and
+              type(recovery['schema_version']) is int and recovery['schema_version'] == 1 and
+              recovery['status'] == 'complete' and recovery['operation_id'] == operation and
+              recovery['resolution'] == receipt['status'] and
+              recovery['migrations_requested'] is False and recovery['deployment_performed'] is False and
+              recovery['cd_unblocked'] is False and all(recovery[name] is True for name in
+                  ('cors_verified', 'timers_restored', 'maintenance_removed', 'failed_attempt_unchanged')))
+        check(isinstance(recovery['diagnostic_directory'], str) and re.fullmatch(
+            r'/var/lib/nodia-updates/diagnostics/current-restore-preflight-[a-f0-9]{32}', recovery['diagnostic_directory']))
+        for name in ('state_sha256', 'blocked_sha256', 'ledger_sha256', 'package_tree_sha256'):
+            check(recovery[name] == receipt[name])
+        check(receipt['current_release_id'] == recovery['release_id'] == request['expected_current_release'] and
+              receipt['package_tree_sha256'] == request['expected_current_tree_sha256'] and
+              manifest.get('release_id') == receipt['current_release_id'] and type(manifest.get('schema_version')) is int and
+              manifest['schema_version'] == 1 and
+              manifest.get('package_tree_sha256') == receipt['package_tree_sha256'])
+        files = manifest.get('files')
+        check(isinstance(files, list) and all(isinstance(item, dict) for item in files))
+        migrations = [item['path'] for item in files if isinstance(item.get('path'), str) and
+                      re.fullmatch(r'dist/migrations/[0-9]{13}-[A-Za-z][A-Za-z0-9_]*\.js', item['path']) and
+                      item.get('type') == 'file']
+        check(type(receipt['migration_count']) is int and receipt['migration_count'] >= 2 and
+              len(migrations) == len(set(migrations)) == receipt['migration_count'])
+        check(date(recovery['started_at']) <= date(recovery['completed_at']) <= date(receipt['acknowledged_at_utc']))
+        return receipt
+    except (KeyError, TypeError, ValueError, AttributeError):
+        raise Rejected(code) from None
 
 
 def validate_backup_result(value, *, started_at, now):

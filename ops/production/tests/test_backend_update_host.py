@@ -8,7 +8,7 @@ import stat
 import tempfile
 import types
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 import zipfile
 
 BASE = Path(__file__).resolve().parents[1]
@@ -24,6 +24,44 @@ def load(name, filename):
 policy = load('policy_fixture', 'backend_update.py')
 adapter = load('host_fixture', 'update-backend.py')
 installer = load('installer_fixture', 'install-backend-updater.py')
+
+
+class WriterShutdownTests(unittest.TestCase):
+    def state(self, **change):
+        return {'ActiveState': 'inactive', 'SubState': 'dead', 'Result': 'success',
+                'MainPID': '0', 'ExecMainCode': '1', 'ExecMainStatus': '0', **change}
+
+    def test_zero_exit_and_the_exact_reviewed_sigterm_are_clean_observations(self):
+        for code, status in [('0', '0'), ('1', '0'), ('2', '15')]:
+            with self.subTest(code=code, status=status):
+                self.assertTrue(adapter.clean_writer_shutdown(self.state(ExecMainCode=code, ExecMainStatus=status)))
+
+    def test_other_signals_core_dumps_nonzero_exits_and_missing_values_are_rejected(self):
+        for code, status in [('2', '9'), ('2', '6'), ('3', '6'), ('1', '1'), ('1', '15'),
+                             ('0', '15'), ('2', '0'), ('3', '0'), ('2', 'SIGTERM'),
+                             (None, '15'), ('2', None), (2, 15)]:
+            with self.subTest(code=code, status=status):
+                self.assertFalse(adapter.clean_writer_shutdown(self.state(ExecMainCode=code, ExecMainStatus=status)))
+        self.assertFalse(adapter.clean_writer_shutdown(None))
+        for change in [{'ActiveState': 'failed'}, {'ActiveState': 'active'}, {'ActiveState': 'deactivating'},
+                       {'Result': 'timeout'}, {'Result': 'signal'}, {'Result': 'core-dump'}, {'MainPID': '42'}]:
+            with self.subTest(change=change):
+                self.assertFalse(adapter.clean_writer_shutdown(self.state(ExecMainCode='2', ExecMainStatus='15', **change)))
+
+    def test_stop_writers_keeps_the_exact_stop_command_and_requires_both_cgroups_empty(self):
+        host = adapter.Host(policy, None, {})
+        host.groups = {unit: '/system.slice/' + unit for unit in adapter.SERVICES}
+        host.command = Mock()
+        host.show = Mock(return_value=self.state(ExecMainCode='2', ExecMainStatus='15'))
+        host.cgroup_empty = Mock(return_value=True)
+        host.stop_writers()
+        host.command.assert_called_once_with(['/usr/bin/systemctl', 'stop', *adapter.SERVICES], 400)
+        self.assertEqual(host.cgroup_empty.call_args_list,
+                         [unittest.mock.call(host.groups[unit]) for unit in adapter.SERVICES])
+        for unit in adapter.SERVICES:
+            host.cgroup_empty = lambda name: name != host.groups[unit]
+            with self.subTest(unit=unit), self.assertRaisesRegex(policy.Rejected, 'writer_cgroup_not_empty'):
+                host.stop_writers()
 
 
 class HostInputTests(unittest.TestCase):
