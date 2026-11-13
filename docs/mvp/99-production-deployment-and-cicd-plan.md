@@ -977,3 +977,34 @@ Al preparar el commit:13/13 casos de observación, lint Client y build completos
 correctos; TypeScript sólo en el build. Suite global con maxWorkers2 en curso.
 El PR de promoción y Obsidian26.15 registran su resultado final por separado;
 preparar esta corrección no acredita por sí solo un nuevo despliegue.
+
+## 20. Importación CSV: esperar el resultado del lector — 2026-11-13
+
+Tras integrar PR8, el [run43369345499 de master](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43369345499)
+pasó baseline/pipeline, Server/worker, Python y host nativo. Client pasó lint/build
+y2890pruebas, pero falló un caso de ProductBulkImport: reintento tras rechazo400
+de un producto sin código. El log muestra `submit-bulk-products` ausente después
+de user.upload, antes del waitFor que comprueba si el botón está habilitado.
+
+La lectura real usa FileReader.onload para establecer filas y renderizar ese
+botón. La promesa de user.upload confirma selección/change, no la finalización
+del lector. En una ejecución local aislada los21casos originales pasaron; ese
+resultado no descarta la carrera observada en GitHub. Se localizaron tres
+consultas con el mismo patrón y se cambian a findByTestId, conservando enabled,
+recibos, payloads, reintento400 y prohibición de repetir creaciones inciertas.
+
+Una regresión adicional controla sólo la frontera FileReader.readAsText: mantiene
+la lectura pendiente, verifica ausencia de botón/fila y cero mutaciones, emite
+load explícitamente y comprueba que sólo un clic posterior crea una vez. No usa
+sleeps, modifica el componente/importador ni relaja la idempotencia. El spy se
+restaura al terminar, sin dejar una promesa de búsqueda huérfana si falla el lector.
+Validación final enfocada:57pruebas en3archivos (22del importador y35de helpers/
+precios), lint completo y build Client correctos; TypeScript sólo en build. La
+suite global del commit nuevo se verifica en GitHub; el resultado se registra en
+el PR de promoción y Obsidian26.17, sin extrapolar el pase enfocado a toda la suite.
+
+Rama codex/fix-product-import-test-readiness desde development6c1e5b84, en un
+worktree independiente. El plan PWA pendiente del checkout principal queda
+intacto y fuera de esta corrección. Impacto de conocimiento: sólo tests, sin
+cambios funcionales, contratos, fichas aprobadas o capacidades publicadas.
+No se reintenta el run antiguo como sustituto del arreglo versionado.

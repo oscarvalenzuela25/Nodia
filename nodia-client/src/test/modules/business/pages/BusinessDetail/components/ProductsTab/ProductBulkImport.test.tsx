@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -209,6 +209,57 @@ describe("ProductBulkImport Component", () => {
     expect(screen.getByRole("button", { name: /Volver al catálogo/i })).toBeInTheDocument();
   });
 
+  it("waits for the CSV read and an explicit submit before creating products", async () => {
+    const user = userEvent.setup();
+    const csv = "name,cost_price,cost_price_tax,sale_price,has_stock\nSynthetic delayed product,100,119,150,true";
+    const file = new File([csv], "products.csv", { type: "text/csv" });
+    const pendingReaders: FileReader[] = [];
+    const read = vi.spyOn(FileReader.prototype, "readAsText").mockImplementation(function (this: FileReader) {
+      pendingReaders.push(this);
+    });
+    const create = vi.mocked(businessServices.bulkCreateProducts).mockReset().mockResolvedValueOnce([{
+      id: "104", version: 1, business_id: "biz-123", code: null, measurement_unit: "unit", name: "Synthetic delayed product",
+      cost_price: 100, cost_price_tax: 119, sale_price: 150, stock: 0, is_active: true,
+    }]);
+    try {
+      renderWithClient(<ProductBulkImport {...defaultProps} />);
+      await user.upload(document.querySelector('input[type="file"]') as HTMLInputElement, file);
+      expect(read).toHaveBeenCalledTimes(1);
+      expect(read).toHaveBeenCalledWith(file);
+      expect(screen.queryByTestId("submit-bulk-products")).not.toBeInTheDocument();
+      expect(screen.queryByText("Synthetic delayed product")).not.toBeInTheDocument();
+      expect(create).not.toHaveBeenCalled();
+      expect(businessServices.bulkUpdateProducts).not.toHaveBeenCalled();
+      expect(defaultProps.onSuccess).not.toHaveBeenCalled();
+      expect(defaultProps.onCancel).not.toHaveBeenCalled();
+
+      // Upload only selects the file. The reader and its React render settle later.
+      const reader = pendingReaders[0];
+      if (!reader) throw new Error("Synthetic CSV reader was not started");
+      act(() => {
+        Object.defineProperty(reader, "result", { value: csv, configurable: true });
+        reader.dispatchEvent(new ProgressEvent("load"));
+      });
+      const submit = await screen.findByTestId("submit-bulk-products");
+      await waitFor(() => expect(submit).toBeEnabled());
+      expect(screen.getByText("Synthetic delayed product")).toBeInTheDocument();
+      expect(create).not.toHaveBeenCalled();
+      expect(businessServices.bulkUpdateProducts).not.toHaveBeenCalled();
+      expect(defaultProps.onSuccess).not.toHaveBeenCalled();
+
+      await user.click(submit);
+      await waitFor(() => expect(defaultProps.onSuccess).toHaveBeenCalledTimes(1));
+      expect(create).toHaveBeenCalledTimes(1);
+      expect(create).toHaveBeenCalledWith([expect.objectContaining({
+        business_id: "biz-123", code: null, name: "Synthetic delayed product",
+        cost_price: 100, cost_price_tax: 119, sale_price: 150,
+      })]);
+      expect(businessServices.bulkUpdateProducts).not.toHaveBeenCalled();
+    } finally {
+      read.mockRestore();
+    }
+  });
+
   it("calls onCancel when clicking Volver al catálogo button", async () => {
     const user = userEvent.setup();
     renderWithClient(<ProductBulkImport {...defaultProps} />);
@@ -392,7 +443,7 @@ describe("ProductBulkImport Component", () => {
     renderWithClient(<ProductBulkImport {...defaultProps} />);
     const csv = 'id,code,name,cost_price,cost_price_tax,sale_price,has_stock,measurement_unit,version\n,,Tomates,100,119,150,true,kg,\n,,Hierbas,100,119,150,true,bundle,\n16,EXIST,Actual,100,119,150,true,unit,3';
     await user.upload(document.querySelector('input[type="file"]') as HTMLInputElement, new File([csv], "products.csv", { type: "text/csv" }));
-    const submit = screen.getByTestId("submit-bulk-products");
+    const submit = await screen.findByTestId("submit-bulk-products");
     await waitFor(() => expect(submit).toBeEnabled());
     await user.click(submit);
     await waitFor(() => expect(businessServices.bulkUpdateProducts).toHaveBeenCalledTimes(1));
@@ -419,7 +470,7 @@ describe("ProductBulkImport Component", () => {
     renderWithClient(<ProductBulkImport {...defaultProps} />);
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     await user.upload(fileInput, new File(["name,cost_price,cost_price_tax,sale_price,has_stock\nProducto sin código,100,119,150,true"], "products.csv", { type: "text/csv" }));
-    const submit = screen.getByTestId("submit-bulk-products");
+    const submit = await screen.findByTestId("submit-bulk-products");
     await waitFor(() => expect(submit).toBeEnabled());
     await user.click(submit);
     await waitFor(() => expect(businessServices.bulkCreateProducts).toHaveBeenCalledTimes(1));
@@ -447,7 +498,7 @@ describe("ProductBulkImport Component", () => {
     renderWithClient(<ProductBulkImport {...defaultProps} />);
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     await user.upload(fileInput, new File(["name,cost_price,cost_price_tax,sale_price,has_stock\nProducto sin código,100,119,150,true"], "products.csv", { type: "text/csv" }));
-    const submit = screen.getByTestId("submit-bulk-products");
+    const submit = await screen.findByTestId("submit-bulk-products");
     await waitFor(() => expect(submit).toBeEnabled());
     await user.click(submit);
     await waitFor(() => expect(screen.getByText(/Revisa el catálogo manualmente/i)).toBeInTheDocument());
