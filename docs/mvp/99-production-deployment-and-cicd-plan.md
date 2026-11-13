@@ -919,3 +919,61 @@ migró datos. Ficha candidata sin aprobación, registro o publicación.
 
 [recibo operativo final](../evidence/production-ai-login-live-20261112-r01.json)
 y [ficha candidata](../nodia-ai/knowledge/general-settings/features/ai-login-host-setup.md).
+
+## 18. Promoción a master y baseline detenido — 2026-11-13
+
+PR5 quedó integrado en development `80666e6a` y PR6 promovió ese contenido a
+master `7aa1da88`. El [CI43362648327](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43362648327)
+se detuvo en el baseline VPS, antes de build o despliegue. El cliente informó
+`backend_status_failed`; SSH restringido reprodujo `writer_process_not_verified`.
+API y worker continuaban activos en f01. El receptor de transporte conservaba
+la condición antigua de cero drop-ins, incompatible con las cuatro extensiones
+revisadas instaladas en §17; el updater ya aceptaba su registro estricto.
+
+Arreglo preparado en `codex/fix-vps-baseline-status`, desde development. El status
+comparte la política del updater instalado fijado por SHA: exige hashes base,
+registro privado, rutas/inventario/bytes exactos y conserva la identidad completa
+de los procesos. El refresco administrativo reemplaza sólo receptor y su hash,
+con locks, preflight de lectura y originales protegidos; no reinicia aplicaciones
+ni migra. [Procedimiento mantenido](../../ops/production/README.md#baseline-de-cd-y-configuraciones-registradas-de-ia--2026-11-13).
+
+El operador instaló el receptor corregido `25d32d5a…` con sudo privado, sin cambiar
+f01 ni PID de API/worker. SSH restringido nuevo, con clave y host pin productivos,
+confirmó deployment_ready, blocked=false y ambos servicios activos. Se repitieron
+sólo jobs fallidos: el intento2 pasó el baseline completo (job131684277110,
+incluido SSH backend) y continuó Changes/pipeline. Builds y apply conservan sus
+resultados propios; el verde de este gate no los acredita.
+
+Validación local:21 pruebas de receptor,10 del instalador y29 comprobaciones
+SSH/sudo/systemd/Nginx reales aisladas, sin red externa, PostgreSQL/R2/IA.
+La identidad POSIX se verificó como root en contenedor; el runner CI normal sin
+root no demuestra esa parte. [PR7 hacia development](https://github.com/oscarvalenzuela25/Nodia/pull/7)
+versiona el arreglo y el procedimiento, sin merge automático ni nueva evidencia
+JSON versionada. Obsidian26.14 contiene comandos, explicación y contraste EC2.
+
+## 19. Prueba de rechazo de acceso histórico y siguiente promoción — 2026-11-13
+
+El intento2 de master superó el baseline, pero Client falló en
+`useObservation.test.tsx`: después de un error transitorio y un refetch403,
+la prueba esperaba accessRejected antes de que React confirmara el nuevo render.
+El fallo se reprodujo localmente sin modificar el hook. TanStack Query notifica
+la suscripción React por lotes; completar refetch no garantiza que result.current
+ya refleje esa notificación. El queryFn sí limpia la entrada del caché al recibir
+el rechazo y vuelve a lanzar el error.
+
+La rama `codex/fix-observation-access-rejection`, desde development `a3d5bf38`,
+ajusta sólo la sincronización de esa prueba: espera la observación del error
+transitorio y después el rechazo asentado, con error exacto, isError y fetch
+terminado. Conserva la comprobación inmediata de caché null y datos ocultos;
+extiende el mismo recorrido a401/403/404/410. No añade sleeps, cambia el scheduler,
+omite assertions ni modifica la autorización o el comportamiento de producción.
+
+Impacto en fichas NodiaAI: sólo test; contratos, capacidades, permisos, fuentes
+aprobadas y publicación permanecen iguales. No requiere registrar/publicar una
+ficha nueva. Validación y PR de promoción se completan con resultados efectivos
+antes de entregar; master no se fusiona automáticamente.
+
+Al preparar el commit:13/13 casos de observación, lint Client y build completos
+correctos; TypeScript sólo en el build. Suite global con maxWorkers2 en curso.
+El PR de promoción y Obsidian26.15 registran su resultado final por separado;
+preparar esta corrección no acredita por sí solo un nuevo despliegue.

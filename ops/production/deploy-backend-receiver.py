@@ -20,6 +20,7 @@ import stat
 import subprocess
 import sys
 import time
+from types import SimpleNamespace
 
 LIB = Path('/usr/local/lib/nodia')
 STATE = Path('/var/lib/nodia-updates')
@@ -28,6 +29,8 @@ SUBMISSIONS = STATE / 'submissions'
 MAX_UPLOAD = 768 * 1024 ** 2
 MAX_INCOMING = 2 * 1024 ** 3
 SAFE_ENV = {'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
+WRITERS = (('api_active', 'nodia-api.service', 'dist/main.js'),
+           ('worker_active', 'nodia-ai-worker.service', 'dist/nodia-ai-worker.js'))
 
 
 def require(condition, code):
@@ -136,6 +139,30 @@ def operation_status(operation_id):
     return result
 
 
+def application_service_guard():
+    """Reuse the installed, hash-pinned updater's exact optional runtime policy."""
+    for directory in (LIB, STATE):
+        for parent in reversed((directory, *directory.parents)):
+            protect(parent, directory=True)
+    settings = bounded_json(STATE / 'settings.json')
+    require(isinstance(settings, dict) and type(settings.get('schema_version')) is int and
+            settings['schema_version'] == 1, 'invalid_updater_settings')
+    assets, services = settings.get('assets'), settings.get('service_hashes')
+    require(isinstance(assets, dict) and isinstance(assets.get('update-backend.py'), str) and
+            re.fullmatch(r'[a-f0-9]{64}', assets['update-backend.py']) and isinstance(services, dict) and
+            all(isinstance(services.get(unit), str) and re.fullmatch(r'[a-f0-9]{64}', services[unit])
+                for _, unit, _ in WRITERS), 'updater_service_policy_not_pinned')
+    filename = LIB / 'update-backend.py'
+    require(protect(filename, 0o644).st_size < 100 * 1024, 'updater_service_policy_too_large')
+    source = filename.read_bytes()
+    require(hashlib.sha256(source).hexdigest() == assets['update-backend.py'], 'updater_service_policy_changed')
+    spec = importlib.util.spec_from_file_location('nodia_receiver_service_policy', filename)
+    module = importlib.util.module_from_spec(spec)
+    # Execute the bytes just verified, without reopening the file or writing pyc.
+    exec(compile(source, str(filename), 'exec'), module.__dict__)
+    return module.Host(SimpleNamespace(require=require), None, settings)
+
+
 def deployment_status():
     current = Path('/opt/nodia/current')
     require(current.is_symlink() and current.lstat().st_uid == current.lstat().st_gid == 0,
@@ -161,16 +188,17 @@ def deployment_status():
                 unresolved = True
     for path in SUBMISSIONS.glob('*.json'):
         if operation_status(path.stem)['phase'] not in ('complete', 'failed'): unresolved = True
-    application = {}
-    for label, unit, entry in (('api_active', 'nodia-api.service', 'dist/main.js'),
-                               ('worker_active', 'nodia-ai-worker.service', 'dist/nodia-ai-worker.js')):
+    application, service_guard = {}, None
+    for label, unit, entry in WRITERS:
         state = unit_state(unit)
         application[label] = state.get('ActiveState') == 'active'
         if application[label]:
             pid = state.get('MainPID', '')
             require(pid.isdigit() and int(pid) > 1 and state.get('SubState') == 'running' and
-                    state.get('Result') == 'success' and state.get('DropInPaths') == '' and
+                    state.get('Result') == 'success' and
                     state.get('ControlGroup') == '/system.slice/' + unit, 'writer_process_not_verified')
+            if service_guard is None: service_guard = application_service_guard()
+            service_guard.service_overrides(unit, state)
             process = Path('/proc') / pid
             require(process.stat().st_uid == pwd.getpwnam('nodia').pw_uid and
                     (process / 'cwd').resolve(strict=True) == release and
