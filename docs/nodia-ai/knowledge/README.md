@@ -1,5 +1,15 @@
 # Contexto funcional de productos para NodiaAI
 
+## PWA instalable online — planificación, 2026-11-13
+
+[Plan103](../../mvp/103-pwa-progressive-implementation-plan.md),
+[índice de producto](general-settings/README.md#instalación-pwa-online--planificación-2026-11-13)
+y [ficha candidata](general-settings/features/pwa-installation.md) describen
+PWA-001 como entrega completa e independiente de instalación/iconos/ventana
+propia, usando las funciones online actuales. Actualizaciones, caché, push y
+sincronización quedan en ítems posteriores. Sólo planificación: draft/planned,
+sin pruebas de instalación, aprobación o publicación ni herramientas nuevas.
+
 ## Teacher: alta guiada y observación Agentic — candidato local, 2026-11-12
 
 [Producto draft revisión35](studies/README.md#alta-guiada-y-estado-agentic--candidato-local-2026-11-12) y [ficha revisión30](studies/features/session-setup-and-planning.md#alta-guiada-y-selección-ia-visible--candidato-local-2026-11-12): ayudas, idioma validado, selección visible/48px y explicación del catálogo sin esfuerzos; selección exacta, elegibilidad y autoridad conservadas. Cabecera observa cuenta Codex de forma acotada compartida, sin convertir ausencia/desconocido en disponibilidad. [Verificación local y diagnóstico productivo por alcance](../../mvp/96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13); sin inferencia, despliegue, aprobación o publicación del lote.

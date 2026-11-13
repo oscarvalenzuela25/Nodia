@@ -1108,3 +1108,88 @@ el intento2 pasó el baseline (job131684277110, incluido el paso SSH del backend
 y continuó Changes/pipeline. Esto no acredita todavía build ni apply completos.
 Código versionado en [PR7 hacia development](https://github.com/oscarvalenzuela25/Nodia/pull/7);
 no se fusionó automáticamente ni se alteraron las ramas del checkout principal.
+
+## Diagnóstico de una operación CD fallida, sin replay
+
+`inspect-backend-operation.py <operation_id>` requiere sudo privado. Lee sólo el
+intento indicado bajo `/var/lib/nodia-updates/attempts/`, con ID32hex, rutas
+root protegidas, archivos regulares sin symlinks y límites de tamaño/inventario.
+Devuelve códigos permitidos de state/recibos y pistas de una lista fija; excluye
+mensajes libres, trazas, URIs, usuarios, contraseñas y variables de entorno. No
+ejecuta el updater ni modifica estado, unidades o base de datos.
+
+```bash
+sudo python3 -I /home/nodia-admin/nodia-setup/backend/inspect-backend-operation.py \
+  37364cfb1765d6c2a24162d842066691
+```
+
+El helper transferido se fija por SHA antes de ejecutarlo. Seis pruebas Linux
+aisladas verifican redacción, límites, modos/rutas y ausencia de escrituras.
+La salida es diagnóstica y puntual; no constituye una conciliación o autorización
+para repetir un efecto. No pedir ni copiar el contenido crudo de last-command.log.
+
+`backend_operation_requires_reconciliation` significa que la consulta de una
+operación devolvió failed/unknown. Primero consultar ese ID y determinar fase,
+efectos y diagnóstico privado; conservar solicitud, subida e intento originales.
+Una fase failed no se cambia a complete para desbloquear CD. El ID deriva del
+artefacto y CI de origen; un nuevo dispatch del mismo CI no es un nuevo intento
+autorizado. Tras corregir y verificar el motivo, la continuación debe mantener
+los gates de CI/master/artefactos e identidad, sin borrar recibos ni crear IDs al
+azar. Un nuevo origen CI sólo corresponde a una intención nueva y revisada.
+
+### Preflight WRITABLE_STATE: corrección verificada — 2026-11-13
+
+La operación37364cfb… falló en prepare: el inspect SQL devolvió verified/read_only
+con TLS, pero el probe devolvió configuration_invalid. El validador local,
+ejecutado en el mismo sandbox, identificó WRITABLE_STATE. node_job tenía
+ProtectSystem=strict y ninguna excepción para el estado de Nodia; el validador
+comprueba W_OK en home/codex. La unidad base y el staging inicial ya concedían
+esas rutas. No fue un fallo de contraseña PostgreSQL ni de login IA.
+
+Se añade exclusivamente `ReadWritePaths=/var/lib/nodia/home /var/lib/nodia/codex`
+a node_job. Configuración y releases continúan read-only; UID/GID, capacidades
+vacías, NoNewPrivileges, secretos vía EnvironmentFile y el resto del aislamiento
+permanecen. La prueba real systemd reproduce EROFS con la unidad anterior y
+verifica acceso sólo a esos directorios con la corregida, incluidos intentos
+fallidos de escribir configuración/releases incluso cuando el archivo es de nodia.
+
+Para el refresco operatorio, el paquete contiene update-backend.py,
+refresh-backend-updater.py y su dependencia revisada refresh-production-cd.py
+(SHA857d9203…). Este último aporta las funciones de rutas/archivos/reemplazo;
+sus bytes se verifican antes de ejecutarlos. El helper requiere el intento fallido
+exacto en preparing, sin efectos/migraciones, los dos locks libres y todos los
+assets/pins actuales coherentes. Guarda originales privados sincronizados antes
+de sustituir únicamente el updater0644 y su pin en settings0600; preserva los
+demás campos, el receptor, el registro IA y el estado de la operación.
+
+```bash
+sudo python3 -I /home/nodia-admin/nodia-setup/backend/cd-preflight-fix-20261113/refresh-backend-updater.py \
+  /home/nodia-admin/nodia-setup/backend/cd-preflight-fix-20261113/update-backend.py \
+  --sha256 703791f5a5b928e34c8ef7bff341f5089839fa6894336c6530e9f14e80e62adc \
+  --previous-sha256 266d409cfcea4ea05b5704042ef1305afff439a244c0340d2f8f6ff577003b56 \
+  --failed-operation 37364cfb1765d6c2a24162d842066691
+```
+
+**Este refresco ya se ejecutó** tras revisión y pruebas; no repetirlo. Originales en
+`/var/lib/nodia-updates/updater-refresh-<SHA>/`. Un fallo parcial entre código/pin
+bloquea las comprobaciones posteriores; conservar el estado, sin reintentar o
+restaurar automáticamente. Las lecturas de staging son acotadas por descriptor
+y rechazan symlinks/FIFO/crecimiento antes de ejecutar código root.
+
+Validación:70 regresiones Python root sin red y25 checks systemd reales aislados.
+La configuración original falló en el VPS; el mismo validador con la excepción
+exacta pasó sin red/app. Tras instalar, el Host.node_job real verificó el candidato
+backend-60494715e629-406369a3c039, sus inventarios, SQL READ ONLY45→48/3pendientes,
+PostgreSQL TLSv1.3, Redis autenticado y R2 HeadBucket. Sin migrar, cambiar current,
+reiniciar API/worker o modificar el intento fallido. Resultados privados bajo
+diagnostics/preflight-0d8ef08d70834ebea2cc8be0db6366cf; sin JSON nuevo versionado.
+
+Esto concilia por observaciones el fallo anterior a efectos y valida el arreglo
+para ese candidato; no convierte el ID fallido en success ni acepta otro paquete.
+La continuación usa una nueva revisión/CI/artefacto de master tras el PR normal,
+con los gates de procedencia y preflight completos. El primer apply, sus tres
+migraciones, backup, readiness y Pages siguen pendientes de ese CD nuevo.
+
+Cierre administrativo: sudo invalidado en la PTY y sesión tmux temporal cerrada.
+API/worker conservaron PID476489/476487; no quedaron unidades update-action
+activas. No se amplió sudoers ni se habilitó root por SSH.
