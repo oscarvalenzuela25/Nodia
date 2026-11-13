@@ -1100,4 +1100,11 @@ reales. Las pruebas de propietario/modos requieren ese entorno; el job CI normal
 sin root no demuestra esos permisos. App/manifiesto del fixture son sintéticos;
 no consulta PostgreSQL/R2/IA. Recibo transitorio bajo output/production, sin añadir
 otro JSON versionado. Copia al VPS comprobada por SHA: receptor25d32d5a… y
-helper857d9203…. Aplicación administrativa y baseline remoto pendientes de sudo.
+helper857d9203…. El operador completó el refresco con sudo privado: nuevo SHA
+instalado, mismo current/f01 y mismos PID428730/428737. Una conexión nueva como
+nodia-deploy con clave/host pin reales devolvió deployment_ready, blocked=false
+y ambos servicios activos. Se relanzaron sólo los jobs fallidos del run original:
+el intento2 pasó el baseline (job131684277110, incluido el paso SSH del backend)
+y continuó Changes/pipeline. Esto no acredita todavía build ni apply completos.
+Código versionado en [PR7 hacia development](https://github.com/oscarvalenzuela25/Nodia/pull/7);
+no se fusionó automáticamente ni se alteraron las ramas del checkout principal.
