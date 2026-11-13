@@ -66,7 +66,7 @@ const catalog = [
     key: "openai",
     name: "OpenAI",
     can_use_api_key: true,
-    can_use_agentic: false,
+    can_use_agentic: params.get("codexUnavailable") === "1",
     is_active: true,
     created_at: "",
     updated_at: "",
@@ -87,10 +87,10 @@ let keys: AiApiKeyEntity[] = Array.from({ length: 12 }, (_, i) => ({
   updated_at: "",
 }));
 const modeFields = {
-  selected_model: modelId,
+  selected_model: params.get("noModels") === "1" ? "" : modelId,
   ocr_model: modelId,
   thinking_level: "low",
-  available_models: [
+  available_models: params.get("noModels") === "1" ? [] : [
     {
       id: modelId,
       name: "Modelo sintético con nombre largo para comprobar la vista móvil",
@@ -110,7 +110,7 @@ let providers: AiProviderEntity[] = catalog.map((item, i) => ({
   mode: "api_key",
   default_mode: "api_key",
   use_api_key: true,
-  use_agentic: i === 0,
+  use_agentic: i === 0 || params.get("codexUnavailable") === "1",
   fields: {
     api_key: modeFields,
     agentic: { ...modeFields, thinking_level: undefined },
@@ -226,6 +226,11 @@ mainInstance.defaults.adapter = async (request) => {
   if (request.method !== "get")
     throw new Error("Unexpected synthetic mutation: " + request.url);
   if (request.url?.endsWith("/ai-providers/health")) return response(health());
+  if (request.url?.endsWith("/session?mode=agentic")) return response({
+    available: false, authenticated: null, planType: null, checkedAt: null,
+    reason: "codex_runtime_unavailable", lastInferenceAt: null, quotas: null, usageAllowed: null,
+  });
+  if (request.url?.endsWith("/session/login/current")) return response({ job: null });
   if (request.url?.endsWith("/ai-providers/catalog")) return response(catalog);
   if (request.url?.endsWith("/ai-providers/models")) return response([]);
   if (request.url?.endsWith("/ai-providers"))

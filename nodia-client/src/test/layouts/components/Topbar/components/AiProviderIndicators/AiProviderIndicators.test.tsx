@@ -10,6 +10,7 @@ import { getAiProvidersHealth } from "../../../../../../modules/generalSettings/
 import type { AiProvidersHealthResponse } from "../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/types";
 import { notifyHttpError } from "../../../../../../config/httpFeedback";
 import i18n from "../../../../../../translate";
+import useAuthStore from "../../../../../../store/authStore";
 
 vi.mock("../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services");
 vi.mock("sileo", () => ({ sileo: { error: vi.fn(), success: vi.fn() } }));
@@ -32,7 +33,13 @@ function setup(shared = false) {
 }
 const button = (mode: string) => screen.getByRole("button", { name: new RegExp(`${mode}:`) });
 const expectColor = (mode: string, color: string) => expect(button(mode).querySelector(".MuiBadge-badge")).toHaveClass(`MuiBadge-color${color}`);
-beforeEach(async () => { vi.resetAllMocks(); await i18n.changeLanguage("es"); vi.mocked(getAiProvidersHealth).mockResolvedValue(fixture()); });
+beforeEach(async () => {
+  vi.resetAllMocks();
+  useAuthStore.setState({ token: "synthetic-test-token", user: { id: "42", name: "Fixture" },
+    expiresAt: Date.now() + 3_600_000, sessionStatus: "authenticated", isRefreshing: false });
+  await i18n.changeLanguage("es");
+  vi.mocked(getAiProvidersHealth).mockResolvedValue(fixture());
+});
 
 describe("AiProviderIndicators with two modes", () => {
   it("shares the two-minute check and permits an immediate manual refresh", async () => {

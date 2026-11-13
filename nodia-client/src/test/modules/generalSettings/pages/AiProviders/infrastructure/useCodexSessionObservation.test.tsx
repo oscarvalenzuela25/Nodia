@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useCodexSessionObservation } from "../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/useCodexSessionObservation";
 import type { CodexSession } from "../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/codexSession";
 import { codexModelObservationEnabled } from "../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/codexSessionState";
+import useAuthStore from "../../../../../../store/authStore";
 
 const service = vi.hoisted(() => ({ observe: vi.fn() }));
 vi.mock("../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/codexSession", () => ({ getCodexSession: service.observe }));
@@ -15,10 +16,23 @@ function fixture() {
   const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={client}>{children}</QueryClientProvider>;
   return { client, wrapper };
 }
-beforeEach(() => { vi.resetAllMocks(); service.observe.mockResolvedValue(connected); });
+beforeEach(() => {
+  vi.resetAllMocks(); service.observe.mockResolvedValue(connected);
+  useAuthStore.setState({ token: "synthetic-test-token", user: { id: "42", name: "Fixture" },
+    expiresAt: Date.now() + 3_600_000, sessionStatus: "authenticated", isRefreshing: false });
+});
 afterEach(() => { vi.useRealTimers(); });
 
 describe("visible Codex session read intent", () => {
+  it("does not read a visible provider before Nodia authentication is validated", async () => {
+    useAuthStore.setState({ sessionStatus: "restoring" });
+    const { wrapper } = fixture();
+    const { result } = renderHook(() => useCodexSessionObservation("42"), { wrapper });
+    expect(service.observe).not.toHaveBeenCalled();
+    act(() => { useAuthStore.setState({ sessionStatus: "authenticated" }); });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(service.observe).toHaveBeenCalledOnce();
+  });
   it("does not wake a hidden/API detail and reads once when Agentic becomes visible", async () => {
     const { wrapper } = fixture();
     const { result, rerender } = renderHook(({ visible }) => useCodexSessionObservation("42", visible), { wrapper, initialProps: { visible: false } });

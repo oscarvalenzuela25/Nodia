@@ -257,3 +257,38 @@ esa comprobación queda separada en la evidencia de integración real.
 [Entrega80](80-nodia-ai-ai34-long-context-compaction.md) añade medición privada del prompt nativo inicial, reserva del primer listado MCP y contador acumulado de respuestas JSON-RPC completas bajo el mismo techo de 256 KiB de Nodia. No informa una ventana de tokens del proveedor ni altera el modelo/esfuerzo/motor elegido. La compactación conserva la selección exacta y no habilita herramientas, archivos ni continuación nativa opaca.
 
 Registro de investigación AI-34: los canarios iniciales verificaron SQL y Web (extracción/continuidad); Agentic largo y una llamada MCP breve agotaron el plazo después del mensaje inicial, sin callbacks. Los intentos fueron conciliados y acusados sin replay; autenticación/catálogo/ready y cuota compartida observada no acreditaban inferencia. La instrumentación posterior detectó herramientas ajenas durante texto; un agente propio de sólo finalización permitió verificar compactación y continuidad Agentic, con citas y recibos terminales. Un rol MCP experimental terminó ERROR y se retiró, conservando el transporte y gate anterior. No se atribuye una causa que el diagnóstico no conservó ni se inventa la sintaxis de MCP en agentes personalizados. [Entrega80](80-nodia-ai-ai34-long-context-compaction.md) mantiene los resultados posteriores, imágenes, recibos y estado de aceptación vigente; estos antecedentes no lo sustituyen. Reiniciar invalida las pruebas locales de modalidad: las pruebas de texto/MCP no revalidan adjuntos por MIME. No se registran prompts ni secretos en el diagnóstico estructural.
+
+## Ajustes de presentación y consultas autenticadas — 2026-11-12
+
+Solicitud explícita vigente: en Gemini, sin modelos disponibles no se muestran
+Low/Medium/High ni la explicación de esa preferencia, en Agentic y API key. La
+capacidad histórica de persistir una preferencia general no obliga a ofrecer
+ese control sin modelos. No borrar thinking_level/thinking_levels existentes,
+asignar un modelo de respaldo ni cambiar la selección al ocultar el bloque.
+Con modelos presentes continúan las preferencias por modelo y su distinción
+respecto de disponibilidad/inferencia. El comportamiento de otros proveedores
+se conserva.
+
+Los avisos Codex de runtime no disponible/error de observación usan recarga
+mediante IconButton de 44×44, nombre accesible y tooltip ES/EN «Volver a comprobar
+estado». Conservan el mensaje y las restricciones de Conectar; se bloquea la
+reconsulta durante la petición. El icono sólo solicita estado y no inicia login,
+inferencia o una configuración del servidor.
+
+Las observaciones health/Codex y lecturas de login esperan una sesión Nodia
+validada. Health deja de sondear tras 401/403 y admite reconsulta explícita;
+los fallos de servicio mantienen su estado real/cadencia existente. Gemini 503
+no se convierte en «sin trabajo» o «sesión cerrada»; puede indicar servicio
+privado no configurado o indisponible y necesita diagnóstico del servidor.
+No se acreditó la causa exacta de los 401 de la captura del usuario.
+
+El frontend Pages declara Cross-Origin-Opener-Policy: same-origin-allow-popups,
+igual que el servidor Vite de desarrollo, para compatibilidad con el popup de
+Google. No se modifica el login, permisos, CORS o política global de sesión.
+El warning del SDK no acredita un fallo de Gemini y no se garantiza su ausencia
+sin comprobar el despliegue y el flujo Google reales. [Fuente Google](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#cross_origin_opener_policy).
+
+Implementación local en codex/fix-ai-provider-state-ui desde development (9495751a);
+sin despliegue/VPS/login/inferencias reales. [Ficha candidata](../nodia-ai/knowledge/general-settings/features/ai-connection-settings-ui.md)
+y [evidencia](../evidence/ai-provider-ui-state-20261112-r01.json) separan pruebas
+sintéticas, build y comprobación visual de la aceptación productiva pendiente.

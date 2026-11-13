@@ -1,5 +1,9 @@
 # Contexto funcional de productos para NodiaAI
 
+## Conexiones IA: ajustes locales de estado — 2026-11-12
+
+[Candidata UI](general-settings/features/ai-connection-settings-ui.md): Gemini oculta potencia sin modelos; Codex usa recarga accesible y las observaciones esperan sesión Nodia. Pruebas y visualización sintéticas; aceptación productiva/Google/proveedores pendiente. Sin nueva herramienta, aprobación, registro o publicación; fichas aprobadas intactas. [Contrato](../../mvp/ai-provider-feature-contract.md) y [evidencia](../../evidence/ai-provider-ui-state-20261112-r01.json).
+
 ## Teacher: QA por alcance y adopción en development — 2026-11-11
 
 [Plan101](../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) prioriza evidencia por objetivo, diagnóstico conectado y práctica adaptativa. F0–F9 y55criterios cerrados para Windows/API key exacta deR02; [102§13](../../mvp/102-nodia-teacher-phased-implementation-and-final-qa.md#13-cierre-pendiente-en-development--2026-11-11) registra por separado la continuación VM: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. Práctica12/14 y final40/40 corresponden a respuestas del agente de QA, no a eficacia educativa humana ni55nuevas pruebas VM. [Recibo VM](../../evidence/teacher-upgrade-development-vm-20261111-r01.json). No se trasladan aceptaciones entre selecciones o entornos.

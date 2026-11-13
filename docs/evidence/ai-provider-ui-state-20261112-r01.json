@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "record_id": "ai-provider-ui-state-20261112-r01",
+  "checked_on": "2026-11-12",
+  "timezone": "America/Santiago",
+  "branch": "codex/fix-ai-provider-state-ui",
+  "base_source_sha": "9495751ad07efa9c399a9e0f342a4ca90a9d8080",
+  "scope": {
+    "gemini": "Hide generic power controls and explanation with no available models, in Agentic and API key; preserve saved preferences and actual model choices.",
+    "codex": "Replace check-status text actions in warning/error alerts with translated accessible 44x44 reload IconButton and tooltip.",
+    "reads": "Require validated Nodia session before health/Codex/login queries; stop health polling after 401/403; retain explicit retry and actual 503 errors.",
+    "pages": "Ship same-origin-allow-popups COOP header matching Vite development; no change to login flow or global auth."
+  },
+  "verification": {
+    "ai_directory": {
+      "test_files": 13,
+      "tests": 144,
+      "passed": 144,
+      "receipt": "output/ai-provider-tests.json"
+    },
+    "final_ai_and_topbar": {
+      "test_files": 14,
+      "tests": 156,
+      "passed": 156,
+      "failed": 0,
+      "success": true,
+      "receipt": "output/ai-ui-final-focused-tests.json",
+      "receipt_sha256": "21f514b48aa9f05d8a1d8f642fa8fcfb37c34c8e36f9fc329b0aeb9eb51dc833"
+    },
+    "initial_full_client": {
+      "test_files": 349,
+      "tests": 2842,
+      "passed": 2830,
+      "failed": 12,
+      "success": false,
+      "receipt": "output/ai-ui-full-client-tests.json",
+      "receipt_sha256": "cd2689ee3dac4e57e65ea70b4d938d81973aa2d7dc2603dbab01e955d15286f2",
+      "failed_files": [
+        {
+          "file": "AiProviderIndicators.test.tsx",
+          "failed": 12
+        }
+      ],
+      "resolution": "All 12 failures were missing validated-auth fixture in AiProviderIndicators.test.tsx; fixture corrected, final focused run includes all failed cases and provider tests. Full suite was not rerun after test-only fixture correction; remaining 348 files passed in initial full run."
+    },
+    "lint": {
+      "full_client": "passed before final test-only fixture correction",
+      "final_changed_test": "passed"
+    },
+    "build": {
+      "command": "npm run build",
+      "result": "passed",
+      "typescript": "tsc -b executes once inside build; no standalone repeated TS check",
+      "warning": "Existing large-chunk warning remains",
+      "pages_headers_artifact_verified": true
+    },
+    "knowledge": {
+      "compile_check": "passed",
+      "sources": 87,
+      "excluded": 43,
+      "documents": 44,
+      "fragments": 46,
+      "approved_documents_unchanged": 44,
+      "candidate_metadata": "valid against contracts.schema.json Metadata; draft/partial/unregistered, approval null",
+      "new_publication": false,
+      "new_markdown_links_checked": 12,
+      "compiled_release_id": "aba2dc482dae530cfbc667f153de642719130524d665d2197b4adbe6420c28ba",
+      "compile_is_not_publication": true
+    },
+    "browser": {
+      "tool": "Playwright CLI",
+      "data": "Synthetic manual fixture; no real OAuth/account/inference",
+      "viewports": [
+        320,
+        1280
+      ],
+      "gemini_empty_effort_buttons": 0,
+      "mobile_document_width": 320,
+      "mobile_document_scroll_width": 320,
+      "codex_reload_target": {
+        "width": 44,
+        "height": 44,
+        "visible_text": "",
+        "accessible_label_and_tooltip": true
+      },
+      "codex_runtime_unavailable_blocks_connect": true,
+      "screenshots": [
+        {
+          "path": "output/ai-provider-ui/codex-1280.png",
+          "sha256": "6a8f8105f1ecc0621f5d7c94fea09f69edf287bcd48e7e58d4984a0fe09936b6"
+        },
+        {
+          "path": "output/ai-provider-ui/codex-320.png",
+          "sha256": "7f1584f126ef28728056a2b11f0abced0ceec82fe2bf217facc18092e51cd659"
+        },
+        {
+          "path": "output/ai-provider-ui/gemini-empty-1280.png",
+          "sha256": "a7592a6f84ae5436161ac9a15382c3b05006d1c6fc99287f69d6eb11a65ed899"
+        },
+        {
+          "path": "output/ai-provider-ui/gemini-empty-320.png",
+          "sha256": "24a7ea055dd16c18324c4b3f4602ad1471c76fdd63de5024c24e0d7f40668dd6"
+        }
+      ],
+      "harness_corrections": "Temporary QA server allowed canonical junction dependencies to load fonts; synthetic login route corrected before verification. No tracked Vite fs/security settings changed. Browser and QA server closed."
+    }
+  },
+  "limitations": [
+    "Exact cause of screenshot 401 responses was not established; auth/polling behavior verified with synthetic HTTP.",
+    "503 remains a real service failure; frontend does not provision AI services on VPS.",
+    "Pages live header was absent during read-only inspection; new _headers applies only on next deployment.",
+    "Google real popup/FedCM flow and disappearance of all SDK COOP warnings remain unverified.",
+    "No provider availability or inference acceptance claimed."
+  ],
+  "sources": [
+    {
+      "path": "docs/mvp/00-progress.md",
+      "sha256": "d8e3fd8cf738ebcc370d450d33abfe1a71e0dc908ccc0ae0efa725c36868f013"
+    },
+    {
+      "path": "docs/mvp/ai-provider-feature-contract.md",
+      "sha256": "2978e39f55027e810800fef09b604ac0f8b5c9c22d9a2e1c356afc63c1dfd636"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/README.md",
+      "sha256": "7abf3d54329571ee26a4e440470cbf352fc48b32c2a58d59880d7ee9253b8c7b"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/README.md",
+      "sha256": "68e9e2f94f442dea61508f46175ee2d5fa42add795dbea81e5975e1e955c0915"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-connection-settings-ui.md",
+      "sha256": "117eeef072f29757c4b8c54a40b8df02e45006f3f86c8d670df9d8708b176829"
+    },
+    {
+      "path": "nodia-client/public/_headers",
+      "sha256": "fbb91bba2296d38bf3020ea63d383bc374fc5abb5ed1e40db83664206306c29e"
+    },
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/AiProviders/components/CodexSessionPanel/CodexSessionPanel.tsx",
+      "sha256": "6357653c5d0acced6848b9a661f6546c08cc936f9e55500a78136f3a0b725f9e"
+    },
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/AiProviders/components/CodexSessionPanel/hooks/useCodexSession.ts",
+      "sha256": "c3aa16ae7301e7f786e2bb10479f52185326e95b906985bb6e1786c89cd2e4a9"
+    },
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/AiProviders/components/ProviderDetail/ProviderDetail.tsx",
+      "sha256": "7bd26056320b415ec9649e14a01bfcd4bc931608a1d8fef5d55756d6ee68efb5"
+    },
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/AiProviders/infrastructure/useCodexSessionObservation.ts",
+      "sha256": "5937ac49967bf616536ffbca6fd5c4b315a978f93bde0073237fa5a3005d198f"
+    },
+    {
+      "path": "nodia-client/src/modules/generalSettings/pages/AiProviders/infrastructure/useServices.ts",
+      "sha256": "ed52e3fd4e37f90b3e3d80d5c6b18b2cfb6dd5e3172ee92fcf2edd5cd2437f4b"
+    },
+    {
+      "path": "nodia-client/src/test/layouts/components/Topbar/components/AiProviderIndicators/AiProviderIndicators.test.tsx",
+      "sha256": "f09f8c89e8f50fcc81a70eb134dc9cb522824577f98feedfed83934f78cc04bd"
+    },
+    {
+      "path": "nodia-client/src/test/manual/ai-providers/README.md",
+      "sha256": "19c13a484c0bb7ac83356c6c7ccdd6acf453c02d5f69c8bac90ac4aaa641ee93"
+    },
+    {
+      "path": "nodia-client/src/test/manual/ai-providers/main.tsx",
+      "sha256": "611cc6c8863b329af2f0a0ae1c08efe449b0d75629670d132cfe7a495e82460f"
+    },
+    {
+      "path": "nodia-client/src/test/modules/generalSettings/pages/AiProviders/AiProviders.test.tsx",
+      "sha256": "f11f166425cce8cbb7f35ec3219af2ec40c330b678cbba5df5c43980d2a923d7"
+    },
+    {
+      "path": "nodia-client/src/test/modules/generalSettings/pages/AiProviders/components/AgenticLoginModal/AgenticLoginModal.test.tsx",
+      "sha256": "84300f65bc33f3acc47f6d74e695076b924ebdfc074676fcec4162514968d652"
+    },
+    {
+      "path": "nodia-client/src/test/modules/generalSettings/pages/AiProviders/components/CodexSessionPanel/CodexSessionPanel.test.tsx",
+      "sha256": "f809e293b90ce2704de413fc78bc361369f590a82aaddec02f7134dab0007ef1"
+    },
+    {
+      "path": "nodia-client/src/test/modules/generalSettings/pages/AiProviders/components/ProviderDetail/ProviderDetail.test.tsx",
+      "sha256": "8f172b9d44698c501d8b1442ebfbaf1a79eb30cb04c06358464d250e2be2ff37"
+    },
+    {
+      "path": "nodia-client/src/test/modules/generalSettings/pages/AiProviders/infrastructure/useCodexSessionObservation.test.tsx",
+      "sha256": "939f22bb04a9c84aeb2135b8d6f16ce11a8e4277cde48046df30d82b96d8c208"
+    },
+    {
+      "path": "nodia-client/src/test/modules/generalSettings/pages/AiProviders/infrastructure/useServices.test.tsx",
+      "sha256": "8290fbf1c41399a61d41454db759901f212ea9264e05f173e0241ceee34643ff"
+    }
+  ],
+  "external_reference": "https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#cross_origin_opener_policy",
+  "operations": {
+    "backend_modified": false,
+    "vps_modified": false,
+    "application_deployed": false,
+    "real_oauth_login_requested": false,
+    "real_inference_requested": false,
+    "committed": false,
+    "pushed": false,
+    "isolated_worktree_used": true
+  }
+}

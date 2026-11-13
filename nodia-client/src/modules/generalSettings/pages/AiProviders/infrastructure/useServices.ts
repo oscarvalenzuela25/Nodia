@@ -1,6 +1,8 @@
 import { getAiApiKeys, createAiApiKey, updateAiApiKey, deleteAiApiKey } from "./services";
 import type { GetAiApiKeysParams } from "./types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
+import useAuthStore, { hasValidatedSession } from "../../../../../store/authStore";
 import {
   getAiProviders,
   createAiProvider,
@@ -30,16 +32,24 @@ import { agenticLoginIsActive } from "./agenticLogin";
 export const useStartGeminiAgenticLogin = () => useMutation({ mutationFn: startGeminiAgenticLogin, retry: false, gcTime: 0 });
 export const useSubmitGeminiAgenticCode = () => useMutation({ mutationFn: submitGeminiAgenticCode, retry: false, gcTime: 0 });
 export const useCancelGeminiAgenticLogin = () => useMutation({ mutationFn: cancelGeminiAgenticLogin, retry: false, gcTime: 0 });
-export const useCurrentGeminiAgenticLogin = (enabled: boolean) => useQuery({
-  queryKey: ["gemini-agentic-login", "current"], queryFn: getCurrentGeminiAgenticLogin,
-  enabled, retry: false, gcTime: 0, refetchOnWindowFocus: false,
-});
-export const useGeminiAgenticLoginStatus = (id: string | null) => useQuery({
-  queryKey: ["gemini-agentic-login", id], queryFn: () => getGeminiAgenticLoginStatus(id!),
-  enabled: Boolean(id), retry: false, gcTime: 0, refetchOnWindowFocus: false,
-  refetchInterval: (query) => query.state.error ? false
-    : agenticLoginIsActive(query.state.data) || !query.state.data ? 2000 : false,
-});
+export const useCurrentGeminiAgenticLogin = (enabled: boolean) => {
+  const authenticated = useAuthStore(hasValidatedSession);
+  return useQuery({
+    queryKey: ["gemini-agentic-login", "current"], queryFn: getCurrentGeminiAgenticLogin,
+    enabled: enabled && authenticated, retry: false, gcTime: 0, refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+};
+export const useGeminiAgenticLoginStatus = (id: string | null) => {
+  const authenticated = useAuthStore(hasValidatedSession);
+  return useQuery({
+    queryKey: ["gemini-agentic-login", id], queryFn: () => getGeminiAgenticLoginStatus(id!),
+    enabled: Boolean(id) && authenticated, retry: false, gcTime: 0, refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: (query) => !hasValidatedSession(useAuthStore.getState()) || query.state.error ? false
+      : agenticLoginIsActive(query.state.data) || !query.state.data ? 2000 : false,
+  });
+};
 
 export const useAiProviderCatalog = () => {
   return useQuery({
@@ -90,14 +100,26 @@ export const useAiProviders = (params?: GetAiProvidersParams) => {
 };
 
 // One HTTP response and one cache entry for badges, alerts and session panels.
-const providerHealthOptions = {
+const providerHealthOptions = queryOptions({
   queryKey: ["ai-providers-health"],
   queryFn: () => getAiProvidersHealth(),
   staleTime: 120_000,
-  refetchInterval: 120_000,
-};
+  retry: false,
+  retryOnMount: false,
+  refetchOnReconnect: false,
+  refetchInterval: (query) => {
+    const error = query.state.error;
+    // A rejected Nodia session/permission needs authentication or explicit retry,
+    // not another background request. Provider outages retain the normal cadence.
+    const authenticationRejected = isAxiosError(error) && [401, 403].includes(error.response?.status ?? 0);
+    return hasValidatedSession(useAuthStore.getState()) && !authenticationRejected ? 120_000 : false;
+  },
+});
 
-export const useAiProvidersHealth = () => useQuery(providerHealthOptions);
+export const useAiProvidersHealth = () => {
+  const authenticated = useAuthStore(hasValidatedSession);
+  return useQuery({ ...providerHealthOptions, enabled: authenticated });
+};
 
 export const useAiProviderEvents = (params?: GetAiProviderEventsParams) => {
   return useQuery({
@@ -148,9 +170,10 @@ export const useUpdateAiProvider = () => {
 
 
 export const useGeminiEngines = (options?: { enabled?: boolean }) => {
+  const authenticated = useAuthStore(hasValidatedSession);
   return useQuery({
     ...providerHealthOptions,
-    enabled: options?.enabled ?? true,
+    enabled: authenticated && (options?.enabled ?? true),
     select: (health: AiProvidersHealthResponse) => health.engines ?? null,
   });
 };

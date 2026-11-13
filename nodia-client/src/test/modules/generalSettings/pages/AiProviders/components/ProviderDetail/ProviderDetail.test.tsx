@@ -1,4 +1,5 @@
 import i18n from "../../../../../../../translate";
+import useAuthStore from "../../../../../../../store/authStore";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -186,6 +187,8 @@ describe("ProviderDetail Component", () => {
     );
   });
   beforeEach(() => {
+    useAuthStore.setState({ token: "synthetic-test-token", user: { id: "42", name: "Fixture" },
+      expiresAt: Date.now() + 3_600_000, sessionStatus: "authenticated", isRefreshing: false });
     vi.resetAllMocks();
     vi.mocked(aiServices.getAiProviders).mockResolvedValue({
       data: mockProviders,
@@ -891,13 +894,15 @@ describe("ProviderDetail Component", () => {
       expect.objectContaining({ q: { provider_id_eq: "prov-1" } }),
     );
   });
-  it("allows an Agentic level preference without assigning a model or enabling its adapter", async () => {
+  it.each(["agentic", "api_key"] as const)("hides Gemini %s reasoning without models and preserves its saved preference", async (mode) => {
     vi.mocked(aiServices.getAiProviders).mockResolvedValue({
       data: [
         {
           ...mockProviders[0],
-          default_mode: "agentic",
-          fields: { agentic: {} },
+          default_mode: mode,
+          use_agentic: true,
+          use_api_key: true,
+          fields: { [mode]: { thinking_level: "high", thinking_levels: { "retired-model": "high" } } },
         },
       ],
       meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 },
@@ -909,24 +914,14 @@ describe("ProviderDetail Component", () => {
         agentic: { engine: "agentic", available: false, authenticated: false },
       },
     });
-    const user = userEvent.setup();
-    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
-    const high = await screen.findByRole("button", { name: "High" });
-    await waitFor(() => expect(high).toBeEnabled());
-    await user.click(high);
-    await waitFor(() =>
-      expect(aiServices.updateAiProvider).toHaveBeenCalledWith(
-        "prov-1",
-        expect.objectContaining({
-          fields: expect.objectContaining({
-            agentic: { thinking_level: "high" },
-          }),
-        }),
-      ),
-    );
-    screen
-      .getAllByRole("button", { name: "Actualizar modelos" })
-      .forEach((button) => expect(button).toBeDisabled());
+    renderWithClient(<ProviderDetail providerId="prov-1" initialMode={mode} onBack={() => {}} />);
+    expect(await screen.findByText("Sin modelos asignados")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "High" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Low" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Medium" })).not.toBeInTheDocument();
+    expect(screen.queryByText(i18n.t(`ai_providers:detail.${mode === "agentic" ? "agentic" : "api"}_reasoning_preference`)))
+      .not.toBeInTheDocument();
+    expect(aiServices.updateAiProvider).not.toHaveBeenCalled();
   });
   it("does not block authenticated Agentic when the default API channel is unconfigured", async () => {
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
