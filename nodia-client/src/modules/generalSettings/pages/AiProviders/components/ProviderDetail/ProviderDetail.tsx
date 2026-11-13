@@ -1538,7 +1538,8 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
             {/* Mode-scoped reasoning preferences */}
             {(activeTab === "api_key" ||
               (activeTab === "agentic" &&
-                providerKey !== "openai")) && (
+                providerKey !== "openai")) &&
+              (providerKey !== "gemini" || availableModels.length > 0) && (
               <Box sx={{ mt: 1 }}>
                 <Typography variant="body2" color="text.secondary">
                   {t(

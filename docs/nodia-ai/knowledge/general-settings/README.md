@@ -4,11 +4,11 @@
   "document_id": "general-settings",
   "product_id": "general-settings",
   "kind": "product",
-  "revision": 22,
+  "revision": 23,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Índice enlaza la ampliación API chat candidata y sus seis revisiones draft; código implementado, ensayos SQL/API/VM pendientes. Sin aprobación o publicación del producto o fichas por actualizar el índice. Cabecera: ClientR32 expone actualización manual de la consulta de salud existente, con17 regresiones y QA autenticada/escritorio/móvil acotada; sin ampliar capacidades o aceptación del resto del producto. ClientR33 retira únicamente el padding inferior del header compartido; evaluación visual sin cambio de conceptos, operaciones o interpretación del contexto."
+    "notes": "Índice enlaza la ampliación API chat candidata y sus seis revisiones draft; código implementado, ensayos SQL/API/VM pendientes. Sin aprobación o publicación del producto o fichas por actualizar el índice. Cabecera: ClientR32 expone actualización manual de la consulta de salud existente, con17 regresiones y QA autenticada/escritorio/móvil acotada; sin ampliar capacidades o aceptación del resto del producto. ClientR33 retira únicamente el padding inferior del header compartido; evaluación visual sin cambio de conceptos, operaciones o interpretación del contexto. UI de conexiones: controles Gemini sólo con modelos, reconsulta Codex compacta y lecturas ligadas a sesión; ver candidata específica, sin nuevas herramientas o publicación."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Ajustes Generales y NodiaAI conforme AGENTS",
@@ -261,3 +261,13 @@ ClientR32 activo:17 regresiones/2 archivos, tipos/lint y build aislado;185 archi
 Topbar compartido retira su padding inferior en todos los tamaños. No altera conceptos, operaciones, datos o interpretación de salud: controles, consultas, autenticación y permisos siguen su contrato. Por ello no requiere una ficha o herramienta nueva; la ficha aprobada de modelos/salud conserva su revisión/hash. Producto revisión22 sigue draft/partial/unregistered, approval:null.
 
 ClientR33 adoptado con un archivo de estilos,17 regresiones existentes/tipos/lint/build y QA comparada320/600/1088px: padding0, reducción exacta de la altura, sin overflow y controles dentro del ancho. Viewport restaurado y pestaña original intacta; sin inferencias ni mutaciones comerciales. [Detalle](../../../features/ai-providers/topbar-mode-health.md#padding-inferior-de-la-cabecera--2026-11-06) y [evidencia](../../../evidence/topbar-bottom-padding-20261106-r01.json).
+
+## Ajustes de conexiones: ausencia de modelos y reconsulta — 2026-11-12
+
+La [candidata UI](features/ai-connection-settings-ui.md) documenta la nueva
+presentación Gemini y recuperación Codex/autenticación. Evaluación: el icono
+es visual, sin nueva operación; ocultar controles sin modelos y acotar consultas
+es comportamiento local, sin modificar modelos guardados, disponibilidad o
+autoridad. Fichas publicadas conservadas; candidata draft/partial/unregistered,
+approval:null. [Contrato](../../../mvp/ai-provider-feature-contract.md) y
+[evidencia](../../../evidence/ai-provider-ui-state-20261112-r01.json).

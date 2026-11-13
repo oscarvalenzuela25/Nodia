@@ -15,8 +15,10 @@ import {
 } from "../../../infrastructure/codexSession";
 import { useCodexSessionObservation } from "../../../infrastructure/useCodexSessionObservation";
 import { codexConnectionState, selectCodexSession } from "../../../infrastructure/codexSessionState";
+import useAuthStore, { hasValidatedSession } from "../../../../../../../store/authStore";
 
 export const useCodexSession = (providerId: string, disabled: boolean, session?: CodexSession) => {
+  const authenticated = useAuthStore(hasValidatedSession);
   const { t } = useTranslation(["ai_providers", "core"]);
   const client = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -39,10 +41,11 @@ export const useCodexSession = (providerId: string, disabled: boolean, session?:
   const current = useQuery({
     queryKey: ["codex-login", providerId, "current"],
     queryFn: () => getCurrentCodexLogin(providerId),
-    enabled: open && !jobId,
+    enabled: authenticated && open && !jobId,
     retry: false,
     gcTime: 0,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
   // This panel mounts only for the selected OpenAI Agentic detail, so mounting
   // it is the read intent. Opening a login modal is not required to inspect auth.
@@ -51,12 +54,13 @@ export const useCodexSession = (providerId: string, disabled: boolean, session?:
   const status = useQuery({
     queryKey: ["codex-login", providerId, effectiveId],
     queryFn: () => getCodexLogin(providerId, effectiveId!),
-    enabled: open && !!effectiveId,
+    enabled: authenticated && open && !!effectiveId,
     retry: false,
     gcTime: 0,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     refetchInterval: (q) =>
-      q.state.error
+      !hasValidatedSession(useAuthStore.getState()) || q.state.error
         ? false
         : !q.state.data || codexJobActive(q.state.data)
           ? 2000
@@ -66,7 +70,7 @@ export const useCodexSession = (providerId: string, disabled: boolean, session?:
     status.data ?? (start.data?.id === effectiveId ? start.data : current.data);
   const active = !!effectiveId && (!job || codexJobActive(job));
   const busy =
-    disabled ||
+    !authenticated || disabled ||
     start.isPending ||
     cancel.isPending ||
     logout.isPending ||

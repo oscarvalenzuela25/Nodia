@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { sileo } from "sileo";
+import useAuthStore from "../../../../../../../store/authStore";
 import AgenticLoginModal from "../../../../../../../modules/generalSettings/pages/AiProviders/components/AgenticLoginModal";
 import * as services from "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services";
 import { currentGeminiAgenticLoginSchema, geminiAgenticLoginSchema } from "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/agenticLogin";
@@ -33,6 +34,8 @@ const renderModal = () => {
 
 describe("AgenticLoginModal", () => {
   beforeEach(() => {
+    useAuthStore.setState({ token: "synthetic-test-token", user: { id: "42", name: "Fixture" },
+      expiresAt: Date.now() + 3_600_000, sessionStatus: "authenticated", isRefreshing: false });
     vi.clearAllMocks();
     vi.mocked(services.getCurrentGeminiAgenticLogin).mockResolvedValue(null);
     vi.mocked(services.startGeminiAgenticLogin).mockResolvedValue(waiting);
