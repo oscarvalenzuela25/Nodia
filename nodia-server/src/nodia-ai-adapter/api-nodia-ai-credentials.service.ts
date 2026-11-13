@@ -4,6 +4,7 @@ import { DataSource, type EntityManager } from 'typeorm';
 import { decryptSecret } from '../ai-provider/helpers/ai-key-crypto.helper.js';
 import type { NodiaAiSelection } from '../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
 import { NodiaAiAdapterError } from './types/nodia-ai-adapter.types.js';
+import { isApiThinkingLevel } from '../common/ai/api-reasoning.js';
 
 export type NodiaAiApiProvider = 'openai' | 'gemini';
 export interface NodiaAiApiConfiguration {
@@ -46,7 +47,7 @@ export function assertApiSelection(selection: NodiaAiSelection): void {
     !selection.model_id.trim() ||
     Buffer.byteLength(selection.model_id, 'utf8') > 1024 ||
     (selection.effort_id !== null &&
-      !['low', 'medium', 'high'].includes(selection.effort_id))
+      !isApiThinkingLevel('openai', selection.effort_id))
   )
     throw new NodiaAiAdapterError(
       'adapter_invalid_selection',
@@ -97,6 +98,8 @@ export class ApiNodiaAiCredentialsService {
         'not_dispatched',
       );
     const fields = apiObject(row.fields) ?? {};
+    if (selection.effort_id !== null && !isApiThinkingLevel(String(row.provider_key), selection.effort_id))
+      throw new NodiaAiAdapterError('adapter_invalid_selection', 'not_dispatched');
     const scoped = apiObject(fields.api_key) ?? (fields.agentic ? {} : fields);
     const models = scoped.available_models;
     if (

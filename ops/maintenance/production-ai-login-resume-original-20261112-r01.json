@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "ops/maintenance/production-ai-login-resume-original-20261112-r01.zip",
+  "archive_sha256": "7c47fe44063749a684d66769a779e2a97c71b901eac30e4e13a4ef041fe2dd77",
+  "sources": [
+    {
+      "target": "gemini-host.py",
+      "old_sha256": "3c31160bc836b7451c7c5f249e416a21d46399db8191e2704ea9ad48e1b559d0",
+      "new_sha256": "dbfabae8443c7db29b6c3da27f8b25f5313214dc430b2c8de2acd7cf0a3e8a51"
+    },
+    {
+      "target": "activate-ai-runtime.py",
+      "old_sha256": "670009d04626aa40b1bb74ebba26b16b5754e25a3a20389e78363f4cf889da8a",
+      "new_sha256": "5e0cdc95ee527876a6cf79c6ecacf48800dca17484557dd170b4b65725b78255"
+    }
+  ],
+  "scope": "Public code only; fix bootstrap checks to require local CLI+containment+protected HTTP, not a provider session before human login. Resume is explicit, preserves prior attempt, rejects changed consumers and requires a fresh READ ONLY gate."
+}

@@ -13,7 +13,7 @@ import i18n from "../../../../translate";
 
 const load = vi.hoisted(() => vi.fn());
 vi.mock("../../../../layouts/components/MobileBottomNav/loadShortcutDialog", () => ({ loadShortcutDialog: load }));
-vi.mock("../../../../services/authorizationService", () => ({ useAuthorizationContext: () => ({ isFetching: false, isError: false, refetch: vi.fn() }) }));
+vi.mock("../../../../services/authorizationService", () => ({ useAuthorizationContext: () => ({ data: settings(), isFetching: false, isError: false, refetch: vi.fn() }) }));
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 const realDialog = () => import("../../../../layouts/components/MobileShortcutDialog");
 const setup = () => render(<ThemeProvider theme={createTheme()}><MemoryRouter>

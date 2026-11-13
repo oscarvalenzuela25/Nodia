@@ -4,11 +4,11 @@
   "document_id": "general-settings",
   "product_id": "general-settings",
   "kind": "product",
-  "revision": 22,
+  "revision": 24,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Índice enlaza la ampliación API chat candidata y sus seis revisiones draft; código implementado, ensayos SQL/API/VM pendientes. Sin aprobación o publicación del producto o fichas por actualizar el índice. Cabecera: ClientR32 expone actualización manual de la consulta de salud existente, con17 regresiones y QA autenticada/escritorio/móvil acotada; sin ampliar capacidades o aceptación del resto del producto. ClientR33 retira únicamente el padding inferior del header compartido; evaluación visual sin cambio de conceptos, operaciones o interpretación del contexto."
+    "notes": "Índice enlaza la ampliación API chat candidata y sus seis revisiones draft; código implementado, ensayos SQL/API/VM pendientes. Sin aprobación o publicación del producto o fichas por actualizar el índice. Cabecera: ClientR32 expone actualización manual de la consulta de salud existente, con17 regresiones y QA autenticada/escritorio/móvil acotada; sin ampliar capacidades o aceptación del resto del producto. ClientR33 retira únicamente el padding inferior del header compartido; evaluación visual sin cambio de conceptos, operaciones o interpretación del contexto. Operación de login: infraestructura activa en VPS; Codex y Antigravity conectados según pruebas humanas; inferencia pendiente, sin publicación. Ajustes locales: acciones contained, contexto del actor e identidad NodiaAI exacta, variantes Gemini con IDs reales/OCR independiente y API OpenAI xhigh/max sin Ultra. Backend verificado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; sin despliegue, inferencia o publicación de este lote."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Ajustes Generales y NodiaAI conforme AGENTS",
@@ -87,7 +87,7 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-06",
+    "checked_on": "2026-11-12",
     "evidence_paths": [
       "docs/mvp/51-nodia-ai-ai05-product-knowledge.md",
       "docs/evidence/nodia-ai-ai05-knowledge-validation.json",
@@ -107,9 +107,10 @@
       "docs/evidence/module-access-and-user-data-deployment-r01.json",
       "docs/evidence/api-chat-knowledge-review-r01.json",
       "docs/evidence/ai-topbar-manual-refresh-20261106-r01.json",
-      "docs/evidence/topbar-bottom-padding-20261106-r01.json"
+      "docs/evidence/topbar-bottom-padding-20261106-r01.json",
+      "docs/mvp/ai-provider-feature-contract.md"
     ],
-    "notes": "Revisión de código/contratos candidatos API y preparación documental con originales byte exactos archivados. Código implementado; ensayo SQL, success API chat real, modalidades, imágenes, VM y publicación de esta revisión pendientes. Las evidencias de etapas anteriores conservan su alcance y no califican el modo API nuevo. Aprobación humana pendiente. Actualización manual del topbar verificada por separado en ClientR32; no transfiere aceptación a otras funciones/proveedores ni a inferencia. Padding inferior0 y geometría comparada320/600/1088px comprobados por separado en R33; sin nueva publicación."
+    "notes": "Revisión de código/contratos candidatos API y preparación documental con originales byte exactos archivados. Código implementado; ensayo SQL, success API chat real, modalidades, imágenes, VM y publicación de esta revisión pendientes. Las evidencias de etapas anteriores conservan su alcance y no califican el modo API nuevo. Aprobación humana pendiente. Actualización manual del topbar verificada por separado en ClientR32; no transfiere aceptación a otras funciones/proveedores ni a inferencia. Padding inferior0 y geometría comparada320/600/1088px comprobados por separado en R33; sin nueva publicación. Corte local2026-11-12: backend build/autorización60/HTTP74/API249, build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; ver candidata/evidencia, sin despliegue/inferencia de este lote."
   },
   "approval": null
 }
@@ -261,3 +262,11 @@ ClientR32 activo:17 regresiones/2 archivos, tipos/lint y build aislado;185 archi
 Topbar compartido retira su padding inferior en todos los tamaños. No altera conceptos, operaciones, datos o interpretación de salud: controles, consultas, autenticación y permisos siguen su contrato. Por ello no requiere una ficha o herramienta nueva; la ficha aprobada de modelos/salud conserva su revisión/hash. Producto revisión22 sigue draft/partial/unregistered, approval:null.
 
 ClientR33 adoptado con un archivo de estilos,17 regresiones existentes/tipos/lint/build y QA comparada320/600/1088px: padding0, reducción exacta de la altura, sin overflow y controles dentro del ancho. Viewport restaurado y pestaña original intacta; sin inferencias ni mutaciones comerciales. [Detalle](../../../features/ai-providers/topbar-mode-health.md#padding-inferior-de-la-cabecera--2026-11-06) y [evidencia](../../../evidence/topbar-bottom-padding-20261106-r01.json).
+
+## Operación del login en VPS — 2026-11-12
+
+[Candidata de infraestructura](features/ai-login-host-setup.md): infraestructura Codex/Antigravity activa sin cambiar flujos, autoridad o modelos. Codex y Antigravity confirmados por el usuario; inferencia pendiente; no modifica las fichas aprobadas ni publica contexto. [Procedimiento](../../../../ops/production/ai-runtime/README.md).
+
+## Interfaz, variantes y acceso — candidato local, 2026-11-12
+
+[Funcionalidad candidata](features/ai-provider-interface-and-module-access.md): acciones contained, variantes Gemini con IDs reales y OCR independiente, API OpenAI xhigh/max (Ultra no admitido), contexto del actor e identidad exacta `nodia_ai`/`/nodia-ai`. Super_admin conserva el bypass; la caché de navegación no concede permisos ni promete revocación visual inmediata. Backend build/autorización60/HTTP74/API249 correctos; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado en [verificación consolidada](../../../mvp/ai-provider-feature-contract.md#verificación-consolidada-de-preferencias-y-acceso--2026-11-12). Producto revisión24 y candidata siguen draft/partial/unregistered/approval:null; fichas aprobadas intactas. Sin despliegue, inferencia o causa productiva del síntoma acreditados.

@@ -168,9 +168,27 @@ Estado al 2026-11-10: bundle copiado, Bash/Python/Node comprobados y systemd-ana
 verify en VPS devuelve0. Los avisos CPUAccounting de xfs pertenecen al sistema.
 Nueve pruebas pequeñas de validador/paquete pasaron en Linux aislado; no son
 pruebas de aplicación activa. **Ejecutado satisfactoriamente:** usuario nodia UID/GID 900, units disabled/inactive
-y pruebas de permisos superadas. [Evidencia](../../docs/evidence/production-backend-host-20261110-r01.json).
+y pruebas de permisos superadas. [verificación consolidada](#baseline-de-identidad-y-unidades--2026-11-10).
 El administrador sin sudo tampoco puede listar el estado privado de la app; es
 una restricción esperada y no se amplían permisos para inspeccionarlo.
+
+
+### Baseline de identidad y unidades — 2026-11-10
+
+Comprobación histórica del bootstrap de host, reportada por el operador y contrastada mediante estado JSON leído por SSH; registro del servidor2026-11-11T02:52:00.590964+00:00. En ese corte API/worker seguían disabled/inactive: no describe el estado activo posterior.
+
+`nodia` tenía UID/GID900 y sólo grupo `nodia`, home `/var/lib/nodia/home`, shell `/usr/sbin/nologin` y contraseña bloqueada verificada por bootstrap, sin sudo ni grupo Docker. CWD de las unidades: `/opt/nodia/current`; entorno privado `/etc/nodia/runtime.env` y `/etc/nodia/redis.env`; recuperación compartida `/var/lib/nodia/config/recovery.json`. Releases bajo `/opt/nodia/releases`, propiedad de root; estado escribible `/var/lib/nodia/home` y `/var/lib/nodia/codex`. Unidades tipo exec, KillMode=mixed y TimeoutStopSec=180s, frente a drenaje worker de150s.
+
+| Fuente del corte | SHA-256 original |
+|---|---|
+| `ops/production/bootstrap-backend-host.sh` | `576daef30956bca003f1e7382e627a6e4e47547e154e9c586b8aabb5cd52cb2b` |
+| `nodia-api.service` | `048bd72f3288228dbc9a53b6dd751ed0efdf728e1356cb3b1e45da6bbb8c2c2d` |
+| `nodia-ai-worker.service` | `aa92c33e4d8b088d9f6d87f84669c46752308b488ef106d79b66a4fcbda4f126` |
+| `Validador del bootstrap` | `58300cdd1528fb25d6db517891a7a5ab645790c7b00c40c870aa1d9bc6cb932c` |
+
+Las pruebas permitieron crear/retirar un archivo de estado y denegaron escritura de releases/configuración y acceso al entorno privado/socket Docker. El stat directo del administrador sobre hijos privados fue denegado como se esperaba. Bash/Python/Node y systemd-analyze verify pasaron;9 pruebas Linux del paquete/validador correctas. El aviso CPUAccounting pertenecía a xfs del sistema.
+
+Este corte no instaló release, secretos, journal, migraciones, seeds o aplicación; no probó readiness/drenaje, DB/Redis TLS o backups. Que el usuario hubiera indicado bucket R2 y correo no acredita configuración secreta ni disponibilidad. La activación y los respaldos posteriores conservan sus verificaciones separadas. Esta sección consolida la baseline del host sin cambiar los hashes históricos.
 
 ## Paquete Linux del backend
 
@@ -1009,3 +1027,28 @@ Pendientes reales: CI/CD del SHA final desde GitHub y primer apply productivo co
 sus recibos/versión/smoke; empaquetado del checkout committed de development tras
 terminar el WIP; mantenimiento de retención de paquetes/diagnósticos. El usuario
 mantiene a su cargo la promoción a master; no se crea por instalar este transporte.
+
+## Diagnóstico Teacher de sólo lectura sobre f01
+
+`diagnose-teacher-qualification.py` instala el helper MJS fijado por hash y lanza
+una unidad temporal como `nodia`. PID1 lee `runtime.env`; el operador no copia
+credenciales. Requiere sudo privado y el release f01 exacto, validado contra sus
+exports/manifiesto. No iniciar este helper como sustituto de la calificación.
+
+```bash
+sudo python3 -I /home/nodia-admin/nodia-setup/backend/diagnose-teacher-qualification.py \
+  --helper-sha256 cb55f9d631e3c83d713f27445d7afb7782830625c56a1c8363e1dcdc9ac30a77
+```
+
+Sólo SELECT/READ ONLY/ROLLBACK con TLS verify-full, límites de tiempo y100
+conexiones activas como máximo. Devuelve tablas presentes y cuentas por selección
+y configuración; no imprime fields, credenciales o snapshots privados. No observa
+al proveedor, genera, califica, migra ni reinicia API/worker. Pruebas:6Node+3Python.
+
+Resultado aportado por el operador el2026-11-13: tabla de calificaciones Agentic
+presente con0filas; ambas selecciones configuradas sin recibo; tabla por propósito
+ausente. SSH público confirmó f01 con45migraciones empaquetadas, sin la migración
+TeacherPurposeQualification, API/worker activos. La sesión autenticada y el
+catálogo no suplen esa evidencia. Actualizar primero el backend/esquema mediante
+el flujo de release autorizado y después calificar la selección exacta; no copiar
+recibos de laboratorio ni conceder disponibilidad desde Client. [verificación consolidada](../../docs/mvp/96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13).

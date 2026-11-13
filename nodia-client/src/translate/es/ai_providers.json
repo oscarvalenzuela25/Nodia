@@ -422,13 +422,20 @@
     "saved_model_configuration": "Modelo guardado en la configuración",
     "quota_remaining_units": "{{remaining}} de {{total}} unidades reportadas disponibles",
     "quota_reported_units": "{{remaining}} unidades reportadas disponibles",
-    "api_reasoning_preference": "Configura Low, Medium o High por modelo. La API recibirá el nivel elegido; su compatibilidad depende del modelo y el proveedor puede rechazarlo. Sin elección, se utiliza el comportamiento del proveedor.",
+    "api_reasoning_preference": "Configura una preferencia de razonamiento por modelo. La API recibirá el nivel elegido; su compatibilidad depende del modelo y el proveedor puede rechazarlo. Sin elección, se utiliza el comportamiento del proveedor.",
     "quota_flash_label": "Gemini Flash",
     "quota_pro_label": "Gemini Pro",
     "quota_5h_label": "Quota 5h",
     "quota_weekly_label": "Quota semanal",
     "agentic_reasoning_preference": "Configura Low, Medium o High. Guardar la preferencia no habilita el adaptador ni verifica razonamiento.",
-    "reasoning_model_label": "Razonamiento de {{model}}"
+    "reasoning_model_label": "Razonamiento de {{model}}",
+    "level_xhigh": "Xhigh",
+    "level_max": "Max",
+    "level_ultra": "Ultra",
+    "api_effort_unsupported": "Ultra no es un nivel admitido por la API de OpenAI; la conexión Agentic utiliza su propio catálogo.",
+    "ocr_focus_variant": "Foco OCR guardado: {{model}}",
+    "variant_preference_conflict": "La configuración guardada de {{model}} usa {{effort}} y difiere de su variante. Revisa el razonamiento y el foco OCR; los valores no se han cambiado.",
+    "invalid_saved_preference": "un valor no válido"
   },
   "engine_selection": {
     "title": "Motor de Ejecución",

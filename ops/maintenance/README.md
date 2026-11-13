@@ -89,3 +89,9 @@ El validador de archivos de configuración exigía contenido y rechazaba el arch
 installation.lock legítimo de cero bytes. La corrección valida por fstat el FD
 abierto root:root0600/regular/nlink1 y acepta cero bytes, sin relajar otros archivos.
 No contiene secretos/configuración real, sólo código fuente original.
+
+## Login IA productivo — originales de bootstrap, 2026-11-12
+
+[Preparación original](production-ai-login-preparation-original-20261112-r01.json) y [activación original](production-ai-login-activation-original-20261112-r01.json) preservan bytes/hashes del R02 antes de las correcciones de permisos y primer lock. Sus ZIP contienen sólo código público/manifiesto, sin credenciales o perfiles. Las correcciones se prueban en `ops/production/ai-runtime`; no reescribir esos originales para simular paridad. El estado instalado se distingue en el recibo operativo.
+
+La [continuación del bootstrap](production-ai-login-resume-original-20261112-r01.json) y el [updater original](production-ai-login-updater-original-20261112-r01.json) conservan también los bytes previos a separar el gate de sesión remota y registrar los drop-ins exactos para CD. Sólo código público; settings privados originales permanecen en el VPS.

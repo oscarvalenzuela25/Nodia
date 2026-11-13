@@ -60,7 +60,7 @@
   "selection_qualified": "Selección calificada para Teacher.",
   "selection_unqualified": "Esta selección aún no está disponible para Teacher.",
   "reasons": {
-    "adapter_unqualified": "Falta una comprobación vigente del adaptador para esta selección.",
+    "adapter_unqualified": "Falta una validación vigente de generación de Teacher con esta conexión, modelo y esfuerzo. Tener una sesión iniciada no sustituye esa comprobación.",
     "provider_unavailable": "El proveedor no está disponible.",
     "no_model": "Falta configurar un modelo.",
     "configuration_changed": "La configuración cambió; vuelve a comprobarla.",
@@ -489,5 +489,42 @@
     },
     "block_history_unavailable": "Este material no entregó las respuestas guardadas de sus bloques. Su historial es desconocido en esta vista."
   },
-  "source_page_without_text": "Hay páginas sin texto extraíble. No se ha realizado OCR."
+  "source_page_without_text": "Hay páginas sin texto extraíble. No se ha realizado OCR.",
+  "form_heading": "Define tu plan de estudio",
+  "form_intro": "Empieza por el tema y tu objetivo. Los campos opcionales ayudan a adaptar la propuesta; usa los iconos de ayuda para ver ejemplos.",
+  "field_help_label": "Ayuda: {{field}}",
+  "stored_language": "{{language}} (valor conservado)",
+  "languages": {
+    "es": "Español",
+    "en": "Inglés",
+    "pt": "Portugués",
+    "fr": "Francés",
+    "de": "Alemán",
+    "it": "Italiano",
+    "ja": "Japonés",
+    "ko": "Coreano",
+    "zh": "Chino",
+    "ar": "Árabe",
+    "ru": "Ruso",
+    "hi": "Hindi"
+  },
+  "form_help": {
+    "topic": "Indica el tema principal, sin intentar describir todo el curso. Ejemplo: redes y DNS. Máximo 240 caracteres.",
+    "objective": "Describe algo concreto que quieras poder hacer. Ejemplo: diagnosticar por qué un dominio no resuelve y comprobar sus registros DNS. Máximo 2000 caracteres.",
+    "title": "Opcional: un nombre corto para reconocer tu plan. Ejemplo: DNS para mi trabajo. Máximo 120 caracteres.",
+    "declared_base": "Cuenta qué sabes ya y qué te cuesta; no necesitas demostrarlo aquí. Ejemplo: conozco las IP, pero confundo los registros A y CNAME. Opcional, máximo 4000 caracteres.",
+    "context": "Explica para qué usarás lo aprendido. Ejemplo: mantener una API en Ubuntu y configurar su dominio. Evita contraseñas o datos privados. Opcional, máximo 4000 caracteres.",
+    "explanation_language": "Elige el idioma de las explicaciones del plan. Ejemplo: inglés para practicar vocabulario técnico. Esta preferencia no cambia el idioma de los menús ni garantiza la calidad del proveedor.",
+    "organization": "Teacher puede proponer una estructura, o puedes pedir jornadas o tópicos. Ejemplo: por jornadas para repartir el estudio; por tópicos para avanzar por conceptos.",
+    "day_count": "Si eliges jornadas, indica entre 1 y 365. Ejemplo: 10 jornadas para repartir el estudio. No son fechas del calendario ni una garantía de duración; revisarás la propuesta antes de aceptarla."
+  },
+  "selection_description": "Elige la conexión, el modo, el modelo y su razonamiento. Teacher comprobará esta combinación antes de generar.",
+  "selection_help": {
+    "connection": "Selecciona la conexión de IA que quieres usar. Sus credenciales y su sesión pertenecen a esa conexión; no se cambiará a otra automáticamente.",
+    "mode": "Agentic utiliza la sesión del adaptador; API key utiliza las claves configuradas. Elige el modo explícitamente: guardar credenciales no demuestra que una generación funcione.",
+    "model": "Elige un modelo del catálogo de esta conexión y modo. Teacher comprueba la combinación exacta; ver un modelo aquí no garantiza que pueda generar.",
+    "effort": "Elige un nivel informado por el catálogo para este modelo. La preferencia no demuestra disponibilidad; Teacher verifica la selección antes de generar."
+  },
+  "effort_unreported": "El catálogo no informa niveles de razonamiento para este modelo. Sincroniza y guarda sus modelos en Ajustes de proveedores (o solicita ayuda al administrador) y después actualiza las conexiones.",
+  "refresh_connections": "Actualizar conexiones"
 }

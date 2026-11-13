@@ -22,15 +22,18 @@ describe("Home", () => {
     act(() => {
       useGeneralSettingsStore.getState().clearContext();
     });
-    vi.mocked(authService.useAuthorizationContext).mockReturnValue({
+    // Current synthetic query data drives navigation; stale-store isolation is
+    // covered with the real transport in useVisibleModules tests.
+    vi.mocked(authService.useAuthorizationContext).mockImplementation(() => ({
+      data: useGeneralSettingsStore(),
       isLoading: false,
       isError: false,
       error: null,
       refetch: mockRefetch,
-    } as unknown as ReturnType<typeof authService.useAuthorizationContext>);
+    } as unknown as ReturnType<typeof authService.useAuthorizationContext>));
   });
 
-  it("renders the welcome message and dynamic module groups from generalSettingsStore", () => {
+  it("renders the welcome message and dynamic module groups from the current authorization context", () => {
     act(() => {
       useGeneralSettingsStore.getState().setContext({
         roles: ["admin"],

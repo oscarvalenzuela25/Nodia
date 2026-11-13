@@ -942,3 +942,37 @@ CUA observó cinco botones de copia con etiquetas .css/.js. El bloque CSS mantuv
 
 Límite de clipboard real: Browser Use devolvió lectura0 y el wrapper de pegado rechazó la operación por portapapeles virtual vacío. Eso no verifica los bytes del portapapeles del sistema operativo, ni permite afirmar copia física exacta. La exactitud/newline, ausencia de API y rechazo se prueban en los6tests sintéticos; la UI real acredita botón, promesa cumplida, toast, texto visible y scroll, manteniendo separadas esas garantías.
 
+## 42. Alta guiada, selección visible y estado Agentic — candidato local, 2026-11-12
+
+Continuación en `codex/enable-ai-provider-login`, desde development. Implementación local comprobada por alcance; [verificación consolidada](#verificación-local-y-diagnóstico-de-producción--2026-11-13). Build/lint Client, 382 regresiones afectadas en51archivos y QA Chromium320/1280 correctos; diagnóstico vivo: f01/45migraciones,0recibos Agentic y tabla por propósito ausente; no cambia aceptaciones históricas ni acredita despliegue o inferencia real.
+
+El formulario organiza tema/objetivo/título y contexto/base en una cuadrícula responsive, con introducción y ayuda por campo. Cada ayuda es un botón de44px con tooltip descriptivo accesible por teclado y texto ES/EN. El idioma de las explicaciones ofrece12 etiquetas; una etiqueta regional/histórica persistida fuera de la lista conserva su valor exacto hasta una elección humana. No cambia el idioma de los menús ni afirma soporte/calidad del proveedor. Client recorta el valor y aplica el formato de Server:2–35 caracteres y patrón `^[a-zA-Z]{2,8}(?:-[a-zA-Z0-9]{1,8})*$`. El catálogo visual no restringe el contrato Server a esas12 opciones.
+
+En creación, Selección IA es una sección semántica siempre visible, sin accordion. Conexión, modo, modelo e intensidad tienen ayuda específica; los cuatro selectores mantienen48px de alto con/sin selección y con/sin limpiar, en dos columnas desde600px y una por debajo. El ajuste de altura es local a Teacher; no redefine el input compartido. La marca Teacher utiliza line-height normal para evitar recortes.
+
+La intensidad procede de opciones reportadas; una selección no elegible puede corregirse cuando no hay peticiones/guardado en vuelo. Sin esfuerzos reportados se muestra el motivo, sin inventar niveles. Teacher lee el catálogo persistido: Actualizar conexiones sólo ejecuta su GET. Para recuperar metadata ausente, un administrador debe abrir Ajustes IA, sincronizar modelos y **guardarlos**, después volver a consultar Teacher. El aviso no concede el módulo administrativo. Codex usa `supportedReasoningEfforts` publicados; no se deducen del nombre o de una preferencia histórica.
+
+Se conservan bloqueos busy/fetch, tupla exacta conexión/modo/modelo/esfuerzo, elegibilidad, CAS y envío/generación bloqueados hasta confirmar una selección lista. Una variante no hereda la calificación de otra. Actualizar no inicia inferencia, autentica cuentas o sincroniza modelos automáticamente.
+
+La cabecera distingue el snapshot agregado de salud de una observación actual de cuenta Codex mediante lectura acotada compartida y actualización manual. Aísla instancia predeterminada activa y sesión autenticada; ausencia, error o desconocido no equivalen a verde. La denegación explícita de sesión/uso sigue teniendo autoridad; ver [contrato de consumo](ai-provider-feature-contract.md#consumo-de-salud-y-observación-codex--candidato-local-2026-11-12). Sin polling de sesión, login, inferencias o escrituras de proveedor.
+
+Evaluación de conocimiento: presentación/ayudas en producto y [ficha existentes](../nodia-ai/knowledge/studies/features/session-setup-and-planning.md), sin herramientas, permisos o capacidades nuevas. Draft/partial/unregistered/approval:null; documentos aprobados intactos. Planes95–102 y gates operativos conservan su estado.
+
+### Verificación local y diagnóstico de producción — 2026-11-13
+
+Lote local de interfaz Teacher y observación Codex: build Client con TypeScript dentro del build y lint global correctos;382 regresiones afectadas/51archivos, sin fallos. Las20 pruebas focales de formulario/4archivos,30 de selección/opciones y84 de observación se solapan con ese lote y no se suman como campañas independientes. Un ajuste de comparación de intent inalcanzable se detectó durante TypeScript y se corrigió antes del build válido; después se regeneraron assets de traducción sin otro chequeo TypeScript independiente.
+
+QA Chromium con fixtures sintéticos y Axios interceptado, a320/1280px, perfiles Teacher ES/oscuro, ausencia de esfuerzos EN/claro y cabecera Codex ES/oscuro. Documento310/1270px sin overflow horizontal; los cuatro selectores mantuvieron48px con/sin limpiar, también sin esfuerzos. Marca line-height normal;12 idiomas visibles y valores históricos conservados, con regresiones regionales. Ayudas accesibles por teclado sin submit ni apertura accidental del selector. Snapshot frío:1GET salud+1GET sesión; actualizar añadió1GET de cada uno, sin POST/inferencia ni errores de consola finales. No son pruebas en teléfono físico ni cuentas/proveedores reales. Se conserva polling de salud120000ms; no se añadió polling de sesión. Aislamiento por instancia/sessionVersion aborta/ignora resultados tardíos, sin promover estado o notificar éxito de otro contexto.
+
+**Producción, lectura sin inferencia:** el operador ejecutó el diagnóstico fijado y entregó su JSON final; SSH corroboró inventario público del release y servicios. `/opt/nodia/current` seguía en `backend-f01b49333688-ff33b6fdbbbc`, API/worker activos y45 migraciones empaquetadas. La migración de calificación por propósito no forma parte de ese paquete. Transacción READ ONLY y TLSv1.3 autorizado: tabla `ai_generation_agentic_qualifications` presente con **0 filas**; `teacher_purpose_qualifications` ausente.
+
+| Conexión configurada observada | Modelo exacto | Esfuerzo | Recibos de selección / configuración actual |
+|---|---|---|---|
+|1, Gemini Agentic|`claude-opus-4-6-thinking`|`high`|0 / 0|
+|2, OpenAI Agentic|`gpt-6.1-sol`|`medium`|0 / 0|
+
+Los IDs/modelos son datos de esa observación, no defaults ni catálogo estático para ejecutar. Login correcto no crea un recibo Teacher. El diagnóstico confirma que las selecciones configuradas carecen de calificación; no verifica otras tuplas elegidas en sesiones ni infiere disponibilidad. Una tabla de propósitos ausente es un hecho del esquema, no una autorización para crearla por fuera del despliegue revisado.
+
+El helper `ops/production/diagnose-teacher-qualification.mjs` se ejecutó con SHA-256 `cb55f9d631e3c83d713f27445d7afb7782830625c56a1c8363e1dcdc9ac30a77`; wrapper `diagnose-teacher-qualification.py`, SHA-256 `26d0ea5baa357d7111ddfe14838fb6440f4432db0a2045138cecf4b0a5498888`. Pasaron6 pruebas Node y3 Python del diagnóstico. No hubo observación de proveedor, calificación, inferencia, migración, mutación DB, configuración de aplicación o despliegue en este lote. Sin nueva aprobación/publicación de conocimiento;44 documentos aprobados preservados byte a byte.
+
+Continuidad: promover un release/esquema revisados por el procedimiento existente y después calificar una tupla exacta mediante intención explícita. No copiar recibos de laboratorio, crearlos manualmente ni eliminar los gates desde Client. El procedimiento permanece en [el runbook](../../ops/production/README.md#diagnóstico-teacher-de-sólo-lectura-sobre-f01).

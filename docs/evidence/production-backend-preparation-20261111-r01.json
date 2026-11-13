@@ -4,7 +4,7 @@
   "client_timezone": "America/Santiago",
   "scope": "linux_backend_candidate_staging_and_read_only_dependency_verification",
   "status": "candidate_staged_dependencies_verified",
-  "host_identity_evidence": "production-backend-host-20261110-r01.json",
+  "host_identity_evidence": "ops/production/README.md",
   "release_id": "backend-candidate-ba8ebfa00b55-e61ee5a268e7",
   "source_sha": "ba8ebfa00b55f103465d0ab533a802152944d224",
   "source_provenance": "workspace_documentation_candidate",

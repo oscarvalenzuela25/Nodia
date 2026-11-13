@@ -412,11 +412,11 @@ describe('AnalyzeInvoiceUseCase API routing', () => {
     expect(providers.findAllProviders).not.toHaveBeenCalled();
     expect(api.execute).not.toHaveBeenCalled();
   });
-  it('passes the explicit API thinking level to the API use case without a session engine', async () => {
+  it.each(['low', 'xhigh', 'max'])('passes explicit OpenAI API level %s without a session engine', async level => {
     const { api, gemini, useCase } = setup();
     await useCase.execute(
       file,
-      { ...dto, thinking_level: 'low' },
+      { ...dto, thinking_level: level },
       undefined,
       undefined,
       actor,
@@ -427,7 +427,7 @@ describe('AnalyzeInvoiceUseCase API routing', () => {
       file,
       undefined,
       19,
-      'low',
+      level,
     );
     expect(gemini.extractInvoiceData).not.toHaveBeenCalled();
   });

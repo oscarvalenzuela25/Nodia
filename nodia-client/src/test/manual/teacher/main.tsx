@@ -16,6 +16,7 @@ import "../../../styles/main.css";
 import MUIProvider from "../../../providers/MUIProvider";
 import { PageContent } from "../../../layouts/BaseLayout/styles";
 import Teacher from "../../../modules/teacher/pages/Teacher";
+import TeacherNew from "../../../modules/teacher/pages/TeacherNew";
 import useAuthStore from "../../../store/authStore";
 import config from "../../../store/configStore";
 import { mainInstance } from "../../../config/api";
@@ -65,8 +66,8 @@ else mainInstance.defaults.adapter = async request => {
   const reject = (status: number, message: string): never => { throw new AxiosError(message, "ERR_BAD_RESPONSE", request, undefined, response({ message }, status)); };
   if (request.method === "get") {
     if (scenario === "error" && path === "sessions") reject(503, "teacher:provider_unavailable");
-    if (path === "connections") return response({ items: [{ connection_id: "1", label: "Synthetic QA connection", is_active: true, modes: [{ mode: "api_key", configuration: "configured", configured_selection: session.selection, models: [{ model_id: "qa-synthetic-teacher-model", label: "Synthetic QA model", efforts: [] }] }] }], next_cursor: null });
-    if (path.includes("/eligibility")) return response({ eligible: false, reason_code: "adapter_unqualified", checked_at: null, selection: session.selection });
+    if (path === "connections") return response({ items: [{ connection_id: "1", label: "Synthetic QA connection", provider_key: "openai", is_default: true, default_mode: "api_key", is_active: true, modes: [{ mode: "api_key", configuration: "configured", configured_selection: session.selection, models: [{ model_id: "qa-synthetic-teacher-model", label: "Synthetic QA model", efforts: params.get("noEfforts") === "1" ? [] : ["low", "medium", "high"].map(effort_id => ({ effort_id, label: effort_id })) }] }] }], next_cursor: null });
+    if (path.includes("/eligibility")) return response({ eligible: false, reason_code: "adapter_unqualified", checked_at: null, selection: { connection_id: "1", mode: request.params?.mode, model_id: request.params?.model_id, effort_id: request.params?.effort_id ?? null } });
     if (path === "sessions") return response({ data: scenario === "empty" ? [] : [session], meta: { page: 1, limit: 10, total_items: scenario === "empty" ? 0 : 1, total_pages: 1 } });
     if (path === `sessions/${id}`) return response(session);
     if (path.endsWith("/messages")) return response({ data: [{ id: "m1", role: "assistant", text: english ? "Would you like to organize this by study days or topics?" : "¿Prefieres organizar tu plan por jornadas o por tópicos?" }], meta: { page: 1, limit: 50, total_items: 1, total_pages: 1 } });
@@ -99,8 +100,8 @@ else mainInstance.defaults.adapter = async request => {
   return response(result);
 };
 const client = new QueryClient({ defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } } });
-const initialEntry = realHttp ? params.get("sessionId") ? `/nodia-teacher/${params.get("sessionId")}` : "/nodia-teacher" : ["list", "empty", "error"].includes(scenario) ? "/nodia-teacher" : `/nodia-teacher/${id}`;
-const router = createMemoryRouter([{ path: "/nodia-teacher", element: <Teacher /> }, { path: "/nodia-teacher/:sessionId", element: <Teacher /> }], { initialEntries: [initialEntry] });
+const initialEntry = realHttp ? params.get("sessionId") ? `/nodia-teacher/${params.get("sessionId")}` : "/nodia-teacher" : scenario === "new" ? "/nodia-teacher/new" : ["list", "empty", "error"].includes(scenario) ? "/nodia-teacher" : `/nodia-teacher/${id}`;
+const router = createMemoryRouter([{ path: "/nodia-teacher", element: <Teacher /> }, { path: "/nodia-teacher/new", element: <TeacherNew /> }, { path: "/nodia-teacher/:sessionId", element: <Teacher /> }], { initialEntries: [initialEntry] });
 if (realHttp) router.subscribe(state => {
   const url = new URL(location.href);
   const sessionId = state.location.pathname.split("/")[2];

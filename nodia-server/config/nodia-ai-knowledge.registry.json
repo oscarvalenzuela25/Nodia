@@ -27,7 +27,9 @@
     "docs/nodia-ai/knowledge/general-settings/features/agentic-api-modes.md",
     "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
     "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
+    "docs/nodia-ai/knowledge/general-settings/features/ai-login-host-setup.md",
     "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+    "docs/nodia-ai/knowledge/general-settings/features/ai-provider-interface-and-module-access.md",
     "docs/nodia-ai/knowledge/general-settings/features/confirmed-administration.md",
     "docs/nodia-ai/knowledge/general-settings/features/confirmed-ai-configuration.md",
     "docs/nodia-ai/knowledge/general-settings/features/module-presentation-and-order.md",
@@ -552,7 +554,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-provider-operations/use-case/build-nodia-ai-provider-operations.use-case.ts",
-          "sha256": "c22ba2a5ed9f6b69b6bbf8eec21e3aa501ccf5dde8f185ce9d6b059aeb5d79e7"
+          "sha256": "55c264e5d4d97a64b34182cff700493ec220be2bb30c5aef063d00e8f830cb9c"
         },
         {
           "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
@@ -561,6 +563,10 @@
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
           "sha256": "513173ef9d70fe9f562ab6293b2822ef8c2be541f8e4b4d96c58167167986634"
+        },
+        {
+          "path": "nodia-server/src/common/ai/api-reasoning.ts",
+          "sha256": "eae4856f7a74d37cad55ac72ab03971c5252d5ac75f2406532c622a2931f2b16"
         }
       ],
       "input_schema": {
@@ -576,7 +582,8 @@
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
-        "docs/evidence/ai-two-modes-contract-integration-r01.json"
+        "docs/evidence/ai-two-modes-contract-integration-r01.json",
+        "docs/mvp/ai-provider-feature-contract.md"
       ]
     },
     {
@@ -590,7 +597,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-provider-operations/use-case/build-nodia-ai-provider-operations.use-case.ts",
-          "sha256": "c22ba2a5ed9f6b69b6bbf8eec21e3aa501ccf5dde8f185ce9d6b059aeb5d79e7"
+          "sha256": "55c264e5d4d97a64b34182cff700493ec220be2bb30c5aef063d00e8f830cb9c"
         },
         {
           "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
@@ -599,6 +606,10 @@
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
           "sha256": "513173ef9d70fe9f562ab6293b2822ef8c2be541f8e4b4d96c58167167986634"
+        },
+        {
+          "path": "nodia-server/src/common/ai/api-reasoning.ts",
+          "sha256": "eae4856f7a74d37cad55ac72ab03971c5252d5ac75f2406532c622a2931f2b16"
         }
       ],
       "input_schema": {
@@ -614,7 +625,8 @@
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
-        "docs/evidence/ai-two-modes-contract-integration-r01.json"
+        "docs/evidence/ai-two-modes-contract-integration-r01.json",
+        "docs/mvp/ai-provider-feature-contract.md"
       ]
     },
     {
@@ -628,7 +640,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-provider-operations/use-case/build-nodia-ai-provider-operations.use-case.ts",
-          "sha256": "c22ba2a5ed9f6b69b6bbf8eec21e3aa501ccf5dde8f185ce9d6b059aeb5d79e7"
+          "sha256": "55c264e5d4d97a64b34182cff700493ec220be2bb30c5aef063d00e8f830cb9c"
         },
         {
           "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
@@ -637,6 +649,10 @@
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
           "sha256": "513173ef9d70fe9f562ab6293b2822ef8c2be541f8e4b4d96c58167167986634"
+        },
+        {
+          "path": "nodia-server/src/common/ai/api-reasoning.ts",
+          "sha256": "eae4856f7a74d37cad55ac72ab03971c5252d5ac75f2406532c622a2931f2b16"
         }
       ],
       "input_schema": {
@@ -652,7 +668,8 @@
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
-        "docs/evidence/ai-two-modes-contract-integration-r01.json"
+        "docs/evidence/ai-two-modes-contract-integration-r01.json",
+        "docs/mvp/ai-provider-feature-contract.md"
       ]
     },
     {
@@ -666,7 +683,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-provider-operations/use-case/build-nodia-ai-provider-operations.use-case.ts",
-          "sha256": "c22ba2a5ed9f6b69b6bbf8eec21e3aa501ccf5dde8f185ce9d6b059aeb5d79e7"
+          "sha256": "55c264e5d4d97a64b34182cff700493ec220be2bb30c5aef063d00e8f830cb9c"
         },
         {
           "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
@@ -675,6 +692,10 @@
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
           "sha256": "513173ef9d70fe9f562ab6293b2822ef8c2be541f8e4b4d96c58167167986634"
+        },
+        {
+          "path": "nodia-server/src/common/ai/api-reasoning.ts",
+          "sha256": "eae4856f7a74d37cad55ac72ab03971c5252d5ac75f2406532c622a2931f2b16"
         }
       ],
       "input_schema": {
@@ -690,7 +711,8 @@
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
-        "docs/evidence/ai-two-modes-contract-integration-r01.json"
+        "docs/evidence/ai-two-modes-contract-integration-r01.json",
+        "docs/mvp/ai-provider-feature-contract.md"
       ]
     },
     {
@@ -704,7 +726,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-provider-operations/use-case/build-nodia-ai-provider-operations.use-case.ts",
-          "sha256": "c22ba2a5ed9f6b69b6bbf8eec21e3aa501ccf5dde8f185ce9d6b059aeb5d79e7"
+          "sha256": "55c264e5d4d97a64b34182cff700493ec220be2bb30c5aef063d00e8f830cb9c"
         },
         {
           "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
@@ -713,6 +735,10 @@
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
           "sha256": "513173ef9d70fe9f562ab6293b2822ef8c2be541f8e4b4d96c58167167986634"
+        },
+        {
+          "path": "nodia-server/src/common/ai/api-reasoning.ts",
+          "sha256": "eae4856f7a74d37cad55ac72ab03971c5252d5ac75f2406532c622a2931f2b16"
         }
       ],
       "input_schema": {
@@ -728,7 +754,8 @@
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
-        "docs/evidence/ai-two-modes-contract-integration-r01.json"
+        "docs/evidence/ai-two-modes-contract-integration-r01.json",
+        "docs/mvp/ai-provider-feature-contract.md"
       ]
     },
     {
@@ -742,7 +769,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-provider-operations/use-case/build-nodia-ai-provider-operations.use-case.ts",
-          "sha256": "c22ba2a5ed9f6b69b6bbf8eec21e3aa501ccf5dde8f185ce9d6b059aeb5d79e7"
+          "sha256": "55c264e5d4d97a64b34182cff700493ec220be2bb30c5aef063d00e8f830cb9c"
         },
         {
           "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
@@ -751,6 +778,10 @@
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
           "sha256": "513173ef9d70fe9f562ab6293b2822ef8c2be541f8e4b4d96c58167167986634"
+        },
+        {
+          "path": "nodia-server/src/common/ai/api-reasoning.ts",
+          "sha256": "eae4856f7a74d37cad55ac72ab03971c5252d5ac75f2406532c622a2931f2b16"
         }
       ],
       "input_schema": {
@@ -766,7 +797,8 @@
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
-        "docs/evidence/ai-two-modes-contract-integration-r01.json"
+        "docs/evidence/ai-two-modes-contract-integration-r01.json",
+        "docs/mvp/ai-provider-feature-contract.md"
       ]
     },
     {
@@ -854,7 +886,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-provider-operations/use-case/build-nodia-ai-provider-operations.use-case.ts",
-          "sha256": "c22ba2a5ed9f6b69b6bbf8eec21e3aa501ccf5dde8f185ce9d6b059aeb5d79e7"
+          "sha256": "55c264e5d4d97a64b34182cff700493ec220be2bb30c5aef063d00e8f830cb9c"
         },
         {
           "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
@@ -863,6 +895,10 @@
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
           "sha256": "513173ef9d70fe9f562ab6293b2822ef8c2be541f8e4b4d96c58167167986634"
+        },
+        {
+          "path": "nodia-server/src/common/ai/api-reasoning.ts",
+          "sha256": "eae4856f7a74d37cad55ac72ab03971c5252d5ac75f2406532c622a2931f2b16"
         }
       ],
       "input_schema": {
@@ -878,7 +914,8 @@
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
         "docs/evidence/nodia-ai-ai36-c05-write-publication-r02-validation.json",
-        "docs/evidence/ai-two-modes-contract-integration-r01.json"
+        "docs/evidence/ai-two-modes-contract-integration-r01.json",
+        "docs/mvp/ai-provider-feature-contract.md"
       ]
     },
     {

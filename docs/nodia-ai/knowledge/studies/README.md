@@ -4,11 +4,11 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 34,
+  "revision": 35,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación."
+    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación. Candidato local2026-11-12: formulario guiado, idioma validado conservando etiqueta histórica y selección IA visible/48px con ayuda; catálogo sin esfuerzos explicado sin inventarlos. Cabecera Codex consulta observación acotada compartida, sin polling. Build/lint,382regresiones/51archivos y QA320/1280 correctos; f01productivo tiene0recibos Agentic y carece de tabla por propósito; sin despliegue/inferencia o publicación del lote."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
@@ -200,10 +200,22 @@
     {
       "path": "nodia-server/scripts/qualify-teacher-text.mjs",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/SessionForm/SessionFields.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/FieldHelp/FieldHelp.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/infrastructure/schemas.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-11",
+    "checked_on": "2026-11-12",
     "evidence_paths": [
       "docs/evidence/teacher-local-implementation-20261101-r01.json",
       "docs/evidence/teacher-local-activation-20261101-r01.json",
@@ -222,9 +234,10 @@
       "docs/evidence/teacher-upgrade-local-20261111-r01.json",
       "docs/evidence/teacher-upgrade-local-20261111-r02.json",
       "docs/evidence/teacher-upgrade-acceptance-20261111-r02.md",
-      "docs/evidence/teacher-upgrade-development-vm-20261111-r01.json"
+      "docs/evidence/teacher-upgrade-development-vm-20261111-r01.json",
+      "docs/mvp/96-nodia-teacher-implementation-plan.md"
     ],
-    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente."
+    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente. Corte2026-11-12: inspección de contratos y código local; build/lint Client,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado en recibo propio: f01/45migraciones,0recibos Agentic y tabla por propósito ausente, sin trasladar la aceptación anterior."
   },
   "approval": null
 }
@@ -459,3 +472,9 @@ Fuentes: [evidencia de proceso](../../../evidence/teacher-v1-vm-process-20261103
 La práctica real terminó14/14; la primera final20/40 dio refuerzo únicamente al objetivo0/20 y su segunda unidad canónica. Navegar consultó material y guardó el cursor sin generar; preparar fue otra acción. Tras seis bloques/lecturas y práctica14/14, una evaluación nueva conservó cobertura/40p y publicó variantes distintas; el intento2 terminó40/40, verificó sección y dejó la sesión completed. No se sumaron notas ni se usaron ayudas de la aplicación; el recorrido QA no certifica nivel personal.
 
 R05 muestra puntos por recuperar sin umbral por objetivo ni claves, y el histórico no enlaza al plan actual. Conservó foco, borrador, pausa/recarga y destino móvil; un guardado incierto se concilió por receipt sin reenvío manual. Codex conserva elegibilidad actual y su calificación histórica, sin otra generación. Las preguntas/feedback revisados tienen límites DNS y de variación posicional; no se promete eficacia/precisión universal ni calibración. La pista opcional sospechosa se omite sin cambiar rúbrica, pudiendo dejar ayuda no disponible; la causa del primer rechazo histórico no se reconstruye. DB POST/GCM/restore y runtime reanudado pasaron. La captura original falló al reanudar y conserva su estado; auditoría independiente del par cifrado existente, sin recaptura. Ambas copias pasaron GCM íntegro por verificación independiente; el catálogo externo cifrado es un snapshot previo a restaurar timers y no se declara igual al actual. El runtime fresh y la UI final quedaron operativos, sin reclasificar la captura original fallida. [Recorrido27](../../../mvp/96-nodia-teacher-implementation-plan.md#27-recorrido-completo-gemini--continuación-solicitada).
+
+## Alta guiada y estado Agentic — candidato local, 2026-11-12
+
+[96§42](../../../mvp/96-nodia-teacher-implementation-plan.md#42-alta-guiada-selección-visible-y-estado-agentic--candidato-local-2026-11-12) y [funcionalidad revisión30](features/session-setup-and-planning.md#alta-guiada-y-selección-ia-visible--candidato-local-2026-11-12): formulario con ayudas accesibles, idioma validado que conserva etiqueta histórica, selección IA siempre visible al crear y cuatro controles48px responsive. Sin esfuerzos publicados se explica sincronización/guardado administrativo; actualizar conexiones sólo relee catálogo. Se conservan selección exacta/elegibilidad/CAS y bloqueos busy/fetch/envío.
+
+Cabecera Codex distingue snapshot de salud y observación acotada compartida del actor/instancia actuales; desconocido y denegaciones no se convierten en verde. Verificación local: build/lint,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado: f01/45migraciones,0recibos Agentic y tabla por propósito ausente en [verificación consolidada](../../../mvp/96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13); sin polling, inferencia, despliegue o publicación de este lote. Producto revisión35 draft/partial/unregistered/approval:null; evaluación de impacto visual/explicativo sin nueva herramienta, permiso o aceptación productiva.

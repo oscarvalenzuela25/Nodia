@@ -1,5 +1,17 @@
 # Contexto funcional de productos para NodiaAI
 
+## Teacher: alta guiada y observación Agentic — candidato local, 2026-11-12
+
+[Producto draft revisión35](studies/README.md#alta-guiada-y-estado-agentic--candidato-local-2026-11-12) y [ficha revisión30](studies/features/session-setup-and-planning.md#alta-guiada-y-selección-ia-visible--candidato-local-2026-11-12): ayudas, idioma validado, selección visible/48px y explicación del catálogo sin esfuerzos; selección exacta, elegibilidad y autoridad conservadas. Cabecera observa cuenta Codex de forma acotada compartida, sin convertir ausencia/desconocido en disponibilidad. [Verificación local y diagnóstico productivo por alcance](../../mvp/96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13); sin inferencia, despliegue, aprobación o publicación del lote.
+
+## Ajustes locales de proveedores y acceso — 2026-11-12
+
+[Ficha candidata](general-settings/features/ai-provider-interface-and-module-access.md): acciones contained, contexto de navegación del actor e identidad exacta NodiaAI, variantes Gemini con IDs reales/OCR independiente y preferencias API OpenAI xhigh/max; Ultra API no admitido. Super_admin conserva su bypass. Backend comprobado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado. Draft/unregistered/approval:null, sin inferencia, despliegue o publicación de este lote. [verificación consolidada](../../mvp/ai-provider-feature-contract.md#verificación-consolidada-de-preferencias-y-acceso--2026-11-12).
+
+## Login IA: preparación del host — 2026-11-12
+
+[Candidata operativa](general-settings/features/ai-login-host-setup.md): runtime privado para los flujos existentes. Infraestructura activa; Codex y Antigravity conectados según pruebas humanas; inferencia pendiente. Sin nueva herramienta, aprobación o publicación.
+
 ## Teacher: QA por alcance y adopción en development — 2026-11-11
 
 [Plan101](../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) prioriza evidencia por objetivo, diagnóstico conectado y práctica adaptativa. F0–F9 y55criterios cerrados para Windows/API key exacta deR02; [102§13](../../mvp/102-nodia-teacher-phased-implementation-and-final-qa.md#13-cierre-pendiente-en-development--2026-11-11) registra por separado la continuación VM: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. Práctica12/14 y final40/40 corresponden a respuestas del agente de QA, no a eficacia educativa humana ni55nuevas pruebas VM. [Recibo VM](../../evidence/teacher-upgrade-development-vm-20261111-r01.json). No se trasladan aceptaciones entre selecciones o entornos.

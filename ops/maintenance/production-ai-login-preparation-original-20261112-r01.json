@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "scope": "Original public first-install operator source; no secrets or private runtime files",
+  "archive": "ops/maintenance/production-ai-login-preparation-original-20261112-r01.zip",
+  "archive_sha256": "11fd764949adee44a83c37a5f83372cc91e399e942f10ed8dd14b00a5b2cc45d",
+  "original_prepare_sha256": "e0332fbc46bc84b697d386869e1b67d83890a29b6b2692226fc8d05860661449",
+  "corrected_prepare_sha256": "3979bf7a86b86b0bcaff721f4fbdcfff7436f044cbc077b4e76748aabb981085",
+  "corrections": [
+    "Set explicit public code directory0755 despite setup umask0077; private state stays0700.",
+    "Use noninteractive stdin and disable dpkg PTY for future package installations."
+  ],
+  "observed_incident": "Initial apt-get process was suspended; exact PID continued, preparation completed. Root cause of suspension not proven; no current package rerun or credential regeneration."
+}

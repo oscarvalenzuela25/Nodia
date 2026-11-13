@@ -1,6 +1,6 @@
 import { getAiApiKeys, createAiApiKey, updateAiApiKey, deleteAiApiKey } from "./services";
 import type { GetAiApiKeysParams } from "./types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, type QueryFunctionContext } from "@tanstack/react-query";
 import {
   getAiProviders,
   createAiProvider,
@@ -92,12 +92,12 @@ export const useAiProviders = (params?: GetAiProvidersParams) => {
 // One HTTP response and one cache entry for badges, alerts and session panels.
 const providerHealthOptions = {
   queryKey: ["ai-providers-health"],
-  queryFn: () => getAiProvidersHealth(),
+  queryFn: ({ signal }: QueryFunctionContext) => getAiProvidersHealth(signal),
   staleTime: 120_000,
   refetchInterval: 120_000,
 };
 
-export const useAiProvidersHealth = () => useQuery(providerHealthOptions);
+export const useAiProvidersHealth = (options?: { enabled?: boolean }) => useQuery({ ...providerHealthOptions, enabled: options?.enabled ?? true });
 
 export const useAiProviderEvents = (params?: GetAiProviderEventsParams) => {
   return useQuery({

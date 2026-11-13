@@ -6,7 +6,7 @@ import SelectionPanel from "../../../../../modules/teacher/components/SelectionP
 import type { ConnectionCatalog } from "../../../../../modules/teacher/infrastructure/selection";
 import type { Selection } from "../../../../../modules/teacher/infrastructure/schemas";
 
-const mocks = vi.hoisted(() => ({ query: vi.fn() }));
+const mocks = vi.hoisted(() => ({ query: vi.fn(), catalogRefetch: vi.fn(), eligibilityRefetch: vi.fn() }));
 vi.mock("../../../../../modules/teacher/infrastructure/useServices", () => ({ useTeacherQuery: mocks.query }));
 const exact: Selection = { connection_id: "2", mode: "agentic", model_id: "fixture-native-model", effort_id: "high" };
 const catalogFixture = (): ConnectionCatalog => ({ items: [
@@ -24,7 +24,8 @@ let observed: Selection;
 const onSave = vi.fn(async () => {});
 beforeEach(() => {
   catalog = catalogFixture(); eligible = true; failed = false; fetching = false; observed = exact; onSave.mockReset(); onSave.mockResolvedValue(undefined);
-  mocks.query.mockImplementation((path: string) => ({ data: path === "connections" ? catalog : { selection: observed, eligible, reason_code: eligible ? null : "adapter_unqualified", checked_at: null }, isLoading: false, isFetching: fetching, isError: failed, refetch: vi.fn() }));
+  mocks.catalogRefetch.mockReset(); mocks.eligibilityRefetch.mockReset();
+  mocks.query.mockImplementation((path: string) => ({ data: path === "connections" ? catalog : { selection: observed, eligible, reason_code: eligible ? null : "adapter_unqualified", checked_at: null }, isLoading: false, isFetching: fetching, isError: failed, refetch: path === "connections" ? mocks.catalogRefetch : mocks.eligibilityRefetch }));
 });
 
 describe("Teacher composer selection", () => {
@@ -149,18 +150,69 @@ describe("Teacher exact selection", () => {
     const changed = vi.fn();
     render(<SelectionPanel intent="create" initial={null} busy={false} onSelectionChange={changed} />);
     await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: exact, ready: true }));
-    expect(header()).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("region", { name: "Selección de IA" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Selección de IA" })).toBeVisible();
+    for (const name of ["Conexión", "Modo", "Modelo", "Esfuerzo"]) expect(screen.getByRole("button", { name })).toBeVisible();
+    expect(screen.queryByRole("button", { name: /Selección de IA/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Guardar selección" })).not.toBeInTheDocument();
     expect(onSave).not.toHaveBeenCalled();
   });
-  it("keeps creation expanded and not ready when the default is unqualified or missing", async () => {
+  it("keeps creation controls visible and not ready when the default is unqualified or missing", async () => {
     const changed = vi.fn(); eligible = false;
     const { rerender } = render(<SelectionPanel intent="create" initial={null} busy={false} onSelectionChange={changed} />);
     await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: exact, ready: false }));
-    expect(header()).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("heading", { name: "Selección de IA" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Esfuerzo" })).toBeVisible();
     catalog.items[1].is_default = false; catalog = { ...catalog };
     rerender(<SelectionPanel intent="create" initial={null} busy={false} onSelectionChange={changed} />);
     await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: null, ready: false }));
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("lets an ineligible creation tuple change to a reported effort and waits for that exact eligibility", async () => {
+    const changed = vi.fn(); const user = userEvent.setup();
+    eligible = false;
+    catalog.items[1].modes[0].models[0].efforts.push({ effort_id: "low", label: "low" });
+    const low = { ...exact, effort_id: "low" };
+    const props = { intent: "create" as const, initial: exact, busy: false, onSelectionChange: changed };
+    const { rerender } = render(<SelectionPanel {...props} />);
+    await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: exact, ready: false }));
+    const effort = screen.getByRole("button", { name: "Esfuerzo" });
+    expect(effort).toHaveAttribute("aria-disabled", "false");
+    await user.click(effort);
+    expect(screen.getAllByRole("option").map(option => option.textContent)).toEqual(["high", "low"]);
+    await user.click(screen.getByRole("option", { name: "low" }));
+    await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: low, ready: false }));
+    expect(mocks.query).toHaveBeenLastCalledWith("connections/2/eligibility", expect.anything(), { mode: "agentic", model_id: exact.model_id, effort_id: "low" }, true);
+    eligible = true;
+    rerender(<SelectionPanel {...props} />);
+    expect(changed).toHaveBeenLastCalledWith({ selection: low, ready: false });
+    observed = low;
+    rerender(<SelectionPanel {...props} />);
+    await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: low, ready: true }));
+    expect(screen.queryByRole("button", { name: "Guardar selección" })).not.toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("explains absent effort metadata and explicitly refetches the catalog without fabricating or saving a selection", async () => {
+    const changed = vi.fn(); const user = userEvent.setup();
+    catalog.items[1].modes[0].models[0].efforts = [];
+    const props = { intent: "create" as const, initial: exact, busy: false, onSelectionChange: changed };
+    const { rerender } = render(<SelectionPanel {...props} />);
+    await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: null, ready: false }));
+    expect(screen.getByText(/El catálogo no informa niveles de razonamiento/).closest("[role=alert]")).toBeVisible();
+    const effort = screen.getByRole("button", { name: "Esfuerzo" });
+    expect(effort).toHaveAttribute("aria-disabled", "true");
+    await user.click(effort);
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Actualizar conexiones" }));
+    expect(mocks.catalogRefetch).toHaveBeenCalledOnce();
+    expect(mocks.eligibilityRefetch).not.toHaveBeenCalled();
+    expect(onSave).not.toHaveBeenCalled();
+    catalog = catalogFixture();
+    rerender(<SelectionPanel {...props} />);
+    await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: exact, ready: true }));
+    expect(screen.getByRole("button", { name: "Esfuerzo" })).toHaveTextContent("high");
     expect(onSave).not.toHaveBeenCalled();
   });
 

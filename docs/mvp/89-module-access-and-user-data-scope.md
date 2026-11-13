@@ -1,5 +1,13 @@
 # Acceso por módulos y privacidad de datos
 
+## NodiaAI: menú del actor e identidad exacta — implementación local, 2026-11-12
+
+La navegación compartida consulta el contexto de autorización bajo la identidad del usuario de la sesión actual. Sin sesión/actor/contexto válido no expone módulos. Para el usuario ordinario, menú y guard de NodiaAI comparten la comprobación del destino canónico `/nodia-ai`, con una única coincidencia y clave exacta `nodia_ai`. Una clave distinta apuntando al chat o una coincidencia ambigua no concede acceso; mover/renombrar grupos conserva la política. El bypass del super_admin activo sigue vigente, confirmado expresamente por el usuario.
+
+La consulta de contexto puede estar cacheada: no es una concesión ejecutable ni una garantía de revocación visual inmediata. Las peticiones privadas pasan por las guardas del Server, que consultan actividad/asignación actuales; la revocación se comprueba incluso con el mismo token aún válido. La autorización de dominio NodiaAI conserva sus comprobaciones de sesión e identidad únicas. No se alteran asignaciones ni identidades históricas para ocultar duplicados.
+
+Ver [contrato de ajustes](ai-provider-feature-contract.md#ajustes-locales-de-interfaz-acceso-y-preferencias--2026-11-12) y [verificación consolidada](ai-provider-feature-contract.md#verificación-consolidada-de-preferencias-y-acceso--2026-11-12): 60 regresiones de políticas y 74 comprobaciones HTTP aisladas correctas; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado. No se acredita despliegue de este endurecimiento ni se ha aislado la causa productiva del síntoma informado.
+
 ## URLs estables y Teacher — implementación local, 2026-11-01
 
 La navegación actual usa `/users`, `/roles`, `/actions`, `/modules`, `/ai-providers`, `/business` (detalle `/business/:id`), `/finances-personal`, `/reservations`, `/nodia-ai` y `/nodia-teacher` (detalle `/nodia-teacher/:sessionId`). El grupo del menú no forma parte de la identidad de la ruta ni del filesystem. Los aliases anteriores sólo redirigen al destino canónico, que vuelve a comprobar su guard. APIs de dominio conservadas.

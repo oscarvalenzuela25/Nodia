@@ -16,6 +16,7 @@ import { validateInvoiceFile } from '../invoice-file-validation.js';
 import type { GeminiExecutionEngine } from '../../common/ai/ai.types.js';
 import { ExecuteCodexInvoiceUseCase } from '../../ai-provider/use-case/execute-codex-invoice.use-case.js';
 import type { AnalysisProgress } from '../../common/ai/analysis-progress.js';
+import { isApiThinkingLevel, type ApiThinkingLevel } from '../../common/ai/api-reasoning.js';
 import { invoiceAnalysisResponse } from '../invoice-analysis-response.js';
 import { InvoiceService } from '../invoice.service.js';
 import type { ActorReference } from '../../authorization/authority-transaction.js';
@@ -296,7 +297,9 @@ export class AnalyzeInvoiceUseCase {
     if (
       !codex &&
       dto.thinking_level !== undefined &&
-      !['low', 'medium', 'high'].includes(dto.thinking_level)
+      !(effectiveMode === 'api_key'
+        ? isApiThinkingLevel(engineKey, dto.thinking_level)
+        : ['low', 'medium', 'high'].includes(dto.thinking_level))
     )
       throw new BadRequestException('Opciones de análisis inválidas.');
     if (codex && (!configuredAiProvider?.id || !this.executeCodexInvoice))
@@ -340,7 +343,7 @@ export class AnalyzeInvoiceUseCase {
               file,
               providerFields,
               providerTax,
-              dto.thinking_level as 'low' | 'medium' | 'high' | undefined,
+              dto.thinking_level as ApiThinkingLevel | undefined,
               signal,
               progress,
             )
@@ -350,7 +353,7 @@ export class AnalyzeInvoiceUseCase {
               file,
               providerFields,
               providerTax,
-              dto.thinking_level as 'low' | 'medium' | 'high' | undefined,
+              dto.thinking_level as ApiThinkingLevel | undefined,
             )
         : engineKey === 'mistral'
           ? effectiveModel !== undefined || ocrModel !== undefined
