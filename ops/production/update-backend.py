@@ -484,6 +484,7 @@ ProtectSystem=strict
 ProtectHome=true
 PrivateTmp=true
 ReadOnlyPaths=/var/lib/nodia/config /opt/nodia
+ReadWritePaths=/var/lib/nodia/home /var/lib/nodia/codex
 LimitFSIZE=2M
 StandardOutput=file:{output}
 StandardError=file:{error}

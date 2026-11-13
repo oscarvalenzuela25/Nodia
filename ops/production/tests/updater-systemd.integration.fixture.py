@@ -51,10 +51,11 @@ command(['groupadd', '--gid', '900', 'nodia'])
 command(['useradd', '--uid', '900', '--gid', '900', '--no-create-home', '--shell', '/usr/sbin/nologin', 'nodia'])
 for path in (STATE, STATE / 'attempts', Path('/var/lib/nodia-maintenance'),
              Path('/etc/nodia'), Path('/usr/local/lib/nodia'), FIXTURE,
-             Path('/var/lib/nodia/config'), Path('/var/lib/nodia/home'), Path('/var/lib/nodia/backups/spool')):
+             Path('/var/lib/nodia/config'), Path('/var/lib/nodia/home'), Path('/var/lib/nodia/codex'),
+             Path('/var/lib/nodia/backups/spool')):
     path.mkdir(parents=True, exist_ok=True)
     path.chmod(0o700 if path == STATE / 'attempts' else 0o755)
-for path in (Path('/var/lib/nodia/home'), Path('/var/lib/nodia/backups/spool')):
+for path in (Path('/var/lib/nodia/home'), Path('/var/lib/nodia/codex'), Path('/var/lib/nodia/backups/spool')):
     os.chown(path, 900, 900); path.chmod(0o700)
 for name in ('runtime.env', 'redis.env'):
     write(Path('/etc/nodia') / name, '# Synthetic fixture; no credentials\n', 0o600)
@@ -86,6 +87,67 @@ for release in (OLD, NEW, FINAL):
     write(release / 'scripts/nodia-ai-backups.mjs', backup)
     write(release / 'scripts/nodia-ai-journal.mjs', journal)
 os.symlink(OLD, ROOT / 'current')
+
+# A narrow real sandbox regression, not a substitute for full runtime validation.
+# The fixture payload uses no credentials, DB, provider accounts or network.
+state_action = FIXTURE / 'writable-state-probe.mjs'
+write(state_action, '''import fs from 'node:fs';
+const state=['/var/lib/nodia/home','/var/lib/nodia/codex'];
+const result={schema_version:1,status:'failed',writable_state:false};
+try {
+  for(const directory of state){
+    const info=fs.statSync(directory);
+    if(!info.isDirectory()||info.uid!==900||(info.mode&0o777)!==0o700)throw Error('metadata');
+    fs.accessSync(directory,fs.constants.W_OK);
+  }
+  result.writable_state=true;
+  for(const directory of state){
+    const file=directory+'/synthetic-sandbox-'+process.pid;
+    fs.writeFileSync(file,'synthetic fixture',{flag:'wx',mode:0o600});fs.unlinkSync(file);
+  }
+  const readonly=['/var/lib/nodia/config/synthetic-writable-file',process.cwd()+'/synthetic-writable-file'];
+  result.protected_paths_readonly=readonly.every(file=>{
+    try{const fd=fs.openSync(file,'a');fs.closeSync(fd);return false;}
+    catch(error){return error.code==='EROFS';}
+  });
+  const status=fs.readFileSync('/proc/self/status','utf8');
+  result.unprivileged=process.getuid()===900&&process.geteuid()===900&&process.getgid()===900
+    &&/^NoNewPrivs:\\s+1$/m.test(status)&&/^CapEff:\\s+0+$/m.test(status);
+  if(!result.protected_paths_readonly||!result.unprivileged)throw Error('sandbox');
+  result.status='verified';
+}catch(error){result.error_code=error.code??'fixture_contract';process.exitCode=1;}
+console.log(JSON.stringify(result));
+''')
+for path in (Path('/var/lib/nodia/config/synthetic-writable-file'), OLD / 'synthetic-writable-file'):
+    write(path, 'synthetic protected fixture\n', 0o600)
+    os.chown(path, 900, 900)
+rw_line = 'ReadWritePaths=/var/lib/nodia/home /var/lib/nodia/codex\n'
+source = Path('/input/update-backend.py').read_text(encoding='utf-8')
+check(source.count(rw_line) == 1, 'exact two persistent writable state paths configured')
+legacy_source = FIXTURE / 'legacy-readonly-updater.py'
+write(legacy_source, source.replace(rw_line, ''))
+legacy_module = load('legacy_readonly_host', legacy_source)
+legacy = legacy_module.Host(policy, stage, {})
+legacy.attempt = STATE / 'legacy-sandbox'; legacy.attempt.mkdir(mode=0o700)
+legacy.candidate = OLD
+try:
+    legacy.node_job(state_action, [])
+except policy.Rejected as error:
+    check(str(error) == 'host_command_failed_inspect_private_diagnostics', 'original sandbox rejects writable state access')
+else: raise AssertionError('original sandbox unexpectedly allowed state writes')
+legacy_results = list(legacy.attempt.glob('*.json'))
+check(len(legacy_results) == 1 and json.loads(legacy_results[0].read_bytes()) ==
+      {'schema_version':1,'status':'failed','writable_state':False,'error_code':'EROFS'},
+      'original sandbox failure is specifically writable state')
+sandbox = host_module.Host(policy, stage, {})
+sandbox.attempt = STATE / 'corrected-sandbox'; sandbox.attempt.mkdir(mode=0o700)
+sandbox.candidate = OLD
+sandbox_result = sandbox.node_job(state_action, [])
+check(sandbox_result == {'schema_version':1,'status':'verified','writable_state':True,
+                        'protected_paths_readonly':True,'unprivileged':True},
+      'corrected real node_job permits only reviewed state and retains readonly unprivileged sandbox')
+check(not list(Path('/run/systemd/system').glob('nodia-update-action-*.service')),
+      'both sandbox probes clean their temporary inactive units')
 
 
 def backup_environment(release):
@@ -243,6 +305,9 @@ failed=json.loads((second.attempt/'state.json').read_text())
 check(failed['failed_phase']=='backup_requested' and not failed['migration_requested'],'failure phase precedes migration intent')
 
 print(json.dumps({'schema_version':1,'status':'passed','checks':checks,
+ 'writable_state_sandbox':{'original_unit_rejected':True,'corrected_unit_passed':True,
+                         'config_and_release_readonly':True,'nodia_uid_gid':900,'state_modes':'0700',
+                         'no_new_privileges':True,'effective_capabilities_zero':True,'full_validator_claimed':False},
  'real_systemd_pid1':True,'systemd_version':command(['/usr/lib/systemd/systemd','--version']).splitlines()[0],
  'real_systemctl_and_journalctl':True,'node_version':command(['/usr/local/bin/node','--version']).strip(),
  'real_writers_uid':900,'fresh_backup_invocation_verified':True,'stale_backup_failure_blocked':True,

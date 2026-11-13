@@ -977,3 +977,86 @@ Al preparar el commit:13/13 casos de observación, lint Client y build completos
 correctos; TypeScript sólo en el build. Suite global con maxWorkers2 en curso.
 El PR de promoción y Obsidian26.15 registran su resultado final por separado;
 preparar esta corrección no acredita por sí solo un nuevo despliegue.
+
+## 20. Importación CSV: esperar el resultado del lector — 2026-11-13
+
+Tras integrar PR8, el [run43369345499 de master](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43369345499)
+pasó baseline/pipeline, Server/worker, Python y host nativo. Client pasó lint/build
+y2890pruebas, pero falló un caso de ProductBulkImport: reintento tras rechazo400
+de un producto sin código. El log muestra `submit-bulk-products` ausente después
+de user.upload, antes del waitFor que comprueba si el botón está habilitado.
+
+La lectura real usa FileReader.onload para establecer filas y renderizar ese
+botón. La promesa de user.upload confirma selección/change, no la finalización
+del lector. En una ejecución local aislada los21casos originales pasaron; ese
+resultado no descarta la carrera observada en GitHub. Se localizaron tres
+consultas con el mismo patrón y se cambian a findByTestId, conservando enabled,
+recibos, payloads, reintento400 y prohibición de repetir creaciones inciertas.
+
+Una regresión adicional controla sólo la frontera FileReader.readAsText: mantiene
+la lectura pendiente, verifica ausencia de botón/fila y cero mutaciones, emite
+load explícitamente y comprueba que sólo un clic posterior crea una vez. No usa
+sleeps, modifica el componente/importador ni relaja la idempotencia. El spy se
+restaura al terminar, sin dejar una promesa de búsqueda huérfana si falla el lector.
+Validación final enfocada:57pruebas en3archivos (22del importador y35de helpers/
+precios), lint completo y build Client correctos; TypeScript sólo en build. La
+suite global del commit nuevo se verifica en GitHub; el resultado se registra en
+el PR de promoción y Obsidian26.17, sin extrapolar el pase enfocado a toda la suite.
+
+Rama codex/fix-product-import-test-readiness desde development6c1e5b84, en un
+worktree independiente. El plan PWA pendiente del checkout principal queda
+intacto y fuera de esta corrección. Impacto de conocimiento: sólo tests, sin
+cambios funcionales, contratos, fichas aprobadas o capacidades publicadas.
+No se reintenta el run antiguo como sustituto del arreglo versionado.
+
+## 21. Primer CD: preparación fallida y diagnóstico protegido — 2026-11-13
+
+El [CI43373323321 de master60494715](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43373323321)
+pasó completo tras PR9. El [CD43374689583](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43374689583)
+verificó sus baselines y solicitó backend; se detuvo con
+`backend_operation_requires_reconciliation`. Pages no quedó confirmado por ese CD.
+
+Consulta SSH restringida del ID37364cfb1765d6c2a24162d842066691: fase failed,
+effects_started=false, migration_requested=false y error
+host_command_failed_inspect_private_diagnostics. La consulta general devuelve
+deployment_ready, blocked=false, f01 y API/worker activos. Esto sitúa el fallo
+antes de pausar timers, mantenimiento, backup, migraciones y cambio de current;
+prepare sí puede haber extraído archivos y ejecutado comprobaciones temporales.
+No se deduce la causa ni ausencia de staging a partir de ese booleano.
+
+Se prepara diagnóstico raíz acotado y de sólo lectura mediante
+inspect-backend-operation.py: códigos de estado/recibos, sin logs libres o secretos.
+Seis regresiones Linux correctas y copia verificada por SHA al VPS. La siguiente
+acción necesita autenticación privada sudo del operador. Hasta leer los recibos
+no se atribuye el fallo a PostgreSQL, red, runtime o proxy.
+
+Se preserva el intento; no se relanza, elimina ni cambia su fase. El flujo no
+ofrece un reset implícito: un dispatch nuevo del mismo CI conserva su operación
+fallida. Corrección, conciliación por lecturas e intención nueva revisada deben
+mantener las barreras existentes. [Procedimiento de diagnóstico](../../ops/production/README.md#diagnóstico-de-una-operación-cd-fallida-sin-replay).
+Código y documentación se trabajan en codex/fix-cd-backend-preflight, separado
+del plan PWA sin commit. Los párrafos anteriores registran la inspección inicial.
+
+**Causa y corrección confirmadas:** el inspect SQL del candidato pasó READ ONLY
+y TLS; el probe falló en configuración. El mismo validador en el sandbox node_job
+identificó WRITABLE_STATE: ProtectSystem=strict impedía W_OK en home/codex. Con
+sólo ReadWritePaths para esos dos directorios, el validador pasó. No se relaja la
+validación ni el resto del aislamiento.17regresiones de updater y25checks
+systemd reales reprodujeron EROFS anterior y aislamiento posterior; cierre
+conjunto70pruebas Python root sin red, incluidos receptor/política/refresh/diagnóstico.
+
+Refresco revisado instalado: updater703791f5… y su pin, preservando los demás
+assets/settings y la operación. Helper requiere origen/destino por hash, locks,
+fallo previo sin efectos y originales privados sincronizados; seis pruebas de
+refresco incluyen lectura acotada/FIFO y fallo parcial sin replay. Tras instalar,
+el Host real verificó inventarios y preflight del candidato60494715: configuración,
+PostgreSQL TLS, Redis y R2 correctos; SQL45→48 con3pendientes, sin ejecutar ninguna.
+current sigue f01 y el intento original conserva su estado/hash. No se inició la
+aplicación candidata ni solicitó inferencia. [Procedimiento mantenido](../../ops/production/README.md#preflight-writable_state-corrección-verificada--2026-11-13).
+
+El arreglo se versiona para una nueva revisión/CI confiable; master queda sujeto
+al PR y sus checks. No se reintenta o limpia el ID anterior. Un preflight positivo
+no acredita backup, migración, cambio de aplicación o publicación Pages: quedan
+en el flujo de CD de la nueva intención. Obsidian26.18 conserva pasos/resultados.
+Sudo fue invalidado y la sesión tmux temporal cerrada al terminar la intervención;
+API/worker conservaron PID476489/476487, sin unidades temporales activas.
