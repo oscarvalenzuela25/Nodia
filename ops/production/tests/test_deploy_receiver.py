@@ -28,6 +28,7 @@ def load(name, filename):
 receiver = load('receiver_fixture', 'deploy-backend-receiver.py')
 gateway = load('gateway_fixture', 'deploy-gateway.py')
 updater = load('receiver_updater_fixture', 'update-backend.py')
+reconciliation_examples = load('receiver_reconciliation_examples', 'tests/test_backend_update.py')
 
 
 def upload_message(data=b'original-actions-zip'):
@@ -136,10 +137,14 @@ class RootStateTests(PipeFixture, unittest.TestCase):
                       'current': {'release_id': self.message['expected_current_release'],
                                   'package_tree_sha256': self.message['expected_current_tree_sha256']}}
         self.real_service_guard = receiver.application_service_guard
+        self.real_samefile = os.path.samefile
 
     def application_fixture(self, runtimes):
         """Real protected files; only absolute host paths/systemctl/proc are relocated."""
         root = Path(tempfile.mkdtemp(dir=self.directory, prefix='application-')).resolve()
+        canonical_node = root / 'synthetic-node-identity'
+        canonical_node.write_bytes(b'Synthetic executable identity; never executed.\n')
+        canonical_node.chmod(0o755)
         releases = root / 'releases'; releases.mkdir()
         release = releases / self.message['expected_current_release']; release.mkdir()
         current = root / 'current'; current.symlink_to(release)
@@ -150,6 +155,8 @@ class RootStateTests(PipeFixture, unittest.TestCase):
         library = root / 'library'; library.mkdir()
         installed = library / 'update-backend.py'
         installed.write_bytes((BASE / 'update-backend.py').read_bytes()); installed.chmod(0o644)
+        installed_policy = library / 'backend_update.py'
+        installed_policy.write_bytes((BASE / 'backend_update.py').read_bytes()); installed_policy.chmod(0o644)
         units = root / 'units'; units.mkdir()
         registry = root / 'consumers.json'
         states, processes, hashes = {}, {}, {}
@@ -159,7 +166,7 @@ class RootStateTests(PipeFixture, unittest.TestCase):
             process = root / 'proc' / str(20000 + index); process.mkdir(parents=True)
             os.chown(process, 900, 900)
             (process / 'cwd').symlink_to(release)
-            (process / 'exe').symlink_to('/usr/local/bin/node')
+            (process / 'exe').symlink_to(canonical_node)
             (process / 'cmdline').write_bytes(b'/usr/local/bin/node\0' + entry.encode() + b'\0')
             paths = []
             if runtimes:
@@ -177,27 +184,36 @@ class RootStateTests(PipeFixture, unittest.TestCase):
             registry.chmod(0o600)
         settings = {'schema_version': 1, 'assets': {'update-backend.py': hashlib.sha256(installed.read_bytes()).hexdigest()},
                     'service_hashes': hashes}
+        settings['assets']['backend_update.py'] = hashlib.sha256(installed_policy.read_bytes()).hexdigest()
         settings_file = self.state / 'settings.json'
         settings_file.write_text(json.dumps(settings), encoding='utf-8'); settings_file.chmod(0o600)
 
         def relocated_guard():
             guard = self.real_service_guard()
             # Retain the executed policy/metadata validation; relocate only its host paths.
-            guard.service_overrides.__func__.__globals__.update(SYSTEMD_UNITS=units, AI_CONSUMERS=registry)
+            guard.service_overrides.__func__.__globals__.update(SYSTEMD_UNITS=units, AI_CONSUMERS=registry, STATE=self.state)
             return guard
 
         def mapped_path(value):
             return {'/opt/nodia/current': current, '/opt/nodia/releases': releases,
                     '/proc': root / 'proc'}.get(str(value), Path(value))
         for name, value in [('LIB', library), ('application_service_guard', relocated_guard), ('Path', mapped_path),
-                            ('unit_state', lambda unit: states[unit])]:
+                            ('unit_state', lambda unit: states.get(unit, {'ActiveState':'inactive'}))]:
             patcher = patch.object(receiver, name, side_effect=value) if callable(value) else patch.object(receiver, name, value)
             patcher.start(); self.addCleanup(patcher.stop)
         patcher = patch.object(receiver.pwd, 'getpwnam', return_value=types.SimpleNamespace(pw_uid=900))
         patcher.start(); self.addCleanup(patcher.stop)
+        # This suite checks inode identity, not execution. Keep the real samefile
+        # comparison and relocate only its fixed canonical reference, so a Python-
+        # only CI image needs no Node binary and a different executable still fails.
+        def mapped_samefile(first, second):
+            return self.real_samefile(first, canonical_node if str(second) == '/usr/local/bin/node' else second)
+        patcher = patch.object(receiver.os.path, 'samefile', side_effect=mapped_samefile)
+        patcher.start(); self.addCleanup(patcher.stop)
         return types.SimpleNamespace(root=root, release=release, units=units, registry=registry,
                                      states=states, processes=processes, library=library,
-                                     installed=installed, settings=settings, settings_file=settings_file)
+                                     installed=installed, installed_policy=installed_policy,
+                                     settings=settings, settings_file=settings_file)
 
     def test_active_status_accepts_no_overrides_or_both_exact_registered_runtime_extensions(self):
         for runtimes in (False, True):
@@ -208,7 +224,86 @@ class RootStateTests(PipeFixture, unittest.TestCase):
                 self.assertEqual(result['status'], 'deployment_ready')
                 self.assertEqual(result['application'], {'api_active': True, 'worker_active': True})
                 self.assertEqual(before, {path: path.read_bytes() for path in fixture.units.rglob('*') if path.is_file()})
-                self.assertEqual(list(fixture.library.iterdir()), [fixture.installed])
+                self.assertEqual(set(fixture.library.iterdir()), {fixture.installed, fixture.installed_policy})
+
+    def reconciled_application_fixture(self):
+        fixture = self.application_fixture(True)
+        receipt, evidence = reconciliation_examples.reconciliation_fixture(request_change={
+            'expected_current_release':fixture.release.name,'expected_current_tree_sha256':'d'*64})
+        attempt = self.state / 'attempts' / receipt['operation_id']; attempt.mkdir(mode=0o700)
+        files = {attempt/'state.json':evidence['state_bytes'], attempt/'request.json':evidence['request_bytes'],
+                 attempt/'recovered-manifest.json':evidence['manifest_bytes'],
+                 self.state/'BLOCKED.json':evidence['blocked_bytes'],
+                 self.state/('same-release-recovery-'+receipt['operation_id']+'.json'):evidence['recovery_bytes']}
+        for path, content in files.items(): path.write_bytes(content); path.chmod(0o600)
+        acknowledgment = attempt / 'pre-migration-reconciliation.json'
+        receiver.save_new(acknowledgment, receipt)
+        return fixture, receipt, evidence, attempt, acknowledgment, files
+
+    def test_exact_reconciliation_unblocks_only_a_new_operation_and_preserves_original_failure_and_block(self):
+        _fixture, receipt, evidence, attempt, _ack, files = self.reconciled_application_fixture()
+        self.assertFalse(receiver.deployment_status()['blocked'])
+        receiver.save_new(self.submissions / (receipt['operation_id']+'.json'), {'message':self.message})
+        with patch.object(receiver, 'command') as launch:
+            original = receiver.submit(self.message)
+            self.assertEqual(original['phase'], 'failed')
+            self.assertEqual(original['error_code'], 'writer_shutdown_not_clean')
+            launch.assert_not_called()
+        guard = receiver.application_service_guard()
+        old_request = json.loads(evidence['request_bytes'])
+        with self.assertRaisesRegex(ValueError, 'operation_id_already_recorded'):
+            guard.begin(old_request, {})
+        next_request = {**old_request, 'operation_id':'b'*32}
+        guard.begin(next_request, {'schema_version':1,'operation_id':'b'*32,'phase':'preparing',
+                                 'effects_started':False,'migration_requested':False})
+        self.assertTrue((self.state/'attempts'/('b'*32)/'request.json').is_file())
+        self.assertTrue(attempt.is_dir())
+        self.assertEqual({path:path.read_bytes() for path in files}, files)
+
+    def test_reconciliation_never_clears_an_independent_pending_submission_or_other_failed_attempt(self):
+        self.reconciled_application_fixture()
+        pending = 'b'*32
+        receiver.save_new(self.submissions/(pending+'.json'), {'message':{**self.message,'operation_id':pending}})
+        self.assertTrue(receiver.deployment_status()['blocked'])
+        (self.submissions/(pending+'.json')).unlink()
+        other = self.state/'attempts'/('c'*32); other.mkdir(mode=0o700)
+        receiver.save_new(other/'state.json', {'schema_version':1,'operation_id':'c'*32,'phase':'failed',
+            'effects_started':True,'migration_requested':True,'failed_phase':'migration_requested'})
+        self.assertTrue(receiver.deployment_status()['blocked'])
+        self.assertTrue(receiver.application_service_guard().prior_updates_blocked())
+
+    def test_reconciliation_requires_private_immutable_ack_snapshot_and_all_original_evidence(self):
+        for changed in ('ack_missing','ack_mutable','ack_extra','snapshot_missing','snapshot_mutable',
+                        'state_changed','request_changed','recovery_changed','block_changed','snapshot_symlink'):
+            with self.subTest(changed=changed):
+                fixture, receipt, _evidence, attempt, ack, _files = self.reconciled_application_fixture()
+                snapshot = attempt/'recovered-manifest.json'
+                if changed == 'ack_missing': ack.unlink()
+                elif changed == 'ack_mutable': ack.chmod(0o644)
+                elif changed == 'ack_extra': ack.write_text(json.dumps({**receipt,'extra':True}), encoding='utf-8')
+                elif changed == 'snapshot_missing': snapshot.unlink()
+                elif changed == 'snapshot_mutable': snapshot.chmod(0o644)
+                elif changed == 'snapshot_symlink':
+                    snapshot.unlink(); snapshot.symlink_to(fixture.release/'release-manifest.json')
+                else:
+                    target = {'state_changed':attempt/'state.json','request_changed':attempt/'request.json',
+                        'recovery_changed':self.state/('same-release-recovery-'+receipt['operation_id']+'.json'),
+                        'block_changed':self.state/'BLOCKED.json'}[changed]
+                    target.write_bytes(target.read_bytes()+b' ')
+                self.assertTrue(receiver.deployment_status()['blocked'])
+                self.assertTrue(receiver.application_service_guard().prior_updates_blocked())
+                # Preserve evidence within each isolated iteration; next case gets its own state directory.
+                for path in self.state.iterdir():
+                    if path.is_file(): path.unlink()
+                import shutil
+                shutil.rmtree(attempt)
+
+    def test_reconciled_history_uses_snapshot_even_after_recovered_release_is_retired(self):
+        fixture, _receipt, _evidence, _attempt, _ack, _files = self.reconciled_application_fixture()
+        guard = receiver.application_service_guard()
+        import shutil
+        shutil.rmtree(fixture.release)
+        self.assertFalse(guard.prior_updates_blocked())
 
     def test_active_status_rejects_missing_altered_extra_unregistered_or_relocated_dropins(self):
         def missing(f): (f.units / 'nodia-api.service.d/70-codex-runtime.conf').unlink()

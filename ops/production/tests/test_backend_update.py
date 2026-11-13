@@ -1,6 +1,9 @@
 """Policy tests: synthetic ports only; no VPS, DB, systemd or credentials."""
 import datetime
+import copy
+import hashlib
 import importlib.util
+import json
 from pathlib import Path
 import unittest
 
@@ -15,6 +18,82 @@ def request():
             'artifact_id': '456', 'artifact_zip_sha256': 'b' * 64, 'source_sha': 'c' * 40,
             'expected_current_release': 'backend-' + 'd' * 12 + '-' + 'e' * 12,
             'expected_current_tree_sha256': 'e' * 64}
+
+
+def reconciliation_fixture(*, state_change=None, request_change=None, recovery_change=None, manifest_change=None):
+    """Synthetic immutable recovery evidence, never a production receipt."""
+    encode = lambda value: (json.dumps(value, sort_keys=True) + '\n').encode()
+    digest = lambda value: hashlib.sha256(value).hexdigest()
+    req = {**request(), **(request_change or {})}
+    state = {'schema_version':1, 'operation_id':req['operation_id'], 'phase':'failed',
+             'failed_phase':'stopping_writers', 'error_code':'writer_shutdown_not_clean',
+             'effects_started':True, 'migration_requested':False, 'automatic_retry_allowed':False,
+             'previous_release':req['expected_current_release'], **(state_change or {})}
+    state_bytes, request_bytes = encode(state), encode(req)
+    block = policy.blocked_record_bytes(state)
+    manifest = {'schema_version':1, 'release_id':req['expected_current_release'],
+                'package_tree_sha256':req['expected_current_tree_sha256'], 'files':[
+                    {'path':'dist/migrations/1790000000000-FixtureOne.js','type':'file'},
+                    {'path':'dist/migrations/1790000000001-FixtureTwo.js','type':'file'}], **(manifest_change or {})}
+    recovery = {'schema_version':1,'status':'complete','operation_id':req['operation_id'],
+        'resolution':'same_release_restored_before_migration','started_at':'2026-11-13T17:50:00+00:00',
+        'completed_at':'2026-11-13T17:51:00+00:00','state_sha256':digest(state_bytes),
+        'blocked_sha256':digest(block),'release_id':req['expected_current_release'],
+        'package_tree_sha256':req['expected_current_tree_sha256'],'ledger_sha256':'f'*64,
+        'migrations_requested':False,'deployment_performed':False,'cd_unblocked':False,
+        'diagnostic_directory':'/var/lib/nodia-updates/diagnostics/current-restore-preflight-'+'1'*32,
+        'cors_verified':True,'timers_restored':True,'maintenance_removed':True,'failed_attempt_unchanged':True,
+        **(recovery_change or {})}
+    recovery_bytes, manifest_bytes = encode(recovery), encode(manifest)
+    receipt = {'schema_version':1,'status':'same_release_restored_before_migration',
+        'operation_id':req['operation_id'],'state_sha256':digest(state_bytes),
+        'request_sha256':digest(request_bytes),'blocked_sha256':digest(block),
+        'recovery_receipt_sha256':digest(recovery_bytes),'current_release_id':req['expected_current_release'],
+        'current_manifest_sha256':digest(manifest_bytes),'package_tree_sha256':req['expected_current_tree_sha256'],
+        'ledger_sha256':recovery['ledger_sha256'],'migration_count':2,'acknowledged_at_utc':'2026-11-13T17:52:00Z',
+        'new_operation_allowed':True,'original_operation_retry_allowed':False}
+    return receipt, {'state_bytes':state_bytes,'request_bytes':request_bytes,'recovery_bytes':recovery_bytes,
+                     'manifest_bytes':manifest_bytes,'blocked_bytes':block}
+
+
+class ReconciliationPolicyTests(unittest.TestCase):
+    def test_only_exact_bound_recovery_evidence_is_accepted_without_mutation_or_replay(self):
+        receipt, evidence = reconciliation_fixture()
+        original = copy.deepcopy((receipt, evidence))
+        self.assertEqual(policy.validate_pre_migration_reconciliation(receipt, **evidence), receipt)
+        self.assertEqual(policy.validate_pre_migration_reconciliation(receipt, **{**evidence, 'blocked_bytes':None}), receipt)
+        self.assertEqual((receipt, evidence), original)
+        self.assertFalse(receipt['original_operation_retry_allowed'])
+
+    def test_missing_unknown_or_wrong_ack_fields_and_replay_permission_are_rejected(self):
+        for change in [{'schema_version':True},{'status':'complete'},{'new_operation_allowed':False},
+                       {'original_operation_retry_allowed':True},{'operation_id':'b'*32},{'migration_count':3},
+                       {'migration_count':True},{'acknowledged_at_utc':'2026-11-13T17:49:00Z'},{'extra':True}]:
+            receipt, evidence = reconciliation_fixture(); receipt.update(change)
+            with self.subTest(change=change), self.assertRaises(policy.Rejected):
+                policy.validate_pre_migration_reconciliation(receipt, **evidence)
+        receipt, evidence = reconciliation_fixture(); del receipt['request_sha256']
+        with self.assertRaises(policy.Rejected): policy.validate_pre_migration_reconciliation(receipt, **evidence)
+
+    def test_every_original_file_and_the_original_block_bytes_remain_hash_bound(self):
+        for field in ('state_bytes','request_bytes','recovery_bytes','manifest_bytes','blocked_bytes'):
+            receipt, evidence = reconciliation_fixture(); evidence[field] += b' '
+            with self.subTest(field=field), self.assertRaises(policy.Rejected):
+                policy.validate_pre_migration_reconciliation(receipt, **evidence)
+
+    def test_a_hash_consistent_but_unrecovered_unknown_or_migration_started_failure_never_passes(self):
+        for change in [{'phase':'unknown'},{'effects_started':False},{'migration_requested':True},
+                       {'failed_phase':'migration_requested'},{'failed_phase':'backup_requested'},
+                       {'error_code':'different_failure'},{'automatic_retry_allowed':True}]:
+            receipt, evidence = reconciliation_fixture(state_change=change)
+            with self.subTest(change=change), self.assertRaises(policy.Rejected):
+                policy.validate_pre_migration_reconciliation(receipt, **evidence)
+        for change in [{'cors_verified':False},{'timers_restored':False},{'maintenance_removed':False},
+                       {'failed_attempt_unchanged':False},{'migrations_requested':True},{'cd_unblocked':True},
+                       {'status':'failed'},{'deployment_performed':True},{'release_id':'backend-'+'9'*12+'-'+'8'*12}]:
+            receipt, evidence = reconciliation_fixture(recovery_change=change)
+            with self.subTest(change=change), self.assertRaises(policy.Rejected):
+                policy.validate_pre_migration_reconciliation(receipt, **evidence)
 
 
 class Ports:

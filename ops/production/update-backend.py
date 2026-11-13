@@ -62,6 +62,19 @@ def ai_runtime_registry(value):
     return value
 
 
+def clean_writer_shutdown(state):
+    """Accept a zero exit or the reviewed SIGTERM, never another signal/failure.
+
+    ExecMainCode uses waitid codes: 1=CLD_EXITED, 2=CLD_KILLED. Nest can
+    re-send SIGTERM after closing its resources; systemd records success/2/15.
+    This observation does not replace DB quiescence or an empty process cgroup.
+    """
+    return (isinstance(state, dict) and state.get('ActiveState') == 'inactive' and
+            state.get('Result') == 'success' and state.get('MainPID') == '0' and
+            (state.get('ExecMainCode'), state.get('ExecMainStatus')) in
+            (('0', '0'), ('1', '0'), ('2', str(signal.SIGTERM))))
+
+
 def unique_json(raw):
     def pairs(items):
         result = {}
@@ -192,15 +205,7 @@ class Host:
     def begin(self, request, state):
         protected(STATE, directory=True)
         protected(STATE / 'attempts', directory=True)
-        self.must(not (STATE / 'BLOCKED.json').exists(), 'prior_update_requires_reconciliation')
-        for previous in (STATE / 'attempts').iterdir():
-            protected(previous, directory=True)
-            status = previous / 'state.json'
-            if status.exists():
-                protected(status, mode=0o600)
-                prior = unique_json(status.read_bytes())
-                self.must(not prior.get('effects_started') or prior.get('phase') in ('complete', 'planned'),
-                          'unfinished_update_requires_reconciliation')
+        self.must(not self.prior_updates_blocked(), 'prior_update_requires_reconciliation')
         self.attempt = STATE / 'attempts' / request['operation_id']
         self.must(not self.attempt.exists(), 'operation_id_already_recorded')
         self.attempt.mkdir(mode=0o700)
@@ -208,12 +213,53 @@ class Host:
         atomic_write(self.attempt / 'request.json', (json.dumps(request, sort_keys=True) + '\n').encode())
         self.record(state)
 
+    def prior_updates_blocked(self):
+        """Read-only admission: acknowledge only a fully bound historical failure."""
+        def private(path, maximum=16384, mode=0o600):
+            info = protected(path, mode=mode)
+            self.must(0 < info.st_size <= maximum, 'update_history_size_invalid')
+            return path.read_bytes()
+        try:
+            protected(STATE, directory=True)
+            protected(STATE / 'attempts', directory=True)
+            blocked_path = STATE / 'BLOCKED.json'
+            blocked = private(blocked_path) if blocked_path.exists() or blocked_path.is_symlink() else None
+            blocked_id = unique_json(blocked).get('operation_id') if blocked is not None else None
+            if blocked is not None:
+                self.must(isinstance(blocked_id, str) and re.fullmatch(r'[a-f0-9]{32}', blocked_id), 'invalid_blocked_operation')
+            reconciled = set()
+            for previous in (STATE / 'attempts').iterdir():
+                protected(previous, directory=True)
+                status = previous / 'state.json'
+                if not (status.exists() or status.is_symlink()): continue
+                state_bytes = private(status)
+                prior = unique_json(state_bytes)
+                acknowledgment = previous / 'pre-migration-reconciliation.json'
+                if not (acknowledgment.exists() or acknowledgment.is_symlink()):
+                    if ((prior.get('effects_started') is False and prior.get('migration_requested') is False)
+                            or prior.get('phase') in ('complete', 'planned')): continue
+                    return True
+                self.must(re.fullmatch(r'[a-f0-9]{32}', previous.name) and prior.get('operation_id') == previous.name,
+                          'invalid_update_history_identity')
+                receipt = unique_json(private(acknowledgment))
+                request_bytes = private(previous / 'request.json')
+                request = self.p.validate_request(unique_json(request_bytes))
+                recovery_bytes = private(STATE / ('same-release-recovery-' + previous.name + '.json'))
+                manifest = previous / 'recovered-manifest.json'
+                self.p.validate_pre_migration_reconciliation(receipt, state_bytes=state_bytes,
+                    request_bytes=request_bytes, recovery_bytes=recovery_bytes,
+                    manifest_bytes=private(manifest, 32 * 1024 ** 2),
+                    blocked_bytes=blocked if previous.name == blocked_id else None)
+                reconciled.add(previous.name)
+            return blocked is not None and blocked_id not in reconciled
+        except (OSError, ValueError, TypeError, AttributeError, self.p.Rejected):
+            return True
+
     def record(self, state):
         atomic_write(self.attempt / 'state.json', (json.dumps(state, sort_keys=True) + '\n').encode())
 
     def block(self, state):
-        atomic_write(STATE / 'BLOCKED.json', (json.dumps({'operation_id': state['operation_id'],
-            'failed_phase': state['failed_phase'], 'error_code': state['error_code']}) + '\n').encode())
+        atomic_write(STATE / 'BLOCKED.json', self.p.blocked_record_bytes(state))
 
     def copy_input(self, directory, name, digest, maximum):
         self.must(isinstance(name, str) and re.fullmatch(r'[a-zA-Z0-9_.-]+', name) and '/' not in name and
@@ -585,9 +631,7 @@ StandardError=file:{error}
         self.command(['/usr/bin/systemctl', 'stop', *SERVICES], 400)
         for unit in SERVICES:
             state = self.show(unit)
-            self.must(state.get('ActiveState') == 'inactive' and state.get('Result') == 'success' and
-                      state.get('MainPID') == '0' and state.get('ExecMainStatus') == '0' and
-                      state.get('ExecMainCode') in ('0', '1'), 'writer_shutdown_not_clean')
+            self.must(clean_writer_shutdown(state), 'writer_shutdown_not_clean')
             self.must(self.cgroup_empty(self.groups[unit]), 'writer_cgroup_not_empty')
 
     def cgroup_empty(self, name):

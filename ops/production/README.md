@@ -1193,3 +1193,86 @@ migraciones, backup, readiness y Pages siguen pendientes de ese CD nuevo.
 Cierre administrativo: sudo invalidado en la PTY y sesión tmux temporal cerrada.
 API/worker conservaron PID476489/476487; no quedaron unidades update-action
 activas. No se amplió sudoers ni se habilitó root por SSH.
+
+### Parada SIGTERM satisfactoria y recuperación anterior a migraciones — 2026-11-13
+
+Incidente CD43473542741, intento f452dfa82420d710757945a652f0b172:
+`stopping_writers`, `writer_shutdown_not_clean`, efectos iniciados y migración
+no solicitada. Ambas unidades terminaron con inactive/success/PID0 y waitid2/15.
+El actualizador confundía la terminación por SIGTERM tras cleanup con fallo.
+La corrección añade sólo esa pareja a(0,0)/(1,0); exige además cgroup vacío y
+conserva quiescencia SQL. No acepta KILL, abort/core, timeout o salida no cero.
+
+El503 de mantenimiento no tenía cabeceras CORS y por eso el navegador lo describió
+como CORS. No se cambia allowOrigins ni se añaden comodines. Tras leer estado y
+verificar f01/f01 con45migraciones y0pendientes/trabajos, se recuperó exclusivamente
+el mismo release. API/worker y timers activos; OPTIONS auth/refresh204 y auth/me
+anónimo401 con origen/credenciales correctos, comprobados local y externamente.
+No hubo migraciones, cambio de current, restore SQL, inferencia o deploy Pages.
+
+La recuperación registra intención antes de iniciar procesos y recibo privado
+independiente; estado fallido y BLOCKED quedan idénticos. El job completo y sus
+diagnósticos están en el VPS, no son una receta para repetirlo:
+
+```text
+/home/nodia-admin/nodia-setup/backend/admin-jobs/restore-same-release-3ee9eac5c9d94e6992589522b33386f6/
+/var/lib/nodia-updates/same-release-recovery-f452dfa82420d710757945a652f0b172.json
+```
+
+Comprobaciones de lectura repetibles:
+
+```bash
+systemctl is-active nodia-api.service nodia-ai-worker.service \
+  nodia-ai-backup.timer nodia-ai-backup-rotate.timer
+readlink /opt/nodia/current
+curl -i -X OPTIONS https://166.0.112.187/api/v1/auth/refresh \
+  -H 'Origin: https://nodia-1ge.pages.dev' \
+  -H 'Access-Control-Request-Method: POST' \
+  -H 'Access-Control-Request-Headers: content-type'
+```
+
+No borrar BLOCKED, editar phase/effects_started o reintentar el apply fallido.
+La disponibilidad recuperada no elimina la barrera del CD. La conciliación
+posterior es operatoria y verificable por ambos gates; sólo habilita una intención
+nueva conforme al [ADR099 propuesto](../../docs/architecture/decisions/ADR-099-pre-migration-deployment-reconciliation.md).
+**Conciliación finalizada:** updater3fb13508…/política15697a43…/receptorb2880ea7…
+instalados, pins coherentes y originales privados en
+`/var/lib/nodia-updates/shutdown-fix-assets-f452dfa82420d710757945a652f0b172/`.
+El refresco tomó ambos locks, verificó los hashes anteriores y los recibos de
+recuperación y conservó current, PID y estados. Una escritura parcial rechaza la
+validación por hash: inspeccionar, sin rollback/retry automático.
+
+El helper operatorio `reconcile-pre-migration-update.py` está limitado al fallo
+observado. Usa IO857d9203… del sibling `refresh-production-cd.py`; código y todos
+los assets se verifican por bytes antes de ejecutarse. Exige los hashes explícitos
+de ambas configuraciones instaladas, request y recuperación completa. Toma los
+locks, registra intent exclusivo, verifica release/inventario, ambas copias del
+request, SQL READ ONLY/TLS45/45 sin trabajos, procesos, CORS y timers. Después
+guarda `recovered-manifest.json`0600 y `pre-migration-reconciliation.json`0600
+en el intento, con fsync; cualquier interrupción exige inspección, sin replay.
+
+Comando equivalente al helper ya ejecutado mediante bytes revisados; **no repetir**:
+
+```bash
+sudo python3 -I -B /home/nodia-admin/nodia-setup/backend/cd-shutdown-fix-20261113/reconcile-pre-migration-update.py \
+  --settings-sha256 516203c58b8f20a27b3b75a5cf96a4d63e2ec9e1938ca0eeb54b6411e8d01e32 \
+  --receiver-settings-sha256 e2fdd62ee2da08d9a5c30f25b4cf4e3403c1f29ea6347435825df879d6406ae6 \
+  --recovery-sha256 d0f9cc4990e551b85d3070f88fb6a4eddf6738e8b447f3c5415edb4cbdbe56e4 \
+  --request-sha256 2171371585e11679a51faa99dac7c215b0f492af0608a9f036744e3d16e89240
+```
+
+ACK y copia privada del manifiesto quedan ligados a estado/request/BLOCKED/
+recuperación/manifiesto exactos. Ambos gates revalidan el ACK aun si el estado se
+altera para aparentar ser terminal. Sólo cierra ese fallo histórico para una
+operación nueva; no permite reaplicar el ID, ignorar otro fallo o saltar un
+submission pendiente. Mantener juntos esos archivos históricos durante limpieza.
+
+Resultado SSH: deployment_ready/blocked=false con API/worker activos; consulta
+del ID original sigue failed y no reintentable. Esquema45 y f01 intactos. Sudo
+invalidado y tmux cerrado. Se requiere promoción por PR y CI/CD nuevos.
+
+Pruebas finales:60Python root sin skips +4SQL/Node y28checks systemd descritos en
+99§22. CI ejecuta los60 en python:3.12-slim-bookworm fijado por digest, sin red
+y con sólo operaciones montadas read-only; falla si hay skips. Para repetirlos
+localmente, montar ops/production en /repo/ops/production de ese contenedor y
+ejecutar `python3 -B /repo/ops/production/tests/run-cd-policy-tests.py`.
