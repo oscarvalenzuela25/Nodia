@@ -40,18 +40,32 @@ describe("NodiaAI durable observation", () => {
     await waitFor(() => expect(mocks.getNodiaAiRun).toHaveBeenCalledTimes(2));
     expect(mocks.getNodiaAiEvents.mock.calls[1][2]).toBe("synthetic-cursor-1");
   });
-  it("retains a historical run on a transient outage and hides it after an explicit access rejection", async () => {
-    mocks.getNodiaAiRun.mockResolvedValueOnce({...run, state: "completed"}).mockRejectedValueOnce(new Error("offline"));
+  it.each([401, 403, 404, 410])("retains a historical run on a transient outage and hides it after an explicit access rejection (%s)", async status => {
+    const outage = new Error("offline");
+    mocks.getNodiaAiRun.mockResolvedValueOnce({...run, state: "completed"}).mockRejectedValueOnce(outage);
     const {result} = renderHook(() => useNodiaAiHistoricalRun(chatId, runId), {wrapper: Wrapper});
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     await act(() => result.current.refetch());
+    await waitFor(() => {
+      expect(result.current.error).toBe(outage);
+      expect(result.current.isError).toBe(true);
+      expect(result.current.isFetching).toBe(false);
+    });
     expect(result.current.data?.run_id).toBe(runId);
     expect(result.current.accessRejected).toBe(false);
-    mocks.getNodiaAiRun.mockRejectedValue(Object.assign(new Error("denied"), {isAxiosError: true, response: {status: 403}}));
+    const denied = Object.assign(new Error("denied"), {isAxiosError: true, response: {status}});
+    mocks.getNodiaAiRun.mockRejectedValue(denied);
     await act(() => result.current.refetch());
-    expect(result.current.accessRejected).toBe(true);
-    expect(result.current.data).toBeUndefined();
     expect(client.getQueryData(["nodia-ai", "9", 1, "run", chatId, runId])).toBeNull();
+    // Refetch settles before the batched Query observer notification necessarily
+    // reaches React. Assert the committed rejection, not the prior outage render.
+    await waitFor(() => {
+      expect(result.current.error).toBe(denied);
+      expect(result.current.accessRejected).toBe(true);
+      expect(result.current.isError).toBe(true);
+      expect(result.current.isFetching).toBe(false);
+      expect(result.current.data).toBeUndefined();
+    });
   });
   it("deduplicates by both durable ID and sequence, sorts bigint sequences and bounds the window", () => {
     expect(mergeNodiaAiEvents([toolEvent, acceptedEvent], [toolEvent, { ...acceptedEvent, event_id: runId }])).toEqual([acceptedEvent, toolEvent]);

@@ -950,3 +950,30 @@ La identidad POSIX se verificó como root en contenedor; el runner CI normal sin
 root no demuestra esa parte. [PR7 hacia development](https://github.com/oscarvalenzuela25/Nodia/pull/7)
 versiona el arreglo y el procedimiento, sin merge automático ni nueva evidencia
 JSON versionada. Obsidian26.14 contiene comandos, explicación y contraste EC2.
+
+## 19. Prueba de rechazo de acceso histórico y siguiente promoción — 2026-11-13
+
+El intento2 de master superó el baseline, pero Client falló en
+`useObservation.test.tsx`: después de un error transitorio y un refetch403,
+la prueba esperaba accessRejected antes de que React confirmara el nuevo render.
+El fallo se reprodujo localmente sin modificar el hook. TanStack Query notifica
+la suscripción React por lotes; completar refetch no garantiza que result.current
+ya refleje esa notificación. El queryFn sí limpia la entrada del caché al recibir
+el rechazo y vuelve a lanzar el error.
+
+La rama `codex/fix-observation-access-rejection`, desde development `a3d5bf38`,
+ajusta sólo la sincronización de esa prueba: espera la observación del error
+transitorio y después el rechazo asentado, con error exacto, isError y fetch
+terminado. Conserva la comprobación inmediata de caché null y datos ocultos;
+extiende el mismo recorrido a401/403/404/410. No añade sleeps, cambia el scheduler,
+omite assertions ni modifica la autorización o el comportamiento de producción.
+
+Impacto en fichas NodiaAI: sólo test; contratos, capacidades, permisos, fuentes
+aprobadas y publicación permanecen iguales. No requiere registrar/publicar una
+ficha nueva. Validación y PR de promoción se completan con resultados efectivos
+antes de entregar; master no se fusiona automáticamente.
+
+Al preparar el commit:13/13 casos de observación, lint Client y build completos
+correctos; TypeScript sólo en el build. Suite global con maxWorkers2 en curso.
+El PR de promoción y Obsidian26.15 registran su resultado final por separado;
+preparar esta corrección no acredita por sí solo un nuevo despliegue.
