@@ -429,6 +429,29 @@ pages_read_failed_deployment_history_http_400 o pages_read_failed_upload_token_h
 El sufijo transport indica que no se recibió respuesta HTTP; en escrituras
 se conserva outcome_unknown y se exige conciliación, sin reenvío automático.
 
+El contrato de assets admite `{success:true,result:...}` sin `errors`; si ese
+campo existe debe ser un array vacío. Los ACK de upload/upsert pueden ser JSON
+con result null/true o204/205vacíos. Las consultas y el deployment exigen sus
+resultados reales. Respuestas se acotan a2MiB mientras se leen; los errores
+indican operación, HTTP y códigos numéricos Cloudflare saneados, sin cuerpos o
+mensajes remotos. Referencia y reproducción: [plan99§25](../../docs/mvp/99-production-deployment-and-cicd-plan.md#25-pages-respuesta-válida-rechazada-y-preflight-antes-del-backend--2026-11-14).
+
+`cd-release.mjs preflight-client` se ejecuta después de prepare y antes de
+backend. Verifica y extrae el artefacto una vez, calcula inventario/hash/MIME y
+consulta proyecto, historial terminal, upload-token y check-missing. Este POST
+es una consulta; el preflight no sube assets, registra hashes o crea deployments.
+Guarda un comprobante sin JWT atado a fuente, CI, artefacto y bytes estáticos;
+backend/client lo exigen y rechazan cambios posteriores. Publicar conserva gate
+y baseline actuales y obtiene su propio JWT. Superar preflight no acredita
+permiso o éxito de publicación y no convierte un resultado incierto en repetible.
+
+El resumen genera siempre un único `delivery-receipt.json` saneado; el workflow
+lo adjunta como `delivery-receipt-<CD run>-<attempt>` con la retención vigente del
+repositorio. Incluye CI/CD, identidades/digests, baselines, preflight, operation
+ID, deployment/marcador y últimos estados/flags/código de error. No subir el
+directorio privado completo, ZIPs, tokens, configuración o respuestas remotas.
+El recibo permite conciliar fallos parciales; no autoriza un replay.
+
 No se reintenta un envio incierto. Backend consulta su operation ID determinista
 antes de enviar. Pages registra el intento antes de su unico POST de creacion.
 El receptor rechaza rerun CD run_attempt > 1 y consulta historial CD del mismo CI;
