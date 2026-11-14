@@ -1316,3 +1316,34 @@ Esta entrega sólo cambia documentación, sin instalación, nuevas credenciales,
 ingesta, alertas, publicación o modificación de los gates/no-replay de CI/CD.
 El siguiente paso es revisar la explicación y completar G1 de104; logs y
 monitoreo productivos conservan pendientes de implementación/medición reales.
+
+## 27. Pages publicado: verificación pública durante la transición — 2026-11-14
+
+PR21/PR22 integrados; development59118f99 y masterbb83fd26. El
+[CI43620970891](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43620970891)
+pasó y [CD43622185230](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43622185230)
+completó backend y confirmó Pages, pero falló después en
+`pwa_public_asset_digest_mismatch`. El recibo original conserva operación
+`017edb5724bd1f86c6835130c7cc97cd` completa y deployment
+`16468e24-1873-4728-8c4a-58a353fa0ae1` publicado, con verificación pública fallida.
+No repetir apply, upload o POST por ese fallo posterior.
+
+Se descargó el ZIP Client original14125035031, verificando su SHA256 oficial;
+la lectura HTTPS posterior valida los diez recursos PWA del mismo artefacto,
+incluido HTML3595bytes, sin rebuild o nueva publicación. El desacuerdo no
+persiste. El verificador previo sólo hacía una lectura por archivo; confirmar
+la identidad canónica por API no resuelve esa transición del alias público.
+El log histórico no identifica el archivo exacto que falló.
+
+`codex/fix-production-deploy`, desde development actualizado, añade polling
+de snapshots completos:120segundos globales monotónicos, hasta25intentos y
+pausas de hasta5segundos. GET de hasta20segundos, acotado por el presupuesto
+restante. MIME/tamaño/SHA256 exactos conservados; un desacuerdo permanente
+sigue fallando. Sólo lecturas anónimas al origen fijo, sin reenvío de efectos.
+Estado/recibo añaden ruta pública permitida y contador, sin cuerpos ni secretos.
+
+[Evidencia y validación](../evidence/pages-public-convergence-20261114.md)
+separan incidente, diagnóstico, paquete original, pruebas y pendientes. El
+arreglo no cambia la aplicación o contratos/fichas NodiaAI; PWA conserva sus
+gates de instalación/auth/dispositivo. Promoción por PR y CI/CD nuevos, sin
+alterar el resultado ni reejecutar CD43622185230.

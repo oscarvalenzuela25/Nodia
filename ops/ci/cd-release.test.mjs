@@ -50,7 +50,7 @@ test('post-publication success persists verification beside the existing deploym
   }
 });
 
-test('post-publication read failures preserve the published deployment, sanitize unknown errors and never retry', async t => {
+test('exhausted post-publication verification preserves the published deployment and never invokes another publication', async t => {
   const f = fixture(t), stateFile = path.join(f.environment.CD_WORKSPACE, 'pages-state.json');
   const result = { status: 'complete', source_sha: 'a'.repeat(40), deployment_id: 'synthetic-deployment', deployment_requested: true };
   for (const [message, code] of [
@@ -68,6 +68,24 @@ test('post-publication read failures preserve the published deployment, sanitize
       pwa_assets_verified: false, error_code: code, automatic_retry_allowed: false });
     assert.doesNotMatch(JSON.stringify(state), /private|remote|secret|trace/);
     assert.equal(calls, 1); assert.equal(result.status, 'complete');
+  }
+});
+
+test('public verification failure stores only an allowlisted resource and bounded read count with the deployment identity', async t => {
+  const f = fixture(t), stateFile = path.join(f.environment.CD_WORKSPACE, 'pages-state.json');
+  const result = { status: 'complete', deployment_id: '11111111-1111-1111-1111-111111111111', deployment_requested: true };
+  for (const [resource, attempts, included] of [['/', 25, true], ['https://private.invalid/token', 999, false]]) {
+    await assert.rejects(confirmPublishedClient({ result, directory: 'synthetic-dist', stateFile,
+      verify: async () => { throw Object.assign(new Error('pwa_public_asset_digest_mismatch'), {
+        pwa_failed_asset_path: resource, pwa_verification_attempts: attempts, body: 'private-secret' }); } }),
+    /pwa_public_asset_digest_mismatch/);
+    const state = JSON.parse(fs.readFileSync(stateFile));
+    assert.equal(state.deployment_id, result.deployment_id); assert.equal(state.deployment_requested, true);
+    assert.equal(state.automatic_retry_allowed, false);
+    assert.equal(Object.hasOwn(state, 'pwa_failed_asset_path'), included);
+    assert.equal(Object.hasOwn(state, 'pwa_verification_attempts'), included);
+    if (included) { assert.equal(state.pwa_failed_asset_path, '/'); assert.equal(state.pwa_verification_attempts, 25); }
+    assert.doesNotMatch(JSON.stringify(state), /private|secret|https:/);
   }
 });
 

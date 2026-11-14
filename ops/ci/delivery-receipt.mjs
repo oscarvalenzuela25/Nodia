@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { isHex, isSha, numeric, repository } from './cd-github.mjs';
+import { pwaVerificationDetails } from './pwa-assets.mjs';
 
 const statusValues = new Set(['baseline_verified', 'prepared', 'preflight_started', 'preflight_verified', 'not_required', 'already_current',
   'upload_requested', 'deployment_requested', 'submitted', 'complete', 'failed', 'unknown',
@@ -53,6 +54,7 @@ function state(value) {
     else if (value[key] === null) result[key] = null;
   }
   if (Object.hasOwn(value, 'error_code')) result.error_code = receiptError(value.error_code);
+  Object.assign(result, pwaVerificationDetails(value));
   result.automatic_retry_allowed = false;
   return result;
 }

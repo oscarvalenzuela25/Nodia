@@ -6,6 +6,21 @@ La navegación está en el [índice del MVP](README.md). Las cronologías, check
 
 ## Próxima acción recomendada
 
+**CD: convergencia pública de Pages, 2026-11-14:** CI43620970891 de
+masterbb83fd26 pasó; CD43622185230 completó backend y publicó Pages, pero la
+lectura inmediata PWA falló en digest. El ZIP original Client14125035031, con
+SHA256 oficial comprobado, coincide después por HTTPS en los diez recursos,
+incluido HTML. En `codex/fix-production-deploy`, desde development59118f99,
+se añade verificación de snapshots completos durante120segundos/hasta25intentos,
+sólo GET sin credenciales y conservando MIME/tamaño/SHA256 exactos. Fallo
+permanente conserva deployment, ruta permitida y contador; no autoriza replay.
+Ver [99§27](99-production-deployment-and-cicd-plan.md#27-pages-publicado-verificación-pública-durante-la-transición--2026-11-14)
+y [evidencia](../evidence/pages-public-convergence-20261114.md).
+Siguiente: PR hacia development y promoción a master con CI/CD nuevos;
+no reejecutar CD43622185230 ni operación017edb5724bd1f86c6835130c7cc97cd.
+Validación:28focales y108Node Linux/Node24.22.2 sin omisiones; control de una
+sola ronda rechazado y módulo restaurado, más HTTPS del paquete original.
+
 **Logs y monitoreo — documentación previa, 2026-11-14:** el usuario elige Grafana
 Cloud Free y pide comprenderlo antes de instalar. Rama
 `codex/plan-grafana-cloud-monitoring` desde development0639f0d9.

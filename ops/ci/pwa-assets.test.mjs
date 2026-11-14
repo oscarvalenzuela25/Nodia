@@ -33,7 +33,7 @@ test('installation assets have real dimensions and same-origin file references; 
   assert.equal(profile.files.length, 10);
   assert.equal(profile.files[0].path, '/manifest.webmanifest');
   const result = await verifyPublishedPwaAssets(f.directory, { request: publicRequest(f.directory) });
-  assert.deepEqual(result, { pwa_assets_verified: true, pwa_assets_count: 10 });
+  assert.deepEqual(result, { pwa_assets_verified: true, pwa_assets_count: 10, pwa_verification_attempts: 1 });
 });
 
 test('historical builds remain valid; removing only the manifest or its HTML link cannot silently disable validation', t => {
@@ -115,7 +115,7 @@ test('published SPA fallback, wrong MIME, modified bytes and missing files fail 
     () => new Response('x', { headers: { 'content-type': 'application/manifest+json', 'content-length': '999999999' } }),
     () => new Response(Buffer.alloc(1024 * 1024), { headers: { 'content-type': 'application/manifest+json' } }),
   ]) {
-    await assert.rejects(verifyPublishedPwaAssets(f.directory, { request: publicRequest(f.directory, change) }),
+    await assert.rejects(verifyPublishedPwaAssets(f.directory, { request: publicRequest(f.directory, change), pollLimit: 1 }),
       /pwa_public_asset_(mime_invalid|digest_mismatch|status_invalid|size_invalid)/);
   }
 });
@@ -123,14 +123,92 @@ test('published SPA fallback, wrong MIME, modified bytes and missing files fail 
 test('public entry HTML must also match the artifact, so stale metadata cannot pass with fresh icon URLs', async t => {
   const f = fixture(t);
   await assert.rejects(verifyPublishedPwaAssets(f.directory, { request: publicRequest(f.directory, (response, pathname) =>
-    pathname === '/' ? new Response('<title>Historical app</title>', { headers: { 'content-type': 'text/html' } }) : response) }),
+    pathname === '/' ? new Response('<title>Historical app</title>', { headers: { 'content-type': 'text/html' } }) : response), pollLimit: 1 }),
   /pwa_public_asset_digest_mismatch/);
 });
 
-test('a public read transport failure is sanitized and attempted only once', async t => {
+test('a public read transport failure is sanitized when its read budget is exhausted', async t => {
   const f = fixture(t); let calls = 0;
   await assert.rejects(verifyPublishedPwaAssets(f.directory, { request: async () => {
     calls++; throw new Error('private error details');
-  } }), error => { assert.equal(error.message, 'pwa_public_asset_request_failed'); return true; });
+  }, pollLimit: 1 }), error => { assert.equal(error.message, 'pwa_public_asset_request_failed'); return true; });
   assert.equal(calls, 1);
+});
+
+function polling(overrides = {}) {
+  let time = 0;
+  const delays = [];
+  return { delays, options: { now: () => time, sleep: async ms => { delays.push(ms); time += ms; },
+    pollLimit: 3, ...overrides } };
+}
+
+test('the public alias can converge after publication while every read still requires exact artifact bytes', async t => {
+  const f = fixture(t), clock = polling(); let round = 0, roots = 0;
+  const request = publicRequest(f.directory, (response, pathname) => {
+    if (pathname === '/manifest.webmanifest') round++;
+    if (pathname === '/') {
+      roots++;
+      if (round === 1) return new Response('<title>Previous deployment</title>', { headers: { 'content-type': 'text/html' } });
+    }
+    return response;
+  });
+  const result = await verifyPublishedPwaAssets(f.directory, { ...clock.options, request });
+  assert.equal(result.pwa_assets_verified, true); assert.equal(result.pwa_verification_attempts, 2);
+  assert.equal(round, 2); assert.equal(roots, 2); assert.deepEqual(clock.delays, [5000]);
+});
+
+test('each polling attempt restarts the full snapshot instead of accumulating successful files across deployments', async t => {
+  const f = fixture(t), clock = polling(); let round = 0, roots = 0;
+  const request = publicRequest(f.directory, (response, pathname) => {
+    if (pathname === '/manifest.webmanifest') round++;
+    if (pathname === '/') roots++;
+    if (round === 1 && pathname === '/icons/icon-192.png')
+      return new Response('old', { headers: { 'content-type': 'image/png' } });
+    if (round === 2 && pathname === '/manifest.webmanifest')
+      return new Response('{}', { headers: { 'content-type': 'application/manifest+json' } });
+    return response;
+  });
+  const result = await verifyPublishedPwaAssets(f.directory, { ...clock.options, request });
+  assert.equal(result.pwa_verification_attempts, 3); assert.equal(round, 3); assert.equal(roots, 1);
+});
+
+test('fresh icons with persistently old entry HTML exhaust the read count and preserve safe failure details', async t => {
+  const f = fixture(t), clock = polling(); let reads = 0;
+  const serve = publicRequest(f.directory, (response, pathname) => pathname === '/'
+    ? new Response('<title>Previous deployment</title>', { headers: { 'content-type': 'text/html' } }) : response);
+  await assert.rejects(verifyPublishedPwaAssets(f.directory, { ...clock.options,
+    request: async (...args) => { reads++; return serve(...args); } }), error => {
+    assert.equal(error.message, 'pwa_public_asset_digest_mismatch');
+    assert.equal(error.pwa_failed_asset_path, '/'); assert.equal(error.pwa_verification_attempts, 3); return true;
+  });
+  assert.equal(reads, 30); assert.deepEqual(clock.delays, [5000, 5000]);
+});
+
+test('wall-clock budget also bounds requests, sleeps and successful-looking partial snapshots', async t => {
+  const f = fixture(t), clock = polling({ timeoutMs: 3 }); let reads = 0;
+  await assert.rejects(verifyPublishedPwaAssets(f.directory, { ...clock.options,
+    request: async () => { reads++; throw Error('private transport details'); } }), /pwa_public_asset_request_failed/);
+  assert.equal(reads, 1); assert.deepEqual(clock.delays, [3]);
+  let time = 0, partialReads = 0;
+  const serve = publicRequest(f.directory);
+  await assert.rejects(verifyPublishedPwaAssets(f.directory, { timeoutMs: 10, now: () => time,
+    request: async (...args) => { partialReads++; time += 5; return serve(...args); },
+    sleep: async () => assert.fail('exhausted deadline cannot sleep') }), /pwa_public_asset_request_failed/);
+  assert.equal(partialReads, 2);
+});
+
+test('transport, HTTP, MIME and oversized replies may converge but can never bypass exact validation', async t => {
+  const f = fixture(t);
+  for (const first of [
+    () => { throw new Error('private transport credential'); },
+    () => new Response('', { status: 503 }),
+    () => new Response('<html>SPA fallback</html>', { headers: { 'content-type': 'text/html' } }),
+    () => new Response('{}', { headers: { 'content-type': 'application/manifest+json', 'content-length': '999999999' } }),
+  ]) {
+    const clock = polling(); let calls = 0;
+    const serve = publicRequest(f.directory);
+    const result = await verifyPublishedPwaAssets(f.directory, { ...clock.options,
+      request: async (...args) => ++calls === 1 ? first() : serve(...args) });
+    assert.equal(result.pwa_verification_attempts, 2); assert.equal(calls, 11);
+  }
 });

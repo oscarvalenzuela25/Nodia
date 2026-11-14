@@ -299,3 +299,16 @@ física, CI Linux, revisión e integración por PR y comprobación HTTPS del mis
 artefacto publicado. iOS no verificado y sin soporte anunciado. No hubo
 inferencias, mutaciones de negocio, instalación en dispositivos o deploy.
 PWA-002…006 permanecen abiertas y no condicionan este candidato.
+
+## 12. Verificación HTTPS: transición pública tras publicar — 2026-11-14
+
+El CD43622185230 publicó el frontend pero su primera verificación pública
+falló en digest. La lectura posterior de los diez recursos del ZIP CI original,
+sin rebuild y con digest oficial verificado, coincide exactamente. El gate
+se corrige con snapshots completos durante un plazo de120segundos y hasta25
+intentos, sólo GET sin credenciales; MIME/tamaño/SHA256 exactos permanecen
+obligatorios. Una discordancia persistente conserva el deployment publicado
+y el fallo, sin volver a publicar. [Plan99§27](99-production-deployment-and-cicd-plan.md#27-pages-publicado-verificación-pública-durante-la-transición--2026-11-14)
+y [evidencia](../evidence/pages-public-convergence-20261114.md) registran
+identidades, límites y validación. No modifica los assets, auth, manifest o
+alcance instalable; standalone y dispositivos siguen pendientes por su alcance.
