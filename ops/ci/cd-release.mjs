@@ -8,7 +8,7 @@ import { CdRejected, extractOriginalZip, githubClient, isSha, numeric, outputs, 
 import { deploymentPlan, unmanagedRuntimePaths } from './cd-selection.mjs';
 import { deployBackend, readBackend } from './cd-vps.mjs';
 import { preflightPages, publishPages } from './cd-pages.mjs';
-import { verifyPublishedPwaAssets } from './pwa-assets.mjs';
+import { pwaVerificationDetails, verifyPublishedPwaAssets } from './pwa-assets.mjs';
 import { inventory } from '../production/package-backend-release.mjs';
 import { deliveryReceipt } from './delivery-receipt.mjs';
 
@@ -162,7 +162,7 @@ export async function confirmPublishedClient({ result, directory, stateFile, ver
     const code = error instanceof Error && publicCodes.has(error.message)
       ? error.message : 'pwa_public_assets_verification_failed';
     writeState(stateFile, { ...result, status: 'published_assets_verification_failed',
-      pwa_assets_verified: false, error_code: code, automatic_retry_allowed: false });
+      pwa_assets_verified: false, error_code: code, ...pwaVerificationDetails(error), automatic_retry_allowed: false });
     throw new CdRejected(code);
   }
   const confirmed = { ...result, ...pwa, automatic_retry_allowed: false };

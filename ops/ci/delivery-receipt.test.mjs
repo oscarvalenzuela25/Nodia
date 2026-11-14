@@ -60,3 +60,20 @@ test('malformed evidence and malicious values cannot prevent or contaminate the 
   assert.equal(receipt.backend.automatic_retry_allowed, false);
   assert.doesNotMatch(JSON.stringify(receipt), /private_secret|private token|remote\.invalid|private-marker|private-deployment-id|trace/);
 });
+
+test('public asset verification receipts retain the published identity and only safe diagnostics', t => {
+  const f = fixture(t), deployment = '11111111-1111-1111-1111-111111111111';
+  for (const [resource, attempts, included] of [['/', 25, true], ['https://private.invalid/token', 999, false]]) {
+    f.write('pages-state.json', { status: 'published_assets_verification_failed', deployment_id: deployment,
+      deployment_requested: true, pwa_assets_verified: false, error_code: 'pwa_public_asset_digest_mismatch',
+      pwa_failed_asset_path: resource, pwa_verification_attempts: attempts, body: 'private-secret' });
+    const receipt = deliveryReceipt(f.directory, f.environment);
+    assert.equal(receipt.client.deployment_id, deployment); assert.equal(receipt.client.deployment_requested, true);
+    assert.equal(receipt.client.error_code, 'pwa_public_asset_digest_mismatch');
+    assert.equal(receipt.client.pwa_assets_verified, false); assert.equal(receipt.automatic_retry_allowed, false);
+    assert.equal(Object.hasOwn(receipt.client, 'pwa_failed_asset_path'), included);
+    assert.equal(Object.hasOwn(receipt.client, 'pwa_verification_attempts'), included);
+    if (included) { assert.equal(receipt.client.pwa_failed_asset_path, '/'); assert.equal(receipt.client.pwa_verification_attempts, 25); }
+    assert.doesNotMatch(JSON.stringify(receipt), /private|secret|https:/);
+  }
+});
