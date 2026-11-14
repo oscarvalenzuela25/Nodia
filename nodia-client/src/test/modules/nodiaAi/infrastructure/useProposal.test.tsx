@@ -37,17 +37,34 @@ describe("NodiaAI retained proposal readers", () => {
     await waitFor(() => expect(mocks.getNodiaAiProposal).toHaveBeenCalledTimes(2));
     await waitFor(() => expect(mocks.getNodiaAiProposalReview).toHaveBeenCalledTimes(2));
   });
-  it("keeps reviewed data through a 500 outage and removes the proposal and review on denial", async () => {
+  it.each([401, 403, 404, 410])("keeps reviewed data through a 500 outage and removes the proposal and review on denial (%s)", async status => {
     const {result} = renderHook(() => {
       const query = useNodiaAiProposal(chatId, proposalEvent.payload);
       return {query, review: useNodiaAiProposalReview(chatId, proposalEvent.payload, query.data)};
     }, {wrapper: Wrapper});
     await waitFor(() => expect(result.current.review.data).toEqual(readonlyReview));
-    mocks.getNodiaAiProposalReview.mockRejectedValueOnce(new Error("offline"));
+    const outage = Object.assign(new Error("offline"), {isAxiosError: true, response: {status: 500}});
+    mocks.getNodiaAiProposalReview.mockRejectedValueOnce(outage);
     await act(() => result.current.review.refetch());
+    await waitFor(() => {
+      expect(result.current.review.error).toBe(outage);
+      expect(result.current.review.isError).toBe(true);
+      expect(result.current.review.isFetching).toBe(false);
+    });
     expect(result.current.review.data).toEqual(readonlyReview); expect(result.current.query.data).toEqual(proposal);
-    mocks.getNodiaAiProposalReview.mockRejectedValue(Object.assign(new Error("denied"), {isAxiosError: true, response: {status: 403}}));
+    const denied = Object.assign(new Error("denied"), {isAxiosError: true, response: {status}});
+    mocks.getNodiaAiProposalReview.mockRejectedValue(denied);
     await act(() => result.current.review.refetch());
-    expect(result.current.review.data).toBeNull(); expect(result.current.query.data).toBeUndefined();
+    expect(client.getQueryData(["nodia-ai", "9", 1, "proposal", chatId, proposalEvent.payload])).toBeNull();
+    expect(client.getQueryData(["nodia-ai", "9", 1, "proposal-review", chatId, proposalEvent.payload])).toBeNull();
+    // Refetch can settle before the batched observer notification reaches React.
+    // Observe this denial, rather than inspecting the preceding outage render.
+    await waitFor(() => {
+      expect(result.current.review.error).toBe(denied);
+      expect(result.current.review.isError).toBe(true);
+      expect(result.current.review.isFetching).toBe(false);
+      expect(result.current.review.data).toBeNull();
+      expect(result.current.query.data).toBeUndefined();
+    });
   });
 });

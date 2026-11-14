@@ -1136,3 +1136,47 @@ Se confirmó ausencia de acciones temporales activas, se invalidó sudo en la PT
 y se cerró tmux. Obsidian26.20 explica causa, comandos de lectura, recuperación,
 conciliación y equivalencia con EC2/ECS/ALB. El arreglo se versiona en la rama
 codex/fix-backend-shutdown-recovery desde development, con PR de revisión.
+
+## 23. Prueba de propuestas: esperar el rechazo observado — 2026-11-13
+
+El [CI43520305205 del PR13](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43520305205)
+pasó pipeline, Server/worker, Python y host nativo. Client pasó lint y build y
+falló en useProposal.test.tsx: después de refetch403 la aserción esperaba null,
+pero result.current.review.data aún conservaba el objeto revisado anterior.
+El PR sigue siendo development→master; un fallo de este CI no inicia CD.
+
+El caso original pasa aislado localmente: no se afirma haber reproducido ahí
+la intermitencia de GitHub. La inspección del hook confirma que el catch borra
+sincrónicamente ambas claves de caché antes de relanzar el rechazo. El cliente
+TanStack instalado suscribe React mediante notifyManager.batchCalls, con
+notificación programada; completar refetch no garantiza observar ya el render
+de ese resultado. El test comprobaba datos sin esperar el error concreto.
+
+Se mantiene la unidad real y sus fronteras sintéticas. El test ahora representa
+HTTP500 explícitamente, espera su error/isError/fetch terminado y verifica que
+review/propuesta siguen disponibles. Después hace lo mismo con el rechazo y
+comprueba review null/propuesta undefined. Se conservan además comprobaciones
+inmediatas de que las dos entradas de caché quedaron null. Se cubren los cuatro
+rechazos401/403/404/410 que ya maneja el hook. No se añaden sleeps, retries,
+cambios de scheduler, configuración de Vitest o alteraciones de autorización.
+
+Una revisión independiente encontró el mismo falso positivo potencial en el
+test de detalle después de503: sus valores de retención podían coincidir con
+el render exitoso previo. Se espera también allí el error503 exacto, isError
+y fetch terminado antes de verificar retención y autorización. Los demás
+rechazos cercanos revisados ya esperan sus indicadores; no se amplía el cambio.
+
+Validación enfocada:62pruebas en3archivos, lint y build Client correctos;
+TypeScript sólo dentro del build. Como control de valor se omitieron las dos
+limpiezas del hook temporalmente en la copia local: los4rechazos fallaron en
+la comprobación de caché. Los bytes originales del hook se restauraron y se
+comprobó ausencia de diff productivo. Experimento/logs en output ignorado,
+sin servicios externos, inferencias o datos reales.
+
+Suite global final:2895tests en353archivos, todos correctos y0pendientes, con
+maxWorkers2 (762,6s en Windows). Las comprobaciones locales no acreditan el CI
+remoto del commit nuevo. Rama codex/fix-proposal-readiness desde developmente39cfc65; primero PR
+hacia development y luego actualización automática del PR13 al incorporar el fix.
+Impacto en conocimiento NodiaAI: sólo pruebas, sin cambios de funcionalidad,
+contratos, capacidades, fichas aprobadas o publicación. No se modifica el VPS,
+Pages, las migraciones, secretos o políticas de recuperación del despliegue.

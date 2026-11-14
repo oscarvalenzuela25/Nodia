@@ -271,10 +271,16 @@ describe("NodiaAI data lifecycle", () => {
   });
 
   it("preserves cached detail after a transient outage and never classifies cancellations as denial", async () => {
-    mocks.getNodiaAiConversation.mockResolvedValueOnce(detail).mockRejectedValueOnce(Object.assign(new Error("offline"), {isAxiosError: true, response: {status: 503}}));
+    const outage = Object.assign(new Error("offline"), {isAxiosError: true, response: {status: 503}});
+    mocks.getNodiaAiConversation.mockResolvedValueOnce(detail).mockRejectedValueOnce(outage);
     const {result} = renderHook(() => useNodiaAiConversation(chatId), {wrapper: Wrapper});
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     await act(() => result.current.refetch());
+    await waitFor(() => {
+      expect(result.current.error).toBe(outage);
+      expect(result.current.isError).toBe(true);
+      expect(result.current.isFetching).toBe(false);
+    });
     expect(result.current.data).toEqual(detail);
     expect(result.current.draftAuthorized).toBe(true);
     expect(result.current.accessRejected).toBe(false);
