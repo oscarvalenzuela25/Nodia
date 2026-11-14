@@ -1,6 +1,6 @@
 import { getHttpErrorMessage, notifyHttpError } from "../../../../../../../../config/httpFeedback";
 import type { FC, FormEvent } from "react";
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -30,6 +30,8 @@ import {
 } from "../../../../infrastructure/useServices";
 import type { DiscoveredModelItem } from "../../../../infrastructure/types";
 import type { SyncModelsModalProps } from "./types";
+import { modelCardContains, modelCardEffort, providerModelCards } from "../../../../infrastructure/modelCards";
+import { selectSyncCards, syncCardSelected, syncModelsFieldsPatch, syncRoleOptions, validDiscoveredModels, type SyncModelCard } from "../../../../infrastructure/syncModelSelection";
 import {
   ModalContentContainer,
   ProviderMetaHeader,
@@ -44,7 +46,7 @@ import {
   ModalActionsContainer,
 } from "./styles";
 
-const SyncModelsModal: FC<SyncModelsModalProps> = ({
+const SyncModelsEditor: FC<SyncModelsModalProps> = ({
   open,
   provider,
   isOperational,
@@ -59,14 +61,48 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
   const [mainModelId, setMainModelId] = useState<string>("");
   const [ocrModelId, setOcrModelId] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [effortChanges, setEffortChanges] = useState<Record<string, string>>({});
+  const [mainNeedsEffort, setMainNeedsEffort] = useState(false);
+  const [ocrNeedsEffort, setOcrNeedsEffort] = useState(false);
+  const [invalidDiscovery, setInvalidDiscovery] = useState(false);
+  const submission = useRef(false);
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
 
   const requestedMode = mode ?? provider?.default_mode ?? provider?.mode ?? null;
   const activeMode = requestedMode === "agentic" || requestedMode === "api_key" ? requestedMode : null;
   const targetEngine = activeMode === "agentic" ? "agentic" : undefined;
+  const providerFields = provider?.fields ?? {};
+  const scopedFields = providerFields[activeMode ?? ""];
+  const modeFields = typeof scopedFields === "object" && scopedFields !== null && !Array.isArray(scopedFields)
+    ? scopedFields as Record<string, unknown>
+    : providerFields.agentic || providerFields.api_key ? {} : providerFields;
+  const savedLevels = modeFields.thinking_levels;
+  const thinkingLevels: Record<string, unknown> = {
+    ...(typeof savedLevels === "object" && savedLevels !== null && !Array.isArray(savedLevels) ? savedLevels : {}),
+    ...effortChanges,
+  };
+  if (ocrModelId && !Object.hasOwn(thinkingLevels, ocrModelId) && modeFields.thinking_level !== undefined) {
+    thinkingLevels[ocrModelId] = modeFields.thinking_level;
+  }
+  const modelCards = providerModelCards(discoveredModels,
+    (provider?.key ?? provider?.catalog?.key) === "gemini" && activeMode === "agentic", {
+      selectedModel: mainModelId, ocrModel: ocrModelId,
+      thinkingLevel: effortChanges[mainModelId] ?? modeFields.thinking_level,
+      thinkingLevels,
+    });
+  const mainCard = modelCards.find(card => modelCardContains(card, mainModelId));
+  const ocrCard = modelCards.find(card => modelCardContains(card, ocrModelId));
+  const selectedCardCount = modelCards.filter(card => syncCardSelected(card, selectedModelIds)).length;
+  const hasPreferenceConflict = modelCards.some(card => card.preferenceConflicts.length > 0);
 
   const {
     mutate: mutateSyncModels,
     isPending: isLoadingDiscovery,
+    isSuccess: discoverySucceeded,
     error: syncModelsError,
     reset: resetSyncModels,
   } = useSyncAiProviderModels();
@@ -82,7 +118,8 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
   // Operational check:
   // Respects isOperational prop passed from ProviderDetail.
   const isOperationalMode = isOperational === true && activeMode !== null;
-  const discoveryError = syncModelsError ? getHttpErrorMessage(syncModelsError) : null;
+  const discoveryError = syncModelsError ? getHttpErrorMessage(syncModelsError)
+    : invalidDiscovery ? t("core:server_error_toast") : null;
 
   const handleDiscoveredModels = useCallback(
     (fetchedList: DiscoveredModelItem[]) => {
@@ -154,6 +191,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
   const fetchLiveModels = useCallback(() => {
     const currentProvider = providerRef.current;
     if (!currentProvider?.id || !isOperationalMode) return;
+    setInvalidDiscovery(false);
     mutateSyncModels(
       {
         id: currentProvider.id,
@@ -164,7 +202,12 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
       {
         onError: notifyHttpError,
         onSuccess: (res) => {
-          handleDiscoveredModels(res.models || []);
+          if (!validDiscoveredModels(res?.models)) {
+            setInvalidDiscovery(true);
+            sileo.error({ title: t("core:server_error_toast") });
+            return;
+          }
+          handleDiscoveredModels(res.models);
           sileo.success({ title: t("ai_providers:modal_sync_models.discovery_success") });
         },
       }
@@ -183,82 +226,37 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
     }
   }, [open, provider?.id, isOperationalMode, fetchLiveModels]);
 
-  const handleToggleModel = (modelId: string) => {
-    setSelectedModelIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(modelId)) {
-        next.delete(modelId);
-        if (mainModelId === modelId) {
-          setMainModelId("");
-        }
-        if (ocrModelId === modelId) {
-          setOcrModelId("");
-        }
-      } else {
-        next.add(modelId);
-      }
-      return next;
-    });
+  const applyCardSelection = (cards: SyncModelCard[], enabled: boolean) => {
+    const next = selectSyncCards(cards, selectedModelIds, enabled);
+    setSelectedModelIds(next);
+    if (mainModelId && !next.has(mainModelId)) { setMainModelId(""); setMainNeedsEffort(false); }
+    if (ocrModelId && !next.has(ocrModelId)) { setOcrModelId(""); setOcrNeedsEffort(false); }
   };
 
-  const filteredModels = useMemo(() => {
+  const filteredCards = (() => {
     const query = searchQuery.toLowerCase().trim();
-    if (!query) return discoveredModels;
-    return discoveredModels.filter((model) => {
+    if (!query) return modelCards;
+    return modelCards.filter(card => (card.variants.length ? card.variants.map(item => item.model) : [card.model]).some(model => {
       const idMatch = model.id.toLowerCase().includes(query);
       const nameMatch = (model.displayName || model.name || "").toLowerCase().includes(query);
       const descMatch = (model.description || "").toLowerCase().includes(query);
       const capMatch = model.capabilities?.some((cap) => cap.toLowerCase().includes(query));
       return idMatch || nameMatch || descMatch || Boolean(capMatch);
-    });
-  }, [discoveredModels, searchQuery]);
+    }));
+  })();
 
   const handleSelectAll = () => {
-    if (searchQuery.trim()) {
-      setSelectedModelIds((prev) => {
-        const next = new Set(prev);
-        filteredModels.forEach((m) => next.add(m.id));
-        return next;
-      });
-    } else {
-      const allIds = new Set(discoveredModels.map((m) => m.id));
-      setSelectedModelIds(allIds);
-    }
+    applyCardSelection(filteredCards, true);
   };
 
   const handleDeselectAll = () => {
-    if (searchQuery.trim()) {
-      setSelectedModelIds((prev) => {
-        const next = new Set(prev);
-        filteredModels.forEach((m) => next.delete(m.id));
-        if (mainModelId && !next.has(mainModelId)) {
-          setMainModelId("");
-        }
-        if (ocrModelId && !next.has(ocrModelId)) {
-          setOcrModelId("");
-        }
-        return next;
-      });
-    } else {
-      setSelectedModelIds(new Set());
-      setMainModelId("");
-      setOcrModelId("");
-    }
+    applyCardSelection(filteredCards, false);
   };
 
   // Dropdown options based strictly on currently checked models
-  const checkedModelOptions = useMemo(() => {
-    return discoveredModels
-      .filter((m) => selectedModelIds.has(m.id))
-      .map((m) => ({
-        value: m.id,
-        label: m.displayName || m.name || m.id,
-        description: m.description,
-      }));
-  }, [discoveredModels, selectedModelIds]);
+  const checkedModelOptions = syncRoleOptions(modelCards, selectedModelIds, mainModelId);
 
-  const ocrOptions = useMemo(() => {
-    return [
+  const ocrOptions = [
       {
         value: "",
         label: t(
@@ -266,9 +264,37 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
           "(Ninguno / Sin foco OCR específico)"
         ),
       },
-      ...checkedModelOptions,
+      ...syncRoleOptions(modelCards, selectedModelIds, ocrModelId),
     ];
-  }, [checkedModelOptions, t]);
+
+  const roleEffortControl = (card: SyncModelCard | undefined, modelId: string, main: boolean) => {
+    if (!card?.variants.length) return null;
+    const needsEffort = main ? mainNeedsEffort : ocrNeedsEffort;
+    const exact = card.variants.find(item => item.model.id === modelId);
+    const saved = Object.hasOwn(thinkingLevels, modelId) ? thinkingLevels[modelId]
+      : main ? modeFields.thinking_level : undefined;
+    const value = needsEffort || saved === null ? null : typeof saved === "string" ? saved : exact?.effort ?? null;
+    return <>
+      <SelectSingleInput
+        label={t("ai_providers:detail.reasoning_model_label", { model: card.label })}
+        value={value}
+        placeholder={t("ai_providers:modal_sync_models.choose_reasoning")}
+        options={card.variants.map(item => ({ value: item.effort, label: t(`ai_providers:detail.level_${item.effort}`) }))}
+        clearable={false}
+        disabled={isSubmitting || isLoadingDiscovery}
+        onChange={value => {
+          const variant = value ? modelCardEffort(card, value) : undefined;
+          if (!variant) return;
+          // Activating a family retains every exact variant for later effort choices.
+          setSelectedModelIds(selectSyncCards([card], selectedModelIds, true));
+          setEffortChanges(previous => ({ ...previous, [variant.model.id]: variant.effort }));
+          if (main) { setMainModelId(variant.model.id); setMainNeedsEffort(false); }
+          else { setOcrModelId(variant.model.id); setOcrNeedsEffort(false); }
+        }}
+      />
+      <Typography variant="caption" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>{modelId}</Typography>
+    </>;
+  };
 
   const isSubmitting = updateProviderMutation.isPending;
 
@@ -277,6 +303,8 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
     isOperationalMode &&
     !isSubmitting &&
     !isLoadingDiscovery &&
+    !discoveryError &&
+    !mainNeedsEffort && !ocrNeedsEffort && !hasPreferenceConflict &&
     selectedModelIds.size > 0 &&
     Boolean(mainModelId);
 
@@ -288,13 +316,16 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
     setMainModelId("");
     setOcrModelId("");
     setSearchQuery("");
+    setEffortChanges({});
+    setMainNeedsEffort(false);
+    setOcrNeedsEffort(false);
     resetSyncModels();
     onClose();
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!provider?.id || !activeMode || !isOperationalMode || isSubmitting || !canSave) return;
+    if (!provider?.id || !activeMode || !isOperationalMode || isSubmitting || !canSave || submission.current) return;
 
     if (selectedModelIds.size === 0) {
       sileo.error({
@@ -316,34 +347,14 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
       return;
     }
 
-    const curatedModels = discoveredModels.filter((m) =>
-      selectedModelIds.has(m.id)
-    );
+    const activeIds = selectSyncCards(modelCards.filter(card => syncCardSelected(card, selectedModelIds)), new Set(), true);
+    const curatedModels = discoveredModels.filter(model => activeIds.has(model.id));
 
+    submission.current = true;
     try {
-      const currentFields = (provider.fields || {}) as Record<string, unknown>;
-      const currentModeData = (currentFields[activeMode ?? ""] as Record<string, unknown>) || {};
-
-      const updatedModeData = {
-        ...currentModeData,
-        available_models: curatedModels,
-        selected_model: mainModelId,
-        ocr_focus_model: ocrModelId || undefined,
-        ocr_model: ocrModelId || undefined,
-      };
-
-      const updatedFields: Record<string, unknown> = {
-        ...currentFields,
-        [activeMode]: updatedModeData,
-      };
-
-      // Only mirror to root fields if this mode is the provider's default_mode (or if no default_mode is specified)
-      if (!provider.default_mode || provider.default_mode === activeMode) {
-        updatedFields.available_models = curatedModels;
-        updatedFields.selected_model = mainModelId;
-        updatedFields.ocr_focus_model = ocrModelId || undefined;
-        updatedFields.ocr_model = ocrModelId || undefined;
-      }
+      const updatedFields = syncModelsFieldsPatch({ fields: provider.fields ?? {}, mode: activeMode,
+        defaultMode: provider.default_mode, models: curatedModels, mainId: mainModelId,
+        ocrId: ocrModelId, effortChanges });
 
       await updateProviderMutation.mutateAsync({
         id: provider.id,
@@ -351,6 +362,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
           fields: updatedFields,
         },
       });
+      if (!mounted.current) return;
 
       sileo.success({
         title: t(
@@ -360,17 +372,20 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
         description: t(
           "ai_providers:modal_sync_models.success_desc",
           "Se configuraron {{count}} modelos para este proveedor.",
-          { count: curatedModels.length }
+          { count: selectedCardCount }
         ),
       });
 
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
+      if (!mounted.current) return;
       sileo.error({
         title: t("core:server_error_toast", "Error en el servidor"),
         description: getHttpErrorMessage(err),
       });
+    } finally {
+      submission.current = false;
     }
   };
 
@@ -380,7 +395,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
         variant="outlined"
         color="inherit"
         onClick={handleClose}
-        disabled={isSubmitting}
+        disabled={isSubmitting || isLoadingDiscovery}
         sx={{ textTransform: "none", fontWeight: 600, borderRadius: 2 }}
       >
         {t("ai_providers:modal_sync_models.cancel", "Cancelar")}
@@ -563,6 +578,9 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
           )}
 
           {/* DISCOVERED MODELS LIST */}
+          {!isLoadingDiscovery && !discoveryError && isOperationalMode && discoverySucceeded && discoveredModels.length === 0 && (
+            <Alert severity="info">{t("ai_providers:modal_sync_models.no_models_available")}</Alert>
+          )}
           {!isLoadingDiscovery && !discoveryError && discoveredModels.length > 0 && (
             <>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
@@ -580,7 +598,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                       {t(
                         "ai_providers:modal_sync_models.models_list_title",
                         "Modelos descubiertos ({{count}})",
-                        { count: discoveredModels.length }
+                        { count: modelCards.length }
                       )}
                     </Typography>
                     <Chip
@@ -588,20 +606,21 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                       label={t(
                         "ai_providers:modal_sync_models.selected_count",
                         "{{count}} seleccionados",
-                        { count: selectedModelIds.size }
+                        { count: selectedCardCount }
                       )}
                       color={selectedModelIds.size > 0 ? "primary" : "default"}
                       sx={{ height: 20, fontSize: "0.6875rem", fontWeight: 600 }}
                     />
                   </Box>
 
-                  <Box sx={{ display: "flex", gap: 1 }}>
+                  <Box sx={{ display: "flex", gap: 1, flexDirection: { xs: "column", sm: "row" }, width: { xs: "100%", sm: "auto" } }}>
                     <Button
                       size="small"
                       variant="contained"
                       color="primary"
                       startIcon={<DoneAllOutlinedIcon sx={{ fontSize: 16 }} />}
                       onClick={handleSelectAll}
+                      disabled={isSubmitting || isLoadingDiscovery}
                       sx={{
                         textTransform: "none",
                         fontSize: "0.75rem",
@@ -624,6 +643,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                       color="primary"
                       startIcon={<RemoveDoneOutlinedIcon sx={{ fontSize: 16 }} />}
                       onClick={handleDeselectAll}
+                      disabled={isSubmitting || isLoadingDiscovery}
                       sx={{
                         textTransform: "none",
                         fontSize: "0.75rem",
@@ -654,11 +674,12 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                   variant="outlined"
                   size="small"
                   fullWidth
+                  disabled={isSubmitting || isLoadingDiscovery}
                 />
               </Box>
 
               <ModelsScrollContainer>
-                {filteredModels.length === 0 ? (
+                {filteredCards.length === 0 ? (
                   <Box
                     sx={{
                       display: "flex",
@@ -681,10 +702,11 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                     </Typography>
                   </Box>
                 ) : (
-                  filteredModels.map((model) => {
-                  const isChecked = selectedModelIds.has(model.id);
-                  const isMain = mainModelId === model.id;
-                  const isOcr = ocrModelId === model.id;
+                  filteredCards.map((card) => {
+                  const model = card.model;
+                  const isChecked = syncCardSelected(card, selectedModelIds);
+                  const isMain = modelCardContains(card, mainModelId);
+                  const isOcr = modelCardContains(card, ocrModelId);
 
                   const contextText = typeof model.contextWindow === "number" && Number.isFinite(model.contextWindow) && model.contextWindow > 0
                     ? t("ai_providers:detail.context_tokens", { tokens: model.contextWindow.toLocaleString(i18n.language) })
@@ -692,17 +714,19 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
 
                   return (
                     <DiscoveredModelCard
-                      key={model.id}
+                      key={card.key}
                       data-testid={`model-card-${model.id}`}
                       selected={isChecked}
-                      onClick={() => handleToggleModel(model.id)}
+                      onClick={() => { if (!isSubmitting && !isLoadingDiscovery) applyCardSelection([card], !isChecked); }}
                       sx={{ cursor: "pointer" }}
                     >
                       <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, flex: 1 }}>
                         <Checkbox
                           checked={isChecked}
-                          onChange={() => handleToggleModel(model.id)}
+                          onChange={() => applyCardSelection([card], !isChecked)}
                           onClick={(e) => e.stopPropagation()}
+                          disabled={isSubmitting || isLoadingDiscovery}
+                          slotProps={{ input: { "aria-label": card.label } }}
                           size="small"
                           color="primary"
                           sx={{ p: 0.5 }}
@@ -711,7 +735,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                         <ModelInfoBox>
                           <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
                             <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                              {model.displayName || model.name || model.id}
+                              {card.label}
                             </Typography>
                             {model.isRecommended && (
                               <Chip
@@ -764,6 +788,13 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                               {model.description}
                             </Typography>
                           )}
+
+                          {card.preferenceConflicts.map(conflict => <Alert key={conflict.modelId} severity="warning">
+                            {t("ai_providers:detail.variant_preference_conflict", {
+                              model: conflict.modelId,
+                              effort: typeof conflict.savedPreference === "string" ? conflict.savedPreference : t("ai_providers:detail.invalid_saved_preference"),
+                            })}
+                          </Alert>)}
 
                           <BadgesRow>
                             {contextText && <Chip
@@ -847,12 +878,17 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                         "Seleccionar modelo por defecto..."
                       )}
                       value={mainModelId}
-                      onChange={(val) => setMainModelId(String(val || ""))}
+                      onChange={(val) => {
+                        if (val === mainModelId) return;
+                        setMainModelId(val ?? "");
+                        setMainNeedsEffort(Boolean(modelCards.find(card => modelCardContains(card, val))?.variants.length));
+                      }}
                       options={checkedModelOptions}
-                      disabled={checkedModelOptions.length === 0}
+                      disabled={checkedModelOptions.length === 0 || isSubmitting || isLoadingDiscovery}
                       clearable={false}
                       required
                     />
+                    {roleEffortControl(mainCard, mainModelId, true)}
                   </RoleCard>
 
                   {/* ROLE 2: OCR FOCUSED MODEL (OPTIONAL, STARTS IN NULL) */}
@@ -891,11 +927,16 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                         "Seleccionar modelo para OCR (Opcional)..."
                       )}
                       value={ocrModelId}
-                      onChange={(val) => setOcrModelId(String(val || ""))}
+                      onChange={(val) => {
+                        if (val === ocrModelId) return;
+                        setOcrModelId(val ?? "");
+                        setOcrNeedsEffort(Boolean(modelCards.find(card => modelCardContains(card, val))?.variants.length));
+                      }}
                       options={ocrOptions}
-                      disabled={checkedModelOptions.length === 0}
+                      disabled={checkedModelOptions.length === 0 || isSubmitting || isLoadingDiscovery}
                       clearable
                     />
+                    {roleEffortControl(ocrCard, ocrModelId, false)}
                   </RoleCard>
                 </RolesVerticalStack>
               </RoleAssignmentBox>
@@ -907,4 +948,8 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
   );
 };
 
-export default SyncModelsModal;
+export default function SyncModelsModal(props: SyncModelsModalProps) {
+  const mode = props.mode ?? props.provider?.default_mode ?? props.provider?.mode;
+  // Discard discovery callbacks and drafts from an earlier connection/mode/opening.
+  return <SyncModelsEditor key={JSON.stringify([props.provider?.id, mode, props.open])} {...props} />;
+}

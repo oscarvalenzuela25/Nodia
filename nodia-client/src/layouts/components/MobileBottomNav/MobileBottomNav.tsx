@@ -16,6 +16,7 @@ import { useVisibleModules, getModuleIcon } from "../../../store/generalSettings
 import { shortcutIdentity } from "../../../store/mobileNavigationStore";
 import type { ShortcutReference } from "../../../store/mobileNavigationStore";
 import { buildShortcutCatalog } from "./catalog";
+import { activeNavigationItem } from "../../../routes/activeNavigationItem";
 import useMobileNavigation from "./hooks/useMobileNavigation";
 import useShortcutDialog from "./hooks/useShortcutDialog";
 import { Dock, EditBadge, HomeLink, LockButton, MOBILE_NAV_RESERVED_HEIGHT, NavRoot, RoundButton, RoundLink, Slot, SlotLabel } from "./styles";
@@ -36,6 +37,7 @@ export default function MobileBottomNav() {
   const catalog = buildShortcutCatalog(groups, i18n.language);
   const { ownerId, sessionVersion, preferences, ready, hydrated, readError, persist } = useMobileNavigation();
   const location = useLocation();
+  const activeOption = activeNavigationItem(location.pathname, catalog);
   const { Dialog: MobileShortcutDialog, open: loadEditor, loadingSlot, failed: editorFailed } = useShortcutDialog(`${ownerId}:${sessionVersion}:${location.key}`);
   const editorLoading = loadingSlot !== null;
   const [editing, setEditing] = useState<{ slotIndex: number; ownerId: string; sessionVersion: number } | null>(null);
@@ -75,7 +77,7 @@ export default function MobileBottomNav() {
     if (!reference && locked) return <Slot key={slotIndex} aria-hidden="true" />;
     const label = reference ? option?.label ?? t("layout:mobile_nav.unavailable") : t("layout:mobile_nav.add_short");
     const icon = reference ? option ? getModuleIcon(option.reference.moduleKey, option.icon) : <LinkOffOutlined /> : <AddOutlined />;
-    const active = Boolean(option && (location.pathname === option.path || location.pathname.startsWith(`${option.path}/`)));
+    const active = Boolean(option && option === activeOption);
     return <Slot key={slotIndex}>
       {locked && option && !busy ? <RoundLink to={option.path} data-configured="true" aria-label={t("layout:mobile_nav.go", { section: option.label })} aria-current={active ? "page" : undefined}>{icon}</RoundLink> :
         <RoundButton disabled={!ready || context.isFetching || locked || editorLoading} loading={loadingSlot === slotIndex} aria-busy={loadingSlot === slotIndex} data-configured={Boolean(option)} data-empty={!reference} aria-label={locked ? t("layout:mobile_nav.unavailable") : t(reference ? "layout:mobile_nav.edit_slot" : "layout:mobile_nav.add_slot", { position: t(`layout:mobile_nav.slot_${slotIndex}`), section: option?.label ?? label })}

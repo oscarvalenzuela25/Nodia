@@ -4,11 +4,11 @@
   "document_id": "general-settings.ai-provider-interface-and-module-access",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 1,
+  "revision": 3,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Implementación local de interfaz, navegación/autorización y preferencias por proveedor. Backend comprobado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado. Sin despliegue ni inferencia real de este lote."
+    "notes": "Implementación local de interfaz, navegación/autorización y preferencias por proveedor. Backend comprobado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado. Sin despliegue ni inferencia real de este lote. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Ajustes Generales y NodiaAI conforme AGENTS",
@@ -34,22 +34,77 @@
       "kind": "implementation"
     },
     {
+      "path": "nodia-client/src/modules/generalSettings/pages/AiProviders/infrastructure/syncModelSelection.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/utils/modelVariantOptions.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ComposerSelection/ComposerSelection.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConfigurationDrawer/ConfigurationDrawer.tsx",
+      "kind": "implementation"
+    },
+    {
       "path": "nodia-server/src/common/ai/api-reasoning.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/ai-provider/helpers/model-observation.helper.ts",
       "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-12",
+    "checked_on": "2026-11-14",
     "evidence_paths": [
-      "docs/mvp/ai-provider-feature-contract.md"
+      "docs/mvp/ai-provider-feature-contract.md",
+      "docs/evidence/model-selector-residual-audit-20261114.md",
+      "docs/evidence/teacher-ai-selection-first-generation-20261114.md"
     ],
-    "notes": "Build Server, autorización60, HTTP74 y API249 correctos; HTTP con fronteras sintéticas de sesión/persistencia. build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; sin publicación, inferencia real ni causa productiva de acceso probada."
+    "notes": "Build Server, autorización60, HTTP74 y API249 correctos; HTTP con fronteras sintéticas de sesión/persistencia. build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; sin publicación, inferencia real ni causa productiva de acceso probada. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote."
   },
   "approval": null
 }
 ---
 
 # Interfaz de proveedores, variantes y acceso a NodiaAI
+
+## Preservación de opciones Codex — 2026-11-14
+
+La lectura sanitizada de configuración conserva `supportedReasoningEfforts`
+válidos como opciones advisory. Antes podía eliminarlos y un guardado posterior
+perdía esos metadatos persistidos, bloqueando el selector Teacher. Se mantienen
+fuera de esa proyección las cuotas/capacidades no comprobadas; conservar opciones
+no demuestra inferencia. Teacher puede observar opciones vivas de su conexión
+sin permisos de administración, activación de modelos o cambios de configuración.
+Su [primera generación sin canary previo](../../../../mvp/96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14)
+es una decisión específica de Teacher, no un cambio del chat NodiaAI.
+
+## Continuación local: selectores agrupados — 2026-11-14
+
+Sincronización y sus roles, el compositor y la configuración del chat presentan
+una opción por familia Gemini Agentic inequívoca y un selector de razonamiento.
+La activación conserva todas las variantes reales en el catálogo; elegir esfuerzo
+cambia sólo al ID explícito correspondiente. OCR conserva su ID y preferencia
+efectiva, incluso si antes heredaba la preferencia general. Quitar OCR envía
+`null`; el guardado del modo evita reenviar mapas raíz sin merge.
+
+Un rol nuevo agrupado requiere esfuerzo explícito. Las contradicciones
+históricas se muestran sin repararse al leer. El chat exige elegibilidad de la
+tupla exacta antes de aplicar. Teacher reutiliza el algoritmo común sin cambiar
+su contrato. Error de guardado conserva el borrador; vacío, descubrimiento
+inválido/caído, doble envío y cambios de contexto están cubiertos por regresiones.
+
+[Evidencia local](../../../../evidence/model-selector-residual-audit-20261114.md):
+suite global2912, regresiones finales29 y helper/Teacher/chat41 correctos;
+build/tipos y lint del código correctos; Chromium sintético320/600/1280 sin
+overflow y con Medium principal/High OCR conservados al redimensionar.
+El lint general conserva un error en un experimento previo ignorado. Sin
+inferencia, aceptación operativa, publicación o aprobación documental nueva.
 
 ## Qué resuelve y qué significa
 
@@ -120,4 +175,5 @@ Ninguna ficha aprobada cambia por esta candidata. El refresco técnico de pins e
 
 | Revisión | Cambio | Compatibilidad |
 |---|---|---|
+| 2 | Agrupación en sincronización/compositor/configuración y auditoría de residuos; OCR efectivo, borrador y contexto protegidos | IDs literales y elegibilidad exacta; sólo candidato local, sin publicación o inferencia. |
 | 1 | Interfaz contained, contexto del actor, identidad NodiaAI y preferencias/variantes por proveedor | Reutiliza operaciones y permisos; IDs reales y OCR conservados. Sin nuevos bindings, aprobación, publicación o inferencia. |

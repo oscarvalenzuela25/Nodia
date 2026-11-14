@@ -61,7 +61,7 @@ Se añadieron **tres archivos**; las 15 migraciones previas conservan contenido/
 
 ## Core reutilizable
 
-`InitialCoreSchema` agrupa `users`, `roles`, `actions`, `module_groups`, `modules`, `user_roles`, `role_actions`, `user_modules` y `translations`. No contiene referencias a Negocios, Finanzas, Reservas o IA. El seed Core inserta datos estables por claves únicas; no sobreescribe registros previos. `AuthSessions` añade las sesiones necesarias para utilizar el login de Nodia. Los dos baselines tienen SQL congelado: cambiar una entidad no cambia retrospectivamente el esquema que crean.
+`InitialCoreSchema` agrupa `users`, `roles`, `actions`, `module_groups`, `modules`, `user_roles`, `role_actions`, `user_modules` y `translations`. No contiene referencias a Negocios, Finanzas, Reservas o IA. El baseline Core inserta datos estables por claves únicas sin sobrescribir configuraciones existentes. El bootstrap inicial crea o reutiliza la identidad configurada y asegura rol, grupo y cuatro módulos activos; antes de existir una asignación de superadministrador puede actualizar enlaces, pertenencia y actividad de esos registros. Una repetición con administrador ya asignado verifica la identidad y los accesos; si cambiaron o se desactivaron, devuelve conflicto sin restaurarlos. `AuthSessions` añade las sesiones necesarias para utilizar el login de Nodia. Los dos baselines tienen SQL congelado: cambiar una entidad no cambia retrospectivamente el esquema que crean.
 
 Negocios/IA queda en `InitialBusinessAiSchema`: `businesses`, `business_collaborators`, `business_actions`, `providers`, `products`, `product_logs`, `invoices`, `ai_providers`, `ai_api_keys`, `ai_provider_events`. Sus transformaciones posteriores siguen en el historial. Finanzas y Reservas crean sus tablas en sus migraciones existentes. Los baselines rechazan esquemas parciales, y su `down` requiere reversión por respaldo verificado.
 
@@ -71,7 +71,39 @@ No fusionar archivos ya aplicados. Sí agrupar cambios pequeños de una misma en
 
 El catálogo tiene 17 identidades tras instalación: Gemini, OpenAI, Anthropic Claude, Mistral AI, DeepSeek, Groq, Perplexity AI, Cohere, xAI, Meta Llama, Together AI, Azure OpenAI, AWS Bedrock, Hugging Face, Ollama, Alibaba Qwen y Moonshot AI (Kimi). Kimi entra con todos los canales deshabilitados; no hay adaptador configurado. El selector conserva su filtro de proveedores compatibles. Los modelos se descubren/configuran dinámicamente, y las claves/sesiones se gestionan por instalación.
 
-Los cuatro módulos Core no incluyen Proveedores IA, Negocios, Finanzas ni Reservas. `seed:finance` y `seed:rental` registran navegación por separado; asignar cada módulo al usuario de forma explícita. El bootstrap no amplía permisos de esos módulos.
+El bootstrap crea exactamente cuatro asignaciones Core; no registra módulos ni datos de Proveedores IA, Negocios, Finanzas o Reservas. Su navegación se instala por separado y los usuarios ordinarios requieren asignación explícita. Según la [política vigente89](89-module-access-and-user-data-scope.md), el `super_admin` activo tiene bypass de asignaciones y recibe el catálogo activo completo, sin que se creen asociaciones adicionales.
+
+### Configuración inicial del superadministrador — consulta de código, 2026-11-14
+
+El rol técnico es `super_admin`, no `super_user`. El primer usuario que inicia
+sesión no se convierte automáticamente en administrador: la operación de
+bootstrap debe ejecutarse explícitamente con el correo previsto.
+
+| Elemento | Configuración del bootstrap |
+| --- | --- |
+| Correo | `BOOTSTRAP_SUPER_ADMIN_EMAIL` en CLI; `super_admin_email` y `SECRET_SEED` en HTTP. Se valida, recorta y convierte a minúsculas. |
+| Usuario nuevo | Nombre `Super Admin`, `is_active: true`. Reutiliza el usuario del mismo correo si existe; no reemplaza su nombre. |
+| Rol y asociación | `super_admin` activo y `user_roles.is_active: true`. |
+| Grupo | `general_settings`, activo; traducciones Administrador General / General Administration. |
+| Módulos/asignaciones | `users`→`/users`, `roles`→`/roles`, `actions`→`/actions`, `modules`→`/modules`; módulos y cuatro `user_modules` activos, con traducciones ES/EN. IDs dinámicos; orden siguiente disponible para registros nuevos. |
+| Perfil y autenticación | Sin contraseña, vínculo Google, foto o sesión iniciales. El primer login Google válido vincula `google_sub` y completa la foto ausente; conserva un nombre existente como `Super Admin`. |
+| Efectos adicionales | Transacción y locks Core/PostgreSQL; tras commit invalida `auth:context:*`. |
+
+No crea acciones o `role_actions`, conexiones/keys/modelos/sesiones IA ni datos
+comerciales. Las migraciones invocadas por `db:setup` son una operación distinta
+y sí pueden insertar catálogos/acciones. El CLI admite repetir la misma
+identidad con accesos intactos; otro correo o accesos modificados producen
+conflicto. HTTP rechaza una asignación de superadministrador ya existente.
+
+Fuentes contrastadas: [caso de uso](../../nodia-server/src/auth/use-case/seed-auth.use-case.ts),
+[CLI](../../nodia-server/scripts/seed-core.mjs),
+[login](../../nodia-server/src/auth/use-case/login.use-case.ts),
+[contexto](../../nodia-server/src/authorization/authorization.service.ts) y
+[acceso HTTP](../../nodia-server/src/authorization/use-case/check-module-access.use-case.ts).
+Esta consulta no ejecuta seeds/migraciones, no inspecciona secretos ni comprueba
+el valor configurado de un entorno operativo. No modifica contratos o estados
+de aprobación documental; aclara la distinción entre baseline y bootstrap y el
+bypass vigente frente al texto histórico de instalación.
 
 ## Verificación reproducible
 

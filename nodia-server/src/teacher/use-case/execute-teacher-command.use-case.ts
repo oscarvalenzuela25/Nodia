@@ -244,7 +244,7 @@ export class ExecuteTeacherCommandUseCase {
         if (
           config.configuration_generation !==
             snapshot.configuration_generation ||
-          config.session_generation !== snapshot.session_generation
+          (s.selection.mode !== 'agentic' && config.session_generation !== snapshot.session_generation)
         )
           teacherError('configuration_changed');
         await m.query(

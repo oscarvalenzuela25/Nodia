@@ -7,12 +7,9 @@ export function refreshTeacherQueries(client: QueryClient, actor: readonly unkno
   const attempt = commandPath?.match(/^((sessions\/[^/]+)\/attempts\/[^/]+)(?:\/.*)?$/);
   const attemptPath = attempt?.[1];
   const draftOnly = commandPath === `${attemptPath}/responses`;
-  const sessionCommand = commandPath?.match(/^(sessions\/[^/]+)(?:\/|$)/);
-  // Session edits can change selection. Educational commands cannot change its
-  // catalog or availability; observing the provider again can contend with a worker.
-  const preserveProviderObservation = commandPath === "sessions" ||
-    Boolean(sessionCommand && commandPath !== sessionCommand[1]) ||
-    Boolean(commandPath?.startsWith("jobs/"));
+  // Teacher commands edit sessions, never provider configuration. A new session
+  // selection has its own query key; bulk native refetches can contend with the
+  // worker or each other. The selection panel owns explicit serial refresh.
   const completesAttempt = Boolean(attemptPath && (
     commandPath === attemptPath || commandPath === `${attemptPath}/submit` ||
     commandPath === `${attemptPath}/close-pending`
@@ -21,7 +18,7 @@ export function refreshTeacherQueries(client: QueryClient, actor: readonly unkno
     queryKey: actor,
     predicate: query => {
       const path = query.queryKey[3];
-      if (preserveProviderObservation && typeof path === "string" && (
+      if (typeof path === "string" && (
         path === "connections" || path.startsWith("connections/")
       )) return false;
       if (cursor) return path === cursor[1];

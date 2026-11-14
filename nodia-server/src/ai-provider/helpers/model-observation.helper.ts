@@ -1,4 +1,16 @@
 import { BadGatewayException } from '@nestjs/common';
+
+/** Saved selector options are advisory metadata, never live capability evidence. */
+function configuredReasoningEfforts(value: unknown): string[] | undefined {
+    if (!Array.isArray(value) || value.length > 32) return undefined;
+    const efforts: string[] = [];
+    for (const effort of value) {
+        if (typeof effort !== 'string' || !/^[a-z][a-z0-9_-]{0,31}$/.test(effort)) return undefined;
+        efforts.push(effort);
+    }
+    return efforts;
+}
+
 export function observedModels(value: unknown) {
     if (!Array.isArray(value))
         throw new BadGatewayException('Gemini devolvió un catálogo de modelos inválido.');
@@ -33,9 +45,11 @@ export function configuredModelFields(fields: Record<string, unknown>) {
             if (!entry || typeof entry !== 'object' || !('id' in entry) || typeof entry.id !== 'string')
                 return [];
             const model = entry as Record<string, unknown>;
+            const efforts = configuredReasoningEfforts(model.supportedReasoningEfforts);
             return [{ id: entry.id, name: typeof model.name === 'string' ? model.name : entry.id,
                     displayName: typeof model.displayName === 'string' ? model.displayName : entry.id,
-                    description: '', contextWindow: null, capabilities: [], isRecommended: false }];
+                    description: '', contextWindow: null, capabilities: [], isRecommended: false,
+                    ...(efforts === undefined ? {} : { supportedReasoningEfforts: efforts }) }];
         });
     }
     for (const mode of ['agentic', 'api_key']) {

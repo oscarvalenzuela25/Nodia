@@ -3,6 +3,7 @@ import { Alert, Button, Typography } from "@mui/material";
 import CheckOutlined from "@mui/icons-material/CheckOutlined";
 import { useTranslation } from "react-i18next";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
+import { catalogModelOptions, chooseModelEffort, modelOptionComplete, modelOptionEfforts, modelOptionFor } from "../../../../utils/modelVariantOptions";
 import { nodiaAiEligibilityReasonKey } from "../../infrastructure/eligibilityPresentation";
 import type { NodiaAiMode, NodiaAiSelection } from "../../infrastructure/types";
 import { DraftActions, SelectionBar, Selector } from "./styles";
@@ -31,6 +32,10 @@ function SelectionEditor({
   const draft = useMemo<NodiaAiSelection | null>(() => connectionId && mode && modelId
     ? { connection_id: connectionId, mode, model_id: modelId, effort_id: effortId }
     : null, [connectionId, mode, modelId, effortId]);
+  const catalogOptions = catalogModelOptions(modeConfig?.models ?? [], connection?.provider_key === "gemini" && mode === "agentic",
+    { model_id: modelId ?? "", effort_id: effortId });
+  const modelOption = modelOptionFor(catalogOptions, modelId ?? "");
+  const reportedEfforts = modelOptionEfforts(modelOption);
   const dirty = connectionId !== (selection?.connection_id ?? null)
     || mode !== (selection?.mode ?? null) || modelId !== (selection?.model_id ?? null)
     || effortId !== (selection?.effort_id ?? null);
@@ -44,14 +49,14 @@ function SelectionEditor({
   const configurationDisabled = !!connection && (!connection.is_active || modeConfig?.configuration === "disabled");
   const exactEligibility = sameSelection(eligibility?.selection ?? null, draft) ? eligibility : null;
   const canApply = dirty && !disabled && !error && !eligibilityError && !missing
-    && !configurationDisabled && draft !== null && exactEligibility?.available === true;
+    && !configurationDisabled && draft !== null && modelOptionComplete(modelOption, draft) && exactEligibility?.available === true;
   const connectionOptions = connections.map(item => ({ value: item.connection_id, label: item.label }));
   if (connectionId && !connection) connectionOptions.push({ value: connectionId, label: t("configuration.missing_connection", { id: connectionId }) });
   const modeOptions = (connection?.modes ?? []).map(item => ({ value: item.mode, label: t(`modes.${item.mode}`) }));
   if (mode && !modeConfig) modeOptions.push({ value: mode, label: t(`modes.${mode}`) });
-  const modelOptions = (modeConfig?.models ?? []).map(item => ({ value: item.model_id, label: item.label }));
+  const modelOptions = catalogOptions.map(item => ({ value: item.value, label: item.label }));
   if (modelId && !model) modelOptions.push({ value: modelId, label: t("configuration.missing_model", { id: modelId }) });
-  const effortOptions = (model?.efforts ?? []).map(item => ({ value: item.effort_id,
+  const effortOptions = reportedEfforts.map(item => ({ value: item.effort_id,
     label: ["low", "medium", "high"].includes(item.effort_id) ? t(`effort_levels.${item.effort_id}`) : item.label }));
   if (effortId && !model?.efforts.some(item => item.effort_id === effortId)) effortOptions.push({ value: effortId, label: t("configuration.missing_effort", { id: effortId }) });
 
@@ -95,20 +100,26 @@ function SelectionEditor({
           }} />
       </Selector>}
       {mode && <Selector>
-        <SelectSingleInput label={t("configuration.model")} options={modelOptions} value={modelId}
+        <SelectSingleInput label={t("configuration.model")} options={modelOptions} value={modelOption?.value ?? modelId}
           clearable={false} disabled={disabled || !modeConfig} placeholder={t("configuration.unassigned_model")}
           onChange={value => {
-            if (value === modelId) return;
-            setModelId(value);
+            if (value === modelId || value === modelOption?.value) return;
             const configured = modeConfig?.configured_selection;
-            setEffortId(configured?.connection_id === connectionId && configured?.mode === mode && configured?.model_id === value
-              ? configured.effort_id : null);
+            const next = modelOptionFor(catalogOptions, value ?? "");
+            const restore = configured?.connection_id === connectionId && configured.mode === mode && next
+              && modelOptionFor(catalogOptions, configured.model_id) === next && modelOptionComplete(next, configured);
+            setModelId(restore ? configured.model_id : value);
+            setEffortId(restore ? configured.effort_id : null);
           }} />
       </Selector>}
       {modelId && <Selector>
         <SelectSingleInput label={t("configuration.effort")} options={effortOptions} value={effortId}
           disabled={disabled || !model || effortOptions.length === 0}
-          placeholder={t("composer.unassigned_effort")} onChange={setEffortId} />
+          placeholder={t("composer.unassigned_effort")} onChange={value => {
+            if (!draft) return;
+            const next = chooseModelEffort(modelOption, draft, value);
+            setModelId(next.model_id); setEffortId(next.effort_id);
+          }} />
       </Selector>}
       {error && <Alert severity="error" action={<Button type="button" color="inherit" disabled={busy} onClick={onRetry}>{t("retry")}</Button>}>{error}</Alert>}
       {!isLoading && !error && connections.length === 0 && <Alert severity="info">{t("configuration.no_connections")}</Alert>}

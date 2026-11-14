@@ -194,6 +194,11 @@ export interface TeacherGenerationJob {
   updated_at: Date;
 }
 export const TEACHER_GENERATION_PORT = Symbol('TEACHER_GENERATION_PORT');
+export interface TeacherConnectionModels {
+  connection_id: string;
+  mode: 'agentic';
+  models: { model_id: string; label: string; efforts: { effort_id: string; label: string }[] }[];
+}
 /** Selection inspection is shared. Teacher owns its durable admission and outbox. */
 export interface TeacherGenerationPort {
   setPublisher(
@@ -204,10 +209,12 @@ export interface TeacherGenerationPort {
     ) => Promise<Record<string, unknown>>,
   ): void;
   connections(actor: ActorReference): Promise<unknown>;
+  models(actor: ActorReference, connectionId: string, mode: string, signal?: AbortSignal): Promise<TeacherConnectionModels>;
   eligibility(
     actor: ActorReference,
     connectionId: string,
     selection: Omit<TeacherSelection, 'connection_id'>,
+    signal?: AbortSignal,
   ): Promise<unknown>;
   verifySelection(
     manager: EntityManager,

@@ -1,5 +1,14 @@
 # Nodia Teacher — implementación directa por fases y QA final
 
+> Continuación funcional2026-11-14: el usuario permite el primer intento con la
+> IA elegida sin calificación generativa previa. [96§43](96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14)
+> y [ADR100 propuesto](../architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md)
+> describen la nueva política, metadata de razonamiento recuperable y alta/menu.
+> Los55TU/recibosR02 inferiores acreditan su política y entorno originales;
+> no constituyen aceptación de este cambio ni lo despliegan. Las referencias a
+> calificación previa quedan históricas sólo para Teacher, sin transferir
+> success entre modelos/esfuerzos o retirar garantías de ejecución y cierre.
+
 > Estado actual: R04 del2026-11-11. Construcción F0–F9 y55TU cerrados para el alcance R02 Windows/API key exacta; continuidad funcional VM sobre ServerR14/ClientR41 comprobada por recibos propios. Respaldo/restauración final comprobados; estado operativo y UI tras reanudar servicios comprobados. [Matriz R02](../evidence/teacher-upgrade-acceptance-20261111-r02.md) y [recibo VM](../evidence/teacher-upgrade-development-vm-20261111-r01.json) separan resultados, selección y entorno. Sin eficacia humana, aprobación documental, publicación o promoción a master.
 > Continuidad R04: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. [Recibo VM](../evidence/teacher-upgrade-development-vm-20261111-r01.json). El cierre55/55 R02 conserva su alcance Windows/API key; este recorrido no representa55pruebas nuevas en VM ni eficacia educativa humana. Sin promoción a master, aprobación documental o publicación.
 > Criterio de trabajo confirmado por el usuario: construir por fases sobre el diseño acordado, sin detenerse a probar/aprobar cada funcionalidad; realizar una campaña de QA integral al terminar, corregir y revalidar los cambios afectados.

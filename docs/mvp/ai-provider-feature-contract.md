@@ -1,5 +1,70 @@
 # Contrato funcional de conexiones IA y regresiones
 
+## Metadata Codex y primer intento Teacher — 2026-11-14
+
+El GET sanitizado conserva ahora `supportedReasoningEfforts` válidos como
+opciones advisory. Antes eliminaba el campo y guardar posteriormente podía
+borrarlo del catálogo persistido. Cuotas, modalidades y capacidades no
+comprobadas siguen fuera de esa proyección; metadata guardada no prueba salud
+o inferencia. Teacher puede observar sólo las opciones actuales de la conexión
+seleccionada mediante su autoridad propia, sin editar configuración o conceder
+acceso a Ajustes IA. [Contrato97](97-nodia-teacher-technical-contracts.md#observación-de-opciones-de-razonamiento--adición2026-11-14).
+
+Por decisión explícita del usuario, la creación Teacher puede ser el primer
+intento real sin recibo generativo previo por tupla/propósito. API prepara la
+configuración con estado generativo desconocido; Agentic observa runtime/sesión
+sin inferir. El Worker revalida la identidad, reserva presupuesto antes de
+enviar y conserva errores/unknown sin replay. [96§43](96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14)
+y [ADR100 propuesto](../architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md).
+No cambia gates de otros dominios/modelos/modalidades ni sustituye pruebas91;
+catálogo/clave/login nunca se presentan como inferencia comprobada.
+
+## Selector de modelos y auditoría de residuos — 2026-11-14
+
+Diagnóstico de código confirmado: `SyncModelsModal` presenta directamente cada
+elemento descubierto y construye las opciones de roles desde esos mismos IDs.
+Por eso muestra separadas las variantes High/Medium/Low. `ProviderDetail` ya
+utiliza `infrastructure/modelCards.ts` para agrupar esas variantes explícitas e
+inequívocas y elegir el razonamiento conservando el ID real del catálogo.
+
+La corrección es viable en Client reutilizando esa agrupación en el modal,
+sus contadores y las opciones de roles. Una familia activada debe conservar
+todas sus variantes descubiertas en `available_models`, para que los esfuerzos
+sigan disponibles después de guardar. La elección de esfuerzo debe mantener
+coherentes el ID exacto, `thinking_levels[id]` y `thinking_level` del principal,
+sin cambiar implícitamente el ID independiente de OCR. No crear un ID base
+ejecutable, hardcodear versiones ni agrupar familias ambiguas.
+
+El primer corte preparó la rama local `codex/unify-model-reasoning-selector`
+desde `development` actualizado (`898aec84`), con investigación y cinco pruebas
+del helper, todavía sin corrección. La continuación solicitada implementa la
+agrupación en sincronización y cierra dos residuos adicionales del chat:
+`ComposerSelection` y `ConfigurationDrawer`. Teacher comparte con ellos el
+algoritmo de opciones de catálogo, manteniendo sus contratos y semántica.
+`ProviderDetail` ya agrupaba; `ProviderCard` y el importador de facturas sólo
+consumen/resumen IDs exactos y no necesitaban cambiar su presentación.
+
+Sincronización cuenta y activa familias, conserva todas las variantes y ofrece
+razonamiento por rol. Requiere elección explícita para roles nuevos agrupados;
+advierte/bloquea contradicciones históricas sin repararlas al leer. Cambiar el
+principal preserva el ID y el esfuerzo efectivo de OCR, incluido el que antes
+heredaba la preferencia general. Quitar OCR envía `null`; `undefined` desaparecía
+del JSON y podía conservar la selección anterior. El guardado parchea sólo el
+modo editado y sus esfuerzos; no reenvía mapas raíz que carecen de merge Server.
+Las respuestas ausentes/inválidas y vacías son estados distintos con retry
+local cuando corresponde. Un guardado rechazado conserva el borrador; envío
+simultáneo y callbacks de un contexto desmontado no alteran otro editor.
+
+En el chat, agrupar no cambia el draft ni acredita elegibilidad: elegir esfuerzo
+resuelve otro ID real y requiere la observación de esa tupla exacta antes de
+Aplicar. Otros modos/proveedores y familias ambiguas permanecen planos.
+
+Verificación y límites en [evidencia local](../evidence/model-selector-residual-audit-20261114.md).
+Sin inferencia, configuración operativa o despliegue. La
+[ficha candidata](../nodia-ai/knowledge/general-settings/features/ai-provider-interface-and-module-access.md)
+sigue draft/partial/unregistered/approval:null; documentos aprobados intactos,
+sin publicación de conocimiento ni nuevas capacidades.
+
 ## OCR manual Gemini: diagnóstico R16 adoptado, extracción bloqueada — 2026-11-07
 
 NativeR16 está adoptado con instrumentación estructural segura, pero la extracción OCR continúa bloqueada. El delta añade sólo la captura best-effort de cli.log/hook en finally, con el helper heredado intacto; errores de diagnóstico no alteran el resultado y no se registra texto libre.660pruebas Linux sin fallos/omitidas y fixture aislado sin red/perfil real correctos. La nueva intención explícita sobre el mismo archivoPNG conservado recibióHTTP504 tras250s en UI: deadline240s, inferencia242057ms, lectura view_file completada y0eventos finish/resultado. El hook observado contabilizó1decisión,0rechazos y0finish; el log examinó30835bytes/128líneas con truncado. Sus indicadores vacíos de transporte/proveedor/HTTP no identifican la causa ni prueban ausencia de fallo. Tras el cierre:0CLI/marcadores/proofs/grupos propios y22fuentes verificadas; archivo y controles recuperados. No hubo replay, otro POST de análisis, guardado o nueva vinculación tras este fallo. Los10rechazos health_status observados fueron metadatos, no inferencias adicionales. No se aisló causa remota; no se atribuye el fallo a Google ni se presupone que otro modelo/CLI funcione. Permanecen CLI1.3.1, SDK, prompt/modelo/esfuerzo y límites240/300/340/360s; resolver una estrategia compatible y demostrar una extracción válida sigue pendiente. [Evidencia R16](../evidence/invoice-gemini-timeout-20261107-r02.json).

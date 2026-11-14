@@ -77,6 +77,12 @@ it("blocks a revoked shortcut and preserves its reference for replacement", () =
   expect(screen.getAllByRole("link")).toHaveLength(1);
   expect(store.getState().preferences.slots[0]).toEqual(reference);
 });
+it("keeps a locked shortcut current within its module's internal route", () => {
+  localStorage.setItem(mobileStorageKey("a"), JSON.stringify({ ...createMobilePreferences(), locked: true, slots: [reference, null, null, null] }));
+  render(<ThemeProvider theme={createTheme()}><MemoryRouter initialEntries={["/reservations/fixture-reservation"]}><MobileBottomNav /></MemoryRouter></ThemeProvider>);
+  expect(screen.getByRole("link", { name: i18n.t("layout:mobile_nav.go", { section: "Reservas" }) })).toHaveAttribute("aria-current", "page");
+  expect(screen.getByRole("link", { name: label("home") })).not.toHaveAttribute("aria-current");
+});
 it("distinguishes permission errors from empty sections and offers retry", async () => {
   context.isError = true;
   setup();

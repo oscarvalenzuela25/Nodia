@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -495,6 +495,131 @@ describe("SyncModelsModal Component", () => {
     renderWithClient(<SyncModelsModal open provider={mockProvider} onClose={() => {}} />);
     expect(aiServices.syncAiProviderModels).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "Guardar Modelos" })).toBeDisabled();
+  });
+
+  it("groups discovery and roles, saves an exact effort without moving OCR, and retains the draft on failure", async () => {
+    const variants = ["high", "medium", "low"].map(effort => ({
+      id: `fixture-family-${effort}`, name: `Fixture Family (${effort})`,
+    }));
+    vi.mocked(aiServices.syncAiProviderModels).mockResolvedValue({ ...mockDiscovered, models: variants });
+    const error = new AxiosError("request failed");
+    Object.assign(error, { response: { data: { message: "Fixture save rejected" } } });
+    vi.mocked(aiServices.updateAiProvider).mockRejectedValueOnce(error).mockResolvedValueOnce(mockProvider);
+    const onClose = vi.fn();
+    const user = userEvent.setup();
+    renderWithClient(<SyncModelsModal open isOperational onClose={onClose} provider={{ ...mockProvider,
+      default_mode: "agentic", fields: { agentic: { available_models: [variants[0]],
+        selected_model: variants[0].id, ocr_model: variants[0].id, thinking_level: "high" } },
+    }} />);
+    await screen.findByRole("checkbox", { name: "Fixture Family" });
+    expect(screen.getAllByRole("checkbox")).toHaveLength(1);
+    expect(screen.getByText("Modelos descubiertos (1)")).toBeInTheDocument();
+    expect(screen.getByText("1 seleccionados")).toBeInTheDocument();
+    const effortControls = screen.getAllByRole("button", { name: "Razonamiento de Fixture Family" });
+    await user.click(effortControls[0]);
+    await user.click(screen.getByRole("option", { name: "Medium" }));
+    await user.click(screen.getByRole("button", { name: "Guardar Modelos" }));
+    await waitFor(() => expect(sileo.error).toHaveBeenCalledWith(expect.objectContaining({ description: "Fixture save rejected" })));
+    const expected = expect.objectContaining({ fields: expect.objectContaining({ agentic: expect.objectContaining({
+      available_models: variants, selected_model: variants[1].id, ocr_model: variants[0].id,
+      thinking_levels: { [variants[1].id]: "medium", [variants[0].id]: "high" }, thinking_level: "medium",
+    }) }) });
+    expect(aiServices.updateAiProvider).toHaveBeenLastCalledWith("prov-1", expected);
+    expect(onClose).not.toHaveBeenCalled();
+    expect(screen.getAllByRole("button", { name: "Razonamiento de Fixture Family" })[0]).toHaveTextContent("Medium");
+    await user.click(screen.getByRole("button", { name: "Guardar Modelos" }));
+    await waitFor(() => expect(onClose).toHaveBeenCalledOnce());
+    expect(aiServices.updateAiProvider).toHaveBeenLastCalledWith("prov-1", expected);
+  });
+
+  it("selects a filtered family as a whole and clears its roles when deselected", async () => {
+    const variants = ["high", "medium", "low"].map(effort => ({
+      id: `fixture-family-${effort}`, name: `Fixture Family (${effort})`,
+    }));
+    vi.mocked(aiServices.syncAiProviderModels).mockResolvedValue({ ...mockDiscovered, models: [...variants, mockDiscovered.models[0]] });
+    const user = userEvent.setup();
+    renderWithClient(<SyncModelsModal open isOperational onClose={() => {}} provider={{ ...mockProvider,
+      fields: { selected_model: variants[0].id, ocr_model: variants[1].id, available_models: variants },
+    }} />);
+    await screen.findByRole("checkbox", { name: "Fixture Family" });
+    await user.type(screen.getByPlaceholderText("Buscar modelos por nombre, ID o capacidad..."), "family-low");
+    await waitFor(() => expect(screen.getAllByRole("checkbox")).toHaveLength(1));
+    await user.click(screen.getByRole("button", { name: "Deseleccionar todos" }));
+    expect(screen.getByText("0 seleccionados")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Guardar Modelos" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Seleccionar todos" }));
+    expect(screen.getByText("1 seleccionados")).toBeInTheDocument();
+    expect(screen.getByText("Seleccionar modelo por defecto...")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Seleccionar modelo por defecto..." }));
+    await user.click(screen.getByRole("option", { name: "Fixture Family" }));
+    expect(screen.getByRole("button", { name: "Guardar Modelos" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Razonamiento de Fixture Family" }));
+    await user.click(screen.getByRole("option", { name: "Low" }));
+    expect(screen.getByRole("button", { name: "Guardar Modelos" })).toBeEnabled();
+    await user.click(screen.getByRole("button", { name: "Guardar Modelos" }));
+    await waitFor(() => expect(aiServices.updateAiProvider).toHaveBeenCalled());
+    expect(aiServices.updateAiProvider).toHaveBeenCalledWith("prov-1", expect.objectContaining({ fields: expect.objectContaining({
+      agentic: expect.objectContaining({ available_models: variants, selected_model: variants[2].id, ocr_model: null, ocr_focus_model: null }),
+    }) }));
+  });
+
+  it("warns about the OCR's actual inherited historical effort without repairing it on read", async () => {
+    const variants = ["high", "medium", "low"].map(effort => ({ id: `fixture-family-${effort}`, name: `Fixture Family (${effort})` }));
+    vi.mocked(aiServices.syncAiProviderModels).mockResolvedValue({ ...mockDiscovered, models: variants });
+    renderWithClient(<SyncModelsModal open isOperational onClose={() => {}} provider={{ ...mockProvider,
+      fields: { agentic: { selected_model: variants[1].id, thinking_level: "medium", ocr_model: variants[0].id } },
+    }} />);
+    await screen.findByRole("checkbox", { name: "Fixture Family" });
+    expect(screen.getByText(/La configuración guardada de fixture-family-high usa medium/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Guardar Modelos" })).toBeDisabled();
+    expect(aiServices.updateAiProvider).not.toHaveBeenCalled();
+  });
+
+  it.each(["missing", "invalid", "offline"])("recovers locally from %s discovery without accepting a guessed catalog", async kind => {
+    if (kind === "offline") vi.mocked(aiServices.syncAiProviderModels).mockRejectedValueOnce(new Error("offline"));
+    else vi.mocked(aiServices.syncAiProviderModels).mockResolvedValueOnce({ ...mockDiscovered,
+      models: (kind === "missing" ? undefined : [{ id: 42, name: "Invalid fixture" }]) as unknown as SyncModelsResult["models"],
+    });
+    const user = userEvent.setup();
+    renderWithClient(<SyncModelsModal open provider={mockProvider} isOperational onClose={() => {}} />);
+    await screen.findByText("No se pudieron obtener los modelos");
+    expect(sileo.error).toHaveBeenCalledOnce();
+    expect(screen.getByRole("button", { name: "Guardar Modelos" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    await screen.findByTestId("model-card-gemini-flash");
+    expect(aiServices.syncAiProviderModels).toHaveBeenCalledTimes(2);
+    expect(screen.getByRole("button", { name: "Guardar Modelos" })).toBeEnabled();
+  });
+
+  it("reports empty discovery and keeps save disabled", async () => {
+    vi.mocked(aiServices.syncAiProviderModels).mockResolvedValue({ ...mockDiscovered, models: [] });
+    renderWithClient(<SyncModelsModal open provider={mockProvider} isOperational onClose={() => {}} />);
+    await screen.findByText("El proveedor no devolvió modelos disponibles.");
+    expect(screen.getByRole("button", { name: "Guardar Modelos" })).toBeDisabled();
+  });
+
+  it("admits one pending save and ignores its old UI callbacks after changing connection", async () => {
+    let resolveSave!: (value: AiProviderEntity) => void;
+    vi.mocked(aiServices.updateAiProvider).mockImplementationOnce(() => new Promise(resolve => { resolveSave = resolve; }));
+    const onClose = vi.fn();
+    const onSuccess = vi.fn();
+    const queryClient = createTestQueryClient();
+    const editor = (provider: AiProviderEntity) => <QueryClientProvider client={queryClient}>
+      <SyncModelsModal open provider={provider} isOperational onClose={onClose} onSuccess={onSuccess} />
+    </QueryClientProvider>;
+    const { rerender } = render(editor(mockProvider));
+    await screen.findByTestId("model-card-gemini-flash");
+    const form = document.getElementById("sync-models-form")!;
+    fireEvent.submit(form);
+    fireEvent.submit(form);
+    await waitFor(() => expect(aiServices.updateAiProvider).toHaveBeenCalledOnce());
+    rerender(editor({ ...mockProvider, id: "provider-b", name: "Fixture B" }));
+    await screen.findByText("Fixture B");
+    await act(async () => { resolveSave(mockProvider); });
+    expect(onClose).not.toHaveBeenCalled();
+    expect(onSuccess).not.toHaveBeenCalled();
+    expect(screen.getByText("Fixture B")).toBeInTheDocument();
+    expect(aiServices.updateAiProvider).toHaveBeenCalledTimes(1);
   });
 
 });

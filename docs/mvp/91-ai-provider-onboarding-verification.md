@@ -1,5 +1,13 @@
 # Incorporar o modificar un proveedor IA: verificación obligatoria
 
+> Aclaración Teacher2026-11-14: la decisión del usuario permite que la creación
+> sea el primer intento real con la selección explícita, sin canary/recibo
+> generativo obligatorio previo por tupla o propósito. [ADR100](../architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md)
+> y [96§43](96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14).
+> Esta excepción de admisión del producto no elimina las pruebas de ingeniería
+> aplicables, no convierte catálogo/clave en disponibilidad generativa comprobada
+> ni acepta todos los modelos/modalidades o modifica gates de otros dominios.
+
 Fecha: 2026-10-27. Estado: en revisión; flujo técnico reusable solicitado expresamente. Aplica a nuevos proveedores (por ejemplo DeepSeek), nuevo modo/adaptador y cambios de contratos. [Retirada de Web](90-agentic-api-only-web-retirement.md). Las capacidades reales dependen de proveedor, modelo, cuenta, modo y entorno; no se deducen por nombre ni se exigen mediante fallbacks.
 
 ## Evidencia mínima por combinación

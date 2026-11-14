@@ -56,7 +56,7 @@ async function fixture() {
   const order: string[] = [];
   const context: AiGenerationExecutionContext = { selection, operationId: uuid('1'), prompt: 'Synthetic untrusted educational input',
     resourceKey: config.resourceKey, configurationGeneration: config.configurationGeneration, sessionGeneration: config.sessionGeneration,
-    nativeObservation: observed, deadlineAt: new Date(Date.now() + 60000), teacherOwner: { actorId: '1', sessionId: uuid('2'), jobId: uuid('3'), attemptId: uuid('4') },
+    nativeObservation: structuredClone(observed), deadlineAt: new Date(Date.now() + 60000), teacherOwner: { actorId: '1', sessionId: uuid('2'), jobId: uuid('3'), attemptId: uuid('4') },
     checkLease: vi.fn(async () => { order.push('lease'); }), beforeExchange: vi.fn(async () => { order.push('budget'); }),
     persistAgenticDescriptor: vi.fn(async () => { order.push('descriptor'); }) };
   return { service, native, codex, manager, query, observed, config, context, order,
@@ -64,8 +64,8 @@ async function fixture() {
     setQualifications: (value: unknown[]) => { qualifications = value; } };
 }
 
-describe('Teacher Agentic identity, qualification and native closure', () => {
-  it('rejects a legacy transport-only scope and accepts only the current application-policy scope', async () => {
+describe('Teacher Agentic current identity, optional diagnostics and native closure', () => {
+  it('does not require a legacy or current qualification receipt for an actual live observation', async () => {
     const f = await fixture();
     const { observed_at: _ignored, ...observationIdentity } = f.observed;
     const legacyScope = agenticHash({
@@ -82,21 +82,23 @@ describe('Teacher Agentic identity, qualification and native closure', () => {
       observation_snapshot: structuredClone(f.observed),
     };
     f.setQualifications([{ ...qualified, scope_hash: legacyScope }]);
-    await expect(f.service.configuration(selection)).rejects.toThrow(
-      'adapter_unqualified',
-    );
+    expect((await f.service.configuration(selection)).configurationGeneration).toBe(f.config.configurationGeneration);
     f.setQualifications([
       { ...qualified, scope_hash: teacherAgenticScope(selection, f.config) },
     ]);
     expect(
       (await f.service.configuration(selection)).configurationGeneration,
     ).toBe(f.config.configurationGeneration);
-    expect(f.native.observe).not.toHaveBeenCalled();
+    f.setQualifications([]);
+    expect((await f.service.eligibility(selection, signal())).eligible).toBe(true);
+    expect(f.query.mock.calls.some(([sql]) => sql.includes('FROM ai_generation_agentic_qualifications'))).toBe(false);
   });
   it('configuration is pure SQL under the caller manager and shares the exact chat generation rule', async () => {
     const f = await fixture();
     const transaction = { query: f.query, queryRunner: { isTransactionActive: true } } as unknown as EntityManager;
-    expect(await f.service.configuration(selection, transaction)).toEqual(f.config);
+    expect(await f.service.configured(selection, transaction)).toEqual({ providerKey: 'gemini', configurationGeneration: f.config.configurationGeneration, sessionGeneration: null });
+    expect(await f.service.configuration(selection, transaction, f.observed)).toEqual(f.config);
+    await expect(f.service.configuration(selection, transaction)).rejects.toThrow('agentic_observation_required');
     expect(f.query.mock.calls.some(([sql]) => sql.includes('FOR SHARE OF p,c'))).toBe(true);
     expect(f.config.configurationGeneration).toBe(agenticHash({ connection_id: '4', provider_key: 'gemini', mode: 'agentic',
       fields: { selected_model: 'synthetic-model' }, updated_at: new Date('2026-11-01T12:00:00Z'), enabled: true }));
@@ -105,30 +107,43 @@ describe('Teacher Agentic identity, qualification and native closure', () => {
     expect(f.config.keyId).toBeNull();
   });
 
-  it('invalidates qualifications on selection, configuration, policy, binary and native epoch changes', async () => {
+  it('accepts a current runtime without a canary while refusing to dispatch an older observation or unconfigured model', async () => {
     const f = await fixture();
     expect((await f.service.eligibility(selection, signal())).eligible).toBe(true);
     const original = structuredClone(f.observed);
     for (const change of [{ session_generation: 'f'.repeat(32) }, { runtime_hash: 'f'.repeat(64) },
       { policy_hash: 'f'.repeat(64) }, { binary_sha512: 'f'.repeat(128) }]) {
       Object.assign(f.observed, original, change);
-      expect((await f.service.eligibility(selection, signal())).eligible).toBe(false);
+      expect((await f.service.eligibility(selection, signal())).eligible).toBe(true);
+      await expect(f.service.execute(f.context, signal())).rejects.toMatchObject({ notStarted: true });
+      expect(f.native.start).not.toHaveBeenCalled();
+      expect(f.context.beforeExchange).not.toHaveBeenCalled();
     }
     Object.assign(f.observed, original);
     expect((await f.service.eligibility({ ...selection, model_id: 'other-synthetic-model' }, signal())).eligible).toBe(false);
     f.setProvider({ ...f.getProvider(), updated_at: new Date('2026-11-01T12:02:00Z') });
-    await expect(f.service.configuration(selection)).rejects.toThrow('adapter_unqualified');
+    expect((await f.service.configured(selection)).configurationGeneration).not.toBe(f.config.configurationGeneration);
     f.setQualifications([]);
-    await expect(f.service.configuration(selection)).rejects.toThrow('adapter_unqualified');
+    expect((await f.service.eligibility(selection, signal())).eligible).toBe(true);
   });
 
-  it('malformed persisted observations fail closed without live I/O under the SQL configuration path', async () => {
+  it('ignores malformed diagnostic history but rejects malformed operation observations without live I/O under SQL', async () => {
     const f = await fixture();
     f.setQualifications([{ scope_hash: teacherAgenticScope(selection, f.config), contract_version: TEACHER_AGENTIC_CONTRACT,
       provider_key: 'gemini', selection_snapshot: selection, configuration_generation: f.config.configurationGeneration,
       observation_snapshot: { ...f.observed, native_io: true } }]);
-    await expect(f.service.configuration(selection)).rejects.toThrow('protocol_invalid');
+    const transaction = { query: f.query, queryRunner: { isTransactionActive: true } } as unknown as EntityManager;
+    await expect(f.service.configuration(selection, transaction, { ...f.observed, native_io: true } as unknown as TeacherAgenticObservation)).rejects.toThrow('protocol_invalid');
     expect(f.native.observe).not.toHaveBeenCalled();
+    expect((await f.service.eligibility(selection, signal())).eligible).toBe(true);
+  });
+
+  it('propagates cancellation of an obsolete eligibility observation without saving or starting generation', async () => {
+    const f = await fixture(); const controller = new AbortController();
+    f.native.observe.mockImplementationOnce(async () => { controller.abort(); controller.signal.throwIfAborted(); return f.observed; });
+    await expect(f.service.eligibility(selection, controller.signal)).rejects.toMatchObject({ name: 'AbortError' });
+    expect(f.native.start).not.toHaveBeenCalled();
+    expect(f.query.mock.calls.some(([sql]) => sql.startsWith('INSERT'))).toBe(false);
   });
 
   it('rejects a provider change during live observation and never falls back', async () => {

@@ -5,6 +5,7 @@ import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { useTranslation } from "react-i18next";
 import { nodiaAiEligibilityReasonKey } from "../../infrastructure/eligibilityPresentation";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
+import { catalogModelOptions, chooseModelEffort, modelOptionComplete, modelOptionEfforts, modelOptionFor } from "../../../../utils/modelVariantOptions";
 import type { NodiaAiMode, NodiaAiSelection } from "../../infrastructure/types";
 import type { ConfigurationDrawerProps } from "./types";
 import {
@@ -43,6 +44,10 @@ function ConfigurationForm(props: ConfigurationDrawerProps & {
     connectionId && mode && modelId
       ? { connection_id: connectionId, mode, model_id: modelId, effort_id: effortId }
       : null, [connectionId, mode, modelId, effortId]);
+  const catalogOptions = catalogModelOptions(modeConfig?.models ?? [], connection?.provider_key === "gemini" && mode === "agentic",
+    { model_id: modelId ?? "", effort_id: effortId });
+  const modelOption = modelOptionFor(catalogOptions, modelId ?? "");
+  const reportedEfforts = modelOptionEfforts(modelOption);
 
   useEffect(() => {
     onSelectionChange(draftSelection);
@@ -57,7 +62,7 @@ function ConfigurationForm(props: ConfigurationDrawerProps & {
   const selectionMissing = connectionId !== null && (!connection || (mode !== null && !modeConfig)
     || (modelId !== null && !model) || (effortId !== null && !model?.efforts.some(item => item.effort_id === effortId)));
   const canApply = !fieldsDisabled && !eligibilityBusy && !error && !eligibilityError
-    && !selectionMissing && draftSelection !== null && exactEligibility?.available === true
+    && !selectionMissing && draftSelection !== null && modelOptionComplete(modelOption, draftSelection) && exactEligibility?.available === true
     && connection?.is_active === true && modeConfig?.configuration !== "disabled";
   const availableLabelKey = mode === "api_key" ? "nodiaAi:configuration.api_available" : "nodiaAi:configuration.available";
 
@@ -69,9 +74,9 @@ function ConfigurationForm(props: ConfigurationDrawerProps & {
   const modeOptions = (connection?.modes ?? [])
     .map(item => ({ value: item.mode, label: modeLabel(item.mode) }));
   if (mode && !modeConfig) modeOptions.push({ value: mode, label: modeLabel(mode) });
-  const modelOptions = (modeConfig?.models ?? []).map(item => ({ value: item.model_id, label: item.label }));
+  const modelOptions = catalogOptions.map(item => ({ value: item.value, label: item.label }));
   if (modelId && !model) modelOptions.push({ value: modelId, label: t("nodiaAi:configuration.missing_model", { id: modelId }) });
-  const effortOptions = (model?.efforts ?? []).map(item => ({ value: item.effort_id, label: effortLabel(item.effort_id, item.label) }));
+  const effortOptions = reportedEfforts.map(item => ({ value: item.effort_id, label: effortLabel(item.effort_id, item.label) }));
   if (effortId && !model?.efforts.some(item => item.effort_id === effortId)) effortOptions.push({ value: effortId, label: t("nodiaAi:configuration.missing_effort", { id: effortId }) });
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -119,12 +124,16 @@ function ConfigurationForm(props: ConfigurationDrawerProps & {
             setModelId(chosen.configured_selection?.model_id ?? null);
             setEffortId(chosen.configured_selection?.effort_id ?? null);
           }} />
-        <SelectSingleInput label={t("nodiaAi:configuration.model")} options={modelOptions} value={modelId} clearable={false}
+        <SelectSingleInput label={t("nodiaAi:configuration.model")} options={modelOptions} value={modelOption?.value ?? modelId} clearable={false}
           disabled={fieldsDisabled || !modeConfig} placeholder={t("nodiaAi:configuration.unassigned_model")}
-          onChange={value => { if (value !== modelId) { setModelId(value); setEffortId(null); } }} />
+          onChange={value => { if (value !== modelId && value !== modelOption?.value) { setModelId(value); setEffortId(null); } }} />
         <SelectSingleInput label={t("nodiaAi:configuration.effort")} options={effortOptions} value={effortId}
-          disabled={fieldsDisabled || !model || model.efforts.length === 0} placeholder={t("nodiaAi:configuration.unassigned_effort")}
-          onChange={setEffortId} />
+          disabled={fieldsDisabled || !model || reportedEfforts.length === 0} placeholder={t("nodiaAi:configuration.unassigned_effort")}
+          onChange={value => {
+            if (!draftSelection) return;
+            const next = chooseModelEffort(modelOption, draftSelection, value);
+            setModelId(next.model_id); setEffortId(next.effort_id);
+          }} />
         <Typography variant="caption" color="text.secondary">{t("nodiaAi:configuration.effort_preference")}</Typography>
         {configurationDisabled && <Alert severity="warning">{t("nodiaAi:configuration.mode_disabled")}</Alert>}
         {selectionMissing && <Alert severity="warning">{t("nodiaAi:configuration.selection_missing")}</Alert>}

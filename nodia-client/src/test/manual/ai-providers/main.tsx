@@ -243,7 +243,7 @@ mainInstance.defaults.adapter = async (request) => {
   }
   if (request.method === "post" && request.url?.includes("/sync-models"))
     return response({
-      models: modeFields.available_models,
+        models: params.get("grouped") === "1" ? groupedFields.available_models : modeFields.available_models,
       providerId: "901",
       providerName: "Gemini · conexión de prueba",
       currentSelectedModel: modelId,

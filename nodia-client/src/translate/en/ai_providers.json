@@ -188,6 +188,8 @@
     "close": "Close"
   },
   "modal_sync_models": {
+    "choose_reasoning": "Select reasoning...",
+    "no_models_available": "The provider returned no available models.",
     "title": "Sync & configure models",
     "subtitle": "Discover live models from the provider and select which ones to activate for the system.",
     "provider_badge_agentic": "Agentic",

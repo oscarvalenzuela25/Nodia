@@ -1,12 +1,12 @@
 import { StrictMode } from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SelectionPanel from "../../../../../modules/teacher/components/SelectionPanel";
-import type { ConnectionCatalog } from "../../../../../modules/teacher/infrastructure/selection";
+import type { ConnectionCatalog, ConnectionModelsObservation } from "../../../../../modules/teacher/infrastructure/selection";
 import type { Selection } from "../../../../../modules/teacher/infrastructure/schemas";
 
-const mocks = vi.hoisted(() => ({ query: vi.fn(), catalogRefetch: vi.fn(), eligibilityRefetch: vi.fn() }));
+const mocks = vi.hoisted(() => ({ query: vi.fn(), catalogRefetch: vi.fn(), modelsRefetch: vi.fn(), eligibilityRefetch: vi.fn() }));
 vi.mock("../../../../../modules/teacher/infrastructure/useServices", () => ({ useTeacherQuery: mocks.query }));
 const exact: Selection = { connection_id: "2", mode: "agentic", model_id: "fixture-native-model", effort_id: "high" };
 const catalogFixture = (): ConnectionCatalog => ({ items: [
@@ -21,14 +21,96 @@ let eligible: boolean;
 let failed: boolean;
 let fetching: boolean;
 let observed: Selection;
+let modelData: ConnectionModelsObservation | undefined;
+let modelsFetching: boolean;
+let modelsFailed: boolean;
+let eligibilityFetching: boolean;
 const onSave = vi.fn(async () => {});
 beforeEach(() => {
   catalog = catalogFixture(); eligible = true; failed = false; fetching = false; observed = exact; onSave.mockReset(); onSave.mockResolvedValue(undefined);
   mocks.catalogRefetch.mockReset(); mocks.eligibilityRefetch.mockReset();
-  mocks.query.mockImplementation((path: string) => ({ data: path === "connections" ? catalog : { selection: observed, eligible, reason_code: eligible ? null : "adapter_unqualified", checked_at: null }, isLoading: false, isFetching: fetching, isError: failed, refetch: path === "connections" ? mocks.catalogRefetch : mocks.eligibilityRefetch }));
+  mocks.modelsRefetch.mockReset(); modelData = undefined; modelsFetching = false; modelsFailed = false; eligibilityFetching = false;
+  mocks.query.mockImplementation((path: string) => path.endsWith("/models")
+    ? { data: modelData, isLoading: modelsFetching && !modelData, isFetching: modelsFetching, isError: modelsFailed, refetch: mocks.modelsRefetch }
+    : { data: path === "connections" ? catalog : { selection: observed, eligible, reason_code: eligible ? null : "adapter_unqualified", checked_at: null }, isLoading: false, isFetching: fetching || (path !== "connections" && eligibilityFetching), isError: failed, refetch: path === "connections" ? mocks.catalogRefetch : mocks.eligibilityRefetch });
 });
 
 describe("Teacher composer selection", () => {
+  it("recovers historical Codex options without saving provider configuration and enables only exact eligibility", async () => {
+    catalog.items[1].provider_key = "openai";
+    catalog.items[1].modes[0].models[0].efforts = [];
+    modelsFetching = true;
+    const changed = vi.fn();
+    const props = { intent: "create" as const, initial: exact, busy: false, onSelectionChange: changed };
+    const { rerender } = render(<SelectionPanel {...props} />);
+    expect(screen.getByRole("status")).toHaveTextContent("Comprobando selección");
+    expect(mocks.query).toHaveBeenCalledWith("connections/2/models", expect.anything(), { mode: "agentic" }, true,
+      { staleTime: 30_000, refetchOnWindowFocus: false, refetchOnReconnect: false });
+    expect(mocks.query).toHaveBeenLastCalledWith("connections/2/eligibility", expect.anything(), { mode: "agentic", model_id: exact.model_id, effort_id: "high" }, false);
+    modelData = { connection_id: "2", mode: "agentic", models: [{ model_id: exact.model_id, label: "Live fixture", efforts: ["high", "future"].map(effort_id => ({ effort_id, label: effort_id })) }] };
+    modelsFetching = false; eligibilityFetching = true;
+    rerender(<SelectionPanel {...props} />);
+    expect(screen.getByRole("button", { name: "Razonamiento" })).toHaveAttribute("aria-disabled", "false");
+    expect(screen.queryByText(/El modelo elegido ya no aparece/)).not.toBeInTheDocument();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Razonamiento" }));
+    await user.click(screen.getByRole("option", { name: "future" }));
+    expect(changed).toHaveBeenLastCalledWith({ selection: { ...exact, effort_id: "future" }, ready: false });
+    eligibilityFetching = false;
+    rerender(<SelectionPanel {...props} />);
+    expect(changed).toHaveBeenLastCalledWith({ selection: { ...exact, effort_id: "future" }, ready: false });
+    observed = { ...exact, effort_id: "future" };
+    rerender(<SelectionPanel {...props} />);
+    expect(changed).toHaveBeenLastCalledWith({ selection: observed, ready: true });
+    expect(onSave).not.toHaveBeenCalled();
+    expect(catalog.items[1].modes[0].models[0].efforts).toEqual([]);
+  });
+
+  it("keeps reasoning editable while an eligibility check is pending", async () => {
+    eligibilityFetching = true;
+    catalog.items[1].modes[0].models[0].efforts.push({ effort_id: "low", label: "low" });
+    const changed = vi.fn();
+    render(<SelectionPanel intent="create" initial={exact} busy={false} onSelectionChange={changed} />);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Razonamiento" }));
+    await user.click(screen.getByRole("option", { name: "low" }));
+    expect(changed).toHaveBeenLastCalledWith({ selection: { ...exact, effort_id: "low" }, ready: false });
+  });
+
+  it("reports missing metadata as an incomplete selection rather than an endless check or missing model", () => {
+    catalog.items[1].modes[0].models[0].efforts = [];
+    render(<SelectionPanel intent="create" initial={exact} busy={false} onSelectionChange={vi.fn()} />);
+    expect(screen.getByRole("status")).toHaveTextContent("Completa la selección de IA");
+    expect(screen.queryByText(/Comprobando selección/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/El modelo elegido ya no aparece/)).not.toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("El catálogo recibido no incluye opciones de razonamiento");
+  });
+
+  it("reports live metadata failure and allows a local retry without losing the selected identity", async () => {
+    catalog.items[1].provider_key = "openai"; modelsFailed = true;
+    const changed = vi.fn();
+    render(<SelectionPanel intent="create" initial={exact} busy={false} onSelectionChange={changed} />);
+    expect(screen.getByRole("status")).toHaveTextContent("No se pudo comprobar la selección");
+    expect(changed).toHaveBeenLastCalledWith({ selection: exact, ready: false });
+    expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("Native fixture");
+    await userEvent.setup().click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(mocks.modelsRefetch).toHaveBeenCalledOnce();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("does not observe or retry native options while a generation or write owns the session", async () => {
+    catalog.items[1].provider_key = "openai"; modelsFailed = true;
+    render(<SelectionPanel intent="create" initial={exact} busy onSelectionChange={vi.fn()} />);
+    expect(mocks.query).toHaveBeenCalledWith("connections/2/models", expect.anything(), { mode: "agentic" }, false, expect.anything());
+    expect(mocks.query).toHaveBeenLastCalledWith("connections/2/eligibility", expect.anything(), { mode: "agentic", model_id: exact.model_id, effort_id: "high" }, false);
+    const retry = screen.getByRole("button", { name: "Reintentar" });
+    expect(retry).toBeDisabled();
+    fireEvent.click(retry);
+    expect(mocks.modelsRefetch).not.toHaveBeenCalled();
+    expect(mocks.eligibilityRefetch).not.toHaveBeenCalled();
+    expect(mocks.catalogRefetch).not.toHaveBeenCalled();
+  });
+
   it("does not qualify or save a grouped model until its intensity is explicitly assigned", async () => {
     const ready = vi.fn();
     catalog.items[1].provider_key = "gemini";
@@ -57,7 +139,7 @@ describe("Teacher composer selection", () => {
     expect(screen.getAllByRole("option")).toHaveLength(1);
     expect(screen.getByRole("option", { name: "Fixture Next" })).toBeVisible();
     await user.keyboard("{Escape}");
-    await user.click(screen.getByRole("button", { name: "Esfuerzo" }));
+    await user.click(screen.getByRole("button", { name: "Razonamiento" }));
     await user.click(screen.getByRole("option", { name: "low" }));
     expect(onSave).not.toHaveBeenCalled();
     expect(ready).toHaveBeenLastCalledWith(false);
@@ -74,7 +156,7 @@ describe("Teacher composer selection", () => {
     const { rerender } = render(<SelectionPanel presentation="composer" initial={exact} busy={false} onSave={onSave} onReadyChange={ready} onDirtyChange={dirty} />);
     expect(screen.queryByRole("heading")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Selección de IA.*Default fixture/ })).not.toBeInTheDocument();
-    for (const name of ["Conexión", "Modo", "Modelo", "Esfuerzo"]) expect(screen.getByRole("button", { name })).toBeEnabled();
+    for (const name of ["Conexión", "Modo", "Modelo", "Razonamiento"]) expect(screen.getByRole("button", { name })).toBeEnabled();
     await waitFor(() => expect(ready).toHaveBeenLastCalledWith(true));
     expect(dirty).toHaveBeenLastCalledWith(false);
     fetching = true;
@@ -89,7 +171,7 @@ describe("Teacher composer selection", () => {
     catalog.items[1].modes[0].models[0].efforts.push({ effort_id: "low", label: "low" });
     const low = { ...exact, effort_id: "low" };
     const { rerender } = render(<SelectionPanel presentation="composer" initial={exact} busy={false} onSave={onSave} onReadyChange={ready} onDirtyChange={dirty} />);
-    await user.click(screen.getByRole("button", { name: "Esfuerzo" }));
+    await user.click(screen.getByRole("button", { name: "Razonamiento" }));
     await user.click(screen.getByRole("option", { name: "low" }));
     expect(ready).toHaveBeenLastCalledWith(false); expect(dirty).toHaveBeenLastCalledWith(true);
     expect(onSave).not.toHaveBeenCalled();
@@ -99,7 +181,7 @@ describe("Teacher composer selection", () => {
     onSave.mockRejectedValueOnce(new Error("fixture rejected write"));
     await user.click(screen.getByRole("button", { name: "Guardar selección" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "Guardar selección" })).toBeEnabled());
-    expect(screen.getByRole("button", { name: "Esfuerzo" })).toHaveTextContent("low");
+    expect(screen.getByRole("button", { name: "Razonamiento" })).toHaveTextContent("low");
     expect(onSave).toHaveBeenCalledExactlyOnceWith(low);
     rerender(<SelectionPanel presentation="composer" initial={exact} busy={false} onSave={onSave} onReadyChange={ready} onDirtyChange={dirty} />);
     expect(onSave).toHaveBeenCalledTimes(1);
@@ -129,7 +211,7 @@ describe("Teacher composer selection", () => {
     render(<SelectionPanel presentation="composer" initial={{ ...exact, model_id: "retired-fixture-model" }} busy={false} onSave={onSave} onReadyChange={ready} />);
     expect(ready).toHaveBeenLastCalledWith(false);
     expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("retired-fixture-model");
-    expect(screen.getByRole("alert")).toHaveTextContent(/La selección guardada ya no aparece/);
+    expect(screen.getByRole("alert")).toHaveTextContent(/El modelo elegido ya no aparece/);
     expect(onSave).not.toHaveBeenCalled();
   });
 
@@ -152,7 +234,7 @@ describe("Teacher exact selection", () => {
     await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: exact, ready: true }));
     expect(screen.getByRole("region", { name: "Selección de IA" })).toBeVisible();
     expect(screen.getByRole("heading", { name: "Selección de IA" })).toBeVisible();
-    for (const name of ["Conexión", "Modo", "Modelo", "Esfuerzo"]) expect(screen.getByRole("button", { name })).toBeVisible();
+    for (const name of ["Conexión", "Modo", "Modelo", "Razonamiento"]) expect(screen.getByRole("button", { name })).toBeVisible();
     expect(screen.queryByRole("button", { name: /Selección de IA/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Guardar selección" })).not.toBeInTheDocument();
     expect(onSave).not.toHaveBeenCalled();
@@ -162,7 +244,7 @@ describe("Teacher exact selection", () => {
     const { rerender } = render(<SelectionPanel intent="create" initial={null} busy={false} onSelectionChange={changed} />);
     await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: exact, ready: false }));
     expect(screen.getByRole("heading", { name: "Selección de IA" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Esfuerzo" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Razonamiento" })).toBeVisible();
     catalog.items[1].is_default = false; catalog = { ...catalog };
     rerender(<SelectionPanel intent="create" initial={null} busy={false} onSelectionChange={changed} />);
     await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: null, ready: false }));
@@ -177,7 +259,7 @@ describe("Teacher exact selection", () => {
     const props = { intent: "create" as const, initial: exact, busy: false, onSelectionChange: changed };
     const { rerender } = render(<SelectionPanel {...props} />);
     await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: exact, ready: false }));
-    const effort = screen.getByRole("button", { name: "Esfuerzo" });
+    const effort = screen.getByRole("button", { name: "Razonamiento" });
     expect(effort).toHaveAttribute("aria-disabled", "false");
     await user.click(effort);
     expect(screen.getAllByRole("option").map(option => option.textContent)).toEqual(["high", "low"]);
@@ -200,8 +282,8 @@ describe("Teacher exact selection", () => {
     const props = { intent: "create" as const, initial: exact, busy: false, onSelectionChange: changed };
     const { rerender } = render(<SelectionPanel {...props} />);
     await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: null, ready: false }));
-    expect(screen.getByText(/El catálogo no informa niveles de razonamiento/).closest("[role=alert]")).toBeVisible();
-    const effort = screen.getByRole("button", { name: "Esfuerzo" });
+    expect(screen.getByText(/El catálogo recibido no incluye opciones de razonamiento/).closest("[role=alert]")).toBeVisible();
+    const effort = screen.getByRole("button", { name: "Razonamiento" });
     expect(effort).toHaveAttribute("aria-disabled", "true");
     await user.click(effort);
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
@@ -212,7 +294,7 @@ describe("Teacher exact selection", () => {
     catalog = catalogFixture();
     rerender(<SelectionPanel {...props} />);
     await waitFor(() => expect(changed).toHaveBeenLastCalledWith({ selection: exact, ready: true }));
-    expect(screen.getByRole("button", { name: "Esfuerzo" })).toHaveTextContent("high");
+    expect(screen.getByRole("button", { name: "Razonamiento" })).toHaveTextContent("high");
     expect(onSave).not.toHaveBeenCalled();
   });
 
@@ -221,7 +303,7 @@ describe("Teacher exact selection", () => {
     await waitFor(() => expect(onSave).toHaveBeenCalledExactlyOnceWith(exact));
     expect(screen.getByRole("button", { name: "Modo" })).toHaveTextContent("Agentic");
     expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("Native fixture");
-    expect(screen.getByRole("button", { name: "Esfuerzo" })).toHaveTextContent("high");
+    expect(screen.getByRole("button", { name: "Razonamiento" })).toHaveTextContent("high");
   });
   it("collapses only after the selection is confirmed by its owner and supports keyboard expansion", async () => {
     const { rerender } = render(<SelectionPanel initial={null} busy={false} onSave={onSave} />);
@@ -241,7 +323,7 @@ describe("Teacher exact selection", () => {
   });
   it("blocks a historical model missing from discovery instead of selecting a new one", () => {
     render(<SelectionPanel initial={{ ...exact, model_id: "retired-fixture-model" }} busy={false} onSave={onSave} />);
-    expect(screen.getByText(/La selección guardada ya no aparece/)).toBeInTheDocument();
+    expect(screen.getByText(/El modelo elegido ya no aparece/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Guardar selección" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("retired-fixture-model");
     expect(onSave).not.toHaveBeenCalled();

@@ -59,4 +59,23 @@ describe("Teacher session fields", () => {
     await user.click(selector);
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
   });
+
+  it("keeps each named value when starting with the plan title and describing the learner's background", async () => {
+    const save = vi.fn();
+    render(<Form save={save} />);
+    const user = userEvent.setup();
+    const title = screen.getByRole("textbox", { name: "Título del plan de estudio" });
+    expect(screen.getAllByRole("textbox")[0]).toBe(title);
+    await user.type(title, "Mi plan de redes");
+    const knowledge = screen.getByRole("textbox", { name: "¿Qué es lo que ya sé? (opcional)" });
+    const context = screen.getByRole("textbox", { name: "Contexto base (opcional)" });
+    expect(knowledge).toHaveAccessibleDescription("Describe lo que ya conoces y lo que te cuesta, o indica que empiezas desde cero.");
+    expect(context).toHaveAccessibleDescription("Cuenta desde qué situación o proyecto partes y para qué quieres aplicar lo aprendido.");
+    await user.type(knowledge, "Conozco las direcciones IP");
+    await user.type(context, "Tengo una API en Ubuntu");
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+    await waitFor(() => expect(save).toHaveBeenCalledOnce());
+    expect(save.mock.calls[0][0]).toMatchObject({ title: "Mi plan de redes", topic: "Redes", objective: "Comprender DNS",
+      declared_base: "Conozco las direcciones IP", context: "Tengo una API en Ubuntu" });
+  });
 });

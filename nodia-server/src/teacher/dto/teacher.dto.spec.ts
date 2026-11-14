@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { describe, expect, it } from 'vitest';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { CreateSessionDto, PatchSetupDraftDto, PauseDto, ProposePlanDto, SetupMessageDto } from './teacher.dto.js';
+import { CreateSessionDto, PatchSetupDraftDto, PauseDto, ProposePlanDto, SetupMessageDto, TeacherModelsDto } from './teacher.dto.js';
 
 const options = { whitelist: true, forbidNonWhitelisted: true };
 const validateDto = <T extends object>(type: new () => T, body: object) => validate(plainToInstance(type, body), options);
@@ -10,6 +10,11 @@ const create = { topic: 'Synthetic topic', objective: 'Synthetic objective', exp
 const selected = { connection_id: '2', mode: 'agentic', model_id: 'synthetic-model', effort_id: null };
 
 describe('Teacher create and setup draft HTTP contracts', () => {
+  it('limits live model observations to the explicit Agentic query without injected fields', async () => {
+    expect(await validateDto(TeacherModelsDto, { mode: 'agentic' })).toHaveLength(0);
+    for (const query of [{}, { mode: 'api_key' }, { mode: 'token_plan_web' }, { mode: 'agentic', model_id: 'injected-model' }])
+      expect(await validateDto(TeacherModelsDto, query)).not.toHaveLength(0);
+  });
   it('keeps the legacy create envelope unchanged when no generation was requested', async () => {
     const dto = plainToInstance(CreateSessionDto, create);
     expect(await validate(dto, options)).toHaveLength(0);

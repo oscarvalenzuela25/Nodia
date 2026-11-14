@@ -1,5 +1,39 @@
 # Contratos técnicos de Nodia Teacher
 
+> Cambio funcional confirmado2026-11-14: Teacher admite el primer intento con
+> conexión/modelo/razonamiento explícitos sin recibo generativo previo, incluido
+> el antiguo gate por propósito. Elegibilidad permite solicitar generación;
+> no acredita inferencia o calidad. API mantiene validación de configuración y
+> credencial; Agentic observa disponibilidad/sesión/opciones reales y el Worker
+> revalida la identidad antes del envío. Presupuestos, autoridad, fences,
+> idempotencia/cierre/unknown no cambian. [ADR100 propuesto](../architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md)
+> y [96§43](96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14)
+> sustituyen sólo los requisitos previos de calificación inferiores; pruebas y
+> hashes históricos no se reescriben ni aceptan automáticamente el cambio nuevo.
+
+## Observación de opciones de razonamiento — adición2026-11-14
+
+`GET /teacher/connections/:id/models?mode=agentic`, autenticado y `no-store`,
+requiere autoridad Teacher actual; sólo OpenAI Agentic. Respuesta:
+`{connection_id,mode,models:[{model_id,label,efforts:[{effort_id,label}]}]}`.
+Consulta no generativa del catálogo nativo existente, fuera de locks/DB;
+autoridad/configuración se comprueban antes/después del I/O. Deadline30s y
+cancelación por cierre HTTP. Devuelve únicamente IDs guardados/seleccionados
+que siguen presentes en el proveedor, hasta200guardados más1seleccionado huérfano,
+con hasta32opciones por modelo. No activa modelos, guarda preferencias o califica.
+Modo/proveedor no admitido400, configuración cambiada409, protocolo inválido502,
+caída/timeout503;401/403 conservan su autoridad. Client valida el contrato,
+comparte observación por sesión/conexión/modo, cache30s y refresh explícito,
+sin polling, focus o reconnect de esta observación.
+
+Catálogo/modelos se leen antes de elegibilidad para no disputar el mismo lease.
+Una respuesta de otra conexión/modo no reemplaza el borrador. Durante comprobación
+de elegibilidad puede cambiarse razonamiento; Aplicar/Crear espera la respuesta de
+la tupla final exacta. Los comandos Teacher no invalidan globalmente modelos y
+elegibilidades; el panel dirige su actualización serial y evita observar Native
+mientras un trabajo mantiene ocupado al usuario. Las opciones guardadas siguen
+siendo configuración advisory, no prueba de inferencia.
+
 > Cierre técnico del upgrade2026-11-11:55/55TU verificados para Windows y la selección API key exacta configurada.18POST reales, revisión de47ítems, QA HTTP/JWT/SQL y rendimiento comparado, correcciones y restore final comprobados. Alcance y límites en la [matriz R02](../evidence/teacher-upgrade-acceptance-20261111-r02.md) y el [recibo R02](../evidence/teacher-upgrade-local-20261111-r02.json). No adopta otros proveedores/entornos, no acredita eficacia humana ni despliega/publica o aprueba ADR/fichas.
 
 > Puerta de calificación2026-11-11: el manifiesto compartido `teacher-generation-policy/2` incluye los hashes de todas las plantillas `teacher-text/2` y sus presupuestos. Su hash forma parte del scope API y del scope Agentic, separado de sus contratos históricos de transporte `teacher-text/1` y `teacher-agentic-text/1`. Una acreditación antigua no habilita las plantillas nuevas. El canary de setup acredita sólo transporte bajo el manifiesto vigente; no concede el propósito `contextual_reply` ni acredita calidad pedagógica. Se conservan recibos históricos y la prohibición de reenviar resultados unknown.

@@ -53,6 +53,41 @@ async function choose(field: string, option: string) {
 }
 
 describe("NodiaAI ConfigurationDrawer", () => {
+  it("shows one Gemini family while preserving exact effort IDs and requiring a new eligibility observation", async () => {
+    const models = ["high", "medium", "low"].map(effort_id => ({ model_id: `fixture-family-${effort_id}`,
+      label: `Fixture Family (${effort_id.toUpperCase()})`, efforts: [{ effort_id, label: effort_id }] }));
+    const selected = { ...agentic, model_id: models[1].model_id, effort_id: "medium" };
+    const settings = props({ connections: [{ ...connections[0], modes: [{ ...connections[0].modes[1], models, configured_selection: selected }] }],
+      selection: selected, eligibility: { ...eligibility, selection: selected } });
+    const { rerender } = render(<ConfigurationDrawer {...settings} />);
+    expect(screen.getByRole("button", { name: key("model") })).toHaveTextContent("Fixture Family");
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith(selected);
+    await choose("model", "Fixture Family");
+    expect(settings.onSelectionChange).toHaveBeenCalledTimes(1);
+    await choose("effort", i18n.t("nodiaAi:effort_levels.low"));
+    const changed = { ...selected, model_id: models[2].model_id, effort_id: "low" };
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith(changed);
+    expect(screen.getByRole("button", { name: key("apply") })).toBeDisabled();
+    rerender(<ConfigurationDrawer {...settings} eligibility={{ ...eligibility, selection: changed }} />);
+    await userEvent.setup().click(screen.getByRole("button", { name: key("apply") }));
+    expect(settings.onApply).toHaveBeenCalledExactlyOnceWith({ selection: changed, routingEnabled: false });
+  });
+
+  it("requires an explicit effort when a newly selected family has no configured tuple", async () => {
+    const models = ["high", "low"].map(effort_id => ({ model_id: `fixture-family-${effort_id}`,
+      label: `Fixture Family (${effort_id.toUpperCase()})`, efforts: [{ effort_id, label: effort_id }] }));
+    const settings = props({ connections: [{ ...connections[0], modes: [{ ...connections[0].modes[1], models: [...connections[0].modes[1].models, ...models] }] }],
+      selection: agentic, eligibility: { ...eligibility, selection: agentic } });
+    const { rerender } = render(<ConfigurationDrawer {...settings} />);
+    await choose("model", "Fixture Family");
+    const incomplete = { ...agentic, model_id: models[0].model_id, effort_id: null };
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith(incomplete);
+    rerender(<ConfigurationDrawer {...settings} eligibility={{ ...eligibility, selection: incomplete }} />);
+    expect(screen.getByRole("button", { name: key("apply") })).toBeDisabled();
+    await choose("effort", i18n.t("nodiaAi:effort_levels.low"));
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith({ ...incomplete, model_id: models[1].model_id, effort_id: "low" });
+  });
+
   it.each(["es", "en"])("applies an exact API chat selection with verified tools without claiming MCP (%s)", async language => {
     await i18n.changeLanguage(language);
     try {

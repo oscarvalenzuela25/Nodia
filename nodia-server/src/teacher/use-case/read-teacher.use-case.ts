@@ -34,12 +34,16 @@ export class ReadTeacherUseCase {
   connections(actor: ActorReference) {
     return this.generation.connections(actor);
   }
+  models(actor: ActorReference, id: string, mode: string, signal?: AbortSignal) {
+    return this.generation.models(actor, id, mode, signal);
+  }
   eligibility(
     actor: ActorReference,
     id: string,
     selection: Omit<TeacherSelection, 'connection_id'>,
+    signal?: AbortSignal,
   ) {
-    return this.generation.eligibility(actor, id, selection);
+    return this.generation.eligibility(actor, id, selection, signal);
   }
   list(actor: ActorReference, q: GetTeacherSessionsDto) {
     return this.store.scope(
