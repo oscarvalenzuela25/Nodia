@@ -1,13 +1,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { verifyArtifact } from './artifact-release.mjs';
 import { CdRejected, extractOriginalZip, githubClient, isSha, numeric, outputs, requireCd, safeFailure, selectArtifact, writeState } from './cd-github.mjs';
 import { deploymentPlan, unmanagedRuntimePaths } from './cd-selection.mjs';
 import { deployBackend, readBackend } from './cd-vps.mjs';
-import { publishPages } from './cd-pages.mjs';
+import { preflightPages, publishPages } from './cd-pages.mjs';
 import { verifyPublishedPwaAssets } from './pwa-assets.mjs';
+import { inventory } from '../production/package-backend-release.mjs';
+import { deliveryReceipt } from './delivery-receipt.mjs';
 
 function workspace(environment) {
   const output = path.resolve(environment.CD_WORKSPACE ?? '');
@@ -63,20 +66,84 @@ export async function prepareRelease(environment = process.env, { api = githubCl
   return { status: 'prepared', source_sha: ci.source_sha, server_required: plan.server_required,
     client_required: plan.client_required, python_or_native_deployed: false };
 }
-export async function updateServer(environment = process.env) {
+const staticDirectory = output => path.join(output, 'client-static', 'dist');
+const staticDigest = directory => createHash('sha256').update(JSON.stringify(inventory(directory, { source: true }))).digest('hex');
+function verifyClientArtifact({ root, plan, environment, verify }) {
+  const artifact = plan.artifacts.client;
+  verify({ root, output: artifact.directory, component: 'client', sourceSha: plan.source_sha,
+    runId: plan.ci.run_id, runAttempt: plan.ci.run_attempt, repository: plan.ci.repository,
+    requireProduction: true, environment });
+  return artifact;
+}
+function requireClientPreflight(output, plan) {
+  const filename = path.join(output, 'client-preflight.json');
+  requireCd(fs.existsSync(filename), 'client_preflight_required_before_backend');
+  const proof = JSON.parse(fs.readFileSync(filename, 'utf8'));
+  requireCd(proof.source_sha === plan.source_sha && proof.ci_run_id === plan.ci.run_id &&
+    proof.ci_run_attempt === plan.ci.run_attempt && proof.deployment_requested === false &&
+    proof.asset_upload_requested === false && proof.status === (plan.client_required ? 'preflight_verified' : 'not_required'),
+  'client_preflight_identity_mismatch');
+  if (plan.client_required) {
+    const artifact = plan.artifacts.client;
+    requireCd(proof.artifact_id === artifact.id && proof.artifact_digest === artifact.digest &&
+      proof.package_tree_sha256 === artifact.metadata.package_tree_sha256 &&
+      proof.public_configuration_sha256 === artifact.metadata.public_configuration_sha256,
+    'client_preflight_identity_mismatch');
+    requireCd(proof.static_tree_sha256 === staticDigest(staticDirectory(output)), 'client_static_changed_after_preflight');
+  }
+  return proof;
+}
+export async function preflightClient(environment = process.env, { api, verify = verifyArtifact,
+  preflight = preflightPages, extract = execFileSync } = {}) {
+  context(environment);
+  const { root, output } = workspace(environment);
+  const plan = JSON.parse(fs.readFileSync(path.join(output, 'release-plan.json'), 'utf8'));
+  api ??= githubClient(environment);
+  const revalidate = () => api.gate(plan.ci.run_id, plan.ci.run_attempt, plan.source_sha);
+  await revalidate();
+  let result = { status: 'not_required', deployment_requested: false, asset_upload_requested: false };
+  if (plan.client_required) {
+    const artifact = verifyClientArtifact({ root, plan, environment, verify });
+    const extracted = path.dirname(staticDirectory(output));
+    requireCd(!fs.existsSync(extracted), 'static_extract_already_exists');
+    fs.mkdirSync(extracted, { mode: 0o700 });
+    try { extract('tar', ['-xzf', path.join(artifact.directory, artifact.result.archive_file), '-C', extracted], { stdio: 'ignore' }); }
+    catch { requireCd(false, 'verified_client_extract_failed'); }
+    const checked = await preflight({ environment, metadata: artifact.metadata, directory: staticDirectory(output),
+      expectedBaseline: plan.client_baseline, allowCreate: !plan.prior_cd_run,
+      stateFile: path.join(output, 'pages-preflight-state.json'), revalidate });
+    requireCd(checked.status === 'preflight_verified' && checked.source_sha === plan.source_sha &&
+      checked.deployment_requested === false && checked.asset_upload_requested === false, 'client_preflight_result_invalid');
+    // Persist only explicit public proof fields, never the short-lived upload JWT or a remote response.
+    result = { status: checked.status, deployment_requested: false, asset_upload_requested: false,
+      total_assets: checked.total_assets, missing_assets: checked.missing_assets,
+      asset_check_performed: checked.asset_check_performed, pages_marker: checked.pages_marker,
+      ...(checked.deployment_id ? { deployment_id: checked.deployment_id } : {}),
+      artifact_id: artifact.id, artifact_digest: artifact.digest,
+      package_tree_sha256: artifact.metadata.package_tree_sha256,
+      public_configuration_sha256: artifact.metadata.public_configuration_sha256,
+      static_tree_sha256: staticDigest(staticDirectory(output)) };
+  }
+  result = { ...result, schema_version: 1, source_sha: plan.source_sha,
+    ci_run_id: plan.ci.run_id, ci_run_attempt: plan.ci.run_attempt, automatic_retry_allowed: false };
+  writeState(path.join(output, 'client-preflight.json'), result);
+  return result;
+}
+export async function updateServer(environment = process.env, { api, read = readBackend, deploy = deployBackend } = {}) {
   context(environment);
   const { output } = workspace(environment);
   const plan = JSON.parse(fs.readFileSync(path.join(output, 'release-plan.json'), 'utf8'));
-  const api = githubClient(environment);
+  requireClientPreflight(output, plan);
+  api ??= githubClient(environment);
   await api.gate(plan.ci.run_id, plan.ci.run_attempt, plan.source_sha);
   let result;
   if (!plan.server_required) {
-    const baseline = await readBackend(environment);
+    const baseline = await read(environment);
     requireCd(baseline.source_sha === plan.server_base, 'backend_changed_after_plan');
     result = { status: 'not_required', source_sha: baseline.source_sha, deployment_requested: false };
   } else {
     const artifact = plan.artifacts.server;
-    result = await deployBackend({ environment, plan, artifact, zipFile: artifact.zip_file, zipBytes: artifact.zip_bytes, ci: plan.ci,
+    result = await deploy({ environment, plan, artifact, zipFile: artifact.zip_file, zipBytes: artifact.zip_bytes, ci: plan.ci,
       expectedRelease: plan.server_baseline.release_id, expectedTree: plan.server_baseline.package_tree_sha256,
       candidateRelease: artifact.result.release_id, candidateTree: artifact.result.package_tree_sha256,
       allowNewSubmission: !plan.prior_cd_run, stateFile: path.join(output, 'backend-state.json') });
@@ -102,32 +169,26 @@ export async function confirmPublishedClient({ result, directory, stateFile, ver
   writeState(stateFile, confirmed);
   return confirmed;
 }
-export async function updateClient(environment = process.env) {
+export async function updateClient(environment = process.env, { api, verify = verifyArtifact,
+  publish = publishPages, confirm = confirmPublishedClient } = {}) {
   context(environment);
   const { root, output } = workspace(environment);
   const plan = JSON.parse(fs.readFileSync(path.join(output, 'release-plan.json'), 'utf8'));
   const backend = JSON.parse(fs.readFileSync(path.join(output, 'backend-result.json'), 'utf8'));
   requireCd(plan.server_required ? ['complete', 'already_current'].includes(backend.status) && backend.source_sha === plan.source_sha :
     backend.status === 'not_required', 'backend_must_be_confirmed_before_pages');
-  const api = githubClient(environment);
+  requireClientPreflight(output, plan);
+  api ??= githubClient(environment);
   const revalidate = () => api.gate(plan.ci.run_id, plan.ci.run_attempt, plan.source_sha);
   await revalidate();
   let result;
   if (!plan.client_required) result = { status: 'not_required', deployment_requested: false };
   else {
-    const artifact = plan.artifacts.client;
-    verifyArtifact({ root, output: artifact.directory, component: 'client', sourceSha: plan.source_sha,
-      runId: plan.ci.run_id, runAttempt: plan.ci.run_attempt, repository: plan.ci.repository,
-      requireProduction: true, environment });
-    const extracted = path.join(output, 'client-static');
-    requireCd(!fs.existsSync(extracted), 'static_extract_already_exists');
-    fs.mkdirSync(extracted, { mode: 0o700 });
-    try { execFileSync('tar', ['-xzf', path.join(artifact.directory, artifact.result.archive_file), '-C', extracted], { stdio: 'ignore' }); }
-    catch { requireCd(false, 'verified_client_extract_failed'); }
-    result = await publishPages({ environment, metadata: artifact.metadata, directory: path.join(extracted, 'dist'),
+    const artifact = verifyClientArtifact({ root, plan, environment, verify });
+    result = await publish({ environment, metadata: artifact.metadata, directory: staticDirectory(output),
       expectedBaseline: plan.client_baseline, allowCreate: !plan.prior_cd_run,
       stateFile: path.join(output, 'pages-state.json'), revalidate });
-    result = await confirmPublishedClient({ result, directory: path.join(extracted, 'dist'),
+    result = await confirm({ result, directory: staticDirectory(output),
       stateFile: path.join(output, 'pages-state.json') });
   }
   writeState(path.join(output, 'client-result.json'), result);
@@ -135,13 +196,15 @@ export async function updateClient(environment = process.env) {
 }
 export function releaseSummary(environment = process.env) {
   const { output } = workspace(environment);
-  const read = name => fs.existsSync(path.join(output, name)) ? JSON.parse(fs.readFileSync(path.join(output, name), 'utf8')) : null;
-  const plan = read('release-plan.json'), backend = read('backend-result.json') ?? read('backend-state.json'),
-    client = read('client-result.json') ?? read('pages-state.json'), failure = read('failure.json');
+  const receipt = deliveryReceipt(output, environment);
+  writeState(path.join(output, 'delivery-receipt.json'), receipt);
+  const { backend, client, failure } = receipt;
   const text = '### Production delivery\n\n' +
-    `Source: \`${plan?.source_sha ?? 'not prepared'}\`.\n\n` +
+    `Source: \`${receipt.source_sha ?? 'not prepared'}\`.\n\n` +
     '| Component | Last confirmed state |\n| --- | --- |\n' +
     `| API/worker | ${backend?.status ?? 'not confirmed'} |\n| Static Client | ${client?.status ?? 'not confirmed'} |\n\n` +
+    `Backend operation: \`${backend?.operation_id ?? 'not recorded'}\`; Pages deployment: \`${client?.deployment_id ?? 'not recorded'}\`.\n\n` +
+    `Sanitized receipt artifact: \`delivery-receipt-${receipt.delivery.run_id ?? 'unknown'}-${receipt.delivery.run_attempt ?? 'unknown'}\`.\n\n` +
     (failure ? `Stopped with \`${failure.error_code}\`; no automatic retry.\n\n` : '') +
     'Python/native runtimes are not deployed or enabled by this delivery. AI capability qualification remains separate.\n' +
     'Pages/VPS publication is not atomic; a partial result records each component separately. No database restore/rollback is automatic.\n';
@@ -151,7 +214,8 @@ export function releaseSummary(environment = process.env) {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const command = process.argv[2];
-    const operation = { prepare: prepareRelease, backend: updateServer, client: updateClient, summary: releaseSummary }[command];
+    const operation = { prepare: prepareRelease, 'preflight-client': preflightClient,
+      backend: updateServer, client: updateClient, summary: releaseSummary }[command];
     requireCd(operation, 'release_command_invalid');
     console.log(JSON.stringify(await operation()));
   } catch (error) {

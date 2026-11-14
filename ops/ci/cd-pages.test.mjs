@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { assetTools, deploymentMarker, pagesClient, publishPages, readPages, staticAssets } from './cd-pages.mjs';
+import { assetTools, deploymentMarker, pagesClient, preflightPages, publishPages, readPages, staticAssets } from './cd-pages.mjs';
 import { publicConfiguration } from './artifact-release.mjs';
 const environment={GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_REF:'refs/heads/master',GITHUB_RUN_ATTEMPT:'1',
   CLOUDFLARE_ACCOUNT_ID:'a'.repeat(32),CLOUDFLARE_PAGES_PROJECT_NAME:'nodia',CLOUDFLARE_API_TOKEN:'synthetic-only',
@@ -19,6 +19,9 @@ const response=value=>Response.json({success:true,errors:[],result:value});
 const fixture=t=>{const dir=fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()),'nodia-pages-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));fs.writeFileSync(path.join(dir,'index.html'),'fixture');return dir;};
 test('static upload hashes use BLAKE3 of base64 bytes and extension; executable Pages inputs are excluded',async t=>{
   const tools=await assetTools();assert.equal(tools.hash(Buffer.alloc(0),'file'), 'af1349b9f5f9a1a6a0404dea36dcc949');
+  for(const [extension,expected] of [['png','2082190357cfd3617ccfe04f340c6247'],['txt','1a98fb08af91aca4a7df1764a2c4ddb0'],
+    ['html','d96fef225537c9f5e44a3cb27fd0b492'],['js','6be321bef99e758250dac034474ddbb8']])
+    assert.equal(tools.hash(Buffer.from('foobar'),'logo.'+extension),expected);
   const dir=fixture(t);const assets=await staticAssets(dir,tools);assert.equal(Object.keys(assets.manifest)[0],'/index.html');
   for(const name of ['_worker.js','_routes.json','wrangler.toml','functions/hello.js']){
     const file=path.join(dir,name);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,'fixture');
@@ -41,8 +44,15 @@ test('a static deployment sends only approved multipart fields and creates exact
       if(Number(query.get('per_page'))>25)return Response.json({success:false,errors:[{code:8000000,message:'invalid page size'}]},{status:400});
       assert.equal(query.get('per_page'),'25');assert.equal(query.get('env'),'production');assert.equal(query.get('page'),'1');return response([]);}
     if(resource.endsWith('/upload-token'))return response({jwt:'synthetic-upload-only'});
-    if(resource.endsWith('/check-missing'))return response(JSON.parse(options.body).hashes);
-    if(resource.endsWith('/upload')||resource.endsWith('/upsert-hashes'))return response(null);
+    // Actual asset API success omits errors; the previous shared fixture invented errors:[] and hid the defect.
+    if(resource.endsWith('/check-missing'))return Response.json({success:true,result:JSON.parse(options.body).hashes});
+    if(resource.endsWith('/upload')){
+      assert.equal(options.headers.Authorization,'Bearer synthetic-upload-only');
+      const payload=JSON.parse(options.body);assert.equal(payload.length,1);assert.equal(payload[0].base64,true);
+      assert.equal(Buffer.from(payload[0].value,'base64').toString(),'fixture');
+      assert.equal(typeof payload[0].metadata.contentType,'string');
+      return Response.json({success:true,result:true});}
+    if(resource.endsWith('/upsert-hashes'))return new Response(null,{status:204});
     if(resource.endsWith('/deployments')){
       assert.ok(options.body instanceof FormData);assert.deepEqual([...options.body.keys()].sort(),['branch','commit_dirty','commit_hash','commit_message','manifest']);
       assert.equal(options.body.get('branch'),'master');canonical=deployment(true);return response(canonical);}
@@ -119,11 +129,76 @@ test('API failures identify a fixed operation and HTTP status without exposing r
     const resource=suffix.startsWith('/pages/assets/')?suffix:projectPath+suffix.slice('/projects/nodia'.length);
     const prefix=method==='GET'?'pages_read_failed':'pages_write_failed_or_outcome_unknown';
     await assert.rejects(api(resource,{method}),error=>{
-      assert.equal(error.message,`${prefix}_${operation}_http_${status}`);
+      assert.equal(error.message,`${prefix}_${operation}_http_${status}_cf_1234`);
       assert.doesNotMatch(String(error),/private|synthetic-only|https:\/\//);return true;
     });
     assert.equal(calls,1);
   }
+});
+
+test('asset acknowledgements accept official null/true and empty 204/205 forms; lookups never accept a missing result',async()=>{
+  for(const operation of ['upload','upsert-hashes'])for(const reply of [
+    ()=>Response.json({success:true,result:null}),()=>Response.json({success:true,result:true}),
+    ()=>new Response(null,{status:204}),()=>new Response(null,{status:205}),
+  ]){
+    const {api}=pagesClient(environment,async()=>reply());
+    assert.equal((await api('/pages/assets/'+operation,{method:'POST',jwt:'synthetic-jwt',body:[]})).success,true);
+  }
+  for(const reply of [()=>new Response(null,{status:204}),()=>Response.json({success:true})]){
+    const {api}=pagesClient(environment,async()=>reply());
+    await assert.rejects(api('/pages/assets/check-missing',{method:'POST',jwt:'synthetic-jwt',body:{hashes:[]}}),
+      /pages_(response_invalid|result_missing)_asset_check/);
+  }
+});
+
+test('malformed or rejected success envelopes include safe operation/status/numeric codes without remote secrets',async()=>{
+  for(const body of [null,[],{success:false,errors:[{code:10000,message:'private synthetic-token'}]},
+    {success:true,errors:[{code:10000,message:'private synthetic-token'}],result:[]},
+    {success:true,errors:null,result:[]}]){
+    let calls=0;
+    const {api}=pagesClient(environment,async()=>{calls++;return Response.json(body);});
+    await assert.rejects(api('/pages/assets/check-missing',{method:'POST',jwt:'synthetic-jwt',body:{hashes:[]}}),error=>{
+      assert.match(error.message,/pages_response_(invalid|unsuccessful)_asset_check_http_200/);
+      assert.doesNotMatch(String(error),/private|synthetic-token/);return true;});
+    assert.equal(calls,1);
+  }
+  const {api}=pagesClient(environment,async()=>new Response('x'.repeat(2*1024*1024+1)));
+  await assert.rejects(api('/pages/assets/check-missing',{method:'POST',body:{hashes:[]}}),/pages_response_limit_asset_check/);
+});
+
+test('Pages preflight checks real upload protocol before effects, persists only safe counts, and never uploads or submits',async t=>{
+  const dir=fixture(t),calls=[];
+  // Keep state outside dist so it cannot become a static asset.
+  const output=fixture(t),receipt=path.join(output,'preflight.json');
+  const request=async(url,options)=>{
+    const pathname=new URL(url).pathname;calls.push([pathname,options.method]);
+    if(pathname.endsWith('/projects/nodia'))return response(project(deployment(false)));
+    if(pathname.endsWith('/deployments'))return response([]);
+    if(pathname.endsWith('/upload-token'))return response({jwt:'synthetic-private-jwt'});
+    assert.equal(pathname,'/client/v4/pages/assets/check-missing');assert.equal(options.method,'POST');
+    return Response.json({success:true,result:JSON.parse(options.body).hashes});
+  };
+  let gates=0;
+  const result=await preflightPages({environment,metadata,directory:dir,allowCreate:true,stateFile:receipt,request,revalidate:async()=>{gates++;}});
+  assert.equal(result.status,'preflight_verified');assert.equal(result.total_assets,1);assert.equal(result.missing_assets,1);
+  assert.equal(result.asset_check_performed,true);assert.equal(result.deployment_requested,false);assert.equal(result.asset_upload_requested,false);
+  assert.equal(gates,2);assert.equal(calls.filter(([,method])=>method==='POST').length,1);
+  assert.doesNotMatch(fs.readFileSync(receipt,'utf8'),/synthetic-private-jwt|Authorization/);
+});
+
+test('Pages preflight rejects malformed missing hashes, historical uncertainty and baseline drift without asset uploads',async t=>{
+  const dir=fixture(t);
+  for(const missing of [null,{},['unknown'],['a'.repeat(32),'a'.repeat(32)]]){
+    const request=async(url)=>url.endsWith('/projects/nodia')?response(project(deployment(false))):url.includes('/deployments?')?
+      response([]):url.endsWith('/upload-token')?response({jwt:'synthetic-private-jwt'}):Response.json({success:true,result:missing});
+    await assert.rejects(preflightPages({environment,metadata,directory:dir,allowCreate:true,request}),/pages_missing_hashes_invalid/);
+    await assert.rejects(preflightPages({environment,metadata,directory:dir,allowCreate:false,request}),/prior_cd_pages_outcome_requires_reconciliation/);
+    await assert.rejects(preflightPages({environment,metadata,directory:dir,allowCreate:true,request,
+      expectedBaseline:{source_sha:'e'.repeat(40),deployment_id:id}}),/pages_baseline_changed_after_plan/);
+  }
+  const result=await preflightPages({environment,metadata,directory:dir,allowCreate:false,request:async(_url,options)=>{
+    assert.equal(options.method,'GET');return response(project(deployment(true)));}});
+  assert.equal(result.asset_check_performed,false);assert.equal(result.missing_assets,null);assert.equal(result.deployment_id,id);
 });
 
 test('transport errors preserve uncertain writes and redact exception details without retrying',async()=>{

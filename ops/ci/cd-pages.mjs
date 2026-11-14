@@ -9,6 +9,31 @@ import { CdRejected, isHex, isSha, numeric, outputs, requireCd, safeFailure, wri
 import { validatePwaAssets } from './pwa-assets.mjs';
 
 const sourceRequire = createRequire(new URL('./pages-assets/package.json', import.meta.url));
+const responseLimit = 2 * 1024 * 1024;
+async function responseBytes(response, operation) {
+  const declared = response.headers.get('content-length');
+  requireCd(declared === null || /^\d+$/.test(declared) && Number(declared) <= responseLimit,
+    `pages_response_limit_${operation}`);
+  if (!response.body) return Buffer.alloc(0);
+  const reader = response.body.getReader(), chunks = [];
+  let length = 0, complete = false;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) { complete = true; break; }
+      length += value.length;
+      requireCd(length <= responseLimit, `pages_response_limit_${operation}`);
+      chunks.push(Buffer.from(value));
+    }
+    return Buffer.concat(chunks);
+  } finally { if (!complete) await reader.cancel(); reader.releaseLock(); }
+}
+function errorCodes(body) {
+  if (!Array.isArray(body?.errors)) return '';
+  const codes = [...new Set(body.errors.map(error => error?.code)
+    .filter(code => Number.isSafeInteger(code) && code >= 0 && code <= 999999999))].slice(0, 3);
+  return codes.length ? '_cf_' + codes.join('_') : '';
+}
 export async function assetTools() {
   const blake = sourceRequire('blake3-wasm');
   const mime = (await import(pathToFileURL(sourceRequire.resolve('mime')).href)).default;
@@ -38,18 +63,27 @@ export function pagesClient(environment = process.env, request = fetch) {
     const headers = { Authorization: `Bearer ${jwt ?? token}`, Accept: 'application/json' };
     let payload = body;
     if (body && !(body instanceof FormData)) { headers['Content-Type'] = 'application/json'; payload = JSON.stringify(body); }
+    const write = method !== 'GET' && operation !== 'asset_check';
     let response;
     try { response = await request('https://api.cloudflare.com/client/v4' + resource, {
       method, headers, body: payload, redirect: 'error', signal: AbortSignal.timeout(method === 'GET' ? 20_000 : 120_000) }); }
-    catch { throw new CdRejected(`${method === 'GET' ? 'pages_read_failed' : 'pages_write_outcome_unknown'}_${operation}_transport`); }
-    requireCd(response.ok, `${method === 'GET' ? 'pages_read_failed' : 'pages_write_failed_or_outcome_unknown'}_${operation}_http_${response.status}`);
-    let value;
-    try {
-      const bytes = await response.arrayBuffer();
-      requireCd(bytes.byteLength <= 2 * 1024 * 1024, 'pages_response_limit');
-      value = JSON.parse(Buffer.from(bytes).toString('utf8'));
-    } catch (error) { if (error instanceof CdRejected) throw error; throw new CdRejected('pages_response_invalid'); }
-    requireCd(value?.success === true && Array.isArray(value.errors) && value.errors.length === 0, 'pages_response_unsuccessful');
+    catch { throw new CdRejected(`${write ? 'pages_write_outcome_unknown' : 'pages_read_failed'}_${operation}_transport`); }
+    let bytes;
+    try { bytes = await responseBytes(response, operation); }
+    catch (error) { if (error instanceof CdRejected) throw error;
+      throw new CdRejected(`${write ? 'pages_write_outcome_unknown' : 'pages_read_failed'}_${operation}_body_transport`); }
+    const acknowledgement = ['asset_upload', 'asset_registration'].includes(operation);
+    // Cloudflare's SDK treats empty 204/205 as acknowledgements. Never allow an empty lookup or deployment identity.
+    if (acknowledgement && [204, 205].includes(response.status) && bytes.length === 0)
+      return { success: true, result: null };
+    let value = null;
+    try { value = JSON.parse(bytes.toString('utf8')); } catch { /* Report only fixed labels, never a remote body. */ }
+    requireCd(response.ok, `${write ? 'pages_write_failed_or_outcome_unknown' : 'pages_read_failed'}_${operation}_http_${response.status}${errorCodes(value)}`);
+    requireCd(value && typeof value === 'object' && !Array.isArray(value), `pages_response_invalid_${operation}_http_${response.status}`);
+    // Asset endpoints legitimately omit errors on success; a present errors field must still be an empty array.
+    requireCd(value.success === true && (!Object.hasOwn(value, 'errors') || Array.isArray(value.errors) && value.errors.length === 0),
+      `pages_response_unsuccessful_${operation}_http_${response.status}${errorCodes(value)}`);
+    requireCd(acknowledgement || Object.hasOwn(value, 'result'), `pages_result_missing_${operation}`);
     return value;
   }
   return { api, projectPath };
@@ -102,8 +136,7 @@ export async function staticAssets(directory, tools) {
   }
   return { manifest, assets, special };
 }
-export async function publishPages({ environment = process.env, metadata, directory, allowCreate, expectedBaseline, stateFile,
-  request = fetch, tools, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)), pollLimit = 120, revalidate = async () => {} }) {
+function publicationContext(environment, metadata, request) {
   requireCd(environment.GITHUB_EVENT_NAME === 'workflow_dispatch' && environment.GITHUB_REF === 'refs/heads/master' &&
     environment.GITHUB_RUN_ATTEMPT === '1', 'pages_cd_rerun_requires_reconciliation');
   const client = pagesClient(environment, request);
@@ -111,12 +144,13 @@ export async function publishPages({ environment = process.env, metadata, direct
   const config = publicConfiguration(environment, { event: 'push', ref: 'refs/heads/master' });
   requireCd(metadata.production_eligible === true && metadata.required_public_configuration_valid === true &&
     metadata.public_configuration_sha256 === config.public_configuration_sha256, 'pages_public_configuration_mismatch');
-  const record = value => { if (stateFile) writeState(stateFile, { marker: desired, automatic_retry_allowed: false, ...value }); };
+  return { client, desired };
+}
+async function deploymentTarget(environment, metadata, expectedBaseline, request, client, desired) {
   const current = await readPages(environment, { request });
   if (current.recorded_marker === desired) {
     requireCd(current.source_sha === metadata.source_sha, 'pages_marker_source_mismatch');
-    record({ status: 'already_current', deployment_requested: false, deployment_id: current.deployment_id });
-    return { status: 'already_current', source_sha: metadata.source_sha, deployment_id: current.deployment_id, deployment_requested: false };
+    return { current, alreadyCurrent: true, deployment: null };
   }
   requireCd(!expectedBaseline || current.source_sha === expectedBaseline.source_sha &&
     current.deployment_id === expectedBaseline.deployment_id, 'pages_baseline_changed_after_plan');
@@ -132,19 +166,62 @@ export async function publishPages({ environment = process.env, metadata, direct
     requireCd(page < pageLimit, 'pages_deployment_history_incomplete');
   }
   requireCd(matches.length <= 1, 'ambiguous_pages_deployment_marker');
-  let deployment = matches.length ? validateDeployment(matches[0], { sourceSha: metadata.source_sha, marker: desired }) : null;
+  const deployment = matches.length ? validateDeployment(matches[0], { sourceSha: metadata.source_sha, marker: desired }) : null;
   if (deployment) requireCd(deployment.latest_stage.name === 'deploy' && deployment.latest_stage.status === 'success',
     'existing_pages_deployment_requires_reconciliation');
+  return { current, alreadyCurrent: false, deployment };
+}
+async function missingAssets(client, content) {
+  const token = (await client.api(`${client.projectPath}/upload-token`)).result?.jwt;
+  requireCd(typeof token === 'string' && token && !/\s/.test(token), 'pages_upload_token_invalid');
+  const missing = (await client.api('/pages/assets/check-missing', { method: 'POST', jwt: token,
+    body: { hashes: [...content.assets.keys()] } })).result;
+  requireCd(Array.isArray(missing) && new Set(missing).size === missing.length && missing.every(hash => content.assets.has(hash)), 'pages_missing_hashes_invalid');
+  return { token, missing };
+}
+export async function preflightPages({ environment = process.env, metadata, directory, allowCreate, expectedBaseline, stateFile,
+  request = fetch, tools, revalidate = async () => {} }) {
+  const { client, desired } = publicationContext(environment, metadata, request);
+  const content = await staticAssets(directory, tools);
+  const base = { source_sha: metadata.source_sha, pages_marker: desired, total_assets: content.assets.size,
+    missing_assets: null, asset_check_performed: false, deployment_requested: false, asset_upload_requested: false,
+    automatic_retry_allowed: false };
+  const record = value => { if (stateFile) writeState(stateFile, { ...base, ...value }); };
+  record({ status: 'preflight_started' });
+  await revalidate();
+  const target = await deploymentTarget(environment, metadata, expectedBaseline, request, client, desired);
+  let result;
+  if (target.alreadyCurrent) result = { ...base, deployment_id: target.current.deployment_id };
+  else if (target.deployment) {
+    const current = await readPages(environment, { request });
+    requireCd(current.deployment_id === target.deployment.id && current.recorded_marker === desired, 'pages_canonical_version_mismatch');
+    result = { ...base, deployment_id: current.deployment_id };
+  } else {
+    requireCd(allowCreate === true, 'prior_cd_pages_outcome_requires_reconciliation');
+    record({ status: 'asset_check_requested' });
+    const { missing } = await missingAssets(client, content);
+    result = { ...base, missing_assets: missing.length, asset_check_performed: true };
+  }
+  await revalidate();
+  record({ ...result, status: 'preflight_verified' });
+  return { ...result, status: 'preflight_verified' };
+}
+export async function publishPages({ environment = process.env, metadata, directory, allowCreate, expectedBaseline, stateFile,
+  request = fetch, tools, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)), pollLimit = 120, revalidate = async () => {} }) {
+  const { client, desired } = publicationContext(environment, metadata, request);
+  const record = value => { if (stateFile) writeState(stateFile, { marker: desired, automatic_retry_allowed: false, ...value }); };
+  const target = await deploymentTarget(environment, metadata, expectedBaseline, request, client, desired);
+  if (target.alreadyCurrent) {
+    record({ status: 'already_current', deployment_requested: false, deployment_id: target.current.deployment_id });
+    return { status: 'already_current', source_sha: metadata.source_sha, deployment_id: target.current.deployment_id, deployment_requested: false };
+  }
+  let deployment = target.deployment;
   if (!deployment) {
     requireCd(allowCreate === true, 'prior_cd_pages_outcome_requires_reconciliation');
     const content = await staticAssets(directory, tools);
     await revalidate();
-    const token = (await client.api(`${client.projectPath}/upload-token`)).result?.jwt;
-    requireCd(typeof token === 'string' && token && !/\s/.test(token), 'pages_upload_token_invalid');
     record({ status: 'asset_check_requested', deployment_requested: false });
-    const missing = (await client.api('/pages/assets/check-missing', { method: 'POST', jwt: token,
-      body: { hashes: [...content.assets.keys()] } })).result;
-    requireCd(Array.isArray(missing) && new Set(missing).size === missing.length && missing.every(hash => content.assets.has(hash)), 'pages_missing_hashes_invalid');
+    const { token, missing } = await missingAssets(client, content);
     let bucket = [], bytes = 0;
     async function flush() {
       if (!bucket.length) return;

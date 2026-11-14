@@ -1,6 +1,6 @@
 # Especificación del MVP — Nodia
 
-Índice de las fuentes del producto. Actualizado el 2026-11-11; carpeta creada el 2026-08-15. Cada documento conserva su propio estado de aprobación, implementación y verificación.
+Índice de las fuentes del producto. Actualizado el 2026-11-14; carpeta creada el 2026-08-15. Cada documento conserva su propio estado de aprobación, implementación y verificación.
 
 El [progreso vigente](00-progress.md) contiene los pendientes y la próxima acción. Las entregas fechadas anteriores se consultan en el [historial consolidado](00-progress-history.md); sus estados históricos no sustituyen las decisiones posteriores.
 
@@ -79,6 +79,12 @@ draft/partial, sin publicación.
 El plan37 tiene autorización explícita para implementación por etapas. Cada optimización conserva contratos y presenta ahorro/QA por perfil y ruta; una medición local no equivale a aceptación productiva completa.
 
 ## Producción y mantenimiento
+
+[Plan99§25](99-production-deployment-and-cicd-plan.md#25-pages-respuesta-válida-rechazada-y-preflight-antes-del-backend--2026-11-14)
+registra la respuesta válida de Pages rechazada por el cliente propio y su
+corrección: preflight antes del backend y recibo durable sin secretos. Prueba
+real con el artefacto original correcta, publicación todavía pendiente; backend
+0f69d505 activo y su operación completa no se repite.
 
 | Necesidad | Fuente vigente |
 | --- | --- |
