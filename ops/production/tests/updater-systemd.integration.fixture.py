@@ -61,10 +61,13 @@ for name in ('runtime.env', 'redis.env'):
     write(Path('/etc/nodia') / name, '# Synthetic fixture; no credentials\n', 0o600)
 write(FIXTURE / 'backup-mode', 'fresh\n')
 
-api = '''import http from 'node:http';
+api = '''import http from 'node:http';import fs from 'node:fs';
 const server=http.createServer((_request,response)=>{response.end('synthetic-api');});
 server.listen(3000,'127.0.0.1');
-process.on('SIGTERM',()=>server.close(()=>process.exit(0)));
+process.on('SIGTERM',()=>server.close(()=>{
+fs.writeFileSync('/var/lib/nodia/home/fixture-api-drained','synthetic cleanup completed');
+process.exit(0);
+}));
 '''
 worker = '''setInterval(()=>{},1000);
 process.on('SIGTERM',()=>process.exit(0));
@@ -82,7 +85,10 @@ else console.log(JSON.stringify({schema_version:1,operation:'rotate',removed:0,p
 journal = "console.log(JSON.stringify({operation:'reconcile',confirmed:0,pending:0,SQL_writes:0}));\n"
 for release in (OLD, NEW, FINAL):
     write(release / 'package.json', '{"type":"module","synthetic_fixture":true}\n')
-    write(release / 'dist/main.js', api)
+    # Model a framework's completed cleanup followed by re-sending the stop signal.
+    # Keep the worker's ordinary zero exit to cover both accepted branches together.
+    api_source = api.replace('process.exit(0);', "process.removeAllListeners('SIGTERM');setTimeout(()=>process.kill(process.pid,'SIGTERM'),10);") if release == OLD else api
+    write(release / 'dist/main.js', api_source)
     write(release / 'dist/nodia-ai-worker.js', worker)
     write(release / 'scripts/nodia-ai-backups.mjs', backup)
     write(release / 'scripts/nodia-ai-journal.mjs', journal)
@@ -171,6 +177,8 @@ ExecStart=/usr/local/bin/node dist/{entry}
 KillSignal=SIGTERM
 KillMode=mixed
 TimeoutStopSec=10
+[Install]
+WantedBy=multi-user.target
 ''')
 for name, cli in (('nodia-ai-backup.service', '${NODIA_AI_BACKUP_SCRIPT} backup ${NODIA_AI_BACKUP_CONFIG}'),
                   ('nodia-ai-backup-rotate.service', '${NODIA_AI_BACKUP_SCRIPT} rotate ${NODIA_AI_BACKUP_CONFIG}'),
@@ -234,6 +242,7 @@ write(Path('/usr/local/lib/nodia/update-backend-action.mjs'), action)
 write(Path('/usr/local/lib/nodia/probe-backend-dependencies.mjs'), 'console.log('+json.dumps(json.dumps(probe))+');\n')
 command(['systemctl', 'daemon-reload'])
 command(['systemctl', 'enable', 'nodia-ai-backup.timer'])
+command(['systemctl', 'enable', 'nodia-api.service', 'nodia-ai-worker.service'])
 command(['systemctl', 'start', 'nodia-api.service', 'nodia-ai-worker.service', 'nodia-fixture-proxy.service', 'nodia-ai-backup.timer'])
 for _ in range(40):
     try:
@@ -263,6 +272,13 @@ class FixtureHost(host_module.Host):
         if url.startswith('https://166.0.112.187/'):
             url = 'http://127.0.0.1:8080/api/v1'
         return super().http(url, status)
+    def stop_writers(self):
+        super().stop_writers()
+        self.shutdown_observations = {}
+        for unit in host_module.SERVICES:
+            state = self.show(unit)
+            self.shutdown_observations[unit] = {key: state[key] for key in
+                ('ActiveState', 'Result', 'MainPID', 'ExecMainCode', 'ExecMainStatus')}
 
 
 def request(current):
@@ -275,6 +291,13 @@ host = FixtureHost(policy, stage, {})
 before_invocation = host.show('nodia-ai-backup.service')['InvocationID']
 result = policy.run_update(request(OLD), host, apply=True)
 check(result['phase']=='complete' and result['deployment_performed'], 'full ordered policy completed')
+check(host.shutdown_observations['nodia-api.service'] == {'ActiveState':'inactive','Result':'success',
+      'MainPID':'0','ExecMainCode':'2','ExecMainStatus':'15'},
+      'real systemd accepts completed cleanup followed by exact SIGTERM: '+json.dumps(host.shutdown_observations))
+check(host.shutdown_observations['nodia-ai-worker.service'] == {'ActiveState':'inactive','Result':'success',
+      'MainPID':'0','ExecMainCode':'1','ExecMainStatus':'0'}, 'real systemd still accepts normal writer zero exit')
+check(Path('/var/lib/nodia/home/fixture-api-drained').read_text() == 'synthetic cleanup completed',
+      'synthetic API completed its cleanup before re-sending SIGTERM')
 check(host_module.CURRENT.resolve(strict=True)==NEW, 'current switched to candidate')
 check(host.backup_environment(NEW)['NODIA_AI_BACKUP_SCRIPT'].startswith(str(NEW)), 'canonical backup script paths switched')
 check(host.show('nodia-api.service')['ActiveState']=='active', 'API restarted under systemd')
@@ -305,6 +328,7 @@ failed=json.loads((second.attempt/'state.json').read_text())
 check(failed['failed_phase']=='backup_requested' and not failed['migration_requested'],'failure phase precedes migration intent')
 
 print(json.dumps({'schema_version':1,'status':'passed','checks':checks,
+ 'writer_shutdown_observations':host.shutdown_observations,
  'writable_state_sandbox':{'original_unit_rejected':True,'corrected_unit_passed':True,
                          'config_and_release_readonly':True,'nodia_uid_gid':900,'state_modes':'0700',
                          'no_new_privileges':True,'effective_capabilities_zero':True,'full_validator_claimed':False},

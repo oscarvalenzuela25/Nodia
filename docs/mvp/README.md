@@ -78,7 +78,7 @@ El plan37 tiene autorización explícita para implementación por etapas. Cada o
 
 | Necesidad | Fuente vigente |
 | --- | --- |
-| Despliegue productivo y CI/CD | [Plan99](99-production-deployment-and-cicd-plan.md) y [ADR097 propuesto](../architecture/decisions/ADR-097-monorepo-production-release-pipeline.md) |
+| Despliegue productivo y CI/CD | [Plan99](99-production-deployment-and-cicd-plan.md), [ADR097 propuesto](../architecture/decisions/ADR-097-monorepo-production-release-pipeline.md) y [ADR099 propuesto: conciliación previa a migraciones](../architecture/decisions/ADR-099-pre-migration-deployment-reconciliation.md) |
 | Instalación de base y bootstrap | [Guía de instalación](database-installation.md) |
 | Seguridad y preparación | [Plan17](17-security-hardening-plan.md), [runbook18](18-security-deployment-runbook.md) y [revisión19](19-prelaunch-review.md), reconciliando sus cortes históricos |
 | Servicios internos | [ADR008](../architecture/decisions/ADR-008-internal-microservices-only.md) y [guía de seguridad](../architecture/internal-microservice-security.md) |

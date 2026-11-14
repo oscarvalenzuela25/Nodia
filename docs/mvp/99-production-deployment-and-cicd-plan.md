@@ -1060,3 +1060,123 @@ no acredita backup, migración, cambio de aplicación o publicación Pages: qued
 en el flujo de CD de la nueva intención. Obsidian26.18 conserva pasos/resultados.
 Sudo fue invalidado y la sesión tmux temporal cerrada al terminar la intervención;
 API/worker conservaron PID476489/476487, sin unidades temporales activas.
+
+## 22. Parada limpia por SIGTERM, recuperación de disponibilidad y conciliación — 2026-11-13
+
+El [CI43471624414](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43471624414)
+de master2cfce73d pasó. El dispatcher inició correctamente el
+[CD43473542741](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43473542741),
+que falló en `stopping_writers` del intento f452dfa82420d710757945a652f0b172.
+`effects_started=true`, `migration_requested=false`, `writer_shutdown_not_clean`.
+Ambas unidades estaban inactivas, sin PID/cgroups vivos, con Result=success y
+ExecMainCode2/ExecMainStatus15. Se rechazó un SIGTERM satisfactorio; no se detectó
+un fallo real de origen CORS. Nginx devolvía mantenimiento503 sin cabeceras CORS.
+
+La recuperación autenticada, revisada independientemente, tomó los locks de
+receptor e instalación y fijó hashes de updater, estado y BLOCKED. Verificó el
+inventario de f01, unidades/drop-ins, configuración de backups y el journal de
+migraciones SQL mediante el action instalado en READ ONLY/TLS, con origen y
+destino ambos f01:45aplicadas,45objetivo,0pendientes y9contadores de trabajo en0.
+Registró intención durable antes de iniciar sólo API/worker del current original.
+Comprobó UID, ejecutable, cwd, cgroup, readiness, CORS y nuevamente SQL; retiró
+únicamente su mantenimiento tras las comprobaciones locales, verificó HTTPS
+público y restauró el estado previo de los timers. Ante fallo habría restablecido
+el mantenimiento, conservando los diagnósticos para inspección.
+
+Resultado confirmado17:50:53UTC: mismo backend-f01b49333688-ff33b6fdbbbc y esquema45;
+API/worker y ambos timers activos. OPTIONS de auth/refresh204 con origen exacto
+`https://nodia-1ge.pages.dev` y credenciales permitidas; GET auth/me anónimo401
+con las mismas cabeceras, desde VPS y PC. No hubo POST de login, inferencia,
+migración, restauración SQL, cambio de current o publicación Pages.
+Estado/BLOCKED originales byte a byte intactos. Recibo privado separado:
+`/var/lib/nodia-updates/same-release-recovery-f452dfa82420d710757945a652f0b172.json`.
+En ese punto la recuperación aún conservaba el bloqueo del CD; el cierre posterior
+se registra al final de este apartado.
+
+La corrección acepta exclusivamente las parejas de salida(0,0)/(1,0)/(2,15)
+junto a inactive/success/PID0 y la comprobación independiente de cgroup vacío.
+Se conservan rechazos de SIGKILL, aborto/core, salida no cero, timeout, PID o
+cgroup vivo.20pruebas de Host y28checks con systemd259/Node24 reales aislados:
+se observó API success/2/15 tras cleanup y worker success/1/0. El fixture conserva
+sus límites sintéticos de aplicación/SQL/GitHub/proxy y no acredita Nginx/TLS.
+La comprobación productiva de CORS/TLS se realizó separadamente como se indica.
+
+La conciliación comparte contrato entre receptor y Host, según
+[ADR099 propuesto](../architecture/decisions/ADR-099-pre-migration-deployment-reconciliation.md).
+No cambia una operación fallida a success ni permite repetirla.
+Impacto en fichas NodiaAI: ninguno; es una reparación operativa sin nuevas
+capacidades, permisos o afirmaciones de disponibilidad de modelos.
+
+**Cierre realizado:** se instalaron por hash exclusivamente updater3fb13508…,
+política15697a43… y receptorb2880ea7…, con originales privados sincronizados
+antes de escribir. No se reinició la aplicación durante ese refresco. El helper
+`reconcile-pre-migration-update.py`0c55f102… verificó de nuevo SQL READ ONLY45/45,
+TLS, quiescencia, procesos, CORS local/público y timers; guardó copia privada del
+manifiesto y ACK exclusivo en el intento. Así no depende de conservar todo f01
+cuando se limpien releases futuros. Ambos gates validan exactamente el mismo
+contrato. Un ACK inválido, modificado o con archivos originales distintos sigue
+bloqueando; un submission pendiente u otro fallo no queda resuelto por este ACK.
+
+SSH restringido confirmó `deployment_ready`, `blocked=false` y ambos servicios
+activos. La consulta específica del ID conserva failed/effects_started=true/
+migration_requested=false y automatic_retry_allowed=false. No se cambia master,
+no se despliega el candidato y no se repite la operación fallida. La siguiente
+promoción exige la rama/PR development→master y un CI/CD nuevo.
+
+Validación final:60pruebas Python Linux root sin skips (incluidas11del helper,
+contrato puro y ficheros reales de los gates),4pruebas SQL/Node y los28checks
+systemd del shutdown descritos arriba. El job CI ejecuta ahora Python en un
+contenedor slim fijado por digest, sin red, privilegios extendidos, secretos o
+montajes adicionales al código de operaciones read-only. El runner falla si
+alguna regresión se omite. El fixture de identidad usa su propio archivo canónico
+y compara inodos reales; no necesita instalar Node para comprobar metadatos.
+No se añade otro TypeScript check ni se compila dos veces la aplicación.
+
+Se confirmó ausencia de acciones temporales activas, se invalidó sudo en la PTY
+y se cerró tmux. Obsidian26.20 explica causa, comandos de lectura, recuperación,
+conciliación y equivalencia con EC2/ECS/ALB. El arreglo se versiona en la rama
+codex/fix-backend-shutdown-recovery desde development, con PR de revisión.
+
+## 23. Prueba de propuestas: esperar el rechazo observado — 2026-11-13
+
+El [CI43520305205 del PR13](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43520305205)
+pasó pipeline, Server/worker, Python y host nativo. Client pasó lint y build y
+falló en useProposal.test.tsx: después de refetch403 la aserción esperaba null,
+pero result.current.review.data aún conservaba el objeto revisado anterior.
+El PR sigue siendo development→master; un fallo de este CI no inicia CD.
+
+El caso original pasa aislado localmente: no se afirma haber reproducido ahí
+la intermitencia de GitHub. La inspección del hook confirma que el catch borra
+sincrónicamente ambas claves de caché antes de relanzar el rechazo. El cliente
+TanStack instalado suscribe React mediante notifyManager.batchCalls, con
+notificación programada; completar refetch no garantiza observar ya el render
+de ese resultado. El test comprobaba datos sin esperar el error concreto.
+
+Se mantiene la unidad real y sus fronteras sintéticas. El test ahora representa
+HTTP500 explícitamente, espera su error/isError/fetch terminado y verifica que
+review/propuesta siguen disponibles. Después hace lo mismo con el rechazo y
+comprueba review null/propuesta undefined. Se conservan además comprobaciones
+inmediatas de que las dos entradas de caché quedaron null. Se cubren los cuatro
+rechazos401/403/404/410 que ya maneja el hook. No se añaden sleeps, retries,
+cambios de scheduler, configuración de Vitest o alteraciones de autorización.
+
+Una revisión independiente encontró el mismo falso positivo potencial en el
+test de detalle después de503: sus valores de retención podían coincidir con
+el render exitoso previo. Se espera también allí el error503 exacto, isError
+y fetch terminado antes de verificar retención y autorización. Los demás
+rechazos cercanos revisados ya esperan sus indicadores; no se amplía el cambio.
+
+Validación enfocada:62pruebas en3archivos, lint y build Client correctos;
+TypeScript sólo dentro del build. Como control de valor se omitieron las dos
+limpiezas del hook temporalmente en la copia local: los4rechazos fallaron en
+la comprobación de caché. Los bytes originales del hook se restauraron y se
+comprobó ausencia de diff productivo. Experimento/logs en output ignorado,
+sin servicios externos, inferencias o datos reales.
+
+Suite global final:2895tests en353archivos, todos correctos y0pendientes, con
+maxWorkers2 (762,6s en Windows). Las comprobaciones locales no acreditan el CI
+remoto del commit nuevo. Rama codex/fix-proposal-readiness desde developmente39cfc65; primero PR
+hacia development y luego actualización automática del PR13 al incorporar el fix.
+Impacto en conocimiento NodiaAI: sólo pruebas, sin cambios de funcionalidad,
+contratos, capacidades, fichas aprobadas o publicación. No se modifica el VPS,
+Pages, las migraciones, secretos o políticas de recuperación del despliegue.
