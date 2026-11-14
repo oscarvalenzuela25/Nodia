@@ -1293,3 +1293,26 @@ productiva todavía pendiente** de PR/CI/promoción y un CD nuevo. No reejecutar
 CD43547384570 ni usar el diagnóstico como permiso de replay. La aceptación final
 exige el canónico correcto y los recursos HTTPS del mismo artefacto; instalar
 PWA, auth standalone y dispositivos conservan sus gates propios.
+
+## 26. Logs y monitoreo: elección Grafana Cloud Free — 2026-11-14
+
+El usuario selecciona Grafana Cloud Free y solicita documentar/entender el
+funcionamiento antes de implementar. [Plan104](104-logs-and-monitoring-grafana-cloud.md)
+es la fuente del inventario, comparación, cuotas oficiales, diagrama, casos de
+uso y etapas. [ADR101](../architecture/decisions/ADR-101-grafana-cloud-observability.md)
+permanece propuesto; la elección del proveedor no aprueba el diseño completo.
+
+Se propone Alloy como servicio del VPS con fuentes explícitas y saneadas,
+métricas del host/unidades y envío TLS saliente. Logs/métricas/paneles/alertas
+permanecen en Cloud; comprobaciones externas observan inaccesibilidad sin
+depender del agente del host. El fallo Pages de§25 puede dejar web/API200:
+necesita un evento del recibo saneado de CD en una fase separada; recoger journal
+del VPS no captura automáticamente Actions/Cloudflare.
+
+Antes de exportar, completar cobertura/saneamiento del registro HTTP general y
+revisar claves Redis y logs de proxy. /api/v1 es liveness básico y /tls-check
+sólo Nginx/TLS; ninguno acredita readiness de DB/Redis/worker o inferencia.
+Esta entrega sólo cambia documentación, sin instalación, nuevas credenciales,
+ingesta, alertas, publicación o modificación de los gates/no-replay de CI/CD.
+El siguiente paso es revisar la explicación y completar G1 de104; logs y
+monitoreo productivos conservan pendientes de implementación/medición reales.
