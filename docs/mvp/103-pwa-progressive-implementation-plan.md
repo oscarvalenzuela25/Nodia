@@ -256,7 +256,10 @@ instalación/versiones se vuelven a comprobar al implementar y registrar QA.
 
 Rama `codex/pwa-001-installation`, creada tras fetch y fast-forward de
 development a `a780099b456b9cb930865543d836e61147cc4190`, conservando el apunte
-visual previo. Implementación de 001.01–004 y 001.07/008 por alcance local:
+visual previo. [PR16](https://github.com/oscarvalenzuela25/Nodia/pull/16) abierto
+en borrador hacia development; CI Linux y resultados finales se consultan en
+ese PR, sin merge o deploy por esta entrega. Implementación de 001.01–004 y
+001.07/008 por alcance local:
 
 - Manifiesto con identidad `/`, nombre Nodia, idioma es, entrada/scope `/`,
   ventana standalone y colores del theme claro existente. Sin hostname de

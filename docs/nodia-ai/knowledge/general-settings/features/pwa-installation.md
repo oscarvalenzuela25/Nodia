@@ -103,7 +103,7 @@ la recuperación existente y no se declara instalada/verificada otra plataforma.
 - [ ] Instalación y funciones online probadas en dispositivos anunciados.
 - [ ] Publicación efectiva y documentación de usuario con resultados reales.
 
-Sólo planificación. La entrada explícita en el registro sirve para validar el
+Candidato local, sin aceptación integral ni publicación. La entrada explícita en el registro sirve para validar el
 documento; no se añade binding, capacidad, aprobación o evidencia inventada. Las
 fichas aprobadas y los contratos publicados permanecen intactos.
 
@@ -112,3 +112,4 @@ fichas aprobadas y los contratos publicados permanecen intactos.
 | Revisión | Cambio | Impacto |
 | --- | --- | --- |
 | 1 | Plan de instalación online independiente y backlog posterior | Draft/planned; sin cambio de herramientas, autoridad, publicación o ejecución. |
+| 2 | Opción1 elegida, candidato estático local y comprobaciones de build, auth y CI/CD; guía de instalación | Draft/partial; instalación real, standalone/auth y publicación pendientes. Sin nuevas herramientas o autoridad. |
