@@ -404,6 +404,14 @@ variables publicas y CI run/attempt. Los secretos Cloudflare/SSH se inyectan en
 pasos separados. El protocolo se contrasto con Wrangler 4.161.0 publicado;
 se usa la API directamente para evitar sus reintentos internos de escrituras.
 
+El listado productivo de deployments usa per_page=25 y exige una página terminal
+antes de escribir, hasta80páginas (2000filas). El valor100 fue rechazado por
+Cloudflare con HTTP400/8000024 en el CD43536680525. Los errores identifican
+operación y estado sin mostrar URLs/cuerpos/secretos: por ejemplo,
+pages_read_failed_deployment_history_http_400 o pages_read_failed_upload_token_http_403.
+El sufijo transport indica que no se recibió respuesta HTTP; en escrituras
+se conserva outcome_unknown y se exige conciliación, sin reenvío automático.
+
 No se reintenta un envio incierto. Backend consulta su operation ID determinista
 antes de enviar. Pages registra el intento antes de su unico POST de creacion.
 El receptor rechaza rerun CD run_attempt > 1 y consulta historial CD del mismo CI;
