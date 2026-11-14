@@ -6,6 +6,19 @@ La navegación está en el [índice del MVP](README.md). Las cronologías, check
 
 ## Próxima acción recomendada
 
+**Logs y monitoreo — documentación previa, 2026-11-14:** el usuario elige Grafana
+Cloud Free y pide comprenderlo antes de instalar. Rama
+`codex/plan-grafana-cloud-monitoring` desde development0639f0d9.
+[Plan104](104-logs-and-monitoring-grafana-cloud.md) conserva la comparación,
+límites oficiales, inventario del repositorio, flujo y casos Pages/endpoint500/
+host caído; propone Alloy en VPS, almacenamiento/alertas Cloud y sondas externas.
+Separar el futuro evento de CD: Alloy no ve por sí solo el runner de GitHub.
+Saneamiento de logs HTTP/Redis requerido antes de exportar. Selección de
+proveedor confirmada; plan en revisión y [ADR101 propuesto](../architecture/decisions/ADR-101-grafana-cloud-observability.md),
+sin cuenta/stack/tokens, instalación, ingesta o cambios productivos en esta
+entrega. Siguiente: revisar funcionamiento y continuar G1 con cuenta/región,
+plan Free efectivo y correo receptor; configuración e integración por etapas.
+
 **Teacher: alta y primer intento, 2026-11-14:** continuación en
 `codex/unify-model-reasoning-selector`, sin canary previo por decisión expresa
 del usuario. Opciones de razonamiento recuperadas desde catálogo real por
