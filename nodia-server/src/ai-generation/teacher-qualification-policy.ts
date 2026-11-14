@@ -20,7 +20,7 @@ const purposes: readonly TeacherPurpose[] = [
 ];
 /** Application policy is separate from the stable, historical transport contracts. */
 export const TEACHER_GENERATION_POLICY = Object.freeze({
-  version: 'teacher-generation-policy/2',
+  version: 'teacher-generation-policy/3',
   template_version: TEACHER_TEMPLATE_VERSION,
   maximum_prompt_bytes: 131072,
   maximum_result_bytes: 32768,
@@ -37,21 +37,18 @@ export const TEACHER_GENERATION_POLICY = Object.freeze({
             new Date('2100-01-01T00:00:00Z'),
             0,
           ),
-          qualification_mode:
-            purpose === 'contextual_reply'
-              ? 'purpose_probe_required'
-              : 'text_transport_probe',
+          qualification_mode: 'optional_diagnostic',
         }),
       ]),
     ),
   ),
 });
 export const TEACHER_GENERATION_POLICY_HASH = hash(TEACHER_GENERATION_POLICY);
-/** A setup canary does not qualify a new anchored helper protocol. */
+/** Diagnostics remain attributable, but never gate the selected Teacher generation. */
 export function teacherPurposeRequiresQualification(
-  purpose: TeacherPurpose | undefined,
+  _purpose: TeacherPurpose | undefined,
 ): boolean {
-  return purpose === 'contextual_reply';
+  return false;
 }
 export function teacherPurposeQualificationScope(transportScope: string): string {
   return hash({ contract: 'teacher-purpose/1', policy_hash: TEACHER_GENERATION_POLICY_HASH,

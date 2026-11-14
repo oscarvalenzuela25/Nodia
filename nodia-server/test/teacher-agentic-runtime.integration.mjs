@@ -184,7 +184,7 @@ async function runtimeChecks(fixture) {
   const observation = { contract: 'teacher-agentic-text/1', available: true, reason: null, observed_at: new Date().toISOString(), resource_key: `codex-profile:${'1'.repeat(64)}`, session_generation: '2'.repeat(32), runtime_hash: '3'.repeat(64), binary_sha512: '4'.repeat(128), policy_hash: '5'.repeat(64), tool_policy: 'none', native_io: false };
   const counters = { starts: 0, observations: 0, reconciles: 0, acknowledgements: 0, acknowledgedOperations: 0, api: 0, alternate: 0 };
   const nativeOperations = new Map();
-  let nextMode = 'complete', failAcks = 0;
+  let nextMode = 'complete', failAcks = 0, observationHook = null;
   function response(entry, mode = entry.mode) {
     const { reference, text, proofId } = entry;
     if (mode === 'unclosed') return { contract: observation.contract, operation_id: reference.operation_id, state: 'unknown', text: null, terminal_proof: null };
@@ -194,15 +194,29 @@ async function runtimeChecks(fixture) {
     return { contract: observation.contract, operation_id: reference.operation_id, state: completed || mode === 'counterproof' ? 'completed' : 'unknown', text: completed || mode === 'counterproof' ? text : null, terminal_proof: proof };
   }
   const nativePort = {
-    observe: async () => { counters.observations++; return { ...observation, observed_at: new Date().toISOString() }; },
+    observe: async () => {
+      counters.observations++;
+      const hook = observationHook; observationHook = null;
+      if (hook) await hook();
+      return { ...observation, observed_at: new Date().toISOString() };
+    },
     start: async command => {
       counters.starts++;
       // Assert SQL counters/identity before the simulated provider boundary, not after it.
-      const [row] = await source.query('SELECT o.started_exchanges,o.reserved_exchanges,o.agentic_transport_descriptor,j.dispatches_used FROM ai_generation_operations o JOIN teacher_generation_jobs j ON j.id=o.teacher_job_id WHERE o.id=$1', [command.operation_id]);
+      const [row] = await source.query('SELECT o.started_exchanges,o.reserved_exchanges,o.agentic_transport_descriptor,j.dispatches_used,j.purpose,j.input_snapshot FROM ai_generation_operations o JOIN teacher_generation_jobs j ON j.id=o.teacher_job_id WHERE o.id=$1', [command.operation_id]);
       assert.equal(row.started_exchanges, 1); assert.equal(row.reserved_exchanges, 1); assert.equal(row.dispatches_used, 1);
       assert.deepEqual(row.agentic_transport_descriptor.reference, teacherAgenticReference(command));
-      const nonceText = command.prompt.match(/return exactly ([0-9a-f-]{36}) as text/u)?.[1];
-      const text = JSON.stringify({ schema_version: 1, text: nonceText ?? 'Synthetic native explanation', brief: { topic: 'Text transport verification', objective: 'Verify a structured reply' }, questions: [], organization_options: ['days', 'topics'] });
+      const nonceText = row.input_snapshot.qualification_probe?.nonce ?? command.prompt.match(/return exactly ([0-9a-f-]{36}) as text/u)?.[1];
+      const text = JSON.stringify(row.purpose === 'plan_outline' ? {
+        schema_version: 1,
+        outline: { schema_version: 1, title: 'First synthetic plan without qualification', topic: row.input_snapshot.session.topic,
+          objective: row.input_snapshot.session.objective, explanation_language: 'en', organization: 'topics', day_count: null,
+          sections: [{ id: 's1', title: 'Synthetic section', required: true, prerequisite_section_ids: [],
+            objectives: [{ id: 'o1', description: 'Understand the isolated fixture rule' }],
+            units: [{ id: 'u1', title: 'Synthetic unit', objective_ids: ['o1'], day_start: null, day_end: null }] }],
+          assessment_policy: row.input_snapshot.policy },
+        guide: { schema_version: 1, strategy: 'balanced', context_notes: '', examples_context: '', prerequisite_knowledge: [], preferred_formats: ['single_choice', 'completion', 'short_text'] },
+      } : { schema_version: 1, text: nonceText ?? 'Synthetic native explanation', brief: { topic: 'Text transport verification', objective: 'Verify a structured reply' }, questions: [], organization_options: ['days', 'topics'] });
       const entry = { reference: teacherAgenticReference(command), text, proofId: randomUUID(), observedAt: new Date().toISOString(), mode: nextMode };
       nativeOperations.set(command.operation_id, entry);
       return response(entry);
@@ -237,15 +251,78 @@ async function runtimeChecks(fixture) {
   const qualifyDraft = await create('Dedicated synthetic Native qualification');
   // Operator fixture setup only: no key/configuration is mistaken for qualification.
   await source.query('UPDATE teacher_sessions SET selection=$2::jsonb WHERE id=$1', [qualifyDraft.session_id, JSON.stringify(fixture.selection)]);
-  await check('Native configuration is unqualified before its own Teacher operation', async () => {
+  await check('Native availability is observed without requiring a prior Teacher canary', async () => {
     const result = await runtime.eligibility(fixture.actor, fixture.connectionId, fixture.selection);
-    assert.equal(result.eligible, false); assert.equal(result.reason_code, 'adapter_unqualified');
-    await assert.rejects(() => source.transaction(manager => runtime.verifySelection(manager, fixture.actor, fixture.selection)));
+    assert.equal(result.eligible, true); assert.equal(result.reason_code, 'runtime_available');
+    const configured = await source.transaction(manager => runtime.verifySelection(manager, fixture.actor, fixture.selection));
+    assert.equal(configured.session_generation, null);
+    assert.equal((await source.query('SELECT count(*)::integer AS n FROM ai_generation_agentic_qualifications'))[0].n, 0);
     assert.equal(counters.starts, 0);
   });
-  await check('Native qualification uses one exact Teacher job and no API or chat acceptance', async () => {
+  await check('First create-plan without any qualification uses one exact dispatch across worker instances', async () => {
+    const key = randomUUID();
+    const body = { topic: 'First selected AI plan', objective: 'Generate directly without a canary', explanation_language: 'en', organization: 'topics', day_count: null, selection: fixture.selection, start_plan: true };
+    const first = await commands.execute(fixture.actor, null, key, 'create', body);
+    const repeated = await commands.execute(fixture.actor, null, key, 'create', body);
+    assert.deepEqual(repeated, first);
+    assert.equal((await source.query('SELECT session_generation FROM teacher_generation_jobs WHERE id=$1', [first.job_id]))[0].session_generation, null);
+    for (const table of ['ai_generation_qualifications', 'ai_generation_agentic_qualifications', 'teacher_purpose_qualifications'])
+      assert.equal((await source.query(`SELECT count(*)::integer AS n FROM ${table}`))[0].n, 0);
+    const starts = counters.starts;
+    const otherWorker = construct().runtime;
+    const claimed = await Promise.all([runtime.execute(randomUUID(), new AbortController().signal), otherWorker.execute(randomUUID(), new AbortController().signal)]);
+    assert.equal(claimed.filter(Boolean).length, 1);
+    assert.equal(counters.starts, starts + 1);
+    const view = await read.job(fixture.actor, first.job_id);
+    assert.equal(view.state, 'ready');
+    const [durable] = await source.query('SELECT j.session_generation,o.started_exchanges,o.reserved_exchanges,o.acknowledged_at,o.agentic_acknowledged_at FROM teacher_generation_jobs j JOIN ai_generation_operations o ON o.teacher_job_id=j.id WHERE j.id=$1', [first.job_id]);
+    assert.equal(durable.session_generation, observation.session_generation);
+    assert.equal(durable.started_exchanges, 1); assert.equal(durable.reserved_exchanges, 1);
+    assert(durable.acknowledged_at); assert(durable.agentic_acknowledged_at);
+    const [session] = await source.query('SELECT current_plan_revision_id FROM teacher_sessions WHERE id=$1', [first.session_id]);
+    assert.equal(session.current_plan_revision_id, null);
+    assert.equal((await source.query('SELECT count(*)::integer AS n FROM teacher_plan_revisions WHERE session_id=$1', [first.session_id]))[0].n, 1);
+    for (const table of ['ai_generation_qualifications', 'ai_generation_agentic_qualifications', 'teacher_purpose_qualifications'])
+      assert.equal((await source.query(`SELECT count(*)::integer AS n FROM ${table}`))[0].n, 0);
+  });
+  await check('A configuration change during Native observation fails before reservation or dispatch', async () => {
+    const job = await enqueue('Configuration changed before claim'); const starts = counters.starts;
+    observationHook = async () => { await source.query('UPDATE ai_providers SET updated_at=clock_timestamp() WHERE id=$1', [fixture.connectionId]); };
+    assert.equal(await runtime.execute(randomUUID(), new AbortController().signal), false);
+    const view = await read.job(fixture.actor, job.job_id);
+    assert.equal(view.state, 'failed_known'); assert.equal(view.error_code, 'configuration_changed');
+    assert.equal((await source.query('SELECT count(*)::integer AS n FROM ai_generation_operations WHERE teacher_job_id=$1', [job.job_id]))[0].n, 0);
+    assert.equal(counters.starts, starts);
+  });
+  await check('Revoking Teacher during Native observation cannot reserve or dispatch a job', async () => {
+    const job = await enqueue('Authority revoked before claim'); const starts = counters.starts;
+    observationHook = async () => { await source.query('UPDATE user_modules SET is_active=false WHERE user_id=$1 AND module_id=$2', [fixture.actor.userId, fixture.moduleId]); };
+    try { assert.equal(await runtime.execute(randomUUID(), new AbortController().signal), false); }
+    finally { await source.query('UPDATE user_modules SET is_active=true WHERE user_id=$1 AND module_id=$2', [fixture.actor.userId, fixture.moduleId]); }
+    const view = await read.job(fixture.actor, job.job_id);
+    assert.equal(view.state, 'failed_known'); assert.equal(view.error_code, 'authority_changed');
+    assert.equal((await source.query('SELECT count(*)::integer AS n FROM ai_generation_operations WHERE teacher_job_id=$1', [job.job_id]))[0].n, 0);
+    assert.equal(counters.starts, starts);
+  });
+  await check('A replaced queued configuration cannot reuse this worker observation with the same fence', async () => {
+    const job = await enqueue('Queued intention replaced before claim'); const starts = counters.starts;
+    const [before] = await source.query('SELECT configuration_generation FROM teacher_generation_jobs WHERE id=$1', [job.job_id]);
+    observationHook = async () => { await source.query('UPDATE teacher_generation_jobs SET configuration_generation=$2 WHERE id=$1', [job.job_id, 'f'.repeat(64)]); };
+    assert.equal(await runtime.execute(randomUUID(), new AbortController().signal), false);
+    assert.equal((await read.job(fixture.actor, job.job_id)).state, 'queued');
+    assert.equal(counters.starts, starts);
+    assert.equal((await source.query('SELECT count(*)::integer AS n FROM ai_generation_operations WHERE teacher_job_id=$1', [job.job_id]))[0].n, 0);
+    await source.query('UPDATE teacher_generation_jobs SET configuration_generation=$2 WHERE id=$1', [job.job_id, before.configuration_generation]);
+    const observations = counters.observations;
+    assert.equal(await runtime.execute(randomUUID(), new AbortController().signal), true);
+    assert(counters.observations > observations, 'a fresh worker observation is required after an obsolete read');
+    assert.equal(counters.starts, starts + 1);
+    assert.equal((await read.job(fixture.actor, job.job_id)).state, 'ready');
+  });
+  await check('Optional Native diagnostic still records one exact Teacher job without API or chat acceptance', async () => {
+    const starts = counters.starts;
     const proof = await runtime.qualifyText(fixture.actor, qualifyDraft.session_id, fixture.selection, new AbortController().signal);
-    assert.equal(proof.local_closed, true); assert.equal(proof.remote_outcome, 'completed'); assert.equal(counters.starts, 1);
+    assert.equal(proof.local_closed, true); assert.equal(proof.remote_outcome, 'completed'); assert.equal(counters.starts, starts + 1);
     const [qualified] = await source.query('SELECT q.owner_kind,o.owner_kind AS operation_owner,o.agentic_acknowledged_at FROM ai_generation_agentic_qualifications q JOIN ai_generation_operations o ON o.id=q.operation_id');
     assert.equal(qualified.owner_kind, 'teacher'); assert.equal(qualified.operation_owner, 'teacher'); assert(qualified.agentic_acknowledged_at);
     assert.equal((await source.query('SELECT count(*)::integer AS n FROM ai_generation_qualifications'))[0].n, 0);

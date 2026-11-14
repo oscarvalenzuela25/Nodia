@@ -13,6 +13,7 @@ export interface NodiaAiConnectionConfiguration {
   can_use_api_key: boolean;
   can_use_agentic: boolean;
   fields: unknown;
+  configuration_updated_at?: Date | string;
 }
 /** No credential columns or credential relations are loaded by this reader. */
 @Injectable()
@@ -37,7 +38,7 @@ export class NodiaAiConnectionsService {
       `SELECT p.id::text, COALESCE(NULLIF(p.name,''),c.name) AS label,
        c.key AS provider_key,p.is_active,p.is_default,p.default_mode,c.is_active AS catalog_active,
        p.use_api_key,p.use_agentic,
-       c.can_use_api_key,c.can_use_agentic,p.fields
+       c.can_use_api_key,c.can_use_agentic,p.fields,p.updated_at AS configuration_updated_at
        FROM ai_providers p JOIN ai_provider_catalog c ON c.id=p.catalog_id
        WHERE p.id=$1 FOR SHARE OF p,c`,
       [id],

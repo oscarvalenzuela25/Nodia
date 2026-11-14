@@ -6,6 +6,37 @@ La navegación está en el [índice del MVP](README.md). Las cronologías, check
 
 ## Próxima acción recomendada
 
+**Teacher: alta y primer intento, 2026-11-14:** continuación en
+`codex/unify-model-reasoning-selector`, sin canary previo por decisión expresa
+del usuario. Opciones de razonamiento recuperadas desde catálogo real por
+conexión, metadata advisory preservada al leer/guardar, mensajes de selección
+precisos y edición durante elegibilidad. Formulario con título primero, ayudas
+ES/EN y botones contained; marca igual al listado. Menú lateral/móvil conserva
+el destino visible más específico en subrutas, sin ampliar acceso.
+[96§43](96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14),
+[ADR100 propuesto](../architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md)
+y [evidencia](../evidence/teacher-ai-selection-first-generation-20261114.md)
+separan pruebas locales, navegador y PostgreSQL descartable de proveedor real.
+Client global2934 más focales finales53, Server261/31archivos, API32SQL y
+Agentic36SQL pasaron; builds/lint del código y knowledge:check correctos. Chromium
+320/600/1280 confirmó cambio de razonamiento y una creación sintética exacta.
+Fichas draft/partial/unregistered/approval:null; sin despliegue, migración
+operativa, inferencia real o publicación. La decisión sustituye el gate previo
+de Teacher, conservando configuración, autoridad, presupuesto, cierre y no-replay.
+
+**Selector de modelos y seed, 2026-11-14:** en
+`codex/unify-model-reasoning-selector` desde development898aec84 se cerraron los
+listados separados de sincronización, compositor y configuración; Teacher
+comparte algoritmo. Preserva IDs/esfuerzos exactos, OCR efectivo y elegibilidad,
+con regresiones de fallos y cambios de contexto. Suite global2912, finales29,
+helper/Teacher/chat41, build/tipos y lint de código correctos; Chromium sintético
+320/600/1280 sin overflow. Lint general conserva un fallo en un experimento
+previo ignorado. [Evidencia](../evidence/model-selector-residual-audit-20261114.md).
+La [consulta del seed](database-installation.md#configuración-inicial-del-superadministrador--consulta-de-código-2026-11-14)
+documenta `super_admin`, cuatro asignaciones y bypass del catálogo activo; no
+ejecutó bootstrap/migraciones. Candidato local sin commit/push, despliegue,
+inferencia o publicación; siguientes pasos Git/aceptación por entorno separados.
+
 **Pages: contrato real y preflight corregidos, 2026-11-14:** [99§25](99-production-deployment-and-cicd-plan.md#25-pages-respuesta-válida-rechazada-y-preflight-antes-del-backend--2026-11-14). CD43547384570 (CI43546497935/1, master0f69d505) completó backend y rechazó un check-missing HTTP200/success:true porque errors no estaba presente. Respuesta real y fuente Wrangler4.161.0 confirman el defecto; fixtures corregidos. Rama codex/fix-pages-protocol-contract añade validación correcta, preflight Pages antes del backend y recibo durable saneado. Preflight real del artefacto original verificado pasó sin rebuild/upload/deploy;13pruebas directas y101Node en Linux correctas, sin omisiones; actionlint correcto. SSH confirma API/worker activos, blocked=false y operación64c9a2f383709ee93ca5e584a9bc5b52 completa; Pages siguef01 sin marcador del CI fallido. Siguiente: PR/CI, promoción y CD nuevos, sin repetir la operación completa ni reejecutar el CD anterior. [Evidencia](../evidence/pages-protocol-contract-20261114.md). Publicación real pendiente; las entradas inferiores conservan sus cortes anteriores.
 
 **CD parcial y Pages corregido, 2026-11-13:** PR14/PR13 integrados; CI43535099739 de master174c2ca5 pasó. CD43536680525 completó backend (SSH: API/worker activos, blocked=false) y falló antes de publicar Client. Pages sigue en f01. Causa reproducida con lectura real: deployments/per_page100 devuelve HTTP400/8000024;25 devuelve200. Rama codex/fix-pages-delivery desde development23982da9 corrige paginado25/80, conserva detección de duplicados/no-replay y añade operación/HTTP al error sin secretos. Validación y pasos en [99§24](99-production-deployment-and-cicd-plan.md#24-pages-paginación-rechazada-antes-de-publicar--2026-11-13) y Obsidian26.28. Siguiente: PR hacia development y promoción a master con CI/CD nuevos; no repetir el apply completado ni reejecutar el CD anterior. Las entradas inferiores conservan sus cortes históricos.

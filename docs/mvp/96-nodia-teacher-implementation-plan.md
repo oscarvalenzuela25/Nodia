@@ -950,7 +950,7 @@ El formulario organiza tema/objetivo/título y contexto/base en una cuadrícula 
 
 En creación, Selección IA es una sección semántica siempre visible, sin accordion. Conexión, modo, modelo e intensidad tienen ayuda específica; los cuatro selectores mantienen48px de alto con/sin selección y con/sin limpiar, en dos columnas desde600px y una por debajo. El ajuste de altura es local a Teacher; no redefine el input compartido. La marca Teacher utiliza line-height normal para evitar recortes.
 
-La intensidad procede de opciones reportadas; una selección no elegible puede corregirse cuando no hay peticiones/guardado en vuelo. Sin esfuerzos reportados se muestra el motivo, sin inventar niveles. Teacher lee el catálogo persistido: Actualizar conexiones sólo ejecuta su GET. Para recuperar metadata ausente, un administrador debe abrir Ajustes IA, sincronizar modelos y **guardarlos**, después volver a consultar Teacher. El aviso no concede el módulo administrativo. Codex usa `supportedReasoningEfforts` publicados; no se deducen del nombre o de una preferencia histórica.
+La intensidad procede de opciones reportadas; una selección no elegible puede corregirse cuando no hay peticiones/guardado en vuelo. Sin esfuerzos reportados se muestra el motivo, sin inventar niveles. En este corte Teacher lee el catálogo persistido: Actualizar conexiones sólo ejecuta su GET. Para recuperar metadata ausente, un administrador debe abrir Ajustes IA, sincronizar modelos y **guardarlos**, después volver a consultar Teacher. El aviso no concede el módulo administrativo. Codex usa `supportedReasoningEfforts` publicados; no se deducen del nombre o de una preferencia histórica. Este recorrido de recuperación y el bloqueo de edición durante elegibilidad quedan sucedidos por la [corrección43](#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14).
 
 Se conservan bloqueos busy/fetch, tupla exacta conexión/modo/modelo/esfuerzo, elegibilidad, CAS y envío/generación bloqueados hasta confirmar una selección lista. Una variante no hereda la calificación de otra. Actualizar no inicia inferencia, autentica cuentas o sincroniza modelos automáticamente.
 
@@ -976,3 +976,61 @@ Los IDs/modelos son datos de esa observación, no defaults ni catálogo estátic
 El helper `ops/production/diagnose-teacher-qualification.mjs` se ejecutó con SHA-256 `cb55f9d631e3c83d713f27445d7afb7782830625c56a1c8363e1dcdc9ac30a77`; wrapper `diagnose-teacher-qualification.py`, SHA-256 `26d0ea5baa357d7111ddfe14838fb6440f4432db0a2045138cecf4b0a5498888`. Pasaron6 pruebas Node y3 Python del diagnóstico. No hubo observación de proveedor, calificación, inferencia, migración, mutación DB, configuración de aplicación o despliegue en este lote. Sin nueva aprobación/publicación de conocimiento;44 documentos aprobados preservados byte a byte.
 
 Continuidad: promover un release/esquema revisados por el procedimiento existente y después calificar una tupla exacta mediante intención explícita. No copiar recibos de laboratorio, crearlos manualmente ni eliminar los gates desde Client. El procedimiento permanece en [el runbook](../../ops/production/README.md#diagnóstico-teacher-de-sólo-lectura-sobre-f01).
+
+## 43. Alta de estudio, razonamiento recuperable y menú persistente — 2026-11-14
+
+Continuación en `codex/unify-model-reasoning-selector`, sobre la base development
+898aec84 y el lote previo de selectores. El usuario confirmó expresamente que
+Teacher debe permitir el primer intento con la IA elegida **sin calificación
+generativa previa**. [ADR100 propuesto](../architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md)
+registra alternativas y frontera técnica. Se mantiene revisión documental de
+este ADR; la decisión funcional no aprueba otros documentos ni publica fichas.
+
+### Selección y primera generación
+
+`configuredModelFields` eliminaba `supportedReasoningEfforts` del GET y un
+guardado posterior podía borrar esos metadatos de la configuración. Conserva
+ahora únicamente esfuerzos dinámicos válidos como opciones advisory, sin
+restaurar cuotas/capacidades inferidas. La regresión recorre GET→patch real→
+catálogo. Teacher recupera históricos ya dañados mediante la
+[observación acotada97](97-nodia-teacher-technical-contracts.md#observación-de-opciones-de-razonamiento--adición2026-11-14),
+sin activar modelos, escribir configuración o exigir permisos administrativos.
+
+El Client distingue carga real, selección incompleta, dato ausente y fallo;
+no muestra «Comprobando» cuando no hay consulta ni acusa de modelo desaparecido
+por faltar sólo los esfuerzos. El razonamiento sigue editable durante
+elegibilidad. Modelos→elegibilidad se serializan por perfil y se cancelan lecturas
+obsoletas; comandos de sesión no disparan refetches nativos masivos y los trabajos
+en curso no compiten con refresh automático/manual del selector.
+
+La política Teacher/3 deja los canaries como diagnóstico opcional, sin gate previo
+por tupla o propósito. API informa configuración preparada con `checked_at:null`;
+Agentic observa el runtime real sin inferir. La admisión guarda selección/config
+exactas; el Worker observa fuera de transacción y claim vuelve a comprobar
+job/fence/selección/configuración/autoridad antes de fijar sesión/recurso y reservar
+la operación. Ejecución vuelve a verificar antes del POST. No depende de caché
+API en otro proceso ni fabrica un recibo. Un error conocido conserva el borrador
+de sesión; unknown mantiene conciliación y no-replay. Contratos/historia de
+calificación se conservan como diagnóstico, sin cambiar otros dominios IA.
+
+### Formulario y navegación
+
+Título es el primer campo, con etiqueta «Título del plan de estudio». Objetivo
+se presenta como «¿Qué es lo que quieres aprender?», base declarada como «¿Qué es
+lo que ya sé?» y contexto como «Contexto base», con ayuda visible y ampliada.
+Los campos/validaciones/DTO no cambian. Mis planes y Guardar borrador son contained;
+la marca de nueva sesión utiliza la misma composición del listado.
+
+Menú lateral y accesos móviles eligen el destino canónico visible más específico
+por segmentos, conservando Teacher en `/nodia-teacher/new`/detalle y Negocios en
+`/business/:id`. Prefijos parecidos no coinciden, Inicio sólo en `/`, y mover o
+renombrar grupos no cambia la selección. Es presentación; no concede acceso.
+
+### Verificación y límites
+
+[Evidencia local consolidada](../evidence/teacher-ai-selection-first-generation-20261114.md)
+separa regresiones, navegador sintético y runtime/SQL. No hay despliegue,
+migración operativa o inferencia real por esta entrega. La
+[ficha candidata](../nodia-ai/knowledge/studies/features/session-setup-and-planning.md)
+sigue draft/partial/unregistered/approval:null. Los55TU/recibos anteriores acreditan
+sus políticas/entornos originales; no aceptan automáticamente esta modificación.

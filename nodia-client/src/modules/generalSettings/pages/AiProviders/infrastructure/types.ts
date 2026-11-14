@@ -184,6 +184,8 @@ export interface AiProviderEntity {
 }
 
 export interface DiscoveredModelItem {
+  /** Discovered configurable options, not proof of inference availability. */
+  supportedReasoningEfforts?: string[];
   id: string;
   name: string;
   displayName?: string;

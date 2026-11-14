@@ -12,9 +12,37 @@ Query parameters: `scenario=new|list|empty|draft|review|plan|lesson|final|practi
 committed command with a lost response recovered only through its original receipt.
 Synthetic model names and illustrative scores exist only in this fixture.
 
-`scenario=new` renders the production creation form; `noEfforts=1` deliberately
-omits reasoning metadata. Eligibility remains false in these synthetic scenarios:
-being signed in or having catalog options must not qualify generation.
+`scenario=new` renders the production creation form. Additional synthetic cases:
+
+- `agentic=1&legacyEfforts=1`: OpenAI Agentic has a saved `medium` preference
+  and an empty persisted effort list. The isolated `connections/1/models` response
+  reports synthetic low/medium/high options before checking the exact selection.
+- `noEfforts=1`: both persisted and observed lists omit reasoning options; show
+  the incomplete-selection explanation without an endless checking spinner.
+- `qualified=1`: explicitly makes this fixture's exact eligibility response true.
+  The legacy parameter is a UI-only availability switch, not real inference or
+  qualification evidence. Without it the synthetic response stays false.
+- `eligibilityDelayMs=2500`: delays only the eligibility response (bounded to
+  10000ms), allowing reasoning edits while an older selection is being checked.
+
+`window.teacherQA.calls` records method/path/body/params, and `.route` records the
+memory-router destination. A synthetic `sessions` request with `start_plan:true`
+returns a queued job with UUID session/job IDs and allows checking the exact
+selected model/effort and single request after a double click. Nothing is dispatched
+to a real provider, Server or database.
+
+QA2026-11-14: Chromium ES/dark320/600/1280 and EN/light1280; document
+clientWidth/scrollWidth match at each width. Title is the first field; all required
+copy/help is translated. My plans/Save draft/Create plan are contained with44px
+height (288px wide at320). AI selectors remain48px. New/list brand metrics match
+at1280 (348.28×39px, Karmatic Arcade, normal line-height). While high eligibility
+was delayed, reasoning remained enabled and could change to low; creation stayed
+disabled until the exact low response. A double click emitted one synthetic POST
+with low and all form values and navigated to its queued session. Missing observed
+efforts showed a settled incomplete state and made no eligibility call. Captures
+are under ignored `output/playwright/teacher-new-*` at repository root. No real
+inference or provider qualification was performed.
+
 QA2026-11-12/13: Chromium320/1280, ES/dark and EN/light; brand line-height normal,
 AI selectors48px with clear icons or disabled/no-effort state, no horizontal
 document overflow (310/1270px scrollWidth). Language menu exposes12 translated

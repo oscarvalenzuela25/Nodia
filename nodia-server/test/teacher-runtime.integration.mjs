@@ -39,6 +39,9 @@ const { PublishTeacherUseCase } =
   await import(compiled('teacher/use-case/publish-teacher.use-case.js').href);
 const { encryptSecret, generateFingerprint } =
   await import(compiled('ai-provider/helpers/ai-key-crypto.helper.js').href);
+const { TEACHER_GENERATION_POLICY } =
+  await import(compiled('ai-generation/teacher-qualification-policy.js').href);
+assert.equal(TEACHER_GENERATION_POLICY.version, 'teacher-generation-policy/3', 'use the current compiled Teacher policy');
 const container = `template_teacher_runtime_${process.pid}_${randomBytes(4).toString('hex')}`;
 const password = randomBytes(20).toString('hex');
 const docker = (...args) =>
@@ -168,25 +171,29 @@ try {
     model_id: 'fixture-model-discovered',
     effort_id: null,
   };
-  const unqualified = await runtime.eligibility(actor, connectionId, selection);
+  const qualificationCounts = async () => (await source.query(
+    `SELECT (SELECT count(*)::integer FROM ai_generation_qualifications) AS transport,
+     (SELECT count(*)::integer FROM teacher_purpose_qualifications) AS purpose`,
+  ))[0];
+  const initialQualifications = await qualificationCounts();
   check(
-    unqualified.eligible === false &&
-      unqualified.reason_code === 'adapter_unqualified',
-    'configuration alone never qualifies Teacher',
+    initialQualifications.transport === 0 && initialQualifications.purpose === 0,
+    'first selected generation starts with no transport or purpose qualification receipts',
   );
-  await assert.rejects(() =>
-    source.transaction((m) => runtime.verifySelection(m, actor, selection)),
+  const readiness = await runtime.eligibility(actor, connectionId, selection);
+  check(
+    readiness.eligible === true && readiness.reason_code === 'configuration_ready' && readiness.checked_at === null,
+    'configured API selection is ready without claiming a completed inference or requiring a prior canary',
   );
-  checks++;
-  // Test-only qualification boundary substitution, never production evidence or a stored acceptance.
-  runtime.verifySelection = async (manager, reference, selected) => {
-    await access.execute(reference.userId, ['/nodia-teacher'], manager);
-    const c = await credentials.configuration(selected, manager);
-    return {
-      configuration_generation: c.configurationGeneration,
-      session_generation: c.sessionGeneration,
-    };
-  };
+  const verifiedSelection = await source.transaction((manager) =>
+    runtime.verifySelection(manager, actor, selection, 'setup_reply'),
+  );
+  const configuredSelection = await credentials.configuration(selection);
+  check(
+    verifiedSelection.configuration_generation === configuredSelection.configurationGeneration &&
+      verifiedSelection.session_generation === configuredSelection.sessionGeneration,
+    'real admission validates the exact configuration without substituting its qualification boundary',
+  );
   const store = new TeacherService(source, access),
     commands = new ExecuteTeacherCommandUseCase(store, runtime),
     read = new ReadTeacherUseCase(store, runtime);
@@ -201,17 +208,23 @@ try {
     expected_session_revision: 1,
     selection,
   });
+  const firstMessageKey = randomUUID();
+  const firstMessageBody = {
+    expected_session_revision: 2,
+    text: 'Use practical examples',
+    generate_reply: true,
+  };
   const message = await commands.execute(
     actor,
     draft.session_id,
-    randomUUID(),
+    firstMessageKey,
     'message',
-    {
-      expected_session_revision: 2,
-      text: 'Use practical examples',
-      generate_reply: true,
-    },
+    firstMessageBody,
   );
+  const repeatedMessage = await commands.execute(actor, draft.session_id, firstMessageKey, 'message', firstMessageBody);
+  check(repeatedMessage.job_id === message.job_id &&
+    (await source.query('SELECT count(*)::integer AS n FROM teacher_generation_jobs WHERE session_id=$1', [draft.session_id]))[0].n === 1,
+  'repeating the first explicit intent returns the same job without duplicate admission');
   let posts = 0;
   globalThis.fetch = async (_url, init) => {
     const [{ used }] = await source.query(
@@ -273,6 +286,14 @@ try {
   );
   check(openSlots === 0, 'canonical slot released with exact ownership proof');
   check(posts === 1, 'one HTTP POST per Teacher job');
+  const [firstOutput] = await source.query(
+    "SELECT text FROM teacher_setup_messages WHERE generation_job_id=$1 AND role='assistant'",
+    [message.job_id],
+  );
+  const qualificationsAfterFirst = await qualificationCounts();
+  check(firstOutput?.text === 'We can study DNS by topics.' &&
+    qualificationsAfterFirst.transport === 0 && qualificationsAfterFirst.purpose === 0,
+  'first worker generation publishes valid output with zero prior or fabricated qualification receipts');
   const detail = await read.detail(actor, draft.session_id);
   const second = await commands.execute(
     actor,
@@ -950,6 +971,9 @@ try {
       postgres: '16 disposable',
       provider: 'synthetic HTTP only',
       real_provider_qualified: false,
+      teacher_policy: TEACHER_GENERATION_POLICY.version,
+      first_generation_without_qualification: true,
+      first_generation_purpose: 'setup_reply',
       posts,
       configured_database_touched: false,
     }),

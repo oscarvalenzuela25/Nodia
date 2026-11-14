@@ -12,7 +12,7 @@ async function studyCache() {
   const actor = ["teacher", "user", 1];
   const paths = ["sessions", "sessions/s", "sessions/s/messages", "sessions/s/units/u", "sessions/s/attempts/a", "sessions/s/attempts/a/questions/q",
     "sessions/s/learning", "sessions/s/enrichment", "sessions/s/enrichment/concepts/c", "sessions/other", "sessions/other/learning",
-    "connections", "connections/1/eligibility", "connections/2/eligibility"];
+    "connections", "connections/1/models", "connections/1/eligibility", "connections/2/eligibility"];
   for (const path of paths) {
     const queryKey = [...actor, path, undefined];
     client.setQueryData(queryKey, { saved: true });
@@ -80,12 +80,13 @@ describe("Teacher study query refresh", () => {
     expect(reads).toEqual(["sessions", "sessions/s", "sessions/s/units/u", "sessions/s/attempts/a", "sessions/s/attempts/a/questions/q",
       "sessions/s/learning", "sessions/s/enrichment", "sessions/s/enrichment/concepts/c"]);
   });
-  it.each(["sessions/s", undefined])("retains provider revalidation for session selection edits or explicit completion refresh (%s)", async command => {
+  it.each(["sessions/s", undefined])("leaves provider observations to the panel after session edits or completion refresh (%s)", async command => {
     const { client, actor, reads } = await studyCache();
     await refreshTeacherQueries(client, actor, command);
-    expect(reads).toContain("connections");
-    expect(reads).toContain("connections/1/eligibility");
-    expect(reads).toContain("connections/2/eligibility");
+    expect(reads).not.toContain("connections");
+    expect(reads).not.toContain("connections/1/models");
+    expect(reads).not.toContain("connections/1/eligibility");
+    expect(reads).not.toContain("connections/2/eligibility");
     expect(reads).toContain("sessions/s/learning");
     expect(reads).not.toContain("other-actor");
   });

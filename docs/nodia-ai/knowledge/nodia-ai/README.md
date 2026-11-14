@@ -4,7 +4,7 @@
   "document_id": "nodia-ai",
   "product_id": "nodia-ai",
   "kind": "product",
-  "revision": 74,
+  "revision": 75,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -353,6 +353,17 @@ La [conciliación real](../../../evidence/nodia-ai-ai40-real-unknown-reconciliat
 MCP/PNG/JPEG/WebP quedan legítimamente invalidados en el scope operativo. Los recibos anteriores siguen siendo históricos; disponibilidad actual requiere reaceptación propia y no se recupera copiando proofs. R05 continúa activo; las correcciones de compactación por transporte y terminal sin texto de selección son candidatas sin adopción/aceptación real. PDF revisado conserva su positivo como texto; audio continúa sin proof. Los [fixes selectivos](../../../evidence/nodia-ai-ai40-selective-fixes-validation-r01.json) pasan322 pruebas focales/5 archivos, tipado y lint; el candidato R06 cambia fingerprint y excluye WAV, sin aceptación operativa. La causa original de la inferencia sigue desconocida. C40-06 y las variantes restantes de C40-09/C40-11 permanecen parciales.
 
 # NodiaAI — contexto de producto
+
+## Selección de modelo y esfuerzo — candidato local, 2026-11-14
+
+El compositor y la configuración del chat agrupan familias Gemini Agentic
+inequívocas y el esfuerzo resuelve a un ID real del catálogo. Una observación de
+otra variante no habilita Aplicar; las tuplas históricas contradictorias siguen
+visibles sin reparación automática. Sincronización y Teacher conservan el mismo
+criterio de identidad. [Ficha candidata](../general-settings/features/ai-provider-interface-and-module-access.md#continuación-local-selectores-agrupados--2026-11-14)
+y [evidencia local](../../../evidence/model-selector-residual-audit-20261114.md).
+No incorpora herramientas, inferencia o publicación; los estados de aprobación
+se conservan.
 
 Metadatos canónicos migrados en [AI-06](../../../mvp/52-nodia-ai-ai06-knowledge-publication-contract.md); este resumen conserva aprobación pendiente y no se publica; las secciones funcionales de lectura publicadas se identifican debajo.
 

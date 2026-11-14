@@ -13,11 +13,12 @@ import { forgetRequest, pendingRequest, rememberRequest } from "./recovery";
 import { refreshTeacherQueries } from "./refresh";
 import { sessionListPollInterval } from "./sessionList";
 
-export function useTeacherQuery<T>(path: string, schema: z.ZodType<T>, params?: Record<string, unknown>, enabled = true) {
+export function useTeacherQuery<T>(path: string, schema: z.ZodType<T>, params?: Record<string, unknown>, enabled = true,
+  observationOptions?: { staleTime: number; refetchOnWindowFocus: false; refetchOnReconnect: false }) {
   const userId = useAuthStore((state) => state.user?.id);
   const sessionVersion = useAuthStore((state) => state.sessionVersion);
   const authenticated = useAuthStore((state) => state.sessionStatus === "authenticated");
-  const query = useQuery({ queryKey: ["teacher", userId, sessionVersion, path, params], queryFn: ({ signal }) => readTeacherData(path, signal, params), select: (data) => schema.parse(data), enabled: Boolean(userId && authenticated && enabled), retry: false });
+  const query = useQuery({ queryKey: ["teacher", userId, sessionVersion, path, params], queryFn: ({ signal }) => readTeacherData(path, signal, params), select: (data) => schema.parse(data), enabled: Boolean(userId && authenticated && enabled), retry: false, ...observationOptions });
   useEffect(() => { if (query.error) notifyHttpError(query.error); }, [query.error]);
   return query;
 }

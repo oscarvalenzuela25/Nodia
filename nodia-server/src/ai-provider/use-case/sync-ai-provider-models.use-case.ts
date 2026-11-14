@@ -17,6 +17,7 @@ export interface DiscoveredModelInfo {
   description: string;
   contextWindow: number | null;
   capabilities: string[];
+  supportedReasoningEfforts?: string[];
   isRecommended: boolean;
   role?: 'chat' | 'multimodal' | 'ocr';
 }

@@ -51,7 +51,7 @@ export function validateTeacherAgenticDescriptor(descriptor: unknown): TeacherAg
   return descriptor as TeacherAgenticDescriptor;
 }
 
-/** Exact Teacher text lane. SQL configuration never observes a live native runtime. */
+/** Exact Teacher text lane. Static reads stay SQL; live snapshots run outside transactions. */
 @Injectable()
 export class TeacherAgenticTextService extends AiGenerationPort {
   constructor(private readonly source: DataSource, private readonly gemini: GeminiTeacherTextTransport,
@@ -72,6 +72,11 @@ export class TeacherAgenticTextService extends AiGenerationPort {
       throw Error('teacher:agentic_connection_unavailable');
     const fields = row.fields !== null && typeof row.fields === 'object' && !Array.isArray(row.fields)
       ? row.fields as Record<string, unknown> : null;
+    const scoped = agenticRecord(fields?.agentic);
+    const models = scoped.available_models;
+    if (scoped.selected_model !== selection.model_id && !(Array.isArray(models)
+      && models.some(model => agenticRecord(model).id === selection.model_id)))
+      throw Error('teacher:agentic_model_unavailable');
     // Same canonical generation as the existing Agentic chat adapter; no Teacher alias resource.
     const generation = agenticHash({ connection_id: row.id, provider_key: row.provider_key, mode: selection.mode,
       fields: fields?.agentic ?? null, updated_at: row.updated_at, enabled: true });
@@ -80,6 +85,7 @@ export class TeacherAgenticTextService extends AiGenerationPort {
 
   private project(selection: AiSelection, provider: TeacherAgenticProvider, generation: string, value: unknown): TeacherAgenticConfiguration {
     const observed = parseTeacherAgenticObservation(value, provider);
+    if (!observed.available && ['runtime_busy', 'codex_profile_busy'].includes(observed.reason ?? '')) throw Error('teacher:runtime_busy');
     if (!observed.available || !observed.resource_key || !observed.binary_sha512)
       throw Error('teacher:agentic_runtime_unavailable');
     return { providerKey: provider, connectionId: selection.connection_id, keyId: null,
@@ -87,21 +93,17 @@ export class TeacherAgenticTextService extends AiGenerationPort {
       resourceKey: observed.resource_key, agentic: observed };
   }
 
-  async configuration(selection: AiSelection, manager: EntityManager = this.source.manager,
-    qualificationOverride?: TeacherAgenticObservation): Promise<TeacherAgenticConfiguration> {
+  async configured(selection: AiSelection, manager: EntityManager = this.source.manager) {
     const { provider, generation } = await this.selected(selection, manager);
-    if (qualificationOverride) return this.project(selection, provider, generation, qualificationOverride);
-    const rows: unknown = await manager.query(`SELECT scope_hash,contract_version,provider_key,selection_snapshot,
-      configuration_generation,observation_snapshot FROM ai_generation_agentic_qualifications
-      WHERE selection_hash=$1 AND configuration_generation=$2 ORDER BY observed_at DESC,scope_hash LIMIT 1`,
-    [agenticHash(selection), generation]);
-    if (!Array.isArray(rows) || rows.length !== 1) throw Error('teacher:adapter_unqualified');
-    const row = agenticRecord(rows[0]);
-    const config = this.project(selection, provider, generation, row.observation_snapshot);
-    if (row.contract_version !== TEACHER_AGENTIC_CONTRACT || row.provider_key !== provider
-        || row.configuration_generation !== generation || agenticHash(row.selection_snapshot) !== agenticHash(selection)
-        || row.scope_hash !== teacherAgenticScope(selection, config)) throw Error('teacher:adapter_unqualified');
-    return config;
+    return { providerKey: provider, configurationGeneration: generation, sessionGeneration: null };
+  }
+
+  async configuration(selection: AiSelection, manager: EntityManager = this.source.manager,
+    observationOverride?: TeacherAgenticObservation): Promise<TeacherAgenticConfiguration> {
+    const { provider, generation } = await this.selected(selection, manager);
+    if (observationOverride) return this.project(selection, provider, generation, observationOverride);
+    if (manager.queryRunner?.isTransactionActive) throw Error('teacher:agentic_observation_required');
+    return this.observe(selection, AbortSignal.timeout(30000));
   }
 
   async observe(selection: AiSelection, signal: AbortSignal): Promise<TeacherAgenticConfiguration> {
@@ -116,16 +118,10 @@ export class TeacherAgenticTextService extends AiGenerationPort {
   async eligibility(selection: AiSelection, signal: AbortSignal) {
     try {
       const live = await this.observe(selection, signal);
-      const qualified = await this.configuration(selection);
-      const matches = teacherAgenticScope(selection, live) === teacherAgenticScope(selection, qualified);
-      const dates: { observed_at: Date | string }[] = matches ? await this.source.manager.query(
-        'SELECT observed_at FROM ai_generation_agentic_qualifications WHERE scope_hash=$1', [teacherAgenticScope(selection, live)]) : [];
-      return { eligible: matches && dates.length === 1, reason_code: matches && dates.length === 1 ? null : 'adapter_unqualified',
-        checked_at: matches && dates.length === 1 ? dates[0].observed_at : null, selection };
+      return { eligible: true, reason_code: 'runtime_available', checked_at: live.agentic.observed_at, selection };
     } catch (error) {
       if (signal.aborted) throw error;
-      return { eligible: false, reason_code: error instanceof Error && error.message === 'teacher:adapter_unqualified'
-        ? 'adapter_unqualified' : 'provider_unavailable', checked_at: null, selection };
+      return { eligible: false, reason_code: 'provider_unavailable', checked_at: null, selection };
     }
   }
 

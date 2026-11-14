@@ -4,11 +4,11 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 35,
+  "revision": 36,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación. Candidato local2026-11-12: formulario guiado, idioma validado conservando etiqueta histórica y selección IA visible/48px con ayuda; catálogo sin esfuerzos explicado sin inventarlos. Cabecera Codex consulta observación acotada compartida, sin polling. Build/lint,382regresiones/51archivos y QA320/1280 correctos; f01productivo tiene0recibos Agentic y carece de tabla por propósito; sin despliegue/inferencia o publicación del lote."
+    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación. Candidato local2026-11-12: formulario guiado, idioma validado conservando etiqueta histórica y selección IA visible/48px con ayuda; catálogo sin esfuerzos explicado sin inventarlos. Cabecera Codex consulta observación acotada compartida, sin polling. Build/lint,382regresiones/51archivos y QA320/1280 correctos; f01productivo tiene0recibos Agentic y carece de tabla por propósito; sin despliegue/inferencia o publicación del lote. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
@@ -212,10 +212,14 @@
     {
       "path": "nodia-client/src/modules/teacher/infrastructure/schemas.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md",
+      "kind": "specification"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-12",
+    "checked_on": "2026-11-14",
     "evidence_paths": [
       "docs/evidence/teacher-local-implementation-20261101-r01.json",
       "docs/evidence/teacher-local-activation-20261101-r01.json",
@@ -235,9 +239,10 @@
       "docs/evidence/teacher-upgrade-local-20261111-r02.json",
       "docs/evidence/teacher-upgrade-acceptance-20261111-r02.md",
       "docs/evidence/teacher-upgrade-development-vm-20261111-r01.json",
-      "docs/mvp/96-nodia-teacher-implementation-plan.md"
+      "docs/mvp/96-nodia-teacher-implementation-plan.md",
+      "docs/evidence/teacher-ai-selection-first-generation-20261114.md"
     ],
-    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente. Corte2026-11-12: inspección de contratos y código local; build/lint Client,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado en recibo propio: f01/45migraciones,0recibos Agentic y tabla por propósito ausente, sin trasladar la aceptación anterior."
+    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente. Corte2026-11-12: inspección de contratos y código local; build/lint Client,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado en recibo propio: f01/45migraciones,0recibos Agentic y tabla por propósito ausente, sin trasladar la aceptación anterior. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote."
   },
   "approval": null
 }
@@ -372,6 +377,18 @@ La [evidencia VM](../../../evidence/teacher-agentic-vm-20261101-r01.json) regist
 
 
 # Nodia Teacher — contexto de producto para NodiaAI
+
+## Alta y primera generación — candidato local, 2026-11-14
+
+El usuario permite crear con la IA explícita sin canary previo. Se conservan
+disponibilidad no generativa, autoridad, presupuestos y recuperación; el resultado
+real se conoce al generar. La [ficha de sesiones rev31](features/session-setup-and-planning.md#primera-generación-y-alta--decisión-del-usuario-2026-11-14)
+registra razonamiento recuperable, copy/orden de alta y menú activo por subruta.
+[Evidencia local](../../../evidence/teacher-ai-selection-first-generation-20261114.md)
+y [96§43](../../../mvp/96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14).
+La calificación previa descrita en cortes inferiores queda histórica para
+Teacher; no hay nuevos gates retirados en otros dominios. Draft/partial,
+unregistered/approval:null, sin despliegue, inferencia o publicación del lote.
 
 ## Alcance operativo local — 2026-11-01
 

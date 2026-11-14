@@ -188,6 +188,8 @@
     "close": "Cerrar"
   },
   "modal_sync_models": {
+    "choose_reasoning": "Seleccionar razonamiento...",
+    "no_models_available": "El proveedor no devolvió modelos disponibles.",
     "title": "Sincronizar y configurar modelos",
     "subtitle": "Consulta los modelos en tiempo real del proveedor y selecciona cuáles activar para el sistema.",
     "provider_badge_agentic": "Agentic",

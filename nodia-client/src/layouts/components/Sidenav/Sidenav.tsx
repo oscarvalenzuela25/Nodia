@@ -35,6 +35,7 @@ import {
   ModuleHeaderText,
 } from "./styles";
 import type { SidenavItem } from "./types";
+import { activeNavigationItem } from "../../../routes/activeNavigationItem";
 
 const getTranslatedLabel = (
   translates: TranslateItem[] | undefined,
@@ -148,6 +149,9 @@ const Sidenav: FC<Props> = ({
     return [homeItem, ...dynamicGroups];
   }, [userModules, lang, t]);
 
+  const activeItem = activeNavigationItem(location.pathname,
+    menuItems.flatMap(item => item.subModules?.length ? item.subModules : [item]));
+
   const drawerVariant = isLgUp ? "permanent" : "temporary";
   const isCollapsed = desktopCollapsed;
 
@@ -239,7 +243,8 @@ const Sidenav: FC<Props> = ({
                               <NavItemButton
                                 aria-label={subDisplayName}
                                 isSubItem={!isCollapsed}
-                                selected={location.pathname === subItem.path}
+                                selected={activeItem === subItem}
+                                aria-current={activeItem === subItem ? "page" : undefined}
                                 onClick={() => handleNavigate(subItem.path)}
                                 sx={{
                                   justifyContent: isCollapsed
@@ -285,7 +290,8 @@ const Sidenav: FC<Props> = ({
                 <Tooltip title={isCollapsed ? displayName : ""} placement="right" arrow>
                   <NavItemButton
                     aria-label={displayName}
-                    selected={location.pathname === moduleItem.path}
+                    selected={activeItem === moduleItem}
+                    aria-current={activeItem === moduleItem ? "page" : undefined}
                     onClick={() => handleNavigate(moduleItem.path)}
                     sx={{ justifyContent: isCollapsed ? "center" : "initial" }}
                   >

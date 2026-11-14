@@ -1,5 +1,15 @@
 # Nodia Teacher con sesiones de estudio y planes adaptativos
 
+> Decisión funcional vigente2026-11-14: el usuario autoriza crear con la IA
+> elegida **sin calificación generativa previa**. La propia creación puede ser
+> el primer intento real; configuración/selección/disponibilidad no generativa,
+> autoridad, presupuestos y recuperación siguen siendo obligatorios. El fallo
+> debe mostrarse y conservar el borrador. Se sustituye sólo el requisito previo
+> de recibo/canary de Teacher, no la verificación de ingeniería o los gates de
+> otros dominios. [ADR100 propuesto](../architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md)
+> y [96§43](96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14).
+> Las aceptaciones y referencias inferiores conservan sus fechas y alcances.
+
 > Cierre técnico del upgrade2026-11-11:55/55TU verificados para Windows y la selección API key exacta configurada.18POST reales, revisión de47ítems, QA HTTP/JWT/SQL y rendimiento comparado, correcciones y restore final comprobados. Alcance y límites en la [matriz R02](../evidence/teacher-upgrade-acceptance-20261111-r02.md) y el [recibo R02](../evidence/teacher-upgrade-local-20261111-r02.json). No adopta otros proveedores/entornos, no acredita eficacia humana ni despliega/publica o aprueba ADR/fichas.
 
 > Upgrade en revisión R02, 2026-11-11: [plan101](101-nodia-teacher-adaptive-upgrade-plan.md) documenta diagnóstico conectado, evidencia por objetivo y práctica adaptativa como primera entrega útil, seguidos de enseñanza interactiva, repaso, aclaraciones, fuentes/actividades/visuales y memoria entre planes. Distingue brechas ya previstas en95/96 de ampliaciones posteriores; conserva la final≥90% y los contratos V1. [102](102-nodia-teacher-phased-implementation-and-final-qa.md) define construcción directa por fases y QA/correcciones al final, sin aprobación funcional entre fases. La solicitud actual sólo autoriza esta documentación: sin implementación, aprobación integral o disponibilidad nueva. [ADR098 propuesto](../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md) y [fichas candidatas](../nodia-ai/knowledge/studies/README.md).

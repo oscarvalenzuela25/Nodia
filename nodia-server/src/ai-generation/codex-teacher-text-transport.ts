@@ -111,7 +111,8 @@ export class CodexTeacherTextTransport implements TeacherAgenticTransport, OnMod
     const available = observed.session.available && observed.session.authenticated === true && model.length === 1
       && (selection.effort_id === null || model[0].supportedReasoningEfforts.includes(selection.effort_id));
     return { contract: TEACHER_AGENTIC_CONTRACT, available,
-      reason: available ? null : observed.session.authenticated !== true ? 'codex_session_required' : 'codex_model_unavailable',
+      reason: available ? null : observed.session.reason === 'codex_profile_busy' ? 'codex_profile_busy'
+        : observed.session.authenticated !== true ? 'codex_session_required' : 'codex_model_unavailable',
       observed_at: new Date().toISOString(), resource_key: observed.resourceKey, session_generation: observed.runtimeSessionId,
       runtime_hash: host.runtimeHash, binary_sha512: host.sha512, policy_hash: host.capabilities.policy_hash,
       tool_policy: 'none', native_io: false };

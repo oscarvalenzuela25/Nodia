@@ -58,6 +58,14 @@ Los únicos modos operativos son Agentic y API key. Las referencias a Web, `toke
 
 ## Teacher
 
+Continuación2026-11-14: [96§43](96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14)
+y [ADR100 propuesto](../architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md)
+registran la decisión explícita de crear con la IA elegida sin canary previo,
+razonamiento recuperable, alta guiada y menú activo en subrutas. Se conservan
+presupuesto, autoridad, selección exacta y recuperación; la generación puede ser
+el primer intento real. Candidato local, sin aceptación operativa, inferencia o
+despliegue por esta entrega. [Evidencia](../evidence/teacher-ai-selection-first-generation-20261114.md).
+
 [Especificación95](95-studies-adaptive-learning.md), [implementación96](96-nodia-teacher-implementation-plan.md), [contratos97](97-nodia-teacher-technical-contracts.md) y [traspaso98](98-nodia-teacher-start-handoff.md). Dominio propio y autoridad por destino canónico conforme a ADR092; las pruebas de una unidad no acreditan el cierre integral de Teacher.
 
 [Upgrade adaptativo101](101-nodia-teacher-adaptive-upgrade-plan.md) R05 y [plan102](102-nodia-teacher-phased-implementation-and-final-qa.md) R04: construcción F0–F9 y QA55/55 cerrados para Windows/API key exacta, con18POST reales,47ítems revisados y restore de laboratorio. [Matriz R02](../evidence/teacher-upgrade-acceptance-20261111-r02.md) y [recibo](../evidence/teacher-upgrade-local-20261111-r02.json) conservan ese alcance. Continuación: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. [Evidencia VM](../evidence/teacher-upgrade-development-vm-20261111-r01.json). Práctica12/14 y final40/40 son resultados del programa de QA, sin eficacia humana ni55nuevos criterios VM. Sin transferencia de aceptaciones o promoción a master. ADR098 sigue propuesto; fichas draft/partial/unregistered/approval:null, sin publicación. Los gates V1/Agentic de96 conservan su alcance.
