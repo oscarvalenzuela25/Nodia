@@ -1,14 +1,17 @@
 # Contexto funcional de productos para NodiaAI
 
-## PWA instalable online — planificación, 2026-11-13
+## PWA instalable online — candidato local, 2026-11-13
 
 [Plan103](../../mvp/103-pwa-progressive-implementation-plan.md),
 [índice de producto](general-settings/README.md#instalación-pwa-online--planificación-2026-11-13)
 y [ficha candidata](general-settings/features/pwa-installation.md) describen
 PWA-001 como entrega completa e independiente de instalación/iconos/ventana
 propia, usando las funciones online actuales. Actualizaciones, caché, push y
-sincronización quedan en ítems posteriores. Sólo planificación: draft/planned,
-sin pruebas de instalación, aprobación o publicación ni herramientas nuevas.
+sincronización quedan en ítems posteriores. Candidato local con opción1,
+manifiesto/iconos y validación CI/CD; build,90regresiones auth y82checks Node
+correctos. Chrome/Edge interpretan el manifiesto local sin errores; instalación,
+auth standalone, Android físico y publicación pendientes. Draft/partial,
+approval:null y sin publicación o herramientas nuevas.
 
 ## Teacher: alta guiada y observación Agentic — candidato local, 2026-11-12
 

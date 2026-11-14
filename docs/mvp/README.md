@@ -69,8 +69,12 @@ Los únicos modos operativos son Agentic y API key. Las referencias a Web, `toke
 [PWA103](103-pwa-progressive-implementation-plan.md): primera entrega PWA-001
 independiente y prioritaria, instalable con iconos/ventana propia y funciones
 online. Backlog separado de actualizaciones/caché, desconexión, push y datos
-offline/sincronización. Plan en revisión, sin implementación o instalación
-acreditadas; [ficha candidata](../nodia-ai/knowledge/general-settings/features/pwa-installation.md).
+offline/sincronización. Candidato local en `codex/pwa-001-installation`, con
+opción1 seleccionada para icono/favicon, manifiesto y validación del artefacto.
+Build,90regresiones auth y82checks CI/CD correctos; instalación física,
+standalone/auth y publicación pendientes. Plan en revisión;
+[ficha candidata](../nodia-ai/knowledge/general-settings/features/pwa-installation.md)
+draft/partial, sin publicación.
 
 El plan37 tiene autorización explícita para implementación por etapas. Cada optimización conserva contratos y presenta ahorro/QA por perfil y ruta; una medición local no equivale a aceptación productiva completa.
 

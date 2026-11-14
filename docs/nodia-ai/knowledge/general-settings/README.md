@@ -4,7 +4,7 @@
   "document_id": "general-settings",
   "product_id": "general-settings",
   "kind": "product",
-  "revision": 26,
+  "revision": 27,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -291,7 +291,9 @@ approval:null. [Contrato](../../../mvp/ai-provider-feature-contract.md) y
 [ficha candidata](features/pwa-installation.md) separan PWA-001, instalación con
 iconos/ventana propia y funciones online, del backlog de service worker,
 actualizaciones, desconexión, push y datos offline/sincronización. Primera entrega
-prioritaria independiente; no se ha implementado o probado su instalación. La
-ficha es draft/planned/not_applicable para herramientas IA, con approval:null y
-sin publicación. La revisión26 de este índice sólo enlaza la planificación;
-las verificaciones históricas de otras funciones no acreditan disponibilidad PWA.
+prioritaria independiente. La revisión27 enlaza el candidato local con opción1
+seleccionada, manifiesto/iconos y validación CI/CD. Build,90regresiones auth y
+82checks Node correctos; manifiesto sin errores locales Chrome/Edge, sin prueba
+de instalación/auth standalone. La ficha es draft/partial/not_applicable para
+herramientas IA, approval:null y sin publicación. Android físico, aceptación por
+plataforma y publicación HTTPS pendientes; otras funciones no acreditan PWA.

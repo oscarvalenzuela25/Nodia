@@ -1,7 +1,8 @@
 # PWA de Nodia — plan de implementación por entregas
 
-> Estado: en revisión. La prioridad y el alcance independiente de PWA-001 fueron solicitados explícitamente el 2026-11-13; este documento nuevo no tiene aprobación documental integral ni acredita implementación.
+> Estado: en revisión, con candidato local implementado y verificación acotada en §11. La prioridad y el alcance independiente de PWA-001 fueron solicitados explícitamente el 2026-11-13; el documento no tiene aprobación integral y la instalación/publicación siguen pendientes.
 > Fecha: 2026-11-13. Rama de planificación: `codex/plan-pwa-installation`, desde `development`.
+> Implementación local: `codex/pwa-001-installation`, desde development/origin actualizado a `a780099b456b9cb930865543d836e61147cc4190`. Opción gráfica 1 seleccionada explícitamente; QA de instalación y publicación pendientes, sin aprobación integral del documento.
 > Fuentes: [Client08](08-stack-frontend.md), [auth14](14-authentication.md), [privacidad89](89-module-access-and-user-data-scope.md), [rutas ADR092](../architecture/decisions/ADR-092-stable-module-navigation-routes.md), [rendimiento37](37-web-performance-implementation-plan.md), [producción99](99-production-deployment-and-cicd-plan.md) y [diseño Client](../../nodia-client/DESIGN.md).
 
 ## 1. Objetivo y orden de entrega
@@ -76,6 +77,17 @@ actualización/caché para completar este ítem. Ver fuentes técnicas en§10.
 | 001.07 | Verificar que el build y el paquete incluyen manifiesto/iconos y que Pages los sirve como archivos, con MIME correcto, sin devolver el HTML de la SPA. | Hashes/inventario del artefacto y respuesta publicada compatibles con el CD existente. Ajustar validación sólo donde falte esta garantía. |
 | 001.08 | Ejecutar checks pertinentes y matriz mínima de§3.5; documentar instalación/desinstalación y límites online. | Resultados reales por plataforma/versión, sin declarar aceptado un dispositivo no probado. |
 | 001.09 | Crear PR de PWA-001, integrar por el flujo development→master y verificar instalación en el origen final tras el deploy autorizado. | Entrega independiente aceptable; tareas PWA-002…006 permanecen abiertas. |
+
+Solicitud visual del 2026-11-13: adaptar la N de la marca existente, conservando
+turquesa, azul y violeta, con estilo simple y moderno para móvil y favicon. Se
+prepararon cinco propuestas visuales para revisión: N esencial, N en círculo,
+N con aro, N conectada y N bicolor. El usuario seleccionó **la opción 1, N
+esencial**, y solicitó una rama desde development actualizado para implementar.
+Se reconstruyó como SVG limpio y se exportaron favicon SVG/ICO/PNG, iconos
+192/512, variantes maskable y Apple180; fuente y receta en
+[branding](../../nodia-client/branding/README.md). La selección del icono no
+aprueba el documento completo ni acredita instalación PWA. La comprobación
+local y los pendientes se registran en §11.
 
 Cambiar de dominio puede requerir otra instalación; un `id` estable no migra
 identidad ni datos entre orígenes. Usar el origen Pages actual permite avanzar;
@@ -209,19 +221,20 @@ por garantía. Estimación y aceptación específicas por operación/módulo.
 
 - [x] Plan creado con PWA-001 independiente y fases posteriores desglosadas.
 - [x] Ficha candidata e índices enlazados; entrada explícita de fuente para validación, sin publicación.
-- [ ] Desarrollar PWA-001 desde development actualizado, en su propia rama.
+- [x] Desarrollar el candidato local PWA-001 desde development actualizado, en su propia rama; aceptación integral y publicación pendientes de AC01–AC12.
 - [ ] Completar AC01–AC12 y distinguir QA local, dispositivos y publicación efectiva.
 - [ ] Revisar y priorizar PWA-002/003 después de la primera entrega.
 - [ ] Elegir eventos push antes de PWA-004 y módulo/política offline antes de PWA-005/006.
 
-Esta entrega es documental: no instala dependencias, registra service workers,
-modifica la app, publica Pages ni cambia el VPS. La [ficha funcional](../nodia-ai/knowledge/general-settings/features/pwa-installation.md)
-se mantiene draft/planned, con aprobación nula; el plan no habilita herramientas
-o capacidades IA. Al implementar se actualizan este checklist, progreso, fichas
-y pasos de usuario con las comprobaciones realmente ejecutadas. Los reportes de
-ensayo van a output/ o .tmp/; sólo evidencia durable útil se consolida en la entrega.
+El corte inicial fue documental. El candidato local posterior implementa
+manifiesto, iconos, metadatos y validación del artefacto/publicación; no añade
+dependencias, service worker ni cambios del VPS. La [ficha funcional](../nodia-ai/knowledge/general-settings/features/pwa-installation.md)
+permanece draft/partial, con aprobación nula y sin publicación de contexto IA.
+Los reportes intermedios van a output/ o .tmp/; sólo evidencia durable útil se
+consolida en la entrega. La [guía de instalación](pwa-installation-guide.md)
+distingue pasos de usuario y compatibilidad realmente comprobada.
 
-Validación documental de esta revisión: `knowledge:check` correcto con91fuentes,
+Validación documental del corte inicial: `knowledge:check` correcto con91fuentes,
 47excluidas,44documentos y46fragmentos; la candidata queda excluida. Se comprobó
 igualdad de bytes de las44fichas aprobadas y ausencia de cambios en capacidades
 y bindings. UTF-8/LF y destinos de enlaces locales correctos. El registro añade
@@ -238,3 +251,51 @@ documental ni se realizó QA de instalación PWA.
 
 Las referencias describen mecanismos, no aceptación de Nodia. Los pasos de
 instalación/versiones se vuelven a comprobar al implementar y registrar QA.
+
+## 11. Candidato local PWA-001 — 2026-11-13
+
+Rama `codex/pwa-001-installation`, creada tras fetch y fast-forward de
+development a `a780099b456b9cb930865543d836e61147cc4190`, conservando el apunte
+visual previo. [PR16](https://github.com/oscarvalenzuela25/Nodia/pull/16) abierto
+en borrador hacia development; CI Linux y resultados finales se consultan en
+ese PR, sin merge o deploy por esta entrega. Implementación de 001.01–004 y
+001.07/008 por alcance local:
+
+- Manifiesto con identidad `/`, nombre Nodia, idioma es, entrada/scope `/`,
+  ventana standalone y colores del theme claro existente. Sin hostname de
+  preview, credenciales o rutas privadas en el manifiesto.
+- Opción1 en SVG vectorial y exportaciones independientes; maskable opaco con
+  la N dentro del círculo seguro de radio40%, comprobado en192/512. Favicon
+  legible a16/32px y recortes circular/cuadrado revisados sobre claro/oscuro.
+- HTML enlaza manifiesto/favicon/Apple; `_headers` conserva COOP para Google y
+  añade MIME/revalidación del manifiesto. No cambian guards, sesión o destinos.
+- CI valida el dist antes de empaquetar/subir; CD comprueba diez recursos
+  publicados por MIME/tamaño/SHA256 sin reconstrucción. Los paquetes históricos
+  sin perfil PWA siguen siendo conciliables. Fallar después de publicar conserva
+  el deployment y un estado explícito sin reenviar la publicación.
+
+Build con TypeScript correcto;90pruebas existentes de auth/sesión/permisos y
+82pruebas Node de CI/CD correctas,10omitidas por requisitos Linux/Node del CI.
+Lint del código correcto con `npm run lint -- --ignore-pattern '.tmp/**'`:
+el comando sin exclusión detecta una regla react-refresh en un experimento
+preexistente e ignorado `.tmp/teacher-upgrade-browser/main.tsx`; no se modificó.
+
+QA local Windows: Chrome157.0.8103.52 y Edge157.0.4341.46, perfiles persistentes
+aislados, origen `http://127.0.0.1:4183`. Manifiesto sin errores y
+`Page.getInstallabilityErrors` vacío; nueve archivos públicos con200/MIME
+correcto. Ruta privada `/nodia-ai` sin sesión vuelve a `/login`; cero peticiones
+API anónimas, registros SW y Cache Storage. La ventana ensayada seguía en modo
+browser (`standalone=false`): esto no acredita instalar o reabrir la app.
+Un primer perfil efímero devolvió `in-incognito`; al ensayar perfil persistente
+desapareció, sin cambios de código.
+
+`knowledge:check` correcto:91fuentes,47excluidas,44documentos y46fragmentos;
+fichas aprobadas sin cambios y candidata PWA excluida, sin publicar.
+
+Evidencia consolidada: [PWA-001 local](../evidence/pwa-001-local-20261113.md).
+Pendientes 001.05/006/009 y AC01–AC12 por alcance: instalación/reapertura real
+Chrome/Edge, Google/auth/cambio de cuenta desde standalone, prueba Android
+física, CI Linux, revisión e integración por PR y comprobación HTTPS del mismo
+artefacto publicado. iOS no verificado y sin soporte anunciado. No hubo
+inferencias, mutaciones de negocio, instalación en dispositivos o deploy.
+PWA-002…006 permanecen abiertas y no condicionan este candidato.

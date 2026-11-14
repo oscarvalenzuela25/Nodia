@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { inventory, normalizeProductionModes, packageRelease, verifySource } from '../production/package-backend-release.mjs';
+import { validatePwaAssets } from './pwa-assets.mjs';
 
 const sha = value => createHash('sha256').update(value).digest('hex');
 const ensure = (condition, code) => { if (!condition) throw new Error(code); };
@@ -164,6 +165,7 @@ function clientPackage(root, output, sourceSha, verified) {
   const sourceFiles = inventory(input, { source: true });
   ensure(sourceFiles.some(item => item.path === 'index.html'), 'client_index_required');
   ensure(sourceFiles.every(item => !forbiddenPackagePath(item.path)), 'operational_data_in_client_dist');
+  validatePwaAssets(input, { required: fs.existsSync(path.join(root, 'nodia-client/public/manifest.webmanifest')) });
   const stage = fs.mkdtempSync(path.join(output, '.client-stage-'));
   let complete = false;
   try {

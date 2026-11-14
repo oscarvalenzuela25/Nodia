@@ -1180,3 +1180,61 @@ hacia development y luego actualización automática del PR13 al incorporar el f
 Impacto en conocimiento NodiaAI: sólo pruebas, sin cambios de funcionalidad,
 contratos, capacidades, fichas aprobadas o publicación. No se modifica el VPS,
 Pages, las migraciones, secretos o políticas de recuperación del despliegue.
+
+## 24. Pages: paginación rechazada antes de publicar — 2026-11-13
+
+PR14 se integró en development23982da9 y PR13 en master174c2ca5. El CI
+[43535099739](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43535099739)
+terminó correctamente y el dispatcher inició el
+[CD43536680525](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43536680525).
+Su job132267336447 completó backend y falló en Client con pages_read_failed.
+No fue otro fallo del updater: el SSH restringido confirmó backend174c2ca5,
+release backend-174c2ca5a1e7-ff076a0afc23, API/worker activos y blocked=false.
+La operación cf77431152a9416d2b27b55f17f598c4 está complete. Pages conserva
+su despliegue canónico214e120b-b6e5-400f-a70a-5cb77aa4d3d7, fuente f01b4933.
+
+**Causa reproducida:** GET deployments con env=production/per_page=100/page=1
+respondió HTTP400, error numérico8000024. La misma consulta con per_page=25
+respondió HTTP200 y nueve filas, result_info total_count9/total_pages1. Se
+consultó mediante la sesión OAuth renovada de Wrangler; no se imprimió el token
+ni se extrajeron los secretos del environment GitHub. Esto prueba el parámetro
+rechazado, no los permisos de escritura del token privado de Actions.
+
+El listado se ejecuta antes de solicitar upload-token y antes de subir assets
+o crear un deployment. El log no registró pages-state y el listado productivo
+completo no contiene el marcador nodia-ci de esta entrega: no se solicitó una
+publicación de Client en este intento. Las filas Git omitidas no acreditan un
+deployment publicado. El backend actualizado se conserva; no se restaura ni
+se vuelve a aplicar por el fallo posterior de Client.
+
+Se corrige cd-pages.mjs en codex/fix-pages-delivery, desde origin/development:
+
+- Páginas de25 y hasta80consultas conservan el límite previo de2000registros.
+  Una página llena exige consultar la siguiente; el límite sin página terminal,
+  una respuesta sobredimensionada o marcadores duplicados impiden escribir.
+- Un marcador previo correcto sólo se verifica; pending/unknown exige
+  conciliación. El POST de creación sigue siendo único y registrado antes
+  del envío, sin reintentos automáticos de escrituras inciertas.
+- Los errores HTTP identifican operación fija y estado: por ejemplo,
+  pages_read_failed_deployment_history_http_400. Los errores de transporte
+  usan el sufijo transport. No se imprimen URLs, cabeceras, cuerpos remotos,
+  JWT ni claves; las escrituras conservan su clasificación de resultado incierto.
+- Las regresiones reproducen el rechazo de tamaños mayores de25 y comprueban
+  frontera de paginado, adopción de marcador, duplicados, historial incompleto
+  y errores HTTP/transporte sin reenvío ni exposición de secretos.
+
+La comprobación local node --test ops/ci/*.test.mjs pasó69casos, con9omisiones
+de pruebas que requieren Linux (sin cambios en esas unidades). Pages pasó9/9
+sin omisiones. Control de regresión: restaurar temporalmente el tamaño100 hizo
+fallar el caso de publicación con HTTP400 antes del envío; se restituyeron los
+bytes del fix y volvió a pasar. Las dependencias de hashing se instalaron
+fijadas y sin scripts; git diff --check correcto. El CI remoto conserva su
+resultado propio, incluidas las9pruebas Linux. No se añade otro chequeo TypeScript ni se recompila la
+aplicación: el cambio afecta al transporte de CD, no al código de Client/Server.
+Impacto en fichas NodiaAI: ninguno, sin capacidades o contratos de producto nuevos.
+
+La promoción mantiene PR hacia development y después development→master, con
+CI/CD nuevos. No pulsar rerun del CD anterior ni repetir el apply de backend.
+La corrección local y la autenticación OAuth no acreditan todavía una entrega
+Client exitosa con el token de GitHub; ese cierre requiere publicación y
+verificación del deployment canónico en el nuevo CD.

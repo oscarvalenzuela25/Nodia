@@ -6,6 +6,7 @@ import { inventory } from '../production/package-backend-release.mjs';
 import { verifyProject } from './check-pages-access.mjs';
 import { forbiddenPackagePath, publicConfiguration } from './artifact-release.mjs';
 import { CdRejected, isHex, isSha, numeric, outputs, requireCd, safeFailure, writeState } from './cd-github.mjs';
+import { validatePwaAssets } from './pwa-assets.mjs';
 
 const sourceRequire = createRequire(new URL('./pages-assets/package.json', import.meta.url));
 export async function assetTools() {
@@ -25,14 +26,23 @@ export function pagesClient(environment = process.env, request = fetch) {
   async function api(resource, { method = 'GET', body, jwt } = {}) {
     requireCd(resource.startsWith(projectPath + '/') || resource === projectPath || resource.startsWith('/pages/assets/'),
       'pages_api_resource_invalid');
+    // Fixed labels identify the failed request without exposing URLs, credentials or response bodies.
+    const operation = resource === projectPath ? 'project' :
+      resource.startsWith(`${projectPath}/deployments?`) ? 'deployment_history' :
+      resource === `${projectPath}/upload-token` ? 'upload_token' :
+      resource === `${projectPath}/deployments` ? 'deployment_submit' :
+      resource.startsWith(`${projectPath}/deployments/`) ? 'deployment_status' :
+      resource === '/pages/assets/check-missing' ? 'asset_check' :
+      resource === '/pages/assets/upload' ? 'asset_upload' :
+      resource === '/pages/assets/upsert-hashes' ? 'asset_registration' : 'other';
     const headers = { Authorization: `Bearer ${jwt ?? token}`, Accept: 'application/json' };
     let payload = body;
     if (body && !(body instanceof FormData)) { headers['Content-Type'] = 'application/json'; payload = JSON.stringify(body); }
     let response;
     try { response = await request('https://api.cloudflare.com/client/v4' + resource, {
       method, headers, body: payload, redirect: 'error', signal: AbortSignal.timeout(method === 'GET' ? 20_000 : 120_000) }); }
-    catch { throw new CdRejected(method === 'GET' ? 'pages_read_failed' : 'pages_write_outcome_unknown'); }
-    requireCd(response.ok, method === 'GET' ? 'pages_read_failed' : 'pages_write_failed_or_outcome_unknown');
+    catch { throw new CdRejected(`${method === 'GET' ? 'pages_read_failed' : 'pages_write_outcome_unknown'}_${operation}_transport`); }
+    requireCd(response.ok, `${method === 'GET' ? 'pages_read_failed' : 'pages_write_failed_or_outcome_unknown'}_${operation}_http_${response.status}`);
     let value;
     try {
       const bytes = await response.arrayBuffer();
@@ -76,6 +86,7 @@ export async function staticAssets(directory, tools) {
   requireCd(fs.lstatSync(directory).isDirectory() && !fs.lstatSync(directory).isSymbolicLink(), 'static_dist_required');
   const files = inventory(directory, { source: true });
   requireCd(files.length > 0 && files.length <= 20_000 && files.some(item => item.path === 'index.html'), 'pages_static_file_count_invalid');
+  validatePwaAssets(directory);
   const manifest = {}, assets = new Map(), special = {};
   for (const item of files) {
     requireCd(!forbiddenPackagePath(item.path), 'operational_data_in_static_dist');
@@ -110,12 +121,15 @@ export async function publishPages({ environment = process.env, metadata, direct
   requireCd(!expectedBaseline || current.source_sha === expectedBaseline.source_sha &&
     current.deployment_id === expectedBaseline.deployment_id, 'pages_baseline_changed_after_plan');
   const matches = [];
-  for (let page = 1; page <= 20; page++) {
-    const listing = await client.api(`${client.projectPath}/deployments?env=production&per_page=100&page=${page}`);
-    requireCd(Array.isArray(listing.result), 'pages_deployment_list_invalid');
+  // Pages rejected 100 with HTTP 400/8000024; 25 was verified against the live API.
+  // Keep the previous 2,000-entry bound and require a terminal page before any write.
+  const pageSize = 25, pageLimit = 80;
+  for (let page = 1; page <= pageLimit; page++) {
+    const listing = await client.api(`${client.projectPath}/deployments?env=production&per_page=${pageSize}&page=${page}`);
+    requireCd(Array.isArray(listing.result) && listing.result.length <= pageSize, 'pages_deployment_list_invalid');
     matches.push(...listing.result.filter(value => value.deployment_trigger?.metadata?.commit_message === desired));
-    if (listing.result.length < 100) break;
-    requireCd(page < 20, 'pages_deployment_history_incomplete');
+    if (listing.result.length < pageSize) break;
+    requireCd(page < pageLimit, 'pages_deployment_history_incomplete');
   }
   requireCd(matches.length <= 1, 'ambiguous_pages_deployment_marker');
   let deployment = matches.length ? validateDeployment(matches[0], { sourceSha: metadata.source_sha, marker: desired }) : null;
