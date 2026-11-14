@@ -6,6 +6,19 @@ import { createHash } from 'node:crypto';
 const ensure = (value, code) => { if (!value) throw new Error(code); };
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const maxAssetBytes = 2 * 1024 * 1024;
+const publicFailureCodes = new Set(['pwa_public_asset_request_failed', 'pwa_public_asset_status_invalid',
+  'pwa_public_asset_mime_invalid', 'pwa_public_asset_body_missing', 'pwa_public_asset_size_invalid',
+  'pwa_public_asset_digest_mismatch']);
+const installationPaths = new Set(['/', '/manifest.webmanifest', '/apple-touch-icon.png', '/favicon-32x32.png',
+  '/favicon.svg', '/favicon.ico', '/icons/icon-192.png', '/icons/icon-512.png',
+  '/icons/icon-maskable-192.png', '/icons/icon-maskable-512.png']);
+export function pwaVerificationDetails(value) {
+  const result = {};
+  if (installationPaths.has(value?.pwa_failed_asset_path)) result.pwa_failed_asset_path = value.pwa_failed_asset_path;
+  if (Number.isSafeInteger(value?.pwa_verification_attempts) && value.pwa_verification_attempts >= 1 &&
+    value.pwa_verification_attempts <= 25) result.pwa_verification_attempts = value.pwa_verification_attempts;
+  return result;
+}
 const asset = (directory, name) => {
   const filename = path.join(directory, name);
   ensure(fs.existsSync(filename), 'pwa_asset_missing');
@@ -120,22 +133,52 @@ async function limitedBytes(response, limit) {
   }
 }
 
-export async function verifyPublishedPwaAssets(directory, { request = fetch } = {}) {
+export async function verifyPublishedPwaAssets(directory, { request = fetch,
+  sleep = ms => new Promise(resolve => setTimeout(resolve, ms)), now = () => performance.now(),
+  timeoutMs = 120_000, pollIntervalMs = 5_000, pollLimit = 25 } = {}) {
   const profile = validatePwaAssets(directory);
   if (!profile) return { pwa_assets_verified: false, pwa_profile: 'historical_without_manifest' };
-  for (const file of profile.files) {
-    let response;
+  ensure(Number.isInteger(timeoutMs) && timeoutMs > 0 && timeoutMs <= 120_000 &&
+    Number.isInteger(pollIntervalMs) && pollIntervalMs > 0 && pollIntervalMs <= 5_000 &&
+    Number.isInteger(pollLimit) && pollLimit > 0 && pollLimit <= 25, 'pwa_public_verification_budget_invalid');
+  const deadline = now() + timeoutMs;
+  let failure;
+  // Pages' canonical API identity can advance before the public alias converges.
+  // Repeat complete, strictly verified snapshots only. This function never publishes or authenticates.
+  for (let attempt = 1; attempt <= pollLimit; attempt++) {
     try {
-      response = await request('https://nodia-1ge.pages.dev' + file.path, { method: 'GET', redirect: 'error',
-        cache: 'no-store', headers: { Accept: file.contentType }, signal: AbortSignal.timeout(20_000) });
-    } catch { throw new Error('pwa_public_asset_request_failed'); }
-    ensure(response.status === 200, 'pwa_public_asset_status_invalid');
-    const mime = response.headers.get('content-type')?.split(';')[0].trim().toLowerCase();
-    const allowedMime = file.contentType === 'image/vnd.microsoft.icon'
-      ? ['image/vnd.microsoft.icon', 'image/x-icon'] : [file.contentType];
-    ensure(allowedMime.includes(mime), 'pwa_public_asset_mime_invalid');
-    const bytes = await limitedBytes(response, file.bytes);
-    ensure(bytes.length === file.bytes && sha(bytes) === file.sha256, 'pwa_public_asset_digest_mismatch');
+      for (const file of profile.files) {
+        let response;
+        try {
+          const remaining = Math.ceil(deadline - now());
+          ensure(remaining > 0, 'pwa_public_asset_request_failed');
+          response = await request('https://nodia-1ge.pages.dev' + file.path, { method: 'GET', redirect: 'error',
+            cache: 'no-store', headers: { Accept: file.contentType },
+            signal: AbortSignal.timeout(Math.min(20_000, remaining)) });
+          ensure(response.status === 200, 'pwa_public_asset_status_invalid');
+          const mime = response.headers.get('content-type')?.split(';')[0].trim().toLowerCase();
+          const allowedMime = file.contentType === 'image/vnd.microsoft.icon'
+            ? ['image/vnd.microsoft.icon', 'image/x-icon'] : [file.contentType];
+          ensure(allowedMime.includes(mime), 'pwa_public_asset_mime_invalid');
+          const bytes = await limitedBytes(response, file.bytes);
+          ensure(bytes.length === file.bytes && sha(bytes) === file.sha256, 'pwa_public_asset_digest_mismatch');
+          ensure(now() < deadline, 'pwa_public_asset_request_failed');
+        } catch (error) {
+          const code = error instanceof Error && publicFailureCodes.has(error.message)
+            ? error.message : 'pwa_public_asset_request_failed';
+          throw Object.assign(new Error(code), pwaVerificationDetails({ pwa_failed_asset_path: file.path,
+            pwa_verification_attempts: attempt }));
+        } finally {
+          // Release unread error responses before polling again; never retain remote bodies.
+          try { await response?.body?.cancel(); } catch { /* Already consumed or canceled. */ }
+        }
+      }
+      return { pwa_assets_verified: true, pwa_assets_count: profile.files.length, pwa_verification_attempts: attempt };
+    } catch (error) { failure = error; }
+    const remaining = deadline - now();
+    if (attempt === pollLimit || remaining <= 0) break;
+    await sleep(Math.min(pollIntervalMs, remaining));
+    if (now() >= deadline) break;
   }
-  return { pwa_assets_verified: true, pwa_assets_count: profile.files.length };
+  throw failure;
 }
