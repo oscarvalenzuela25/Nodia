@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { confirmPublishedClient, updateClient, releaseSummary } from './cd-release.mjs';
+import { confirmPublishedClient, preflightClient, updateServer, updateClient, releaseSummary } from './cd-release.mjs';
 import { CdRejected, safeFailure } from './cd-github.mjs';
 
 function fixture(t) {
@@ -69,4 +69,86 @@ test('post-publication read failures preserve the published deployment, sanitize
     assert.doesNotMatch(JSON.stringify(state), /private|remote|secret|trace/);
     assert.equal(calls, 1); assert.equal(result.status, 'complete');
   }
+});
+
+function clientCandidate(t) {
+  const f = fixture(t), calls = [], source = f.environment.CI_SOURCE_SHA;
+  const artifact = { id: '123', digest: 'sha256:' + 'b'.repeat(64), directory: path.join(f.environment.CD_WORKSPACE, 'client'),
+    metadata: { source_sha: source, package_tree_sha256: 'c'.repeat(64), public_configuration_sha256: 'd'.repeat(64) },
+    result: { archive_file: 'synthetic.tar.gz' } };
+  const plan = { source_sha: source, server_base: 'e'.repeat(40), server_required: true, client_required: true,
+    prior_cd_run: true, ci: { run_id: '10', run_attempt: '1', repository: 'oscarvalenzuela25/Nodia' },
+    client_baseline: { source_sha: 'e'.repeat(40), deployment_id: '11111111-1111-1111-1111-111111111111' },
+    server_baseline: { release_id: 'backend-' + 'e'.repeat(12) + '-' + 'f'.repeat(12), package_tree_sha256: 'f'.repeat(64) },
+    artifacts: { client: artifact, server: { ...artifact, result: { release_id: 'backend-' + source.slice(0, 12) + '-' + 'c'.repeat(12),
+      package_tree_sha256: 'c'.repeat(64) } } } };
+  f.write('release-plan.json', plan);
+  const api = { gate: async () => { calls.push('gate'); } };
+  const verify = options => { assert.equal(options.requireProduction, true); assert.equal(options.sourceSha, source); calls.push('verify'); };
+  const extract = (program, args) => {
+    calls.push('extract'); assert.equal(program, 'tar');
+    const directory = path.join(args.at(-1), 'dist'); fs.mkdirSync(directory);
+    fs.writeFileSync(path.join(directory, 'index.html'), '<title>Synthetic built artifact</title>');
+  };
+  const preflight = async options => {
+    calls.push('preflight'); assert.equal(options.allowCreate, false); await options.revalidate();
+    return { status: 'preflight_verified', source_sha: source, total_assets: 1, missing_assets: null,
+      asset_check_performed: false, deployment_requested: false, asset_upload_requested: false,
+      jwt: 'synthetic-upload-secret', response: { token: 'synthetic-remote-secret' } };
+  };
+  return { ...f, plan, calls, api, verify, extract, preflight };
+}
+
+test('a failed Pages preflight cannot reach backend effects or mint a successful local proof', async t => {
+  const f = clientCandidate(t);
+  await assert.rejects(preflightClient(f.environment, { api: f.api, verify: f.verify, extract: f.extract,
+    preflight: async () => { throw new CdRejected('pages_response_unsuccessful'); } }), /pages_response_unsuccessful/);
+  assert.equal(fs.existsSync(path.join(f.environment.CD_WORKSPACE, 'client-preflight.json')), false);
+  let remoteCalls = 0;
+  await assert.rejects(updateServer(f.environment, { api: { gate: async () => { remoteCalls++; } },
+    read: async () => { remoteCalls++; }, deploy: async () => { remoteCalls++; } }), /client_preflight_required_before_backend/);
+  assert.equal(remoteCalls, 0);
+  assert.equal(f.calls.filter(value => value === 'extract').length, 1);
+});
+
+test('preflight binds the exact artifact and publication reuses its bytes without another extraction or leaking JWTs', async t => {
+  const f = clientCandidate(t);
+  const checked = await preflightClient(f.environment, f);
+  assert.equal(checked.missing_assets, null); assert.equal(checked.asset_check_performed, false);
+  assert.doesNotMatch(fs.readFileSync(path.join(f.environment.CD_WORKSPACE, 'client-preflight.json'), 'utf8'), /secret|jwt|response/);
+  let backendCalls = 0;
+  await updateServer(f.environment, { api: f.api, deploy: async options => {
+    backendCalls++; assert.equal(options.allowNewSubmission, false);
+    return { status: 'already_current', source_sha: f.plan.source_sha, deployment_requested: false };
+  } });
+  let published = 0;
+  await updateClient(f.environment, { api: f.api, verify: f.verify,
+    publish: async options => {
+      published++; assert.equal(options.allowCreate, false);
+      assert.deepEqual(options.expectedBaseline, f.plan.client_baseline);
+      assert.match(fs.readFileSync(path.join(options.directory, 'index.html'), 'utf8'), /Synthetic built artifact/);
+      await options.revalidate();
+      return { status: 'already_current', source_sha: f.plan.source_sha, deployment_requested: false };
+    }, confirm: async ({ result }) => result });
+  assert.equal(backendCalls, 1); assert.equal(published, 1);
+  assert.equal(f.calls.filter(value => value === 'extract').length, 1);
+  assert.equal(f.calls.filter(value => value === 'verify').length, 2);
+  assert.ok(f.calls.filter(value => value === 'gate').length >= 4);
+});
+
+test('replacing the preflight identity or changing extracted bytes blocks backend and publication', async t => {
+  const f = clientCandidate(t), checked = await preflightClient(f.environment, f);
+  let contacted = false;
+  for (const change of [{ source_sha: 'f'.repeat(40) }, { artifact_digest: 'sha256:' + 'f'.repeat(64) },
+    { ci_run_attempt: '2' }, { deployment_requested: true }, { asset_upload_requested: true }]) {
+    f.write('client-preflight.json', { ...checked, ...change });
+    await assert.rejects(updateServer(f.environment, { api: f.api, deploy: async () => { contacted = true; } }),
+      /client_preflight_identity_mismatch/);
+  }
+  f.write('client-preflight.json', checked);
+  fs.writeFileSync(path.join(f.environment.CD_WORKSPACE, 'client-static', 'dist', 'index.html'), 'changed after preflight');
+  f.write('backend-result.json', { status: 'complete', source_sha: f.plan.source_sha });
+  await assert.rejects(updateClient(f.environment, { api: f.api, verify: f.verify,
+    publish: async () => { contacted = true; } }), /client_static_changed_after_preflight/);
+  assert.equal(contacted, false);
 });

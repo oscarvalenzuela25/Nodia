@@ -1238,3 +1238,58 @@ CI/CD nuevos. No pulsar rerun del CD anterior ni repetir el apply de backend.
 La corrección local y la autenticación OAuth no acreditan todavía una entrega
 Client exitosa con el token de GitHub; ese cierre requiere publicación y
 verificación del deployment canónico en el nuevo CD.
+
+## 25. Pages: respuesta válida rechazada y preflight antes del backend — 2026-11-14
+
+El [CI43546497935](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43546497935)
+de master0f69d505 terminó correctamente. El
+[CD43547384570, número4](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43547384570)
+completó backend y falló en Pages con pages_response_unsuccessful, estado
+asset_check_requested. Se confirmó por SSH API/worker activos, blocked=false y
+operación64c9a2f383709ee93ca5e584a9bc5b52 complete; migration_requested=true y
+automatic_retry_allowed=false. Esa operación no se vuelve a aplicar.
+
+**Causa reproducida:** check-missing devuelve HTTP200, success:true y result
+válido, sin campo errors. El validador propio exigía errors:[]; los fixtures
+siempre lo añadían. Es distinto del HTTP400 de paginación de§24. Se contrastó
+el protocolo completo con Wrangler4.161.0, incluido hash, JWT, payloads y ACK.
+El canónico Pages conserva f01 y no existe marcador nodia-ci del intento;
+una fila Git0f69d505 queued/idle no acredita una publicación del CD.
+
+Corrección en `codex/fix-pages-protocol-contract`, desde developmentaee16272:
+
+- Envelopes success/result sin errors válidos; errores presentes deben estar
+  vacíos. ACK204/205 sólo para upload/upsert, sin relajar consultas o identidad
+  del deployment. Respuestas acotadas durante lectura y errores con operación,
+  HTTP/códigos numéricos saneados, nunca mensajes o tokens remotos.
+- Preflight Client **antes de efectos backend**: artefacto original verificado,
+  extracción única, inventario/hash/MIME y consulta de proyecto/historial/JWT/
+  check-missing sin upload o publicación. Un comprobante exacto y los hashes del
+  dist bloquean backend/client si faltan, cambian o pertenecen a otro artefacto.
+  Publicar vuelve a validar CI/baseline y obtiene su propio JWT.
+- Recibo durable de allowlist adjunto siempre al CD con identidades, estados
+  parciales y flags. Los JSON privados completos, ZIPs y credenciales no se
+  adjuntan. Conservación según retención del repositorio, sin autorización de
+  reintento derivada del recibo. No cambia run_attempt1, prior-CD o no-replay.
+
+Se probó el preflight corregido contra Cloudflare usando **el ZIP original del
+CI43546497935**, digest oficial comprobado y211archivos validados, sin rebuild.
+Las cuatro consultas devolvieron200;210assets únicos y80faltantes en esa
+instantánea. Se prohibieron en el diagnóstico los endpoints de upload/upsert/
+submit. No se accedió al backend durante esa prueba ni se publicó el frontend.
+La sesión OAuth local no acredita los permisos de escritura del token de Actions.
+
+Validación local:13pruebas directas y91Node correctas en Windows; comprobación
+final con Node24.22.2 Linux x64 en filesystem nativo WSL:101correctas, sin fallos
+u omisiones, incluido empaquetado real. Actionlint y diffcheck correctos.
+Restaurar temporalmente el validador defectuoso
+hizo fallar las regresiones en asset_check_http_200; se restituyeron bytes exactos
+y volvieron a pasar. [Evidencia consolidada](../evidence/pages-protocol-contract-20261114.md)
+incluye fuentes primarias, identidades y límites.
+
+Impacto NodiaAI: ninguno en capacidades/herramientas/modelos/fichas aprobadas.
+La solución está implementada y su preflight real comprobado; **publicación
+productiva todavía pendiente** de PR/CI/promoción y un CD nuevo. No reejecutar
+CD43547384570 ni usar el diagnóstico como permiso de replay. La aceptación final
+exige el canónico correcto y los recursos HTTPS del mismo artefacto; instalar
+PWA, auth standalone y dispositivos conservan sus gates propios.
