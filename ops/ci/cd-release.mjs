@@ -3,10 +3,11 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { verifyArtifact } from './artifact-release.mjs';
-import { extractOriginalZip, githubClient, isSha, numeric, outputs, requireCd, safeFailure, selectArtifact, writeState } from './cd-github.mjs';
+import { CdRejected, extractOriginalZip, githubClient, isSha, numeric, outputs, requireCd, safeFailure, selectArtifact, writeState } from './cd-github.mjs';
 import { deploymentPlan, unmanagedRuntimePaths } from './cd-selection.mjs';
 import { deployBackend, readBackend } from './cd-vps.mjs';
 import { publishPages } from './cd-pages.mjs';
+import { verifyPublishedPwaAssets } from './pwa-assets.mjs';
 
 function workspace(environment) {
   const output = path.resolve(environment.CD_WORKSPACE ?? '');
@@ -83,6 +84,24 @@ export async function updateServer(environment = process.env) {
   writeState(path.join(output, 'backend-result.json'), result);
   return result;
 }
+export async function confirmPublishedClient({ result, directory, stateFile, verify = verifyPublishedPwaAssets }) {
+  // Publication is already confirmed. This step can only read assets and record their verification.
+  let pwa;
+  try { pwa = await verify(directory); }
+  catch (error) {
+    const publicCodes = new Set(['pwa_public_asset_request_failed', 'pwa_public_asset_status_invalid',
+      'pwa_public_asset_mime_invalid', 'pwa_public_asset_body_missing', 'pwa_public_asset_size_invalid',
+      'pwa_public_asset_digest_mismatch']);
+    const code = error instanceof Error && publicCodes.has(error.message)
+      ? error.message : 'pwa_public_assets_verification_failed';
+    writeState(stateFile, { ...result, status: 'published_assets_verification_failed',
+      pwa_assets_verified: false, error_code: code, automatic_retry_allowed: false });
+    throw new CdRejected(code);
+  }
+  const confirmed = { ...result, ...pwa, automatic_retry_allowed: false };
+  writeState(stateFile, confirmed);
+  return confirmed;
+}
 export async function updateClient(environment = process.env) {
   context(environment);
   const { root, output } = workspace(environment);
@@ -108,6 +127,8 @@ export async function updateClient(environment = process.env) {
     result = await publishPages({ environment, metadata: artifact.metadata, directory: path.join(extracted, 'dist'),
       expectedBaseline: plan.client_baseline, allowCreate: !plan.prior_cd_run,
       stateFile: path.join(output, 'pages-state.json'), revalidate });
+    result = await confirmPublishedClient({ result, directory: path.join(extracted, 'dist'),
+      stateFile: path.join(output, 'pages-state.json') });
   }
   writeState(path.join(output, 'client-result.json'), result);
   return result;

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { captureSource, ciIdentity, confirmCapture, digestFile, forbiddenPackagePath,
   packageArtifact, parseArguments, publicConfiguration, safePath, verifyArtifact } from './artifact-release.mjs';
+import { pwaFixture } from './fixtures/pwa-assets.mjs';
 
 const rootDirectory = fileURLToPath(new URL('../../', import.meta.url));
 const temporaryRoot = process.env.NODIA_ARTIFACT_TEST_TEMP_ROOT
@@ -165,6 +166,26 @@ test('archive export attributes cannot silently change archive contents', t => {
   const sourceSha = f.commit();
   assert.throws(() => captureSource({ ...f.options, sourceSha, environment: { ...f.environment, GITHUB_SHA: sourceSha } }),
     /archive_export_attributes_denied/);
+});
+
+test('a PWA source requires its built manifest and icons before packaging without rebuilding', t => {
+  if (!needLinux(t)) return;
+  const f = fixture(t);
+  f.write('nodia-client/public/manifest.webmanifest', '{"synthetic_source_marker":true}');
+  const sourceSha = f.commit();
+  const options = { ...f.options, sourceSha, environment: { ...f.environment, GITHUB_SHA: sourceSha } };
+  captureSource(options); buildFixture(f);
+  assert.throws(() => packageArtifact(options), /pwa_manifest_link_invalid/);
+  pwaFixture(path.join(f.root, 'nodia-client/dist'));
+  fs.rmSync(path.join(f.root, 'nodia-client/dist/icons/icon-512.png'));
+  assert.throws(() => packageArtifact(options), /pwa_asset_missing/);
+  pwaFixture(path.join(f.root, 'nodia-client/dist'));
+  const result = packageArtifact(options);
+  assert.equal(result.build_invoked_by_packager, false);
+  const manifest = JSON.parse(fs.readFileSync(path.join(f.output, result.manifest_file)));
+  assert.ok(manifest.files.some(item => item.path === 'dist/manifest.webmanifest'));
+  assert.ok(manifest.files.some(item => item.path === 'dist/icons/icon-maskable-512.png'));
+  assert.equal(verifyArtifact(options).archive_content_verified, true);
 });
 
 test('prebuilt client roundtrip verifies content/run/config digests without building or executing the app', t => {

@@ -6,6 +6,7 @@ import { inventory } from '../production/package-backend-release.mjs';
 import { verifyProject } from './check-pages-access.mjs';
 import { forbiddenPackagePath, publicConfiguration } from './artifact-release.mjs';
 import { CdRejected, isHex, isSha, numeric, outputs, requireCd, safeFailure, writeState } from './cd-github.mjs';
+import { validatePwaAssets } from './pwa-assets.mjs';
 
 const sourceRequire = createRequire(new URL('./pages-assets/package.json', import.meta.url));
 export async function assetTools() {
@@ -85,6 +86,7 @@ export async function staticAssets(directory, tools) {
   requireCd(fs.lstatSync(directory).isDirectory() && !fs.lstatSync(directory).isSymbolicLink(), 'static_dist_required');
   const files = inventory(directory, { source: true });
   requireCd(files.length > 0 && files.length <= 20_000 && files.some(item => item.path === 'index.html'), 'pages_static_file_count_invalid');
+  validatePwaAssets(directory);
   const manifest = {}, assets = new Map(), special = {};
   for (const item of files) {
     requireCd(!forbiddenPackagePath(item.path), 'operational_data_in_static_dist');

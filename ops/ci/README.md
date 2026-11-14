@@ -404,6 +404,23 @@ variables publicas y CI run/attempt. Los secretos Cloudflare/SSH se inyectan en
 pasos separados. El protocolo se contrasto con Wrangler 4.161.0 publicado;
 se usa la API directamente para evitar sus reintentos internos de escrituras.
 
+Para PWA-001, [pwa-assets.mjs](pwa-assets.mjs) comprueba el `dist` ya construido:
+identidad/scope del manifiesto, enlaces HTML, PNG con dimensiones reales,
+variantes `any`/`maskable`, icono Apple, favicon vectorial y archivos presentes.
+El empaquetado exige este perfil cuando la fuente contiene el manifiesto; la
+subida vuelve a validarlo. Los artefactos históricos sin manifiesto ni enlace
+PWA siguen siendo conciliables, pero un perfil parcial se rechaza.
+
+Tras confirmar Pages, CD hace GET sin credenciales, redirecciones o reintentos
+del manifiesto, iconos y entrada `/` en `nodia-1ge.pages.dev`, comparando MIME,
+tamaño y SHA-256 con el mismo artefacto. Un HTML de fallback, recurso ausente o
+metadatos de otra versión fallan la verificación. El éxito actualiza
+`pages-state.json` con el resultado PWA y la identidad del deployment. Si falla después de
+publicar, `pages-state.json` conserva `published_assets_verification_failed`:
+la publicación ya puede estar activa y no se vuelve a enviar automáticamente.
+Estos checks no acreditan instalación, auth standalone o compatibilidad de un
+dispositivo; esas pruebas siguen en [plan103](../../docs/mvp/103-pwa-progressive-implementation-plan.md).
+
 El listado productivo de deployments usa per_page=25 y exige una página terminal
 antes de escribir, hasta80páginas (2000filas). El valor100 fue rechazado por
 Cloudflare con HTTP400/8000024 en el CD43536680525. Los errores identifican

@@ -3,7 +3,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { updateClient, releaseSummary } from './cd-release.mjs';
+import { confirmPublishedClient, updateClient, releaseSummary } from './cd-release.mjs';
+import { CdRejected, safeFailure } from './cd-github.mjs';
 
 function fixture(t) {
   const parent=fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()),'nodia-release-'));
@@ -31,4 +32,41 @@ test('summary preserves separate partial results and explicitly excludes runtime
   const f=fixture(t);f.write('backend-result.json',{status:'complete'});f.write('pages-state.json',{status:'pages_submission_requested'});
   f.write('failure.json',{error_code:'pages_write_outcome_unknown'});
   const result=releaseSummary(f.environment);assert.equal(result.backend,'complete');assert.equal(result.client,'pages_submission_requested');
+});
+
+test('post-publication success persists verification beside the existing deployment identity and clears an older error', async t => {
+  const f = fixture(t), stateFile = path.join(f.environment.CD_WORKSPACE, 'pages-state.json');
+  for (const status of ['complete', 'already_current']) {
+    f.write('pages-state.json', { status: 'published_assets_verification_failed', error_code: 'old_failure' });
+    const result = { status, source_sha: 'a'.repeat(40), deployment_id: 'synthetic-deployment',
+      deployment_requested: status === 'complete' };
+    let calls = 0;
+    const confirmed = await confirmPublishedClient({ result, directory: 'synthetic-dist', stateFile,
+      verify: async directory => { calls++; assert.equal(directory, 'synthetic-dist');
+        return { pwa_assets_verified: true, pwa_assets_count: 10 }; } });
+    assert.deepEqual(confirmed, { ...result, pwa_assets_verified: true, pwa_assets_count: 10, automatic_retry_allowed: false });
+    assert.deepEqual(JSON.parse(fs.readFileSync(stateFile)), confirmed);
+    assert.equal(calls, 1); assert.equal(Object.hasOwn(result, 'pwa_assets_verified'), false);
+  }
+});
+
+test('post-publication read failures preserve the published deployment, sanitize unknown errors and never retry', async t => {
+  const f = fixture(t), stateFile = path.join(f.environment.CD_WORKSPACE, 'pages-state.json');
+  const result = { status: 'complete', source_sha: 'a'.repeat(40), deployment_id: 'synthetic-deployment', deployment_requested: true };
+  for (const [message, code] of [
+    ['pwa_public_asset_digest_mismatch', 'pwa_public_asset_digest_mismatch'],
+    ['pwa_private_remote_secret', 'pwa_public_assets_verification_failed'],
+    ['private token https://remote.invalid/secret\ntrace', 'pwa_public_assets_verification_failed'],
+  ]) {
+    let calls = 0;
+    await assert.rejects(confirmPublishedClient({ result, directory: 'synthetic-dist', stateFile,
+      verify: async () => { calls++; throw new Error(message); } }), error => {
+      assert.ok(error instanceof CdRejected); assert.equal(safeFailure(error).error_code, code); return true;
+    });
+    const state = JSON.parse(fs.readFileSync(stateFile));
+    assert.deepEqual(state, { ...result, status: 'published_assets_verification_failed',
+      pwa_assets_verified: false, error_code: code, automatic_retry_allowed: false });
+    assert.doesNotMatch(JSON.stringify(state), /private|remote|secret|trace/);
+    assert.equal(calls, 1); assert.equal(result.status, 'complete');
+  }
 });
