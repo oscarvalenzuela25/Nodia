@@ -15,10 +15,11 @@ import { GeminiTeacherTextTransport } from './gemini-teacher-text-transport.js';
 import { CodexTeacherTextTransport } from './codex-teacher-text-transport.js';
 import { CODEX_TEACHER_TEXT_TRANSPORT } from './agentic-text-contract.js';
 import { RouteTextGenerationService } from './route-text-generation.service.js';
+import { TeacherModelObservationService } from './teacher-model-observation.service.js';
 
 @Global()
 @Module({imports:[AuthorizationModule,NodiaAiRuntimePolicyModule,CodexRuntimeModule],providers:[
-  ApiNodiaAiCredentialsService,NodiaAiConnectionsService,ApiTextGenerationService,
+  ApiNodiaAiCredentialsService,NodiaAiConnectionsService,ApiTextGenerationService,TeacherModelObservationService,
   NodiaAiAdapterTransport,GeminiTeacherTextTransport,CodexTeacherTextTransport,
   {provide:CODEX_TEACHER_TEXT_TRANSPORT,useExisting:CodexTeacherTextTransport},TeacherAgenticTextService,RouteTextGenerationService,
   {provide:AiGenerationPort,useExisting:RouteTextGenerationService},GenerationWorkerSourceRegistry,TeacherGenerationRuntimeService,

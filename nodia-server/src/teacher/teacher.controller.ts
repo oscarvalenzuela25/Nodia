@@ -41,6 +41,7 @@ import {
   StartAttemptDto,
   SubmitPracticeAnswerDto,
   TeacherEligibilityDto,
+  TeacherModelsDto,
 } from './dto/teacher.dto.js';
 
 @Controller('teacher')
@@ -55,18 +56,37 @@ export class TeacherController {
   ) {
     return this.read.connections(actorReference(r.auth));
   }
+  @Get('connections/:id/models')
+  @Header('Cache-Control', 'no-store')
+  async models(@Req() r: AuthRequest, @Param('id') id: string, @Query() q: TeacherModelsDto) {
+    const cancellation = new AbortController();
+    const onClose = () => cancellation.abort();
+    r.res?.once('close', onClose);
+    try {
+      return await this.read.models(actorReference(r.auth), id, q.mode, cancellation.signal);
+    } finally {
+      r.res?.off('close', onClose);
+    }
+  }
   @Get('connections/:id/eligibility')
   @Header('Cache-Control', 'no-store')
-  eligibility(
+  async eligibility(
     @Req() r: AuthRequest,
     @Param('id') id: string,
     @Query() q: TeacherEligibilityDto,
   ) {
-    return this.read.eligibility(actorReference(r.auth), id, {
-      mode: q.mode,
-      model_id: q.model_id,
-      effort_id: q.effort_id ?? null,
-    });
+    const cancellation = new AbortController();
+    const onClose = () => cancellation.abort();
+    r.res?.once('close', onClose);
+    try {
+      return await this.read.eligibility(actorReference(r.auth), id, {
+        mode: q.mode,
+        model_id: q.model_id,
+        effort_id: q.effort_id ?? null,
+      }, cancellation.signal);
+    } finally {
+      r.res?.off('close', onClose);
+    }
   }
   @Get('sessions') @Header('Cache-Control', 'no-store') list(
     @Req() r: AuthRequest,

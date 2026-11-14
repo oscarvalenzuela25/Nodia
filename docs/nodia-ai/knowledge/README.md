@@ -1,5 +1,26 @@
 # Contexto funcional de productos para NodiaAI
 
+## Teacher: alta y primer intento — candidato local, 2026-11-14
+
+[Producto rev36](studies/README.md#alta-y-primera-generación--candidato-local-2026-11-14)
+y [ficha rev31](studies/features/session-setup-and-planning.md#primera-generación-y-alta--decisión-del-usuario-2026-11-14):
+decisión explícita de generar con IA elegida sin canary previo, razonamiento
+recuperable sin inventar opciones, formulario guiado y menú activo por subruta.
+[ADR100 propuesto](../../architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md)
+y [evidencia local](../../evidence/teacher-ai-selection-first-generation-20261114.md).
+Draft/partial/unregistered/approval:null; no modifica fichas aprobadas, herramientas,
+historiales, publicación o gates de otros dominios. Sin inferencia/despliegue real.
+
+## Selectores agrupados y residuos — candidato local, 2026-11-14
+
+[Ficha candidata rev2](general-settings/features/ai-provider-interface-and-module-access.md#continuación-local-selectores-agrupados--2026-11-14)
+y [contrato](../../mvp/ai-provider-feature-contract.md#selector-de-modelos-y-auditoría-de-residuos--2026-11-14):
+sincronización, compositor y configuración agrupan variantes Gemini Agentic;
+Teacher comparte algoritmo. IDs/tuplas reales, OCR efectivo y elegibilidad exacta
+conservados. [Evidencia](../../evidence/model-selector-residual-audit-20261114.md)
+de regresiones y navegador sintéticos. Draft/partial/unregistered/approval:null,
+sin cambiar fichas aprobadas, herramientas, inferencia o publicación.
+
 ## PWA instalable online — candidato local, 2026-11-13
 
 [Plan103](../../mvp/103-pwa-progressive-implementation-plan.md),

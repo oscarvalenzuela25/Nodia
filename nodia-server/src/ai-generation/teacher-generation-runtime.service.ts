@@ -48,10 +48,12 @@ import { reportTeacherPublicationFailure } from '../teacher/policies/teacher-pub
 import { TeacherAgenticTextService, validateTeacherAgenticDescriptor, teacherAgenticScope } from './teacher-agentic-text.service.js';
 import { TeacherAgenticClosedError, TeacherAgenticUnclosedError, parseTeacherAgenticProof, type TeacherAgenticConfiguration, type TeacherAgenticDescriptor, type TeacherAgenticObservation, type TeacherAgenticProof } from './agentic-text-contract.js';
 
-import { currentTeacherQualificationProbe, teacherApiQualificationScope as scope, teacherPurposeRequiresQualification, teacherPurposeQualificationScope, TEACHER_GENERATION_POLICY_HASH, TEACHER_GENERATION_POLICY } from './teacher-qualification-policy.js';
+import { currentTeacherQualificationProbe, teacherApiQualificationScope as scope, teacherPurposeQualificationScope, TEACHER_GENERATION_POLICY_HASH, TEACHER_GENERATION_POLICY } from './teacher-qualification-policy.js';
 
 import { assertContextualQualificationJob, contextualQualificationReplyMatches } from './teacher-contextual-qualification-policy.js';
 import { enrichmentRecord, readAnchor, rejectFinalHelp } from '../teacher/use-case/teacher-enrichment-persistence.js';
+import { TeacherModelObservationService } from './teacher-model-observation.service.js';
+import { CodexOperationException } from '../common/ai/codex/codex-contract.js';
 
 function canonical(value: unknown): unknown {
   if (value instanceof Date) return value.toISOString();
@@ -71,7 +73,7 @@ const hash = (value: unknown) =>
 type Job = TeacherGenerationJob & {
   session_owner_user_id: string;
   configuration_generation: string;
-  session_generation: string;
+  session_generation: string | null;
   lease_owner: string;
   lease_until: Date;
 };
@@ -141,7 +143,7 @@ export class TeacherGenerationRuntimeService
     }
   >();
   private readonly qualificationJobs = new Set<string>();
-  private readonly qualificationAgentic = new Map<string, TeacherAgenticObservation>();
+  private readonly qualificationAgentic = new Map<string, TeacherAgenticConfiguration>();
   constructor(
     private readonly source: DataSource,
     private readonly access: CheckModuleAccessUseCase,
@@ -152,6 +154,7 @@ export class TeacherGenerationRuntimeService
     @Inject(NODIA_AI_RUNTIME_POLICY)
     private readonly policy: NodiaAiRuntimePolicy,
     @Optional() private readonly agentic?: TeacherAgenticTextService,
+    @Optional() private readonly modelsReader?: TeacherModelObservationService,
   ) {}
   onModuleInit() {
     this.registry.register(this);
@@ -162,7 +165,7 @@ export class TeacherGenerationRuntimeService
   }
   private configuration(selection: TeacherSelection, manager = this.source.manager, override?: TeacherAgenticObservation) {
     if (selection.mode === 'api_key') return this.credentials.configuration(selection, manager);
-    if (!this.agentic) throw new ServiceUnavailableException('teacher:adapter_unqualified');
+    if (!this.agentic) throw new ServiceUnavailableException('teacher:provider_unavailable');
     return this.agentic.configuration(selection, manager, override);
   }
   private async authority(manager: EntityManager, actor: ActorReference) {
@@ -182,16 +185,26 @@ export class TeacherGenerationRuntimeService
       return { items: rows.map(projectNodiaAiConnection), next_cursor: null };
     });
   }
+  models(actor: ActorReference, connectionId: string, mode: string, signal?: AbortSignal) {
+    if (!this.modelsReader) throw new ServiceUnavailableException('teacher:provider_unavailable');
+    return this.modelsReader.execute(actor, connectionId, mode, signal);
+  }
   async eligibility(
     actor: ActorReference,
     connectionId: string,
     input: Omit<TeacherSelection, 'connection_id'>,
+    callerSignal?: AbortSignal,
   ) {
+    callerSignal?.throwIfAborted();
     const exactSelection = { ...input, connection_id: connectionId };
     if (exactSelection.mode === 'agentic' && this.agentic) {
       await this.source.transaction(async manager => { await lockAuthority(manager); await this.authority(manager, actor); });
       // Native observation runs outside the authority transaction; execution revalidates it.
-      return this.agentic.eligibility(exactSelection, AbortSignal.timeout(30000));
+      const signal = callerSignal ? AbortSignal.any([callerSignal, AbortSignal.timeout(30000)]) : AbortSignal.timeout(30000);
+      const observed = await this.agentic.eligibility(exactSelection, signal);
+      signal.throwIfAborted();
+      await this.source.transaction(async manager => { await lockAuthority(manager); await this.authority(manager, actor); });
+      return observed;
     }
     return this.source.transaction(async (manager) => {
       await lockAuthority(manager);
@@ -200,23 +213,21 @@ export class TeacherGenerationRuntimeService
       if (selection.mode !== 'api_key')
         return {
           eligible: false,
-          reason_code: 'adapter_unqualified',
+          reason_code: 'provider_unavailable',
           checked_at: null,
           selection,
         };
       try {
-        const config = await this.configuration(selection, manager);
-        const qualified = await manager.query(
-          'SELECT observed_at FROM ai_generation_qualifications WHERE scope_hash=$1',
-          [scope(selection, config)],
-        );
+        await this.configuration(selection, manager);
+        callerSignal?.throwIfAborted();
         return {
-          eligible: qualified.length === 1,
-          reason_code: qualified.length === 1 ? null : 'adapter_unqualified',
-          checked_at: qualified[0]?.observed_at ?? null,
+          eligible: true,
+          reason_code: 'configuration_ready',
+          checked_at: null,
           selection,
         };
       } catch {
+        callerSignal?.throwIfAborted();
         return {
           eligible: false,
           reason_code: 'provider_unavailable',
@@ -230,29 +241,23 @@ export class TeacherGenerationRuntimeService
     manager: EntityManager,
     actor: ActorReference,
     selection: TeacherSelection,
-    purpose?: TeacherPurpose,
+    _purpose?: TeacherPurpose,
   ) {
     await this.authority(manager, actor);
     if (selection.mode === 'agentic' && this.agentic) {
-      const native = await this.configuration(selection, manager);
-      await this.verifyPurpose(manager, selection, native, purpose);
-      return { configuration_generation: native.configurationGeneration, session_generation: native.sessionGeneration };
+      // Admission records static configuration only; the worker observes the
+      // current native identity outside SQL before claiming this exact job.
+      const configured = await this.agentic.configured(selection, manager);
+      return { configuration_generation: configured.configurationGeneration, session_generation: null };
     }
     if (selection.mode !== 'api_key')
-      throw new ServiceUnavailableException('teacher:adapter_unqualified');
+      throw new ServiceUnavailableException('teacher:provider_unavailable');
     let config: NodiaAiApiConfiguration | TeacherAgenticConfiguration;
     try {
       config = await this.configuration(selection, manager);
     } catch {
       throw new ServiceUnavailableException('teacher:provider_unavailable');
     }
-    const rows = await manager.query(
-      'SELECT scope_hash FROM ai_generation_qualifications WHERE scope_hash=$1',
-      [scope(selection, config)],
-    );
-    if (rows.length !== 1)
-      throw new ServiceUnavailableException('teacher:adapter_unqualified');
-    await this.verifyPurpose(manager, selection, config, purpose);
     return {
       configuration_generation: config.configurationGeneration,
       session_generation: config.sessionGeneration,
@@ -262,68 +267,103 @@ export class TeacherGenerationRuntimeService
     return selection.mode === 'api_key' ? scope(selection, config)
       : teacherAgenticScope(selection, config as TeacherAgenticConfiguration);
   }
-  private async verifyPurpose(manager: EntityManager, selection: TeacherSelection,
-    config: NodiaAiApiConfiguration | TeacherAgenticConfiguration, purpose?: TeacherPurpose) {
-    if (!teacherPurposeRequiresQualification(purpose)) return;
-    const rows = await manager.query(`SELECT scope_hash FROM teacher_purpose_qualifications
-      WHERE scope_hash=$1 AND policy_hash=$2 AND purpose='contextual_reply'
-      AND selection_snapshot=$3::jsonb AND configuration_generation=$4
-      AND session_generation IS NOT DISTINCT FROM $5`,
-    [teacherPurposeQualificationScope(this.transportScope(selection, config)), TEACHER_GENERATION_POLICY_HASH,
-      JSON.stringify(selection), config.configurationGeneration, config.sessionGeneration]);
-    if (rows.length !== 1) throw new ServiceUnavailableException('teacher:adapter_unqualified');
+  private async candidate(manager: EntityManager, onlyJobId: string | null) {
+    const rows: Job[] = await manager.query(
+      `SELECT j.*,s.owner_user_id::text AS session_owner_user_id FROM teacher_generation_jobs j JOIN teacher_sessions s ON s.id=j.session_id
+      WHERE j.state='queued' AND j.available_at<=clock_timestamp() AND j.deadline_at>clock_timestamp()
+      AND j.created_at>clock_timestamp()-interval '300 seconds'
+      AND ($2::uuid IS NULL OR j.id=$2)
+      AND s.state NOT IN ('paused','archived')
+      AND NOT EXISTS(SELECT 1 FROM teacher_generation_jobs active WHERE active.session_id=j.session_id AND active.state IN ('running','unknown') AND active.blocks_duplicate=true)
+      AND NOT EXISTS(SELECT 1 FROM teacher_generation_jobs active WHERE active.actor_id=j.actor_id AND active.state IN ('running','unknown') AND active.blocks_duplicate=true)
+      AND NOT EXISTS(SELECT 1 FROM nodia_ai_jobs cj JOIN nodia_ai_conversations c ON c.id=cj.conversation_id WHERE c.owner_id=j.actor_id AND cj.state IN ('leased','unknown'))
+      AND ((SELECT count(*) FROM nodia_ai_jobs WHERE kind IN ('turn','execution') AND state='leased')+(SELECT count(*) FROM teacher_generation_jobs WHERE state='running'))<$1
+      ORDER BY j.available_at,j.id FOR UPDATE OF s,j SKIP LOCKED LIMIT 1`,
+      [this.policy.queue.foreground_workers, onlyJobId],
+    );
+    return rows[0] ?? null;
+  }
+  private rejectCandidate(manager: EntityManager, job: Job, error: unknown) {
+    return manager.query(`UPDATE teacher_generation_jobs SET state='failed_known',blocks_duplicate=false,error_code=$2,updated_at=clock_timestamp()
+      WHERE id=$1 AND state='queued' AND fence=$3 AND selection_snapshot=$4::jsonb AND configuration_generation=$5`,
+    [job.id, safeFailureCode(error), job.fence, JSON.stringify(job.selection_snapshot), job.configuration_generation]);
   }
   private async claim(
     workerId: string,
     onlyJobId: string | null = null,
+    signal: AbortSignal = new AbortController().signal,
   ): Promise<Claim | null> {
-    return this.source.transaction(async (manager) => {
+    if (signal.aborted) return null;
+    const prepared = await this.source.transaction(async manager => {
       await lockAuthority(manager);
       await lockNodiaAiQueue(manager);
-      const rows: Job[] = await manager.query(
-        `SELECT j.*,s.owner_user_id::text AS session_owner_user_id FROM teacher_generation_jobs j JOIN teacher_sessions s ON s.id=j.session_id
-        WHERE j.state='queued' AND j.available_at<=clock_timestamp() AND j.deadline_at>clock_timestamp()
-        AND j.created_at>clock_timestamp()-interval '300 seconds'
-        AND ($2::uuid IS NULL OR j.id=$2)
-        AND s.state NOT IN ('paused','archived')
-        AND NOT EXISTS(SELECT 1 FROM teacher_generation_jobs active WHERE active.session_id=j.session_id AND active.state IN ('running','unknown') AND active.blocks_duplicate=true)
-        AND NOT EXISTS(SELECT 1 FROM teacher_generation_jobs active WHERE active.actor_id=j.actor_id AND active.state IN ('running','unknown') AND active.blocks_duplicate=true)
-        AND NOT EXISTS(SELECT 1 FROM nodia_ai_jobs cj JOIN nodia_ai_conversations c ON c.id=cj.conversation_id WHERE c.owner_id=j.actor_id AND cj.state IN ('leased','unknown'))
-        AND ((SELECT count(*) FROM nodia_ai_jobs WHERE kind IN ('turn','execution') AND state='leased')+(SELECT count(*) FROM teacher_generation_jobs WHERE state='running'))<$1
-        ORDER BY j.available_at,j.id FOR UPDATE OF s,j SKIP LOCKED LIMIT 1`,
-        [this.policy.queue.foreground_workers, onlyJobId],
-      );
-      const job = rows[0];
+      const job = await this.candidate(manager, onlyJobId);
       if (!job) return null;
+      try {
+        const actor = { userId: job.actor_id, sessionId: job.auth_session_public_id ?? '' };
+        const current = await this.authority(manager, actor);
+        assert(job.session_owner_user_id === current.actorId || current.isSuperAdmin, 'authority_changed');
+        const configured = await this.verifySelection(manager, actor, job.selection_snapshot, job.purpose);
+        assert(configured.configuration_generation === job.configuration_generation, 'configuration_changed');
+        return job;
+      } catch (error) { await this.rejectCandidate(manager, job, error); return null; }
+    });
+    if (!prepared || signal.aborted) return null;
+    let live: TeacherAgenticConfiguration | null = null;
+    try {
+      if (prepared.selection_snapshot.mode === 'agentic') {
+        if (!this.agentic) throw Error('teacher:provider_unavailable');
+        const override = this.qualificationAgentic.get(prepared.id);
+        live = override
+          ? await this.agentic.configuration(prepared.selection_snapshot, this.source.manager, override.agentic)
+          : await this.agentic.observe(prepared.selection_snapshot, AbortSignal.any([signal, AbortSignal.timeout(30000)]));
+        if (override) assert(live.configurationGeneration === override.configurationGeneration, 'configuration_changed');
+      }
+      signal.throwIfAborted();
+    } catch (error) {
+      if (safeFailureCode(error) === 'runtime_busy' || error instanceof CodexOperationException && error.code === 'codex_profile_busy') return null;
+      if (!signal.aborted) await this.source.transaction(async manager => {
+        await lockNodiaAiQueue(manager);
+        await this.rejectCandidate(manager, prepared, error);
+      });
+      return null;
+    }
+    return this.source.transaction(async (manager) => {
+      if (signal.aborted) return null;
+      await lockAuthority(manager);
+      await lockNodiaAiQueue(manager);
+      const job = await this.candidate(manager, prepared.id);
+      if (!job) return null;
+      // A different fenced intention owns its own result. Do not dispatch it or
+      // fail it merely because this worker's earlier read became obsolete.
+      if (job.fence !== prepared.fence || hash(job.selection_snapshot) !== hash(prepared.selection_snapshot)
+        || job.configuration_generation !== prepared.configuration_generation || job.session_generation !== prepared.session_generation) return null;
       const actor = {
         userId: job.actor_id,
         sessionId: job.auth_session_public_id ?? '',
       };
       let config: NodiaAiApiConfiguration | TeacherAgenticConfiguration;
       try {
+        if (live) assert(live.configurationGeneration === job.configuration_generation, 'configuration_changed');
         const current = await this.authority(manager, actor);
         assert(
           job.session_owner_user_id === current.actorId || current.isSuperAdmin,
           'authority_changed',
         );
         if (job.purpose === 'contextual_reply') await rejectFinalHelp(manager, job.session_id);
-        if (!this.qualificationJobs.has(job.id))
-          await this.verifySelection(manager, actor, job.selection_snapshot, job.purpose);
+        await this.verifySelection(manager, actor, job.selection_snapshot, job.purpose);
         config = await this.configuration(
           job.selection_snapshot,
           manager,
-          this.qualificationAgentic.get(job.id),
+          live?.agentic,
         );
         assert(
           config.configurationGeneration === job.configuration_generation &&
-            config.sessionGeneration === job.session_generation,
+            (job.selection_snapshot.mode === 'agentic' && job.session_generation === null || config.sessionGeneration === job.session_generation),
           'configuration_changed',
         );
       } catch (error) {
-        await manager.query(
-          "UPDATE teacher_generation_jobs SET state='failed_known',blocks_duplicate=false,error_code=$2,updated_at=clock_timestamp() WHERE id=$1",
-          [job.id, safeFailureCode(error)],
-        );
+        await this.rejectCandidate(manager, job, error);
         return null;
       }
       await manager.query(
@@ -349,9 +389,10 @@ export class TeacherGenerationRuntimeService
         configuration: config.configurationGeneration,
         deadline: job.deadline_at,
       });
+      if (signal.aborted) return null;
       await manager.query(
-        `UPDATE teacher_generation_jobs SET state='running',fence=$2,lease_owner=$3,lease_until=LEAST(clock_timestamp()+interval '30 seconds',deadline_at),updated_at=clock_timestamp() WHERE id=$1`,
-        [job.id, fence, workerId],
+        `UPDATE teacher_generation_jobs SET state='running',fence=$2,lease_owner=$3,session_generation=$4,lease_until=LEAST(clock_timestamp()+interval '30 seconds',deadline_at),updated_at=clock_timestamp() WHERE id=$1`,
+        [job.id, fence, workerId, config.sessionGeneration],
       );
       await manager.query(
         `INSERT INTO teacher_generation_attempts(id,session_id,job_id,attempt_no,worker_id,fence,phase)
@@ -390,7 +431,7 @@ export class TeacherGenerationRuntimeService
         ],
       );
       return {
-        job: { ...job, fence, lease_owner: workerId },
+        job: { ...job, fence, lease_owner: workerId, session_generation: config.sessionGeneration },
         operationId,
         runtimeFence,
         config,
@@ -425,7 +466,7 @@ export class TeacherGenerationRuntimeService
       'session_paused',
     );
     const currentConfiguration = await this.configuration(claim.job.selection_snapshot, manager,
-      this.qualificationAgentic.get(claim.job.id));
+      'agentic' in claim.config ? claim.config.agentic : undefined);
     assert(currentConfiguration.configurationGeneration === claim.config.configurationGeneration &&
       currentConfiguration.sessionGeneration === claim.config.sessionGeneration &&
       currentConfiguration.resourceKey === claim.config.resourceKey, 'configuration_changed');
@@ -456,7 +497,7 @@ export class TeacherGenerationRuntimeService
       const config = await this.configuration(
         claim.job.selection_snapshot,
         manager,
-        this.qualificationAgentic.get(claim.job.id),
+        'agentic' in claim.config ? claim.config.agentic : undefined,
       );
       assert(
         config.configurationGeneration === claim.config.configurationGeneration,
@@ -493,7 +534,7 @@ export class TeacherGenerationRuntimeService
       const config = await this.configuration(
         claim.job.selection_snapshot,
         manager,
-        this.qualificationAgentic.get(claim.job.id),
+        'agentic' in claim.config ? claim.config.agentic : undefined,
       );
       assert(
         config.configurationGeneration === claim.config.configurationGeneration,
@@ -720,7 +761,7 @@ export class TeacherGenerationRuntimeService
     onlyJobId: string | null = null,
   ): Promise<boolean> {
     if (!this.publisher || signal.aborted) return false;
-    const claim = await this.claim(workerId, onlyJobId);
+    const claim = await this.claim(workerId, onlyJobId, signal);
     if (!claim) return false;
     const deadline = teacherGenerationDeadline(
       claim.job.purpose,
@@ -730,6 +771,7 @@ export class TeacherGenerationRuntimeService
     const abort = new AbortController();
     const cancel = () => abort.abort(signal.reason);
     signal.addEventListener('abort', cancel, { once: true });
+    if (signal.aborted) cancel();
     const timer = setTimeout(
       () => abort.abort(Error('teacher:deadline')),
       Math.max(1, deadline - Date.now()),
@@ -887,6 +929,7 @@ export class TeacherGenerationRuntimeService
       const pending=await manager.query("SELECT count(*)::integer AS n FROM teacher_generation_jobs WHERE actor_id=$1 AND state IN ('queued','running','blocked_paused')",[actor.userId]);
       assert(pending[0]?.n<2,'capacity_unavailable');
       const c = await this.configuration(selection, manager, nativeConfig?.agentic);
+      if (nativeConfig) assert(c.configurationGeneration === nativeConfig.configurationGeneration, 'configuration_changed');
       const input = {
         qualification_probe: { contract: nativeConfig ? 'teacher-agentic-text/1' : 'teacher-text/1', nonce,
           teacher_policy_hash: TEACHER_GENERATION_POLICY_HASH },
@@ -924,7 +967,7 @@ export class TeacherGenerationRuntimeService
       return c;
     });
     this.qualificationJobs.add(jobId);
-    if (nativeConfig) this.qualificationAgentic.set(jobId, nativeConfig.agentic);
+    if (nativeConfig) this.qualificationAgentic.set(jobId, nativeConfig);
     try {
       await this.run(randomUUID(), signal, jobId);
       return await this.completeTextQualification(actor, sessionId, jobId, signal);
@@ -989,7 +1032,7 @@ export class TeacherGenerationRuntimeService
     });
   }
   /** Explicit operator-only anchored protocol probe. Never called by a controller/tool.
-   * Requires current transport qualification and an unused real thread in an owned active lab session. */
+   * Optional diagnostic over an unused real thread in an owned active lab session. */
   async qualifyContextualReply(actor: ActorReference, sessionId: string, selection: TeacherSelection,
     threadId: string, signal: AbortSignal) {
     const jobId = randomUUID(), nonce = randomUUID();

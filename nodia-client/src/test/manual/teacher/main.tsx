@@ -32,6 +32,10 @@ document.documentElement.lang = lang;
 config.setState({ themeType: params.get("theme") === "dark" ? "dark" : "light" });
 useAuthStore.getState().login({ token: "synthetic-never-sent", expiresAt: Date.now() + 3_600_000, user: { id: realHttp ? params.get("actorId") ?? "1" : "teacher-qa", name: "QA" } });
 const scenario = params.get("scenario") ?? "list";
+const agentic = params.get("agentic") === "1";
+const noEfforts = params.get("noEfforts") === "1";
+const legacyEfforts = params.get("legacyEfforts") === "1";
+const syntheticEfforts = ["low", "medium", "high"].map(effort_id => ({ effort_id, label: effort_id }));
 const id = "11111111-1111-4111-8111-111111111111";
 const pid = "22222222-2222-4222-8222-222222222222";
 const sid = "33333333-3333-4333-8333-333333333333";
@@ -45,34 +49,41 @@ const topic = english ? "English for everyday technical conversations" : "Redes 
 const objective = english ? "Explain a problem clearly and ask for help in everyday and work contexts." : "Comprender cómo se conectan los dispositivos y resolver problemas cotidianos de conectividad.";
 const actions = (...keys: string[]) => Object.fromEntries(keys.map(key => [key, { enabled: true, reason_code: null }]));
 const outline: Outline = { schema_version: 1, title: topic, topic, objective, explanation_language: lang, organization: english ? "days" : "topics", day_count: english ? 7 : null, sections: [{ id: sid, title: english ? "Explaining a problem" : "Cómo funciona Internet", required: true, prerequisite_section_ids: [], objectives: [{ id: oid, description: objective }], units: [{ id: uid, title: english ? "Asking for help" : "Nombres, direcciones y DNS", objective_ids: [oid], day_start: english ? 1 : null, day_end: english ? 2 : null }] }], assessment_policy: { version: "teacher-assessment/1", practice_counts: { single_choice: 3, completion: 1, short_text: 1 }, final_counts: { single_choice: 6, completion: 2, short_text: 4 }, diagnostic_counts: { single_choice: 4, completion: 2, short_text: 2 }, final_threshold_percent: 90, coverage_per_objective: 2, criterion_ids: ["objective", "accuracy", "clarity"], normalization: "NFC-trim-collapse" } };
-const hasPlan = !["draft", "review"].includes(scenario);
+const hasPlan = !["new", "draft", "review"].includes(scenario);
 const isAttempt = ["final", "graded", "failed", "practice"].includes(scenario);
-const session: Session = { setup_draft_text: "", setup_draft_revision: 0, id, title: topic, topic, objective, state: scenario === "paused" ? "paused" : hasPlan ? "active" : "draft", revision: 1, updated_at: new Date().toISOString(), declared_base: null, context: null, explanation_language: lang, requested_organization: outline.organization, requested_day_count: outline.day_count, selection: { connection_id: "1", mode: "api_key", model_id: "qa-synthetic-teacher-model", effort_id: null }, dispatch_limit: 200, dispatches_used: 2, current_plan: hasPlan ? { id: pid, revision_no: 1, outline, content_hash: "a".repeat(64), state: "accepted" } : null, latest_proposal: scenario === "review" ? { id: pid, revision_no: 1, outline, content_hash: "a".repeat(64), state: "draft" } : null, latest_job_id: scenario === "unknown" ? jobId : null, active_jobs: scenario === "unknown" ? [{ job_id: jobId, state: "unknown", purpose: "learning_packet" }] : [], active_attempts: [], section_states: [{ section_id: sid, verification_state: "not_verified", allowed_actions: actions("start_final", "retry_final") }], cursor: { revision: 1, phase: isAttempt ? "final" : hasPlan && scenario !== "plan" ? "theory" : "setup", plan_revision_id: hasPlan ? pid : null, section_id: hasPlan ? sid : null, unit_id: isAttempt || scenario === "plan" ? null : uid, content_version_id: isAttempt || scenario === "plan" ? null : cid, attempt_id: isAttempt ? aid : null, item_id: isAttempt ? "q0" : null, block_id: null }, allowed_actions: actions("edit", "propose_plan", "accept_plan", "prepare_unit", "start_section_final", "pause", "archive", "start_diagnostic") };
+const session: Session = { setup_draft_text: "", setup_draft_revision: 0, id, title: topic, topic, objective, state: scenario === "paused" ? "paused" : hasPlan ? "active" : "draft", revision: 1, updated_at: new Date().toISOString(), declared_base: null, context: null, explanation_language: lang, requested_organization: outline.organization, requested_day_count: outline.day_count, selection: { connection_id: "1", mode: agentic ? "agentic" : "api_key", model_id: "qa-synthetic-teacher-model", effort_id: agentic ? "medium" : null }, dispatch_limit: 200, dispatches_used: 2, current_plan: hasPlan ? { id: pid, revision_no: 1, outline, content_hash: "a".repeat(64), state: "accepted" } : null, latest_proposal: scenario === "review" ? { id: pid, revision_no: 1, outline, content_hash: "a".repeat(64), state: "draft" } : null, latest_job_id: scenario === "unknown" ? jobId : null, active_jobs: scenario === "unknown" ? [{ job_id: jobId, state: "unknown", purpose: "learning_packet" }] : [], active_attempts: [], section_states: [{ section_id: sid, verification_state: "not_verified", allowed_actions: actions("start_final", "retry_final") }], cursor: { revision: 1, phase: isAttempt ? "final" : hasPlan && scenario !== "plan" ? "theory" : "setup", plan_revision_id: hasPlan ? pid : null, section_id: hasPlan ? sid : null, unit_id: isAttempt || scenario === "plan" ? null : uid, content_version_id: isAttempt || scenario === "plan" ? null : cid, attempt_id: isAttempt ? aid : null, item_id: isAttempt ? "q0" : null, block_id: null }, allowed_actions: actions("edit", "propose_plan", "accept_plan", "prepare_unit", "start_section_final", "pause", "archive", "start_diagnostic") };
 if (session.state === "paused") session.allowed_actions = actions("resume", "archive");
 const delivered = scenario === "graded" || scenario === "failed";
 const attempt: Attempt = { attempt_id: aid, session_id: id, scope: scenario === "practice" ? "unit_practice" : "section_final", state: delivered ? "graded" : "in_progress", result: delivered ? scenario === "failed" ? "not_passed" : "passed" : scenario === "practice" ? null : "pending", revision: 1, plan_revision_id: pid, section_id: sid, unit_id: scenario === "practice" ? uid : null, questions: Array.from({ length: 12 }, (_, index) => ({ question_id: `q${index}`, ordinal: index + 1, answer_status: delivered ? "submitted" : "empty" })), ...(delivered ? { earned_points: scenario === "failed" ? 32 : 36, denominator_points: 40, percentage: scenario === "failed" ? 80 : 90 } : {}), allowed_actions: delivered ? actions("view_feedback", "new_attempt") : actions("save_answers", "submit_attempt", "request_help", ...(scenario === "practice" ? ["submit_question"] : [])) };
 const responses = new Map<string, { answer: Answer | null; revision: number }>();
 const receiptMap = new Map<string, unknown>();
-const calls: { method: string; path: string; body: unknown }[] = [];
-Object.assign(window, { teacherQA: { calls, session, responses } });
+const calls: { method: string; path: string; body: unknown; params: unknown }[] = [];
+const qa = { calls, session, responses, route: "" };
+Object.assign(window, { teacherQA: qa });
 let failed = false;
 if (realHttp) mainInstance.defaults.baseURL = realHttp;
 else mainInstance.defaults.adapter = async request => {
   await new Promise<void>(resolve => setTimeout(resolve, 80));
   const path = request.url?.replace(/^\/teacher\//, "") ?? "";
   const body = request.data ? JSON.parse(String(request.data)) as Record<string, unknown> : {};
-  calls.push({ method: request.method ?? "get", path, body });
+  calls.push({ method: request.method ?? "get", path, body, params: request.params });
   const response = (data: unknown, status = 200) => ({ config: request, data: structuredClone(data), status, statusText: "QA", headers: {} });
   const reject = (status: number, message: string): never => { throw new AxiosError(message, "ERR_BAD_RESPONSE", request, undefined, response({ message }, status)); };
   if (request.method === "get") {
     if (scenario === "error" && path === "sessions") reject(503, "teacher:provider_unavailable");
-    if (path === "connections") return response({ items: [{ connection_id: "1", label: "Synthetic QA connection", provider_key: "openai", is_default: true, default_mode: "api_key", is_active: true, modes: [{ mode: "api_key", configuration: "configured", configured_selection: session.selection, models: [{ model_id: "qa-synthetic-teacher-model", label: "Synthetic QA model", efforts: params.get("noEfforts") === "1" ? [] : ["low", "medium", "high"].map(effort_id => ({ effort_id, label: effort_id })) }] }] }], next_cursor: null });
-    if (path.includes("/eligibility")) return response({ eligible: false, reason_code: "adapter_unqualified", checked_at: null, selection: { connection_id: "1", mode: request.params?.mode, model_id: request.params?.model_id, effort_id: request.params?.effort_id ?? null } });
+    if (path === "connections") return response({ items: [{ connection_id: "1", label: "Synthetic QA connection", provider_key: "openai", is_default: true, default_mode: agentic ? "agentic" : "api_key", is_active: true, modes: [{ mode: agentic ? "agentic" : "api_key", configuration: "configured", configured_selection: session.selection, models: [{ model_id: "qa-synthetic-teacher-model", label: "Synthetic QA model", efforts: noEfforts || legacyEfforts ? [] : syntheticEfforts }] }] }], next_cursor: null });
+    if (path === "connections/1/models") return response({ connection_id: "1", mode: "agentic", models: [{ model_id: "qa-synthetic-teacher-model", label: "Synthetic QA model", efforts: noEfforts ? [] : syntheticEfforts }] });
+    if (path.includes("/eligibility")) {
+      const delay = Math.min(10_000, Math.max(0, Number(params.get("eligibilityDelayMs")) || 0));
+      if (delay) await new Promise<void>(resolve => setTimeout(resolve, delay));
+      const eligible = params.get("qualified") === "1";
+      return response({ eligible, reason_code: eligible ? null : "adapter_unqualified", checked_at: null, selection: { connection_id: "1", mode: request.params?.mode, model_id: request.params?.model_id, effort_id: request.params?.effort_id ?? null } });
+    }
     if (path === "sessions") return response({ data: scenario === "empty" ? [] : [session], meta: { page: 1, limit: 10, total_items: scenario === "empty" ? 0 : 1, total_pages: 1 } });
     if (path === `sessions/${id}`) return response(session);
     if (path.endsWith("/messages")) return response({ data: [{ id: "m1", role: "assistant", text: english ? "Would you like to organize this by study days or topics?" : "¿Prefieres organizar tu plan por jornadas o por tópicos?" }], meta: { page: 1, limit: 50, total_items: 1, total_pages: 1 } });
     if (path.includes("plan-proposals")) return response(session.latest_proposal);
-    if (path === `jobs/${jobId}`) return response({ job_id: jobId, fence: "1", state: "unknown", purpose: "learning_packet", result_ref: null, error_code: null, local_closed: true, remote_outcome: "unknown", retry_after_ms: null, allowed_actions: actions("refresh", "request_new_generation") });
+    if (path === `jobs/${jobId}`) return response({ job_id: jobId, fence: "1", state: scenario === "new" ? "queued" : "unknown", purpose: scenario === "new" ? "plan_outline" : "learning_packet", result_ref: null, error_code: null, local_closed: scenario === "new" ? null : true, remote_outcome: scenario === "new" ? null : "unknown", retry_after_ms: null, allowed_actions: actions("refresh", "request_new_generation") });
     if (path.includes("/questions/")) {
       const qid = path.split("/").at(-1)!;
       const stored = responses.get(qid);
@@ -87,7 +98,19 @@ else mainInstance.defaults.adapter = async request => {
   if (params.get("fail") === "pause" && path.endsWith("/pause") && !failed) { failed = true; return reject(409, "teacher:revision_conflict"); }
   const key = String(request.headers.get("Idempotency-Key"));
   let result: Record<string, unknown> = { session_id: id, revision: ++session.revision };
-  if (path === "sessions") result = { session_id: id, revision: session.revision };
+  if (path === "sessions") {
+    session.title = typeof body.title === "string" ? body.title : null;
+    session.topic = String(body.topic);
+    session.objective = String(body.objective);
+    session.declared_base = typeof body.declared_base === "string" ? body.declared_base : null;
+    session.context = typeof body.context === "string" ? body.context : null;
+    session.selection = body.selection as Session["selection"] ?? null;
+    if (body.start_plan === true) {
+      session.latest_job_id = jobId;
+      session.active_jobs = [{ job_id: jobId, state: "queued", purpose: "plan_outline" }];
+      result = { kind: "job", state: "queued", session_id: id, job_id: jobId };
+    } else result = { session_id: id, revision: session.revision };
+  }
   if (path.endsWith("/cursor")) { session.cursor = { ...session.cursor, ...body, revision: session.cursor.revision + 1 }; result = { session_id: id, revision: session.cursor.revision }; }
   if (path.endsWith("/responses")) { for (const patch of body.responses as { question_id: string; answer: Answer }[]) responses.set(patch.question_id, { answer: patch.answer, revision: (responses.get(patch.question_id)?.revision ?? 1) + 1 }); attempt.revision++; result = { attempt_id: aid, revision: attempt.revision, responses: (body.responses as { question_id: string }[]).map(patch => ({ question_id: patch.question_id, response_revision: responses.get(patch.question_id)!.revision })) }; }
   if (path.endsWith("/pause")) { if (body.pending_responses) { for (const patch of body.pending_responses as { question_id: string; answer: Answer }[]) responses.set(patch.question_id, { answer: patch.answer, revision: (responses.get(patch.question_id)?.revision ?? 1) + 1 }); attempt.revision++; } session.state = "paused"; session.cursor = { ...session.cursor, ...(body.cursor as object), revision: session.cursor.revision + 1 }; session.allowed_actions = actions("resume", "archive"); }
@@ -102,6 +125,8 @@ else mainInstance.defaults.adapter = async request => {
 const client = new QueryClient({ defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } } });
 const initialEntry = realHttp ? params.get("sessionId") ? `/nodia-teacher/${params.get("sessionId")}` : "/nodia-teacher" : scenario === "new" ? "/nodia-teacher/new" : ["list", "empty", "error"].includes(scenario) ? "/nodia-teacher" : `/nodia-teacher/${id}`;
 const router = createMemoryRouter([{ path: "/nodia-teacher", element: <Teacher /> }, { path: "/nodia-teacher/new", element: <TeacherNew /> }, { path: "/nodia-teacher/:sessionId", element: <Teacher /> }], { initialEntries: [initialEntry] });
+qa.route = router.state.location.pathname;
+router.subscribe(state => { qa.route = state.location.pathname; });
 if (realHttp) router.subscribe(state => {
   const url = new URL(location.href);
   const sessionId = state.location.pathname.split("/")[2];

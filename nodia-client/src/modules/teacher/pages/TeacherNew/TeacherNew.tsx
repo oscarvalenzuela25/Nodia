@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import ArrowBackOutlined from "@mui/icons-material/ArrowBackOutlined";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
@@ -50,13 +50,13 @@ function NewSession() {
     if (result) openSession(result);
   };
   return <Page>
-    <Button variant="outlined" component={Link} to={NODIA_TEACHER_ROUTE} startIcon={<ArrowBackOutlined />} disabled={busy} sx={{ alignSelf: "flex-start" }}>{t("teacher:my_plans")}</Button>
-    <Header><Stack sx={{ gap: 1 }}><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>{t("teacher:new_session")}</Typography><Typography color="text.secondary">{t("teacher:new_session_description")}</Typography></Stack></Header>
+    <Button variant="contained" component={Link} to={NODIA_TEACHER_ROUTE} startIcon={<ArrowBackOutlined />} disabled={busy} sx={{ alignSelf: "flex-start", width: { xs: "100%", sm: "auto" } }}>{t("teacher:my_plans")}</Button>
+    <Header><Box><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>{t("teacher:new_session")}</Typography><Typography color="text.secondary">{t("teacher:new_session_description")}</Typography></Box></Header>
     <RequestRecovery command={command} onRecovered={openSession} />
     <NewPlanForm onSubmit={handleSubmit(createPlan)}>
       <Panel><Stack sx={{ gap: 2 }}><SessionFields control={control} errors={errors} busy={busy} /></Stack></Panel>
       <Panel><SelectionPanel intent="create" initial={null} busy={busy} onSelectionChange={onSelectionChange} /></Panel>
-      <CreateActions><Button type="button" variant="outlined" disabled={busy} onClick={handleSubmit(saveDraft)}>{t("teacher:save_draft")}</Button><Button type="submit" variant="contained" disabled={busy || !selectionState.ready}>{t("teacher:create_plan")}</Button></CreateActions>
+      <CreateActions><Button type="button" variant="contained" disabled={busy} onClick={handleSubmit(saveDraft)}>{t("teacher:save_draft")}</Button><Button type="submit" variant="contained" disabled={busy || !selectionState.ready}>{t("teacher:create_plan")}</Button></CreateActions>
     </NewPlanForm>
   </Page>;
 }

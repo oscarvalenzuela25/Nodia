@@ -191,3 +191,6 @@ export class TeacherEligibilityDto {
   @IsString() @Length(1, 1024) model_id!: string;
   @IsOptional() @IsString() @Length(1, 256) effort_id?: string;
 }
+export class TeacherModelsDto {
+  @IsIn(['agentic']) mode!: 'agentic';
+}

@@ -24,6 +24,38 @@ describe("Sidenav", () => {
     });
   });
 
+  it("retains the canonical parent selection on internal pages and selects only a more specific module when present", async () => {
+    const modules = [
+      { key: "nodia_teacher", link: "/nodia-teacher", translates: [{ key: "key", es: "Nodia Teacher", en: "Nodia Teacher" }] },
+      { key: "businesses", link: "/business", translates: [{ key: "key", es: "Negocios", en: "Business" }] },
+      { key: "business-reports", link: "/business/reports", translates: [{ key: "key", es: "Informes de negocios", en: "Business reports" }] },
+    ];
+    act(() => useGeneralSettingsStore.getState().setContext({ roles: [], actions: [], modules: [
+      { module_group_key: "original-group", translates: [], modules },
+    ] }));
+    const router = createMemoryRouter([{ path: "*", element: <Sidenav mobileOpen onDrawerToggle={vi.fn()} /> }],
+      { initialEntries: ["/nodia-teacher/new"] });
+    render(<RouterProvider router={router} />);
+    expect(screen.getByRole("button", { name: "Nodia Teacher" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "Nodia Teacher" })).toHaveClass("Mui-selected");
+    expect(screen.getByRole("button", { name: "Inicio" })).not.toHaveAttribute("aria-current");
+
+    await act(() => router.navigate("/business/fixture-business/products"));
+    expect(screen.getByRole("button", { name: "Negocios" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "Nodia Teacher" })).not.toHaveAttribute("aria-current");
+
+    await act(() => router.navigate("/business/reports/monthly"));
+    expect(screen.getByRole("button", { name: "Informes de negocios" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "Negocios" })).not.toHaveClass("Mui-selected");
+    act(() => useGeneralSettingsStore.getState().setContext({ roles: [], actions: [], modules: [
+      { module_group_key: "renamed-and-moved", translates: [], modules: [modules[2], modules[0], modules[1]] },
+    ] }));
+    expect(screen.getByRole("button", { name: "Informes de negocios" })).toHaveAttribute("aria-current", "page");
+    await act(() => router.navigate("/businesses/fixture-business"));
+    expect(screen.getByRole("button", { name: "Negocios" })).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("button", { name: "Inicio" })).not.toHaveAttribute("aria-current");
+  });
+
   it("shows NodiaAI only after the ordinary user's current context assigns its module", async () => {
     const router = createMemoryRouter([{ path: "*", element: <Sidenav mobileOpen onDrawerToggle={vi.fn()} /> }]);
     render(<RouterProvider router={router} />);

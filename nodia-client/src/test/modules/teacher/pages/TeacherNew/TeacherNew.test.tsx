@@ -26,7 +26,7 @@ function openPage() {
 async function fillRequired() {
   const user = userEvent.setup();
   await user.type(screen.getByRole("textbox", { name: "Tema*" }), " Redes ");
-  await user.type(screen.getByRole("textbox", { name: "Qué quieres lograr*" }), " Comprender DNS ");
+  await user.type(screen.getByRole("textbox", { name: "¿Qué es lo que quieres aprender?*" }), " Comprender DNS ");
   return user;
 }
 beforeEach(() => { mocks.execute.mockReset(); mocks.execute.mockResolvedValue(null); mocks.ready = true; mocks.blocked = false; mocks.selectionAvailable = true; });
@@ -47,7 +47,7 @@ describe("new Teacher plan", () => {
     let finish!: (value: CommandResult | null) => void;
     mocks.execute.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
     openPage(); const user = await fillRequired();
-    await user.type(screen.getByRole("textbox", { name: "Contexto de uso (opcional)" }), "Diagnosticar mi red");
+    await user.type(screen.getByRole("textbox", { name: "Contexto base (opcional)" }), "Diagnosticar mi red");
     await user.click(screen.getByRole("button", { name: "Crear plan" }));
     expect(screen.getByRole("button", { name: "Crear plan" })).toBeDisabled();
     expect(screen.getByRole("textbox", { name: "Tema*" })).toBeDisabled();
@@ -56,7 +56,7 @@ describe("new Teacher plan", () => {
     finish(null);
     await waitFor(() => expect(screen.getByRole("button", { name: "Crear plan" })).toBeEnabled());
     expect(screen.getByRole("textbox", { name: "Tema*" })).toHaveValue(" Redes ");
-    expect(screen.getByRole("textbox", { name: "Contexto de uso (opcional)" })).toHaveValue("Diagnosticar mi red");
+    expect(screen.getByRole("textbox", { name: "Contexto base (opcional)" })).toHaveValue("Diagnosticar mi red");
   });
   it("blocks creation without current exact-selection readiness, including a form submit", async () => {
     mocks.ready = false;

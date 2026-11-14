@@ -4,11 +4,11 @@
   "document_id": "studies.session-setup-and-planning",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 30,
+  "revision": 31,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación. Candidato local2026-11-12: formulario guiado, idioma validado conservando etiqueta histórica y selección IA visible/48px con ayuda; catálogo sin esfuerzos explicado sin inventarlos. Cabecera Codex consulta observación acotada compartida, sin polling. Build/lint,382regresiones/51archivos y QA320/1280 correctos; f01productivo tiene0recibos Agentic y carece de tabla por propósito; sin despliegue/inferencia o publicación del lote."
+    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación. Candidato local2026-11-12: formulario guiado, idioma validado conservando etiqueta histórica y selección IA visible/48px con ayuda; catálogo sin esfuerzos explicado sin inventarlos. Cabecera Codex consulta observación acotada compartida, sin polling. Build/lint,382regresiones/51archivos y QA320/1280 correctos; f01productivo tiene0recibos Agentic y carece de tabla por propósito; sin despliegue/inferencia o publicación del lote. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Nodia Teacher y NodiaAI conforme AGENTS",
@@ -216,10 +216,26 @@
     {
       "path": "nodia-client/src/modules/teacher/infrastructure/schemas.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/ai-generation/teacher-model-observation.service.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/ai-generation/teacher-qualification-policy.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/infrastructure/selection.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md",
+      "kind": "specification"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-12",
+    "checked_on": "2026-11-14",
     "evidence_paths": [
       "docs/evidence/teacher-local-implementation-20261101-r01.json",
       "docs/evidence/teacher-local-activation-20261101-r01.json",
@@ -241,9 +257,10 @@
       "docs/evidence/teacher-upgrade-local-20261111-r02.json",
       "docs/evidence/teacher-upgrade-acceptance-20261111-r02.md",
       "docs/evidence/teacher-upgrade-development-vm-20261111-r01.json",
-      "docs/mvp/96-nodia-teacher-implementation-plan.md"
+      "docs/mvp/96-nodia-teacher-implementation-plan.md",
+      "docs/evidence/teacher-ai-selection-first-generation-20261114.md"
     ],
-    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente. Corte2026-11-12: inspección de contratos y código local; build/lint Client,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado en recibo propio: f01/45migraciones,0recibos Agentic y tabla por propósito ausente, sin trasladar la aceptación anterior."
+    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente. Corte2026-11-12: inspección de contratos y código local; build/lint Client,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado en recibo propio: f01/45migraciones,0recibos Agentic y tabla por propósito ausente, sin trasladar la aceptación anterior. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote."
   },
   "approval": null
 }
@@ -358,6 +375,33 @@ La [evidencia VM](../../../../evidence/teacher-agentic-vm-20261101-r01.json) reg
 
 
 # Sesiones y definición del plan — contexto funcional para NodiaAI
+
+## Primera generación y alta — decisión del usuario, 2026-11-14
+
+Teacher permite que la creación sea el primer intento real con la conexión,
+modelo y razonamiento elegidos, sin recibo generativo o canary previo por tupla
+o propósito. Comprueba configuración y, en Agentic, sesión/opciones actuales;
+el Worker revalida la selección exacta antes del envío. Configuración o login
+no garantizan respuesta ni calidad; si falla, se conserva el borrador y se
+explica el error. Unknown sigue sin replay. Diagnósticos históricos se conservan.
+
+El selector recupera metadatos de razonamiento ausentes mediante lectura nativa
+acotada de la conexión seleccionada; no añade modelos o modifica preferencias.
+Permite cambiar razonamiento durante elegibilidad y espera la respuesta de la
+tupla final para solicitar generación. Carga, selección incompleta y error son
+estados distintos, con retry local serial. No observa el perfil durante trabajo
+o guardado de la sesión ni dispara invalidaciones nativas simultáneas.
+
+Título del plan es el primer campo; conocimientos se presentan como «¿Qué es
+lo que ya sé?» y contexto como «Contexto base», con ayudas claras. Mis planes y
+Guardar borrador son contained; alta/listado comparten marca. Teacher permanece
+seleccionado en el menú de sus páginas internas, sin conceder permisos nuevos.
+
+[96§43](../../../../mvp/96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14),
+[ADR100 propuesto](../../../../architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md)
+y [evidencia local](../../../../evidence/teacher-ai-selection-first-generation-20261114.md).
+Las referencias inferiores a calificación previa son históricas en Teacher.
+Esta decisión no aprueba/publica la ficha o el ADR ni acredita inferencia real.
 
 ## Alcance operativo local — 2026-11-01
 

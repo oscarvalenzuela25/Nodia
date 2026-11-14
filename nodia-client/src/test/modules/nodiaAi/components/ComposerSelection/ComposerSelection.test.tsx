@@ -36,6 +36,40 @@ async function choose(field: string, option: string) {
 }
 
 describe("ComposerSelection", () => {
+  it("groups Gemini Agentic variants and requires eligibility for the explicitly chosen executable effort", async () => {
+    const models = ["high", "medium", "low"].map(effort_id => ({
+      model_id: `fixture-family-${effort_id}`, label: `Fixture Family (${effort_id.toUpperCase()})`,
+      efforts: [{ effort_id, label: effort_id }],
+    }));
+    const selected = { ...agent, model_id: models[2].model_id, effort_id: "low" };
+    const settings = props({ connections: [{ ...connections[1], provider_key: "gemini", modes: [{ ...mode(selected), models }] }],
+      selection: selected, eligibility: observed(selected) });
+    const { rerender } = render(<ComposerSelection {...settings} />);
+    expect(screen.getByRole("button", { name: key("model") })).toHaveTextContent("Fixture Family");
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith(selected);
+    await choose("model", "Fixture Family");
+    expect(settings.onSelectionChange).toHaveBeenCalledTimes(1);
+    await choose("effort", i18n.t("nodiaAi:effort_levels.high"));
+    const changed = { ...selected, model_id: models[0].model_id, effort_id: "high" };
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith(changed);
+    expect(screen.getByRole("button", { name: key("apply") })).toBeDisabled();
+    rerender(<ComposerSelection {...settings} eligibility={observed(changed)} />);
+    await userEvent.setup().click(screen.getByRole("button", { name: key("apply") }));
+    expect(settings.onApply).toHaveBeenCalledExactlyOnceWith({ selection: changed, routingEnabled: false });
+  });
+
+  it.each(["api_key", "agentic"] as const)("keeps non-Gemini-Agentic variants separate (%s)", async channel => {
+    const models = ["high", "low"].map(effort_id => ({ model_id: `fixture-family-${effort_id}`,
+      label: `Fixture Family (${effort_id.toUpperCase()})`, efforts: [{ effort_id, label: effort_id }] }));
+    const selected = { ...agent, mode: channel, model_id: models[0].model_id, effort_id: "high" };
+    render(<ComposerSelection {...props({ connections: [{ ...connections[1], provider_key: channel === "api_key" ? "gemini" : "openai",
+      modes: [{ ...mode(selected), models }] }], selection: selected, eligibility: observed(selected) })} />);
+    await userEvent.setup().click(screen.getByRole("button", { name: key("model") }));
+    expect(screen.getByRole("option", { name: models[0].label })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: models[1].label })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Fixture Family" })).not.toBeInTheDocument();
+  });
+
   it("loads the chosen connection's persisted default exactly without applying or changing global preferences", async () => {
     const settings = props();
     const { rerender } = render(<ComposerSelection {...settings} />);

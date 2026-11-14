@@ -37,7 +37,7 @@ describe("Teacher modal request reconciliation", () => {
     render(<QueryClientProvider client={client}><DialogCommand onRecovered={onRecovered} /></QueryClientProvider>);
     const user = userEvent.setup();
     await user.type(screen.getByRole("textbox", { name: "Tema*" }), "Networks");
-    await user.type(screen.getByRole("textbox", { name: "Qué quieres lograr*" }), "Explain DNS");
+    await user.type(screen.getByRole("textbox", { name: "¿Qué es lo que quieres aprender?*" }), "Explain DNS");
     await user.click(screen.getByRole("button", { name: "Guardar borrador" }));
     const dialog = screen.getByRole("dialog");
     const recover = await within(dialog).findByRole("button", { name: "Consultar guardado" });
@@ -49,7 +49,7 @@ describe("Teacher modal request reconciliation", () => {
     await waitFor(() => expect(recover).toBeEnabled());
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(onRecovered).not.toHaveBeenCalled();
-    expect(within(dialog).getByRole("textbox", { name: "Qué quieres lograr*" })).toHaveValue("Explain DNS");
+    expect(within(dialog).getByRole("textbox", { name: "¿Qué es lo que quieres aprender?*" })).toHaveValue("Explain DNS");
     await user.click(recover);
     await waitFor(() => expect(onRecovered).toHaveBeenCalledWith(ack));
     expect(sendTeacher).toHaveBeenCalledOnce();

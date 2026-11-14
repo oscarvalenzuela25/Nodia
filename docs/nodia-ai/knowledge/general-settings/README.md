@@ -4,7 +4,7 @@
   "document_id": "general-settings",
   "product_id": "general-settings",
   "kind": "product",
-  "revision": 27,
+  "revision": 28,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -125,6 +125,15 @@
 La [paridad API del chat](../nodia-ai/features/api-key-chat-parity.md), [plan92](../../../mvp/92-nodia-ai-api-chat-parity.md) y [flujo seguro revisión5](features/secure-ai-interaction.md) están en revisión. Código implementado para la misma autoridad/gateway, propuesta y confirmación humanas; API no simula MCP ni éxito por tener clave/catálogo. SQL, proveedor real, modalidades y VM se verifican por separado. Esta revisión del índice es draft/unregistered/approval:null y no aprueba ni publica las fichas. Los apartados inferiores son cortes anteriores con su propia evidencia.
 
 # Ajustes Generales — contexto de producto para NodiaAI
+
+## Continuación de selectores — candidato local, 2026-11-14
+
+[Ficha de interfaz rev2](features/ai-provider-interface-and-module-access.md#continuación-local-selectores-agrupados--2026-11-14):
+sincronización y sus roles agrupan variantes Gemini Agentic, conservan IDs y el
+esfuerzo efectivo de OCR. Compositor/configuración del chat comparten el patrón
+de catálogo con Teacher. [Regresiones y navegador sintéticos](../../../evidence/model-selector-residual-audit-20261114.md)
+verificados por alcance. Sin despliegue, inferencia o publicación; permanece
+draft/partial/unregistered/approval:null y no cambia documentos aprobados.
 
 ## Cambio solicitado el 2026-10-27: Agentic y API key
 
