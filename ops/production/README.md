@@ -1276,3 +1276,43 @@ Pruebas finales:60Python root sin skips +4SQL/Node y28checks systemd descritos e
 y con sólo operaciones montadas read-only; falla si hay skips. Para repetirlos
 localmente, montar ops/production en /repo/ops/production de ese contenedor y
 ejecutar `python3 -B /repo/ops/production/tests/run-cd-policy-tests.py`.
+
+## Mantenimiento de la cuota de uploads — 2026-11-15
+
+El receiver limita incoming a2GiB y10archivos. La cuota no describe espacio libre
+ni autoriza a borrar por antigüedad. [Incidente y reparación99§30](../../docs/mvp/99-production-deployment-and-cicd-plan.md#30-upload-de-backend-cuota-activa-y-diagnóstico--2026-11-15)
+identifican el archivado ya aplicado; no repetirlo. El intento fallido se conserva.
+
+`archive-completed-backend-upload.py` es operador root, fuera del gateway SSH
+restringido. Sólo archiva el ZIP de una operación complete distinta de current,
+con el digest explícito y receiver instalado/pin coherentes. Exige que todas las
+referencias al ZIP sean complete; rechaza partial, symlink/hardlink, mutable,
+conflicto de hash o destino existente. Requests/attempts/submissions permanecen.
+
+Para otro mantenimiento revisado, con valores observados (marcadores no ejecutables):
+
+```bash
+sudo python3 -I -B /ruta/revisada/archive-completed-backend-upload.py \
+  --operation-id <operación-complete-no-current> \
+  --artifact-sha256 <digest-original-zip> \
+  --receiver-sha256 <digest-instalado-y-fijado>
+```
+
+Dry-run por defecto, sin intent/archivo nuevo. Revisar su identidad y repetir con
+`--apply` únicamente como intención de ese mantenimiento. El apply adquiere
+locks receiver→installation y registra intent durable antes de mover el único ZIP
+con renameat2 NOREPLACE en el mismo filesystem. Archivo/recibo quedan0600 y
+carpetas0700 bajo archived-incoming y archive-completed-upload-<operation_id>.
+
+Un intent existente, incluso sin receipt, exige inspección; no tiene opción de
+replay/sobreescritura. El archivo mantiene bytes/hash y ruta original en el recibo,
+permitiendo recuperación operatoria revisada; no elimina datos ni libera disco.
+No hay restore automático al inbox, retención automática, reinicio, SQL o deploy.
+
+El diagnóstico candidato conserva cuatro rechazos de upload de forma cerrada:
+cuota, headroom, bloqueo por actualización pendiente y upload ya registrado.
+EPIPE no desecha una respuesta root válida ni reenvía el ZIP. Node/recibo guardan
+upload_rejected y el código permitido; las demás respuestas siguen unknown y sin
+replay. El gateway productivo debe actualizarse mediante operación revisada y
+pin, independientemente del release de la aplicación; no asumirlo instalado por
+fusionar el código. Una cuota reparada no permite relanzar el CD fallido.

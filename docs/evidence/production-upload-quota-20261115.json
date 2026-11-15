@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "incident": {
+    "ci_run_id": "43753748903",
+    "cd_run_id": "43754640640",
+    "source_sha": "422f823e4ba35a420cbb2559633528103c63a06e",
+    "artifact_id": "14177268691",
+    "artifact_bytes": 215982270,
+    "artifact_zip_sha256": "cb9f0564e5eca58afa828004652cb031f3d0ef0a29661dce1882140cc7f99e6c",
+    "operation_id": "df43e4475de09c49dad98e773279fe93",
+    "reported_error": "backend_upload_outcome_unknown",
+    "root_cause": "incoming_quota_reached_operator_cleanup_required",
+    "incoming_limit_bytes": 2147483648,
+    "excess_bytes": 12317603
+  },
+  "incoming_before": {
+    "kind": "incoming_inventory",
+    "files": [
+      {
+        "directory": "server-43546497935-1",
+        "name": "14094113962.zip",
+        "bytes": 215976251,
+        "sha256": "1bdc378056085d6f0c89b7521aaf4d89113739d64adb01090e626eb1439e96d1"
+      },
+      {
+        "directory": "server-43471624414-1",
+        "name": "14060209069.zip",
+        "bytes": 215976252,
+        "sha256": "18203f671d5b135870e088c267463bf6e8d8c5922b67a4991d83ba76080aa329"
+      },
+      {
+        "directory": "server-43554037357-1",
+        "name": "14097179553.zip",
+        "bytes": 215976251,
+        "sha256": "124c0566bc3746627696bc62be00f74954568d239cff5226a25eec85bc735cf2"
+      },
+      {
+        "directory": "server-43373323321-1",
+        "name": "14014155653.zip",
+        "bytes": 215975812,
+        "sha256": "d235f340e9cf797e2f749991b557b2735a9a2026ac5f35a168fa219a3fbb1ee6"
+      },
+      {
+        "directory": "server-43692516659-1",
+        "name": "14153775349.zip",
+        "bytes": 215982751,
+        "sha256": "9a9059bad83c1a36a9e1612fc9510810c9083a42d39c876d943a413b76039d51"
+      },
+      {
+        "directory": "server-43628466598-1",
+        "name": "14127640136.zip",
+        "bytes": 215986320,
+        "sha256": "baf3806dd0fb74b97818b24fe020450b0962d9ddcc30eaea2a54f2e802400723"
+      },
+      {
+        "directory": "server-43662589149-1",
+        "name": "14140049857.zip",
+        "bytes": 215982761,
+        "sha256": "094ff3278e1bce03efd139f18071464ebfee1757a203111c7dbb3c5316e06c7b"
+      },
+      {
+        "directory": "server-43620970891-1",
+        "name": "14123834136.zip",
+        "bytes": 215986315,
+        "sha256": "a64e0dba707443fecc5d2c55226d457b195bf1120e6f647173c9a6a5dbdb3db7"
+      },
+      {
+        "directory": "server-43535099739-1",
+        "name": "14088269914.zip",
+        "bytes": 215976268,
+        "sha256": "80dabe812df7731d606f248137f4a1d1a0f2bdfaee89846918f41d6f2378626f"
+      }
+    ],
+    "count": 9,
+    "total_bytes": 1943818981,
+    "free_bytes": 102381137920,
+    "target_zip": false,
+    "target_partial": false,
+    "submission": false,
+    "request": false,
+    "receiver_sha256": "b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4",
+    "gateway_sha256": "877fe548164b127d8f3820bafa4b0c44797a8a732a9a829c1c82de098b8e2ab8"
+  },
+  "archive_receipt": {
+    "schema_version": 1,
+    "operation_id": "cf77431152a9416d2b27b55f17f598c4",
+    "artifact_directory": "server-43535099739-1",
+    "artifact_id": "14088269914",
+    "artifact_zip_sha256": "80dabe812df7731d606f248137f4a1d1a0f2bdfaee89846918f41d6f2378626f",
+    "bytes": 215976268,
+    "source_sha": "174c2ca5a1e78758e94d0f00ab43ff5e0c8c535e",
+    "receiver_sha256": "b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4",
+    "receiver_settings_sha256": "e2fdd62ee2da08d9a5c30f25b4cf4e3403c1f29ea6347435825df879d6406ae6",
+    "submission_sha256": "91ae2cd692053e50525b09d29b2680e868205e9a08df11f6af0285ff2d5da970",
+    "request_sha256": "39ebc03962c533059ecc5aae6672e2cf7af8fefe90288622fef1cf4315e163a6",
+    "state_sha256": "532665eb525923008cb8fa1a58cdb42fdffaf5cc623110b349f29c6f07d14085",
+    "current": {
+      "release_id": "backend-e2c2eca346a2-d096d1b33274",
+      "source_sha": "e2c2eca346a2aa6b084dd04e84efebefbce478d9",
+      "package_tree_sha256": "d096d1b33274812cc54b83bf0090d222476a7fe6f5b77d2406c7f97680495979"
+    },
+    "archived_relative_path": "archived-incoming/server-43535099739-1/14088269914.zip",
+    "reference_sha256": {
+      "submissions/cf77431152a9416d2b27b55f17f598c4.json": "91ae2cd692053e50525b09d29b2680e868205e9a08df11f6af0285ff2d5da970",
+      "attempts/cf77431152a9416d2b27b55f17f598c4/state.json": "532665eb525923008cb8fa1a58cdb42fdffaf5cc623110b349f29c6f07d14085",
+      "requests/cf77431152a9416d2b27b55f17f598c4.json": "39ebc03962c533059ecc5aae6672e2cf7af8fefe90288622fef1cf4315e163a6"
+    },
+    "deployment_requested": false,
+    "application_services_restarted": false,
+    "automatic_retry_allowed": false,
+    "status": "upload_archived",
+    "moved": true,
+    "completed_at": "2026-11-15T20:10:35.139965+00:00"
+  },
+  "incoming_after": {
+    "kind": "incoming_inventory",
+    "files": [
+      {
+        "directory": "server-43546497935-1",
+        "name": "14094113962.zip",
+        "bytes": 215976251,
+        "sha256": "1bdc378056085d6f0c89b7521aaf4d89113739d64adb01090e626eb1439e96d1"
+      },
+      {
+        "directory": "server-43471624414-1",
+        "name": "14060209069.zip",
+        "bytes": 215976252,
+        "sha256": "18203f671d5b135870e088c267463bf6e8d8c5922b67a4991d83ba76080aa329"
+      },
+      {
+        "directory": "server-43554037357-1",
+        "name": "14097179553.zip",
+        "bytes": 215976251,
+        "sha256": "124c0566bc3746627696bc62be00f74954568d239cff5226a25eec85bc735cf2"
+      },
+      {
+        "directory": "server-43373323321-1",
+        "name": "14014155653.zip",
+        "bytes": 215975812,
+        "sha256": "d235f340e9cf797e2f749991b557b2735a9a2026ac5f35a168fa219a3fbb1ee6"
+      },
+      {
+        "directory": "server-43692516659-1",
+        "name": "14153775349.zip",
+        "bytes": 215982751,
+        "sha256": "9a9059bad83c1a36a9e1612fc9510810c9083a42d39c876d943a413b76039d51"
+      },
+      {
+        "directory": "server-43628466598-1",
+        "name": "14127640136.zip",
+        "bytes": 215986320,
+        "sha256": "baf3806dd0fb74b97818b24fe020450b0962d9ddcc30eaea2a54f2e802400723"
+      },
+      {
+        "directory": "server-43662589149-1",
+        "name": "14140049857.zip",
+        "bytes": 215982761,
+        "sha256": "094ff3278e1bce03efd139f18071464ebfee1757a203111c7dbb3c5316e06c7b"
+      },
+      {
+        "directory": "server-43620970891-1",
+        "name": "14123834136.zip",
+        "bytes": 215986315,
+        "sha256": "a64e0dba707443fecc5d2c55226d457b195bf1120e6f647173c9a6a5dbdb3db7"
+      }
+    ],
+    "count": 8,
+    "total_bytes": 1727842713,
+    "free_bytes": 102380916736,
+    "target_zip": false,
+    "target_partial": false,
+    "submission": false,
+    "request": false,
+    "receiver_sha256": "b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4",
+    "gateway_sha256": "877fe548164b127d8f3820bafa4b0c44797a8a732a9a829c1c82de098b8e2ab8",
+    "archive_sha256": "80dabe812df7731d606f248137f4a1d1a0f2bdfaee89846918f41d6f2378626f",
+    "archive_bytes": 215976268
+  },
+  "final_backend_status": {
+    "schema_version": 1,
+    "status": "deployment_ready",
+    "user": "nodia-deploy",
+    "forced_command": true,
+    "privileged_helper_enabled": true,
+    "deployment_implemented": true,
+    "deployment_requested": false,
+    "current": {
+      "release_id": "backend-e2c2eca346a2-d096d1b33274",
+      "source_sha": "e2c2eca346a2aa6b084dd04e84efebefbce478d9",
+      "package_tree_sha256": "d096d1b33274812cc54b83bf0090d222476a7fe6f5b77d2406c7f97680495979"
+    },
+    "blocked": false,
+    "application": {
+      "api_active": true,
+      "worker_active": true
+    }
+  },
+  "maintenance_script_sha256": "a3723753da62957063bcc336a685d874786b9da348daf435d75c4b2616543e74",
+  "runtime_gateway_updated": false,
+  "deployment_retried": false,
+  "sudo_timestamp_invalidated": true,
+  "administrative_session_closed": true,
+  "checks": {
+    "node_linux": {
+      "runtime": "24.22.2",
+      "passed": 130,
+      "skipped": 0
+    },
+    "receiver_gateway_linux_root": {
+      "passed": 27,
+      "skipped": 0
+    },
+    "archive_linux_root": {
+      "passed": 16,
+      "skipped": 0
+    }
+  },
+  "automatic_retry_allowed": false
+}

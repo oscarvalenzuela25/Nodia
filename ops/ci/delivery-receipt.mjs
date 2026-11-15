@@ -5,7 +5,7 @@ import { isHex, isSha, numeric, repository } from './cd-github.mjs';
 import { pwaVerificationDetails } from './pwa-assets.mjs';
 
 const statusValues = new Set(['baseline_verified', 'prepared', 'preflight_started', 'preflight_verified', 'not_required', 'already_current',
-  'upload_requested', 'deployment_requested', 'submitted', 'complete', 'failed', 'unknown',
+  'upload_requested', 'upload_rejected', 'deployment_requested', 'submitted', 'complete', 'failed', 'unknown',
   'asset_check_requested', 'asset_upload_requested', 'asset_hash_registration_requested',
   'pages_submission_requested', 'published_assets_verification_failed']);
 const fixedErrors = new Set(['cd_failed_inspect_private_state', 'pages_response_unsuccessful', 'pages_response_invalid',
@@ -14,6 +14,8 @@ const fixedErrors = new Set(['cd_failed_inspect_private_state', 'pages_response_
   'verified_client_extract_failed', 'backend_must_be_confirmed_before_pages', 'backend_changed_after_plan',
   'backend_operation_requires_reconciliation', 'backend_operation_poll_deadline_requires_reconciliation',
   'backend_submission_outcome_unknown', 'backend_upload_outcome_unknown', 'backend_poll_outcome_unknown',
+  'incoming_quota_reached_operator_cleanup_required', 'insufficient_upload_headroom',
+  'prior_update_requires_reconciliation', 'upload_already_recorded_no_automatic_replay',
   'prior_cd_run_requires_operator_reconciliation', 'prior_cd_pages_outcome_requires_reconciliation',
   'pages_status_deadline_requires_reconciliation', 'existing_pages_deployment_requires_reconciliation',
   'pages_baseline_changed_after_plan', 'pages_canonical_version_mismatch', 'pages_deployment_failed_requires_reconciliation',

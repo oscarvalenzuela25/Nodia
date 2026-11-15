@@ -1409,3 +1409,37 @@ keyrings y timers conservados/restaurados. HTTPS200/auth401 comprobados sin
 desactivar TLS. El usuario recargó Teacher y confirmó desaparición del aviso
 y propuesta GPT/medium generada. Esta aceptación humana es acotada; no aprueba
 ADR/fichas ni acredita otras selecciones, modalidades o el curso completo.
+
+## 30. Upload de backend: cuota activa y diagnóstico — 2026-11-15
+
+[CI43753748903](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43753748903)
+correcto; [CD43754640640](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43754640640)
+falló en upload antes de submit/deploy y de publicar Client. No es un fallo de
+Teacher ni de build. La operación df43e4475de09c49dad98e773279fe93 no existe;
+inspección root confirmó ausencia de ZIP/partial/request/submission nuevos.
+
+Causa confirmada: incoming1943818981bytes más ZIP215982270 excede la cuota
+2147483648 por12317603bytes, pese a102GB libres. Se archivó reversiblemente un
+ZIP histórico complete/no-current, con pins/hash/locks/referencias comprobados,
+sin borrar nada ni elevar límites. Incoming final8ZIPs/1727842713bytes; current
+e2c2eca3 y API/worker intactos, blocked:false. sudo invalidado/tmux cerrado.
+[Evidencia y recibo](../evidence/production-upload-quota-20261115.md) conservan
+identidades, hashes y archivo exactos. No repetir el mantenimiento ya aplicado.
+
+Candidato en `codex/fix-deploy-upload-diagnostics` desde development1a6336aa:
+gateway conserva rechazo root temprano ante EPIPE; Node/recibo distinguen cuatro
+códigos cerrados de unknown sin exponer respuesta libre o permitir replay. Nuevo
+operador dry-run/apply archiva un ZIP complete/no-current con intent/fsync y
+rename NOREPLACE. Pruebas Linux:130Node,27receiver/gateway y16archivado correctas,
+sin omisiones; ensayo operatorio real independiente de esas fixtures.
+
+El gateway productivo conserva su hash original; corrección diagnóstica requiere
+adopción operatoria con pin aparte de la promoción de código. No cambiar permisos,
+reiniciar servicios o relajar el receiver para solucionar recepción. Este archivado
+reversible no altera arquitectura de autoridad ni contratos de dominio, por lo que
+no incorpora un ADR nuevo o publica fichas NodiaAI.
+
+Continuidad: PR/promoción y CI/CD nuevos confiables; no reintentar CD43754640640
+ni conservar el mismo CI como intención nueva. Teacher UI no desplegado todavía.
+La cuota debe mantenerse mediante archivos terminales verificados y una política
+de archivo/retención futura; el helper no automatiza borrados o selecciona por edad.
