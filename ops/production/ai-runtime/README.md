@@ -1,5 +1,69 @@
 # Login de Codex y Antigravity en el VPS
 
+## Teacher GPT: host separado y diagnóstico — candidato 2026-11-14
+
+Teacher GPT utiliza el host de texto de [ADR093](../../../docs/architecture/decisions/ADR-093-teacher-agentic-text-runtimes.md),
+además del app-server Codex que usa el chat. El login Codex y el indicador verde
+no instalan ese binario ni prueban que Teacher pueda utilizarlo. El wrapper exige
+`NODIA_CODEX_TEACHER_HOST` y `NODIA_CODEX_TEACHER_HOST_SHA512`; su ausencia se
+informa ahora como `codex_host_unconfigured`, en vez de ocultarse bajo
+`provider_unavailable`. Una observación nativa negativa conserva su fecha real;
+un fallo anterior a ella mantiene `checked_at:null`.
+
+Inspección SSH de lectura del2026-11-14: release
+`backend-307ffbccc510-3b25a0834e0f`, API/worker activos, drop-ins70Codex/71Gemini;
+no se encontró el host Teacher en el paquete ni en las rutas públicas revisadas.
+El configurador/packager productivo tampoco lo aprovisiona. No se leyó el
+`runtime.env` protegido, no se obtuvo una sesión HTTP del usuario ni se atribuye
+el resultado concreto de `/teacher/connections/2/eligibility` a un error interno
+que esa respuesta anterior no identifica.
+
+El candidato [prepare-teacher-runtime.py](prepare-teacher-runtime.py) implementa
+la instalación separada. No se ejecutó en el VPS. Flujo de operación posterior:
+
+1. Construir y empaquetar el host con los pins y ABI de
+   [su guía](../../../nodia-server/native/teacher-codex-host/README.md).
+   Se exige perfil `release`, Linuxx86_64, glibc≤2.39, manifiesto exacto y
+   capacidades sin tools/adjuntos/retries. El artefacto `dev` histórico no sirve.
+2. Instalar las fuentes revisadas del updater, `register-consumers.py` y
+   `prepare-teacher-runtime.py` en sus rutas root mediante el procedimiento de
+   actualización de operadores existente, contrastando sus hashes antes de
+   ejecutarlas. No repetir `prepare-ai-runtime.py` sobre la instalación activa.
+3. Transferir el binario/manifiesto públicos y proporcionar el SHA256 del
+   manifiesto revisado por un canal independiente. Ejecutar como root:
+
+   ```bash
+   python3 -I /usr/local/lib/nodia/ai-runtime/prepare-teacher-runtime.py prepare \
+     --artifact /ruta/revisada/nodia-teacher-codex-host-HASH16 \
+     --manifest /ruta/revisada/host.manifest.json --manifest-sha256 SHA256_REVISADO
+   ```
+
+   Verifica SHA256/SHA512, commit, ABI y `--capabilities` como nodia en un
+   proceso aislado sin red/perfiles. Conserva un host inmutable por SHA512 y
+   prepara el archivo de entorno; todavía no modifica los consumidores.
+4. Durante una ventana operativa con respaldo y drenaje comprobados, detener
+   ambos consumidores y ejecutar `prepare-teacher-runtime.py activate`.
+   Rechaza consumidores activos o jobs/owners pendientes mediante el preflight
+   SQL READ ONLY/TLS existente. Añade exclusivamente72Teacher a ambos,
+   recarga systemd y registra los hashes; **deja API/worker detenidos**.
+   El operador verifica el recibo y los inicia mediante el procedimiento normal.
+5. Comprobar la elegibilidad de la selección exacta con sesión autorizada.
+   Configuración, capabilities y elegibilidad no sustituyen una generación real
+   ni acreditan otros modelos/intensidades/modalidades.
+
+El guard CD conserva la instalación70/71 existente y admite opcionalmente72
+con un registro que fija los hashes del entorno y del binario. El archivo de
+entorno sólo puede contener las dos variables exactas del host; cualquier otra
+variable, symlink, contenido modificado o inventario parcial falla. Backups y
+timers no admiten este permiso. El registro permite sólo la adición inicial de
+Teacher; no sustituye silenciosamente un host ya registrado. Un fallo conserva
+el estado y requiere inspección, sin retry o reinicio automático.
+
+Verificación local: pruebas sintéticas de manifiesto/capacidades/ABI/digests,
+barreras de activación, registro CD y drift de entorno/binario. Docker local no
+estaba disponible; no se compiló ni preparó un paquete `release` nuevo, no se
+instaló el operador remoto, no se cambió la configuración ni se ejecutó inferencia.
+
 ## Estado — 2026-11-12, America/Santiago
 
 Rama `codex/enable-ai-provider-login`, creada desde `origin/development`

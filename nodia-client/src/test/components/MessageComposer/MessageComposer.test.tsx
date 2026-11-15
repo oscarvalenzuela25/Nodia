@@ -63,6 +63,23 @@ describe("shared message composer", () => {
     expect(screen.getByRole("textbox", { name: props.label })).toBe(input);
     expect(props.onTextChange).not.toHaveBeenCalled();
   });
+  it("replaces Send with an owner's stop control and blocks form or Enter admission without remounting the draft", async () => {
+    const stop = vi.fn();
+    const view = render(<MessageComposer {...props} />);
+    const input = screen.getByRole("textbox", { name: props.label });
+    view.rerender(<MessageComposer {...props} disabled sendAction={<button type="button" onClick={stop}>Detener turno sintético</button>} />);
+    expect(screen.queryByRole("button", { name: props.sendLabel })).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: props.label })).toBe(input);
+    expect(input).toHaveValue(props.text);
+    fireEvent.keyDown(input, { key: "Enter" });
+    fireEvent.submit(input.closest("form")!);
+    await userEvent.click(screen.getByRole("button", { name: "Detener turno sintético" }));
+    expect(stop).toHaveBeenCalledOnce();
+    expect(props.onSend).not.toHaveBeenCalled();
+    view.rerender(<MessageComposer {...props} />);
+    expect(screen.getByRole("textbox", { name: props.label })).toBe(input);
+    expect(screen.getByRole("button", { name: props.sendLabel })).toBeEnabled();
+  });
   it("keeps explicit receipt recovery available without letting Enter resend locked input", async () => {
     render(<MessageComposer {...props} inputDisabled voiceDisabled submitOnEnter={false} sendLabel="Comprobar envío" />);
     const input = screen.getByRole("textbox", { name: props.label }); expect(input).toBeDisabled();

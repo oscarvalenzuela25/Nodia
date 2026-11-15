@@ -1,5 +1,35 @@
 # Negocios: contrato vigente de interfaz
 
+## Alta desde barcode desconocido en POS — 2026-11-14
+
+Sólo404 product:not_found del lookup exacto abre la decisión de registro. Sí
+reutiliza ProductModal con barcode textual precargado (ceros preservados); No,
+cierre o cancelación limpia y devuelve el foco al lector. Asociación con producto
+existente permanece explícita con revisión/confirmación. Al terminar el alta se
+añade una unidad a la misma venta local una sola vez y se limpia/enfoca el lector
+(plan94§40); no confirma/cobra la venta. Cancelar/error conserva partidas.
+El alta conserva
+el guardado recuperable y los errores del formulario. Lookup/overlays bloquean
+acciones dependientes y descartan resultados de otro actor/sesión/negocio/venta.
+Ver plan94§39 y recibo de pruebas para distinguir local, VM y hardware físico.
+
+## Productos: alias y códigos — solicitud2026-11-14
+
+Alias nullable independiente del nombre de factura, máximo255caracteres y
+normalizado por trim. CRUD incluye checkbox «Utilizar el nombre como alias»:
+marcado con vacío/blancos, escritura personalizada desmarca, guardar marcado
+copia el nombre sin bool persistido. Edición con alias requiere expected_version.
+OCR requiere revisión explícita de nuevos/existentes sin alias; lápiz abre
+modal local con nombre arriba y alias/checkbox. Con alias existente se conserva.
+Prevalidar todas las filas/comandos antes del primer POST; errores conservan
+borrador y modal. No declarar transacción global del flujo de varias peticiones.
+Vinculación manual rotula «(Sin código)» y conserva ID/revisión/campos elegidos.
+Busca en Server por q.search (nombre OR alias); filtros q.code_presence y
+q.barcode_presence present/missing, Todos omitido. Limpiar restaura Todos en
+ambos y Activo en actividad; aplicar/quitar reinicia página. CSV agrega alias y
+omitir columna conserva el anterior; fingerprint de recuperación incluye alias.
+[Plan94§38](../../../../docs/mvp/94-business-point-of-sale-and-product-refactor.md#38-alias-humano-de-productos-y-revisión-ocr--solicitud2026-11-14).
+
 Actualizado por solicitud del usuario el 2026-10-09. Registro de implementación; no implica aprobación documental automática.
 
 - Rutas canónicas: `/business` y `/business/:id`, independientes del grupo del menú. Los enlaces anteriores `/tools/business` sólo redirigen al mismo destino guardado (ADR-092, 2026-11-01).

@@ -7,12 +7,26 @@ import {
   IsUUID,
   IsNumber,
   IsIn,
+  MaxLength,
   ArrayMaxSize,
   ArrayNotEmpty,
   ValidateBy,
 } from 'class-validator';
 
 export class FilterProductDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  search?: string;
+
+  @IsOptional()
+  @IsIn(['present', 'missing'])
+  code_presence?: 'present' | 'missing';
+
+  @IsOptional()
+  @IsIn(['present', 'missing'])
+  barcode_presence?: 'present' | 'missing';
+
   @IsOptional()
   @Transform(({ value }) => Array.isArray(value) ? value : typeof value === 'string' ? value.split(',') : value)
   @IsArray()

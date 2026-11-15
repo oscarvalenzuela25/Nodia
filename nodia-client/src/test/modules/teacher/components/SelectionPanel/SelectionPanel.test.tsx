@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import SelectionPanel from "../../../../../modules/teacher/components/SelectionPanel";
 import type { ConnectionCatalog, ConnectionModelsObservation } from "../../../../../modules/teacher/infrastructure/selection";
 import type { Selection } from "../../../../../modules/teacher/infrastructure/schemas";
+import i18n from "../../../../../translate";
 
 const mocks = vi.hoisted(() => ({ query: vi.fn(), catalogRefetch: vi.fn(), modelsRefetch: vi.fn(), eligibilityRefetch: vi.fn() }));
 vi.mock("../../../../../modules/teacher/infrastructure/useServices", () => ({ useTeacherQuery: mocks.query }));
@@ -25,17 +26,35 @@ let modelData: ConnectionModelsObservation | undefined;
 let modelsFetching: boolean;
 let modelsFailed: boolean;
 let eligibilityFetching: boolean;
+let reasonCode: string;
 const onSave = vi.fn(async () => {});
 beforeEach(() => {
   catalog = catalogFixture(); eligible = true; failed = false; fetching = false; observed = exact; onSave.mockReset(); onSave.mockResolvedValue(undefined);
   mocks.catalogRefetch.mockReset(); mocks.eligibilityRefetch.mockReset();
   mocks.modelsRefetch.mockReset(); modelData = undefined; modelsFetching = false; modelsFailed = false; eligibilityFetching = false;
+  reasonCode = "adapter_unqualified";
   mocks.query.mockImplementation((path: string) => path.endsWith("/models")
     ? { data: modelData, isLoading: modelsFetching && !modelData, isFetching: modelsFetching, isError: modelsFailed, refetch: mocks.modelsRefetch }
-    : { data: path === "connections" ? catalog : { selection: observed, eligible, reason_code: eligible ? null : "adapter_unqualified", checked_at: null }, isLoading: false, isFetching: fetching || (path !== "connections" && eligibilityFetching), isError: failed, refetch: path === "connections" ? mocks.catalogRefetch : mocks.eligibilityRefetch });
+    : { data: path === "connections" ? catalog : { selection: observed, eligible, reason_code: eligible ? null : reasonCode, checked_at: null }, isLoading: false, isFetching: fetching || (path !== "connections" && eligibilityFetching), isError: failed, refetch: path === "connections" ? mocks.catalogRefetch : mocks.eligibilityRefetch });
 });
 
 describe("Teacher composer selection", () => {
+  it("explains the public Codex failure without treating configured reasoning as runtime availability", () => {
+    eligible = false; reasonCode = "codex_session_required";
+    const changed = vi.fn();
+    render(<SelectionPanel intent="create" initial={exact} busy={false} onSelectionChange={changed} />);
+    expect(changed).toHaveBeenLastCalledWith({ selection: exact, ready: false });
+    expect(screen.getByRole("button", { name: "Razonamiento" })).toHaveTextContent("high");
+    expect(screen.getByRole("alert")).toHaveTextContent(i18n.t("teacher:reasons.codex_session_required"));
+    expect(screen.queryByText(i18n.t("teacher:reasons.unknown"))).not.toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+    for (const code of ["codex_host_unconfigured", "codex_host_unverified", "codex_runtime_unavailable", "codex_session_required",
+      "codex_model_unavailable", "codex_profile_busy", "codex_protocol_invalid", "agentic_connection_unavailable",
+      "agentic_model_unavailable", "agentic_runtime_unavailable", "agentic_protocol_invalid", "configuration_changed", "runtime_busy"]) {
+      for (const lng of ["es", "en"]) expect(i18n.exists(`teacher:reasons.${code}`, { lng })).toBe(true);
+    }
+  });
+
   it("recovers historical Codex options without saving provider configuration and enables only exact eligibility", async () => {
     catalog.items[1].provider_key = "openai";
     catalog.items[1].modes[0].models[0].efforts = [];

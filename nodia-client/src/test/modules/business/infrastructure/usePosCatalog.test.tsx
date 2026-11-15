@@ -33,7 +33,7 @@ describe("POS catalogue shared infinite reader", () => {
     products.mockResolvedValueOnce(page([item("1"), item("2")], 1, 2)).mockReturnValueOnce(next.promise);
     const { result } = renderHook(() => usePosCatalog("business-a"), { wrapper: Wrapper });
     await waitFor(() => expect(result.current.products).toHaveLength(2));
-    expect(products).toHaveBeenCalledExactlyOnceWith({ page: 1, limit: 24, includes: true, q: { business_id_eq: "business-a", is_active_eq: true, has_stock_eq: true, name_cont: undefined, s: "name asc" } });
+    expect(products).toHaveBeenCalledExactlyOnceWith({ page: 1, limit: 24, includes: true, q: { business_id_eq: "business-a", is_active_eq: true, has_stock_eq: true, search: undefined, s: "name asc" } });
     expect(result.current.hasNextPage).toBe(true); // Two returned rows are not the global total.
     let loading!: Promise<void>;
     act(() => { loading = result.current.loadMore(); void result.current.loadMore(); });
@@ -62,7 +62,7 @@ describe("POS catalogue shared infinite reader", () => {
     await act(async () => { await vi.advanceTimersByTimeAsync(1); });
     vi.useRealTimers();
     await waitFor(() => expect(result.current.products[0]?.name).toBe("Coffee"));
-    expect(products.mock.calls[1][0]?.q?.name_cont).toBe("Coffee"); expect(products.mock.calls[1][0]?.page).toBe(1);
+    expect(products.mock.calls[1][0]?.q?.search).toBe("Coffee"); expect(products.mock.calls[1][0]?.page).toBe(1);
     expect(selectBeforeSearch("1")).toBeNull(); expect(result.current.resolveSelection("2")?.id).toBe("2");
   });
 
@@ -130,7 +130,7 @@ describe("POS catalogue shared infinite reader", () => {
     await waitFor(() => expect(result.current.products).toHaveLength(1));
     rerender({ assignment: true });
     await waitFor(() => expect(result.current.products[0]?.id).toBe("2"));
-    expect(products.mock.calls[1][0]?.q).toEqual({ business_id_eq: "business-a", is_active_eq: true, name_cont: undefined, s: "name asc" });
+    expect(products.mock.calls[1][0]?.q).toEqual({ business_id_eq: "business-a", is_active_eq: true, search: undefined, s: "name asc" });
     const previousSelect = result.current.resolveSelection;
     act(() => useAuthStore.setState({ sessionVersion: useAuthStore.getState().sessionVersion + 1 }));
     await waitFor(() => expect(result.current.products[0]?.id).toBe("3"));

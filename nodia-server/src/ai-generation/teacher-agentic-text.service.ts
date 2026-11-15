@@ -5,6 +5,7 @@ import { AiGenerationPort, type AiGenerationExecutionContext, type AiGenerationR
 import type { AiSelection } from './ai-selection.js';
 import { TEACHER_GENERATION_POLICY_HASH, TEACHER_GENERATION_POLICY } from './teacher-qualification-policy.js';
 import { GeminiTeacherTextTransport } from './gemini-teacher-text-transport.js';
+import { CodexOperationException } from '../common/ai/codex/codex-contract.js';
 import {
   CODEX_TEACHER_TEXT_TRANSPORT, TEACHER_AGENTIC_CONTRACT,
   TeacherAgenticClosedError, TeacherAgenticUnclosedError,
@@ -22,6 +23,20 @@ const referenceKeys = ['contract', 'operation_id', 'session_id', 'job_id', 'atte
 const exactText = (v: unknown, max: number): v is string => typeof v === 'string' && v === v.trim()
   && v.length > 0 && Buffer.byteLength(v, 'utf8') <= max && agenticWellFormedText(v) && ![...v].some(c => c.charCodeAt(0) < 32);
 const decimal = (v: unknown): v is string => typeof v === 'string' && /^[1-9][0-9]{0,18}$/u.test(v) && BigInt(v) <= 9223372036854775807n;
+const eligibilityReasons = new Set([
+  'codex_host_unconfigured', 'codex_host_unverified', 'codex_runtime_unavailable',
+  'codex_session_required', 'codex_model_unavailable', 'codex_profile_busy', 'codex_protocol_invalid',
+  'agentic_connection_unavailable', 'agentic_model_unavailable', 'agentic_runtime_unavailable',
+  'agentic_protocol_invalid', 'configuration_changed', 'runtime_busy',
+]);
+function eligibilityReason(error: unknown): string {
+  const code = error instanceof CodexOperationException ? error.code
+    : error instanceof Error && error.message.startsWith('teacher:') ? error.message.slice(8) : null;
+  return code && eligibilityReasons.has(code) ? code : 'provider_unavailable';
+}
+class TeacherAgenticUnavailableObservation extends Error {
+  constructor(reason: string, readonly checkedAt: string) { super(`teacher:${reason}`); }
+}
 function selectionValid(selection: AiSelection): void {
   if (!selection || selection.mode !== 'agentic' || !decimal(selection.connection_id)
       || !exactText(selection.model_id, 1024) || !(selection.effort_id === null || exactText(selection.effort_id, 256)))
@@ -85,9 +100,10 @@ export class TeacherAgenticTextService extends AiGenerationPort {
 
   private project(selection: AiSelection, provider: TeacherAgenticProvider, generation: string, value: unknown): TeacherAgenticConfiguration {
     const observed = parseTeacherAgenticObservation(value, provider);
-    if (!observed.available && ['runtime_busy', 'codex_profile_busy'].includes(observed.reason ?? '')) throw Error('teacher:runtime_busy');
     if (!observed.available || !observed.resource_key || !observed.binary_sha512)
-      throw Error('teacher:agentic_runtime_unavailable');
+      throw new TeacherAgenticUnavailableObservation(
+        observed.reason === 'codex_profile_busy' ? 'runtime_busy'
+          : observed.reason && eligibilityReasons.has(observed.reason) ? observed.reason : 'agentic_runtime_unavailable', observed.observed_at);
     return { providerKey: provider, connectionId: selection.connection_id, keyId: null,
       configurationGeneration: generation, sessionGeneration: observed.session_generation,
       resourceKey: observed.resource_key, agentic: observed };
@@ -121,7 +137,8 @@ export class TeacherAgenticTextService extends AiGenerationPort {
       return { eligible: true, reason_code: 'runtime_available', checked_at: live.agentic.observed_at, selection };
     } catch (error) {
       if (signal.aborted) throw error;
-      return { eligible: false, reason_code: 'provider_unavailable', checked_at: null, selection };
+      return { eligible: false, reason_code: eligibilityReason(error),
+        checked_at: error instanceof TeacherAgenticUnavailableObservation ? error.checkedAt : null, selection };
     }
   }
 

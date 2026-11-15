@@ -21,7 +21,7 @@ def package(output):
     names = ['prepare-ai-runtime.py', 'activate-ai-runtime.py', 'gemini-host.py', 'runtime-preflight.mjs',
              'nodia-gemini.service', 'codex-provision.py', 'codex-keyring.py', 'codex-bus.conf',
              'codex-bus.service', 'codex-keyring.service', 'codex-runtime.conf', 'codex-native-probe.mjs',
-             'verify-gemini-host.py', 'register-consumers.py']
+             'verify-gemini-host.py', 'register-consumers.py', 'prepare-teacher-runtime.py']
     for name in names:
         shutil.copyfile(source / name, output / name)
     shutil.copyfile(root / 'docs/evidence/scripts/attach-nodia-gemini-login-cgroup.py', output / 'attach-login-cgroup.py')

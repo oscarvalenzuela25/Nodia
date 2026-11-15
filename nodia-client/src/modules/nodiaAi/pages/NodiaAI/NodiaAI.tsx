@@ -34,7 +34,6 @@ import ConversationManagement, {
 import type { ConversationFilters } from "../../components/ConversationHistory/types";
 import ChatComposer from "../../components/ChatComposer";
 import ChatMessage from "../../components/ChatMessage";
-import ConversationTitle from "../../components/ConversationTitle";
 import ComposerSelection from "../../components/ComposerSelection";
 import { useAttachmentDrafts } from "../../components/Attachments/hooks/useAttachmentDrafts";
 import ExecutionObservation from "../../components/ExecutionObservation";
@@ -61,7 +60,7 @@ import {
 import {
   Actions,
   Chat,
-  ChatHeading,
+  ChatNotices,
   Header,
   History,
   Messages,
@@ -171,10 +170,6 @@ function ChatPage() {
   const updateConversation = useUpdateNodiaAiConversation(
     operation?.chat.conversation_id ?? null,
   );
-  const renameConversation = useUpdateNodiaAiConversation(chatId);
-  const titleLock = useRef(false);
-  const [titleErrorState, setTitleErrorState] = useState<{ chatId: string; message: string } | null>(null);
-  const titleError = titleErrorState?.chatId === chatId ? titleErrorState.message : null;
   const catalog = useNodiaAiCatalog(!!chat && !chat.read_only);
   const eligibility = useNodiaAiEligibility(
     inlineDirty ? inlineDraft : (chat?.selection ?? null),
@@ -260,7 +255,6 @@ function ChatPage() {
     admit.isPending ||
     saving ||
     updateConversation.isPending ||
-    renameConversation.isPending ||
     attachments.admissionInFlight;
   const readBusy = detail.isFetching || history.isFetching;
   const sendDisabled =
@@ -333,29 +327,6 @@ function ChatPage() {
   };
   const recoverContent = () =>
     Promise.all([detail.refetch(), history.refetch()]);
-  const saveTitle = async (title: string | null, revision: number) => {
-    if (!chatId || !chat || chat.read_only || titleLock.current || busy || readBusy || active
-      || !detail.draftAuthorized || detail.isError || history.isError || currentChat.current !== chatId)
-      throw new Error(t("detail_error"));
-    const boundId = chatId;
-    titleLock.current = true;
-    setTitleErrorState(null);
-    try {
-      await renameConversation.mutateAsync({ expected_conversation_revision: revision, title });
-    } catch (error) {
-      if (currentChat.current === boundId) setTitleErrorState({ chatId: boundId, message: getHttpErrorMessage(error) });
-      throw error;
-    } finally {
-      titleLock.current = false;
-    }
-  };
-  const refreshTitle = async () => {
-    const boundId = chatId;
-    const result = await detail.refetch();
-    if (currentChat.current !== boundId || result.isError || !result.data || result.data.conversation.read_only) return null;
-    setTitleErrorState(null);
-    return result.data.conversation;
-  };
   const loadOlderMessages = async () => {
     const node = messageScroll.current;
     if (!chatId || !node || history.isFetching || recording) return;
@@ -563,36 +534,11 @@ function ChatPage() {
           </History>
         )}
         <Chat>
-          <ChatHeading>
-            {chat ? <ConversationTitle key={chat.conversation_id}
-              conversation={chat} readOnly={chat.read_only}
-              disabled={!detail.draftAuthorized || busy || readBusy || active || !!operation || recording || attachments.busy || uncertain === chatId || detail.isError || history.isError}
-              busy={renameConversation.isPending} error={titleError}
-              onSave={saveTitle} onRefresh={refreshTitle}
-            /> : <Typography
-              component="h2"
-              variant="h6"
-              sx={{ fontSize: { xs: "1rem", sm: "1.25rem" }, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}
-            >
-              {t(chatId ? "untitled" : "welcome")}
-            </Typography>}
-            {chat && (
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                <Chip
-                  size="small"
-                  sx={{ display: { xs: "none", sm: "inline-flex" } }}
-                  label={
-                    chat.selection
-                      ? `${t(`modes.${chat.selection.mode}`)} · ${chat.selection.model_id}`
-                      : t("no_selection")
-                  }
-                />
-                {chat.read_only && <Chip size="small" label={t("read_only")} />}
-              </Box>
-            )}
-            {readBusy && !detail.isLoading && !active && (
-              <LinearProgress aria-label={t("refreshing")} sx={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2 }} />
-            )}
+          {readBusy && !detail.isLoading && !active && (
+            <LinearProgress aria-label={t("refreshing")} sx={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, zIndex: 1, borderRadius: 1 }} />
+          )}
+          <ChatNotices>
+            {chat?.read_only && <Chip size="small" label={t("read_only")} />}
             {requestedId && !chatId && (
               <Alert severity="error">{t("invalid_chat")}</Alert>
             )}
@@ -670,7 +616,7 @@ function ChatPage() {
             {usable && eligibility.data?.supports_image_generation === false && (
               <Typography variant="caption" color="text.secondary">{t("image_generation.unverified")}</Typography>
             )}
-          </ChatHeading>
+          </ChatNotices>
           <Messages
             ref={messageScroll}
             role="region"
@@ -806,12 +752,6 @@ function ChatPage() {
                 conversationId={chatId}
                 run={run}
                 onProgress={followActivity}
-                activityControls={<RunCancellation
-                  conversationId={chatId}
-                  run={run}
-                  authorized={detail.draftAuthorized && !detail.isFetching && !detail.isError}
-                  readOnly={chat?.read_only ?? true}
-                />}
               />
             )}
           </Messages>
@@ -820,6 +760,10 @@ function ChatPage() {
               conversationId={chatId!} conversationRevision={chat.revision}
               text={draft} onTextChange={text => { composerDraft.setText(text); attachments.dismissRejectedAdmission(); }}
               draft={attachments} disabled={sendDisabled || uncertain === chatId || inlineDirty}
+              sendAction={uncertain !== chatId && run && ["queued", "running", "cancel_requested"].includes(run.state) ? <RunCancellation
+                key={run.run_id} compact conversationId={chatId!} run={run}
+                authorized={detail.draftAuthorized && !detail.isFetching && !detail.isError}
+                readOnly={chat.read_only} /> : undefined}
               recovering={uncertain === chatId}
               textTooLarge={messageTextBytes > NODIA_AI_MESSAGE_TEXT_BYTES}
               onSend={() => void send()} onRecordingChange={setRecording}

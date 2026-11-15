@@ -11,6 +11,8 @@ import SelectSingleInput from "../../../../../../../../components/inputs/SelectS
 import type { SelectSingleInputProps } from "../../../../../../../../components/inputs/SelectSingleInput/types";
 import type { ProductEntity, ProviderEntity } from "../../../../../../infrastructure/types";
 import ProductImageDraft from "./ProductImageDraft";
+import ProductAliasInput from "../../../../../../components/ProductAliasInput";
+import { normalizeProductAlias, productAliasFits, productAliasUsesName, resolveProductAlias } from "../../../../../../infrastructure/productAliases";
 import PriceSuggestion from "../PriceSuggestion";
 import { useDeferredProductSave } from "./hooks/useDeferredProductSave";
 import type { ProductImageChange, ProductSaveTarget } from "./hooks/useDeferredProductSave";
@@ -25,7 +27,8 @@ import { calculateProductPricing, PRODUCT_PRICE_MAX, validProductTaxRate, type P
 
 const integerMoney = z.number().int().min(0).max(PRODUCT_PRICE_MAX);
 const productSchema = z.object({
-  code: z.string().trim().refine(productCodeFits).nullable().transform((value) => value || null), name: z.string().trim().min(1),
+  code: z.string().trim().refine(productCodeFits).nullable().transform((value) => value || null), name: z.string().trim().min(1).refine(value => [...value].length <= 255),
+  alias: z.string().nullable().refine(productAliasFits).transform(normalizeProductAlias),
   measurement_unit: z.enum(MEASUREMENT_UNITS),
   barcode: z.string().nullable().refine((value) => { if (value === null) return true; try { return barcodeValue(value) === value; } catch { return false; } }),
   cost_price: integerMoney, cost_price_tax: integerMoney, sale_price: integerMoney,
@@ -37,13 +40,15 @@ export type ProductFormData = z.infer<typeof productSchema>;
 type ProductFormInput = z.input<typeof productSchema>;
 interface Props {
   open: boolean; onClose: () => void; onSubmit: (data: ProductFormData, target?: ProductSaveTarget) => Promise<ProductEntity>;
+  onSaved?: (product: ProductEntity) => void | Promise<void>;
   businessId: string;
   initialData?: ProductEntity | null; providers?: ProviderEntity[];
+  initialBarcode?: string;
   providerSearch?: Pick<SelectSingleInputProps, "onSearchChange" | "onLoadMore" | "hasMore" | "loadingOptions">;
   isSubmitting?: boolean;
 }
-const defaults = (product?: ProductEntity | null): ProductFormInput => ({
-  code: product?.code ?? null, name: product?.name ?? "", barcode: product?.barcode ?? null, measurement_unit: product?.measurement_unit ?? "unit",
+const defaults = (product?: ProductEntity | null, initialBarcode?: string): ProductFormInput => ({
+  code: product?.code ?? null, name: product?.name ?? "", alias: product?.alias ?? null, barcode: product ? product.barcode ?? null : initialBarcode ?? null, measurement_unit: product?.measurement_unit ?? "unit",
   cost_price: product?.cost_price ?? 0, cost_price_tax: product?.cost_price_tax ?? 0,
   sale_price: product?.sale_price ?? 0,
   offer_price: product ? product.offer_price ?? null : 0, is_offer_enabled: product?.is_offer_enabled ?? false,
@@ -54,17 +59,23 @@ const initialTaxRate = (product?: ProductEntity | null) => {
   const derived = Math.round((product.cost_price_tax / product.cost_price - 1) * 100);
   return derived >= 0 ? derived : 19;
 };
-export const ProductModal = ({ open, onClose, onSubmit, businessId, initialData, providers = [], providerSearch, isSubmitting: submitting = false }: Props) => {
+export const ProductModal = ({ open, onClose, onSubmit, onSaved, businessId, initialData, initialBarcode, providers = [], providerSearch, isSubmitting: submitting = false }: Props) => {
   const { t, i18n } = useTranslation(["business", "core", "product"]);
   const mobile = useMediaQuery(useTheme().breakpoints.down("sm"));
   const [imageChange, setImageChange] = useState<ProductImageChange>({ kind: "keep" });
   const saving = useDeferredProductSave({ businessId, initialProduct: initialData ?? null, persistFields: onSubmit });
   const [restoredProduct] = useState(() => saving.savedProduct ?? initialData);
+  const [openingBarcode] = useState(initialBarcode);
+  const focusProductName = Boolean(openingBarcode && !initialData && !restoredProduct);
+  const [aliasUsesName, setAliasUsesName] = useState(() => productAliasUsesName(restoredProduct?.name ?? "", restoredProduct?.alias));
   const [activeHelp, setActiveHelp] = useState<string | null>(null);
   const [imageBusy, setImageBusy] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [completing, setCompleting] = useState(false);
+  const savedCompletion = useRef(false);
+  useEffect(() => { if (open) savedCompletion.current = false; }, [open, initialData]);
   const [latest, setLatest] = useState<ProductEntity | null>(null);
-  const isSubmitting = submitting || imageBusy || checking || saving.busy;
+  const isSubmitting = submitting || imageBusy || checking || saving.busy || completing;
   const form = useRef<HTMLFormElement>(null);
   const barcodeFocusPending = useRef(false);
   useEffect(() => { barcodeFocusPending.current = open; }, [open]);
@@ -72,7 +83,7 @@ export const ProductModal = ({ open, onClose, onSubmit, businessId, initialData,
     if (!open || isSubmitting || !barcodeFocusPending.current) return;
     const activeAtRequest = document.activeElement;
     const frame = requestAnimationFrame(() => {
-      const input = form.current?.querySelector<HTMLInputElement>('input[name="barcode"]');
+      const input = form.current?.querySelector<HTMLInputElement>(focusProductName ? 'input[name="name"]' : 'input[name="barcode"]');
       if (input && !input.disabled && barcodeFocusPending.current) {
         barcodeFocusPending.current = false;
         if (document.activeElement !== activeAtRequest && document.activeElement !== input && form.current?.contains(document.activeElement)) return;
@@ -81,20 +92,25 @@ export const ProductModal = ({ open, onClose, onSubmit, businessId, initialData,
       }
     });
     return () => cancelAnimationFrame(frame);
-  }, [open, isSubmitting]);
+  }, [open, isSubmitting, focusProductName]);
   const [taxRate, setTaxRate] = useState(() => initialTaxRate(restoredProduct));
   const [pricingError, setPricingError] = useState<ProductPricingField | null>(null);
   const [previousOpen, setPreviousOpen] = useState(open);
-  if (previousOpen !== open) { setPreviousOpen(open); if (open) { setPricingError(null); setTaxRate(initialTaxRate(initialData ?? restoredProduct)); } }
+  if (previousOpen !== open) { setPreviousOpen(open); if (open) { setPricingError(null); setTaxRate(initialTaxRate(initialData ?? restoredProduct)); setAliasUsesName(productAliasUsesName((initialData ?? restoredProduct)?.name ?? "", (initialData ?? restoredProduct)?.alias)); } }
   const [previousProduct, setPreviousProduct] = useState(initialData);
-  if (previousProduct !== initialData) { setPreviousProduct(initialData); setTaxRate(initialTaxRate(initialData)); setPricingError(null); setImageChange({ kind: "keep" }); }
+  if (previousProduct !== initialData) { setPreviousProduct(initialData); setTaxRate(initialTaxRate(initialData)); setPricingError(null); setImageChange({ kind: "keep" }); setAliasUsesName(productAliasUsesName(initialData?.name ?? "", initialData?.alias)); }
   const currentProduct = saving.savedProduct ?? initialData;
   const version = currentProduct?.version;
-  const { control, reset, handleSubmit, getValues, setValue, formState: { errors } } = useForm<ProductFormInput, unknown, ProductFormData>({ resolver: zodResolver(productSchema), defaultValues: defaults(restoredProduct) });
+  const { control, reset, handleSubmit, getValues, setValue, formState: { errors } } = useForm<ProductFormInput, unknown, ProductFormData>({ resolver: zodResolver(productSchema), defaultValues: defaults(restoredProduct, openingBarcode) });
   const costPriceTax = useWatch({ control, name: "cost_price_tax" });
+  const productName = useWatch({ control, name: "name" });
+  const productAlias = useWatch({ control, name: "alias" });
   const salePrice = useWatch({ control, name: "sale_price" });
   const validSalePrice = Number.isInteger(salePrice) && salePrice >= 0 && salePrice <= PRODUCT_PRICE_MAX;
-  useEffect(() => { if (open) reset(defaults(initialData ?? restoredProduct)); }, [initialData, restoredProduct, open, reset]);
+  useEffect(() => { if (open) {
+    const source = initialData ?? restoredProduct;
+    reset(defaults(source, openingBarcode));
+  } }, [initialData, restoredProduct, open, reset, openingBarcode]);
   const help = (name: string, label: string) => <Tooltip title={t(name === "code" ? "product:supplier_code_optional_help" : name === "measurement_unit" ? "product:measurement_unit_help" : name === "sale_price" ? "business:product_field_help_sale_price" : `business:pos.field_help.${name}`)} open={activeHelp === name}
     onOpen={() => setActiveHelp(name)} onClose={() => setActiveHelp(null)}>
     <IconButton type="button" size="small" disabled={isSubmitting} aria-label={t("business:pos.field_help_label", { field: label })}
@@ -137,7 +153,7 @@ export const ProductModal = ({ open, onClose, onSubmit, businessId, initialData,
     if (["sale_price", "offer_price", "cost_price", "cost_price_tax"].includes(field) && typeof value === "number") return new Intl.NumberFormat(i18n.language, { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(value);
     return String(value);
   };
-  const fieldLabels = { name: "product_name", code: "pos.supplier_code", measurement_unit: "measurement_unit", barcode: "pos.barcode", sale_price: "product_sale_price", offer_price: "pos.alternate_price", is_offer_enabled: "pos.use_alternate", has_stock: "pos.availability", is_active: "active_label", cost_price: "product_cost_price", cost_price_tax: "product_cost_tax", provider_id: "product_provider" } as const;
+  const fieldLabels = { name: "product_name", alias: "product_alias", code: "pos.supplier_code", measurement_unit: "measurement_unit", barcode: "pos.barcode", sale_price: "product_sale_price", offer_price: "pos.alternate_price", is_offer_enabled: "pos.use_alternate", has_stock: "pos.availability", is_active: "active_label", cost_price: "product_cost_price", cost_price_tax: "product_cost_tax", provider_id: "product_provider" } as const;
   const canonicalReviewValue = (field: keyof ProductFormData, value: unknown) => {
     if (field === "measurement_unit" && value === undefined) return "unit";
     if (field === "code" && typeof value === "string") return value.trim() || null;
@@ -145,31 +161,49 @@ export const ProductModal = ({ open, onClose, onSubmit, businessId, initialData,
   };
   const reviewRows = latest ? (Object.keys(fieldLabels) as (keyof typeof fieldLabels)[]).map(field => {
     const saved = canonicalReviewValue(field, latest[field]);
-    const draft = canonicalReviewValue(field, getValues(field));
+    const draft = canonicalReviewValue(field, field === "alias" ? resolveProductAlias(getValues("name"), getValues("alias"), aliasUsesName) : getValues(field));
     return { field, label: field === "measurement_unit" ? t("product:measurement_unit") : t(`business:${fieldLabels[field]}`), saved: reviewValue(field, saved), draft: reviewValue(field, draft), changed: saved !== draft };
   }) : [];
   const submitForm = async (data: ProductFormData) => {
-    if (isSubmitting || pricingError || !validProductTaxRate(taxRate)) return;
-    try { await saving.save({ ...data, expected_version: version }, imageChange); onClose(); } catch { /* Keep the form and image draft for recovery. */ }
+    if (savedCompletion.current || isSubmitting || pricingError || !validProductTaxRate(taxRate)) return;
+    let product: ProductEntity;
+    try { product = await saving.save({ ...data, alias: resolveProductAlias(data.name, data.alias, aliasUsesName), expected_version: version }, imageChange); }
+    catch { return; /* Keep the form and image draft for recovery. */ }
+    savedCompletion.current = true;
+    setCompleting(true);
+    // Persistence and image recovery have finished. Failure in a consumer must
+    // never return to a form that could repeat the already confirmed creation.
+    try { await onSaved?.(product); }
+    catch (error) { notifyHttpError(error); }
+    finally { onClose(); setCompleting(false); }
   };
   return <BaseModal open={open} onClose={() => { if (!isSubmitting) { saving.cancel(); onClose(); } }} title={t(currentProduct ? "business:pos.edit_product" : "business:add_single_product")} size="md" actions={<ModalActionsContainer>
     <Button disabled={isSubmitting} onClick={() => { saving.cancel(); onClose(); }}>{t("business:cancel")}</Button>
     <Button variant="contained" disabled={isSubmitting || saving.phase === "fields_unknown" || Boolean(pricingError) || !validProductTaxRate(taxRate) || !validSalePrice} type="submit" form="product-form" data-testid="save-product-btn">{t("business:save")}</Button>
   </ModalActionsContainer>}>
-    <FormContainer ref={form} id="product-form" onSubmit={handleSubmit(submitForm)}>
+    <FormContainer ref={form} id="product-form" onSubmit={event => {
+      if (aliasUsesName) setValue("alias", getValues("name"));
+      void handleSubmit(submitForm)(event);
+    }}>
       {saving.phase === "fields_unknown" && <Alert severity="warning">{t("business:pos.product_save_unknown")}</Alert>}
       {saving.savedProduct && imageChange.kind !== "keep" && <Alert severity="info">{t("business:pos.product_saved_image_pending")}</Alert>}
       {(saving.pendingIntent || saving.phase === "image_pending" || saving.phase === "image_conflict") && <Alert severity="warning" action={<Button disabled={isSubmitting} onClick={() => void saving.reconcile().catch(() => undefined)}>{t("business:pos.reconcile")}</Button>}>{t(saving.phase === "image_conflict" ? "business:pos.image_review_before_retry" : "business:pos.image_pending")}</Alert>}
       {pricingError && <Alert severity="error">{t("business:product_price_calculation_invalid")}</Alert>}
       <Grid container spacing={2}>
-        {(["barcode", "name", "code"] as const).map((name) => <Grid key={name} size={12}><Controller name={name} control={control} render={({ field }) => <TextInput
-          id={`product-${name}`} name={name} label={t(name === "barcode" ? "business:pos.barcode" : name === "code" ? "business:pos.supplier_code" : "business:product_name")}
-          labelAdornment={help(name, t(name === "barcode" ? "business:pos.barcode" : name === "code" ? "business:pos.supplier_code" : "business:product_name"))} type="text"
-          autoFocus={name === "barcode"}
+        <Grid size={12}><Controller name="name" control={control} render={({ field }) => <TextInput id="product-name" name="name" label={t("business:product_name")} labelAdornment={help("name", t("business:product_name"))}
+          value={field.value} onChange={field.onChange} error={Boolean(errors.name)} helperText={errors.name ? t("business:pos.invalid_field") : undefined}
+          disabled={isSubmitting} required autoFocus={focusProductName} data-testid="product-name-input" />} /></Grid>
+        <Grid size={12}><ProductAliasInput name={productName} value={productAlias} useName={aliasUsesName} disabled={isSubmitting}
+          error={Boolean(errors.alias)} helperText={errors.alias ? t("business:product_alias_invalid") : undefined}
+          onChange={value => setValue("alias", value, { shouldDirty: true })} onUseNameChange={setAliasUsesName} /></Grid>
+        {(["barcode", "code"] as const).map((name) => <Grid key={name} size={12}><Controller name={name} control={control} render={({ field }) => <TextInput
+          id={`product-${name}`} name={name} label={t(name === "barcode" ? "business:pos.barcode" : "business:pos.supplier_code")}
+          labelAdornment={help(name, t(name === "barcode" ? "business:pos.barcode" : "business:pos.supplier_code"))} type="text"
+          autoFocus={name === "barcode" && !focusProductName}
           value={field.value ?? ""} onChange={(event) => field.onChange(name === "barcode" && event.target.value === "" ? null : event.target.value)}
           onFocus={name === "barcode" ? (event) => event.currentTarget.select() : undefined}
           onKeyDown={name === "barcode" ? (event) => { if (event.key === "Enter") { event.preventDefault(); event.stopPropagation(); } } : undefined}
-          error={Boolean(errors[name])} helperText={errors[name] ? t("business:pos.invalid_field") : name === "barcode" ? t("business:pos.barcode_input_help") : undefined} disabled={isSubmitting} required={name === "name"} data-testid={`product-${name}-input`} /> } /></Grid>)}
+          error={Boolean(errors[name])} helperText={errors[name] ? t("business:pos.invalid_field") : name === "barcode" ? t("business:pos.barcode_input_help") : undefined} disabled={isSubmitting} data-testid={`product-${name}-input`} /> } /></Grid>)}
         <Grid size={12}><Controller name="measurement_unit" control={control} render={({ field }) => <SelectSingleInput id="product-measurement-unit" label={t("product:measurement_unit")} labelAdornment={help("measurement_unit", t("product:measurement_unit"))} required clearable={false}
           value={field.value} options={MEASUREMENT_UNITS.map((unit) => ({ value: unit, label: t(`product:units.${unit}`) }))}
           onChange={field.onChange} disabled={isSubmitting} error={Boolean(errors.measurement_unit)} helperText={errors.measurement_unit ? t("product:invalid_measurement_unit") : undefined} data-testid="product-measurement-unit-input" /> } /></Grid>

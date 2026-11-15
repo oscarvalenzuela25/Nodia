@@ -135,6 +135,13 @@ sequenceDiagram
 
 ## 5. Reglas de Negocio Críticas
 
+Ampliación solicitada2026-11-14: alias humano opcional independiente del nombre
+original, revisión explícita en factura y filtros de códigos definidos en
+[plan94§38](../../mvp/94-business-point-of-sale-and-product-refactor.md#38-alias-humano-de-productos-y-revisión-ocr--solicitud2026-11-14).
+Su implementación y aceptación por entorno se registran en la
+[evidencia](../../evidence/product-alias-and-code-completeness-20261114.md);
+no extiende las herramientas NodiaAI publicadas.
+
 1. **Aislamiento Multi-Tenant Estricto:** Un usuario jamás puede ver, editar ni listar productos o colaboradores de un negocio en el que no sea Owner ni Colaborador activo. Cada consulta en backend debe filtrar forzosamente por `business_id` validando la membresía del usuario autenticado.
 2. **Colaboradores Preexistentes:** Solo se pueden invitar usuarios que ya posean una cuenta activa en Nodia (verificación por correo electrónico contra la tabla `users`).
 3. **Inmutabilidad del Owner:** Un colaborador no puede expulsar al Owner ni removerle permisos. El Owner es único por negocio.

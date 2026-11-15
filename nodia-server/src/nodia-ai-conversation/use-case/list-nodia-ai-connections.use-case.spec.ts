@@ -132,7 +132,6 @@ describe('ListNodiaAiConnectionsUseCase', () => {
     expect(f.transport.observe).not.toHaveBeenCalled();
   });
   it.each([
-    undefined,
     null,
     'future_effort',
     { future_effort: true },
@@ -168,6 +167,18 @@ describe('ListNodiaAiConnectionsUseCase', () => {
       });
     },
   );
+  it('recovers manually configurable GPT reasoning when old metadata was lost, without claiming runtime support', async () => {
+    const f = connectionFixture();
+    f.row.provider_key = 'openai';
+    f.row.fields = { agentic: { selected_model: 'synthetic-codex', thinking_level: 'medium',
+      available_models: [{ id: 'synthetic-codex' }] } };
+    const result = await new ListNodiaAiConnectionsUseCase(f.connections, f.authorize, f.policy).execute(testIdentity, {});
+    const mode = result.items[0].modes[1];
+    expect(mode.models[0].efforts.map(item => item.effort_id)).toEqual(['low', 'medium', 'high', 'xhigh', 'max', 'ultra']);
+    expect(mode.configured_selection).toMatchObject({ model_id: 'synthetic-codex', effort_id: 'medium' });
+    expect(mode).toMatchObject({ authentication: 'unknown', inference: 'unknown', observed_at: null });
+    expect(f.transport.observe).not.toHaveBeenCalled();
+  });
   it('preserves an orphaned Codex model and explicit null effort without inventing a catalog', async () => {
     const f = connectionFixture();
     f.row.provider_key = 'openai';

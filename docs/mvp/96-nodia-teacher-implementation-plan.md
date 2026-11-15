@@ -1,5 +1,18 @@
 # Plan de implementación de Nodia Teacher
 
+## GPT Agentic: catálogo y host específico — continuación2026-11-14
+
+La solicitud actual corrige intensidades GPT ausentes y diagnóstico genérico de
+elegibilidad. Server centraliza preferencias configurables si falta metadata
+histórica, conserva catálogo explícito y tupla exacta; no convierte configuración
+en disponibilidad. Teacher muestra motivos seguros de host/sesión/modelo/runtime.
+La inspección productiva de sólo lectura encontró ausente el host específico
+Teacher Codex en las rutas de despliegue revisadas, aunque API/worker estaban
+activos. Su aprovisionamiento/verificación tiene alcance separado del catálogo
+y del login Codex. [Evidencia local](../evidence/nodia-ai-chat-space-gpt-selection-20261114.md).
+No se ejecutó inferencia, migración o despliegue; las aceptaciones históricas
+de VM no se transfieren a producción ni a otros modelos.
+
 > Cierre técnico del upgrade2026-11-11:55/55TU verificados para Windows y la selección API key exacta configurada.18POST reales, revisión de47ítems, QA HTTP/JWT/SQL y rendimiento comparado, correcciones y restore final comprobados. Alcance y límites en la [matriz R02](../evidence/teacher-upgrade-acceptance-20261111-r02.md) y el [recibo R02](../evidence/teacher-upgrade-local-20261111-r02.json). No adopta otros proveedores/entornos, no acredita eficacia humana ni despliega/publica o aprueba ADR/fichas.
 
 > Continuidad documental, 2026-11-11: el [upgrade101](101-nodia-teacher-adaptive-upgrade-plan.md) organiza E0–E8 y criterios TU propios; E0–E3 priorizan evidencia por objetivo, diagnóstico conectado y práctica adaptativa. [102](102-nodia-teacher-phased-implementation-and-final-qa.md) fija construcción directa F0–F9, controles técnicos breves y QA/correcciones agrupados al final, sin aprobación por funcionalidad. No sustituye TH/AC de V1 ni cierra los unknown/reply_framing de§32. Etapas y aceptación nuevas permanecen pendientes. Esta entrega sólo documenta, sin implementar código, migrar o desplegar; [ADR098](../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md) sigue propuesto.
@@ -1034,3 +1047,9 @@ migración operativa o inferencia real por esta entrega. La
 [ficha candidata](../nodia-ai/knowledge/studies/features/session-setup-and-planning.md)
 sigue draft/partial/unregistered/approval:null. Los55TU/recibos anteriores acreditan
 sus políticas/entornos originales; no aceptan automáticamente esta modificación.
+
+### Primera generación ordinaria comprobada en VM — 2026-11-14
+
+[Recibo por selección y época](../evidence/chat-gpt-development-vm-20261114-r01.json): sobre el snapshot chat/GPT de desarrollo se reutilizó el host ya instalado, actor/sesión Nodia vigentes y selección guardada conexión1/Agentic/gpt-6.1-sol/medium. La observación no generativa devolvió eligible=true/runtime_available. El camino normal create/start_plan pasó por autoridad Teacher y worker normal, terminó ready con un plan candidato de2secciones,1dispatch y operación closed/completed con ACK SQL/nativo. No se creó probe de calificación ni se modificaron recibos de calificación. La identidad del trabajo y epoch quedan en el recibo; no se amplía a otras modalidades, propósitos, proveedores o eficacia de un estudiante humano.
+
+La primera sonda falló al copiar sólo entorno y UID sin el bind DBus del namespace de API. Al replicar el contexto real, el almacén autenticado y los esfuerzos reales respondieron correctamente. Fue un error del harness, no prueba de logout, caducidad o causa de la petición productiva original. No se leyeron/cambiaron credenciales ni se inició login, fallback o replay. Los respaldos cifrados anterior/postcanario se restauraron de forma aislada con datos/columnas/constraints y perfiles exactos. UI/autenticación HTTP del usuario no se observaron por el bloqueo de CUA/túnel. Esta continuación no aprueba/publica los borradores ni acredita despliegue productivo.

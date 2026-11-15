@@ -6,7 +6,7 @@ import BaseModal from "../../../../../../../../../components/BaseModal";
 import SelectSingleInput from "../../../../../../../../../components/inputs/SelectSingleInput";
 import QueryErrorAlert from "../../../../../../../../../components/QueryErrorAlert";
 import type { ProductEntity } from "../../../../../../../infrastructure/types";
-import { INVOICE_UPDATE_FIELDS, type InvoiceProvisionalRow, type InvoiceUpdateField } from "../helpers";
+import { invoiceAliasNeedsReview, INVOICE_UPDATE_FIELDS, type InvoiceProvisionalRow, type InvoiceUpdateField } from "../helpers";
 import { PRODUCT_PRICE_MAX } from "../../ProductModal/productPricing";
 import { useInvoiceMatchProducts } from "./infrastructure/useServices";
 import { Comparison } from "./styles";
@@ -23,11 +23,11 @@ export default function InvoiceProductMatch({ businessId, row, disabled, onClose
   const staleScope = openedScope !== scopeKey;
   const product = selected.data;
   const loading = disabled || !canInteract || staleScope || products.isFetching || selected.isFetching;
-  const invalid = (field: InvoiceUpdateField) => field === "name" || field === "code" ? !row[field].trim() : !Number.isInteger(row[field]) || row[field] < 0 || row[field] > PRODUCT_PRICE_MAX;
+  const invalid = (field: InvoiceUpdateField) => field === "alias" ? invoiceAliasNeedsReview(row) : field === "name" || field === "code" ? !row[field].trim() : !Number.isInteger(row[field]) || row[field] < 0 || row[field] > PRODUCT_PRICE_MAX;
   const chosen = fields.filter(field => !invalid(field));
-  const fieldLabel = (field: InvoiceUpdateField) => t(`business:${({ code: "product_code", name: "product_name", cost_price: "product_cost_price", cost_price_tax: "product_cost_tax", sale_price: "product_sale_price" } as const)[field]}`);
+  const fieldLabel = (field: InvoiceUpdateField) => t(`business:${({ code: "product_code", name: "product_name", alias: "product_alias", cost_price: "product_cost_price", cost_price_tax: "product_cost_tax", sale_price: "product_sale_price" } as const)[field]}`);
   const display = (value: unknown) => value === null || value === undefined || value === "" ? t("business:invoice_match_no_value") : String(value);
-  const optionsList = options.map(item => ({ value: item.id, label: `${item.name} · ${item.code || t("business:invoice_match_no_code")}` }));
+  const optionsList = options.map(item => ({ value: item.id, label: `${item.alias?.trim() || item.name} (${item.code?.trim() || t("business:invoice_match_no_code")})` }));
   return <BaseModal open onClose={onClose} title={t("business:invoice_match_title")} subtitle={t("business:invoice_match_help")} size="md" actions={<Stack direction={{ xs: "column-reverse", sm: "row" }} sx={{ gap: 2, width: "100%", justifyContent: "flex-end" }}>
     <Button variant="outlined" onClick={onClose} sx={{ width: { xs: "100%", sm: "auto" } }}>{t("core:cancel")}</Button>
     <Button variant="contained" disabled={loading || selected.isError || products.isError || !product || !chosen.length} onClick={() => { if (product && !loading && !selected.isError && !products.isError && chosen.length && onApply(product, chosen)) onClose(); }} sx={{ width: { xs: "100%", sm: "auto" } }}>{t("business:invoice_match_apply")}</Button>

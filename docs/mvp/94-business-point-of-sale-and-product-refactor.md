@@ -1085,3 +1085,154 @@ El cambio mejora el importador manual. No añade capacidades, herramientas, bind
 ### Verificación
 
 Client:78 casos/4 archivos, tipos y lint0; build aislado de7 fuentes exactas sobre R30,1397 inputs/1390 heredados idénticos,186 outputs. Server:30 casos/3 archivos, tipos/lint0. Native R13:651 Linux sin omitidos y fixture independiente real de procesos/cgroup/setsid/IO/nueva intención, sin cuenta/proveedor. Native R14:655 Linux sin omitidos, incluidos4 ASGI del header; no se suman ambas corridas ni se presenta la fixture independiente R13 como ejecutada de nuevo. Source-readonly final registra38 entradas por roles solapados, no38 fuentes únicas. El recibo readonly R14 31fdfc59… acredita identidad/protección/estáticos sin consultas a proveedores, escrituras DB o recargas UI.
+
+## 38. Alias humano de productos y revisión OCR — solicitud2026-11-14
+
+Reglas funcionales solicitadas explícitamente; implementación candidata y
+aceptación por entorno separadas. [ADR102 propuesto](../architecture/decisions/ADR-102-human-product-alias-and-code-completeness.md),
+[ficha candidata](../nodia-ai/knowledge/businesses/features/product-alias-and-code-completeness.md)
+y [evidencia](../evidence/product-alias-and-code-completeness-20261114.md).
+
+`alias` es un nombre humano independiente del nombre original de factura,
+nullable y de hasta255caracteres. Backend normaliza trim, vacío/blancos→null;
+omitir en updates conserva. No es único, no sustituye name/code/barcode ni se
+utiliza como identidad o matching OCR. Nuevos snapshots product_logs conservan
+alias; migración179366 añade ambas columnas sin completar históricos.
+
+Alta/edición manual añade el campo opcional con checkbox arriba a la derecha
+del label, «Utilizar el nombre como alias». Inicial marcado si no existe alias
+o coincide con el nombre; escribir personalizado desmarca y borrar/blancos
+marca. Marcado guarda copia explícita del nombre al guardar; no persiste otro
+bool. Un nombre cambiado no reescribe un alias personalizado. Modificar alias
+requiere expected_version; error mantiene modal, inputs y revisión recuperable.
+
+Revisión OCR muestra columna Alias y lápiz. Nuevo o existente sin alias:
+remarcado con texto/nombre accesible, revisión obligatoria mediante alias o
+elección explícita de usar nombre. El modal muestra el nombre arriba, luego
+input y checkbox; Guardar modifica sólo el borrador. Existentes con alias lo
+conservan; vinculación manual conserva identidad/revisión/campos elegidos y
+rotula productos sin código como «Nombre (Sin código)». IA no completa alias.
+No cambiar el nombre de factura al editar alias. Todos los comandos se validan
+antes del primer POST, manteniendo la recuperación de efectos parciales del
+flujo existente; no afirmar una transacción global invoice+productos.
+
+Buscadores de productos consultan nombre OR alias en Server mediante q.search,
+con escape de comodines y límite255; no filtran sólo la página descargada ni
+cambian name_cont literal. Se aplica también al selector de vinculación y a la
+consulta común del catálogo POS, sin rediseñar el POS en esta etapa.
+
+Filter de Productos incorpora dos SelectSingleInput independientes: Código de
+factura y Código de barras, con Todos/Con/Sin; default y Limpiar→Todos. Publica
+q.code_presence y q.barcode_presence con present/missing, omitiendo Todos.
+Null, vacío y sólo whitespace cuentan como ausente. Actividad conserva Activo
+inicial/limpieza mediante ActiveStatusSelect. Aplicar/quitar reinicia paginado,
+reabrir/redimensionar conserva selección. Búsqueda/filtros respetan autoridad
+y se aplican antes de paginar. No asignan identificadores ni barcode desde OCR.
+
+CSV añade alias, con escaping/fórmulas neutralizadas y compatibilidad con
+archivos que omiten la columna. Recuperación incluye alias en su fingerprint,
+distinguiendo variantes históricas sin confundir sus posiciones.
+
+Conocimiento: candidata draft/partial/unregistered/approval:null; no se modifica
+la aprobación de la ficha de productos ni se amplían por Markdown las
+herramientas publicadas. No se añaden índices, endpoints de importación o
+garantías atómicas por anticipación; su necesidad requiere evidencia/decisión.
+
+Verificación2026-11-14: Client2964/360, Server6063/353 más caso Linux aparte y
+48focales finales, build/tipos/lint del código correctos. QA visual sintética
+320/600/1280 ES/dark y EN/light; PostgreSQL descartable Linux5gates y HTTP4gates.
+Delta de productos adoptado sólo en VM,179366 comprometida una vez48→49:
+13productos/33logs conservan datos y aliasNULL, sin backfill. Respaldo final
+DB/configuración cifrado y restaurado con igualdad exacta; cierre de servicios
+y timers en el recibo operativo enlazado desde la evidencia. La UI autenticada
+VM quedó para revisión manual por rechazo automático de Chrome/túnel; no se
+extiende la QA sintética a ese recorrido ni se acredita inferencia OCR.
+
+## 39. Alta de producto al escanear un barcode desconocido — solicitud2026-11-14
+
+El lector del POS consulta el barcode exacto dentro del negocio. Sólo una
+respuesta404 de producto inexistente (`product:not_found`) abre la pregunta
+para registrar un producto nuevo. Errores de red, autenticación, servicio o una
+ruta inexistente conservan su feedback y no se presentan como catálogo vacío.
+
+Registrar abre el formulario nativo de Producto con el barcode textual
+precargado, conservando ceros iniciales. El resto de datos se revisa normalmente,
+incluido alias, nombre, precios, disponibilidad y proveedor opcional. El seed
+sólo inicializa un alta; no sobrescribe edición ni borrador/reconciliación en
+curso. El campo inicial útil es nombre cuando el barcode ya viene precargado.
+Se usan los mismos contratos, validadores, guardado recuperable y toast del
+catálogo; una escritura fallida conserva modal y datos, sin retry automático.
+
+No, cerrar o cancelar explícitamente limpia el lector y devuelve su foco para
+continuar escaneando. Éxito confirmado también permite seguir escaneando.
+La ampliación explícita posterior de§40 sustituye el reescaneo del primer corte:
+el alta terminada añade una unidad a la venta local actual. No confirma ni cobra
+la venta. El recibo y QA inferiores de§39 conservan su comportamiento anterior.
+
+Se conserva la vinculación existente mediante una acción secundaria explícita
+«Asociar a un producto existente», su selector y confirmación exacta de revisión.
+Mientras se resuelve el lookup o un diálogo/formulario está abierto, se evita
+otro escaneo, cambios de carrito o alternancia de venta. Un cambio de negocio,
+actor/sesión, venta o sección invalida el contexto de la respuesta tardía;
+la comprobación síncrona del handler acompaña al disabled.
+
+Las partidas previas, precios, cantidades y medio de pago se conservan durante
+la decisión y el alta; la incorporación final se rige por§40. No se cambia Server, esquema, permisos o contratos del
+checkout; no se publica una herramienta IA de creación ni se amplía R17.
+Implementación, regresiones y adopción por entorno se registran separadas en
+[evidencia](../evidence/pos-unknown-barcode-registration-20261114.md) y
+[ficha candidata](../nodia-ai/knowledge/businesses/features/point-of-sale-checkout-and-accessibility.md).
+
+Verificación de§39: Client2986/362 correcto,66focales/4archivos y19finales tras
+ajustar recuperación409 localizada;2finales del wrapper tras corregir tipado de
+sus consultas de test. Build/tipos/lint del código correctos. Edge/Chromium157
+aislado320/600/1280 ES/dark y EN/light: barcode255exacto, No/X/foco, formulario
+400/retry y conflicto1→lectura2→confirmación2 correctos; carrito intacto.
+Adopción sólo Client VM:213recursos exactos,212históricos direccionables y
+release previa intacta, Nginx CAS/un reload, procesos/env/timers preservados.
+Sin nueva migración, escrituras comerciales, inferencias o cambios productivos;
+UI autenticada VM y lector físico pendientes de revisión humana. Evidencia§39
+separa las corridas y no suma sus tests como casos únicos.
+
+## 40. Añadir el producto recién guardado a la venta actual — solicitud2026-11-14
+
+El usuario pide expresamente eliminar el reescaneo del primer corte de§39.
+Después de completar el guardado nativo (campos e imagen/recuperación si
+corresponde), se añade exactamente una unidad del producto a la venta local
+que inició ese registro. El lector queda limpio y enfocado para seguir.
+No/cancelar sigue sin modificar partidas; asociación existente conserva su
+comportamiento y confirmación anteriores. No confirma ni cobra la venta.
+
+El éxito de persistencia tiene callback propio, separado de cerrar/cancelar.
+Se utiliza el resultado final guardado con ID, negocio, versión, disponibilidad,
+precio efectivo y origen reales. Server create/update ya retornan
+productResponse/catalogPrice. Si un journal histórico carece de la proyección
+necesaria, sólo se lee el mismo ID y se exige negocio/versión concordantes;
+no se inventan precios ni se repite el alta para resolver una lectura fallida.
+
+La incorporación usa la política y persistencia local de carrito existentes;
+el resultado se acepta sólo si el carrito permite la edición. Preserva las
+otras partidas/cantidades/precios y medio de pago. Cada intención consume su
+callback una sola vez, incluso ante callbacks o clicks repetidos. Un cambio de
+actor/sesión/negocio/venta/sección invalida el resultado tardío, sin añadirlo a
+otro carrito ni limpiar el lector de otro contexto.
+
+Error o incertidumbre al guardar no añade nada y conserva formulario/journal.
+Si el catálogo ya quedó guardado pero el producto no es elegible, la lectura
+es incompatible o el carrito rechaza la edición, se informa específicamente
+«guardado, no agregado». Se conserva el catálogo y el carrito previo, se libera
+el lector y no se ejecuta otro POST de creación por ese fallo local.
+
+Sin cambios Server, esquema, checkout, permisos o herramientas IA. La
+[ficha candidata](../nodia-ai/knowledge/businesses/features/point-of-sale-checkout-and-accessibility.md)
+y [evidencia de autoadd](../evidence/pos-product-registration-autoadd-20261114.md)
+separan esta revisión de los resultados anteriores que exigían reescaneo.
+
+Verificación§40:57focales/3archivos y globalClient2994/362 correctos, build con
+tipos y lint del código correctos. Navegador aislado320ESdark/1280ENlight pasó
+400/retry/dobleclick→unaadición, total2000→3200, lector limpio/foco, lectura
+histórica exacta, precio ausente y respuesta obsoleta de otro negocio sinadd.
+Client autoadd adoptado en VM,213recursos nuevos exactos,212históricos HTTP y
+213anteriores en disco; Nginx CAS/un reload y rollback preparado. Server, procesos,
+entorno y timers preservados;0SQL/ventas/proveedor/auth. UI autenticada VM y
+lector físico pendientes, sin cambio productivo, esquema o publicación IA.

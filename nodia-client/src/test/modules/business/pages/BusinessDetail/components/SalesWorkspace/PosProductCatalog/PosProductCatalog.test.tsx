@@ -105,7 +105,7 @@ describe("POS autocomplete catalogue", () => {
     expect(previous).toHaveAttribute("aria-disabled", "true");
     fireEvent.click(previous);
     expect(onSelect).not.toHaveBeenCalled();
-    await waitFor(() => expect(fetchProducts.mock.calls.at(-1)?.[0]?.q?.name_cont).toBe("Coffee"));
+    await waitFor(() => expect(fetchProducts.mock.calls.at(-1)?.[0]?.q?.search).toBe("Coffee"));
     await readyInput();
     await openPopup(input);
     const result = await screen.findByRole("option", { name: /Coffee/ });
@@ -114,7 +114,7 @@ describe("POS autocomplete catalogue", () => {
     expect(onSelect).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ id: "2", name: "Coffee" }));
     expect(input).toHaveValue("");
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
-    expect(fetchProducts.mock.calls[1][0]).toEqual(expect.objectContaining({ page: 1, limit: 24, includes: true, q: expect.objectContaining({ business_id_eq: "business-a", name_cont: "Coffee" }) }));
+    expect(fetchProducts.mock.calls[1][0]).toEqual(expect.objectContaining({ page: 1, limit: 24, includes: true, q: expect.objectContaining({ business_id_eq: "business-a", search: "Coffee" }) }));
   });
 
   it("locks duplicate bottom scrolls, keeps options on next-page error and retries only the failed page", async () => {

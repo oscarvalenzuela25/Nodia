@@ -5,6 +5,7 @@ import i18n from "../../../../translate";
 describe("NodiaAI public eligibility reasons", () => {
   it.each([
     "runtime_busy", "session_required", "adapter_transport_unavailable", "adapter_unconfigured",
+    "codex_session_required", "codex_session_unverified", "codex_model_unavailable", "codex_runtime_unavailable", "codex_protocol_invalid",
     "runtime_unconfigured", "adapter_connection_unavailable", "adapter_mode_unsupported",
     "model_unavailable", "model_option_mismatch", "thinking_level_unsupported",
     "adapter_protocol_unverified", "mcp_adapter_unverified", "adapter_invalid_observation", "adapter_invalid_response",

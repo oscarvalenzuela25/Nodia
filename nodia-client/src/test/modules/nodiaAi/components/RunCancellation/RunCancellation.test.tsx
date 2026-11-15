@@ -28,6 +28,17 @@ describe("stop response control", () => {
     }
     expect(cancelNodiaAiRun).not.toHaveBeenCalled();
   });
+  it("uses one compact Stop icon, then a disabled waiting control after the exact cancellation request", async () => {
+    vi.mocked(cancelNodiaAiRun).mockResolvedValueOnce({ status: "accepted", run: { ...run, state: "cancel_requested", revision: run.revision + 1 } });
+    render(<QueryClientProvider client={client}><RunCancellation compact conversationId={chatId} run={{ ...run, state: "running" }} authorized readOnly={false} /></QueryClientProvider>);
+    const stop = screen.getByRole("button", { name: "Detener respuesta" });
+    expect(stop).toHaveAttribute("type", "button");
+    expect(stop).toHaveTextContent("");
+    await userEvent.click(stop);
+    expect(await screen.findByRole("button", { name: "Solicitud de detención enviada" })).toBeDisabled();
+    expect(cancelNodiaAiRun).toHaveBeenCalledOnce();
+    expect(screen.getByRole("status")).toHaveTextContent("Esperando que termine el cierre");
+  });
   it("shows a local check-state action after uncertainty, with no automatic resend", async () => {
     vi.mocked(cancelNodiaAiRun).mockRejectedValueOnce(new Error("Synthetic uncertainty"));
     render(<QueryClientProvider client={client}><RunCancellation conversationId={chatId} run={{ ...run, state: "running" }} authorized readOnly={false} /></QueryClientProvider>);

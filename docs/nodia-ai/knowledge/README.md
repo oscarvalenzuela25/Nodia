@@ -1,5 +1,56 @@
 # Contexto funcional de productos para NodiaAI
 
+## Producto recién guardado → venta local — VM development2026-11-14
+
+[Checkout revisión4](businesses/features/point-of-sale-checkout-and-accessibility.md#alta-terminada-e-incorporación-automática--solicitud-posterior2026-11-14)
+y [Negocios revisión53](businesses/README.md#producto-guardado--venta-local-actual--ampliación2026-11-14)
+registran la nueva orden: alta terminada incorpora una unidad al carrito de
+origen y limpia/enfoca el lector, con control de contexto y duplicados.
+[Evidencia](../../evidence/pos-product-registration-autoadd-20261114.md).
+Draft/partial/unregistered/approval:null; sin ampliar permisos/herramientas IA o
+aprobar fichas. Client2994/362 y QA sintética correctos; adopción sólo Client VM
+con213recursos exactos y runtime intacto. UI autenticada VM/lector físico aún
+pendientes; los resultados del corte previo sin autoadd son históricos.
+
+## Registro desde lector POS — VM development2026-11-14
+
+[Checkout revisión3](businesses/features/point-of-sale-checkout-and-accessibility.md#barcode-desconocido-y-alta-nativa--solicitud2026-11-14)
+y [Negocios revisión52](businesses/README.md#registro-desde-lector-pos--solicitud2026-11-14)
+describen alta nativa con barcode precargado y retorno al escáner, preservando
+carrito y asociación existente. [Evidencia por alcance](../../evidence/pos-unknown-barcode-registration-20261114.md).
+Draft/partial/unregistered/approval:null; no añade herramienta IA ni cambia
+los44 documentos aprobados. Client2986/362 y QA sintética6perfiles correctos;
+adopción sólo Client VM con213recursos exactos y runtime intacto. Verificación y
+adopción de esta ampliación separadas del cierre previo de alias/Teacher; UI
+autenticada VM/lector físico pendientes de revisión humana.
+
+## Alias de productos — VM development2026-11-14
+
+[Negocios revisión51](businesses/README.md) y
+[ficha nueva](businesses/features/product-alias-and-code-completeness.md)
+describen alias independiente, revisión humana del borrador OCR, búsqueda por
+nombre/alias y filtros de códigos. Regresiones y QA visual sintética en la
+[evidencia](../../evidence/product-alias-and-code-completeness-20261114.md);
+SQL y adopción VM tienen recibo separado: migración179366 única sin backfill,
+datos preservados y respaldo final restaurado. UI real VM pendiente manual.
+Draft/partial/unregistered/approval:null:
+no habilita herramientas de alias, cambia los contratos publicados o modifica
+las44 fichas aprobadas. Markdown y alias no son identidad de matching ni acceso.
+
+## Chat compacto y GPT Agentic — VM development2026-11-14
+
+[Compositor](nodia-ai/features/chat-composer-selection.md),
+[preferencias](general-settings/features/ai-provider-interface-and-module-access.md)
+y [Teacher](studies/features/session-setup-and-planning.md) registran Stop en
+compositor, renombrado lateral, más espacio de mensajes y recuperación de
+intensidades GPT sin inventar disponibilidad. Diagnóstico de host/sesión/runtime
+específico. VM conserva su host existente y pasó elegibilidad y una generación
+normal de plan GPT/medium con cierre, sin aceptar la propuesta. Producción
+requiere aprovisionamiento y verificación propios, sin heredar ese resultado.
+[Evidencia](../../evidence/nodia-ai-chat-space-gpt-selection-20261114.md).
+Fichas draft/unregistered/approval:null, sin publicar ni cambiar fichas aprobadas.
+El padding de página es exclusivamente visual y no modifica contexto/autoridad.
+
 ## Teacher: alta y primer intento — candidato local, 2026-11-14
 
 [Producto rev36](studies/README.md#alta-y-primera-generación--candidato-local-2026-11-14)

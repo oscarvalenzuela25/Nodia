@@ -10,6 +10,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, type EntityManager } from 'typeorm';
 import { Product } from './entities/product.entity.js';
 import { ProductLog } from './entities/product-log.entity.js';
+import { normalizeProductAlias } from './product-alias.js';
+import { applyProductLookupFilters } from './product-lookup-filters.js';
 import { CreateProductDto } from './dto/create-product.dto.js';
 import { BulkCreateProductDto } from './dto/bulk-create-product.dto.js';
 import { UpdateProductDto } from './dto/update-product.dto.js';
@@ -135,10 +137,13 @@ export class ProductService {
   }
 
   private catalogFields<
-    T extends { code?: string | null; measurement_unit?: ProductMeasurementUnit },
+    T extends { code?: string | null; alias?: string | null; measurement_unit?: ProductMeasurementUnit },
   >(attributes: T, create = false): T {
     rejectRetiredProductFields(attributes);
     const normalized = { ...attributes };
+    if (create || attributes.alias !== undefined)
+      normalized.alias = normalizeProductAlias(attributes.alias) ?? null;
+    else delete normalized.alias;
     if (create || attributes.code !== undefined)
       normalized.code = normalizeProductCode(attributes.code);
     else delete normalized.code;
@@ -393,8 +398,12 @@ export class ProductService {
       has_stock_eq,
       has_stock_null,
       is_offer_enabled_eq,
+      search,
+      code_presence,
+      barcode_presence,
       ...cleanQ
     } = q ?? {};
+    applyProductLookupFilters(qb, { search, code_presence, barcode_presence });
     if (availability_in !== undefined) {
       if (
         !Array.isArray(availability_in) ||
@@ -713,6 +722,7 @@ export class ProductService {
     )
       throw new BadRequestException('product:invalid_availability');
     const requiresVersion = [
+      'alias',
       'barcode',
       'offer_price',
       'is_offer_enabled',
@@ -785,6 +795,7 @@ export class ProductService {
         throw new BadRequestException('product:invalid_availability');
       const previous = locked.get(ids[index])!;
       const requiresVersion = [
+        'alias',
         'barcode',
         'offer_price',
         'is_offer_enabled',

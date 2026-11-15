@@ -1,12 +1,14 @@
 import i18n from "../../../../../../../../translate";
 import { isMeasurementUnit } from "../../../../../../infrastructure/measurementUnits";
 import { productCodeFits } from "../../../../../../infrastructure/productCodes";
+import { normalizeProductAlias, productAliasFits } from "../../../../../../infrastructure/productAliases";
 import type { CreateProductPayload, BulkUpdateProductItemPayload } from "../../../../../../infrastructure/types";
 export interface ProvisionalRow {
   id?: string;
   code?: string | null;
   measurement_unit?: string;
   name: string;
+  alias?: string | null;
   cost_price: number;
   cost_price_tax: number;
   sale_price: number;
@@ -23,6 +25,7 @@ export interface ProvisionalRow {
 }
 
 export const FIELD_ALIASES: Record<string, string[]> = {
+  alias: ["alias", "nombre comercial", "commercial name", "product alias"],
   measurement_unit: ["measurement_unit", "unidad de medida", "unidad", "unit of measure", "measurement unit"],
   barcode: ["barcode", "codigo de barras", "código de barras", "bar code"],
   offer_price: ["offer_price", "precio alternativo", "alternative price"],
@@ -102,6 +105,7 @@ export const validateRow = (
   if (!row.name || !row.name.trim()) {
     errors.push(i18n.t("business:invoice_validation_name"));
   }
+  if (!productAliasFits(row.alias)) errors.push(i18n.t("business:product_alias_invalid"));
   if (row.cost_price === undefined || !Number.isInteger(row.cost_price) || row.cost_price < 0 || row.cost_price > 2147483647) {
     errors.push(i18n.t("business:invoice_validation_cost"));
   }
@@ -116,7 +120,7 @@ export const validateRow = (
   if (row.barcode !== undefined && row.barcode !== null && (!row.barcode || row.barcode.length > 255 || row.barcode.trim() !== row.barcode || /\p{Cc}/u.test(row.barcode))) errors.push(i18n.t("business:pos.invalid_barcode"));
   if (row.offer_price !== undefined && row.offer_price !== null && (!Number.isInteger(row.offer_price) || row.offer_price < 0 || row.offer_price > 2147483647)) errors.push(i18n.t("business:pos.invalid_price"));
   if (row.is_offer_enabled === true && row.offer_price === null) errors.push(i18n.t("business:pos.invalid_price"));
-  if (row.id && [row.barcode,row.offer_price,row.is_offer_enabled,row.has_stock,row.measurement_unit].some(value => value !== undefined) && (!Number.isInteger(row.version) || (row.version ?? 0) < 1)) errors.push(i18n.t("business:pos.invalid_field"));
+  if (row.id && [row.alias,row.barcode,row.offer_price,row.is_offer_enabled,row.has_stock,row.measurement_unit].some(value => value !== undefined) && (!Number.isInteger(row.version) || (row.version ?? 0) < 1)) errors.push(i18n.t("business:pos.invalid_field"));
 
   if (row.invalid_fields?.some(field => field === "has_stock" ? typeof row.has_stock !== "boolean" : typeof row.is_offer_enabled !== "boolean")) errors.push(i18n.t("business:pos.invalid_field"));
   return { errors, isValid: errors.length === 0 };
@@ -153,6 +157,7 @@ export const parseCSV = (csvText: string): ProvisionalRow[] => {
     const has = (key: string) => Object.hasOwn(raw,key) && raw[key] !== "";
     const row: ProvisionalRow = {
       id: raw.id || undefined, ...(Object.hasOwn(raw, "code") ? { code: raw.code.trim() || null } : {}), name: raw.name?.trim() ?? "",
+      ...(Object.hasOwn(raw, "alias") ? { alias: normalizeProductAlias(raw.alias) } : {}),
       cost_price: parseNumber(raw.cost_price), cost_price_tax: parseNumber(raw.cost_price_tax),
       sale_price: parseNumber(raw.sale_price),
       stock: parseNumber(raw.stock), is_active: has("is_active") ? parseBoolean(raw.is_active) : true,
@@ -171,6 +176,7 @@ export const parseCSV = (csvText: string): ProvisionalRow[] => {
 export function productImportPayload(row: ProvisionalRow, businessId: string): CreateProductPayload | BulkUpdateProductItemPayload {
   const check = validateRow(row); if (!check.isValid) throw new Error(check.errors.join(", "));
   const common = { ...(row.code !== undefined ? { code: row.code?.trim() || null } : {}),
+    ...(row.alias !== undefined ? { alias: normalizeProductAlias(row.alias) } : {}),
     ...(isMeasurementUnit(row.measurement_unit) ? { measurement_unit: row.measurement_unit } : {}), name: row.name, cost_price: row.cost_price, cost_price_tax: row.cost_price_tax,
     sale_price: row.sale_price, is_active: row.is_active,
     ...(row.barcode !== undefined ? { barcode: row.barcode } : {}),
@@ -187,7 +193,7 @@ export const generateTemplateCSV = (lang: string = "es"): string => {
 
   if (isEn) {
     return (
-      "Code (code),Name (name),Base cost (cost_price),Tax-inclusive cost (cost_price_tax),Sale price (sale_price),Available (has_stock),Active (is_active),ID (id),Barcode (barcode),Alternative price (offer_price),Alternative enabled (is_offer_enabled),Version (version),Measurement unit (measurement_unit)\n" +
+      "Code (code),Name (name),Base cost (cost_price),Tax-inclusive cost (cost_price_tax),Sale price (sale_price),Available (has_stock),Active (is_active),ID (id),Barcode (barcode),Alternative price (offer_price),Alternative enabled (is_offer_enabled),Version (version),Measurement unit (measurement_unit),Alias (alias)\n" +
       "PROD-001,Cola Soda 500ml,600,714,1200,true,true,\n" +
       "PROD-002,Potato Chips 100g,450,536,900,false,true,\n" +
       "PROD-003,Chocolate Cookie 80g,300,357,700,true,true,\n"
@@ -195,7 +201,7 @@ export const generateTemplateCSV = (lang: string = "es"): string => {
   }
 
   return (
-    "Código (code),Nombre (name),Costo base (cost_price),Costo con IVA (cost_price_tax),Precio de venta (sale_price),Disponible (has_stock),Activo (is_active),ID (id),Código de barras (barcode),Precio alternativo (offer_price),Alternativo habilitado (is_offer_enabled),Versión (version),Unidad de medida (measurement_unit)\n" +
+    "Código (code),Nombre (name),Costo base (cost_price),Costo con IVA (cost_price_tax),Precio de venta (sale_price),Disponible (has_stock),Activo (is_active),ID (id),Código de barras (barcode),Precio alternativo (offer_price),Alternativo habilitado (is_offer_enabled),Versión (version),Unidad de medida (measurement_unit),Alias (alias)\n" +
     "PROD-001,Bebida Cola 500ml,600,714,1200,true,true,\n" +
     "PROD-002,Snack Papas Fritas 100g,450,536,900,false,true,\n" +
     "PROD-003,Galleta Chocolate 80g,300,357,700,true,true,\n"
@@ -218,8 +224,8 @@ export const exportProductsToCSV = (
 ): string => {
   const isEn = lang.startsWith("en");
   const header = isEn
-    ? "Code (code),Name (name),Base cost (cost_price),Tax-inclusive cost (cost_price_tax),Sale price (sale_price),Available (has_stock),Active (is_active),ID (id),Barcode (barcode),Alternative price (offer_price),Alternative enabled (is_offer_enabled),Version (version),Measurement unit (measurement_unit)"
-    : "Código (code),Nombre (name),Costo base (cost_price),Costo con IVA (cost_price_tax),Precio de venta (sale_price),Disponible (has_stock),Activo (is_active),ID (id),Código de barras (barcode),Precio alternativo (offer_price),Alternativo habilitado (is_offer_enabled),Versión (version),Unidad de medida (measurement_unit)";
+    ? "Code (code),Name (name),Base cost (cost_price),Tax-inclusive cost (cost_price_tax),Sale price (sale_price),Available (has_stock),Active (is_active),ID (id),Barcode (barcode),Alternative price (offer_price),Alternative enabled (is_offer_enabled),Version (version),Measurement unit (measurement_unit),Alias (alias)"
+    : "Código (code),Nombre (name),Costo base (cost_price),Costo con IVA (cost_price_tax),Precio de venta (sale_price),Disponible (has_stock),Activo (is_active),ID (id),Código de barras (barcode),Precio alternativo (offer_price),Alternativo habilitado (is_offer_enabled),Versión (version),Unidad de medida (measurement_unit),Alias (alias)";
 
   const lines = [header];
   for (const p of products) {
@@ -237,6 +243,7 @@ export const exportProductsToCSV = (
       escapeCsvValue(p.is_offer_enabled),
       escapeCsvValue(p.version),
       escapeCsvValue(p.measurement_unit ?? "unit"),
+      escapeCsvValue(p.alias),
     ].join(",");
     lines.push(row);
   }

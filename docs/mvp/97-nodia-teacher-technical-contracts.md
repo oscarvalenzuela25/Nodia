@@ -1,5 +1,20 @@
 # Contratos técnicos de Nodia Teacher
 
+## Diagnóstico de elegibilidad Agentic — adición2026-11-14
+
+`GET /teacher/connections/:id/eligibility` conserva selección exacta y contrato
+eligible/reason_code/checked_at. Los errores conocidos se proyectan mediante
+categorías seguras: host Codex no configurado/no verificado, runtime no disponible,
+sesión requerida, modelo ausente, perfil ocupado, protocolo inválido y cambios de
+configuración. Errores desconocidos siguen siendo provider_unavailable sin texto
+remoto libre. Una observación negativa terminada conserva observed_at; una
+excepción antes de observar mantiene checked_at:null. No implica inferencia exitosa.
+
+La ausencia histórica de supportedReasoningEfforts permite preferencias
+configurables centrales; catálogo válido explícito conserva sus opciones exactas.
+[Contrato proveedores](ai-provider-feature-contract.md) y
+[evidencia](../evidence/nodia-ai-chat-space-gpt-selection-20261114.md).
+
 > Cambio funcional confirmado2026-11-14: Teacher admite el primer intento con
 > conexión/modelo/razonamiento explícitos sin recibo generativo previo, incluido
 > el antiguo gate por propósito. Elegibilidad permite solicitar generación;
@@ -621,3 +636,9 @@ El corte local comunicado en la evidencia consolida tipado de producción,133pru
 El selector de intensidad consume sólo `models[].efforts` de `GET /teacher/connections`. Ausencia de opciones se explica; no se fabrica esfuerzo para habilitarlo. Este GET proyecta configuración persistida, no descubrimiento nativo: consultar de nuevo no sustituye sincronizar/guardar modelos desde Ajustes IA con su autorización propia. Una opción reportada puede editarse aunque la tupla anterior sea inelegible, manteniendo bloqueo durante busy/fetch y ready/canSave/envío dependientes de la respuesta exacta. No cambian elegibilidad por selección/época, CAS, configuración persistida, presupuestos o calificación real.
 
 Implementación local en verificación; [verificación consolidada](96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13). Sin migraciones, despliegue, inferencia, aprobación o publicación por este lote.
+
+### Observación exacta y contexto de proceso comprobados — 2026-11-14
+
+El [recibo VM](../evidence/chat-gpt-development-vm-20261114-r01.json) conserva selección, session_generation, configuration_generation, resource_key y hashes de runtime/política del único dispatch ordinario. El mismo UID/GID/HOME/env no basta para observar una sesión cuando API/worker montan `/run/user/10000/bus` en `/run/nodia-runtime/bus`: la sonda debe usar también ese bind. Una respuesta vacía fuera de ese contexto no demuestra pérdida de autenticación. La sonda corregida no generó; sólo después de elegibilidad exacta se admitió la primera generación normal, con presupuesto1, resultado completed, transporte/proceso cerrados y ACK. No se repitió ninguna inferencia ni se creó identidad de autenticación.
+
+El catálogo de esfuerzos diferencia opciones reales explícitas (incluido `[]`) y metadatos ausentes. Las preferencias manuales Agentic recuperables no acreditan soporte o disponibilidad y no cambian automáticamente la selección; el descubrimiento real y la elegibilidad exacta siguen siendo autoridad operacional. La evidencia de este corte pertenece sólo a la VM; no atribuye una causa al endpoint productivo sin su traza autenticada ni extiende la aceptación a otros propósitos.

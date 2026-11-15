@@ -45,6 +45,11 @@ const safeReasons = new Set([
   'runtime_unconfigured',
   'mcp_adapter_unverified',
   'agentic_timeout',
+  'codex_model_unavailable',
+  'codex_session_required',
+  'codex_session_unverified',
+  'codex_runtime_unavailable',
+  'codex_protocol_invalid',
 ]);
 /** Read-only non-generative preflight. It never probes MCP or grants authority to execute a turn. */
 @Injectable()

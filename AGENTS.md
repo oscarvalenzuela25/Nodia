@@ -173,8 +173,9 @@ Skills disponibles en `nodia-client/skills/`:
 
 - **Padding de Pantalla y Contenedores Principales (Responsive):**
   - **Móvil (`xs` / `<600px`):** **16px** (`p: 2` en MUI o `theme.spacing(2)`).
-  - **Tablet (`sm` / `600px - 899px`):** **24px** (`p: 3` en MUI o `theme.spacing(3)`).
-  - **Escritorio (`md`+ / `>=900px`):** **32px** (`p: 4` en MUI o `theme.spacing(4)`).
+  - **Tablet (`sm` / `600px - 899px`):** **16px vertical /24px lateral** (`theme.spacing(2, 3)`).
+  - **Escritorio (`md`+ / `>=900px`):** **16px vertical /32px lateral** (`theme.spacing(2, 4)`).
+  - Solicitud2026-11-14: ajuste sólo de contenedores completos de página; conservar interiores de paneles/modales y reserva MobileBottomNav/safe area. Detalle en `nodia-client/DESIGN.md`9.4.
   - **Cero doble padding:** Queda prohibido añadir padding exterior en componentes de página hijas (`src/modules/*/pages/*`) cuando ya son renderizadas dentro de `PageContent` en `BaseLayout`.
 - **Espaciado (Gap) entre Paneles:**
   - **Vertical:** Separación estándar de **24px** (`rowGap: 3` / `24px`).

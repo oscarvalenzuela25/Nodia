@@ -35,7 +35,7 @@ export const validVersion = (value: unknown): value is number => typeof value ==
 export const fieldsFingerprint = (data: ProductFormData): string => JSON.stringify([
   data.code, data.name, data.barcode, data.measurement_unit, data.cost_price, data.cost_price_tax,
   data.sale_price, data.offer_price, data.is_offer_enabled,
-  data.has_stock, data.provider_id || null, data.is_active,
+  data.has_stock, data.provider_id || null, data.is_active, data.alias ?? null,
 ]);
 const localFiles = new WeakMap<File, string>();
 export const imageFingerprint = (change: ProductImageChange): string | null => {
@@ -78,8 +78,13 @@ export function readProductSaveJournal(actorId: string, businessId: string, init
   if (entry.fieldsFingerprint !== null) {
     try {
       const fields: unknown = JSON.parse(entry.fieldsFingerprint);
-      if (Array.isArray(fields) && fields.length === 13 && typeof fields[6] === "number" && Number.isInteger(fields[6]) && fields[6] >= 0) {
+      if (Array.isArray(fields) && fields.length === 13 && typeof fields[12] === "boolean" && typeof fields[6] === "number" && Number.isInteger(fields[6]) && fields[6] >= 0) {
         fields.splice(6, 1);
+      }
+      // Old saves had no alias slot. Append null without changing an unknown
+      // outcome or interpreting a current alias fingerprint as the retired slot.
+      if (Array.isArray(fields) && fields.length === 12) {
+        fields.push(null);
         return { ...entry, fieldsFingerprint: JSON.stringify(fields) };
       }
     } catch { /* An opaque historical fingerprint cannot be treated as equal. */ }

@@ -95,9 +95,11 @@ export function validatePwaAssets(directory, { required = false } = {}) {
   }
   ensure(htmlLinks.some(link => link.rel === 'apple-touch-icon' && link.href === '/apple-touch-icon.png'),
     'pwa_apple_icon_link_invalid');
-  ensure(htmlLinks.some(link => link.rel === 'icon' && link.type === 'image/svg+xml' && link.href === '/favicon.svg'),
-    'pwa_favicon_link_invalid');
   const svg = asset(directory, 'favicon.svg');
+  // Preserve historical releases while binding cache-versioned URLs to this exact shared PWA mark.
+  const faviconUrls = new Set(['/favicon.svg', `/favicon.svg?v=${sha(svg).slice(0, 12)}`]);
+  ensure(htmlLinks.some(link => link.rel === 'icon' && link.type === 'image/svg+xml' && faviconUrls.has(link.href)),
+    'pwa_favicon_link_invalid');
   ensure(/<svg\b/.test(svg.toString()) && /<path\b/.test(svg.toString()) &&
     !/<(?:image|script|foreignObject)\b|data:image|\bon\w+\s*=/i.test(svg.toString()), 'pwa_favicon_vector_required');
   files.push({ path: '/favicon.svg', contentType: 'image/svg+xml', bytes: svg });

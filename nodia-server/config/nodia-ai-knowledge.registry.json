@@ -14,9 +14,10 @@
     "docs/nodia-ai/knowledge/businesses/features/multi-sale-workspace.md",
     "docs/nodia-ai/knowledge/businesses/features/point-of-sale-and-sales.md",
     "docs/nodia-ai/knowledge/businesses/features/point-of-sale-checkout-and-accessibility.md",
+    "docs/nodia-ai/knowledge/businesses/features/product-alias-and-code-completeness.md",
     "docs/nodia-ai/knowledge/businesses/features/product-logs.md",
-    "docs/nodia-ai/knowledge/businesses/features/product-units-and-fractional-sales.md",
     "docs/nodia-ai/knowledge/businesses/features/product-price-calculator-and-invoice-binding.md",
+    "docs/nodia-ai/knowledge/businesses/features/product-units-and-fractional-sales.md",
     "docs/nodia-ai/knowledge/businesses/features/products.md",
     "docs/nodia-ai/knowledge/businesses/features/sale-line-price-adjustments.md",
     "docs/nodia-ai/knowledge/businesses/features/sales-and-reporting-read-only.md",
@@ -25,8 +26,8 @@
     "docs/nodia-ai/knowledge/general-settings/README.md",
     "docs/nodia-ai/knowledge/general-settings/features/actions-and-business-actions.md",
     "docs/nodia-ai/knowledge/general-settings/features/agentic-api-modes.md",
-    "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
     "docs/nodia-ai/knowledge/general-settings/features/ai-connection-settings-ui.md",
+    "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
     "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
     "docs/nodia-ai/knowledge/general-settings/features/ai-login-host-setup.md",
     "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
@@ -84,8 +85,8 @@
     "docs/nodia-ai/knowledge/reservations/features/properties-and-collaborators.md",
     "docs/nodia-ai/knowledge/reservations/features/reservations.md",
     "docs/nodia-ai/knowledge/studies/README.md",
-    "docs/nodia-ai/knowledge/studies/features/adaptive-plans-and-day-material.md",
     "docs/nodia-ai/knowledge/studies/features/activity-types-and-visuals.md",
+    "docs/nodia-ai/knowledge/studies/features/adaptive-plans-and-day-material.md",
     "docs/nodia-ai/knowledge/studies/features/concept-memory-and-map.md",
     "docs/nodia-ai/knowledge/studies/features/contextual-clarifications.md",
     "docs/nodia-ai/knowledge/studies/features/diagnostic-and-skip-assessment.md",
@@ -2852,15 +2853,15 @@
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
-          "sha256": "2bab57fac64ffee7a3a59e37597708107c65f9932501159a5c9482b1c9339ce2"
+          "sha256": "11c6d8934dbc74edf26f561b275ad4a948e4317395c23936d5359fe0818e3a0a"
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "afd6926f2edcacf715634ac31ab467bc6ab69811e9bc99ee6fcf4de5f97b7d81"
+          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
         },
         {
           "path": "nodia-server/src/product/product-catalog.ts",
-          "sha256": "14db2c02e5d62b9bf0df2ae3c0ec95f326743a0a9386eb360303a0a1381e3c4a"
+          "sha256": "b57caeba772508ca9b07a6ecfdd500ea968a5dbb5584f440b5f1d5578e5a9c96"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -2868,7 +2869,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "c70051779068d59ba9b15c401ff71ae5577f845aa3381455711b242765dd2656"
+          "sha256": "847c4e687923384df877a157b49aa586c2a6234eadce3e864a6c95b1e6be1455"
         }
       ],
       "input_schema": {
@@ -2912,15 +2913,15 @@
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
-          "sha256": "2bab57fac64ffee7a3a59e37597708107c65f9932501159a5c9482b1c9339ce2"
+          "sha256": "11c6d8934dbc74edf26f561b275ad4a948e4317395c23936d5359fe0818e3a0a"
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "afd6926f2edcacf715634ac31ab467bc6ab69811e9bc99ee6fcf4de5f97b7d81"
+          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
         },
         {
           "path": "nodia-server/src/product/product-catalog.ts",
-          "sha256": "14db2c02e5d62b9bf0df2ae3c0ec95f326743a0a9386eb360303a0a1381e3c4a"
+          "sha256": "b57caeba772508ca9b07a6ecfdd500ea968a5dbb5584f440b5f1d5578e5a9c96"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -2928,7 +2929,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "c70051779068d59ba9b15c401ff71ae5577f845aa3381455711b242765dd2656"
+          "sha256": "847c4e687923384df877a157b49aa586c2a6234eadce3e864a6c95b1e6be1455"
         }
       ],
       "input_schema": {
@@ -3056,15 +3057,15 @@
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
-          "sha256": "2bab57fac64ffee7a3a59e37597708107c65f9932501159a5c9482b1c9339ce2"
+          "sha256": "11c6d8934dbc74edf26f561b275ad4a948e4317395c23936d5359fe0818e3a0a"
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "afd6926f2edcacf715634ac31ab467bc6ab69811e9bc99ee6fcf4de5f97b7d81"
+          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
         },
         {
           "path": "nodia-server/src/product/product-catalog.ts",
-          "sha256": "14db2c02e5d62b9bf0df2ae3c0ec95f326743a0a9386eb360303a0a1381e3c4a"
+          "sha256": "b57caeba772508ca9b07a6ecfdd500ea968a5dbb5584f440b5f1d5578e5a9c96"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -3072,7 +3073,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "c70051779068d59ba9b15c401ff71ae5577f845aa3381455711b242765dd2656"
+          "sha256": "847c4e687923384df877a157b49aa586c2a6234eadce3e864a6c95b1e6be1455"
         }
       ],
       "input_schema": {
@@ -3112,15 +3113,15 @@
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
-          "sha256": "2bab57fac64ffee7a3a59e37597708107c65f9932501159a5c9482b1c9339ce2"
+          "sha256": "11c6d8934dbc74edf26f561b275ad4a948e4317395c23936d5359fe0818e3a0a"
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "afd6926f2edcacf715634ac31ab467bc6ab69811e9bc99ee6fcf4de5f97b7d81"
+          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
         },
         {
           "path": "nodia-server/src/product/product-catalog.ts",
-          "sha256": "14db2c02e5d62b9bf0df2ae3c0ec95f326743a0a9386eb360303a0a1381e3c4a"
+          "sha256": "b57caeba772508ca9b07a6ecfdd500ea968a5dbb5584f440b5f1d5578e5a9c96"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -3128,11 +3129,11 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "c70051779068d59ba9b15c401ff71ae5577f845aa3381455711b242765dd2656"
+          "sha256": "847c4e687923384df877a157b49aa586c2a6234eadce3e864a6c95b1e6be1455"
         },
         {
           "path": "nodia-server/src/product/use-case/export-products-csv.use-case.ts",
-          "sha256": "737e6e539495d80248488016fddb8bb7fdce166349e3b573be22580d02551b44"
+          "sha256": "47067a608d6c69f00bffafa30a195e7f6b99562eb8b848ce70f5c74b3993fb1b"
         }
       ],
       "input_schema": {
@@ -3176,15 +3177,15 @@
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
-          "sha256": "2bab57fac64ffee7a3a59e37597708107c65f9932501159a5c9482b1c9339ce2"
+          "sha256": "11c6d8934dbc74edf26f561b275ad4a948e4317395c23936d5359fe0818e3a0a"
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "afd6926f2edcacf715634ac31ab467bc6ab69811e9bc99ee6fcf4de5f97b7d81"
+          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
         },
         {
           "path": "nodia-server/src/product/product-catalog.ts",
-          "sha256": "14db2c02e5d62b9bf0df2ae3c0ec95f326743a0a9386eb360303a0a1381e3c4a"
+          "sha256": "b57caeba772508ca9b07a6ecfdd500ea968a5dbb5584f440b5f1d5578e5a9c96"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -3192,7 +3193,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "c70051779068d59ba9b15c401ff71ae5577f845aa3381455711b242765dd2656"
+          "sha256": "847c4e687923384df877a157b49aa586c2a6234eadce3e864a6c95b1e6be1455"
         }
       ],
       "input_schema": {
@@ -3236,15 +3237,15 @@
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
-          "sha256": "2bab57fac64ffee7a3a59e37597708107c65f9932501159a5c9482b1c9339ce2"
+          "sha256": "11c6d8934dbc74edf26f561b275ad4a948e4317395c23936d5359fe0818e3a0a"
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "afd6926f2edcacf715634ac31ab467bc6ab69811e9bc99ee6fcf4de5f97b7d81"
+          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
         },
         {
           "path": "nodia-server/src/product/product-catalog.ts",
-          "sha256": "14db2c02e5d62b9bf0df2ae3c0ec95f326743a0a9386eb360303a0a1381e3c4a"
+          "sha256": "b57caeba772508ca9b07a6ecfdd500ea968a5dbb5584f440b5f1d5578e5a9c96"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -3252,7 +3253,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "c70051779068d59ba9b15c401ff71ae5577f845aa3381455711b242765dd2656"
+          "sha256": "847c4e687923384df877a157b49aa586c2a6234eadce3e864a6c95b1e6be1455"
         }
       ],
       "input_schema": {
@@ -5813,7 +5814,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-conversation/use-case/observe-nodia-ai-eligibility.use-case.ts",
-          "sha256": "66d38765752e7fbfdaf57fe2b2bde46e77c56640df8c219a1bec22201029e374"
+          "sha256": "22e5da360fc26d91f742926e635879e6580855566ab454d06b634998d48fddfd"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-ocr/adapters/products-invoice-ocr.adapter.ts",
@@ -5869,7 +5870,7 @@
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "afd6926f2edcacf715634ac31ab467bc6ab69811e9bc99ee6fcf4de5f97b7d81"
+          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",

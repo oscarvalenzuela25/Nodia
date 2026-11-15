@@ -1,6 +1,7 @@
 """Exact reviewed AI runtime extensions; no account, inference or updater effects."""
 import ast
 import importlib.util
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -120,6 +121,40 @@ class RuntimeDropinGuardTests(unittest.TestCase):
             for unit in adapter.SERVICES:
                 self.host.service_overrides(unit, self.state(unit))
         self.assertEqual(before, {p: p.read_bytes() for p in self.units.rglob('*') if p.is_file()})
+
+    def test_teacher_extension_pins_environment_and_binary_and_rejects_drift(self):
+        self.configure()
+        root = self.units.parent
+        environment = root / 'teacher-runtime.env'
+        hosts = root / 'hosts'; hosts.mkdir()
+        content = b'Synthetic host, never executed.\n'
+        checksum = hashlib.sha512(content).hexdigest()
+        target = hosts / ('host-' + checksum)
+        target.write_bytes(content); target.chmod(0o755)
+        environment.write_bytes((f'NODIA_CODEX_TEACHER_HOST=/usr/local/lib/nodia/teacher-runtime/host-{checksum}\n'
+                                 f'NODIA_CODEX_TEACHER_HOST_SHA512={checksum}\n').encode())
+        environment.chmod(0o644)
+        patch.object(adapter, 'TEACHER_ENVIRONMENT', environment).start()
+        patch.object(adapter, 'TEACHER_HOST_ROOT', hosts).start()
+        value = registry()
+        value['teacher_host'] = adapter.teacher_runtime_descriptor()
+        extra_hash = hashlib.sha256(adapter.TEACHER_RUNTIME_TEMPLATE).hexdigest()
+        states = {}
+        for unit in adapter.SERVICES:
+            value['units'][unit][adapter.TEACHER_RUNTIME_NAME] = extra_hash
+            path = self.units / (unit + '.d') / adapter.TEACHER_RUNTIME_NAME
+            path.write_bytes(adapter.TEACHER_RUNTIME_TEMPLATE); path.chmod(0o644)
+            states[unit] = {'DropInPaths': self.state(unit)['DropInPaths'] + ' ' + str(path)}
+        self.registry.write_text(json.dumps(value), encoding='utf-8')
+        for unit in adapter.SERVICES:
+            self.host.service_overrides(unit, states[unit])
+        target.write_bytes(b'X' * len(content))
+        with self.assertRaisesRegex(ValueError, 'teacher_runtime_binary_changed'):
+            self.host.service_overrides('nodia-api.service', states['nodia-api.service'])
+        target.write_bytes(content)
+        environment.write_bytes(environment.read_bytes() + b'JWT_SECRET=forbidden\n')
+        with self.assertRaisesRegex(ValueError, 'teacher_runtime_environment_invalid'):
+            self.host.service_overrides('nodia-ai-worker.service', states['nodia-ai-worker.service'])
 
     def test_backup_units_never_accept_ai_or_arbitrary_dropins(self):
         self.configure()

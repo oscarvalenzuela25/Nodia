@@ -4,11 +4,11 @@
   "document_id": "studies.session-setup-and-planning",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 31,
+  "revision": 33,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación. Candidato local2026-11-12: formulario guiado, idioma validado conservando etiqueta histórica y selección IA visible/48px con ayuda; catálogo sin esfuerzos explicado sin inventarlos. Cabecera Codex consulta observación acotada compartida, sin polling. Build/lint,382regresiones/51archivos y QA320/1280 correctos; f01productivo tiene0recibos Agentic y carece de tabla por propósito; sin despliegue/inferencia o publicación del lote. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote."
+    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación. Candidato local2026-11-12: formulario guiado, idioma validado conservando etiqueta histórica y selección IA visible/48px con ayuda; catálogo sin esfuerzos explicado sin inventarlos. Cabecera Codex consulta observación acotada compartida, sin polling. Build/lint,382regresiones/51archivos y QA320/1280 correctos; f01productivo tiene0recibos Agentic y carece de tabla por propósito; sin despliegue/inferencia o publicación del lote. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Nodia Teacher y NodiaAI conforme AGENTS",
@@ -258,9 +258,11 @@
       "docs/evidence/teacher-upgrade-acceptance-20261111-r02.md",
       "docs/evidence/teacher-upgrade-development-vm-20261111-r01.json",
       "docs/mvp/96-nodia-teacher-implementation-plan.md",
-      "docs/evidence/teacher-ai-selection-first-generation-20261114.md"
+      "docs/evidence/teacher-ai-selection-first-generation-20261114.md",
+      "docs/evidence/nodia-ai-chat-space-gpt-selection-20261114.md",
+      "docs/evidence/chat-gpt-development-vm-20261114-r01.json"
     ],
-    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente. Corte2026-11-12: inspección de contratos y código local; build/lint Client,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado en recibo propio: f01/45migraciones,0recibos Agentic y tabla por propósito ausente, sin trasladar la aceptación anterior. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote."
+    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente. Corte2026-11-12: inspección de contratos y código local; build/lint Client,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado en recibo propio: f01/45migraciones,0recibos Agentic y tabla por propósito ausente, sin trasladar la aceptación anterior. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación."
   },
   "approval": null
 }
@@ -551,3 +553,22 @@ Se conserva la elección de esfuerzos reportados incluso si la combinación ante
 La cabecera incorpora observación acotada compartida de cuenta Codex para complementar el snapshot de salud, aislada por instancia predeterminada activa y sesión actual. Desconocido/error/ausencia no son disponibilidad; denegación explícita de uso/sesión se conserva. No añade polling, login o inferencia.
 
 Evaluación de impacto: ayudas, presentación y explicación del estado sobre operaciones existentes, sin nuevas herramientas o permisos. Implementación local comprobada: build/lint,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado: f01/45migraciones,0recibos Agentic y tabla por propósito ausente; [96§42](../../../../mvp/96-nodia-teacher-implementation-plan.md#42-alta-guiada-selección-visible-y-estado-agentic--candidato-local-2026-11-12), [contrato97](../../../../mvp/97-nodia-teacher-technical-contracts.md#alta-teacher-y-selección-explícita--contrato-client-candidato-2026-11-12) y [verificación consolidada](../../../../mvp/96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13). Revisión30 draft/partial/unregistered/approval:null; no despliegue, inferencia real o aceptación productiva por este lote. Las fuentes aprobadas y gates anteriores siguen intactos.
+
+
+## Chat compacto y preferencias Agentic — candidato local2026-11-14
+
+Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte.
+El padding vertical16px sólo cambia presentación del contenedor de página;
+no altera contexto operativo, herramientas, autoridad ni confirmaciones.
+El chat retira cabecera título/modelo y botón de actividad; renombrar continúa
+en el menú lateral, con errores y borradores recuperables. Stop ocupa el lugar
+de Enviar y conserva cancelación identificada/conciliación sin replay.
+Opciones manuales sólo cuando falta metadata GPT; catálogo explícito conserva
+opciones exactas. Los modelos siguen viniendo de configuración/catálogo real.
+[Contrato](../../../../mvp/ai-provider-feature-contract.md) y
+[evidencia](../../../../evidence/nodia-ai-chat-space-gpt-selection-20261114.md).
+
+
+### Continuación técnica en VM de desarrollo — 2026-11-14
+
+[Recibo por selección y época](../../../../evidence/chat-gpt-development-vm-20261114-r01.json). La generación comprobada pertenece a Teacher y a la tupla exacta del recibo. El compositor se verificó como recursos estáticos servidos; no se observó un envío de chat ni UI autenticada en esta continuación. La ficha continúa candidata sin aprobación o publicación.

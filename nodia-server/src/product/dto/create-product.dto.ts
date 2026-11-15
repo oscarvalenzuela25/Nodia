@@ -50,6 +50,12 @@ export class CreateProductDto {
   @IsString()
   name: string;
 
+  @Transform(({ value }: { value: unknown }) => typeof value === 'string' ? value.trim() || null : value)
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  alias?: string | null;
+
   @IsNotEmpty()
   @IsInt()
   cost_price: number;
