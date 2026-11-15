@@ -25,15 +25,34 @@ la instalación separada. No se ejecutó en el VPS. Flujo de operación posterio
    [su guía](../../../nodia-server/native/teacher-codex-host/README.md).
    Se exige perfil `release`, Linuxx86_64, glibc≤2.39, manifiesto exacto y
    capacidades sin tools/adjuntos/retries. El artefacto `dev` histórico no sirve.
-2. Instalar las fuentes revisadas del updater, `register-consumers.py` y
-   `prepare-teacher-runtime.py` en sus rutas root mediante el procedimiento de
-   actualización de operadores existente, contrastando sus hashes antes de
-   ejecutarlas. No repetir `prepare-ai-runtime.py` sobre la instalación activa.
+2. Para una instalación sana con sólo70/71, usar el operador específico
+   [upgrade-teacher-operators.py](upgrade-teacher-operators.py), con un manifiesto
+   cerrado contra el release/manifiesto actual, settings, receiver-settings,
+   consumers, fuentes anteriores y nuevas, y los tres assets inmutables.
+   `refresh-backend-updater.py` recupera un CD fallido; no sirve para este caso.
+   El instalador inicial tampoco actualiza fuentes diferentes. No simular un
+   CD fallido ni repetir `prepare-ai-runtime.py` sobre la instalación activa.
+
+   ```bash
+   sudo python3 -I -B /ruta/revisada/upgrade-teacher-operators.py --execute \
+     --bundle /ruta/revisada/bundle --manifest /ruta/revisada/upgrade.json \
+     --manifest-sha256 SHA256_REVISADO
+   ```
+
+   Sin `--execute` es inerte. Contrasta la identidad/hash del propio script
+   antes de ejecutarlo. El bundle se valida archivo por archivo contra el
+   manifiesto de upgrade. Obtiene los locks de instalación/CD, exige backend
+   sano y guarda originales privados antes de sustituir sólo updater/register,
+   crear prepare y cambiar el pin del updater. Conserva consumidores, registro,
+   release, procesos y timers; no activa Teacher ni reinicia servicios.
+   Una reserva interrumpida se concilia desde originales/recibos; no se borra
+   ni se reintenta automáticamente. Necesita metadatos root revisados; el hash
+   de un archivo inaccesible no se reemplaza por una suposición de ausencia.
 3. Transferir el binario/manifiesto públicos y proporcionar el SHA256 del
    manifiesto revisado por un canal independiente. Ejecutar como root:
 
    ```bash
-   python3 -I /usr/local/lib/nodia/ai-runtime/prepare-teacher-runtime.py prepare \
+   python3 -I -B /usr/local/lib/nodia/ai-runtime/prepare-teacher-runtime.py prepare \
      --artifact /ruta/revisada/nodia-teacher-codex-host-HASH16 \
      --manifest /ruta/revisada/host.manifest.json --manifest-sha256 SHA256_REVISADO
    ```
@@ -59,10 +78,91 @@ timers no admiten este permiso. El registro permite sólo la adición inicial de
 Teacher; no sustituye silenciosamente un host ya registrado. Un fallo conserva
 el estado y requiere inspección, sin retry o reinicio automático.
 
-Verificación local: pruebas sintéticas de manifiesto/capacidades/ABI/digests,
+Verificación del corte anterior: pruebas sintéticas de manifiesto/capacidades/ABI/digests,
 barreras de activación, registro CD y drift de entorno/binario. Docker local no
 estaba disponible; no se compiló ni preparó un paquete `release` nuevo, no se
 instaló el operador remoto, no se cambió la configuración ni se ejecutó inferencia.
+
+Incidencia posterior en release `backend-3beeedbcbf10-d096d1b33274`: el despliegue
+de aplicación conserva ese aprovisionamiento pendiente. El refresco sano pasó
+14 regresiones Linux y revisión independiente; su integración está incluida en
+el runner de política y el bundle. Después, el usuario actualizó operadores y
+preparó el host release79960da7, con recibos/hashes comprobados y procesos
+conservados. La ventana posterior activó72, verificó registro/salud y restauró
+timers; el usuario confirmó propuesta GPT/medium desde Teacher. Estado y límites en
+[la evidencia vigente](../../../docs/evidence/teacher-production-runtime-20261114.md).
+
+### Respaldo para la adopción actual
+
+[capture-teacher-backup.py](capture-teacher-backup.py) acepta `--execute --plan
+PLAN --plan-sha256 HASH --fingerprint-source SOURCE`. Sin `--execute` es inerte.
+Requiere plan cerrado por identidad/metadatos/fuentes y toma ambos locks antes
+de reservar. Pausa ambos timers y espera que terminen las tres unidades de
+backup/reconciliación antes del primer fingerprint; conserva sus estados
+activos/habilitados y sólo los restaura tras las verificaciones del éxito.
+Instala sólo la fuente de huella por hash, llama al servicio de
+backup existente y exige igualdad de las capturas antes/después, conservando
+un backup conocido incluso ante drift posterior. No detiene API/worker, crea
+mantenimiento ni omite tablas para obtener igualdad. El receipt no autoriza
+restauración o inferencia. Un resultado incierto se concilia sin nuevo envío.
+Un fallo posterior a solicitar la pausa conserva los estados y puede dejar
+timers pausados para conciliación: no declarar conservación final hasta
+comprobarlos. Nunca borrar el lock para forzar un backup.
+
+[activate-teacher-window.py](activate-teacher-window.py) acepta `--execute --plan
+PLAN --plan-sha256 HASH --restore-receipt RECEIPT`. Ambos operadores necesitan
+el sibling revisado `upgrade-teacher-operators.py` con su hash fijo. La ventana
+liga el restore DB exacto y GCM al release, verifica el preparado y conserva
+los locks durante mantenimiento/drenaje/parada/registro/arranque/smokes/timers.
+Sólo arranca tras activación/descriptor/registro completos; un fallo conserva
+estado y recibos sin recuperación automática. No acredita la selección real.
+
+El restaurador histórico de producción está fijado a f01/45 migraciones. No
+usar su éxito para acreditar el release Teacher actual ni cambiar esos pins
+para hacerlo pasar. [restore-teacher-backup.mjs](../restore-teacher-backup.mjs)
+ensaya únicamente igualdad de filas públicas del dump actual, antes de cualquier
+preparación de recuperación; no arranca API/worker ni autoriza dispatch.
+
+1. Capturar la huella con [fingerprint-teacher-restore.mjs](../fingerprint-teacher-restore.mjs)
+   como nodia, cwd del release canónico y entorno privado del servicio con
+   `PGSSLMODE=verify-full`/`DOTENV_CONFIG_PATH=/dev/null`. Pasar explícitamente
+   `--capture SOURCE_SHA MANIFEST_SHA256 RELEASE_ID TREE_SHA256` revisados.
+   Exige identidad/hash de Node y TLS autorizados, transacción READ ONLY
+   REPEATABLE READ y límites acotados de filas/bytes/tiempo y256 tablas.
+2. Crear un backup nuevo con el servicio existente y writers activos; comprobar
+   su InvocationID y resultado nuevo. Repetir la captura y exigir igualdad;
+   si cambia la base, no declarar ese dump igual a la huella. Descargar sólo
+   el cifrado identificado por backupID/SHA, usando el exportador existente.
+3. Ejecutar el ensayo local con `node ops/production/restore-teacher-backup.mjs`
+   y los pares obligatorios: `--cipher-file`, `--cipher-sha256`,
+   `--backup-id`, `--private-key-file`, `--fingerprint-file`,
+   `--fingerprint-sha256`, `--package-archive`, `--package-sha256`,
+   `--node-archive`, `--node-sha256`, `--manifest-sha256`, `--source-sha`,
+   `--release-id`, `--tree-sha256` y `--output` nuevo. Sin argumentos es inerte.
+
+Los archivos públicos del paquete/Node deben proceder de una cadena revisada
+y fijada por hashes independientes. Un export del release instalado no es el
+ZIP original de CI: verificar todos los archivos contra el manifiesto antes
+de aceptarlo, incluidos modos, symlinks y ausencia de extras. El tar del paquete
+tiene contenido en su raíz y el de Node un directorio inicial con `bin/node`.
+La clave privada permanece fuera del repositorio y sólo pasa por RAM/stdin a
+un contenedor local sin red. No se imprime, copia al VPS ni se envía por chat.
+
+El ensayo impone GCM íntegro antes de crear PostgreSQL, imágenes locales
+fijadas, red interna sin puertos, usuario sin privilegios y comparación de
+ledger/columnas/extensiones/huella. Los recursos se eliminan por etiqueta propia;
+SIGINT/SIGTERM pasan por cleanup. SIGKILL o pérdida del daemon requieren
+conciliación manual de los recursos etiquetados, sin declarar limpieza.
+El recibo es `database_equality_only`: no acredita DDL/secuencias, journal,
+perfiles o recuperación operativa Teacher. El recorrido sintético con el
+release actual comprobó49 migraciones/68 entidades/102 tablas y cleanup completo;
+el respaldo productivo conserva su comprobación separada.
+
+La igualdad de huellas compara valores canónicos `[aggregate, tablas[nombre,
+filas,md5]]` después de validar ambos contratos completos. El orden de las
+propiedades JSON puede cambiar entre Python y JavaScript; no cambia los datos.
+No se omiten tablas o campos ni se altera el orden de tablas para hacer pasar
+un resultado. El intento inicial fallido y su recibo se conservan ante correcciones.
 
 ## Estado — 2026-11-12, America/Santiago
 

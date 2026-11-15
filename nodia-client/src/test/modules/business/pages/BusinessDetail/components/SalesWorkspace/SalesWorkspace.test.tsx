@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { AxiosError } from "axios";
 import userEvent from "@testing-library/user-event";
+import { Dialog, DialogTitle } from "@mui/material";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter } from "react-router";
 import SalesWorkspace from "../../../../../../../modules/business/pages/BusinessDetail/components/SalesWorkspace";
@@ -42,7 +43,8 @@ vi.mock("react-router", async (original) => ({ ...await original<typeof import("
 vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/SalesWorkspace/PosProductCatalog", () => ({ default: ({ disabled, onSelect }: { disabled: boolean; onSelect: (product: ProductEntity) => void }) => <button disabled={disabled} onClick={() => onSelect(product)}>Pick synthetic existing product</button> }));
 vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/SalesWorkspace/PosProductRegistration", () => ({ default: ({ barcode, onClose, onRegistered }: { barcode: string; onClose: () => void; onRegistered: (product: ProductEntity) => void | Promise<void> }) => {
   state.registrationComplete = onRegistered; state.registrationClose = onClose;
-  return <div role="dialog" aria-label="Product registration boundary"><span>{barcode}</span><button onClick={onClose}>Close registration boundary</button></div>;
+  // Keep the real portal/modal stack: the confirmation can still be exiting.
+  return <Dialog open transitionDuration={0}><DialogTitle>Product registration boundary</DialogTitle><span>{barcode}</span><button onClick={onClose}>Close registration boundary</button></Dialog>;
 } }));
 vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesRecords", () => ({ default: () => null }));
 vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReports", () => ({ default: () => null }));
@@ -127,7 +129,8 @@ describe("manual point of sale checkout controls", () => {
     await userEvent.type(scanner, "000000123{Enter}");
     await screen.findByRole("dialog", { name: "Código de barras sin registrar" });
     await userEvent.click(screen.getByRole("button", { name: "Sí, registrar producto" }));
-    expect(await screen.findByRole("dialog", { name: "Product registration boundary" })).toHaveTextContent("000000123");
+    // Registration must be accessible while the previous confirmation is exiting.
+    expect(screen.getByRole("dialog", { name: "Product registration boundary" })).toHaveTextContent("000000123");
     await userEvent.click(screen.getByRole("button", { name: "Close registration boundary" }));
     await waitFor(() => expect(scanner).toHaveFocus()); expect(scanner).toHaveValue("");
     expect(state.setLines).not.toHaveBeenCalled(); expect(state.lines).toEqual([line]);

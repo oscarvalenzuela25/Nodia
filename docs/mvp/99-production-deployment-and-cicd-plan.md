@@ -1372,3 +1372,40 @@ release Linux todavía debe construirse, verificarse e instalarse por el flujo
 operativo; no utilizar el dev histórico. Primero actualizar operadores revisados
 con sus pins y después aprovisionar/verificar Teacher por selección exacta.
 No se modifica ni se repite una operación productiva anterior.
+
+## 29. Teacher sigue bloqueado tras el CD: aprovisionamiento separado — 2026-11-14
+
+Master3beeedbc sí está desplegado, pero el host Teacher y su operador no existen
+en las rutas accesibles y los operadores instalados carecen de soporte72.
+La captura ahora muestra el motivo preciso host_unconfigured. El corte§28
+preparó código y VM, no instaló esa dependencia en producción.
+[Diagnóstico actual](../evidence/teacher-production-runtime-20261114.md).
+
+El refresco root existente sólo acepta recuperación de un intento CD fallido
+sin efectos; no se utilizará para una instalación sana fabricando un fallo.
+Hace falta transición CAS específica de operadores/pins, antes de prepare y
+activate del host release. Revisar también action/preflight instalados y su
+quietud Teacher. Construcción/verificación y paquete revisable en curso,
+sin instalación, parada de consumidores o inferencia productiva en este corte.
+
+Continuación2026-11-15UTC: el usuario ejecutó desde su terminal privada el
+refresco CAS revisado y prepare del host release79960da7. Recibos y hashes
+confirman operadores actualizados y binario preparado; settings sólo cambia
+su pin, consumers/current/PID/keyrings/timers intactos, todavía70/71 sin72.
+Build optimizado y CLI exacta correctos, protocolo Cargo release en curso.
+El ensayo de restore actual conserva f01 histórico y comprobó49 migraciones/
+68 entidades/102 tablas con datos sintéticos y limpieza completa. Nuevos
+operadores de captura y ventana pasan revisión independiente e integración
+Linux root110casos, NodeCI14 y roundtrip del bundle. Captura/restore productivos,
+activación y selección real todavía pendientes. No cambiar aprobación de ADR,
+fichas o calificación por estos resultados. La evidencia enlazada conserva
+digests, fases y límites de lectura reales.
+
+Ventana productiva cerrada2026-11-15UTC: backup875a4409 restaurado con49
+migraciones/68 entidades/102 tablas iguales; activación72 completada por el
+usuario con plan867d4f36/ventana aed9a8b7 y registro final e7c9ec01. API/worker
+activos tras parada limpia y nueve contadores quietos; mismo release3be,
+keyrings y timers conservados/restaurados. HTTPS200/auth401 comprobados sin
+desactivar TLS. El usuario recargó Teacher y confirmó desaparición del aviso
+y propuesta GPT/medium generada. Esta aceptación humana es acotada; no aprueba
+ADR/fichas ni acredita otras selecciones, modalidades o el curso completo.

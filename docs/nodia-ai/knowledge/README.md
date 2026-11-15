@@ -1,5 +1,14 @@
 # Contexto funcional de productos para NodiaAI
 
+## Teacher: runtime productivo activo — 2026-11-14/15
+
+La [ficha candidata](studies/features/session-setup-and-planning.md#incidencia-productiva-posterior--2026-11-14)
+separa el éxito VM del aprovisionamiento Teacher productivo: host release
+activado con recibos/restauración comprobados y propuesta GPT/medium confirmada
+por el usuario. La aceptación se limita a ese escenario;
+no amplía contratos, autoridad o herramientas ni aprueba/publica fichas.
+[Evidencia vigente](../../evidence/teacher-production-runtime-20261114.md).
+
 ## Producto recién guardado → venta local — VM development2026-11-14
 
 [Checkout revisión4](businesses/features/point-of-sale-checkout-and-accessibility.md#alta-terminada-e-incorporación-automática--solicitud-posterior2026-11-14)

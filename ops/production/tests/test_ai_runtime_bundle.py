@@ -28,10 +28,18 @@ class AiRuntimeBundleTests(unittest.TestCase):
         manifest, payloads = installer.verified_bundle(output, packaged['manifest_sha256'])
         self.assertIn('prepare-teacher-runtime.py', manifest['files'])
         self.assertEqual(payloads['prepare-teacher-runtime.py'], (BASE / 'ai-runtime/prepare-teacher-runtime.py').read_bytes())
-        operator = output / 'prepare-teacher-runtime.py'
-        operator.write_bytes(operator.read_bytes() + b'# synthetic changed operator\n')
-        with self.assertRaisesRegex(RuntimeError, 'bundle_digest_mismatch'):
-            installer.verified_bundle(output, packaged['manifest_sha256'])
+        self.assertEqual(payloads['upgrade-teacher-operators.py'], (BASE / 'ai-runtime/upgrade-teacher-operators.py').read_bytes())
+        for name in ('activate-teacher-window.py', 'capture-teacher-backup.py'):
+            self.assertEqual(payloads[name], (BASE / 'ai-runtime' / name).read_bytes())
+        for name in ('fingerprint-teacher-restore.mjs', 'export-backup-cipher.mjs'):
+            self.assertEqual(payloads[name], (BASE / name).read_bytes())
+        for name in ('prepare-teacher-runtime.py', 'upgrade-teacher-operators.py'):
+            operator = output / name
+            original = operator.read_bytes()
+            operator.write_bytes(original + b'# synthetic changed operator\n')
+            with self.assertRaisesRegex(RuntimeError, 'bundle_digest_mismatch'):
+                installer.verified_bundle(output, packaged['manifest_sha256'])
+            operator.write_bytes(original)
 
 
 if __name__ == '__main__':
