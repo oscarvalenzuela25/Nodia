@@ -126,7 +126,7 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     };
     const user = userEvent.setup(); openPage(); await readyComposer();
     await user.click(screen.getByRole("button", { name: i18n.t("nodiaAi:new_chat") }));
-    await screen.findByRole("heading", { name: "Other synthetic chat" });
+    await waitFor(() => expect(screen.getByRole("textbox", { name: "Mensaje" })).toBeEnabled());
     await readyComposer();
     expect(screen.getByRole("button", { name: "Conexión" })).toHaveTextContent(codexConnection.label);
     expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("AI40 discovered Codex model");
@@ -446,7 +446,7 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     expect(writes.every(item => item.url === `/nodia-ai/conversations/${chatId}`)).toBe(true);
     expect(sileo.error).toHaveBeenCalledOnce(); expect(sileo.success).toHaveBeenCalledOnce();
     expect(composer).toHaveValue("AI35 next message remains private and unsent");
-    expect(await screen.findByRole("heading", { name: "AI35 corrected title" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "AI35 corrected title" })).not.toBeInTheDocument();
   });
   it("keeps a conflicted title for an explicit CAS refresh instead of automatically repeating the PATCH", async () => {
     current.conversation.title = "AI35 conflict original";
@@ -733,8 +733,7 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeDisabled();
     expect(writes).toEqual([]);
   });
-  it("loads historical run activity only on intent and never exposes controls on a restricted message", async () => {
-    const user = userEvent.setup();
+  it("shows historical result controls inline and never exposes them on a restricted message", async () => {
     messageItems = [
       { message_id: messageId, run_id: run.run_id, seq: "2", role: "assistant", status: "sealed", created_at: conversation.created_at, visibility: "visible", author_user_id: null, sealed_at: conversation.created_at, parts: [{ kind: "text", text: "Historical synthetic answer" }] },
       { message_id: otherChatId, run_id: run.run_id, seq: "3", role: "assistant", status: "sealed", created_at: conversation.created_at, visibility: "restricted" },
@@ -742,10 +741,7 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     eventItems = [toolEvent];
     openPage();
     expect(await screen.findByText("Historical synthetic answer")).toBeInTheDocument();
-    const buttons = screen.getAllByRole("button", { name: "Ver actividad del turno" });
-    expect(buttons).toHaveLength(1);
-    expect(reads.filter(item => item.url.includes("/runs/"))).toEqual([]);
-    await user.click(buttons[0]);
+    expect(screen.queryByRole("button", { name: "Ver actividad del turno" })).not.toBeInTheDocument();
     await screen.findByRole("button", { name: "Ver resultado de consulta" });
     expect(reads.filter(item => item.url === `/nodia-ai/runs/${run.run_id}`)).toHaveLength(1);
     expect(writes).toEqual([]);
@@ -819,7 +815,12 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     const input = await screen.findByRole("textbox", { name: "Mensaje" });
     await waitFor(() => expect(reads.some(entry => entry.url.endsWith("/eligibility"))).toBe(true));
     expect(input).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Enviar mensaje" })).not.toBeInTheDocument();
+    const stop = screen.getAllByRole("button", { name: state === "cancel_requested" ? "Solicitud de detención enviada" : "Detener respuesta" });
+    expect(stop).toHaveLength(1);
+    expect(within(screen.getByRole("article", { name: "Actividad de NodiaAI" })).queryByRole("button")).not.toBeInTheDocument();
+    expect(stop[0].closest("form")).toBe(input.closest("form"));
+    if (state === "cancel_requested") expect(stop[0]).toBeDisabled();
     expect(writes).toEqual([]);
   });
 
@@ -1036,7 +1037,7 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     await user.click(screen.getByRole("button", {name: "Aplicar configuración"}));
     await waitFor(() => expect(writes).toHaveLength(1));
     await act(() => navigate(`/nodia-ai?chat=${otherChatId}`));
-    expect(await screen.findByRole("heading", {name: "Other synthetic chat"})).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("textbox", { name: "Mensaje" })).toHaveValue(""));
     await act(async () => { completeSelection?.(); });
     await waitFor(() => expect(screen.getByRole("button", {name: "Conexión"})).toBeEnabled());
     expect(screen.getByRole("button", {name: "Modelo"})).toHaveTextContent(model.label);
@@ -1054,7 +1055,7 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     await waitFor(() => expect(recover).toBeEnabled());
     await user.click(screen.getByRole("button", {name: "Conversaciones"}));
     await user.click(await screen.findByRole("button", {name: /^Other synthetic chat/}));
-    await screen.findByRole("heading", {name: "Other synthetic chat"});
+    await waitFor(() => expect(screen.getByRole("textbox", { name: "Mensaje" })).toHaveValue(""));
     await act(() => navigate(-1));
     expect(await screen.findByRole("button", {name: "Comprobar el mismo envío"})).toBeInTheDocument();
     const input = screen.getByRole("textbox", {name: "Mensaje"});

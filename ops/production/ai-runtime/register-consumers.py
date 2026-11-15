@@ -4,6 +4,7 @@ No app change/restart, database, network, account or deployment is requested.
 The operator must first install the compatible reviewed updater source.
 """
 import fcntl
+import hashlib
 import importlib.util
 import json
 import os
@@ -21,13 +22,14 @@ def load(name, path):
     return module
 
 
-def register():
-    if sys.platform != 'linux' or os.geteuid() != 0 or sys.argv[1:]:
+def register(*, lock_held=False):
+    if sys.platform != 'linux' or os.geteuid() != 0:
         raise RuntimeError('linux_root_no_arguments_required')
     host_module = load('host', LIB / 'update-backend.py')
     safe = load('safe', LIB / 'ai-runtime/codex-provision.py')
     settings = host_module.unique_json(safe.read_regular(STATE / 'settings.json', 0o600))
-    if not hasattr(host_module, 'AI_RUNTIME_HASHES'):
+    if not all(hasattr(host_module, name) for name in (
+            'AI_RUNTIME_HASHES', 'TEACHER_RUNTIME_NAME', 'TEACHER_RUNTIME_TEMPLATE', 'teacher_runtime_descriptor')):
         raise RuntimeError('compatible_updater_required')
     for name in ('update-backend.py', 'backend_update.py'):
         if host_module.sha_file(LIB / name) != settings['assets'][name]:
@@ -36,35 +38,56 @@ def register():
     lock = Path('/var/lib/nodia-backend-setup/installation.lock')
     safe.read_regular(lock, 0o600)
     with lock.open('r+b') as handle:
-        fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        if not lock_held:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         value = {'schema_version': 1, 'purpose': 'nodia_ai_runtime_consumers',
                  'units': {name: host_module.AI_RUNTIME_HASHES for name in host_module.SERVICES}}
+        templates = dict(host_module.AI_RUNTIME_TEMPLATES)
+        optional = [host_module.SYSTEMD_UNITS / (name + '.d') / host_module.TEACHER_RUNTIME_NAME
+                    for name in host_module.SERVICES]
+        if any(path.exists() or path.is_symlink() for path in optional):
+            value['teacher_host'] = host_module.teacher_runtime_descriptor()
+            templates[host_module.TEACHER_RUNTIME_NAME] = host_module.TEACHER_RUNTIME_TEMPLATE
+            hashes = {name: hashlib.sha256(raw).hexdigest() for name, raw in templates.items()}
+            value['units'] = {name: hashes for name in host_module.SERVICES}
         host_module.ai_runtime_registry(value)
         host = host_module.Host(policy, None, settings)
         for name in host_module.SERVICES:
             parent = host_module.SYSTEMD_UNITS / (name + '.d')
             host_module.protected(parent, directory=True)
-            if {p.name for p in parent.iterdir()} != set(host_module.AI_RUNTIME_TEMPLATES):
+            if {p.name for p in parent.iterdir()} != set(templates):
                 raise RuntimeError('unexpected_dropin_inventory')
-            for filename, contents in host_module.AI_RUNTIME_TEMPLATES.items():
+            for filename, contents in templates.items():
                 if safe.read_regular(parent / filename, 0o644) != contents:
                     raise RuntimeError('unreviewed_dropin')
         # This is metadata only; the guard still hardcodes the reviewed bytes.
         raw = (json.dumps(value, sort_keys=True, indent=2) + '\n').encode()
-        safe.install_file(host_module.AI_CONSUMERS, raw, 0o600)
         for name, digest in settings['service_hashes'].items():
             path = host_module.SYSTEMD_UNITS / name
             host_module.protected(path, mode=0o644)
             policy.require(host_module.sha_file(path) == digest, 'base_unit_hash_changed')
+        if host_module.AI_CONSUMERS.exists() or host_module.AI_CONSUMERS.is_symlink():
+            previous_raw = safe.read_regular(host_module.AI_CONSUMERS, 0o600)
+            previous = host_module.ai_runtime_registry(host_module.unique_json(previous_raw))
+            if previous_raw != raw:
+                if 'teacher_host' in previous or 'teacher_host' not in value:
+                    raise RuntimeError('runtime_consumer_replacement_not_allowed')
+                # Only the additive Teacher extension; never overwrite another host or remove a lane.
+                host_module.atomic_write(host_module.AI_CONSUMERS, raw)
+        else:
+            safe.install_file(host_module.AI_CONSUMERS, raw, 0o600)
+        for name in settings['service_hashes']:
             host.service_overrides(name, host.show(name))
         return {'schema_version': 1, 'status': 'runtime_consumers_verified',
                 'registry_sha256': host_module.sha_file(host_module.AI_CONSUMERS),
-                'reviewed_dropin_files': 4, 'base_units_unchanged': True,
+                'reviewed_dropin_files': len(templates) * len(host_module.SERVICES), 'base_units_unchanged': True,
                 'application_restarted': False, 'deployment_requested': False}
 
 
 if __name__ == '__main__':
     try:
+        if sys.argv[1:]:
+            raise RuntimeError('no_arguments_required')
         print(json.dumps(register()))
     except Exception:
         print(json.dumps({'status': 'failed', 'error_code': 'runtime_consumer_registration_failed',

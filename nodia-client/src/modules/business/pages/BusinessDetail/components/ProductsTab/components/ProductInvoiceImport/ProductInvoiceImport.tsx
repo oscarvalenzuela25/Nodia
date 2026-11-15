@@ -1,3 +1,5 @@
+import InvoiceAliasReview from "./InvoiceAliasReview";
+import EditOutlined from "@mui/icons-material/EditOutlined";
 import InvoiceProductMatch from "./InvoiceProductMatch";
 import PriceSuggestion from "../PriceSuggestion";
 import InvoiceRowActions from "./InvoiceRowActions";
@@ -57,8 +59,6 @@ import {
   useBulkUpdateProducts,
 } from "../../../../../../infrastructure/useServices";
 import type {
-  CreateProductPayload,
-  BulkUpdateProductItemPayload,
   ProductLogEntity,
   ProductEntity,
   VerifyIaProviderItem,
@@ -79,7 +79,9 @@ import {
   type InvoiceUpdateField,
   INVOICE_UPDATE_FIELDS,
   bindInvoiceRow,
-  invoiceProductPayload,
+  invoiceAliasNeedsReview,
+  reviewInvoiceAlias,
+  prepareInvoiceProductPayloads,
   validateInvoiceRow,
   validateInvoiceRows,
   mapExtractedItemsToRows,
@@ -123,6 +125,7 @@ export const ProductInvoiceImport: FC<Props> = ({
   const [invoiceTotalAmount, setInvoiceTotalAmount] = useState<number>(0);
   const [invoiceIssueDate, setInvoiceIssueDate] = useState<string>("");
   const [matchingRow, setMatchingRow] = useState<{ businessId: string; row: InvoiceProvisionalRow } | null>(null);
+  const [aliasReview, setAliasReview] = useState<{ businessId: string; row: InvoiceProvisionalRow } | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<InvoiceProvisionalRow>>({});
   const [editTaxRate, setEditTaxRate] = useState<number>(19);
@@ -451,6 +454,14 @@ export const ProductInvoiceImport: FC<Props> = ({
     }
   };
 
+  const handleApplyAlias = (alias: string) => {
+    if (isBusy || analysisIntent.current || !aliasReview || aliasReview.businessId !== businessId || !rows.includes(aliasReview.row)) return false;
+    const reviewed = reviewInvoiceAlias(aliasReview.row, alias);
+    setRows(previous => validateInvoiceRows(previous.map(row => row === aliasReview.row ? reviewed : row)));
+    sileo.success({ title: t("business:invoice_alias_draft_saved") });
+    return true;
+  };
+
   const handleSaveEdit = () => {
     if (editingIndex === null || isBusy || analysisIntent.current) return;
 
@@ -468,6 +479,8 @@ export const ProductInvoiceImport: FC<Props> = ({
       ...currentRow,
       ...editFormData,
       id: currentRow.id,
+      alias: currentRow.alias,
+      alias_reviewed: currentRow.alias_reviewed,
       code: newCode,
       name: (editFormData.name ?? "").trim(),
       cost_price: Number(editFormData.cost_price ?? 0),
@@ -504,6 +517,8 @@ export const ProductInvoiceImport: FC<Props> = ({
     setIsSaving(true);
 
     try {
+      // Validate every product command, including bindings/versions/aliases, before writing the invoice.
+      const { newItems, updateItems } = prepareInvoiceProductPayloads(rows, businessId, selectedProviderId || null);
       // =========================================================================
       // The current API persists the invoice and products in separate requests.
       // If invoice creation fails, STOP immediately. Do NOT touch products.
@@ -522,6 +537,8 @@ export const ProductInvoiceImport: FC<Props> = ({
             matched_product_id: r.id,
             selected_update_fields: r.manual_match?.fields,
             name: r.name,
+            alias: r.alias?.trim() ?? null,
+            alias_reviewed: r.alias_reviewed === true,
             cost_price: r.cost_price,
             quantity: Number.isFinite(r.quantity) ? r.quantity : null,
             is_update: r.isUpdate,
@@ -534,15 +551,6 @@ export const ProductInvoiceImport: FC<Props> = ({
       // A transactional confirmation endpoint is still required in Server.
       // Only runs if invoice was successfully saved in step 1.
       // =========================================================================
-      const newItems: CreateProductPayload[] = [];
-      const updateItems: BulkUpdateProductItemPayload[] = [];
-
-      rows.forEach(row => {
-        const payload = invoiceProductPayload(row, businessId, selectedProviderId || null);
-        if ("id" in payload) updateItems.push(payload);
-        else newItems.push(payload);
-      });
-
       if (newItems.length > 0) {
         await bulkCreateMutation.mutateAsync(newItems);
       }
@@ -1084,13 +1092,14 @@ export const ProductInvoiceImport: FC<Props> = ({
               boxShadow: "none",
             }}
           >
-            <Table size="small" sx={{ minWidth: showInvoiceDetails ? 1200 : 1000 }}>
+            <Table size="small" sx={{ minWidth: showInvoiceDetails ? 1400 : 1200 }}>
               <TableHead>
                 <TableRow>
                   <TableCell width={36}></TableCell>
                   <TableCell width={110}>{t("business:product_status")}</TableCell>
                   <TableCell>{t("business:product_code")}</TableCell>
                   <TableCell>{t("business:product_name")}</TableCell>
+                  <TableCell>{t("business:product_alias")}</TableCell>
                   <TableCell align="right">{t("business:product_cost_price")}</TableCell>
                   <TableCell align="right">{t("business:product_cost_tax")}</TableCell>
                   <TableCell align="right">
@@ -1165,6 +1174,22 @@ export const ProductInvoiceImport: FC<Props> = ({
 
                       <TableCell sx={{ fontWeight: 600, maxWidth: 240, overflowWrap: "anywhere" }}>{row.code || "-"}</TableCell>
                       <TableCell sx={{ minWidth: 160, maxWidth: 280, overflowWrap: "anywhere" }}>{row.name}</TableCell>
+                      <TableCell sx={{ minWidth: 180, maxWidth: 280, overflowWrap: "anywhere" }}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, p: 0.5, borderRadius: 1,
+                          border: "1px solid", borderColor: invoiceAliasNeedsReview(row) ? "warning.main" : "transparent",
+                          bgcolor: invoiceAliasNeedsReview(row) ? "action.hover" : "transparent" }}>
+                          <Box sx={{ flex: 1, minWidth: 0 }}>
+                            <Typography variant="body2">{row.alias?.trim() || t("business:invoice_alias_pending")}</Typography>
+                            {invoiceAliasNeedsReview(row) && <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>{t("business:invoice_alias_required")}</Typography>}
+                          </Box>
+                          <Tooltip title={t("business:invoice_alias_edit", { name: row.name })}><span><IconButton
+                            aria-label={t("business:invoice_alias_edit", { name: row.name })} data-testid={`review-invoice-alias-${idx}`} disabled={isBusy}
+                            onClick={() => { if (!isBusy && !analysisIntent.current) setAliasReview({ businessId, row }); }}
+                            sx={{ width: 44, height: 44, color: invoiceAliasNeedsReview(row) ? "warning.main" : "primary.main" }}>
+                            <EditOutlined fontSize="small" />
+                          </IconButton></span></Tooltip>
+                        </Box>
+                      </TableCell>
                       <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
                         {Number.isFinite(row.cost_price) ? `$${row.cost_price.toLocaleString()}` : "-"}
                       </TableCell>
@@ -1266,6 +1291,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                             {row.historicalProduct.name}
                           </Typography>
                         </TableCell>
+                        <TableCell sx={{ overflowWrap: "anywhere" }}>{row.historicalProduct.alias ?? "—"}</TableCell>
                         <TableCell align="right" sx={{ color: "text.secondary" }}>
                           ${row.historicalProduct.cost_price.toLocaleString()}
                         </TableCell>
@@ -1293,6 +1319,10 @@ export const ProductInvoiceImport: FC<Props> = ({
       )}
 
       {matchingRow && <InvoiceProductMatch key={rows.indexOf(matchingRow.row)} businessId={businessId} row={matchingRow.row} disabled={isBusy || matchingRow.businessId !== businessId} onClose={() => setMatchingRow(null)} onApply={handleBindProduct} />}
+
+      {aliasReview && aliasReview.businessId === businessId && rows.includes(aliasReview.row) && <InvoiceAliasReview key={`${businessId}:${rows.indexOf(aliasReview.row)}`} name={aliasReview.row.name} alias={aliasReview.row.alias}
+        disabled={isBusy}
+        onApply={handleApplyAlias} onClose={() => setAliasReview(null)} />}
 
       {/* Row Edit Modal */}
       <BaseModal

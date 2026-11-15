@@ -246,6 +246,7 @@ export function ProductMobileCard({
   const comparable = !historical || priceMeasurementsComparable(product, historical);
   const diff = comparable ? calculatePriceDiff(product.sale_price, historical?.sale_price) : null;
   const fields = (item: ProductEntity | ProductLogEntity, current = false) => [
+    { key: "alias", label: t("product_alias"), value: item.alias?.trim() || "—", fullWidth: true },
     { key: "code", label: t("product_code"), value: item.code ?? "—", fullWidth: true },
     {
       key: "cost",

@@ -41,3 +41,13 @@ claro y oscuro, además de recortes circular y cuadrado de maskable. Comprobar
 dimensiones, alfa y contenido antes de actualizar el manifiesto.
 
 Contrato y aceptación por plataforma: [PWA103](../../docs/mvp/103-pwa-progressive-implementation-plan.md).
+
+## Referencia del favicon — 2026-11-14
+
+La pestaña web y la instalación PWA comparten la N esencial anterior. Para
+solicitar el icono actual mediante una URL distinta de referencias antiguas,
+index.html añade `?v=6e46f1a62f82` a SVG/PNG/ICO. Es el prefijo de12hex del
+SHA256 del SVG fuente; al regenerar la marca, actualizar las tres referencias.
+El gate acepta el SVG canónico histórico o exactamente su URL versionada con
+ese hash; no admite orígenes ajenos, parámetros libres o una versión obsoleta.
+No se cambia el manifiesto, sus imágenes o la identidad de instalación.

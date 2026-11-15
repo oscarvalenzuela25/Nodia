@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { DataSource, EntityManager } from 'typeorm';
 import type { AiGenerationExecutionContext } from './ai-generation-port.js';
 import { TeacherAgenticTextService, teacherAgenticScope } from './teacher-agentic-text.service.js';
+import { codexError } from '../common/ai/codex/codex-contract.js';
 import type { GeminiTeacherTextTransport } from './gemini-teacher-text-transport.js';
 import {
   TEACHER_AGENTIC_CONTRACT, TeacherAgenticClosedError, TeacherAgenticUnclosedError,
@@ -65,6 +66,28 @@ async function fixture() {
 }
 
 describe('Teacher Agentic current identity, optional diagnostics and native closure', () => {
+  it.each(['codex_host_unconfigured', 'codex_host_unverified', 'configuration_changed'])(
+    'exposes safe %s without inventing an observation or starting generation', async reason => {
+      const f = await fixture();
+      f.native.observe.mockRejectedValueOnce(Error(`teacher:${reason}`));
+      expect(await f.service.eligibility(selection, signal())).toEqual({ eligible: false, reason_code: reason, checked_at: null, selection });
+      expect(f.native.start).not.toHaveBeenCalled();
+    });
+  it('reports a known Codex session error without leaking the private provider message', async () => {
+    const f = await fixture();
+    f.native.observe.mockRejectedValueOnce(codexError('codex_session_required', 409));
+    expect(await f.service.eligibility(selection, signal())).toMatchObject({ eligible: false, reason_code: 'codex_session_required', checked_at: null });
+    f.native.observe.mockRejectedValueOnce(Error('private error with credentials'));
+    expect(await f.service.eligibility(selection, signal())).toMatchObject({ eligible: false, reason_code: 'provider_unavailable', checked_at: null });
+  });
+  it('preserves the date and safe reason of a completed unavailable observation', async () => {
+    const f = await fixture();
+    f.observed.available = false;
+    f.observed.reason = 'runtime_busy';
+    expect(await f.service.eligibility(selection, signal())).toMatchObject({ eligible: false, reason_code: 'runtime_busy', checked_at: f.observed.observed_at });
+    await expect(f.service.observe(selection, signal())).rejects.toThrow('teacher:runtime_busy');
+    expect(f.native.start).not.toHaveBeenCalled();
+  });
   it('does not require a legacy or current qualification receipt for an actual live observation', async () => {
     const f = await fixture();
     const { observed_at: _ignored, ...observationIdentity } = f.observed;

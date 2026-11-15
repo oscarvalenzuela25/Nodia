@@ -3,6 +3,16 @@ import { parseCSV, productImportPayload, exportProductsToCSV, validateRow } from
 import type { ProductEntity } from '../../../../../../../../../modules/business/infrastructure/types';
 
 describe('Product CSV catalog contract', () => {
+  it('preserves an omitted alias, clears an explicit blank and requires a version to change the alias', () => {
+    const base = 'id,name,cost_price,cost_price_tax,sale_price';
+    const [omitted] = parseCSV(`${base}\n12,Original,0,0,1`);
+    expect(productImportPayload(omitted, 'business')).not.toHaveProperty('alias');
+    const [blank] = parseCSV(`${base},alias,version\n12,Original,0,0,1,   ,4`);
+    expect(productImportPayload(blank, 'business')).toMatchObject({ name: 'Original', alias: null, expected_version: 4 });
+    const [custom] = parseCSV(`${base},alias\n12,Original,0,0,1,Commercial`);
+    expect(custom.isValid).toBe(false);
+    expect(productImportPayload({ ...custom, version: 4 }, 'business')).toMatchObject({ name: 'Original', alias: 'Commercial', expected_version: 4 });
+  });
   it.each([[255, true], [256, false]] as const)('counts %i astral supplier-code characters by Unicode code point', (length, valid) => {
     const code = '🧾'.repeat(length);
     const [row] = parseCSV(`code,name,cost_price,cost_price_tax,sale_price,has_stock\n ${code} ,Synthetic,0,0,1,true`);

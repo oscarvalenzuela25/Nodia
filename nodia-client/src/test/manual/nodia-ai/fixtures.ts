@@ -103,11 +103,11 @@ export function installFixture(scenario: string | null) {
     last_owner_message_at: timestamp, expires_at: "2099-01-01T00:00:00Z", created_at: timestamp, updated_at: timestamp,
     read_only: scenario === "read-only",
   };
-  const run: NodiaAiRun | null = scenario === "unknown" || scenario === "observation" || proposalScenario || scenario === "clarification" ? {
+  let run: NodiaAiRun | null = scenario === "chat-running" || scenario === "unknown" || scenario === "observation" || proposalScenario || scenario === "clarification" ? {
     run_id: "10000000-0000-4000-8000-000000000002", conversation_id: CHAT_ID,
     user_message_id: "10000000-0000-4000-8000-000000000003", assistant_message_id: null,
     revision: 1, selection: BASE_SELECTION, catalog_version: "qa-synthetic-catalog",
-    state: scenario === "unknown" ? "unknown" : scenario === "clarification" ? "waiting_for_user" : "completed", phase: "qa-synthetic-state", deadline_at: timestamp, created_at: timestamp, completed_at: scenario === "unknown" || scenario === "clarification" ? null : timestamp,
+    state: scenario === "chat-running" ? "running" : scenario === "unknown" ? "unknown" : scenario === "clarification" ? "waiting_for_user" : "completed", phase: "qa-synthetic-state", deadline_at: timestamp, created_at: timestamp, completed_at: scenario === "chat-running" || scenario === "unknown" || scenario === "clarification" ? null : timestamp,
     error: null, routing: conversation.routing,
     budget_limits: { schema_version: 1, tool_calls: 12, mcp_rpc_messages: 128, provider_dispatches: 3, compactions: 1, delegations: 1 },
     budget_used: { tool_calls: 0, mcp_rpc_messages: 0, provider_dispatches: 0, compactions: 0, delegations: 0 }, active_stage: null,
@@ -118,7 +118,7 @@ export function installFixture(scenario: string | null) {
     { message_id: "10000000-0000-4000-8000-000000000004", run_id: null, seq: "2", role: "assistant", status: "sealed", visibility: "visible", author_user_id: null, sealed_at: timestamp, created_at: timestamp,
       parts: [{ kind: "text", text: "[RESPUESTA SINTÃ‰TICA / SYNTHETIC RESPONSE] Este contenido permite revisar lectura, contraste y scroll. No se consultÃ³ Gemini ni una base de datos.\n\n" + "Detalle sintÃ©tico de prueba con texto extenso que conserva la informaciÃ³n al cambiar de ancho. / Synthetic detail retained across viewport changes.\n".repeat(12) }] },
   ] };
-  if (scenario === "chat-redesign") {
+  if (scenario === "chat-redesign" || scenario === "chat-running") {
     conversation = { ...conversation, title: "Tu espacio de trabajo · QA" };
     messages.items = messages.items.map((message, index) => message.visibility === "visible"
       ? { ...message, parts: [{ kind: "text", text: index === 0
@@ -222,6 +222,11 @@ export function installFixture(scenario: string | null) {
         { ...modeMetadata, mode: "api_key", configured_selection: API_SELECTION, models: [{ model_id: API_SELECTION.model_id, label: "Modelo API sintético / Synthetic API model", efforts: [] }] },
       ],
     }] });
+    if (scenario === "chat-running" && run && method === "POST" && path === `/nodia-ai/runs/${run.run_id}/cancel`) {
+      run = { ...run, state: "cancel_requested", revision: run.revision + 1 };
+      return response({ status: "accepted", run });
+    }
+    if (scenario === "chat-running" && run && method === "GET" && path === `/nodia-ai/runs/${run.run_id}`) return response(run);
     if (method === "GET" && path.endsWith("/events")) return response({ conversation_id: CHAT_ID, items: scenario === "observation" ? [{
       event_id: "10000000-0000-4000-8000-000000000005", conversation_id: CHAT_ID, run_id: run!.run_id,
       seq: "1", cursor: "synthetic-checkpoint", created_at: timestamp, kind: "tool_completed",

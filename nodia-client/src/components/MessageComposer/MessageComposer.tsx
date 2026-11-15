@@ -14,7 +14,7 @@ import type { MessageComposerProps } from "./types";
 /** Shared text/dictation surface. Owners supply their own send policy and optional slots. */
 export default function MessageComposer({ scopeKey, text, onTextChange, onSend, maxBytes, maxLength,
   label, placeholder, sendLabel, ariaLabel = label, disabled = false, sendDisabled = false,
-  inputDisabled = false, voiceDisabled, submitOnEnter = true, textTooLarge = false,
+  inputDisabled = false, voiceDisabled, sendAction, submitOnEnter = true, textTooLarge = false,
   onRecordingChange, onPaste, beforeInput, toolbarStart, footer, sx }: MessageComposerProps) {
   const { t, i18n } = useTranslation("core");
   const validLimits = Number.isSafeInteger(maxBytes) && maxBytes >= 0
@@ -32,7 +32,7 @@ export default function MessageComposer({ scopeKey, text, onTextChange, onSend, 
     onRecordingChange?.(recording);
     return () => onRecordingChange?.(false);
   }, [onRecordingChange, recording]);
-  const canSend = !disabled && !sendDisabled && !overLimit && !recording;
+  const canSend = !sendAction && !disabled && !sendDisabled && !overLimit && !recording;
   return <ComposerShell aria-label={ariaLabel} sx={sx} onSubmit={event => { event.preventDefault(); if (canSend) onSend(); }}>
     {beforeInput}
     <InputRow>
@@ -54,8 +54,8 @@ export default function MessageComposer({ scopeKey, text, onTextChange, onSend, 
             "&.Mui-focusVisible": { outline: "2px solid", outlineColor: "primary.main", outlineOffset: 2 },
           }}>{recording ? <StopRounded /> : <MicNoneOutlined />}</IconButton></span>
       </Tooltip>
-      <Tooltip title={sendLabel}><span><IconButton type="submit" aria-label={sendLabel} disabled={!canSend}
-        sx={{ width: 44, height: 44, borderRadius: 3, bgcolor: "primary.main", color: "primary.contrastText", "&:hover": { bgcolor: "primary.dark" }, "&.Mui-disabled": { bgcolor: "action.disabledBackground" } }}><SendRounded sx={{ fontSize: 21 }} /></IconButton></span></Tooltip>
+      {sendAction ?? <Tooltip title={sendLabel}><span><IconButton type="submit" aria-label={sendLabel} disabled={!canSend}
+        sx={{ width: 44, height: 44, borderRadius: 3, bgcolor: "primary.main", color: "primary.contrastText", "&:hover": { bgcolor: "primary.dark" }, "&.Mui-disabled": { bgcolor: "action.disabledBackground" } }}><SendRounded sx={{ fontSize: 21 }} /></IconButton></span></Tooltip>}
     </InputRow>
     {recording && <Box sx={{ minWidth: 0 }}>
       <Typography role="status" variant="caption" color="error.main">{t(voice.state === "requesting" ? "message_composer.dictation.requesting" : voice.state === "stopping" ? "message_composer.dictation.stopping" : "message_composer.dictation.listening", { time: `${Math.floor(voice.seconds / 60)}:${String(voice.seconds % 60).padStart(2, "0")}` })}</Typography>

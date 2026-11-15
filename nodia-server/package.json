@@ -41,6 +41,8 @@
     "test:provider-contacts:integration": "npm run build && node test/provider-contacts.integration.mjs",
     "test:provider-csv:integration": "npm run build && node test/provider-csv.integration.mjs",
     "test:business-sales:integration": "npm run build && node test/business-sales.integration.mjs",
+    "test:product-alias:integration": "node test/product-alias.integration.mjs",
+    "test:product-alias:http": "node test/product-alias-http.integration.mjs",
     "test:nodia-ai:pos-candidate": "npm run build && node scripts/check-nodia-ai-pos-candidate.mjs",
     "test:nodia-ai:pos-publication": "npm run build && node test/nodia-ai-pos-publication.integration.mjs",
     "test:invoice-access:integration": "npm run build && node test/invoice-access.integration.mjs",

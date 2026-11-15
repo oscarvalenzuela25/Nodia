@@ -32,6 +32,9 @@ export class ProductLog {
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  alias: string | null;
+
   @Column({ type: 'integer' })
   cost_price: number;
 

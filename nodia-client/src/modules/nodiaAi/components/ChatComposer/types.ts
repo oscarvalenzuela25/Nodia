@@ -9,6 +9,7 @@ export interface ChatComposerProps {
   draft: AttachmentPanelProps["draft"];
   disabled: boolean;
   sendDisabled: boolean;
+  sendAction?: ReactNode;
   recovering: boolean;
   textTooLarge: boolean;
   onSend: () => void;

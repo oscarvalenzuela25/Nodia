@@ -4,11 +4,11 @@
   "document_id": "businesses",
   "product_id": "businesses",
   "kind": "product",
-  "revision": 50,
+  "revision": 53,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "ClientR37 conserva la mejora visual de precio sugerido verificada1088/320px, sin Aplicar/Guardar en esa QA. NativeR16 adoptado con diagnóstico seguro best-effort y660Linux correctos, pero la nueva intención OCR real volvió aHTTP504 tras leer el archivo sin finish/resultado. Cierre local0CLI/marcadores/proofs/grupos yPNG conservado. Causa no aislada; no atribuir a Google/transporte ni convertir indicadores vacíos de un log truncado en ausencia de fallos. R15fallido y R37visual conservan sus recibos. Resolver extracción compatible con CLI1.3.1 sigue pendiente; sin replay, cambio de selección o ampliación de deadlines. No amplía guardado comercial, capacidades, permisos o bindings; draft/partial/unregistered sin nueva aprobación/publicación."
+    "notes": "ClientR37 conserva la mejora visual de precio sugerido verificada1088/320px, sin Aplicar/Guardar en esa QA. NativeR16 adoptado con diagnóstico seguro best-effort y660Linux correctos, pero la nueva intención OCR real volvió aHTTP504 tras leer el archivo sin finish/resultado. Cierre local0CLI/marcadores/proofs/grupos yPNG conservado. Causa no aislada; no atribuir a Google/transporte ni convertir indicadores vacíos de un log truncado en ausencia de fallos. R15fallido y R37visual conservan sus recibos. Resolver extracción compatible con CLI1.3.1 sigue pendiente; sin replay, cambio de selección o ampliación de deadlines. No amplía guardado comercial, capacidades, permisos o bindings; draft/partial/unregistered sin nueva aprobación/publicación. VM development2026-11-14: alias humano nullable con revisión OCR explícita, búsqueda nombre/alias y filtros independientes de códigos. Migración179366 aplicada una vez;13productos/33logs preservados y QA local/SQL/HTTP aislados correctos. Sin producción, inferencia OCR o publicación; recibo operativo separado. Solicitud2026-11-14: alta nativa desde barcode POS inexistente, decisión Registrar/No y asociación existente conservada; barcode precargado textual y venta intacta. Client2986/362 y focales finales correctos, build/tipos/lint y QA aislada320/600/1280 ES/EN correctos; adopción sólo Client VM con recibo separado. Sin publicación IA o aprobación heredada. Ampliación explícita posterior2026-11-14 plan94§40: alta POS terminada agrega una unidad a la venta local actual, una vez, y limpia/enfoca lector. Sustituye reescaneo de§39; cancelación/error/contexto obsoleto no agrega. Client2994/362 y57focales/3archivos correctos, build/tipos/lint y QA sintética320ESdark/1280ENlight correctos. Adopción Client VM con recibo separado; sin cambio Server, herramienta IA o aprobación/publicación nueva."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
@@ -199,9 +199,8 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-07",
+    "checked_on": "2026-11-14",
     "evidence_paths": [
-      "docs/evidence/nodia-ai-c05-live-preparations-r01.json",
       "docs/evidence/nodia-ai-ai36-c03-publication-authorization-r01.json",
       "docs/evidence/nodia-ai-ai36-c03-VM-publication-r01.json",
       "docs/evidence/nodia-ai-c03-handoff-readback-20261025-r01.json",
@@ -232,9 +231,10 @@
       "docs/evidence/product-price-suggestion-ui-20261107-r01.json",
       "docs/evidence/product-price-result-alignment-20261107-r01.json",
       "docs/evidence/invoice-gemini-timeout-20261107-r01.json",
-      "docs/evidence/invoice-gemini-timeout-20261107-r02.json"
+      "docs/evidence/invoice-gemini-timeout-20261107-r02.json",
+      "docs/evidence/product-alias-and-code-completeness-20261114.md"
     ],
-    "notes": "R16:660Linux sin fallos/omitidas más fixture cancel/setsid/IO/nuevaintención sin red/perfil real; Windows649pass/11skip es corrida separada. Adopción técnica verificada con configuraciónServerR12/ClientR37 preservada. OCR real504 con deadline240s/inferencia242057ms/UI250s, view_filecompletado y finish/result0. Hook1decisión/0rechazos; log truncado sin indicadores reconocidos no prueba causa ni ausencia. Cierre local0CLI/marcadores/proofs/grupos; no replay/guardar/vincularnuevo. R15yR37 históricos intactos;44aprobadas byte-idénticas. No se declara extracción resuelta."
+    "notes": "R16:660Linux sin fallos/omitidas más fixture cancel/setsid/IO/nuevaintención sin red/perfil real; Windows649pass/11skip es corrida separada. Adopción técnica verificada con configuraciónServerR12/ClientR37 preservada. OCR real504 con deadline240s/inferencia242057ms/UI250s, view_filecompletado y finish/result0. Hook1decisión/0rechazos; log truncado sin indicadores reconocidos no prueba causa ni ausencia. Cierre local0CLI/marcadores/proofs/grupos; no replay/guardar/vincularnuevo. R15yR37 históricos intactos;44aprobadas byte-idénticas. No se declara extracción resuelta. Solicitud2026-11-14: alta nativa desde barcode POS inexistente, decisión Registrar/No y asociación existente conservada; barcode precargado textual y venta intacta. Client2986/362 y focales finales correctos, build/tipos/lint y QA aislada320/600/1280 ES/EN correctos; adopción sólo Client VM con recibo separado. Sin publicación IA o aprobación heredada. Ampliación explícita posterior2026-11-14 plan94§40: alta POS terminada agrega una unidad a la venta local actual, una vez, y limpia/enfoca lector. Sustituye reescaneo de§39; cancelación/error/contexto obsoleto no agrega. Client2994/362 y57focales/3archivos correctos, build/tipos/lint y QA sintética320ESdark/1280ENlight correctos. Adopción Client VM con recibo separado; sin cambio Server, herramienta IA o aprobación/publicación nueva."
   },
   "approval": null
 }
@@ -586,3 +586,30 @@ NativeR15 está adoptado y sus659pruebas Linux/fixture de cierre aislado pasaron
 ## Diagnóstico NativeR16 adoptado, extracción aún bloqueada — 2026-11-07
 
 NativeR16 está adoptado con instrumentación estructural segura, pero la extracción OCR continúa bloqueada. El delta añade sólo la captura best-effort de cli.log/hook en finally, con el helper heredado intacto; errores de diagnóstico no alteran el resultado y no se registra texto libre.660pruebas Linux sin fallos/omitidas y fixture aislado sin red/perfil real correctos. La nueva intención explícita sobre el mismo archivoPNG conservado recibióHTTP504 tras250s en UI: deadline240s, inferencia242057ms, lectura view_file completada y0eventos finish/resultado. El hook observado contabilizó1decisión,0rechazos y0finish; el log examinó30835bytes/128líneas con truncado. Sus indicadores vacíos de transporte/proveedor/HTTP no identifican la causa ni prueban ausencia de fallo. Tras el cierre:0CLI/marcadores/proofs/grupos propios y22fuentes verificadas; archivo y controles recuperados. No hubo replay, otro POST de análisis, guardado o nueva vinculación tras este fallo. Los10rechazos health_status observados fueron metadatos, no inferencias adicionales. No se aisló causa remota; no se atribuye el fallo a Google ni se presupone que otro modelo/CLI funcione. Permanecen CLI1.3.1, SDK, prompt/modelo/esfuerzo y límites240/300/340/360s; resolver una estrategia compatible y demostrar una extracción válida sigue pendiente. [Evidencia R16](../../../evidence/invoice-gemini-timeout-20261107-r02.json). No cambia la autoridad, capacidades o permisos de NodiaAI; aprobación y publicación siguen separadas.
+
+
+## Alias humano de productos — VM development2026-11-14
+
+[Ficha candidata](features/product-alias-and-code-completeness.md): alias separado
+del nombre original, edición/revisión OCR explícita, búsquedas y códigos.
+Migración179366 y delta nativo adoptados sólo en VM; sin nueva herramienta publicada. Ver evidencia de la ficha para cierre operativo y límites.
+
+
+Antecedente histórico de verificación conservado: [evidencia anterior](../../../evidence/nodia-ai-c05-live-preparations-r01.json).
+
+## Registro desde lector POS — solicitud2026-11-14
+
+[Checkout revisión4](features/point-of-sale-checkout-and-accessibility.md#barcode-desconocido-y-alta-nativa--solicitud2026-11-14):
+decisión explícita ante barcode inexistente, alta nativa precargada y retorno
+al lector. Plan94§40 añade una unidad al guardar desde POS; el checkout y la
+autoridad de NodiaAI conservan sus contratos.
+[Evidencia por alcance](../../../evidence/pos-unknown-barcode-registration-20261114.md).
+Draft/partial/unregistered/approval:null, sin aprobación ni publicación nueva.
+
+## Producto guardado → venta local actual — ampliación2026-11-14
+
+[Checkout revisión4](features/point-of-sale-checkout-and-accessibility.md#alta-terminada-e-incorporación-automática--solicitud-posterior2026-11-14):
+alta terminada incorpora una unidad sin reescaneo, con control de contexto y
+duplicados, lector limpio/enfocado y fallo específico si ya se guardó catálogo.
+[Evidencia de autoadd](../../../evidence/pos-product-registration-autoadd-20261114.md)
+separa esta ampliación del corte previo que no añadía al carrito.

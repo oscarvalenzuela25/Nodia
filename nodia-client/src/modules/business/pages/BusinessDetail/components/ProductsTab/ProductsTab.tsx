@@ -52,6 +52,7 @@ import { sileo } from "sileo";
 import { TableSkeleton } from "../../../../../../components/skeletons";
 import InputSearch from "../../../../../../components/inputs/InputSearch";
 import SelectMultipleInput from "../../../../../../components/inputs/SelectMultipleInput";
+import SelectSingleInput from "../../../../../../components/inputs/SelectSingleInput";
 import ActiveStatusSelect from "../../../../../../components/Filter/components/ActiveStatusSelect";
 import TextInput from "../../../../../../components/inputs/TextInput";
 import ConfirmDialog from "../../../../../../components/ConfirmDialog";
@@ -164,6 +165,8 @@ export const ProductsTab: FC<Props> = ({
   // Filter modal draft state
   const [draftFilterCodes, setDraftFilterCodes] = useState<string[]>([]);
   const [draftFilterName, setDraftFilterName] = useState<string>("");
+  const [draftCodePresence, setDraftCodePresence] = useState<"present" | "missing" | null>(null);
+  const [draftBarcodePresence, setDraftBarcodePresence] = useState<"present" | "missing" | null>(null);
   const [draftFilterProviders, setDraftFilterProviders] = useState<string[]>(
     [],
   );
@@ -180,6 +183,8 @@ export const ProductsTab: FC<Props> = ({
   // Applied filter state
   const [appliedFilterCodes, setAppliedFilterCodes] = useState<string[]>([]);
   const [appliedFilterName, setAppliedFilterName] = useState<string>("");
+  const [codePresence, setCodePresence] = useState<"present" | "missing" | null>(null);
+  const [barcodePresence, setBarcodePresence] = useState<"present" | "missing" | null>(null);
   const [appliedFilterProviders, setAppliedFilterProviders] = useState<
     string[]
   >([]);
@@ -232,6 +237,8 @@ export const ProductsTab: FC<Props> = ({
     let count = 0;
     if (appliedFilterCodes.length > 0) count += appliedFilterCodes.length;
     if (appliedFilterName.trim()) count += 1;
+    if (codePresence) count += 1;
+    if (barcodePresence) count += 1;
     if (appliedFilterProviders.length > 0)
       count += appliedFilterProviders.length;
     if (appliedFilterStock.length > 0) count += appliedFilterStock.length;
@@ -242,6 +249,7 @@ export const ProductsTab: FC<Props> = ({
   }, [
     appliedFilterCodes,
     appliedFilterName,
+    codePresence, barcodePresence,
     appliedFilterProviders,
     appliedFilterStock,
     appliedFilterActive,
@@ -260,9 +268,10 @@ export const ProductsTab: FC<Props> = ({
     includes: true,
     q: {
       business_id_eq: businessId,
-      name_cont:
-        [appliedFilterName.trim(), search.trim()].filter(Boolean).join(" ") ||
-        undefined,
+      name_cont: appliedFilterName.trim() || undefined,
+      search: search.trim() || undefined,
+      code_presence: codePresence ?? undefined,
+      barcode_presence: barcodePresence ?? undefined,
       code_in: appliedFilterCodes.length > 0 ? appliedFilterCodes : undefined,
       provider_id_in:
         appliedFilterProviders.length > 0 ? appliedFilterProviders : undefined,
@@ -437,6 +446,8 @@ export const ProductsTab: FC<Props> = ({
   const handleApplyFilters = () => {
     setAppliedFilterCodes(draftFilterCodes);
     setAppliedFilterName(draftFilterName);
+    setCodePresence(draftCodePresence);
+    setBarcodePresence(draftBarcodePresence);
     setAppliedFilterProviders(draftFilterProviders);
     setAppliedFilterStock(draftFilterStock);
     setAppliedFilterActive(draftFilterActive);
@@ -447,6 +458,8 @@ export const ProductsTab: FC<Props> = ({
   const handleClearFilters = () => {
     setDraftFilterCodes([]);
     setDraftFilterName("");
+    setDraftCodePresence(null); setDraftBarcodePresence(null);
+    setCodePresence(null); setBarcodePresence(null);
     setDraftFilterProviders([]);
     setDraftFilterStock([]);
     setDraftFilterActive("active");
@@ -469,6 +482,7 @@ export const ProductsTab: FC<Props> = ({
           code: data.code,
           measurement_unit: data.measurement_unit,
           name: data.name,
+          alias: data.alias,
           cost_price: data.cost_price,
           cost_price_tax: data.cost_price_tax,
           sale_price: data.sale_price,
@@ -486,6 +500,7 @@ export const ProductsTab: FC<Props> = ({
           code: data.code,
           measurement_unit: data.measurement_unit,
           name: data.name,
+          alias: data.alias,
           cost_price: data.cost_price,
           cost_price_tax: data.cost_price_tax,
           sale_price: data.sale_price,
@@ -539,7 +554,7 @@ export const ProductsTab: FC<Props> = ({
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
         <Filter
           disabled={isBusy}
-          onOpen={() => setDraftFilterActive(appliedFilterActive)}
+          onOpen={() => { setDraftFilterActive(appliedFilterActive); setDraftCodePresence(codePresence); setDraftBarcodePresence(barcodePresence); }}
           onFilter={handleApplyFilters}
           onClear={handleClearFilters}
           activeCount={activeFiltersCount}
@@ -569,6 +584,13 @@ export const ProductsTab: FC<Props> = ({
             disabled={isLoading || isFetching}
             dataTestId="filter-product-name-input"
           />
+
+          <SelectSingleInput label={t("business:product_code_presence")} value={draftCodePresence ?? "all"} clearable={false}
+            disabled={isBusy} options={[{ value: "all", label: t("business:product_presence_all") }, { value: "present", label: t("business:product_presence_present") }, { value: "missing", label: t("business:product_presence_missing") }]}
+            onChange={value => setDraftCodePresence(value === "present" || value === "missing" ? value : null)} />
+          <SelectSingleInput label={t("business:product_barcode_presence")} value={draftBarcodePresence ?? "all"} clearable={false}
+            disabled={isBusy} options={[{ value: "all", label: t("business:product_presence_all") }, { value: "present", label: t("business:product_presence_present") }, { value: "missing", label: t("business:product_presence_missing") }]}
+            onChange={value => setDraftBarcodePresence(value === "present" || value === "missing" ? value : null)} />
 
           <SelectMultipleInput
             label={t("business:filter_provider_label")}
@@ -618,6 +640,10 @@ export const ProductsTab: FC<Props> = ({
       {/* Active Filters Chips */}
       {activeFiltersCount > 0 && (
         <ActiveFilters sx={{ mb: 2 }}>
+          {codePresence && <FilterChips label={`${t("business:product_code_presence")}: ${t(`business:product_presence_${codePresence}`)}`}
+            disabled={isBusy} onAction={() => { setCodePresence(null); setDraftCodePresence(null); setPage(0); }} />}
+          {barcodePresence && <FilterChips label={`${t("business:product_barcode_presence")}: ${t(`business:product_presence_${barcodePresence}`)}`}
+            disabled={isBusy} onAction={() => { setBarcodePresence(null); setDraftBarcodePresence(null); setPage(0); }} />}
           {appliedFilterCodes.map((code) => (
             <FilterChips
               key={`code-${code}`}
@@ -860,6 +886,7 @@ export const ProductsTab: FC<Props> = ({
                 { width: 48, align: "center" },
                 { header: t("business:product_code") },
                 { header: t("business:product_name") },
+                { header: t("business:product_alias") },
                 { align: "center", header: t("business:pos.image_column") },
                 { header: t("business:product_provider") },
                 { align: "right", header: t("business:product_cost_tax") },
@@ -916,6 +943,7 @@ export const ProductsTab: FC<Props> = ({
                     <TableCell sx={{ width: 48, p: 0.5 }} align="center" />
                     <TableCell>{t("business:product_code")}</TableCell>
                     <TableCell>{t("business:product_name")}</TableCell>
+                    <TableCell>{t("business:product_alias")}</TableCell>
                     <TableCell align="center">{t("business:pos.image_column")}</TableCell>
                     <TableCell>{t("business:product_provider")}</TableCell>
                     <TableCell align="right">
@@ -958,7 +986,7 @@ export const ProductsTab: FC<Props> = ({
                 <TableBody>
                   {!isLoading && displayedProducts.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={showAdditionalColumns ? 11 : 8} align="center" sx={{ py: 6 }}>
+                      <TableCell colSpan={showAdditionalColumns ? 12 : 9} align="center" sx={{ py: 6 }}>
                         <Typography
                           variant="subtitle1"
                           sx={{ fontWeight: 600, mb: 0.5 }}
@@ -1025,6 +1053,7 @@ export const ProductsTab: FC<Props> = ({
                               {prod.code ?? "—"}
                             </TableCell>
                             <TableCell sx={{ maxWidth: 280, overflowWrap: "anywhere" }}><Typography variant="body2">{prod.name}</Typography></TableCell>
+                            <TableCell sx={{ maxWidth: 280, overflowWrap: "anywhere" }}>{prod.alias?.trim() || "—"}</TableCell>
                             <TableCell align="center"><ProductImageThumbnail name={prod.name} image={prod.image} disabled={isBusy} onOpen={() => setImageProduct(prod)} /></TableCell>
                             <TableCell sx={{ maxWidth: 220, overflowWrap: "anywhere" }}>{prod.provider?.name ?? "-"}</TableCell>
                             <TableCell align="right">
@@ -1207,6 +1236,7 @@ export const ProductsTab: FC<Props> = ({
                                   {historicalLog.name}
                                 </Typography>
                               </TableCell>
+                              <TableCell sx={{ overflowWrap: "anywhere" }}>{historicalLog.alias?.trim() || "—"}</TableCell>
                               <TableCell align="center" sx={{ color: "text.secondary" }}>—</TableCell>
                               <TableCell sx={{ color: "text.secondary" }}>
                                 -

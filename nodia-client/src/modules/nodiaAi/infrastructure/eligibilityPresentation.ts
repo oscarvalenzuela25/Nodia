@@ -3,6 +3,11 @@
 const reasonKeys: Readonly<Record<string, string>> = {
   "nodia_ai:runtime_busy": "eligibility_reasons.busy",
   "nodia_ai:session_required": "eligibility_reasons.session_required",
+  "nodia_ai:codex_session_required": "eligibility_reasons.session_required",
+  "nodia_ai:codex_session_unverified": "eligibility_reasons.session_unverified",
+  "nodia_ai:codex_model_unavailable": "eligibility_reasons.model_unavailable",
+  "nodia_ai:codex_runtime_unavailable": "eligibility_reasons.transport_unavailable",
+  "nodia_ai:codex_protocol_invalid": "eligibility_reasons.invalid_observation",
   "nodia_ai:adapter_transport_unavailable": "eligibility_reasons.transport_unavailable",
   "nodia_ai:adapter_unconfigured": "eligibility_reasons.unconfigured",
   "nodia_ai:runtime_unconfigured": "eligibility_reasons.unconfigured",

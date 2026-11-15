@@ -1,5 +1,24 @@
 # Contrato funcional de conexiones IA y regresiones
 
+## GPT Agentic: preferencias recuperables y diagnóstico — 2026-11-14
+
+Por solicitud expresa, las intensidades configurables Agentic tienen una fuente
+central por proveedor en `common/ai/agentic-reasoning.ts`. GPT usa esas preferencias
+si `supportedReasoningEfforts` está ausente en registros históricos; un valor
+guardado válido se conserva. Metadata descubierta válida, incluso `[]`, conserva
+sus opciones exactas; metadata inválida no se convierte en soporte. Gemini
+conserva sus preferencias existentes. No se hardcodean IDs/versiones de modelo,
+no hay selección automática ni se fabrica disponibilidad. API sigue con sus
+preferencias propias y Ultra API excluido. Esta ampliación sustituye la regla
+histórica de no ofrecer preferencias GPT Agentic si falta metadata.
+
+Catálogos NodiaAI/Teacher y observación por conexión comparten esas opciones.
+La elegibilidad continúa por selección exacta; Teacher distingue fallos públicos
+de host/sesión/modelo/runtime y conserva timestamp sólo si hubo observación real.
+La configuración productiva revisada omite el host específico Teacher GPT:
+el login Codex/chat no lo sustituye. [Diagnóstico y evidencia](../evidence/nodia-ai-chat-space-gpt-selection-20261114.md).
+Entrega local; no instala el host ni acredita inferencia, aprobación o publicación.
+
 ## Metadata Codex y primer intento Teacher — 2026-11-14
 
 El GET sanitizado conserva ahora `supportedReasoningEfforts` válidos como

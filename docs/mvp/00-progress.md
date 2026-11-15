@@ -1,5 +1,68 @@
 # Progreso del MVP — Nodia
 
+**Favicon como PWA — añadido a PR25, 2026-11-14:** misma N esencial compartida,
+URLs favicon versionadas por el hash del SVG para solicitar la marca actual;
+sin cambiar los bytes de imagen o el manifiesto. Build/tipos,31checksLinux sin
+omisiones y validación de10assets construidos correctos. [103§13](103-pwa-progressive-implementation-plan.md#13-favicon-web-igual-a-la-marca-pwa--2026-11-14).
+Sólo visual/metadatos, sin nuevo despliegue ni aceptación de instalación/caché
+de usuario. PR conserva base development y no se fusiona por esta solicitud.
+
+**Alta POS con incorporación automática — VM development2026-11-14:** el usuario
+retira el reescaneo del primer corte: guardar completamente añade una unidad
+a la misma venta local y limpia/enfoca el lector; callback separado de cancelar,
+guard de contexto y una sola incorporación por intención. [Plan94§40](94-business-point-of-sale-and-product-refactor.md#40-añadir-el-producto-recién-guardado-a-la-venta-actual--solicitud2026-11-14)
+y [evidencia nueva](../evidence/pos-product-registration-autoadd-20261114.md).
+Client2994/362,57focales/3archivos, build/tipos/lint y QA sintética320ESdark/
+1280ENlight correctos. Client VM adoptado con213recursos exactos/212históricos
+HTTP; procesos/env/timers intactos, rollback preparado y recibo propio. Siguiente:
+revisión humana de UI autenticada VM/lector físico, sin heredarla de fixtures.
+El cierre§39 siguiente es histórico y no acepta automáticamente autoadd.
+
+**Lector POS: registro de barcode desconocido — VM development2026-11-14:**
+404 product:not_found abre Registrar/No/Asociar existente. Registrar usa el
+formulario nativo con barcode textual precargado y foco útil en nombre; No o
+cancelar limpia y devuelve foco, sin cambiar carrito. [Plan94§39](94-business-point-of-sale-and-product-refactor.md#39-alta-de-producto-al-escanear-un-barcode-desconocido--solicitud2026-11-14)
+y [evidencia](../evidence/pos-unknown-barcode-registration-20261114.md).
+Client2986/362 y regresiones finales correctos; build/tipos/lint y Chromium
+sintético320/600/1280 ES/dark y EN/light correctos. Client adoptado en VM:
+213recursos exactos y212históricos direccionables, Nginx CAS/un reload y rollback
+preparado; Server/DB/procesos/env/timers conservados. Sin migración, proveedor,
+venta real, publicación IA o aprobación documental nueva. Siguiente: revisión
+humana de UI autenticada VM/lector físico; no heredarla de la QA sintética.
+
+**Alias de productos — VM development2026-11-14:** implementados alias independiente,
+revisión OCR humana, búsqueda nombre OR alias, CSV/historial y filtros de
+presencia de código/barcode. [Plan94§38](94-business-point-of-sale-and-product-refactor.md#38-alias-humano-de-productos-y-revisión-ocr--solicitud2026-11-14),
+[ADR102 propuesto](../architecture/decisions/ADR-102-human-product-alias-and-code-completeness.md)
+y [evidencia](../evidence/product-alias-and-code-completeness-20261114.md).
+Client2964/360 y Server6063/353 correctos, una omisión Windows comprobada en
+Linux;48Server finales tras ajustar whitespace SQL. Builds, lint del código,
+cuatro gates HTTP aislados y Chromium sintético320/600/1280 correctos. SQL aislado
+Linux:cinco gates correctos y cuatro HTTP adicionales, sin DB operativa ni proveedor.
+Migración179366 adoptada una vez48→49 en VM,13productos/33logs preservados,
+aliasNULL sin backfill. Respaldo final DB/configuración cifrado/restaurado con
+igualdad exacta. Cierre de servicios/timers en recibo operativo de evidencia;
+UI real VM pendiente de revisión manual por rechazo automático Chrome/túnel.
+No producción, inferencia OCR, publicación ni rediseño POS.
+
+**Chat compacto y GPT Agentic — VM development2026-11-14:** rama
+`codex/nodia-ai-chat-space-gpt-selection` desde origin/development. Stop en el
+compositor, sin botón de actividad ni cabecera título/modelo; renombrado lateral,
+padding vertical16px y laterales16/24/32px. Preferencias GPT recuperables sin
+inventar modelos/disponibilidad, elegibilidad Teacher con diagnóstico preciso.
+Host Teacher existente preservado y overlay adoptado en VM: catálogo GPT con
+seis preferencias, elegibilidad exacta y una creación normal start_plan:true
+gpt-6.1-sol/medium pasaron. Un dispatch reservado/iniciado, trabajo ready con
+propuesta de dos secciones; cierre Native/local y ACK persistidos. Sin aceptar
+plan, fallback, replay o cambios de credenciales. El aviso inicial de sesión fue
+causado por el harness sin el bind del bus que sí usa la API, no por logout.
+[Evidencia y cierre operativo](../evidence/nodia-ai-chat-space-gpt-selection-20261114.md).
+La revisión automática rechazó Chrome personal y el túnel SSH; interfaz real VM
+pendiente de revisión manual, QA visual local sintética separada. La adopción no
+acredita producción o publicación. El host ausente en rutas productivas revisadas
+requiere su entrega propia según99§28; no se ejecutó CD. Los conteos de pruebas
+locales previos conservan su recibo; la suite con productos se registra arriba.
+
 Actualizado el 2026-11-14. Síntesis del estado y pendientes por alcance; no es una consulta en vivo de la VM ni acredita despliegue en Truobox. El upgrade Teacher tiene construcción y QA55/55 por alcance R02 del2026-11-11; los restantes QA citados conservan la fecha explícita de su evidencia.
 
 La navegación está en el [índice del MVP](README.md). Las cronologías, checklists superados e incidencias anteriores se conservan en el [historial consolidado](00-progress-history.md), sin convertir sus «siguientes pasos» antiguos en tareas actuales.

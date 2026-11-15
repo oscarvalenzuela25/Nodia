@@ -20,7 +20,7 @@ vi.mock("sileo", () => ({ sileo: feedback }));
 const product: ProductEntity = { id: "17", business_id: "business-a", version: 4, code: "SUP-1", barcode: "001234", name: "Synthetic product",
   cost_price: 100, cost_price_tax: 119, sale_price: 149, offer_price: 200, is_offer_enabled: false,
   has_stock: true, stock: 0, is_active: true, provider_id: null };
-const form: ProductFormData = { measurement_unit: "unit", code: product.code, barcode: product.barcode!, name: product.name, cost_price: 100, cost_price_tax: 119,
+const form: ProductFormData = { measurement_unit: "unit", code: product.code, barcode: product.barcode!, name: product.name, alias: null, cost_price: 100, cost_price_tax: 119,
   sale_price: 149, offer_price: 200, is_offer_enabled: false, has_stock: true, is_active: true, provider_id: null };
 const createFile = () => new File(["synthetic image"], "product.png", { type: "image/png", lastModified: 1 });
 const key = productSaveKey("actor-a", "business-a", null);
@@ -45,6 +45,7 @@ describe("deferred product and image save", () => {
 
   it.each([false, true])("preserves confirmed fields and the unknown-outcome gate when reopening a journal with the retired auxiliary slot (unknown=%s)", async (fieldsUnknown) => {
     const earlierFields: unknown[] = JSON.parse(fieldsFingerprint(form));
+    earlierFields.pop(); // Before alias existed.
     earlierFields.splice(6, 0, 30);
     sessionStorage.setItem(key, JSON.stringify({ ...emptyJournal("actor-a", "business-a", null), product,
       fieldsFingerprint: JSON.stringify(earlierFields), fieldsUnknown }));
@@ -200,6 +201,26 @@ describe("deferred product and image save", () => {
     await act(async () => { await result.current.save({ ...form, name: "Edited after error" }, { kind: "replace", file }); });
     expect(persist.mock.calls[1]).toEqual([{ ...form, name: "Edited after error" }, { id: product.id, version: 5 }]);
     expect(http.put).toHaveBeenCalledTimes(1); expect(http.post).toHaveBeenCalledTimes(1);
+  });
+
+  it("saves an alias-only edit against the recovered product version without replaying the image upload", async () => {
+    const file = createFile(); const persist = vi.fn().mockResolvedValueOnce(product).mockResolvedValueOnce({ ...product, alias: "Commercial", version: 6 });
+    http.put.mockRejectedValueOnce(new AxiosError("lost content response"));
+    const { result } = renderHook(() => useDeferredProductSave({ businessId: "business-a", persistFields: persist }), { wrapper });
+    await saveAttempt(() => result.current.save(form, { kind: "replace", file }));
+    http.get.mockResolvedValue({ data: receipt(result.current.pendingIntent!.id) });
+    await act(async () => { await result.current.save({ ...form, alias: "Commercial" }, { kind: "replace", file }); });
+    expect(persist.mock.calls[1]).toEqual([{ ...form, alias: "Commercial" }, { id: product.id, version: 5 }]);
+    expect(http.put).toHaveBeenCalledTimes(1); expect(http.post).toHaveBeenCalledTimes(1);
+  });
+
+  it("recognizes a confirmed pre-alias fingerprint without replaying saved fields", async () => {
+    const oldFields: unknown[] = JSON.parse(fieldsFingerprint(form)); oldFields.pop();
+    sessionStorage.setItem(key, JSON.stringify({ ...emptyJournal("actor-a", "business-a", null), product, fieldsFingerprint: JSON.stringify(oldFields) }));
+    const persist = vi.fn();
+    const { result } = renderHook(() => useDeferredProductSave({ businessId: "business-a", persistFields: persist }), { wrapper });
+    await act(async () => { await result.current.save(form, { kind: "keep" }); });
+    expect(persist).not.toHaveBeenCalled(); expect(result.current.savedProduct?.id).toBe(product.id);
   });
 
   it("persists a changed measurement after recovering the original image attempt without creating another product", async () => {

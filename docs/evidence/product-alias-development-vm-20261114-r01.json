@@ -1,0 +1,308 @@
+{
+  "schema": "product-alias-development-vm/1",
+  "date": "2026-11-14",
+  "environment": "development_vm_only",
+  "production_changed": false,
+  "candidate": {
+    "source": {
+      "sha256": "089d01d4825b82057d450499a0e807dfe0d2fe282216c65a48628fa97ddcb43f",
+      "files": 6876
+    },
+    "server": {
+      "sha256": "3346e941b25087c3fcf294a0dd82908cb8d296924024d4ffdd62dd10f26155dc",
+      "files": 3454
+    },
+    "client": {
+      "sha256": "70d759eeb4a0c26dc63c3d8f597154bb5391ad981d49734120fcd9451380db4d",
+      "files": 213
+    }
+  },
+  "adoption": {
+    "base": "nodia-server-chat-gpt-20261114-r01",
+    "server": "nodia-server-product-alias-20261114-r01",
+    "client": "nodia-client-product-alias-20261114-r01",
+    "new_server_manifest_sha256": "f85998354712081aaf8e07472c3253868733ac2dc9f41769f45e32e0caf84247",
+    "new_client_manifest_sha256": "f0f986578e60ca7121c3f9791d2e7786ca48650494e2f72ad6d8db1f590dc661",
+    "server_archive": {
+      "sha256": "98b0227df65b0367039205575811d2c2ba182190e4a79a1816a14219e785a2ba",
+      "bytes": 3587260
+    },
+    "client_archive": {
+      "sha256": "38cdf836e2bb9df763c439e566205c2968ce76394445bc7c77ad8405f50117db",
+      "bytes": 2511342
+    },
+    "closed_changed_server_members": 55,
+    "new_files": 16,
+    "units": [
+      "common/utils/ransack-query.policies",
+      "migrations/1793660000000-AddProductAlias",
+      "product/dto/create-product-log.dto",
+      "product/dto/create-product.dto",
+      "product/dto/filter-product.dto",
+      "product/entities/product-log.entity",
+      "product/entities/product.entity",
+      "product/product-catalog",
+      "product/product.service",
+      "product/use-case/export-products-csv.use-case",
+      "product/product-alias",
+      "product/product-lookup-filters"
+    ],
+    "all_other_Server_members_preserved": true,
+    "chat_Teacher_native_media_sources_unchanged": true,
+    "dependencies_unchanged": true,
+    "knowledge_release": "186b29742a85dae4c4bf21125175f06bbe8d5c22cc50c515ed6a58a01931e23a",
+    "knowledge_documents": 44,
+    "knowledge_fragments": 46,
+    "knowledge_sources": 92,
+    "knowledge_excluded": 48,
+    "later_documentation_build_readopted": false
+  },
+  "isolated_Linux_integration": {
+    "status": "passed",
+    "sql": {
+      "schema": "product-alias-sql/1",
+      "status": "passed",
+      "checks": [
+        "additive_migration_preserves_legacy_fields_bigint_ids_and_unknown_aliases",
+        "real_query_searches_alias_or_original_name_with_literal_wildcards_and_business_scope",
+        "presence_filters_before_pagination_distinguish_null_blank_tabs_real_zero_and_leading_zero",
+        "database_alias_length_and_existing_identifier_uniqueness_are_preserved",
+        "new_snapshot_preserves_reviewed_alias_legacy_stays_unknown_and_rollback_never_discards_data"
+      ],
+      "operational_db_used": false,
+      "provider_calls": 0,
+      "authentication_guards_exercised": false
+    },
+    "http": {
+      "schema": "product-alias-http/1",
+      "status": "passed",
+      "checks": [
+        "both_real_product_routes_preserve_encoded_search_and_independent_nested_presence_filters",
+        "malformed_arrays_unknown_fields_invalid_presence_and_search_limits_fail_before_execution",
+        "native_create_update_and_bulk_dtos_preserve_omission_and_normalize_reviewed_aliases",
+        "alias_unicode_boundary_and_invalid_types_are_enforced_by_the_real_http_pipeline"
+      ],
+      "database_calls": 0,
+      "provider_calls": 0,
+      "authentication_guards_exercised": false,
+      "note": "Transport/DTO integration only; service authorization, CAS and persistence have separate evidence."
+    },
+    "image": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+    "tcp_listeners": 0,
+    "operational_db_used": false,
+    "provider_calls": 0,
+    "socket_private": true
+  },
+  "migration": {
+    "schema": "product-alias-vm-migration/1",
+    "success": true,
+    "ledger_before": 48,
+    "ledger_after": 49,
+    "exact_migration": "AddProductAlias1793660000000",
+    "database_tables": 102,
+    "legacy": [
+      {
+        "table": "product_logs",
+        "rows": 33,
+        "legacy_columns_and_values_equal": true,
+        "aliases_nonnull": 0
+      },
+      {
+        "table": "products",
+        "rows": 13,
+        "legacy_columns_and_values_equal": true,
+        "aliases_nonnull": 0
+      }
+    ],
+    "all_other_table_rows_columns_constraints_equal": true,
+    "changed_sequences": [
+      "migrations_id_seq"
+    ],
+    "alias_backfill": false,
+    "provider_calls": 0,
+    "automatic_retry": false,
+    "after_inventory_sha256": "9c40a8bebf28db98f09fc1098c6461c83254c0b3a1cb3f3290ad0fcec1383540",
+    "reconciles_committed_migration": true,
+    "original_postcommit_check_failure": "ledger ORDER BY id selected id::text alias; append assumption was false",
+    "migration_dispatched_again": false,
+    "services_started": [
+      "nodia-api",
+      "nodia-ai-worker",
+      "nodia-keyring",
+      "nodia-gemini-keyring"
+    ],
+    "HTTP_API": 200,
+    "anonymous_Teacher": 401,
+    "authenticated_HTTP_observed": false
+  },
+  "migration_dispatch_reconciliation": {
+    "first_operator_exit": 1,
+    "original_stdout_bytes": 0,
+    "DDL_committed_once": true,
+    "postcommit_check_failed": "The inventory selects id::text AS id and ORDER BY id sorts the output alias lexically; migration49 was not the last array element.",
+    "readonly_observed_ledger": 49,
+    "readonly_observed_alias_columns": 2,
+    "corrected_check": "Compare original migration identities in numeric id order plus exact single new migration.",
+    "DDL_replayed": false,
+    "original_intent_and_failed_result_preserved": true
+  },
+  "HTTP_static_verification": {
+    "success": true,
+    "HTTP_assets_verified": 213,
+    "index_sha256": "cac62edb42fc5f6b62519b9d05fa2227406b29cec6b26ff6cef4b766ac47bf5a",
+    "provider_requests": 0
+  },
+  "postadoption_recovery": {
+    "database": {
+      "schema": "teacher-upgrade-vm-final-database-restore/1",
+      "success": true,
+      "recorded_at": "2026-11-14T21:51:51.224Z",
+      "cipher_sha256": "6e32121b645a517099570331f960a2a1c0e0e723fdc2b9eefd16f40cf733aeda",
+      "source_inventory_sha256": "9c40a8bebf28db98f09fc1098c6461c83254c0b3a1cb3f3290ad0fcec1383540",
+      "tables": 102,
+      "sequences": 37,
+      "migrations": 49,
+      "rows_and_original_columns_equal": true,
+      "constraint_names_and_semantics_equal": true,
+      "gcm_authenticated_before_restore": true,
+      "network": "none",
+      "application_processes_started": false,
+      "provider_requests": 0,
+      "plaintext_files": 0,
+      "restored_owner_acl": "not restored: pg_dump --no-owner --no-acl; operational credentials/roles are outside this dump",
+      "read_only_final_recovery": true,
+      "ddl_rehearsal_executed": false,
+      "owned_container_removed": true,
+      "self_contained": false,
+      "recovery_catalog_sha256": "e5a3e3ff4a5a93568f7d0b04d174a8e7a992279092ec143dd7198321dd0ab867"
+    },
+    "configuration": {
+      "schema": "teacher-upgrade-vm-final-configuration-restore/1",
+      "success": true,
+      "recorded_at": "2026-11-14T21:51:58.120Z",
+      "cipher_sha256": "1d13af31493701ccd3501785355bfa98202dc2ba8920ce1f04afff1b2bb00dc0",
+      "source_manifest_sha256": "bd8216eb8800db64b151fc7a68801e0b21e114dd6495fce8e70a20aae7b4fe19",
+      "entries": 8880,
+      "file_bytes": 562457709,
+      "content_uid_gid_mode_mtime_xattrs_symlinks_equal": true,
+      "gcm_authenticated_before_restore": true,
+      "network": "none",
+      "application_processes_started": false,
+      "provider_requests": 0,
+      "plaintext_host_files": 0,
+      "owned_volume_removed": true,
+      "self_contained": false,
+      "recovery_catalog_sha256": "e5a3e3ff4a5a93568f7d0b04d174a8e7a992279092ec143dd7198321dd0ab867"
+    }
+  },
+  "recovery_limits": {
+    "self_contained": false,
+    "plaintext_database_or_profiles_on_host": 0,
+    "encryption": "AES-256-GCM; data keys wrapped with DPAPI CurrentUser",
+    "discardable_restores": "Pinned Docker images, networknone, no live volumes or application processes. Owned resources removed.",
+    "preserved_legacy_package_relative_base_documented_in_local_catalogue": true,
+    "private_catalogue": "ops/lab/artifacts/product-alias-vm-20261114-r01/CATALOG.json",
+    "all_historical_Client_asset_archives_exported": false
+  },
+  "final_state": {
+    "schema": "product-alias-vm-final-state/1",
+    "success": true,
+    "recorded_at": "2026-11-14T22:00:28Z",
+    "states": {
+      "nodia-api": "active",
+      "nodia-ai-worker": "active",
+      "nodia-keyring": "active",
+      "nodia-gemini-keyring": "active",
+      "nginx": "active",
+      "nodia-ai-backup.timer": "active",
+      "nodia-ai-backup-rotate.timer": "active",
+      "nodia-gemini-lab": "failed",
+      "nodia-ai-backup": "failed",
+      "nodia-ai-backup-rotate": "activating"
+    },
+    "containers": [
+      {
+        "name": "nodia-lab-postgres-1",
+        "running": true,
+        "status": "running",
+        "health": "healthy"
+      },
+      {
+        "name": "nodia-lab-redis-1",
+        "running": true,
+        "status": "running",
+        "health": "healthy"
+      },
+      {
+        "name": "nodia-gemini-microservice",
+        "running": false,
+        "status": "exited",
+        "health": "unhealthy"
+      }
+    ],
+    "server_release": "/opt/nodia/releases/nodia-server-product-alias-20261114-r01",
+    "server_manifest_sha256": "f85998354712081aaf8e07472c3253868733ac2dc9f41769f45e32e0caf84247",
+    "client_release": "/opt/nodia/releases/nodia-client-product-alias-20261114-r01",
+    "client_index_sha256": "cac62edb42fc5f6b62519b9d05fa2227406b29cec6b26ff6cef4b766ac47bf5a",
+    "native_host_sha512_unchanged": true,
+    "quiet": {
+      "teacher_active": 0,
+      "teacher_attempts": 0,
+      "chat_active": 0,
+      "slots": 0,
+      "owners": 0
+    },
+    "HTTP_API": 200,
+    "HTTP_anonymous_teacher": 401,
+    "authenticated_HTTP_or_UI_observed": false,
+    "postadoption_backup_restored": true,
+    "timers_restored_to_original_active_state": true,
+    "preexisting_failures_not_reset": [
+      "nodia-gemini-lab",
+      "nodia-ai-backup"
+    ],
+    "provider_requests": 0,
+    "remote_inferences_total_for_this_task": 1,
+    "production_changed": false,
+    "automatic_retry": false,
+    "disk_available_bytes": 880513024
+  },
+  "scope_limits": [
+    "SQL5/HTTP4 fixtures are synthetic and do not assert authenticated user HTTP/UI QA.",
+    "No OCR inference or API/provider changes for alias; only one separate ordinary Teacher inference in the preceding chat phase.",
+    "No production changes, CI full-installation Docker run, human efficacy claim, approval or publication of draft knowledge.",
+    "Existing Gemini Native/service and managed main backup failures predated this task and were preserved; the GPT host is distinct."
+  ],
+  "private_receipt_sha256": {
+    "isolated-result.json": "69dd482f5ff55b50adc96c13925be890c63df78454b7d4014feaff9ceafc5cd9",
+    "server/stage-result.json": "3ef56d1516fbb2ced7e8d2bc4b76d208c49226af04751a2b5013bd2dc3d573fc",
+    "server/bind-result.json": "8c1741beb81b31fe8b4b097355fe8f440483738ab46b94796661d908ecf9bcfa",
+    "migrate-and-start-result.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reconcile-migration-result.json": "877202b95706e3af37e634fbb3d625b9700f9325e0d150dddd2223e207a58b21",
+    "reconcile-committed-and-start-result.json": "a08b14ccce6fbd09be0e6e46500e2b65ed2d402980a2c1bacdcd6a5c530b76e9",
+    "client/client-activate-result.json": "00484b9ea59010093da042716d8e627a2188bf9a952fb3924f3c2d15640eaef6",
+    "client/client-verify-result.json": "268630165d821ad746736c530779652e4e811d65708a874f01096cfef2348ee8",
+    "final-state-result.json": "98254e6e6fd52bdfd477c039bf42e476ce5a11d47698d200b50ff75934debfa5",
+    "CATALOG.json": "88f9309075c91f8fff9ab0fd3e03ecba52e3db574f8926a58ae1a38b5c8125c3"
+  },
+  "post_timer_rotation": {
+    "observed_at": "2026-11-14T21:55:32.629691+00:00",
+    "service": "inactive",
+    "result": "success",
+    "MainPID": 0,
+    "both_timers": "active/waiting",
+    "original_initial_activating_observation_preserved": true,
+    "private_status_sha256": "3035934a728a44b3f2c41a05d88e71c93bfee219c3f5292432a8e06ac56cc78f"
+  },
+  "clock_sources_and_ordering": {
+    "VM_recorded_at_source": "date -u executed inside the VM by final-resume-r01.py",
+    "post_timer_rotation_observed_at_source": "datetime.now(timezone.utc) on Windows during local evidence consolidation",
+    "Windows_final_result_file_mtime_UTC": "2026-11-14T21:52:58.705972+00:00",
+    "VM_embedded_final_state_UTC": "2026-11-14T22:00:28+00:00",
+    "approximate_VM_clock_ahead_of_Windows_seconds": 449,
+    "offset_basis_and_limits": "Existing final-state stdout timestamp versus its Windows receipt file mtime; approximate, includes transport/write latency; no new remote clock probe.",
+    "ordering": "Operational order derives from the exclusive stage intents/receipts and observed call sequence. Timestamps from different clocks must not be sorted as one clock.",
+    "clocks_changed": false,
+    "original_receipt_timestamps_preserved": true
+  }
+}

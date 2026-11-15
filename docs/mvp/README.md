@@ -1,5 +1,51 @@
 # Especificación del MVP — Nodia
 
+**Alta POS con incorporación automática — VM development2026-11-14:** guardar el
+producto añade una unidad a la misma venta local y limpia/enfoca el lector,
+sin reescaneo. [Plan94§40](94-business-point-of-sale-and-product-refactor.md#40-añadir-el-producto-recién-guardado-a-la-venta-actual--solicitud2026-11-14)
+y [evidencia nueva](../evidence/pos-product-registration-autoadd-20261114.md)
+sustituyen la regla de no-autoadd del corte§39. Client2994/362,57focales,
+build/tipos/lint y QA sintética correctos; Client VM adoptado con213recursos
+exactos y runtime intacto, recibo propio y rollback preparado.
+Sin cambio Server, checkout, herramienta IA o aprobación documental nueva.
+
+**Lector POS: registro de barcode desconocido — VM development2026-11-14:**
+decisión Registrar/No con alta nativa precargada, retorno al lector y asociación
+existente conservada; carrito intacto y errores HTTP separados de ausencia.
+[Plan94§39](94-business-point-of-sale-and-product-refactor.md#39-alta-de-producto-al-escanear-un-barcode-desconocido--solicitud2026-11-14),
+[ficha candidata](../nodia-ai/knowledge/businesses/features/point-of-sale-checkout-and-accessibility.md#barcode-desconocido-y-alta-nativa--solicitud2026-11-14)
+y [evidencia](../evidence/pos-unknown-barcode-registration-20261114.md).
+Client2986/362, regresiones finales, build/tipos/lint y QA sintética6perfiles
+correctos. Adopción sólo Client VM con213recursos exactos y rollback preparado;
+Server/DB/procesos/timers intactos. Sin producción, herramientas IA nuevas o
+aceptación de lector físico/UI autenticada VM.
+
+**Alias de productos — VM development2026-11-14:** nombre humano independiente,
+revisión explícita para productos nuevos/sin alias en factura, búsqueda por
+nombre OR alias y filtros de código/barcode. [Plan94§38](94-business-point-of-sale-and-product-refactor.md#38-alias-humano-de-productos-y-revisión-ocr--solicitud2026-11-14),
+[ADR102 propuesto](../architecture/decisions/ADR-102-human-product-alias-and-code-completeness.md)
+y [evidencia](../evidence/product-alias-and-code-completeness-20261114.md).
+Client2964/360 y Server6063/353 correctos, caso Linux aparte; build/lint y QA
+visual sintética correctos. SQL aislado5gates y HTTP4gates Linux correctos;
+migración179366 adoptada una vez en VM sin backfill,13productos/33logs
+preservados. Respaldo final DB/configuración cifrado y restaurado; cierre de
+servicios/timers en recibo operativo. No rediseña POS, publica herramientas ni
+modifica producción; fichas candidatas sin aprobación heredada.
+
+**Chat compacto y GPT Agentic — VM development2026-11-14:** rama
+`codex/nodia-ai-chat-space-gpt-selection` desde origin/development. Stop en el
+compositor, sin botón de actividad ni cabecera título/modelo; renombrado lateral,
+padding vertical16px y laterales16/24/32px. Preferencias GPT recuperables sin
+inventar modelos/disponibilidad, elegibilidad Teacher con diagnóstico preciso.
+Host Teacher ya existente preservado en VM; elegibilidad exacta GPT/medium y
+una creación normal de plan comprobadas, trabajo ready y cierre confirmado,
+sin aceptar propuesta. El primer aviso de sesión fue un harness sin el bind del
+bus de credenciales, corregido sin cambiar credenciales. [Evidencia](../evidence/nodia-ai-chat-space-gpt-selection-20261114.md).
+La adopción VM no despliega producción ni publica fichas candidatas. Los
+conteos locales previos de chat conservan su recibo; la suite posterior con
+productos se registra arriba. Aprovisionamiento productivo separado en
+[99§28](99-production-deployment-and-cicd-plan.md#28-host-específico-teacher-gpt-y-guard-cd--candidato-local2026-11-14).
+
 Índice de las fuentes del producto. Actualizado el 2026-11-14; carpeta creada el 2026-08-15. Cada documento conserva su propio estado de aprobación, implementación y verificación.
 
 El [progreso vigente](00-progress.md) contiene los pendientes y la próxima acción. Las entregas fechadas anteriores se consultan en el [historial consolidado](00-progress-history.md); sus estados históricos no sustituyen las decisiones posteriores.

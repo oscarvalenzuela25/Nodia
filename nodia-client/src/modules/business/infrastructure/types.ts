@@ -113,6 +113,7 @@ export interface ProductEntity {
   image?: { id: string; url: string; mime_type: string; width: number; height: number; byte_size: number } | null;
   previous_price_snapshot?: ProductLogEntity | null;
   name: string;
+  alias?: string | null;
   cost_price: number;
   cost_price_tax: number;
   sale_price: number;
@@ -133,6 +134,7 @@ export interface CreateProductPayload {
   is_offer_enabled?: boolean;
   has_stock: boolean;
   name: string;
+  alias?: string | null;
   cost_price: number;
   cost_price_tax: number;
   sale_price: number;
@@ -149,6 +151,7 @@ export interface UpdateProductPayload {
   code?: string | null;
   measurement_unit?: MeasurementUnit;
   name?: string;
+  alias?: string | null;
   cost_price?: number;
   cost_price_tax?: number;
   sale_price?: number;
@@ -170,6 +173,9 @@ export interface GetProductsParams {
   all?: boolean;
   includes?: boolean;
   q?: {
+    search?: string;
+    code_presence?: "present" | "missing";
+    barcode_presence?: "present" | "missing";
     id_in?: string | string[];
     business_id_eq?: string;
     provider_id_eq?: string;
@@ -428,6 +434,7 @@ export interface ProductLogEntity {
   has_stock?: boolean | null;
   product_version?: number | null;
   name: string;
+  alias?: string | null;
   cost_price: number;
   cost_price_tax: number;
   sale_price: number;

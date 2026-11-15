@@ -8,6 +8,18 @@
 
 Definir sistema visual, accesibilidad y restricciones de interacción aplicables para el frontend del MVP, asegurando coherencia visual y técnica antes de definir la arquitectura y stacks definitivos.
 
+## Contenedores de página compactos — solicitud2026-11-14
+
+`BaseLayout/PageContent` usa16px de padding vertical y laterales16px en xs,
+24px en sm y32px desde md. Esta decisión explícita sustituye el padding
+vertical24/32px de los cortes anteriores. Sólo cambia el contenedor completo
+de página: no reduce espacios internos de tarjetas/modales ni duplica padding
+en páginas hijas. La reserva inferior de MobileBottomNav y safe area se conserva.
+NodiaAI aprovecha el espacio disponible y retira su cabecera de conversación;
+renombrar permanece en el menú de cada conversación del panel izquierdo.
+Ver [plan93](93-nodia-ai-chat-composer-redesign.md) y
+[DESIGN9.4](../../nodia-client/DESIGN.md#94-espaciado-dinámico-y-prohibición-de-doble-padding).
+
 ## 1. Librería de Componentes y Sistema Visual
 
 - **Framework de UI:** Se utilizará la estructura existente en `nodia-client`, la cual se basa en **Material UI (MUI)**.

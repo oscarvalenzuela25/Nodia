@@ -15,6 +15,8 @@ export interface MessageComposerProps {
   ariaLabel?: string;
   disabled?: boolean;
   sendDisabled?: boolean;
+  /** Replaces send while the owner is processing a turn; form submission stays blocked. */
+  sendAction?: ReactNode;
   inputDisabled?: boolean;
   /** Optional separate voice gate, e.g. while explicit send recovery is available. */
   voiceDisabled?: boolean;

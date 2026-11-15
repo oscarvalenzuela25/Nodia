@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 import { pngDimensions, validatePwaAssets, verifyPublishedPwaAssets } from './pwa-assets.mjs';
 import { png, pwaFixture } from './fixtures/pwa-assets.mjs';
 import { assetTools, staticAssets } from './cd-pages.mjs';
@@ -45,6 +46,23 @@ test('historical builds remain valid; removing only the manifest or its HTML lin
   assert.throws(() => validatePwaAssets(f.directory, { required: true }), /pwa_manifest_link_invalid/);
   f.updateManifest();
   assert.throws(() => validatePwaAssets(f.directory), /pwa_manifest_link_invalid/);
+});
+
+test('favicon cache version must match the shared vector bytes without accepting foreign or arbitrary URLs', async t => {
+  const f = fixture(t), filename = path.join(f.directory, 'index.html');
+  const original = fs.readFileSync(filename, 'utf8');
+  const version = createHash('sha256').update(fs.readFileSync(path.join(f.directory, 'favicon.svg'))).digest('hex').slice(0, 12);
+  f.write('index.html', original.replace('href="/favicon.svg"', `href="/favicon.svg?v=${version}"`));
+  assert.equal(validatePwaAssets(f.directory).files.length, 10);
+  assert.equal((await verifyPublishedPwaAssets(f.directory, { request: publicRequest(f.directory) })).pwa_assets_verified, true);
+  for (const href of ['/favicon.svg?v=wrong', '/favicon.svg?token=synthetic', `/favicon.svg?v=${version}&other=1`,
+    `https://foreign.invalid/favicon.svg?v=${version}`, '//foreign.invalid/favicon.svg']) {
+    f.write('index.html', original.replace('href="/favicon.svg"', `href="${href}"`));
+    assert.throws(() => validatePwaAssets(f.directory), /pwa_favicon_link_invalid/);
+  }
+  f.write('index.html', original.replace('href="/favicon.svg"', `href="/favicon.svg?v=${version}"`));
+  f.write('favicon.svg', '<svg><path d="M0 0h2v2z"/></svg>');
+  assert.throws(() => validatePwaAssets(f.directory), /pwa_favicon_link_invalid/);
 });
 
 test('invalid JSON, scope, executable metadata and native-app preference are rejected', t => {

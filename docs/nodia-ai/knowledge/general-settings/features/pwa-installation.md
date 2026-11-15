@@ -4,24 +4,38 @@
   "document_id": "general-settings.pwa-installation",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 2,
+  "revision": 3,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Local PWA-001 candidate implements manifest, HTML metadata, selected option1 vector favicon and app icons, with artifact/publication checks. Build, auth regressions and local Chrome/Edge manifest interpretation verified; actual installation, standalone Google auth, physical Android and public HTTPS release acceptance remain pending. No service worker, offline persistence, push or synchronization."
+    "notes": "Local PWA-001 candidate implements manifest, HTML metadata, selected option1 vector favicon and app icons, with artifact/publication checks. Build, auth regressions and local Chrome/Edge manifest interpretation verified; actual installation, standalone Google auth, physical Android and public HTTPS release acceptance remain pending. No service worker, offline persistence, push or synchronization. Visual-only2026-11-14: tab favicon keeps the same PWA N mark; URL versions are tied to the source SVG hash. No change to images, manifest, installation identity, concepts, operations or AI context."
   },
   "integration_status": "not_applicable",
   "maintainer": "Mantenimiento de Client y contexto transversal conforme AGENTS",
   "sources": [
-    {"path": "docs/mvp/103-pwa-progressive-implementation-plan.md", "kind": "specification"},
-    {"path": "docs/mvp/14-authentication.md", "kind": "specification"},
-    {"path": "docs/mvp/89-module-access-and-user-data-scope.md", "kind": "specification"},
-    {"path": "docs/architecture/decisions/ADR-092-stable-module-navigation-routes.md", "kind": "specification"}
+    {
+      "path": "docs/mvp/103-pwa-progressive-implementation-plan.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/mvp/14-authentication.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/mvp/89-module-access-and-user-data-scope.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-092-stable-module-navigation-routes.md",
+      "kind": "specification"
+    }
   ],
   "verification": {
-    "checked_on": "2026-11-13",
-    "evidence_paths": ["docs/evidence/pwa-001-local-20261113.md"],
-    "notes": "Local static assets, build, auth unit regressions and CI/CD checks verified. Chrome/Edge persistent profiles return no manifest/installability errors; browser mode only, without installation or standalone auth. No device or production acceptance. Installation belongs to the user's browser and operating system; no AI tool applies."
+    "checked_on": "2026-11-14",
+    "evidence_paths": [
+      "docs/evidence/pwa-001-local-20261113.md"
+    ],
+    "notes": "Local static assets, build, auth unit regressions and CI/CD checks verified. Chrome/Edge persistent profiles return no manifest/installability errors; browser mode only, without installation or standalone auth. No device or production acceptance. Installation belongs to the user's browser and operating system; no AI tool applies. Favicon follow-up: Client build/types,31 Linux PWA/artifact checks without skips and10 built assets verified; visual comparison of existing PNG192/32 and common vector. No deployment or personal-cache/installation verification; plan103 section13 records scope."
   },
   "approval": null
 }
@@ -113,3 +127,14 @@ fichas aprobadas y los contratos publicados permanecen intactos.
 | --- | --- | --- |
 | 1 | Plan de instalación online independiente y backlog posterior | Draft/planned; sin cambio de herramientas, autoridad, publicación o ejecución. |
 | 2 | Opción1 elegida, candidato estático local y comprobaciones de build, auth y CI/CD; guía de instalación | Draft/partial; instalación real, standalone/auth y publicación pendientes. Sin nuevas herramientas o autoridad. |
+| 3 | Favicon web versionado a la misma marca PWA | Sólo visual/metadatos; sin nueva autoridad, contexto, instalación o publicación. |
+
+## Evaluación visual: favicon web — 2026-11-14
+
+La misma N esencial de la PWA ya existe en SVG/PNG/ICO. Se versionan sus URLs
+por el hash del SVG para solicitar el recurso actual, conservando imágenes,
+manifiesto, identidad y contratos. No cambia conceptos, operaciones, autoridad
+o interpretación de resultados: no modifica contexto IA ni añade herramientas.
+
+Build/tipos y31checks Linux correctos; la caché de un navegador personal y la
+instalación real no se verificaron. [Método y límites103§13](../../../../mvp/103-pwa-progressive-implementation-plan.md#13-favicon-web-igual-a-la-marca-pwa--2026-11-14).

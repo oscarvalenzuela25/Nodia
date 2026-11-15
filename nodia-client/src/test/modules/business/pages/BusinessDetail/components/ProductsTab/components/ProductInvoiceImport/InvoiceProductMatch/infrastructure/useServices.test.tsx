@@ -50,7 +50,7 @@ describe("invoice product matching queries", () => {
     await act(async () => { await vi.advanceTimersByTimeAsync(2); });
     vi.useRealTimers();
     await waitFor(() => expect(read).toHaveBeenCalledTimes(2));
-    expect(read.mock.calls[1][0]).toEqual({ page: 1, limit: 25, q: { business_id_eq: "business-a", name_cont: "Synthetic name", s: "name asc" } });
+    expect(read.mock.calls[1][0]).toEqual({ page: 1, limit: 25, q: { business_id_eq: "business-a", search: "Synthetic name", s: "name asc" } });
   });
 
   it("keeps late ID/business responses out of the current selected snapshot", async () => {

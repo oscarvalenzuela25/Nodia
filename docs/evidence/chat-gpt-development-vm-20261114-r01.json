@@ -1,0 +1,283 @@
+{
+  "schema": "nodia-chat-gpt-development-vm/1",
+  "date": "2026-11-14",
+  "environment": "development_vm_only",
+  "production_changed": false,
+  "candidate": {
+    "source": {
+      "sha256": "4d71fc1e6ed576a77eb2b79ab6591f604195ddd0abc4465cee1186257b55a49d",
+      "files": 6856
+    },
+    "server": {
+      "sha256": "c8cac9b2ce042339563444b9e6246adabd6801148d3b782dcb03441869a1f00e",
+      "files": 3445
+    },
+    "client": {
+      "sha256": "1a83ab2c918fb639e7169575fe1ef16edb55aade1fc49848f304776a2508ea61",
+      "files": 213
+    }
+  },
+  "adoption": {
+    "server": "/opt/nodia/releases/nodia-server-chat-gpt-20261114-r01",
+    "client": "/opt/nodia/releases/nodia-client-chat-gpt-20261114-r01",
+    "server_manifest_sha256": "987cdb558113be4b12e76cfd16d3a1220d52e4653b70e82a11e782566837c0d1",
+    "client_manifest_sha256": "01a5a49464d5b089d5df986278c27c19060b8f586f54a6faa0ad92ed439bcae9",
+    "changed_server_members": 68,
+    "new_server_members": 18,
+    "migration_count": 48,
+    "dependencies_changed": false,
+    "native_host_replaced": false,
+    "selected_models_or_credentials_changed": false,
+    "Linux_tests": {
+      "passed": 128,
+      "files": 6,
+      "typecheck": true
+    },
+    "HTTP_static_resources_exact": 213,
+    "API_status": 200,
+    "anonymous_Teacher_status": 401,
+    "knowledge_release": "ea157c253ce445bd72675658f7a808763d9c8427ee93f877af18d3967b2a5b3f"
+  },
+  "native_host": {
+    "path": "/opt/nodia/native/teacher-codex-20261101-r01/nodia-teacher-codex-host",
+    "sha512": "1de89ae8d82da01520f3bea2dcc6cf95273727e8a7c12ed2e758b90614715b5bd1e9480aa97799c22086aa8b0a5043b2189eeeacf05abe9abb9647ab6f4f04ec",
+    "already_present": true,
+    "release_acceptance": "development_artifact_only"
+  },
+  "harness_correction": {
+    "original_observation": "provider_unavailable/codex_session_required from a transient process lacking the API mount namespace",
+    "confirmed_cause": "DBUS_SESSION_BUS_ADDRESS points to /run/nodia-runtime/bus; API/worker bind the real /run/user/10000/bus there. Environment and UID alone were insufficient.",
+    "corrected_context": {
+      "UID": 10000,
+      "GID": 987,
+      "same_environment_home_and_profile": true,
+      "BindReadOnlyPaths": "/run/user/10000/bus:/run/nodia-runtime/bus:rbind"
+    },
+    "credentials_inspected_or_changed": false,
+    "login_performed": false,
+    "session_expiry_inferred": false,
+    "production_request_cause_proven": false
+  },
+  "non_generative_observation": {
+    "eligible": true,
+    "reason_code": "runtime_available",
+    "checked_at": "2026-11-14T21:35:02.172Z",
+    "selection": {
+      "connection_id": "1",
+      "mode": "agentic",
+      "model_id": "gpt-6.1-sol",
+      "effort_id": "medium"
+    },
+    "efforts_observed": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max",
+      "ultra"
+    ],
+    "provider_inferences": 0
+  },
+  "ordinary_Teacher_canary": {
+    "success": true,
+    "stage": "terminal",
+    "selection": {
+      "connection_id": "1",
+      "mode": "agentic",
+      "model_id": "gpt-6.1-sol",
+      "effort_id": "medium"
+    },
+    "job": {
+      "id": "1c31ea6c-8ff6-4539-a41f-dcbbba333aa6",
+      "state": "ready",
+      "error_code": null,
+      "dispatches_used": 1,
+      "blocks_duplicate": false,
+      "selection_snapshot": {
+        "mode": "agentic",
+        "model_id": "gpt-6.1-sol",
+        "effort_id": "medium",
+        "connection_id": "1"
+      },
+      "result_ref": {
+        "content_hash": "c676f7962e56c387ce9f2e0d448824d7ef0dbcf64bb344a907d636d419b348b1",
+        "proposal_revision_id": "8fa1491b-f552-48f2-aaa5-1570366c2416"
+      },
+      "qualification_probe": false
+    },
+    "session_id": "d350b712-0e56-477e-adec-bffe5b5149ff",
+    "operations": [
+      {
+        "id": "35902b2f-7ed6-495a-ae0c-bd7fad9341e2",
+        "owner_kind": "teacher",
+        "phase": "closed",
+        "remote_outcome": "completed",
+        "selection_snapshot": {
+          "mode": "agentic",
+          "model_id": "gpt-6.1-sol",
+          "effort_id": "medium",
+          "connection_id": "1"
+        },
+        "reserved_exchanges": 1,
+        "started_exchanges": 1,
+        "acknowledged": true,
+        "agentic_ack": true,
+        "local_transport_closed": "true",
+        "native_process_closed": "true"
+      }
+    ],
+    "plans": [
+      {
+        "id": "8fa1491b-f552-48f2-aaa5-1570366c2416",
+        "state": "candidate",
+        "content_hash": "c676f7962e56c387ce9f2e0d448824d7ef0dbcf64bb344a907d636d419b348b1",
+        "sections": 2
+      }
+    ],
+    "qualifications_before": {
+      "agentic": 6,
+      "purposes": 1
+    },
+    "qualifications_after": {
+      "agentic": 6,
+      "purposes": 1
+    },
+    "HTTP_auth_observed": false,
+    "UI_observed": false,
+    "auth_sessions_created": 0,
+    "JWT_created": false,
+    "automatic_retry": false
+  },
+  "operation_epoch": {
+    "id": "35902b2f-7ed6-495a-ae0c-bd7fad9341e2",
+    "selection_snapshot": {
+      "mode": "agentic",
+      "model_id": "gpt-6.1-sol",
+      "effort_id": "medium",
+      "connection_id": "1"
+    },
+    "session_generation": "bb6d5442e14045ed866dac3d36265d84",
+    "configuration_generation": "afae5ab51445a125a20ede614a4cb931876fd2e60a0c3bdaa37e14c60dfa2332",
+    "resource_key": "codex-profile:c17db95bfdfba4ffee919e03da6cc09443c0c337a66ec234c4fef830ae2507f6",
+    "runtime_hash": "7291470aa3905492350a6fcc6698867048f57b6a42621558472c9390dfb45682",
+    "policy_hash": "6ff59ae868a330f7f574908d3632dd994f9db3795ed51f9e0116414b9eb26618",
+    "phase": "closed",
+    "remote_outcome": "completed"
+  },
+  "authority": {
+    "existing_actor_and_unexpired_auth_session_validated_by_Teacher_scope_and_module_access": true,
+    "synthetic_auth_session_or_JWT_created": false,
+    "authenticated_HTTP_or_UI_observed": false
+  },
+  "recovery": {
+    "before_and_after_canary": {
+      "backup-before": {
+        "database": {
+          "schema": "teacher-upgrade-vm-final-database-restore/1",
+          "success": true,
+          "recorded_at": "2026-11-14T20:56:27.173Z",
+          "cipher_sha256": "b3b04730f71952d1d38ee2621c98253e7cd09df7894e49f4fff3a498274fdc7b",
+          "tables": 102,
+          "sequences": 37,
+          "migrations": 48,
+          "rows_and_original_columns_equal": true,
+          "constraint_names_and_semantics_equal": true,
+          "gcm_authenticated_before_restore": true,
+          "network": "none",
+          "owned_container_removed": true,
+          "self_contained": false,
+          "recovery_catalog_sha256": "82be66b0440d749d17cf863b191ad7a3d7887ce0f63f04279f6fa4793ccf0c23"
+        },
+        "configuration": {
+          "schema": "teacher-upgrade-vm-final-configuration-restore/1",
+          "success": true,
+          "recorded_at": "2026-11-14T20:53:53.284Z",
+          "cipher_sha256": "5956c313ce72635ee223a79cf1c3f61b2a0f4a3a2f563885ecd1cad2c43ac639",
+          "entries": 8872,
+          "file_bytes": 562517196,
+          "content_uid_gid_mode_mtime_xattrs_symlinks_equal": true,
+          "gcm_authenticated_before_restore": true,
+          "network": "none",
+          "owned_volume_removed": true,
+          "self_contained": false,
+          "recovery_catalog_sha256": "82be66b0440d749d17cf863b191ad7a3d7887ce0f63f04279f6fa4793ccf0c23"
+        }
+      },
+      "checkpoint-chat-ready": {
+        "database": {
+          "schema": "teacher-upgrade-vm-final-database-restore/1",
+          "success": true,
+          "recorded_at": "2026-11-14T21:40:10.534Z",
+          "cipher_sha256": "53ac117d5bbc915859efdeb55f553cf48d7642f1053314b0d43644d27bf29b17",
+          "tables": 102,
+          "sequences": 37,
+          "migrations": 48,
+          "rows_and_original_columns_equal": true,
+          "constraint_names_and_semantics_equal": true,
+          "gcm_authenticated_before_restore": true,
+          "network": "none",
+          "owned_container_removed": true,
+          "self_contained": false,
+          "recovery_catalog_sha256": "fe0ee79b862c256952b7303f0f6c4cebf8886abc98857aa27859e694279de989"
+        },
+        "configuration": {
+          "schema": "teacher-upgrade-vm-final-configuration-restore/1",
+          "success": true,
+          "recorded_at": "2026-11-14T21:40:17.732Z",
+          "cipher_sha256": "07cefc92d67f783b223830b352e105ba7c17e6c589b1158c1c979e6d653e0833",
+          "entries": 8878,
+          "file_bytes": 562457193,
+          "content_uid_gid_mode_mtime_xattrs_symlinks_equal": true,
+          "gcm_authenticated_before_restore": true,
+          "network": "none",
+          "owned_volume_removed": true,
+          "self_contained": false,
+          "recovery_catalog_sha256": "fe0ee79b862c256952b7303f0f6c4cebf8886abc98857aa27859e694279de989"
+        }
+      }
+    },
+    "encryption": "AES-256-GCM; per-backup key wrapped with Windows DPAPI CurrentUser",
+    "plaintext_database_or_profile_files_on_host": 0,
+    "private_artifact_directory": "ops/lab/artifacts/chat-gpt-vm-20261114-r01/",
+    "external_runtime_code_and_legacy_assets_still_required": true,
+    "quiet_before_checkpoint": {
+      "teacher_active": 0,
+      "teacher_attempts": 0,
+      "chat_active": 0,
+      "slots": 0,
+      "owners": 0
+    }
+  },
+  "client_activation_reconciliation": {
+    "success": true,
+    "reconciled": true,
+    "initial_result": "client_index_not_current_after_single_reload",
+    "observed_result": "exact_after_configuration_and_all_213_resources_verified",
+    "cause_scope": "Nginx reload convergence; no second reload or activation",
+    "activation_replayed": false,
+    "provider_requests": 0,
+    "intent_after_sha256": "1e4da3ae2c7a3f90e7757917349b3b8e36dec12e17200e5dbb967fe775cf0905",
+    "index_sha256": "d7b9e67f1bb3df7e657031395e39ecb5cbd4e084d6d6b8f0d0b922a010bfd6f3"
+  },
+  "limits": [
+    "This proves one ordinary Teacher plan for the exact VM connection/model/effort/epoch; it does not qualify every modality or purpose.",
+    "The generated two-section plan is candidate, not accepted as educational efficacy or reviewed by a human learner.",
+    "No authenticated browser/UI or user HTTP QA was observed. CUA and the requested tunnel were blocked; no alternate automation bypass was used.",
+    "No production deployment, new login, fallback, qualification probe, inference replay or automatic retry.",
+    "Backup timers were paused through the independent products adoption; their return to original active state and final restored backup are recorded in product-alias-development-vm-20261114-r01.json."
+  ],
+  "private_receipt_sha256": {
+    "qa-actual-observe.json": "41c80424ee29d7bb4ebeebcb50fdf020df88f4930f7edd44fbaee30e0406ad40",
+    "qa-actual-generate.json": "3b9b2577dec01afaf0cf63838cca4525848c93397eff64e791ca68bb1b8855ff",
+    "checkpoint-chat-ready/prepared-result.json": "b5b089288d5e61ddb4f9a93d359a415488f9b209318aafb2296b1361e5c9ada9",
+    "checkpoint-chat-ready/inventory.json": "4986840b36645a7cbb8cee7ee808d5e8ffc5589bd7ec1b1efc19fca15acb705f",
+    "client/activation-reconciliation-result.json": "4052f72a01bb0dfb9269d10f88f19e7f89e4d7498123bd2398253fdb72109664"
+  },
+  "subsequent_independent_products_evidence": "docs/evidence/product-alias-development-vm-20261114-r01.json",
+  "clock_sources_and_ordering": {
+    "VM_observation_and_operation_times": "Provider observations/operation timestamps use the VM clock.",
+    "cross_host_clock_note": "See product-alias-development-vm-20261114-r01.json clock_sources_and_ordering; VM approximately449seconds ahead of the Windows receipt clock in the final sample.",
+    "clocks_changed": false,
+    "original_timestamps_preserved": true
+  }
+}

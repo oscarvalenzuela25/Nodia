@@ -10,7 +10,7 @@ export const page = (data: ProductEntity[], current = 1, total = 1): GetProducts
   data, meta: { page: current, limit: 25, total_items: total === 1 ? data.length : 26, total_pages: total },
 });
 export const invoiceRow = (overrides: Partial<InvoiceProvisionalRow> = {}): InvoiceProvisionalRow => ({
-  code: "INV-17", invoice_code: "INV-17", name: "Synthetic invoice item", cost_price: 2000, cost_price_tax: 2380,
+  code: "INV-17", invoice_code: "INV-17", name: "Synthetic invoice item", alias: "Human reviewed alias", alias_reviewed: true, cost_price: 2000, cost_price_tax: 2380,
   sale_price: Number.NaN, quantity: 2, is_active: true, isUpdate: false, errors: [], isValid: false, ...overrides,
 });
 export const deferred = <T,>() => {

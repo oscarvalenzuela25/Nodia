@@ -4,11 +4,11 @@
   "document_id": "businesses.point-of-sale-checkout-and-accessibility",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 2,
+  "revision": 4,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "R17 implementado y adoptado en VM: NodiaAI sólo consulta ventas/reportes; cinco preparadores y sus puertos activos retirados, históricos autorizados sin writer. Dos lecturas y dos fuentes de informes verificadas con DI y SQL desechable; POS manual conserva sus funciones. Server/KB selectivos, respaldo cifrado previo y posterior, 70 tablas/35 migraciones y Client R16 preservados. Nueva ficha draft/unregistered/approval:null; POS5 aprobado conserva sus bytes y sólo proyecta Filtros e informes."
+    "notes": "R17 implementado y adoptado en VM: NodiaAI sólo consulta ventas/reportes; cinco preparadores y sus puertos activos retirados, históricos autorizados sin writer. Dos lecturas y dos fuentes de informes verificadas con DI y SQL desechable; POS manual conserva sus funciones. Server/KB selectivos, respaldo cifrado previo y posterior, 70 tablas/35 migraciones y Client R16 preservados. Nueva ficha draft/unregistered/approval:null; POS5 aprobado conserva sus bytes y sólo proyecta Filtros e informes. Solicitud2026-11-14: alta nativa desde barcode POS inexistente, decisión Registrar/No y asociación existente conservada; barcode precargado textual y venta intacta. Client2986/362 y focales finales correctos, build/tipos/lint y QA aislada320/600/1280 ES/EN correctos; adopción sólo Client VM con recibo separado. Sin publicación IA o aprobación heredada. Ampliación explícita posterior2026-11-14 plan94§40: alta POS terminada agrega una unidad a la venta local actual, una vez, y limpia/enfoca lector. Sustituye reescaneo de§39; cancelación/error/contexto obsoleto no agrega. Client2994/362 y57focales/3archivos correctos, build/tipos/lint y QA sintética320ESdark/1280ENlight correctos. Adopción Client VM con recibo separado; sin cambio Server, herramienta IA o aprobación/publicación nueva."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
@@ -76,15 +76,29 @@
     {
       "path": "nodia-client/src/modules/business/pages/BusinessDetail/components/SalesWorkspace/PaymentMethodButtons/styles.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/business/infrastructure/usePosBarcodeLookup.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/ProductModal.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/business/pages/BusinessDetail/components/SalesWorkspace/PosProductRegistration.tsx",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-10-30",
+    "checked_on": "2026-11-14",
     "evidence_paths": [
       "docs/evidence/business-pos-accessibility-20261029-r01.json",
-      "docs/evidence/nodia-ai-sales-readonly-20261030-r01.json"
+      "docs/evidence/nodia-ai-sales-readonly-20261030-r01.json",
+      "docs/evidence/pos-unknown-barcode-registration-20261114.md",
+      "docs/evidence/pos-product-registration-autoadd-20261114.md"
     ],
-    "notes": "R17: Server5685 pruebas correctas/1 omitida previa; catálogo47, conocimiento58 y contratos3. Linux6 garantías y SQL desechable13+3 correctos, una venta manual sólo en fixture. VM completada: manifestc38b16bd…c231/KB ea03686c…e5b, dos lecturas/cero writers, 70 tablas y ledger35 idénticos, respaldos verificados. Sin inferencia de proveedor ni aprobación/publicación de esta ficha candidata."
+    "notes": "R17: Server5685 pruebas correctas/1 omitida previa; catálogo47, conocimiento58 y contratos3. Linux6 garantías y SQL desechable13+3 correctos, una venta manual sólo en fixture. VM completada: manifestc38b16bd…c231/KB ea03686c…e5b, dos lecturas/cero writers, 70 tablas y ledger35 idénticos, respaldos verificados. Sin inferencia de proveedor ni aprobación/publicación de esta ficha candidata. Solicitud2026-11-14: alta nativa desde barcode POS inexistente, decisión Registrar/No y asociación existente conservada; barcode precargado textual y venta intacta. Client2986/362 y focales finales correctos, build/tipos/lint y QA aislada320/600/1280 ES/EN correctos; adopción sólo Client VM con recibo separado. Sin publicación IA o aprobación heredada. Ampliación explícita posterior2026-11-14 plan94§40: alta POS terminada agrega una unidad a la venta local actual, una vez, y limpia/enfoca lector. Sustituye reescaneo de§39; cancelación/error/contexto obsoleto no agrega. Client2994/362 y57focales/3archivos correctos, build/tipos/lint y QA sintética320ESdark/1280ENlight correctos. Adopción Client VM con recibo separado; sin cambio Server, herramienta IA o aprobación/publicación nueva."
   },
   "approval": null
 }
@@ -157,6 +171,7 @@ La cabecera se pliega desde el extremo derecho del breadcrumb, conservando tabs/
 - [x] Migración/adopción Server VM:35 migraciones/70 tablas,69 de dominio preservadas y sólo dos CHECKs ampliados; Server73be36…/KBcde7…, API2263533/worker2263534 estables30.276s, respaldo previo BD/config cifrado/verificado y Native/keyring/timers conservados,0ventas/proveedores nuevos.
 - [x] Client R02 activo y UI autenticada verificada;173archivos/169assets actuales/32previos, manifiesto08dcdfbc…ece9. R02 sólo corrige estilos de pagos tras hallazgo de label partido R01;18focales posteriores a la suite2261, lint/tipos/build y QA adicional320/600/1280 correctos.
 - [ ] Lector y teléfono físicos según evidencia disponible.
+- [x] Corte anterior§39, antes de autoadd: alta POS desde barcode desconocido2026-11-14: Client2986/362 y focales finales, build/tipos/lint y QA sintética6perfiles; adopción sólo Client VM213recursos y runtime intacto, recibo separado. UI autenticada VM/lector físico pendientes.
 - [ ] Revisión/aprobación documental; esta ficha no habilita ni publica capacidades.
 
 [Recibo R12](../../../../evidence/business-pos-accessibility-20261029-r01.json):0overflow, controles56px, imágenes80px, cinco medios y estado conservado al resize/paneles con0GETextra. Fallo400 preserva revisión;503 posterior al commit conserva el journal y recupera completed por1GET del recibo, sin replay/POST draft o complete. No prueba pago, lector/teléfono físicos o persistencia comercial en VM. La migración amplía CHECKs de operación/evento para checkout; down se bloquea si ya hay recibos/eventos de ese tipo, sin borrar datos. No afirmar reversibilidad con ventas nuevas sólo porque existe down.
@@ -168,3 +183,43 @@ La inspección autenticada final R02 en navegador integrado1280px confirma Trans
 | Revisión | Cambio | Compatibilidad |
 |---|---|---|
 | 1 | Plan94 R12 y ADR087 propuesto: checkout atómico y nueve ajustes UI | Sustituye únicamente el draft previo de nuevas ventas UI. Históricos, herramientas IA y cuerpos aprobados intactos; draft/partial/unregistered/approval:null. |
+
+## Barcode desconocido y alta nativa — solicitud2026-11-14
+
+Sólo404 product:not_found del lookup exacto abre la decisión. Registrar abre
+el formulario nativo de Producto con barcode textual precargado (ceros intactos)
+y foco útil en nombre. No/cerrar/cancelar limpia el lector y le devuelve foco.
+Asociar existente conserva selección por ID, revisión exacta y confirmación.
+
+Aclaración posterior de plan94§40: el alta terminada agrega una unidad a la
+misma venta local y limpia/enfoca el lector, una sola vez. No confirma/cobra la
+venta. El reescaneo pertenece al corte previo de§39. Se conservan nombre/alias/precios/disponibilidad,
+proveedor opcional y guardado recuperable; un error mantiene el formulario.
+Lookup y overlays bloquean acciones dependientes y descartan respuestas de
+otro actor/sesión/negocio/venta/sección. Un error HTTP genérico no es ausencia.
+
+[Plan94§39](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#39-alta-de-producto-al-escanear-un-barcode-desconocido--solicitud2026-11-14)
+y [evidencia](../../../../evidence/pos-unknown-barcode-registration-20261114.md)
+separan pruebas sintéticas, adopción y lector físico. Sigue draft/partial/
+unregistered/approval:null; no habilita herramientas IA ni modifica POS5 aprobado.
+
+## Alta terminada e incorporación automática — solicitud posterior2026-11-14
+
+Éxito completo de campos/imagen/recuperación tiene callback propio separado de
+cancelar. Usa ID/negocio/versión/precio/disponibilidad reales, política de carrito
+y aceptación del motor local; no usa el texto del escáner como identidad final.
+Cada intención incorpora una unidad como máximo y preserva otras partidas y
+medio de pago. Actor/sesión/negocio/venta/sección distintos descartan callbacks
+tardíos. Cancelación y escritura fallida/incierta no agregan ni recrean catálogo.
+
+Si el catálogo está guardado pero la incorporación falla, informar ese resultado
+específico y liberar el lector sin otro POST de alta. Proyección histórica
+incompleta exige lectura del ID/negocio/versión exactos, nunca precio supuesto.
+
+- [x] Regresiones y QA de autoadd:57focales/3archivos, global2994/362, build/tipos/lint y navegador aislado320ESdark/1280ENlight correctos; ver evidencia para límites.
+- [x] Adopción Client VM de autoadd:213recursos nuevos exactos,212históricos HTTP, Server/procesos/env/timers intactos, rollback preparado y recibo propio.
+- [ ] Lector físico/UI autenticada VM; no acreditados por fixture.
+
+[Plan94§40](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#40-añadir-el-producto-recién-guardado-a-la-venta-actual--solicitud2026-11-14)
+y [evidencia nueva](../../../../evidence/pos-product-registration-autoadd-20261114.md).
+Draft/partial/unregistered/approval:null; no amplía checkout ni autoridad IA.

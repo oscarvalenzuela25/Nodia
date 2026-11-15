@@ -36,6 +36,34 @@ async function choose(field: string, option: string) {
 }
 
 describe("ComposerSelection", () => {
+  it("recovers configured GPT effort options after a catalog refresh without changing the saved tuple or assuming availability", async () => {
+    const selected = { ...agent, model_id: "fixture-gpt-agentic", effort_id: "medium" };
+    const configured = { ...mode(selected), models: [{ model_id: selected.model_id, label: "Configured GPT fixture", efforts: [] }] };
+    const connection = { ...connections[1], provider_key: "openai", modes: [configured] };
+    const settings = props({ connections: [connection], selection: selected, eligibility: observed(selected, false) });
+    const { rerender } = render(<ComposerSelection {...settings} />);
+    expect(screen.getByText(key("selection_missing"))).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: key("effort") })).toHaveTextContent("medium");
+
+    const refreshed = { ...connection, modes: [{ ...configured, models: [{ ...configured.models[0],
+      efforts: ["low", "medium", "high"].map(effort_id => ({ effort_id, label: effort_id })),
+    }] }] };
+    rerender(<ComposerSelection {...settings} connections={[refreshed]} />);
+    expect(screen.queryByText(key("selection_missing"))).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: key("effort") })).toHaveTextContent(i18n.t("nodiaAi:effort_levels.medium"));
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith(selected);
+    expect(settings.onDirtyChange).toHaveBeenLastCalledWith(false);
+    expect(settings.onApply).not.toHaveBeenCalled();
+
+    await choose("effort", i18n.t("nodiaAi:effort_levels.high"));
+    const changed = { ...selected, effort_id: "high" };
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith(changed);
+    expect(screen.getByRole("button", { name: key("apply") })).toBeDisabled();
+    rerender(<ComposerSelection {...settings} connections={[refreshed]} eligibility={observed(changed)} />);
+    await userEvent.setup().click(screen.getByRole("button", { name: key("apply") }));
+    expect(settings.onApply).toHaveBeenCalledExactlyOnceWith({ selection: changed, routingEnabled: false });
+  });
+
   it("groups Gemini Agentic variants and requires eligibility for the explicitly chosen executable effort", async () => {
     const models = ["high", "medium", "low"].map(effort_id => ({
       model_id: `fixture-family-${effort_id}`, label: `Fixture Family (${effort_id.toUpperCase()})`,

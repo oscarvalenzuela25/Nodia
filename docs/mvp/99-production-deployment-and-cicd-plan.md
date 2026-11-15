@@ -1347,3 +1347,28 @@ separan incidente, diagnóstico, paquete original, pruebas y pendientes. El
 arreglo no cambia la aplicación o contratos/fichas NodiaAI; PWA conserva sus
 gates de instalación/auth/dispositivo. Promoción por PR y CI/CD nuevos, sin
 alterar el resultado ni reejecutar CD43622185230.
+
+## 28. Host específico Teacher GPT y guard CD — candidato local2026-11-14
+
+La inspección de lectura del release backend-307ffbccc510-3b25a0834e0f encontró
+API/worker activos y extensiones70Codex/71Gemini, sin host Teacher en las rutas
+revisadas. El login Codex del chat no aprovisiona el host de texto de ADR093.
+La respuesta anterior provider_unavailable no identifica la excepción de una
+petición concreta; el candidato Server preserva motivos seguros y timestamp real.
+
+La rama codex/nodia-ai-chat-space-gpt-selection prepara un operador separado
+que exige artefacto release Linux y manifiesto exacto, fija binarioSHA512 y
+archivo de entorno de dos variables y añade opcionalmente72Teacher a ambos
+consumidores. El guard CD registra y comprueba ambos digests por operación;
+conserva70/71, unidades base y rechazo de overrides en backups/timers. Activar
+requiere drenaje/parada ya efectuados y SQL READ ONLY/TLS sin owners pendientes;
+no inicia servicios automáticamente. El empaquetado incluye el operador; CI
+incorpora sus regresiones y el roundtrip del paquete sin cuentas ni Docker para
+esa prueba. [Runbook](../../ops/production/ai-runtime/README.md) y
+[evidencia](../evidence/nodia-ai-chat-space-gpt-selection-20261114.md).
+
+Sin instalación, reinicio, migración, inferencia o CD de esta entrega. El binario
+release Linux todavía debe construirse, verificarse e instalarse por el flujo
+operativo; no utilizar el dev histórico. Primero actualizar operadores revisados
+con sus pins y después aprovisionar/verificar Teacher por selección exacta.
+No se modifica ni se repite una operación productiva anterior.

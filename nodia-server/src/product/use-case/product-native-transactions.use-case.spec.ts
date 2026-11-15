@@ -199,6 +199,33 @@ describe('Native product writers through their use cases', () => {
       new CreateProductUseCase(f.service).execute(dto, undefined, actor),
     ).rejects.toThrow('log persistence failed');
   });
+  it('persists a trimmed human alias and its snapshot without changing the invoice name', async () => {
+    const f = fixture();
+    const created = await f.service.createProduct({ ...dto, alias: '  Café del día  ' }, f.manager, actor);
+    expect(created.alias).toBe('Café del día');
+    expect(created.name).toBe(dto.name);
+    expect(f.logs.save).toHaveBeenCalledWith(expect.objectContaining({ alias: 'Café del día', name: dto.name }));
+  });
+  it('preserves an omitted alias through unrelated edits and records explicit clearing with the exact revision', async () => {
+    const f = fixture();
+    Object.assign(f.product, { alias: 'Nombre humano', version: 7 });
+    const renamed = await f.service.updateProduct('3', { name: 'Invoice name updated' }, f.manager, actor);
+    expect(renamed.alias).toBe('Nombre humano');
+    const cleared = await f.service.updateProduct('3', { alias: ' \t ', expected_version: 8 }, f.manager, actor);
+    expect(cleared.alias).toBeNull();
+    expect(cleared.name).toBe('Invoice name updated');
+    expect(cleared.version).toBe(9);
+    expect(f.logs.save).toHaveBeenLastCalledWith(expect.objectContaining({ alias: null, product_version: 9, changed_fields: ['alias'] }));
+  });
+  it('rejects unversioned and stale alias writes before saving product or history', async () => {
+    const f = fixture();
+    Object.assign(f.product, { alias: 'Preserved', version: 3 });
+    await expect(f.service.updateProduct('3', { alias: 'Next' }, f.manager, actor)).rejects.toThrow('product:version_required');
+    await expect(f.service.updateProduct('3', { alias: 'Next', expected_version: 2 }, f.manager, actor)).rejects.toThrow('product:version_conflict');
+    expect(f.products.save).not.toHaveBeenCalled();
+    expect(f.logs.save).not.toHaveBeenCalled();
+    expect(f.product.alias).toBe('Preserved');
+  });
   it('locks existing product and preserves omitted values in the derived updated snapshot', async () => {
     const f = fixture();
     await new UpdateProductUseCase(f.service).execute(

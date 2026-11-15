@@ -41,7 +41,7 @@ export const RANSACK_POLICIES = {
     has_description: 'boolean',
   },
   provider: { ...common, business_id: 'uuid', name: 'text', tax: 'number' },
-  product: { ...common, ...prices, business_id: 'uuid', provider_id: 'bigint', version: 'number' },
+  product: { ...common, ...prices, alias: 'text', business_id: 'uuid', provider_id: 'bigint', version: 'number' },
   product_log: {
     id: 'uuid',
     created_at: 'date',

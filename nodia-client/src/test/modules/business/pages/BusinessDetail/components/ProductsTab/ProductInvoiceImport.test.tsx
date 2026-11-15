@@ -12,6 +12,7 @@ import {
 } from "../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport";
 import * as businessServices from "../../../../../../../modules/business/infrastructure/services";
 import { reserveObservation } from "../../../../../../../modules/business/components/AnalysisConsole/infrastructure/services";
+import i18n from "../../../../../../../translate";
 import { sileo } from "sileo";
 vi.mock("../../../../../../../modules/business/components/AnalysisConsole/infrastructure/services", () => ({
   reserveObservation: vi.fn(async () => ({ version: 1, id: crypto.randomUUID() })),
@@ -59,6 +60,8 @@ vi.mock("../../../../../../../modules/business/infrastructure/services", () => (
         business_id: "biz-123",
         code: "SKU-EXISTING",
         name: "Producto Existente",
+        alias: "Alias existente",
+        version: 1,
         cost_price: 5000,
         cost_price_tax: 950,
         sale_price: 7000,
@@ -123,6 +126,8 @@ describe("ProductInvoiceImport Helpers", () => {
       const result = validateInvoiceRow({
         code: "SKU-TEST-1",
         name: "Mouse Gamer RGB",
+        alias: "Mouse comercial",
+        alias_reviewed: true,
         cost_price: 15000,
         cost_price_tax: 2850,
         sale_price: 19500,
@@ -170,6 +175,8 @@ describe("ProductInvoiceImport Helpers", () => {
         business_id: "biz-123",
         code: "SKU-EXISTING",
         name: "Producto Existente",
+        alias: "Alias existente",
+        version: 1,
         cost_price: 5000,
         cost_price_tax: 950,
         sale_price: 7000,
@@ -382,6 +389,15 @@ describe("ProductInvoiceImport Component", () => {
       await user.click(screen.getByTestId("save-row-edit"));
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     }
+    // Alias review is human/local; never supply aliases through the OCR fixture.
+    for (const button of screen.queryAllByTestId(/^review-invoice-alias-/)) {
+      const row = button.closest("tr");
+      if (!row || !within(row).queryByText(i18n.t("business:invoice_alias_required"))) continue;
+      await user.click(button);
+      await user.click(screen.getByRole("checkbox", { name: i18n.t("business:product_alias_use_name") }));
+      await user.click(screen.getByTestId("save-invoice-alias"));
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    }
     const selects = screen.queryAllByRole("button", { name: /Disponibilidad/ });
     for (const select of selects) {
       if (select.hasAttribute("disabled") || select.getAttribute("aria-disabled") === "true") continue;
@@ -397,6 +413,25 @@ describe("ProductInvoiceImport Component", () => {
     await user.click(option);
     await waitFor(() => expect(screen.getByTestId("invoice-file-input")).toBeEnabled());
   };
+  it("prevalidates a missing update version before the invoice POST and retains the reviewed row", async () => {
+    vi.mocked(businessServices.getProducts).mockResolvedValueOnce({ data: [{ id: "12", business_id: "biz-123", code: "SKU-CAS",
+      name: "Catalog original", alias: "Preserved catalog alias", cost_price: 100, cost_price_tax: 119, sale_price: 130, stock: 0,
+      is_active: true }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 50 } });
+    vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce(syntheticAnalysis("PREVALIDATE", "SKU-CAS"));
+    renderWithClient(<ProductInvoiceImport businessId="biz-123" onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
+    await selectProvider();
+    await user.upload(screen.getByTestId("invoice-file-input"), new File(["synthetic"], "synthetic.pdf", { type: "application/pdf" }));
+    await user.click(screen.getByTestId("analyze-invoice-btn"));
+    const save = await screen.findByTestId("submit-invoice-products");
+    await waitFor(() => expect(save).toBeEnabled());
+    await user.click(save);
+    await waitFor(() => expect(sileo.error).toHaveBeenCalled());
+    expect(businessServices.createInvoiceWithFile).not.toHaveBeenCalled();
+    expect(businessServices.bulkCreateProducts).not.toHaveBeenCalled();
+    expect(businessServices.bulkUpdateProducts).not.toHaveBeenCalled();
+    expect(within(screen.getByTestId("invoice-row-0")).getByText("Preserved catalog alias")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("PREVALIDATE")).toBeInTheDocument();
+  });
   it("keeps a blocked Gemini selection and its file, and checks availability without starting OCR", async () => {
     const selected = { id: "blocked-instance", key: "gemini", name: "Synthetic Gemini selected", mode: "agentic", is_active: true,
       can_use_model: false, availability_reason: "runtime_busy" as const, error: "Synthetic unavailability", is_default: true, use_agentic: true,
@@ -827,12 +862,10 @@ describe("ProductInvoiceImport Component", () => {
     // Save dialog
     await user.click(screen.getByTestId("save-row-edit"));
 
-    // Now it should have a valid green dot and the save button is enabled
-    await waitFor(() => {
-      expect(screen.getByTestId("valid-dot-0")).toBeInTheDocument();
-    });
-
+    // Numeric/code corrections do not bypass the separate human alias review.
+    expect(screen.getByTestId("error-dot-0")).toBeInTheDocument();
     await classifyNewProducts();
+    await waitFor(() => expect(screen.getByTestId("valid-dot-0")).toBeInTheDocument());
     const saveBtn = screen.getByTestId("submit-invoice-products");
     expect(saveBtn).not.toBeDisabled();
   });
@@ -966,6 +999,10 @@ describe("ProductInvoiceImport Component", () => {
       expect(businessServices.bulkCreateProducts).toHaveBeenCalledTimes(1);
     });
 
+    expect(businessServices.createInvoiceWithFile).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ extracted_items: [expect.objectContaining({ name: "Cable HDMI", alias: "Cable HDMI", alias_reviewed: true })] }),
+    }));
+    expect(businessServices.bulkCreateProducts).toHaveBeenCalledWith([expect.objectContaining({ name: "Cable HDMI", alias: "Cable HDMI" })]);
     expect(mockOnSuccess).toHaveBeenCalledTimes(1);
   });
 
@@ -1110,11 +1147,11 @@ describe("ProductInvoiceImport Component", () => {
     const row = await screen.findByTestId("invoice-row-0");
     const history = screen.getByTestId("historical-row-0");
     expect(within(row).queryByRole("checkbox")).not.toBeInTheDocument();
-    expect(within(row).getAllByRole("cell")).toHaveLength(8);
-    expect(within(history).getAllByRole("cell")).toHaveLength(8);
+    expect(within(row).getAllByRole("cell")).toHaveLength(9);
+    expect(within(history).getAllByRole("cell")).toHaveLength(9);
     await user.click(screen.getByRole("button", { name: "Mostrar cantidad de la factura y disponibilidad" }));
-    expect(within(row).getAllByRole("cell")).toHaveLength(10);
-    expect(within(history).getAllByRole("cell")).toHaveLength(10);
+    expect(within(row).getAllByRole("cell")).toHaveLength(11);
+    expect(within(history).getAllByRole("cell")).toHaveLength(11);
     expect(within(row).getByRole("cell", { name: "3" })).toBeVisible();
     const expandedRow = row.textContent;
     await user.click(screen.getByRole("button", { name: "Ocultar cantidad de la factura y disponibilidad" }));
@@ -1968,7 +2005,7 @@ describe("ProductInvoiceImport Component", () => {
     ], []);
     expect(rows.every((row) => !row.isValid)).toBe(true);
     expect(rows[0].errors.join(" ")).toMatch(/repetido/i);
-    expect(validateInvoiceRows([{ ...rows[0], sale_price: 130 }])[0].isValid).toBe(true);
+    expect(validateInvoiceRows([{ ...rows[0], alias: "Reviewed SKU", alias_reviewed: true, sale_price: 130 }])[0].isValid).toBe(true);
   });
   it("does not calculate price changes from invalid values", () => {
     expect(calculatePriceDiff(NaN, 100)).toBeNull();

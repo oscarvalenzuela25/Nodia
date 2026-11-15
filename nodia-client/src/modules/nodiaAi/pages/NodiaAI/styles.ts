@@ -48,9 +48,10 @@ export const Workspace = styled("div")(({ theme }) => ({
   display: "flex",
   minWidth: 0,
   gap: theme.spacing(2),
-  height: "calc(100dvh - 13rem)",
+  height: "calc(100dvh - 11rem)",
   minHeight: 580,
   maxHeight: 1200,
+  [theme.breakpoints.between("sm", "md")]: { height: "calc(100dvh - 12rem)" },
   [theme.breakpoints.down("sm")]: { height: "calc(100dvh - 18rem)", minHeight: 520, maxHeight: "none" },
 }));
 const scrollAreaStyles = (theme: Theme): CSSObject => {
@@ -94,6 +95,7 @@ export const History = styled(ScrollArea)(({ theme }) => ({
   background: theme.palette.background.paper,
 }));
 export const Chat = styled("div")(({ theme }) => ({
+  position: "relative",
   display: "flex",
   flexDirection: "column",
   minWidth: 0,
@@ -104,7 +106,8 @@ export const Chat = styled("div")(({ theme }) => ({
   background: theme.palette.background.paper,
   boxShadow: `0 8px 32px ${alpha(theme.palette.common.black, theme.palette.mode === "dark" ? 0.14 : 0.025)}`,
 }));
-export const ChatHeading = styled("div")(({ theme }) => ({
+export const ChatNotices = styled("div")(({ theme }) => ({
+  "&:empty": { display: "none" },
   position: "relative",
   padding: theme.spacing(2, 3),
   [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5, 2) },

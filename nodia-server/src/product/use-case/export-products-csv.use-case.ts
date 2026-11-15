@@ -49,8 +49,8 @@ export class ExportProductsCsvUseCase {
     const isEn = dto.lang?.toLowerCase().startsWith('en');
 
     const header = isEn
-      ? 'Supplier code (code),Barcode (barcode),Name (name),Measurement unit (measurement_unit),Base cost (cost_price),Tax-inclusive cost (cost_price_tax),Regular price (sale_price),Alternative price (offer_price),Alternative enabled (is_offer_enabled),Available (has_stock),Legacy stock (stock),Active (is_active),ID (id),Version (version)'
-      : 'Código proveedor (code),Código de barras (barcode),Nombre (name),Unidad de medida (measurement_unit),Costo base (cost_price),Costo con IVA (cost_price_tax),Precio normal (sale_price),Precio alternativo (offer_price),Alternativo habilitado (is_offer_enabled),Disponible (has_stock),Stock histórico (stock),Activo (is_active),ID (id),Versión (version)';
+      ? 'Supplier code (code),Barcode (barcode),Name (name),Alias (alias),Measurement unit (measurement_unit),Base cost (cost_price),Tax-inclusive cost (cost_price_tax),Regular price (sale_price),Alternative price (offer_price),Alternative enabled (is_offer_enabled),Available (has_stock),Legacy stock (stock),Active (is_active),ID (id),Version (version)'
+      : 'Código proveedor (code),Código de barras (barcode),Nombre (name),Alias (alias),Unidad de medida (measurement_unit),Costo base (cost_price),Costo con IVA (cost_price_tax),Precio normal (sale_price),Precio alternativo (offer_price),Alternativo habilitado (is_offer_enabled),Disponible (has_stock),Stock histórico (stock),Activo (is_active),ID (id),Versión (version)';
 
     const queryParams: GetProductsDto = { all: true, includes: false };
     if (dto.business_id) {
@@ -88,6 +88,7 @@ export class ExportProductsCsvUseCase {
         this.escapeCsvValue(product.code),
         this.escapeCsvValue(product.barcode),
         this.escapeCsvValue(product.name),
+        this.escapeCsvValue(product.alias),
         this.escapeCsvValue(product.measurement_unit),
         this.escapeCsvValue(product.cost_price),
         this.escapeCsvValue(product.cost_price_tax),

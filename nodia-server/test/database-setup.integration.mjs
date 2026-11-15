@@ -105,6 +105,23 @@ try {
     (await db.runMigrations()).length === 0,
     'A repeated migration run is inert',
   );
+  // Exercise alias expansion against legacy rows in a separate role/database,
+  // reusing only this fixture's owned disposable PostgreSQL container.
+  const { verifyProductAliases } = await import('./product-alias.integration.mjs');
+  const { AddProductAlias1793660000000: AliasMigration } = await import('../dist/migrations/1793660000000-AddProductAlias.js');
+  const { applyProductLookupFilters } = await import('../dist/product/product-lookup-filters.js');
+  const { normalizeProductAlias } = await import('../dist/product/product-alias.js');
+  const { productSnapshot } = await import('../dist/product/product-catalog.js');
+  assert.match(password, /^[a-f0-9]{40}$/);
+  await db.query(`CREATE ROLE product_alias_test LOGIN PASSWORD '${password}'`);
+  await db.query('CREATE DATABASE product_alias_test OWNER product_alias_test');
+  const aliasDb = new DataSource({ ...options, username: 'product_alias_test', database: 'product_alias_test', entities: [], migrations: [] });
+  connections.push(aliasDb);
+  await aliasDb.initialize();
+  const aliases = await verifyProductAliases(aliasDb, { Migration: AliasMigration,
+    applyFilters: applyProductLookupFilters, normalizeAlias: normalizeProductAlias, productSnapshot });
+  check(aliases.status === 'passed' && aliases.checks.length === 5,
+    'Product alias migration, search, identifier completeness and snapshots pass on disposable PostgreSQL');
   const inspection = db.createQueryRunner();
   let tables;
   try {
