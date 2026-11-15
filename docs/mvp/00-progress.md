@@ -1,5 +1,12 @@
 # Progreso del MVP — Nodia
 
+**Favicon como PWA — añadido a PR25, 2026-11-14:** misma N esencial compartida,
+URLs favicon versionadas por el hash del SVG para solicitar la marca actual;
+sin cambiar los bytes de imagen o el manifiesto. Build/tipos,31checksLinux sin
+omisiones y validación de10assets construidos correctos. [103§13](103-pwa-progressive-implementation-plan.md#13-favicon-web-igual-a-la-marca-pwa--2026-11-14).
+Sólo visual/metadatos, sin nuevo despliegue ni aceptación de instalación/caché
+de usuario. PR conserva base development y no se fusiona por esta solicitud.
+
 **Alta POS con incorporación automática — VM development2026-11-14:** el usuario
 retira el reescaneo del primer corte: guardar completamente añade una unidad
 a la misma venta local y limpia/enfoca el lector; callback separado de cancelar,

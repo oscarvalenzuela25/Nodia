@@ -312,3 +312,31 @@ y el fallo, sin volver a publicar. [Plan99§27](99-production-deployment-and-cic
 y [evidencia](../evidence/pages-public-convergence-20261114.md) registran
 identidades, límites y validación. No modifica los assets, auth, manifest o
 alcance instalable; standalone y dispositivos siguen pendientes por su alcance.
+
+## 13. Favicon web igual a la marca PWA — 2026-11-14
+
+Solicitud adicional sobre PR25 abierto hacia development. Los archivos ya
+comparten la opción1 elegida: N esencial en gradiente turquesa/azul/violeta.
+Se inspeccionaron PNG192 y favicon32 y la fuente SVG común. Se conservan sus
+bytes y las imágenes/manifiesto PWA; sólo se versionan las tres referencias
+favicon del HTML con `?v=6e46f1a62f82`, prefijo12 del SHA256 del SVG.
+Esto solicita una URL nueva; no acredita borrar la caché de un dispositivo
+particular ni comprobar su pestaña instalada.
+
+El gate de empaquetado conserva el href canónico para históricos y acepta sólo
+la versión derivada de los bytes actuales del SVG, rechazando versión incorrecta,
+parámetros arbitrarios, origen externo y modificación del SVG sin actualizarla.
+Manifiesto e inventario público de10archivos conservan sus restricciones.
+
+Build Client con tipos correcto;31comprobaciones PWA/artefactos en Linux con
+Node24.22.2 correctas y0omisiones. Windows:25correctas/6exclusivasLinux omitidas.
+El primer intento Linux sobre /mnt/c detectó modos incompatibles; la corrida
+final usó el directorio de fixtures nativo mediante NODIA_ARTIFACT_TEST_TEMP_ROOT,
+sin cambiar las garantías. Una copia parcial de la fixture sin dependencia de
+empaquetado se descartó; el ensayo final usa los módulos originales completos.
+El build contiene los tres href versionados,10assets válidos y favicon bytes
+idénticos a public/. No React, auth, API, SW, capacidades o publicación nuevos.
+
+Evaluación visual en la [ficha existente](../nodia-ai/knowledge/general-settings/features/pwa-installation.md).
+Cambio local para actualizar el mismo PR; sin nuevo despliegue de VM/producción,
+instalación real, prueba de caché personal o aceptación adicional PWA-001.
