@@ -18,7 +18,7 @@ class TeacherBackupCaptureTests(unittest.TestCase):
     def setUp(self):
         # Reuse only the explicitly synthetic fixture, not its tests.
         self.f=fixtures.TeacherWindowTests();self.f.setUp();self.addCleanup(self.f.doCleanups)
-        f=self.f;self.backup_calls=0;self.jobs=0;self.changed_after=False;self.unknown_backup=False
+        f=self.f;self.backup_calls=0;self.jobs=0;self.changed_after=False;self.unknown_backup=False;self.backup_lock_busy=False
         self.backup={'backup_id':'11111111-1111-4111-8111-111111111111','cipher_sha256':'c'*64,
                      'captured_at':'2026-11-15T00:00:00Z','journal_sequence':1}
         original=f.updater.Host
@@ -49,6 +49,8 @@ class TeacherBackupCaptureTests(unittest.TestCase):
 
     def create_backup(self):
         self.f.locked();self.assertTrue(self.f.apps);self.f.events.append('backup');self.backup_calls+=1
+        self.assertTrue(all(state['ActiveState']=='inactive' for unit,state in self.f.states.items() if unit.endswith('.timer')))
+        if self.backup_lock_busy:raise RuntimeError('synthetic_backup_flock_exit_75')
         if self.unknown_backup:raise RuntimeError('synthetic_backup_outcome_unknown')
         return self.backup
 
@@ -56,6 +58,7 @@ class TeacherBackupCaptureTests(unittest.TestCase):
         self.f.locked();self.jobs+=1;self.f.events.append('fingerprint')
         self.assertEqual(args[0],'--capture');self.assertEqual(args[3],self.f.release.name);self.assertEqual(seconds,180)
         self.assertEqual(path.read_bytes(),self.fingerprint.read_bytes());self.assertTrue(self.f.apps)
+        self.assertTrue(all(state['ActiveState']=='inactive' for unit,state in self.f.states.items() if unit.endswith('.timer')))
         tables=[{'name':'synthetic_table','rows':2 if self.changed_after and self.jobs==2 else 1,'md5':'d'*32}]
         return {'tables':tables,'aggregate_sha256':self.f.io.sha(json.dumps(tables,separators=(',',':')).encode())}
 
@@ -64,11 +67,13 @@ class TeacherBackupCaptureTests(unittest.TestCase):
     def test_exact_before_backup_after_and_healthy_runtime_produce_scoped_receipt(self):
         result=self.run_capture()
         self.assertEqual(result['status'],'captured_source_equal');self.assertEqual(result['backup_id'],self.backup['backup_id'])
-        self.assertEqual(self.f.events,['fingerprint','backup','fingerprint']);self.assertEqual(self.backup_calls,1)
+        self.assertEqual(self.f.events,['pause','fingerprint','backup','fingerprint','timers_restored']);self.assertEqual(self.backup_calls,1)
         self.assertFalse(self.f.maintenance.exists());self.assertTrue(self.f.apps);self.assertEqual(self.f.started,0)
         fingerprint=self.record/'source-fingerprint.json'
         self.assertEqual(self.f.io.sha(fingerprint.read_bytes()),result['source_fingerprint_file_sha256'])
         self.assertFalse(result['restore_performed']);self.assertFalse(result['runtime_recovery_authorized'])
+        self.assertTrue(result['timers_paused']);self.assertTrue(result['timers_restored'])
+        self.assertTrue(all(state['ActiveState']=='active' for unit,state in self.f.states.items() if unit.endswith('.timer')))
         self.assertFalse((self.f.state/'attempts').exists())
 
     def test_wrong_source_or_metadata_CAS_prevents_reservation_and_backup(self):
@@ -100,8 +105,67 @@ class TeacherBackupCaptureTests(unittest.TestCase):
         failure=json.loads((self.record/'failure.json').read_bytes())
         self.assertTrue(failure['backup_side_effects_possible']);self.assertFalse(failure['backup_result_known'])
         self.assertFalse(failure['backup_delete_or_retry_attempted']);self.assertFalse((self.record/'receipt.json').exists())
+        self.assertTrue(failure['timers_paused']);self.assertFalse(failure['timers_restored'])
+        self.assertNotIn('timers_restored',self.f.events)
         with self.assertRaisesRegex(ValueError,'capture_already_reserved_no_replay'):self.run_capture()
         self.assertEqual(self.backup_calls,1)
+
+    def test_backup_lock_busy_keeps_timer_state_for_review_without_resuming_or_replay(self):
+        self.backup_lock_busy=True
+        with self.assertRaisesRegex(RuntimeError,'flock_exit_75'):self.run_capture()
+        failure=json.loads((self.record/'failure.json').read_bytes())
+        self.assertEqual(failure['phase'],'backup_requested');self.assertTrue(failure['timers_pause_requested'])
+        self.assertTrue(failure['timers_paused']);self.assertFalse(failure['timers_restored'])
+        self.assertTrue(all(state=={'active':True,'enabled':'enabled'} for state in failure['timer_states_before'].values()))
+        self.assertEqual(self.f.events,['pause','fingerprint','backup']);self.assertEqual(self.jobs,1)
+        self.assertTrue(all(state['ActiveState']=='inactive' for unit,state in self.f.states.items() if unit.endswith('.timer')))
+        with self.assertRaisesRegex(ValueError,'capture_already_reserved_no_replay'):self.run_capture()
+        self.assertEqual(self.backup_calls,1);self.assertFalse(failure['automatic_retry_allowed'])
+
+    def test_installed_pause_waits_for_existing_backup_work_before_first_fingerprint(self):
+        updater_spec=importlib.util.spec_from_file_location('synthetic_capture_real_updater',BASE.parent/'update-backend.py')
+        updater=importlib.util.module_from_spec(updater_spec);updater_spec.loader.exec_module(updater)
+        self.f.states['nodia-ai-backup-rotate.timer'].update(ActiveState='inactive',UnitFileState='disabled')
+        original=self.f.updater.Host;busy=True
+        def host(*args):
+            instance=original(*args);show=instance.show
+            def unit_state(unit):
+                if unit in updater.BACKUPS:return {'ActiveState':'active' if busy else 'inactive'}
+                return show(unit)
+            def command(arguments):
+                self.f.locked();self.assertEqual(arguments,['/usr/bin/systemctl','stop',*updater.TIMERS])
+                self.f.events.append('pause')
+                for unit in updater.TIMERS:self.f.states[unit]['ActiveState']='inactive'
+            instance.show=unit_state;instance.command=command
+            instance.must=lambda value,_:self.assertTrue(value)
+            instance.pause_timers=lambda:updater.Host.pause_timers(instance)
+            return instance
+        def wait(_):
+            nonlocal busy
+            self.assertEqual(self.jobs,0);self.assertEqual(self.backup_calls,0)
+            self.f.events.append('wait_existing_backup');busy=False
+        self.f.updater.Host=host
+        with patch.object(updater,'atomic_write',side_effect=lambda path,raw:self.f.write(path,raw,0o600)), \
+             patch.object(updater.time,'sleep',side_effect=wait):
+            self.run_capture()
+        self.assertEqual(self.f.events,['pause','wait_existing_backup','fingerprint','backup','fingerprint','timers_restored'])
+        self.assertEqual(self.f.states['nodia-ai-backup-rotate.timer']['ActiveState'],'inactive')
+        self.assertEqual(self.f.states['nodia-ai-backup-rotate.timer']['UnitFileState'],'disabled')
+
+    def test_pause_failure_preserves_original_states_before_any_fingerprint_or_backup(self):
+        original=self.f.updater.Host
+        def host(*args):
+            instance=original(*args);pause=instance.pause_timers
+            def interrupted():
+                pause();raise RuntimeError('synthetic_backup_units_still_busy')
+            instance.pause_timers=interrupted;return instance
+        self.f.updater.Host=host
+        with self.assertRaisesRegex(RuntimeError,'backup_units_still_busy'):self.run_capture()
+        failure=json.loads((self.record/'failure.json').read_bytes())
+        self.assertEqual(failure['phase'],'timers_pausing');self.assertTrue(failure['timers_pause_requested'])
+        self.assertFalse(failure['timers_paused']);self.assertFalse(failure['timers_restored'])
+        self.assertTrue((self.record/'timers-before.json').exists());self.assertEqual(self.f.events,['pause'])
+        self.assertFalse(failure['backup_side_effects_possible']);self.assertEqual(self.jobs,0);self.assertEqual(self.backup_calls,0)
 
     def test_invalid_fingerprint_digest_fails_before_backup(self):
         original=self.fingerprint_job

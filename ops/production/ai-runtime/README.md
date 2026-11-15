@@ -96,11 +96,17 @@ conservados. Sigue pendiente activar72 y verificar la selección real. Estado y 
 [capture-teacher-backup.py](capture-teacher-backup.py) acepta `--execute --plan
 PLAN --plan-sha256 HASH --fingerprint-source SOURCE`. Sin `--execute` es inerte.
 Requiere plan cerrado por identidad/metadatos/fuentes y toma ambos locks antes
-de reservar. Instala sólo la fuente de huella por hash, llama al servicio de
+de reservar. Pausa ambos timers y espera que terminen las tres unidades de
+backup/reconciliación antes del primer fingerprint; conserva sus estados
+activos/habilitados y sólo los restaura tras las verificaciones del éxito.
+Instala sólo la fuente de huella por hash, llama al servicio de
 backup existente y exige igualdad de las capturas antes/después, conservando
 un backup conocido incluso ante drift posterior. No detiene API/worker, crea
 mantenimiento ni omite tablas para obtener igualdad. El receipt no autoriza
 restauración o inferencia. Un resultado incierto se concilia sin nuevo envío.
+Un fallo posterior a solicitar la pausa conserva los estados y puede dejar
+timers pausados para conciliación: no declarar conservación final hasta
+comprobarlos. Nunca borrar el lock para forzar un backup.
 
 [activate-teacher-window.py](activate-teacher-window.py) acepta `--execute --plan
 PLAN --plan-sha256 HASH --restore-receipt RECEIPT`. Ambos operadores necesitan

@@ -192,3 +192,34 @@ reinician o repiten automáticamente. Dieciocho regresiones nuevas pasan en
 Linux root. Integración final:110 casos Python en Linux root sin omisiones,
 roundtrip del bundle correcto y14 casos Node del paso CI correctos. Captura y
 ventana conservan su adopción operativa pendiente; no heredan el éxito sintético.
+
+## Primer intento de captura: conflicto previo al envío
+
+El usuario ejecutó el candidato de captura2b30766a6310d2708a1d190094355ce7,
+plan SHA256 `8f84ea85c9cd9caa2d9d5f9e3169329a843249fae72b1a51044b69f35e0beab4`.
+Falló en `backup_requested`; el mensaje inicial conservó correctamente el
+resultado como desconocido. No se reejecutó ni se borraron registros/locks.
+API/worker permanecieron activos con los mismos PID, sin activar Teacher.
+
+El lector root sanitizado posterior (SHA256
+`eff696d0bb0945095656f702ac63e0a469c0d6a5621ae83527a4d6aaa8a1c9b3`)
+entregó diagnóstico SHA256
+`f96197dab2cf9109c747c08f188ef786b73453ba9851a881bc96b195f54c6da1`.
+Confirma la huella inicial de102 tablas y servicio backup fallido con
+`ExecMainStatus=75`, InvocationID `ce48421a8fa64e43aa1d154c925689cd`;
+reconcile terminó0, sin mensaje de backup ready o registro `backup.json`.
+El script desplegado, contrastado con su manifiesto, reserva75 exclusivamente
+al conflicto de `flock --nonblock`, antes de cargar el catálogo/rotar/crear.
+Así se clasifica ese intento como **no enviado por bloqueo ocupado**, sin
+atribuirle mutaciones R2. No se afirma cuál proceso tenía el lock sin evidencia.
+El recibo original conservador permanece intacto; esta clasificación es posterior.
+
+Se corrigió sólo captura y su suite: pausa los dos timers, espera BACKUPS,
+ejecuta FP→backup→FP y restaura estados tras validaciones CD/runtime. Fallos
+guardan estados/flags y no restauran o repiten automáticamente. Nueve pruebas
+focales en contenedor Linux root correctas, incluidas tres regresiones nuevas
+de orden/espera/fallo parcial y preservación de un timer inicialmente inactivo.
+Fuente corregida SHA256
+`acd0f755d81ddfeb04cff8b118bcb0da634ea2468a9a33f1be473bedaf0de1f0`.
+El siguiente intento necesita otro captureID/plan y revisión, sin reutilizar
+la reserva fallida. Respaldo/restore productivos continúan pendientes.

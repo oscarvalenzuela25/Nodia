@@ -102,7 +102,9 @@ def capture(plan_file,expected,fingerprint_file):
         host=updater.Host(policy,None,settings);host.current=current;host.candidate=current
         host.verify_writers(current)
         record.mkdir(mode=0o700);io.sync_directory(STATE);host.attempt=record
-        phase='reserved';backup=None
+        phase='reserved';backup=None;timers=None;timers_pause_requested=False;timers_paused=False;timers_restored=False
+        timer_states_before={unit:{'active':state['ActiveState']=='active','enabled':state['UnitFileState']}
+                             for unit,state in runtime['units'].items() if unit.endswith('.timer')}
         try:
             io.exclusive(record/'plan.json',raw)
             io.exclusive(record/'intent.json',(json.dumps({'plan_sha256':expected,'automatic_retry_allowed':False})+'\n').encode())
@@ -110,6 +112,9 @@ def capture(plan_file,expected,fingerprint_file):
             safe.install_file(target,fingerprint,0o644)
             require(io.sha(io.read_source(target,installed=True))==plan['fingerprint_sha256'],'installed_fingerprint_changed')
             identity=[manifest['source_sha'],plan['current_manifest_sha256'],current.name,manifest['package_tree_sha256']]
+            phase='timers_pausing';timers_pause_requested=True
+            timers=host.pause_timers();timers_paused=True
+            require(timers==timer_states_before,'capture_timer_state_changed_before_pause')
             phase='fingerprint_before'
             before=validate_fingerprint(io,host.node_job(target,['--capture',*identity],180))
             before_raw=(json.dumps(before,sort_keys=True,indent=2)+'\n').encode();io.exclusive(record/'source-fingerprint.json',before_raw)
@@ -127,11 +132,19 @@ def capture(plan_file,expected,fingerprint_file):
             for name,key,path in [('settings','settings_sha256',STATE/'settings.json'),('receiver','receiver_settings_sha256',STATE/'receiver-settings.json'),('registry','registry_sha256',REGISTRY)]:
                 require(io.read_source(path,installed=True,mode=0o600,bound=16384)==metadata[name],'capture_metadata_changed_after_backup')
             require(io.ready(receiver)==status,'capture_backend_status_changed')
-            final=io.snapshot(receiver,settings)
-            require(final['base_units_sha256']==runtime['base_units_sha256'],'capture_runtime_changed')
-            for unit,previous in runtime['units'].items():
-                keys=('ActiveState','UnitFileState') if unit.endswith('.timer') else tuple(previous)
-                require(all(final['units'][unit].get(k)==previous.get(k) for k in keys),'capture_runtime_changed')
+            def verify_runtime(paused):
+                final=io.snapshot(receiver,settings)
+                require(final['base_units_sha256']==runtime['base_units_sha256'],'capture_runtime_changed')
+                for unit,previous in runtime['units'].items():
+                    if unit.endswith('.timer'):
+                        expected={'ActiveState':'inactive' if paused else previous['ActiveState'],
+                                  'UnitFileState':previous['UnitFileState']}
+                    else:expected=previous
+                    require(all(final['units'][unit].get(k)==v for k,v in expected.items()),'capture_runtime_changed')
+            verify_runtime(True)
+            phase='timers_restoring'
+            host.restore_timers(timers);timers_restored=True
+            verify_runtime(False)
             result={'schema':'teacher-backup-capture-receipt/1','status':'captured_source_equal',**backup,
                 'source_sha':manifest['source_sha'],'release_id':current.name,'release_manifest_sha256':plan['current_manifest_sha256'],
                 'package_tree_sha256':manifest['package_tree_sha256'],'fingerprint_helper_sha256':plan['fingerprint_sha256'],
@@ -139,12 +152,15 @@ def capture(plan_file,expected,fingerprint_file):
                 'source_fingerprint_private_path':str(record/'source-fingerprint.json'),'capture_id':plan['capture_id'],
                 'plan_sha256':expected,'public_tables':len(before['tables']),'SQL_writes':0,'provider_calls':0,
                 'API_worker_stopped':False,'maintenance_created':False,'restore_performed':False,'runtime_recovery_authorized':False,
+                'timer_states_before':timer_states_before,'timers_paused':timers_paused,'timers_restored':timers_restored,
                 'automatic_retry_allowed':False}
             io.exclusive(record/'receipt.json',(json.dumps(result,sort_keys=True)+'\n').encode());return result
         except BaseException as error:
             code=str(error) if isinstance(error,ValueError) and re.fullmatch('[a-z_]{1,100}',str(error)) else 'capture_private_reconciliation_required'
             io.exclusive(record/'failure.json',(json.dumps({'phase':phase,'error_code':code,'backup_result_known':backup is not None,
-                'backup_side_effects_possible':phase in ('backup_requested','fingerprint_after'),'backup_delete_or_retry_attempted':False,
+                'backup_side_effects_possible':backup is not None or phase in ('backup_requested','fingerprint_after'),'backup_delete_or_retry_attempted':False,
+                'timer_states_before':timer_states_before,'timers_pause_requested':timers_pause_requested,
+                'timers_paused':timers_paused,'timers_restored':timers_restored,
                 'automatic_retry_allowed':False})+'\n').encode())
             raise
 
