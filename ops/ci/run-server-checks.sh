@@ -4,6 +4,7 @@ set -euo pipefail
 test -f dist/main.js
 test -f dist/nodia-ai-worker.js
 node test/build-assets.integration.mjs
+node test/product-alias-http.integration.mjs
 node --test --test-concurrency=2 \
   test/nodia-ai-catalog.spec.mjs \
   test/nodia-ai-catalog-runtime.spec.mjs \

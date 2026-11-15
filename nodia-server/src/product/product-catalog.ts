@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException } from '@nestjs/common';
 import type { Product } from './entities/product.entity.js';
+import { normalizeProductAlias } from './product-alias.js';
 import {
   normalizeProductCode,
   validateProductMeasurementUnit,
@@ -33,6 +34,7 @@ export function validateCatalogProduct(
   create = false,
 ): void {
   rejectRetiredProductFields(product);
+  if (product.alias !== undefined) normalizeProductAlias(product.alias);
   if (product.code !== undefined) normalizeProductCode(product.code);
   if (product.measurement_unit !== undefined)
     validateProductMeasurementUnit(product.measurement_unit);
@@ -106,6 +108,7 @@ export function productSnapshot(
     code: product.code,
     measurement_unit: product.measurement_unit,
     name: product.name,
+    alias: product.alias ?? null,
     cost_price: product.cost_price,
     cost_price_tax: product.cost_price_tax,
     sale_price: product.sale_price,

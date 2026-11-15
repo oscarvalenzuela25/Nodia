@@ -21,6 +21,37 @@ describe("ProductModal", () => {
   beforeEach(() => vi.clearAllMocks());
   const input = (name: string) => screen.getByTestId(`product-${name}-input`).querySelector("input")!;
   const chooseAvailability = async (label: string) => { const user = userEvent.setup(); await user.click(screen.getByRole("button", { name: "Disponibilidad" })); await user.click(screen.getByRole("option", { name: label })); };
+  it("prefills a new scanned barcode exactly, focuses the name and does not overwrite an open draft or existing product", async () => {
+    const props = { businessId: "business-1", onClose: vi.fn(), onSubmit: submit };
+    const { rerender } = render(<ProductModal {...props} open initialBarcode="000000123" />);
+    expect(input("barcode")).toHaveValue("000000123");
+    await waitFor(() => expect(input("name")).toHaveFocus());
+    fireEvent.change(input("name"), { target: { value: "Draft product" } });
+    rerender(<ProductModal {...props} open initialBarcode="000000999" />);
+    expect(input("barcode")).toHaveValue("000000123"); expect(input("name")).toHaveValue("Draft product");
+    rerender(<ProductModal {...props} open initialBarcode="000000999" initialData={product} />);
+    await waitFor(() => expect(input("barcode")).toHaveValue(product.barcode));
+    expect(input("name")).toHaveValue(product.name); expect(submit).not.toHaveBeenCalled();
+  });
+  it("copies the current name when chosen and preserves a custom alias after a failed save without changing the original name", async () => {
+    const onClose = vi.fn();
+    submit.mockRejectedValueOnce(new Error("Synthetic server error"));
+    render(<ProductModal businessId="business-1" open onClose={onClose} onSubmit={submit} initialData={{ ...product, alias: "  " }} />);
+    const alias = screen.getByRole("textbox", { name: "Alias comercial" });
+    const useName = screen.getByRole("checkbox", { name: "Usar el nombre del producto" });
+    expect(useName).toBeChecked(); expect(alias).toHaveValue(product.name);
+    fireEvent.change(alias, { target: { value: "  Commercial name  " } });
+    expect(useName).not.toBeChecked();
+    fireEvent.click(screen.getByTestId("save-product-btn"));
+    await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
+    expect(submit.mock.calls[0][0]).toMatchObject({ name: product.name, alias: "Commercial name", expected_version: 3 });
+    expect(onClose).not.toHaveBeenCalled(); expect(alias).toHaveValue("  Commercial name  ");
+    fireEvent.click(useName);
+    fireEvent.change(input("name"), { target: { value: "Updated original" } });
+    fireEvent.click(screen.getByTestId("save-product-btn"));
+    await waitFor(() => expect(submit).toHaveBeenCalledTimes(2));
+    expect(submit.mock.calls[1][0]).toMatchObject({ name: "Updated original", alias: "Updated original" });
+  });
   it.each([undefined, product])("focuses the first barcode field on opening and reopening create/edit without submitting", async (initialData) => {
     const props = { businessId: "business-1", onClose: vi.fn(), onSubmit: submit, initialData };
     const { rerender } = render(<ProductModal {...props} open />);
@@ -29,7 +60,7 @@ describe("ProductModal", () => {
       expect(input("barcode").selectionStart).toBe(0);
     });
     const fields = screen.getByRole("dialog").querySelectorAll("input");
-    expect(fields[0]).toBe(input("barcode"));
+    expect(fields[0]).toBe(input("name"));
     const user = userEvent.setup();
     await user.keyboard("00005678{Enter}");
     expect(input("barcode")).toHaveValue("00005678");

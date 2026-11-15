@@ -1,4 +1,5 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { AxiosError } from "axios";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter } from "react-router";
@@ -6,11 +7,15 @@ import SalesWorkspace from "../../../../../../../modules/business/pages/Business
 import type { CartLine, PaymentMethod, Sale } from "../../../../../../../modules/business/infrastructure/salesTypes";
 import useAuthStore from "../../../../../../../store/authStore";
 import { printSaleTicket } from "../../../../../../../modules/business/infrastructure/printSaleTicket";
-import { getProduct, getSale } from "../../../../../../../modules/business/infrastructure/salesServices";
+import { getProduct, getProductByBarcode, getSale } from "../../../../../../../modules/business/infrastructure/salesServices";
 import type { ProductEntity } from "../../../../../../../modules/business/infrastructure/types";
+import { createAxiosInstance } from "../../../../../../../config/axiosInstance";
+import { cartTotal } from "../../../../../../../modules/business/infrastructure/salesPolicies";
+import { sileo } from "sileo";
 
 vi.mock("../../../../../../../modules/business/infrastructure/printSaleTicket", () => ({ printSaleTicket: vi.fn() }));
-vi.mock("../../../../../../../modules/business/infrastructure/salesServices", async original => ({ ...await original<typeof import("../../../../../../../modules/business/infrastructure/salesServices")>(), getSale: vi.fn(), getProduct: vi.fn() }));
+vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn(), info: vi.fn() } }));
+vi.mock("../../../../../../../modules/business/infrastructure/salesServices", async original => ({ ...await original<typeof import("../../../../../../../modules/business/infrastructure/salesServices")>(), getSale: vi.fn(), getProduct: vi.fn(), getProductByBarcode: vi.fn() }));
 
 const state = vi.hoisted(() => ({
   sale: null as Sale | null, lines: [] as CartLine[], paymentMethod: "cash" as PaymentMethod, mobile: false,
@@ -19,6 +24,8 @@ const state = vi.hoisted(() => ({
   activeId: "local-a", activeNumber: 1, hasUnsaved: false, newSale: vi.fn(), selectSale: vi.fn(), closeSale: vi.fn(), retryStorage: vi.fn(),
   load: vi.fn(), reconcile: vi.fn(), retry: vi.fn(), save: vi.fn(),
   updateProduct: vi.fn(),
+  registrationComplete: null as ((product: ProductEntity) => void | Promise<void>) | null,
+  registrationClose: null as (() => void) | null,
 }));
 vi.mock("@mui/material", async (original) => ({ ...await original<typeof import("@mui/material")>(), useMediaQuery: () => state.mobile }));
 vi.mock("../../../../../../../modules/business/infrastructure/useSaleDraft", async () => {
@@ -32,7 +39,11 @@ vi.mock("../../../../../../../modules/business/infrastructure/useSaleDraft", asy
 vi.mock("../../../../../../../modules/business/infrastructure/useServices", () => ({ useUpdateProduct: () => ({ isPending: false, mutateAsync: state.updateProduct }) }));
 vi.mock("../../../../../../../modules/business/infrastructure/useSaleLineImages", () => ({ useSaleLineImages: () => ({ images: {}, remember: vi.fn(), isLoading: false, isFetching: false, isError: false, retry: vi.fn() }) }));
 vi.mock("react-router", async (original) => ({ ...await original<typeof import("react-router")>(), useBlocker: () => ({ state: "unblocked" }) }));
-vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/SalesWorkspace/PosProductCatalog", () => ({ default: () => <div>Catalog fixture</div> }));
+vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/SalesWorkspace/PosProductCatalog", () => ({ default: ({ disabled, onSelect }: { disabled: boolean; onSelect: (product: ProductEntity) => void }) => <button disabled={disabled} onClick={() => onSelect(product)}>Pick synthetic existing product</button> }));
+vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/SalesWorkspace/PosProductRegistration", () => ({ default: ({ barcode, onClose, onRegistered }: { barcode: string; onClose: () => void; onRegistered: (product: ProductEntity) => void | Promise<void> }) => {
+  state.registrationComplete = onRegistered; state.registrationClose = onClose;
+  return <div role="dialog" aria-label="Product registration boundary"><span>{barcode}</span><button onClick={onClose}>Close registration boundary</button></div>;
+} }));
 vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesRecords", () => ({ default: () => null }));
 vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesReports", () => ({ default: () => null }));
 const line: CartLine = { product_id: "synthetic-product", name: "Producto de prueba", code: "CODE", barcode: "00123", quantity: 1, expected_product_version: 3, expected_unit_price: "1200", regular_price: "1200", offer_price: null, price_source: "regular" };
@@ -42,8 +53,134 @@ const completed: Sale = { id: "saved-sale", business_id: "business-a", status: "
   created_at: "2026-10-30T20:00:00Z", updated_at: "2026-10-30T20:00:00Z", completed_at: "2026-10-30T20:00:00Z", cancelled_at: null, cancellation_reason: null,
   items: [{ id: "saved-line", product_id: line.product_id, position: 0, quantity: 1, product_code_snapshot: null, product_barcode_snapshot: "00123", product_name_snapshot: "Nombre confirmado", measurement_unit_snapshot: "kg", regular_unit_price: "1200", offer_price_snapshot: null, is_offer_enabled_snapshot: false, price_source: "regular", unit_price: "1200", line_total: "1200", product_version: 3 }] };
 const renderWorkspace = () => render(<MemoryRouter><SalesWorkspace businessId="business-a" section="pos" /></MemoryRouter>);
+const registered = { ...product, id: "newly-registered", name: "New product", barcode: "000000123", version: 1 };
+const openRegistration = async () => {
+  vi.mocked(getProductByBarcode).mockRejectedValue(Object.assign(new AxiosError("Synthetic miss"), { response: { status: 404, data: { message: "product:not_found" } } }));
+  await userEvent.type(screen.getByLabelText("Escanear o ingresar código de barras"), "000000123{Enter}");
+  await screen.findByRole("dialog", { name: "Código de barras sin registrar" });
+  await userEvent.click(screen.getByRole("button", { name: "Sí, registrar producto" }));
+  await screen.findByRole("dialog", { name: "Product registration boundary" });
+};
 
 describe("manual point of sale checkout controls", () => {
+  it("adds the completed product once with quantity one, preserves existing lines and returns to the clean scanner", async () => {
+    const existing = { ...line, expected_unit_price: "2000", regular_price: "2000" }; state.lines = [existing];
+    state.setLines.mockReturnValue(true);
+    renderWorkspace(); await openRegistration();
+    const complete = state.registrationComplete!;
+    await act(async () => { await complete(registered); await complete(registered); });
+    expect(state.setLines).toHaveBeenCalledTimes(1);
+    const next: CartLine[] = state.setLines.mock.calls[0][0];
+    expect(next[0]).toEqual(existing); expect(next[1]).toMatchObject({ product_id: registered.id, quantity: 1, expected_unit_price: "1200" });
+    expect(cartTotal(next)).toBe("3200"); expect(getProduct).not.toHaveBeenCalled();
+    await act(async () => state.registrationClose!());
+    await waitFor(() => expect(screen.getByLabelText("Escanear o ingresar código de barras")).toHaveFocus());
+    expect(screen.getByLabelText("Escanear o ingresar código de barras")).toHaveValue("");
+  });
+  it.each(["unavailable", "read_failure", "cart_rejected"])("keeps the saved catalog product and existing sale when automatic addition fails: %s", async failure => {
+    state.lines = [line]; state.setLines.mockReturnValue(failure !== "cart_rejected");
+    renderWorkspace(); await openRegistration();
+    const saved = failure === "read_failure" ? { ...registered, effective_price: undefined, price_source: undefined } : failure === "unavailable" ? { ...registered, has_stock: false } : registered;
+    if (failure === "read_failure") vi.mocked(getProduct).mockRejectedValue(new AxiosError("Synthetic read failed"));
+    const complete = state.registrationComplete!;
+    await act(async () => { await complete(saved); await complete(saved); });
+    expect(state.lines).toEqual([line]);
+    expect(state.setLines).toHaveBeenCalledTimes(failure === "cart_rejected" ? 1 : 0);
+    expect(sileo.success).not.toHaveBeenCalled();
+    expect(sileo.error).toHaveBeenCalledWith(expect.objectContaining({ title: "Producto guardado; no se agregó a la venta" }));
+    if (failure === "read_failure") expect(getProduct).toHaveBeenCalledExactlyOnceWith(registered.id);
+  });
+  it("hydrates an old response by exact identity and revision without inventing a price", async () => {
+    state.setLines.mockReturnValue(true);
+    renderWorkspace(); await openRegistration();
+    vi.mocked(getProduct).mockResolvedValue(registered);
+    await act(async () => state.registrationComplete!({ ...registered, effective_price: undefined, price_source: undefined }));
+    expect(getProduct).toHaveBeenCalledExactlyOnceWith(registered.id);
+    expect(state.setLines).toHaveBeenCalledExactlyOnceWith([expect.objectContaining({ product_id: registered.id, quantity: 1, expected_unit_price: "1200" })]);
+  });
+  it("does not add a saved product to another cart or clear its scanner when its hydration finishes late", async () => {
+    state.lines = [line]; state.setLines.mockReturnValue(true);
+    let resolveRead!: (value: ProductEntity) => void;
+    vi.mocked(getProduct).mockImplementation(() => new Promise(resolve => { resolveRead = resolve; }));
+    const { rerender } = renderWorkspace(); await openRegistration();
+    const close = state.registrationClose!;
+    let completion!: Promise<void>;
+    act(() => { completion = Promise.resolve(state.registrationComplete!({ ...registered, effective_price: undefined, price_source: undefined })); });
+    rerender(<MemoryRouter><SalesWorkspace businessId="business-b" section="pos" /></MemoryRouter>);
+    fireEvent.change(screen.getByLabelText("Escanear o ingresar código de barras"), { target: { value: "current-cart-input" } });
+    await act(async () => { resolveRead(registered); await completion; close(); });
+    expect(state.setLines).not.toHaveBeenCalled(); expect(state.lines).toEqual([line]);
+    expect(screen.getByLabelText("Escanear o ingresar código de barras")).toHaveValue("current-cart-input");
+  });
+  it("offers registration for an unknown code and clears/refocuses on No or form cancellation without changing the cart", async () => {
+    state.lines = [line];
+    vi.mocked(getProductByBarcode).mockRejectedValue(Object.assign(new AxiosError("Synthetic miss"), { response: { status: 404, data: { message: "product:not_found" } } }));
+    renderWorkspace();
+    const scanner = screen.getByLabelText("Escanear o ingresar código de barras");
+    const newSale = screen.getByRole("button", { name: "Nueva venta" });
+    const catalog = screen.getByRole("button", { name: "Pick synthetic existing product" });
+    await userEvent.type(scanner, "000000123{Enter}");
+    await screen.findByRole("dialog", { name: "Código de barras sin registrar" });
+    expect(scanner).toBeDisabled(); expect(newSale).toBeDisabled(); expect(catalog).toBeDisabled();
+    await userEvent.click(screen.getByRole("button", { name: "No, seguir escaneando" }));
+    await waitFor(() => expect(scanner).toHaveFocus()); expect(scanner).toHaveValue("");
+    await userEvent.type(scanner, "000000123{Enter}");
+    await screen.findByRole("dialog", { name: "Código de barras sin registrar" });
+    await userEvent.click(screen.getByRole("button", { name: "Sí, registrar producto" }));
+    expect(await screen.findByRole("dialog", { name: "Product registration boundary" })).toHaveTextContent("000000123");
+    await userEvent.click(screen.getByRole("button", { name: "Close registration boundary" }));
+    await waitFor(() => expect(scanner).toHaveFocus()); expect(scanner).toHaveValue("");
+    expect(state.setLines).not.toHaveBeenCalled(); expect(state.lines).toEqual([line]);
+  });
+  it("preserves the explicit existing-product association branch and ignores its late result after changing business", async () => {
+    vi.mocked(getProductByBarcode).mockRejectedValue(Object.assign(new AxiosError("Synthetic miss"), { response: { status: 404, data: { message: "product:not_found" } } }));
+    let resolveUpdate!: (product: ProductEntity) => void;
+    state.updateProduct.mockImplementation(() => new Promise(resolve => { resolveUpdate = resolve; }));
+    const { rerender } = renderWorkspace();
+    const scanner = screen.getByLabelText("Escanear o ingresar código de barras");
+    await userEvent.type(scanner, "000000123{Enter}");
+    await screen.findByRole("dialog", { name: "Código de barras sin registrar" });
+    await userEvent.click(screen.getByRole("button", { name: "Asociar a un producto existente" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Pick synthetic existing product" })).toBeEnabled());
+    await userEvent.click(screen.getByRole("button", { name: "Pick synthetic existing product" }));
+    await userEvent.click(screen.getByRole("button", { name: "Vincular código de barras" }));
+    await userEvent.click(within(screen.getByRole("dialog", { name: "Vincular código de barras" })).getByRole("button", { name: "Confirmar" }));
+    expect(state.updateProduct).toHaveBeenCalledWith({ id: product.id, payload: { barcode: "000000123", expected_version: product.version } });
+    rerender(<MemoryRouter><SalesWorkspace businessId="business-b" section="pos" /></MemoryRouter>);
+    fireEvent.change(screen.getByLabelText("Escanear o ingresar código de barras"), { target: { value: "new-context-draft" } });
+    await act(async () => resolveUpdate({ ...product, version: 4, barcode: "000000123" }));
+    expect(screen.getByLabelText("Escanear o ingresar código de barras")).toHaveValue("new-context-draft");
+    expect(state.setLines).not.toHaveBeenCalled();
+  });
+  it("recovers the latest revision after a localized association conflict and requires a second explicit confirmation", async () => {
+    const conflict = await createAxiosInstance({ adapter: async config => {
+      throw new AxiosError("Synthetic conflict", "ERR_BAD_RESPONSE", config, undefined, { config, status: 409, statusText: "Conflict", headers: {}, data: { message: "product:version_conflict" } });
+    } }).put("/products/synthetic-product").catch((error: unknown) => error);
+    expect((conflict as AxiosError<{ message: string }>).response?.data.message).not.toBe("product:version_conflict");
+    vi.mocked(getProductByBarcode).mockRejectedValue(Object.assign(new AxiosError("Synthetic miss"), { response: { status: 404, data: { message: "product:not_found" } } }));
+    state.updateProduct.mockRejectedValueOnce(conflict).mockResolvedValueOnce({ ...product, version: 5, barcode: "000000123" });
+    vi.mocked(getProduct).mockResolvedValue({ ...product, version: 4, name: "Reviewed current product" });
+    renderWorkspace();
+    const scanner = screen.getByLabelText("Escanear o ingresar código de barras");
+    await userEvent.type(scanner, "000000123{Enter}");
+    await screen.findByRole("dialog", { name: "Código de barras sin registrar" });
+    await userEvent.click(screen.getByRole("button", { name: "Asociar a un producto existente" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Pick synthetic existing product" })).toBeEnabled());
+    await userEvent.click(screen.getByRole("button", { name: "Pick synthetic existing product" }));
+    await userEvent.click(screen.getByRole("button", { name: "Vincular código de barras" }));
+    const dialog = screen.getByRole("dialog", { name: "Vincular código de barras" });
+    await userEvent.click(within(dialog).getByRole("button", { name: "Confirmar" }));
+    await waitFor(() => expect(getProduct).toHaveBeenCalledExactlyOnceWith(product.id));
+    await waitFor(() => expect(dialog).toHaveTextContent("Reviewed current product"));
+    expect(state.updateProduct).toHaveBeenCalledTimes(1);
+    expect(dialog).toBeInTheDocument(); expect(scanner).toHaveValue("000000123");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Confirmar" }));
+    await waitFor(() => expect(state.updateProduct).toHaveBeenCalledTimes(2));
+    expect(state.updateProduct.mock.calls[0][0]).toMatchObject({ payload: { expected_version: 3, barcode: "000000123" } });
+    expect(state.updateProduct.mock.calls[1][0]).toMatchObject({ payload: { expected_version: 4, barcode: "000000123" } });
+    await waitFor(() => expect(scanner).toHaveFocus()); expect(scanner).toHaveValue("");
+    expect(state.setLines).not.toHaveBeenCalled();
+  });
   it("applies a sale-only price without reading or updating the product", async () => {
     Object.assign(state, { lines: [line], dirty: true });
     state.setLines.mockReturnValue(true);
@@ -104,11 +241,13 @@ describe("manual point of sale checkout controls", () => {
     state.setPaymentMethod.mockReset();
     state.setLines.mockReset();
     state.updateProduct.mockReset();
+    state.registrationComplete = null; state.registrationClose = null;
     state.checkout.mockReset();
     vi.mocked(getProduct).mockReset();
+    vi.mocked(getProductByBarcode).mockReset();
     vi.mocked(printSaleTicket).mockReset();
     vi.mocked(getSale).mockReset().mockResolvedValue(structuredClone(completed));
-    useAuthStore.setState({ user: { id: "qa-actor", name: "QA" } });
+    useAuthStore.setState({ user: { id: "qa-actor", name: "QA" }, token: "synthetic-session", sessionStatus: "authenticated", expiresAt: Date.now() + 60000 });
     Object.assign(state, { sale: null, lines: [], dirty: false, busy: false, pending: null, description: "", paymentMethod: "cash", mobile: false });
   });
   it("starts with scanner focus, explicit cash and no empty alert or draft action", async () => {

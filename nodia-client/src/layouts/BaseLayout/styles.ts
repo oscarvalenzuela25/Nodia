@@ -37,9 +37,11 @@ export const PageContent = styled("div", { shouldForwardProp: prop => prop !== "
   padding: theme.spacing(2),
   ...(mobileNavigation ? { paddingBottom: `calc(${theme.spacing(2)} + ${MOBILE_NAV_RESERVED_HEIGHT})` } : {}),
   [theme.breakpoints.up("sm")]: {
-    padding: theme.spacing(3),
+    paddingLeft: theme.spacing(3),
+    paddingRight: theme.spacing(3),
   },
   [theme.breakpoints.up("md")]: {
-    padding: theme.spacing(4),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
   },
 }));

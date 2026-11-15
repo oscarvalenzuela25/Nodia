@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Alert, Box, Button, LinearProgress, Typography } from "@mui/material";
 import FactCheckOutlined from "@mui/icons-material/FactCheckOutlined";
@@ -106,25 +106,31 @@ export default function ExecutionObservation({ conversationId, run, observed = t
   </Observation>;
 }
 
-function HistoricalRun({ conversationId, runId, observed, onBusyChange }: { conversationId: string; runId: string; observed: boolean; onBusyChange: (busy: boolean) => void }) {
+function HistoricalRun({ conversationId, runId }: { conversationId: string; runId: string }) {
   const { t } = useTranslation("nodiaAi");
-  const query = useNodiaAiHistoricalRun(conversationId, runId, observed);
+  const query = useNodiaAiHistoricalRun(conversationId, runId);
   return <>
     {query.isError && <Alert severity="error" action={<Button variant="contained" disabled={query.isFetching} onClick={() => void query.refetch()}>{t("retry")}</Button>}>{t("observation.events_error")}</Alert>}
     <Skeleton loading={query.isLoading}>
-      {query.data && <ExecutionObservation conversationId={conversationId} run={query.data} observed={observed} historical onBusyChange={onBusyChange} />}
+      {query.data && <ExecutionObservation conversationId={conversationId} run={query.data} />}
     </Skeleton>
   </>;
 }
 
+/** Results stay inline; old turns are read only once their message approaches the viewport. */
 export function HistoricalObservation({ conversationId, runId }: { conversationId: string; runId: string }) {
-  const { t } = useTranslation("nodiaAi");
-  const [opened, setOpened] = useState(false);
-  const [visited, setVisited] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const activityId = useId();
-  return <Box sx={{ mt: 1, minWidth: 0 }}>
-    <Button variant="contained" disabled={busy} aria-expanded={opened} aria-controls={activityId} sx={{ minHeight: 44, width: { xs: "100%", sm: "auto" } }} onClick={() => { setVisited(true); setOpened(value => !value); }}>{t(opened ? "observation.hide_activity" : "observation.show_activity")}</Button>
-    <div id={activityId} hidden={!opened}>{visited && <HistoricalRun conversationId={conversationId} runId={runId} observed={opened} onBusyChange={setBusy} />}</div>
+  const anchor = useRef<HTMLDivElement>(null);
+  const [visited, setVisited] = useState(() => typeof IntersectionObserver === "undefined");
+  useEffect(() => {
+    const node = anchor.current;
+    if (!node || visited) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) { setVisited(true); observer.disconnect(); }
+    }, { rootMargin: "200px" });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [visited]);
+  return <Box ref={anchor} sx={{ minWidth: 0 }}>
+    {visited && <HistoricalRun conversationId={conversationId} runId={runId} />}
   </Box>;
 }

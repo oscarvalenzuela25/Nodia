@@ -8,13 +8,13 @@ const read = vi.mocked(getProducts);
 beforeEach(() => vi.resetAllMocks());
 
 describe("invoice product matching readers", () => {
-  it("searches by name with a bounded twenty-five-item page and the explicit business", async () => {
+  it("searches alias or name with a bounded twenty-five-item page and the explicit business", async () => {
     const response = page([product()], 2, 2);
     read.mockResolvedValue(response);
     expect(await findMatchProducts("business-a", "Synthetic", 2)).toBe(response);
-    expect(read).toHaveBeenCalledExactlyOnceWith({ page: 2, limit: 25, q: { business_id_eq: "business-a", name_cont: "Synthetic", s: "name asc" } });
+    expect(read).toHaveBeenCalledExactlyOnceWith({ page: 2, limit: 25, q: { business_id_eq: "business-a", search: "Synthetic", s: "name asc" } });
     await findMatchProducts("business-b", "", 1);
-    expect(read).toHaveBeenLastCalledWith({ page: 1, limit: 25, q: { business_id_eq: "business-b", name_cont: undefined, s: "name asc" } });
+    expect(read).toHaveBeenLastCalledWith({ page: 1, limit: 25, q: { business_id_eq: "business-b", search: undefined, s: "name asc" } });
   });
 
   it("reads a fresh immutable ID snapshot instead of trusting a previously listed revision", async () => {

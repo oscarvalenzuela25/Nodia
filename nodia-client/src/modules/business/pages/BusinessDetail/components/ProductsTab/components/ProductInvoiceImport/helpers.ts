@@ -1,4 +1,5 @@
 import i18n from "../../../../../../../../translate";
+import { normalizeProductAlias, productAliasFits } from "../../../../../../infrastructure/productAliases";
 import { PRODUCT_PRICE_MAX } from "../ProductModal/productPricing";
 import type {
   ExtractedInvoiceItem,
@@ -23,6 +24,7 @@ export interface HistoricalProductData {
   id?: string;
   code: string | null;
   name: string;
+  alias?: string | null;
   cost_price: number;
   cost_price_tax: number;
   sale_price: number;
@@ -36,7 +38,7 @@ export interface PriceDiffData {
   isIncrease: boolean;
 }
 
-export const INVOICE_UPDATE_FIELDS = ["code", "name", "cost_price", "cost_price_tax", "sale_price"] as const;
+export const INVOICE_UPDATE_FIELDS = ["code", "name", "alias", "cost_price", "cost_price_tax", "sale_price"] as const;
 export type InvoiceUpdateField = typeof INVOICE_UPDATE_FIELDS[number];
 export interface ManualInvoiceMatch {
   product_id: string;
@@ -51,6 +53,8 @@ export interface InvoiceProvisionalRow {
   invoice_code?: string;
   manual_match?: ManualInvoiceMatch;
   name: string;
+  alias?: string | null;
+  alias_reviewed?: boolean;
   cost_price: number;
   cost_price_tax: number;
   sale_price: number;
@@ -91,8 +95,22 @@ export const calculatePriceDiff = (
   };
 };
 
+/** Alias is catalog/human data only. OCR names never silently become aliases. */
+export function invoiceAliasNeedsReview(row: Partial<InvoiceProvisionalRow>): boolean {
+  return row.alias_reviewed !== true || typeof row.alias !== "string" || normalizeProductAlias(row.alias) === null || !productAliasFits(row.alias);
+}
+
+export function reviewInvoiceAlias(row: InvoiceProvisionalRow, alias: string): InvoiceProvisionalRow {
+  const value = normalizeProductAlias(alias);
+  if (!value || !productAliasFits(value)) throw new Error(i18n.t("business:product_alias_invalid"));
+  const next: InvoiceProvisionalRow = { ...row, alias: value, alias_reviewed: true,
+    manual_match: row.manual_match ? { ...row.manual_match, fields: [...new Set([...row.manual_match.fields, "alias" as const])] } : undefined };
+  return { ...next, ...validateInvoiceRow(next) };
+}
+
 export const validateInvoiceRow = (
-  row: Partial<InvoiceProvisionalRow>
+  row: Partial<InvoiceProvisionalRow>,
+  requireAliasReview = true,
 ): { errors: string[]; isValid: boolean } => {
   const errors: string[] = [];
 
@@ -101,6 +119,9 @@ export const validateInvoiceRow = (
   }
   if (!row.name || !row.name.trim()) {
     errors.push(i18n.t("business:invoice_validation_name"));
+  }
+  if (requireAliasReview && invoiceAliasNeedsReview(row)) {
+    errors.push(i18n.t("business:invoice_alias_required"));
   }
   if (row.cost_price === undefined || !Number.isInteger(row.cost_price) || row.cost_price < 0 || row.cost_price > PRODUCT_PRICE_MAX) {
     errors.push(i18n.t("business:invoice_validation_cost"));
@@ -178,6 +199,7 @@ export const mapExtractedItemsToRows = (
         id: logMatch.id,
         code: logMatch.code,
         name: logMatch.name,
+        alias: logMatch.alias ?? null,
         cost_price: Number(logMatch.cost_price ?? 0),
         cost_price_tax: Number(logMatch.cost_price_tax ?? 0),
         sale_price: Number(logMatch.sale_price ?? 0),
@@ -189,6 +211,7 @@ export const mapExtractedItemsToRows = (
         id: existing.id,
         code: existing.code,
         name: existing.name,
+        alias: existing.alias ?? null,
         cost_price: Number(existing.cost_price ?? 0),
         cost_price_tax: Number(existing.cost_price_tax ?? 0),
         sale_price: Number(existing.sale_price ?? 0),
@@ -221,6 +244,8 @@ export const mapExtractedItemsToRows = (
       code,
       invoice_code: code,
       name: (item.name || "").trim(),
+      alias: typeof existing?.alias === "string" && existing.alias.trim() ? existing.alias.trim() : null,
+      alias_reviewed: typeof existing?.alias === "string" && !!existing.alias.trim() && productAliasFits(existing.alias),
       cost_price,
       cost_price_tax,
       sale_price,
@@ -241,6 +266,8 @@ export const mapExtractedItemsToRows = (
       code: rowData.code ?? "",
       invoice_code: code,
       name: rowData.name ?? "",
+      alias: rowData.alias ?? null,
+      alias_reviewed: rowData.alias_reviewed,
       cost_price: rowData.cost_price ?? 0,
       cost_price_tax: rowData.cost_price_tax ?? 0,
       sale_price: rowData.sale_price ?? 0,
@@ -274,16 +301,33 @@ export function invoiceProductPayload(row: InvoiceProvisionalRow, businessId: st
     for (const field of match.fields) {
       if (field === 'code') payload.code = row.code.trim() || null;
       else if (field === 'name') payload.name = row.name;
+      else if (field === 'alias') payload.alias = row.alias?.trim() ?? null;
       else payload[field] = row[field];
     }
     return payload;
   }
-  const common = { provider_id: providerId, code: row.code, name: row.name,
+  const common = { provider_id: providerId, code: row.code, name: row.name, alias: row.alias?.trim() ?? null,
     cost_price: row.cost_price, cost_price_tax: row.cost_price_tax,
     sale_price: row.sale_price, is_active: row.is_active };
-  if (row.id) return { ...common, id: row.id, ...(row.version !== undefined ? { expected_version: row.version } : {}) };
+  if (row.id) {
+    if (!Number.isSafeInteger(row.version) || Number(row.version) < 1) throw new Error(i18n.t('business:invoice_match_invalid_product'));
+    return { ...common, id: row.id, expected_version: row.version };
+  }
   if (typeof row.has_stock !== 'boolean') throw new Error(i18n.t('business:pos.choose_availability'));
   return { ...common, business_id: businessId, has_stock: row.has_stock };
+}
+
+export function prepareInvoiceProductPayloads(rows: InvoiceProvisionalRow[], businessId: string, providerId: string | null) {
+  const reviewed = validateInvoiceRows(rows);
+  if (!reviewed.length || reviewed.some(row => !row.isValid)) throw new Error(reviewed.flatMap(row => row.errors).join(", "));
+  const newItems: CreateProductPayload[] = [];
+  const updateItems: BulkUpdateProductItemPayload[] = [];
+  for (const row of reviewed) {
+    const payload = invoiceProductPayload(row, businessId, providerId);
+    if ("id" in payload) updateItems.push(payload);
+    else newItems.push(payload);
+  }
+  return { newItems, updateItems };
 }
 
 /** Bind by immutable product identity; only checked catalog fields join the later save. */
@@ -303,17 +347,20 @@ export function bindInvoiceRow(row: InvoiceProvisionalRow, product: ProductEntit
   const selected = [...new Set(fields)];
   const next: InvoiceProvisionalRow = {
     ...row, id: product.id, code: product.code ?? '', name: product.name,
+    alias: typeof product.alias === 'string' && product.alias.trim() ? product.alias.trim() : null,
+    alias_reviewed: typeof product.alias === 'string' && !!product.alias.trim() && productAliasFits(product.alias),
     cost_price: Number(product.cost_price), cost_price_tax: Number(product.cost_price_tax), sale_price: Number(product.sale_price),
     version: product.version, has_stock: product.has_stock ?? undefined, is_active: product.is_active, isUpdate: true,
     manual_match: { product_id: product.id, business_id: businessId, expected_version: Number(product.version), fields: selected },
-    historicalProduct: { id: product.id, code: product.code, name: product.name, cost_price: Number(product.cost_price), cost_price_tax: Number(product.cost_price_tax), sale_price: Number(product.sale_price), stock: Number(product.stock), created_at: product.updated_at },
+    historicalProduct: { id: product.id, code: product.code, name: product.name, alias: product.alias ?? null, cost_price: Number(product.cost_price), cost_price_tax: Number(product.cost_price_tax), sale_price: Number(product.sale_price), stock: Number(product.stock), created_at: product.updated_at },
   };
   for (const field of selected) {
-    if (field === 'code' || field === 'name') next[field] = row[field];
+    if (field === 'alias') { next.alias = row.alias; next.alias_reviewed = row.alias_reviewed; }
+    else if (field === 'code' || field === 'name') next[field] = row[field];
     else next[field] = row[field];
   }
-  const validation = validateInvoiceRow(next);
-  if (!validation.isValid) throw new Error(validation.errors.join(', '));
-  return { ...next, ...validation, priceDiff: calculatePriceDiff(next.sale_price, Number(product.sale_price)) };
+  const fieldValidation = validateInvoiceRow(next, false);
+  if (!fieldValidation.isValid) throw new Error(fieldValidation.errors.join(', '));
+  return { ...next, ...validateInvoiceRow(next), priceDiff: calculatePriceDiff(next.sale_price, Number(product.sale_price)) };
 }
 

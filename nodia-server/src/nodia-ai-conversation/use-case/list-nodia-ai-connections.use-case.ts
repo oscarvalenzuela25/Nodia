@@ -16,6 +16,7 @@ import {
   configuredNodiaAiSelection,
 } from './nodia-ai-configured-selection.js';
 import { apiReasoningPreferences } from '../../common/ai/api-reasoning.js';
+import { agenticReasoningPreferences } from '../../common/ai/agentic-reasoning.js';
 export { configurationRecord } from './nodia-ai-configured-selection.js';
 import {
   NodiaAiConnectionsService,
@@ -41,14 +42,23 @@ export const NODIA_AI_CONNECTION_PAGE_UTF8_BYTES = 1024 * 1024;
 function effortPreferences(preferred: unknown, provider?: string, mode?: string) {
   // ai-provider-feature-contract.md: these are configurable preferences for all three modes,
   // not discovered capabilities. Only an exact non-generative eligibility observation enables execution.
-  const options = new Set<string>(mode === 'api_key' && provider === 'openai'
-    ? apiReasoningPreferences(provider) : ['low', 'medium', 'high']);
+  const options = new Set<string>(mode === 'agentic'
+    ? agenticReasoningPreferences(provider ?? '')
+    : mode === 'api_key' && provider === 'openai'
+      ? apiReasoningPreferences(provider) : ['low', 'medium', 'high']);
   if (identifier(preferred, 256)) options.add(preferred);
   return Array.from(options, (effort_id) => ({ effort_id, label: effort_id }));
 }
-function codexEfforts(value: unknown) {
-  // Persisted discovery is advisory; missing/invalid metadata never manufactures support.
+function codexEfforts(value: unknown, preferred: unknown) {
+  // Missing historical metadata permits explicit configuration preferences.
+  // A valid discovery (including an explicit empty list) keeps its exact options.
   // Keep the same bound and identifier contract as the native Codex model parser.
+  const preferences = () => {
+    const options = new Set(agenticReasoningPreferences('openai'));
+    if (typeof preferred === 'string' && /^[a-z][a-z0-9_-]{0,31}$/.test(preferred)) options.add(preferred);
+    return Array.from(options, effort_id => ({ effort_id, label: effort_id }));
+  };
+  if (value === undefined) return preferences();
   if (!Array.isArray(value)) return [];
   if (value.length > 32)
     throw new ServiceUnavailableException(
@@ -131,7 +141,7 @@ export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
               : model.id,
           efforts:
             row.provider_key === 'openai' && mode === 'agentic'
-              ? codexEfforts(model.supportedReasoningEfforts)
+              ? codexEfforts(model.supportedReasoningEfforts, preferred)
               : effortPreferences(preferred, row.provider_key, mode),
         });
       }

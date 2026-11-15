@@ -1,5 +1,24 @@
 # NodiaAI — chat y compositor con selección por conversación
 
+## Chat compacto y Stop en compositor — solicitud2026-11-14
+
+Decisión explícita del usuario: quitar «Ver actividad del turno» y la cabecera
+del chat con título/modelo. Renombrar permanece en el menú de cada conversación
+del panel izquierdo. Los resultados y propuestas del historial mantienen acceso
+inline por visibilidad, sin lanzar consultas de todo el historial a la vez.
+Durante queued/running/cancel_requested el botón de Enviar se reemplaza por Stop
+y reutiliza cancelación/recuperación identificadas; no revierte efectos ni presume
+cierre remoto. Borradores, CAS y tratamiento de errores conservan sus contratos.
+
+PageContent reduce sólo padding vertical a16px con laterales16/24/32px; el
+workspace del chat aprovecha la altura. Ver [regla07](07-design-constraints.md#contenedores-de-página-compactos--solicitud2026-11-14).
+GPT Agentic recupera preferencias configurables cuando falta metadata histórica,
+con fuente central Server y elegibilidad independiente; catálogo real explícito
+conserva sus opciones. Sustituye el requisito histórico de esfuerzos siempre
+descubiertos cuando no hay metadata, sin modelos fallback o disponibilidad ficticia.
+[Evidencia local](../evidence/nodia-ai-chat-space-gpt-selection-20261114.md).
+Sin despliegue/inferencia nueva ni aprobación/publicación de fichas.
+
 Fecha inicial: 2026-10-28. Revisión vigente: R08, 2026-10-29. Estado documental: en revisión. Implementación autorizada por la solicitud explícita del usuario; esta autorización no aprueba el documento ni publica conocimiento.
 
 [Contrato de proveedores](ai-provider-feature-contract.md) · [Modos90](90-agentic-api-only-web-retirement.md) · [Verificación91](91-ai-provider-onboarding-verification.md) · [Chat API92](92-nodia-ai-api-chat-parity.md) · [Adjuntos78](78-nodia-ai-ai32-attachments-voice.md) · [Ficha candidata](../nodia-ai/knowledge/nodia-ai/features/chat-composer-selection.md).
@@ -182,3 +201,9 @@ Client2118/259, tipado/lint/build y10casos offline correctos. Edge/Chromium con 
 
 
 Observación responsive R07: con320px y un borrador de225caracteres, durante la escucha los selectores deshabilitados pueden extenderse61px fuera del formulario/52px fuera de la tarjeta. Micrófono/Stop, texto y envío permanecen visibles; al terminar recuperan su disposición, con0px de recorte medido en idle/afterStop. Este detalle visual sigue pendiente de refinamiento; no se presenta la QA como aceptación de todo dispositivo.
+
+## Continuación en VM de desarrollo — 2026-11-14
+
+El [recibo separado](../evidence/chat-gpt-development-vm-20261114-r01.json) fija el snapshot chat/GPT, overlay Server de68miembros modificados/18nuevos y Client de213recursos HTTP exactos. Linux pasó128pruebas focales en6archivos y tipado. Conserva48migraciones, dependencias, host Teacher, perfiles y selección; el lote posterior de productos tiene snapshot/adopción propios. No se trasladó el dist actual de productos al primer overlay.
+
+Se comprobó elegibilidad no generativa y una generación ordinaria de Teacher con la selección exacta del recibo, sin probe previo,1dispatch, cierre y ACK. Eso no prueba un envío del chat ni toda modalidad/modelo. No se observó UI autenticada: CUA y el túnel automático fueron rechazados y no se eludieron. La primera activación Client convergió después de un único reload de Nginx; se conservó su fallo inicial y se reconcilió por bytes/213recursos sin repetir activación. Respaldo cifrado pre y postcanario restaurado; el estado final de servicios/timers se cierra con la adopción independiente de productos. Sin despliegue en producción, fallback, login nuevo o publicación de fichas candidatas.

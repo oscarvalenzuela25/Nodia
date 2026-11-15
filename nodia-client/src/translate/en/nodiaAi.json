@@ -22,6 +22,7 @@
   "eligibility_reasons": {
     "busy": "The session is busy. Check again when the operation finishes.",
     "session_required": "This connection requires signing in with the provider.",
+    "session_unverified": "We could not verify the provider session. Check the connection again.",
     "transport_unavailable": "We could not reach the provider service.",
     "unconfigured": "The adapter for this connection needs configuration.",
     "connection_unavailable": "This connection is not enabled for the selected mode.",

@@ -92,8 +92,8 @@
   - `spacing(1)` = `8px` (gap mínimo entre chips, iconos y metadatos)
   - `spacing(1.5)` = `12px` (gap compacto en barras móviles)
   - `spacing(2)` = `16px` (**padding estándar de contenedor de pantalla en Mobile `xs`**, gap estándar en toolbars)
-  - `spacing(3)` = `24px` (padding en Tablet `sm`, padding interno de modales/tarjetas en desktop, separación vertical entre paneles)
-  - `spacing(4)` = `32px` (**padding estándar de contenedor de pantalla en Desktop `md`+**)
+  - `spacing(3)` = `24px` (padding lateral en Tablet `sm`, padding interno de modales/tarjetas en desktop, separación vertical entre paneles)
+  - `spacing(4)` = `32px` (**padding lateral de contenedor de pantalla en Desktop `md`+**)
   - `spacing(6)` = `48px` (separación entre secciones principales en desktop)
 - **Border Radius**:
   - Inputs, botones y chips: `8px` a `10px`
@@ -142,7 +142,7 @@
    - Botón de colapso a la izquierda (`ArrowCircleLeftOutlinedIcon`).
    - Selectores a la derecha: Idioma (`ES / EN`), Tema (`Sol / Luna`), Avatar circular con menú de usuario.
 3. **Área Principal (`PageContent`)**:
-   - `padding: theme.spacing(4)` (32px constante).
+   - `padding: theme.spacing(2, 4)` (16px vertical y32px lateral, ajuste solicitado el2026-11-14).
    - Cabecera con título principal y botón CTA alineado a la derecha (`+ Nuevo ...`).
    - Barra de filtros: Buscador con debounce (`InputSearch`) + Botón de filtro modal (`Filter`) con badge contador + Switcher/Toggle de estados (`Activos / Inactivos / Todos`).
 
@@ -368,9 +368,9 @@ Nodia se rige bajo la escala estándar de breakpoints de Material UI, adaptada p
 | Breakpoint | Rango (px) | Dispositivos Destino | Comportamiento del Shell y Layout |
 | :--- | :--- | :--- | :--- |
 | `xs` | `0px - 599px` | Smartphones en orientación vertical (iPhone, Android) | Topbar 56px, Drawer temporal con auto-cierre, padding 16px, 1 columna, botones al 100% |
-| `sm` | `600px - 899px` | Tablets en vertical, móviles grandes en horizontal | Topbar 64px, Drawer temporal, padding 24px, 2 columnas en grilla |
-| `md` | `900px - 1199px` | Tablets en horizontal, Laptops compactas | Topbar 64px, Sidenav persistente o colapsado, padding 32px, 3 columnas |
-| `lg` | `1200px - 1535px` | Monitores de escritorio estándar y laptops corporativas | Sidenav persistente 272px (o 88px colapsado), padding 32px, 4 columnas |
+| `sm` | `600px - 899px` | Tablets en vertical, móviles grandes en horizontal | Topbar 64px, Drawer temporal, padding16px vertical/24px lateral, 2 columnas en grilla |
+| `md` | `900px - 1199px` | Tablets en horizontal, Laptops compactas | Topbar 64px, Sidenav persistente o colapsado, padding16px vertical/32px lateral, 3 columnas |
+| `lg` | `1200px - 1535px` | Monitores de escritorio estándar y laptops corporativas | Sidenav persistente 272px (o88px colapsado), padding16px vertical/32px lateral, 4 columnas |
 | `xl` | `1536px+` | Pantallas anchas (QHD, 4K, Ultra-wide) | Layout contenido o max-width con márgenes amplios |
 
 ---
@@ -398,8 +398,9 @@ Nodia se rige bajo la escala estándar de breakpoints de Material UI, adaptada p
 
 - **Regla Estricta de Contenedor de Pantalla (`PageContent`)**:
   - `padding: theme.spacing(2)` (16px) en `xs`.
-  - `padding: theme.spacing(3)` (24px) en `sm`.
-  - `padding: theme.spacing(4)` (32px) en `md`+.
+  - `padding: theme.spacing(2, 3)` (16px vertical/24px lateral) en `sm`.
+  - `padding: theme.spacing(2, 4)` (16px vertical/32px lateral) en `md`+.
+  - Ajuste solicitado el2026-11-14: sólo el contenedor completo de página reduce el padding vertical. Mantener padding interno de paneles/modales y reserva inferior de MobileBottomNav/safe area.
 - **Prohibición de Doble Padding**: Las páginas hijas (`src/modules/*/pages/*`) **nunca deben declarar su propio padding exterior** sobre `ContainerPage` o el nodo raíz, ya que esto duplicaría el padding (llegando a 64px de espacio desperdiciado en móviles). Toda página hereda el padding responsivo provisto por `PageContent` en `BaseLayout`.
 - **Paneles anidados compactos**: el padding exterior de `PageContent` no define el padding de cada tarjeta. En `xs`, usar `12px` a `16px` internos según densidad; evitar acumular varios marcos con padding de `24px`/`32px`. Conservar separación legible y controles táctiles de `44px`; compactar espacios, no los objetivos de interacción. Referencia: listado/detalle de AiProviders.
 - **Detalle móvil**: evitar repetir la cabecera completa del listado; conservar nombre, Volver y las acciones de la instancia. Si las pestañas se apilan, usar orientación vertical real para semántica y teclado, conservando selección y configuración al redimensionar.
@@ -628,6 +629,20 @@ Un rechazo explícito401/403/404/410 retira contenido privado y cancela lectores
 
 ### 10.10 Chat conversacional y compositor compacto (2026-10-28)
 
+#### Continuación compacta solicitada2026-11-14
+
+La cabecera de título/modelo y «Ver actividad del turno» se retiran. Renombrar
+permanece en menú lateral con revisión/error/borrador preservados. Stop44px
+reemplaza Enviar durante turno activo y reutiliza recuperación identificada.
+Históricos cargan sus resultados al aproximarse a la vista, sin consultar de
+golpe todos los turnos. PageContent usa16px verticales y laterales16/24/32px;
+workspace aprovecha32px adicionales en md+ y16px en sm frente al corte anterior.
+Minimos/scroll móvil y reserva de navegación se conservan. No cambia permisos,
+contenido operativo o herramientas, ni acredita ahorro de latencia/memoria.
+[Verificación](../docs/evidence/nodia-ai-chat-space-gpt-selection-20261114.md).
+Los cortes inferiores conservan su estado histórico.
+
+
 - Un único compositor y borrador por chat; archivos elegidos/pegados y voz reutilizan validación, upload, revisión y recuperación existentes. El editor de adjuntos sigue cargándose por intención, con reintento local sin recarga. Política de adjuntos se consulta al montar el compositor; no consume inferencia.
 - Micrófono y envío tienen áreas de 44px. En xs, acciones de cabecera por icono con nombre accesible, selección en dos columnas y sin duplicar el árbol; Contexto no muestra tokens/porcentajes sin datos. Los márgenes de mensajes conservan usuario a la derecha y asistente a la izquierda también dentro del wrapper de Boneyard.
 - Selección temporal aislada por conversación y aplicada explícitamente; el historial conserva su run original. Cambios de ancho/contexto y errores no sustituyen el borrador. Nuevas conversaciones toman sólo el predeterminado real de Server.
@@ -832,3 +847,56 @@ El material entrega sus últimas40 interacciones de la versión actual en la mis
 Los paneles secundarios conservan el editor al ocultarse. Ocultar devuelve el foco al disparador; reabrir conserva texto y selección. Si la consulta mantiene el input temporalmente deshabilitado, la restauración espera su habilitación y se cancela ante un contexto/foco nuevo. Pausa y archivo bloquean las escrituras, conservando la lectura de fuentes, hilos e inspecciones históricas. Los tipos/versiones desconocidos de actividades y gráficos conservan consigna/título y aviso accesible, sin ejecutar el payload ni ofrecer corrección.
 
 Comparación de laboratorio del lector contra `ba8ebfa00b55f103465d0ab533a802152944d224`, mismo HTTP/JWT/SQL aislados y tres rondas alternadas por perfil: se descartó una variante con CLS0.1037 móvil/0.1269 escritorio causado por la cascada/Skeleton de bloques. El patrón final midió CLS0.0131/0.0058 frente a baseline0.0185/0.0088. Las funciones añadidas cuestan17,453bytes comprimidos adicionales; LCP4.236s/840ms frente a4.196s/812ms. No acredita mejora global de velocidad, cumplimiento del objetivo móvil de2.5s ni métricas productivas. La medición precede el último ajuste de caret y textos, que no intervienen en la ruta inicial colapsada. Véase [evidencia consolidada](../docs/evidence/teacher-upgrade-ui-qa-20261111-r02.json): perfiles,12muestras, método reproducible, límites, teclado/árbol accesible y comprobaciones320px ES/dark y1280px EN/light.
+
+### 10.19 Alias de productos y revisión de factura — 2026-11-14
+
+ProductAliasInput comparte label a la izquierda, checkbox de44px a la derecha
+y TextInput debajo; en xs permite wrap sin otro árbol ni breakpoint. Conservar
+espacios del borrador mientras se escribe: cualquier texto no vacío tras trim
+desmarca el checkbox, vacío lo marca. La copia del nombre se materializa al
+guardar. InvoiceAliasReview muestra primero el nombre original y exige una
+elección humana para filas nuevas/sin alias; guardar esa revisión sólo cambia
+el borrador. Los errores mantienen modal/texto/contexto y el retry es explícito.
+
+Chromium sintético320/600/1280, ES/dark y EN/light: documento sin overflow,
+controles44px y borrador intacto ante409/redimensionado. A600 la tabla usa scroll
+local831,67px/550px; en xs conserva tarjetas. Filtros y búsqueda operan mediante
+contrato Server antes de paginar. No se cambian theme, breakpoints, autoridad
+ni matching por identidad. No acredita ahorro de rendimiento, teléfono físico,
+inferencia o guardado real. [Evidencia y límites](../docs/evidence/product-alias-and-code-completeness-20261114.md).
+
+### 10.20 Registro desde lector POS — 2026-11-14
+
+El lookup usa barcode exacto y su código de error original, separado de la
+traducción del feedback.404 product:not_found abre ConfirmDialog con Registrar,
+No y asociación existente secundaria. Registrar reutiliza ProductModal con
+barcode precargado textual y foco en nombre; No/X/cancelar devuelve foco al
+lector limpio. El formulario se conserva tras error y redimensionado. La
+ampliación§40 añade una unidad a la misma venta local al terminar el alta y
+devuelve foco al lector, una sola vez por intención; no confirma/cobra la venta.
+La asociación mantiene revisión y segunda
+confirmación humana tras conflicto. Scope/guard síncrono descarta respuestas
+de otro actor/sesión/negocio/venta/sección; no duplicar consultas/capturas del
+lector ni introducir listener global de teclado.
+
+QA del primer corte§39, Edge/Chromium157 aislado ES/dark y EN/light320/600/1280: documento sin
+overflow, barcode255con000iniciales exacto, modal288/536/640px y foco/borrador
+conservados. Acciones nativas de registro44px enxs y36,5px desde sm; no se
+redefinen theme/breakpoints ni se acredita accesibilidad global. Warning
+transitorio aria-hidden del modal observado; foco final y Tab comprobados.
+Sin lector/teléfono/teclado virtual físicos o mejora de rendimiento afirmada.
+[Pruebas y alcance VM](../docs/evidence/pos-unknown-barcode-registration-20261114.md).
+
+Autoadd§40 tiene [evidencia posterior](../docs/evidence/pos-product-registration-autoadd-20261114.md):
+callback de persistencia final separado de cancelar y guard por intención/contexto.
+Un rechazo al incorporar catálogo ya guardado informa ese resultado, sin repetir
+el alta ni inventar un precio. Los resultados§39 anteriores no prueban autoadd.
+
+QA posterior§40:57focales/3archivos y globalClient2994/362 correctos, build/tipos/
+lint correctos. A320ESdark y1280ENlight, alta1200sobrecarrito2000 produce dos
+partidas/3200sinreescaneo, cantidades1/1 y lector limpio/enfocado. Error400
+conserva formulario; doble click sólo incorpora una vez. Proyección actual
+decorada evita GETextra; histórica incompleta exige lectura exacta. Precio
+ausente después de leer no se inventa; contexto desmontado no recibe callbacks.
+Viewport/mouse/teclado sintéticos, sin lector/teléfono físicos ni medición de
+rendimiento. Se reutilizan estilos, theme y geometría del corte§39.

@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import { Alert, Box, Button, Chip, Divider, LinearProgress, Typography, useMediaQuery, useTheme } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
@@ -8,12 +8,14 @@ import { sileo } from "sileo";
 import axios from "axios";
 import TextInput from "../../../../../../components/inputs/TextInput";
 import ConfirmDialog from "../../../../../../components/ConfirmDialog";
-import { notifyHttpError } from "../../../../../../config/httpFeedback";
+import { getHttpErrorMessage, notifyHttpError } from "../../../../../../config/httpFeedback";
+import { getServerErrorCode } from "../../../../../../config/axiosInstance";
 import useAuthStore from "../../../../../../store/authStore";
 import { useUpdateProduct } from "../../../../infrastructure/useServices";
-import { getProduct, getProductByBarcode } from "../../../../infrastructure/salesServices";
+import { getProduct } from "../../../../infrastructure/salesServices";
+import { usePosBarcodeLookup } from "../../../../infrastructure/usePosBarcodeLookup";
 import { getProducts } from "../../../../infrastructure/services";
-import { addCartProduct, barcodeValue, cartTotal, formatClp, productToCartLine, quantityFromInput, refreshCartPrices, removeCartProduct, setCartQuantity, setCartUnitPrice } from "../../../../infrastructure/salesPolicies";
+import { addCartProduct, cartTotal, formatClp, productToCartLine, quantityFromInput, refreshCartPrices, removeCartProduct, setCartQuantity, setCartUnitPrice } from "../../../../infrastructure/salesPolicies";
 import { stepSaleQuantity } from "../../../../infrastructure/saleQuantities";
 import { useSaleDraft } from "../../../../infrastructure/useSaleDraft";
 import { useSaleExitGuard } from "../../../../infrastructure/useSaleExitGuard";
@@ -26,6 +28,7 @@ import type { SaleSection } from "../../../../infrastructure/salesTypes";
 import SalesRecords from "./SalesRecords";
 import SalesReports from "./SalesReports";
 import PosProductCatalog from "./PosProductCatalog";
+import PosProductRegistration from "./PosProductRegistration";
 import PaymentMethodButtons from "./PaymentMethodButtons";
 import OpenSaleTabs, { saleTabId } from "./OpenSaleTabs";
 import SaleLineList from "./SaleLineList";
@@ -48,7 +51,10 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
   const [mobilePane, setMobilePane] = useState<"catalog" | "cart">("catalog");
   const [fontScale, setFontScale] = useState(100);
   const [lookup, setLookup] = useState(false);
-  const [unknownBarcode, setUnknownBarcode] = useState<string | null>(null);
+  const [missingBarcode, setMissingBarcode] = useState<{ id: number; scope: string; barcode: string; stage: "prompt" | "register" | "assign" } | null>(null);
+  const missingSequence = useRef(0);
+  const currentMissing = useRef<typeof missingBarcode>(null);
+  const completedRegistration = useRef<number | null>(null);
   const [assignment, setAssignment] = useState<ProductEntity | null>(null);
   const [assignConfirm, setAssignConfirm] = useState(false);
   const [confirm, setConfirm] = useState<"complete" | "cancel" | "close" | "refresh" | null>(null);
@@ -70,31 +76,51 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
     window.addEventListener("beforeunload", prevent); return () => window.removeEventListener("beforeunload", prevent);
   }, [draft.hasUnsaved]);
   const updateProduct = useUpdateProduct();
-  const busy = draft.busy || lookup || updateProduct.isPending || ticketPrinting.printing;
-  const canLeave = draft.canDiscardWorkspace && !busy;
+  const barcodeLookup = usePosBarcodeLookup({ businessId, context: JSON.stringify([draft.activeId, section]),
+    enabled: section === "pos" && !draft.busy && !lookup && !updateProduct.isPending && !ticketPrinting.printing && !editingPrice && !draft.pending && !draft.storageError && !draft.sale,
+    onProduct: product => {
+      const next = addCartProduct(draft.lines, product); lineImages.remember(product); draft.setLines(next); setBarcode("");
+      setQuantityDrafts(values => { const next = { ...values }; delete next[product.id]; return next; });
+      setAnnouncement(t("business:pos.added", { name: product.name }));
+    },
+    onMissing: (value, scope) => { setMissingBarcode({ id: ++missingSequence.current, scope, barcode: value, stage: "prompt" }); setAssignment(null); sileo.error({ title: t("business:pos.barcode_unknown") }); },
+    onError: error => {
+      if (error instanceof Error && error.message === "invalid_barcode") sileo.error({ title: t("business:pos.invalid_barcode") });
+      else if (error instanceof Error && ["unavailable_product", "price_changed", "cart_limit"].includes(error.message)) sileo.error({ title: t(error.message === "cart_limit" ? "business:pos.cart_limit" : "business:pos.product_unavailable") });
+      else notifyHttpError(error);
+    },
+    onFinished: () => { restoreScanFocus.current = true; },
+  });
+  const unknown = missingBarcode?.scope === barcodeLookup.scope ? missingBarcode : null;
+  useLayoutEffect(() => { currentMissing.current = unknown; return () => { currentMissing.current = null; }; }, [unknown]);
+  const unknownBarcode = unknown?.barcode ?? null;
+  const registrationOverlay = unknown?.stage === "prompt" || unknown?.stage === "register";
+  const assigning = assignConfirm && unknown?.stage === "assign";
+  const busy = draft.busy || lookup || barcodeLookup.busy || updateProduct.isPending || ticketPrinting.printing;
+  const canLeave = draft.canDiscardWorkspace && !busy && !unknownBarcode;
   const { blocker, confirmLeave, showDialog: showLeaveDialog } = useSaleExitGuard({ section, hasUnsaved: draft.hasUnsaved, canDiscard: canLeave, clearForExit: draft.clearForExit });
   const readonly = Boolean(draft.sale);
   const baseControlsDisabled = busy || Boolean(draft.pending) || draft.storageError || readonly;
-  const controlsDisabled = baseControlsDisabled || editingPrice;
+  const controlsDisabled = baseControlsDisabled || editingPrice || Boolean(unknownBarcode);
   let total: string | null = null;
   try { total = cartTotal(draft.lines); } catch { /* Invalid/overflow totals block persistence and completion. */ }
   const quantityInvalid = draft.lines.some((line) => quantityDrafts[line.product_id] !== undefined && quantityFromInput(quantityDrafts[line.product_id]) !== line.quantity);
   const selectedAssignment = assignment;
   const paymentInvalid = draft.description.trim().length > 500 || (!draft.sale && draft.paymentMethod === "other");
-  const canComplete = !busy && !editingPrice && !draft.pending && !draft.storageError && (!draft.sale || draft.sale.status === "draft") && !quantityInvalid && !paymentInvalid && total !== null && BigInt(total) > 0n && draft.lines.length > 0;
+  const canComplete = !busy && !editingPrice && !unknownBarcode && !draft.pending && !draft.storageError && (!draft.sale || draft.sale.status === "draft") && !quantityInvalid && !paymentInvalid && total !== null && BigInt(total) > 0n && draft.lines.length > 0;
   let ticketPreview: SaleTicketModel | null = null;
   if (confirm === "complete") {
     try { ticketPreview = buildCartTicket({ businessName, lines: draft.lines, paymentMethod: draft.paymentMethod, description: draft.description, language: i18n.language, showDetails: true }); }
     catch { /* An invalid cart never becomes a printable or confirmable ticket. */ }
   }
   useEffect(() => {
-    if (restoreScanFocus.current && section === "pos" && (!mobile || mobilePane === "catalog") && !busy && !editingPrice && !draft.pending && !draft.storageError && !draft.sale && !unknownBarcode && !assignConfirm && !confirm) {
+    if (restoreScanFocus.current && section === "pos" && (!mobile || mobilePane === "catalog") && !busy && !editingPrice && !draft.pending && !draft.storageError && !draft.sale && !unknownBarcode && !assigning && !confirm) {
       restoreScanFocus.current = false;
       const scanner = inputContainer.current?.querySelector("input");
       scanner?.focus();
       if (mobile) scanner?.scrollIntoView?.({ block: "center", inline: "nearest" });
     }
-  }, [section, mobile, mobilePane, busy, editingPrice, draft.activeId, draft.pending, draft.storageError, draft.sale, unknownBarcode, assignConfirm, confirm, focusEpoch]);
+  }, [section, mobile, mobilePane, busy, editingPrice, draft.activeId, draft.pending, draft.storageError, draft.sale, unknownBarcode, assigning, confirm, focusEpoch]);
   const add = (product: ProductEntity) => {
     if (controlsDisabled || priceEditor.blocksChange()) return;
     try {
@@ -106,32 +132,51 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
   };
   const scan = async () => {
     if (controlsDisabled || priceEditor.blocksChange()) return;
-    let value: string;
-    try { value = barcodeValue(barcode); } catch { sileo.error({ title: t("business:pos.invalid_barcode") }); return; }
-    setLookup(true); setUnknownBarcode(null);
+    await barcodeLookup.scan(barcode);
+  };
+  const dismissUnknown = () => {
+    if (!unknown || !barcodeLookup.isCurrent() || currentMissing.current?.id !== unknown.id) return;
+    barcodeLookup.resume(); setMissingBarcode(null); setBarcode(""); setAssignment(null); setAssignConfirm(false); requestScanFocus();
+  };
+  const addRegisteredProduct = async (saved: ProductEntity) => {
+    if (!unknown || unknown.stage !== "register" || completedRegistration.current === unknown.id) return;
+    const currentIntent = () => barcodeLookup.isCurrent() && currentMissing.current?.id === unknown.id;
+    if (!currentIntent()) return;
+    completedRegistration.current = unknown.id;
     try {
-      const product = await getProductByBarcode(businessId, value);
-      if (!active.current) return;
-      const next = addCartProduct(draft.lines, product); lineImages.remember(product); draft.setLines(next); setBarcode("");
-      setQuantityDrafts((values) => { const next = { ...values }; delete next[product.id]; return next; });
+      if (!saved || typeof saved.id !== "string" || !saved.id.trim() || saved.business_id !== businessId || !Number.isSafeInteger(saved.version) || !saved.version || saved.version < 1) throw new Error("unavailable_product");
+      let product = saved;
+      // Current mutation responses include catalogPrice. Historical recovery
+      // journals can lack that projection; read it exactly, never invent it.
+      if (saved.effective_price === undefined || saved.price_source === undefined) {
+        product = await getProduct(saved.id);
+        if (!currentIntent()) return;
+        if (product.id !== saved.id || product.business_id !== businessId || product.version !== saved.version) throw new Error("price_changed");
+      }
+      const next = addCartProduct(draft.lines, product);
+      if (!draft.setLines(next)) throw new Error("cart_rejected");
+      lineImages.remember(product);
+      setQuantityDrafts(values => { const next = { ...values }; delete next[product.id]; return next; });
       setAnnouncement(t("business:pos.added", { name: product.name }));
+      sileo.success({ title: t("business:pos.added", { name: product.name }) });
     } catch (error) {
-      if (!active.current) return;
-      if (axios.isAxiosError(error) && error.response?.status === 404) { setUnknownBarcode(value); setAssignment(null); sileo.error({ title: t("business:pos.barcode_unknown") }); }
-      else if (error instanceof Error && ["unavailable_product", "price_changed", "cart_limit"].includes(error.message)) sileo.error({ title: t(error.message === "cart_limit" ? "business:pos.cart_limit" : "business:pos.product_unavailable") });
-      else notifyHttpError(error);
-    } finally { if (active.current) { restoreScanFocus.current = true; setLookup(false); } }
+      if (!currentIntent()) return;
+      sileo.error({ title: t("business:pos.registered_not_added"), description: axios.isAxiosError(error) ? getHttpErrorMessage(error) : t("business:pos.registered_not_added_help") });
+    }
   };
   const associate = async () => {
     if (priceEditor.blocksChange()) return;
-    if (!selectedAssignment || !unknownBarcode || !selectedAssignment.version) return;
+    if (!selectedAssignment || !unknown || !unknownBarcode || !selectedAssignment.version) return;
+    const currentIntent = () => barcodeLookup.isCurrent() && currentMissing.current?.id === unknown.id;
     try {
       await updateProduct.mutateAsync({ id: selectedAssignment.id, payload: { barcode: unknownBarcode, expected_version: selectedAssignment.version } });
+      if (!currentIntent()) return;
       restoreScanFocus.current = true;
-      setAssignConfirm(false); setUnknownBarcode(null); setAssignment(null); setAnnouncement(t("business:pos.rescan"));
+      dismissUnknown(); setAnnouncement(t("business:pos.rescan"));
     } catch (error) {
-      if (axios.isAxiosError<{ message?: string }>(error) && error.response?.data.message === "product:version_conflict") {
-        try { const current = await getProduct(selectedAssignment.id); if (active.current && current.business_id === businessId) setAssignment(current); } catch (readError) { notifyHttpError(readError); }
+      if (!currentIntent()) return;
+      if (axios.isAxiosError<{ message?: string }>(error) && (getServerErrorCode(error) ?? error.response?.data.message) === "product:version_conflict") {
+        try { const current = await getProduct(selectedAssignment.id); if (currentIntent() && current.business_id === businessId) setAssignment(current); } catch (readError) { if (currentIntent()) notifyHttpError(readError); }
       }
       // Keep the assignment and dialog. A refreshed revision still needs another explicit confirmation.
     }
@@ -196,7 +241,7 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
     if (!confirm) return;
     if (confirming.current || priceChanging.current || (confirm === "complete" && (!canComplete || !ticketPreview))) return;
     confirming.current = true;
-    if (confirm === "complete") { setUnknownBarcode(null); setAssignment(null); restoreScanFocus.current = true; }
+    if (confirm === "complete") { setMissingBarcode(null); setAssignment(null); restoreScanFocus.current = true; }
     try {
       const result = confirm === "complete" && !draft.sale ? await draft.checkout() : await draft.transition(confirm, reason.trim());
       if (result && active.current) {
@@ -209,7 +254,7 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
       }
     } finally { confirming.current = false; }
   };
-  const clearTransient = () => { setUnknownBarcode(null); setAssignment(null); setAssignConfirm(false); setConfirm(null); setClosingSaleId(null); setReason(""); };
+  const clearTransient = () => { setMissingBarcode(null); setAssignment(null); setAssignConfirm(false); setConfirm(null); setClosingSaleId(null); setReason(""); };
   const newSale = () => { if (!priceEditor.blocksChange() && draft.newSale()) { clearTransient(); setMobilePane("catalog"); requestScanFocus(); } };
   const selectSale = (id: string, source: "pointer" | "keyboard") => {
     if (priceEditor.blocksChange()) return;
@@ -253,8 +298,8 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
   const currency = (value: string | number) => formatClp(value, i18n.language);
   return <Workspace>
     {ticketPrinting.receipt && ticketPrinting.receipt.id !== draft.sale?.id && <Alert severity="success" sx={{ overflowWrap: "anywhere", flexWrap: "wrap", "& .MuiAlert-message": { minWidth: 0, flex: "1 1 0" }, "& .MuiAlert-action": { alignItems: "center", width: { xs: "100%", sm: "auto" }, m: 0, pl: { xs: 0, sm: 2 } } }} action={<Box sx={{ display: "grid", gridTemplateColumns: { xs: "minmax(0, 1fr)", sm: "repeat(2, minmax(0, 1fr))" }, gap: 1, width: "100%" }}>
-      <Button variant="contained" fullWidth sx={{ minHeight: 44 }} startIcon={<PrintOutlined />} disabled={busy || editingPrice} onClick={() => { if (!priceEditor.blocksChange()) void ticketPrinting.print(undefined, false); }}>{t("business:ticket.print_summary")}</Button>
-      <Button variant="contained" fullWidth sx={{ minHeight: 44 }} startIcon={<PrintOutlined />} disabled={busy || editingPrice} onClick={() => { if (!priceEditor.blocksChange()) void ticketPrinting.print(undefined, true); }}>{t("business:ticket.print")}</Button>
+      <Button variant="contained" fullWidth sx={{ minHeight: 44 }} startIcon={<PrintOutlined />} disabled={busy || editingPrice || Boolean(unknownBarcode)} onClick={() => { if (!priceEditor.blocksChange()) void ticketPrinting.print(undefined, false); }}>{t("business:ticket.print_summary")}</Button>
+      <Button variant="contained" fullWidth sx={{ minHeight: 44 }} startIcon={<PrintOutlined />} disabled={busy || editingPrice || Boolean(unknownBarcode)} onClick={() => { if (!priceEditor.blocksChange()) void ticketPrinting.print(undefined, true); }}>{t("business:ticket.print")}</Button>
     </Box>}>
       {t("business:ticket.last_saved", { total: currency(ticketPrinting.receipt.total_amount) })}<Typography component="p" variant="caption">{ticketPrinting.receipt.id}</Typography>
     </Alert>}
@@ -263,12 +308,12 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
     {section === "reports" && <SalesReports businessId={businessId} />}
     {section === "sales" && <SalesRecords businessId={businessId} onOpen={(sale) => { draft.load(sale); clearTransient(); setMobilePane("cart"); setSearchParams((params) => { params.set("section", "pos"); return params; }); }} />}
     {section === "pos" && <>
-      <Actions><Typography component="h2" variant="h5" sx={{ flex: 1, fontWeight: 700 }}>{t("business:pos.sale_number", { number: draft.activeNumber })}</Typography><Button variant="contained" size="large" sx={{ minHeight: 56, px: 3, fontSize: "1rem" }} startIcon={<AddOutlined />} disabled={busy || editingPrice || draft.storageError} onClick={newSale}>{t("business:pos.new_sale")}</Button></Actions>
-      <OpenSaleTabs sales={openSales} activeId={draft.activeId} panelId={panelId} disabled={lookup || updateProduct.isPending || editingPrice || draft.storageError || Boolean(confirm) || assignConfirm} onSelect={selectSale} onClose={closeSale} />
+      <Actions><Typography component="h2" variant="h5" sx={{ flex: 1, fontWeight: 700 }}>{t("business:pos.sale_number", { number: draft.activeNumber })}</Typography><Button variant="contained" size="large" sx={{ minHeight: 56, px: 3, fontSize: "1rem" }} startIcon={<AddOutlined />} disabled={busy || editingPrice || unknownBarcode !== null || draft.storageError} onClick={newSale}>{t("business:pos.new_sale")}</Button></Actions>
+      <OpenSaleTabs sales={openSales} activeId={draft.activeId} panelId={panelId} disabled={busy || editingPrice || draft.storageError || Boolean(confirm) || assigning || unknownBarcode !== null} onSelect={selectSale} onClose={closeSale} />
       <Box aria-live="polite" sx={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap" }}>{announcement}</Box>
       {mobile && <Box sx={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: 1 }}>
-        <Button variant={mobilePane === "catalog" ? "contained" : "outlined"} aria-pressed={mobilePane === "catalog"} disabled={busy} onClick={() => { setMobilePane("catalog"); requestScanFocus(); }}>{t("business:pos.selected_products")}</Button>
-        <Button variant={mobilePane === "cart" ? "contained" : "outlined"} aria-pressed={mobilePane === "cart"} disabled={busy} onClick={() => setMobilePane("cart")}>{t("business:pos.payment_summary")} ({draft.lines.length}){total !== null ? ` · ${currency(total)}` : ""}</Button>
+        <Button variant={mobilePane === "catalog" ? "contained" : "outlined"} aria-pressed={mobilePane === "catalog"} disabled={busy || Boolean(unknownBarcode)} onClick={() => { setMobilePane("catalog"); requestScanFocus(); }}>{t("business:pos.selected_products")}</Button>
+        <Button variant={mobilePane === "cart" ? "contained" : "outlined"} aria-pressed={mobilePane === "cart"} disabled={busy || Boolean(unknownBarcode)} onClick={() => setMobilePane("cart")}>{t("business:pos.payment_summary")} ({draft.lines.length}){total !== null ? ` · ${currency(total)}` : ""}</Button>
       </Box>}
       <PointOfSaleGrid role="tabpanel" id={panelId} aria-labelledby={saleTabId(panelId, draft.activeId)}>
         <CatalogPanel sx={{ display: mobile && mobilePane !== "catalog" ? "none" : "flex" }}>
@@ -277,17 +322,17 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
             <Button type="submit" variant="contained" disabled={controlsDisabled || !barcode}>{t("business:pos.scan_add")}</Button>
             <Typography variant="caption" color="text.secondary">{t(busy ? "business:pos.scan_paused" : "business:pos.scan_ready")}</Typography>
           </Box>
-          {unknownBarcode && <Alert severity="warning" sx={{ mt: 2 }}>
+          {unknownBarcode && unknown?.stage === "assign" && <Alert severity="warning" sx={{ mt: 2 }}>
             {t("business:pos.barcode_unknown_value", { barcode: unknownBarcode })}
             {selectedAssignment && <Typography sx={{ mt: 1, fontWeight: 600, overflowWrap: "anywhere" }}>{selectedAssignment.name}</Typography>}
             <Button disabled={busy || editingPrice || !selectedAssignment} onClick={() => setAssignConfirm(true)}>{t("business:pos.assign_barcode")}</Button>
-            <Button disabled={busy || editingPrice} onClick={() => { setUnknownBarcode(null); setAssignment(null); requestScanFocus(); }}>{t("business:cancel")}</Button>
+            <Button disabled={busy || editingPrice} onClick={dismissUnknown}>{t("business:cancel")}</Button>
           </Alert>}
-          <PosProductCatalog businessId={businessId} disabled={controlsDisabled} assignmentMode={Boolean(unknownBarcode)} onSelect={(product) => unknownBarcode ? setAssignment(product) : add(product)} />
+          <PosProductCatalog businessId={businessId} disabled={baseControlsDisabled || editingPrice || registrationOverlay || assigning} assignmentMode={unknown?.stage === "assign"} onSelect={(product) => unknown?.stage === "assign" ? setAssignment(product) : add(product)} />
           <SaleLineList lines={draft.lines} images={lineImages.images} imageLoading={lineImages.isLoading} imageError={lineImages.isError} imageFetching={lineImages.isFetching} retryImages={() => void lineImages.retry()}
             disabled={controlsDisabled} quantityDrafts={quantityDrafts} onStep={stepQuantity} onQuantity={changeQuantity} onReview={!readonly && draft.lines.length ? () => setConfirm("refresh") : undefined}
             fontScale={fontScale} onFontScale={setFontScale} editingScope={draft.activeId} onPrice={readonly ? undefined : changePrice}
-            priceDisabled={baseControlsDisabled} editingProductId={priceEditor.editingProductId} onPriceEditingChange={priceEditor.onEditingChange}
+            priceDisabled={baseControlsDisabled || Boolean(unknownBarcode)} editingProductId={priceEditor.editingProductId} onPriceEditingChange={priceEditor.onEditingChange}
             onRemove={readonly ? undefined : (id) => { if (!controlsDisabled && !priceEditor.blocksChange() && draft.setLines(removeCartProduct(draft.lines, id))) { clearQuantityInput(id); sileo.success({ title: t("business:pos.product_removed") }); } }} />
         </CatalogPanel>
         <CartPanel role="region" aria-label={t("business:pos.payment_summary")} sx={{ display: mobile && mobilePane !== "cart" ? "none" : "flex" }}>
@@ -322,7 +367,14 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
         {ticketPreview ? <SaleTicket ticket={ticketPreview} /> : <Alert severity="error">{t("business:ticket.preview_invalid")}</Alert>}
       </Box>}
     </ConfirmDialog>
-    <ConfirmDialog open={assignConfirm} onClose={() => { if (!busy) setAssignConfirm(false); }} onConfirm={associate} isLoading={updateProduct.isPending} confirmDisabled={!selectedAssignment?.version || busy} title={t("business:pos.assign_barcode")} message={t("business:pos.assign_confirm", { barcode: unknownBarcode, name: selectedAssignment?.name, previous: selectedAssignment?.barcode ?? t("business:pos.no_barcode") })}>{!selectedAssignment && <Alert severity="error">{t("business:pos.product_unavailable")}</Alert>}</ConfirmDialog>
+    <ConfirmDialog open={unknown?.stage === "prompt"} onClose={dismissUnknown} onConfirm={() => setMissingBarcode(value => value?.scope === barcodeLookup.scope ? { ...value, stage: "register" } : null)}
+      title={t("business:pos.register_product_title")} message={t("business:pos.register_product_description")}
+      confirmText={t("business:pos.register_product_confirm")} cancelText={t("business:pos.register_product_decline")}
+      additionalActions={<Button variant="outlined" onClick={() => setMissingBarcode(value => value?.scope === barcodeLookup.scope ? { ...value, stage: "assign" } : null)}>{t("business:pos.assign_existing_product")}</Button>}>
+      <Typography variant="body2" sx={{ overflowWrap: "anywhere", whiteSpace: "pre-wrap", fontWeight: 600 }}>{unknownBarcode}</Typography>
+    </ConfirmDialog>
+    {unknown?.stage === "register" && <PosProductRegistration key={`${unknown.scope}:${unknown.id}`} businessId={businessId} barcode={unknown.barcode} onClose={dismissUnknown} onRegistered={addRegisteredProduct} />}
+    <ConfirmDialog open={assigning} onClose={() => { if (!busy) setAssignConfirm(false); }} onConfirm={associate} isLoading={updateProduct.isPending} confirmDisabled={!selectedAssignment?.version || busy} title={t("business:pos.assign_barcode")} message={t("business:pos.assign_confirm", { barcode: unknownBarcode, name: selectedAssignment?.name, previous: selectedAssignment?.barcode ?? t("business:pos.no_barcode") })}>{!selectedAssignment && <Alert severity="error">{t("business:pos.product_unavailable")}</Alert>}</ConfirmDialog>
     <ConfirmDialog open={showLeaveDialog} onClose={() => blocker.reset?.()} onConfirm={confirmLeave} confirmDisabled={!canLeave} title={t("business:pos.leave_title")} message={t(canLeave ? "business:pos.leave_message" : draft.storageError ? "business:pos.leave_storage_message" : "business:pos.leave_pending_message")} />
   </Workspace>;
 }

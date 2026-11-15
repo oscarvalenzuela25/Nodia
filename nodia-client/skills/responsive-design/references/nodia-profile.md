@@ -13,7 +13,7 @@ Aplicar `AGENTS.md`, `nodia-client/AGENTS.md` y sus skills obligatorias `fronten
 ## Layout y estilo
 
 - Theme en `nodia-client/src/theme/*`, composición en `src/providers/MUIProvider.tsx`. Breakpoints verificados en `src/theme/breakpoints.tsx`: xs0, sm600, md900, lg1200, xl1536; consultar nuevamente si cambia el theme. Móvil es `down("sm")`.
-- `BaseLayout/PageContent` aporta padding xs16/sm24/md32 px. Páginas hijas no añaden otro padding exterior. Paneles: separación vertical24/horizontal16 px; los patrones específicos de tabla/filtros de 07 conservan sus separaciones particulares.
+- `BaseLayout/PageContent` aporta padding vertical16px y lateral xs16/sm24/md32px (solicitud2026-11-14). Conserva reserva MobileBottomNav/safe area. Páginas hijas no añaden otro padding exterior. Paneles: separación vertical24/horizontal16px; los patrones específicos de tabla/filtros de07 conservan sus separaciones particulares.
 - Acciones principales de cabeceras, toolbars y modales ocupan ancho completo en xs. Mantener nombres accesibles y targets cómodos sin alterar acciones/permisos.
 - MUI/Emotion, paleta, tipografía y tokens actuales; no crear otro theme ni sustituir fuentes por recomendaciones estéticas de una skill externa.
 - Scroll: reutilizar overrides de `src/theme/components.tsx`. Track transparente `!important`, flechas ocultas y tamaño0, thumb6px/radio9999px/sin borde, blanco en dark o negro en light con alpha0.2/hover0.35; `scrollbar-width: thin` y `scrollbar-color: <thumb> transparent`, además de pseudo-clases WebKit.

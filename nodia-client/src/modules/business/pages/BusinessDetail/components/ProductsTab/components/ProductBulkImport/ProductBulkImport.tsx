@@ -391,6 +391,7 @@ const ProductBulkImportEditor: FC<Props> = ({
                   <TableCell width={50} align="center">{t("business:product_status")}</TableCell>
                   <TableCell>{t("business:product_code")}</TableCell>
                   <TableCell>{t("business:product_name")}</TableCell>
+                  <TableCell>{t("business:product_alias")}</TableCell>
                   <TableCell>{t("product:measurement_unit")}</TableCell>
                   <TableCell align="right">{t("business:product_cost_price")}</TableCell>
                   <TableCell align="right">{t("business:product_sale_price")}</TableCell>
@@ -422,6 +423,7 @@ const ProductBulkImportEditor: FC<Props> = ({
                     </TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>{row.code || "-"}</TableCell>
                     <TableCell>{row.name || "-"}</TableCell>
+                    <TableCell>{row.alias?.trim() || t(row.id && row.alias === undefined ? "business:pos.preserve_existing" : "business:no_info")}</TableCell>
                     <TableCell>{row.measurement_unit ? (isMeasurementUnit(row.measurement_unit) ? t(`product:units.${row.measurement_unit}`) : row.measurement_unit) : t(row.id ? "business:pos.preserve_existing" : "product:units.unit")}</TableCell>
                     <TableCell align="right">${row.cost_price.toLocaleString()}</TableCell>
                     <TableCell align="right" sx={{ fontWeight: 600 }}>${row.sale_price.toLocaleString()}</TableCell>
@@ -532,6 +534,10 @@ const ProductBulkImportEditor: FC<Props> = ({
                 required
               />
             </Grid>
+
+            <Grid size={12}><TextInput id="bulk-edit-alias" name="alias" label={t("business:product_alias")} disabled={isBusy}
+              value={editFormData.alias ?? ""} helperText={t("business:product_alias_csv_help")}
+              onChange={event => setEditFormData(previous => ({ ...previous, alias: event.target.value }))} /></Grid>
 
             {/* Row 2: Costo Base sin Impuesto, Impuesto % auxiliar, Costo Base con Impuestos */}
             <Grid size={{ xs: 12, sm: 4 }}>

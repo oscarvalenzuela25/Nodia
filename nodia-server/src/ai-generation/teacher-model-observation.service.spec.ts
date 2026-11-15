@@ -5,6 +5,7 @@ import { NodiaAiConnectionsService, type NodiaAiConnectionConfiguration } from '
 import type { CodexRuntimeService } from '../common/ai/codex/codex-runtime.service.js';
 import { codexError } from '../common/ai/codex/codex-contract.js';
 import { TeacherModelObservationService } from './teacher-model-observation.service.js';
+import { projectNodiaAiConnection } from '../nodia-ai-conversation/use-case/list-nodia-ai-connections.use-case.js';
 
 const actor = { userId: '7', sessionId: '11111111-1111-4111-8111-111111111111' };
 const model = (id = 'fixture-model', efforts: unknown = ['future_effort', 'other_effort']) => ({ id, displayName: `Label ${id}`, supportedReasoningEfforts: efforts });
@@ -43,6 +44,17 @@ function fixture() {
 }
 
 describe('Teacher live model observation', () => {
+  it('keeps historical manual options separate from absent native metadata and an explicitly empty native list', async () => {
+    const f = fixture();
+    const configured = projectNodiaAiConnection(f.row).modes.find(item => item.mode === 'agentic')!;
+    expect(configured.models[0].efforts.map(item => item.effort_id)).toContain('medium');
+    f.listModels.mockResolvedValueOnce([{ id: 'fixture-model' }]);
+    await expect(f.service.execute(actor, '5', 'agentic')).rejects.toMatchObject({ status: 502, message: 'teacher:model_observation_invalid' });
+    expect(projectNodiaAiConnection(f.row).modes[1]).toEqual(configured);
+    f.listModels.mockResolvedValueOnce([model('fixture-model', [])]);
+    expect((await f.service.execute(actor, '5', 'agentic')).models[0].efforts).toEqual([]);
+    expect(projectNodiaAiConnection(f.row).modes[1]).toEqual(configured);
+  });
   it('recovers real effort options for a historical selection without activating models or inferring', async () => {
     const f = fixture(); const original = structuredClone(f.row);
     expect(await f.service.execute(actor, '5', 'agentic')).toEqual({ connection_id: '5', mode: 'agentic', models: [

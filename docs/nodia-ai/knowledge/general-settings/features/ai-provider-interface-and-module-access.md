@@ -4,11 +4,11 @@
   "document_id": "general-settings.ai-provider-interface-and-module-access",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 3,
+  "revision": 4,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Implementación local de interfaz, navegación/autorización y preferencias por proveedor. Backend comprobado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado. Sin despliegue ni inferencia real de este lote. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote."
+    "notes": "Implementación local de interfaz, navegación/autorización y preferencias por proveedor. Backend comprobado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado. Sin despliegue ni inferencia real de este lote. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Ajustes Generales y NodiaAI conforme AGENTS",
@@ -63,7 +63,8 @@
     "evidence_paths": [
       "docs/mvp/ai-provider-feature-contract.md",
       "docs/evidence/model-selector-residual-audit-20261114.md",
-      "docs/evidence/teacher-ai-selection-first-generation-20261114.md"
+      "docs/evidence/teacher-ai-selection-first-generation-20261114.md",
+      "docs/evidence/nodia-ai-chat-space-gpt-selection-20261114.md"
     ],
     "notes": "Build Server, autorización60, HTTP74 y API249 correctos; HTTP con fronteras sintéticas de sesión/persistencia. build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; sin publicación, inferencia real ni causa productiva de acceso probada. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote."
   },
@@ -177,3 +178,17 @@ Ninguna ficha aprobada cambia por esta candidata. El refresco técnico de pins e
 |---|---|---|
 | 2 | Agrupación en sincronización/compositor/configuración y auditoría de residuos; OCR efectivo, borrador y contexto protegidos | IDs literales y elegibilidad exacta; sólo candidato local, sin publicación o inferencia. |
 | 1 | Interfaz contained, contexto del actor, identidad NodiaAI y preferencias/variantes por proveedor | Reutiliza operaciones y permisos; IDs reales y OCR conservados. Sin nuevos bindings, aprobación, publicación o inferencia. |
+
+
+## Chat compacto y preferencias Agentic — candidato local2026-11-14
+
+Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte.
+El padding vertical16px sólo cambia presentación del contenedor de página;
+no altera contexto operativo, herramientas, autoridad ni confirmaciones.
+El chat retira cabecera título/modelo y botón de actividad; renombrar continúa
+en el menú lateral, con errores y borradores recuperables. Stop ocupa el lugar
+de Enviar y conserva cancelación identificada/conciliación sin replay.
+Opciones manuales sólo cuando falta metadata GPT; catálogo explícito conserva
+opciones exactas. Los modelos siguen viniendo de configuración/catálogo real.
+[Contrato](../../../../mvp/ai-provider-feature-contract.md) y
+[evidencia](../../../../evidence/nodia-ai-chat-space-gpt-selection-20261114.md).

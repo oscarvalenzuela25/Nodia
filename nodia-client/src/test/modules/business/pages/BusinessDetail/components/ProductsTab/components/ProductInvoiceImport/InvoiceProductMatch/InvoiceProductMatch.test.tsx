@@ -65,6 +65,23 @@ describe("invoice product match dialog", () => {
     expect(row).toMatchObject({ code: "INV-17", sale_price: 4500, isUpdate: false });
   });
 
+  it("shows a no-code product by its commercial alias while server search still matches its original name", async () => {
+    read.mockImplementation(async () => page([{ ...product(), code: null, alias: "Commercial visible", name: "Technical original" }]));
+    const onApply = vi.fn().mockReturnValue(true);
+    render(<InvoiceProductMatch businessId="business-a" row={invoiceRow()} disabled={false} onClose={vi.fn()} onApply={onApply} />, { wrapper: Wrapper });
+    const user = userEvent.setup();
+    const select = await screen.findByRole("button", { name: "Producto existente" });
+    await waitFor(() => expect(select).toBeEnabled());
+    await user.click(select);
+    await user.type(screen.getByRole("textbox"), "Technical");
+    await waitFor(() => expect(read.mock.calls.some(([params]) => params?.q?.search === "Technical")).toBe(true));
+    const option = await screen.findByRole("option", { name: "Commercial visible (Sin código)" });
+    await user.click(option);
+    await waitFor(() => expect(applyButton()).toBeEnabled());
+    await user.click(applyButton());
+    expect(onApply).toHaveBeenCalledWith(expect.objectContaining({ alias: "Commercial visible", name: "Technical original", code: null }), expect.any(Array));
+  });
+
   it("keeps an unknown invoice sale price unchecked and allows cancelling without applying anything", async () => {
     const onApply = vi.fn();
     const onClose = vi.fn();

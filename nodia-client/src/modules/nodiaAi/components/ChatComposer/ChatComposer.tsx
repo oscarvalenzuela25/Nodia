@@ -36,7 +36,7 @@ export default function ChatComposer(props: ChatComposerProps) {
   return <MessageComposer scopeKey={props.conversationId} text={props.text} onTextChange={props.onTextChange} onSend={props.onSend}
     maxBytes={remainingTextBytes} disabled={draft.busy || capabilities.isFetching || (disabled && !recovering)}
     inputDisabled={disabled || recovering} voiceDisabled={disabled || recovering || draft.busy}
-    sendDisabled={sendDisabled} submitOnEnter={!recovering} textTooLarge={props.textTooLarge}
+    sendDisabled={sendDisabled} sendAction={props.sendAction} submitOnEnter={!recovering} textTooLarge={props.textTooLarge}
     label={t("message")} placeholder={t("composer.placeholder")} ariaLabel={t("composer.title")} sendLabel={t(recovering ? "recover_send" : "send")}
     onRecordingChange={recordingChanged} onPaste={event => {
       const files = Array.from(event.clipboardData.files);

@@ -51,12 +51,50 @@ AI_RUNTIME_TEMPLATES = {
 }
 AI_RUNTIME_HASHES = {name: hashlib.sha256(value).hexdigest()
                      for name, value in AI_RUNTIME_TEMPLATES.items()}
+TEACHER_RUNTIME_TEMPLATE = b'[Service]\nEnvironmentFile=/etc/nodia/teacher-runtime.env\n'
+TEACHER_RUNTIME_NAME = '72-teacher-runtime.conf'
+TEACHER_ENVIRONMENT = Path('/etc/nodia/teacher-runtime.env')
+TEACHER_HOST_ROOT = Path('/usr/local/lib/nodia/teacher-runtime')
+
+
+def teacher_runtime_descriptor():
+    """Only two exact Teacher environment entries and their immutable host."""
+    for parent in reversed(TEACHER_ENVIRONMENT.parents):
+        protected(parent, directory=True)
+    info = protected(TEACHER_ENVIRONMENT, mode=0o644)
+    if not 0 < info.st_size < 512:
+        raise ValueError('teacher_runtime_environment_invalid')
+    raw = TEACHER_ENVIRONMENT.read_bytes()
+    match = re.fullmatch(rb'NODIA_CODEX_TEACHER_HOST=/usr/local/lib/nodia/teacher-runtime/host-([a-f0-9]{128})\n'
+                         rb'NODIA_CODEX_TEACHER_HOST_SHA512=([a-f0-9]{128})\n', raw)
+    if not match or match[1] != match[2]:
+        raise ValueError('teacher_runtime_environment_invalid')
+    digest = match[1].decode('ascii')
+    target = TEACHER_HOST_ROOT / ('host-' + digest)
+    for parent in reversed(target.parents):
+        protected(parent, directory=True)
+    info = protected(target, mode=0o755)
+    if not 0 < info.st_size <= 1024 ** 3:
+        raise ValueError('teacher_runtime_binary_invalid')
+    with target.open('rb') as stream:
+        actual = hashlib.file_digest(stream, 'sha512').hexdigest()
+    if actual != digest:
+        raise ValueError('teacher_runtime_binary_changed')
+    return {'environment_sha256': hashlib.sha256(raw).hexdigest(), 'binary_sha512': digest}
 
 
 def ai_runtime_registry(value):
-    """Only the exact two reviewed extensions for both application consumers."""
+    """Exact base extensions, optionally the separately pinned Teacher host."""
     expected = {'schema_version': 1, 'purpose': 'nodia_ai_runtime_consumers',
                 'units': {name: AI_RUNTIME_HASHES for name in SERVICES}}
+    if type(value) is dict and 'teacher_host' in value:
+        host = value['teacher_host']
+        if (type(host) is not dict or set(host) != {'environment_sha256', 'binary_sha512'}
+                or not isinstance(host['environment_sha256'], str) or not HEX.fullmatch(host['environment_sha256'])
+                or not isinstance(host['binary_sha512'], str) or not re.fullmatch('[a-f0-9]{128}', host['binary_sha512'])):
+            raise ValueError('ai_runtime_registry_invalid')
+        hashes = {**AI_RUNTIME_HASHES, TEACHER_RUNTIME_NAME: hashlib.sha256(TEACHER_RUNTIME_TEMPLATE).hexdigest()}
+        expected = {**expected, 'units': {name: hashes for name in SERVICES}, 'teacher_host': host}
     if type(value) is not dict or type(value.get('schema_version')) is not int or value != expected:
         raise ValueError('ai_runtime_registry_invalid')
     return value
@@ -179,14 +217,17 @@ class Host:
             info = protected(AI_CONSUMERS, mode=0o600)
             self.must(0 < info.st_size <= 16384, 'ai_runtime_registry_size_invalid')
             raw = AI_CONSUMERS.read_bytes()
-            ai_runtime_registry(unique_json(raw))
+            registered = ai_runtime_registry(unique_json(raw))
+            if 'teacher_host' in registered:
+                self.must(teacher_runtime_descriptor() == registered['teacher_host'], 'teacher_runtime_changed')
             registry = hashlib.sha256(raw).hexdigest()
         if not self.runtime_registry_seen:
             self.runtime_registry_snapshot = registry
             self.runtime_registry_seen = True
         self.must(registry == self.runtime_registry_snapshot, 'ai_runtime_registry_changed_during_update')
         parent = SYSTEMD_UNITS / (unit + '.d')
-        expected = AI_RUNTIME_HASHES if registry is not None else {}
+        expected = registered['units'][unit] if registry is not None else {}
+        templates = {**AI_RUNTIME_TEMPLATES, TEACHER_RUNTIME_NAME: TEACHER_RUNTIME_TEMPLATE}
         paths = [parent / name for name in expected]
         self.must(state.get('DropInPaths') == ' '.join(str(path) for path in paths),
                   'installed_service_changed_or_overridden')
@@ -199,7 +240,7 @@ class Host:
             self.must(not expected, 'ai_runtime_dropin_missing')
         for path in paths:
             info = protected(path, mode=0o644)
-            self.must(info.st_size == len(AI_RUNTIME_TEMPLATES[path.name])
+            self.must(info.st_size == len(templates[path.name])
                       and sha_file(path) == expected[path.name], 'ai_runtime_dropin_changed')
 
     def begin(self, request, state):
