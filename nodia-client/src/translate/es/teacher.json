@@ -21,7 +21,7 @@
   "fields": {
     "topic": "Tema",
     "objective": "¿Qué es lo que quieres aprender?",
-    "title": "Título del plan de estudio",
+    "title": "Título del plan de estudio (opcional)",
     "declared_base": "¿Qué es lo que ya sé? (opcional)",
     "context": "Contexto base (opcional)",
     "explanation_language": "Idioma de explicación",
@@ -558,5 +558,60 @@
     "effort": "Elige uno de los niveles que ofrece este modelo. Teacher lo usará en las próximas generaciones; el contenido ya generado no cambia. El resultado puede variar según el modelo y el razonamiento."
   },
   "effort_unreported": "El catálogo recibido no incluye opciones de razonamiento para este modelo. Actualiza las conexiones o elige otro modelo; tu borrador se conserva.",
-  "refresh_connections": "Actualizar conexiones"
+  "refresh_connections": "Actualizar conexiones",
+  "wizard": {
+    "title": "Nuevo estudio",
+    "intro": "Dale forma a lo que quieres aprender. Teacher te ayudará a preparar un plan que podrás revisar antes de empezar.",
+    "steps_label": "Pasos para crear tu estudio",
+    "steps": {
+      "goal": "Qué quieres aprender",
+      "organization": "Cómo quieres organizarte",
+      "review": "Revisar y preparar"
+    },
+    "descriptions": {
+      "goal": "Empieza por el tema y lo que te gustaría poder hacer. El título es opcional.",
+      "organization": "Elige el idioma y cómo prefieres organizar el estudio. Puedes dejar que Teacher proponga la estructura.",
+      "review": "Revisa tu objetivo y elige la IA que preparará la propuesta."
+    },
+    "next": "Continuar",
+    "previous": "Anterior",
+    "create_proposal": "Crear propuesta",
+    "save_draft": "Guardar borrador y salir",
+    "add_context": "Añadir contexto (opcional)",
+    "summary": "Tu estudio, en resumen",
+    "edit_goal": "Editar objetivo",
+    "edit_organization": "Editar organización",
+    "step_count": "Paso {{current}} de {{total}}",
+    "day_count": " · {{count}} jornadas",
+    "hints": {
+      "title": "Un nombre para reconocer tu estudio. Puedes dejarlo vacío.",
+      "topic": "Por ejemplo, SQL o inglés. Escribe el tema que quieres estudiar.",
+      "objective": "Por ejemplo, consultar y agrupar datos, o conversar durante un viaje. Cuenta qué quieres conseguir."
+    },
+    "errors": {
+      "title": "El título admite hasta 120 caracteres.",
+      "topic": "Escribe un tema de entre 1 y 240 caracteres.",
+      "objective": "Escribe un objetivo de entre 1 y 2000 caracteres.",
+      "declared_base": "La base declarada admite hasta 4000 caracteres.",
+      "context": "El contexto admite hasta 4000 caracteres.",
+      "explanation_language": "Elige un idioma válido.",
+      "day_count": "Usa un número entero de 1 a 365, o deja el campo vacío."
+    },
+    "organization_hint": "La propuesta podrá revisarse antes de usarla.",
+    "days_optional": "Opcional. Si lo dejas vacío, Teacher propondrá la cantidad.",
+    "proposal_notice": "Crear propuesta guarda tu estudio y pide a la IA un plan para revisar. No lo acepta ni prepara las lecciones automáticamente.",
+    "local_notice": "Tus respuestas siguen en esta página. Todavía no se han guardado.",
+    "save_notice": "Guardar borrador conserva tu estudio sin generar contenido con IA. Podrás retomarlo desde Mis planes.",
+    "note_title": "Un comienzo sencillo",
+    "note_body": "Primero definimos tu objetivo. Después eliges cómo estudiar y revisas todo antes de pedir una propuesta.",
+    "notes": {
+      "goal": "No necesitas conocer tu nivel ni tener un programa preparado para empezar.",
+      "organization": "Tu experiencia previa y el contexto ayudan, pero son opcionales."
+    },
+    "exit_title": "Tu estudio aún no está guardado",
+    "exit_message": "Si sales ahora, perderás las respuestas de esta página. Puedes seguir editando o guardar un borrador cuando los datos obligatorios estén completos.",
+    "exit_uncertain": "Estamos comprobando si la solicitud se guardó. Salir no la cancela. Al volver, consulta su estado antes de crear otro estudio.",
+    "keep_editing": "Seguir editando",
+    "leave": "Salir sin guardar"
+  }
 }

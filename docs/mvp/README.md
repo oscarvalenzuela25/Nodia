@@ -115,8 +115,9 @@ Los únicos modos operativos son Agentic y API key. Las referencias a Web, `toke
 ## Teacher
 
 [Rediseño UX/UI106](106-nodia-teacher-guided-ux-redesign.md), solicitado el2026-11-15
-para futura implementación: alta guiada, revisión comprensible y llegada a primera
-lección, preservando contratos e historial. En revisión, sin UI implementada;
+con primera entrega local de alta guiada3pasos (106§10). Revisión comprensible y
+llegada a primera lección aún pendientes; contratos e historial conservados.
+En revisión, sin aprobación integral ni despliegue;
 seguimiento `TUX-001` en [TODO](TODO.md).
 
 Continuación2026-11-14: [96§43](96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14)

@@ -1,5 +1,18 @@
 # Progreso del MVP — Nodia
 
+**Teacher UX/UI — primera entrega local, 2026-11-15:** rama
+`codex/teacher-guided-ui` desde `origin/development` actualizado en `ae35b02e`.
+[106§10](106-nodia-teacher-guided-ux-redesign.md#10-primera-entrega-local--solicitud-de-desarrollo2026-11-15)
+implementa alta3pasos, contexto opcional, resumen/edición y selección IA explícita
+conservados al volver; pasos locales sin POST. Borrador sin IA y propuesta con
+tupla exacta usan comandos existentes; guard SPA/recarga y salida con guardado
+sólo tras acuse. [Evidencia local](../evidence/teacher-guided-setup-20261115.md)
+registra Client2999/362, build/tipos/lint del código y Chromium sintético
+320/600/900/1440; consultas IA iniciales2→0, JS total+6820bytes gzip. Sin cambio Server,
+inferencia o despliegue. Observación/comprensión humana TUX-00/01 pendiente;
+continuar TUX-03, después revisión/primera lección TUX-04/05. Fichas candidatas,
+sin aprobación/publicación o aceptación heredada del Teacher histórico.
+
 **Teacher UX/UI y núcleo de pendientes — especificación, 2026-11-15:** el usuario
 reporta dificultad de uso, especialmente al crear un estudio, y pide documentar
 un rediseño para implementar después. [Plan106](106-nodia-teacher-guided-ux-redesign.md)
@@ -10,8 +23,8 @@ borrador de alta incompleto no se presenta como persistido. Sin UI o inferencias
 dependencias y primer pendiente, sin prioridad nueva ni especificaciones duplicadas.
 PWA-001: código y artefacto publicado verificados por103§12; instalación física,
 standalone/auth y aceptación por dispositivo pendientes. No repetir deploy antiguo.
-Fichas Teacher candidatas, sin aprobación/publicación. Próximo paso de TUX-001:
-contrastar recorrido/baseline y preparar prototipo específico; no ejecutar ahora.
+Fichas Teacher candidatas, sin aprobación/publicación. Este corte documental es anterior a la solicitud de desarrollo y entrega local
+registradas arriba; su límite de no ejecutar quedó sustituido por esa solicitud.
 
 **Noticias bajo demanda — investigación, 2026-11-15:** el usuario propone una
 sección con botón para obtener noticias y confirma tecnología, programación e IA.

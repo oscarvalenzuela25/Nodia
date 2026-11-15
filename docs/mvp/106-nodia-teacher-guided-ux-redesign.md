@@ -1,6 +1,9 @@
-# Teacher — rediseño guiado de UX/UI y plan de implementación futura
+# Teacher — rediseño guiado de UX/UI e implementación por etapas
 
-> Estado: en revisión; especificación del 2026-11-15, sin implementación.
+> Estado: en revisión; primera entrega de alta guiada implementada localmente el2026-11-15.
+> Solicitud posterior del mismo día: empezar el desarrollo desde development.
+> Esta autorización sustituye el límite documental inicial, sin aprobar el diseño
+> completo ni acreditar comprensión humana, inferencia o adopción operativa.
 > Solicitud confirmada: el usuario encuentra Teacher engorroso y no entiende cómo
 > utilizarlo, especialmente durante la creación. Pide rediseñar la experiencia
 > con skills de diseño y documentarla para implementar más adelante.
@@ -19,8 +22,9 @@ Rediseñar Mis planes, alta, definición, revisión del plan, espera/recuperaci�
 primera lección y acceso a herramientas secundarias. La prioridad de construcción
 es el arranque; el resto se integra después sin perder las capacidades actuales.
 Conservar sidenav/topbar, MobileBottomNav, theme, rutas canónicas, propiedad,
-datos/historial y contratos pedagógicos. No iniciar ahora cambios de aplicación,
-migraciones, inferencias, instalaciones, despliegues ni nuevas herramientas IA.
+datos/historial y contratos pedagógicos. El corte documental inicial no iniciaba aplicación ni operaciones. La solicitud
+posterior autoriza la primera entrega Client de§10; conserva fuera de este lote
+migraciones, inferencias, instalaciones, despliegues y nuevas herramientas IA.
 
 ## 2. Fuentes y diagnóstico de la experiencia actual
 
@@ -326,10 +330,11 @@ ambas, conservando los límites por dispositivo/proveedor/entorno.
 - [x] Fichas e índices enlazados; TODO central con punto de reanudación.
 - [ ] TUX-00: observar y contrastar recorrido con usuario sobre una versión concreta.
 - [ ] TUX-01: crear/revisar prototipo específico Teacher; la maqueta Noticias no aplica.
-- [ ] TUX-02…05: implementación por entregas y actualización de contratos/fichas afectadas.
+- [x] TUX-02: primera entrega Client de alta guiada y regresiones locales; ver§10.
+- [ ] TUX-03…05: definición/espera, revisión legible y primera lección; aún pendientes.
 - [ ] TUX-06: QA técnico/UX, comparación por perfil y adopción por alcance.
 
-Entregable actual exclusivamente documental. Ficha candidata:
+El corte inicial fue exclusivamente documental;§10 registra su primera implementación. Ficha candidata:
 [experiencia guiada](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md),
 enlazada desde [Teacher](../nodia-ai/knowledge/studies/README.md). Sin aprobación
 automática, publicación o disponibilidad operativa del rediseño.
@@ -338,3 +343,39 @@ Comprobación de esta especificación: contratos de alta/aceptación/material y
 checklist revisados; enlaces locales/anclas, frontmatter y UTF-8/LF verificados.
 Validación de conocimiento Server correcta; el borrador nuevo se excluye del
 corpus publicado. Sin pruebas de aplicación o UI por esta entrega documental.
+
+## 10. Primera entrega local — solicitud de desarrollo2026-11-15
+
+Rama `codex/teacher-guided-ui`, creada desde `origin/development` actualizado
+`ae35b02e`, con árbol inicialmente limpio. La solicitud de empezar desarrollo
+permite construir el alta mientras observación humana TUX-00 y contraste de
+comprensión TUX-01 siguen pendientes explícitos. Este candidato funcional puede
+servir para esa revisión; no se inventa un recorrido observado ni una aprobación.
+
+Implementado `/nodia-teacher/new` con tres pasos: objetivo, organización y
+revisión. Título opcional, ayudas persistentes y errores específicos; contexto/base
+plegables y cantidad de jornadas opcional. Una sola instancia RHF conserva valores
+y errores; la selección IA se monta al llegar a revisión y se conserva al volver,
+sin sustituir el borrador incompleto de conexión/modelo/esfuerzo. Resumen plegable
+con accesos de edición y título del paso antes del resumen en DOM para que el foco
+no salte por encima de la revisión en móvil. Theme, navegación y PageContent intactos.
+
+Continuar/Anterior sólo validan y navegan localmente. Guardar usa el contrato
+existente `start_plan:false`, sin exigir IA disponible; Crear propuesta utiliza
+`true` y la selección exacta elegible. No acepta plan ni genera material. El guard
+SPA y beforeunload protegen el alta sin persistencia anunciada: seguir editando,
+salir explícitamente o guardar y continuar al destino sólo tras acuse. Error
+conserva formulario/modal; resultado incierto mantiene el recibo y bloquea otra
+mutación. Salir no cancela el trabajo ni borra la recuperación.
+
+Se reutiliza `useTeacherCommand`: no cambia Server, idempotencia, autoridad,
+presupuesto, modelos o perfiles. UX06 se limita a la misma request key: dos altas
+independientes en pestañas distintas son intenciones distintas; no se incorpora
+una deduplicación por contenido. La recuperación conserva únicamente metadatos
+opacos existentes; los campos del wizard no se escriben en browserstorage.
+
+Validación y comparación por perfil en [evidencia del lote](../evidence/teacher-guided-setup-20261115.md).
+Comprensión humana, recorrido completo propuesta/aceptación/material del rediseño,
+UI autenticada con shell/entorno real, teléfono físico y adopción VM/producción
+siguen pendientes. Retomar TUX-03 sin reiniciar los upgrades históricos de102;
+revisión legible TUX-04 y primera lección TUX-05 son entregas posteriores.

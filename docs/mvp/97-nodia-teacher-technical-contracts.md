@@ -1,5 +1,25 @@
 # Contratos técnicos de Nodia Teacher
 
+## Alta guiada Client — continuidad2026-11-15
+
+[Plan106](106-nodia-teacher-guided-ux-redesign.md) comienza con un wizard local
+sobre los DTOs existentes, sin cambios de API, Server o migraciones. Tema,
+objetivo e idioma siguen obligatorios; título/base/contexto opcionales y
+`day_count:null` admitido al elegir jornadas. La selección IA se presenta en el
+tercer paso y conserva su instancia al volver. Avanzar/retroceder no envía POST.
+Guardar usa `start_plan:false`, sin exigir IA lista; crear propuesta usa `true`
+con tupla exacta y elegibilidad vigente, sin canary nuevo. La propuesta no queda
+aceptada ni genera material por esta acción.
+
+Se reutiliza `useTeacherCommand`: payload/clave de intención, recibo y recuperación
+por GET del resultado incierto. El guard de salida SPA y recarga preserva datos;
+guardar antes de salir exige acuse Server. Una alta incompleta permanece local.
+No se agrega persistencia de pasos ni una garantía de deduplicación de altas
+independientes entre pestañas. [Evidencia local](../evidence/teacher-guided-setup-20261115.md)
+consolida QA en curso; comprensión humana, continuidad/revisión/primera lección
+TUX-03…05 y adopción por entorno siguen pendientes. No amplía autoridad, contratos
+pedagógicos o disponibilidad IA ni aprueba este documento.
+
 ## Diagnóstico de elegibilidad Agentic — adición2026-11-14
 
 `GET /teacher/connections/:id/eligibility` conserva selección exacta y contrato

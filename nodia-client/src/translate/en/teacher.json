@@ -21,7 +21,7 @@
   "fields": {
     "topic": "Topic",
     "objective": "What do you want to learn?",
-    "title": "Study plan title",
+    "title": "Study plan title (optional)",
     "declared_base": "What do I already know? (optional)",
     "context": "Background context (optional)",
     "explanation_language": "Explanation language",
@@ -558,5 +558,60 @@
     "effort": "Choose one of the levels offered by this model. Teacher will use it for future generations; existing content stays unchanged. Results may vary with the model and reasoning level."
   },
   "effort_unreported": "The received catalog has no reasoning options for this model. Refresh connections or choose another model; your draft is preserved.",
-  "refresh_connections": "Refresh connections"
+  "refresh_connections": "Refresh connections",
+  "wizard": {
+    "title": "New study",
+    "intro": "Shape what you want to learn. Teacher will help you prepare a plan you can review before starting.",
+    "steps_label": "Steps to create your study",
+    "steps": {
+      "goal": "What you want to learn",
+      "organization": "How you want to study",
+      "review": "Review and prepare"
+    },
+    "descriptions": {
+      "goal": "Start with the topic and what you would like to be able to do. The title is optional.",
+      "organization": "Choose a language and how to organize your study. You can let Teacher suggest the structure.",
+      "review": "Review your goal and choose the AI that will prepare the proposal."
+    },
+    "next": "Continue",
+    "previous": "Back",
+    "create_proposal": "Create proposal",
+    "save_draft": "Save draft and leave",
+    "add_context": "Add context (optional)",
+    "summary": "Your study at a glance",
+    "edit_goal": "Edit goal",
+    "edit_organization": "Edit organization",
+    "step_count": "Step {{current}} of {{total}}",
+    "day_count": " · {{count}} study days",
+    "hints": {
+      "title": "A name to recognize your study. You can leave it empty.",
+      "topic": "For example, SQL or English. Enter the topic you want to study.",
+      "objective": "For example, query and group data, or hold a conversation while travelling. Describe what you want to achieve."
+    },
+    "errors": {
+      "title": "The title can contain up to 120 characters.",
+      "topic": "Enter a topic between 1 and 240 characters.",
+      "objective": "Enter a goal between 1 and 2000 characters.",
+      "declared_base": "Your starting knowledge can contain up to 4000 characters.",
+      "context": "The context can contain up to 4000 characters.",
+      "explanation_language": "Choose a valid language.",
+      "day_count": "Enter a whole number from 1 to 365, or leave the field empty."
+    },
+    "organization_hint": "You can review the proposal before using it.",
+    "days_optional": "Optional. Leave it empty for Teacher to suggest a number.",
+    "proposal_notice": "Create proposal saves your study and asks AI for a plan to review. It does not accept the plan or prepare lessons automatically.",
+    "local_notice": "Your answers are still on this page. They have not been saved yet.",
+    "save_notice": "Save draft keeps your study without generating AI content. You can resume it from My plans.",
+    "note_title": "A simple beginning",
+    "note_body": "First, define your goal. Then choose how to study and review everything before requesting a proposal.",
+    "notes": {
+      "goal": "You do not need to know your level or have a curriculum ready to start.",
+      "organization": "Your previous experience and context help, but they are optional."
+    },
+    "exit_title": "Your study has not been saved yet",
+    "exit_message": "Leaving now will lose the answers on this page. You can keep editing or save a draft once the required details are complete.",
+    "exit_uncertain": "We are checking whether the request was saved. Leaving does not cancel it. When you return, check its status before creating another study.",
+    "keep_editing": "Keep editing",
+    "leave": "Leave without saving"
+  }
 }

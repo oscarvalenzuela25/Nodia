@@ -1,8 +1,17 @@
 # Plan de implementación de Nodia Teacher
 
-> Continuación futura de UX/UI: [plan106](106-nodia-teacher-guided-ux-redesign.md),
-> solicitado el2026-11-15. Rediseño guiado pendiente, sin reiniciar las entregas
-> técnicas ya verificadas aquí. Punto de reanudación `TUX-001` en [TODO](TODO.md).
+> Alta guiada — primera entrega local, 2026-11-15: solicitud de desarrollo
+> actual sobre [plan106](106-nodia-teacher-guided-ux-redesign.md), rama
+> `codex/teacher-guided-ui` desde `origin/development` en `ae35b02e`. Wizard de
+> tres pasos con una instancia de formulario/selección conservada al volver,
+> resumen y protección de salida SPA/recarga. Los pasos no envían POST;
+> `start_plan:false` guarda sin exigir IA lista y `true` solicita una propuesta
+> con selección exacta. El comando/recibo existente resuelve el resultado
+> incierto, sin replay o deduplicación nueva entre pestañas. La salida con guardado
+> sólo continúa tras acuse. [Evidencia del lote](../evidence/teacher-guided-setup-20261115.md)
+> registra QA técnico local por alcance y límites de entorno. TUX-00 humano,
+> comprensión de TUX-01 y TUX-03…05 permanecen pendientes. Sin reiniciar F0–F9,
+> aprobar documentos/ADR o adoptar VM/producción. Seguimiento `TUX-001` en [TODO](TODO.md).
 
 ## GPT Agentic: catálogo y host específico — continuación2026-11-14
 

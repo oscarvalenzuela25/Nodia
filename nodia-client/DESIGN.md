@@ -900,3 +900,22 @@ decorada evita GETextra; histórica incompleta exige lectura exacta. Precio
 ausente después de leer no se inventa; contexto desmontado no recibe callbacks.
 Viewport/mouse/teclado sintéticos, sin lector/teléfono físicos ni medición de
 rendimiento. Se reutilizan estilos, theme y geometría del corte§39.
+
+### 10.21 Alta guiada Teacher — primera entrega local2026-11-15
+
+`TeacherNew` y `useStudySetup` mantienen un formulario de tres pasos con validación
+local y campos únicos. La selección se monta por primera intención de revisión,
+se conserva al retroceder (incluida selección incompleta) y no duplica consultas
+por viewport. Resumen plegable antes del panel de revisión en móvil; título del
+paso anterior en DOM y foco al avanzar/error. Sidebar desde lg, sin padding de
+página adicional ni barra fija. Contexto/base opcionales conservan borrador al
+plegarse. Acciones44px y ancho completo xs; tema/fuentes existentes.
+
+Guardar y generar son acciones separadas con los comandos/recibos existentes.
+Guard SPA y beforeunload protegen cambios locales; el guardado de salida conserva
+modal/datos ante fallo y sólo continúa al destino con acuse. Unknown concilia sin
+replay. No persistir campos en browserstorage ni anunciar guardado prematuramente.
+
+Comparación y QA por perfil en [evidencia](../docs/evidence/teacher-guided-setup-20261115.md).
+No acredita comprensión humana, rendimiento de campo, shell autenticado, teclado
+virtual/teléfono físico o adopción operativa. TUX-03…05 siguen pendientes.
