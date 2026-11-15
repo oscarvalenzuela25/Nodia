@@ -64,7 +64,7 @@ describe("Teacher session fields", () => {
     const save = vi.fn();
     render(<Form save={save} />);
     const user = userEvent.setup();
-    const title = screen.getByRole("textbox", { name: "Título del plan de estudio" });
+    const title = screen.getByRole("textbox", { name: "Título del plan de estudio (opcional)" });
     expect(screen.getAllByRole("textbox")[0]).toBe(title);
     await user.type(title, "Mi plan de redes");
     const knowledge = screen.getByRole("textbox", { name: "¿Qué es lo que ya sé? (opcional)" });
