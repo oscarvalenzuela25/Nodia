@@ -1,5 +1,9 @@
 # Plan de implementación de Nodia Teacher
 
+> Continuación futura de UX/UI: [plan106](106-nodia-teacher-guided-ux-redesign.md),
+> solicitado el2026-11-15. Rediseño guiado pendiente, sin reiniciar las entregas
+> técnicas ya verificadas aquí. Punto de reanudación `TUX-001` en [TODO](TODO.md).
+
 ## GPT Agentic: catálogo y host específico — continuación2026-11-14
 
 La solicitud actual corrige intensidades GPT ausentes y diagnóstico genérico de

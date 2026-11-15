@@ -1,0 +1,65 @@
+# TODO — núcleo de iniciativas y próximas entregas
+
+> Revisado el 2026-11-15. Creado por solicitud explícita para reunir ideas y
+> especificaciones que se implementarán después. No hay prioridad nueva entre
+> iniciativas, fechas comprometidas ni autorización de despliegue por este índice.
+
+## Cómo usar este núcleo
+
+Este archivo es la entrada única para **trabajo futuro planificado**. El detalle
+y checklist viven en cada documento canónico. [00-progress](00-progress.md)
+conserva el estado operativo y las incidencias; [README](README.md) es el índice
+de fuentes. [12-kanban](12-kanban.md) conserva su alcance/historia de MVP, no
+se utiliza para reabrir tareas superadas por cortes posteriores.
+
+Al retomar una iniciativa:
+
+1. Leer README, progreso y este TODO; seleccionar la iniciativa que pide el usuario.
+   Si no eligió una, la posición en la tabla no decide prioridad automáticamente.
+2. Abrir la especificación enlazada, su checklist y dependencias/ADR/fichas.
+3. Conciliar código, Git, evidencia y entorno actual. Una rama o un checkbox viejo
+   no prueba qué falta hoy; tampoco un merge demuestra aceptación del usuario.
+4. Continuar desde el primer paso incompleto real del alcance, conservando lo
+   comprobado. No repetir despliegues, migraciones o inferencias inciertas.
+5. Registrar resultado/evidencia y siguiente paso **primero en la fuente canónica**;
+   actualizar después esta fila y progreso si cambió el estado operativo.
+6. Cerrar por entrega/alcance con evidencia; no marcar documentos aprobados por
+   haber terminado código. Si cambia una decisión, revisar dependencias y pendientes.
+
+Estados: `especificado` (diseño/plan sin implementación), `implementado con
+validación pendiente`, `en implementación`, `bloqueado` (dependencia concreta),
+`cerrado por alcance`. El estado documental/aprobación lo conserva cada fuente.
+
+## Cola actual
+
+| ID / iniciativa | Estado comprobado por alcance | Documento para retomar | Primera acción pendiente y dependencia |
+| --- | --- | --- | --- |
+| **PWA-001 — instalación online** | Implementado y artefacto publicado/verificado HTTPS por el corte103§12; aceptación física/standalone pendiente. El usuario reconoce el paso1 realizado | [Plan103 §11–14](103-pwa-progressive-implementation-plan.md#14-estado-conciliado-para-el-todo--2026-11-15), [guía](pwa-installation-guide.md), [evidencia HTTPS](../evidence/pages-public-convergence-20261114.md) | Reconciliar AC01–AC12; probar instalación/reapertura Chrome/Edge y Android físico, Google/auth/renovación/cambio de cuenta standalone. iOS sin verificar. No repetir publicación/PR antiguo |
+| **PWA-002 — caché y actualización** | Especificado, sin implementación acreditada | [Plan103](103-pwa-progressive-implementation-plan.md) §4 | Retomar contrato de actualización/caché estática y preservar borradores; depende de base001 y compatibilidad de artefactos |
+| **PWA-003 — desconexión** | Especificado | [Plan103](103-pwa-progressive-implementation-plan.md) §5 | Diseñar estado offline/recuperación;002 para arranque sin red. No promete datos offline |
+| **PWA-004 — push** | Especificado; eventos sin concretar | [Plan103](103-pwa-progressive-implementation-plan.md) §6 | Elegir eventos/destinatarios/consentimiento y contrato de suscripción. No requiere escrituras offline |
+| **PWA-005/006 — datos offline y sincronización** | Especificado como evolución, sin módulo elegido | [Plan103](103-pwa-progressive-implementation-plan.md) §7–8 | Elegir módulo/datos, privacidad/retención; después conflictos/idempotencia de escrituras. No ampliar todos los módulos por defecto |
+| **OBS-001 — Grafana, primera entrega operativa** | G0/documentación e inventario; Grafana Cloud Free elegido. Sin cuenta/stack, Alloy, ingesta o alertas acreditados | [Plan104 §8–9](104-logs-and-monitoring-grafana-cloud.md#8-secuencia-de-configuración-posterior), [ADR101 propuesto](../architecture/decisions/ADR-101-grafana-cloud-observability.md) | G1: cuenta/stack/región/Free efectivo/correo/host. Después G2–G6 con configuración, saneamiento antes de exportar, alertas y consumo real. Credenciales por custodia segura |
+| **OBS-002 — eventos de CI/CD** | Especificado como entrega separada G7 | [Plan104](104-logs-and-monitoring-grafana-cloud.md) §6 y§8 | Definir emisor desde recibo saneado y validar fallo/entrega parcial; Alloy no observa por sí solo el runner de GitHub. Sin replay ni dependencia de telemetría para publicar |
+| **NEWS-001 — Noticias bajo demanda** | Investigación, lectura DEV puntual y maqueta editorial con fixtures. Sin módulo/API Nodia implementado | [Plan105 §4–6](105-on-demand-tech-news.md#4-entregas-y-aceptación-propuestas), [diseño](../features/news/editorial-design.md) | Resolver acceso/plan daily.dev, condiciones/retención por fuente, conexión personal/multiusuario y catálogo. Luego contratos y primera fuente de extremo a extremo. Fuentes candidatas daily.dev/DEV/RSS/HN |
+| **TUX-001 — Teacher fácil de entender** | Solicitud y especificación futura; no implementación del rediseño. El éxito operativo Teacher anterior no resuelve la dificultad UX reportada | [Plan106 §7–9](106-nodia-teacher-guided-ux-redesign.md#7-plan-de-implementación-futura-por-entregas), [ficha candidata](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md) | TUX-00: contrastar recorrido y baseline; TUX-01 prototipo de creación guiada/revisión/primera lección. Implementar después preservando contratos95/97/101 y ADR100 |
+
+## Añadir nuevas ideas sin perder el contexto
+
+Añadir una fila con ID estable, resultado esperado, estado comprobado, documento
+canónico, primer pendiente y dependencias. Si sólo existe una idea, escribir
+«por especificar» y el problema que resuelve; no fingir que está lista para construir.
+No crear una segunda especificación dentro de esta tabla. Cuando haya alcance
+funcional, crear/actualizar fichas NodiaAI y enlaces conforme al estándar.
+
+Mantener IDs originales de entregas como PWA-001. OBS/NEWS/TUX son identificadores
+de seguimiento, no permisos, rutas, herramientas o prioridades. Una idea retirada
+se conserva con motivo y destino si fue reemplazada, sin borrar evidencia histórica.
+
+## Corte de verificación
+
+Esta conciliación usa documentación/código y referencias Git disponibles en el
+checkout; no consultó producción, cuentas Grafana o dispositivos. Plan103§12 y
+evidencia posterior suceden el texto de publicación pendiente de103§11; la
+comprobación HTTPS no acredita instalación humana. Noticias y Teacher UX/UI siguen
+en revisión. Nuevas evidencias deberán actualizar primero sus documentos enlazados.
