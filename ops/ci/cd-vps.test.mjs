@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { deployBackend, operationId, requireReady } from './cd-vps.mjs';
+import { CdRejected } from './cd-github.mjs';
 const blob = Buffer.concat([Buffer.from([0,0,0,11]), Buffer.from('ssh-ed25519'), Buffer.from([0,0,0,32]), Buffer.alloc(32,7)]);
 const expectedFingerprint = 'SHA256:' + createHash('sha256').update(blob).digest('base64').replace(/=+$/, '');
 const environment = { GITHUB_EVENT_NAME: 'workflow_dispatch', GITHUB_REF: 'refs/heads/master', GITHUB_RUN_ATTEMPT: '1',
@@ -38,4 +42,84 @@ test('uncertain submission and previous CD origin cannot repeat effects',async()
   assert.equal(calls,2);
   await assert.rejects(deployBackend({...options,send:async()=>({code:0,body:operation('unknown')})}),/requires_reconciliation/);
   assert.throws(()=>requireReady({...ready(),blocked:true}));assert.throws(()=>requireReady({...ready(),application:{api_active:true,worker_active:false}}));
+});
+
+function uploadFixture(t, reply) {
+  const directory = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'nodia-cd-upload-'));
+  t.after(() => {
+    fs.unlinkSync(path.join(directory, 'backend-state.json'));
+    fs.rmdirSync(directory);
+  });
+  const stateFile = path.join(directory, 'backend-state.json'), calls = [];
+  const send = async (_, command) => {
+    calls.push(command);
+    if (calls.length === 1) return { code: 1, body: { status: 'failed', error_code: 'operation_not_found' } };
+    if (calls.length === 2) return { code: 0, body: ready() };
+    if (calls.length === 3 && command.startsWith('upload ')) return reply;
+    throw new Error('Unexpected effect after the upload response');
+  };
+  const state = () => JSON.parse(fs.readFileSync(stateFile, 'utf8'));
+  return { stateFile, calls, send, state };
+}
+const knownUploadErrors = ['incoming_quota_reached_operator_cleanup_required', 'insufficient_upload_headroom',
+  'prior_update_requires_reconciliation', 'upload_already_recorded_no_automatic_replay'];
+const rejectedUpload = error_code => ({ code: 1, body: { schema_version: 1, status: 'failed', error_code,
+  automatic_retry_allowed: false } });
+
+for (const code of knownUploadErrors) {
+  test(`known upload rejection ${code} is durable and never submits deployment or retries`, async t => {
+    const f = uploadFixture(t, rejectedUpload(code));
+    await assert.rejects(deployBackend({ ...options, stateFile: f.stateFile, send: f.send }),
+      error => error instanceof CdRejected && error.message === code);
+    assert.deepEqual(f.state(), { operation_id: id, automatic_retry_allowed: false,
+      status: 'upload_rejected', deployment_requested: false, error_code: code });
+    assert.deepEqual(f.calls, [`status ${id}`, 'status', `upload 20 ${'e'.repeat(64)} 10 1 123`]);
+  });
+}
+
+test('untrusted or contradictory rejection responses remain unknown without leaking remote fields', async t => {
+  const valid = rejectedUpload(knownUploadErrors[0]);
+  const cases = [
+    ['extra fields', { ...valid, body: { ...valid.body, Authorization: 'private-transport-secret' } }],
+    ['unknown code', rejectedUpload('private_secret_in_lowercase')],
+    ['schema mismatch', { ...valid, body: { ...valid.body, schema_version: 2 } }],
+    ['schema string', { ...valid, body: { ...valid.body, schema_version: '1' } }],
+    ['wrong status', { ...valid, body: { ...valid.body, status: 'uploaded' } }],
+    ['retry enabled', { ...valid, body: { ...valid.body, automatic_retry_allowed: true } }],
+    ['missing retry flag', { ...valid, body: { schema_version: 1, status: 'failed', error_code: knownUploadErrors[0] } }],
+    ['successful exit', { ...valid, code: 0 }],
+    ['exit outside range', { ...valid, code: 256 }],
+    ['fractional exit', { ...valid, code: 1.5 }],
+    ['string exit', { ...valid, code: '1' }],
+    ['unknown exit', { ...valid, code: null }],
+    ['missing body', { code: 1, body: null }],
+    ['array body', { code: 1, body: [valid.body] }],
+  ];
+  for (const [name, response] of cases) await t.test(name, async t => {
+    const f = uploadFixture(t, response);
+    await assert.rejects(deployBackend({ ...options, stateFile: f.stateFile, send: f.send }),
+      error => error instanceof CdRejected && error.message === 'backend_upload_outcome_unknown');
+    assert.deepEqual(f.state(), { operation_id: id, automatic_retry_allowed: false,
+      status: 'upload_requested', deployment_requested: false });
+    assert.equal(f.calls.length, 3);
+    assert.equal(f.calls.filter(command => command.startsWith('upload ')).length, 1);
+    assert.equal(f.calls.filter(command => command.startsWith('deploy ')).length, 0);
+    assert.doesNotMatch(JSON.stringify(f.state()), /private|Authorization/);
+  });
+});
+
+test('a disconnected upload retains its uncertain intent without another upload or deployment', async t => {
+  const f = uploadFixture(t, null);
+  await assert.rejects(deployBackend({ ...options, stateFile: f.stateFile,
+    send: async (...args) => {
+      if (f.calls.length === 2) {
+        f.calls.push(args[1]);
+        throw new CdRejected('ssh_effect_or_status_outcome_unknown');
+      }
+      return f.send(...args);
+    } }), /ssh_effect_or_status_outcome_unknown/);
+  assert.equal(f.state().status, 'upload_requested');
+  assert.equal(f.state().deployment_requested, false);
+  assert.equal(f.state().automatic_retry_allowed, false);
+  assert.equal(f.calls.length, 3);
 });

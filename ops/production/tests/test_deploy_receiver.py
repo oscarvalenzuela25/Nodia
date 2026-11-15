@@ -10,7 +10,9 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
+import threading
 import types
 import unittest
 from unittest.mock import patch
@@ -114,6 +116,71 @@ class PipeTests(PipeFixture, unittest.TestCase):
             with self.subTest(total=total), self.assertRaisesRegex(ValueError, 'upload_timeout'):
                 receiver.receive_bytes(self.pipe(close_writer=False), io.BytesIO(), 1, '0' * 64,
                                        total_seconds=total, idle_seconds=idle)
+
+
+@unittest.skipUnless(sys.platform == 'linux', 'real POSIX upload pipes required')
+class GatewayUploadTests(unittest.TestCase):
+    def early_response(self, body, exit_code=1):
+        # The subprocess closes ZIP input immediately, reproducing a receiver
+        # quota rejection while the caller is still streaming a large archive.
+        payload = b'clearly-synthetic-zip-bytes' * 65536
+        read_fd, write_fd = os.pipe()
+
+        def write_input():
+            try:
+                offset = 0
+                while offset < len(payload):
+                    offset += os.write(write_fd, payload[offset:offset + 65536])
+            except BrokenPipeError:
+                pass
+            finally:
+                os.close(write_fd)
+
+        writer = threading.Thread(target=write_input, daemon=True)
+        writer.start()
+        original = subprocess.Popen
+        calls = []
+        code = ('import os,sys;os.close(0);'
+                'sys.stdout.write(' + repr(json.dumps(body)) + ');sys.stdout.flush();'
+                'sys.exit(' + repr(exit_code) + ')')
+
+        def child(*_args, **kwargs):
+            calls.append(True)
+            return original([sys.executable, '-I', '-c', code], **kwargs)
+
+        output = io.StringIO()
+        command = ('upload 456 ' + hashlib.sha256(payload).hexdigest() + ' 123 1 ' + str(len(payload)))
+        try:
+            with patch.object(gateway.pwd, 'getpwnam', return_value=types.SimpleNamespace(pw_uid=os.getuid())), \
+                    patch.dict(os.environ, {'SSH_ORIGINAL_COMMAND': command}), \
+                    patch.object(gateway.subprocess, 'Popen', side_effect=child), \
+                    patch.object(gateway.sys, 'stdin', types.SimpleNamespace(fileno=lambda: read_fd)), \
+                    patch.object(gateway.sys, 'stdout', output):
+                result = gateway.main()
+            self.assertEqual(len(calls), 1)
+            return result, json.loads(output.getvalue())
+        finally:
+            os.close(read_fd)
+            writer.join(timeout=5)
+            self.assertFalse(writer.is_alive(), 'Caller pipe writer must terminate after rejection')
+
+    def test_early_receiver_rejections_survive_a_real_broken_pipe_without_replay(self):
+        for error in gateway.UPLOAD_REJECTIONS:
+            with self.subTest(error=error):
+                body = {'schema_version': 1, 'status': 'failed', 'error_code': error,
+                        'automatic_retry_allowed': False}
+                self.assertEqual(self.early_response(body), (1, body))
+
+    def test_interrupted_upload_cannot_become_success_or_disclose_untrusted_fields(self):
+        body = {'schema_version': 1, 'status': 'failed',
+                'error_code': 'incoming_quota_reached_operator_cleanup_required',
+                'automatic_retry_allowed': False}
+        for invalid, code in [(body, 0), ({**body, 'private': 'never-forward'}, 1),
+                              ({**body, 'error_code': 'private_secret'}, 1),
+                              ({**body, 'automatic_retry_allowed': True}, 1),
+                              ({**body, 'schema_version': True}, 1)]:
+            with self.subTest(body=invalid, exit_code=code), self.assertRaises(ValueError):
+                self.early_response(invalid, code)
 
 
 @unittest.skipUnless(hasattr(os, 'geteuid') and os.geteuid() == 0, 'root metadata contract needs isolated Linux root')
