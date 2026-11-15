@@ -7,6 +7,18 @@ import { fileURLToPath } from 'node:url';
 import { withSshFiles, verifyDeploymentStatus } from './check-vps-access.mjs';
 import { CdRejected, isHex, isSha, numeric, outputs, requireCd, safeFailure, writeState, ZIP_LIMIT } from './cd-github.mjs';
 
+const uploadRejectionCodes = new Set(['incoming_quota_reached_operator_cleanup_required',
+  'insufficient_upload_headroom', 'prior_update_requires_reconciliation',
+  'upload_already_recorded_no_automatic_replay']);
+function uploadRejection(result) {
+  const body = result?.body;
+  return Number.isInteger(result?.code) && result.code >= 1 && result.code <= 255 &&
+    body && typeof body === 'object' && !Array.isArray(body) &&
+    Object.keys(body).sort().join(',') === 'automatic_retry_allowed,error_code,schema_version,status' &&
+    body.schema_version === 1 && body.status === 'failed' && body.automatic_retry_allowed === false &&
+    uploadRejectionCodes.has(body.error_code) ? body.error_code : null;
+}
+
 export async function sshCommand(session, command, { inputFile, timeout = 20_000 } = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(session.program, [...session.args, command], { env: session.options.env, windowsHide: true,
@@ -84,6 +96,11 @@ export async function deployBackend({ environment = process.env, plan, artifact,
       record({ status: 'upload_requested', deployment_requested: false });
       const uploaded = await send(session, `upload ${artifact.id} ${artifact.digest.slice(7)} ${ci.run_id} ${ci.run_attempt} ${zipBytes}`,
         { inputFile: zipFile, timeout: 180_000 });
+      const rejected = uploadRejection(uploaded);
+      if (rejected) {
+        record({ status: 'upload_rejected', deployment_requested: false, error_code: rejected });
+        throw new CdRejected(rejected);
+      }
       requireCd(uploaded.code === 0 && uploaded.body?.schema_version === 1 && uploaded.body.status === 'uploaded' &&
         uploaded.body.artifact_id === artifact.id && uploaded.body.artifact_zip_sha256 === artifact.digest.slice(7) &&
         uploaded.body.bytes === zipBytes && uploaded.body.deployment_requested === false, 'backend_upload_outcome_unknown');

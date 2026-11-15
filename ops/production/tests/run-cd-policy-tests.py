@@ -12,7 +12,7 @@ if sys.platform != 'linux' or os.geteuid() != 0 or not Path('/.dockerenv').exist
 directory = str(Path(__file__).resolve().parent)
 loader = unittest.TestLoader()
 suite = unittest.TestSuite(loader.discover(directory, pattern=pattern) for pattern in
-                           ('test_backend_update*.py', 'test_deploy_receiver.py',
+                           ('test_backend_update*.py', 'test_deploy_receiver.py', 'test_archive_completed_backend_upload.py',
                             'test_ai_runtime_updater.py', 'test_teacher_runtime.py',
                             'test_teacher_operator_upgrade.py', 'test_activate_teacher_window.py',
                             'test_capture_teacher_backup.py'))

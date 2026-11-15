@@ -77,3 +77,28 @@ test('public asset verification receipts retain the published identity and only 
     assert.doesNotMatch(JSON.stringify(receipt), /private|secret|https:/);
   }
 });
+
+test('upload rejection receipts preserve only allowlisted reasons and never authorize replay', t => {
+  const f = fixture(t), id = 'd'.repeat(32);
+  for (const code of ['incoming_quota_reached_operator_cleanup_required', 'insufficient_upload_headroom',
+    'prior_update_requires_reconciliation', 'upload_already_recorded_no_automatic_replay']) {
+    f.write('backend-state.json', { status: 'upload_rejected', operation_id: id,
+      deployment_requested: false, error_code: code, automatic_retry_allowed: true,
+      response: 'private-root-response', headers: { Authorization: 'private-transport-token' } });
+    f.write('failure.json', { error_code: code, body: 'private-failure-body' });
+    const receipt = deliveryReceipt(f.directory, f.environment);
+    assert.deepEqual(receipt.backend, { status: 'upload_rejected', operation_id: id,
+      deployment_requested: false, error_code: code, automatic_retry_allowed: false });
+    assert.deepEqual(receipt.failure, { status: 'failed', error_code: code, automatic_retry_allowed: false });
+    assert.equal(receipt.automatic_retry_allowed, false);
+    assert.doesNotMatch(JSON.stringify(receipt), /private-|Authorization|"response"|"headers"/);
+  }
+  f.write('backend-state.json', { status: 'upload_rejected', operation_id: id,
+    deployment_requested: false, error_code: 'incoming_quota_private_secret', automatic_retry_allowed: true });
+  f.write('failure.json', { error_code: 'incoming_quota_private_secret' });
+  const receipt = deliveryReceipt(f.directory, f.environment);
+  assert.equal(receipt.backend.error_code, 'cd_failed_inspect_private_state');
+  assert.equal(receipt.failure.error_code, 'cd_failed_inspect_private_state');
+  assert.equal(receipt.backend.automatic_retry_allowed, false);
+  assert.doesNotMatch(JSON.stringify(receipt), /private_secret/);
+});

@@ -1,5 +1,17 @@
 # Especificación del MVP — Nodia
 
+**CD: cuota de upload reparada, despliegue pendiente — 2026-11-15:**
+CI43753748903 pasó; CD43754640640 rechazó backend antes de submit/publicación.
+Incoming1,94GB más ZIP216MB excedía el límite2GiB, sin falta de disco.
+Archivado reversible de un ZIP histórico complete deja8ZIPs/1727842713bytes,
+con hash/recibos intactos; currente2c2eca3 y API/worker activos, sin nuevo deploy.
+[99§30](99-production-deployment-and-cicd-plan.md#30-upload-de-backend-cuota-activa-y-diagnóstico--2026-11-15)
+y [evidencia](../evidence/production-upload-quota-20261115.md). Candidato distingue
+rechazos conocidos de unknown sin replay;130Node+27receiver+16archivo Linux
+correctos. Gateway productivo no actualizado por esta intervención; siguiente
+promoción/CI/CD nuevos y adopción operatoria propia del diagnóstico, sin repetir
+el intento fallido. sudo invalidado y sesión administrativa cerrada.
+
 **Teacher GPT en producción — incidencia cerrada2026-11-15:** host release
 activado con72 en API/worker, registro/hashes/current comprobados y timers
 restaurados. Respaldo real restaurado para49 migraciones/102 tablas; HTTPS200 y

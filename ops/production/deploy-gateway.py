@@ -9,6 +9,21 @@ import subprocess
 import sys
 import time
 
+UPLOAD_REJECTIONS = frozenset({
+    'incoming_quota_reached_operator_cleanup_required',
+    'insufficient_upload_headroom',
+    'prior_update_requires_reconciliation',
+    'upload_already_recorded_no_automatic_replay',
+})
+
+
+def known_upload_rejection(body, code):
+    return (type(code) is int and 1 <= code <= 255 and type(body) is dict and
+            set(body) == {'schema_version', 'status', 'error_code', 'automatic_retry_allowed'} and
+            type(body['schema_version']) is int and body['schema_version'] == 1 and
+            body['status'] == 'failed' and body['automatic_retry_allowed'] is False and
+            isinstance(body['error_code'], str) and body['error_code'] in UPLOAD_REJECTIONS)
+
 
 def parse_command(original):
     if not isinstance(original, str) or len(original) > 1024 or not re.fullmatch(r'[a-z0-9 -]+', original):
@@ -45,22 +60,35 @@ def main():
         '/usr/local/lib/nodia/deploy-backend-receiver.py'], stdin=subprocess.PIPE,
         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=env)
     try:
-        child.stdin.write((json.dumps(message) + '\n').encode()); child.stdin.flush()
-        if message['command'] == 'upload':
-            # Root enforces byte count, digest, quota and deadlines independently.
-            remaining, deadline = message['bytes'], time.monotonic() + 240
-            with selectors.DefaultSelector() as selector:
-                selector.register(sys.stdin.fileno(), selectors.EVENT_READ)
-                while True:
-                    wait = min(20, deadline - time.monotonic())
-                    if wait <= 0 or not selector.select(wait): raise ValueError('upload_timeout')
-                    block = os.read(sys.stdin.fileno(), min(1024 * 1024, remaining + 1))
-                    if not block: break
-                    remaining -= len(block)
-                    if remaining < 0: raise ValueError('upload_exceeds_declared_size')
-                    child.stdin.write(block); child.stdin.flush()
-            if remaining: raise ValueError('upload_size_or_digest_mismatch')
-        child.stdin.close()
+        interrupted = False
+        try:
+            child.stdin.write((json.dumps(message) + '\n').encode()); child.stdin.flush()
+            if message['command'] == 'upload':
+                # Root enforces byte count, digest, quota and deadlines independently.
+                remaining, deadline = message['bytes'], time.monotonic() + 240
+                with selectors.DefaultSelector() as selector:
+                    selector.register(sys.stdin.fileno(), selectors.EVENT_READ)
+                    while True:
+                        wait = min(20, deadline - time.monotonic())
+                        if wait <= 0 or not selector.select(wait): raise ValueError('upload_timeout')
+                        block = os.read(sys.stdin.fileno(), min(1024 * 1024, remaining + 1))
+                        if not block: break
+                        remaining -= len(block)
+                        if remaining < 0: raise ValueError('upload_exceeds_declared_size')
+                        child.stdin.write(block); child.stdin.flush()
+                if remaining: raise ValueError('upload_size_or_digest_mismatch')
+        except BrokenPipeError:
+            if message['command'] != 'upload':
+                raise ValueError('deploy_gateway_failed_result_unknown') from None
+            # The receiver may reject before consuming ZIP bytes. Read its one
+            # bounded response instead of discarding it or forwarding more input.
+            interrupted = True
+        try:
+            child.stdin.close()
+        except BrokenPipeError:
+            if message['command'] != 'upload':
+                raise ValueError('deploy_gateway_failed_result_unknown') from None
+            interrupted = True
         output, deadline = bytearray(), time.monotonic() + 35
         with selectors.DefaultSelector() as selector:
             selector.register(child.stdout.fileno(), selectors.EVENT_READ)
@@ -78,11 +106,18 @@ def main():
         body = json.loads(output)
         if not isinstance(body, dict) or body.get('schema_version') != 1:
             raise ValueError('invalid_receiver_response')
+        if interrupted and not known_upload_rejection(body, result):
+            raise ValueError('deploy_gateway_failed_result_unknown')
         print(json.dumps(body), flush=True)
         return result
     finally:
         if child.poll() is None:
             child.kill(); child.wait()
+        for stream in (child.stdin, child.stdout):
+            try:
+                stream.close()
+            except BrokenPipeError:
+                pass
 
 
 if __name__ == '__main__':
