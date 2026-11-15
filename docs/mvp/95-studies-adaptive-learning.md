@@ -1,5 +1,15 @@
 # Nodia Teacher con sesiones de estudio y planes adaptativos
 
+> Alta guiada — primera entrega local, 2026-11-15: el usuario solicita empezar
+> el rediseño de [plan106](106-nodia-teacher-guided-ux-redesign.md). El alta en
+> `/nodia-teacher/new` presenta tres pasos: objetivo, organización/contexto
+> opcional y revisión con selección IA explícita. Avanzar es local; guardar
+> borrador y crear propuesta conservan los contratos actuales. Código candidato,
+> QA de esta entrega en curso en [evidencia propia](../evidence/teacher-guided-setup-20261115.md).
+> Observación/comprensión humana y resto de TUX-03…05 pendientes; no se transfieren
+> las aceptaciones históricas ni se aprueba o despliega el rediseño. Seguimiento
+> `TUX-001` en [TODO](TODO.md).
+
 > Decisión funcional vigente2026-11-14: el usuario autoriza crear con la IA
 > elegida **sin calificación generativa previa**. La propia creación puede ser
 > el primer intento real; configuración/selección/disponibilidad no generativa,

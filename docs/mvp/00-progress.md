@@ -1,5 +1,52 @@
 # Progreso del MVP — Nodia
 
+**Teacher UX/UI — primera entrega local, 2026-11-15:** rama
+`codex/teacher-guided-ui` desde `origin/development` actualizado en `ae35b02e`.
+[106§10](106-nodia-teacher-guided-ux-redesign.md#10-primera-entrega-local--solicitud-de-desarrollo2026-11-15)
+implementa alta3pasos, contexto opcional, resumen/edición y selección IA explícita
+conservados al volver; pasos locales sin POST. Borrador sin IA y propuesta con
+tupla exacta usan comandos existentes; guard SPA/recarga y salida con guardado
+sólo tras acuse. [Evidencia local](../evidence/teacher-guided-setup-20261115.md)
+registra Client2999/362, build/tipos/lint del código y Chromium sintético
+320/600/900/1440; consultas IA iniciales2→0, JS total+6820bytes gzip. Sin cambio Server,
+inferencia o despliegue. Observación/comprensión humana TUX-00/01 pendiente;
+continuar TUX-03, después revisión/primera lección TUX-04/05. Fichas candidatas,
+sin aprobación/publicación o aceptación heredada del Teacher histórico.
+
+**Teacher UX/UI y núcleo de pendientes — especificación, 2026-11-15:** el usuario
+reporta dificultad de uso, especialmente al crear un estudio, y pide documentar
+un rediseño para implementar después. [Plan106](106-nodia-teacher-guided-ux-redesign.md)
+propone alta3pasos, definición/diagnóstico opcionales, revisión primero legible y
+primera lección con acciones explícitas. Contratos actuales/ADR100 conservados;
+borrador de alta incompleto no se presenta como persistido. Sin UI o inferencias.
+[TODO central](TODO.md) enlaza PWA, Grafana, Noticias y Teacher con estados,
+dependencias y primer pendiente, sin prioridad nueva ni especificaciones duplicadas.
+PWA-001: código y artefacto publicado verificados por103§12; instalación física,
+standalone/auth y aceptación por dispositivo pendientes. No repetir deploy antiguo.
+Fichas Teacher candidatas, sin aprobación/publicación. Este corte documental es anterior a la solicitud de desarrollo y entrega local
+registradas arriba; su límite de no ejecutar quedó sustituido por esa solicitud.
+
+**Noticias bajo demanda — investigación, 2026-11-15:** el usuario propone una
+sección con botón para obtener noticias y confirma tecnología, programación e IA.
+[Propuesta105](105-on-demand-tech-news.md) compara daily.dev, RSS, HN y DEV;
+recomienda daily.dev más RSS, con conservación de resultados y control de cuota.
+Discrepancia entre documentación Free y precios Plus de daily.dev pendiente de
+cuenta real; condiciones de exhibición/retención y conexión por usuario también.
+[Producto](../nodia-ai/knowledge/news/README.md) y
+[función candidata](../nodia-ai/knowledge/news/features/on-demand-reading.md)
+draft/planned/unregistered/approval:null, sólo registradas para validación.
+Sin implementación, credenciales, consultas autenticadas, publicación o despliegue.
+Continuación: cambios trasladados byte a byte a `codex/news-section-design`,
+desde `origin/development` actualizado en `4e73a1ed`.
+[Diseño editorial candidato](../features/news/editorial-design.md) inspirado en
+Codrops, con metadatos de Smashing y filtros DEV; conserva sidenav/topbar,
+theme y navegación móvil. Fichas revisión2, sin aprobación/publicación.
+Maqueta local con fixtures en output: seis perfiles320/600/1440 claro/oscuro,
+filtros/vacío y simulación sin HTTP correctos; sin overflow/errores JS. Shell
+esquemático: no acredita la UI integrada, permisos, cuentas o teléfono físico.
+Siguiente: revisar alcance/diseño/fuentes y resolver acceso/condiciones antes
+de fijar contratos y construir una primera fuente de extremo a extremo.
+
 **Teacher GPT: runtime productivo activo —2026-11-14/15:**
 release `backend-3beeedbcbf10-d096d1b33274` confirmado; usuario ejecutó refresco
 CAS de operadores y prepare del host release79960da7. Recibos/hashes comprobados,

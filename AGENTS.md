@@ -33,6 +33,11 @@ API chat reutiliza ToolGateway, módulos/ownership, grants, propuestas, confirma
 
 ## Continuidad
 
+- Núcleo de iniciativas futuras: [docs/mvp/TODO.md](docs/mvp/TODO.md). Para nuevas
+  ideas y entregas aplazadas, mantener allí el enlace a su especificación y primer
+  pendiente real; consultar además README/progreso y continuar desde el documento
+  canónico sin repetir pasos ya implementados o aceptados por su alcance.
+
 - Paralelismo autorizado por el usuario (2026-10-15): usar subagentes cuando haya subtareas independientes que permitan avanzar en paralelo. Asignar ámbitos de archivos claros, coordinar cambios compartidos y realizar una integración y verificación final comunes.
 
 - Retomar desde el primer paso incompleto o bloqueado del checklist.

@@ -1,5 +1,16 @@
 # Contexto funcional de productos para NodiaAI
 
+## Teacher guiado y continuidad futura — especificación2026-11-15
+
+[Plan106](../../mvp/106-nodia-teacher-guided-ux-redesign.md),
+[producto Teacher](studies/README.md) y
+[ficha candidata](studies/features/guided-setup-and-study-experience.md) registran
+el rediseño futuro centrado en comprensión: alta3pasos, revisión legible y primera
+lección explícita, conservando contratos e historial. Sin implementación o nueva
+herramienta; draft/planned/unregistered/approval:null. El [TODO central](../../mvp/TODO.md)
+organiza PWA/Grafana/Noticias/Teacher sin publicar estas especificaciones como
+capacidades operativas del chat.
+
 ## Teacher: runtime productivo activo — 2026-11-14/15
 
 La [ficha candidata](studies/features/session-setup-and-planning.md#incidencia-productiva-posterior--2026-11-14)
@@ -82,6 +93,11 @@ de regresiones y navegador sintéticos. Draft/partial/unregistered/approval:null
 sin cambiar fichas aprobadas, herramientas, inferencia o publicación.
 
 ## PWA instalable online — candidato local, 2026-11-13
+
+Continuación documental2026-11-15: [103§12/14](../../mvp/103-pwa-progressive-implementation-plan.md#14-estado-conciliado-para-el-todo--2026-11-15)
+y evidencia HTTPS acreditan publicación posterior a este corte local. Instalación
+física/standalone/auth siguen pendientes en [TODO](../../mvp/TODO.md); sin publicación
+IA o aprobación de la ficha. El párrafo siguiente conserva el corte original.
 
 [Plan103](../../mvp/103-pwa-progressive-implementation-plan.md),
 [índice de producto](general-settings/README.md#instalación-pwa-online--planificación-2026-11-13)
@@ -429,6 +445,7 @@ Todos los productos/módulos actuales pertenecen al alcance funcional confirmado
 
 | Producto | Carpeta documental elegida | Fuentes de partida | Fichas de contexto |
 |---|---|---|---|
+| Noticias (propuesta) | `news/` | [Plan105](../../mvp/105-on-demand-tech-news.md) | [Producto](news/README.md) y [lectura bajo demanda](news/features/on-demand-reading.md), draft/planned/unregistered; sólo validación, sin herramientas o publicación |
 | Nodia Teacher en Estudios | `studies/` | [Especificación95](../../mvp/95-studies-adaptive-learning.md), [plan96](../../mvp/96-nodia-teacher-implementation-plan.md), [upgrade101 en revisión](../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y [ADR098 propuesto](../../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md) | [Producto](studies/README.md), cuatro funciones base parciales y seis nuevas planned; fichas draft/unregistered, sin publicación. Evidencia/gates de V1 no acreditan el upgrade |
 | Negocios | `businesses/` | [PRD](../../features/businesses/01-prd.md), [inventario de endpoints](../../mvp/39-nodia-ai-current-capabilities-inventory.md) | [Producto](businesses/README.md) draft excluido;7 funciones con secciones de lectura publicadas, [preparadores de efectos](businesses/features/confirmed-business-effects.md) publicados y [análisis C03 revisión3](businesses/features/active-invoice-analysis.md) aprobado/publicado con aceptación pendiente |
 | Finanzas personales | `personal-finance/` | [Contratos](../../mvp/22-personal-finance-contracts.md) | [Producto](personal-finance/README.md) excluido;4 funciones con secciones de lectura y [efecto confirmado](personal-finance/features/confirmed-movement-effect.md) publicados |

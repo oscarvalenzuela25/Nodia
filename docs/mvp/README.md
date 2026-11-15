@@ -57,11 +57,11 @@ productos se registra arriba. Aprovisionamiento productivo separado en
 
 Índice de las fuentes del producto. Actualizado el 2026-11-14; carpeta creada el 2026-08-15. Cada documento conserva su propio estado de aprobación, implementación y verificación.
 
-El [progreso vigente](00-progress.md) contiene los pendientes y la próxima acción. Las entregas fechadas anteriores se consultan en el [historial consolidado](00-progress-history.md); sus estados históricos no sustituyen las decisiones posteriores.
+El [progreso vigente](00-progress.md) contiene el estado operativo y la próxima acción. El [TODO central](TODO.md) reúne iniciativas futuras, especificaciones y puntos de reanudación sin duplicar sus planes. Las entregas fechadas anteriores se consultan en el [historial consolidado](00-progress-history.md); sus estados históricos no sustituyen las decisiones posteriores.
 
 ## Cómo continuar
 
-1. Leer [00-progress](00-progress.md) y retomar el primer paso incompleto del plan correspondiente, junto con sus dependencias.
+1. Leer [00-progress](00-progress.md) y el [TODO central](TODO.md); abrir la especificación de la iniciativa seleccionada y retomar su primer paso incompleto real junto con sus dependencias.
 2. Consultar la especificación del dominio, backend y ADR aplicables antes de cambiar contratos o comportamiento.
 3. Registrar decisiones y evidencia en su fuente canónica; mantener las [fichas NodiaAI](../nodia-ai/knowledge/README.md) cuando corresponda.
 4. Distinguir aprobación documental, implementación, integración real y aceptación por entorno. No marcar documentos aprobados sin confirmación explícita ni reutilizar estados antiguos como pendientes actuales.
@@ -94,6 +94,7 @@ El [progreso vigente](00-progress.md) contiene los pendientes y la próxima acci
 | Reservas | [Entrevista25](25-rental-reservations-interview.md), [especificación26](26-rental-reservations-spec.md), [ERD27](27-rental-reservations-erd.md), [contratos28](28-rental-reservations-contracts.md), planes [Server29](29-rental-reservations-backend-plan.md)/[Client30](30-rental-reservations-client-plan.md) y [rediseño36](36-reservations-redesign-proposal.md) |
 | Negocios, productos y POS | [PRD de Negocios](../features/businesses/01-prd.md), [plan94](94-business-point-of-sale-and-product-refactor.md) y [contactos31](31-provider-contacts-proposal.md) |
 | Core, módulos y privacidad | [Orden/feedback87](87-core-feedback-module-order-plan.md), [política89](89-module-access-and-user-data-scope.md) y [ADR092 de rutas canónicas](../architecture/decisions/ADR-092-stable-module-navigation-routes.md) |
+| Noticias de tecnología, programación e IA | [Propuesta105](105-on-demand-tech-news.md): daily.dev/DEV/RSS/HN y [diseño editorial](../features/news/editorial-design.md) con sidenav/topbar conservados. Investigación y diseño en revisión, sin implementación |
 
 La aprobación explícita del ERD27 del 2026-10-04 no aprueba por extensión contratos28, planes29/30 ni sus ADR. Los estados de cada dominio se consultan en sus fuentes y en progreso.
 
@@ -112,6 +113,12 @@ La aprobación explícita del ERD27 del 2026-10-04 no aprueba por extensión con
 Los únicos modos operativos son Agentic y API key. Las referencias a Web, `token_plan` o CRUD conversacional de ventas describen etapas retiradas; no habilitan ejecución. Consultar progreso y plan91 para la disponibilidad realmente comprobada por selección/entorno.
 
 ## Teacher
+
+[Rediseño UX/UI106](106-nodia-teacher-guided-ux-redesign.md), solicitado el2026-11-15
+con primera entrega local de alta guiada3pasos (106§10). Revisión comprensible y
+llegada a primera lección aún pendientes; contratos e historial conservados.
+En revisión, sin aprobación integral ni despliegue;
+seguimiento `TUX-001` en [TODO](TODO.md).
 
 Continuación2026-11-14: [96§43](96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14)
 y [ADR100 propuesto](../architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md)
@@ -132,10 +139,12 @@ despliegue por esta entrega. [Evidencia](../evidence/teacher-ai-selection-first-
 [PWA103](103-pwa-progressive-implementation-plan.md): primera entrega PWA-001
 independiente y prioritaria, instalable con iconos/ventana propia y funciones
 online. Backlog separado de actualizaciones/caché, desconexión, push y datos
-offline/sincronización. Candidato local en `codex/pwa-001-installation`, con
-opción1 seleccionada para icono/favicon, manifiesto y validación del artefacto.
-Build,90regresiones auth y82checks CI/CD correctos; instalación física,
-standalone/auth y publicación pendientes. Plan en revisión;
+offline/sincronización. Implementación inicial y opción1 para icono/favicon,
+manifiesto y validación de artefacto realizadas;103§12 acredita publicación y
+diez recursos originales verificados por HTTPS. Instalación física y
+standalone/auth pendientes por dispositivo, sin repetir el deploy histórico.
+Ver [estado conciliado103§14](103-pwa-progressive-implementation-plan.md#14-estado-conciliado-para-el-todo--2026-11-15)
+y [TODO](TODO.md). Plan en revisión;
 [ficha candidata](../nodia-ai/knowledge/general-settings/features/pwa-installation.md)
 draft/partial, sin publicación.
 

@@ -4,15 +4,19 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 38,
+  "revision": 40,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación. Candidato local2026-11-12: formulario guiado, idioma validado conservando etiqueta histórica y selección IA visible/48px con ayuda; catálogo sin esfuerzos explicado sin inventarlos. Cabecera Codex consulta observación acotada compartida, sin polling. Build/lint,382regresiones/51archivos y QA320/1280 correctos; f01productivo tiene0recibos Agentic y carece de tabla por propósito; sin despliegue/inferencia o publicación del lote. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación."
+    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación. Candidato local2026-11-12: formulario guiado, idioma validado conservando etiqueta histórica y selección IA visible/48px con ayuda; catálogo sin esfuerzos explicado sin inventarlos. Cabecera Codex consulta observación acotada compartida, sin polling. Build/lint,382regresiones/51archivos y QA320/1280 correctos; f01productivo tiene0recibos Agentic y carece de tabla por propósito; sin despliegue/inferencia o publicación del lote. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación. Continuación local2026-11-15: primera entrega del rediseño106 con alta de tres pasos, contexto opcional, resumen y selección IA explícita al revisar; avance local sin POST y una sola instancia del selector conservada al volver. Guardar borrador usa start_plan:false sin exigir IA lista; crear propuesta true con selección exacta. Guard de salida SPA/recarga y salida con guardado sólo tras acuse, reutilizando comando/recuperación existentes. QA del lote en curso; observación/comprensión humana y TUX-03…05 pendientes. Sin cambios Server/migraciones, inferencia o adopción por esta entrega."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/mvp/106-nodia-teacher-guided-ux-redesign.md",
+      "kind": "specification"
+    },
     {
       "path": "docs/mvp/95-studies-adaptive-learning.md",
       "kind": "specification"
@@ -216,10 +220,14 @@
     {
       "path": "docs/architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md",
       "kind": "specification"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/hooks/useStudySetup.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-14",
+    "checked_on": "2026-11-15",
     "evidence_paths": [
       "docs/evidence/teacher-local-implementation-20261101-r01.json",
       "docs/evidence/teacher-local-activation-20261101-r01.json",
@@ -244,11 +252,31 @@
       "docs/evidence/nodia-ai-chat-space-gpt-selection-20261114.md",
       "docs/evidence/chat-gpt-development-vm-20261114-r01.json"
     ],
-    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente. Corte2026-11-12: inspección de contratos y código local; build/lint Client,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado en recibo propio: f01/45migraciones,0recibos Agentic y tabla por propósito ausente, sin trasladar la aceptación anterior. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación."
+    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente. Corte2026-11-12: inspección de contratos y código local; build/lint Client,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado en recibo propio: f01/45migraciones,0recibos Agentic y tabla por propósito ausente, sin trasladar la aceptación anterior. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación. Continuación2026-11-15: inspección documental/código del wizard; regresiones de alta/campos/selección/recuperación y Chromium sintético comprobados según evidencia propia; sin aceptación humana u operativa. No heredar resultados históricos al rediseño."
   },
   "approval": null
 }
 ---
+
+## Alta guiada — primera entrega local, 2026-11-15
+
+El usuario solicita empezar el rediseño de [plan106](../../../mvp/106-nodia-teacher-guided-ux-redesign.md).
+`/nodia-teacher/new` presenta objetivo, organización con contexto opcional y
+revisión/resumen con selección IA explícita. Avanzar no envía POST y volver
+conserva campos y la misma instancia del selector, sin reemplazar la tupla elegida.
+Guardar borrador usa `start_plan:false` y no exige IA lista; crear propuesta usa
+`true` con selección exacta, sin aceptar el plan o preparar lecciones automáticamente.
+El guard de salida SPA/recarga permite seguir editando; guardar antes de salir
+sólo continúa tras acuse Server. El alta incompleta permanece local y la
+recuperación del comando incierto mantiene el recibo existente, sin replay.
+
+Evaluación de impacto: cambia la presentación y la guía de creación, por lo que
+se actualiza este contexto. Conserva operaciones, mínimos, autoridad por destino,
+historial y contratos pedagógicos; no habilita herramientas del chat ni capacidades
+IA por Markdown. [Evidencia del lote](../../../evidence/teacher-guided-setup-20261115.md),
+con QA técnico local por alcance y límites de entorno explícitos. Observación/comprensión humana TUX-00/01,
+revisión/continuidad/primera lección TUX-03…05 y adopción por entorno pendientes.
+Draft/partial/unregistered/approval:null; sin aprobación o publicación nuevas.
 
 > Continuidad VM del2026-11-11: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. [Recibo VM](../../../evidence/teacher-upgrade-development-vm-20261111-r01.json). El cierre55/55 R02 conserva su alcance Windows/API key; este recorrido no representa55pruebas nuevas en VM ni eficacia educativa humana. Sin promoción a master, aprobación documental o publicación. Los cortes inferiores conservan sus fechas.
 
@@ -402,6 +430,13 @@ La calificación técnica no acredita calidad pedagógica universal ni crea un c
 
 ## Propósito y alcance
 
+Rediseño solicitado2026-11-15: [plan106](../../../mvp/106-nodia-teacher-guided-ux-redesign.md)
+y [ficha de experiencia guiada](features/guided-setup-and-study-experience.md)
+responden a la dificultad de uso reportada. La propuesta separa alta, candidata,
+aceptación y material con ayuda progresiva. Alta3pasos implementada localmente
+por106§10; revisión/material del rediseño y comprensión humana pendientes.
+Conserva los contratos del Teacher actual. Retomar `TUX-001` en [TODO](../../../mvp/TODO.md).
+
 La [propuesta95 R02](../../../mvp/95-studies-adaptive-learning.md) y el [plan de implementación96](../../../mvp/96-nodia-teacher-implementation-plan.md) definen Nodia Teacher como producto general de Estudios. Cada persona crea una sesión de cualquier tema mediante formulario y chat breve; Teacher ofrece jornadas o tópicos, se revisa el plan y se genera material/preguntas progresivamente. Inglés cotidiano y tecnológico es un ejemplo personal, no un módulo ni un curso fijo. Las propuestas técnicas y documentos completos siguen sin aprobación.
 
 La ampliación95 R03 detalla la revisión del borrador, ajustes manuales sin IA y una candidata comparada cuando se pide ayuda a Teacher. Crear guarda la revisión elegida y permite preparar material después. La disponibilidad del proveedor no bloquea guardar una propuesta válida existente; no significa que el material esté listo.
@@ -434,6 +469,7 @@ La implementación conserva límites parciales por función y evidencia históri
 
 | Función | Ficha relativa | Implementación | Integración NodiaAI | Módulos de destino |
 |---|---|---|---|---|
+| Experiencia guiada y rediseño UX/UI | [Ficha](features/guided-setup-and-study-experience.md) | partial; alta3pasos local de106, QA/comprensión y resto pendientes | Sin registrar | Mismo Teacher `/nodia-teacher` |
 | Sesiones, formulario y chat de definición | [Ficha](features/session-setup-and-planning.md) | Parcial; definición/propuesta/ajuste comprobados en selección VM exacta | Sin registrar | Teacher `/nodia-teacher`, autoridad89/ADR092 |
 | Diagnóstico y prueba final de sección | [Ficha](features/diagnostic-and-skip-assessment.md) | Parcial; diagnóstico y final comprobados por alcance VM | Sin registrar | Teacher `/nodia-teacher` |
 | Planes y material guardado por jornada/tópico | [Ficha](features/adaptive-plans-and-day-material.md) | Parcial; snapshot y muestra SQL VM revisados; prediction/citas no emitidos | Sin registrar | Teacher `/nodia-teacher` |

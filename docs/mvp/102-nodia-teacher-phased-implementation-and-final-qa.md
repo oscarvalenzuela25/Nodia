@@ -1,5 +1,21 @@
 # Nodia Teacher — implementación directa por fases y QA final
 
+## Entrega UX posterior y separada — 2026-11-15
+
+El usuario solicita comenzar [plan106](106-nodia-teacher-guided-ux-redesign.md)
+en `codex/teacher-guided-ui`, desde `origin/development` en `ae35b02e`. Primera
+entrega local: alta de tres pasos, contexto opcional, resumen/elección IA y
+protección de salida SPA/recarga, con guardado confirmado y comando/recuperación
+existentes. Avanzar no genera ni guarda; borrador usa `start_plan:false` y crear
+propuesta `true`. No cambia Server, migraciones, aceptación por hash ni material.
+
+La [evidencia de este lote](../evidence/teacher-guided-setup-20261115.md) documenta
+su QA específico local, separado de aceptación humana/operativa. No reabre F0–F9/55TU
+ni hereda su aceptación. Observación humana TUX-00, comprensión de TUX-01,
+TUX-03…05 y QA/adopción integral TUX-06 siguen pendientes por su alcance. Código
+local no acredita comprensión, inferencia, publicación, aprobación documental o
+despliegue en VM/producción.
+
 > Continuación funcional2026-11-14: el usuario permite el primer intento con la
 > IA elegida sin calificación generativa previa. [96§43](96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14)
 > y [ADR100 propuesto](../architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md)

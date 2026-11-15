@@ -1,8 +1,8 @@
 # PWA de Nodia — plan de implementación por entregas
 
-> Estado: en revisión, con candidato local implementado y verificación acotada en §11. La prioridad y el alcance independiente de PWA-001 fueron solicitados explícitamente el 2026-11-13; el documento no tiene aprobación integral y la instalación/publicación siguen pendientes.
+> Estado vigente conciliado2026-11-15: en revisión, PWA-001 implementado y artefacto publicado/verificado HTTPS por§12; instalación física y aceptación standalone/auth por dispositivo pendientes. La prioridad y alcance independiente de001 fueron solicitados el2026-11-13; no hay aprobación integral. §11 conserva su corte local histórico; ver§14 y [TODO](TODO.md).
 > Fecha: 2026-11-13. Rama de planificación: `codex/plan-pwa-installation`, desde `development`.
-> Implementación local: `codex/pwa-001-installation`, desde development/origin actualizado a `a780099b456b9cb930865543d836e61147cc4190`. Opción gráfica 1 seleccionada explícitamente; QA de instalación y publicación pendientes, sin aprobación integral del documento.
+> Rama histórica de implementación local: `codex/pwa-001-installation`, desde development/origin en `a780099b456b9cb930865543d836e61147cc4190`. Opción gráfica1 seleccionada. La publicación posterior se registra en§12; no repetir esa operación al retomar el QA de instalación.
 > Fuentes: [Client08](08-stack-frontend.md), [auth14](14-authentication.md), [privacidad89](89-module-access-and-user-data-scope.md), [rutas ADR092](../architecture/decisions/ADR-092-stable-module-navigation-routes.md), [rendimiento37](37-web-performance-implementation-plan.md), [producción99](99-production-deployment-and-cicd-plan.md) y [diseño Client](../../nodia-client/DESIGN.md).
 
 ## 1. Objetivo y orden de entrega
@@ -340,3 +340,21 @@ idénticos a public/. No React, auth, API, SW, capacidades o publicación nuevos
 Evaluación visual en la [ficha existente](../nodia-ai/knowledge/general-settings/features/pwa-installation.md).
 Cambio local para actualizar el mismo PR; sin nuevo despliegue de VM/producción,
 instalación real, prueba de caché personal o aceptación adicional PWA-001.
+
+## 14. Estado conciliado para el TODO — 2026-11-15
+
+El usuario identifica el paso1 PWA como realizado al pedir el núcleo de pendientes.
+Se concilian los cortes existentes: implementación/assets de§11 y favicon de§13;
+§12 acredita publicación y comprobación posterior por HTTPS de diez recursos del
+artefacto CI original. Las referencias a «publicación pendiente» en el corte
+histórico§11 no describen ese resultado posterior. No se repite PR, merge o CD.
+
+No implica cierre de todos los AC01–AC12: instalación/reapertura Chrome/Edge,
+Google/auth/renovación/cambio de cuenta desde standalone y Android físico requieren
+su evidencia. iOS sigue sin verificar. Reconciliar cada gate con la versión y
+dispositivo de la prueba futura; publicación exacta no acredita instalación humana.
+PWA-002…006 siguen sin implementación acreditada por este corte.
+
+[TODO](TODO.md) contiene el punto de reanudación por entrega; las especificaciones
+y evidencias permanecen en este plan. Sin nueva consulta productiva, despliegue,
+instalación, aprobación o verificación de dispositivo por esta conciliación.
