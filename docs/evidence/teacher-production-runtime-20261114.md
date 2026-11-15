@@ -1,4 +1,4 @@
-# Teacher Codex en producción: activación pendiente — 2026-11-14/15
+# Teacher Codex en producción: runtime activo — 2026-11-14/15
 
 Solicitud actual del usuario: Teacher continúa bloqueado después de integrar
 PR25/26. La captura muestra el motivo específico `codex_host_unconfigured`.
@@ -278,3 +278,39 @@ La activación y la selección/inferencia productiva aún no se acreditan.
 Integración del código final del ensayo/captura:113 pruebas Python Linux root
 sin omisiones,20 Node (15 del paso CI y cinco históricas) y roundtrip del bundle
 correctos. No se repitió el backup o una inferencia para corregir la comparación.
+
+## Activación productiva y confirmación humana
+
+Fuente final `46d2653ad12524c3db63db7af1f8d5e1b52cc31a`; dos operadores del
+bundle exactos contra Git, nueve pins instalados comprobados por SSH. Ventana
+`aed9a8b7086fd8abacde4f6585968c2b`, plan SHA256
+`867d4f36b51d9073b1afe57ec2234675f3237681d71425606f4074125c0d3323`,
+checksums SHA256 `65fd09e28cffe63775e8b562ca619fb050eaaf53dff56aa60c14ea81cdb72b0e`.
+El usuario ejecutó el paso revisado desde su terminal privada; recibo
+`teacher_runtime_window_complete` SHA256
+`82963444f8116a3f9358e6c96d167776e52d86e0b11cca715c4db04a2df946ed`.
+
+Pre/post-stop READ ONLY y TLS autorizados, nueve contadores en cero;
+49→49 migraciones, ninguna ejecutada. Parada limpia y cgroups vacíos antes
+de activar. Nuevo registro SHA256
+`e7c9ec01047ac3c27f15b04ddd41cf4651b5210b00f1dda9f140da782fe65023`.
+Ambos consumidores activos/enabled con70/71/72, PID API877005/worker877006,
+mismo current/manifiesto3be. Entorno/host y registro completos antes del único
+arranque; keyrings conservados y timers activos/enabled restaurados. Se retiró
+el mantenimiento y no se ejecutó inferencia por el operador de instalación.
+
+Comprobación independiente desde PC con curl/Schannel: HTTPS raíz200 y
+auth/me401 sin credenciales ni excepciones TLS. OpenSSL en servidor verificó
+TLS1.3 y nombre IP; certificado válido hasta2026-11-21T10:33:27Z. Python local
+había rechazado la cadena como expirada; esa incidencia del verificador local
+no se presenta como expiración del leaf productivo, ni se modificaron CA,
+trust stores o verificación TLS para obtener éxito.
+
+El usuario confirmó explícitamente, tras recargar Teacher y conservar
+ChatGPT/Agentic/gpt-6.1-sol/medium: **«Desapareció y generó la propuesta»**.
+Esa confirmación humana cierra el síntoma solicitado. Se distingue de una
+auditoría independiente del turno: el operador no fabricó JWT/sesiones ni
+inspeccionó sus IDs/ACK autenticados. El operador no aceptó ni modificó una
+propuesta; no se transfieren resultados a material/práctica/final,
+otros modelos/esfuerzos, API key o Gemini. Fichas/ADR continúan con su aprobación
+documental previa; esta entrega no publica conocimiento.

@@ -1,17 +1,21 @@
 # Progreso del MVP — Nodia
 
-**Teacher GPT: preparación productiva, activación pendiente —2026-11-14/15:**
+**Teacher GPT: runtime productivo activo —2026-11-14/15:**
 release `backend-3beeedbcbf10-d096d1b33274` confirmado; usuario ejecutó refresco
 CAS de operadores y prepare del host release79960da7. Recibos/hashes comprobados,
-API/worker/PID/current/keyrings/timers intactos y sólo70/71 activos. Build release
+API/worker/PID/current/keyrings/timers intactos durante preparación. Build release
 offline y CLI del artefacto correctos;11 pruebas Cargo release correctas. Ensayo
 DB actual sintético comprobó49 migraciones/68 entidades/102 tablas y cleanup.
 Integración final113 casos Python Linux root sin omisiones, NodeCI15 y cinco
 regresiones Node históricas, más bundle
 correctos, con revisión independiente. Clave original localizada en su custodia
 local protegida. Respaldo875a4409 y restore local exacto comprobados para49
-migraciones/68 entidades/102 tablas, con GCM y cleanup completos. Faltan
-activación coordinada y selección exacta/inferencia; sin login nuevo o fallback.
+migraciones/68 entidades/102 tablas, con GCM y cleanup completos. Ventana
+aed9a8b7 completada:72 activo en ambos consumidores, nuevos PID877005/877006,
+current/keyrings/timers conservados y nueve contadores quietos antes/después
+de la parada. HTTPS200/auth401 comprobados. Usuario confirmó desaparición del
+aviso y propuesta GPT/medium generada desde Teacher; alcance humano acotado a
+ese escenario, sin login nuevo, fallback o aceptación de otras modalidades.
 [99§29](99-production-deployment-and-cicd-plan.md#29-teacher-sigue-bloqueado-tras-el-cd-aprovisionamiento-separado--2026-11-14)
 y [evidencia](../evidence/teacher-production-runtime-20261114.md).
 

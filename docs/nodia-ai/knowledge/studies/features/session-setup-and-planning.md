@@ -576,9 +576,12 @@ opciones exactas. Los modelos siguen viniendo de configuración/catálogo real.
 ### Incidencia productiva posterior — 2026-11-14
 
 La aplicación desplegada informa `codex_host_unconfigured`. Después del
-diagnóstico, el usuario actualizó los operadores y preparó el host release
-específico; sus recibos están comprobados, todavía sin activar72 o reiniciar.
-La VM conserva su verificación anterior; no se transfiere a producción. Aún no
-se acreditan elegibilidad o generación productivas. No cambia el
+diagnóstico, el usuario actualizó los operadores, preparó y activó el host
+release específico con72 en API/worker. Recibos/hashes, respaldo real restaurado,
+salud HTTPS y timers comprobados; el release y los keyrings se conservaron.
+El usuario confirmó desde Teacher que desapareció el aviso y se generó una
+propuesta con GPT/medium. Esta aceptación humana se limita a esa propuesta;
+conserva los alcances históricos VM y no acredita otras modalidades o todo el
+curso productivo. No cambia el
 contrato funcional, permisos, selección o presupuesto; no se pide reconectar
 la cuenta sin evidencia de un fallo de sesión. [Estado comprobado](../../../../evidence/teacher-production-runtime-20261114.md).

@@ -88,7 +88,8 @@ de aplicación conserva ese aprovisionamiento pendiente. El refresco sano pasó
 14 regresiones Linux y revisión independiente; su integración está incluida en
 el runner de política y el bundle. Después, el usuario actualizó operadores y
 preparó el host release79960da7, con recibos/hashes comprobados y procesos
-conservados. Sigue pendiente activar72 y verificar la selección real. Estado y límites en
+conservados. La ventana posterior activó72, verificó registro/salud y restauró
+timers; el usuario confirmó propuesta GPT/medium desde Teacher. Estado y límites en
 [la evidencia vigente](../../../docs/evidence/teacher-production-runtime-20261114.md).
 
 ### Respaldo para la adopción actual

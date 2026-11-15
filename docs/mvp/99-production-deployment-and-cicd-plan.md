@@ -1400,3 +1400,12 @@ Linux root110casos, NodeCI14 y roundtrip del bundle. Captura/restore productivos
 activación y selección real todavía pendientes. No cambiar aprobación de ADR,
 fichas o calificación por estos resultados. La evidencia enlazada conserva
 digests, fases y límites de lectura reales.
+
+Ventana productiva cerrada2026-11-15UTC: backup875a4409 restaurado con49
+migraciones/68 entidades/102 tablas iguales; activación72 completada por el
+usuario con plan867d4f36/ventana aed9a8b7 y registro final e7c9ec01. API/worker
+activos tras parada limpia y nueve contadores quietos; mismo release3be,
+keyrings y timers conservados/restaurados. HTTPS200/auth401 comprobados sin
+desactivar TLS. El usuario recargó Teacher y confirmó desaparición del aviso
+y propuesta GPT/medium generada. Esta aceptación humana es acotada; no aprueba
+ADR/fichas ni acredita otras selecciones, modalidades o el curso completo.
