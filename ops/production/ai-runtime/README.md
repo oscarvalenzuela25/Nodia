@@ -25,15 +25,34 @@ la instalación separada. No se ejecutó en el VPS. Flujo de operación posterio
    [su guía](../../../nodia-server/native/teacher-codex-host/README.md).
    Se exige perfil `release`, Linuxx86_64, glibc≤2.39, manifiesto exacto y
    capacidades sin tools/adjuntos/retries. El artefacto `dev` histórico no sirve.
-2. Instalar las fuentes revisadas del updater, `register-consumers.py` y
-   `prepare-teacher-runtime.py` en sus rutas root mediante el procedimiento de
-   actualización de operadores existente, contrastando sus hashes antes de
-   ejecutarlas. No repetir `prepare-ai-runtime.py` sobre la instalación activa.
+2. Para una instalación sana con sólo70/71, usar el operador específico
+   [upgrade-teacher-operators.py](upgrade-teacher-operators.py), con un manifiesto
+   cerrado contra el release/manifiesto actual, settings, receiver-settings,
+   consumers, fuentes anteriores y nuevas, y los tres assets inmutables.
+   `refresh-backend-updater.py` recupera un CD fallido; no sirve para este caso.
+   El instalador inicial tampoco actualiza fuentes diferentes. No simular un
+   CD fallido ni repetir `prepare-ai-runtime.py` sobre la instalación activa.
+
+   ```bash
+   sudo python3 -I -B /ruta/revisada/upgrade-teacher-operators.py --execute \
+     --bundle /ruta/revisada/bundle --manifest /ruta/revisada/upgrade.json \
+     --manifest-sha256 SHA256_REVISADO
+   ```
+
+   Sin `--execute` es inerte. Contrasta la identidad/hash del propio script
+   antes de ejecutarlo. El bundle se valida archivo por archivo contra el
+   manifiesto de upgrade. Obtiene los locks de instalación/CD, exige backend
+   sano y guarda originales privados antes de sustituir sólo updater/register,
+   crear prepare y cambiar el pin del updater. Conserva consumidores, registro,
+   release, procesos y timers; no activa Teacher ni reinicia servicios.
+   Una reserva interrumpida se concilia desde originales/recibos; no se borra
+   ni se reintenta automáticamente. Necesita metadatos root revisados; el hash
+   de un archivo inaccesible no se reemplaza por una suposición de ausencia.
 3. Transferir el binario/manifiesto públicos y proporcionar el SHA256 del
    manifiesto revisado por un canal independiente. Ejecutar como root:
 
    ```bash
-   python3 -I /usr/local/lib/nodia/ai-runtime/prepare-teacher-runtime.py prepare \
+   python3 -I -B /usr/local/lib/nodia/ai-runtime/prepare-teacher-runtime.py prepare \
      --artifact /ruta/revisada/nodia-teacher-codex-host-HASH16 \
      --manifest /ruta/revisada/host.manifest.json --manifest-sha256 SHA256_REVISADO
    ```
@@ -59,10 +78,17 @@ timers no admiten este permiso. El registro permite sólo la adición inicial de
 Teacher; no sustituye silenciosamente un host ya registrado. Un fallo conserva
 el estado y requiere inspección, sin retry o reinicio automático.
 
-Verificación local: pruebas sintéticas de manifiesto/capacidades/ABI/digests,
+Verificación del corte anterior: pruebas sintéticas de manifiesto/capacidades/ABI/digests,
 barreras de activación, registro CD y drift de entorno/binario. Docker local no
 estaba disponible; no se compiló ni preparó un paquete `release` nuevo, no se
 instaló el operador remoto, no se cambió la configuración ni se ejecutó inferencia.
+
+Incidencia posterior en release `backend-3beeedbcbf10-d096d1b33274`: el despliegue
+de aplicación conserva ese aprovisionamiento pendiente. El refresco sano pasó
+14 regresiones Linux y revisión independiente; su integración está incluida en
+el runner de política y el bundle. Compilación release nueva en curso, todavía
+sin instalación ni inferencia productiva. Estado y límites en
+[la evidencia vigente](../../../docs/evidence/teacher-production-runtime-20261114.md).
 
 ## Estado — 2026-11-12, America/Santiago
 

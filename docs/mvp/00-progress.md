@@ -1,5 +1,16 @@
 # Progreso del MVP — Nodia
 
+**Teacher GPT productivo sigue bloqueado —2026-11-14:** release
+`backend-3beeedbcbf10-d096d1b33274` confirmado; API/worker activos con70/71,
+sin host/configurador Teacher en rutas accesibles ni72. Metadatos protegidos
+pendientes de lectura root; inaccesible no equivale a ausente. Helper de
+refresco sano implementado:14 regresiones focales Linux, revisión independiente,
+runner92/92 previo a dos adiciones y roundtrip de bundle correctos. Compilación
+release offline en curso. Falta aprovisionar, activar con respaldo/drenaje y
+comprobar selección exacta/inferencia; sin mutaciones productivas, cambios de
+login o fallback. [99§29](99-production-deployment-and-cicd-plan.md#29-teacher-sigue-bloqueado-tras-el-cd-aprovisionamiento-separado--2026-11-14)
+y [evidencia](../evidence/teacher-production-runtime-20261114.md).
+
 **Favicon como PWA — añadido a PR25, 2026-11-14:** misma N esencial compartida,
 URLs favicon versionadas por el hash del SVG para solicitar la marca actual;
 sin cambiar los bytes de imagen o el manifiesto. Build/tipos,31checksLinux sin

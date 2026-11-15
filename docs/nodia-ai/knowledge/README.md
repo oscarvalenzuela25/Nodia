@@ -1,5 +1,13 @@
 # Contexto funcional de productos para NodiaAI
 
+## Teacher: aprovisionamiento productivo pendiente — 2026-11-14
+
+La [ficha candidata](studies/features/session-setup-and-planning.md#incidencia-productiva-posterior--2026-11-14)
+separa el éxito VM del host Teacher todavía ausente en producción. Preparación
+operativa en curso, sin inferencia ni instalación productiva acreditadas;
+no amplía contratos, autoridad o herramientas ni aprueba/publica fichas.
+[Evidencia vigente](../../evidence/teacher-production-runtime-20261114.md).
+
 ## Producto recién guardado → venta local — VM development2026-11-14
 
 [Checkout revisión4](businesses/features/point-of-sale-checkout-and-accessibility.md#alta-terminada-e-incorporación-automática--solicitud-posterior2026-11-14)

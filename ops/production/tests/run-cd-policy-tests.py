@@ -13,7 +13,8 @@ directory = str(Path(__file__).resolve().parent)
 loader = unittest.TestLoader()
 suite = unittest.TestSuite(loader.discover(directory, pattern=pattern) for pattern in
                            ('test_backend_update*.py', 'test_deploy_receiver.py',
-                            'test_ai_runtime_updater.py', 'test_teacher_runtime.py'))
+                            'test_ai_runtime_updater.py', 'test_teacher_runtime.py',
+                            'test_teacher_operator_upgrade.py'))
 result = unittest.TextTestRunner(verbosity=1).run(suite)
 if result.skipped:
     raise SystemExit('cd_policy_regressions_must_not_be_skipped')

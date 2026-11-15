@@ -572,3 +572,13 @@ opciones exactas. Los modelos siguen viniendo de configuración/catálogo real.
 ### Continuación técnica en VM de desarrollo — 2026-11-14
 
 [Recibo por selección y época](../../../../evidence/chat-gpt-development-vm-20261114-r01.json). La generación comprobada pertenece a Teacher y a la tupla exacta del recibo. El compositor se verificó como recursos estáticos servidos; no se observó un envío de chat ni UI autenticada en esta continuación. La ficha continúa candidata sin aprobación o publicación.
+
+### Incidencia productiva posterior — 2026-11-14
+
+La aplicación desplegada informa `codex_host_unconfigured`: falta instalar el
+host específico de Teacher y los operadores compatibles. La VM conserva su
+verificación anterior; no se transfiere a producción. El refresco sano está
+implementado/probado y el artefacto release se prepara por separado. Aún no se
+acreditan instalación, elegibilidad o generación productivas. No cambia el
+contrato funcional, permisos, selección o presupuesto; no se pide reconectar
+la cuenta sin evidencia de un fallo de sesión. [Estado comprobado](../../../../evidence/teacher-production-runtime-20261114.md).

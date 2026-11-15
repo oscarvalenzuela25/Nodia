@@ -1372,3 +1372,18 @@ release Linux todavía debe construirse, verificarse e instalarse por el flujo
 operativo; no utilizar el dev histórico. Primero actualizar operadores revisados
 con sus pins y después aprovisionar/verificar Teacher por selección exacta.
 No se modifica ni se repite una operación productiva anterior.
+
+## 29. Teacher sigue bloqueado tras el CD: aprovisionamiento separado — 2026-11-14
+
+Master3beeedbc sí está desplegado, pero el host Teacher y su operador no existen
+en las rutas accesibles y los operadores instalados carecen de soporte72.
+La captura ahora muestra el motivo preciso host_unconfigured. El corte§28
+preparó código y VM, no instaló esa dependencia en producción.
+[Diagnóstico actual](../evidence/teacher-production-runtime-20261114.md).
+
+El refresco root existente sólo acepta recuperación de un intento CD fallido
+sin efectos; no se utilizará para una instalación sana fabricando un fallo.
+Hace falta transición CAS específica de operadores/pins, antes de prepare y
+activate del host release. Revisar también action/preflight instalados y su
+quietud Teacher. Construcción/verificación y paquete revisable en curso,
+sin instalación, parada de consumidores o inferencia productiva en este corte.
