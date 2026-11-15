@@ -5,7 +5,7 @@ import os from 'node:os';
 import { createHash } from 'node:crypto';
 import { test } from 'node:test';
 import { spawnSync } from 'node:child_process';
-import { argumentPairs, validateRelease, parseArguments, restoreTeacherBackup, privateKeyOutsideRepository, PINS } from '../restore-teacher-backup.mjs';
+import { argumentPairs, validateRelease, parseArguments, restoreTeacherBackup, privateKeyOutsideRepository, sameFingerprintData, PINS } from '../restore-teacher-backup.mjs';
 import { fingerprintDigest, fingerprintPublicSchema, validateFingerprint, validateCaptureIdentity, MAX_TABLES } from '../fingerprint-teacher-restore.mjs';
 
 const sha = data => createHash('sha256').update(data).digest('hex');
@@ -54,6 +54,26 @@ test('the separate Teacher fingerprint accepts102 tables and rejects257 without 
   assert.throws(() => fingerprintDigest(Array.from({ length: 257 }, (_, index) => table(index))));
   const old = fs.readFileSync(new URL('../fingerprint-backend-public.mjs', import.meta.url), 'utf8');
   assert.match(old, /const MAX_TABLES = 100;/);
+});
+
+test('Python sort_keys fingerprints compare by all data, independently of JSON object key order', () => {
+  const tables = [{ name: 'teacher_studies', rows: 3, md5: 'a'.repeat(32) },
+    { name: 'users', rows: 2, md5: 'b'.repeat(32) }];
+  const actual = validateFingerprint({ tables, aggregate_sha256: fingerprintDigest(tables) });
+  // Exact object-key order produced by Python json.dumps(..., sort_keys=True).
+  const captured = validateFingerprint(JSON.parse(`{"aggregate_sha256":"${actual.aggregate_sha256}","tables":[{"md5":"${tables[0].md5}","name":"teacher_studies","rows":3},{"md5":"${tables[1].md5}","name":"users","rows":2}]}`));
+  assert.notEqual(JSON.stringify(actual), JSON.stringify(captured));
+  assert.equal(sameFingerprintData(actual, captured), true);
+  assert.equal(sameFingerprintData(captured, actual), true);
+  for (const [field, changed] of [['name', 'teacher_topics'], ['rows', 4], ['md5', 'c'.repeat(32)]]) {
+    const differentTables = tables.map((row, index) => index === 0 ? { ...row, [field]: changed } : { ...row });
+    const different = validateFingerprint({ tables: differentTables, aggregate_sha256: fingerprintDigest(differentTables) });
+    assert.equal(sameFingerprintData(actual, different), false);
+  }
+  const missingTables = tables.slice(1);
+  assert.equal(sameFingerprintData(actual, validateFingerprint({ tables: missingTables, aggregate_sha256: fingerprintDigest(missingTables) })), false);
+  assert.equal(sameFingerprintData(actual, { tables, aggregate_sha256: '0'.repeat(64) }), false);
+  assert.equal(sameFingerprintData(actual, { ...actual, tables: [...tables].reverse() }), false);
 });
 
 test('fingerprinting still rejects RLS filtering and nonrepeatable/write transactions', async () => {

@@ -223,3 +223,58 @@ Fuente corregida SHA256
 `acd0f755d81ddfeb04cff8b118bcb0da634ea2468a9a33f1be473bedaf0de1f0`.
 El siguiente intento necesita otro captureID/plan y revisión, sin reutilizar
 la reserva fallida. Respaldo/restore productivos continúan pendientes.
+
+## Captura R03 y restauración productiva comprobadas
+
+Candidato fuente13131455d1b8a8b6ec86e0ba7de004d15da07341, captureID
+`1ca9c80dca2521d78998d628c087d3f0`, plan SHA256
+`48aff2845b2d90abebdfcddf83f10029ee9d04009688041b815e6c2e9f16b95f`.
+La receta revisada SHA256
+`3e2f7eb445fbf870b4dd2faefdc8495783c87483070070c5a9437dcb6bac41d9`
+conciliaba explícitamente la salida75 de CE antes del nuevo pedido; no borró
+failure/intent/locks o repitió el captureID original. El usuario la ejecutó en
+su terminal privada. Resultado capturado/igual antes-después, timers activos y
+enabled restaurados, API/worker conservados y sin mantenimiento/activación.
+Recibo de captura SHA256
+`4b550e9c4c08e970a4ccdfe50cc84366de57aa175f6386abef5f3f42cccb6702`.
+
+Backup `875a4409-7ded-484b-912f-2baf7fe3a8a1`, ciphertext532.361 bytes SHA256
+`427712a3c92cad5ce23e9ad6a8eb36c05cfb17f1351eea3ea0a18c28a8f609fd`.
+Export GET aislado como nodia con sólo recovery.json y RW en export, sin
+runtime.env/JWT/DB/perfiles; archivo y metadata verificados antes de la copia
+cifrada admin0600 y descarga por SSH. Huella fuente de102 tablas SHA256 de
+archivo `e04b152cd63213993aa841cba3bb4cf91ac57a7b1a0067247bd07b9b148ffabe`,
+aggregate `a3afa5706547769ff69b9dc5185a21e8900c699fe0ea092871c8dabcc63cf65b`.
+
+El primer restore real descifró/GCM y restauró el dump, pero su comparador
+rechazó igualdad por orden de propiedades JSON. Python `sort_keys=True` y el
+objeto JS tenían los mismos campos con distinto orden; la fixture sintética
+anterior no reproducía esa representación. Se corrigió sólo el comparador
+del harness para comparar todos los valores canónicos tras validar ambos
+contratos; conserva campos, orden de tablas y digests, sin exclusiones nuevas.
+Regresión específica y once focales correctas. No se modifica el fingerprint
+e4 ni los bytes del backup/capturas o el recibo fallido original.
+
+Nuevo ensayo del **mismo** ciphertext con fuente restore SHA256
+`1f410a3f71c31dc1cd3baaaf3b025461fdf21e4c6f216b709d21463af21d153b`:
+receipt `restore-receipt-r02.json` SHA256
+`b28989c4440629a22c6e5d5c53f12e30dc5e3cb5d40de9ccaab99d38ee400ec4`,
+verified/complete, GCM íntegro,49 migraciones/68 entidades/102 tablas y aggregate
+exactamente igual a la fuente. Cleanup4 contenedores/una red/cinco volúmenes
+sin errores, confirmado por inventario Docker. La RSA original sólo RAM/stdin,
+nunca copiada al VPS o al contenedor como archivo. Sin apps/workers/proveedores
+arrancados en la cuarentena ni conexiones de ésta a producción. Sigue siendo
+igualdad DB previa a prepare, sin aprobar recuperación runtime/journal/perfiles.
+
+También cerró Cargo release: nueve pruebas de protocolo/Core y dos CLI,
+11 correctas sin ignoradas, offline/sin cuentas. El test usa features dev
+propias de wiremock; su binario de caché no reemplaza el artefacto productivo
+79960da7, cuyo CLI exacto ya se comprobó por separado. Una comprobación extra
+de rebuild posterior se detuvo al detectar recompilación innecesaria; no es
+un fallo del build o tests anteriores ni se instaló otro binario. Todos los
+contenedores propios de compilación/verificación quedaron cerrados.
+La activación y la selección/inferencia productiva aún no se acreditan.
+
+Integración del código final del ensayo/captura:113 pruebas Python Linux root
+sin omisiones,20 Node (15 del paso CI y cinco históricas) y roundtrip del bundle
+correctos. No se repitió el backup o una inferencia para corregir la comparación.

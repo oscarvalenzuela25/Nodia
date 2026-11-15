@@ -2,8 +2,8 @@
 
 **Teacher GPT en producción — incidencia2026-11-14/15:** operadores actualizados
 y host release preparado por el usuario, con hashes/PID/current comprobados,
-todavía sin activar72 ni reiniciar servicios. Ensayo DB actual sintético correcto;
-captura/restauración productivas, ventana y selección real pendientes. El éxito
+todavía sin activar72 ni reiniciar servicios. Captura y restauración productivas
+verificadas para49 migraciones/102 tablas; ventana y selección real pendientes. El éxito
 previo de VM no se transfiere a producción.
 [Plan99§29](99-production-deployment-and-cicd-plan.md#29-teacher-sigue-bloqueado-tras-el-cd-aprovisionamiento-separado--2026-11-14)
 y [evidencia](../evidence/teacher-production-runtime-20261114.md).

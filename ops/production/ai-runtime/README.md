@@ -157,6 +157,12 @@ perfiles o recuperación operativa Teacher. El recorrido sintético con el
 release actual comprobó49 migraciones/68 entidades/102 tablas y cleanup completo;
 el respaldo productivo conserva su comprobación separada.
 
+La igualdad de huellas compara valores canónicos `[aggregate, tablas[nombre,
+filas,md5]]` después de validar ambos contratos completos. El orden de las
+propiedades JSON puede cambiar entre Python y JavaScript; no cambia los datos.
+No se omiten tablas o campos ni se altera el orden de tablas para hacer pasar
+un resultado. El intento inicial fallido y su recibo se conservan ante correcciones.
+
 ## Estado — 2026-11-12, America/Santiago
 
 Rama `codex/enable-ai-provider-login`, creada desde `origin/development`

@@ -42,6 +42,14 @@ export function validateRelease(value, digest, expected) {
   return value;
 }
 
+/** Inputs have already passed the closed fingerprint contract. Key insertion order
+ * differs between Python sort_keys and JavaScript; table order and every value remain exact. */
+export function sameFingerprintData(left, right) {
+  const canonical = value => JSON.stringify([value.aggregate_sha256,
+    value.tables.map(row => [row.name, row.rows, row.md5])]);
+  return canonical(left) === canonical(right);
+}
+
 function regular(filename, maximum) {
   const absolute = path.resolve(filename), info = fs.lstatSync(absolute);
   ensure(fs.realpathSync(absolute) === absolute && info.isFile() && !info.isSymbolicLink() && info.nlink === 1 && info.size > 0 && info.size <= maximum, 'restore_input_not_regular_or_bounded');
@@ -135,8 +143,8 @@ async function insideRunner(mode) {
       'restore_provider_schema_recreated');
     const { fingerprintPublicSchema, validateFingerprint } = await import('/harness/fingerprint-teacher-restore.mjs');
     const source = validateFingerprint(JSON.parse(fs.readFileSync('/quarantine/source-fingerprint.json', 'utf8')));
-    const fingerprint = await fingerprintPublicSchema(client);
-    ensure(JSON.stringify(fingerprint) === JSON.stringify(source), 'restore_source_content_mismatch');
+    const fingerprint = validateFingerprint(await fingerprintPublicSchema(client));
+    ensure(sameFingerprintData(fingerprint, source), 'restore_source_content_mismatch');
     await client.query('ROLLBACK');
     process.stdout.write(JSON.stringify({ status: 'verified',
       migrations_verified: expectedMigrations.length, entity_tables_verified: dataSource.entityMetadatas.length, public_tables_verified: fingerprint.tables.length,
@@ -203,7 +211,7 @@ export async function restoreTeacherBackup(options, { spawn = executeDocker, sig
     const database = 'nodia_restore_' + options['backup-id'].replaceAll('-', '');
     const configuration = { source_sha: options['source-sha'], release_id: options['release-id'], tree_sha256: options['tree-sha256'], manifest_sha256: options['manifest-sha256'], backup_id: options['backup-id'], cipher_sha256: options['cipher-sha256'] };
     const target = { host: 'pg', port: 5432, username: 'restore_app', password, database };
-    const source = `const validateRelease=${validateRelease.toString()};\n(${insideRunner.toString()})(process.argv[2]).catch(error => {const code=typeof error?.safeCode==='string'&&/^[a-z0-9_]{1,100}$/.test(error.safeCode)?'restore_check_'+error.safeCode:'restore_local_runner_failed';process.stderr.write(code+'\\n');process.exitCode=1;});\n`;
+    const source = `const validateRelease=${validateRelease.toString()};\nconst sameFingerprintData=${sameFingerprintData.toString()};\n(${insideRunner.toString()})(process.argv[2]).catch(error => {const code=typeof error?.safeCode==='string'&&/^[a-z0-9_]{1,100}$/.test(error.safeCode)?'restore_check_'+error.safeCode:'restore_local_runner_failed';process.stderr.write(code+'\\n');process.exitCode=1;});\n`;
     for (const [filename, contents] of [['/harness/restore.mjs', source], ['/quarantine/control.json', JSON.stringify(configuration)],
       ['/quarantine/target.json', JSON.stringify(target)]])
       await call(['exec', '-i', stage, '/bin/sh', '-c', 'cat > ' + filename], { input: contents });
