@@ -4,15 +4,19 @@
   "document_id": "general-settings.pwa-installation",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 3,
+  "revision": 4,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Local PWA-001 candidate implements manifest, HTML metadata, selected option1 vector favicon and app icons, with artifact/publication checks. Build, auth regressions and local Chrome/Edge manifest interpretation verified; actual installation, standalone Google auth, physical Android and public HTTPS release acceptance remain pending. No service worker, offline persistence, push or synchronization. Visual-only2026-11-14: tab favicon keeps the same PWA N mark; URL versions are tied to the source SVG hash. No change to images, manifest, installation identity, concepts, operations or AI context."
+    "notes": "PWA-001 implements manifest, HTML metadata, selected option1 vector favicon and app icons, with artifact/publication checks. Plan103 section12 records publication and later exact public HTTPS verification of ten original CI assets. Actual installation, standalone Google auth and physical Android acceptance remain pending. No service worker, offline persistence, push or synchronization. Visual-only2026-11-14: tab favicon keeps the same PWA N mark; URL versions are tied to the source SVG hash. No change to images, manifest, installation identity, concepts, operations or AI context. Documentary reconciliation2026-11-15 adds no deployment or device verification."
   },
   "integration_status": "not_applicable",
   "maintainer": "Mantenimiento de Client y contexto transversal conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/evidence/pages-public-convergence-20261114.md",
+      "kind": "evidence"
+    },
     {
       "path": "docs/mvp/103-pwa-progressive-implementation-plan.md",
       "kind": "specification"
@@ -33,7 +37,8 @@
   "verification": {
     "checked_on": "2026-11-14",
     "evidence_paths": [
-      "docs/evidence/pwa-001-local-20261113.md"
+      "docs/evidence/pwa-001-local-20261113.md",
+      "docs/evidence/pages-public-convergence-20261114.md"
     ],
     "notes": "Local static assets, build, auth unit regressions and CI/CD checks verified. Chrome/Edge persistent profiles return no manifest/installability errors; browser mode only, without installation or standalone auth. No device or production acceptance. Installation belongs to the user's browser and operating system; no AI tool applies. Favicon follow-up: Client build/types,31 Linux PWA/artifact checks without skips and10 built assets verified; visual comparison of existing PNG192/32 and common vector. No deployment or personal-cache/installation verification; plan103 section13 records scope."
   },
@@ -128,6 +133,7 @@ fichas aprobadas y los contratos publicados permanecen intactos.
 | 1 | Plan de instalación online independiente y backlog posterior | Draft/planned; sin cambio de herramientas, autoridad, publicación o ejecución. |
 | 2 | Opción1 elegida, candidato estático local y comprobaciones de build, auth y CI/CD; guía de instalación | Draft/partial; instalación real, standalone/auth y publicación pendientes. Sin nuevas herramientas o autoridad. |
 | 3 | Favicon web versionado a la misma marca PWA | Sólo visual/metadatos; sin nueva autoridad, contexto, instalación o publicación. |
+| 4 | Conciliación documental con publicación/HTTPS de103§12 | Instalación real/standalone/dispositivo siguen pendientes; sin deploy o publicación IA nuevos. |
 
 ## Evaluación visual: favicon web — 2026-11-14
 
@@ -138,3 +144,12 @@ o interpretación de resultados: no modifica contexto IA ni añade herramientas.
 
 Build/tipos y31checks Linux correctos; la caché de un navegador personal y la
 instalación real no se verificaron. [Método y límites103§13](../../../../mvp/103-pwa-progressive-implementation-plan.md#13-favicon-web-igual-a-la-marca-pwa--2026-11-14).
+
+## Estado conciliado para pendientes — 2026-11-15
+
+[Plan103§12/14](../../../../mvp/103-pwa-progressive-implementation-plan.md#14-estado-conciliado-para-el-todo--2026-11-15)
+y evidencia HTTPS suceden el corte local: el frontend se publicó y diez recursos
+originales coinciden por MIME/tamaño/SHA256. Esto no prueba instalación humana,
+Google/auth standalone o Android físico. El [TODO](../../../../mvp/TODO.md) retoma
+esos gates y las entregas PWA-002…006, sin repetir publicación o PR históricos.
+No hay nueva prueba operativa en esta conciliación ni herramienta IA aplicable.

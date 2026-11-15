@@ -4,7 +4,7 @@
   "document_id": "studies.session-setup-and-planning",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 33,
+  "revision": 34,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -13,6 +13,10 @@
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Nodia Teacher y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/mvp/106-nodia-teacher-guided-ux-redesign.md",
+      "kind": "specification"
+    },
     {
       "path": "nodia-client/src/modules/teacher/components/SetupConversation/SetupConversation.tsx",
       "kind": "implementation"
@@ -585,3 +589,14 @@ conserva los alcances históricos VM y no acredita otras modalidades o todo el
 curso productivo. No cambia el
 contrato funcional, permisos, selección o presupuesto; no se pide reconectar
 la cuenta sin evidencia de un fallo de sesión. [Estado comprobado](../../../../evidence/teacher-production-runtime-20261114.md).
+
+## Rediseño guiado futuro — solicitud2026-11-15
+
+El usuario reporta dificultad para usar Teacher y pide especificar un rediseño
+para más adelante. [Plan106](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md)
+y [ficha candidata](guided-setup-and-study-experience.md) proponen alta3pasos,
+ayuda opcional y revisión/primera lección claras. No se ha implementado ese flujo.
+La creación actual sigue requiriendo tema, objetivo e idioma incluso al guardar
+borrador; el wizard no puede anunciar un alta incompleta como guardada. El cambio
+de presentación propuesto conserva acciones, autoridad, selección exacta y ADR100.
+No afecta herramientas publicadas ni aprueba el rediseño o las fichas existentes.

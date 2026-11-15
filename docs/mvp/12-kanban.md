@@ -14,6 +14,11 @@ Teacher tiene dominio propio Client/Server, módulo `/nodia-teacher`, sesiones p
 
 ## Objetivo
 
+Las iniciativas futuras incorporadas desde el2026-11-15 se siguen en
+[TODO central](TODO.md), con enlace a su especificación y primer pendiente real.
+Este tablero conserva su alcance y cortes históricos; no reabrir tareas antiguas
+sin conciliarlas con progreso/evidencia posteriores.
+
 Derivar la especificación técnica en tickets o tareas funcionales trazables, organizados por épicas, para facilitar la implementación secuencial del MVP.
 
 ## Épica nueva: punto de venta por negocio — implementación local 2026-10-28

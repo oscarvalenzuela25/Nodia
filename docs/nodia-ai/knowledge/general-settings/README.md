@@ -4,7 +4,7 @@
   "document_id": "general-settings",
   "product_id": "general-settings",
   "kind": "product",
-  "revision": 29,
+  "revision": 30,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -306,7 +306,11 @@ seleccionada, manifiesto/iconos y validación CI/CD. Build,90regresiones auth y
 82checks Node correctos; manifiesto sin errores locales Chrome/Edge, sin prueba
 de instalación/auth standalone. La ficha es draft/partial/not_applicable para
 herramientas IA, approval:null y sin publicación. Android físico, aceptación por
-plataforma y publicación HTTPS pendientes; otras funciones no acreditan PWA.
+plataforma pendientes; otras funciones no acreditan PWA. Conciliación2026-11-15:
+[103§12/14](../../../mvp/103-pwa-progressive-implementation-plan.md#14-estado-conciliado-para-el-todo--2026-11-15)
+registra publicación y diez recursos originales comprobados por HTTPS; esa puerta
+sucede el corte local anterior. Instalación física/standalone/auth conservan
+pendientes propios en [TODO](../../../mvp/TODO.md), sin repetir el despliegue.
 
 
 ## Chat compacto y preferencias Agentic — candidato local2026-11-14

@@ -1,5 +1,9 @@
 # Nodia Teacher con sesiones de estudio y planes adaptativos
 
+> Rediseño UX/UI futuro solicitado2026-11-15: [plan106](106-nodia-teacher-guided-ux-redesign.md)
+> especifica alta guiada, revisión comprensible y primera lección; sin implementar
+> o reemplazar los contratos actuales. Retomar mediante `TUX-001` en [TODO](TODO.md).
+
 > Decisión funcional vigente2026-11-14: el usuario autoriza crear con la IA
 > elegida **sin calificación generativa previa**. La propia creación puede ser
 > el primer intento real; configuración/selección/disponibilidad no generativa,

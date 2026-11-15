@@ -4,7 +4,7 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 38,
+  "revision": 39,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -13,6 +13,10 @@
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/mvp/106-nodia-teacher-guided-ux-redesign.md",
+      "kind": "specification"
+    },
     {
       "path": "docs/mvp/95-studies-adaptive-learning.md",
       "kind": "specification"
@@ -402,6 +406,12 @@ La calificación técnica no acredita calidad pedagógica universal ni crea un c
 
 ## Propósito y alcance
 
+Ampliación futura solicitada2026-11-15: [plan106](../../../mvp/106-nodia-teacher-guided-ux-redesign.md)
+y [ficha de experiencia guiada](features/guided-setup-and-study-experience.md)
+responden a la dificultad de uso reportada. La propuesta separa alta, candidata,
+aceptación y material con ayuda progresiva. No acredita implementación o eficacia;
+conserva los contratos del Teacher actual. Retomar `TUX-001` en [TODO](../../../mvp/TODO.md).
+
 La [propuesta95 R02](../../../mvp/95-studies-adaptive-learning.md) y el [plan de implementación96](../../../mvp/96-nodia-teacher-implementation-plan.md) definen Nodia Teacher como producto general de Estudios. Cada persona crea una sesión de cualquier tema mediante formulario y chat breve; Teacher ofrece jornadas o tópicos, se revisa el plan y se genera material/preguntas progresivamente. Inglés cotidiano y tecnológico es un ejemplo personal, no un módulo ni un curso fijo. Las propuestas técnicas y documentos completos siguen sin aprobación.
 
 La ampliación95 R03 detalla la revisión del borrador, ajustes manuales sin IA y una candidata comparada cuando se pide ayuda a Teacher. Crear guarda la revisión elegida y permite preparar material después. La disponibilidad del proveedor no bloquea guardar una propuesta válida existente; no significa que el material esté listo.
@@ -434,6 +444,7 @@ La implementación conserva límites parciales por función y evidencia históri
 
 | Función | Ficha relativa | Implementación | Integración NodiaAI | Módulos de destino |
 |---|---|---|---|---|
+| Experiencia guiada y rediseño UX/UI futuro | [Ficha](features/guided-setup-and-study-experience.md) | planned; especificación106, no wizard implementado | Sin registrar | Mismo Teacher `/nodia-teacher` |
 | Sesiones, formulario y chat de definición | [Ficha](features/session-setup-and-planning.md) | Parcial; definición/propuesta/ajuste comprobados en selección VM exacta | Sin registrar | Teacher `/nodia-teacher`, autoridad89/ADR092 |
 | Diagnóstico y prueba final de sección | [Ficha](features/diagnostic-and-skip-assessment.md) | Parcial; diagnóstico y final comprobados por alcance VM | Sin registrar | Teacher `/nodia-teacher` |
 | Planes y material guardado por jornada/tópico | [Ficha](features/adaptive-plans-and-day-material.md) | Parcial; snapshot y muestra SQL VM revisados; prediction/citas no emitidos | Sin registrar | Teacher `/nodia-teacher` |

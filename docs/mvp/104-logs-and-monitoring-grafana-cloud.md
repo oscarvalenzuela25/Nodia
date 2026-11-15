@@ -1,5 +1,9 @@
 # Logs y monitoreo de Nodia — Grafana Cloud Free
 
+> Seguimiento de implementación futura: `OBS-001` (G1–G6) y `OBS-002` (G7)
+> en [TODO central](TODO.md). Este plan conserva especificación y checklist;
+> el índice no acredita instalación o ingesta.
+
 > Estado: en revisión; investigación y planificación, sin implementación.
 > Elección confirmada por el usuario: Grafana Cloud, plan gratuito, el 2026-11-14.
 > Rama: `codex/plan-grafana-cloud-monitoring`, desde origin/development actualizado a `0639f0d9444bf81b15603fd1dce33bbb69598760`.
