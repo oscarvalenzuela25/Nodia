@@ -1,5 +1,14 @@
 # Especificación del MVP — Nodia
 
+**Teacher GPT en producción — incidencia cerrada2026-11-15:** host release
+activado con72 en API/worker, registro/hashes/current comprobados y timers
+restaurados. Respaldo real restaurado para49 migraciones/102 tablas; HTTPS200 y
+auth401 verificados. El usuario confirmó que GPT/medium dejó de mostrar el
+aviso y generó la propuesta. Alcance de esta aceptación: esa propuesta/selección;
+no amplía a otras modalidades o al curso Teacher completo.
+[Plan99§29](99-production-deployment-and-cicd-plan.md#29-teacher-sigue-bloqueado-tras-el-cd-aprovisionamiento-separado--2026-11-14)
+y [evidencia](../evidence/teacher-production-runtime-20261114.md).
+
 **Alta POS con incorporación automática — VM development2026-11-14:** guardar el
 producto añade una unidad a la misma venta local y limpia/enfoca el lector,
 sin reescaneo. [Plan94§40](94-business-point-of-sale-and-product-refactor.md#40-añadir-el-producto-recién-guardado-a-la-venta-actual--solicitud2026-11-14)

@@ -1,0 +1,316 @@
+# Teacher Codex en producción: runtime activo — 2026-11-14/15
+
+Solicitud actual del usuario: Teacher continúa bloqueado después de integrar
+PR25/26. La captura muestra el motivo específico `codex_host_unconfigured`.
+Rama de corrección `codex/fix-teacher-production-runtime`, desde development
+080a948827cffb530a8aa578f0918992218eeba9. No cambiar modelo/esfuerzo ni modo.
+
+## Hechos de lectura
+
+SSH con host pin existente confirma producción en
+`backend-3beeedbcbf10-d096d1b33274`, código de master3beeedbcbf101c6bcd1338f405266edbd75c48a2.
+API/worker activos y drop-ins70Codex/71Gemini;72Teacher no está instalado.
+Las rutas accesibles `/usr/local/lib/nodia/teacher-runtime` y
+`/usr/local/lib/nodia/ai-runtime/prepare-teacher-runtime.py` no existen.
+Updater y register instalados no tienen soporte72. El transporte compilado
+coincide con el manifiesto y contiene el guard host_unconfigured.
+
+No se pudieron leer como administrador sin sudo el entorno protegido ni el
+registro consumers: inaccesible no significa ausente. No se leyó runtime.env,
+perfiles, claves o sesiones. No se atribuye a expiración de login. Sudo no
+interactivo no está autenticado; no hubo cambios privilegiados ni SQL/inferencia.
+Recibo intermedio `output/production/teacher-host-incident-20261114-r01/public-readonly.json`,
+SHA256 `8f214d2e6665948217e8b9fc6664541ef86684a2890f0e72a61478c34ecfa708`.
+
+El despliegue de aplicación no instala operadores ni el host Teacher. El éxito
+de VM del corte anterior usa un host ya existente en ese entorno; no demuestra
+aprovisionamiento productivo. El login y el app-server Codex del chat son otra
+pieza y no sustituyen el binario text-only de ADR093.
+
+## Preparación en curso
+
+Se inició Docker Desktop mediante CLI y se reutilizan imagen Bookworm fijada,
+toolchain1.95, Cargo.lock y volúmenes propios de Teacher. Compilación release
+offline con dosCPU y un trabajo Cargo; ninguna cuenta/perfil/proveedor. Comenzó
+con tresGB; al compilar Core se amplió en vivo el límite a cuatroGB, sin reinicio
+ni OOM y tras comprobar seisGB físicos libres. No cambia el código o los pins.
+Debe pasar protocolo sintético, capabilities, hashes/ABI y manifiesto de release;
+no se relabela el dev histórico ni se toma su calificación como nueva.
+
+El refresco existente exige una operación fallida preparing sin efectos, y el
+instalador inicial rechaza versiones distintas: ninguno habilita refresco sano.
+Se prepara un operador CAS específico con dos locks, fuentes/hashes antiguos
+y nuevos, respaldo privado y pins coherentes; sin inventar una operación CD
+fallida. Incluye revisión de runtime-preflight/update-backend-action instalados:
+activar importa ese contrato, no el dist de la aplicación nueva.
+
+El helper específico `upgrade-teacher-operators.py` está implementado, sin
+ejecución productiva: reemplaza únicamente updater/register, crea prepare y
+actualiza el pin del updater. Verifica los siete archivos de unidades base,
+PID/inicio de procesos y estado habilitado de timers, además de hashes y
+locks. Respalda originales antes del primer efecto; una interrupción conserva
+su reserva y exige conciliación privada. Las fuentes se compilan desde bytes
+ya verificados, sin reabrir un path que pudiera cambiar. No toca70/71, perfiles,
+registro de consumidores, release o servicios. Revisión independiente cerró
+dos hallazgos sobre mapas de hashes y unidades/timers antes de la entrega.
+
+Verificación: runner de política92/92 en Linux root aislado, sin red; después
+dos regresiones adicionales del mismo helper dejan14/14 focales correctas
+(backend no sano y entorno Teacher preexistente abortan antes de reservar).
+Roundtrip del bundle correcto, incluyendo alteración de prepare/upgrade
+detectada por hashes. Estas pruebas usan systemd/receiver sintéticos; no
+acreditan una instalación real. No se repiten como nueva inferencia las
+pruebas históricas de VM.
+
+Antes de producción: paquete exacto revisable, elevación privada del operador,
+actualización de operadores, prepare sin cuentas, respaldo/drenaje/quietud,
+activación72 con consumidores parados, comprobación de registro y arranque
+explícitos. Después elegibilidad y una creación normal exacta, con presupuesto,
+cierre y ACK; sin replay, fallback, nuevo JWT o confirmación implícita del plan.
+Este documento no acredita todavía instalación ni inferencia productivas.
+
+## Lectura protegida y candidato cerrado
+
+El usuario ejecutó el lector sanitizado desde su terminal privada con sudo;
+el agente recuperó únicamente su JSON. SHA256 del lector
+`f2c92c087652393e98aa97f0d19ede05ec155f759fba31872d00c341410ed2c3`;
+recibo `private-readonly.json` SHA256
+`81043406114d538f2a15d700595bd9ed76f5e372bb0f4ff78b97ba33f3648893`.
+Ahora sí están confirmadas como ausentes tanto la carpeta del host como
+`/etc/nodia/teacher-runtime.env`. Los siete hashes de unidades base y los
+70/71 de ambas unidades coinciden con sus pins; timers activos/habilitados.
+No se cargaron secretos, perfiles o código de operadores.
+
+El marcador BLOCKED existe; su presencia sola no acredita un bloqueo activo
+porque el receiver interpreta las conciliaciones históricas. No se elimina ni
+se da por resuelto: el helper exige `deployment_status.blocked:false` bajo ambos
+locks antes de reservar o escribir. Se conservan las protecciones existentes.
+
+Candidato público desde commit `3e3f86f33edfe8fc1592c14c1d6a05610bf95da6`:
+helper SHA256 `bdb432360273384c61c4d308bdd17fd689bc16be5dc8dd4ed57988c7755dc632`,
+manifiesto cerrado SHA256
+`6313fd278c9f5c02bb3dcc1307749ea5d8d4607384dbedee72d70a77bc9ebfb9`.
+CAS de metadatos: settings
+`516203c58b8f20a27b3b75a5cf96a4d63e2ec9e1938ca0eeb54b6411e8d01e32`,
+receiver-settings `e2fdd62ee2da08d9a5c30f25b4cf4e3403c1f29ea6347435825df879d6406ae6`,
+consumers `fd19a67e88c5b3665fd4fa03921cbd9632333ab654ce481d26f762121837917c`.
+Se contrastaron también los tres assets inmutables con el commit exacto;
+no se reemplazan. El candidato no acredita ejecución ni activación.
+
+La adopción requiere respaldo cifrado y ensayo de restauración conforme ADR093.
+El restore histórico está fijado a f01/45 migraciones y no prueba el release
+actual. Se prepara un ensayo offline acotado sobre el respaldo nuevo sin
+arrancar aplicaciones/proveedores; no se generaliza la recuperación legacy.
+La cobertura pendiente de keyring/perfiles sigue documentada en el runbook,
+sin tocar esos archivos ni convertirla en una nueva plataforma de este incidente.
+
+## Ensayo nuevo de igualdad DB — 2026-11-15 UTC
+
+`restore-teacher-backup.mjs` y `fingerprint-teacher-restore.mjs` conservan el
+restaurador histórico intacto. El helper nuevo admite256 tablas acotadas;
+el límite histórico100 no cubre las102 tablas actuales. Conserva límites de
+filas/bytes/tiempo, rechazo de RLS y de objetos de extensión, TLS y transacción
+READ ONLY REPEATABLE READ. El ensayo comprueba identidad de release/Node,
+ledger completo y columnas antes de comparar la huella; no llama a prepare,
+migraciones o AppModule. No se declara recuperación operativa/journal.
+
+Se exportó sólo la lista pública del manifiesto vía SSH con el pin existente,
+sin crear archivos en el servidor ni incluir archivos extra del árbol. Se
+verificaron24.573 entradas (24.572 más el manifiesto), tipos/modos/bytes/hashes,
+symlinks internos y el digest canónico del inventario. No es el ZIP original
+de CI. Archivo público SHA256
+`f8f566afbc9c6c8760681fdb8386a23230f0ea73c674220575bc9bca0fe98462`,
+210.075.111 bytes. Export del único binario Node SHA256
+`86fbf353cbadcde68f5a4cf5ee23c41de08e77f4f1fb1e16af22ca5dc70e1908`,
+44.807.313 bytes, ejecutable coincidente con el pin del manifiesto.
+
+Prueba Docker real exclusivamente sintética con esos artefactos:49 migraciones,
+68 entidades ORM y102 tablas públicas, GCM íntegro y huella restaurada exacta
+`d04b05e7efc60b90e559a0cefe8ac7153f74476e74257aeed251a8590c2a9120`.
+Contenedores512MB/1CPU, imágenes locales fijadas y red interna sin puertos.
+Cleanup completo de cuatro contenedores/una red/cinco volúmenes; fixture y
+RSA efímera también eliminados. Recibo sintético SHA256
+`1954b43542e3b0d71a853a57d07b70d5ae1e49e10ac674b7fed4a0eb1715117f`.
+No se usaron datos, cuentas, claves o inferencias de producción.
+
+Revisión independiente corrigió el límite de ruta `..custody` dentro del repo
+y cleanup SIGINT/SIGTERM antes del cierre. Diez regresiones nuevas más cinco
+históricas pasan; lint y UTF-8/LF correctos. Integración CI del test nuevo con
+update-backend-action:14/14 correctos. SIGKILL/daemon caído requieren inspección
+manual; no se promete limpieza automática en esos casos. Fuentes finales:
+restore SHA256 `aa840bb8bb8a74356a0c71e7e8c0594ed4a2b5f79c32f5b3aa4e1a16db6612d6`,
+fingerprint `e4d899a31df33ca40f3e663369d7b3419577c530779cdb54c318f82ac9acf191`.
+Ensayo del respaldo productivo y custodia de su clave privada aún pendientes.
+
+## Preparación productiva comprobada — 2026-11-15 UTC
+
+Build release optimizado offline completado en47m39s, sin cambios del source,
+Cargo.lock o pins. Binario148.327.248 bytes SHA256
+`79960da7671727241ffadf8a9d828903bdddec209f63ca8ea545c90eb0a38c1b`;
+manifiesto SHA256 `72db0b69e052f57543b112eec29bcd72895697cf236f2604c75e7cdd51371c38`.
+ELF64x86_64, GLIBC máximo2.34 y todas las bibliotecas resueltas. Capabilities
+exactas y argumentos inválidos comprobados sobre ese artefacto como UID65534,
+sin red, rootfs de lectura y sin perfil/cuenta. Tests Cargo release de protocolo
+en curso; no se atribuye todavía su resultado. El artefacto está sin calificar
+para selecciones reales de producción.
+
+El usuario ejecutó la receta de preparación revisada desde su terminal privada:
+`prepare-reviewed.sh`, SHA256
+`bb56eb444991ba7e7a0e87ece3a90aee9e0f1571090af043a5ecd13e2dec71d4`.
+Los dos recibos recuperados confirman `teacher_operators_upgraded` y
+`teacher_runtime_prepared`. El helper aceptó la conciliación histórica por el
+estado semántico del receiver, sin borrar BLOCKED ni simular otro CD.
+Settings después SHA256
+`9556cd0353679c780df5e893221cd691d75c2c5695334bbb43bea411696725bb`;
+receiver/consumers permanecen iguales. Current, manifiesto y PID de API/worker
+conservados, al igual que keyrings/timers; todavía sólo70/71 activos.
+
+Host instalado root0755 por SHA512
+`104407c763e028060be7d7b3f7976347bb464de475d19b091f4378e667e3dbfa735862248a473b2913c35bce8a098ef73e03fbe532fb1dbe600de28f835a8c26`,
+comprobado también desde el archivo público. Recibo preparado SHA256
+`4b85c191f52ce93b7c895ec063965385a1529195e1127ba49739dc4178b1c3c0`.
+El SHA256 esperado del entorno staged
+`83665ded99e69dfb3182b8d355383d01278b5f195426bcf4da72068b6b81abc5`
+es derivado determinísticamente de las dos variables/host; el administrador no
+pudo leerlo directamente. La ventana deberá contrastar sus bytes root reales.
+No hubo reinicio, activación, login o inferencia por esta preparación.
+
+La clave de recuperación original se localizó mediante el default documentado
+del generador, fuera del repositorio. Metadatos y SPKI público coinciden con
+`f7af9aea7868daa71a9500f9bbd91f35a3fe6fea396f82d5f5a9c78ab8510bbd`;
+DACL protegida, un permiso exclusivo del usuario actual. No se imprimió/leyó
+el contenido privado ni se copió al VPS; el restore la leerá únicamente en RAM.
+Se conservan la clave original y su custodia; no se regenera otra pareja.
+
+Captura fresh y ventana coordinada están implementadas y revisadas por un par,
+todavía sin ejecutar. Captura usa dos locks, CAS e InvocationID/cursor nuevos y
+huellas completas antes/después; no detiene servicios. Ventana usa dos locks,
+respaldo ensayado ligado al release y GCM, mantenimiento, drenaje de nueve
+contadores, cgroups vacíos, activación/registro exactos antes del único arranque,
+smokes y timers conservados. Interrupciones preservan recibos/reserva y nunca
+reinician o repiten automáticamente. Dieciocho regresiones nuevas pasan en
+Linux root. Integración final:110 casos Python en Linux root sin omisiones,
+roundtrip del bundle correcto y14 casos Node del paso CI correctos. Captura y
+ventana conservan su adopción operativa pendiente; no heredan el éxito sintético.
+
+## Primer intento de captura: conflicto previo al envío
+
+El usuario ejecutó el candidato de captura2b30766a6310d2708a1d190094355ce7,
+plan SHA256 `8f84ea85c9cd9caa2d9d5f9e3169329a843249fae72b1a51044b69f35e0beab4`.
+Falló en `backup_requested`; el mensaje inicial conservó correctamente el
+resultado como desconocido. No se reejecutó ni se borraron registros/locks.
+API/worker permanecieron activos con los mismos PID, sin activar Teacher.
+
+El lector root sanitizado posterior (SHA256
+`eff696d0bb0945095656f702ac63e0a469c0d6a5621ae83527a4d6aaa8a1c9b3`)
+entregó diagnóstico SHA256
+`f96197dab2cf9109c747c08f188ef786b73453ba9851a881bc96b195f54c6da1`.
+Confirma la huella inicial de102 tablas y servicio backup fallido con
+`ExecMainStatus=75`, InvocationID `ce48421a8fa64e43aa1d154c925689cd`;
+reconcile terminó0, sin mensaje de backup ready o registro `backup.json`.
+El script desplegado, contrastado con su manifiesto, reserva75 exclusivamente
+al conflicto de `flock --nonblock`, antes de cargar el catálogo/rotar/crear.
+Así se clasifica ese intento como **no enviado por bloqueo ocupado**, sin
+atribuirle mutaciones R2. No se afirma cuál proceso tenía el lock sin evidencia.
+El recibo original conservador permanece intacto; esta clasificación es posterior.
+
+Se corrigió sólo captura y su suite: pausa los dos timers, espera BACKUPS,
+ejecuta FP→backup→FP y restaura estados tras validaciones CD/runtime. Fallos
+guardan estados/flags y no restauran o repiten automáticamente. Nueve pruebas
+focales en contenedor Linux root correctas, incluidas tres regresiones nuevas
+de orden/espera/fallo parcial y preservación de un timer inicialmente inactivo.
+Fuente corregida SHA256
+`acd0f755d81ddfeb04cff8b118bcb0da634ea2468a9a33f1be473bedaf0de1f0`.
+El siguiente intento necesita otro captureID/plan y revisión, sin reutilizar
+la reserva fallida. Respaldo/restore productivos continúan pendientes.
+
+## Captura R03 y restauración productiva comprobadas
+
+Candidato fuente13131455d1b8a8b6ec86e0ba7de004d15da07341, captureID
+`1ca9c80dca2521d78998d628c087d3f0`, plan SHA256
+`48aff2845b2d90abebdfcddf83f10029ee9d04009688041b815e6c2e9f16b95f`.
+La receta revisada SHA256
+`3e2f7eb445fbf870b4dd2faefdc8495783c87483070070c5a9437dcb6bac41d9`
+conciliaba explícitamente la salida75 de CE antes del nuevo pedido; no borró
+failure/intent/locks o repitió el captureID original. El usuario la ejecutó en
+su terminal privada. Resultado capturado/igual antes-después, timers activos y
+enabled restaurados, API/worker conservados y sin mantenimiento/activación.
+Recibo de captura SHA256
+`4b550e9c4c08e970a4ccdfe50cc84366de57aa175f6386abef5f3f42cccb6702`.
+
+Backup `875a4409-7ded-484b-912f-2baf7fe3a8a1`, ciphertext532.361 bytes SHA256
+`427712a3c92cad5ce23e9ad6a8eb36c05cfb17f1351eea3ea0a18c28a8f609fd`.
+Export GET aislado como nodia con sólo recovery.json y RW en export, sin
+runtime.env/JWT/DB/perfiles; archivo y metadata verificados antes de la copia
+cifrada admin0600 y descarga por SSH. Huella fuente de102 tablas SHA256 de
+archivo `e04b152cd63213993aa841cba3bb4cf91ac57a7b1a0067247bd07b9b148ffabe`,
+aggregate `a3afa5706547769ff69b9dc5185a21e8900c699fe0ea092871c8dabcc63cf65b`.
+
+El primer restore real descifró/GCM y restauró el dump, pero su comparador
+rechazó igualdad por orden de propiedades JSON. Python `sort_keys=True` y el
+objeto JS tenían los mismos campos con distinto orden; la fixture sintética
+anterior no reproducía esa representación. Se corrigió sólo el comparador
+del harness para comparar todos los valores canónicos tras validar ambos
+contratos; conserva campos, orden de tablas y digests, sin exclusiones nuevas.
+Regresión específica y once focales correctas. No se modifica el fingerprint
+e4 ni los bytes del backup/capturas o el recibo fallido original.
+
+Nuevo ensayo del **mismo** ciphertext con fuente restore SHA256
+`1f410a3f71c31dc1cd3baaaf3b025461fdf21e4c6f216b709d21463af21d153b`:
+receipt `restore-receipt-r02.json` SHA256
+`b28989c4440629a22c6e5d5c53f12e30dc5e3cb5d40de9ccaab99d38ee400ec4`,
+verified/complete, GCM íntegro,49 migraciones/68 entidades/102 tablas y aggregate
+exactamente igual a la fuente. Cleanup4 contenedores/una red/cinco volúmenes
+sin errores, confirmado por inventario Docker. La RSA original sólo RAM/stdin,
+nunca copiada al VPS o al contenedor como archivo. Sin apps/workers/proveedores
+arrancados en la cuarentena ni conexiones de ésta a producción. Sigue siendo
+igualdad DB previa a prepare, sin aprobar recuperación runtime/journal/perfiles.
+
+También cerró Cargo release: nueve pruebas de protocolo/Core y dos CLI,
+11 correctas sin ignoradas, offline/sin cuentas. El test usa features dev
+propias de wiremock; su binario de caché no reemplaza el artefacto productivo
+79960da7, cuyo CLI exacto ya se comprobó por separado. Una comprobación extra
+de rebuild posterior se detuvo al detectar recompilación innecesaria; no es
+un fallo del build o tests anteriores ni se instaló otro binario. Todos los
+contenedores propios de compilación/verificación quedaron cerrados.
+La activación y la selección/inferencia productiva aún no se acreditan.
+
+Integración del código final del ensayo/captura:113 pruebas Python Linux root
+sin omisiones,20 Node (15 del paso CI y cinco históricas) y roundtrip del bundle
+correctos. No se repitió el backup o una inferencia para corregir la comparación.
+
+## Activación productiva y confirmación humana
+
+Fuente final `46d2653ad12524c3db63db7af1f8d5e1b52cc31a`; dos operadores del
+bundle exactos contra Git, nueve pins instalados comprobados por SSH. Ventana
+`aed9a8b7086fd8abacde4f6585968c2b`, plan SHA256
+`867d4f36b51d9073b1afe57ec2234675f3237681d71425606f4074125c0d3323`,
+checksums SHA256 `65fd09e28cffe63775e8b562ca619fb050eaaf53dff56aa60c14ea81cdb72b0e`.
+El usuario ejecutó el paso revisado desde su terminal privada; recibo
+`teacher_runtime_window_complete` SHA256
+`82963444f8116a3f9358e6c96d167776e52d86e0b11cca715c4db04a2df946ed`.
+
+Pre/post-stop READ ONLY y TLS autorizados, nueve contadores en cero;
+49→49 migraciones, ninguna ejecutada. Parada limpia y cgroups vacíos antes
+de activar. Nuevo registro SHA256
+`e7c9ec01047ac3c27f15b04ddd41cf4651b5210b00f1dda9f140da782fe65023`.
+Ambos consumidores activos/enabled con70/71/72, PID API877005/worker877006,
+mismo current/manifiesto3be. Entorno/host y registro completos antes del único
+arranque; keyrings conservados y timers activos/enabled restaurados. Se retiró
+el mantenimiento y no se ejecutó inferencia por el operador de instalación.
+
+Comprobación independiente desde PC con curl/Schannel: HTTPS raíz200 y
+auth/me401 sin credenciales ni excepciones TLS. OpenSSL en servidor verificó
+TLS1.3 y nombre IP; certificado válido hasta2026-11-21T10:33:27Z. Python local
+había rechazado la cadena como expirada; esa incidencia del verificador local
+no se presenta como expiración del leaf productivo, ni se modificaron CA,
+trust stores o verificación TLS para obtener éxito.
+
+El usuario confirmó explícitamente, tras recargar Teacher y conservar
+ChatGPT/Agentic/gpt-6.1-sol/medium: **«Desapareció y generó la propuesta»**.
+Esa confirmación humana cierra el síntoma solicitado. Se distingue de una
+auditoría independiente del turno: el operador no fabricó JWT/sesiones ni
+inspeccionó sus IDs/ACK autenticados. El operador no aceptó ni modificó una
+propuesta; no se transfieren resultados a material/práctica/final,
+otros modelos/esfuerzos, API key o Gemini. Fichas/ADR continúan con su aprobación
+documental previa; esta entrega no publica conocimiento.
