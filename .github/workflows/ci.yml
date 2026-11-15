@@ -87,7 +87,7 @@ jobs:
         run: node --test ops/ci/*.test.mjs
       - name: Test migration policy and updater effect ordering without services
         run: |
-          node --test ops/production/tests/update-backend-action.test.mjs
+          node --test ops/production/tests/update-backend-action.test.mjs ops/production/tests/teacher-restore.test.mjs
           python3 -m unittest discover -s ops/production/tests -p test_ai_runtime_bundle.py
           docker run --rm --network none \
             --mount "type=bind,source=$GITHUB_WORKSPACE/ops/production,target=/repo/ops/production,readonly" \

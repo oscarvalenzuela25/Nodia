@@ -1,10 +1,11 @@
 # Especificación del MVP — Nodia
 
-**Teacher GPT en producción — incidencia2026-11-14:** la app actual está
-desplegada, pero falta el host nativo y los operadores compatibles de Teacher;
-el éxito previo de VM no acredita esa instalación. Refresco sano específico
-implementado/probado y paquete release en preparación, sin cambios productivos
-todavía. [Plan99§29](99-production-deployment-and-cicd-plan.md#29-teacher-sigue-bloqueado-tras-el-cd-aprovisionamiento-separado--2026-11-14)
+**Teacher GPT en producción — incidencia2026-11-14/15:** operadores actualizados
+y host release preparado por el usuario, con hashes/PID/current comprobados,
+todavía sin activar72 ni reiniciar servicios. Ensayo DB actual sintético correcto;
+captura/restauración productivas, ventana y selección real pendientes. El éxito
+previo de VM no se transfiere a producción.
+[Plan99§29](99-production-deployment-and-cicd-plan.md#29-teacher-sigue-bloqueado-tras-el-cd-aprovisionamiento-separado--2026-11-14)
 y [evidencia](../evidence/teacher-production-runtime-20261114.md).
 
 **Alta POS con incorporación automática — VM development2026-11-14:** guardar el

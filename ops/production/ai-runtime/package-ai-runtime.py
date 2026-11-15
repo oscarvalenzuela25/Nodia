@@ -22,9 +22,12 @@ def package(output):
              'nodia-gemini.service', 'codex-provision.py', 'codex-keyring.py', 'codex-bus.conf',
              'codex-bus.service', 'codex-keyring.service', 'codex-runtime.conf', 'codex-native-probe.mjs',
              'verify-gemini-host.py', 'register-consumers.py', 'prepare-teacher-runtime.py',
-             'upgrade-teacher-operators.py']
+             'upgrade-teacher-operators.py', 'activate-teacher-window.py',
+             'capture-teacher-backup.py']
     for name in names:
         shutil.copyfile(source / name, output / name)
+    for name in ('fingerprint-teacher-restore.mjs', 'export-backup-cipher.mjs'):
+        shutil.copyfile(source.parent / name, output / name)
     shutil.copyfile(root / 'docs/evidence/scripts/attach-nodia-gemini-login-cgroup.py', output / 'attach-login-cgroup.py')
     shutil.copyfile(root / 'docs/evidence/scripts/verify-nodia-gemini-login-cgroup-host.py', output / 'verify-login-cgroup-host.py')
     shutil.copyfile(source.parent / 'update-backend-action.mjs', output / 'update-backend-action.mjs')

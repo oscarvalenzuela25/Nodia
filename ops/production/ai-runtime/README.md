@@ -86,9 +86,70 @@ instaló el operador remoto, no se cambió la configuración ni se ejecutó infe
 Incidencia posterior en release `backend-3beeedbcbf10-d096d1b33274`: el despliegue
 de aplicación conserva ese aprovisionamiento pendiente. El refresco sano pasó
 14 regresiones Linux y revisión independiente; su integración está incluida en
-el runner de política y el bundle. Compilación release nueva en curso, todavía
-sin instalación ni inferencia productiva. Estado y límites en
+el runner de política y el bundle. Después, el usuario actualizó operadores y
+preparó el host release79960da7, con recibos/hashes comprobados y procesos
+conservados. Sigue pendiente activar72 y verificar la selección real. Estado y límites en
 [la evidencia vigente](../../../docs/evidence/teacher-production-runtime-20261114.md).
+
+### Respaldo para la adopción actual
+
+[capture-teacher-backup.py](capture-teacher-backup.py) acepta `--execute --plan
+PLAN --plan-sha256 HASH --fingerprint-source SOURCE`. Sin `--execute` es inerte.
+Requiere plan cerrado por identidad/metadatos/fuentes y toma ambos locks antes
+de reservar. Instala sólo la fuente de huella por hash, llama al servicio de
+backup existente y exige igualdad de las capturas antes/después, conservando
+un backup conocido incluso ante drift posterior. No detiene API/worker, crea
+mantenimiento ni omite tablas para obtener igualdad. El receipt no autoriza
+restauración o inferencia. Un resultado incierto se concilia sin nuevo envío.
+
+[activate-teacher-window.py](activate-teacher-window.py) acepta `--execute --plan
+PLAN --plan-sha256 HASH --restore-receipt RECEIPT`. Ambos operadores necesitan
+el sibling revisado `upgrade-teacher-operators.py` con su hash fijo. La ventana
+liga el restore DB exacto y GCM al release, verifica el preparado y conserva
+los locks durante mantenimiento/drenaje/parada/registro/arranque/smokes/timers.
+Sólo arranca tras activación/descriptor/registro completos; un fallo conserva
+estado y recibos sin recuperación automática. No acredita la selección real.
+
+El restaurador histórico de producción está fijado a f01/45 migraciones. No
+usar su éxito para acreditar el release Teacher actual ni cambiar esos pins
+para hacerlo pasar. [restore-teacher-backup.mjs](../restore-teacher-backup.mjs)
+ensaya únicamente igualdad de filas públicas del dump actual, antes de cualquier
+preparación de recuperación; no arranca API/worker ni autoriza dispatch.
+
+1. Capturar la huella con [fingerprint-teacher-restore.mjs](../fingerprint-teacher-restore.mjs)
+   como nodia, cwd del release canónico y entorno privado del servicio con
+   `PGSSLMODE=verify-full`/`DOTENV_CONFIG_PATH=/dev/null`. Pasar explícitamente
+   `--capture SOURCE_SHA MANIFEST_SHA256 RELEASE_ID TREE_SHA256` revisados.
+   Exige identidad/hash de Node y TLS autorizados, transacción READ ONLY
+   REPEATABLE READ y límites acotados de filas/bytes/tiempo y256 tablas.
+2. Crear un backup nuevo con el servicio existente y writers activos; comprobar
+   su InvocationID y resultado nuevo. Repetir la captura y exigir igualdad;
+   si cambia la base, no declarar ese dump igual a la huella. Descargar sólo
+   el cifrado identificado por backupID/SHA, usando el exportador existente.
+3. Ejecutar el ensayo local con `node ops/production/restore-teacher-backup.mjs`
+   y los pares obligatorios: `--cipher-file`, `--cipher-sha256`,
+   `--backup-id`, `--private-key-file`, `--fingerprint-file`,
+   `--fingerprint-sha256`, `--package-archive`, `--package-sha256`,
+   `--node-archive`, `--node-sha256`, `--manifest-sha256`, `--source-sha`,
+   `--release-id`, `--tree-sha256` y `--output` nuevo. Sin argumentos es inerte.
+
+Los archivos públicos del paquete/Node deben proceder de una cadena revisada
+y fijada por hashes independientes. Un export del release instalado no es el
+ZIP original de CI: verificar todos los archivos contra el manifiesto antes
+de aceptarlo, incluidos modos, symlinks y ausencia de extras. El tar del paquete
+tiene contenido en su raíz y el de Node un directorio inicial con `bin/node`.
+La clave privada permanece fuera del repositorio y sólo pasa por RAM/stdin a
+un contenedor local sin red. No se imprime, copia al VPS ni se envía por chat.
+
+El ensayo impone GCM íntegro antes de crear PostgreSQL, imágenes locales
+fijadas, red interna sin puertos, usuario sin privilegios y comparación de
+ledger/columnas/extensiones/huella. Los recursos se eliminan por etiqueta propia;
+SIGINT/SIGTERM pasan por cleanup. SIGKILL o pérdida del daemon requieren
+conciliación manual de los recursos etiquetados, sin declarar limpieza.
+El recibo es `database_equality_only`: no acredita DDL/secuencias, journal,
+perfiles o recuperación operativa Teacher. El recorrido sintético con el
+release actual comprobó49 migraciones/68 entidades/102 tablas y cleanup completo;
+el respaldo productivo conserva su comprobación separada.
 
 ## Estado — 2026-11-12, America/Santiago
 

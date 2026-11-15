@@ -29,6 +29,10 @@ class AiRuntimeBundleTests(unittest.TestCase):
         self.assertIn('prepare-teacher-runtime.py', manifest['files'])
         self.assertEqual(payloads['prepare-teacher-runtime.py'], (BASE / 'ai-runtime/prepare-teacher-runtime.py').read_bytes())
         self.assertEqual(payloads['upgrade-teacher-operators.py'], (BASE / 'ai-runtime/upgrade-teacher-operators.py').read_bytes())
+        for name in ('activate-teacher-window.py', 'capture-teacher-backup.py'):
+            self.assertEqual(payloads[name], (BASE / 'ai-runtime' / name).read_bytes())
+        for name in ('fingerprint-teacher-restore.mjs', 'export-backup-cipher.mjs'):
+            self.assertEqual(payloads[name], (BASE / name).read_bytes())
         for name in ('prepare-teacher-runtime.py', 'upgrade-teacher-operators.py'):
             operator = output / name
             original = operator.read_bytes()

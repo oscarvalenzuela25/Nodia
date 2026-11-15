@@ -1,14 +1,16 @@
 # Progreso del MVP — Nodia
 
-**Teacher GPT productivo sigue bloqueado —2026-11-14:** release
-`backend-3beeedbcbf10-d096d1b33274` confirmado; API/worker activos con70/71,
-sin host/configurador Teacher en rutas accesibles ni72. Metadatos protegidos
-pendientes de lectura root; inaccesible no equivale a ausente. Helper de
-refresco sano implementado:14 regresiones focales Linux, revisión independiente,
-runner92/92 previo a dos adiciones y roundtrip de bundle correctos. Compilación
-release offline en curso. Falta aprovisionar, activar con respaldo/drenaje y
-comprobar selección exacta/inferencia; sin mutaciones productivas, cambios de
-login o fallback. [99§29](99-production-deployment-and-cicd-plan.md#29-teacher-sigue-bloqueado-tras-el-cd-aprovisionamiento-separado--2026-11-14)
+**Teacher GPT: preparación productiva, activación pendiente —2026-11-14/15:**
+release `backend-3beeedbcbf10-d096d1b33274` confirmado; usuario ejecutó refresco
+CAS de operadores y prepare del host release79960da7. Recibos/hashes comprobados,
+API/worker/PID/current/keyrings/timers intactos y sólo70/71 activos. Build release
+offline y CLI del artefacto correctos; protocolo Cargo release en curso. Ensayo
+DB actual sintético comprobó49 migraciones/68 entidades/102 tablas y cleanup.
+Integración final110 casos Python Linux root sin omisiones, NodeCI14 y bundle
+correctos, con revisión independiente. Clave original localizada en su custodia
+local protegida. Faltan respaldo/restore productivos, activación coordinada y
+selección exacta/inferencia; sin login nuevo o fallback.
+[99§29](99-production-deployment-and-cicd-plan.md#29-teacher-sigue-bloqueado-tras-el-cd-aprovisionamiento-separado--2026-11-14)
 y [evidencia](../evidence/teacher-production-runtime-20261114.md).
 
 **Favicon como PWA — añadido a PR25, 2026-11-14:** misma N esencial compartida,

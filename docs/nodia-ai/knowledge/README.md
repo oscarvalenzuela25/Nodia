@@ -3,8 +3,8 @@
 ## Teacher: aprovisionamiento productivo pendiente — 2026-11-14
 
 La [ficha candidata](studies/features/session-setup-and-planning.md#incidencia-productiva-posterior--2026-11-14)
-separa el éxito VM del host Teacher todavía ausente en producción. Preparación
-operativa en curso, sin inferencia ni instalación productiva acreditadas;
+separa el éxito VM del aprovisionamiento Teacher productivo: operadores y host
+release preparados con recibos comprobados, activación/selección real pendientes;
 no amplía contratos, autoridad o herramientas ni aprueba/publica fichas.
 [Evidencia vigente](../../evidence/teacher-production-runtime-20261114.md).
 
