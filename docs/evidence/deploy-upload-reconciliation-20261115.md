@@ -1,9 +1,11 @@
 # CD43791568791 — upload incierto y conciliación de lectura
 
-Fecha: 2026-11-15. Alcance: recibo oficial, lectura restringida del estado y
-auditoría de código. **Causa del upload no confirmada; sin despliegue ni
-publicación por esta intervención.** Este corte no sustituye el incidente de
-cuota anterior ni declara adoptada la corrección candidata.
+Fecha: 2026-11-15, hora de Santiago. Alcance: recibo oficial, lectura restringida,
+inspección root y mantenimiento operatorio autorizado posteriormente por el usuario.
+**Cuota insuficiente y cinco ausencias objetivo comprobadas; archivo reversible
+y gateway adoptados, sin nuevo deploy o publicación de aplicación.** El recibo
+fallido original conserva `backend_upload_outcome_unknown`, sin reescritura/replay.
+La continuación operativa inferior sucede las limitaciones de la primera lectura.
 
 ## Fuentes y preservación
 
@@ -16,6 +18,9 @@ cuota anterior ni declara adoptada la corrección candidata.
   `e2fa05386d6528c97013bb538c1635be7dd933e32ac3194a89d021150912b59f`.
   Copias de trabajo en `output/deploy-43791568791/`, ignorado; esta evidencia
   consolida los hechos sin depender de ese temporal para continuar.
+- [Recibo durable de conciliación y operadores](deploy-upload-reconciliation-20261115.json):
+  inventarios antes/después, referencias del ZIP archivado, refresh del gateway,
+  hashes y estado final; `new_delivery.status:not_started` en este corte.
 - [Incidente y reparación anteriores](production-upload-quota-20261115.md),
   [plan99§31](../mvp/99-production-deployment-and-cicd-plan.md#31-upload-incierto-y-equivalencia-acotada-de-payload--2026-11-15)
   y [ADR103 propuesto](../architecture/decisions/ADR-103-backend-payload-equivalence-with-preserved-source.md).
@@ -45,7 +50,7 @@ La proyección `baselines.server.status` del recibo dice `not_confirmed`, aunque
 conserva release/fuente/árbol. No convertir esa etiqueta del serializer en una
 observación de caída: la lectura SSH posterior tiene evidencia y alcance propios.
 
-## Lectura restringida posterior
+## Primera lectura restringida, anterior a la autorización operatoria
 
 La investigación principal obtuvo `deployment_ready`, `blocked:false`, API y
 worker activos, con el release/fuente/árbol20ba/c01 anteriores. La consulta de
@@ -53,12 +58,12 @@ la operación5668d201c5bf57899b0aefe71f490ef7 devolvió `operation_not_found`.
 Esto acredita ausencia de submission visible por ese ID, **no ausencia de ZIP,
 partial o bytes recibidos**: las submissions se crean después del upload.
 
-Hashes instalados observados:
+Hashes instalados observados en esa primera lectura:
 
 - Gateway: `877fe548164b127d8f3820bafa4b0c44797a8a732a9a829c1c82de098b8e2ab8`.
 - Receiver: `b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4`.
 
-El gateway corresponde al original anterior a la corrección diagnóstica de99§30.
+Ese gateway corresponde al original anterior a la corrección diagnóstica de99§30.
 Cambiar el código del repositorio no lo instala automáticamente ni actualiza pins.
 `sudo -n` no estaba disponible y no había sesión tmux administrativa; no se hizo
 inventario root actual de incoming. No repetir ni presentar el inventario del
@@ -68,15 +73,15 @@ No se solicitó un nuevo upload/deploy, reinicio, migración, restauración, cam
 de credenciales o publicación Pages durante esta conciliación. Servicios activos
 no prueban modalidades IA, aceptación funcional de UI o ausencia de parciales.
 
-## Interpretación y pendientes
+## Interpretación del corte inicial
 
 Confirmado: candidato y backend registrado tienen payload idéntico, pero fuente
 y manifiesto distintos. No hay motivo para reescribir el SHA real como si el
-candidato estuviera ejecutándose. No confirmado: causa concreta del fallo de
+candidato estuviera ejecutándose. En ese corte no estaban confirmados la causa del fallo de
 recepción, inventario/cuota actual, existencia/tamaño de un posible parcial o
 resultado local del receiver durante la transferencia.
 
-La cuota fue causa demostrada de CD43754640640, no de éste. Los plazos distintos
+La cuota de CD43754640640 no demostraba la de éste sin inspección nueva. Los plazos distintos
 del emisor180s y receiver/gateway240s son un hallazgo de código, no causa probada
 de este fallo. Tampoco `operation_not_found` autoriza reenviar bytes.
 
@@ -111,14 +116,74 @@ reales y candidato separado. No cambia ni concilia el recibo histórico fallido.
   corrigieron las fixtures, conservando los gates y assertions de producción.
   La suite final completa pasó en ambas plataformas.
 
-Sin cambio UI/backend funcional ni adopción del gateway. Esta promoción modifica
+Este corte local precedió a la adopción operatoria del gateway descrita abajo.
+Sin cambio UI/backend funcional. Esta promoción modifica
 `ops/**`, por lo que su propio flag será falso y necesita entrega normal después
 de la conciliación operatoria. No se ha ejecutado nuevo CI/CD remoto.
 
-Continuar desde99§31: conciliación operatoria exacta antes de nueva intención;
+Continuar desde99§31 tras la conciliación operatoria documentada abajo:
 preflight de capacidad/protocolo instalado; journal consultable de upload y
 reanudación de bytes sin replay de deploy; política de archivo/retención con
 terminalidad, pins y referencias comprobados. Mantener recibos originales.
+
+## Continuación operatoria autorizada — cuota y gateway adoptados
+
+El usuario autorizó inspeccionar el upload actual y actualizar el gateway para
+continuar con una entrega nueva, sin repetir operaciones inciertas. El
+[recibo JSON consolidado](deploy-upload-reconciliation-20261115.json) conserva
+los resultados y hashes de las fuentes operatorias. Los timestamps de archivo
+02:55UTC y gateway02:59UTC del16 corresponden al15 de noviembre en Santiago.
+
+Inspección root:9ZIPs/1.943.825.000bytes, 101.190.762.496bytes de disco libre y
+las cinco ausencias objetivo verificadas (ZIP, partial, submission, request y
+attempt del ID5668d201c5bf57899b0aefe71f490ef7). Con215.982.276bytes del artefacto
+original14192845449, la recepción sumaría2.159.807.276bytes: excede en12.323.628
+la cuota2.147.483.648. El receiver instalado aplica ese gate antes de crear los
+paths de recepción; no se reenvió la subida para reproducir el rechazo. Esta
+evidencia nueva cierra la ausencia de inspección del corte inicial. El error
+original se conserva y no se inventa un nuevo estado remoto de esa operación.
+
+El helper manual de archivo hizo dry-run y apply de la operación complete
+`64c9a2f383709ee93ca5e584a9bc5b52`, fuente histórica0f69d505, distinta de current.
+Movió exclusivamente el ZIP14094113962, 215.976.251bytes y SHA256
+`1bdc378056085d6f0c89b7521aaf4d89113739d64adb01090e626eb1439e96d1`, a
+`archived-incoming/server-43546497935-1/14094113962.zip`. Locks, referencias
+complete, pins, originales e intent/recibo durables comprobados; sin borrar datos.
+Incoming final:8ZIPs/1.727.848.749bytes. El archivo no libera disco ni establece
+retención automática; sólo recupera cuota activa para una nueva entrega.
+
+`refresh-deploy-gateway.py` revisado, SHA256
+`193e286d0c40f871ca2470bd2c49bb339cc53cb86623fafdf5c7247800e3dd14`, pasó14pruebas
+Linux. Receiver/gateway27, archivo16 y refresh previo10 dan67casos correctos,
+sin skips. Revisión independiente sin hallazgos accionables. No se modificaron
+los helpers anteriores o su política IO fijada857d9203… .
+
+El dry-run/apply operatorio actualizó sólo gateway y su pin, con CAS del settings
+completo e intent/originales durables. Resultado observado:
+
+| Dato | Postcheck |
+| --- | --- |
+| Gateway adoptado | `6b794263ad129ff45ed8752374d55a9c69cde789ae903a33cc2097fd91406e9f` |
+| Receiver intacto | `b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4` |
+| Receiver-settings nuevo | `52768ca169a119594efbaf73374f547ea3857a65a68db769a7bff26e85fce59d` |
+| Updater-settings intacto | `9556cd0353679c780df5e893221cd691d75c2c5695334bbb43bea411696725bb` |
+| API / worker PID | `1018075` / `1018078`, conservados |
+| Current | `backend-20baee851cc3-c01d5047410c`, conservado |
+| SSH restringido nuevo | `deployment_ready`, `blocked:false` |
+
+Inventario root posterior al gateway volvió a comprobar8ZIPs/1.727.848.749bytes,
+pin52768ca1…, gateway6b794263…, receiverb2880ea7… y current/PIDs iguales;
+el JSON durable conserva ese postcheck en `after_gateway`.
+
+BLOCKED histórico y su ACK se preservaron: existencia bruta no equivale a bloqueo
+efectivo; la política instalada verifica la conciliación. Ningún restart,
+migración, upload/deploy antiguo o publicación acompañó este mantenimiento.
+
+OPS-01 queda cerrado para esta conciliación y OPS-06 para la adopción diagnóstica
+concreta; capacidad/versión del protocolo y ledger/reanudación siguen pendientes.
+OPS-05 es parcial/manual. La siguiente promoción/CI/CD nueva aún no se ha
+ejecutado en este corte; los cambios ops impiden omitir su primer backend aunque
+el payload coincida. No relanzar CI43790183498, CD43791568791 o su operación.
 
 ## Impacto en contexto NodiaAI
 

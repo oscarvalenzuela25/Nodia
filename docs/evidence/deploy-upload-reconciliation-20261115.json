@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "original_delivery_run_id": "43791568791",
+  "original_ci_run_id": "43790183498",
+  "original_receipt_artifact_id": "14193021375",
+  "original_receipt_zip_sha256": "0a27792ae46256bc8d92763ed85fdd0fac38be741acf697a220632303baf1aea",
+  "original_operation_id": "5668d201c5bf57899b0aefe71f490ef7",
+  "artifact_id": "14192845449",
+  "artifact_bytes": 215982276,
+  "incoming_limit_bytes": 2147483648,
+  "excess_bytes": 12323628,
+  "before": {
+    "count": 9,
+    "total_bytes": 1943825000,
+    "free_bytes": 101190762496,
+    "target_zip": false,
+    "target_partial": false,
+    "target_submission": false,
+    "target_request": false,
+    "target_attempt": false,
+    "current": "/opt/nodia/releases/backend-20baee851cc3-c01d5047410c",
+    "application": {
+      "nodia-api.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "MainPID": "1018075"
+      },
+      "nodia-ai-worker.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "MainPID": "1018078"
+      }
+    },
+    "receiver_settings_sha256": "e2fdd62ee2da08d9a5c30f25b4cf4e3403c1f29ea6347435825df879d6406ae6",
+    "installed_assets": {
+      "deploy-gateway.py": "877fe548164b127d8f3820bafa4b0c44797a8a732a9a829c1c82de098b8e2ab8",
+      "deploy-backend-receiver.py": "b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4"
+    }
+  },
+  "after_archive": {
+    "count": 8,
+    "total_bytes": 1727848749,
+    "free_bytes": 101190590464,
+    "target_zip": false,
+    "target_partial": false,
+    "target_submission": false,
+    "target_request": false,
+    "target_attempt": false,
+    "current": "/opt/nodia/releases/backend-20baee851cc3-c01d5047410c",
+    "application": {
+      "nodia-api.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "MainPID": "1018075"
+      },
+      "nodia-ai-worker.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "MainPID": "1018078"
+      }
+    },
+    "receiver_settings_sha256": "e2fdd62ee2da08d9a5c30f25b4cf4e3403c1f29ea6347435825df879d6406ae6",
+    "installed_assets": {
+      "deploy-gateway.py": "877fe548164b127d8f3820bafa4b0c44797a8a732a9a829c1c82de098b8e2ab8",
+      "deploy-backend-receiver.py": "b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4"
+    }
+  },
+  "inventory_files_before": [
+    {
+      "directory": "server-43373323321-1",
+      "name": "14014155653.zip",
+      "bytes": 215975812,
+      "sha256": "d235f340e9cf797e2f749991b557b2735a9a2026ac5f35a168fa219a3fbb1ee6"
+    },
+    {
+      "directory": "server-43471624414-1",
+      "name": "14060209069.zip",
+      "bytes": 215976252,
+      "sha256": "18203f671d5b135870e088c267463bf6e8d8c5922b67a4991d83ba76080aa329"
+    },
+    {
+      "directory": "server-43546497935-1",
+      "name": "14094113962.zip",
+      "bytes": 215976251,
+      "sha256": "1bdc378056085d6f0c89b7521aaf4d89113739d64adb01090e626eb1439e96d1"
+    },
+    {
+      "directory": "server-43554037357-1",
+      "name": "14097179553.zip",
+      "bytes": 215976251,
+      "sha256": "124c0566bc3746627696bc62be00f74954568d239cff5226a25eec85bc735cf2"
+    },
+    {
+      "directory": "server-43620970891-1",
+      "name": "14123834136.zip",
+      "bytes": 215986315,
+      "sha256": "a64e0dba707443fecc5d2c55226d457b195bf1120e6f647173c9a6a5dbdb3db7"
+    },
+    {
+      "directory": "server-43628466598-1",
+      "name": "14127640136.zip",
+      "bytes": 215986320,
+      "sha256": "baf3806dd0fb74b97818b24fe020450b0962d9ddcc30eaea2a54f2e802400723"
+    },
+    {
+      "directory": "server-43662589149-1",
+      "name": "14140049857.zip",
+      "bytes": 215982761,
+      "sha256": "094ff3278e1bce03efd139f18071464ebfee1757a203111c7dbb3c5316e06c7b"
+    },
+    {
+      "directory": "server-43692516659-1",
+      "name": "14153775349.zip",
+      "bytes": 215982751,
+      "sha256": "9a9059bad83c1a36a9e1612fc9510810c9083a42d39c876d943a413b76039d51"
+    },
+    {
+      "directory": "server-43760491504-1",
+      "name": "14179749992.zip",
+      "bytes": 215982287,
+      "sha256": "1f2bbfdb3ec938130badbc9cd87766ec19aea7bbd94711c4de1a8ef66fbf751e"
+    }
+  ],
+  "archive_receipt": {
+    "schema_version": 1,
+    "operation_id": "64c9a2f383709ee93ca5e584a9bc5b52",
+    "artifact_directory": "server-43546497935-1",
+    "artifact_id": "14094113962",
+    "artifact_zip_sha256": "1bdc378056085d6f0c89b7521aaf4d89113739d64adb01090e626eb1439e96d1",
+    "bytes": 215976251,
+    "source_sha": "0f69d505f2826f97c5f54b14a0acbe74daea248e",
+    "receiver_sha256": "b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4",
+    "receiver_settings_sha256": "e2fdd62ee2da08d9a5c30f25b4cf4e3403c1f29ea6347435825df879d6406ae6",
+    "submission_sha256": "da5475d48a51a9cb40964a2f9a83fd78c02b713802f02617faaff64341425d1b",
+    "request_sha256": "a41ad5c4a55695d18025c0dbbdc04aab61e0fca1cda02464d9a9d829a79bd3c8",
+    "state_sha256": "f2cc8d3e92496d5a9cb8e0976f1d9d2afab6cb3543188fd085b0fff65f66623f",
+    "current": {
+      "release_id": "backend-20baee851cc3-c01d5047410c",
+      "source_sha": "20baee851cc36b01d51705b6af80913ccf757baa",
+      "package_tree_sha256": "c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d"
+    },
+    "archived_relative_path": "archived-incoming/server-43546497935-1/14094113962.zip",
+    "reference_sha256": {
+      "submissions/64c9a2f383709ee93ca5e584a9bc5b52.json": "da5475d48a51a9cb40964a2f9a83fd78c02b713802f02617faaff64341425d1b",
+      "attempts/64c9a2f383709ee93ca5e584a9bc5b52/state.json": "f2cc8d3e92496d5a9cb8e0976f1d9d2afab6cb3543188fd085b0fff65f66623f",
+      "requests/64c9a2f383709ee93ca5e584a9bc5b52.json": "a41ad5c4a55695d18025c0dbbdc04aab61e0fca1cda02464d9a9d829a79bd3c8"
+    },
+    "deployment_requested": false,
+    "application_services_restarted": false,
+    "automatic_retry_allowed": false,
+    "status": "upload_archived",
+    "moved": true,
+    "completed_at": "2026-11-16T02:55:09.242342+00:00"
+  },
+  "gateway_receipt": {
+    "schema_version": 1,
+    "gateway_sha256": "6b794263ad129ff45ed8752374d55a9c69cde789ae903a33cc2097fd91406e9f",
+    "previous_gateway_sha256": "877fe548164b127d8f3820bafa4b0c44797a8a732a9a829c1c82de098b8e2ab8",
+    "receiver_sha256": "b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4",
+    "previous_receiver_settings_sha256": "e2fdd62ee2da08d9a5c30f25b4cf4e3403c1f29ea6347435825df879d6406ae6",
+    "receiver_settings_sha256": "52768ca169a119594efbaf73374f547ea3857a65a68db769a7bff26e85fce59d",
+    "updater_settings_sha256": "9556cd0353679c780df5e893221cd691d75c2c5695334bbb43bea411696725bb",
+    "blocked_evidence_sha256": "4a0eb040aca6b8abfd5a44aecd8e29c33477e19a628d322f08ea6c8f53fb0d88",
+    "current": {
+      "release_id": "backend-20baee851cc3-c01d5047410c",
+      "source_sha": "20baee851cc36b01d51705b6af80913ccf757baa",
+      "package_tree_sha256": "c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d"
+    },
+    "application_pids": {
+      "nodia-api.service": 1018075,
+      "nodia-ai-worker.service": 1018078
+    },
+    "deployment_requested": false,
+    "deployment_performed": false,
+    "application_services_restarted": false,
+    "automatic_retry_allowed": false,
+    "status": "gateway_refreshed",
+    "gateway_changed": true,
+    "completed_at": "2026-11-16T02:59:22.255071+00:00"
+  },
+  "source_receipt_sha256": {
+    "inventory_before": "20c4c69f4e75ec9e480572a695b6d570a5d7d5052056c68ed5a4360c9f462ba8",
+    "inventory_after_archive": "3f8abe4c83d853e5e3a8e1364c6f03fdb9172ff6fbdcf23167d8a603d2c20a19",
+    "archive": "6a0f3d45fc194cbe526f9ae4f9206b2326aa3d733b0127e6802559d9cf8eb6b7",
+    "gateway": "a80f6c41a76f2b4eee8cf0be0491087eb5e1430d5763e133eac80984454b5f37",
+    "inventory_after_gateway": "dc5e1e0dce7709a4096840c5e2d7ada06481fabec1de3a39f91c7e187509420f"
+  },
+  "blocked_file_presence_is_not_effective_block": true,
+  "fresh_restricted_ssh_status": "deployment_ready",
+  "effective_blocked_after_gateway": false,
+  "original_upload_or_deploy_replayed": false,
+  "original_receipt_rewritten": false,
+  "new_delivery": {
+    "status": "not_started"
+  },
+  "automatic_retry_allowed": false,
+  "after_gateway": {
+    "count": 8,
+    "total_bytes": 1727848749,
+    "target_zip": false,
+    "target_partial": false,
+    "target_submission": false,
+    "target_request": false,
+    "target_attempt": false,
+    "current": "/opt/nodia/releases/backend-20baee851cc3-c01d5047410c",
+    "application": {
+      "nodia-api.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "MainPID": "1018075"
+      },
+      "nodia-ai-worker.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "MainPID": "1018078"
+      }
+    },
+    "receiver_settings_sha256": "52768ca169a119594efbaf73374f547ea3857a65a68db769a7bff26e85fce59d",
+    "installed_assets": {
+      "deploy-gateway.py": "6b794263ad129ff45ed8752374d55a9c69cde789ae903a33cc2097fd91406e9f",
+      "deploy-backend-receiver.py": "b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4"
+    }
+  }
+}

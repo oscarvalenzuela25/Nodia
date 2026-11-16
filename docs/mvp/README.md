@@ -1,15 +1,17 @@
 # Especificación del MVP — Nodia
 
-**CD: segundo upload incierto, corrección local — 2026-11-15:**
-CD43791568791 se detuvo antes de solicitar deploy/publicación; API/worker
-conservan20baee85 activos. Payload backend candidato y actual idénticos, gateway
-diagnóstico todavía no adoptado; causa actual sin confirmar sin inventario root.
+**CD: cuota reparada y gateway adoptado, deploy pendiente — 2026-11-15:**
+Inspección root del CD43791568791 confirmó cinco ausencias objetivo y cuota
+insuficiente por12.323.628bytes. Archivado reversible de un ZIP complete/no-current
+deja8ZIPs/1.727.848.749bytes. Gateway6b794263 adoptado con CAS/pin y SSH nuevo
+deployment_ready/blocked:false; receiver, current20ba/c01 y PIDs intactos.
 [99§31](99-production-deployment-and-cicd-plan.md#31-upload-incierto-y-equivalencia-acotada-de-payload--2026-11-15),
-[evidencia](../evidence/deploy-upload-reconciliation-20261115.md) y ADR103
-propuesto: omisión acotada por diff/hash, fuente real conservada;155Node Linux
-correctos. Implementación local, sin despliegue. Primera promoción requiere
-entrega normal; [TODO OPS-001](TODO.md) continúa en conciliación del intento,
-capacidad/protocolo instalado, journal de upload y retención segura.
+[evidencia/recibos](../evidence/deploy-upload-reconciliation-20261115.md):155Node
+y67Python Linux correctos, sin skips; revisión independiente sin hallazgos.
+Recibo fallido intacto y sin replay, deploy/publicación nuevos aún no ejecutados.
+Primera promoción con ops requiere entrega normal; [TODO OPS-001](TODO.md)
+conserva preflight capacidad/protocolo, ledger/reanudación y retención automática
+pendientes. ADR103 propuesto, equivalencia local sin adopción de aplicación.
 
 **CD: cuota de upload reparada, despliegue pendiente — 2026-11-15:**
 CI43753748903 pasó; CD43754640640 rechazó backend antes de submit/publicación.

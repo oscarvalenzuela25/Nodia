@@ -1454,12 +1454,13 @@ antes de solicitar deploy/publicación. El
 conserva operación5668d201c5bf57899b0aefe71f490ef7, `upload_requested` y
 `deployment_requested:false`. [Evidencia consolidada](../evidence/deploy-upload-reconciliation-20261115.md).
 
-Lectura restringida posterior: backend20baee851cc3-c01d5047410c, API/worker
+Primera lectura restringida: backend20baee851cc3-c01d5047410c, API/worker
 activos y `blocked:false`; fuente real
 `20baee851cc36b01d51705b6af80913ccf757baa`. `operation_not_found` no demuestra
 ausencia de ZIP/partial. Sin sudo no interactivo ni sesión tmux administrativa,
-no se inspeccionó incoming actual como root. **Causa de este upload no confirmada**;
-no trasladar a este intento la cuota demostrada en§30 ni repetir su mantenimiento.
+no se inspeccionó entonces incoming como root. Ese límite del corte inicial fue
+resuelto por la continuación operatoria autorizada más abajo; no se usó el
+inventario anterior de§30 como si fuera el de este intento.
 
 El candidato538c67f5ceed4de22cc4d47f629b0ab90ceacbf3 y el backend actual
 declaran el mismo árbol completo
@@ -1482,7 +1483,25 @@ Implementación local en `codex/fix-deploy-upload-reconciliation`: selección,
 transporte, gate Pages y recibo/resumen conservan esa distinción. Suite Node CI
 completa:155correctos en Linux nativo, sin skips; Windows145correctos/10skips de
 plataforma. Negativos de elegibilidad/procedencia y publicación condicionada
-comprobados con fixtures. Sin nuevo CI/CD remoto o instalación de operadores.
+comprobados con fixtures. Esta validación local precede a la adopción del gateway;
+todavía no hay nuevo CI/CD remoto por esta continuación.
+
+**Continuación operatoria autorizada:** inspección root confirmó9ZIPs y
+1.943.825.000bytes, más215.982.276del candidato: exceso12.323.628 frente a2GiB.
+ZIP/partial/submission/request/attempt objetivo ausentes. Dry-run/apply archivó
+sólo el ZIP14094113962 de64c9a2f383709ee93ca5e584a9bc5b52, complete0f69/no-current,
+215.976.251bytes con hash y referencias intactos. Incoming queda8ZIPs y
+1.727.848.749bytes; sin borrar datos o establecer retención automática.
+
+Gateway6b794263… adoptado mediante nuevo helper193e286d… con CAS, intent/originales
+durables y pin. Receiverb2880ea7…, updater-settings9556cd03…, BLOCKED histórico/ACK,
+current20ba/c01 y PIDs1018075/1018078 intactos. Receiver-settings nuevo52768ca1…;
+SSH restringido nuevo deployment_ready/blocked:false. Linux67pruebas correctas,
+sin skips (14helpernuevo+27receiver+16archivo+10refresh); revisión sin hallazgos.
+[Recibos durables](../evidence/deploy-upload-reconciliation-20261115.json) y
+[evidencia detallada](../evidence/deploy-upload-reconciliation-20261115.md).
+El CD fallido conserva su recibo unknown; no fue reescrito o repetido. Nueva
+promoción/CI/CD pendiente, sin deploy/publicación de aplicación por el mantenimiento.
 
 ### 31.1. Fiabilidad del transporte y siguiente entrega OPS-001
 
@@ -1491,10 +1510,9 @@ CAS, identidad SSH restringida, pins, recibos saneados y efectos asíncronos de
 systemd. Client-only ya existe; no agregar un switch manual de omisión Server.
 La equivalencia tampoco reemplaza un protocolo de transferencia recuperable.
 
-- [ ] **OPS-01 — conciliar este intento:** inspección operatoria acotada de
-  ZIP/partial/submission/request para su identidad, hashes/pins y servicios,
-  cuando exista acceso administrativo; sin replay. Registrar causa sólo con
-  evidencia nueva y preservar los originales.
+- [x] **OPS-01 — conciliar este intento:** inspección root, cinco ausencias
+  objetivo, cuota insuficiente, hashes/pins/current/PIDs y postcheck conservados
+  en el recibo nuevo. Fallo histórico intacto, sin replay. No repetir este gate.
 - [ ] **OPS-02 — preflight antes de bytes:** contrato tipado para capacidad
   efectiva, cuota/count/headroom y versión/capacidades/pins del gateway instalado.
   Comprobar ambos extremos; una preconsulta no reserva capacidad ni elimina una
@@ -1513,10 +1531,14 @@ La equivalencia tampoco reemplaza un protocolo de transferencia recuperable.
   y diagnósticos. Archivar sólo terminales verificados, no-current y sin referencias
   compartidas, con dry-run, locks, intent/recibo durable y posibilidad de
   recuperación. No borrar unknown/parciales/fallidos, pins, current o evidencia
-  para liberar cuota; no elegir sólo por edad. El helper actual sigue manual.
-- [ ] **OPS-06 — rollout de operadores:** bundle revisado y adopción explícita
-  con hashes/pins/CAS, ensayos Linux aislados y postcheck. El gateway observado
-  conserva877fe548…; promoción de aplicación no instala esta corrección.
+  para liberar cuota; no elegir sólo por edad. Dos archivos puntuales fueron
+  verificados por sus propios recibos§30/§31; política automática pendiente y
+  helper actual manual, sin repetir esos movimientos.
+- [x] **OPS-06 — rollout diagnóstico del gateway:** helper193e286d… y candidato
+  exacto6b794263… revisados/probados/adoptados con CAS, hashes/pins/originales y
+  SSH nuevo. Receiver/updater/current/PIDs/BLOCKED/ACK conservados, sin restart.
+  Este cierre sólo acredita el diagnóstico acotado; versión/capacidades del
+  protocolo/preflightOPS-02 y ledger/reanudaciónOPS-03/04 siguen pendientes.
 
 Pruebas requeridas por alcance: corte antes de bytes, a mitad y tras fsync antes
 de ACK; crash de ledger/rename; hash/offset conflictivo; cuota concurrente;
@@ -1527,4 +1549,5 @@ No presentar tests sintéticos como instalación remota o reparación de este fa
 
 Evaluación de conocimiento NodiaAI: infraestructura, sin cambio funcional de
 contratos, permisos, herramientas o modelos; no se crean/publican fichas por
-esta intervención. ADR103 permanece propuesto y la adopción sigue pendiente.
+esta intervención. ADR103 permanece propuesto; gateway diagnóstico adoptado,
+equivalencia candidata y nueva entrega de aplicación aún sin adopción productiva.
