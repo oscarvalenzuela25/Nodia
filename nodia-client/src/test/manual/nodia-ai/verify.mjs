@@ -16,7 +16,7 @@ const syntheticModelLabel = "Modelo sintético alternativo / Synthetic alternati
 async function open(page, { width = 390, theme = "dark", lang = "es", scenario = "default" } = {}) {
   await page.setViewportSize({ width, height: 900 });
   await page.goto(`${origin}/src/test/manual/nodia-ai/index.html?theme=${theme}&lang=${lang}&scenario=${scenario}`);
-  await page.getByRole("heading", { name: "Nodia AI", level: 1 }).waitFor();
+  await page.getByRole("heading", { name: "NodiaAI", level: 1 }).waitFor();
   await page.evaluate(() => document.fonts.ready);
   await page.getByText("[QA SINTÉTICO / SYNTHETIC QA]", { exact: false }).waitFor();
   if (scenario !== "unknown" && scenario !== "read-only") await page.getByRole("button", { name: translations[lang].send, exact: true }).waitFor({ state: "visible" });

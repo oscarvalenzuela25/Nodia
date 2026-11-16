@@ -1,9 +1,15 @@
-import { ListItem } from "@mui/material";
+import { IconButton, ListItem } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
 
 export const Filters = styled("div")(({ theme }) => ({
   display: "flex", flexDirection: "column", gap: theme.spacing(1.5), marginBottom: theme.spacing(2),
   minWidth: 0,
+}));
+export const FilterSummary = styled("div")(({ theme }) => ({
+  display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap",
+  gap: theme.spacing(0.5, 1), minWidth: 0,
+  "& > span": { minWidth: 0, overflowWrap: "anywhere" },
+  "& > button": { minHeight: 44, minWidth: 0, maxWidth: "100%", whiteSpace: "normal", overflowWrap: "anywhere" },
 }));
 export const ConversationRow = styled(ListItem, {
   shouldForwardProp: prop => prop !== "active",
@@ -46,10 +52,20 @@ export const RowActions = styled("div")(({ theme }) => ({
 
 export const Heading = styled("div")(({ theme }) => ({
   display: "flex", alignItems: "center", justifyContent: "space-between",
-  gap: theme.spacing(1), minWidth: 0, marginBottom: theme.spacing(1),
+  gap: theme.spacing(0.5), minWidth: 0, marginBottom: theme.spacing(1),
   "& button": { minWidth: 44, minHeight: 44 },
 }));
 
 export const AdditionalFilters = styled("div")(({ theme }) => ({
   display: "flex", flexDirection: "column", gap: theme.spacing(1.5), minWidth: 0,
+}));
+
+export const RailButton = styled(IconButton)(({ theme }) => ({
+  width: 44, height: 44, borderRadius: theme.shape.borderRadius,
+  "&[aria-current=page]": {
+    color: theme.palette.primary.main,
+    background: alpha(theme.palette.primary.main, 0.12),
+    border: `1px solid ${alpha(theme.palette.primary.main, 0.3)}`,
+  },
+  "&.Mui-focusVisible": { outline: `2px solid ${theme.palette.primary.main}`, outlineOffset: 1 },
 }));

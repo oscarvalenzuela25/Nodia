@@ -662,3 +662,36 @@ Implementación local en verificación; [verificación consolidada](96-nodia-tea
 El [recibo VM](../evidence/chat-gpt-development-vm-20261114-r01.json) conserva selección, session_generation, configuration_generation, resource_key y hashes de runtime/política del único dispatch ordinario. El mismo UID/GID/HOME/env no basta para observar una sesión cuando API/worker montan `/run/user/10000/bus` en `/run/nodia-runtime/bus`: la sonda debe usar también ese bind. Una respuesta vacía fuera de ese contexto no demuestra pérdida de autenticación. La sonda corregida no generó; sólo después de elegibilidad exacta se admitió la primera generación normal, con presupuesto1, resultado completed, transporte/proceso cerrados y ACK. No se repitió ninguna inferencia ni se creó identidad de autenticación.
 
 El catálogo de esfuerzos diferencia opciones reales explícitas (incluido `[]`) y metadatos ausentes. Las preferencias manuales Agentic recuperables no acreditan soporte o disponibilidad y no cambian automáticamente la selección; el descubrimiento real y la elegibilidad exacta siguen siendo autoridad operacional. La evidencia de este corte pertenece sólo a la VM; no atribuye una causa al endpoint productivo sin su traza autenticada ni extiende la aceptación a otros propósitos.
+
+## Cabecera, herramientas adaptativas y selección en Popover — 2026-11-16
+
+La continuación [106§11](106-nodia-teacher-guided-ux-redesign.md#11-cabecera-drawer-adaptativo-y-selector-ia--solicitud2026-11-16)
+modifica presentación Client. El estado conserva su procedencia de sesión y se
+alinea con el título; «Resultado guardado» mantiene el significado del trabajo
+confirmado aunque se mueva a la barra de acciones. Quitar su recarga contigua no
+suprime la recuperación GET de errores/unknown ni el sondeo actual por estado.
+Pausa, retoma y archivo continúan usando `allowed_actions` y sus comandos actuales.
+
+El Drawer adaptativo lateral derecho agrupa las categorías existentes, con Mis
+fuentes inicial y sólo un contenido activo. Sus editores por intención conservan
+borrador y reintento local; cerrarlo suspende lecturas pertinentes sin cancelar
+mutaciones remotas ni descartar resultados inciertos. Cambiar categoría, viewport
+o sesión no autoriza respuestas tardías a modificar otro contexto. Cierre/foco y
+bloqueo durante peticiones conservan los contratos de formularios existentes.
+
+La presentación composer de SelectionPanel se resume en modelo/modo y un Popover
+horizontal con conexión/modo/modelo/intensidad dinámicos, resumen aplicado y cierre.
+No incorpora el «+», adjuntos o hooks de negocio NodiaAI al editor Teacher.
+Plegar no aplica ni descarta una selección local; dirty/ready siguen comunicándose
+al propietario y errores de guardado conservan datos y panel. Elegibilidad,
+CAS/recibos, esfuerzos publicados por selección y ausencia de modelo conservan
+su autoridad, sin fallback ni capacidad deducida de un nombre.
+
+Implementación y QA sintética de esta UI comprobadas; regresiones y checks de
+código correctos por el alcance de la [evidencia propia](../evidence/teacher-drawer-chat-ui-20261116.md). La
+recuperación de una escritura incierta se muestra dentro del Drawer mediante el
+mismo comando propietario; se suprime el control de fondo mientras esté abierto.
+No se fuerza a cerrar el foco modal para consultar el recibo ni se reenvía la
+mutación original.
+Sin DTO, endpoint, herramienta, migración, inferencia, despliegue o publicación
+nueva por esta presentación. Los cortes históricos conservan su alcance.

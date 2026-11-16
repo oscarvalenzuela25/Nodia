@@ -1,19 +1,82 @@
 # Progreso del MVP — Nodia
 
-**CD: transporte upload v2 adoptado, entrega nueva pendiente — 2026-11-16:**
+**Teacher: revisión legible del plan — solicitud2026-11-16:**
+[106§13](106-nodia-teacher-guided-ux-redesign.md#13-revisión-del-plan-legible-y-edición-progresiva--solicitud2026-11-16)
+retoma TUX-04: resumen/recorrido primero, «Usar este plan» principal y edición o
+ajuste con IA bajo demanda. Todos los campos, borradores, cantidades inválidas y
+aceptación exacta conservan sus contratos. Implementación y QA sintética local
+verificadas:12perfiles320–1280px y borradores/nodos/foco conservados, incluso
+ante503/409. Global3039/365 previa al guard final y al caso histórico;26focales
+posteriores y build/lint finales correctos. [Evidencia propia](../evidence/teacher-plan-review-20261116/README.md).
+TUX-04 parcial: comprensión humana/UI autenticada/dispositivo y adopción
+pendientes; sin inferencia, publicación o aprobación nuevas.
+
+**NodiaAI: historial móvil desde cabecera — solicitud2026-11-16:**
+[107§15](107-nodia-ai-ux-ui-upgrade-plan.md#15-historial-móvil-desde-cabecera--solicitud2026-11-16)
+registra la petición de retirar la barra lateral por debajo de900px y abrir el
+historial desde un icono de cabecera; fila móvil con «Nuevo chat» compacto a la
+derecha. Escritorio conserva el panel colapsable; chat/borrador/URL y búsqueda
+conservados en [QA Chromium sintética](../evidence/nodia-ai-mobile-history-20261116/README.md),
+incluso al redimensionar y ante503. Implementación local, tipos/lint/build
+correctos;84focales y global3035/364 correctos. Capturas anteriores
+con barra móvil históricas, sin aprobar fichas o desplegar esta revisión.
+
+**NodiaAI: claridad del historial y filtros — continuación2026-11-16:**
+retomado NAIUX-001 desde [107§14](107-nodia-ai-ux-ui-upgrade-plan.md#14-continuidad-del-historial-y-filtros--continuación2026-11-16).
+Vacío filtrado diferenciado, criterios activos/restablecimiento visibles,
+selección accesible y Drawer móvil con nombre. QA Chromium sintética en cinco
+perfiles correcta, con borrador/chat/foco y recuperación de consulta conservados;
+global3034/364 y tipos/lint/build correctos. [Evidencia](../evidence/nodia-ai-history-filters-20261116.md).
+UI autenticada/dispositivo y adopción de esta revisión pendientes; no se
+modifican contratos, IA o autoridad ni se aprueban/publican fichas.
+
+**Teacher: ResizeObserver — corrección local verificada2026-11-16:** solicitud en
+la misma rama, sin cambiar diseño o borradores. [106§12](106-nodia-teacher-guided-ux-redesign.md#12-ciclo-de-medición-de-teacherloading--solicitud2026-11-16)
+limita la medición Boneyard a la carga inicial tras reproducir el aviso; regresión
+atómica (3 casos) y QA independiente de tres recorridos/seis perfiles sin avisos;
+geometría conservada.
+Revalidación focal actual 60/60, tipado, lint y build finales correctos por alcance;
+global con fallo de test concurrente y revalidación posterior detallados en [evidencia](../evidence/teacher-drawer-chat-ui-20261116.md#corrección-del-ciclo-de-medición--solicitud2026-11-16).
+Sin inferencia, despliegue o publicación de contexto.
+
+**Teacher: cabecera, drawer y selector IA — solicitud2026-11-16:** mockups
+aceptados y desarrollo autorizado en la rama actual `codex/durable-backend-uploads`.
+[Plan106§11](106-nodia-teacher-guided-ux-redesign.md#11-cabecera-drawer-adaptativo-y-selector-ia--solicitud2026-11-16) registra estado a la derecha del título,
+acciones/resultado integrados, aprendizaje adaptativo en Drawer con Mis fuentes
+inicial y selección IA horizontal en Popover, sin botón «+». Implementación y QA sintética de seis perfiles/
+continuidad verificadas; pruebas/tipos/lint/build finales correctos por alcance
+(incluida la última alineación CSS xs); [evidencia propia](../evidence/teacher-drawer-chat-ui-20261116.md).
+Contratos/autoridad/recuperación conservados; sin inferencia, despliegue o
+aprobación/publicación de fichas por este lote.
+
+**NodiaAI: historial compacto y burbujas — solicitud2026-11-16:** mockups
+aceptados e implementación local en la rama actual `codex/durable-backend-uploads`.
+[Plan107§13](107-nodia-ai-ux-ui-upgrade-plan.md#13-historial-compacto-y-burbujas--solicitud2026-11-16)
+registra marca34px estilo Teacher, historial colapsado en iconos con tooltips,
+compositor16px, selector según texto y respuestas en globo con copia sólo por
+icono. [QA sintética6perfiles/continuidad correcta](../evidence/nodia-ai-sidebar-bubbles-20261116.md);
+tipos/lint/build finales correctos y pruebas globales con corrección/revalidación
+focal posterior. Contratos/contexto/autoridad conservados.
+Sin adopción de este nuevo alcance, inferencia o aprobación/publicación de fichas.
+
+**CD: entrega95b completada con upload v2 — 2026-11-16:**
 [99§32](99-production-deployment-and-cicd-plan.md#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16)
-y [recibo/evidencia](../evidence/durable-backend-uploads-20261116.md): bundle5d5a150b
-adoptado por operador root, dry-run/apply correctos y capabilities v2 por SSH nuevo.
-Pins/settings206fcbd9, updater/reconciliaciones intactos; current6ba/c01 y
-PIDs1076642/1076645 preservados, sin restart o deploy de aplicación. SSH nuevo
-confirma deployment_ready/blocked:false y ambos writers activos. CI43871419155
-completa correcta para2309037c:173Node+15políticas+206Python root sin skips.
-El gate adicional del cliente revalida CI/master después de transferir y antes
-del submit:72focales correctas; CI del próximo HEAD todavía pendiente. Retención,
-transferencia y entrega reales nuevas siguen pendientes; delivery null.
+y [recibo/evidencia](../evidence/durable-backend-uploads-20261116.md): PR39/40
+integrados, CI master43878077045 y CD43879692520 completos correctos. Backend/
+Client95b publicados con árbolesc01/bbb5 sin variación; transferencia v2 de
+215982275bytes verified, recovered:false y sin fallos inyectados en producción.
+SSH nuevo deployment_ready/blocked:false y writers activos; HTTPS API200/auth401/
+Client200 con TLS0, Pages01ee1156 y PWA10recursos correctos. El mantenimiento previo
+de adopción conservó6ba/PIDs sin restart; esta entrega normal activó95b.
+Prueba root final: un archivo automático de215986320bytes, bytes/referencias
+íntegros; inventario9ZIPs/1943826973bytes, tres archivos y un ledger verified,
+sin parcial. Sudo invalidado, tmux cerrado y SSH posterior95b/blocked:false/activos.
+Alcance v2 entregado y cierre administrativo completo. [TODO OPS-001](TODO.md)
+continúa con política de disco físico/offload y retención global de releases/
+diagnósticos. Fallos y reanudación probados en CI aislado; transferencia productiva
+normal (recovered:false).
 [ADR104 propuesto](../architecture/decisions/ADR-104-durable-upload-continuation-and-incoming-retention.md),
-sin aprobación documental o cambios de conocimiento. [TODO OPS-001](TODO.md)
-continúa desde esos gates; la adopción del transporte no cierra toda la iniciativa.
+sin aprobación documental, inferencia IA, cambios de conocimiento o replay histórico.
 
 **CD y NodiaAI: entrega productiva completada — 2026-11-16:**
 PR36→development y PR37→master6ba2afb7, con CI correctos. CI43798403214 y

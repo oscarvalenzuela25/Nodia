@@ -91,7 +91,7 @@ export default function SetupConversation({ messages, draft, scopeKey, contextKe
     <MessageComposer scopeKey={scopeKey} text={draft.text} onTextChange={draft.change} onSend={() => { if (!sendDisabled && confirmation === null) onSend(); }}
       maxLength={4000} maxBytes={8192} label={t("teacher:message")} placeholder={t("teacher:message_placeholder")} sendLabel={t("teacher:send_message")} ariaLabel={t("teacher:message")}
       disabled={disabled || confirmation !== null} sendDisabled={sendDisabled} voiceDisabled={disabled || confirmation !== null || generating || draft.conflict}
-      onRecordingChange={reportRecording} footer={footer} sx={{ m: { xs: 1, sm: 2 }, mt: 0 }} />
+      onRecordingChange={reportRecording} inputStart={footer && <Box sx={{ width: "fit-content", minWidth: 0, maxWidth: { xs: "100%", sm: "15rem" } }}>{footer}</Box>} sx={{ m: { xs: 1, sm: 2 }, mt: 0 }} />
     {(draft.status !== "saved" || !draft.valid || draft.conflict) && <Stack sx={{ px: 2, pb: 1.5, gap: 1 }}>
       {draft.status !== "saved" && <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}><Typography role="status" variant="caption" color="text.secondary">{t(`teacher:setup_draft_${draft.status}`)}</Typography>
         {draft.status === "failed" && <Tooltip title={t("teacher:retry_draft_save")}><span><IconButton aria-label={t("teacher:retry_draft_save")} disabled={disabled || recording || !draft.valid || draft.conflict} onClick={() => { void draft.save(); }}><RefreshOutlined fontSize="small" /></IconButton></span></Tooltip>}

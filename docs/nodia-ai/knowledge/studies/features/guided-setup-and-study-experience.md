@@ -4,11 +4,11 @@
   "document_id": "studies.guided-setup-and-study-experience",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 2,
+  "revision": 4,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Primera entrega local2026-11-15: wizard3pasos contra DTO actual, resumen/selección conservados, guard salida SPA/recarga y recuperación existente. TUX-03…05 y comprensión humana pendientes; no acredita disponibilidad operativa."
+    "notes": "Primera entrega local2026-11-15: wizard3pasos contra DTO actual, resumen/selección conservados, guard salida SPA/recarga y recuperación existente. TUX-03…05 y comprensión humana pendientes; no acredita disponibilidad operativa. Continuación2026-11-16: mockups aceptados y desarrollo autorizado en la misma rama para cabecera/estado/acciones, Drawer adaptativo con Mis fuentes inicial y selector IA horizontal en Popover sin botón +. Implementación y QA sintética local de seis perfiles/continuidad verificadas; suite 3027/364 antes del último ajuste de recuperación y 11 focales posteriores correctos; tipos/lint/build por alcance correctos. Última alineación CSS xs, lint focal y build final correctos; matriz de seis perfiles repetida. No se afirma una segunda global de 3028 casos. No cambia contratos, contexto o herramientas ni acredita inferencia, adopción o aprobación/publicación. Continuación106§13: revisión legible/edición progresiva locales con QA sintética. Global3039/365 previa al guard final y al caso histórico;26focales posteriores y build/lint finales correctos. Sin contratos, contexto o herramientas nuevos; aceptación UX/adopción pendientes."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Teacher conforme AGENTS",
@@ -28,18 +28,97 @@
     {
       "path": "nodia-client/src/modules/teacher/hooks/useStudySetup.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/AdaptiveWorkspace.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/SelectionPanel/SelectionPanel.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/PlanReview/PlanReview.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/PlanStructureEditor/PlanStructureEditor.tsx",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-15",
+    "checked_on": "2026-11-16",
     "evidence_paths": [
-      "docs/evidence/teacher-guided-setup-20261115.md"
+      "docs/evidence/teacher-guided-setup-20261115.md",
+      "docs/evidence/teacher-drawer-chat-ui-20261116.md",
+      "docs/evidence/teacher-plan-review-20261116/README.md"
     ],
-    "notes": "Regresiones de comportamiento y Chromium local con transporte sintético; sin inferencia, UI autenticada/shell real, comprensión humana o adopción VM/producción."
+    "notes": "Regresiones de comportamiento y Chromium local con transporte sintético; sin inferencia, UI autenticada/shell real, comprensión humana o adopción VM/producción. Corte2026-11-16: solicitud/mockups y contratos UI contrastados documentalmente; QA sintética local de seis perfiles, foco/borradores y errores comprobados; suite global 3027/364 previa al último ajuste de recuperación y 11 focales posteriores correctos. Tipos/lint/build por alcance correctos; último CSS xs, lint focal y build final correctos, con la matriz de seis perfiles repetida. Sin segunda global de 3028 casos, inferencia o adopción afirmadas; detalle en evidencia propia. Continuación106§13: QA Chromium12perfiles320–1280 ESoscuro/ENclaro, borradores/foco/nodos y503/409 conservados; aceptación ID/hash exactos sin IA. Global3039/365 anterior al guard final !policyValid y al caso histórico;26focales posteriores12,38s, build/lint finales y typecheck previo correctos. UI autenticada, comprensión, teléfono físico/adopción pendientes."
   },
   "approval": null
 }
 ---
+
+## Revisión legible del plan — solicitud2026-11-16
+
+[Plan106§13](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#13-revisión-del-plan-legible-y-edición-progresiva--solicitud2026-11-16)
+retoma TUX-04 por petición del usuario: entender la propuesta antes de editarla.
+Resumen con título/objetivo/organización y conteos reales; recorrido por secciones
+con detalles bajo demanda. «Usar este plan» es principal; «Editar estructura» y
+«Pedir un ajuste» conservan acceso visible, con editor y ajuste plegables. La
+activación futura mantiene su acción versionada propia. Con propuesta disponible,
+la revisión precede a la conversación de planificación, que se despliega mediante
+su botón y sigue montada para conservar borrador, selección y editores. Sin
+propuesta continúa visible; no se pliega durante grabación. El helper de «Usar
+este plan» distingue guardar la propuesta y elegir una unidad de preparar material.
+
+Se conservan todos los campos y reglas de edición, cantidades inválidas, IDs y
+borradores al plegar, revalidar o fallar503/409. Cambios locales/política inválida
+bloquean aceptación con explicación y acceso al editor. Resolver una promesa de
+comando no acredita guardado; el éxito lo determina la revisión confirmada.
+Ajustar con IA, guardar revisión manual, aceptar y preparar material son acciones
+diferentes. Abrir/leer no genera ni acepta implícitamente; aceptación exacta no
+requiere proveedor listo cuando el contrato permita esa acción.
+
+Evaluación de impacto: presentación y acceso progresivo a operaciones actuales,
+sin cambiar conceptos, efectos, contexto enviado, permisos, herramientas o
+interpretación de resultados. Implementación y QA sintética local verificadas en
+[la evidencia propia](../../../../evidence/teacher-plan-review-20261116/README.md):
+12perfiles320–1280px, ES oscuro/EN claro, sin overflow ni escrituras al entrar;
+drafts/nodos/foco conservados al plegar o redimensionar y ante503/409. Aceptación
+con ID/hash exactos de la revisión confirmada, sin IA o preparación automática.
+Una política inválida bloquea aceptación y también ajustes con IA, incluso sin
+cambio estructural; ayuda ES/EN y corrección comprobadas sin escrituras. La
+regresión histórica posterior conserva título/duración ausentes y estado vacío
+hasta editar explícitamente, sin inventar jornadas ni aceptar si no está permitido.
+
+Global365archivos/3039pruebas correcta antes del último guard de política, su
+assertion y el caso histórico posterior;26focales correctas después en12,38s, build final
+(tipado+Vite), lint final con sólo `.tmp/**` excluido y typecheck independiente
+previo correctos. No se afirma otra global posterior. Comprensión humana, UI
+autenticada, teléfono físico y adopción siguen independientes; TUX-04 parcial
+por alcance local. Draft/partial/unregistered/approval:null, sin publicación,
+aprobación o inferencia nuevas por esta entrega.
+
+## Cabecera, drawer y selector IA — solicitud2026-11-16
+
+[Plan106§11](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#11-cabecera-drawer-adaptativo-y-selector-ia--solicitud2026-11-16)
+registra la continuación aceptada: estado al extremo derecho del título,
+«Mis planes de estudio» contained y resultado confirmado junto a las acciones,
+sin recarga contigua. Aprendizaje adaptativo pasa a Drawer derecho con Mis fuentes
+primero/seleccionado al entrar; cada categoría muestra su información existente.
+El chat usa resumen compacto y configuración horizontal en Popover, sin botón «+».
+
+Implementación y QA sintética local verificadas en la rama actual; regresiones y
+checks finales de código correctos por alcance, incluida la última alineación
+CSS xs y la repetición de seis perfiles según evidencia. Borradores, foco,
+retry, selección exacta y datos de disponibilidad mantienen sus contratos; mover
+controles no genera IA, acepta planes ni guarda selecciones implícitamente.
+Evaluación de impacto: presentación y acceso a operaciones existentes, sin nuevos
+conceptos, herramientas, permisos o contexto del modelo. Candidata draft/partial/
+unregistered/approval:null, sin publicación o adopción por este lote.
+[Evidencia propia](../../../../evidence/teacher-drawer-chat-ui-20261116.md); el mockup no
+prueba UI integrada, dispositivo físico o capacidades de un proveedor.
 
 # Experiencia guiada de Teacher — contexto funcional para NodiaAI
 
@@ -48,9 +127,10 @@
 El usuario reporta que Teacher es difícil de entender, especialmente al crear.
 [Plan106](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md) propone alta
 de3pasos, ayuda contextual opcional, revisión legible y primera lección con
-siguiente acción clara. El alta3pasos es ahora un candidato implementado localmente. La revisión legible
-y la primera lección del rediseño siguen pendientes; no se atribuye disponibilidad
-operativa por existir código.
+siguiente acción clara. El alta3pasos es un candidato implementado localmente. La revisión legible cuenta
+con la entrega local de106§13; comprensión humana, UI autenticada y adopción
+siguen pendientes. La primera lección TUX-05 conserva su alcance pendiente; no se
+atribuye disponibilidad operativa por existir código.
 La [ficha de sesión](session-setup-and-planning.md) conserva el baseline real.
 
 ## Solicitudes en lenguaje natural
@@ -109,7 +189,8 @@ como guardada ni promete persistencia tras recarga. Regresiones y QA locales por
 - [x] Solicitud y baseline trazados a106/97 y DTOs reales.
 - [ ] Prototipo específico Teacher y comprensión contrastados con usuario.
 - [x] Alta local implementada: mínimos, navegación, selección/errores y salida protegida probados con fixtures; autoridad Server reutilizada.
-- [ ] Aceptación exacta, conflictos, concurrencia y recuperación comprobados.
+- [ ] Aceptación exacta, conflictos y recuperación comprobados localmente en106§13;
+  concurrencia/HTTP autenticado y adopción no se reaceptan por esa QA sintética.
 - [x] Alta responsive/ES/EN/temas verificada en Chromium sintético; continuidad histórica y entorno real no reaceptados.
 - [ ] Integración/publicación NodiaAI definida si se solicita; ninguna nueva en106.
 

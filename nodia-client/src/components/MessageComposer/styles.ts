@@ -19,6 +19,13 @@ export const InputRow = styled("div")(({ theme }) => ({
   display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto auto", alignItems: "end", gap: theme.spacing(1), minWidth: 0,
   "& > button": { width: 44, height: 44, flexShrink: 0, borderRadius: 14 },
   "&[data-layout=stacked]": { gridTemplateColumns: "minmax(0, 1fr)" },
+  "&[data-layout=inline][data-has-start=true]": {
+    gridTemplateColumns: "auto minmax(0, 1fr) auto auto",
+    [theme.breakpoints.down("sm")]: {
+      gridTemplateColumns: "minmax(0, 1fr) auto auto",
+      "& > [data-composer-input-start]": { gridColumn: "1 / -1" },
+    },
+  },
 }));
 
 export const ComposerActions = styled("div")(({ theme }) => ({

@@ -27,5 +27,11 @@ export function useRetainedPanelFocus<Key extends string>(active: Key | null) {
     observer.observe(saved.node, { attributes: true, attributeFilter: ["disabled"] });
     return () => observer.disconnect();
   }, [active]);
-  return { remember, setTrigger: (key: Key, node: HTMLButtonElement | null) => { triggers.current[key] = node; }, returnToTrigger: () => { if (active !== null) triggers.current[active]?.focus({ preventScroll: true }); } };
+  const restoreEditor = () => {
+    const saved = active === null ? undefined : editors.current.get(active);
+    if (!saved || saved.node.disabled || !saved.node.isConnected || saved.node.closest("[hidden]")) return;
+    saved.node.focus({ preventScroll: true });
+    if (saved.start !== null && saved.end !== null) saved.node.setSelectionRange(saved.start, saved.end);
+  };
+  return { remember, restoreEditor, setTrigger: (key: Key, node: HTMLButtonElement | null) => { triggers.current[key] = node; }, returnToTrigger: () => { if (active !== null) triggers.current[active]?.focus({ preventScroll: true }); } };
 }

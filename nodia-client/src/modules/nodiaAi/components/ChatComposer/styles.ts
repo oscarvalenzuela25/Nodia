@@ -4,7 +4,7 @@ import { alpha, styled, type SxProps, type Theme } from "@mui/material/styles";
 
 export const composerStyles: SxProps<Theme> = theme => ({
   width: "100%", maxWidth: "56rem", boxSizing: "border-box", alignSelf: "center",
-  margin: 0, maxHeight: "100%", borderRadius: 5,
+  margin: 0, maxHeight: "100%", borderRadius: "16px", containerType: "inline-size",
   "& > [data-composer-toolbar]": {
     minHeight: 44, flex: "0 1 auto", overflowY: "auto",
     scrollbarWidth: "thin", scrollbarColor: `${alpha(theme.palette.text.primary, 0.2)} transparent`,
@@ -20,8 +20,14 @@ export const composerStyles: SxProps<Theme> = theme => ({
       "& > [data-composer-controls]": { gridColumn: 3, gridRow: 1 },
       "& > [data-composer-footer]": { gridColumn: "1 / -1", gridRow: 2 },
     },
+    "@container (max-width: 20rem)": {
+      display: "grid", gridTemplateColumns: "44px minmax(0, 1fr) auto",
+      "& > [data-composer-start]": { gridColumn: 1, gridRow: 1 },
+      "& > [data-composer-controls]": { gridColumn: 3, gridRow: 1 },
+      "& > [data-composer-footer]": { gridColumn: "1 / -1", gridRow: 2 },
+    },
   },
-  [theme.breakpoints.down("sm")]: { margin: 0, borderRadius: 4 },
+  [theme.breakpoints.down("sm")]: { margin: 0, borderRadius: "16px" },
 });
 
 export const ReviewArea = styled("div")(({ theme }) => ({

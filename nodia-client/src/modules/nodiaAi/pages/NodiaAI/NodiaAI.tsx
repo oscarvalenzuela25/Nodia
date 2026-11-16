@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import ForumOutlined from "@mui/icons-material/ForumOutlined";
+import MenuOutlined from "@mui/icons-material/MenuOutlined";
 import RefreshOutlined from "@mui/icons-material/RefreshOutlined";
 import { Skeleton } from "boneyard-js/react";
 import { useSearchParams } from "react-router";
@@ -32,7 +33,7 @@ import ConversationHistory from "../../components/ConversationHistory";
 import ConversationManagement, {
   type ConversationOperation,
 } from "../../components/ConversationManagement/ConversationManagement";
-import type { ConversationFilters } from "../../components/ConversationHistory/types";
+import { DEFAULT_CONVERSATION_FILTERS, type ConversationFilters } from "../../components/ConversationHistory/types";
 import ChatComposer from "../../components/ChatComposer";
 import ChatMessage from "../../components/ChatMessage";
 import ComposerSelection from "../../components/ComposerSelection";
@@ -101,12 +102,7 @@ function ChatPage() {
   const setOverlay = (
     kind: "history" | "preferences" | null,
   ) => setOverlayState(kind ? { kind, chatId } : null);
-  const [filters, setFilters] = useState<ConversationFilters>({
-    search: "",
-    archive: "active",
-    pinned: false,
-    view: "own",
-  });
+  const [filters, setFilters] = useState<ConversationFilters>({ ...DEFAULT_CONVERSATION_FILTERS });
   const [search, setSearch] = useState("");
   const [historyFiltersExpanded, setHistoryFiltersExpanded] = useState(false);
   const canViewAll = useGeneralSettingsStore(
@@ -482,8 +478,15 @@ function ChatPage() {
       setSaving(false);
     }
   };
-  const historyContent = (
+  const historyContent = (collapsed: boolean, inDrawer = false) => (
     <ConversationHistory
+      collapsed={collapsed}
+      toggleRef={inDrawer ? undefined : historyTrigger}
+      onToggleCollapsed={() => {
+        if (!desktop) { setOverlay(inDrawer ? null : "history"); return; }
+        if (messageScroll.current) transcriptAnchor.current = captureTranscriptAnchor(messageScroll.current);
+        setHistoryVisible(value => !value);
+      }}
       items={chats.accessRejected ? [] : chatItems}
       selectedId={chatId}
       filters={{ ...filters, view: canViewAll ? filters.view : "own" }}
@@ -519,28 +522,27 @@ function ChatPage() {
       <Header>
         <Box>
           <PageTitle id="nodia-ai-title">
-            Nodia AI
+            NodiaAI
           </PageTitle>
         </Box>
         <Actions>
-            <Button
-              className="history-toggle"
-              variant="outlined"
-              startIcon={<ForumOutlined />}
-            aria-label={t("conversations")}
-            title={t("conversations")}
-              ref={historyTrigger}
-              aria-expanded={desktop ? historyVisible : overlay === "history"}
-              aria-controls={desktop ? "nodia-ai-history" : undefined}
-              disabled={busy || recording}
-              onClick={() => {
-                if (!desktop) { setOverlay("history"); return; }
-                if (messageScroll.current) transcriptAnchor.current = captureTranscriptAnchor(messageScroll.current);
-                setHistoryVisible(value => !value);
-              }}
-            >
-              <span className="header-action-label">{t("conversations")}</span>
-            </Button>
+          {!desktop && (
+            <Tooltip title={t("expand_conversations")}>
+              <span>
+                <IconButton
+                  ref={historyTrigger}
+                  aria-label={t("expand_conversations")}
+                  aria-haspopup="dialog"
+                  aria-expanded={overlay === "history"}
+                  aria-controls={overlay === "history" ? "nodia-ai-history" : undefined}
+                  disabled={busy || recording}
+                  onClick={() => setOverlay("history")}
+                >
+                  <MenuOutlined />
+                </IconButton>
+              </span>
+            </Tooltip>
+          )}
           <Button
             variant="contained"
             startIcon={<AddOutlined />}
@@ -555,8 +557,8 @@ function ChatPage() {
       </Header>
       <Workspace>
         {desktop && (
-          <History id="nodia-ai-history" as="aside" hidden={!historyVisible} aria-label={t("conversations")}>
-            {historyContent}
+          <History id="nodia-ai-history" as="aside" data-collapsed={!historyVisible} aria-label={t("conversations")}>
+            {historyContent(!historyVisible)}
           </History>
         )}
         <Chat data-empty={!!chat && !messages.length && !history.isLoading && !run && !history.isError && !detail.isError && !accessRejected}>
@@ -842,7 +844,10 @@ function ChatPage() {
         anchor="left"
         open={overlay === "history" && !desktop}
         onClose={() => setOverlay(null)}
-        slotProps={{ paper: { sx: { width: "min(100%, 320px)", p: 2 } } }}
+        slotProps={{
+          paper: { id: desktop ? undefined : "nodia-ai-history", "aria-label": t("conversations"), sx: { width: "min(100%, 320px)", p: 2 } },
+          transition: { onExited: () => { if (!operation && overlay === null) historyTrigger.current?.focus(); } },
+        }}
       >
         <Button
           variant="contained"
@@ -851,7 +856,7 @@ function ChatPage() {
         >
           {t("close")}
         </Button>
-        {!desktop && historyContent}
+        {!desktop && overlay === "history" && historyContent(false, true)}
       </Drawer>
       <Preferences
         key={`preferences:${chatId ?? "new"}`}

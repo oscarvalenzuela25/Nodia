@@ -1,9 +1,10 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { Alert, Button, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Alert, Box, Button, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import CheckOutlined from "@mui/icons-material/CheckOutlined";
-import InfoOutlined from "@mui/icons-material/InfoOutlined";
 import UndoOutlined from "@mui/icons-material/UndoOutlined";
 import ExpandMoreOutlined from "@mui/icons-material/ExpandMoreOutlined";
+import ExpandLessOutlined from "@mui/icons-material/ExpandLessOutlined";
+import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import RefreshOutlined from "@mui/icons-material/RefreshOutlined";
 import { useTranslation } from "react-i18next";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
@@ -13,7 +14,7 @@ import { connectionModelsSchema, connectionsSchema, eligibilitySchema, type Sele
 import { configuredSelection, defaultSelection, emptySelection, sameSelection, selectionIssue, validSelection, withObservedModels, type SelectionDraft } from "../../infrastructure/selection";
 import { chooseModelEffort, modelOptionComplete, modelOptionEfforts, modelOptionFor, teacherModelOptions } from "../../infrastructure/modelOptions";
 import { useTeacherQuery } from "../../infrastructure/useServices";
-import { ComposerSelectionBar, Details, Fields, SelectionAccordion, SelectionHeader, SelectionSection, Selector, Summary } from "./styles";
+import { ComposerPopover, ComposerSelection, ComposerSelectionBar, ComposerSummary, ComposerSummaryText, Details, Fields, SelectionAccordion, SelectionHeader, SelectionSection, Selector, Summary } from "./styles";
 
 type Props = { initial: Selection | null; busy: boolean; presentation?: "panel" | "composer";
   onDirtyChange?: (dirty: boolean) => void; onReadyChange?: (ready: boolean) => void } & (
@@ -26,6 +27,8 @@ export default function SelectionPanel({ initial, busy, onSave, intent = "sessio
   const catalog = useTeacherQuery("connections", connectionsSchema);
   const [edited, setEdited] = useState<SelectionDraft | null>(null);
   const [opened, setOpened] = useState(false);
+  const [visited, setVisited] = useState(false);
+  const composerSummary = useRef<HTMLButtonElement | null>(null);
   const [applying, setApplying] = useState(false);
   const [refreshingContext, setRefreshingContext] = useState<string | null>(null);
   const refreshRequests = useRef(new Set<string>());
@@ -77,9 +80,12 @@ export default function SelectionPanel({ initial, busy, onSave, intent = "sessio
     setEdited(selection);
     submission.current = true;
     setApplying(true);
-    void onSave(selection).catch(() => { /* The owner reports the failed write; never replay it automatically. */ })
+    void onSave(selection).catch(() => {
+      // The owner reports the failed write; retain the selection for an explicit retry.
+      if (presentation === "composer") { setVisited(true); setOpened(true); }
+    })
       .finally(() => { submission.current = false; setApplying(false); });
-  }, [initial, edited, busy, catalog.isFetching, catalog.isError, eligibility.isFetching, eligibility.isError, selection, exactEligibility, onSave, intent, modelsPending, modelsError, refreshing]);
+  }, [initial, edited, busy, catalog.isFetching, catalog.isError, eligibility.isFetching, eligibility.isError, selection, exactEligibility, onSave, intent, modelsPending, modelsError, refreshing, presentation]);
   useEffect(() => { onSelectionChange?.({ selection, ready }); }, [onSelectionChange, selection, ready]);
   useEffect(() => { onDirtyChange?.(dirty || applying); }, [dirty, applying, onDirtyChange]);
   useEffect(() => { onReadyChange?.(ready && !applying && (intent === "create" || !dirty)); }, [ready, applying, dirty, intent, onReadyChange]);
@@ -89,7 +95,7 @@ export default function SelectionPanel({ initial, busy, onSave, intent = "sessio
     submission.current = true;
     setApplying(true);
     try { await onSave(selection); setOpened(false); }
-    catch { /* The owner reports the failed write; preserve the complete selection draft. */ }
+    catch { setOpened(true); /* The owner reports the failed write; preserve the complete selection draft. */ }
     finally { submission.current = false; setApplying(false); }
   };
   const reason = exactEligibility?.reason_code
@@ -130,15 +136,45 @@ export default function SelectionPanel({ initial, busy, onSave, intent = "sessio
     <Selector compact={presentation === "composer"}><SelectSingleInput labelAdornment={help("effort")} label={t("teacher:effort")} value={draft.effort_id} options={effortOptions.map(item => ({ value: item.effort_id, label: item.label }))} onChange={value => setEdited(chooseModelEffort(modelOption, { ...draft }, value))} disabled={optionsDisabled || !effortOptions.length} /></Selector>
   </>;
 
-  if (presentation === "composer") return <ComposerSelectionBar aria-label={t("teacher:ai_selection")}>
-    {controls}
-    <Tooltip title={`${t("teacher:configuration_notice")} ${status}${reason ? ` · ${reason}` : ""}`}><IconButton aria-label={t("teacher:ai_selection")} color={exactEligibility?.eligible ? "primary" : "default"}><InfoOutlined fontSize="small" /></IconButton></Tooltip>
-    {intent !== "create" && dirty && <>
-      <Tooltip title={t("core:cancel")}><span><IconButton aria-label={t("core:cancel")} disabled={disabled || !initial} onClick={() => setEdited(null)}><UndoOutlined fontSize="small" /></IconButton></span></Tooltip>
-      <Tooltip title={t("teacher:save_selection")}><span><IconButton aria-label={t("teacher:save_selection")} color="primary" disabled={!canSave} loading={applying} onClick={() => void save()}><CheckOutlined fontSize="small" /></IconButton></span></Tooltip>
-    </>}
-    {feedback}
-  </ComposerSelectionBar>;
+  const applied = intent === "create" ? selection : initial;
+  const appliedConnection = catalog.data?.items.find(item => item.connection_id === applied?.connection_id);
+  const appliedMode = appliedConnection?.modes.find(item => item.mode === applied?.mode);
+  const appliedModel = appliedMode?.models.find(item => item.model_id === applied?.model_id);
+  const appliedModelLabel = appliedModel?.label ?? applied?.model_id ?? t("teacher:no_model");
+  const appliedModeLabel = applied?.mode === "api_key" ? "API key" : applied?.mode === "agentic" ? "Agentic" : t("teacher:selection_incomplete");
+  const appliedSummary = [appliedModelLabel, appliedConnection?.label ?? applied?.connection_id, applied?.mode ? appliedModeLabel : null, applied?.effort_id].filter(Boolean).join(" · ");
+  const closePopover = () => { if (!applying) setOpened(false); };
+  if (presentation === "composer") return <ComposerSelection aria-label={t("teacher:ai_selection")}>
+    <ComposerSummary ref={composerSummary} variant="text" type="button" disabled={disabled}
+      aria-label={t("teacher:ai_selection")} aria-haspopup="dialog" aria-expanded={opened} aria-controls={visited ? fieldsId : undefined}
+      title={appliedSummary} endIcon={opened ? <ExpandLessOutlined /> : <ExpandMoreOutlined />}
+      onClick={() => { setVisited(true); setOpened(value => !value); }}>
+      <ComposerSummaryText>
+        <Typography component="span" variant="body2" sx={{ fontWeight: 600 }}>{appliedModelLabel}</Typography>
+        <Typography component="span" variant="caption" color="text.secondary">{appliedModeLabel}</Typography>
+      </ComposerSummaryText>
+    </ComposerSummary>
+    {!opened && intent !== "create" && dirty && initial && <Typography variant="caption" role="status" sx={{ overflowWrap: "anywhere" }}>{t("teacher:selection_unsaved")}</Typography>}
+    {!opened && feedback}
+    {visited && <ComposerPopover open={opened} anchorEl={() => composerSummary.current} keepMounted
+      anchorOrigin={{ vertical: "top", horizontal: "left" }} transformOrigin={{ vertical: "bottom", horizontal: "left" }}
+      marginThreshold={16} onClose={closePopover}
+      slotProps={{ paper: { role: "dialog", "aria-modal": true, id: fieldsId, "aria-labelledby": `${fieldsId}-title` } }}>
+      <Stack direction="row" sx={{ alignItems: "flex-start", gap: 1, mb: 1.5 }}>
+        <Box sx={{ minWidth: 0, flex: 1 }}>
+          <Typography id={`${fieldsId}-title`} component="h2" variant="subtitle2">{t("teacher:chat_configuration")}</Typography>
+          <Typography variant="caption" sx={{ overflowWrap: "anywhere" }} title={t("teacher:configuration_notice")}>{t("teacher:applied_selection")}: {appliedSummary}</Typography>
+        </Box>
+        <IconButton type="button" aria-label={t("core:close")} disabled={applying} onClick={closePopover} sx={{ width: 44, height: 44, flexShrink: 0 }}><CloseOutlined /></IconButton>
+      </Stack>
+      <ComposerSelectionBar>{controls}</ComposerSelectionBar>
+      {intent !== "create" && dirty && <Stack direction="row" sx={{ justifyContent: "flex-end", flexWrap: "wrap", gap: 1, mt: 1.5 }}>
+        <Button variant="outlined" startIcon={<UndoOutlined />} disabled={disabled || !initial} onClick={() => setEdited(null)}>{t("core:cancel")}</Button>
+        <Button variant="contained" startIcon={<CheckOutlined />} disabled={!canSave} loading={applying} onClick={() => void save()}>{t("teacher:save_selection")}</Button>
+      </Stack>}
+      {opened && <Stack sx={{ gap: 1, mt: 1 }}>{feedback}</Stack>}
+    </ComposerPopover>}
+  </ComposerSelection>;
 
   const summary = [connection?.label ?? draft.connection_id, draft.mode === "api_key" ? "API key" : draft.mode === "agentic" ? "Agentic" : null,
     modelOption?.label ?? model?.label ?? draft.model_id, draft.effort_id].filter(Boolean).join(" · ");
