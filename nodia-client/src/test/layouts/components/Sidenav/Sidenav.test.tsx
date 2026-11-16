@@ -24,6 +24,20 @@ describe("Sidenav", () => {
     });
   });
 
+  it("places public News directly after Home for a visitor and closes the drawer on entry", async () => {
+    useAuthStore.getState().logout();
+    const toggle = vi.fn();
+    const router = createMemoryRouter([{ path: "*", element: <Sidenav mobileOpen onDrawerToggle={toggle} /> }]);
+    render(<RouterProvider router={router} />);
+    const buttons = screen.getAllByRole("button");
+    expect(buttons[0]).toHaveAccessibleName("Inicio");
+    expect(buttons[1]).toHaveAccessibleName("Noticias");
+    await userEvent.click(buttons[1]);
+    expect(router.state.location.pathname).toBe("/news");
+    expect(toggle).toHaveBeenCalledOnce();
+    expect(buttons[1]).toHaveAttribute("aria-current", "page");
+  });
+
   it("retains the canonical parent selection on internal pages and selects only a more specific module when present", async () => {
     const modules = [
       { key: "nodia_teacher", link: "/nodia-teacher", translates: [{ key: "key", es: "Nodia Teacher", en: "Nodia Teacher" }] },
@@ -104,6 +118,8 @@ describe("Sidenav", () => {
     await waitFor(() => expect(screen.queryByRole("tooltip")).not.toBeInTheDocument());
     await user.click(homeIcon);
     await user.unhover(homeIcon);
+    await user.tab();
+    expect(screen.getByRole("button", { name: language === "es" ? "Noticias" : "News" })).toHaveFocus();
     await user.tab();
     expect(sectionIcon).toHaveFocus();
     // Native :focus-visible tooltip opening is verified in the browser QA.

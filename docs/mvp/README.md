@@ -1,5 +1,37 @@
 # Especificación del MVP — Nodia
 
+**Noticias: preparación final NEWS-06 — 2026-11-16:**
+[105§13](105-on-demand-tech-news.md#13-news-06-validación-final-y-preparación-de-entrega--solicitud2026-11-16)
+completa validación técnica local: JWT/SQL reales de laboratorio,13gates sin red
+y14opt-in con dos RSS reales/110noticias; UI adversa y carga inicial corregida,
+41focales/tipos/lint/build y QA320/900/1440. Zoom nativo200% geométrico/teclado
+comprobado, con captura visual fallida; teléfono/Google/sesión humana pendientes.
+[Evidencia final](../evidence/news-final-validation-20261116.md) y
+[guía de entrega](../features/news/deployment-readiness.md) dejan candidato para
+CI/promoción y adopción separadas; no se despliega por este pedido de preparación.
+
+**Noticias: segunda fuente Node.js — NEWS-04,2026-11-16:**
+[105§12](105-on-demand-tech-news.md#12-news-04-segunda-fuente-rss-nodejs--solicitud2026-11-16)
+incorpora Node.js junto a web.dev: lectura pública, POST por fuente explícita
+exclusivo super_admin, estado/caché independientes y dedupe por URL conservando
+procedencias. Node sólo título/URL/fecha con aviso MIT accesible. [Evidencia](../evidence/news-nodejs-integration-20261116.md)
+separa SQL/HTTP descartable, RSS real y UI sintética. NEWS-06 conserva aceptación
+y adopción; daily.dev deshabilitada y GitHub candidata no bloquean RSS.
+
+**OPS-001 cerrado por alcance — 2026-11-16:** por solicitud del usuario,
+[99§33](99-production-deployment-and-cicd-plan.md#33-cierre-ops-001-y-separación-de-ops-05--2026-11-16)
+registra el cierre del transporte recuperable v2 y archivo automático del inbox
+ya entregados. OPS-05 conserva en [TODO](TODO.md) la política de retención global
+y disco físico/offload. Sin nueva limpieza, despliegue o aprobación del ADR104.
+
+**Cierre por aceptación humana — 2026-11-16:** el usuario confirma QA de
+THEME-001 y funcionamiento de PWA-001, TUX-001 y NAIUX-001, y solicita cerrarlos.
+Las cuatro entregas quedan **cerradas por alcance**; sus planes108/103/106/107
+registran el cierre y conservan evidencia técnica previa. No se identificaron
+dispositivos/entornos nuevos ni se ejecutó otra adopción. Evoluciones PWA-002…006
+y Teacher TUX-03/05 permanecen separadas; el cierre no aprueba fichas o ADR.
+El [TODO](TODO.md) distingue las entregas cerradas de la cola activa.
+
 **Temas personales desde el topbar — solicitud2026-11-16:**
 [Plan108](108-user-theme-presets.md) especifica paleta independiente de
 claro/oscuro, Nodia predeterminado y preferencia del navegador para todos los
@@ -10,9 +42,9 @@ Implementación y verificación local completadas:
 12 perfiles; global3059/370 y 27 focales posteriores al feedback final,
 tipos/lint/build correctos por [alcance y límites](../evidence/user-theme-presets-20261116.md).
 [Ficha candidata](../nodia-ai/knowledge/general-settings/features/interface-theme-presets.md)
-draft/unregistered/approval:null. Aceptación humana con sesión real/dispositivo y
-adopción pendientes; sin herramienta IA, sincronización de cuenta o despliegue
-nuevos. Seguimiento THEME-001 en
+draft/unregistered/approval:null. THEME-001 cerrado por QA/aceptación humana
+2026-11-16; sin atribuir dispositivos no identificados, herramienta IA,
+sincronización de cuenta o despliegue nuevos. Seguimiento en
 [TODO](TODO.md).
 
 **Teacher: revisión legible del plan — solicitud2026-11-16:**
@@ -23,8 +55,9 @@ aceptación exacta conservan sus contratos. Implementación y QA sintética loca
 verificadas:12perfiles320–1280px y borradores/nodos/foco conservados, incluso
 ante503/409. Global3039/365 previa al guard final y al caso histórico;26focales
 posteriores y build/lint finales correctos. [Evidencia propia](../evidence/teacher-plan-review-20261116/README.md).
-TUX-04 parcial: comprensión humana/UI autenticada/dispositivo y adopción
-pendientes; sin inferencia, publicación o aprobación nuevas.
+TUX-001 cerrado por aceptación humana del alcance entregado2026-11-16;
+TUX-03/05 siguen como evolución propuesta. Sin inferencia, adopción, publicación
+o aprobación documental nuevas por el cierre.
 
 **NodiaAI: historial móvil desde cabecera — solicitud2026-11-16:**
 [107§15](107-nodia-ai-ux-ui-upgrade-plan.md#15-historial-móvil-desde-cabecera--solicitud2026-11-16)
@@ -42,8 +75,9 @@ Vacío filtrado diferenciado, criterios activos/restablecimiento visibles,
 selección accesible y Drawer móvil con nombre. QA Chromium sintética en cinco
 perfiles correcta, con borrador/chat/foco y recuperación de consulta conservados;
 global3034/364 y tipos/lint/build correctos. [Evidencia](../evidence/nodia-ai-history-filters-20261116.md).
-UI autenticada/dispositivo y adopción de esta revisión pendientes; no se
-modifican contratos, IA o autoridad ni se aprueban/publican fichas.
+NAIUX-001 cerrado por aceptación humana del alcance entregado2026-11-16; no se
+acreditan dispositivos ni adopción nuevos, ni se modifican contratos, IA,
+autoridad o aprobación/publicación de fichas.
 
 **Teacher: ResizeObserver — corrección local verificada2026-11-16:** solicitud en
 la misma rama, sin cambiar diseño o borradores. [106§12](106-nodia-teacher-guided-ux-redesign.md#12-ciclo-de-medición-de-teacherloading--solicitud2026-11-16)
@@ -214,7 +248,7 @@ El [progreso vigente](00-progress.md) contiene el estado operativo y la próxima
 | Reservas | [Entrevista25](25-rental-reservations-interview.md), [especificación26](26-rental-reservations-spec.md), [ERD27](27-rental-reservations-erd.md), [contratos28](28-rental-reservations-contracts.md), planes [Server29](29-rental-reservations-backend-plan.md)/[Client30](30-rental-reservations-client-plan.md) y [rediseño36](36-reservations-redesign-proposal.md) |
 | Negocios, productos y POS | [PRD de Negocios](../features/businesses/01-prd.md), [plan94](94-business-point-of-sale-and-product-refactor.md) y [contactos31](31-provider-contacts-proposal.md) |
 | Core, módulos y privacidad | [Orden/feedback87](87-core-feedback-module-order-plan.md), [política89](89-module-access-and-user-data-scope.md) y [ADR092 de rutas canónicas](../architecture/decisions/ADR-092-stable-module-navigation-routes.md) |
-| Noticias de tecnología, programación e IA | [Propuesta105](105-on-demand-tech-news.md): daily.dev/DEV/RSS/HN y [diseño editorial](../features/news/editorial-design.md) con sidenav/topbar conservados. Investigación y diseño en revisión, sin implementación |
+| Noticias de tecnología, programación e IA | [Plan105§12](105-on-demand-tech-news.md#12-news-04-segunda-fuente-rss-nodejs--solicitud2026-11-16): NEWS-04 incorpora RSS Node.js junto a web.dev, lectura pública Home→Noticias y fetch exclusivo super_admin por fuente explícita. Diseño NEWS-05/chips conservado, dedupe con procedencias/avisos MIT. [Evidencia](../evidence/news-nodejs-integration-20261116.md), [contratos](../features/news/http-contract.md), [catálogo](../features/news/source-catalog.md) y [ADR105 propuesto](../architecture/decisions/ADR-105-public-news-and-source-access-tiers.md). NEWS-06 aceptación/adopción pendientes |
 
 La aprobación explícita del ERD27 del 2026-10-04 no aprueba por extensión contratos28, planes29/30 ni sus ADR. Los estados de cada dominio se consultan en sus fuentes y en progreso.
 
@@ -235,10 +269,11 @@ Los únicos modos operativos son Agentic y API key. Las referencias a Web, `toke
 ## Teacher
 
 [Rediseño UX/UI106](106-nodia-teacher-guided-ux-redesign.md), solicitado el2026-11-15
-con primera entrega local de alta guiada3pasos (106§10). Revisión comprensible y
-llegada a primera lección aún pendientes; contratos e historial conservados.
-En revisión, sin aprobación integral ni despliegue;
-seguimiento `TUX-001` en [TODO](TODO.md).
+con alta guiada3pasos, paneles, cabecera/drawer y revisión legible del plan
+entregados por106§10–13. TUX-001 cerrado por aceptación humana2026-11-16;
+TUX-03/05 conservan su evolución propuesta de borrador/preparación y primera
+lección/continuidad. Documento en revisión, sin aprobación integral o despliegue
+nuevos; seguimiento en [TODO](TODO.md).
 
 Continuación2026-11-14: [96§43](96-nodia-teacher-implementation-plan.md#43-alta-de-estudio-razonamiento-recuperable-y-menú-persistente--2026-11-14)
 y [ADR100 propuesto](../architecture/decisions/ADR-100-teacher-first-generation-with-explicit-ai-selection.md)
@@ -261,8 +296,9 @@ flex/historial plegable, lectura editorial y compositor2niveles con selector
 progresivo. Misma rama `codex/nodia-ai-ux-ui-upgrade`; Client3013/363, tipos/
 build/lint del código y QA28perfiles sintéticos correctos. Agentic/API key,
 contratos y recuperación conservados; sin inferencias/despliegue o aprobación/
-publicación. [TODO](TODO.md): NAIUX-07, revisión humana y adopción por entorno.
-No repetir baseline/construcción cerrados por alcance local.
+publicación por ese corte histórico. NAIUX-001 cerrado por aceptación humana
+2026-11-16, incluidas continuaciones107§13–15. [TODO](TODO.md) conserva cierre y
+límites de adopción; no repetir baseline/construcción o despliegue ya completados.
 
 [Diseño Client](../../nodia-client/DESIGN.md), [tarjetas/accesos móviles35](35-mobile-cards-shortcuts-plan.md), [rendimiento37](37-web-performance-implementation-plan.md), [compositor93](93-nodia-ai-chat-composer-redesign.md) y [manual de propuestas](../features/nodia-ai/proposal-review-presentation.md).
 
@@ -271,9 +307,10 @@ independiente y prioritaria, instalable con iconos/ventana propia y funciones
 online. Backlog separado de actualizaciones/caché, desconexión, push y datos
 offline/sincronización. Implementación inicial y opción1 para icono/favicon,
 manifiesto y validación de artefacto realizadas;103§12 acredita publicación y
-diez recursos originales verificados por HTTPS. Instalación física y
-standalone/auth pendientes por dispositivo, sin repetir el deploy histórico.
-Ver [estado conciliado103§14](103-pwa-progressive-implementation-plan.md#14-estado-conciliado-para-el-todo--2026-11-15)
+diez recursos originales verificados por HTTPS. PWA-001 cerrado por aceptación
+humana de funcionamiento2026-11-16; matriz por dispositivo no acreditada por esa
+confirmación. No repetir el deploy histórico.
+Ver [plan103](103-pwa-progressive-implementation-plan.md)
 y [TODO](TODO.md). Plan en revisión;
 [ficha candidata](../nodia-ai/knowledge/general-settings/features/pwa-installation.md)
 draft/partial, sin publicación.

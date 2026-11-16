@@ -86,6 +86,26 @@ describe('HTTP module policy', () => {
     ).toBeUndefined();
   });
 
+  it('opens no News family: only exact refresh crosses to its current-super-admin use case', () => {
+    expect(resolveHttpModulePolicy(['news'], ['refresh'], 'POST')).toEqual({
+      routes: [],
+      match: 'all',
+    });
+    for (const [handler, method] of [
+      ['refresh', 'GET'],
+      ['other', 'POST'],
+      ['', 'POST'],
+      ['refresh/:id', 'POST'],
+    ]) {
+      expect(
+        resolveHttpModulePolicy(['news'], [handler], method),
+      ).toBeUndefined();
+    }
+    expect(
+      resolveHttpModulePolicy(['news'], ['refresh', 'other'], 'POST'),
+    ).toBeUndefined();
+  });
+
   it('classifies every current nonpublic HTTP handler, including aliases', () => {
     const sourceRoot = fileURLToPath(new URL('../', import.meta.url));
     const routeDecorators = new Map([
