@@ -147,8 +147,8 @@ permite repetir el recorrido sin depender del snapshot temporal de baseline.
 
 ## Vistas finales y continuación
 
-[Escritorio sintético](nodia-ai-ux-desktop-20261115.png) ·
-[Móvil320×568 sintético](nodia-ai-ux-mobile-20261115.png).
+[Escritorio sintético](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ux-desktop-20261115.png) ·
+[Móvil320×568 sintético](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ux-mobile-20261115.png).
 
 El servidor QA5194 se cerró y no quedó listener; otros servidores no se tocaron.
 No hay despliegue/DB/proveedor real ni aceptación humana/operativa nuevos.

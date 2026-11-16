@@ -1,5 +1,19 @@
 # Contexto funcional de productos para NodiaAI
 
+## Capturas de validación archivadas — 2026-11-16
+
+El usuario solicita excluir imágenes del repositorio.
+[Archivo](../../evidence/validation-images-archive-20261116.md) y
+[delta de procedencia](../../evidence/validation-images-knowledge-delta-20261116.json):
+247capturas retiradas del índice con originales locales intactos; enlaces
+permanentes al commit anterior. Sólo cuatro borradores actualizan referencias
+y revisión (módulos9, NodiaAI84, audio Codex3 y ejecución35), sin cambiar fechas
+o resultados de QA, contratos, capacidades o aprobación. Un path de metadata
+apunta al catálogo textual en vez de a una PNG. Compilador/reglas intactos;
+release cambia sólo por source_hashes de cuatro fuentes publicadas, manteniendo
+44documentos/46fragmentos/153capacidades y su contenido. Pins derivados por build
+soportado; no implica inferencia, adopción o publicación de capacidades nuevas.
+
 ## Noticias: preparación NEWS-06 — 2026-11-16
 
 [Plan105§13](../../mvp/105-on-demand-tech-news.md#13-news-06-validación-final-y-preparación-de-entrega--solicitud2026-11-16),

@@ -1,5 +1,17 @@
 # Progreso del MVP — Nodia
 
+**PR News a development y capturas archivadas — solicitud2026-11-16:**
+[105§14](105-on-demand-tech-news.md#14-pr-a-development-y-capturas-fuera-de-git--solicitud2026-11-16)
+conserva [PR46](https://github.com/oscarvalenzuela25/Nodia/pull/46), ya abierta y
+lista para revisión. CI funcional8886e42f correcto: Client3104/376,
+Server6092/355 sin omisiones y40checks de esquema. La actualización excluye
+247capturas/16486902bytes del árbol, manteniendo originales locales ignorados,
+SHA256/permalinks y JSON históricos según [catálogo](../evidence/validation-images-archive-20261116.md).
+Sólo enlaces/procedencia cambian; contenidos44/fragmentos46/capacidades153 y
+aprobaciones preservados. Sin modificaciones de aplicación, fusión, despliegue
+o reescritura del historial. TODO actualizado: integración/promoción News después
+del CI exacto de la actualización, QA manual/adopción separados; OPS-05 en cola.
+
 **Noticias: NEWS-06 preparación técnica terminada — solicitud2026-11-16:**
 [105§13](105-on-demand-tech-news.md#13-news-06-validación-final-y-preparación-de-entrega--solicitud2026-11-16)
 y [evidencia final](../evidence/news-final-validation-20261116.md) consolidan

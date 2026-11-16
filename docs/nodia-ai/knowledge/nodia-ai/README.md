@@ -4,7 +4,7 @@
   "document_id": "nodia-ai",
   "product_id": "nodia-ai",
   "kind": "product",
-  "revision": 83,
+  "revision": 84,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -420,6 +420,11 @@ MCP/PNG/JPEG/WebP quedan legítimamente invalidados en el scope operativo. Los r
 
 # NodiaAI — contexto de producto
 
+## Archivo de capturas de validación — 2026-11-16
+
+Por solicitud del usuario, las capturas binarias dejan de versionarse. El [catálogo de archivo](../../../evidence/validation-images-archive-20261116.md) conserva tamaños, hashes y enlaces al commit original; se actualizan sólo referencias documentales. No cambia el resultado ni la fecha de las pruebas históricas, capacidades, contratos, permisos o publicación. La ficha conserva draft/unregistered y approval:null; no hay aceptación o verificación nueva por esta limpieza.
+
+
 ## Evolución UX/UI planificada — 2026-11-15
 
 Corte local anterior a la adopción productiva del16 documentada arriba; sus
@@ -685,7 +690,7 @@ El candidato audio tiene352 pruebas focales y6 del wrapper observacional; ambos 
 
 R05 y sus proofs MCP/imagen previos mantienen sus bytes. Los positivos históricos de [imágenes UI](../../../evidence/nodia-ai-ai40-ui-image-flow-r01.json) conservan su alcance propio y no prestan aceptación al audio candidato. Se mantienen31 fragmentos/74 capacidades, ninguna aprobación o herramienta nueva y AI-40 parcial.
 
-La [captura PDF revisado](../../../evidence/nodia-ai-ai40-pdf-reviewed-text-ui-r01.jpg) y la inspección final del consolidado verifican recarga autenticada: respuesta exacta persistida, compositor habilitado y borrador vacío. Se conservan19 mensajes/10 runs/10 dispatches/cinco adjuntos, el único efecto histórico y cero pendientes, sin reenviar ni confirmar nada.
+La [captura PDF revisado](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-pdf-reviewed-text-ui-r01.jpg) y la inspección final del consolidado verifican recarga autenticada: respuesta exacta persistida, compositor habilitado y borrador vacío. Se conservan19 mensajes/10 runs/10 dispatches/cinco adjuntos, el único efecto histórico y cero pendientes, sin reenviar ni confirmar nada.
 
 Antecedentes históricos conservados fuera del índice acotado actual: [nodia-ai-v1-catalog-contracts-validation](../../../evidence/nodia-ai-v1-catalog-contracts-validation.json), [nodia-ai-ai02-gemini-web-viability](../../../evidence/nodia-ai-ai02-gemini-web-viability.json).
 

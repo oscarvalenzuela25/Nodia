@@ -22,7 +22,7 @@ La [observación R2 del estado listo](nodia-ai-ai38-attachment-r2-ready-r01.json
 
 Después de pulsar **Quitar** en la app, el [observador de ausencia](nodia-ai-ai38-attachment-r2-absent-r01.json) confirma `HEAD 404` y `GET 404` de la misma clave propia, metadatos ya no listos y cero trabajos de limpieza del objeto. No se borra por prefijo ni se intervienen objetos ajenos. La ausencia del objeto vivo no demuestra borrado físico ni un SLA continuo de retención.
 
-![PDF de 20 MiB listo desde la UI autenticada](nodia-ai-ai38-attachment-ready-ui-r01.png)
+[PDF de 20 MiB listo desde la UI autenticada (captura archivada)](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-attachment-ready-ui-r01.png)
 
 ## Estado operativo y límites de la aceptación
 

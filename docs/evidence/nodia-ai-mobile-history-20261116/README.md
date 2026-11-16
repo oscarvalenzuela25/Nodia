@@ -14,9 +14,9 @@ del harness `nodia-client/src/test/manual/nodia-ai-ux`, componentes productivos
 del chat. URL local con `scenario=history-filters&lang=es&theme=dark`, puerto5194.
 El contenido, usuario, modelo y borrador son fixtures QA, sin datos reales.
 
-- [Chat móvil sin panel lateral](chat-mobile.png): botón de historial a la
+- [Chat móvil sin panel lateral](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-mobile-history-20261116/chat-mobile.png): botón de historial a la
   izquierda, «Nuevo chat» compacto a la derecha y chat con todo el ancho disponible.
-- [Historial desplegado](history-drawer-mobile.png): Drawer existente con búsqueda
+- [Historial desplegado](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-mobile-history-20261116/history-drawer-mobile.png): Drawer existente con búsqueda
   y acciones de conversaciones, sin una segunda lista interactiva de fondo.
 
 | PNG | SHA-256 |

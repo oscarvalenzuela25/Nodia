@@ -653,3 +653,29 @@ entrega; no son gates adicionales para RSS. ADR105 sigue propuesto y las fichas
 revisión8 draft/unregistered/approval:null. Impacto de conocimiento: consolidar
 verificación y corrección de presentación de la función existente, sin nuevas
 operaciones, herramientas, permisos o inferencias.
+
+## 14. PR a development y capturas fuera de Git — solicitud2026-11-16
+
+El usuario solicita PR de estos desarrollos a development, retirar imágenes de
+validación y actualizar TODO. Se conserva la [PR46 existente](https://github.com/oscarvalenzuela25/Nodia/pull/46),
+`codex/news-implementation`→`development`, sin duplicarla, fusionarla o desplegar.
+Su corte funcional `8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17` pasó
+[CI43958680003](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43958680003):
+Client3104/376, Server6092/355 sin omisiones y40comprobaciones de esquema.
+
+La actualización documental retira247capturas históricas del árbol versionado
+(16486902bytes), conserva originales locales/ignorados, hashes y enlaces al
+commit original en el [catálogo](../evidence/validation-images-archive-20261116.md).
+No había capturas nuevas en el diff de News; la retirada afecta las históricas
+ya incluidas en development. No se reescribe historia ni se promete reducir el
+tamaño de un clon completo. JSON históricos y assets funcionales intactos.
+
+Los enlaces modificados cambian únicamente procedencia de cuatro documentos
+publicados, sin cambiar contenidos, contratos, capacidades o aprobaciones según
+[delta](../evidence/validation-images-knowledge-delta-20261116.json). Los derivados
+de conocimiento se reconstruyen mediante scripts existentes; no se omiten sus
+checks. Las cuatro fichas afectadas permanecen draft/approval:null.
+
+La PR actualizada requiere su CI de SHA exacto; el CI funcional anterior no se
+atribuye al commit posterior. Siguiente paso: revisión/integración a development
+y promoción/adopción autorizada según la guía, conservando límites manuales de§13.

@@ -1,5 +1,14 @@
 # Especificación del MVP — Nodia
 
+**PR News y archivo de capturas — solicitud2026-11-16:**
+[PR46](https://github.com/oscarvalenzuela25/Nodia/pull/46) abierta contra development;
+CI del corte funcional correcto (Client3104/376, Server6092/355 y40checks SQL).
+[105§14](105-on-demand-tech-news.md#14-pr-a-development-y-capturas-fuera-de-git--solicitud2026-11-16)
+registra la actualización y siguientes fases. Se retiran247capturas/16486902bytes
+del árbol versionado, con [catálogo de originales](../evidence/validation-images-archive-20261116.md)
+y JSON históricos intactos. La actualización tiene su CI propio; no fusiona o
+despliega. El [TODO](TODO.md) mantiene integración/adopción News y OPS-05 en cola.
+
 **Noticias: preparación final NEWS-06 — 2026-11-16:**
 [105§13](105-on-demand-tech-news.md#13-news-06-validación-final-y-preparación-de-entrega--solicitud2026-11-16)
 completa validación técnica local: JWT/SQL reales de laboratorio,13gates sin red

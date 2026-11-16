@@ -4,7 +4,7 @@
   "document_id": "nodia-ai.context-execution",
   "product_id": "nodia-ai",
   "kind": "feature",
-  "revision": 34,
+  "revision": 35,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -356,6 +356,11 @@ MCP/PNG/JPEG/WebP quedan legítimamente invalidados en el scope operativo. Los r
 
 # Contexto autorizado y ejecuciÃ³n conversacional
 
+## Archivo de capturas de validación — 2026-11-16
+
+Por solicitud del usuario, las capturas binarias dejan de versionarse. El [catálogo de archivo](../../../../evidence/validation-images-archive-20261116.md) conserva tamaños, hashes y enlaces al commit original; se actualizan sólo referencias documentales. No cambia el resultado ni la fecha de las pruebas históricas, capacidades, contratos, permisos o publicación. La ficha conserva draft/unregistered y approval:null; no hay aceptación o verificación nueva por esta limpieza.
+
+
 Las secciones AI-09/AI-12 y los ensayos R01 siguientes conservan su corte histÃ³rico. El anexo C05 al final delimita la implementaciÃ³n candidata y el estado operativo actual; no transfiere pruebas entre entornos.
 
 [Producto](../README.md). [Entrega58](../../../../mvp/58-nodia-ai-ai12-context-execution.md).
@@ -528,7 +533,7 @@ El candidato audio tiene352 pruebas focales y6 del wrapper observacional; ambos 
 
 R05 y sus proofs MCP/imagen previos mantienen sus bytes. Los positivos históricos de [imágenes UI](../../../../evidence/nodia-ai-ai40-ui-image-flow-r01.json) conservan su alcance propio y no prestan aceptación al audio candidato. Se mantienen31 fragmentos/74 capacidades, ninguna aprobación o herramienta nueva y AI-40 parcial.
 
-La [captura PDF revisado](../../../../evidence/nodia-ai-ai40-pdf-reviewed-text-ui-r01.jpg) y la inspección final del consolidado verifican recarga autenticada: respuesta exacta persistida, compositor habilitado y borrador vacío. Se conservan19 mensajes/10 runs/10 dispatches/cinco adjuntos, el único efecto histórico y cero pendientes, sin reenviar ni confirmar nada.
+La [captura PDF revisado](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-pdf-reviewed-text-ui-r01.jpg) y la inspección final del consolidado verifican recarga autenticada: respuesta exacta persistida, compositor habilitado y borrador vacío. Se conservan19 mensajes/10 runs/10 dispatches/cinco adjuntos, el único efecto histórico y cero pendientes, sin reenviar ni confirmar nada.
 
 Antecedentes históricos conservados fuera del índice acotado actual: [nodia-ai-ai12-routing-postgres-integration](../../../../evidence/nodia-ai-ai12-routing-postgres-integration.json), [nodia-ai-ai12-postgres-integration](../../../../evidence/nodia-ai-ai12-postgres-integration.json).
 
