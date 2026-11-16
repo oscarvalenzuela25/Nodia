@@ -34,6 +34,7 @@ validación pendiente`, `en implementación`, `bloqueado` (dependencia concreta)
 
 | ID / iniciativa | Estado comprobado por alcance | Documento para retomar | Primera acción pendiente y dependencia |
 | --- | --- | --- | --- |
+| **OCR-001 — revisión de factura y selección IA** | Implementación/QA local verificadas; global2:3125/378 y focal posterior124/10 cubre último delta de recuperación; tipos/lint/build y pins locales correctos | [Plan94§41](94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16) | Revisión/integración del candidato. [Evidencia](../evidence/invoice-ocr-review-defaults-20261116.md); adopción/aceptación por entorno separadas |
 | **PWA-002 — caché y actualización** | Especificado, sin implementación acreditada | [Plan103](103-pwa-progressive-implementation-plan.md) §4 | Retomar contrato de actualización/caché estática y preservar borradores; depende de base001 y compatibilidad de artefactos |
 | **PWA-003 — desconexión** | Especificado | [Plan103](103-pwa-progressive-implementation-plan.md) §5 | Diseñar estado offline/recuperación;002 para arranque sin red. No promete datos offline |
 | **PWA-004 — push** | Especificado; eventos sin concretar | [Plan103](103-pwa-progressive-implementation-plan.md) §6 | Elegir eventos/destinatarios/consentimiento y contrato de suscripción. No requiere escrituras offline |

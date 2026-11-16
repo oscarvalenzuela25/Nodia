@@ -992,6 +992,8 @@ ClientR29 adoptado y comprobado por CUA autenticada a1088/320px: «Oferta» prec
 
 ### Tabla provisional compacta y acciones por fila — 2026-11-07
 
+> Composición de columnas sustituida por §41 (solicitud2026-11-16); evidencia de este corte intacta.
+
 Por solicitud del usuario, las tres acciones de cada producto provisional —vincular con uno existente, editar y quitar la fila del borrador— se agrupan en un menú contextual accesible. Su disparador tiene un área mínima de44×44px, nombre por fila, estado expandido y relación con el menú; se mantienen los handlers y bloqueos existentes durante análisis, reconsultas y guardado. Abrir el menú no modifica el producto ni solicita otra inferencia. Se elimina la columna del candado y su control local; `isLocked` permanece únicamente como compatibilidad del borrador histórico, sin un nuevo control de bloqueo.
 
 Junto a Precio Venta se incorpora un control +/− para mostrar u ocultar conjuntamente Cantidad de la factura y Disponibilidad. Ambas columnas comienzan ocultas; al publicar una extracción con productos nuevos sin disponibilidad requerida, se muestran para que el dato pendiente sea accesible. Ocultar o restaurar columnas conserva los valores, el destino vinculado y las validaciones: una ausencia no se convierte en disponibilidad ni habilita Guardar. Las filas históricas siguen la misma visibilidad para conservar la alineación. La tabla mantiene un único árbol y un scroll horizontal local, con ancho mínimo1000px sin las columnas adicionales y1200px al mostrarlas; los importes no se dividen entre líneas y los códigos largos pueden envolver dentro de su columna. No se añade un breakpoint por el tamaño de la captura.
@@ -1106,6 +1108,7 @@ marca. Marcado guarda copia explícita del nombre al guardar; no persiste otro
 bool. Un nombre cambiado no reescribe un alias personalizado. Modificar alias
 requiere expected_version; error mantiene modal, inputs y revisión recuperable.
 
+Regla OCR de este corte, sustituida para nuevos por §41 (2026-11-16):
 Revisión OCR muestra columna Alias y lápiz. Nuevo o existente sin alias:
 remarcado con texto/nombre accesible, revisión obligatoria mediante alias o
 elección explícita de usar nombre. El modal muestra el nombre arriba, luego
@@ -1236,3 +1239,84 @@ Client autoadd adoptado en VM,213recursos nuevos exactos,212históricos HTTP y
 213anteriores en disco; Nginx CAS/un reload y rollback preparado. Server, procesos,
 entorno y timers preservados;0SQL/ventas/proveedor/auth. UI autenticada VM y
 lector físico pendientes, sin cambio productivo, esquema o publicación IA.
+
+## 41. Revisión OCR compacta, defaults comerciales y selección IA — solicitud2026-11-16
+
+### Regla vigente y sustitución de antecedentes
+
+El usuario solicita esta corrección del importador manual en una rama nueva desde
+`development`. Sustituye, sólo en este flujo, la revisión obligatoria del alias
+de productos nuevos de §38 y el control de columnas descrito en §35 («Tabla
+provisional compacta»). Los recibos anteriores conservan su comportamiento y
+entorno históricos. [ADR102](../architecture/decisions/ADR-102-human-product-alias-and-code-completeness.md)
+continúa propuesto; esta solicitud funcional no aprueba ese ADR ni las fichas.
+
+| Dato/acción | Comportamiento solicitado |
+| --- | --- |
+| Alias de fila nueva | Copiar automáticamente el nombre de producto al alias del borrador; lápiz para editarlo sin cambiar el nombre original. No usar un alias inventado por la IA ni hacer backfill de históricos. |
+| Alias de actualización | Cargar y conservar el alias del producto existente; editarlo desde el mismo lápiz si hace falta. Un histórico sin alias sigue pendiente de revisión, con texto breve «Revisar alias»; no hereda un alias extraído o el nombre automáticamente. |
+| Disponibilidad | Retirar columna y control del editor OCR. Nuevos productos comienzan disponibles (`has_stock: true`); updates no envían cambios de disponibilidad. Cambiarla requiere abrir el producto en el catálogo. La cantidad facturada sigue sin convertirse en stock. |
+| Precio Venta (30%) | Inicializar el borrador OCR con `Math.round(cost_price_tax × 1.3)` para filas nuevas y matches automáticos, usando el incremento sobre costo bruto de §35. Lápiz por fila para cambiar el precio. Es una propuesta comercial local revisable; no es un dato extraído, una garantía de rentabilidad ni un margen persistido. |
+| Precio y vinculación manual | Las casillas explícitas de la vinculación revisada siguen mandando: si venta no se elige, conservar el precio del catálogo. El default no reescribe campos no elegidos. |
+| Tabla | Cantidad de la factura inmediatamente a la derecha de Alias comercial, siempre visible. Retirar el icono +/− de columnas. Costos, precios, estado, histórico y acciones mantienen su correspondencia de columnas y el scroll horizontal local. |
+| Selección IA previa | Añadir Modelo e Intensidad junto a proveedor IA y método de conexión; comenzar con los valores predeterminados persistidos para esa instancia/modo. Modelo sin configurar o intensidad no entregada se representan explícitamente; no añadir modelos ni capacidades estáticas. |
+
+La calculadora reutiliza el dominio monetario CLP entero de 0 a 2.147.483.647:
+bruto ausente/inválido, resultado no finito o overflow no se convierten en cero ni
+en una venta válida. Cero real sigue siendo válido. El importe editado sólo cambia
+venta; no recalcula costos. El 30% es el default de preparación de la fila OCR;
+la calculadora manual de ProductModal conserva Aplicar explícito y su contrato.
+Todas las filas se validan antes del primer POST comercial y Guardar sigue siendo
+una acción posterior. No se amplía la atomicidad entre factura y productos.
+
+La selección IA debe resolver catálogo/opciones desde la respuesta real y enviar
+la selección exacta al contrato del análisis. Cambiar instancia o modo elimina
+valores incompatibles del contexto anterior. Revalidar no reemplaza una selección
+explícita; una selección retirada bloquea el análisis y permite corregirla. La
+configuración no acredita inferencia ni soporte. Durante análisis/cancelación
+se conservan bloqueo y borrador, sin fallback ni replay. «Comprobar disponibilidad»
+refresca la verificación del proveedor y el catálogo conjuntamente; no reanaliza
+la factura ni sustituye archivo o instancia al recuperar disponibilidad.
+Aplican [contrato de proveedores](ai-provider-feature-contract.md),
+[plan91](91-ai-provider-onboarding-verification.md) y [plan92](92-nodia-ai-api-chat-parity.md)
+por el alcance real que resulte modificado; añadir selectores no constituye alta
+ni calificación de un proveedor nuevo.
+
+### Contexto NodiaAI, validación y continuidad
+
+Impacto funcional del importador manual: defaults comerciales y selección exacta,
+además de composición/copy. Se actualizan las fichas candidatas de
+[alias](../nodia-ai/knowledge/businesses/features/product-alias-and-code-completeness.md),
+[calculadora/vinculación](../nodia-ai/knowledge/businesses/features/product-price-calculator-and-invoice-binding.md)
+y [Negocios](../nodia-ai/knowledge/businesses/README.md), con sus índices. No se
+modifican las fichas aprobadas de análisis/facturas ni los contratos de OCR
+conversacional: esta entrega no habilita herramientas, permisos, bindings,
+publicación o escritura de ventas/reportes NodiaAI.
+
+- [x] Solicitud, fórmula existente y reglas sustituidas identificadas; fichas
+  candidatas e índices enlazados sin aprobación heredada.
+- [x] Implementar y comprobar defaults/preservación, edición, datos ausentes y
+  límites monetarios, selección exacta por instancia/modo y configuración histórica.
+- [x] Tipos/lint/build Client y QA responsive/teclado sintética de seis perfiles
+  correctos; [evidencia por alcance](../evidence/invoice-ocr-review-defaults-20261116.md).
+- [x] Global2 correcta3125/378 y focal final posterior124/10 cubriendo el último
+  delta de recuperación; cortes y límites documentados en evidencia.
+- [x] Tipos/lint/build finales Client correctos y conocimiento/pins generados
+  mediante scripts soportados; resultado y release local exacto en evidencia.
+- [ ] Registrar entrega/revisión del candidato. Adopción y aceptación por entorno
+  requieren evidencia propia; ninguna se acredita por esta especificación.
+
+Implementado localmente en `codex/fixes-invoice-ocr` desde origin/development.
+[QA sintética](../evidence/invoice-ocr-review-defaults-20261116.md) verificó seis
+perfiles320/600/900/1440 ES/EN claro/oscuro, alias/precios por tipo de fila,
+históricos, teclado y conservación de borradores/foco al redimensionar. Tipos,
+lint y build finales Client correctos (build14,68s, advertencia de chunks existente).
+Global1 conservó3124correctas/1fallida por texto de opción modelo; aserción
+corregida a la etiqueta internacionalizada. Global2 pasó3125/378 en285,95s;
+focal posterior124/10 en82,41s cubre el último ajuste de recuperación realizado
+mientras corría la global. No se atribuye esa global a todo el árbol final.
+QA adicional conserva selección alternativa/Low a320 y cuatro selects únicos
+210×44px. Conocimiento y pins locales comprobados mediante scripts soportados;
+el release exacto queda en evidencia. Primer pendiente: revisión/integración;
+adopción/aceptación por entorno separadas. Sin inferencias, mutaciones HTTP reales,
+migraciones o publicación de conocimiento por esta entrega.

@@ -4,11 +4,11 @@
   "document_id": "businesses",
   "product_id": "businesses",
   "kind": "product",
-  "revision": 53,
+  "revision": 54,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "ClientR37 conserva la mejora visual de precio sugerido verificada1088/320px, sin Aplicar/Guardar en esa QA. NativeR16 adoptado con diagnóstico seguro best-effort y660Linux correctos, pero la nueva intención OCR real volvió aHTTP504 tras leer el archivo sin finish/resultado. Cierre local0CLI/marcadores/proofs/grupos yPNG conservado. Causa no aislada; no atribuir a Google/transporte ni convertir indicadores vacíos de un log truncado en ausencia de fallos. R15fallido y R37visual conservan sus recibos. Resolver extracción compatible con CLI1.3.1 sigue pendiente; sin replay, cambio de selección o ampliación de deadlines. No amplía guardado comercial, capacidades, permisos o bindings; draft/partial/unregistered sin nueva aprobación/publicación. VM development2026-11-14: alias humano nullable con revisión OCR explícita, búsqueda nombre/alias y filtros independientes de códigos. Migración179366 aplicada una vez;13productos/33logs preservados y QA local/SQL/HTTP aislados correctos. Sin producción, inferencia OCR o publicación; recibo operativo separado. Solicitud2026-11-14: alta nativa desde barcode POS inexistente, decisión Registrar/No y asociación existente conservada; barcode precargado textual y venta intacta. Client2986/362 y focales finales correctos, build/tipos/lint y QA aislada320/600/1280 ES/EN correctos; adopción sólo Client VM con recibo separado. Sin publicación IA o aprobación heredada. Ampliación explícita posterior2026-11-14 plan94§40: alta POS terminada agrega una unidad a la venta local actual, una vez, y limpia/enfoca lector. Sustituye reescaneo de§39; cancelación/error/contexto obsoleto no agrega. Client2994/362 y57focales/3archivos correctos, build/tipos/lint y QA sintética320ESdark/1280ENlight correctos. Adopción Client VM con recibo separado; sin cambio Server, herramienta IA o aprobación/publicación nueva."
+    "notes": "Solicitud2026-11-16 plan94§41: nuevos alias desde nombre, alias existente conservado/editable, disponibilidad nueva true y existente intacta, precio OCR inicial30% sobre bruto y edición por fila; modelo/intensidad desde configuración persistida por instancia/modo. Implementación local y QA Chromium sintética6perfiles verificadas; tipos/lint/build correctos. Global2 correcta3125/378 y focal posterior124/10 cubre recuperación final; tipos/lint/build y pins locales correctos según evidencia2026-11-16; antecedentes fechados inferiores conservan su alcance. Sin nueva aprobación/publicación o adopción. ClientR37 conserva la mejora visual de precio sugerido verificada1088/320px, sin Aplicar/Guardar en esa QA. NativeR16 adoptado con diagnóstico seguro best-effort y660Linux correctos, pero la nueva intención OCR real volvió aHTTP504 tras leer el archivo sin finish/resultado. Cierre local0CLI/marcadores/proofs/grupos yPNG conservado. Causa no aislada; no atribuir a Google/transporte ni convertir indicadores vacíos de un log truncado en ausencia de fallos. R15fallido y R37visual conservan sus recibos. Resolver extracción compatible con CLI1.3.1 sigue pendiente; sin replay, cambio de selección o ampliación de deadlines. No amplía guardado comercial, capacidades, permisos o bindings; draft/partial/unregistered sin nueva aprobación/publicación. VM development2026-11-14: alias humano nullable con revisión OCR explícita, búsqueda nombre/alias y filtros independientes de códigos. Migración179366 aplicada una vez;13productos/33logs preservados y QA local/SQL/HTTP aislados correctos. Sin producción, inferencia OCR o publicación; recibo operativo separado. Solicitud2026-11-14: alta nativa desde barcode POS inexistente, decisión Registrar/No y asociación existente conservada; barcode precargado textual y venta intacta. Client2986/362 y focales finales correctos, build/tipos/lint y QA aislada320/600/1280 ES/EN correctos; adopción sólo Client VM con recibo separado. Sin publicación IA o aprobación heredada. Ampliación explícita posterior2026-11-14 plan94§40: alta POS terminada agrega una unidad a la venta local actual, una vez, y limpia/enfoca lector. Sustituye reescaneo de§39; cancelación/error/contexto obsoleto no agrega. Client2994/362 y57focales/3archivos correctos, build/tipos/lint y QA sintética320ESdark/1280ENlight correctos. Adopción Client VM con recibo separado; sin cambio Server, herramienta IA o aprobación/publicación nueva."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
@@ -199,9 +199,8 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-14",
+    "checked_on": "2026-11-16",
     "evidence_paths": [
-      "docs/evidence/nodia-ai-ai36-c03-publication-authorization-r01.json",
       "docs/evidence/nodia-ai-ai36-c03-VM-publication-r01.json",
       "docs/evidence/nodia-ai-c03-handoff-readback-20261025-r01.json",
       "docs/evidence/nodia-ai-c03-reconciliation-20261025-r01.json",
@@ -232,9 +231,10 @@
       "docs/evidence/product-price-result-alignment-20261107-r01.json",
       "docs/evidence/invoice-gemini-timeout-20261107-r01.json",
       "docs/evidence/invoice-gemini-timeout-20261107-r02.json",
-      "docs/evidence/product-alias-and-code-completeness-20261114.md"
+      "docs/evidence/product-alias-and-code-completeness-20261114.md",
+      "docs/evidence/invoice-ocr-review-defaults-20261116.md"
     ],
-    "notes": "R16:660Linux sin fallos/omitidas más fixture cancel/setsid/IO/nuevaintención sin red/perfil real; Windows649pass/11skip es corrida separada. Adopción técnica verificada con configuraciónServerR12/ClientR37 preservada. OCR real504 con deadline240s/inferencia242057ms/UI250s, view_filecompletado y finish/result0. Hook1decisión/0rechazos; log truncado sin indicadores reconocidos no prueba causa ni ausencia. Cierre local0CLI/marcadores/proofs/grupos; no replay/guardar/vincularnuevo. R15yR37 históricos intactos;44aprobadas byte-idénticas. No se declara extracción resuelta. Solicitud2026-11-14: alta nativa desde barcode POS inexistente, decisión Registrar/No y asociación existente conservada; barcode precargado textual y venta intacta. Client2986/362 y focales finales correctos, build/tipos/lint y QA aislada320/600/1280 ES/EN correctos; adopción sólo Client VM con recibo separado. Sin publicación IA o aprobación heredada. Ampliación explícita posterior2026-11-14 plan94§40: alta POS terminada agrega una unidad a la venta local actual, una vez, y limpia/enfoca lector. Sustituye reescaneo de§39; cancelación/error/contexto obsoleto no agrega. Client2994/362 y57focales/3archivos correctos, build/tipos/lint y QA sintética320ESdark/1280ENlight correctos. Adopción Client VM con recibo separado; sin cambio Server, herramienta IA o aprobación/publicación nueva."
+    "notes": "Delta2026-11-16: implementación local, tipos/lint/build y QA Chromium sintética6perfiles correctos; global2 correcta3125/378 y focal posterior124/10; tipos/lint/build y pins locales correctos. Sin inferencia ni mutaciones HTTP reales. R16:660Linux sin fallos/omitidas más fixture cancel/setsid/IO/nuevaintención sin red/perfil real; Windows649pass/11skip es corrida separada. Adopción técnica verificada con configuraciónServerR12/ClientR37 preservada. OCR real504 con deadline240s/inferencia242057ms/UI250s, view_filecompletado y finish/result0. Hook1decisión/0rechazos; log truncado sin indicadores reconocidos no prueba causa ni ausencia. Cierre local0CLI/marcadores/proofs/grupos; no replay/guardar/vincularnuevo. R15yR37 históricos intactos;44aprobadas byte-idénticas. No se declara extracción resuelta. Solicitud2026-11-14: alta nativa desde barcode POS inexistente, decisión Registrar/No y asociación existente conservada; barcode precargado textual y venta intacta. Client2986/362 y focales finales correctos, build/tipos/lint y QA aislada320/600/1280 ES/EN correctos; adopción sólo Client VM con recibo separado. Sin publicación IA o aprobación heredada. Ampliación explícita posterior2026-11-14 plan94§40: alta POS terminada agrega una unidad a la venta local actual, una vez, y limpia/enfoca lector. Sustituye reescaneo de§39; cancelación/error/contexto obsoleto no agrega. Client2994/362 y57focales/3archivos correctos, build/tipos/lint y QA sintética320ESdark/1280ENlight correctos. Adopción Client VM con recibo separado; sin cambio Server, herramienta IA o aprobación/publicación nueva."
   },
   "approval": null
 }
@@ -244,6 +244,20 @@
 
 Las rutas de `ops/lab/artifacts/` citadas debajo identifican originales locales ignorados por Git; no se distribuyen con un checkout ni con el paquete productivo. Se conservan sus nombres, hechos y fuentes portables ya enlazadas, sin copiar originales, alterar evidencias o ampliar aprobación/publicación. Esta revisión sólo corrige su presentación documental y sigue draft/unregistered, con approval:null.
 # Negocios — contexto de producto para NodiaAI
+
+## Revisión manual OCR — solicitud2026-11-16
+
+[Plan94§41](../../../mvp/94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16) establece alias nuevo
+desde nombre, alias existente conservado/editable, nuevos disponibles y updates
+sin cambio de disponibilidad. Precio inicial30% sobre costo bruto editable con
+lápiz; cantidad junto a alias, sin columna disponibilidad ni toggle. Modelo e
+intensidad parten de configuración persistida por instancia/modo y opciones
+reales. [Alias](features/product-alias-and-code-completeness.md) y
+[calculadora/vinculación](features/product-price-calculator-and-invoice-binding.md)
+registran el cambio funcional y los antecedentes sustituidos. Implementación
+local y QA sintética6perfiles verificadas; tipos/lint/build y pins locales correctos
+en [evidencia](../../../evidence/invoice-ocr-review-defaults-20261116.md).
+Sin aprobación/publicación o adopción nuevas.
 
 ## Regla nueva de Productos — 2026-11-06
 
@@ -613,3 +627,9 @@ alta terminada incorpora una unidad sin reescaneo, con control de contexto y
 duplicados, lector limpio/enfocado y fallo específico si ya se guardó catálogo.
 [Evidencia de autoadd](../../../evidence/pos-product-registration-autoadd-20261114.md)
 separa esta ampliación del corte previo que no añadía al carrito.
+
+### Evidencia histórica conservada fuera del frontmatter
+
+El frontmatter mantiene el límite contractual de32evidencias. Se conserva el
+recibo anterior en [nodia-ai-ai36-c03-publication-authorization-r01.json](../../../evidence/nodia-ai-ai36-c03-publication-authorization-r01.json),
+sin modificar su alcance ni el archivo original.

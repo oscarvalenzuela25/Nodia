@@ -533,7 +533,43 @@ El panel de trabajo Teacher conserva una barra indeterminada por estado queued/r
 
 Corte histórico R15: Definir tu plan explicó Guardar/Enviar/Proponer mediante una lista semántica: una columna de base y tres desde md900px. Conserva un formulario y el mismo borrador durante resize/refetch. Guardar mensaje usa contained; las tres acciones reutilizan ancho completo en xs y targets44px existentes. Un borrador guardado sin enviar muestra aviso y bloquea Proponer, sin autoenvío ni pérdida de texto. En320px se observó documento310px sin desbordamiento y botones244×44px; no equivale a prueba en teléfono físico. [Alcance y comprobación](../docs/mvp/96-nodia-teacher-implementation-plan.md#31-definición-clara-y-estado-de-preparación-estable--2026-11-05).
 
-### 9.13 Tabla provisional de factura: menú y columnas opcionales — 2026-11-07
+### 9.13 Tabla provisional de factura y selección IA — 2026-11-16
+
+La [solicitud vigente del plan94§41](../docs/mvp/94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16)
+sustituye el toggle y la disponibilidad opcional del corte2026-11-07 inferior.
+La tabla conserva comparación horizontal en un único árbol, `minWidth: 1200`
+constante y scroll local dentro de TableContainer también en móvil, con las
+scrollbars del theme. Cantidad de la factura queda siempre a la derecha de Alias
+comercial; las filas históricas mantienen la correspondencia de columnas.
+
+Nuevos productos copian nombre al alias y comienzan disponibles; updates cargan
+alias de catálogo y omiten `has_stock` del payload para conservar disponibilidad.
+Alias se edita con lápiz44×44px; sólo un alias pendiente muestra «Revisar alias».
+Retirar el control OCR de disponibilidad no impide cambiarla desde el catálogo.
+«Precio Venta (30%)» parte del incremento sobre costo bruto de§9.14, editable por
+lápiz44×44px con nombre accesible. La inicialización afecta sólo el borrador OCR;
+la vinculación manual conserva los campos no elegidos, incluidos los precios.
+Guardar comercialmente sigue siendo una acción posterior; ausencia o importe
+inválido no se convierte en precio válido para habilitarla.
+
+Proveedor IA, método de conexión, modelo e intensidad usan un grid de una columna
+en xs, dos desde sm y cuatro desde lg. Modelo/esfuerzo comienzan con la
+configuración persistida de la instancia/modo, sin catálogo o capacidades
+inventados. Resize conserva selección y borrador, con el mismo estado y consultas;
+no se montan dos formularios ni se hace una consulta por cada representación.
+Bloqueo durante ejecución/cancelación, corrección de selección inválida y feedback
+traducido siguen el contrato existente. La configuración no acredita inferencia.
+Implementación local, tipos/lint/build y QA Chromium sintética de seis perfiles
+correctos: ES/oscuro320/600/900/1440 y EN/claro320/1440, sin desbordamiento del
+documento; scroll local250/1200 a320. Precio399 y alias revisado conservados al
+redimensionar, validación−1 y retorno de foco al lápiz comprobados. No acredita
+teléfono físico, autenticación o HTTP comercial/inferencia reales. Selección
+alternativa/Low conservada a320, con cuatro selects únicos210×44px. Global2
+correcta3125/378 y focal final posterior124/10 cubren sus respectivos cortes
+según [evidencia](../docs/evidence/invoice-ocr-review-defaults-20261116.md).
+
+**Antecedente2026-11-07: composición de columnas sustituida.** El recibo siguiente
+conserva su alcance histórico y no prescribe el toggle ni la disponibilidad actual.
 
 El importador manual agrupa vincular, editar y quitar fila en `InvoiceRowActions`, con un disparador de44×44px y nombre accesible por fila, `aria-haspopup`, estado expandido y relación con el menú. Reutiliza Menu/MenuItem de MUI, iconos y traducciones ES/EN; conserva navegación por teclado, cierre y retorno de foco del componente. Menú y acciones quedan deshabilitados durante análisis, reconsultas o guardado; el handler comprueba de nuevo el bloqueo antes de delegar. No se sustituyen los handlers ni se crean acciones de negocio nuevas. El menú puede envolver textos extensos y limita su ancho al viewport.
 
@@ -544,6 +580,8 @@ La comparación permanece como tabla con scroll horizontal dentro de TableContai
 Implementación local en seis entradas de producción:52regresiones/2archivos (33,52s), tipos y lint correctos. Build aislado R33→R34 y sucesor R34→R35 de una cabecera, con adopciones verificadas:185outputs actuales y assets de17versiones históricas porHTTP+SHA, miss404; dos activaciones/recargas Nginx (R34 y R35), sin reiniciar Server/Native. CUA escritorio/320/600 verifica geometría, menú, toggle y borrador en harness aislado con el componente R35 exacto y fixtures rotuladas sin red. La nueva QA real Gemini no produjo tabla:409health_status previo y otra intención504/240s; sin replay. No equivale a teléfono físico ni demuestra mejora de rendimiento. Ver [plan94§35](../docs/mvp/94-business-point-of-sale-and-product-refactor.md#tabla-provisional-compacta-y-acciones-por-fila--2026-11-07) y [evidencia](../docs/evidence/invoice-provisional-table-ui-20261107-r01.json). Cambio de presentación/interacción manual, sin modificar backend, proveedor/modelo, payload, validación, SQL o autenticación.
 
 ### 9.14 Calculadora local de precio compacta — 2026-11-07
+
+> La preparación inicial de filas OCR usa el default30% solicitado2026-11-16 de§9.13. Los controles manuales descritos aquí conservan Aplicar explícito y no recalculan venta al editar costo/porcentaje.
 
 ClientR36 activo en VM: calculadora compacta a la derecha del costo con impuestos desde sm600, porcentaje88px con%, importe visible e icono44px con tooltip «Usar precio sugerido». Un container query local de280px permite tres columnas (88+132+44+16); por debajo usa dos filas y conserva el importe entero. En xs el bloque va debajo del costo; no cambia el breakpoint global. Enter en el porcentaje evita enviar el formulario. Cambiar porcentaje/costo sólo actualiza la sugerencia; aplicar sólo cambia la venta del borrador.104pruebas/4archivos, tipos/lint/build aislado correctos. CUA autenticada1088/320px:30%→350,40%→377 con venta350 hasta aplicar, costos226/269 intactos y Cancelar/reabrir tras recarga recupera350/30%. Input/costo alineados, tooltip y targets44px comprobados; móvil sin overflow. Vista aislada600/320 verificó un importe1300000000 completo. No Guardar, mutaciones HTTP o inferencias; Server/Native/SQL/contratos/autoridad conservados. Una activación/recarga Nginx y185outputs actuales/18versiones históricas verificados. Sin publicación ni aprobación nueva. [Evidencia](../docs/evidence/product-price-suggestion-ui-20261107-r01.json). Verificación de componente/VM acotada; no equivale a teléfono físico ni a persistencia comercial.
 

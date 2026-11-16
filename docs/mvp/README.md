@@ -1,5 +1,16 @@
 # Especificación del MVP — Nodia
 
+**OCR manual: defaults y selección exacta — solicitud2026-11-16:**
+[Plan94§41](94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16) documenta alias nuevo desde nombre,
+alias existente editable/conservado, disponibilidad nueva true y updates intactos;
+venta inicial30% sobre bruto editable, cantidad junto al alias y sin toggle.
+Modelo/intensidad desde defaults persistidos por instancia/modo. Implementación
+local, tipos/lint/build y QA Chromium sintética6perfiles correctos por
+[evidencia](../evidence/invoice-ocr-review-defaults-20261116.md). Global2:3125/378;
+focal posterior124/10 cubre último delta de recuperación. Tipos/lint/build finales
+y conocimiento/pins locales correctos; revisión/integración y adopción separadas.
+Sin inferencia ni aprobación/publicación nuevas.
+
 **PR News y archivo de capturas — solicitud2026-11-16:**
 [PR46](https://github.com/oscarvalenzuela25/Nodia/pull/46) abierta contra development;
 CI del corte funcional correcto (Client3104/376, Server6092/355 y40checks SQL).
