@@ -162,7 +162,7 @@ def _archive_json(host, path):
     return value
 
 
-def _archive(host, identity, *, digest):
+def _archive(host, identity, *, digest, missing_ok=False):
     expected_directory = 'server-' + identity['run_id'] + '-' + identity['run_attempt']
     expected_relative = 'archived-incoming/' + expected_directory + '/' + identity['artifact_id'] + '.zip'
     records = list(islice(host.STATE.glob('archive-completed-upload-*'), MAX_LEDGERS + 1))
@@ -178,7 +178,8 @@ def _archive(host, identity, *, digest):
         filename = receipt if _occupied(receipt) else directory / 'intent.json'
         host.require(_occupied(filename), 'upload_archive_record_invalid')
         value = _archive_json(host, filename)
-        if (value.get('artifact_directory'), value.get('artifact_id')) != (expected_directory, identity['artifact_id']):
+        expected_key = (expected_directory, identity['artifact_id'])
+        if all((item.get('artifact_directory'), item.get('artifact_id')) != expected_key for item in (intent, value)):
             continue
         host.require(_occupied(receipt) and type(value.get('schema_version')) is int and value['schema_version'] == 1 and
                      value.get('status') == 'upload_archived' and value.get('moved') is True and
@@ -215,6 +216,8 @@ def _archive(host, identity, *, digest):
                                              ('source_sha', r'[a-f0-9]{40}'), ('package_tree_sha256', r'[a-f0-9]{64}'))),
                      'upload_archive_requires_reconciliation')
         matches.append(value)
+    if not matches and missing_ok:
+        return False
     host.require(len(matches) == 1, 'upload_archive_requires_reconciliation')
     root = host.STATE / 'archived-incoming'
     host.protect(root, 0o700, directory=True)
@@ -222,6 +225,7 @@ def _archive(host, identity, *, digest):
     size, checksum = _read_file(host, root / expected_directory / (identity['artifact_id'] + '.zip'), identity['bytes'], digest=digest)
     host.require(size == identity['bytes'] and (not digest or checksum == identity['artifact_zip_sha256']),
                  'upload_archive_requires_reconciliation')
+    return True
 
 
 def _inspect(host, identity, records, *, digest):
@@ -248,8 +252,9 @@ def _inspect(host, identity, records, *, digest):
         size, checksum = _read_file(host, complete, identity['bytes'], digest=digest)
         host.require(size == identity['bytes'] and (not digest or checksum == identity['artifact_zip_sha256']), 'upload_digest_mismatch')
         return 'verified', size, checksum, receipt
-    if receipt:
-        _archive(host, identity, digest=digest)
+    if _archive(host, identity, digest=digest, missing_ok=not receipt):
+        # A complete archive receipt also seals byte reception when finish lost
+        # its upload receipt before an independently completed deploy/archive.
         return 'archived', identity['bytes'], identity['artifact_zip_sha256'], True
     return 'receiving', 0, EMPTY_SHA256, False
 

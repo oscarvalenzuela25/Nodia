@@ -451,6 +451,40 @@ class BackendUploadTests(unittest.TestCase):
         self.assertEqual(upload.reservation_usage(self.host), (0, 0))
         self.assertEqual(before, self.snapshot())
 
+    def test_archive_receipt_seals_renamed_upload_even_without_upload_receipt(self):
+        self.open()
+        self.append(self.data)
+        upload.rename_noreplace(self.paths()[1], self.paths()[2])
+        self.assertFalse((self.ledger() / 'receipt.json').exists())
+        self.archive()
+        before = self.snapshot()
+        status = upload.get_status(self.host, self.message)
+        self.assertEqual(status['phase'], 'archived')
+        self.assertEqual(status['offset'], len(self.data))
+        self.assertEqual(status['prefix_sha256'], self.message['artifact_zip_sha256'])
+        self.assertTrue(status['receipt_recorded'])
+        self.assertEqual(self.open(), status)
+        self.assertEqual(self.finish(), status)
+        with self.assertRaisesRegex(ValueError, '^upload_not_receiving$'):
+            self.append(b'x', offset=0, prefix_sha256=upload.EMPTY_SHA256)
+        self.assertEqual(upload.reservation_usage(self.host), (0, 0))
+        self.assertEqual(before, self.snapshot())
+        self.assertFalse((self.ledger() / 'receipt.json').exists())
+        self.assertFalse(self.paths()[1].exists())
+        self.assertFalse(self.paths()[2].exists())
+
+    def test_missing_upload_receipt_does_not_hide_conflicting_archive_receipt_identity(self):
+        self.open()
+        self.append(self.data)
+        upload.rename_noreplace(self.paths()[1], self.paths()[2])
+        record, value = self.archive()
+        (record / 'receipt.json').unlink()
+        receiver.save_new(record / 'receipt.json', {**value, 'artifact_id': '999'})
+        before = self.snapshot()
+        with self.assertRaisesRegex(ValueError, '^upload_archive_requires_reconciliation$'):
+            upload.get_status(self.host, self.message)
+        self.assertEqual(before, self.snapshot())
+
     def test_missing_or_ambiguous_archive_record_never_adopts_bytes(self):
         self.completed()
         self.paths()[2].unlink()
