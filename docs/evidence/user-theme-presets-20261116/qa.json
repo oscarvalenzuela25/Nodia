@@ -1,0 +1,145 @@
+{
+  "profiles": {
+    "continuity": "draft DOM, resize, mode and reload passed",
+    "matrix": [
+      {
+        "actor": "guest",
+        "lang": "es",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "popupInside": true,
+        "controlsInside": true,
+        "mode": "light",
+        "preset": "notebook"
+      },
+      {
+        "actor": "member",
+        "lang": "es",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "popupInside": true,
+        "controlsInside": true,
+        "mode": "light",
+        "preset": "bubblegum"
+      },
+      {
+        "actor": "admin",
+        "lang": "es",
+        "width": 599,
+        "viewport": 599,
+        "scroll": 599,
+        "popupInside": true,
+        "controlsInside": true,
+        "mode": "light",
+        "preset": "vercel"
+      },
+      {
+        "actor": "guest",
+        "lang": "es",
+        "width": 600,
+        "viewport": 600,
+        "scroll": 600,
+        "popupInside": true,
+        "controlsInside": true,
+        "mode": "light",
+        "preset": "cyberpunk"
+      },
+      {
+        "actor": "member",
+        "lang": "es",
+        "width": 900,
+        "viewport": 900,
+        "scroll": 900,
+        "popupInside": true,
+        "controlsInside": true,
+        "mode": "light",
+        "preset": "mocha-mousse"
+      },
+      {
+        "actor": "admin",
+        "lang": "es",
+        "width": 1280,
+        "viewport": 1280,
+        "scroll": 1280,
+        "popupInside": true,
+        "controlsInside": true,
+        "mode": "light",
+        "preset": "nodia"
+      },
+      {
+        "actor": "guest",
+        "lang": "en",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "popupInside": true,
+        "controlsInside": true,
+        "mode": "dark",
+        "preset": "notebook"
+      },
+      {
+        "actor": "member",
+        "lang": "en",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "popupInside": true,
+        "controlsInside": true,
+        "mode": "dark",
+        "preset": "bubblegum"
+      },
+      {
+        "actor": "admin",
+        "lang": "en",
+        "width": 599,
+        "viewport": 599,
+        "scroll": 599,
+        "popupInside": true,
+        "controlsInside": true,
+        "mode": "dark",
+        "preset": "vercel"
+      },
+      {
+        "actor": "guest",
+        "lang": "en",
+        "width": 600,
+        "viewport": 600,
+        "scroll": 600,
+        "popupInside": true,
+        "controlsInside": true,
+        "mode": "dark",
+        "preset": "cyberpunk"
+      },
+      {
+        "actor": "member",
+        "lang": "en",
+        "width": 900,
+        "viewport": 900,
+        "scroll": 900,
+        "popupInside": true,
+        "controlsInside": true,
+        "mode": "dark",
+        "preset": "mocha-mousse"
+      },
+      {
+        "actor": "admin",
+        "lang": "en",
+        "width": 1280,
+        "viewport": 1280,
+        "scroll": 1280,
+        "popupInside": true,
+        "controlsInside": true,
+        "mode": "dark",
+        "preset": "nodia"
+      }
+    ]
+  },
+  "storage": {
+    "failureRollback": true,
+    "searchKept": true,
+    "retry": true,
+    "offlineSelection": true
+  }
+}

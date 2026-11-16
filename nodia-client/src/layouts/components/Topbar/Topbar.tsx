@@ -19,6 +19,7 @@ import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutl
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import useProfileMenu from "./hooks/useProfileMenu";
 import ThemeSelector from "../ThemeSelector";
+import ThemePresetSelector from "../../../components/ThemePresetSelector";
 import LanguageSelector from "../../../components/LanguageSelector";
 import { TopbarRoot } from "./styles";
 import AiProviderIndicators from "./components/AiProviderIndicators";
@@ -79,15 +80,17 @@ const Topbar: FC<Props> = ({
       {isAuthenticated && canManageAi && <AiProviderIndicators />}
       <Stack
         direction="row"
-        spacing={{ xs: 1, sm: 2 }}
+        spacing={{ xs: 0.5, sm: 2 }}
         sx={{
           alignItems: "center",
           justifyContent: "flex-end",
+          minWidth: 0,
           gridRow: 1,
           gridColumn: { xs: 2, sm: 3 },
         }}
       >
         <LanguageSelector />
+        <ThemePresetSelector />
         <ThemeSelector />
         {isAuthenticated ? (
           <>
@@ -134,6 +137,7 @@ const Topbar: FC<Props> = ({
             disabled={isBusy}
             variant="contained"
             color="primary"
+            sx={{ minWidth: { xs: 0, sm: 64 }, px: { xs: 1, sm: 2 } }}
             onClick={() => navigate("/login")}
           >
             {t("login")}
