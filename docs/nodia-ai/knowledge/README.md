@@ -1,5 +1,19 @@
 # Contexto funcional de productos para NodiaAI
 
+## Temas personales — solicitud2026-11-16
+
+[Plan108](../../mvp/108-user-theme-presets.md) y
+[ficha candidata](general-settings/features/interface-theme-presets.md)
+documentan paleta local independiente del modo claro/oscuro: Nodia inicial y
+presets oficiales tweakcn adaptados a MUI desde el topbar para todos los roles.
+Nuevo concepto de apariencia, sin cambio de datos, contratos o autoridad del
+dominio. Implementación y [verificación local](../../evidence/user-theme-presets-20261116.md)
+completadas:44opciones/86paletas importadas, QA sintética12perfiles,
+global3059/370 y27focales tras el feedback final, tipos/lint/build correctos por
+alcance. Ficha draft/implemented/unregistered/approval:null con path explícito
+para validación; aceptación humana/sesión real/dispositivo y adopción pendientes,
+sin binding, herramienta de chat, sincronización de cuenta o publicación nuevos.
+
 ## Teacher: revisión legible del plan — solicitud2026-11-16
 
 [106§13](../../mvp/106-nodia-teacher-guided-ux-redesign.md#13-revisión-del-plan-legible-y-edición-progresiva--solicitud2026-11-16),

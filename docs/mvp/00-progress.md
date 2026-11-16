@@ -1,5 +1,20 @@
 # Progreso del MVP — Nodia
 
+**Temas personales desde el topbar — solicitud2026-11-16:**
+[Plan108](108-user-theme-presets.md) registra desarrollo autorizado de
+44opciones: Nodia y43presets de tweakcn incorporados, con modo claro/oscuro
+independiente y preferencia del navegador accesible a todos los roles.
+Implementación y verificación local completadas: 86 paletas importadas con
+contraste mínimo por alcance, QA Chromium sintética12perfiles, almacenamiento
+denegado/rollback/reintento y selección sin conexión correctos. Global3059/370;
+después del feedback final,27focales/7archivos, tipos/lint/build correctos por
+[evidencia y límites](../evidence/user-theme-presets-20261116.md). Lint excluye
+experimentos `.tmp` históricos y build conserva aviso>500kB. Primer pendiente:
+aceptación visual humana con UI/sesión auténtica y teléfono; después adopción
+por entorno si se solicita, sin repetir catálogo/construcción/QA local.
+[Ficha candidata](../nodia-ai/knowledge/general-settings/features/interface-theme-presets.md)
+draft/unregistered/approval:null, sin herramienta IA o despliegue nuevos.
+
 **Teacher: revisión legible del plan — solicitud2026-11-16:**
 [106§13](106-nodia-teacher-guided-ux-redesign.md#13-revisión-del-plan-legible-y-edición-progresiva--solicitud2026-11-16)
 retoma TUX-04: resumen/recorrido primero, «Usar este plan» principal y edición o

@@ -31,6 +31,18 @@ Ver [plan93](93-nodia-ai-chat-composer-redesign.md) y
 - **Predeterminado solicitado el 2026-10-11:** oscuro/negro sin preferencia guardada. El selector permite cambiar a claro y volver a oscuro; se conserva la elección guardada en ese navegador al recargar, incluidas preferencias anteriores. No depende del tema del sistema.
 - **Design Tokens:** Los colores exactos para MUI se extraerán y generarán a partir de un tema proporcionado posteriormente.
 
+### Paletas personales — solicitud2026-11-16
+
+[Plan108](108-user-theme-presets.md) amplía la apariencia con presets oficiales
+tweakcn adaptados a MUI y un selector del topbar disponible para todos los roles.
+Nodia y oscuro siguen siendo los valores iniciales; elegir paleta conserva el
+modo y viceversa. Preferencia local de navegador, sin sincronización de cuenta
+o permisos nuevos. `src/themes/` aporta cada paleta clara/oscura; el provider
+único mantiene tipografía, dimensiones, breakpoints y overrides de `src/theme/`.
+Implementación/verificación local completadas por [evidencia108](../evidence/user-theme-presets-20261116.md);
+aceptación humana/sesión real/dispositivo y adopción pendientes. La autorización
+de desarrollo no aprueba esta ampliación documental ni su adopción por entorno.
+
 ## 3. Tipografía
 
 - **Requisitos:** Elegante, agradable a la vista, y sin problemas con los pesos *normal* y *bold*.
@@ -51,6 +63,12 @@ BaseLayout autenticado incorpora barra inferior de borde a borde con cuatro acce
 
 - **Nivel de exigencia:** No es prioridad para el MVP.
 - **Enfoque práctico:** Se aprovechará únicamente la accesibilidad gratuita que ya traen los componentes de MUI out-of-the-box, sin realizar pruebas o ajustes específicos de contraste, screen readers o navegación estricta.
+
+**Ampliación explícita2026-11-16:** para los temas adicionales de
+[plan108](108-user-theme-presets.md), comprobar contraste mínimo4.5:1 de los
+pares de texto/acciones definidos en ese alcance y la operación por teclado
+del selector. Esta petición posterior amplía la regla histórica anterior para
+esta entrega; no acredita una auditoría o certificación global de accesibilidad.
 
 ## Avisos de autorización bajo el topbar — 2026-10-09
 

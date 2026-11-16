@@ -23,6 +23,16 @@ Definir las dependencias base del frontend, la estructura del proyecto y los Des
 
 ## 2. Configuración del Tema MUI (Design Tokens)
 
+**Contrato vigente de paletas — solicitud2026-11-16:**
+[plan108](108-user-theme-presets.md) conserva la composición única en
+`src/providers/MUIProvider.tsx`, los tokens compartidos en `src/theme/` y añade
+`src/themes/` con un archivo/exportación por defecto por paleta, variantes claras
+y oscuras y catálogo tipado. `configStore.themeId` elige paleta y `themeType`
+mantiene modo, ambos locales al navegador; Nodia/oscuro iniciales y preferencias
+históricas compatibles. No se importan componentes Tailwind/shadcn ni se crea
+otra solución de temas. El código ilustrativo inferior describe el diseño base
+histórico y no sustituye los contratos de implementación enlazados en108.
+
 Se adaptaron los tokens de Tailwind provistos por el usuario para integrarse nativamente al sistema de temas de Material UI (`createTheme`), soportando modo claro y oscuro, e incorporando la fuente `Inter`.
 
 ### Código Base del Tema (`src/theme/theme.ts`)

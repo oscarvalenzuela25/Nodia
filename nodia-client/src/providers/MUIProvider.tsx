@@ -1,4 +1,4 @@
-import type { FC, PropsWithChildren } from "react";
+import { useMemo, type FC, type PropsWithChildren } from "react";
 import { CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Toaster } from "sileo";
@@ -9,7 +9,8 @@ import zIndex from "../theme/zIndex";
 import transitions from "../theme/transitions";
 import components from "../theme/components";
 import useThemeType from "../hooks/useThemeType";
-import { darkPalette, lightPalette } from "../theme/palette";
+import { resolveThemePreset } from "../themes";
+import useThemeStore from "../store/configStore";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { esES, enUS } from "@mui/x-date-pickers/locales";
@@ -22,9 +23,10 @@ type Props = PropsWithChildren;
 const MUIProvider: FC<Props> = ({ children }) => {
   const { i18n } = useTranslation();
   const { themeType } = useThemeType();
-  const palette = themeType === "light" ? lightPalette : darkPalette;
+  const themeId = useThemeStore((state) => state.themeId);
+  const palette = resolveThemePreset(themeId)[themeType];
 
-  const theme = createTheme({
+  const theme = useMemo(() => createTheme({
     cssVariables: true,
     palette,
     typography,
@@ -36,7 +38,7 @@ const MUIProvider: FC<Props> = ({ children }) => {
     shape: {
       borderRadius: 8,
     },
-  });
+  }), [palette]);
 
   return (
     <ThemeProvider theme={theme}>
