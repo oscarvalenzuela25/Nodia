@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "delivery_complete_retention_pending",
+  "status": "v2_delivered_and_administratively_closed",
   "bundle_manifest_sha256": "5d5a150ba591514e953269d1f72ef463bef9f7aee10cd670aee716e3e57df2e4",
   "bundle": {
     "assets": {
@@ -193,7 +193,28 @@
         "worker_active": true
       }
     },
-    "administrative_closure": null
+    "administrative_closure": {
+      "status": "complete",
+      "sudo_timestamp_invalidated": true,
+      "sudo_invalidation_job_id": "upload-v2-final-proof-close-66706cce6b8940778280effbd41f7fb0",
+      "tmux_session": "setup",
+      "tmux_kill_session_exit_code": 0,
+      "tmux_has_session_exit_code": 1,
+      "tmux_no_server_running_confirmed": true,
+      "fresh_ssh_status_after_close": {
+        "status": "deployment_ready",
+        "blocked": false,
+        "current": {
+          "release_id": "backend-95b6189303df-c01d5047410c",
+          "source_sha": "95b6189303df939c901ea6afe64d531180a441c8",
+          "package_tree_sha256": "c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d"
+        },
+        "application": {
+          "api_active": true,
+          "worker_active": true
+        }
+      }
+    }
   },
   "delivery": {
     "status": "complete",
@@ -550,15 +571,257 @@
     "delivery_cd_conclusion": "success"
   },
   "retention_verification": {
-    "status": "pending_root_receipt",
+    "status": "verified",
+    "verified": true,
+    "metric_consistent_only": false,
     "logical_incoming_bytes_observed": 1943826973,
     "logical_incoming_files_observed": 9,
-    "metric_consistent_only": true,
-    "verified": false
+    "archive_count": 3,
+    "new_automatic_archives": 1,
+    "new_archive_operation_id": "78663186e98d9775592edc22455c47d2",
+    "new_archive_receipt_sha256": "76a4cfbb5b1c7ee8556d95c39965418c593d04f733513b210cbe7903c3669ee3",
+    "archived_bytes_verified": true,
+    "original_references_verified": true,
+    "root_proof_job_id": "upload-v2-final-proof-close-66706cce6b8940778280effbd41f7fb0"
   },
   "root_postcheck": {
-    "status": "pending_sudo_authentication",
-    "tty_confirmed": "/dev/pts/1",
-    "administrative_closure": null
+    "status": "complete",
+    "job_id": "upload-v2-final-proof-close-66706cce6b8940778280effbd41f7fb0",
+    "job_exit_code": 0,
+    "script_sha256": "d573d1d601096b01ca193a0aba2e5db405833dbfe34d241bc647b84c64d06bb2",
+    "source_file": "output/production/admin-jobs/upload-v2-final-proof-close-66706cce6b8940778280effbd41f7fb0/stdout.log",
+    "source_sha256": "6630b80a591db2f63fb864eb31e95226b233bc140409e5f04e35d88b7b6c2803",
+    "observations": [
+      {
+        "schema_version": 1,
+        "kind": "upload_storage_inspection",
+        "files": [
+          {
+            "directory": "server-43373323321-1",
+            "name": "14014155653.zip",
+            "bytes": 215975812
+          },
+          {
+            "directory": "server-43471624414-1",
+            "name": "14060209069.zip",
+            "bytes": 215976252
+          },
+          {
+            "directory": "server-43554037357-1",
+            "name": "14097179553.zip",
+            "bytes": 215976251
+          },
+          {
+            "directory": "server-43620970891-1",
+            "name": "14123834136.zip",
+            "bytes": 215986315
+          },
+          {
+            "directory": "server-43662589149-1",
+            "name": "14140049857.zip",
+            "bytes": 215982761
+          },
+          {
+            "directory": "server-43692516659-1",
+            "name": "14153775349.zip",
+            "bytes": 215982751
+          },
+          {
+            "directory": "server-43760491504-1",
+            "name": "14179749992.zip",
+            "bytes": 215982287
+          },
+          {
+            "directory": "server-43798403214-1",
+            "name": "14196015685.zip",
+            "bytes": 215982269
+          },
+          {
+            "directory": "server-43878077045-1",
+            "name": "14231846639.zip",
+            "bytes": 215982275
+          }
+        ],
+        "count": 9,
+        "total_bytes": 1943826973,
+        "free_bytes": 98418540544,
+        "archives": [
+          {
+            "operation_id": "64c9a2f383709ee93ca5e584a9bc5b52",
+            "artifact_directory": "server-43546497935-1",
+            "artifact_id": "14094113962",
+            "artifact_zip_sha256": "1bdc378056085d6f0c89b7521aaf4d89113739d64adb01090e626eb1439e96d1",
+            "bytes": 215976251,
+            "source_sha": "0f69d505f2826f97c5f54b14a0acbe74daea248e",
+            "archived_relative_path": "archived-incoming/server-43546497935-1/14094113962.zip",
+            "status": "upload_archived",
+            "moved": true
+          },
+          {
+            "operation_id": "78663186e98d9775592edc22455c47d2",
+            "artifact_directory": "server-43628466598-1",
+            "artifact_id": "14127640136",
+            "artifact_zip_sha256": "baf3806dd0fb74b97818b24fe020450b0962d9ddcc30eaea2a54f2e802400723",
+            "bytes": 215986320,
+            "source_sha": "307ffbccc5101b563a97f8e5c52d518262cd3a29",
+            "archived_relative_path": "archived-incoming/server-43628466598-1/14127640136.zip",
+            "status": "upload_archived",
+            "moved": true
+          },
+          {
+            "operation_id": "cf77431152a9416d2b27b55f17f598c4",
+            "artifact_directory": "server-43535099739-1",
+            "artifact_id": "14088269914",
+            "artifact_zip_sha256": "80dabe812df7731d606f248137f4a1d1a0f2bdfaee89846918f41d6f2378626f",
+            "bytes": 215976268,
+            "source_sha": "174c2ca5a1e78758e94d0f00ab43ff5e0c8c535e",
+            "archived_relative_path": "archived-incoming/server-43535099739-1/14088269914.zip",
+            "status": "upload_archived",
+            "moved": true
+          }
+        ],
+        "ledgers": [
+          {
+            "upload_id": "bf288031e60fe4c529b85a14e55547ad20cebbafc435163a07e1a0325fceec20",
+            "identity": {
+              "artifact_id": "14231846639",
+              "artifact_zip_sha256": "96c25b730234cc2397048710453e9c20f37873d2d48dd1e8382fbb6f051260b7",
+              "bytes": 215982275,
+              "run_attempt": "1",
+              "run_id": "43878077045"
+            },
+            "receipt_recorded": true
+          }
+        ],
+        "current": "/opt/nodia/releases/backend-95b6189303df-c01d5047410c",
+        "application": {
+          "nodia-api.service": {
+            "ActiveState": "active",
+            "SubState": "running",
+            "MainPID": "1168037"
+          },
+          "nodia-ai-worker.service": {
+            "ActiveState": "active",
+            "SubState": "running",
+            "MainPID": "1168046"
+          }
+        },
+        "receiver_settings_sha256": "206fcbd95a997babbf39094fef9eb08b51c3ba206d281ccc7df0e19da16162ee",
+        "installed_assets": {
+          "archive-completed-backend-upload.py": "3a0f596d20d6df5b3b88f680dee5c6f2c63d8792bb4c1d1ce56c2d05b7f7d968",
+          "backend_upload.py": "25bc905248373aacd250f086ebf8d00e25df67d53612b0d8da39701057066c68",
+          "deploy-backend-receiver.py": "cc71b34bbdf3d8e4603aaaecf9161d62110f01ac33d202ac61eb5f9b9d37d6d3",
+          "deploy-gateway.py": "b37048070631d3705c2946fb70c15e4fb2483edd412655326a49db80c5cda7fb"
+        },
+        "deployment_requested": false,
+        "automatic_retry_allowed": false
+      },
+      {
+        "schema_version": 1,
+        "kind": "durable_upload_storage_proof",
+        "new_archives": [
+          {
+            "receipt": {
+              "application_services_restarted": false,
+              "archived_relative_path": "archived-incoming/server-43628466598-1/14127640136.zip",
+              "artifact_directory": "server-43628466598-1",
+              "artifact_id": "14127640136",
+              "artifact_zip_sha256": "baf3806dd0fb74b97818b24fe020450b0962d9ddcc30eaea2a54f2e802400723",
+              "automatic_retry_allowed": false,
+              "bytes": 215986320,
+              "completed_at": "2026-11-16T13:51:46.545267+00:00",
+              "current": {
+                "package_tree_sha256": "c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d",
+                "release_id": "backend-6ba2afb7d258-c01d5047410c",
+                "source_sha": "6ba2afb7d258548ca68c245fb8282759a30d0ce4"
+              },
+              "deployment_requested": false,
+              "moved": true,
+              "operation_id": "78663186e98d9775592edc22455c47d2",
+              "receiver_settings_sha256": "206fcbd95a997babbf39094fef9eb08b51c3ba206d281ccc7df0e19da16162ee",
+              "receiver_sha256": "cc71b34bbdf3d8e4603aaaecf9161d62110f01ac33d202ac61eb5f9b9d37d6d3",
+              "reference_sha256": {
+                "attempts/78663186e98d9775592edc22455c47d2/state.json": "9d2552ac83d7b0f4070e01679f5b23162de9f0211b979f0bfaf8f29b24473754",
+                "requests/78663186e98d9775592edc22455c47d2.json": "f1bfee86c80ba8180a6050a8d8f25e209d3254c0326984fad5d87a05def16122",
+                "submissions/78663186e98d9775592edc22455c47d2.json": "4f404c5a0a2e272f1f73275bf744316842c08ec5521f0d3380bf428e75106560"
+              },
+              "request_sha256": "f1bfee86c80ba8180a6050a8d8f25e209d3254c0326984fad5d87a05def16122",
+              "schema_version": 1,
+              "source_sha": "307ffbccc5101b563a97f8e5c52d518262cd3a29",
+              "state_sha256": "9d2552ac83d7b0f4070e01679f5b23162de9f0211b979f0bfaf8f29b24473754",
+              "status": "upload_archived",
+              "submission_sha256": "4f404c5a0a2e272f1f73275bf744316842c08ec5521f0d3380bf428e75106560"
+            },
+            "receipt_sha256": "76a4cfbb5b1c7ee8556d95c39965418c593d04f733513b210cbe7903c3669ee3",
+            "archived_bytes_verified": true,
+            "original_references_verified": true
+          }
+        ],
+        "upload_ledgers": [
+          {
+            "receipt": {
+              "identity": {
+                "artifact_id": "14231846639",
+                "artifact_zip_sha256": "96c25b730234cc2397048710453e9c20f37873d2d48dd1e8382fbb6f051260b7",
+                "bytes": 215982275,
+                "run_attempt": "1",
+                "run_id": "43878077045"
+              },
+              "protocol_version": 2,
+              "schema_version": 1,
+              "status": "upload_verified",
+              "upload_id": "bf288031e60fe4c529b85a14e55547ad20cebbafc435163a07e1a0325fceec20"
+            },
+            "receipt_sha256": "a89640b6dd0b3ea6b6b307e06cdac5c2ea4fdbeda2ad6de44c720ce9cc8274d5",
+            "intent_sha256": "949462eaef9b80920f6121b15412de38b8a58a8a84302762811b6dbc72672f67",
+            "complete_bytes_verified": true,
+            "partial_absent": true
+          }
+        ],
+        "reconciliation_evidence_sha256": "7ae2f6080dd1946b271d4766b63606f77e1c1f825324ae9efababd1a881fba4a",
+        "original_unknown_operation_still_absent": true,
+        "original_operation_id": "5668d201c5bf57899b0aefe71f490ef7",
+        "deployment_requested": false,
+        "automatic_retry_allowed": false
+      },
+      {
+        "sudo_timestamp_invalidated": true
+      }
+    ],
+    "historical_access_block": "previous_postcheck_awaited_private_sudo_authentication"
+  },
+  "administrative_closure": {
+    "status": "complete",
+    "sudo_timestamp_invalidated": true,
+    "sudo_invalidation_job_id": "upload-v2-final-proof-close-66706cce6b8940778280effbd41f7fb0",
+    "tmux_session": "setup",
+    "tmux_kill_session_exit_code": 0,
+    "tmux_has_session_exit_code": 1,
+    "tmux_no_server_running_confirmed": true,
+    "fresh_ssh_status_after_close": {
+      "status": "deployment_ready",
+      "blocked": false,
+      "current": {
+        "release_id": "backend-95b6189303df-c01d5047410c",
+        "source_sha": "95b6189303df939c901ea6afe64d531180a441c8",
+        "package_tree_sha256": "c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d"
+      },
+      "application": {
+        "api_active": true,
+        "worker_active": true
+      }
+    }
+  },
+  "remaining_scope": {
+    "v2_delivery_complete": true,
+    "physical_disk_and_global_retention_policy": "pending_separate_specification",
+    "production_byte_recovery_exercised": false,
+    "recovery_fault_tests": "verified_in_isolated_ci",
+    "retention_targets_pending": [
+      "physical_disk",
+      "offload",
+      "releases",
+      "diagnostics"
+    ]
   }
 }

@@ -5,8 +5,8 @@
 Implementación autorizada de [99§32](../mvp/99-production-deployment-and-cicd-plan.md#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16)
 y [ADR104 propuesto](../architecture/decisions/ADR-104-durable-upload-continuation-and-incoming-retention.md).
 Transporte v2 adoptado y entrega nueva95b completada por CD43879692520. La
-transferencia real v2 y los postchecks SSH/HTTPS pasaron; la retención automática
-sigue pendiente de su recibo root. El mantenimiento de adopción conservó6ba/PIDs
+transferencia real v2, retención automática y postchecks SSH/HTTPS verificados;
+intervención administrativa cerrada. El mantenimiento de adopción conservó6ba/PIDs
 sin deploy/restart; la entrega posterior sí activó el release normal95b. No se repiten CI/CD43791568791,
 43799433169 ni sus operaciones; sus recibos mantienen su significado original.
 
@@ -144,8 +144,8 @@ no se reemplaza por el de una lectura posterior con métricas de disco distintas
 
 La adopción queda acreditada por sus propios recibos; la entrega nueva posterior
 se acredita abajo. No cerrar OPS-001 por instalar el transporte ni presentar el
-retorno de capabilities como prueba de retención automática. No se declara cierre
-administrativo: continúa pendiente la inspección root posterior. El bundle697
+retorno de capabilities como prueba de retención automática. La prueba root y
+el cierre administrativo posteriores se registran al final. El bundle697
 histórico sigue sin aplicación.
 
 ## Promoción e inventario anterior a nuevos bytes
@@ -200,14 +200,44 @@ y SHA256 del archivo fuente:
   conserva observaciones exactas y sus hashes; SHA256 de su archivo fuente:
   `4871625fd5018479a6f147f84f94414b63bb492b23c10d5d80919697469c9e40`.
 
-Estado `delivery_complete_retention_pending`: entrega/transferencia normales
-comprobadas. La métrica de cuota es consistente con un archivo, pero **no verifica
-por sí sola la retención automática**. Su recibo e inventario root posteriores
-siguen pendientes: la autenticación sudo bloqueó esa inspección, con TTY
-`/dev/pts/1` confirmada, sin atribuir todavía una causa a ese fallo de acceso.
-No se declara cierre administrativo ni cierre completo de OPS-001. Las operaciones
-y recibos CI/CD históricos permanecen intactos, sin replay; ningún success
-operativo aprueba ADR104, genera inferencia IA o acepta una UI humana.
+## Retención automática verificada y cierre administrativo
+
+Job root `upload-v2-final-proof-close-66706cce6b8940778280effbd41f7fb0`,
+complete/exit0; script revisado SHA256
+`d573d1d601096b01ca193a0aba2e5db405833dbfe34d241bc647b84c64d06bb2`.
+Su stdout contiene tres JSON completos (inventario, prueba con recibos y
+sudo invalidado), conservados íntegros en el JSON compañero. SHA256 del stdout:
+`6630b80a591db2f63fb864eb31e95226b233bc140409e5f04e35d88b7b6c2803`.
+La lectura root resuelve el bloqueo previo de autenticación y acredita:
+
+- Un archivo automático nuevo, operación`78663186e98d9775592edc22455c47d2`,
+  artifact14127640136 de source`307ffbccc5101b563a97f8e5c52d518262cd3a29`.
+  ZIP215986320bytes, SHA256
+  `baf3806dd0fb74b97818b24fe020450b0962d9ddcc30eaea2a54f2e802400723`;
+  receipt SHA256`76a4cfbb5b1c7ee8556d95c39965418c593d04f733513b210cbe7903c3669ee3`.
+  Bytes archivados y referencias originales verificados, sin cambios en éstas.
+  El recibo registra current6ba al archivar antes del deploy normal95b y conserva
+  deployment_requested/application_services_restarted false.
+- Ledger bf288031… verified para215982275bytes; recibo e intent originales
+  completos/digests conservados. SHA256 del recibo
+  `a89640b6dd0b3ea6b6b307e06cdac5c2ea4fdbeda2ad6de44c720ce9cc8274d5`,
+  intent`949462eaef9b80920f6121b15412de38b8a58a8a84302762811b6dbc72672f67`.
+  ZIP completo verificado y parcial ausente.
+- Inventario final9ZIPs/1943826973bytes, tres archivos (dos históricos y uno
+  automático nuevo) y un ledger. Current95b/c01, API1168037/worker1168046 running;
+  settings206fcbd9 y los cuatro assets intactos. Conciliaciones SHA7ae2f608…
+  sin variación; operación histórica5668d201… sigue ausente en attempts,
+  submissions y requests: sin replay.
+- `sudo_timestamp_invalidated:true` dentro del mismo job. Después, cierre de
+  tmux setup exit0; has-session exit1 con no server running. SSH nuevo después
+  del cierre: deployment_ready95b/c01, blocked:false, API/worker activos.
+
+Estado `v2_delivered_and_administratively_closed`: recepción normal, archivo
+reversible automático y cierre administrativo comprobados. Fallos y reanudación
+probados en CI aislado; esta transferencia productiva fue normal (recovered:false).
+El archivo libera cuota del inbox, no espacio físico. Queda por especificar la
+política de disco físico/offload y retención global de releases/diagnósticos. ADR104 sigue propuesto; ningún
+success operativo aprueba documentos, genera inferencia IA o acepta una UI humana.
 
 Evaluación NodiaAI: infraestructura; ningún cambio de contrato funcional,
 ownership, permisos, herramientas, modelo o inferencia. No se publican fichas ni

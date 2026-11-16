@@ -9,10 +9,13 @@ Client95b publicados con árbolesc01/bbb5 sin variación; transferencia v2 de
 SSH nuevo deployment_ready/blocked:false y writers activos; HTTPS API200/auth401/
 Client200 con TLS0, Pages01ee1156 y PWA10recursos correctos. El mantenimiento previo
 de adopción conservó6ba/PIDs sin restart; esta entrega normal activó95b.
-Retención automática todavía pendiente del recibo root: la métrica9slots es
-consistente, sin acreditar por sí sola el archivo. Cierre administrativo pendiente.
-[TODO OPS-001](TODO.md): primero esos dos cierres; después política de disco físico/
-retención global y demás garantías sin implementar. Upload v2 no cierra todo OPS.
+Prueba root final: un archivo automático de215986320bytes, bytes/referencias
+íntegros; inventario9ZIPs/1943826973bytes, tres archivos y un ledger verified,
+sin parcial. Sudo invalidado, tmux cerrado y SSH posterior95b/blocked:false/activos.
+Alcance v2 entregado y cierre administrativo completo. [TODO OPS-001](TODO.md)
+continúa con política de disco físico/offload y retención global de releases/
+diagnósticos. Fallos y reanudación probados en CI aislado; transferencia productiva
+normal (recovered:false).
 [ADR104 propuesto](../architecture/decisions/ADR-104-durable-upload-continuation-and-incoming-retention.md),
 sin aprobación documental, inferencia IA, cambios de conocimiento o replay histórico.
 

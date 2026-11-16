@@ -1513,32 +1513,48 @@ La equivalencia tampoco reemplaza un protocolo de transferencia recuperable.
 - [x] **OPS-01 — conciliar este intento:** inspección root, cinco ausencias
   objetivo, cuota insuficiente, hashes/pins/current/PIDs y postcheck conservados
   en el recibo nuevo. Fallo histórico intacto, sin replay. No repetir este gate.
-- [ ] **OPS-02 — preflight antes de bytes:** contrato tipado para capacidad
+- [x] **OPS-02 — preflight antes de bytes:** entregado en
+  [§32](#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16),
+  con reserva efectiva y capabilities reales verificadas en producción.
+  Contrato tipado para capacidad
   efectiva, cuota/count/headroom y versión/capacidades/pins del gateway instalado.
   Comprobar ambos extremos; una preconsulta no reserva capacidad ni elimina una
   carrera. No relajar cuotas o autoridad por mostrar mejor diagnóstico.
-- [ ] **OPS-03 — estado durable de upload:** intención vinculada a artefacto,
+- [x] **OPS-03 — estado durable de upload:** entregado en
+  [§32](#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16),
+  ledger/ZIP/recibo reales íntegros; incertidumbre y cortes ensayados en CI.
+  Intención vinculada a artefacto,
   digest, tamaño y CI antes de recibir; consulta independiente de submission de
   deploy, códigos cerrados y escritura atómica/fsync. Distinguir recepción,
   parcial, verificado, rechazo e incertidumbre; pérdida del ACK se concilia por
   lectura. Una consulta no crea o ejecuta otra operación.
-- [ ] **OPS-04 — reanudación de transferencia:** evaluar offset/chunks con
+- [x] **OPS-04 — reanudación de transferencia:** entregado en
+  [§32](#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16).
+  CAS de prefijo y recuperación probados en CI aislado; transferencia normal
+  real v2 comprobada con recovered:false, sin inyectar fallos productivos.
+  Offset/chunks con
   hashes y digest final, locks por identidad y límites de recursos. Reanudar
   bytes no permite replay de deploy, migración o activación. Alternativa de
   descarga desde almacenamiento inmutable requiere contrato/custodia/allowlist
   propios; no añadir servicios o credenciales por defecto.
-- [ ] **OPS-05 — archivo y retención:** distinguir incoming, archivo, releases
-  y diagnósticos. Archivar sólo terminales verificados, no-current y sin referencias
-  compartidas, con dry-run, locks, intent/recibo durable y posibilidad de
-  recuperación. No borrar unknown/parciales/fallidos, pins, current o evidencia
-  para liberar cuota; no elegir sólo por edad. Dos archivos puntuales fueron
-  verificados por sus propios recibos§30/§31; política automática pendiente y
-  helper actual manual, sin repetir esos movimientos.
+- [ ] **OPS-05 — archivo y retención global:** archivo automático INCOMING
+  completado en[§32](#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16),
+  con recibo real, bytes/hash y referencias originales verificados. Los dos
+  archivos manuales§30/§31 conservan sus recibos, sin repetir movimientos.
+  Primer pendiente: definir política de disco físico/offload, releases y
+  diagnósticos fuera del inbox; no hay purga global o de backups/secretos.
+  Sólo terminales verificados/no-current y todas sus referencias coherentes y
+  completas, con locks/intent/recibo durable y conservación reversible. No borrar
+  unknown/parciales/fallidos, pins, current o evidencia para liberar cuota;
+  no elegir sólo por edad. No se ensayó una restauración productiva desde el
+  archivo: se verificaron los bytes preservados y sus referencias.
 - [x] **OPS-06 — rollout diagnóstico del gateway:** helper193e286d… y candidato
   exacto6b794263… revisados/probados/adoptados con CAS, hashes/pins/originales y
   SSH nuevo. Receiver/updater/current/PIDs/BLOCKED/ACK conservados, sin restart.
-  Este cierre sólo acredita el diagnóstico acotado; versión/capacidades del
-  protocolo/preflightOPS-02 y ledger/reanudaciónOPS-03/04 siguen pendientes.
+  Ese corte acreditó el diagnóstico acotado y dejó pendientes versión/
+  capacidades/preflightOPS-02 y ledger/reanudaciónOPS-03/04; completados después
+  en[§32](#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16)
+  por sus alcances CI/producción, sin atribuir recuperación productiva no ejercitada.
 
 Pruebas requeridas por alcance: corte antes de bytes, a mitad y tras fsync antes
 de ACK; crash de ledger/rename; hash/offset conflictivo; cuota concurrente;
@@ -1589,9 +1605,10 @@ gateway6b794263…/receiverb2880ea7… exactos y conservados.
 
 NodiaAI UX/UI queda entregado operativamente mediante el Client publicado; sus
 pruebas locales conservan alcance propio y NAIUX-07 mantiene comprensión/UI real
-y teléfono/teclado físico pendientes. OPS-02/03/04 y la política automática de
-OPS-05 siguen pendientes; no confundir esta entrega exitosa con recuperación
-reanudable o retención automática implementadas. Sudo invalidado mediante job
+y teléfono/teclado físico pendientes. En este corte anterior quedaron pendientes
+OPS-02/03/04 y archivo automático de OPS-05: la continuación§32 los completa por
+sus alcances comprobados y deja abierta la política de disco/retención global.
+Esta entrega6ba por sí sola no acreditó recuperación reanudable o archivo automático. Sudo invalidado mediante job
 close-upload-operator-2ec47231daf74e3499f3a826dbf735e7 complete/exit0; tmux setup
 cerrado, comprobación SSH exit0. La documentación final se integrará por PR a
 development; no requiere otra promoción productiva para repetir esta entrega.
@@ -1677,10 +1694,15 @@ autoriza por sí mismo.
 - [x] Postchecks SSH95b/c01/blocked:false y HTTPS API200/auth401/Client200, TLS0;
   capabilities v2/assets coincidentes. PWA10recursos verificados,1intento.
 - [x] Consolidar recibos de adopción y entrega/postchecks en MD/JSON.
-- [ ] Verificar retención automática con recibo root posterior; la métrica
-  lógica1943826973bytes/9slots es consistente, pero no acredita el movimiento.
-- [ ] Cerrar la intervención administrativa tras esa inspección y conciliar los
-  índices generales. No se declara OPS completo todavía.
+- [x] Retención automática verificada por prueba root: un archivo nuevo
+  operación78663186…/artifact14127640136/215986320bytes, recibo completo,
+  bytes y referencias originales íntegros; inventario9ZIP/1943826973bytes,
+  tres archivos y un ledger verified sin parcial.
+- [x] Cierre administrativo: job final-proof-close66706cce… exit0, sudo invalidado
+  en el job, tmux setup cerrado y SSH nuevo95b/blocked:false/writers activos.
+- [x] Consolidar prueba root completa y conciliar índices para el alcance v2.
+- [ ] Especificar política de disco físico/offload y retención global de releases/
+  diagnósticos (OPS-05); sin purga de backups/secretos por defecto.
 
 El [recibo de esta continuación](../evidence/durable-backend-uploads-20261116.md)
 y su JSON registran identidades, hashes y cortes de CI separados. El ajuste del
@@ -1709,12 +1731,28 @@ SSH nuevo confirma95b/c01, deployment_ready/blocked:false y writers activos;
 HTTPS API200/auth401/Client200 con TLS0, Pages01ee1156… y PWA10recursos correctos.
 
 Prestate root histórico conserva9ZIPs/1943831018bytes y dos archivos anteriores,
-sin ledger v2. Después del CD, capabilities muestra1943826973bytes/9slots y
-los cuatro assets coinciden; esa métrica no sustituye el recibo de archivo.
-Retención automática sigue pendiente de inspección root, bloqueada por autenticación
-sudo pese a TTY/dev/pts/1 confirmada. No se afirma una causa, cierre administrativo
-o cierre completo de OPS-001; faltan esos recibos. La entrega sí figura complete,
-separada de ese pendiente y de la adopción sin restart. Sin replay de CI/CD antiguos.
+sin ledger v2. El postcheck root final sí verificó el archivo automático nuevo
+78663186…:215986320bytes de source307ffb…, SHA ZIPbaf3806d… y recibo76a4cfbb…,
+bytes archivados y referencias originales íntegros. Inventario final9ZIPs/
+1943826973bytes, tres archivos y un ledger bf288031… verified, ZIP completo y
+sin parcial. Current95b/c01 y API1168037/worker1168046 running; settings206fcbd9,
+assets y conciliaciones7ae2 intactos. La operación histórica5668d201… sigue
+sin attempts/submissions/requests, sin replay.
+
+Job `upload-v2-final-proof-close-66706cce6b8940778280effbd41f7fb0` complete/exit0:
+scriptd573d1d6…, stdout6630b80a… con tres JSON íntegros en la evidencia. Incluye
+sudo invalidado; tmux setup cerrado y comprobación has-session exit1/no server
+running. SSH después del cierre confirma deployment_ready95b/blocked:false y
+ambos writers activos. El bloqueo sudo del diagnóstico anterior queda superado
+por esta ejecución comprobada; no permanece como pendiente.
+
+El alcance v2 de OPS-02/03/04 y el archivo automático INCOMING de OPS-05 están
+entregados, con cierre administrativo. Los checklists del corte anterior§31
+conservan su fecha; esta continuación los sucede por ese alcance. Fallos y
+reanudación probados en CI aislado; esta transferencia productiva fue normal
+(recovered:false). Queda pendiente especificar política de disco físico/offload
+y retención global de releases/diagnósticos (OPS-05). No se borra ni se amplía retención de releases,
+backups, secretos o evidencia por este cierre.
 
 Evaluación de conocimiento: infraestructura, sin cambio funcional NodiaAI,
 herramientas, ownership, permisos, modelos o inferencias. No se crean fichas ni
