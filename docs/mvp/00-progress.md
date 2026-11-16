@@ -1,5 +1,16 @@
 # Progreso del MVP — Nodia
 
+**CD: segundo upload incierto, corrección local — 2026-11-15:**
+CD43791568791 se detuvo antes de solicitar deploy/publicación; API/worker
+conservan20baee85 activos. Payload backend candidato y actual idénticos, gateway
+diagnóstico todavía no adoptado; causa actual sin confirmar sin inventario root.
+[99§31](99-production-deployment-and-cicd-plan.md#31-upload-incierto-y-equivalencia-acotada-de-payload--2026-11-15),
+[evidencia](../evidence/deploy-upload-reconciliation-20261115.md) y ADR103
+propuesto: omisión acotada por diff/hash, fuente real conservada;155Node Linux
+correctos. Implementación local, sin despliegue. Primera promoción requiere
+entrega normal; [TODO OPS-001](TODO.md) continúa en conciliación del intento,
+capacidad/protocolo instalado, journal de upload y retención segura.
+
 **NodiaAI UX/UI — implementación local, 2026-11-15:** misma rama
 `codex/nodia-ai-ux-ui-upgrade`. [Plan107§11](107-nodia-ai-ux-ui-upgrade-plan.md#11-implementación-local-solicitada-en-la-misma-rama--2026-11-15)
 y [evidencia](../evidence/nodia-ai-ux-upgrade-20261115.md): workspace flex/historial

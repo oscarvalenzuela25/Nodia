@@ -42,6 +42,13 @@ export function unmanagedRuntimePaths({ repo = process.cwd(), base, head }) {
     return true;
   }).sort();
 }
+export function serverContentEquivalenceAllowed({ repo = process.cwd(), base, head }) {
+  ancestor(repo, base, head);
+  const raw = execFileSync('git', ['-C', repo, 'diff', '--no-ext-diff', '--no-textconv', '--name-status', '-z', '--find-renames', base, head, '--']);
+  // Renames must qualify at both ends. Operators, packaging and runtime inputs require a normal rollout.
+  return parseNameStatus(raw).every(item => item.paths.every(name =>
+    name.startsWith('docs/') || name.startsWith('nodia-client/')));
+}
 export function deploymentPlan({ repo = process.cwd(), head, clientBase, serverBase, forceClient = false }) {
   requireCd(isSha(clientBase) && isSha(serverBase) && isSha(head), 'deployed_baselines_required');
   const client = deployedChanges({ repo, base: clientBase, head });
@@ -50,6 +57,7 @@ export function deploymentPlan({ repo = process.cwd(), head, clientBase, serverB
   requireCd(unmanaged.length === 0, 'unmanaged_runtime_change_requires_coordinated_rollout');
   return { schema_version: 1, source_sha: head, client_base: clientBase, server_base: serverBase,
     client_required: client.client || forceClient, server_required: server.server || server.contracts,
+    server_content_equivalence_allowed: serverContentEquivalenceAllowed({ repo, base: serverBase, head }),
     python_or_native_deployed: false,
     separate_runtime_checks_selected: server.python || server.native };
 }

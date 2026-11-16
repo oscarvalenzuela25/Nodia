@@ -1,5 +1,16 @@
 # Especificación del MVP — Nodia
 
+**CD: segundo upload incierto, corrección local — 2026-11-15:**
+CD43791568791 se detuvo antes de solicitar deploy/publicación; API/worker
+conservan20baee85 activos. Payload backend candidato y actual idénticos, gateway
+diagnóstico todavía no adoptado; causa actual sin confirmar sin inventario root.
+[99§31](99-production-deployment-and-cicd-plan.md#31-upload-incierto-y-equivalencia-acotada-de-payload--2026-11-15),
+[evidencia](../evidence/deploy-upload-reconciliation-20261115.md) y ADR103
+propuesto: omisión acotada por diff/hash, fuente real conservada;155Node Linux
+correctos. Implementación local, sin despliegue. Primera promoción requiere
+entrega normal; [TODO OPS-001](TODO.md) continúa en conciliación del intento,
+capacidad/protocolo instalado, journal de upload y retención segura.
+
 **CD: cuota de upload reparada, despliegue pendiente — 2026-11-15:**
 CI43753748903 pasó; CD43754640640 rechazó backend antes de submit/publicación.
 Incoming1,94GB más ZIP216MB excedía el límite2GiB, sin falta de disco.
