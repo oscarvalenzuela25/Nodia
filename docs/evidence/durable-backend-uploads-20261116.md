@@ -4,9 +4,10 @@
 
 Implementación autorizada de [99§32](../mvp/99-production-deployment-and-cicd-plan.md#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16)
 y [ADR104 propuesto](../architecture/decisions/ADR-104-durable-upload-continuation-and-incoming-retention.md).
-El transporte v2 está adoptado mediante operación root y postchecks reales;
-la aplicación conserva la entrega6ba. La adopción no ejecutó deploy/restart ni
-acredita todavía transferencia/retención reales. No se repiten CI/CD43791568791,
+Transporte v2 adoptado y entrega nueva95b completada por CD43879692520. La
+transferencia real v2 y los postchecks SSH/HTTPS pasaron; la retención automática
+sigue pendiente de su recibo root. El mantenimiento de adopción conservó6ba/PIDs
+sin deploy/restart; la entrega posterior sí activó el release normal95b. No se repiten CI/CD43791568791,
 43799433169 ni sus operaciones; sus recibos mantienen su significado original.
 
 V2 separa intención/transferencia de autorización de app. Identidad CI/artifact/
@@ -29,14 +30,18 @@ como una transacción atómica de cinco archivos.
 
 ## Verificación e integración de código
 
-- Corte actual `2309037cedf5e497f7736cece0512868d60b6146`, posterior a
+- Corte final `0c30a767f3deab17d361fcf8db5fe5c86cfb027c`,
+  [CI43873970183](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43873970183)
+  completa correcta:174Node CI,15Node de políticas y206Python root sin skips,
+  además de las apps. Incluye el gate de revalidación posterior a transferir.
+- Corte anterior `2309037cedf5e497f7736cece0512868d60b6146`, posterior a
   `4a5709629a708043e90a1a0958ffbfa58f3ba54f`. El job
   [Changes and pipeline checks133313305566](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43871419155/job/133313305566)
   de [CI43871419155](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43871419155)
   terminó correcto:173Node CI,15Node de políticas atómicas y206Python root
   con POSIX real en contenedor aislado, sin skips. CI43871419155 ya terminó
-  completa correcta para2309037c, incluidas las apps. Es un resultado del corte
-  exacto: no acredita la CI del gate adicional todavía sin commit.
+  completa correcta para2309037c, incluidas las apps; conservada como corte
+  anterior, distinto de la CI final0c30. Los assets root del bundle siguen iguales.
 - El módulo de upload tiene27casos. El borde final reconoce un ZIP archivado
   aunque el upload todavía carezca de recibo propio, conservando su identidad
   y estado archived; nunca vuelve a receiving/offset0 ni inicia otra transferencia.
@@ -57,11 +62,10 @@ como una transacción atómica de cinco archivos.
   Las lecturas admiten máximo8intentos con espera, bajo presupuesto común de
   256llamadas por transferencia, sin replay de aplicación. Sus regresiones
   forman parte del job actual confirmado.
-- Gate adicional local del cliente: GitHub vuelve a comprobar CI de origen y
-  master después de la transferencia y antes de registrar/enviar deploy,
-  mediante callback cd-release→cd-vps. La regresión de master cambiado durante
-  los bytes y72focales en tres archivos pasaron. Requiere commit/CI nuevos;
-  no se asignan todavía SHA o run, ni se hereda el éxito de2309037c. Los cuatro
+- Gate del cliente: GitHub vuelve a comprobar CI de origen y master después
+  de la transferencia y antes de registrar/enviar deploy, mediante callback
+  cd-release→cd-vps. La regresión de master cambiado durante los bytes y72focales
+  pasaron; ahora está committed y validado en CI0c30/43873970183. Los cuatro
   assets root y el operador31617 no cambiaron por este gate del cliente.
 - WSL no inicia por `ERROR_NO_SYSTEM_RESOURCES`; Docker local no está activo.
   No se reiniciaron procesos/servicios del usuario ni se usó producción para
@@ -94,16 +98,17 @@ Manifest final SHA256`5d5a150ba591514e953269d1f72ef463bef9f7aee10cd670aee716e3e5
 operador`31617ac07563b9da099798d6a8615d8db3c26a6dc9133f3e862def9e5560596d`.
 CAS esperado de receiver-settings:
 `52768ca169a119594efbaf73374f547ea3857a65a68db769a7bff26e85fce59d`.
-Current esperado6ba/c01; lectura SSH deployment_ready/blocked:false con API/worker
-activos. La aplicación permanece en esa entrega; los cambios live de esta
-intervención están acotados a los cuatro assets del transporte y su pin. Una
-discrepancia requiere inspección, no sobrescritura.
+Current esperado por el mantenimiento de adopción:6ba/c01, deployment_ready/
+blocked:false y API/worker activos. Ese mantenimiento sólo cambió los cuatro
+assets del transporte y su pin; la entrega posterior95b se documenta por separado.
+Una discrepancia requiere inspección, no sobrescritura.
 
 El bundle histórico697171b00b30e79b7a07d125c47145e5fbc44d57c9d687f1cc0f052284fc7288
 preparado para9533 fue sustituido y nunca aplicado. Su módulo upload tenía SHA256
 `a90a168492d192f88283760570fe63a12757b3f6627b73feeb6c7503c7a9829e`;
 los demás assets y el operador permanecen iguales. El JSON conserva ese objeto
-histórico separado del bundle actual; ninguno acredita adopción.
+histórico separado del bundle actual; la adopción de este último tiene su
+recibo independiente siguiente.
 
 ## Adopción operativa comprobada
 
@@ -137,12 +142,72 @@ SHA256 del archivo de capabilities por SSH nuevo:
 El digest de capabilities internas del recibo corresponde a su propia consulta;
 no se reemplaza por el de una lectura posterior con métricas de disco distintas.
 
-El estado consolidado es `transport_adopted`; `delivery` permanece null. Faltan
-CI del nuevo HEAD, promoción normal, transferencia y retención reales con sus
-recibos y entrega nueva de aplicación. No cerrar OPS-001 por instalar el transporte
-ni presentar el retorno de capabilities como un upload ejecutado. No se declara
-cierre administrativo todavía: el acceso sigue en uso para pre/postchecks de la
-intervención autorizada. El bundle697 histórico sigue sin aplicación.
+La adopción queda acreditada por sus propios recibos; la entrega nueva posterior
+se acredita abajo. No cerrar OPS-001 por instalar el transporte ni presentar el
+retorno de capabilities como prueba de retención automática. No se declara cierre
+administrativo: continúa pendiente la inspección root posterior. El bundle697
+histórico sigue sin aplicación.
+
+## Promoción e inventario anterior a nuevos bytes
+
+[PR39](https://github.com/oscarvalenzuela25/Nodia/pull/39) integrado en development
+`363365c58bc9925d3fc8c28cb2419c530f8e81f5`.
+[PR40 development→master](https://github.com/oscarvalenzuela25/Nodia/pull/40)
+integrado con merge `95b6189303df939c901ea6afe64d531180a441c8`.
+[CI43876278159](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43876278159)
+completa correcta, incluidas las apps y las comprobaciones agregadas de CI.
+[CI push/master43878077045](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43878077045)
+completa correcta, todos los jobs. [CD43879692520](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43879692520)
+completo correcto; entrega y recibo propio descritos abajo. Sin replay de CI/CD
+anteriores ni dispatch CD manual.
+
+Inspección root de sólo lectura
+`upload-v2-promotion-prestate-5ec1cae904044a868e58d074d1301138`, complete/exit0:
+9ZIPs/1943831018bytes, dos archivos históricos con recibo y ningún ledger de
+upload. Current6ba/c01 y PIDs1076642/1076645 iguales; receiver-settings206fcbd9
+y los cuatro assets adoptados coinciden. Disco libre99803340800bytes en esa
+lectura, independiente de la métrica del postcheck anterior. El JSON conserva el
+inventario íntegro y SHA256 de su stdout. No se movió otro ZIP ni se inició una
+transferencia por esta inspección; los dos archivos previos no acreditan una
+retención automática nueva. Es el inventario previo al CD posterior y no se
+reescribe para simular un estado final.
+
+## Entrega nueva completa y postchecks
+
+Origen `95b6189303df939c901ea6afe64d531180a441c8`,
+[CI43878077045](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43878077045)
+y [CD43879692520](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43879692520)
+completos correctos. [Artefacto de recibo14232226510](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43879692520/artifacts/14232226510),
+ZIP SHA256`a88d02158283b224cc17db07b9b843fb6e1f34cd6157cd751e6c29c9677c024b`.
+El JSON consolidado conserva el recibo original completo, sin corregir sus campos,
+y SHA256 del archivo fuente:
+`c2af9081048e3ff2a7b16f63002352ef70ceb03053c7a2aa219b8aabf6f23fa6`.
+
+- Backend complete, operación`f9a133f56fb74ea337256b530602c073`; upload v2
+  `bf288031e60fe4c529b85a14e55547ad20cebbafc435163a07e1a0325fceec20`,
+  215982275bytes, fase verified. `upload_recovered:false`: no se inyectaron
+  fallos en producción ni se afirma una recuperación remota ejercitada.
+- Release`backend-95b6189303df-c01d5047410c` y Client95b/bbb5; árboles iguales
+  a la entrega anterior, procedencias nuevas explícitas. Backend sí registra
+  deployment_requested/deployment_performed true; no confundir esta entrega
+  normal con el mantenimiento sin restart de adopción del transporte.
+- Client complete, Pages`01ee1156-11c2-4eac-a07d-07e02ef8a245`;215assets y0faltantes
+  en preflight, PWA10recursos verificados en1intento. Failure null y prior_cd_run false.
+- SSH nuevo: deployment_ready, current95b/c01, blocked:false y API/worker activos.
+  Capabilities v2 y cuatro hashes coincidentes; métrica lógica1943826973bytes/
+  9slots, disco libre98418917376bytes en ese postcheck.
+- HTTPS API200, auth/me401 y Client200, todos con verificación TLS0. El JSON
+  conserva observaciones exactas y sus hashes; SHA256 de su archivo fuente:
+  `4871625fd5018479a6f147f84f94414b63bb492b23c10d5d80919697469c9e40`.
+
+Estado `delivery_complete_retention_pending`: entrega/transferencia normales
+comprobadas. La métrica de cuota es consistente con un archivo, pero **no verifica
+por sí sola la retención automática**. Su recibo e inventario root posteriores
+siguen pendientes: la autenticación sudo bloqueó esa inspección, con TTY
+`/dev/pts/1` confirmada, sin atribuir todavía una causa a ese fallo de acceso.
+No se declara cierre administrativo ni cierre completo de OPS-001. Las operaciones
+y recibos CI/CD históricos permanecen intactos, sin replay; ningún success
+operativo aprueba ADR104, genera inferencia IA o acepta una UI humana.
 
 Evaluación NodiaAI: infraestructura; ningún cambio de contrato funcional,
 ownership, permisos, herramientas, modelo o inferencia. No se publican fichas ni

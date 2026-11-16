@@ -1640,11 +1640,12 @@ autoriza por sí mismo.
 
 - [x] Contrato y ADR propuesto registrados; autorización de implementación no
   equivale a aprobación documental o publicación de conocimiento.
-- [x] Implementación de módulo, cliente, archivo y operador; candidato actual
-  `2309037cedf5e497f7736cece0512868d60b6146`, con27casos del módulo de upload.
+- [x] Implementación de módulo, cliente, archivo y operador; HEAD final
+  `0c30a767f3deab17d361fcf8db5fe5c86cfb027c`, con27casos del módulo de upload.
+  Bundle root de2309037c adoptado sin cambios de sus cuatro hashes.
 - [x] Corte inicial9533/CI43867659803 completo correcto:173Node,15Node de
   políticas y204Python root sin omisiones. Conservado como evidencia histórica.
-- [x] Último job `Changes and pipeline checks`133313305566 de
+- [x] Job del corte2309037c `Changes and pipeline checks`133313305566 de
   [CI43871419155](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43871419155/job/133313305566)
   correcto:173Node,15Node de políticas y206Python root en contenedor aislado,
   sin skips. CI43871419155 completa correcta para2309037c, incluidas las apps.
@@ -1654,7 +1655,9 @@ autoriza por sí mismo.
 - [x] Bundle final5d5a150b y sus siete archivos verificados en staging privado
   `upload-v2-2309037c`, posteriormente adoptado. Bundle697171b0 sustituido,
   conservado como corte histórico9533, nunca instalado.
-- [x] CI general43871419155 completa correcta; resultado separado del futuro HEAD.
+- [x] CI general43871419155 completa correcta para2309037c, corte anterior.
+- [x] CI final0c30/43873970183 completa correcta:174Node CI+15Node de políticas+
+  206Python root sin skips, además de las apps y gate posterior al upload.
 - [x] Dry-run y adopción root correctos; recibo del job
   `upload-v2-adopt-597438dcc5e54144bcde5c0765727373`, exit0. Settings206fcbd9,
   capacidades internas verificadas y capabilities por SSH nuevo aceptadas por
@@ -1663,11 +1666,21 @@ autoriza por sí mismo.
 - [x] Gate adicional del cliente: revalidar CI de origen/master después de los
   bytes y antes de registrar/enviar deploy. Regresión de master cambiado durante
   transferencia y72focales correctas; cuatro assets/operador no cambiaron.
-- [ ] CI nueva del HEAD que incorporará ese gate y esta evidencia; no asignar
-  SHA/run al cambio todavía no committed.
-- [ ] Promover por PR/CI nuevos y verificar retención/recepción/entrega reales.
-- [x] Consolidar recibo de adopción y postchecks en MD/JSON, README/progreso/TODO.
-- [ ] Consolidar la futura entrega y retención reales; `delivery` sigue null.
+- [x] PR39 integrado en development363365c5; PR40 integrado en master95b61893.
+  CI43876278159 de PR40 completa correcta, incluidas apps/comprobaciones agregadas.
+- [x] Prestate root anterior a promoción:9ZIPs/1943831018bytes, dos archivos
+  históricos y ningún ledger; current/PIDs/settings206fcbd9 iguales.
+- [x] CI del push/master43878077045 completa correcta, todos los jobs.
+- [x] CD43879692520 completo correcto: backend/Client95b, upload v2 verified
+  215982275bytes; recibo original14232226510 consolidado con ZIP/hash fuente.
+  Sin replay anterior o dispatch CD manual; recovered:false, sin fault injection.
+- [x] Postchecks SSH95b/c01/blocked:false y HTTPS API200/auth401/Client200, TLS0;
+  capabilities v2/assets coincidentes. PWA10recursos verificados,1intento.
+- [x] Consolidar recibos de adopción y entrega/postchecks en MD/JSON.
+- [ ] Verificar retención automática con recibo root posterior; la métrica
+  lógica1943826973bytes/9slots es consistente, pero no acredita el movimiento.
+- [ ] Cerrar la intervención administrativa tras esa inspección y conciliar los
+  índices generales. No se declara OPS completo todavía.
 
 El [recibo de esta continuación](../evidence/durable-backend-uploads-20261116.md)
 y su JSON registran identidades, hashes y cortes de CI separados. El ajuste del
@@ -1679,17 +1692,29 @@ por lectura y256llamadas por transferencia, sin replay de aplicación.
 
 WSL local no inicia por `ERROR_NO_SYSTEM_RESOURCES` y Docker no está activo; no
 se reinician procesos del usuario ni se usa producción como entorno de pruebas.
-Las206pruebas root de2309037c se ejecutaron con POSIX real en CI, sin skips.
+Las206pruebas root de0c30/CI43873970183 se ejecutaron con POSIX real, sin skips;
+la suite CI total174Node y15Node de políticas también pasó, junto a las apps.
 El transporte ya está adoptado y el JSON conserva recibo completo, hashes y
 capabilities reales: protocolo2, bloque máximo8388608bytes, cuota2147483648bytes/
 10slots; observación lógica1943831018bytes/9slots y disco libre99803844608bytes.
 Son valores observados después de adoptar, no cuotas inventadas o promesas de
 capacidad futura. Updater9556 y evidencia de conciliación7ae2 permanecen intactos.
-Producción de aplicación sigue6ba/c01, deployment_ready/blocked:false, API/worker
-activos y mismos PIDs; `delivery` continúa null. Faltan CI del nuevo HEAD,
-transferencia/retención reales y entrega nueva; OPS no se declara completado.
-No se registra aún cierre administrativo: el acceso sigue disponible para los
-pre/postchecks de la intervención autorizada.
+La adopción preservó6ba/PIDs; el CD posterior43879692520 sí activó la aplicación
+95b/c01 y publicó Client95b/bbb5, árboles iguales con nueva procedencia. CI master
+43878077045 y CD completos correctos; backend operaciónf9a133f5… complete, upload
+bf288031…/215982275bytes verified y recovered:false. No se inyectaron fallos en
+producción: recepción normal real comprobada, recuperación remota no ejercitada.
+El recibo original14232226510 y su ZIP SHAa88d0215… quedan íntegros en la evidencia.
+SSH nuevo confirma95b/c01, deployment_ready/blocked:false y writers activos;
+HTTPS API200/auth401/Client200 con TLS0, Pages01ee1156… y PWA10recursos correctos.
+
+Prestate root histórico conserva9ZIPs/1943831018bytes y dos archivos anteriores,
+sin ledger v2. Después del CD, capabilities muestra1943826973bytes/9slots y
+los cuatro assets coinciden; esa métrica no sustituye el recibo de archivo.
+Retención automática sigue pendiente de inspección root, bloqueada por autenticación
+sudo pese a TTY/dev/pts/1 confirmada. No se afirma una causa, cierre administrativo
+o cierre completo de OPS-001; faltan esos recibos. La entrega sí figura complete,
+separada de ese pendiente y de la adopción sin restart. Sin replay de CI/CD antiguos.
 
 Evaluación de conocimiento: infraestructura, sin cambio funcional NodiaAI,
 herramientas, ownership, permisos, modelos o inferencias. No se crean fichas ni
