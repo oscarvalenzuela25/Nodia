@@ -4,15 +4,19 @@
   "document_id": "general-settings",
   "product_id": "general-settings",
   "kind": "product",
-  "revision": 30,
+  "revision": 31,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Índice enlaza la ampliación API chat candidata y sus seis revisiones draft; código implementado, ensayos SQL/API/VM pendientes. Sin aprobación o publicación del producto o fichas por actualizar el índice. Cabecera: ClientR32 expone actualización manual de la consulta de salud existente, con17 regresiones y QA autenticada/escritorio/móvil acotada; sin ampliar capacidades o aceptación del resto del producto. ClientR33 retira únicamente el padding inferior del header compartido; evaluación visual sin cambio de conceptos, operaciones o interpretación del contexto. Operación de login: infraestructura activa en VPS; Codex y Antigravity conectados según pruebas humanas; inferencia pendiente, sin publicación. Ajustes locales: acciones contained, contexto del actor e identidad NodiaAI exacta, variantes Gemini con IDs reales/OCR independiente y API OpenAI xhigh/max sin Ultra. Backend verificado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; sin despliegue, inferencia o publicación de este lote. UI de conexiones incorporada desde PR4: Gemini sin controles cuando no hay modelos, recarga Codex accesible, lecturas ligadas a sesión y COOP para popups; alcance local previo sin ampliar herramientas o publicación. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte."
+    "notes": "Índice enlaza la ampliación API chat candidata y sus seis revisiones draft; código implementado, ensayos SQL/API/VM pendientes. Sin aprobación o publicación del producto o fichas por actualizar el índice. Cabecera: ClientR32 expone actualización manual de la consulta de salud existente, con17 regresiones y QA autenticada/escritorio/móvil acotada; sin ampliar capacidades o aceptación del resto del producto. ClientR33 retira únicamente el padding inferior del header compartido; evaluación visual sin cambio de conceptos, operaciones o interpretación del contexto. Operación de login: infraestructura activa en VPS; Codex y Antigravity conectados según pruebas humanas; inferencia pendiente, sin publicación. Ajustes locales: acciones contained, contexto del actor e identidad NodiaAI exacta, variantes Gemini con IDs reales/OCR independiente y API OpenAI xhigh/max sin Ultra. Backend verificado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; sin despliegue, inferencia o publicación de este lote. UI de conexiones incorporada desde PR4: Gemini sin controles cuando no hay modelos, recarga Codex accesible, lecturas ligadas a sesión y COOP para popups; alcance local previo sin ampliar herramientas o publicación. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Temas personales2026-11-16: plan108 introduce paleta local independiente del modo claro/oscuro, Nodia inicial y presets tweakcn adaptados a MUI; implementación y verificación locales completadas por alcance:44opciones/86paletas importadas, QA sintética12perfiles, global3059/370 y27focales posteriores al feedback final, tipos/lint/build correctos. Sin sincronización de cuenta, herramienta IA, aprobación o despliegue nuevos; aceptación humana/UI auténtica/dispositivo y adopción pendientes."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Ajustes Generales y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/mvp/108-user-theme-presets.md",
+      "kind": "specification"
+    },
     {
       "path": "docs/mvp/103-pwa-progressive-implementation-plan.md",
       "kind": "specification"
@@ -91,7 +95,7 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-14",
+    "checked_on": "2026-11-16",
     "evidence_paths": [
       "docs/mvp/51-nodia-ai-ai05-product-knowledge.md",
       "docs/evidence/nodia-ai-ai05-knowledge-validation.json",
@@ -113,9 +117,10 @@
       "docs/evidence/ai-topbar-manual-refresh-20261106-r01.json",
       "docs/evidence/topbar-bottom-padding-20261106-r01.json",
       "docs/mvp/ai-provider-feature-contract.md",
-      "docs/evidence/nodia-ai-chat-space-gpt-selection-20261114.md"
+      "docs/evidence/nodia-ai-chat-space-gpt-selection-20261114.md",
+      "docs/evidence/user-theme-presets-20261116.md"
     ],
-    "notes": "Revisión de código/contratos candidatos API y preparación documental con originales byte exactos archivados. Código implementado; ensayo SQL, success API chat real, modalidades, imágenes, VM y publicación de esta revisión pendientes. Las evidencias de etapas anteriores conservan su alcance y no califican el modo API nuevo. Aprobación humana pendiente. Actualización manual del topbar verificada por separado en ClientR32; no transfiere aceptación a otras funciones/proveedores ni a inferencia. Padding inferior0 y geometría comparada320/600/1088px comprobados por separado en R33; sin nueva publicación. Corte local2026-11-12: backend build/autorización60/HTTP74/API249, build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; ver candidata/evidencia, sin despliegue/inferencia de este lote."
+    "notes": "Revisión de código/contratos candidatos API y preparación documental con originales byte exactos archivados. Código implementado; ensayo SQL, success API chat real, modalidades, imágenes, VM y publicación de esta revisión pendientes. Las evidencias de etapas anteriores conservan su alcance y no califican el modo API nuevo. Aprobación humana pendiente. Actualización manual del topbar verificada por separado en ClientR32; no transfiere aceptación a otras funciones/proveedores ni a inferencia. Padding inferior0 y geometría comparada320/600/1088px comprobados por separado en R33; sin nueva publicación. Corte local2026-11-12: backend build/autorización60/HTTP74/API249, build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; ver candidata/evidencia, sin despliegue/inferencia de este lote. Temas personales108 verificados localmente2026-11-16:44opciones/86paletas importadas, QA Chromium sintética12perfiles, storage denegado/rollback/reintento/offline y continuidad correctos; global3059/370 previa al feedback final y27focales posteriores, tipos/lint/build correctos. Alcance de lint excluye experimentos .tmp históricos y build conserva aviso>500kB. No acredita UI con cuenta real, teléfono o adopción por entorno."
   },
   "approval": null
 }
@@ -126,6 +131,21 @@
 La [paridad API del chat](../nodia-ai/features/api-key-chat-parity.md), [plan92](../../../mvp/92-nodia-ai-api-chat-parity.md) y [flujo seguro revisión5](features/secure-ai-interaction.md) están en revisión. Código implementado para la misma autoridad/gateway, propuesta y confirmación humanas; API no simula MCP ni éxito por tener clave/catálogo. SQL, proveedor real, modalidades y VM se verifican por separado. Esta revisión del índice es draft/unregistered/approval:null y no aprueba ni publica las fichas. Los apartados inferiores son cortes anteriores con su propia evidencia.
 
 # Ajustes Generales — contexto de producto para NodiaAI
+
+## Temas personales — solicitud2026-11-16
+
+[Plan108](../../../mvp/108-user-theme-presets.md) y
+[ficha candidata](features/interface-theme-presets.md) separan la elección de
+paleta del modo claro/oscuro. Nodia conserva la apariencia inicial; el catálogo
+adicional tweakcn se incorpora a MUI con la estructura compartida existente.
+Preferencia local del navegador, accesible desde el topbar a todos los roles;
+no sincroniza cuentas, concede módulos ni se cambia mediante chat.
+Implementación y [verificación local](../../../evidence/user-theme-presets-20261116.md)
+completadas:44opciones y86paletas importadas, QA sintética12perfiles,
+global3059/370 y27focales posteriores al feedback final; tipos/lint/build correctos
+por alcance. Revisión31 draft/partial/unregistered/approval:null; aceptación
+humana con sesión real/dispositivo y adopción pendientes. La ficha nueva tiene
+path explícito para validación, sin binding, herramienta o publicación nuevos.
 
 ## Continuación de selectores — candidato local, 2026-11-14
 
@@ -172,6 +192,7 @@ Rutas de destino trazadas al inventario/catálogo: `/settings/users`, `/settings
 
 | Función | Ficha | Implementación | Integración NodiaAI | Destino |
 |---|---|---|---|---|
+| Temas personales y modo claro/oscuro | [interface-theme-presets](features/interface-theme-presets.md) | Implementado/verificado localmente por plan108; aceptación/adopción pendientes | Sin herramienta IA; ficha draft/unregistered | Topbar, preferencia local |
 | Usuarios, acceso y sesión propia | [users](features/users.md) | Backend existente/parcial; gates en ficha | Sólo lecturas AI-15 publicadas; resto pendiente | `/settings/users` |
 | Roles y asociaciones de acciones | [roles](features/roles.md) | Backend existente/parcial; gates en ficha | Sólo lecturas AI-15 publicadas; resto pendiente | `/settings/roles` |
 | Acciones y acciones de negocio | [actions-and-business-actions](features/actions-and-business-actions.md) | Backend existente/parcial; gates en ficha | Sólo lecturas AI-15 publicadas; resto pendiente | `/settings/actions` |

@@ -1,5 +1,20 @@
 # Especificación del MVP — Nodia
 
+**Temas personales desde el topbar — solicitud2026-11-16:**
+[Plan108](108-user-theme-presets.md) especifica paleta independiente de
+claro/oscuro, Nodia predeterminado y preferencia del navegador para todos los
+roles. Catálogo oficial tweakcn incorporado a MUI, sin consulta externa en uso;
+contraste acotado a nuevos tokens y estructura de Nodia conservada.
+Implementación y verificación local completadas:
+44 opciones, contraste de 86 paletas importadas y QA Chromium sintética de
+12 perfiles; global3059/370 y 27 focales posteriores al feedback final,
+tipos/lint/build correctos por [alcance y límites](../evidence/user-theme-presets-20261116.md).
+[Ficha candidata](../nodia-ai/knowledge/general-settings/features/interface-theme-presets.md)
+draft/unregistered/approval:null. Aceptación humana con sesión real/dispositivo y
+adopción pendientes; sin herramienta IA, sincronización de cuenta o despliegue
+nuevos. Seguimiento THEME-001 en
+[TODO](TODO.md).
+
 **Teacher: revisión legible del plan — solicitud2026-11-16:**
 [106§13](106-nodia-teacher-guided-ux-redesign.md#13-revisión-del-plan-legible-y-edición-progresiva--solicitud2026-11-16)
 retoma TUX-04: resumen/recorrido primero, «Usar este plan» principal y edición o

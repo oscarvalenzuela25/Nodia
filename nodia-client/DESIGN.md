@@ -11,6 +11,7 @@
 - **Tono Visual**: Moderno, minimalista, de alta precisión técnica ("High-density Developer & Enterprise Tooling"). Sin estética genérica ("No AI slop"), tipografía cuidada, contrastes calibrados y micro-interacciones sutiles con retroalimentación visual inmediata.
 - **Enfoque de Tema**: **Dual (Modo Oscuro dominante / Modo Claro accesible)**. Diseñado con prioridad estética para el modo oscuro con superficies profundas (`#000000` base, `#1a212b` superficies/tarjetas) y acentos en índigo/lavanda y verde/teal.
 - **Tema inicial** (solicitud del 2026-10-11): oscuro/negro cuando no hay preferencia guardada, independientemente del tema del sistema. El selector existente alterna a claro y viceversa; la elección persiste en el navegador y se respeta al recargar, incluidas preferencias claras anteriores.
+- **Paletas personales** (solicitud del 2026-11-16): [plan108](../docs/mvp/108-user-theme-presets.md) separa `themeId` de `themeType`. Nodia conserva los tokens predeterminados; `src/themes/` incorpora presets tweakcn claros/oscuros con un archivo/exportación por defecto por tema. El selector del topbar está disponible sin permisos especiales y guarda la elección en este navegador, sin sincronización de cuenta. `src/theme/` conserva tipografía, spacing, breakpoints, shape y overrides; `MUIProvider` sigue siendo la composición única. Contraste mínimo4.5:1 para los pares de texto/acción de nuevas paletas, con alcance y excepciones históricas documentados; no certifica toda la aplicación. Implementación/verificación local completadas por [evidencia108](../docs/evidence/user-theme-presets-20261116.md); aceptación visual humana/sesión real/dispositivo y adopción pendientes, sin despliegue acreditado.
 
 ---
 
@@ -1158,3 +1159,21 @@ una aceptación denegada.
 Global3039/365 anterior a ese guard final y al caso histórico;26focales posteriores y build/lint
 finales correctos. No afirmar una nueva global posterior ni aceptación humana,
 teléfono físico o adopción por entorno; no trasladar métricas de§10.23.
+
+### 10.25 Paletas precalculadas — solicitud2026-11-16
+
+[Plan108](../docs/mvp/108-user-theme-presets.md) mantiene un catálogo local de
+44 temas con dos variantes MUI y composición única. La conversión de formatos
+upstream y la corrección de contraste se ejecutan mediante el importador
+versionado; el runtime importa paletas ya calculadas. Mantener ese límite al
+añadir temas: no ejecutar conversiones o búsquedas de contraste por render o
+durante el arranque ni añadir dependencia HTTP al selector.
+
+La [comparación del catálogo](src/themes/README.md) registró, en
+Node24.20.0 con MUI precargado y12evaluaciones Rolldown ESM sin minificar,
+mediana68.1ms y8.15KB gzip para adaptación runtime frente a12.1ms y15.88KB gzip
+para las paletas estáticas elegidas. La variante runtime se descartó por el
+trabajo síncrono inicial. Estos datos de laboratorio no miden transferencia,
+latencia del navegador, INP ni aceptación productiva; la geometría/continuidad
+responsive y los checks Client se registran por separado en
+[evidencia108](../docs/evidence/user-theme-presets-20261116.md).
