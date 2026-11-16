@@ -14,6 +14,32 @@ UPLOAD_REJECTIONS = frozenset({
     'insufficient_upload_headroom',
     'prior_update_requires_reconciliation',
     'upload_already_recorded_no_automatic_replay',
+    'receiver_busy',
+    'upload_offset_conflict',
+    'upload_prefix_conflict',
+    'upload_ledger_requires_reconciliation',
+    'upload_unmanaged_requires_reconciliation',
+    'upload_chunk_digest_mismatch',
+    'upload_protocol_upgrade_required',
+    'upload_requires_operator_reconciliation',
+    'upload_ledger_invalid',
+    'upload_digest_mismatch',
+    'upload_size_or_digest_mismatch',
+    'upload_storage_conflict',
+    'upload_storage_changed',
+    'upload_file_changed',
+    'upload_file_size_invalid',
+    'upload_ledger_conflict',
+    'upload_archive_requires_reconciliation',
+    'upload_archive_record_invalid',
+    'upload_archive_limit_reached',
+    'upload_ledger_limit_reached',
+    'upload_chunk_digest_invalid',
+    'upload_chunk_size_invalid',
+    'upload_not_receiving',
+    'upload_not_complete',
+    'upload_finalization_requires_reconciliation',
+    'upload_transport_refresh_requires_reconciliation',
 })
 
 
@@ -31,7 +57,14 @@ def parse_command(original):
     parts = original.split(' ')
     if any(not part for part in parts): raise ValueError('noncanonical_deploy_command')
     result = {'schema_version': 1, 'command': parts[0]}
-    if parts[0] == 'status' and len(parts) in (1, 2):
+    identity = ('artifact_id', 'artifact_zip_sha256', 'run_id', 'run_attempt', 'bytes')
+    if parts[0] == 'capabilities' and len(parts) == 1:
+        names = ()
+    elif parts[0] in ('upload-status', 'upload-open', 'upload-finish') and len(parts) == 6:
+        names = identity
+    elif parts[0] == 'upload-append' and len(parts) == 10:
+        names = identity + ('offset', 'prefix_sha256', 'chunk_bytes', 'chunk_sha256')
+    elif parts[0] == 'status' and len(parts) in (1, 2):
         names = ('operation_id',) if len(parts) == 2 else ()
     elif parts[0] == 'upload' and len(parts) == 6:
         names = ('artifact_id', 'artifact_zip_sha256', 'run_id', 'run_attempt', 'bytes')
@@ -43,11 +76,16 @@ def parse_command(original):
                 'artifact_zip_sha256': r'[a-f0-9]{64}', 'run_id': r'[1-9][0-9]{0,19}',
                 'run_attempt': r'[1-9][0-9]{0,5}', 'bytes': r'[1-9][0-9]{0,9}',
                 'source_sha': r'[a-f0-9]{40}', 'expected_current_release': r'backend-[a-f0-9]{12}-[a-f0-9]{12}',
-                'expected_current_tree_sha256': r'[a-f0-9]{64}'}
+                'expected_current_tree_sha256': r'[a-f0-9]{64}', 'offset': r'(?:0|[1-9][0-9]{0,9})',
+                'prefix_sha256': r'[a-f0-9]{64}', 'chunk_bytes': r'[1-9][0-9]{0,7}',
+                'chunk_sha256': r'[a-f0-9]{64}'}
     for name, value in zip(names, parts[1:]):
         if not re.fullmatch(patterns[name], value): raise ValueError('invalid_deploy_command_argument')
-        result[name] = int(value) if name == 'bytes' else value
+        result[name] = int(value) if name in ('bytes', 'offset', 'chunk_bytes') else value
     if result.get('bytes', 0) > 768 * 1024 ** 2: raise ValueError('invalid_upload_size')
+    if result['command'] == 'upload-append' and not (result['chunk_bytes'] <= 8 * 1024 ** 2 and
+            result['offset'] + result['chunk_bytes'] <= result['bytes']):
+        raise ValueError('invalid_upload_chunk')
     return result
 
 
@@ -63,9 +101,10 @@ def main():
         interrupted = False
         try:
             child.stdin.write((json.dumps(message) + '\n').encode()); child.stdin.flush()
-            if message['command'] == 'upload':
+            if message['command'] in ('upload', 'upload-append'):
                 # Root enforces byte count, digest, quota and deadlines independently.
-                remaining, deadline = message['bytes'], time.monotonic() + 240
+                remaining = message['chunk_bytes'] if message['command'] == 'upload-append' else message['bytes']
+                deadline = time.monotonic() + 240
                 with selectors.DefaultSelector() as selector:
                     selector.register(sys.stdin.fileno(), selectors.EVENT_READ)
                     while True:
@@ -78,7 +117,7 @@ def main():
                         child.stdin.write(block); child.stdin.flush()
                 if remaining: raise ValueError('upload_size_or_digest_mismatch')
         except BrokenPipeError:
-            if message['command'] != 'upload':
+            if message['command'] not in ('upload', 'upload-append'):
                 raise ValueError('deploy_gateway_failed_result_unknown') from None
             # The receiver may reject before consuming ZIP bytes. Read its one
             # bounded response instead of discarding it or forwarding more input.
@@ -86,10 +125,11 @@ def main():
         try:
             child.stdin.close()
         except BrokenPipeError:
-            if message['command'] != 'upload':
+            if message['command'] not in ('upload', 'upload-append'):
                 raise ValueError('deploy_gateway_failed_result_unknown') from None
             interrupted = True
-        output, deadline = bytearray(), time.monotonic() + 35
+        output = bytearray()
+        deadline = time.monotonic() + (90 if message['command'] == 'upload-open' else 35)
         with selectors.DefaultSelector() as selector:
             selector.register(child.stdout.fileno(), selectors.EVENT_READ)
             while True:

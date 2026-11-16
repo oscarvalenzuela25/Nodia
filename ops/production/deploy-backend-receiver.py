@@ -8,6 +8,7 @@ import datetime
 import fcntl
 import hashlib
 import importlib.util
+from itertools import islice
 import json
 import os
 from pathlib import Path
@@ -28,6 +29,10 @@ INCOMING = STATE / 'incoming'
 SUBMISSIONS = STATE / 'submissions'
 MAX_UPLOAD = 768 * 1024 ** 2
 MAX_INCOMING = 2 * 1024 ** 3
+MAX_CHUNK = 8 * 1024 ** 2
+UPLOAD_COMMANDS = frozenset({'upload-status', 'upload-open', 'upload-append', 'upload-finish'})
+TRANSPORT_ASSETS = frozenset({'deploy-backend-receiver.py', 'deploy-gateway.py',
+                              'backend_upload.py', 'archive-completed-backend-upload.py'})
 SAFE_ENV = {'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
 WRITERS = (('api_active', 'nodia-api.service', 'dist/main.js'),
            ('worker_active', 'nodia-ai-worker.service', 'dist/nodia-ai-worker.js'))
@@ -53,7 +58,19 @@ def validate_message(value):
             type(value['schema_version']) is int, 'invalid_receiver_message')
     command = value.get('command')
     fields = {'schema_version', 'command'}
-    if command == 'status':
+    if command == 'capabilities':
+        require(set(value) == fields, 'invalid_capabilities_message')
+    elif command in UPLOAD_COMMANDS:
+        extra = {'artifact_id', 'artifact_zip_sha256', 'run_id', 'run_attempt', 'bytes'}
+        if command == 'upload-append':
+            extra |= {'offset', 'prefix_sha256', 'chunk_bytes', 'chunk_sha256'}
+        require(set(value) == fields | extra and type(value.get('bytes')) is int and
+                0 < value['bytes'] <= MAX_UPLOAD, 'invalid_upload_message')
+        if command == 'upload-append':
+            require(type(value.get('offset')) is int and 0 <= value['offset'] < value['bytes'] and
+                    type(value.get('chunk_bytes')) is int and 0 < value['chunk_bytes'] <= MAX_CHUNK and
+                    value['offset'] + value['chunk_bytes'] <= value['bytes'], 'invalid_upload_chunk')
+    elif command == 'status':
         require(set(value) in (fields, fields | {'operation_id'}), 'invalid_status_message')
     elif command == 'upload':
         require(set(value) == fields | {'artifact_id', 'artifact_zip_sha256', 'run_id', 'run_attempt', 'bytes'},
@@ -68,11 +85,101 @@ def validate_message(value):
                 'run_attempt': r'[1-9][0-9]{0,5}', 'artifact_zip_sha256': r'[a-f0-9]{64}',
                 'operation_id': r'[a-f0-9]{32}', 'source_sha': r'[a-f0-9]{40}',
                 'expected_current_release': r'backend-[a-f0-9]{12}-[a-f0-9]{12}',
-                'expected_current_tree_sha256': r'[a-f0-9]{64}'}
+                'expected_current_tree_sha256': r'[a-f0-9]{64}',
+                'prefix_sha256': r'[a-f0-9]{64}', 'chunk_sha256': r'[a-f0-9]{64}'}
     for name, pattern in patterns.items():
         if name in value:
             require(isinstance(value[name], str) and re.fullmatch(pattern, value[name]), 'invalid_' + name)
     return value
+
+
+def transport_assets():
+    settings = bounded_json(STATE / 'receiver-settings.json')
+    require(type(settings) is dict and type(settings.get('schema_version')) is int and
+            settings['schema_version'] == 1 and type(settings.get('assets')) is dict and
+            set(settings['assets']) in ({'deploy-backend-receiver.py', 'deploy-gateway.py'}, TRANSPORT_ASSETS),
+            'receiver_assets_invalid')
+    snapshots = {}
+    for name, expected in settings['assets'].items():
+        filename = LIB / name
+        info = protect(filename, 0o755 if name == 'deploy-gateway.py' else 0o644)
+        require(0 < info.st_size < 100 * 1024 and isinstance(expected, str) and
+                re.fullmatch(r'[a-f0-9]{64}', expected), 'receiver_asset_invalid')
+        descriptor = os.open(filename, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(descriptor, 'rb') as stream:
+            require(os.fstat(stream.fileno()).st_ino == info.st_ino, 'receiver_asset_changed')
+            raw = stream.read(100 * 1024)
+        require(len(raw) == info.st_size and hashlib.sha256(raw).hexdigest() == expected,
+                'receiver_asset_changed')
+        snapshots[name] = raw
+    return settings['assets'], snapshots
+
+
+def upload_modules():
+    assets, snapshots = transport_assets()
+    require(set(assets) == TRANSPORT_ASSETS, 'upload_protocol_upgrade_required')
+    modules = []
+    for filename in ('backend_upload.py', 'archive-completed-backend-upload.py'):
+        scope = {'__file__': str(LIB / filename), '__name__': 'reviewed_' + filename.replace('-', '_')}
+        exec(compile(snapshots[filename], str(LIB / filename), 'exec'), scope)
+        modules.append(SimpleNamespace(**scope))
+    return assets, *modules
+
+
+def upload_command(message, fd):
+    assets, uploads, retention = upload_modules()
+    host = SimpleNamespace(**globals())
+    if message['command'] == 'capabilities':
+        require(deployment_status()['blocked'] is False, 'prior_update_requires_reconciliation')
+        size, count = uploads.reservation_usage(host)
+        return {'schema_version': 1, 'status': 'upload_capabilities', 'protocol_version': 2,
+                'max_chunk_bytes': MAX_CHUNK, 'max_upload_bytes': MAX_UPLOAD,
+                'incoming_limit_bytes': MAX_INCOMING, 'incoming_limit_files': 10,
+                'logical_incoming_bytes': size, 'logical_incoming_files': count,
+                'free_bytes': shutil.disk_usage(INCOMING).free,
+                'retention_policy': 'archive_completed_noncurrent_on_demand', 'retention_deletes_files': False,
+                'assets_sha256': assets, 'deployment_requested': False, 'automatic_retry_allowed': False}
+    return {'upload-status': lambda: uploads.get_status(host, message),
+            'upload-open': lambda: uploads.open_upload(host, message, retention),
+            'upload-append': lambda: uploads.append_upload(host, message, fd),
+            'upload-finish': lambda: uploads.finish_upload(host, message)}[message['command']]()
+
+
+def transport_adoption_guard():
+    """Incomplete operator adoption cannot authorize subsequent mutation commands.
+
+    Kept outside upload_modules so the operator can inspect candidate capabilities
+    while holding both locks, before persisting its final receipt.
+    """
+    records = list(islice(STATE.glob('transport-refresh-*'), 1001))
+    require(len(records) <= 1000, 'upload_transport_refresh_requires_reconciliation')
+    evidence = {'schema_version', 'manifest_sha256', 'previous_assets_sha256', 'assets_sha256',
+        'previous_receiver_settings_sha256', 'receiver_settings_sha256', 'updater_settings_sha256',
+        'reconciliation_evidence_sha256', 'current', 'application_pids', 'deployment_requested',
+        'deployment_performed', 'application_services_restarted', 'automatic_retry_allowed'}
+    for directory in records:
+        require(re.fullmatch(r'transport-refresh-[a-f0-9]{64}', directory.name), 'upload_transport_refresh_requires_reconciliation')
+        protect(directory, 0o700, directory=True)
+        require((directory / 'intent.json').exists() and (directory / 'receipt.json').exists(),
+                'upload_transport_refresh_requires_reconciliation')
+        intent, receipt = bounded_json(directory / 'intent.json'), bounded_json(directory / 'receipt.json')
+        require(type(intent) is dict and type(receipt) is dict and
+                set(intent) == evidence | {'status', 'started_at', 'writes'} and
+                set(receipt) == evidence | {'status', 'transport_changed', 'capabilities_verified', 'capabilities_sha256', 'completed_at'} and
+                type(receipt.get('schema_version')) is int and receipt['schema_version'] == 1 and
+                receipt['manifest_sha256'] == directory.name.removeprefix('transport-refresh-') and
+                intent['status'] == 'upload_transport_refresh_intent' and receipt['status'] == 'upload_transport_refreshed' and
+                receipt['transport_changed'] is True and receipt['capabilities_verified'] is True and
+                all(receipt[name] is False for name in ('deployment_requested', 'deployment_performed',
+                    'application_services_restarted', 'automatic_retry_allowed')) and
+                all(intent[name] == receipt[name] for name in evidence) and
+                type(receipt['assets_sha256']) is dict and set(receipt['assets_sha256']) == TRANSPORT_ASSETS and
+                all(isinstance(value, str) and re.fullmatch(r'[a-f0-9]{64}', value)
+                    for value in receipt['assets_sha256'].values()), 'upload_transport_refresh_requires_reconciliation')
+        manifest = directory / 'upload-transport.json'
+        require(protect(manifest, 0o600).st_size <= 16384 and
+                hashlib.sha256(manifest.read_bytes()).hexdigest() == receipt['manifest_sha256'],
+                'upload_transport_refresh_requires_reconciliation')
 
 
 def protect(path, mode=None, directory=False):
@@ -255,8 +362,19 @@ def receive_bytes(fd, output, expected_size, expected_hash, *, total_seconds=240
 def upload(message, fd):
     require(not deployment_status()['blocked'], 'prior_update_requires_reconciliation')
     size, count = incoming_inventory()
+    reservations = 0
+    if (STATE / 'receiver-settings.json').exists():
+        assets, _ = transport_assets()
+        if set(assets) == TRANSPORT_ASSETS:
+            _, policy, retention = upload_modules()
+            host = SimpleNamespace(**globals())
+            size, count = policy.reservation_usage(host)
+            physical, _ = incoming_inventory()
+            reservations = size - physical
+            retention.ensure_capacity(host, message['bytes'], size, count)
+            size, count = policy.reservation_usage(host)
     require(size + message['bytes'] <= MAX_INCOMING and count < 10, 'incoming_quota_reached_operator_cleanup_required')
-    require(shutil.disk_usage(INCOMING).free > message['bytes'] + 2 * 1024 ** 3, 'insufficient_upload_headroom')
+    require(shutil.disk_usage(INCOMING).free > message['bytes'] + reservations + 2 * 1024 ** 3, 'insufficient_upload_headroom')
     directory = INCOMING / ('server-' + message['run_id'] + '-' + message['run_attempt'])
     if not directory.exists(): directory.mkdir(mode=0o700)
     protect(directory, 0o700, directory=True)
@@ -334,19 +452,20 @@ def main():
     os.umask(0o077)
     for directory in (LIB, STATE, INCOMING, SUBMISSIONS, STATE / 'requests'):
         protect(directory, directory=True)
-    settings = bounded_json(STATE / 'receiver-settings.json')
-    for name, expected in settings['assets'].items():
-        path = LIB / name
-        require(name in ('deploy-backend-receiver.py', 'deploy-gateway.py') and
-                protect(path).st_size < 100 * 1024 and
-                hashlib.sha256(path.read_bytes()).hexdigest() == expected, 'receiver_asset_changed')
-    require(set(settings['assets']) == {'deploy-backend-receiver.py', 'deploy-gateway.py'}, 'receiver_assets_invalid')
+    transport_assets()
     message = read_header(sys.stdin.fileno())
     lock = STATE / 'receiver.lock'
     protect(lock, 0o600)
     with lock.open('r+b') as stream:
-        fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-        if message['command'] == 'status':
+        try:
+            fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise ValueError('receiver_busy') from None
+        if message['command'] not in ('status', 'upload-status'):
+            transport_adoption_guard()
+        if message['command'] in UPLOAD_COMMANDS or message['command'] == 'capabilities':
+            result = upload_command(message, sys.stdin.fileno())
+        elif message['command'] == 'status':
             result = operation_status(message['operation_id']) if 'operation_id' in message else deployment_status()
         elif message['command'] == 'upload': result = upload(message, sys.stdin.fileno())
         else: result = submit(message)

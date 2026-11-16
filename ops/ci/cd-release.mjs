@@ -146,7 +146,8 @@ export async function updateServer(environment = process.env, { api, read = read
     result = await deploy({ environment, plan, artifact, zipFile: artifact.zip_file, zipBytes: artifact.zip_bytes, ci: plan.ci,
       expectedRelease: plan.server_baseline.release_id, expectedTree: plan.server_baseline.package_tree_sha256,
       candidateRelease: artifact.result.release_id, candidateTree: artifact.result.package_tree_sha256,
-      allowNewSubmission: !plan.prior_cd_run, stateFile: path.join(output, 'backend-state.json') });
+      allowNewSubmission: !plan.prior_cd_run, stateFile: path.join(output, 'backend-state.json'),
+      revalidate: () => api.gate(plan.ci.run_id, plan.ci.run_attempt, plan.source_sha) });
   }
   writeState(path.join(output, 'backend-result.json'), result);
   return result;

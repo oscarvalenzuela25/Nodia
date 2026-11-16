@@ -57,6 +57,7 @@ export function deploymentPlan({ repo = process.cwd(), head, clientBase, serverB
   requireCd(unmanaged.length === 0, 'unmanaged_runtime_change_requires_coordinated_rollout');
   return { schema_version: 1, source_sha: head, client_base: clientBase, server_base: serverBase,
     client_required: client.client || forceClient, server_required: server.server || server.contracts,
+    server_upload_protocol_version: 2,
     server_content_equivalence_allowed: serverContentEquivalenceAllowed({ repo, base: serverBase, head }),
     python_or_native_deployed: false,
     separate_runtime_checks_selected: server.python || server.native };

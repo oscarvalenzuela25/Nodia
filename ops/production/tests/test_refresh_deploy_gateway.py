@@ -59,7 +59,8 @@ class GatewayRefreshTests(unittest.TestCase):
                   'service_hashes': {'preserved': 'unchanged'}})
         self.updater_raw = (self.state / 'settings.json').read_bytes()
         self.source = self.root / 'unprivileged-candidate.py'
-        self.write(self.source, (BASE / refresh.GATEWAY).read_bytes(), 0o666)
+        # Original v1 bytes pinned by this historical operator, from production commit 6ba2afb7.
+        self.write(self.source, (BASE / 'tests/fixtures/deploy-gateway-v1.py').read_bytes(), 0o666)
         self.expected = self.io.sha(self.source.read_bytes())
         self.assertEqual(self.expected, refresh.CANDIDATE_SHA256)
         self.record = self.state / ('gateway-refresh-' + self.expected)

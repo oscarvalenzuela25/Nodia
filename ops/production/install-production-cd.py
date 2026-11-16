@@ -17,7 +17,9 @@ LIB = Path('/usr/local/lib/nodia')
 STATE = Path('/var/lib/nodia-updates')
 RULE = Path('/etc/sudoers.d/nodia-production-cd')
 SUDOERS = b'nodia-deploy ALL=(root) NOPASSWD: /usr/bin/python3 -I /usr/local/lib/nodia/deploy-backend-receiver.py\n'
-ASSETS = ('deploy-backend-receiver.py', 'deploy-gateway.py', 'install-production-cd.py')
+TRANSPORT_ASSETS = ('deploy-backend-receiver.py', 'deploy-gateway.py', 'backend_upload.py',
+                    'archive-completed-backend-upload.py')
+ASSETS = (*TRANSPORT_ASSETS, 'install-production-cd.py')
 
 
 def require(condition, code):
@@ -134,9 +136,11 @@ def install(bundle, digest):
     for directory in (STATE / 'incoming', STATE / 'submissions'):
         updater.safe_directory(directory); directory.chmod(0o700)
     updater.exact_install(STATE / 'receiver.lock', b'', 0o600)
-    updater.exact_install(LIB / 'deploy-backend-receiver.py', contents['deploy-backend-receiver.py'])
+    for name in TRANSPORT_ASSETS:
+        if name != 'deploy-gateway.py':
+            updater.exact_install(LIB / name, contents[name])
     receiver_settings = {'schema_version': 1, 'assets': {name: manifest['assets'][name]
-                         for name in ('deploy-backend-receiver.py', 'deploy-gateway.py')}}
+                         for name in TRANSPORT_ASSETS}}
     updater.exact_install(STATE / 'receiver-settings.json',
                           (json.dumps(receiver_settings, sort_keys=True, indent=2) + '\n').encode(), 0o600)
     # Grant fixed argv only; header parsing and enum validation live in root-owned code.

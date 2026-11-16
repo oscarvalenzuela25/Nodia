@@ -1,5 +1,20 @@
 # Especificación del MVP — Nodia
 
+**CD: transporte upload v2 adoptado, entrega nueva pendiente — 2026-11-16:**
+[99§32](99-production-deployment-and-cicd-plan.md#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16)
+y [recibo/evidencia](../evidence/durable-backend-uploads-20261116.md): bundle5d5a150b
+adoptado por operador root, dry-run/apply correctos y capabilities v2 por SSH nuevo.
+Pins/settings206fcbd9, updater/reconciliaciones intactos; current6ba/c01 y
+PIDs1076642/1076645 preservados, sin restart o deploy de aplicación. SSH nuevo
+confirma deployment_ready/blocked:false y ambos writers activos. CI43871419155
+completa correcta para2309037c:173Node+15políticas+206Python root sin skips.
+El gate adicional del cliente revalida CI/master después de transferir y antes
+del submit:72focales correctas; CI del próximo HEAD todavía pendiente. Retención,
+transferencia y entrega reales nuevas siguen pendientes; delivery null.
+[ADR104 propuesto](../architecture/decisions/ADR-104-durable-upload-continuation-and-incoming-retention.md),
+sin aprobación documental o cambios de conocimiento. [TODO OPS-001](TODO.md)
+continúa desde esos gates; la adopción del transporte no cierra toda la iniciativa.
+
 **CD y NodiaAI: entrega productiva completada — 2026-11-16:**
 PR36→development y PR37→master6ba2afb7, con CI correctos. CI43798403214 y
 CD43799433169 correctos: backend6ba/c01 complete y Client6ba/bbb5 publicado,

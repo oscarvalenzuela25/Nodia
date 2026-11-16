@@ -4,7 +4,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
-import { deployBackend, operationId, requireReady } from './cd-vps.mjs';
+import { deployBackend, operationId, operationAbsent, requireReady, sshCommand } from './cd-vps.mjs';
+import { uploadId, uploadIdentity } from './cd-upload.mjs';
 import { CdRejected } from './cd-github.mjs';
 const blob = Buffer.concat([Buffer.from([0,0,0,11]), Buffer.from('ssh-ed25519'), Buffer.from([0,0,0,32]), Buffer.alloc(32,7)]);
 const expectedFingerprint = 'SHA256:' + createHash('sha256').update(blob).digest('base64').replace(/=+$/, '');
@@ -18,12 +19,12 @@ const ready = (source = old, hash = oldTree) => ({ schema_version:1,status:'depl
   current:{source_sha:source,package_tree_sha256:hash,release_id:release(source,hash)} });
 const ci = { run_id:'10',run_attempt:'1',source_sha:next }, artifact = {id:'20',digest:'sha256:'+'e'.repeat(64)}, id=operationId(artifact,ci);
 const operation = phase => ({schema_version:1,status:'operation_status',operation_id:id,phase,effects_started:true,migration_requested:true,deployment_performed:phase==='complete'});
-const options = {environment,plan:{server_required:true,source_sha:next,server_base:old},artifact,ci,zipFile:'unused-fixture.zip',zipBytes:123,
+const options = {environment,plan:{server_required:true,source_sha:next,server_base:old,server_upload_protocol_version:1},artifact,ci,zipFile:'unused-fixture.zip',zipBytes:123,
   expectedRelease:release(old,oldTree),expectedTree:oldTree,candidateRelease:release(next,tree),candidateTree:tree,
   sshOptions:{expectedFingerprint},sleep:async()=>{},pollLimit:2};
 test('backend transport submits once, verifies artifact receipt and confirms both healthy writers', async () => {
   const calls=[];
-  const replies=[{code:1,body:{status:'failed',error_code:'operation_not_found'}},{code:0,body:ready()},
+  const replies=[operationMissing,{code:0,body:ready()},
     {code:0,body:{schema_version:1,status:'uploaded',artifact_id:'20',artifact_zip_sha256:'e'.repeat(64),bytes:123,deployment_requested:false}},
     {code:0,body:{schema_version:1,status:'submitted',operation_id:id,phase:'submitted',deployment_requested:true,automatic_retry_allowed:false}},
     {code:0,body:operation('complete')},{code:0,body:ready(next,tree)}];
@@ -38,7 +39,7 @@ test('an existing operation is queried before global readiness and never resubmi
 });
 test('uncertain submission and previous CD origin cannot repeat effects',async()=>{
   let calls=0;
-  await assert.rejects(deployBackend({...options,allowNewSubmission:false,send:async()=>++calls===1?{code:1,body:{status:'failed',error_code:'operation_not_found'}}:{code:0,body:ready()}}),/prior_cd_run/);
+  await assert.rejects(deployBackend({...options,allowNewSubmission:false,send:async()=>++calls===1?operationMissing:{code:0,body:ready()}}),/prior_cd_run/);
   assert.equal(calls,2);
   await assert.rejects(deployBackend({...options,send:async()=>({code:0,body:operation('unknown')})}),/requires_reconciliation/);
   assert.throws(()=>requireReady({...ready(),blocked:true}));assert.throws(()=>requireReady({...ready(),application:{api_active:true,worker_active:false}}));
@@ -147,7 +148,7 @@ function uploadFixture(t, reply) {
   const stateFile = path.join(directory, 'backend-state.json'), calls = [];
   const send = async (_, command) => {
     calls.push(command);
-    if (calls.length === 1) return { code: 1, body: { status: 'failed', error_code: 'operation_not_found' } };
+    if (calls.length === 1) return operationMissing;
     if (calls.length === 2) return { code: 0, body: ready() };
     if (calls.length === 3 && command.startsWith('upload ')) return reply;
     throw new Error('Unexpected effect after the upload response');
@@ -200,6 +201,64 @@ test('untrusted or contradictory rejection responses remain unknown without leak
     assert.equal(f.calls.filter(command => command.startsWith('deploy ')).length, 0);
     assert.doesNotMatch(JSON.stringify(f.state()), /private|Authorization/);
   });
+});
+
+test('only an exact failed operation lookup may authorize a new application intention', async () => {
+  assert.equal(operationAbsent(operationMissing), true);
+  for (const invalid of [
+    { code: null }, { code: 0 }, { code: 256 }, { code: 1.5 }, { code: '1' },
+    { body: { ...operationMissing.body, automatic_retry_allowed: true } },
+    { body: { ...operationMissing.body, deployment_requested: true } },
+    { body: { ...operationMissing.body, effects_started: true } },
+    { body: { ...operationMissing.body, schema_version: '1' } },
+    { body: { status: 'failed', error_code: 'operation_not_found' } },
+  ]) {
+    const value = { ...operationMissing, ...invalid }; assert.equal(operationAbsent(value), false);
+    let calls = 0;
+    await assert.rejects(deployBackend({ ...options, send: async () => { calls++; return value; } }), /requires_reconciliation/);
+    assert.equal(calls, 1);
+  }
+});
+
+test('v2 byte proof is required before a single deploy; prior CD origin never enters transfer recovery', async () => {
+  const v2 = { ...options, plan: { ...options.plan, server_upload_protocol_version: 2 } };
+  const proof = { upload_protocol_version: 2, upload_id: uploadId(uploadIdentity(artifact, ci, options.zipBytes)),
+    upload_phase: 'verified', upload_offset: options.zipBytes, upload_bytes: options.zipBytes, upload_recovered: true };
+  let transfers = 0; const calls = [];
+  const replies = [operationMissing, { code: 0, body: ready() },
+    { code: 0, body: { schema_version: 1, status: 'submitted', operation_id: id, phase: 'submitted',
+      deployment_requested: true, automatic_retry_allowed: false } }, { code: 0, body: operation('complete') }, { code: 0, body: ready(next, tree) }];
+  const result = await deployBackend({ ...v2, transfer: async () => { transfers++; return proof; },
+    send: async (_, command) => { calls.push(command); return replies.shift(); } });
+  assert.equal(result.status, 'complete'); assert.equal(transfers, 1);
+  assert.equal(calls.filter(x => x.startsWith('deploy ')).length, 1);
+  await assert.rejects(deployBackend({ ...v2, allowNewSubmission: false, transfer: async () => { transfers++; return proof; },
+    send: async (_, command) => command === 'status' ? { code: 0, body: ready() } : operationMissing }), /prior_cd_run/);
+  assert.equal(transfers, 1);
+  await assert.rejects(deployBackend({ ...v2, transfer: async () => ({ ...proof, upload_phase: 'receiving' }),
+    send: async (_, command) => command === 'status' ? { code: 0, body: ready() } : operationMissing }), /upload_status_invalid/);
+});
+
+test('SSH streaming sends only the verified inclusive byte range', async t => {
+  const parent = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'nodia-ssh-range-'));
+  t.after(() => fs.rmSync(parent, { recursive: true, force: true }));
+  const file = path.join(parent, 'artifact.zip'); fs.writeFileSync(file, '0123456789');
+  const program = "let b='';process.stdin.on('data',x=>b+=x).on('end',()=>process.stdout.write(JSON.stringify({body:b})));";
+  const reply = await sshCommand({ program: process.execPath, args: ['-e', program], options: { env: process.env } }, 'fixture',
+    { inputFile: file, start: 3, end: 6 });
+  assert.equal(reply.code, 0); assert.deepEqual(reply.body, { body: '3456' });
+});
+
+test('a master change during byte transfer stops before recording or sending application submission', async () => {
+  let transferred = false, revalidated = false; const calls = [];
+  const proof = { upload_protocol_version: 2, upload_id: uploadId(uploadIdentity(artifact, ci, options.zipBytes)),
+    upload_phase: 'verified', upload_offset: options.zipBytes, upload_bytes: options.zipBytes, upload_recovered: false };
+  await assert.rejects(deployBackend({ ...options, plan: { ...options.plan, server_upload_protocol_version: 2 },
+    transfer: async () => { transferred = true; return proof; },
+    revalidate: async () => { revalidated = true; assert.equal(transferred, true); throw new CdRejected('ci_source_is_not_current_master'); },
+    send: async (_, command) => { calls.push(command); return command === 'status' ? { code: 0, body: ready() } : operationMissing; } }),
+  /ci_source_is_not_current_master/);
+  assert.equal(revalidated, true); assert.equal(calls.filter(x => x.startsWith('deploy ')).length, 0);
 });
 
 test('a disconnected upload retains its uncertain intent without another upload or deployment', async t => {

@@ -5,7 +5,7 @@ import { isHex, isSha, numeric, repository } from './cd-github.mjs';
 import { pwaVerificationDetails } from './pwa-assets.mjs';
 
 const statusValues = new Set(['baseline_verified', 'prepared', 'preflight_started', 'preflight_verified', 'not_required', 'already_current', 'content_unchanged',
-  'upload_requested', 'upload_rejected', 'deployment_requested', 'submitted', 'complete', 'failed', 'unknown',
+  'upload_requested', 'upload_rejected', 'upload_receiving', 'upload_open_requested', 'upload_verified', 'deployment_requested', 'submitted', 'complete', 'failed', 'unknown',
   'asset_check_requested', 'asset_upload_requested', 'asset_hash_registration_requested',
   'pages_submission_requested', 'published_assets_verification_failed']);
 const fixedErrors = new Set(['cd_failed_inspect_private_state', 'pages_response_unsuccessful', 'pages_response_invalid',
@@ -15,6 +15,19 @@ const fixedErrors = new Set(['cd_failed_inspect_private_state', 'pages_response_
   'backend_operation_requires_reconciliation', 'backend_operation_poll_deadline_requires_reconciliation',
   'backend_submission_outcome_unknown', 'backend_upload_outcome_unknown', 'backend_poll_outcome_unknown',
   'incoming_quota_reached_operator_cleanup_required', 'insufficient_upload_headroom',
+  'upload_identity_invalid', 'upload_status_invalid', 'upload_protocol_upgrade_required', 'upload_local_artifact_invalid',
+  'upload_local_artifact_changed', 'upload_local_digest_mismatch', 'upload_status_outcome_unknown', 'upload_remote_prefix_mismatch',
+  'upload_archived_no_automatic_replay', 'upload_transfer_requires_reconciliation', 'upload_transfer_budget_exhausted',
+  'upload_open_outcome_unknown', 'upload_unmanaged_requires_reconciliation', 'upload_ledger_requires_reconciliation',
+  'upload_identity_conflict', 'upload_offset_conflict', 'upload_prefix_conflict', 'upload_chunk_digest_mismatch',
+  'receiver_busy', 'archive_intent_already_recorded_no_automatic_replay',
+  'upload_requires_operator_reconciliation', 'upload_ledger_invalid', 'upload_digest_mismatch',
+  'upload_size_or_digest_mismatch', 'upload_storage_conflict', 'upload_storage_changed',
+  'upload_file_changed', 'upload_file_size_invalid', 'upload_ledger_conflict', 'upload_archive_requires_reconciliation',
+  'upload_archive_record_invalid', 'upload_archive_limit_reached', 'upload_ledger_limit_reached',
+  'upload_chunk_digest_invalid', 'upload_chunk_size_invalid', 'upload_not_receiving', 'upload_not_complete',
+  'upload_finalization_requires_reconciliation', 'upload_transport_refresh_requires_reconciliation',
+  'existing_backend_operation_requires_reconciliation',
   'prior_update_requires_reconciliation', 'upload_already_recorded_no_automatic_replay',
   'prior_cd_run_requires_operator_reconciliation', 'prior_cd_pages_outcome_requires_reconciliation',
   'pages_status_deadline_requires_reconciliation', 'existing_pages_deployment_requires_reconciliation',
@@ -42,14 +55,19 @@ function state(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   const result = { status: statusValues.has(value.status) ? value.status : 'not_confirmed' };
   for (const [key, valid] of Object.entries({ source_sha: isSha, candidate_source_sha: isSha, package_tree_sha256: isHex,
-    release_id: release, deployment_id: uuid,
+    release_id: release, deployment_id: uuid, upload_id: isHex,
     operation_id: item => typeof item === 'string' && /^[a-f0-9]{32}$/.test(item),
     pages_marker: marker, marker, recorded_marker: marker })) {
     if (valid(value[key])) result[key] = value[key];
   }
   for (const key of ['deployment_requested', 'deployment_performed', 'effects_started', 'migration_requested',
-    'asset_upload_requested', 'asset_check_performed', 'pwa_assets_verified']) {
+    'asset_upload_requested', 'asset_check_performed', 'pwa_assets_verified', 'upload_recovered']) {
     if (typeof value[key] === 'boolean') result[key] = value[key];
+  }
+  if (value.upload_protocol_version === 2) result.upload_protocol_version = 2;
+  if (['absent', 'receiving', 'ready', 'verified', 'archived'].includes(value.upload_phase)) result.upload_phase = value.upload_phase;
+  for (const key of ['upload_offset', 'upload_bytes']) {
+    if (Number.isSafeInteger(value[key]) && value[key] >= 0 && value[key] <= 768 * 1024 ** 2) result[key] = value[key];
   }
   for (const key of ['total_assets', 'missing_assets', 'pwa_assets_count']) {
     if (Number.isSafeInteger(value[key]) && value[key] >= 0 && value[key] <= 20_000) result[key] = value[key];

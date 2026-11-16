@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { withSshFiles, verifyDeploymentStatus } from './check-vps-access.mjs';
 import { CdRejected, isHex, isSha, numeric, outputs, requireCd, safeFailure, writeState, ZIP_LIMIT } from './cd-github.mjs';
+import { uploadArtifact, uploadId, uploadIdentity } from './cd-upload.mjs';
 
 const uploadRejectionCodes = new Set(['incoming_quota_reached_operator_cleanup_required',
   'insufficient_upload_headroom', 'prior_update_requires_reconciliation',
@@ -19,7 +20,7 @@ function uploadRejection(result) {
     uploadRejectionCodes.has(body.error_code) ? body.error_code : null;
 }
 
-export async function sshCommand(session, command, { inputFile, timeout = 20_000 } = {}) {
+export async function sshCommand(session, command, { inputFile, start, end, timeout = 20_000 } = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(session.program, [...session.args, command], { env: session.options.env, windowsHide: true,
       stdio: ['pipe', 'pipe', 'pipe'] });
@@ -42,7 +43,7 @@ export async function sshCommand(session, command, { inputFile, timeout = 20_000
       if (inputFailed && code === 0) return reject(new CdRejected('ssh_upload_outcome_unknown'));
       resolve({ code, body });
     });
-    if (inputFile) pipeline(fs.createReadStream(inputFile), child.stdin).catch(() => { inputFailed = true; });
+    if (inputFile) pipeline(fs.createReadStream(inputFile, { start, end }), child.stdin).catch(() => { inputFailed = true; });
     else child.stdin.end();
   });
 }
@@ -66,9 +67,17 @@ export function operationId(artifact, ci) {
   return createHash('sha256').update(JSON.stringify({ component: 'server', artifact: artifact.id,
     digest: artifact.digest, run: ci.run_id, attempt: ci.run_attempt, source: ci.source_sha })).digest('hex').slice(0, 32);
 }
+export function operationAbsent(result) {
+  const body = result?.body;
+  return Number.isInteger(result?.code) && result.code >= 1 && result.code <= 255 &&
+    body && typeof body === 'object' && !Array.isArray(body) &&
+    Object.keys(body).sort().join(',') === 'automatic_retry_allowed,error_code,schema_version,status' &&
+    body.schema_version === 1 && body.status === 'failed' && body.error_code === 'operation_not_found' &&
+    body.automatic_retry_allowed === false;
+}
 export async function deployBackend({ environment = process.env, plan, artifact, zipFile, zipBytes, ci,
   expectedRelease, expectedTree, candidateRelease, candidateTree, allowNewSubmission = true, stateFile, send = sshCommand, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)),
-  sshOptions = {}, pollLimit = 240 }) {
+  sshOptions = {}, pollLimit = 240, transfer = uploadArtifact, revalidate = async () => {} }) {
   requireCd(environment.GITHUB_EVENT_NAME === 'workflow_dispatch' && environment.GITHUB_REF === 'refs/heads/master' &&
     environment.GITHUB_RUN_ATTEMPT === '1' &&
     plan.server_required === true && isSha(ci.source_sha) && ci.source_sha === plan.source_sha &&
@@ -76,11 +85,14 @@ export async function deployBackend({ environment = process.env, plan, artifact,
     isHex(candidateTree) && candidateRelease === `backend-${ci.source_sha.slice(0, 12)}-${candidateTree.slice(0, 12)}` &&
     Number.isSafeInteger(zipBytes) && zipBytes > 0 && zipBytes <= ZIP_LIMIT, 'backend_deploy_input_invalid');
   const id = operationId(artifact, ci);
-  const record = value => { if (stateFile) writeState(stateFile, { operation_id: id, automatic_retry_allowed: false, ...value }); };
+  const protocol = plan.server_upload_protocol_version ?? 2;
+  requireCd([1, 2].includes(protocol), 'upload_protocol_upgrade_required');
+  let uploadProof = {};
+  const record = value => { if (stateFile) writeState(stateFile, { operation_id: id, automatic_retry_allowed: false, ...uploadProof, ...value }); };
   return withSshFiles(environment, async session => {
     const existing = await send(session, `status ${id}`);
     let submitted = false;
-    if (existing.code !== 0 && existing.body?.status === 'failed' && existing.body.error_code === 'operation_not_found') {
+    if (operationAbsent(existing)) {
       const status = await send(session, 'status');
       requireCd(status.code === 0, 'backend_status_failed');
       const current = requireReady(status.body);
@@ -100,17 +112,29 @@ export async function deployBackend({ environment = process.env, plan, artifact,
         record(result);
         return result;
       }
-      record({ status: 'upload_requested', deployment_requested: false });
-      const uploaded = await send(session, `upload ${artifact.id} ${artifact.digest.slice(7)} ${ci.run_id} ${ci.run_attempt} ${zipBytes}`,
-        { inputFile: zipFile, timeout: 180_000 });
-      const rejected = uploadRejection(uploaded);
-      if (rejected) {
-        record({ status: 'upload_rejected', deployment_requested: false, error_code: rejected });
-        throw new CdRejected(rejected);
+      if (protocol === 2) {
+        uploadProof = await transfer({ session, send, artifact, ci, zipFile, zipBytes, record, sleep });
+        requireCd(uploadProof?.upload_protocol_version === 2 && uploadProof.upload_phase === 'verified' &&
+          uploadProof.upload_offset === zipBytes && uploadProof.upload_bytes === zipBytes &&
+          uploadProof.upload_id === uploadId(uploadIdentity(artifact, ci, zipBytes)) &&
+          typeof uploadProof.upload_recovered === 'boolean', 'upload_status_invalid');
+      } else {
+        // Explicit legacy plan only. A failed v2 handshake never downgrades to this transport.
+        record({ status: 'upload_requested', deployment_requested: false });
+        const uploaded = await send(session, `upload ${artifact.id} ${artifact.digest.slice(7)} ${ci.run_id} ${ci.run_attempt} ${zipBytes}`,
+          { inputFile: zipFile, timeout: 180_000 });
+        const rejected = uploadRejection(uploaded);
+        if (rejected) {
+          record({ status: 'upload_rejected', deployment_requested: false, error_code: rejected });
+          throw new CdRejected(rejected);
+        }
+        requireCd(uploaded.code === 0 && uploaded.body?.schema_version === 1 && uploaded.body.status === 'uploaded' &&
+          uploaded.body.artifact_id === artifact.id && uploaded.body.artifact_zip_sha256 === artifact.digest.slice(7) &&
+          uploaded.body.bytes === zipBytes && uploaded.body.deployment_requested === false, 'backend_upload_outcome_unknown');
       }
-      requireCd(uploaded.code === 0 && uploaded.body?.schema_version === 1 && uploaded.body.status === 'uploaded' &&
-        uploaded.body.artifact_id === artifact.id && uploaded.body.artifact_zip_sha256 === artifact.digest.slice(7) &&
-        uploaded.body.bytes === zipBytes && uploaded.body.deployment_requested === false, 'backend_upload_outcome_unknown');
+      record({ status: 'upload_verified', deployment_requested: false });
+      // A long transfer must not submit an application attempt for a superseded master.
+      await revalidate();
       record({ status: 'deployment_requested', deployment_requested: true });
       const accepted = await send(session, `deploy ${id} ${artifact.id} ${artifact.digest.slice(7)} ${ci.run_id} ${ci.run_attempt} ${ci.source_sha} ${expectedRelease} ${expectedTree}`);
       requireCd(accepted.code === 0 && accepted.body?.schema_version === 1 && accepted.body.status === 'submitted' &&

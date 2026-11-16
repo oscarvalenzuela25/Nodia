@@ -1595,3 +1595,102 @@ reanudable o retención automática implementadas. Sudo invalidado mediante job
 close-upload-operator-2ec47231daf74e3499f3a826dbf735e7 complete/exit0; tmux setup
 cerrado, comprobación SSH exit0. La documentación final se integrará por PR a
 development; no requiere otra promoción productiva para repetir esta entrega.
+
+## 32. Retención automática y continuación de uploads — solicitud2026-11-16
+
+El usuario solicita continuar OPS-02/03/04/05 para evitar la reincidencia de
+cuota y recuperar subidas sin perder funcionalidades ni repetir operaciones
+inciertas. [ADR104 propuesto](../architecture/decisions/ADR-104-durable-upload-continuation-and-incoming-retention.md)
+fija la decisión y los límites. Rama `codex/durable-backend-uploads`, desde
+developmenteb7927f2 (incluye PR38 y cierre del despliegue anterior).
+
+La entrega anterior permanece complete6ba/c01 y Client6ba/bbb5. Esta continuación
+no reabre su CI/CD ni cambia recibos históricos. Sólo una entrega nueva, validada
+con identidades propias, podrá ejecutar un deploy; ningún estado de upload lo
+autoriza por sí mismo.
+
+### 32.1. Contrato y ejecución prevista
+
+- V2: capabilities tipadas, consulta pura, intención inmutable por identidad,
+  reserva de bytes totales/slot, append de8MiB máximo mediante CAS offset+SHA256
+  del prefijo, y finish con digest completo/fsync/rename NOREPLACE/recibo.
+  Bytes de un parcial se comparan con el ZIP original antes de continuar; no
+  reset, truncamiento o adopción de archivos legacy/huérfanos.
+- El ledger raíz no guarda un offset mutable: el archivo protegido y su hash
+  observado son la autoridad del cursor; fsync precede al ACK y a la finalización.
+  Un rename completado sin recibo se concilia por lectura del destino y sellado,
+  sin repetir el movimiento. Las consultas no reparan ni crean archivos.
+- La continuación automática opera dentro del CD original con presupuesto
+  finito. `prior_cd_run`, CI/master, baseline y primer submit conservan su barrera.
+  Operación ausente sólo con fallo exacto y exit válido; campos contradictorios
+  no autorizan efectos. No hay fallback v2→legacy ante error.
+- Archivo automático sólo si la reserva nueva no cabe. Se valida el lote entero
+  antes de mover; mínimo número de ZIPs complete/no-current, todas las referencias
+  coherentes y ningún parcial. Aliases no evaden intents anteriores. Se mantienen
+  locks, hashes, recibos y todos los registros de ejecución.
+- Este alcance conserva los archivos en `archived-incoming`: no borra datos ni
+  libera disco físico. Backups, releases, perfiles, secretos y evidencia no tienen
+  una retención nueva por esta entrega. Headroom insuficiente falla cerrado.
+- Adopción del transporte separada de app: bundle4assets revisado, CAS de pins y
+  current, originales/intent durables, pin al final y status/capabilities/PIDs
+  iguales. Sin cambios sudoers, updater o servicios. Un intento parcial se inspecciona;
+  no se instala otra vez bajo un manifest distinto para evadirlo.
+
+### 32.2. Checklist y evidencia
+
+- [x] Contrato y ADR propuesto registrados; autorización de implementación no
+  equivale a aprobación documental o publicación de conocimiento.
+- [x] Implementación de módulo, cliente, archivo y operador; candidato actual
+  `2309037cedf5e497f7736cece0512868d60b6146`, con27casos del módulo de upload.
+- [x] Corte inicial9533/CI43867659803 completo correcto:173Node,15Node de
+  políticas y204Python root sin omisiones. Conservado como evidencia histórica.
+- [x] Último job `Changes and pipeline checks`133313305566 de
+  [CI43871419155](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43871419155/job/133313305566)
+  correcto:173Node,15Node de políticas y206Python root en contenedor aislado,
+  sin skips. CI43871419155 completa correcta para2309037c, incluidas las apps.
+- [x] Revisión cruzada de fallos, hashes/byte bounds, reservas legacy, barreras
+  de archivo/adopción incompletas y ausencia de replay; regresiones incorporadas.
+  El último borde reconoce archivo sin recibo previo de upload y evita reset a0.
+- [x] Bundle final5d5a150b y sus siete archivos verificados en staging privado
+  `upload-v2-2309037c`, posteriormente adoptado. Bundle697171b0 sustituido,
+  conservado como corte histórico9533, nunca instalado.
+- [x] CI general43871419155 completa correcta; resultado separado del futuro HEAD.
+- [x] Dry-run y adopción root correctos; recibo del job
+  `upload-v2-adopt-597438dcc5e54144bcde5c0765727373`, exit0. Settings206fcbd9,
+  capacidades internas verificadas y capabilities por SSH nuevo aceptadas por
+  el validador Node. SSH nuevo confirma deployment_ready/blocked:false.
+  Current6ba/c01 y PIDs1076642/1076645 iguales; sin deploy/restart de aplicación.
+- [x] Gate adicional del cliente: revalidar CI de origen/master después de los
+  bytes y antes de registrar/enviar deploy. Regresión de master cambiado durante
+  transferencia y72focales correctas; cuatro assets/operador no cambiaron.
+- [ ] CI nueva del HEAD que incorporará ese gate y esta evidencia; no asignar
+  SHA/run al cambio todavía no committed.
+- [ ] Promover por PR/CI nuevos y verificar retención/recepción/entrega reales.
+- [x] Consolidar recibo de adopción y postchecks en MD/JSON, README/progreso/TODO.
+- [ ] Consolidar la futura entrega y retención reales; `delivery` sigue null.
+
+El [recibo de esta continuación](../evidence/durable-backend-uploads-20261116.md)
+y su JSON registran identidades, hashes y cortes de CI separados. El ajuste del
+cliente en `4a5709629a708043e90a1a0958ffbfa58f3ba54f` valida los ACK completos
+antes de continuar y evita lecturas redundantes: el fixture normal de seis bloques
+baja18→10llamadas, sin atribuir ahorro de latencia o throughput productivos.
+Sólo una respuesta ambigua provoca consulta antes de continuar; máximo8intentos
+por lectura y256llamadas por transferencia, sin replay de aplicación.
+
+WSL local no inicia por `ERROR_NO_SYSTEM_RESOURCES` y Docker no está activo; no
+se reinician procesos del usuario ni se usa producción como entorno de pruebas.
+Las206pruebas root de2309037c se ejecutaron con POSIX real en CI, sin skips.
+El transporte ya está adoptado y el JSON conserva recibo completo, hashes y
+capabilities reales: protocolo2, bloque máximo8388608bytes, cuota2147483648bytes/
+10slots; observación lógica1943831018bytes/9slots y disco libre99803844608bytes.
+Son valores observados después de adoptar, no cuotas inventadas o promesas de
+capacidad futura. Updater9556 y evidencia de conciliación7ae2 permanecen intactos.
+Producción de aplicación sigue6ba/c01, deployment_ready/blocked:false, API/worker
+activos y mismos PIDs; `delivery` continúa null. Faltan CI del nuevo HEAD,
+transferencia/retención reales y entrega nueva; OPS no se declara completado.
+No se registra aún cierre administrativo: el acceso sigue disponible para los
+pre/postchecks de la intervención autorizada.
+
+Evaluación de conocimiento: infraestructura, sin cambio funcional NodiaAI,
+herramientas, ownership, permisos, modelos o inferencias. No se crean fichas ni
+se altera aprobación/corpus por este trabajo; ADR104 sigue propuesto.
