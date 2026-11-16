@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "status": "prepared",
-  "bundle_manifest_sha256": "697171b00b30e79b7a07d125c47145e5fbc44d57c9d687f1cc0f052284fc7288",
+  "status": "transport_adopted",
+  "bundle_manifest_sha256": "5d5a150ba591514e953269d1f72ef463bef9f7aee10cd670aee716e3e57df2e4",
   "bundle": {
     "assets": {
       "archive-completed-backend-upload.py": "3a0f596d20d6df5b3b88f680dee5c6f2c63d8792bb4c1d1ce56c2d05b7f7d968",
-      "backend_upload.py": "a90a168492d192f88283760570fe63a12757b3f6627b73feeb6c7503c7a9829e",
+      "backend_upload.py": "25bc905248373aacd250f086ebf8d00e25df67d53612b0d8da39701057066c68",
       "deploy-backend-receiver.py": "cc71b34bbdf3d8e4603aaaecf9161d62110f01ac33d202ac61eb5f9b9d37d6d3",
       "deploy-gateway.py": "b37048070631d3705c2946fb70c15e4fb2483edd412655326a49db80c5cda7fb"
     },
@@ -29,13 +29,216 @@
     "initial_ci_conclusion": "success",
     "linux_node_ci_tests": 173,
     "linux_node_policy_tests": 15,
-    "linux_root_policy_tests": 204,
+    "linux_root_policy_tests": 206,
     "skipped": 0,
-    "final_windows_node_tests": 173,
-    "final_windows_node_passed": 163,
-    "final_windows_platform_skips": 10
+    "initial_ci_job_id": "133300276596",
+    "initial_linux_root_policy_tests": 204,
+    "latest_source_sha": "2309037cedf5e497f7736cece0512868d60b6146",
+    "latest_ci_run_id": "43871419155",
+    "latest_ci_status": "completed",
+    "latest_ci_conclusion": "success",
+    "latest_policy_job_id": "133313305566",
+    "latest_policy_job_conclusion": "success",
+    "latest_policy_job_url": "https://github.com/oscarvalenzuela25/Nodia/actions/runs/43871419155/job/133313305566",
+    "upload_module_cases": 27,
+    "client_ack_lineage_source_sha": "4a5709629a708043e90a1a0958ffbfa58f3ba54f",
+    "synthetic_normal_calls_before": 18,
+    "synthetic_normal_calls_after": 10,
+    "readonly_attempt_limit": 8,
+    "transfer_call_budget": 256,
+    "local_wsl_status": "ERROR_NO_SYSTEM_RESOURCES",
+    "posix_evidence_origin": "isolated_root_ci_container",
+    "historical_windows_node_tests": 173,
+    "historical_windows_node_passed": 163,
+    "historical_windows_node_platform_skips": 10,
+    "client_pre_submit_revalidation": {
+      "status": "locally_tested_pending_fresh_head_ci",
+      "behavior": "revalidate_original_ci_and_current_master_after_byte_transfer_before_application_submission",
+      "focal_tests": 72,
+      "focal_files": [
+        "cd-vps",
+        "cd-upload",
+        "cd-release"
+      ],
+      "new_head_source_sha": null,
+      "new_head_ci_run_id": null
+    }
   },
-  "adoption": null,
+  "adoption": {
+    "schema_version": 1,
+    "manifest_sha256": "5d5a150ba591514e953269d1f72ef463bef9f7aee10cd670aee716e3e57df2e4",
+    "previous_assets_sha256": {
+      "deploy-backend-receiver.py": "b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4",
+      "deploy-gateway.py": "6b794263ad129ff45ed8752374d55a9c69cde789ae903a33cc2097fd91406e9f"
+    },
+    "assets_sha256": {
+      "archive-completed-backend-upload.py": "3a0f596d20d6df5b3b88f680dee5c6f2c63d8792bb4c1d1ce56c2d05b7f7d968",
+      "backend_upload.py": "25bc905248373aacd250f086ebf8d00e25df67d53612b0d8da39701057066c68",
+      "deploy-backend-receiver.py": "cc71b34bbdf3d8e4603aaaecf9161d62110f01ac33d202ac61eb5f9b9d37d6d3",
+      "deploy-gateway.py": "b37048070631d3705c2946fb70c15e4fb2483edd412655326a49db80c5cda7fb"
+    },
+    "previous_receiver_settings_sha256": "52768ca169a119594efbaf73374f547ea3857a65a68db769a7bff26e85fce59d",
+    "receiver_settings_sha256": "206fcbd95a997babbf39094fef9eb08b51c3ba206d281ccc7df0e19da16162ee",
+    "updater_settings_sha256": "9556cd0353679c780df5e893221cd691d75c2c5695334bbb43bea411696725bb",
+    "reconciliation_evidence_sha256": "7ae2f6080dd1946b271d4766b63606f77e1c1f825324ae9efababd1a881fba4a",
+    "current": {
+      "release_id": "backend-6ba2afb7d258-c01d5047410c",
+      "source_sha": "6ba2afb7d258548ca68c245fb8282759a30d0ce4",
+      "package_tree_sha256": "c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d"
+    },
+    "application_pids": {
+      "nodia-api.service": 1076642,
+      "nodia-ai-worker.service": 1076645
+    },
+    "deployment_requested": false,
+    "deployment_performed": false,
+    "application_services_restarted": false,
+    "automatic_retry_allowed": false,
+    "status": "upload_transport_refreshed",
+    "transport_changed": true,
+    "capabilities_verified": true,
+    "capabilities_sha256": "23a51bc44d41f3cc538442c756cfcd4028e4b1596722d87fc46709cb84692abc",
+    "completed_at": "2026-11-16T13:08:12.635460+00:00",
+    "operator_job_id": "upload-v2-adopt-597438dcc5e54144bcde5c0765727373",
+    "operator_job_exit_code": 0,
+    "receipt_source_file": "output/production/admin-jobs/upload-v2-adopt-597438dcc5e54144bcde5c0765727373/stdout.log",
+    "receipt_source_sha256": "767267ca688022cd9d7665f75e85136c18916af8fe88d7985e6892636ba82bcd",
+    "dry_run": {
+      "job_id": "upload-v2-dry-run-cbaa60893aa94ff6aa93308974eb18ff",
+      "exit_code": 0,
+      "receipt": {
+        "schema_version": 1,
+        "manifest_sha256": "5d5a150ba591514e953269d1f72ef463bef9f7aee10cd670aee716e3e57df2e4",
+        "previous_assets_sha256": {
+          "deploy-backend-receiver.py": "b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4",
+          "deploy-gateway.py": "6b794263ad129ff45ed8752374d55a9c69cde789ae903a33cc2097fd91406e9f"
+        },
+        "assets_sha256": {
+          "archive-completed-backend-upload.py": "3a0f596d20d6df5b3b88f680dee5c6f2c63d8792bb4c1d1ce56c2d05b7f7d968",
+          "backend_upload.py": "25bc905248373aacd250f086ebf8d00e25df67d53612b0d8da39701057066c68",
+          "deploy-backend-receiver.py": "cc71b34bbdf3d8e4603aaaecf9161d62110f01ac33d202ac61eb5f9b9d37d6d3",
+          "deploy-gateway.py": "b37048070631d3705c2946fb70c15e4fb2483edd412655326a49db80c5cda7fb"
+        },
+        "previous_receiver_settings_sha256": "52768ca169a119594efbaf73374f547ea3857a65a68db769a7bff26e85fce59d",
+        "receiver_settings_sha256": "206fcbd95a997babbf39094fef9eb08b51c3ba206d281ccc7df0e19da16162ee",
+        "updater_settings_sha256": "9556cd0353679c780df5e893221cd691d75c2c5695334bbb43bea411696725bb",
+        "reconciliation_evidence_sha256": "7ae2f6080dd1946b271d4766b63606f77e1c1f825324ae9efababd1a881fba4a",
+        "current": {
+          "release_id": "backend-6ba2afb7d258-c01d5047410c",
+          "source_sha": "6ba2afb7d258548ca68c245fb8282759a30d0ce4",
+          "package_tree_sha256": "c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d"
+        },
+        "application_pids": {
+          "nodia-api.service": 1076642,
+          "nodia-ai-worker.service": 1076645
+        },
+        "deployment_requested": false,
+        "deployment_performed": false,
+        "application_services_restarted": false,
+        "automatic_retry_allowed": false,
+        "status": "upload_transport_refresh_dry_run",
+        "transport_changed": false,
+        "capabilities_verified": false
+      },
+      "source_sha256": "ee698e3f04957dec4cbbf7f5a3e9a0864246636592c6605df495181e6fd115bb"
+    },
+    "fresh_ssh_capabilities": {
+      "schema_version": 1,
+      "status": "upload_capabilities",
+      "protocol_version": 2,
+      "max_chunk_bytes": 8388608,
+      "max_upload_bytes": 805306368,
+      "incoming_limit_bytes": 2147483648,
+      "incoming_limit_files": 10,
+      "logical_incoming_bytes": 1943831018,
+      "logical_incoming_files": 9,
+      "free_bytes": 99803844608,
+      "retention_policy": "archive_completed_noncurrent_on_demand",
+      "retention_deletes_files": false,
+      "assets_sha256": {
+        "archive-completed-backend-upload.py": "3a0f596d20d6df5b3b88f680dee5c6f2c63d8792bb4c1d1ce56c2d05b7f7d968",
+        "backend_upload.py": "25bc905248373aacd250f086ebf8d00e25df67d53612b0d8da39701057066c68",
+        "deploy-backend-receiver.py": "cc71b34bbdf3d8e4603aaaecf9161d62110f01ac33d202ac61eb5f9b9d37d6d3",
+        "deploy-gateway.py": "b37048070631d3705c2946fb70c15e4fb2483edd412655326a49db80c5cda7fb"
+      },
+      "deployment_requested": false,
+      "automatic_retry_allowed": false
+    },
+    "fresh_ssh_capabilities_source_file": "output/durable-uploads-20261116/capabilities-after-adoption.json",
+    "fresh_ssh_capabilities_source_sha256": "5284e099cafff1e0aa1baa3ea2d4a315d966e495c96c63c153e791931fae22c3",
+    "node_capabilities_validator_accepted": true,
+    "fresh_ssh_status": {
+      "confirmed": true,
+      "status": "deployment_ready",
+      "blocked": false,
+      "current": {
+        "release_id": "backend-6ba2afb7d258-c01d5047410c",
+        "source_sha": "6ba2afb7d258548ca68c245fb8282759a30d0ce4",
+        "package_tree_sha256": "c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d"
+      },
+      "application": {
+        "api_active": true,
+        "worker_active": true
+      }
+    },
+    "administrative_closure": null
+  },
   "delivery": null,
-  "automatic_retry_allowed": false
+  "automatic_retry_allowed": false,
+  "historical_bundles": [
+    {
+      "source_sha": "9533bc9b5fb2713d33c510facc0fb60f4d9ce204",
+      "bundle_manifest_sha256": "697171b00b30e79b7a07d125c47145e5fbc44d57c9d687f1cc0f052284fc7288",
+      "bundle": {
+        "assets": {
+          "archive-completed-backend-upload.py": "3a0f596d20d6df5b3b88f680dee5c6f2c63d8792bb4c1d1ce56c2d05b7f7d968",
+          "backend_upload.py": "a90a168492d192f88283760570fe63a12757b3f6627b73feeb6c7503c7a9829e",
+          "deploy-backend-receiver.py": "cc71b34bbdf3d8e4603aaaecf9161d62110f01ac33d202ac61eb5f9b9d37d6d3",
+          "deploy-gateway.py": "b37048070631d3705c2946fb70c15e4fb2483edd412655326a49db80c5cda7fb"
+        },
+        "expected_current": {
+          "package_tree_sha256": "c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d",
+          "release_id": "backend-6ba2afb7d258-c01d5047410c",
+          "source_sha": "6ba2afb7d258548ca68c245fb8282759a30d0ce4"
+        },
+        "previous_assets": {
+          "deploy-backend-receiver.py": "b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4",
+          "deploy-gateway.py": "6b794263ad129ff45ed8752374d55a9c69cde789ae903a33cc2097fd91406e9f"
+        },
+        "purpose": "nodia-upload-transport-v2",
+        "schema_version": 1
+      },
+      "status": "staged_superseded_not_applied",
+      "adoption": null
+    }
+  ],
+  "candidate_source_sha": "2309037cedf5e497f7736cece0512868d60b6146",
+  "staging": {
+    "status": "applied_after_hash_match",
+    "directory": "/home/nodia-admin/nodia-setup/backend/upload-v2-2309037c",
+    "files_sha256": {
+      "bundle/archive-completed-backend-upload.py": "3a0f596d20d6df5b3b88f680dee5c6f2c63d8792bb4c1d1ce56c2d05b7f7d968",
+      "bundle/backend_upload.py": "25bc905248373aacd250f086ebf8d00e25df67d53612b0d8da39701057066c68",
+      "bundle/deploy-backend-receiver.py": "cc71b34bbdf3d8e4603aaaecf9161d62110f01ac33d202ac61eb5f9b9d37d6d3",
+      "bundle/deploy-gateway.py": "b37048070631d3705c2946fb70c15e4fb2483edd412655326a49db80c5cda7fb",
+      "bundle/upload-transport.json": "5d5a150ba591514e953269d1f72ef463bef9f7aee10cd670aee716e3e57df2e4",
+      "refresh-upload-transport.py": "31617ac07563b9da099798d6a8615d8db3c26a6dc9133f3e862def9e5560596d",
+      "refresh-production-cd.py": "857d9203ea243f2049ffbf55864f35a3853238d18b3a086b803c41989289bc97"
+    },
+    "live_changes": true,
+    "application_changes": false
+  },
+  "pre_adoption_status": {
+    "status": "deployment_ready",
+    "blocked": false,
+    "current": {
+      "package_tree_sha256": "c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d",
+      "release_id": "backend-6ba2afb7d258-c01d5047410c",
+      "source_sha": "6ba2afb7d258548ca68c245fb8282759a30d0ce4"
+    },
+    "application": {
+      "api_active": true,
+      "worker_active": true
+    }
+  }
 }

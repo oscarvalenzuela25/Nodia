@@ -1640,26 +1640,57 @@ autoriza por sí mismo.
 
 - [x] Contrato y ADR propuesto registrados; autorización de implementación no
   equivale a aprobación documental o publicación de conocimiento.
-- [x] Primera implementación local de módulo, cliente, archivo y operador.
-- [x] Primer corte Linux CI43867659803:173Node,15Node de políticas y204Python
-  root en contenedor aislado, sin omisiones. Nuevos módulos de transporte/pins
-  permanecen con esos mismos hashes; ajuste posterior del cliente requiere CI final.
+- [x] Implementación de módulo, cliente, archivo y operador; candidato actual
+  `2309037cedf5e497f7736cece0512868d60b6146`, con27casos del módulo de upload.
+- [x] Corte inicial9533/CI43867659803 completo correcto:173Node,15Node de
+  políticas y204Python root sin omisiones. Conservado como evidencia histórica.
+- [x] Último job `Changes and pipeline checks`133313305566 de
+  [CI43871419155](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43871419155/job/133313305566)
+  correcto:173Node,15Node de políticas y206Python root en contenedor aislado,
+  sin skips. CI43871419155 completa correcta para2309037c, incluidas las apps.
 - [x] Revisión cruzada de fallos, hashes/byte bounds, reservas legacy, barreras
   de archivo/adopción incompletas y ausencia de replay; regresiones incorporadas.
-- [ ] Adoptar el bundle revisado con acceso administrativo autenticado, dry-run
-  y postcheck por conexión SSH nueva; distinguir resultado remoto de fixtures.
+  El último borde reconoce archivo sin recibo previo de upload y evita reset a0.
+- [x] Bundle final5d5a150b y sus siete archivos verificados en staging privado
+  `upload-v2-2309037c`, posteriormente adoptado. Bundle697171b0 sustituido,
+  conservado como corte histórico9533, nunca instalado.
+- [x] CI general43871419155 completa correcta; resultado separado del futuro HEAD.
+- [x] Dry-run y adopción root correctos; recibo del job
+  `upload-v2-adopt-597438dcc5e54144bcde5c0765727373`, exit0. Settings206fcbd9,
+  capacidades internas verificadas y capabilities por SSH nuevo aceptadas por
+  el validador Node. SSH nuevo confirma deployment_ready/blocked:false.
+  Current6ba/c01 y PIDs1076642/1076645 iguales; sin deploy/restart de aplicación.
+- [x] Gate adicional del cliente: revalidar CI de origen/master después de los
+  bytes y antes de registrar/enviar deploy. Regresión de master cambiado durante
+  transferencia y72focales correctas; cuatro assets/operador no cambiaron.
+- [ ] CI nueva del HEAD que incorporará ese gate y esta evidencia; no asignar
+  SHA/run al cambio todavía no committed.
 - [ ] Promover por PR/CI nuevos y verificar retención/recepción/entrega reales.
-- [ ] Consolidar evidencias y actualizar README/progreso/TODO al alcance comprobado.
+- [x] Consolidar recibo de adopción y postchecks en MD/JSON, README/progreso/TODO.
+- [ ] Consolidar la futura entrega y retención reales; `delivery` sigue null.
 
 El [recibo de esta continuación](../evidence/durable-backend-uploads-20261116.md)
-registra primer CI, hashes del bundle, staging privado y límites. Windows Node
-completo173(163correctos/10skips POSIX) y60focales finales correctos. WSL local
-no inicia por `ERROR_NO_SYSTEM_RESOURCES` y Docker
-no está activo; no se reinician procesos del usuario ni se usan servicios
-productivos como entorno de pruebas. El CI aislado sin secretos de PR validará
-las garantías POSIX antes de cualquier adopción. El primer corte ya pasó ese
-gate; autenticación/dry-run/CAS/postcheck de adopción todavía pendientes.
+y su JSON registran identidades, hashes y cortes de CI separados. El ajuste del
+cliente en `4a5709629a708043e90a1a0958ffbfa58f3ba54f` valida los ACK completos
+antes de continuar y evita lecturas redundantes: el fixture normal de seis bloques
+baja18→10llamadas, sin atribuir ahorro de latencia o throughput productivos.
+Sólo una respuesta ambigua provoca consulta antes de continuar; máximo8intentos
+por lectura y256llamadas por transferencia, sin replay de aplicación.
+
+WSL local no inicia por `ERROR_NO_SYSTEM_RESOURCES` y Docker no está activo; no
+se reinician procesos del usuario ni se usa producción como entorno de pruebas.
+Las206pruebas root de2309037c se ejecutaron con POSIX real en CI, sin skips.
+El transporte ya está adoptado y el JSON conserva recibo completo, hashes y
+capabilities reales: protocolo2, bloque máximo8388608bytes, cuota2147483648bytes/
+10slots; observación lógica1943831018bytes/9slots y disco libre99803844608bytes.
+Son valores observados después de adoptar, no cuotas inventadas o promesas de
+capacidad futura. Updater9556 y evidencia de conciliación7ae2 permanecen intactos.
+Producción de aplicación sigue6ba/c01, deployment_ready/blocked:false, API/worker
+activos y mismos PIDs; `delivery` continúa null. Faltan CI del nuevo HEAD,
+transferencia/retención reales y entrega nueva; OPS no se declara completado.
+No se registra aún cierre administrativo: el acceso sigue disponible para los
+pre/postchecks de la intervención autorizada.
 
 Evaluación de conocimiento: infraestructura, sin cambio funcional NodiaAI,
 herramientas, ownership, permisos, modelos o inferencias. No se crean fichas ni
-se altera aprobación/corpus por este trabajo.
+se altera aprobación/corpus por este trabajo; ADR104 sigue propuesto.

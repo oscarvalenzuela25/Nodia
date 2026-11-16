@@ -5,7 +5,7 @@ import { isHex, isSha, numeric, repository } from './cd-github.mjs';
 import { pwaVerificationDetails } from './pwa-assets.mjs';
 
 const statusValues = new Set(['baseline_verified', 'prepared', 'preflight_started', 'preflight_verified', 'not_required', 'already_current', 'content_unchanged',
-  'upload_requested', 'upload_rejected', 'upload_receiving', 'upload_open_requested', 'deployment_requested', 'submitted', 'complete', 'failed', 'unknown',
+  'upload_requested', 'upload_rejected', 'upload_receiving', 'upload_open_requested', 'upload_verified', 'deployment_requested', 'submitted', 'complete', 'failed', 'unknown',
   'asset_check_requested', 'asset_upload_requested', 'asset_hash_registration_requested',
   'pages_submission_requested', 'published_assets_verification_failed']);
 const fixedErrors = new Set(['cd_failed_inspect_private_state', 'pages_response_unsuccessful', 'pages_response_invalid',

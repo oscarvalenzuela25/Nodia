@@ -249,6 +249,18 @@ test('SSH streaming sends only the verified inclusive byte range', async t => {
   assert.equal(reply.code, 0); assert.deepEqual(reply.body, { body: '3456' });
 });
 
+test('a master change during byte transfer stops before recording or sending application submission', async () => {
+  let transferred = false, revalidated = false; const calls = [];
+  const proof = { upload_protocol_version: 2, upload_id: uploadId(uploadIdentity(artifact, ci, options.zipBytes)),
+    upload_phase: 'verified', upload_offset: options.zipBytes, upload_bytes: options.zipBytes, upload_recovered: false };
+  await assert.rejects(deployBackend({ ...options, plan: { ...options.plan, server_upload_protocol_version: 2 },
+    transfer: async () => { transferred = true; return proof; },
+    revalidate: async () => { revalidated = true; assert.equal(transferred, true); throw new CdRejected('ci_source_is_not_current_master'); },
+    send: async (_, command) => { calls.push(command); return command === 'status' ? { code: 0, body: ready() } : operationMissing; } }),
+  /ci_source_is_not_current_master/);
+  assert.equal(revalidated, true); assert.equal(calls.filter(x => x.startsWith('deploy ')).length, 0);
+});
+
 test('a disconnected upload retains its uncertain intent without another upload or deployment', async t => {
   const f = uploadFixture(t, null);
   await assert.rejects(deployBackend({ ...options, stateFile: f.stateFile,

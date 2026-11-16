@@ -77,7 +77,7 @@ export function operationAbsent(result) {
 }
 export async function deployBackend({ environment = process.env, plan, artifact, zipFile, zipBytes, ci,
   expectedRelease, expectedTree, candidateRelease, candidateTree, allowNewSubmission = true, stateFile, send = sshCommand, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)),
-  sshOptions = {}, pollLimit = 240, transfer = uploadArtifact }) {
+  sshOptions = {}, pollLimit = 240, transfer = uploadArtifact, revalidate = async () => {} }) {
   requireCd(environment.GITHUB_EVENT_NAME === 'workflow_dispatch' && environment.GITHUB_REF === 'refs/heads/master' &&
     environment.GITHUB_RUN_ATTEMPT === '1' &&
     plan.server_required === true && isSha(ci.source_sha) && ci.source_sha === plan.source_sha &&
@@ -132,6 +132,9 @@ export async function deployBackend({ environment = process.env, plan, artifact,
           uploaded.body.artifact_id === artifact.id && uploaded.body.artifact_zip_sha256 === artifact.digest.slice(7) &&
           uploaded.body.bytes === zipBytes && uploaded.body.deployment_requested === false, 'backend_upload_outcome_unknown');
       }
+      record({ status: 'upload_verified', deployment_requested: false });
+      // A long transfer must not submit an application attempt for a superseded master.
+      await revalidate();
       record({ status: 'deployment_requested', deployment_requested: true });
       const accepted = await send(session, `deploy ${id} ${artifact.id} ${artifact.digest.slice(7)} ${ci.run_id} ${ci.run_attempt} ${ci.source_sha} ${expectedRelease} ${expectedTree}`);
       requireCd(accepted.code === 0 && accepted.body?.schema_version === 1 && accepted.body.status === 'submitted' &&

@@ -1395,5 +1395,16 @@ El helper sólo revisa capabilities internas bajo sus locks antes de sellar el
 recibo; después debe verificarse por una conexión SSH nueva. No repetir un apply
 interrumpido ni generar otro manifest para eludir su journal.
 
+**Adopción comprobada2026-11-16:** bundle5d5a150b aplicado con operador31617,
+dry-run/apply exit0 y recibo `upload_transport_refreshed`. Receiver-settings206fcbd9;
+updater9556 y conciliaciones7ae2 intactos. Postcheck por SSH nuevo ofrece protocolo2,
+8MiB/bloque y cuota2GiB/10slots, aceptado por el cliente Node. Current6ba/c01 y
+PIDs1076642/1076645 preservados, sin deploy/restart de aplicación. La evidencia
+consolidada anterior conserva recibo, cuatro hashes y métricas reales; no repetir
+este apply. El gate adicional del cliente revalida CI/master después de bytes y
+antes del submit; falta su CI nueva, además de transferencia/retención reales y
+entrega normal propia. La adopción del transporte no cierra OPS-001 ni acredita
+por sí sola esos resultados.
+
 Los intents, receipts y archivos de recepción/archivo son evidencia mantenida;
 no eliminarlos para liberar cuota o simular que una operación no ocurrió.
