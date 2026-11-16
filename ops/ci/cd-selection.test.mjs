@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import test from 'node:test';
-import { selectChecks, unmanagedRuntimePaths, ancestor } from './cd-selection.mjs';
+import { selectChecks, unmanagedRuntimePaths, ancestor, deploymentPlan, serverContentEquivalenceAllowed } from './cd-selection.mjs';
 
 function fixture(t) {
   const repo = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'nodia-selection-'));
@@ -16,13 +16,17 @@ function fixture(t) {
   const write = (name, text = 'fixture\n') => { fs.mkdirSync(path.dirname(path.join(repo, name)), { recursive: true }); fs.writeFileSync(path.join(repo, name), text); };
   const commit = () => { git(['add', '-A']); git(['commit', '-qm', 'fixture', '--no-gpg-sign']); return git(['rev-parse', 'HEAD']); };
   write('fixture.txt');
+  write('nodia-server/config/nodia-ai-knowledge.registry.json', JSON.stringify({ source_paths: [], capabilities: [], bindings: [] }));
+  for (const name of ['docs/mvp/nodia-ai-v1-runtime-policy.json', 'docs/mvp/nodia-ai-v1-runtime-policy.schema.json',
+    'docs/mvp/nodia-ai-v1-common-contracts.schema.json', 'docs/mvp/nodia-ai-v1-tool-catalog.json',
+    'docs/mvp/nodia-ai-v1-tool-catalog.extensions.json', 'docs/evidence/scripts/validate-nodia-ai-ai04.cjs']) write(name, '{}\n');
   return { repo, write, commit, git };
 }
 const result = selected => ({ ...Object.fromEntries(['client','server','contracts','native','python','docs','ci'].map(key => [key, selected.includes(key)])),
   reasons: Object.fromEntries(['client','server','contracts','native','python','docs','ci'].map(key => [key, []])), docs_only: selected.join() === 'docs' });
 
 test('deployed backlog and config drift expand ordinary checks without reducing event selections', t => {
-  const f = fixture(t), baseline = f.commit(); f.write('client'); const eventBase = f.commit(); f.write('docs'); const head = f.commit();
+  const f = fixture(t), baseline = f.commit(); f.write('client'); const eventBase = f.commit(); f.write('docs-fixture'); const head = f.commit();
   const classify = ({ base }) => result(base === baseline ? ['client','server','contracts'] : ['docs','python']);
   const selected = selectChecks({ repo: f.repo, base: eventBase, head, clientBase: baseline, serverBase: baseline, productionPush: true, classify });
   for (const flag of ['client','server','contracts','docs','python']) assert.equal(selected[flag], true);
@@ -42,4 +46,29 @@ test('actual runtime dependencies block coordinated rollout but prose and isolat
   assert.deepEqual(unmanagedRuntimePaths({ repo: f.repo, base, head: docs }), []);
   f.write('nodia-gemini-microservice/requirements.txt'); f.write('nodia-server/native/binding.gyp'); const head = f.commit();
   assert.deepEqual(unmanagedRuntimePaths({ repo: f.repo, base, head }), ['nodia-gemini-microservice/requirements.txt','nodia-server/native/binding.gyp']);
+});
+
+test('content equivalence eligibility considers the complete deployed server backlog, including both rename paths', t => {
+  const f = fixture(t), base = f.commit();
+  f.write('docs/mvp/example.md'); f.write('nodia-client/src/chat.ts'); const client = f.commit();
+  assert.equal(serverContentEquivalenceAllowed({ repo: f.repo, base, head: client }), true);
+  assert.equal(deploymentPlan({ repo: f.repo, head: client, clientBase: base, serverBase: base }).server_content_equivalence_allowed, true);
+  f.write('ops/ci/runtime.mjs'); const runtime = f.commit();
+  f.write('docs/new.md'); const latest = f.commit();
+  assert.equal(serverContentEquivalenceAllowed({ repo: f.repo, base: client, head: latest }), false);
+  assert.equal(serverContentEquivalenceAllowed({ repo: f.repo, base: runtime, head: latest }), true);
+  f.git(['mv', 'ops/ci/runtime.mjs', 'docs/moved.md']); const renamed = f.commit();
+  assert.equal(serverContentEquivalenceAllowed({ repo: f.repo, base: latest, head: renamed }), false);
+});
+
+test('equal payloads cannot bypass rollout for packaging, runtime, CI or root inputs', t => {
+  const f = fixture(t); let base = f.commit();
+  for (const name of ['nodia-server/src/app.ts', 'nodia-server/README.md', 'ops/production/package-backend-release.mjs',
+    '.github/workflows/cd.yml', '.nvmrc', 'package.json', 'AGENTS.md', 'docs-lookalike/file.md', 'nodia-client-other/file.ts']) {
+    f.write(name); const head = f.commit();
+    assert.equal(serverContentEquivalenceAllowed({ repo: f.repo, base, head }), false, name);
+    base = head;
+  }
+  assert.throws(() => serverContentEquivalenceAllowed({ repo: f.repo, base: 'f'.repeat(40), head: base }),
+    /deployed_baseline_not_an_ancestor/);
 });

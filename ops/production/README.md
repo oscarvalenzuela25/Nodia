@@ -1316,3 +1316,28 @@ upload_rejected y el código permitido; las demás respuestas siguen unknown y s
 replay. El gateway productivo debe actualizarse mediante operación revisada y
 pin, independientemente del release de la aplicación; no asumirlo instalado por
 fusionar el código. Una cuota reparada no permite relanzar el CD fallido.
+
+## Refresco acotado del gateway — 2026-11-15
+
+`refresh-deploy-gateway.py` adopta únicamente el diagnóstico de upload revisado,
+sin reinstalar el receiver/updater o cambiar sudoers. Su CLI exige hash anterior
+del gateway, candidato exacto y CAS del receiver-settings completo. Usa los bytes
+fijados de `refresh-production-cd.py` como política de IO; no modificar ese helper
+compartido, otros operadores fijan su hash.
+
+Dry-run por defecto: snapshot único del candidato, UTF-8/LF/digest/compile, rutas
+root/modos/pins, locks receiver→installation y status efectivo/PIDs estables.
+El archivo BLOCKED histórico y su ACK pueden estar conciliados: la autoridad es
+el receiver instalado, no la mera presencia de BLOCKED. No se borran evidencias.
+
+Apply guarda intent/originales durables en `gateway-refresh-<hash>/`, reemplaza
+gateway0755 y su pin en receiver-settings0600 con fsync por archivo, y registra
+receipt sólo si current/PIDs y el resto de assets/configuración siguen iguales.
+Un corte entre ambos reemplazos deja el pin incoherente y falla cerrado; no hay
+rollback/replay automático. Un record existente exige inspección, incluso en dry-run.
+
+La adopción real de6b794263… y la cuota reparada del intento43791568791 se
+registran en [99§31](../../docs/mvp/99-production-deployment-and-cicd-plan.md#31-upload-incierto-y-equivalencia-acotada-de-payload--2026-11-15)
+y [evidencia](../../docs/evidence/deploy-upload-reconciliation-20261115.md).
+No repetir esa operación ni el CD antiguo. El éxito del operador requiere además
+un `status` por una conexión SSH restringida nueva; no se prueba con otro upload.

@@ -102,3 +102,19 @@ test('upload rejection receipts preserve only allowlisted reasons and never auth
   assert.equal(receipt.backend.automatic_retry_allowed, false);
   assert.doesNotMatch(JSON.stringify(receipt), /private_secret/);
 });
+
+test('equivalent backend receipts and summaries distinguish candidate from actual provenance without claiming a deployment', t => {
+  const f = fixture(t), actual = 'e'.repeat(40), candidate = f.environment.CI_SOURCE_SHA, tree = 'f'.repeat(64);
+  f.write('backend-result.json', { status: 'content_unchanged', source_sha: actual, candidate_source_sha: candidate,
+    package_tree_sha256: tree, release_id: `backend-${actual.slice(0, 12)}-${tree.slice(0, 12)}`,
+    deployment_requested: false, deployment_performed: false, automatic_retry_allowed: true, response: 'private-secret' });
+  releaseSummary(f.environment);
+  const receipt = JSON.parse(fs.readFileSync(path.join(f.directory, 'delivery-receipt.json')));
+  assert.equal(receipt.backend.status, 'content_unchanged'); assert.equal(receipt.backend.source_sha, actual);
+  assert.equal(receipt.backend.candidate_source_sha, candidate); assert.equal(receipt.backend.deployment_requested, false);
+  assert.equal(receipt.backend.deployment_performed, false); assert.equal(receipt.backend.automatic_retry_allowed, false);
+  assert.match(fs.readFileSync(f.environment.GITHUB_STEP_SUMMARY, 'utf8'), /Backend retained source:.*equivalent candidate:.*No backend deployment performed/);
+  assert.doesNotMatch(JSON.stringify(receipt), /private-secret|response/);
+  f.write('backend-result.json', { status: 'content_unchanged', candidate_source_sha: 'private-secret' });
+  assert.equal(Object.hasOwn(deliveryReceipt(f.directory, f.environment).backend, 'candidate_source_sha'), false);
+});

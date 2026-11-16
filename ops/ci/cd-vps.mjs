@@ -93,6 +93,13 @@ export async function deployBackend({ environment = process.env, plan, artifact,
       requireCd(current.release_id === expectedRelease && current.package_tree_sha256 === expectedTree &&
         current.source_sha === plan.server_base, 'backend_changed_after_plan');
       requireCd(allowNewSubmission === true, 'prior_cd_run_requires_operator_reconciliation');
+      if (plan.server_content_equivalence_allowed === true && candidateTree === current.package_tree_sha256) {
+        const result = { status: 'content_unchanged', source_sha: current.source_sha,
+          release_id: current.release_id, package_tree_sha256: current.package_tree_sha256,
+          candidate_source_sha: ci.source_sha, deployment_requested: false, deployment_performed: false };
+        record(result);
+        return result;
+      }
       record({ status: 'upload_requested', deployment_requested: false });
       const uploaded = await send(session, `upload ${artifact.id} ${artifact.digest.slice(7)} ${ci.run_id} ${ci.run_attempt} ${zipBytes}`,
         { inputFile: zipFile, timeout: 180_000 });

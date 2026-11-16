@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { verifyArtifact } from './artifact-release.mjs';
-import { CdRejected, extractOriginalZip, githubClient, isSha, numeric, outputs, requireCd, safeFailure, selectArtifact, writeState } from './cd-github.mjs';
+import { CdRejected, extractOriginalZip, githubClient, isHex, isSha, numeric, outputs, requireCd, safeFailure, selectArtifact, writeState } from './cd-github.mjs';
 import { deploymentPlan, unmanagedRuntimePaths } from './cd-selection.mjs';
 import { deployBackend, readBackend } from './cd-vps.mjs';
 import { preflightPages, publishPages } from './cd-pages.mjs';
@@ -175,7 +175,8 @@ export async function updateClient(environment = process.env, { api, verify = ve
   const { root, output } = workspace(environment);
   const plan = JSON.parse(fs.readFileSync(path.join(output, 'release-plan.json'), 'utf8'));
   const backend = JSON.parse(fs.readFileSync(path.join(output, 'backend-result.json'), 'utf8'));
-  requireCd(plan.server_required ? ['complete', 'already_current'].includes(backend.status) && backend.source_sha === plan.source_sha :
+  requireCd(plan.server_required ? (['complete', 'already_current'].includes(backend.status) && backend.source_sha === plan.source_sha ||
+    confirmedEquivalentBackend(plan, backend)) :
     backend.status === 'not_required', 'backend_must_be_confirmed_before_pages');
   requireClientPreflight(output, plan);
   api ??= githubClient(environment);
@@ -194,6 +195,23 @@ export async function updateClient(environment = process.env, { api, verify = ve
   writeState(path.join(output, 'client-result.json'), result);
   return result;
 }
+export function confirmedEquivalentBackend(plan, backend) {
+  const baseline = plan.server_baseline, artifact = plan.artifacts?.server;
+  const tree = baseline?.package_tree_sha256, source = baseline?.source_sha;
+  return backend.status === 'content_unchanged' && plan.server_content_equivalence_allowed === true &&
+    !Object.hasOwn(backend, 'error_code') &&
+    plan.prior_cd_run === false && isSha(source) && isSha(plan.source_sha) && isHex(tree) &&
+    source === plan.server_base && backend.source_sha === source &&
+    backend.candidate_source_sha === plan.source_sha &&
+    baseline.release_id === `backend-${source.slice(0, 12)}-${tree.slice(0, 12)}` &&
+    backend.release_id === baseline.release_id && backend.package_tree_sha256 === tree &&
+    artifact?.metadata?.source_sha === plan.source_sha && artifact.metadata.package_tree_sha256 === tree &&
+    artifact.metadata.production_eligible === true && artifact?.result?.production_eligible === true &&
+    artifact.result.source_sha === plan.source_sha && artifact.result.package_tree_sha256 === tree &&
+    artifact.result.release_id === `backend-${plan.source_sha.slice(0, 12)}-${tree.slice(0, 12)}` &&
+    artifact.metadata.release_id === artifact.result.release_id &&
+    backend.deployment_requested === false && backend.deployment_performed === false;
+}
 export function releaseSummary(environment = process.env) {
   const { output } = workspace(environment);
   const receipt = deliveryReceipt(output, environment);
@@ -203,6 +221,7 @@ export function releaseSummary(environment = process.env) {
     `Source: \`${receipt.source_sha ?? 'not prepared'}\`.\n\n` +
     '| Component | Last confirmed state |\n| --- | --- |\n' +
     `| API/worker | ${backend?.status ?? 'not confirmed'} |\n| Static Client | ${client?.status ?? 'not confirmed'} |\n\n` +
+    (backend?.status === 'content_unchanged' ? `Backend retained source: \`${backend.source_sha}\`; equivalent candidate: \`${backend.candidate_source_sha}\`. No backend deployment performed.\n\n` : '') +
     `Backend operation: \`${backend?.operation_id ?? 'not recorded'}\`; Pages deployment: \`${client?.deployment_id ?? 'not recorded'}\`.\n\n` +
     `Sanitized receipt artifact: \`delivery-receipt-${receipt.delivery.run_id ?? 'unknown'}-${receipt.delivery.run_attempt ?? 'unknown'}\`.\n\n` +
     (failure ? `Stopped with \`${failure.error_code}\`; no automatic retry.\n\n` : '') +

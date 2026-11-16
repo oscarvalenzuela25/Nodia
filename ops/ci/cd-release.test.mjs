@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { confirmPublishedClient, preflightClient, updateServer, updateClient, releaseSummary } from './cd-release.mjs';
+import { confirmPublishedClient, confirmedEquivalentBackend, preflightClient, updateServer, updateClient, releaseSummary } from './cd-release.mjs';
 import { CdRejected, safeFailure } from './cd-github.mjs';
 
 function fixture(t) {
@@ -168,5 +168,67 @@ test('replacing the preflight identity or changing extracted bytes blocks backen
   f.write('backend-result.json', { status: 'complete', source_sha: f.plan.source_sha });
   await assert.rejects(updateClient(f.environment, { api: f.api, verify: f.verify,
     publish: async () => { contacted = true; } }), /client_static_changed_after_preflight/);
+  assert.equal(contacted, false);
+});
+
+function equivalentCandidate(t) {
+  const f = clientCandidate(t), tree = f.plan.artifacts.server.result.package_tree_sha256, source = f.plan.server_base;
+  const server = f.plan.artifacts.server;
+  server.metadata = { ...server.metadata, release_id: server.result.release_id, production_eligible: true };
+  server.result = { ...server.result, source_sha: f.plan.source_sha, production_eligible: true };
+  Object.assign(f.plan, { prior_cd_run: false, server_content_equivalence_allowed: true,
+    server_baseline: { source_sha: source, release_id: `backend-${source.slice(0, 12)}-${tree.slice(0, 12)}`, package_tree_sha256: tree } });
+  const backend = { ...f.plan.server_baseline, status: 'content_unchanged', candidate_source_sha: f.plan.source_sha,
+    deployment_requested: false, deployment_performed: false };
+  f.write('release-plan.json', f.plan);
+  return { ...f, backend };
+}
+
+test('verified equivalent payload allows Pages while retaining the actually running backend source', async t => {
+  const f = equivalentCandidate(t);
+  await preflightClient(f.environment, { ...f, preflight: async options => {
+    assert.equal(options.allowCreate, true); return f.preflight({ ...options, allowCreate: false });
+  } });
+  let deployed = 0, published = 0;
+  await updateServer(f.environment, { api: f.api, deploy: async options => {
+    deployed++; assert.equal(options.allowNewSubmission, true);
+    assert.equal(options.plan.server_content_equivalence_allowed, true); return f.backend;
+  } });
+  await updateClient(f.environment, { api: f.api, verify: f.verify, publish: async options => {
+    published++; assert.equal(options.allowCreate, true); await options.revalidate();
+    return { status: 'complete', source_sha: f.plan.source_sha };
+  }, confirm: async ({ result }) => result });
+  const retained = JSON.parse(fs.readFileSync(path.join(f.environment.CD_WORKSPACE, 'backend-result.json')));
+  assert.equal(retained.source_sha, f.plan.server_base); assert.equal(retained.candidate_source_sha, f.plan.source_sha);
+  assert.equal(retained.deployment_performed, false); assert.equal(deployed, 1); assert.equal(published, 1);
+});
+
+test('incomplete or mismatched equivalence evidence blocks Pages before credentials and HTTP', async t => {
+  const f = equivalentCandidate(t);
+  assert.equal(confirmedEquivalentBackend(f.plan, f.backend), true);
+  const variants = [
+    [{ server_content_equivalence_allowed: false }, {}], [{ server_content_equivalence_allowed: undefined }, {}],
+    [{ server_content_equivalence_allowed: 'true' }, {}], [{ prior_cd_run: true }, {}], [{ prior_cd_run: undefined }, {}],
+    [{ server_base: 'b'.repeat(40) }, {}], [{ server_baseline: {} }, {}], [{ artifacts: {} }, {}],
+    [{ artifacts: { server: { ...f.plan.artifacts.server, metadata: { ...f.plan.artifacts.server.metadata, package_tree_sha256: 'b'.repeat(64) } } } }, {}],
+    [{ artifacts: { server: { ...f.plan.artifacts.server, result: { ...f.plan.artifacts.server.result, package_tree_sha256: 'b'.repeat(64) } } } }, {}],
+    [{ artifacts: { server: { ...f.plan.artifacts.server, metadata: { ...f.plan.artifacts.server.metadata, source_sha: 'b'.repeat(40) } } } }, {}],
+    [{ artifacts: { server: { ...f.plan.artifacts.server, result: { ...f.plan.artifacts.server.result, release_id: 'invalid' } } } }, {}],
+    [{ artifacts: { server: { ...f.plan.artifacts.server, result: { ...f.plan.artifacts.server.result, source_sha: 'b'.repeat(40) } } } }, {}],
+    [{ artifacts: { server: { ...f.plan.artifacts.server, metadata: { ...f.plan.artifacts.server.metadata, release_id: 'invalid' } } } }, {}],
+    [{ artifacts: { server: { ...f.plan.artifacts.server, metadata: { ...f.plan.artifacts.server.metadata, production_eligible: false } } } }, {}],
+    [{ artifacts: { server: { ...f.plan.artifacts.server, result: { ...f.plan.artifacts.server.result, production_eligible: false } } } }, {}],
+    [{}, { source_sha: f.plan.source_sha }], [{}, { candidate_source_sha: 'b'.repeat(40) }],
+    [{}, { release_id: 'invalid' }], [{}, { package_tree_sha256: 'c'.repeat(12) }],
+    [{}, { deployment_requested: true }], [{}, { deployment_performed: true }], [{}, { deployment_performed: undefined }],
+    [{}, { error_code: 'backend_upload_outcome_unknown' }],
+  ];
+  let contacted = false;
+  for (const [planChange, backendChange] of variants) {
+    f.write('release-plan.json', { ...f.plan, ...planChange });
+    f.write('backend-result.json', { ...f.backend, ...backendChange });
+    await assert.rejects(updateClient(f.environment, { api: { gate: async () => { contacted = true; } } }),
+      /backend_must_be_confirmed_before_pages/);
+  }
   assert.equal(contacted, false);
 });
