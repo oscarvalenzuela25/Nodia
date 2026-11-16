@@ -4,11 +4,11 @@
   "document_id": "nodia-ai.chat-composer-selection",
   "product_id": "nodia-ai",
   "kind": "feature",
-  "revision": 14,
+  "revision": 15,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "R02 desplegado en VM por solicitud explícita: compositor y selección entre mensajes, miniaturas/papelera y subida serial sin replay. Client/API/worker Linux verificados, datos y sesiones conservados; sin inferencia ni calificación nueva de modelos. R03: avatar común, actividad temporal, cabecera estable y teclado/menú del compositor implementados y adoptados sólo en Client, con Server y KB preservados. R04 incorpora renombrado inline en cabecera mediante el PATCH existente, revisión fijada y borrador recuperable. R07: dictado explícito del navegador a texto editable, posible servicio remoto aceptado, onda desde Web Audio y reproducción local de audio manual/histórico implementados localmente. El micrófono principal no crea adjuntos ni autoenvía; Client estático R07 adoptado y verificado por HTTP, con API/worker/KB/Native preservados; transcripción real no validada. R08: presentación Markdown limitada al texto visible del asistente y recarga de elegibilidad por IconButton44px implementadas, con QA integrada/visual y adopción estática R08 verificadas. No cambia el motor de dictado ni aplica un restablecimiento de permiso. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación. Plan107 (2026-11-15): evaluación visual y de interacción futura del chat, sin implementación ni cambios de contratos, modos o herramientas. El estado de implementación conserva exclusivamente el alcance existente; rediseño pendiente NAIUX-00/01. Continuación plan107: upgrade UX/UI implementado y verificado localmente con fixtures, conservando contratos y modos; aceptación humana/dispositivos y adopción por entorno pendientes. Sin nueva herramienta, aprobación o publicación."
+    "notes": "R02 desplegado en VM por solicitud explícita: compositor y selección entre mensajes, miniaturas/papelera y subida serial sin replay. Client/API/worker Linux verificados, datos y sesiones conservados; sin inferencia ni calificación nueva de modelos. R03: avatar común, actividad temporal, cabecera estable y teclado/menú del compositor implementados y adoptados sólo en Client, con Server y KB preservados. R04 incorpora renombrado inline en cabecera mediante el PATCH existente, revisión fijada y borrador recuperable. R07: dictado explícito del navegador a texto editable, posible servicio remoto aceptado, onda desde Web Audio y reproducción local de audio manual/histórico implementados localmente. El micrófono principal no crea adjuntos ni autoenvía; Client estático R07 adoptado y verificado por HTTP, con API/worker/KB/Native preservados; transcripción real no validada. R08: presentación Markdown limitada al texto visible del asistente y recarga de elegibilidad por IconButton44px implementadas, con QA integrada/visual y adopción estática R08 verificadas. No cambia el motor de dictado ni aplica un restablecimiento de permiso. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación. Plan107 (2026-11-15): evaluación visual y de interacción futura del chat, sin implementación ni cambios de contratos, modos o herramientas. El estado de implementación conserva exclusivamente el alcance existente; rediseño pendiente NAIUX-00/01. Continuación plan107: upgrade UX/UI implementado y verificado localmente con fixtures, conservando contratos y modos; aceptación humana/dispositivos y adopción por entorno pendientes. Sin nueva herramienta, aprobación o publicación. Continuación productiva2026-11-16: la UI del plan107 fue adoptada mediante CI43798403214/CD43799433169 nuevos, fuente6ba2afb7d258548ca68c245fb8282759a30d0ce4. El recibo acredita backend y Client completos,215assets y10recursos PWA verificados. Esta continuación sucede el límite local sin despliegue del15 de noviembre; no acredita revisión humana de UI, micrófono, inferencias ni aprobación/publicación del contexto."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento NodiaAI conforme AGENTS",
@@ -112,10 +112,18 @@
     {
       "path": "docs/mvp/107-nodia-ai-ux-ui-upgrade-plan.md",
       "kind": "specification"
+    },
+    {
+      "path": "docs/evidence/deploy-upload-reconciliation-20261115.md",
+      "kind": "evidence"
+    },
+    {
+      "path": "docs/evidence/deploy-upload-reconciliation-20261115.json",
+      "kind": "evidence"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-15",
+    "checked_on": "2026-11-16",
     "evidence_paths": [
       "docs/evidence/nodia-ai-chat-redesign-verification-20261028-r01.json",
       "docs/evidence/nodia-ai-chat-refinement-verification-20261028-r02.json",
@@ -130,9 +138,11 @@
       "docs/evidence/nodia-ai-chat-markdown-20261029-r01.json",
       "docs/evidence/nodia-ai-chat-space-gpt-selection-20261114.md",
       "docs/evidence/chat-gpt-development-vm-20261114-r01.json",
-      "docs/evidence/nodia-ai-ux-upgrade-20261115.md"
+      "docs/evidence/nodia-ai-ux-upgrade-20261115.md",
+      "docs/evidence/deploy-upload-reconciliation-20261115.md",
+      "docs/evidence/deploy-upload-reconciliation-20261115.json"
     ],
-    "notes": "Las evidencias R02-R08 y la continuación VM del 2026-11-14 conservan su alcance histórico en evidence_paths y el cuerpo: UI, adjuntos/dictado, selección y entrega estática no acreditan toda inferencia, MIME, cuenta o dispositivo. La generación Teacher del recibo VM sólo acredita su selección/propósito exactos. Continuación plan107 del 2026-11-15: 3013 pruebas Client/363 archivos con4workers, build/tipos y lint del código excluyendo temporales correctos; QA28perfiles sintéticos con GuardStrict real y adapter aislado, foco/ancla/datos y errores conservados. Una ronda global previa agotó espera RTL OCR; caso/suite aislados y ronda final pasaron sin cambiar código/assertions/timeout; causa concreta no probada. Comparación geométrica y coste de bytes en el recibo nuevo. Sin inferencias, publicación, despliegue o aceptación humana/teclado físico; NAIUX-07 pendiente. Los originales históricos y sus hashes no se reescriben."
+    "notes": "Las evidencias R02-R08 y la continuación VM del 2026-11-14 conservan su alcance histórico en evidence_paths y el cuerpo: UI, adjuntos/dictado, selección y entrega estática no acreditan toda inferencia, MIME, cuenta o dispositivo. La generación Teacher del recibo VM sólo acredita su selección/propósito exactos. Continuación plan107 del 2026-11-15: 3013 pruebas Client/363 archivos con4workers, build/tipos y lint del código excluyendo temporales correctos; QA28perfiles sintéticos con GuardStrict real y adapter aislado, foco/ancla/datos y errores conservados. Una ronda global previa agotó espera RTL OCR; caso/suite aislados y ronda final pasaron sin cambiar código/assertions/timeout; causa concreta no probada. Comparación geométrica y coste de bytes en el recibo nuevo. Sin inferencias, publicación, despliegue o aceptación humana/teclado físico; NAIUX-07 pendiente. Los originales históricos y sus hashes no se reescriben. Revisión documental2026-11-16 del recibo deploy-upload-reconciliation-20261115.json:new_delivery: CI43798403214/CD43799433169 success; backend/Client fuente6ba2afb7d258548ca68c245fb8282759a30d0ce4, Pagesbcf7cb3c-3bfd-4efd-93fb-fac3a3afbe8a,215assets/PWA10exactos en1intento. SSH fresco acredita current6ba/c01 y API/worker activos; TLS API200,auth anónimo401 y Client200. Sin inferencias, micrófono físico o aceptación humana nuevos; draft/unregistered/approval:null y límites anteriores conservados."
   },
   "approval": null
 }
@@ -140,7 +150,35 @@
 
 # Chat, compositor y selección por conversación — contexto funcional para NodiaAI
 
+## Adopción productiva del upgrade UX/UI — 2026-11-16
+
+El diseño de [plan107](../../../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md)
+está adoptado mediante [CI43798403214](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43798403214)
+y [CD43799433169](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43799433169),
+ambos completos para fuente `6ba2afb7d258548ca68c245fb8282759a30d0ce4`.
+El [recibo JSON, `new_delivery`](../../../../evidence/deploy-upload-reconciliation-20261115.json)
+acredita backend y Client; la [conciliación histórica](../../../../evidence/deploy-upload-reconciliation-20261115.md)
+preserva el incidente anterior, sin convertirlo en un reintento del mismo upload.
+
+El Client publicado tiene215assets, árbol `bbb5c0a0fa85…` y Pages
+`bcf7cb3c-3bfd-4efd-93fb-fac3a3afbe8a`; los10recursos PWA coincidieron exactamente
+en un intento. Backend adoptado `backend-6ba2afb7d258-c01d5047410c`, con contenido
+`c01d5047410c…` idéntico al anterior. SSH fresco confirma current/fuente6ba,
+API/worker activos y `blocked:false`. Lecturas con TLS verificado: API200,
+autenticación anónima401 y Client200.
+
+La adopción conserva selección exacta, borradores/errores, adjuntos, dictado,
+Stop y recuperación descritos debajo. Evaluación de impacto: sólo entrega de UI
+ya implementada, sin reglas, contratos, permisos, herramientas o capacidad IA
+nuevos. No se comprobaron una nueva inferencia, micrófono/teclado físico o
+comprensión humana de la UI; esos límites siguen pendientes en NAIUX-07.
+Ficha draft/implemented/unregistered/approval:null; desplegar la aplicación no
+aprueba esta revisión ni publica la ficha en el contexto del modelo.
+
 ## Evolución UX/UI del chat — planificación2026-11-15
+
+Corte local anterior a la adopción productiva del16 documentada arriba; se
+preserva su evidencia sin mantener la adopción como pendiente actual.
 
 [Plan107§11](../../../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#11-implementación-local-solicitada-en-la-misma-rama--2026-11-15)
 y [evidencia local](../../../../evidence/nodia-ai-ux-upgrade-20261115.md) cierran

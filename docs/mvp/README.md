@@ -1,17 +1,19 @@
 # Especificación del MVP — Nodia
 
-**CD: cuota reparada y gateway adoptado, deploy pendiente — 2026-11-15:**
-Inspección root del CD43791568791 confirmó cinco ausencias objetivo y cuota
-insuficiente por12.323.628bytes. Archivado reversible de un ZIP complete/no-current
-deja8ZIPs/1.727.848.749bytes. Gateway6b794263 adoptado con CAS/pin y SSH nuevo
-deployment_ready/blocked:false; receiver, current20ba/c01 y PIDs intactos.
-[99§31](99-production-deployment-and-cicd-plan.md#31-upload-incierto-y-equivalencia-acotada-de-payload--2026-11-15),
-[evidencia/recibos](../evidence/deploy-upload-reconciliation-20261115.md):155Node
-y67Python Linux correctos, sin skips; revisión independiente sin hallazgos.
-Recibo fallido intacto y sin replay, deploy/publicación nuevos aún no ejecutados.
-Primera promoción con ops requiere entrega normal; [TODO OPS-001](TODO.md)
-conserva preflight capacidad/protocolo, ledger/reanudación y retención automática
-pendientes. ADR103 propuesto, equivalencia local sin adopción de aplicación.
+**CD y NodiaAI: entrega productiva completada — 2026-11-16:**
+PR36→development y PR37→master6ba2afb7, con CI correctos. CI43798403214 y
+CD43799433169 correctos: backend6ba/c01 complete y Client6ba/bbb5 publicado,
+PWA10recursos verificados. SSH nuevo confirma current, API/worker activos y
+blocked:false; HTTPS API200/auth401/Client200 con TLS verificado.
+[99§31](99-production-deployment-and-cicd-plan.md#312-entrega-nueva-completada-en-producción--2026-11-16)
+y [evidencia/recibos](../evidence/deploy-upload-reconciliation-20261115.md)
+separan mantenimiento sin restart de la entrega normal que sí activó release y
+reinició servicios. No-op no usado por cambiosops; código integrado, caso remoto
+elegible aún sin ensayar. CD antiguo/recibo unknown intactos, sin replay.
+[TODO](TODO.md): NAIUX adopción operativa realizada, comprensión/UI real y teléfono
+pendientes; OPS conserva preflight, ledger/reanudación y retención automática.
+Sin nueva inferencia, aceptación humana o aprobación/publicación de fichas.
+Sudo invalidado y tmux administrativo cerrado, comprobación SSH correcta.
 
 **CD: cuota de upload reparada, despliegue pendiente — 2026-11-15:**
 CI43753748903 pasó; CD43754640640 rechazó backend antes de submit/publicación.

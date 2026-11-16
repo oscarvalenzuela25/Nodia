@@ -1483,8 +1483,8 @@ Implementación local en `codex/fix-deploy-upload-reconciliation`: selección,
 transporte, gate Pages y recibo/resumen conservan esa distinción. Suite Node CI
 completa:155correctos en Linux nativo, sin skips; Windows145correctos/10skips de
 plataforma. Negativos de elegibilidad/procedencia y publicación condicionada
-comprobados con fixtures. Esta validación local precede a la adopción del gateway;
-todavía no hay nuevo CI/CD remoto por esta continuación.
+comprobados con fixtures. Esta validación local precede a la adopción del gateway
+y al CI/CD nuevo completado en§31.2; conserva sus resultados y alcance.
 
 **Continuación operatoria autorizada:** inspección root confirmó9ZIPs y
 1.943.825.000bytes, más215.982.276del candidato: exceso12.323.628 frente a2GiB.
@@ -1500,8 +1500,8 @@ SSH restringido nuevo deployment_ready/blocked:false. Linux67pruebas correctas,
 sin skips (14helpernuevo+27receiver+16archivo+10refresh); revisión sin hallazgos.
 [Recibos durables](../evidence/deploy-upload-reconciliation-20261115.json) y
 [evidencia detallada](../evidence/deploy-upload-reconciliation-20261115.md).
-El CD fallido conserva su recibo unknown; no fue reescrito o repetido. Nueva
-promoción/CI/CD pendiente, sin deploy/publicación de aplicación por el mantenimiento.
+El CD fallido conserva su recibo unknown; no fue reescrito o repetido. El
+mantenimiento no desplegó/publicó aplicación; la entrega posterior figura en§31.2.
 
 ### 31.1. Fiabilidad del transporte y siguiente entrega OPS-001
 
@@ -1549,5 +1549,49 @@ No presentar tests sintéticos como instalación remota o reparación de este fa
 
 Evaluación de conocimiento NodiaAI: infraestructura, sin cambio funcional de
 contratos, permisos, herramientas o modelos; no se crean/publican fichas por
-esta intervención. ADR103 permanece propuesto; gateway diagnóstico adoptado,
-equivalencia candidata y nueva entrega de aplicación aún sin adopción productiva.
+esta intervención. ADR103 permanece propuesto; gateway diagnóstico adoptado.
+La adopción posterior de aplicación y los límites del no-op se registran abajo.
+
+### 31.2. Entrega nueva completada en producción — 2026-11-16
+
+[PR36](https://github.com/oscarvalenzuela25/Nodia/pull/36) integrada en development
+b934b4ca y [PR37](https://github.com/oscarvalenzuela25/Nodia/pull/37) promovida a
+master`6ba2afb7d258548ca68c245fb8282759a30d0ce4`. CI de
+[PR36/43796059914](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43796059914),
+[PR37/43797447887](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43797447887)
+y [push master43798403214](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43798403214)
+correctos. [CD43799433169](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43799433169)
+terminó correctamente, con `failure:null` y `prior_cd_run:false`.
+
+- Backend: operación95a1e365c9b294773a082b2b7f30db7c complete,
+  `backend-6ba2afb7d258-c01d5047410c`, árbol completo c01d5047… de la evidencia.
+  Se realizó entrega normal: upload, activación del nuevo release y reinicio
+  coordinado de servicios conforme al protocolo. No fue un no-op ni replay.
+- Client: complete, Pages`bcf7cb3c-3bfd-4efd-93fb-fac3a3afbe8a`, release
+  `client-6ba2afb7d258-bbb5c0a0fa85`; payload igual al candidato538 fallido.
+  Preflight215assets/65faltantes y10recursos PWA verificados en un intento.
+- [Recibo oficial14196161759](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43799433169/artifacts/14196161759),
+  ZIP SHA256`68e2f4a36bb412b785307c21a85db281f0afcc0ac32fbe295511217c07a92098`;
+  [JSON durable](../evidence/deploy-upload-reconciliation-20261115.json) conserva
+  recibo completo, estado SSH y comprobaciones públicas. El recibo anterior se
+  mantiene separado e intacto.
+- SSH restringido nuevo: deployment_ready, current6ba/c01, blocked:false y
+  API/worker activos. HTTPS con verificación TLS normal: API200, auth anónima401
+  y Client200. Sin inferencias, login nuevo o aceptación humana/UI por esta prueba.
+
+La primera promoción incluía ops: `server_content_equivalence_allowed:false`.
+El código está integrado/adoptado por esta entrega; la omisión por equivalencia
+no se utilizó ni se ensayó remotamente con otro caso elegible. No simular un
+segundo deploy para demostrarla. Linux155Node locales,67Python focales y145checks
+root de políticas en CI, además de las suites de aplicación del CI, correctos.
+Client del CI push/master pasó3013pruebas/363archivos; hashes postdeploy del
+gateway6b794263…/receiverb2880ea7… exactos y conservados.
+
+NodiaAI UX/UI queda entregado operativamente mediante el Client publicado; sus
+pruebas locales conservan alcance propio y NAIUX-07 mantiene comprensión/UI real
+y teléfono/teclado físico pendientes. OPS-02/03/04 y la política automática de
+OPS-05 siguen pendientes; no confundir esta entrega exitosa con recuperación
+reanudable o retención automática implementadas. Sudo invalidado mediante job
+close-upload-operator-2ec47231daf74e3499f3a826dbf735e7 complete/exit0; tmux setup
+cerrado, comprobación SSH exit0. La documentación final se integrará por PR a
+development; no requiere otra promoción productiva para repetir esta entrega.

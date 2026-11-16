@@ -5,6 +5,8 @@ Rama `codex/nodia-ai-ux-ui-upgrade`, base
 `d2baa8f16f7ca352437cbed0890ac4e7b4e53f2e` de `origin/development`.
 Implementación autorizada por el usuario después de la planificación. Este
 recibo no aprueba documentos ni acredita adopción operativa o uso humano real.
+La adopción operativa posterior del16nov se registra al final, por su propio
+recibo; no amplía el alcance sintético de esta verificación local.
 
 ## Cambio comprobado
 
@@ -153,3 +155,29 @@ No hay despliegue/DB/proveedor real ni aceptación humana/operativa nuevos.
 Continuar NAIUX-07 en [TODO](../mvp/TODO.md): comprensión/UI real, teléfono/
 teclado virtual/Safari y adopción mediante el procedimiento del entorno. No
 repetir la construcción/baseline ni inferencias históricas para esa continuación.
+
+## Continuación: publicación productiva — 2026-11-16 America/Santiago
+
+[CI43798403214](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43798403214)
+y [CD43799433169](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43799433169)
+correctos, después de integrar PR36 en development y promover PR37 a master
+`6ba2afb7d258548ca68c245fb8282759a30d0ce4`.
+Client`client-6ba2afb7d258-bbb5c0a0fa85`, Pages
+`bcf7cb3c-3bfd-4efd-93fb-fac3a3afbe8a`, quedó complete. Árbol
+`bbb5c0a0fa85a0c219516946378022d03cc7f33e86b9f941c16f0a9ecf509c47`, igual al
+candidato538 fallido, con una intención y artefacto nuevos. No hubo replay del
+CI/CD anterior. Backend6ba/c01 complete, postcheck SSH/HTTPS correcto y10recursos
+PWA verificados en1intento.
+
+[Recibo oficial14196161759](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43799433169/artifacts/14196161759),
+[evidencia de entrega](deploy-upload-reconciliation-20261115.md) y
+[JSON durable](deploy-upload-reconciliation-20261115.json) separan el fallo previo,
+archivo/gateway y despliegue nuevo. Sólo el mantenimiento gateway conservó PIDs;
+el deploy posterior normal sí reinició servicios conforme al protocolo. Sudo
+invalidado y tmux administrativo cerrado al finalizar.
+
+Esto cierra la adopción operativa productiva de NAIUX-07, sin convertir las
+medidas anteriores en datos de campo. Comprensión/UI autenticada real,
+teléfono/teclado virtual/Safari continúan pendientes. Sin inferencias o aceptación
+humana nuevas, aprobación documental o publicación de fichas. Continuar esa
+revisión sin repetir el despliegue, baseline o construcción ya completados.
