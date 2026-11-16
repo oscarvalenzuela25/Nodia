@@ -3,12 +3,14 @@ import { alpha, styled, type CSSObject, type Theme } from "@mui/material/styles"
 export const PageTitle = styled("h1")(({ theme }) => ({
   fontFamily: '"Karmatic Arcade", monospace, sans-serif',
   fontWeight: 400,
-  fontSize: "1.375rem",
+  fontSize: "34px",
   lineHeight: 1.25,
   margin: 0,
   display: "inline-block",
-  color: theme.palette.text.primary,
-  [theme.breakpoints.down("sm")]: { fontSize: "1.125rem" },
+  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.tertiary?.main ?? theme.palette.secondary.main} 100%)`,
+  backgroundClip: "text",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
 }));
 
 export const Page = styled("section")(({ theme }) => ({
@@ -27,8 +29,9 @@ export const Header = styled("div")(({ theme }) => ({
   justifyContent: "space-between",
   gap: theme.spacing(2),
   flexShrink: 0,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("md")]: {
     gap: theme.spacing(1),
+    flexDirection: "column", alignItems: "stretch",
   },
 }));
 export const Actions = styled("div")(({ theme }) => ({
@@ -36,14 +39,16 @@ export const Actions = styled("div")(({ theme }) => ({
   gap: theme.spacing(1),
   flexWrap: "wrap",
   "& button": { minHeight: 44 },
+  "& .MuiIconButton-root": { width: 44, height: 44 },
+  [theme.breakpoints.down("md")]: {
+    width: "100%",
+    minWidth: 0,
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexWrap: "nowrap",
+  },
   [theme.breakpoints.down("sm")]: {
-    display: "grid",
-    gridTemplateColumns: "44px minmax(0, 1fr)",
-    alignItems: "stretch",
-    minWidth: 0, flex: 1,
-    "& button": { width: "100%", minWidth: 0, fontSize: "0.75rem" },
-    "& .history-toggle": { padding: 0, "& .MuiButton-startIcon": { margin: 0 } },
-    "& .history-toggle .header-action-label": { display: "none" },
+    "& .MuiButton-root": { minWidth: 0, fontSize: "0.75rem" },
   },
 }));
 export const Workspace = styled("div")(({ theme }) => ({
@@ -87,12 +92,13 @@ const scrollAreaStyles = (theme: Theme): CSSObject => {
 export const ScrollArea = styled("div")(({ theme }) => scrollAreaStyles(theme));
 export const History = styled(ScrollArea)(({ theme }) => ({
   width: 244,
+  boxSizing: "border-box",
   flexShrink: 0,
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: 16,
   padding: theme.spacing(1.5),
   background: theme.palette.background.paper,
-  "&[hidden]": { display: "none" },
+  "&[data-collapsed=true]": { width: 64, padding: "8px 9px" },
 }));
 export const Chat = styled("div")(({ theme }) => ({
   position: "relative",

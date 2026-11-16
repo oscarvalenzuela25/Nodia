@@ -39,6 +39,31 @@ beforeEach(() => {
 });
 
 describe("Teacher composer selection", () => {
+  it("keeps unapplied changes when closed and restores focus without saving on Escape", async () => {
+    const user = userEvent.setup();
+    const dirty = vi.fn();
+    catalog.items[1].modes[0].models[0].efforts.push({ effort_id: "low", label: "low" });
+    render(<SelectionPanel presentation="composer" initial={exact} busy={false} onSave={onSave} onDirtyChange={dirty} />);
+    const trigger = screen.getByRole("button", { name: "Selección de IA" });
+    expect(trigger).toHaveTextContent("Native fixture");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Modelo" })).not.toBeInTheDocument();
+    trigger.focus(); await user.keyboard("{Enter}");
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await user.click(screen.getByRole("button", { name: "Razonamiento" }));
+    await user.click(screen.getByRole("option", { name: "low" }));
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(trigger).toHaveFocus();
+    expect(dirty).toHaveBeenLastCalledWith(true);
+    expect(onSave).not.toHaveBeenCalled();
+    await user.click(trigger);
+    expect(screen.getByRole("button", { name: "Razonamiento" })).toHaveTextContent("low");
+    await user.click(screen.getByRole("button", { name: "Cerrar" }));
+    await waitFor(() => expect(trigger).toHaveFocus());
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
   it("explains the public Codex failure without treating configured reasoning as runtime availability", () => {
     eligible = false; reasonCode = "codex_session_required";
     const changed = vi.fn();
@@ -137,6 +162,7 @@ describe("Teacher composer selection", () => {
     observed = initial;
     catalog.items[1].modes[0].models = ["high", "low"].map(effort => ({ model_id: `fixture-next-${effort}`, label: `Fixture Next (${effort})`, efforts: [{ effort_id: effort, label: effort }] }));
     render(<SelectionPanel presentation="composer" initial={initial} busy={false} onSave={onSave} onReadyChange={ready} />);
+    await userEvent.setup().click(screen.getByRole("button", { name: "Selección de IA" }));
     expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("Fixture Next");
     expect(ready).toHaveBeenLastCalledWith(false);
     expect(mocks.query).toHaveBeenLastCalledWith("connections/2/eligibility", expect.anything(), { mode: "agentic", model_id: initial.model_id }, false);
@@ -153,6 +179,7 @@ describe("Teacher composer selection", () => {
     connection.modes[0].models = ["high", "medium", "low"].map(effort => ({ model_id: `fixture-next-${effort}`, label: `Fixture Next (${effort})`, efforts: ["high", "medium", "low"].map(effort_id => ({ effort_id, label: effort_id })) }));
     observed = high;
     const { rerender } = render(<SelectionPanel presentation="composer" initial={high} busy={false} onSave={onSave} onReadyChange={ready} />);
+    await userEvent.setup().click(screen.getByRole("button", { name: "Selección de IA" }));
     expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("Fixture Next");
     await user.click(screen.getByRole("button", { name: "Modelo" }));
     expect(screen.getAllByRole("option")).toHaveLength(1);
@@ -170,11 +197,12 @@ describe("Teacher composer selection", () => {
     expect(onSave).toHaveBeenCalledExactlyOnceWith(low);
   });
 
-  it("provides four accessible footer selectors without a panel and exposes only persisted readiness", async () => {
+  it("opens four accessible popover selectors and exposes only persisted readiness", async () => {
     const ready = vi.fn(); const dirty = vi.fn();
     const { rerender } = render(<SelectionPanel presentation="composer" initial={exact} busy={false} onSave={onSave} onReadyChange={ready} onDirtyChange={dirty} />);
-    expect(screen.queryByRole("heading")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Selección de IA.*Default fixture/ })).not.toBeInTheDocument();
+    await userEvent.setup().click(screen.getByRole("button", { name: "Selección de IA" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cerrar" })).toBeEnabled();
     for (const name of ["Conexión", "Modo", "Modelo", "Razonamiento"]) expect(screen.getByRole("button", { name })).toBeEnabled();
     await waitFor(() => expect(ready).toHaveBeenLastCalledWith(true));
     expect(dirty).toHaveBeenLastCalledWith(false);
@@ -183,6 +211,12 @@ describe("Teacher composer selection", () => {
     expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("Native fixture");
     expect(screen.getByRole("button", { name: "Modelo" })).toHaveAttribute("aria-disabled", "true");
     expect(ready).toHaveBeenLastCalledWith(false);
+    fetching = false;
+    rerender(<SelectionPanel presentation="composer" initial={exact} busy onSave={onSave} onReadyChange={ready} onDirtyChange={dirty} />);
+    expect(screen.getByRole("button", { name: "Modelo" })).toHaveAttribute("aria-disabled", "true");
+    await userEvent.setup().click(screen.getByRole("button", { name: "Cerrar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(onSave).not.toHaveBeenCalled();
   });
 
   it("requires exact eligibility and explicit apply, preserving changes after a failed write", async () => {
@@ -190,6 +224,7 @@ describe("Teacher composer selection", () => {
     catalog.items[1].modes[0].models[0].efforts.push({ effort_id: "low", label: "low" });
     const low = { ...exact, effort_id: "low" };
     const { rerender } = render(<SelectionPanel presentation="composer" initial={exact} busy={false} onSave={onSave} onReadyChange={ready} onDirtyChange={dirty} />);
+    await userEvent.setup().click(screen.getByRole("button", { name: "Selección de IA" }));
     await user.click(screen.getByRole("button", { name: "Razonamiento" }));
     await user.click(screen.getByRole("option", { name: "low" }));
     expect(ready).toHaveBeenLastCalledWith(false); expect(dirty).toHaveBeenLastCalledWith(true);
@@ -211,11 +246,13 @@ describe("Teacher composer selection", () => {
     await waitFor(() => expect(ready).toHaveBeenLastCalledWith(true));
     expect(dirty).toHaveBeenLastCalledWith(false);
     expect(screen.queryByRole("button", { name: "Guardar selección" })).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Selección de IA" })).toHaveFocus());
   });
 
   it("allows canceling an unsaved selection without a mutation", async () => {
     const ready = vi.fn(); const user = userEvent.setup();
     render(<SelectionPanel presentation="composer" initial={exact} busy={false} onSave={onSave} onReadyChange={ready} />);
+    await userEvent.setup().click(screen.getByRole("button", { name: "Selección de IA" }));
     await user.click(screen.getByRole("button", { name: "Modo" }));
     await user.click(screen.getByRole("option", { name: "API key" }));
     expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("Sin modelo asignado");
@@ -225,9 +262,10 @@ describe("Teacher composer selection", () => {
     expect(ready).toHaveBeenLastCalledWith(true); expect(onSave).not.toHaveBeenCalled();
   });
 
-  it("keeps a missing historical selection unavailable without substituting a default", () => {
+  it("keeps a missing historical selection unavailable without substituting a default", async () => {
     const ready = vi.fn();
     render(<SelectionPanel presentation="composer" initial={{ ...exact, model_id: "retired-fixture-model" }} busy={false} onSave={onSave} onReadyChange={ready} />);
+    await userEvent.setup().click(screen.getByRole("button", { name: "Selección de IA" }));
     expect(ready).toHaveBeenLastCalledWith(false);
     expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("retired-fixture-model");
     expect(screen.getByRole("alert")).toHaveTextContent(/El modelo elegido ya no aparece/);

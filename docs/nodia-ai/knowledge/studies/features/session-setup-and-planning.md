@@ -4,11 +4,11 @@
   "document_id": "studies.session-setup-and-planning",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 35,
+  "revision": 37,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación. Candidato local2026-11-12: formulario guiado, idioma validado conservando etiqueta histórica y selección IA visible/48px con ayuda; catálogo sin esfuerzos explicado sin inventarlos. Cabecera Codex consulta observación acotada compartida, sin polling. Build/lint,382regresiones/51archivos y QA320/1280 correctos; f01productivo tiene0recibos Agentic y carece de tabla por propósito; sin despliegue/inferencia o publicación del lote. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación. Continuación local2026-11-15: primera entrega del rediseño106 con alta de tres pasos, contexto opcional, resumen y selección IA explícita al revisar; avance local sin POST y una sola instancia del selector conservada al volver. Guardar borrador usa start_plan:false sin exigir IA lista; crear propuesta true con selección exacta. Guard de salida SPA/recarga y salida con guardado sólo tras acuse, reutilizando comando/recuperación existentes. QA del lote en curso; observación/comprensión humana y TUX-03…05 pendientes. Sin cambios Server/migraciones, inferencia o adopción por esta entrega."
+    "notes": "QA55/55 R02 conservado para Windows/API key exacta. Continuación VM OpenAI Agentic sobre ServerR14/ClientR41 comprobada: diagnóstico/evidencia, plan/material, ayuda, práctica12/14 y final40/40; respaldo/restauración y reanudación operativa/UI pasados. Las respuestas son del agente de QA, no eficacia humana ni55nuevas pruebas VM. Revisión/versionado Git editorial pendiente; sin master, aprobación o publicación. Candidato local2026-11-12: formulario guiado, idioma validado conservando etiqueta histórica y selección IA visible/48px con ayuda; catálogo sin esfuerzos explicado sin inventarlos. Cabecera Codex consulta observación acotada compartida, sin polling. Build/lint,382regresiones/51archivos y QA320/1280 correctos; f01productivo tiene0recibos Agentic y carece de tabla por propósito; sin despliegue/inferencia o publicación del lote. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación. Continuación local2026-11-15: primera entrega del rediseño106 con alta de tres pasos, contexto opcional, resumen y selección IA explícita al revisar; avance local sin POST y una sola instancia del selector conservada al volver. Guardar borrador usa start_plan:false sin exigir IA lista; crear propuesta true con selección exacta. Guard de salida SPA/recarga y salida con guardado sólo tras acuse, reutilizando comando/recuperación existentes. QA del lote en curso; observación/comprensión humana y TUX-03…05 pendientes. Sin cambios Server/migraciones, inferencia o adopción por esta entrega. Continuación2026-11-16: mockups aceptados y desarrollo autorizado en la misma rama para cabecera/estado/acciones, Drawer adaptativo con Mis fuentes inicial y selector IA horizontal en Popover sin botón +. Implementación y QA sintética local de seis perfiles/continuidad verificadas; suite 3027/364 antes del último ajuste de recuperación y 11 focales posteriores correctos; tipos/lint/build por alcance correctos. Última alineación CSS xs, lint focal y build final correctos; matriz de seis perfiles repetida. No se afirma una segunda global de 3028 casos. No cambia contratos, contexto o herramientas ni acredita inferencia, adopción o aprobación/publicación. Continuación106§13: revisión legible/edición progresiva locales con QA sintética. Global3039/365 previa al guard final y al caso histórico;26focales posteriores y build/lint finales correctos. Sin contratos, contexto o herramientas nuevos; aceptación UX/adopción pendientes."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Nodia Teacher y NodiaAI conforme AGENTS",
@@ -240,10 +240,18 @@
     {
       "path": "nodia-client/src/modules/teacher/hooks/useStudySetup.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/AdaptiveWorkspace.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/PlanStructureEditor/PlanStructureEditor.tsx",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-15",
+    "checked_on": "2026-11-16",
     "evidence_paths": [
       "docs/evidence/teacher-local-implementation-20261101-r01.json",
       "docs/evidence/teacher-local-activation-20261101-r01.json",
@@ -268,13 +276,76 @@
       "docs/mvp/96-nodia-teacher-implementation-plan.md",
       "docs/evidence/teacher-ai-selection-first-generation-20261114.md",
       "docs/evidence/nodia-ai-chat-space-gpt-selection-20261114.md",
-      "docs/evidence/chat-gpt-development-vm-20261114-r01.json"
+      "docs/evidence/chat-gpt-development-vm-20261114-r01.json",
+      "docs/evidence/teacher-drawer-chat-ui-20261116.md",
+      "docs/evidence/teacher-plan-review-20261116/README.md"
     ],
-    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente. Corte2026-11-12: inspección de contratos y código local; build/lint Client,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado en recibo propio: f01/45migraciones,0recibos Agentic y tabla por propósito ausente, sin trasladar la aceptación anterior. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación. Continuación2026-11-15: inspección documental/código del wizard; regresiones de alta/campos/selección/recuperación y Chromium sintético comprobados según evidencia propia; sin aceptación humana u operativa. No heredar resultados históricos al rediseño."
+    "notes": "Cierre funcional/operativo VM por recibos propios, separado de R02 Windows/API key. Final24/24escritos+16/16objetivos; assisted=false significa ausencia de ayuda registrada en ese intento respondido por el agente. Respaldo/restauración y recarga posterior comprobados. Sin eficacia humana, aceptación de otras selecciones, aprobación o publicación; revisión Git editorial pendiente. Corte2026-11-12: inspección de contratos y código local; build/lint Client,382regresiones/51archivos y QA Chromium320/1280 correctos; diagnóstico vivo confirmado en recibo propio: f01/45migraciones,0recibos Agentic y tabla por propósito ausente, sin trasladar la aceptación anterior. Continuación local2026-11-14: razonamiento recuperable desde catálogo real por conexión, metadatos advisory preservados, alta y navegación corregidas. Decisión funcional explícita: Teacher permite primera generación sin canary previo; conserva selección exacta, disponibilidad no generativa, autoridad, presupuesto y recuperación. Sin despliegue, inferencia real o publicación de este lote. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación. Continuación2026-11-15: inspección documental/código del wizard; regresiones de alta/campos/selección/recuperación y Chromium sintético comprobados según evidencia propia; sin aceptación humana u operativa. No heredar resultados históricos al rediseño. Corte2026-11-16: solicitud/mockups y contratos UI contrastados documentalmente; QA sintética local de seis perfiles, foco/borradores y errores comprobados; suite global 3027/364 previa al último ajuste de recuperación y 11 focales posteriores correctos. Tipos/lint/build por alcance correctos; último CSS xs, lint focal y build final correctos, con la matriz de seis perfiles repetida. Sin segunda global de 3028 casos, inferencia o adopción afirmadas; detalle en evidencia propia. Continuación106§13: QA Chromium12perfiles320–1280 ESoscuro/ENclaro, borradores/foco/nodos y503/409 conservados; aceptación ID/hash exactos sin IA. Global3039/365 anterior al guard final !policyValid y al caso histórico;26focales posteriores12,38s, build/lint finales y typecheck previo correctos. UI autenticada, comprensión, teléfono físico/adopción pendientes."
   },
   "approval": null
 }
 ---
+
+## Revisión legible del plan — solicitud2026-11-16
+
+[Plan106§13](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#13-revisión-del-plan-legible-y-edición-progresiva--solicitud2026-11-16)
+retoma TUX-04 por petición del usuario: entender la propuesta antes de editarla.
+Resumen con título/objetivo/organización y conteos reales; recorrido por secciones
+con detalles bajo demanda. «Usar este plan» es principal; «Editar estructura» y
+«Pedir un ajuste» conservan acceso visible, con editor y ajuste plegables. La
+activación futura mantiene su acción versionada propia. Con propuesta disponible,
+la revisión precede a la conversación de planificación, que se despliega mediante
+su botón y sigue montada para conservar borrador, selección y editores. Sin
+propuesta continúa visible; no se pliega durante grabación. El helper de «Usar
+este plan» distingue guardar la propuesta y elegir una unidad de preparar material.
+
+Se conservan todos los campos y reglas de edición, cantidades inválidas, IDs y
+borradores al plegar, revalidar o fallar503/409. Cambios locales/política inválida
+bloquean aceptación con explicación y acceso al editor. Resolver una promesa de
+comando no acredita guardado; el éxito lo determina la revisión confirmada.
+Ajustar con IA, guardar revisión manual, aceptar y preparar material son acciones
+diferentes. Abrir/leer no genera ni acepta implícitamente; aceptación exacta no
+requiere proveedor listo cuando el contrato permita esa acción.
+
+Evaluación de impacto: presentación y acceso progresivo a operaciones actuales,
+sin cambiar conceptos, efectos, contexto enviado, permisos, herramientas o
+interpretación de resultados. Implementación y QA sintética local verificadas en
+[la evidencia propia](../../../../evidence/teacher-plan-review-20261116/README.md):
+12perfiles320–1280px, ES oscuro/EN claro, sin overflow ni escrituras al entrar;
+drafts/nodos/foco conservados al plegar o redimensionar y ante503/409. Aceptación
+con ID/hash exactos de la revisión confirmada, sin IA o preparación automática.
+Una política inválida bloquea aceptación y también ajustes con IA, incluso sin
+cambio estructural; ayuda ES/EN y corrección comprobadas sin escrituras. La
+regresión histórica posterior conserva título/duración ausentes y estado vacío
+hasta editar explícitamente, sin inventar jornadas ni aceptar si no está permitido.
+
+Global365archivos/3039pruebas correcta antes del último guard de política, su
+assertion y el caso histórico posterior;26focales correctas después en12,38s, build final
+(tipado+Vite), lint final con sólo `.tmp/**` excluido y typecheck independiente
+previo correctos. No se afirma otra global posterior. Comprensión humana, UI
+autenticada, teléfono físico y adopción siguen independientes; TUX-04 parcial
+por alcance local. Draft/partial/unregistered/approval:null, sin publicación,
+aprobación o inferencia nuevas por esta entrega.
+
+## Cabecera, drawer y selector IA — solicitud2026-11-16
+
+[Plan106§11](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#11-cabecera-drawer-adaptativo-y-selector-ia--solicitud2026-11-16)
+registra la continuación aceptada: estado al extremo derecho del título,
+«Mis planes de estudio» contained y resultado confirmado junto a las acciones,
+sin recarga contigua. Aprendizaje adaptativo pasa a Drawer derecho con Mis fuentes
+primero/seleccionado al entrar; cada categoría muestra su información existente.
+El chat usa resumen compacto y configuración horizontal en Popover, sin botón «+».
+
+Implementación y QA sintética local verificadas en la rama actual; regresiones y
+checks finales de código correctos por alcance, incluida la última alineación
+CSS xs y la repetición de seis perfiles según evidencia. Borradores, foco,
+retry, selección exacta y datos de disponibilidad mantienen sus contratos; mover
+controles no genera IA, acepta planes ni guarda selecciones implícitamente.
+Evaluación de impacto: presentación y acceso a operaciones existentes, sin nuevos
+conceptos, herramientas, permisos o contexto del modelo. Candidata draft/partial/
+unregistered/approval:null, sin publicación o adopción por este lote.
+[Evidencia propia](../../../../evidence/teacher-drawer-chat-ui-20261116.md); el mockup no
+prueba UI integrada, dispositivo físico o capacidades de un proveedor.
 
 ## Alta guiada — primera entrega local, 2026-11-15
 

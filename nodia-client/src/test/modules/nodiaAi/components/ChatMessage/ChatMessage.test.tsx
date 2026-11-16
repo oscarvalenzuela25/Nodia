@@ -55,8 +55,10 @@ describe("ChatMessage", () => {
     vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } });
     render(<ChatMessage message={{ ...message, role: "assistant", status: "partial", parts: [
       { kind: "text", text: "**Resumen sintético**" },
+      { kind: "image", attachment_id: attachmentId, text: null },
     ] }} conversationId={chatId} />);
     const button = screen.getByRole("button", { name: "Copiar respuesta" });
+    expect(button.textContent).toBe("");
     button.focus();
     await user.keyboard("{Enter}");
     expect(writeText).toHaveBeenCalledWith("Resumen sintético");

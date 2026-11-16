@@ -4,11 +4,11 @@
   "document_id": "nodia-ai.chat-composer-selection",
   "product_id": "nodia-ai",
   "kind": "feature",
-  "revision": 15,
+  "revision": 18,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "R02 desplegado en VM por solicitud explícita: compositor y selección entre mensajes, miniaturas/papelera y subida serial sin replay. Client/API/worker Linux verificados, datos y sesiones conservados; sin inferencia ni calificación nueva de modelos. R03: avatar común, actividad temporal, cabecera estable y teclado/menú del compositor implementados y adoptados sólo en Client, con Server y KB preservados. R04 incorpora renombrado inline en cabecera mediante el PATCH existente, revisión fijada y borrador recuperable. R07: dictado explícito del navegador a texto editable, posible servicio remoto aceptado, onda desde Web Audio y reproducción local de audio manual/histórico implementados localmente. El micrófono principal no crea adjuntos ni autoenvía; Client estático R07 adoptado y verificado por HTTP, con API/worker/KB/Native preservados; transcripción real no validada. R08: presentación Markdown limitada al texto visible del asistente y recarga de elegibilidad por IconButton44px implementadas, con QA integrada/visual y adopción estática R08 verificadas. No cambia el motor de dictado ni aplica un restablecimiento de permiso. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación. Plan107 (2026-11-15): evaluación visual y de interacción futura del chat, sin implementación ni cambios de contratos, modos o herramientas. El estado de implementación conserva exclusivamente el alcance existente; rediseño pendiente NAIUX-00/01. Continuación plan107: upgrade UX/UI implementado y verificado localmente con fixtures, conservando contratos y modos; aceptación humana/dispositivos y adopción por entorno pendientes. Sin nueva herramienta, aprobación o publicación. Continuación productiva2026-11-16: la UI del plan107 fue adoptada mediante CI43798403214/CD43799433169 nuevos, fuente6ba2afb7d258548ca68c245fb8282759a30d0ce4. El recibo acredita backend y Client completos,215assets y10recursos PWA verificados. Esta continuación sucede el límite local sin despliegue del15 de noviembre; no acredita revisión humana de UI, micrófono, inferencias ni aprobación/publicación del contexto."
+    "notes": "R02 desplegado en VM por solicitud explícita: compositor y selección entre mensajes, miniaturas/papelera y subida serial sin replay. Client/API/worker Linux verificados, datos y sesiones conservados; sin inferencia ni calificación nueva de modelos. R03: avatar común, actividad temporal, cabecera estable y teclado/menú del compositor implementados y adoptados sólo en Client, con Server y KB preservados. R04 incorpora renombrado inline en cabecera mediante el PATCH existente, revisión fijada y borrador recuperable. R07: dictado explícito del navegador a texto editable, posible servicio remoto aceptado, onda desde Web Audio y reproducción local de audio manual/histórico implementados localmente. El micrófono principal no crea adjuntos ni autoenvía; Client estático R07 adoptado y verificado por HTTP, con API/worker/KB/Native preservados; transcripción real no validada. R08: presentación Markdown limitada al texto visible del asistente y recarga de elegibilidad por IconButton44px implementadas, con QA integrada/visual y adopción estática R08 verificadas. No cambia el motor de dictado ni aplica un restablecimiento de permiso. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación. Plan107 (2026-11-15): evaluación visual y de interacción futura del chat, sin implementación ni cambios de contratos, modos o herramientas. El estado de implementación conserva exclusivamente el alcance existente; rediseño pendiente NAIUX-00/01. Continuación plan107: upgrade UX/UI implementado y verificado localmente con fixtures, conservando contratos y modos; aceptación humana/dispositivos y adopción por entorno pendientes. Sin nueva herramienta, aprobación o publicación. Continuación productiva2026-11-16: la UI del plan107 fue adoptada mediante CI43798403214/CD43799433169 nuevos, fuente6ba2afb7d258548ca68c245fb8282759a30d0ce4. El recibo acredita backend y Client completos,215assets y10recursos PWA verificados. Esta continuación sucede el límite local sin despliegue del15 de noviembre; no acredita revisión humana de UI, micrófono, inferencias ni aprobación/publicación del contexto. Continuación visual2026-11-16: mockups aceptados e implementación local en codex/durable-backend-uploads; marca34px, historial compacto con tooltips, selector ajustado al texto y respuestas en globo con copia sólo por icono. QA sintética en seis perfiles y continuidad de borrador/búsqueda correctas; tipos/lint/build finales correctos y pruebas globales con corrección/revalidación focal posterior, sin segunda global limpia afirmada. Sin despliegue o inferencia; no cambia contexto, herramientas, contratos o autoridad. Continuación plan107§14: claridad de filtros e historial, restablecimiento con borrador/selección conservados y acceso por teclado. Implementación local y QA sintética; sin cambio de contexto/autoridad, publicación o adopción de esta revisión. Plan107§15: historial móvil en Drawer y acciones compactas implementados. QA Chromium sintética,84focales,global3035/364 y tipos/lint/build correctos. Sólo presentación/acceso; sin ampliar contexto, autoridad o herramientas."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento NodiaAI conforme AGENTS",
@@ -147,6 +147,32 @@
   "approval": null
 }
 ---
+
+## Historial compacto y burbujas — solicitud2026-11-16
+
+[Evidencia local consolidada](../../../../evidence/nodia-ai-sidebar-bubbles-20261116.md).
+
+[Plan107§13](../../../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#13-historial-compacto-y-burbujas--solicitud2026-11-16)
+registra los mockups aceptados y la implementación solicitada en la rama actual.
+El historial colapsado conserva iconos para abrir conversaciones y tooltips con
+su título/modelo; los menús de opciones quedan en la presentación expandida.
+La marca adopta el estilo de Teacher a34px, el compositor radio16px y el resumen
+IA ancho según texto, conservando la tupla exacta y su editor.
+
+Las respuestas de NodiaAI usan un panel de globo con esquina hacia su entidad,
+igual que los mensajes propios; avatar/hora quedan encima. Copiar permanece
+dentro del panel como icono con tooltip/nombre accesible, sin etiqueta visible
+permanente. La copia mantiene su contenido visible permitido y feedback existente.
+
+Evaluación de impacto: sólo presentación y acceso a controles existentes. No
+cambia conceptos, operaciones, contexto enviado, interpretación de resultados,
+Markdown seguro, permisos, confirmación o recuperación. Sin herramienta, ficha
+o binding nuevos. Implementación local y QA sintética completas en seis perfiles; tipos/lint/build
+finales correctos y pruebas verificadas por ronda global con revalidación focal
+posterior, sin segunda global limpia afirmada. Despliegue y revisión humana de UI integrada/dispositivo
+pendientes. El producto80 y esta ficha16
+siguen draft/unregistered/approval:null, sin publicación o fichas aprobadas alteradas.
+
 
 # Chat, compositor y selección por conversación — contexto funcional para NodiaAI
 
@@ -345,3 +371,43 @@ opciones exactas. Los modelos siguen viniendo de configuración/catálogo real.
 ### Continuación técnica en VM de desarrollo — 2026-11-14
 
 [Recibo por selección y época](../../../../evidence/chat-gpt-development-vm-20261114-r01.json). La generación comprobada pertenece a Teacher y a la tupla exacta del recibo. El compositor se verificó como recursos estáticos servidos; no se observó un envío de chat ni UI autenticada en esta continuación. La ficha continúa candidata sin aprobación o publicación.
+
+## Historial: filtros y continuidad — continuación2026-11-16
+
+[Plan107§14](../../../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#14-continuidad-del-historial-y-filtros--continuación2026-11-16) y [evidencia local](../../../../evidence/nodia-ai-history-filters-20261116.md): el historial distingue
+conversaciones ausentes de una búsqueda/filtros sin coincidencias. Muestra los
+criterios activos y permite restablecerlos sin cambiar el chat abierto o su
+borrador; carga, error y revalidación conservan sus reglas. El foco vuelve al
+buscador; la selección actual se anuncia en la lista expandida y el Drawer móvil
+tiene nombre accesible. El contador representa criterios locales, no cifras ni
+capacidades del proveedor.
+
+Evaluación de impacto: presentación y navegación de filtros existentes, sin
+cambio de contexto enviado, conceptos de autoridad, herramientas, permisos,
+contratos o interpretación de resultados. Se actualiza esta ficha existente;
+no requiere una herramienta ni ficha nueva. Implementado localmente con QA
+sintética; comprobación humana/autenticada/dispositivo y adopción de esta revisión
+pendientes. Conserva draft/unregistered/approval:null, sin publicación.
+
+
+## Historial móvil desde cabecera — solicitud2026-11-16
+
+[Plan107§15](../../../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#15-historial-móvil-desde-cabecera--solicitud2026-11-16)
+registra la nueva distribución autorizada: por debajo de900px se retira la barra
+lateral y un icono de cabecera abre el historial existente en Drawer. En xs,
+icono a la izquierda y «Nuevo chat» compacto a la derecha comparten una fila bajo
+la marca; se conserva el área táctil44px. Desde900px el historial lateral mantiene
+su colapso. Abrir/cerrar y cambiar de tamaño deben conservar chat/URL, selección,
+filtros, borrador y retorno de foco, sin consultas o formularios duplicados.
+
+Evaluación de impacto: sólo presentación y acceso a controles existentes. No
+cambia conceptos, operaciones, contexto enviado, interpretación de resultados,
+contratos, permisos, modelos, herramientas, confirmación o recuperación. Se
+actualiza la ficha existente; no requiere otra ficha, herramienta o binding.
+Implementación local y [QA Chromium sintética](../../../../evidence/nodia-ai-mobile-history-20261116/README.md)
+comprobadas en320/390/599/600/899/900/1440px ES oscuro/EN claro: sin overflow,
+foco/búsqueda/borrador/URL conservados al redimensionar y ante503 del historial,
+sin mutaciones. Tipado/lint/build finales,84focales y global3035/364 correctos;
+limitaciones del build/lint y corrección de espera de transición en el recibo. Los resultados y capturas anteriores con barra móvil son históricos.
+UI autenticada/dispositivo y adopción siguen pendientes. Conserva draft/unregistered/approval:null,
+sin publicación o aprobación nuevas.

@@ -331,7 +331,9 @@ ambas, conservando los límites por dispositivo/proveedor/entorno.
 - [ ] TUX-00: observar y contrastar recorrido con usuario sobre una versión concreta.
 - [ ] TUX-01: crear/revisar prototipo específico Teacher; la maqueta Noticias no aplica.
 - [x] TUX-02: primera entrega Client de alta guiada y regresiones locales; ver§10.
-- [ ] TUX-03…05: definición/espera, revisión legible y primera lección; aún pendientes.
+- [ ] TUX-03/05: definición/espera y primera lección; aún pendientes por sus alcances.
+- [ ] TUX-04: revisión legible implementada y comprobada localmente en§13;
+  comprensión humana/UI autenticada y adopción todavía pendientes.
 - [ ] TUX-06: QA técnico/UX, comparación por perfil y adopción por alcance.
 
 El corte inicial fue exclusivamente documental;§10 registra su primera implementación. Ficha candidata:
@@ -379,3 +381,239 @@ Comprensión humana, recorrido completo propuesta/aceptación/material del redis
 UI autenticada con shell/entorno real, teléfono físico y adopción VM/producción
 siguen pendientes. Retomar TUX-03 sin reiniciar los upgrades históricos de102;
 revisión legible TUX-04 y primera lección TUX-05 son entregas posteriores.
+
+## 11. Cabecera, drawer adaptativo y selector IA — solicitud2026-11-16
+
+El usuario aceptó los mockups de Teacher y autorizó implementar todos los cambios
+en la rama actual `codex/durable-backend-uploads`, conservando los cambios locales
+previos de NodiaAI. La última corrección del compositor elimina el botón «+»;
+se toma el panel horizontal de configuración de NodiaAI como referencia visual,
+sin importar sus herramientas, adjuntos ni runtime de negocio a Teacher.
+
+### Alcance solicitado
+
+- La fila del título asignado ubica el estado de la sesión al extremo derecho,
+  también en las otras etapas. En móvil conserva título/estado legibles y orden
+  de lectura, sin truncar información ni introducir padding exterior adicional.
+- «Mis planes de estudio» utiliza la variante `contained` en todas sus apariciones.
+- Se retira el panel adaptativo de la página. Un botón «Aprendizaje adaptativo»
+  abre un Drawer lateral derecho inmediatamente después de la acción principal
+  Pausar y guardar/Retomar y antes de Opciones de la sesión/Archivar.
+- El Drawer conserva los botones de categorías, con filas adaptables y este orden:
+  Mis fuentes, Evidencia y diagnóstico, Repasar, Actividades, Conceptos y
+  Aclaraciones. Al entrar, Mis fuentes está seleccionado; pulsar otra categoría
+  muestra sólo su contenido. Cerrar/cambiar categoría no pierde los borradores;
+  reintento local y descarte de aperturas obsoletas conservan las reglas vigentes.
+- «Resultado guardado» se ubica a la derecha de Opciones de la sesión o de Archivar
+  en la misma barra de acciones. Se retira su botón de recarga contiguo; esto no
+  elimina sondeo, errores o recuperación explícita del trabajo cuando correspondan.
+  El indicador sigue describiendo un resultado confirmado, no una generación nueva.
+- En el chat, el resumen compacto de modelo/modo abre un Popover anclado encima.
+  Mantiene el diseño horizontal de «Configuración del chat»: resumen de IA aplicada,
+  cierre y cuatro selectores redondeados de conexión, modo, modelo e intensidad.
+  Se adapta al ancho disponible sin duplicar el selector. Aplicar/Cancelar,
+  selección exacta, borradores, errores y elegibilidad mantienen su contrato.
+  El editor Teacher conserva la caja de texto, selector y sus controles actuales
+  de dictado/envío; no añade el botón «+» ni adjuntos de NodiaAI.
+
+**Estado:** implementación y QA sintética local verificadas; regresiones,
+tipado, lint de código y build correctos por los cortes descritos en evidencia.
+La última alineación CSS xs también tiene lint focal y build final correctos,
+con la matriz de seis perfiles repetida. La aceptación de los
+mockups fija dirección visual y autoriza este desarrollo; no aprueba documentos,
+fichas, disponibilidad de proveedores o una adopción productiva. La
+[evidencia del lote](../evidence/teacher-drawer-chat-ui-20261116.md) separa los
+resultados comprobados de los pendientes.
+
+**Invariantes:** mismas rutas/módulo Teacher, autoridad por sesión/owner,
+`allowed_actions`, generación sólo por intención explícita, selección/configuración
+exactas, Server/DTOs/CAS/idempotencia, pausa/retoma, límites, confirmación,
+recuperación y no-replay. Abrir un Drawer o Popover no implica inferencia,
+aceptación de un plan, disponibilidad del modelo o guardado de una selección local.
+No se amplían permisos ni se habilitan herramientas por cambiar presentación.
+
+**Impacto de conocimiento:** se actualizan [producto Teacher](../nodia-ai/knowledge/studies/README.md#cabecera-drawer-y-selector-ia--solicitud2026-11-16),
+[experiencia guiada](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md#cabecera-drawer-y-selector-ia--solicitud2026-11-16)
+y [sesión/definición](../nodia-ai/knowledge/studies/features/session-setup-and-planning.md#cabecera-drawer-y-selector-ia--solicitud2026-11-16).
+Sólo cambia la presentación y el acceso a controles existentes, sin nuevos
+conceptos operativos, contexto enviado, herramientas o interpretación de resultados.
+Las candidatas conservan draft/partial/unregistered/approval:null; no se modifican
+fichas aprobadas ni se publican borradores. Este alcance no cierra TUX-00…06
+ni hereda el despliegue, QA o inferencia de entregas anteriores.
+
+Comprobación documental inicial: once documentos UTF-8/LF sin BOM y 25 enlaces/
+anclas locales pertinentes válidos, diff correcto. Conocimiento check/build
+correctos: 95 fuentes, 51 excluidas, 44 documentos/46 fragmentos, mismo release
+`9f7cb7e13becc051f1c90d6f2e0014eb18f78e4711a2a820971c38a2df4c77e8`.
+Los borradores permanecen excluidos; esto no acredita implementación o UI real.
+
+### Validación local de la continuación
+
+[La evidencia del lote](../evidence/teacher-drawer-chat-ui-20261116.md) registra
+31 pruebas del selector y 42 del editor/estado. La suite global pasó 3027 pruebas
+/364 archivos en 442,05s antes de la última incorporación de recuperación incierta;
+11 regresiones focales posteriores (8+2+1) verifican ese ajuste en 7,58s. El
+inventario suma 3028, sin afirmar una segunda ejecución global de esa cifra.
+Tipado, lint de código y build correctos tras el ajuste de recuperación; avisos
+previos del build conservados. Lint focal y build del último cambio CSS de alineación del chip en xs también
+correctos; build final de 13,74s y matriz de seis perfiles repetida correcta.
+
+Chromium sintético en 320–1440px, ES/EN claro/oscuro, comprueba plan, revisión,
+lección, práctica, pausa y final: cabecera/acciones, Drawer/Popover, foco,
+borradores y errores 503/esquema inválido. El chip conserva su posición a la
+derecha al envolver en xs y los botones mantienen ancho completo. La selección
+histórica incompleta del ensayo no solicita elegibilidad ni habilita generación;
+un retry explícito del fallo conocido conserva tupla exacta.
+
+La recuperación incierta se presenta dentro del Drawer con el mismo comando
+propietario, sin duplicado en el fondo. La pérdida de respuesta al guardar fuente
+conserva draft y consulta el recibo: un POST original y un GET, sin replay o
+inferencia; bloqueo liberado tras acuse. El ensayo de selección 503/retry contiene
+dos PATCH exactos. No hay POST/inferencia por abrir los paneles. Las fixtures no
+acreditan UI autenticada, teléfono físico, aceptación pedagógica o adopción.
+
+El log Vite de la QA emitió el aviso nativo de ResizeObserver durante resize/
+textarea. Origen no aislado contra baseline, sin afirmar que sea previo o que
+la consola esté libre de avisos; geometría, borrador, foco y recuperación sí
+pasaron. Detalle y límites en la evidencia del lote.
+
+Este párrafo conserva la observación inicial; su corrección posterior se sigue en
+el [apartado12](#12-ciclo-de-medición-de-teacherloading--solicitud2026-11-16).
+
+## 12. Ciclo de medición de TeacherLoading — solicitud2026-11-16
+
+El usuario pidió corregir el aviso ResizeObserver en la misma rama sin alterar el
+diseño ni perder borradores. La reproducción del recorrido de continuidad produjo
+dos avisos nativos sin instrumentar; el diagnóstico por propietario de observador
+identificó Boneyard sobre ancestros DIV de workspace/historial y el textarea MUI
+en los ciclos afectados. El Skeleton seguía midiendo con `loading=false`.
+
+La corrección limita Skeleton a la carga inicial y conserva LoadingRegion y los
+dos wrappers neutros para los datos cargados. El formulario mantiene su nodo,
+borrador, foco y caret al revalidar o cambiar ancho. No modifica Boneyard/MUI,
+geometría, autosize, recuperación o contratos; no suprime errores globalmente.
+El recorrido candidato instrumentado terminó sin avisos y mantuvo continuidad.
+
+Estado: implementación local y regresión atómica de TeacherLoading (3 casos) correctas. Un
+navegador nuevo sin parche de ResizeObserver completó tres recorridos de
+continuidad y seis perfiles sin avisos nativos de este tipo; los borradores,
+editor y recuperación se conservan. El compositor mantiene su textarea, texto,
+foco y caret 4…13 en 1280→320→600→1280px y al abrir/cerrar el Drawer; una PATCH de
+autoguardado sintética confirmada, sin avisos en ese recorrido. Geometría idéntica a la matriz anterior en
+los seis perfiles; cuatro capturas idénticas y dos con diferencias limitadas a
+controles, sin afirmar paridad de píxeles universal. La suite global completó
+3033/3034 casos y 363/364 archivos; el único fallo corresponde a una versión de
+test NodiaAI que cambió concurrentemente después del inicio. Esa revisión no se
+modifica aquí. La revalidación focal actual pasa 60/60 casos en cinco suites
+(14,18s), incluido el test concurrente; sin segunda global limpia afirmada.
+Tipado, lint de código completo y build final correctos; build18,91s con avisos
+de chunk grande/timing conservados. La corrección queda verificada por alcance
+local. [Evidencia específica](../evidence/teacher-drawer-chat-ui-20261116.md#corrección-del-ciclo-de-medición--solicitud2026-11-16)
+conserva el aviso inicial y distingue reproducción, candidato y checks pendientes.
+No se traslada una medición local a todos los navegadores o a producción.
+
+Impacto de contexto evaluado: es una corrección técnica sin cambios en conceptos,
+operaciones, autoridad o interpretación de resultados de las fichas existentes.
+No requiere nuevas fichas/herramientas ni aprobar o publicar candidatas. Sin
+inferencia, despliegue o aceptación física nuevos.
+
+## 13. Revisión del plan legible y edición progresiva — solicitud2026-11-16
+
+El usuario encuentra ambigua y abrumadora la segunda etapa, «Revisar el plan»,
+cuando se genera la propuesta. Solicita reformarla en la misma rama. Este lote
+retoma TUX-04 y la dirección ya prevista en§4.6: primero comprender el recorrido,
+después elegir si usarlo, pedir un ajuste o editarlo. No reinicia el alta ni las
+entregas comprobadas de§10–12.
+
+### Alcance e interacción
+
+- Lectura inicial con título, objetivo y organización reales del outline y
+  conteos derivados de sus secciones/unidades. Si la organización por jornadas
+  no trae cantidad, no inventar duración o fechas. Mostrar la revisión exacta.
+- Recorrido de secciones con detalles bajo demanda, sin abrir simultáneamente
+  todos los campos. Objetivos y unidades siguen accesibles en su sección.
+- Principal «Usar este plan» para la candidata actual; conservar «Activar
+  revisión» cuando sea una revisión futura. «Editar estructura» y «Pedir un
+  ajuste» son alternativas descubribles de menor énfasis, con variantes outlined.
+  Usar una propuesta no prepara automáticamente material ni inicia una inferencia.
+- Editar abre la estructura completa por intención: título, objetivo,
+  organización/jornadas, obligatoriedad, prerrequisitos, objetivos, unidades,
+  orden, exclusión, incorporación y política de evaluación mantienen sus reglas.
+  Secciones editables plegables conservan IDs y valores al ordenar o cambiar ancho.
+- El ajuste con IA se abre por intención y explica que prepara otra propuesta
+  para revisar. Conservar borrador y bloqueo por la disponibilidad/acción real;
+  escribir o abrir el panel no genera ni aplica cambios automáticamente.
+- Con una propuesta disponible, la revisión precede a la conversación de
+  planificación. Ésta queda bajo «Ver/Ocultar conversación de planificación» y
+  sigue montada mediante `hidden`, conservando borrador, selección y editores.
+  Sin propuesta, permanece visible como antes. No permitir plegarla durante
+  grabación. El helper de «Usar este plan» explica que se guarda la propuesta y
+  después se elige una unidad; no afirma que el material ya esté preparado.
+- Guardar cambios manuales conserva la creación de una nueva revisión sin IA.
+  Edición local o política inválida bloquean aceptación/ajuste con explicación
+  visible y acceso al editor para corregir. Aceptar sigue disponible sin IA lista
+  cuando lo permitan `allowed_actions` y los demás bloqueos reales.
+
+### Identidad, borradores y límites
+
+Conservar IDs/hash/revisión y comandos existentes de97. El estado del editor se
+mantiene para la misma `proposalView.id`; sólo otra revisión confirmada puede
+reemplazarlo mediante el límite de identidad actual. Guardar, aceptar y pedir un
+ajuste siguen siendo acciones diferentes; no fusionar sus efectos.
+
+`onSave`/`onAdjust`/`onAccept` devuelven `Promise<void>` y el padre puede resolver
+esa promesa tras un `execute` fallido que devuelve `null`. Resolver la promesa
+no acredita éxito: no cerrar editores, borrar texto o anunciar persistencia por
+ese solo hecho.503/409 y resultado incierto conservan borradores y recuperación
+actual, sin replay. `AssessmentPolicyEditor` conserva cantidades textuales
+inválidas: mantenerlo montado al plegar o conservar explícitamente ese estado,
+sin perderlo ni dejar un bloqueo oculto sin explicación.
+
+Theme, rutas/autoridad, MobileBottomNav/safe area, padding de PageContent y
+contratos Server permanecen vigentes. Controles de44px y acciones xs de ancho
+completo; una sola instancia del editor/estado, orden de lectura y foco coherentes.
+No añade modelos, inferencias, cuotas, evidencia educativa o capacidades supuestas.
+
+### Estado y comprobación de este lote
+
+Implementación local y QA propia comprobadas; TUX-04 queda parcial por alcance,
+sin aceptación de comprensión humana o adopción implícita. [Evidencia y tres
+capturas nativas](../evidence/teacher-plan-review-20261116/README.md) distinguen
+fixtures de una sesión operativa. Chromium157.0.8103.52 completó12perfiles:
+320/390/600/899/900/1280px, altura900px, ES oscuro y EN claro con la fixture por
+jornadas. Cuatro secciones y12unidades reales de esa fixture; cero inputs de
+texto visibles al entrar, CTA44px disponible sin IA, cero escrituras iniciales
+y sin overflow horizontal. Cero errores de ventana/avisos ResizeObserver en los
+recorridos observados; esto no acredita todos los navegadores.
+
+Edición manual y cantidades inválidas conservan valores/nodos al plegar y
+redimensionar.503/409 mantienen editor/borrador y bloquean aceptar. La recuperación
+explícita del ensayo produjo tres PATCH: dos rechazados y uno confirmado como
+revisión2; un POST de aceptación conserva el ID/hash exactos de esa revisión,
+sin IA o preparación automática. Ajuste y conversación conservan sus drafts y
+nodos al plegar/reabrir; el ajuste mantiene foco/caret4…9 en1280→390→1280px.
+
+La revisión final detectó que una cantidad inválida sin cambio estructural podía
+dejar habilitado el ajuste con IA. Se incorporó `!policyValid` al bloqueo y su
+ayuda ES/EN. QA posterior con selección sintética disponible comprobó bloqueo al
+invalidar, habilitación al corregir y cero escrituras por esa comprobación.
+La regresión histórica posterior verifica revisión futura sin título, con
+duración nula y sin secciones: mantiene desconocido/vacío hasta una edición
+explícita, no inventa jornadas y respeta `canAccept=false`.
+
+Checks: global365archivos/3039pruebas correcta en306,35s, iniciada **antes** de
+ese último guard/helper, su assertion y el caso histórico posterior. Después del ajuste,26focales
+de PlanReview/PlanStructureEditor/SetupConversation correctas en12,38s; build
+final (tipado+Vite) y lint final correctos, excluyendo sólo `.tmp/**` de
+experimentos ignorados. Typecheck independiente previo correcto. No se afirma
+otra global posterior al guard final; las regresiones focales cubren el cambio.
+Contratos, refetch/recibos y autoridad conservados, sin replay o cambios Server.
+Comprensión humana, UI autenticada, teléfono físico y adopción siguen pendientes;
+sin inferencia, publicación o aprobación nuevas. No hereda resultados de§10–12.
+
+Impacto evaluado en [producto42](../nodia-ai/knowledge/studies/README.md#revisión-legible-del-plan--solicitud2026-11-16),
+[sesión37](../nodia-ai/knowledge/studies/features/session-setup-and-planning.md#revisión-legible-del-plan--solicitud2026-11-16)
+y [experiencia guiada4](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md#revisión-legible-del-plan--solicitud2026-11-16):
+presentación y acceso progresivo a operaciones existentes; sin nuevos conceptos,
+efectos, contexto, herramientas o permisos. Conservan draft/partial/unregistered/
+approval:null, sin publicación o aprobación automática de fichas.

@@ -15,7 +15,7 @@ import type { MessageComposerProps } from "./types";
 export default function MessageComposer({ scopeKey, text, onTextChange, onSend, maxBytes, maxLength,
   label, placeholder, sendLabel, ariaLabel = label, disabled = false, sendDisabled = false,
   inputDisabled = false, voiceDisabled, sendAction, submitOnEnter = true, textTooLarge = false,
-  onRecordingChange, onPaste, beforeInput, toolbarStart, footer, sx, layout = "inline" }: MessageComposerProps) {
+  onRecordingChange, onPaste, beforeInput, inputStart, toolbarStart, footer, sx, layout = "inline" }: MessageComposerProps) {
   const { t, i18n } = useTranslation("core");
   const validLimits = Number.isSafeInteger(maxBytes) && maxBytes >= 0
     && (maxLength === undefined || (Number.isSafeInteger(maxLength) && maxLength >= 0));
@@ -51,7 +51,8 @@ export default function MessageComposer({ scopeKey, text, onTextChange, onSend, 
   );
   return <ComposerShell aria-label={ariaLabel} sx={sx} onSubmit={event => { event.preventDefault(); if (canSend) onSend(); }}>
     {beforeInput}
-    <InputRow data-layout={layout}>
+    <InputRow data-layout={layout} data-has-start={Boolean(inputStart)}>
+      {inputStart && <Box data-composer-input-start sx={{ minWidth: 0, maxWidth: "100%" }}>{inputStart}</Box>}
       <MessageInput onPaste={onPaste} onKeyDown={event => {
         if (event.key !== "Enter" || event.shiftKey || event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
         event.preventDefault();

@@ -36,13 +36,14 @@ export default function JobPanel({ allowNew = true, presentation = "panel", jobI
         {enabled(job.allowed_actions, "continue_before_dispatch") && <Button variant="outlined" disabled={disabled} onClick={() => void onContinue(job)}>{t("teacher:continue_preparation")}</Button>}
         {canRequestNew && <Button variant="contained" disabled={disabled} onClick={() => void onNew(job)}>{t("teacher:new_generation")}</Button>}
   </>;
-  if (presentation === "inline") return <Status aria-live="polite" sx={{ gap: 1 }}>
+  if (presentation === "inline" && job?.state === "ready" && !query.isError) return <StateChip role="status" aria-live="polite" size="small" color="success" label={t("teacher:jobs.ready")} />;
+  if (presentation === "inline") return <Status data-teacher-job-status aria-live="polite" sx={{ gap: 1 }}>
     <InlineStatusRow>
       <InlineStatusValue><TeacherLoading compact loading={query.isLoading && !job}>
         {job ? <StateChip size="small" color={job.state === "ready" ? "success" : job.state === "failed_known" ? "error" : job.state === "unknown" || job.state === "blocked_paused" ? "warning" : job.state === "cancelled_before_dispatch" ? "default" : "info"} label={t(`teacher:jobs.${job.state}`)} />
           : !query.isError && <Typography variant="body2" color="text.secondary">{t("teacher:job_no_confirmed_state")}</Typography>}
       </TeacherLoading></InlineStatusValue>
-      <Tooltip title={t("teacher:refresh_status")}><span><IconButton aria-label={t("teacher:refresh_status")} disabled={disabled || query.isLoading} loading={query.isFetching} onClick={() => void query.refetch()} sx={{ width: 44, height: 44 }}><RefreshOutlined /></IconButton></span></Tooltip>
+      {job?.state !== "ready" && <Tooltip title={t("teacher:refresh_status")}><span><IconButton aria-label={t("teacher:refresh_status")} disabled={disabled || query.isLoading} loading={query.isFetching} onClick={() => void query.refetch()} sx={{ width: 44, height: 44 }}><RefreshOutlined /></IconButton></span></Tooltip>}
     </InlineStatusRow>
     <ProgressSpace>{preparing && <LinearProgress aria-label={t("teacher:preparation_progress")} sx={{ height: 2, borderRadius: 1 }} />}</ProgressSpace>
     <QueryErrorAlert retryVariant="outlined" isError={query.isError} isFetching={query.isFetching} onRetry={query.refetch} />

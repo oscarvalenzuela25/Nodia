@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { alpha, useTheme } from "@mui/material/styles";
 import { Skeleton, type SkeletonProps } from "boneyard-js/react";
 import { useTranslation } from "react-i18next";
-import { LoadingRegion, LoadingSpace } from "./styles";
+import { LoadedContent, LoadingRegion, LoadingSpace } from "./styles";
 
 // Geometry only: an initial request has no content for Boneyard to measure yet.
 const contentBones: SkeletonProps["initialBones"] = {
@@ -19,9 +19,11 @@ export default function TeacherLoading({ loading, compact = false, children }: P
   const theme = useTheme();
   const { t } = useTranslation();
   const color = alpha(theme.palette.text.primary, .12);
+  // Boneyard also observes loaded ancestors. Stop measuring after initial loading
+  // so textarea autosizing cannot feed back into it; keep the neutral layout wrappers.
   return <LoadingRegion role={loading ? "status" : undefined} aria-label={loading ? t("core:loading_route") : undefined} aria-busy={loading || undefined}>
-    <Skeleton loading={loading} initialBones={compact ? compactBones : contentBones} color={color} darkColor={color} animate={false}>
-    {loading ? <LoadingSpace compact={compact} aria-hidden="true" /> : children}
-    </Skeleton>
+    {loading ? <Skeleton loading initialBones={compact ? compactBones : contentBones} color={color} darkColor={color} animate={false}>
+      <LoadingSpace compact={compact} aria-hidden="true" />
+    </Skeleton> : <LoadedContent><div>{children}</div></LoadedContent>}
   </LoadingRegion>;
 }

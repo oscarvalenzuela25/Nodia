@@ -1,9 +1,14 @@
 # NodiaAI — evolución UX/UI del chat con referencia DeepSeek
 
-Fecha: 2026-11-15. Revisión: R02. Estado documental: **en revisión**.
+Fecha: 2026-11-15. Revisión: R05. Estado documental: **en revisión**.
 Estado de entrega: **implementación local y QA sintética completadas**; revisión humana y adopción por entorno pendientes.
 Continuación2026-11-16: **adopción operativa productiva completada en§12**;
 revisión humana y teléfono/teclado físico siguen pendientes. El corte local se conserva.
+Continuación visual2026-11-16: mockups aceptados por el usuario, implementación
+y QA local comprobadas en la rama actual; alcance y verificación propios en§13,
+sin heredar el despliegue del§12.
+Continuación móvil2026-11-16: solicitud de historial sólo en Drawer por debajo
+de900px y acciones compactas de cabecera; alcance y validación propia en§15.
 Solicitud: estudiar `deepseek-ai/chat-demo`, mejorar de forma importante la
 experiencia de NodiaAI y dejar la implementación futura en el TODO.
 
@@ -574,3 +579,171 @@ demuestra interacción autenticada, disponibilidad IA o aceptación humana. No s
 hicieron inferencias ni se aprueban/publican fichas o el plan por esta entrega.
 No repetir baseline, construcción o deploy ya registrados para continuar la
 revisión humana. Los tests, mediciones y límites del§11 siguen siendo locales.
+
+## 13. Historial compacto y burbujas — solicitud2026-11-16
+
+El usuario aceptó los mockups generados y pidió implementar esta continuación
+en la rama actual `codex/durable-backend-uploads`, sin crear ni cambiar de rama.
+La aceptación cubre la dirección visual mostrada y los ajustes siguientes; no
+aprueba documentalmente este plan, las fichas candidatas ni una entrega productiva.
+
+- Marca NodiaAI con la tipografía Karmatic Arcade y el degradado primary→tertiary
+  de NodiaTeacher, a34px. No se cambia la marca ni la pantalla Teacher.
+- Se retira el botón de cabecera «Conversaciones». El icono de menú a la
+  izquierda del título del historial lo colapsa; el historial conserva una barra
+  estrecha con el icono para expandir y un icono por conversación. El tooltip
+  presenta título/modelo reales; pulsarlo sólo abre esa conversación. Los menús
+  de opciones vuelven a estar disponibles al expandir el panel. Búsqueda,
+  filtros, paginado y selección conservan sus estados y contratos.
+- El compositor usa radio16px. El resumen del selector IA ocupa el ancho de su
+  texto, con el desplegable junto al nombre, y se limita al espacio disponible
+  en anchos pequeños; no se modifica la selección exacta ni su editor.
+- Las respuestas de NodiaAI reciben un panel sutil similar al de los mensajes
+  propios, con radio16px y esquina de globo dirigida a su entidad: izquierda
+  para Nodia y derecha para la persona. Avatar, entidad y hora quedan encima.
+  La copia del texto visible queda dentro del panel, sólo mediante icono, sin
+  texto «Copiar» permanente; conserva nombre accesible, tooltip y feedback.
+
+**Estado:** implementación, QA sintética y checks finales de código comprobados
+por alcance local. [Evidencia consolidada](../evidence/nodia-ai-sidebar-bubbles-20261116.md).
+ChatMessage/RunActivity/MessageMarkdown41, ConversationHistory/ComposerSelection26
+y NodiaAI60 correctos. La ronda global4workers terminó en451,85s con3015/3017
+casos y362/363archivos correctos; sólo fallaron dos expectativas de ruta del
+título anterior. Corregidas a «NodiaAI», ruta7+historial11 finales pasaron18/18,
+incluidas regresiones de foco y menú obsoleto responsive. Es una corrida global
+con revalidación focal posterior, no una segunda corrida global limpia.
+Los checks finales corresponden a la integración posterior descrita debajo.
+Lint detectó un acceso de refs durante render; se corrigió haciendo al contenido
+expandido dueño del menú, descartándolo al colapsar, con el toggle estable fuera
+de ese contenido. Lint focal correcto sin desactivar reglas;34focales finales
+(ruta7/historial11/selección16) correctas en10,30s. Los seis perfiles y el recorrido
+de continuidad se repitieron sobre la separación final, con iguales medidas y
+estados conservados. Página60/60 final correcta en73,14s, tipos y lint de código
+completo correctos; lint excluye sólo `.tmp/**` de experimentos ignorados, sin
+desactivar reglas. Build final correcto (tsc-b+Vite), con warning previo de
+bundle>500kB y avisos de tiempos de plugins; no se afirma build sin warnings.
+
+Chromium sintético en1440/900/899/600/390/320px, ES/EN y oscuro/claro: sin
+overflow horizontal de documento, marca34px/compositor16px, copia sin texto
+visible y selector157,11×44px. Barra64px, opciones ausentes al colapsar,
+borrador conservado y Escape/foco de retorno móvil comprobados. Una instancia
+1440→320→1440 conserva borrador/búsqueda;7GET iniciales→8por búsqueda explícita,
+sin mutaciones o inferencias. En este corte histórico móvil se conserva la barra y la expansión usa
+Drawer; §15 sustituye después esa distribución móvil por solicitud explícita; un compositor de hasta20rem pasa el selector a una segunda fila de
+herramientas para mantener controles44px. Formulario móvil172px con borrador:
+es una adaptación de espacio, no una mejora de rendimiento. Avisos previos
+React setState en render y Emotion first-child presentes; no se afirma consola
+limpia. UI autenticada real, dispositivo físico y adopción nueva siguen pendientes.
+
+**Invariantes:** contratos Server, permisos, owner, Agentic/API key, disponibilidad
+por selección exacta, borradores/errores, Markdown seguro, adjuntos, dictado,
+Stop, propuestas/confirmación y recuperación siguen vigentes. No añadir modelos
+estáticos, consultas por icono, inferencias, herramientas o persistencia de negocio.
+
+**Impacto de conocimiento:** actualización de la
+[ficha existente](../nodia-ai/knowledge/nodia-ai/features/chat-composer-selection.md#historial-compacto-y-burbujas--solicitud2026-11-16)
+y el [producto](../nodia-ai/knowledge/nodia-ai/README.md#historial-compacto-y-burbujas--solicitud2026-11-16).
+El cambio sólo modifica presentación y acceso a controles existentes, sin alterar
+conceptos, operaciones, contexto enviado o interpretación de resultados. Ambos
+permanecen draft/unregistered/approval:null; no requiere una herramienta o ficha
+nueva ni modifica fichas aprobadas. Adopción de esta revisión y comprobación
+humana de la UI integrada/dispositivo se mantienen separadas del§12.
+
+Comprobación documental2026-11-16: nueve documentos UTF-8/LF sin BOM y enlaces
+locales del plan válidos; `git diff --check` correcto. `knowledge:check` y
+`knowledge:build` correctos:95fuentes,51excluidas,44documentos/46fragmentos,
+release `9f7cb7e13becc051f1c90d6f2e0014eb18f78e4711a2a820971c38a2df4c77e8`
+conservada. Los borradores siguen excluidos; estos checks no acreditan UI real.
+
+## 14. Continuidad del historial y filtros — continuación2026-11-16
+
+Al retomar NAIUX-001 desde el TODO, §13 ya tiene implementación y QA local;
+NAIUX-07 conserva la revisión humana/autenticada y de dispositivo pendiente.
+La solicitud actual autoriza continuar las mejoras preservando funcionalidades.
+La revisión de interacción identifica un defecto concreto: una búsqueda sin
+coincidencias mostraba el vacío inicial de «no tienes conversaciones», aunque
+existieran chats y filtros avanzados plegados.
+
+- Distinguir vacío inicial de ausencia de coincidencias. Un error de consulta
+  mantiene su aviso y reintento; la carga inicial no anuncia un resultado vacío.
+- Mostrar el número de criterios activos y Restablecer junto al buscador,
+  también con filtros avanzados plegados. El contador deriva del estado local:
+  búsqueda no vacía, archivo distinto de Sin archivar, Sólo fijadas y ámbito
+  Todas las personas únicamente cuando el actor dispone de ese control.
+- Restablecer vuelve a búsqueda vacía, Sin archivar, sin fijadas y Mis
+  conversaciones. La inicialización y la acción comparten defaults. Conserva el
+  chat abierto, su URL interna, selección IA, mensajes y borrador; sólo cambia
+  la consulta del historial. El foco vuelve al buscador y se bloquea durante
+  carga/revalidación. Las páginas ya almacenadas siguen la caché existente;
+  la primera lectura de los criterios restaurados comienza sin cursor anterior.
+- El historial expandido identifica su conversación actual con `aria-current`,
+  como la barra compacta. El Drawer móvil recibe el nombre accesible traducido
+  Conversaciones; conserva Escape y retorno de foco.
+
+Implementación y QA Chromium sintética comprobadas en cinco perfiles
+320/390/899/900/1440, ES/EN y claro/oscuro: acción44px dentro del viewport, sin
+scroll horizontal global; restablecer conserva chat/borrador y devuelve foco.
+Error503 de revalidación con filas previas conserva contenido y permite reintento.
+Los recorridos sólo emitieron GET del adapter sintético, sin inferencias.
+Pruebas globales3034/364, tipos/lint/build y knowledge check/build correctos;
+resultados se consolidan en
+[el recibo de esta revisión](../evidence/nodia-ai-history-filters-20261116.md).
+
+**Impacto:** mejora de presentación y navegación de criterios existentes. No
+cambia contratos Server, autoridad, permisos, modos, selección IA, adjuntos,
+Stop, propuestas o recuperación. La ficha y el producto candidatos conservan
+su estado draft/unregistered/approval:null; no hay herramienta nueva o
+publicación. UI autenticada, teléfono físico y adopción de §13–14 permanecen
+pendientes por sus propios alcances. No repetir la entrega productiva anterior.
+
+
+## 15. Historial móvil desde cabecera — solicitud2026-11-16
+
+El usuario solicita continuar en la misma rama con el chat móvil a todo el ancho:
+retirar el panel izquierdo y abrir el listado mediante un IconButton a la izquierda
+de una fila de acciones, con «Nuevo chat» compacto a la derecha. Se reutiliza el
+corte existente del historial temporal: menos de900px; desde900px se conserva el
+panel lateral expandible/colapsable de §13. No se añade otro breakpoint.
+
+- Por debajo de900px no se monta la barra lateral de64px. El historial completo
+  sigue accesible en el Drawer existente mediante el icono de la cabecera.
+- En xs, la fila ocupa el ancho disponible bajo la marca: IconButton de historial
+  a la izquierda y «Nuevo chat» a la derecha, sin estirar este botón al100%.
+  Esta excepción a la regla general de acciones móviles de ancho completo es una
+  petición expresa del usuario; conserva el área táctil mínima de44px.
+- El icono tiene nombre traducido y estado de expansión accesible; Escape/cierre
+  devuelve el foco al disparador una vez terminada la transición. Los bloqueos
+  existentes de operaciones, carga y grabación siguen aplicándose.
+- Mantener una sola instancia activa del historial, las mismas consultas y
+  filtros y el chat/URL/selección/borrador actuales. Abrir/cerrar o cambiar de
+  tamaño sólo cambia la presentación; no envía mensajes, crea chats o ejecuta IA.
+- La reserva MobileBottomNav/safe area y el padding de página siguen perteneciendo
+  al layout existente. El escritorio conserva el colapso y las acciones actuales.
+
+**Estado de esta revisión:** implementación local y QA Chromium157.0.8103.52
+sintética comprobadas en320/390/599/600/899/900/1440px y vuelta a390px,
+altura844px, ES oscuro/EN claro. Sin barra por debajo de900px y una barra desde
+900px, sin overflow horizontal. Icono44×44px; «Nuevo chat» ES122,34×44px en xs
+y133,39×44px en sm, con la fila y sus extremos conservados. Drawer con Escape y
+retorno de foco, búsqueda conservada al reabrir; mismo textarea, borrador y URL
+al redimensionar y ante503 del historial, sin mutaciones. Un ID duplicado temporal
+al pasar de Drawer abierto a900px quedó corregido; la repetición conserva un ID
+durante la transición y el borrador intacto. Capturas nativas y alcance en
+[el recibo propio](../evidence/nodia-ai-mobile-history-20261116/README.md).
+Checks finales correctos: global3035pruebas/364archivos en355,45s con8workers;
+84focales de página/historial/ruta en92,43s, tipado, lint y build (tsc+Vite).
+Lint sólo excluye `.tmp/**` de experimentos ignorados, sin desactivar reglas.
+Build conserva el aviso previo de tamaño de chunks. La primera ronda global
+pasó3034/3035: la nueva expectativa consultaba el chat antes de acabar la
+transición; corregida para esperar con `waitFor`, la ronda global nueva pasó
+3035/3035. Sin cambiar garantías o silenciar la prueba.
+No se heredan resultados de §13–14 ni sus capturas con barra móvil. UI
+autenticada/dispositivo físico y adopción siguen como hitos independientes.
+
+**Impacto de conocimiento:** cambio exclusivo de presentación y acceso al historial
+existente; no cambia conceptos, operaciones, contexto enviado, interpretación de
+resultados, permisos, contratos, modelos o herramientas. Se registra en la
+[ficha existente](../nodia-ai/knowledge/nodia-ai/features/chat-composer-selection.md#historial-móvil-desde-cabecera--solicitud2026-11-16)
+y el [producto](../nodia-ai/knowledge/nodia-ai/README.md#historial-móvil-desde-cabecera--solicitud2026-11-16),
+ambos draft/unregistered/approval:null. Sin herramienta, publicación, aprobación
+documental o despliegue nuevos.

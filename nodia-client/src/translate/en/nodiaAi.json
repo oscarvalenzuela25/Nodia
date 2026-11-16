@@ -4,6 +4,8 @@
     "ready_title": "How can I help?"
   },
   "settings": "Settings",
+  "expand_conversations": "Expand conversations",
+  "collapse_conversations": "Collapse conversations",
   "conversations": "Conversations",
   "new_chat": "New chat",
   "untitled": "Untitled conversation",
@@ -1076,6 +1078,11 @@
     "changed": "Preferences changed during this turn. The original history is preserved and the request will not be repeated automatically. You can send a new request to use their current version."
   },
   "organization": {
+    "active_filters_one": "{{count}} active filter",
+    "active_filters_other": "{{count}} active filters",
+    "reset_filters": "Reset",
+    "reset_filters_label": "Reset conversation filters",
+    "no_matches": "No conversations match this search or these filters.",
     "show_filters": "Show conversation filters",
     "hide_filters": "Hide conversation filters",
     "search": "Search by title or text",

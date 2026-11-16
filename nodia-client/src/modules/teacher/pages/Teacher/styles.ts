@@ -22,6 +22,17 @@ export const StateChip = styled(Chip)(({ theme }) => ({ fontWeight: theme.typogr
 export const Page = styled(Stack)(({ theme }) => ({ gap: theme.spacing(3), minWidth: 0, "& .MuiButton-root": { minHeight: 44 }, "& .MuiIconButton-root": { width: 44, height: 44 } }));
 export const SessionPage = styled(Page)(({ theme }) => ({ gap: theme.spacing(1) }));
 export const Header = styled(Box)(({ theme }) => ({ display: "flex", alignItems: "center", justifyContent: "space-between", gap: theme.spacing(2), flexWrap: "wrap", "& > button": { [theme.breakpoints.down("sm")]: { width: "100%" } } }));
+export const SessionTitleRow = styled(Box)(({ theme }) => ({
+  display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto", alignItems: "start", gap: theme.spacing(2),
+  "& h1": { minWidth: 0, overflowWrap: "anywhere" },
+  "& .MuiChip-root": { marginTop: theme.spacing(0.5), flexShrink: 0 },
+}));
+export const SessionActions = styled(Stack)(({ theme }) => ({
+  display: "flex", flexDirection: "row", alignItems: "center", flexWrap: "wrap", gap: theme.spacing(1), minWidth: 0,
+  "& > button": { minHeight: 44, [theme.breakpoints.down("sm")]: { width: "100%" } },
+  "& > .MuiChip-root": { flexShrink: 0, [theme.breakpoints.down("sm")]: { marginLeft: "auto" } },
+  "& > [data-teacher-job-status]": { minWidth: 0, maxWidth: "100%" },
+}));
 export const Panel = styled(Paper)(({ theme }) => ({ padding: theme.spacing(3), borderRadius: theme.spacing(2), border: `1px solid ${theme.palette.divider}`, backgroundImage: "none", minWidth: 0, overflowWrap: "anywhere", [theme.breakpoints.down("sm")]: { padding: theme.spacing(2) } }));
 export const Workspace = styled(Box)(({ theme }) => ({ display: "grid", gridTemplateColumns: "minmax(0,1fr)", alignItems: "start", gap: theme.spacing(3, 2), [theme.breakpoints.up("md")]: { gridTemplateColumns: "minmax(240px, 320px) minmax(0, 1fr)" } }));
 export const PlanGrid = styled(Box)(({ theme }) => ({ display: "grid", gridTemplateColumns: "minmax(0,1fr)", gap: theme.spacing(3, 2), [theme.breakpoints.up("sm")]: { gridTemplateColumns: "repeat(2,minmax(0,1fr))" }, [theme.breakpoints.up("xl")]: { gridTemplateColumns: "repeat(3,minmax(0,1fr))" } }));

@@ -1,0 +1,557 @@
+{
+  "capturedOn": "2026-11-16",
+  "branch": "codex/durable-backend-uploads",
+  "head": "0c30a767f3deab17d361fcf8db5fe5c86cfb027c",
+  "workingTreeChangesIncluded": true,
+  "browser": {
+    "engine": "Chromium",
+    "version": "157.0.8103.52"
+  },
+  "kind": "Capturas nativas del código local con componentes productivos y datos sintéticos; sin retoque ni generación de imágenes.",
+  "limits": [
+    "No es una sesión autenticada productiva ni prueba de disponibilidad de un proveedor.",
+    "No equivale a aceptación en teléfono físico, Safari o teclado virtual.",
+    "NodiaAI desktop: captura nativa del área de contenido a viewport 1440×1000; el PNG mide 1104×904.",
+    "La navegación exterior de NodiaAI móvil es la representación sintética del harness.",
+    "NodiaAI mantiene avisos de desarrollo React (actualización durante render) y Emotion (:first-child), observados en consola; esta entrega no declara consola globalmente libre de errores.",
+    "Sin mutaciones, inferencias ni despliegues en la captura."
+  ],
+  "images": [
+    {
+      "file": "nodia-ai-escritorio-expandido.png",
+      "title": "NodiaAI: historial expandido y burbujas",
+      "product": "NodiaAI",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "captureArea": "content",
+      "bounds": {
+        "x": 304,
+        "y": 80,
+        "width": 1104,
+        "height": 904
+      },
+      "url": "http://127.0.0.1:5194/src/test/manual/nodia-ai-ux/index.html?lang=es&theme=dark&scenario=history-filters",
+      "client": 1440,
+      "scroll": 1440,
+      "resizeWarnings": [],
+      "mutations": [],
+      "language": "es",
+      "theme": "dark",
+      "note": "Captura nativa del área de trabajo.",
+      "imageSize": {
+        "width": 1104,
+        "height": 904
+      },
+      "sha256": "aff8b99ccb58e13feab11ec6138db89fd602c5ad36af2fe56541936ecba6c2c8",
+      "bytes": 58147,
+      "capturedAtUtc": "2026-11-16T15:13:47.928258+00:00"
+    },
+    {
+      "file": "nodia-ai-escritorio-colapsado.png",
+      "title": "NodiaAI: historial en iconos con tooltip",
+      "product": "NodiaAI",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "captureArea": "content",
+      "bounds": {
+        "x": 304,
+        "y": 80,
+        "width": 1104,
+        "height": 904
+      },
+      "url": "http://127.0.0.1:5194/src/test/manual/nodia-ai-ux/index.html?lang=es&theme=dark&scenario=history-filters",
+      "client": 1440,
+      "scroll": 1440,
+      "resizeWarnings": [],
+      "mutations": [],
+      "language": "es",
+      "theme": "dark",
+      "note": "Captura nativa del área de trabajo.",
+      "imageSize": {
+        "width": 1104,
+        "height": 904
+      },
+      "sha256": "d530575a972e70b5b01e43a94274f2153b09b462b1232043ea5c521b3b96312c",
+      "bytes": 50812,
+      "capturedAtUtc": "2026-11-16T15:13:48.805849+00:00"
+    },
+    {
+      "file": "nodia-ai-selector-ia.png",
+      "title": "NodiaAI: configuración de IA abierta",
+      "product": "NodiaAI",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "captureArea": "content",
+      "bounds": {
+        "x": 304,
+        "y": 80,
+        "width": 1104,
+        "height": 904
+      },
+      "url": "http://127.0.0.1:5194/src/test/manual/nodia-ai-ux/index.html?lang=es&theme=dark&scenario=history-filters",
+      "client": 1440,
+      "scroll": 1440,
+      "resizeWarnings": [],
+      "mutations": [],
+      "language": "es",
+      "theme": "dark",
+      "note": "Captura nativa del área de trabajo.",
+      "imageSize": {
+        "width": 1104,
+        "height": 904
+      },
+      "sha256": "5222f64e0bb929124299edbd55023cebfd13119c03a646f9e81359a67e406ba0",
+      "bytes": 60405,
+      "capturedAtUtc": "2026-11-16T15:13:49.742418+00:00"
+    },
+    {
+      "file": "nodia-ai-filtros-aplicados.png",
+      "title": "NodiaAI: filtros activos y estado sin coincidencias",
+      "product": "NodiaAI",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "captureArea": "content",
+      "bounds": {
+        "x": 304,
+        "y": 80,
+        "width": 1104,
+        "height": 904
+      },
+      "url": "http://127.0.0.1:5194/src/test/manual/nodia-ai-ux/index.html?lang=es&theme=dark&scenario=history-filters",
+      "client": 1440,
+      "scroll": 1440,
+      "resizeWarnings": [],
+      "mutations": [],
+      "language": "es",
+      "theme": "dark",
+      "note": "Captura nativa del área de trabajo.",
+      "imageSize": {
+        "width": 1104,
+        "height": 904
+      },
+      "sha256": "2f00fe910b60287565105fba3c7bf363ad4cf8fbb4c4792c261d08e6f7e273ab",
+      "bytes": 63015,
+      "capturedAtUtc": "2026-11-16T15:13:52.161944+00:00"
+    },
+    {
+      "file": "nodia-ai-movil.png",
+      "title": "NodiaAI: chat y barra colapsada en móvil",
+      "product": "NodiaAI",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureArea": "viewport",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "url": "http://127.0.0.1:5194/src/test/manual/nodia-ai-ux/index.html?lang=es&theme=dark&scenario=history-filters",
+      "client": 390,
+      "scroll": 390,
+      "resizeWarnings": [],
+      "mutations": [],
+      "language": "es",
+      "theme": "dark",
+      "note": "Viewport completo; navegación exterior sintética del harness.",
+      "imageSize": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "b514d3f1ebfbb1fcb45ebca240dc683879e16834ee72b35b984030b2c552b0f1",
+      "bytes": 52936,
+      "capturedAtUtc": "2026-11-16T15:13:53.267879+00:00"
+    },
+    {
+      "file": "nodia-ai-movil-historial.png",
+      "title": "NodiaAI: historial móvil abierto",
+      "product": "NodiaAI",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureArea": "viewport",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "url": "http://127.0.0.1:5194/src/test/manual/nodia-ai-ux/index.html?lang=es&theme=dark&scenario=history-filters",
+      "client": 390,
+      "scroll": 390,
+      "resizeWarnings": [],
+      "mutations": [],
+      "language": "es",
+      "theme": "dark",
+      "note": "Viewport completo; navegación exterior sintética del harness.",
+      "imageSize": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "3b01e6e26bf32506dce90f1b447367969c12a2d2bb53d1ade9d689efa73ec9ef",
+      "bytes": 21157,
+      "capturedAtUtc": "2026-11-16T15:13:53.825880+00:00"
+    },
+    {
+      "file": "teacher-plan-desktop.png",
+      "title": "Teacher: plan generado y acciones de sesión",
+      "product": "Nodia Teacher",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "captureArea": "viewport",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 900
+      },
+      "url": "http://127.0.0.1:5195/src/test/manual/teacher/index.html?scenario=plan&lang=es&theme=dark&agentic=1&qualified=1&job=ready",
+      "language": "es",
+      "theme": "dark",
+      "client": 1280,
+      "scroll": 1280,
+      "resizeWarnings": [],
+      "pageErrors": [],
+      "mutations": [],
+      "panelBounds": null,
+      "scrollY": 0,
+      "note": "Viewport completo del harness Teacher.",
+      "imageSize": {
+        "width": 1280,
+        "height": 900
+      },
+      "sha256": "06588aeada7f7fe9a7b634982e27b2f7028bbe2ed843cf9358ef37296128bb8e",
+      "bytes": 88302,
+      "capturedAtUtc": "2026-11-16T15:07:36.298671+00:00"
+    },
+    {
+      "file": "teacher-paused-chat-desktop.png",
+      "title": "Teacher: sesión pausada y conversación",
+      "product": "Nodia Teacher",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "captureArea": "viewport",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 900
+      },
+      "url": "http://127.0.0.1:5195/src/test/manual/teacher/index.html?scenario=paused-draft&lang=es&theme=dark&agentic=1&qualified=1&job=ready",
+      "language": "es",
+      "theme": "dark",
+      "client": 1280,
+      "scroll": 1280,
+      "resizeWarnings": [],
+      "pageErrors": [],
+      "mutations": [],
+      "panelBounds": null,
+      "scrollY": 0,
+      "note": "Viewport completo del harness Teacher.",
+      "imageSize": {
+        "width": 1280,
+        "height": 900
+      },
+      "sha256": "1fe92d1274c40437121b19c4dd1e7c330802b469e256878e44b65e4d44294045",
+      "bytes": 78818,
+      "capturedAtUtc": "2026-11-16T15:07:37.937194+00:00"
+    },
+    {
+      "file": "teacher-ai-selector-desktop.png",
+      "title": "Teacher: selector horizontal de IA",
+      "product": "Nodia Teacher",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "captureArea": "viewport",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 900
+      },
+      "url": "http://127.0.0.1:5195/src/test/manual/teacher/index.html?scenario=draft&lang=es&theme=dark&agentic=1&qualified=1",
+      "language": "es",
+      "theme": "dark",
+      "client": 1280,
+      "scroll": 1280,
+      "resizeWarnings": [],
+      "pageErrors": [],
+      "mutations": [],
+      "panelBounds": {
+        "x": 62,
+        "y": 371,
+        "width": 640,
+        "height": 153.96875,
+        "right": 702,
+        "client": 638,
+        "scroll": 638
+      },
+      "scrollY": 0,
+      "note": "Viewport completo del harness Teacher.",
+      "imageSize": {
+        "width": 1280,
+        "height": 900
+      },
+      "sha256": "1f73841a86b8a20537d60a03073b9c3fff02f06374f4d24ec61273f442ed2882",
+      "bytes": 80404,
+      "capturedAtUtc": "2026-11-16T15:07:39.547961+00:00"
+    },
+    {
+      "file": "teacher-sources-drawer-desktop.png",
+      "title": "Teacher: drawer con Mis fuentes inicial",
+      "product": "Nodia Teacher",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "captureArea": "viewport",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 900
+      },
+      "url": "http://127.0.0.1:5195/src/test/manual/teacher/index.html?scenario=draft&lang=es&theme=dark&agentic=1&qualified=1",
+      "language": "es",
+      "theme": "dark",
+      "client": 1280,
+      "scroll": 1280,
+      "resizeWarnings": [],
+      "pageErrors": [],
+      "mutations": [],
+      "panelBounds": {
+        "x": 520,
+        "y": 0,
+        "width": 760,
+        "height": 900,
+        "right": 1280,
+        "client": 759,
+        "scroll": 759
+      },
+      "scrollY": 0,
+      "note": "Viewport completo del harness Teacher.",
+      "imageSize": {
+        "width": 1280,
+        "height": 900
+      },
+      "sha256": "4f06e46fbd091de02e44a65cbd9faea4503b17603c070d3badd3983df61488ea",
+      "bytes": 104726,
+      "capturedAtUtc": "2026-11-16T15:07:41.358385+00:00"
+    },
+    {
+      "file": "teacher-sources-drawer-mobile.png",
+      "title": "Teacher: drawer adaptativo en móvil",
+      "product": "Nodia Teacher",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureArea": "viewport",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "url": "http://127.0.0.1:5195/src/test/manual/teacher/index.html?scenario=draft&lang=es&theme=dark&agentic=1&qualified=1",
+      "language": "es",
+      "theme": "dark",
+      "client": 390,
+      "scroll": 390,
+      "resizeWarnings": [],
+      "pageErrors": [],
+      "mutations": [],
+      "panelBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "right": 390,
+        "client": 389,
+        "scroll": 389
+      },
+      "scrollY": 0,
+      "note": "Viewport completo del harness Teacher.",
+      "imageSize": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "90c8f440cd65ce7a3020490482f0230a5685d7f4fe5fb28e0838697c5ee86eda",
+      "bytes": 48509,
+      "capturedAtUtc": "2026-11-16T15:07:43.113184+00:00"
+    },
+    {
+      "file": "teacher-ai-selector-mobile.png",
+      "title": "Teacher: selector de IA en móvil",
+      "product": "Nodia Teacher",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureArea": "viewport",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "url": "http://127.0.0.1:5195/src/test/manual/teacher/index.html?scenario=draft&lang=es&theme=dark&agentic=1&qualified=1",
+      "language": "es",
+      "theme": "dark",
+      "client": 390,
+      "scroll": 390,
+      "resizeWarnings": [],
+      "pageErrors": [],
+      "mutations": [],
+      "panelBounds": {
+        "x": 16,
+        "y": 449,
+        "width": 358,
+        "height": 237.96875,
+        "right": 374,
+        "client": 356,
+        "scroll": 356
+      },
+      "scrollY": 74,
+      "note": "Scroll normal de 74 px para mostrar el editor completo; cabecera parcialmente fuera del viewport.",
+      "imageSize": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "7c7537e47e379f8c09f220aef5d5056f4af58dcbb71d22d7edf4aa6bc2744ba3",
+      "bytes": 65704,
+      "capturedAtUtc": "2026-11-16T15:09:19.923095+00:00"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+      "sha256": "1aa9bfee92dfb10dd99760386d05d51a6abc310594f6cf64576e375e698e2559"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/styles.ts",
+      "sha256": "e7313df5715481359b2bda4e14fce5eddf146e46a5bc1a75f54ccc789323bb97"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConversationHistory/ConversationHistory.tsx",
+      "sha256": "aceaf67273eaf7307811b7938643b196ce31114126a6e964aa4b6f4524bf6f4d"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConversationHistory/styles.ts",
+      "sha256": "5956ff67fa9f43dc56fb0185984b599601603c099279d2d40ce662e589128ae2"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ChatMessage/ChatMessage.tsx",
+      "sha256": "6698715f200073ea5c24c4bb54963560e600d76307cbdb7ffcb1e2e953af01e5"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ChatMessage/styles.ts",
+      "sha256": "65612fe6675bd9b3bdc91afa60d02e0dfb7b13a22ccf14d7a14b87c35b004f80"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ComposerSelection/ComposerSelection.tsx",
+      "sha256": "11a09fd29ddda7c9808646e5fd6720c7a7420e69782565ce5bb83f062575b4e7"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ComposerSelection/styles.ts",
+      "sha256": "cf5aa0321f3b31c81e7f3eb8754aef63a53c6dfcf4b7fc916ea49490fcb6c386"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ChatComposer/styles.ts",
+      "sha256": "78339330e808de89229d2feb291eb017939aa886aa6a95030b117f48b69fc9db"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/pages/Teacher/Teacher.tsx",
+      "sha256": "1e5cdc97f11c8c1ebde31b1c69433619c83e2c4859996c5b1ebe4e8936349499"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/pages/Teacher/styles.ts",
+      "sha256": "d582ac6b8dd373d5ac329ff0a2af4d62d9d76b80c9330a64181476b185eb704a"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/AdaptiveWorkspace.tsx",
+      "sha256": "7fcb6f910fa1bce6bd4e182d869f7a39bd65c4cd1d1dac0bb02ec5fc1f476402"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/styles.ts",
+      "sha256": "4c886de4db6c5d2d9e26479048458be598edab5d7b2f4412bd5d779383041000"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/SelectionPanel/SelectionPanel.tsx",
+      "sha256": "dc88d17e9ae04e3eef2e8dee49a8091edb23ca3cf99db230d5942b93249c02be"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/SelectionPanel/styles.ts",
+      "sha256": "db244fdf80a82e6a3c00f3b1c4536626c13e474743ec32390799a8e5079f97aa"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/SetupConversation/SetupConversation.tsx",
+      "sha256": "189be57be0eaae68376786af133f3e8679acf4c9e2a02c34975d6bda9e21d3ed"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/TeacherLoading/TeacherLoading.tsx",
+      "sha256": "5a1a8551513531190a7fcc622fcabe5580c1303751f65f29c3745811210f460d"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/TeacherLoading/styles.ts",
+      "sha256": "a319ef102d6621cc6485f0b2c884272d91d13a54c597b12f9a06a292d8c4f650"
+    },
+    {
+      "path": "nodia-client/src/components/MessageComposer/MessageComposer.tsx",
+      "sha256": "77c5c59fcc35bf1752d61dab067d97712a290911e5b084f1e0666beb60ef249b"
+    },
+    {
+      "path": "nodia-client/src/components/MessageComposer/styles.ts",
+      "sha256": "7a311404ac31934e928419fe9b442270038b33d0799c68c6845d53e921eab458"
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai-ux/main.tsx",
+      "sha256": "843038456d5074f6acc7e04b60a7e18a0f4e8bef5ab13a0fdf44e3cf5766d2cb"
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai/fixtures.ts",
+      "sha256": "c2809ef3d2cd3a5e2907e37491c7d6de65c5c92e839514687a1c72d2c4273729"
+    },
+    {
+      "path": "nodia-client/src/test/manual/teacher/main.tsx",
+      "sha256": "84f95d7d45fc0452864f361f8d62c3809e788371f03954d33a4834229e3f482a"
+    },
+    {
+      "path": "nodia-client/src/theme/palette.tsx",
+      "sha256": "96c3e865d8972718b4fc1d0285163da7c61d36f32b0037882966ac91e67ee8ac"
+    },
+    {
+      "path": "nodia-client/src/theme/typography.tsx",
+      "sha256": "0119025b791f9b16b212524580e7ebb7896616a5418c5d2729f63db3ecb69eac"
+    },
+    {
+      "path": "nodia-client/src/styles/main.css",
+      "sha256": "8d35db73bfd57ea311b4a55755e11e1249b34da7650df0a43e3368931d0d7d8c"
+    },
+    {
+      "path": "nodia-client/src/translate/es/nodiaAi.json",
+      "sha256": "f5c6bbdd4428e5c9002522826566b197c4a490da9c0d007632683985ac7ab4f0"
+    },
+    {
+      "path": "nodia-client/src/translate/es/teacher.json",
+      "sha256": "a0ff10d862069dcb119aeebf8ee81bda3dfaa5256e1a782e9d11fa896b11ad09"
+    }
+  ]
+}

@@ -31,6 +31,19 @@ function Controlled({ value }: { value: MessageComposerProps }) {
 }
 
 describe("shared message composer", () => {
+  it("keeps one input and send owner when an owner-supplied model control is present", async () => {
+    const onChoose = vi.fn();
+    render(<MessageComposer {...props} inputStart={<button type="button" onClick={onChoose}>Elegir modelo de prueba</button>} />);
+    const input = screen.getByRole("textbox", { name: props.label });
+    await userEvent.click(screen.getByRole("button", { name: "Elegir modelo de prueba" }));
+    expect(onChoose).toHaveBeenCalledOnce();
+    expect(props.onSend).not.toHaveBeenCalled();
+    expect(screen.getAllByRole("textbox")).toEqual([input]);
+    expect(input).toHaveValue(props.text);
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(props.onSend).toHaveBeenCalledOnce();
+    expect(screen.getAllByRole("button", { name: "Dictar mensaje" })).toHaveLength(1);
+  });
   it("preserves the input and a single action owner when opting into stacked controls", async () => {
     const attach = vi.fn(), stop = vi.fn();
     const toolbarStart = <button type="button" onClick={attach}>Adjuntar sintético</button>;

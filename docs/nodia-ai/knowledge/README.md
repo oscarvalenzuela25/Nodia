@@ -1,5 +1,69 @@
 # Contexto funcional de productos para NodiaAI
 
+## Teacher: revisión legible del plan — solicitud2026-11-16
+
+[106§13](../../mvp/106-nodia-teacher-guided-ux-redesign.md#13-revisión-del-plan-legible-y-edición-progresiva--solicitud2026-11-16),
+[producto42](studies/README.md#revisión-legible-del-plan--solicitud2026-11-16),
+[sesión37](studies/features/session-setup-and-planning.md#revisión-legible-del-plan--solicitud2026-11-16)
+y [experiencia guiada4](studies/features/guided-setup-and-study-experience.md#revisión-legible-del-plan--solicitud2026-11-16)
+registran lectura inicial y edición/ajuste progresivos, sin perder campos o
+borradores ni alterar aceptación/versionado. Impacto de presentación/acceso,
+sin cambio de contexto, conceptos, operaciones o herramientas. Implementación y
+[QA sintética local](../../evidence/teacher-plan-review-20261116/README.md)
+verificadas en12perfiles, con borradores/identidad y503/409 conservados. Global3039/365
+previa al guard final y al caso histórico;26focales posteriores y build/lint
+finales correctos, sin otra global posterior afirmada. Candidatas draft/partial/
+unregistered/approval:null; comprensión humana/UI autenticada/físico y adopción
+pendientes, sin publicación o aprobación nuevas.
+
+## NodiaAI: historial móvil desde cabecera — solicitud2026-11-16
+
+[Plan107§15](../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#15-historial-móvil-desde-cabecera--solicitud2026-11-16),
+[producto82](nodia-ai/README.md#historial-móvil-desde-cabecera--solicitud2026-11-16)
+y [ficha18](nodia-ai/features/chat-composer-selection.md#historial-móvil-desde-cabecera--solicitud2026-11-16)
+registran historial sólo en Drawer por debajo de900px y fila móvil con icono a la
+izquierda/Nuevo chat compacto a la derecha. Impacto exclusivo de presentación y
+acceso: sin cambio de contexto, contratos, autoridad o herramientas. Implementación
+local y [QA sintética](../../evidence/nodia-ai-mobile-history-20261116/README.md)
+comprobadas; tipos/lint/build finales,84focales y global3035/364 correctos. Draft/unregistered/approval:null, sin publicación ni adopción nuevas. Los cortes anteriores conservan su evidencia histórica.
+
+## NodiaAI: continuidad del historial y filtros — continuación2026-11-16
+
+[Plan107§14](../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#14-continuidad-del-historial-y-filtros--continuación2026-11-16),
+[producto81](nodia-ai/README.md#historial-filtros-y-continuidad--continuación2026-11-16)
+y [ficha17](nodia-ai/features/chat-composer-selection.md#historial-filtros-y-continuidad--continuación2026-11-16)
+registran vacío filtrado, criterios activos/restablecimiento y acceso por teclado.
+[Evidencia sintética](../../evidence/nodia-ai-history-filters-20261116.md).
+Evaluación visual/de navegación sin cambio de contexto, autoridad o herramientas;
+draft/unregistered/approval:null, sin adopción o publicación nueva.
+
+## Teacher: cabecera, drawer y selector IA — solicitud2026-11-16
+
+[Plan106§11](../../mvp/106-nodia-teacher-guided-ux-redesign.md#11-cabecera-drawer-adaptativo-y-selector-ia--solicitud2026-11-16),
+[producto41](studies/README.md#cabecera-drawer-y-selector-ia--solicitud2026-11-16),
+[sesión36](studies/features/session-setup-and-planning.md#cabecera-drawer-y-selector-ia--solicitud2026-11-16)
+y [experiencia guiada3](studies/features/guided-setup-and-study-experience.md#cabecera-drawer-y-selector-ia--solicitud2026-11-16)
+registran mockups aceptados y desarrollo autorizado en la misma rama: cabecera y
+acciones, herramientas adaptativas en Drawer y selección horizontal en Popover,
+sin «+». Implementación y QA sintética local verificadas; regresiones/tipos/lint/
+build finales por alcance correctos (incluido último CSS xs) según [evidencia propia](../../evidence/teacher-drawer-chat-ui-20261116.md).
+Impacto de presentación/acceso, sin cambio de contexto, operaciones o autoridad.
+Draft/partial/unregistered/approval:null; no publica fichas ni acredita inferencia
+o adopción productiva.
+
+## Historial compacto y burbujas NodiaAI — solicitud2026-11-16
+
+[Plan107§13](../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#13-historial-compacto-y-burbujas--solicitud2026-11-16),
+[producto80](nodia-ai/README.md#historial-compacto-y-burbujas--solicitud2026-11-16)
+y [ficha16](nodia-ai/features/chat-composer-selection.md#historial-compacto-y-burbujas--solicitud2026-11-16)
+registran mockups aceptados e implementación local: marca34px, historial en iconos,
+selector según texto, compositor16px y respuestas en globo con copia por icono.
+Impacto sólo de presentación/acceso; sin cambio de contexto, herramientas,
+autoridad o contratos. [QA sintética6perfiles/continuidad correcta](../../evidence/nodia-ai-sidebar-bubbles-20261116.md);
+tipos/lint/build finales correctos y pruebas globales con revalidación focal
+posterior. Draft/unregistered/approval:null,
+sin despliegue, inferencia o publicación nueva, con fichas aprobadas intactas.
+
 ## Evolución UX/UI NodiaAI — planificación2026-11-15
 
 [Plan107§11](../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#11-implementación-local-solicitada-en-la-misma-rama--2026-11-15),

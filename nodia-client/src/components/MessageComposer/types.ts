@@ -25,6 +25,8 @@ export interface MessageComposerProps {
   onRecordingChange?: (recording: boolean) => void;
   onPaste?: ClipboardEventHandler<HTMLDivElement>;
   beforeInput?: ReactNode;
+  /** Compact owner-supplied control before the text field; shares the same composer. */
+  inputStart?: ReactNode;
   toolbarStart?: ReactNode;
   footer?: ReactNode;
   sx?: SxProps<Theme>;
