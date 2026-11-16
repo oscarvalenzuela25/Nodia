@@ -1,0 +1,1872 @@
+{
+  "schema": "validation-image-archive/1",
+  "created_on": "2026-11-16",
+  "reason": "User requested excluding validation images from version control",
+  "original_commit": "8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17",
+  "images": 247,
+  "total_bytes": 16486902,
+  "local_originals": "Retained byte-for-byte at original paths, ignored and untracked in this workspace",
+  "git_history_rewritten": false,
+  "historical_json_rewritten": false,
+  "reference_updates": [
+    {
+      "path": "docs/evidence/nodia-ai-ai15-timeout-investigation.md",
+      "original_sha256": "ec0c1ae52d6cc18c6d9e7baa4df3baabbf54a94eb31cf0495ef4d87052844759"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-live-ui-r01.md",
+      "original_sha256": "1055e6d84de04a1fbda9ec9c16bfdee7a2c759db90faa697b48fce5198e8b4a3"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-owner-availability-r01.md",
+      "original_sha256": "6bc052f05589709fff7d02af45b9e6f8d3195c8bc4cf030405ea94dddd544f7c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-profile-reservation-r01.md",
+      "original_sha256": "9af669f54311bc62f777f6ff837e4d1172324f281709bd9eccc56611970e930d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-attachments-r01.md",
+      "original_sha256": "afabd221c95e0b5ea37899d2965da31d8152568c8f9ecccc121939eb6d06f9eb"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai40-delivery-runbook-r01.md",
+      "original_sha256": "c8f955b2aa4ad875d3196e58692e9c73661038fa5dfa2241bd3b0329a404c78a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-mobile-history-20261116/README.md",
+      "original_sha256": "17795659a82706bf411260cb2528f38dc2d94c1bde0563effaf05088bd505524"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ux-upgrade-20261115.md",
+      "original_sha256": "602814c26eb3d8c3b8336b19990eebd2205f449e90ae8ef1834bbe35bb4b7b60"
+    },
+    {
+      "path": "docs/evidence/teacher-plan-review-20261116/README.md",
+      "original_sha256": "bcf4bcab86d8cca09b2e798d7f58cbb6f44d754cc0626c5da8a1d7c2cd505c2d"
+    },
+    {
+      "path": "docs/evidence/user-theme-presets-20261116.md",
+      "original_sha256": "9bac2b1b9a2c3e3a77ccd1fbfbd2c32a41cf69911033f0b7a30893fbdd86afcf"
+    },
+    {
+      "path": "docs/evidence/visual-nodia-ai-teacher-20261116/README.md",
+      "original_sha256": "5096eb6025864771acbb383b47d66b64eec78f0abd0eba1658b4c172fb0d3ac0"
+    },
+    {
+      "path": "docs/mvp/00-progress-history.md",
+      "original_sha256": "b42d121f409025f9bc64ff2c778296f871051bd632d0773f9c4b431655454fcf"
+    },
+    {
+      "path": "docs/mvp/53-nodia-ai-ai07-module-authorization.md",
+      "original_sha256": "ed15b7c59bd4c7eafbe7fc6b00b7ff43992e035e0039f75a6c20d5edbfd45a08"
+    },
+    {
+      "path": "docs/mvp/59-nodia-ai-ai13-chat-page.md",
+      "original_sha256": "8e11724f62b4fb19cf1d7a8cd53a6f2f393b08f0b52c837027ab4e4354085e71"
+    },
+    {
+      "path": "docs/mvp/69-nodia-ai-ai23-dependent-workflows.md",
+      "original_sha256": "19a8e3a48be6e23b46a2e0f2fe008533d03eea65aae2543338869374e3ca14f1"
+    },
+    {
+      "path": "docs/mvp/78-nodia-ai-ai32-attachments-voice.md",
+      "original_sha256": "02f8a5af0693eb72a33ebcff9eb70922222dc1da1f23c2af91cfa7d39717faa7"
+    },
+    {
+      "path": "docs/mvp/84-nodia-ai-ai38-environment-acceptance.md",
+      "original_sha256": "78091d56ac36d939132e7b4e7e100cc32fd5bd61b4020d5d3f6e7d59884ca52e"
+    },
+    {
+      "path": "docs/mvp/86-nodia-ai-ai40-codex-acceptance.md",
+      "original_sha256": "7f4bf806ec1f8e31a904ccad24f9a077530919d005bdcf5b0470f0ad92b970a3"
+    },
+    {
+      "path": "docs/mvp/87-core-feedback-module-order-plan.md",
+      "original_sha256": "44dc773018846e5aafb7c11383818c0146a16a6f5481762e0967d2cd2e7b78ea"
+    },
+    {
+      "path": "docs/mvp/88-nodia-ai-continuation-handoff-20261025.md",
+      "original_sha256": "68b4df325fc60b919a04028fb1b4b4d6e5418d43df706c1943458f1f91cea792"
+    },
+    {
+      "path": "docs/mvp/93-nodia-ai-chat-composer-redesign.md",
+      "original_sha256": "98a876b90a249852fc2ce49d5084affb61cc9e987968dd3f7219f9209516b301"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/module-presentation-and-order.md",
+      "original_sha256": "aecbd6948722a682f3444930c0e78e26c49336c8e200bda6e93868ff0982b3a4"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/README.md",
+      "original_sha256": "a7a85df71bd9c86b0ec1f03316e8de7c87d61d7454212887ffd3d75ba1c126f0"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/codex-audio-inputs.md",
+      "original_sha256": "bc255360c6ade73d5f19cecd477dd07c38bfd1fe5d9262e81e8392edfb9b4f12"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/context-execution.md",
+      "original_sha256": "452a80c8c3422c73281980e94c855b314dcefb9bbc4aa86494e37dcc497d9591"
+    }
+  ],
+  "entries": [
+    {
+      "original_path": "docs/evidence/ai-provider-health/loading-dark-es.png",
+      "bytes": 37136,
+      "sha256": "c2cc6c0504c555bf4aab111b77c421855a80ad6b3dfae35d86bfeac327a8a9e4",
+      "git_blob_oid": "844820804d81711d4f7d0561242314e8fc0c1bdc",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/ai-provider-health/loading-dark-es.png"
+    },
+    {
+      "original_path": "docs/evidence/ai-two-modes-ui-desktop-r01.png",
+      "bytes": 69948,
+      "sha256": "d25e08ed89dcc22a5ef67623c64f7925fbf69862dc9830d8f0666a49e597a620",
+      "git_blob_oid": "fb34758e349045ea23c3b62aedc6a0aa1f316047",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/ai-two-modes-ui-desktop-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/ai-two-modes-ui-mobile-r01.png",
+      "bytes": 31980,
+      "sha256": "579d4b5bb33dea17099c759d68a4e604dafc0af9d6cf720e694a352f138fb30a",
+      "git_blob_oid": "7e572481eb7a97c77afdff4838fc1cfe3846c650",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/ai-two-modes-ui-mobile-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/api-chat-ui-desktop-en-light-r01.png",
+      "bytes": 119723,
+      "sha256": "7d995a11a54c7cb9b0d98e0595252bf9c68b661e8462a740bbf5ff3268fec9f0",
+      "git_blob_oid": "b05277661541775d30ea3939795557c446ba0afa",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/api-chat-ui-desktop-en-light-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/api-chat-ui-mobile-es-dark-r01.png",
+      "bytes": 51653,
+      "sha256": "12a1afbeb5607653d6ee25ecbb913a0124777f4f22a4edc3800e0197154e850d",
+      "git_blob_oid": "8099cacea7b739c5a9551cc9d16425da5c8c95b1",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/api-chat-ui-mobile-es-dark-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/codex-model-catalog-refresh-r01.png",
+      "bytes": 70585,
+      "sha256": "4ba53f1f4bfb3e8a6ffd5d363c2c6bdca745768f4b0cfd41ee41eb1c88bffb22",
+      "git_blob_oid": "d182786a683390480c71358b6d2f527241332f3b",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/codex-model-catalog-refresh-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/core-fx03-order-desktop-r01.png",
+      "bytes": 96470,
+      "sha256": "cf7dca2f6017293dfbf70a4aed7db556b689dec2aacac52441d5fead21b0576a",
+      "git_blob_oid": "fa15df51c8f562b2bf30b48707d785a38e80c9a5",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-fx03-order-desktop-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/core-fx03-order-mobile-r01.png",
+      "bytes": 31842,
+      "sha256": "b2c6aeb371dc4f8337d772f92b58598d7d602d6ca049cfc8a0f62adfa0684bce",
+      "git_blob_oid": "77da1ad61bd7dcec9dad284decb8e15562d03356",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-fx03-order-mobile-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/core-fx03-order-recovery-r01.png",
+      "bytes": 78357,
+      "sha256": "c1b8186561bc1925f397b70c3a046b6874ed221cdb8fc16107d088f59764f054",
+      "git_blob_oid": "15f90262c6738c44e474a12643c399c7c7a96233",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-fx03-order-recovery-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/core-fx04-empty-group-cleanup-r02.png",
+      "bytes": 31712,
+      "sha256": "6ea71c462b818cd153beda21daae256a06f605bc9709781c923ffaf419dee710",
+      "git_blob_oid": "97c0db40acd515bf3b696aa34b9a388fa5e375ee",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-fx04-empty-group-cleanup-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/core-fx04-live-cross-page-r02.png",
+      "bytes": 64846,
+      "sha256": "72143cccb0b0b529f5422092ea86e5687ff1e76ca4af1a770d9b9db05da21bfd",
+      "git_blob_oid": "26501d12e9d483c03e44202811b1f9a8d2fc3a03",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-fx04-live-cross-page-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/core-fx04-live-final-r02.png",
+      "bytes": 62551,
+      "sha256": "84136fb417611fef91d12fe90782dc77ed85e3a9ead5272a29ba325ca18d6eea",
+      "git_blob_oid": "14f3f498effa7e37579fe7a176a37f56f227b260",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-fx04-live-final-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/core-fx04-live-group-order-r02.png",
+      "bytes": 50997,
+      "sha256": "ce48c4afbec7a44f133335ad3d75434c1fd757afae6867dcba52643c4b92ae5b",
+      "git_blob_oid": "2134bc4e778432ac6391eac9bae5f3935fc47422",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-fx04-live-group-order-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/core-fx04-live-module-order-r02.png",
+      "bytes": 49781,
+      "sha256": "ebdfe6cd92833c7243b9d8aaa8a3bcf9ee4fb5bec76d40ea18b3926b8041fec5",
+      "git_blob_oid": "a7e482d6e59e038e4e5f7d937910c84318bb7897",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-fx04-live-module-order-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/core-fx04-live-modules-r01.png",
+      "bytes": 72105,
+      "sha256": "cc1e6be96f62c033c36707aed9fa308d6a18f2395af7922f33b687fa4870cc50",
+      "git_blob_oid": "b9a6c85cb50e84a32027398946f591fe2228cbfc",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-fx04-live-modules-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/core-module-columns-r01.png",
+      "bytes": 71143,
+      "sha256": "a8b873577180586a078cae9a4f69366d29d3c51b3c04dc2f3f8926ebef5117bc",
+      "git_blob_oid": "368af4b7dd2adc14c2207c4f83aa16a46662b9c8",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-module-columns-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/core-module-drag-groups-live-r01.png",
+      "bytes": 72047,
+      "sha256": "1fb7a1e9f4b2d1624ef670ea69ac4ef05eb8a108ca722b1ae9955996f66441c3",
+      "git_blob_oid": "9ab34066683dfccc861934751f2a1f691f3cb1fe",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-module-drag-groups-live-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/core-module-drag-mobile-r01.png",
+      "bytes": 26065,
+      "sha256": "92f4e2addd4014ffff486ddaac7c38f716065c988de59c4cc39c9f166026a835",
+      "git_blob_oid": "1f52e7d372a0c909184243ba870d83ad9a09949a",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-module-drag-mobile-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/core-module-drag-modules-live-r01.png",
+      "bytes": 76192,
+      "sha256": "ff9a88017f07c138b90e69a831e6c7ccec9e5b7c99cf2b837c4a895609ff1ba0",
+      "git_blob_oid": "766f0951819fde6b278f8325e78a5ef4d6cca32b",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-module-drag-modules-live-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/core-module-drag-no-tooltip-r01.png",
+      "bytes": 74716,
+      "sha256": "b2797e7caf57fbbf5956a5a4008dd91756e2af3cb82f9df194896ac664cdd2cb",
+      "git_blob_oid": "06f756f7a14b230811855c94ac7f01babccbbfd2",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-module-drag-no-tooltip-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/core-module-headings-r01.png",
+      "bytes": 78735,
+      "sha256": "443bb6e71211d7b298f04d57ea49108eb3629ea0dbc5c29443fbabc3528ea709",
+      "git_blob_oid": "caeb6684dff4e716379e7ae1a8346aa1397adef2",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-module-headings-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/core-module-home-r01.png",
+      "bytes": 42869,
+      "sha256": "97211cf2d76a2237ddf905c540674f743a72075c856c86f2282021e7fe421dea",
+      "git_blob_oid": "5c5cc6e60679f7e4b39de55d542eff8e1bcfbdf4",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-module-home-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/images/nodia-ai-ai31-report-en-dark.png",
+      "bytes": 57532,
+      "sha256": "7ac2e90c9fd094a5fa4943412dae2c7979a6feaccea9e0e9a5dc0172f5c801a1",
+      "git_blob_oid": "06ada3dbc89c594ddef2275f9a0410195e380ba9",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/images/nodia-ai-ai31-report-en-dark.png"
+    },
+    {
+      "original_path": "docs/evidence/images/nodia-ai-ai31-report-es.png",
+      "bytes": 69251,
+      "sha256": "5b5ede8e4d305c04e87c2938aad01cb6f1a9027924110ed64f680f0a9cf4e403",
+      "git_blob_oid": "f352e14bb9ffd7c2181cbf097b21d60ce32d0954",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/images/nodia-ai-ai31-report-es.png"
+    },
+    {
+      "original_path": "docs/evidence/images/nodia-ai-ai32-accepted-en-390.png",
+      "bytes": 34991,
+      "sha256": "edc02b437336bcebb4cbf85258e59d7c06697a57e748b6e3761ccfbabbacd886",
+      "git_blob_oid": "023d53a33027086e5d654b49913eedfd845c586c",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/images/nodia-ai-ai32-accepted-en-390.png"
+    },
+    {
+      "original_path": "docs/evidence/images/nodia-ai-ai32-accepted-es-390.png",
+      "bytes": 47655,
+      "sha256": "48f59d3f71f059da5076485a9053d0c7c29e3c844714a254b55ebbce4a7691cd",
+      "git_blob_oid": "bb6f986373e674f0a10a8af8bf1e2776e24f6571",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/images/nodia-ai-ai32-accepted-es-390.png"
+    },
+    {
+      "original_path": "docs/evidence/images/nodia-ai-ai32-draft-error-es-320.png",
+      "bytes": 46222,
+      "sha256": "23234a4ac284f58d954298d96b5556da7da8fef920d41e747f81e5709e8c6aa0",
+      "git_blob_oid": "b7dfa53400232c9830bd1e7df3bd7e606438a74e",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/images/nodia-ai-ai32-draft-error-es-320.png"
+    },
+    {
+      "original_path": "docs/evidence/images/nodia-ai-ai35-desktop.jpg",
+      "bytes": 105340,
+      "sha256": "41fa23760bb981e6c74074c8f14adbd626dc9690e4e09cc9f0937561e50faa70",
+      "git_blob_oid": "df8fc8227fc72644d1d828ae2eda76956cf004b3",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/images/nodia-ai-ai35-desktop.jpg"
+    },
+    {
+      "original_path": "docs/evidence/images/nodia-ai-ai35-drawer-mobile.jpg",
+      "bytes": 25186,
+      "sha256": "242b03a9018dc1613dcfd56071baa0e34de73e9f9dbc77bbe8f2eaaf6dab4e93",
+      "git_blob_oid": "72e8e9e258c12f08078b37b3ea7332e49db0ae68",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/images/nodia-ai-ai35-drawer-mobile.jpg"
+    },
+    {
+      "original_path": "docs/evidence/images/nodia-ai-ai35-history-mobile.jpg",
+      "bytes": 32996,
+      "sha256": "f21da0f8cdf897bdc76cacdee6f61d64d7071cea54364ba2975dba26a17666ea",
+      "git_blob_oid": "4399fe40fd05014c309ac79bd1725bbd1bae65ec",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/images/nodia-ai-ai35-history-mobile.jpg"
+    },
+    {
+      "original_path": "docs/evidence/mobile-navigation/desktop-light-en-1280.jpg",
+      "bytes": 60547,
+      "sha256": "6bfe85da994c10a0b1042815ddcd24d93c2a93e560069e7133b32c286a0a0280",
+      "git_blob_oid": "59d9d3b6e12093c24d946ad1ca717bf87fbd37e1",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/mobile-navigation/desktop-light-en-1280.jpg"
+    },
+    {
+      "original_path": "docs/evidence/mobile-navigation/mobile-dark-es.jpg",
+      "bytes": 32769,
+      "sha256": "a441c4fd41cc749adde84365baaa52246742f713e79cb7d39df4bd518ee9b593",
+      "git_blob_oid": "c2b980c4fc9b99d974d0b3664e11794cf40e4b10",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/mobile-navigation/mobile-dark-es.jpg"
+    },
+    {
+      "original_path": "docs/evidence/mobile-navigation/mobile-light-en-320.jpg",
+      "bytes": 23901,
+      "sha256": "35aa6ba45fd5a973d93ac40ea21f7b7f30c646789cde018a3523e57b49427b72",
+      "git_blob_oid": "60575140db9d179df9f7c9280dd3c712e1a061b4",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/mobile-navigation/mobile-light-en-320.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-additive-continuity-20261025-r01.png",
+      "bytes": 70642,
+      "sha256": "6cfd5701e98146455c958660d6b848530190ac1597e17a00289aca2cf962f122",
+      "git_blob_oid": "ab609d49e81be068227b7231a8db606f30af7654",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-additive-continuity-20261025-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai07-1440-light-en.png",
+      "bytes": 18112,
+      "sha256": "231241f572d1e500365d436751a93031b052a7398f8c14310d04de23a30a1bcc",
+      "git_blob_oid": "f04438f22b0350012636bb29d5707bb197da9188",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai07-1440-light-en.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai07-320-dark-es.png",
+      "bytes": 15686,
+      "sha256": "25f926772b905778f81e5e3fe6c52fa3adc8f7f3089382b0d2b23cbacf522a35",
+      "git_blob_oid": "a90ec408485f0114b907d13c62571285189f2857",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai07-320-dark-es.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai08-1440-dark.png",
+      "bytes": 164824,
+      "sha256": "a1293c14cbe57ff82c21aace447f64acceba23a228f813f98c50e77f8fe6e4ff",
+      "git_blob_oid": "269f297548bb515d04cbd666a2a63d39e59ee0b1",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai08-1440-dark.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai08-320-dark.png",
+      "bytes": 215123,
+      "sha256": "2da3c2cfcbc8977e1be9344abf18ff362aff481ce30073fd632b93934d90ee43",
+      "git_blob_oid": "abb7c9255d98419f8e7cc0e32df5689d4727cb7a",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai08-320-dark.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai13-browser-1440-light-en.png",
+      "bytes": 108025,
+      "sha256": "2c8944fd49409c033e504552ed6c0c59e1a5a30065e1874aaea6e9a841858fe7",
+      "git_blob_oid": "777a1e679bdd9276ac7a84525468149173fe349c",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai13-browser-1440-light-en.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai13-browser-320-dark-es.png",
+      "bytes": 53152,
+      "sha256": "eca4fbc64d9514e90dd9aae330118cf2bc4b5cdc2ea029e351860226f61d31cf",
+      "git_blob_oid": "6468bac85eadd98241ab1af9ed3ba0f1f43ac94e",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai13-browser-320-dark-es.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai13-browser-320-main-dark-es.png",
+      "bytes": 60444,
+      "sha256": "366599cc3de1ecfa7edd3fb8d892c351d2860198f29602be5da27b86433e1ad8",
+      "git_blob_oid": "18f931537cfcaa3f7b8b8682e6117ddd4627915f",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai13-browser-320-main-dark-es.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai15-gemini-mcp-real-success.png",
+      "bytes": 35617,
+      "sha256": "3a4abd85fa121a86ae8dc24ca04d8368521d93e94f704d058a2c606118bb7499",
+      "git_blob_oid": "a65c64ff83e1c314312b73c62c84307dcbb3a089",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai15-gemini-mcp-real-success.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai20/desktop-es-completed.png",
+      "bytes": 74113,
+      "sha256": "314cd8c78b11f36415c4056249d19cf11a9305af0e4a8077381dca08a6169b2f",
+      "git_blob_oid": "35a3218c0444c108a82e5c973a34c03f2f4ec85d",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai20/desktop-es-completed.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai20/mobile-en-cancelled.png",
+      "bytes": 29359,
+      "sha256": "2c66770ff4324588a925dd7e6124900a2a4c67bfeb69e08433a43bb1adf4f112",
+      "git_blob_oid": "6020d1860106a33871b3767ed81d936f90cf0e72",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai20/mobile-en-cancelled.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai21/desktop-es-derived.jpg",
+      "bytes": 74068,
+      "sha256": "0921ac3a3c294454b23ac3d9911c012520fc7cbab5ae4230715c76294b133747",
+      "git_blob_oid": "7d45a4ae11eabb3adb402147951348026a5c4d8d",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai21/desktop-es-derived.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai21/desktop-es-receipt.jpg",
+      "bytes": 76799,
+      "sha256": "e9c4892345a9cb565a73a0d805c1a9d28d40411a306cfd8df7c665e154d58a29",
+      "git_blob_oid": "89701e5697361c182b0464b2056f05c016334c01",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai21/desktop-es-receipt.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai21/mobile-en-delete-preview.jpg",
+      "bytes": 34975,
+      "sha256": "546e0f8a498a70a188a0a7a2fd0658e6a4017cd2d67af3d8ee0b099879a859c7",
+      "git_blob_oid": "053c504dabb021bb286aa77d8d1d78cfc9d992e6",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai21/mobile-en-delete-preview.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai21/mobile-es-editor.jpg",
+      "bytes": 29473,
+      "sha256": "97b2543a0d1cb925e726138bb9cbdde58d7547f6e972c1e026b0a9adf5cd7612",
+      "git_blob_oid": "d8bbba6f970c02611d3d24675a4a229c7c9c4d2a",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai21/mobile-es-editor.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai22/desktop-business-receipt-en.jpg",
+      "bytes": 60104,
+      "sha256": "8e2974170ce128100f8381b0eea12f97b879e934d2c365a7adf7f83a76d1921c",
+      "git_blob_oid": "7617639c186865cb3ec10c45626a0b61c87e3ecd",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai22/desktop-business-receipt-en.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai22/desktop-invoice-zero-es.jpg",
+      "bytes": 61074,
+      "sha256": "ae3a9232cd71955f518069603e5809131a545ba4540ca3764746a9c4381eb4e8",
+      "git_blob_oid": "92cd6a2ceb3a4be80cd7f87918548fb6f42a7c11",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai22/desktop-invoice-zero-es.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai22/mobile-integer-editor.jpg",
+      "bytes": 32649,
+      "sha256": "fe1bdf9bebe68ea4b62df8e5b0686072615eeac6951d8414566d15b287623604",
+      "git_blob_oid": "e603f11f44e954ea51e621dc8b097341176b58f8",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai22/mobile-integer-editor.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai22/mobile-revision-saved.jpg",
+      "bytes": 37854,
+      "sha256": "614f07046003bcb470a35fa959a5da835d31523d0d6923e9005171522e3fb22f",
+      "git_blob_oid": "c307abf0ce359ba88f4c00626dce7fbf00e3a91f",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai22/mobile-revision-saved.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai23/desktop-partial-receipt-en.jpg",
+      "bytes": 65399,
+      "sha256": "01924541c97f5f071d1e4dbd8bc8697802514d99dcf3532376881aee7bbaea8c",
+      "git_blob_oid": "5b135265f08343078f05e99c1c529fdd7f4cb658",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai23/desktop-partial-receipt-en.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai23/desktop-resumed-receipts-en.jpg",
+      "bytes": 65365,
+      "sha256": "998a466e6228f1663b8cc68036a8b49b5107faed74e2594ad1d21de46dc96f4b",
+      "git_blob_oid": "8e91446a34c475283ce4d761b74f09f248b52854",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai23/desktop-resumed-receipts-en.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai23/mobile-workflow-editor-es.jpg",
+      "bytes": 32318,
+      "sha256": "c64d32ff8cad25e2095309bed4cd271a0985663d911f27255253381f9340b952",
+      "git_blob_oid": "d9b2c5b885654e04258a2d0e5652b855eb12b4a1",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai23/mobile-workflow-editor-es.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai24/desktop-policy-receipt-en.jpg",
+      "bytes": 60880,
+      "sha256": "8e319eacf2c9dfa1e3c156585dba11ff82c4a7f77b15e897c8ddd628212d5ea5",
+      "git_blob_oid": "8a1eefbdfce3a036850afb0e4621ceeb67df1126",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai24/desktop-policy-receipt-en.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai24/desktop-policy-revision-es.jpg",
+      "bytes": 61239,
+      "sha256": "b5cc3afc6d4def49d6b0fab6055cfe1708d154fd8e3b824583471746cf7bb536",
+      "git_blob_oid": "113bbdf8dcf357181db2ba629328ce9e735fb0f6",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai24/desktop-policy-revision-es.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai24/mobile-rules-editor-es.jpg",
+      "bytes": 32568,
+      "sha256": "f7e5d5b75855f1bdec5d0b32b1007cbac548651690228c4af11f2bb31a4bda34",
+      "git_blob_oid": "77c01dd2382a98daf1cd517ce57e86ee23303377",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai24/mobile-rules-editor-es.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai25/desktop-cancellation-revision-es.jpg",
+      "bytes": 64760,
+      "sha256": "1ecb84b5621c7040e0f083232f67aeefab7a3f130126f5875a4a82b02672a30c",
+      "git_blob_oid": "235260ce8eae6e1a0f53aacf339c10fea8e8640a",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai25/desktop-cancellation-revision-es.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai25/desktop-reservation-receipt-en.jpg",
+      "bytes": 67575,
+      "sha256": "16a9008235f342fd147de2d4042922a7720a162957e89888ebd0baf8bc02f8dc",
+      "git_blob_oid": "4fed8228a1dd3912581fa79dda3d0eb780fb32c4",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai25/desktop-reservation-receipt-en.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai25/mobile-reservation-editor-es.jpg",
+      "bytes": 36620,
+      "sha256": "fdaf90708347cb9e3c7895ed74900ea93fb4277437a9a9629a21a7e6c1e545bb",
+      "git_blob_oid": "c5f38e746310ddafde2f4ca10549f561bb0cdb47",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai25/mobile-reservation-editor-es.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai26/block-revision.jpg",
+      "bytes": 73500,
+      "sha256": "32d5971e9b31b3f3508c13cb0cebfe7a758a1168e39fda93d5b54733680ec6b7",
+      "git_blob_oid": "0ca2aa3cb78d2b0c241e1680159908defb3a5ee5",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai26/block-revision.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai26/money-receipt-en.jpg",
+      "bytes": 60825,
+      "sha256": "ec94074b4260338e8a9c29298d73a90b6fe4b00df02c9e7a285c501c74866f13",
+      "git_blob_oid": "f39f932bbbd0631b373f70803d0e883e4a0ec451",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai26/money-receipt-en.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai26/preparation-mobile.jpg",
+      "bytes": 31102,
+      "sha256": "f7fbe52f878573797de9b41aa5222f6c3c803243ac99bd6b888e26b06d82538f",
+      "git_blob_oid": "f93c8a4a30c258d242e8174d28b28d7cf0643b2a",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai26/preparation-mobile.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai26/refund-preview.jpg",
+      "bytes": 69666,
+      "sha256": "c2e54a6c75bac3f94c7ddd602d10e1c2ca754b0911e086f1559c21fc4edbfa5c",
+      "git_blob_oid": "b5045dcf656153874d180d09a030c9847edad0da",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai26/refund-preview.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai27/confirmation-queued.jpg",
+      "bytes": 60552,
+      "sha256": "a6c1b7b40c041363dac1e43f6246e38262744c966c3c53f3b4fb1984c4d26942",
+      "git_blob_oid": "59a963df9b4fa03596f99defea69227a38c91525",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai27/confirmation-queued.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai27/core-receipt-en.jpg",
+      "bytes": 59977,
+      "sha256": "cec5776020a3e89f6d8ec2d7d84830811fddb6e29f78211868f8d77535604d5c",
+      "git_blob_oid": "fc87b80870cf59c4d87343b07398d5a0329eca83",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai27/core-receipt-en.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai27/delete-preview.jpg",
+      "bytes": 59252,
+      "sha256": "2dbd3dc8177c1bdebe04e37a363eded73f612786cdc27b5e0ce7ec749e3f1daa",
+      "git_blob_oid": "0cf37cbf89d9430256a0a6c4ca10c1cf0ae3bdfe",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai27/delete-preview.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai27/role-editor.jpg",
+      "bytes": 55390,
+      "sha256": "6a7c5341af3e22bfe2f93d5351315d8a046ca7aa93b68f6bde91192529dca208",
+      "git_blob_oid": "8c3e24a735aabd1d397e8e2206c62c6648bcb049",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai27/role-editor.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai27/role-revision.jpg",
+      "bytes": 65084,
+      "sha256": "f9711745c734dfa7f7e3b66bbe131a1d2becf96c80b529323bf0ec64fbffba22",
+      "git_blob_oid": "a470ee121c686d9b8884fc6a29b2decae93ea4e9",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai27/role-revision.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai27/user-mobile.jpg",
+      "bytes": 36780,
+      "sha256": "04a651ef2ab7b02807a57abf7b4e405f0cfa02805a86b4969406b51a9425820c",
+      "git_blob_oid": "0be122aab49da82bb6dd39012ce1fa3416df4cb5",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai27/user-mobile.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai28/provider-mobile.jpg",
+      "bytes": 36389,
+      "sha256": "0a89dba5e22b019a25b07582dc702bef791d8b769e48bbcf5e6c055256081eac",
+      "git_blob_oid": "a03ed316a29aa3ffd5ac2c5abd9252a7a8aa3d27",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai28/provider-mobile.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai28/provider-receipt-en.jpg",
+      "bytes": 65377,
+      "sha256": "670c9aaca194333710539b892ccea6dd67391844a5fc478291803edbcccd72db",
+      "git_blob_oid": "30dedabc3ea12589909492dcc258e081569847a5",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai28/provider-receipt-en.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai28/provider-revision.jpg",
+      "bytes": 62619,
+      "sha256": "f960df8dd86cbf3e1b9e4974c80c107c9ff6d2289587d87d57a16d30f798be9c",
+      "git_blob_oid": "1a31dfb4fb34fa0b4012fb4cdcb6fe681f109cd4",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai28/provider-revision.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai29-r01-web-authenticated.png",
+      "bytes": 49284,
+      "sha256": "ef1e1a163d4811ee22f5899ef8efa0003a65b4da06f78baf13e7dc52df87748f",
+      "git_blob_oid": "e94bd75cc5e60414245c76e3d04464ac5cc17ec9",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai29-r01-web-authenticated.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai29-r01-web-handoff.png",
+      "bytes": 37379,
+      "sha256": "a557b20fdb933127aa06890195053f4725998876853d4d4b7f139c373d27b214",
+      "git_blob_oid": "aa402ee0a5a17a3961b4cc81082fab902d05223a",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai29-r01-web-handoff.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai29-r01-web-login-required.png",
+      "bytes": 62010,
+      "sha256": "2d198b4300b2ea937353cd13cd30f3f7907712b1829e28b6210bcc716880909f",
+      "git_blob_oid": "803b7f9e4dccfbe19a5185c4d573b5a114f060ee",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai29-r01-web-login-required.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai32-r05-ui-fixed.jpg",
+      "bytes": 36809,
+      "sha256": "60e4c09b85844e541bb793e63168d4a9b344096127640ac3282106360f103103",
+      "git_blob_oid": "3498d36da61fd2ee55374a2cb5a869126adc7dbc",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai32-r05-ui-fixed.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai32-r05-ui-response.jpg",
+      "bytes": 36734,
+      "sha256": "651f2d42d831f6b76400af07aaa7fd7382e50ef010a8c63d5c2eb1069036de6e",
+      "git_blob_oid": "c14553dd66baf4bd8de6d31daeccb3f0769f3439",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai32-r05-ui-response.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai32-r05-ui-result.jpg",
+      "bytes": 35190,
+      "sha256": "b9e99e65ea5b4787ab2d909a796d811d3592f18d95e4d0bb82cbd0c9e2b29211",
+      "git_blob_oid": "dd07a16fe43211c37d01b9d230bf09d90283ee28",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai32-r05-ui-result.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai33-ui-dark.png",
+      "bytes": 96641,
+      "sha256": "816dfc3b3dab8f8bf8ae2e45746752621ea403797f959ea6f92b66ff93e0d97d",
+      "git_blob_oid": "ac6eaa7743b2e4971fbdb4234217018d2683a1ce",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai33-ui-dark.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai33-ui-light-error-mobile.png",
+      "bytes": 21883,
+      "sha256": "e3f9eeaf7707d1667cf765d1464e5efac1534e58368b0b9bed710eaba7524f43",
+      "git_blob_oid": "f7495b2f814767ce0210329a1309518c4d1e94f8",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai33-ui-light-error-mobile.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai33-ui-light-mobile.png",
+      "bytes": 31330,
+      "sha256": "ffade873c64068d88520f5e81770f162f2bc76ee1d232a72040a43f96f74f72a",
+      "git_blob_oid": "8c740feac701050fc0e3aba71180582c001e6abb",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai33-ui-light-mobile.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai33-ui-real.png",
+      "bytes": 35621,
+      "sha256": "c6a3141df2d4252b4f7aadeb9c1be816be0e8220b5ef865a8604d518f00d1b95",
+      "git_blob_oid": "01aef8aae4a6ff2a1574e8656b575b821cde843e",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai33-ui-real.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai34-ui-desktop-light.jpg",
+      "bytes": 113917,
+      "sha256": "91a277b23c35d418c9c11984f860b07c00a0854b4eb729882f7f9757d885aef7",
+      "git_blob_oid": "5f92b62e65e0bad8e0dc1a939b7f31ceafee1a7b",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai34-ui-desktop-light.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai34-ui-mobile-dark.jpg",
+      "bytes": 42416,
+      "sha256": "d2a10d97325f0ab866a39f18ed4681005ba912974832a0aadd6bab3a5c6d5300",
+      "git_blob_oid": "8583a2f54c92e0a1b2a4693edd9db8d81efc5905",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai34-ui-mobile-dark.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai36-c05-crud-create-confirm-r01.png",
+      "bytes": 79524,
+      "sha256": "42731e6c136f1f2c971bf72dafb1ab196f54428e7ae92962823b6e58b264134b",
+      "git_blob_oid": "7c75ad19e2852b163f3010567888a0f6365de563",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai36-c05-crud-create-confirm-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai36-c05-crud-create-preview-r01.png",
+      "bytes": 86109,
+      "sha256": "0323a425a7bce435f68e37bca8aa24bc98aa7131abe6455b8038f0e48970f944",
+      "git_blob_oid": "ad7e23dffae993fa4f7266bbcb1d330534ea78da",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai36-c05-crud-create-preview-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai36-c05-crud-create-receipt-r01.png",
+      "bytes": 82006,
+      "sha256": "97a4877963988b9db900688362533410cc0c8271ac54c86534d5db0cbdae133d",
+      "git_blob_oid": "a015e47533b2ce11458100a8191ef75c099fd69b",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai36-c05-crud-create-receipt-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai36-c05-crud-delete-preview-r01.png",
+      "bytes": 76948,
+      "sha256": "3364d99c71e81e5bc1dab46c89dc0992c3fc022d04a002099fa1af05fc7caf1c",
+      "git_blob_oid": "f1484c019c1ae081d3d1414d059505d8c0d23870",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai36-c05-crud-delete-preview-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai36-c05-crud-readback-r01.png",
+      "bytes": 94367,
+      "sha256": "12b8ac4c1e1d65a99de8e43043d3beb8558207d60ddbc30e7adc697f7056fd4f",
+      "git_blob_oid": "d230d0a53a0df693d0f97145547e0465cef9b47c",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai36-c05-crud-readback-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai36-c05-crud-update-preview-r01.png",
+      "bytes": 82552,
+      "sha256": "f24e0787fd72c654d25a9e23b8ba1dc5f691c843311875c64de58c68274eb164",
+      "git_blob_oid": "5ea0006882b30d17a5d089ed0006d6c33e6fca0d",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai36-c05-crud-update-preview-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-acceptance-r03-failure.png",
+      "bytes": 112247,
+      "sha256": "37280a7349d438a6e0a4f28637f85a45e61befdb39b97707f20cdb1c3d0eb5e3",
+      "git_blob_oid": "fab77d6f646f23a12b37145ebf066fa1610f88ab",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-acceptance-r03-failure.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-acceptance-r04-failure.png",
+      "bytes": 107258,
+      "sha256": "2e068f976258111aa024ae5b4ef82a301ff44dc05d625dfc0314b9a3623d6dbc",
+      "git_blob_oid": "e7cd8d09b7131ab4c0be7041ff50feff0f64144e",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-acceptance-r04-failure.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-acceptance-r04-finance.png",
+      "bytes": 57336,
+      "sha256": "87eb5cc602bd818ff76c2d2961c0d286bf5194fd89b28711b88cf3a4a2e7aaae",
+      "git_blob_oid": "de64ff732df31e2424ab97f55966ca507e9280c8",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-acceptance-r04-finance.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-acceptance-r05-finance.png",
+      "bytes": 57655,
+      "sha256": "544b4c2b54393a96c3001c4d08998cfcf1b1e1e61866914d2a04ff22cd25ee11",
+      "git_blob_oid": "daf42cb5c329124a0029e968a833cda50594e58f",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-acceptance-r05-finance.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-acceptance-r06-finance.png",
+      "bytes": 57396,
+      "sha256": "0992764f0bcde3a177009766751cf5bcf92e6f2a366e0a0238be001aa4d572f0",
+      "git_blob_oid": "d28156168c7d3d9c00a4299b792145cc36c2ca65",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-acceptance-r06-finance.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-adoption-login-r01.png",
+      "bytes": 21305,
+      "sha256": "6e9dda42bba8fcc14d7d45138dd2131a09d3d1050fee5b1d1a7b8b65179c49c3",
+      "git_blob_oid": "46000ff0b445cc331c223dc4dcec43360ee0d5d4",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-adoption-login-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-attachment-over-limit-ui-r01.png",
+      "bytes": 83089,
+      "sha256": "62f32a6d85ac5b3b0e1d1b0301a9cab4f17846d30647f9ce431d5e67f848c36e",
+      "git_blob_oid": "2a1e7baaaa3765bd309bf06bda9c2c6c7dfed86a",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-attachment-over-limit-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-attachment-ready-ui-r01.png",
+      "bytes": 82417,
+      "sha256": "ac5ccf8f6adf4e61f5b8ec0f83cc5b4aa8dc316391866690659485223082fe9c",
+      "git_blob_oid": "1c1b416d758092749d2ab0730c95ce0c1f99be2c",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-attachment-ready-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-attachment-removed-ui-r01.png",
+      "bytes": 83089,
+      "sha256": "62f32a6d85ac5b3b0e1d1b0301a9cab4f17846d30647f9ce431d5e67f848c36e",
+      "git_blob_oid": "2a1e7baaaa3765bd309bf06bda9c2c6c7dfed86a",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-attachment-removed-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-live-category-r01.png",
+      "bytes": 64531,
+      "sha256": "2d53b197e32181586140bfce7efd1c69a6e7f0f0a87d11517cba1298532ddd31",
+      "git_blob_oid": "42161fb660a2859a05dbd4cb07cee4f2cdc8f194",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-live-category-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-live-confirm-button-r02.png",
+      "bytes": 70543,
+      "sha256": "c0b087545d18eee09f467efcca8a702c29956d0038e6604a6fef5f74f07dbbcf",
+      "git_blob_oid": "a425dd151e07e4d3e2f0d114382cfdec9aecb080",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-live-confirm-button-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-live-finance-r01.png",
+      "bytes": 52434,
+      "sha256": "51f3082ae8e9482fa95f959cf19bd6ac0615a01399bfdfee9b420c14759e8b9d",
+      "git_blob_oid": "fd8fe07b5653ede19d344c2487556a2b0a27868c",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-live-finance-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-live-proposal-fields-r01.png",
+      "bytes": 76535,
+      "sha256": "2516c15a0a802d131b642126163333805a2ef6e7f5efad19ece53fc0e4e94f3e",
+      "git_blob_oid": "01fcfd01772fae3d739dab63de21ebc8b59442a3",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-live-proposal-fields-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-live-proposal-head-r01.png",
+      "bytes": 80166,
+      "sha256": "2cacb0b0324e9e2dc80e5dca37336c9b835954f2b0cf06d6c8ced1de407a86c8",
+      "git_blob_oid": "f61323177ddd6276c69b9286644eb4f3c3c9034f",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-live-proposal-head-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-live-proposal-r01.png",
+      "bytes": 75630,
+      "sha256": "76d204ee111d9f4f61a0d267477d07315e8e4b7d82df59e5c4d0831802668186",
+      "git_blob_oid": "32bdea6fa55d0bff2b430d4694eb75a1e06b2e4b",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-live-proposal-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-live-receipt-r01.png",
+      "bytes": 73133,
+      "sha256": "51934d026c7604223349afa4058dd83696d567181c963fb62420f3e8f0e193cd",
+      "git_blob_oid": "cf9c5909f665c522567cbdb48649c0a53566ed72",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-live-receipt-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-live-reopened-r01.png",
+      "bytes": 70702,
+      "sha256": "11381bed0be41490ddb2012b26be8d0ffd745d18f26096e90ffaffb40af6bfeb",
+      "git_blob_oid": "8b472d8374dedfa60446b99546d136b33a8dec22",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-live-reopened-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-owner-before-r01.png",
+      "bytes": 82359,
+      "sha256": "ee890dbe5c076ce245d97202783256a4d02444b100e3f1b4161020b094245336",
+      "git_blob_oid": "1ed23b14a8036b8af9a6dc5d0196c71bdfef0bcb",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-owner-before-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-owner-selector-r01.png",
+      "bytes": 67208,
+      "sha256": "13e666f926b4d90135904297448f6de992ae8f26ca7f1815aec659a832f4237b",
+      "git_blob_oid": "d0fb183220e9c24b70c231685531b02a7d5d3b78",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-owner-selector-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-profile-reservation-before-r01.png",
+      "bytes": 73471,
+      "sha256": "e5867125f356f8c7805998cc3718e5178184108c46d22d57f6a85315974c6ab9",
+      "git_blob_oid": "d44c50bc6123ca6e82d0cb9164dc60a69dccecf6",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-profile-reservation-before-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-profile-reservation-diag-ui-r01.png",
+      "bytes": 73471,
+      "sha256": "e5867125f356f8c7805998cc3718e5178184108c46d22d57f6a85315974c6ab9",
+      "git_blob_oid": "d44c50bc6123ca6e82d0cb9164dc60a69dccecf6",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-profile-reservation-diag-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-profile-reservation-ui-r01.png",
+      "bytes": 69919,
+      "sha256": "b43f429fa7c3db9cea3bf90033f9087cb41054f7874c92c5e19513b89aa97b63",
+      "git_blob_oid": "954d6137904f53408b0ad76a9abda5933f29f52c",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-profile-reservation-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-turn-b-admissible-r01.png",
+      "bytes": 89070,
+      "sha256": "c761459d6f4edaf1e9efa6a74849d65d8fe23fa66bdba2a65cf384de051d0979",
+      "git_blob_oid": "216a376a8bf690068eb63c569a5690080b0783d7",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-turn-b-admissible-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-turn-b-busy-r01.png",
+      "bytes": 75895,
+      "sha256": "aac6281d6af2163b2e365be4bdf939d850fda23204354dba45b3d6afe863480d",
+      "git_blob_oid": "4d0b0044a0b8efdcb245059730b9f8331683b1b0",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-turn-b-busy-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-turn-completed-r01.png",
+      "bytes": 72771,
+      "sha256": "f68cf58215dbe390b272cad1b5a32ba12cee3185e35d4fed3cd28a2185d5399a",
+      "git_blob_oid": "3350a9ec86149d17f7dd21024b997556de1bf5bf",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-turn-completed-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-turn-recovered-r01.png",
+      "bytes": 72376,
+      "sha256": "38cb01843c1cbd73eb5ed50857f0102c2cca994959e7a9243539248fd27834c0",
+      "git_blob_oid": "433ef6e91e0725bc6294f136c30fcb4ff84164fa",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-turn-recovered-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-turn-reopened-busy-r01.png",
+      "bytes": 95844,
+      "sha256": "44becaf622833420dc92110afe1754eb1574830ab1746c276f08721e785114b1",
+      "git_blob_oid": "c64c1547fc7a035180744a3628e211e618beac9f",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-turn-reopened-busy-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-ui-drawer-agentic-r01.png",
+      "bytes": 75791,
+      "sha256": "662891d2e1fd1cd8d23c4dd6d1a7f6f5fe4d3a33d77390366c9f945e76fa8fa4",
+      "git_blob_oid": "052349839c07ead7e10c541148d0fb135b846360",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-ui-drawer-agentic-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-ui-drawer-desktop-r01.png",
+      "bytes": 82512,
+      "sha256": "4a613bf228ebd7b58c09d09d077325657c3c0320c980b02181485e84f607be18",
+      "git_blob_oid": "c1f3963cb7433b7475bbfcfe8954128a9e9b5346",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-ui-drawer-desktop-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-ui-drawer-mobile-r01.png",
+      "bytes": 30072,
+      "sha256": "caad1b0e6b00bce4c4a59166ebf642cc3a8066e306c2bc3271b4efe79782df76",
+      "git_blob_oid": "4b4678b0cc66bf4b8bf839b8904b8bbb92109254",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-ui-drawer-mobile-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-ui-history-after-r01.png",
+      "bytes": 77317,
+      "sha256": "f0c2a8efa42129a435d0bedac0624b386043576289b372b89d8798d7faeeffcf",
+      "git_blob_oid": "c7135dd00fc5fa73eaa0ce3464134faf38592187",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-ui-history-after-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai38-ui-history-before-r01.png",
+      "bytes": 78375,
+      "sha256": "f51df06c08e991d312e7299ce6b4d24232b8a9fa8f2325eb726cb88b22546d2d",
+      "git_blob_oid": "385f865fee624224199573d393924dc19ac657a9",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai38-ui-history-before-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-accepted-preferences-ui-r01.png",
+      "bytes": 59109,
+      "sha256": "d025183468f7c6d2b81d60cc553f5273c865f9a479d6c4928d297b4034f50a32",
+      "git_blob_oid": "af1f118004be5de000bb1323daa1396eef7acd31",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-accepted-preferences-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-account-ui-r01.png",
+      "bytes": 71665,
+      "sha256": "a2856b8da69918f656b18d51af996f763620d0a003f455cc3cd4ff4f815c16ee",
+      "git_blob_oid": "39c945c1655c48dc7132f6df5c41b41157e03a01",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-account-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-availability-ui-r02.png",
+      "bytes": 77106,
+      "sha256": "d6f359d1e38983575ace2f77210820b8fbadc8664c8302d35e2e30e5bf69cdfc",
+      "git_blob_oid": "a219648144af4d4502c944ed201a7819bb5b71a2",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-availability-ui-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-client-roundtrip-chat-r01.png",
+      "bytes": 70689,
+      "sha256": "9e0f070c89a39a57a89361a795e70140bec36a89b4b7be452869b9405f2bba0c",
+      "git_blob_oid": "a2b9d88d260c81f20c9fb263dbdb6e33836e24ad",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-client-roundtrip-chat-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-codex-continuity-r01-ui.png",
+      "bytes": 84592,
+      "sha256": "13630feaab5bf8bb6282f20d55442cfc6c5b6baa317de3b9973ec2787d7ec172",
+      "git_blob_oid": "2690ab624ab117ab34f0927c7f894fa069ecf9e4",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-codex-continuity-r01-ui.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-common-preferences-preview-r01.png",
+      "bytes": 73913,
+      "sha256": "0bad2751717e70d21e2d646cb107a9bf03345535f78433b52988486a70922f43",
+      "git_blob_oid": "85427d38a40878671b3c58864805369c1881f754",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-common-preferences-preview-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-common-preferences-preview-r02.png",
+      "bytes": 71928,
+      "sha256": "4e7f362024699f81e667a56335bf0be971144cd5aabeed698dcb6bd22b12dfd9",
+      "git_blob_oid": "ec0801770ea90bd34646b3772426488b4bf2553f",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-common-preferences-preview-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-common-reads-ui-r01.png",
+      "bytes": 90550,
+      "sha256": "918c56570d36f56bb5510228930d8ac9637976d84329a9e2d7c0162dcf882558",
+      "git_blob_oid": "b1f6f2c1a4c4ab103737be53e7d52f4d1c3904ad",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-common-reads-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-compiled-client-draft-r01.png",
+      "bytes": 70050,
+      "sha256": "38f0a653b1a647f6706e0bcb6d994b47780532cbb01c98ba60a868146b53d034",
+      "git_blob_oid": "552300193566ea32b365ec24c709a5a960ec202b",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-compiled-client-draft-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-compiled-client-drawer-r01.png",
+      "bytes": 74100,
+      "sha256": "1591abb2085798857e649f9ef8625c7f729cc531de1751555768da6427e3ba88",
+      "git_blob_oid": "eb04e45e7a90de9abe1fe061110274eee6511a18",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-compiled-client-drawer-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-compiled-drawer-en-r01.png",
+      "bytes": 74843,
+      "sha256": "355babce9a57e154f7a52dcfc34f7e4fc282893aef9ac14a59ded684ef68b72a",
+      "git_blob_oid": "9966494a0c3c1d89391ee7809423a6aed3f14fcc",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-compiled-drawer-en-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-contained-attachments-r01.png",
+      "bytes": 98924,
+      "sha256": "50607b5655d8641d1e685ac8f48aad3bdf4def273c3f815fbde6beff7c981513",
+      "git_blob_oid": "de2fcd98f3702f2d8ae94a7de8046a6ad8668705",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-contained-attachments-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-contained-drawer-r01.png",
+      "bytes": 86950,
+      "sha256": "7697d654f9af4c2d8fbfe3c5bb3935534f82852cf04c2a774ded83194ce3ada5",
+      "git_blob_oid": "a634b44287a2308ec7a794c343531ab6007a2eae",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-contained-drawer-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-contained-preferences-r01.png",
+      "bytes": 74817,
+      "sha256": "a70bfe42db6b5b65abdb13f18fe3f908e73fe8c3fd7c03c926f1c83bb0b60386",
+      "git_blob_oid": "ba95464dc136379ae26042809bc851697dc8b53f",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-contained-preferences-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-continuity-codex-ui-r01.png",
+      "bytes": 75208,
+      "sha256": "edfbc31000db6df16d1c676b3b611a49599c09f7cea49908e73db3a73a50a255",
+      "git_blob_oid": "466590121e74abca91b15ab0701ae592daeb62d7",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-continuity-codex-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-continuity-web-ui-r01.png",
+      "bytes": 75751,
+      "sha256": "ce17d3a2558b2d4c06058a680c0e4e7b5fbf96ae7b1d8dbea77e466d989191e7",
+      "git_blob_oid": "282a3e2bd0cbdbdaba22c262787131758d4f4ec2",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-continuity-web-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-core-read-ui-r01.png",
+      "bytes": 69424,
+      "sha256": "fe588db367959d1ee69ed40468d5cd821622f21e2009af6bd7e2827021c00df5",
+      "git_blob_oid": "b36b02dcb36ed19063df9912d0b0bd9bd77a1563",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-core-read-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-draft-browser-r01.jpg",
+      "bytes": 74328,
+      "sha256": "491809d6d6dd7767427a6883d7d54d71244eca39c66772a941c0fb2bc4b0fc08",
+      "git_blob_oid": "35b8f893e4cae8e904f1bd1937a35ee908fa8c36",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-draft-browser-r01.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-drawer-final-ui-r01.png",
+      "bytes": 76048,
+      "sha256": "5f35817c1a646c4b866a9c89d62433b2bd22d58605ff3ee2817f72be2fd3c51f",
+      "git_blob_oid": "685c65bebaa8b5af40abaf2e2b23b8a0e15b19c9",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-drawer-final-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-drawer-mcp-final-ui-r01.png",
+      "bytes": 84652,
+      "sha256": "b6c05c6cb941adf553e866606ae4d268a5d2aedd9a84e6884f08d301f20578f8",
+      "git_blob_oid": "7c71c61f9b67e6ee16a6e72a39870b2ce10f3e38",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-drawer-mcp-final-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-drawer-ui-r01.png",
+      "bytes": 71817,
+      "sha256": "ef49510bc76c4dc477cf21d95f5102022199c696ab4dd3ccf854206f80316a43",
+      "git_blob_oid": "41b14887f34d8d6f4ae470a75e74a33a79e1ed35",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-drawer-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-effect-ui-r01.png",
+      "bytes": 67458,
+      "sha256": "634c84a1494fa4141a3a41f49c6fb0d382c452d7ad83f1836a9e19275fb3d72e",
+      "git_blob_oid": "0cf2e565ecc754750a3e03c94787fae843bc2880",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-effect-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-effect-ui-r02.png",
+      "bytes": 74377,
+      "sha256": "33fdbb542fb4ff999aaf0f5e542357cc81659081db33b5c77cd65ec17f40b595",
+      "git_blob_oid": "e1ff31d08640f0697c2695d6df4be2929a1d04f0",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-effect-ui-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-finance-aggregates-ui-r01.png",
+      "bytes": 80742,
+      "sha256": "76b75872a11f20251ef9675b22e61e0a3568a4fa6007fd704c9f7a50df6062d4",
+      "git_blob_oid": "bd510eabfce4253836deb6de8238a730a4dc4849",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-finance-aggregates-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-gemini-continuity-r02-ui.png",
+      "bytes": 84834,
+      "sha256": "bec3dec7b7ae8ad86fb3d9055ac47fc1d12b7ecd4c884738ff031e3c2ad262bb",
+      "git_blob_oid": "a704798f7d05d6a02ecf150b123213726545ce60",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-gemini-continuity-r02-ui.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-human-confirm-ui-r01.png",
+      "bytes": 92385,
+      "sha256": "5353063e33e2ec5f766c1145124f9ac10e811c09b644964ade9eda41cf0a6d30",
+      "git_blob_oid": "34587322fc352a103bab6adad413d4d3f70ab9ae",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-human-confirm-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-human-confirm-ui-r02.png",
+      "bytes": 95474,
+      "sha256": "682de7a96f2bb711c0d3fe98a9b3ea6ecaad360aec682883fa205183a8266f49",
+      "git_blob_oid": "83a2c832f2873fefaf39faf7557c7d2a81544428",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-human-confirm-ui-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-human-preview-ui-r01.png",
+      "bytes": 70054,
+      "sha256": "997b15453926fcee26a0082d4800a2d65f86db25ad402927a410aaeb1a6d02e3",
+      "git_blob_oid": "87b7dcfca14696f4b225bc16ef093aa227cebcdc",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-human-preview-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-human-preview-ui-r02.png",
+      "bytes": 71669,
+      "sha256": "490e8f4c4b496b1097cc5980422d75e6d9e70245f4dceddd4efe11a05f0451cd",
+      "git_blob_oid": "b3ddf0ea7ac14052a94466b6752166fa2638f09a",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-human-preview-ui-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-images-reloaded-ui-r01.jpg",
+      "bytes": 64997,
+      "sha256": "fc6769e1a62bea9f9b3b0397733989412557521ec090bebcd2f4d3995cb73dbd",
+      "git_blob_oid": "e8a537a7ebf828481207337547215b343d1e7444",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-images-reloaded-ui-r01.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-invoice-r2-download-r01.png",
+      "bytes": 83630,
+      "sha256": "41539ceaf55f07354e21888e812451bd4a204ca54da84b5a23ae6682b81b5b60",
+      "git_blob_oid": "21f7ec41747982490612f5c229627fc221a91ac4",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-invoice-r2-download-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-jpeg-mcp-worker-ui-r01.jpg",
+      "bytes": 87931,
+      "sha256": "4114d7c4fffe686e3c8ad80711c13898719031286012d87253798e4c813c1db9",
+      "git_blob_oid": "da9f47bb1e3b65dbe070cad09411bbb09c77f502",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-jpeg-mcp-worker-ui-r01.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-mcp-chat-ui-r02.png",
+      "bytes": 82484,
+      "sha256": "a1cdda8694cacd10e6bad35b2e7ab1a3200c825a645f3438473c8c144f174e24",
+      "git_blob_oid": "2e3ce5b37827a8615705fb6a2e7d49a0e7944059",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-mcp-chat-ui-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-mcp-chat-ui-r03.png",
+      "bytes": 80984,
+      "sha256": "e0a6cbc9013d52d67eae360e2d00a79f7c9f58dee2cf90d62c73c94de0d73fc7",
+      "git_blob_oid": "e4b175d79e28a3cb19e0925441dde3a52d5fd837",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-mcp-chat-ui-r03.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-mcp-chat-ui-r04.png",
+      "bytes": 77113,
+      "sha256": "8451745d7824a1711fc379677ea800353b65723f1b8130da1092dc6ff7b0cdae",
+      "git_blob_oid": "d32ac894170a7b238221d55e5df6b2ea65b07ab9",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-mcp-chat-ui-r04.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-mobile-chat-390-r01.png",
+      "bytes": 39911,
+      "sha256": "92b56dabe1bd2350153b585d5d559e9e4abe8ee31a5f1aafde95dbb52e36b2dc",
+      "git_blob_oid": "1b590d91e3a274e4f794b4df3c1c206dacbdafb2",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-mobile-chat-390-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-mobile-composer-390-r01.png",
+      "bytes": 46242,
+      "sha256": "8fe75e538bede57b4c0675ccb331e340fcdac1491d89c58209e3ca2bd65339f7",
+      "git_blob_oid": "f0708a4b71781a93943b78b286c2e2997e17740e",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-mobile-composer-390-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-mobile-drawer-320-r01.png",
+      "bytes": 26989,
+      "sha256": "d83b2f6c2d66fcea362b07a7c7872cee2c1500dc0142f3eb415ea66360012576",
+      "git_blob_oid": "b96317df7fed42003d04c8fda6c1ac61359ca843",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-mobile-drawer-320-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-mobile-preferences-320-r01.png",
+      "bytes": 36277,
+      "sha256": "6beea4203ad581338229bf196fd43d7cdce34fa4c71ca360d2c45df043831326",
+      "git_blob_oid": "eb862c725027933008f6ff5b20e322b5c4a8d9c5",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-mobile-preferences-320-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-pdf-reviewed-text-ui-r01.jpg",
+      "bytes": 70322,
+      "sha256": "fd9906b1c63efa734bffc65ee540beb6747fbd4874a0b0f8b24f43aed47fe540",
+      "git_blob_oid": "59696968ce20b5142df65ef4690261a7cd0df913",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-pdf-reviewed-text-ui-r01.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-png-worker-ui-r01.jpg",
+      "bytes": 78253,
+      "sha256": "f02a090dd797123c2b14d146b72efdf78754c07f31ad9f836f0e786efe256c7e",
+      "git_blob_oid": "1ce8fff31c12a6df7c6a6edf0c49339a3f082b37",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-png-worker-ui-r01.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-preference-forget-completed-r01.png",
+      "bytes": 82303,
+      "sha256": "08a5b127c0023fea3affeba5f56ad074b1a2e518e1f39abc14caa5a3c610299e",
+      "git_blob_oid": "a39b65e771db6ed01eb952b1b1ec0a94b0a83ccb",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-preference-forget-completed-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-preference-forget-confirm-r01.png",
+      "bytes": 77968,
+      "sha256": "8c8a4c074a9fecf88971f1c69c2b93d214b77d6d87329791cf4111d8600d836c",
+      "git_blob_oid": "6f1bb6efb8fc2445ade439a98686c38a9cf4e3eb",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-preference-forget-confirm-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-preference-forget-persisted-r01.png",
+      "bytes": 66723,
+      "sha256": "25c8e689f0e167c4d1e1fccd7976f137c7ccf4ff3dc500f4f8a201015a9e82f5",
+      "git_blob_oid": "e3f83bf5a42035c26a7b456d9f4fd8eee1861fda",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-preference-forget-persisted-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-preference-forget-preview-r01.png",
+      "bytes": 93873,
+      "sha256": "57fed2f19ef0321375648f39c423576ffd67443895a47f05532c31a21fea7739",
+      "git_blob_oid": "4e310a817a44d4e8248dc4ed0412797f0b7b7243",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-preference-forget-preview-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-preference-update-completed-r01.png",
+      "bytes": 83184,
+      "sha256": "6d38aea2c91c3a78bccae58217ab6bb0ec5dc8009958f715f23cb43f9a73fb11",
+      "git_blob_oid": "6eb9400dc337a4dee92cd8fdac08d94df7927d97",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-preference-update-completed-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-preference-update-confirm-r01.png",
+      "bytes": 81750,
+      "sha256": "29786db9161c0eed9d0b36ff2289b7e6fbd2441c7cc7f6223de5e3abad0e09cf",
+      "git_blob_oid": "749bbd606003f1145d4d1b28fe9644fd62407572",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-preference-update-confirm-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-preference-update-persisted-r01.png",
+      "bytes": 67682,
+      "sha256": "47f899577a74cd6a242124ac999d13408112d67f4ba771a541a8a62a89d5bcc0",
+      "git_blob_oid": "ad0bd1c8b82f2ebfab8fe45b0ebf903403921e4e",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-preference-update-persisted-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-preference-update-preview-r01.png",
+      "bytes": 78092,
+      "sha256": "b01482c9d07572eab463a5f03badaf5ad54f2fba21f3d908d75a8f278ad1fce6",
+      "git_blob_oid": "8b3c7eba921c96187573081c25b76287465e1625",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-preference-update-preview-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-private-csv-ui-r01.png",
+      "bytes": 82034,
+      "sha256": "73ecb63991b116937ca49c7aaf28fcaf664edee89c40baea647cd62794005180",
+      "git_blob_oid": "4f577fb9b5346ddaaf1b24b4470bc2a5f980134d",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-private-csv-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-r06-business-ui-r01.jpg",
+      "bytes": 67790,
+      "sha256": "d6cf5b07f7646c7eb5cb82d26b2df6286d7f09781884c87f489d8fc9944e7c7a",
+      "git_blob_oid": "3b10610065aee8605852821164b7464be3a06328",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-r06-business-ui-r01.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-r06-finance-ui-r01.jpg",
+      "bytes": 70784,
+      "sha256": "71aed0af494b730b614336d3b0dad9cbddd29dd297a108748438ffa0a76a93a1",
+      "git_blob_oid": "ac1bc1b017329c66d1ad031a1dc69b817a192d08",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-r06-finance-ui-r01.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-r07-png-worker-ui-r01.jpg",
+      "bytes": 65991,
+      "sha256": "28edb2af06925da5fc6b342b5bde1ad927e9ea633f2edbdba9427ad9f55c9aba",
+      "git_blob_oid": "c1b2539a3fcffb5986c8179393c129e6bee369ad",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-r07-png-worker-ui-r01.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-recovery-drawer-ui-r01.png",
+      "bytes": 82488,
+      "sha256": "3fa430925b6e46cf907dda473133a9d4d93f279c988db2a6f26282b20c927ed5",
+      "git_blob_oid": "d4ded1f97096dcce18d5ba64890ec8bf552c5814",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-recovery-drawer-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-report-events-before-r01.png",
+      "bytes": 77863,
+      "sha256": "da4f649ecd4d0b3ca7cae075b54bd7b8f35a4d72937800d1371f27df82d377e0",
+      "git_blob_oid": "88dc32ae79f91ac764616bda9ee7e19255bb41c2",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-report-events-before-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-reservations-read-ui-r01.png",
+      "bytes": 70275,
+      "sha256": "0c6ee7fa0bccc88d64bfdfa679c684eabe4f0ab08e1c25f7b36c0a13079b5a3f",
+      "git_blob_oid": "444db546fc4cb9ae6f22a75fe0f48368392cbcf4",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-reservations-read-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-stop-active-ui-r01.png",
+      "bytes": 81925,
+      "sha256": "7b5e7977151d7885d550fa9c983aeb54f63690f27511d126cd1e4442d4def870",
+      "git_blob_oid": "cfcd71f1e5d58aa9c9d1905b401ea8e67e92e62f",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-stop-active-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-stop-requested-ui-r02.png",
+      "bytes": 81670,
+      "sha256": "eb7a65e4bda3fac8c3b2f204ac6e57b212b5aafaf399c6a8628968e2bd2ed029",
+      "git_blob_oid": "6601a6fbdbb0fe847bf9cf1db2e044b445f8a7fc",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-stop-requested-ui-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-structured-report-summary-ui-r01.png",
+      "bytes": 87039,
+      "sha256": "4084e4ba11e297af291af981ab9f39a31d796760cc15b2542db83aa10dea6e92",
+      "git_blob_oid": "43540e0ac1f178cfbae94161a2cea549fb9fdd6b",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-structured-report-summary-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-structured-report-ui-r01.png",
+      "bytes": 87526,
+      "sha256": "a45a76739ab8d38cc005ea383566ab8080291e0006b02d9bf0c14a3b622cce1a",
+      "git_blob_oid": "de38683ad6c5c23cdccbfc1323f36c9691512d69",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-structured-report-ui-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ai40-webp-worker-ui-r01.jpg",
+      "bytes": 77806,
+      "sha256": "bd16d6a04e55ece960872825e4ca86f1d0ebe6b00d5f9b77b85a3c505d16e6a6",
+      "git_blob_oid": "2e099c377cae0ebde04b880fdcca67bfc06ccf78",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-webp-worker-ui-r01.jpg"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-antigravity-commercial-closure-20261026-r01.png",
+      "bytes": 91088,
+      "sha256": "cd73356683b7259554b98ca37f6323fd2b5ce51d2558adb0ecf432e98de48d7a",
+      "git_blob_oid": "7b11b15c6e39db357000e244ffbbc87a7d3a981b",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-antigravity-commercial-closure-20261026-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-antigravity-image-generation-20261026-r01.png",
+      "bytes": 81061,
+      "sha256": "5beb07cf7ca16bb7c0f3e50e4b801aef8d9a18e844c865173d913f197abf7540",
+      "git_blob_oid": "4a94f8be2c21ae3667e6d611ac25891896711a8e",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-antigravity-image-generation-20261026-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-antigravity-invoice-ocr-natural-comparison-reload-20261026-r01.png",
+      "bytes": 98235,
+      "sha256": "53e35cf79e1f6708c3b87e4224c7b7605d006cd93808a3b28b0afb1b4aa1aa8a",
+      "git_blob_oid": "669c25a2906ff9e4d2b013dd794fdbc79f76109c",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-antigravity-invoice-ocr-natural-comparison-reload-20261026-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-antigravity-p1-pdf-comparison-reload-20261026-r01.png",
+      "bytes": 103966,
+      "sha256": "5ee5ed9c09364d0fd3580db956b2922dfe0f568d25ec77290f3592b4fa983d64",
+      "git_blob_oid": "203b21616d7de916dc10f31ff9f2764ed1a4f29a",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-antigravity-p1-pdf-comparison-reload-20261026-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-antigravity-p1-pdf-ocr-20261026-r01.png",
+      "bytes": 88969,
+      "sha256": "ba226925c6f506dbbeb0e735a56a1fd7918ba339c542d87f0c2fdec0c4586abc",
+      "git_blob_oid": "e00d9109866171404651d4952751df0cd74f939e",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-antigravity-p1-pdf-ocr-20261026-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-attachment-session-continuity-after-20261025-r01.png",
+      "bytes": 77897,
+      "sha256": "3cf292e838c0fc6fde7cc40a0f8e413466d899aeddb7fe9c074dd88ca8663203",
+      "git_blob_oid": "687419bfac2b567e41499a11a2138b0d324486c8",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-attachment-session-continuity-after-20261025-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-c05-continuity-after-native-adoption-r01.png",
+      "bytes": 59693,
+      "sha256": "8f03cbb72f09ba7c93ad18b13cfc05142330c4b1da2064b84a1175afc416a4e4",
+      "git_blob_oid": "267618e03ed40b4c22c75b345c879561744f0356",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-c05-continuity-after-native-adoption-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-c05-csv-result-r01.png",
+      "bytes": 59694,
+      "sha256": "3a935cc3d4cbc60072cdafcf29c7309685c4ad5ded1ad2986feefee2f2495737",
+      "git_blob_oid": "ff82473db334133d338e1f35aa6c72c33c613e46",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-c05-csv-result-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-c05-preparations-core-r01.png",
+      "bytes": 62292,
+      "sha256": "055ebb646225ce201432c5c498d8f15f5c2a3feb95795da0c3419050815c5195",
+      "git_blob_oid": "e71058f39c9ad9094b5dff0b097185defa4e7ee3",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-c05-preparations-core-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-chat-feedback-active-desktop-20261029.png",
+      "bytes": 76856,
+      "sha256": "3295e476a570981a326b3cda1c74a7b755631eea41c2f882af5702877b3e3f60",
+      "git_blob_oid": "4a35ce328cb15e53bff9c5646aea03f3de7a3173",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-chat-feedback-active-desktop-20261029.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-chat-feedback-active-mobile-20261029.png",
+      "bytes": 44321,
+      "sha256": "82944396fbf51255b562247a9e9320c2768f724704b3b65695681c4cf1439da8",
+      "git_blob_oid": "d0679253c32cd9102d119e9e48ed0a2493ee08ac",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-chat-feedback-active-mobile-20261029.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-chat-feedback-completed-mobile-20261029.png",
+      "bytes": 56305,
+      "sha256": "c16924fd0753e58b8b356e8c70d2fedc2725190fe17f25dad643fe5bd4e859c7",
+      "git_blob_oid": "d03dbf0491aa397141da8a2e7cc9e4482287ac28",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-chat-feedback-completed-mobile-20261029.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-chat-markdown-1569-en-light-20261029.png",
+      "bytes": 92498,
+      "sha256": "20aa1ca21ee9b15036d5282cd62cade864ac09bec87c395373daf0816d6e78b0",
+      "git_blob_oid": "33be6f2c7a2d8bc0956f51224cb92f30aa0e720d",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-chat-markdown-1569-en-light-20261029.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-chat-markdown-320-es-dark-20261029.png",
+      "bytes": 46614,
+      "sha256": "e8f61c5ab88d8f5d07a3db448a348f043f7b1818b645ce7cd72ae7f17707f167",
+      "git_blob_oid": "592f309dfe9ec9a69ab86f25fa3057250ec4d98f",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-chat-markdown-320-es-dark-20261029.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-chat-redesign-1440-light-en-20261028.png",
+      "bytes": 77199,
+      "sha256": "b7d82a8fd97c7e15b1409f1735d24926afacf0acddf741c217204fbf08cf02af",
+      "git_blob_oid": "ecd7f3bc7789418d512ba61889c19083389cd628",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-chat-redesign-1440-light-en-20261028.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-chat-redesign-390-dark-es-20261028.png",
+      "bytes": 47314,
+      "sha256": "c6f7e23846f011a90bc0a41dca4aa246bd62f8a6761cbf4d90ead593dc3f8a96",
+      "git_blob_oid": "8c48fb6c22c67e1e8117a343ebdb827c08051ef7",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-chat-redesign-390-dark-es-20261028.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-chat-refinement-desktop-20261028-r02.png",
+      "bytes": 89265,
+      "sha256": "4d38b161b5b9d125dc4b2368c44a414f473fd88c3048f58d88dee51cd11eae27",
+      "git_blob_oid": "e68d25d9583924dac36bbf617a5d4ababbc3c530",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-chat-refinement-desktop-20261028-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-chat-refinement-mobile-20261028-r02.png",
+      "bytes": 53519,
+      "sha256": "18d714bdcd71b2bba79a2355fdaaac5fd197912f1ca4ccb8e43afd0a3cc0c547",
+      "git_blob_oid": "ec9cb60db523637365317f04066e29a1360f97c2",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-chat-refinement-mobile-20261028-r02.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-chat-title-desktop-20261029.png",
+      "bytes": 76368,
+      "sha256": "1b033c05fd4e4119272cb56e7b27e7f1c7d926e0a9da43e9ef1eaee71510b67f",
+      "git_blob_oid": "93f80e7d7ba47e310b18894fe78d1e38eb43794d",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-chat-title-desktop-20261029.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-chat-title-mobile-20261029.png",
+      "bytes": 59553,
+      "sha256": "41f60dc8b765542b1f1cb2613afe1e79bc7bda75bd21637f6d59ab2f79d01a9f",
+      "git_blob_oid": "4171994262106c73bd0286d47eaf1abb54bf8926",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-chat-title-mobile-20261029.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-codex-image-generation-20261026-r01.png",
+      "bytes": 79664,
+      "sha256": "8bdb1f7572ed3c5d560c4840e0664bbbe504e17d016f1ae51d7f73e474a61e31",
+      "git_blob_oid": "709d9f2a2f4e05f15b933d4e586566cf9c40bc64",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-codex-image-generation-20261026-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-codex-secure-login-completed-20261027-r01.png",
+      "bytes": 58624,
+      "sha256": "963cfb28608b6e66ab369e969f36b189a917bbbb31f1a96dc23d4c1be08d1077",
+      "git_blob_oid": "24af38eb9a234440984201bc180853ff8aebb88a",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-codex-secure-login-completed-20261027-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-mobile-history-20261116/chat-mobile.png",
+      "bytes": 52408,
+      "sha256": "bd1a6e1b4130c3af99671855041ee9bc9bd72da078be1a80b68fe41a2e06965d",
+      "git_blob_oid": "74c45ea09782c8e2225061796ac72e1b3d73f2f9",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-mobile-history-20261116/chat-mobile.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-mobile-history-20261116/history-drawer-mobile.png",
+      "bytes": 21486,
+      "sha256": "1fa09e6e1a0055ec26e9a4e3afd354ba3a57ba49131aa80f3d20a72dc1887db7",
+      "git_blob_oid": "1f86015622d42cd3ffc30e76cf44834326d24b2b",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-mobile-history-20261116/history-drawer-mobile.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-nr26-audio-result-r01.png",
+      "bytes": 108971,
+      "sha256": "b1d546d1f2ec5e417392624d5be1dd62a07a47f46c19d0560629eb2db59e3ee3",
+      "git_blob_oid": "74d9429eb64da27efde45f2c0845ec520afd289a",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-nr26-audio-result-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-nr26-pdf-result-r01.png",
+      "bytes": 92685,
+      "sha256": "0305d65919284dadd408a168440448c623799412ea73348d235cc18f585ea0af",
+      "git_blob_oid": "cae8888192bc0759a687078b9d8f1d16e7c9e2d8",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-nr26-pdf-result-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-preferences-close-1569-20261029.png",
+      "bytes": 84850,
+      "sha256": "d7fb9cb0544334a25accd1030e6a40521c3f617dc91cfe0a9f68f8dcf3ca2f9c",
+      "git_blob_oid": "6becdae29fb4e6c1c326a7a738db8b8d5bf4303e",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-preferences-close-1569-20261029.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-preferences-close-390-20261029.png",
+      "bytes": 24520,
+      "sha256": "0d8c90492edd229180fbc0ba3a8a9e0f213c77423bf5bc669ebb47d877f533d6",
+      "git_blob_oid": "68b3821d685a96fead7782945e74b327cfa9cfce",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-preferences-close-390-20261029.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-preferences-copy-1569-20261029.png",
+      "bytes": 87016,
+      "sha256": "d8d0d7c4b72da81f4368eab45c9f3f17bba663ac38ae17e60ab57372c6690dca",
+      "git_blob_oid": "32df6eab928675d4e8e962689020add5a8e17744",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-preferences-copy-1569-20261029.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-preferences-copy-390-20261029.png",
+      "bytes": 24176,
+      "sha256": "fb4041f1fee9dcb2eb181443f6711db012410e5f5b2ccafbe19808ba135f32c2",
+      "git_blob_oid": "d62046f856095c8ef2d45ce13507c04edc7c28e4",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-preferences-copy-390-20261029.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-sidebar-collapsed-r01.png",
+      "bytes": 113085,
+      "sha256": "fda314f2fbf8a32e8c2975dd3eaa573685925c47222af7a9a1a69c26f1a2a7f9",
+      "git_blob_oid": "3255bedd202f752b2218af44689e61c653051e7b",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-sidebar-collapsed-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-sidebar-desktop-r01.png",
+      "bytes": 114410,
+      "sha256": "e9df1b68bc9f6b2ac58aa64d982af6f96b849a768e5bde18cead3b47cb5ecef3",
+      "git_blob_oid": "03c8ba1e39c6fb90ea3a7d2ed5e8fa50a3d87500",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-sidebar-desktop-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-sidebar-mobile-r01.png",
+      "bytes": 15771,
+      "sha256": "908d1a2df5e092780d2cee04b1cc2157e31c15fa28b887f025aa90d37ec5b48d",
+      "git_blob_oid": "c117b5906a4861d1d35231689f84fbff3a24ca48",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-sidebar-mobile-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-title-desktop-r01.png",
+      "bytes": 71289,
+      "sha256": "824193b777bbebb35f4bac9547a77f0144d24c9d4aaca2e7c126b45cbe716bd9",
+      "git_blob_oid": "c5a47aff4db20b5b8cf201c22c6daf24957d6196",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-title-desktop-r01.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ux-desktop-20261115.png",
+      "bytes": 67280,
+      "sha256": "f635b683ac5a105c193ae557490fdf499cffa7e968e06d8096a5a4f5a214ef26",
+      "git_blob_oid": "360d4e8c67589fab06322ad8f0647c583993d861",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ux-desktop-20261115.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-ux-mobile-20261115.png",
+      "bytes": 31785,
+      "sha256": "99ac10f4cceb6d6c34a620b2a9b2da8f4c8f83a957b1927a0670ece391fba06c",
+      "git_blob_oid": "584e03dc9e4776e33542c52b2bc6f39416a562ce",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ux-mobile-20261115.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-voice-dictation-1569-en-light-20261029.png",
+      "bytes": 84733,
+      "sha256": "d3a23a125a51a5792e2ddace5371e06b13e004a2b699d094a5dea22a848654ba",
+      "git_blob_oid": "7429dc9bbef3e813e01dee11275d328535648e93",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-voice-dictation-1569-en-light-20261029.png"
+    },
+    {
+      "original_path": "docs/evidence/nodia-ai-voice-dictation-320-es-dark-20261029.png",
+      "bytes": 47413,
+      "sha256": "1abfb216f92f21a7ad921a018a94cefc2c98e814e868fa26a4ec6d087451e449",
+      "git_blob_oid": "5d22a13388367e52777eb1800b75ea36c760343a",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-voice-dictation-320-es-dark-20261029.png"
+    },
+    {
+      "original_path": "docs/evidence/screenshots/ai29/secure-key-error-mobile.jpg",
+      "bytes": 39215,
+      "sha256": "41fa9b7fe26ae762277b8b179594d21008a5df539a5e4504995f62773eb7eaf1",
+      "git_blob_oid": "a961b7c1d0726bb212605cb59158a6fc525303ba",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/screenshots/ai29/secure-key-error-mobile.jpg"
+    },
+    {
+      "original_path": "docs/evidence/screenshots/ai29/secure-key-mobile.jpg",
+      "bytes": 31697,
+      "sha256": "295547e894e6fb4e30427b83275000725fa056d733adb5c75feb6db7d0c4ac08",
+      "git_blob_oid": "4896324e881b13d9ccc1f5cfd89c4826cb9200d6",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/screenshots/ai29/secure-key-mobile.jpg"
+    },
+    {
+      "original_path": "docs/evidence/screenshots/ai29/secure-login-desktop-en.jpg",
+      "bytes": 45989,
+      "sha256": "42e3048d70897bb604b69357000b9b67dc327b38bc821044aea640e6d8810279",
+      "git_blob_oid": "ff92d1dd91591a78a01ba080440ba0248a5b0319",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/screenshots/ai29/secure-login-desktop-en.jpg"
+    },
+    {
+      "original_path": "docs/evidence/screenshots/ai29/secure-receipt-mobile.jpg",
+      "bytes": 42261,
+      "sha256": "8f7cfae2a21d7130b740dfa437690234bc5caafdbf8a8e91022e87fa6171eca8",
+      "git_blob_oid": "b14ef9c80bc093c23b75ca374c97961142fc9242",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/screenshots/ai29/secure-receipt-mobile.jpg"
+    },
+    {
+      "original_path": "docs/evidence/teacher-plan-review-20261116/overview-desktop.png",
+      "bytes": 114868,
+      "sha256": "857ab963c08fa77f71bd2dd952256d17dddab980619228bff2ef442c215ff5ab",
+      "git_blob_oid": "d0701640915aac10fa6e11c9670d8274be943170",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/teacher-plan-review-20261116/overview-desktop.png"
+    },
+    {
+      "original_path": "docs/evidence/teacher-plan-review-20261116/overview-mobile.png",
+      "bytes": 55037,
+      "sha256": "bf6f1aa8cc6737f3101ee750295c0e5d51946ddf2009230bba4aed8178dc089a",
+      "git_blob_oid": "1ec4410b018a57e62c21a058d4b2087e14d9e7e2",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/teacher-plan-review-20261116/overview-mobile.png"
+    },
+    {
+      "original_path": "docs/evidence/teacher-plan-review-20261116/section-desktop.png",
+      "bytes": 138051,
+      "sha256": "52f2a58b38d1c89ba7057bc9899abec5bfe549c3fc129f504dc204ab32a46d3c",
+      "git_blob_oid": "7f28f9bbbd0fe212162eefbbda790d73583a4a64",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/teacher-plan-review-20261116/section-desktop.png"
+    },
+    {
+      "original_path": "docs/evidence/teacher-plan-review-20261116/section-mobile.png",
+      "bytes": 58403,
+      "sha256": "0c63111229911b1b0d12987286ea293dd0fa609ccdd65791e43db52e0a0c0582",
+      "git_blob_oid": "ef993a8e9282172aa73449ddaccd43eb3fd73393",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/teacher-plan-review-20261116/section-mobile.png"
+    },
+    {
+      "original_path": "docs/evidence/user-theme-presets-20261116/themes-320-es.png",
+      "bytes": 30092,
+      "sha256": "6935f876642a1c781a3118ebfb0551da2b4feb9700a7881d1ca8906c5dec3bdf",
+      "git_blob_oid": "dd9fd71f8232ef3a52b9041ed7c58c321c7199dc",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/user-theme-presets-20261116/themes-320-es.png"
+    },
+    {
+      "original_path": "docs/evidence/user-theme-presets-20261116/themes-600-en.png",
+      "bytes": 39578,
+      "sha256": "a586e3aa955661767865635097791c5d3dbdd32b0945daa9f6d16ea6aaaa1698",
+      "git_blob_oid": "9fabd41227039cd515539f439b99142af4a6e14f",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/user-theme-presets-20261116/themes-600-en.png"
+    },
+    {
+      "original_path": "docs/evidence/user-theme-presets-20261116/themes-900-es.png",
+      "bytes": 63963,
+      "sha256": "c23e7c84b497d21ae110aadaa3f8999f22bf5bfad40334f6fa3c9e3f0eebe173",
+      "git_blob_oid": "95aeae8e126a0f6df3ced9af5a3cdf87892e7072",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/user-theme-presets-20261116/themes-900-es.png"
+    },
+    {
+      "original_path": "docs/evidence/user-theme-presets-20261116/themes-storage-error-320.png",
+      "bytes": 32774,
+      "sha256": "2b8ebe70fbaa26101b731bc1be7a773fa130607743dfaa7bf774b291a3138cbc",
+      "git_blob_oid": "ad9f53c25e5bfcd4054213c8f76323ac7f25d207",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/user-theme-presets-20261116/themes-storage-error-320.png"
+    },
+    {
+      "original_path": "docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-escritorio-colapsado.png",
+      "bytes": 50812,
+      "sha256": "d530575a972e70b5b01e43a94274f2153b09b462b1232043ea5c521b3b96312c",
+      "git_blob_oid": "af62e7d18bcd4b876f8b0788bce2bbbad6b557dc",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-escritorio-colapsado.png"
+    },
+    {
+      "original_path": "docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-escritorio-expandido.png",
+      "bytes": 58147,
+      "sha256": "aff8b99ccb58e13feab11ec6138db89fd602c5ad36af2fe56541936ecba6c2c8",
+      "git_blob_oid": "4abb1935dd5eee189dbdcc5990828061521250f7",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-escritorio-expandido.png"
+    },
+    {
+      "original_path": "docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-filtros-aplicados.png",
+      "bytes": 63015,
+      "sha256": "2f00fe910b60287565105fba3c7bf363ad4cf8fbb4c4792c261d08e6f7e273ab",
+      "git_blob_oid": "46487d86bb1d6c6e4c4842c766595ef811906fdb",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-filtros-aplicados.png"
+    },
+    {
+      "original_path": "docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-movil-historial.png",
+      "bytes": 21157,
+      "sha256": "3b01e6e26bf32506dce90f1b447367969c12a2d2bb53d1ade9d689efa73ec9ef",
+      "git_blob_oid": "a5e06d8bdce73412d514e2aeae49fe004bb88a14",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-movil-historial.png"
+    },
+    {
+      "original_path": "docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-movil.png",
+      "bytes": 52936,
+      "sha256": "b514d3f1ebfbb1fcb45ebca240dc683879e16834ee72b35b984030b2c552b0f1",
+      "git_blob_oid": "047ea88f71af8cfebd76dc268c677cf8763f0ff7",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-movil.png"
+    },
+    {
+      "original_path": "docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-selector-ia.png",
+      "bytes": 60405,
+      "sha256": "5222f64e0bb929124299edbd55023cebfd13119c03a646f9e81359a67e406ba0",
+      "git_blob_oid": "923c70a03dd1d535d985c350d54ad1b572a2aee4",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-selector-ia.png"
+    },
+    {
+      "original_path": "docs/evidence/visual-nodia-ai-teacher-20261116/teacher-ai-selector-desktop.png",
+      "bytes": 80404,
+      "sha256": "1f73841a86b8a20537d60a03073b9c3fff02f06374f4d24ec61273f442ed2882",
+      "git_blob_oid": "594b1852d4e0f81f83347c85b771ea495d7cff2f",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/teacher-ai-selector-desktop.png"
+    },
+    {
+      "original_path": "docs/evidence/visual-nodia-ai-teacher-20261116/teacher-ai-selector-mobile.png",
+      "bytes": 65704,
+      "sha256": "7c7537e47e379f8c09f220aef5d5056f4af58dcbb71d22d7edf4aa6bc2744ba3",
+      "git_blob_oid": "7bb2d22b9b0f71b73ef04f685dc451ef9b52dcce",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/teacher-ai-selector-mobile.png"
+    },
+    {
+      "original_path": "docs/evidence/visual-nodia-ai-teacher-20261116/teacher-paused-chat-desktop.png",
+      "bytes": 78818,
+      "sha256": "1fe92d1274c40437121b19c4dd1e7c330802b469e256878e44b65e4d44294045",
+      "git_blob_oid": "53fb906ed5709991885aba9af5b695a0dd2fb6d9",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/teacher-paused-chat-desktop.png"
+    },
+    {
+      "original_path": "docs/evidence/visual-nodia-ai-teacher-20261116/teacher-plan-desktop.png",
+      "bytes": 88302,
+      "sha256": "06588aeada7f7fe9a7b634982e27b2f7028bbe2ed843cf9358ef37296128bb8e",
+      "git_blob_oid": "77ccb031c4bd406821103540e99ef63297f72d6e",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/teacher-plan-desktop.png"
+    },
+    {
+      "original_path": "docs/evidence/visual-nodia-ai-teacher-20261116/teacher-sources-drawer-desktop.png",
+      "bytes": 104726,
+      "sha256": "4f06e46fbd091de02e44a65cbd9faea4503b17603c070d3badd3983df61488ea",
+      "git_blob_oid": "698b09fc5eb51ce031615202ab0a2453554534e2",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/teacher-sources-drawer-desktop.png"
+    },
+    {
+      "original_path": "docs/evidence/visual-nodia-ai-teacher-20261116/teacher-sources-drawer-mobile.png",
+      "bytes": 48509,
+      "sha256": "90c8f440cd65ce7a3020490482f0230a5685d7f4fe5fb28e0838697c5ee86eda",
+      "git_blob_oid": "64f04037c6d439e7a053c666ace3f5177ba9ac5d",
+      "original_url": "https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/teacher-sources-drawer-mobile.png"
+    }
+  ],
+  "validation": {
+    "image_hashes_verified": 247,
+    "local_originals_unchanged": true,
+    "clean_checkout": {
+      "schema": "validation-images-clean-checkout/1",
+      "status": "passed",
+      "tracked_validation_images": 0,
+      "local_links_checked": 2956,
+      "new_missing_links": 0,
+      "preexisting_unversioned_local_links": 46,
+      "published_documents": 44,
+      "fragments": 46,
+      "capabilities": 153,
+      "release_id": "167d6f758da630bf28a9513c97acf80c22d508010e6db267319b1837727630e4",
+      "published_content_unchanged": true,
+      "historical_json_modified": 0,
+      "source_tree": "git-index-archive",
+      "configured_database_used": false
+    },
+    "supported_derived_builds": [
+      "context:prepare",
+      "context:build"
+    ],
+    "current_knowledge_checker": "passed",
+    "source_and_dist_pins": "regenerated_by_supported_build",
+    "historical_json_files_modified": 0,
+    "application_code_modified": false
+  }
+}

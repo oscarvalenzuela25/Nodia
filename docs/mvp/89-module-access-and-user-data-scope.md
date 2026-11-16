@@ -1,5 +1,24 @@
 # Acceso por módulos y privacidad de datos
 
+## Noticias pública — alcance confirmado2026-11-16
+
+[Plan105§8](105-on-demand-tech-news.md#8-news-01-acceso-público-y-catálogo-inicial--2026-11-16)
+registra la excepción nueva: `/news` pública y enlace fijo bajo Home, sin sesión,
+rol o asignación. Fuentes con cuota sólo para cualquier sesión Nodia válida,
+sin requisito de módulo, además de los permisos propios del proveedor. Metadatos
+de fuentes limitadas tampoco se sirven públicamente desde caché. El
+[ADR105 propuesto](../architecture/decisions/ADR-105-public-news-and-source-access-tiers.md)
+delimita handlers y separación de datos; implementación pendiente. Las reglas
+privadas inferiores conservan su alcance para todos los demás dominios. Esta
+solicitud no aprueba el ADR ni cambia grants, IDs o contratos históricos.
+
+La petición posterior [105§9](105-on-demand-tech-news.md#9-obtención-exclusiva-super_admin-y-primera-integración-rss--2026-11-16)
+reserva **toda obtención externa a super_admin activo**. La lectura de caché
+pública continúa sin sesión. Usuario ordinario, aunque tenga todos los módulos,
+no puede actualizar fuentes; el rol vigente se comprueba en Server. Esta regla
+sucede la autorización amplia de fetch del corte anterior, no las políticas de
+otros recursos ni las condiciones de los proveedores.
+
 ## NodiaAI: menú del actor e identidad exacta — implementación local, 2026-11-12
 
 La navegación compartida consulta el contexto de autorización bajo la identidad del usuario de la sesión actual. Sin sesión/actor/contexto válido no expone módulos. Para el usuario ordinario, menú y guard de NodiaAI comparten la comprobación del destino canónico `/nodia-ai`, con una única coincidencia y clave exacta `nodia_ai`. Una clave distinta apuntando al chat o una coincidencia ambigua no concede acceso; mover/renombrar grupos conserva la política. El bypass del super_admin activo sigue vigente, confirmado expresamente por el usuario.

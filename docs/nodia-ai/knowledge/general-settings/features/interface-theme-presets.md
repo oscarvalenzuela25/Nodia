@@ -4,11 +4,11 @@
   "document_id": "general-settings.interface-theme-presets",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 1,
+  "revision": 2,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "Implementación local2026-11-16:44opciones,86paletas importadas con contraste, selección/búsqueda y modo independiente, persistencia histórica/rollback/reintento. QA Chromium sintética12perfiles, global3059/370 y27focales posteriores al feedback final, tipos/lint/build correctos por alcance. Sin sincronización de cuenta, herramienta IA o adopción. Aceptación visual humana/sesión real/dispositivo pendientes."
+    "notes": "THEME-001 implementado y cerrado por alcance con aceptación humana de QA el2026-11-16 (plan108§9). 44opciones,86paletas importadas con contraste, selección/búsqueda y modo independiente, persistencia histórica/rollback/reintento. QA Chromium sintética12perfiles, global3059/370 y27focales posteriores al feedback final, tipos/lint/build correctos por alcance. Sin sincronización de cuenta, herramienta IA o adopción nueva; la confirmación no identifica dispositivo o entorno."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Client y contexto transversal conforme AGENTS",
@@ -36,7 +36,7 @@
       "docs/evidence/user-theme-presets-20261116.md",
       "docs/evidence/user-theme-presets-20261116/qa.json"
     ],
-    "notes": "Catálogo oficial fijado y86paletas adaptadas verificadas; Nodia original conserva3pares claros históricos por debajo de4.5. Chromium sintético320/390/599/600/900/1280px ES/EN claro/oscuro, visitante/miembro/super_admin, sin overflow y con foco/borrador/recarga conservados. Storage denegado y selección sin conexión comprobados. Global3059/370 antes del último feedback;27focales y tipos/lint/build posteriores correctos. Lint excluye .tmp histórico con4errores ajenos; build conserva aviso>500kB. No acredita cuenta real, dispositivo, lector de pantalla, otros motores o disponibilidad productiva."
+    "notes": "Catálogo oficial fijado y86paletas adaptadas verificadas; Nodia original conserva3pares claros históricos por debajo de4.5. Chromium sintético320/390/599/600/900/1280px ES/EN claro/oscuro, visitante/miembro/super_admin, sin overflow y con foco/borrador/recarga conservados. Storage denegado y selección sin conexión comprobados. Global3059/370 antes del último feedback;27focales y tipos/lint/build posteriores correctos. Lint excluye .tmp histórico con4errores ajenos; build conserva aviso>500kB. No acredita cuenta real, dispositivo, lector de pantalla, otros motores o disponibilidad productiva. Aceptación humana de QA y cierre del alcance confirmados por el usuario el2026-11-16, registrados en plan108§9, sin detalle adicional de dispositivos/entorno ni adopción nueva."
   },
   "approval": null
 }
@@ -56,8 +56,9 @@ Es una preferencia del navegador. No cambia los colores corporativos de todos
 los usuarios, no se sincroniza como configuración de cuenta y no concede acceso
 a módulos. Especificación en revisión e implementación/verificación local
 completadas según [evidencia](../../../../evidence/user-theme-presets-20261116.md);
-aceptación humana y adopción pendientes. Esta ficha no demuestra disponibilidad
-productiva.
+aceptación humana de QA registrada y THEME-001 cerrado por alcance según
+[plan108§9](../../../../mvp/108-user-theme-presets.md#9-cierre-por-aceptación-humana--2026-11-16).
+Esta confirmación no acredita una adopción nueva ni identifica dispositivos/entorno.
 
 ## Solicitudes en lenguaje natural
 
@@ -117,7 +118,8 @@ HTTP ni replay de efectos externos.
 - [x] Catálogo, contraste y compatibilidad histórica comprobados.
 - [x] Selección/búsqueda, teclado, foco y continuidad responsive comprobados.
 - [x] Pruebas/tipos/lint/build y validación del corpus conciliados.
-- [ ] UI autenticada, dispositivo y adopción por entorno comprobados.
+- [x] Aceptación humana de QA y cierre de THEME-001 registrados; sin detalle de
+  sesión/dispositivo/entorno ni nueva adopción inferidos.
 
 La ficha permanece draft/unregistered y `approval:null`. El path explícito sirve
 para validar el corpus; no crea binding, herramienta ni publicación. La evidencia
@@ -128,4 +130,5 @@ duradera de esta entrega se conserva en
 
 | Revisión | Cambio y fuentes | Impacto |
 | --- | --- | --- |
+| 2 | Aceptación humana2026-11-16 y cierre THEME-001 por plan108§9 | Actualiza estado de entrega; sin cambio funcional, herramienta, aprobación o publicación. |
 | 1 | Solicitud2026-11-16 y plan108 | Nuevo concepto de paleta local; conserva modo/paleta Nodia y contratos del dominio. No modifica propuestas ni publica herramientas. |

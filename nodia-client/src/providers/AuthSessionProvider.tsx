@@ -7,13 +7,13 @@ import { useSignOut } from "../modules/auth/infrastructure/useServices";
 import useSessionLifecycle from "./hooks/useSessionLifecycle";
 import useRetainedSessionView from "./hooks/useRetainedSessionView";
 
-export default function AuthSessionProvider({ children }: PropsWithChildren) {
+export default function AuthSessionProvider({ children, allowPublic = false }: PropsWithChildren<{ allowPublic?: boolean }>) {
   useSessionLifecycle();
   const { sessionStatus, isDemo, isSessionActive, isSessionValid, canMount, actorScope } = useRetainedSessionView();
   const { t } = useTranslation("auth");
   const signOut = useSignOut();
 
-  const needsRecovery = !isDemo && (!isSessionValid || !actorScope);
+  const needsRecovery = !allowPublic && !isDemo && (!isSessionValid || !actorScope);
   return <>
     {needsRecovery && (
       <Box sx={{ maxWidth: 480, mx: "auto", p: 3, mt: 8 }}>
@@ -40,6 +40,6 @@ export default function AuthSessionProvider({ children }: PropsWithChildren) {
         )}
       </Box>
     )}
-    {(isDemo || canMount) && <Box key={actorScope ?? "public"} inert={!isDemo && !isSessionActive} sx={{ display: "contents" }}>{children}</Box>}
+    {(allowPublic || isDemo || canMount) && <Box key={allowPublic ? "public" : actorScope ?? "public"} inert={!allowPublic && !isDemo && !isSessionActive} sx={{ display: "contents" }}>{children}</Box>}
   </>;
 }

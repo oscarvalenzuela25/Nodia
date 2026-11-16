@@ -55,5 +55,16 @@ test-results/
 htmlcov/
 .coverage
 
+# Validation screenshots stay local; preserve only textual evidence/catalogs.
+/docs/evidence/**/*.png
+/docs/evidence/**/*.jpg
+/docs/evidence/**/*.jpeg
+/docs/evidence/**/*.webp
+/docs/evidence/**/*.gif
+/docs/evidence/**/*.avif
+/docs/evidence/**/*.bmp
+/docs/evidence/**/*.tif
+/docs/evidence/**/*.tiff
+
 # Local recovery packages; catalogued in ops/maintenance
 /ops/lab/artifacts/
