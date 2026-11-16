@@ -191,7 +191,112 @@
   "original_upload_or_deploy_replayed": false,
   "original_receipt_rewritten": false,
   "new_delivery": {
-    "status": "not_started"
+    "status": "complete",
+    "source_sha": "6ba2afb7d258548ca68c245fb8282759a30d0ce4",
+    "ci_run_id": "43798403214",
+    "delivery_run_id": "43799433169",
+    "receipt_sha256": "849dfa7a6bffcecb4c9ebe44c3fcbd100ac9ea35224db59a9e8c49cc95c77261",
+    "receipt": {
+      "schema_version": 1,
+      "repository": "oscarvalenzuela25/Nodia",
+      "source_sha": "6ba2afb7d258548ca68c245fb8282759a30d0ce4",
+      "ci": {
+        "run_id": "43798403214",
+        "run_attempt": "1"
+      },
+      "delivery": {
+        "run_id": "43799433169",
+        "run_attempt": "1"
+      },
+      "prior_cd_run": false,
+      "baselines": {
+        "client": {
+          "status": "baseline_verified",
+          "source_sha": "20baee851cc36b01d51705b6af80913ccf757baa",
+          "deployment_id": "044db702-10f4-4ab9-8e43-76ead7a27a44",
+          "recorded_marker": "nodia-ci:20baee851cc36b01d51705b6af80913ccf757baa:342d230758f113063ac38482449661f9ac819fa0597183b3fe031e6b2ee5400a:6a5754cf13a0e287e1d4bc65d1250cf37d8d23123940bbcb22faabf1d1d0f2d4:43760491504:1",
+          "deployment_requested": false,
+          "automatic_retry_allowed": false
+        },
+        "server": {
+          "status": "not_confirmed",
+          "source_sha": "20baee851cc36b01d51705b6af80913ccf757baa",
+          "package_tree_sha256": "c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d",
+          "release_id": "backend-20baee851cc3-c01d5047410c",
+          "automatic_retry_allowed": false
+        }
+      },
+      "artifacts": {
+        "client": {
+          "id": "14195228381",
+          "digest": "sha256:c67d428fe1b899ea8194ea11472cea26338644afce268d6ae37b5e65bc3ba8b9",
+          "package_tree_sha256": "bbb5c0a0fa85a0c219516946378022d03cc7f33e86b9f941c16f0a9ecf509c47",
+          "public_configuration_sha256": "6a5754cf13a0e287e1d4bc65d1250cf37d8d23123940bbcb22faabf1d1d0f2d4",
+          "release_id": "client-6ba2afb7d258-bbb5c0a0fa85"
+        },
+        "server": {
+          "id": "14196015685",
+          "digest": "sha256:c67fe0b396319249b4a3faa93dc8a9ebc39d37a0810f5c61eb4f99c1e68cd3f8",
+          "package_tree_sha256": "c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d",
+          "release_id": "backend-6ba2afb7d258-c01d5047410c"
+        }
+      },
+      "preflight": {
+        "status": "preflight_verified",
+        "source_sha": "6ba2afb7d258548ca68c245fb8282759a30d0ce4",
+        "package_tree_sha256": "bbb5c0a0fa85a0c219516946378022d03cc7f33e86b9f941c16f0a9ecf509c47",
+        "pages_marker": "nodia-ci:6ba2afb7d258548ca68c245fb8282759a30d0ce4:bbb5c0a0fa85a0c219516946378022d03cc7f33e86b9f941c16f0a9ecf509c47:6a5754cf13a0e287e1d4bc65d1250cf37d8d23123940bbcb22faabf1d1d0f2d4:43798403214:1",
+        "deployment_requested": false,
+        "asset_upload_requested": false,
+        "asset_check_performed": true,
+        "total_assets": 215,
+        "missing_assets": 65,
+        "automatic_retry_allowed": false
+      },
+      "backend": {
+        "status": "complete",
+        "source_sha": "6ba2afb7d258548ca68c245fb8282759a30d0ce4",
+        "operation_id": "95a1e365c9b294773a082b2b7f30db7c",
+        "deployment_requested": true,
+        "deployment_performed": true,
+        "automatic_retry_allowed": false
+      },
+      "client": {
+        "status": "complete",
+        "source_sha": "6ba2afb7d258548ca68c245fb8282759a30d0ce4",
+        "deployment_id": "bcf7cb3c-3bfd-4efd-93fb-fac3a3afbe8a",
+        "deployment_requested": true,
+        "pwa_assets_verified": true,
+        "pwa_assets_count": 10,
+        "pwa_verification_attempts": 1,
+        "automatic_retry_allowed": false
+      },
+      "failure": null,
+      "unavailable_sources": [],
+      "automatic_retry_allowed": false
+    },
+    "original_upload_or_deploy_replayed": false,
+    "receipt_artifact_id": "14196161759",
+    "receipt_zip_sha256": "68e2f4a36bb412b785307c21a85db281f0afcc0ac32fbe295511217c07a92098",
+    "backend_zip_bytes": 215982269,
+    "ci_url": "https://github.com/oscarvalenzuela25/Nodia/actions/runs/43798403214",
+    "delivery_url": "https://github.com/oscarvalenzuela25/Nodia/actions/runs/43799433169",
+    "public_checks": {
+      "api_http": 200,
+      "anonymous_auth_http": 401,
+      "client_http": 200,
+      "tls_verification_disabled": false
+    },
+    "fresh_ssh_current": {
+      "release_id": "backend-6ba2afb7d258-c01d5047410c",
+      "source_sha": "6ba2afb7d258548ca68c245fb8282759a30d0ce4",
+      "package_tree_sha256": "c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d"
+    },
+    "fresh_ssh_application": {
+      "api_active": true,
+      "worker_active": true
+    },
+    "fresh_ssh_blocked": false
   },
   "automatic_retry_allowed": false,
   "after_gateway": {
@@ -220,5 +325,11 @@
       "deploy-gateway.py": "6b794263ad129ff45ed8752374d55a9c69cde789ae903a33cc2097fd91406e9f",
       "deploy-backend-receiver.py": "b2880ea7af6dd5e29d469d93b718a0a407ec5189488cce902150fa4ce2d75bd4"
     }
-  }
+  },
+  "administrative_session": {
+    "sudo_timestamp_invalidated": true,
+    "operator_session_closed": true,
+    "receipt_sha256": "cbe0eeccf4c0f8e27e5e890b4a5b395cd00b9231193f629ed7b4e87bf0070eb3"
+  },
+  "original_operation_still_absent_after_new_delivery": true
 }

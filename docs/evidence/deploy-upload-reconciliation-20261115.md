@@ -1,11 +1,12 @@
 # CD43791568791 — upload incierto y conciliación de lectura
 
-Fecha: 2026-11-15, hora de Santiago. Alcance: recibo oficial, lectura restringida,
-inspección root y mantenimiento operatorio autorizado posteriormente por el usuario.
-**Cuota insuficiente y cinco ausencias objetivo comprobadas; archivo reversible
-y gateway adoptados, sin nuevo deploy o publicación de aplicación.** El recibo
-fallido original conserva `backend_upload_outcome_unknown`, sin reescritura/replay.
-La continuación operativa inferior sucede las limitaciones de la primera lectura.
+Fecha inicial: 2026-11-15; cierre: **2026-11-16, America/Santiago**. Alcance:
+conciliación del recibo fallido, inspección root, archivo/gateway y entrega nueva.
+**CD43799433169 completado: backend y Client6ba publicados, SSH/HTTPS y10recursos
+PWA verificados.** El recibo original de CD43791568791 conserva
+`backend_upload_outcome_unknown`, sin reescritura/replay. El mantenimiento del
+gateway no reinició servicios; el deploy nuevo normal sí activó otro release
+y reinició conforme al protocolo. Los cortes siguientes conservan su historia.
 
 ## Fuentes y preservación
 
@@ -20,7 +21,7 @@ La continuación operativa inferior sucede las limitaciones de la primera lectur
   consolida los hechos sin depender de ese temporal para continuar.
 - [Recibo durable de conciliación y operadores](deploy-upload-reconciliation-20261115.json):
   inventarios antes/después, referencias del ZIP archivado, refresh del gateway,
-  hashes y estado final; `new_delivery.status:not_started` en este corte.
+  hashes y estado final; `new_delivery.status:complete` en el cierre16nov.
 - [Incidente y reparación anteriores](production-upload-quota-20261115.md),
   [plan99§31](../mvp/99-production-deployment-and-cicd-plan.md#31-upload-incierto-y-equivalencia-acotada-de-payload--2026-11-15)
   y [ADR103 propuesto](../architecture/decisions/ADR-103-backend-payload-equivalence-with-preserved-source.md).
@@ -118,8 +119,8 @@ reales y candidato separado. No cambia ni concilia el recibo histórico fallido.
 
 Este corte local precedió a la adopción operatoria del gateway descrita abajo.
 Sin cambio UI/backend funcional. Esta promoción modifica
-`ops/**`, por lo que su propio flag será falso y necesita entrega normal después
-de la conciliación operatoria. No se ha ejecutado nuevo CI/CD remoto.
+`ops/**`, por lo que su propio flag no permite omitir el backend. La entrega
+normal que entonces faltaba se completó después y se registra en el cierre final.
 
 Continuar desde99§31 tras la conciliación operatoria documentada abajo:
 preflight de capacidad/protocolo instalado; journal consultable de upload y
@@ -181,9 +182,72 @@ migración, upload/deploy antiguo o publicación acompañó este mantenimiento.
 
 OPS-01 queda cerrado para esta conciliación y OPS-06 para la adopción diagnóstica
 concreta; capacidad/versión del protocolo y ledger/reanudación siguen pendientes.
-OPS-05 es parcial/manual. La siguiente promoción/CI/CD nueva aún no se ha
-ejecutado en este corte; los cambios ops impiden omitir su primer backend aunque
-el payload coincida. No relanzar CI43790183498, CD43791568791 o su operación.
+OPS-05 es parcial/manual. Este corte operatorio precedió al CI/CD nuevo del
+apartado siguiente; los cambios ops impidieron omitir su primer backend aunque
+el payload coincidiera. No relanzar CI43790183498, CD43791568791 o su operación.
+
+## Cierre de entrega nueva — 2026-11-16 America/Santiago
+
+[PR36](https://github.com/oscarvalenzuela25/Nodia/pull/36) integrada en development
+b934b4ca y [PR37](https://github.com/oscarvalenzuela25/Nodia/pull/37) en master
+`6ba2afb7d258548ca68c245fb8282759a30d0ce4`.
+[CI PR36/43796059914](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43796059914),
+[CI PR37/43797447887](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43797447887)
+y [CI push master43798403214](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43798403214)
+terminaron correctamente. [CD43799433169](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43799433169)
+terminó con backend/Client `complete`, `failure:null` y `prior_cd_run:false`.
+
+[Recibo oficial14196161759](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43799433169/artifacts/14196161759):
+ZIP SHA256`68e2f4a36bb412b785307c21a85db281f0afcc0ac32fbe295511217c07a92098`.
+JSON extraído SHA256`849dfa7a6bffcecb4c9ebe44c3fcbd100ac9ea35224db59a9e8c49cc95c77261`.
+El [JSON durable](deploy-upload-reconciliation-20261115.json) conserva el recibo
+completo y los postchecks en `new_delivery`, aparte del intento anterior.
+
+| Resultado | Identidad comprobada |
+| --- | --- |
+| Backend complete | operación`95a1e365c9b294773a082b2b7f30db7c` |
+| Backend adoptado | `backend-6ba2afb7d258-c01d5047410c` |
+| Árbol backend | `c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d` |
+| Artefacto backend nuevo | `14196015685`, ZIP215.982.269bytes |
+| Client complete | Pages`bcf7cb3c-3bfd-4efd-93fb-fac3a3afbe8a` |
+| Client adoptado | `client-6ba2afb7d258-bbb5c0a0fa85` |
+| Árbol Client | `bbb5c0a0fa85a0c219516946378022d03cc7f33e86b9f941c16f0a9ecf509c47` |
+| Artefacto Client nuevo | `14195228381` |
+| Preflight Pages | 215assets/65faltantes |
+| PWA público | 10recursos verificados,1intento |
+
+Backend y Client conservaron los payloads del candidato fallido, pero esta es
+otra intención/CI/artefactos/releases. No se reejecutó el CI43790183498, el
+CD43791568791 o la operación5668d201c5bf57899b0aefe71f490ef7. Consulta final de
+esa operación: `operation_not_found`; el recibo original unknown sigue intacto.
+
+La promoción modificó ops y `server_content_equivalence_allowed` fue falso:
+hubo upload y activación backend normales, con reinicio coordinado de servicios.
+La conservación de PIDs1018075/1018078 del mantenimiento anterior no se atribuye
+al deploy posterior. Código de equivalencia integrado; no-op remoto elegible aún
+sin ensayar, sin otra entrega artificial para demostrarlo.
+
+SSH restringido nuevo: `deployment_ready`, current6ba/c01, API/worker activos y
+`blocked:false`. HTTPS con verificación TLS estándar: API200, endpoint anónimo
+de autenticación401 y Client200; TLS no se deshabilitó. Estas pruebas no acreditan
+login, inferencia IA, comprensión humana o teléfono físico.
+
+Validación previa y CI:155Node Linux locales,67Python focales sin skips,
+145comprobaciones root de políticas en CI y checks de aplicación correctos;
+Client del CI push/master terminó3013pruebas/363archivos correctos. Postdeploy
+conserva gateway6b794263… y receiverb2880ea7… con hashes exactos de la tabla anterior.
+Las cifras son alcances distintos, no una cobertura total sumable del producto.
+
+Cierre administrativo observado: sudo invalidado por el job
+`close-upload-operator-2ec47231daf74e3499f3a826dbf735e7`, complete/exit0; sesión tmux
+setup cerrada y comprobación SSH exit0. No se conservaron sesiones sudo/tmux
+abiertas por este mantenimiento.
+
+NodiaAI UX/UI queda entregado operativamente mediante este Client. NAIUX-07
+conserva revisión humana/UI real y teléfono/teclado físico; sin inferencias o
+aceptación humana nuevas. OPS-02/03/04 y política automáticaOPS-05 permanecen
+pendientes. Documentación final por PR a development; no requiere repetir el
+CD exitoso ni otra promoción productiva por registrar estos hechos.
 
 ## Impacto en contexto NodiaAI
 
@@ -191,3 +255,10 @@ Cambio de infraestructura de entrega, sin modificación de contratos funcionales
 ownership, grants, propuestas, confirmación, idempotencia, modelos o herramientas
 NodiaAI. No requiere nuevas fichas funcionales ni publicación del corpus. No se
 apruebaADR103 ni se heredan aceptaciones productivas por este análisis.
+
+El cierre documental16nov actualiza las fichas draft existentes de producto y
+compositor (revisiones79/15) para registrar la adopción operativa, conservando
+unregistered/approval:null y los límites de pruebas humanas/inferencia. Knowledge
+check/build finales correctos:95fuentes,51excluidas,44documentos/46fragmentos;
+release publicable `9f7cb7e13becc051f1c90d6f2e0014eb18f78e4711a2a820971c38a2df4c77e8`
+intacta. No se publica el borrador ni se atribuye aprobación por desplegar Client.
