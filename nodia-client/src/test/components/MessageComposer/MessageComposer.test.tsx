@@ -31,6 +31,31 @@ function Controlled({ value }: { value: MessageComposerProps }) {
 }
 
 describe("shared message composer", () => {
+  it("preserves the input and a single action owner when opting into stacked controls", async () => {
+    const attach = vi.fn(), stop = vi.fn();
+    const toolbarStart = <button type="button" onClick={attach}>Adjuntar sintético</button>;
+    const view = render(<MessageComposer {...props} toolbarStart={toolbarStart} />);
+    const input = screen.getByRole("textbox", { name: props.label });
+    input.focus();
+    view.rerender(<MessageComposer {...props} layout="stacked" toolbarStart={toolbarStart} />);
+    expect(screen.getByRole("textbox", { name: props.label })).toBe(input);
+    expect(input).toHaveFocus();
+    expect(input).toHaveValue(props.text);
+    expect(screen.getAllByRole("button", { name: props.sendLabel })).toHaveLength(1);
+    expect(screen.getAllByRole("button", { name: "Dictar mensaje" })).toHaveLength(1);
+    await userEvent.click(screen.getByRole("button", { name: "Adjuntar sintético" }));
+    expect(attach).toHaveBeenCalledOnce();
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(props.onSend).toHaveBeenCalledOnce();
+    view.rerender(<MessageComposer {...props} layout="stacked" disabled toolbarStart={toolbarStart}
+      sendAction={<button type="button" onClick={stop}>Detener turno apilado</button>} />);
+    expect(screen.getByRole("textbox", { name: props.label })).toBe(input);
+    expect(screen.queryByRole("button", { name: props.sendLabel })).not.toBeInTheDocument();
+    fireEvent.submit(input.closest("form")!);
+    await userEvent.click(screen.getByRole("button", { name: "Detener turno apilado" }));
+    expect(stop).toHaveBeenCalledOnce();
+    expect(props.onSend).toHaveBeenCalledOnce();
+  });
   it("sends Enter once, retains Shift+Enter, and does not submit IME or held-key events", async () => {
     render(<Controlled value={props} />);
     const input = screen.getByRole("textbox", { name: props.label });

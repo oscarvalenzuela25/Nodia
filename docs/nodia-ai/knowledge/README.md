@@ -1,5 +1,17 @@
 # Contexto funcional de productos para NodiaAI
 
+## Evolución UX/UI NodiaAI — planificación2026-11-15
+
+[Plan107§11](../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#11-implementación-local-solicitada-en-la-misma-rama--2026-11-15),
+[producto](nodia-ai/README.md), [ficha del compositor](nodia-ai/features/chat-composer-selection.md#evolución-uxui-del-chat--planificación2026-11-15)
+y [evidencia](../../evidence/nodia-ai-ux-upgrade-20261115.md) registran la
+continuación implementada de la propuesta: workspace/lectura, historial y
+compositor2niveles con selección progresiva. Contratos, modos y recuperación
+conservados; copia local sin herramienta nueva. Validación sintética local,
+sin inferencia/despliegue; NAIUX-07 en [TODO](../../mvp/TODO.md). Producto
+draft/partial y ficha draft/implemented, ambos unregistered/approval:null,
+sin publicación o aprobación nuevas.
+
 ## Teacher guiado y continuidad futura — especificación2026-11-15
 
 [Plan106](../../mvp/106-nodia-teacher-guided-ux-redesign.md),

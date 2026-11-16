@@ -3,15 +3,12 @@ import { alpha, styled, type CSSObject, type Theme } from "@mui/material/styles"
 export const PageTitle = styled("h1")(({ theme }) => ({
   fontFamily: '"Karmatic Arcade", monospace, sans-serif',
   fontWeight: 400,
-  fontSize: "2.125rem",
+  fontSize: "1.375rem",
   lineHeight: 1.25,
   margin: 0,
   display: "inline-block",
-  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.tertiary?.main ?? theme.palette.secondary.main} 100%)`,
-  backgroundClip: "text",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  [theme.breakpoints.down("sm")]: { fontSize: "1.5rem" },
+  color: theme.palette.text.primary,
+  [theme.breakpoints.down("sm")]: { fontSize: "1.125rem" },
 }));
 
 export const Page = styled("section")(({ theme }) => ({
@@ -19,6 +16,8 @@ export const Page = styled("section")(({ theme }) => ({
   flexDirection: "column",
   gap: theme.spacing(2),
   minWidth: 0,
+  minHeight: 0,
+  flex: 1,
   overflowWrap: "anywhere",
 }));
 
@@ -27,9 +26,9 @@ export const Header = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "space-between",
   gap: theme.spacing(2),
+  flexShrink: 0,
   [theme.breakpoints.down("sm")]: {
-    alignItems: "stretch",
-    flexDirection: "column",
+    gap: theme.spacing(1),
   },
 }));
 export const Actions = styled("div")(({ theme }) => ({
@@ -39,20 +38,20 @@ export const Actions = styled("div")(({ theme }) => ({
   "& button": { minHeight: 44 },
   [theme.breakpoints.down("sm")]: {
     display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    gridTemplateColumns: "44px minmax(0, 1fr)",
     alignItems: "stretch",
+    minWidth: 0, flex: 1,
     "& button": { width: "100%", minWidth: 0, fontSize: "0.75rem" },
+    "& .history-toggle": { padding: 0, "& .MuiButton-startIcon": { margin: 0 } },
+    "& .history-toggle .header-action-label": { display: "none" },
   },
 }));
 export const Workspace = styled("div")(({ theme }) => ({
   display: "flex",
   minWidth: 0,
   gap: theme.spacing(2),
-  height: "calc(100dvh - 11rem)",
-  minHeight: 580,
-  maxHeight: 1200,
-  [theme.breakpoints.between("sm", "md")]: { height: "calc(100dvh - 12rem)" },
-  [theme.breakpoints.down("sm")]: { height: "calc(100dvh - 18rem)", minHeight: 520, maxHeight: "none" },
+  minHeight: 0,
+  flex: 1,
 }));
 const scrollAreaStyles = (theme: Theme): CSSObject => {
   const thumb = alpha(
@@ -87,12 +86,13 @@ const scrollAreaStyles = (theme: Theme): CSSObject => {
 };
 export const ScrollArea = styled("div")(({ theme }) => scrollAreaStyles(theme));
 export const History = styled(ScrollArea)(({ theme }) => ({
-  width: 260,
+  width: 244,
   flexShrink: 0,
   border: `1px solid ${theme.palette.divider}`,
-  borderRadius: 20,
-  padding: theme.spacing(2),
+  borderRadius: 16,
+  padding: theme.spacing(1.5),
   background: theme.palette.background.paper,
+  "&[hidden]": { display: "none" },
 }));
 export const Chat = styled("div")(({ theme }) => ({
   position: "relative",
@@ -101,33 +101,44 @@ export const Chat = styled("div")(({ theme }) => ({
   minWidth: 0,
   minHeight: 0,
   flex: 1,
-  border: `1px solid ${theme.palette.divider}`,
-  borderRadius: 24,
-  background: theme.palette.background.paper,
-  boxShadow: `0 8px 32px ${alpha(theme.palette.common.black, theme.palette.mode === "dark" ? 0.14 : 0.025)}`,
+  background: theme.palette.background.default,
+  "&[data-empty=true] > [data-chat-messages]": { flex: "0 1 auto", marginTop: "auto" },
+  "&[data-empty=true] > form": { marginBottom: "auto" },
 }));
 export const ChatNotices = styled("div")(({ theme }) => ({
   "&:empty": { display: "none" },
   position: "relative",
-  padding: theme.spacing(2, 3),
-  [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5, 2) },
-  borderBottom: `1px solid ${theme.palette.divider}`,
+  padding: theme.spacing(0, 1, 1.5),
   display: "flex",
   flexDirection: "column",
-  flexShrink: 0,
+  flexShrink: 1,
+  minHeight: 0,
+  maxHeight: "40%",
+  width: "100%", maxWidth: "56rem", alignSelf: "center", boxSizing: "border-box",
+  ...scrollAreaStyles(theme),
   gap: theme.spacing(1),
 }));
 export const Messages = styled(ScrollArea)(({ theme }) => ({
   flex: 1,
+  width: "100%", maxWidth: "56rem", alignSelf: "center", boxSizing: "border-box",
   overflowAnchor: "none",
-  minHeight: 180,
-  padding: theme.spacing(3),
-  background: alpha(theme.palette.primary.main, theme.palette.mode === "dark" ? 0.025 : 0.018),
+  minHeight: 0,
+  padding: theme.spacing(2, 1, 3),
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(3),
+  "& > *": { flexShrink: 0, minWidth: 0 },
+  "& [data-message-id] + [data-message-id]": { marginTop: theme.spacing(3) },
   [theme.breakpoints.down("sm")]: {
-    padding: theme.spacing(2, 1.25),
-    minHeight: 160,
+    padding: theme.spacing(1, 0, 2),
   },
+}));
+
+export const Welcome = styled("div")(({ theme }) => ({
+  margin: "auto", width: "100%", maxWidth: "36rem", padding: theme.spacing(2, 0),
+  textAlign: "center", minWidth: 0,
+  "& h2": { fontWeight: 600, letterSpacing: "-0.025em", textWrap: "balance" },
+  "& > svg": { fontSize: 32, color: theme.palette.primary.main, marginBottom: theme.spacing(1.5) },
+  "& > button": { marginTop: theme.spacing(3), minHeight: 44 },
+  [theme.breakpoints.down("sm")]: { "& > button": { width: "100%" } },
 }));

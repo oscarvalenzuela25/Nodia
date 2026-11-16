@@ -1,5 +1,32 @@
 # Progreso del MVP — Nodia
 
+**NodiaAI UX/UI — implementación local, 2026-11-15:** misma rama
+`codex/nodia-ai-ux-ui-upgrade`. [Plan107§11](107-nodia-ai-ux-ui-upgrade-plan.md#11-implementación-local-solicitada-en-la-misma-rama--2026-11-15)
+y [evidencia](../evidence/nodia-ai-ux-upgrade-20261115.md): workspace flex/historial
+plegable, lectura editorial, compositor2niveles y selección modal progresiva.
+Selección exacta, borradores/errores, adjuntos, voz, Stop, propuestas y recuperación
+conservados; Teacher mantiene variante inline. Client3013/363, tipos/build y
+lint de código correctos;28perfiles sintéticos, foco/ancla/GuardStrict y errores
+comprobados. Lectura1440:565→616px; compositor320:195→120px; JS+1845bytes gzip,
+sin ahorro de red afirmado. Una ronda global previa agotó espera RTL OCR; caso/
+suite aislados y global final4workers pasaron sin alterar assertions/timeout.
+Sin inferencia/despliegue o aprobación/publicación. [TODO](TODO.md): continuar
+NAIUX-07, revisión humana/UI real/dispositivo y adopción propia del entorno.
+
+**NodiaAI UX/UI — corte documental inicial, 2026-11-15:** sustituido en alcance
+de implementación por la continuación superior. Rama
+`codex/nodia-ai-ux-ui-upgrade`, creada desde origin/development actualizado
+`d2baa8f1`. [Plan107](107-nodia-ai-ux-ui-upgrade-plan.md) fija referencia DeepSeek,
+auditoría Client/contratos, dirección visual y entregas con aceptación/medición.
+Compositor/Stop/scroll y propuestas actuales se preservan; selección progresiva,
+jerarquía de mensajes y altura móvil son mejoras propuestas. Dictado320px tiene
+una incidencia previa documentada; el resto de fricciones requiere baseline.
+Sin código UI, inferencias o despliegue; [TODO NAIUX-001](TODO.md) empieza en
+NAIUX-00, medición comparable con fixtures, y NAIUX-01, propuesta visual.
+Evaluación en producto draft/partial y ficha draft/implemented para el compositor
+vigente, ambos unregistered; el upgrade sigue planificado, sin aprobación o
+publicación. Las decisiones vigentes de93 y los dos modos Agentic/API key siguen.
+
 **CD: cuota de upload reparada, despliegue pendiente — 2026-11-15:**
 CI43753748903 pasó; CD43754640640 rechazó backend antes de submit/publicación.
 Incoming1,94GB más ZIP216MB excedía el límite2GiB, sin falta de disco.

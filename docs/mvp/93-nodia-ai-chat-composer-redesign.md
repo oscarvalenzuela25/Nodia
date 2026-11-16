@@ -1,5 +1,22 @@
 # NodiaAI — chat y compositor con selección por conversación
 
+## Evolución UX/UI futura — planificación2026-11-15
+
+Continuación implementada localmente por solicitud posterior: [107§11](107-nodia-ai-ux-ui-upgrade-plan.md#11-implementación-local-solicitada-en-la-misma-rama--2026-11-15)
+y [evidencia](../evidence/nodia-ai-ux-upgrade-20261115.md). Compositor2niveles,
+selección progresiva, lectura/workspace e historial conservan los contratos
+de93. El corte inicial siguiente describía el plan previo; su límite de no
+implementar quedó sustituido, sin aprobar documentos o publicar conocimiento.
+
+[Plan107](107-nodia-ai-ux-ui-upgrade-plan.md) estudia la referencia DeepSeek y
+propone mejorar workspace, lectura y selección progresiva conservando este
+contrato. Seguimiento NAIUX-001 en [TODO](TODO.md); primera acción NAIUX-00,
+baseline comparable. No implementado ni aprobado por documentarlo. Esta
+propuesta no repone la cabecera título/modelo ni «Ver actividad», no cambia
+Agentic/API key y no habilita ramas, regeneración, herramientas o transporte
+directo al proveedor. Los cierres e incidencias de este documento conservan su
+alcance; la nueva evaluación vive en107 sin repetir su implementación anterior.
+
 ## Chat compacto y Stop en compositor — solicitud2026-11-14
 
 Decisión explícita del usuario: quitar «Ver actividad del turno» y la cabecera

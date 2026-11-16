@@ -24,6 +24,7 @@ import useGeneralSettingsStore from "../../../../store/generalSettings/generalSe
 import { getHttpErrorMessage } from "../../../../config/httpFeedback";
 import { nodiaAiEligibilityReasonKey, nodiaAiRunErrorKey } from "../../infrastructure/eligibilityPresentation";
 import { useConversationDraft } from "../../infrastructure/useConversationDraft";
+import { captureTranscriptAnchor, restoreTranscriptAnchor, type TranscriptAnchor } from "../../infrastructure/transcriptViewport";
 import { useNodiaAiStatusRefresh } from "../../infrastructure/useNodiaAiStatusRefresh";
 import { NODIA_AI_MESSAGE_TEXT_BYTES } from "../../infrastructure/schemas";
 import Preferences from "../../components/Preferences";
@@ -67,6 +68,7 @@ import {
   Page,
   PageTitle,
   Workspace,
+  Welcome,
 } from "./styles";
 
 const sameSelection = (
@@ -90,6 +92,7 @@ function ChatPage() {
       ? requestedId.toLowerCase()
       : null;
   const desktop = useMediaQuery(useTheme().breakpoints.up("md"));
+  const [historyVisible, setHistoryVisible] = useState(true);
   const [overlayState, setOverlayState] = useState<{
     kind: "history" | "preferences";
     chatId: string | null;
@@ -196,6 +199,24 @@ function ChatPage() {
         .flatMap((page) => page.items) ?? []);
   const messageScroll = useRef<HTMLDivElement | null>(null);
   const followMessages = useRef(true);
+  const transcriptAnchor = useRef<TranscriptAnchor | null>(null);
+  useLayoutEffect(() => {
+    const viewport = messageScroll.current;
+    if (!viewport) return;
+    if (followMessages.current) viewport.scrollTop = viewport.scrollHeight;
+    else restoreTranscriptAnchor(viewport, transcriptAnchor.current);
+  }, [desktop, historyVisible]);
+  useLayoutEffect(() => {
+    const viewport = messageScroll.current;
+    if (!viewport || typeof ResizeObserver === "undefined") return;
+    // Local viewport changes include the composer growing and the sidebar resizing.
+    const observer = new ResizeObserver(() => {
+      if (followMessages.current) viewport.scrollTop = viewport.scrollHeight;
+      else restoreTranscriptAnchor(viewport, transcriptAnchor.current);
+    });
+    observer.observe(viewport);
+    return () => observer.disconnect();
+  }, []);
   const followActivity = useCallback(() => {
     const node = messageScroll.current;
     if (node && followMessages.current) node.scrollTop = node.scrollHeight;
@@ -494,7 +515,7 @@ function ChatPage() {
     />
   );
   return (
-    <Page aria-labelledby="nodia-ai-title">
+    <Page aria-labelledby="nodia-ai-title" data-page-layout="conversation">
       <Header>
         <Box>
           <PageTitle id="nodia-ai-title">
@@ -502,19 +523,24 @@ function ChatPage() {
           </PageTitle>
         </Box>
         <Actions>
-          {!desktop && (
             <Button
-              variant="text"
+              className="history-toggle"
+              variant="outlined"
               startIcon={<ForumOutlined />}
             aria-label={t("conversations")}
             title={t("conversations")}
               ref={historyTrigger}
+              aria-expanded={desktop ? historyVisible : overlay === "history"}
+              aria-controls={desktop ? "nodia-ai-history" : undefined}
               disabled={busy || recording}
-              onClick={() => setOverlay("history")}
+              onClick={() => {
+                if (!desktop) { setOverlay("history"); return; }
+                if (messageScroll.current) transcriptAnchor.current = captureTranscriptAnchor(messageScroll.current);
+                setHistoryVisible(value => !value);
+              }}
             >
               <span className="header-action-label">{t("conversations")}</span>
             </Button>
-          )}
           <Button
             variant="contained"
             startIcon={<AddOutlined />}
@@ -529,11 +555,11 @@ function ChatPage() {
       </Header>
       <Workspace>
         {desktop && (
-          <History as="aside" aria-label={t("conversations")}>
+          <History id="nodia-ai-history" as="aside" hidden={!historyVisible} aria-label={t("conversations")}>
             {historyContent}
           </History>
         )}
-        <Chat>
+        <Chat data-empty={!!chat && !messages.length && !history.isLoading && !run && !history.isError && !detail.isError && !accessRejected}>
           {readBusy && !detail.isLoading && !active && (
             <LinearProgress aria-label={t("refreshing")} sx={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, zIndex: 1, borderRadius: 1 }} />
           )}
@@ -618,6 +644,7 @@ function ChatPage() {
             )}
           </ChatNotices>
           <Messages
+            data-chat-messages
             ref={messageScroll}
             role="region"
             aria-label={t("messages")}
@@ -626,6 +653,7 @@ function ChatPage() {
               const node = event.currentTarget;
               followMessages.current =
                 node.scrollHeight - node.scrollTop - node.clientHeight < 80;
+              transcriptAnchor.current = captureTranscriptAnchor(node);
               if (
                 pendingScroll.current?.id === chatId &&
                 pendingScroll.current.height === node.scrollHeight
@@ -643,20 +671,15 @@ function ChatPage() {
               </Button>
             )}
             {!chatId && (
-              <Box
-                sx={{
-                  my: "auto",
-                  mx: "auto",
-                  maxWidth: "32rem",
-                  textAlign: "center",
-                }}
-              >
-                <ForumOutlined color="primary" sx={{ fontSize: 40, mb: 2 }} />
-                <Typography variant="h6">{t("welcome_message")}</Typography>
+              <Welcome>
+                <ForumOutlined />
+                <Typography component="h2" variant="h5">{t("welcome_message")}</Typography>
                 <Typography color="text.secondary" sx={{ mt: 1 }}>
                   {t("welcome_detail")}
                 </Typography>
-              </Box>
+                <Button variant="contained" startIcon={<AddOutlined />} disabled={busy || chats.isFetching || recording}
+                  onClick={() => void createChat()}>{t("workspace.start")}</Button>
+              </Welcome>
             )}
             <Skeleton loading={detail.isLoading || history.isLoading}>
               {chatId &&
@@ -664,9 +687,11 @@ function ChatPage() {
                 !messages.length &&
                 !history.isLoading &&
                 !history.isError && (
-                  <Typography color="text.secondary">
-                    {t("empty_messages")}
-                  </Typography>
+                  <Welcome>
+                    <ForumOutlined />
+                    <Typography component="h2" variant="h5">{t("workspace.ready_title")}</Typography>
+                    <Typography color="text.secondary" sx={{ mt: 1 }}>{t("empty_messages")}</Typography>
+                  </Welcome>
                 )}
               {messages.map((message) => (
                 <ChatMessage key={message.message_id} message={message}

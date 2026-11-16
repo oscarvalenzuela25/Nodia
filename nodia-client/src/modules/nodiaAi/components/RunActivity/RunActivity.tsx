@@ -20,10 +20,12 @@ export default function RunActivity({ run, events, children }: { run: NodiaAiRun
     }
   };
   return <MessageRow isOwner={false} aria-label={t("activity.title")}>
-    <Mark aria-hidden="true">N</Mark>
     <Content>
+      <Identity isOwner={false}>
+        <Mark aria-hidden="true">N</Mark>
+        <Typography component="span" variant="caption" sx={{ fontWeight: 700 }}>{t("assistant")}</Typography>
+      </Identity>
       <Bubble isOwner={false}>
-        <Identity><Typography component="span" variant="caption" sx={{ fontWeight: 700 }}>{t("assistant")}</Typography></Identity>
         <Summary role="status" aria-live="polite">
           <CircularProgress size={14} aria-hidden="true" />
           <Typography variant="body2">{t(`states.${run.state}`)}</Typography>

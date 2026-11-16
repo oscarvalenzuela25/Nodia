@@ -18,6 +18,13 @@ export const ComposerShell = styled("form")(({ theme }) => ({
 export const InputRow = styled("div")(({ theme }) => ({
   display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto auto", alignItems: "end", gap: theme.spacing(1), minWidth: 0,
   "& > button": { width: 44, height: 44, flexShrink: 0, borderRadius: 14 },
+  "&[data-layout=stacked]": { gridTemplateColumns: "minmax(0, 1fr)" },
+}));
+
+export const ComposerActions = styled("div")(({ theme }) => ({
+  display: "flex", alignItems: "flex-start", gap: theme.spacing(1), minWidth: 0,
+  flexShrink: 0,
+  "& > [data-composer-footer]": { flex: 1, minWidth: 0 },
 }));
 
 export const MessageInput = styled("div")(({ theme }) => ({

@@ -1,11 +1,15 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { sileo } from "sileo";
+import i18n from "../../../../../translate";
 import ChatMessage from "../../../../../modules/nodiaAi/components/ChatMessage";
 import type { NodiaAiMessage } from "../../../../../modules/nodiaAi/infrastructure/types";
 import useAuthStore from "../../../../../store/authStore";
 import { chatId, messageId, runId } from "../../infrastructure/fixtures";
 
 const views = vi.hoisted(() => ({ attachment: vi.fn(), historical: vi.fn() }));
+vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 vi.mock("../../../../../modules/nodiaAi/components/Attachments/AttachmentMessage", () => ({
   default: (props: { id: string; kind: string; conversationId: string }) => {
     views.attachment(props);
@@ -44,6 +48,65 @@ afterEach(() => {
 });
 
 describe("ChatMessage", () => {
+  it("copies only the displayed answer after keyboard activation and confirms a fulfilled clipboard write", async () => {
+    const user = userEvent.setup();
+    let complete!: () => void;
+    const writeText = vi.fn().mockReturnValue(new Promise<void>(resolve => { complete = resolve; }));
+    vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } });
+    render(<ChatMessage message={{ ...message, role: "assistant", status: "partial", parts: [
+      { kind: "text", text: "**Resumen sintético**" },
+    ] }} conversationId={chatId} />);
+    const button = screen.getByRole("button", { name: "Copiar respuesta" });
+    button.focus();
+    await user.keyboard("{Enter}");
+    expect(writeText).toHaveBeenCalledWith("Resumen sintético");
+    expect(writeText).toHaveBeenCalledTimes(1);
+    expect(button).toBeDisabled();
+    expect(sileo.success).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert")).toHaveTextContent("Respuesta parcial");
+    await act(async () => complete());
+    expect(button).toBeEnabled();
+    expect(sileo.success).toHaveBeenCalledWith({ title: "Respuesta copiada" });
+    expect(views.historical).toHaveBeenCalledWith({ conversationId: chatId, runId });
+  });
+
+  it.each(["unavailable", "denied"])("preserves selectable answer text and gives manual guidance when clipboard is %s", async scenario => {
+    const user = userEvent.setup();
+    const writeText = vi.fn().mockRejectedValue(new Error("NotAllowedError"));
+    vi.stubGlobal("navigator", { ...navigator, clipboard: scenario === "denied" ? { writeText } : undefined });
+    render(<ChatMessage message={{ ...message, role: "assistant" }} conversationId={chatId} currentRunId={runId} />);
+    await user.click(screen.getByRole("button", { name: "Copiar respuesta" }));
+    await waitFor(() => expect(sileo.error).toHaveBeenCalledWith({
+      title: "No pudimos copiar la respuesta", description: "Selecciona el texto de la respuesta y cópialo manualmente.",
+    }));
+    expect(screen.getByText("Consulta sintética")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Copiar respuesta" })).toBeEnabled();
+    expect(sileo.success).not.toHaveBeenCalled();
+  });
+
+  it("offers no copy action for restricted, user, unknown-role or attachment-only messages", () => {
+    const view = render(<ChatMessage message={message} conversationId={chatId} />);
+    expect(screen.queryByRole("button", { name: "Copiar respuesta" })).not.toBeInTheDocument();
+    view.rerender(<ChatMessage message={{ ...message, role: "tool" }} conversationId={chatId} currentRunId={runId} />);
+    expect(screen.queryByRole("button", { name: "Copiar respuesta" })).not.toBeInTheDocument();
+    view.rerender(<ChatMessage message={{ message_id: messageId, run_id: runId, seq: "1", role: "assistant", status: "sealed",
+      created_at: message.created_at, visibility: "restricted" }} conversationId={chatId} />);
+    expect(screen.queryByRole("button", { name: "Copiar respuesta" })).not.toBeInTheDocument();
+    view.rerender(<ChatMessage message={{ ...message, role: "assistant", parts: [{ kind: "image", attachment_id: attachmentId, text: null }] }} conversationId={chatId} currentRunId={runId} />);
+    expect(screen.queryByRole("button", { name: "Copiar respuesta" })).not.toBeInTheDocument();
+    expect(views.attachment).toHaveBeenCalledWith({ id: attachmentId, kind: "image", conversationId: chatId });
+  });
+
+  it("translates the copy control and feedback in English", async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } });
+    await i18n.changeLanguage("en");
+    render(<ChatMessage message={{ ...message, role: "assistant" }} conversationId={chatId} currentRunId={runId} />);
+    await user.click(screen.getByRole("button", { name: "Copy response" }));
+    expect(sileo.success).toHaveBeenCalledWith({ title: "Response copied" });
+  });
+
   it("uses the authenticated profile image only for the user's messages", () => {
     useAuthStore.setState({ user: { id: "9", name: "Óscar", email: "synthetic@example.invalid", image_url: "https://example.invalid/profile.png" } });
     const view = render(<ChatMessage message={message} conversationId={chatId} />);

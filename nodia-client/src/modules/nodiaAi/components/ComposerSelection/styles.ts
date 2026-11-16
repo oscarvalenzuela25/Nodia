@@ -1,4 +1,42 @@
 import { alpha, styled } from "@mui/material/styles";
+import { Button, Popover } from "@mui/material";
+
+export const SelectionPanel = styled("div")(({ theme }) => ({
+  display: "flex", flexDirection: "column", gap: theme.spacing(1), width: "100%", minWidth: 0,
+  "& > .MuiAlert-root": { minWidth: 0 },
+}));
+
+export const SelectionSummary = styled(Button)(({ theme }) => ({
+  width: "100%", minWidth: 0, height: 44, minHeight: 44, justifyContent: "space-between", textAlign: "left",
+  padding: theme.spacing(0.25, 0.75), borderRadius: theme.shape.borderRadius,
+  color: theme.palette.text.primary, textTransform: "none",
+  "& .MuiButton-endIcon": { flexShrink: 0 },
+  "&.Mui-focusVisible": { outline: `2px solid ${theme.palette.primary.main}`, outlineOffset: 2 },
+}));
+
+export const SelectionPopover = styled(Popover)(({ theme }) => {
+  const thumb = alpha(theme.palette.mode === "dark" ? "#ffffff" : "#000000", 0.2);
+  return {
+    "& .MuiPopover-paper": {
+      width: "min(36rem, calc(100vw - 32px))", maxWidth: "calc(100vw - 32px)", maxHeight: "min(50dvh, 28rem)",
+      minWidth: 0, boxSizing: "border-box", padding: theme.spacing(2), borderRadius: theme.spacing(2),
+      border: `1px solid ${theme.palette.divider}`, overflowY: "auto", overflowX: "auto",
+      scrollbarWidth: "thin", scrollbarColor: `${thumb} transparent`,
+      "&::-webkit-scrollbar": { width: 6, height: 6 },
+      "&::-webkit-scrollbar-track": { background: "transparent !important" },
+      "&::-webkit-scrollbar-button": { display: "none !important", width: 0, height: 0 },
+      "&::-webkit-scrollbar-thumb": { background: thumb, borderRadius: 9999, border: 0,
+        "&:hover": { background: alpha(theme.palette.mode === "dark" ? "#ffffff" : "#000000", 0.35) } },
+    },
+  };
+});
+
+export const SummaryContent = styled("span")(({ theme }) => ({
+  display: "flex", flexDirection: "column", gap: theme.spacing(0.25), minWidth: 0, flex: 1,
+  "& > span:not([data-selection-description])": { minWidth: 0, maxWidth: "100%", lineHeight: 1.25, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" },
+  "& [data-selection-description]": { position: "absolute", width: 1, height: 1, padding: 0,
+    overflow: "hidden", clipPath: "inset(50%)", whiteSpace: "nowrap" },
+}));
 
 export const SelectionBar = styled("div")(({ theme }) => ({
   display: "flex",
