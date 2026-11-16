@@ -1,5 +1,18 @@
 # Progreso del MVP — Nodia
 
+**CD: cuota reparada y gateway adoptado, deploy pendiente — 2026-11-15:**
+Inspección root del CD43791568791 confirmó cinco ausencias objetivo y cuota
+insuficiente por12.323.628bytes. Archivado reversible de un ZIP complete/no-current
+deja8ZIPs/1.727.848.749bytes. Gateway6b794263 adoptado con CAS/pin y SSH nuevo
+deployment_ready/blocked:false; receiver, current20ba/c01 y PIDs intactos.
+[99§31](99-production-deployment-and-cicd-plan.md#31-upload-incierto-y-equivalencia-acotada-de-payload--2026-11-15),
+[evidencia/recibos](../evidence/deploy-upload-reconciliation-20261115.md):155Node
+y67Python Linux correctos, sin skips; revisión independiente sin hallazgos.
+Recibo fallido intacto y sin replay, deploy/publicación nuevos aún no ejecutados.
+Primera promoción con ops requiere entrega normal; [TODO OPS-001](TODO.md)
+conserva preflight capacidad/protocolo, ledger/reanudación y retención automática
+pendientes. ADR103 propuesto, equivalencia local sin adopción de aplicación.
+
 **NodiaAI UX/UI — implementación local, 2026-11-15:** misma rama
 `codex/nodia-ai-ux-ui-upgrade`. [Plan107§11](107-nodia-ai-ux-ui-upgrade-plan.md#11-implementación-local-solicitada-en-la-misma-rama--2026-11-15)
 y [evidencia](../evidence/nodia-ai-ux-upgrade-20261115.md): workspace flex/historial

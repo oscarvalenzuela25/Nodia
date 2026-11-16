@@ -4,7 +4,7 @@ import path from 'node:path';
 import { isHex, isSha, numeric, repository } from './cd-github.mjs';
 import { pwaVerificationDetails } from './pwa-assets.mjs';
 
-const statusValues = new Set(['baseline_verified', 'prepared', 'preflight_started', 'preflight_verified', 'not_required', 'already_current',
+const statusValues = new Set(['baseline_verified', 'prepared', 'preflight_started', 'preflight_verified', 'not_required', 'already_current', 'content_unchanged',
   'upload_requested', 'upload_rejected', 'deployment_requested', 'submitted', 'complete', 'failed', 'unknown',
   'asset_check_requested', 'asset_upload_requested', 'asset_hash_registration_requested',
   'pages_submission_requested', 'published_assets_verification_failed']);
@@ -41,7 +41,7 @@ const release = value => typeof value === 'string' && /^(?:backend|client)-[a-f0
 function state(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   const result = { status: statusValues.has(value.status) ? value.status : 'not_confirmed' };
-  for (const [key, valid] of Object.entries({ source_sha: isSha, package_tree_sha256: isHex,
+  for (const [key, valid] of Object.entries({ source_sha: isSha, candidate_source_sha: isSha, package_tree_sha256: isHex,
     release_id: release, deployment_id: uuid,
     operation_id: item => typeof item === 'string' && /^[a-f0-9]{32}$/.test(item),
     pages_marker: marker, marker, recorded_marker: marker })) {

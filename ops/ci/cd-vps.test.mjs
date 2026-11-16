@@ -44,6 +44,100 @@ test('uncertain submission and previous CD origin cannot repeat effects',async()
   assert.throws(()=>requireReady({...ready(),blocked:true}));assert.throws(()=>requireReady({...ready(),application:{api_active:true,worker_active:false}}));
 });
 
+const unchangedOptions = { ...options, plan: { ...options.plan, server_content_equivalence_allowed: true },
+  candidateTree: oldTree, candidateRelease: release(next, oldTree) };
+const operationMissing = { code: 1, body: { schema_version: 1, status: 'failed',
+  error_code: 'operation_not_found', automatic_retry_allowed: false } };
+function statusOnlySend(body = ready()) {
+  const calls = [];
+  return { calls, send: async (_, command) => {
+    calls.push(command);
+    if (calls.length === 1) return operationMissing;
+    if (calls.length === 2 && command === 'status') return { code: 0, body };
+    throw new Error('Unexpected effect while comparing backend package content');
+  } };
+}
+
+test('identical package content keeps the deployed source and records a distinct candidate without upload or deployment', async t => {
+  const directory = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'nodia-cd-unchanged-'));
+  const stateFile = path.join(directory, 'backend-state.json');
+  t.after(() => { if (fs.existsSync(stateFile)) fs.unlinkSync(stateFile); fs.rmdirSync(directory); });
+  const f = statusOnlySend();
+  const result = await deployBackend({ ...unchangedOptions, stateFile, send: f.send });
+  assert.deepEqual(result, { status: 'content_unchanged', source_sha: old, release_id: release(old, oldTree),
+    package_tree_sha256: oldTree, candidate_source_sha: next, deployment_requested: false, deployment_performed: false });
+  assert.notEqual(result.source_sha, ci.source_sha);
+  assert.deepEqual(f.calls, [`status ${id}`, 'status']);
+  assert.deepEqual(JSON.parse(fs.readFileSync(stateFile, 'utf8')), {
+    operation_id: id, automatic_retry_allowed: false, ...result });
+});
+
+test('identical content cannot bypass the expected baseline or an earlier uncertain CD intention', async t => {
+  const cases = [
+    ['changed release', { expectedRelease: release('f'.repeat(40), oldTree) }, /backend_changed_after_plan/],
+    ['changed tree', { expectedTree: tree }, /backend_changed_after_plan/],
+    ['changed source', { plan: { ...unchangedOptions.plan, server_base: 'f'.repeat(40) } }, /backend_changed_after_plan/],
+    ['prior CD run', { allowNewSubmission: false }, /prior_cd_run_requires_operator_reconciliation/],
+  ];
+  for (const [name, overrides, code] of cases) await t.test(name, async () => {
+    const f = statusOnlySend();
+    await assert.rejects(deployBackend({ ...unchangedOptions, ...overrides, send: f.send }), code);
+    assert.deepEqual(f.calls, [`status ${id}`, 'status']);
+  });
+});
+
+test('matching content never hides an existing active, failed or unknown operation or a malformed status', async t => {
+  for (const phase of ['failed', 'unknown', 'preparing']) await t.test(phase, async () => {
+    const calls = [];
+    await assert.rejects(deployBackend({ ...unchangedOptions, pollLimit: 1, send: async (_, command) => {
+      calls.push(command); return { code: 0, body: operation(phase) };
+    } }), phase === 'preparing' ? /backend_operation_poll_deadline_requires_reconciliation/ : /backend_operation_requires_reconciliation/);
+    assert.deepEqual(calls, [`status ${id}`]);
+  });
+  const calls = [];
+  await assert.rejects(deployBackend({ ...unchangedOptions, send: async (_, command) => {
+    calls.push(command); return { code: 0, body: { status: 'failed', error_code: 'operation_not_found' } };
+  } }), /existing_backend_operation_requires_reconciliation/);
+  assert.deepEqual(calls, [`status ${id}`]);
+});
+
+test('unqualified plans and a shared digest prefix keep the normal upload path', async t => {
+  const sharedPrefixTree = oldTree.slice(0, 12) + 'c'.repeat(52);
+  const cases = [
+    ['missing equivalence qualification', { plan: options.plan }],
+    ['explicitly unqualified plan', { plan: { ...options.plan, server_content_equivalence_allowed: false } }],
+    ['truthy qualification is not approval', { plan: { ...options.plan, server_content_equivalence_allowed: 'true' } }],
+    ['same prefix is different content', { candidateTree: sharedPrefixTree, candidateRelease: release(next, sharedPrefixTree) }],
+  ];
+  for (const [name, overrides] of cases) await t.test(name, async () => {
+    const calls = [];
+    await assert.rejects(deployBackend({ ...unchangedOptions, ...overrides, send: async (_, command) => {
+      calls.push(command);
+      if (calls.length === 1) return operationMissing;
+      if (calls.length === 2) return { code: 0, body: ready() };
+      if (command.startsWith('upload ')) return { code: 1, body: { schema_version: 1, status: 'failed',
+        error_code: 'insufficient_upload_headroom', automatic_retry_allowed: false } };
+      throw new Error('Unexpected deployment after rejected upload');
+    } }), /insufficient_upload_headroom/);
+    assert.deepEqual(calls, [`status ${id}`, 'status', `upload 20 ${'e'.repeat(64)} 10 1 123`]);
+  });
+});
+
+test('content comparison cannot treat blocked, unhealthy or error-bearing readiness as a positive result', async t => {
+  const cases = [
+    ['blocked', { ...ready(), blocked: true }],
+    ['unhealthy writer', { ...ready(), application: { api_active: true, worker_active: false } }],
+    ['hidden error', { ...ready(), error_code: 'synthetic-private-diagnostic' }],
+    ['hidden current field', { ...ready(), current: { ...ready().current, error_code: 'synthetic-private-diagnostic' } }],
+  ];
+  for (const [name, body] of cases) await t.test(name, async () => {
+    const f = statusOnlySend(body);
+    await assert.rejects(deployBackend({ ...unchangedOptions, send: f.send }), error =>
+      error instanceof CdRejected && error.message === 'deployment_gateway_not_ready');
+    assert.deepEqual(f.calls, [`status ${id}`, 'status']);
+  });
+});
+
 function uploadFixture(t, reply) {
   const directory = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'nodia-cd-upload-'));
   t.after(() => {
