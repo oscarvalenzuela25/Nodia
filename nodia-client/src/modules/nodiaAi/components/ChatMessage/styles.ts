@@ -5,19 +5,15 @@ const ownerProp = (prop: PropertyKey) => prop !== "isOwner";
 
 export const MessageRow = styled("article", { shouldForwardProp: ownerProp })<{ isOwner: boolean }>(({ theme, isOwner }) => ({
   display: "flex",
-  flexDirection: isOwner ? "row-reverse" : "row",
-  alignItems: "flex-start",
+  flexDirection: "column",
   alignSelf: isOwner ? "flex-end" : "flex-start",
   // Skeleton adds a neutral block wrapper; margins preserve chat alignment there too.
   marginLeft: isOwner ? "auto" : 0,
   marginRight: isOwner ? 0 : "auto",
-  marginBottom: theme.spacing(3),
-  gap: theme.spacing(1.25),
-  width: "fit-content",
+  width: isOwner ? "fit-content" : "100%",
   minWidth: 0,
-  maxWidth: isOwner ? "min(88%, 44rem)" : "min(100%, 56rem)",
+  maxWidth: isOwner ? "min(88%, 44rem)" : "100%",
   [theme.breakpoints.down("sm")]: {
-    gap: theme.spacing(0.75),
     maxWidth: isOwner ? "94%" : "100%",
   },
 }));
@@ -25,59 +21,65 @@ export const MessageRow = styled("article", { shouldForwardProp: ownerProp })<{ 
 export const Avatar = styled(MuiAvatar, { shouldForwardProp: ownerProp })<{ isOwner: boolean }>(({ theme, isOwner }) => ({
   display: "grid",
   placeItems: "center",
-  width: 32,
-  height: 32,
+  width: 24,
+  height: 24,
   flexShrink: 0,
-  marginTop: theme.spacing(0.5),
-  borderRadius: isOwner ? "50%" : 11,
+  borderRadius: isOwner ? "50%" : theme.shape.borderRadius,
   background: isOwner
     ? alpha(theme.palette.text.primary, 0.05)
     : alpha(theme.palette.primary.main, theme.palette.mode === "dark" ? 0.15 : 0.08),
   color: isOwner ? theme.palette.text.secondary : theme.palette.primary.main,
   fontFamily: isOwner ? "inherit" : '"Karmatic Arcade", monospace, sans-serif',
-  fontSize: "1.125rem",
+  fontSize: isOwner ? "0.75rem" : "0.875rem",
   lineHeight: 1,
-  [theme.breakpoints.down("sm")]: { width: 26, height: 30, fontSize: "1rem" },
 }));
 
-export const Content = styled("div")({
+export const Content = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: 8,
+  gap: theme.spacing(1),
   minWidth: 0,
-  flex: "1 1 auto",
-});
+  width: "100%",
+}));
 
-export const Bubble = styled("div", { shouldForwardProp: ownerProp })<{ isOwner: boolean }>(({ theme, isOwner }) => {
-  const ownerBackground = theme.palette.mode === "dark" ? theme.palette.primary.dark : theme.palette.primary.main;
-  return {
-    minWidth: 0,
-    padding: theme.spacing(1.5, 2),
-    borderRadius: isOwner ? "20px 6px 20px 20px" : "6px 20px 20px 20px",
-    border: `1px solid ${isOwner ? alpha(ownerBackground, 0.3) : alpha(theme.palette.text.primary, 0.07)}`,
-    background: isOwner ? ownerBackground : theme.palette.background.paper,
-    color: isOwner ? theme.palette.getContrastText(ownerBackground) : theme.palette.text.primary,
-    boxShadow: isOwner
-      ? `0 4px 16px ${alpha(theme.palette.primary.main, 0.14)}`
-      : `0 3px 14px ${alpha(theme.palette.common.black, theme.palette.mode === "dark" ? 0.1 : 0.035)}`,
-    [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.25, 1.5) },
-  };
-});
+export const Bubble = styled("div", { shouldForwardProp: ownerProp })<{ isOwner: boolean }>(({ theme, isOwner }) => ({
+  minWidth: 0,
+  padding: isOwner ? theme.spacing(1.5, 2) : 0,
+  borderRadius: isOwner ? "18px 6px 18px 18px" : 0,
+  border: isOwner ? `1px solid ${alpha(theme.palette.text.primary, 0.06)}` : 0,
+  background: isOwner ? alpha(theme.palette.text.primary, theme.palette.mode === "dark" ? 0.075 : 0.045) : "transparent",
+  color: theme.palette.text.primary,
+  [theme.breakpoints.down("sm")]: { padding: isOwner ? theme.spacing(1.25, 1.5) : 0 },
+}));
 
-export const Identity = styled("div")(({ theme }) => ({
+export const Identity = styled("div", { shouldForwardProp: ownerProp })<{ isOwner: boolean }>(({ theme, isOwner }) => ({
   display: "flex",
-  alignItems: "baseline",
+  alignItems: "center",
+  justifyContent: isOwner ? "flex-end" : "flex-start",
   flexWrap: "wrap",
-  gap: theme.spacing(1.5),
-  marginBottom: theme.spacing(0.75),
+  gap: theme.spacing(1),
+  color: theme.palette.text.secondary,
   fontSize: "0.6875rem",
   lineHeight: 1.4,
-  "& time": { marginLeft: "auto", opacity: 0.7, fontVariantNumeric: "tabular-nums" },
+  "& time": { fontVariantNumeric: "tabular-nums" },
+}));
+
+export const MessageBody = styled("div")(({ theme }) => ({
+  display: "flex", flexDirection: "column", gap: theme.spacing(1.75), minWidth: 0,
+}));
+
+export const MessageActions = styled("div")(({ theme }) => ({
+  display: "flex", alignItems: "center", minWidth: 0,
+  "& button": {
+    width: 44, height: 44, color: theme.palette.text.secondary,
+    "&:hover": { color: theme.palette.text.primary, background: alpha(theme.palette.text.primary, 0.05) },
+    "&.Mui-focusVisible": { outline: `2px solid ${theme.palette.primary.main}`, outlineOffset: 2 },
+  },
 }));
 
 export const MessageText = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
-  fontSize: "0.9375rem",
+  fontSize: "1rem",
   lineHeight: 1.7,
   color: "inherit",
   whiteSpace: "pre-wrap",

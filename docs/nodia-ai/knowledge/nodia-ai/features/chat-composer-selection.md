@@ -4,11 +4,11 @@
   "document_id": "nodia-ai.chat-composer-selection",
   "product_id": "nodia-ai",
   "kind": "feature",
-  "revision": 12,
+  "revision": 14,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "R02 desplegado en VM por solicitud explícita: compositor y selección entre mensajes, miniaturas/papelera y subida serial sin replay. Client/API/worker Linux verificados, datos y sesiones conservados; sin inferencia ni calificación nueva de modelos. R03: avatar común, actividad temporal, cabecera estable y teclado/menú del compositor implementados y adoptados sólo en Client, con Server y KB preservados. R04 incorpora renombrado inline en cabecera mediante el PATCH existente, revisión fijada y borrador recuperable. R07: dictado explícito del navegador a texto editable, posible servicio remoto aceptado, onda desde Web Audio y reproducción local de audio manual/histórico implementados localmente. El micrófono principal no crea adjuntos ni autoenvía; Client estático R07 adoptado y verificado por HTTP, con API/worker/KB/Native preservados; transcripción real no validada. R08: presentación Markdown limitada al texto visible del asistente y recarga de elegibilidad por IconButton44px implementadas, con QA integrada/visual y adopción estática R08 verificadas. No cambia el motor de dictado ni aplica un restablecimiento de permiso. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación."
+    "notes": "R02 desplegado en VM por solicitud explícita: compositor y selección entre mensajes, miniaturas/papelera y subida serial sin replay. Client/API/worker Linux verificados, datos y sesiones conservados; sin inferencia ni calificación nueva de modelos. R03: avatar común, actividad temporal, cabecera estable y teclado/menú del compositor implementados y adoptados sólo en Client, con Server y KB preservados. R04 incorpora renombrado inline en cabecera mediante el PATCH existente, revisión fijada y borrador recuperable. R07: dictado explícito del navegador a texto editable, posible servicio remoto aceptado, onda desde Web Audio y reproducción local de audio manual/histórico implementados localmente. El micrófono principal no crea adjuntos ni autoenvía; Client estático R07 adoptado y verificado por HTTP, con API/worker/KB/Native preservados; transcripción real no validada. R08: presentación Markdown limitada al texto visible del asistente y recarga de elegibilidad por IconButton44px implementadas, con QA integrada/visual y adopción estática R08 verificadas. No cambia el motor de dictado ni aplica un restablecimiento de permiso. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación. Plan107 (2026-11-15): evaluación visual y de interacción futura del chat, sin implementación ni cambios de contratos, modos o herramientas. El estado de implementación conserva exclusivamente el alcance existente; rediseño pendiente NAIUX-00/01. Continuación plan107: upgrade UX/UI implementado y verificado localmente con fixtures, conservando contratos y modos; aceptación humana/dispositivos y adopción por entorno pendientes. Sin nueva herramienta, aprobación o publicación."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento NodiaAI conforme AGENTS",
@@ -108,10 +108,14 @@
     {
       "path": "nodia-client/src/modules/nodiaAi/components/MessageMarkdown/styles.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/107-nodia-ai-ux-ui-upgrade-plan.md",
+      "kind": "specification"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-14",
+    "checked_on": "2026-11-15",
     "evidence_paths": [
       "docs/evidence/nodia-ai-chat-redesign-verification-20261028-r01.json",
       "docs/evidence/nodia-ai-chat-refinement-verification-20261028-r02.json",
@@ -125,15 +129,44 @@
       "docs/evidence/nodia-ai-voice-dictation-live-20261029-r02.json",
       "docs/evidence/nodia-ai-chat-markdown-20261029-r01.json",
       "docs/evidence/nodia-ai-chat-space-gpt-selection-20261114.md",
-      "docs/evidence/chat-gpt-development-vm-20261114-r01.json"
+      "docs/evidence/chat-gpt-development-vm-20261114-r01.json",
+      "docs/evidence/nodia-ai-ux-upgrade-20261115.md"
     ],
-    "notes": "R02: suite Client2067/251 antes del plegado final;132 checks afectados finales, build/tipado/lint y Chromium320–1569px correctos. Upload/recuperación sintéticos; no SQL/storage/inferencia real o teléfono físico. Arranque local posterior de API/worker/DB/cache/Native verificado sin inferencia; login/UI real con proveedor pendientes. Codex Agentic no soportado en Windows; selección del modo retirado queda null. Adopción posterior VM: Server desde baseline real Codex Model Catalog, Linux tsc/63 casos/6 DI, Client compilado y25 assets servidos exactos. SQL65/32 y knowledge/época Native preservados, respaldos cifrados antes/después, API/PG/Redis/Native saludables y túnel5174. No se hicieron logins/inferencias ni se publicaron borradores; la prueba humana con proveedor sigue separada. R03: Client2118/259, tipos/lint/build y diez casos offline correctos; Edge sintético320–1569px, gap8px y header97px estable.172archivos entregados/168assets actuales y46históricos comprobados. Sin inferencias, auth o SQL durante esta adopción; proveedores y teléfono físico conservan límites. R04: Client2126/260, ocho regresiones atómicas, tipos/lint/build y Edge sintético320/390/600/1088/1569px correctos; Client estático adoptado sin reiniciar Server/Native ni nuevas inferencias. R05: cierre visual de Preferencias por X verificado en cuatro perfiles de navegador sintético,2126/260 y delivery estático; sin cambiar memoria/consentimiento. R06: explicación de Preferencias ES/EN con ejemplo y pasos de cambio/borrado,2126/260 y lectura responsive comprobada; únicamente copy, sin cambio funcional. R07: 22 regresiones del hook pasan con APIs simuladas. ASR real aislado Windows con start() exacto y WAV/dispositivo sintéticos: Edge156.0.4314.50 network y Chrome156.0.8078.48 no-speech; text:null ambos, terminal/end y cleanup observados, sin replay ni fallback. No micrófono físico ni transcripción real aceptada. Client2166/263, tipos/lint/build correctos; diez perfiles de geometría/idioma/tema y dictado simulado con señal Web Audio real conservan texto/stop/sin autoenvío. VM R07 adoptada:172archivos/168assets actuales/46previos y túnel5174 verificados, respaldo/fallback conservados y Server/KB/Native sin cambios. HTTP/fixtures no acreditan ASR real ni UI autenticada de usuario. R08: Client2187/264,30 regresiones Markdown/ChatMessage,59 de página, tipos/lint/build y10offline correctos. Diez perfiles320–1569px ESoscuro/ENclaro y scroll local por teclado verificados;173archivos/169assets actuales/46previos y túnel5174 adoptados con respaldo/fallback. Historial real autenticado con título/tabla/negritas sin mensajes ni confirmaciones; Server/KB/Native preservados. Limitaciones de consola, bundle y dispositivo físico en el recibo. Permiso nativo de localhost5174 observado granted; reset autorizado rechazado como tool_method_not_supported, no aplicado ni confirmado, sin otros cambios de permisos ni reconocimiento/captura nuevos en esta revisión. R02 real autenticado anterior terminó en network sin transcripción; sólo edición manual posterior comprobada. Continuación VM desarrollo2026-11-14: snapshot chat/GPT separado adoptado y128pruebas Linux/tipado correctos; elegibilidad no generativa real y una primera generación normal Teacher con Agentic/gpt-6.1-sol/medium terminada ready,1dispatch y cierre/ACK. Se reutilizaron actor/sesión vigentes y host existente; ninguna credencial/JWT nueva, probe de calificación, fallback o replay. Sonda inicial corregida para replicar el bind DBus del servicio; no fue evidencia de logout. Respaldo cifrado antes/después del canario restaurado exactamente. Sin QA autenticada HTTP/UI, eficacia educativa humana, aceptación productiva o publicación."
+    "notes": "Las evidencias R02-R08 y la continuación VM del 2026-11-14 conservan su alcance histórico en evidence_paths y el cuerpo: UI, adjuntos/dictado, selección y entrega estática no acreditan toda inferencia, MIME, cuenta o dispositivo. La generación Teacher del recibo VM sólo acredita su selección/propósito exactos. Continuación plan107 del 2026-11-15: 3013 pruebas Client/363 archivos con4workers, build/tipos y lint del código excluyendo temporales correctos; QA28perfiles sintéticos con GuardStrict real y adapter aislado, foco/ancla/datos y errores conservados. Una ronda global previa agotó espera RTL OCR; caso/suite aislados y ronda final pasaron sin cambiar código/assertions/timeout; causa concreta no probada. Comparación geométrica y coste de bytes en el recibo nuevo. Sin inferencias, publicación, despliegue o aceptación humana/teclado físico; NAIUX-07 pendiente. Los originales históricos y sus hashes no se reescriben."
   },
   "approval": null
 }
 ---
 
 # Chat, compositor y selección por conversación — contexto funcional para NodiaAI
+
+## Evolución UX/UI del chat — planificación2026-11-15
+
+[Plan107§11](../../../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#11-implementación-local-solicitada-en-la-misma-rama--2026-11-15)
+y [evidencia local](../../../../evidence/nodia-ai-ux-upgrade-20261115.md) cierran
+la implementación solicitada del upgrade: workspace flex, historial plegable,
+respuesta editorial, copia de texto visible y compositor de dos niveles.
+Resumen de modelo/modo con identidad completa accesible y editor Popover bajo
+intención, montado tras abrir; selección exacta/Aplicar/Cancelar conservados.
+Plegar mantiene dirty y bloquea envío; fallos mantienen editor/datos. El éxito
+confirmado devuelve foco al nuevo resumen, sin robarlo en refetch posteriores.
+
+Evaluación de impacto: cambia presentación y acceso a controles existentes;
+copiar sólo escribe el portapapeles por acción humana con feedback ES/EN.
+No añade herramientas, fuentes de contexto, permisos, formatos o capacidades IA.
+Agentic/API key, adjuntos/revisión, dictado, Stop, propuestas/recibos y recovery
+mantienen sus contratos. Teacher sigue inline; núcleo de captura compartido sin
+cambios de política. Se conserva creación explícita, sin cabecera título/modelo
+ni botón de actividad retirados. Historial/URL y ancla/fondo sobreviven al resize.
+
+Validación con componentes reales/GuardStrict y transporte sintético:28perfiles,
+errores de selección/revisión, revalidación de autorización y datos conservados.
+Las suites/build/tipos/lint y medidas por perfil están en la evidencia; no son
+sesión de persona real, inferencia, micrófono/teclado físico o despliegue.
+El desborde61px histórico no se reprodujo en el baseline nuevo ni en candidato;
+no se modifica su evidencia anterior. [TODO](../../../../mvp/TODO.md): NAIUX-07,
+revisión humana y adopción por entorno, sin repetir construcción/baseline.
+Ficha draft/implemented/unregistered/approval:null, sin publicación nueva.
 
 ## Qué resuelve y qué significa
 

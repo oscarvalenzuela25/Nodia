@@ -1,4 +1,8 @@
 {
+  "workspace": {
+    "start": "Iniciar conversación",
+    "ready_title": "¿En qué te ayudo?"
+  },
   "settings": "Configuración",
   "conversations": "Conversaciones",
   "new_chat": "Nuevo chat",
@@ -38,6 +42,12 @@
   "empty_messages": "El chat está listo para su primer mensaje. Revisa la configuración para comenzar.",
   "you": "Tú",
   "assistant": "NodiaAI",
+  "message_actions": {
+    "copy": "Copiar respuesta",
+    "copied": "Respuesta copiada",
+    "copy_failed": "No pudimos copiar la respuesta",
+    "copy_manual": "Selecciona el texto de la respuesta y cópialo manualmente."
+  },
   "restricted_message": "Este mensaje contiene información que tus permisos actuales no permiten consultar.",
   "messages_error": "No pudimos recuperar el historial. Los mensajes ya cargados se conservan.",
   "more_messages": "Cargar mensajes anteriores",
@@ -136,6 +146,12 @@
     "mode": "Modo",
     "model": "Modelo",
     "effort": "Intensidad",
+    "selection_panel": {
+      "title": "Elegir IA para esta conversación",
+      "applied": "IA aplicada",
+      "choose": "Elige una conexión y un modelo para continuar",
+      "unsaved": "Cambios sin aplicar. Abre la selección para aplicarlos o cancelarlos antes de enviar."
+    },
     "effort_preference": "La intensidad es una preferencia. Su disponibilidad se comprueba para la selección exacta antes de aplicar.",
     "unassigned_connection": "Sin conexión asignada",
     "unassigned_mode": "Sin modo asignado",

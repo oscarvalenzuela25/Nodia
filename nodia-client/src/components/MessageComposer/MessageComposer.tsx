@@ -8,14 +8,14 @@ import { sileo } from "sileo";
 import TextInput from "../inputs/TextInput";
 import VoiceActivity from "../VoiceActivity";
 import { useVoiceDictation } from "../../hooks/useVoiceDictation";
-import { ComposerShell, InputRow, MessageInput, Toolbar } from "./styles";
+import { ComposerActions, ComposerShell, InputRow, MessageInput, Toolbar } from "./styles";
 import type { MessageComposerProps } from "./types";
 
 /** Shared text/dictation surface. Owners supply their own send policy and optional slots. */
 export default function MessageComposer({ scopeKey, text, onTextChange, onSend, maxBytes, maxLength,
   label, placeholder, sendLabel, ariaLabel = label, disabled = false, sendDisabled = false,
   inputDisabled = false, voiceDisabled, sendAction, submitOnEnter = true, textTooLarge = false,
-  onRecordingChange, onPaste, beforeInput, toolbarStart, footer, sx }: MessageComposerProps) {
+  onRecordingChange, onPaste, beforeInput, toolbarStart, footer, sx, layout = "inline" }: MessageComposerProps) {
   const { t, i18n } = useTranslation("core");
   const validLimits = Number.isSafeInteger(maxBytes) && maxBytes >= 0
     && (maxLength === undefined || (Number.isSafeInteger(maxLength) && maxLength >= 0));
@@ -33,18 +33,8 @@ export default function MessageComposer({ scopeKey, text, onTextChange, onSend, 
     return () => onRecordingChange?.(false);
   }, [onRecordingChange, recording]);
   const canSend = !sendAction && !disabled && !sendDisabled && !overLimit && !recording;
-  return <ComposerShell aria-label={ariaLabel} sx={sx} onSubmit={event => { event.preventDefault(); if (canSend) onSend(); }}>
-    {beforeInput}
-    <InputRow>
-      <MessageInput onPaste={onPaste} onKeyDown={event => {
-        if (event.key !== "Enter" || event.shiftKey || event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
-        event.preventDefault();
-        if (!event.repeat && canSend && submitOnEnter) onSend();
-      }}>
-        <TextInput label={label} placeholder={placeholder} value={text} onChange={event => onTextChange(event.target.value)}
-          multiline minRows={1} maxRows={5} disabled={disabled || inputDisabled || recording} />
-      </MessageInput>
-      <Tooltip title={t(voice.state === "requesting" ? "message_composer.dictation.cancel" : recording ? "message_composer.dictation.stop" : !voice.supported ? "message_composer.dictation.unsupported" : atLimit ? "message_composer.dictation.errors.text_too_large" : "message_composer.dictation.start")}>
+  const voiceControl = (
+    <Tooltip title={t(voice.state === "requesting" ? "message_composer.dictation.cancel" : recording ? "message_composer.dictation.stop" : !voice.supported ? "message_composer.dictation.unsupported" : atLimit ? "message_composer.dictation.errors.text_too_large" : "message_composer.dictation.start")}>
         <span><IconButton aria-label={t(voice.state === "requesting" ? "message_composer.dictation.cancel" : recording ? "message_composer.dictation.stop" : "message_composer.dictation.start")} color={recording ? "error" : "default"}
           disabled={voiceLocked || voice.state === "stopping" || (!recording && (!voice.supported || atLimit))}
           onClick={() => voice.state === "requesting" ? voice.cancel() : recording ? voice.stop() : void voice.start()} sx={{
@@ -54,15 +44,35 @@ export default function MessageComposer({ scopeKey, text, onTextChange, onSend, 
             "&.Mui-focusVisible": { outline: "2px solid", outlineColor: "primary.main", outlineOffset: 2 },
           }}>{recording ? <StopRounded /> : <MicNoneOutlined />}</IconButton></span>
       </Tooltip>
-      {sendAction ?? <Tooltip title={sendLabel}><span><IconButton type="submit" aria-label={sendLabel} disabled={!canSend}
-        sx={{ width: 44, height: 44, borderRadius: 3, bgcolor: "primary.main", color: "primary.contrastText", "&:hover": { bgcolor: "primary.dark" }, "&.Mui-disabled": { bgcolor: "action.disabledBackground" } }}><SendRounded sx={{ fontSize: 21 }} /></IconButton></span></Tooltip>}
+  );
+  const sendControl = sendAction ?? (
+    <Tooltip title={sendLabel}><span><IconButton type="submit" aria-label={sendLabel} disabled={!canSend}
+        sx={{ width: 44, height: 44, borderRadius: 3, bgcolor: "primary.main", color: "primary.contrastText", "&:hover": { bgcolor: "primary.dark" }, "&.Mui-disabled": { bgcolor: "action.disabledBackground" } }}><SendRounded sx={{ fontSize: 21 }} /></IconButton></span></Tooltip>
+  );
+  return <ComposerShell aria-label={ariaLabel} sx={sx} onSubmit={event => { event.preventDefault(); if (canSend) onSend(); }}>
+    {beforeInput}
+    <InputRow data-layout={layout}>
+      <MessageInput onPaste={onPaste} onKeyDown={event => {
+        if (event.key !== "Enter" || event.shiftKey || event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
+        event.preventDefault();
+        if (!event.repeat && canSend && submitOnEnter) onSend();
+      }}>
+        <TextInput label={label} placeholder={placeholder} value={text} onChange={event => onTextChange(event.target.value)}
+          multiline minRows={1} maxRows={5} disabled={disabled || inputDisabled || recording} />
+      </MessageInput>
+      {layout === "inline" && <>{voiceControl}{sendControl}</>}
     </InputRow>
+    {layout === "stacked" && <ComposerActions data-composer-toolbar>
+      {toolbarStart && <Box data-composer-start>{toolbarStart}</Box>}
+      {footer && <Box data-composer-footer data-composer-selection>{footer}</Box>}
+      <Box data-composer-controls sx={{ ml: "auto", display: "flex", gap: 1, flexShrink: 0 }}>{voiceControl}{sendControl}</Box>
+    </ComposerActions>}
     {recording && <Box sx={{ minWidth: 0 }}>
       <Typography role="status" variant="caption" color="error.main">{t(voice.state === "requesting" ? "message_composer.dictation.requesting" : voice.state === "stopping" ? "message_composer.dictation.stopping" : "message_composer.dictation.listening", { time: `${Math.floor(voice.seconds / 60)}:${String(voice.seconds % 60).padStart(2, "0")}` })}</Typography>
       {voice.state !== "stopping" && <VoiceActivity stream={voice.stream} />}
       <Typography variant="caption" color="text.secondary">{t("message_composer.dictation.notice")}</Typography>
     </Box>}
     {overLimit && <Alert severity="warning">{t("message_composer.text_too_large")}</Alert>}
-    {(toolbarStart || footer) && <Toolbar>{toolbarStart}<Box data-composer-footer data-composer-selection>{footer}</Box></Toolbar>}
+    {layout === "inline" && (toolbarStart || footer) && <Toolbar data-composer-toolbar>{toolbarStart}<Box data-composer-footer data-composer-selection>{footer}</Box></Toolbar>}
   </ComposerShell>;
 }

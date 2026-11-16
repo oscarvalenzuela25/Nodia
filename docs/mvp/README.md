@@ -146,6 +146,16 @@ despliegue por esta entrega. [Evidencia](../evidence/teacher-ai-selection-first-
 
 ## Interfaz y rendimiento
 
+**Evolución UX/UI de NodiaAI — implementación local2026-11-15:**
+[Plan107§11](107-nodia-ai-ux-ui-upgrade-plan.md#11-implementación-local-solicitada-en-la-misma-rama--2026-11-15)
+y [evidencia](../evidence/nodia-ai-ux-upgrade-20261115.md) registran workspace
+flex/historial plegable, lectura editorial y compositor2niveles con selector
+progresivo. Misma rama `codex/nodia-ai-ux-ui-upgrade`; Client3013/363, tipos/
+build/lint del código y QA28perfiles sintéticos correctos. Agentic/API key,
+contratos y recuperación conservados; sin inferencias/despliegue o aprobación/
+publicación. [TODO](TODO.md): NAIUX-07, revisión humana y adopción por entorno.
+No repetir baseline/construcción cerrados por alcance local.
+
 [Diseño Client](../../nodia-client/DESIGN.md), [tarjetas/accesos móviles35](35-mobile-cards-shortcuts-plan.md), [rendimiento37](37-web-performance-implementation-plan.md), [compositor93](93-nodia-ai-chat-composer-redesign.md) y [manual de propuestas](../features/nodia-ai/proposal-review-presentation.md).
 
 [PWA103](103-pwa-progressive-implementation-plan.md): primera entrega PWA-001

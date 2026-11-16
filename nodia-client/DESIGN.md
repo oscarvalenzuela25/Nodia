@@ -629,6 +629,50 @@ Un rechazo explícito401/403/404/410 retira contenido privado y cancela lectores
 
 ### 10.10 Chat conversacional y compositor compacto (2026-10-28)
 
+#### Evolución UX/UI verificada localmente — 2026-11-15
+
+[Plan107§11](../docs/mvp/107-nodia-ai-ux-ui-upgrade-plan.md#11-implementación-local-solicitada-en-la-misma-rama--2026-11-15)
+y [evidencia](../docs/evidence/nodia-ai-ux-upgrade-20261115.md) registran el nuevo
+patrón local. No implica adopción del entorno, aprobación o inferencia nueva.
+
+- La página de conversación opta por `data-page-layout="conversation"`.
+  BaseLayout utiliza100dvh y una cadena flex/min-height0 a través de PageContent
+  y los wrappers explícitos `data-route-guard`/`data-route-view` de GuardStrict.
+  Conservar avisos de autorización e inert; no aplicar esta altura a todas las
+  páginas ni sumar offsets por breakpoint o mínimos520/580px. Padding y reserva
+  MobileBottomNav/safe area siguen siendo propiedad del layout existente.
+- Historial local plegable en desktop y overlay móvil, con el mismo dueño de
+  filtros/páginas/URL. El viewport usa ancla por messageId/offset y seguimiento
+  condicionado al fondo; ResizeObserver local se desconecta al desmontar. No
+  convertir un cambio de ancho o altura del compositor en salto de lectura.
+- Columna de mensajes/compositor de hasta56rem, asistente editorial y usuario
+  a derecha. El ritmo24px pertenece al contenedor mediante artículos adyacentes
+  `data-message-id`: Boneyard envuelve los artículos y el gap del padre por sí
+  solo no los separa. No duplicar ese gap con márgenes del componente de mensaje.
+- `MessageComposer.layout="stacked"` coloca texto ancho y herramientas en dos
+  niveles, con un solo textarea/captura. NodiaAI opta por esta variante; Teacher
+  conserva inline. Adjuntar/selector/dictado/Enviar o Stop tienen área44px. El
+  footer pasa a ancho completo ante dirty/error; alinear al inicio evita que un
+  bloque alto quede fuera de su scrollport o detrás del textarea.
+- Selección aplicada resumida con modelo/modo, descripción/tooltip completos y
+  editor Popover MUI anclado arriba, con ancho propio y scroll local. Montar por
+  intención y conservar después, con foco modal/Cerrar/Escape. Plegar no aplica,
+  descarta ni habilita envío de un borrador dirty; error deja editor y datos.
+  Tras éxito, enfocar el nuevo resumen sólo cuando corresponde a la selección
+  confirmada y está habilitado; no robar foco en refetch posteriores.
+- Copiar respuesta es una acción local sobre texto visible con Sileo ES/EN;
+  no copia controles/metadatos ni añade regeneración. Markdown, datos ausentes,
+  actividad pública, propuestas/recibos, adjuntos y recovery conservan contratos.
+
+QA sintética con GuardStrict real:28perfiles ES/EN/claro/oscuro, foco/ancla,
+errores de selección/revisión y revalidación con borrador preservado. Lectura
+1440×900:565→616px; compositor320px:195→120px; a320×568 los controles quedan
+alcanzables sobre la reserva. Builds equivalentes: JS+1845bytes gzip, CSS igual,
+siete GET iniciales conservados; no se afirma ahorro de red/latencia/render.
+La variante de tres filas se descartó por altura. El desborde61px histórico
+inferior no se reprodujo en el baseline nuevo ni en el candidato simulado;
+micrófono/teclado virtual y dispositivos físicos mantienen sus gates propios.
+
 #### Continuación compacta solicitada2026-11-14
 
 La cabecera de título/modelo y «Ver actividad del turno» se retiran. Renombrar

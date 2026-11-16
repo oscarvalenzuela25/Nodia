@@ -101,6 +101,16 @@ async function readyComposer() {
   await waitFor(() => expect(input).toBeEnabled());
   return input;
 }
+async function openSelectionEditor() {
+  const trigger = await screen.findByRole("button", { name: i18n.t("nodiaAi:configuration.selection_panel.title") });
+  await waitFor(() => expect(trigger).toBeEnabled());
+  if (trigger.getAttribute("aria-expanded") !== "true") await userEvent.setup().click(trigger);
+}
+async function closeSelectionEditor() {
+  const editor = screen.getByRole("dialog", { name: i18n.t("nodiaAi:configuration.title") });
+  await userEvent.setup().click(within(editor).getByRole("button", { name: i18n.t("nodiaAi:close") }));
+  await waitFor(() => expect(screen.queryByRole("dialog", { name: i18n.t("nodiaAi:configuration.title") })).not.toBeInTheDocument());
+}
 beforeEach(() => {
   extraConnections = []; useGeneralSettingsStore.getState().clearContext();
   current = structuredClone(detail); available = true; eligibilityReason = "nodia_ai:adapter_unavailable"; writes = []; reads = []; messageItems = []; eventItems = []; admitAction = undefined; patchAction = undefined;
@@ -128,10 +138,12 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     await user.click(screen.getByRole("button", { name: i18n.t("nodiaAi:new_chat") }));
     await waitFor(() => expect(screen.getByRole("textbox", { name: "Mensaje" })).toBeEnabled());
     await readyComposer();
+    expect(screen.queryByRole("dialog", { name: i18n.t("nodiaAi:configuration.title") })).not.toBeInTheDocument();
+    await openSelectionEditor();
     expect(screen.getByRole("button", { name: "Conexión" })).toHaveTextContent(codexConnection.label);
     expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("AI40 discovered Codex model");
     expect(screen.getByRole("button", { name: "Intensidad" })).toHaveTextContent("New observed effort");
-    expect(screen.queryByRole("dialog", { name: i18n.t("nodiaAi:configuration.title") })).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: i18n.t("nodiaAi:configuration.title") })).toBeInTheDocument();
     expect(writes).toHaveLength(1);
     expect(writes[0].url).toBe("/nodia-ai/conversations");
     expect(writes[0].body).not.toHaveProperty("selection");
@@ -158,12 +170,22 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     await waitFor(() => expect(admittedSelections).toEqual([selection]));
     await waitFor(() => expect(composer).toBeEnabled());
     await user.type(composer, "Synthetic second turn");
+    await openSelectionEditor();
     await user.click(screen.getByRole("button", { name: "Conexión" }));
     await user.click(await screen.findByRole("option", { name: codexConnection.label }));
     await waitFor(() => expect(screen.getByRole("button", { name: "Aplicar configuración" })).toBeEnabled());
-    expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Enviar mensaje", hidden: true })).toBeDisabled();
     expect(writes).toHaveLength(1);
     expect(composer).toHaveValue("Synthetic second turn");
+    const pendingModel = screen.getByRole("button", { name: "Modelo" });
+    await closeSelectionEditor();
+    expect(screen.getByText(i18n.t("nodiaAi:configuration.selection_panel.unsaved"))).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeDisabled();
+    expect(composer).toHaveValue("Synthetic second turn");
+    expect(writes).toHaveLength(1);
+    await openSelectionEditor();
+    expect(screen.getByRole("button", { name: "Modelo" })).toBe(pendingModel);
+    expect(pendingModel).toHaveTextContent("AI40 discovered Codex model");
     await user.click(screen.getByRole("button", { name: "Aplicar configuración" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: "Enviar mensaje" }));
@@ -282,6 +304,7 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
       await user.click(screen.getByRole("button", { name: field }));
       await user.click(await screen.findByRole("option", { name: label }));
     };
+    await openSelectionEditor();
     await waitFor(() => expect(screen.getByRole("button", { name: "Conexión" })).not.toHaveAttribute("aria-disabled", "true"));
     await selectOption("Conexión", codexConnection.label);
     await selectOption("Modo", i18n.t("nodiaAi:modes.agentic"));
@@ -291,8 +314,9 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Aplicar configuración" })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: "Aplicar configuración" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await openSelectionEditor();
     await waitFor(() => expect(screen.getByRole("button", { name: "Conexión" })).toBeEnabled());
-    expect(screen.getByRole("textbox", { name: "Mensaje" })).toBe(composer);
+    expect(screen.getByRole("textbox", { name: "Mensaje", hidden: true })).toBe(composer);
     expect(composer).toHaveValue("AI40 next message stays unsent");
     expect(screen.getByText("AI40 previous decisions stay in this conversation")).toBeInTheDocument();
     expect(writes).toHaveLength(1);
@@ -330,6 +354,48 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     expect(screen.queryByRole("link", { name: linkName })).not.toBeInTheDocument();
     expect(composer).toHaveValue("AI40 private draft");
     expect(writes).toEqual([]);
+  });
+
+  it("keeps the failed selection editor and message draft recoverable without sending or applying another selection", async () => {
+    let rejectSelection = true;
+    patchAction = config => {
+      if (rejectSelection) return rejected(config, 503, "Synthetic selection save unavailable");
+      const body = JSON.parse(config.data as string) as { selection: NodiaAiSelection };
+      current.conversation = { ...current.conversation, selection: body.selection, revision: current.conversation.revision + 1 };
+      return response(config, current.conversation);
+    };
+    const user = userEvent.setup(); openPage(); const composer = await readyComposer();
+    await user.type(composer, "Synthetic draft retained through selection failure");
+    await openSelectionEditor();
+    await user.click(screen.getByRole("button", { name: "Modelo" }));
+    await user.click(await screen.findByRole("option", { name: "Second Agentic model" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Aplicar configuración" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "Aplicar configuración" }));
+    expect(await screen.findByText("Synthetic selection save unavailable")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: i18n.t("nodiaAi:configuration.selection_panel.title"), hidden: true })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("Second Agentic model");
+    expect(composer).toHaveValue("Synthetic draft retained through selection failure");
+    expect(screen.getByRole("button", { name: "Enviar mensaje", hidden: true })).toBeDisabled();
+    expect(writes).toHaveLength(1);
+    expect(writes[0].url).toBe(`/nodia-ai/conversations/${chatId}/selection`);
+    expect(current.conversation.selection).toEqual(selection);
+    await closeSelectionEditor();
+    expect(screen.getByText("Synthetic selection save unavailable")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeDisabled();
+    await openSelectionEditor();
+    expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("Second Agentic model");
+    rejectSelection = false;
+    const saveError = screen.getAllByRole("alert").find(alert => within(alert).queryByText("Synthetic selection save unavailable"));
+    expect(saveError).toBeDefined();
+    await user.click(within(saveError!).getByRole("button", { name: i18n.t("nodiaAi:retry") }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Aplicar configuración" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "Aplicar configuración" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeEnabled());
+    expect(composer).toHaveValue("Synthetic draft retained through selection failure");
+    expect(writes).toHaveLength(2);
+    expect(writes.every(entry => entry.url.endsWith("/selection"))).toBe(true);
+    expect(writes[1].body.selection).toEqual({ ...selection, model_id: "synthetic-second-model" });
+    expect(current.conversation.selection).toEqual({ ...selection, model_id: "synthetic-second-model" });
   });
 
   it("keeps the visible message anchor when an older page resolves before React Query delivers the DOM update", async () => {
@@ -1031,6 +1097,7 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
       };
     });
     const user = userEvent.setup(); openPage(); await readyComposer();
+    await openSelectionEditor();
     await waitFor(() => expect(screen.getByRole("button", {name: "Modelo"})).not.toHaveAttribute("aria-disabled", "true"));
     await user.click(screen.getByRole("button", {name: "Modelo"}));
     await user.click(await screen.findByRole("option", {name: "Second Agentic model"}));
@@ -1039,10 +1106,13 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     await act(() => navigate(`/nodia-ai?chat=${otherChatId}`));
     await waitFor(() => expect(screen.getByRole("textbox", { name: "Mensaje" })).toHaveValue(""));
     await act(async () => { completeSelection?.(); });
+    expect(screen.queryByRole("dialog", {name: "Configuración del chat"})).not.toBeInTheDocument();
+    await openSelectionEditor();
     await waitFor(() => expect(screen.getByRole("button", {name: "Conexión"})).toBeEnabled());
     expect(screen.getByRole("button", {name: "Modelo"})).toHaveTextContent(model.label);
     expect(writes).toHaveLength(1);
     expect(writes[0].url).toBe(`/nodia-ai/conversations/${chatId}/selection`);
+    await closeSelectionEditor();
     expect(screen.queryByRole("dialog", {name: "Configuración del chat"})).not.toBeInTheDocument();
   });
 

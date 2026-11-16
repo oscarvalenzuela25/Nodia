@@ -28,4 +28,6 @@ export interface MessageComposerProps {
   toolbarStart?: ReactNode;
   footer?: ReactNode;
   sx?: SxProps<Theme>;
+  /** Opt-in full-width text area with voice/send in their own action row. */
+  layout?: "inline" | "stacked";
 }

@@ -4,11 +4,11 @@
   "document_id": "nodia-ai",
   "product_id": "nodia-ai",
   "kind": "product",
-  "revision": 76,
+  "revision": 78,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Índice enlaza la ampliación API chat candidata y sus seis revisiones draft; código implementado, ensayos SQL/API/VM pendientes. Sin aprobación o publicación del producto o fichas por actualizar el índice. R08 enlaza presentación Markdown y recarga visual candidatas: implementación/QA y adopción estática R08 verificadas según recibo; no amplía capacidades ni cambia el dictado. Client R38 adoptado: presentación compacta de propuestas, comparación por contenedor, detalles exactos plegables y etiquetas históricas de ventas de sólo lectura. Conserva borrador/guards de fetch e incertidumbre, confirmación exacta y autoridad; confirmed no acredita efecto aplicado. No cambia otras tarjetas de resultados, registro, capacidades o publicación. Ajustes locales: acciones contained, contexto del actor e identidad NodiaAI exacta, variantes Gemini con IDs reales/OCR independiente y API OpenAI xhigh/max sin Ultra. Backend verificado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; sin despliegue, inferencia o publicación de este lote. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte."
+    "notes": "Índice enlaza la ampliación API chat candidata y sus seis revisiones draft; código implementado, ensayos SQL/API/VM pendientes. Sin aprobación o publicación del producto o fichas por actualizar el índice. R08 enlaza presentación Markdown y recarga visual candidatas: implementación/QA y adopción estática R08 verificadas según recibo; no amplía capacidades ni cambia el dictado. Client R38 adoptado: presentación compacta de propuestas, comparación por contenedor, detalles exactos plegables y etiquetas históricas de ventas de sólo lectura. Conserva borrador/guards de fetch e incertidumbre, confirmación exacta y autoridad; confirmed no acredita efecto aplicado. No cambia otras tarjetas de resultados, registro, capacidades o publicación. Ajustes locales: acciones contained, contexto del actor e identidad NodiaAI exacta, variantes Gemini con IDs reales/OCR independiente y API OpenAI xhigh/max sin Ultra. Backend verificado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; sin despliegue, inferencia o publicación de este lote. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Plan107 (2026-11-15): evaluación visual y de interacción futura del chat, sin implementación ni cambios de contratos, modos o herramientas. El estado de implementación conserva exclusivamente el alcance existente; rediseño pendiente NAIUX-00/01. Continuación plan107: upgrade UX/UI implementado y verificado localmente con fixtures, conservando contratos y modos; aceptación humana/dispositivos y adopción por entorno pendientes. Sin nueva herramienta, aprobación o publicación."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento del módulo NodiaAI conforme a AGENTS",
@@ -220,12 +220,15 @@
     {
       "path": "nodia-client/src/modules/nodiaAi/infrastructure/historicalProposalPresentation.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/107-nodia-ai-ux-ui-upgrade-plan.md",
+      "kind": "specification"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-14",
+    "checked_on": "2026-11-15",
     "evidence_paths": [
-      "docs/evidence/nodia-ai-ai15-postgres-integration.json",
       "docs/evidence/nodia-ai-ai15-live-local.json",
       "docs/evidence/nodia-ai-ai15-live-artifacts.json",
       "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
@@ -256,9 +259,10 @@
       "docs/evidence/nodia-ai-ai40-common-tools-validation-r01.json",
       "docs/evidence/nodia-ai-ai40-remaining-validation-r01.json",
       "docs/evidence/nodia-ai-proposal-ui-20261107-r01.json",
-      "docs/evidence/nodia-ai-chat-space-gpt-selection-20261114.md"
+      "docs/evidence/nodia-ai-chat-space-gpt-selection-20261114.md",
+      "docs/evidence/nodia-ai-ux-upgrade-20261115.md"
     ],
-    "notes": "Revisión de código/contratos candidatos API y preparación documental con originales byte exactos archivados. Código implementado; ensayo SQL, success API chat real, modalidades, imágenes, VM y publicación de esta revisión pendientes. Las evidencias de etapas anteriores conservan su alcance y no califican el modo API nuevo. Aprobación humana pendiente. Plan93 R08 y ficha chat-composer-selection10 registran Client2187/264, QA320–1569px y entrega estática173archivos verificados en evidencia propia; reset del permiso no aplicado. Este índice no aprueba ni publica esa revisión. R38: 218 regresiones/4 archivos (9 helper incluidos); últimos ajustes sólo visuales revisados, tipos/lint finales correctos y build aislado 1401/185. QA sintética y autenticada de propuesta expirada a 320 px, sin overflow, mensajes IA, confirmaciones o mutaciones comerciales; 185 outputs/20 versiones históricas y miss404 verificados. No acredita teléfono físico, efecto comercial ni inferencia. Corte local2026-11-12: backend build/autorización60/HTTP74/API249, build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; ver candidata/evidencia, sin despliegue/inferencia de este lote."
+    "notes": "Revisión de código/contratos candidatos API y preparación documental con originales byte exactos archivados. Código implementado; ensayo SQL, success API chat real, modalidades, imágenes, VM y publicación de esta revisión pendientes. Las evidencias de etapas anteriores conservan su alcance y no califican el modo API nuevo. Aprobación humana pendiente. Plan93 R08 y ficha chat-composer-selection10 registran Client2187/264, QA320–1569px y entrega estática173archivos verificados en evidencia propia; reset del permiso no aplicado. Este índice no aprueba ni publica esa revisión. R38: 218 regresiones/4 archivos (9 helper incluidos); últimos ajustes sólo visuales revisados, tipos/lint finales correctos y build aislado 1401/185. QA sintética y autenticada de propuesta expirada a 320 px, sin overflow, mensajes IA, confirmaciones o mutaciones comerciales; 185 outputs/20 versiones históricas y miss404 verificados. No acredita teléfono físico, efecto comercial ni inferencia. Corte local2026-11-12: backend build/autorización60/HTTP74/API249, build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; ver candidata/evidencia, sin despliegue/inferencia de este lote. Plan107: contraste documental/código actual y referencia externa sin key/inferencia. No es QA de la nueva UI ni aceptación humana/productiva; baseline NodiaAI pendiente. Comprobación de estructura/publicación por knowledge check/build separada. Cierre local plan107: Client3013/363, build/tipos/lint de código y QA28perfiles sintéticos; cuerpo y evidencia delimitan contención previa, bytes y pendientes. No inferencia ni despliegue."
   },
   "approval": null
 }
@@ -353,6 +357,25 @@ La [conciliación real](../../../evidence/nodia-ai-ai40-real-unknown-reconciliat
 MCP/PNG/JPEG/WebP quedan legítimamente invalidados en el scope operativo. Los recibos anteriores siguen siendo históricos; disponibilidad actual requiere reaceptación propia y no se recupera copiando proofs. R05 continúa activo; las correcciones de compactación por transporte y terminal sin texto de selección son candidatas sin adopción/aceptación real. PDF revisado conserva su positivo como texto; audio continúa sin proof. Los [fixes selectivos](../../../evidence/nodia-ai-ai40-selective-fixes-validation-r01.json) pasan322 pruebas focales/5 archivos, tipado y lint; el candidato R06 cambia fingerprint y excluye WAV, sin aceptación operativa. La causa original de la inferencia sigue desconocida. C40-06 y las variantes restantes de C40-09/C40-11 permanecen parciales.
 
 # NodiaAI — contexto de producto
+
+## Evolución UX/UI planificada — 2026-11-15
+
+Referencia histórica conservada: [recibo original](../../../evidence/nodia-ai-ai15-postgres-integration.json).
+
+[Plan107§11](../../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#11-implementación-local-solicitada-en-la-misma-rama--2026-11-15),
+[ficha del compositor](features/chat-composer-selection.md#evolución-uxui-del-chat--planificación2026-11-15)
+y [evidencia](../../../evidence/nodia-ai-ux-upgrade-20261115.md) registran la
+continuación implementada por solicitud expresa: lectura editorial, workspace/
+historial más ligeros y compositor2niveles con editor IA progresivo. Cambia la
+presentación; conserva contratos, autoridad, Agentic/API key, selección exacta,
+adjuntos/voz/Stop, propuestas y recuperación. Copiar es una acción local del
+portapapeles, sin nueva herramienta o capacidad del proveedor.
+
+QA sintética y regresiones por alcance local completas; aceptación humana/UI
+real, dispositivos y adopción siguen separadas en [TODO NAIUX-001](../../../mvp/TODO.md).
+Producto draft/partial y ficha draft/implemented, ambos unregistered/approval:null;
+ninguna publicación o aprobación se deriva de implementar. No repetir baseline
+o construcción al retomar NAIUX-07.
 
 ## Selección de modelo y esfuerzo — candidato local, 2026-11-14
 

@@ -11,10 +11,11 @@ export const ConversationRow = styled(ListItem, {
   position: "relative",
   width: "100%",
   minWidth: 0,
-  borderRadius: typeof theme.shape.borderRadius === "number" ? theme.shape.borderRadius * 2 : `calc(${theme.shape.borderRadius} * 2)`,
+  borderRadius: theme.shape.borderRadius,
   marginBottom: theme.spacing(0.5),
-  background: active ? alpha(theme.palette.primary.main, 0.13) : "transparent",
-  "&:hover": { background: alpha(theme.palette.primary.main, active ? 0.18 : 0.06) },
+  border: `1px solid ${active ? alpha(theme.palette.primary.main, 0.2) : "transparent"}`,
+  background: active ? alpha(theme.palette.primary.main, 0.075) : "transparent",
+  "&:hover": { background: alpha(theme.palette.text.primary, active ? 0.06 : 0.035) },
   "& .MuiListItemButton-root": {
     width: "100%",
     minWidth: 0,
@@ -22,6 +23,8 @@ export const ConversationRow = styled(ListItem, {
     alignItems: "flex-start",
     borderRadius: "inherit",
     paddingRight: theme.spacing(7),
+    "& .MuiListItemText-primary": { fontSize: "0.875rem", fontWeight: active ? 650 : 500, lineHeight: 1.5 },
+    "& .MuiListItemText-secondary": { fontSize: "0.75rem", marginTop: theme.spacing(0.5), lineHeight: 1.5 },
     "&.Mui-selected, &.Mui-selected:hover, &:hover": { background: "transparent" },
   },
 }));

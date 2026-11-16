@@ -7,7 +7,7 @@ import MessageComposer from "../../../../components/MessageComposer";
 import Attachments from "../Attachments";
 import { NODIA_AI_MESSAGE_TEXT_BYTES } from "../../infrastructure/schemas";
 import { isInvoiceOcrReference } from "../Attachments/hooks/useAttachmentDrafts";
-import { ReviewArea } from "./styles";
+import { composerStyles, ReviewArea } from "./styles";
 import type { ChatComposerProps } from "./types";
 
 /** NodiaAI keeps its attachment/admission policy around the shared text editor. */
@@ -33,7 +33,7 @@ export default function ChatComposer(props: ChatComposerProps) {
     draft.add(files);
     setShowAttachments(true);
   };
-  return <MessageComposer scopeKey={props.conversationId} text={props.text} onTextChange={props.onTextChange} onSend={props.onSend}
+  return <MessageComposer layout="stacked" sx={composerStyles} scopeKey={props.conversationId} text={props.text} onTextChange={props.onTextChange} onSend={props.onSend}
     maxBytes={remainingTextBytes} disabled={draft.busy || capabilities.isFetching || (disabled && !recovering)}
     inputDisabled={disabled || recovering} voiceDisabled={disabled || recovering || draft.busy}
     sendDisabled={sendDisabled} sendAction={props.sendAction} submitOnEnter={!recovering} textTooLarge={props.textTooLarge}
