@@ -47,6 +47,24 @@ def deploy_message():
 
 
 class MessagePolicyTests(unittest.TestCase):
+    def test_v2_commands_match_root_schema_and_bound_ranges_independently(self):
+        identity = '456 ' + 'b' * 64 + ' 123 1 42'
+        for command in ('capabilities', *[name + ' ' + identity for name in
+                        ('upload-status', 'upload-open', 'upload-finish')],
+                        'upload-append ' + identity + ' 0 ' + hashlib.sha256(b'').hexdigest() + ' 8 ' + 'c' * 64):
+            parsed = gateway.parse_command(command)
+            self.assertEqual(receiver.validate_message(parsed), parsed)
+        for changes in ({'offset': True}, {'offset': -1}, {'chunk_bytes': True},
+                        {'offset': 40, 'chunk_bytes': 8}, {'chunk_bytes': receiver.MAX_CHUNK + 1},
+                        {'prefix_sha256': 'bad'}, {'unexpected': 1}):
+            message = gateway.parse_command('upload-append ' + identity + ' 0 ' + 'c' * 64 + ' 8 ' + 'd' * 64)
+            with self.subTest(changes=changes), self.assertRaises(ValueError):
+                receiver.validate_message({**message, **changes})
+        for command in ('capabilities extra', 'upload-status ' + identity + ' extra',
+                        'upload-append ' + identity + ' 40 ' + 'c' * 64 + ' 8 ' + 'd' * 64):
+            with self.subTest(command=command), self.assertRaises(ValueError):
+                gateway.parse_command(command)
+
     def test_canonical_ssh_commands_match_the_independently_validated_root_message(self):
         for original in ['status', 'status ' + 'a' * 32,
                          'upload 456 ' + 'b' * 64 + ' 123 1 42',

@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -87,7 +88,7 @@ class ArchiveCompletedUploadTests(unittest.TestCase):
                 'schema_version': 1, 'message': message, 'submitted_at': '2026-11-15T00:00:00+00:00'})
         request = {name: message[name] for name in ('operation_id', 'artifact_id', 'artifact_zip_sha256',
                    'source_sha', 'expected_current_release', 'expected_current_tree_sha256')}
-        request.update(schema_version=1, artifact_directory='server-123-1')
+        request.update(schema_version=1, artifact_directory='server-' + message['run_id'] + '-' + message['run_attempt'])
         self.json(self.state / 'requests' / (operation + '.json'), request)
         directory = self.state / 'attempts' / operation
         directory.mkdir(mode=0o700)
@@ -100,6 +101,35 @@ class ArchiveCompletedUploadTests(unittest.TestCase):
     def assert_originals(self):
         for relative, raw in self.pins.items():
             self.assertEqual((self.state / relative).read_bytes(), raw)
+
+    def add_upload(self, operation, run, artifact, data, *, phase='complete', source=None):
+        previous = self.message
+        self.message = {**previous, 'run_id': run, 'artifact_id': artifact,
+                        'artifact_zip_sha256': hashlib.sha256(data).hexdigest(),
+                        'source_sha': source or previous['source_sha']}
+        try:
+            self.record_operation(operation, phase)
+        finally:
+            self.message = previous
+        directory = self.state / 'incoming' / ('server-' + run + '-1')
+        directory.mkdir(mode=0o700, exist_ok=True)
+        path = directory / (artifact + '.zip')
+        self.write(path, data, 0o600)
+        return path
+
+    def run_capacity(self, requested=10, *, maximum=None, usage_bytes=None, usage_files=None, free=10 * 1024 ** 3):
+        module, _ = self.receiver_load(self.receiver_sha)
+        _, physical_bytes, physical_files = archive.incoming_files()
+        host = SimpleNamespace(STATE=self.state, INCOMING=self.state / 'incoming',
+            MAX_UPLOAD=768 * 1024 ** 2, MAX_INCOMING=maximum if maximum is not None else 2 * 1024 ** 3,
+            deployment_status=module.deployment_status, operation_status=module.operation_status,
+            validate_message=module.validate_message)
+        with (self.state / 'receiver.lock').open('r+b') as lock:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            with patch.object(archive.shutil, 'disk_usage', return_value=SimpleNamespace(free=free)):
+                return archive.ensure_capacity(host, requested,
+                    physical_bytes if usage_bytes is None else usage_bytes,
+                    physical_files if usage_files is None else usage_files)
 
     def test_default_dry_run_does_not_create_archive_or_intent(self):
         result = self.run_archive()
@@ -282,6 +312,165 @@ class ArchiveCompletedUploadTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'reviewed_receiver_digest_required'):
             self.run_archive(apply=True)
         self.assertFalse(self.record.exists())
+
+    def test_capacity_already_fits_does_not_move_or_create_records(self):
+        result = self.run_capacity(maximum=len(self.data) + 10)
+        self.assertEqual(result, {'archived': [], 'usage_bytes': len(self.data), 'usage_files': 1})
+        self.assertTrue(self.source.exists())
+        self.assertFalse(self.record.exists())
+
+    def test_capacity_moves_minimum_number_of_zips_for_bytes(self):
+        small = self.add_upload('1' * 32, '124', '457', b's' * 20)
+        large = self.add_upload('2' * 32, '125', '458', b'l' * 100)
+        total = len(self.data) + 120
+        result = self.run_capacity(requested=50, maximum=total + 50 - 70)
+        self.assertEqual([item['operation_id'] for item in result['archived']], ['2' * 32])
+        self.assertEqual(result['usage_bytes'], total - 100)
+        self.assertEqual(result['usage_files'], 2)
+        self.assertTrue(self.source.exists())
+        self.assertTrue(small.exists())
+        self.assertFalse(large.exists())
+
+    def test_capacity_fixed_ten_slot_limit_counts_pending_reservations(self):
+        result = self.run_capacity(usage_files=10)
+        self.assertEqual(len(result['archived']), 1)
+        self.assertEqual(result['usage_files'], 9)
+        self.assertEqual(result['usage_bytes'], 0)
+
+    def test_capacity_insufficient_eligible_bytes_never_starts_a_partial_batch(self):
+        with self.assertRaisesRegex(ValueError, 'incoming_quota_reached_operator_cleanup_required'):
+            self.run_capacity(requested=10, maximum=9)
+        self.assertTrue(self.source.exists())
+        self.assertFalse(self.record.exists())
+
+    def test_capacity_shared_references_move_once_and_second_round_never_repeats(self):
+        self.record_operation('1' * 32)
+        first = self.run_capacity(usage_files=10)
+        self.assertEqual(len(first['archived']), 1)
+        record_bytes = {str(path.relative_to(self.state)): path.read_bytes()
+                        for path in self.state.glob('archive-completed-upload-*/*.json')}
+        second = self.run_capacity()
+        self.assertEqual(second, {'archived': [], 'usage_bytes': 0, 'usage_files': 0})
+        with self.assertRaisesRegex(ValueError, 'incoming_quota_reached_operator_cleanup_required'):
+            self.run_capacity(usage_files=10)
+        self.assertEqual(record_bytes, {str(path.relative_to(self.state)): path.read_bytes()
+                        for path in self.state.glob('archive-completed-upload-*/*.json')})
+        self.assertEqual(self.destination.read_bytes(), self.data)
+
+    def test_capacity_keeps_current_failed_unknown_partial_and_orphan_files(self):
+        kept = [self.add_upload('1' * 32, '124', '457', b'c' * 100,
+                               source=self.ready['current']['source_sha']),
+                self.add_upload('2' * 32, '125', '458', b'f' * 100, phase='failed'),
+                self.add_upload('3' * 32, '126', '459', b'u' * 100, phase='unknown'),
+                self.add_upload('4' * 32, '127', '460', b'p' * 100)]
+        partial = kept[-1].with_suffix('.zip.part')
+        self.write(partial, b'partial', 0o600)
+        orphan = self.state / 'incoming/server-127-1/461.zip'
+        self.write(orphan, b'orphan' * 100, 0o600)
+        result = self.run_capacity(usage_files=10)
+        self.assertEqual([item['operation_id'] for item in result['archived']], [self.operation])
+        for path in [*kept, partial, orphan]:
+            self.assertTrue(path.exists(), path.name)
+
+    def test_source_conflict_in_shared_reference_blocks_manual_and_automatic_archive(self):
+        self.record_operation('1' * 32)
+        for folder in ('submissions', 'requests'):
+            path = self.state / folder / ('1' * 32 + '.json')
+            value = json.loads(path.read_bytes())
+            (value['message'] if folder == 'submissions' else value)['source_sha'] = self.ready['current']['source_sha']
+            self.json(path, value)
+        for action in (lambda: self.run_archive(apply=True), lambda: self.run_capacity(usage_files=10)):
+            with self.assertRaisesRegex(ValueError, 'archive_reference_source_conflict'):
+                action()
+            self.assertFalse(self.record.exists())
+
+    def test_corrupt_unrelated_reference_and_bounded_scan_fail_closed(self):
+        path = self.state / 'submissions' / ('1' * 32 + '.json')
+        self.json(path, {'schema_version': 1, 'message': self.message, 'extra': True})
+        with self.assertRaisesRegex(ValueError, 'invalid_archive_submission'):
+            self.run_capacity(usage_files=10)
+        path.unlink()
+        self.record_operation('1' * 32)
+        with patch.object(archive, 'LIMIT', 1):
+            with self.assertRaisesRegex(ValueError, 'archive_reference_limit'):
+                self.run_capacity(usage_files=10)
+        self.assertTrue(self.source.exists())
+        self.assertFalse(self.record.exists())
+
+    def test_disk_headroom_is_checked_before_archiving_because_rename_frees_no_disk(self):
+        with self.assertRaisesRegex(ValueError, 'insufficient_upload_headroom'):
+            self.run_capacity(usage_files=10, free=10 + 2 * 1024 ** 3)
+        self.assertTrue(self.source.exists())
+        self.assertFalse(self.record.exists())
+
+    def test_capacity_interruption_cannot_replay_via_another_operation_alias(self):
+        self.record_operation('1' * 32)
+        with patch.object(archive, 'rename_noreplace', side_effect=RuntimeError('Synthetic interruption')):
+            with self.assertRaisesRegex(RuntimeError, 'Synthetic interruption'):
+                self.run_capacity(usage_files=10)
+        records = list(self.state.glob('archive-completed-upload-*'))
+        self.assertEqual(len(records), 1)
+        with self.assertRaisesRegex(ValueError, 'already_recorded_no_automatic_replay'):
+            self.run_capacity(usage_files=10)
+        with self.assertRaisesRegex(ValueError, 'already_recorded_no_automatic_replay'):
+            self.run_archive(apply=True)
+        self.assertEqual(list(self.state.glob('archive-completed-upload-*')), records)
+        self.assertTrue(self.source.exists())
+
+    def test_complete_receipt_with_reappeared_source_blocks_alias_archive(self):
+        self.record_operation('1' * 32)
+        self.run_archive(apply=True)
+        self.write(self.source, self.data, 0o600)
+        with self.assertRaisesRegex(ValueError, 'archive_record_source_present_requires_reconciliation'):
+            self.run_capacity(usage_files=10)
+        self.assertEqual(self.destination.read_bytes(), self.data)
+        self.assertEqual(self.source.read_bytes(), self.data)
+
+    def test_capacity_interruption_after_rename_still_blocks_even_when_quota_now_fits(self):
+        self.record_operation('1' * 32)
+        actual = archive.rename_noreplace
+        def interrupt(source, destination):
+            actual(source, destination)
+            raise RuntimeError('Synthetic interruption after move')
+        with patch.object(archive, 'rename_noreplace', side_effect=interrupt):
+            with self.assertRaisesRegex(RuntimeError, 'Synthetic interruption after move'):
+                self.run_capacity(usage_files=10)
+        self.assertFalse(self.source.exists())
+        with self.assertRaisesRegex(ValueError, 'already_recorded_no_automatic_replay'):
+            self.run_capacity()
+        self.assertEqual(self.destination.read_bytes(), self.data)
+        self.assertEqual(len(list(self.state.glob('archive-completed-upload-*'))), 1)
+
+    def test_completed_archive_records_have_bounded_strict_schemas(self):
+        self.run_archive(apply=True)
+        with patch.object(archive, 'LIMIT', 0):
+            with self.assertRaisesRegex(ValueError, 'archive_record_limit'):
+                archive.archive_records()
+        for name in ('intent.json', 'receipt.json'):
+            path = self.record / name
+            value = json.loads(path.read_bytes())
+            value['reference_sha256'] = {'../../unrelated': 'f' * 64}
+            self.json(path, value)
+        with self.assertRaisesRegex(ValueError, 'invalid_archive_record'):
+            self.run_capacity()
+        self.assertEqual(self.destination.read_bytes(), self.data)
+
+    def test_all_four_assets_are_pinned_and_arbitrary_extra_asset_is_rejected(self):
+        path = self.state / 'receiver-settings.json'
+        settings = json.loads(path.read_bytes())
+        for name in (archive.UPLOAD, archive.ARCHIVER):
+            source = ('# Synthetic pinned ' + name + '\n').encode()
+            self.write(self.lib / name, source, 0o644)
+            settings['assets'][name] = hashlib.sha256(source).hexdigest()
+        self.json(path, settings)
+        self.assertEqual(self.run_capacity()['archived'], [])
+        self.write(self.lib / archive.ARCHIVER, b'# Changed pinned policy\n', 0o644)
+        with self.assertRaisesRegex(ValueError, 'reviewed_receiver_digest_required'):
+            self.run_capacity(usage_files=10)
+        settings['assets']['unreviewed.py'] = 'f' * 64
+        self.json(path, settings)
+        with self.assertRaisesRegex(ValueError, 'invalid_receiver_settings'):
+            self.run_capacity(usage_files=10)
 
 
 if __name__ == '__main__':

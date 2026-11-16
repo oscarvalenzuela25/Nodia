@@ -1,5 +1,14 @@
 # Progreso del MVP — Nodia
 
+**CD: retención y continuación de bytes en implementación — 2026-11-16:**
+[99§32](99-production-deployment-and-cicd-plan.md#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16)
+y [ADR104 propuesto](../architecture/decisions/ADR-104-durable-upload-continuation-and-incoming-retention.md):
+protocolo v2 con intención durable, reserva total, prefijo/hash exactos y archivo
+automático del mínimo de paquetes completados no-current. Sin borrados o replay
+de aplicación; la aprobación documental no se infiere de la autorización de código.
+Primera implementación local; Linux/adopción remota pendientes, entrega6ba anterior
+intacta. [TODO OPS-001](TODO.md) continúa desde sus pruebas y rollout propios.
+
 **CD y NodiaAI: entrega productiva completada — 2026-11-16:**
 PR36→development y PR37→master6ba2afb7, con CI correctos. CI43798403214 y
 CD43799433169 correctos: backend6ba/c01 complete y Client6ba/bbb5 publicado,

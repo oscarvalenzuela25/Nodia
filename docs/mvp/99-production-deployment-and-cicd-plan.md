@@ -1595,3 +1595,65 @@ reanudable o retención automática implementadas. Sudo invalidado mediante job
 close-upload-operator-2ec47231daf74e3499f3a826dbf735e7 complete/exit0; tmux setup
 cerrado, comprobación SSH exit0. La documentación final se integrará por PR a
 development; no requiere otra promoción productiva para repetir esta entrega.
+
+## 32. Retención automática y continuación de uploads — solicitud2026-11-16
+
+El usuario solicita continuar OPS-02/03/04/05 para evitar la reincidencia de
+cuota y recuperar subidas sin perder funcionalidades ni repetir operaciones
+inciertas. [ADR104 propuesto](../architecture/decisions/ADR-104-durable-upload-continuation-and-incoming-retention.md)
+fija la decisión y los límites. Rama `codex/durable-backend-uploads`, desde
+developmenteb7927f2 (incluye PR38 y cierre del despliegue anterior).
+
+La entrega anterior permanece complete6ba/c01 y Client6ba/bbb5. Esta continuación
+no reabre su CI/CD ni cambia recibos históricos. Sólo una entrega nueva, validada
+con identidades propias, podrá ejecutar un deploy; ningún estado de upload lo
+autoriza por sí mismo.
+
+### 32.1. Contrato y ejecución prevista
+
+- V2: capabilities tipadas, consulta pura, intención inmutable por identidad,
+  reserva de bytes totales/slot, append de8MiB máximo mediante CAS offset+SHA256
+  del prefijo, y finish con digest completo/fsync/rename NOREPLACE/recibo.
+  Bytes de un parcial se comparan con el ZIP original antes de continuar; no
+  reset, truncamiento o adopción de archivos legacy/huérfanos.
+- El ledger raíz no guarda un offset mutable: el archivo protegido y su hash
+  observado son la autoridad del cursor; fsync precede al ACK y a la finalización.
+  Un rename completado sin recibo se concilia por lectura del destino y sellado,
+  sin repetir el movimiento. Las consultas no reparan ni crean archivos.
+- La continuación automática opera dentro del CD original con presupuesto
+  finito. `prior_cd_run`, CI/master, baseline y primer submit conservan su barrera.
+  Operación ausente sólo con fallo exacto y exit válido; campos contradictorios
+  no autorizan efectos. No hay fallback v2→legacy ante error.
+- Archivo automático sólo si la reserva nueva no cabe. Se valida el lote entero
+  antes de mover; mínimo número de ZIPs complete/no-current, todas las referencias
+  coherentes y ningún parcial. Aliases no evaden intents anteriores. Se mantienen
+  locks, hashes, recibos y todos los registros de ejecución.
+- Este alcance conserva los archivos en `archived-incoming`: no borra datos ni
+  libera disco físico. Backups, releases, perfiles, secretos y evidencia no tienen
+  una retención nueva por esta entrega. Headroom insuficiente falla cerrado.
+- Adopción del transporte separada de app: bundle4assets revisado, CAS de pins y
+  current, originales/intent durables, pin al final y status/capabilities/PIDs
+  iguales. Sin cambios sudoers, updater o servicios. Un intento parcial se inspecciona;
+  no se instala otra vez bajo un manifest distinto para evadirlo.
+
+### 32.2. Checklist y evidencia
+
+- [x] Contrato y ADR propuesto registrados; autorización de implementación no
+  equivale a aprobación documental o publicación de conocimiento.
+- [x] Primera implementación local de módulo, cliente, archivo y operador.
+- [ ] Completar pruebas Linux root y contratos entre gateway/receiver/cliente.
+- [ ] Revisar fallos, hashes/byte bounds y ausencia de replay de aplicación.
+- [ ] Adoptar el bundle revisado con acceso administrativo autenticado, dry-run
+  y postcheck por conexión SSH nueva; distinguir resultado remoto de fixtures.
+- [ ] Promover por PR/CI nuevos y verificar retención/recepción/entrega reales.
+- [ ] Consolidar evidencias y actualizar README/progreso/TODO al alcance comprobado.
+
+Estado inicial: Windows Node focal correcto; las suites Linux nuevas todavía
+requieren ejecución. WSL local no inicia por `ERROR_NO_SYSTEM_RESOURCES` y Docker
+no está activo; no se reinician procesos del usuario ni se usan servicios
+productivos como entorno de pruebas. El CI aislado sin secretos de PR validará
+las garantías POSIX antes de cualquier adopción. No se afirma instalado el v2.
+
+Evaluación de conocimiento: infraestructura, sin cambio funcional NodiaAI,
+herramientas, ownership, permisos, modelos o inferencias. No se crean fichas ni
+se altera aprobación/corpus por este trabajo.
