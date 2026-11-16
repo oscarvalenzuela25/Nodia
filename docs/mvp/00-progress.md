@@ -1,5 +1,108 @@
 # Progreso del MVP — Nodia
 
+**PR News a development y capturas archivadas — solicitud2026-11-16:**
+[105§14](105-on-demand-tech-news.md#14-pr-a-development-y-capturas-fuera-de-git--solicitud2026-11-16)
+conserva [PR46](https://github.com/oscarvalenzuela25/Nodia/pull/46), ya abierta y
+lista para revisión. CI funcional8886e42f correcto: Client3104/376,
+Server6092/355 sin omisiones y40checks de esquema. La actualización excluye
+247capturas/16486902bytes del árbol, manteniendo originales locales ignorados,
+SHA256/permalinks y JSON históricos según [catálogo](../evidence/validation-images-archive-20261116.md).
+Sólo enlaces/procedencia cambian; contenidos44/fragmentos46/capacidades153 y
+aprobaciones preservados. Sin modificaciones de aplicación, fusión, despliegue
+o reescritura del historial. TODO actualizado: integración/promoción News después
+del CI exacto de la actualización, QA manual/adopción separados; OPS-05 en cola.
+
+**Noticias: NEWS-06 preparación técnica terminada — solicitud2026-11-16:**
+[105§13](105-on-demand-tech-news.md#13-news-06-validación-final-y-preparación-de-entrega--solicitud2026-11-16)
+y [evidencia final](../evidence/news-final-validation-20261116.md) consolidan
+13gates HTTP con JWT/SQL reales de laboratorio, y14opt-in con dos POST admin/RSS
+reales y110noticias recuperadas por GET anónimo. Sin tokens reales, Google,
+DB configurada, inferencias o despliegue. UI del build: adversas/teclado/logout
+correctos; defecto inicial Boneyard0px corregido y revalidado220px en320/900/1440,
+41focales/5archivos, tipos/lint/build correctos. Globales de NEWS-04 conservan su
+alcance anterior al fix; CI debe verificar el SHA final de la PR.
+Zoom nativo200% geométrico/teclado correcto; captura visual fallida, teléfono y
+sesión humana no acreditados. [Guía de entrega](../features/news/deployment-readiness.md)
+Server→Client/migraciones, ledger append-only y recuperación explícita lista.
+Fichas revisión8 implemented local/draft/unregistered/approval:null. NEWS-001 queda
+como candidato preparado, con CI/promoción/adopción por sus fases; la preparación
+no aprueba ADR105 ni sustituye aceptación humana.
+
+**Noticias: NEWS-04 implementado localmente — solicitud2026-11-16:**
+[105§12](105-on-demand-tech-news.md#12-news-04-segunda-fuente-rss-nodejs--solicitud2026-11-16)
+integra segundo RSS Node.js con lectura pública y fetch exclusivo super_admin
+por fuente explícita. Reservas/estado independientes, URLs agrupadas con
+procedencias y metadata primaria correcta al filtrar. Aviso MIT completo con
+atribución; sólo título/URL/fecha Node, sin extractos/cuerpos/medios.
+[Evidencia por alcance](../evidence/news-nodejs-integration-20261116.md):27focales
+Server y40Client, tipos/lint/build correctos;11gates SQL/HTTP en PostgreSQL
+descartable, rollback conserva web.dev; adaptador compilado real100normalizadas
+sin persistencia. UI sintética público oscuro ES/admin claro EN en320/600/900/1440
+sin overflow, POST sólo Node mientras lectura filtra web.dev y503 conserva feed.
+Fichas revisión7, draft/unregistered/approval:null. Sin adopción, migración de DB
+configurada, publicación de conocimiento o aprobación del ADR105. Globales comunes:
+Client3103/375, Server6091/355+1omitida histórica Linux; conocimiento96/52/44/46
+conservado. NEWS-06 es el
+primer pendiente; estados inferiores se conservan como cortes históricos.
+
+**OPS-001 cerrado; OPS-05 independiente — solicitud2026-11-16:**
+[99§33](99-production-deployment-and-cicd-plan.md#33-cierre-ops-001-y-separación-de-ops-05--2026-11-16)
+concilia la instrucción del usuario con evidencia de entrega productiva y cierre
+administrativo ya registrados en§32. Transporte v2 y archivo automático cerrados;
+retención global/releases/diagnósticos y disco físico/offload siguen como OPS-05
+en [TODO](TODO.md). Sin consultas productivas, limpieza, traslado o despliegue
+nuevos. Las entradas inferiores conservan sus cortes históricos y se suceden
+por esta separación de seguimiento.
+
+**Cierre por aceptación humana — 2026-11-16:** el usuario informa que THEME-001
+pasó QA y que PWA-001, TUX-001 y NAIUX-001 funcionan bien, y pide cerrarlos.
+Se cierran por el alcance entregado en [108](108-user-theme-presets.md),
+[103](103-pwa-progressive-implementation-plan.md),
+[106](106-nodia-teacher-guided-ux-redesign.md) y
+[107](107-nodia-ai-ux-ui-upgrade-plan.md). Esta aceptación sucede los pendientes
+humanos de los cortes inferiores; no modifica sus resultados técnicos ni
+acredita dispositivos/entornos no detallados. PWA-002…006 y Teacher TUX-03/05
+conservan alcances futuros separados en [TODO](TODO.md). Sin nuevo código,
+inferencia, migración o despliegue, ni aprobación documental de fichas/ADR.
+News continúa por [105§11](105-on-demand-tech-news.md#11-pendientes-reales-de-news--conciliación2026-11-16):
+segunda fuente RSS y aceptación/adopción; daily.dev sigue deshabilitada.
+OPS-001 conserva únicamente la política global de disco/offload y retención
+pendiente, según [99§32](99-production-deployment-and-cicd-plan.md#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16).
+
+**Noticias: cierre editorial NEWS-05 local — solicitud2026-11-16:**
+[Plan105§10](105-on-demand-tech-news.md#10-news-05-composición-editorial-y-chips-de-temas--2026-11-16)
+completa la composición solicitada: chips visibles de selección única y foco
+recuperable, barra editorial, grid por contenedor580/1020px y gaps24/16px,
+titulares/metadatos y conteo real. Contratos, lectura pública/fetch super_admin
+conservados. Global Client3087/375, focales24/4, tipos/lint/build y QA Chromium
+10perfiles320–1440px correctos por [evidencia propia](../evidence/news-editorial-design-20261116.md),
+incluidos teclado, paginado, sidenav colapsado, reflow720px y503 sintético.
+Primera global interrumpida al corregir foco de limpiar; la final sigue al último
+cambio. Sólo UI/documentación, sin nuevo Server/DB/RSS real, despliegue o aprobación.
+Fichas revisión6, draft/unregistered/approval:null; evaluación visual sin cambio
+de contexto/herramientas. NEWS-04 sigue segunda fuente; NEWS-06 aceptación humana,
+zoom nativo200% (reflow no lo acredita), sesión auténtica/teléfono y adopción.
+
+**Noticias pública y fetch super_admin — primera fuente local2026-11-16:**
+[Plan105§9](105-on-demand-tech-news.md#9-obtención-exclusiva-super_admin-y-primera-integración-rss--2026-11-16)
+registra la restricción posterior del usuario: cualquiera lee caché pública,
+sólo super_admin vigente obtiene datos externos. Home→Noticias implementado,
+GET público y POST administrativo con reserva durable/fencing; web.dev primero,
+daily.dev deshabilitada y Node/GitHub candidatas por [catálogo](../features/news/source-catalog.md).
+En `codex/news-implementation`, desde development `2585b767`, NEWS-02/03 locales
+verificados: Client3078/374 y Server6088/1omitido histórico/355, tipos/lint/build
+correctos por alcance;9gates SQL/HTTP descartables y lectura real de10artículos
+por adaptador, sin credenciales. QA Chromium sintética8perfiles320–1440px,
+ES/EN/claro/oscuro, filtros/drawer y503 con tarjetas conservadas según
+[evidencia propia](../evidence/news-public-rss-implementation-20261116.md).
+Migración179367 sólo ensayada en DB descartable; sin adopción de BD configurada,
+VM/producción, aceptación humana o publicación/aprobación de fichas/ADR.
+Revisión5 producto partial/función implemented por web.dev, unregistered y
+approval:null; corpus44documentos/46fragmentos conservado.
+[ADR105 propuesto](../architecture/decisions/ADR-105-public-news-and-source-access-tiers.md).
+[NEWS-001](TODO.md) continúa segunda fuente y QA/adopción propios; no repetir
+primera integración ni habilitar daily.dev por ser super_admin.
+
 **Temas personales desde el topbar — solicitud2026-11-16:**
 [Plan108](108-user-theme-presets.md) registra desarrollo autorizado de
 44opciones: Nodia y43presets de tweakcn incorporados, con modo claro/oscuro

@@ -16,18 +16,18 @@ NodiaAI: viewport desktop 1440×1000, captura nativa del área de trabajo (1104�
 
 | Vista | Viewport | PNG |
 | --- | --- | --- |
-| NodiaAI: historial expandido y burbujas | 1440×1000 | [Abrir](nodia-ai-escritorio-expandido.png) |
-| NodiaAI: historial en iconos con tooltip | 1440×1000 | [Abrir](nodia-ai-escritorio-colapsado.png) |
-| NodiaAI: configuración de IA abierta | 1440×1000 | [Abrir](nodia-ai-selector-ia.png) |
-| NodiaAI: filtros activos y estado sin coincidencias | 1440×1000 | [Abrir](nodia-ai-filtros-aplicados.png) |
-| NodiaAI: chat y barra colapsada en móvil | 390×844 | [Abrir](nodia-ai-movil.png) |
-| NodiaAI: historial móvil abierto | 390×844 | [Abrir](nodia-ai-movil-historial.png) |
-| Teacher: plan generado y acciones de sesión | 1280×900 | [Abrir](teacher-plan-desktop.png) |
-| Teacher: sesión pausada y conversación | 1280×900 | [Abrir](teacher-paused-chat-desktop.png) |
-| Teacher: selector horizontal de IA | 1280×900 | [Abrir](teacher-ai-selector-desktop.png) |
-| Teacher: drawer con Mis fuentes inicial | 1280×900 | [Abrir](teacher-sources-drawer-desktop.png) |
-| Teacher: drawer adaptativo en móvil | 390×844 | [Abrir](teacher-sources-drawer-mobile.png) |
-| Teacher: selector de IA en móvil | 390×844 | [Abrir](teacher-ai-selector-mobile.png) |
+| NodiaAI: historial expandido y burbujas | 1440×1000 | [Abrir](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-escritorio-expandido.png) |
+| NodiaAI: historial en iconos con tooltip | 1440×1000 | [Abrir](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-escritorio-colapsado.png) |
+| NodiaAI: configuración de IA abierta | 1440×1000 | [Abrir](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-selector-ia.png) |
+| NodiaAI: filtros activos y estado sin coincidencias | 1440×1000 | [Abrir](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-filtros-aplicados.png) |
+| NodiaAI: chat y barra colapsada en móvil | 390×844 | [Abrir](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-movil.png) |
+| NodiaAI: historial móvil abierto | 390×844 | [Abrir](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/nodia-ai-movil-historial.png) |
+| Teacher: plan generado y acciones de sesión | 1280×900 | [Abrir](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/teacher-plan-desktop.png) |
+| Teacher: sesión pausada y conversación | 1280×900 | [Abrir](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/teacher-paused-chat-desktop.png) |
+| Teacher: selector horizontal de IA | 1280×900 | [Abrir](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/teacher-ai-selector-desktop.png) |
+| Teacher: drawer con Mis fuentes inicial | 1280×900 | [Abrir](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/teacher-sources-drawer-desktop.png) |
+| Teacher: drawer adaptativo en móvil | 390×844 | [Abrir](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/teacher-sources-drawer-mobile.png) |
+| Teacher: selector de IA en móvil | 390×844 | [Abrir](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/visual-nodia-ai-teacher-20261116/teacher-ai-selector-mobile.png) |
 
 ## Alcance de la evidencia
 

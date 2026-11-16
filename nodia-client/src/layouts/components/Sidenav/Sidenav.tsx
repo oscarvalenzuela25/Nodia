@@ -14,6 +14,8 @@ import {
   Tooltip,
 } from "@mui/material";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import NewspaperOutlinedIcon from "@mui/icons-material/NewspaperOutlined";
+import { NEWS_ROUTE } from "../../../modules/news/constants/routes";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import {
@@ -110,9 +112,12 @@ const Sidenav: FC<Props> = ({
       path: "/",
       icon: <HomeOutlinedIcon />,
     };
+    const newsItem: SidenavItem = {
+      id: "news-public", nameKey: "menu_news", path: NEWS_ROUTE, icon: <NewspaperOutlinedIcon />,
+    };
 
     if (!userModules || userModules.length === 0) {
-      return [homeItem];
+      return [homeItem, newsItem];
     }
 
     const sortedGroups = userModules;
@@ -146,7 +151,7 @@ const Sidenav: FC<Props> = ({
       };
     });
 
-    return [homeItem, ...dynamicGroups];
+    return [homeItem, newsItem, ...dynamicGroups];
   }, [userModules, lang, t]);
 
   const activeItem = activeNavigationItem(location.pathname,

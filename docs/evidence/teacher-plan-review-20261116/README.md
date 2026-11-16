@@ -12,10 +12,10 @@ con fuentes cargadas. Español/oscuro; escritorio1280×900 y móvil390×900 CSS 
 Las capturas de escritorio abarcan el documento completo. La móvil usa scroll
 normal hasta el título de revisión. Se conservan el padding/layout del producto.
 
-- [Resumen y recorrido en escritorio](overview-desktop.png).
-- [Detalle de una sección](section-desktop.png).
-- [Resumen en móvil](overview-mobile.png).
-- [Sección desplegada en móvil](section-mobile.png): captura adicional solicitada
+- [Resumen y recorrido en escritorio](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/teacher-plan-review-20261116/overview-desktop.png).
+- [Detalle de una sección](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/teacher-plan-review-20261116/section-desktop.png).
+- [Resumen en móvil](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/teacher-plan-review-20261116/overview-mobile.png).
+- [Sección desplegada en móvil](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/teacher-plan-review-20261116/section-mobile.png): captura adicional solicitada
   por el usuario,390×900, scroll normal al recorrido; sin overflow horizontal ni
   mutaciones al desplegar. Mismo Chromium, tema, idioma y fixtures.
 

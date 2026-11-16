@@ -15,9 +15,12 @@ import { NODIA_AI_ROUTE } from "../modules/nodiaAi/constants/routes";
 import { NODIA_TEACHER_ROUTE, TEACHER_NEW_ROUTE, TEACHER_SESSION_ROUTE } from "../modules/teacher/constants/routes";
 import { ADMIN_ROUTES, LEGACY_MODULE_DESTINATIONS } from "./moduleDestinations";
 import LegacyModuleRedirect from "./LegacyModuleRedirect";
+import SessionRouteLayout from "./SessionRouteLayout";
+import { NEWS_ROUTE } from "../modules/news/constants/routes";
 
 // Lazy-loaded route pages (Code Splitting per route)
 const Home = lazyWithRetry(() => import("../modules/home/pages/Home"));
+const News = lazyWithRetry(() => import("../modules/news/pages/News"));
 const NodiaAI = lazyWithRetry(() => import("../modules/nodiaAi/pages/NodiaAI"));
 const Teacher = lazyWithRetry(() => import("../modules/teacher/pages/Teacher"));
 const TeacherNew = lazyWithRetry(() => import("../modules/teacher/pages/TeacherNew"));
@@ -65,8 +68,13 @@ const renderLazyPublic = (children: ReactNode) => (
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <SessionRouteLayout />,
     errorElement: <RouteError />,
     children: [
+      {
+        path: NEWS_ROUTE,
+        element: <BaseLayout>{renderLazyPage(<News />)}</BaseLayout>,
+      },
       ...Object.entries(LEGACY_MODULE_DESTINATIONS).map(([path, destination]) => ({
         path,
         element: <LegacyModuleRedirect destination={destination} />,

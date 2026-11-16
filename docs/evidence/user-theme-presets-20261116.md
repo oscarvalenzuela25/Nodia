@@ -111,10 +111,10 @@ se reinició el servidor antes del recorrido final. No son fallos de producción
 
 Capturas finales inspeccionadas:
 
-- [320px, Notebook claro/ES](user-theme-presets-20261116/themes-320-es.png).
-- [900px, Mocha Mousse claro/ES](user-theme-presets-20261116/themes-900-es.png).
-- [600px, Cyberpunk oscuro/EN](user-theme-presets-20261116/themes-600-en.png).
-- [320px, error de almacenamiento y búsqueda conservada](user-theme-presets-20261116/themes-storage-error-320.png).
+- [320px, Notebook claro/ES](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/user-theme-presets-20261116/themes-320-es.png).
+- [900px, Mocha Mousse claro/ES](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/user-theme-presets-20261116/themes-900-es.png).
+- [600px, Cyberpunk oscuro/EN](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/user-theme-presets-20261116/themes-600-en.png).
+- [320px, error de almacenamiento y búsqueda conservada](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/user-theme-presets-20261116/themes-storage-error-320.png).
 
 ## Límites y continuidad
 

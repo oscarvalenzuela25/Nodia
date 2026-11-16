@@ -1,5 +1,79 @@
 # Contexto funcional de productos para NodiaAI
 
+## Capturas de validación archivadas — 2026-11-16
+
+El usuario solicita excluir imágenes del repositorio.
+[Archivo](../../evidence/validation-images-archive-20261116.md) y
+[delta de procedencia](../../evidence/validation-images-knowledge-delta-20261116.json):
+247capturas retiradas del índice con originales locales intactos; enlaces
+permanentes al commit anterior. Sólo cuatro borradores actualizan referencias
+y revisión (módulos9, NodiaAI84, audio Codex3 y ejecución35), sin cambiar fechas
+o resultados de QA, contratos, capacidades o aprobación. Un path de metadata
+apunta al catálogo textual en vez de a una PNG. Compilador/reglas intactos;
+release cambia sólo por source_hashes de cuatro fuentes publicadas, manteniendo
+44documentos/46fragmentos/153capacidades y su contenido. Pins derivados por build
+soportado; no implica inferencia, adopción o publicación de capacidades nuevas.
+
+## Noticias: preparación NEWS-06 — 2026-11-16
+
+[Plan105§13](../../mvp/105-on-demand-tech-news.md#13-news-06-validación-final-y-preparación-de-entrega--solicitud2026-11-16),
+[producto revisión8](news/README.md), [función revisión8](news/features/on-demand-reading.md)
+y [evidencia final](../../evidence/news-final-validation-20261116.md) registran
+primera versión RSS implementada y preparación técnica local terminada. JWT/SQL
+reales de laboratorio y RSS reales separados de UI sintética; carga inicial
+Boneyard corregida. Zoom nativo geométrico/teclado, captura visual fallida;
+teléfono/Google/sesión humana y adopción no acreditados. CI del SHA se consulta en
+la PR del candidato. Impacto de verificación/presentación, sin nuevas operaciones,
+herramientas, permisos o inferencias. Draft/unregistered/approval:null y sin
+publicación; los cortes inferiores conservan su evidencia histórica.
+
+## Noticias: NEWS-04, segunda fuente Node.js — 2026-11-16
+
+[Plan105§12](../../mvp/105-on-demand-tech-news.md#12-news-04-segunda-fuente-rss-nodejs--solicitud2026-11-16),
+[producto revisión7](news/README.md) y [función revisión7](news/features/on-demand-reading.md)
+registran web.dev/Node.js locales con lectura pública y fetch super_admin por
+fuente explícita. Estado/reserva por fuente, dedupe con procedencias y selector
+administrativo independiente. Node sólo título/URL/fecha, aviso MIT accesible;
+fuente y alcance revisados en [evidencia primaria](../../evidence/news-nodejs-source-review-20261116.md),
+con [verificación de integración separada](../../evidence/news-nodejs-integration-20261116.md).
+Impacto: ampliar fuentes/procedencias de una función existente, sin autoridad,
+herramientas, inferencias o escrituras externas nuevas. Draft/unregistered y
+approval:null, sin publicación/adopción. NEWS-06 conserva aceptación/entrega;
+daily.dev deshabilitada y GitHub candidata no bloquean RSS. La entrada inicial
+inferior de primera fuente/revisión6 conserva su corte histórico.
+
+## Cierre por aceptación humana — 2026-11-16
+
+El usuario confirma QA/funcionamiento y solicita cerrar THEME-001, PWA-001,
+TUX-001 y NAIUX-001 por sus entregas actuales. Los planes
+[108](../../mvp/108-user-theme-presets.md),
+[103](../../mvp/103-pwa-progressive-implementation-plan.md),
+[106](../../mvp/106-nodia-teacher-guided-ux-redesign.md) y
+[107](../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md) registran esa aceptación;
+el [TODO](../../mvp/TODO.md) conserva las evoluciones separadas. Este corte
+sucede las menciones de aceptación humana pendiente en las entradas históricas
+inferiores para esos alcances. No acredita dispositivos, despliegues o inferencias
+nuevos. Impacto de seguimiento/aceptación, sin cambio de capacidades, contratos,
+autoridad, herramientas o contexto funcional publicado. Las fichas candidatas
+conservan su estado documental/registro y approval:null; cierre funcional no
+equivale a aprobación de conocimiento o ADR.
+
+## Noticias pública y catálogo inicial — 2026-11-16
+
+[Plan105§8](../../mvp/105-on-demand-tech-news.md#8-news-01-acceso-público-y-catálogo-inicial--2026-11-16),
+[producto revisión6](news/README.md), [función revisión6](news/features/on-demand-reading.md)
+y [catálogo](../../features/news/source-catalog.md) registran acceso público bajo
+Home. La [solicitud posterior105§9](../../mvp/105-on-demand-tech-news.md#9-obtención-exclusiva-super_admin-y-primera-integración-rss--2026-11-16)
+reserva todo fetch a super_admin vigente. Producto/función revisión6
+partial/implemented por primera fuente web.dev local, con
+[pruebas/SQL/HTTP, UI sintética y RSS real](../../evidence/news-public-rss-implementation-20261116.md).
+NEWS-05 [105§10](../../mvp/105-on-demand-tech-news.md#10-news-05-composición-editorial-y-chips-de-temas--2026-11-16)
+completa chips y composición editorial local con [evidencia propia](../../evidence/news-editorial-design-20261116.md).
+Evaluación visual/interacción, sin cambios de conceptos, contratos o herramientas;
+global3087/375, tipos/lint/build y QA sintética correctos por alcance.
+daily.dev sigue deshabilitada; Node/GitHub candidatas. Draft/unregistered,
+approval:null, sin adopción, herramienta, publicación o aprobación documental nuevas.
+
 ## Temas personales — solicitud2026-11-16
 
 [Plan108](../../mvp/108-user-theme-presets.md) y

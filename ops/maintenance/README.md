@@ -1,5 +1,14 @@
 # Mantenimiento del workspace — 2026-10-23
 
+## Capturas de validación fuera de Git — 2026-11-16
+
+Por solicitud del usuario se retiran247PNG/JPG del árbol versionado,
+16486902bytes. [Catálogo y política](../../docs/evidence/validation-images-archive-20261116.md)
+conservan tamaños/SHA256/blobs y enlaces al commit original; copias locales
+intactas e ignoradas. Se actualizan enlaces Markdown y cuatro borradores, sin
+cambiar JSON históricos, firmas, aprobaciones, contratos o publicación.
+No se reescribe historia ni se promete reducir un clon completo existente.
+
 ## Original del instalador productivo — 2026-11-11
 
 El [ZIP del helper original](production-first-install-original-20261111.zip) conserva los bytes que se ejecutaron antes de corregir la limpieza de su unidad temporal. El [manifiesto](production-first-install-original-20261111.json) registra origen, tamaño y SHA256 original6fd3ba48, comprobado desde el VPS antes de reemplazarlo; el helper corregido tiene hash distinto. No contiene configuración, credenciales o claves, ni constituye un rollback de base de datos. La incidencia y reconciliación READ ONLY se siguen en [evidencia de primera instalación](../../docs/evidence/production-first-install-20261111-r01.json).

@@ -61,6 +61,15 @@ function policyForPath(
 ): HttpModulePolicy | undefined {
   const path = normalize(controllerPath);
   if (path === 'auth') return { routes: [], match: 'all' };
+  // Only this exact operation is session-only here; its use case checks current super_admin.
+  if (
+    path === 'news' &&
+    method === 'POST' &&
+    handlerPaths.length === 1 &&
+    normalize(handlerPaths[0]) === 'refresh'
+  ) {
+    return { routes: [], match: 'all' };
+  }
   if (path === 'teacher' || path.startsWith('teacher/')) {
     return { routes: ['/nodia-teacher'], match: 'all' };
   }

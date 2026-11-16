@@ -1,7 +1,9 @@
 # NodiaAI — evolución UX/UI del chat con referencia DeepSeek
 
-Fecha: 2026-11-15. Revisión: R05. Estado documental: **en revisión**.
-Estado de entrega: **implementación local y QA sintética completadas**; revisión humana y adopción por entorno pendientes.
+Fecha: 2026-11-15. Revisión: R06. Estado documental: **en revisión**.
+Estado de entrega: **NAIUX-001 cerrado por alcance y aceptación humana el2026-11-16**;
+ver§16. Los cortes siguientes conservan la evidencia histórica de implementación,
+QA y adopción, sin acreditar un despliegue nuevo de las continuaciones locales.
 Continuación2026-11-16: **adopción operativa productiva completada en§12**;
 revisión humana y teléfono/teclado físico siguen pendientes. El corte local se conserva.
 Continuación visual2026-11-16: mockups aceptados por el usuario, implementación
@@ -335,11 +337,14 @@ dejar evidencia/primer pendiente, sin duplicar los cierres históricos de93.
 - [x] NAIUX-04: integrar compositor/selección y regresión de dictado.
 - [x] NAIUX-05: completar adjuntos/recuperación y casos adversos.
 - [x] NAIUX-06: cerrar QA y comparación de rendimiento por alcance.
-- [ ] NAIUX-07: revisión humana y adopción operativa separadas.
+- [x] NAIUX-07: aceptación humana del alcance entregado registrada en§16;
+  adopción productiva de la base acreditada en§12. Las continuaciones locales
+  conservan sus límites de adopción por entorno; no se ejecuta un despliegue nuevo.
 
 NAIUX-00/06 se cierran por laboratorio con fixtures, según §11; NAIUX-01 se
 verificó con el candidato integrado y se descartó su primera variante de tres
-filas por restar lectura. NAIUX-07 conserva revisión humana/adopción pendientes.
+filas por restar lectura. NAIUX-07 cierra la revisión humana por§16; la adopción
+de§12 no se extiende a las continuaciones posteriores sin evidencia propia.
 No repetir la investigación o baseline ya completados. Tampoco
 exige inferencias nuevas para medir UI: usar transporte sintético identificado
 para los estados. Cualquier validación generativa posterior conserva el alcance
@@ -747,3 +752,27 @@ resultados, permisos, contratos, modelos o herramientas. Se registra en la
 y el [producto](../nodia-ai/knowledge/nodia-ai/README.md#historial-móvil-desde-cabecera--solicitud2026-11-16),
 ambos draft/unregistered/approval:null. Sin herramienta, publicación, aprobación
 documental o despliegue nuevos.
+
+## 16. Cierre NAIUX-001 por aceptación humana — 2026-11-16
+
+El usuario solicita cerrar NAIUX-001 junto con las entregas que ya funcionan
+bien. Se registra la aceptación funcional del upgrade y se cierra **NAIUX-001
+por el alcance entregado**: workspace, historial, lectura/resultados, compositor,
+selección, adjuntos/recuperación y QA de§11, con las continuaciones de historial
+compacto/burbujas, filtros y acceso móvil de§13–15. La revisión humana deja de
+figurar como primer pendiente de esas entregas.
+
+La adopción productiva comprobada de§12 conserva su versión y recibo. La
+confirmación del usuario no identifica versión, entorno o dispositivo y no
+demuestra por sí sola una nueva adopción de§13–15, teléfono/teclado físico,
+Safari, dictado real o inferencia. Este cierre no ejecuta despliegues ni repite
+el anterior. Una futura entrega por entorno conserva el procedimiento de
+[plan99](99-production-deployment-and-cicd-plan.md), sin reabrir el trabajo UX
+aceptado ni atribuirle capacidades nuevas.
+
+Impacto documental: aceptación conciliada con la
+[ficha del compositor](../nodia-ai/knowledge/nodia-ai/features/chat-composer-selection.md#cierre-funcional-naiux-001--2026-11-16).
+Sólo cambia el seguimiento; contratos, modos Agentic/API key, autoridad,
+propuestas, adjuntos/voz/Stop y recuperación conservan su comportamiento.
+El plan continúa en revisión y la ficha draft/implemented/unregistered con
+approval:null; no se aprueba integralmente documentación ni se publica contexto.

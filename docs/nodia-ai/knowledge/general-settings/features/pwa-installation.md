@@ -4,11 +4,11 @@
   "document_id": "general-settings.pwa-installation",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 4,
+  "revision": 5,
   "document_status": "draft",
   "implementation": {
-    "status": "partial",
-    "notes": "PWA-001 implements manifest, HTML metadata, selected option1 vector favicon and app icons, with artifact/publication checks. Plan103 section12 records publication and later exact public HTTPS verification of ten original CI assets. Actual installation, standalone Google auth and physical Android acceptance remain pending. No service worker, offline persistence, push or synchronization. Visual-only2026-11-14: tab favicon keeps the same PWA N mark; URL versions are tied to the source SVG hash. No change to images, manifest, installation identity, concepts, operations or AI context. Documentary reconciliation2026-11-15 adds no deployment or device verification."
+    "status": "implemented",
+    "notes": "PWA-001 implements manifest, HTML metadata, selected option1 vector favicon and app icons, with artifact/publication checks. Plan103 section12 records publication and exact public HTTPS verification of ten original CI assets. The user confirmed correct operation and requested closure on2026-11-16 (section15); PWA-001 is closed for the delivered online-installation scope. Browser/device/version were not specified; no comprehensive platform certification is inferred. PWA-002…006 remain planned: no service worker, offline persistence, push or synchronization. No new deployment or AI context publication."
   },
   "integration_status": "not_applicable",
   "maintainer": "Mantenimiento de Client y contexto transversal conforme AGENTS",
@@ -35,12 +35,12 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-14",
+    "checked_on": "2026-11-16",
     "evidence_paths": [
       "docs/evidence/pwa-001-local-20261113.md",
       "docs/evidence/pages-public-convergence-20261114.md"
     ],
-    "notes": "Local static assets, build, auth unit regressions and CI/CD checks verified. Chrome/Edge persistent profiles return no manifest/installability errors; browser mode only, without installation or standalone auth. No device or production acceptance. Installation belongs to the user's browser and operating system; no AI tool applies. Favicon follow-up: Client build/types,31 Linux PWA/artifact checks without skips and10 built assets verified; visual comparison of existing PNG192/32 and common vector. No deployment or personal-cache/installation verification; plan103 section13 records scope."
+    "notes": "Local static assets, build, auth unit regressions and CI/CD checks verified. Chrome/Edge persistent profiles return no manifest/installability errors; browser mode only, without installation or standalone auth. No device or production acceptance. Installation belongs to the user's browser and operating system; no AI tool applies. Favicon follow-up: Client build/types,31 Linux PWA/artifact checks without skips and10 built assets verified; visual comparison of existing PNG192/32 and common vector. No deployment or personal-cache/installation verification; plan103 section13 records scope. User acceptance and functional closure on2026-11-16 are recorded in plan103 section15; the confirmation does not identify platform/version/device or establish execution of every AC01–AC12 scenario. Earlier technical limits are preserved."
   },
   "approval": null
 }
@@ -52,10 +52,10 @@
 
 [Plan103](../../../../mvp/103-pwa-progressive-implementation-plan.md) especifica
 una primera entrega independiente, PWA-001: instalar Nodia con icono y ventana
-propia, conservando las funciones online. **Existe un candidato local con
-manifiesto, iconos y metadatos; la instalación efectiva y la publicación siguen
-pendientes.** La opción1 fue seleccionada como icono/favicon; eso no aprueba esta
-ficha ni acredita compatibilidad por dispositivo.
+propia, conservando las funciones online. **PWA-001 está implementado, publicado
+y cerrado por alcance con aceptación humana de funcionamiento el2026-11-16**,
+según [plan103§15](../../../../mvp/103-pwa-progressive-implementation-plan.md#15-cierre-de-pwa-001-por-aceptación-humana--2026-11-16).
+La confirmación no detalla plataforma/dispositivo ni aprueba esta ficha.
 
 El plan posterior separa caché estática/actualizaciones, desconexión, push,
 lecturas offline y escrituras/sincronización. Instalar no implica disponer de
@@ -65,7 +65,7 @@ esas funciones ni mantener el navegador ejecutándose permanentemente.
 
 | Solicitud ilustrativa | Intención y respuesta segura |
 | --- | --- |
-| «Quiero instalar Nodia» | Consultar el estado de publicación y la plataforma comprobada en plan103; existe un candidato local, sin instalación pública acreditada. Seguir la guía sólo para el origen/versiones efectivamente disponibles. El chat no instala una app por el usuario. |
+| «Quiero instalar Nodia» | Consultar el origen y la plataforma en la guía y plan103. PWA-001 está publicado y aceptado por alcance; esa aceptación no certifica dispositivos no identificados. El chat no instala una app por el usuario. |
 | «¿Funcionará sin internet?» | La primera entrega mantiene funciones online. Offline de datos/sincronización son ítems posteriores sin implementación acreditada. |
 | «Instálala y dame acceso a Teacher» | La instalación es una acción local del navegador; el acceso depende de la asignación y sesión existentes, con la excepción super_admin documentada. No conceder módulos por instalar. |
 | «Envíame avisos cuando termine» | Push permanece en planificación y requiere eventos, permisos y suscripción del dispositivo; no fingir alta o entrega. |
@@ -90,8 +90,10 @@ separa instrucciones de aceptación efectiva. La matriz inicial
 propuesta es Windows/Chrome y Edge y Android/Chrome. iOS/Safari debe comprobarse
 en su dispositivo antes de anunciar soporte. El procedimiento efectivo se añade
 con la entrega; no asumir un banner o botón idéntico en todos los navegadores.
-Chrome/Edge Windows interpretaron localmente el manifiesto sin errores; no se
-probó instalar, reabrir o autenticarse desde standalone. Android/iOS pendientes.
+La evidencia técnica original registra interpretación local del manifiesto en
+Chrome/Edge Windows y publicación HTTPS. El usuario confirmó después que
+PWA-001 funciona bien, sin detallar dispositivo o navegador. Se conserva esa
+distinción y no se anuncia soporte Android/iOS por extrapolación.
 
 ## Reglas, acceso y restricciones
 
@@ -118,18 +120,21 @@ la recuperación existente y no se declara instalada/verificada otra plataforma.
 - [x] Plan, fuentes y límites de disponibilidad enlazados.
 - [x] Ausencia de herramienta nueva y motivo de not_applicable documentados.
 - [x] Candidato estático local, icono1 seleccionado, build y regresiones por alcance documentados; sin aprobación o publicación de contexto IA.
-- [ ] PWA-001 implementado y AC01–AC12 comprobados por alcance.
-- [ ] Instalación y funciones online probadas en dispositivos anunciados.
-- [ ] Publicación efectiva y documentación de usuario con resultados reales.
+- [x] PWA-001 implementado y cerrado por aceptación humana de funcionamiento (§15).
+- [x] Publicación efectiva HTTPS y guía registradas por alcance.
+- La confirmación humana no detalla dispositivos ni demuestra cada escenario de
+  AC01–AC12; la matriz técnica conserva sus límites sin reabrir el ítem cerrado.
 
-Candidato local, sin aceptación integral ni publicación. La entrada explícita en el registro sirve para validar el
-documento; no se añade binding, capacidad, aprobación o evidencia inventada. Las
-fichas aprobadas y los contratos publicados permanecen intactos.
+La ficha permanece draft/approval:null y sin herramienta IA. El cierre funcional
+de PWA-001 no aprueba ni publica esta documentación. La entrada explícita en el
+registro permite validarla; las fichas aprobadas y contratos publicados permanecen
+intactos.
 
 ## Evolución y compatibilidad
 
 | Revisión | Cambio | Impacto |
 | --- | --- | --- |
+| 5 | Aceptación humana2026-11-16 y cierre PWA-001 por plan103§15 | Primera entrega implemented y cerrada por alcance; futuras PWA002…006 planificadas. Sin certificación de dispositivos, despliegue o publicación IA nuevos. |
 | 1 | Plan de instalación online independiente y backlog posterior | Draft/planned; sin cambio de herramientas, autoridad, publicación o ejecución. |
 | 2 | Opción1 elegida, candidato estático local y comprobaciones de build, auth y CI/CD; guía de instalación | Draft/partial; instalación real, standalone/auth y publicación pendientes. Sin nuevas herramientas o autoridad. |
 | 3 | Favicon web versionado a la misma marca PWA | Sólo visual/metadatos; sin nueva autoridad, contexto, instalación o publicación. |
@@ -153,3 +158,11 @@ originales coinciden por MIME/tamaño/SHA256. Esto no prueba instalación humana
 Google/auth standalone o Android físico. El [TODO](../../../../mvp/TODO.md) retoma
 esos gates y las entregas PWA-002…006, sin repetir publicación o PR históricos.
 No hay nueva prueba operativa en esta conciliación ni herramienta IA aplicable.
+
+## Cierre funcional aceptado — 2026-11-16
+
+El usuario confirmó el buen funcionamiento y solicitó cerrar PWA-001.
+[Plan103§15](../../../../mvp/103-pwa-progressive-implementation-plan.md#15-cierre-de-pwa-001-por-aceptación-humana--2026-11-16)
+sucede el pendiente de aceptación del corte anterior. No identifica la plataforma
+de la prueba y no altera su matriz técnica histórica. PWA-002…006 permanecen
+planificadas; no hay nuevo despliegue, herramienta o aprobación de esta ficha.

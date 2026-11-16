@@ -4,7 +4,7 @@
   "document_id": "nodia-ai.codex-audio-inputs",
   "product_id": "nodia-ai",
   "kind": "feature",
-  "revision": 2,
+  "revision": 3,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -85,6 +85,11 @@
 ---
 
 # Audio original del chat Codex por formato verificado
+
+## Archivo de capturas de validación — 2026-11-16
+
+Por solicitud del usuario, las capturas binarias dejan de versionarse. El [catálogo de archivo](../../../../evidence/validation-images-archive-20261116.md) conserva tamaños, hashes y enlaces al commit original; se actualizan sólo referencias documentales. No cambia el resultado ni la fecha de las pruebas históricas, capacidades, contratos, permisos o publicación. La ficha conserva draft/unregistered y approval:null; no hay aceptación o verificación nueva por esta limpieza.
+
 
 [Producto](../README.md) · [Adjuntos y voz](attachments-and-voice.md) · [Imágenes Codex](codex-image-inputs.md) · [AI-40](../../../../mvp/86-nodia-ai-ai40-codex-acceptance.md).
 
@@ -177,4 +182,4 @@ El candidato WAV no se adopta. La configuración, sesiones y los cuatro proofs h
 |---|---|---|---|
 | 2 | PDF texto revisado positivo y dos canarios WAV negativos con cierre/ACK; segundo rechazo explícito observado sin causalidad global | Sin herramientas nuevas, proofs WAV o adopción; evidencia consolidada enlazada | PDF raw y otros contenedores de audio siguen bloqueados en este candidato |
 
-La [captura PDF revisado](../../../../evidence/nodia-ai-ai40-pdf-reviewed-text-ui-r01.jpg) y la inspección final del consolidado verifican recarga autenticada: respuesta exacta persistida, compositor habilitado y borrador vacío. Se conservan19 mensajes/10 runs/10 dispatches/cinco adjuntos, el único efecto histórico y cero pendientes, sin reenviar ni confirmar nada.
+La [captura PDF revisado](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/nodia-ai-ai40-pdf-reviewed-text-ui-r01.jpg) y la inspección final del consolidado verifican recarga autenticada: respuesta exacta persistida, compositor habilitado y borrador vacío. Se conservan19 mensajes/10 runs/10 dispatches/cinco adjuntos, el único efecto histórico y cero pendientes, sin reenviar ni confirmar nada.

@@ -1,6 +1,6 @@
 # PWA de Nodia — plan de implementación por entregas
 
-> Estado vigente conciliado2026-11-15: en revisión, PWA-001 implementado y artefacto publicado/verificado HTTPS por§12; instalación física y aceptación standalone/auth por dispositivo pendientes. La prioridad y alcance independiente de001 fueron solicitados el2026-11-13; no hay aprobación integral. §11 conserva su corte local histórico; ver§14 y [TODO](TODO.md).
+> Estado vigente conciliado2026-11-16: plan en revisión; PWA-001 cerrado por alcance con aceptación humana de funcionamiento (§15), tras implementación y publicación/verificación HTTPS de§12. La confirmación no detalla dispositivos ni acredita toda la matriz de compatibilidad. PWA-002…006 permanecen planificados. §11 y§14 conservan sus cortes históricos; ver [TODO](TODO.md).
 > Fecha: 2026-11-13. Rama de planificación: `codex/plan-pwa-installation`, desde `development`.
 > Rama histórica de implementación local: `codex/pwa-001-installation`, desde development/origin en `a780099b456b9cb930865543d836e61147cc4190`. Opción gráfica1 seleccionada. La publicación posterior se registra en§12; no repetir esa operación al retomar el QA de instalación.
 > Fuentes: [Client08](08-stack-frontend.md), [auth14](14-authentication.md), [privacidad89](89-module-access-and-user-data-scope.md), [rutas ADR092](../architecture/decisions/ADR-092-stable-module-navigation-routes.md), [rendimiento37](37-web-performance-implementation-plan.md), [producción99](99-production-deployment-and-cicd-plan.md) y [diseño Client](../../nodia-client/DESIGN.md).
@@ -106,6 +106,11 @@ un hostname de preview que termine identificando la instalación productiva.
 
 ### 3.5 QA y criterios de aceptación completos
 
+La matriz original siguiente conserva sus casillas como registro de evidencia
+por criterio. El cierre funcional aceptado posteriormente en§15 no marca como
+ejecutadas pruebas de dispositivo o compatibilidad sin recibo detallado; las
+casillas históricas no reabren PWA-001 por sí solas.
+
 - [ ] **AC01 — Artefacto:** manifiesto parseable, campos/URLs válidos, scope/start_url coherentes e iconos existentes con dimensiones declaradas reales; empaquetados y servidos por HTTPS con MIME correcto.
 - [ ] **AC02 — Instalación escritorio:** Chrome y Edge en Windows permiten instalar Nodia desde sus controles; el sistema muestra nombre e icono correctos y abre una ventana standalone. No basta crear un acceso directo que abra una pestaña.
 - [ ] **AC03 — Instalación móvil:** Chrome Android se prueba en un dispositivo compatible, con dispositivo/versión registrados. Si se anuncia soporte iOS en ese lanzamiento, también Safari iOS mediante Añadir a pantalla de inicio. La emulación responsive no acredita instalar una app en esos sistemas.
@@ -135,6 +140,8 @@ PWA-001 está terminado cuando AC01–AC12 estén satisfechos por alcance, el c�
 esté revisado e instalado en el origen acordado y una persona pueda abrir su
 icono/ventana y usar las funciones online con sus permisos. Antes de ese despliegue
 se distingue «implementado y probado localmente» de «operativo para usuarios».
+El cierre solicitado y aceptado por el usuario el2026-11-16 se concilia en§15;
+esa aceptación del alcance entregado no certifica cada plataforma de la matriz.
 
 **Prueba de independencia:** el PR puede cerrarse con PWA-002…006 sin empezar,
 sin instalar plugin PWA, crear contratos de sincronización o contratar servicios.
@@ -221,15 +228,16 @@ por garantía. Estimación y aceptación específicas por operación/módulo.
 
 - [x] Plan creado con PWA-001 independiente y fases posteriores desglosadas.
 - [x] Ficha candidata e índices enlazados; entrada explícita de fuente para validación, sin publicación.
-- [x] Desarrollar el candidato local PWA-001 desde development actualizado, en su propia rama; aceptación integral y publicación pendientes de AC01–AC12.
-- [ ] Completar AC01–AC12 y distinguir QA local, dispositivos y publicación efectiva.
+- [x] Desarrollar PWA-001 desde development actualizado, en su propia rama; publicación y verificación HTTPS registradas en§12.
+- [x] Registrar aceptación humana de funcionamiento y cierre de PWA-001 por alcance (§15); conservar la matriz AC01–AC12 como evidencia por criterio, sin inventar pruebas de dispositivos.
 - [ ] Revisar y priorizar PWA-002/003 después de la primera entrega.
 - [ ] Elegir eventos push antes de PWA-004 y módulo/política offline antes de PWA-005/006.
 
 El corte inicial fue documental. El candidato local posterior implementa
 manifiesto, iconos, metadatos y validación del artefacto/publicación; no añade
 dependencias, service worker ni cambios del VPS. La [ficha funcional](../nodia-ai/knowledge/general-settings/features/pwa-installation.md)
-permanece draft/partial, con aprobación nula y sin publicación de contexto IA.
+permanece draft/implemented por PWA-001, con aprobación nula y sin publicación
+de contexto IA; las entregas posteriores continúan planificadas.
 Los reportes intermedios van a output/ o .tmp/; sólo evidencia durable útil se
 consolida en la entrega. La [guía de instalación](pwa-installation-guide.md)
 distingue pasos de usuario y compatibilidad realmente comprobada.
@@ -358,3 +366,22 @@ PWA-002…006 siguen sin implementación acreditada por este corte.
 [TODO](TODO.md) contiene el punto de reanudación por entrega; las especificaciones
 y evidencias permanecen en este plan. Sin nueva consulta productiva, despliegue,
 instalación, aprobación o verificación de dispositivo por esta conciliación.
+
+## 15. Cierre de PWA-001 por aceptación humana — 2026-11-16
+
+El usuario confirmó «PWA 001 igual ya funciona bien» y solicitó cerrar el ítem.
+**PWA-001 queda cerrado por alcance**: instalación con icono y ventana propia,
+conservando las funciones online. La aceptación humana sucede el pendiente
+funcional de§14; la publicación y la integridad de recursos siguen acreditadas
+por§12, sin repetir PR, merge o CD.
+
+La confirmación no identifica navegador, versión, dispositivo u origen de la
+prueba. No se marcan automáticamente AC01–AC12 como pruebas ejecutadas ni se
+anuncia compatibilidad iOS o de otra plataforma sin evidencia específica. La
+matriz conserva esos límites de verificación; no constituye un bloqueo nuevo
+del alcance que el usuario acaba de aceptar.
+
+PWA-002…006 continúan abiertos como entregas independientes: caché/actualización,
+desconexión, push, datos offline y sincronización. Este cierre no incorpora
+service worker ni esas capacidades, no ejecuta un despliegue y no aprueba el
+plan completo o la ficha NodiaAI, que mantiene draft y approval:null.

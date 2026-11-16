@@ -4,7 +4,7 @@
   "document_id": "general-settings.module-presentation-and-order",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 8,
+  "revision": 9,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -84,7 +84,7 @@
       "docs/evidence/core-fx02-order-validation-r01.json",
       "docs/evidence/core-fx03-order-validation-r01.json",
       "docs/evidence/core-fx04-live-delivery-r01.json",
-      "docs/evidence/core-fx04-live-modules-r01.png",
+      "docs/evidence/validation-images-archive-20261116.json",
       "docs/evidence/core-module-drag-delivery-r01.json",
       "docs/evidence/core-fx04-live-acceptance-r02.json",
       "docs/evidence/sidenav-collapsed-tooltips-20261031-r25.json"
@@ -97,6 +97,11 @@
 
 # Módulos agrupados y orden persistido — contexto funcional
 
+## Archivo de capturas de validación — 2026-11-16
+
+Por solicitud del usuario, las capturas binarias dejan de versionarse. El [catálogo de archivo](../../../../evidence/validation-images-archive-20261116.md) conserva tamaños, hashes y enlaces al commit original; se actualizan sólo referencias documentales. No cambia el resultado ni la fecha de las pruebas históricas, capacidades, contratos, permisos o publicación. La ficha conserva draft/unregistered y approval:null; no hay aceptación o verificación nueva por esta limpieza.
+
+
 ## Corte vigente — aceptación UI y paginado corregido, 2026-10-25
 
 FX-04: Server DnD R03/Client pagination R07 en VM Linux local. Cambios positivos de grupo/módulo desde UI autenticada, invalidación y sidenav sin recarga, persistencia tras recarga, filtros restaurados, cruce de página por teclado y alta/grupo vacío inactivo verificados. Corregido size→limit en transporte Client/locator. Ocho movimientos reales, grupo de ensayo eliminado tras autorización humana y orden original restaurado;58 tablas ajenas sin cambios. Pendientes alta de módulo desde formulario (rutas ocupadas), dos administradores reales y renovación natural completa. Concurrencia de dos principales, permisos y proyección MCP probados aisladamente. No añade herramientas ni publicación.
@@ -107,7 +112,7 @@ FX-04: Server DnD R03/Client pagination R07 en VM Linux local. Cambios positivos
 
 Server DnD R03/Client DnD R02 adoptados en la VM Linux local, sin migración adicional sobre historia30. Backup cifrado previo,60 tablas/orden/configuración/época Gemini y150 contratos/41fragmentos conservados; journal abierto sin entradas no confirmadas o backups expirados.171 assets HTTP/SHA/MIME, SPA/API200 y asset ausente404 comprobados. [Recibo](../../../../evidence/core-module-drag-delivery-r01.json) y [corte operativo87](../../../../mvp/87-core-feedback-module-order-plan.md#adopción-de-la-ampliación-de-arrastre--2026-10-25).
 
-UI real autenticada muestra asas y no ofrece Copiar ID. Dos drops before adyacentes —grupo2 antes de4 y módulo6 antes de7— devolvieron HTTP200 unchanged; readback SQL posterior conserva datos y orden, sin cambio positivo guardado por el operador. Los cambios efectivos/sidenav se aceptan sólo en SQL aislada y navegador sintético, no se extrapolan a esa cuenta. [Módulos](../../../../evidence/core-module-drag-modules-live-r01.png), [grupos](../../../../evidence/core-module-drag-groups-live-r01.png), [móvil emulado](../../../../evidence/core-module-drag-mobile-r01.png). La emulación táctil no admitió el gesto; no se afirma aceptación física.
+UI real autenticada muestra asas y no ofrece Copiar ID. Dos drops before adyacentes —grupo2 antes de4 y módulo6 antes de7— devolvieron HTTP200 unchanged; readback SQL posterior conserva datos y orden, sin cambio positivo guardado por el operador. Los cambios efectivos/sidenav se aceptan sólo en SQL aislada y navegador sintético, no se extrapolan a esa cuenta. [Módulos](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-module-drag-modules-live-r01.png), [grupos](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-module-drag-groups-live-r01.png), [móvil emulado](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-module-drag-mobile-r01.png). La emulación táctil no admitió el gesto; no se afirma aceptación física.
 
 Rollback DnD R03→R02/Client R02→R01 preparado, no ejecutado, conserva esquema30; no sustituye un plan revisado para volver a R09/esquema previo. Corte final Client73/8 y Server71/3 focales, builds/tipos/lints y SQL99/64/18 correctos; no sumar recuentos superpuestos. FX-04 sigue parcial por efectos positivos autenticados, concurrencia y ciclo completo de sesión. Ficha6 draft/partial/unregistered, approval null, sin nueva inferencia, herramienta o publicación MCP.
 
@@ -123,7 +128,7 @@ Un drop envía como máximo un PATCH before/after con rangos/IDs esperados de or
 
 Migración1793200000000 y runtime Server R02/Client R01 adoptados en la VM Linux local autorizada, con backup cifrado previo y escritores drenados. Historia29→30, backfill y constraints comprobados; proyección SQL ajena al orden conserva datos, autoridad y asignaciones. Redis eliminó una clave de contexto y comprobó cero restantes. El sucesor Server R02 sólo alinea dos metadatos src de conocimiento con dist; no repite migración y conserva exactamente150 contratos/41fragmentos R09, configuración, época Gemini y orden migrado. [Corte y evidencias](../../../../mvp/87-core-feedback-module-order-plan.md#adopción-operativa-parcial-de-fx-04--2026-10-25).
 
-Client compilado servido por nginx comprobado por171 assets HTTP/SHA/MIME, SPA/API200 y asset ausente404. La página de módulos se leyó desde una sesión real: tabla agrupada, modo Ordenar, metadata válida y extremos de flechas coherentes. [Captura](../../../../evidence/core-fx04-live-modules-r01.png). No se ejecutaron movimientos ni CRUD desde esa cuenta, ni inferencias IA; faltan aceptación funcional de altas/movimientos, actualización del sidenav, concurrencia y ciclo de sesión. FX-04 permanece abierto y esta ficha draft/partial/unregistered, approval null. [Evidencia consolidada](../../../../evidence/core-fx04-live-delivery-r01.json).
+Client compilado servido por nginx comprobado por171 assets HTTP/SHA/MIME, SPA/API200 y asset ausente404. La página de módulos se leyó desde una sesión real: tabla agrupada, modo Ordenar, metadata válida y extremos de flechas coherentes. [Captura](https://github.com/oscarvalenzuela25/Nodia/blob/8886e42f43c1dc93e4a67cfb643b9aac7d9c9f17/docs/evidence/core-fx04-live-modules-r01.png). No se ejecutaron movimientos ni CRUD desde esa cuenta, ni inferencias IA; faltan aceptación funcional de altas/movimientos, actualización del sidenav, concurrencia y ciclo de sesión. FX-04 permanece abierto y esta ficha draft/partial/unregistered, approval null. [Evidencia consolidada](../../../../evidence/core-fx04-live-delivery-r01.json).
 
 En ese corte R02 no se ejecutó rollback: el operador preparado para R01 era histórico y sus guards no correspondían a R02. Volver de aquel R02 a un runtime anterior al esquema30 exigía un plan revisado, backup nuevo y escritores detenidos; no bastaba cambiar un descriptor y reutilizar escritores antiguos con columnas sin DEFAULT. El corte DnD vigente de arriba sí incorpora un operador específico R03→R02 bajo el mismo esquema30, preparado y no ejecutado.
 
