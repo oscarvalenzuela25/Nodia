@@ -74,3 +74,44 @@ input node, focus/caret and a newer local edit. Pause disables/cancels pending t
 and carries any still-local answer together with the cursor. Blank text is a durable
 draft, while submission completeness belongs to Server and explicit “I don't know”
 is a different answer.
+
+## Teacher drawer and composer QA — 2026-11-16
+
+`scenario=paused-draft` shows a paused session with its definition chat, while
+`job=ready` adds an explicit synthetic completed job for checking the saved-result
+chip in the action row. Existing scenarios continue to cover review, plan, lesson,
+practice and final. `window.teacherQA.enrichmentFailure = "error" | "invalid"`
+fails the next enrichment read once; the subsequent explicit retry returns an
+empty valid workspace. `window.teacherQA.failSelection = true` rejects the next
+selection PATCH once. Setup-draft receipts and selection acknowledgements update
+only this adapter's in-memory session. No provider is called.
+
+The adaptive drawer starts at My sources on entry and retains editors while
+closed; its reads are disabled until visible. `fail=lost` also permits testing a
+lost source-command response: reconcile from inside the drawer with the original
+receipt GET, retaining the draft and without replaying the POST. This proves the
+synthetic UI recovery path, not real source persistence or provider availability.
+
+Final browser profiles/limits are consolidated in
+[the local evidence](../../../../../docs/evidence/teacher-drawer-chat-ui-20261116.md).
+
+## Readable plan review — 2026-11-16
+
+`scenario=review&reviewSize=long` shows a synthetic four-section/twelve-unit
+proposal. Review starts in reading mode, with explicit acceptance, optional
+structure editing and AI adjustment. The planning conversation stays mounted
+behind its show/hide button. Without a proposal the conversation remains visible.
+
+`window.teacherQA.failPlanSave = 503 | 409` rejects the next manual proposal PATCH
+once, before changing the in-memory session. A successful manual PATCH creates
+a new synthetic revision with a new ID/hash; acceptance uses that exact revision.
+This proves the fixture UI path, not Server persistence or a cryptographic hash.
+Review/draft cursors have no selected unit/material before accepting a plan.
+
+Check invalid assessment counts across folding/refetch/resize, visible recovery
+copy and blocked save/accept/adjustment. With `qualified=1`, an invalid count must
+still block the adjustment; correcting it restores the action without sending it.
+Preserve manual, adjustment and conversation drafts, focus/caret and IDs. Opening
+the reading panels must not issue writes, accept or generate material.
+
+Captures and results: [plan review evidence](../../../../../docs/evidence/teacher-plan-review-20261116/README.md).

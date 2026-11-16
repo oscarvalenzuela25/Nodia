@@ -963,3 +963,198 @@ replay. No persistir campos en browserstorage ni anunciar guardado prematurament
 Comparación y QA por perfil en [evidencia](../docs/evidence/teacher-guided-setup-20261115.md).
 No acredita comprensión humana, rendimiento de campo, shell autenticado, teclado
 virtual/teléfono físico o adopción operativa. TUX-03…05 siguen pendientes.
+
+### 10.22 Historial compacto y burbujas NodiaAI — solicitud2026-11-16
+
+La marca de página toma Karmatic Arcade y degradado primary→tertiary de Teacher,
+a34px. El control de menú se sitúa a la izquierda de «Conversaciones» en el
+historial, sustituyendo el botón exterior. Colapsar conserva una barra estrecha
+con expansión e iconos de conversación; tooltips y nombres accesibles presentan
+los datos reales. Los iconos sólo seleccionan: las opciones de conversación se
+usan en el panel expandido. No duplicar consultas, filtros o estado por tamaño.
+Conservar el mismo nodo del toggle al colapsar para mantener foco de teclado;
+al cerrar Drawer restaurar el foco después de su transición. El estado del menú
+pertenece al contenido expandido y se descarta al colapsar, sin leer refs/DOM
+durante render para decidir si un ancla sigue conectada.
+
+Compositor con radio16px y resumen IA de ancho según texto, limitado por el
+espacio disponible; el desplegable queda junto al nombre. Avisos y editor de
+selección conservan su espacio y contratos. Mantener borrador, foco, ancla de
+lectura, selección exacta y reserva MobileBottomNav al cambiar de presentación.
+Continuación móvil solicitada2026-11-16 ([plan107§15](../docs/mvp/107-nodia-ai-ux-ui-upgrade-plan.md#15-historial-móvil-desde-cabecera--solicitud2026-11-16)):
+en anchos inferiores a900px no se monta la barra lateral; un IconButton en la
+cabecera abre el mismo Drawer del historial con retorno de foco. En xs, situar
+el icono a la izquierda y «Nuevo chat» compacto a la derecha de una fila de ancho
+completo bajo la marca, conservando44px táctiles. Es una excepción explícita del
+usuario al ancho100% del botón principal móvil. Desde900px conservar el panel
+lateral colapsable. Compartir estado, filtros y consultas; no duplicar historial
+ni desmontar el compositor al cruzar el breakpoint. QA Chromium sintética propia
+en320/390/599/600/899/900/1440px ES oscuro/EN claro sin overflow; borrador/URL,
+búsqueda y retorno de foco conservados, incluso ante503 del historial y durante
+la transición a escritorio. No duplicar el ID del historial durante el cierre
+del Drawer al pasar a900px. [Capturas/recibo](../docs/evidence/nodia-ai-mobile-history-20261116/README.md);
+global3035/364 y84focales correctos, con tipado/lint/build finales correctos;
+build conserva el aviso previo de tamaño de chunks y lint excluye sólo `.tmp/**`.
+Las medidas históricas siguientes
+describen el corte con barra móvil. Un compositor de hasta20rem mueve el selector a otra fila de
+herramientas con una container query local; mantiene controles44px.
+
+Los mensajes de Nodia usan una superficie/borde sutil similar a los propios,
+radio16px y esquina de globo orientada a la entidad: arriba a la izquierda para
+Nodia y a la derecha para la persona. Avatar/entidad/hora quedan encima; copia
+del texto visible dentro del panel mediante icono, tooltip y nombre accesible,
+sin «Copiar» permanente. Conservar Markdown seguro, adjuntos y feedback.
+
+[Plan107§13](../docs/mvp/107-nodia-ai-ux-ui-upgrade-plan.md#13-historial-compacto-y-burbujas--solicitud2026-11-16)
+y [evidencia local](../docs/evidence/nodia-ai-sidebar-bubbles-20261116.md):
+Chromium sintético320/390/600/899/900/1440 ES/EN claro/oscuro sin overflow de
+documento; radio16px, título34px y selector157,11×44px para el texto de fixture.
+Resize1440→320→1440 conserva borrador/búsqueda y Escape restaura foco móvil.
+Formulario móvil172px con borrador, sin afirmar ahorro o rendimiento. Tipos,
+lint de código y build finales correctos; pruebas globales con corrección y
+revalidación focal posterior documentadas, sin afirmar segunda global limpia.
+No acredita UI productiva, dispositivo físico o Safari.
+
+### 10.23 Cabecera y paneles Teacher — solicitud2026-11-16
+
+El título asignado y el estado forman una fila con el estado al extremo derecho;
+conservar legibilidad/orden de lectura al envolver en móvil. «Mis planes de
+estudio» es `contained`. La barra ordena acción principal, Aprendizaje adaptativo,
+Opciones de la sesión/Archivar y el estado «Resultado guardado» cuando exista.
+No añadir la recarga contigua al resultado; conservar recuperación y sondeo
+por sus estados reales, sin prometer persistencia o disponibilidad nuevas.
+
+Las herramientas adaptativas viven en un Drawer derecho, con botones existentes
+en filas adaptables y Mis fuentes primero/seleccionado al entrar. Sólo el panel
+activo es visible; conservar formularios ya visitados, foco, retry local y
+cancelación de aperturas obsoletas al cambiar contexto. No montar consultas
+adicionales por breakpoint ni presentar un cierre local como cancelación remota.
+
+El resumen compacto modelo/modo del composer abre una burbuja Popover por encima.
+Su panel horizontal usa resumen de IA aplicada, cierre y selectores redondeados
+conexión/modo/modelo/intensidad; se envuelve según ancho real. Una única instancia
+conserva draft/ready, error y selección exacta. Cerrar no aplica/descarta ni
+habilita envío de un borrador dirty. No copiar las capacidades/adjuntos NodiaAI:
+Teacher no muestra el botón «+». Dictado/envío conservan los controles del editor.
+
+Implementación y QA sintética local verificadas según [106§11](../docs/mvp/106-nodia-teacher-guided-ux-redesign.md#11-cabecera-drawer-adaptativo-y-selector-ia--solicitud2026-11-16)
+y [evidencia](../docs/evidence/teacher-drawer-chat-ui-20261116.md). No trasladar
+métricas, aceptación o adopción de los patrones anteriores a este lote.
+
+La recuperación de escritura incierta pertenece al foco modal: mostrar el mismo
+RequestRecovery del comando dentro del Drawer y suprimir el duplicado de fondo
+mientras abre. No crear otro comando, cerrar para recuperar ni reenviar.
+QA sintética de seis perfiles de 320–1440 px ES/EN claro/oscuro: cabecera/orden de
+acciones y botones, Drawer de 760 px/móvil completo, Popover640 × 153,97 px desktop y
+288 px móvil; sin overflow de documento/local. Draft de fuente/repaso y nodo de
+fuente conservados entre categorías/cierre/resize, Escape devuelve foco y cerrar
+suspende lecturas pertinentes. Errores503/esquema, selección histórica incompleta
+y título largo comprobados. La recuperación incierta mantiene el draft: un POST
+original y GET de recibo, sin replay, bloqueo liberado tras acuse. Suite global
+3027/364 antes del último ajuste funcional y 11 focales posteriores correctos;
+tipos/lint/build por alcance en evidencia, sin afirmar una segunda global3028.
+Lint focal y build finales de la alineación CSS xs correctos; matriz de seis
+perfiles repetida. No acredita rendimiento o dispositivo físico.
+
+En xs los botones de acciones conservan ancho completo. Si el chip de resultado
+pasa a otra línea, se alinea a la derecha de ella; en escritorio permanece
+inmediatamente después de Opciones de la sesión/Archivar. No forzar una fila
+única que comprima o solape controles.
+
+La alineación final xs fue medida a 390/320 px: borde derecho del chip 374/304 px,
+con el padding de página 16 px conservado. Lint focal y build de esta fuente final
+correctos, build 13,74s; los avisos previos de chunk grande/timing de plugins no
+se reclasifican como fallos ni se ocultan.
+
+Durante la QA sintética se observó «ResizeObserver loop completed with undelivered
+notifications.» en el log Vite al redimensionar/editar textarea. El origen no se
+aisló contra baseline: no etiquetarlo como previo ni afirmar consola sin avisos.
+Los checks geométricos, de borrador, foco y recuperación mantuvieron su resultado;
+la observación se conserva separada en la evidencia.
+
+#### Vida útil de la medición inicial Teacher — solicitud2026-11-16
+
+La observación superior conserva el corte inicial. El aislamiento posterior
+reproduce dos avisos nativos en continuidad y detecta observadores Boneyard en
+ancestros cargados del workspace/historial junto al autosize del textarea MUI.
+TeacherLoading monta Skeleton sólo durante la carga inicial; al disponer de datos
+mantiene los dos wrappers neutros y LoadingRegion, sin medir el formulario vivo.
+Conservar el mismo nodo, texto, foco y caret durante refetch/error/resize; el
+skeleton inicial conserva su geometría y no envuelve controles interactivos.
+
+No usar supresión global de ResizeObserver, cambiar dependencias o fijar filas del
+textarea para ocultar el problema: la corrección pertenece al ciclo de vida del
+skeleton, sin alterar diseño ni autosize. Regresión atómica (3 casos) correcta y recorrido
+instrumentado candidato sin avisos. Un navegador nuevo sin parche RO repite tres
+recorridos de continuidad y seis perfiles sin avisos nativos; la geometría coincide
+exactamente con el baseline de los seis casos. Cuatro capturas son idénticas y
+dos sólo difieren en regiones de controles; no afirmar igualdad de píxeles global.
+El compositor mantiene su nodo, texto, foco y caret 4…13 en 1280→320→600→1280px y
+al abrir/cerrar Drawer, con un autoguardado sintético confirmado y cero avisos.
+El contenedor relativo pertenece a `styles.ts` MUI/Emotion; no se añaden estilos
+inline ni se cambia el markup neutro. La repetición de matriz/compositor sobre
+esta fuente final mantiene los resultados. La global completó 3033/3034 casos,
+con un fallo de test concurrente NodiaAI; revalidación focal actual 60/60 correcta,
+sin afirmar segunda global limpia. Tipado, lint de código completo y build final
+correctos (18,91s, avisos previos conservados). Patrón local verificado en
+[106§12](../docs/mvp/106-nodia-teacher-guided-ux-redesign.md#12-ciclo-de-medición-de-teacherloading--solicitud2026-11-16)
+y su [evidencia](../docs/evidence/teacher-drawer-chat-ui-20261116.md#corrección-del-ciclo-de-medición--solicitud2026-11-16).
+
+### Historial NodiaAI: filtros recuperables — continuación2026-11-16
+
+El vacío inicial se distingue de una búsqueda/filtros sin coincidencias. Resumen
+de criterios y Restablecer permanecen visibles al plegar filtros avanzados;
+contador sólo de criterios disponibles para el actor. Defaults compartidos con
+la página; reset conserva chat/selección/borrador y vuelve a enfocar el buscador,
+con bloqueo durante carga/refetch. Las páginas existentes siguen la caché por
+criterios; la primera lectura restaurada no usa un cursor de otra consulta.
+La selección expandida usa aria-current y el Drawer tiene nombre traducido.
+
+Chromium sintético320/390/899/900/1440, ES/EN y claro/oscuro: sin overflow global,
+Restablecer44px de alto dentro del viewport, Enter/foco/Escape, borrador y chat
+conservados;503 con filas previas y retry correctos. Sólo GET del adapter.
+Global3034/364, tipos/lint/build y conocimiento correctos. No es una medición de
+rendimiento, sesión autenticada o teléfono físico; adopción nueva pendiente.
+[Plan107§14](../docs/mvp/107-nodia-ai-ux-ui-upgrade-plan.md#14-continuidad-del-historial-y-filtros--continuación2026-11-16)
+y [evidencia](../docs/evidence/nodia-ai-history-filters-20261116.md).
+
+### 10.24 Revisión Teacher: lectura antes de editar — solicitud2026-11-16
+
+La revisión de una propuesta comienza con título, objetivo, organización y
+conteos reales de secciones/unidades, seguida de un recorrido con detalle bajo
+demanda. No desplegar de entrada todos los inputs, prerrequisitos y cantidades
+de evaluación. Conservar theme, espacios de panel y padding exterior del layout.
+«Usar este plan» es la acción principal; activación futura conserva su nombre y
+contrato propios. «Editar estructura» y «Pedir un ajuste» son alternativas
+outlined descubribles. En xs, botones de44px y ancho completo, sin barras fijas
+adicionales ni competencia con MobileBottomNav.
+
+Con propuesta disponible, situar la revisión antes de la conversación de
+planificación. La conversación se despliega por su botón y permanece montada con
+`hidden`, conservando borrador, selección y editores; sin propuesta es visible.
+Bloquear el plegado mientras graba. El texto de apoyo de «Usar este plan» distingue
+guardar la propuesta, elegir unidad y preparar material mediante otra acción.
+
+Plegar el editor o el ajuste no descarta texto ni cantidades inválidas. El editor
+de evaluación conserva su estado montado, o éste se eleva explícitamente, con
+explicación visible de los bloqueos y acceso para corregir. Secciones plegables
+mantienen IDs al ordenar; una sola instancia de draft/validación por revisión.
+El retorno de una `Promise<void>` de comando no acredita éxito: no cerrar,
+limpiar ni marcar guardado antes de la confirmación real de una nueva revisión.
+Mantener error/recuperación, CAS/hash exactos y aceptación separada de generar
+material. Abrir, leer, plegar o cambiar ancho no provoca inferencias o mutaciones.
+
+Solicitud y reglas en [106§13](../docs/mvp/106-nodia-teacher-guided-ux-redesign.md#13-revisión-del-plan-legible-y-edición-progresiva--solicitud2026-11-16).
+Implementación local y [QA sintética propia](../docs/evidence/teacher-plan-review-20261116/README.md):
+12perfiles320–1280px, ES oscuro/EN claro, sin overflow; CTA44px e inputs de texto
+inicialmente ocultos. Draft/nodo de edición, ajuste y conversación conservados
+al plegar y redimensionar; caret4…9 del ajuste intacto.503/409 conservan datos;
+aceptación con ID/hash exactos de la revisión confirmada y sin IA disponible.
+Entrar no escribe ni prepara material automáticamente. Política inválida
+bloquea también ajuste con IA aun si `changed=false`, con ayuda visible ES/EN.
+Históricos sin título, cantidad de jornadas o secciones conservan fallback/vacío
+y valores desconocidos hasta edición explícita, sin inventar duración o habilitar
+una aceptación denegada.
+Global3039/365 anterior a ese guard final y al caso histórico;26focales posteriores y build/lint
+finales correctos. No afirmar una nueva global posterior ni aceptación humana,
+teléfono físico o adopción por entorno; no trasladar métricas de§10.23.

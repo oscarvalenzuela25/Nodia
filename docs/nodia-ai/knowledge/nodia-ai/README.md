@@ -4,11 +4,11 @@
   "document_id": "nodia-ai",
   "product_id": "nodia-ai",
   "kind": "product",
-  "revision": 79,
+  "revision": 82,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Índice enlaza la ampliación API chat candidata y sus seis revisiones draft; código implementado, ensayos SQL/API/VM pendientes. Sin aprobación o publicación del producto o fichas por actualizar el índice. R08 enlaza presentación Markdown y recarga visual candidatas: implementación/QA y adopción estática R08 verificadas según recibo; no amplía capacidades ni cambia el dictado. Client R38 adoptado: presentación compacta de propuestas, comparación por contenedor, detalles exactos plegables y etiquetas históricas de ventas de sólo lectura. Conserva borrador/guards de fetch e incertidumbre, confirmación exacta y autoridad; confirmed no acredita efecto aplicado. No cambia otras tarjetas de resultados, registro, capacidades o publicación. Ajustes locales: acciones contained, contexto del actor e identidad NodiaAI exacta, variantes Gemini con IDs reales/OCR independiente y API OpenAI xhigh/max sin Ultra. Backend verificado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; sin despliegue, inferencia o publicación de este lote. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Plan107 (2026-11-15): evaluación visual y de interacción futura del chat, sin implementación ni cambios de contratos, modos o herramientas. El estado de implementación conserva exclusivamente el alcance existente; rediseño pendiente NAIUX-00/01. Continuación plan107: upgrade UX/UI implementado y verificado localmente con fixtures, conservando contratos y modos; aceptación humana/dispositivos y adopción por entorno pendientes. Sin nueva herramienta, aprobación o publicación. Continuación productiva2026-11-16: la UI del plan107 fue adoptada mediante CI43798403214/CD43799433169 nuevos, fuente6ba2afb7d258548ca68c245fb8282759a30d0ce4. El recibo acredita backend y Client completos,215assets y10recursos PWA verificados. Esta continuación sucede el límite local sin despliegue del15 de noviembre; no acredita revisión humana de UI, micrófono, inferencias ni aprobación/publicación del contexto."
+    "notes": "Índice enlaza la ampliación API chat candidata y sus seis revisiones draft; código implementado, ensayos SQL/API/VM pendientes. Sin aprobación o publicación del producto o fichas por actualizar el índice. R08 enlaza presentación Markdown y recarga visual candidatas: implementación/QA y adopción estática R08 verificadas según recibo; no amplía capacidades ni cambia el dictado. Client R38 adoptado: presentación compacta de propuestas, comparación por contenedor, detalles exactos plegables y etiquetas históricas de ventas de sólo lectura. Conserva borrador/guards de fetch e incertidumbre, confirmación exacta y autoridad; confirmed no acredita efecto aplicado. No cambia otras tarjetas de resultados, registro, capacidades o publicación. Ajustes locales: acciones contained, contexto del actor e identidad NodiaAI exacta, variantes Gemini con IDs reales/OCR independiente y API OpenAI xhigh/max sin Ultra. Backend verificado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado; sin despliegue, inferencia o publicación de este lote. Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias GPT Agentic recuperables; Teacher distingue fallos de host/sesión/modelo/runtime. Sin despliegue o inferencia nueva; el host Teacher GPT requiere aprovisionamiento específico. Las preferencias no acreditan soporte. Plan107 (2026-11-15): evaluación visual y de interacción futura del chat, sin implementación ni cambios de contratos, modos o herramientas. El estado de implementación conserva exclusivamente el alcance existente; rediseño pendiente NAIUX-00/01. Continuación plan107: upgrade UX/UI implementado y verificado localmente con fixtures, conservando contratos y modos; aceptación humana/dispositivos y adopción por entorno pendientes. Sin nueva herramienta, aprobación o publicación. Continuación productiva2026-11-16: la UI del plan107 fue adoptada mediante CI43798403214/CD43799433169 nuevos, fuente6ba2afb7d258548ca68c245fb8282759a30d0ce4. El recibo acredita backend y Client completos,215assets y10recursos PWA verificados. Esta continuación sucede el límite local sin despliegue del15 de noviembre; no acredita revisión humana de UI, micrófono, inferencias ni aprobación/publicación del contexto. Continuación visual2026-11-16: mockups aceptados e implementación local en codex/durable-backend-uploads; marca34px, historial compacto con tooltips, selector ajustado al texto y respuestas en globo con copia sólo por icono. QA sintética en seis perfiles y continuidad de borrador/búsqueda correctas; tipos/lint/build finales correctos y pruebas globales con corrección/revalidación focal posterior, sin segunda global limpia afirmada. Sin despliegue o inferencia; no cambia contexto, herramientas, contratos o autoridad. Continuación plan107§14: claridad de filtros e historial, restablecimiento con borrador/selección conservados y acceso por teclado. Implementación local y QA sintética; sin cambio de contexto/autoridad, publicación o adopción de esta revisión. Plan107§15: historial móvil en Drawer y acciones compactas implementados. QA Chromium sintética,84focales,global3035/364 y tipos/lint/build correctos. Sólo presentación/acceso; sin ampliar contexto, autoridad o herramientas."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento del módulo NodiaAI conforme a AGENTS",
@@ -275,6 +275,26 @@
   "approval": null
 }
 ---
+
+## Historial compacto y burbujas — solicitud2026-11-16
+
+[Evidencia local consolidada](../../../evidence/nodia-ai-sidebar-bubbles-20261116.md).
+
+[Plan107§13](../../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#13-historial-compacto-y-burbujas--solicitud2026-11-16)
+y [ficha candidata revisión16](features/chat-composer-selection.md#historial-compacto-y-burbujas--solicitud2026-11-16)
+registran la dirección visual aceptada: marca34px con estilo Teacher, historial
+colapsado en iconos con tooltips y sin menús, compositor16px, selector según texto
+y paneles de respuesta con esquina de globo y copia sólo por icono. Implementación
+local y QA sintética completas; tipos/lint/build finales correctos y pruebas
+globales con revalidación focal posterior, sin segunda global limpia afirmada.
+Todo corresponde a la rama actual, sin adopción productiva de este nuevo alcance. El despliegue anterior del§12 conserva su fecha y contenido.
+
+Impacto sólo de presentación/acceso: no altera conceptos, operaciones, contexto
+enviado, interpretación de resultados, herramientas, permisos o confirmación.
+Producto80 draft/partial y ficha16 draft/implemented conservan los estados del
+alcance previo, con esta continuación comprobada sólo por alcance local; unregistered/approval:null,
+sin publicación ni modificación de fichas aprobadas.
+
 
 ## Adopción productiva del upgrade UX/UI — 2026-11-16
 
@@ -764,3 +784,43 @@ Continuación local2026-11-14: chat compacto/Stop en compositor y preferencias G
 [Evidencia](../../../evidence/nodia-ai-chat-space-gpt-selection-20261114.md).
 Sin nuevas herramientas o aprobación/publicación; impacto visual sin cambio de
 contexto operativo y preferencias distintas de disponibilidad real.
+
+## Historial: filtros y continuidad — continuación2026-11-16
+
+[Plan107§14](../../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#14-continuidad-del-historial-y-filtros--continuación2026-11-16) y [evidencia local](../../../evidence/nodia-ai-history-filters-20261116.md): el historial distingue
+conversaciones ausentes de una búsqueda/filtros sin coincidencias. Muestra los
+criterios activos y permite restablecerlos sin cambiar el chat abierto o su
+borrador; carga, error y revalidación conservan sus reglas. El foco vuelve al
+buscador; la selección actual se anuncia en la lista expandida y el Drawer móvil
+tiene nombre accesible. El contador representa criterios locales, no cifras ni
+capacidades del proveedor.
+
+Evaluación de impacto: presentación y navegación de filtros existentes, sin
+cambio de contexto enviado, conceptos de autoridad, herramientas, permisos,
+contratos o interpretación de resultados. Se actualiza esta ficha existente;
+no requiere una herramienta ni ficha nueva. Implementado localmente con QA
+sintética; comprobación humana/autenticada/dispositivo y adopción de esta revisión
+pendientes. Conserva draft/unregistered/approval:null, sin publicación.
+
+
+## Historial móvil desde cabecera — solicitud2026-11-16
+
+[Plan107§15](../../../mvp/107-nodia-ai-ux-ui-upgrade-plan.md#15-historial-móvil-desde-cabecera--solicitud2026-11-16)
+registra la nueva distribución autorizada: por debajo de900px se retira la barra
+lateral y un icono de cabecera abre el historial existente en Drawer. En xs,
+icono a la izquierda y «Nuevo chat» compacto a la derecha comparten una fila bajo
+la marca; se conserva el área táctil44px. Desde900px el historial lateral mantiene
+su colapso. Abrir/cerrar y cambiar de tamaño deben conservar chat/URL, selección,
+filtros, borrador y retorno de foco, sin consultas o formularios duplicados.
+
+Evaluación de impacto: sólo presentación y acceso a controles existentes. No
+cambia conceptos, operaciones, contexto enviado, interpretación de resultados,
+contratos, permisos, modelos, herramientas, confirmación o recuperación. Se
+actualiza la ficha existente; no requiere otra ficha, herramienta o binding.
+Implementación local y [QA Chromium sintética](../../../evidence/nodia-ai-mobile-history-20261116/README.md)
+comprobadas en320/390/599/600/899/900/1440px ES oscuro/EN claro: sin overflow,
+foco/búsqueda/borrador/URL conservados al redimensionar y ante503 del historial,
+sin mutaciones. Tipado/lint/build finales,84focales y global3035/364 correctos;
+limitaciones del build/lint y corrección de espera de transición en el recibo. Los resultados y capturas anteriores con barra móvil son históricos.
+UI autenticada/dispositivo y adopción siguen pendientes. Conserva draft/unregistered/approval:null,
+sin publicación o aprobación nuevas.

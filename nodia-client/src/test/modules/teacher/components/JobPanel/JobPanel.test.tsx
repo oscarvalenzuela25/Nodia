@@ -19,6 +19,20 @@ beforeEach(() => {
 const view = (paused = false, presentation: "panel" | "inline" = "panel") => <JobPanel presentation={presentation} jobId={job.job_id} paused={paused} busy={false} onReady={onReady} onTerminal={onTerminal} onNew={onNew} onContinue={onContinue} />;
 
 describe("Teacher job presentation", () => {
+  it("shows a saved result as a chip without a refresh action, retaining read-error recovery", async () => {
+    job.state = "ready";
+    const { rerender } = render(view(false, "inline"));
+    expect(screen.getByRole("status")).toHaveTextContent("Resultado guardado");
+    expect(screen.queryByRole("button", { name: "Actualizar estado" })).not.toBeInTheDocument();
+    expect(onReady).toHaveBeenCalledOnce();
+    query.isError = true;
+    rerender(view(false, "inline"));
+    expect(screen.getByText("Resultado guardado")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Actualizar estado" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(query.refetch).toHaveBeenCalledOnce();
+    expect(onNew).not.toHaveBeenCalled();
+  });
   it("shows inline state without a separate heading and refreshes only the existing job read", async () => {
     job.state = "queued";
     render(view(false, "inline"));

@@ -4,6 +4,8 @@
     "ready_title": "¿En qué te ayudo?"
   },
   "settings": "Configuración",
+  "expand_conversations": "Expandir conversaciones",
+  "collapse_conversations": "Colapsar conversaciones",
   "conversations": "Conversaciones",
   "new_chat": "Nuevo chat",
   "untitled": "Conversación sin título",
@@ -1076,6 +1078,11 @@
     "changed": "Las preferencias cambiaron durante el turno. El historial original se conserva y la solicitud no se repetirá automáticamente. Puedes enviar una nueva petición para usar su versión actual."
   },
   "organization": {
+    "active_filters_one": "{{count}} filtro activo",
+    "active_filters_other": "{{count}} filtros activos",
+    "reset_filters": "Restablecer",
+    "reset_filters_label": "Restablecer filtros de conversaciones",
+    "no_matches": "No hay conversaciones que coincidan con esta búsqueda o estos filtros.",
     "show_filters": "Mostrar filtros de conversaciones",
     "hide_filters": "Ocultar filtros de conversaciones",
     "search": "Buscar por título o texto",

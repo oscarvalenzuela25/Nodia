@@ -50,6 +50,7 @@ function projectProviderFixture(changes: NodiaAiPublicProposal["steps"][number][
 }
 
 export function installFixture(scenario: string | null) {
+  const redesignedChat = scenario === "chat-redesign" || scenario === "history-filters";
   const requests: { method: string; path: string }[] = [];
   // Browser-only upload storage: no network, cloud files or provider qualification.
   const attachments = new Map<string, NodiaAiAttachment>();
@@ -118,7 +119,7 @@ export function installFixture(scenario: string | null) {
     { message_id: "10000000-0000-4000-8000-000000000004", run_id: null, seq: "2", role: "assistant", status: "sealed", visibility: "visible", author_user_id: null, sealed_at: timestamp, created_at: timestamp,
       parts: [{ kind: "text", text: "[RESPUESTA SINTÃ‰TICA / SYNTHETIC RESPONSE] Este contenido permite revisar lectura, contraste y scroll. No se consultÃ³ Gemini ni una base de datos.\n\n" + "Detalle sintÃ©tico de prueba con texto extenso que conserva la informaciÃ³n al cambiar de ancho. / Synthetic detail retained across viewport changes.\n".repeat(12) }] },
   ] };
-  if (scenario === "chat-redesign" || scenario === "chat-running") {
+  if (redesignedChat || scenario === "chat-running") {
     conversation = { ...conversation, title: "Tu espacio de trabajo · QA" };
     messages.items = messages.items.map((message, index) => message.visibility === "visible"
       ? { ...message, parts: [{ kind: "text", text: index === 0
@@ -148,6 +149,7 @@ export function installFixture(scenario: string | null) {
     requests.push({ method, path });
     const response = (data: unknown, status = 200): AxiosResponse => ({ data, status, statusText: status === 200 ? "OK" : "Synthetic fixture error", headers: {}, config });
     const failureMatches = nextFailure === "catalog" && path.endsWith("/connections")
+      || nextFailure === "conversations" && path.endsWith("/conversations") && method === "GET"
       || nextFailure === "messages" && path.endsWith("/messages") && method === "GET"
       || nextFailure === "selection" && path.endsWith("/selection")
       || nextFailure === "detail" && path.endsWith(`/${CHAT_ID}`)
@@ -212,10 +214,10 @@ export function installFixture(scenario: string | null) {
     if (method === "GET" && path === "/nodia-ai/preferences") return response({ items: [], next_cursor: null });
     if (method === "GET" && path === "/nodia-ai/preferences/catalog") return response({ items: [] });
     if (method === "GET" && path.endsWith("/connections")) return response({ next_cursor: null, items: [{
-      connection_id: BASE_SELECTION.connection_id, label: scenario === "chat-redesign" ? "Nodia · QA" : "ConexiÃ³n sintÃ©tica QA / Synthetic QA connection", provider_key: "gemini", is_active: true, is_default: true, default_mode: "agentic",
+      connection_id: BASE_SELECTION.connection_id, label: redesignedChat ? "Nodia · QA" : "ConexiÃ³n sintÃ©tica QA / Synthetic QA connection", provider_key: "gemini", is_active: true, is_default: true, default_mode: "agentic",
       modes: [
         { ...modeMetadata, mode: "agentic", configured_selection: BASE_SELECTION, models: [
-          { model_id: BASE_SELECTION.model_id, label: scenario === "chat-redesign" ? "Modelo de prueba" : "Modelo Agentic base sintÃ©tico / Synthetic base Agentic model", efforts: [] },
+          { model_id: BASE_SELECTION.model_id, label: redesignedChat ? "Modelo de prueba" : "Modelo Agentic base sintÃ©tico / Synthetic base Agentic model", efforts: [] },
           { model_id: AGENTIC_SELECTION.model_id, label: "Modelo Agentic sintÃ©tico / Synthetic Agentic model", efforts: [{ effort_id: "qa-deliberate", label: "Intensidad sintÃ©tica / Synthetic intensity" }] },
           { model_id: "qa-synthetic-alternative", label: QA_MODEL_LABEL, efforts: [] },
         ] },
@@ -295,7 +297,17 @@ export function installFixture(scenario: string | null) {
       };
       return response(data);
     }
-    if (method === "GET" && path.endsWith("/conversations")) return response({ items: scenario === "empty" ? [] : [conversation], next_cursor: null });
+    if (method === "GET" && path.endsWith("/conversations")) {
+      if (scenario === "history-filters") {
+        // Opt-in synthetic filtering for history UX checks; never a production search implementation.
+        const filters = config.params as { search?: string; is_archived?: boolean; is_pinned?: boolean };
+        const matches = (!filters.search || conversation.title?.toLocaleLowerCase().includes(filters.search.toLocaleLowerCase()))
+          && (filters.is_archived === undefined || conversation.is_archived === filters.is_archived)
+          && (filters.is_pinned === undefined || conversation.is_pinned === filters.is_pinned);
+        return response({ items: matches ? [conversation] : [], next_cursor: null });
+      }
+      return response({ items: scenario === "empty" ? [] : [conversation], next_cursor: null });
+    }
     if (method === "GET" && path.endsWith("/messages")) return response(scenario === "empty" ? { ...messages, items: [] } : messages);
     if (method === "GET" && path.endsWith(`/${CHAT_ID}`)) return response({ conversation, current_run: run, active_execution: reviewedProposal.state === "confirmed" && (canConfirmScenario || executionScenario) && ["queued", "running", "unknown"].includes(observedExecution.state) ? observedExecution : null });
     if (method === "PATCH" && path.endsWith("/selection")) {

@@ -7,7 +7,7 @@ export const SelectionPanel = styled("div")(({ theme }) => ({
 }));
 
 export const SelectionSummary = styled(Button)(({ theme }) => ({
-  width: "100%", minWidth: 0, height: 44, minHeight: 44, justifyContent: "space-between", textAlign: "left",
+  width: "fit-content", maxWidth: "100%", alignSelf: "flex-start", minWidth: 0, height: 44, minHeight: 44, justifyContent: "flex-start", textAlign: "left",
   padding: theme.spacing(0.25, 0.75), borderRadius: theme.shape.borderRadius,
   color: theme.palette.text.primary, textTransform: "none",
   "& .MuiButton-endIcon": { flexShrink: 0 },
@@ -32,7 +32,7 @@ export const SelectionPopover = styled(Popover)(({ theme }) => {
 });
 
 export const SummaryContent = styled("span")(({ theme }) => ({
-  display: "flex", flexDirection: "column", gap: theme.spacing(0.25), minWidth: 0, flex: 1,
+  display: "flex", flexDirection: "column", gap: theme.spacing(0.25), minWidth: 0,
   "& > span:not([data-selection-description])": { minWidth: 0, maxWidth: "100%", lineHeight: 1.25, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" },
   "& [data-selection-description]": { position: "absolute", width: 1, height: 1, padding: 0,
     overflow: "hidden", clipPath: "inset(50%)", whiteSpace: "nowrap" },

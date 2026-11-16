@@ -75,7 +75,7 @@ export default function ChatMessage({ message, conversationId, currentRunId }: C
             </Box>
           )}
         </Identity>
-        <Bubble isOwner={isOwner}>
+        <Bubble isOwner={isOwner} isAssistant={message.role === "assistant"}>
           {message.status === "partial" && (
             <Alert severity="info" sx={{ mb: 1 }}>{t("organization.partial_message")}</Alert>
           )}
@@ -87,14 +87,14 @@ export default function ChatMessage({ message, conversationId, currentRunId }: C
               <AttachmentMessage id={part.attachment_id} kind={part.kind} conversationId={conversationId} />
             </Box>
           ))}
+          {canCopy && <MessageActions>
+            <Tooltip title={t("message_actions.copy")}>
+              <span><IconButton aria-label={t("message_actions.copy")} disabled={copying} onClick={() => void copyResponse()}>
+                <ContentCopyOutlined fontSize="small" />
+              </IconButton></span>
+            </Tooltip>
+          </MessageActions>}
         </Bubble>
-        {canCopy && <MessageActions>
-          <Tooltip title={t("message_actions.copy")}>
-            <span><IconButton aria-label={t("message_actions.copy")} disabled={copying} onClick={() => void copyResponse()}>
-              <ContentCopyOutlined fontSize="small" />
-            </IconButton></span>
-          </Tooltip>
-        </MessageActions>}
         {message.visibility === "visible" && message.role === "assistant" && message.run_id && message.run_id !== currentRunId && (
           <HistoricalObservation conversationId={conversationId} runId={message.run_id} />
         )}

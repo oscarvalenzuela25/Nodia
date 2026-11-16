@@ -75,7 +75,7 @@ describe("NodiaAI route", () => {
     await i18n.changeLanguage(language);
     useAuthStore.getState().login({ token: "fixture", expiresAt: Date.now() + 900000, user: { id: "1", name: "Fixture" } });
     const transport = adapter(true); openRoute();
-    expect(await screen.findByRole("heading", { name: "Nodia AI", level: 1 })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "NodiaAI", level: 1 })).toBeInTheDocument();
     expect(await screen.findByText(i18n.t("nodiaAi:welcome_message"))).toBeInTheDocument();
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
     expect(transport.mock.calls.every(([config]) => config.method === "get")).toBe(true);

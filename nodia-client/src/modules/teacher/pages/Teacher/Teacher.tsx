@@ -3,6 +3,7 @@ import BlockLearningTools from "../../components/AdaptiveWorkspace/BlockLearning
 import { useCallback, useEffect, useState } from "react";
 import { Alert, Box, Button, LinearProgress, Menu, MenuItem, Pagination, Stack, Switch, Typography } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
+import SchoolOutlined from "@mui/icons-material/SchoolOutlined";
 import AutoStoriesOutlined from "@mui/icons-material/AutoStoriesOutlined";
 import ArrowBackOutlined from "@mui/icons-material/ArrowBackOutlined";
 import RefreshOutlined from "@mui/icons-material/RefreshOutlined";
@@ -32,7 +33,7 @@ import { setupDraftReceiptSchema, type Answer, type CommandResult, type Cursor, 
 import { useSetupDraft } from "../../hooks/useSetupDraft";
 import { TEACHER_NEW_ROUTE } from "../../constants/routes";
 import { SESSION_JOB_COLORS } from "../../infrastructure/sessionList";
-import { Actions, ArchivedFilter, Header, LessonHeader, Page, Panel, PlanFilters, PlanGrid, PlanSearch, ProductBrand, SessionPage, StateChip, Workspace } from "./styles";
+import { Actions, ArchivedFilter, Header, LessonHeader, Page, Panel, PlanFilters, PlanGrid, PlanSearch, ProductBrand, SessionActions, SessionPage, SessionTitleRow, StateChip, Workspace } from "./styles";
 
 const SESSION_STATE_COLORS = {
   draft: "default",
@@ -72,7 +73,7 @@ function TeacherSession({ sessionId }: { sessionId: string }) {
   const session = useTeacherSession(sessionId);
   const command = useTeacherCommand();
   return <SessionPage>
-    <Button variant="outlined" component={Link} to="/nodia-teacher" startIcon={<ArrowBackOutlined />} sx={{ alignSelf: "flex-start", minHeight: 44 }}>{t("teacher:my_plans")}</Button>
+    <Button variant="contained" component={Link} to="/nodia-teacher" startIcon={<ArrowBackOutlined />} sx={{ alignSelf: "flex-start", minHeight: 44 }}>{t("teacher:my_plans")}</Button>
     {!session.data && <RequestRecovery command={command} onRecovered={() => { void session.refetch(); }} />}
     <QueryErrorAlert retryVariant="outlined" isError={session.isError} isFetching={session.isFetching} onRetry={session.refetch} />
     {session.isFetching && !session.isLoading && <LinearProgress />}
@@ -100,10 +101,12 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
   const [draftConflict, setDraftConflict] = useState(false);
   const [localCursor, setLocalCursor] = useState<Cursor>(session.cursor);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [adaptiveOpen, setAdaptiveOpen] = useState(false);
   const [archiving, setArchiving] = useState(false);
   const [editingSession, setEditingSession] = useState(false);
   const [selecting, setSelecting] = useState(false);
   const [revising, setRevising] = useState(false);
+  const [planningOpen, setPlanningOpen] = useState(false);
   const [optionsAnchor, setOptionsAnchor] = useState<HTMLElement | null>(null);
   const [hint, setHint] = useState<string | null>(null);
   const [outlineExpanded, setOutlineExpanded] = useState(!session.cursor.unit_id && !session.cursor.attempt_id);
@@ -223,13 +226,15 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
         </Panel> : null;
 
   return <SessionPage>
-    {!editingSession && !selecting && !helpOpen && !archiving && <RequestRecovery command={command} onRecovered={applyResult} />}
-    <Header><Box><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><Typography variant="h4" component="h1" sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" }, fontWeight: 700 }}>{session.title || session.topic}</Typography><Typography color="text.secondary">{session.objective}</Typography></Box><StateChip label={t(`teacher:states.${session.state}`)} color={SESSION_STATE_COLORS[session.state]} /></Header>
-    <Actions>
+    {!editingSession && !selecting && !helpOpen && !archiving && !adaptiveOpen && <RequestRecovery command={command} onRecovered={applyResult} />}
+    <Header><Box sx={{ width: "100%", minWidth: 0 }}><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><SessionTitleRow><Typography variant="h4" component="h1" sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" }, fontWeight: 700 }}>{session.title || session.topic}</Typography><StateChip label={t(`teacher:states.${session.state}`)} color={SESSION_STATE_COLORS[session.state]} /></SessionTitleRow><Typography color="text.secondary">{session.objective}</Typography></Box></Header>
+    <SessionActions>
       {enabled(session.allowed_actions, "pause") && <Button disabled={busy || draftConflict || messageDraft.saving || messageDraft.conflict || !messageDraft.valid} variant="contained" onClick={() => void stateCommand("pause")}>{t("teacher:pause")}</Button>}
       {enabled(session.allowed_actions, "resume") && <Button disabled={busy} variant="contained" onClick={() => void stateCommand("resume")}>{t("teacher:resume")}</Button>}
+      <Button variant="outlined" startIcon={<SchoolOutlined />} disabled={busy || recordingMessage || reinforcementNavigation.pending} aria-haspopup="dialog" aria-expanded={adaptiveOpen} onClick={() => setAdaptiveOpen(true)}>{t("teacher:adaptive.workspace")}</Button>
       {archiveOnly ? <Button variant="outlined" disabled={busy} onClick={() => setArchiving(true)}>{t("teacher:archive")}</Button> : <Button variant="outlined" disabled={busy} aria-haspopup="menu" aria-expanded={Boolean(optionsAnchor)} onClick={event => setOptionsAnchor(event.currentTarget)}>{t("teacher:session_options")}</Button>}
-    </Actions>
+      {jobId && <JobPanel key={`${jobId}:${jobSelection.followResult}`} presentation="inline" jobId={jobId} paused={!active} busy={busy} onReady={onReady} onTerminal={onTerminal} onContinue={async job => { await execute(`jobs/${jobId}/continue-before-dispatch`, { expected_session_revision: session.revision, expected_job_fence: job.fence }); }} onNew={async job => { await execute(`jobs/${jobId}/new-generation`, { expected_session_revision: session.revision, expected_job_fence: job.fence }); }} />}
+    </SessionActions>
     <Menu anchorEl={optionsAnchor} open={Boolean(optionsAnchor)} onClose={() => setOptionsAnchor(null)} slotProps={{ list: { "aria-label": t("teacher:session_options") } }}>
       {enabled(session.allowed_actions, "edit") && <MenuItem disabled={busy} sx={{ minHeight: 44 }} onClick={() => { setOptionsAnchor(null); setEditingSession(true); }}>{t("teacher:edit_session")}</MenuItem>}
       {plan && enabled(session.allowed_actions, "edit") && <MenuItem disabled={busy} sx={{ minHeight: 44 }} onClick={() => { setOptionsAnchor(null); setSelecting(true); }}>{t("teacher:ai_selection")}</MenuItem>}
@@ -243,18 +248,18 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
     {selecting && <BaseModal open title={t("teacher:ai_selection")} onClose={() => { if (!busy) setSelecting(false); }}><RequestRecovery command={command} onRecovered={result => { applyResult(result); setSelecting(false); }} /><SelectionPanel initial={session.selection} busy={busy} onSave={async selection => { const result = await execute(`sessions/${session.id}`, { expected_session_revision: session.revision, selection }, "PATCH"); if (result) setSelecting(false); }} /></BaseModal>}
     {session.state === "paused" && <Alert severity="info">{t("teacher:paused_notice")}</Alert>}
     <Typography variant="body2" color="text.secondary">{t("teacher:budget", { used: session.dispatches_used, limit: session.dispatch_limit })}</Typography>
-    <Panel><AdaptiveWorkspace session={session} command={command} busy={busy || reinforcementNavigation.pending} onResult={applyResult} onPractice={id => void startAttempt("units", id)} /></Panel>
-    {(jobId || !plan || revising) && <Panel sx={{ p: { xs: 0, sm: 0 }, ...(plan && !revising ? { border: 0, background: "transparent", boxShadow: "none" } : {}) }}><SetupConversation messages={messages} draft={messageDraft} showConversation={!plan || revising} scopeKey={session.id} contextKey={`${session.revision}:${JSON.stringify(session.selection)}`} page={messagePage} busy={locked} generating={preparing} hasSelection={Boolean(session.selection) && selectionReady && !selectionDirty} canPropose={enabled(session.allowed_actions, "propose_plan")} onPage={setMessagePage} onRecordingChange={setRecordingMessage}
-        jobStatus={jobId ? <JobPanel key={`${jobId}:${jobSelection.followResult}`} presentation="inline" jobId={jobId} paused={!active} busy={busy} onReady={onReady} onTerminal={onTerminal} onContinue={async job => { await execute(`jobs/${jobId}/continue-before-dispatch`, { expected_session_revision: session.revision, expected_job_fence: job.fence }); }} onNew={async job => { await execute(`jobs/${jobId}/new-generation`, { expected_session_revision: session.revision, expected_job_fence: job.fence }); }} /> : undefined}
-        footer={<SelectionPanel presentation="composer" initial={session.selection} busy={locked || preparing || recordingMessage || messageDraft.saving} onDirtyChange={setSelectionDirty} onReadyChange={setSelectionReady} onSave={async selection => { const result = await execute(`sessions/${session.id}`, { expected_session_revision: session.revision, selection }, "PATCH"); if (!result) throw new Error("Teacher selection was not confirmed"); }} />}
-        onSend={() => { if (locked || preparing || recordingMessage || selectionDirty || !selectionReady) return; const text = messageDraft.text; void messageDraft.save().then(async saved => { if (!saved) return; const result = await execute(`sessions/${session.id}/messages`, { expected_session_revision: session.revision, expected_draft_revision: saved.setup_draft_revision, text, generate_reply: true }); const receipt = setupDraftReceiptSchema.safeParse(result); if (result) messageDraft.sent(text, receipt.success ? receipt.data : null); }); }}
-        onPropose={async () => { if (locked || preparing || recordingMessage || selectionDirty || !selectionReady || messageDraft.text.trim()) return false; const saved = await messageDraft.save(); if (!saved) return false; return Boolean(await execute(`sessions/${session.id}/plan-proposals`, { expected_session_revision: session.revision, organization: session.requested_organization, day_count: session.requested_day_count })); }}
-      /></Panel>}
+    <AdaptiveWorkspace open={adaptiveOpen} onClose={() => setAdaptiveOpen(false)} session={session} command={command} busy={busy || reinforcementNavigation.pending} onResult={applyResult} onPractice={id => void startAttempt("units", id)} />
     {(!plan || revising) && <>
       {comparing && proposalView && <Panel><Stack sx={{ gap: 2 }}><Alert severity="info">{t("teacher:candidate_notice")}</Alert><PlanGrid>{[{ title: t("teacher:previous_proposal"), plan: baseProposal.data }, { title: t("teacher:candidate_proposal"), plan: proposalView }].map(item => <Box key={item.title}><Typography variant="subtitle1">{item.title}</Typography>{item.plan?.outline.sections.map(section => <Box key={section.id} sx={{ my: 2 }}><Typography variant="subtitle2">{section.title}</Typography>{section.units.map(unit => <Typography key={unit.id} variant="body2">{unit.title}</Typography>)}</Box>)}</Box>)}</PlanGrid><Actions><Button variant="contained" disabled={locked || !baseProposal.data} onClick={() => void execute(`sessions/${session.id}/plan-proposals/${proposalView.base_revision_id}/apply-candidate`, { candidate_id: proposalView.id, expected_base_revision_id: proposalView.base_revision_id, expected_base_hash: proposalView.base_hash, expected_session_revision: session.revision })}>{t("teacher:apply_candidate")}</Button><Button variant="outlined" disabled={locked || !baseProposal.data} onClick={() => setProposalId(proposalView.base_revision_id ?? null)}>{t("teacher:keep_previous")}</Button></Actions></Stack></Panel>}
       {proposal.isLoading && !proposalView && <TeacherLoading loading />}
       {proposalView && <Panel><PlanReview key={proposalView.id} plan={proposalView} busy={locked || comparing || preparing} futureRevision={Boolean(plan)} canAdjust={selectionReady && !selectionDirty} canAccept={!comparing && (plan ? proposalView.id !== plan.id && enabled(session.allowed_actions, "activate_revision") : enabled(session.allowed_actions, "accept_plan"))} onSave={async outline => { await execute(`sessions/${session.id}/plan-proposals/${proposalView.id}`, { expected_session_revision: session.revision, expected_proposal_hash: proposalView.content_hash, outline }, "PATCH"); }} onAccept={async () => { const result = await execute(plan ? `sessions/${session.id}/plan-revisions/${proposalView.id}/activate` : `sessions/${session.id}/plan-proposals/${proposalView.id}/accept`, { expected_session_revision: session.revision, proposal_revision_id: proposalView.id, proposal_hash: proposalView.content_hash, ...(plan ? { expected_current_plan_revision_id: plan.id } : {}) }); if (result && plan) { setRevising(false); setUnitId(null); setAttemptId(null); setQuestionId(null); } }} onAdjust={async text => { if (locked || preparing || selectionDirty || !selectionReady) return; await execute(`sessions/${session.id}/plan-proposals`, { expected_session_revision: session.revision, base_proposal_id: proposalView.id, base_hash: proposalView.content_hash, adjustment_text: text, organization: proposalView.outline.organization, day_count: proposalView.outline.day_count }); }} /></Panel>}
     </>}
+    {(!plan || revising) && proposalView && <Actions><Button variant="outlined" disabled={busy || recordingMessage} aria-expanded={planningOpen} aria-controls="teacher-planning-conversation" onClick={() => setPlanningOpen(value => !value)}>{t(planningOpen ? "teacher:review_ui.hide_conversation" : "teacher:review_ui.show_conversation")}</Button></Actions>}
+    {(!plan || revising) && <Panel id="teacher-planning-conversation" hidden={Boolean(proposalView) && !planningOpen} sx={{ p: { xs: 0, sm: 0 } }}><SetupConversation messages={messages} draft={messageDraft} showConversation={!plan || revising} scopeKey={session.id} contextKey={`${session.revision}:${JSON.stringify(session.selection)}`} page={messagePage} busy={locked} generating={preparing} hasSelection={Boolean(session.selection) && selectionReady && !selectionDirty} canPropose={enabled(session.allowed_actions, "propose_plan")} onPage={setMessagePage} onRecordingChange={setRecordingMessage}
+        footer={<SelectionPanel presentation="composer" initial={session.selection} busy={locked || preparing || recordingMessage || messageDraft.saving} onDirtyChange={setSelectionDirty} onReadyChange={setSelectionReady} onSave={async selection => { const result = await execute(`sessions/${session.id}`, { expected_session_revision: session.revision, selection }, "PATCH"); if (!result) throw new Error("Teacher selection was not confirmed"); }} />}
+        onSend={() => { if (locked || preparing || recordingMessage || selectionDirty || !selectionReady) return; const text = messageDraft.text; void messageDraft.save().then(async saved => { if (!saved) return; const result = await execute(`sessions/${session.id}/messages`, { expected_session_revision: session.revision, expected_draft_revision: saved.setup_draft_revision, text, generate_reply: true }); const receipt = setupDraftReceiptSchema.safeParse(result); if (result) messageDraft.sent(text, receipt.success ? receipt.data : null); }); }}
+        onPropose={async () => { if (locked || preparing || recordingMessage || selectionDirty || !selectionReady || messageDraft.text.trim()) return false; const saved = await messageDraft.save(); if (!saved) return false; return Boolean(await execute(`sessions/${session.id}/plan-proposals`, { expected_session_revision: session.revision, organization: session.requested_organization, day_count: session.requested_day_count })); }}
+      /></Panel>}
     {!plan && assessmentView}
     {plan && <Workspace>
       <Panel><StudyJourney key={plan.id} outline={plan.outline} sectionStates={session.section_states} selectedUnitId={unitId} expanded={outlineExpanded} onExpandedChange={setOutlineExpanded} busy={locked}

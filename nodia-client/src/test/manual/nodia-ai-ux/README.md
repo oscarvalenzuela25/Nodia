@@ -52,3 +52,22 @@ El baseline se obtiene desde un snapshot de código anterior, con las mismas
 fixtures/wrappers, fuentes cargadas y viewport. Comparar conteos de requests y
 bytes de builds equivalentes; no afirmar un ahorro de ruta a partir de la suma
 de todos los chunks ni de recursos servidos por el servidor de desarrollo.
+
+## Historial y filtros — continuación2026-11-16
+
+`scenario=history-filters` reutiliza las fixtures de conversación del rediseño
+y añade filtrado sintético optativo de búsqueda/archivo/fijadas para verificar
+vacíos y restablecimiento con el chat abierto. No implementa búsqueda productiva.
+`failNext("conversations")` junto con `refetch("conversations")` permite comprobar
+error de revalidación con filas previas y reintento sin perder el borrador.
+El filtro por ámbito se comprueba en pruebas de componente con permisos sintéticos.
+
+## Historial desde cabecera en móvil — continuación2026-11-16
+
+Por debajo de900px ya no se muestra una barra lateral. La fila bajo la marca
+presenta el icono de historial a la izquierda y «Nuevo chat» compacto a la derecha;
+el icono abre el Drawer existente. Desde900px se conserva el panel colapsable.
+Comprobar retorno de foco con Escape, búsqueda retenida al reabrir y mismo
+textarea/borrador/URL al cruzar899/900px, también con el Drawer abierto y con503
+de historial. No debe haber IDs duplicados durante la transición ni mutaciones
+por abrir/cerrar el historial. [Evidencia local](../../../../../docs/evidence/nodia-ai-mobile-history-20261116/README.md).

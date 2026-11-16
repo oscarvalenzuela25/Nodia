@@ -122,6 +122,26 @@ beforeEach(() => {
 afterEach(() => { useGeneralSettingsStore.getState().clearContext(); client.clear(); mainInstance.defaults.adapter = originalAdapter; useAuthStore.setState({token: null, user: null, sessionStatus: "anonymous"}); });
 
 describe("NodiaAI page with synthetic authenticated HTTP", () => {
+  it("opens mobile history from the header without a side rail and restores focus with the draft intact", async () => {
+    const user = userEvent.setup(); openPage();
+    const composer = await readyComposer();
+    await user.type(composer, "Mobile unsent draft");
+    const trigger = screen.getByRole("button", { name: i18n.t("nodiaAi:expand_conversations") });
+    const newChat = screen.getByRole("button", { name: i18n.t("nodiaAi:new_chat") });
+    expect(trigger.parentElement?.parentElement).toBe(newChat.parentElement);
+    expect(screen.queryByRole("complementary", { name: i18n.t("nodiaAi:conversations") })).not.toBeInTheDocument();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await user.click(trigger);
+    await screen.findByRole("textbox", { name: i18n.t("nodiaAi:organization.search") });
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(document.querySelectorAll("#nodia-ai-history")).toHaveLength(1);
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(trigger).toHaveFocus());
+    await waitFor(() => expect(screen.getByRole("textbox", { name: "Mensaje" })).toBe(composer));
+    expect(composer).toHaveValue("Mobile unsent draft");
+    expect(reads.filter(item => /\/conversations\/[a-f0-9-]+$/.test(item.url)).every(item => item.url.endsWith(chatId))).toBe(true);
+    expect(writes).toEqual([]);
+  });
   it("opens a new conversation with the Server-resolved defaults and no configuration modal", async () => {
     extraConnections = [codexConnection];
     other.conversation.selection = codexSelection;
@@ -458,7 +478,7 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
       await user.type(composer, "AI35 preserve draft across independent drawers");
       expect(screen.queryByRole("button", { name: "Configuración" })).not.toBeInTheDocument();
       expect(screen.queryByRole("button", { name: "Preferencias" })).not.toBeInTheDocument();
-      await user.click(screen.getByRole("button", { name: "Conversaciones" }));
+      await user.click(screen.getByRole("button", { name: i18n.t("nodiaAi:expand_conversations") }));
       await user.click(await screen.findByRole("button", { name: i18n.t("nodiaAi:organization.actions", { title: i18n.t("nodiaAi:untitled") }) }));
       await user.click(screen.getByRole("menuitem", { name: i18n.t("nodiaAi:organization.saved_preferences") }));
       await screen.findByText("Todavía no has aceptado ninguna preferencia.");
@@ -486,7 +506,7 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     const user = userEvent.setup(); openPage();
     const composer = await readyComposer();
     await user.type(composer, "AI35 next message remains private and unsent");
-    await user.click(screen.getByRole("button", { name: "Conversaciones" }));
+    await user.click(screen.getByRole("button", { name: i18n.t("nodiaAi:expand_conversations") }));
     await user.click(await screen.findByRole("button", { name: "Acciones de AI35 synthetic original" }));
     await user.click(screen.getByRole("menuitem", { name: "Renombrar" }));
     const dialog = await screen.findByRole("dialog", { name: "Renombrar" });
@@ -518,7 +538,7 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     current.conversation.title = "AI35 conflict original";
     patchAction = config => { current.conversation = { ...current.conversation, revision: 4 }; return rejected(config, 409, "nodia_ai:revision_conflict"); };
     const user = userEvent.setup(); openPage(); await readyComposer();
-    await user.click(screen.getByRole("button", { name: "Conversaciones" }));
+    await user.click(screen.getByRole("button", { name: i18n.t("nodiaAi:expand_conversations") }));
     await user.click(await screen.findByRole("button", { name: "Acciones de AI35 conflict original" }));
     await user.click(screen.getByRole("menuitem", { name: "Renombrar" }));
     const dialog = await screen.findByRole("dialog", { name: "Renombrar" });
@@ -543,8 +563,10 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
       reads.push({ url: config.url, params: { ...params } });
       return response(config, { items: params.cursor ? [other.conversation] : [current.conversation], next_cursor: params.cursor ? null : "synthetic-page-two" });
     };
-    const user = userEvent.setup(); openPage(); await readyComposer();
-    await user.click(screen.getByRole("button", { name: "Conversaciones" }));
+    const user = userEvent.setup(); openPage(); const composer = await readyComposer();
+    await user.type(composer, "Borrador conservado al restablecer filtros");
+    await user.click(screen.getByRole("button", { name: i18n.t("nodiaAi:expand_conversations") }));
+    const historyPanel = await screen.findByRole("dialog", { name: "Conversaciones" });
     await user.click(await screen.findByRole("button", { name: "Cargar más conversaciones" }));
     await waitFor(() => expect(reads.some(item => item.url === "/nodia-ai/conversations" && item.params.cursor === "synthetic-page-two")).toBe(true));
     expect(await screen.findByRole("button", { name: /^Other synthetic chat/ })).toBeInTheDocument();
@@ -559,6 +581,24 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     await user.click(screen.getByRole("button", { name: "Conversaciones" }));
     await user.click(await screen.findByRole("option", { name: "Archivadas" }));
     await waitFor(() => expect(reads.some(item => item.url === "/nodia-ai/conversations" && item.params.is_archived === true && item.params.is_pinned === true && item.params.search === "AI35 supplier" && item.params.cursor === undefined)).toBe(true));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Restablecer filtros de conversaciones" })).toBeEnabled());
+    const beforeReset = reads.length;
+    await user.click(screen.getByRole("button", { name: "Restablecer filtros de conversaciones" }));
+    // Returning to a cached infinite query may revalidate its later pages too.
+    // Its first request must start from the default criteria without the old cursor.
+    const resetQueries = () => reads.slice(beforeReset).filter(item => item.url === "/nodia-ai/conversations"
+      && item.params.view === "own" && item.params.is_archived === false && item.params.search === undefined);
+    await waitFor(() => expect(resetQueries()[0]?.params).toEqual(expect.objectContaining({
+      view: "own", is_archived: false, search: undefined, is_pinned: undefined,
+    })));
+    const resetQuery = resetQueries()[0]?.params;
+    expect(resetQuery?.search).toBeUndefined();
+    expect(resetQuery?.is_pinned).toBeUndefined();
+    expect(resetQuery?.cursor).toBeUndefined();
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(historyPanel).not.toBeInTheDocument());
+    expect(composer).toHaveValue("Borrador conservado al restablecer filtros");
+    expect(reads.filter(item => /\/conversations\/[a-f0-9-]+$/.test(item.url)).every(item => item.url.endsWith(chatId))).toBe(true);
     expect(writes).toEqual([]);
   });
   it.each(["detail", "messages"] as const)("withdraws private content after a %s read returns 403 without replaying a message", async kind => {
@@ -1123,7 +1163,7 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     await user.click(screen.getByRole("button", {name: "Enviar mensaje"}));
     const recover = await screen.findByRole("button", {name: "Comprobar el mismo envío"});
     await waitFor(() => expect(recover).toBeEnabled());
-    await user.click(screen.getByRole("button", {name: "Conversaciones"}));
+    await user.click(screen.getByRole("button", {name: i18n.t("nodiaAi:expand_conversations")}));
     await user.click(await screen.findByRole("button", {name: /^Other synthetic chat/}));
     await waitFor(() => expect(screen.getByRole("textbox", { name: "Mensaje" })).toHaveValue(""));
     await act(() => navigate(-1));

@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, alpha, Box, styled } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, alpha, Box, Button, Popover, styled } from "@mui/material";
 export const SelectionAccordion = styled(Accordion)({ background: "transparent", "&:before": { display: "none" } });
 export const Summary = styled(AccordionSummary)(({ theme }) => ({ padding: 0, minHeight: 44, "& .MuiAccordionSummary-content": { margin: theme.spacing(1, 0) } }));
 export const Details = styled(AccordionDetails)({ padding: 0 });
@@ -21,6 +21,41 @@ export const ComposerSelectionBar = styled("div")(({ theme }) => ({
   "& > .MuiAlert-root": { flexBasis: "100%", minWidth: 0 },
   "& > .MuiIconButton-root, & > span > .MuiIconButton-root": { minWidth: 44, minHeight: 44 },
 }));
+
+export const ComposerSelection = styled("div")(({ theme }) => ({
+  display: "flex", flexDirection: "column", gap: theme.spacing(1), minWidth: 0, width: "fit-content", maxWidth: "100%",
+  "& > .MuiAlert-root": { minWidth: 0 },
+}));
+
+export const ComposerSummary = styled(Button)(({ theme }) => ({
+  width: "fit-content", maxWidth: "100%", minWidth: 0, minHeight: 44, textAlign: "left",
+  justifyContent: "flex-start", alignSelf: "flex-start", textTransform: "none",
+  padding: theme.spacing(.25, .75), color: theme.palette.text.primary,
+  "& .MuiButton-endIcon": { flexShrink: 0 },
+  "&.Mui-focusVisible": { outline: `2px solid ${theme.palette.primary.main}`, outlineOffset: 2 },
+}));
+
+export const ComposerSummaryText = styled("span")(({ theme }) => ({
+  display: "flex", flexDirection: "column", minWidth: 0, gap: theme.spacing(.25),
+  "& > span": { whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 },
+}));
+
+export const ComposerPopover = styled(Popover)(({ theme }) => {
+  const thumb = alpha(theme.palette.text.primary, .2);
+  return {
+    "& .MuiPopover-paper": {
+      width: "min(40rem, calc(100vw - 32px))", maxWidth: "calc(100vw - 32px)",
+      maxHeight: "min(60dvh, 32rem)", boxSizing: "border-box", minWidth: 0,
+      padding: theme.spacing(2), borderRadius: 16, border: `1px solid ${theme.palette.divider}`,
+      overflowY: "auto", scrollbarWidth: "thin", scrollbarColor: `${thumb} transparent`,
+      "&::-webkit-scrollbar": { width: 6, height: 6 },
+      "&::-webkit-scrollbar-track": { background: "transparent !important" },
+      "&::-webkit-scrollbar-button": { display: "none !important", width: 0, height: 0 },
+      "&::-webkit-scrollbar-thumb": { background: thumb, borderRadius: 9999, border: 0,
+        "&:hover": { background: alpha(theme.palette.text.primary, .35) } },
+    },
+  };
+});
 
 export const Selector = styled("div", { shouldForwardProp: prop => prop !== "compact" })<{ compact: boolean }>(({ theme, compact }) => ({
   minWidth: 0,

@@ -1,66 +1,121 @@
-import { useState } from "react";
-import { Alert, Button, Chip, FormControlLabel, Stack, Switch, Typography } from "@mui/material";
+import { useId, useState } from "react";
+import { AccordionDetails, AccordionSummary, Alert, Box, Button, Chip, Stack, Typography } from "@mui/material";
+import CheckOutlined from "@mui/icons-material/CheckOutlined";
+import EditOutlined from "@mui/icons-material/EditOutlined";
+import ExpandMoreOutlined from "@mui/icons-material/ExpandMoreOutlined";
+import TuneOutlined from "@mui/icons-material/TuneOutlined";
 import { useTranslation } from "react-i18next";
 import TextInput from "../../../../components/inputs/TextInput";
-import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
-import SelectMultipleInput from "../../../../components/inputs/SelectMultipleInput";
 import type { Plan, Outline } from "../../infrastructure/schemas";
 import { outlineSchema } from "../../infrastructure/schemas";
 import { Actions } from "../../pages/Teacher/styles";
-import { SectionEditor } from "./styles";
-import AssessmentPolicyEditor from "../AssessmentPolicyEditor";
+import PlanStructureEditor from "../PlanStructureEditor";
+import { Decision, MetricRow, OutlineSection, ReviewSummary, SectionNumber, SectionSummary, UnitList } from "./styles";
 
 type Props = { plan: Plan; busy: boolean; canAccept: boolean; canAdjust: boolean; futureRevision?: boolean; onSave: (outline: Outline) => Promise<void>; onAccept: () => Promise<void>; onAdjust: (text: string) => Promise<void> };
 export default function PlanReview({ plan, busy, canAccept, canAdjust, futureRevision = false, onSave, onAccept, onAdjust }: Props) {
   const { t } = useTranslation();
+  const id = useId();
   const [draft, setDraft] = useState(() => structuredClone(plan.outline));
   const [adjustment, setAdjustment] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [adjusting, setAdjusting] = useState(false);
   const [invalid, setInvalid] = useState(false);
   const [policyValid, setPolicyValid] = useState(true);
   const changed = JSON.stringify(draft) !== JSON.stringify(plan.outline);
-  const updateSection = (index: number, patch: Partial<Outline["sections"][number]>) => setDraft(current => ({ ...current, sections: current.sections.map((section, i) => i === index ? { ...section, ...patch } : section) }));
-  const moveSection = (index: number, delta: number) => setDraft(current => { const sections = [...current.sections]; const other = index + delta; if (other < 0 || other >= sections.length) return current; [sections[index], sections[other]] = [sections[other], sections[index]]; return { ...current, sections }; });
-  const addSection = () => {
-    const objectiveId = crypto.randomUUID();
-    setDraft(current => ({ ...current, sections: [...current.sections, { id: crypto.randomUUID(), title: "", required: true, prerequisite_section_ids: [], objectives: [{ id: objectiveId, description: "" }], units: [{ id: crypto.randomUUID(), title: "", objective_ids: [objectiveId], day_start: null, day_end: null }] }] }));
-  };
+  const unitCount = draft.sections.reduce((sum, section) => sum + section.units.length, 0);
   const save = async () => {
+    if (busy || !changed || !policyValid) return;
     const result = outlineSchema.safeParse(draft);
     setInvalid(!result.success);
-    if (result.success && policyValid) await onSave(result.data);
+    if (result.success) await onSave(result.data);
   };
-  return <Stack sx={{ gap: 2 }}>
-    <Stack direction="row" sx={{ gap: 1, alignItems: "center", flexWrap: "wrap" }}><Typography variant="h5" sx={{ fontSize: 22, fontWeight: 700 }}>{t("teacher:review_plan")}</Typography><Chip label={t("teacher:revision", { revision: plan.revision_no })} size="small" /></Stack>
-    <Typography color="text.secondary">{t("teacher:review_description")}</Typography>
-    {invalid && <Alert severity="error">{t("teacher:invalid_plan")}</Alert>}
-    <TextInput label={t("teacher:fields.title")} value={draft.title} onChange={event => setDraft({ ...draft, title: event.target.value })} disabled={busy} />
-    <TextInput label={t("teacher:fields.objective")} value={draft.objective} onChange={event => setDraft({ ...draft, objective: event.target.value })} disabled={busy} multiline minRows={2} />
-    <SelectSingleInput label={t("teacher:fields.organization")} value={draft.organization} options={["days", "topics"].map(value => ({ value, label: t(`teacher:organization.${value}`) }))} onChange={value => { if (value === "days" || value === "topics") setDraft({ ...draft, organization: value, day_count: value === "topics" ? null : draft.day_count, sections: value === "topics" ? draft.sections.map(section => ({ ...section, units: section.units.map(unit => ({ ...unit, day_start: null, day_end: null })) })) : draft.sections }); }} disabled={busy} clearable={false} />
-    {draft.organization === "days" && <TextInput label={t("teacher:fields.day_count")} value={draft.day_count === null ? "" : String(draft.day_count)} type="number" inputMode="numeric" onChange={event => setDraft({ ...draft, day_count: event.target.value === "" ? null : Number(event.target.value) })} disabled={busy} />}
-    {draft.sections.map((section, index) => <SectionEditor key={section.id}>
-      <TextInput label={t("teacher:section_title", { number: index + 1 })} value={section.title} onChange={event => updateSection(index, { title: event.target.value })} disabled={busy} />
-      <FormControlLabel label={t("teacher:required_section")} control={<Switch disabled={busy} checked={section.required} onChange={(_, required) => updateSection(index, { required })} />} />
-      <SelectMultipleInput label={t("teacher:prerequisites")} value={section.prerequisite_section_ids} options={draft.sections.filter(item => item.id !== section.id).map(item => ({ value: item.id, label: item.title }))} onChange={prerequisite_section_ids => updateSection(index, { prerequisite_section_ids })} disabled={busy} />
-      {section.objectives.map((objective, objectiveIndex) => <TextInput key={objective.id} label={t("teacher:objective_number", { number: objectiveIndex + 1 })} value={objective.description} onChange={event => updateSection(index, { objectives: section.objectives.map(item => item.id === objective.id ? { ...item, description: event.target.value } : item) })} disabled={busy} multiline />)}
-      {section.units.map((unit, unitIndex) => <Stack key={unit.id} sx={{ gap: 1 }}>
-        <TextInput label={t("teacher:unit_title", { number: unitIndex + 1 })} value={unit.title} onChange={event => updateSection(index, { units: section.units.map(item => item.id === unit.id ? { ...item, title: event.target.value } : item) })} disabled={busy} />
-        <SelectMultipleInput label={t("teacher:unit_objectives")} value={unit.objective_ids} options={section.objectives.map(item => ({ value: item.id, label: item.description }))} onChange={objective_ids => updateSection(index, { units: section.units.map(item => item.id === unit.id ? { ...item, objective_ids } : item) })} disabled={busy} />
-        <Actions><Button variant="contained" disabled={busy || unitIndex === 0} onClick={() => { const units = [...section.units]; [units[unitIndex], units[unitIndex - 1]] = [units[unitIndex - 1], units[unitIndex]]; updateSection(index, { units }); }}>{t("teacher:move_unit_up")}</Button><Button variant="contained" disabled={busy || section.units.length === 1} onClick={() => updateSection(index, { units: section.units.filter(item => item.id !== unit.id) })}>{t("teacher:exclude_unit")}</Button></Actions>
-        {draft.organization === "days" && <Stack direction={{ xs: "column", sm: "row" }} sx={{ gap: 2 }}>
-          {(["day_start", "day_end"] as const).map(field => <TextInput key={field} label={t(`teacher:fields.${field}`)} value={unit[field] === null ? "" : String(unit[field])} type="number" inputMode="numeric" onChange={event => updateSection(index, { units: section.units.map(item => item.id === unit.id ? { ...item, [field]: event.target.value === "" ? null : Number(event.target.value) } : item) })} disabled={busy} />)}
-        </Stack>}
-      </Stack>)}
-      <Actions><Button variant="contained" disabled={busy || section.objectives.length >= 12} onClick={() => { const id = crypto.randomUUID(); updateSection(index, { objectives: [...section.objectives, { id, description: "" }], units: section.units.map((unit, i) => i === 0 ? { ...unit, objective_ids: [...unit.objective_ids, id] } : unit) }); }}>{t("teacher:add_objective")}</Button><Button variant="contained" disabled={busy || draft.sections.reduce((sum, item) => sum + item.units.length, 0) >= 60} onClick={() => updateSection(index, { units: [...section.units, { id: crypto.randomUUID(), title: "", objective_ids: section.objectives.map(item => item.id), day_start: null, day_end: null }] })}>{t("teacher:add_unit")}</Button></Actions>
-      <Actions><Button variant="contained" disabled={busy || index === 0} onClick={() => moveSection(index, -1)}>{t("teacher:move_up")}</Button><Button variant="contained" disabled={busy || index === draft.sections.length - 1} onClick={() => moveSection(index, 1)}>{t("teacher:move_down")}</Button><Button variant="contained" color="error" disabled={busy || draft.sections.length === 1} onClick={() => setDraft(current => ({ ...current, sections: current.sections.filter(item => item.id !== section.id) }))}>{t("teacher:exclude_section")}</Button></Actions>
-    </SectionEditor>)}
-    <Button variant="contained" disabled={busy || draft.sections.length >= 24} onClick={addSection}>{t("teacher:add_section")}</Button>
-    <Alert severity="info">{t("teacher:final_policy")}</Alert>
-    <AssessmentPolicyEditor value={draft.assessment_policy} maximumSectionObjectives={Math.max(0, ...draft.sections.map(section => section.objectives.length))} busy={busy} onValidation={setPolicyValid} onChange={assessment_policy => setDraft(current => ({ ...current, assessment_policy }))} />
-    {changed && <Alert severity="warning">{t("teacher:unsaved_plan")}</Alert>}
-    <Actions><Button variant="contained" disabled={busy || !changed || !policyValid} onClick={() => void save()}>{t("teacher:save_changes")}</Button><Button variant="contained" disabled={busy || changed || !canAccept || !policyValid} onClick={() => void onAccept()}>{t(futureRevision ? "teacher:activate_revision" : "teacher:create_plan")}</Button></Actions>
-    <SectionEditor>
-      <TextInput label={t("teacher:adjustment")} value={adjustment} onChange={event => setAdjustment(event.target.value)} multiline minRows={2} disabled={busy} />
-      <Button variant="contained" disabled={busy || changed || !canAdjust || !adjustment.trim()} onClick={() => void onAdjust(adjustment)}>{t("teacher:ask_adjustment")}</Button>
-    </SectionEditor>
+  return <Stack component="section" aria-labelledby={`${id}-title`} sx={{ gap: 3, minWidth: 0 }}>
+    <Stack direction="row" sx={{ gap: 1, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
+      <Typography id={`${id}-title`} component="h2" variant="h5" sx={{ fontSize: 22, fontWeight: 700 }}>{t(futureRevision ? "teacher:review_ui.future_title" : "teacher:review_ui.title")}</Typography>
+      <Chip label={t("teacher:revision", { revision: plan.revision_no })} size="small" variant="outlined" />
+    </Stack>
+    <ReviewSummary>
+      <Stack sx={{ gap: 2, minWidth: 0 }}>
+        <Typography component="h3" variant="h5" sx={{ fontWeight: 700, textWrap: "balance" }}>{draft.title || draft.topic}</Typography>
+        <Typography sx={{ whiteSpace: "pre-wrap" }}>{draft.objective}</Typography>
+        <MetricRow>
+          <Chip label={t("teacher:review_ui.sections", { count: draft.sections.length })} size="small" />
+          <Chip label={t("teacher:review_ui.units", { count: unitCount })} size="small" />
+          <Chip label={draft.organization === "days" && draft.day_count !== null ? t("teacher:review_ui.days", { count: draft.day_count }) : t(`teacher:organization.${draft.organization}`)} size="small" />
+        </MetricRow>
+      </Stack>
+      <Decision>
+        <Typography variant="body2" color="text.secondary">{t("teacher:review_ui.decision_hint")}</Typography>
+        <Button variant="contained" startIcon={<CheckOutlined />} disabled={busy || changed || !canAccept || !policyValid}
+          onClick={() => void onAccept()}>{t(futureRevision ? "teacher:activate_revision" : "teacher:review_ui.use_plan")}</Button>
+        <Typography variant="caption" color="text.secondary">{t(futureRevision ? "teacher:review_ui.future_accept_hint" : "teacher:review_ui.accept_hint")}</Typography>
+      </Decision>
+    </ReviewSummary>
+    <Stack sx={{ gap: 1 }}>
+      <Actions>
+        <Button variant="outlined" startIcon={<EditOutlined />} disabled={busy} aria-expanded={editing} aria-controls={`${id}-editor`} onClick={() => setEditing(value => !value)}>{t(editing ? "teacher:review_ui.show_overview" : "teacher:review_ui.edit_structure")}</Button>
+        <Button variant="outlined" startIcon={<TuneOutlined />} disabled={busy} aria-expanded={adjusting} aria-controls={`${id}-adjustment`} onClick={() => setAdjusting(value => !value)}>{t("teacher:review_ui.request_adjustment")}</Button>
+      </Actions>
+      {changed && <Alert severity="warning">{t("teacher:review_ui.unsaved")}</Alert>}
+      {!policyValid && <Alert severity="error">{t("teacher:review_ui.invalid_policy")}</Alert>}
+      {invalid && <Alert severity="error">{t("teacher:invalid_plan")}</Alert>}
+      {(changed || !policyValid) && !editing && <Actions><Button variant="outlined" disabled={busy} onClick={() => setEditing(true)}>{t("teacher:review_ui.continue_editing")}</Button></Actions>}
+    </Stack>
+    <Box id={`${id}-adjustment`} hidden={!adjusting}>
+      <Stack sx={{ gap: 2 }}>
+        <Typography component="h3" variant="h6">{t("teacher:review_ui.adjustment_title")}</Typography>
+        <Typography variant="body2" color="text.secondary">{t("teacher:review_ui.adjustment_hint")}</Typography>
+        <TextInput label={t("teacher:adjustment")} helperText={t("teacher:review_ui.adjustment_example")} value={adjustment} onChange={event => setAdjustment(event.target.value)} multiline minRows={2} disabled={busy} />
+        {!canAdjust && <Alert severity="info">{t("teacher:review_ui.adjustment_unavailable")}</Alert>}
+        <Actions><Button variant="contained" disabled={busy || changed || !policyValid || !canAdjust || !adjustment.trim()} onClick={() => void onAdjust(adjustment)}>{t("teacher:ask_adjustment")}</Button></Actions>
+      </Stack>
+    </Box>
+    <Box hidden={editing}>
+      <Stack sx={{ gap: 2 }}>
+        <Stack sx={{ gap: 0.5 }}>
+          <Typography component="h3" variant="h6">{t("teacher:review_ui.journey")}</Typography>
+          <Typography variant="body2" color="text.secondary">{t("teacher:review_ui.journey_hint")}</Typography>
+        </Stack>
+        {draft.sections.map((section, index) => <OutlineSection key={section.id} disabled={busy} disableGutters elevation={0}>
+          <AccordionSummary expandIcon={<ExpandMoreOutlined />} aria-controls={`${id}-section-${section.id}`}>
+            <SectionSummary>
+              <SectionNumber>{index + 1}</SectionNumber>
+              <Box sx={{ minWidth: 0 }}>
+                <Typography component="span" sx={{ display: "block", fontWeight: 600 }}>{section.title || t("teacher:review_ui.section_fallback", { number: index + 1 })}</Typography>
+                <Typography component="span" variant="body2" color="text.secondary">{t("teacher:review_ui.section_units", { count: section.units.length })}</Typography>
+              </Box>
+              {!section.required && <Chip size="small" variant="outlined" label={t("teacher:review_ui.optional")} />}
+            </SectionSummary>
+          </AccordionSummary>
+          <AccordionDetails id={`${id}-section-${section.id}`}>
+            <Stack sx={{ gap: 2 }}>
+              <Box>
+                <Typography variant="subtitle2">{t("teacher:review_ui.learning_outcomes")}</Typography>
+                <UnitList as="ul">{section.objectives.map(objective => <li key={objective.id}>{objective.description}</li>)}</UnitList>
+              </Box>
+              <Box>
+                <Typography variant="subtitle2">{t("teacher:review_ui.section_content")}</Typography>
+                <UnitList>{section.units.map(unit => <li key={unit.id}>
+                  {unit.title}
+                  {draft.organization === "days" && unit.day_start !== null && unit.day_end !== null && <Typography variant="caption" color="text.secondary" component="span" sx={{ display: "block" }}>{t("teacher:review_ui.day_range", { start: unit.day_start, end: unit.day_end })}</Typography>}
+                </li>)}</UnitList>
+              </Box>
+            </Stack>
+          </AccordionDetails>
+        </OutlineSection>)}
+        {!draft.sections.length && <Alert severity="info">{t("teacher:review_ui.empty_sections")}</Alert>}
+      </Stack>
+    </Box>
+    <Box id={`${id}-editor`} hidden={!editing}>
+      <Stack sx={{ gap: 3 }}>
+        <Stack sx={{ gap: 0.5 }}>
+          <Typography component="h3" variant="h6">{t("teacher:review_ui.edit_structure")}</Typography>
+          <Typography variant="body2" color="text.secondary">{t("teacher:review_ui.edit_hint")}</Typography>
+        </Stack>
+        <PlanStructureEditor value={draft} onChange={setDraft} busy={busy} onValidation={setPolicyValid} />
+        <Actions><Button variant="contained" disabled={busy || !changed || !policyValid} onClick={() => void save()}>{t("teacher:save_changes")}</Button></Actions>
+      </Stack>
+    </Box>
   </Stack>;
 }

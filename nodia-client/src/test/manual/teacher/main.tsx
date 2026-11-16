@@ -49,16 +49,28 @@ const topic = english ? "English for everyday technical conversations" : "Redes 
 const objective = english ? "Explain a problem clearly and ask for help in everyday and work contexts." : "Comprender cómo se conectan los dispositivos y resolver problemas cotidianos de conectividad.";
 const actions = (...keys: string[]) => Object.fromEntries(keys.map(key => [key, { enabled: true, reason_code: null }]));
 const outline: Outline = { schema_version: 1, title: topic, topic, objective, explanation_language: lang, organization: english ? "days" : "topics", day_count: english ? 7 : null, sections: [{ id: sid, title: english ? "Explaining a problem" : "Cómo funciona Internet", required: true, prerequisite_section_ids: [], objectives: [{ id: oid, description: objective }], units: [{ id: uid, title: english ? "Asking for help" : "Nombres, direcciones y DNS", objective_ids: [oid], day_start: english ? 1 : null, day_end: english ? 2 : null }] }], assessment_policy: { version: "teacher-assessment/1", practice_counts: { single_choice: 3, completion: 1, short_text: 1 }, final_counts: { single_choice: 6, completion: 2, short_text: 4 }, diagnostic_counts: { single_choice: 4, completion: 2, short_text: 2 }, final_threshold_percent: 90, coverage_per_objective: 2, criterion_ids: ["objective", "accuracy", "clarity"], normalization: "NFC-trim-collapse" } };
-const hasPlan = !["new", "draft", "review"].includes(scenario);
+if (scenario === "review" && params.get("reviewSize") === "long") {
+  const titles = english ? ["Building the foundations", "Explaining a problem", "Working through examples", "Putting it into practice"] : ["Construir las bases", "Entender el recorrido", "Resolver problemas frecuentes", "Aplicar lo aprendido"];
+  const source = outline.sections[0];
+  outline.sections = titles.map((title, sectionIndex) => {
+    const sectionId = sectionIndex === 0 ? sid : `33333333-3333-4333-8333-${String(sectionIndex + 1).padStart(12, "0")}`;
+    const objectiveId = `66666666-6666-4666-8666-${String(sectionIndex + 1).padStart(12, "0")}`;
+    return { ...structuredClone(source), id: sectionId, title, objectives: [{ id: objectiveId, description: source.objectives[0].description }],
+      units: Array.from({ length: 3 }, (_, unitIndex) => ({ ...source.units[0], id: `44444444-4444-4444-8444-${String(sectionIndex * 3 + unitIndex + 1).padStart(12, "0")}`,
+        title: `${title}: ${english ? "example" : "ejemplo"} ${unitIndex + 1}`, objective_ids: [objectiveId] })),
+    };
+  });
+}
+const hasPlan = !["new", "draft", "review", "paused-draft"].includes(scenario);
 const isAttempt = ["final", "graded", "failed", "practice"].includes(scenario);
-const session: Session = { setup_draft_text: "", setup_draft_revision: 0, id, title: topic, topic, objective, state: scenario === "paused" ? "paused" : hasPlan ? "active" : "draft", revision: 1, updated_at: new Date().toISOString(), declared_base: null, context: null, explanation_language: lang, requested_organization: outline.organization, requested_day_count: outline.day_count, selection: { connection_id: "1", mode: agentic ? "agentic" : "api_key", model_id: "qa-synthetic-teacher-model", effort_id: agentic ? "medium" : null }, dispatch_limit: 200, dispatches_used: 2, current_plan: hasPlan ? { id: pid, revision_no: 1, outline, content_hash: "a".repeat(64), state: "accepted" } : null, latest_proposal: scenario === "review" ? { id: pid, revision_no: 1, outline, content_hash: "a".repeat(64), state: "draft" } : null, latest_job_id: scenario === "unknown" ? jobId : null, active_jobs: scenario === "unknown" ? [{ job_id: jobId, state: "unknown", purpose: "learning_packet" }] : [], active_attempts: [], section_states: [{ section_id: sid, verification_state: "not_verified", allowed_actions: actions("start_final", "retry_final") }], cursor: { revision: 1, phase: isAttempt ? "final" : hasPlan && scenario !== "plan" ? "theory" : "setup", plan_revision_id: hasPlan ? pid : null, section_id: hasPlan ? sid : null, unit_id: isAttempt || scenario === "plan" ? null : uid, content_version_id: isAttempt || scenario === "plan" ? null : cid, attempt_id: isAttempt ? aid : null, item_id: isAttempt ? "q0" : null, block_id: null }, allowed_actions: actions("edit", "propose_plan", "accept_plan", "prepare_unit", "start_section_final", "pause", "archive", "start_diagnostic") };
+const session: Session = { setup_draft_text: "", setup_draft_revision: 0, id, title: topic, topic, objective, state: ["paused", "paused-draft"].includes(scenario) ? "paused" : hasPlan ? "active" : "draft", revision: 1, updated_at: new Date().toISOString(), declared_base: null, context: null, explanation_language: lang, requested_organization: outline.organization, requested_day_count: outline.day_count, selection: { connection_id: "1", mode: agentic ? "agentic" : "api_key", model_id: "qa-synthetic-teacher-model", effort_id: agentic ? "medium" : null }, dispatch_limit: 200, dispatches_used: 2, current_plan: hasPlan ? { id: pid, revision_no: 1, outline, content_hash: "a".repeat(64), state: "accepted" } : null, latest_proposal: scenario === "review" ? { id: pid, revision_no: 1, outline, content_hash: "a".repeat(64), state: "draft" } : null, latest_job_id: scenario === "unknown" || params.get("job") === "ready" ? jobId : null, active_jobs: scenario === "unknown" ? [{ job_id: jobId, state: "unknown", purpose: "learning_packet" }] : [], active_attempts: [], section_states: [{ section_id: sid, verification_state: "not_verified", allowed_actions: actions("start_final", "retry_final") }], cursor: { revision: 1, phase: isAttempt ? "final" : hasPlan && scenario !== "plan" ? "theory" : "setup", plan_revision_id: hasPlan ? pid : null, section_id: hasPlan ? sid : null, unit_id: !hasPlan || isAttempt || scenario === "plan" ? null : uid, content_version_id: !hasPlan || isAttempt || scenario === "plan" ? null : cid, attempt_id: isAttempt ? aid : null, item_id: isAttempt ? "q0" : null, block_id: null }, allowed_actions: actions("edit", "propose_plan", "accept_plan", "prepare_unit", "start_section_final", "pause", "archive", "start_diagnostic") };
 if (session.state === "paused") session.allowed_actions = actions("resume", "archive");
 const delivered = scenario === "graded" || scenario === "failed";
 const attempt: Attempt = { attempt_id: aid, session_id: id, scope: scenario === "practice" ? "unit_practice" : "section_final", state: delivered ? "graded" : "in_progress", result: delivered ? scenario === "failed" ? "not_passed" : "passed" : scenario === "practice" ? null : "pending", revision: 1, plan_revision_id: pid, section_id: sid, unit_id: scenario === "practice" ? uid : null, questions: Array.from({ length: 12 }, (_, index) => ({ question_id: `q${index}`, ordinal: index + 1, answer_status: delivered ? "submitted" : "empty" })), ...(delivered ? { earned_points: scenario === "failed" ? 32 : 36, denominator_points: 40, percentage: scenario === "failed" ? 80 : 90 } : {}), allowed_actions: delivered ? actions("view_feedback", "new_attempt") : actions("save_answers", "submit_attempt", "request_help", ...(scenario === "practice" ? ["submit_question"] : [])) };
 const responses = new Map<string, { answer: Answer | null; revision: number }>();
 const receiptMap = new Map<string, unknown>();
 const calls: { method: string; path: string; body: unknown; params: unknown }[] = [];
-const qa = { calls, session, responses, route: "" };
+const qa = { calls, session, responses, route: "", enrichmentFailure: "none" as "none" | "error" | "invalid", failSelection: false, failPlanSave: null as null | 409 | 503 };
 Object.assign(window, { teacherQA: qa });
 let failed = false;
 if (realHttp) mainInstance.defaults.baseURL = realHttp;
@@ -79,10 +91,18 @@ else mainInstance.defaults.adapter = async request => {
       const eligible = params.get("qualified") === "1";
       return response({ eligible, reason_code: eligible ? null : "adapter_unqualified", checked_at: null, selection: { connection_id: "1", mode: request.params?.mode, model_id: request.params?.model_id, effort_id: request.params?.effort_id ?? null } });
     }
+    if (path === `sessions/${id}/enrichment`) {
+      const failure = qa.enrichmentFailure;
+      qa.enrichmentFailure = "none";
+      if (failure === "error") return reject(503, "teacher:provider_unavailable");
+      if (failure === "invalid") return response({ schema_version: 0 });
+      return response({ schema_version: 1, revision: 1, policy_version: "teacher-intervals/1", review_cards: [], threads: [], sources: [], activities: [], concepts: [], equivalences: [], accepted_equivalences: [], visuals: [], has_more: false });
+    }
     if (path === "sessions") return response({ data: scenario === "empty" ? [] : [session], meta: { page: 1, limit: 10, total_items: scenario === "empty" ? 0 : 1, total_pages: 1 } });
     if (path === `sessions/${id}`) return response(session);
     if (path.endsWith("/messages")) return response({ data: [{ id: "m1", role: "assistant", text: english ? "Would you like to organize this by study days or topics?" : "¿Prefieres organizar tu plan por jornadas o por tópicos?" }], meta: { page: 1, limit: 50, total_items: 1, total_pages: 1 } });
     if (path.includes("plan-proposals")) return response(session.latest_proposal);
+    if (path === `jobs/${jobId}` && params.get("job") === "ready") return response({ job_id: jobId, fence: "1", state: "ready", purpose: "plan_outline", result_ref: null, error_code: null, local_closed: true, remote_outcome: "completed", retry_after_ms: null, allowed_actions: actions("refresh") });
     if (path === `jobs/${jobId}`) return response({ job_id: jobId, fence: "1", state: scenario === "new" ? "queued" : "unknown", purpose: scenario === "new" ? "plan_outline" : "learning_packet", result_ref: null, error_code: null, local_closed: scenario === "new" ? null : true, remote_outcome: scenario === "new" ? null : "unknown", retry_after_ms: null, allowed_actions: actions("refresh", "request_new_generation") });
     if (path.includes("/questions/")) {
       const qid = path.split("/").at(-1)!;
@@ -96,8 +116,19 @@ else mainInstance.defaults.adapter = async request => {
     return reject(404, "teacher:not_found");
   }
   if (params.get("fail") === "pause" && path.endsWith("/pause") && !failed) { failed = true; return reject(409, "teacher:revision_conflict"); }
+  if (qa.failSelection && path === `sessions/${id}` && body.selection) { qa.failSelection = false; return reject(503, "teacher:provider_unavailable"); }
+  if (qa.failPlanSave && request.method === "patch" && path.includes("/plan-proposals/")) {
+    const status = qa.failPlanSave; qa.failPlanSave = null;
+    return reject(status, status === 409 ? "teacher:revision_conflict" : "teacher:provider_unavailable");
+  }
   const key = String(request.headers.get("Idempotency-Key"));
   let result: Record<string, unknown> = { session_id: id, revision: ++session.revision };
+  if (path === `sessions/${id}` && body.selection) session.selection = body.selection as Session["selection"];
+  if (path.endsWith("/setup-draft")) {
+    session.setup_draft_text = String(body.text);
+    session.setup_draft_revision += 1;
+    result = { ...result, setup_draft_text: session.setup_draft_text, setup_draft_revision: session.setup_draft_revision };
+  }
   if (path === "sessions") {
     session.title = typeof body.title === "string" ? body.title : null;
     session.topic = String(body.topic);
@@ -117,7 +148,11 @@ else mainInstance.defaults.adapter = async request => {
   if (path.endsWith("/resume")) { session.state = "active"; session.allowed_actions = actions("pause", "archive", "start_section_final"); }
   if (path.endsWith("/attempts")) result = { attempt_id: aid, kind: "attempt", revision: attempt.revision };
   if (path.endsWith("/help")) result = { attempt_id: aid, revision: ++attempt.revision, hint: english ? "Ask one concrete question." : "Distingue la resolución del nombre de la conexión al destino." };
-  if (path.endsWith("/accept")) session.current_plan = { id: pid, revision_no: 1, outline, content_hash: "a".repeat(64), state: "accepted" };
+  if (request.method === "patch" && path.includes("/plan-proposals/") && body.outline && session.latest_proposal) {
+    session.latest_proposal = { ...session.latest_proposal, id: crypto.randomUUID(), revision_no: session.latest_proposal.revision_no + 1, outline: structuredClone(body.outline as Outline), content_hash: "b".repeat(64) };
+    result = { ...result, proposal_revision_id: session.latest_proposal.id };
+  }
+  if (path.endsWith("/accept")) session.current_plan = session.latest_proposal ? { ...session.latest_proposal, state: "accepted" } : { id: pid, revision_no: 1, outline, content_hash: "a".repeat(64), state: "accepted" };
   receiptMap.set(key, { request_key: key, operation: path, session_id: id, http_status: 200, receipt: result, completed_at: new Date().toISOString() });
   if (params.get("fail") === "lost" && !failed) { failed = true; throw new AxiosError("synthetic lost response", "ERR_NETWORK", request); }
   return response(result);

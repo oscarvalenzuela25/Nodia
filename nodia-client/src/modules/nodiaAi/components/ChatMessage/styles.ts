@@ -42,14 +42,16 @@ export const Content = styled("div")(({ theme }) => ({
   width: "100%",
 }));
 
-export const Bubble = styled("div", { shouldForwardProp: ownerProp })<{ isOwner: boolean }>(({ theme, isOwner }) => ({
+export const Bubble = styled("div", {
+  shouldForwardProp: prop => ownerProp(prop) && prop !== "isAssistant",
+})<{ isOwner: boolean; isAssistant?: boolean }>(({ theme, isOwner, isAssistant }) => ({
   minWidth: 0,
-  padding: isOwner ? theme.spacing(1.5, 2) : 0,
-  borderRadius: isOwner ? "18px 6px 18px 18px" : 0,
-  border: isOwner ? `1px solid ${alpha(theme.palette.text.primary, 0.06)}` : 0,
-  background: isOwner ? alpha(theme.palette.text.primary, theme.palette.mode === "dark" ? 0.075 : 0.045) : "transparent",
+  padding: isOwner || isAssistant ? theme.spacing(1.5, 2) : 0,
+  borderRadius: isOwner ? "16px 6px 16px 16px" : isAssistant ? "6px 16px 16px 16px" : 0,
+  border: isOwner || isAssistant ? `1px solid ${alpha(theme.palette.text.primary, 0.06)}` : 0,
+  background: isOwner || isAssistant ? alpha(theme.palette.text.primary, theme.palette.mode === "dark" ? 0.075 : 0.045) : "transparent",
   color: theme.palette.text.primary,
-  [theme.breakpoints.down("sm")]: { padding: isOwner ? theme.spacing(1.25, 1.5) : 0 },
+  [theme.breakpoints.down("sm")]: { padding: isOwner || isAssistant ? theme.spacing(1.25, 1.5) : 0 },
 }));
 
 export const Identity = styled("div", { shouldForwardProp: ownerProp })<{ isOwner: boolean }>(({ theme, isOwner }) => ({
@@ -70,6 +72,7 @@ export const MessageBody = styled("div")(({ theme }) => ({
 
 export const MessageActions = styled("div")(({ theme }) => ({
   display: "flex", alignItems: "center", minWidth: 0,
+  marginTop: theme.spacing(1),
   "& button": {
     width: 44, height: 44, color: theme.palette.text.secondary,
     "&:hover": { color: theme.palette.text.primary, background: alpha(theme.palette.text.primary, 0.05) },
