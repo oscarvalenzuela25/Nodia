@@ -16,20 +16,20 @@ const localScroll = (theme: Theme) => {
 };
 
 export const MarkdownContent = styled("div")(({ theme }) => ({
-  ...theme.typography.body2, fontSize: "0.9375rem", lineHeight: 1.7, color: "inherit",
+  ...theme.typography.body2, fontSize: "1rem", lineHeight: 1.75, color: "inherit",
   minWidth: 0, maxWidth: "100%", whiteSpace: "normal", overflowWrap: "anywhere",
   "& > :first-child": { marginTop: 0 },
   "& > :last-child": { marginBottom: 0 },
-  "& p": { margin: theme.spacing(0, 0, 1.5) },
-  "& h3, & h4, & h5, & h6": { fontWeight: 700, lineHeight: 1.4, margin: theme.spacing(2, 0, 1), color: "inherit" },
-  "& h3": { fontSize: "1.2rem" }, "& h4": { fontSize: "1.075rem" }, "& h5, & h6": { fontSize: "1rem" },
+  "& p": { margin: theme.spacing(0, 0, 2) },
+  "& h3, & h4, & h5, & h6": { fontWeight: 650, lineHeight: 1.45, margin: theme.spacing(3, 0, 1.25), color: "inherit" },
+  "& h3": { fontSize: "1.25rem" }, "& h4": { fontSize: "1.125rem" }, "& h5, & h6": { fontSize: "1rem" },
   "& ul, & ol": { margin: theme.spacing(0, 0, 1.5), paddingLeft: theme.spacing(3) },
-  "& li + li": { marginTop: theme.spacing(0.5) },
+  "& li + li": { marginTop: theme.spacing(0.75) },
   "& li > p": { marginBottom: theme.spacing(0.5) },
   "& .contains-task-list": { listStyle: "none", paddingLeft: 0 },
   "& input[type=checkbox]": { marginRight: theme.spacing(1), accentColor: theme.palette.primary.main },
-  "& blockquote": { margin: theme.spacing(1.5, 0), padding: theme.spacing(1, 1.5),
-    borderLeft: `3px solid ${alpha(theme.palette.primary.main, 0.45)}`, background: alpha(theme.palette.primary.main, 0.045), borderRadius: 6,
+  "& blockquote": { margin: theme.spacing(2, 0), padding: theme.spacing(0.5, 0, 0.5, 2),
+    borderLeft: `2px solid ${alpha(theme.palette.primary.main, 0.45)}`, color: theme.palette.text.secondary,
     "& > :last-child": { marginBottom: 0 } },
   "& a": { color: theme.palette.primary.main, textDecoration: "underline", textUnderlineOffset: "3px",
     "&:hover": { color: theme.palette.primary.dark },
@@ -40,7 +40,7 @@ export const MarkdownContent = styled("div")(({ theme }) => ({
 }));
 
 export const TableScroll = styled("div")(({ theme }) => ({
-  ...localScroll(theme), minWidth: 0, maxWidth: "100%", margin: theme.spacing(1.5, 0), borderRadius: 10,
+  ...localScroll(theme), minWidth: 0, maxWidth: "100%", margin: theme.spacing(2, 0), borderRadius: theme.shape.borderRadius,
   border: `1px solid ${theme.palette.divider}`,
   "& table": { borderCollapse: "separate", borderSpacing: 0, width: "max-content", minWidth: 650 },
   "& th, & td": { padding: theme.spacing(1, 1.5), maxWidth: "24rem", textAlign: "left", verticalAlign: "top", lineHeight: 1.6,
@@ -51,8 +51,8 @@ export const TableScroll = styled("div")(({ theme }) => ({
 }));
 
 export const CodeBlock = styled("pre")(({ theme }) => ({
-  ...localScroll(theme), minWidth: 0, maxWidth: "100%", boxSizing: "border-box", margin: theme.spacing(1.5, 0), padding: theme.spacing(1.5),
-  border: `1px solid ${theme.palette.divider}`, borderRadius: 10, background: alpha(theme.palette.text.primary, 0.045),
+  ...localScroll(theme), minWidth: 0, maxWidth: "100%", boxSizing: "border-box", margin: theme.spacing(2, 0), padding: theme.spacing(2),
+  border: `1px solid ${theme.palette.divider}`, borderRadius: theme.shape.borderRadius, background: alpha(theme.palette.text.primary, 0.035),
   fontSize: "0.8125rem", lineHeight: 1.65,
   "& code": { display: "block", minWidth: "max-content", padding: 0, background: "transparent", borderRadius: 0,
     whiteSpace: "pre", overflowWrap: "normal", fontSize: "inherit" },

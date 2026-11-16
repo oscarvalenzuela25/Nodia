@@ -1,25 +1,36 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, Button, Typography } from "@mui/material";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import type { RefObject } from "react";
+import { Alert, Box, Button, IconButton, Typography } from "@mui/material";
 import CheckOutlined from "@mui/icons-material/CheckOutlined";
+import ExpandMoreOutlined from "@mui/icons-material/ExpandMoreOutlined";
+import ExpandLessOutlined from "@mui/icons-material/ExpandLessOutlined";
+import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import { useTranslation } from "react-i18next";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import { catalogModelOptions, chooseModelEffort, modelOptionComplete, modelOptionEfforts, modelOptionFor } from "../../../../utils/modelVariantOptions";
 import { nodiaAiEligibilityReasonKey } from "../../infrastructure/eligibilityPresentation";
 import type { NodiaAiMode, NodiaAiSelection } from "../../infrastructure/types";
-import { DraftActions, SelectionBar, Selector } from "./styles";
+import { DraftActions, SelectionBar, SelectionPanel, SelectionPopover, SelectionSummary, Selector, SummaryContent } from "./styles";
 import type { ComposerSelectionProps } from "./types";
 
 const sameSelection = (left: NodiaAiSelection | null, right: NodiaAiSelection | null) =>
   left !== null && right !== null && left.connection_id === right.connection_id
   && left.mode === right.mode && left.model_id === right.model_id && left.effort_id === right.effort_id;
 
+const selectionKey = (selection: NodiaAiSelection | null) => JSON.stringify(selection && [
+  selection.connection_id, selection.mode, selection.model_id, selection.effort_id,
+]);
+
 function SelectionEditor({
   connections, selection, onSelectionChange, onDirtyChange,
   eligibility, eligibilityBusy, eligibilityError, onRetryEligibility,
   isLoading, isFetching, isSaving, readOnly, error, onRetry,
-  hasMore, onLoadMore, onApply,
-}: ComposerSelectionProps) {
+  hasMore, onLoadMore, onApply, summaryRef: summary,
+}: ComposerSelectionProps & { summaryRef: RefObject<HTMLButtonElement | null> }) {
   const { t } = useTranslation("nodiaAi");
+  const panelId = useId();
+  const [opened, setOpened] = useState(false);
+  const [visited, setVisited] = useState(false);
   const [connectionId, setConnectionId] = useState(selection?.connection_id ?? null);
   const [mode, setMode] = useState<NodiaAiMode | null>(selection?.mode ?? null);
   const [modelId, setModelId] = useState(selection?.model_id ?? null);
@@ -60,17 +71,81 @@ function SelectionEditor({
     label: ["low", "medium", "high"].includes(item.effort_id) ? t(`effort_levels.${item.effort_id}`) : item.label }));
   if (effortId && !model?.efforts.some(item => item.effort_id === effortId)) effortOptions.push({ value: effortId, label: t("configuration.missing_effort", { id: effortId }) });
 
+  const appliedConnection = connections.find(item => item.connection_id === selection?.connection_id);
+  const appliedMode = appliedConnection?.modes.find(item => item.mode === selection?.mode);
+  const appliedModel = appliedMode?.models.find(item => item.model_id === selection?.model_id);
+  const appliedEffort = appliedModel?.efforts.find(item => item.effort_id === selection?.effort_id);
+  const appliedModelLabel = appliedModel?.label ?? selection?.model_id ?? t("configuration.unassigned_model");
+  const appliedDetails = selection ? [
+    appliedConnection?.label ?? t("configuration.missing_connection", { id: selection.connection_id }),
+    t(`modes.${selection.mode}`),
+    ...(selection.effort_id === null ? [] : [
+      ["low", "medium", "high"].includes(selection.effort_id)
+        ? t(`effort_levels.${selection.effort_id}`) : appliedEffort?.label ?? selection.effort_id,
+    ]),
+  ].join(" · ") : t("configuration.selection_panel.choose");
+  const appliedIdentity = selection ? [selection.connection_id, selection.mode, selection.model_id, selection.effort_id]
+    .filter(value => value !== null).join(" · ") : undefined;
+  const closePanel = () => {
+    if (busy) return;
+    setOpened(false);
+  };
+
   const apply = async () => {
     if (!canApply || !draft || submission.current) return;
     submission.current = true;
     setApplying(true);
     try { await onApply({ selection: draft, routingEnabled: false }); }
-    catch { /* The owner reports the HTTP error; the complete draft remains editable. */ }
+    catch { setOpened(true); /* The owner reports the HTTP error; retain the complete visible draft. */ }
     finally { submission.current = false; setApplying(false); }
   };
 
+  const notices = <>
+      {dirty && <Typography role="status" variant="caption" color="text.primary" sx={{ px: 1, overflowWrap: "anywhere" }}>
+        {t("configuration.selection_panel.unsaved")}
+      </Typography>}
+      {error && <Alert severity="error" action={<Button type="button" color="inherit" disabled={busy} onClick={onRetry}>{t("retry")}</Button>}>{error}</Alert>}
+      {!isLoading && !error && connections.length === 0 && <Alert severity="info">{t("configuration.no_connections")}</Alert>}
+      {missing && <Alert severity="warning">{t("configuration.selection_missing")}</Alert>}
+      {configurationDisabled && <Alert severity="warning">{t("configuration.mode_disabled")}</Alert>}
+      {dirty && eligibilityError && <Alert severity="error" action={<Button type="button" color="inherit" disabled={disabled} onClick={onRetryEligibility}>{t("retry")}</Button>}>{eligibilityError}</Alert>}
+      {dirty && draft && !eligibilityBusy && !eligibilityError && exactEligibility?.available === false && !missing && !configurationDisabled && (
+        <Alert severity="info" action={<Button type="button" color="inherit" disabled={disabled} onClick={onRetryEligibility}>{t("configuration.check_again")}</Button>}>
+          {t(nodiaAiEligibilityReasonKey(exactEligibility.reason))}
+        </Alert>
+      )}
+  </>;
+
   return (
-    <SelectionBar aria-label={t("configuration.title")}>
+    <SelectionPanel>
+      <SelectionSummary ref={summary} type="button" variant="text" disabled={busy}
+        aria-label={t("configuration.selection_panel.title")} aria-expanded={opened} aria-controls={visited ? panelId : undefined} aria-haspopup="dialog"
+        aria-describedby={`${panelId}-applied`}
+        title={[appliedModelLabel, appliedDetails, appliedIdentity].filter(Boolean).join("\n")} endIcon={opened ? <ExpandLessOutlined /> : <ExpandMoreOutlined />}
+        onClick={() => {
+          if (opened) closePanel();
+          else { setVisited(true); setOpened(true); }
+        }}>
+        <SummaryContent>
+          <span id={`${panelId}-applied`} data-selection-description>{t("configuration.selection_panel.applied")}: {appliedModelLabel} · {appliedDetails}</span>
+          <Typography component="span" variant="body2" sx={{ fontWeight: 600 }}>{appliedModelLabel}</Typography>
+          <Typography component="span" variant="caption" color="text.secondary">{selection ? t(`modes.${selection.mode}`) : t("configuration.selection_panel.choose")}</Typography>
+        </SummaryContent>
+      </SelectionSummary>
+      {!opened && notices}
+      {visited && <SelectionPopover open={opened} anchorEl={() => summary.current} keepMounted
+        anchorOrigin={{ vertical: "top", horizontal: "left" }} transformOrigin={{ vertical: "bottom", horizontal: "left" }}
+        marginThreshold={16} onClose={closePanel}
+        slotProps={{ paper: { id: panelId, role: "dialog", "aria-modal": true, "aria-labelledby": `${panelId}-title` } }}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1, mb: 1 }}>
+          <Box sx={{ flex: 1, minWidth: 0, overflowWrap: "anywhere" }}>
+            <Typography component="h2" variant="subtitle2" id={`${panelId}-title`}>{t("configuration.title")}</Typography>
+            <Typography variant="caption" color="text.secondary">{t("configuration.selection_panel.applied")}: {appliedModelLabel} · {appliedDetails}</Typography>
+          </Box>
+          <IconButton type="button" aria-label={t("close")} disabled={busy} onClick={closePanel} sx={{ width: 44, height: 44, flexShrink: 0 }}><CloseOutlined /></IconButton>
+        </Box>
+        {opened && <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mb: dirty || error || missing || configurationDisabled || eligibilityError ? 1 : 0 }}>{notices}</Box>}
+        <SelectionBar aria-label={t("configuration.title")}>
       <Selector>
         <SelectSingleInput label={t("configuration.connection")} options={connectionOptions}
           value={connectionId} clearable={false} disabled={disabled}
@@ -121,16 +196,6 @@ function SelectionEditor({
             setModelId(next.model_id); setEffortId(next.effort_id);
           }} />
       </Selector>}
-      {error && <Alert severity="error" action={<Button type="button" color="inherit" disabled={busy} onClick={onRetry}>{t("retry")}</Button>}>{error}</Alert>}
-      {!isLoading && !error && connections.length === 0 && <Alert severity="info">{t("configuration.no_connections")}</Alert>}
-      {missing && <Alert severity="warning">{t("configuration.selection_missing")}</Alert>}
-      {configurationDisabled && <Alert severity="warning">{t("configuration.mode_disabled")}</Alert>}
-      {dirty && eligibilityError && <Alert severity="error" action={<Button type="button" color="inherit" disabled={disabled} onClick={onRetryEligibility}>{t("retry")}</Button>}>{eligibilityError}</Alert>}
-      {dirty && draft && !eligibilityBusy && !eligibilityError && exactEligibility?.available === false && !missing && !configurationDisabled && (
-        <Alert severity="info" action={<Button type="button" color="inherit" disabled={disabled} onClick={onRetryEligibility}>{t("configuration.check_again")}</Button>}>
-          {t(nodiaAiEligibilityReasonKey(exactEligibility.reason))}
-        </Alert>
-      )}
       {dirty && <DraftActions>
         <Typography variant="caption" color="text.secondary" sx={{ flex: 1 }}>
           {t(eligibilityBusy ? "configuration.checking" : "configuration.scope")}
@@ -142,13 +207,32 @@ function SelectionEditor({
         <Button type="button" size="small" variant="contained" startIcon={<CheckOutlined />}
           disabled={!canApply} loading={isSaving || applying} onClick={() => void apply()}>{t("configuration.apply")}</Button>
       </DraftActions>}
-    </SelectionBar>
+        </SelectionBar>
+      </SelectionPopover>}
+    </SelectionPanel>
   );
 }
 
 export default function ComposerSelection(props: ComposerSelectionProps) {
-  const selection = props.selection;
+  const summary = useRef<HTMLButtonElement | null>(null);
+  const completedFocus = useRef<string | null>(null);
+  const [confirmedFocus, setConfirmedFocus] = useState<string | null>(null);
   // A server-confirmed selection starts a new editor; failed writes never change this key.
-  const key = JSON.stringify(selection && [selection.connection_id, selection.mode, selection.model_id, selection.effort_id]);
-  return <SelectionEditor key={key} {...props} />;
+  const key = selectionKey(props.selection);
+  const summaryBusy = props.isLoading || props.isFetching || props.isSaving || props.eligibilityBusy;
+  useEffect(() => {
+    if (!summaryBusy && confirmedFocus === key && completedFocus.current !== confirmedFocus) {
+      summary.current?.focus();
+      completedFocus.current = confirmedFocus;
+    }
+  }, [confirmedFocus, key, summaryBusy]);
+  const apply: ComposerSelectionProps["onApply"] = async change => {
+    completedFocus.current = null;
+    setConfirmedFocus(null);
+    await props.onApply(change);
+    // A successful write may update the keyed editor before its promise resolves.
+    // Focus only the new server-confirmed summary, never the detached old trigger.
+    setConfirmedFocus(selectionKey(change.selection));
+  };
+  return <SelectionEditor key={key} {...props} summaryRef={summary} onApply={apply} />;
 }

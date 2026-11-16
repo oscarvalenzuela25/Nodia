@@ -1,4 +1,8 @@
 {
+  "workspace": {
+    "start": "Start a conversation",
+    "ready_title": "How can I help?"
+  },
   "settings": "Settings",
   "conversations": "Conversations",
   "new_chat": "New chat",
@@ -38,6 +42,12 @@
   "empty_messages": "This chat is ready for its first message. Review its settings to get started.",
   "you": "You",
   "assistant": "NodiaAI",
+  "message_actions": {
+    "copy": "Copy response",
+    "copied": "Response copied",
+    "copy_failed": "We could not copy the response",
+    "copy_manual": "Select the response text and copy it manually."
+  },
   "restricted_message": "This message contains information that your current permissions do not allow you to view.",
   "messages_error": "We could not recover the history. Previously loaded messages are preserved.",
   "more_messages": "Load earlier messages",
@@ -136,6 +146,12 @@
     "mode": "Mode",
     "model": "Model",
     "effort": "Intensity",
+    "selection_panel": {
+      "title": "Choose AI for this conversation",
+      "applied": "Applied AI",
+      "choose": "Choose a connection and model to continue",
+      "unsaved": "Unapplied changes. Open the selection to apply or cancel them before sending."
+    },
     "effort_preference": "Intensity is a preference. Availability is checked for the exact selection before applying.",
     "unassigned_connection": "No connection assigned",
     "unassigned_mode": "No mode assigned",

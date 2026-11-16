@@ -60,10 +60,10 @@ export default function GuardStrict({ children, modulePath }: Props) {
 
   // Keep the authorized view mounted during refresh, with its controls disabled.
   return (
-    <Box aria-busy={isBusy}>
+    <Box aria-busy={isBusy} data-route-guard>
       {(context.isFetching || isRefreshing) && <LinearProgress />}
       {error}
-      <Box key={actorScope} inert={isBusy || context.isError}>{children}</Box>
+      <Box key={actorScope} inert={isBusy || context.isError} data-route-view>{children}</Box>
     </Box>
   );
 }

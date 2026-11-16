@@ -9,6 +9,8 @@ export const LayoutWrapper = styled("div")({
   display: "flex",
   minHeight: "100vh",
   width: "100%",
+  // Conversation pages consume the available viewport; other pages keep document scrolling.
+  "&:has([data-page-layout='conversation'])": { height: "100dvh", minHeight: 0 },
 });
 
 export const MainContainer = styled("main", {
@@ -22,6 +24,10 @@ export const MainContainer = styled("main", {
     flexGrow: 1,
     width: "100%",
     minWidth: 0,
+    "&:has([data-page-layout='conversation'])": {
+      minHeight: 0,
+      "& > header": { flexShrink: 0 },
+    },
     [theme.breakpoints.up("lg")]: {
       width: `calc(100% - ${currentWidth}px)`,
       transition: theme.transitions.create(["width"], {
@@ -36,6 +42,13 @@ export const PageContent = styled("div", { shouldForwardProp: prop => prop !== "
   flexGrow: 1,
   padding: theme.spacing(2),
   ...(mobileNavigation ? { paddingBottom: `calc(${theme.spacing(2)} + ${MOBILE_NAV_RESERVED_HEIGHT})` } : {}),
+  "&:has([data-page-layout='conversation'])": {
+    display: "flex", flexDirection: "column", minHeight: 0,
+    "& [data-route-guard], & [data-route-view]": {
+      display: "flex", flexDirection: "column", minHeight: 0, flex: 1,
+    },
+    "& [data-route-guard] > :not([data-route-view])": { flexShrink: 0 },
+  },
   [theme.breakpoints.up("sm")]: {
     paddingLeft: theme.spacing(3),
     paddingRight: theme.spacing(3),
