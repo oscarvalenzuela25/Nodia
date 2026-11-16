@@ -118,3 +118,18 @@ test('equivalent backend receipts and summaries distinguish candidate from actua
   f.write('backend-result.json', { status: 'content_unchanged', candidate_source_sha: 'private-secret' });
   assert.equal(Object.hasOwn(deliveryReceipt(f.directory, f.environment).backend, 'candidate_source_sha'), false);
 });
+
+test('byte recovery evidence preserves cursor and identity without exposing raw responses or permitting application retry', t => {
+  const f = fixture(t);
+  f.write('backend-state.json', { status: 'upload_receiving', upload_protocol_version: 2, upload_id: 'e'.repeat(64),
+    upload_offset: 8 * 1024 ** 2, upload_bytes: 16 * 1024 ** 2, upload_phase: 'receiving', upload_recovered: true,
+    deployment_requested: false, automatic_retry_allowed: true, response: 'private-remote-value' });
+  const receipt = deliveryReceipt(f.directory, f.environment);
+  assert.equal(receipt.backend.upload_protocol_version, 2); assert.equal(receipt.backend.upload_recovered, true);
+  assert.equal(receipt.backend.upload_offset, 8 * 1024 ** 2); assert.equal(receipt.backend.upload_id, 'e'.repeat(64));
+  assert.equal(receipt.backend.deployment_requested, false); assert.equal(receipt.backend.automatic_retry_allowed, false);
+  assert.doesNotMatch(JSON.stringify(receipt), /private-remote-value|response/);
+  f.write('backend-state.json', { status: 'upload_receiving', upload_offset: -1, upload_id: 'private-secret', upload_phase: 'private-secret' });
+  const invalid = deliveryReceipt(f.directory, f.environment).backend;
+  for (const key of ['upload_offset', 'upload_id', 'upload_phase']) assert.equal(Object.hasOwn(invalid, key), false);
+});

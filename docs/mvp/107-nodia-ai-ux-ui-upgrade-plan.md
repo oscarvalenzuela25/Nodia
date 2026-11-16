@@ -2,6 +2,8 @@
 
 Fecha: 2026-11-15. Revisión: R02. Estado documental: **en revisión**.
 Estado de entrega: **implementación local y QA sintética completadas**; revisión humana y adopción por entorno pendientes.
+Continuación2026-11-16: **adopción operativa productiva completada en§12**;
+revisión humana y teléfono/teclado físico siguen pendientes. El corte local se conserva.
 Solicitud: estudiar `deepseek-ai/chat-demo`, mejorar de forma importante la
 experiencia de NodiaAI y dejar la implementación futura en el TODO.
 
@@ -547,3 +549,28 @@ null y estados por alcance. No backend, migraciones, cuentas, inferencias,
 cancelaciones reales o despliegue. Los warnings previos de React/Emotion y
 bundle>500kB mantienen su alcance. Reanudar en NAIUX-07; no repetir construcción,
 baseline o gates históricos por leer el checklist original.
+
+## 12. Adopción operativa productiva — 2026-11-16
+
+PR36 integrada en development y PR37 promovida a master
+`6ba2afb7d258548ca68c245fb8282759a30d0ce4`, con CI correctos.
+[CI43798403214](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43798403214)
+y [CD43799433169](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43799433169)
+correctos; Client`client-6ba2afb7d258-bbb5c0a0fa85` publicado en Pages
+`bcf7cb3c-3bfd-4efd-93fb-fac3a3afbe8a`, backend6ba/c01 complete.
+[99§31.2](99-production-deployment-and-cicd-plan.md#312-entrega-nueva-completada-en-producción--2026-11-16),
+[recibo oficial14196161759](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43799433169/artifacts/14196161759)
+y [evidencia de cierre](../evidence/deploy-upload-reconciliation-20261115.md)
+conservan identidades, hashes, SSH/HTTPS y diez recursos PWA verificados.
+
+El árbol Clientbbb5… coincide con el candidato538 del intento fallido; la entrega
+posterior usó CI/artefactos/operación nuevos, sin replay del CD anterior. El gateway
+se actualizó antes y sin restart; el deploy normal posterior sí activó release y
+reinició servicios. Sudo invalidado y sesión tmux administrativa cerrada.
+
+NAIUX-07 queda cumplido en su **adopción operativa productiva**; comprensión y uso
+de UI real, teléfono/teclado virtual/Safari continúan pendientes. El HTTP200 no
+demuestra interacción autenticada, disponibilidad IA o aceptación humana. No se
+hicieron inferencias ni se aprueban/publican fichas o el plan por esta entrega.
+No repetir baseline, construcción o deploy ya registrados para continuar la
+revisión humana. Los tests, mediciones y límites del§11 siguen siendo locales.
