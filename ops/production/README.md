@@ -1341,3 +1341,59 @@ registran en [99§31](../../docs/mvp/99-production-deployment-and-cicd-plan.md#3
 y [evidencia](../../docs/evidence/deploy-upload-reconciliation-20261115.md).
 No repetir esa operación ni el CD antiguo. El éxito del operador requiere además
 un `status` por una conexión SSH restringida nueva; no se prueba con otro upload.
+
+## Upload v2: recuperación y retención automática del inbox
+
+[Plan99§32](../../docs/mvp/99-production-deployment-and-cicd-plan.md#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16),
+[ADR104 propuesto](../../docs/architecture/decisions/ADR-104-durable-upload-continuation-and-incoming-retention.md)
+y [evidencia](../../docs/evidence/durable-backend-uploads-20261116.md) separan
+implementación, ensayos aislados y adopción real. No asumir instalado un protocolo
+por cambiar el repositorio; las capacidades deben leerse por SSH nuevo.
+
+El gateway admite únicamente los comandos tipados nuevos `capabilities`,
+`upload-status`, `upload-open`, `upload-append` y `upload-finish`. No expone paths,
+shell, borrado, restart o ejecución. Los cinco campos de identidad son artifact
+ID/digest original, CI run/attempt y bytes; otro contenido para la misma ruta
+física requiere conciliación, incluso con un intent sin parcial.
+
+El cliente verifica el ZIP original y consulta capacidades/pins antes de iniciar.
+Los offsets son de bytes realmente observados y hasheados, comparados contra el
+ZIP; cada append exige ese CAS y SHA/EOF de su bloque antes de escribir. Nunca
+trunca, sobrescribe o adopta un parcial legacy. Se guarda intención antes de
+bytes, fsync antes de ACK, fsync completo antes de rename y recibo después.
+ACKs válidos evitan lecturas redundantes; tras incertidumbre sólo una consulta
+con evidencia exacta permite continuar bytes. No existe deploy-resume, y el ZIP
+completo no relaja la barrera de CI/CD anterior o autoriza otro submit.
+
+La cuota cuenta tamaño total y slot de cada intent activo, no sólo su parcial.
+También el upload legacy bajo assets4 respeta esas reservas. La retención siempre
+comprueba intents anteriores y, si no cabe la reserva nueva, archiva el mínimo
+de ZIPs completos/no-current con todas las referencias verificadas. No elige
+por edad ni borra failed/unknown/partial/orphan. Los archivos permanecen en
+`archived-incoming`; moverlos no libera espacio físico. Sin headroom o candidatos
+seguros, se detiene antes de nuevos bytes. No hay purga de releases/backups/secretos.
+
+`refresh-upload-transport.py` adopta un bundle revisado de cuatro assets más
+`upload-transport.json`; IO857 debe estar como sibling del operador. El manifest
+liga hashes nuevos, assets previos y current exacto. CLI con marcadores no
+ejecutables (usar únicamente valores observados y revisados):
+
+```bash
+sudo python3 -I -B /ruta/revisada/refresh-upload-transport.py \
+  --bundle /ruta/revisada/bundle \
+  --manifest-sha256 <sha256-manifest> \
+  --expected-receiver-settings-sha256 <sha256-settings-instalado>
+```
+
+Dry-run por defecto. Con `--apply`, locks receiver→installation, intent/originales
+durables, cinco escrituras registradas y pin al final. Se conservan updater,
+reconciliaciones, current y PID; no modifica sudoers, credenciales o servicios.
+Tras sustituir el receiver, un refresh sin recibo final bloquea nuevas mutaciones;
+las consultas de salud/storage siguen separadas. Antes del cambio de receiver,
+los módulos añadidos no habilitan v2 y los bytes/pins legacy siguen intactos.
+El helper sólo revisa capabilities internas bajo sus locks antes de sellar el
+recibo; después debe verificarse por una conexión SSH nueva. No repetir un apply
+interrumpido ni generar otro manifest para eludir su journal.
+
+Los intents, receipts y archivos de recepción/archivo son evidencia mantenida;
+no eliminarlos para liberar cuota o simular que una operación no ocurrió.

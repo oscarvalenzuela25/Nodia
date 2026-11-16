@@ -49,7 +49,7 @@ function fixture(t, behavior = {}) {
       }
       if (behavior.reject) return failure(behavior.reject);
       received = Buffer.concat([received, payload]);
-      return { code: 0, body: status() };
+      return { code: 0, body: behavior.ack?.(status()) ?? status() };
     }
     if (operation === 'upload-finish') {
       assert.deepEqual(received, bytes); renamed = true;
@@ -70,6 +70,7 @@ test('chunk transport verifies the immutable ZIP and seals bytes without any app
   assert.equal(result.upload_offset, f.zipBytes); assert.equal(result.upload_id, uploadId(f.identity));
   assert.equal(f.calls.filter(x => x.startsWith('upload-open ')).length, 1);
   assert.equal(f.calls.filter(x => x.startsWith('upload-finish ')).length, 1);
+  assert.equal(f.calls.filter(x => x.startsWith('upload-status ')).length, 1);
   assert.ok(f.calls.every(x => !/^(deploy|upload |status )/.test(x)));
   assert.ok(f.records.every(x => x.deployment_requested === false));
 });
@@ -105,7 +106,7 @@ test('conflicting remote prefix, identity and phase never reset, truncate or sen
     const f = fixture(t, { status: body => ({ code: 0, body: { ...body, ...change } }) });
     await assert.rejects(uploadArtifact(f), expected); assert.equal(f.calls.length, 2);
   }
-  const f = fixture(t, { status: (body, received) => ({ code: 0, body: received.length ? { ...body, prefix_sha256: 'f'.repeat(64) } : body }) });
+  const f = fixture(t, { ack: body => ({ ...body, prefix_sha256: 'f'.repeat(64) }) });
   await assert.rejects(uploadArtifact(f), /upload_remote_prefix_mismatch/);
   assert.equal(f.calls.filter(x => x.startsWith('upload-append ')).length, 1);
 });
@@ -129,7 +130,7 @@ test('local artifact corruption is detected before contacting the server', async
 test('busy and lost read responses have bounded, read-only retries', async t => {
   const f = fixture(t); let attempts = 0;
   f.send = async () => { attempts++; return failure('receiver_busy'); };
-  await assert.rejects(uploadArtifact(f), /upload_status_outcome_unknown/); assert.equal(attempts, 4);
+  await assert.rejects(uploadArtifact(f), /upload_status_outcome_unknown/); assert.equal(attempts, 8);
 });
 test('lost open response never sends a second open when no intent can be proven', async t => {
   const f = fixture(t), normal = f.send;

@@ -93,24 +93,24 @@ export async function uploadArtifact({ session, send, artifact, ci, zipFile, zip
     return send(session, command, options);
   }
   async function read(command) {
-    for (let attempt = 0; attempt < 4; attempt++) {
+    for (let attempt = 0; attempt < 8; attempt++) {
       let result;
       try { result = await request(command); }
       catch (error) {
         if (!(error instanceof CdRejected) || !/^ssh_/.test(error.message)) throw error;
-        if (attempt === 3) throw new CdRejected('upload_status_outcome_unknown');
-        await sleep(1_000); continue;
+        if (attempt === 7) throw new CdRejected('upload_status_outcome_unknown');
+        await sleep(Math.min(1_000 * 2 ** attempt, 4_000)); continue;
       }
       const failure = knownFailure(result);
-      if (failure === 'receiver_busy') { await sleep(1_000); continue; }
+      if (failure === 'receiver_busy') { await sleep(Math.min(1_000 * 2 ** attempt, 4_000)); continue; }
       if (fatalFailures.has(failure)) throw new CdRejected(failure);
       return result;
     }
     throw new CdRejected('upload_status_outcome_unknown');
   }
   const capabilities = validateUploadCapabilities(await read('capabilities'));
-  const readStatus = async () => {
-    const proof = validateUploadStatus(await read(`upload-status ${value}`), identity);
+  const accept = async result => {
+    const proof = validateUploadStatus(result, identity);
     requireCd(proof.phase !== 'archived', 'upload_archived_no_automatic_replay');
     requireCd(await digest(0, proof.offset - 1) === proof.prefix_sha256, 'upload_remote_prefix_mismatch');
     record({ status: 'upload_receiving', upload_protocol_version: 2, upload_id: id,
@@ -118,6 +118,7 @@ export async function uploadArtifact({ session, send, artifact, ci, zipFile, zip
       upload_recovered: recovered, deployment_requested: false });
     return proof;
   };
+  const readStatus = async () => accept(await read(`upload-status ${value}`));
   async function mutation(command, options) {
     try {
       const result = await request(command, options), failure = knownFailure(result);
@@ -137,8 +138,8 @@ export async function uploadArtifact({ session, send, artifact, ci, zipFile, zip
   if (status.phase === 'absent') {
     record({ status: 'upload_open_requested', upload_protocol_version: 2, upload_id: id,
       upload_bytes: zipBytes, deployment_requested: false });
-    await mutation(`upload-open ${value}`, { timeout: 120_000 });
-    status = await readStatus();
+    const opened = await mutation(`upload-open ${value}`, { timeout: 120_000 });
+    status = opened ? await accept(opened) : await readStatus();
     requireCd(status.phase !== 'absent', 'upload_open_outcome_unknown'); // No second open after uncertainty.
   }
   for (let step = 0; step < 128; step++) {
@@ -146,8 +147,8 @@ export async function uploadArtifact({ session, send, artifact, ci, zipFile, zip
     if (status.phase === 'verified' && status.receipt_recorded) return { upload_protocol_version: 2,
       upload_id: id, upload_phase: 'verified', upload_offset: zipBytes, upload_bytes: zipBytes, upload_recovered: recovered };
     if (status.phase === 'ready' || status.phase === 'verified') {
-      await mutation(`upload-finish ${value}`);
-      status = await readStatus();
+      const finished = await mutation(`upload-finish ${value}`);
+      status = finished ? await accept(finished) : await readStatus();
       if (status.phase !== 'verified' || !status.receipt_recorded) {
         requireCd(++recoveries <= 4, 'upload_transfer_requires_reconciliation');
         recovered = true;
@@ -157,9 +158,9 @@ export async function uploadArtifact({ session, send, artifact, ci, zipFile, zip
     requireCd(status.phase === 'receiving' && status.offset < zipBytes, 'upload_transfer_requires_reconciliation');
     const offset = status.offset, length = Math.min(capabilities.max_chunk_bytes, zipBytes - offset);
     const hash = await digest(offset, offset + length - 1);
-    await mutation(`upload-append ${value} ${offset} ${status.prefix_sha256} ${length} ${hash}`,
+    const appended = await mutation(`upload-append ${value} ${offset} ${status.prefix_sha256} ${length} ${hash}`,
       { inputFile: zipFile, start: offset, end: offset + length - 1, timeout: 90_000 });
-    const next = await readStatus();
+    const next = appended ? await accept(appended) : await readStatus();
     requireCd(next.offset >= offset && next.offset <= offset + length, 'upload_offset_conflict');
     if (next.offset === offset) {
       requireCd(++recoveries <= 4, 'upload_transfer_requires_reconciliation');

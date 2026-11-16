@@ -1641,18 +1641,24 @@ autoriza por sí mismo.
 - [x] Contrato y ADR propuesto registrados; autorización de implementación no
   equivale a aprobación documental o publicación de conocimiento.
 - [x] Primera implementación local de módulo, cliente, archivo y operador.
-- [ ] Completar pruebas Linux root y contratos entre gateway/receiver/cliente.
-- [ ] Revisar fallos, hashes/byte bounds y ausencia de replay de aplicación.
+- [x] Primer corte Linux CI43867659803:173Node,15Node de políticas y204Python
+  root en contenedor aislado, sin omisiones. Nuevos módulos de transporte/pins
+  permanecen con esos mismos hashes; ajuste posterior del cliente requiere CI final.
+- [x] Revisión cruzada de fallos, hashes/byte bounds, reservas legacy, barreras
+  de archivo/adopción incompletas y ausencia de replay; regresiones incorporadas.
 - [ ] Adoptar el bundle revisado con acceso administrativo autenticado, dry-run
   y postcheck por conexión SSH nueva; distinguir resultado remoto de fixtures.
 - [ ] Promover por PR/CI nuevos y verificar retención/recepción/entrega reales.
 - [ ] Consolidar evidencias y actualizar README/progreso/TODO al alcance comprobado.
 
-Estado inicial: Windows Node focal correcto; las suites Linux nuevas todavía
-requieren ejecución. WSL local no inicia por `ERROR_NO_SYSTEM_RESOURCES` y Docker
+El [recibo de esta continuación](../evidence/durable-backend-uploads-20261116.md)
+registra primer CI, hashes del bundle, staging privado y límites. Windows Node
+completo173(163correctos/10skips POSIX) y60focales finales correctos. WSL local
+no inicia por `ERROR_NO_SYSTEM_RESOURCES` y Docker
 no está activo; no se reinician procesos del usuario ni se usan servicios
 productivos como entorno de pruebas. El CI aislado sin secretos de PR validará
-las garantías POSIX antes de cualquier adopción. No se afirma instalado el v2.
+las garantías POSIX antes de cualquier adopción. El primer corte ya pasó ese
+gate; autenticación/dry-run/CAS/postcheck de adopción todavía pendientes.
 
 Evaluación de conocimiento: infraestructura, sin cambio funcional NodiaAI,
 herramientas, ownership, permisos, modelos o inferencias. No se crean fichas ni
