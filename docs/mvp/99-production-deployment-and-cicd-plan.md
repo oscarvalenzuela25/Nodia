@@ -1757,3 +1757,28 @@ backups, secretos o evidencia por este cierre.
 Evaluación de conocimiento: infraestructura, sin cambio funcional NodiaAI,
 herramientas, ownership, permisos, modelos o inferencias. No se crean fichas ni
 se altera aprobación/corpus por este trabajo; ADR104 sigue propuesto.
+
+## 33. Cierre OPS-001 y separación de OPS-05 — 2026-11-16
+
+El usuario solicita cerrar OPS-001 si está listo y conservar OPS-05 en cola.
+La evidencia consolidada de§32 acredita entrega productiva y cierre
+administrativo del transporte v2: preflight/reserva, estado durable, continuación
+de bytes y archivo automático del inbox. **OPS-001 queda cerrado por ese alcance
+entregado**. Se conservan recibos, hashes, CI/CD y las limitaciones de prueba:
+recuperación ante fallos en CI aislado; transferencia productiva normal, sin
+inyectar cortes ni acreditar una restauración productiva desde el archivo.
+
+**OPS-05 — retención global y disco físico** permanece como pendiente
+independiente en [TODO](TODO.md). El archivo automático INCOMING ya implementado
+no se repite: mueve bytes de forma reversible y libera cuota lógica del inbox,
+pero no espacio físico. Falta especificar qué releases/diagnósticos conservar,
+duración/capacidad, criterios de protección y eventual retirada o traslado fuera
+del servidor; después implementar y comprobar esa política. No se fija una
+duración ni se elige almacenamiento externo por esta conciliación.
+
+El cierre no ejecuta limpieza, movimiento, despliegue o consulta productiva.
+Current, pins, operaciones inciertas, backups, secretos y evidencia conservan
+sus protecciones; no hay purga por defecto ni replay de entregas históricas.
+ADR104 sigue propuesto. Evaluación de conocimiento: sólo seguimiento de
+infraestructura, sin capacidad funcional NodiaAI, cambio de autoridad o fichas
+nuevas.

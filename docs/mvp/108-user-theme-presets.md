@@ -2,8 +2,9 @@
 
 > Estado documental: en revisión; implementación solicitada explícitamente el
 > 2026-11-16. La autorización de desarrollo no aprueba esta especificación ni
-> las fichas NodiaAI. Implementación y verificación local completadas por el
-> alcance indicado en§8; aceptación humana/adopción por entorno pendientes.
+> las fichas NodiaAI. THEME-001 cerrado por alcance con aceptación humana de QA
+> el2026-11-16 (§9); verificación técnica conservada en§8. Este cierre no registra
+> una adopción nueva ni amplía la compatibilidad a dispositivos no identificados.
 
 ## 1. Solicitud y fuentes
 
@@ -127,13 +128,14 @@ validación del corpus, sin binding ni publicación nuevos.
 - [x] Ejecutar pruebas Client, tipos, lint y build; validar corpus NodiaAI.
 - [x] Consolidar [evidencia](../evidence/user-theme-presets-20261116.md) y actualizar
   este checklist desde resultados reales.
-- [ ] Revisar UI autenticada y dispositivo físico; adopción por entorno separada.
+- [x] Registrar aceptación humana de QA y cerrar THEME-001 por el alcance
+  entregado (§9). La confirmación no detalla sesión, dispositivo o entorno.
 
-El primer pendiente real es aceptación visual humana con sesión auténtica y
-dispositivo físico, seguida de adopción por entorno si se solicita. El
-[TODO central](TODO.md) conserva el punto de reanudación. No repetir catálogo,
-construcción o QA local ya comprobados. No hubo migración DB, inferencia IA ni
-despliegue por este candidato.
+No quedan pendientes funcionales en THEME-001 tras la aceptación de§9. Una
+adopción adicional por entorno, si se solicita, se gestiona por el flujo de
+entrega existente; no se deduce del cierre ni exige repetir catálogo,
+construcción o QA ya comprobados. El [TODO central](TODO.md) conserva el cierre.
+No hubo migración DB, inferencia IA ni despliegue por esta conciliación.
 
 ## 8. Cierre local verificado — 2026-11-16
 
@@ -173,3 +175,17 @@ versionado. Enlaces del plan/ficha y UTF-8/LF de los once archivos mantenidos
 verificados. Cuenta real, teléfono/teclado virtual, lector de pantalla y otros
 motores pendientes; este cierre local no acredita disponibilidad productiva o
 aceptación de UX.
+
+## 9. Cierre por aceptación humana — 2026-11-16
+
+El usuario confirmó «theme 001 ya paso QA, toca cerrarlo». Se registra la
+aceptación humana del alcance entregado y **THEME-001 queda cerrado por alcance**:
+catálogo y selector de paleta, modo independiente y preferencia del navegador.
+Esta confirmación sucede el pendiente de aceptación humana de§7–8; no se
+repite la construcción ni la QA técnica documentada.
+
+La confirmación no identifica dispositivo, navegador, sesión o entorno. Los
+límites técnicos de la evidencia permanecen; no se convierte una prueba
+sintética en prueba física ni se acredita otro despliegue. Se conserva el
+estado documental en revisión y la ficha draft/unregistered/approval:null:
+aceptar el funcionamiento no aprueba ni publica la documentación NodiaAI.

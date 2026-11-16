@@ -1,6 +1,9 @@
 # Teacher — rediseño guiado de UX/UI e implementación por etapas
 
-> Estado: en revisión; primera entrega de alta guiada implementada localmente el2026-11-15.
+> Estado documental: en revisión. **TUX-001 cerrado por alcance entregado y
+> aceptación humana el2026-11-16; ver§14.** Alta guiada, paneles/selector y revisión
+> legible aceptados por el usuario. TUX-03/05 conservan su evolución propuesta
+> fuera de este cierre; no se presentan como implementados.
 > Solicitud posterior del mismo día: empezar el desarrollo desde development.
 > Esta autorización sustituye el límite documental inicial, sin aprobar el diseño
 > completo ni acreditar comprensión humana, inferencia o adopción operativa.
@@ -328,13 +331,15 @@ ambas, conservando los límites por dispositivo/proveedor/entorno.
 
 - [x] Solicitud, baseline de código, límites y fases documentados.
 - [x] Fichas e índices enlazados; TODO central con punto de reanudación.
-- [ ] TUX-00: observar y contrastar recorrido con usuario sobre una versión concreta.
-- [ ] TUX-01: crear/revisar prototipo específico Teacher; la maqueta Noticias no aplica.
+- [x] TUX-00/01: revisión del candidato entregado cerrada por aceptación funcional
+  del usuario en§14; no acredita un estudio observado, tiempos o prototipos adicionales.
 - [x] TUX-02: primera entrega Client de alta guiada y regresiones locales; ver§10.
-- [ ] TUX-03/05: definición/espera y primera lección; aún pendientes por sus alcances.
-- [ ] TUX-04: revisión legible implementada y comprobada localmente en§13;
-  comprensión humana/UI autenticada y adopción todavía pendientes.
-- [ ] TUX-06: QA técnico/UX, comparación por perfil y adopción por alcance.
+- [x] TUX-04: revisión legible implementada/comprobada en§13 y aceptada por el
+  usuario en§14, conservando revisión/hash y edición progresiva.
+- [x] TUX-06: cierre del alcance entregado con QA técnica registrada y aceptación
+  humana de§14. Entornos/dispositivos específicos no descritos no se dan por probados.
+- [ ] Evolución fuera del cierre TUX-001: TUX-03/05, definición/espera y primera
+  lección/continuidad guiadas; propuesta pendiente de implementación por sus alcances.
 
 El corte inicial fue exclusivamente documental;§10 registra su primera implementación. Ficha candidata:
 [experiencia guiada](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md),
@@ -617,3 +622,29 @@ y [experiencia guiada4](../nodia-ai/knowledge/studies/features/guided-setup-and-
 presentación y acceso progresivo a operaciones existentes; sin nuevos conceptos,
 efectos, contexto, herramientas o permisos. Conservan draft/partial/unregistered/
 approval:null, sin publicación o aprobación automática de fichas.
+
+## 14. Cierre TUX-001 por aceptación humana — 2026-11-16
+
+El usuario confirma «TUX 001 tambien funciona bien toca cerrarlo». Se registra
+su aceptación funcional y se cierra **TUX-001 por el alcance entregado**: alta
+guiada de§10, cabecera/Drawer/selector de§11, corrección de medición de§12 y
+revisión legible/edición progresiva de§13. La revisión humana deja de ser el
+primer pendiente de esas entregas; no se repite su construcción o QA por rutina.
+
+El cierre conserva la evidencia técnica y sus límites. La confirmación no detalla
+versión, entorno, navegador o dispositivo, ni acredita por sí sola un recorrido
+observado con tiempos, teléfono físico, inferencia o eficacia pedagógica. No se
+ejecuta una adopción o despliegue nuevo ni se hereda la adopción de otro alcance.
+
+**Evolución separada, no implementada por este cierre:** TUX-03, para mejorar la
+guía de borrador/definición, preparación y recuperación; TUX-05, para primera
+lección, continuidad y herramientas secundarias. Sus contratos/capacidades
+existentes permanecen, pero el rediseño propuesto de§4.4/4.5/4.7 y§7 no se da por
+entregado. Son seguimiento futuro independiente y no reabren TUX-001.
+
+Impacto documental: se concilia aceptación con la
+[ficha de experiencia guiada](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md#cierre-funcional-tux-001--2026-11-16),
+sin cambiar conceptos, operaciones, contexto, herramientas, permisos o contratos.
+El documento sigue en revisión; la ficha sigue draft/partial/unregistered y
+approval:null. Aceptar la UI entregada no aprueba integralmente la evolución
+propuesta ni publica conocimiento.
