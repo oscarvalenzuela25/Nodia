@@ -1,19 +1,23 @@
 # Especificación del MVP — Nodia
 
-**CD: transporte upload v2 adoptado, entrega nueva pendiente — 2026-11-16:**
+**CD: entrega95b completada con upload v2 — 2026-11-16:**
 [99§32](99-production-deployment-and-cicd-plan.md#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16)
-y [recibo/evidencia](../evidence/durable-backend-uploads-20261116.md): bundle5d5a150b
-adoptado por operador root, dry-run/apply correctos y capabilities v2 por SSH nuevo.
-Pins/settings206fcbd9, updater/reconciliaciones intactos; current6ba/c01 y
-PIDs1076642/1076645 preservados, sin restart o deploy de aplicación. SSH nuevo
-confirma deployment_ready/blocked:false y ambos writers activos. CI43871419155
-completa correcta para2309037c:173Node+15políticas+206Python root sin skips.
-El gate adicional del cliente revalida CI/master después de transferir y antes
-del submit:72focales correctas; CI del próximo HEAD todavía pendiente. Retención,
-transferencia y entrega reales nuevas siguen pendientes; delivery null.
+y [recibo/evidencia](../evidence/durable-backend-uploads-20261116.md): PR39/40
+integrados, CI master43878077045 y CD43879692520 completos correctos. Backend/
+Client95b publicados con árbolesc01/bbb5 sin variación; transferencia v2 de
+215982275bytes verified, recovered:false y sin fallos inyectados en producción.
+SSH nuevo deployment_ready/blocked:false y writers activos; HTTPS API200/auth401/
+Client200 con TLS0, Pages01ee1156 y PWA10recursos correctos. El mantenimiento previo
+de adopción conservó6ba/PIDs sin restart; esta entrega normal activó95b.
+Prueba root final: un archivo automático de215986320bytes, bytes/referencias
+íntegros; inventario9ZIPs/1943826973bytes, tres archivos y un ledger verified,
+sin parcial. Sudo invalidado, tmux cerrado y SSH posterior95b/blocked:false/activos.
+Alcance v2 entregado y cierre administrativo completo. [TODO OPS-001](TODO.md)
+continúa con política de disco físico/offload y retención global de releases/
+diagnósticos. Fallos y reanudación probados en CI aislado; transferencia productiva
+normal (recovered:false).
 [ADR104 propuesto](../architecture/decisions/ADR-104-durable-upload-continuation-and-incoming-retention.md),
-sin aprobación documental o cambios de conocimiento. [TODO OPS-001](TODO.md)
-continúa desde esos gates; la adopción del transporte no cierra toda la iniciativa.
+sin aprobación documental, inferencia IA, cambios de conocimiento o replay histórico.
 
 **CD y NodiaAI: entrega productiva completada — 2026-11-16:**
 PR36→development y PR37→master6ba2afb7, con CI correctos. CI43798403214 y
