@@ -1,8 +1,8 @@
 # Caja de Negocios — plan de implementación y propuesta visual
 
-> Fecha: 2026-11-17. Estado: **especificado, sin implementación**. Solicitud de
-> planificación para retomar mañana, 2026-11-18, en la misma rama
-> `codex/teacher-guided-continuity`. Los requisitos expresos del usuario se
+> Fecha: 2026-11-17. Estado: **especificado, con rama de desarrollo abierta**.
+> El usuario solicita abrir una rama nueva para Caja. La rama
+> `codex/business-cash-ledger` parte de `origin/development` (`0049b5fc`). Los requisitos expresos se
 > distinguen de las decisiones recomendadas de este plan. Documento y
 > [ADR106](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
 > propuestos; no se atribuye aprobación documental, migración ni despliegue.
@@ -350,11 +350,11 @@ Capturas en `output/playwright/cash-planning-20261117/` ignoradas por Git.
 Las decisiones duraderas están en este documento y la fuente es portable;
 retomar no depende de conservar una captura o un proceso local.
 
-## 8. Secuencia para retomar mañana
+## 8. Secuencia de desarrollo
 
 | Paso | Entrega y cierre verificable | Dependencia |
 | --- | --- | --- |
-| **CASH-01 — contratos y reglas** | Cerrar ajustes visuales y decisiones propuestas; DTOs/errores, meta real, límites, orden de locks, recibos/ruta OCR y política de edición de vinculados definidos | Primer pendiente; contrastar Git/PR50 sin repetir trabajos aceptados |
+| **CASH-01 — contratos y reglas** | Cerrar ajustes visuales y decisiones propuestas; DTOs/errores, meta real, límites, orden de locks, recibos/ruta OCR y política de edición de vinculados definidos | Primer pendiente. La [PR 50](https://github.com/oscarvalenzuela25/Nodia/pull/50) ya está integrada en la base e incluye folio opcional y preferencia OCR |
 | **CASH-02 — modelo y categorías** | Migración aditiva, scope/políticas, CRUD categoría y normalización de nombre única por negocio/mayúsculas/whitespace, con conflicto concurrente | 01 |
 | **CASH-03 — movimientos y agregados** | CRUD manual idempotente/CAS, filtros Ransack, snapshot página+summary y agregador mensual | 02 |
 | **CASH-04 — vínculo factura/OCR** | Único egreso, asignación/recategorización/retiro/restauración, sync total/fecha, manual atómico y confirmación OCR transaccional recuperable | 03; cambios de guardado nativo antes de habilitar selector OCR |
@@ -372,8 +372,9 @@ Checklist de estado:
 - [ ] CASH-05/06: UI e integraciones reales, incluyendo cards mensuales.
 - [ ] CASH-07: verificación e integración/adopción por entorno.
 
-La fecha de mañana expresa la intención de continuidad; no crea una automatización
-ni autoriza una entrega productiva. Este turno sólo incorpora plan y vistas.
+La rama parte de la base integrada de Negocios y Teacher. Para CASH-01, el
+guardado actual de factura y productos OCR en llamadas separadas sigue siendo
+la frontera a ampliar antes de introducir el egreso automático en CASH-04.
 
 ## 9. Pruebas de valor de la implementación futura
 

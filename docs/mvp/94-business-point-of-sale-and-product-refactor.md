@@ -1305,8 +1305,7 @@ publicación o escritura de ventas/reportes NodiaAI.
   delta de recuperación; cortes y límites documentados en evidencia.
 - [x] Tipos/lint/build finales Client correctos y conocimiento/pins generados
   mediante scripts soportados; resultado y release local exacto en evidencia.
-- [ ] Registrar entrega/revisión del candidato. Adopción y aceptación por entorno
-  requieren evidencia propia; ninguna se acredita por esta especificación.
+- [x] Registrar integración y cierre de OCR-001 en §43.
 
 Implementado localmente en `codex/fixes-invoice-ocr` desde origin/development.
 [QA sintética](../evidence/invoice-ocr-review-defaults-20261116.md) verificó seis
@@ -1319,9 +1318,7 @@ focal posterior124/10 en82,41s cubre el último ajuste de recuperación realizad
 mientras corría la global. No se atribuye esa global a todo el árbol final.
 QA adicional conserva selección alternativa/Low a320 y cuatro selects únicos
 210×44px. Conocimiento y pins locales comprobados mediante scripts soportados;
-el release exacto queda en evidencia. Primer pendiente: revisión/integración;
-adopción/aceptación por entorno separadas. Sin inferencias, mutaciones HTTP reales,
-migraciones o publicación de conocimiento por esta entrega.
+el release exacto queda en evidencia. La validación local cubrió ese corte.
 
 ## 42. Precios de venta redondeados, división local y proveedores OCR — solicitud2026-11-17
 
@@ -1471,13 +1468,29 @@ no publica una capacidad ni autoriza escrituras de ventas/reportes.
 - [x] QA técnica local común: Client3225/387, focal OCR75/3, Server6143/358
   (1caso Linux omitido en Windows),7gates PG16 y32perfiles Chromium; tipos/lint/build
   y contexto/pins correctos por [evidencia](../evidence/business-pricing-ocr-adjustments-20261117.md).
-- [ ] Migración/adopción, revisión y aceptación por entorno del nuevo alcance.
+- [x] Registrar integración y cierre de BIZ-042 en §43.
 
 La implementación y las regresiones por ámbito son locales. No se acreditan por
 este texto inferencias nuevas, mutaciones comerciales reales, despliegue,
 aplicación de migración en DB operativa o teléfono físico. Capturas nuevas sólo
 en output/.tmp ignorados; la evidencia duradera final será textual.
 
-Candidato incorporado a [PR50](https://github.com/oscarvalenzuela25/Nodia/pull/50)
-contra development, conservando la entrega Teacher anterior. El estado del CI
-se consulta para el SHA final; no se atribuye una ejecución anterior a nuevos bytes.
+## 43. Cierre de OCR-001 y BIZ-042 — 2026-11-17
+
+El usuario solicita cerrar las dos entregas y el [TODO](TODO.md) registra el
+cierre por alcance.
+
+- **OCR-001.** Revisión compacta, defaults comerciales y selección exacta de IA.
+  Integrado en `development` por la [PR 48](https://github.com/oscarvalenzuela25/Nodia/pull/48)
+  (`6b7f15a5`) y en `master` por la [PR 49](https://github.com/oscarvalenzuela25/Nodia/pull/49)
+  (`2456db84`).
+- **BIZ-042.** Redondeo y división local de precios, preferencia de proveedor
+  OCR y ajustes de factura/Overview. Integrado en `development` por la
+  [PR 50](https://github.com/oscarvalenzuela25/Nodia/pull/50) (`0049b5fc`) y en
+  `master` por la [PR 51](https://github.com/oscarvalenzuela25/Nodia/pull/51)
+  (`d4345ea9`).
+
+Los merges acreditan integración en Git. La aplicación de la migración
+`1793680000000` en DB operativa, la habilitación de proveedores OCR y las
+pruebas funcionales en producción requieren evidencia propia. El valor por
+defecto de `use_ocr` es `false`. Las fichas candidatas conservan su estado.

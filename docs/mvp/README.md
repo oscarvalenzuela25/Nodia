@@ -1,14 +1,22 @@
 # Especificación del MVP — Nodia
 
+**Cierre de cuatro entregas — 2026-11-17.** Por instrucción del usuario, el
+[TODO](TODO.md#entregas-cerradas-por-alcance) cierra PCON-001, OCR-001, BIZ-042
+y TUX-03/05. Se comprobó su integración en `development` y `master`. Los
+[cierres de Contactos](31-provider-contacts-proposal.md#cierre-de-pcon-001--2026-11-17),
+[Negocios](94-business-point-of-sale-and-product-refactor.md#43-cierre-de-ocr-001-y-biz-042--2026-11-17)
+y [Teacher](106-nodia-teacher-guided-ux-redesign.md#16-cierre-de-tux-0305--2026-11-17)
+conservan el alcance de la evidencia funcional.
+
 **Caja de Negocios — planificación2026-11-17:** [Plan109](109-business-cash-ledger-plan.md)
 define tab Caja, categorías comunes a ingresos/egresos, filtros Ransack hoy/activos,
 paneles coherentes con búsqueda y tabla, vínculo opcional de factura a un único
 egreso y dos cards de ingresos/egresos del mes actual en Overview. Plan y vistas
 sintéticas, sin implementación. [ADR106 propuesto](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
 separa ownership, consistencia e idempotencia; confirmar OCR requiere ampliar la
-frontera nativa antes de afirmar atomicidad. [TODO CASH-001](TODO.md) deja primer
-pendiente CASH-01 para retomar2026-11-18 en la misma rama. Ficha candidata planned,
-draft/unregistered/approval:null; sin migración, herramientas o despliegue nuevos.
+frontera nativa antes de afirmar atomicidad. [TODO CASH-001](TODO.md) sitúa
+CASH-01 en `codex/business-cash-ledger`, desde `origin/development` (`0049b5fc`).
+Ficha candidata planned/draft/unregistered/approval:null.
 Ampliación R02: selectores de categoría con X y +/modal de creación rápida;
 duplicados ignorando mayúsculas/espaciados incluso inactivas. Quitar categoría
 de factura retira su egreso al guardar, cambiarla conserva ID. Cierres de caja
@@ -28,7 +36,7 @@ Server6143/358 y1caso Linux omitido en Windows. Candidato de PR50 actualizado.
 [Evidencia y límites](../evidence/business-pricing-ocr-adjustments-20261117.md).
 NodiaAI muestra venta normalizada antes de confirmar; propuestas incompatibles
 requieren revisión nueva. Candidatas Negocios55/calculadora15 sin nueva aprobación
-ni publicación. Revisión/adopción del alcance nuevo pendientes.
+ni publicación. Cierre e integración registrados en el plan94§43.
 
 **Teacher: TUX-03/05 implementados y verificados localmente — 2026-11-16:**
 [Plan106§15](106-nodia-teacher-guided-ux-redesign.md#15-tux-0305-guía-y-continuidad-implementadas-localmente--2026-11-16)
@@ -39,8 +47,7 @@ Teacher final277/42 y global previa3171/383, tipos/build y lint de fuentes corre
 Chromium sintético16perfiles320/600/900/1440 ES/EN y errores CAS/respuesta
 verificados por [evidencia](../evidence/teacher-guided-continuity-20261116.md).
 No hay generación automática, cambios Server/DB ni inferencia/despliegue nuevos.
-Primer pendiente: revisión/aceptación del alcance nuevo e integración/adopción
-por entorno; el cierre humano TUX-001 anterior se conserva. Fichas candidatas
+Cierre e integración registrados en el plan106§16. Fichas candidatas
 actualizadas sin aprobación/publicación.
 
 **Proveedores: apertura recuperable de Contactos — incidencia2026-11-16:**
@@ -50,10 +57,9 @@ Assets/importación anónimos actuales correctos; causa exacta aún no aislada. 
 candidato contiene descarga/fallo con lista y borradores intactos, retry local y
 scope vigente. Focal67/9 y QA fresh320/600/1440 de fallo/recuperación correctas;
 global3139/380, tipos/lint/build y pins locales correctos por
-[evidencia](../evidence/providers-contacts-opening-20261116.md). Primer pendiente:
-revisar/integrar/adoptar el candidato; si reaparece, capturar petición/error
-autenticados antes de atribuir causa. Sin nueva autorización de despliegue. Sin cambio
-Server/DB/HTTP ni aprobación/publicación nueva; no se declara resuelto en producción.
+[evidencia](../evidence/providers-contacts-opening-20261116.md). El plan31
+registra el cierre por alcance. Si reaparece el fallo, capturar petición/error
+autenticados antes de atribuir causa.
 
 **OCR manual: defaults y selección exacta — solicitud2026-11-16:**
 [Plan94§41](94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16) documenta alias nuevo desde nombre,
@@ -63,7 +69,7 @@ Modelo/intensidad desde defaults persistidos por instancia/modo. Implementación
 local, tipos/lint/build y QA Chromium sintética6perfiles correctos por
 [evidencia](../evidence/invoice-ocr-review-defaults-20261116.md). Global2:3125/378;
 focal posterior124/10 cubre último delta de recuperación. Tipos/lint/build finales
-y conocimiento/pins locales correctos; revisión/integración y adopción separadas.
+y conocimiento/pins locales correctos. Cierre e integración registrados en plan94§43.
 Sin inferencia ni aprobación/publicación nuevas.
 
 **News integrado y publicado — 2026-11-16:**

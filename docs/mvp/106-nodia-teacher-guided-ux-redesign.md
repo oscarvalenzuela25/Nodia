@@ -2,8 +2,8 @@
 
 > Estado documental: en revisión. **TUX-001 cerrado por alcance entregado y
 > aceptación humana el2026-11-16; ver§14.** Alta guiada, paneles/selector y revisión
-> legible aceptados por el usuario. TUX-03/05 se implementan localmente después
-> de ese cierre en§15; QA local verificada, aceptación de ese alcance y adopción pendientes.
+> legible aceptados por el usuario. **TUX-03/05 cerrado por instrucción del
+> usuario el 2026-11-17.** Implementación y QA local en §15, cierre en §16.
 > Solicitud posterior del mismo día: empezar el desarrollo desde development.
 > Esta autorización sustituye el límite documental inicial, sin aprobar el diseño
 > completo ni acreditar comprensión humana, inferencia o adopción operativa.
@@ -341,7 +341,7 @@ ambas, conservando los límites por dispositivo/proveedor/entorno.
 - [x] Evolución fuera del cierre TUX-001: TUX-03/05, definición/espera y primera
   lección/continuidad guiadas implementadas localmente; ver§15.
 - [x] QA técnica local integrada de§15; evidencia final enlazada.
-- [ ] Aceptación humana de TUX-03/05 y adopción por entorno, sin reabrir TUX-001.
+- [x] Cierre de TUX-03/05 por instrucción del usuario, ver §16.
 
 El corte inicial fue exclusivamente documental;§10 registra su primera implementación. Ficha candidata:
 [experiencia guiada](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md),
@@ -736,7 +736,7 @@ existentes mantienen su acceso en el Drawer; no se añaden herramientas MCP.
 - [x] Integración y QA técnica local común: Teacher final277/42 y global previa3171/383,
   tipos/build y lint de fuentes correctos; Chromium sintético16perfiles y
   recorridos CAS/borrador/material por [evidencia](../evidence/teacher-guided-continuity-20261116.md).
-- [ ] Aceptación humana de este alcance y adopción por entorno, independientes.
+- [x] Integración y cierre del alcance registrados en §16.
 
 Impacto de presentación, explicación y acceso a operaciones existentes. Se
 mantienen DTOs/HTTP, autoridad Teacher, presupuesto, selección exacta, CAS,
@@ -749,3 +749,15 @@ conservan draft/partial/unregistered/approval:null. Código y pruebas locales no
 acreditan inferencia real, comprensión humana, teléfono físico, producción,
 aprobación del plan completo o publicación del conocimiento. Capturas nuevas
 sólo en output/.tmp ignorados; consolidar evidencia textual duradera al finalizar.
+
+## 16. Cierre de TUX-03/05 — 2026-11-17
+
+El usuario solicita cerrar el alcance de guía opcional, diagnóstico, preparación
+y continuidad de primera lección descrito en §15. La
+[PR 50](https://github.com/oscarvalenzuela25/Nodia/pull/50) integró el cambio en
+`development` (`0049b5fc`) y la [PR 51](https://github.com/oscarvalenzuela25/Nodia/pull/51)
+en `master` (`d4345ea9`). El cierre queda registrado en el [TODO](TODO.md).
+
+La evidencia funcional disponible cubre QA local. La adopción por entorno,
+inferencia real y pruebas en teléfono requieren comprobación propia. El plan
+sigue en revisión y las fichas candidatas conservan su estado.
