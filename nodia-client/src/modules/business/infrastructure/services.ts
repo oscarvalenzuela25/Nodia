@@ -1,5 +1,6 @@
 import { mainInstance } from "../../../config/api";
 import { apiPath } from "../../../config/apiPath";
+import { z } from "zod";
 import type {
   AssignCollaboratorsPayload,
   BusinessCollaborator,
@@ -203,6 +204,31 @@ export const getInvoices = async (
     { params }
   );
   return data;
+};
+
+const editableInvoiceSchema = z.object({
+  id: z.string(),
+  business_id: z.string(),
+  code: z.string().nullable(),
+  provider_id: z.string().nullish(),
+  total_amount: z.number().int().nonnegative(),
+  path_storage: z.string(),
+  data: z.looseObject({ issue_date: z.string().nullish(), notes: z.string().nullish() }).optional(),
+  is_active: z.boolean(),
+  provider: z.object({ id: z.string(), name: z.string() }).nullish(),
+});
+
+export const getInvoiceEditSource = async (
+  businessId: string, invoiceId: string, signal?: AbortSignal,
+) => {
+  const { data } = await mainInstance.get<unknown>(
+    apiPath(`/invoices/${encodeURIComponent(invoiceId)}`), { signal },
+  );
+  const invoice = editableInvoiceSchema.parse(data);
+  if (invoice.id !== invoiceId || invoice.business_id !== businessId) {
+    throw new Error("Unexpected invoice scope");
+  }
+  return invoice;
 };
 
 export const createInvoice = async (

@@ -63,7 +63,7 @@ import {
 
 interface Props {
   businessId: string;
-  onSwitchTab?: (tabIndex: number) => void;
+  onOpenInvoices?: () => void;
   onOpenNewProvider?: () => void;
   onOpenNewProduct?: () => void;
   onOpenNewInvoice?: () => void;
@@ -71,7 +71,7 @@ interface Props {
 
 export const OverviewTab: FC<Props> = ({
   businessId,
-  onSwitchTab,
+  onOpenInvoices,
   onOpenNewInvoice,
 }) => {
   const { t, i18n } = useTranslation(["business", "core"]);
@@ -455,7 +455,7 @@ export const OverviewTab: FC<Props> = ({
               <Button
                 size="small"
                 endIcon={<ArrowForwardIcon fontSize="small" />}
-                onClick={() => onSwitchTab?.(3)}
+                onClick={onOpenInvoices}
                 sx={{ textTransform: "none" }}
               >
                 {t("business:view_all_invoices")}
@@ -717,7 +717,7 @@ mobile ? <Box sx={{ display: "grid", gap: 2 }}>
 
         <MenuItem
           onClick={() => {
-            onSwitchTab?.(3);
+            onOpenInvoices?.();
             handleCloseActionMenu();
           }}
           sx={{ borderRadius: 1 }}

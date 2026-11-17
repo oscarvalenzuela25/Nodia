@@ -1,11 +1,10 @@
 # Progreso del MVP — Nodia
 
-**CASH-04 implementado localmente en Server — 2026-11-17.**
-[Plan109 §13](109-business-cash-ledger-plan.md#13-facturas-y-ocr-vinculados-con-caja--cash-04-2026-11-17)
-registra las migraciones 1793710000000 y 1793720000000, el egreso único
-auditable por factura, su retiro y restauración y la confirmación OCR
-compuesta con recibos privados. El [TODO](TODO.md) continúa con CASH-05
-para la interfaz de Caja.
+**CASH-05 implementado localmente — 2026-11-17.**
+[Plan109 §14](109-business-cash-ledger-plan.md#14-pestaña-caja-y-gestión-de-movimientos--cash-05-2026-11-17)
+registra la pestaña Caja, filtros y totales, formularios con recuperación de
+recibos y listado responsive. El [TODO](TODO.md) continúa con CASH-06 para
+Overview y los formularios de Facturas/OCR.
 
 **Topbar y OCR de Negocios — 2026-11-17.** Corrección local en
 `codex/business-cash-ledger`. El [estado IA](../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17)

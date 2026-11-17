@@ -1,10 +1,10 @@
 # Caja de Negocios — plan de implementación y propuesta visual
 
-> Fecha: 2026-11-17. Estado: **CASH-04 implementado localmente en Server para Facturas y confirmación OCR**.
+> Fecha: 2026-11-17. Estado: **CASH-05 implementado localmente para la pestaña Caja**.
 > Rama `codex/business-cash-ledger` desde `origin/development` (`0049b5fc`).
 > §1 recoge la solicitud. §§3–6 fijan el contrato V1 para implementación.
 > El plan y el [ADR106](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
-> siguen en revisión. El siguiente paso es CASH-05.
+> siguen en revisión. El siguiente paso es CASH-06.
 
 > **R02, ampliación2026-11-17:** X para limpiar categoría, + para crearla desde
 > formularios y validación de duplicados independiente de mayúsculas/espaciados.
@@ -606,8 +606,8 @@ retomar no depende de conservar una captura o un proceso local.
 | **CASH-02 — modelo y categorías** | Implementación local de la migración aditiva, alta/edición/actividad, listado/detalle, autoridad y recibos | Ver §11 |
 | **CASH-03 — movimientos y agregados** | Alta, edición y actividad manuales con recibo y revisión; filtros Ransack, página y resumen sobre un snapshot y agregado mensual | Implementado localmente. Ver §12 |
 | **CASH-04 — vínculo factura/OCR** | Único egreso, asignación/recategorización/retiro/restauración, sync total/fecha, manual atómico y confirmación OCR transaccional recuperable | Implementado localmente en Server. Ver §13 |
-| **CASH-05 — UI Caja y categorías** | Tab, Filter, cards, tabla/tarjetas, drawer, formularios y acciones ES/EN | Primer pendiente. Contratos de movimientos y vínculos de CASH-03/04 |
-| **CASH-06 — Overview y selectores factura** | Dos cards mensuales; categoría opcional con ayuda/X/+ en ambos flujos; modal creación rápida, borrador/foco e invalidación | 04/05 |
+| **CASH-05 — UI Caja y categorías** | Tab, filtros, totales, tabla/tarjetas, drawer, formularios y acciones ES/EN | Implementado localmente. Ver §14 |
+| **CASH-06 — Overview y selectores factura** | Dos cards mensuales; categoría opcional con ayuda/X/+ en ambos flujos; modal creación rápida, borrador/foco e invalidación | Primer pendiente. Contratos de Facturas/OCR y Caja de CASH-04/05 |
 | **CASH-07 — validación y entrega** | Unidades, integración SQL/HTTP aislada, QA visual proporcional, documentación/fichas y CI de SHA final | 02…06; despliegue/adopción con pedido propio |
 
 Checklist de estado:
@@ -618,7 +618,8 @@ Checklist de estado:
 - [x] CASH-02: persistencia, autorización, administración de categorías y recibos.
 - [x] CASH-03: movimientos manuales y agregados.
 - [x] CASH-04: factura/OCR identificados, atómicos y recuperables en Server local.
-- [ ] CASH-05/06: UI e integraciones reales, incluyendo cards mensuales.
+- [x] CASH-05: pestaña Caja, categorías, movimientos y agregados filtrados en Client local.
+- [ ] CASH-06: cards mensuales e integración de Facturas/OCR desde Client.
 - [ ] CASH-07: verificación e integración/adopción por entorno.
 
 La ampliación transaccional del guardado OCR y la compatibilidad de escritores de
@@ -795,7 +796,7 @@ pruebas de la compilación de conocimiento. La ficha candidata sigue excluida
 del contexto publicado.
 
 Comprenden este corte el backend local y la traducción de sus errores
-compartidos. La pestaña y las tarjetas de Overview corresponden a CASH-05.
+compartidos. La pestaña corresponde a CASH-05 y las tarjetas de Overview a CASH-06.
 Las migraciones quedan pendientes de aplicación en un entorno operativo.
 
 ## 13. Facturas y OCR vinculados con Caja — CASH-04, 2026-11-17
@@ -863,3 +864,59 @@ queda excluida de publicación.
 El uso de esta ruta desde el guardado OCR de Client y los selectores de
 categoría corresponden a CASH-06. Las migraciones quedan pendientes de
 aplicación en un entorno operativo.
+
+## 14. Pestaña Caja y gestión de movimientos — CASH-05, 2026-11-17
+
+La [pestaña Caja](../../nodia-client/src/modules/business/pages/BusinessDetail/components/CashTab/CashTab.tsx)
+se abre con `section=cash` en el detalle de un negocio y se puede seleccionar
+desde el control móvil. La navegación usa nombres de sección, incluidas las
+acciones de Overview. Cambiar de ancho conserva filtros, búsqueda y página.
+Se muestran tarjetas por debajo de 600 px y tabla con scroll local desde
+600 px. La paginación queda fuera del scroll. Tipo y actividad tienen
+etiquetas textuales en ambas vistas.
+
+El filtro inicial y la acción de limpiar usan hoy en America/Santiago y
+actividad Activo. El rango, categoría, actividad y búsqueda se envían a
+Server. Los paneles muestran conteos y sumas exactas en CLP de todos los
+movimientos de la selección antes de paginar. Las lecturas y las claves de
+caché mantienen actor, sesión y negocio. Un error de lectura ofrece
+reintento y conserva la distinción entre información desconocida y cero.
+
+Los formularios permiten crear y editar movimientos manuales y confirmar
+su cambio de actividad. El Drawer gestiona categorías, con búsqueda y
+paginación. El alta rápida cambia temporalmente el contenido del mismo
+diálogo, conserva el borrador y selecciona la categoría creada. Se puede
+conservar la categoría histórica inactiva de un movimiento. El formulario
+permite revisar la versión actual antes de reenviar una edición en conflicto.
+Cuando el resultado queda incierto, conserva el comando en el editor y
+ofrece consulta del recibo y reintento explícito con la misma clave.
+
+Client descarga el módulo de Caja al seleccionar la sección. La carga
+fallida muestra un reintento dentro del panel y conserva la navegación del
+negocio. En Vite, el archivo de BusinessDetail pasó de 149,31 a 122,37 kB
+gzip entre la variante estática y la diferida. Caja quedó en un archivo
+propio de 21,06 kB gzip. Chromium observó la descarga al entrar a Caja,
+su ausencia al abrir Overview y que un fallo simulado de carga queda
+contenido en Caja con la acción de reintentar visible.
+
+En un egreso de factura, Editar abre la factura por ID exacto dentro del
+mismo detalle. En esta entrega permite editar metadatos nativos. El
+importe y la fecha permanecen bloqueados en ese acceso hasta que CASH-06
+conecte la edición identificada, los selectores y la confirmación OCR.
+CASH-06 integra también los dos agregados mensuales de Overview.
+
+La verificación Chromium local usó transporte sintético y el detalle de
+Negocios con su navegación real. Se comprobó el cambio de tabla a tarjetas
+en 599/600 px, el layout en 320, 390, 900 y 1280 px, ES oscuro y EN claro,
+la conservación de la página y filtros, el alta rápida con borrador intacto,
+la edición de factura vinculada y la recuperación con la misma clave tras
+un 503. El Drawer ocupó el ancho completo a 320 px y devolvió el foco a su
+botón al cerrar con Escape. Una respuesta inválida mostró error y
+reintento. Una respuesta vacía válida mostró el estado vacío y los dos
+ceros. Las capturas permanecen en `output/playwright/cash05/`. La prueba
+local de Client complementa la verificación HTTP y SQL de CASH-02…04.
+
+Pasaron 3266 pruebas de Client en 395 archivos, tipado y build. El lint
+pasó excluyendo los fixtures históricos ignorados en `nodia-client/.tmp`.
+También pasaron 58 pruebas de conocimiento. Caja conserva su ficha
+candidata y los 44 documentos, 46 fragmentos y 153 capacidades publicados.

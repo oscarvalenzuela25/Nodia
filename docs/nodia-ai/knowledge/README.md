@@ -1,5 +1,14 @@
 # Contexto funcional de productos para NodiaAI
 
+## Pestaña Caja en Negocios — CASH-05, 2026-11-17
+
+[Plan109 §14](../../mvp/109-business-cash-ledger-plan.md#14-pestaña-caja-y-gestión-de-movimientos--cash-05-2026-11-17),
+[Caja revisión7](businesses/features/cash-ledger-and-invoice-expenses.md)
+y [Negocios revisión63](businesses/README.md) registran la interfaz local
+de categorías y movimientos con filtros, totales, recibos y tarjetas
+móviles. El impacto es de Client y del contexto candidato, sin nuevas
+herramientas ni permisos publicados.
+
 ## Facturas y OCR vinculados con Caja — CASH-04, 2026-11-17
 
 [Plan109 §13](../../mvp/109-business-cash-ledger-plan.md#13-facturas-y-ocr-vinculados-con-caja--cash-04-2026-11-17),

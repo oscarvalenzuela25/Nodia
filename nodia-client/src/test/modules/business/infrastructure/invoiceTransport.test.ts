@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { mainInstance } from "../../../../config/api";
-import { createInvoiceWithFile } from "../../../../modules/business/infrastructure/services";
+import { createInvoiceWithFile, getInvoiceEditSource } from "../../../../modules/business/infrastructure/services";
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -23,5 +23,34 @@ describe("optional invoice folio transport", () => {
     expect(body.get("code")).toBe("F-1445");
     expect(body.get("total_amount")).toBe("1445");
     expect(body.get("file")).toBe(file);
+  });
+});
+
+describe("Caja linked invoice transport", () => {
+  const source = {
+    id: "133",
+    business_id: "synthetic-business",
+    code: null,
+    provider_id: null,
+    total_amount: 230,
+    path_storage: "",
+    data: { issue_date: "2026-11-17", reviewed_items: [1, 2] },
+    is_active: false,
+  };
+
+  it("fetches the exact invoice and retains its accounting metadata", async () => {
+    const abort = new AbortController();
+    const get = vi.spyOn(mainInstance, "get").mockResolvedValue({ data: source });
+    await expect(getInvoiceEditSource(source.business_id, source.id, abort.signal)).resolves.toEqual(source);
+    expect(get).toHaveBeenCalledWith(expect.stringMatching(/\/invoices\/133$/), { signal: abort.signal });
+  });
+
+  it.each([
+    { ...source, business_id: "different-business" },
+    { ...source, id: "132" },
+    { ...source, total_amount: "230" },
+  ])("rejects a mismatched or malformed source invoice", async (data) => {
+    vi.spyOn(mainInstance, "get").mockResolvedValue({ data });
+    await expect(getInvoiceEditSource(source.business_id, source.id)).rejects.toBeInstanceOf(Error);
   });
 });

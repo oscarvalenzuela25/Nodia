@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import {
+  Alert,
   Box,
   Button,
   Grid,
@@ -54,10 +55,15 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onSubmit: (data: InvoiceFormSubmitData) => Promise<void>;
-  initialData?: InvoiceEntity | null;
+  initialData?: InvoiceEntity | (Pick<InvoiceEntity, "code" | "total_amount" | "path_storage" | "is_active"> & {
+    provider_id?: string | null;
+    data?: { issue_date?: string | null; notes?: string | null };
+    provider?: Pick<ProviderEntity, "id" | "name"> | null;
+  }) | null;
   providers?: ProviderEntity[];
   providerSearch?: Pick<SelectSingleInputProps, "onSearchChange" | "onLoadMore" | "hasMore" | "loadingOptions">;
   isSubmitting?: boolean;
+  linkedCashExpense?: boolean;
 }
 
 export const InvoiceModal: FC<Props> = ({
@@ -68,6 +74,7 @@ export const InvoiceModal: FC<Props> = ({
   providers = [],
   providerSearch,
   isSubmitting = false,
+  linkedCashExpense = false,
 }) => {
   const { t } = useTranslation(["business", "core"]);
   const [file, setFile] = useState<File | null>(null);
@@ -277,13 +284,17 @@ export const InvoiceModal: FC<Props> = ({
       }
       size="sm"
       actions={modalActions}
+      disableEscapeKeyDown={isSubmitting}
+      showCloseButton={!isSubmitting}
     >
       <FormContainer
         id="invoice-form"
         onSubmit={handleSubmit(onFormSubmit)}
       >
+        {linkedCashExpense && <Alert severity="info">{t("business:cash.linked_invoice_edit_hint")}</Alert>}
 
         {/* File Upload Section */}
+        {!linkedCashExpense && (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
           <Typography variant="caption" sx={{ fontWeight: 600, color: "text.secondary" }}>
             {t("business:invoice_file_section_title")}
@@ -429,6 +440,7 @@ export const InvoiceModal: FC<Props> = ({
             )}
           </FileDropzoneBox>
         </Box>
+        )}
 
         {/* Form Inputs (filled manually) */}
         <Grid container spacing={2}>
@@ -491,7 +503,7 @@ export const InvoiceModal: FC<Props> = ({
                   error={!!errors.total_amount}
                   helperText={errors.total_amount?.message ? t(errors.total_amount.message) : undefined}
                   required
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || linkedCashExpense}
                   data-testid="invoice-total-amount-input"
                 />
               )}
@@ -510,7 +522,7 @@ export const InvoiceModal: FC<Props> = ({
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || linkedCashExpense}
                   data-testid="invoice-issue-date-input"
                 />
               )}
@@ -532,7 +544,7 @@ export const InvoiceModal: FC<Props> = ({
                   onBlur={field.onBlur}
                   error={!!errors.path_storage}
                   helperText={errors.path_storage?.message}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || linkedCashExpense}
                   data-testid="invoice-path-input"
                 />
               )}
