@@ -772,6 +772,19 @@ describe('AI-22 native business/catalog proposals', () => {
       ),
     ).rejects.toMatchObject({ status: 400 });
   });
+  it('locks the previous provider before the product snapshot, even for an explicit unlink', async () => {
+    const f = fixture();
+    const prepared = await f.op('products', 'update').prepare(
+      { business_id: businessId, id: '3', provider_id: null },
+      f.context,
+    );
+    expect(prepared.status).toBe('ready');
+    const statements = f.query.mock.calls.map(([sql]) => sql);
+    const previousProvider = statements.findIndex((sql) => /FROM providers WHERE id=\$1 FOR SHARE/.test(sql));
+    const productLock = statements.findIndex((sql) => /FROM products WHERE id=\$1 FOR UPDATE/.test(sql));
+    expect(previousProvider).toBeGreaterThan(-1);
+    expect(productLock).toBeGreaterThan(previousProvider);
+  });
   it('supports explicit product transfer and freezes destination business separately', async () => {
     const f = fixture();
     const op = f.op('products', 'update');

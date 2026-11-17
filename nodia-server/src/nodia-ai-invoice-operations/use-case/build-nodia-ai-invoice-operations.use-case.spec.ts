@@ -68,6 +68,8 @@ function fixture() {
   };
   let exists = true;
   let isSuperAdmin = false;
+  let cashExpense:
+    { withdrawn_from_invoice: boolean; is_active: boolean } | undefined;
   const query = vi.fn(async (sql: string, args: unknown[] = []) => {
     if (sql.includes('AS authority_locks')) return [{ authority_locks: 9 }];
     if (sql.includes('AS "actorId"'))
@@ -91,6 +93,8 @@ function fixture() {
     if (sql.includes('FROM nodia_ai_execution_steps')) return [];
     if (sql.includes('FROM invoices'))
       return exists ? [structuredClone(target)] : [];
+    if (sql.includes('FROM business_cash_movements'))
+      return cashExpense ? [cashExpense] : [];
     if (sql.includes('FROM businesses'))
       return businesses
         .filter((item) => (args[0] as string[]).includes(String(item.id)))
@@ -145,6 +149,9 @@ function fixture() {
     },
     setSuper: () => {
       isSuperAdmin = true;
+    },
+    setCashExpense: (withdrawn = false) => {
+      cashExpense = { withdrawn_from_invoice: withdrawn, is_active: false };
     },
   };
 }
@@ -417,6 +424,62 @@ describe('BuildNodiaAiInvoiceOperationsUseCase', () => {
         transaction: f.manager,
       },
     );
+  });
+  it('blocks a confirmed change that would now remove the date of an inactive cash expense', async () => {
+    const f = fixture();
+    const op = f.operations[1];
+    f.target.data = { issue_date: '2026-11-17', items: [] };
+    const input = {
+      business_id: business,
+      id: '7',
+      data: { notes: 'updated' },
+    };
+    const step = await prepared(op, input, f.context);
+
+    f.setCashExpense();
+    await expect(op.prepare(input, f.context)).rejects.toThrow(
+      'business:cash_invoice_review_required',
+    );
+    await expect(op.verifyPreconditions(step, f.context)).rejects.toThrow(
+      'nodia_ai:preconditions_changed',
+    );
+    await expect(op.executeConfirmed(step, f.context)).rejects.toThrow(
+      'nodia_ai:preconditions_changed',
+    );
+    expect(f.update).not.toHaveBeenCalled();
+  });
+  it('permits changing metadata only and blocks a transfer with withdrawn expense history', async () => {
+    const f = fixture();
+    const op = f.operations[1];
+    f.setSuper();
+    f.target.data = { issue_date: '2026-11-17', items: [] };
+    f.setCashExpense();
+    const step = await prepared(
+      op,
+      {
+        business_id: business,
+        id: '7',
+        is_active: false,
+        data: { issue_date: '2026-11-17', notes: 'reviewed' },
+      },
+      f.context,
+    );
+    await expect(op.executeConfirmed(step, f.context)).resolves.toEqual({
+      id: '7',
+      businessId: business,
+    });
+    f.setCashExpense(true);
+    await expect(
+      op.prepare(
+        {
+          business_id: business,
+          id: '7',
+          destination_business_id: destination,
+          provider_id: null,
+        },
+        f.context,
+      ),
+    ).rejects.toThrow('business:cash_invoice_transfer_not_allowed');
   });
   it('requires actual changes and an existing target in the source business', async () => {
     const f = fixture();

@@ -10,12 +10,20 @@ import {
 import { User } from '../../user/entities/user.entity.js';
 import { BusinessCashMovement } from './business-cash-movement.entity.js';
 
+export type BusinessCashMovementAuditOperation =
+  | 'movement_create'
+  | 'movement_update'
+  | 'invoice_create'
+  | 'invoice_update'
+  | 'invoice_withdraw'
+  | 'invoice_restore';
+
 @Entity('business_cash_movement_audit')
 @Check(
   'ck_business_cash_movement_audit_operation',
-  `(operation = 'movement_create' AND version = 1 AND "before" IS NULL)
-    OR (operation = 'movement_update' AND version > 1
-        AND "before" IS NOT NULL AND jsonb_typeof("before") = 'object')`,
+  `(operation IN ('movement_create', 'invoice_create') AND version = 1 AND "before" IS NULL)
+  OR (operation IN ('movement_update', 'invoice_update', 'invoice_withdraw', 'invoice_restore')
+    AND version > 1 AND "before" IS NOT NULL AND jsonb_typeof("before") = 'object')`,
 )
 @Check(
   'ck_business_cash_movement_audit_after',
@@ -34,8 +42,8 @@ export class BusinessCashMovementAudit {
 
   @Column('uuid') business_id: string;
   @Column('bigint') actor_id: string;
-  @Column({ type: 'varchar', length: 24 }) operation:
-    'movement_create' | 'movement_update';
+  @Column({ type: 'varchar', length: 24 })
+  operation: BusinessCashMovementAuditOperation;
   @Column({ type: 'jsonb', nullable: true }) before: Record<
     string,
     unknown

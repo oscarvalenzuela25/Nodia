@@ -5,6 +5,7 @@ import { Product } from '../entities/product.entity.js';
 import { ProductLog } from '../entities/product-log.entity.js';
 import { CreateBulkProductsUseCase } from './create-bulk-products.use-case.js';
 import { UpdateBulkProductsUseCase } from './update-bulk-products.use-case.js';
+import { normalizeOcrProducts } from '../ocr-confirmation-products.js';
 const businessA = '11111111-1111-4111-8111-111111111111';
 const businessB = '11111111-1111-4111-8111-111111111112';
 const actor = {
@@ -27,7 +28,7 @@ function fixture() {
   const records = new Map(
     ['2', '10'].map((id) => [
       id,
-      Object.assign(new Product(), { ...base, id, code: `P-${id}` }),
+      Object.assign(new Product(), { ...base, id, version: 1, code: `P-${id}` }),
     ]),
   );
   const calls: string[] = [];
@@ -60,11 +61,12 @@ function fixture() {
       calls.push(`product:${where.id}`);
       return records.get(where.id) ?? null;
     }),
-    create: vi.fn((items: object[]) =>
-      items.map((item, index) =>
+    create: vi.fn((items: object | object[]) => {
+      if (!Array.isArray(items)) return Object.assign(new Product(), { ...items, id: '20' });
+      return items.map((item, index) =>
         Object.assign(new Product(), { ...item, id: String(index + 20) }),
-      ),
-    ),
+      );
+    }),
     save: vi.fn(async (items: Product[]) => {
       calls.push('save-products');
       return items;
@@ -99,6 +101,11 @@ function fixture() {
         (args[0] as string[]).includes(provider.id),
       );
     }
+    if (sql.includes('FROM products p'))
+      return (args[0] as string[]).flatMap((id) => {
+        const product = records.get(id);
+        return product ? [{ id, business_id: product.business_id, provider_id: product.provider_id }] : [];
+      });
     return [];
   });
   const manager = {
@@ -231,10 +238,10 @@ describe('Legacy product bulk relation integrity through native use cases', () =
       actor,
     );
     expect(f.calls).toEqual([
-      'product:2',
-      'product:10',
       'businesses',
       'providers',
+      'product:2',
+      'product:10',
       'save-products',
       'save-logs',
     ]);
@@ -303,6 +310,47 @@ describe('Legacy product bulk relation integrity through native use cases', () =
       ),
     ).rejects.toMatchObject({ status: 400 });
     expect(f.products.save).not.toHaveBeenCalled();
+  });
+  it('rejects a relationship change between lookup and the ordered product lock', async () => {
+    const f = fixture();
+    const product = f.records.get('2')!;
+    f.selection.getMany.mockResolvedValueOnce([Object.assign(new Product(), product, { provider_id: null })]);
+    await expect(
+      f.service.updateProduct('2', { name: 'Race candidate' }, f.manager, actor),
+    ).rejects.toThrow('product:version_conflict');
+    expect(f.products.save).not.toHaveBeenCalled();
+    expect(f.logs.save).not.toHaveBeenCalled();
+  });
+  it('prepares OCR products and writes derived logs through the supplied transaction in input order', async () => {
+    const f = fixture();
+    f.providers.push({ id: '9', business_id: businessA });
+    const existing = f.records.get('10')!;
+    Object.assign(existing, { has_stock: null, is_active: false });
+    const line = { invoice_code: null, name: 'Revisado', alias: 'Alias', alias_reviewed: true, cost_price: 3, quantity: 2.5 };
+    const fields = { code: 'New', name: 'Revisado', alias: 'Alias', cost_price: 3, cost_price_tax: 4, sale_price: 15, is_active: true };
+    const items = normalizeOcrProducts([
+      { kind: 'manual_match', line, product_id: '10', expected_version: 1, changes: { sale_price: 105 } },
+      { kind: 'create', line, product: fields },
+      { kind: 'update', line, product_id: '2', expected_version: 1, product: { ...fields, code: 'Updated' } },
+    ]);
+    const write = await f.service.prepareOcrConfirmation(f.manager, businessA, '9', items, actor);
+    expect(f.calls).toEqual(['businesses', 'providers', 'product:2', 'product:10']);
+    expect(f.query.mock.calls.find(([sql]) => sql.includes('FROM providers'))?.[1])
+      .toEqual([['7', '9']]);
+    expect(f.products.save).not.toHaveBeenCalled();
+    expect(f.logs.save).not.toHaveBeenCalled();
+    expect(await write()).toEqual([{ id: '10', version: 2 }, { id: '20', version: 1 }, { id: '2', version: 2 }]);
+    expect(f.products.save).toHaveBeenCalledWith([
+      expect.objectContaining({ id: '10', provider_id: '7', is_active: false, has_stock: null, stock: 5, sale_price: 110 }),
+      expect.objectContaining({ id: '20', provider_id: '9', has_stock: true, stock: 0, sale_price: 20 }),
+      expect.objectContaining({ id: '2', provider_id: '9', has_stock: true, stock: 5, sale_price: 20 }),
+    ]);
+    expect(f.logs.save).toHaveBeenCalledWith([
+      expect.objectContaining({ product_id: '10', changed_fields: ['sale_price'], product_version: 2, actor_id: actor.userId }),
+      expect.objectContaining({ product_id: '20', source: 'create', product_version: 1 }),
+      expect.objectContaining({ product_id: '2', source: 'update', product_version: 2 }),
+    ]);
+    expect(f.transaction).not.toHaveBeenCalled();
   });
   it('propagates derived-log failure to the same transaction', async () => {
     const f = fixture();

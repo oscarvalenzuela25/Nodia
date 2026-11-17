@@ -15,9 +15,17 @@ export const CASH_MOVEMENT_JSON = `jsonb_build_object(
   'description', movement.description,
   'is_active', movement.is_active,
   'version', movement.version,
-  'source', 'manual',
-  'invoice', NULL
+  'source', movement.source,
+  'invoice', CASE WHEN movement.source = 'invoice'
+    THEN jsonb_build_object('id', invoice.id::text, 'code', invoice.code)
+    ELSE NULL END
 )`;
+
+export const CASH_MOVEMENT_DETAIL_JOINS = `
+  JOIN business_cash_categories category
+    ON category.id = movement.category_id AND category.business_id = movement.business_id
+  LEFT JOIN invoices invoice
+    ON invoice.id = movement.invoice_id AND invoice.business_id = movement.business_id`;
 
 export async function readCashMovement(
   manager: EntityManager,
@@ -27,9 +35,9 @@ export async function readCashMovement(
   const [row] = await manager.query<{ movement: CashMovement }[]>(
     `SELECT ${CASH_MOVEMENT_JSON} AS movement
      FROM business_cash_movements movement
-     JOIN business_cash_categories category
-       ON category.id = movement.category_id AND category.business_id = movement.business_id
-     WHERE movement.business_id = $1 AND movement.id = $2`,
+     ${CASH_MOVEMENT_DETAIL_JOINS}
+     WHERE movement.business_id = $1 AND movement.id = $2
+       AND NOT movement.withdrawn_from_invoice`,
     [businessId, id],
   );
   if (!row) throw new NotFoundException('business:resource_not_found');

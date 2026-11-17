@@ -1,5 +1,15 @@
 # Contexto funcional de productos para NodiaAI
 
+## Facturas y OCR vinculados con Caja — CASH-04, 2026-11-17
+
+[Plan109 §13](../../mvp/109-business-cash-ledger-plan.md#13-facturas-y-ocr-vinculados-con-caja--cash-04-2026-11-17),
+[Caja revisión6](businesses/features/cash-ledger-and-invoice-expenses.md)
+y [Negocios revisión62](businesses/README.md) registran el egreso por
+factura y el guardado atómico de la revisión OCR en Server local. Las
+herramientas existentes conservan su contrato y revalidan la
+compatibilidad de la factura. La publicación de Caja sigue pendiente de
+una definición y aprobación propias.
+
 ## Movimientos y resúmenes de Caja — CASH-03, 2026-11-17
 
 [Plan109 §12](../../mvp/109-business-cash-ledger-plan.md#12-movimientos-manuales-y-agregados--cash-03-2026-11-17),

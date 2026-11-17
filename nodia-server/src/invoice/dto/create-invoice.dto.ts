@@ -33,25 +33,32 @@ export class CreateInvoiceDto {
   provider_id?: string | null;
 
   @IsOptional()
-  @Transform(({ value }) => typeof value === 'string' ? value.trim() || null : value)
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim() || null : value,
+  )
   @IsString()
   @MaxLength(255)
   code?: string | null;
 
   @IsOptional()
   @Transform(({ value }) => {
-    if (value === undefined || value === null || value === '' || isNaN(Number(value))) {
+    if (
+      value === undefined ||
+      value === null ||
+      value === '' ||
+      isNaN(Number(value))
+    ) {
       return 0;
     }
     return Math.round(Number(value));
   })
   @IsInt()
   @Min(0)
-  total_amount?: number = 0;
+  total_amount?: number;
 
   @IsOptional()
   @IsString()
-  path_storage?: string = '';
+  path_storage?: string;
 
   @IsOptional()
   @Transform(({ value }) => {
@@ -67,7 +74,9 @@ export class CreateInvoiceDto {
     if (typeof value === 'string') {
       try {
         const parsed = JSON.parse(value);
-        return typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
+        return typeof parsed === 'object' &&
+          parsed !== null &&
+          !Array.isArray(parsed)
           ? parsed
           : {};
       } catch {
@@ -79,16 +88,18 @@ export class CreateInvoiceDto {
       : {};
   })
   @IsObject()
-  data?: Record<string, any> = {};
+  data?: Record<string, any>;
 
   @IsOptional()
   @Transform(({ value }) => {
-    if (value === 'true' || value === true || value === 1 || value === '1') return true;
-    if (value === 'false' || value === false || value === 0 || value === '0') return false;
+    if (value === 'true' || value === true || value === 1 || value === '1')
+      return true;
+    if (value === 'false' || value === false || value === 0 || value === '0')
+      return false;
     return value;
   })
   @IsBoolean()
-  is_active?: boolean = true;
+  is_active?: boolean;
 
   @IsOptional()
   file?: any;

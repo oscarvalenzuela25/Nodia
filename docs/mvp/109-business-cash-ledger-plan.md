@@ -1,10 +1,10 @@
 # Caja de Negocios — plan de implementación y propuesta visual
 
-> Fecha: 2026-11-17. Estado: **CASH-03 implementado localmente para movimientos manuales y agregados**.
+> Fecha: 2026-11-17. Estado: **CASH-04 implementado localmente en Server para Facturas y confirmación OCR**.
 > Rama `codex/business-cash-ledger` desde `origin/development` (`0049b5fc`).
 > §1 recoge la solicitud. §§3–6 fijan el contrato V1 para implementación.
 > El plan y el [ADR106](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
-> siguen en revisión. El siguiente paso es CASH-04.
+> siguen en revisión. El siguiente paso es CASH-05.
 
 > **R02, ampliación2026-11-17:** X para limpiar categoría, + para crearla desde
 > formularios y validación de duplicados independiente de mayúsculas/espaciados.
@@ -605,8 +605,8 @@ retomar no depende de conservar una captura o un proceso local.
 | **CASH-01 — contratos y reglas** | Cierre documental 2026-11-17. Reglas, DTOs/errores, respuestas, idempotencia/CAS, frontera OCR y criterios UI fijados en §§3–7 | Cerrado por alcance documental. La [PR 50](https://github.com/oscarvalenzuela25/Nodia/pull/50) ya está integrada en la base e incluye folio opcional y preferencia OCR |
 | **CASH-02 — modelo y categorías** | Implementación local de la migración aditiva, alta/edición/actividad, listado/detalle, autoridad y recibos | Ver §11 |
 | **CASH-03 — movimientos y agregados** | Alta, edición y actividad manuales con recibo y revisión; filtros Ransack, página y resumen sobre un snapshot y agregado mensual | Implementado localmente. Ver §12 |
-| **CASH-04 — vínculo factura/OCR** | Único egreso, asignación/recategorización/retiro/restauración, sync total/fecha, manual atómico y confirmación OCR transaccional recuperable | Primer pendiente. Cambios de guardado nativo antes de habilitar selector OCR |
-| **CASH-05 — UI Caja y categorías** | Tab, Filter, cards, tabla/tarjetas, drawer, formularios y acciones ES/EN | Contratos03; puede preparar componentes aislados sin fingir endpoints |
+| **CASH-04 — vínculo factura/OCR** | Único egreso, asignación/recategorización/retiro/restauración, sync total/fecha, manual atómico y confirmación OCR transaccional recuperable | Implementado localmente en Server. Ver §13 |
+| **CASH-05 — UI Caja y categorías** | Tab, Filter, cards, tabla/tarjetas, drawer, formularios y acciones ES/EN | Primer pendiente. Contratos de movimientos y vínculos de CASH-03/04 |
 | **CASH-06 — Overview y selectores factura** | Dos cards mensuales; categoría opcional con ayuda/X/+ en ambos flujos; modal creación rápida, borrador/foco e invalidación | 04/05 |
 | **CASH-07 — validación y entrega** | Unidades, integración SQL/HTTP aislada, QA visual proporcional, documentación/fichas y CI de SHA final | 02…06; despliegue/adopción con pedido propio |
 
@@ -617,7 +617,7 @@ Checklist de estado:
 - [x] Definir contratos, reglas, criterios de UI y verificación de CASH-01.
 - [x] CASH-02: persistencia, autorización, administración de categorías y recibos.
 - [x] CASH-03: movimientos manuales y agregados.
-- [ ] CASH-04: factura/OCR identificados, atómicos y recuperables según alcance.
+- [x] CASH-04: factura/OCR identificados, atómicos y recuperables en Server local.
 - [ ] CASH-05/06: UI e integraciones reales, incluyendo cards mensuales.
 - [ ] CASH-07: verificación e integración/adopción por entorno.
 
@@ -797,3 +797,69 @@ del contexto publicado.
 Comprenden este corte el backend local y la traducción de sus errores
 compartidos. La pestaña y las tarjetas de Overview corresponden a CASH-05.
 Las migraciones quedan pendientes de aplicación en un entorno operativo.
+
+## 13. Facturas y OCR vinculados con Caja — CASH-04, 2026-11-17
+
+La [migración 1793710000000](../../nodia-server/src/migrations/1793710000000-LinkBusinessCashInvoiceExpenses.ts)
+inicializa en 1 la revisión de facturas existentes y nuevas. Conserva las
+facturas previas sin generar egresos. La restricción única por factura se
+mantiene tras un retiro, y la FK compuesta exige el mismo negocio. Un
+cambio efectivo de factura incrementa su revisión. Asignar o retirar sólo
+la categoría también la incrementa. La edición de actividad desde Caja
+mantiene la revisión de Facturas.
+
+POST y PUT identificados de Facturas guardan su efecto en Caja bajo el mismo
+lock y en el mismo commit que el recibo. Omitir la categoría conserva el
+vínculo y permite sincronizar el total y la fecha revisados. Null explícito
+retira el egreso y lo excluye de detalle, filtros y agregados. Una nueva
+asignación a categoría activa restaura el mismo UUID como activo. Caja
+muestra el folio vigente y permite buscar por folio o ID de factura.
+
+Los escritores legados conservan los campos omitidos. La protección común
+rechaza cambios legados de importe o fecha efectivos con egreso vigente y
+traslados con historial. NodiaAI comprueba compatibilidad al preparar, al
+preparar el archivo y al ejecutar bajo lock. Los cambios incompatibles se
+resuelven desde Facturas nativas. Los DTO y proyecciones publicados de NodiaAI
+conservan sus contratos y la ficha de Caja sigue como candidata.
+
+La [confirmación OCR nativa](../../nodia-server/src/invoice/use-case/save-cash-invoice.use-case.ts)
+recibe el comando y el archivo con límites de transporte, valida la revisión
+de cada producto y registra factura, productos, logs, egreso opcional,
+auditoría y recibo en la misma transacción. Una intención idéntica recupera
+el mismo resultado, incluidos los IDs y versiones en el orden revisado.
+
+La [migración 1793720000000](../../nodia-server/src/migrations/1793720000000-LinkInvoiceUploadsToCashAttempts.ts)
+vincula la intención privada de archivo con el intento del recibo. R2 se
+ejecuta fuera de SQL. La confirmación verifica concesión, subida preparada
+y ausencia de limpieza, y consume la intención en el commit. Cada reintento
+tiene su propia clave de archivo. El recolector de Facturas conserva la
+gracia de limpieza y verifica la propiedad del adjunto antes de borrarlo.
+
+La [integración de CASH-04](../../nodia-server/test/business-cash-invoice.integration.mjs)
+ejercitó ocho grupos en PostgreSQL 16.15 aislado y HTTP compilado con
+almacenamiento sintético. Verificó las migraciones sin backfill, ambos
+alias de Facturas, permisos y recibos por actor, concurrencia de revisión,
+efecto único por factura, retiro y restauración, los tres tipos de fila
+OCR y el rollback de factura, productos, logs, movimiento y auditoría
+al fallar el sellado del recibo. Un intento vencido o una carga fallida
+se recuperaron con una nueva clave privada. Los DTO y límites multipart
+rechazaron comandos inválidos antes de subir el archivo.
+
+Desde `nodia-server`, ejecutar `node test/business-cash-invoice.integration.mjs`
+después del build. Por defecto, el script crea PostgreSQL 16 desechable.
+`CASH04_TEST_PORT` admite una base loopback vacía y marcada para laboratorio.
+Pasaron las regresiones HTTP de CASH-02/03, acceso de Facturas, 18
+escenarios de carga legada con S3 sintético y siete grupos de precios/OCR.
+La suite general del Server pasó 6305 pruebas y omitió una con
+`--testTimeout 20000`. Pasaron tipado, build y lint, con el aviso
+preexistente en `test/nodia-ai-live-unknown.fixture.mjs`.
+
+La verificación de conocimiento recompiló las referencias a los escritores
+existentes tras el cambio de locks y el guard de Facturas. Pasaron 58
+pruebas y la comprobación de los pins locales. El contexto emitido conserva
+44 documentos, 46 fragmentos y 153 capacidades. La ficha candidata de Caja
+queda excluida de publicación.
+
+El uso de esta ruta desde el guardado OCR de Client y los selectores de
+categoría corresponden a CASH-06. Las migraciones quedan pendientes de
+aplicación en un entorno operativo.

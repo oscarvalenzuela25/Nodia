@@ -9,20 +9,32 @@ export interface CashCategory {
 
 export type CashMovementType = 'income' | 'expense';
 
-export interface CashMovement {
+interface CashMovementBase {
   id: string;
   business_id: string;
   category_id: string;
   category: Pick<CashCategory, 'id' | 'name' | 'is_active'>;
-  type: CashMovementType;
   amount: string;
   occurred_on: string;
-  description: string;
   is_active: boolean;
   version: number;
-  source: 'manual';
-  invoice: null;
 }
+
+export type CashMovement = CashMovementBase &
+  (
+    | {
+        type: CashMovementType;
+        source: 'manual';
+        description: string;
+        invoice: null;
+      }
+    | {
+        type: 'expense';
+        source: 'invoice';
+        description: null;
+        invoice: { id: string; code: string | null };
+      }
+  );
 
 interface CashTotals {
   count: number;
@@ -40,11 +52,22 @@ export interface CashMonthlySummary {
   summary: CashSummary;
 }
 
+export interface CashInvoiceResult {
+  invoice_id: string;
+  invoice_version: number;
+  cash_movement_id: string | null;
+}
+
 interface CashMutationResults {
   category_create: { category: CashCategory };
   category_update: { category: CashCategory };
   movement_create: { movement: CashMovement };
   movement_update: { movement: CashMovement };
+  invoice_create: CashInvoiceResult;
+  invoice_update: CashInvoiceResult;
+  invoice_ocr_confirm: CashInvoiceResult & {
+    products: { id: string; version: number }[];
+  };
 }
 
 export type CashOperation = keyof CashMutationResults;

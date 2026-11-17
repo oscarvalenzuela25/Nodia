@@ -10,12 +10,14 @@ import {
   type Relation,
 } from 'typeorm';
 import { Business } from '../../business/entities/business.entity.js';
+import { Invoice } from '../../invoice/entities/invoice.entity.js';
 import { User } from '../../user/entities/user.entity.js';
 import type { CashMovementType } from '../types/cash.types.js';
 import { BusinessCashCategory } from './business-cash-category.entity.js';
 
 @Entity('business_cash_movements')
 @Unique('uq_business_cash_movements_id_business', ['id', 'business_id'])
+@Unique('uq_business_cash_movements_invoice', ['invoice_id'])
 @Index('idx_business_cash_movements_activity_date', [
   'business_id',
   'is_active',
@@ -37,7 +39,13 @@ import { BusinessCashCategory } from './business-cash-category.entity.js';
   'ck_business_cash_movements_occurred_on',
   "occurred_on BETWEEN DATE '0001-01-01' AND DATE '9999-12-31'",
 )
-@Check('ck_business_cash_movements_description', "description ~ '[^[:space:]]'")
+@Check(
+  'ck_business_cash_movements_source',
+  `(source = 'manual' AND invoice_id IS NULL AND NOT withdrawn_from_invoice
+    AND description IS NOT NULL AND description ~ '[^[:space:]]')
+  OR (source = 'invoice' AND type = 'expense' AND invoice_id IS NOT NULL
+    AND description IS NULL)`,
+)
 @Check('ck_business_cash_movements_version', 'version > 0')
 export class BusinessCashMovement {
   @PrimaryColumn('uuid', {
@@ -50,7 +58,12 @@ export class BusinessCashMovement {
   @Column({ type: 'varchar', length: 7 }) type: CashMovementType;
   @Column('bigint') amount: string;
   @Column('date') occurred_on: string;
-  @Column({ type: 'varchar', length: 500 }) description: string;
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  description: string | null;
+  @Column({ type: 'varchar', length: 7, default: 'manual' }) source:
+    'manual' | 'invoice';
+  @Column({ type: 'bigint', nullable: true }) invoice_id: string | null;
+  @Column({ type: 'boolean', default: false }) withdrawn_from_invoice: boolean;
   @Column({ type: 'boolean', default: true }) is_active: boolean;
   @Column({ type: 'integer', default: 1 }) version: number;
   @Column('bigint') created_by: string;
@@ -84,6 +97,21 @@ export class BusinessCashMovement {
     },
   ])
   category: Relation<BusinessCashCategory>;
+
+  @ManyToOne(() => Invoice, { nullable: true, onDelete: 'RESTRICT' })
+  @JoinColumn([
+    {
+      name: 'invoice_id',
+      referencedColumnName: 'id',
+      foreignKeyConstraintName: 'fk_business_cash_movements_invoice',
+    },
+    {
+      name: 'business_id',
+      referencedColumnName: 'business_id',
+      foreignKeyConstraintName: 'fk_business_cash_movements_invoice',
+    },
+  ])
+  invoice: Relation<Invoice> | null;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({

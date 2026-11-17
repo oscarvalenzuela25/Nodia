@@ -133,6 +133,20 @@ export class CashMutationRequestsService {
     if (!rows.length) throw unavailable();
   }
 
+  async markRetryable(
+    manager: EntityManager,
+    identity: CashReceiptIdentity,
+    attemptId: string,
+  ): Promise<void> {
+    await manager.query(
+      `UPDATE business_cash_mutation_requests
+       SET status='retryable', updated_at=clock_timestamp()
+       WHERE business_id=$1 AND actor_id=$2 AND request_key=$3 AND attempt_id=$4
+         AND status='processing' AND lease_expires_at>clock_timestamp()`,
+      [...scopeParameters(identity), attemptId],
+    );
+  }
+
   async settle<Operation extends CashOperation>(
     manager: EntityManager,
     identity: CashReceiptIdentity,

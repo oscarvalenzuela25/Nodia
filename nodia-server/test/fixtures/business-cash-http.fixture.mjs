@@ -163,17 +163,25 @@ export async function withBusinessCashHttpLab(
     );
   }
 
-  async function startHttp(settings) {
-    const moduleRef = await Test.createTestingModule({
+  async function startHttp(
+    settings,
+    { imports = [], controllers = [], providers = [], overrides = [] } = {},
+  ) {
+    const builder = Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(settings),
         RedisModule,
         BusinessCashModule,
+        ...imports,
       ],
+      controllers,
+      providers,
     })
       .overrideProvider(RedisService)
-      .useValue({})
-      .compile();
+      .useValue({});
+    for (const [provider, value] of overrides)
+      builder.overrideProvider(provider).useValue(value);
+    const moduleRef = await builder.compile();
     app = moduleRef.createNestApplication({ logger: false });
     app.setGlobalPrefix('api/v1');
     app.set('query parser', (value) =>
@@ -227,8 +235,12 @@ export async function withBusinessCashHttpLab(
         headers:
           body === undefined
             ? headers
-            : { ...headers, 'Content-Type': 'application/json' },
-        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+            : body instanceof FormData
+              ? headers
+              : { ...headers, 'Content-Type': 'application/json' },
+        ...(body === undefined
+          ? {}
+          : { body: body instanceof FormData ? body : JSON.stringify(body) }),
         signal: AbortSignal.timeout(8000),
       });
       return {
@@ -242,7 +254,7 @@ export async function withBusinessCashHttpLab(
   try {
     const settings = await openLabDatabase(port);
     await seedAuthority();
-    await run({ source, startHttp: () => startHttp(settings) });
+    await run({ source, startHttp: (options) => startHttp(settings, options) });
   } finally {
     if (app) await app.close();
     if (source?.isInitialized) await source.destroy();

@@ -6,6 +6,7 @@
 > CASH-01: contrato técnico definido en el plan109 para implementación por fases.
 > CASH-02: categorías y recibos implementados localmente según plan109 §11.
 > CASH-03: movimientos manuales y agregados implementados localmente según plan109 §12.
+> CASH-04: facturas, vínculo de Caja y confirmación OCR implementados en Server local según plan109 §13.
 
 ## Contexto
 

@@ -1219,11 +1219,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
@@ -1261,11 +1261,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
@@ -1303,11 +1303,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
@@ -2349,11 +2349,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
@@ -2391,11 +2391,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
@@ -2874,7 +2874,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "63c2bc0c760d090a85473a7d5e0f26421b79ffe5139d9f20229d7b0e6b46b797"
+          "sha256": "f85efebc07515ea11fdf8899e8d91194baaa469be87dac88eca1e43fee5d5e30"
         }
       ],
       "input_schema": {
@@ -2934,7 +2934,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "63c2bc0c760d090a85473a7d5e0f26421b79ffe5139d9f20229d7b0e6b46b797"
+          "sha256": "f85efebc07515ea11fdf8899e8d91194baaa469be87dac88eca1e43fee5d5e30"
         }
       ],
       "input_schema": {
@@ -2970,11 +2970,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
@@ -3012,11 +3012,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
@@ -3078,7 +3078,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "63c2bc0c760d090a85473a7d5e0f26421b79ffe5139d9f20229d7b0e6b46b797"
+          "sha256": "f85efebc07515ea11fdf8899e8d91194baaa469be87dac88eca1e43fee5d5e30"
         }
       ],
       "input_schema": {
@@ -3134,7 +3134,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "63c2bc0c760d090a85473a7d5e0f26421b79ffe5139d9f20229d7b0e6b46b797"
+          "sha256": "f85efebc07515ea11fdf8899e8d91194baaa469be87dac88eca1e43fee5d5e30"
         },
         {
           "path": "nodia-server/src/product/use-case/export-products-csv.use-case.ts",
@@ -3198,7 +3198,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "63c2bc0c760d090a85473a7d5e0f26421b79ffe5139d9f20229d7b0e6b46b797"
+          "sha256": "f85efebc07515ea11fdf8899e8d91194baaa469be87dac88eca1e43fee5d5e30"
         }
       ],
       "input_schema": {
@@ -3258,7 +3258,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "63c2bc0c760d090a85473a7d5e0f26421b79ffe5139d9f20229d7b0e6b46b797"
+          "sha256": "f85efebc07515ea11fdf8899e8d91194baaa469be87dac88eca1e43fee5d5e30"
         }
       ],
       "input_schema": {
@@ -3294,11 +3294,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
@@ -3340,11 +3340,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
@@ -3458,11 +3458,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
@@ -3500,11 +3500,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
@@ -3542,11 +3542,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
@@ -3700,11 +3700,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
@@ -3742,11 +3742,11 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
+          "sha256": "adb6d94eb8ab88c8a0d37750fda75002e3957c454e56b59111e2c22c0ca2849b"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
-          "sha256": "6cd30677347b63962035ce9c7d54e1f008d09180205e90f2e43d5e4478273659"
+          "sha256": "4c88980609e83e6d2e780c71f9d1986c34522e0f0f17d66ca53196a6c5162254"
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",

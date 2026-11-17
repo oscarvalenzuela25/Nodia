@@ -4,6 +4,7 @@ import { applyRansack } from '../../common/utils/ransack-query.builder.js';
 import { RANSACK_POLICIES } from '../../common/utils/ransack-query.policies.js';
 import { CashBusinessScope } from '../cash-business-scope.js';
 import {
+  CASH_MOVEMENT_DETAIL_JOINS,
   CASH_MOVEMENT_JSON,
   readCashMovement,
 } from '../cash-movement-projection.js';
@@ -80,7 +81,8 @@ export class ReadCashMovementsUseCase {
         .addSelect('movement.business_id', 'business_id')
         .addSelect('movement.type', 'type')
         .addSelect('movement.amount', 'amount')
-        .addSelect('movement.occurred_on', 'occurred_on');
+        .addSelect('movement.occurred_on', 'occurred_on')
+        .where('NOT movement.withdrawn_from_invoice');
       applyRansack(
         filtered,
         filters,
@@ -94,6 +96,10 @@ export class ReadCashMovementsUseCase {
              SELECT 1 FROM business_cash_categories category
              WHERE category.id = movement.category_id AND category.business_id = movement.business_id
                AND category.name ILIKE :term ESCAPE '!'
+           ) OR EXISTS (
+             SELECT 1 FROM invoices invoice
+             WHERE invoice.id = movement.invoice_id AND invoice.business_id = movement.business_id
+               AND (invoice.code ILIKE :term ESCAPE '!' OR invoice.id::text ILIKE :term ESCAPE '!')
            ))`,
           { term: `%${search.replace(/[!%_]/g, '!$&')}%` },
         );
@@ -117,8 +123,7 @@ export class ReadCashMovementsUseCase {
              SELECT jsonb_agg(${CASH_MOVEMENT_JSON} ORDER BY page.${order} ${direction}, page.id ${direction})
              FROM page
              JOIN business_cash_movements movement USING (id, business_id)
-             JOIN business_cash_categories category
-               ON category.id = movement.category_id AND category.business_id = movement.business_id
+             ${CASH_MOVEMENT_DETAIL_JOINS}
            ), '[]'::jsonb) AS data
          FROM filtered`,
         parameters,
@@ -157,7 +162,8 @@ export class ReadCashMovementsUseCase {
       const period = cashMonthlyPeriod(new Date());
       const [row] = await manager.query<CashSummaryRow[]>(
         `SELECT ${CASH_SUMMARY_COLUMNS} FROM business_cash_movements
-         WHERE business_id = $1 AND is_active AND occurred_on BETWEEN $2::date AND $3::date`,
+         WHERE business_id = $1 AND is_active AND NOT withdrawn_from_invoice
+           AND occurred_on BETWEEN $2::date AND $3::date`,
         [businessId, period.from, period.to],
       );
       return { period, summary: cashSummary(row) };

@@ -10,6 +10,9 @@ import { plainToInstance } from 'class-transformer';
 import { UpdateProviderDto } from '../dist/provider/dto/update-provider.dto.js';
 import { ProviderOcrAndOptionalInvoiceCode1793680000000 } from '../dist/migrations/1793680000000-ProviderOcrAndOptionalInvoiceCode.js';
 import { CreateProviderContacts1791220000000 } from '../dist/migrations/1791220000000-CreateProviderContacts.js';
+import { CreateBusinessCashCategories1793690000000 } from '../dist/migrations/1793690000000-CreateBusinessCashCategories.js';
+import { CreateBusinessCashMovements1793700000000 } from '../dist/migrations/1793700000000-CreateBusinessCashMovements.js';
+import { LinkBusinessCashInvoiceExpenses1793710000000 } from '../dist/migrations/1793710000000-LinkBusinessCashInvoiceExpenses.js';
 import { ProductService } from '../dist/product/product.service.js';
 import { Product } from '../dist/product/entities/product.entity.js';
 import { ProductLog } from '../dist/product/entities/product-log.entity.js';
@@ -22,26 +25,43 @@ import { ExportProvidersCsvUseCase } from '../dist/provider/use-case/export-prov
 import { installBusinessAccessFixture, businessAccessTestSession } from './fixtures/business-access.fixture.mjs';
 
 const container = `nodia_business_adjustments_${process.pid}_${randomBytes(4).toString('hex')}`;
+const database = 'business_adjustments_test';
+const portOverride = process.env.BUSINESS_PRICING_OCR_TEST_PORT;
 const docker = (...args) => execFileSync('docker', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const checks = [];
 let db, started = false;
 try {
-  docker('run', '--detach', '--rm', '--name', container, '--publish', '127.0.0.1::5432',
-    '--env', 'POSTGRES_DB=business_adjustments_test', '--env', 'POSTGRES_USER=business_adjustments_test',
-    '--env', `POSTGRES_PASSWORD=${container}`, 'postgres:16-alpine');
-  started = true;
-  for (let i = 0; i < 40; i++) {
-    try { docker('exec', container, 'pg_isready', '-h', '127.0.0.1', '-U', 'business_adjustments_test'); break; }
-    catch { if (i === 39) throw new Error('disposable_postgres_unavailable'); await delay(250); }
+  let port;
+  if (portOverride !== undefined) {
+    assert.match(portOverride, /^[1-9][0-9]{0,4}$/);
+    port = Number(portOverride);
+    assert.ok(port >= 1024 && port <= 65535, 'Expected an explicit loopback test port');
+  } else {
+    docker('run', '--detach', '--rm', '--name', container, '--publish', '127.0.0.1::5432',
+      '--env', `POSTGRES_DB=${database}`, '--env', `POSTGRES_USER=${database}`,
+      '--env', `POSTGRES_PASSWORD=${container}`, 'postgres:16-alpine');
+    started = true;
+    for (let i = 0; i < 40; i++) {
+      try { docker('exec', container, 'pg_isready', '-h', '127.0.0.1', '-U', database); break; }
+      catch { if (i === 39) throw new Error('disposable_postgres_unavailable'); await delay(250); }
+    }
+    const mapping = docker('port', container, '5432/tcp');
+    assert.match(mapping, /^127\.0\.0\.1:\d+$/);
+    port = Number(mapping.split(':')[1]);
   }
-  const mapping = docker('port', container, '5432/tcp');
-  assert.match(mapping, /^127\.0\.0\.1:\d+$/);
-  db = new DataSource({ type: 'postgres', host: '127.0.0.1', port: Number(mapping.split(':')[1]),
-    username: 'business_adjustments_test', password: container, database: 'business_adjustments_test', synchronize: false,
+  db = new DataSource({ type: 'postgres', host: '127.0.0.1', port,
+    username: database, password: started ? container : database, database, synchronize: false, installExtensions: false,
     entities: [fileURLToPath(new URL('../dist/**/*.entity.js', import.meta.url))] });
   await db.initialize();
-  assert.deepEqual((await db.query('SELECT current_database() AS database,current_user AS username'))[0],
-    { database: 'business_adjustments_test', username: 'business_adjustments_test' });
+  const [identity] = await db.query(`SELECT current_database() AS db,current_user AS username,
+    current_setting('server_version_num')::int/10000 AS major,
+    shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()`);
+  assert.equal(identity.db, database);
+  assert.equal(identity.username, database);
+  assert.equal(identity.major, 16);
+  if (!started)
+    assert.equal(identity.marker, 'nodia-disposable:business-price-ocr', 'Refusing an unmarked database');
+  assert.deepEqual(await db.query("SELECT tablename FROM pg_tables WHERE schemaname='public'"), []);
   await installBusinessAccessFixture(db);
   await db.query("ALTER TABLE businesses ADD COLUMN sales_timezone varchar(64) NOT NULL DEFAULT 'America/Santiago'");
   await db.query(`CREATE TABLE providers(id bigserial PRIMARY KEY,business_id uuid NOT NULL REFERENCES businesses(id),name varchar(255) NOT NULL,tax int NOT NULL DEFAULT 19,fields jsonb NOT NULL DEFAULT '{}',is_active boolean NOT NULL DEFAULT true,created_at timestamp NOT NULL DEFAULT now(),updated_at timestamp NOT NULL DEFAULT now());
@@ -86,6 +106,14 @@ try {
   await imports.execute({ items: [{ id: ocr.id, business_id: business, name: 'OCR supplier', use_ocr: false }] }, actor);
   assert.equal((await db.getRepository(Provider).findOneByOrFail({ id: ocr.id })).use_ocr, false);
   checks.push('csv_opt_in_roundtrips_and_legacy_omission_preserves_existing_preference');
+  const cash = db.createQueryRunner();
+  try {
+    await new CreateBusinessCashCategories1793690000000().up(cash);
+    await new CreateBusinessCashMovements1793700000000().up(cash);
+    await new LinkBusinessCashInvoiceExpenses1793710000000().up(cash);
+  } finally {
+    await cash.release();
+  }
   const invoices = new InvoiceService(db.getRepository(Invoice));
   const absent = await invoices.createInvoice({ business_id: business, provider_id: normal.id }, undefined, actor);
   assert.equal(absent.code, null);

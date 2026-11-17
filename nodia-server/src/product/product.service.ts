@@ -2,6 +2,7 @@ import { normalizeCatalogSalePrice } from './product-sale-price.js';
 import {
   BadRequestException,
   ConflictException,
+  HttpException,
   Injectable,
   Optional,
   NotFoundException,
@@ -53,6 +54,15 @@ import {
   validateProductMeasurementUnit,
   type ProductMeasurementUnit,
 } from './product-measurement-unit.js';
+import type {
+  OcrProductItem,
+  OcrSavedProduct,
+} from './ocr-confirmation-products.js';
+import { CashWriteRejection } from '../business-cash/use-case/execute-cash-mutation.use-case.js';
+
+type ProductReference = Pick<Product, 'id' | 'business_id' | 'provider_id'>;
+type ProductProvider = { business_id: string; provider_id?: string | null };
+type ProductUpdate = UpdateProductDto & { id: string };
 
 @Injectable()
 export class ProductService {
@@ -84,21 +94,43 @@ export class ProductService {
   ): Promise<void> {
     const current = this.actor(actor);
     await this.authorizeBusinesses(manager, current, [], { lock: true });
-    const productIds = [...new Set(ids.map((id) => this.referenceId(id)))].sort(
-      (a, b) => (BigInt(a) < BigInt(b) ? -1 : BigInt(a) > BigInt(b) ? 1 : 0),
+    const productIds = [...new Set(ids.map((id) => this.referenceId(id)))];
+    const candidates = await this.productReferences(manager, productIds);
+    await this.authorizeBusinesses(
+      manager,
+      current,
+      [...candidates.values()].map((product) => product.business_id),
+      { lock: true },
     );
-    const products: { id: string; business_id: string }[] = await manager.query(
-      'SELECT p.id::text,p.business_id::text FROM products p WHERE p.id=ANY($1::bigint[]) ORDER BY p.id FOR SHARE OF p',
+    const products: ProductReference[] = await manager.query(
+      'SELECT p.id::text,p.business_id::text,p.provider_id::text FROM products p WHERE p.id=ANY($1::bigint[]) ORDER BY p.id FOR SHARE OF p',
       [productIds],
     );
     if (products.length !== productIds.length)
       throw new NotFoundException('Product not found');
-    await this.authorizeBusinesses(
-      manager,
-      current,
-      products.map((product) => product.business_id),
-      { lock: true },
+    this.assertSameProductBusinesses(products, candidates);
+  }
+
+  private async productReferences(
+    manager: EntityManager,
+    ids: readonly string[],
+  ): Promise<Map<string, ProductReference>> {
+    if (!ids.length) return new Map();
+    const rows: ProductReference[] = await manager.query(
+      'SELECT p.id::text,p.business_id::text,p.provider_id::text FROM products p WHERE p.id=ANY($1::bigint[])',
+      [ids],
     );
+    return new Map(rows.map((row) => [row.id, row]));
+  }
+
+  private assertSameProductBusinesses(
+    products: readonly ProductReference[],
+    candidates: ReadonlyMap<string, ProductReference>,
+  ): void {
+    if (
+      products.some((product) => product.business_id !== candidates.get(product.id)?.business_id)
+    )
+      throw new ConflictException('product:version_conflict');
   }
 
   private requireTransaction(manager: EntityManager): void {
@@ -314,7 +346,9 @@ export class ProductService {
   /** Individual and legacy bulk writers share the same relation barrier. */
   private async validateReferenceSet(
     manager: EntityManager,
-    references: readonly { business_id: string; provider_id?: string | null }[],
+    references: readonly ProductProvider[],
+    previousProviders: readonly (string | null)[] = [],
+    concealProvider = false,
   ): Promise<void> {
     if (
       references.some(
@@ -325,9 +359,9 @@ export class ProductService {
     // Business existence, current ownership and parent locks were checked together.
     const providerIds = [
       ...new Set(
-        references.flatMap((item) =>
-          item.provider_id == null ? [] : [this.referenceId(item.provider_id)],
-        ),
+        [...previousProviders, ...references.map((item) => item.provider_id)]
+          .filter((id): id is string => id != null)
+          .map((id) => this.referenceId(id)),
       ),
     ].sort((a, b) =>
       BigInt(a) < BigInt(b) ? -1 : BigInt(a) > BigInt(b) ? 1 : 0,
@@ -348,10 +382,13 @@ export class ProductService {
           byId.get(this.referenceId(item.provider_id))?.toLowerCase() !==
             item.business_id.toLowerCase(),
       )
-    )
+    ) {
+      if (concealProvider)
+        throw new NotFoundException('business:resource_not_found');
       throw new BadRequestException(
         'Provider does not belong to this business',
       );
+    }
   }
 
   private async validateReferences(
@@ -362,6 +399,213 @@ export class ProductService {
     return this.validateReferenceSet(manager, [
       { business_id: businessId, provider_id: providerId },
     ]);
+  }
+
+  private async lockProductUpdates(
+    manager: EntityManager,
+    actor: ActorReference,
+    items: readonly ProductUpdate[],
+    invoice?: { business_id: string; provider_id: string | null },
+  ): Promise<Product[]> {
+    await this.authorizeBusinesses(manager, actor, [], { lock: true });
+    const ids = items.map((item) => this.referenceId(item.id));
+    if (new Set(ids).size !== ids.length)
+      throw new BadRequestException(
+        'A product may appear only once in a bulk update',
+      );
+    const before = await this.productReferences(manager, ids);
+    for (const id of ids) {
+      const product = before.get(id);
+      if (invoice && product?.business_id !== invoice.business_id)
+        throw new NotFoundException('business:resource_not_found');
+      if (!product)
+        throw new NotFoundException(`Product with ID "${id}" not found`);
+    }
+    const destinations = items.map((item, index) => {
+      const product = before.get(ids[index])!;
+      return {
+        business_id: item.business_id ?? product.business_id,
+        provider_id:
+          item.provider_id === undefined ? product.provider_id : item.provider_id,
+      };
+    });
+    const current = [...before.values()];
+    const references = invoice ? [...destinations, invoice] : destinations;
+    await this.authorizeBusinesses(
+      manager,
+      actor,
+      [...current, ...references].map((item) => item.business_id),
+      { lock: true },
+    );
+    await this.validateReferenceSet(
+      manager,
+      references,
+      current.map((item) => item.provider_id),
+      invoice !== undefined,
+    );
+    if (!ids.length) return [];
+    const selected = await manager
+      .getRepository(Product)
+      .createQueryBuilder('product')
+      .where('product.id IN (:...ids)', { ids })
+      .orderBy('product.id', 'ASC')
+      .setLock('pessimistic_write')
+      .getMany();
+    this.assertSameProductBusinesses(selected, before);
+    if (
+      selected.some((product) => product.provider_id !== before.get(product.id)?.provider_id)
+    )
+      throw new ConflictException('product:version_conflict');
+    const locked = new Map(selected.map((product) => [product.id, product]));
+    return ids.map((id) => {
+      const product = locked.get(id);
+      if (!product)
+        throw new NotFoundException(
+          invoice
+            ? 'business:resource_not_found'
+            : `Product with ID "${id}" not found`,
+        );
+      return product;
+    });
+  }
+
+  private productCreation(dto: CreateProductDto) {
+    const attributes = normalizeCatalogSalePrice(this.catalogFields(dto, true));
+    validateCatalogProduct(attributes, true);
+    return {
+      ...attributes,
+      barcode: dto.barcode ?? null,
+      offer_price: dto.offer_price ?? null,
+      is_offer_enabled: dto.is_offer_enabled ?? false,
+      stock: dto.stock ?? 0,
+      is_active: dto.is_active ?? true,
+      version: 1,
+    };
+  }
+
+  private async productUpdate(
+    manager: EntityManager,
+    product: Product,
+    dto: UpdateProductDto,
+  ): Promise<{ candidate: Product; changedFields: string[] }> {
+    const { expected_version, ...suppliedAttributes } = dto;
+    const attributes = normalizeCatalogSalePrice(
+      this.catalogFields(suppliedAttributes),
+    );
+    if (
+      Object.hasOwn(attributes, 'has_stock') &&
+      typeof attributes.has_stock !== 'boolean'
+    )
+      throw new BadRequestException('product:invalid_availability');
+    const requiresVersion = [
+      'alias',
+      'barcode',
+      'offer_price',
+      'is_offer_enabled',
+      'has_stock',
+      'measurement_unit',
+    ].some((key) => Object.hasOwn(attributes, key));
+    checkProductVersion(product, expected_version, requiresVersion);
+    if (product.version >= 2147483647)
+      throw new ConflictException('product:version_conflict');
+    await this.assertMovable(
+      manager,
+      product,
+      attributes.business_id ?? product.business_id,
+    );
+    const candidate = Object.assign(new Product(), product, attributes, {
+      version: (product.version ?? 1) + 1,
+    });
+    validateCatalogProduct(candidate);
+    return { candidate, changedFields: Object.keys(attributes) };
+  }
+
+  /** Keep the same catalog validators and derived logs as native writers. */
+  async prepareOcrConfirmation(
+    manager: EntityManager,
+    businessId: string,
+    providerId: string | null,
+    items: readonly OcrProductItem[],
+    actor: ActorReference,
+  ): Promise<() => Promise<OcrSavedProduct[]>> {
+    this.requireTransaction(manager);
+    try {
+      const invoice = { business_id: businessId, provider_id: providerId };
+      const updates = items.flatMap((item) =>
+        item.kind === 'create'
+          ? []
+          : [{
+              id: item.product_id,
+              expected_version: item.expected_version,
+              ...(item.kind === 'update'
+                ? { ...item.product, provider_id: providerId }
+                : item.changes),
+            }],
+      );
+      const selected = await this.lockProductUpdates(
+        manager,
+        actor,
+        updates,
+        invoice,
+      );
+      const locked = new Map(selected.map((product) => [product.id, product]));
+      const updateById = new Map(
+        updates.map(({ id, ...attributes }) => [id, attributes]),
+      );
+      const products = manager.getRepository(Product);
+      const logs = manager.getRepository(ProductLog);
+      const staged: {
+        candidate: Product;
+        changedFields: string[];
+        source: 'create' | 'update';
+      }[] = [];
+      for (const item of items) {
+        if (item.kind === 'create') {
+          const input = { ...invoice, ...item.product, has_stock: true };
+          staged.push({
+            candidate: products.create(this.productCreation(input)),
+            changedFields: Object.keys(input),
+            source: 'create',
+          });
+          continue;
+        }
+        const update = await this.productUpdate(
+          manager,
+          locked.get(item.product_id)!,
+          updateById.get(item.product_id)!,
+        );
+        staged.push({ ...update, source: 'update' });
+      }
+      return async () => {
+        try {
+          const saved = await this.persist(() =>
+            products.save(staged.map((entry) => entry.candidate)),
+          );
+          await logs.save(saved.map((product, index) => logs.create(
+            productSnapshot(
+              product,
+              staged[index].source,
+              actor.userId,
+              staged[index].changedFields,
+            ),
+          )));
+          return saved.map(({ id, version }) => ({ id, version }));
+        } catch (error) {
+          this.rethrowOcrFailure(error);
+        }
+      };
+    } catch (error) {
+      this.rethrowOcrFailure(error);
+    }
+  }
+
+  private rethrowOcrFailure(error: unknown): never {
+    if (error instanceof HttpException) {
+      const status = error.getStatus();
+      if (status === 400 || status === 404 || status === 409)
+        throw new CashWriteRejection(status, error.message);
+    }
+    throw error;
   }
 
   // ---------------------------------------------------------------------------
@@ -597,22 +841,13 @@ export class ProductService {
     });
     const products = manager.getRepository(Product);
     const logs = manager.getRepository(ProductLog);
-    const attributes = normalizeCatalogSalePrice(this.catalogFields(createDto, true));
-    validateCatalogProduct(attributes, true);
+    const attributes = this.productCreation(createDto);
     await this.validateReferences(
       manager,
       createDto.business_id,
       createDto.provider_id,
     );
-    const product = products.create({
-      ...attributes,
-      barcode: createDto.barcode ?? null,
-      offer_price: createDto.offer_price ?? null,
-      is_offer_enabled: createDto.is_offer_enabled ?? false,
-      stock: createDto.stock ?? 0,
-      is_active: createDto.is_active ?? true,
-      version: 1,
-    });
+    const product = products.create(attributes);
     const savedProduct = await this.persist(() => products.save(product));
 
     // Automatically record snapshot in product_logs
@@ -649,22 +884,9 @@ export class ProductService {
     const products = manager.getRepository(Product);
     const productLogs = manager.getRepository(ProductLog);
     await this.validateReferenceSet(manager, bulkDto.items);
-    const attributes = bulkDto.items.map((item) => normalizeCatalogSalePrice(this.catalogFields(item, true)));
-    for (const item of attributes) validateCatalogProduct(item, true);
+    const attributes = bulkDto.items.map((item) => this.productCreation(item));
     const savedProducts = await this.persist(() =>
-      products.save(
-        products.create(
-          attributes.map((item) => ({
-            ...item,
-            barcode: item.barcode ?? null,
-            offer_price: item.offer_price ?? null,
-            is_offer_enabled: item.is_offer_enabled ?? false,
-            stock: item.stock ?? 0,
-            is_active: item.is_active ?? true,
-            version: 1,
-          })),
-        ),
-      ),
+      products.save(products.create(attributes)),
     );
     const logs = savedProducts.map((prod, index) =>
       productLogs.create(
@@ -693,53 +915,17 @@ export class ProductService {
         this.updateProduct(id, updateDto, tx, current),
       );
     this.requireTransaction(manager);
-    await this.authorizeBusinesses(manager, current, [], { lock: true });
     const products = manager.getRepository(Product);
     const logs = manager.getRepository(ProductLog);
-    const product = await products.findOne({
-      where: { id },
-      lock: { mode: 'pessimistic_write' },
-    });
-    if (!product)
-      throw new NotFoundException(`Product with ID "${id}" not found`);
-    await this.authorizeBusinesses(
-      manager,
-      current,
-      [product.business_id, updateDto.business_id ?? product.business_id],
-      { lock: true },
-    );
-    await this.validateReferences(
-      manager,
-      updateDto.business_id ?? product.business_id,
-      updateDto.provider_id === undefined
-        ? product.provider_id
-        : updateDto.provider_id,
-    );
-    const { expected_version, ...suppliedAttributes } = updateDto;
-    const attributes = normalizeCatalogSalePrice(this.catalogFields(suppliedAttributes));
-    if (
-      Object.hasOwn(attributes, 'has_stock') &&
-      typeof attributes.has_stock !== 'boolean'
-    )
-      throw new BadRequestException('product:invalid_availability');
-    const requiresVersion = [
-      'alias',
-      'barcode',
-      'offer_price',
-      'is_offer_enabled',
-      'has_stock',
-      'measurement_unit',
-    ].some((key) => Object.hasOwn(attributes, key));
-    checkProductVersion(product, expected_version, requiresVersion);
-    await this.assertMovable(
+    const [product] = await this.lockProductUpdates(manager, current, [
+      { ...updateDto, id },
+    ]);
+    const { candidate, changedFields } = await this.productUpdate(
       manager,
       product,
-      attributes.business_id ?? product.business_id,
+      updateDto,
     );
-    const candidate = Object.assign(new Product(), product, attributes);
-    validateCatalogProduct(candidate);
-    Object.assign(product, attributes, { version: (product.version ?? 1) + 1 });
-    const savedProduct = await this.persist(() => products.save(product));
+    const savedProduct = await this.persist(() => products.save(candidate));
 
     // Automatically record snapshot in product_logs
     const log = logs.create(
@@ -747,7 +933,7 @@ export class ProductService {
         savedProduct,
         'update',
         current.userId,
-        Object.keys(attributes),
+        changedFields,
       ),
     );
     await logs.save(log);
@@ -766,62 +952,14 @@ export class ProductService {
         this.updateBulkProducts(bulkDto, tx, current),
       );
     this.requireTransaction(manager);
-    await this.authorizeBusinesses(manager, current, [], { lock: true });
     const products = manager.getRepository(Product);
     const productLogs = manager.getRepository(ProductLog);
-    const ids = bulkDto.items.map((item) => this.referenceId(item.id));
-    if (new Set(ids).size !== ids.length)
-      throw new BadRequestException(
-        'A product may appear only once in a bulk update',
-      );
-    const selected = await products
-      .createQueryBuilder('product')
-      .where('product.id IN (:...ids)', { ids })
-      .orderBy('product.id', 'ASC')
-      .setLock('pessimistic_write')
-      .getMany();
-    const locked = new Map(selected.map((product) => [product.id, product]));
-    if (locked.size !== ids.length) {
-      const missing = ids.find((id) => !locked.has(id));
-      throw new NotFoundException(`Product with ID "${missing}" not found`);
-    }
+    const selected = await this.lockProductUpdates(manager, current, bulkDto.items);
     const candidates: Product[] = [];
     for (const [index, item] of bulkDto.items.entries()) {
-      const { id: _id, expected_version, ...suppliedAttributes } = item;
-      const attributes = normalizeCatalogSalePrice(this.catalogFields(suppliedAttributes));
-      if (
-        Object.hasOwn(attributes, 'has_stock') &&
-        typeof attributes.has_stock !== 'boolean'
-      )
-        throw new BadRequestException('product:invalid_availability');
-      const previous = locked.get(ids[index])!;
-      const requiresVersion = [
-        'alias',
-        'barcode',
-        'offer_price',
-        'is_offer_enabled',
-        'has_stock',
-        'measurement_unit',
-      ].some((key) => Object.hasOwn(attributes, key));
-      checkProductVersion(previous, expected_version, requiresVersion);
-      await this.assertMovable(
-        manager,
-        previous,
-        attributes.business_id ?? previous.business_id,
-      );
-      const candidate = Object.assign(new Product(), previous, attributes, {
-        version: (previous.version ?? 1) + 1,
-      });
-      validateCatalogProduct(candidate);
-      candidates.push(candidate);
+      const { id: _id, ...attributes } = item;
+      candidates.push((await this.productUpdate(manager, selected[index], attributes)).candidate);
     }
-    await this.authorizeBusinesses(
-      manager,
-      current,
-      [...selected, ...candidates].map((product) => product.business_id),
-      { lock: true },
-    );
-    await this.validateReferenceSet(manager, candidates);
     const savedProducts = await this.persist(() => products.save(candidates));
     const logs = savedProducts.map((prod, index) =>
       productLogs.create(

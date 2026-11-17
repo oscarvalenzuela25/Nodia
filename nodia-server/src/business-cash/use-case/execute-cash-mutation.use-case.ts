@@ -10,6 +10,7 @@ import { CashBusinessScope } from '../cash-business-scope.js';
 import {
   CASH_MUTATION_CONTRACT_VERSION,
   CashMutationRequestsService,
+  type CashReceiptIdentity,
   type CashRequest,
 } from '../cash-mutation-requests.service.js';
 import type {
@@ -22,34 +23,48 @@ import type {
 type CashTarget =
   | { kind: 'business'; id: string }
   | { kind: 'category'; id: string }
-  | { kind: 'movement'; id: string };
+  | { kind: 'movement'; id: string }
+  | { kind: 'invoice'; id: string };
 
 interface CashCommand<Operation extends CashOperation> {
   requestKey: string;
   operation: Operation;
   target: CashTarget;
-  intent: Readonly<Record<string, string | boolean | number>>;
+  intent: Readonly<Record<string, unknown>>;
+}
+
+export interface CashMutationAttempt extends CashReceiptIdentity {
+  attemptId: string;
 }
 
 export class CashWriteRejection extends HttpException {
-  constructor(status: 404 | 409, message: string) {
+  constructor(status: 400 | 404 | 409, message: string) {
     super(message, status);
   }
 }
 
-function fingerprint(command: CashCommand<CashOperation>): string {
-  const fields = Object.entries(command.intent).sort(([left], [right]) =>
+function sortedEntries(value: object) {
+  return Object.entries(value).sort(([left], [right]) =>
     left < right ? -1 : Number(left > right),
   );
+}
+
+function fingerprint(command: CashCommand<CashOperation>): string {
   return createHash('sha256')
     .update(
-      JSON.stringify([
-        'cash-mutation',
-        CASH_MUTATION_CONTRACT_VERSION,
-        command.operation,
-        command.target.id,
-        fields,
-      ]),
+      JSON.stringify(
+        [
+          'cash-mutation',
+          CASH_MUTATION_CONTRACT_VERSION,
+          command.operation,
+          command.target.id,
+          sortedEntries(command.intent),
+        ],
+        (_key, value: unknown) =>
+          value && typeof value === 'object' && !Array.isArray(value)
+            ? Object.fromEntries(sortedEntries(value))
+            : value,
+      ),
     )
     .digest('hex');
 }
@@ -81,7 +96,9 @@ export class ExecuteCashMutationUseCase {
     write: (
       manager: EntityManager,
       businessId: string,
+      attempt: CashMutationAttempt,
     ) => Promise<CashMutationPayload<NoInfer<Operation>>>,
+    stage?: (attempt: CashMutationAttempt) => Promise<void>,
   ): Promise<CashMutationResult<Operation>> {
     const { target, operation, requestKey } = command;
     const requestHash = fingerprint(command);
@@ -120,10 +137,17 @@ export class ExecuteCashMutationUseCase {
 
     const { businessId } = request;
     const { attemptId } = reservation;
+    const attempt: CashMutationAttempt = {
+      businessId,
+      actorId: request.actorId,
+      requestKey,
+      attemptId,
+    };
     try {
+      if (stage) await stage(attempt);
       return await this.scope.run(businessId, actor, async (manager) => {
         await this.requests.holdAttempt(manager, request, attemptId);
-        const result = await write(manager, businessId);
+        const result = await write(manager, businessId, attempt);
         await this.requests.settle<Operation>(manager, request, attemptId, {
           status: 'committed',
           result,
@@ -163,6 +187,8 @@ export class ExecuteCashMutationUseCase {
         return this.scope.forCategory(target.id, actor, reserve);
       case 'movement':
         return this.scope.forMovement(target.id, actor, reserve);
+      case 'invoice':
+        return this.scope.forInvoice(target.id, actor, reserve);
     }
   }
 }

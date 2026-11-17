@@ -42,5 +42,10 @@ import { ReadCashReceiptUseCase } from './use-case/read-cash-receipt.use-case.js
     ReadCashMovementsUseCase,
     ReadCashReceiptUseCase,
   ],
+  exports: [
+    CashBusinessScope,
+    CashMutationRequestsService,
+    ExecuteCashMutationUseCase,
+  ],
 })
 export class BusinessCashModule {}

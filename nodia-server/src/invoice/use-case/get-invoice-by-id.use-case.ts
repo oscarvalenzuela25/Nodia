@@ -11,4 +11,13 @@ export class GetInvoiceByIdUseCase {
       ? this.invoiceService.findOneInvoice(id, actor.transaction, actor)
       : this.invoiceService.findOneInvoice(id);
   }
+
+  executeNative(id: string, actor: ActorReference) {
+    return this.invoiceService.findOneInvoice(
+      id,
+      actor.transaction,
+      actor,
+      true,
+    );
+  }
 }

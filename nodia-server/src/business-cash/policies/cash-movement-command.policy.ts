@@ -22,7 +22,7 @@ const editableFields = [
 ] as const;
 
 export type CashMovementFields = Pick<
-  CashMovement,
+  Extract<CashMovement, { source: 'manual' }>,
   (typeof editableFields)[number]
 >;
 export type CashMovementChange = Partial<CashMovementFields> & {

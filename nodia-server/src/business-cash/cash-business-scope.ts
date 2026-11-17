@@ -58,8 +58,17 @@ export class CashBusinessScope {
     return this.forRecord('business_cash_movements', id, actor, work);
   }
 
+  forInvoice<T>(
+    id: string,
+    actor: ActorReference,
+    work: (manager: EntityManager, businessId: string) => Promise<T>,
+  ): Promise<T> {
+    validateCashCategoryId(id);
+    return this.forRecord('invoices', id, actor, work);
+  }
+
   private forRecord<T>(
-    table: 'business_cash_categories' | 'business_cash_movements',
+    table: 'business_cash_categories' | 'business_cash_movements' | 'invoices',
     id: string,
     actor: ActorReference,
     work: (
@@ -70,8 +79,7 @@ export class CashBusinessScope {
   ): Promise<T> {
     return this.transaction(actor, async (manager) => {
       await currentActor(manager, actor);
-      // Only resolve the immutable parent before its lock. Domain data is read
-      // after membership has been rechecked under that lock.
+      // Resolve the parent first and read domain data only after scope is locked.
       const [record] = await manager.query<{ business_id: string }[]>(
         `SELECT business_id FROM ${table} WHERE id=$1`,
         [id],
@@ -80,6 +88,15 @@ export class CashBusinessScope {
       await assertBusinessesAccess(manager, actor, [record.business_id], {
         lock: true,
       });
+      // Legacy clients can transfer an invoice without cash history.
+      if (table === 'invoices') {
+        const [current] = await manager.query<{ id: string }[]>(
+          'SELECT id::text FROM invoices WHERE id=$1 AND business_id=$2',
+          [id, record.business_id],
+        );
+        if (!current)
+          throw new NotFoundException('business:resource_not_found');
+      }
       return work(manager, record.business_id, id);
     });
   }

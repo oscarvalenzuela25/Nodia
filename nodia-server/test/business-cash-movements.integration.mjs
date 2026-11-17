@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { CreateBusinessCashCategories1793690000000 } from '../dist/migrations/1793690000000-CreateBusinessCashCategories.js';
 import { CreateBusinessCashMovements1793700000000 } from '../dist/migrations/1793700000000-CreateBusinessCashMovements.js';
+import { LinkBusinessCashInvoiceExpenses1793710000000 } from '../dist/migrations/1793710000000-LinkBusinessCashInvoiceExpenses.js';
 import { withBusinessCashHttpLab } from './fixtures/business-cash-http.fixture.mjs';
 
 const business = 'aa000000-0000-4000-8000-000000000001';
@@ -77,7 +78,10 @@ function readAudit(source, id) {
 }
 
 async function migrationAndAuthority(source, startHttp) {
-  assert.equal((await source.runMigrations()).length, 2);
+  await source.query(`CREATE TABLE invoices (
+    id bigint PRIMARY KEY, business_id uuid NOT NULL, code varchar(255)
+  )`);
+  assert.equal((await source.runMigrations()).length, 3);
   const send = await startHttp();
   const categoryIntent = {
     business_id: business,
@@ -102,6 +106,7 @@ async function migrationAndAuthority(source, startHttp) {
   });
   const alien = await addCategory(send, 'Categoría ajena', '2', otherBusiness);
   await source.undoLastMigration();
+  await source.undoLastMigration();
   assert.deepEqual(
     await source.query(
       `SELECT to_regclass('business_cash_movements') AS movement,
@@ -111,7 +116,7 @@ async function migrationAndAuthority(source, startHttp) {
     ),
     [{ movement: null, audit: null, categories: 2, receipts: 2 }],
   );
-  assert.equal((await source.runMigrations()).length, 1);
+  assert.equal((await source.runMigrations()).length, 2);
   assert.deepEqual(
     expectStatus(await send('POST', categories, '1', categoryIntent), 201),
     categoryReceipt,
@@ -619,11 +624,13 @@ async function run({ source, startHttp }) {
   );
   await filtersAndExactMonth(source, send, currentCategory, alien);
   const audit = await readAudit(source, movement.id);
+  await source.undoLastMigration();
   await assert.rejects(
     () => source.undoLastMigration(),
     /business:cash_movements_rollback_would_lose_data/,
   );
   assert.deepEqual(await readAudit(source, movement.id), audit);
+  assert.equal((await source.runMigrations()).length, 1);
   expectStatus(await send('GET', movements + '/' + movement.id), 200);
   console.log(
     JSON.stringify({
@@ -655,6 +662,7 @@ await withBusinessCashHttpLab(
     migrations: [
       CreateBusinessCashCategories1793690000000,
       CreateBusinessCashMovements1793700000000,
+      LinkBusinessCashInvoiceExpenses1793710000000,
     ],
     business,
     otherBusiness,

@@ -16,6 +16,10 @@ import { AiProviderModule } from '../ai-provider/ai-provider.module.js';
 import { AnalysisObservationsUseCase } from './use-case/analysis-observations.use-case.js';
 import { AnalysisObservationInterceptor } from './analysis-observation.interceptor.js';
 import { InvoiceUploadRecoveryWorker } from './invoice-upload-recovery.worker.js';
+import { BusinessCashModule } from '../business-cash/business-cash.module.js';
+import { ProductModule } from '../product/product.module.js';
+import { InvoiceCashUploadService } from './invoice-cash-upload.js';
+import { SaveCashInvoiceUseCase } from './use-case/save-cash-invoice.use-case.js';
 
 @Module({
   imports: [
@@ -24,6 +28,8 @@ import { InvoiceUploadRecoveryWorker } from './invoice-upload-recovery.worker.js
     GeminiModule,
     ProviderModule,
     AiProviderModule,
+    BusinessCashModule,
+    ProductModule,
   ],
   controllers: [InvoiceController],
   providers: [
@@ -37,6 +43,8 @@ import { InvoiceUploadRecoveryWorker } from './invoice-upload-recovery.worker.js
     AnalyzeInvoiceUseCase,
     VerifyIaProvidersUseCase,
     GetInvoiceSelectableModelsUseCase,
+    InvoiceCashUploadService,
+    SaveCashInvoiceUseCase,
   ],
   exports: [InvoicePersistenceModule, VerifyIaProvidersUseCase],
 })
