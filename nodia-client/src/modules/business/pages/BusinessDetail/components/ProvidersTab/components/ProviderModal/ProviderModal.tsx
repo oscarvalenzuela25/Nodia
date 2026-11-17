@@ -337,7 +337,7 @@ export const ProviderModal: FC<Props> = ({
                       onBlur={field.onBlur}
                       disabled={isSubmitting}
                       multiline
-                      rows={2}
+                      minRows={3}
                       data-testid="provider-field-code-instructions-input"
                     />
                   )}
@@ -385,7 +385,7 @@ export const ProviderModal: FC<Props> = ({
                       onBlur={field.onBlur}
                       disabled={isSubmitting}
                       multiline
-                      rows={2}
+                      minRows={3}
                       data-testid="provider-field-cost-price-instructions-input"
                     />
                   )}
@@ -435,7 +435,7 @@ export const ProviderModal: FC<Props> = ({
                       onBlur={field.onBlur}
                       disabled={isSubmitting}
                       multiline
-                      rows={2}
+                      minRows={3}
                       data-testid="provider-field-cost-price-tax-instructions-input"
                     />
                   )}
@@ -483,7 +483,7 @@ export const ProviderModal: FC<Props> = ({
                       onBlur={field.onBlur}
                       disabled={isSubmitting}
                       multiline
-                      rows={2}
+                      minRows={3}
                       data-testid="provider-field-packages-instructions-input"
                     />
                   )}
@@ -535,7 +535,7 @@ export const ProviderModal: FC<Props> = ({
                       onBlur={field.onBlur}
                       disabled={isSubmitting}
                       multiline
-                      rows={2}
+                      minRows={3}
                       data-testid="provider-field-units-per-package-instructions-input"
                     />
                   )}

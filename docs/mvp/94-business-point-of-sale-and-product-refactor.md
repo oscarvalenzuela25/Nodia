@@ -1390,6 +1390,11 @@ Desactivar oculta la configuración sin borrar sus valores persistidos o el
 borrador; activarla otra vez permite revisarlos. Listados y tarjetas no despliegan
 mapeos de proveedores sin OCR.
 
+Los cinco campos de instrucciones del formulario de proveedor parten con
+al menos tres líneas y crecen con el texto escrito o pegado, sin límite de altura
+en el campo. El desplazamiento vertical queda en el cuerpo del modal.
+El ajuste es visual y conserva el texto enviado y su uso en OCR.
+
 Sólo el selector comercial de Registrar productos con OCR consulta proveedores
 con `q.use_ocr_eq=true`, búsqueda y paginado en Server. El filtro forma parte de
 la identidad de la consulta; no se descarga el conjunto completo para filtrarlo
