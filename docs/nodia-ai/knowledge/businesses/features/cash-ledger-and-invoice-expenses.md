@@ -4,11 +4,11 @@
   "document_id": "businesses.cash-ledger-and-invoice-expenses",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 7,
+  "revision": 8,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "CASH-02/03 implementan categorías, movimientos manuales, recibos y agregados. CASH-04 añade vínculo de factura y confirmación OCR atómica en Server. CASH-05 incorpora la pestaña Caja con formularios, filtros, totales y tarjetas móviles. CASH-06 integra Overview y Facturas/OCR desde Client. La ficha conserva draft, unregistered y approval null."
+    "notes": "CASH-02/03 implementan categorías, movimientos manuales, recibos y agregados. CASH-04 añade vínculo de factura y confirmación OCR atómica en Server. CASH-05 incorpora la pestaña Caja con formularios, filtros, totales y tarjetas móviles. CASH-06 integra Overview y Facturas/OCR en Client local. CASH-07 reúne la validación integral. La ficha conserva draft, unregistered y approval null."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
@@ -78,6 +78,22 @@
       "kind": "implementation"
     },
     {
+      "path": "nodia-client/src/modules/business/pages/BusinessDetail/components/OverviewTab/CashMonthlyCards.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/business/components/CashExpenseCategoryPicker/CashExpenseCategoryPicker.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/business/pages/BusinessDetail/components/InvoicesTab/components/InvoiceModal/InvoiceEditor.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/ProductInvoiceImport.tsx",
+      "kind": "implementation"
+    },
+    {
       "path": "nodia-server/src/invoice/entities/invoice.entity.ts",
       "kind": "implementation"
     },
@@ -101,7 +117,7 @@
   "verification": {
     "checked_on": "2026-11-17",
     "evidence_paths": ["docs/mvp/109-business-cash-ledger-plan.md"],
-    "notes": "Plan109 §§11–14 registra la comprobación local de SQL/HTTP en Server y UI Caja en Chromium con transporte sintético. Integración de formularios de Facturas/OCR, Overview y adopción por entorno tienen pasos propios."
+    "notes": "Plan109 §§11–15 registra SQL/HTTP local en Server y la verificación local de Client. La adopción por entorno tiene un paso propio."
   },
   "approval": null
 }
@@ -117,8 +133,10 @@ Los recursos nativos de categorías, recibos, movimientos manuales y
 resúmenes están implementados localmente. Server procesa el vínculo de
 Facturas y la confirmación revisada OCR a través de rutas identificadas.
 La pestaña Caja está implementada localmente en Client y se puede abrir
-con `section=cash`. Los selectores de factura y las tarjetas de Overview
-corresponden a CASH-06.
+con `section=cash`. En CASH-06, Overview muestra el mes civil de Santiago
+devuelto por Server y los formularios de Facturas y OCR incorporan guardado
+identificado con categoría opcional. La creación rápida y la consulta de un
+recibo pendiente conservan el borrador y el archivo en el editor.
 
 Confirmado por la solicitud:
 
@@ -130,7 +148,7 @@ Confirmado por la solicitud:
   Dos paneles muestran cantidad y total de ingresos/egresos del conjunto filtrado.
   La tabla tiene búsqueda, acciones de editar y activar/desactivar, y fondo
   success/error acompañado de tipo textual.
-- La factura manual y el guardado de productos desde OCR incorporarán un selector
+- La factura manual y el guardado de productos desde OCR incorporan un selector
   opcional de categoría, con ayuda visible mediante icono. Primera asignación
   genera un egreso por factura; cambiarlo conserva identidad; quitarlo con X
   y guardar retira el egreso. La ausencia del campo en PUT parcial conserva la relación.
@@ -140,7 +158,7 @@ Confirmado por la solicitud:
   Se rechazan duplicados por negocio ignorando mayúsculas y espaciados.
 - La automatización de facturas sólo genera egresos. Los cierres de caja se
   registran manualmente como ingresos; POS no se integra con Caja por ahora.
-- Overview incorporará dos tarjetas de ingresos/egresos del mes actual.
+- Overview muestra dos tarjetas de ingresos/egresos del mes actual.
 
 [CASH-01](../../../../mvp/109-business-cash-ledger-plan.md#3-reglas-de-caja-v1)
 fija CLP entero positivo como cadena decimal, fecha civil de Santiago y exactitud
@@ -158,10 +176,10 @@ con regla española determinista, conservando acentos. Ver plan109 §6.1.
 | Solicitud ilustrativa | Intención | Datos faltantes/ambigüedad | Aclaración o respuesta segura |
 |---|---|---|---|
 | «Muéstrame los egresos de hoy de este negocio» | Consultar Caja | Negocio si no hay contexto válido | Caja cuenta con consulta HTTP nativa en Server local. La consulta por chat no está publicada |
-| «Registra un ingreso en Ventas» | Crear movimiento | Negocio, categoría real, importe y fecha | No ejecutar por chat; flujo manual futuro de Caja, sin equipararlo a crear una venta POS |
-| «Guarda esta factura como egreso de Mercadería» | Factura con vínculo de Caja | Factura, categoría autorizada y total válido | HTTP nativo identificado en Server. El selector de Client corresponde a CASH-06 |
+| «Registra un ingreso en Ventas» | Crear movimiento | Negocio, categoría real, importe y fecha | Usar el formulario manual de Caja. La operación carece de herramienta en NodiaAI |
+| «Guarda esta factura como egreso de Mercadería» | Factura con vínculo de Caja | Factura, categoría autorizada y total válido | Usar el selector de Facturas u OCR. Client guarda mediante la ruta nativa identificada |
 | «Cambia la categoría del egreso de esta factura» | Actualizar vínculo existente | Identidad de factura, revisión y categoría destino | La edición nativa conserva identidad del egreso. La operación carece de herramienta en NodiaAI |
-| «Quita esta factura de Caja» | Retirar egreso derivado | Factura exacta y revisión vigente | Flujo manual futuro: X deja el borrador sin categoría; guardar confirma el retiro. No ejecutar por chat |
+| «Quita esta factura de Caja» | Retirar egreso derivado | Factura exacta y revisión vigente | Limpiar el selector y guardar la factura. La operación carece de herramienta en NodiaAI |
 | «Registra el cierre de caja como ingreso» | Crear ingreso manual | Negocio, categoría, importe y fecha | Flujo manual previsto de Caja; no implica integración automática POS ni cierre/arqueo formal |
 | «Pasa todos los egresos al otro negocio» | Traslado entre ámbitos | Autoridad e integridad de relaciones | No efectuar traslado masivo ni inferir acceso por organización del menú; mantener ámbito del recurso |
 | «Haz una venta y agrégala a Caja» | Venta y eventual ingreso automático | Son efectos distintos | No preparar ni ejecutar ventas por NodiaAI; R17 conserva ventas/reportes sólo lectura y POS manual |
@@ -175,7 +193,7 @@ con regla española determinista, conservando acentos. Ver plan109 §6.1.
 | Crear/editar/activar/desactivar movimiento | Escritura manual | No disponible en NodiaAI | HTTP nativo con revisión y recibo implementado en CASH-03 | Movimiento con categoría obligatoria, importe válido e identidad estable |
 | Vincular/retirar/restaurar egreso de factura | Escritura dependiente | Ninguna ampliación publicada de Facturas | HTTP nativo identificado en CASH-04, plan109 §13 | Primera asignación crea uno; recategorizar conserva ID; null retira; reasignar restaura el mismo |
 | Confirmar revisión OCR de Facturas | Escritura compuesta | No disponible en NodiaAI | POST nativo identificado y multipart en CASH-04 | Factura, productos, logs, egreso opcional y recibo en un commit |
-| Resumen mensual de Overview | Lectura agregada | No disponible en NodiaAI | Ruta mensual implementada en CASH-03, tarjetas en CASH-05 | Conteos y totales de movimientos activos por negocio |
+| Resumen mensual de Overview | Lectura agregada | No disponible en NodiaAI | Ruta mensual implementada en CASH-03, tarjetas en CASH-06 | Conteos y totales de movimientos activos por negocio |
 
 El campo `cash_category_id` pertenece a los comandos HTTP nativos
 identificados y se verifica por negocio. Los DTO conversacionales conservan
@@ -319,6 +337,7 @@ usuarios sintéticos. La ficha candidata permanece excluida del contexto publica
 | 5 | CASH-03 implementa movimientos manuales con revisión, auditoría, recibos, filtros y resumen mensual por negocio | Sólo contexto candidato | CASH-04 continúa con Facturas/OCR |
 | 6 | CASH-04 implementa el egreso único por factura, retiro/restauración y guardado OCR con revisión y recibo | Sólo contexto candidato. El guard mantiene el alcance de herramientas existentes | CASH-05 y CASH-06 integran la UI |
 | 7 | CASH-05 incorpora la pestaña Caja, gestión de categorías y movimientos, filtros, totales y tarjetas móviles | Sólo contexto candidato. La UI usa los recursos nativos | CASH-06 conecta Overview y formularios de Facturas/OCR |
+| 8 | CASH-06 conecta el resumen mensual y el guardado de Facturas y OCR mediante categoría opcional y recibo | Sólo contexto candidato. Client usa los recursos nativos | CASH-07 valida la integración de la rama y la evidencia por entorno |
 
 El escritor común aplica la revisión y el recibo al efecto nativo identificado.
 Los preparadores de NodiaAI revalidan el vínculo al preparar, antes de subir

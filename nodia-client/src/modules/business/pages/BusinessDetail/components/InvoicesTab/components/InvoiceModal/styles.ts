@@ -61,6 +61,7 @@ export const FileDropzoneBox = styled(Box)(({ theme }) => {
     textAlign: "center",
     cursor: "pointer",
     transition: "border-color 0.2s, background-color 0.2s",
+    "&:focus-within": { outline: `2px solid ${theme.palette.primary.main}`, outlineOffset: 2 },
     "&:hover": {
       borderColor: theme.palette.primary.main,
       backgroundColor: isDark

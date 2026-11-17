@@ -4,6 +4,7 @@ import {
   cashCatalogIdSchema,
   cashCategoryListSchema,
   cashCategorySchema,
+  cashMonthlySummarySchema,
   cashMovementListSchema,
   cashMovementSchema,
   cashReceiptSchema,
@@ -20,6 +21,20 @@ import { trimCashText } from "./cashValues";
 
 const categories = apiPath("/business-cash-categories");
 const movements = apiPath("/business-cash-movements");
+const invoices = apiPath("/invoices");
+const maxInvoiceFileBytes = 10 * 1024 * 1024;
+const maxOcrCommandBytes = 1024 * 1024;
+const multipartHeaders = { headers: { "Content-Type": undefined } };
+
+export class CashCommandValidationError extends Error {
+  readonly statusCode: 400 | 413;
+
+  constructor(statusCode: 400 | 413) {
+    super("business:cash_invalid_command");
+    this.name = "CashCommandValidationError";
+    this.statusCode = statusCode;
+  }
+}
 
 const scopedParams = (
   businessId: string,
@@ -122,6 +137,14 @@ export async function getCashMovement(businessId: string, id: string, signal?: A
   return row;
 }
 
+export async function getCashMonthlySummary(businessId: string, signal?: AbortSignal) {
+  const response = await mainInstance.get<unknown>(`${movements}/monthly-summary`, {
+    params: { business_id: cashUuidSchema.parse(businessId) },
+    signal,
+  });
+  return cashMonthlySummarySchema.parse(response.data);
+}
+
 function assertReceiptIdentity(
   businessId: string,
   requestKey: string,
@@ -133,10 +156,28 @@ function assertReceiptIdentity(
     ("operation" in receipt && receipt.operation !== command.operation)
   )
     throw new Error("cash_receipt_mismatch");
-  if (receipt.status === "committed") {
-    const row = "category" in receipt.result ? receipt.result.category : receipt.result.movement;
-    assertResourceIdentity(businessId, row, "id" in command ? command.id : undefined);
+  if (receipt.status !== "committed") return;
+  const { result } = receipt;
+  if ("invoice_id" in result) {
+    // The receipt envelope omits business_id for invoices. The receipt read
+    // itself is scoped by business and actor, and writes verify exact targets.
+    if (command.operation === "invoice_update" && result.invoice_id !== command.id) {
+      throw new Error("cash_receipt_mismatch");
+    }
+    if (
+      command.operation === "invoice_ocr_confirm" &&
+      (!("products" in result) ||
+        result.products.length !== command.fields.items.length ||
+        command.fields.items.some(
+          (item, index) => item.kind !== "create" && item.product_id !== result.products[index]?.id,
+        ))
+    ) {
+      throw new Error("cash_receipt_mismatch");
+    }
+    return;
   }
+  const row = "category" in result ? result.category : result.movement;
+  assertResourceIdentity(businessId, row, "id" in command ? command.id : undefined);
 }
 
 export async function getCashReceipt(
@@ -153,21 +194,72 @@ export async function getCashReceipt(
   return receipt;
 }
 
+function assertInvoiceFileSize(file: File): void {
+  if (file.size < 1) throw new CashCommandValidationError(400);
+  if (file.size > maxInvoiceFileBytes) throw new CashCommandValidationError(413);
+}
+
+function requestCashMutation(
+  businessId: string,
+  requestKey: string,
+  command: CashMutationCommand,
+) {
+  if (command.operation === "invoice_ocr_confirm") {
+    assertInvoiceFileSize(command.file);
+    if (command.fields.items.length < 1 || command.fields.items.length > 500) {
+      throw new CashCommandValidationError(400);
+    }
+    // The Server interprets command as UTF-8 decoded by the multipart parser.
+    // Escape a literal replacement character so it remains distinct from invalid UTF-8.
+    const json = JSON.stringify({
+      ...command.fields,
+      business_id: businessId,
+      request_key: requestKey,
+    }).replaceAll("\uFFFD", "\\uFFFD");
+    if (new TextEncoder().encode(json).byteLength > maxOcrCommandBytes) {
+      throw new CashCommandValidationError(413);
+    }
+    const form = new FormData();
+    form.append("command", json);
+    form.append("file", command.file);
+    return mainInstance.post<unknown>(`${invoices}/ocr-confirmations`, form, multipartHeaders);
+  }
+  if (command.operation === "invoice_create") {
+    const payload = { ...command.fields, request_key: requestKey, business_id: businessId };
+    if (!command.file) return mainInstance.post<unknown>(invoices, payload);
+    assertInvoiceFileSize(command.file);
+    const form = new FormData();
+    form.append("file", command.file);
+    for (const [name, value] of Object.entries(payload)) {
+      // A missing folio and JSON null normalize to null on the Server.
+      if (value === undefined || (name === "code" && value === null)) continue;
+      form.append(name, name === "data" ? JSON.stringify(value) : String(value));
+    }
+    return mainInstance.post<unknown>(invoices, form, multipartHeaders);
+  }
+  if (command.operation === "invoice_update") {
+    return mainInstance.put<unknown>(
+      `${invoices}/${cashCatalogIdSchema.parse(command.id)}`,
+      { ...command.fields, request_key: requestKey },
+    );
+  }
+  const category = command.operation === "category_create" || command.operation === "category_update";
+  const route = category ? categories : movements;
+  const payload = { ...command.fields, request_key: requestKey };
+  return "id" in command
+    ? mainInstance.put<unknown>(
+        `${route}/${(category ? cashCatalogIdSchema : cashUuidSchema).parse(command.id)}`,
+        payload,
+      )
+    : mainInstance.post<unknown>(route, { ...payload, business_id: businessId });
+}
+
 export async function sendCashMutation(
   businessId: string,
   requestKey: string,
   command: CashMutationCommand,
 ) {
-  const category = command.operation === "category_create" || command.operation === "category_update";
-  const route = category ? categories : movements;
-  const payload = { ...command.fields, request_key: requestKey };
-  const response =
-    "id" in command
-      ? await mainInstance.put<unknown>(
-          `${route}/${(category ? cashCatalogIdSchema : cashUuidSchema).parse(command.id)}`,
-          payload,
-        )
-      : await mainInstance.post<unknown>(route, { ...payload, business_id: businessId });
+  const response = await requestCashMutation(businessId, requestKey, command);
   const result = cashWriteResultSchema.parse(response.data);
   assertReceiptIdentity(businessId, requestKey, command, result);
   if (response.status !== (result.status === "processing" ? 202 : "id" in command ? 200 : 201))

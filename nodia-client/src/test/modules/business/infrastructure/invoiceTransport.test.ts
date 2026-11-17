@@ -36,6 +36,11 @@ describe("Caja linked invoice transport", () => {
     path_storage: "",
     data: { issue_date: "2026-11-17", reviewed_items: [1, 2] },
     is_active: false,
+    version: 7,
+    cash_expense: {
+      movement_id: "3d20c3e7-650c-49f8-a84c-e98c18ec9ee0",
+      category: { id: "81", name: "Insumos", is_active: false },
+    },
   };
 
   it("fetches the exact invoice and retains its accounting metadata", async () => {
@@ -49,6 +54,8 @@ describe("Caja linked invoice transport", () => {
     { ...source, business_id: "different-business" },
     { ...source, id: "132" },
     { ...source, total_amount: "230" },
+    { ...source, version: undefined },
+    { ...source, cash_expense: undefined },
   ])("rejects a mismatched or malformed source invoice", async (data) => {
     vi.spyOn(mainInstance, "get").mockResolvedValue({ data });
     await expect(getInvoiceEditSource(source.business_id, source.id)).rejects.toBeInstanceOf(Error);

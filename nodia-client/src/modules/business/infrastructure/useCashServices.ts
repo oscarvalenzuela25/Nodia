@@ -15,9 +15,11 @@ import useAuthStore, { hasActiveSession } from "../../../store/authStore";
 import i18n from "../../../translate";
 import { cashUuidSchema } from "./cashSchemas";
 import {
+  CashCommandValidationError,
   cashCategoryParams,
   getCashCategories,
   getCashCategory,
+  getCashMonthlySummary,
   getCashMovement,
   getCashMovements,
   getCashReceipt,
@@ -33,6 +35,7 @@ import type {
   CashScope,
 } from "./cashTypes";
 import { trimCashText } from "./cashValues";
+import { businessKeys, invoiceKeys, productKeys, productLogKeys } from "./queryKeys";
 
 const cashScopeKey = ({ actorId, sessionVersion, businessId }: CashScope) =>
   ["business-cash", actorId, sessionVersion, businessId] as const;
@@ -62,6 +65,18 @@ function previousPage<T>(
   key: QueryKey,
 ): T | undefined {
   return previous && hashKey(previous.slice(0, -1)) === hashKey(key.slice(0, -1)) ? data : undefined;
+}
+
+export function useCashMonthlySummary(scope: CashScope, enabled = true) {
+  const active = useAuthStore((auth) => canRequest(scope, auth));
+  return useQuery({
+    queryKey: cashKeys.monthly(scope),
+    enabled: active && enabled,
+    queryFn: ({ signal }) => {
+      assertRequestScope(scope);
+      return getCashMonthlySummary(scope.businessId, signal);
+    },
+  });
 }
 
 export function useCashMovements(scope: CashScope, { page, search, ...fields }: CashMovementFilters) {
@@ -165,6 +180,27 @@ function invalidateCash(
     void client.invalidateQueries({ queryKey: cashKeys.categories(scope) });
   else void client.invalidateQueries({ queryKey: cashKeys.monthly(scope) });
   void client.invalidateQueries({ queryKey: cashKeys.movements(scope) });
+  if (
+    operation === "invoice_create" || operation === "invoice_update" || operation === "invoice_ocr_confirm"
+  ) {
+    void client.invalidateQueries({ queryKey: invoiceKeys.lists() });
+  }
+  if (operation === "invoice_ocr_confirm") {
+    void client.invalidateQueries({ queryKey: productKeys.all });
+    void client.invalidateQueries({ queryKey: productLogKeys.all });
+    void client.invalidateQueries({ queryKey: businessKeys.detail(scope.businessId) });
+  }
+}
+
+function snapshotCommand(command: CashMutationCommand): CashMutationCommand {
+  if (command.operation === "invoice_create" || command.operation === "invoice_ocr_confirm") {
+    // Files hold immutable bytes. Keep the native File so every replay retains
+    // the original filename and MIME alongside the captured command fields.
+    const snapshot = { ...command };
+    snapshot.fields = structuredClone(command.fields);
+    return snapshot;
+  }
+  return structuredClone(command);
 }
 
 function notifyReceipt(receipt: CashReceipt) {
@@ -239,15 +275,23 @@ export function useCashMutation(scope: CashScope) {
         action === "recover"
           ? await getCashReceipt(entry.scope.businessId, entry.requestKey, entry.command)
           : await mutateAsync(entry);
-      if (receipt.status === "committed") invalidateCash(client, entry.scope, entry.command.operation);
+      if (receipt.status === "committed" && hasCashScope(entry.scope)) {
+        invalidateCash(client, entry.scope, entry.command.operation);
+      }
       if (!isCurrent()) return;
       notifyReceipt(receipt);
       return finish(receipt);
     } catch (error) {
       if (!isCurrent()) return;
-      notifyHttpError(error);
+      const invalidCommand = error instanceof CashCommandValidationError ? error : undefined;
+      if (invalidCommand) {
+        sileo.error({
+          title: i18n.t("core:server_error_toast"),
+          description: i18n.t(invalidCommand.message),
+        });
+      } else notifyHttpError(error);
       const response = isAxiosError<{ message?: unknown }>(error) ? error.response : undefined;
-      const status = response?.status;
+      const status = invalidCommand?.statusCode ?? response?.status;
       // Only an initial, definitive client error can prove failure here. An
       // error on replay cannot override a previously uncertain commit.
       if (
@@ -265,6 +309,7 @@ export function useCashMutation(scope: CashScope) {
           error: {
             status_code: status,
             message:
+              invalidCommand?.message ??
               getServerErrorCode(error) ??
               (typeof message === "string" ? message : getHttpErrorMessage(error)),
           },
@@ -282,7 +327,7 @@ export function useCashMutation(scope: CashScope) {
       owner,
       scope: { ...scope },
       requestKey: crypto.randomUUID(),
-      command: structuredClone(command),
+      command: snapshotCommand(command),
     };
     intent.current = entry;
     return run(entry, "submit");

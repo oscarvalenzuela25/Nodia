@@ -1,10 +1,10 @@
 # Progreso del MVP — Nodia
 
-**CASH-05 implementado localmente — 2026-11-17.**
-[Plan109 §14](109-business-cash-ledger-plan.md#14-pestaña-caja-y-gestión-de-movimientos--cash-05-2026-11-17)
-registra la pestaña Caja, filtros y totales, formularios con recuperación de
-recibos y listado responsive. El [TODO](TODO.md) continúa con CASH-06 para
-Overview y los formularios de Facturas/OCR.
+**CASH-06 implementado localmente — 2026-11-17.**
+[Plan109 §15](109-business-cash-ledger-plan.md#15-resumen-mensual-y-guardado-desde-facturas-y-ocr--cash-06-2026-11-17)
+registra los totales y conteos del mes en Overview. Facturas y OCR usan
+una categoría de Caja opcional y el guardado identificado con recibo.
+El [TODO](TODO.md) continúa con CASH-07 para validar la entrega integral.
 
 **Topbar y OCR de Negocios — 2026-11-17.** Corrección local en
 `codex/business-cash-ledger`. El [estado IA](../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17)

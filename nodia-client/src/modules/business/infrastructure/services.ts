@@ -1,6 +1,7 @@
 import { mainInstance } from "../../../config/api";
 import { apiPath } from "../../../config/apiPath";
 import { z } from "zod";
+import { cashCatalogIdSchema, cashUuidSchema, cashVersionSchema } from "./cashSchemas";
 import type {
   AssignCollaboratorsPayload,
   BusinessCollaborator,
@@ -213,14 +214,21 @@ const editableInvoiceSchema = z.object({
   provider_id: z.string().nullish(),
   total_amount: z.number().int().nonnegative(),
   path_storage: z.string(),
-  data: z.looseObject({ issue_date: z.string().nullish(), notes: z.string().nullish() }).optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
   is_active: z.boolean(),
   provider: z.object({ id: z.string(), name: z.string() }).nullish(),
+  version: cashVersionSchema,
+  cash_expense: z.object({
+    movement_id: cashUuidSchema,
+    category: z.object({ id: cashCatalogIdSchema, name: z.string(), is_active: z.boolean() }),
+  }).nullable(),
 });
+
+export type InvoiceEditSource = z.infer<typeof editableInvoiceSchema>;
 
 export const getInvoiceEditSource = async (
   businessId: string, invoiceId: string, signal?: AbortSignal,
-) => {
+): Promise<InvoiceEditSource> => {
   const { data } = await mainInstance.get<unknown>(
     apiPath(`/invoices/${encodeURIComponent(invoiceId)}`), { signal },
   );

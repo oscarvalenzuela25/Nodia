@@ -48,6 +48,7 @@ import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import { Skeleton } from "boneyard-js/react";
 import { KpiCardSkeleton, TableSkeleton } from "../../../../../../components/skeletons";
 import InvoicePreviewModal from "../InvoicesTab/components/InvoicePreviewModal/InvoicePreviewModal";
+import CashMonthlyCards from "./CashMonthlyCards";
 import {
   KpiCard,
   KpiTop,
@@ -321,6 +322,10 @@ export const OverviewTab: FC<Props> = ({
               </Box>
             </KpiCard>
           </Skeleton>
+        </Grid>
+
+        <Grid size={12}>
+          <CashMonthlyCards businessId={businessId} />
         </Grid>
 
         {/* Registered providers beside key providers */}

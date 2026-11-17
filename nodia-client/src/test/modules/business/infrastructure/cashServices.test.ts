@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   cashCategoryParams,
   cashMovementParams,
+  getCashMonthlySummary,
   getCashMovement,
   getCashMovements,
   getCashReceipt,
@@ -21,6 +22,7 @@ const businessId = "a0000000-0000-4000-8000-000000000001";
 const otherBusiness = "a0000000-0000-4000-8000-000000000002";
 const id = "b0000000-0000-4000-8000-000000000001";
 const requestKey = "c0000000-0000-4000-8000-000000000001";
+const nextRequestKey = "c0000000-0000-4000-8000-000000000002";
 const linked = {
   id,
   business_id: businessId,
@@ -45,6 +47,34 @@ const command: CashMutationCommand = {
   id,
   fields: { expected_version: 4, is_active: false },
 };
+const invoiceResult = {
+  invoice_id: "9223372036854775807",
+  invoice_version: 2,
+  cash_movement_id: null,
+};
+const invoiceUpdate: CashMutationCommand = {
+  operation: "invoice_update",
+  id: invoiceResult.invoice_id,
+  fields: { expected_version: 1, is_active: false },
+};
+const ocrCommand = (file = new File(["invoice"], "boleta.pdf", { type: "application/pdf" })):
+  Extract<CashMutationCommand, { operation: "invoice_ocr_confirm" }> => ({
+  operation: "invoice_ocr_confirm",
+  fields: {
+    invoice: { total_amount: 500, issue_date: "2024-02-29", cash_category_id: "9223372036854775807" },
+    items: [{
+      kind: "manual_match",
+      product_id: "9223372036854775806",
+      expected_version: 7,
+      changes: {},
+      line: {
+        invoice_code: null, name: "Té \uFFFD", alias: "", alias_reviewed: true,
+        cost_price: 500, quantity: 1,
+      },
+    }],
+  },
+  file,
+});
 
 beforeEach(() => vi.resetAllMocks());
 
@@ -127,6 +157,130 @@ describe("Cash API contract", () => {
     );
     http.get.mockResolvedValueOnce({ data: stored });
     expect(await getCashReceipt(businessId, requestKey, command)).toEqual(stored);
+  });
+});
+
+describe("Cash Overview and invoice receipts", () => {
+  it("loads the full Santiago month in the business scope and preserves decimal totals", async () => {
+    const signal = new AbortController().signal;
+    const period = { from: "2024-02-01", to: "2024-02-29", time_zone: "America/Santiago" };
+    const monthly = {
+      period,
+      summary: { ...summary, income: { count: 0, total_amount: "0" } },
+    };
+    http.get.mockResolvedValueOnce({ data: monthly });
+    expect(await getCashMonthlySummary(businessId, signal)).toEqual(monthly);
+    expect(http.get).toHaveBeenCalledExactlyOnceWith(
+      expect.stringMatching(/\/business-cash-movements\/monthly-summary$/),
+      { params: { business_id: businessId }, signal },
+    );
+
+    http.get.mockResolvedValueOnce({ data: { ...monthly, period: { ...period, to: "2024-03-01" } } });
+    await expect(getCashMonthlySummary(businessId)).rejects.toThrow();
+  });
+
+  it("keeps invoice fields equivalent in JSON and multipart, with explicit nullable IDs", async () => {
+    const file = new File(["invoice"], "factura.pdf", { type: "application/pdf" });
+    const create = {
+      operation: "invoice_create",
+      fields: {
+        provider_id: null,
+        cash_category_id: null,
+        path_storage: "",
+        code: null,
+        total_amount: 0,
+        is_active: false,
+        data: { issue_date: "2024-02-29" },
+      },
+    } as const;
+    const stored = {
+      request_key: requestKey, status: "committed", operation: create.operation, result: invoiceResult,
+    };
+    http.post.mockResolvedValue({ status: 201, data: stored });
+    expect(await sendCashMutation(businessId, requestKey, create)).toEqual(stored);
+    expect(http.post).toHaveBeenNthCalledWith(1, expect.stringMatching(/\/invoices$/), {
+      ...create.fields, request_key: requestKey, business_id: businessId,
+    });
+    const storedFile = { ...stored, request_key: nextRequestKey };
+    http.post.mockResolvedValueOnce({ status: 201, data: storedFile });
+    expect(await sendCashMutation(businessId, nextRequestKey, { ...create, file })).toEqual(storedFile);
+    const [route, form] = http.post.mock.calls[1] as [string, FormData];
+    expect(route).toMatch(/\/invoices$/);
+    expect(Object.fromEntries(form)).toEqual({
+      file,
+      cash_category_id: "null",
+      provider_id: "null",
+      path_storage: "",
+      total_amount: "0",
+      is_active: "false",
+      data: '{"issue_date":"2024-02-29"}',
+      request_key: nextRequestKey,
+      business_id: businessId,
+    });
+    expect(form.get("file")).toBe(file);
+    expect(http.post.mock.calls[1][2]).toEqual({ headers: { "Content-Type": undefined } });
+  });
+
+  it("distinguishes keeping a category from withdrawing it and verifies the invoice target", async () => {
+    const receipt = {
+      request_key: requestKey, status: "committed", operation: invoiceUpdate.operation, result: invoiceResult,
+    };
+    http.put.mockResolvedValue({ status: 200, data: receipt });
+    expect(await sendCashMutation(businessId, requestKey, invoiceUpdate)).toEqual(receipt);
+    expect(http.put).toHaveBeenNthCalledWith(1, expect.stringMatching(new RegExp(`/invoices/${invoiceUpdate.id}$`)), {
+      request_key: requestKey, expected_version: 1, is_active: false,
+    });
+    const withdraw = { ...invoiceUpdate, fields: { ...invoiceUpdate.fields, cash_category_id: null } };
+    const withdrawn = { ...receipt, request_key: nextRequestKey };
+    http.put.mockResolvedValueOnce({ status: 200, data: withdrawn });
+    expect(await sendCashMutation(businessId, nextRequestKey, withdraw)).toEqual(withdrawn);
+    expect(http.put.mock.calls[1][1]).toEqual({
+      request_key: nextRequestKey, expected_version: 1, is_active: false, cash_category_id: null,
+    });
+
+    http.get.mockResolvedValue({ data: { ...receipt, result: { ...invoiceResult, invoice_id: "41" } } });
+    await expect(getCashReceipt(businessId, requestKey, invoiceUpdate)).rejects.toThrow("cash_receipt_mismatch");
+    expect(http.get).toHaveBeenCalledExactlyOnceWith(
+      expect.stringContaining(`/businesses/${businessId}/cash-mutation-requests/${requestKey}`),
+    );
+  });
+
+  it("sends one OCR command and the original file and verifies ordered product identities", async () => {
+    const draft = ocrCommand();
+    const receipt = {
+      request_key: requestKey, status: "committed", operation: draft.operation,
+      result: { ...invoiceResult, products: [{ id: "9223372036854775806", version: 7 }] },
+    };
+    http.post.mockResolvedValue({ status: 201, data: receipt });
+    expect(await sendCashMutation(businessId, requestKey, draft)).toEqual(receipt);
+    const [route, form] = http.post.mock.calls[0] as [string, FormData];
+    expect(route).toMatch(/\/invoices\/ocr-confirmations$/);
+    expect([...form.keys()]).toEqual(["command", "file"]);
+    const json = form.get("command");
+    expect(json).toEqual(expect.stringContaining("\\uFFFD"));
+    expect(JSON.parse(String(json))).toEqual({
+      ...draft.fields, request_key: requestKey, business_id: businessId,
+    });
+    expect(form.get("file")).toBe(draft.file);
+
+    http.get
+      .mockResolvedValueOnce({ data: { ...receipt, result: { ...invoiceResult, products: [{ id: "41", version: 7 }] } } })
+      .mockResolvedValueOnce({ data: { ...receipt, result: { ...invoiceResult, products: [
+        ...receipt.result.products, { id: "41", version: 7 },
+      ] } } });
+    await expect(getCashReceipt(businessId, requestKey, draft)).rejects.toThrow("cash_receipt_mismatch");
+    await expect(getCashReceipt(businessId, requestKey, draft)).rejects.toThrow("cash_receipt_mismatch");
+  });
+
+  it("rejects an incomplete or oversized OCR command before sending the upload", async () => {
+    const draft = ocrCommand();
+    await expect(sendCashMutation(businessId, requestKey, {
+      ...draft, fields: { ...draft.fields, items: [] },
+    })).rejects.toMatchObject({ statusCode: 400 });
+
+    draft.fields.items[0].line.name = "é".repeat(600_000);
+    await expect(sendCashMutation(businessId, requestKey, draft)).rejects.toMatchObject({ statusCode: 413 });
+    expect(http.post).not.toHaveBeenCalled();
   });
 });
 

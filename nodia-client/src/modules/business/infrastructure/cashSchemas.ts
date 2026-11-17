@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CASH_AMOUNT_PATTERN, isCashCivilDate } from "./cashValues";
+import { CASH_AMOUNT_PATTERN, CASH_TIME_ZONE, isCashCivilDate, isCashCivilMonth } from "./cashValues";
 
 export const cashUuidSchema = z
   .string()
@@ -70,6 +70,16 @@ export const cashSummarySchema = z.strictObject({
   income: cashTotalsSchema,
   expense: cashTotalsSchema,
 });
+export const cashMonthlySummarySchema = z.strictObject({
+  period: z
+    .strictObject({
+      from: cashDateSchema,
+      to: cashDateSchema,
+      time_zone: z.literal(CASH_TIME_ZONE),
+    })
+    .refine(({ from, to }) => isCashCivilMonth(from, to)),
+  summary: cashSummarySchema,
+});
 
 export const cashCategoryListSchema = z
   .strictObject({
@@ -95,6 +105,9 @@ const operationSchema = z.enum([
   "category_update",
   "movement_create",
   "movement_update",
+  "invoice_create",
+  "invoice_update",
+  "invoice_ocr_confirm",
 ]);
 const identity = { request_key: cashUuidSchema, operation: operationSchema };
 const receiptCategoryFields = {
@@ -107,11 +120,35 @@ const receiptMovementFields = {
   status: z.literal("committed"),
   result: z.strictObject({ movement: cashMovementSchema }),
 };
+export const cashInvoiceResultSchema = z.strictObject({
+  invoice_id: cashCatalogIdSchema,
+  invoice_version: cashVersionSchema,
+  cash_movement_id: cashUuidSchema.nullable(),
+});
+export const cashInvoiceOcrResultSchema = cashInvoiceResultSchema.extend({
+  products: z
+    .array(z.strictObject({ id: cashCatalogIdSchema, version: cashVersionSchema }))
+    .min(1)
+    .max(500)
+    .refine((products) => new Set(products.map(({ id }) => id)).size === products.length),
+});
+const receiptInvoiceFields = {
+  request_key: cashUuidSchema,
+  status: z.literal("committed"),
+  result: cashInvoiceResultSchema,
+};
 const committedSchema = z.discriminatedUnion("operation", [
   z.strictObject({ ...receiptCategoryFields, operation: z.literal("category_create") }),
   z.strictObject({ ...receiptCategoryFields, operation: z.literal("category_update") }),
   z.strictObject({ ...receiptMovementFields, operation: z.literal("movement_create") }),
   z.strictObject({ ...receiptMovementFields, operation: z.literal("movement_update") }),
+  z.strictObject({ ...receiptInvoiceFields, operation: z.literal("invoice_create") }),
+  z.strictObject({ ...receiptInvoiceFields, operation: z.literal("invoice_update") }),
+  z.strictObject({
+    ...receiptInvoiceFields,
+    operation: z.literal("invoice_ocr_confirm"),
+    result: cashInvoiceOcrResultSchema,
+  }),
 ]);
 export const cashWriteResultSchema = z.union([
   committedSchema,

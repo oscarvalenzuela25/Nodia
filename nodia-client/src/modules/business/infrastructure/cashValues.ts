@@ -21,6 +21,13 @@ export const cashToday = (now = Date.now()): string =>
     .toPlainDate()
     .toString();
 
+export const isCashCivilMonth = (from: string, to: string): boolean =>
+  isCashCivilDate(from) &&
+  isCashCivilDate(to) &&
+  from.slice(0, 7) === to.slice(0, 7) &&
+  from.endsWith("-01") &&
+  Number(to.slice(8)) === Temporal.PlainDate.from(from).daysInMonth;
+
 const amountFormatters = new Map<string, Intl.NumberFormat>();
 
 export function formatCashAmount(amount: string, locale: string): string {

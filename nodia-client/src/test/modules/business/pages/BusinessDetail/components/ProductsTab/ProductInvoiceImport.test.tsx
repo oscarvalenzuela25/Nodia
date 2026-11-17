@@ -11,6 +11,8 @@ import {
   calculatePriceDiff,
 } from "../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport";
 import * as businessServices from "../../../../../../../modules/business/infrastructure/services";
+import * as cashServices from "../../../../../../../modules/business/infrastructure/cashServices";
+import useAuthStore from "../../../../../../../store/authStore";
 import { reserveObservation } from "../../../../../../../modules/business/components/AnalysisConsole/infrastructure/services";
 import i18n from "../../../../../../../translate";
 import { sileo } from "sileo";
@@ -44,7 +46,15 @@ vi.mock("../../../../../../../hooks/useAuth", () => ({
     isSessionValid: true,
     isDemo: false,
     sessionStatus: "authenticated",
+    sessionVersion: useAuthStore.getState().sessionVersion,
   }),
+}));
+
+vi.mock("../../../../../../../modules/business/infrastructure/cashServices", async (importOriginal) => ({
+  ...await importOriginal<typeof cashServices>(),
+  sendCashMutation: vi.fn(),
+  getCashReceipt: vi.fn(),
+  getCashCategories: vi.fn(),
 }));
 
 vi.mock("../../../../../../../modules/business/infrastructure/services", () => ({
@@ -372,9 +382,27 @@ describe("ProductInvoiceImport Component", () => {
   const user = userEvent.setup();
   const mockOnCancel = vi.fn();
   const mockOnSuccess = vi.fn();
+  const cashBusinessId = "c57dba66-9717-44b9-a9d1-0daf5378cad5";
+  const cashCategory = {
+    id: "19", business_id: cashBusinessId, name: "Compra mayorista", description: "Facturas",
+    version: 1, is_active: true, created_at: "2026-11-17T00:00:00.000Z", updated_at: "2026-11-17T00:00:00.000Z",
+  };
+  const cashPage = { total_items: 1, total_pages: 1, page: 1, limit: 50 };
+  const setupCashBusiness = () => {
+    vi.mocked(businessServices.getProviders).mockResolvedValueOnce({
+      data: [{ id: "8", name: "Distribuidora Central", business_id: cashBusinessId, tax: 19, use_ocr: true, is_active: true, created_at: "" }],
+      meta: cashPage,
+    });
+  };
+  const mockConfirmation = () => vi.mocked(cashServices.sendCashMutation).mockImplementationOnce(async (_, request_key) => ({
+    status: "committed", request_key, operation: "invoice_ocr_confirm",
+    result: { invoice_id: "15", invoice_version: 1, cash_movement_id: null, products: [{ id: "21", version: 1 }] },
+  }));
 
   beforeEach(() => {
     vi.clearAllMocks();
+    useAuthStore.getState().login({ token: "synthetic-test-token", user: { id: "42", name: "Synthetic operator" }, expiresAt: Date.now() + 300_000 });
+    vi.mocked(cashServices.getCashCategories).mockResolvedValue({ data: [cashCategory], meta: cashPage });
     vi.mocked(reserveObservation).mockReset().mockImplementation(async () => ({ version: 1, id: crypto.randomUUID() }));
     vi.mocked(businessServices.getProviders).mockResolvedValue({ data: [{ id: "prov-1", name: "Distribuidora Central", business_id: "biz-123", tax: 19, use_ocr: true, is_active: true, created_at: "" }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 50 } });
     window.HTMLElement.prototype.scrollIntoView = vi.fn();
@@ -395,10 +423,10 @@ describe("ProductInvoiceImport Component", () => {
     await waitFor(() => expect(screen.getByTestId("invoice-file-input")).toBeEnabled());
   };
   it("edits a default sale price from its row pencil without writing until invoice confirmation", async () => {
+    setupCashBusiness();
     vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce(syntheticAnalysis("PRICE-PENCIL"));
-    vi.mocked(businessServices.createInvoiceWithFile).mockResolvedValueOnce({ id: "invoice-price", business_id: "biz-123", code: "PRICE-PENCIL", total_amount: 119, path_storage: "synthetic.pdf", is_active: true, created_at: "" });
-    vi.mocked(businessServices.bulkCreateProducts).mockResolvedValueOnce([]);
-    renderWithClient(<ProductInvoiceImport businessId="biz-123" onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
+    mockConfirmation();
+    renderWithClient(<ProductInvoiceImport businessId={cashBusinessId} onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
     await selectProvider();
     await user.upload(screen.getByTestId("invoice-file-input"), new File(["synthetic"], "synthetic.pdf", { type: "application/pdf" }));
     await user.click(screen.getByTestId("analyze-invoice-btn"));
@@ -416,8 +444,12 @@ describe("ProductInvoiceImport Component", () => {
     expect(within(screen.getByTestId("invoice-row-0")).getByText(/\$200/)).toBeInTheDocument();
     expect(businessServices.createInvoiceWithFile).not.toHaveBeenCalled();
     expect(businessServices.bulkCreateProducts).not.toHaveBeenCalled();
+    expect(cashServices.sendCashMutation).not.toHaveBeenCalled();
     await user.click(screen.getByTestId("submit-invoice-products"));
-    await waitFor(() => expect(businessServices.bulkCreateProducts).toHaveBeenCalledWith([expect.objectContaining({ alias: "Synthetic SYNTHETIC-NEW", sale_price: 200, has_stock: true })]));
+    await waitFor(() => expect(cashServices.sendCashMutation).toHaveBeenCalledWith(cashBusinessId, expect.any(String), expect.objectContaining({
+      operation: "invoice_ocr_confirm",
+      fields: expect.objectContaining({ items: [expect.objectContaining({ product: expect.objectContaining({ alias: "Synthetic SYNTHETIC-NEW", sale_price: 200 }) })] }),
+    })));
   });
 
   it("prevalidates a missing update version before the invoice POST and retains the reviewed row", async () => {
@@ -430,9 +462,8 @@ describe("ProductInvoiceImport Component", () => {
     await user.upload(screen.getByTestId("invoice-file-input"), new File(["synthetic"], "synthetic.pdf", { type: "application/pdf" }));
     await user.click(screen.getByTestId("analyze-invoice-btn"));
     const save = await screen.findByTestId("submit-invoice-products");
-    await waitFor(() => expect(save).toBeEnabled());
-    await user.click(save);
-    await waitFor(() => expect(sileo.error).toHaveBeenCalled());
+    expect(save).toBeDisabled();
+    expect(cashServices.sendCashMutation).not.toHaveBeenCalled();
     expect(businessServices.createInvoiceWithFile).not.toHaveBeenCalled();
     expect(businessServices.bulkCreateProducts).not.toHaveBeenCalled();
     expect(businessServices.bulkUpdateProducts).not.toHaveBeenCalled();
@@ -882,140 +913,89 @@ describe("ProductInvoiceImport Component", () => {
     expect(saveBtn).not.toBeDisabled();
   });
 
-  it("stops product writes when invoice creation fails", async () => {
-    vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce({
-      business_id: "biz-123",
-      provider_id: null,
-      code: "FAC-ERROR-TEST",
-      total_amount: 30000,
-      data: {
-        items: [
-          {
-            code: "SKU-HDMI",
-            name: "Cable HDMI",
-            quantity: 10,
-            unit_price: 3000,
-            total_price: 30000,
-          },
-        ],
-      },
-    });
+  it("keeps the file and draft through an uncertain confirmation and only retries the exact intent", async () => {
+    setupCashBusiness();
+    vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce(syntheticAnalysis("FAC-RETRY"));
+    vi.mocked(cashServices.sendCashMutation).mockRejectedValueOnce(new Error("Synthetic transport failure"));
+    vi.mocked(cashServices.getCashReceipt).mockImplementationOnce(async (_, request_key) => ({
+      status: "unconfirmed", request_key,
+    }));
+    mockConfirmation();
 
-    // Invoice creation fails!
-    vi.mocked(businessServices.createInvoiceWithFile).mockRejectedValueOnce(
-      new Error("Storage upload failure")
-    );
-
-    renderWithClient(
-      <ProductInvoiceImport
-        businessId="biz-123"
-        onCancel={mockOnCancel}
-        onSuccess={mockOnSuccess}
-      />
-    );
-
+    renderWithClient(<ProductInvoiceImport businessId={cashBusinessId} onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
     await selectProvider();
-
-    const file = new File(["pdf content"], "invoice.pdf", { type: "application/pdf" });
+    const file = new File(["synthetic PDF"], "invoice.pdf", { type: "application/pdf" });
     await user.upload(screen.getByTestId("invoice-file-input"), file);
     await user.click(screen.getByTestId("analyze-invoice-btn"));
+    const save = await screen.findByTestId("submit-invoice-products");
+    await waitFor(() => expect(save).toBeEnabled());
+    await user.click(save);
 
-    await waitFor(() => {
-      expect(screen.getByTestId("valid-dot-0")).toBeInTheDocument();
-    });
-
-    await waitForDraftReady();
-    const saveBtn = screen.getByTestId("submit-invoice-products");
-    await user.click(saveBtn);
-
-    await waitFor(() => {
-      expect(businessServices.createInvoiceWithFile).toHaveBeenCalledTimes(1);
-    });
-
-    // Products MUST NOT be called!
+    const check = await screen.findByRole("button", { name: i18n.t("business:cash.receipt_check") });
+    expect(save).toBeDisabled();
+    expect(screen.getByTestId("invoice-file-input")).toBeDisabled();
+    expect(screen.getByDisplayValue("FAC-RETRY")).toBeDisabled();
+    expect(screen.getByDisplayValue("invoice.pdf")).toBeInTheDocument();
+    expect(mockOnSuccess).not.toHaveBeenCalled();
+    await user.click(check);
+    const [business, requestKey, command] = vi.mocked(cashServices.sendCashMutation).mock.calls[0];
+    expect(cashServices.getCashReceipt).toHaveBeenCalledWith(business, requestKey, command);
+    expect(command).toMatchObject({ operation: "invoice_ocr_confirm",
+      fields: { invoice: { provider_id: "8", code: "FAC-RETRY" }, items: [{ kind: "create" }] } });
+    if (command.operation !== "invoice_ocr_confirm") throw new Error("Wrong confirmation command");
+    expect(command.file).toBe(file);
+    expect(command.fields.invoice).not.toHaveProperty("issue_date");
+    expect(command.fields.invoice).not.toHaveProperty("cash_category_id");
+    await user.click(await screen.findByRole("button", { name: i18n.t("business:cash.receipt_retry") }));
+    await waitFor(() => expect(mockOnSuccess).toHaveBeenCalledTimes(1));
+    expect(vi.mocked(cashServices.sendCashMutation).mock.calls[1]).toEqual([business, requestKey, command]);
+    expect(businessServices.analyzeInvoice).toHaveBeenCalledTimes(1);
+    expect(businessServices.createInvoiceWithFile).not.toHaveBeenCalled();
     expect(businessServices.bulkCreateProducts).not.toHaveBeenCalled();
     expect(businessServices.bulkUpdateProducts).not.toHaveBeenCalled();
-    expect(mockOnSuccess).not.toHaveBeenCalled();
   });
 
-  it("creates invoice first, then saves products through separate requests", async () => {
-    vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce({
-      business_id: "biz-123",
-      provider_id: null,
-      code: "FAC-SUCCESS",
-      total_amount: 30000,
-      data: {
-        items: [
-          {
-            code: "SKU-HDMI",
-            name: "Cable HDMI",
-            quantity: 10,
-            unit_price: 3000,
-            total_price: 30000,
-          },
-        ],
-      },
-    });
-
-    vi.mocked(businessServices.createInvoiceWithFile).mockResolvedValueOnce({
-      id: "inv-created-1",
-      business_id: "biz-123",
-      code: "FAC-SUCCESS",
-      total_amount: 30000,
-      path_storage: "invoices/biz-123/invoice.pdf",
-      is_active: true,
-      created_at: new Date().toISOString(),
-    });
-
-    vi.mocked(businessServices.bulkCreateProducts).mockResolvedValueOnce([
-      {
-        id: "prod-new-1",
-        business_id: "biz-123",
-        code: "SKU-HDMI",
-        name: "Cable HDMI",
-        cost_price: 3000,
-        cost_price_tax: 570,
-        sale_price: 3900,
-        stock: 10,
-        is_active: true,
-      },
-    ]);
-
-    renderWithClient(
-      <ProductInvoiceImport
-        businessId="biz-123"
-        onCancel={mockOnCancel}
-        onSuccess={mockOnSuccess}
-      />
-    );
-
+  it("creates and selects a category, preserves the review, and requires the missing civil date", async () => {
+    setupCashBusiness();
+    vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce(syntheticAnalysis("FAC-CASH"));
+    vi.mocked(cashServices.sendCashMutation).mockImplementationOnce(async (_, request_key) => ({
+      status: "committed", request_key, operation: "category_create", result: { category: cashCategory },
+    }));
+    mockConfirmation();
+    renderWithClient(<ProductInvoiceImport businessId={cashBusinessId} onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
     await selectProvider();
-
-    const file = new File(["pdf content"], "invoice.pdf", { type: "application/pdf" });
+    const file = new File(["synthetic PDF"], "categorised.pdf", { type: "application/pdf" });
     await user.upload(screen.getByTestId("invoice-file-input"), file);
     await user.click(screen.getByTestId("analyze-invoice-btn"));
-
-    await waitFor(() => {
-      expect(screen.getByTestId("valid-dot-0")).toBeInTheDocument();
-    });
-
+    const save = await screen.findByTestId("submit-invoice-products");
+    const addCategory = screen.getByRole("button", { name: i18n.t("business:cash.category_add") });
+    await waitFor(() => expect(addCategory).toBeEnabled());
+    await user.click(addCategory);
+    const dialog = await screen.findByRole("dialog");
+    await user.type(within(dialog).getByRole("textbox", { name: new RegExp(i18n.t("business:cash.category_name")) }), cashCategory.name);
+    await user.type(within(dialog).getByRole("textbox", { name: new RegExp(i18n.t("business:description_label")) }), cashCategory.description);
+    await user.click(within(dialog).getByRole("button", { name: i18n.t("core:save") }));
     await waitForDraftReady();
-    const saveBtn = screen.getByTestId("submit-invoice-products");
-    await user.click(saveBtn);
+    expect(screen.getByDisplayValue("FAC-CASH")).toBeInTheDocument();
+    expect(screen.getByDisplayValue(file.name)).toBeInTheDocument();
+    expect(save).toBeDisabled();
+    expect(cashServices.sendCashMutation).toHaveBeenCalledTimes(1);
 
-    await waitFor(() => {
-      expect(businessServices.createInvoiceWithFile).toHaveBeenCalledTimes(1);
-    });
-
-    await waitFor(() => {
-      expect(businessServices.bulkCreateProducts).toHaveBeenCalledTimes(1);
-    });
-
-    expect(businessServices.createInvoiceWithFile).toHaveBeenCalledWith(expect.objectContaining({
-      data: expect.objectContaining({ extracted_items: [expect.objectContaining({ name: "Cable HDMI", alias: "Cable HDMI", alias_reviewed: true })] }),
+    const date = screen.getByTestId("invoice-date-field").querySelector("input");
+    expect(date).toHaveValue("");
+    fireEvent.change(date!, { target: { value: "2026-02-29" } });
+    expect(save).toBeDisabled();
+    fireEvent.change(date!, { target: { value: "2024-02-29" } });
+    await waitFor(() => expect(save).toBeEnabled());
+    await user.click(save);
+    await waitFor(() => expect(mockOnSuccess).toHaveBeenCalledTimes(1));
+    expect(cashServices.sendCashMutation).toHaveBeenLastCalledWith(cashBusinessId, expect.any(String), expect.objectContaining({
+      operation: "invoice_ocr_confirm",
+      file,
+      fields: expect.objectContaining({ invoice: {
+        provider_id: "8", code: "FAC-CASH", total_amount: 119, issue_date: "2024-02-29", cash_category_id: cashCategory.id,
+      } }),
     }));
-    expect(businessServices.bulkCreateProducts).toHaveBeenCalledWith([expect.objectContaining({ name: "Cable HDMI", alias: "Cable HDMI" })]);
-    expect(mockOnSuccess).toHaveBeenCalledTimes(1);
   });
 
   it("renders image preview inside dropzone for images, PDF icon for PDFs, and overwrites when a new file is uploaded", async () => {

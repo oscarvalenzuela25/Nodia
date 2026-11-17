@@ -1,10 +1,10 @@
 # Caja de Negocios — plan de implementación y propuesta visual
 
-> Fecha: 2026-11-17. Estado: **CASH-05 implementado localmente para la pestaña Caja**.
+> Fecha: 2026-11-17. Estado: **CASH-06 implementado localmente para Overview, Facturas y OCR**.
 > Rama `codex/business-cash-ledger` desde `origin/development` (`0049b5fc`).
 > §1 recoge la solicitud. §§3–6 fijan el contrato V1 para implementación.
 > El plan y el [ADR106](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
-> siguen en revisión. El siguiente paso es CASH-06.
+> siguen en revisión. El siguiente paso es CASH-07.
 
 > **R02, ampliación2026-11-17:** X para limpiar categoría, + para crearla desde
 > formularios y validación de duplicados independiente de mayúsculas/espaciados.
@@ -607,7 +607,7 @@ retomar no depende de conservar una captura o un proceso local.
 | **CASH-03 — movimientos y agregados** | Alta, edición y actividad manuales con recibo y revisión; filtros Ransack, página y resumen sobre un snapshot y agregado mensual | Implementado localmente. Ver §12 |
 | **CASH-04 — vínculo factura/OCR** | Único egreso, asignación/recategorización/retiro/restauración, sync total/fecha, manual atómico y confirmación OCR transaccional recuperable | Implementado localmente en Server. Ver §13 |
 | **CASH-05 — UI Caja y categorías** | Tab, filtros, totales, tabla/tarjetas, drawer, formularios y acciones ES/EN | Implementado localmente. Ver §14 |
-| **CASH-06 — Overview y selectores factura** | Dos cards mensuales; categoría opcional con ayuda/X/+ en ambos flujos; modal creación rápida, borrador/foco e invalidación | Primer pendiente. Contratos de Facturas/OCR y Caja de CASH-04/05 |
+| **CASH-06 — Overview y selectores factura** | Dos tarjetas mensuales; categoría opcional con ayuda/X/+ en ambos flujos; creación rápida, borrador, foco, recibos e invalidación | Implementado localmente. Ver §15 |
 | **CASH-07 — validación y entrega** | Unidades, integración SQL/HTTP aislada, QA visual proporcional, documentación/fichas y CI de SHA final | 02…06; despliegue/adopción con pedido propio |
 
 Checklist de estado:
@@ -619,7 +619,7 @@ Checklist de estado:
 - [x] CASH-03: movimientos manuales y agregados.
 - [x] CASH-04: factura/OCR identificados, atómicos y recuperables en Server local.
 - [x] CASH-05: pestaña Caja, categorías, movimientos y agregados filtrados en Client local.
-- [ ] CASH-06: cards mensuales e integración de Facturas/OCR desde Client.
+- [x] CASH-06: tarjetas mensuales e integración de Facturas/OCR desde Client.
 - [ ] CASH-07: verificación e integración/adopción por entorno.
 
 La ampliación transaccional del guardado OCR y la compatibilidad de escritores de
@@ -899,11 +899,9 @@ propio de 21,06 kB gzip. Chromium observó la descarga al entrar a Caja,
 su ausencia al abrir Overview y que un fallo simulado de carga queda
 contenido en Caja con la acción de reintentar visible.
 
-En un egreso de factura, Editar abre la factura por ID exacto dentro del
-mismo detalle. En esta entrega permite editar metadatos nativos. El
-importe y la fecha permanecen bloqueados en ese acceso hasta que CASH-06
-conecte la edición identificada, los selectores y la confirmación OCR.
-CASH-06 integra también los dos agregados mensuales de Overview.
+En CASH-05, Editar desde un egreso abre la factura por ID exacto dentro del
+mismo detalle y permite cambiar metadatos. CASH-06 amplía ese acceso con
+edición identificada de importe, fecha y categoría. Ver §15.
 
 La verificación Chromium local usó transporte sintético y el detalle de
 Negocios con su navegación real. Se comprobó el cambio de tabla a tarjetas
@@ -920,3 +918,58 @@ Pasaron 3266 pruebas de Client en 395 archivos, tipado y build. El lint
 pasó excluyendo los fixtures históricos ignorados en `nodia-client/.tmp`.
 También pasaron 58 pruebas de conocimiento. Caja conserva su ficha
 candidata y los 44 documentos, 46 fragmentos y 153 capacidades publicados.
+
+## 15. Resumen mensual y guardado desde Facturas y OCR — CASH-06, 2026-11-17
+
+[Overview](../../nodia-client/src/modules/business/pages/BusinessDetail/components/OverviewTab/CashMonthlyCards.tsx)
+muestra ingresos y egresos de movimientos activos, con conteos y sumas
+exactas en CLP del mes civil de Santiago devuelto por Server. La lectura
+tiene caché propia por actor, sesión y negocio, independiente de los
+filtros de Caja. Distingue el cero confirmado del importe desconocido.
+
+El [selector común](../../nodia-client/src/modules/business/components/CashExpenseCategoryPicker/CashExpenseCategoryPicker.tsx)
+busca categorías activas del negocio y conserva visible una selección
+histórica inactiva. X limpia la selección y + abre el formulario de
+creación rápida con nombre y descripción. Al guardar la categoría se
+selecciona, con el borrador y archivo conservados. Cerrar devuelve el foco
+al selector. La ayuda explica el egreso en ambos flujos.
+
+El [editor manual](../../nodia-client/src/modules/business/pages/BusinessDetail/components/InvoicesTab/components/InvoiceModal/InvoiceEditor.tsx)
+usa guardado identificado desde Facturas y desde Caja. El importe,
+fecha y categoría del egreso cambian desde la factura origen. La edición
+usa la revisión exacta de la factura y muestra el efecto antes de guardar.
+Conservar la selección omite el campo de categoría y limpiar un vínculo
+envía null para retirar el egreso. Volver a asignar restaura su identidad.
+Un conflicto permite revisar la factura vigente y conservar el borrador.
+
+La [revisión OCR](../../nodia-client/src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/ProductInvoiceImport.tsx)
+envía el archivo y las filas revisadas en una confirmación multipart.
+Cuando se vincula un egreso, el usuario confirma una fecha de emisión
+válida y un total positivo. Server registra factura, productos, logs,
+egreso opcional y recibo en la misma transacción definida en §13.
+
+En ambos flujos un resultado pendiente conserva en el editor la misma
+intención, archivo y clave. Client permite consultar el recibo y reenviar
+explícitamente cuando corresponde. Sólo un recibo confirmado cierra el
+guardado e invalida las lecturas de Facturas, Caja y Overview. El recibo
+OCR actualiza también las proyecciones dependientes de productos y logs.
+
+Chromium local verificó Overview a 320 px en español oscuro y a 1280 px
+en inglés claro, incluida una suma exacta superior al límite entero
+seguro de JavaScript. En Facturas a 390 px se comprobó la creación rápida,
+el foco, el borrador y PDF conservados, el retiro con la revisión exacta
+y la actualización del agregado mensual. En OCR a 320 px se comprobó la
+fecha obligatoria al vincular, la revisión de un producto existente y uno
+nuevo, y el envío mediante una sola ruta de confirmación. Ambos flujos
+se recuperaron de un 503 con consulta del recibo y un reenvío explícito
+del mismo multipart. Esta QA usó HTTP sintético con el Client real.
+Las capturas quedan en `output/playwright/cash06/`. En paralelo, los ocho
+grupos del contrato nativo pasaron con HTTP compilado, PostgreSQL 16
+desechable y almacenamiento sintético, incluida la recuperación
+transaccional de OCR. Pasaron 3284 pruebas de Client en 397 archivos,
+tipado, build y lint con la exclusión de fixtures históricos ignorados
+en `nodia-client/.tmp`. La verificación de conocimiento pasó 58 pruebas
+y conserva 44 documentos, 46 fragmentos y 153 capacidades emitidos en local.
+
+CASH-07 reúne la verificación integral de la rama y la evidencia por
+entorno. Las migraciones permanecen pendientes en entornos operativos.

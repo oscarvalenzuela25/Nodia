@@ -279,6 +279,11 @@ export interface InvoiceEntity {
   code: string | null;
   total_amount: number;
   path_storage: string;
+  version?: number;
+  cash_expense?: {
+    movement_id: string;
+    category: { id: string; name: string; is_active: boolean };
+  } | null;
   data?: {
     issue_date?: string;
     notes?: string;

@@ -1,10 +1,10 @@
 # Especificación del MVP — Nodia
 
-**Caja de Negocios — CASH-05 implementado localmente, 2026-11-17.**
-[Plan109 §14](109-business-cash-ledger-plan.md#14-pestaña-caja-y-gestión-de-movimientos--cash-05-2026-11-17)
-registra la pestaña de Caja, categorías, movimientos manuales, filtros y
-totales con tabla y tarjetas móviles. El [TODO](TODO.md) continúa en
-**CASH-06** con Overview y la integración de Facturas/OCR.
+**Caja de Negocios — CASH-06 implementado localmente, 2026-11-17.**
+[Plan109 §15](109-business-cash-ledger-plan.md#15-resumen-mensual-y-guardado-desde-facturas-y-ocr--cash-06-2026-11-17)
+registra ingresos y egresos mensuales en Overview, selector de categorías
+y guardado recuperable desde Facturas y OCR. El [TODO](TODO.md) continúa
+en **CASH-07**.
 
 **Topbar para Negocios y recarga desde el avatar — 2026-11-17.**
 [Estado de IA](../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17)
