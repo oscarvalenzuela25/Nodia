@@ -1,5 +1,13 @@
 # Contexto funcional de productos para NodiaAI
 
+## Categorías y recibos de Caja — CASH-02, 2026-11-17
+
+[Plan109 §11](../../mvp/109-business-cash-ledger-plan.md#11-categorías-y-recibos-implementados--cash-02-2026-11-17),
+[Caja revisión4](businesses/features/cash-ledger-and-invoice-expenses.md)
+y [Negocios revisión60](businesses/README.md) registran la implementación
+local de categorías, unicidad concurrente y recibos autorizados por negocio.
+La ficha sigue partial/draft/unregistered y conserva approval:null.
+
 ## Topbar y selección OCR de Negocios — 2026-11-17
 
 [Ajustes](general-settings/README.md#acciones-de-cabecera-para-negocios-y-pwa--2026-11-17)

@@ -30,6 +30,7 @@ const moduleByControllerPath: Readonly<Record<string, string>> = {
   business: BUSINESS,
   businesses: BUSINESS,
   'businesses/:businessId': BUSINESS,
+  'business-cash-categories': BUSINESS,
   'business-action': BUSINESS,
   'business-actions': BUSINESS,
   provider: BUSINESS,
@@ -89,6 +90,11 @@ function policyForPath(
   }
   if (path.startsWith('rental/')) {
     return { routes: ['/reservations'], match: 'all' };
+  }
+  if (path === 'businesses/:businessId/cash-mutation-requests') {
+    return method === 'GET' && handlerPaths.length === 1 && normalize(handlerPaths[0]) === ':key'
+      ? { routes: [BUSINESS], match: 'all' }
+      : undefined;
   }
   if (
     (path === 'ai-provider' || path === 'ai-providers') &&

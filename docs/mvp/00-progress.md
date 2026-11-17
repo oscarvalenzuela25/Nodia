@@ -1,5 +1,11 @@
 # Progreso del MVP — Nodia
 
+**CASH-02 implementado localmente — 2026-11-17.**
+[Plan109 §11](109-business-cash-ledger-plan.md#11-categorías-y-recibos-implementados--cash-02-2026-11-17)
+registra migración 1793690000000, lecturas y mutaciones de categorías con
+autoridad por negocio y recibos privados. El [TODO](TODO.md) continúa con
+CASH-03 para movimientos manuales y agregados.
+
 **Topbar y OCR de Negocios — 2026-11-17.** Corrección local en
 `codex/business-cash-ledger`. El [estado IA](../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17)
 usa una proyección mínima para Negocios y el [selector OCR](94-business-point-of-sale-and-product-refactor.md#44-modelos-ocr-con-acceso-de-negocios--2026-11-17)
@@ -10,9 +16,8 @@ el avatar recarga la URL actual en el [alcance de plan103 §16](103-pwa-progress
 `codex/business-cash-ledger` define contrato HTTP, cantidades exactas en CLP,
 fecha civil de Santiago, autorización por negocio, orden de locks y recibos.
 El [Plan109 §§6.2–6.4](109-business-cash-ledger-plan.md#62-factura-manual-revisiones-y-compatibilidad)
-fija edición desde Facturas y un guardado OCR compuesto. El próximo paso es
-**CASH-02** para modelo, autorización y categorías. La prueba de las
-garantías transaccionales queda en las fases de implementación.
+fija edición desde Facturas y un guardado OCR compuesto. Este corte define
+los contratos que usan CASH-02 y las fases siguientes.
 
 **PCON-001, OCR-001, BIZ-042 y TUX-03/05 cerrados — 2026-11-17.** El usuario
 solicita el cierre por alcance. Contactos y OCR se integraron por PR 48 y 49,

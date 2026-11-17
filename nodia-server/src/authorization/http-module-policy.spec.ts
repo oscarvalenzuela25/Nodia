@@ -15,6 +15,7 @@ describe('HTTP module policy', () => {
     [['ai-api-key', 'ai-api-keys'], '/ai-providers'],
     [['ai-provider-event', 'ai-provider-events'], '/ai-providers'],
     [['invoice', 'invoices'], '/business'],
+    [['business-cash-categories'], '/business'],
     [['providers/:providerId/contacts'], '/business'],
     [['finance/movements'], '/finances-personal'],
     [['rental/properties/:propertyId/reservations'], '/reservations'],
@@ -39,6 +40,16 @@ describe('HTTP module policy', () => {
     expect(
       resolveHttpModulePolicy(['invoice', 'invoices'], ['selectable-models'], 'GET'),
     ).toEqual({ routes: ['/business'], match: 'all' });
+  });
+
+  it('requires the canonical Business module for cash receipt reads only', () => {
+    const controller = ['businesses/:businessId/cash-mutation-requests'];
+    expect(resolveHttpModulePolicy(controller, [':key'], 'GET')).toEqual({
+      routes: ['/business'],
+      match: 'all',
+    });
+    expect(resolveHttpModulePolicy(controller, [':key'], 'PUT')).toBeUndefined();
+    expect(resolveHttpModulePolicy(controller, [''], 'GET')).toBeUndefined();
   });
 
   it('shares the exact Topbar status GET without opening AI administration', () => {

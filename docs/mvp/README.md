@@ -1,5 +1,10 @@
 # Especificación del MVP — Nodia
 
+**Caja de Negocios — CASH-02 implementado localmente, 2026-11-17.**
+[Plan109 §11](109-business-cash-ledger-plan.md#11-categorías-y-recibos-implementados--cash-02-2026-11-17)
+registra la migración aditiva, categorías con permiso por negocio, unicidad
+concurrente y recibos. El [TODO](TODO.md) continúa en **CASH-03**.
+
 **Topbar para Negocios y recarga desde el avatar — 2026-11-17.**
 [Estado de IA](../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17)
 y [modelos del OCR](94-business-point-of-sale-and-product-refactor.md#44-modelos-ocr-con-acceso-de-negocios--2026-11-17)
@@ -12,8 +17,8 @@ para recargar la URL actual. Candidato local en `codex/business-cash-ledger`.
 de categorías, movimientos, filtros y agregados, edición de egresos desde
 Facturas y confirmación OCR con recibo recuperable. El
 [ADR106](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
-sigue propuesto. El [TODO](TODO.md) sitúa **CASH-02** como primer paso de
-implementación en `codex/business-cash-ledger`.
+sigue propuesto. Ese contrato sirvió de base para CASH-02 en
+`codex/business-cash-ledger`.
 
 **Cierre de cuatro entregas — 2026-11-17.** Por instrucción del usuario, el
 [TODO](TODO.md#entregas-cerradas-por-alcance) cierra PCON-001, OCR-001, BIZ-042

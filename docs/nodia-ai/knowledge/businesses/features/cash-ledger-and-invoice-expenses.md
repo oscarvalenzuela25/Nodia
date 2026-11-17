@@ -4,11 +4,11 @@
   "document_id": "businesses.cash-ledger-and-invoice-expenses",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 3,
+  "revision": 4,
   "document_status": "draft",
   "implementation": {
-    "status": "planned",
-    "notes": "CASH-01 cerrado por alcance documental en plan109 §§3–7. CLP enteros como cadenas decimales, fecha civil Santiago, categorías compartidas y unicidad por negocio, filtros y totales con un snapshot y Overview mensual. El egreso de factura tiene actividad independiente; null lo retira y una nueva categoría restaura el mismo ID. Importe, fecha y categoría se editan desde Facturas. Guardado identificado y revisado, confirmación OCR compuesta y revalidación de propuestas previas bajo lock pendientes de implementación. Caja permanece planned/draft/unregistered/approval:null."
+    "status": "partial",
+    "notes": "CASH-02 implementa localmente las categorías y sus recibos con autoridad de Negocios, unicidad concurrente por nombre normalizado y revisión al editar. CASH-03…07 cubren movimientos, facturas/OCR, UI y entrega. La ficha conserva draft, unregistered y approval null."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
@@ -28,6 +28,18 @@
     {
       "path": "docs/mvp/94-business-point-of-sale-and-product-refactor.md",
       "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/business-cash/business-cash-categories.controller.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/business-cash/business-cash-receipts.controller.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/migrations/1793690000000-CreateBusinessCashCategories.ts",
+      "kind": "implementation"
     },
     {
       "path": "nodia-server/src/invoice/entities/invoice.entity.ts",
@@ -51,9 +63,9 @@
     }
   ],
   "verification": {
-    "checked_on": null,
-    "evidence_paths": [],
-    "notes": "CASH-01 contrasta contratos de repositorio y documenta implementación futura. Las pruebas de autorización, integridad, concurrencia, agregación y operación corresponden a CASH-02…07."
+    "checked_on": "2026-11-17",
+    "evidence_paths": ["docs/mvp/109-business-cash-ledger-plan.md"],
+    "notes": "Categorías y recibos comprobados en Server local con 10 grupos SQL/HTTP en PostgreSQL 16.15 aislado. Plan109 §11 delimita la evidencia. Movimientos, agregación, facturas/OCR y operación por entorno requieren sus pruebas propias."
   },
   "approval": null
 }
@@ -65,8 +77,8 @@
 
 [Plan109](../../../../mvp/109-business-cash-ledger-plan.md) recoge una nueva pestaña
 **Caja** dentro de cada negocio para registrar y agrupar ingresos y egresos.
-El usuario solicita planificarla y refinar sus vistas antes de implementarla.
-Esta ficha es candidata; Caja no está disponible por añadir este documento.
+Los recursos nativos de categorías y recibos están implementados localmente.
+El tab de Caja y las operaciones de movimientos tienen fases propias.
 
 Confirmado por la solicitud:
 
@@ -119,7 +131,7 @@ con regla española determinista, conservando acentos. Ver plan109 §6.1.
 | Operación semántica | Clase/efecto propuesto | Herramienta y estado real | Contrato | Resultado esperado de implementación |
 |---|---|---|---|---|
 | Listar movimientos y resumir filtros | Lectura paginada y agregada | Ninguna herramienta Caja registrada | GET y DTO Ransack definidos en plan109 §5, pendientes de implementación | data/meta/summary juntos desde una sentencia para la selección completa |
-| Administrar/crear rápidamente categorías | Escritura manual por negocio | No disponible en NodiaAI | Recurso, canonicalizador e índice único nuevos por implementar | Nombre/descripción, categoría seleccionada tras alta y duplicados rechazados incluso concurrentemente |
+| Administrar categorías | Escritura manual por negocio | No disponible en NodiaAI | HTTP nativo de categorías y recibos implementado localmente, plan109 §11. Alta rápida en Client corresponde a CASH-05/06 | Nombre y descripción, revisión al editar y duplicados rechazados incluso bajo concurrencia |
 | Crear/editar/activar/desactivar movimiento | Escritura manual | No disponible en NodiaAI | Recurso, DTO y casos de uso nuevos por implementar | Movimiento con categoría obligatoria, importe válido e identidad estable |
 | Vincular/retirar/restaurar egreso de factura | Escritura dependiente | Ninguna ampliación publicada de Facturas | Ampliación futura de contratos nativos identificados en fuentes | Primera asignación crea uno; recategorizar conserva ID; null retira; reasignar restaura el mismo |
 | Resumen mensual de Overview | Lectura agregada | No disponible en NodiaAI | Ruta mensual y agregado de Caja de plan109 §5 | Conteos y totales de movimientos activos por negocio |
@@ -241,20 +253,19 @@ deben probarse en DB antes de declarar el flujo listo.
 
 ## Integración y evidencia
 
-- [x] Solicitud, plan canónico y ficha candidata enlazados; estado planned/draft/unregistered y aprobación null.
+- [x] Solicitud, plan canónico y ficha candidata enlazados. Estado partial/draft/unregistered y aprobación null.
 - [x] Contratos y reglas de CASH-01 refinados en plan109 §§3–7.
 - [ ] Aprobación documental de la ficha, si se solicita.
-- [ ] Entidades, DTOs, endpoints, ownership y relaciones implementados/contrastados.
+- [x] Entidades, DTOs, endpoints y autoridad para categorías y recibos implementados localmente.
+- [ ] Implementar movimientos, agregados y relaciones con Facturas.
 - [ ] Igualdad de filtros/lista/resumen y resumen mensual verificadas en Server.
 - [ ] Vínculo de factura, concurrencia, reintentos y fallo parcial comprobados.
 - [ ] Alta rápida, clave canónica/duplicados, X/null frente a omisión PUT parcial, retiro/restauración de identidad y exclusión incluso con Todos comprobados.
 - [ ] UI responsive, ES/EN, carga/vacío/error, ayuda y borradores comprobados con los contratos reales.
 - [ ] Integración de Caja en NodiaAI especificada y registrada separadamente, si se incorpora al alcance futuro.
 
-No hay inferencia, proveedor, migración, despliegue ni evidencia operativa nueva
-por esta planificación. Las vistas propuestas contienen sólo datos sintéticos.
-El registro explícito de esta fuente permite validarla; permanece excluida de
-publicación mientras conserve draft y ninguna capacidad la use.
+La validación de CASH-02 usa PostgreSQL aislado y peticiones HTTP con usuarios
+sintéticos. La ficha candidata permanece excluida del contexto publicado.
 
 ## Evolución y compatibilidad
 
@@ -263,6 +274,7 @@ publicación mientras conserve draft y ninguna capacidad la use.
 | 1 | Solicitud2026-11-17, plan109 y ADR106 propuesto: Caja, categorías, egreso de factura y Overview mensual | Sólo contexto candidato; sin capacidades/bindings nuevos | Implementar contratos manuales sin ampliar silenciosamente efectos de preparadores aprobados; revalidar facturas vinculadas y compatibilidad de propuestas antes de cualquier integración futura |
 | 2 | Refinamiento confirmado2026-11-17: X y alta rápida +, unicidad sin mayúsculas/whitespace, null retira egreso y reasignar restaura ID; cierres manuales como ingresos | Sólo candidata, planned y sin publicación | Sustituye la recomendación rev1 de impedir vaciar categoría ya vinculada; retiro auditado independiente de actividad. Facturas automáticas sólo egresos, sin integración POS ni cierre/arqueo formal |
 | 3 | CASH-01 cierra la especificación V1 de reglas, consultas, edición desde Facturas, confirmación OCR y recibos | Sólo candidata; conserva aprobación null | El guard bajo lock protege propuestas previas. CASH-02…07 implementan y verifican |
+| 4 | CASH-02 implementa categorías y recibos con unicidad concurrente y autoridad por negocio | Sólo contexto candidato. Integración de herramientas independiente | CASH-03 implementa movimientos y agregados |
 
 Una ampliación futura de los escritores nativos de Facturas debe distinguir los
 comandos que no incluyen Caja y los que expresan explícitamente el nuevo efecto.

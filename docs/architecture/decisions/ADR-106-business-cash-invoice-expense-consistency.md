@@ -4,6 +4,7 @@
 > Fecha: 2026-11-17
 > R02: ampliación explícita de selectores y retiro del egreso al quitar categoría.
 > CASH-01: contrato técnico definido en el plan109 para implementación por fases.
+> CASH-02: categorías y recibos implementados localmente según plan109 §11.
 
 ## Contexto
 

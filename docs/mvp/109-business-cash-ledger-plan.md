@@ -1,10 +1,10 @@
 # Caja de Negocios — plan de implementación y propuesta visual
 
-> Fecha: 2026-11-17. Estado: **CASH-01 cerrado por alcance documental**.
+> Fecha: 2026-11-17. Estado: **CASH-02 implementado localmente para categorías y recibos**.
 > Rama `codex/business-cash-ledger` desde `origin/development` (`0049b5fc`).
 > §1 recoge la solicitud. §§3–6 fijan el contrato V1 para implementación.
 > El plan y el [ADR106](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
-> siguen en revisión. La implementación comienza en CASH-02.
+> siguen en revisión. El siguiente paso es CASH-03.
 
 > **R02, ampliación2026-11-17:** X para limpiar categoría, + para crearla desde
 > formularios y validación de duplicados independiente de mayúsculas/espaciados.
@@ -102,7 +102,7 @@ y el ADR en revisión.
 | `business_cash_categories` | `id` bigint, `business_id` UUID, `name`, `normalized_name` privado, `description`, `is_active`, versión, autor y fechas de alta/edición |
 | `business_cash_movements` | `id` UUID, `business_id` UUID, `category_id` bigint obligatorio, `type`, `amount`, `occurred_on`, `description` nullable sólo para origen factura, `source` manual/invoice, `invoice_id` bigint nullable, `is_active`, `withdrawn_from_invoice`, versión y auditoría |
 | Auditoría de movimientos | Apéndice transaccional por movimiento y nueva versión, con negocio, actor, instante, operación y campos de Caja antes/después. Registra alta, modificaciones, actividad, retiro y restauración. Sin copiar archivo, JSON de factura ni datos de inferencia |
-| Recibo | Una fila por negocio/actor/`request_key`, con operación, versión de contrato, hash, estado y resultado mínimo según §6.2. El estado de staging se vincula con la intención recuperable de `invoice_uploads` |
+| Recibo | Una fila por negocio/actor/`request_key`, con operación, versión de contrato, hash, estado y resultado mínimo según §6.4. El estado de staging se vinculará en CASH-04 con la intención recuperable de `invoice_uploads` |
 | Facturas | Columna de versión inicializada a 1 para facturas nuevas e históricas, sin crear movimientos. Todos los escritores que cambian la fila incrementan la versión. Cambiar la categoría vigente también incrementa la versión de factura |
 
 - Usar FK compuestas categoría/negocio y factura/negocio. La clave de factura
@@ -120,7 +120,8 @@ y el ADR en revisión.
 
 ## 5. Contrato HTTP V1 de Caja
 
-Los endpoints de esta sección se implementan en CASH-02…04. Los nuevos
+Categorías y lectura de recibos corresponden a CASH-02. Movimientos
+corresponden a CASH-03 y Facturas/OCR a CASH-04. Los nuevos
 controladores y alias listados se registran explícitamente bajo el destino
 `/business` en la política HTTP. Todas las peticiones requieren sesión y
 autorización al negocio actual, como propietario, colaborador activo o
@@ -602,8 +603,8 @@ retomar no depende de conservar una captura o un proceso local.
 | Paso | Entrega y cierre verificable | Dependencia |
 | --- | --- | --- |
 | **CASH-01 — contratos y reglas** | Cierre documental 2026-11-17. Reglas, DTOs/errores, respuestas, idempotencia/CAS, frontera OCR y criterios UI fijados en §§3–7 | Cerrado por alcance documental. La [PR 50](https://github.com/oscarvalenzuela25/Nodia/pull/50) ya está integrada en la base e incluye folio opcional y preferencia OCR |
-| **CASH-02 — modelo y categorías** | Migración aditiva de categorías y recibos, scope/políticas, alta/edición/actividad y nombre único por negocio, con conflicto concurrente | Primer pendiente. CASH-03 incorpora movimientos manuales. CASH-04 añade el vínculo de factura y staging compuesto |
-| **CASH-03 — movimientos y agregados** | CRUD manual idempotente/CAS, filtros Ransack, snapshot página+summary y agregador mensual | 02 |
+| **CASH-02 — modelo y categorías** | Implementación local de la migración aditiva, alta/edición/actividad, listado/detalle, autoridad y recibos | Ver §11 |
+| **CASH-03 — movimientos y agregados** | CRUD manual idempotente/CAS, filtros Ransack, snapshot página+summary y agregador mensual | Primer pendiente. Reutiliza el alcance y los recibos de CASH-02 |
 | **CASH-04 — vínculo factura/OCR** | Único egreso, asignación/recategorización/retiro/restauración, sync total/fecha, manual atómico y confirmación OCR transaccional recuperable | 03; cambios de guardado nativo antes de habilitar selector OCR |
 | **CASH-05 — UI Caja y categorías** | Tab, Filter, cards, tabla/tarjetas, drawer, formularios y acciones ES/EN | Contratos03; puede preparar componentes aislados sin fingir endpoints |
 | **CASH-06 — Overview y selectores factura** | Dos cards mensuales; categoría opcional con ayuda/X/+ en ambos flujos; modal creación rápida, borrador/foco e invalidación | 04/05 |
@@ -614,7 +615,8 @@ Checklist de estado:
 - [x] Solicitud y ampliación mensual documentadas, contratos actuales contrastados.
 - [x] Fuente canónica, ADR propuesto, ficha candidata y TODO preparados.
 - [x] Definir contratos, reglas, criterios de UI y verificación de CASH-01.
-- [ ] CASH-02/03: persistencia, autorización, categorías, movimientos y agregados.
+- [x] CASH-02: persistencia, autorización, administración de categorías y recibos.
+- [ ] CASH-03: movimientos manuales y agregados.
 - [ ] CASH-04: factura/OCR identificados, atómicos y recuperables según alcance.
 - [ ] CASH-05/06: UI e integraciones reales, incluyendo cards mensuales.
 - [ ] CASH-07: verificación e integración/adopción por entorno.
@@ -671,8 +673,8 @@ requiere confirmación documental explícita.
 ## 10. Impacto NodiaAI y verificación de este plan
 
 La [ficha de Caja](../nodia-ai/knowledge/businesses/features/cash-ledger-and-invoice-expenses.md)
-permanece `planned/draft/unregistered/approval:null`; producto e índice enlazan
-el alcance futuro. Registrar el path para validación no publica herramientas.
+queda `partial/draft/unregistered/approval:null` por el alcance local de
+categorías y recibos. Producto e índice enlazan el estado técnico.
 No cambiar documentos aprobados, schemas de ventas, autoridad o permisos ni
 presentar Caja como disponible en chat. Una integración IA futura requiere
 especificación, contrato, revisión/confirmación y evidencias propias.
@@ -699,3 +701,45 @@ R02 añade comprobación local de X/+/Drawer/modal, duplicados Unicode e inactiv
 matriz completa de factura y retiro/restauración sin duplicados; ocho capturas
 adicionales ignoradas. Evidencia anterior conserva su corte e identifica el nuevo
 hash. Las garantías de persistencia corresponden a CASH-02…07.
+
+## 11. Categorías y recibos implementados — CASH-02, 2026-11-17
+
+La [migración 1793690000000](../../nodia-server/src/migrations/1793690000000-CreateBusinessCashCategories.ts)
+añade `business_cash_categories` y `business_cash_mutation_requests`. La
+unicidad usa negocio y nombre canónico con colación `C`, también para
+categorías inactivas. El rollback de la migración requiere tablas vacías.
+
+Server expone listado, detalle, alta, edición y actividad de categorías.
+El listado obtiene página y total en una sentencia. El caso de uso revalida
+sesión, módulo y pertenencia antes de operar en el negocio. Un colaborador
+revocado recibe la misma respuesta pública que para un recurso ausente.
+
+La escritura reserva el recibo por negocio, actor y clave, después toma la
+fila del recibo y verifica su intento antes de aplicar el cambio. El efecto
+y el resultado se confirman juntos. Un duplicado de nombre concurrente o una
+revisión obsoleta produce un rechazo recuperable. Guardar sin cambios con la
+revisión vigente conserva la versión. El GET de recibo es privado y la
+concesión vencida permite retomar el mismo comando con la misma clave.
+
+Los puntos de entrada, migración y pruebas corresponden al backend local.
+Movimientos, agregados, integración de Facturas/OCR y tab Caja se entregan
+en los pasos siguientes.
+
+La [prueba de integración](../../nodia-server/test/business-cash-categories.integration.mjs)
+pasó los 10 grupos de comprobaciones en PostgreSQL 16.15 aislado y Nest
+compilado con sesión y permisos sintéticos. Incluye migración aditiva, ambos
+casos de rollback, autorización HTTP, alta concurrente con una y dos claves,
+CAS concurrente, no-op, actividad, Ransack, 202, rollback SQL y recuperación
+de concesión vencida. La carrera de revocación se prueba esperando el lock del
+negocio antes de releer membresía. Se ejecuta desde `nodia-server` después de
+`npm run build` con `node test/business-cash-categories.integration.mjs`.
+El script crea PostgreSQL 16 desechable por defecto y acepta un puerto
+loopback con base vacía y marcada para el laboratorio.
+
+Server local: 65 pruebas focales correctas y suite general de 6202 casos
+correctos y uno omitido en Windows, con `--testTimeout 20000`. Pasaron el
+tipado de producción, build y lint, con el aviso preexistente en
+`test/nodia-ai-live-unknown.fixture.mjs`.
+
+La migración permanece pendiente de aplicación operativa. CASH-03 comienza
+con el modelo de movimientos manuales y su resumen agregado.
