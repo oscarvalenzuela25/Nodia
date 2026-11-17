@@ -17,6 +17,15 @@ y [caso de uso](../../nodia-server/src/provider-contact/use-case/get-provider-co
 responde200 vacío, proveedor inexistente/fuera de alcance responde404. Un error
 no debe convertirse en una lista vacía. Contratos/IDs/ownership permanecen iguales.
 
+## Confirmación posterior del usuario — 2026-11-16
+
+A la pregunta de si el error persiste después de recargar y volver a abrir el
+proveedor, el usuario responde: **«Se corrige al recargar»**. Se registra como
+recuperación humana del síntoma en producción, sin observación nueva del agente
+ni cambio de datos o despliegue. Es compatible con carga transitoria o una
+versión anterior abierta; no demuestra caché, service worker ni petición exacta
+como causa. El fix local sigue sin adoptar y no se acredita solución permanente.
+
 ## Assets observados en producción, sólo lectura y sin sesión
 
 Origen [Nodia en Pages](https://nodia-1ge.pages.dev/). Reporte local ignorado:
@@ -107,12 +116,11 @@ compilada, no una autorización. El candidato tiene check/build y pins propios
 al cerrar las fuentes; el recibo exacto del último check se registra abajo. No
 constituye publicación operativa ni autorización de despliegue.
 
-Primer pendiente de incidencia: aislar el recorrido autenticado original,
-identificando la petición/error y si persiste tras recargar. Esa aclaración se
-consultó al usuario y no tiene respuesta registrada en este corte. Revisión,
-integración y adopción del fix local permanecen separadas, sin nueva autorización
-de despliegue. Los assets públicos, fixtures y tests no sustituyen ese recorrido
-ni permiten declarar resuelta la incidencia productiva.
+Aclaración posterior recibida: recargar corrige el fallo observado, según el
+usuario. Primer pendiente: revisión/integración/adopción del fix local, sin
+nueva autorización de despliegue. Si reaparece, capturar petición/error y versión
+afectados para aislar la causa. Los assets públicos, fixtures, tests y la
+recuperación por recarga no acreditan una solución permanente ni adopción del fix.
 
 ## Conocimiento y pins del candidato
 
@@ -133,3 +141,14 @@ catálogo `nodia-ai-business-pos/4`, schema
 Los44archivos aprobados completos permanecen byte-intactos respecto de HEAD.
 Sin cambio del registro, publicación operativa o adopción. El release anterior
 OCR conserva su recibo; este candidato añade sólo nueva procedencia de plan31.
+
+### Revalidación documental tras la respuesta del usuario
+
+Después de registrar la recuperación por recarga en plan31 e índices, check/build
+locales y las58regresiones de conocimiento pasan; verificador2118enlaces y pins
+src/dist correctos. Release del candidato documental:
+`5dd6e76f3a29d90dab84224c12334e9455828549077c885dcb4a8ded86703d20`.
+Conserva96fuentes/52excluidas,44documentos/46fragmentos/153capacidades y los bytes
+de las fichas aprobadas. El cambio es documental: no se repiten pruebas de UI,
+no se modifica código y no se despliega. El recibo del corte anterior permanece
+como antecedente, sin reescribir sus resultados.

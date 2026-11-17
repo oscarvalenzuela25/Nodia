@@ -235,8 +235,12 @@ Validación local cerrada: focal67/9, global3139/380 en283,97s (inicio21:09:20
 America/Santiago), tipos/lint y build39,45s correctos, más QA fresh de seis estados
 (320/600/1440 por fallo/panel saludable) con recuperación/foco/búsqueda conservados.
 Conocimiento y pins propios comprobados por scripts soportados; el recibo se
-conserva en evidencia. Primer pendiente: aislar la petición/error del recorrido
-autenticado original y confirmar si persiste tras recargar; respuesta del usuario
-pendiente en este corte. Revisión/integración y adopción del candidato local
-permanecen separadas y sin nueva autorización de despliegue. El incidente de
-producción sigue abierto; no se suple con assets públicos o datos simulados.
+conserva en evidencia. El usuario confirma después que **recargar la página
+corrige el fallo observado en producción**. Es recuperación humana del síntoma,
+sin identificar la petición, versión o causa exacta. Es compatible con un fallo
+transitorio de carga o una versión anterior abierta; caché/service worker no
+están demostrados como causa. No requiere otro cambio de código por sí sola.
+Primer pendiente: revisar/integrar/adoptar el candidato local, sin nueva
+autorización de despliegue. Si reaparece, capturar petición/error y versión de
+la sesión afectada antes de atribuir causa o declarar solución permanente.
+La recuperación por recarga no acredita la adopción ni aceptación del fix nuevo.

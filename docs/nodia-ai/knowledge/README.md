@@ -11,8 +11,8 @@ operaciones, herramientas, permisos o bindings. La ficha aprobada
 plan31 cambia sólo su procedencia técnica compilada, con pins propios del candidato.
 Focal67/9 correcta, incluidas12atómicas de hook/loader; QA fresh320/600/1440
 verifica recuperación/foco/búsqueda. Global3139/380, tipos/lint/build y pins locales
-correctos. Causa autenticada
-del incidente productivo aún no aislada; sin nueva aprobación/publicación/adopción.
+correctos. El usuario confirma que recargar corrige el fallo observado; causa
+exacta aún no aislada y fix local sin adoptar. Sin nueva aprobación/publicación.
 
 ## OCR manual: defaults y selección exacta — solicitud2026-11-16
 
