@@ -23,6 +23,13 @@ focal posterior124/10 cubre último delta de recuperación. Tipos/lint/build fin
 y conocimiento/pins locales correctos; revisión/integración y adopción separadas.
 Sin inferencia ni aprobación/publicación nuevas.
 
+**News integrado y publicado — 2026-11-16:**
+[105§15](105-on-demand-tech-news.md#15-promoción-y-publicación-comprobadas--2026-11-16)
+registra PR46/47 integradas, master03206aa1 y CI/CD correctos para backend/Client.
+Lectura pública HTTP200 con ambas fuentes y caché inicial vacía; primer pendiente
+es actualizar desde super_admin y completar aceptación funcional en producción.
+No repetir integración/despliegue. [TODO vigente](TODO.md).
+
 **PR News y archivo de capturas — solicitud2026-11-16:**
 [PR46](https://github.com/oscarvalenzuela25/Nodia/pull/46) abierta contra development;
 CI del corte funcional correcto (Client3104/376, Server6092/355 y40checks SQL).

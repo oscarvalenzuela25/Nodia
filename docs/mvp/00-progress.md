@@ -23,6 +23,18 @@ focal posterior124/10 cubre último delta de recuperación. Tipos/lint/build fin
 y conocimiento/pins locales correctos; revisión/integración y adopción separadas.
 Sin inferencia ni aprobación/publicación nuevas.
 
+**News publicado; aceptación funcional pendiente — 2026-11-16:**
+[105§15](105-on-demand-tech-news.md#15-promoción-y-publicación-comprobadas--2026-11-16)
+concilia PR46/development y PR47/master ya integradas. Master03206aa1,
+[CI43967669633](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43967669633)
+y [CD43969486953](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43969486953)
+correctos; backend/Client complete para el mismo SHA y10recursos PWA verificados.
+GET News anónimo posterior200/TLS normal, ambas fuentes y0artículos, sin éxito
+o error de refresh registrados. No se ejecutó POST ni se disparó otra entrega.
+Primer pendiente: actualización explícita super_admin y lectura/UI/aceptación
+en producción, con teléfono/inspección visual nativa pendientes. TODO sucede
+los estados inferiores de PR abierta o adopción aún no realizada.
+
 **PR News a development y capturas archivadas — solicitud2026-11-16:**
 [105§14](105-on-demand-tech-news.md#14-pr-a-development-y-capturas-fuera-de-git--solicitud2026-11-16)
 conserva [PR46](https://github.com/oscarvalenzuela25/Nodia/pull/46), ya abierta y

@@ -679,3 +679,27 @@ checks. Las cuatro fichas afectadas permanecen draft/approval:null.
 La PR actualizada requiere su CI de SHA exacto; el CI funcional anterior no se
 atribuye al commit posterior. Siguiente paso: revisión/integración a development
 y promoción/adopción autorizada según la guía, conservando límites manuales de§13.
+
+## 15. Promoción y publicación comprobadas — 2026-11-16
+
+Consulta de estado posterior al usuario: [PR46](https://github.com/oscarvalenzuela25/Nodia/pull/46)
+integrada en development `d50dc414`; [PR47](https://github.com/oscarvalenzuela25/Nodia/pull/47)
+integrada en master `03206aa1c9f9c5357d8bedcdd489cf33707c12a9`.
+[CI43967669633](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43967669633)
+y [CD43969486953](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43969486953)
+completos y correctos. Logs saneados del CD registran backend/client complete
+para ese SHA, operación backend8b4ba109… con deployment_performed:true,
+publicación Client9f47f475… y10recursos PWA verificados en un intento.
+
+Comprobación pública posterior: `GET https://166.0.112.187/api/v1/news` sin
+credenciales, HTTP200 y TLS verificado normalmente. Respuesta con0artículos y
+fuentes web-dev/node-js, sin último éxito o error registrados. El vacío inicial
+es válido: no se ejecutó POST ni consumo externo durante esta consulta de estado.
+No se deduce una actualización real del proveedor a partir de ese GET.
+
+Primer pendiente real: desde la sesión super_admin, elegir cada fuente y efectuar
+una intención explícita de actualización; verificar después su lectura pública,
+permisos/UI reales y aceptación humana. Teléfono e inspección visual nativa200%
+conservan los límites de§13. No repetir integración, promoción o despliegue ya
+comprobados. Esta conciliación no modifica contratos, capacidades, herramientas
+o aprobación de fichas/ADR; no acredita un recorrido humano por leer logs.
