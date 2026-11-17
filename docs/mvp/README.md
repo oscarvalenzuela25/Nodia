@@ -1,5 +1,20 @@
 # Especificación del MVP — Nodia
 
+**Caja de Negocios — planificación2026-11-17:** [Plan109](109-business-cash-ledger-plan.md)
+define tab Caja, categorías comunes a ingresos/egresos, filtros Ransack hoy/activos,
+paneles coherentes con búsqueda y tabla, vínculo opcional de factura a un único
+egreso y dos cards de ingresos/egresos del mes actual en Overview. Plan y vistas
+sintéticas, sin implementación. [ADR106 propuesto](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
+separa ownership, consistencia e idempotencia; confirmar OCR requiere ampliar la
+frontera nativa antes de afirmar atomicidad. [TODO CASH-001](TODO.md) deja primer
+pendiente CASH-01 para retomar2026-11-18 en la misma rama. Ficha candidata planned,
+draft/unregistered/approval:null; sin migración, herramientas o despliegue nuevos.
+Ampliación R02: selectores de categoría con X y +/modal de creación rápida;
+duplicados ignorando mayúsculas/espaciados incluso inactivas. Quitar categoría
+de factura retira su egreso al guardar, cambiarla conserva ID. Cierres de caja
+como ingresos manuales; sin ventas automáticas. Drawer y modal se muestran en
+la maqueta actualizada; rev2 Caja/rev57 Negocios siguen como candidatas.
+
 **Negocios: precios redondeados, división y proveedores OCR — solicitud2026-11-17:**
 [Plan94§42](94-business-point-of-sale-and-product-refactor.md#42-precios-de-venta-redondeados-división-local-y-proveedores-ocr--solicitud2026-11-17)
 registra venta manual libre hasta onBlur y normalización al guardar; sugerencias

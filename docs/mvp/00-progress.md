@@ -1,5 +1,22 @@
 # Progreso del MVP — Nodia
 
+**Caja de Negocios — plan/vistas2026-11-17:** [Plan109](109-business-cash-ledger-plan.md)
+y [ADR106 propuesto](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
+registran categorías compartidas, ingreso/egreso con categoría obligatoria,
+filtros diarios/actividad, resumen filtrado y egreso único por factura manual/OCR.
+Ampliación del usuario: dos cards mensuales de ingresos/egresos en Overview.
+Sin implementación: los controles de las vistas son simulación local, no una
+garantía SQL/HTTP. [TODO CASH-001](TODO.md) retoma CASH-01 mañana2026-11-18 en
+`codex/teacher-guided-continuity`; CASH-04 exige confirmación OCR identificada,
+transaccional y recuperable. Ficha planned/draft/unregistered/approval:null,
+sin aprobación documental, operaciones de BD, inferencias o despliegue nuevos.
+R02 del mismo día sustituye la recomendación de impedir quitar categoría:
+al guardar vacía se retira el egreso, sin aparecer tampoco en actividad Todos.
+X/+ y modal contextual conservan borradores, validan nombres sin diferencias de
+mayúsculas/espaciados y seleccionan la categoría nueva. Cierres manuales como
+ingresos; sólo facturas automáticas como egresos. Actualización de plan/maqueta,
+no implementación; ficha Caja2 y Negocios57 permanecen candidatas.
+
 **Negocios: precios redondeados, división y proveedores OCR — solicitud2026-11-17:**
 [Plan94§42](94-business-point-of-sale-and-product-refactor.md#42-precios-de-venta-redondeados-división-local-y-proveedores-ocr--solicitud2026-11-17)
 registra venta manual libre hasta onBlur y normalización al guardar; sugerencias
