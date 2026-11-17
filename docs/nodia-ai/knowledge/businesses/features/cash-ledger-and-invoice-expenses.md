@@ -4,11 +4,11 @@
   "document_id": "businesses.cash-ledger-and-invoice-expenses",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 8,
+  "revision": 9,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "CASH-02/03 implementan categorías, movimientos manuales, recibos y agregados. CASH-04 añade vínculo de factura y confirmación OCR atómica en Server. CASH-05 incorpora la pestaña Caja con formularios, filtros, totales y tarjetas móviles. CASH-06 integra Overview y Facturas/OCR en Client local. CASH-07 reúne la validación integral. La ficha conserva draft, unregistered y approval null."
+    "notes": "CASH-02/03 implementan categorías, movimientos manuales, recibos y agregados. CASH-04 añade vínculo de factura y confirmación OCR atómica en Server. CASH-05 incorpora la pestaña Caja. CASH-06 integra Overview y Facturas/OCR. CASH-07 registra la validación integral local y la CI de la rama por SHA. La ficha conserva draft, unregistered y approval null."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
@@ -117,7 +117,7 @@
   "verification": {
     "checked_on": "2026-11-17",
     "evidence_paths": ["docs/mvp/109-business-cash-ledger-plan.md"],
-    "notes": "Plan109 §§11–15 registra SQL/HTTP local en Server y la verificación local de Client. La adopción por entorno tiene un paso propio."
+    "notes": "Plan109 §§11–16 registra Client, SQL/HTTP, QA móvil y confirmación OCR sin inferencia externa en laboratorio. La CI identifica el SHA de entrega. La adopción por entorno tiene un paso propio."
   },
   "approval": null
 }
@@ -338,6 +338,7 @@ usuarios sintéticos. La ficha candidata permanece excluida del contexto publica
 | 6 | CASH-04 implementa el egreso único por factura, retiro/restauración y guardado OCR con revisión y recibo | Sólo contexto candidato. El guard mantiene el alcance de herramientas existentes | CASH-05 y CASH-06 integran la UI |
 | 7 | CASH-05 incorpora la pestaña Caja, gestión de categorías y movimientos, filtros, totales y tarjetas móviles | Sólo contexto candidato. La UI usa los recursos nativos | CASH-06 conecta Overview y formularios de Facturas/OCR |
 | 8 | CASH-06 conecta el resumen mensual y el guardado de Facturas y OCR mediante categoría opcional y recibo | Sólo contexto candidato. Client usa los recursos nativos | CASH-07 valida la integración de la rama y la evidencia por entorno |
+| 9 | CASH-07 verifica Caja, Overview, Facturas y confirmación OCR en laboratorio y registra la CI de la rama por SHA | Sólo contexto candidato | Adopción por entorno con evidencia propia |
 
 El escritor común aplica la revisión y el recibo al efecto nativo identificado.
 Los preparadores de NodiaAI revalidan el vínculo al preparar, antes de subir

@@ -1,5 +1,14 @@
 # Contexto funcional de productos para NodiaAI
 
+## Verificación de Caja — CASH-07, 2026-11-17
+
+[Plan109 §16](../../mvp/109-business-cash-ledger-plan.md#16-verificación-de-entrega--cash-07-2026-11-17),
+[Caja revisión9](businesses/features/cash-ledger-and-invoice-expenses.md)
+y [Negocios revisión65](businesses/README.md) registran la entrega
+técnica y la verificación aislada de Client, HTTP y PostgreSQL. La ficha
+de Caja conserva su estado candidato. Adoptar en un entorno operativo
+requiere evidencia de ese entorno.
+
 ## Overview y guardado en Facturas/OCR — CASH-06, 2026-11-17
 
 [Plan109 §15](../../mvp/109-business-cash-ledger-plan.md#15-resumen-mensual-y-guardado-desde-facturas-y-ocr--cash-06-2026-11-17),
@@ -7,7 +16,7 @@
 y [Negocios revisión64](businesses/README.md) registran el resumen
 mensual y el guardado con categoría opcional y recibo en Client local.
 La ficha de Caja conserva su estado candidato. La verificación integral
-por entorno sigue en CASH-07.
+de la rama está documentada en CASH-07.
 
 ## Pestaña Caja en Negocios — CASH-05, 2026-11-17
 

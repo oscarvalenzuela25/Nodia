@@ -1,10 +1,10 @@
 # Caja de Negocios — plan de implementación y propuesta visual
 
-> Fecha: 2026-11-17. Estado: **CASH-06 implementado localmente para Overview, Facturas y OCR**.
+> Fecha: 2026-11-17. Estado: **CASH-07 con verificación integral en laboratorio**.
 > Rama `codex/business-cash-ledger` desde `origin/development` (`0049b5fc`).
 > §1 recoge la solicitud. §§3–6 fijan el contrato V1 para implementación.
 > El plan y el [ADR106](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
-> siguen en revisión. El siguiente paso es CASH-07.
+> siguen en revisión. La evidencia de entrega se registra en §16.
 
 > **R02, ampliación2026-11-17:** X para limpiar categoría, + para crearla desde
 > formularios y validación de duplicados independiente de mayúsculas/espaciados.
@@ -608,7 +608,7 @@ retomar no depende de conservar una captura o un proceso local.
 | **CASH-04 — vínculo factura/OCR** | Único egreso, asignación/recategorización/retiro/restauración, sync total/fecha, manual atómico y confirmación OCR transaccional recuperable | Implementado localmente en Server. Ver §13 |
 | **CASH-05 — UI Caja y categorías** | Tab, filtros, totales, tabla/tarjetas, drawer, formularios y acciones ES/EN | Implementado localmente. Ver §14 |
 | **CASH-06 — Overview y selectores factura** | Dos tarjetas mensuales; categoría opcional con ayuda/X/+ en ambos flujos; creación rápida, borrador, foco, recibos e invalidación | Implementado localmente. Ver §15 |
-| **CASH-07 — validación y entrega** | Unidades, integración SQL/HTTP aislada, QA visual proporcional, documentación/fichas y CI de SHA final | 02…06; despliegue/adopción con pedido propio |
+| **CASH-07 — validación y entrega** | Unidades, integración SQL/HTTP aislada, QA móvil y fichas en §16. CI sobre el SHA de entrega | El resultado remoto se registra en GitHub Actions. La adopción por entorno tiene pedido propio |
 
 Checklist de estado:
 
@@ -620,7 +620,8 @@ Checklist de estado:
 - [x] CASH-04: factura/OCR identificados, atómicos y recuperables en Server local.
 - [x] CASH-05: pestaña Caja, categorías, movimientos y agregados filtrados en Client local.
 - [x] CASH-06: tarjetas mensuales e integración de Facturas/OCR desde Client.
-- [ ] CASH-07: verificación e integración/adopción por entorno.
+- [x] CASH-07: verificación local con Client, HTTP y PostgreSQL aislados. La CI del commit de entrega se consulta en Actions.
+- [ ] Adopción y comprobación por entorno operativo, con pedido propio.
 
 La ampliación transaccional del guardado OCR y la compatibilidad de escritores de
 Facturas/Productos corresponden a CASH-04. La aprobación del plan o del ADR
@@ -971,5 +972,75 @@ tipado, build y lint con la exclusión de fixtures históricos ignorados
 en `nodia-client/.tmp`. La verificación de conocimiento pasó 58 pruebas
 y conserva 44 documentos, 46 fragmentos y 153 capacidades emitidos en local.
 
-CASH-07 reúne la verificación integral de la rama y la evidencia por
-entorno. Las migraciones permanecen pendientes en entornos operativos.
+CASH-07 reúne la verificación integral de la rama en §16. Las
+migraciones permanecen pendientes en entornos operativos.
+
+## 16. Verificación de entrega — CASH-07, 2026-11-17
+
+### QA en Chromium
+
+| Recorrido | Verificación |
+| --- | --- |
+| Caja, 320/390/599/600/900/1440 px | Tarjetas hasta 599 px, tabla con scroll local desde 600 px y ancho medido de al menos 698 px. El documento conservó su ancho de cliente. Cambiar de tamaño preservó la segunda página y los totales de la selección. |
+| Caja, estados y guardado | Una respuesta inválida mostró reintento. Una lectura vacía válida devolvió dos ceros. El conflicto de nombre conservó el borrador de categoría. El alta rápida conservó el importe y la descripción del ingreso. Tras un 503, el reenvío explícito mantuvo el mismo comando y clave. |
+| Caja y Overview, 320 px en inglés claro | El Drawer ocupó el ancho disponible y Escape devolvió el foco a Categorías. Overview mostró una suma exacta de CLP 9.007.199.254.740.993. |
+| Facturas, 320 px con entrada táctil emulada | Limpiar, añadir y ayuda midieron 44 × 44 px y se probaron como controles separados. Cancelar el alta rápida conservó la categoría y el borrador. Enter limpió la selección, devolvió el foco y dejó cerrado el selector. El editor mantuvo su ancho con el tamaño de fuente raíz al 200 %. |
+
+Estos casos usaron el Client real con respuestas HTTP sintéticas para
+forzar errores y comprobar estados. Las capturas están en
+`output/playwright/cash07/`, fuera del repositorio.
+
+### Contratos nativos y carga OCR
+
+Con HTTP compilado y PostgreSQL 16.15 desechable pasaron los 10 grupos
+de [categorías](../../nodia-server/test/business-cash-categories.integration.mjs),
+los 8 de [movimientos](../../nodia-server/test/business-cash-movements.integration.mjs)
+y los 8 de [Facturas y OCR](../../nodia-server/test/business-cash-invoice.integration.mjs).
+Incluyen permisos por negocio, unicidad concurrente, versión y recibos,
+agregados paginados, retiro y restauración, carga multipart y rollback.
+
+Una confirmación OCR de 500 filas combinó 180 altas, 160 ediciones y
+160 coincidencias manuales. El comando ocupó 177.814 bytes. En el
+laboratorio se observaron los límites SQL de 5 s por sentencia y 2 s
+por lock. Confirmar tomó 524 ms. Forzar un fallo al sellar el recibo
+tomó 411 ms y revirtió el lote, factura, egreso y logs. Reenviar la
+misma intención tomó 405 ms y confirmó con un nuevo intento de archivo.
+Cambiar el orden con la misma clave fue rechazado, y una fila 501 fue
+rechazada antes de subir el archivo. Los tiempos describen esta
+ejecución local con almacenamiento sintético.
+
+### Recorrido completo
+
+Chromium usó el Client real, los controladores y casos de uso compilados
+de Nest, y PostgreSQL 16 aislado. A 320 y 600 px se crearon un ingreso y
+un egreso manual. La búsqueda SQL coincidió literalmente con coma, %
+y _. El filtro persistió al cruzar el breakpoint. Una categoría
+duplicada devolvió 409 y el formulario conservó los campos.
+
+Desde Facturas se adjuntó un PDF, se creó y seleccionó la categoría y se
+guardó la factura. Limpiar la selección y cancelar conservó el vínculo.
+Guardar sin categoría lo retiró, y reasignarla restauró el mismo UUID
+de egreso con el importe actualizado. En OCR se confirmó la fecha de
+emisión que faltaba. Un único POST multipart creó la factura, su egreso
+y dos logs, actualizó un producto de versión 7 a 8 y creó otro en
+versión 1. El stock del producto existente se conservó.
+
+En el ingreso manual, la factura manual y OCR, el puente ocultó una
+respuesta 201 después de un commit efectivo. El Client conservó la
+intención y recuperó cada recibo confirmado por GET. Overview mostró
+exactamente CLP 9.999.999.999.999 de ingresos y CLP 73.100 de egresos.
+El servidor devolvió 404 al consultar un negocio ajeno y 403 al actor
+sin módulo. El laboratorio simuló extracción, observación, proveedor
+y almacenamiento. La entrada táctil y el viewport fueron emulados.
+
+### Commit de entrega
+
+El chequeo de instalación limpia compara las columnas físicas de
+PostgreSQL con las propiedades persistidas de TypeORM. Excluye las
+proyecciones `@VirtualColumn`, incluida `invoices.cash_expense`.
+La instalación limpia pasó los 40 controles de esquema y migración.
+
+[Nodia CI de la rama](https://github.com/oscarvalenzuela25/Nodia/actions/workflows/ci.yml?query=branch%3Acodex%2Fbusiness-cash-ledger)
+registra la validación del SHA de entrega mediante una PR a
+`development`. La adopción, las migraciones operativas y la prueba
+con teléfono físico o un proveedor OCR real tienen evidencia propia.

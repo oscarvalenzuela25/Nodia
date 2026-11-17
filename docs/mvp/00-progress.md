@@ -1,10 +1,11 @@
 # Progreso del MVP — Nodia
 
-**CASH-06 implementado localmente — 2026-11-17.**
-[Plan109 §15](109-business-cash-ledger-plan.md#15-resumen-mensual-y-guardado-desde-facturas-y-ocr--cash-06-2026-11-17)
-registra los totales y conteos del mes en Overview. Facturas y OCR usan
-una categoría de Caja opcional y el guardado identificado con recibo.
-El [TODO](TODO.md) continúa con CASH-07 para validar la entrega integral.
+**Entrega técnica de Caja, CASH-07 — 2026-11-17.**
+[Plan109 §16](109-business-cash-ledger-plan.md#16-verificación-de-entrega--cash-07-2026-11-17)
+registra los contratos HTTP y SQL, la comprobación móvil y la recuperación
+de recibos de Caja, Facturas y OCR. El resultado de Nodia CI corresponde
+al SHA de entrega en GitHub. El [TODO](TODO.md) conserva la adopción por
+entorno operativo.
 
 **Topbar y OCR de Negocios — 2026-11-17.** Corrección local en
 `codex/business-cash-ledger`. El [estado IA](../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17)
