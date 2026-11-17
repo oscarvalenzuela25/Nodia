@@ -1,5 +1,19 @@
 # Contexto funcional de productos para NodiaAI
 
+## Teacher: guía y continuidad TUX-03/05 — 2026-11-16
+
+[Plan106§15](../../mvp/106-nodia-teacher-guided-ux-redesign.md#15-tux-0305-guía-y-continuidad-implementadas-localmente--2026-11-16),
+[Estudios revisión44](studies/README.md), [experiencia guiada revisión6](studies/features/guided-setup-and-study-experience.md)
+y [sesión revisión38](studies/features/session-setup-and-planning.md) registran
+ayuda/diagnóstico opcionales, mensaje sin enviar protegido, preparación explícita
+y continuidad desde cursor/material/intento comprobados. Impacto de presentación
+y acceso a operaciones existentes; sin DTOs, autoridad, herramientas o permisos
+nuevos. Teacher final277/42, global previa3171/383, tipos/build y lint de fuentes correctos;
+Chromium sintético16perfiles y errores CAS/borrador/material en
+[evidencia común](../../evidence/teacher-guided-continuity-20261116.md).
+Aceptación del alcance nuevo e integración/adopción pendientes. TUX-001 mantiene
+su cierre previo; draft/partial/unregistered/approval:null y publicación intactos.
+
 ## Contactos de proveedores: recuperación local — incidencia2026-11-16
 
 [Plan31](../../mvp/31-provider-contacts-proposal.md#apertura-recuperable-de-contactos--incidencia-de-producción2026-11-16) y

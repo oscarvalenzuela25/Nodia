@@ -1,5 +1,18 @@
 # Especificación del MVP — Nodia
 
+**Teacher: TUX-03/05 implementados y verificados localmente — 2026-11-16:**
+[Plan106§15](106-nodia-teacher-guided-ux-redesign.md#15-tux-0305-guía-y-continuidad-implementadas-localmente--2026-11-16)
+registra conversación/diagnóstico opcionales, borrador protegido, preparación y
+recuperación explícitas, primera lección y continuidad desde contexto real.
+Rama `codex/teacher-guided-continuity` desde development `6b7f15a5`.
+Teacher final277/42 y global previa3171/383, tipos/build y lint de fuentes correctos;
+Chromium sintético16perfiles320/600/900/1440 ES/EN y errores CAS/respuesta
+verificados por [evidencia](../evidence/teacher-guided-continuity-20261116.md).
+No hay generación automática, cambios Server/DB ni inferencia/despliegue nuevos.
+Primer pendiente: revisión/aceptación del alcance nuevo e integración/adopción
+por entorno; el cierre humano TUX-001 anterior se conserva. Fichas candidatas
+actualizadas sin aprobación/publicación.
+
 **Proveedores: apertura recuperable de Contactos — incidencia2026-11-16:**
 [Plan31](31-provider-contacts-proposal.md#apertura-recuperable-de-contactos--incidencia-de-producción2026-11-16) registra error/404 reportado en producción.
 El usuario confirma que recargar la página corrige el fallo observado.

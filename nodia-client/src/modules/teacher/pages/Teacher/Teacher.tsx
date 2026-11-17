@@ -1,12 +1,11 @@
 import AdaptiveWorkspace from "../../components/AdaptiveWorkspace/AdaptiveWorkspace";
 import BlockLearningTools from "../../components/AdaptiveWorkspace/BlockLearningTools";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Box, Button, LinearProgress, Menu, MenuItem, Pagination, Stack, Switch, Typography } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import SchoolOutlined from "@mui/icons-material/SchoolOutlined";
 import AutoStoriesOutlined from "@mui/icons-material/AutoStoriesOutlined";
 import ArrowBackOutlined from "@mui/icons-material/ArrowBackOutlined";
-import RefreshOutlined from "@mui/icons-material/RefreshOutlined";
 import { Link, useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import LessonMarkdown from "../../components/LessonMarkdown";
@@ -25,6 +24,9 @@ import JobPanel from "../../components/JobPanel";
 import TeacherLoading from "../../components/TeacherLoading";
 import StudyJourney from "../../components/StudyJourney";
 import SetupConversation from "../../components/SetupConversation";
+import StudyContinuation from "../../components/StudyContinuation";
+import DiagnosticEntry from "../../components/DiagnosticEntry/DiagnosticEntry";
+import { studyContinuation } from "../../infrastructure/studyContinuation";
 import ReinforcementPanel from "../../components/ReinforcementPanel";
 import { useReinforcementNavigation } from "../../infrastructure/useReinforcementNavigation";
 import { useTeacherAttempt, useTeacherCommand, useTeacherMaterial, useTeacherMessages, useTeacherProposal, useTeacherQuestion, useTeacherSession, useTeacherSessions } from "../../infrastructure/useServices";
@@ -102,6 +104,9 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
   const [localCursor, setLocalCursor] = useState<Cursor>(session.cursor);
   const [helpOpen, setHelpOpen] = useState(false);
   const [adaptiveOpen, setAdaptiveOpen] = useState(false);
+  const [diagnosticOpen, setDiagnosticOpen] = useState(false);
+  const lessonHeading = useRef<HTMLHeadingElement>(null);
+  const assessmentHeading = useRef<HTMLHeadingElement>(null);
   const [archiving, setArchiving] = useState(false);
   const [editingSession, setEditingSession] = useState(false);
   const [selecting, setSelecting] = useState(false);
@@ -113,7 +118,8 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
   const messages = useTeacherMessages(session.id, messagePage);
   const proposal = useTeacherProposal(session.id, proposalId ?? session.latest_proposal?.id ?? null);
   const plan = session.current_plan;
-  const material = useTeacherMaterial(session.id, unitId, plan?.id ?? null);
+  const materialPlanId = localCursor.plan_revision_id && localCursor.plan_revision_id !== plan?.id ? null : plan?.id ?? null;
+  const material = useTeacherMaterial(session.id, unitId, materialPlanId);
   const attempt = useTeacherAttempt(session.id, attemptId);
   const question = useTeacherQuestion(session.id, attemptId, questionId ?? attempt.data?.questions[0]?.question_id ?? null);
   const proposalView = proposal.data ?? session.latest_proposal ?? (revising ? plan : null);
@@ -175,8 +181,9 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
     return result;
   };
   const saveCursor = async (cursor: Cursor) => {
-    setLocalCursor(cursor);
-    return execute(`sessions/${session.id}/cursor`, { expected_cursor_revision: session.cursor.revision, ...cursorBody(cursor) }, "PATCH");
+    const result = await execute(`sessions/${session.id}/cursor`, { expected_cursor_revision: session.cursor.revision, ...cursorBody(cursor) }, "PATCH");
+    if (result) setLocalCursor(cursor);
+    return result;
   };
   const studyCursor = (): Cursor => attempt.data && attemptId ? { ...localCursor, phase: attempt.data.scope === "section_final" ? "final" : attempt.data.scope === "diagnostic" ? "review" : "practice", plan_revision_id: attempt.data.plan_revision_id ?? null, section_id: attempt.data.section_id ?? null, unit_id: attempt.data.unit_id ?? null, content_version_id: attempt.data.scope === "unit_practice" && material.data?.kind === "material" ? material.data.content_version_id : null, attempt_id: attemptId, item_id: question.data?.question_id ?? null, block_id: null } : localCursor;
   const startAttempt = async (kind: "units" | "sections", id: string, newAttempt = false, route: "direct" | "after_study" = "direct") => {
@@ -184,8 +191,8 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
     if (result?.attempt_id) { setLocalCursor({ ...localCursor, phase: kind === "units" ? "practice" : "final", plan_revision_id: plan?.id ?? null, attempt_id: result.attempt_id, section_id: kind === "sections" ? id : localCursor.section_id, unit_id: kind === "sections" ? null : id, content_version_id: null, item_id: null, block_id: null }); }
   };
   useEffect(() => {
-    if (material.data?.kind === "material" && localCursor.block_id) document.getElementById(`teacher-block-${localCursor.block_id}`)?.scrollIntoView({ block: "start" });
-  }, [material.data, localCursor.block_id]);
+    if (material.data?.kind === "material" && material.data.content_version_id === localCursor.content_version_id && localCursor.block_id) document.getElementById(`teacher-block-${localCursor.block_id}`)?.scrollIntoView({ block: "start" });
+  }, [material.data, localCursor.block_id, localCursor.content_version_id]);
   const saveAnswer = async (answer: Answer, expectedRevision: number) => {
     if (!attempt.data || !question.data) return null;
     const result = await execute(`sessions/${session.id}/attempts/${attempt.data.attempt_id}/responses`, { expected_attempt_revision: attempt.data.revision, responses: [{ question_id: question.data.question_id, expected_response_revision: expectedRevision, answer }] }, "PATCH");
@@ -206,10 +213,33 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
     if (saved) { setLocalCursor(saved); setUnitId(null); setAttemptId(null); setQuestionId(null); setOutlineExpanded(true); }
   };
 
+  const selectUnit = async (sectionId: string, nextUnitId: string) => {
+    if (locked || draftAnswer || draftConflict || recordingMessage || !plan?.outline.sections.some(section => section.id === sectionId && section.units.some(unit => unit.id === nextUnitId))) return;
+    const cursor: Cursor = { ...session.cursor, phase: "setup", plan_revision_id: plan.id, section_id: sectionId, unit_id: nextUnitId, content_version_id: null, attempt_id: null, item_id: null, block_id: null };
+    const saved = await reinforcementNavigation.choose(cursor, value => command.execute(`sessions/${session.id}/cursor`, { expected_cursor_revision: value.revision, ...cursorBody(value) }, "PATCH"));
+    if (saved) { setLocalCursor(saved); setUnitId(nextUnitId); setAttemptId(null); setQuestionId(null); setHint(null); setOutlineExpanded(false); }
+  };
+  const continuationContext = plan ? { plan, cursor: localCursor, selectedUnitId: unitId, attemptId,
+    attemptPlanRevisionId: attempt.data?.attempt_id === attemptId ? attempt.data?.plan_revision_id : undefined,
+    material: material.data, allowedActions: session.allowed_actions, paused: !active } : null;
+  const prepareLesson = async (targetUnitId: string) => {
+    if (locked || material.isFetching || !continuationContext) return;
+    const next = studyContinuation(continuationContext);
+    if (next.kind !== "prepare" || !next.canPrepare || next.target?.unitId !== targetUnitId) return;
+    await execute(`sessions/${session.id}/units/${targetUnitId}/material`, { plan_revision_id: plan?.id, expected_session_revision: session.revision, variant: "current" });
+  };
+  const focusStudy = () => {
+    const block = material.data?.kind === "material" && material.data.content_version_id === localCursor.content_version_id && localCursor.block_id
+      ? document.getElementById(`teacher-block-${localCursor.block_id}`) : null;
+    const target = attemptId ? assessmentHeading.current : block ?? lessonHeading.current;
+    target?.focus({ preventScroll: true });
+    target?.scrollIntoView({ block: "start" });
+  };
+
   const assessmentView = attemptId ? <Panel><QueryErrorAlert retryVariant="outlined" isError={attempt.isError || question.isError} isFetching={attempt.isFetching || question.isFetching} onRetry={() => { void attempt.refetch(); void question.refetch(); }} />
           <TeacherLoading loading={attempt.isLoading && !attempt.data}>
             {attempt.data && <Stack sx={{ gap: 3 }}>
-              <Typography variant="h5" component="h2">{t(attempt.data.scope === "section_final" ? "teacher:final_assessment" : attempt.data.scope === "diagnostic" ? "teacher:diagnostic" : "teacher:practice")}</Typography>
+              <Typography ref={assessmentHeading} tabIndex={-1} variant="h5" component="h2">{t(attempt.data.scope === "section_final" ? "teacher:final_assessment" : attempt.data.scope === "diagnostic" ? "teacher:diagnostic" : "teacher:practice")}</Typography>
               <Box component="nav" aria-label={t("teacher:assessment_navigation")} sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(44px,1fr))", gap: 1, "& > button": { minHeight: 44, minWidth: 44, px: 0, whiteSpace: "nowrap" } }}>{attempt.data.questions.map((item, index) => <Button key={item.question_id} variant={question.data?.question_id === item.question_id ? "contained" : "outlined"} disabled={locked || attempt.isFetching || question.isFetching || (attempt.data?.scope !== "section_final" && attempt.data.state === "in_progress" && attempt.data.questions.findIndex(item => item.answer_status !== "submitted") >= 0 && index > attempt.data.questions.findIndex(item => item.answer_status !== "submitted"))} aria-label={t("teacher:question_number", { number: index + 1 })} onClick={() => { if (draftAnswer) return; setQuestionId(item.question_id); setHint(null); void saveCursor({ ...studyCursor(), item_id: item.question_id }); }}>{index + 1}</Button>)}</Box>
               {question.isLoading && !question.data && <TeacherLoading loading />}
               {question.data && <QuestionCard key={question.data.question_id} question={question.data} busy={locked || attempt.isFetching || question.isFetching} canSave={enabled(attempt.data.allowed_actions, "save_answers")} canSubmit={enabled(attempt.data.allowed_actions, "submit_question")} final={attempt.data.scope === "section_final"} delivered={attempt.data.state !== "in_progress"} onDraft={setDraftAnswer} onConflictChange={setDraftConflict} onSave={saveAnswer} onReflectionSave={async metadata => { if (!question.data?.response_id) return false; const result = await execute(`sessions/${session.id}/learning/response-metadata`, { expected_session_revision: session.revision, response_id: question.data.response_id, expected_response_revision: question.data.response_revision, ...metadata }); return result !== null; }} onSubmit={async answer => { const result = await execute(`sessions/${session.id}/attempts/${attemptId}/responses/${question.data!.question_id}/submit`, { expected_attempt_revision: attempt.data!.revision, expected_response_revision: question.data!.response_revision, answer }); if (result) setDraftAnswer(null); }} />}
@@ -226,7 +256,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
         </Panel> : null;
 
   return <SessionPage>
-    {!editingSession && !selecting && !helpOpen && !archiving && !adaptiveOpen && <RequestRecovery command={command} onRecovered={applyResult} />}
+    {!editingSession && !selecting && !helpOpen && !archiving && !adaptiveOpen && !diagnosticOpen && <RequestRecovery command={command} onRecovered={applyResult} />}
     <Header><Box sx={{ width: "100%", minWidth: 0 }}><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><SessionTitleRow><Typography variant="h4" component="h1" sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" }, fontWeight: 700 }}>{session.title || session.topic}</Typography><StateChip label={t(`teacher:states.${session.state}`)} color={SESSION_STATE_COLORS[session.state]} /></SessionTitleRow><Typography color="text.secondary">{session.objective}</Typography></Box></Header>
     <SessionActions>
       {enabled(session.allowed_actions, "pause") && <Button disabled={busy || draftConflict || messageDraft.saving || messageDraft.conflict || !messageDraft.valid} variant="contained" onClick={() => void stateCommand("pause")}>{t("teacher:pause")}</Button>}
@@ -239,7 +269,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
       {enabled(session.allowed_actions, "edit") && <MenuItem disabled={busy} sx={{ minHeight: 44 }} onClick={() => { setOptionsAnchor(null); setEditingSession(true); }}>{t("teacher:edit_session")}</MenuItem>}
       {plan && enabled(session.allowed_actions, "edit") && <MenuItem disabled={busy} sx={{ minHeight: 44 }} onClick={() => { setOptionsAnchor(null); setSelecting(true); }}>{t("teacher:ai_selection")}</MenuItem>}
       {plan && enabled(session.allowed_actions, "activate_revision") && <MenuItem disabled={busy} sx={{ minHeight: 44 }} onClick={() => { setOptionsAnchor(null); setRevising(value => !value); }}>{t(revising ? "teacher:close_plan_review" : "teacher:review_plan")}</MenuItem>}
-      {enabled(session.allowed_actions, "start_diagnostic") && <MenuItem disabled={busy} sx={{ minHeight: 44 }} onClick={() => { setOptionsAnchor(null); void execute(`sessions/${session.id}/diagnostic-attempts`, { expected_session_revision: session.revision, entry_route: "diagnostic", new_attempt: false }); }}>{t("teacher:diagnostic")}</MenuItem>}
+      {enabled(session.allowed_actions, "start_diagnostic") && <MenuItem disabled={busy || recordingMessage || reinforcementNavigation.pending || Boolean(draftAnswer) || draftConflict} sx={{ minHeight: 44 }} onClick={() => { setOptionsAnchor(null); setDiagnosticOpen(true); }}>{t("teacher:diagnostic")}</MenuItem>}
       {enabled(session.allowed_actions, "archive") && <MenuItem disabled={busy} sx={{ minHeight: 44 }} onClick={() => { setOptionsAnchor(null); setArchiving(true); }}>{t("teacher:archive")}</MenuItem>}
       {enabled(session.allowed_actions, "unarchive") && <MenuItem disabled={busy} sx={{ minHeight: 44 }} onClick={() => { setOptionsAnchor(null); void stateCommand("unarchive"); }}>{t("teacher:unarchive")}</MenuItem>}
     </Menu>
@@ -248,29 +278,35 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
     {selecting && <BaseModal open title={t("teacher:ai_selection")} onClose={() => { if (!busy) setSelecting(false); }}><RequestRecovery command={command} onRecovered={result => { applyResult(result); setSelecting(false); }} /><SelectionPanel initial={session.selection} busy={busy} onSave={async selection => { const result = await execute(`sessions/${session.id}`, { expected_session_revision: session.revision, selection }, "PATCH"); if (result) setSelecting(false); }} /></BaseModal>}
     {session.state === "paused" && <Alert severity="info">{t("teacher:paused_notice")}</Alert>}
     <Typography variant="body2" color="text.secondary">{t("teacher:budget", { used: session.dispatches_used, limit: session.dispatch_limit })}</Typography>
+    {diagnosticOpen && <DiagnosticEntry session={session} open onClose={() => setDiagnosticOpen(false)} busy={busy || recordingMessage || reinforcementNavigation.pending}
+      recovery={<RequestRecovery command={command} onRecovered={result => { applyResult(result); setDiagnosticOpen(false); }} />}
+      onStart={async () => { if (locked || recordingMessage || draftAnswer || draftConflict) return false; return Boolean(await execute(`sessions/${session.id}/diagnostic-attempts`, { expected_session_revision: session.revision, entry_route: "diagnostic", new_attempt: false })); }} />}
     <AdaptiveWorkspace open={adaptiveOpen} onClose={() => setAdaptiveOpen(false)} session={session} command={command} busy={busy || reinforcementNavigation.pending} onResult={applyResult} onPractice={id => void startAttempt("units", id)} />
     {(!plan || revising) && <>
       {comparing && proposalView && <Panel><Stack sx={{ gap: 2 }}><Alert severity="info">{t("teacher:candidate_notice")}</Alert><PlanGrid>{[{ title: t("teacher:previous_proposal"), plan: baseProposal.data }, { title: t("teacher:candidate_proposal"), plan: proposalView }].map(item => <Box key={item.title}><Typography variant="subtitle1">{item.title}</Typography>{item.plan?.outline.sections.map(section => <Box key={section.id} sx={{ my: 2 }}><Typography variant="subtitle2">{section.title}</Typography>{section.units.map(unit => <Typography key={unit.id} variant="body2">{unit.title}</Typography>)}</Box>)}</Box>)}</PlanGrid><Actions><Button variant="contained" disabled={locked || !baseProposal.data} onClick={() => void execute(`sessions/${session.id}/plan-proposals/${proposalView.base_revision_id}/apply-candidate`, { candidate_id: proposalView.id, expected_base_revision_id: proposalView.base_revision_id, expected_base_hash: proposalView.base_hash, expected_session_revision: session.revision })}>{t("teacher:apply_candidate")}</Button><Button variant="outlined" disabled={locked || !baseProposal.data} onClick={() => setProposalId(proposalView.base_revision_id ?? null)}>{t("teacher:keep_previous")}</Button></Actions></Stack></Panel>}
       {proposal.isLoading && !proposalView && <TeacherLoading loading />}
-      {proposalView && <Panel><PlanReview key={proposalView.id} plan={proposalView} busy={locked || comparing || preparing} futureRevision={Boolean(plan)} canAdjust={selectionReady && !selectionDirty} canAccept={!comparing && (plan ? proposalView.id !== plan.id && enabled(session.allowed_actions, "activate_revision") : enabled(session.allowed_actions, "accept_plan"))} onSave={async outline => { await execute(`sessions/${session.id}/plan-proposals/${proposalView.id}`, { expected_session_revision: session.revision, expected_proposal_hash: proposalView.content_hash, outline }, "PATCH"); }} onAccept={async () => { const result = await execute(plan ? `sessions/${session.id}/plan-revisions/${proposalView.id}/activate` : `sessions/${session.id}/plan-proposals/${proposalView.id}/accept`, { expected_session_revision: session.revision, proposal_revision_id: proposalView.id, proposal_hash: proposalView.content_hash, ...(plan ? { expected_current_plan_revision_id: plan.id } : {}) }); if (result && plan) { setRevising(false); setUnitId(null); setAttemptId(null); setQuestionId(null); } }} onAdjust={async text => { if (locked || preparing || selectionDirty || !selectionReady) return; await execute(`sessions/${session.id}/plan-proposals`, { expected_session_revision: session.revision, base_proposal_id: proposalView.id, base_hash: proposalView.content_hash, adjustment_text: text, organization: proposalView.outline.organization, day_count: proposalView.outline.day_count }); }} /></Panel>}
+      {proposalView && <Panel><PlanReview key={proposalView.id} plan={proposalView} busy={locked || comparing || preparing || Boolean(draftAnswer) || draftConflict || recordingMessage} futureRevision={Boolean(plan)} canAdjust={selectionReady && !selectionDirty} canAccept={!comparing && (plan ? proposalView.id !== plan.id && enabled(session.allowed_actions, "activate_revision") : enabled(session.allowed_actions, "accept_plan"))} onSave={async outline => { await execute(`sessions/${session.id}/plan-proposals/${proposalView.id}`, { expected_session_revision: session.revision, expected_proposal_hash: proposalView.content_hash, outline }, "PATCH"); }} onAccept={async () => { if (locked || draftAnswer || draftConflict || recordingMessage) return; const result = await execute(plan ? `sessions/${session.id}/plan-revisions/${proposalView.id}/activate` : `sessions/${session.id}/plan-proposals/${proposalView.id}/accept`, { expected_session_revision: session.revision, proposal_revision_id: proposalView.id, proposal_hash: proposalView.content_hash, ...(plan ? { expected_current_plan_revision_id: plan.id } : {}) }); if (result) { setRevising(false); setUnitId(null); setAttemptId(null); setQuestionId(null); setLocalCursor({ ...session.cursor, phase: "setup", plan_revision_id: proposalView.id, section_id: null, unit_id: null, content_version_id: null, attempt_id: null, item_id: null, block_id: null }); } }} onAdjust={async text => { if (locked || preparing || selectionDirty || !selectionReady) return; await execute(`sessions/${session.id}/plan-proposals`, { expected_session_revision: session.revision, base_proposal_id: proposalView.id, base_hash: proposalView.content_hash, adjustment_text: text, organization: proposalView.outline.organization, day_count: proposalView.outline.day_count }); }} /></Panel>}
     </>}
     {(!plan || revising) && proposalView && <Actions><Button variant="outlined" disabled={busy || recordingMessage} aria-expanded={planningOpen} aria-controls="teacher-planning-conversation" onClick={() => setPlanningOpen(value => !value)}>{t(planningOpen ? "teacher:review_ui.hide_conversation" : "teacher:review_ui.show_conversation")}</Button></Actions>}
-    {(!plan || revising) && <Panel id="teacher-planning-conversation" hidden={Boolean(proposalView) && !planningOpen} sx={{ p: { xs: 0, sm: 0 } }}><SetupConversation messages={messages} draft={messageDraft} showConversation={!plan || revising} scopeKey={session.id} contextKey={`${session.revision}:${JSON.stringify(session.selection)}`} page={messagePage} busy={locked} generating={preparing} hasSelection={Boolean(session.selection) && selectionReady && !selectionDirty} canPropose={enabled(session.allowed_actions, "propose_plan")} onPage={setMessagePage} onRecordingChange={setRecordingMessage}
+    {(!plan || revising) && <Panel id="teacher-planning-conversation" hidden={Boolean(proposalView) && !planningOpen && !messageDraft.text.trim()} sx={{ p: { xs: 0, sm: 0 } }}><SetupConversation messages={messages} draft={messageDraft} showConversation={!plan || revising} scopeKey={session.id} contextKey={`${session.revision}:${JSON.stringify(session.selection)}`} page={messagePage} busy={locked} generating={preparing} hasSelection={Boolean(session.selection) && selectionReady && !selectionDirty} canPropose={enabled(session.allowed_actions, "propose_plan")} onPage={setMessagePage} onRecordingChange={setRecordingMessage}
+        onDiagnostic={enabled(session.allowed_actions, "start_diagnostic") ? () => setDiagnosticOpen(true) : undefined} diagnosticDisabled={Boolean(draftAnswer) || draftConflict}
         footer={<SelectionPanel presentation="composer" initial={session.selection} busy={locked || preparing || recordingMessage || messageDraft.saving} onDirtyChange={setSelectionDirty} onReadyChange={setSelectionReady} onSave={async selection => { const result = await execute(`sessions/${session.id}`, { expected_session_revision: session.revision, selection }, "PATCH"); if (!result) throw new Error("Teacher selection was not confirmed"); }} />}
         onSend={() => { if (locked || preparing || recordingMessage || selectionDirty || !selectionReady) return; const text = messageDraft.text; void messageDraft.save().then(async saved => { if (!saved) return; const result = await execute(`sessions/${session.id}/messages`, { expected_session_revision: session.revision, expected_draft_revision: saved.setup_draft_revision, text, generate_reply: true }); const receipt = setupDraftReceiptSchema.safeParse(result); if (result) messageDraft.sent(text, receipt.success ? receipt.data : null); }); }}
         onPropose={async () => { if (locked || preparing || recordingMessage || selectionDirty || !selectionReady || messageDraft.text.trim()) return false; const saved = await messageDraft.save(); if (!saved) return false; return Boolean(await execute(`sessions/${session.id}/plan-proposals`, { expected_session_revision: session.revision, organization: session.requested_organization, day_count: session.requested_day_count })); }}
       /></Panel>}
     {!plan && assessmentView}
     {plan && <Workspace>
-      <Panel><StudyJourney key={plan.id} outline={plan.outline} sectionStates={session.section_states} selectedUnitId={unitId} expanded={outlineExpanded} onExpandedChange={setOutlineExpanded} busy={locked}
-        onSelectUnit={(sectionId, nextUnitId) => { setUnitId(nextUnitId); setAttemptId(null); setQuestionId(null); void saveCursor({ ...localCursor, phase: "setup", plan_revision_id: plan.id, section_id: sectionId, unit_id: nextUnitId, content_version_id: null, attempt_id: null, item_id: null, block_id: null }); }}
+      <Panel><StudyJourney key={plan.id} outline={plan.outline} sectionStates={session.section_states} selectedUnitId={unitId} expanded={outlineExpanded} onExpandedChange={setOutlineExpanded} busy={locked || Boolean(draftAnswer) || draftConflict || recordingMessage}
+        onSelectUnit={(sectionId, nextUnitId) => { void selectUnit(sectionId, nextUnitId); }}
         onStartFinal={sectionId => { void startAttempt("sections", sectionId); }} /></Panel>
       <Stack sx={{ gap: 3, minWidth: 0 }}>
-        {!unitId && !attemptId && <Panel><LessonHeader><Typography variant="h5" component="h2">{t("teacher:plan_created")}</Typography><Typography>{t("teacher:choose_unit")}</Typography></LessonHeader><Button variant="contained" disabled={locked} onClick={() => { const section = plan.outline.sections[0]; const first = section?.units[0]; if (first) { setUnitId(first.id); void saveCursor({ ...localCursor, phase: "setup", plan_revision_id: plan.id, section_id: section.id, unit_id: first.id, content_version_id: null, attempt_id: null, item_id: null, block_id: null }); } }}>{t("teacher:first_unit")}</Button></Panel>}
-        {unitId && !attemptId && <Panel>
+        {continuationContext && <TeacherLoading loading={Boolean(unitId && !attemptId && materialPlanId && material.isLoading && !material.data)}><StudyContinuation {...continuationContext} busy={busy || reinforcementNavigation.pending || recordingMessage || material.isFetching || attempt.isFetching || question.isFetching}
+          onSelectUnit={(sectionId, nextUnitId) => { void selectUnit(sectionId, nextUnitId); }} onPrepare={id => { void prepareLesson(id); }} onOpen={focusStudy} onContinue={focusStudy}
+          onInspectJob={id => { setJobSelection({ jobId: id, followResult: false }); }} onRefresh={() => { void material.refetch(); }} /></TeacherLoading>}
+        {unitId && !attemptId && materialPlanId && (material.isError || material.data?.kind === "material") && <Panel>
           <QueryErrorAlert retryVariant="outlined" isError={material.isError} isFetching={material.isFetching} onRetry={material.refetch} />
           <TeacherLoading loading={material.isLoading && !material.data}>
-            {material.data?.kind === "material" ? <Stack sx={{ gap: 3 }}><LessonHeader><Typography variant="overline">{t("teacher:theory")}</Typography><Typography variant="h5" component="h2">{plan.outline.sections.flatMap(section => section.units).find(unit => unit.id === unitId)?.title}</Typography></LessonHeader>{material.data.blocks.map(block => <Box key={block.id} id={`teacher-block-${block.id}`}><Typography variant="h6" component="h3">{block.title}</Typography><LessonMarkdown text={block.body_markdown} /><BlockLearningTools session={session} history={material.data?.kind === "material" ? material.data.lesson_interactions : undefined} busy={locked || material.isFetching} command={command} onResult={applyResult} contentVersionId={material.data?.kind === "material" ? material.data.content_version_id : ""} block={block} /><Button variant="outlined" disabled={locked} onClick={() => void saveCursor({ ...localCursor, phase: "theory", plan_revision_id: plan.id, unit_id: unitId, content_version_id: material.data?.kind === "material" ? material.data.content_version_id : null, block_id: block.id })}>{t("teacher:save_reading_point")}</Button></Box>)}<Actions>{session.state === "active" && enabled(material.data.allowed_actions, "prepare_material") && <NewMaterialVersion sessionId={session.id} planRevisionId={plan.id} unitId={unitId} contentVersionId={material.data.content_version_id} sessionRevision={session.revision} busy={fetching || material.isFetching || reinforcementNavigation.pending} command={command} onQueued={applyResult} />}<Button variant="contained" disabled={locked || !enabled(material.data.allowed_actions, "start_practice")} onClick={() => void startAttempt("units", unitId)}>{t("teacher:start_practice")}</Button><Button variant="outlined" disabled={locked || !enabled(session.allowed_actions, "start_section_final")} onClick={() => { const section = plan.outline.sections.find(section => section.units.some(unit => unit.id === unitId)); if (section) void startAttempt("sections", section.id, false, "after_study"); }}>{t("teacher:after_study_final")}</Button></Actions></Stack> : material.data && <Stack sx={{ gap: 2 }}><Typography variant="h6">{t("teacher:material_not_ready")}</Typography><Typography color="text.secondary">{t(`teacher:material.${material.data.state}`)}</Typography>{material.data.job_id ? <Button variant="contained" sx={{ alignSelf: "center", width: "fit-content", maxWidth: "100%" }} startIcon={<RefreshOutlined />} disabled={busy} onClick={() => setJobSelection({ jobId: material.data?.kind === "availability" ? material.data.job_id : null, followResult: true })}>{t("teacher:refresh_status")}</Button> : <Button variant="contained" disabled={locked || !enabled(session.allowed_actions, "prepare_unit")} onClick={() => void execute(`sessions/${session.id}/units/${unitId}/material`, { plan_revision_id: plan.id, expected_session_revision: session.revision, variant: "current" })}>{t("teacher:prepare_unit")}</Button>}</Stack>}
+            {material.data?.kind === "material" ? <Stack sx={{ gap: 3 }}><LessonHeader><Typography variant="overline">{t("teacher:theory")}</Typography><Typography ref={lessonHeading} tabIndex={-1} variant="h5" component="h2">{plan.outline.sections.flatMap(section => section.units).find(unit => unit.id === unitId)?.title}</Typography></LessonHeader>{material.data.blocks.map(block => <Box key={block.id} id={`teacher-block-${block.id}`} tabIndex={-1}><Typography variant="h6" component="h3">{block.title}</Typography><LessonMarkdown text={block.body_markdown} /><BlockLearningTools session={session} history={material.data?.kind === "material" ? material.data.lesson_interactions : undefined} busy={locked || material.isFetching} command={command} onResult={applyResult} contentVersionId={material.data?.kind === "material" ? material.data.content_version_id : ""} block={block} /><Button variant="outlined" disabled={locked} onClick={() => void saveCursor({ ...localCursor, phase: "theory", plan_revision_id: plan.id, unit_id: unitId, content_version_id: material.data?.kind === "material" ? material.data.content_version_id : null, block_id: block.id })}>{t("teacher:save_reading_point")}</Button></Box>)}<Actions>{session.state === "active" && enabled(material.data.allowed_actions, "prepare_material") && <NewMaterialVersion sessionId={session.id} planRevisionId={plan.id} unitId={unitId} contentVersionId={material.data.content_version_id} sessionRevision={session.revision} busy={fetching || material.isFetching || reinforcementNavigation.pending} command={command} onQueued={applyResult} />}<Button variant="contained" disabled={locked || !enabled(material.data.allowed_actions, "start_practice")} onClick={() => void startAttempt("units", unitId)}>{t("teacher:start_practice")}</Button><Button variant="outlined" disabled={locked || !enabled(session.allowed_actions, "start_section_final")} onClick={() => { const section = plan.outline.sections.find(section => section.units.some(unit => unit.id === unitId)); if (section) void startAttempt("sections", section.id, false, "after_study"); }}>{t("teacher:after_study_final")}</Button></Actions></Stack> : null}
           </TeacherLoading>
         </Panel>}
         {assessmentView}
