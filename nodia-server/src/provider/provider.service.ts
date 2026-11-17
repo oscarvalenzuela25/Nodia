@@ -1,3 +1,4 @@
+import { validateProviderOcrPreference } from './provider-ocr-preference.js';
 import { requireCompatibleProviderTransfers } from './use-case/provider-transfer.rules.js';
 import {
   BadRequestException,
@@ -256,6 +257,7 @@ export class ProviderService {
     manager?: EntityManager,
     actor?: ActorReference,
   ): Promise<Provider> {
+    validateProviderOcrPreference(createProviderDto.use_ocr);
     return this.transaction(
       manager ?? actor?.transaction,
       async (transaction) => {
@@ -289,6 +291,7 @@ export class ProviderService {
     manager?: EntityManager,
     actor?: ActorReference,
   ): Promise<Provider> {
+    validateProviderOcrPreference(updateProviderDto.use_ocr);
     const repository =
       manager?.getRepository(Provider) ?? this.providerRepository;
     const scope = await resolveBusinessAccess(repository.manager, actor!);
@@ -303,7 +306,7 @@ export class ProviderService {
       .getOne();
     if (!provider) throw new NotFoundException('Provider not found');
     const payload = {
-      ...updateProviderDto,
+      ...Object.fromEntries(Object.entries(updateProviderDto).filter(([, value]) => value !== undefined)),
       ...(updateProviderDto.tax !== undefined && {
         tax: Number(updateProviderDto.tax),
       }),
@@ -321,6 +324,7 @@ export class ProviderService {
     bulkDto: BulkCreateProviderDto,
     actor?: ActorReference,
   ): Promise<Provider[]> {
+    for (const item of bulkDto.items) validateProviderOcrPreference(item.use_ocr);
     return this.transaction(actor?.transaction, async (manager) => {
       await assertBusinessesAccess(
         manager,
@@ -346,6 +350,7 @@ export class ProviderService {
     actor?: ActorReference,
   ): Promise<Provider[]> {
     const items = bulkDto.items.map((item) => {
+      validateProviderOcrPreference(item.use_ocr);
       if (
         typeof item.id !== 'string' ||
         !/^\d{1,19}$/.test(item.id) ||
@@ -353,7 +358,7 @@ export class ProviderService {
         BigInt(item.id) > 9223372036854775807n
       )
         throw new BadRequestException('Invalid provider ID');
-      return { ...item, id: BigInt(item.id).toString() };
+      return { ...Object.fromEntries(Object.entries(item).filter(([, value]) => value !== undefined)), id: BigInt(item.id).toString() } as typeof item;
     });
     const ids = items.map((item) => item.id);
     if (!ids.length || new Set(ids).size !== ids.length)

@@ -50,6 +50,7 @@ const mockProviders: ProviderEntity[] = [
     id: "prov-101",
     business_id: "biz-123",
     name: "Lácteos del Sur",
+    use_ocr: true,
     tax: 19,
     fields: {
       code: { value: "COD_PROD", instructions: "Tomar código numérico" },
@@ -65,6 +66,7 @@ const mockProviders: ProviderEntity[] = [
     id: "prov-102",
     business_id: "biz-123",
     name: "Envases Modernos",
+    use_ocr: false,
     tax: 10,
     fields: {},
     is_active: false,
@@ -249,24 +251,12 @@ describe("ProvidersTab Component", () => {
       screen.getByTestId("provider-field-units-per-package-prov-101")
     ).toHaveTextContent("Unidades por caja: UNID_X_CAJA");
 
-    // Provider 2: has tax chip and 'Sin información' in the 5 lines
+    // A supplier without OCR keeps its ordinary data and no invoice mapping rows.
     expect(screen.getByText("prov-102")).toBeInTheDocument();
     expect(screen.getByTestId("provider-tax-chip-prov-102")).toHaveTextContent("10%");
-    expect(screen.getByTestId("provider-field-code-prov-102")).toHaveTextContent(
-      "Código: Sin información"
-    );
-    expect(screen.getByTestId("provider-field-cost-price-prov-102")).toHaveTextContent(
-      "Costo base sin impuestos: Sin información"
-    );
-    expect(screen.getByTestId("provider-field-cost-price-tax-prov-102")).toHaveTextContent(
-      "Costo base con impuestos: Sin información"
-    );
-    expect(screen.getByTestId("provider-field-packages-prov-102")).toHaveTextContent(
-      "Cajas / Bultos: Sin información"
-    );
-    expect(
-      screen.getByTestId("provider-field-units-per-package-prov-102")
-    ).toHaveTextContent("Unidades por caja: Sin información");
+    for (const key of ["code", "cost-price", "cost-price-tax", "packages", "units-per-package"]) {
+      expect(screen.queryByTestId(`provider-field-${key}-prov-102`)).not.toBeInTheDocument();
+    }
   });
 
   it("opens 3-dots action menu with Editar and Desactivar options for active provider", async () => {

@@ -9,7 +9,7 @@ import { enabled } from "../../infrastructure/presentation";
 import type { Job } from "../../infrastructure/schemas";
 import { Actions } from "../../pages/Teacher/styles";
 import { InlineStatusRow, InlineStatusValue, ProgressSpace, StateChip, Status } from "./styles";
-import { jobErrorKey } from "./presentation";
+import { jobErrorKey, jobExpectedResultKey } from "./presentation";
 
 type Props = { allowNew?: boolean; presentation?: "panel" | "inline"; jobId: string; paused: boolean; busy: boolean; onReady: (job: Job) => void; onTerminal?: (job: Job) => void; onContinue: (job: Job) => Promise<void>; onNew: (job: Job) => Promise<void> };
 export default function JobPanel({ allowNew = true, presentation = "panel", jobId, paused, busy, onReady, onTerminal, onContinue, onNew }: Props) {
@@ -28,9 +28,15 @@ export default function JobPanel({ allowNew = true, presentation = "panel", jobI
     else onTerminal?.(job);
   }, [job, onReady, onTerminal]);
   const feedback = job && <>
+      {preparing && <Typography variant="body2">{t(jobExpectedResultKey(job.purpose))}</Typography>}
+      {job.state === "blocked_paused" && <Typography variant="body2">{t("teacher:job_paused_help")}</Typography>}
+      {job.state === "ready" && (job.purpose === "plan_outline" || job.purpose === "plan_adjustment") && <Typography variant="body2">{t("teacher:job_proposal_review_help")}</Typography>}
       {job.state === "unknown" && <Typography variant="body2">{t("teacher:unknown_notice")}</Typography>}
       {query.isError && <Typography variant="body2" color="text.secondary">{t("teacher:job_last_known_state")}</Typography>}
       {errorKey && <><Typography variant="body2">{t(errorKey)}</Typography>{errorKey === "teacher:job_error_native_excluded" && canRequestNew && <Typography variant="body2">{t("teacher:job_error_native_excluded_retry")}</Typography>}<Typography variant="body2" color="text.secondary">{t("teacher:generation_blocked")}</Typography></>}
+      {job.state !== "ready" && <Typography variant="body2" color="text.secondary">{t("teacher:job_refresh_read_help")}</Typography>}
+      {canRequestNew && <Typography variant="body2" color="text.secondary">{t("teacher:job_new_intention_help")}</Typography>}
+      {(preparing || job.state === "unknown" || job.state === "blocked_paused") && <Typography variant="body2" color="text.secondary">{t("teacher:job_return_help")}</Typography>}
   </>;
   const recoveryActions = job && <>
         {enabled(job.allowed_actions, "continue_before_dispatch") && <Button variant="outlined" disabled={disabled} onClick={() => void onContinue(job)}>{t("teacher:continue_preparation")}</Button>}

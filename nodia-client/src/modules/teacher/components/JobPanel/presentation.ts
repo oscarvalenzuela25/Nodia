@@ -23,3 +23,11 @@ export function jobErrorKey(code: string | null, knownFailure = false): string |
   if (exact === "native_dispatch_excluded" && knownFailure) return "teacher:job_error_native_excluded";
   return Object.hasOwn(ERROR_KEYS, exact) ? ERROR_KEYS[exact] : "teacher:job_error_unrecognized";
 }
+
+export function jobExpectedResultKey(purpose: string): string {
+  if (purpose === "plan_outline" || purpose === "plan_adjustment") return "teacher:job_plan_expected";
+  if (purpose === "setup_reply") return "teacher:job_reply_expected";
+  if (purpose === "learning_packet") return "teacher:job_material_expected";
+  if (purpose === "assessment_only") return "teacher:job_assessment_expected";
+  return "teacher:job_result_expected";
+}

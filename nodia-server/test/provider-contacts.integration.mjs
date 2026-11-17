@@ -78,7 +78,7 @@ try {
   db = new DataSource(options);
   await db.initialize();
   await db.query(
-    `CREATE TABLE providers(id bigserial PRIMARY KEY, business_id uuid NOT NULL, name varchar(255) NOT NULL, tax int NOT NULL DEFAULT 19, fields jsonb NOT NULL DEFAULT '{}', is_active boolean NOT NULL DEFAULT true, created_at timestamp NOT NULL DEFAULT now(), updated_at timestamp NOT NULL DEFAULT now())`,
+    `CREATE TABLE providers(use_ocr boolean NOT NULL DEFAULT false,id bigserial PRIMARY KEY, business_id uuid NOT NULL, name varchar(255) NOT NULL, tax int NOT NULL DEFAULT 19, fields jsonb NOT NULL DEFAULT '{}', is_active boolean NOT NULL DEFAULT true, created_at timestamp NOT NULL DEFAULT now(), updated_at timestamp NOT NULL DEFAULT now())`,
   );
   await db.query(
     `INSERT INTO providers(business_id,name) VALUES ('11111111-1111-4111-8111-111111111111','Distribuidora Los Andes'), ('11111111-1111-4111-8111-111111111111','Envases del Sur')`,

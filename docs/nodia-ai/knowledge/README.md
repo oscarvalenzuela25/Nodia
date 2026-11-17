@@ -1,5 +1,62 @@
 # Contexto funcional de productos para NodiaAI
 
+## Caja de Negocios: planificación y vistas — 2026-11-17
+
+[Plan109](../../mvp/109-business-cash-ledger-plan.md),
+[Negocios revisión57](businesses/README.md) y
+[Caja revisión2](businesses/features/cash-ledger-and-invoice-expenses.md)
+recogen el registro de ingresos/egresos, categorías comunes, filtros Ransack y
+paneles coherentes con toda la tabla filtrada. Vínculo opcional factura→egreso
+único y dos tarjetas mensuales de Overview; atomicidad/idempotencia OCR son
+objetivos de CASH-04, sin garantías operativas nuevas. Ficha nueva
+planned/draft/unregistered/approval:null y producto parcial por funciones ya
+existentes. Sólo planificación/refinamiento visual con datos sintéticos, sin
+implementación de Caja, migraciones, herramientas o publicación. Facturas aprobada
+conserva cuerpo/firma; ventas/reportes R17 permanecen sólo lectura y Caja no está
+disponible en runtime NodiaAI.
+
+Refinamiento confirmado posterior: selectores con X para limpiar y + para alta
+rápida con nombre/descripción, unicidad por negocio sin mayúsculas/whitespace y
+nueva categoría seleccionada sólo tras éxito. Borrador/foco preservados y único
+overlay activo. En factura, omitir el campo en PATCH conserva; null al guardar
+retira el egreso, otra categoría conserva ID y reasignar tras retiro restaura el
+mismo. Sustituye la recomendación inicial de impedir vaciar un vínculo. Retiro
+lógico auditado separado de actividad y excluido incluso con Todos es propuesta
+de consistencia; no hay borrado de evidencia. Facturas automáticas sólo egresos;
+cierres de caja se registran manualmente como ingresos, sin integración POS ni
+cierre/arqueo formal. No cambia la aprobación de fichas existentes ni habilita
+efectos nuevos mediante propuestas antiguas, tampoco sobre vínculos retirados.
+
+## Negocios: precios y proveedores OCR — 2026-11-17
+
+[Plan94§42](../../mvp/94-business-point-of-sale-and-product-refactor.md#42-precios-de-venta-redondeados-división-local-y-proveedores-ocr--solicitud2026-11-17),
+[Negocios55](businesses/README.md) y [calculadora/vinculación15](businesses/features/product-price-calculator-and-invoice-binding.md)
+registran venta a decenas al salir del campo/guardar, sugerencia y división ya
+redondeadas, preferencia OCR defaultfalse y folio manual opcional. Impacto
+funcional local con CAS y confirmación de venta normalizada antes del hash;
+comandos incompatibles requieren nueva revisión. No cambia autoridad ni habilita
+escrituras de ventas/reportes. [Evidencia](../../evidence/business-pricing-ocr-adjustments-20261117.md)
+separa pruebas, PG16 sintético, UI y adopción pendiente. La ficha aprobada Facturas5
+conserva su corte histórico: no exigir folio manual por su frase anterior ni
+trasladar la firma a esta ampliación. Nuevos contratos generados alinean sólo
+comentarios del preparador y procedencia; cuerpos/firmas aprobados intactos,
+96fuentes/52excluidas y44documentos/46fragmentos/153capacidades conservados.
+Candidatas draft/partial/unregistered/approval:null; sin publicación nueva.
+
+## Teacher: guía y continuidad TUX-03/05 — 2026-11-16
+
+[Plan106§15](../../mvp/106-nodia-teacher-guided-ux-redesign.md#15-tux-0305-guía-y-continuidad-implementadas-localmente--2026-11-16),
+[Estudios revisión44](studies/README.md), [experiencia guiada revisión6](studies/features/guided-setup-and-study-experience.md)
+y [sesión revisión38](studies/features/session-setup-and-planning.md) registran
+ayuda/diagnóstico opcionales, mensaje sin enviar protegido, preparación explícita
+y continuidad desde cursor/material/intento comprobados. Impacto de presentación
+y acceso a operaciones existentes; sin DTOs, autoridad, herramientas o permisos
+nuevos. Teacher final277/42, global previa3171/383, tipos/build y lint de fuentes correctos;
+Chromium sintético16perfiles y errores CAS/borrador/material en
+[evidencia común](../../evidence/teacher-guided-continuity-20261116.md).
+Aceptación del alcance nuevo e integración/adopción pendientes. TUX-001 mantiene
+su cierre previo; draft/partial/unregistered/approval:null y publicación intactos.
+
 ## Contactos de proveedores: recuperación local — incidencia2026-11-16
 
 [Plan31](../../mvp/31-provider-contacts-proposal.md#apertura-recuperable-de-contactos--incidencia-de-producción2026-11-16) y
@@ -640,7 +697,7 @@ Todos los productos/módulos actuales pertenecen al alcance funcional confirmado
 |---|---|---|---|
 | Noticias (propuesta) | `news/` | [Plan105](../../mvp/105-on-demand-tech-news.md) | [Producto](news/README.md) y [lectura bajo demanda](news/features/on-demand-reading.md), draft/planned/unregistered; sólo validación, sin herramientas o publicación |
 | Nodia Teacher en Estudios | `studies/` | [Especificación95](../../mvp/95-studies-adaptive-learning.md), [plan96](../../mvp/96-nodia-teacher-implementation-plan.md), [upgrade101 en revisión](../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y [ADR098 propuesto](../../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md) | [Producto](studies/README.md), cuatro funciones base parciales y seis nuevas planned; fichas draft/unregistered, sin publicación. Evidencia/gates de V1 no acreditan el upgrade |
-| Negocios | `businesses/` | [PRD](../../features/businesses/01-prd.md), [inventario de endpoints](../../mvp/39-nodia-ai-current-capabilities-inventory.md) | [Producto](businesses/README.md) draft excluido;7 funciones con secciones de lectura publicadas, [preparadores de efectos](businesses/features/confirmed-business-effects.md) publicados y [análisis C03 revisión3](businesses/features/active-invoice-analysis.md) aprobado/publicado con aceptación pendiente |
+| Negocios | `businesses/` | [PRD](../../features/businesses/01-prd.md), [inventario de endpoints](../../mvp/39-nodia-ai-current-capabilities-inventory.md), [plan de Caja109](../../mvp/109-business-cash-ledger-plan.md) | [Producto](businesses/README.md) draft excluido;7 funciones con secciones de lectura publicadas, [preparadores de efectos](businesses/features/confirmed-business-effects.md) publicados y [análisis C03 revisión3](businesses/features/active-invoice-analysis.md) aprobado/publicado con aceptación pendiente; [Caja](businesses/features/cash-ledger-and-invoice-expenses.md) planned/draft/unregistered, sin implementación o publicación |
 | Finanzas personales | `personal-finance/` | [Contratos](../../mvp/22-personal-finance-contracts.md) | [Producto](personal-finance/README.md) excluido;4 funciones con secciones de lectura y [efecto confirmado](personal-finance/features/confirmed-movement-effect.md) publicados |
 | Reservas | `reservations/` | [Especificación](../../mvp/26-rental-reservations-spec.md), [contratos](../../mvp/28-rental-reservations-contracts.md) | [Producto](reservations/README.md) excluido;9 funciones de lectura y secciones publicadas de [configuración](reservations/features/confirmed-configuration.md), [ciclo comercial](reservations/features/confirmed-reservation-lifecycle.md), [dinero](reservations/features/confirmed-money.md) y [ocupación/preparación](reservations/features/confirmed-occupancy-preparation.md) |
 | NodiaAI (nuevo producto en implementación) | `nodia-ai/` | [Plan45](../../mvp/45-nodia-ai-implementation-plan.md), [política50](../../mvp/50-nodia-ai-ai04-runtime-policy.md) | [Producto](nodia-ai/README.md) draft excluido; secciones de [coordinación](nodia-ai/features/conversation-coordination.md), [preferencias](nodia-ai/features/accepted-preferences.md) y [adjuntos/voz](nodia-ai/features/attachments-and-voice.md) publicadas; otras fichas conservan estados propios |

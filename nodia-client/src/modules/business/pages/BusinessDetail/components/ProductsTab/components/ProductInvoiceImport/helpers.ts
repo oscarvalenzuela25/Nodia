@@ -1,3 +1,4 @@
+import { roundSalePrice } from "../../../../../../../../utils/salePrice";
 import i18n from "../../../../../../../../translate";
 import { normalizeProductAlias, productAliasFits } from "../../../../../../infrastructure/productAliases";
 import { PRODUCT_PRICE_MAX, suggestedProductPrice } from "../ProductModal/productPricing";
@@ -110,13 +111,26 @@ export function reviewInvoiceAlias(row: InvoiceProvisionalRow, alias: string): I
 
 /** A local price edit joins the reviewed fields when the row was manually bound. */
 export function reviewInvoiceSalePrice(row: InvoiceProvisionalRow, salePrice: number): InvoiceProvisionalRow {
-  if (!Number.isInteger(salePrice) || salePrice < 0 || salePrice > PRODUCT_PRICE_MAX) {
+  const rounded = roundSalePrice(salePrice);
+  if (!Number.isInteger(salePrice) || rounded === null) {
     throw new Error(i18n.t("business:invoice_validation_sale"));
   }
-  const next: InvoiceProvisionalRow = { ...row, sale_price: salePrice,
-    priceDiff: calculatePriceDiff(salePrice, row.historicalProduct?.sale_price),
+  const next: InvoiceProvisionalRow = { ...row, sale_price: rounded,
+    priceDiff: calculatePriceDiff(rounded, row.historicalProduct?.sale_price),
     manual_match: row.manual_match ? { ...row.manual_match, fields: [...new Set([...row.manual_match.fields, "sale_price" as const])] } : undefined };
   return { ...next, ...validateInvoiceRow(next) };
+}
+
+/** Keep unselected catalog prices intact; only selected or explicitly edited sale fields round. */
+export function invoiceRowEditPrice(row: InvoiceProvisionalRow, edited: Partial<InvoiceProvisionalRow>): Pick<InvoiceProvisionalRow, "sale_price" | "manual_match"> {
+  const match = row.manual_match;
+  const fields = match ? [...new Set([...match.fields, ...INVOICE_UPDATE_FIELDS.filter(field =>
+    Object.hasOwn(edited, field) && edited[field] !== row[field])])] : [];
+  const writesSale = !match || fields.includes("sale_price");
+  return {
+    sale_price: writesSale ? roundSalePrice(edited.sale_price ?? Number.NaN) ?? Number.NaN : row.sale_price,
+    manual_match: match ? { ...match, fields } : undefined,
+  };
 }
 
 export const validateInvoiceRow = (
@@ -140,7 +154,8 @@ export const validateInvoiceRow = (
   if (row.cost_price_tax === undefined || !Number.isInteger(row.cost_price_tax) || row.cost_price_tax < 0 || row.cost_price_tax > PRODUCT_PRICE_MAX) {
     errors.push(i18n.t("business:invoice_validation_tax"));
   }
-  if (row.sale_price === undefined || !Number.isInteger(row.sale_price) || row.sale_price < 0 || row.sale_price > PRODUCT_PRICE_MAX) {
+  if (row.sale_price === undefined || !Number.isInteger(row.sale_price) || row.sale_price < 0 || row.sale_price > PRODUCT_PRICE_MAX ||
+    ((!row.manual_match || row.manual_match.fields.includes("sale_price")) && roundSalePrice(row.sale_price) === null)) {
     errors.push(i18n.t("business:invoice_validation_sale"));
   }
   if (row.quantity === undefined || !Number.isFinite(row.quantity) || row.quantity < 0) {
@@ -315,13 +330,13 @@ export function invoiceProductPayload(row: InvoiceProvisionalRow, businessId: st
       if (field === 'code') payload.code = row.code.trim() || null;
       else if (field === 'name') payload.name = row.name;
       else if (field === 'alias') payload.alias = row.alias?.trim() ?? null;
-      else payload[field] = row[field];
+      else payload[field] = field === 'sale_price' ? roundSalePrice(row.sale_price)! : row[field];
     }
     return payload;
   }
   const common = { provider_id: providerId, code: row.code, name: row.name, alias: row.alias?.trim() ?? null,
     cost_price: row.cost_price, cost_price_tax: row.cost_price_tax,
-    sale_price: row.sale_price, is_active: row.is_active };
+    sale_price: roundSalePrice(row.sale_price)!, is_active: row.is_active };
   if (row.id) {
     if (!Number.isSafeInteger(row.version) || Number(row.version) < 1) throw new Error(i18n.t('business:invoice_match_invalid_product'));
     return { ...common, id: row.id, expected_version: row.version };

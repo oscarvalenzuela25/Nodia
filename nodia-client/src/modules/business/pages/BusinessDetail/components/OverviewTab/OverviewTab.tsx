@@ -257,7 +257,6 @@ export const OverviewTab: FC<Props> = ({
                   <Typography variant="caption" sx={{ width: "100%" }}>{t("business:pos.active_products")}</Typography>
                   <Chip size="small" color="success" variant="outlined" label={`${t("business:pos.available")}: ${availability.data.available}`} />
                   <Chip size="small" color="error" variant="outlined" label={`${t("business:pos.unavailable")}: ${availability.data.unavailable}`} />
-                  <Chip size="small" variant="outlined" label={`${t("business:pos.availability_unknown")}: ${availability.data.unknown}`} />
                 </Box>}
               </Box>
             </KpiCard>
@@ -531,7 +530,7 @@ mobile ? <Box sx={{ display: "grid", gap: 2 }}>
                         <TableRow key={inv.id} hover>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {inv.code}
+                              {inv.code || t("business:invoice_without_code")}
                             </Typography>
                           </TableCell>
                           <TableCell>{inv.provider?.name ?? "-"}</TableCell>

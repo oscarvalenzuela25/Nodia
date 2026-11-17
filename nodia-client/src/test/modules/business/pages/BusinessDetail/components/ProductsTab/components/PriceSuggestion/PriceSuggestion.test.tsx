@@ -30,7 +30,7 @@ describe("local product price suggestion", () => {
     expect(markupInput()).toHaveValue("2,5");
     expect(apply).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button"));
-    expect(apply).toHaveBeenCalledExactlyOnceWith(1025);
+    expect(apply).toHaveBeenCalledExactlyOnceWith(1030);
     expect(sileo.success).toHaveBeenCalledTimes(1);
   });
   it("keeps a real zero applicable while empty, invalid and overflowing inputs remain unavailable", () => {
@@ -84,7 +84,7 @@ describe("local product price suggestion", () => {
     expect(submit).not.toHaveBeenCalled();
     expect(apply).not.toHaveBeenCalled();
     await user.click(screen.getByRole("button", { name: "Usar precio sugerido" }));
-    expect(apply).toHaveBeenCalledExactlyOnceWith(377);
+    expect(apply).toHaveBeenCalledExactlyOnceWith(380);
     expect(submit).not.toHaveBeenCalled();
   });
 });

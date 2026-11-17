@@ -1,3 +1,5 @@
+import { PriceDivisionAction } from "../../../../../../../../components/PriceDivisionDialog";
+import { roundSalePrice } from "../../../../../../../../utils/salePrice";
 import axios from "axios";
 import { sileo } from "sileo";
 import BusinessWorkflow from "../../../../../../components/BusinessWorkflow";
@@ -216,7 +218,9 @@ const ProductBulkImportEditor: FC<Props> = ({
   const handleSaveEdit = () => {
     if (editingIndex === null || isBusy || Boolean(editPricingError) || !validProductTaxRate(editTaxRate)) return;
 
-    const { errors, isValid } = validateRow(editFormData);
+    const roundedSale = roundSalePrice(editFormData.sale_price ?? Number.NaN);
+    const { errors, isValid } = validateRow({ ...editFormData, sale_price: roundedSale ?? Number.NaN });
+    if (!isValid) { sileo.error({ title: t("business:pos.invalid_field"), description: errors.join("; ") }); return; }
     const updatedRow: ProvisionalRow = {
       ...rows[editingIndex],
       ...editFormData,
@@ -224,7 +228,7 @@ const ProductBulkImportEditor: FC<Props> = ({
       name: (editFormData.name ?? "").trim(),
       cost_price: Number(editFormData.cost_price ?? Number.NaN),
       cost_price_tax: Number(editFormData.cost_price_tax ?? Number.NaN),
-      sale_price: Number(editFormData.sale_price ?? Number.NaN),
+      sale_price: roundedSale!,
       stock: rows[editingIndex].stock,
       is_active: editFormData.is_active ?? true,
       errors,
@@ -547,6 +551,7 @@ const ProductBulkImportEditor: FC<Props> = ({
                 name="cost_price"
                 type="number"
                 label={t("business:product_cost_price")}
+                labelAdornment={<PriceDivisionAction mode="net" value={editFormData.cost_price ?? null} label={t("business:product_cost_price")} contextKey={`${businessId}:${editingIndex}`} disabled={isBusy} onApply={handleCostPriceChange} />}
                 value={Number.isFinite(editFormData.cost_price) ? String(editFormData.cost_price) : ""}
                 onChange={(e) => handleCostPriceChange(parseNumber(e.target.value))}
                 required
@@ -560,6 +565,7 @@ const ProductBulkImportEditor: FC<Props> = ({
                 name="tax_rate"
                 type="number"
                 label={t("business:product_tax_rate")}
+                labelAdornment={<Box component="span" aria-hidden="true" sx={{ height: 44, width: 0 }} />}
                 value={Number.isFinite(editTaxRate) ? String(editTaxRate) : ""}
                 onChange={(e) => handleTaxRateChange(parseNumber(e.target.value))}
               />
@@ -572,6 +578,7 @@ const ProductBulkImportEditor: FC<Props> = ({
                 name="cost_price_tax"
                 type="number"
                 label={t("business:product_cost_tax")}
+                labelAdornment={<Box component="span" aria-hidden="true" sx={{ height: 44, width: 0 }} />}
                 value={Number.isFinite(editFormData.cost_price_tax) ? String(editFormData.cost_price_tax) : ""}
                 onChange={(e) => handleCostPriceTaxChange(parseNumber(e.target.value))}
               />
@@ -586,6 +593,8 @@ const ProductBulkImportEditor: FC<Props> = ({
                 name="sale_price"
                 type="number"
                 label={t("business:product_sale_price")}
+                labelAdornment={<PriceDivisionAction mode="sale" value={editFormData.sale_price ?? null} label={t("business:product_sale_price")} contextKey={`${businessId}:${editingIndex}`} disabled={isBusy} onApply={handleSalePriceChange} />}
+                onBlur={() => { const rounded = roundSalePrice(editFormData.sale_price ?? Number.NaN); if (rounded !== null) handleSalePriceChange(rounded); }}
                 value={Number.isFinite(editFormData.sale_price) ? String(editFormData.sale_price) : ""}
                 onChange={(e) => handleSalePriceChange(parseNumber(e.target.value))}
                 required

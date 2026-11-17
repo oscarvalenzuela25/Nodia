@@ -143,6 +143,15 @@ function fixture() {
   };
 }
 describe('Legacy product bulk relation integrity through native use cases', () => {
+  it('normalizes each explicit bulk price and its snapshot while preserving omitted values', async () => {
+    const f = fixture();
+    const created = await f.service.createBulkProducts({ items: [{ ...base, sale_price: 1444 }, { ...base, code: 'P2', sale_price: 1445 }] }, f.manager, actor);
+    expect(created.map(product => product.sale_price)).toEqual([1440, 1450]);
+    expect(f.logs.save).toHaveBeenLastCalledWith(expect.arrayContaining([expect.objectContaining({ sale_price: 1440 }), expect.objectContaining({ sale_price: 1450 })]));
+    const updated = await f.service.updateBulkProducts({ items: [{ id: '2', sale_price: 1445 }, { id: '10', name: 'Retain historical price' }] }, f.manager, actor);
+    expect(updated.map(product => product.sale_price)).toEqual([1450, 4]);
+  });
+
   it('keeps input/output order when several products have no supplier code', async () => {
     const f = fixture();
     const result = await f.service.createBulkProducts({ items: [

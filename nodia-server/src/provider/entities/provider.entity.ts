@@ -31,6 +31,9 @@ export class Provider {
   @Column({ type: 'jsonb', default: () => "'{}'" })
   fields: Record<string, any>;
 
+  @Column({ type: 'boolean', default: false })
+  use_ocr: boolean;
+
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
 

@@ -26,7 +26,7 @@ describe('Product CSV catalog contract', () => {
     const [existing] = parseCSV(`${header}\n12,SUP,Existing,10,12,15,1000`);
     expect(existing.isValid).toBe(true);
     const update = productImportPayload(existing, 'business');
-    expect(update).toMatchObject({ id: '12', sale_price: 15 });
+    expect(update).toMatchObject({ id: '12', sale_price: 20 });
     for (const field of ['stock','has_stock','barcode','offer_price','is_offer_enabled']) expect(update).not.toHaveProperty(field);
     const [fresh] = parseCSV(`${header}\n,SUP,New,10,12,15,1000`);
     expect(fresh.isValid).toBe(false);

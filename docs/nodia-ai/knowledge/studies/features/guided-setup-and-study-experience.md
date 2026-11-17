@@ -4,11 +4,11 @@
   "document_id": "studies.guided-setup-and-study-experience",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 5,
+  "revision": 6,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Primera entrega local2026-11-15: wizard3pasos contra DTO actual, resumen/selección conservados, guard salida SPA/recarga y recuperación existente. TUX-03…05 y comprensión humana pendientes; no acredita disponibilidad operativa. Continuación2026-11-16: mockups aceptados y desarrollo autorizado en la misma rama para cabecera/estado/acciones, Drawer adaptativo con Mis fuentes inicial y selector IA horizontal en Popover sin botón +. Implementación y QA sintética local de seis perfiles/continuidad verificadas; suite 3027/364 antes del último ajuste de recuperación y 11 focales posteriores correctos; tipos/lint/build por alcance correctos. Última alineación CSS xs, lint focal y build final correctos; matriz de seis perfiles repetida. No se afirma una segunda global de 3028 casos. No cambia contratos, contexto o herramientas ni acredita inferencia, adopción o aprobación/publicación. Continuación106§13: revisión legible/edición progresiva locales con QA sintética. Global3039/365 previa al guard final y al caso histórico;26focales posteriores y build/lint finales correctos. Sin contratos, contexto o herramientas nuevos; aceptación UX/adopción pendientes. Cierre106§14 (2026-11-16): el usuario confirma que TUX-001 funciona bien y pide cerrarlo. Alta guiada, paneles/selector y revisión legible aceptados por alcance entregado; TUX-03/05 siguen como evolución propuesta separada, no implementada por el cierre. No acredita dispositivos/entornos no descritos, inferencia o despliegue nuevos; no aprueba ni publica esta ficha."
+    "notes": "Primera entrega local2026-11-15: wizard3pasos contra DTO actual, resumen/selección conservados, guard salida SPA/recarga y recuperación existente. TUX-03…05 y comprensión humana pendientes; no acredita disponibilidad operativa. Continuación2026-11-16: mockups aceptados y desarrollo autorizado en la misma rama para cabecera/estado/acciones, Drawer adaptativo con Mis fuentes inicial y selector IA horizontal en Popover sin botón +. Implementación y QA sintética local de seis perfiles/continuidad verificadas; suite 3027/364 antes del último ajuste de recuperación y 11 focales posteriores correctos; tipos/lint/build por alcance correctos. Última alineación CSS xs, lint focal y build final correctos; matriz de seis perfiles repetida. No se afirma una segunda global de 3028 casos. No cambia contratos, contexto o herramientas ni acredita inferencia, adopción o aprobación/publicación. Continuación106§13: revisión legible/edición progresiva locales con QA sintética. Global3039/365 previa al guard final y al caso histórico;26focales posteriores y build/lint finales correctos. Sin contratos, contexto o herramientas nuevos; aceptación UX/adopción pendientes. Cierre106§14 (2026-11-16): el usuario confirma que TUX-001 funciona bien y pide cerrarlo. Alta guiada, paneles/selector y revisión legible aceptados por alcance entregado; TUX-03/05 siguen como evolución propuesta separada, no implementada por el cierre. No acredita dispositivos/entornos no descritos, inferencia o despliegue nuevos; no aprueba ni publica esta ficha. 106§15: TUX-03/05 locales verificados: ayuda/diagnóstico opcionales, borrador protegido y continuidad manual. Ver evidencia teacher-guided-continuity-20261116.md; aceptación/adopción nuevas pendientes."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Teacher conforme AGENTS",
@@ -44,6 +44,22 @@
     {
       "path": "nodia-client/src/modules/teacher/components/PlanStructureEditor/PlanStructureEditor.tsx",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/DiagnosticEntry/DiagnosticEntry.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/StudyContinuation/StudyContinuation.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/infrastructure/studyContinuation.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/pages/Teacher/Teacher.tsx",
+      "kind": "implementation"
     }
   ],
   "verification": {
@@ -51,13 +67,61 @@
     "evidence_paths": [
       "docs/evidence/teacher-guided-setup-20261115.md",
       "docs/evidence/teacher-drawer-chat-ui-20261116.md",
-      "docs/evidence/teacher-plan-review-20261116/README.md"
+      "docs/evidence/teacher-plan-review-20261116/README.md",
+      "docs/evidence/teacher-guided-continuity-20261116.md"
     ],
-    "notes": "Regresiones de comportamiento y Chromium local con transporte sintético; sin inferencia, UI autenticada/shell real, comprensión humana o adopción VM/producción. Corte2026-11-16: solicitud/mockups y contratos UI contrastados documentalmente; QA sintética local de seis perfiles, foco/borradores y errores comprobados; suite global 3027/364 previa al último ajuste de recuperación y 11 focales posteriores correctos. Tipos/lint/build por alcance correctos; último CSS xs, lint focal y build final correctos, con la matriz de seis perfiles repetida. Sin segunda global de 3028 casos, inferencia o adopción afirmadas; detalle en evidencia propia. Continuación106§13: QA Chromium12perfiles320–1280 ESoscuro/ENclaro, borradores/foco/nodos y503/409 conservados; aceptación ID/hash exactos sin IA. Global3039/365 anterior al guard final !policyValid y al caso histórico;26focales posteriores12,38s, build/lint finales y typecheck previo correctos. UI autenticada, comprensión, teléfono físico/adopción pendientes. Aceptación humana funcional registrada en106§14 por confirmación del usuario el2026-11-16; sustituye el pendiente humano del alcance entregado sin reinterpretar las pruebas sintéticas como sesión/dispositivo real ni inventar mediciones."
+    "notes": "Regresiones de comportamiento y Chromium local con transporte sintético; sin inferencia, UI autenticada/shell real, comprensión humana o adopción VM/producción. Corte2026-11-16: solicitud/mockups y contratos UI contrastados documentalmente; QA sintética local de seis perfiles, foco/borradores y errores comprobados; suite global 3027/364 previa al último ajuste de recuperación y 11 focales posteriores correctos. Tipos/lint/build por alcance correctos; último CSS xs, lint focal y build final correctos, con la matriz de seis perfiles repetida. Sin segunda global de 3028 casos, inferencia o adopción afirmadas; detalle en evidencia propia. Continuación106§13: QA Chromium12perfiles320–1280 ESoscuro/ENclaro, borradores/foco/nodos y503/409 conservados; aceptación ID/hash exactos sin IA. Global3039/365 anterior al guard final !policyValid y al caso histórico;26focales posteriores12,38s, build/lint finales y typecheck previo correctos. UI autenticada, comprensión, teléfono físico/adopción pendientes. Aceptación humana funcional registrada en106§14 por confirmación del usuario el2026-11-16; sustituye el pendiente humano del alcance entregado sin reinterpretar las pruebas sintéticas como sesión/dispositivo real ni inventar mediciones. Continuación106§15: código/contratos inspeccionados y regresiones atómicas por ámbito; Teacher final277/42 y global previa3171/383, tipos/build y lint de fuentes correctos; Chromium sintético16perfiles y recorridos de CAS/borrador/material verificados. No se trasladan métricas históricas ni se acredita operación real de este lote. Evidencia común: docs/evidence/teacher-guided-continuity-20261116.md; lint excluye prototipos ignorados .tmp. Sin inferencia o despliegue nuevos."
   },
   "approval": null
 }
 ---
+
+## Guía opcional y continuidad — implementación local2026-11-16
+
+[Plan106§15](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#15-tux-0305-guía-y-continuidad-implementadas-localmente--2026-11-16)
+registra TUX-03/05 en `codex/teacher-guided-continuity`, desde development
+`6b7f15a5`. Implementación local posterior al cierre humano TUX-001, que se
+conserva. QA técnica local final verificada; aceptación de este alcance y adopción pendientes; no se
+atribuye inferencia, despliegue, dispositivo real o comprensión humana.
+
+Crear propuesta usa objetivo guardado y conversación enviada; la ayuda es
+opcional y la selección IA permanece visible al plegarla. El mismo compositor
+conserva texto/identidad, inerte al ocultarse y sin plegado durante grabación.
+Mensaje privado sin enviar bloquea la propuesta: enviarlo, seguir editando o
+confirmar su descarte son decisiones expresas. Descartar sólo vacía el borrador;
+conserva historial y exige contexto coincidente. Límites, CAS y confirmación
+exacta siguen vigentes, sin incluir texto no enviado ni llamar IA al abrir.
+
+Diagnóstico también opcional: su modal consulta aprendizaje al abrirse, sin
+iniciar un intento. La acción nativa no demuestra banco. Un intento nuevo exige
+banco revisado confirmado y lectura sin error; uno activo puede retomarse sin
+banco nuevo, usando `new_attempt:false`. Sin banco no hay nota cero ni bloqueo
+de propuesta; se puede cerrar. No es nivel oficial ni evaluación final. El
+error conserva modal/datos y recuperación; no se duplican avisos del comando.
+
+La preparación explica el propósito real, permite volver a Mis planes y aclara
+que salir no cancela. Actualizar estado sólo lee; otra generación depende de
+`allowed_actions`, nunca de inferir seguridad por el nombre del estado.
+Unknown no se reenvía ni cambia de proveedor automáticamente. No se inventan
+fases, porcentajes, ETA o identidad de selección que JobDTO no devuelve.
+
+La siguiente acción se deriva de plan/cursor/intento/material reales. Elegir
+la primera unidad sólo navega después del cursor confirmado; preparar material
+es otra intención. Material guardado ofrece abrir o continuar, con foco en el
+bloque compatible o cabecera, y en la evaluación restaurada cuando corresponda.
+Guardar punto de lectura sólo actualiza el cursor local tras acuse. Un trabajo
+referenciado se observa antes de proponer otro, aun con not_prepared; unknown,
+datos ausentes, plan vacío e identidades históricas conservan salida explícita.
+Un cursor/intento histórico no se reasigna al plan vigente ni promete recuperar
+la versión exacta de material por una consulta que sólo devuelve la actual.
+
+Evaluación de impacto: mejora presentación, explicación y acceso sobre contratos
+existentes, sin conceptos operativos, DTOs, autoridad, presupuesto, herramientas
+MCP o permisos nuevos. Selección exacta, CAS, versiones/hash y recuperación se
+conservan. No hay Server/migraciones ni publicación; draft/partial/unregistered,
+approval:null. Regresiones atómicas por ámbito disponibles; QA técnica final registrada en la evidencia común; aceptación/adopción del
+nuevo alcance pendientes y separadas de resultados históricos.
+
 
 ## Cierre funcional TUX-001 — 2026-11-16
 
@@ -144,8 +208,9 @@ El usuario reporta que Teacher es difícil de entender, especialmente al crear.
 de3pasos, ayuda contextual opcional, revisión legible y primera lección con
 siguiente acción clara. El alta3pasos es un candidato implementado localmente. La revisión legible cuenta
 con la entrega local de106§13 y aceptación funcional del usuario en106§14.
-La confirmación no identifica entorno/dispositivo ni acredita una adopción nueva. La primera lección TUX-05 conserva su alcance pendiente; no se
-atribuye disponibilidad operativa por existir código.
+La confirmación no identifica entorno/dispositivo ni acredita una adopción nueva.
+TUX-03/05 se implementan localmente después en106§15; QA final y aceptación
+de ese alcance siguen pendientes, sin atribuir disponibilidad operativa por código.
 La [ficha de sesión](session-setup-and-planning.md) conserva el baseline real.
 
 ## Solicitudes en lenguaje natural
@@ -189,7 +254,8 @@ Esconder controles avanzados no elimina capacidades ni cambia permisos.
 
 Conservar búsqueda/paginación/archivo actuales en Mis planes. No hay informes
 nuevos o métricas inferidas de aprendizaje. Estado y siguiente acción deben
-derivar de contratos reales; pendiente probar proyección UI de cada fase.
+derivar de contratos reales;106§15 implementa esa proyección conservadora y
+mantiene pendiente la QA integrada final de sus fases.
 
 ## Vista previa, confirmación y recuperación
 
@@ -207,11 +273,15 @@ como guardada ni promete persistencia tras recarga. Regresiones y QA locales por
 - [ ] Aceptación exacta, conflictos y recuperación comprobados localmente en106§13;
   concurrencia/HTTP autenticado y adopción no se reaceptan por esa QA sintética.
 - [x] Alta responsive/ES/EN/temas verificada en Chromium sintético; continuidad histórica y entorno real no reaceptados.
+- [x] TUX-03/05 implementados localmente en106§15 con diagnóstico por intención,
+  borrador protegido, próxima acción y navegación tras cursor confirmado.
+- [ ] QA final integrada y aceptación humana de TUX-03/05; adopción por entorno
+  separada de código y regresiones atómicas locales.
 - [ ] Integración/publicación NodiaAI definida si se solicita; ninguna nueva en106.
 
 Fuente candidata validada; no publica ni acredita operación real por sí sola.
 Seguimiento [TODO](../../../../mvp/TODO.md): TUX-001 cerrado por alcance en106§14;
-TUX-03/05 conservan su evolución propuesta separada.
+TUX-03/05 tienen implementación local separada en106§15 y QA/aceptación pendientes.
 
 ## Evolución y compatibilidad
 
@@ -220,3 +290,4 @@ TUX-03/05 conservan su evolución propuesta separada.
 | 1 | Rediseño futuro de alta y continuidad, plan106 | Nueva candidata UX y fichas Teacher | Sin cambio de contratos/autoridad; capacidades actuales conservadas |
 
 | 2 | Alta3pasos local, selección conservada y salida protegida | Guía Client y recuperación existentes | Sin cambios Server, publicación o aprobación; comprensión y resto pendientes |
+| 6 | TUX-03/05 locales: ayuda/diagnóstico opcionales, borrador protegido y continuidad conservadora | Presentación y acceso a operaciones existentes | Sin contratos, herramientas, publicación o aprobación nuevas; QA final y aceptación pendientes |

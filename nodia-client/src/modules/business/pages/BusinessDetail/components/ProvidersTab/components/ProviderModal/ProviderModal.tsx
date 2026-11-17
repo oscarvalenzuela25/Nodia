@@ -7,6 +7,8 @@ import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
+  Checkbox,
+  FormControlLabel,
   Divider,
   Typography,
 } from "@mui/material";
@@ -39,6 +41,7 @@ const providerSchema = z.object({
   cost_price_tax: fieldMappingSchema,
   packages: fieldMappingSchema,
   units_per_package: fieldMappingSchema,
+  use_ocr: z.boolean(),
   is_active: z.boolean(),
 });
 
@@ -47,7 +50,8 @@ export type ProviderFormValues = z.infer<typeof providerSchema>;
 export interface ProviderFormData {
   name: string;
   tax: number;
-  fields: Record<string, { value: string; instructions: string }>;
+  fields: Record<string, unknown>;
+  use_ocr: boolean;
   is_active: boolean;
 }
 
@@ -101,9 +105,12 @@ export const ProviderModal: FC<Props> = ({
       cost_price_tax: defaultFieldMapping,
       packages: defaultFieldMapping,
       units_per_package: defaultFieldMapping,
+      use_ocr: false,
       is_active: true,
     },
   });
+
+  const useOcr = useWatch({ control, name: "use_ocr" });
 
   // Watch field values to conditionally display instructions inputs
   const codeValue = useWatch({ control, name: "code.value" });
@@ -126,6 +133,7 @@ export const ProviderModal: FC<Props> = ({
         cost_price_tax: extractField(rawFields.cost_price_tax),
         packages: extractField(rawFields.packages),
         units_per_package: extractField(rawFields.units_per_package),
+        use_ocr: initialData.use_ocr === true,
         is_active: initialData.is_active,
       });
     } else {
@@ -137,14 +145,14 @@ export const ProviderModal: FC<Props> = ({
         cost_price_tax: defaultFieldMapping,
         packages: defaultFieldMapping,
         units_per_package: defaultFieldMapping,
+        use_ocr: false,
         is_active: true,
       });
     }
   }, [initialData, reset]);
 
   const onFormSubmit = async (data: ProviderFormValues) => {
-    const fieldsRecord: Record<string, { value: string; instructions: string }> =
-      {};
+    const fieldsRecord: Record<string, unknown> = { ...(initialData?.fields ?? {}) };
     const mappingKeys = [
       "code",
       "cost_price",
@@ -161,6 +169,8 @@ export const ProviderModal: FC<Props> = ({
           value: val,
           instructions: item?.instructions?.trim() || "",
         };
+      } else {
+        delete fieldsRecord[key];
       }
     }
 
@@ -168,6 +178,7 @@ export const ProviderModal: FC<Props> = ({
       name: data.name.trim(),
       tax: Number(data.tax),
       fields: fieldsRecord,
+      use_ocr: data.use_ocr,
       is_active: data.is_active,
     });
   };
@@ -267,7 +278,14 @@ export const ProviderModal: FC<Props> = ({
           )}
         />
 
-        <Divider sx={{ my: 0.5 }} />
+        <Box>
+          <Controller name="use_ocr" control={control} render={({ field }) => <FormControlLabel
+            control={<Checkbox name={field.name} checked={field.value} onChange={(_, checked) => field.onChange(checked)} onBlur={field.onBlur} disabled={isSubmitting} data-testid="provider-use-ocr-checkbox" />}
+            label={t("business:provider_use_ocr_label")} sx={{ m: 0, minHeight: 44 }} />} />
+          <Typography variant="body2" color="text.secondary">{t("business:provider_use_ocr_help")}</Typography>
+        </Box>
+
+        {useOcr && <><Divider sx={{ my: 0.5 }} />
 
         {/* Invoice Columns Mapping Section */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -528,6 +546,8 @@ export const ProviderModal: FC<Props> = ({
         </Box>
 
         <Divider sx={{ my: 0.5 }} />
+
+        </>}
 
         {/* is_active Switch at bottom, matching Core pattern */}
         <SwitchWrapper>

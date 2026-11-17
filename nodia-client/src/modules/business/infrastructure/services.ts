@@ -308,7 +308,7 @@ export const createInvoiceWithFile = async (
   if (params.provider_id && params.provider_id !== "null" && params.provider_id.trim() !== "") {
     formData.append("provider_id", params.provider_id.trim());
   }
-  formData.append("code", params.code);
+  if (params.code?.trim()) formData.append("code", params.code.trim());
   formData.append("total_amount", String(Math.round(params.total_amount ?? 0)));
   if (params.path_storage) {
     formData.append("path_storage", params.path_storage);

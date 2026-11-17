@@ -44,7 +44,7 @@ const mockProviders: ProviderEntity[] = [
     id: "prov-1",
     business_id: "biz-123",
     name: "Distribuidora Mayorista",
-    tax: 19,
+    tax: 19, use_ocr: false,
     fields: {},
     is_active: true,
     created_at: "2026-01-01T00:00:00Z",
@@ -444,4 +444,17 @@ describe("InvoicesTab Component", () => {
     expect(businessServices.getInvoices).toHaveBeenCalledWith(expect.objectContaining({ page: 1, q: expect.objectContaining({ is_active_eq: true }) }));
   });
 
+  it("transports an optional empty folio as null and preserves an explicit inactive selection on create", async () => {
+    vi.mocked(businessServices.createInvoiceWithFile).mockResolvedValueOnce({
+      id: "no-folio", business_id: "biz-123", code: null, total_amount: 0, path_storage: "", is_active: false, created_at: "",
+    });
+    renderWithClient(<InvoicesTab businessId="biz-123" />);
+    const create = screen.getByTestId("new-invoice-btn");
+    await waitFor(() => expect(create).toBeEnabled());
+    await user.click(create);
+    await user.click(screen.getByTestId("invoice-active-switch").querySelector("input")!);
+    await user.click(screen.getByTestId("save-invoice-btn"));
+    await waitFor(() => expect(businessServices.createInvoiceWithFile).toHaveBeenCalledWith(expect.objectContaining({ code: null, is_active: false })));
+    expect(screen.queryByTestId("invoice-code-input")).not.toBeInTheDocument();
+  });
 });

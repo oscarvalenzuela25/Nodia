@@ -1,5 +1,48 @@
 # Especificación del MVP — Nodia
 
+**Caja de Negocios — planificación2026-11-17:** [Plan109](109-business-cash-ledger-plan.md)
+define tab Caja, categorías comunes a ingresos/egresos, filtros Ransack hoy/activos,
+paneles coherentes con búsqueda y tabla, vínculo opcional de factura a un único
+egreso y dos cards de ingresos/egresos del mes actual en Overview. Plan y vistas
+sintéticas, sin implementación. [ADR106 propuesto](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
+separa ownership, consistencia e idempotencia; confirmar OCR requiere ampliar la
+frontera nativa antes de afirmar atomicidad. [TODO CASH-001](TODO.md) deja primer
+pendiente CASH-01 para retomar2026-11-18 en la misma rama. Ficha candidata planned,
+draft/unregistered/approval:null; sin migración, herramientas o despliegue nuevos.
+Ampliación R02: selectores de categoría con X y +/modal de creación rápida;
+duplicados ignorando mayúsculas/espaciados incluso inactivas. Quitar categoría
+de factura retira su egreso al guardar, cambiarla conserva ID. Cierres de caja
+como ingresos manuales; sin ventas automáticas. Drawer y modal se muestran en
+la maqueta actualizada; rev2 Caja/rev57 Negocios siguen como candidatas.
+
+**Negocios: precios redondeados, división y proveedores OCR — solicitud2026-11-17:**
+[Plan94§42](94-business-point-of-sale-and-product-refactor.md#42-precios-de-venta-redondeados-división-local-y-proveedores-ocr--solicitud2026-11-17)
+registra venta manual libre hasta onBlur y normalización al guardar; sugerencias
+por porcentaje y división de venta ya redondeadas a decenas. Neto conserva CLP
+entero. `use_ocr` defaultfalse y filtro exclusivo del selector OCR; columnas
+ocultas conservan mapeos, demás formularios muestran todos los proveedores.
+Folio opcional, fecha civil inicial de hoy, Notas/Activo al final y Overview
+sin chip Por confirmar. Migración1793680000000 preparada/verificada en PG16
+sintético,7gates; sin SQL operativo. Client3225/387, focal OCR75/3, tipos/lint/build y Chromium32perfiles correctos;
+Server6143/358 y1caso Linux omitido en Windows. Candidato de PR50 actualizado.
+[Evidencia y límites](../evidence/business-pricing-ocr-adjustments-20261117.md).
+NodiaAI muestra venta normalizada antes de confirmar; propuestas incompatibles
+requieren revisión nueva. Candidatas Negocios55/calculadora15 sin nueva aprobación
+ni publicación. Revisión/adopción del alcance nuevo pendientes.
+
+**Teacher: TUX-03/05 implementados y verificados localmente — 2026-11-16:**
+[Plan106§15](106-nodia-teacher-guided-ux-redesign.md#15-tux-0305-guía-y-continuidad-implementadas-localmente--2026-11-16)
+registra conversación/diagnóstico opcionales, borrador protegido, preparación y
+recuperación explícitas, primera lección y continuidad desde contexto real.
+Rama `codex/teacher-guided-continuity` desde development `6b7f15a5`.
+Teacher final277/42 y global previa3171/383, tipos/build y lint de fuentes correctos;
+Chromium sintético16perfiles320/600/900/1440 ES/EN y errores CAS/respuesta
+verificados por [evidencia](../evidence/teacher-guided-continuity-20261116.md).
+No hay generación automática, cambios Server/DB ni inferencia/despliegue nuevos.
+Primer pendiente: revisión/aceptación del alcance nuevo e integración/adopción
+por entorno; el cierre humano TUX-001 anterior se conserva. Fichas candidatas
+actualizadas sin aprobación/publicación.
+
 **Proveedores: apertura recuperable de Contactos — incidencia2026-11-16:**
 [Plan31](31-provider-contacts-proposal.md#apertura-recuperable-de-contactos--incidencia-de-producción2026-11-16) registra error/404 reportado en producción.
 El usuario confirma que recargar la página corrige el fallo observado.
@@ -22,6 +65,13 @@ local, tipos/lint/build y QA Chromium sintética6perfiles correctos por
 focal posterior124/10 cubre último delta de recuperación. Tipos/lint/build finales
 y conocimiento/pins locales correctos; revisión/integración y adopción separadas.
 Sin inferencia ni aprobación/publicación nuevas.
+
+**News integrado y publicado — 2026-11-16:**
+[105§15](105-on-demand-tech-news.md#15-promoción-y-publicación-comprobadas--2026-11-16)
+registra PR46/47 integradas, master03206aa1 y CI/CD correctos para backend/Client.
+Lectura pública HTTP200 con ambas fuentes y caché inicial vacía; primer pendiente
+es actualizar desde super_admin y completar aceptación funcional en producción.
+No repetir integración/despliegue. [TODO vigente](TODO.md).
 
 **PR News y archivo de capturas — solicitud2026-11-16:**
 [PR46](https://github.com/oscarvalenzuela25/Nodia/pull/46) abierta contra development;

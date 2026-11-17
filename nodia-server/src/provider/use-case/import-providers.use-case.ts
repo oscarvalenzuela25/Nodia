@@ -1,3 +1,4 @@
+import { validateProviderOcrPreference } from '../provider-ocr-preference.js';
 import {
   BadRequestException,
   ConflictException,
@@ -37,6 +38,7 @@ export class ImportProvidersUseCase {
     const identities = new Set<string>();
     let contactCount = 0;
     const items = dto.items.map((item) => {
+      validateProviderOcrPreference(item.use_ocr);
       if (item.business_id !== businessId)
         throw new BadRequestException('Import must belong to one business');
       if (item.id !== undefined) validateContactId(item.id);
@@ -162,6 +164,7 @@ export class ImportProvidersUseCase {
           tax: item.tax ?? 19,
           is_active: item.is_active ?? true,
           fields: item.fields ?? {},
+          ...(item.use_ocr !== undefined ? { use_ocr: item.use_ocr } : {}),
         };
         if (!provider) {
           provider = await providers.save(providers.create(values));
@@ -169,6 +172,7 @@ export class ImportProvidersUseCase {
           provider.name !== values.name ||
           provider.tax !== values.tax ||
           provider.is_active !== values.is_active ||
+          (item.use_ocr !== undefined && provider.use_ocr !== item.use_ocr) ||
           !isDeepStrictEqual(provider.fields, values.fields)
         ) {
           // Already fetched and locked: avoid save's extra SELECT per existing row.

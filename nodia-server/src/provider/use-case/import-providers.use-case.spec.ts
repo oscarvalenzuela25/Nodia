@@ -10,6 +10,8 @@ describe('ImportProvidersUseCase input guarantees', () => {
     { items: [item, item] },
     { items: [{ ...item, id: '9223372036854775808' }] },
     { items: [{ ...item, tax: 19.5 }] },
+    { items: [{ ...item, use_ocr: null }] },
+    { items: [{ ...item, use_ocr: 'true' }] },
     {
       items: [
         item,

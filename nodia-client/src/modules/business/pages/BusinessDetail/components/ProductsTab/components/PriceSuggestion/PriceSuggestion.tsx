@@ -1,6 +1,6 @@
 import { useId, useState } from "react";
 import { Box, InputAdornment, Tooltip, Typography } from "@mui/material";
-import ArrowDownwardRounded from "@mui/icons-material/ArrowDownwardRounded";
+import CheckOutlined from "@mui/icons-material/CheckOutlined";
 import { visuallyHidden } from "@mui/utils";
 import { useTranslation } from "react-i18next";
 import { sileo } from "sileo";
@@ -42,7 +42,7 @@ export default function PriceSuggestion({ costPriceTax, disabled = false, onAppl
           if (disabled || price === null) return;
           onApply(price);
           sileo.success({ title: t("product_suggestion_applied") });
-        }}><ArrowDownwardRounded fontSize="small" /></ApplyButton>
+        }}><CheckOutlined fontSize="small" /></ApplyButton>
       </ApplyButtonSlot>
     </Tooltip>
   </SuggestionLayout></Suggestion>;

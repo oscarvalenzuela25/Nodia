@@ -169,7 +169,7 @@
   "product_tax_rate": "Tax %",
   "product_sale_price": "Sale Price",
   "product_price_calculation_invalid": "Check the cost amounts and tax rate: they must produce valid whole CLP amounts.",
-  "product_field_help_sale_price": "Final regular CLP price, entered manually. It does not change costs or change when the suggested markup is edited.",
+  "product_field_help_sale_price": "Regular final price in CLP. It rounds to the nearest multiple of 10 when leaving the field or saving. Costs stay unchanged; a suggestion is used only when applied.",
   "product_offer_price": "Offer: {{price}}",
   "product_regular_price": "Regular: {{price}}",
   "product_stock": "Stock",
@@ -818,5 +818,23 @@
   "invoice_match_scope_changed": "The session or business changed. Close this dialog and select the product again.",
   "invoice_row_actions": "Product {{row}} actions",
   "invoice_show_detail_columns": "Show invoice quantity and availability",
-  "invoice_hide_detail_columns": "Hide invoice quantity and availability"
+  "invoice_hide_detail_columns": "Hide invoice quantity and availability",
+  "provider_use_ocr_label": "Use with OCR",
+  "provider_use_ocr_help": "Enable invoice column settings and show this supplier in the OCR selector.",
+  "invoice_code_optional_helper": "Optional. You can save the invoice without a code or folio.",
+  "invoice_without_code": "No folio",
+  "invoice_code_invalid": "Invalid invoice code",
+  "price_division": {
+    "open": "Divide {{field}}",
+    "title": "Divide price",
+    "amount": "Price to divide",
+    "divisor": "Divide by",
+    "result": "Result",
+    "apply": "Apply result",
+    "sale_help": "Sale price is rounded to the nearest multiple of 10.",
+    "net_help": "Net price keeps whole-peso precision without rounding to tens.",
+    "invalid": "Enter a valid price and a divisor greater than zero.",
+    "applied": "Result applied to draft"
+  },
+  "provider_use_ocr_invalid": "Invalid OCR preference"
 }

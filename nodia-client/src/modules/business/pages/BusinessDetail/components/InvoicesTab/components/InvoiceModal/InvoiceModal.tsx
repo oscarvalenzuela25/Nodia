@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import DateInput from "../../../../../../../../components/inputs/DateInput";
 import type { FC, ChangeEvent, DragEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -34,9 +35,9 @@ import {
 } from "./styles";
 
 const invoiceSchema = z.object({
-  code: z.string().min(1, "Código requerido"),
+  code: z.string().trim().max(255, "business:invoice_code_invalid"),
   provider_id: z.string().nullable().optional(),
-  total_amount: z.number().min(0, "Monto debe ser >= 0"),
+  total_amount: z.number().min(0, "business:invoice_validation_total"),
   path_storage: z.string(),
   issue_date: z.string(),
   notes: z.string(),
@@ -129,7 +130,7 @@ export const InvoiceModal: FC<Props> = ({
       provider_id: null,
       total_amount: 0,
       path_storage: "",
-      issue_date: "",
+      issue_date: dayjs().format("YYYY-MM-DD"),
       notes: "",
       is_active: true,
     },
@@ -138,7 +139,7 @@ export const InvoiceModal: FC<Props> = ({
   useEffect(() => {
     if (initialData) {
       reset({
-        code: initialData.code,
+        code: initialData.code ?? "",
         provider_id: initialData.provider_id || null,
         total_amount: initialData.total_amount,
         path_storage: initialData.path_storage || "",
@@ -152,7 +153,7 @@ export const InvoiceModal: FC<Props> = ({
         provider_id: null,
         total_amount: 0,
         path_storage: "",
-        issue_date: "",
+        issue_date: dayjs().format("YYYY-MM-DD"),
         notes: "",
         is_active: true,
       });
@@ -445,8 +446,7 @@ export const InvoiceModal: FC<Props> = ({
                   onChange={field.onChange}
                   onBlur={field.onBlur}
                   error={!!errors.code}
-                  helperText={errors.code?.message}
-                  required
+                  helperText={errors.code?.message ? t(errors.code.message) : t("business:invoice_code_optional_helper")}
                   disabled={isSubmitting}
                   data-testid="invoice-code-input"
                 />
@@ -489,7 +489,7 @@ export const InvoiceModal: FC<Props> = ({
                   onChange={(e) => field.onChange(Number(e.target.value))}
                   onBlur={field.onBlur}
                   error={!!errors.total_amount}
-                  helperText={errors.total_amount?.message}
+                  helperText={errors.total_amount?.message ? t(errors.total_amount.message) : undefined}
                   required
                   disabled={isSubmitting}
                   data-testid="invoice-total-amount-input"
@@ -539,30 +539,6 @@ export const InvoiceModal: FC<Props> = ({
             />
           </Grid>
 
-          <Grid size={{ xs: 12 }}>
-        <SwitchWrapper>
-          <Controller
-            name="is_active"
-            control={control}
-            render={({ field }) => (
-              <StyledFormControlLabel
-                control={
-                  <StyledSwitch
-                    checked={field.value}
-                    onChange={(e) => field.onChange(e.target.checked)}
-                    name="is_active"
-                    disabled={isSubmitting}
-                    data-testid="invoice-active-switch"
-                  />
-                }
-                label={t("business:active_label")}
-                labelPlacement="start"
-              />
-            )}
-          />
-        </SwitchWrapper>
-
-          </Grid>
 
           <Grid size={{ xs: 12 }}>
             <Controller
@@ -585,6 +561,30 @@ export const InvoiceModal: FC<Props> = ({
               )}
             />
           </Grid>
+          <Grid size={{ xs: 12 }}>
+            <SwitchWrapper>
+              <Controller
+                name="is_active"
+                control={control}
+                render={({ field }) => (
+                  <StyledFormControlLabel
+                    control={
+                      <StyledSwitch
+                        checked={field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        name="is_active"
+                        disabled={isSubmitting}
+                        data-testid="invoice-active-switch"
+                      />
+                    }
+                    label={t("business:active_label")}
+                    labelPlacement="start"
+                  />
+                )}
+              />
+            </SwitchWrapper>
+          </Grid>
+
         </Grid>
       </FormContainer>
     </BaseModal>

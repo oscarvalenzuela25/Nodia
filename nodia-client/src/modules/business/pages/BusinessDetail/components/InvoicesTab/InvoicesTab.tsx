@@ -267,7 +267,7 @@ export const InvoicesTab: FC<Props> = ({
         await updateMutation.mutateAsync({
           id: selectedInvoice.id,
           payload: {
-            code: data.code,
+            code: data.code.trim() || null,
             provider_id: data.provider_id || null,
             total_amount: data.total_amount,
             path_storage: data.path_storage,
@@ -283,10 +283,11 @@ export const InvoicesTab: FC<Props> = ({
         await createMutation.mutateAsync({
           file: data.file || undefined,
           business_id: businessId,
-          code: data.code,
+          code: data.code.trim() || null,
           provider_id: data.provider_id || null,
           total_amount: data.total_amount,
           path_storage: data.path_storage || "",
+          is_active: data.is_active,
           data: {
             issue_date: data.issue_date,
             notes: data.notes,
@@ -609,7 +610,7 @@ export const InvoicesTab: FC<Props> = ({
                   <TableRow key={inv.id} hover>
                     <TableCell>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {inv.code}
+                        {inv.code || t("business:invoice_without_code")}
                       </Typography>
                     </TableCell>
                     <TableCell>{inv.provider?.name ?? "-"}</TableCell>

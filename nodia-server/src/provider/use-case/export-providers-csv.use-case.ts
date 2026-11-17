@@ -92,8 +92,8 @@ export class ExportProvidersCsvUseCase {
         );
     }
     const suffix = isEn
-      ? ',Contacts JSON (contacts),Extra Mapping JSON (fields_json),CSV Version (csv_version)'
-      : ',Contactos JSON (contacts),Mapeo adicional JSON (fields_json),Versión CSV (csv_version)';
+      ? ',Contacts JSON (contacts),Extra Mapping JSON (fields_json),CSV Version (csv_version),Use OCR (use_ocr)'
+      : ',Contactos JSON (contacts),Mapeo adicional JSON (fields_json),Versión CSV (csv_version),Usar OCR (use_ocr)';
     const lines = [header + suffix];
     let bytes = Buffer.byteLength(lines[0], 'utf8');
     if (bytes > Math.min(2 * 1024 * 1024, limits?.maxBytes ?? 2 * 1024 * 1024))
@@ -150,6 +150,7 @@ export class ExportProvidersCsvUseCase {
         ),
         this.escapeCsvValue(JSON.stringify(fields)),
         '2',
+        this.escapeCsvValue(provider.use_ocr),
       ].join(',');
       bytes += Buffer.byteLength(row, 'utf8') + 1;
       if (

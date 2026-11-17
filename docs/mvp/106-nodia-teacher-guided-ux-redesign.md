@@ -2,8 +2,8 @@
 
 > Estado documental: en revisión. **TUX-001 cerrado por alcance entregado y
 > aceptación humana el2026-11-16; ver§14.** Alta guiada, paneles/selector y revisión
-> legible aceptados por el usuario. TUX-03/05 conservan su evolución propuesta
-> fuera de este cierre; no se presentan como implementados.
+> legible aceptados por el usuario. TUX-03/05 se implementan localmente después
+> de ese cierre en§15; QA local verificada, aceptación de ese alcance y adopción pendientes.
 > Solicitud posterior del mismo día: empezar el desarrollo desde development.
 > Esta autorización sustituye el límite documental inicial, sin aprobar el diseño
 > completo ni acreditar comprensión humana, inferencia o adopción operativa.
@@ -338,8 +338,10 @@ ambas, conservando los límites por dispositivo/proveedor/entorno.
   usuario en§14, conservando revisión/hash y edición progresiva.
 - [x] TUX-06: cierre del alcance entregado con QA técnica registrada y aceptación
   humana de§14. Entornos/dispositivos específicos no descritos no se dan por probados.
-- [ ] Evolución fuera del cierre TUX-001: TUX-03/05, definición/espera y primera
-  lección/continuidad guiadas; propuesta pendiente de implementación por sus alcances.
+- [x] Evolución fuera del cierre TUX-001: TUX-03/05, definición/espera y primera
+  lección/continuidad guiadas implementadas localmente; ver§15.
+- [x] QA técnica local integrada de§15; evidencia final enlazada.
+- [ ] Aceptación humana de TUX-03/05 y adopción por entorno, sin reabrir TUX-001.
 
 El corte inicial fue exclusivamente documental;§10 registra su primera implementación. Ficha candidata:
 [experiencia guiada](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md),
@@ -648,3 +650,102 @@ sin cambiar conceptos, operaciones, contexto, herramientas, permisos o contratos
 El documento sigue en revisión; la ficha sigue draft/partial/unregistered y
 approval:null. Aceptar la UI entregada no aprueba integralmente la evolución
 propuesta ni publica conocimiento.
+
+
+## 15. TUX-03/05: guía y continuidad implementadas localmente — 2026-11-16
+
+El usuario solicita continuar lo pendiente desde development. La rama
+`codex/teacher-guided-continuity` parte de `origin/development` `6b7f15a5`.
+El usuario aclara que se debe mantener o mejorar el diseño nuevo existente,
+priorizando UX/UI. Se conservan alta guiada, cabecera, revisión legible, selector
+IA, Drawer, temas y pautas responsive; la evolución añade guía y recuperación
+sobre esa base, sin sustituir su lenguaje visual.
+
+Se implementan los alcances siguientes en Client, con QA final local en
+[evidencia común](../evidence/teacher-guided-continuity-20261116.md). Este desarrollo sucede el pendiente técnico
+de TUX-03/05 de§9/§14 y no altera el cierre humano previo de TUX-001.
+
+### Definición, mensaje privado y preparación — TUX-03
+
+«Crear propuesta» es la acción principal, con selección IA visible aunque
+«Aclarar mi objetivo» esté cerrado. La ayuda se abre con borrador no vacío o
+historial propio; plegar conserva el mismo historial/compositor y su texto,
+con controles ocultos inertes. No se puede plegar durante grabación o comando.
+La conversación y el diagnóstico son opcionales; enviar o crear una propuesta
+siguen siendo intenciones explícitas que utilizan la selección IA existente.
+
+El aviso junto a Crear propuesta explica que un mensaje sin enviar no participa
+en ella. Se puede enviar, seguir editando o descartar mediante confirmación
+expresa; el descarte conserva el historial enviado y sólo vacía el borrador.
+Cambio de sesión/contexto/texto/historial invalida la confirmación abierta.
+Se conservan CAS de borrador, límites de texto/bytes, grabación y confirmación
+exacta de propuesta; no hay envío, aceptación o generación implícitos.
+
+`JobPanel` distingue propósito real y resultado esperado sin inventar fases,
+porcentajes, tiempos o identidad de selección del trabajo. Explica que se puede
+volver a Mis planes sin cancelar la solicitud. Actualizar estado consulta el
+trabajo existente; una nueva preparación sólo aparece por `allowed_actions`,
+respetando `allowNew`, pausa y busy. Unknown mantiene su consulta/conciliación
+sin replay o cambio automático de proveedor. Los fallos de lectura conservan
+el último dato confirmado; carga inicial y revalidación siguen separadas.
+
+### Diagnóstico opcional con banco comprobado
+
+`DiagnosticEntry` consulta el estado de aprendizaje al abrirse por intención;
+no añade una lectura por entrar a la sesión ni inicia un intento al mostrarlo.
+`start_diagnostic` sólo permite ofrecer la entrada: no acredita banco revisado.
+Un intento nuevo requiere `diagnostic_blueprint.reviewed === true` y consulta
+sin error, además de la acción nativa; un diagnóstico activo puede retomarse sin
+exigir un banco nuevo. El comando usa `new_attempt:false` y conserva la
+confirmación/recuperación del propietario actual. Falta de banco o revisión
+no adjudica nota cero ni bloquea crear la propuesta: se puede cerrar y seguir.
+Fallar conserva el modal, con carga inicial, error/reintento y bloqueo de doble envío locales.
+
+### Primera lección y continuidad — TUX-05
+
+`StudyContinuation` deriva una siguiente acción del plan, cursor confirmado,
+intento restaurado y disponibilidad de material reales. Sin unidad elegida,
+propone la primera unidad real del plan; elegirla persiste el cursor y sólo
+cambia la vista después del acuse. Elegir o aceptar un plan no prepara material.
+Sin material, Preparar primera lección/Preparar material es una intención
+separada, sujeta a acción nativa, pausa, selección y bloqueos existentes.
+
+Material disponible ofrece abrir lectura; cursor compatible y bloque existente
+ofrecen continuar. El botón enfoca el bloque guardado cuando la versión leída
+coincide; de otro modo enfoca la cabecera de la lección. Con intento restaurado,
+enfoca su cabecera, sin responder ni iniciar otro intento. El punto de lectura
+sólo cambia localmente tras confirmar su guardado. Un cursor o intento de otra
+revisión se presenta como histórico: no se redirige silenciosamente a la primera
+unidad del plan vigente ni se promete obtener una versión histórica exacta por
+el endpoint actual de material.
+
+Cualquier disponibilidad con `job_id` conduce a observar ese trabajo y no a
+crear otro, incluso si dice not_prepared. Estados preparing/unknown sin ID
+ofrecen consulta; datos ausentes, unidad no encontrada y plan vacío conservan
+su explicación sin fabricar contenido ni acciones. Las herramientas secundarias
+existentes mantienen su acceso en el Drawer; no se añaden herramientas MCP.
+
+### Implementación, evaluación de impacto y límites
+
+- [x] TUX-03: ayuda opcional, selección visible y mensaje sin enviar protegido.
+- [x] TUX-03: propósito/espera, lectura y recuperación según acciones nativas.
+- [x] Entrada diagnóstica por intención, banco revisado o intento activo real.
+- [x] TUX-05: próxima acción derivada, material manual y estados conservadores.
+- [x] TUX-05: selección de unidad/lectura tras acuse y foco de lectura/intento.
+- [x] Regresiones atómicas añadidas/actualizadas por los ámbitos implementados.
+- [x] Integración y QA técnica local común: Teacher final277/42 y global previa3171/383,
+  tipos/build y lint de fuentes correctos; Chromium sintético16perfiles y
+  recorridos CAS/borrador/material por [evidencia](../evidence/teacher-guided-continuity-20261116.md).
+- [ ] Aceptación humana de este alcance y adopción por entorno, independientes.
+
+Impacto de presentación, explicación y acceso a operaciones existentes. Se
+mantienen DTOs/HTTP, autoridad Teacher, presupuesto, selección exacta, CAS,
+versiones/hash, evaluación y recuperación. Sin cambios Server o migraciones,
+nuevos conceptos operativos, permisos, herramientas o publicación. La ficha
+[guiada revisión6](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md#guía-opcional-y-continuidad--implementación-local2026-11-16),
+[sesión revisión38](../nodia-ai/knowledge/studies/features/session-setup-and-planning.md#guía-opcional-y-continuidad--implementación-local2026-11-16)
+y [producto revisión44](../nodia-ai/knowledge/studies/README.md#guía-opcional-y-continuidad--implementación-local2026-11-16)
+conservan draft/partial/unregistered/approval:null. Código y pruebas locales no
+acreditan inferencia real, comprensión humana, teléfono físico, producción,
+aprobación del plan completo o publicación del conocimiento. Capturas nuevas
+sólo en output/.tmp ignorados; consolidar evidencia textual duradera al finalizar.

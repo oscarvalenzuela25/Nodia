@@ -159,7 +159,7 @@ try {
   db = await new DataSource(options).initialize();
   await db.query(`
     CREATE TABLE businesses(id uuid PRIMARY KEY);
-    CREATE TABLE providers(id bigint PRIMARY KEY);
+    CREATE TABLE providers(use_ocr boolean NOT NULL DEFAULT false,id bigint PRIMARY KEY);
     CREATE TABLE invoices(
       id bigserial PRIMARY KEY, business_id uuid NOT NULL REFERENCES businesses(id),
       provider_id bigint REFERENCES providers(id), code varchar(255) NOT NULL,

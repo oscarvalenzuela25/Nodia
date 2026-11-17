@@ -1,3 +1,7 @@
+import dayjs from "dayjs";
+import { PriceDivisionAction } from "../../../../../../../../components/PriceDivisionDialog";
+import { roundSalePrice } from "../../../../../../../../utils/salePrice";
+import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import InvoiceAliasReview from "./InvoiceAliasReview";
 import InvoicePriceReview from "./InvoicePriceReview";
 import EditOutlined from "@mui/icons-material/EditOutlined";
@@ -77,7 +81,7 @@ import {
 import {
   type InvoiceProvisionalRow,
   type InvoiceUpdateField,
-  INVOICE_UPDATE_FIELDS,
+  invoiceRowEditPrice,
   bindInvoiceRow,
   invoiceAliasNeedsReview,
   reviewInvoiceAlias,
@@ -124,7 +128,7 @@ export const ProductInvoiceImport: FC<Props> = ({
   const [rows, setRows] = useState<InvoiceProvisionalRow[]>([]);
   const [invoiceCode, setInvoiceCode] = useState<string>("");
   const [invoiceTotalAmount, setInvoiceTotalAmount] = useState<number>(0);
-  const [invoiceIssueDate, setInvoiceIssueDate] = useState<string>("");
+  const [invoiceIssueDate, setInvoiceIssueDate] = useState<string>(() => dayjs().format("YYYY-MM-DD"));
   const [matchingRow, setMatchingRow] = useState<{ businessId: string; row: InvoiceProvisionalRow } | null>(null);
   const [aliasReview, setAliasReview] = useState<{ businessId: string; row: InvoiceProvisionalRow } | null>(null);
   const [priceReview, setPriceReview] = useState<{ businessId: string; row: InvoiceProvisionalRow } | null>(null);
@@ -216,7 +220,7 @@ export const ProductInvoiceImport: FC<Props> = ({
   );
 
   // Queries
-  const providerQuery = usePagedProviderOptions(businessId);
+  const providerQuery = usePagedProviderOptions(businessId, true, { useOcrOnly: true });
   const providerOptions = providerQuery.options;
 
   const { data: productsData, isFetching: isFetchingProducts, isError: productsError, refetch: refetchProducts } = useProducts({
@@ -373,7 +377,7 @@ export const ProductInvoiceImport: FC<Props> = ({
       if (analysisIntent.current !== intent || !transport.isCurrent()) return;
       setInvoiceCode(response.code || "");
       setInvoiceTotalAmount(response.total_amount ?? Number.NaN);
-      setInvoiceIssueDate(response.data?.issue_date || "");
+      setInvoiceIssueDate(response.data?.issue_date || dayjs().format("YYYY-MM-DD"));
       shouldScrollToResults.current = true;
       setRows(mappedRows);
       transport.emit('draft_ready');
@@ -474,11 +478,15 @@ export const ProductInvoiceImport: FC<Props> = ({
   const handleSaveEdit = () => {
     if (editingIndex === null || isBusy || analysisIntent.current) return;
 
-    const { errors, isValid } = validateInvoiceRow(editFormData);
+    const currentRow = rows[editingIndex];
+    if (!currentRow) return;
+    const reviewedPrice = invoiceRowEditPrice(currentRow, editFormData);
+    const edited = { ...editFormData, ...reviewedPrice };
+    const { errors, isValid } = validateInvoiceRow(edited);
+    if (!isValid) { sileo.error({ title: t("business:invoice_validation_sale"), description: errors.join("; ") }); return; }
 
     const newCode = (editFormData.code ?? "").trim();
-    const currentRow = rows[editingIndex];
-    const newSalePrice = Number(editFormData.sale_price ?? 0);
+    const newSalePrice = reviewedPrice.sale_price;
     const priceDiff = calculatePriceDiff(
       newSalePrice,
       currentRow.historicalProduct?.sale_price
@@ -498,7 +506,7 @@ export const ProductInvoiceImport: FC<Props> = ({
       quantity: editFormData.quantity ?? Number.NaN,
       has_stock: currentRow.has_stock,
       version: currentRow.version,
-      manual_match: currentRow.manual_match ? { ...currentRow.manual_match, fields: [...new Set([...currentRow.manual_match.fields, ...INVOICE_UPDATE_FIELDS.filter(field => editFormData[field] !== currentRow[field])])] } : undefined,
+      manual_match: reviewedPrice.manual_match,
       is_active: editFormData.is_active ?? true,
       isUpdate: Boolean(currentRow.id),
       isLocked: currentRow.isLocked ?? false,
@@ -519,7 +527,7 @@ export const ProductInvoiceImport: FC<Props> = ({
   };
 
   const handleSubmitAll = async () => {
-    if (analysisIntent.current || rows.length === 0 || hasErrors || isBusy || !invoiceCode.trim() || !file || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0) {
+    if (analysisIntent.current || rows.length === 0 || hasErrors || isBusy || !file || invoiceCode.trim().length > 255 || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0) {
       return;
     }
 
@@ -536,7 +544,7 @@ export const ProductInvoiceImport: FC<Props> = ({
         file,
         business_id: businessId,
         provider_id: selectedProviderId || null,
-        code: invoiceCode.trim(),
+        code: invoiceCode.trim() || null,
         total_amount: Math.round(invoiceTotalAmount || 0),
         data: {
           issue_date: invoiceIssueDate || undefined,
@@ -1023,9 +1031,8 @@ export const ProductInvoiceImport: FC<Props> = ({
               label={t("business:invoice_number_label")}
               value={invoiceCode}
               onChange={(e) => { if (!isBusy && !analysisIntent.current) setInvoiceCode(e.target.value); }}
-              required
-              error={!invoiceCode.trim()}
-              helperText={!invoiceCode.trim() ? t("validations:required") : undefined}
+              error={invoiceCode.trim().length > 255}
+              helperText={t(invoiceCode.trim().length > 255 ? "business:invoice_code_invalid" : "business:invoice_code_optional_helper")}
               disabled={isBusy}
               data-testid="invoice-code-field"
             />
@@ -1083,7 +1090,7 @@ export const ProductInvoiceImport: FC<Props> = ({
               <Button
                 variant="contained"
                 color="success"
-                disabled={hasErrors || rows.length === 0 || isBusy || !invoiceCode.trim() || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0}
+                disabled={hasErrors || rows.length === 0 || isBusy || invoiceCode.trim().length > 255 || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0}
                 onClick={handleSubmitAll}
                 startIcon={isSaving ? <CircularProgress size={18} color="inherit" /> : <ReceiptLongOutlinedIcon />}
                 sx={{ borderRadius: 2 }}
@@ -1406,6 +1413,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                 name="cost_price"
                 type="number"
                 label={t("business:product_cost_price")}
+                labelAdornment={<><Tooltip title={t("business:pos.field_help.cost_price")}><IconButton type="button" disabled={isBusy} aria-label={t("business:pos.field_help_label", { field: t("business:product_cost_price") })} sx={{ width: 44, height: 44, flexShrink: 0 }}><HelpOutlineOutlinedIcon fontSize="small" /></IconButton></Tooltip><PriceDivisionAction value={editFormData.cost_price ?? null} mode="net" label={t("business:product_cost_price")} disabled={isBusy} contextKey={`${businessId}:${editingIndex}`} onApply={handleCostPriceChange} /></>}
                 value={numericInputValue(editFormData.cost_price)}
                 onChange={(e) => handleCostPriceChange(parseNumericInput(e.target.value))}
                 required
@@ -1419,6 +1427,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                 name="tax_rate"
                 type="number"
                 label={t("business:product_tax_rate")}
+                labelAdornment={<Box component="span" aria-hidden="true" sx={{ height: 44, width: 0 }} />}
                 value={numericInputValue(editTaxRate)}
                 onChange={(e) => handleTaxRateChange(parseNumericInput(e.target.value))}
                 data-testid="edit-field-tax-rate"
@@ -1431,6 +1440,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                 name="cost_price_tax"
                 type="number"
                 label={t("business:product_cost_tax")}
+                labelAdornment={<Box component="span" aria-hidden="true" sx={{ height: 44, width: 0 }} />}
                 value={numericInputValue(editFormData.cost_price_tax)}
                 onChange={(e) => handleCostPriceTaxChange(parseNumericInput(e.target.value))}
                 data-testid="edit-field-cost-tax"
@@ -1443,6 +1453,8 @@ export const ProductInvoiceImport: FC<Props> = ({
                 name="sale_price"
                 type="number"
                 label={t("business:product_sale_price")}
+                labelAdornment={<><Tooltip title={t("business:product_field_help_sale_price")}><IconButton type="button" disabled={isBusy} aria-label={t("business:pos.field_help_label", { field: t("business:product_sale_price") })} sx={{ width: 44, height: 44, flexShrink: 0 }}><HelpOutlineOutlinedIcon fontSize="small" /></IconButton></Tooltip><PriceDivisionAction value={editFormData.sale_price ?? null} mode="sale" label={t("business:product_sale_price")} disabled={isBusy} contextKey={`${businessId}:${editingIndex}`} onApply={handleSalePriceChange} /></>}
+                onBlur={() => { const rounded = roundSalePrice(editFormData.sale_price ?? Number.NaN); if (rounded !== null) handleSalePriceChange(rounded); }}
                 value={numericInputValue(editFormData.sale_price)}
                 onChange={(e) => handleSalePriceChange(parseNumericInput(e.target.value))}
                 required
