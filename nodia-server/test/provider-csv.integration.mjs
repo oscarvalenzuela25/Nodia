@@ -82,7 +82,7 @@ try {
   await db.initialize();
   await db.query('CREATE TABLE businesses(id uuid PRIMARY KEY)');
   await db.query(
-    `CREATE TABLE providers(id bigserial PRIMARY KEY,business_id uuid NOT NULL REFERENCES businesses(id),name varchar(255) NOT NULL,tax int NOT NULL DEFAULT 19,fields jsonb NOT NULL DEFAULT '{}',is_active boolean NOT NULL DEFAULT true,created_at timestamp NOT NULL DEFAULT now(),updated_at timestamp NOT NULL DEFAULT now())`,
+    `CREATE TABLE providers(use_ocr boolean NOT NULL DEFAULT false,id bigserial PRIMARY KEY,business_id uuid NOT NULL REFERENCES businesses(id),name varchar(255) NOT NULL,tax int NOT NULL DEFAULT 19,fields jsonb NOT NULL DEFAULT '{}',is_active boolean NOT NULL DEFAULT true,created_at timestamp NOT NULL DEFAULT now(),updated_at timestamp NOT NULL DEFAULT now())`,
   );
   const runner = db.createQueryRunner();
   await new CreateProviderContacts1791220000000().up(runner);

@@ -109,6 +109,21 @@ function fixture() {
   };
 }
 describe('Native product writers through their use cases', () => {
+  it.each([[1444, 1440], [1445, 1450]])('normalizes explicit create and update prices before their derived snapshots: %i', async (input, expected) => {
+    const f = fixture();
+    const created = await f.service.createProduct({ ...dto, sale_price: input }, f.manager, actor);
+    expect(created.sale_price).toBe(expected);
+    expect(f.logs.save).toHaveBeenLastCalledWith(expect.objectContaining({ sale_price: expected, cost_price: 1, cost_price_tax: 2 }));
+    const updated = await f.service.updateProduct('3', { sale_price: input }, f.manager, actor);
+    expect(updated.sale_price).toBe(expected);
+    expect(f.logs.save).toHaveBeenLastCalledWith(expect.objectContaining({ sale_price: expected, changed_fields: ['sale_price'] }));
+  });
+  it('rejects rounded overflow before persisting product or new history', async () => {
+    const f = fixture();
+    await expect(f.service.createProduct({ ...dto, sale_price: 2147483645 }, f.manager, actor)).rejects.toThrow('product:invalid_price');
+    expect(f.products.save).not.toHaveBeenCalled(); expect(f.logs.save).not.toHaveBeenCalled();
+  });
+
   it('creates without supplier code using unit and includes both fields in the derived log', async () => {
     const f = fixture();
     const { code: _code, ...input } = dto;
@@ -179,7 +194,7 @@ describe('Native product writers through their use cases', () => {
         product_id: result.id,
         code: 'P',
         stock: 5,
-        sale_price: 4,
+        sale_price: 0,
       }),
     );
     expect(f.globalProducts.save).not.toHaveBeenCalled();

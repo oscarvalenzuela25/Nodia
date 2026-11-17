@@ -1,0 +1,401 @@
+<div id="nodia-caja-preview" aria-label="Propuesta de Caja en Negocios">
+  <div class="nd-preview-controls" role="group" aria-label="Vistas de la propuesta"><span>Vistas de detalle</span><button type="button" class="cursor-interaction" data-action="preview-cash">Caja</button><button type="button" class="cursor-interaction" data-action="preview-drawer">Drawer de categorías</button><button type="button" class="cursor-interaction" data-action="preview-quick-category">Modal crear categoría</button></div>
+  <div class="nd-app">
+    <header class="nd-top"><span class="nd-brand">Nodia</span><span class="nd-demo">Propuesta · datos de ejemplo</span></header>
+    <div class="nd-content">
+      <div class="nd-breadcrumb">Negocios <span>›</span> Almacén del Barrio</div>
+      <div class="nd-business"><div class="nd-business-icon"><i data-lucide="store" aria-hidden="true"></i></div><div><h1>Almacén del Barrio</h1><span class="nd-muted">Gestión del negocio</span></div><span class="nd-active">Activo</span></div>
+      <nav class="nd-tabs" aria-label="Secciones del negocio">
+        <button type="button" data-view="overview">Overview</button><button type="button" data-view="cash" class="selected">Caja</button><button type="button" data-view="invoice">Facturas</button><button type="button" data-view="ocr">Productos con OCR</button>
+      </nav>
+      <label class="nd-mobile-nav">Sección<select id="nd-section"><option value="overview">Overview</option><option value="cash" selected>Caja</option><option value="invoice">Facturas</option><option value="ocr">Productos con OCR</option></select></label>
+      <div class="nd-feedback" id="nd-feedback" role="status" hidden></div>
+      <main id="nd-main"></main>
+    </div>
+    <div id="nd-overlay" class="nd-overlay" hidden><section id="nd-dialog" class="nd-modal" role="dialog" aria-modal="true" aria-labelledby="nd-dialog-title"></section></div>
+  </div>
+</div>
+<style>
+#nodia-caja-preview{--nd-bg:light-dark(#f7f9f3,#000);--nd-paper:light-dark(#fff,#1a212b);--nd-text:light-dark(#12151a,#fff);--nd-muted:light-dark(#555b62,#c5c9d0);--nd-line:light-dark(#e1e4e6,#39414b);--nd-primary:light-dark(#4f46e5,#818cf8);--nd-on-primary:light-dark(#fff,#111528);--nd-green:light-dark(#187b41,#4ade80);--nd-red:light-dark(#bd2833,#f87171);--nd-tint:8%;--nd-row-pad:15px;font-family:"DM Sans","Inter",-apple-system,BlinkMacSystemFont,sans-serif;color:var(--nd-text);font-size:14px;line-height:1.45;color-scheme:light dark}
+#nodia-caja-preview *{box-sizing:border-box}
+#nodia-caja-preview [hidden]{display:none!important}
+#nodia-caja-preview h1,#nodia-caja-preview h2,#nodia-caja-preview h3,#nodia-caja-preview p{margin:0}
+#nodia-caja-preview h1{font-size:22px;font-weight:600;line-height:1.3}
+#nodia-caja-preview h2{font-size:20px;font-weight:600}
+#nodia-caja-preview h3{font-size:16px;font-weight:600}
+#nodia-caja-preview button,#nodia-caja-preview input,#nodia-caja-preview select,#nodia-caja-preview textarea{font:inherit;color:inherit}
+#nodia-caja-preview button{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;border:1px solid var(--nd-line);padding:9px 15px;background:var(--nd-paper);font-weight:500}
+#nodia-caja-preview button:hover{background:color-mix(in srgb,var(--nd-primary) 7%,var(--nd-paper))}
+#nodia-caja-preview button:disabled{opacity:.4}
+#nodia-caja-preview button.nd-primary{background:var(--nd-primary);color:var(--nd-on-primary);border-color:transparent}
+#nodia-caja-preview button.nd-ghost{border-color:transparent;background:transparent;color:var(--nd-primary)}
+#nodia-caja-preview button.nd-icon{width:44px;min-width:44px;padding:10px;border-color:transparent;background:transparent}
+#nodia-caja-preview button.nd-help{min-height:32px;width:32px;padding:5px;border:none;border-radius:50%;color:var(--nd-muted);background:transparent;font-weight:600}
+#nodia-caja-preview button:focus-visible,#nodia-caja-preview input:focus-visible,#nodia-caja-preview select:focus-visible,#nodia-caja-preview textarea:focus-visible{outline:2px solid var(--nd-primary);outline-offset:3px}
+#nodia-caja-preview input,#nodia-caja-preview select,#nodia-caja-preview textarea{width:100%;min-width:0;min-height:44px;border:1px solid var(--nd-line);border-radius:8px;padding:10px 12px;background:var(--nd-paper)}
+#nodia-caja-preview textarea{resize:vertical;min-height:84px}
+#nodia-caja-preview label{display:flex;flex-direction:column;gap:8px;font-weight:600;min-width:0}
+#nodia-caja-preview input[type=checkbox]{width:20px;min-height:20px;accent-color:var(--nd-green)}
+#nodia-caja-preview .nd-app{position:relative;min-height:810px;background:var(--nd-bg);border:1px solid var(--nd-line);border-radius:16px;overflow:clip}
+#nodia-caja-preview .nd-top{display:flex;align-items:center;gap:20px;min-height:62px;padding:12px 32px;border-bottom:1px solid var(--nd-line);background:var(--nd-paper)}
+#nodia-caja-preview .nd-brand{font-size:23px;font-weight:700;letter-spacing:-1px;color:var(--nd-primary)}
+#nodia-caja-preview .nd-demo{font-size:12px;color:var(--nd-muted);margin-left:auto;margin-right:70px}
+#nodia-caja-preview .nd-content{padding:16px 32px 32px;display:flex;flex-direction:column;gap:24px}
+#nodia-caja-preview .nd-breadcrumb{display:flex;gap:12px;color:var(--nd-muted);font-size:13px}
+#nodia-caja-preview .nd-business{display:flex;align-items:center;gap:14px;background:var(--nd-paper);border:1px solid var(--nd-line);border-radius:14px;padding:18px 20px}
+#nodia-caja-preview .nd-business-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:12px;color:var(--nd-primary);background:color-mix(in srgb,var(--nd-primary) 10%,var(--nd-paper))}
+#nodia-caja-preview .nd-muted{color:var(--nd-muted);font-size:13px;font-weight:400}
+#nodia-caja-preview .nd-active{font-size:12px;margin-left:auto;color:var(--nd-green);background:color-mix(in srgb,var(--nd-green) 10%,var(--nd-paper));padding:4px 10px;border-radius:20px}
+#nodia-caja-preview .nd-tabs{display:flex;gap:8px;border-bottom:1px solid var(--nd-line);margin-top:-8px}
+#nodia-caja-preview .nd-tabs button{border:0;border-radius:0;background:transparent;color:var(--nd-muted);position:relative;padding:12px 18px}
+#nodia-caja-preview .nd-tabs button.selected{color:var(--nd-primary)}
+#nodia-caja-preview .nd-tabs button.selected:after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:3px;background:var(--nd-primary);border-radius:3px 3px 0 0}
+#nodia-caja-preview .nd-mobile-nav{display:none}
+#nodia-caja-preview main{display:flex;flex-direction:column;gap:24px;min-width:0}
+#nodia-caja-preview .nd-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+#nodia-caja-preview .nd-actions{display:flex;gap:8px;flex-wrap:wrap}
+#nodia-caja-preview .nd-filters-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:-10px}
+#nodia-caja-preview .nd-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;font-size:12px;border:1px solid var(--nd-line);border-radius:18px;background:var(--nd-paper);color:var(--nd-muted)}
+#nodia-caja-preview .nd-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+#nodia-caja-preview .nd-stat{padding:22px 24px;background:var(--nd-paper);border:1px solid var(--nd-line);border-radius:14px;min-width:0}
+#nodia-caja-preview .nd-stat-head{display:flex;align-items:center;gap:10px;font-weight:600}
+#nodia-caja-preview .nd-stat-icon{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:10px;background:color-mix(in srgb,var(--nd-mark) 10%,var(--nd-paper));color:var(--nd-mark)}
+#nodia-caja-preview .nd-income{--nd-mark:var(--nd-green)}
+#nodia-caja-preview .nd-expense{--nd-mark:var(--nd-red)}
+#nodia-caja-preview .nd-stat-value{font-size:30px;line-height:1.25;font-weight:600;letter-spacing:-.5px;font-variant-numeric:tabular-nums;margin:16px 0 5px;overflow-wrap:anywhere}
+#nodia-caja-preview .nd-table-panel{background:var(--nd-paper);border:1px solid var(--nd-line);border-radius:14px;min-width:0}
+#nodia-caja-preview .nd-table-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px}
+#nodia-caja-preview .nd-search{display:flex;align-items:center;gap:8px;max-width:340px;width:100%;position:relative}
+#nodia-caja-preview .nd-search>i,#nodia-caja-preview .nd-search>svg{position:absolute;left:12px;color:var(--nd-muted)}
+#nodia-caja-preview .nd-search input{padding-left:38px;font-weight:400}
+#nodia-caja-preview .nd-table-wrap{overflow-x:auto;scrollbar-width:thin;scrollbar-color:light-dark(#0003,#fff3) transparent}
+#nodia-caja-preview .nd-table-wrap::-webkit-scrollbar{width:6px;height:6px}
+#nodia-caja-preview .nd-table-wrap::-webkit-scrollbar-track{background:transparent!important}
+#nodia-caja-preview .nd-table-wrap::-webkit-scrollbar-button{display:none!important;width:0;height:0}
+#nodia-caja-preview .nd-table-wrap::-webkit-scrollbar-thumb{border-radius:9999px;border:0;background:light-dark(#0003,#fff3)}
+#nodia-caja-preview table{width:100%;min-width:650px;border-collapse:collapse;font-size:13px}
+#nodia-caja-preview th{text-align:left;padding:12px 16px;font-size:12px;font-weight:600;color:var(--nd-muted);border-top:1px solid var(--nd-line);border-bottom:1px solid var(--nd-line)}
+#nodia-caja-preview td{padding:var(--nd-row-pad) 16px;border-bottom:1px solid var(--nd-line);vertical-align:middle}
+#nodia-caja-preview tr.nd-cash-row{background:color-mix(in srgb,var(--nd-mark) var(--nd-tint),var(--nd-paper))}
+#nodia-caja-preview .nd-amount{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+#nodia-caja-preview .nd-kind{display:flex;align-items:center;gap:6px;font-weight:600;white-space:nowrap}
+#nodia-caja-preview .nd-kind i,#nodia-caja-preview .nd-kind svg{color:var(--nd-mark)}
+#nodia-caja-preview .nd-row-title{font-weight:500}
+#nodia-caja-preview .nd-origin{font-size:12px;color:var(--nd-muted);margin-top:3px}
+#nodia-caja-preview .nd-pagination{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:10px 16px;font-size:12px;color:var(--nd-muted)}
+#nodia-caja-preview .nd-mobile-records{display:none}
+#nodia-caja-preview .nd-status{display:inline-flex;align-items:center;gap:5px;color:var(--nd-muted);font-size:12px}
+#nodia-caja-preview .nd-status:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+#nodia-caja-preview .nd-small-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+#nodia-caja-preview .nd-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 16px}
+#nodia-caja-preview .nd-wide{grid-column:1/-1}
+#nodia-caja-preview .nd-field-label{display:flex;gap:6px;align-items:center;min-height:32px}
+#nodia-caja-preview .nd-form-card{padding:24px;background:var(--nd-paper);border:1px solid var(--nd-line);border-radius:14px}
+#nodia-caja-preview .nd-form-card form{display:flex;flex-direction:column;gap:24px}
+#nodia-caja-preview .nd-switch{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--nd-line);border-radius:10px;padding:12px 14px;background:color-mix(in srgb,var(--nd-text) 3%,var(--nd-paper))}
+#nodia-caja-preview .nd-form-footer{display:flex;justify-content:flex-end;gap:8px}
+#nodia-caja-preview .nd-info{padding:12px 14px;border-radius:8px;color:var(--nd-muted);background:color-mix(in srgb,var(--nd-primary) 7%,var(--nd-paper));font-size:13px}
+#nodia-caja-preview .nd-overlay{position:absolute;inset:0;z-index:10;background:light-dark(#11182755,#0009);padding:48px 20px;display:flex;align-items:flex-start;justify-content:center}
+#nodia-caja-preview .nd-modal{width:100%;max-width:510px;border:1px solid var(--nd-line);border-radius:16px;background:var(--nd-paper);color:var(--nd-text);padding:24px;box-shadow:0 12px 48px #0003;display:flex;flex-direction:column;gap:24px;min-width:0}
+#nodia-caja-preview .nd-modal.nd-drawer{margin:-48px -20px -48px auto;max-width:430px;border-radius:0;min-height:100%;padding:24px}
+#nodia-caja-preview .nd-modal>form{display:flex;flex-direction:column;gap:20px}
+#nodia-caja-preview .nd-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#nodia-caja-preview .nd-category-list{display:flex;flex-direction:column;gap:0}
+#nodia-caja-preview .nd-category-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--nd-line)}
+#nodia-caja-preview .nd-category-row>div:first-child{min-width:0;overflow-wrap:anywhere}
+#nodia-caja-preview .nd-category-actions{display:flex;align-items:center}
+#nodia-caja-preview .nd-menu{display:flex;flex-direction:column;gap:6px}
+#nodia-caja-preview .nd-menu button{justify-content:flex-start}
+#nodia-caja-preview .nd-feedback{border-radius:8px;padding:10px 14px;color:var(--nd-green);background:color-mix(in srgb,var(--nd-green) 9%,var(--nd-paper));font-size:13px}
+#nodia-caja-preview .nd-empty{padding:36px 20px;text-align:center;color:var(--nd-muted)}
+#nodia-caja-preview .nd-error{color:var(--nd-red);font-size:13px}
+#nodia-caja-preview .nd-linked{color:var(--nd-primary);background:transparent;border:0;padding:0;font-size:12px;min-height:28px;justify-content:flex-start}
+@media(max-width:899px){#nodia-caja-preview .nd-content{padding:16px 24px 24px}#nodia-caja-preview .nd-top{padding-inline:24px}#nodia-caja-preview .nd-actions{gap:8px}#nodia-caja-preview .nd-toolbar{align-items:flex-start}}
+@media(max-width:599px){#nodia-caja-preview{font-size:14px}#nodia-caja-preview .nd-app{border-radius:12px;min-height:900px}#nodia-caja-preview .nd-content{padding:16px;gap:24px}#nodia-caja-preview .nd-top{padding:12px 16px;gap:12px}#nodia-caja-preview .nd-demo{font-size:11px;margin-right:0;max-width:120px}#nodia-caja-preview h1{font-size:18px}#nodia-caja-preview .nd-business{padding:16px;gap:10px;flex-wrap:wrap}#nodia-caja-preview .nd-business-icon{width:40px;height:40px}#nodia-caja-preview .nd-active{margin-left:50px}#nodia-caja-preview .nd-tabs{display:none}#nodia-caja-preview .nd-mobile-nav{display:flex}#nodia-caja-preview .nd-toolbar,#nodia-caja-preview .nd-actions{width:100%;flex-direction:column;align-items:stretch}#nodia-caja-preview .nd-toolbar button,#nodia-caja-preview .nd-actions button{width:100%}#nodia-caja-preview .nd-stats{grid-template-columns:1fr;gap:16px}#nodia-caja-preview .nd-stat{padding:18px}#nodia-caja-preview .nd-stat-value{font-size:28px;margin-top:12px}#nodia-caja-preview .nd-table-top{padding:16px;flex-direction:column;align-items:stretch;gap:12px}#nodia-caja-preview .nd-table-wrap{display:none}#nodia-caja-preview .nd-mobile-records{display:flex;flex-direction:column;gap:12px;padding:0 16px 16px}#nodia-caja-preview .nd-mobile-record{background:color-mix(in srgb,var(--nd-mark) var(--nd-tint),var(--nd-paper));padding:14px;border:1px solid var(--nd-line);border-radius:10px;display:flex;flex-direction:column;gap:10px}#nodia-caja-preview .nd-mobile-record-head{display:flex;align-items:center;justify-content:space-between;gap:10px}#nodia-caja-preview .nd-form-grid{grid-template-columns:1fr}#nodia-caja-preview .nd-form-card{padding:16px}#nodia-caja-preview .nd-form-footer{flex-direction:column-reverse}#nodia-caja-preview .nd-form-footer button{width:100%}#nodia-caja-preview .nd-overlay{padding:16px 8px}#nodia-caja-preview .nd-modal{padding:20px 16px;border-radius:14px}#nodia-caja-preview .nd-modal.nd-drawer{margin:-16px -8px -16px auto;max-width:100%;padding:20px 16px;border-radius:0}#nodia-caja-preview input,#nodia-caja-preview select,#nodia-caja-preview textarea{font-size:16px}#nodia-caja-preview .nd-pagination{justify-content:space-between;padding-inline:12px}}
+@media(max-width:599px){#nodia-caja-preview button.nd-help{min-height:44px;width:44px;min-width:44px;flex-shrink:0}#nodia-caja-preview .nd-field-label{flex-wrap:wrap}}
+#nodia-caja-preview .nd-preview-controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:16px;color:var(--nd-muted);font-size:12px}
+#nodia-caja-preview .nd-preview-controls button{font-size:12px;min-height:36px;padding:7px 12px}
+#nodia-caja-preview .nd-category-control{display:flex;gap:8px;align-items:center;width:100%;min-width:0}
+#nodia-caja-preview .nd-category-control select{min-width:0;flex:1}
+#nodia-caja-preview .nd-category-control button{flex-shrink:0;width:44px;min-width:44px;height:44px;padding:10px}
+#nodia-caja-preview .nd-category-control button[data-action="quick-category"]{color:var(--nd-primary)}
+#nodia-caja-preview .nd-invoice-modes{display:flex;gap:8px;flex-wrap:wrap}
+#nodia-caja-preview .nd-link-note{font-size:13px}
+@media(max-width:599px){#nodia-caja-preview .nd-preview-controls{align-items:stretch}#nodia-caja-preview .nd-preview-controls>span{width:100%}#nodia-caja-preview .nd-preview-controls button{min-height:44px}#nodia-caja-preview .nd-invoice-modes{flex-direction:column}#nodia-caja-preview .nd-invoice-modes button{width:100%}}
+</style>
+<script>
+(() => {
+  const root = document.getElementById('nodia-caja-preview');
+  const main = root.querySelector('#nd-main');
+  const overlay = root.querySelector('#nd-overlay');
+  const modal = root.querySelector('#nd-dialog');
+  const today = '2026-11-17';
+  const money = n => '$' + new Intl.NumberFormat('es-CL').format(n);
+  const esc = text => String(text).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const icon = name => '<i data-lucide="' + name + '" aria-hidden="true"></i>';
+  let categories = [
+    {id:'c1',name:'Mercadería',description:'Compras para abastecer el negocio',active:true},
+    {id:'c2',name:'Operación diaria',description:'Movimientos cotidianos del almacén',active:true},
+    {id:'c3',name:'Servicios',description:'Electricidad, agua e internet',active:true},
+    {id:'c4',name:'Aportes',description:'Aportes de capital al negocio',active:true}
+  ];
+  let records = [
+    {id:8,type:'income',amount:145000,date:today,category:'c2',description:'Ingreso de jornada',active:true,invoice:false},
+    {id:7,type:'expense',amount:78900,date:today,category:'c1',description:'Compra a distribuidora',active:true,invoice:true},
+    {id:6,type:'income',amount:50000,date:today,category:'c4',description:'Aporte de caja',active:true,invoice:false},
+    {id:5,type:'expense',amount:18500,date:today,category:'c3',description:'Servicio de internet',active:true,invoice:false},
+    {id:4,type:'expense',amount:6900,date:today,category:'c2',description:'Insumos de limpieza',active:true,invoice:false},
+    {id:3,type:'income',amount:23000,date:today,category:'c2',description:'Ingreso complementario',active:true,invoice:false},
+    {id:2,type:'income',amount:98000,date:'2026-11-10',category:'c2',description:'Ingreso de jornada anterior',active:true,invoice:false},
+    {id:1,type:'expense',amount:42000,date:'2026-11-08',category:'c1',description:'Compra de abastecimiento',active:true,invoice:false},
+    {id:9,type:'expense',amount:12000,date:today,category:'c2',description:'Registro desactivado de ejemplo',active:false,invoice:false},
+    {id:10,type:'income',amount:100000,date:'2026-10-31',category:'c4',description:'Aporte del mes anterior',active:true,invoice:false}
+  ];
+  let view = 'cash';
+  let filter = {category:'',from:today,to:today,activity:'active',search:''};
+  let page = 1;
+  const pageSize = 4;
+  let focusBeforeDialog = null;
+  let categoryEditId = null;
+  let invoiceCategory = 'c1';
+  const invoiceDraft = {code:'',amount:'78900',date:today,category:invoiceCategory,notes:'',active:true,provider:'Distribuidora de ejemplo'};
+  let invoiceMode = 'edit';
+  let invoiceId = 'invoice-demo-1';
+  const invoiceBook = new Map([
+    ['invoice-demo-1',{...invoiceDraft}],
+    ['invoice-demo-2',{...invoiceDraft,amount:'24000',category:''}]
+  ]);
+  records.find(row=>row.invoice).invoiceId = invoiceId;
+  let quickCategoryContext = null;
+  let ocrCategory = '';
+  const design = {tint:8,density:'Cómoda'};
+  const saved = window.openai?.widgetState?.privateContent;
+  if (saved && ['overview','cash','invoice','ocr'].includes(saved.view)) view = saved.view;
+  const savedFilter = window.openai?.widgetState?.modelContent?.caja_filtros;
+  if (savedFilter && ['active','inactive','all'].includes(savedFilter.activity) && ['category','from','to','search'].every(key=>typeof savedFilter[key]==='string')) filter = {...filter,...savedFilter};
+  function persist() {
+    window.openai?.setWidgetState?.({modelContent:{vista:view,caja_filtros:filter},privateContent:{view}})?.catch(()=>{});
+  }
+  window.addEventListener('openai:set_globals', event => {
+    const incoming = event.detail?.globals?.widgetState?.privateContent;
+    const incomingFilter = event.detail?.globals?.widgetState?.modelContent?.caja_filtros;
+    if (incomingFilter && ['active','inactive','all'].includes(incomingFilter.activity) && ['category','from','to','search'].every(key=>typeof incomingFilter[key]==='string')) filter = {...filter,...incomingFilter};
+    if (incoming && ['overview','cash','invoice','ocr'].includes(incoming.view)) {view=incoming.view;render();}
+  });
+  function icons() { if (globalThis.lucide) globalThis.lucide.createIcons({attrs:{width:18,height:18}}); }
+  function bindLocalForm(form, apply) {
+    const submitLocally = () => { if (form.reportValidity()) apply(form); };
+    form.querySelector('[data-local-submit]').addEventListener('click', submitLocally);
+    form.addEventListener('submit', event => event.preventDefault());
+    form.addEventListener('keydown', event => {
+      if (event.key === 'Enter' && event.target.matches('input:not([type="checkbox"])')) {
+        event.preventDefault();
+        submitLocally();
+      }
+    });
+  }
+  function categoryName(id) { return categories.find(c=>c.id===id)?.name || 'Categoría no disponible'; }
+  function canonicalCategoryName(name) { return name.normalize('NFKC').toLocaleLowerCase('es').replace(/[\p{White_Space}\uFEFF]/gu,''); }
+  function isDuplicateCategory(name, exceptId=null) { const key=canonicalCategoryName(name);return categories.some(category=>category.id!==exceptId&&canonicalCategoryName(category.name)===key); }
+  function decorateCategoryPicker(select) {
+    if (!select || select.closest('.nd-category-control')) return;
+    const control=document.createElement('span');control.className='nd-category-control';
+    select.before(control);control.append(select);
+    const clear=document.createElement('button');clear.type='button';clear.className='cursor-interaction';clear.dataset.action='clear-category';clear.setAttribute('aria-label','Limpiar categoría');clear.innerHTML=icon('x');
+    const create=document.createElement('button');create.type='button';create.className='cursor-interaction';create.dataset.action='quick-category';create.setAttribute('aria-label','Crear categoría');create.innerHTML=icon('plus');
+    control.append(clear,create);
+  }
+  function updateInvoiceLinkNote() {
+    const note=root.querySelector('#nd-invoice-link-note');if(!note)return;
+    const linked=records.find(row=>row.invoiceId===invoiceId&&!row.withdrawn);
+    note.textContent=linked&&!invoiceDraft.category?'Al guardar se retirará el egreso de Caja. Los totales dejarán de incluirlo.':linked?'Egreso vinculado · cambiar la categoría conserva el mismo registro.':invoiceDraft.category?'Al guardar se registrará un único egreso por el total y fecha de esta factura.':'Sin categoría · esta factura no generará un egreso en Caja.';
+    note.classList.toggle('nd-error',Boolean(linked&&!invoiceDraft.category));
+  }
+  function chooseInvoice(mode,id=null) {
+    invoiceMode=mode;invoiceId=id;
+    const draft=id?invoiceBook.get(id):{code:'',amount:'0',date:today,category:'',notes:'',active:true,provider:'Distribuidora de ejemplo'};
+    Object.assign(invoiceDraft,draft);invoiceCategory=invoiceDraft.category;view='invoice';render();persist();
+  }
+  function categoryOptions(selected, empty, includeInactive=false) {
+    return '<option value="">'+esc(empty)+'</option>' + categories.filter(c=>includeInactive||c.active||c.id===selected).map(c=>'<option value="'+c.id+'" '+(c.id===selected?'selected':'')+'>'+esc(c.name)+(c.active?'':' · Inactiva')+'</option>').join('');
+  }
+  function stats(list, month=false) {
+    return '<div class="nd-stats" aria-live="polite">'+['income','expense'].map(type=>{
+      const rows=list.filter(r=>r.type===type);
+      const name=type==='income'?'Ingresos':'Egresos';
+      return '<article class="nd-stat nd-'+type+'"><div class="nd-stat-head"><span class="nd-stat-icon">'+icon(type==='income'?'arrow-down-left':'arrow-up-right')+'</span>'+name+(month?' del mes':'')+'</div><div class="nd-stat-value">'+money(rows.reduce((s,r)=>s+r.amount,0))+'</div><div class="nd-muted">'+rows.length+' '+(type==='income'?'ingresos':'egresos')+' · CLP'+(month?' · Activos':'')+'</div></article>';
+    }).join('')+'</div>';
+  }
+  function filtered() {
+    const term=filter.search.trim().toLocaleLowerCase('es');
+    return records.filter(r=>!r.withdrawn&&(!filter.category||r.category===filter.category)&&(!filter.from||r.date>=filter.from)&&(!filter.to||r.date<=filter.to)&&(filter.activity==='all'||r.active===(filter.activity==='active'))&&(!term||(r.description+' '+categoryName(r.category)+' '+(r.invoice?'Factura':'Manual')).toLocaleLowerCase('es').includes(term))).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+  }
+  function cashParts() {
+    const list=filtered();
+    const totalPages=Math.max(1,Math.ceil(list.length/pageSize));page=Math.min(page,totalPages);
+    root.querySelector('#nd-cash-stats').innerHTML=stats(list);
+    const visible=list.slice((page-1)*pageSize,page*pageSize);
+    root.querySelector('#nd-record-count').textContent=list.length+' registros';
+    root.querySelector('#nd-table-rows').innerHTML=visible.length?visible.map(r=>'<tr class="nd-cash-row nd-'+r.type+'"><td>'+esc(r.date.split('-').reverse().join('/'))+'</td><td><span class="nd-kind">'+icon(r.type==='income'?'arrow-down-left':'arrow-up-right')+(r.type==='income'?'Ingreso':'Egreso')+'</span></td><td><div class="nd-row-title">'+esc(r.description)+'</div><div class="nd-origin">'+(r.invoice?'Factura · egreso vinculado':'Registro manual')+'</div></td><td>'+esc(categoryName(r.category))+'</td><td class="nd-amount">'+(r.type==='income'?'+':'−')+' '+money(r.amount)+'</td><td><span class="nd-status">'+(r.active?'Activo':'Inactivo')+'</span></td><td><button class="nd-icon cursor-interaction" type="button" data-action="row-menu" data-id="'+r.id+'" aria-label="Acciones de '+esc(r.description)+'">'+icon('ellipsis-vertical')+'</button></td></tr>').join(''):'<tr><td colspan="7"><div class="nd-empty">No hay movimientos con estos filtros.</div></td></tr>';
+    root.querySelector('#nd-mobile-rows').innerHTML=visible.length?visible.map(r=>'<article class="nd-mobile-record nd-'+r.type+'"><div class="nd-mobile-record-head"><span class="nd-kind">'+icon(r.type==='income'?'arrow-down-left':'arrow-up-right')+(r.type==='income'?'Ingreso':'Egreso')+'</span><button class="nd-icon cursor-interaction" type="button" data-action="row-menu" data-id="'+r.id+'" aria-label="Acciones de '+esc(r.description)+'">'+icon('ellipsis-vertical')+'</button></div><div class="nd-row-title">'+esc(r.description)+'</div><div class="nd-amount">'+(r.type==='income'?'+':'−')+' '+money(r.amount)+'</div><div class="nd-muted">'+esc(categoryName(r.category))+' · '+esc(r.date.split('-').reverse().join('/'))+'</div><div class="nd-origin">'+(r.invoice?'Factura · egreso vinculado':'Registro manual')+' · '+(r.active?'Activo':'Inactivo')+'</div></article>').join(''):'<div class="nd-empty">No hay movimientos con estos filtros.</div>';
+    root.querySelector('#nd-page-label').textContent=list.length?((page-1)*pageSize+1)+'–'+Math.min(page*pageSize,list.length)+' de '+list.length:'0 registros';
+    root.querySelector('[data-action="previous"]').disabled=page===1;
+    root.querySelector('[data-action="next"]').disabled=page===totalPages;
+    icons();
+  }
+  function render() {
+    root.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('selected',b.dataset.view===view);b.setAttribute('aria-current',b.dataset.view===view?'page':'false');});
+    root.querySelector('#nd-section').value=view;
+    if(view==='cash') {
+      const period=filter.from===today&&filter.to===today?'Hoy · 17 nov 2026':((filter.from||'Inicio')+' → '+(filter.to||'Sin fin'));
+      main.innerHTML='<div class="nd-toolbar"><button type="button" data-action="filters" class="cursor-interaction">'+icon('list-filter')+'Filtros <span class="nd-chip">'+(2+(filter.category?1:0))+'</span></button><div class="nd-actions"><button type="button" data-action="categories" class="cursor-interaction">'+icon('tags')+'Gestionar categorías</button><button type="button" data-action="new-expense" class="cursor-interaction">'+icon('minus')+'Egreso</button><button type="button" data-action="new-income" class="nd-primary cursor-interaction">'+icon('plus')+'Ingreso</button></div></div><div class="nd-filters-line"><span class="nd-chip">'+icon('calendar-days')+esc(period)+'</span><span class="nd-chip">'+esc(filter.category?categoryName(filter.category):'Todas las categorías')+'</span><span class="nd-chip">'+(filter.activity==='active'?'Activos':filter.activity==='inactive'?'Inactivos':'Todos')+'</span></div><div id="nd-cash-stats"></div><section class="nd-table-panel" aria-label="Movimientos de Caja"><div class="nd-table-top"><label class="nd-search">'+icon('search')+'<input id="nd-search" type="search" aria-label="Buscar movimientos" placeholder="Buscar movimientos…" value="'+esc(filter.search)+'"></label><span id="nd-record-count" class="nd-muted"></span></div><div class="nd-table-wrap"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Categoría</th><th class="nd-amount">Monto · CLP</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="nd-table-rows"></tbody></table></div><div class="nd-mobile-records" id="nd-mobile-rows"></div><div class="nd-pagination"><span id="nd-page-label"></span><button type="button" class="nd-icon cursor-interaction" data-action="previous" aria-label="Página anterior">'+icon('chevron-left')+'</button><button type="button" class="nd-icon cursor-interaction" data-action="next" aria-label="Página siguiente">'+icon('chevron-right')+'</button></div></section>';
+      cashParts();
+      root.querySelector('#nd-search').addEventListener('input',e=>{filter.search=e.target.value;page=1;cashParts();persist();});
+    } else if(view==='overview') {
+      const monthly=records.filter(r=>!r.withdrawn&&r.active&&r.date>='2026-11-01'&&r.date<='2026-11-30');
+      main.innerHTML='<div class="nd-small-heading"><div><h2>Resumen del negocio</h2><span class="nd-muted">Noviembre 2026 · movimientos activos de Caja</span></div></div>'+stats(monthly,true)+'<div class="nd-info">Los importes del mes se calculan con los movimientos de Caja. Los filtros de la pestaña Caja no cambian este resumen.</div><div class="nd-actions"><button class="nd-primary cursor-interaction" type="button" data-action="go-cash">Ver movimientos de Caja</button></div>';
+    } else if(view==='invoice') {
+      main.innerHTML='<div class="nd-small-heading"><div><h2>Facturas</h2><span class="nd-muted">Registro manual y vínculo con Caja</span></div></div><section class="nd-form-card"><form id="nd-invoice-form"><h3>Actualizar factura</h3><div class="nd-form-grid"><label>Código / folio <span class="nd-muted">Opcional</span><input name="code" value="" placeholder="Sin folio"></label><label>Proveedor<select name="provider"><option>Distribuidora de ejemplo</option><option>Proveedor local</option></select></label><label>Total · CLP<input name="amount" type="number" min="1" step="1" value="78900" required></label><label>Fecha de emisión<input name="date" type="date" value="'+today+'" required></label><label class="nd-wide"><span class="nd-field-label">Categoría de egreso <span class="nd-muted">Opcional</span><button type="button" class="nd-help cursor-interaction" data-action="help-invoice" aria-label="Información sobre categoría de egreso">?</button></span><select name="category">'+categoryOptions(invoiceCategory,'Sin egreso en Caja')+'</select></label><div class="nd-wide nd-info" id="nd-invoice-help" hidden>Al seleccionar una categoría, esta factura tendrá un único egreso en Caja por su total y fecha de emisión. Cambiar la categoría actualiza ese mismo egreso.</div><label class="nd-wide">Notas u observaciones<textarea name="notes" placeholder="Agregar observaciones…"></textarea></label><label class="nd-wide nd-switch">Activo<input name="active" type="checkbox" checked></label></div><div class="nd-form-footer"><button class="nd-primary cursor-interaction" type="button" data-local-submit>Guardar factura</button></div></form></section>';
+      const invoiceForm = root.querySelector('#nd-invoice-form');
+      invoiceForm.querySelector('h3').textContent=invoiceMode==='new'?'Nueva factura':'Actualizar factura';
+      invoiceForm.elements.namedItem('amount').min='0';
+      const invoiceModes=document.createElement('div');invoiceModes.className='nd-invoice-modes';
+      invoiceModes.innerHTML='<button type="button" data-action="new-invoice" class="nd-primary cursor-interaction">Nueva factura</button><button type="button" data-action="edit-demo-invoice" class="cursor-interaction">Editar factura con egreso</button><button type="button" data-action="edit-unlinked-invoice" class="cursor-interaction">Editar factura sin categoría</button>';
+      root.querySelector('.nd-form-card').before(invoiceModes);
+      const linkedNote = document.createElement('div');
+      linkedNote.id='nd-invoice-link-note';
+      linkedNote.className = 'nd-info';
+      linkedNote.textContent = 'Egreso vinculado · cambiar la categoría conserva el mismo registro.';
+      invoiceForm.querySelector('h3').after(linkedNote);
+      for (const [key,value] of Object.entries(invoiceDraft)) {
+        const field = invoiceForm.elements.namedItem(key);
+        if (!field) continue;
+        if (field.type === 'checkbox') field.checked = value;
+        else field.value = value;
+      }
+      const keepInvoiceDraft = event => {
+        const field = event.target;
+        if (field.name && Object.hasOwn(invoiceDraft,field.name)) invoiceDraft[field.name] = field.type === 'checkbox' ? field.checked : field.value;
+        updateInvoiceLinkNote();
+      };
+      invoiceForm.addEventListener('input',keepInvoiceDraft);
+      invoiceForm.addEventListener('change',keepInvoiceDraft);
+      bindLocalForm(invoiceForm,saveInvoice);
+      invoiceForm.querySelector('#nd-invoice-help').textContent='La categoría es opcional. Al guardar con categoría se crea o actualiza un único egreso por el total y la fecha de la factura. Al quitarla y guardar, se retira ese egreso de Caja.';
+      updateInvoiceLinkNote();
+    } else {
+      main.innerHTML='<div class="nd-small-heading"><div><h2>Registrar productos con OCR</h2><span class="nd-muted">Revisión de factura de ejemplo · extracción simulada</span></div></div><section class="nd-form-card"><div class="nd-form-grid"><label>Proveedor<select><option>Distribuidora de ejemplo · OCR activo</option></select></label><label>Fecha de emisión<input type="date" value="'+today+'"></label><div class="nd-wide nd-info">3 productos revisados · total factura '+money(78900)+' CLP</div><label class="nd-wide"><span class="nd-field-label">Categoría de egreso <span class="nd-muted">Opcional</span><button type="button" class="nd-help cursor-interaction" data-action="help-ocr" aria-label="Información sobre egreso al guardar productos">?</button></span><select id="nd-ocr-category">'+categoryOptions('','Sin egreso en Caja')+'</select></label><div class="nd-wide nd-info" id="nd-ocr-help" hidden>Si eliges una categoría, al guardar la factura se registra un único egreso por el total de la factura. Los productos no generan egresos individuales.</div></div><div class="nd-form-footer" style="margin-top:24px"><button type="button" class="nd-primary cursor-interaction" data-action="save-ocr">Guardar factura y productos</button></div></section>';
+    }
+    main.querySelectorAll('#nd-invoice-form select[name="category"],#nd-ocr-category').forEach(decorateCategoryPicker);
+    const ocrSelect=root.querySelector('#nd-ocr-category');if(ocrSelect){ocrSelect.value=ocrCategory;ocrSelect.addEventListener('change',event=>{ocrCategory=event.target.value;});}
+    icons();
+  }
+  function feedback(message) {const area=root.querySelector('#nd-feedback');area.textContent=message;area.hidden=false;}
+  function openDialog(title,html,drawer=false) {
+    if(overlay.hidden) focusBeforeDialog=document.activeElement;
+    modal.classList.toggle('nd-drawer',drawer);
+    modal.innerHTML='<div class="nd-dialog-head"><h2 id="nd-dialog-title">'+esc(title)+'</h2><button type="button" class="nd-icon cursor-interaction" data-action="close-dialog" aria-label="Cerrar">'+icon('x')+'</button></div>'+html;
+    overlay.hidden=false;
+    icons();
+    const first=modal.querySelector('input, select, textarea, button');if(first)first.focus();
+    root.querySelector('.nd-app').style.minHeight=Math.max(810,modal.scrollHeight+110)+'px';
+  }
+  function closeDialog(){if(quickCategoryContext){restoreCategoryOrigin(null);return;}overlay.hidden=true;root.querySelector('.nd-app').style.minHeight='';if(focusBeforeDialog?.isConnected)focusBeforeDialog.focus();else {const action=focusBeforeDialog?.getAttribute('data-action');const trigger=action?root.querySelector('button[data-action="'+action+'"]'):null;trigger?.focus();}}
+  function openQuickCategory(select) {
+    quickCategoryContext={select,wasOpen:!overlay.hidden,nodes:[...modal.childNodes],drawer:modal.classList.contains('nd-drawer'),trigger:document.activeElement};
+    openDialog('Crear categoría','<p class="nd-muted">La categoría se seleccionará en el formulario que estabas completando.</p><form id="nd-quick-category-form"><label>Nombre *<input name="name" maxlength="120" required placeholder="Ej. Mantención"></label><label>Descripción *<textarea name="description" maxlength="500" required placeholder="¿Qué movimientos agrupa?"></textarea></label><p class="nd-error" id="nd-quick-category-error" role="alert" hidden></p><div class="nd-form-footer"><button type="button" class="nd-ghost cursor-interaction" data-action="close-dialog">Cancelar</button><button type="button" data-local-submit class="nd-primary cursor-interaction">Crear y seleccionar</button></div></form>');
+    bindLocalForm(modal.querySelector('form'),form=>{
+      const data=new FormData(form);const name=data.get('name').trim();const description=data.get('description').trim();
+      if(!canonicalCategoryName(name)||!description||isDuplicateCategory(name)){
+        const error=modal.querySelector('#nd-quick-category-error');error.textContent=!canonicalCategoryName(name)||!description?'Completa el nombre y la descripción.':'Ya existe una categoría con ese nombre, incluso si está inactiva. Los espacios y las mayúsculas no la hacen distinta.';error.hidden=false;return;
+      }
+      const created={id:'c'+Date.now(),name,description,active:true};categories.push(created);restoreCategoryOrigin(created);feedback('Categoría creada y seleccionada en esta demostración.');persist();
+    });
+  }
+  function restoreCategoryOrigin(created) {
+    const context=quickCategoryContext;quickCategoryContext=null;
+    if(context.wasOpen){modal.replaceChildren(...context.nodes);modal.classList.toggle('nd-drawer',context.drawer);overlay.hidden=false;root.querySelector('.nd-app').style.minHeight=Math.max(810,modal.scrollHeight+110)+'px';}
+    else {overlay.hidden=true;root.querySelector('.nd-app').style.minHeight='';}
+    if(created){context.select.innerHTML=categoryOptions(created.id,'Seleccionar categoría');context.select.value=created.id;context.select.dispatchEvent(new Event('input',{bubbles:true}));context.select.dispatchEvent(new Event('change',{bubbles:true}));}
+    if(created)context.select.focus();else context.trigger?.focus();
+    icons();
+  }
+  function showFilters() {
+    openDialog('Filtrar movimientos','<form id="nd-filter-form"><label>Categoría<select name="category">'+categoryOptions(filter.category,'Todas las categorías',true)+'</select></label><div class="nd-form-grid"><label>Desde<input type="date" name="from" value="'+filter.from+'" required></label><label>Hasta<input type="date" name="to" value="'+filter.to+'" required></label></div><label>Estado<select name="activity"><option value="active" '+(filter.activity==='active'?'selected':'')+'>Activo</option><option value="inactive" '+(filter.activity==='inactive'?'selected':'')+'>Inactivo</option><option value="all" '+(filter.activity==='all'?'selected':'')+'>Todos</option></select></label><p class="nd-error" id="nd-filter-error" role="alert" hidden></p><div class="nd-form-footer"><button type="button" data-action="clear-filter" class="nd-ghost cursor-interaction">Limpiar filtros</button><button type="button" data-local-submit class="nd-primary cursor-interaction">Aplicar filtros</button></div></form>');
+    bindLocalForm(modal.querySelector('form'),form=>{const data=new FormData(form);if(data.get('from')>data.get('to')){const error=modal.querySelector('#nd-filter-error');error.textContent='La fecha inicial debe ser anterior o igual a la final.';error.hidden=false;return;}filter={...filter,category:data.get('category'),from:data.get('from'),to:data.get('to'),activity:data.get('activity')};page=1;closeDialog();render();persist();});
+  }
+  function showCategories(editId=null) {
+    categoryEditId=editId;
+    const cat=categories.find(c=>c.id===editId);
+    openDialog('Categorías de Caja','<p class="nd-muted">Las mismas categorías sirven para ingresos y egresos.</p><form id="nd-category-form"><h3>'+(cat?'Editar categoría':'Nueva categoría')+'</h3><label>Nombre<input name="name" maxlength="120" value="'+esc(cat?.name||'')+'" required></label><label>Descripción<textarea name="description" maxlength="500" required>'+esc(cat?.description||'')+'</textarea></label><div class="nd-form-footer">'+(cat?'<button type="button" class="nd-ghost cursor-interaction" data-action="new-category">Cancelar edición</button>':'')+'<button type="button" data-local-submit class="nd-primary cursor-interaction">'+(cat?'Guardar cambios':'Crear categoría')+'</button></div><p id="nd-category-error" role="alert" class="nd-error" hidden></p></form><div class="nd-category-list">'+categories.map(c=>'<div class="nd-category-row"><div><strong>'+esc(c.name)+'</strong><div class="nd-muted">'+esc(c.description)+'</div><span class="nd-status">'+(c.active?'Activa':'Inactiva')+'</span></div><div class="nd-category-actions"><button type="button" class="nd-icon cursor-interaction" data-action="edit-category" data-id="'+c.id+'" aria-label="Editar '+esc(c.name)+'">'+icon('pencil')+'</button><button type="button" class="nd-icon cursor-interaction" data-action="toggle-category" data-id="'+c.id+'" aria-label="'+(c.active?'Desactivar':'Activar')+' '+esc(c.name)+'">'+icon(c.active?'circle-pause':'circle-play')+'</button></div></div>').join('')+'</div>',true);
+    bindLocalForm(modal.querySelector('form'),form=>{const data=new FormData(form);const name=data.get('name').trim();const description=data.get('description').trim();if(!canonicalCategoryName(name)||!description||isDuplicateCategory(name,categoryEditId)){const error=modal.querySelector('#nd-category-error');error.textContent='Completa los campos con un nombre único. Espacios y mayúsculas no distinguen categorías; también se consideran las inactivas.';error.hidden=false;return;}if(cat){cat.name=name;cat.description=description;}else categories.push({id:'c'+Date.now(),name,description,active:true});feedback('Categoría guardada en esta demostración.');render();showCategories();persist();});
+  }
+  function showMovement(type,id=null) {
+    const r=records.find(item=>item.id===Number(id));
+    if(r?.invoice){closeDialog();chooseInvoice('edit',r.invoiceId);feedback('El importe, fecha y categoría del egreso vinculado se actualizan desde su factura.');return;}
+    const title=(r?'Actualizar ':'Agregar ')+(type==='income'?'ingreso':'egreso');
+    openDialog(title,'<form id="nd-movement-form"><label>Categoría *<select name="category" required>'+categoryOptions(r?.category||'','Seleccionar categoría')+'</select></label><div class="nd-form-grid"><label>Monto · CLP *<input name="amount" type="number" min="1" step="1" value="'+(r?.amount||'')+'" required inputmode="numeric"></label><label>Fecha *<input name="date" type="date" value="'+(r?.date||today)+'" required></label></div><label>Descripción *<textarea name="description" required maxlength="500">'+esc(r?.description||'')+'</textarea></label><label class="nd-switch">Activo<input type="checkbox" name="active" '+(!r||r.active?'checked':'')+'></label><div class="nd-form-footer"><button type="button" class="nd-ghost cursor-interaction" data-action="close-dialog">Cancelar</button><button type="button" data-local-submit class="nd-primary cursor-interaction">Guardar '+(type==='income'?'ingreso':'egreso')+'</button></div></form>');
+    decorateCategoryPicker(modal.querySelector('select[name="category"]'));icons();
+    bindLocalForm(modal.querySelector('form'),form=>{const data=new FormData(form);const amount=Number(data.get('amount'));if(!Number.isSafeInteger(amount)||amount<=0)return;const payload={type,amount,date:data.get('date'),category:data.get('category'),description:data.get('description').trim(),active:data.get('active')==='on',invoice:false};if(r)Object.assign(r,payload);else records.push({...payload,id:Math.max(...records.map(row=>row.id))+1});closeDialog();render();feedback((r?'Movimiento actualizado':'Movimiento creado')+' en esta demostración.');persist();});
+  }
+  function showRowMenu(id) {
+    const row=records.find(r=>r.id===Number(id));if(!row)return;
+    openDialog('Acciones del movimiento','<div><strong>'+esc(row.description)+'</strong><p class="nd-muted">'+(row.type==='income'?'Ingreso':'Egreso')+' · '+money(row.amount)+'</p></div><div class="nd-menu"><button type="button" data-action="edit-row" data-id="'+row.id+'" class="cursor-interaction">'+icon('pencil')+'Editar'+(row.invoice?' desde factura':'')+'</button><button type="button" data-action="confirm-toggle" data-id="'+row.id+'" class="cursor-interaction">'+icon(row.active?'circle-pause':'circle-play')+(row.active?'Desactivar':'Activar')+'</button></div>');
+  }
+  function saveInvoice(form) {
+    const data=new FormData(form);const cat=data.get('category');const amount=Number(data.get('amount'));
+    if(!Number.isSafeInteger(amount)||amount<0||(cat&&amount<=0)){feedback('La categoría requiere un total positivo para registrar el egreso.');return;}
+    if(!invoiceId){invoiceId='invoice-demo-'+(invoiceBook.size+1);invoiceMode='edit';}
+    const current=records.find(row=>row.invoiceId===invoiceId);
+    Object.assign(invoiceDraft,{code:data.get('code'),amount:String(amount),date:data.get('date'),category:cat,notes:data.get('notes'),active:data.get('active')==='on',provider:data.get('provider')});
+    invoiceCategory=cat;invoiceBook.set(invoiceId,{...invoiceDraft});
+    if(cat){
+      if(current)Object.assign(current,{category:cat,amount,date:data.get('date'),active:current.withdrawn?true:current.active,withdrawn:false});
+      else records.push({id:Math.max(...records.map(row=>row.id))+1,type:'expense',amount,date:data.get('date'),category:cat,description:'Compra a distribuidora',active:true,invoice:true,invoiceId,withdrawn:false});
+    }else if(current)current.withdrawn=true;
+    render();
+    feedback(cat?'Factura guardada en la demostración · un único egreso vinculado.':current?'Factura guardada en la demostración · egreso retirado de Caja.':'Factura guardada en la demostración · sin egreso en Caja.');persist();
+  }
+  root.addEventListener('click',event=>{
+    const nav=event.target.closest('[data-view]');if(nav){view=nav.dataset.view;render();persist();return;}
+    const button=event.target.closest('button[data-action]');if(!button)return;
+    const action=button.dataset.action;const id=button.dataset.id;
+    if(action==='preview-cash'){if(quickCategoryContext)restoreCategoryOrigin(null);closeDialog();view='cash';render();}
+    else if(action==='preview-drawer'){if(quickCategoryContext)restoreCategoryOrigin(null);closeDialog();view='cash';render();showCategories();}
+    else if(action==='preview-quick-category'){if(quickCategoryContext)restoreCategoryOrigin(null);closeDialog();chooseInvoice('edit','invoice-demo-1');openQuickCategory(root.querySelector('#nd-invoice-form select[name="category"]'));}
+    else if(action==='new-invoice')chooseInvoice('new');
+    else if(action==='edit-demo-invoice')chooseInvoice('edit','invoice-demo-1');
+    else if(action==='edit-unlinked-invoice')chooseInvoice('edit','invoice-demo-2');
+    else if(action==='clear-category'){const select=button.closest('.nd-category-control').querySelector('select');select.value='';select.dispatchEvent(new Event('input',{bubbles:true}));select.dispatchEvent(new Event('change',{bubbles:true}));select.focus();}
+    else if(action==='quick-category')openQuickCategory(button.closest('.nd-category-control').querySelector('select'));
+    else if(action==='go-cash'){view='cash';render();persist();}
+    else if(action==='filters')showFilters();
+    else if(action==='categories'||action==='new-category')showCategories();
+    else if(action==='edit-category')showCategories(id);
+    else if(action==='toggle-category'){const cat=categories.find(c=>c.id===id);openDialog((cat.active?'Desactivar':'Activar')+' categoría','<p>'+esc(cat.name)+'</p><p class="nd-muted">Los movimientos existentes conservan su categoría y sus importes.</p><div class="nd-form-footer"><button type="button" class="nd-ghost cursor-interaction" data-action="categories">Cancelar</button><button type="button" class="nd-primary cursor-interaction" data-action="apply-category-toggle" data-id="'+id+'">Confirmar</button></div>');}
+    else if(action==='apply-category-toggle'){const cat=categories.find(c=>c.id===id);cat.active=!cat.active;feedback('Estado de categoría actualizado en la demostración.');render();showCategories();}
+    else if(action==='new-income')showMovement('income');
+    else if(action==='new-expense')showMovement('expense');
+    else if(action==='close-dialog')closeDialog();
+    else if(action==='previous'){page=Math.max(1,page-1);cashParts();}
+    else if(action==='next'){page++;cashParts();}
+    else if(action==='row-menu')showRowMenu(id);
+    else if(action==='edit-row'){const row=records.find(r=>r.id===Number(id));showMovement(row.type,id);}
+    else if(action==='confirm-toggle'){const row=records.find(r=>r.id===Number(id));openDialog((row.active?'Desactivar':'Activar')+' movimiento','<p>'+esc(row.description)+'</p><p class="nd-muted">El cambio se reflejará en los totales de Caja y en el resumen del mes.</p><div class="nd-form-footer"><button type="button" class="nd-ghost cursor-interaction" data-action="close-dialog">Cancelar</button><button type="button" class="nd-primary cursor-interaction" data-action="apply-toggle" data-id="'+id+'">Confirmar</button></div>');}
+    else if(action==='apply-toggle'){const row=records.find(r=>r.id===Number(id));row.active=!row.active;closeDialog();render();feedback('Estado del movimiento actualizado en la demostración.');persist();}
+    else if(action==='clear-filter'){filter={category:'',from:today,to:today,activity:'active',search:''};page=1;closeDialog();render();persist();}
+    else if(action==='help-invoice'){const help=root.querySelector('#nd-invoice-help');help.hidden=!help.hidden;button.setAttribute('aria-expanded',String(!help.hidden));}
+    else if(action==='help-ocr'){const help=root.querySelector('#nd-ocr-help');help.hidden=!help.hidden;button.setAttribute('aria-expanded',String(!help.hidden));}
+    else if(action==='save-ocr'){const selected=root.querySelector('#nd-ocr-category').value;feedback(selected?'Vista previa: se guardarían la factura y los productos con un único egreso en '+categoryName(selected)+'.':'Vista previa: se guardarían la factura y los productos sin egreso en Caja.');}
+  });
+  root.querySelector('#nd-section').addEventListener('change',event=>{view=event.target.value;render();persist();});
+  root.addEventListener('keydown',event=>{
+    if(overlay.hidden)return;
+    if(event.key==='Escape'){event.preventDefault();closeDialog();}
+    if(event.key==='Tab'){const controls=[...modal.querySelectorAll('button,input,select,textarea')].filter(el=>!el.disabled&&!el.hidden);const first=controls[0],last=controls[controls.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}
+  });
+  function applyDesign(){root.style.setProperty('--nd-tint',design.tint+'%');root.style.setProperty('--nd-row-pad',design.density==='Compacta'?'10px':'15px');}
+  render();applyDesign();
+  if(globalThis.Tweak){const tweak=new Tweak({container:root,onChange:applyDesign});tweak.addSlider(design,'tint',{label:'Intensidad del fondo de filas',min:3,max:15,step:1,unit:'%',reference:'--nd-tint'});tweak.addSelect(design,'density',{label:'Densidad de tabla',options:['Cómoda','Compacta'],reference:'--nd-row-pad'});}
+})();
+</script>

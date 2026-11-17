@@ -211,6 +211,7 @@ export interface ProviderEntity {
   business_id: string;
   name: string;
   tax: number;
+  use_ocr: boolean;
   fields?: ProviderFieldsMapping;
   is_active: boolean;
   created_at: string;
@@ -221,6 +222,7 @@ export interface CreateProviderPayload {
   business_id: string;
   name: string;
   tax?: number;
+  use_ocr?: boolean;
   fields?: Record<string, unknown>;
   is_active?: boolean;
 }
@@ -228,6 +230,7 @@ export interface CreateProviderPayload {
 export interface UpdateProviderPayload {
   name?: string;
   tax?: number;
+  use_ocr?: boolean;
   fields?: Record<string, unknown>;
   is_active?: boolean;
 }
@@ -260,6 +263,7 @@ export interface GetProvidersParams {
     name_cont?: string;
     business_id_eq?: string;
     is_active_eq?: boolean;
+    use_ocr_eq?: boolean;
     s?: string;
     [key: string]: unknown;
   };
@@ -272,7 +276,7 @@ export interface InvoiceEntity {
   id: string;
   business_id: string;
   provider_id?: string | null;
-  code: string;
+  code: string | null;
   total_amount: number;
   path_storage: string;
   data?: {
@@ -289,15 +293,16 @@ export interface InvoiceEntity {
 export interface CreateInvoicePayload {
   business_id: string;
   provider_id?: string | null;
-  code: string;
+  code?: string | null;
   total_amount?: number;
   path_storage: string;
   data?: Record<string, unknown>;
+  is_active?: boolean;
 }
 
 export interface UpdateInvoicePayload {
   provider_id?: string | null;
-  code?: string;
+  code?: string | null;
   total_amount?: number;
   path_storage?: string;
   data?: Record<string, unknown>;
@@ -413,7 +418,7 @@ export interface CreateInvoiceWithFileParams {
   file?: File;
   business_id: string;
   provider_id?: string | null;
-  code: string;
+  code?: string | null;
   total_amount?: number;
   path_storage?: string;
   data?: Record<string, unknown>;

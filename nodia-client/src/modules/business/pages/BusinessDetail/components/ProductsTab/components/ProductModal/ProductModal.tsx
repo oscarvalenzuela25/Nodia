@@ -7,6 +7,8 @@ import { Alert, Box, Button, Chip, Grid, IconButton, Table, TableBody, TableCell
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import BaseModal from "../../../../../../../../components/BaseModal";
 import TextInput from "../../../../../../../../components/inputs/TextInput";
+import { PriceDivisionAction } from "../../../../../../../../components/PriceDivisionDialog";
+import { roundSalePrice } from "../../../../../../../../utils/salePrice";
 import SelectSingleInput from "../../../../../../../../components/inputs/SelectSingleInput";
 import type { SelectSingleInputProps } from "../../../../../../../../components/inputs/SelectSingleInput/types";
 import type { ProductEntity, ProviderEntity } from "../../../../../../infrastructure/types";
@@ -31,7 +33,11 @@ const productSchema = z.object({
   alias: z.string().nullable().refine(productAliasFits).transform(normalizeProductAlias),
   measurement_unit: z.enum(MEASUREMENT_UNITS),
   barcode: z.string().nullable().refine((value) => { if (value === null) return true; try { return barcodeValue(value) === value; } catch { return false; } }),
-  cost_price: integerMoney, cost_price_tax: integerMoney, sale_price: integerMoney,
+  cost_price: integerMoney, cost_price_tax: integerMoney, sale_price: integerMoney.transform((value, context) => {
+    const rounded = roundSalePrice(value);
+    if (rounded === null) { context.addIssue({ code: "custom" }); return z.NEVER; }
+    return rounded;
+  }),
   offer_price: integerMoney.nullable(), is_offer_enabled: z.boolean(), has_stock: z.boolean().nullable().refine((value) => value !== null),
   provider_id: z.string().optional().nullable(), is_active: z.boolean(),
   expected_version: z.number().int().positive().optional(),
@@ -106,7 +112,7 @@ export const ProductModal = ({ open, onClose, onSubmit, onSaved, businessId, ini
   const productName = useWatch({ control, name: "name" });
   const productAlias = useWatch({ control, name: "alias" });
   const salePrice = useWatch({ control, name: "sale_price" });
-  const validSalePrice = Number.isInteger(salePrice) && salePrice >= 0 && salePrice <= PRODUCT_PRICE_MAX;
+  const validSalePrice = Number.isInteger(salePrice) && roundSalePrice(salePrice) !== null;
   useEffect(() => { if (open) {
     const source = initialData ?? restoredProduct;
     reset(defaults(source, openingBarcode));
@@ -129,15 +135,28 @@ export const ProductModal = ({ open, onClose, onSubmit, onSaved, businessId, ini
     setPricingError(result.valid ? null : calculationSource);
     if (result.valid) for (const [name, derived] of Object.entries(result.values)) setValue(name as keyof typeof result.values, derived, { shouldDirty: true, shouldValidate: true });
   };
-  const moneyField = (name: "cost_price" | "cost_price_tax" | "sale_price" | "offer_price", label: string) => <Controller name={name} control={control} render={({ field }) => <TextInput
+  const moneyField = (name: "cost_price" | "cost_price_tax" | "sale_price" | "offer_price", label: string) => <Controller name={name} control={control} render={({ field }) => {
+    const invalidSale = name === "sale_price" && typeof field.value === "number" && Number.isFinite(field.value) && roundSalePrice(field.value) === null;
+    return <TextInput
     id={`product-${name.replaceAll("_", "-")}`} name={field.name} type="number" label={label} data-testid={`product-${name === "cost_price_tax" ? "cost-tax" : name.replaceAll("_", "-")}-input`}
-    labelAdornment={help(name, label)} value={field.value === null || !Number.isFinite(field.value) ? "" : String(field.value)}
+    labelAdornment={<Box sx={{ display: "inline-flex", alignItems: "center" }}>{help(name, label)}
+      {(name === "sale_price" || name === "cost_price") && <PriceDivisionAction value={Number.isFinite(field.value) ? field.value : null} mode={name === "sale_price" ? "sale" : "net"} label={label} disabled={isSubmitting}
+        contextKey={`${businessId}:${currentProduct?.id ?? "new"}:${version ?? "new"}:${name}`} onApply={value => {
+          setValue(name, value, { shouldDirty: true, shouldValidate: true });
+          if (name === "cost_price") applyPricing(name, value);
+        }} />}</Box>} value={field.value === null || !Number.isFinite(field.value) ? "" : String(field.value)}
     onChange={(event) => {
       const raw = event.target.value;
       const value = raw === "" ? Number.NaN : Number(raw);
       field.onChange(name === "offer_price" && raw === "" ? null : value);
       if (name === "cost_price" || name === "cost_price_tax") applyPricing(name, value);
-    }} onBlur={field.onBlur} error={Boolean(errors[name])} helperText={errors[name] ? t("business:pos.invalid_price") : undefined} disabled={isSubmitting} /> } />;
+    }} onBlur={() => {
+      field.onBlur();
+      if (name === "sale_price" && field.value !== null) {
+        const rounded = roundSalePrice(field.value);
+        if (rounded !== null) setValue("sale_price", rounded, { shouldDirty: true, shouldValidate: true });
+      }
+    }} error={Boolean(errors[name]) || invalidSale} helperText={errors[name] || invalidSale ? t("business:pos.invalid_price") : undefined} disabled={isSubmitting} />; } } />;
   const options = initialData?.provider && !providers.some((provider) => provider.id === initialData.provider?.id) ? [initialData.provider, ...providers] : providers;
   const inspectCurrent = async () => {
     if (!currentProduct || isSubmitting) return;
@@ -166,6 +185,7 @@ export const ProductModal = ({ open, onClose, onSubmit, onSaved, businessId, ini
   }) : [];
   const submitForm = async (data: ProductFormData) => {
     if (savedCompletion.current || isSubmitting || pricingError || !validProductTaxRate(taxRate)) return;
+    setValue("sale_price", data.sale_price, { shouldDirty: true });
     let product: ProductEntity;
     try { product = await saving.save({ ...data, alias: resolveProductAlias(data.name, data.alias, aliasUsesName), expected_version: version }, imageChange); }
     catch { return; /* Keep the form and image draft for recovery. */ }
@@ -208,7 +228,7 @@ export const ProductModal = ({ open, onClose, onSubmit, onSaved, businessId, ini
           value={field.value} options={MEASUREMENT_UNITS.map((unit) => ({ value: unit, label: t(`product:units.${unit}`) }))}
           onChange={field.onChange} disabled={isSubmitting} error={Boolean(errors.measurement_unit)} helperText={errors.measurement_unit ? t("product:invalid_measurement_unit") : undefined} data-testid="product-measurement-unit-input" /> } /></Grid>
         <Grid size={{ xs: 12, sm: 6 }}>{moneyField("cost_price", t("business:product_cost_price"))}</Grid>
-        <Grid size={{ xs: 12, sm: 6 }}><TextInput label={t("business:product_tax_rate")} labelAdornment={help("tax_rate", t("business:product_tax_rate"))} type="number" value={Number.isFinite(taxRate) ? String(taxRate) : ""} data-testid="product-tax-rate-input" disabled={isSubmitting} error={!Number.isFinite(taxRate) || taxRate < 0} onChange={(event) => {
+        <Grid size={{ xs: 12, sm: 6 }}><TextInput label={t("business:product_tax_rate")} labelAdornment={<Box sx={{ minHeight: 44, display: "inline-flex", alignItems: "center" }}>{help("tax_rate", t("business:product_tax_rate"))}</Box>} type="number" value={Number.isFinite(taxRate) ? String(taxRate) : ""} data-testid="product-tax-rate-input" disabled={isSubmitting} error={!Number.isFinite(taxRate) || taxRate < 0} onChange={(event) => {
           const value = event.target.value === "" ? Number.NaN : Number(event.target.value); setTaxRate(value);
           applyPricing("tax_rate", value);
         }} /></Grid>

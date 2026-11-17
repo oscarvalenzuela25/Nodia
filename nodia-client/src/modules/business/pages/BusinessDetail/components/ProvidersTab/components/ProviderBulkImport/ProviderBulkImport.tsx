@@ -8,6 +8,8 @@ import {
   Box,
   Button,
   Chip,
+  Checkbox,
+  FormControlLabel,
   Divider,
   Grid,
   IconButton,
@@ -605,7 +607,13 @@ export const ProviderBulkImport: FC<Props> = ({
             />
           </SwitchWrapper>
 
-          <Divider sx={{ my: 1 }} />
+          <Box>
+            <FormControlLabel control={<Checkbox checked={editFormData.use_ocr === true} onChange={(_, checked) => setEditFormData(previous => ({ ...previous, use_ocr: checked }))} />}
+              label={t("business:provider_use_ocr_label")} sx={{ m: 0, minHeight: 44 }} />
+            <Typography variant="body2" color="text.secondary">{t("business:provider_use_ocr_help")}</Typography>
+          </Box>
+
+          {editFormData.use_ocr === true && <><Divider sx={{ my: 1 }} />
 
           <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
             {t("business:invoice_columns_mapping_title")}
@@ -771,7 +779,7 @@ export const ProviderBulkImport: FC<Props> = ({
                 }
               />
             </Grid>
-          </Grid>
+          </Grid></>}
         </FormContainer>
       </BaseModal>
     </BusinessWorkflow>

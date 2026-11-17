@@ -71,6 +71,7 @@ describe('ExportProvidersCsvUseCase', () => {
         name: 'Nestle',
         tax: 19,
         is_active: false,
+        use_ocr: true,
         fields: {
           code: { value: 'SKU', instructions: 'In column description' },
         },
@@ -91,6 +92,8 @@ describe('ExportProvidersCsvUseCase', () => {
     expect(lines[0]).toContain(
       'Name (name),Tax % (tax),Active (is_active),Code Column (field_code),Code Instructions (instructions_code),Net Cost Column (field_cost_price),Net Cost Instructions (instructions_cost_price),Tax Cost Column (field_cost_price_tax),Tax Cost Instructions (instructions_cost_price_tax),Packages Column (field_packages),Packages Instructions (instructions_packages),Units Per Package Column (field_units_per_package),Units Per Package Instructions (instructions_units_per_package),ID (id)',
     );
+    expect(lines[0]).toContain('Use OCR (use_ocr)');
+    expect(lines[1]).toMatch(/,2,true$/);
     expect(lines[1]).toContain(
       'Nestle,19,false,SKU,In column description,,,,,,,,,202',
     );

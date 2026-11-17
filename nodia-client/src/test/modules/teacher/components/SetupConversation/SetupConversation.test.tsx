@@ -1,5 +1,5 @@
-import { useEffect, type ComponentProps } from "react";
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { useEffect, type ComponentProps, type ReactElement } from "react";
+import { act, fireEvent, render as renderUI, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import SetupConversation from "../../../../../modules/teacher/components/SetupConversation";
@@ -18,18 +18,72 @@ beforeEach(() => {
   history = { isLoading: false, isFetching: false, isError: false, refetch: vi.fn(), data: { data: [{ id: "fixture-message", role: "assistant", text: "Fixture conversation already sent" }], meta: { page: 1, limit: 50, total_items: 1, total_pages: 1 } } };
 });
 afterEach(() => vi.useRealTimers());
-function Harness({ text = "", revision = 1, messages = history, jobs = [], scopeKey = "fixture-session", contextKey = "fixture-context", hasSelection = true, busy = false, footer, jobStatus, showConversation = true }: {
-  text?: string; revision?: number; messages?: History; jobs?: Session["active_jobs"]; scopeKey?: string; contextKey?: string; hasSelection?: boolean; busy?: boolean; footer?: Props["footer"]; jobStatus?: Props["jobStatus"]; showConversation?: boolean;
+function Harness({ text = "", revision = 1, messages = history, jobs = [], scopeKey = "fixture-session", contextKey = "fixture-context", hasSelection = true, busy = false, footer, jobStatus, showConversation = true, onDiagnostic, diagnosticDisabled }: {
+  text?: string; revision?: number; messages?: History; jobs?: Session["active_jobs"]; scopeKey?: string; contextKey?: string; hasSelection?: boolean; busy?: boolean; footer?: Props["footer"]; jobStatus?: Props["jobStatus"]; showConversation?: boolean; onDiagnostic?: Props["onDiagnostic"]; diagnosticDisabled?: boolean;
 }) {
   const draft = useSetupDraft({ text, revision, busy, editable: true, onSave: save });
-  return <SetupConversation messages={messages} draft={draft} scopeKey={scopeKey} contextKey={contextKey} footer={footer} jobStatus={jobStatus} showConversation={showConversation} page={1} busy={busy} generating={hasPreparingJob(jobs)} hasSelection={hasSelection} canPropose onPage={onPage} onSend={onSend} onPropose={onPropose} />;
+  return <SetupConversation messages={messages} draft={draft} scopeKey={scopeKey} contextKey={contextKey} footer={footer} jobStatus={jobStatus} showConversation={showConversation} page={1} busy={busy} generating={hasPreparingJob(jobs)} hasSelection={hasSelection} canPropose onPage={onPage} onSend={onSend} onPropose={onPropose} onDiagnostic={onDiagnostic} diagnosticDisabled={diagnosticDisabled} />;
 }
 const input = () => screen.getByRole("textbox", { name: "Mensaje para Teacher" });
 const send = () => screen.getByRole("button", { name: "Enviar a Teacher" });
-const propose = () => screen.getByRole("button", { name: "Implementar plan" });
-const confirmProposal = () => within(screen.getByRole("dialog")).getByRole("button", { name: "Implementar plan" });
+const propose = () => screen.getByRole("button", { name: "Crear propuesta" });
+const confirmProposal = () => within(screen.getByRole("dialog")).getByRole("button", { name: "Crear propuesta" });
+function render(ui: ReactElement) {
+  const result = renderUI(ui);
+  const clarify = screen.queryByRole("button", { name: "Aclarar mi objetivo" });
+  if (clarify && !clarify.hasAttribute("disabled")) fireEvent.click(clarify);
+  return result;
+}
 
 describe("Teacher setup conversation actions", () => {
+  it("offers a diagnostic only through the supplied capability without making it a proposal requirement", async () => {
+    const diagnostic = vi.fn();
+    const { rerender } = renderUI(<Harness />);
+    expect(screen.queryByRole("button", { name: "Evaluar mi punto de partida" })).not.toBeInTheDocument(); expect(propose()).toBeEnabled();
+    rerender(<Harness onDiagnostic={diagnostic} diagnosticDisabled />);
+    const assess = screen.getByRole("button", { name: "Evaluar mi punto de partida" });
+    expect(assess).toBeDisabled(); expect(propose()).toBeEnabled();
+    rerender(<Harness onDiagnostic={diagnostic} />);
+    await userEvent.click(assess); expect(diagnostic).toHaveBeenCalledOnce();
+    expect(onPropose).not.toHaveBeenCalled(); expect(onSend).not.toHaveBeenCalled();
+  });
+  it("keeps conversation optional while retaining the AI selection and direct proposal action", async () => {
+    const { container } = renderUI(<Harness footer={<span>Fixture selected AI</span>} />);
+    expect(screen.getByText("Fixture selected AI")).toBeVisible(); expect(propose()).toBeEnabled();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    const editor = container.querySelector("textarea");
+    await userEvent.click(screen.getByRole("button", { name: "Aclarar mi objetivo" }));
+    expect(input()).toBe(editor);
+    await userEvent.type(input(), "Private fixture draft");
+    await userEvent.click(screen.getByRole("button", { name: "Ocultar conversación" }));
+    expect(editor).not.toBeVisible(); expect(editor).toHaveValue("Private fixture draft"); expect(editor).toBeDisabled();
+    expect(propose()).toBeDisabled(); expect(screen.getByText(/Tienes un mensaje sin enviar/)).toBeVisible();
+    await userEvent.click(screen.getByRole("button", { name: "Aclarar mi objetivo" }));
+    expect(input()).toBe(editor); expect(input()).toHaveValue("Private fixture draft");
+    expect(onSend).not.toHaveBeenCalled(); expect(onPropose).not.toHaveBeenCalled();
+  });
+  it("requires an explicit review before discarding only the unsent draft", async () => {
+    render(<Harness text="Private fixture draft" />);
+    await userEvent.click(screen.getByRole("button", { name: "Descartar mensaje" }));
+    const dialog = screen.getByRole("dialog");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Seguir editando" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(input()).toHaveValue("Private fixture draft");
+    await userEvent.click(screen.getByRole("button", { name: "Descartar mensaje" }));
+    await userEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Descartar mensaje" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(input()).toHaveValue(""); expect(screen.getByText("Fixture conversation already sent")).toBeVisible();
+    expect(onSend).not.toHaveBeenCalled(); expect(onPropose).not.toHaveBeenCalled(); expect(save).not.toHaveBeenCalled();
+  });
+  it("invalidates discard confirmation when its session context changes", async () => {
+    const { rerender } = render(<Harness text="Private fixture draft" />);
+    const editor = input();
+    await userEvent.click(screen.getByRole("button", { name: "Descartar mensaje" }));
+    rerender(<Harness text="Private fixture draft" contextKey="changed-fixture-context" />);
+    const discard = within(screen.getByRole("dialog")).getByRole("button", { name: "Descartar mensaje" });
+    expect(discard).toBeDisabled(); fireEvent.click(discard);
+    expect(editor).toHaveValue("Private fixture draft"); expect(save).not.toHaveBeenCalled(); expect(onSend).not.toHaveBeenCalled();
+  });
   it("loads history geometry initially and keeps the editor and cached conversation through refetch and read errors", () => {
     const { container, rerender } = render(<Harness text="Synthetic saved preferences" messages={{ ...history, data: undefined, isLoading: true, isFetching: true }} />);
     expect(container.querySelector('[data-boneyard-overlay="true"]')?.childElementCount).toBeGreaterThan(0);
@@ -67,7 +121,7 @@ describe("Teacher setup conversation actions", () => {
     const { rerender } = render(<Harness jobs={[historical, pending]} />);
     expect(propose()).toBeDisabled(); rerender(<Harness jobs={[historical]} />);
     await userEvent.click(propose()); expect(onPropose).not.toHaveBeenCalled();
-    expect(screen.getByRole("dialog")).toHaveTextContent(/Podrás revisarla, seguir conversando y pedir cambios antes de aceptarla/);
+    expect(screen.getByRole("dialog")).toHaveTextContent(/Podrás revisarla antes de aceptarla/);
     await userEvent.click(confirmProposal()); await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(onPropose).toHaveBeenCalledOnce(); expect(onSend).not.toHaveBeenCalled();
   });

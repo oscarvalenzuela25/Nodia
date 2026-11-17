@@ -1,3 +1,4 @@
+import { normalizeCatalogSalePrice } from './product-sale-price.js';
 import {
   BadRequestException,
   ConflictException,
@@ -596,7 +597,7 @@ export class ProductService {
     });
     const products = manager.getRepository(Product);
     const logs = manager.getRepository(ProductLog);
-    const attributes = this.catalogFields(createDto, true);
+    const attributes = normalizeCatalogSalePrice(this.catalogFields(createDto, true));
     validateCatalogProduct(attributes, true);
     await this.validateReferences(
       manager,
@@ -648,7 +649,7 @@ export class ProductService {
     const products = manager.getRepository(Product);
     const productLogs = manager.getRepository(ProductLog);
     await this.validateReferenceSet(manager, bulkDto.items);
-    const attributes = bulkDto.items.map((item) => this.catalogFields(item, true));
+    const attributes = bulkDto.items.map((item) => normalizeCatalogSalePrice(this.catalogFields(item, true)));
     for (const item of attributes) validateCatalogProduct(item, true);
     const savedProducts = await this.persist(() =>
       products.save(
@@ -715,7 +716,7 @@ export class ProductService {
         : updateDto.provider_id,
     );
     const { expected_version, ...suppliedAttributes } = updateDto;
-    const attributes = this.catalogFields(suppliedAttributes);
+    const attributes = normalizeCatalogSalePrice(this.catalogFields(suppliedAttributes));
     if (
       Object.hasOwn(attributes, 'has_stock') &&
       typeof attributes.has_stock !== 'boolean'
@@ -787,7 +788,7 @@ export class ProductService {
     const candidates: Product[] = [];
     for (const [index, item] of bulkDto.items.entries()) {
       const { id: _id, expected_version, ...suppliedAttributes } = item;
-      const attributes = this.catalogFields(suppliedAttributes);
+      const attributes = normalizeCatalogSalePrice(this.catalogFields(suppliedAttributes));
       if (
         Object.hasOwn(attributes, 'has_stock') &&
         typeof attributes.has_stock !== 'boolean'

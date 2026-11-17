@@ -19,6 +19,24 @@ beforeEach(() => {
 const view = (paused = false, presentation: "panel" | "inline" = "panel") => <JobPanel presentation={presentation} jobId={job.job_id} paused={paused} busy={false} onReady={onReady} onTerminal={onTerminal} onNew={onNew} onContinue={onContinue} />;
 
 describe("Teacher job presentation", () => {
+  it("explains the actual requested result and read-only recovery without starting another intention", async () => {
+    render(view(false, "inline"));
+    expect(screen.getByText(/Teacher está preparando una propuesta/)).toBeVisible();
+    expect(screen.getByText(/Salir de esta vista no cancela/)).toBeVisible();
+    expect(screen.getByText(/Actualizar estado sólo consulta/)).toBeVisible();
+    expect(screen.queryByText(/Solicitar nueva generación inicia/)).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Actualizar estado" }));
+    expect(query.refetch).toHaveBeenCalledOnce(); expect(onNew).not.toHaveBeenCalled(); expect(onContinue).not.toHaveBeenCalled();
+  });
+  it("shows new-intention guidance only when native recovery is offered and respects the view restriction", () => {
+    job.state = "unknown"; job.local_closed = true; job.allowed_actions = { request_new_generation: action };
+    const { rerender } = render(view(false, "inline"));
+    expect(screen.getByText(/Solicitar nueva generación inicia/)).toBeVisible();
+    rerender(<JobPanel allowNew={false} presentation="inline" jobId={job.job_id} paused={false} busy={false} onReady={onReady} onNew={onNew} onContinue={onContinue} />);
+    expect(screen.queryByText(/Solicitar nueva generación inicia/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Solicitar nueva generación" })).not.toBeInTheDocument();
+    expect(onNew).not.toHaveBeenCalled();
+  });
   it("shows a saved result as a chip without a refresh action, retaining read-error recovery", async () => {
     job.state = "ready";
     const { rerender } = render(view(false, "inline"));

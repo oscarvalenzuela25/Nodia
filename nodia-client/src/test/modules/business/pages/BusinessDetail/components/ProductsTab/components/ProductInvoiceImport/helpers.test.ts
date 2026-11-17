@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bindInvoiceRow, canBindInvoiceProduct, invoiceProductPayload, mapExtractedItemsToRows, validateInvoiceRows, reviewInvoiceAlias, reviewInvoiceSalePrice, invoiceAliasNeedsReview, prepareInvoiceProductPayloads } from '../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/helpers';
+import { bindInvoiceRow, canBindInvoiceProduct, invoiceProductPayload, mapExtractedItemsToRows, validateInvoiceRows, reviewInvoiceAlias, reviewInvoiceSalePrice, invoiceAliasNeedsReview, prepareInvoiceProductPayloads, invoiceRowEditPrice } from '../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/helpers';
 import type { ProductEntity } from '../../../../../../../../../modules/business/infrastructure/types';
 
 describe('Purchase invoice versus POS catalog', () => {
@@ -64,8 +64,8 @@ describe('Manual invoice product binding', () => {
     expect(validateInvoiceRows(rows.slice(0, 1))[0].isValid).toBe(true);
   });
   it('defaults sale to a rounded 30 percent markup, preserves explicit zero and rejects fractional CLP', () => {
-    const row = sourceRow(); expect(row.sale_price).toBe(1392);
-    expect(invoiceProductPayload(row, 'business', null)).toMatchObject({ sale_price: 1392, has_stock: true });
+    const row = sourceRow(); expect(row.sale_price).toBe(1390);
+    expect(invoiceProductPayload(row, 'business', null)).toMatchObject({ sale_price: 1390, has_stock: true });
     expect(invoiceProductPayload({ ...row, sale_price: 0 }, 'business', null)).toMatchObject({ sale_price: 0 });
     expect(() => invoiceProductPayload({ ...row, sale_price: 990.5 }, 'business', null)).toThrow();
   });
@@ -125,9 +125,9 @@ describe('Editable OCR aliases', () => {
 describe('OCR default boundaries', () => {
   it('applies 30 percent over extracted gross cost for automatic catalog matches while preserving alias and availability', () => {
     const [row] = mapExtractedItemsToRows([{ code: 'SUP', name: 'Invoice name', quantity: 1, cost_price: 100, cost_price_tax: 119 }], [{ ...product, code: 'SUP' }]);
-    expect(row).toMatchObject({ alias: 'Manual alias', alias_reviewed: true, has_stock: false, sale_price: 155 });
+    expect(row).toMatchObject({ alias: 'Manual alias', alias_reviewed: true, has_stock: false, sale_price: 150 });
     const payload = invoiceProductPayload(row, 'business', null);
-    expect(payload).toMatchObject({ id: product.id, sale_price: 155, alias: 'Manual alias' });
+    expect(payload).toMatchObject({ id: product.id, sale_price: 150, alias: 'Manual alias' });
     expect(payload).not.toHaveProperty('has_stock');
   });
   it('leaves missing, nonfinite and overflowing costs invalid without assigning a sale price', () => {
@@ -149,6 +149,28 @@ describe('OCR default boundaries', () => {
 });
 
 describe('Local OCR sale price changes', () => {
+  it.each([1547, 2147483647])('keeps an unselected catalog sale %s intact when editing only costs', sale_price => {
+    const row = bindInvoiceRow(sourceRow(), { ...product, sale_price }, ['cost_price'], 'business');
+    const edited = { cost_price: 901 };
+    const intent = invoiceRowEditPrice(row, edited);
+    const updated = { ...row, ...edited, ...intent };
+    expect(intent).toMatchObject({ sale_price, manual_match: { fields: ['cost_price'] } });
+    expect(validateInvoiceRows([updated])[0].isValid).toBe(true);
+    expect(invoiceProductPayload(updated, 'business', null)).toEqual({ id: product.id, expected_version: product.version, cost_price: 901 });
+    expect(row.sale_price).toBe(sale_price);
+    expect(row.manual_match?.fields).toEqual(['cost_price']);
+  });
+  it('rounds an explicitly edited sale and includes that exact field in the reviewed payload', () => {
+    const row = bindInvoiceRow(sourceRow(), { ...product, sale_price: 1547 }, ['cost_price'], 'business');
+    const edited = { ...row, sale_price: 1445 };
+    const intent = invoiceRowEditPrice(row, edited);
+    const updated = { ...edited, ...intent };
+    expect(intent).toMatchObject({ sale_price: 1450, manual_match: { fields: ['cost_price', 'sale_price'] } });
+    expect(invoiceProductPayload(updated, 'business', null)).toEqual({ id: product.id, expected_version: product.version, cost_price: 900, sale_price: 1450 });
+    expect(edited.sale_price).toBe(1445);
+    expect(row.sale_price).toBe(1547);
+    expect(row.manual_match?.fields).toEqual(['cost_price']);
+  });
   it('replaces the editable price, recomputes comparison and preserves catalog identity and availability', () => {
     const row = bindInvoiceRow(sourceRow(), product, ['cost_price'], 'business');
     const changed = reviewInvoiceSalePrice(row, 1200);
@@ -162,6 +184,6 @@ describe('Local OCR sale price changes', () => {
     for (const price of [Number.NaN, Infinity, -1, 0.1, 2147483648]) {
       expect(() => reviewInvoiceSalePrice(row, price)).toThrow();
     }
-    expect(row.sale_price).toBe(1392);
+    expect(row.sale_price).toBe(1390);
   });
 });

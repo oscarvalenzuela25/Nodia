@@ -107,7 +107,7 @@ const providers: ProviderEntity[] = Array.from({ length: 53 }, (_, i) => ({
       : i === 52
         ? "Proveedor inactivo"
         : "Proveedor QA " + (i + 1),
-  tax: 19,
+  tax: 19, use_ocr: true,
   is_active: i !== 52,
   created_at: "2026-10-09",
   fields: {

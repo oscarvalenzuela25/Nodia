@@ -1,7 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { ProductMobileCard } from "../../../../../modules/business/components/BusinessMobileCards/BusinessMobileCards";
+import { ProductMobileCard, ProviderMobileCard, InvoiceMobileCard } from "../../../../../modules/business/components/BusinessMobileCards/BusinessMobileCards";
 import type { ProductEntity, ProductLogEntity } from "../../../../../modules/business/infrastructure/types";
 import i18n from "../../../../../translate";
 
@@ -94,4 +94,20 @@ describe("ProductMobileCard image access with the real MobileRecordCard", () => 
     expect(screen.queryByText(/^[+−]\d+%$/)).not.toBeInTheDocument();
   });
 
+});
+
+describe("Supplier OCR and optional invoice folio on mobile", () => {
+  it("preserves supplier actions while hiding mappings until OCR is enabled", () => {
+    const provider = { id: "provider", business_id: "business", name: "Proveedor sintético", tax: 19, is_active: true, created_at: "", use_ocr: false, fields: { code: "SKU_STORED" } };
+    const props = { disabled: false, onEdit: vi.fn(), onToggle: vi.fn(), onContacts: vi.fn() };
+    const view = render(<ProviderMobileCard provider={provider} {...props} />);
+    expect(screen.queryByText("SKU_STORED")).not.toBeInTheDocument();
+    view.rerender(<ProviderMobileCard provider={{ ...provider, use_ocr: true }} {...props} />);
+    expect(screen.getByText("SKU_STORED")).toBeInTheDocument();
+  });
+  it("keeps an invoice without a folio identifiable and editable", () => {
+    render(<InvoiceMobileCard invoice={{ id: "invoice", business_id: "business", code: null, total_amount: 0, path_storage: "", created_at: "", is_active: true }}
+      disabled={false} formatDate={formatDate} onPreview={vi.fn()} onCopy={vi.fn()} onEdit={vi.fn()} />);
+    expect(screen.getByRole("heading", { name: i18n.t("business:invoice_without_code") })).toBeInTheDocument();
+  });
 });

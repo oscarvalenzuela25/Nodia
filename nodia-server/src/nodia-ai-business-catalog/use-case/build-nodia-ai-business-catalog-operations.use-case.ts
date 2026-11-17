@@ -1,3 +1,4 @@
+import { roundProductSalePrice } from '../../product/product-sale-price.js';
 import { createHash } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 import {
@@ -179,6 +180,7 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
             'exact_material_values_and_references_and_translations_or_collaborators/1',
           derived: 'product_snapshot_after_every_product_write/1',
           native: 'shared_entity_manager/1',
+          ...(resourceKey === 'products' ? { sale_price_rounding: 'nearest_ten_half_up_before_review/1' } : {}),
         }),
       )
       .digest('hex');
@@ -573,6 +575,9 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
     input: Input,
     context: ProposalPreparerContext,
   ): Promise<ProposalPreparation> {
+    // Freeze the price the person will actually review and confirm, never a different execution value.
+    if (this.resourceKey === 'products' && input.command.sale_price !== undefined)
+      input.command.sale_price = roundProductSalePrice(input.command.sale_price);
     if (this.resourceKey === 'businesses' && this.operation !== 'create') {
       input.businessId ??= input.id;
       input.id ??= input.businessId;
@@ -853,6 +858,10 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
   ): Promise<void> {
     let snapshot: NodiaAiJsonObject;
     try {
+      const input = this.decode(step.commandTemplate, true);
+      if (this.resourceKey === 'products' && input.command.sale_price !== undefined &&
+        input.command.sale_price !== roundProductSalePrice(input.command.sale_price))
+        throw new ConflictException('nodia_ai:preconditions_changed');
       await this.authority(
         this.decode(step.commandTemplate, true),
         context,

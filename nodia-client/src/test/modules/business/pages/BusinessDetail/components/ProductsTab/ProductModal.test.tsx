@@ -189,7 +189,7 @@ describe("ProductModal", () => {
     await userEvent.setup().click(screen.getByTestId("save-product-btn"));
     expect(submit).not.toHaveBeenCalled(); expect(await screen.findByText("Seleccione la disponibilidad manualmente.")).toBeInTheDocument();
   });
-  it("links only net and gross costs, leaving regular and alternate prices untouched", async () => {
+  it("links only net and gross costs, leaving the saved sale source and alternate price untouched", async () => {
     render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} initialData={product} />);
     const user = userEvent.setup(); await user.clear(input("cost-price")); await user.type(input("cost-price"), "100000");
     expect(input("cost-tax")).toHaveValue(119000); expect(input("sale-price")).toHaveValue(1547); expect(input("offer-price")).toHaveValue(2000);
@@ -201,14 +201,14 @@ describe("ProductModal", () => {
     fireEvent.change(input("suggested-markup"), { target: { value: "50" } });
     expect(input("sale-price")).toHaveValue(1547);
     fireEvent.click(screen.getByRole("button", { name: "Usar precio sugerido" }));
-    expect(input("sale-price")).toHaveValue(1785);
+    expect(input("sale-price")).toHaveValue(1790);
     expect(input("cost-price")).toHaveValue(1000);
     expect(input("cost-tax")).toHaveValue(1190);
     fireEvent.change(input("cost-tax"), { target: { value: "2380" } });
-    expect(input("sale-price")).toHaveValue(1785);
+    expect(input("sale-price")).toHaveValue(1790);
     fireEvent.click(screen.getByTestId("save-product-btn"));
     await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-    expect(submit.mock.calls[0][0]).toMatchObject({ sale_price: 1785, cost_price: 2000, cost_price_tax: 2380 });
+    expect(submit.mock.calls[0][0]).toMatchObject({ sale_price: 1790, cost_price: 2000, cost_price_tax: 2380 });
     expect(submit.mock.calls[0][0]).not.toHaveProperty("markup");
     expect(submit.mock.calls[0][0]).not.toHaveProperty("suggested_markup");
     expect(screen.queryByTestId("product-profit-margin-input")).not.toBeInTheDocument();
@@ -217,7 +217,7 @@ describe("ProductModal", () => {
     render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} initialData={{ ...product, is_offer_enabled: true }} />);
     await userEvent.setup().click(screen.getByTestId("save-product-btn"));
     await waitFor(() => expect(submit).toHaveBeenCalled());
-    expect(submit.mock.calls[0][0]).toMatchObject({ sale_price: 1547, offer_price: 2000, is_offer_enabled: true, expected_version: 3 });
+    expect(submit.mock.calls[0][0]).toMatchObject({ sale_price: 1550, offer_price: 2000, is_offer_enabled: true, expected_version: 3 });
   });
   it("does not turn an empty alternate input into zero or fall back while enabled", async () => {
     render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} initialData={{ ...product, is_offer_enabled: true }} />);
@@ -264,6 +264,46 @@ describe("ProductModal", () => {
     await user.click(screen.getByTestId("save-product-btn"));
     await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
     expect(submit.mock.calls[0][0]).toMatchObject({ sale_price: 1200, cost_price_tax: 1190, cost_price: 1000, has_stock: false, offer_price: 2000 });
+  });
+  it("preserves the saved sale source until blur and normalizes direct submit while retaining a failed save", async () => {
+    submit.mockRejectedValueOnce(new Error("Synthetic server error"));
+    const onClose = vi.fn();
+    render(<ProductModal businessId="business-1" open onClose={onClose} onSubmit={submit} initialData={product} />);
+    expect(input("sale-price")).toHaveValue(1547);
+    fireEvent.change(input("sale-price"), { target: { value: "1444" } });
+    expect(input("sale-price")).toHaveValue(1444);
+    fireEvent.blur(input("sale-price"));
+    expect(input("sale-price")).toHaveValue(1440);
+    fireEvent.change(input("sale-price"), { target: { value: "1445" } });
+    fireEvent.submit(input("sale-price").closest("form")!);
+    await waitFor(() => expect(submit).toHaveBeenCalledOnce());
+    expect(submit.mock.calls[0][0]).toMatchObject({ sale_price: 1450, cost_price: 1000, cost_price_tax: 1190, offer_price: 2000 });
+    expect(input("sale-price")).toHaveValue(1450); expect(onClose).not.toHaveBeenCalled();
+  });
+  it("divides net and sale in their own precision without submitting the product form", async () => {
+    const user = userEvent.setup();
+    render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} initialData={product} />);
+    await user.click(screen.getByRole("button", { name: "Dividir Costo Base sin Impuesto" }));
+    const netDialog = screen.getByRole("dialog", { name: "Dividir precio" });
+    fireEvent.change(within(netDialog).getByRole("textbox", { name: "Precio a dividir" }), { target: { value: "2889" } });
+    fireEvent.change(within(netDialog).getByRole("textbox", { name: "Dividir entre" }), { target: { value: "2" } });
+    await user.click(within(netDialog).getByRole("button", { name: "Aplicar resultado" }));
+    expect(input("cost-price")).toHaveValue(1445); expect(input("cost-tax")).toHaveValue(1720); expect(input("sale-price")).toHaveValue(1547);
+    await user.click(screen.getByRole("button", { name: "Dividir Precio Venta" }));
+    const saleDialog = screen.getByRole("dialog", { name: "Dividir precio" });
+    fireEvent.change(within(saleDialog).getByRole("textbox", { name: "Precio a dividir" }), { target: { value: "2889" } });
+    fireEvent.change(within(saleDialog).getByRole("textbox", { name: "Dividir entre" }), { target: { value: "2" } });
+    await user.click(within(saleDialog).getByRole("button", { name: "Aplicar resultado" }));
+    expect(input("sale-price")).toHaveValue(1440); expect(input("cost-price")).toHaveValue(1445); expect(input("offer-price")).toHaveValue(2000);
+    expect(submit).not.toHaveBeenCalled();
+  });
+  it("shows an invalid sale rounding overflow without clamping or submitting", () => {
+    render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} initialData={product} />);
+    fireEvent.change(input("sale-price"), { target: { value: "2147483647" } });
+    fireEvent.blur(input("sale-price"));
+    expect(input("sale-price")).toHaveValue(2147483647);
+    expect(input("sale-price")).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByTestId("save-product-btn")).toBeDisabled(); expect(submit).not.toHaveBeenCalled();
   });
   it("keeps a real zero sale price distinct from empty without rewriting costs", async () => {
     render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} initialData={product} />);

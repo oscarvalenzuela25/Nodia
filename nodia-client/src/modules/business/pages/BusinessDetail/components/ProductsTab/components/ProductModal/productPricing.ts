@@ -1,3 +1,5 @@
+import { roundSalePrice } from "../../../../../../../../utils/salePrice";
+
 export const PRODUCT_PRICE_MAX = 2147483647;
 
 export interface ProductPricingValues {
@@ -34,6 +36,5 @@ export function calculateProductPricing(source: ProductPricingField, value: numb
 /** Local assistance only; the editable markup is never part of a product payload. */
 export function suggestedProductPrice(costPriceTax: number | null, markup: number): number | null {
   if (costPriceTax === null || !integer(costPriceTax) || !Number.isFinite(markup) || markup < 0) return null;
-  const price = Math.round(costPriceTax * (1 + markup / 100));
-  return integer(price) ? price : null;
+  return roundSalePrice(costPriceTax * (1 + markup / 100));
 }

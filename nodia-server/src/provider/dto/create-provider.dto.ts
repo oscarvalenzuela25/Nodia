@@ -10,6 +10,7 @@ import {
   Length,
   Max,
   Min,
+  ValidateIf,
 } from 'class-validator';
 
 export class CreateProviderDto {
@@ -34,6 +35,10 @@ export class CreateProviderDto {
   @IsOptional()
   @IsObject()
   fields?: Record<string, any> = {};
+
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsBoolean()
+  use_ocr?: boolean;
 
   @IsOptional()
   @IsBoolean()

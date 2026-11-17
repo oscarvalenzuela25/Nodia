@@ -169,7 +169,7 @@
   "product_tax_rate": "Impuesto %",
   "product_sale_price": "Precio Venta",
   "product_price_calculation_invalid": "Revise los importes de coste y el IVA: deben producir importes enteros CLP válidos.",
-  "product_field_help_sale_price": "Precio normal final en CLP, ingresado manualmente. No cambia los costes ni se modifica al editar el incremento sugerido.",
+  "product_field_help_sale_price": "Precio normal final en CLP. Se redondea al múltiplo de 10 más cercano al salir del campo o guardar. No cambia los costes; la sugerencia sólo se usa al aplicarla.",
   "product_offer_price": "Oferta: {{price}}",
   "product_regular_price": "Normal: {{price}}",
   "product_stock": "Stock",
@@ -818,5 +818,23 @@
   "invoice_match_scope_changed": "La sesión o el negocio cambió. Cierra esta ventana y vuelve a seleccionar el producto.",
   "invoice_row_actions": "Acciones del producto {{row}}",
   "invoice_show_detail_columns": "Mostrar cantidad de la factura y disponibilidad",
-  "invoice_hide_detail_columns": "Ocultar cantidad de la factura y disponibilidad"
+  "invoice_hide_detail_columns": "Ocultar cantidad de la factura y disponibilidad",
+  "provider_use_ocr_label": "Usar con OCR",
+  "provider_use_ocr_help": "Activa la configuración de columnas de factura y muestra este proveedor en el selector del OCR.",
+  "invoice_code_optional_helper": "Opcional. Puedes guardar la factura sin código o folio.",
+  "invoice_without_code": "Sin folio",
+  "invoice_code_invalid": "Código o folio inválido",
+  "price_division": {
+    "open": "Dividir {{field}}",
+    "title": "Dividir precio",
+    "amount": "Precio a dividir",
+    "divisor": "Dividir entre",
+    "result": "Resultado",
+    "apply": "Aplicar resultado",
+    "sale_help": "El precio de venta se redondea al múltiplo de 10 más cercano.",
+    "net_help": "El precio neto se mantiene en pesos enteros, sin redondear a decenas.",
+    "invalid": "Ingresa un precio válido y un divisor mayor que cero.",
+    "applied": "Resultado aplicado al borrador"
+  },
+  "provider_use_ocr_invalid": "Preferencia OCR inválida"
 }

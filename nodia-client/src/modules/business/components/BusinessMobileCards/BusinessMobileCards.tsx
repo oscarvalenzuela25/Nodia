@@ -84,7 +84,7 @@ export function ProviderMobileCard({
       fields={[
         { key: "id", label: t("provider_id"), value: provider.id },
         { key: "tax", label: t("provider_tax"), value: `${provider.tax}%` },
-        ...mapping.map((key) => {
+        ...(provider.use_ocr === true ? mapping : []).map((key) => {
           const entry = provider.fields?.[key];
           const value =
             typeof entry === "string"
@@ -181,7 +181,7 @@ export function InvoiceMobileCard({
     });
   return (
     <MobileRecordCard
-      title={invoice.code}
+      title={invoice.code || t("invoice_without_code")}
       status={<Status active={invoice.is_active} />}
       disabled={disabled}
       fields={[

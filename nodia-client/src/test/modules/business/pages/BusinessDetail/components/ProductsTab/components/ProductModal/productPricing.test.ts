@@ -35,12 +35,13 @@ describe("independent product price and cost assistance", () => {
 });
 
 describe("local suggested price", () => {
-  it("uses gross cost and explicit editable markup with whole-CLP rounding", () => {
-    expect(suggestedProductPrice(1190, 30)).toBe(1547);
+  it("uses gross cost and explicit editable markup with nearest-ten CLP rounding", () => {
+    expect(suggestedProductPrice(1190, 30)).toBe(1550);
     expect(suggestedProductPrice(1190, 2.5)).toBe(1220);
-    expect(suggestedProductPrice(1, 50)).toBe(2);
+    expect(suggestedProductPrice(1, 50)).toBe(0);
     expect(suggestedProductPrice(0, 30)).toBe(0);
     expect(suggestedProductPrice(1190, 0)).toBe(1190);
+    expect(suggestedProductPrice(1111, 30)).toBe(1440);
   });
   it.each([null, Number.NaN, -1, 1.5, PRODUCT_PRICE_MAX + 1])("rejects missing or invalid gross cost %s", (cost) => {
     expect(suggestedProductPrice(cost, 30)).toBeNull();
@@ -50,7 +51,7 @@ describe("local suggested price", () => {
   });
   it("does not clamp an overflowing suggestion or invent a percentage ceiling", () => {
     expect(suggestedProductPrice(PRODUCT_PRICE_MAX, 30)).toBeNull();
-    expect(suggestedProductPrice(1, 1000)).toBe(11);
-    expect(suggestedProductPrice(PRODUCT_PRICE_MAX, 0)).toBe(PRODUCT_PRICE_MAX);
+    expect(suggestedProductPrice(1, 1000)).toBe(10);
+    expect(suggestedProductPrice(PRODUCT_PRICE_MAX, 0)).toBeNull();
   });
 });

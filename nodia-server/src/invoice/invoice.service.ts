@@ -1,3 +1,4 @@
+import { normalizeInvoiceCode } from './invoice-code.js';
 import {
   BadRequestException,
   ConflictException,
@@ -169,7 +170,7 @@ export class InvoiceService {
         dto.provider_id ?? null,
       );
       const repository = manager.getRepository(Invoice);
-      const invoice = repository.create(dto);
+      const invoice = repository.create({ ...dto, code: normalizeInvoiceCode(dto.code) });
       return await repository.save(invoice);
     } catch (error: any) {
       if (error?.code === '23503') {
@@ -243,7 +244,7 @@ export class InvoiceService {
         dto.business_id !== invoice.business_id
       )
         Object.assign(invoice, { business: undefined });
-      Object.assign(invoice, dto);
+      Object.assign(invoice, dto, dto.code !== undefined ? { code: normalizeInvoiceCode(dto.code) } : {});
       return await repository.save(invoice);
     } catch (error: any) {
       if (error?.code === '23503') {

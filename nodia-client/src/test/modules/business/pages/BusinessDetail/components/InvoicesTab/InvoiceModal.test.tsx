@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -15,6 +16,7 @@ describe("InvoiceModal Component", () => {
       business_id: "biz-123",
       name: "Distribuidora Mayorista",
       tax: 19,
+      use_ocr: false,
       fields: {},
       is_active: true,
       created_at: "2026-01-01T00:00:00Z",
@@ -46,12 +48,13 @@ describe("InvoiceModal Component", () => {
     expect(screen.getByTestId("invoice-issue-date-input")).toBeInTheDocument();
     expect(screen.queryByTestId("invoice-due-date-input")).not.toBeInTheDocument();
     expect(screen.getByTestId("invoice-path-input")).toBeInTheDocument();
+    expect(screen.getByTestId("invoice-issue-date-input").querySelector("input")).toHaveValue(dayjs().format("YYYY-MM-DD"));
     expect(screen.getByTestId("invoice-notes-input")).toBeInTheDocument();
     const path = screen.getByTestId("invoice-path-input");
     const active = screen.getByTestId("invoice-active-switch");
     const notes = screen.getByTestId("invoice-notes-input");
     expect(path.compareDocumentPosition(active) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(active.compareDocumentPosition(notes) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(notes.compareDocumentPosition(active) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getByTestId("save-invoice-btn")).toBeInTheDocument();
   });
 
@@ -193,6 +196,7 @@ describe("InvoiceModal Component", () => {
     expect(screen.getByText("Editar Factura")).toBeInTheDocument();
     expect(screen.getByTestId("invoice-code-input").querySelector("input")).toHaveValue("FAC-EXISTING-99");
     expect(screen.getByTestId("invoice-active-switch").querySelector("input")).not.toBeChecked();
+    expect(screen.getByTestId("invoice-issue-date-input").querySelector("input")).toHaveValue("2026-03-15");
     expect(screen.getByTestId("invoice-existing-file")).toBeInTheDocument();
     expect(screen.getByText("fac-existing.pdf")).toBeInTheDocument();
     expect(screen.getByTestId("invoice-notes-input").querySelector("textarea")).toHaveValue("Pendiente de pago transferencia");
@@ -223,5 +227,33 @@ describe("InvoiceModal Component", () => {
 
     expect(screen.queryByRole("img", { name: "boleta.jpg" })).not.toBeInTheDocument();
     expect(screen.getByText("boleta_final.pdf")).toBeInTheDocument();
+  });
+
+  it("accepts an invoice without a code or folio and retains the selected local issue date", async () => {
+    render(<InvoiceModal open onClose={mockOnClose} onSubmit={mockOnSubmit} providers={mockProviders} />);
+    const code = screen.getByTestId("invoice-code-input").querySelector("input")!;
+    expect(code).not.toBeRequired();
+    const date = screen.getByTestId("invoice-issue-date-input").querySelector("input")!;
+    await user.clear(date);
+    await user.type(date, "2026-04-02");
+    await user.click(screen.getByTestId("save-invoice-btn"));
+    await waitFor(() => expect(mockOnSubmit).toHaveBeenCalledWith(expect.objectContaining({ code: "", issue_date: "2026-04-02" })));
+  });
+
+  it("can edit an existing invoice whose optional folio and issue date are absent without inserting today", () => {
+    render(<InvoiceModal open onClose={mockOnClose} onSubmit={mockOnSubmit} initialData={{
+      id: "no-code", business_id: "biz-123", code: null, total_amount: 0, path_storage: "", data: {}, is_active: true, created_at: "",
+    }} />);
+    expect(screen.getByTestId("invoice-code-input").querySelector("input")).toHaveValue("");
+    expect(screen.getByTestId("invoice-issue-date-input").querySelector("input")).toHaveValue("");
+  });
+  it("keeps an overlong optional folio in the editor and blocks submission", async () => {
+    render(<InvoiceModal open onClose={mockOnClose} onSubmit={mockOnSubmit} />);
+    const code = screen.getByTestId("invoice-code-input").querySelector("input")!;
+    await user.type(code, "x".repeat(256));
+    await user.click(screen.getByTestId("save-invoice-btn"));
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+    expect(code).toHaveValue("x".repeat(256));
+    expect(code).toHaveAttribute("aria-invalid", "true");
   });
 });

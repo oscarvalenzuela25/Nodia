@@ -155,7 +155,7 @@ async function checkBusinessPolicy(source) {
     [owned, member.userId]);
   await source.query('CREATE TABLE products (id bigint PRIMARY KEY, business_id uuid NOT NULL REFERENCES businesses(id))');
   await source.query('CREATE TABLE product_logs (id uuid PRIMARY KEY, product_id bigint NOT NULL REFERENCES products(id))');
-  await source.query('CREATE TABLE providers (id bigint PRIMARY KEY, business_id uuid NOT NULL REFERENCES businesses(id))');
+  await source.query('CREATE TABLE providers (use_ocr boolean NOT NULL DEFAULT false,id bigint PRIMARY KEY, business_id uuid NOT NULL REFERENCES businesses(id))');
   await source.query('CREATE TABLE personal_info_provider (id bigint PRIMARY KEY, provider_id bigint NOT NULL REFERENCES providers(id))');
   await source.query('CREATE TABLE invoices (id bigint PRIMARY KEY, business_id uuid NOT NULL REFERENCES businesses(id))');
   for (const table of ['products', 'providers', 'invoices'])

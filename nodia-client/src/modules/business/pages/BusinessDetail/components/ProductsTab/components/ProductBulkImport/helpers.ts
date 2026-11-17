@@ -1,3 +1,4 @@
+import { roundSalePrice } from "../../../../../../../../utils/salePrice";
 import i18n from "../../../../../../../../translate";
 import { isMeasurementUnit } from "../../../../../../infrastructure/measurementUnits";
 import { productCodeFits } from "../../../../../../infrastructure/productCodes";
@@ -112,7 +113,7 @@ export const validateRow = (
   if (row.cost_price_tax === undefined || !Number.isInteger(row.cost_price_tax) || row.cost_price_tax < 0 || row.cost_price_tax > 2147483647) {
     errors.push(i18n.t("business:invoice_validation_tax"));
   }
-  if (row.sale_price === undefined || !Number.isInteger(row.sale_price) || row.sale_price < 0 || row.sale_price > 2147483647) {
+  if (row.sale_price === undefined || !Number.isInteger(row.sale_price) || row.sale_price < 0 || row.sale_price > 2147483647 || roundSalePrice(row.sale_price) === null) {
     errors.push(i18n.t("business:invoice_validation_sale"));
   }
   if (row.id && (!/^[1-9][0-9]{0,18}$/.test(row.id) || BigInt(row.id) > 9223372036854775807n)) errors.push(i18n.t("business:pos.invalid_field"));
@@ -159,7 +160,7 @@ export const parseCSV = (csvText: string): ProvisionalRow[] => {
       id: raw.id || undefined, ...(Object.hasOwn(raw, "code") ? { code: raw.code.trim() || null } : {}), name: raw.name?.trim() ?? "",
       ...(Object.hasOwn(raw, "alias") ? { alias: normalizeProductAlias(raw.alias) } : {}),
       cost_price: parseNumber(raw.cost_price), cost_price_tax: parseNumber(raw.cost_price_tax),
-      sale_price: parseNumber(raw.sale_price),
+      sale_price: roundSalePrice(parseNumber(raw.sale_price)) ?? Number.NaN,
       stock: parseNumber(raw.stock), is_active: has("is_active") ? parseBoolean(raw.is_active) : true,
       ...(has("measurement_unit") ? { measurement_unit: raw.measurement_unit.trim() } : {}),
       ...(has("barcode") ? { barcode: raw.barcode === "null" ? null : raw.barcode } : {}),
@@ -178,7 +179,7 @@ export function productImportPayload(row: ProvisionalRow, businessId: string): C
   const common = { ...(row.code !== undefined ? { code: row.code?.trim() || null } : {}),
     ...(row.alias !== undefined ? { alias: normalizeProductAlias(row.alias) } : {}),
     ...(isMeasurementUnit(row.measurement_unit) ? { measurement_unit: row.measurement_unit } : {}), name: row.name, cost_price: row.cost_price, cost_price_tax: row.cost_price_tax,
-    sale_price: row.sale_price, is_active: row.is_active,
+    sale_price: roundSalePrice(row.sale_price)!, is_active: row.is_active,
     ...(row.barcode !== undefined ? { barcode: row.barcode } : {}),
     ...(row.offer_price !== undefined ? { offer_price: row.offer_price } : {}),
     ...(row.is_offer_enabled !== undefined ? { is_offer_enabled: row.is_offer_enabled } : {}),

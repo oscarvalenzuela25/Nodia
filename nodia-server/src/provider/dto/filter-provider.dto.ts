@@ -22,6 +22,15 @@ export class ProviderFilterDto implements RansackFilter<Provider> {
   is_active_eq?: boolean;
 
   @IsOptional()
+  @Transform(({ value }) => {
+    if (value === 'true' || value === true) return true;
+    if (value === 'false' || value === false) return false;
+    return value;
+  })
+  @IsBoolean()
+  use_ocr_eq?: boolean;
+
+  @IsOptional()
   @IsString()
   s?: string;
 }

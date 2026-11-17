@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Alert, Box, Button, IconButton, Pagination, Stack, Tooltip, Typography } from "@mui/material";
 import InfoOutlined from "@mui/icons-material/InfoOutlined";
 import RefreshOutlined from "@mui/icons-material/RefreshOutlined";
@@ -31,24 +31,31 @@ type Props = {
   onSend: () => void;
   onPropose: () => Promise<boolean>;
   onRecordingChange?: (recording: boolean) => void;
+  onDiagnostic?: () => void;
+  diagnosticDisabled?: boolean;
 };
 
-export default function SetupConversation({ messages, draft, scopeKey, contextKey, footer, jobStatus, showConversation = true, page, busy, generating = false, hasSelection, canPropose, onPage, onSend, onPropose, onRecordingChange }: Props) {
+export default function SetupConversation({ messages, draft, scopeKey, contextKey, footer, jobStatus, showConversation = true, page, busy, generating = false, hasSelection, canPropose, onPage, onSend, onPropose, onRecordingChange, onDiagnostic, diagnosticDisabled = false }: Props) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [confirmation, setConfirmation] = useState<string | null>(null);
   const [proposing, setProposing] = useState(false);
   const [recording, setRecording] = useState(false);
+  const [helpExpanded, setHelpExpanded] = useState<boolean | null>(null);
+  const [discardConfirmation, setDiscardConfirmation] = useState<string | null>(null);
+  const conversationId = useId();
   const proposalFlight = useRef(false);
   const history = useRef<HTMLDivElement>(null);
   const follow = useRef(true);
   const reportRecording = useCallback((value: boolean) => { setRecording(value); onRecordingChange?.(value); }, [onRecordingChange]);
   const disabled = busy || messages.isFetching || draft.saving || proposing;
   const unsent = Boolean(draft.text.trim());
+  const expanded = helpExpanded ?? (unsent || Boolean(messages.data?.data.some(item => item.role === "user")));
   const sendDisabled = disabled || draft.conflict || !draft.valid || !unsent || !hasSelection || generating || recording || messages.isError;
   const proposeDisabled = disabled || draft.conflict || !draft.valid || !canPropose || !hasSelection || unsent || generating || recording || messages.isError || messages.isLoading;
   const snapshot = JSON.stringify([scopeKey, contextKey, page, draft.text, messages.data?.data.map(item => item.id)]);
   const staleConfirmation = confirmation !== null && confirmation !== snapshot;
+  const staleDiscard = discardConfirmation !== null && discardConfirmation !== snapshot;
   useEffect(() => {
     const element = history.current;
     if (element && follow.current) element.scrollTop = element.scrollHeight;
@@ -61,13 +68,23 @@ export default function SetupConversation({ messages, draft, scopeKey, contextKe
   };
   const help = <Stack sx={{ gap: 1 }}>{["setup_autosave_help", "setup_send_help", "setup_propose_help"].map(key => <span key={key}>{t(`teacher:${key}`)}</span>)}</Stack>;
   return <Stack sx={{ minWidth: 0 }}>
-    {showConversation && <ConversationHeader>
+    {showConversation && <><ConversationHeader>
       <Typography variant="h6" component="h2" sx={{ fontSize: 22, fontWeight: 700 }}>{t("teacher:define_plan")}</Typography>
       <Tooltip title={help} describeChild><span tabIndex={proposeDisabled ? 0 : undefined}><Button variant="contained" endIcon={<InfoOutlined />} disabled={proposeDisabled} onClick={() => setConfirmation(snapshot)}>{t("teacher:propose_plan")}</Button></span></Tooltip>
-    </ConversationHeader>}
+    </ConversationHeader>
+    <Stack sx={{ px: { xs: 2, sm: 3 }, pb: 2, gap: 1.5 }}>
+      <Typography variant="body2" color="text.secondary">{t("teacher:setup_optional_help")}</Typography>
+      <Typography variant="caption" color="text.secondary">{t("teacher:setup_ai_intention_notice")}</Typography>
+      {unsent && <Alert severity="info" role="note"><Typography variant="body2">{t("teacher:setup_unsent_proposal_notice")}</Typography><Button variant="outlined" size="small" sx={{ mt: 1, width: { xs: "100%", sm: "auto" } }} disabled={disabled || recording || draft.conflict || confirmation !== null} onClick={() => setDiscardConfirmation(snapshot)}>{t("teacher:discard_setup_message")}</Button></Alert>}
+      {footer && <Box sx={{ minWidth: 0, maxWidth: "100%" }}>{footer}</Box>}
+      <Stack direction={{ xs: "column", sm: "row" }} sx={{ gap: 1, alignItems: { sm: "flex-start" } }}>
+        <Button variant="outlined" aria-expanded={expanded} aria-controls={conversationId} disabled={disabled || recording || confirmation !== null || discardConfirmation !== null} onClick={() => setHelpExpanded(!expanded)}>{t(expanded ? "teacher:hide_goal_help" : "teacher:clarify_goal")}</Button>
+        {onDiagnostic && <Button variant="outlined" disabled={disabled || recording || generating || diagnosticDisabled || confirmation !== null || discardConfirmation !== null} onClick={onDiagnostic}>{t("teacher:evaluate_starting_point")}</Button>}
+      </Stack>
+    </Stack></>}
     {jobStatus && <Box sx={{ px: showConversation ? { xs: 2, sm: 3 } : 0, pb: showConversation ? 2 : 0 }}>{jobStatus}</Box>}
-    {showConversation && <>
-    <Box sx={{ px: { xs: 2, sm: 3 } }}><QueryErrorAlert retryVariant="outlined" isError={messages.isError} isFetching={messages.isFetching} onRetry={messages.refetch} /></Box>
+    {showConversation && <Box sx={{ px: { xs: 2, sm: 3 } }}><QueryErrorAlert retryVariant="outlined" isError={messages.isError} isFetching={messages.isFetching} onRetry={messages.refetch} /></Box>}
+    <Box id={conversationId} hidden={!showConversation || !expanded}>
     <History ref={history} role="log" aria-label={t("teacher:planning_conversation")} aria-live="polite" aria-relevant="additions text" onScroll={event => { const el = event.currentTarget; follow.current = el.scrollHeight - el.scrollTop - el.clientHeight < 64; }}>
       <TeacherLoading loading={messages.isLoading && !messages.data}>
         {!messages.isError && !messages.isLoading && !messages.data?.data.length && <Typography color="text.secondary">{t("teacher:chat_empty")}</Typography>}
@@ -88,10 +105,10 @@ export default function SetupConversation({ messages, draft, scopeKey, contextKe
       </TeacherLoading>
     </History>
     {messages.data && messages.data.meta.total_pages > 1 && <Pagination variant="outlined" sx={{ px: 2, mb: 2 }} page={page} count={messages.data.meta.total_pages} disabled={disabled || confirmation !== null} onChange={(_, value) => { follow.current = true; onPage(value); }} />}
-    <MessageComposer scopeKey={scopeKey} text={draft.text} onTextChange={draft.change} onSend={() => { if (!sendDisabled && confirmation === null) onSend(); }}
+    <MessageComposer scopeKey={scopeKey} text={draft.text} onTextChange={draft.change} onSend={() => { if (!sendDisabled && confirmation === null && discardConfirmation === null && showConversation && expanded) onSend(); }}
       maxLength={4000} maxBytes={8192} label={t("teacher:message")} placeholder={t("teacher:message_placeholder")} sendLabel={t("teacher:send_message")} ariaLabel={t("teacher:message")}
-      disabled={disabled || confirmation !== null} sendDisabled={sendDisabled} voiceDisabled={disabled || confirmation !== null || generating || draft.conflict}
-      onRecordingChange={reportRecording} inputStart={footer && <Box sx={{ width: "fit-content", minWidth: 0, maxWidth: { xs: "100%", sm: "15rem" } }}>{footer}</Box>} sx={{ m: { xs: 1, sm: 2 }, mt: 0 }} />
+      disabled={disabled || confirmation !== null || discardConfirmation !== null || !showConversation || !expanded} sendDisabled={sendDisabled || discardConfirmation !== null || !showConversation || !expanded} voiceDisabled={disabled || confirmation !== null || discardConfirmation !== null || generating || draft.conflict || !showConversation || !expanded}
+      onRecordingChange={reportRecording} sx={{ m: { xs: 1, sm: 2 }, mt: 0 }} />
     {(draft.status !== "saved" || !draft.valid || draft.conflict) && <Stack sx={{ px: 2, pb: 1.5, gap: 1 }}>
       {draft.status !== "saved" && <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}><Typography role="status" variant="caption" color="text.secondary">{t(`teacher:setup_draft_${draft.status}`)}</Typography>
         {draft.status === "failed" && <Tooltip title={t("teacher:retry_draft_save")}><span><IconButton aria-label={t("teacher:retry_draft_save")} disabled={disabled || recording || !draft.valid || draft.conflict} onClick={() => { void draft.save(); }}><RefreshOutlined fontSize="small" /></IconButton></span></Tooltip>}
@@ -99,9 +116,12 @@ export default function SetupConversation({ messages, draft, scopeKey, contextKe
       {!draft.valid && <Alert severity="error">{t("teacher:invalid_field")}</Alert>}
       {draft.conflict && <Alert severity="warning"><Typography>{t("teacher:setup_draft_conflict")}</Typography><Typography sx={{ whiteSpace: "pre-wrap" }}>{draft.remoteText}</Typography></Alert>}
     </Stack>}
-    <ConfirmDialog open={confirmation !== null} onClose={() => setConfirmation(null)} onConfirm={confirm} title={t("teacher:confirm_proposal_title")} message={t("teacher:confirm_proposal_message")} confirmText={t("teacher:propose_plan")} cancelText={t("teacher:keep_planning")} isLoading={proposing} confirmDisabled={proposeDisabled || staleConfirmation}>
+    </Box>
+    <ConfirmDialog open={showConversation && confirmation !== null} onClose={() => setConfirmation(null)} onConfirm={confirm} title={t("teacher:confirm_proposal_title")} message={t("teacher:confirm_proposal_message")} confirmText={t("teacher:propose_plan")} cancelText={t("teacher:keep_planning")} isLoading={proposing} confirmDisabled={proposeDisabled || staleConfirmation}>
       {staleConfirmation && <Alert severity="warning">{t("teacher:proposal_context_changed")}</Alert>}
     </ConfirmDialog>
-    </>}
+    <ConfirmDialog open={showConversation && discardConfirmation !== null} onClose={() => setDiscardConfirmation(null)} onConfirm={() => { if (disabled || recording || draft.conflict || staleDiscard || discardConfirmation === null) return; setHelpExpanded(expanded); draft.change(""); setDiscardConfirmation(null); }} title={t("teacher:discard_setup_message_title")} message={t("teacher:discard_setup_message_notice")} confirmText={t("teacher:discard_setup_message")} cancelText={t("teacher:keep_setup_message")} confirmDisabled={disabled || recording || draft.conflict || staleDiscard}>
+      {staleDiscard && <Alert severity="warning">{t("teacher:proposal_context_changed")}</Alert>}
+    </ConfirmDialog>
   </Stack>;
 }
