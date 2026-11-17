@@ -573,8 +573,8 @@ function ScopedProductInvoiceImport({
     if (outcome?.status === "committed" && outcome.operation === "invoice_ocr_confirm") {
       onSuccess();
     }
-    if (outcome?.status === "rejected" && rows.some((row) => row.id) &&
-      ["business:cash_version_conflict", "business:resource_not_found"].includes(outcome.error.message)) {
+    if (outcome?.status === "rejected" && outcome.operation === "invoice_ocr_confirm" && rows.some((row) => row.id) &&
+      ["product:version_conflict", "business:cash_version_conflict", "business:resource_not_found"].includes(outcome.error.message)) {
       void refetchProducts();
     }
   };

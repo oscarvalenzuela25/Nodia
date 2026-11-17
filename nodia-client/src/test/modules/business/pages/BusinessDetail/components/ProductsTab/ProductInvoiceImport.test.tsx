@@ -955,6 +955,63 @@ describe("ProductInvoiceImport Component", () => {
     expect(businessServices.bulkUpdateProducts).not.toHaveBeenCalled();
   });
 
+  it("refreshes a conflicting product and requires reviewing its new version before confirming the same draft", async () => {
+    setupCashBusiness();
+    const catalogProduct = {
+      id: "21", business_id: cashBusinessId, code: "SKU-CAS", name: "Catalog product",
+      alias: "Catalog alias", version: 7, cost_price: 100, cost_price_tax: 119, sale_price: 150,
+      stock: 10, is_active: true,
+    };
+    const refreshedCatalog = deferred<Awaited<ReturnType<typeof businessServices.getProducts>>>();
+    vi.mocked(businessServices.getProducts)
+      .mockResolvedValueOnce({ data: [catalogProduct], meta: cashPage })
+      .mockImplementationOnce(() => refreshedCatalog.promise);
+    vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce(syntheticAnalysis("FAC-CAS", catalogProduct.code));
+    vi.mocked(cashServices.sendCashMutation).mockRejectedValueOnce({
+      isAxiosError: true,
+      response: { status: 409, data: { message: "product:version_conflict" } },
+    });
+    mockConfirmation();
+    renderWithClient(<ProductInvoiceImport businessId={cashBusinessId} onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
+    await selectProvider();
+    const file = new File(["synthetic PDF"], "concurrent.pdf", { type: "application/pdf" });
+    await user.upload(screen.getByTestId("invoice-file-input"), file);
+    await user.click(screen.getByTestId("analyze-invoice-btn"));
+    const save = await screen.findByTestId("submit-invoice-products");
+    await waitFor(() => expect(save).toBeEnabled());
+    fireEvent.change(screen.getByDisplayValue("FAC-CAS"), { target: { value: "FAC-CAS-REVIEWED" } });
+    await user.click(save);
+
+    await waitFor(() => expect(businessServices.getProducts).toHaveBeenCalledTimes(2));
+    expect(save).toBeDisabled();
+    expect(screen.getByDisplayValue(file.name)).toBeInTheDocument();
+    expect(screen.getByDisplayValue("FAC-CAS-REVIEWED")).toBeInTheDocument();
+    expect(cashServices.sendCashMutation).toHaveBeenCalledTimes(1);
+    expect(mockOnSuccess).not.toHaveBeenCalled();
+    refreshedCatalog.resolve({
+      data: [{ ...catalogProduct, name: "Updated catalog product", version: 8 }],
+      meta: cashPage,
+    });
+    const accept = await screen.findByRole("button", { name: i18n.t("business:cash.ocr_use_reviewed_product") });
+    expect(screen.getByText(/Updated catalog product/)).toBeInTheDocument();
+    expect(save).toBeDisabled();
+    await user.click(accept);
+    await waitFor(() => expect(save).toBeEnabled());
+    await user.click(save);
+    await waitFor(() => expect(mockOnSuccess).toHaveBeenCalledTimes(1));
+
+    const [, oldKey, oldCommand] = vi.mocked(cashServices.sendCashMutation).mock.calls[0];
+    const [, newKey, newCommand] = vi.mocked(cashServices.sendCashMutation).mock.calls[1];
+    expect(newKey).not.toBe(oldKey);
+    expect(oldCommand).toMatchObject({ fields: { items: [{ product_id: "21", expected_version: 7 }] } });
+    expect(newCommand).toMatchObject({ operation: "invoice_ocr_confirm", fields: {
+      invoice: { code: "FAC-CAS-REVIEWED" },
+      items: [{ product_id: "21", expected_version: 8 }],
+    } });
+    expect(newCommand.operation === "invoice_ocr_confirm" && newCommand.file).toBe(file);
+    expect(businessServices.analyzeInvoice).toHaveBeenCalledTimes(1);
+  });
+
   it("creates and selects a category, preserves the review, and requires the missing civil date", async () => {
     setupCashBusiness();
     vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce(syntheticAnalysis("FAC-CASH"));

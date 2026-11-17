@@ -999,6 +999,13 @@ y los 8 de [Facturas y OCR](../../nodia-server/test/business-cash-invoice.integr
 Incluyen permisos por negocio, unicidad concurrente, versión y recibos,
 agregados paginados, retiro y restauración, carga multipart y rollback.
 
+Las carreras adicionales comprobaron revocación durante la carga,
+intento tardío después de recuperar una concesión, desactivación de
+categoría durante OCR y retiro de factura mientras Caja intentaba
+cambiar la actividad del egreso. Hubo rollback de factura y productos
+cuando la categoría quedó inactiva o ganó una edición de producto
+concurrente.
+
 Una confirmación OCR de 500 filas combinó 180 altas, 160 ediciones y
 160 coincidencias manuales. El comando ocupó 177.814 bytes. En el
 laboratorio se observaron los límites SQL de 5 s por sentencia y 2 s
@@ -1008,6 +1015,11 @@ misma intención tomó 405 ms y confirmó con un nuevo intento de archivo.
 Cambiar el orden con la misma clave fue rechazado, y una fila 501 fue
 rechazada antes de subir el archivo. Los tiempos describen esta
 ejecución local con almacenamiento sintético.
+
+La batería local de Server pasó 6305 pruebas en 368 archivos, con una
+prueba omitida por la configuración existente. También pasaron el
+build, los contratos offline y las 58 pruebas de conocimiento, con
+44 documentos, 46 fragmentos y 153 capacidades en el contexto local.
 
 ### Recorrido completo
 
@@ -1032,6 +1044,12 @@ exactamente CLP 9.999.999.999.999 de ingresos y CLP 73.100 de egresos.
 El servidor devolvió 404 al consultar un negocio ajeno y 403 al actor
 sin módulo. El laboratorio simuló extracción, observación, proveedor
 y almacenamiento. La entrada táctil y el viewport fueron emulados.
+
+Si otra edición cambia la revisión de un producto antes del guardado
+OCR, el rechazo `product:version_conflict` vuelve a consultar el
+catálogo y exige revisar la versión vigente. La regresión de Client
+verifica que el folio editado y el archivo se conservan y que el nuevo
+intento usa la revisión aceptada explícitamente.
 
 ### Commit de entrega
 
