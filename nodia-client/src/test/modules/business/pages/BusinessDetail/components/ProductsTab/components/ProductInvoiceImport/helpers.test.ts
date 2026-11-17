@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bindInvoiceRow, canBindInvoiceProduct, invoiceProductPayload, mapExtractedItemsToRows, validateInvoiceRows, reviewInvoiceAlias, invoiceAliasNeedsReview, prepareInvoiceProductPayloads } from '../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/helpers';
+import { bindInvoiceRow, canBindInvoiceProduct, invoiceProductPayload, mapExtractedItemsToRows, validateInvoiceRows, reviewInvoiceAlias, reviewInvoiceSalePrice, invoiceAliasNeedsReview, prepareInvoiceProductPayloads } from '../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/helpers';
 import type { ProductEntity } from '../../../../../../../../../modules/business/infrastructure/types';
 
 describe('Purchase invoice versus POS catalog', () => {
@@ -14,12 +14,13 @@ describe('Purchase invoice versus POS catalog', () => {
     expect(update).toMatchObject({ id: '12', expected_version: 4, is_active: false });
     for (const field of ['stock','quantity','has_stock','barcode','offer_price','is_offer_enabled']) expect(update).not.toHaveProperty(field);
   });
-  it('requires a manual availability choice for a new item even when purchase quantity is positive or zero', () => {
+  it('defaults a new item to available independently of purchase quantity, including zero', () => {
     const [row] = mapExtractedItemsToRows([{ code: 'NEW', name: 'New', quantity: 0, cost_price: 0, cost_price_tax: 0 }], []);
     expect(row.quantity).toBe(0);
-    expect(row.has_stock).toBeUndefined();
-    expect(() => invoiceProductPayload({ ...row, sale_price: 0 }, 'business', null)).toThrow();
-    expect(invoiceProductPayload({ ...reviewInvoiceAlias(row, 'New alias'), has_stock: false, sale_price: 0 }, 'business', null)).toMatchObject({ has_stock: false });
+    expect(row.has_stock).toBe(true);
+    expect(row.isValid).toBe(true);
+    expect(invoiceProductPayload(row, 'business', null)).toMatchObject({ has_stock: true, sale_price: 0, alias: 'New' });
+    expect(invoiceProductPayload({ ...row, has_stock: false }, 'business', null)).toMatchObject({ has_stock: true });
   });
 });
 
@@ -47,7 +48,7 @@ describe('Manual invoice product binding', () => {
       expect(() => bindInvoiceRow(sourceRow(), candidate, ['code'], 'business')).toThrow();
     }
     expect(() => bindInvoiceRow(sourceRow(), product, [], 'business')).toThrow();
-    expect(() => bindInvoiceRow(sourceRow(), product, ['sale_price'], 'business')).toThrow();
+    expect(() => bindInvoiceRow({ ...sourceRow(), sale_price: Number.NaN }, product, ['sale_price'], 'business')).toThrow();
   });
   it('refuses a changed target, version or business at payload creation', () => {
     const row = bindInvoiceRow(sourceRow(), product, ['code'], 'business');
@@ -62,24 +63,24 @@ describe('Manual invoice product binding', () => {
     expect(rows.every(row => !row.isValid && row.errors.some(error => error.includes('dos veces')))).toBe(true);
     expect(validateInvoiceRows(rows.slice(0, 1))[0].isValid).toBe(true);
   });
-  it('requires a manually assigned new sale, preserves zero, and rejects fractional CLP', () => {
-    const row = sourceRow(); expect(row.sale_price).toBeNaN();
-    expect(() => invoiceProductPayload({ ...row, has_stock: true }, 'business', null)).toThrow();
-    expect(invoiceProductPayload({ ...reviewInvoiceAlias(row, 'Reviewed alias'), sale_price: 0, has_stock: false }, 'business', null)).toMatchObject({ sale_price: 0, has_stock: false });
-    expect(() => invoiceProductPayload({ ...row, sale_price: 990.5, has_stock: false }, 'business', null)).toThrow();
+  it('defaults sale to a rounded 30 percent markup, preserves explicit zero and rejects fractional CLP', () => {
+    const row = sourceRow(); expect(row.sale_price).toBe(1392);
+    expect(invoiceProductPayload(row, 'business', null)).toMatchObject({ sale_price: 1392, has_stock: true });
+    expect(invoiceProductPayload({ ...row, sale_price: 0 }, 'business', null)).toMatchObject({ sale_price: 0 });
+    expect(() => invoiceProductPayload({ ...row, sale_price: 990.5 }, 'business', null)).toThrow();
   });
 });
 
 
-describe('Human-reviewed OCR aliases', () => {
-  it('ignores a provider-supplied alias and preserves the extracted name until a human reviews a new row', () => {
-    const [row] = mapExtractedItemsToRows([{ code: 'NEW', name: 'Abbreviated invoice label', alias: 'Do not trust OCR alias', quantity: 0, cost_price: 0, cost_price_tax: 0 }], []);
-    expect(row).toMatchObject({ name: 'Abbreviated invoice label', alias: null, alias_reviewed: false });
-    expect(invoiceAliasNeedsReview(row)).toBe(true);
+describe('Editable OCR aliases', () => {
+  it('defaults alias to the normalized extracted name, ignoring a provider-supplied alias', () => {
+    const [row] = mapExtractedItemsToRows([{ code: 'NEW', name: '  Abbreviated invoice label  ', alias: 'Do not trust OCR alias', quantity: 0, cost_price: 0, cost_price_tax: 0 }], []);
+    expect(row).toMatchObject({ name: 'Abbreviated invoice label', alias: 'Abbreviated invoice label', alias_reviewed: true });
+    expect(invoiceAliasNeedsReview(row)).toBe(false);
     const reviewed = reviewInvoiceAlias(row, '  Commercial label  ');
     expect(reviewed).toMatchObject({ name: row.name, alias: 'Commercial label', alias_reviewed: true, quantity: 0 });
     expect(invoiceAliasNeedsReview(reviewed)).toBe(false);
-    expect(row.alias).toBeNull();
+    expect(row.alias).toBe('Abbreviated invoice label');
     expect(() => reviewInvoiceAlias(row, ' ')).toThrow();
     expect(() => reviewInvoiceAlias(row, 'x'.repeat(256))).toThrow();
   });
@@ -117,5 +118,50 @@ describe('Human-reviewed OCR aliases', () => {
     const stale = { ...first, code: 'OTHER', id: '12', version: undefined };
     expect(() => prepareInvoiceProductPayloads([first, stale], 'business', null)).toThrow();
     expect(first.alias).toBe('Reviewed');
+  });
+});
+
+// Defaults are local assistance, not fabricated OCR amounts.
+describe('OCR default boundaries', () => {
+  it('applies 30 percent over extracted gross cost for automatic catalog matches while preserving alias and availability', () => {
+    const [row] = mapExtractedItemsToRows([{ code: 'SUP', name: 'Invoice name', quantity: 1, cost_price: 100, cost_price_tax: 119 }], [{ ...product, code: 'SUP' }]);
+    expect(row).toMatchObject({ alias: 'Manual alias', alias_reviewed: true, has_stock: false, sale_price: 155 });
+    const payload = invoiceProductPayload(row, 'business', null);
+    expect(payload).toMatchObject({ id: product.id, sale_price: 155, alias: 'Manual alias' });
+    expect(payload).not.toHaveProperty('has_stock');
+  });
+  it('leaves missing, nonfinite and overflowing costs invalid without assigning a sale price', () => {
+    for (const gross of [undefined, null, Number.NaN, Infinity, -1, 2147483647]) {
+      const [row] = mapExtractedItemsToRows([{ code: 'NEW', name: 'New', quantity: 1, cost_price: null, cost_price_tax: gross }], []);
+      expect(row.isValid).toBe(false);
+      expect(Number.isFinite(row.sale_price)).toBe(false);
+      expect(() => invoiceProductPayload(row, 'business', null)).toThrow();
+    }
+  });
+  it('requires repair for blank or overlong generated aliases without truncating the name', () => {
+    for (const name of [' ', '🙂'.repeat(256)]) {
+      const [row] = mapExtractedItemsToRows([{ code: 'NEW', name, quantity: 1, cost_price: 0, cost_price_tax: 0 }], []);
+      expect(row.name).toBe(name.trim());
+      expect(invoiceAliasNeedsReview(row)).toBe(true);
+      expect(row.isValid).toBe(false);
+    }
+  });
+});
+
+describe('Local OCR sale price changes', () => {
+  it('replaces the editable price, recomputes comparison and preserves catalog identity and availability', () => {
+    const row = bindInvoiceRow(sourceRow(), product, ['cost_price'], 'business');
+    const changed = reviewInvoiceSalePrice(row, 1200);
+    expect(changed).toMatchObject({ id: product.id, version: product.version, sale_price: 1200, has_stock: false, alias: product.alias, quantity: 6, priceDiff: { diff: 210, percent: 21, isIncrease: true } });
+    expect(invoiceProductPayload(changed, 'business', null)).toEqual({ id: product.id, expected_version: product.version, cost_price: 900, sale_price: 1200 });
+    expect(row.sale_price).toBe(990);
+  });
+  it('preserves a real zero and rejects blank-equivalent nonfinite, negative, fractional and overflowing prices', () => {
+    const row = sourceRow();
+    expect(reviewInvoiceSalePrice(row, 0).sale_price).toBe(0);
+    for (const price of [Number.NaN, Infinity, -1, 0.1, 2147483648]) {
+      expect(() => reviewInvoiceSalePrice(row, price)).toThrow();
+    }
+    expect(row.sale_price).toBe(1392);
   });
 });

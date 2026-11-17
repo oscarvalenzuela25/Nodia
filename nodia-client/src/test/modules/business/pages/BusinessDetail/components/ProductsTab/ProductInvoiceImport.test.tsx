@@ -11,6 +11,7 @@ import {
   calculatePriceDiff,
 } from "../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport";
 import * as businessServices from "../../../../../../../modules/business/infrastructure/services";
+import { getSelectableModels } from "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services";
 import { reserveObservation } from "../../../../../../../modules/business/components/AnalysisConsole/infrastructure/services";
 import i18n from "../../../../../../../translate";
 import { sileo } from "sileo";
@@ -24,6 +25,21 @@ import type {
   ExtractedInvoiceItem,
   ProductLogEntity,
 } from "../../../../../../../modules/business/infrastructure/types";
+
+vi.mock("../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services", async (importOriginal) => ({
+  ...await importOriginal<typeof import("../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services")>(),
+  // Synthetic provider observations for this integration suite; no real discovery or inference.
+  getSelectableModels: vi.fn(async (params: { provider_id?: string; mode?: "agentic" | "api_key" }) => [{
+    providerId: params.provider_id, provider: "synthetic", mode: params.mode, planType: params.mode,
+    models_source: "provider", isSelected: true, isActive: true, selectedModel: null,
+    models: ["model-current", "model-secondary", "synthetic-selected-model", "synthetic-exact-model", "synthetic-closure-model",
+      "synthetic-cancel-model", "gemini-3.8-flash", "mistral-large-latest", "account-model", "gemini-2.5-pro", "gpt-4o",
+      "synthetic-agentic-model", "synthetic-api-model", "synthetic-alternative-model"].map(id => ({
+      id, name: id, displayName: id, description: "Synthetic model", contextWindow: null,
+      capabilities: ["reasoning"], inputModalities: ["image"], supportedReasoningEfforts: ["low", "medium", "high"],
+    })),
+  }]),
+}));
 
 vi.mock("sileo", () => ({
   sileo: {
@@ -220,7 +236,7 @@ describe("ProductInvoiceImport Helpers", () => {
       expect(rows[0].errors).toContain("Código es requerido");
 
       // Followed by valid rows
-      expect(rows[1].isValid).toBe(false); // New sale price is intentionally unassigned.
+      expect(rows[1].isValid).toBe(true);
       expect(rows[2].isValid).toBe(true);
 
       // Check existing product matching
@@ -255,7 +271,7 @@ describe("ProductInvoiceImport Helpers", () => {
       expect(rows[0].code).toBe("SKU-TAX-ONLY");
       expect(rows[0].cost_price).toBe(5000);
       expect(rows[0].cost_price_tax).toBe(5950);
-      expect(rows[0].sale_price).toBeNaN();
+      expect(rows[0].sale_price).toBe(7735);
     });
 
     it("derives missing gross cost from net cost and supplier tax", () => {
@@ -275,7 +291,7 @@ describe("ProductInvoiceImport Helpers", () => {
       expect(rows[0].code).toBe("SKU-NET-ONLY");
       expect(rows[0].cost_price).toBe(5000);
       expect(rows[0].cost_price_tax).toBe(5950);
-      expect(rows[0].sale_price).toBeNaN();
+      expect(rows[0].sale_price).toBe(7735);
     });
 
     it("leaves missing extracted costs invalid for manual review", () => {
@@ -299,7 +315,7 @@ describe("ProductInvoiceImport Helpers", () => {
       expect(rows[0].isValid).toBe(false);
     });
 
-    it("preserves historical information without inventing a sale price for a new product", () => {
+    it("preserves historical information and compares the default 30 percent sale price", () => {
       const items: ExtractedInvoiceItem[] = [
         {
           code: "SKU-HIST",
@@ -328,9 +344,9 @@ describe("ProductInvoiceImport Helpers", () => {
       const rows = mapExtractedItemsToRows(items, [], historicalLogs);
       expect(rows).toHaveLength(1);
       expect(rows[0].cost_price_tax).toBe(11900);
-      expect(rows[0].sale_price).toBeNaN();
+      expect(rows[0].sale_price).toBe(15470);
       expect(rows[0].historicalProduct?.sale_price).toBe(12495);
-      expect(rows[0].priceDiff).toBeNull();
+      expect(rows[0].priceDiff).toMatchObject({ isIncrease: true, percent: 23 });
       // Initial lock state is false
       expect(rows[0].isLocked).toBe(false);
     });
@@ -352,8 +368,8 @@ describe("ProductInvoiceImport Helpers", () => {
       expect(rows[0].code).toBe("SKU-FULL");
       expect(rows[0].cost_price).toBe(4000);
       expect(rows[0].cost_price_tax).toBe(4760);
-      expect(rows[0].sale_price).toBeNaN();
-      expect(rows[0].isValid).toBe(false);
+      expect(rows[0].sale_price).toBe(6188);
+      expect(rows[0].isValid).toBe(true);
     });
   });
 });
@@ -373,46 +389,43 @@ describe("ProductInvoiceImport Component", () => {
     });
   });
 
-  const classifyNewProducts = async () => {
+  const waitForDraftReady = async () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    const expand = screen.queryByRole("button", { name: "Mostrar cantidad de la factura y disponibilidad" });
-    if (expand) await user.click(expand);
-    const newCodes = screen.queryAllByRole("button", { name: /Disponibilidad/ }).filter(select => !select.hasAttribute("disabled") && select.getAttribute("aria-disabled") !== "true").map(select => select.closest("tr")?.querySelectorAll("td")[2]?.textContent);
-    for (const code of newCodes) {
-      const row = screen.queryAllByTestId(/^invoice-row-/).find(candidate => candidate.querySelectorAll("td")[2]?.textContent === code);
-      if (!row) continue;
-      const trigger = within(row).getByRole("button", { name: /Acciones del producto/ });
-      if (trigger.hasAttribute("disabled")) continue;
-      await user.click(trigger);
-      await user.click(screen.getByRole("menuitem", { name: "Editar fila" }));
-      await user.click(screen.getByRole("button", { name: "Usar precio sugerido" }));
-      await user.click(screen.getByTestId("save-row-edit"));
-      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    }
-    // Alias review is human/local; never supply aliases through the OCR fixture.
-    for (const button of screen.queryAllByTestId(/^review-invoice-alias-/)) {
-      const row = button.closest("tr");
-      if (!row || !within(row).queryByText(i18n.t("business:invoice_alias_required"))) continue;
-      await user.click(button);
-      await user.click(screen.getByRole("checkbox", { name: i18n.t("business:product_alias_use_name") }));
-      await user.click(screen.getByTestId("save-invoice-alias"));
-      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    }
-    const selects = screen.queryAllByRole("button", { name: /Disponibilidad/ });
-    for (const select of selects) {
-      if (select.hasAttribute("disabled") || select.getAttribute("aria-disabled") === "true") continue;
-      await user.click(select);
-      const option = screen.queryByRole("option", { name: "Disponible" });
-      if (option) await user.click(option);
-    }
   };
   const selectProvider = async () => {
     const trigger = screen.getByRole("button", { name: /Proveedor vinculado/i });
+    await waitFor(() => expect(trigger).toHaveAttribute("aria-disabled", "false"));
     await user.click(trigger);
     const option = await screen.findByRole("option", { name: "Distribuidora Central" });
     await user.click(option);
     await waitFor(() => expect(screen.getByTestId("invoice-file-input")).toBeEnabled());
   };
+  it("edits a default sale price from its row pencil without writing until invoice confirmation", async () => {
+    vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce(syntheticAnalysis("PRICE-PENCIL"));
+    vi.mocked(businessServices.createInvoiceWithFile).mockResolvedValueOnce({ id: "invoice-price", business_id: "biz-123", code: "PRICE-PENCIL", total_amount: 119, path_storage: "synthetic.pdf", is_active: true, created_at: "" });
+    vi.mocked(businessServices.bulkCreateProducts).mockResolvedValueOnce([]);
+    renderWithClient(<ProductInvoiceImport businessId="biz-123" onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
+    await selectProvider();
+    await user.upload(screen.getByTestId("invoice-file-input"), new File(["synthetic"], "synthetic.pdf", { type: "application/pdf" }));
+    await user.click(screen.getByTestId("analyze-invoice-btn"));
+    const pencil = await screen.findByTestId("review-invoice-price-0");
+    const row = screen.getByTestId("invoice-row-0");
+    expect(within(row).getByText(/\$155/)).toBeInTheDocument();
+    expect(screen.getByTestId("submit-invoice-products")).toBeEnabled();
+    await user.click(pencil);
+    const input = screen.getByRole("spinbutton", { name: new RegExp(`^${i18n.t("business:product_sale_price")}`) });
+    expect(input).toHaveValue(155);
+    fireEvent.change(input, { target: { value: "199" } });
+    await waitFor(() => expect(screen.getByTestId("save-invoice-price")).toBeEnabled());
+    await user.click(screen.getByTestId("save-invoice-price"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(within(screen.getByTestId("invoice-row-0")).getByText(/\$199/)).toBeInTheDocument();
+    expect(businessServices.createInvoiceWithFile).not.toHaveBeenCalled();
+    expect(businessServices.bulkCreateProducts).not.toHaveBeenCalled();
+    await user.click(screen.getByTestId("submit-invoice-products"));
+    await waitFor(() => expect(businessServices.bulkCreateProducts).toHaveBeenCalledWith([expect.objectContaining({ alias: "Synthetic SYNTHETIC-NEW", sale_price: 199, has_stock: true })]));
+  });
+
   it("prevalidates a missing update version before the invoice POST and retains the reviewed row", async () => {
     vi.mocked(businessServices.getProducts).mockResolvedValueOnce({ data: [{ id: "12", business_id: "biz-123", code: "SKU-CAS",
       name: "Catalog original", alias: "Preserved catalog alias", cost_price: 100, cost_price_tax: 119, sale_price: 130, stock: 0,
@@ -438,6 +451,8 @@ describe("ProductInvoiceImport Component", () => {
       default_mode: "agentic", fields: { selected_model: "synthetic-selected-model" } };
     const other = { ...selected, id: "other-instance", name: "Synthetic other available", is_default: false, can_use_model: true, availability_reason: null, error: null };
     vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([selected, other]).mockResolvedValueOnce([{ ...selected, can_use_model: true, availability_reason: null, error: null }, other]);
+    vi.mocked(getSelectableModels).mockResolvedValueOnce([{ providerId: selected.id, provider: selected.key, mode: "agentic", planType: "agentic",
+      models_source: "unavailable", models_observed_at: null, isSelected: true, isActive: true, selectedModel: "synthetic-selected-model", models: [] }]);
     renderWithClient(<ProductInvoiceImport businessId="biz-123" onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
     await selectProvider();
     const file = new File(["synthetic"], "synthetic-preserved.pdf", { type: "application/pdf" });
@@ -448,6 +463,7 @@ describe("ProductInvoiceImport Component", () => {
     await waitFor(() => expect(screen.getByTestId("analyze-invoice-btn")).toBeEnabled());
     expect(businessServices.analyzeInvoice).not.toHaveBeenCalled();
     expect(businessServices.verifyIaProviders).toHaveBeenCalledTimes(2);
+    expect(getSelectableModels).toHaveBeenCalledTimes(2);
     expect(screen.getByText(/synthetic-preserved.pdf/)).toBeVisible();
     expect(screen.getByRole("button", { name: /Proveedor de IA/ })).toHaveTextContent("Synthetic Gemini selected");
     vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce(syntheticAnalysis("SYNTHETIC-AFTER-CHECK"));
@@ -586,7 +602,7 @@ describe("ProductInvoiceImport Component", () => {
     await user.click(screen.getByTestId("cancel-invoice-analysis-btn"));
     expect(vi.mocked(businessServices.analyzeInvoice).mock.calls[1][0].signal?.aborted).toBe(true);
     expect(screen.getByDisplayValue("MY-LOCAL-DRAFT")).toBeVisible();
-    expect(screen.getByText("Synthetic SYNTHETIC-NEW")).toBeVisible();
+    expect(screen.getAllByText("Synthetic SYNTHETIC-NEW")[0]).toBeVisible();
     await user.click(screen.getByTestId("analyze-invoice-btn"));
     await waitFor(() => expect(businessServices.analyzeInvoice).toHaveBeenCalledTimes(3));
     await act(async () => { late.resolve(syntheticAnalysis("LATE-OLD", "OLD-ROW")); await late.promise; });
@@ -597,7 +613,7 @@ describe("ProductInvoiceImport Component", () => {
     expect(screen.queryByTestId("retry-analyze-btn")).not.toBeInTheDocument();
     await act(async () => { current.resolve(syntheticAnalysis("CURRENT-RESULT", "CURRENT-ROW")); await current.promise; });
     expect(await screen.findByDisplayValue("CURRENT-RESULT")).toBeVisible();
-    expect(screen.getByText("Synthetic CURRENT-ROW")).toBeVisible();
+    expect(screen.getAllByText("Synthetic CURRENT-ROW")[0]).toBeVisible();
     expect(screen.queryByText("Synthetic OLD-ROW")).not.toBeInTheDocument();
     expect(vi.mocked(businessServices.analyzeInvoice).mock.calls[2][0].file).toBe(file);
     expect(businessServices.createInvoiceWithFile).not.toHaveBeenCalled();
@@ -627,7 +643,7 @@ describe("ProductInvoiceImport Component", () => {
     await act(async () => { history.resolve({ data: [], meta: { page: 1, limit: 25, total_items: 0, total_pages: 0 } }); await history.promise; });
     expect(screen.getByDisplayValue("BEFORE-HISTORY")).toBeEnabled();
     expect(screen.queryByDisplayValue("SHOULD-NOT-APPLY")).not.toBeInTheDocument();
-    expect(screen.getByText("Synthetic SYNTHETIC-NEW")).toBeVisible();
+    expect(screen.getAllByText("Synthetic SYNTHETIC-NEW")[0]).toBeVisible();
     expect(within(screen.getByTestId("analysis-console")).getByText("Espera cancelada")).toBeVisible();
     expect(screen.getByTestId("analyze-invoice-btn")).toBeEnabled();
     expect(businessServices.createInvoiceWithFile).not.toHaveBeenCalled();
@@ -666,6 +682,7 @@ describe("ProductInvoiceImport Component", () => {
     );
 
     const trigger = screen.getByRole("button", { name: /Proveedor vinculado/i });
+    await waitFor(() => expect(trigger).toHaveAttribute("aria-disabled", "false"));
     await user.click(trigger);
 
     // Verify "None" / "Ninguno" option is NOT present
@@ -798,10 +815,10 @@ describe("ProductInvoiceImport Component", () => {
 
     // Red dot row is sorted at index 0 (Adaptador USB-C)
     expect(screen.getByTestId("error-dot-0")).toBeInTheDocument();
-    expect(screen.getByTestId("error-dot-1")).toBeInTheDocument();
+    expect(screen.getByTestId("valid-dot-1")).toBeInTheDocument();
 
     // The save button MUST be disabled because of errors
-    await classifyNewProducts();
+    await waitForDraftReady();
     const saveBtn = screen.getByTestId("submit-invoice-products");
     expect(saveBtn).toBeDisabled();
     expect(
@@ -862,9 +879,9 @@ describe("ProductInvoiceImport Component", () => {
     // Save dialog
     await user.click(screen.getByTestId("save-row-edit"));
 
-    // Numeric/code corrections do not bypass the separate human alias review.
-    expect(screen.getByTestId("error-dot-0")).toBeInTheDocument();
-    await classifyNewProducts();
+    // New aliases already use the extracted name; correcting the code completes this row.
+    expect(screen.getByTestId("valid-dot-0")).toBeInTheDocument();
+    await waitForDraftReady();
     await waitFor(() => expect(screen.getByTestId("valid-dot-0")).toBeInTheDocument());
     const saveBtn = screen.getByTestId("submit-invoice-products");
     expect(saveBtn).not.toBeDisabled();
@@ -909,10 +926,10 @@ describe("ProductInvoiceImport Component", () => {
     await user.click(screen.getByTestId("analyze-invoice-btn"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("error-dot-0")).toBeInTheDocument();
+      expect(screen.getByTestId("valid-dot-0")).toBeInTheDocument();
     });
 
-    await classifyNewProducts();
+    await waitForDraftReady();
     const saveBtn = screen.getByTestId("submit-invoice-products");
     await user.click(saveBtn);
 
@@ -984,10 +1001,10 @@ describe("ProductInvoiceImport Component", () => {
     await user.click(screen.getByTestId("analyze-invoice-btn"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("error-dot-0")).toBeInTheDocument();
+      expect(screen.getByTestId("valid-dot-0")).toBeInTheDocument();
     });
 
-    await classifyNewProducts();
+    await waitForDraftReady();
     const saveBtn = screen.getByTestId("submit-invoice-products");
     await user.click(saveBtn);
 
@@ -1095,27 +1112,27 @@ describe("ProductInvoiceImport Component", () => {
     expect(taxRateInput).toHaveValue(19);
     expect(costTaxInput).toHaveValue(1190);
     expect(screen.queryByTestId("edit-field-margin")).not.toBeInTheDocument();
-    expect(saleInput).toHaveValue(null);
+    expect(saleInput).toHaveValue(1547);
 
-    // 1. Changing cost recalculates cost with tax and sale price
+    // 1. Changing cost recalculates gross cost, preserving the editable sale price
     await user.clear(costInput);
     await user.type(costInput, "2000");
     expect(costTaxInput).toHaveValue(2380);
-    expect(saleInput).toHaveValue(null);
+    expect(saleInput).toHaveValue(1547);
 
-    // 2. Changing tax rate recalculates cost with tax and sale price
+    // 2. Changing tax rate recalculates gross cost, preserving the editable sale price
     await user.clear(taxRateInput);
     await user.type(taxRateInput, "10");
     expect(costTaxInput).toHaveValue(2200);
-    expect(saleInput).toHaveValue(null);
+    expect(saleInput).toHaveValue(1547);
 
-    // 3. Changing cost with tax recalculates cost base and sale price
+    // 3. Changing gross cost recalculates net cost, preserving the editable sale price
     await user.clear(costTaxInput);
     await user.type(costTaxInput, "3300");
     expect(costInput).toHaveValue(3000);
-    expect(saleInput).toHaveValue(null);
+    expect(saleInput).toHaveValue(1547);
 
-    // 4. Changing sale price recalculates margin percentage
+    // 4. Changing sale price preserves costs
     await user.clear(saleInput);
     await user.type(saleInput, "4950");
     expect(costInput).toHaveValue(3000);
@@ -1135,7 +1152,7 @@ describe("ProductInvoiceImport Component", () => {
     expect(screen.queryByTestId("edit-field-margin")).not.toBeInTheDocument();
   }, 15_000);
 
-  it("collapses quantity and availability without losing values or misaligning historical rows", async () => {
+  it("keeps quantity after alias with aligned history and no availability or details control", async () => {
     vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce({
       business_id: "biz-123", provider_id: "prov-1", code: "FAC-DETAILS", total_amount: 5000,
       data: { items: [{ code: "SKU-EXISTING", name: "Producto existente", quantity: 3, unit_price: 1000, total_price: 3000 }] },
@@ -1146,25 +1163,22 @@ describe("ProductInvoiceImport Component", () => {
     await user.click(screen.getByTestId("analyze-invoice-btn"));
     const row = await screen.findByTestId("invoice-row-0");
     const history = screen.getByTestId("historical-row-0");
-    expect(within(row).queryByRole("checkbox")).not.toBeInTheDocument();
-    expect(within(row).getAllByRole("cell")).toHaveLength(9);
-    expect(within(history).getAllByRole("cell")).toHaveLength(9);
-    await user.click(screen.getByRole("button", { name: "Mostrar cantidad de la factura y disponibilidad" }));
-    expect(within(row).getAllByRole("cell")).toHaveLength(11);
-    expect(within(history).getAllByRole("cell")).toHaveLength(11);
-    expect(within(row).getByRole("cell", { name: "3" })).toBeVisible();
-    const expandedRow = row.textContent;
-    await user.click(screen.getByRole("button", { name: "Ocultar cantidad de la factura y disponibilidad" }));
-    expect(screen.queryByRole("columnheader", { name: "Cantidad de la factura" })).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Mostrar cantidad de la factura y disponibilidad" }));
-    expect(row.textContent).toBe(expandedRow);
+    const headings = screen.getAllByRole("columnheader").map(cell => cell.textContent);
+    const aliasIndex = headings.indexOf(i18n.t("business:product_alias"));
+    expect(aliasIndex).toBeGreaterThan(-1);
+    expect(headings[aliasIndex + 1]).toBe(i18n.t("business:pos.invoice_quantity"));
+    expect(within(row).getAllByRole("cell")).toHaveLength(10);
+    expect(within(history).getAllByRole("cell")).toHaveLength(10);
+    expect(within(row).getAllByRole("cell")[aliasIndex + 1]).toHaveTextContent("3");
+    expect(screen.queryByRole("columnheader", { name: "Disponibilidad" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /cantidad de la factura y disponibilidad/ })).not.toBeInTheDocument();
     expect(screen.getByDisplayValue("FAC-DETAILS")).toBeInTheDocument();
     expect(businessServices.analyzeInvoice).toHaveBeenCalledOnce();
     expect(businessServices.createInvoiceWithFile).not.toHaveBeenCalled();
     expect(businessServices.bulkUpdateProducts).not.toHaveBeenCalled();
   });
 
-  it("preserves the catalog sale price and renders the historical comparison without action buttons", async () => {
+  it("compares the default 30 percent sale against historical price without historical action buttons", async () => {
     vi.mocked(businessServices.getProductLogs).mockResolvedValueOnce({
       data: [
         {
@@ -1225,7 +1239,7 @@ describe("ProductInvoiceImport Component", () => {
     // Price diff indicator is rendered with red up arrow and +60%
     const priceDiffBadge = screen.getByTestId("price-diff-0");
     expect(priceDiffBadge).toBeInTheDocument();
-    expect(priceDiffBadge).toHaveTextContent("-15%");
+    expect(priceDiffBadge).toHaveTextContent("+48%");
 
     // Historical comparison sub-row is rendered directly below
     const historicalRow = screen.getByTestId("historical-row-0");
@@ -1297,7 +1311,7 @@ describe("ProductInvoiceImport Component", () => {
 
     const priceDiffBadge = screen.getByTestId("price-diff-0");
     expect(priceDiffBadge).toBeInTheDocument();
-    expect(priceDiffBadge).toHaveTextContent("-50%");
+    expect(priceDiffBadge).toHaveTextContent("-35%");
   });
 
   it("smoothly scrolls down and focuses on the results section after successful invoice analysis", async () => {
@@ -1415,7 +1429,7 @@ describe("ProductInvoiceImport Component", () => {
       expect(screen.getByTestId("invoice-results-section")).toBeInTheDocument();
     });
     expect(screen.getByDisplayValue("FAC-RETRY-OK")).toBeInTheDocument();
-    expect(screen.getByText("Producto Reintentado")).toBeInTheDocument();
+    expect(screen.getAllByText("Producto Reintentado")[0]).toBeInTheDocument();
   });
 
   it("analyzes invoice with Mistral OCR when selecting Mistral, sending the selected instance ID", async () => {
@@ -1711,6 +1725,30 @@ describe("ProductInvoiceImport Component", () => {
     expect(vi.mocked(businessServices.analyzeInvoice).mock.calls[0][0]).not.toHaveProperty('engine');
   });
 
+  it("shows saved model and intensity defaults and sends exact local selector overrides", async () => {
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([{
+      id: "api-local-selection", key: "openai", name: "API selection", mode: "api_key", is_active: true,
+      can_use_model: true, is_default: true, use_api_key: true, default_mode: "api_key",
+      fields: { api_key: { selected_model: "account-model", thinking_levels: { "account-model": "high" }, thinking_level: "low" } },
+    }]);
+    vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce({
+      business_id: "biz-123", provider_id: "prov-1", code: "LOCAL-SELECTION", total_amount: 0, data: { items: [] },
+    });
+    renderWithClient(<ProductInvoiceImport businessId="biz-123" onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
+    await selectProvider();
+    await user.upload(screen.getByTestId("invoice-file-input"), new File(["synthetic"], "synthetic.pdf", { type: "application/pdf" }));
+    expect(within(screen.getByTestId("ai-model-select")).getByText(`account-model (${i18n.t("business:default_badge")})`)).toBeInTheDocument();
+    expect(within(screen.getByTestId("ai-intensity-select")).getByText(i18n.t("ai_providers:detail.level_high"))).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: i18n.t("business:select_ai_model_label") }));
+    await user.click(screen.getByRole("option", { name: "synthetic-alternative-model" }));
+    await user.click(screen.getByRole("button", { name: i18n.t("business:select_ai_intensity_label") }));
+    await user.click(screen.getByRole("option", { name: i18n.t("ai_providers:detail.level_medium") }));
+    await user.click(screen.getByTestId("analyze-invoice-btn"));
+    await waitFor(() => expect(businessServices.analyzeInvoice).toHaveBeenCalledWith(expect.objectContaining({
+      ai_provider_id: "api-local-selection", mode: "api_key", model: "synthetic-alternative-model", thinking_level: "medium",
+    })));
+  });
+
   it("auto-selects the default provider with badge and shows mode select with active mode when single or multiple active modes exist", async () => {
     vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([
       {
@@ -1988,7 +2026,7 @@ describe("ProductInvoiceImport Component", () => {
   });
   it("preserves zero quantities and flags absent or infinite extraction values", () => {
     const base = { code: "ZERO", name: "Zero stock", quantity: 0, cost_price: 0, cost_price_tax: 0 };
-    expect(mapExtractedItemsToRows([base], [])[0]).toMatchObject({ quantity: 0, cost_price: 0, cost_price_tax: 0, isValid: false });
+    expect(mapExtractedItemsToRows([base], [])[0]).toMatchObject({ quantity: 0, cost_price: 0, cost_price_tax: 0, sale_price: 0, has_stock: true, isValid: true });
     expect(mapExtractedItemsToRows([{ ...base, quantity: null }], [])[0].isValid).toBe(false);
     expect(mapExtractedItemsToRows([{ ...base, quantity: Infinity }], [])[0].isValid).toBe(false);
     expect(mapExtractedItemsToRows([{ ...base, cost_price: Infinity, cost_price_tax: null }], [])[0].isValid).toBe(false);
@@ -1996,7 +2034,7 @@ describe("ProductInvoiceImport Component", () => {
   it("calculates extracted unit prices using the selected supplier tax", () => {
     const [row] = mapExtractedItemsToRows([{ code: "TAX", name: "Taxed", unit_price: 100, quantity: 1 }], [], [], 10);
     expect(row.cost_price_tax).toBe(110);
-    expect(row.sale_price).toBeNaN();
+    expect(row.sale_price).toBe(143);
   });
   it("requires duplicate SKU rows to be reviewed and clears the error after removal", () => {
     const rows = mapExtractedItemsToRows([

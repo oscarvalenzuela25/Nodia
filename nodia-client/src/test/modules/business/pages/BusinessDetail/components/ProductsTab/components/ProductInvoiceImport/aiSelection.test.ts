@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getInvoiceAiModes, isProviderVisibleInInvoiceImport, hasAgenticEligibilityIssues, resolveInvoiceAiConfiguration, resolveInvoiceAiProvider } from "../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/aiSelection";
+import { getInvoiceAiModes, getInvoiceAiSelectionOptions, isProviderVisibleInInvoiceImport, hasAgenticEligibilityIssues, resolveInvoiceAiConfiguration, resolveInvoiceAiProvider } from "../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/aiSelection";
 import type { VerifyIaProviderItem } from "../../../../../../../../../modules/business/infrastructure/types";
 
 const first: VerifyIaProviderItem = {
@@ -97,5 +97,45 @@ describe("invoice AI selection", () => {
     const provider = { ...first, availability_reason: reason };
     expect(isProviderVisibleInInvoiceImport(provider)).toBe(true);
     expect(resolveInvoiceAiConfiguration(provider, "agentic").canAnalyze).toBe(false);
+  });
+});
+
+
+describe("invoice model and intensity choices", () => {
+  const provider: VerifyIaProviderItem = { ...first, key: "openai", active_mode: "agentic", fields: {
+    agentic: { selected_model: "model-a", thinking_level: "medium", thinking_levels: { "model-a": "high", "model-b": "low" },
+      available_models: [{ id: "model-a", name: "A" }, { id: "model-b", name: "B" }] },
+    api_key: { selected_model: "api-model", thinking_level: "max" },
+  } };
+  it("defaults to persisted model and its own intensity, then resolves the chosen model's preference", () => {
+    expect(getInvoiceAiSelectionOptions(provider, "agentic")).toMatchObject({ model: "model-a", thinkingLevel: "high" });
+    expect(getInvoiceAiSelectionOptions(provider, "agentic", { model: "model-b" })).toMatchObject({ model: "model-b", thinkingLevel: "low" });
+    expect(getInvoiceAiSelectionOptions(provider, "api_key")).toMatchObject({ model: "api-model", thinkingLevel: "max" });
+    expect(getInvoiceAiSelectionOptions(provider, "agentic", { model: "model-b", thinkingLevel: "new_effort" })).toMatchObject({ model: "model-b", thinkingLevel: "new_effort" });
+  });
+  it("derives Codex intensity choices from the exact observed model, preserving unsupported historical selections", () => {
+    const live = [{ id: "model-a", inputModalities: ["image"], supportedReasoningEfforts: ["low", "high", "future_effort"] }];
+    const result = getInvoiceAiSelectionOptions(provider, "agentic", {}, live);
+    expect(result.thinkingOptions.map(item => item.value)).toEqual(["low", "high", "future_effort"]);
+    expect(result.canAnalyze).toBe(true);
+    const removed = getInvoiceAiSelectionOptions(provider, "agentic", { thinkingLevel: "medium" }, live);
+    expect(removed).toMatchObject({ thinkingLevel: "medium", effortUnavailable: true, canAnalyze: false });
+    expect(removed.thinkingOptions[0].value).toBe("medium");
+  });
+  it("blocks missing live models and text-only Codex models without replacing the configured model", () => {
+    expect(getInvoiceAiSelectionOptions(provider, "agentic", {}, [])).toMatchObject({ model: "model-a", modelUnavailable: true, canAnalyze: false });
+    expect(getInvoiceAiSelectionOptions(provider, "agentic", {}, [{ id: "model-a", inputModalities: ["text"], supportedReasoningEfforts: ["high"] }]).canAnalyze).toBe(false);
+  });
+  it("does not infer Codex intensities from saved catalogs, and handles absent or malformed entries", () => {
+    expect(getInvoiceAiSelectionOptions(provider, "agentic").thinkingOptions).toEqual([{ value: "high", label: "high" }]);
+    const malformed = { ...provider, fields: { agentic: { available_models: [null, {}, { id: 4 }, { id: "" }] } } };
+    expect(getInvoiceAiSelectionOptions(malformed, "agentic")).toMatchObject({ model: "", modelOptions: [], thinkingOptions: [], canAnalyze: false });
+    expect(getInvoiceAiSelectionOptions(null, null)).toMatchObject({ modelOptions: [], thinkingOptions: [], canAnalyze: false });
+  });
+  it("offers the API protocol's full preferences without treating them as model capabilities", () => {
+    const api = { ...provider, mode: "api_key", active_mode: "api_key" as const };
+    const result = getInvoiceAiSelectionOptions(api, "api_key", {}, [{ id: "api-model" }]);
+    expect(result.thinkingOptions.map(item => item.value)).toEqual(["low", "medium", "high", "xhigh", "max"]);
+    expect(result.thinkingLevel).toBe("max");
   });
 });

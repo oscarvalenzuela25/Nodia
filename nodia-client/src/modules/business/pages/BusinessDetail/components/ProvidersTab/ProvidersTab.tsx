@@ -5,10 +5,12 @@ import { ProviderMobileCard } from "../../../../components/BusinessMobileCards/B
 import { useMediaQuery, useTheme } from "@mui/material";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import type { FC, MouseEvent } from "react";
-import { lazy, Suspense, useState } from "react";
+import { useState } from "react";
+import useProviderContactsOpening from "./hooks/useProviderContactsOpening";
 import { useTranslation } from "react-i18next";
 import {
   Box,
+  Alert,
   Button,
   Chip,
   IconButton,
@@ -61,8 +63,6 @@ import {
 } from "./components/ProviderBulkImport/helpers";
 import { StatusDot } from "../../styles";
 
-const ProviderContacts = lazy(() => import("./components/ProviderContacts"));
-
 interface Props {
   businessId: string;
   isCreateModalOpenDirectly?: boolean;
@@ -74,13 +74,15 @@ export const ProvidersTab: FC<Props> = ({
   isCreateModalOpenDirectly = false,
   onCloseDirectCreateModal,
 }) => {
-  const { t, i18n } = useTranslation(["business", "core"]);
+  const { t, i18n } = useTranslation(["business", "core", "provider_contacts"]);
   const mobile = useMediaQuery(useTheme().breakpoints.down("sm"));
 
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"active" | "inactive" | null>("active");
   const [contactsProvider, setContactsProvider] =
     useState<ProviderEntity | null>(null);
+  const { Component: ProviderContacts, open: openContacts, loadingProviderId, failedProvider } =
+    useProviderContactsOpening(businessId, setContactsProvider);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(50);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -249,25 +251,24 @@ export const ProvidersTab: FC<Props> = ({
     );
   }
 
-  if (contactsProvider?.business_id === businessId) {
+  if (contactsProvider?.business_id === businessId && ProviderContacts) {
     return (
-      <Suspense
-        fallback={
-          <LinearProgress aria-label={t("provider_contacts:loading")} />
-        }
-      >
         <ProviderContacts
           key={contactsProvider.id}
           providerId={contactsProvider.id}
           providerName={contactsProvider.name}
           onBack={() => setContactsProvider(null)}
         />
-      </Suspense>
     );
   }
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      {loadingProviderId !== null && <LinearProgress aria-label={t("provider_contacts:loading")} />}
+      {failedProvider && <Alert severity="error" action={<Button variant="outlined" disabled={loadingProviderId !== null || isBusy}
+        onClick={() => { if (!isBusy) void openContacts(failedProvider); }}>{t("core:retry")}</Button>}>
+        {t("provider_contacts:load_error")}
+      </Alert>}
       <QueryErrorAlert
         isError={isError}
         isFetching={isFetching}
@@ -450,10 +451,10 @@ export const ProvidersTab: FC<Props> = ({
                   <ProviderMobileCard
                     key={prov.id}
                     provider={prov}
-                    disabled={isBusy}
+                    disabled={isBusy || loadingProviderId !== null}
                     onEdit={handleOpenEdit}
                     onToggle={setConfirmToggleProvider}
-                    onContacts={setContactsProvider}
+                    onContacts={provider => { if (!isBusy) void openContacts(provider); }}
                   />
                 ))
               )}
@@ -521,8 +522,9 @@ export const ProvidersTab: FC<Props> = ({
                               startIcon={
                                 <ContactsOutlinedIcon fontSize="small" />
                               }
-                              disabled={isBusy}
-                              onClick={() => setContactsProvider(prov)}
+                              loading={loadingProviderId === prov.id}
+                              disabled={isBusy || loadingProviderId !== null}
+                              onClick={() => { if (!isBusy) void openContacts(prov); }}
                               data-testid={`provider-contacts-${prov.id}`}
                             >
                               {t("provider_contacts:contacts")}

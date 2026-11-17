@@ -1,5 +1,34 @@
 # Contexto funcional de productos para NodiaAI
 
+## Contactos de proveedores: recuperación local — incidencia2026-11-16
+
+[Plan31](../../mvp/31-provider-contacts-proposal.md#apertura-recuperable-de-contactos--incidencia-de-producción2026-11-16) y
+[evidencia](../../evidence/providers-contacts-opening-20261116.md) registran
+recuperación de carga secundaria y conservación de contexto/borradores. Impacto
+visual/interacción y resiliencia local; sin nuevos conceptos, datos, contratos,
+operaciones, herramientas, permisos o bindings. La ficha aprobada
+[contactos](businesses/features/supplier-contacts.md) conserva bytes y aprobación;
+plan31 cambia sólo su procedencia técnica compilada, con pins propios del candidato.
+Focal67/9 correcta, incluidas12atómicas de hook/loader; QA fresh320/600/1440
+verifica recuperación/foco/búsqueda. Global3139/380, tipos/lint/build y pins locales
+correctos. El usuario confirma que recargar corrige el fallo observado; causa
+exacta aún no aislada y fix local sin adoptar. Sin nueva aprobación/publicación.
+
+## OCR manual: defaults y selección exacta — solicitud2026-11-16
+
+[Plan94§41](../../mvp/94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16),
+[Negocios revisión54](businesses/README.md), [alias revisión2](businesses/features/product-alias-and-code-completeness.md)
+y [calculadora/vinculación revisión14](businesses/features/product-price-calculator-and-invoice-binding.md)
+registran reglas nuevas del importador manual: alias nuevo desde nombre,
+preservación de alias/disponibilidad existentes, venta inicial30% sobre bruto
+editable y modelo/intensidad desde configuración exacta. Impacto funcional y de
+presentación; implementación local, tipos/lint/build y QA Chromium sintética
+verificados en [evidencia propia](../../evidence/invoice-ocr-review-defaults-20261116.md).
+Global2:3125/378 y focal posterior124/10 cubren sus respectivos cortes; tipos,
+lint/build finales y pins locales correctos, sin atribuir la global a todo el árbol final.
+Sin fichas nuevas, herramientas, permisos o bindings; draft/unregistered y
+approval:null. Cuerpos aprobados, históricos y publicación se conservan.
+
 ## Capturas de validación archivadas — 2026-11-16
 
 El usuario solicita excluir imágenes del repositorio.

@@ -1,5 +1,7 @@
 # Especificación Técnica: Pipeline de Facturas e Inteligencia Artificial (OCR)
 
+> Revisión manual vigente solicitada2026-11-16: [plan94§41](../../mvp/94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16) define alias por defecto del nuevo, preservación de alias/disponibilidad del existente, venta inicial30% sobre bruto editable y selección exacta de modelo/intensidad desde defaults persistidos. Sustituye las reglas previas de revisión/columnas sólo para el importador manual; implementación y validación de este delta se registran en ese plan.
+
 > Cambio solicitado el 2026-10-27: retirar Web y conservar sólo Agentic (`agentic`) y API key (`api_key`), conforme [plan90](../../mvp/90-agentic-api-only-web-retirement.md) y [pruebas91](../../mvp/91-ai-provider-onboarding-verification.md). Los apartados inferiores conservan contratos/evidencias anteriores por fecha y no habilitan Web. Implementación y aceptación en curso; ningún cambio automático de proveedor, modelo o modo por error.
 
 > Estado: borrador preliminar para contraste con base de datos

@@ -1,16 +1,16 @@
 import InvoiceAliasReview from "./InvoiceAliasReview";
+import InvoicePriceReview from "./InvoicePriceReview";
 import EditOutlined from "@mui/icons-material/EditOutlined";
 import InvoiceProductMatch from "./InvoiceProductMatch";
 import PriceSuggestion from "../PriceSuggestion";
 import InvoiceRowActions from "./InvoiceRowActions";
-import AddRounded from "@mui/icons-material/AddRounded";
-import RemoveRounded from "@mui/icons-material/RemoveRounded";
 import BusinessWorkflow from "../../../../../../components/BusinessWorkflow";
 import { getHttpErrorMessage, notifyHttpError } from "../../../../../../../../config/httpFeedback";
 import { invoiceAiAnalysisMessageKey, invoiceAiRuntimeMessageKey } from "../../../../../../infrastructure/invoiceAiFailure";
 import AnalysisConsole, { useAnalysisObservation } from "../../../../../../components/AnalysisConsole";
 import { Workspace, WorkspaceGrid } from "../../../../../../components/AnalysisConsole/styles";
-import { getInvoiceAiModes, isInvoiceAiMode, isProviderVisibleInInvoiceImport, resolveInvoiceAiConfiguration, resolveInvoiceAiProvider, type InvoiceAiMode } from "./aiSelection";
+import { getInvoiceAiModes, isInvoiceAiMode, isProviderVisibleInInvoiceImport, resolveInvoiceAiProvider, type InvoiceAiMode } from "./aiSelection";
+import { useInvoiceAiSelection } from "./hooks/useInvoiceAiSelection";
 import type { FC, ChangeEvent, DragEvent } from "react";
 import { useState, useMemo, useRef, useEffect, Fragment } from "react";
 import { useTranslation } from "react-i18next";
@@ -81,6 +81,7 @@ import {
   bindInvoiceRow,
   invoiceAliasNeedsReview,
   reviewInvoiceAlias,
+  reviewInvoiceSalePrice,
   prepareInvoiceProductPayloads,
   validateInvoiceRow,
   validateInvoiceRows,
@@ -109,7 +110,7 @@ export const ProductInvoiceImport: FC<Props> = ({
   onCancel,
   onSuccess,
 }) => {
-  const { t } = useTranslation(["business", "core", "ai_providers"]);
+  const { t, i18n } = useTranslation(["business", "core", "ai_providers"]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const resultsSectionRef = useRef<HTMLDivElement | null>(null);
   const shouldScrollToResults = useRef<boolean>(false);
@@ -126,11 +127,11 @@ export const ProductInvoiceImport: FC<Props> = ({
   const [invoiceIssueDate, setInvoiceIssueDate] = useState<string>("");
   const [matchingRow, setMatchingRow] = useState<{ businessId: string; row: InvoiceProvisionalRow } | null>(null);
   const [aliasReview, setAliasReview] = useState<{ businessId: string; row: InvoiceProvisionalRow } | null>(null);
+  const [priceReview, setPriceReview] = useState<{ businessId: string; row: InvoiceProvisionalRow } | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<InvoiceProvisionalRow>>({});
   const [editTaxRate, setEditTaxRate] = useState<number>(19);
   const [isSaving, setIsSaving] = useState(false);
-  const [showInvoiceDetails, setShowInvoiceDetails] = useState(false);
 
   const [modeSelection, setModeSelection] = useState<{ providerId: string; mode: InvoiceAiMode } | null>(null);
   const { data: iaProvidersData, isLoading: isVerifyingProviders, isFetching: isFetchingAiProviders, isError: aiProvidersError, refetch: refetchAiProviders } = useVerifyIaProviders({ mode: modeSelection?.mode });
@@ -150,13 +151,15 @@ export const ProductInvoiceImport: FC<Props> = ({
   const selectedAiMode = requestedMode
     ? (enabledModes.includes(requestedMode) ? requestedMode : null)
     : (defaultMode && enabledModes.includes(defaultMode) ? defaultMode : enabledModes[0] ?? null);
-  const aiConfiguration = resolveInvoiceAiConfiguration(currentAiProvider, selectedAiMode);
+  const aiConfiguration = useInvoiceAiSelection(currentAiProvider, selectedAiMode, businessId);
   const availabilityMessage = selectedAiMode === "agentic"
     ? invoiceAiRuntimeMessageKey(currentAiProvider?.availability_reason) : null;
   const unavailableMessage = !currentAiProvider
     ? t("business:no_ai_providers_available")
     : availabilityMessage ? t(availabilityMessage)
     : !aiConfiguration.model ? t("business:ai_model_unassigned")
+    : aiConfiguration.modelUnavailable ? t("business:ai_model_unavailable")
+    : aiConfiguration.effortUnavailable ? t("ai_providers:codex.effort_unavailable", { effort: aiConfiguration.thinkingLevel })
     : currentAiProvider.error || t("business:provider_unavailable");
 
   const activeModes = enabledModes.map((value) => ({
@@ -232,7 +235,7 @@ export const ProductInvoiceImport: FC<Props> = ({
 
   const isAnalyzing = observation.isBusy;
   const isBusy =
-    isAnalyzing || isCheckingAiAvailability || isFetchingAiProviders || isFetchingProducts || providerQuery.isFetching ||
+    isAnalyzing || isCheckingAiAvailability || isFetchingAiProviders || aiConfiguration.isFetching || isFetchingProducts || providerQuery.isFetching ||
     isSaving ||
     createInvoiceMutation.isPending ||
     bulkCreateMutation.isPending ||
@@ -255,7 +258,6 @@ export const ProductInvoiceImport: FC<Props> = ({
   }, []);
 
   const hasErrors = useMemo(() => rows.some((r) => !r.isValid), [rows]);
-  const needsAvailability = rows.some(row => !row.id && typeof row.has_stock !== "boolean");
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (isUploadDisabled || analysisIntent.current) return;
@@ -303,8 +305,8 @@ export const ProductInvoiceImport: FC<Props> = ({
     modeToUse?: InvoiceAiMode | null
   ) => {
     const effectiveMode = modeToUse ?? selectedAiMode;
-    const configuration = resolveInvoiceAiConfiguration(provider, effectiveMode);
-    if (analysisIntent.current || availabilityCheckPending.current || !file || !selectedProviderId || selectedProviderTax === null || productsError || aiProvidersError || isBusy || !configuration.canAnalyze || !effectiveMode) return;
+    const configuration = aiConfiguration;
+    if (provider.id !== currentAiProvider?.id || effectiveMode !== selectedAiMode || analysisIntent.current || availabilityCheckPending.current || !file || !selectedProviderId || selectedProviderTax === null || productsError || aiProvidersError || isBusy || !configuration.canAnalyze || !effectiveMode) return;
     const intent = Symbol("invoice-analysis");
     analysisIntent.current = intent;
     const targetModel = configuration.model;
@@ -374,7 +376,6 @@ export const ProductInvoiceImport: FC<Props> = ({
       setInvoiceIssueDate(response.data?.issue_date || "");
       shouldScrollToResults.current = true;
       setRows(mappedRows);
-      if (mappedRows.some(row => !row.id && typeof row.has_stock !== "boolean")) setShowInvoiceDetails(true);
       transport.emit('draft_ready');
       transport.finish();
     } catch (error) {
@@ -389,7 +390,7 @@ export const ProductInvoiceImport: FC<Props> = ({
     if (availabilityCheckPending.current) return;
     availabilityCheckPending.current = true;
     setIsCheckingAiAvailability(true);
-    try { await refetchAiProviders(); }
+    try { await Promise.all([refetchAiProviders(), ...(currentAiProvider && selectedAiMode ? [aiConfiguration.refetch()] : [])]); }
     catch (error) { notifyHttpError(error); }
     finally { availabilityCheckPending.current = false; setIsCheckingAiAvailability(false); }
   };
@@ -462,6 +463,14 @@ export const ProductInvoiceImport: FC<Props> = ({
     return true;
   };
 
+  const handleApplyPrice = (price: number) => {
+    if (isBusy || analysisIntent.current || !priceReview || priceReview.businessId !== businessId || !rows.includes(priceReview.row)) return false;
+    const reviewed = reviewInvoiceSalePrice(priceReview.row, price);
+    setRows(previous => validateInvoiceRows(previous.map(row => row === priceReview.row ? reviewed : row)));
+    sileo.success({ title: t("business:invoice_sale_price_draft_saved") });
+    return true;
+  };
+
   const handleSaveEdit = () => {
     if (editingIndex === null || isBusy || analysisIntent.current) return;
 
@@ -487,7 +496,7 @@ export const ProductInvoiceImport: FC<Props> = ({
       cost_price_tax: Number(editFormData.cost_price_tax ?? 0),
       sale_price: newSalePrice,
       quantity: editFormData.quantity ?? Number.NaN,
-      has_stock: currentRow.id ? currentRow.has_stock : editFormData.has_stock,
+      has_stock: currentRow.has_stock,
       version: currentRow.version,
       manual_match: currentRow.manual_match ? { ...currentRow.manual_match, fields: [...new Set([...currentRow.manual_match.fields, ...INVOICE_UPDATE_FIELDS.filter(field => editFormData[field] !== currentRow[field])])] } : undefined,
       is_active: editFormData.is_active ?? true,
@@ -510,7 +519,7 @@ export const ProductInvoiceImport: FC<Props> = ({
   };
 
   const handleSubmitAll = async () => {
-    if (analysisIntent.current || rows.length === 0 || hasErrors || rows.some(row => !row.id && typeof row.has_stock !== "boolean") || isBusy || !invoiceCode.trim() || !file || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0) {
+    if (analysisIntent.current || rows.length === 0 || hasErrors || isBusy || !invoiceCode.trim() || !file || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0) {
       return;
     }
 
@@ -583,7 +592,7 @@ export const ProductInvoiceImport: FC<Props> = ({
       </Box>
 
       {/* Instructions & Upload Area */}
-      <QueryErrorAlert isError={aiProvidersError || productsError || providerQuery.isError} isFetching={isBusy} onRetry={() => { if (!isBusy && !analysisIntent.current) return Promise.all([handleCheckAiAvailability(), refetchProducts(), providerQuery.refetch()]); }} />
+      <QueryErrorAlert isError={aiProvidersError || aiConfiguration.isError || productsError || providerQuery.isError} isFetching={isBusy} onRetry={() => { if (!isBusy && !analysisIntent.current) return Promise.all([handleCheckAiAvailability(), refetchProducts(), providerQuery.refetch()]); }} />
       <InvoiceSectionPaper>
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, display: "flex", alignItems: "center", gap: 1 }}>
           <ReceiptLongOutlinedIcon color="primary" />
@@ -653,19 +662,9 @@ export const ProductInvoiceImport: FC<Props> = ({
                   gap: 2,
                 }}
               >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    gap: 2,
-                    flex: 1,
-                    minWidth: 0,
-                    flexBasis: { xs: '100%', sm: 'auto' },
-                  }}
-                >
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "minmax(0, 1fr)", sm: "repeat(2, minmax(0, 1fr))", lg: "repeat(4, minmax(0, 1fr))" }, gap: 2, flex: 1, minWidth: 0 }}>
                   {/* AI Provider Selector */}
-                  <Box sx={{ minWidth: { xs: 0, sm: 200 }, flex: 1, flexBasis: { xs: '100%', sm: 'auto' }, maxWidth: 300 }}>
+                  <Box sx={{ minWidth: 0 }}>
                     <SelectSingleInput
                       id="ai-provider-select"
                       label={t("business:select_ai_provider_label", "Proveedor de IA")}
@@ -690,7 +689,7 @@ export const ProductInvoiceImport: FC<Props> = ({
 
                   {/* Mode Selector (shown whenever selected provider has active modes) */}
                   {activeModes.length > 0 && (
-                    <Box sx={{ minWidth: { xs: 0, sm: 200 }, flex: 1, flexBasis: { xs: '100%', sm: 'auto' }, maxWidth: 300 }}>
+                    <Box sx={{ minWidth: 0 }}>
                       <SelectSingleInput
                         id="ai-mode-select"
                         label={t("business:select_ai_mode_label", "Método de Conexión")}
@@ -713,6 +712,21 @@ export const ProductInvoiceImport: FC<Props> = ({
                       />
                     </Box>
                   )}
+                  <SelectSingleInput
+                    id="ai-model-select" dataTestId="ai-model-select" label={t("business:select_ai_model_label")}
+                    options={aiConfiguration.modelOptions.map(option => ({ ...option, label: `${option.label}${option.value === aiConfiguration.defaultModel ? ` (${t("business:default_badge")})` : ""}` }))} value={aiConfiguration.model || null}
+                    onChange={value => { if (!isBusy && !analysisIntent.current) aiConfiguration.selectModel(value); }}
+                    placeholder={t("business:ai_model_unassigned")} disabled={isBusy} clearable={false}
+                  />
+                  <SelectSingleInput
+                    id="ai-intensity-select" dataTestId="ai-intensity-select" label={t("business:select_ai_intensity_label")}
+                    options={aiConfiguration.thinkingOptions.map(option => {
+                      const key = `ai_providers:detail.level_${option.value}`;
+                      return { ...option, label: i18n.exists(key) ? t(key) : option.label };
+                    })} value={aiConfiguration.thinkingLevel ?? null}
+                    onChange={value => { if (!isBusy && !analysisIntent.current) aiConfiguration.selectThinkingLevel(value); }}
+                    placeholder={t("business:ai_intensity_unassigned")} disabled={isBusy || aiConfiguration.thinkingOptions.length === 0} clearable={false}
+                  />
                 </Box>
 
                 {/* Analyze Action Button */}
@@ -1069,7 +1083,7 @@ export const ProductInvoiceImport: FC<Props> = ({
               <Button
                 variant="contained"
                 color="success"
-                disabled={hasErrors || needsAvailability || rows.length === 0 || isBusy || !invoiceCode.trim() || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0}
+                disabled={hasErrors || rows.length === 0 || isBusy || !invoiceCode.trim() || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0}
                 onClick={handleSubmitAll}
                 startIcon={isSaving ? <CircularProgress size={18} color="inherit" /> : <ReceiptLongOutlinedIcon />}
                 sx={{ borderRadius: 2 }}
@@ -1092,7 +1106,7 @@ export const ProductInvoiceImport: FC<Props> = ({
               boxShadow: "none",
             }}
           >
-            <Table size="small" sx={{ minWidth: showInvoiceDetails ? 1400 : 1200 }}>
+            <Table size="small" sx={{ minWidth: 1200 }}>
               <TableHead>
                 <TableRow>
                   <TableCell width={36}></TableCell>
@@ -1100,26 +1114,10 @@ export const ProductInvoiceImport: FC<Props> = ({
                   <TableCell>{t("business:product_code")}</TableCell>
                   <TableCell>{t("business:product_name")}</TableCell>
                   <TableCell>{t("business:product_alias")}</TableCell>
+                  <TableCell align="right">{t("business:pos.invoice_quantity")}</TableCell>
                   <TableCell align="right">{t("business:product_cost_price")}</TableCell>
                   <TableCell align="right">{t("business:product_cost_tax")}</TableCell>
-                  <TableCell align="right">
-                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 0.5 }}>
-                      {t("business:product_sale_price")}
-                      <Tooltip title={t(showInvoiceDetails ? "business:invoice_hide_detail_columns" : "business:invoice_show_detail_columns")}>
-                        <span><IconButton
-                          aria-label={t(showInvoiceDetails ? "business:invoice_hide_detail_columns" : "business:invoice_show_detail_columns")}
-                          aria-expanded={showInvoiceDetails}
-                          disabled={isBusy}
-                          onClick={() => { if (!isBusy && !analysisIntent.current) setShowInvoiceDetails(previous => !previous); }}
-                          sx={{ minWidth: 44, minHeight: 44, color: "inherit" }}
-                        >{showInvoiceDetails ? <RemoveRounded fontSize="small" /> : <AddRounded fontSize="small" />}</IconButton></span>
-                      </Tooltip>
-                    </Box>
-                  </TableCell>
-                  {showInvoiceDetails && <>
-                    <TableCell align="right">{t("business:pos.invoice_quantity")}</TableCell>
-                    <TableCell>{t("business:pos.availability")}</TableCell>
-                  </>}
+                  <TableCell align="right" sx={{ minWidth: 180 }}>{t("business:invoice_sale_price_default")}</TableCell>
                   <TableCell align="right" width={96} sx={{ whiteSpace: "nowrap" }}>{t("core:actions")}</TableCell>
                 </TableRow>
               </TableHead>
@@ -1180,7 +1178,6 @@ export const ProductInvoiceImport: FC<Props> = ({
                           bgcolor: invoiceAliasNeedsReview(row) ? "action.hover" : "transparent" }}>
                           <Box sx={{ flex: 1, minWidth: 0 }}>
                             <Typography variant="body2">{row.alias?.trim() || t("business:invoice_alias_pending")}</Typography>
-                            {invoiceAliasNeedsReview(row) && <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>{t("business:invoice_alias_required")}</Typography>}
                           </Box>
                           <Tooltip title={t("business:invoice_alias_edit", { name: row.name })}><span><IconButton
                             aria-label={t("business:invoice_alias_edit", { name: row.name })} data-testid={`review-invoice-alias-${idx}`} disabled={isBusy}
@@ -1190,6 +1187,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                           </IconButton></span></Tooltip>
                         </Box>
                       </TableCell>
+                      <TableCell align="right">{Number.isFinite(row.quantity) ? row.quantity : "—"}</TableCell>
                       <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
                         {Number.isFinite(row.cost_price) ? `$${row.cost_price.toLocaleString()}` : "-"}
                       </TableCell>
@@ -1197,6 +1195,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                         {Number.isFinite(row.cost_price_tax) ? `$${row.cost_price_tax.toLocaleString()}` : "-"}
                       </TableCell>
                       <TableCell align="right" sx={{ fontWeight: 600, whiteSpace: "nowrap" }}>
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 1 }}>
                         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
                           <span>{Number.isFinite(row.sale_price) ? `$${row.sale_price.toLocaleString()}` : "-"}</span>
                           {row.priceDiff && (
@@ -1232,17 +1231,14 @@ export const ProductInvoiceImport: FC<Props> = ({
                             </Tooltip>
                           )}
                         </Box>
+                          <Tooltip title={t("business:invoice_sale_price_edit", { name: row.name })}><span><IconButton
+                            aria-label={t("business:invoice_sale_price_edit", { name: row.name })} data-testid={`review-invoice-price-${idx}`} disabled={isBusy}
+                            onClick={() => { if (!isBusy && !analysisIntent.current) setPriceReview({ businessId, row }); }}
+                            sx={{ width: 44, height: 44, color: "primary.main" }}>
+                            <EditOutlined fontSize="small" />
+                          </IconButton></span></Tooltip>
+                        </Box>
                       </TableCell>
-                      {showInvoiceDetails && <>
-                      <TableCell align="right">{Number.isFinite(row.quantity) ? row.quantity : "—"}</TableCell>
-                      <TableCell><SelectSingleInput label={t("business:pos.availability")}
-                        value={typeof row.has_stock === "boolean" ? String(row.has_stock) : null}
-                        options={[{ value: "true", label: t("business:pos.available") }, { value: "false", label: t("business:pos.unavailable") }]}
-                        onChange={value => { if (!isBusy && !analysisIntent.current) setRows(previous => previous.map((item,index) => index === idx ? { ...item, has_stock: value === null ? undefined : value === "true" } : item)); }}
-                        disabled={isBusy || Boolean(row.id)} placeholder={t(row.id ? "business:pos.preserve_existing" : "business:pos.choose_availability")}
-                      /></TableCell>
-
-                      </>}
 
                       <TableCell align="right">
                         <InvoiceRowActions index={idx} disabled={isBusy}
@@ -1292,6 +1288,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                           </Typography>
                         </TableCell>
                         <TableCell sx={{ overflowWrap: "anywhere" }}>{row.historicalProduct.alias ?? "—"}</TableCell>
+                        <TableCell align="right" sx={{ color: "text.secondary" }}>—</TableCell>
                         <TableCell align="right" sx={{ color: "text.secondary" }}>
                           ${row.historicalProduct.cost_price.toLocaleString()}
                         </TableCell>
@@ -1301,10 +1298,6 @@ export const ProductInvoiceImport: FC<Props> = ({
                         <TableCell align="right" sx={{ color: "text.secondary", fontWeight: 500 }}>
                           ${row.historicalProduct.sale_price.toLocaleString()}
                         </TableCell>
-                        {showInvoiceDetails && <>
-                          <TableCell align="right" sx={{ color: "text.secondary" }}>—</TableCell>
-                          <TableCell align="center">—</TableCell>
-                        </>}
                         <TableCell align="right">
                           <Typography variant="caption" color="text.disabled">-</Typography>
                         </TableCell>
@@ -1323,6 +1316,10 @@ export const ProductInvoiceImport: FC<Props> = ({
       {aliasReview && aliasReview.businessId === businessId && rows.includes(aliasReview.row) && <InvoiceAliasReview key={`${businessId}:${rows.indexOf(aliasReview.row)}`} name={aliasReview.row.name} alias={aliasReview.row.alias}
         disabled={isBusy}
         onApply={handleApplyAlias} onClose={() => setAliasReview(null)} />}
+
+      {priceReview && priceReview.businessId === businessId && rows.includes(priceReview.row) && <InvoicePriceReview key={`${businessId}:${rows.indexOf(priceReview.row)}`}
+        price={priceReview.row.sale_price} disabled={isBusy}
+        onApply={handleApplyPrice} onClose={() => setPriceReview(null)} />}
 
       {/* Row Edit Modal */}
       <BaseModal
@@ -1360,14 +1357,6 @@ export const ProductInvoiceImport: FC<Props> = ({
             handleSaveEdit();
           }}
         >
-          <SelectSingleInput
-            label={t("business:pos.availability")}
-            value={typeof editFormData.has_stock === "boolean" ? String(editFormData.has_stock) : null}
-            options={[{ value: "true", label: t("business:pos.available") }, { value: "false", label: t("business:pos.unavailable") }]}
-            onChange={(value) => { if (!isBusy && !analysisIntent.current) setEditFormData(previous => ({ ...previous, has_stock: value === null ? undefined : value === "true" })); }}
-            disabled={isBusy || Boolean(editFormData.id)}
-            placeholder={t(editFormData.id ? "business:pos.preserve_existing" : "business:pos.choose_availability")}
-          />
           {/* is_active Switch at top, matching Core pattern */}
           <SwitchWrapper>
             <StyledFormControlLabel
