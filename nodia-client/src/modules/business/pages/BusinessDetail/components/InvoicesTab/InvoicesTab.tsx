@@ -45,14 +45,11 @@ import ActiveStatusSelect from "../../../../../../components/Filter/components/A
 import SelectMultipleInput from "../../../../../../components/inputs/SelectMultipleInput";
 import InputSearch from "../../../../../../components/inputs/InputSearch";
 import ConfirmDialog from "../../../../../../components/ConfirmDialog";
-import {
-  useInvoices,
-  useCreateInvoiceWithFile,
-  useUpdateInvoice,
-} from "../../../../infrastructure/useServices";
+import useAuthStore from "../../../../../../store/authStore";
+import { useInvoices, useUpdateInvoice } from "../../../../infrastructure/useServices";
 import { usePagedProviderOptions, usePagedInvoiceCodeOptions } from "../../../../infrastructure/usePagedOptions";
 import type { InvoiceEntity } from "../../../../infrastructure/types";
-import InvoiceModal, { type InvoiceFormSubmitData } from "./components/InvoiceModal";
+import InvoiceEditor from "./components/InvoiceModal/InvoiceEditor";
 import InvoicePreviewModal from "./components/InvoicePreviewModal/InvoicePreviewModal";
 import { StatusDot } from "../../styles";
 
@@ -76,6 +73,8 @@ export const InvoicesTab: FC<Props> = ({
 }) => {
   const { t, i18n } = useTranslation(["business", "core"]);
   const mobile = useMediaQuery(useTheme().breakpoints.down("sm"));
+  const actorId = useAuthStore((state) => state.user?.id);
+  const sessionVersion = useAuthStore((state) => state.sessionVersion);
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "-";
@@ -102,7 +101,7 @@ export const InvoicesTab: FC<Props> = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState<InvoiceEntity | null>(null);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string>();
   const [previewInvoice, setPreviewInvoice] = useState<InvoiceEntity | null>(null);
 
   const handleCopyPath = async (path?: string) => {
@@ -222,17 +221,16 @@ export const InvoicesTab: FC<Props> = ({
     return invoices.reduce((acc, inv) => acc + (Number(inv.total_amount) || 0), 0);
   }, [invoices]);
 
-  const createMutation = useCreateInvoiceWithFile();
   const updateMutation = useUpdateInvoice();
-  const isBusy = isLoading || isFetching || createMutation.isPending || updateMutation.isPending;
+  const isBusy = isLoading || isFetching || updateMutation.isPending;
 
   const handleOpenCreate = () => {
-    setSelectedInvoice(null);
+    setSelectedInvoiceId(undefined);
     setIsModalOpen(true);
   };
 
   const handleOpenEdit = (invoice: InvoiceEntity) => {
-    setSelectedInvoice(invoice);
+    setSelectedInvoiceId(invoice.id);
     setIsModalOpen(true);
   };
 
@@ -258,48 +256,6 @@ export const InvoicesTab: FC<Props> = ({
       setConfirmToggleInvoice(null);
     } catch {
       // Keep confirm dialog open on error
-    }
-  };
-
-  const handleFormSubmit = async (data: InvoiceFormSubmitData) => {
-    try {
-      if (selectedInvoice) {
-        await updateMutation.mutateAsync({
-          id: selectedInvoice.id,
-          payload: {
-            code: data.code.trim() || null,
-            provider_id: data.provider_id || null,
-            total_amount: data.total_amount,
-            path_storage: data.path_storage,
-            data: {
-              ...selectedInvoice.data,
-              issue_date: data.issue_date,
-              notes: data.notes,
-            },
-            is_active: data.is_active,
-          },
-        });
-      } else {
-        await createMutation.mutateAsync({
-          file: data.file || undefined,
-          business_id: businessId,
-          code: data.code.trim() || null,
-          provider_id: data.provider_id || null,
-          total_amount: data.total_amount,
-          path_storage: data.path_storage || "",
-          is_active: data.is_active,
-          data: {
-            issue_date: data.issue_date,
-            notes: data.notes,
-          },
-        });
-      }
-
-      setIsModalOpen(false);
-      setSelectedInvoice(null);
-      if (onCloseDirectCreateModal) onCloseDirectCreateModal();
-    } catch {
-      // Do not close modal on error, allowing user to retry
     }
   };
 
@@ -541,6 +497,7 @@ export const InvoicesTab: FC<Props> = ({
           onClick={handleOpenCreate}
           sx={{ borderRadius: 2, width: { xs: "100%", sm: "auto" }, minHeight: { xs: 44, sm: "auto" } }}
           disabled={isBusy}
+          aria-label={t("business:new_invoice_btn")}
           data-testid="new-invoice-btn"
         >
           {t("business:new_invoice_btn")}
@@ -847,19 +804,16 @@ export const InvoicesTab: FC<Props> = ({
       />
 
       {/* Modal */}
-      {(isModalOpen || isCreateModalOpenDirectly) && (
-        <InvoiceModal
-          open={isModalOpen || isCreateModalOpenDirectly}
+      {actorId && (isModalOpen || isCreateModalOpenDirectly) && (
+        <InvoiceEditor
+          key={`${businessId}:${actorId}:${sessionVersion}:${selectedInvoiceId ?? ""}`}
+          scope={{ businessId, actorId, sessionVersion }}
+          invoiceId={selectedInvoiceId}
           onClose={() => {
             setIsModalOpen(false);
-            setSelectedInvoice(null);
-            if (onCloseDirectCreateModal) onCloseDirectCreateModal();
+            setSelectedInvoiceId(undefined);
+            onCloseDirectCreateModal?.();
           }}
-          onSubmit={handleFormSubmit}
-          initialData={selectedInvoice}
-          providers={providers}
-          providerSearch={{ onSearchChange: providerQuery.setSearch, onLoadMore: () => { void providerQuery.fetchNextPage(); }, hasMore: providerQuery.hasNextPage, loadingOptions: providerQuery.isFetching }}
-          isSubmitting={isBusy}
         />
       )}
 

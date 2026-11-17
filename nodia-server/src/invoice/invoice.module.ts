@@ -8,6 +8,7 @@ import { GetInvoiceByIdUseCase } from './use-case/get-invoice-by-id.use-case.js'
 import { GetInvoiceViewUrlUseCase } from './use-case/get-invoice-view-url.use-case.js';
 import { AnalyzeInvoiceUseCase } from './use-case/analyze-invoice.use-case.js';
 import { VerifyIaProvidersUseCase } from './use-case/verify-ia-providers.use-case.js';
+import { GetInvoiceSelectableModelsUseCase } from './use-case/get-invoice-selectable-models.use-case.js';
 import { StorageModule } from '../common/storage/storage.module.js';
 import { GeminiModule } from '../common/ai/gemini.module.js';
 import { ProviderModule } from '../provider/provider.module.js';
@@ -15,6 +16,10 @@ import { AiProviderModule } from '../ai-provider/ai-provider.module.js';
 import { AnalysisObservationsUseCase } from './use-case/analysis-observations.use-case.js';
 import { AnalysisObservationInterceptor } from './analysis-observation.interceptor.js';
 import { InvoiceUploadRecoveryWorker } from './invoice-upload-recovery.worker.js';
+import { BusinessCashModule } from '../business-cash/business-cash.module.js';
+import { ProductModule } from '../product/product.module.js';
+import { InvoiceCashUploadService } from './invoice-cash-upload.js';
+import { SaveCashInvoiceUseCase } from './use-case/save-cash-invoice.use-case.js';
 
 @Module({
   imports: [
@@ -23,6 +28,8 @@ import { InvoiceUploadRecoveryWorker } from './invoice-upload-recovery.worker.js
     GeminiModule,
     ProviderModule,
     AiProviderModule,
+    BusinessCashModule,
+    ProductModule,
   ],
   controllers: [InvoiceController],
   providers: [
@@ -35,6 +42,9 @@ import { InvoiceUploadRecoveryWorker } from './invoice-upload-recovery.worker.js
     InvoiceUploadRecoveryWorker,
     AnalyzeInvoiceUseCase,
     VerifyIaProvidersUseCase,
+    GetInvoiceSelectableModelsUseCase,
+    InvoiceCashUploadService,
+    SaveCashInvoiceUseCase,
   ],
   exports: [InvoicePersistenceModule, VerifyIaProvidersUseCase],
 })

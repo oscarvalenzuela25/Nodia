@@ -5,9 +5,12 @@ import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-qu
 import type { ReactElement } from "react";
 import InvoicesTab from "../../../../../../../modules/business/pages/BusinessDetail/components/InvoicesTab/InvoicesTab";
 import * as businessServices from "../../../../../../../modules/business/infrastructure/services";
+import * as cashServices from "../../../../../../../modules/business/infrastructure/cashServices";
 import type { InvoiceEntity, ProviderEntity } from "../../../../../../../modules/business/infrastructure/types";
 import { sileo } from "sileo";
 import { notifyHttpError } from "../../../../../../../config/httpFeedback";
+import useAuthStore from "../../../../../../../store/authStore";
+import i18n from "../../../../../../../translate";
 
 vi.mock("sileo", () => ({
   sileo: {
@@ -35,9 +38,28 @@ vi.mock("../../../../../../../modules/business/infrastructure/services", () => (
   createInvoice: vi.fn(),
   createInvoiceWithFile: vi.fn(),
   updateInvoice: vi.fn(),
+  getInvoiceEditSource: vi.fn(),
   getProviders: vi.fn(),
   getInvoiceViewUrl: vi.fn(),
 }));
+
+vi.mock("../../../../../../../modules/business/infrastructure/cashServices", async (importOriginal) => ({
+  ...await importOriginal<typeof cashServices>(),
+  getCashCategories: vi.fn(),
+  getCashReceipt: vi.fn(),
+  sendCashMutation: vi.fn(),
+}));
+
+const businessId = "6ca4ef5d-28d2-4214-affb-ff74b48b526f";
+const requestKey = "c3f8bdd0-c4c3-429d-9bc2-998b3c7e512f";
+const linkedCategory = { id: "31", name: "Insumos", is_active: false };
+const movementId = "a820203c-1456-418d-852d-f2a690e3b4c2";
+const createdCategory = { id: "32", name: "Operación", is_active: true, business_id: businessId, description: "Gastos", version: 1 };
+const committed = (operation: "invoice_create" | "invoice_update") => ({
+  operation, status: "committed" as const, request_key: requestKey, result: {
+    invoice_id: "17", invoice_version: 9, cash_movement_id: movementId,
+  },
+});
 
 const mockProviders: ProviderEntity[] = [
   {
@@ -112,6 +134,24 @@ describe("InvoicesTab Component", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(cashServices.sendCashMutation).mockReset();
+    vi.mocked(cashServices.getCashReceipt).mockReset();
+    useAuthStore.getState().login({
+      token: "test-jwt",
+      expiresAt: Date.now() + 900_000,
+      user: { id: "42", name: "Test user" },
+    });
+    vi.mocked(cashServices.getCashCategories).mockResolvedValue({
+      data: [],
+      meta: { page: 1, limit: 25, total_pages: 0, total_items: 0 },
+    });
+    vi.mocked(cashServices.sendCashMutation).mockResolvedValue(committed("invoice_create"));
+    vi.mocked(businessServices.getInvoiceEditSource).mockImplementation(async (id, invoiceId) => ({
+      ...mockInvoices.find((invoice) => invoice.id === invoiceId)!,
+      business_id: id,
+      version: 7,
+      cash_expense: null,
+    }));
     vi.mocked(businessServices.getProviders).mockResolvedValue({
       data: mockProviders,
       meta: { total_items: 1, page: 1, limit: 100, total_pages: 1 },
@@ -139,18 +179,20 @@ describe("InvoicesTab Component", () => {
     expect(screen.getByText("fac-analyzed-002.pdf")).toBeInTheDocument();
   });
 
-  it("opens modal and allows registering an invoice manually with an uploaded file without analyze", async () => {
-    vi.mocked(businessServices.createInvoiceWithFile).mockResolvedValue({
-      id: "inv-new",
-      business_id: "biz-123",
-      code: "FAC-NUEVA-777",
-      total_amount: 300000,
-      path_storage: "invoices/fac-nueva.pdf",
-      is_active: true,
-      created_at: "2026-03-20T00:00:00Z",
-    });
+  it("preserves the file and invoice while creating its category and recovering a receipt", async () => {
+    vi.mocked(cashServices.sendCashMutation)
+      .mockImplementationOnce(async (_businessId, key) => ({
+        request_key: key, operation: "category_create", status: "committed", result: { category: createdCategory },
+      }))
+      .mockImplementationOnce(async (_businessId, key) => ({
+        request_key: key, operation: "invoice_create", status: "processing",
+      }));
+    vi.mocked(cashServices.getCashReceipt).mockImplementation(async (_businessId, key) => ({
+      ...committed("invoice_create"),
+      request_key: key,
+    }));
 
-    renderWithClient(<InvoicesTab businessId="biz-123" />);
+    renderWithClient(<InvoicesTab businessId={businessId} />);
 
     // Click "Registrar Factura" button
     const newInvoiceBtn = screen.getByTestId("new-invoice-btn");
@@ -177,22 +219,36 @@ describe("InvoicesTab Component", () => {
     await user.clear(amountInput);
     await user.type(amountInput, "300000");
 
-    // Click save
+    const categoryButton = screen.getByRole("button", { name: i18n.t("business:cash.category_add") });
+    await waitFor(() => expect(categoryButton).toBeEnabled());
+    await user.click(categoryButton);
+    expect(screen.getAllByRole("dialog")).toHaveLength(1);
+    await user.type(screen.getByRole("textbox", { name: `${i18n.t("business:cash.category_name")}*` }), createdCategory.name);
+    await user.type(screen.getByRole("textbox", { name: `${i18n.t("business:description_label")}*` }), createdCategory.description);
+    await user.click(screen.getByRole("button", { name: i18n.t("core:save") }));
+
+    const picker = await screen.findByRole("button", { name: i18n.t("business:cash.expense_category") });
+    await waitFor(() => expect(picker).toHaveFocus());
+    expect(picker).toHaveTextContent(createdCategory.name);
+    expect(screen.getByText("mi-factura.pdf")).toBeVisible();
+    expect(screen.getByDisplayValue("FAC-NUEVA-777")).toBeVisible();
     const saveBtn = screen.getByTestId("save-invoice-btn");
     await user.click(saveBtn);
 
-    await waitFor(() => {
-      expect(businessServices.createInvoiceWithFile).toHaveBeenCalledTimes(1);
-    });
-
-    expect(businessServices.createInvoiceWithFile).toHaveBeenCalledWith(
+    const receipt = await screen.findByRole("button", { name: i18n.t("business:cash.receipt_check") });
+    expect(saveBtn).toBeDisabled();
+    expect(screen.getByText("mi-factura.pdf")).toBeVisible();
+    expect(cashServices.sendCashMutation).toHaveBeenLastCalledWith(businessId, expect.any(String),
       expect.objectContaining({
-        business_id: "biz-123",
-        code: "FAC-NUEVA-777",
-        total_amount: 300000,
+        operation: "invoice_create",
+        fields: expect.objectContaining({ code: "FAC-NUEVA-777", total_amount: 300000, cash_category_id: "32" }),
         file,
       })
     );
+    const [, key] = vi.mocked(cashServices.sendCashMutation).mock.calls[1];
+    await user.click(receipt);
+    expect(cashServices.getCashReceipt).toHaveBeenCalledWith(businessId, key, expect.objectContaining({ file }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
   it("renders table without status column", async () => {
@@ -256,10 +312,7 @@ describe("InvoicesTab Component", () => {
     await user.click(editMenuItem);
 
     // 3. Verify modal opened in edit mode
-    await waitFor(() => {
-      expect(screen.getByText("Editar Factura")).toBeInTheDocument();
-    });
-    expect(screen.getByTestId("invoice-code-input").querySelector("input")).toHaveValue("FAC-MANUAL-001");
+    expect((await screen.findByTestId("invoice-code-input")).querySelector("input")).toHaveValue("FAC-MANUAL-001");
   });
 
   it("renders visible invoices summary next to search with count, total amount, and tooltip info icon", async () => {
@@ -445,16 +498,63 @@ describe("InvoicesTab Component", () => {
   });
 
   it("transports an optional empty folio as null and preserves an explicit inactive selection on create", async () => {
-    vi.mocked(businessServices.createInvoiceWithFile).mockResolvedValueOnce({
-      id: "no-folio", business_id: "biz-123", code: null, total_amount: 0, path_storage: "", is_active: false, created_at: "",
-    });
-    renderWithClient(<InvoicesTab businessId="biz-123" />);
+    renderWithClient(<InvoicesTab businessId={businessId} />);
     const create = screen.getByTestId("new-invoice-btn");
     await waitFor(() => expect(create).toBeEnabled());
     await user.click(create);
     await user.click(screen.getByTestId("invoice-active-switch").querySelector("input")!);
     await user.click(screen.getByTestId("save-invoice-btn"));
-    await waitFor(() => expect(businessServices.createInvoiceWithFile).toHaveBeenCalledWith(expect.objectContaining({ code: null, is_active: false })));
-    expect(screen.queryByTestId("invoice-code-input")).not.toBeInTheDocument();
+    await waitFor(() => expect(cashServices.sendCashMutation).toHaveBeenCalledWith(businessId, expect.any(String),
+      expect.objectContaining({ operation: "invoice_create", fields: expect.objectContaining({ code: null, is_active: false }) })));
+    await waitFor(() => expect(screen.queryByTestId("invoice-code-input")).not.toBeInTheDocument());
+  });
+
+  it("uses the revision shown, preserves the changed amount on explicit rebase, and clears the linked expense", async () => {
+    const source = {
+      ...mockInvoices[0], id: "17", business_id: businessId, code: "F-17",
+      version: 7, cash_expense: { movement_id: movementId, category: linkedCategory },
+    };
+    vi.mocked(businessServices.getInvoices).mockResolvedValue({
+      data: [source], meta: { page: 1, limit: 25, total_pages: 1, total_items: 1 },
+    });
+    vi.mocked(businessServices.getInvoiceEditSource).mockResolvedValueOnce(source).mockResolvedValueOnce({
+      ...source, version: 8, total_amount: 600000, data: { ...source.data, issue_date: "2026-02-20" },
+    });
+    vi.mocked(cashServices.sendCashMutation)
+      .mockRejectedValueOnce({
+        isAxiosError: true,
+        response: { status: 409, data: { message: "business:cash_version_conflict" } },
+      })
+      .mockResolvedValueOnce(committed("invoice_update"));
+    renderWithClient(<InvoicesTab businessId={businessId} />);
+    await user.click(await screen.findByTestId("invoice-actions-btn-17"));
+    await user.click(await screen.findByTestId("menu-item-edit-invoice"));
+
+    const amount = (await screen.findByTestId("invoice-total-amount-input")).querySelector("input")!;
+    await user.clear(amount);
+    await user.type(amount, "700000");
+    expect(screen.getByText(/El egreso quedará en.*700.000/)).toBeVisible();
+    const save = screen.getByTestId("save-invoice-btn");
+    await user.click(save);
+    expect(cashServices.sendCashMutation).toHaveBeenLastCalledWith(businessId, expect.any(String), {
+      operation: "invoice_update", id: "17",
+      fields: { expected_version: 7, total_amount: 700000 },
+    });
+
+    const review = await screen.findByRole("button", { name: i18n.t("business:cash.review_current") });
+    expect(save).toBeDisabled();
+    await user.click(review);
+    expect(await screen.findByText(i18n.t("business:cash.current_version", { version: 8 }))).toBeVisible();
+    await user.click(screen.getByRole("button", { name: i18n.t("business:cash.accept_current") }));
+    expect(amount).toHaveValue(700000);
+    expect(screen.getByDisplayValue("2026-02-20")).toBeVisible();
+    const picker = screen.getByRole("button", { name: i18n.t("business:cash.expense_category") });
+    await user.click(within(picker).getByRole("button", { name: i18n.t("core:clear_selection") }));
+    expect(screen.getByText(i18n.t("business:cash.invoice_effect_withdraw"))).toBeVisible();
+    await user.click(save);
+    expect(cashServices.sendCashMutation).toHaveBeenLastCalledWith(businessId, expect.any(String), {
+      operation: "invoice_update", id: "17",
+      fields: { expected_version: 8, total_amount: 700000, cash_category_id: null },
+    });
   });
 });

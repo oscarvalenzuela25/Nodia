@@ -3,6 +3,10 @@
 > Estado: propuesto
 > Fecha: 2026-11-17
 > R02: ampliación explícita de selectores y retiro del egreso al quitar categoría.
+> CASH-01: contrato técnico definido en el plan109 para implementación por fases.
+> CASH-02: categorías y recibos implementados localmente según plan109 §11.
+> CASH-03: movimientos manuales y agregados implementados localmente según plan109 §12.
+> CASH-04: facturas, vínculo de Caja y confirmación OCR implementados en Server local según plan109 §13.
 
 ## Contexto
 
@@ -44,7 +48,7 @@ garantiza una única operación ni evita duplicar facturas después de un timeou
 
 ## Decisión
 
-Se recomienda B para V1, pendiente de refinamiento/documentación aprobada:
+Se elige B como base técnica de V1. El ADR permanece propuesto para revisión.
 
 - Tab bajo destino canónico Negocios, recursos `business_cash_categories` y
   `business_cash_movements` con `business_id`, scope/autorización compartidos.
@@ -52,22 +56,29 @@ Se recomienda B para V1, pendiente de refinamiento/documentación aprobada:
   FK mismo negocio, índice único de `invoice_id` también para egresos inactivos
   o retirados. Nombre canónico administrado por Server y unique por negocio,
   incluso para categorías inactivas; misma normalización en Drawer/modal.
-- Factura y su egreso confirman en la misma transacción. Total/fecha derivados
-  y categoría se actualizan sin crear otro egreso; actividad independiente.
+- Factura y su egreso confirman en la misma transacción. Total, fecha y
+  categoría se editan en Facturas y actualizan el mismo egreso. Caja cambia
+  la actividad del egreso independientemente de la factura.
 - Quitar categoría explícitamente retira el efecto de lista y agregados, incluso
   Todos, conservando auditoría mediante retiro lógico separado de actividad.
   Una nueva asignación restaura el mismo ID. Ausencia del campo conserva;
   null significa retiro y forma parte del comando/recibo idempotente.
 - X edita el borrador, + crea categoría y la selecciona sin guardar factura o
   movimiento. Un solo overlay activo, borrador y foco conservados.
-- Confirmación OCR identificada/idempotente en Server para factura/productos/
-  egreso/recibo en una transacción, preparando R2 antes y conservando limpieza
-  recuperable. Consultar recibo ante resultado incierto, sin nueva inferencia.
-- Página y summary usan un snapshot consistente del mismo conjunto filtrado;
-  Overview reutiliza el agregador para el mes actual, activos y mismo negocio.
-- El plan109 identifica recomendaciones aún refinables: representación técnica
-  del retiro auditado, edición del origen, actividad independiente, límites y
-  concurrencia. El retiro observable pedido por R02 ya es requisito expreso.
+- Confirmación OCR identificada en `/invoices/ocr-confirmations`, con factura,
+  productos, egreso, auditoría y recibo en una transacción. Preparar R2 antes
+  de confirmar y cercar cada intento con concesión y clave de archivo propia.
+  Recuperar por negocio, actor y `request_key`, verificando autoridad actual.
+- Página, count y summary comparten una sentencia SQL tras revalidar autoridad
+  en READ COMMITTED. Overview usa el mismo agregador y mes civil de Santiago.
+- El [orden común](../../mvp/109-business-cash-ledger-plan.md#64-recibos-archivos-y-orden-de-locks)
+  toma autoridad, negocio y recibo antes de recursos de dominio. Factura y
+  productos preceden a categoría y movimiento. El contrato fija CAS, precisión
+  decimal exacta y reglas para facturas históricas.
+- Propuestas previas de NodiaAI se revalidan bajo lock antes del efecto. Los
+  cambios que afectarían Caja se remiten a Facturas nativas sin reanudar una
+  propuesta incompatible. Se preserva el contexto firmado de las operaciones
+  conversacionales existentes.
 - Sólo facturas generan egresos automáticos; cierres de caja se registran a mano
   como ingresos. Sin integración de ventas ni flujo formal de cierre por este alcance.
 
@@ -75,10 +86,11 @@ Se recomienda B para V1, pendiente de refinamiento/documentación aprobada:
 
 - Positivas: ausencia de duplicados respaldada por DB, recategorización estable,
   separación de dinero del negocio y personal, totales coherentes con búsqueda.
-- Costos/riesgos: confirmación OCR requiere CAS, autoridad vigente, recibos
-  persistentes y orden global de locks; no declarar atomicidad por ocultar doble clic.
-- Trabajo posterior: CASH-01 cierra contratos/límites/orden; CASH-02…07 implementan
-  y prueban. Sin backfill, POS automático, publicación IA o despliegue por este ADR.
+- Costos: la confirmación OCR implica un caso de uso compuesto, adaptar el orden
+  de los escritores de Productos y proteger el DTO parcial de Facturas frente
+  a defaults. La evidencia de rollback y concurrencia se obtiene en SQL aislado.
+- CASH-01 cierra el contrato documental. CASH-02…07 implementan y verifican los
+  límites y efectos en las capas correspondientes.
 
 ## Referencias
 

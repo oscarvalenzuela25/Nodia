@@ -1,4 +1,5 @@
 import {
+  Check,
   Column,
   CreateDateColumn,
   Entity,
@@ -6,15 +7,23 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
+  VirtualColumn,
   type Relation,
 } from 'typeorm';
 import { Business } from '../../business/entities/business.entity.js';
 import { Provider } from '../../provider/entities/provider.entity.js';
+import {
+  invoiceCashExpenseProjection,
+  type InvoiceCashExpenseProjection,
+} from '../invoice-cash-projection.js';
 
 @Entity({
   name: 'invoices',
 })
+@Unique('uq_invoices_id_business', ['id', 'business_id'])
+@Check('ck_invoices_version', 'version > 0')
 export class Invoice {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;
@@ -42,6 +51,16 @@ export class Invoice {
 
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
+
+  @Column({ type: 'integer', default: 1 })
+  version: number;
+
+  @VirtualColumn({
+    type: 'jsonb',
+    select: false,
+    query: invoiceCashExpenseProjection,
+  })
+  cash_expense?: InvoiceCashExpenseProjection | null;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

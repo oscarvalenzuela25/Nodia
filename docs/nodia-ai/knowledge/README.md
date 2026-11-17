@@ -1,10 +1,81 @@
 # Contexto funcional de productos para NodiaAI
 
+## Verificación de Caja — CASH-07, 2026-11-17
+
+[Plan109 §16](../../mvp/109-business-cash-ledger-plan.md#16-verificación-de-entrega--cash-07-2026-11-17),
+[Caja revisión9](businesses/features/cash-ledger-and-invoice-expenses.md)
+y [Negocios revisión65](businesses/README.md) registran la entrega
+técnica y la verificación aislada de Client, HTTP y PostgreSQL. La ficha
+de Caja conserva su estado candidato. Adoptar en un entorno operativo
+requiere evidencia de ese entorno.
+
+## Overview y guardado en Facturas/OCR — CASH-06, 2026-11-17
+
+[Plan109 §15](../../mvp/109-business-cash-ledger-plan.md#15-resumen-mensual-y-guardado-desde-facturas-y-ocr--cash-06-2026-11-17),
+[Caja revisión8](businesses/features/cash-ledger-and-invoice-expenses.md)
+y [Negocios revisión64](businesses/README.md) registran el resumen
+mensual y el guardado con categoría opcional y recibo en Client local.
+La ficha de Caja conserva su estado candidato. La verificación integral
+de la rama está documentada en CASH-07.
+
+## Pestaña Caja en Negocios — CASH-05, 2026-11-17
+
+[Plan109 §14](../../mvp/109-business-cash-ledger-plan.md#14-pestaña-caja-y-gestión-de-movimientos--cash-05-2026-11-17),
+[Caja revisión7](businesses/features/cash-ledger-and-invoice-expenses.md)
+y [Negocios revisión63](businesses/README.md) registran la interfaz local
+de categorías y movimientos con filtros, totales, recibos y tarjetas
+móviles. El impacto es de Client y del contexto candidato, sin nuevas
+herramientas ni permisos publicados.
+
+## Facturas y OCR vinculados con Caja — CASH-04, 2026-11-17
+
+[Plan109 §13](../../mvp/109-business-cash-ledger-plan.md#13-facturas-y-ocr-vinculados-con-caja--cash-04-2026-11-17),
+[Caja revisión6](businesses/features/cash-ledger-and-invoice-expenses.md)
+y [Negocios revisión62](businesses/README.md) registran el egreso por
+factura y el guardado atómico de la revisión OCR en Server local. Las
+herramientas existentes conservan su contrato y revalidan la
+compatibilidad de la factura. La publicación de Caja sigue pendiente de
+una definición y aprobación propias.
+
+## Movimientos y resúmenes de Caja — CASH-03, 2026-11-17
+
+[Plan109 §12](../../mvp/109-business-cash-ledger-plan.md#12-movimientos-manuales-y-agregados--cash-03-2026-11-17),
+[Caja revisión5](businesses/features/cash-ledger-and-invoice-expenses.md)
+y [Negocios revisión61](businesses/README.md) registran el backend local de
+movimientos manuales, revisión, auditoría, recibos y agregados por negocio.
+La ficha sigue partial/draft/unregistered y conserva approval:null.
+
+## Categorías y recibos de Caja — CASH-02, 2026-11-17
+
+[Plan109 §11](../../mvp/109-business-cash-ledger-plan.md#11-categorías-y-recibos-implementados--cash-02-2026-11-17),
+[Caja revisión4](businesses/features/cash-ledger-and-invoice-expenses.md)
+y [Negocios revisión60](businesses/README.md) registran la implementación
+local de categorías, unicidad concurrente y recibos autorizados por negocio.
+La ficha sigue partial/draft/unregistered y conserva approval:null.
+
+## Topbar y selección OCR de Negocios — 2026-11-17
+
+[Ajustes](general-settings/README.md#acciones-de-cabecera-para-negocios-y-pwa--2026-11-17)
+y [Negocios](businesses/README.md#estado-de-ia-y-modelos-ocr-desde-negocios--2026-11-17)
+registran el estado de lectura de IA, la selección de modelos de facturas y
+la recarga desde el avatar. Las herramientas publicadas de NodiaAI mantienen
+su alcance.
+
+## Caja de Negocios: contratos CASH-01 — 2026-11-17
+
+[Plan109 §§3–7](../../mvp/109-business-cash-ledger-plan.md#3-reglas-de-caja-v1),
+[Caja revisión3](businesses/features/cash-ledger-and-invoice-expenses.md) y
+[Negocios revisión58](businesses/README.md) registran reglas, filtros, recibos
+y frontera de confirmación OCR. Total, fecha y categoría del egreso se editan
+desde su factura origen. La protección de propuestas previas debe verificarse
+en el escritor común bajo lock. Caja sigue planned, draft y unregistered, con
+approval:null. Su implementación comienza en CASH-02.
+
 ## Caja de Negocios: planificación y vistas — 2026-11-17
 
 [Plan109](../../mvp/109-business-cash-ledger-plan.md),
-[Negocios revisión57](businesses/README.md) y
-[Caja revisión2](businesses/features/cash-ledger-and-invoice-expenses.md)
+[Negocios, corte revisión57](businesses/README.md) y
+[Caja, corte revisión2](businesses/features/cash-ledger-and-invoice-expenses.md)
 recogen el registro de ingresos/egresos, categorías comunes, filtros Ransack y
 paneles coherentes con toda la tabla filtrada. Vínculo opcional factura→egreso
 único y dos tarjetas mensuales de Overview; atomicidad/idempotencia OCR son
@@ -697,7 +768,7 @@ Todos los productos/módulos actuales pertenecen al alcance funcional confirmado
 |---|---|---|---|
 | Noticias (propuesta) | `news/` | [Plan105](../../mvp/105-on-demand-tech-news.md) | [Producto](news/README.md) y [lectura bajo demanda](news/features/on-demand-reading.md), draft/planned/unregistered; sólo validación, sin herramientas o publicación |
 | Nodia Teacher en Estudios | `studies/` | [Especificación95](../../mvp/95-studies-adaptive-learning.md), [plan96](../../mvp/96-nodia-teacher-implementation-plan.md), [upgrade101 en revisión](../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y [ADR098 propuesto](../../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md) | [Producto](studies/README.md), cuatro funciones base parciales y seis nuevas planned; fichas draft/unregistered, sin publicación. Evidencia/gates de V1 no acreditan el upgrade |
-| Negocios | `businesses/` | [PRD](../../features/businesses/01-prd.md), [inventario de endpoints](../../mvp/39-nodia-ai-current-capabilities-inventory.md), [plan de Caja109](../../mvp/109-business-cash-ledger-plan.md) | [Producto](businesses/README.md) draft excluido;7 funciones con secciones de lectura publicadas, [preparadores de efectos](businesses/features/confirmed-business-effects.md) publicados y [análisis C03 revisión3](businesses/features/active-invoice-analysis.md) aprobado/publicado con aceptación pendiente; [Caja](businesses/features/cash-ledger-and-invoice-expenses.md) planned/draft/unregistered, sin implementación o publicación |
+| Negocios | `businesses/` | [PRD](../../features/businesses/01-prd.md), [inventario de endpoints](../../mvp/39-nodia-ai-current-capabilities-inventory.md), [plan de Caja109](../../mvp/109-business-cash-ledger-plan.md) | [Producto](businesses/README.md) draft excluido;7 funciones con secciones de lectura publicadas, [preparadores de efectos](businesses/features/confirmed-business-effects.md) publicados y [análisis C03 revisión3](businesses/features/active-invoice-analysis.md) aprobado/publicado con aceptación pendiente; [Caja](businesses/features/cash-ledger-and-invoice-expenses.md) partial/draft/unregistered, con API local de categorías y movimientos manuales |
 | Finanzas personales | `personal-finance/` | [Contratos](../../mvp/22-personal-finance-contracts.md) | [Producto](personal-finance/README.md) excluido;4 funciones con secciones de lectura y [efecto confirmado](personal-finance/features/confirmed-movement-effect.md) publicados |
 | Reservas | `reservations/` | [Especificación](../../mvp/26-rental-reservations-spec.md), [contratos](../../mvp/28-rental-reservations-contracts.md) | [Producto](reservations/README.md) excluido;9 funciones de lectura y secciones publicadas de [configuración](reservations/features/confirmed-configuration.md), [ciclo comercial](reservations/features/confirmed-reservation-lifecycle.md), [dinero](reservations/features/confirmed-money.md) y [ocupación/preparación](reservations/features/confirmed-occupancy-preparation.md) |
 | NodiaAI (nuevo producto en implementación) | `nodia-ai/` | [Plan45](../../mvp/45-nodia-ai-implementation-plan.md), [política50](../../mvp/50-nodia-ai-ai04-runtime-policy.md) | [Producto](nodia-ai/README.md) draft excluido; secciones de [coordinación](nodia-ai/features/conversation-coordination.md), [preferencias](nodia-ai/features/accepted-preferences.md) y [adjuntos/voz](nodia-ai/features/attachments-and-voice.md) publicadas; otras fichas conservan estados propios |

@@ -1,5 +1,5 @@
 import type { ProviderReadExecution } from '../types/provider-read-execution.types.js';
-import { Injectable, Optional } from '@nestjs/common';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { ApiProviderService } from '../../common/ai/api-provider.service.js';
 import { AiProviderService } from '../ai-provider.service.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
@@ -7,6 +7,7 @@ import { GetSelectableModelsDto } from '../dto/get-selectable-models.dto.js';
 import { observedModels } from '../helpers/model-observation.helper.js';
 import { observedAgenticQuota } from '../../common/ai/gemini-quota-observation.js';
 import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
+import type { AiProvider } from '../entities/ai-provider.entity.js';
 export interface SelectableModelInfo {
   id: string;
   name: string;
@@ -15,6 +16,8 @@ export interface SelectableModelInfo {
   contextWindow: number | null;
   maxOutputTokens?: number;
   capabilities: string[];
+  inputModalities?: string[] | null;
+  supportedReasoningEfforts?: string[];
   isRecommended?: boolean;
   isCurrent?: boolean;
   rateLimits?: {
@@ -101,8 +104,30 @@ export class GetSelectableModelsUseCase {
           all: true,
           includes: true,
         });
+    return this.discover(dto, response.data ?? [], execution);
+  }
+
+  async executeForProvider(
+    dto: Required<Pick<GetSelectableModelsDto, 'provider_id' | 'mode'>>,
+  ): Promise<ProviderSelectableModelsResult[]> {
+    let provider: AiProvider;
+    try {
+      provider = await this.aiProviderService.findProviderById(dto.provider_id);
+    } catch (error) {
+      if (error instanceof NotFoundException) return [];
+      throw error;
+    }
+    if (!provider.is_active || provider.catalog?.is_active === false) return [];
+    return this.discover(dto, [provider]);
+  }
+
+  private async discover(
+    dto: GetSelectableModelsDto,
+    providers: readonly AiProvider[],
+    execution?: ProviderReadExecution,
+  ): Promise<ProviderSelectableModelsResult[]> {
     const results: ProviderSelectableModelsResult[] = [];
-    for (const provider of response.data ?? []) {
+    for (const provider of providers) {
       execution?.signal.throwIfAborted();
       const key = provider.catalog?.key ?? provider.key ?? '';
       if (dto.provider && key.toLowerCase() !== dto.provider.toLowerCase())

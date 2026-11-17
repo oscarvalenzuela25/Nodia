@@ -40,6 +40,13 @@ export const RANSACK_POLICIES = {
     owner_id: 'bigint',
     has_description: 'boolean',
   },
+  business_cash_category: { business_id: 'uuid', is_active: 'boolean', name: 'text' },
+  business_cash_movement: {
+    business_id: 'uuid',
+    category_id: 'bigint',
+    occurred_on: 'date',
+    is_active: 'boolean',
+  },
   provider: { ...common, business_id: 'uuid', name: 'text', tax: 'number', use_ocr: 'boolean' },
   product: { ...common, ...prices, alias: 'text', business_id: 'uuid', provider_id: 'bigint', version: 'number' },
   product_log: {

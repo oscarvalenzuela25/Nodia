@@ -47,6 +47,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
   id,
   fullWidth = true,
   clearable = true,
+  fullSizeClear = false,
   "data-testid": dataTestIdProp,
   dataTestId,
 }) => {
@@ -105,6 +106,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
 
   const handleClear = (e: MouseEvent<unknown>) => {
     e.stopPropagation();
+    if (fullSizeClear) document.getElementById(inputId)?.focus();
     onChange(null);
   };
 
@@ -115,7 +117,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (disabled || loadingOptions) return;
+    if (disabled || loadingOptions || e.target !== e.currentTarget) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       if (!isOpen) {
@@ -168,7 +170,8 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
               size="small"
               aria-label={t("clear_selection")}
               onClick={handleClear}
-              sx={{ p: 0.25 }}
+              disabled={fullSizeClear && loadingOptions}
+              sx={fullSizeClear ? { width: 44, height: 44 } : { p: 0.25 }}
             >
               <CloseIcon fontSize="small" sx={{ fontSize: "1rem" }} />
             </IconButton>

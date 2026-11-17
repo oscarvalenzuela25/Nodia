@@ -1,5 +1,6 @@
 import { roundSalePrice } from "../../../../../../../../utils/salePrice";
 import i18n from "../../../../../../../../translate";
+import { cashCatalogIdSchema, cashVersionSchema } from "../../../../../../infrastructure/cashSchemas";
 import { normalizeProductAlias, productAliasFits } from "../../../../../../infrastructure/productAliases";
 import { PRODUCT_PRICE_MAX, suggestedProductPrice } from "../ProductModal/productPricing";
 import type {
@@ -7,8 +8,6 @@ import type {
   ProductEntity,
   ProductLogEntity,
   VerifyIaProviderItem,
-  CreateProductPayload,
-  BulkUpdateProductItemPayload,
 } from "../../../../../../infrastructure/types";
 
 export const normalizeVerifyProviders = (data: unknown): VerifyIaProviderItem[] => {
@@ -170,12 +169,12 @@ export const validateInvoiceRows = (rows: InvoiceProvisionalRow[]): InvoiceProvi
   const targets = new Map<string, number>();
   rows.forEach((row) => {
     const code = row.code.trim().toLowerCase();
-    if (code) counts.set(code, (counts.get(code) ?? 0) + 1);
+    if (code && (!row.manual_match || row.manual_match.fields.includes("code"))) counts.set(code, (counts.get(code) ?? 0) + 1);
     if (row.id) targets.set(row.id, (targets.get(row.id) ?? 0) + 1);
   });
   return rows.map((row) => {
     const { errors } = validateInvoiceRow(row);
-    if ((counts.get(row.code.trim().toLowerCase()) ?? 0) > 1) {
+    if ((!row.manual_match || row.manual_match.fields.includes("code")) && (counts.get(row.code.trim().toLowerCase()) ?? 0) > 1) {
       errors.push(i18n.t("business:invoice_validation_duplicate_code"));
     }
     if (row.id && (targets.get(row.id) ?? 0) > 1) errors.push(i18n.t("business:invoice_match_duplicate_target"));
@@ -316,54 +315,37 @@ export const mapExtractedItemsToRows = (
   return validateInvoiceRows(rows).sort((a, b) => (a.isValid === b.isValid ? 0 : a.isValid ? 1 : -1));
 };
 
-/** Purchase quantity is retained in the invoice, never copied into catalog state. */
-export function invoiceProductPayload(row: InvoiceProvisionalRow, businessId: string, providerId: string | null): CreateProductPayload | BulkUpdateProductItemPayload {
-  const validation = validateInvoiceRow(row);
-  if (!validation.isValid) throw new Error(validation.errors.join(', '));
-  if (row.manual_match) {
-    const match = row.manual_match;
-    if (row.id !== match.product_id || match.business_id !== businessId || row.version !== match.expected_version ||
-      !Number.isSafeInteger(match.expected_version) || match.expected_version < 1 || !match.fields.length ||
-      match.fields.some(field => !INVOICE_UPDATE_FIELDS.includes(field))) throw new Error(i18n.t('business:invoice_match_invalid_product'));
-    const payload: BulkUpdateProductItemPayload = { id: match.product_id, expected_version: match.expected_version };
-    for (const field of match.fields) {
-      if (field === 'code') payload.code = row.code.trim() || null;
-      else if (field === 'name') payload.name = row.name;
-      else if (field === 'alias') payload.alias = row.alias?.trim() ?? null;
-      else payload[field] = field === 'sale_price' ? roundSalePrice(row.sale_price)! : row[field];
-    }
-    return payload;
-  }
-  const common = { provider_id: providerId, code: row.code, name: row.name, alias: row.alias?.trim() ?? null,
-    cost_price: row.cost_price, cost_price_tax: row.cost_price_tax,
-    sale_price: roundSalePrice(row.sale_price)!, is_active: row.is_active };
-  if (row.id) {
-    if (!Number.isSafeInteger(row.version) || Number(row.version) < 1) throw new Error(i18n.t('business:invoice_match_invalid_product'));
-    return { ...common, id: row.id, expected_version: row.version };
-  }
-  return { ...common, business_id: businessId, has_stock: true };
-}
-
-export function prepareInvoiceProductPayloads(rows: InvoiceProvisionalRow[], businessId: string, providerId: string | null) {
-  const reviewed = validateInvoiceRows(rows);
-  if (!reviewed.length || reviewed.some(row => !row.isValid)) throw new Error(reviewed.flatMap(row => row.errors).join(", "));
-  const newItems: CreateProductPayload[] = [];
-  const updateItems: BulkUpdateProductItemPayload[] = [];
-  for (const row of reviewed) {
-    const payload = invoiceProductPayload(row, businessId, providerId);
-    if ("id" in payload) updateItems.push(payload);
-    else newItems.push(payload);
-  }
-  return { newItems, updateItems };
-}
-
 /** Bind by immutable product identity; only checked catalog fields join the later save. */
 export function canBindInvoiceProduct(product: ProductEntity, businessId: string): boolean {
   const money = (value: unknown) => (typeof value === 'number' || typeof value === 'string' && value.trim() !== '') && Number.isInteger(Number(value)) && Number(value) >= 0 && Number(value) <= PRODUCT_PRICE_MAX;
-  return product.business_id === businessId && /^[1-9][0-9]*$/.test(product.id) &&
-    Number.isSafeInteger(product.version) && Number(product.version) >= 1 &&
+  return product.business_id === businessId && cashCatalogIdSchema.safeParse(product.id).success &&
+    cashVersionSchema.safeParse(product.version).success &&
     typeof product.name === 'string' && !!product.name.trim() && (product.code === null || typeof product.code === 'string') &&
     typeof product.is_active === 'boolean' && [product.cost_price, product.cost_price_tax, product.sale_price].every(money);
+}
+
+export function updateInvoiceProductRevision(row: InvoiceProvisionalRow, product: ProductEntity, businessId: string): InvoiceProvisionalRow {
+  if (!canBindInvoiceProduct(product, businessId) || row.id !== product.id) {
+    throw new Error(i18n.t("business:invoice_match_invalid_product"));
+  }
+  if (row.manual_match) return bindInvoiceRow(row, product, row.manual_match.fields, businessId);
+  return {
+    ...row,
+    version: product.version,
+    has_stock: product.has_stock ?? undefined,
+    historicalProduct: {
+      id: product.id,
+      code: product.code,
+      name: product.name,
+      alias: product.alias,
+      cost_price: Number(product.cost_price),
+      cost_price_tax: Number(product.cost_price_tax),
+      sale_price: Number(product.sale_price),
+      stock: Number(product.stock),
+      created_at: product.updated_at,
+    },
+    priceDiff: calculatePriceDiff(row.sale_price, Number(product.sale_price)),
+  };
 }
 
 export function bindInvoiceRow(row: InvoiceProvisionalRow, product: ProductEntity, fields: readonly InvoiceUpdateField[], businessId: string): InvoiceProvisionalRow {

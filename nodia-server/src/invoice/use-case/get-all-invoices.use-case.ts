@@ -12,4 +12,8 @@ export class GetAllInvoicesUseCase {
       ? this.invoiceService.findAllInvoices(queryParams, actor)
       : this.invoiceService.findAllInvoices(queryParams);
   }
+
+  executeNative(queryParams: GetInvoicesDto, actor: ActorReference) {
+    return this.invoiceService.findAllInvoices(queryParams, actor, true);
+  }
 }

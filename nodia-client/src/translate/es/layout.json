@@ -47,6 +47,7 @@
   "login": "Ingresar",
   "toggle_drawer": "Alternar menú",
   "collapse_drawer": "Colapsar menú",
+  "refresh_information": "Actualizar información",
   "toggle_theme": "Cambiar tema",
   "theme_selector": "Tema de la aplicación",
   "theme_selector_label": "Elegir tema: {{theme}}",
@@ -70,6 +71,6 @@
     "needs_review": "Necesita revisión",
     "unverified": "Sin verificar; revisar estado",
     "disabled": "Deshabilitado",
-    "disabled_label": "{{provider}} · {{mode}}: {{status}}"
+    "status_label": "{{provider}} · {{mode}}: {{status}}"
   }
 }

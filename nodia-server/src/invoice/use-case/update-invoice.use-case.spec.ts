@@ -3,7 +3,8 @@ import { UpdateInvoiceUseCase } from './update-invoice.use-case.js';
 import { InvoiceService } from '../invoice.service.js';
 import type { EntityManager, Repository } from 'typeorm';
 import { Invoice } from '../entities/invoice.entity.js';
-import type { UpdateInvoiceDto } from '../dto/update-invoice.dto.js';
+import { UpdateInvoiceDto } from '../dto/update-invoice.dto.js';
+import { ValidationPipe } from '@nestjs/common';
 
 const nativeBusiness = '11111111-1111-4111-8111-111111111111';
 const actor = {
@@ -12,11 +13,8 @@ const actor = {
 };
 function nativeManager(repository: object, invoice: Invoice) {
   invoice.business_id ??= nativeBusiness;
-  const before = {
-    ...structuredClone(invoice),
-    business_id: invoice.business_id ?? nativeBusiness,
-    provider_id: invoice.provider_id ?? null,
-  };
+  invoice.provider_id ??= null;
+  invoice.version ??= 1;
   const query = vi.fn(async (sql: string, args: unknown[] = []) => {
     if (sql.includes('AS authority_locks')) return [{ authority_locks: 9 }];
     if (sql.includes('AS "actorId"'))
@@ -27,11 +25,14 @@ function nativeManager(repository: object, invoice: Invoice) {
           isSuperAdmin: true,
         },
       ];
-    if (sql.includes('FROM invoices')) return [structuredClone(before)];
+    if (sql.includes('SELECT version FROM invoices'))
+      return [{ version: invoice.version }];
+    if (sql.includes('FROM invoices')) return [structuredClone(invoice)];
+    if (sql.includes('FROM business_cash_movements')) return [];
     if (sql.includes('FROM businesses'))
       return (args[0] as string[]).map((id) => ({ id }));
     if (sql.includes('FROM providers'))
-      return [{ id: args[0], business_id: before.business_id }];
+      return [{ id: args[0], business_id: invoice.business_id }];
     throw new Error('Unexpected SQL');
   });
   const manager = {
@@ -51,10 +52,23 @@ function nativeManager(repository: object, invoice: Invoice) {
 
 describe('UpdateInvoiceUseCase', () => {
   it('preserves an omitted folio and explicitly clears or trims it through the native writer', async () => {
-    const invoice = Object.assign(new Invoice(), { id: '7', business_id: nativeBusiness, provider_id: null, code: '00012', path_storage: '', total_amount: 0, data: {} });
-    const repository = { findOne: vi.fn(async () => invoice), save: vi.fn(async (value: Invoice) => value) };
+    const invoice = Object.assign(new Invoice(), {
+      id: '7',
+      business_id: nativeBusiness,
+      provider_id: null,
+      code: '00012',
+      path_storage: '',
+      total_amount: 0,
+      data: {},
+    });
+    const repository = {
+      findOne: vi.fn(async () => invoice),
+      save: vi.fn(async (value: Invoice) => Object.assign(invoice, value)),
+    };
     const manager = nativeManager(repository, invoice);
-    const service = new InvoiceService(repository as unknown as Repository<Invoice>);
+    const service = new InvoiceService(
+      repository as unknown as Repository<Invoice>,
+    );
     await service.updateInvoice('7', { total_amount: 42 }, manager, actor);
     expect(invoice.code).toBe('00012');
     await service.updateInvoice('7', { code: '  ' }, manager, actor);
@@ -177,6 +191,39 @@ describe('UpdateInvoiceUseCase', () => {
     );
     const result = await real.execute('7', { code: 'new' }, manager, actor);
     expect(result).toEqual({ ...original, code: 'new' });
+  });
+
+  it('keeps legacy JSON fields omitted through the real partial DTO and native writer', async () => {
+    const original = {
+      id: '7',
+      business_id: nativeBusiness,
+      provider_id: null,
+      code: 'old',
+      total_amount: 531,
+      data: { issue_date: '2026-11-17', items: [{ quantity: 0 }] },
+      path_storage: `invoices/${nativeBusiness}/kept.pdf`,
+      is_active: false,
+      version: 1,
+    } as Invoice;
+    const repository = {
+      findOne: vi.fn(async () => structuredClone(original)),
+      save: vi.fn(async (value: Invoice) => value),
+    };
+    const manager = nativeManager(repository, original);
+    const dto = await new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }).transform(
+      { code: ' replacement ' },
+      { type: 'body', metatype: UpdateInvoiceDto },
+    );
+    const service = new InvoiceService(
+      repository as unknown as Repository<Invoice>,
+    );
+    await expect(
+      service.updateInvoice('7', dto, manager, actor),
+    ).resolves.toEqual({ ...original, code: 'replacement' });
   });
 
   it.each([null, '9'])(

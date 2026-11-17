@@ -1,6 +1,5 @@
 import { useState } from "react";
-import useAuth from "../../../../../../../../../hooks/useAuth";
-import { useSelectableModels } from "../../../../../../../../generalSettings/pages/AiProviders/infrastructure/useServices";
+import { useInvoiceSelectableModels } from "../../../../../../../infrastructure/useServices";
 import type { VerifyIaProviderItem } from "../../../../../../../infrastructure/types";
 import { getInvoiceAiModes, getInvoiceAiSelectionOptions, type InvoiceAiMode, type InvoiceAiOverride } from "../aiSelection";
 
@@ -10,13 +9,13 @@ export const useInvoiceAiSelection = (
   mode: InvoiceAiMode | null,
   importScope: string,
 ) => {
-  const { isSessionActive } = useAuth();
   const scope = JSON.stringify([importScope, provider?.id, mode]);
   const [selection, setSelection] = useState<{ scope: string; override: InvoiceAiOverride } | null>(null);
   const override = selection?.scope === scope ? selection.override : {};
-  const modelsQuery = useSelectableModels(
-    { provider_id: provider?.id, mode: mode ?? undefined },
-    { enabled: isSessionActive && Boolean(provider?.id && mode && getInvoiceAiModes(provider).includes(mode)) },
+  const modelsQuery = useInvoiceSelectableModels(
+    provider?.id && mode && getInvoiceAiModes(provider).includes(mode)
+      ? { provider_id: provider.id, mode }
+      : null,
   );
   const observations = Array.isArray(modelsQuery.data) ? modelsQuery.data : [];
   const observation = observations.find(item => item && typeof item === "object" && item.providerId === provider?.id && item.mode === mode);
@@ -27,7 +26,7 @@ export const useInvoiceAiSelection = (
   const configuration = getInvoiceAiSelectionOptions(provider, mode, override, observedModels);
   return {
     ...configuration,
-    canAnalyze: configuration.canAnalyze && !modelsQuery.isError && !modelsQuery.isFetching,
+    canAnalyze: configuration.canAnalyze && modelsQuery.isSuccess && !modelsQuery.isFetching,
     isFetching: modelsQuery.isFetching,
     isError: modelsQuery.isError,
     refetch: modelsQuery.refetch,

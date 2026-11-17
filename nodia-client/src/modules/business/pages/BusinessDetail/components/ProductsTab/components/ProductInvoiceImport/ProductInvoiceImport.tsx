@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { PriceDivisionAction } from "../../../../../../../../components/PriceDivisionDialog";
 import { roundSalePrice } from "../../../../../../../../utils/salePrice";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
@@ -47,20 +46,23 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { sileo } from "sileo";
+import useAuth from "../../../../../../../../hooks/useAuth";
 
 import BaseModal from "../../../../../../../../components/BaseModal";
 import TextInput from "../../../../../../../../components/inputs/TextInput";
 import SelectSingleInput from "../../../../../../../../components/inputs/SelectSingleInput";
 import QueryErrorAlert from "../../../../../../../../components/QueryErrorAlert";
+import { CashExpenseCategoryPicker, QuickCashCategoryForm, type CashCategoryOption } from "../../../../../../components/CashExpenseCategoryPicker";
 import { usePagedProviderOptions } from "../../../../../../infrastructure/usePagedOptions";
 import { getProductLogs } from "../../../../../../infrastructure/services";
+import type { CashMutationOutcome, CashScope } from "../../../../../../infrastructure/cashTypes";
+import { useCashMutation } from "../../../../../../infrastructure/useCashServices";
+import { formatCashAmount, isCashCivilDate } from "../../../../../../infrastructure/cashValues";
+import { CashMutationFeedback } from "../../../CashTab/CashEditors/CashMutationFeedback";
 import {
   useProducts,
   useAnalyzeInvoice,
   useVerifyIaProviders,
-  useCreateInvoiceWithFile,
-  useBulkCreateProducts,
-  useBulkUpdateProducts,
 } from "../../../../../../infrastructure/useServices";
 import type {
   ProductLogEntity,
@@ -86,13 +88,22 @@ import {
   invoiceAliasNeedsReview,
   reviewInvoiceAlias,
   reviewInvoiceSalePrice,
-  prepareInvoiceProductPayloads,
+  canBindInvoiceProduct,
+  updateInvoiceProductRevision,
   validateInvoiceRow,
   validateInvoiceRows,
   mapExtractedItemsToRows,
   calculatePriceDiff,
   normalizeVerifyProviders,
 } from "./helpers";
+import {
+  canConfirmInvoiceFile,
+  InvoiceConfirmationError,
+  isInvoiceFolio,
+  isInvoiceTotal,
+  MAX_OCR_CONFIRMATION_ROWS,
+  prepareInvoiceConfirmation,
+} from "./invoiceOcrConfirmation";
 
 const parseNumericInput = (value: string): number => value.trim() ? Number(value) : Number.NaN;
 const numericInputValue = (value: number | undefined): string => typeof value === "number" && Number.isFinite(value) ? String(value) : "";
@@ -109,33 +120,49 @@ interface Props {
   onSuccess: () => void;
 }
 
-export const ProductInvoiceImport: FC<Props> = ({
+export const ProductInvoiceImport: FC<Props> = (props) => {
+  const auth = useAuth();
+  const scope = { businessId: props.businessId, actorId: auth.user?.id ?? "", sessionVersion: auth.sessionVersion };
+  return <ScopedProductInvoiceImport key={JSON.stringify([scope.actorId, scope.sessionVersion])} {...props} cashScope={scope} active={auth.isSessionActive} />;
+};
+
+function ScopedProductInvoiceImport({
   businessId,
   onCancel,
   onSuccess,
-}) => {
+  cashScope,
+  active,
+}: Props & { cashScope: CashScope; active: boolean }) {
   const { t, i18n } = useTranslation(["business", "core", "ai_providers"]);
+  const cashMutation = useCashMutation(cashScope);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const resultsSectionRef = useRef<HTMLDivElement | null>(null);
+  const categoryPickerId = "ocr-cash-category";
   const shouldScrollToResults = useRef<boolean>(false);
   const analysisIntent = useRef<symbol | null>(null);
   const availabilityCheckPending = useRef(false);
   const [isCheckingAiAvailability, setIsCheckingAiAvailability] = useState(false);
 
-  const [selectedProviderId, setSelectedProviderId] = useState<string>("");
-  const [selectedProviderTax, setSelectedProviderTax] = useState<number | null>(null);
+  const [selectedProvider, setSelectedProvider] = useState<{ businessId: string; id: string; tax: number | null }>();
+  const selectedProviderId = selectedProvider?.businessId === businessId ? selectedProvider.id : "";
+  const selectedProviderTax = selectedProvider?.businessId === businessId ? selectedProvider.tax : null;
   const [file, setFile] = useState<File | null>(null);
   const [rows, setRows] = useState<InvoiceProvisionalRow[]>([]);
   const [invoiceCode, setInvoiceCode] = useState<string>("");
   const [invoiceTotalAmount, setInvoiceTotalAmount] = useState<number>(0);
-  const [invoiceIssueDate, setInvoiceIssueDate] = useState<string>(() => dayjs().format("YYYY-MM-DD"));
+  const [invoiceIssueDate, setInvoiceIssueDate] = useState("");
+  const [reviewSource, setReviewSource] = useState<{ file: File; providerId: string; businessId: string }>();
+  const [selectedCategory, setSelectedCategory] = useState<{ businessId: string; value: CashCategoryOption | null }>();
+  const cashCategory = selectedCategory?.businessId === businessId ? selectedCategory.value : null;
+  const setCashCategory = (value: CashCategoryOption | null) => setSelectedCategory({ businessId, value });
+  const [quickCategoryBusiness, setQuickCategoryBusiness] = useState<string>();
+  const quickCategory = quickCategoryBusiness === businessId;
   const [matchingRow, setMatchingRow] = useState<{ businessId: string; row: InvoiceProvisionalRow } | null>(null);
   const [aliasReview, setAliasReview] = useState<{ businessId: string; row: InvoiceProvisionalRow } | null>(null);
   const [priceReview, setPriceReview] = useState<{ businessId: string; row: InvoiceProvisionalRow } | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<InvoiceProvisionalRow>>({});
   const [editTaxRate, setEditTaxRate] = useState<number>(19);
-  const [isSaving, setIsSaving] = useState(false);
 
   const [modeSelection, setModeSelection] = useState<{ providerId: string; mode: InvoiceAiMode } | null>(null);
   const { data: iaProvidersData, isLoading: isVerifyingProviders, isFetching: isFetchingAiProviders, isError: aiProvidersError, refetch: refetchAiProviders } = useVerifyIaProviders({ mode: modeSelection?.mode });
@@ -223,29 +250,34 @@ export const ProductInvoiceImport: FC<Props> = ({
   const providerQuery = usePagedProviderOptions(businessId, true, { useOcrOnly: true });
   const providerOptions = providerQuery.options;
 
-  const { data: productsData, isFetching: isFetchingProducts, isError: productsError, refetch: refetchProducts } = useProducts({
+  const { data: productsData, isFetching: isFetchingProducts, isError: productsError, isPlaceholderData, refetch: refetchProducts } = useProducts({
     q: { business_id_eq: businessId },
     all: true,
   });
-  const existingProducts = productsData?.data ?? [];
+  const existingProducts = useMemo(() => isPlaceholderData ? [] :
+    (productsData?.data ?? []).filter((product) => product.business_id === businessId),
+  [businessId, isPlaceholderData, productsData]);
+  const catalog = useMemo(() => new Map(existingProducts.map((product) => [product.id, product])), [existingProducts]);
+  const revisionsToReview = rows.flatMap<{ row: InvoiceProvisionalRow; index: number; latest?: ProductEntity }>((row, index) => {
+    if (!row.id) return [];
+    const latest = catalog.get(row.id);
+    if (latest && canBindInvoiceProduct(latest, businessId)) {
+      return row.version === latest.version ? [] : [{ row, index, latest }];
+    }
+    return [{ row, index }];
+  });
 
   // Mutations
   const analyzeMutation = useAnalyzeInvoice();
   const analysisRuntimeMessage = invoiceAiAnalysisMessageKey(analyzeMutation.error);
   const observation = useAnalysisObservation(businessId);
-  const createInvoiceMutation = useCreateInvoiceWithFile();
-  const bulkCreateMutation = useBulkCreateProducts();
-  const bulkUpdateMutation = useBulkUpdateProducts();
 
   const isAnalyzing = observation.isBusy;
   const isBusy =
     isAnalyzing || isCheckingAiAvailability || isFetchingAiProviders || aiConfiguration.isFetching || isFetchingProducts || providerQuery.isFetching ||
-    isSaving ||
-    createInvoiceMutation.isPending ||
-    bulkCreateMutation.isPending ||
-    bulkUpdateMutation.isPending;
+    cashMutation.busy || cashMutation.pending || quickCategory;
 
-  const isUploadDisabled = !selectedProviderId || selectedProviderTax === null || productsError || isBusy;
+  const isUploadDisabled = !selectedProviderId || selectedProviderTax === null || !productsData || productsError || isPlaceholderData || isBusy;
   const [isDragging, setIsDragging] = useState(false);
 
   // Prevent browser default behavior of opening dropped files in tab
@@ -262,6 +294,20 @@ export const ProductInvoiceImport: FC<Props> = ({
   }, []);
 
   const hasErrors = useMemo(() => rows.some((r) => !r.isValid), [rows]);
+  const sourceChanged = !reviewSource || reviewSource.file !== file || reviewSource.providerId !== selectedProviderId ||
+    reviewSource.businessId !== businessId;
+  const invalidFile = !file || !canConfirmInvoiceFile(file);
+  const invalidAmount = !isInvoiceTotal(invoiceTotalAmount)
+    ? "business:cash.ocr_total_range"
+    : cashCategory && invoiceTotalAmount === 0 ? "business:cash_invoice_invalid_amount" : undefined;
+  const date = invoiceIssueDate.trim();
+  const invalidDate = (cashCategory || date) && !isCashCivilDate(date)
+    ? cashCategory ? "business:cash_invoice_invalid_date" : "business:cash.ocr_invalid_date"
+    : undefined;
+  const invalidRowCount = rows.length > MAX_OCR_CONFIRMATION_ROWS;
+  const canSave = active && !isBusy && !isPlaceholderData && !productsError && rows.length > 0 &&
+    !sourceChanged && !invalidFile && !invalidAmount && !invalidDate && !invalidRowCount &&
+    isInvoiceFolio(invoiceCode) && !hasErrors && revisionsToReview.length === 0;
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (isUploadDisabled || analysisIntent.current) return;
@@ -310,7 +356,7 @@ export const ProductInvoiceImport: FC<Props> = ({
   ) => {
     const effectiveMode = modeToUse ?? selectedAiMode;
     const configuration = aiConfiguration;
-    if (provider.id !== currentAiProvider?.id || effectiveMode !== selectedAiMode || analysisIntent.current || availabilityCheckPending.current || !file || !selectedProviderId || selectedProviderTax === null || productsError || aiProvidersError || isBusy || !configuration.canAnalyze || !effectiveMode) return;
+    if (provider.id !== currentAiProvider?.id || effectiveMode !== selectedAiMode || analysisIntent.current || availabilityCheckPending.current || !file || isUploadDisabled || selectedProviderTax === null || aiProvidersError || !configuration.canAnalyze || !effectiveMode) return;
     const intent = Symbol("invoice-analysis");
     analysisIntent.current = intent;
     const targetModel = configuration.model;
@@ -337,13 +383,9 @@ export const ProductInvoiceImport: FC<Props> = ({
       transport.preparing();
 
       const items = response.data?.items || [];
-      const matchedProductIds = existingProducts
-        .filter((p) =>
-          items.some(
-            (item) => item.code && item.code.trim().toLowerCase() === p.code?.trim().toLowerCase()
-          )
-        )
-        .map((p) => p.id);
+      const extractedCodes = new Set(items.map((item) => item.code?.trim().toLowerCase()).filter(Boolean));
+      const matchedProductIds = existingProducts.filter((product) =>
+        product.code && extractedCodes.has(product.code.trim().toLowerCase())).map((product) => product.id);
 
       let historicalLogs: ProductLogEntity[] = [];
       if (matchedProductIds.length > 0) {
@@ -377,7 +419,8 @@ export const ProductInvoiceImport: FC<Props> = ({
       if (analysisIntent.current !== intent || !transport.isCurrent()) return;
       setInvoiceCode(response.code || "");
       setInvoiceTotalAmount(response.total_amount ?? Number.NaN);
-      setInvoiceIssueDate(response.data?.issue_date || dayjs().format("YYYY-MM-DD"));
+      setInvoiceIssueDate(response.data?.issue_date ?? "");
+      setReviewSource({ file, providerId: selectedProviderId, businessId });
       shouldScrollToResults.current = true;
       setRows(mappedRows);
       transport.emit('draft_ready');
@@ -526,68 +569,40 @@ export const ProductInvoiceImport: FC<Props> = ({
     setEditingIndex(null);
   };
 
-  const handleSubmitAll = async () => {
-    if (analysisIntent.current || rows.length === 0 || hasErrors || isBusy || !file || invoiceCode.trim().length > 255 || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0) {
-      return;
-    }
-
-    setIsSaving(true);
-
-    try {
-      // Validate every product command, including bindings/versions/aliases, before writing the invoice.
-      const { newItems, updateItems } = prepareInvoiceProductPayloads(rows, businessId, selectedProviderId || null);
-      // =========================================================================
-      // The current API persists the invoice and products in separate requests.
-      // If invoice creation fails, STOP immediately. Do NOT touch products.
-      // =========================================================================
-      await createInvoiceMutation.mutateAsync({
-        file,
-        business_id: businessId,
-        provider_id: selectedProviderId || null,
-        code: invoiceCode.trim() || null,
-        total_amount: Math.round(invoiceTotalAmount || 0),
-        data: {
-          issue_date: invoiceIssueDate || undefined,
-          items_count: rows.length,
-          extracted_items: rows.map((r) => ({
-            code: r.invoice_code ?? r.code,
-            matched_product_id: r.id,
-            selected_update_fields: r.manual_match?.fields,
-            name: r.name,
-            alias: r.alias?.trim() ?? null,
-            alias_reviewed: r.alias_reviewed === true,
-            cost_price: r.cost_price,
-            quantity: Number.isFinite(r.quantity) ? r.quantity : null,
-            is_update: r.isUpdate,
-          })),
-        },
-        is_active: true,
-      });
-
-      // =========================================================================
-      // A transactional confirmation endpoint is still required in Server.
-      // Only runs if invoice was successfully saved in step 1.
-      // =========================================================================
-      if (newItems.length > 0) {
-        await bulkCreateMutation.mutateAsync(newItems);
-      }
-      if (updateItems.length > 0) {
-        await bulkUpdateMutation.mutateAsync(updateItems);
-      }
-
-      sileo.success({
-        title: t("business:invoice_and_products_success"),
-      });
-
+  const applyConfirmation = (outcome: CashMutationOutcome | undefined) => {
+    if (outcome?.status === "committed" && outcome.operation === "invoice_ocr_confirm") {
       onSuccess();
-    } catch {
+    }
+    if (outcome?.status === "rejected" && outcome.operation === "invoice_ocr_confirm" && rows.some((row) => row.id) &&
+      ["product:version_conflict", "business:cash_version_conflict", "business:resource_not_found"].includes(outcome.error.message)) {
+      void refetchProducts();
+    }
+  };
+
+  const handleSubmitAll = async () => {
+    if (!canSave || analysisIntent.current || !file) return;
+    let fields;
+    try {
+      fields = prepareInvoiceConfirmation(rows, businessId, {
+        providerId: selectedProviderId,
+        code: invoiceCode,
+        total: invoiceTotalAmount,
+        issueDate: invoiceIssueDate,
+        categoryId: cashCategory?.id,
+      });
+    } catch (error) {
       sileo.error({
         title: t("core:server_error_toast"),
-        description: t("business:invoice_save_failed_abort"),
+        description: error instanceof InvoiceConfirmationError ? t(error.messageKey) : undefined,
       });
-    } finally {
-      setIsSaving(false);
+      return;
     }
+    applyConfirmation(await cashMutation.submit({ operation: "invoice_ocr_confirm", fields, file }));
+  };
+
+  const closeQuickCategory = () => {
+    setQuickCategoryBusiness(undefined);
+    requestAnimationFrame(() => document.getElementById(categoryPickerId)?.focus());
   };
 
   return (
@@ -630,7 +645,10 @@ export const ProductInvoiceImport: FC<Props> = ({
                 onSearchChange={value => { if (!isBusy && !analysisIntent.current) providerQuery.setSearch(value); }} hasMore={providerQuery.hasNextPage}
                 onLoadMore={() => { if (!isBusy && !analysisIntent.current) void providerQuery.fetchNextPage(); }} loadingOptions={providerQuery.isFetching}
                 value={selectedProviderId || null}
-                onChange={(val) => { if (isBusy || analysisIntent.current) return; setSelectedProviderId(val ?? ""); setSelectedProviderTax(providerQuery.providers.find((provider) => provider.id === val)?.tax ?? null); }}
+                onChange={(val) => {
+                  if (isBusy || analysisIntent.current) return;
+                  setSelectedProvider({ businessId, id: val ?? "", tax: providerQuery.providers.find((provider) => provider.id === val)?.tax ?? null });
+                }}
                 placeholder={t("business:select_provider_placeholder", "Seleccionar proveedor...")}
                 searchPlaceholder={t("business:search_provider_placeholder", "Buscar proveedor...")}
                 disabled={isBusy}
@@ -1031,8 +1049,8 @@ export const ProductInvoiceImport: FC<Props> = ({
               label={t("business:invoice_number_label")}
               value={invoiceCode}
               onChange={(e) => { if (!isBusy && !analysisIntent.current) setInvoiceCode(e.target.value); }}
-              error={invoiceCode.trim().length > 255}
-              helperText={t(invoiceCode.trim().length > 255 ? "business:invoice_code_invalid" : "business:invoice_code_optional_helper")}
+              error={!isInvoiceFolio(invoiceCode)}
+              helperText={t(!isInvoiceFolio(invoiceCode) ? "business:invoice_code_invalid" : "business:invoice_code_optional_helper")}
               disabled={isBusy}
               data-testid="invoice-code-field"
             />
@@ -1044,8 +1062,8 @@ export const ProductInvoiceImport: FC<Props> = ({
               onChange={(e) => { if (!isBusy && !analysisIntent.current) setInvoiceTotalAmount(parseNumericInput(e.target.value)); }}
               type="number"
               disabled={isBusy}
-              error={!Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0}
-              helperText={!Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0 ? t("business:invoice_validation_total") : undefined}
+              error={Boolean(invalidAmount)}
+              helperText={invalidAmount ? t(invalidAmount) : undefined}
               data-testid="invoice-total-field"
             />
             <TextInput
@@ -1054,6 +1072,8 @@ export const ProductInvoiceImport: FC<Props> = ({
               label={t("business:invoice_date_label")}
               value={invoiceIssueDate}
               onChange={(e) => { if (!isBusy && !analysisIntent.current) setInvoiceIssueDate(e.target.value); }}
+              error={Boolean(invalidDate)}
+              helperText={invalidDate ? t(invalidDate) : undefined}
               disabled={isBusy}
               data-testid="invoice-date-field"
             />
@@ -1067,7 +1087,27 @@ export const ProductInvoiceImport: FC<Props> = ({
                 disabled
               />
             )}
+            <CashExpenseCategoryPicker
+              id={categoryPickerId}
+              scope={cashScope}
+              selected={cashCategory}
+              onChange={setCashCategory}
+              onQuickCreate={() => {
+                if (!isBusy && !analysisIntent.current) setQuickCategoryBusiness(businessId);
+              }}
+              disabled={isBusy}
+            />
           </InvoiceSummaryGrid>
+
+          {cashCategory && !invalidAmount && !invalidDate && (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              {t("business:cash.ocr_expense_preview", {
+                amount: formatCashAmount(String(invoiceTotalAmount), i18n.language),
+                date,
+                category: cashCategory.name,
+              })}
+            </Typography>
+          )}
 
           <Alert severity="info" sx={{ mt: 3, mb: 3, borderRadius: 2 }}>
             <Typography variant="body2">
@@ -1075,13 +1115,60 @@ export const ProductInvoiceImport: FC<Props> = ({
             </Typography>
           </Alert>
 
+          <Box sx={{ display: "grid", gap: 1, mb: 2 }}>
+            {sourceChanged && <Alert severity="warning">{t("business:cash.ocr_source_changed")}</Alert>}
+            {invalidFile && <Alert severity="error">{t("business:cash.ocr_invalid_file")}</Alert>}
+            {invalidRowCount && <Alert severity="error">{t("business:cash.ocr_max_items")}</Alert>}
+            <CashMutationFeedback
+              outcome={cashMutation.outcome}
+              busy={cashMutation.busy || !active}
+              onRecover={() => { void cashMutation.recover().then(applyConfirmation); }}
+              onRetry={() => { void cashMutation.retry().then(applyConfirmation); }}
+            />
+            {!productsError && !isPlaceholderData && revisionsToReview.length > 0 && (
+              <Alert severity="warning" sx={{ "& .MuiAlert-message": { minWidth: 0, width: "100%" } }}>
+                <Typography variant="body2">{t("business:cash.ocr_review_changed_products")}</Typography>
+                <Box component="ul" sx={{ display: "grid", gap: 1, mb: 0, pl: 2 }}>
+                  {revisionsToReview.map(({ row, index, latest }) => {
+                    const applyRevision = () => {
+                      if (!latest || isBusy || analysisIntent.current) return;
+                      try {
+                        const revised = updateInvoiceProductRevision(row, latest, businessId);
+                        setRows((previous) => validateInvoiceRows(previous.map((item) => item === row ? revised : item)));
+                      } catch (error) {
+                        sileo.error({
+                          title: t("business:invoice_match_invalid_product"),
+                          description: error instanceof Error ? error.message : undefined,
+                        });
+                      }
+                    };
+                    return (
+                      <li key={index}>
+                        <Typography variant="body2" sx={{ overflowWrap: "anywhere" }}>
+                          {row.name} · {latest
+                            ? [latest.name, latest.code, formatCashAmount(String(Number(latest.sale_price)), i18n.language)].filter(Boolean).join(" · ")
+                            : t("business:cash.ocr_product_no_longer_available")}
+                        </Typography>
+                        {latest && (
+                          <Button size="small" color="inherit" disabled={isBusy} onClick={applyRevision} sx={{ minHeight: 44 }}>
+                            {t("business:cash.ocr_use_reviewed_product")}
+                          </Button>
+                        )}
+                      </li>
+                    );
+                  })}
+                </Box>
+              </Alert>
+            )}
+          </Box>
+
           {/* Table Header / Save Action */}
           <Box data-business-toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2, mb: 2 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
               {t("business:provisional_table_title", { count: rows.length })}
             </Typography>
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
               {hasErrors && (
                 <Typography variant="caption" color="error.main" sx={{ fontWeight: 600 }}>
                   {t("business:must_fix_errors_warning")}
@@ -1090,10 +1177,10 @@ export const ProductInvoiceImport: FC<Props> = ({
               <Button
                 variant="contained"
                 color="success"
-                disabled={hasErrors || rows.length === 0 || isBusy || invoiceCode.trim().length > 255 || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0}
+                disabled={!canSave}
                 onClick={handleSubmitAll}
-                startIcon={isSaving ? <CircularProgress size={18} color="inherit" /> : <ReceiptLongOutlinedIcon />}
-                sx={{ borderRadius: 2 }}
+                startIcon={cashMutation.busy ? <CircularProgress size={18} color="inherit" /> : <ReceiptLongOutlinedIcon />}
+                sx={{ borderRadius: 2, minHeight: 44, width: { xs: "100%", sm: "auto" } }}
                 data-testid="submit-invoice-products"
               >
                 {t("business:save_invoice_and_products_btn")}
@@ -1328,6 +1415,22 @@ export const ProductInvoiceImport: FC<Props> = ({
         price={priceReview.row.sale_price} disabled={isBusy}
         onApply={handleApplyPrice} onClose={() => setPriceReview(null)} />}
 
+      {quickCategory && (
+        <QuickCashCategoryForm
+          scope={cashScope}
+          onCreated={(category) => { setCashCategory(category); closeQuickCategory(); }}
+          onCancel={closeQuickCategory}
+        >
+          {({ content, actions, locked, onClose }) => (
+            <BaseModal open onClose={onClose} title={t("business:cash.category_add")} size="sm"
+              showCloseButton={!locked} disableEscapeKeyDown={locked}
+              actions={<ModalActionsContainer>{actions}</ModalActionsContainer>}>
+              {content}
+            </BaseModal>
+          )}
+        </QuickCashCategoryForm>
+      )}
+
       {/* Row Edit Modal */}
       <BaseModal
         open={editingIndex !== null}
@@ -1484,6 +1587,6 @@ export const ProductInvoiceImport: FC<Props> = ({
       </BaseModal>
     </BusinessWorkflow>
   );
-};
+}
 
 export default ProductInvoiceImport;

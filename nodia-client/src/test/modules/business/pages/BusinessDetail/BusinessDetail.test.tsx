@@ -14,6 +14,12 @@ vi.mock("../../../../../modules/business/pages/BusinessDetail/components/SalesWo
   default: ({ businessId }: { businessId: string }) => <input aria-label={`Carrito sintético ${businessId}`} defaultValue="" />,
 }));
 
+vi.mock("../../../../../modules/business/pages/BusinessDetail/components/CashTab", () => ({
+  default: ({ onEditInvoice }: { onEditInvoice: (id: string) => void }) => (
+    <button onClick={() => onEditInvoice("831")}>Abrir factura vinculada</button>
+  ),
+}));
+
 vi.mock("sileo", () => ({
   sileo: {
     info: vi.fn(),
@@ -48,6 +54,7 @@ vi.mock("../../../../../modules/business/infrastructure/services", () => ({
   createProvider: vi.fn(),
   updateProvider: vi.fn(),
   getInvoices: vi.fn(),
+  getInvoiceEditSource: vi.fn(),
   createInvoice: vi.fn(),
   updateInvoice: vi.fn(),
 }));
@@ -134,6 +141,31 @@ describe("BusinessDetail Page", () => {
       data: [],
       meta: { total_items: 0, page: 1, limit: 10, total_pages: 1 },
     });
+  });
+
+  it("opens the source invoice by ID from Caja with editable financial fields", async () => {
+    vi.mocked(businessServices.getInvoiceEditSource).mockResolvedValue({
+      id: "831", business_id: mockBusiness.id, provider_id: null, code: "F-831",
+      total_amount: 1200, path_storage: "", data: { issue_date: "2026-11-17" }, is_active: true,
+      version: 4,
+      cash_expense: {
+        movement_id: "3d20c3e7-650c-49f8-a84c-e98c18ec9ee0",
+        category: { id: "81", name: "Insumos", is_active: false },
+      },
+    });
+    renderWithClient(<BusinessDetail />, "/business/biz-123?section=cash");
+    const opener = await screen.findByRole("button", { name: "Abrir factura vinculada" });
+    await userEvent.click(opener);
+    const code = await screen.findByTestId("invoice-code-input");
+    expect(code.querySelector("input") ?? code).toHaveValue("F-831");
+    expect(businessServices.getInvoiceEditSource).toHaveBeenCalledWith("biz-123", "831", expect.any(AbortSignal));
+    const amount = screen.getByTestId("invoice-total-amount-input");
+    const date = screen.getByTestId("invoice-issue-date-input");
+    expect(amount.querySelector("input") ?? amount).toBeEnabled();
+    expect(date.querySelector("input") ?? date).toBeEnabled();
+    expect(screen.getByText(i18n.t("business:cash.category_inactive_option", { name: "Insumos" }))).toBeVisible();
+    await userEvent.click(screen.getByRole("button", { name: i18n.t("core:close") }));
+    expect(await screen.findByRole("button", { name: "Abrir factura vinculada" })).toBeVisible();
   });
 
   it("renders business details with header, breadcrumb, owner, and default overview tab", async () => {

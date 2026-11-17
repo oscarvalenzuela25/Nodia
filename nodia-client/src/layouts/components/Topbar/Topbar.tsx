@@ -17,6 +17,7 @@ import {
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
 import useProfileMenu from "./hooks/useProfileMenu";
 import ThemeSelector from "../ThemeSelector";
 import ThemePresetSelector from "../../../components/ThemePresetSelector";
@@ -49,6 +50,7 @@ const Topbar: FC<Props> = ({
     handleLogout,
   } = useProfileMenu();
   const canManageAi = useCanAccessModule("/ai-providers");
+  const canAccessBusiness = useCanAccessModule("/business");
 
   return (
     <TopbarRoot>
@@ -77,7 +79,7 @@ const Topbar: FC<Props> = ({
         <ArrowCircleLeftOutlinedIcon />
       </IconButton>
 
-      {isAuthenticated && canManageAi && <AiProviderIndicators />}
+      {isAuthenticated && (canManageAi || canAccessBusiness) && <AiProviderIndicators canManageAi={canManageAi} />}
       <Stack
         direction="row"
         spacing={{ xs: 0.5, sm: 2 }}
@@ -124,6 +126,16 @@ const Topbar: FC<Props> = ({
                 {user?.email}
               </Typography>
               <Divider />
+              <MenuItem
+                onClick={() => window.location.reload()}
+                disabled={isBusy}
+                sx={{ minHeight: 44 }}
+              >
+                <ListItemIcon>
+                  <RefreshOutlinedIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>{t("refresh_information")}</ListItemText>
+              </MenuItem>
               <MenuItem onClick={handleLogout} disabled={isBusy}>
                 <ListItemIcon>
                   <LogoutOutlinedIcon fontSize="small" />

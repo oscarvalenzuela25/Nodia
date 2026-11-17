@@ -13,6 +13,7 @@ import {
 import { isUUID } from 'class-validator';
 import { CreateInvoiceUseCase } from '../../invoice/use-case/create-invoice.use-case.js';
 import { UpdateInvoiceUseCase } from '../../invoice/use-case/update-invoice.use-case.js';
+import { assertInvoiceCashCompatibility } from '../../invoice/invoice-cash-compatibility.js';
 import type { CreateInvoiceDto } from '../../invoice/dto/create-invoice.dto.js';
 import type { UpdateInvoiceDto } from '../../invoice/dto/update-invoice.dto.js';
 import { isFinanceBigint } from '../../finance-common/validation/finance-validation.js';
@@ -624,13 +625,6 @@ class InvoiceOperation implements NodiaAiNativeOperation {
     if (first && first.business_id !== input.businessId)
       throw new ConflictException('nodia_ai:invoice_business_mismatch');
     const destination = String(input.command.business_id ?? input.businessId);
-    if (
-      first &&
-      destination !== input.businessId &&
-      first.path_storage !== '' &&
-      !input.command.attachment_id
-    )
-      invoiceLegacyFileMediaType(first.path_storage, first.business_id);
     const ids = [...new Set([input.businessId, destination])].sort();
     const businesses = await this.store.businesses(context.manager, ids);
     if (businesses.length !== ids.length)
@@ -642,15 +636,43 @@ class InvoiceOperation implements NodiaAiNativeOperation {
       providerId == null
         ? null
         : await this.store.provider(context.manager, String(providerId));
-    if (providerId != null && !provider)
-      throw new NotFoundException('nodia_ai:provider_not_found');
-    if (provider && provider.business_id !== destination)
-      throw new ConflictException('nodia_ai:provider_business_mismatch');
     const target = input.id
       ? await this.store.target(context.manager, input.id, true)
       : null;
     if (!isDeepStrictEqual(first, target))
       throw new ConflictException('nodia_ai:preconditions_changed');
+    if (target && input.id) {
+      // Eligibility is live and intentionally absent from the signed snapshot.
+      // Staging and apply both re-enter this check through verifyPreconditions.
+      await assertInvoiceCashCompatibility(
+        context.manager,
+        {
+          id: input.id,
+          business_id: input.businessId,
+          total_amount: target.total_amount,
+          data: target.data,
+        },
+        {
+          business_id: destination,
+          total_amount: Object.hasOwn(input.command, 'total_amount')
+            ? input.command.total_amount
+            : target.total_amount,
+          data: Object.hasOwn(input.command, 'data')
+            ? input.command.data
+            : target.data,
+        },
+      );
+      if (
+        destination !== input.businessId &&
+        target.path_storage !== '' &&
+        !input.command.attachment_id
+      )
+        invoiceLegacyFileMediaType(target.path_storage, target.business_id);
+    }
+    if (providerId != null && !provider)
+      throw new NotFoundException('nodia_ai:provider_not_found');
+    if (provider && provider.business_id !== destination)
+      throw new ConflictException('nodia_ai:provider_business_mismatch');
     const snapshot: NodiaAiJsonObject = {
       schema_version: 1,
       destination_business_id: destination,

@@ -385,3 +385,17 @@ PWA-002…006 continúan abiertos como entregas independientes: caché/actualiza
 desconexión, push, datos offline y sincronización. Este cierre no incorpora
 service worker ni esas capacidades, no ejecuta un despliegue y no aprueba el
 plan completo o la ficha NodiaAI, que mantiene draft y approval:null.
+
+## 16. Recargar la página desde el avatar — 2026-11-17
+
+**Actualizar información** aparece encima de **Cerrar sesión** para la
+persona autenticada. Usa la recarga nativa en la ubicación actual, incluida
+la ruta, query y fragmento. El mismo menú se usa en escritorio, móvil y la
+ventana instalada. Una sesión en proceso de renovación o cierre bloquea la
+acción junto al resto del menú.
+
+La recarga vuelve a iniciar Client y sus consultas en esa URL. La gestión de
+versiones, caché estática y borradores al actualizar corresponde a PWA-002.
+En Chromium con fixture sintético, el clic a 320 px y Enter a 1440 px
+registraron una navegación de tipo `reload` con la misma URL. El control queda
+antes de Cerrar sesión y conserva 44 px de alto en móvil.

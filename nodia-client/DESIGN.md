@@ -668,6 +668,13 @@ el fallo local; contactos/HTTP/Server/DB y ficha aprobada permanecen intactos.
 - **Resultado y límites:** [evidencia con hashes](../docs/evidence/web-performance/stage-shortcut-editor-2026-10-10.json),18 auditorías limpias de Inicio **sin sesión**: móvil77→78, desktop98→98, scripts442.300→427.280B (−15.020B/3,4%), A11y100. Sesión real en5174: editor ausente de inventario inicial y observado tras intención, búsqueda/selección390→320px y foco conservados; QA320/390/599/600/900/1200/1440, ES oscuro/EN claro, sin overflow. Inventario de recursos no equivale a transferencia ni timing. La observación de primera apertura local incluye automatización; falta comparación bajo throttling. Meta90 móvil, presupuesto400KiB, Lighthouse privado posterior, teléfono físico e INP siguen pendientes. No extrapolar la mejora de Inicio a Reservas ni cambiar i18n antes de reconciliar ADR-002.
 
 
+**Carga por sección en Negocios — CASH-05, 2026-11-17.** La pestaña Caja
+descarga su módulo al abrirse y ofrece reintento en el panel si falla la
+carga. El archivo Vite de BusinessDetail pasó de 149,31 a 122,37 kB gzip
+entre las variantes estática y diferida de CASH-05. Chromium local observó
+una solicitud de módulo al abrir Caja y ninguna desde Overview. Son cifras
+de artefactos compilados y una comprobación de carga. [Plan109 §14](../docs/mvp/109-business-cash-ledger-plan.md#14-pestaña-caja-y-gestión-de-movimientos--cash-05-2026-11-17)
+
 ### 10.7 Patrón verificado — catálogo administrativo separado del runtime (2026-10-10)
 
 - **Límite comprobado:** [moduleIcons](src/store/generalSettings/moduleIcons.tsx) conserva el registro completo y los resolutores usados por Inicio/Sidenav/barra móvil. [iconCatalog](src/store/generalSettings/iconCatalog.ts) contiene las etiquetas, categorías y palabras de búsqueda de las 91 opciones de IconSelect. El selector lo importa directamente; no reexportar ese catálogo por el barrel compartido de generalSettings ni importarlo desde navegación. La ruta de Módulos ya es lazy: no agregar otro loader o estado asíncrono al selector.

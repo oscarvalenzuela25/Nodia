@@ -228,8 +228,7 @@ manifest/pins técnicos; no constituye nueva aprobación ni publicación operati
   sobre el corte congelado posterior al fix de foco.
 - [x] Conocimiento/pins locales generados y verificados mediante scripts
   soportados; resultado final en evidencia, sin modificar fichas aprobadas.
-- [ ] Revisar/integrar/adoptar candidato; aislar y comprobar el recorrido
-  autenticado reportado de producción antes de afirmar su resolución.
+- [x] Integración confirmada y cierre registrado en la sección siguiente.
 
 Validación local cerrada: focal67/9, global3139/380 en283,97s (inicio21:09:20
 America/Santiago), tipos/lint y build39,45s correctos, más QA fresh de seis estados
@@ -240,7 +239,16 @@ corrige el fallo observado en producción**. Es recuperación humana del síntom
 sin identificar la petición, versión o causa exacta. Es compatible con un fallo
 transitorio de carga o una versión anterior abierta; caché/service worker no
 están demostrados como causa. No requiere otro cambio de código por sí sola.
-Primer pendiente: revisar/integrar/adoptar el candidato local, sin nueva
-autorización de despliegue. Si reaparece, capturar petición/error y versión de
-la sesión afectada antes de atribuir causa o declarar solución permanente.
 La recuperación por recarga no acredita la adopción ni aceptación del fix nuevo.
+
+## Cierre de PCON-001 — 2026-11-17
+
+El usuario solicita cerrar PCON-001 por el alcance de recuperación de apertura de
+Contactos. La [PR 48](https://github.com/oscarvalenzuela25/Nodia/pull/48) integró
+la corrección en `development` (`6b7f15a5`). La
+[PR 49](https://github.com/oscarvalenzuela25/Nodia/pull/49) incluyó el cambio en
+`master` (`2456db84`). El [TODO](TODO.md) registra el cierre por alcance.
+
+La causa exacta del 404 y la verificación autenticada del cambio en producción
+quedan sin evidencia directa. Si reaparece el incidente, capturar petición,
+error y versión de la sesión afectada.

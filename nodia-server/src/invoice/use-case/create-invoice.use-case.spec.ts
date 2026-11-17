@@ -211,7 +211,6 @@ describe('CreateInvoiceUseCase', () => {
     });
     expect(operations).toEqual([
       'business-share',
-      'business-share',
       'provider-share',
       'save',
     ]);
