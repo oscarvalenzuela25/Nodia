@@ -1,11 +1,19 @@
 # Progreso del MVP — Nodia
 
+**CASH-01 cerrado por alcance documental — 2026-11-17.** La rama
+`codex/business-cash-ledger` define contrato HTTP, cantidades exactas en CLP,
+fecha civil de Santiago, autorización por negocio, orden de locks y recibos.
+El [Plan109 §§6.2–6.4](109-business-cash-ledger-plan.md#62-factura-manual-revisiones-y-compatibilidad)
+fija edición desde Facturas y un guardado OCR compuesto. El próximo paso es
+**CASH-02** para modelo, autorización y categorías. La prueba de las
+garantías transaccionales queda en las fases de implementación.
+
 **PCON-001, OCR-001, BIZ-042 y TUX-03/05 cerrados — 2026-11-17.** El usuario
 solicita el cierre por alcance. Contactos y OCR se integraron por PR 48 y 49,
 y precios/proveedores OCR y Teacher por PR 50 y 51. La base verificada para la
 rama `codex/business-cash-ledger` es `origin/development` `0049b5fc`, que
 incorpora las cuatro entregas y el plan de Caja. El [TODO](TODO.md) recoge
-los cierres y CASH-01 como primer paso. Las comprobaciones funcionales por
+los cierres. Las comprobaciones funcionales por
 entorno, incluida la migración BIZ-042 en DB operativa, conservan sus límites.
 
 **Caja de Negocios — plan/vistas2026-11-17:** [Plan109](109-business-cash-ledger-plan.md)
@@ -14,8 +22,8 @@ registran categorías compartidas, ingreso/egreso con categoría obligatoria,
 filtros diarios/actividad, resumen filtrado y egreso único por factura manual/OCR.
 Ampliación del usuario: dos cards mensuales de ingresos/egresos en Overview.
 Sin implementación: los controles de las vistas son simulación local, no una
-garantía SQL/HTTP. [TODO CASH-001](TODO.md) retoma CASH-01 en
-`codex/business-cash-ledger`; CASH-04 exige confirmación OCR identificada,
+garantía SQL/HTTP. La planificación de [CASH-001](TODO.md) precede el cierre
+documental de CASH-01. CASH-04 exige confirmación OCR identificada,
 transaccional y recuperable. Ficha planned/draft/unregistered/approval:null,
 sin aprobación documental, operaciones de BD, inferencias o despliegue nuevos.
 R02 del mismo día sustituye la recomendación de impedir quitar categoría:
@@ -23,7 +31,7 @@ al guardar vacía se retira el egreso, sin aparecer tampoco en actividad Todos.
 X/+ y modal contextual conservan borradores, validan nombres sin diferencias de
 mayúsculas/espaciados y seleccionan la categoría nueva. Cierres manuales como
 ingresos; sólo facturas automáticas como egresos. Actualización de plan/maqueta,
-no implementación; ficha Caja2 y Negocios57 permanecen candidatas.
+no implementación. Caja2 y Negocios57 identifican el corte previo de las fichas.
 
 **Negocios: precios redondeados, división y proveedores OCR — solicitud2026-11-17:**
 [Plan94§42](94-business-point-of-sale-and-product-refactor.md#42-precios-de-venta-redondeados-división-local-y-proveedores-ocr--solicitud2026-11-17)

@@ -1,5 +1,13 @@
 # Especificación del MVP — Nodia
 
+**Caja de Negocios — CASH-01 cerrado, 2026-11-17.** El
+[Plan109](109-business-cash-ledger-plan.md#3-reglas-de-caja-v1) fija los contratos
+de categorías, movimientos, filtros y agregados, edición de egresos desde
+Facturas y confirmación OCR con recibo recuperable. El
+[ADR106](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
+sigue propuesto. El [TODO](TODO.md) sitúa **CASH-02** como primer paso de
+implementación en `codex/business-cash-ledger`.
+
 **Cierre de cuatro entregas — 2026-11-17.** Por instrucción del usuario, el
 [TODO](TODO.md#entregas-cerradas-por-alcance) cierra PCON-001, OCR-001, BIZ-042
 y TUX-03/05. Se comprobó su integración en `development` y `master`. Los
@@ -14,14 +22,14 @@ paneles coherentes con búsqueda y tabla, vínculo opcional de factura a un úni
 egreso y dos cards de ingresos/egresos del mes actual en Overview. Plan y vistas
 sintéticas, sin implementación. [ADR106 propuesto](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
 separa ownership, consistencia e idempotencia; confirmar OCR requiere ampliar la
-frontera nativa antes de afirmar atomicidad. [TODO CASH-001](TODO.md) sitúa
-CASH-01 en `codex/business-cash-ledger`, desde `origin/development` (`0049b5fc`).
+frontera nativa antes de afirmar atomicidad. Este corte de planificación precede
+el cierre de CASH-01 en `codex/business-cash-ledger`.
 Ficha candidata planned/draft/unregistered/approval:null.
 Ampliación R02: selectores de categoría con X y +/modal de creación rápida;
 duplicados ignorando mayúsculas/espaciados incluso inactivas. Quitar categoría
 de factura retira su egreso al guardar, cambiarla conserva ID. Cierres de caja
 como ingresos manuales; sin ventas automáticas. Drawer y modal se muestran en
-la maqueta actualizada; rev2 Caja/rev57 Negocios siguen como candidatas.
+la maqueta actualizada de las candidatas Caja rev2 y Negocios rev57.
 
 **Negocios: precios redondeados, división y proveedores OCR — solicitud2026-11-17:**
 [Plan94§42](94-business-point-of-sale-and-product-refactor.md#42-precios-de-venta-redondeados-división-local-y-proveedores-ocr--solicitud2026-11-17)

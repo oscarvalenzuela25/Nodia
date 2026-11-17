@@ -1,11 +1,10 @@
 # Caja de Negocios — plan de implementación y propuesta visual
 
-> Fecha: 2026-11-17. Estado: **especificado, con rama de desarrollo abierta**.
-> El usuario solicita abrir una rama nueva para Caja. La rama
-> `codex/business-cash-ledger` parte de `origin/development` (`0049b5fc`). Los requisitos expresos se
-> distinguen de las decisiones recomendadas de este plan. Documento y
-> [ADR106](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
-> propuestos; no se atribuye aprobación documental, migración ni despliegue.
+> Fecha: 2026-11-17. Estado: **CASH-01 cerrado por alcance documental**.
+> Rama `codex/business-cash-ledger` desde `origin/development` (`0049b5fc`).
+> §1 recoge la solicitud. §§3–6 fijan el contrato V1 para implementación.
+> El plan y el [ADR106](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
+> siguen en revisión. La implementación comienza en CASH-02.
 
 > **R02, ampliación2026-11-17:** X para limpiar categoría, + para crearla desde
 > formularios y validación de duplicados independiente de mayúsculas/espaciados.
@@ -79,132 +78,158 @@ Las cards mensuales de Overview son independientes del filtro del tab Caja.
   registrada o su medio «efectivo» no prueba un cobro. Caja no crea ingresos
   automáticos desde ventas ni habilita herramientas IA por esta especificación.
 
-## 3. Decisiones recomendadas para V1
+## 3. Reglas de Caja V1
 
-Estas decisiones completan huecos de la solicitud para hacerla implementable;
-son **propuestas para refinar**, no confirmaciones atribuidas al usuario.
+CASH-01 fija los siguientes criterios técnicos para implementación. Las reglas
+expresas de la solicitud están en §1. Esta definición técnica deja el documento
+y el ADR en revisión.
 
-| Tema | Propuesta y motivo |
+| Tema | Regla |
 | --- | --- |
-| Dinero | CLP enteros positivos, tipo separado `income`/`expense`; cero, negativos y fracciones rechazados. El redondeo a decenas de precios de venta **no se aplica** a Caja ni al total de factura |
-| Precisión | `bigint` en DB y string decimal en transporte/sumas; límite por movimiento propuesto `9999999999999`. Sumar sin pasar por `Number`; validar límites al cerrar CASH-01. Facturas mantienen su rango actual, sin ensancharlo implícitamente |
-| Fecha | `occurred_on` de tipo SQL DATE, `YYYY-MM-DD` válido y rango inclusivo. Hoy y mes de Caja se obtienen con IANA `America/Santiago`, como los períodos del negocio en plan94, sin offset fijo |
-| Fecha de factura | El egreso usa la fecha de emisión civil guardada, sin convertirla como instante. Al vincular exige fecha válida; un histórico sin fecha requiere completarla, sin inventar hoy |
-| Categoría | Nombre y descripción obligatorios, textos de negocio sin traducción dinámica; nombre único por negocio ignorando mayúsculas y espaciados, incluidas categorías inactivas. Límites propuestos: nombre120 y descripción500 caracteres; algoritmo canónico en§6.1 |
-| Actividad de categoría | Desactivar preserva historial y movimientos; impide nuevas asignaciones. Una edición conserva visible la categoría histórica inactiva y permite mantenerla o cambiarla |
-| Descripción de movimiento | Obligatoria en manuales, máximo500; los vinculados muestran referencia legible a factura aun sin folio. La identidad es el ID, nunca el folio |
-| Edición de manuales | Categoría, importe, fecha, descripción y actividad editables con control de versión; tipo inmutable para no invertir silenciosamente el significado |
-| Edición de vinculados | Importe, fecha y origen derivados de factura; cambiar esos campos remite a su formulario. Cambiar categoría desde Caja o factura actualiza la misma relación bajo una política única |
-| Quitar categoría ya vinculada — confirmado R02 | Al guardar null explícito se retira el egreso de Caja y de todos sus resúmenes, incluso listando actividad Todos. No basta con poner `is_active=false`, porque seguiría apareciendo como registro inactivo |
-| Auditoría del retiro — recomendación técnica | Retiro lógico separado de actividad, sin borrar evidencia. Guardar una nueva categoría después del retiro restaura el mismo egreso/ID como efecto vigente activo; no duplica registros |
-| Cambio de total/fecha de factura | Mientras conserve categoría, actualiza el mismo egreso en la transacción de factura y exige total positivo. Sin categoría se conserva la validación nativa de factura; retirar no exige un egreso positivo. No crea un segundo movimiento |
-| Actividad del egreso | Independiente de `invoice.is_active`: inactivar factura no implica anulación financiera. Recategorizar una factura no reactiva un egreso inactivo; se reactiva explícitamente desde Caja |
-| Cambiar negocio de factura vinculada | Rechazarlo en V1; no trasladar dinero/categoría entre negocios implícitamente |
-| Borrado | Acciones de actividad para categorías/movimientos; retiro del efecto de factura al quitar categoría según R02. Ambos conservan auditoría, sin DELETE físico desde UI |
-| Históricos | Sin backfill automático: facturas previas generan egreso sólo ante asignación explícita de categoría. No crear categorías ni movimientos al migrar |
+| Moneda e importe | CLP enteros positivos, de `1` a `9999999999999` por movimiento. En JSON, decimal canónico como string, sin signo, ceros iniciales, exponente ni fracciones. SQL `bigint` por movimiento y suma exacta `numeric`, sin el límite individual. Caja mantiene el monto en pesos enteros |
+| Fecha civil | `occurred_on` SQL DATE, fecha gregoriana real `YYYY-MM-DD` en años 0001–9999. El rango incluye los extremos. Día inicial, limpieza y mes toman `America/Santiago` con fechas civiles |
+| Categoría | Compartida por ingresos y egresos. Nombre y descripción obligatorios. Nombre visible recortado tras NFKC, 1–120 puntos de código, y descripción recortada, 1–500. Unicidad por negocio según §6.1, incluidas inactivas |
+| Actividad de categoría | La inactiva sigue visible en el historial y como selección actual. Se permite guardar la misma categoría de un movimiento vigente. Primera asignación, reasignación y restauración requieren categoría activa. Los movimientos tienen actividad independiente |
+| Movimiento manual | Categoría, importe, fecha y descripción recortada de 1–500 puntos de código. Tipo `income` o `expense` inmutable. Activo al crear por defecto. Se permiten edición y cambio de actividad con revisión |
+| Movimiento de factura | Egreso con total, fecha y categoría editables desde la factura origen. En Caja, Editar abre esa factura y la acción de actividad sólo cambia el movimiento. La referencia se compone del ID y folio actual. Folio nulo muestra «Sin folio» en Client |
+| Actividad y retiro | La factura y su egreso conservan actividad independiente. Retirar una categoría al guardar oculta el egreso incluso con Todos. Restaurar reactiva el mismo ID. Cambiar datos de un egreso vigente conserva su actividad |
+| Historia | Sin borrado en UI ni backfill financiero. La factura con un egreso vigente o retirado permanece en su negocio para conservar la relación histórica. Facturas sin historia conservan la política nativa de transferencia |
 
-La fecha inicial local del formulario de factura existente no se modifica por
-este plan. Caja y Overview muestran explícitamente el período usado para que
-«hoy» y «mes actual» sean comprobables. Un cambio futuro de zona del negocio
-necesitaría contrato persistido; no se supone que ese campo existe actualmente.
+## 4. Modelo lógico y garantías
 
-## 4. Modelo propuesto y garantías
-
-Recursos verticales nuevos, dentro de Nodia Server, sin microservicio:
-
-| Recurso | Campos principales propuestos |
+| Recurso | Identidad y campos necesarios |
 | --- | --- |
-| `business_cash_categories` | `id` bigint, `business_id` UUID, `name`, `normalized_name`, `description`, `is_active` true, `version`, auditoría de actor/fechas; clave normalizada administrada por Server |
-| `business_cash_movements` | `id` UUID, `business_id`, `category_id` NOT NULL, `type`, `amount` bigint CHECK positivo, `occurred_on` DATE, `description`, `source` manual/invoice, `invoice_id` nullable, `is_active` true, `withdrawn_from_invoice` false, `version`, auditoría |
-| Recibos de guardado identificados | Clave de operación UUID, actor/negocio/operación, fingerprint del comando, estado y resultado persistidos para recuperar respuestas perdidas sin repetir efectos |
+| `business_cash_categories` | `id` bigint, `business_id` UUID, `name`, `normalized_name` privado, `description`, `is_active`, versión, autor y fechas de alta/edición |
+| `business_cash_movements` | `id` UUID, `business_id` UUID, `category_id` bigint obligatorio, `type`, `amount`, `occurred_on`, `description` nullable sólo para origen factura, `source` manual/invoice, `invoice_id` bigint nullable, `is_active`, `withdrawn_from_invoice`, versión y auditoría |
+| Auditoría de movimientos | Apéndice transaccional por movimiento y nueva versión, con negocio, actor, instante, operación y campos de Caja antes/después. Registra alta, modificaciones, actividad, retiro y restauración. Sin copiar archivo, JSON de factura ni datos de inferencia |
+| Recibo | Una fila por negocio/actor/`request_key`, con operación, versión de contrato, hash, estado y resultado mínimo según §6.2. El estado de staging se vincula con la intención recuperable de `invoice_uploads` |
+| Facturas | Columna de versión inicializada a 1 para facturas nuevas e históricas, sin crear movimientos. Todos los escritores que cambian la fila incrementan la versión. Cambiar la categoría vigente también incrementa la versión de factura |
 
-Invariantes en DB y dominio:
+- Usar FK compuestas categoría/negocio y factura/negocio. La clave de factura
+  es única en movimientos de origen factura, incluso inactivos o retirados.
+  Constraints restringen tipo, importe, origen, nulabilidad y retiro. Sólo
+  origen factura admite `invoice_id` y retiro. Ese origen siempre es egreso.
+- Versiones enteras positivas de 32 bits. Altas comienzan en 1 y cambios
+  efectivos incrementan la revisión. Guardar sin cambios con revisión vigente confirma
+  el resultado existente, sin incrementar versión ni insertar otra auditoría.
+- Indexar inicialmente negocio/actividad/fecha/ID y negocio/categoría/fecha/ID
+  para movimientos vigentes, además de las claves únicas y FKs. Guiar índices
+  de búsqueda adicionales con EXPLAIN y volumen sintético en CASH-03.
+- Actor y negocio se resuelven en Server. El cliente no escribe propietario,
+  versión resultante, origen, ID de factura en Caja, clave canónica o retiro.
 
-1. FK compuesta categoría/negocio y factura/negocio: referencias de otro negocio
-   inválidas aun si el actor tiene acceso a ambos.
-2. Un único movimiento con origen factura por `invoice_id`, incluso inactivo o
-   retirado. Retiro y posterior asignación conservan identidad e historial.
-   Constraint de coherencia: origen invoice implica tipo expense e invoice_id;
-   manual no puede declarar un invoice_id arbitrario.
-3. Cambiar categoría de factura bloquea la misma factura/movimiento; creación
-   concurrente no duplica el vínculo. La revisión obsoleta devuelve409.
-4. Categoría desactivada durante la confirmación se valida dentro de la misma
-   frontera de autoridad/transacción. Revalidar membresía actual, no un rol cacheado.
-5. Toda suma/conteo y búsqueda lleva scope SQL del negocio y excluye efectos
-   retirados, independientemente del filtro de actividad. Nada de fetch por
-   fila ni sumar sólo los productos/movimientos visibles. La auditoría retirada
-   no es un movimiento inactivo recuperable desde el selector Todos.
-6. Índices iniciales: negocio/actividad/fecha/id y negocio/categoría/fecha/id;
-   unique del vínculo y `(business_id, normalized_name)`, incluyendo inactivas.
-   El DTO no acepta la clave normalizada del cliente. Confirmar planes EXPLAIN con
-   volúmenes sintéticos antes de añadir índices de búsqueda costosos.
-7. Orden de locks compatible con autoridad y negocio existentes; concretar en
-   CASH-01 el orden global de factura/productos/categoría/movimiento y probar
-   concurrencia antes de cerrar la integración.
+## 5. Contrato HTTP V1 de Caja
 
-El registro de cambios debe conservar actor, revisión y valores anteriores/nuevos
-de operaciones de dinero. Editabilidad no equivale a un libro fiscal inmutable.
+Los endpoints de esta sección se implementan en CASH-02…04. Los nuevos
+controladores y alias listados se registran explícitamente bajo el destino
+`/business` en la política HTTP. Todas las peticiones requieren sesión y
+autorización al negocio actual, como propietario, colaborador activo o
+super_admin. Un recurso ajeno y uno inexistente comparten respuesta 404.
+El acceso a dos negocios no autoriza una referencia cruzada. Ver
+[plan89](89-module-access-and-user-data-scope.md#contratos-y-barreras) y
+[ADR092](../architecture/decisions/ADR-092-stable-module-navigation-routes.md).
 
-## 5. Contratos HTTP propuestos, no disponibles actualmente
-
-| Método / ruta candidata | Función |
+| Método y ruta | Entrada y resultado |
 | --- | --- |
-| GET `/business-cash-categories` | Listado paginado/buscable por negocio y actividad; selector y Drawer usan el mismo contrato |
-| POST `/business-cash-categories` | Crear categoría con clave de idempotencia |
-| PUT `/business-cash-categories/:id` | Editar o activar/desactivar con `expected_version` |
-| GET `/business-cash-movements` | Devuelve página, metadatos y summary filtrado consistente |
-| GET `/business-cash-movements/:id` | Detalle autorizado y origen/vínculo, útil para edición/recuperación |
-| POST `/business-cash-movements` | Crear movimiento manual con clave de idempotencia |
-| PUT `/business-cash-movements/:id` | Edición permitida o actividad, con revisión esperada y restricciones por origen |
-| POST/PUT `/invoices[/:id]` existentes | Añadir `cash_category_id` opcional; factura+egreso dentro de una sola transacción |
-| POST de confirmación OCR, ruta por cerrar en CASH-01 | Comando revisado de factura/productos + categoría opcional + operación identificada + referencia de archivo preparado |
+| GET `/business-cash-categories` | `page`, `limit`, `q` de categorías. Devuelve `{data: Category[], meta}` |
+| GET `/business-cash-categories/:id` | Detalle de categoría autorizada, incluso inactiva |
+| POST `/business-cash-categories` | Cuerpo `{request_key, business_id, name, description, is_active?}`. 201 y resultado identificado |
+| PUT `/business-cash-categories/:id` | Cuerpo `{request_key, expected_version, name?, description?, is_active?}`. Al menos un campo editable. 200 y resultado identificado |
+| GET `/business-cash-movements` | `page`, `limit`, `q` de movimientos. Devuelve `{data: Movement[], meta, summary}` |
+| GET `/business-cash-movements/monthly-summary?business_id=…` | Sólo negocio. Devuelve `{period: {from, to, time_zone}, summary}` para activos del mes civil actual. Ruta estática antes de `:id` |
+| GET `/business-cash-movements/:id` | Detalle vigente, incluso inactivo. Retirados devuelven 404 |
+| POST `/business-cash-movements` | Cuerpo `{request_key, business_id, type, category_id, amount, occurred_on, description, is_active?}`. Tipo y origen validados por Server, origen manual. 201 y resultado identificado |
+| PUT `/business-cash-movements/:id` | Cuerpo `{request_key, expected_version, category_id?, amount?, occurred_on?, description?, is_active?}`. Al menos un campo editable. Para vinculados sólo `is_active`. 200 y resultado identificado |
+| GET `/businesses/:businessId/cash-mutation-requests/:key` | Recibo del actor y negocio actuales, incluidas operaciones de factura descritas en §6.2. Respuesta 200 con estado y `Cache-Control: no-store` |
 
-GET sigue `Get*Dto -> Filter*Dto -> RANSACK_POLICIES -> applyRansack`.
-Allowlist candidata para movimientos: `business_id_eq` obligatorio,
-`category_id_eq`, `occurred_on_gteq`, `occurred_on_lteq`, `is_active_eq`, `s` y
-`q.search` acotado a descripción/referencia/categoría. `search` es un filtro de
-dominio parametrizado antes del builder común, siguiendo el precedente de
-productos; no permitir columnas/SQL/joins enviados por el cliente. Categorías:
-negocio, actividad, `name_cont` y orden permitido.
+En creación, `is_active` omitido implica `true`. En PUT parcial los campos
+omitidos se conservan. Los campos editables de Caja de estas rutas no aceptan
+`null` ni strings en lugar de booleanos JSON. Campos fuera del DTO se rechazan.
+`business_id` y `request_key` son UUID, igual que el ID de movimiento.
+IDs bigint viajan como strings de dígitos, de `1` a `9223372036854775807`
+sin ceros iniciales. Los parámetros de ruta se validan antes de consultar.
+Los PUT resuelven el negocio por la fila y el recibo conserva ese ámbito.
 
-Ejemplo de intención inicial (serialización por el Axios compartido):
+**Proyecciones**
 
-```text
-GET /business-cash-movements?page=1&limit=10
-  &q[business_id_eq]=<negocio>
-  &q[occurred_on_gteq]=2026-11-17
-  &q[occurred_on_lteq]=2026-11-17
-  &q[is_active_eq]=true
-```
+- `Category`: `{id, business_id, name, description, is_active, version}`.
+- `Movement`: `{id, business_id, category_id, category: {id, name, is_active}, type, amount, occurred_on, description, is_active, version, source, invoice}`.
+  `invoice` es null en manuales y `{id, code}` en originados por factura.
+  `code` puede ser null. En origen factura `description` es null. Una categoría
+  histórica inactiva llega en la proyección para poder mostrarla al editar.
+- `summary`: `{currency: "CLP", income: {count, total_amount}, expense: {count, total_amount}}`.
+  Los conteos y `meta` se proyectan como enteros JSON seguros, con comprobación
+  explícita antes de convertir. Los totales son strings, incluido `"0"`.
+  `period.from` y `period.to` son fechas civiles inclusivas y `time_zone` es
+  `"America/Santiago"`. Error de lectura conserva su condición de error.
 
-Las fechas del ejemplo son sintéticas. Defaults los envía explícitamente Client;
-en GET omitir actividad significa sin predicado (Todos), no true implícito.
-Limpiar restaura hoy/Activo/todas las categorías; limpiar search restaura texto
-vacío. Aplicar/quitar filtros o cambiar search reinicia página. Reabrir/redimensionar
-conserva la selección aplicada. Rechazar fechas imposibles, inicio>fin, booleanos
-inválidos, campos/sort no permitidos y límites de paginado fuera del contrato.
+**Filtros y orden**
 
-Respuesta conceptual:
+Mantener el adaptador Ransack, con DTOs cerrados y política por recurso
+según [ADR010](../architecture/decisions/ADR-010-ransack-query-policies.md).
+Abrir `q` sólo tras validar la envolvente. `q[business_id_eq]` UUID es
+obligatorio. Las listas admiten `page` 1–100000, `limit` 1–100, defaults
+1/10 como el resto de Negocios y el tope de Ventas. No admiten `all`,
+`includes` ni `size`. Arrays, claves repetidas, null, operadores no listados,
+orden vacío y booleanos distintos de `true`/`false` producen 400.
+
+| Recurso | Campos de `q` además de negocio | Orden `q[s]` |
+| --- | --- | --- |
+| Categorías | `is_active_eq`, `name_cont` literal recortado, hasta 255 puntos de código | `name asc` o `name desc`, mapeado a la clave de nombre de Server, con ID asc de desempate. Default `name asc` |
+| Movimientos | `category_id_eq`, `occurred_on_gteq`, `occurred_on_lteq`, `is_active_eq`, `search` literal hasta 255 puntos de código, recortado | `occurred_on asc`, `occurred_on desc`, `amount asc` o `amount desc`. ID en la misma dirección como desempate. Default `occurred_on desc` |
+
+Un rango puede tener un solo extremo. Si se envían ambos, desde ≤ hasta.
+`q[search]` aplica OR entre descripción, nombre de categoría y folio/ID de
+factura como texto. Escapar `%`, `_` y `!` como literales con parámetros y
+agrupar el OR dentro de los filtros de negocio. Una búsqueda vacía tras
+recortar se omite. El filtro por un ID válido de categoría ajena o ausente
+devuelve cero coincidencias en un negocio autorizado. La asignación a ese ID sí
+falla con 404. Client codifica comas como `%2C` para el parser `qs` con
+`comma:true` y conserva `false` en la serialización de actividad.
+
+La pantalla usa `ActiveStatusSelect` y envía hoy en ambos extremos y activo
+al entrar o limpiar filtros.
+Todos omite `is_active_eq`. Una lectura HTTP sin filtro de fecha cubre todo el
+período. La lista de selección para una asignación nueva pide sólo activas.
+el filtro de movimientos puede buscar categorías activas e inactivas. Aplicar,
+quitar filtros o cambiar el buscador reinicia página y conserva los demás
+criterios aplicados. Reabrir o redimensionar conserva filtros y borrador.
+
+Usar el mismo conjunto filtrado y autorizado para página, metadatos y totales
+en **una sentencia SQL**. El predicado excluye retirados tanto en página como
+en count/sum. El agregado se calcula antes de paginar y sigue disponible al
+pedir una página sin filas. Usar un CTE equivalente al
+[precedente de Ventas](../../nodia-server/src/sale/use-case/read-sales.use-case.ts)
+y reutilizar la agregación para Overview, que aplica activos y mes de Santiago
+con una única fecha civil de referencia del Server. Ejemplo sintético vacío:
 
 ```json
 {
   "data": [],
   "meta": { "page": 1, "limit": 10, "total_items": 0, "total_pages": 0 },
   "summary": {
+    "currency": "CLP",
     "income": { "count": 0, "total_amount": "0" },
-    "expense": { "count": 0, "total_amount": "0" },
-    "currency": "CLP"
+    "expense": { "count": 0, "total_amount": "0" }
   }
 }
 ```
 
-Conservar la convención vigente de `meta` y PaginationQueryDto/servicios al
-implementar. Página, count y sums deben provenir del mismo snapshot autorizado
-(consulta única o transacción de lectura consistente, no tres READ COMMITTED
-independientes). La página vacía conserva summary correcto. Overview reutiliza
-el agregador con activos y primer/último día del mes actual, sin search ni
-categoría del tab Caja; puede pedir `limit=1` sin descargar el libro completo.
-No almacenar contadores duplicados en Business ni lanzar una consulta por card.
+**Errores públicos**
+
+| HTTP | Contrato para Client |
+| --- | --- |
+| 400 | DTO, asociaciones mal formadas, campo inmutable o comando vacío. Para regla de importe/fecha de vínculo usar `business:cash_invoice_invalid_amount` / `business:cash_invoice_invalid_date`. Mantener el envelope común de validación |
+| 401 / 403 | Sesión no válida o falta de destino activo/asignado. Usar errores de Auth/ModuleAccess existentes |
+| 404 | `business:resource_not_found` en negocio, instancia o asociación ausente/ajena. Un recibo válido ausente dentro del negocio visible se reporta `unconfirmed` |
+| 409 | `business:cash_category_name_exists`, `business:cash_category_inactive`, `business:cash_version_conflict`, `business:cash_request_key_conflict`, `business:cash_invoice_review_required`, `business:cash_invoice_transfer_not_allowed`. Los conflictos de producto conservan el contrato de Productos |
+| 413 | Límite de bytes multipart. El contenido/MIME incompatible conserva la validación 400 de Facturas |
+| 503 | Dependencia temporalmente indisponible antes de poder confirmar el resultado. Tras incertidumbre consultar recibo y conservar intención/borrador |
+
+Los códigos de dominio se entregan como `message` traducible, sin incluir
+mensajes SQL/SDK ni datos ajenos. Un 409 de revisión exige leer el recurso
+actual, presentar diferencias y confirmar otra intención. El error conserva
+el borrador y se notifica en ES/EN.
 
 ## 6. Facturas, OCR e idempotencia
 
@@ -213,12 +238,12 @@ Semántica de `cash_category_id`:
 | Situación | Resultado esperado |
 | --- | --- |
 | Alta sin categoría | Factura sin egreso |
-| Edición sin enviar el campo | Conserva relación/categoría; no crea ni elimina efectos implícitos |
+| Edición sin enviar el campo | Conserva vínculo y categoría. Si el vínculo está vigente, un cambio de total o fecha sincroniza el mismo egreso mediante guardado identificado y revisado |
 | Primera asignación válida | Crea exactamente un egreso con total/fecha de esa factura |
 | Asignación repetida o reintento | Mismo egreso, sin duplicado |
 | Cambio de categoría de egreso vigente | Mismo ID de egreso, nueva categoría, actividad intacta |
-| Campo null/vacío sin vínculo | Sigue sin egreso |
-| Campo null/vacío con egreso vigente — R02 | Retira ese egreso al guardar; sale de lista, conteos y totales diarios/mensuales, también con actividad Todos |
+| Null explícito sin vínculo o con vínculo ya retirado | Conserva la ausencia de un egreso vigente |
+| Null explícito con egreso vigente — R02 | Retira ese egreso al guardar. Sale de lista, conteos y totales diarios/mensuales, también con actividad Todos |
 | Categoría después de un retiro | Restaura el mismo ID como egreso vigente activo, con importe/fecha actuales; no duplica |
 | Categoría ajena/inactiva nueva o fecha/importe inválidos al crear/mantener/restaurar egreso vigente | Falla la escritura completa; conserva borrador y estado anterior. Sin categoría o al retirarla, aplicar validación nativa de factura, incluido total0 |
 
@@ -243,22 +268,23 @@ categoría/importe/actividad y guardar factura/efecto/recibo en una transacción
 El total positivo y fecha válida son requisitos del egreso vigente; retirar la
 categoría de una factura de total0 no debe quedar bloqueado por esa regla.
 
-La retirada lógica es una recomendación de implementación para cumplir la
-eliminación observable pedida sin perder auditoría, no una capacidad ya existente.
+La retirada lógica conserva la auditoría y cumple la eliminación observable
+pedida. La implementación de esta regla corresponde a CASH-04.
 
 ### 6.1. Nombre único y creación rápida de categorías — R02
 
-La comparación ignora mayúsculas y espacios de cualquier posición, no sólo
-trim. Contrato propuesto: normalización Unicode NFKC, minúsculas con regla
-española determinista y eliminación de whitespace Unicode (incluido FEFF).
-Se conservan acentos: no inventar equivalencia entre palabras diferentes.
-`Mercadería`, ` MERCADERÍA ` y `Mer ca dería` producen la misma clave.
-El nombre visible puede conservar separación legible; no usar la descripción
-como identidad. Rechazar nombre vacío/espacios. Verificar este contrato común en
-Server y fixture Client, sin confiar en el control preventivo de la UI.
+La clave canónica aplica NFKC, quita `\p{White_Space}` y U+FEFF en cualquier
+posición, convierte a minúsculas con `toLocaleLowerCase('es')` y aplica NFKC
+final. Quitar espacios primero mantiene equivalentes `ΟΣ` y `Ο Σ` al evaluar
+la sigma final. Los acentos se conservan. `Mercadería`, ` MERCADERÍA ` y
+`Mer ca dería` producen la misma clave. El nombre visible conserva separación
+legible. Rechazar clave vacía, más de 1024 bytes UTF-8, NUL y sustitutos Unicode
+inválidos. Validar texto también en Server aunque Client haga comprobaciones
+preventivas.
 
-Persistir clave canónica privada calculada por Server y constraint unique por
-negocio; conflicto concurrente o nombre de categoría inactiva devuelve409 con
+Persistir clave privada calculada por Server y constraint unique por negocio
+con colación determinista `C`. Conflicto concurrente o categoría inactiva con
+el mismo nombre devuelve 409 con
 mensaje traducible `business:cash_category_name_exists`. El modal conserva
 nombre/descripción y permite corregir; no seleccionar ni reactivar una categoría
 ajena/inactiva silenciosamente. Drawer y modal usan el mismo caso de uso.
@@ -272,32 +298,250 @@ el catálogo. Al cancelar/error no cambiar la selección anterior. Un solo overl
 activo: suspender/restaurar el editor de movimiento al abrir creación rápida,
 sin dos focus traps ni descarte del borrador. No agregar + a filtros de consulta.
 
-La X reutiliza `SelectSingleInput` con `clearable` (ya soportado en Client), con
-nombre accesible y área táctil44px. En factura/OCR limpia el campo opcional; en
-ingreso/egreso manual permite limpiar el borrador pero guardar exige otra categoría.
+La selección reutiliza `SelectSingleInput` y la X es un control hermano del
+disparador, con nombre accesible y área táctil de 44 px. Enter/Espacio limpia
+sin abrir la lista y devuelve el foco al disparador al desaparecer la X. El
+control interno actual es más pequeño y comparte el evento del disparador.
+En factura/OCR limpia el campo opcional. En ingreso/egreso manual permite
+limpiar el borrador pero guardar exige otra categoría.
 Acotar esta entrega a los selectores de categoría; no se cambia globalmente la
 semántica de actividad u otros selects de la aplicación.
 
-### 6.2. Confirmación identificada y recuperación
+### 6.2. Factura manual, revisiones y compatibilidad
 
-Factura manual: ampliar casos de uso existentes para que factura y egreso
-confirmen juntos; usar el protocolo de archivo recuperable actual. Repetir una
-misma intención con igual clave/fingerprint devuelve recibo anterior; la misma
-clave con otro cuerpo produce409. No usar folio como clave porque es opcional.
+Conservar `POST /invoices`, `PUT /invoices/:id` parcial y sus alias
+`/invoice`. Identificar el contrato nuevo con `request_key` UUID en el
+cuerpo. El POST acepta JSON o multipart existente con un archivo opcional.
+El PUT recibe JSON y exige `expected_version` junto a `request_key`.
+En multipart, `cash_category_id` acepta el ID decimal o el token exacto
+`null`. En JSON acepta string decimal o null. El campo ausente permanece ausente.
+El valor vacío del selector se serializa como null. La API rechaza `""`.
+`cash_category_id` sin `request_key`, o `expected_version` sin intención
+identificada, produce 400. Un PUT con `request_key` y sin revisión, o un POST
+que envíe `expected_version`, también produce 400.
 
-OCR: preparar archivo antes de la transacción y enviar una confirmación nativa
-identificada que prevalide todos los comandos revisados y conserve CAS de los
-productos existentes. Dentro de SQL: factura, productos/logs, egreso y recibo
-confirman juntos, o ninguno. R2/inferencia nunca dentro del lock/transacción.
-Conservar el borrador de revisión y su identidad; un timeout muestra resultado
-desconocido hasta consultar recibo, sin recrear factura o repetir análisis.
+Las lecturas nativas de factura incorporan `version` positiva y
+`cash_expense: {movement_id, category: {id, name, is_active}} | null`.
+Se proyecta en consulta por conjunto. El valor es null si no hay egreso
+vigente. `is_active` dentro de `category` describe la categoría. La
+actividad del egreso se consulta en Caja y se cambia con su propia versión.
+Mutaciones identificadas devuelven recibo según §6.4. Las no identificadas
+conservan la forma de respuesta anterior. El editor obtiene la versión de la
+lectura que mostró y elige la clave al confirmar.
 
-Esta es una **garantía por implementar en CASH-04**, no una propiedad del flujo
-actual. No habilitar la integración OCR con Caja como entrega terminada sin
-haber probado commit, rollback, concurrencia y respuesta perdida. Los clientes
-anteriores siguen usando su contrato vigente y no generan egresos ocultos.
+Los campos nativos de factura continúan conservando nombre y significado. Los
+DTO de escritura identificada validan estrictamente los campos presentes,
+incluido `total_amount` entero 0–2147483647, código nullable recortado de
+hasta 255, proveedor nullable y `data` como objeto. Enviar `data` reemplaza
+el objeto completo como en la ruta actual. Omitirlo lo conserva. Un archivo
+nuevo usa el staging nativo. Referencias nativas a almacenamiento siguen
+sujetas al contrato existente de Facturas. En la confirmación OCR el archivo
+se obtiene exclusivamente de la parte `file`. El PUT identificado mantiene
+el negocio de origen. Enviar otro `business_id` sin historia de egreso
+produce 400 en ese contrato. El cliente anterior puede trasladar una factura sin
+historia de egreso según el contrato previo. Si existe historia, vigente o
+retirada, el traslado devuelve 409 aun para super_admin.
 
-## 7. Diseño y responsive para refinar
+El [DTO parcial vigente](../../nodia-server/src/invoice/dto/update-invoice.dto.ts)
+hereda defaults de creación. Materializar el DTO con sólo `code` también
+materializa total 0, ruta vacía, datos vacíos y activo true. CASH-04 debe
+capturar presencia antes de transformaciones/defaults para todo escritor
+nativo, conservar campos omitidos y calcular el candidato efectivo bajo lock.
+Validar fecha de egreso sólo desde `data.issue_date` persistida/candidata. El
+fallback de fecha de creación usado por listados de Facturas queda fuera de
+esta decisión. Guardado sin vínculo y retiro explícito admiten total 0 y se
+rigen por la validación nativa cuando no hay egreso vigente.
+
+La comprobación se aplica en el punto común antes de guardar la factura y
+después de adquirir su lock. Cualquier cliente legado que trate de cambiar
+total o fecha civil efectiva de un egreso vigente recibe 409
+`business:cash_invoice_review_required`. Omitir el campo de categoría en un
+PUT identificado permite sincronizar total/fecha ya revisados conforme a la
+matriz. El formulario muestra el efecto vigente y el cambio de total/fecha o
+el retiro antes de confirmar. Actualizar metadatos compatibles, incluido
+`invoice.is_active`, conserva el egreso. La revisión se compara antes de
+escribir cualquier efecto y después de comprobar si ya existe un recibo igual.
+
+**NodiaAI y compatibilidad de propuestas.** La procedencia se fija desde el
+coordinador de Server al entrar al escritor común. El body, `data`, la
+presencia de un manager, super_admin o el modo/proveedor carecen de esa
+autoridad. Comprobar elegibilidad al preparar la propuesta y al preparar su
+archivo. Al aplicar, releer el vínculo bajo lock. Bloquear
+cambios a monto/fecha de egreso vigente, incluido inactivo, y traslado con
+cualquier historia de egreso. Comparar valores efectivos: reemplazar `data`
+y perder `issue_date` cuenta como cambio. Las propuestas previas
+incompatibles reciben `nodia_ai:preconditions_changed` del ciclo de ejecución
+existente, con orientación al editor manual donde corresponda y sin
+reanudación. Mantener forma/hash/recibos firmados y proyecciones antiguas.
+Operaciones sin efecto de Caja conservan su alcance, sin publicar campos de
+Caja como contexto o herramientas. Aplicar también §26 de
+[Negocios94](94-business-point-of-sale-and-product-refactor.md).
+
+### 6.3. Confirmación de productos desde OCR
+
+`POST /invoices/ocr-confirmations` y alias `/invoice/ocr-confirmations`.
+Recibe exactamente una parte `command` JSON UTF-8 de hasta 1 MiB y una parte
+`file` de hasta 10 MiB, con el validador actual PDF/PNG/JPEG/WebP por contenido.
+Aplicar límites al parser multipart antes de materializar datos y rechazar
+partes extra o repetidas antes de staging.
+`command` contiene `{request_key, business_id, invoice, items}`.
+`invoice` admite `{provider_id?, code?, total_amount, issue_date?, cash_category_id?}`,
+con proveedor/folio/categoría/fecha opcionales y null admitido. El total sigue
+el rango entero de Facturas. La factura nueva queda activa. El archivo, la
+ruta y los metadatos de revisión persistidos se resuelven en Server.
+Si el OCR carece de fecha, conservar esa ausencia en la revisión y pedir
+fecha civil si se asigna categoría. Se mantiene el default de hoy del
+formulario manual de factura, que es otro recorrido.
+
+`items` tiene 1–500 filas. El límite de filas y bytes acota validación y
+duración de una operación SQL indivisible. Rechazar exceso antes de R2.
+Cada fila tiene `kind`, `line` y datos de catálogo según la tabla.
+`line` conserva `{invoice_code, name, alias, alias_reviewed, cost_price, quantity}`
+revisados. `invoice_code` admite null. El alias revisado es texto no vacío
+y `alias_reviewed` es true, como exige la revisión actual. Cantidad es un
+número finito no negativo y puede ser fraccionaria. El costo de la línea es
+entero entre 0 y 2147483647, como los precios de Productos. A partir de estas
+filas, Server deriva `items_count` y `extracted_items` compatibles con la
+revisión OCR actual. Cantidad pertenece al snapshot, sin transformarla en
+stock ni activar una actualización de inventario adicional.
+
+| `kind` | Campos de la fila y regla de escritura |
+| --- | --- |
+| `create` | `product: {code, name, alias, cost_price, cost_price_tax, sale_price, is_active}`. Server añade negocio y proveedor de factura, con `has_stock: true` |
+| `update` | `product_id` bigint, `expected_version`, y el mismo objeto `product`. Actualiza los campos enviados por el flujo automático y el proveedor de factura. Conserva `has_stock` y demás campos ajenos |
+| `manual_match` | `product_id` bigint, `expected_version`, `changes` no vacío con sólo `code`, `name`, `alias`, `cost_price`, `cost_price_tax`, `sale_price` seleccionados. Conserva los demás campos, incluido proveedor, actividad y disponibilidad |
+
+Cuando el catálogo recibe `name`, `alias` o `cost_price`, su valor normalizado
+debe coincidir con el de `line`. `invoice_code` conserva la referencia de la
+factura y puede diferir del código de catálogo en un vínculo manual. Server
+deriva el destino y `selected_update_fields` de la fila validada.
+
+En este flujo de alta, el código de catálogo es obligatorio. Para ediciones
+se conserva la semántica de código nullable de Productos. Nombre, códigos y
+alias de catálogo se acotan a 255 caracteres. Los campos de catálogo están
+sujetos a [Productos](../../nodia-server/src/product/dto/create-product.dto.ts)
+y al redondeo de venta del [plan94 §42](94-business-point-of-sale-and-product-refactor.md#42-precios-de-venta-redondeados-división-local-y-proveedores-ocr--solicitud2026-11-17).
+Mostrar valores normalizados antes de confirmar. Rechazar identificadores o
+versiones inválidas, IDs destino repetidos y códigos de catálogo no vacíos
+repetidos en las filas revisadas, comparados tras trim y minúsculas, antes de
+staging. Revalidar estado, pertenencia,
+unicidad y CAS con los locks en SQL. Reutilizar las validaciones y casos de
+uso nativos con el mismo manager, manteniendo los campos no seleccionados y
+los logs. `use_ocr` sigue controlando sólo el selector. No aceptar caminos
+R2, respuestas de inferencia como autorización o campos fuera del DTO.
+
+El resultado confirmado registra factura, filas de producto, logs, egreso
+opcional y auditoría/recibo en una única transacción. La pantalla migra al
+endpoint compuesto para toda confirmación, con o sin categoría. Las rutas
+antiguas conservan sus contratos separados. Si el endpoint compuesto falla,
+la UI conserva el borrador y no vuelve a las tres peticiones ni repite el
+análisis. La ruta y el selector OCR se habilitan juntos tras los gates de
+CASH-04 y CASH-06.
+
+### 6.4. Recibos, archivos y orden de locks
+
+**Identidad y respuesta.** Aplicar el precedente de
+[mutación de Ventas](../../nodia-server/src/sale/use-case/mutate-sale.use-case.ts)
+para la identidad `(business_id, actor_id, request_key)` y resolverla antes
+del CAS. El hash fijo v1 cubre operación, destino, revisión esperada, comando
+normalizado y, si aplica, SHA-256 de los bytes de archivo y su tipo validado.
+Distinguir campos omitidos de null explícito en updates, excluir la propia
+clave, ruta y metadata interna, conservar el orden de las filas. Derivar
+actor/ámbito de sesión y recurso. Canonicalizar propiedades de objetos, IDs,
+textos y defaults del comando mediante la misma función de validación previa
+en cada intento. Resolver el recibo con la autoridad actual antes de revisar
+CAS, categoría o estado del producto para un efecto nuevo. Una clave
+vinculada a otro hash u operación devuelve 409.
+Al confirmar otra intención después de un error definitivo se usa nueva clave.
+
+La respuesta exitosa identificada es
+`{request_key, status: "committed", operation, result}`. Las operaciones son
+`category_create`, `category_update`, `movement_create`, `movement_update`,
+`invoice_create`, `invoice_update` e `invoice_ocr_confirm`. El resultado
+de categorías es `{category: Category}` y el de movimientos `{movement: Movement}`
+según §5. Facturas devuelven `{invoice_id, invoice_version, cash_movement_id}`,
+con ID de movimiento null si no queda vigente. OCR añade `products` en orden
+de las filas, con `{id, version}` por producto. El recibo histórico devuelve
+los mismos datos confirmados, no el estado de una edición posterior. Para
+mostrar datos actuales se vuelve a consultar el recurso.
+
+| Estado en GET | Semántica y recuperación |
+| --- | --- |
+| `unconfirmed` | Sólo `{request_key, status}`. Ausencia de recibo visible, sin prueba de rollback. Conservar clave y borrador, volver a consultar o reenviar la misma intención exacta |
+| `processing` | `{request_key, status, operation}`. Otro intento mantiene la concesión. POST/PUT igual devuelve 202 con esa misma forma, sin ejecutar otra vez |
+| `committed` | Devuelve el recibo indicado arriba. POST/PUT igual recupera recibo y código de éxito original, 201 para altas/OCR o 200 para edición |
+| `rejected` | `{request_key, status, operation, error: {status_code, message}}`. Fallo definitivo confirmado sin efectos. Reenvío igual devuelve el mismo error público |
+| `retryable` | `{request_key, status, operation}`. Fallo transitorio comprobado o concesión vencida. Autoriza reintento explícito del mismo comando con la misma clave, bajo un nuevo intento identificado |
+
+GET comprueba sesión, módulo y negocio actuales incluso para recibos previos.
+Sólo el actor original puede recuperarlos, también si fue super_admin. Otra
+persona dentro de un negocio visible recibe `unconfirmed` para esa clave.
+Mantener identidad y resultado durante la conservación del registro asociado.
+Una eventual poda de payload exige mantener el marcador de deduplicación y
+su criterio de recuperación. V1 no incluye una purga que vuelva reutilizable
+una clave ya consumida.
+
+**Staging y resultado incierto.** Reservar en transacción corta y autorizada
+la identidad/hash y un intento con concesión de 120 s según reloj SQL.
+Antes de PUT a R2, persistir `invoice_uploads` para una clave privada de ese
+intento y validar archivo. El límite actual de PUT R2 es 60 s y la limpieza
+conserva la gracia nativa de 10 min. Confirmar SQL sólo si el recibo sigue
+perteneciendo al intento y la intención de archivo está vigente, preparada y
+sin limpieza iniciada. Consumirla en el commit de factura+efectos+recibo.
+Liberar toda transacción antes de R2. Revalidar autoridad antes de reservar y
+dentro de la confirmación. Tras expiración, un reintento reclama el recibo
+bajo lock y usa un intento y clave de archivo nuevos. El anterior queda
+cercado y su intención se reconcilia. Comprobar el cercado también antes de
+sellar el estado terminal, para evitar que un intento viejo sobrescriba al
+nuevo. Una excepción de COMMIT no marca rechazo ni limpia a ciegas. Releer
+primero el recibo y la pertenencia del archivo. El worker reutiliza el patrón
+[de recuperación de Facturas](../../nodia-server/src/invoice/use-case/recover-invoice-uploads.use-case.ts),
+comprueba adjunto persistido y conserva protección frente a un PUT tardío.
+El recibo público sólo expone su proyección. Client conserva el comando y
+archivo de la intención mientras está pendiente y puede retener en sesión
+únicamente la identidad mínima para releer el recibo tras recargar. Si no
+dispone del comando/archivo original, permite recuperar el estado y exige
+reconstruir la misma intención para reenviar con esa clave.
+
+**Orden de persistencia.** Para operaciones que comparten recursos usar
+`READ COMMITTED`, el mismo manager y el siguiente orden, omitiendo filas
+que la operación no toca:
+
+1. Barrera de autoridad común SHARE, actor/sesión actuales y revalidación de
+   módulo destino `/business` con el manager. Bloquear todos los negocios
+   por UUID ascendente FOR SHARE y releer la pertenencia después, en otra
+   sentencia. Reutilizar el patrón [sale-authority](../../nodia-server/src/sale/sale-authority.ts).
+2. Recibo propio FOR UPDATE y, si el intento nativo staged tiene archivo,
+   su intención privada FOR UPDATE. El recolector toma sólo su intención,
+   libera SQL antes de R2 y no adquiere locks de factura/negocio mientras la
+   retiene. Los cercados de ejecución/archivo conversacionales siguen en su
+   propio protocolo y no comparten estas intenciones.
+3. Proveedores requeridos por ID bigint ascendente FOR SHARE, facturas por
+   ID ascendente FOR UPDATE, productos existentes por ID bigint ascendente
+   FOR UPDATE. Las facturas nuevas se insertan en el paso 5. Si se leyeron referencias
+   para fijar el orden, comprobarlas tras bloquear la entidad y devolver
+   conflicto si cambiaron. Los escritores de productos que hoy bloquean
+   producto antes de negocio/proveedor deben alinearse antes de habilitar
+   la confirmación compuesta. Comprobar productores de logs y otros
+   escritores en la misma matriz de concurrencia.
+4. Categorías por ID ascendente FOR SHARE para asignar, FOR UPDATE si el
+   comando cambia esa categoría. Movimientos existentes por UUID ascendente
+   FOR UPDATE. Desactivar categoría sólo toma su fila, sin recorrer
+   movimientos. Para actividad de un movimiento de factura, resolver y
+   bloquear primero su factura, y releer origen y estado tras el lock.
+   Ningún escritor de movimientos toma luego un lock de factura.
+5. Ejecutar cambios, logs y auditoría. Confirmar resultado del recibo y
+   consumir la intención del archivo en el mismo commit. El rechazo
+   definitivo posterior al rollback se registra en una transacción corta,
+   sólo por el intento vigente.
+
+En SQL usar los tiempos de autoridad del repositorio (2 s de lock y hasta
+5 s por sentencia). Serializar alta simultánea por factura con su lock y la
+restricción única. Los ids de los productos a bloquear se conocen antes
+de aplicar cambios. Las lecturas de Caja revalidan la autoridad con los
+locks comunes y usan una sola sentencia para su snapshot de datos.
+
+## 7. Criterios de UI y responsive
 
 Conservar el shell/theme/tipografía Nodia y `PageContent`, sin doble padding.
 Espaciados de panel24px vertical/16px horizontal; tokens success/error con alpha
@@ -311,7 +555,8 @@ Orden de Caja:
 2. Dos paneles iguales: etiqueta, total CLP y cantidad; contexto del período.
 3. Tabla: buscador arriba a la izquierda; columnas fecha, tipo, descripción/origen,
    categoría, importe, actividad y acciones. `⋮` abre Editar/Activar/Desactivar;
-   confirmación de estado antes de escribir.
+   confirmación de estado antes de escribir. En vinculados, Editar abre el
+   formulario de la factura origen por ID estable.
 4. Paginado fuera del scroll; tabla desde sm minWidth650. En xs usar tarjetas de
    registro con tipo textual/fondo semántico y las mismas acciones/datos/consulta.
 
@@ -329,6 +574,8 @@ principales de ancho completo, objetivos44px y selector de sección existente;
 drawer ocupa el ancho disponible sin perder borrador al redimensionar.
 Cada selector de categoría de registro incorpora X y botón +; reservar ancho
 para ambos sin aplastar el texto en320px y mantener ayuda accesible.
+Navegar al tab por `section=cash` y conservar los destinos actuales. Al añadir
+la sección, preservar o reemplazar por nombres los índices que hoy usa Overview.
 
 Overview: añadir **Ingresos del mes** y **Egresos del mes** como cards del mismo
 lenguaje de las actuales, cada una con cantidad y total; subtítulo del mes/año.
@@ -354,8 +601,8 @@ retomar no depende de conservar una captura o un proceso local.
 
 | Paso | Entrega y cierre verificable | Dependencia |
 | --- | --- | --- |
-| **CASH-01 — contratos y reglas** | Cerrar ajustes visuales y decisiones propuestas; DTOs/errores, meta real, límites, orden de locks, recibos/ruta OCR y política de edición de vinculados definidos | Primer pendiente. La [PR 50](https://github.com/oscarvalenzuela25/Nodia/pull/50) ya está integrada en la base e incluye folio opcional y preferencia OCR |
-| **CASH-02 — modelo y categorías** | Migración aditiva, scope/políticas, CRUD categoría y normalización de nombre única por negocio/mayúsculas/whitespace, con conflicto concurrente | 01 |
+| **CASH-01 — contratos y reglas** | Cierre documental 2026-11-17. Reglas, DTOs/errores, respuestas, idempotencia/CAS, frontera OCR y criterios UI fijados en §§3–7 | Cerrado por alcance documental. La [PR 50](https://github.com/oscarvalenzuela25/Nodia/pull/50) ya está integrada en la base e incluye folio opcional y preferencia OCR |
+| **CASH-02 — modelo y categorías** | Migración aditiva de categorías y recibos, scope/políticas, alta/edición/actividad y nombre único por negocio, con conflicto concurrente | Primer pendiente. CASH-03 incorpora movimientos manuales. CASH-04 añade el vínculo de factura y staging compuesto |
 | **CASH-03 — movimientos y agregados** | CRUD manual idempotente/CAS, filtros Ransack, snapshot página+summary y agregador mensual | 02 |
 | **CASH-04 — vínculo factura/OCR** | Único egreso, asignación/recategorización/retiro/restauración, sync total/fecha, manual atómico y confirmación OCR transaccional recuperable | 03; cambios de guardado nativo antes de habilitar selector OCR |
 | **CASH-05 — UI Caja y categorías** | Tab, Filter, cards, tabla/tarjetas, drawer, formularios y acciones ES/EN | Contratos03; puede preparar componentes aislados sin fingir endpoints |
@@ -366,15 +613,15 @@ Checklist de estado:
 
 - [x] Solicitud y ampliación mensual documentadas, contratos actuales contrastados.
 - [x] Fuente canónica, ADR propuesto, ficha candidata y TODO preparados.
-- [ ] Refinar/aceptar diseño y decisiones de CASH-01; no se marca aprobación automática.
+- [x] Definir contratos, reglas, criterios de UI y verificación de CASH-01.
 - [ ] CASH-02/03: persistencia, autorización, categorías, movimientos y agregados.
 - [ ] CASH-04: factura/OCR identificados, atómicos y recuperables según alcance.
 - [ ] CASH-05/06: UI e integraciones reales, incluyendo cards mensuales.
 - [ ] CASH-07: verificación e integración/adopción por entorno.
 
-La rama parte de la base integrada de Negocios y Teacher. Para CASH-01, el
-guardado actual de factura y productos OCR en llamadas separadas sigue siendo
-la frontera a ampliar antes de introducir el egreso automático en CASH-04.
+La ampliación transaccional del guardado OCR y la compatibilidad de escritores de
+Facturas/Productos corresponden a CASH-04. La aprobación del plan o del ADR
+requiere confirmación documental explícita.
 
 ## 9. Pruebas de valor de la implementación futura
 
@@ -383,10 +630,12 @@ la frontera a ampliar antes de introducir el egreso automático en CASH-04.
   CLP de Caja a decenas. Serialización decimal exacta de importes y sumas.
 - Categorías: nombre duplicado normalizado, descripción requerida, misma empresa,
   desactivación conserva historia y categoría histórica visible al editar. Probar
-  mayúsculas, whitespace inicial/final/repetido/interno, tab/NBSP/FEFF, Unicode
-  equivalente y dos POST simultáneos; inactivas también impiden duplicado.
+  mayúsculas, whitespace inicial/final/repetido/interno, tab/NBSP/FEFF, sigma final,
+  NFKC expansivo, bytes de clave y dos POST simultáneos. Inactivas también impiden
+  duplicados. Competir asignación con desactivación en dos transacciones.
 - SQL/HTTP aislados: rol sin módulo, negocio ajeno, colaborador revocado durante
   operación, super_admin, filtros/search/sort malformados y agrupación autorizada.
+  Probar coma literal con Axios/qs reales y comodines literales con PostgreSQL.
 - Agregados: más de una página, página sin filas, cero real, activos/inactivos/Todos,
   search y categoría, commit concurrente sin mezclar snapshots. Overview mensual
   no hereda filtro diario/search y no duplica ventas/facturas.
@@ -394,10 +643,19 @@ la frontera a ampliar antes de introducir el egreso automático en CASH-04.
   sesiones asignando, con→null retira y null→con restaura sin duplicar; omisión
   no retira. Ningún retirado aparece en Todos ni en cards mensuales. X y cancelar
   no modifican persistencia; total0/fecha histórica inválida,
-  cambio de negocio y revisión obsoleta; cambios total/fecha no duplican/reactivan.
-- Confirmación OCR: fallo de producto/CAS o categoría revierte factura/egreso/logs;
-  respuesta perdida devuelve mismo recibo; hash distinto con misma clave rechaza;
-  upload tardío/expirado y rollback conservan recuperación R2 sin archivo huérfano.
+  cambio de negocio con historial retirado y revisión obsoleta. Cambios total/fecha
+  conservan ID y actividad. PUT con sólo folio conserva monto, fecha, ruta y actividad.
+- Confirmación OCR: fallo de producto/CAS o categoría revierte factura, egreso y logs.
+  Respuesta perdida devuelve el mismo recibo antes de CAS. Misma clave con otro
+  comando, orden de filas o bytes de archivo se rechaza. Medir un lote mixto cerca
+  de los límites con el timeout SQL real. Probar límites, concesión
+  vencida, intento tardío, reconciliación de commit y autorización revocada durante
+  staging o antes de leer el recibo. Probar concurrencia con producto/actualización
+  legacy y desvinculación frente a actividad desde Caja.
+- NodiaAI: la propuesta antigua concurrente con el alta de vínculo no escribe
+  ni queda reanudable si cambia total/fecha. Los metadatos y propuestas compatibles
+  mantienen su contrato. Probar que campos de procedencia enviados por HTTP o en
+  JSON de factura no conceden efectos.
 - Unidades pequeñas de filtros/hooks/formulario y errores de transporte: reintento
   conserva inputs, resultado incierto no crea otra intención, teclado/foco y
   resize no descartan editor. No generar suites espejo de páginas completas.
@@ -407,19 +665,31 @@ la frontera a ampliar antes de introducir el egreso automático en CASH-04.
   al regresar; no guardar movimiento por crear categoría.
 - QA Chromium320/600/900/1440, claro/oscuro y ES/EN, montos/nombres largos,
   paginado/menús/drawer, estados vacío/error/carga y zoom. Teléfono físico y
-  adopción no quedan acreditados con una maqueta o captura.
+  adopción requieren evidencia propia. X y + deben ser controles independientes
+  con teclado, foco, borrador y objetivo táctil comprobados.
 
 ## 10. Impacto NodiaAI y verificación de este plan
 
-La [ficha nueva](../nodia-ai/knowledge/businesses/features/cash-ledger-and-invoice-expenses.md)
+La [ficha de Caja](../nodia-ai/knowledge/businesses/features/cash-ledger-and-invoice-expenses.md)
 permanece `planned/draft/unregistered/approval:null`; producto e índice enlazan
 el alcance futuro. Registrar el path para validación no publica herramientas.
 No cambiar documentos aprobados, schemas de ventas, autoridad o permisos ni
 presentar Caja como disponible en chat. Una integración IA futura requiere
 especificación, contrato, revisión/confirmación y evidencias propias.
 
-La verificación de este turno sólo cubre referencias/metadata y la maqueta local
-con fixtures; las garantías SQL/HTTP/transaccionales anteriores son gates futuros.
+### Verificación de CASH-01 — 2026-11-17
+
+Contrastados los contratos y casos de uso de Facturas, Productos, Ventas,
+Business Access y autorización de NodiaAI. La revisión local del código reprodujo
+los defaults del DTO parcial, la interpretación de comas por Axios/qs y la
+diferencia de normalización de sigma cuando se quitan espacios demasiado tarde.
+Se validaron JSON, UTF-8/LF, enlaces, compilación de conocimiento y 58 pruebas
+del compilador y del pin. El corpus conserva 44 documentos, 46 fragmentos y
+153 capacidades con el mismo release. El §9 recoge los gates SQL/HTTP/UI
+de implementación.
+
+### Evidencia previa de planificación R01/R02
+
 [Evidencia de planificación](../evidence/business-cash-planning-20261117.md):
 build/check de conocimiento y58pruebas correctos,97fuentes/53excluidas con
 44documentos/46fragmentos/153capacidades conservadas. Maqueta Chromium con
@@ -428,13 +698,4 @@ comprobados; nueve capturas fuera de Git. No equivale a pruebas de implementaci�
 R02 añade comprobación local de X/+/Drawer/modal, duplicados Unicode e inactivos,
 matriz completa de factura y retiro/restauración sin duplicados; ocho capturas
 adicionales ignoradas. Evidencia anterior conserva su corte e identifica el nuevo
-hash;58pruebas de conocimiento y check final correctos, sin implementar Caja.
-
-Compatibilidad obligatoria en CASH-04: un escritor NodiaAI ya existente no puede
-actualizar total/fecha de una factura vinculada y producir un efecto de Caja
-oculto bajo una confirmación antigua. Hasta especificar/verificar esa ampliación,
-rechazar el comando que afectaría Caja y remitir al formulario manual. Crear o
-editar facturas sin vínculo y sin categoría conserva su alcance anterior;
-`is_active` de factura no propaga actividad. La procedencia de ejecución se obtiene
-del coordinador confiable, nunca de un flag editable enviado por HTTP/modelo.
-Probar propuestas antiguas y cambios concurrentes de vínculo como regresión.
+hash. Las garantías de persistencia corresponden a CASH-02…07.

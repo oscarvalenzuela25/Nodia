@@ -1,10 +1,20 @@
 # Contexto funcional de productos para NodiaAI
 
+## Caja de Negocios: contratos CASH-01 — 2026-11-17
+
+[Plan109 §§3–7](../../mvp/109-business-cash-ledger-plan.md#3-reglas-de-caja-v1),
+[Caja revisión3](businesses/features/cash-ledger-and-invoice-expenses.md) y
+[Negocios revisión58](businesses/README.md) registran reglas, filtros, recibos
+y frontera de confirmación OCR. Total, fecha y categoría del egreso se editan
+desde su factura origen. La protección de propuestas previas debe verificarse
+en el escritor común bajo lock. Caja sigue planned, draft y unregistered, con
+approval:null. Su implementación comienza en CASH-02.
+
 ## Caja de Negocios: planificación y vistas — 2026-11-17
 
 [Plan109](../../mvp/109-business-cash-ledger-plan.md),
-[Negocios revisión57](businesses/README.md) y
-[Caja revisión2](businesses/features/cash-ledger-and-invoice-expenses.md)
+[Negocios, corte revisión57](businesses/README.md) y
+[Caja, corte revisión2](businesses/features/cash-ledger-and-invoice-expenses.md)
 recogen el registro de ingresos/egresos, categorías comunes, filtros Ransack y
 paneles coherentes con toda la tabla filtrada. Vínculo opcional factura→egreso
 único y dos tarjetas mensuales de Overview; atomicidad/idempotencia OCR son

@@ -4,11 +4,11 @@
   "document_id": "businesses",
   "product_id": "businesses",
   "kind": "product",
-  "revision": 57,
+  "revision": 58,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Solicitud2026-11-16 plan94§41: nuevos alias desde nombre, alias existente conservado/editable, disponibilidad nueva true y existente intacta, precio OCR inicial30% sobre bruto y edición por fila; modelo/intensidad desde configuración persistida por instancia/modo. Implementación local y QA Chromium sintética6perfiles verificadas; tipos/lint/build correctos. Global2 correcta3125/378 y focal posterior124/10 cubre recuperación final; tipos/lint/build y pins locales correctos según evidencia2026-11-16; antecedentes fechados inferiores conservan su alcance. Sin nueva aprobación/publicación o adopción. ClientR37 conserva la mejora visual de precio sugerido verificada1088/320px, sin Aplicar/Guardar en esa QA. NativeR16 adoptado con diagnóstico seguro best-effort y660Linux correctos, pero la nueva intención OCR real volvió aHTTP504 tras leer el archivo sin finish/resultado. Cierre local0CLI/marcadores/proofs/grupos yPNG conservado. Causa no aislada; no atribuir a Google/transporte ni convertir indicadores vacíos de un log truncado en ausencia de fallos. R15fallido y R37visual conservan sus recibos. Resolver extracción compatible con CLI1.3.1 sigue pendiente; sin replay, cambio de selección o ampliación de deadlines. No amplía guardado comercial, capacidades, permisos o bindings; draft/partial/unregistered sin nueva aprobación/publicación. VM development2026-11-14: alias humano nullable con revisión OCR explícita, búsqueda nombre/alias y filtros independientes de códigos. Migración179366 aplicada una vez;13productos/33logs preservados y QA local/SQL/HTTP aislados correctos. Sin producción, inferencia OCR o publicación; recibo operativo separado. Solicitud2026-11-14: alta nativa desde barcode POS inexistente, decisión Registrar/No y asociación existente conservada; barcode precargado textual y venta intacta. Client2986/362 y focales finales correctos, build/tipos/lint y QA aislada320/600/1280 ES/EN correctos; adopción sólo Client VM con recibo separado. Sin publicación IA o aprobación heredada. Ampliación explícita posterior2026-11-14 plan94§40: alta POS terminada agrega una unidad a la venta local actual, una vez, y limpia/enfoca lector. Sustituye reescaneo de§39; cancelación/error/contexto obsoleto no agrega. Client2994/362 y57focales/3archivos correctos, build/tipos/lint y QA sintética320ESdark/1280ENlight correctos. Adopción Client VM con recibo separado; sin cambio Server, herramienta IA o aprobación/publicación nueva. Solicitud2026-11-17 plan94§42: redondeo de venta a decenas en formulario/OCR/sugerencia y Server para campos enviados, división local, proveedor use_ocrfalse/filtro OCR exclusivo, folio nullable, hoy civil local sólo al crear y chips de disponibilidad sin reclasificar desconocidos. Vista previa NodiaAI normalizada antes del hash y rechazo de propuestas incompatibles; autoridad/confirmación intactas. Implementación y QA técnica local final comprobadas por evidencia2026-11-17; adopción/aceptación por entorno pendientes. Ficha aprobada Facturas rev5 conserva bytes/firma: mínimos manuales nuevos en esta candidata, sin heredar aprobación o publicar capacidades. Solicitud2026-11-17 plan109/ADR106 propuesto, Caja rev2: registro de ingresos/egresos y categorías, vínculo opcional de factura a egreso único y Overview mensual sólo planificados. X/alta rápida +, unicidad por negocio sin mayúsculas/whitespace. null explícito al guardar retira, omisión en PUT parcial conserva; recategorizar/restaurar mantiene ID. Retiro auditado separado de actividad y excluido incluso con Todos, sin borrar evidencia. Cierres manuales como ingresos, facturas automáticas sólo egresos; POS sin integración. CASH-04 exige confirmación OCR idempotente y transacción factura+productos+egreso tras staging. Sin implementación, migraciones o capacidades IA nuevas; guard conserva historia de vínculos retirados. Ficha planned/draft/unregistered/approval:null."
+    "notes": "Solicitud2026-11-16 plan94§41: nuevos alias desde nombre, alias existente conservado/editable, disponibilidad nueva true y existente intacta, precio OCR inicial30% sobre bruto y edición por fila; modelo/intensidad desde configuración persistida por instancia/modo. Implementación local y QA Chromium sintética6perfiles verificadas; tipos/lint/build correctos. Global2 correcta3125/378 y focal posterior124/10 cubre recuperación final; tipos/lint/build y pins locales correctos según evidencia2026-11-16; antecedentes fechados inferiores conservan su alcance. Sin nueva aprobación/publicación o adopción. ClientR37 conserva la mejora visual de precio sugerido verificada1088/320px, sin Aplicar/Guardar en esa QA. NativeR16 adoptado con diagnóstico seguro best-effort y660Linux correctos, pero la nueva intención OCR real volvió aHTTP504 tras leer el archivo sin finish/resultado. Cierre local0CLI/marcadores/proofs/grupos yPNG conservado. Causa no aislada; no atribuir a Google/transporte ni convertir indicadores vacíos de un log truncado en ausencia de fallos. R15fallido y R37visual conservan sus recibos. Resolver extracción compatible con CLI1.3.1 sigue pendiente; sin replay, cambio de selección o ampliación de deadlines. No amplía guardado comercial, capacidades, permisos o bindings; draft/partial/unregistered sin nueva aprobación/publicación. VM development2026-11-14: alias humano nullable con revisión OCR explícita, búsqueda nombre/alias y filtros independientes de códigos. Migración179366 aplicada una vez;13productos/33logs preservados y QA local/SQL/HTTP aislados correctos. Sin producción, inferencia OCR o publicación; recibo operativo separado. Solicitud2026-11-14: alta nativa desde barcode POS inexistente, decisión Registrar/No y asociación existente conservada; barcode precargado textual y venta intacta. Client2986/362 y focales finales correctos, build/tipos/lint y QA aislada320/600/1280 ES/EN correctos; adopción sólo Client VM con recibo separado. Sin publicación IA o aprobación heredada. Ampliación explícita posterior2026-11-14 plan94§40: alta POS terminada agrega una unidad a la venta local actual, una vez, y limpia/enfoca lector. Sustituye reescaneo de§39; cancelación/error/contexto obsoleto no agrega. Client2994/362 y57focales/3archivos correctos, build/tipos/lint y QA sintética320ESdark/1280ENlight correctos. Adopción Client VM con recibo separado; sin cambio Server, herramienta IA o aprobación/publicación nueva. Solicitud2026-11-17 plan94§42: redondeo de venta a decenas en formulario/OCR/sugerencia y Server para campos enviados, división local, proveedor use_ocrfalse/filtro OCR exclusivo, folio nullable, hoy civil local sólo al crear y chips de disponibilidad sin reclasificar desconocidos. Vista previa NodiaAI normalizada antes del hash y rechazo de propuestas incompatibles; autoridad/confirmación intactas. Implementación y QA técnica local final comprobadas por evidencia2026-11-17; adopción/aceptación por entorno pendientes. Ficha aprobada Facturas rev5 conserva bytes/firma: mínimos manuales nuevos en esta candidata, sin heredar aprobación o publicar capacidades. CASH-01, plan109 y ADR106 propuesto: V1 de Caja y Overview mensual, filtros y sumas sobre el mismo conjunto, egreso único por factura con retiro/restauración y confirmación OCR identificada. Caja rev3 planned/draft/unregistered/approval:null. Los contratos esperan implementación desde CASH-02. Propuestas previas de Facturas conservan su alcance y se revalidan frente al vínculo de Caja."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
@@ -313,8 +313,8 @@ y [ficha candidata de Caja](features/cash-ledger-and-invoice-expenses.md)
 definen la pestaña de ingresos/egresos y categorías compartidas por negocio.
 Filtro inicial hoy/activos, búsqueda y dos paneles responden al mismo conjunto
 filtrado completo antes del paginado. Overview incorpora dos tarjetas del mes
-actual, independientes del filtro de Caja. Hoy/mes civil en America/Santiago
-son la propuesta de contrato, sin cambiar el default de factura de§42.
+actual, independientes del filtro de Caja. CASH-01 fija hoy y mes civil en
+America/Santiago. El default manual de factura sigue el plan94 §42.
 
 Factura manual y guardado OCR incluirán categoría opcional con ayuda; primera
 asignación genera un egreso, otra categoría actualiza el mismo. Refinamiento
@@ -323,26 +323,23 @@ nombre/descripción, sin duplicados por negocio ignorando mayúsculas y todo
 whitespace Unicode. Tras alta exitosa queda seleccionada; error/cancelación
 conservan borrador y foco del formulario origen, con un único overlay activo.
 
-En factura, omitir el campo en PATCH conserva el vínculo; null explícito al
+En factura, omitir el campo en PUT parcial conserva el vínculo. Null explícito al
 guardar retira el egreso. X antes de guardar sólo cambia el borrador. Reasignar
 tras retiro restaura el mismo ID sin duplicar. Esta regla sustituye la
 recomendación anterior que impedía limpiar una categoría ya vinculada. Se
-recomienda retiro lógico auditado separado de is_active, excluido de Caja incluso
-con Todos, manteniendo unicidad e historial. Unicidad por
-factura, confirmación identificada/idempotente y transacción OCR
-factura+productos+egreso tras staging son objetivos de CASH-04, no garantías
-actuales. El importe contable CLP no aplica decenas de precio de venta. No hay
+usa retiro lógico auditado separado de actividad, excluido de Caja incluso con
+Todos. En un egreso vinculado, monto, fecha y categoría cambian desde la factura
+origen. Caja controla su actividad. CASH-04 implementa el guardado identificado e
+idempotente, el recibo y la transacción OCR. El importe contable CLP conserva su
+valor entero en pesos. No hay
 backfill ni automatización de ingresos POS en este alcance. Facturas automáticas
 sólo generan egresos; cierres de caja se registran manualmente como ingresos con
 categoría. El cierre/arqueo formal queda fuera, sin impedir ese registro manual.
 
-Solicitud de planificación y refinamiento visual, **sin implementación de Caja**,
-nuevas migraciones, inferencias, herramientas ni publicación. Nueva ficha
-planned/draft/unregistered/approval:null revisión2; producto revisión57 sigue partial por
-las funciones existentes. No hereda aprobación de Facturas ni amplía efectos
-confirmados antiguos. R17 de ventas/reportes sólo lectura permanece intacta;
-Caja aún no está disponible en runtime NodiaAI. El registro explícito sólo permite
-validar la candidata, no habilita capacidades.
+CASH-01 cerrado por alcance documental. Caja revisión3 sigue planned, draft y
+unregistered, con approval:null. El producto revisión58 conserva alcance parcial
+por las funciones existentes. La implementación corresponde a CASH-02…07 y la
+protección de propuestas previas de Facturas a CASH-04.
 
 ## Redondeo, división y contratos manuales — solicitud2026-11-17
 
@@ -563,7 +560,7 @@ Los modos operativos son Agentic y API key conforme90/92. Function calling API n
 
 | Función | Ficha | Implementación | Integración NodiaAI | Destino |
 |---|---|---|---|---|
-| Caja, categorías y egresos de factura | [cash-ledger-and-invoice-expenses](features/cash-ledger-and-invoice-expenses.md) | Plan109/rev2: Caja, Overview mensual, selectores X/alta rápida +, retiro/restauración de egreso de factura; sin implementación | Planned/draft/unregistered/approval:null; cero herramientas o bindings nuevos | `/business/:id?section=cash` propuesto; autoridad por Negocios |
+| Caja, categorías y egresos de factura | [cash-ledger-and-invoice-expenses](features/cash-ledger-and-invoice-expenses.md) | Plan109 y revisión3: contratos CASH-01, implementación desde CASH-02 | Planned/draft/unregistered/approval:null | `/business/:id?section=cash`; autoridad por Negocios |
 | Negocios y colaboradores | [businesses-and-collaborators](features/businesses-and-collaborators.md) | Backend existente/parcial; gates en ficha | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |
 | Proveedores comerciales | [suppliers](features/suppliers.md); [ampliación candidata§42](features/product-price-calculator-and-invoice-binding.md#redondeo-división-y-contratos-manuales--solicitud2026-11-17) | use_ocr local con defaultfalse y filtro sólo OCR; QA final común registrada en evidencia2026-11-17 | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |
 | Contactos de proveedores | [supplier-contacts](features/supplier-contacts.md) | Backend existente/parcial; gates en ficha | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |
@@ -596,6 +593,7 @@ Publicación de conocimiento, proyecciones y autoridad depende de AI-06/07/08/12
 |---|---|---|
 | 56 | Plan109/ADR106 propuesto: Caja, categorías comunes, egreso único de factura y dos tarjetas mensuales de Overview | Candidata planned sin implementación, aprobación o publicación; CASH-04 exige frontera transaccional/idempotente nueva para OCR |
 | 57 | Refinamiento confirmado: selectores X/alta rápida +, categorías sin duplicados ignorando mayúsculas/whitespace y retiro/restauración del mismo egreso por null/categoría | Sustituye recomendación inicial sin retiro; auditado separado de actividad. Cierres manuales como ingresos, facturas automáticas sólo egresos; planned sin publicación nueva |
+| 58 | CASH-01 fija contratos nativos, precisión, agregados, edición de vinculados y confirmación OCR identificada | Ficha Caja rev3, aún planned. CASH-04 revalida propuestas previas en el escritor común |
 | 1 | AI-05: 7 fichas funcionales desde especificaciones/backend e inventario39 | [Cobertura/diferencias/gates](../../../mvp/51-nodia-ai-ai05-product-knowledge.md); sin migraciones/runtime/publicación ni aprobación automática |
 | 17 | Solicitud POS2026-10-28 y aclaraciones CLP/medio informativo; plan94/ADR085 | Ficha candidata nueva y migración stock planificada; fichas aprobadas y runtime preservados |
 | 18 | Aclaración R02: imagen opcional, code comercial/barcode separados, efectivo inicial y oferta habilitable | Ficha rev2 y contratos planificados, sin aprobación documental/publicación ni implementación implícitas |

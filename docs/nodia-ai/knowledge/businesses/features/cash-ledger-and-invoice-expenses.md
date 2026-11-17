@@ -4,11 +4,11 @@
   "document_id": "businesses.cash-ledger-and-invoice-expenses",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 2,
+  "revision": 3,
   "document_status": "draft",
   "implementation": {
     "status": "planned",
-    "notes": "Refinamiento confirmado2026-11-17: selectores de categoría con X para limpiar y + para alta rápida; categoría nueva seleccionada tras éxito, sin duplicados por negocio ignorando mayúsculas y whitespace. En factura, null explícito al guardar retira el egreso; omitir en PUT parcial conserva. Asignar otra categoría conserva identidad y reasignar después de retiro restaura el mismo egreso. Retiro lógico auditado separado de actividad es recomendación técnica por implementar. Facturas automáticas sólo generan egresos; cierre de caja se registra manualmente como ingreso, POS sin integración. Dos paneles mensuales en Overview. Sin implementación, migraciones, endpoints ni herramientas nuevos; planned/draft/unregistered/approval:null. No habilita Caja en NodiaAI ni amplía las capacidades publicadas de Facturas, Productos, Ventas o Reportes."
+    "notes": "CASH-01 cerrado por alcance documental en plan109 §§3–7. CLP enteros como cadenas decimales, fecha civil Santiago, categorías compartidas y unicidad por negocio, filtros y totales con un snapshot y Overview mensual. El egreso de factura tiene actividad independiente; null lo retira y una nueva categoría restaura el mismo ID. Importe, fecha y categoría se editan desde Facturas. Guardado identificado y revisado, confirmación OCR compuesta y revalidación de propuestas previas bajo lock pendientes de implementación. Caja permanece planned/draft/unregistered/approval:null."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
@@ -53,7 +53,7 @@
   "verification": {
     "checked_on": null,
     "evidence_paths": [],
-    "notes": "Planificación documental. La entidad/DTO actuales de Facturas no contienen el vínculo de Caja: sus referencias sólo identifican el punto a ampliar. Validación de contratos, autorización, integridad, concurrencia, agregación e integración real pendientes. La revisión de una maqueta no acredita backend ni operación productiva."
+    "notes": "CASH-01 contrasta contratos de repositorio y documenta implementación futura. Las pruebas de autorización, integridad, concurrencia, agregación y operación corresponden a CASH-02…07."
   },
   "approval": null
 }
@@ -90,24 +90,16 @@ Confirmado por la solicitud:
   registran manualmente como ingresos; POS no se integra con Caja por ahora.
 - Overview incorporará dos tarjetas de ingresos/egresos del mes actual.
 
-Recomendaciones de diseño sujetas al refinamiento de plan109/ADR106: dinero CLP
-entero positivo, bigint persistido y cadena decimal en API; fecha civil DATE del movimiento; movimiento vinculado cuyo importe
-y fecha siguen el total y la fecha de emisión de la factura; edición de esos
-datos desde Facturas; actividad del movimiento independiente de la factura;
-retiro lógico auditado separado de actividad. La recomendación anterior de
-impedir quitar una categoría ya vinculada queda sustituida por la regla explícita
-de retiro al guardar. No aplicar redondeo de precio de
-venta a los importes contables. Las tarjetas de Overview usarían cantidad/total
-de movimientos activos del mes civil, independientes del filtro de Caja.
-Hoy y mes actual se resolverían en America/Santiago, sin offset fijo y sin
-cambiar el default civil local del formulario de factura de plan94§42.
+[CASH-01](../../../../mvp/109-business-cash-ledger-plan.md#3-reglas-de-caja-v1)
+fija CLP entero positivo como cadena decimal, fecha civil de Santiago y exactitud
+de conteos y sumas. Monto, fecha y categoría del egreso vinculado se editan en la
+factura origen. Caja controla actividad independiente. Toda baja por retiro
+permanece auditada. Overview usa activos del mes civil en Santiago con su propio
+período. El formulario manual de factura conserva su fecha civil inicial de §42.
 
-Para unicidad se recomienda un canonicalizador compartido/versionado:
-normalización NFKC, minúsculas con regla española determinista definida en plan109
-y eliminación de todo whitespace Unicode, incluido FEFF, conservando acentos.
-No limitarse a trim ni a colapsar espacios. La validación
-de Client no sustituye el índice único por negocio y nombre canónico en Server/DB;
-la carrera entre altas y los duplicados con categorías inactivas se resuelven allí.
+La unicidad se resuelve en Server/DB por negocio, también para inactivas. La
+clave aplica NFKC y elimina espacios Unicode/FEFF antes de convertir a minúsculas
+con regla española determinista, conservando acentos. Ver plan109 §6.1.
 
 ## Solicitudes en lenguaje natural
 
@@ -126,11 +118,11 @@ la carrera entre altas y los duplicados con categorías inactivas se resuelven a
 
 | Operación semántica | Clase/efecto propuesto | Herramienta y estado real | Contrato | Resultado esperado de implementación |
 |---|---|---|---|---|
-| Listar movimientos y resumir filtros | Lectura paginada y agregada | Ninguna herramienta Caja registrada | GET y DTO Ransack propuestos en plan109; pendientes | data/meta/summary juntos, desde la misma lectura consistente y selección; sin sumar sólo la página |
+| Listar movimientos y resumir filtros | Lectura paginada y agregada | Ninguna herramienta Caja registrada | GET y DTO Ransack definidos en plan109 §5, pendientes de implementación | data/meta/summary juntos desde una sentencia para la selección completa |
 | Administrar/crear rápidamente categorías | Escritura manual por negocio | No disponible en NodiaAI | Recurso, canonicalizador e índice único nuevos por implementar | Nombre/descripción, categoría seleccionada tras alta y duplicados rechazados incluso concurrentemente |
 | Crear/editar/activar/desactivar movimiento | Escritura manual | No disponible en NodiaAI | Recurso, DTO y casos de uso nuevos por implementar | Movimiento con categoría obligatoria, importe válido e identidad estable |
 | Vincular/retirar/restaurar egreso de factura | Escritura dependiente | Ninguna ampliación publicada de Facturas | Ampliación futura de contratos nativos identificados en fuentes | Primera asignación crea uno; recategorizar conserva ID; null retira; reasignar restaura el mismo |
-| Resumen mensual de Overview | Lectura agregada | No disponible en NodiaAI | Mismo agregador de Caja, alcance fijo mensual propuesto | Conteos y totales activos por negocio, sin doble conteo con POS |
+| Resumen mensual de Overview | Lectura agregada | No disponible en NodiaAI | Ruta mensual y agregado de Caja de plan109 §5 | Conteos y totales de movimientos activos por negocio |
 
 Las entidades/DTO actuales de Facturas no incluyen categoría de Caja. Sus
 contratos existentes no deben recibir un campo desconocido ni asumir un efecto
@@ -144,11 +136,11 @@ endpoints propuestos. No se invoca SQL/HTTP arbitrario.
 | Negocio | Obligatorio | Ámbito nativo del recurso, conforme89 | Autoridad actual del actor; no aceptar IDs cruzados |
 | Categoría | Obligatoria en movimiento; opcional en factura | Categoría propia del negocio, común a ambos tipos; nombre y descripción obligatorios | Elegir categoría activa; limpiar movimiento deja campo requerido inválido hasta seleccionar; factura sin categoría no genera egreso o retira el existente al guardar |
 | Tipo | Obligatorio en movimiento manual | Ingreso o egreso | Factura vinculada siempre egreso; una categoría no determina el tipo |
-| Importe | Positivo, CLP entero recomendado | Valor registrado; vinculado desde total de factura | No deducir pago, saldo bancario o impuesto; total cero no permite crear vínculo |
-| Fecha | Fecha civil recomendada | Movimiento manual o emisión de factura vinculada | No desplazar un día por conversiones UTC; rango inclusivo con contrato explícito |
-| Descripción | Obligatoria en categoría; campo previsto de movimiento | Texto identificador del movimiento o categoría | Límites finales de DTO en plan109; no inferir datos de productos |
-| Actividad | Activo/inactivo | Estado del movimiento separado del tipo | Actividad de factura no desactiva automáticamente el egreso según propuesta v1 |
-| Retiro del vínculo | Efecto explícito de null al guardar factura | Marcador propuesto withdrawn_from_invoice independiente de is_active | No equivale a desactivar; excluido de lista/resumen incluso con Todos; conservar auditoría e identidad |
+| Importe | CLP entero positivo, como decimal canónico | Valor registrado o total de factura | Total cero impide un egreso vigente |
+| Fecha | Fecha civil | Movimiento manual o emisión de factura vinculada | Rango inclusivo en Santiago; usar fecha de emisión confirmada |
+| Descripción | Obligatoria en categoría y movimiento manual | Texto registral. Egreso vinculado presenta referencia de factura | Límites en plan109 §3 |
+| Actividad | Activo/inactivo | Estado del movimiento separado del tipo | Actividad del egreso se cambia de forma independiente |
+| Retiro del vínculo | Efecto explícito de null al guardar factura | Retiro lógico auditado | Excluido de lista/resumen incluso con Todos. Recupera el mismo ID al restaurar |
 | Identidad de origen | Administrada por Server | Factura origen y egreso único | Folio opcional no identifica ni deduplica la factura |
 
 ## Reglas, acceso y restricciones
@@ -156,7 +148,8 @@ endpoints propuestos. No se invoca SQL/HTTP arbitrario.
 Reutilizar autoridad de Negocios de [plan89](../../../../mvp/89-module-access-and-user-data-scope.md)
 y destino canónico del recurso. Categoría, factura y movimiento deben pertenecer
 al mismo negocio y verificarse en Server; un menú o un filtro de Client no otorgan
-acceso. La matriz concreta de permisos de los recursos nuevos sigue pendiente.
+acceso. Plan109 §5 aplica sesión y módulo canónico `/business`, con dueño,
+colaborador activo o super_admin y revalidación transaccional del ámbito.
 
 No habrá backfill automático ni ingreso automático por venta POS en este
 alcance. Se permite registrar manualmente el cierre de caja como un ingreso con
@@ -165,10 +158,9 @@ eso no impide este registro manual. Caja registra movimientos del negocio; no es
 conciliación bancaria ni prueba de pago de una factura. Mantener procedencias
 para no sumar una factura y su egreso como dos salidas.
 
-La propuesta contempla desactivación explícita con confirmación, no eliminación
-física de movimientos o de categorías usadas. Categorías inactivas conservan
-histórico y su referencia actual; la asignación nueva debe usar una opción
-permitida por el contrato que se implemente.
+El contrato contempla desactivación explícita con confirmación. Categorías
+inactivas conservan el historial y la referencia actual. Toda asignación nueva
+o restauración requiere categoría activa.
 
 La unicidad de categorías se aplica por negocio, también frente a categorías
 inactivas, con la misma clave canónica y sin clasificar por ingreso/egreso.
@@ -184,14 +176,14 @@ descripción para corregir; cancelar no crea ni cambia la selección anterior.
 | Factura nueva | Sin categoría/null | Sin egreso |
 | Factura nueva | Categoría válida | Un egreso |
 | Factura existente sin vínculo | Categoría válida | Crear un egreso |
-| Cualquier factura existente | Campo ausente en PUT parcial | Conservar relación y estado, sin retiro implícito |
+| Cualquier factura existente | Campo ausente en PUT parcial | Conservar relación. Una edición identificada de total o fecha sincroniza el egreso vigente |
 | Factura con vínculo | Otra categoría válida | Mismo ID de egreso, categoría actualizada |
 | Factura con vínculo | null explícito | Retirar el egreso de Caja al guardar |
 | Factura con vínculo retirado | Categoría válida | Restaurar el mismo ID y activar de nuevo su efecto, sin duplicado |
 
 X modifica sólo el borrador hasta guardar. Cancelar la factura conserva el estado
-persistido. Se recomienda mantener la unicidad histórica por factura y registrar
-el retiro lógico auditado mediante un estado propio, separado de is_active.
+persistido. La unicidad histórica por factura y el retiro lógico separado de
+actividad se respaldan con constraints y auditoría en CASH-04.
 Un movimiento retirado queda fuera de lista, conteos y totales de Caja, incluso
 con actividad Todos; no se expone como simple inactivo que pueda reactivarse al
 margen de la factura. Restaurar vuelve a usar la misma identidad y relación.
@@ -212,7 +204,7 @@ esa aprobación no cubre el efecto futuro factura→egreso.
 | Categoría | Query param Ransack de igualdad | Categoría del negocio | Relación validada por Server |
 | Rango de fechas | Desde/hasta civiles inclusivos | Default hoy para Caja | Fecha de movimiento, no fecha técnica de creación |
 | Actividad | Activo, Inactivo, Todos | Default Activo; limpiar restaura Activo | Todos omite predicado de actividad, pero nunca incluye vínculos retirados; ActiveStatusSelect en filtro |
-| Búsqueda | q.search de dominio acotado aplicado a lista y resumen | Conjunto filtrado completo | Campos permitidos y predicado final en DTO pendiente |
+| Búsqueda | q.search literal de dominio aplicado a lista y resumen | Conjunto filtrado completo | Descripción, categoría y folio/ID de factura según plan109 §5 |
 | Cantidad y total de ingresos | COUNT/SUM de tipo ingreso | CLP; todos los registros filtrados, antes de paginar | Movimientos Caja, no ventas POS |
 | Cantidad y total de egresos | COUNT/SUM de tipo egreso | CLP; todos los registros filtrados, antes de paginar | Movimientos Caja, incluidos vínculos únicos de factura |
 | Overview mensual | Misma agregación; activos del mes actual | Mes civil corriente, por negocio; independiente de filtro Caja | Sólo movimientos Caja, con el origen sin duplicar |
@@ -237,12 +229,10 @@ esa información.
 evalúa una transacción nativa factura+egreso y unicidad por factura para evitar
 duplicados al editar, hacer doble clic o reintentar. La atomicidad global de
 productos OCR/factura no está acreditada por los contratos actuales. La integración
-OCR depende de CASH-04: confirmación nueva identificada e idempotente en Server,
-con factura+productos+egreso en una transacción tras staging del archivo. No
-declarar completa la integración hasta comprobar rollback, conflictos y reintentos
-de esa frontera. Mantener R2 fuera de transacciones SQL con la recuperación
-existente de archivos. Estas garantías son objetivos de implementación, no
-comportamiento ya comprobado.
+OCR depende de CASH-04. La confirmación identificada registra factura, productos,
+egreso y recibo en una transacción tras preparar el archivo. La recuperación
+consulta la misma clave en el ámbito del actor y negocio. Las pruebas de rollback,
+conflictos y reintentos quedan en plan109 §§6.4 y 9.
 
 Error conserva formulario y borrador, notifica por Sileo y permite recuperación
 sin replay ciego ante resultado incierto. Desactivar/reactivar exige confirmación
@@ -252,7 +242,8 @@ deben probarse en DB antes de declarar el flujo listo.
 ## Integración y evidencia
 
 - [x] Solicitud, plan canónico y ficha candidata enlazados; estado planned/draft/unregistered y aprobación null.
-- [ ] Definiciones recomendadas refinadas y aprobación documental específica, si se solicita.
+- [x] Contratos y reglas de CASH-01 refinados en plan109 §§3–7.
+- [ ] Aprobación documental de la ficha, si se solicita.
 - [ ] Entidades, DTOs, endpoints, ownership y relaciones implementados/contrastados.
 - [ ] Igualdad de filtros/lista/resumen y resumen mensual verificadas en Server.
 - [ ] Vínculo de factura, concurrencia, reintentos y fallo parcial comprobados.
@@ -271,6 +262,7 @@ publicación mientras conserve draft y ninguna capacidad la use.
 |---|---|---|---|
 | 1 | Solicitud2026-11-17, plan109 y ADR106 propuesto: Caja, categorías, egreso de factura y Overview mensual | Sólo contexto candidato; sin capacidades/bindings nuevos | Implementar contratos manuales sin ampliar silenciosamente efectos de preparadores aprobados; revalidar facturas vinculadas y compatibilidad de propuestas antes de cualquier integración futura |
 | 2 | Refinamiento confirmado2026-11-17: X y alta rápida +, unicidad sin mayúsculas/whitespace, null retira egreso y reasignar restaura ID; cierres manuales como ingresos | Sólo candidata, planned y sin publicación | Sustituye la recomendación rev1 de impedir vaciar categoría ya vinculada; retiro auditado independiente de actividad. Facturas automáticas sólo egresos, sin integración POS ni cierre/arqueo formal |
+| 3 | CASH-01 cierra la especificación V1 de reglas, consultas, edición desde Facturas, confirmación OCR y recibos | Sólo candidata; conserva aprobación null | El guard bajo lock protege propuestas previas. CASH-02…07 implementan y verifican |
 
 Una ampliación futura de los escritores nativos de Facturas debe distinguir los
 comandos que no incluyen Caja y los que expresan explícitamente el nuevo efecto.
