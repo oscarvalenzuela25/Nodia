@@ -1,9 +1,9 @@
 # Especificación del MVP — Nodia
 
-**Caja de Negocios — CASH-02 implementado localmente, 2026-11-17.**
-[Plan109 §11](109-business-cash-ledger-plan.md#11-categorías-y-recibos-implementados--cash-02-2026-11-17)
-registra la migración aditiva, categorías con permiso por negocio, unicidad
-concurrente y recibos. El [TODO](TODO.md) continúa en **CASH-03**.
+**Caja de Negocios — CASH-03 implementado localmente, 2026-11-17.**
+[Plan109 §12](109-business-cash-ledger-plan.md#12-movimientos-manuales-y-agregados--cash-03-2026-11-17)
+registra ingresos y egresos manuales, control de versión, recibos, filtros y
+resumen mensual. El [TODO](TODO.md) continúa en **CASH-04** con Facturas/OCR.
 
 **Topbar para Negocios y recarga desde el avatar — 2026-11-17.**
 [Estado de IA](../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17)

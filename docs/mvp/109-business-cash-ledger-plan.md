@@ -1,10 +1,10 @@
 # Caja de Negocios — plan de implementación y propuesta visual
 
-> Fecha: 2026-11-17. Estado: **CASH-02 implementado localmente para categorías y recibos**.
+> Fecha: 2026-11-17. Estado: **CASH-03 implementado localmente para movimientos manuales y agregados**.
 > Rama `codex/business-cash-ledger` desde `origin/development` (`0049b5fc`).
 > §1 recoge la solicitud. §§3–6 fijan el contrato V1 para implementación.
 > El plan y el [ADR106](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md)
-> siguen en revisión. El siguiente paso es CASH-03.
+> siguen en revisión. El siguiente paso es CASH-04.
 
 > **R02, ampliación2026-11-17:** X para limpiar categoría, + para crearla desde
 > formularios y validación de duplicados independiente de mayúsculas/espaciados.
@@ -604,8 +604,8 @@ retomar no depende de conservar una captura o un proceso local.
 | --- | --- | --- |
 | **CASH-01 — contratos y reglas** | Cierre documental 2026-11-17. Reglas, DTOs/errores, respuestas, idempotencia/CAS, frontera OCR y criterios UI fijados en §§3–7 | Cerrado por alcance documental. La [PR 50](https://github.com/oscarvalenzuela25/Nodia/pull/50) ya está integrada en la base e incluye folio opcional y preferencia OCR |
 | **CASH-02 — modelo y categorías** | Implementación local de la migración aditiva, alta/edición/actividad, listado/detalle, autoridad y recibos | Ver §11 |
-| **CASH-03 — movimientos y agregados** | CRUD manual idempotente/CAS, filtros Ransack, snapshot página+summary y agregador mensual | Primer pendiente. Reutiliza el alcance y los recibos de CASH-02 |
-| **CASH-04 — vínculo factura/OCR** | Único egreso, asignación/recategorización/retiro/restauración, sync total/fecha, manual atómico y confirmación OCR transaccional recuperable | 03; cambios de guardado nativo antes de habilitar selector OCR |
+| **CASH-03 — movimientos y agregados** | Alta, edición y actividad manuales con recibo y revisión; filtros Ransack, página y resumen sobre un snapshot y agregado mensual | Implementado localmente. Ver §12 |
+| **CASH-04 — vínculo factura/OCR** | Único egreso, asignación/recategorización/retiro/restauración, sync total/fecha, manual atómico y confirmación OCR transaccional recuperable | Primer pendiente. Cambios de guardado nativo antes de habilitar selector OCR |
 | **CASH-05 — UI Caja y categorías** | Tab, Filter, cards, tabla/tarjetas, drawer, formularios y acciones ES/EN | Contratos03; puede preparar componentes aislados sin fingir endpoints |
 | **CASH-06 — Overview y selectores factura** | Dos cards mensuales; categoría opcional con ayuda/X/+ en ambos flujos; modal creación rápida, borrador/foco e invalidación | 04/05 |
 | **CASH-07 — validación y entrega** | Unidades, integración SQL/HTTP aislada, QA visual proporcional, documentación/fichas y CI de SHA final | 02…06; despliegue/adopción con pedido propio |
@@ -616,7 +616,7 @@ Checklist de estado:
 - [x] Fuente canónica, ADR propuesto, ficha candidata y TODO preparados.
 - [x] Definir contratos, reglas, criterios de UI y verificación de CASH-01.
 - [x] CASH-02: persistencia, autorización, administración de categorías y recibos.
-- [ ] CASH-03: movimientos manuales y agregados.
+- [x] CASH-03: movimientos manuales y agregados.
 - [ ] CASH-04: factura/OCR identificados, atómicos y recuperables según alcance.
 - [ ] CASH-05/06: UI e integraciones reales, incluyendo cards mensuales.
 - [ ] CASH-07: verificación e integración/adopción por entorno.
@@ -722,8 +722,7 @@ revisión vigente conserva la versión. El GET de recibo es privado y la
 concesión vencida permite retomar el mismo comando con la misma clave.
 
 Los puntos de entrada, migración y pruebas corresponden al backend local.
-Movimientos, agregados, integración de Facturas/OCR y tab Caja se entregan
-en los pasos siguientes.
+Los movimientos y agregados de CASH-03 se documentan en §12.
 
 La [prueba de integración](../../nodia-server/test/business-cash-categories.integration.mjs)
 pasó los 10 grupos de comprobaciones en PostgreSQL 16.15 aislado y Nest
@@ -741,5 +740,60 @@ correctos y uno omitido en Windows, con `--testTimeout 20000`. Pasaron el
 tipado de producción, build y lint, con el aviso preexistente en
 `test/nodia-ai-live-unknown.fixture.mjs`.
 
-La migración permanece pendiente de aplicación operativa. CASH-03 comienza
-con el modelo de movimientos manuales y su resumen agregado.
+La migración permanece pendiente de aplicación operativa.
+
+## 12. Movimientos manuales y agregados — CASH-03, 2026-11-17
+
+La [migración 1793700000000](../../nodia-server/src/migrations/1793700000000-CreateBusinessCashMovements.ts)
+añade movimientos manuales y auditoría por movimiento y versión. La FK
+compuesta exige categoría del mismo negocio. El rollback requiere ambas
+tablas vacías. El Server devuelve `source: "manual"` e `invoice: null`.
+CASH-04 incorpora la persistencia del vínculo de factura y su retiro.
+
+El [recurso HTTP](../../nodia-server/src/business-cash/business-cash-movements.controller.ts)
+permite crear ingresos y egresos, editar campos parciales con revisión,
+cambiar actividad, consultar detalle y listar. Reutiliza la autorización del
+negocio y los recibos privados de CASH-02. Una asignación nueva requiere
+categoría activa bajo lock. Una edición con la misma categoría conserva la
+referencia histórica aunque se haya desactivado. Los cambios efectivos
+guardan el antes/después de los campos del movimiento y el recibo junto con
+el efecto. Guardar los mismos valores con revisión vigente confirma el
+recibo y conserva la versión.
+
+Ransack filtra por categoría, actividad, fechas inclusivas y texto literal
+en descripción o nombre de categoría. La lista calcula sus totales antes de
+paginar y devuelve página, conteos y sumas desde la misma sentencia, incluso
+si la página está vacía. El resumen mensual reutiliza la agregación y toma
+sólo activos del mes civil actual en America/Santiago. Los importes y sumas
+CLP viajan como decimales exactos en texto.
+
+La [integración de movimientos](../../nodia-server/test/business-cash-movements.integration.mjs)
+pasó 8 grupos en PostgreSQL 16.15 aislado con Nest compilado y sesiones
+sintéticas. Verificó la FK, autorización, altas y ediciones concurrentes,
+recibos de la versión original, rechazo recuperable, rollback por fallo de
+sellado, reintento tras el vencimiento, filtros, resumen mensual y una suma
+exacta de `9009999999999099`. La integración de categorías pasó sus 10
+grupos tras compartir el ejecutor y comprobó la recuperación de un recibo
+existente con el hash V1 de CASH-02. Ejecutar desde `nodia-server` después
+de `npm run build` con `node test/business-cash-movements.integration.mjs`.
+La prueba crea un PostgreSQL 16 desechable por defecto o usa
+`CASH03_TEST_PORT` con una base loopback vacía y marcada para laboratorio.
+
+Se evaluó `EXPLAIN (ANALYZE, BUFFERS)` con 120.000 movimientos sintéticos
+distribuidos en tres negocios y 60 categorías. La consulta con actividad
+y fecha usó el índice negocio/actividad/fecha/ID. La consulta por categoría
+y fecha usó el índice negocio/categoría/fecha/ID. La consulta sin filtros de
+actividad ni fecha recorrió los 40.000 movimientos del negocio para
+computar el resumen. El CTE materializado evitó duplicar la evaluación de
+la búsqueda literal. Se conservaron los índices iniciales. La medición
+corresponde al laboratorio local.
+
+Server local pasó 129 pruebas focalizadas y 6266 en la suite general con
+`--testTimeout 20000`, con una omitida. Pasaron tipado, build y lint, con el
+aviso preexistente en `test/nodia-ai-live-unknown.fixture.mjs`. Pasaron las 58
+pruebas de la compilación de conocimiento. La ficha candidata sigue excluida
+del contexto publicado.
+
+Comprenden este corte el backend local y la traducción de sus errores
+compartidos. La pestaña y las tarjetas de Overview corresponden a CASH-05.
+Las migraciones quedan pendientes de aplicación en un entorno operativo.

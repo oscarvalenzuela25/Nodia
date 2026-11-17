@@ -18,7 +18,7 @@ import { CashCategoryParamsDto } from './dto/cash-category-params.dto.js';
 import { CreateCashCategoryDto } from './dto/create-cash-category.dto.js';
 import { QueryCashCategoriesDto } from './dto/query-cash-categories.dto.js';
 import { UpdateCashCategoryDto } from './dto/update-cash-category.dto.js';
-import type { CashCategoryMutationResult } from './types/cash.types.js';
+import type { CashMutationResult } from './types/cash.types.js';
 import { MutateCashCategoryUseCase } from './use-case/mutate-cash-category.use-case.js';
 import { ReadCashCategoriesUseCase } from './use-case/read-cash-categories.use-case.js';
 
@@ -45,7 +45,7 @@ export class BusinessCashCategoriesController {
     @Body() body: CreateCashCategoryDto,
     @Req() request: AuthRequest,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<CashCategoryMutationResult> {
+  ): Promise<CashMutationResult<'category_create'>> {
     const result = await this.mutate.create(body, actorReference(request.auth));
     if (result.status === 'processing') response.status(HttpStatus.ACCEPTED);
     return result;
@@ -58,7 +58,7 @@ export class BusinessCashCategoriesController {
     @Body() body: UpdateCashCategoryDto,
     @Req() request: AuthRequest,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<CashCategoryMutationResult> {
+  ): Promise<CashMutationResult<'category_update'>> {
     const result = await this.mutate.update(
       params.id,
       body,

@@ -11,6 +11,7 @@ import type { QueryCashCategoriesDto } from '../dto/query-cash-categories.dto.js
 import { BusinessCashCategory } from '../entities/business-cash-category.entity.js';
 import { publicCashCategory } from '../policies/cash-category.policy.js';
 import { normalizeCashCategoryQuery } from '../policies/cash-category-query.policy.js';
+import { cashReadCount } from '../policies/cash-query.policy.js';
 import type { CashCategory } from '../types/cash.types.js';
 
 export interface CashCategoryList {
@@ -68,9 +69,9 @@ export class ReadCashCategoriesUseCase {
           parameters,
         );
       const row = rows[0];
-      const total = Number(row?.total);
-      if (!row || !/^\d+$/.test(row.total) || !Number.isSafeInteger(total))
+      if (!row)
         throw new InternalServerErrorException('business:cash_invalid_total');
+      const total = cashReadCount(row.total);
       return {
         data: row.data,
         meta: {

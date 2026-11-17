@@ -1,5 +1,13 @@
 # Contexto funcional de productos para NodiaAI
 
+## Movimientos y resúmenes de Caja — CASH-03, 2026-11-17
+
+[Plan109 §12](../../mvp/109-business-cash-ledger-plan.md#12-movimientos-manuales-y-agregados--cash-03-2026-11-17),
+[Caja revisión5](businesses/features/cash-ledger-and-invoice-expenses.md)
+y [Negocios revisión61](businesses/README.md) registran el backend local de
+movimientos manuales, revisión, auditoría, recibos y agregados por negocio.
+La ficha sigue partial/draft/unregistered y conserva approval:null.
+
 ## Categorías y recibos de Caja — CASH-02, 2026-11-17
 
 [Plan109 §11](../../mvp/109-business-cash-ledger-plan.md#11-categorías-y-recibos-implementados--cash-02-2026-11-17),
@@ -723,7 +731,7 @@ Todos los productos/módulos actuales pertenecen al alcance funcional confirmado
 |---|---|---|---|
 | Noticias (propuesta) | `news/` | [Plan105](../../mvp/105-on-demand-tech-news.md) | [Producto](news/README.md) y [lectura bajo demanda](news/features/on-demand-reading.md), draft/planned/unregistered; sólo validación, sin herramientas o publicación |
 | Nodia Teacher en Estudios | `studies/` | [Especificación95](../../mvp/95-studies-adaptive-learning.md), [plan96](../../mvp/96-nodia-teacher-implementation-plan.md), [upgrade101 en revisión](../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y [ADR098 propuesto](../../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md) | [Producto](studies/README.md), cuatro funciones base parciales y seis nuevas planned; fichas draft/unregistered, sin publicación. Evidencia/gates de V1 no acreditan el upgrade |
-| Negocios | `businesses/` | [PRD](../../features/businesses/01-prd.md), [inventario de endpoints](../../mvp/39-nodia-ai-current-capabilities-inventory.md), [plan de Caja109](../../mvp/109-business-cash-ledger-plan.md) | [Producto](businesses/README.md) draft excluido;7 funciones con secciones de lectura publicadas, [preparadores de efectos](businesses/features/confirmed-business-effects.md) publicados y [análisis C03 revisión3](businesses/features/active-invoice-analysis.md) aprobado/publicado con aceptación pendiente; [Caja](businesses/features/cash-ledger-and-invoice-expenses.md) planned/draft/unregistered, sin implementación o publicación |
+| Negocios | `businesses/` | [PRD](../../features/businesses/01-prd.md), [inventario de endpoints](../../mvp/39-nodia-ai-current-capabilities-inventory.md), [plan de Caja109](../../mvp/109-business-cash-ledger-plan.md) | [Producto](businesses/README.md) draft excluido;7 funciones con secciones de lectura publicadas, [preparadores de efectos](businesses/features/confirmed-business-effects.md) publicados y [análisis C03 revisión3](businesses/features/active-invoice-analysis.md) aprobado/publicado con aceptación pendiente; [Caja](businesses/features/cash-ledger-and-invoice-expenses.md) partial/draft/unregistered, con API local de categorías y movimientos manuales |
 | Finanzas personales | `personal-finance/` | [Contratos](../../mvp/22-personal-finance-contracts.md) | [Producto](personal-finance/README.md) excluido;4 funciones con secciones de lectura y [efecto confirmado](personal-finance/features/confirmed-movement-effect.md) publicados |
 | Reservas | `reservations/` | [Especificación](../../mvp/26-rental-reservations-spec.md), [contratos](../../mvp/28-rental-reservations-contracts.md) | [Producto](reservations/README.md) excluido;9 funciones de lectura y secciones publicadas de [configuración](reservations/features/confirmed-configuration.md), [ciclo comercial](reservations/features/confirmed-reservation-lifecycle.md), [dinero](reservations/features/confirmed-money.md) y [ocupación/preparación](reservations/features/confirmed-occupancy-preparation.md) |
 | NodiaAI (nuevo producto en implementación) | `nodia-ai/` | [Plan45](../../mvp/45-nodia-ai-implementation-plan.md), [política50](../../mvp/50-nodia-ai-ai04-runtime-policy.md) | [Producto](nodia-ai/README.md) draft excluido; secciones de [coordinación](nodia-ai/features/conversation-coordination.md), [preferencias](nodia-ai/features/accepted-preferences.md) y [adjuntos/voz](nodia-ai/features/attachments-and-voice.md) publicadas; otras fichas conservan estados propios |

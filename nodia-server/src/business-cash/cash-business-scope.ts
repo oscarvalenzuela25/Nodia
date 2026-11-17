@@ -11,7 +11,10 @@ import {
 } from '../authorization/authority-transaction.js';
 import { CheckModuleAccessUseCase } from '../authorization/use-case/check-module-access.use-case.js';
 import { assertBusinessesAccess } from '../business-access/business-access.js';
-import { validateCashCategoryId } from './policies/cash-category.policy.js';
+import {
+  normalizeCashUuid,
+  validateCashCategoryId,
+} from './policies/cash-category.policy.js';
 
 @Injectable()
 export class CashBusinessScope {
@@ -39,19 +42,45 @@ export class CashBusinessScope {
     work: (manager: EntityManager, businessId: string) => Promise<T>,
   ): Promise<T> {
     validateCashCategoryId(id);
+    return this.forRecord('business_cash_categories', id, actor, work);
+  }
+
+  forMovement<T>(
+    rawId: string,
+    actor: ActorReference,
+    work: (
+      manager: EntityManager,
+      businessId: string,
+      id: string,
+    ) => Promise<T>,
+  ): Promise<T> {
+    const id = normalizeCashUuid(rawId);
+    return this.forRecord('business_cash_movements', id, actor, work);
+  }
+
+  private forRecord<T>(
+    table: 'business_cash_categories' | 'business_cash_movements',
+    id: string,
+    actor: ActorReference,
+    work: (
+      manager: EntityManager,
+      businessId: string,
+      id: string,
+    ) => Promise<T>,
+  ): Promise<T> {
     return this.transaction(actor, async (manager) => {
       await currentActor(manager, actor);
       // Only resolve the immutable parent before its lock. Domain data is read
       // after membership has been rechecked under that lock.
-      const [category] = await manager.query<{ business_id: string }[]>(
-        'SELECT business_id FROM business_cash_categories WHERE id=$1',
+      const [record] = await manager.query<{ business_id: string }[]>(
+        `SELECT business_id FROM ${table} WHERE id=$1`,
         [id],
       );
-      if (!category) throw new NotFoundException('business:resource_not_found');
-      await assertBusinessesAccess(manager, actor, [category.business_id], {
+      if (!record) throw new NotFoundException('business:resource_not_found');
+      await assertBusinessesAccess(manager, actor, [record.business_id], {
         lock: true,
       });
-      return work(manager, category.business_id);
+      return work(manager, record.business_id, id);
     });
   }
 

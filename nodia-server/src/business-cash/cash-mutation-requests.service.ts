@@ -6,10 +6,11 @@ import {
 import { randomUUID } from 'node:crypto';
 import type { EntityManager } from 'typeorm';
 import type {
-  CashCategory,
-  CashCategoryOperation,
+  CashMutationPayload,
   CashMutationReceipt,
+  CashOperation,
   CashRejectedResult,
+  KnownCashReceipt,
 } from './types/cash.types.js';
 
 export interface CashReceiptIdentity {
@@ -18,23 +19,27 @@ export interface CashReceiptIdentity {
   requestKey: string;
 }
 
-interface CashRequest extends CashReceiptIdentity {
-  operation: CashCategoryOperation;
+export interface CashRequest<
+  Operation extends CashOperation,
+> extends CashReceiptIdentity {
+  operation: Operation;
   fingerprint: string;
 }
 
-type CashCategoryResult = { category: CashCategory };
-type TerminalResult =
-  | { status: 'committed'; result: CashCategoryResult }
+type TerminalResult<Operation extends CashOperation> =
+  | { status: 'committed'; result: CashMutationPayload<Operation> }
   | { status: 'rejected'; error: CashRejectedResult };
-type StoredReceipt = {
-  operation: CashCategoryOperation;
+type StoredReceipt<Operation extends CashOperation> = {
+  operation: Operation;
   request_hash: string;
   attempt_id: string;
   contract_version: number;
-} & (TerminalResult | { status: 'processing' | 'retryable'; expired: boolean });
-type KnownReceipt = Exclude<CashMutationReceipt, { status: 'unconfirmed' }>;
-type Reservation = { attemptId: string } | { receipt: KnownReceipt };
+} & (
+  | TerminalResult<Operation>
+  | { status: 'processing' | 'retryable'; expired: boolean }
+);
+export type CashReservation<Operation extends CashOperation> =
+  { attemptId: string } | { receipt: KnownCashReceipt<Operation> };
 
 export const CASH_MUTATION_CONTRACT_VERSION = 1;
 
@@ -64,10 +69,10 @@ export class CashMutationRequestsService {
         };
   }
 
-  async reserve(
+  async reserve<Operation extends CashOperation>(
     manager: EntityManager,
-    request: CashRequest,
-  ): Promise<Reservation> {
+    request: CashRequest<Operation>,
+  ): Promise<CashReservation<Operation>> {
     const parameters = scopeParameters(request);
     let entry = await this.find(manager, request);
     if (!entry) {
@@ -128,11 +133,11 @@ export class CashMutationRequestsService {
     if (!rows.length) throw unavailable();
   }
 
-  async settle(
+  async settle<Operation extends CashOperation>(
     manager: EntityManager,
     identity: CashReceiptIdentity,
     attemptId: string,
-    outcome: TerminalResult,
+    outcome: TerminalResult<Operation>,
   ): Promise<void> {
     const rows = await manager.query<{ attempt_id: string }[]>(
       `WITH settled AS (
@@ -154,7 +159,7 @@ export class CashMutationRequestsService {
   }
 
   private async find(manager: EntityManager, identity: CashReceiptIdentity) {
-    const [row] = await manager.query<StoredReceipt[]>(
+    const [row] = await manager.query<StoredReceipt<CashOperation>[]>(
       `SELECT operation, request_hash, attempt_id, contract_version, status, result, error,
               lease_expires_at<=clock_timestamp() AS expired
        FROM business_cash_mutation_requests
@@ -164,7 +169,10 @@ export class CashMutationRequestsService {
     return row;
   }
 
-  private match(request: CashRequest, entry?: StoredReceipt): KnownReceipt {
+  private match<Operation extends CashOperation>(
+    request: CashRequest<Operation>,
+    entry?: StoredReceipt<CashOperation>,
+  ): KnownCashReceipt<Operation> {
     if (!entry) throw unavailable();
     if (
       entry.operation !== request.operation ||
@@ -173,10 +181,14 @@ export class CashMutationRequestsService {
     ) {
       throw new ConflictException('business:cash_request_key_conflict');
     }
-    return this.project(request.requestKey, entry);
+    // The checked operation identifies the persisted result contract.
+    return this.project(request.requestKey, entry as StoredReceipt<Operation>);
   }
 
-  private project(requestKey: string, entry: StoredReceipt): KnownReceipt {
+  private project<Operation extends CashOperation>(
+    requestKey: string,
+    entry: StoredReceipt<Operation>,
+  ): KnownCashReceipt<Operation> {
     const identity = { request_key: requestKey, operation: entry.operation };
     if (entry.status === 'committed')
       return { ...identity, status: 'committed', result: entry.result };

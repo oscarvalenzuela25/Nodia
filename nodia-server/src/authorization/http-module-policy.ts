@@ -31,6 +31,7 @@ const moduleByControllerPath: Readonly<Record<string, string>> = {
   businesses: BUSINESS,
   'businesses/:businessId': BUSINESS,
   'business-cash-categories': BUSINESS,
+  'business-cash-movements': BUSINESS,
   'business-action': BUSINESS,
   'business-actions': BUSINESS,
   provider: BUSINESS,

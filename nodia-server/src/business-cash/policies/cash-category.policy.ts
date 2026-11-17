@@ -84,8 +84,23 @@ function categoryName(
   return { name, normalized_name };
 }
 
-function active(value: unknown): boolean {
+export function normalizeCashDescription(value: unknown): string {
+  return text(value, 500);
+}
+
+export function normalizeCashActivity(value: unknown): boolean {
   if (typeof value !== 'boolean') return invalid();
+  return value;
+}
+
+export function normalizeCashVersion(value: unknown): number {
+  if (
+    typeof value !== 'number' ||
+    !Number.isInteger(value) ||
+    value < 1 ||
+    value > CASH_MAX_VERSION
+  )
+    return invalid();
   return value;
 }
 
@@ -97,8 +112,11 @@ export function normalizeCashCategoryCreate(
     business_id: normalizeCashUuid(value.business_id),
     request_key: normalizeCashUuid(value.request_key),
     ...categoryName(value.name),
-    description: text(value.description, 500),
-    is_active: value.is_active === undefined ? true : active(value.is_active),
+    description: normalizeCashDescription(value.description),
+    is_active:
+      value.is_active === undefined
+        ? true
+        : normalizeCashActivity(value.is_active),
   };
 }
 
@@ -113,25 +131,18 @@ export function normalizeCashCategoryUpdate(
     'expected_version',
     ...optionalFields,
   ]);
-  const { expected_version } = value;
-  if (
-    typeof expected_version !== 'number' ||
-    !Number.isInteger(expected_version) ||
-    expected_version < 1 ||
-    expected_version > CASH_MAX_VERSION ||
-    optionalFields.every((field) => value[field] === undefined)
-  )
+  if (optionalFields.every((field) => value[field] === undefined))
     return invalid();
   return {
     request_key: normalizeCashUuid(value.request_key),
-    expected_version,
+    expected_version: normalizeCashVersion(value.expected_version),
     ...(value.name === undefined ? {} : categoryName(value.name)),
     ...(value.description === undefined
       ? {}
-      : { description: text(value.description, 500) }),
+      : { description: normalizeCashDescription(value.description) }),
     ...(value.is_active === undefined
       ? {}
-      : { is_active: active(value.is_active) }),
+      : { is_active: normalizeCashActivity(value.is_active) }),
   };
 }
 

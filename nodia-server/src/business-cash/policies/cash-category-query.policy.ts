@@ -1,75 +1,33 @@
-import { BadRequestException } from '@nestjs/common';
 import { validateRansackEnvelope } from '../../common/utils/ransack-query.builder.js';
+import { CASH_CATEGORY_SORTS } from '../dto/query-cash-categories.dto.js';
+import { assertCashFields, normalizeCashUuid } from './cash-category.policy.js';
 import {
-  CASH_CATEGORY_SORTS,
-  CASH_MAX_LIMIT,
-  CASH_MAX_PAGE,
-} from '../dto/query-cash-categories.dto.js';
-import {
-  assertCashFields,
-  isCashText,
-  normalizeCashUuid,
-  trimCashText,
-} from './cash-category.policy.js';
-
-const invalidCode = 'business:cash_invalid_query';
-const invalid = (): never => {
-  throw new BadRequestException(invalidCode);
-};
-
-function positiveInteger(value: unknown, max: number): number {
-  if (
-    typeof value !== 'number' ||
-    !Number.isInteger(value) ||
-    value < 1 ||
-    value > max
-  )
-    return invalid();
-  return value;
-}
+  CASH_INVALID_QUERY,
+  invalidCashQuery,
+  normalizeCashActivity,
+  normalizeCashPagination,
+  normalizeCashSearch,
+} from './cash-query.policy.js';
 
 export function normalizeCashCategoryQuery(value: unknown) {
-  assertCashFields(value, ['q', 'page', 'limit'], invalidCode);
+  assertCashFields(value, ['q', 'page', 'limit'], CASH_INVALID_QUERY);
   const q = value.q;
   assertCashFields(
     q,
     ['business_id_eq', 'name_cont', 'is_active_eq', 's'],
-    invalidCode,
+    CASH_INVALID_QUERY,
   );
   validateRansackEnvelope(q);
 
-  const activity = q.is_active_eq;
-  if (
-    activity !== undefined &&
-    ![true, false, 'true', 'false'].some((item) => item === activity)
-  )
-    return invalid();
   if (q.s !== undefined && !CASH_CATEGORY_SORTS.some((sort) => sort === q.s))
-    return invalid();
-
-  let name: string | undefined;
-  if (q.name_cont !== undefined) {
-    if (!isCashText(q.name_cont)) return invalid();
-    name = trimCashText(q.name_cont);
-    if ([...name].length > 255) return invalid();
-  }
+    return invalidCashQuery();
 
   return {
-    page: positiveInteger(
-      value.page === undefined ? 1 : value.page,
-      CASH_MAX_PAGE,
-    ),
-    limit: positiveInteger(
-      value.limit === undefined ? 10 : value.limit,
-      CASH_MAX_LIMIT,
-    ),
+    ...normalizeCashPagination(value.page, value.limit),
     filters: {
-      business_id_eq: normalizeCashUuid(q.business_id_eq, invalidCode),
-      name_cont: name || undefined,
-      is_active_eq:
-        activity === undefined
-          ? undefined
-          : activity === true || activity === 'true',
+      business_id_eq: normalizeCashUuid(q.business_id_eq, CASH_INVALID_QUERY),
+      name_cont: normalizeCashSearch(q.name_cont),
+      is_active_eq: normalizeCashActivity(q.is_active_eq),
     },
     direction: q.s === 'name desc' ? ('DESC' as const) : ('ASC' as const),
   };

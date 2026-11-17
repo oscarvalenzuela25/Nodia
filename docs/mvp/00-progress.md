@@ -1,10 +1,10 @@
 # Progreso del MVP — Nodia
 
-**CASH-02 implementado localmente — 2026-11-17.**
-[Plan109 §11](109-business-cash-ledger-plan.md#11-categorías-y-recibos-implementados--cash-02-2026-11-17)
-registra migración 1793690000000, lecturas y mutaciones de categorías con
-autoridad por negocio y recibos privados. El [TODO](TODO.md) continúa con
-CASH-03 para movimientos manuales y agregados.
+**CASH-03 implementado localmente — 2026-11-17.**
+[Plan109 §12](109-business-cash-ledger-plan.md#12-movimientos-manuales-y-agregados--cash-03-2026-11-17)
+registra migración 1793700000000, ingresos y egresos manuales con control de
+versión, auditoría y recibos, más filtros y agregados exactos por negocio.
+El [TODO](TODO.md) continúa con CASH-04 para Facturas/OCR.
 
 **Topbar y OCR de Negocios — 2026-11-17.** Corrección local en
 `codex/business-cash-ledger`. El [estado IA](../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17)

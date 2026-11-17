@@ -16,6 +16,7 @@ describe('HTTP module policy', () => {
     [['ai-provider-event', 'ai-provider-events'], '/ai-providers'],
     [['invoice', 'invoices'], '/business'],
     [['business-cash-categories'], '/business'],
+    [['business-cash-movements'], '/business'],
     [['providers/:providerId/contacts'], '/business'],
     [['finance/movements'], '/finances-personal'],
     [['rental/properties/:propertyId/reservations'], '/reservations'],
@@ -50,6 +51,16 @@ describe('HTTP module policy', () => {
     });
     expect(resolveHttpModulePolicy(controller, [':key'], 'PUT')).toBeUndefined();
     expect(resolveHttpModulePolicy(controller, [''], 'GET')).toBeUndefined();
+  });
+
+  it('uses the Business module for the monthly cash summary', () => {
+    expect(
+      resolveHttpModulePolicy(
+        ['business-cash-movements'],
+        ['monthly-summary'],
+        'GET',
+      ),
+    ).toEqual({ routes: ['/business'], match: 'all' });
   });
 
   it('shares the exact Topbar status GET without opening AI administration', () => {
