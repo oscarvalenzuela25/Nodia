@@ -46,12 +46,12 @@ import {
 import ContactModal from "../ContactModal";
 import { ContactPanel, ContactTableContainer, ContactToolbar } from "./styles";
 
-type Props = { providerId: string; providerName: string; onBack: () => void };
+export type ProviderContactsProps = { providerId: string; providerName: string; onBack: () => void };
 export default function ProviderContacts({
   providerId,
   providerName,
   onBack,
-}: Props) {
+}: ProviderContactsProps) {
   const { t } = useTranslation(["provider_contacts", "core"]);
   const mobile = useMediaQuery(useTheme().breakpoints.down("sm"));
   const [page, setPage] = useState(0);

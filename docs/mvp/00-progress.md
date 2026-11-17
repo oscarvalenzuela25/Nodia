@@ -1,5 +1,28 @@
 # Progreso del MVP — Nodia
 
+**Proveedores: apertura recuperable de Contactos — incidencia2026-11-16:**
+[Plan31](31-provider-contacts-proposal.md#apertura-recuperable-de-contactos--incidencia-de-producción2026-11-16) registra error/404 reportado en producción.
+El usuario confirma que recargar la página corrige el fallo observado.
+Assets/importación anónimos actuales correctos; causa exacta aún no aislada. Reproducción local de import404 confirmó escape al error global;
+candidato contiene descarga/fallo con lista y borradores intactos, retry local y
+scope vigente. Focal67/9 y QA fresh320/600/1440 de fallo/recuperación correctas;
+global3139/380, tipos/lint/build y pins locales correctos por
+[evidencia](../evidence/providers-contacts-opening-20261116.md). Primer pendiente:
+revisar/integrar/adoptar el candidato; si reaparece, capturar petición/error
+autenticados antes de atribuir causa. Sin nueva autorización de despliegue. Sin cambio
+Server/DB/HTTP ni aprobación/publicación nueva; no se declara resuelto en producción.
+
+**OCR manual: defaults y selección exacta — solicitud2026-11-16:**
+[Plan94§41](94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16) documenta alias nuevo desde nombre,
+alias existente editable/conservado, disponibilidad nueva true y updates intactos;
+venta inicial30% sobre bruto editable, cantidad junto al alias y sin toggle.
+Modelo/intensidad desde defaults persistidos por instancia/modo. Implementación
+local, tipos/lint/build y QA Chromium sintética6perfiles correctos por
+[evidencia](../evidence/invoice-ocr-review-defaults-20261116.md). Global2:3125/378;
+focal posterior124/10 cubre último delta de recuperación. Tipos/lint/build finales
+y conocimiento/pins locales correctos; revisión/integración y adopción separadas.
+Sin inferencia ni aprobación/publicación nuevas.
+
 **PR News a development y capturas archivadas — solicitud2026-11-16:**
 [105§14](105-on-demand-tech-news.md#14-pr-a-development-y-capturas-fuera-de-git--solicitud2026-11-16)
 conserva [PR46](https://github.com/oscarvalenzuela25/Nodia/pull/46), ya abierta y

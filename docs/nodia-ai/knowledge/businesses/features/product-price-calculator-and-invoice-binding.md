@@ -4,11 +4,11 @@
   "document_id": "businesses.product-price-calculator-and-invoice-binding",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 13,
+  "revision": 14,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "ClientR37 conserva la mejora visual de precio sugerido verificada1088/320px, sin Aplicar/Guardar en esa QA. NativeR16 adoptado con diagnóstico seguro best-effort y660Linux correctos, pero la nueva intención OCR real volvió aHTTP504 tras leer el archivo sin finish/resultado. Cierre local0CLI/marcadores/proofs/grupos yPNG conservado. Causa no aislada; no atribuir a Google/transporte ni convertir indicadores vacíos de un log truncado en ausencia de fallos. R15fallido y R37visual conservan sus recibos. Resolver extracción compatible con CLI1.3.1 sigue pendiente; sin replay, cambio de selección o ampliación de deadlines. No amplía guardado comercial, capacidades, permisos o bindings; draft/partial/unregistered sin nueva aprobación/publicación. VM development2026-11-14: alias humano nullable con revisión OCR explícita, búsqueda nombre/alias y filtros independientes de códigos. Migración179366 aplicada una vez;13productos/33logs preservados y QA local/SQL/HTTP aislados correctos. Sin producción, inferencia OCR o publicación; recibo operativo separado."
+    "notes": "Solicitud2026-11-16 plan94§41: nuevos alias desde nombre, alias existente conservado/editable, disponibilidad nueva true y existente intacta, precio OCR inicial30% sobre bruto y edición por fila; modelo/intensidad desde configuración persistida por instancia/modo. Implementación local y QA Chromium sintética6perfiles verificadas; tipos/lint/build correctos. Global2 correcta3125/378 y focal posterior124/10 cubre recuperación final; tipos/lint/build y pins locales correctos según evidencia2026-11-16; antecedentes fechados inferiores conservan su alcance. Sin nueva aprobación/publicación o adopción. ClientR37 conserva la mejora visual de precio sugerido verificada1088/320px, sin Aplicar/Guardar en esa QA. NativeR16 adoptado con diagnóstico seguro best-effort y660Linux correctos, pero la nueva intención OCR real volvió aHTTP504 tras leer el archivo sin finish/resultado. Cierre local0CLI/marcadores/proofs/grupos yPNG conservado. Causa no aislada; no atribuir a Google/transporte ni convertir indicadores vacíos de un log truncado en ausencia de fallos. R15fallido y R37visual conservan sus recibos. Resolver extracción compatible con CLI1.3.1 sigue pendiente; sin replay, cambio de selección o ampliación de deadlines. No amplía guardado comercial, capacidades, permisos o bindings; draft/partial/unregistered sin nueva aprobación/publicación. VM development2026-11-14: alias humano nullable con revisión OCR explícita, búsqueda nombre/alias y filtros independientes de códigos. Migración179366 aplicada una vez;13productos/33logs preservados y QA local/SQL/HTTP aislados correctos. Sin producción, inferencia OCR o publicación; recibo operativo separado."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
@@ -83,7 +83,7 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-14",
+    "checked_on": "2026-11-16",
     "evidence_paths": [
       "docs/evidence/business-product-pricing-documentation-20261106-r01.json",
       "docs/evidence/business-product-pricing-20261106-r01.json",
@@ -96,9 +96,10 @@
       "docs/evidence/product-price-result-alignment-20261107-r01.json",
       "docs/evidence/invoice-gemini-timeout-20261107-r01.json",
       "docs/evidence/invoice-gemini-timeout-20261107-r02.json",
-      "docs/evidence/product-alias-and-code-completeness-20261114.md"
+      "docs/evidence/product-alias-and-code-completeness-20261114.md",
+      "docs/evidence/invoice-ocr-review-defaults-20261116.md"
     ],
-    "notes": "R16:660Linux sin fallos/omitidas más fixture cancel/setsid/IO/nuevaintención sin red/perfil real; Windows649pass/11skip es corrida separada. Adopción técnica verificada con configuraciónServerR12/ClientR37 preservada. OCR real504 con deadline240s/inferencia242057ms/UI250s, view_filecompletado y finish/result0. Hook1decisión/0rechazos; log truncado sin indicadores reconocidos no prueba causa ni ausencia. Cierre local0CLI/marcadores/proofs/grupos; no replay/guardar/vincularnuevo. R15yR37 históricos intactos;44aprobadas byte-idénticas. No se declara extracción resuelta."
+    "notes": "Delta2026-11-16: implementación local, tipos/lint/build y QA Chromium sintética6perfiles correctos; global2 correcta3125/378 y focal posterior124/10; tipos/lint/build y pins locales correctos. Sin inferencia ni mutaciones HTTP reales. R16:660Linux sin fallos/omitidas más fixture cancel/setsid/IO/nuevaintención sin red/perfil real; Windows649pass/11skip es corrida separada. Adopción técnica verificada con configuraciónServerR12/ClientR37 preservada. OCR real504 con deadline240s/inferencia242057ms/UI250s, view_filecompletado y finish/result0. Hook1decisión/0rechazos; log truncado sin indicadores reconocidos no prueba causa ni ausencia. Cierre local0CLI/marcadores/proofs/grupos; no replay/guardar/vincularnuevo. R15yR37 históricos intactos;44aprobadas byte-idénticas. No se declara extracción resuelta."
   },
   "approval": null
 }
@@ -110,9 +111,37 @@
 
 ## Qué resuelve y qué significa
 
-El precio de venta manual pertenece al producto y no recalcula costo neto o costo con impuesto. El porcentaje deja de persistirse: 30% es una sugerencia editable de una calculadora local sobre costo bruto, aplicada sólo mediante una acción explícita al borrador. Guardar producto es una acción posterior. No representa utilidad realizada ni añade impuestos a la venta. La oferta permanece independiente.
+El precio de venta manual pertenece al producto y no recalcula costo neto o costo con impuesto. El porcentaje deja de persistirse: 30% es una sugerencia editable de una calculadora local sobre costo bruto; en el formulario nativo se aplica al borrador mediante una acción explícita. La preparación manual OCR de [plan94§41](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16) inicializa la venta de filas nuevas y matches automáticos con ese incremento, con lápiz por fila para corregirla. Guardar producto sigue siendo una acción posterior. No representa utilidad realizada ni añade impuestos a la venta. La oferta permanece independiente.
 
 La fila extraída de una factura es una propuesta, no un producto confirmado. Vincularla permite elegir un producto real del mismo negocio y revisar valores anterior→nuevo por campo. No guarda ni repite OCR al seleccionar.
+
+
+## Revisión manual OCR — solicitud2026-11-16
+
+[Plan94§41](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16) sustituye el
+control de columnas anterior: Cantidad de la factura queda junto a Alias comercial;
+Disponibilidad y su control +/− desaparecen. Nuevos disponibles por defecto;
+actualizaciones omiten disponibilidad y la conservan. Un cambio posterior se hace
+en el producto nativo. Alias nuevo copia nombre; alias existente procede del
+catálogo y conserva su valor hasta edición explícita.
+
+«Precio Venta (30%)» identifica el incremento inicial sobre bruto; no indica que
+todo precio editado conserve ese porcentaje. Lápiz permite cambiar sólo venta.
+Bruto ausente/inválido u overflow deja la fila pendiente sin inventar un importe;
+cero real se conserva. El precio de catálogo elegido mediante vinculación manual
+no se reemplaza si la casilla venta no fue seleccionada.
+
+Modelo e Intensidad se seleccionan antes de analizar desde la configuración y
+opciones reales de la instancia/modo. Los defaults persistidos se presentan
+inicialmente; sin modelo asignado se informa esa ausencia. No se deducen modelos,
+capacidades o intensidad por el nombre del proveedor ni se cambia la selección
+durante una inferencia. No supone disponibilidad comprobada ni autorización de
+otro proveedor o modo. Cancelación y recuperación conservan su contrato.
+
+Este delta está implementado localmente; tipos/lint/build y QA Chromium sintética
+de seis perfiles correctos según [evidencia](../../../../evidence/invoice-ocr-review-defaults-20261116.md).
+Global2:3125/378 y focal final posterior124/10 correctos; tipos/lint/build y pins locales verificados. No hereda resultados OCR anteriores ni
+modifica las herramientas conversacionales publicadas.
 
 ## Solicitudes en lenguaje natural
 

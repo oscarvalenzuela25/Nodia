@@ -1,6 +1,6 @@
 import i18n from "../../../../../../../../translate";
 import { normalizeProductAlias, productAliasFits } from "../../../../../../infrastructure/productAliases";
-import { PRODUCT_PRICE_MAX } from "../ProductModal/productPricing";
+import { PRODUCT_PRICE_MAX, suggestedProductPrice } from "../ProductModal/productPricing";
 import type {
   ExtractedInvoiceItem,
   ProductEntity,
@@ -95,7 +95,7 @@ export const calculatePriceDiff = (
   };
 };
 
-/** Alias is catalog/human data only. OCR names never silently become aliases. */
+/** New OCR rows use their name; catalog aliases remain independently editable. */
 export function invoiceAliasNeedsReview(row: Partial<InvoiceProvisionalRow>): boolean {
   return row.alias_reviewed !== true || typeof row.alias !== "string" || normalizeProductAlias(row.alias) === null || !productAliasFits(row.alias);
 }
@@ -105,6 +105,17 @@ export function reviewInvoiceAlias(row: InvoiceProvisionalRow, alias: string): I
   if (!value || !productAliasFits(value)) throw new Error(i18n.t("business:product_alias_invalid"));
   const next: InvoiceProvisionalRow = { ...row, alias: value, alias_reviewed: true,
     manual_match: row.manual_match ? { ...row.manual_match, fields: [...new Set([...row.manual_match.fields, "alias" as const])] } : undefined };
+  return { ...next, ...validateInvoiceRow(next) };
+}
+
+/** A local price edit joins the reviewed fields when the row was manually bound. */
+export function reviewInvoiceSalePrice(row: InvoiceProvisionalRow, salePrice: number): InvoiceProvisionalRow {
+  if (!Number.isInteger(salePrice) || salePrice < 0 || salePrice > PRODUCT_PRICE_MAX) {
+    throw new Error(i18n.t("business:invoice_validation_sale"));
+  }
+  const next: InvoiceProvisionalRow = { ...row, sale_price: salePrice,
+    priceDiff: calculatePriceDiff(salePrice, row.historicalProduct?.sale_price),
+    manual_match: row.manual_match ? { ...row.manual_match, fields: [...new Set([...row.manual_match.fields, "sale_price" as const])] } : undefined };
   return { ...next, ...validateInvoiceRow(next) };
 }
 
@@ -233,8 +244,10 @@ export const mapExtractedItemsToRows = (
     } else if (missingGross && Number.isFinite(cost_price)) {
       cost_price_tax = Math.round(cost_price * taxFactor);
     }
-    // Preserve the explicit catalog sale price; new products require a manual price.
-    const sale_price = existing ? Number(existing.sale_price) : Number.NaN;
+    // Initial OCR proposal only. Later edits remain independent of costs.
+    const sale_price = suggestedProductPrice(cost_price_tax, 30) ?? Number.NaN;
+    const name = (item.name || "").trim();
+    const alias = normalizeProductAlias(existing ? existing.alias : name);
     const quantity = item.quantity === null || item.quantity === undefined ? Number.NaN : Number(item.quantity);
 
     const priceDiff = calculatePriceDiff(sale_price, historicalProduct?.sale_price);
@@ -243,14 +256,14 @@ export const mapExtractedItemsToRows = (
       id: existing?.id,
       code,
       invoice_code: code,
-      name: (item.name || "").trim(),
-      alias: typeof existing?.alias === "string" && existing.alias.trim() ? existing.alias.trim() : null,
-      alias_reviewed: typeof existing?.alias === "string" && !!existing.alias.trim() && productAliasFits(existing.alias),
+      name,
+      alias,
+      alias_reviewed: alias !== null && productAliasFits(alias),
       cost_price,
       cost_price_tax,
       sale_price,
       quantity,
-      has_stock: typeof existing?.has_stock === "boolean" ? existing.has_stock : undefined,
+      has_stock: existing ? existing.has_stock ?? undefined : true,
       version: existing?.version,
       is_active: existing?.is_active ?? true,
       isUpdate: Boolean(existing?.id),
@@ -313,8 +326,7 @@ export function invoiceProductPayload(row: InvoiceProvisionalRow, businessId: st
     if (!Number.isSafeInteger(row.version) || Number(row.version) < 1) throw new Error(i18n.t('business:invoice_match_invalid_product'));
     return { ...common, id: row.id, expected_version: row.version };
   }
-  if (typeof row.has_stock !== 'boolean') throw new Error(i18n.t('business:pos.choose_availability'));
-  return { ...common, business_id: businessId, has_stock: row.has_stock };
+  return { ...common, business_id: businessId, has_stock: true };
 }
 
 export function prepareInvoiceProductPayloads(rows: InvoiceProvisionalRow[], businessId: string, providerId: string | null) {

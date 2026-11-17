@@ -2,6 +2,7 @@
 
 > Estado: propuesto
 > Fecha: 2026-11-14
+> Aclaración funcional2026-11-16: [plan94§41](../../mvp/94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16) sustituye la revisión obligatoria de alias para filas OCR nuevas; estado propuesto conservado.
 
 ## Contexto
 
@@ -37,9 +38,12 @@ explícita de `name`, sin otro booleano persistido. El alias personalizado no si
 cambios posteriores de nombre automáticamente. Escribir texto no vacío desmarca
 el checkbox; borrar o escribir sólo espacios lo marca.
 
-Nuevas filas OCR y productos existentes sin alias necesitan revisión explícita:
-escribir alias o elegir usar nombre y guardar el editor local. La IA no extrae,
-inventa ni confirma alias. Los comandos de todas las filas se validan antes de
+En el corte inicial2026-11-14, filas OCR nuevas y existentes sin alias exigían
+revisión explícita. La solicitud funcional2026-11-16 de plan94§41 sustituye esa
+regla para filas nuevas: el importador copia localmente el nombre al alias,
+editable antes del guardado final. Updates cargan y conservan el alias real;
+existentes sin alias siguen requiriendo revisión. La IA no extrae, inventa ni
+confirma alias y no se completa historia en la base de datos. Los comandos de todas las filas se validan antes de
 guardar la factura. No se declara atomicidad global de un flujo de varias
 peticiones; se conservan recuperación/idempotencia existentes.
 
