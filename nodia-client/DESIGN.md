@@ -639,6 +639,27 @@ Pautas de proceso solicitadas el2026-10-10 tras informes autenticados de Inicio.
 
 ### 10.6 Patrón verificado — editor secundario por intención (2026-10-10)
 
+**Aplicación a Contactos de proveedores — incidencia2026-11-16:**
+[plan31](../docs/mvp/31-provider-contacts-proposal.md#apertura-recuperable-de-contactos--incidencia-de-producción2026-11-16) registra la reproducción local de
+un404 de importación que antes alcanzaba RouteError global. La carga secundaria
+mantiene la lista de proveedores montada hasta resolver, comparte el módulo
+correcto y libera el rechazo para retry local. Alert/toast traducidos y foco
+recuperable; sin recarga global, pérdida de búsqueda/página/borrador o una nueva
+mutación al reintentar. Actor/sessionVersion/negocio/proveedor capturados impiden
+abrir resoluciones obsoletas. Resize conserva el mismo estado y consultas.
+Focal67casos/9archivos correcta (12atómicas de hook/loader); restaurar foco
+tras habilitar de nuevo el control, no mientras sigue disabled. Regresión
+antes/después del defecto comprobada. QA final Chromium fresh ES/oscuro:
+320/600/1440 por fallo/panel saludable, búsqueda y foco conservados al retry,
+resize y Volver; sin overflow ni excepcionesJS. A320Alert278×128,08px en x16
+y documento310/viewport320. Global3139/380, focal67/9, tipos/lint/build finales
+correctos del corte congelado; build39,45s. Contención local verificada, sin
+atribuirla a la resolución del incidente autenticado original de producción.
+[Evidencia](../docs/evidence/providers-contacts-opening-20261116.md) distingue
+assets/importación anónimos correctos de la causa autenticada de producción aún
+no aislada. No se acredita ahorro de rendimiento ni cierre productivo por contener
+el fallo local; contactos/HTTP/Server/DB y ficha aprobada permanecen intactos.
+
 - **Descarga al pulsar:** [MobileBottomNav](src/layouts/components/MobileBottomNav/MobileBottomNav.tsx) mantiene la navegación disponible y carga MobileShortcutDialog mediante [loadShortcutDialog](src/layouts/components/MobileBottomNav/loadShortcutDialog.ts) al solicitar edición. Imports de props son exclusivamente tipados; BaseModal y el editor quedan fuera del grafo estático inicial. No precargar al montar ni sustituir BaseModal por otro modal.
 - **Recuperación local:** [useShortcutDialog](src/layouts/components/MobileBottomNav/hooks/useShortcutDialog.ts) muestra estado traducido y loading/disabled en controles de edición durante la descarga, sin skeletons ni un diálogo vacío. Fallo: alert y un toast traducidos, botones habilitados y reintento al pulsar el acceso. Compartir importación satisfactoria; liberar la promesa rechazada. No usar la recarga automática de lazyRoute para este editor: borradores de la página deben permanecer intactos. Reintentar no garantiza recuperar un asset eliminado del servidor; conservar assets con hash durante despliegues según10.4/WP-06.
 - **Solicitud vinculada al contexto:** ignorar resolución tardía tras cambiar identidad, versión de sesión, navegación o desmontar la barra. Revalidar sesión antes de abrir y conservar autorización/persistencia estrictas al guardar. El componente cargado puede reutilizarse; selección/búsqueda pertenecen a la instancia del formulario, con key por persona/sesión/espacio.

@@ -7,6 +7,9 @@ import ProvidersTab from "../../../../../../../modules/business/pages/BusinessDe
 import * as businessServices from "../../../../../../../modules/business/infrastructure/services";
 import type { ProviderEntity } from "../../../../../../../modules/business/infrastructure/types";
 import { sileo } from "sileo";
+import useAuthStore from "../../../../../../../store/authStore";
+import i18n from "../../../../../../../translate";
+import * as contactsLoader from "../../../../../../../modules/business/pages/BusinessDetail/components/ProvidersTab/loadProviderContacts";
 import * as contactServices from "../../../../../../../modules/business/pages/BusinessDetail/components/ProvidersTab/components/ProviderContacts/infrastructure/services";
 
 vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/ProvidersTab/components/ProviderContacts/infrastructure/services", () => ({
@@ -31,6 +34,7 @@ vi.mock("../../../../../../../hooks/useAuth", () => ({
     isSessionValid: true,
     isDemo: false,
     sessionStatus: "authenticated",
+    sessionVersion: 0,
   }),
 }));
 
@@ -94,6 +98,8 @@ describe("ProvidersTab Component", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    useAuthStore.setState({ token: "test-jwt", user: { id: "42", name: "Oscar Valenzuela" },
+      sessionVersion: 0, sessionStatus: "authenticated", isRefreshing: false, expiresAt: Date.now() + 3600000 });
     vi.mocked(contactServices.getContacts).mockResolvedValue({ data: [], meta: { page: 1, limit: 25, total_items: 0, total_pages: 0 } });
     window.URL.createObjectURL = vi.fn(() => "blob:mock-url");
     window.URL.revokeObjectURL = vi.fn();
@@ -137,6 +143,70 @@ describe("ProvidersTab Component", () => {
     expect(contactServices.getContacts).toHaveBeenCalledWith("prov-102", expect.objectContaining({ page: 1, limit: 25 }), expect.any(AbortSignal));
     await user.click(screen.getByRole("button", { name: "Volver a proveedores" }));
     expect(screen.getByText("Lácteos del Sur")).toBeInTheDocument();
+  });
+
+  // Deliberately keep the server-shaped numeric ID: this regression protects
+  // the create/refetch/contact handoff rather than assuming UUID-shaped fixtures.
+  const newlyCreatedProvider: ProviderEntity = { ...mockProviders[0], id: 101 as unknown as string,
+    name: "Proveedor Nuevo", fields: {} };
+
+  const createProviderThroughForm = async () => {
+    let created = false;
+    vi.mocked(businessServices.getProviders).mockImplementation(async () => ({
+      data: created ? [...mockProviders, newlyCreatedProvider] : mockProviders,
+      meta: { total_items: created ? 3 : 2, page: 1, limit: 50, total_pages: 1 },
+    }));
+    vi.mocked(businessServices.createProvider).mockImplementation(async () => {
+      created = true;
+      return newlyCreatedProvider;
+    });
+    renderWithClient(<ProvidersTab businessId="biz-123" />);
+    await screen.findByText("Lácteos del Sur");
+    await user.click(screen.getByTestId("manage-providers-btn"));
+    await user.click(screen.getByTestId("add-single-provider-menu-item"));
+    await user.type(screen.getByRole("textbox", { name: /Nombre de Empresa \/ Proveedor/ }), newlyCreatedProvider.name);
+    await user.click(screen.getByTestId("save-provider-btn"));
+    await screen.findByText(newlyCreatedProvider.name);
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(businessServices.createProvider).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+      business_id: "biz-123", name: newlyCreatedProvider.name, tax: 19, is_active: true,
+    }));
+    expect(vi.mocked(businessServices.getProviders).mock.calls.length).toBeGreaterThanOrEqual(2);
+  };
+
+  it("opens the empty contacts panel after creating and refetching a provider with a numeric server ID", async () => {
+    await createProviderThroughForm();
+    expect(contactServices.getContacts).not.toHaveBeenCalled();
+    await user.click(screen.getByTestId("provider-contacts-101"));
+    await screen.findByText("Contactos de Proveedor Nuevo", {}, { timeout: 5000 });
+    expect(await screen.findByText("Este proveedor aún no tiene contactos")).toBeInTheDocument();
+    expect(contactServices.getContacts).toHaveBeenCalledWith(101, expect.objectContaining({ page: 1, limit: 25 }), expect.any(AbortSignal));
+    expect(businessServices.createProvider).toHaveBeenCalledOnce();
+  });
+
+  it("keeps the provider list and search after a contacts chunk failure, then retries without recreating the supplier", async () => {
+    await createProviderThroughForm();
+    const search = screen.getByPlaceholderText("Buscar proveedores por nombre...");
+    await user.type(search, "Proveedor");
+    await waitFor(() => expect(businessServices.getProviders).toHaveBeenLastCalledWith(expect.objectContaining({
+      q: expect.objectContaining({ name_cont: "Proveedor" }),
+    })));
+    const opening = vi.spyOn(contactsLoader, "loadProviderContacts").mockRejectedValueOnce(new Error("synthetic chunk 404"));
+    await user.click(screen.getByTestId("provider-contacts-101"));
+    expect(await screen.findByRole("alert")).toHaveTextContent(i18n.t("provider_contacts:load_error"));
+    expect(screen.getByRole("table")).toBeInTheDocument();
+    expect(screen.getByText("Proveedor Nuevo")).toBeInTheDocument();
+    expect(search).toHaveValue("Proveedor");
+    expect(contactServices.getContacts).not.toHaveBeenCalled();
+    expect(screen.queryByText("Contactos de Proveedor Nuevo")).not.toBeInTheDocument();
+    expect(sileo.error).toHaveBeenCalledExactlyOnceWith({ title: i18n.t("provider_contacts:load_error") });
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    await screen.findByText("Contactos de Proveedor Nuevo", {}, { timeout: 5000 });
+    expect(await screen.findByText("Este proveedor aún no tiene contactos")).toBeInTheDocument();
+    expect(contactServices.getContacts).toHaveBeenCalledWith(101, expect.objectContaining({ page: 1, limit: 25 }), expect.any(AbortSignal));
+    expect(opening).toHaveBeenCalledTimes(2);
+    expect(businessServices.createProvider).toHaveBeenCalledOnce();
+    expect(sileo.error).toHaveBeenCalledOnce();
   });
 
   it("renders table with ID, Name, Tax, Fields, Status, and Actions columns", async () => {

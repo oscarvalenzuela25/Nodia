@@ -1,5 +1,19 @@
 # Contexto funcional de productos para NodiaAI
 
+## Contactos de proveedores: recuperación local — incidencia2026-11-16
+
+[Plan31](../../mvp/31-provider-contacts-proposal.md#apertura-recuperable-de-contactos--incidencia-de-producción2026-11-16) y
+[evidencia](../../evidence/providers-contacts-opening-20261116.md) registran
+recuperación de carga secundaria y conservación de contexto/borradores. Impacto
+visual/interacción y resiliencia local; sin nuevos conceptos, datos, contratos,
+operaciones, herramientas, permisos o bindings. La ficha aprobada
+[contactos](businesses/features/supplier-contacts.md) conserva bytes y aprobación;
+plan31 cambia sólo su procedencia técnica compilada, con pins propios del candidato.
+Focal67/9 correcta, incluidas12atómicas de hook/loader; QA fresh320/600/1440
+verifica recuperación/foco/búsqueda. Global3139/380, tipos/lint/build y pins locales
+correctos. Causa autenticada
+del incidente productivo aún no aislada; sin nueva aprobación/publicación/adopción.
+
 ## OCR manual: defaults y selección exacta — solicitud2026-11-16
 
 [Plan94§41](../../mvp/94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16),

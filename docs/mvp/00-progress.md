@@ -1,5 +1,17 @@
 # Progreso del MVP — Nodia
 
+**Proveedores: apertura recuperable de Contactos — incidencia2026-11-16:**
+[Plan31](31-provider-contacts-proposal.md#apertura-recuperable-de-contactos--incidencia-de-producción2026-11-16) registra error/404 reportado en producción.
+Assets/importación anónimos actuales correctos; causa autenticada original aún
+no aislada. Reproducción local de import404 confirmó escape al error global;
+candidato contiene descarga/fallo con lista y borradores intactos, retry local y
+scope vigente. Focal67/9 y QA fresh320/600/1440 de fallo/recuperación correctas;
+global3139/380, tipos/lint/build y pins locales correctos por
+[evidencia](../evidence/providers-contacts-opening-20261116.md). Primer pendiente:
+aislar petición/error autenticados y confirmar persistencia tras recarga; revisión,
+integración/adopción separadas, sin nueva autorización de despliegue. Sin cambio
+Server/DB/HTTP ni aprobación/publicación nueva; no se declara resuelto en producción.
+
 **OCR manual: defaults y selección exacta — solicitud2026-11-16:**
 [Plan94§41](94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16) documenta alias nuevo desde nombre,
 alias existente editable/conservado, disponibilidad nueva true y updates intactos;

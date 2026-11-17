@@ -83,7 +83,7 @@ Usar listas de rangos permite ampliar a mañana y tarde sin cambiar el formato p
 
 ## Interfaz implementada
 
-En detalle de negocio → tab Proveedores, cada fila tiene la acción **Contactos** debajo del nombre. Abre un listado paginado de nombre, teléfonos, email, resumen de horarios, estado y acciones, dentro del mismo tab y con botón Volver. El listado de proveedores conserva su búsqueda y página. Se consulta únicamente el proveedor seleccionado, sin N+1; el código de contactos y la validación telefónica se cargan mediante `lazy`/`Suspense` al abrir el apartado.
+En detalle de negocio → tab Proveedores, cada fila tiene la acción **Contactos** debajo del nombre. Abre un listado paginado de nombre, teléfonos, email, resumen de horarios, estado y acciones, dentro del mismo tab y con botón Volver. El listado de proveedores conserva su búsqueda y página. Se consulta únicamente el proveedor seleccionado, sin N+1. La carga secundaria se realiza por intención con recuperación local; la incidencia2026-11-16 inferior sustituye el montaje `lazy`/`Suspense` que trasladaba un fallo de descarga al error global de ruta.
 
 El formulario independiente de contacto reutiliza `BaseModal` en tamaño amplio, con datos generales, teléfonos repetibles, email, acordeón de horarios, comentario y switch de activo. Un único scroll vertical en el cuerpo conserva accesibles el encabezado y Guardar/Cancelar. En móvil, campos apilados y acciones principales de ancho completo; tabla con scroll horizontal y mínimo de 650px. Mantener tema claro/oscuro, teclado, etiquetas accesibles y traducciones ES/EN.
 
@@ -157,3 +157,86 @@ Ejecutado `nodia-server/scripts/reset-business-inventory.mjs`: locks de tablas, 
 Respaldo local fuera de Git: `C:/Users/Oscar/AppData/Local/Nodia/backups/before-business-inventory-reset-2026-10-11T20-32-59-019Z.json`. Contiene registros completos de las siete tablas del alcance. Se verificó su reconstrucción exacta con `jsonb_populate_recordset` en tablas temporales y rollback, sin reinsertar datos en las tablas reales. Para recuperar, revisar escrituras posteriores y restaurar únicamente el alcance necesario en transacción, productos antes de logs y facturas antes de ítems; proveedores/contactos no se borraron y no deben duplicarse.
 
 El script exige `--apply` para futuras ejecuciones y solo debe usarse tras una nueva solicitud explícita de limpieza. No constituye una migración ni debe ejecutarse al desplegar. `inspect-business-cleanup.mjs` permite volver a comprobar conteos y relaciones sin modificar datos.
+
+## Apertura recuperable de Contactos — incidencia de producción2026-11-16
+
+### Hechos confirmados y límite del diagnóstico
+
+El usuario informa que crear un proveedor y abrir **Contactos** termina en una
+pantalla de error/404, y confirma que ocurre en producción. La revisión de
+contratos mantiene `GET /api/v1/providers/:providerId/contacts`: un proveedor
+válido sin contactos devuelve200 con lista vacía; proveedor inexistente o fuera
+del alcance autorizado devuelve404. Vacío y fallo siguen siendo estados distintos.
+No se ha aislado aún la petición, sesión o causa exacta del recorrido autenticado
+original de producción; no se declara resuelto por esta corrección local.
+
+Sondeo público de sólo lectura de https://nodia-1ge.pages.dev el2026-11-16:
+133URLs totales (índice,131JavaScript y CSS de preload), todas200, con MIME
+correcto y sin HTML de la SPA en lugar de JavaScript. El chunk `ProviderContacts-ORme97nj.js` de22135bytes tiene SHA256
+`a10748998e22d225fe817ef020c5348b58f0007800759555d4dc3ae8cc0f19fc`.
+Chromium anónimo importó/evaluó ese módulo exacto: export default function y
+cero errores JavaScript. Esto acredita los assets observados en ese instante;
+no identifica el fallo autenticado ni prueba que otra versión, petición o
+caché del incidente anterior tuviese la misma respuesta. Tampoco acredita
+lectura HTTP de contactos o autorización. [Evidencia y límites](../evidence/providers-contacts-opening-20261116.md).
+
+### Regla UI vigente y mejora de recuperación
+
+Se reprodujo localmente Crear proveedor→Contactos con un404 de importación
+simulado: el montaje anterior acababa en `RouteError` global. Ese fallo local
+confirmado justifica contener la descarga secundaria, sin atribuirlo a la causa
+original de producción. La carga por intención comparte importación satisfactoria
+pero libera la promesa rechazada; Reintentar vuelve a solicitar la apertura
+localmente, sin recargar la página ni iniciar un guardado o alta nuevos.
+
+Mientras descarga o falla se mantiene montado el listado de proveedores, con
+su búsqueda, filtro, página y borradores. El error muestra Alert y toast
+internacionalizados; el usuario puede reintentar desde ese contexto y recuperar
+el foco. No se monta un panel vacío ni se muestra un error de datos como vacío.
+La solicitud captura actor, versión de sesión, negocio y proveedor: cambios de
+contexto o desmontaje descartan resoluciones tardías; una apertura obsoleta no
+puede mostrar los contactos de otro contexto. Una descarga correcta es código
+reutilizable, nunca una autorización para leer datos de otra instancia.
+
+Al abrir el panel, su GET mantiene los estados de carga inicial, vacío, error
+con reintento y refetch suave existentes. La navegación conserva Volver y la
+lista originaria; el layout móvil/escritorio comparte estado y consultas.
+No cambia Server, DB, rutas, IDs, contratos HTTP, ownership, permisos o formas
+de persistencia de contactos. Guardado fallido conserva el formulario y datos.
+
+### Evaluación de contexto y continuidad
+
+Impacto de presentación, recuperación e interacción local. La ficha aprobada de
+[contactos de proveedores](../nodia-ai/knowledge/businesses/features/supplier-contacts.md)
+permanece íntegra; no cambia concepto, datos, operación, herramienta, binding o
+permiso publicado. Se registra el impacto aquí y en el índice de conocimiento,
+conforme al estándar. El nuevo hash de una fuente de la ficha puede cambiar el
+manifest/pins técnicos; no constituye nueva aprobación ni publicación operativa.
+
+- [x] Contrato/ruta contrastados y assets públicos/importación anónima comprobados.
+- [x] Reproducción local anterior con fallo de importación simulado; alcance
+  diferenciado del incidente autenticado original.
+- [x] Focal final67casos/9archivos correcta: incluye12atómicas de hook/loader
+  y dos nuevas integraciones del padre para alta→Contactos y fallo/reintento.
+- [x] Recuperación integrada local: import404 queda en Alert/lista; retry abre
+  vacío del mismo proveedor sin recarga. Regresión de retorno de foco corregida
+  después de detectar que se intentaba antes de habilitar el botón.
+- [x] QA final Chromium fresh ES/oscuro320/600/1440 en fallo/panel saludable:
+  foco, búsqueda, resize y retry sin recarga conservados; sin overflow ni
+  excepcionesJS. Capturas ignoradas y límites descritos en evidencia.
+- [x] Tipos/lint/build finales Client, global3139/380 y focal67/9 correctos
+  sobre el corte congelado posterior al fix de foco.
+- [x] Conocimiento/pins locales generados y verificados mediante scripts
+  soportados; resultado final en evidencia, sin modificar fichas aprobadas.
+- [ ] Revisar/integrar/adoptar candidato; aislar y comprobar el recorrido
+  autenticado reportado de producción antes de afirmar su resolución.
+
+Validación local cerrada: focal67/9, global3139/380 en283,97s (inicio21:09:20
+America/Santiago), tipos/lint y build39,45s correctos, más QA fresh de seis estados
+(320/600/1440 por fallo/panel saludable) con recuperación/foco/búsqueda conservados.
+Conocimiento y pins propios comprobados por scripts soportados; el recibo se
+conserva en evidencia. Primer pendiente: aislar la petición/error del recorrido
+autenticado original y confirmar si persiste tras recargar; respuesta del usuario
+pendiente en este corte. Revisión/integración y adopción del candidato local
+permanecen separadas y sin nueva autorización de despliegue. El incidente de
+producción sigue abierto; no se suple con assets públicos o datos simulados.
