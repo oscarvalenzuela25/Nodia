@@ -13,17 +13,18 @@ const useSearch = () => {
   return { search: debouncedSearch, setSearch };
 };
 
-export const usePagedProviderOptions = (businessId: string, enabled = true) => {
+export const usePagedProviderOptions = (businessId: string, enabled = true, options: { useOcrOnly?: boolean } = {}) => {
   const { isSessionActive } = useAuth();
   const { search, setSearch } = useSearch();
+  const useOcrOnly = options.useOcrOnly === true;
   const query = useInfiniteQuery({
-    queryKey: ["providers", "options", businessId, search],
+    queryKey: ["providers", "options", businessId, search, useOcrOnly],
     initialPageParam: 1,
-    queryFn: ({ pageParam }) => getProviders({ page: pageParam, limit: 50, q: { business_id_eq: businessId, name_cont: search || undefined, s: "name asc" } }),
+    queryFn: ({ pageParam }) => getProviders({ page: pageParam, limit: 50, q: { business_id_eq: businessId, name_cont: search || undefined, ...(useOcrOnly ? { use_ocr_eq: true } : {}), s: "name asc" } }),
     getNextPageParam: (page) => page.meta.page < page.meta.total_pages ? page.meta.page + 1 : undefined,
     enabled: isSessionActive && enabled && !!businessId,
   });
-  const providers = query.data?.pages.flatMap((page) => page.data) ?? [];
+  const providers = (query.data?.pages.flatMap((page) => page.data) ?? []).filter(provider => !useOcrOnly || provider.use_ocr === true);
   return { isFetching: query.isFetching, isLoading: query.isLoading, isError: query.isError, refetch: query.refetch, fetchNextPage: query.fetchNextPage, hasNextPage: query.hasNextPage, providers, setSearch, options: providers.map((provider) => ({ value: provider.id, label: provider.name })) };
 };
 
@@ -37,7 +38,7 @@ export const usePagedInvoiceCodeOptions = (businessId: string, enabled = true) =
     getNextPageParam: (page) => page.meta.page < page.meta.total_pages ? page.meta.page + 1 : undefined,
     enabled: isSessionActive && enabled && !!businessId,
   });
-  return { isFetching: query.isFetching, isLoading: query.isLoading, isError: query.isError, refetch: query.refetch, fetchNextPage: query.fetchNextPage, hasNextPage: query.hasNextPage, setSearch, options: Array.from(new Set(query.data?.pages.flatMap((page) => page.data.map((invoice) => invoice.code)) ?? [])) };
+  return { isFetching: query.isFetching, isLoading: query.isLoading, isError: query.isError, refetch: query.refetch, fetchNextPage: query.fetchNextPage, hasNextPage: query.hasNextPage, setSearch, options: Array.from(new Set(query.data?.pages.flatMap((page) => page.data.map((invoice) => invoice.code).filter((code): code is string => typeof code === "string" && code.trim().length > 0)) ?? [])) };
 };
 
 export const usePagedProductCodeOptions = (businessId: string, enabled = true) => {

@@ -271,7 +271,7 @@ describe("ProductInvoiceImport Helpers", () => {
       expect(rows[0].code).toBe("SKU-TAX-ONLY");
       expect(rows[0].cost_price).toBe(5000);
       expect(rows[0].cost_price_tax).toBe(5950);
-      expect(rows[0].sale_price).toBe(7735);
+      expect(rows[0].sale_price).toBe(7740);
     });
 
     it("derives missing gross cost from net cost and supplier tax", () => {
@@ -291,7 +291,7 @@ describe("ProductInvoiceImport Helpers", () => {
       expect(rows[0].code).toBe("SKU-NET-ONLY");
       expect(rows[0].cost_price).toBe(5000);
       expect(rows[0].cost_price_tax).toBe(5950);
-      expect(rows[0].sale_price).toBe(7735);
+      expect(rows[0].sale_price).toBe(7740);
     });
 
     it("leaves missing extracted costs invalid for manual review", () => {
@@ -368,7 +368,7 @@ describe("ProductInvoiceImport Helpers", () => {
       expect(rows[0].code).toBe("SKU-FULL");
       expect(rows[0].cost_price).toBe(4000);
       expect(rows[0].cost_price_tax).toBe(4760);
-      expect(rows[0].sale_price).toBe(6188);
+      expect(rows[0].sale_price).toBe(6190);
       expect(rows[0].isValid).toBe(true);
     });
   });
@@ -382,7 +382,7 @@ describe("ProductInvoiceImport Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(reserveObservation).mockReset().mockImplementation(async () => ({ version: 1, id: crypto.randomUUID() }));
-    vi.mocked(businessServices.getProviders).mockResolvedValue({ data: [{ id: "prov-1", name: "Distribuidora Central", business_id: "biz-123", tax: 19, is_active: true, created_at: "" }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 50 } });
+    vi.mocked(businessServices.getProviders).mockResolvedValue({ data: [{ id: "prov-1", name: "Distribuidora Central", business_id: "biz-123", tax: 19, use_ocr: true, is_active: true, created_at: "" }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 50 } });
     window.HTMLElement.prototype.scrollIntoView = vi.fn();
     useGeneralSettingsStore.setState({
       isLoaded: false,
@@ -410,20 +410,20 @@ describe("ProductInvoiceImport Component", () => {
     await user.click(screen.getByTestId("analyze-invoice-btn"));
     const pencil = await screen.findByTestId("review-invoice-price-0");
     const row = screen.getByTestId("invoice-row-0");
-    expect(within(row).getByText(/\$155/)).toBeInTheDocument();
+    expect(within(row).getByText(/\$150/)).toBeInTheDocument();
     expect(screen.getByTestId("submit-invoice-products")).toBeEnabled();
     await user.click(pencil);
     const input = screen.getByRole("spinbutton", { name: new RegExp(`^${i18n.t("business:product_sale_price")}`) });
-    expect(input).toHaveValue(155);
+    expect(input).toHaveValue(150);
     fireEvent.change(input, { target: { value: "199" } });
     await waitFor(() => expect(screen.getByTestId("save-invoice-price")).toBeEnabled());
     await user.click(screen.getByTestId("save-invoice-price"));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    expect(within(screen.getByTestId("invoice-row-0")).getByText(/\$199/)).toBeInTheDocument();
+    expect(within(screen.getByTestId("invoice-row-0")).getByText(/\$200/)).toBeInTheDocument();
     expect(businessServices.createInvoiceWithFile).not.toHaveBeenCalled();
     expect(businessServices.bulkCreateProducts).not.toHaveBeenCalled();
     await user.click(screen.getByTestId("submit-invoice-products"));
-    await waitFor(() => expect(businessServices.bulkCreateProducts).toHaveBeenCalledWith([expect.objectContaining({ alias: "Synthetic SYNTHETIC-NEW", sale_price: 199, has_stock: true })]));
+    await waitFor(() => expect(businessServices.bulkCreateProducts).toHaveBeenCalledWith([expect.objectContaining({ alias: "Synthetic SYNTHETIC-NEW", sale_price: 200, has_stock: true })]));
   });
 
   it("prevalidates a missing update version before the invoice POST and retains the reviewed row", async () => {
@@ -657,7 +657,7 @@ describe("ProductInvoiceImport Component", () => {
           id: "prov-1",
           name: "Distribuidora Central",
           business_id: "biz-123",
-          tax: 19,
+          tax: 19, use_ocr: true,
           is_active: true,
           created_at: "2026-01-01T00:00:00Z",
         },
@@ -665,7 +665,7 @@ describe("ProductInvoiceImport Component", () => {
           id: "prov-2",
           name: "Importadora Andes",
           business_id: "biz-123",
-          tax: 19,
+          tax: 19, use_ocr: true,
           is_active: true,
           created_at: "2026-01-01T00:00:00Z",
         },
@@ -688,7 +688,7 @@ describe("ProductInvoiceImport Component", () => {
     // Verify "None" / "Ninguno" option is NOT present
     expect(screen.queryByRole("option", { name: /none|ninguno/i })).not.toBeInTheDocument();
 
-    vi.mocked(businessServices.getProviders).mockResolvedValue({ data: [{ id: "prov-2", name: "Importadora Andes", business_id: "biz-123", tax: 19, is_active: true, created_at: "" }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 50 } });
+    vi.mocked(businessServices.getProviders).mockResolvedValue({ data: [{ id: "prov-2", name: "Importadora Andes", business_id: "biz-123", tax: 19, use_ocr: true, is_active: true, created_at: "" }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 50 } });
     // Search is resolved by the server and keeps the selected ID.
     const searchInput = screen.getByPlaceholderText(/buscar proveedor|buscar/i);
     await user.type(searchInput, "Andes");
@@ -1112,25 +1112,25 @@ describe("ProductInvoiceImport Component", () => {
     expect(taxRateInput).toHaveValue(19);
     expect(costTaxInput).toHaveValue(1190);
     expect(screen.queryByTestId("edit-field-margin")).not.toBeInTheDocument();
-    expect(saleInput).toHaveValue(1547);
+    expect(saleInput).toHaveValue(1550);
 
     // 1. Changing cost recalculates gross cost, preserving the editable sale price
     await user.clear(costInput);
     await user.type(costInput, "2000");
     expect(costTaxInput).toHaveValue(2380);
-    expect(saleInput).toHaveValue(1547);
+    expect(saleInput).toHaveValue(1550);
 
     // 2. Changing tax rate recalculates gross cost, preserving the editable sale price
     await user.clear(taxRateInput);
     await user.type(taxRateInput, "10");
     expect(costTaxInput).toHaveValue(2200);
-    expect(saleInput).toHaveValue(1547);
+    expect(saleInput).toHaveValue(1550);
 
     // 3. Changing gross cost recalculates net cost, preserving the editable sale price
     await user.clear(costTaxInput);
     await user.type(costTaxInput, "3300");
     expect(costInput).toHaveValue(3000);
-    expect(saleInput).toHaveValue(1547);
+    expect(saleInput).toHaveValue(1550);
 
     // 4. Changing sale price preserves costs
     await user.clear(saleInput);
@@ -2034,7 +2034,7 @@ describe("ProductInvoiceImport Component", () => {
   it("calculates extracted unit prices using the selected supplier tax", () => {
     const [row] = mapExtractedItemsToRows([{ code: "TAX", name: "Taxed", unit_price: 100, quantity: 1 }], [], [], 10);
     expect(row.cost_price_tax).toBe(110);
-    expect(row.sale_price).toBe(143);
+    expect(row.sale_price).toBe(140);
   });
   it("requires duplicate SKU rows to be reviewed and clears the error after removal", () => {
     const rows = mapExtractedItemsToRows([

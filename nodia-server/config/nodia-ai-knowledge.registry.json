@@ -1218,7 +1218,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -1236,12 +1236,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_businessespreparecreatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -1260,7 +1260,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -1278,12 +1278,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_businessespreparesetcollaboratorsPartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -1302,7 +1302,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -1320,12 +1320,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_businessesprepareupdatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -1430,12 +1430,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_financecategoriespreparecreatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -1468,12 +1468,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_financecategoriespreparedeletePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -1506,12 +1506,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_financecategoriesprepareupdatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -1616,12 +1616,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_financecategorygroupspreparecreatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -1654,12 +1654,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_financecategorygroupspreparedeletePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -1692,12 +1692,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_financecategorygroupsprepareupdatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -1798,12 +1798,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_financemovementspreparecreatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -1835,12 +1835,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_financemovementspreparedeletePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -1873,12 +1873,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_financemovementsprepareupdatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -1983,12 +1983,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_financeobligationspreparecreatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -2021,12 +2021,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_financeobligationspreparedeletePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -2059,12 +2059,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_financeobligationsprepareupdatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -2348,7 +2348,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -2366,12 +2366,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_invoicespreparecreatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -2390,7 +2390,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -2408,12 +2408,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_invoicesprepareupdatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -2873,7 +2873,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "847c4e687923384df877a157b49aa586c2a6234eadce3e864a6c95b1e6be1455"
+          "sha256": "63c2bc0c760d090a85473a7d5e0f26421b79ffe5139d9f20229d7b0e6b46b797"
         }
       ],
       "input_schema": {
@@ -2933,7 +2933,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "847c4e687923384df877a157b49aa586c2a6234eadce3e864a6c95b1e6be1455"
+          "sha256": "63c2bc0c760d090a85473a7d5e0f26421b79ffe5139d9f20229d7b0e6b46b797"
         }
       ],
       "input_schema": {
@@ -2969,7 +2969,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -2987,12 +2987,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_productlogspreparecreatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -3011,7 +3011,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -3029,12 +3029,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_productlogsprepareupdatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -3077,7 +3077,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "847c4e687923384df877a157b49aa586c2a6234eadce3e864a6c95b1e6be1455"
+          "sha256": "63c2bc0c760d090a85473a7d5e0f26421b79ffe5139d9f20229d7b0e6b46b797"
         }
       ],
       "input_schema": {
@@ -3133,7 +3133,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "847c4e687923384df877a157b49aa586c2a6234eadce3e864a6c95b1e6be1455"
+          "sha256": "63c2bc0c760d090a85473a7d5e0f26421b79ffe5139d9f20229d7b0e6b46b797"
         },
         {
           "path": "nodia-server/src/product/use-case/export-products-csv.use-case.ts",
@@ -3197,7 +3197,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "847c4e687923384df877a157b49aa586c2a6234eadce3e864a6c95b1e6be1455"
+          "sha256": "63c2bc0c760d090a85473a7d5e0f26421b79ffe5139d9f20229d7b0e6b46b797"
         }
       ],
       "input_schema": {
@@ -3257,7 +3257,7 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "847c4e687923384df877a157b49aa586c2a6234eadce3e864a6c95b1e6be1455"
+          "sha256": "63c2bc0c760d090a85473a7d5e0f26421b79ffe5139d9f20229d7b0e6b46b797"
         }
       ],
       "input_schema": {
@@ -3293,7 +3293,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -3306,17 +3306,21 @@
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
           "sha256": "513173ef9d70fe9f562ab6293b2822ef8c2be541f8e4b4d96c58167167986634"
+        },
+        {
+          "path": "nodia-server/src/product/product-sale-price.ts",
+          "sha256": "e163ccd5adb85c0d88fe88b8c8bc80a93a582c9b78d1df3a6a72444a73cfaeb5"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_productspreparecreatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -3335,7 +3339,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -3348,17 +3352,21 @@
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
           "sha256": "513173ef9d70fe9f562ab6293b2822ef8c2be541f8e4b4d96c58167167986634"
+        },
+        {
+          "path": "nodia-server/src/product/product-sale-price.ts",
+          "sha256": "e163ccd5adb85c0d88fe88b8c8bc80a93a582c9b78d1df3a6a72444a73cfaeb5"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_productsprepareupdatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -3449,7 +3457,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -3467,12 +3475,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_providercontactspreparecreatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -3491,7 +3499,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -3509,12 +3517,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_providercontactspreparesetactivePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -3533,7 +3541,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -3551,12 +3559,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_providercontactsprepareupdatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -3691,7 +3699,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -3709,12 +3717,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_providerspreparecreatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -3733,7 +3741,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
-          "sha256": "17c3f8d372a0dc6144686045ba8f7a725e18f905542267f1c83588d2f471137b"
+          "sha256": "37d5211e2435e4d85ae8208f4400cf20a0e31d3c377aff81eb7620289a07e09c"
         },
         {
           "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
@@ -3751,12 +3759,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWriteInput_providersprepareupdatePartial",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/pos-write-finance-business.schema.json",
         "definition": "McpWritePreparationResult",
-        "sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+        "sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai36-c01-validation.json",
@@ -6090,86 +6098,86 @@
         {
           "capability_id": "nodia_businesses_prepare_create",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_businesses_prepare_set_collaborators",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_businesses_prepare_update",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_invoices_prepare_create",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_invoices_prepare_update",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_product_logs_prepare_create",
           "revision": 2,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_product_logs_prepare_update",
           "revision": 2,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_products_prepare_create",
           "revision": 2,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_products_prepare_update",
           "revision": 2,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_provider_contacts_prepare_create",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_provider_contacts_prepare_set_active",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_provider_contacts_prepare_update",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_providers_prepare_create",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_providers_prepare_update",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         }
       ],
       "required_module_routes": [
@@ -6892,68 +6900,68 @@
         {
           "capability_id": "nodia_finance_categories_prepare_create",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_finance_categories_prepare_delete",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_finance_categories_prepare_update",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_finance_category_groups_prepare_create",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_finance_category_groups_prepare_delete",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_finance_category_groups_prepare_update",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_finance_movements_prepare_delete",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_finance_movements_prepare_update",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_finance_obligations_prepare_create",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_finance_obligations_prepare_delete",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         },
         {
           "capability_id": "nodia_finance_obligations_prepare_update",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         }
       ],
       "required_module_routes": [
@@ -6971,8 +6979,8 @@
         {
           "capability_id": "nodia_finance_movements_prepare_create",
           "revision": 1,
-          "input_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1",
-          "output_schema_sha256": "4f94c085a91e91e86146b7cd1557d821c39895a2372e8c5c4b7cc2f2bf016ae1"
+          "input_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b",
+          "output_schema_sha256": "633c013116b014f8aac2630f066f9f391768c61a4ebdeb3d31e797050f7bce3b"
         }
       ],
       "required_module_routes": [

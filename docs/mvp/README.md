@@ -1,5 +1,20 @@
 # Especificación del MVP — Nodia
 
+**Negocios: precios redondeados, división y proveedores OCR — solicitud2026-11-17:**
+[Plan94§42](94-business-point-of-sale-and-product-refactor.md#42-precios-de-venta-redondeados-división-local-y-proveedores-ocr--solicitud2026-11-17)
+registra venta manual libre hasta onBlur y normalización al guardar; sugerencias
+por porcentaje y división de venta ya redondeadas a decenas. Neto conserva CLP
+entero. `use_ocr` defaultfalse y filtro exclusivo del selector OCR; columnas
+ocultas conservan mapeos, demás formularios muestran todos los proveedores.
+Folio opcional, fecha civil inicial de hoy, Notas/Activo al final y Overview
+sin chip Por confirmar. Migración1793680000000 preparada/verificada en PG16
+sintético,7gates; sin SQL operativo. Client3225/387, focal OCR75/3, tipos/lint/build y Chromium32perfiles correctos;
+Server6143/358 y1caso Linux omitido en Windows. Candidato de PR50 actualizado.
+[Evidencia y límites](../evidence/business-pricing-ocr-adjustments-20261117.md).
+NodiaAI muestra venta normalizada antes de confirmar; propuestas incompatibles
+requieren revisión nueva. Candidatas Negocios55/calculadora15 sin nueva aprobación
+ni publicación. Revisión/adopción del alcance nuevo pendientes.
+
 **Teacher: TUX-03/05 implementados y verificados localmente — 2026-11-16:**
 [Plan106§15](106-nodia-teacher-guided-ux-redesign.md#15-tux-0305-guía-y-continuidad-implementadas-localmente--2026-11-16)
 registra conversación/diagnóstico opcionales, borrador protegido, preparación y

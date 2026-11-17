@@ -1,5 +1,7 @@
 # Negocios — punto de venta, ventas y refactor de productos
 
+> Ampliación vigente2026-11-17: [§42](#42-precios-de-venta-redondeados-división-local-y-proveedores-ocr--solicitud2026-11-17) aplica redondeo de venta a decenas, división asistida, proveedores OCR opt-in y folio de factura opcional. Sustituye las fórmulas incompatibles de§35/§41 para el comportamiento nuevo, conservando sus recibos históricos. Implementación local; QA común, adopción y aceptación del nuevo alcance separadas de la autorización funcional.
+
 > Ampliación funcional vigente del 2026-11-06: [§35](#35-precios-independientes-calculadora-local-y-vinculación-ocr-revisada--2026-11-06) retira el porcentaje persistido, sustituye el cálculo bidireccional por una calculadora local explícita y añade vinculación manual OCR por ID/versión con campos revisados. Regla pedida y autorizada por el usuario; implementación/pruebas/adopción de este alcance en curso, ADR095 propuesto y nueva ficha sin aprobar/publicar. Los cortes anteriores conservan su evidencia y sólo se sustituyen las reglas incompatibles indicadas.
 
 > Fecha inicial: 2026-10-28. Corte histórico: **R15 — filtros, tablas y entrada de productos, 2026-10-30**. Estado R15: **implementado, suite/QA/entrega e inspección autenticada real verificadas por alcance**. R14 y cortes anteriores conservan sus evidencias históricas. Sin nueva aprobación documental/publicación, aceptación física o mejora de rendimiento acreditadas.
@@ -1320,3 +1322,162 @@ QA adicional conserva selección alternativa/Low a320 y cuatro selects únicos
 el release exacto queda en evidencia. Primer pendiente: revisión/integración;
 adopción/aceptación por entorno separadas. Sin inferencias, mutaciones HTTP reales,
 migraciones o publicación de conocimiento por esta entrega.
+
+## 42. Precios de venta redondeados, división local y proveedores OCR — solicitud2026-11-17
+
+El usuario solicita ajustar precios, formularios y elegibilidad del selector OCR
+antes de continuar la entrega. La instrucción autoriza estas reglas funcionales;
+no aprueba ADR095 ni fichas, publicación de conocimiento o adopción por entorno.
+Se mantiene el diseño actual y se amplían reglas explícitas sin habilitar nuevas
+escrituras de ventas/reportes NodiaAI, que continúan sólo lectura según§26.
+
+### Venta normal al múltiplo de10 más cercano
+
+`1444 → 1440` y `1445 → 1450`: los empates redondean hacia arriba. La regla
+abarca alta/edición de producto, preparación/importación OCR y sugerencias de
+venta, incluida la columna inicial30% y el editor con lápiz. Es exclusiva del
+precio normal `sale_price`; oferta, costos, total de factura y partidas de ventas
+históricas no se redondean a decenas por esta solicitud.
+
+Durante escritura manual se conserva el número en edición: se normaliza al salir
+del campo y al preparar el payload válido, sin reemplazar cada dígito mientras
+se escribe. Sugerencias y cocientes se redondean directamente desde su resultado
+real: `round10(bruto × (1 + porcentaje/100))`, sin `Math.round` intermedio a CLP
+antes de redondear a10. Esto sustituye las fórmulas de§35/§41 para nuevas
+preparaciones; sus ejemplos, capturas y recibos fechados siguen describiendo el
+corte anterior. La calculadora manual conserva Aplicar explícito; OCR conserva
+su propuesta inicial revisable y Guardar como decisión posterior.
+
+Server normaliza la venta enviada en create/update individuales y por lotes.
+Un PATCH que omite `sale_price` conserva la venta anterior; no convierte otros
+campos ni fuerza precios heredados por una lectura. El dominio sigue siendo
+CLP entero no negativo hasta2.147.483.647: cero real se conserva, datos ausentes,
+NaN/infinito y overflow del resultado bloquean, sin fabricar cero ni clamp.
+No hay backfill de productos/logs o recálculo de snapshots/ventas históricas.
+
+Fuentes: [helper Client](../../nodia-client/src/utils/salePrice.ts),
+[helper Server](../../nodia-server/src/product/product-sale-price.ts),
+[escritores](../../nodia-server/src/product/product.service.ts) y
+[calculadora](../../nodia-client/src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductModal/productPricing.ts).
+
+### División asistida e icono de aplicación
+
+En las etiquetas de precio de venta y neto, un IconButton con símbolo de división
+se ubica a la derecha de la ayuda de interrogación. Abre un modal local con el
+importe para dividirlo y un divisor explícito. Abrir, modificar o cancelar no
+guarda ni envía HTTP comercial; Aplicar modifica sólo el borrador correspondiente,
+con feedback traducido y contexto de edición vigente. No aplica un cálculo
+obsoleto de otro producto/campo ni envía el formulario exterior al pulsar Enter.
+
+El cociente de venta se redondea directamente a decenas; el neto no usa esa regla.
+Neto mantiene el contrato CLP entero: sólo aproxima una fracción de CLP al entero,
+sin pasar a múltiplos de10. Divisor debe ser positivo; vacío, no finito, cero,
+negativo u overflow mantienen Aplicar bloqueado. Cambiar venta no deriva costos;
+cambiar neto mantiene la asistencia tributaria existente, sin recalcular venta.
+En la calculadora de precio sugerido el control Aplicar pasa de flecha a check;
+no añade confirmación comercial ni guardado automático.
+
+Fuentes: [diálogo](../../nodia-client/src/components/PriceDivisionDialog/PriceDivisionDialog.tsx),
+[acción/identidad](../../nodia-client/src/components/PriceDivisionDialog/PriceDivisionAction.tsx),
+[cálculo](../../nodia-client/src/components/PriceDivisionDialog/calculation.ts) y
+[precio sugerido](../../nodia-client/src/modules/business/pages/BusinessDetail/components/ProductsTab/components/PriceSuggestion/PriceSuggestion.tsx).
+
+### Proveedor comercial con OCR opt-in
+
+`providers.use_ocr` es booleano NOT NULL con defaultfalse. La migración deja
+false tanto los proveedores existentes como los nuevos sin valor explícito;
+no infiere autorización OCR desde mapeos históricos o actividad. Registrar/editar
+incluye un checkbox desmarcado por defecto. Nombre e impuesto conservan sus
+reglas/defaults; las columnas/mapeos de factura se muestran sólo al activar OCR.
+Desactivar oculta la configuración sin borrar sus valores persistidos o el
+borrador; activarla otra vez permite revisarlos. Listados y tarjetas no despliegan
+mapeos de proveedores sin OCR.
+
+Sólo el selector comercial de Registrar productos con OCR consulta proveedores
+con `q.use_ocr_eq=true`, búsqueda y paginado en Server. El filtro forma parte de
+la identidad de la consulta; no se descarga el conjunto completo para filtrarlo
+localmente. Selectores de productos y facturas mantienen todos los proveedores
+permitidos por su contrato y ámbito; `use_ocr` no reemplaza actividad, propiedad,
+autenticación o autorización. Es una preferencia de uso comercial, no una conexión
+o capacidad del proveedor IA.
+
+CSVv2 añade `use_ocr` opcional al final. True/false explícitos se conservan;
+columna ausente o vacía en un archivo legado omite el campo al actualizar, sin
+desactivar una configuración actual. Crear sin flag utiliza false de Server.
+La configuración de columnas desconocida se conserva al registrar/editar.
+
+Fuentes: [entidad](../../nodia-server/src/provider/entities/provider.entity.ts),
+[DTO](../../nodia-server/src/provider/dto/create-provider.dto.ts),
+[filtro](../../nodia-server/src/provider/dto/filter-provider.dto.ts),
+[formulario](../../nodia-client/src/modules/business/pages/BusinessDetail/components/ProvidersTab/components/ProviderModal/ProviderModal.tsx)
+y [selector paginado](../../nodia-client/src/modules/business/infrastructure/usePagedOptions.ts).
+
+### Factura manual y panel de catálogo
+
+- Código/folio es opcional y nullable: blanco/espacios se normalizan a null.
+  En actualización, omitir conserva; enviar null limpia. No inventar folio,
+  identidad ni consecutivo. La UI muestra «Sin folio» cuando falta; un ID real
+  sigue identificando la factura y sus archivos.
+- Fecha de emisión inicia en hoy como fecha civil local del navegador sólo al
+  crear. Editar conserva `data.issue_date`, incluso si no existe; revalidar o
+  redimensionar no sustituye una fecha editada. No cambia el campo de creación
+  histórico ni añade una columna temporal nueva.
+- Notas/observaciones se sitúa antes de Activo, y Activo queda al final con el
+  patrón visual de Core. Crear/editar envía el booleano explícito, conserva el
+  formulario al fallar y cierra sólo tras confirmación de éxito.
+- En Overview/Catálogo se muestran los chips Disponible y No disponible. Se
+  retira sólo Por confirmar; `has_stock:null` no se convierte en false/true ni
+  altera datos, agregados o la disponibilidad del producto.
+
+[CreateInvoiceDto](../../nodia-server/src/invoice/dto/create-invoice.dto.ts),
+[UpdateInvoiceDto](../../nodia-server/src/invoice/dto/update-invoice.dto.ts),
+[entidad](../../nodia-server/src/invoice/entities/invoice.entity.ts),
+[modal](../../nodia-client/src/modules/business/pages/BusinessDetail/components/InvoicesTab/components/InvoiceModal/InvoiceModal.tsx)
+y [Overview](../../nodia-client/src/modules/business/pages/BusinessDetail/components/OverviewTab/OverviewTab.tsx)
+son fuentes del contrato nuevo. La migración
+[1793680000000](../../nodia-server/src/migrations/1793680000000-ProviderOcrAndOptionalInvoiceCode.ts)
+añade el flag y relaja NOT NULL del folio, sin modificar facturas previas. Su
+retirada con pérdida potencial requiere restauración de respaldo; no fabrica
+folios para simular rollback. Implementar la migración no demuestra su aplicación.
+
+### Confirmación NodiaAI, discrepancia documental y verificación
+
+Las propuestas nuevas de Productos normalizan la venta antes de construir su
+vista previa/hash; la persona confirma el valor que se ejecutará. Propuestas
+antiguas con venta incompatible se rechazan por precondiciones cambiadas y
+requieren una nueva revisión, sin normalizar silenciosamente durante ejecución
+ni repetir una escritura incierta. Identidad, autoridad, campos no enviados,
+idempotencia y recuperación permanecen sujetos a sus contratos existentes.
+Fuente: [catálogo de operaciones](../../nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts).
+
+Discrepancia localizada: [Facturas y archivos rev5](../nodia-ai/knowledge/businesses/features/invoices-and-files.md)
+está aprobada y describe `business_id + code` como mínimos del corte anterior.
+La solicitud explícita actual cambia el contrato manual vigente; esa frase no
+se utiliza para exigir folio en el formulario nuevo. Se conserva intacto el
+cuerpo aprobado, su revisión/hash y approval; no se traslada la firma antigua.
+La ampliación se registra en la [candidata calculadora/vinculación rev15](../nodia-ai/knowledge/businesses/features/product-price-calculator-and-invoice-binding.md)
+y [Negocios rev55](../nodia-ai/knowledge/businesses/README.md), ambas
+draft/partial/unregistered/approval:null. La aprobación/publicación del contexto
+y paridad de herramientas se verifican por sus propios gates; una UI o DTO nuevo
+no publica una capacidad ni autoriza escrituras de ventas/reportes.
+
+- [x] Redondeo manual/OCR/sugerido y división local implementados con límites.
+- [x] Normalización Server sólo de venta enviada y vista previa NodiaAI exacta;
+  propuestas incompatibles requieren revisión nueva.
+- [x] Preferencia OCR persistida, mapeos conservados y filtro sólo en selector OCR.
+- [x] Folio opcional, fecha inicial civil local y orden Notas/Activo implementados.
+- [x] Chip Por confirmar retirado sin reclasificar información desconocida.
+- [x] Fuentes y fichas candidatas actualizadas sin renovar aprobación histórica.
+- [x] QA técnica local común: Client3225/387, focal OCR75/3, Server6143/358
+  (1caso Linux omitido en Windows),7gates PG16 y32perfiles Chromium; tipos/lint/build
+  y contexto/pins correctos por [evidencia](../evidence/business-pricing-ocr-adjustments-20261117.md).
+- [ ] Migración/adopción, revisión y aceptación por entorno del nuevo alcance.
+
+La implementación y las regresiones por ámbito son locales. No se acreditan por
+este texto inferencias nuevas, mutaciones comerciales reales, despliegue,
+aplicación de migración en DB operativa o teléfono físico. Capturas nuevas sólo
+en output/.tmp ignorados; la evidencia duradera final será textual.
+
+Candidato incorporado a [PR50](https://github.com/oscarvalenzuela25/Nodia/pull/50)
+contra development, conservando la entrega Teacher anterior. El estado del CI
+se consulta para el SHA final; no se atribuye una ejecución anterior a nuevos bytes.

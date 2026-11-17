@@ -8,6 +8,7 @@ import {
   IsString,
   IsUUID,
   Min,
+  MaxLength,
 } from 'class-validator';
 
 export class CreateInvoiceDto {
@@ -31,9 +32,11 @@ export class CreateInvoiceDto {
   @IsString()
   provider_id?: string | null;
 
-  @IsNotEmpty()
+  @IsOptional()
+  @Transform(({ value }) => typeof value === 'string' ? value.trim() || null : value)
   @IsString()
-  code: string;
+  @MaxLength(255)
+  code?: string | null;
 
   @IsOptional()
   @Transform(({ value }) => {

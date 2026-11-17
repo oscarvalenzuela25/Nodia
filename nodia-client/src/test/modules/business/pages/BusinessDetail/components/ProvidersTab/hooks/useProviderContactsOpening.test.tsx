@@ -8,7 +8,7 @@ import useProviderContactsOpening from "../../../../../../../../modules/business
 
 vi.mock("sileo", () => ({ sileo: { error: vi.fn() } }));
 const contactsModule = { default: () => <div /> };
-const provider: ProviderEntity = { id: "supplier-1", business_id: "business-1", name: "Synthetic", tax: 19, is_active: true, created_at: "2026-11-16" };
+const provider: ProviderEntity = { id: "supplier-1", business_id: "business-1", name: "Synthetic", tax: 19, use_ocr: false, is_active: true, created_at: "2026-11-16" };
 const deferred = () => {
   let resolve!: (value: typeof contactsModule) => void;
   let reject!: (error: Error) => void;

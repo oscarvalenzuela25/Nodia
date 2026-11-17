@@ -4,11 +4,11 @@
   "document_id": "businesses.product-price-calculator-and-invoice-binding",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 14,
+  "revision": 15,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Solicitud2026-11-16 plan94§41: nuevos alias desde nombre, alias existente conservado/editable, disponibilidad nueva true y existente intacta, precio OCR inicial30% sobre bruto y edición por fila; modelo/intensidad desde configuración persistida por instancia/modo. Implementación local y QA Chromium sintética6perfiles verificadas; tipos/lint/build correctos. Global2 correcta3125/378 y focal posterior124/10 cubre recuperación final; tipos/lint/build y pins locales correctos según evidencia2026-11-16; antecedentes fechados inferiores conservan su alcance. Sin nueva aprobación/publicación o adopción. ClientR37 conserva la mejora visual de precio sugerido verificada1088/320px, sin Aplicar/Guardar en esa QA. NativeR16 adoptado con diagnóstico seguro best-effort y660Linux correctos, pero la nueva intención OCR real volvió aHTTP504 tras leer el archivo sin finish/resultado. Cierre local0CLI/marcadores/proofs/grupos yPNG conservado. Causa no aislada; no atribuir a Google/transporte ni convertir indicadores vacíos de un log truncado en ausencia de fallos. R15fallido y R37visual conservan sus recibos. Resolver extracción compatible con CLI1.3.1 sigue pendiente; sin replay, cambio de selección o ampliación de deadlines. No amplía guardado comercial, capacidades, permisos o bindings; draft/partial/unregistered sin nueva aprobación/publicación. VM development2026-11-14: alias humano nullable con revisión OCR explícita, búsqueda nombre/alias y filtros independientes de códigos. Migración179366 aplicada una vez;13productos/33logs preservados y QA local/SQL/HTTP aislados correctos. Sin producción, inferencia OCR o publicación; recibo operativo separado."
+    "notes": "Solicitud2026-11-16 plan94§41: nuevos alias desde nombre, alias existente conservado/editable, disponibilidad nueva true y existente intacta, precio OCR inicial30% sobre bruto y edición por fila; modelo/intensidad desde configuración persistida por instancia/modo. Implementación local y QA Chromium sintética6perfiles verificadas; tipos/lint/build correctos. Global2 correcta3125/378 y focal posterior124/10 cubre recuperación final; tipos/lint/build y pins locales correctos según evidencia2026-11-16; antecedentes fechados inferiores conservan su alcance. Sin nueva aprobación/publicación o adopción. ClientR37 conserva la mejora visual de precio sugerido verificada1088/320px, sin Aplicar/Guardar en esa QA. NativeR16 adoptado con diagnóstico seguro best-effort y660Linux correctos, pero la nueva intención OCR real volvió aHTTP504 tras leer el archivo sin finish/resultado. Cierre local0CLI/marcadores/proofs/grupos yPNG conservado. Causa no aislada; no atribuir a Google/transporte ni convertir indicadores vacíos de un log truncado en ausencia de fallos. R15fallido y R37visual conservan sus recibos. Resolver extracción compatible con CLI1.3.1 sigue pendiente; sin replay, cambio de selección o ampliación de deadlines. No amplía guardado comercial, capacidades, permisos o bindings; draft/partial/unregistered sin nueva aprobación/publicación. VM development2026-11-14: alias humano nullable con revisión OCR explícita, búsqueda nombre/alias y filtros independientes de códigos. Migración179366 aplicada una vez;13productos/33logs preservados y QA local/SQL/HTTP aislados correctos. Sin producción, inferencia OCR o publicación; recibo operativo separado. Solicitud2026-11-17 plan94§42: redondeo de venta a decenas en formulario/OCR/sugerencia y Server para campos enviados, división local, proveedor use_ocrfalse/filtro OCR exclusivo, folio nullable, hoy civil local sólo al crear y chips de disponibilidad sin reclasificar desconocidos. Vista previa NodiaAI normalizada antes del hash y rechazo de propuestas incompatibles; autoridad/confirmación intactas. Implementación y QA técnica local final comprobadas por evidencia2026-11-17; adopción/aceptación por entorno pendientes. Ficha aprobada Facturas rev5 conserva bytes/firma: mínimos manuales nuevos en esta candidata, sin heredar aprobación o publicar capacidades."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
@@ -80,10 +80,58 @@
     {
       "path": "nodia-client/src/modules/business/infrastructure/invoiceAiFailure.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/utils/salePrice.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/components/PriceDivisionDialog/calculation.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/components/PriceDivisionDialog/PriceDivisionDialog.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/components/PriceDivisionDialog/PriceDivisionAction.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/product/product-sale-price.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/provider/entities/provider.entity.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/provider/dto/create-provider.dto.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/provider/dto/filter-provider.dto.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/invoice/dto/create-invoice.dto.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/invoice/dto/update-invoice.dto.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/migrations/1793680000000-ProviderOcrAndOptionalInvoiceCode.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-16",
+    "checked_on": "2026-11-17",
     "evidence_paths": [
       "docs/evidence/business-product-pricing-documentation-20261106-r01.json",
       "docs/evidence/business-product-pricing-20261106-r01.json",
@@ -97,9 +145,10 @@
       "docs/evidence/invoice-gemini-timeout-20261107-r01.json",
       "docs/evidence/invoice-gemini-timeout-20261107-r02.json",
       "docs/evidence/product-alias-and-code-completeness-20261114.md",
-      "docs/evidence/invoice-ocr-review-defaults-20261116.md"
+      "docs/evidence/invoice-ocr-review-defaults-20261116.md",
+      "docs/evidence/business-pricing-ocr-adjustments-20261117.md"
     ],
-    "notes": "Delta2026-11-16: implementación local, tipos/lint/build y QA Chromium sintética6perfiles correctos; global2 correcta3125/378 y focal posterior124/10; tipos/lint/build y pins locales correctos. Sin inferencia ni mutaciones HTTP reales. R16:660Linux sin fallos/omitidas más fixture cancel/setsid/IO/nuevaintención sin red/perfil real; Windows649pass/11skip es corrida separada. Adopción técnica verificada con configuraciónServerR12/ClientR37 preservada. OCR real504 con deadline240s/inferencia242057ms/UI250s, view_filecompletado y finish/result0. Hook1decisión/0rechazos; log truncado sin indicadores reconocidos no prueba causa ni ausencia. Cierre local0CLI/marcadores/proofs/grupos; no replay/guardar/vincularnuevo. R15yR37 históricos intactos;44aprobadas byte-idénticas. No se declara extracción resuelta."
+    "notes": "Delta2026-11-16: implementación local, tipos/lint/build y QA Chromium sintética6perfiles correctos; global2 correcta3125/378 y focal posterior124/10; tipos/lint/build y pins locales correctos. Sin inferencia ni mutaciones HTTP reales. R16:660Linux sin fallos/omitidas más fixture cancel/setsid/IO/nuevaintención sin red/perfil real; Windows649pass/11skip es corrida separada. Adopción técnica verificada con configuraciónServerR12/ClientR37 preservada. OCR real504 con deadline240s/inferencia242057ms/UI250s, view_filecompletado y finish/result0. Hook1decisión/0rechazos; log truncado sin indicadores reconocidos no prueba causa ni ausencia. Cierre local0CLI/marcadores/proofs/grupos; no replay/guardar/vincularnuevo. R15yR37 históricos intactos;44aprobadas byte-idénticas. No se declara extracción resuelta. Corte2026-11-17: contratos, fuentes y QA técnica local final comprobados; integración/adopción pendientes. No heredar resultados históricos ni atribuir migración operativa, inferencia o despliegue nuevos. Corte2026-11-17: Client global3225/387, focal75/3, tipos/lint/build y32perfiles Chromium correctos; Server global6143/358 y1prueba Linux omitida en Windows,7gates PostgreSQL16 y58knowledge/pins correctos. Sin DB operativa, inferencia o publicación nuevas; evidencia business-pricing-ocr-adjustments-20261117.md."
   },
   "approval": null
 }
@@ -107,7 +156,72 @@
 
 # Calculadora local y vinculación OCR revisada de Productos
 
+## Redondeo, división y contratos manuales — solicitud2026-11-17
+
+[Plan94§42](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#42-precios-de-venta-redondeados-división-local-y-proveedores-ocr--solicitud2026-11-17)
+sustituye la aproximación anterior de venta para el comportamiento nuevo:
+`1444 → 1440`, `1445 → 1450`, siempre múltiplos de10 con empates hacia arriba.
+Incluye alta/edición de producto, fila OCR, sugerencia30% y calculadora local.
+La entrada manual permanece libre al escribir y se normaliza al salir del campo;
+Guardar valida/prepara nuevamente el valor. No cambia oferta ni costos por editar
+venta. Se calcula `round10(bruto × (1 + porcentaje/100))` o `round10(precio/divisor)`
+directamente, sin redondear primero el resultado a CLP enteros.
+
+Un IconButton de división a la derecha de la ayuda abre un modal local para
+revisar importe/divisor. Aplicar sólo cambia el borrador; Cancelar conserva el
+anterior y Enter no envía el formulario padre. Divisor positivo, importes finitos
+y límites CLP válidos son necesarios. En neto no se redondea a decenas: se mantiene
+la precisión CLP entera del contrato, aproximando sólo fracciones de CLP. Venta
+no recalcula costos; neto mantiene la asistencia de impuesto existente. El check
+de la calculadora reemplaza la flecha como acción de Aplicar, sin guardar HTTP.
+
+Server normaliza únicamente `sale_price` presente en comandos individuales o
+bulk. Omitirlo conserva el precio del destino; nunca redondea logs, snapshots de
+ventas o productos históricos por una lectura/migración. Cero es válido;
+resultado ausente/no finito/overflow bloquea sin clamp ni valor inventado.
+Propuestas NodiaAI nuevas normalizan antes de vista previa/hash y confirmación;
+propuestas antiguas con venta incompatible requieren preparar una nueva revisión,
+sin cambiar silenciosamente lo confirmado ni repetir un efecto incierto.
+
+### Proveedor OCR y factura manual
+
+`use_ocr` comercial es booleano defaultfalse, también para filas existentes al
+migrar. Un checkbox habilita mostrar los mapeos de factura; apagarlo conserva sus
+valores/borradores y campos JSON desconocidos. El selector OCR filtra en Server
+con `q.use_ocr_eq=true`, búsqueda/paginado e identidad de caché con ese filtro;
+los selectores de producto/factura mantienen todos los proveedores según ámbito.
+No deducir uso OCR de mapeos, actividad, nombre ni credencial. CSVv2 añade flag
+opcional final; false se conserva y omitirlo en legado no desactiva un update.
+
+Folio/código de factura es opcional, máximo255 y nullable. Blanco se envía como
+null u omitido en alta multipart; update omitido conserva y null limpia. Ausencia
+se muestra como «Sin folio», conservando su ID real. Fecha de emisión empieza en
+hoy civil local sólo al crear; edición conserva la fecha guardada o ausente.
+Notas va encima de Activo, situado al final; booleano false se transporta también
+en alta. Error mantiene modal, archivo, texto y selección para revisar/reintentar.
+Overview conserva Disponible/No disponible y retira el chip Por confirmar sin
+transformar `has_stock:null` ni cambiar agregados.
+
+Discrepancia explícita: [Facturas y archivos aprobada rev5](invoices-and-files.md)
+describe código obligatorio para el corte anterior. Esta solicitud cambia los
+mínimos del formulario/API manual nuevos; no se exige ese opcional por la frase
+histórica. Cuerpo aprobado, revisión, firma y approval quedan intactos. Esta
+candidata recoge el contrato actual mientras su aprobación/publicación sigue
+pendiente; no supone paridad automática de herramientas, nuevas capacidades,
+autorización o escritores de ventas/reportes NodiaAI. Mantener schema vigente,
+identidad y confirmación humana exacta del canal que corresponda.
+
+Fuentes de implementación: helpers salePrice/product-sale-price, diálogo de
+división, ProductService, DTOs Provider/Invoice y migración1793680000000 enlazados
+en metadata y plan42. Inspección y regresiones por ámbito locales; QA final común,
+aplicación de migración, adopción y aceptación del alcance aún pendientes. Los
+cortes fechados inferiores no se reinterpretan como evidencia de esta regla.
+
 [Negocios](../README.md) · [plan94 §35](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#35-precios-independientes-calculadora-local-y-vinculación-ocr-revisada--2026-11-06) · [ADR095 propuesto](../../../../architecture/decisions/ADR-095-independent-product-prices-and-reviewed-invoice-binding.md).
+
+QA técnica final: Client3225/387, focal75/3, Server6143/358 (1caso sóloLinux
+omitido en Windows),7gates PG16 y32perfiles Chromium; tipos/lint/build y pins
+por [evidencia común](../../../../evidence/business-pricing-ocr-adjustments-20261117.md). Sin adopción operativa o aceptación humana nuevas.
 
 ## Qué resuelve y qué significa
 
@@ -170,7 +284,7 @@ Los endpoints se describen como fuente contractual del flujo manual. No se crea 
 | Dato | Regla |
 |---|---|
 | Costo bruto | `cost_price_tax`, importe CLP; no es tasa tributaria. Cero es un valor real y ausencia no se vuelve cero. |
-| Porcentaje sugerido | 30 inicial editable y local, finito no negativo con decimales y sin máximo arbitrario; no se manda como `profit_percentage` ni se rellena desde historia o IA. `Math.round(bruto × (1 + porcentaje/100))` CLP; bruto/resultado entero de 0 a 2.147.483.647. Ausencia/overflow bloquean Aplicar, sin clamp. Helper y regresiones de la entrega acreditan esta regla local; no implica un guardado comercial. |
+| Porcentaje sugerido | 30 inicial editable y local, finito no negativo con decimales y sin máximo arbitrario; no se manda como `profit_percentage` ni se rellena desde historia o IA. `round10(bruto × (1 + porcentaje/100))` CLP, directamente desde el resultado real y sin aproximación entera intermedia; bruto entero y venta normalizada dentro de 0 a 2.147.483.647, conforme§42. Ausencia/overflow bloquean Aplicar, sin clamp. Helper y regresiones de la entrega acreditan esta regla local; no implica un guardado comercial. |
 | Destino | ID bigint como string, negocio y versión frescos; no resolver por el nuevo código ni convertir ID a Number. |
 | Campos seleccionables | Código, nombre, costo neto, costo bruto y venta. Cada casilla muestra anterior→nuevo; campo no elegido conserva el destino. Código y costos válidos se ofrecen seleccionados; nombre/venta optativos. Igualdad no fabrica una diferencia. |
 | Otros atributos | Proveedor, barcode, oferta, disponibilidad y unidad no se deducen de la vinculación. Cantidad de factura no se convierte en stock. |

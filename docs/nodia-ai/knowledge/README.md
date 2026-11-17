@@ -1,5 +1,21 @@
 # Contexto funcional de productos para NodiaAI
 
+## Negocios: precios y proveedores OCR — 2026-11-17
+
+[Plan94§42](../../mvp/94-business-point-of-sale-and-product-refactor.md#42-precios-de-venta-redondeados-división-local-y-proveedores-ocr--solicitud2026-11-17),
+[Negocios55](businesses/README.md) y [calculadora/vinculación15](businesses/features/product-price-calculator-and-invoice-binding.md)
+registran venta a decenas al salir del campo/guardar, sugerencia y división ya
+redondeadas, preferencia OCR defaultfalse y folio manual opcional. Impacto
+funcional local con CAS y confirmación de venta normalizada antes del hash;
+comandos incompatibles requieren nueva revisión. No cambia autoridad ni habilita
+escrituras de ventas/reportes. [Evidencia](../../evidence/business-pricing-ocr-adjustments-20261117.md)
+separa pruebas, PG16 sintético, UI y adopción pendiente. La ficha aprobada Facturas5
+conserva su corte histórico: no exigir folio manual por su frase anterior ni
+trasladar la firma a esta ampliación. Nuevos contratos generados alinean sólo
+comentarios del preparador y procedencia; cuerpos/firmas aprobados intactos,
+96fuentes/52excluidas y44documentos/46fragmentos/153capacidades conservados.
+Candidatas draft/partial/unregistered/approval:null; sin publicación nueva.
+
 ## Teacher: guía y continuidad TUX-03/05 — 2026-11-16
 
 [Plan106§15](../../mvp/106-nodia-teacher-guided-ux-redesign.md#15-tux-0305-guía-y-continuidad-implementadas-localmente--2026-11-16),

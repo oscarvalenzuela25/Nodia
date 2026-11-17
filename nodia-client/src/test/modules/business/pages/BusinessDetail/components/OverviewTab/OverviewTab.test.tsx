@@ -44,7 +44,7 @@ const mockProviders: ProviderEntity[] = [
     id: "prov-1",
     business_id: "biz-123",
     name: "Distribuidora Central",
-    tax: 19,
+    tax: 19, use_ocr: false,
     is_active: true,
     created_at: "2026-01-01T00:00:00Z",
   },
@@ -52,7 +52,7 @@ const mockProviders: ProviderEntity[] = [
     id: "prov-2",
     business_id: "biz-123",
     name: "Insumos Norte",
-    tax: 19,
+    tax: 19, use_ocr: false,
     is_active: false,
     created_at: "2026-01-01T00:00:00Z",
   },
@@ -243,7 +243,7 @@ describe("OverviewTab Component", () => {
     // 3 Stock badges
     expect(screen.getByText("Disponible: 1")).toBeInTheDocument();
     expect(screen.getByText("No disponible: 1")).toBeInTheDocument();
-    expect(screen.getByText("Por confirmar: 1")).toBeInTheDocument();
+    expect(screen.queryByText("Por confirmar: 1")).not.toBeInTheDocument();
 
     // Inventory value and its divider are removed
     expect(screen.queryByText(/Valor inventario/i)).not.toBeInTheDocument();

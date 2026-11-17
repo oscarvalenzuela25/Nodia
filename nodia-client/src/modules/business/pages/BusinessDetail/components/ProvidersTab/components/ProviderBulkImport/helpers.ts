@@ -25,6 +25,7 @@ export interface ProvisionalProviderRow {
   name: string;
   tax: number;
   is_active: boolean;
+  use_ocr?: boolean;
   code: FieldMappingData;
   cost_price: FieldMappingData;
   cost_price_tax: FieldMappingData;
@@ -49,6 +50,7 @@ export const FIELD_ALIASES: Record<string, string[]> = {
   ],
   tax: ["tax", "impuesto", "iva", "porcentaje_impuesto", "tax %", "impuesto %"],
   is_active: ["is_active", "activo", "active", "estado", "status"],
+  use_ocr: ["use_ocr", "usar ocr", "use ocr"],
   field_code: [
     "field_code",
     "columna_codigo",
@@ -283,6 +285,7 @@ export const parseCSV = (csvText: string): ProvisionalProviderRow[] => {
       name: rawData["name"] ?? "",
       tax: finalTax,
       is_active: parseBoolean(rawData["is_active"]),
+      use_ocr: rawData.use_ocr?.trim() ? parseBoolean(rawData.use_ocr) : undefined,
       contactsJson: rawData.contacts || undefined,
       extraFields,
       code: {
@@ -314,6 +317,7 @@ export const parseCSV = (csvText: string): ProvisionalProviderRow[] => {
       name: parsed.name ?? "",
       tax: parsed.tax ?? 19,
       is_active: parsed.is_active ?? true,
+      ...(parsed.use_ocr === undefined ? {} : { use_ocr: parsed.use_ocr }),
       code: parsed.code ?? { value: "", instructions: "" },
       cost_price: parsed.cost_price ?? { value: "", instructions: "" },
       cost_price_tax: parsed.cost_price_tax ?? { value: "", instructions: "" },
@@ -344,13 +348,14 @@ export function buildImportPayload(rows: ProvisionalProviderRow[], businessId: s
     }
     return {
       business_id: businessId, ...(row.id ? { id: row.id } : {}), name: row.name, tax: row.tax, is_active: row.is_active, fields,
+      ...(row.use_ocr === undefined ? {} : { use_ocr: row.use_ocr }),
       ...(row.contactsJson?.trim() ? { contacts: importContactsSchema.parse(JSON.parse(row.contactsJson)) } : {}),
     };
   });
 }
 
 export const generateTemplateCSV = (lang: string = 'es'): string => {
-  const suffix = lang.startsWith('en') ? ',Contacts JSON (contacts),Extra Mapping JSON (fields_json),CSV Version (csv_version)' : ',Contactos JSON (contacts),Mapeo adicional JSON (fields_json),Versión CSV (csv_version)';
+  const suffix = lang.startsWith('en') ? ',Contacts JSON (contacts),Extra Mapping JSON (fields_json),CSV Version (csv_version),Use OCR (use_ocr)' : ',Contactos JSON (contacts),Mapeo adicional JSON (fields_json),Versión CSV (csv_version),Usar OCR (use_ocr)';
   return providerCsvHeader(lang) + suffix + '\n';
 };
 

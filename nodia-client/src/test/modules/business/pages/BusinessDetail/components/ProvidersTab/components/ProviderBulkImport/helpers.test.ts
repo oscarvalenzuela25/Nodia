@@ -27,4 +27,11 @@ describe('Provider CSV round trip', () => {
     expect(buildImportPayload(parseCSV("name\n'=name"), businessId)[0].name).toBe("'=name");
     expect(buildImportPayload(parseCSV('name\nSur'), businessId)[0]).not.toHaveProperty('contacts');
   });
+  it('preserves explicit OCR opt-in and opt-out while leaving legacy updates unspecified', () => {
+    expect(buildImportPayload(parseCSV('name,use_ocr\nSur,true'), businessId)[0]).toHaveProperty('use_ocr', true);
+    expect(buildImportPayload(parseCSV('name,use_ocr\nSur,false'), businessId)[0]).toHaveProperty('use_ocr', false);
+    expect(buildImportPayload(parseCSV('name,use_ocr\nSur,'), businessId)[0]).not.toHaveProperty('use_ocr');
+    expect(buildImportPayload(parseCSV('name\nSur'), businessId)[0]).not.toHaveProperty('use_ocr');
+    expect(() => parseCSV('name,use_ocr\nSur,maybe')).toThrow('business:provider_csv_boolean_error');
+  });
 });

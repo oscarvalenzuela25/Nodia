@@ -246,6 +246,32 @@ function change(s: StoredProposalStep, key: string) {
   )!;
 }
 describe('AI-22 native business/catalog proposals', () => {
+  it.each(['create', 'update'])('rounds a %s proposal before public review and never executes an unrounded frozen command', async operation => {
+    const f = fixture();
+    const op = f.op('products', operation);
+    const input: NodiaAiJsonObject = operation === 'create' ? { business_id: businessId, ...prices, sale_price: 1445 } : { business_id: businessId, id: '3', sale_price: 1445 };
+    const prepared = await step(op, input, f.context);
+    expect((prepared.commandTemplate.command as NodiaAiJsonObject).sale_price).toBe(1450);
+    expect(change(prepared, 'sale_price').after).toBe(1450);
+    const old = structuredClone(prepared);
+    (old.commandTemplate.command as NodiaAiJsonObject).sale_price = 1445;
+    await expect(op.executeConfirmed(old, f.context)).rejects.toThrow('nodia_ai:preconditions_changed');
+    expect(f.writers.every(writer => writer.execute.mock.calls.length === 0)).toBe(true);
+    await op.executeConfirmed(prepared, f.context);
+    expect(f.writers.some(writer => writer.execute.mock.calls.some(call => call.some(command => command && typeof command === 'object' && 'sale_price' in command && command.sale_price === 1450)))).toBe(true);
+  });
+  it('rounds explicit edits on reprepare before the new preview and leaves historical log prices unchanged', async () => {
+    const f = fixture();
+    const op = f.op('products', 'update');
+    const prepared = await step(op, { business_id: businessId, id: '3', sale_price: 1440 }, f.context);
+    const edited = await op.applyEdits(prepared.commandTemplate, [{ field_key: 'sale_price', value: 1445 }], f.context);
+    const next = await op.reprepareStored(edited, f.context);
+    expect(next.status).toBe('ready');
+    if (next.status === 'ready') expect((next.commandTemplate.command as NodiaAiJsonObject).sale_price).toBe(1450);
+    const log = await step(f.op('product_logs'), { business_id: businessId, product_id: '3', ...prices, sale_price: 1445 }, f.context);
+    expect((log.commandTemplate.command as NodiaAiJsonObject).sale_price).toBe(1445);
+  });
+
   it('rejects retired margin fields in new or stored proposals without calling a writer', async () => {
     const f = fixture();
     for (const resource of ['products', 'product_logs']) {

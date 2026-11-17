@@ -119,6 +119,7 @@ export const ProvidersTab: FC<Props> = ({
     },
   });
   const providers = providersData?.data ?? [];
+  const showInvoiceMappings = providers.some(provider => provider.use_ocr === true);
 
   const createMutation = useCreateProvider();
   const updateMutation = useUpdateProvider();
@@ -215,6 +216,7 @@ export const ProvidersTab: FC<Props> = ({
             name: data.name,
             tax: data.tax,
             fields: data.fields,
+            use_ocr: data.use_ocr,
             is_active: data.is_active,
           },
         });
@@ -224,6 +226,7 @@ export const ProvidersTab: FC<Props> = ({
           name: data.name,
           tax: data.tax,
           fields: data.fields,
+          use_ocr: data.use_ocr,
           is_active: data.is_active,
         });
       }
@@ -427,7 +430,7 @@ export const ProvidersTab: FC<Props> = ({
                   align: "center",
                   header: t("business:provider_tax"),
                 },
-                { header: t("business:provider_fields_label") },
+                ...(showInvoiceMappings ? [{ header: t("business:provider_fields_label") }] : []),
                 { align: "center", header: t("business:product_status") },
                 { width: 80, align: "right", header: t("core:actions") },
               ]}
@@ -471,7 +474,7 @@ export const ProvidersTab: FC<Props> = ({
                     <TableCell align="center" width={110}>
                       {t("business:provider_tax")}
                     </TableCell>
-                    <TableCell>{t("business:provider_fields_label")}</TableCell>
+                    {showInvoiceMappings && <TableCell>{t("business:provider_fields_label")}</TableCell>}
                     <TableCell align="center">
                       {t("business:product_status")}
                     </TableCell>
@@ -483,7 +486,7 @@ export const ProvidersTab: FC<Props> = ({
                 <TableBody>
                   {!isLoading && providers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                      <TableCell colSpan={showInvoiceMappings ? 6 : 5} align="center" sx={{ py: 6 }}>
                         <Typography
                           variant="subtitle1"
                           sx={{ fontWeight: 600, mb: 0.5 }}
@@ -544,10 +547,10 @@ export const ProvidersTab: FC<Props> = ({
                         </TableCell>
 
                         {/* Fields: Structured format with support for { value, instructions } */}
-                        <TableCell
+                        {showInvoiceMappings && <TableCell
                           data-testid={`provider-fields-cell-${prov.id}`}
                         >
-                          {(() => {
+                          {prov.use_ocr === true ? (() => {
                             const getFieldConfig = (
                               field: unknown,
                             ): { value: string; instructions: string } => {
@@ -685,8 +688,8 @@ export const ProvidersTab: FC<Props> = ({
                                 )}
                               </Box>
                             );
-                          })()}
-                        </TableCell>
+                          })() : "—"}
+                        </TableCell>}
 
                         {/* Status */}
                         <TableCell align="center">

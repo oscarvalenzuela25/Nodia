@@ -107,7 +107,7 @@ export const InvoicePreviewModal: FC<InvoicePreviewModalProps> = ({
       actions={modalActions}
     >
       <Box sx={{ minWidth: 0, overflowWrap: "anywhere" }}>
-        <Typography variant="subtitle2">{t("business:invoice_code")}: {invoice?.code}</Typography>
+        <Typography variant="subtitle2">{t("business:invoice_code")}: {invoice?.code || t("business:invoice_without_code")}</Typography>
         {modalSubtitle && <Typography variant="body2" color="text.secondary">{modalSubtitle}</Typography>}
       </Box>
       <Box sx={{ minHeight: { xs: "min(240px, 35svh)", sm: 320 }, width: "100%", position: "relative" }}>
@@ -186,7 +186,7 @@ export const InvoicePreviewModal: FC<InvoicePreviewModalProps> = ({
               <Box
                 component="iframe"
                 src={data.url}
-                title={invoice?.code || "Invoice PDF"}
+                title={invoice?.code || t("business:invoice_without_code")}
                 data-testid="preview-iframe"
                 sx={{
                   width: "100%",
@@ -261,7 +261,7 @@ export const InvoicePreviewModal: FC<InvoicePreviewModalProps> = ({
                 <Box
                   component="img"
                   src={data.url}
-                  alt={invoice?.code || "Invoice file"}
+                  alt={invoice?.code || t("business:invoice_without_code")}
                   data-testid="preview-image"
                   onLoad={() => setLoadedUrl(data.url)}
                   onError={() => setFailedUrl(data.url)}

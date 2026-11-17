@@ -27,8 +27,8 @@ export class Invoice {
   @Column({ type: 'bigint', nullable: true })
   provider_id: string | null;
 
-  @Column({ type: 'varchar', length: 255 })
-  code: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  code: string | null;
 
   @Column({ type: 'integer', default: 0 })
   total_amount: number;

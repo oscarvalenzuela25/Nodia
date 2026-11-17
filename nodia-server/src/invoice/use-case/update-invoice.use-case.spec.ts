@@ -50,6 +50,19 @@ function nativeManager(repository: object, invoice: Invoice) {
 }
 
 describe('UpdateInvoiceUseCase', () => {
+  it('preserves an omitted folio and explicitly clears or trims it through the native writer', async () => {
+    const invoice = Object.assign(new Invoice(), { id: '7', business_id: nativeBusiness, provider_id: null, code: '00012', path_storage: '', total_amount: 0, data: {} });
+    const repository = { findOne: vi.fn(async () => invoice), save: vi.fn(async (value: Invoice) => value) };
+    const manager = nativeManager(repository, invoice);
+    const service = new InvoiceService(repository as unknown as Repository<Invoice>);
+    await service.updateInvoice('7', { total_amount: 42 }, manager, actor);
+    expect(invoice.code).toBe('00012');
+    await service.updateInvoice('7', { code: '  ' }, manager, actor);
+    expect(invoice.code).toBeNull();
+    await service.updateInvoice('7', { code: '  00014  ' }, manager, actor);
+    expect(invoice.code).toBe('00014');
+  });
+
   let useCase: UpdateInvoiceUseCase;
   let invoiceServiceMock: Partial<InvoiceService>;
 

@@ -14,7 +14,7 @@ describe("ProviderModal Component", () => {
     user = userEvent.setup();
   });
 
-  it("renders new provider modal with name, tax, 5 invoice mapping inputs, and active switch at bottom", () => {
+  it("starts with OCR disabled and only reveals invoice mappings when enabled", () => {
     render(
       <ProviderModal
         open={true}
@@ -30,12 +30,8 @@ describe("ProviderModal Component", () => {
       screen.getByTestId("provider-tax-input").querySelector("input")
     ).toHaveValue(19);
 
-    // The 5 invoice mapping fields
-    expect(screen.getByTestId("provider-field-code-input")).toBeInTheDocument();
-    expect(screen.getByTestId("provider-field-cost-price-input")).toBeInTheDocument();
-    expect(screen.getByTestId("provider-field-cost-price-tax-input")).toBeInTheDocument();
-    expect(screen.getByTestId("provider-field-packages-input")).toBeInTheDocument();
-    expect(screen.getByTestId("provider-field-units-per-package-input")).toBeInTheDocument();
+    expect(screen.getByTestId("provider-use-ocr-checkbox").querySelector("input")).not.toBeChecked();
+    expect(screen.queryByTestId("provider-field-code-input")).not.toBeInTheDocument();
 
     // Instructions inputs are initially hidden (progressive disclosure)
     expect(screen.queryByTestId("provider-field-code-instructions-input")).not.toBeInTheDocument();
@@ -53,6 +49,7 @@ describe("ProviderModal Component", () => {
       />
     );
 
+    await user.click(screen.getByTestId("provider-use-ocr-checkbox").querySelector("input")!);
     const codeInput = screen.getByTestId("provider-field-code-input").querySelector("input")!;
     expect(screen.queryByTestId("provider-field-code-instructions-input")).not.toBeInTheDocument();
 
@@ -79,6 +76,7 @@ describe("ProviderModal Component", () => {
     await user.type(nameInput, "Distribuidora Central");
 
     // Enter invoice mapping columns
+    await user.click(screen.getByTestId("provider-use-ocr-checkbox").querySelector("input")!);
     const codeInput = screen.getByTestId("provider-field-code-input").querySelector("input")!;
     await user.type(codeInput, "COD_ARTICULO");
 
@@ -104,6 +102,7 @@ describe("ProviderModal Component", () => {
 
     expect(mockOnSubmit).toHaveBeenCalledWith({
       name: "Distribuidora Central",
+      use_ocr: true,
       tax: 19,
       fields: {
         code: {
@@ -141,6 +140,7 @@ describe("ProviderModal Component", () => {
 
     expect(mockOnSubmit).toHaveBeenCalledWith({
       name: "Proveedor Sin Mapeo",
+      use_ocr: false,
       tax: 19,
       fields: {},
       is_active: true,
@@ -153,6 +153,7 @@ describe("ProviderModal Component", () => {
       business_id: "biz-123",
       name: "Comercializadora del Sur",
       tax: 10,
+      use_ocr: true,
       fields: {
         code: {
           value: "SKU_PROD",
@@ -204,5 +205,25 @@ describe("ProviderModal Component", () => {
     // Switch should be unchecked
     const switchInput = screen.getByTestId("provider-active-switch").querySelector("input")!;
     expect(switchInput).not.toBeChecked();
+  });
+
+  it("keeps entered mappings and unknown stored fields when OCR is disabled, then submits the flag explicitly", async () => {
+    render(<ProviderModal open onClose={mockOnClose} onSubmit={mockOnSubmit} initialData={{
+      id: "preserved", business_id: "biz-123", name: "Proveedor existente", tax: 19, use_ocr: true, is_active: true, created_at: "",
+      fields: { code: { value: "SKU", instructions: "Keep me" }, future: { value: "EXTRA", instructions: "Untouched" } },
+    }} />);
+    const code = screen.getByTestId("provider-field-code-input").querySelector("input")!;
+    await user.clear(code);
+    await user.type(code, "PRODUCTO");
+    const checkbox = screen.getByTestId("provider-use-ocr-checkbox").querySelector("input")!;
+    await user.click(checkbox);
+    expect(screen.queryByTestId("provider-field-code-input")).not.toBeInTheDocument();
+    await user.click(checkbox);
+    expect(screen.getByTestId("provider-field-code-input").querySelector("input")).toHaveValue("PRODUCTO");
+    await user.click(checkbox);
+    await user.click(screen.getByTestId("save-provider-btn"));
+    await waitFor(() => expect(mockOnSubmit).toHaveBeenCalledWith(expect.objectContaining({
+      use_ocr: false, fields: { code: { value: "PRODUCTO", instructions: "Keep me" }, future: { value: "EXTRA", instructions: "Untouched" } },
+    })));
   });
 });
