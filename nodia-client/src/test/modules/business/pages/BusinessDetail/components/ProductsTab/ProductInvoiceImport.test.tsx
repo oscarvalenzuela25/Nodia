@@ -11,7 +11,6 @@ import {
   calculatePriceDiff,
 } from "../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport";
 import * as businessServices from "../../../../../../../modules/business/infrastructure/services";
-import { getSelectableModels } from "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services";
 import { reserveObservation } from "../../../../../../../modules/business/components/AnalysisConsole/infrastructure/services";
 import i18n from "../../../../../../../translate";
 import { sileo } from "sileo";
@@ -23,23 +22,9 @@ import useGeneralSettingsStore from "../../../../../../../store/generalSettings/
 import type {
   ProductEntity,
   ExtractedInvoiceItem,
+  InvoiceSelectableModelsParams,
   ProductLogEntity,
 } from "../../../../../../../modules/business/infrastructure/types";
-
-vi.mock("../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services", async (importOriginal) => ({
-  ...await importOriginal<typeof import("../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services")>(),
-  // Synthetic provider observations for this integration suite; no real discovery or inference.
-  getSelectableModels: vi.fn(async (params: { provider_id?: string; mode?: "agentic" | "api_key" }) => [{
-    providerId: params.provider_id, provider: "synthetic", mode: params.mode, planType: params.mode,
-    models_source: "provider", isSelected: true, isActive: true, selectedModel: null,
-    models: ["model-current", "model-secondary", "synthetic-selected-model", "synthetic-exact-model", "synthetic-closure-model",
-      "synthetic-cancel-model", "gemini-3.8-flash", "mistral-large-latest", "account-model", "gemini-2.5-pro", "gpt-4o",
-      "synthetic-agentic-model", "synthetic-api-model", "synthetic-alternative-model"].map(id => ({
-      id, name: id, displayName: id, description: "Synthetic model", contextWindow: null,
-      capabilities: ["reasoning"], inputModalities: ["image"], supportedReasoningEfforts: ["low", "medium", "high"],
-    })),
-  }]),
-}));
 
 vi.mock("sileo", () => ({
   sileo: {
@@ -92,6 +77,15 @@ vi.mock("../../../../../../../modules/business/infrastructure/services", () => (
     meta: { total_items: 0 },
   }),
   analyzeInvoice: vi.fn(),
+  // Synthetic observations for this integration suite; no provider calls.
+  getInvoiceSelectableModels: vi.fn(async ({ provider_id, mode }: InvoiceSelectableModelsParams) => [{
+    providerId: provider_id, mode, models_source: "provider",
+    models: ["model-current", "model-secondary", "synthetic-selected-model", "synthetic-exact-model", "synthetic-closure-model",
+      "synthetic-cancel-model", "gemini-3.8-flash", "mistral-large-latest", "account-model", "gemini-2.5-pro", "gpt-4o",
+      "synthetic-agentic-model", "synthetic-api-model", "synthetic-alternative-model"].map(id => ({
+      id, name: id, displayName: id, inputModalities: ["image"], supportedReasoningEfforts: ["low", "medium", "high"],
+    })),
+  }]),
   verifyIaProviders: vi.fn().mockResolvedValue([{ id: "ai-primary", key: "gemini", name: "Google Gemini", mode: "agentic", is_active: true, can_use_model: true, is_default: true, use_agentic: true, default_mode: "agentic", fields: { selected_model: "model-current" } }, { id: "ai-secondary", key: "gemini", name: "Gemini Secundario", mode: "agentic", is_active: true, can_use_model: true, use_agentic: true, default_mode: "agentic", fields: { selected_model: "model-secondary" } }]),
   createInvoiceWithFile: vi.fn(),
   bulkCreateProducts: vi.fn(),
@@ -451,8 +445,9 @@ describe("ProductInvoiceImport Component", () => {
       default_mode: "agentic", fields: { selected_model: "synthetic-selected-model" } };
     const other = { ...selected, id: "other-instance", name: "Synthetic other available", is_default: false, can_use_model: true, availability_reason: null, error: null };
     vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([selected, other]).mockResolvedValueOnce([{ ...selected, can_use_model: true, availability_reason: null, error: null }, other]);
-    vi.mocked(getSelectableModels).mockResolvedValueOnce([{ providerId: selected.id, provider: selected.key, mode: "agentic", planType: "agentic",
-      models_source: "unavailable", models_observed_at: null, isSelected: true, isActive: true, selectedModel: "synthetic-selected-model", models: [] }]);
+    vi.mocked(businessServices.getInvoiceSelectableModels).mockResolvedValueOnce([
+      { providerId: selected.id, mode: "agentic", models_source: "unavailable", models: [] },
+    ]);
     renderWithClient(<ProductInvoiceImport businessId="biz-123" onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
     await selectProvider();
     const file = new File(["synthetic"], "synthetic-preserved.pdf", { type: "application/pdf" });
@@ -463,7 +458,7 @@ describe("ProductInvoiceImport Component", () => {
     await waitFor(() => expect(screen.getByTestId("analyze-invoice-btn")).toBeEnabled());
     expect(businessServices.analyzeInvoice).not.toHaveBeenCalled();
     expect(businessServices.verifyIaProviders).toHaveBeenCalledTimes(2);
-    expect(getSelectableModels).toHaveBeenCalledTimes(2);
+    expect(businessServices.getInvoiceSelectableModels).toHaveBeenCalledTimes(2);
     expect(screen.getByText(/synthetic-preserved.pdf/)).toBeVisible();
     expect(screen.getByRole("button", { name: /Proveedor de IA/ })).toHaveTextContent("Synthetic Gemini selected");
     vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce(syntheticAnalysis("SYNTHETIC-AFTER-CHECK"));

@@ -1,5 +1,13 @@
 # Contexto funcional de productos para NodiaAI
 
+## Topbar y selección OCR de Negocios — 2026-11-17
+
+[Ajustes](general-settings/README.md#acciones-de-cabecera-para-negocios-y-pwa--2026-11-17)
+y [Negocios](businesses/README.md#estado-de-ia-y-modelos-ocr-desde-negocios--2026-11-17)
+registran el estado de lectura de IA, la selección de modelos de facturas y
+la recarga desde el avatar. Las herramientas publicadas de NodiaAI mantienen
+su alcance.
+
 ## Caja de Negocios: contratos CASH-01 — 2026-11-17
 
 [Plan109 §§3–7](../../mvp/109-business-cash-ledger-plan.md#3-reglas-de-caja-v1),

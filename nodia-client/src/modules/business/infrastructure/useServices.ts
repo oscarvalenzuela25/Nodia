@@ -6,6 +6,7 @@ import { invoiceAiAnalysisMessageKey } from "./invoiceAiFailure";
 import type { AxiosError } from "axios";
 import {
   keepPreviousData,
+  skipToken,
   useMutation,
   useQuery,
   useQueryClient,
@@ -28,6 +29,7 @@ import {
   updateInvoice,
   analyzeInvoice,
   verifyIaProviders,
+  getInvoiceSelectableModels,
   createInvoiceWithFile,
   getProducts,
   getProductAvailability,
@@ -45,6 +47,7 @@ import type {
   AssignCollaboratorsPayload,
   BusinessEntity,
   GetBusinessesParams,
+  InvoiceSelectableModelsParams,
 } from "./types";
 
 
@@ -514,6 +517,15 @@ export const useVerifyIaProviders = (options?: { enabled?: boolean; mode?: impor
     enabled: isSessionActive && (options?.enabled ?? true),
     staleTime: 30000,
     refetchOnWindowFocus: false,
+  });
+};
+
+export const useInvoiceSelectableModels = (params: InvoiceSelectableModelsParams | null) => {
+  const { isSessionActive, sessionVersion } = useAuth();
+  return useQuery({
+    queryKey: ["invoice", "selectable-models", sessionVersion, params],
+    queryFn: params ? ({ signal }) => getInvoiceSelectableModels(params, signal) : skipToken,
+    enabled: isSessionActive && params !== null,
   });
 };
 

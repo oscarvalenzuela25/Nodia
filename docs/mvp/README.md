@@ -1,5 +1,12 @@
 # Especificación del MVP — Nodia
 
+**Topbar para Negocios y recarga desde el avatar — 2026-11-17.**
+[Estado de IA](../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17)
+y [modelos del OCR](94-business-point-of-sale-and-product-refactor.md#44-modelos-ocr-con-acceso-de-negocios--2026-11-17)
+se consultan con el módulo Negocios. El menú del avatar incorpora
+[Actualizar información](103-pwa-progressive-implementation-plan.md#16-recargar-la-página-desde-el-avatar--2026-11-17)
+para recargar la URL actual. Candidato local en `codex/business-cash-ledger`.
+
 **Caja de Negocios — CASH-01 cerrado, 2026-11-17.** El
 [Plan109](109-business-cash-ledger-plan.md#3-reglas-de-caja-v1) fija los contratos
 de categorías, movimientos, filtros y agregados, edición de egresos desde

@@ -1,5 +1,11 @@
 # Progreso del MVP — Nodia
 
+**Topbar y OCR de Negocios — 2026-11-17.** Corrección local en
+`codex/business-cash-ledger`. El [estado IA](../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17)
+usa una proyección mínima para Negocios y el [selector OCR](94-business-point-of-sale-and-product-refactor.md#44-modelos-ocr-con-acceso-de-negocios--2026-11-17)
+consulta su lectura exacta por conexión/modo. **Actualizar información** en
+el avatar recarga la URL actual en el [alcance de plan103 §16](103-pwa-progressive-implementation-plan.md#16-recargar-la-página-desde-el-avatar--2026-11-17).
+
 **CASH-01 cerrado por alcance documental — 2026-11-17.** La rama
 `codex/business-cash-ledger` define contrato HTTP, cantidades exactas en CLP,
 fecha civil de Santiago, autorización por negocio, orden de locks y recibos.

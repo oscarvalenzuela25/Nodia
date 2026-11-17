@@ -4,7 +4,7 @@
   "document_id": "businesses",
   "product_id": "businesses",
   "kind": "product",
-  "revision": 58,
+  "revision": 59,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -304,6 +304,14 @@
 
 Las rutas de `ops/lab/artifacts/` citadas debajo identifican originales locales ignorados por Git; no se distribuyen con un checkout ni con el paquete productivo. Se conservan sus nombres, hechos y fuentes portables ya enlazadas, sin copiar originales, alterar evidencias o ampliar aprobación/publicación. Esta revisión sólo corrige su presentación documental y sigue draft/unregistered, con approval:null.
 # Negocios — contexto de producto para NodiaAI
+
+## Estado de IA y modelos OCR desde Negocios — 2026-11-17
+
+El módulo habilita la lectura mínima de estado IA en el topbar y el selector
+exacto de modelos del OCR. Administración de IA conserva su propia autoridad
+de gestión. La [ficha candidata de revisión OCR](features/product-price-calculator-and-invoice-binding.md#selección-ocr-con-el-módulo-negocios--2026-11-17)
+y el [plan94 §44](../../../mvp/94-business-point-of-sale-and-product-refactor.md#44-modelos-ocr-con-acceso-de-negocios--2026-11-17)
+describen el contrato por selección.
 
 ## Caja: plan de registro y egresos de factura — solicitud2026-11-17
 

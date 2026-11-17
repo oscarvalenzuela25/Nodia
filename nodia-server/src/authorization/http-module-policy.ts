@@ -90,6 +90,14 @@ function policyForPath(
   if (path.startsWith('rental/')) {
     return { routes: ['/reservations'], match: 'all' };
   }
+  if (
+    (path === 'ai-provider' || path === 'ai-providers') &&
+    method === 'GET' &&
+    handlerPaths.length === 1 &&
+    normalize(handlerPaths[0]) === 'topbar-status'
+  ) {
+    return { routes: [AI, BUSINESS], match: 'any' };
+  }
   // These exact list handlers supply selectors in the corresponding editor.
   // A shared list never grants access to detail handlers or to catalog writes.
   if (

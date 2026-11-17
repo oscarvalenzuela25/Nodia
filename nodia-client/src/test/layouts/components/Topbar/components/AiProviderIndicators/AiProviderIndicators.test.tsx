@@ -4,11 +4,13 @@ import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-qu
 import { MemoryRouter, useLocation } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { sileo } from "sileo";
+import { AxiosError } from "axios";
 import AiProviderIndicators from "../../../../../../layouts/components/Topbar/components/AiProviderIndicators";
 import { useAiProvidersHealth } from "../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/useServices";
 import { getAiProvidersHealth } from "../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services";
 import type { AiProvidersHealthResponse } from "../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/types";
 import { notifyHttpError } from "../../../../../../config/httpFeedback";
+import { mainInstance } from "../../../../../../config/api";
 import i18n from "../../../../../../translate";
 import useAuthStore from "../../../../../../store/authStore";
 import { getCodexSession, type CodexSession } from "../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/codexSession";
@@ -30,9 +32,9 @@ const fixture = (): AiProvidersHealthResponse => ({
 function Location() { const location = useLocation(); return <output>{location.pathname}{location.search}</output>; }
 function SharedObserver() { useAiProvidersHealth(); return null; }
 function SharedSessionObserver() { useCodexSessionObservation("900"); return null; }
-function setup(shared = false, sharedSession = false) {
+function setup(shared = false, sharedSession = false, canManageAi = true) {
   const client = new QueryClient({ queryCache: new QueryCache({ onError: notifyHttpError }), defaultOptions: { queries: { retry: false } } });
-  render(<QueryClientProvider client={client}><MemoryRouter><AiProviderIndicators />{shared && <SharedObserver />}{sharedSession && <SharedSessionObserver />}<Location /></MemoryRouter></QueryClientProvider>);
+  render(<QueryClientProvider client={client}><MemoryRouter><AiProviderIndicators canManageAi={canManageAi} />{shared && <SharedObserver />}{sharedSession && <SharedSessionObserver />}<Location /></MemoryRouter></QueryClientProvider>);
   return client;
 }
 const button = (mode: string) => screen.getByRole("button", { name: new RegExp(`${mode}:`) });
@@ -57,6 +59,59 @@ const openAiFixture = () => {
   }) };
   return data;
 };
+
+describe("AiProviderIndicators for Commerce without AI administration", () => {
+  const provider = { name: "Synthetic connection", key: "openai", isActive: true, use_api_key: true, use_agentic: true,
+    hasApiKey: true, agentic: { available: true, authenticated: true } };
+  const readOnlyMode = (mode: string) => screen.getByRole("img", { name: new RegExp(`${mode}:`) });
+  const refresh = () => screen.getByRole("button", { name: "Actualizar estado de IA" });
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it("reads the narrow endpoint and refreshes both observations without settings access", async () => {
+    const get = vi.spyOn(mainInstance, "get").mockResolvedValue({ data: { provider } });
+    setup(false, false, false);
+    await screen.findByRole("group");
+    expect(get).toHaveBeenCalledExactlyOnceWith(expect.stringMatching(/\/ai-providers\/topbar-status$/), expect.objectContaining({ signal: expect.any(AbortSignal) }));
+    expect(readOnlyMode("API key")).toHaveAccessibleName(/API key configurada/);
+    expect(readOnlyMode("Agentic")).toHaveAccessibleName(/Sesión disponible/);
+    expect(readOnlyMode("Agentic")).not.toHaveAccessibleName(/Abrir ajustes/);
+    expect(screen.queryByRole("button", { name: /Agentic:/ })).not.toBeInTheDocument();
+    expect(getAiProvidersHealth).not.toHaveBeenCalled();
+    expect(getCodexSession).not.toHaveBeenCalled();
+
+    get.mockResolvedValue({ data: { provider: { ...provider, hasApiKey: false, agentic: { available: true, authenticated: false } } } });
+    await userEvent.click(refresh());
+    await waitFor(() => expect(readOnlyMode("Agentic")).toHaveAccessibleName(/Necesita revisión/));
+    expect(readOnlyMode("API key")).toHaveAccessibleName(/Necesita revisión/);
+    expect(sileo.success).toHaveBeenCalledOnce();
+    expect(screen.getByRole("status")).toHaveTextContent(/^\/$/);
+    expect(get).toHaveBeenCalledTimes(2);
+  });
+
+  it("retains stored key configuration and marks Agentic unverified after a malformed refresh", async () => {
+    const get = vi.spyOn(mainInstance, "get").mockResolvedValue({ data: { provider } });
+    setup(false, false, false);
+    await screen.findByRole("group");
+    get.mockResolvedValue({ data: { provider: { ...provider, agentic: { available: true } } } });
+    await userEvent.click(refresh());
+    await waitFor(() => expect(readOnlyMode("Agentic")).toHaveAccessibleName(/Sin verificar/));
+    expect(readOnlyMode("API key")).toHaveAccessibleName(/API key configurada/);
+    expect(sileo.error).toHaveBeenCalledOnce();
+    expect(sileo.success).not.toHaveBeenCalled();
+  });
+
+  it("drops previously read indicators on a server authorization rejection", async () => {
+    const get = vi.spyOn(mainInstance, "get").mockResolvedValue({ data: { provider } });
+    setup(false, false, false);
+    await screen.findByRole("group");
+    get.mockRejectedValue(Object.assign(new AxiosError("Forbidden"), { response: { status: 403 } }));
+    await userEvent.click(refresh());
+    await waitFor(() => expect(screen.queryByRole("group")).not.toBeInTheDocument());
+    expect(sileo.success).not.toHaveBeenCalled();
+    expect(getAiProvidersHealth).not.toHaveBeenCalled();
+  });
+});
 
 describe("AiProviderIndicators with two modes", () => {
   it("shares the two-minute check and permits an immediate manual refresh", async () => {

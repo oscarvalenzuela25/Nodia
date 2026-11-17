@@ -6,6 +6,8 @@ import type {
   BusinessEntity,
   GetBusinessesParams,
   GetBusinessesResponse,
+  InvoiceSelectableModelsParams,
+  InvoiceSelectableModelsResponse,
 } from "./types";
 
 export const getBusinesses = async (
@@ -293,6 +295,14 @@ export const verifyIaProviders = async (mode?: import("./types").InvoiceAiConnec
   const { data } = await mainInstance.get<import("./types").VerifyIaProvidersResponse>(
     apiPath("/invoices/verify-ia-providers"),
     { params: mode ? { mode } : undefined },
+  );
+  return data;
+};
+
+export const getInvoiceSelectableModels = async (params: InvoiceSelectableModelsParams, signal?: AbortSignal) => {
+  const { data } = await mainInstance.get<InvoiceSelectableModelsResponse>(
+    apiPath("/invoices/selectable-models"),
+    { params, signal },
   );
   return data;
 };

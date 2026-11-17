@@ -4,7 +4,7 @@
   "document_id": "businesses.product-price-calculator-and-invoice-binding",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 15,
+  "revision": 16,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -24,6 +24,10 @@
     {
       "path": "docs/mvp/89-module-access-and-user-data-scope.md",
       "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/invoice/use-case/get-invoice-selectable-models.use-case.ts",
+      "kind": "implementation"
     },
     {
       "path": "nodia-server/src/product/entities/product.entity.ts",
@@ -398,3 +402,10 @@ El editor de alias conserva el nombre de factura y sólo modifica el borrador.
 Nuevos/existentes sin alias requieren revisión; alias existente se conserva.
 Todos los comandos se prevalidan antes del primer POST, sin declarar atomicidad
 global. Ver [ficha candidata](product-alias-and-code-completeness.md).
+
+## Selección OCR con el módulo Negocios — 2026-11-17
+
+El formulario consulta modelos por conexión y modo exactos dentro del módulo
+Negocios. El resultado público se limita a opciones del selector. Una lectura
+exitosa de modelos acredita descubrimiento, y la inferencia tiene su propia
+verificación. Ver [plan94 §44](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#44-modelos-ocr-con-acceso-de-negocios--2026-11-17).

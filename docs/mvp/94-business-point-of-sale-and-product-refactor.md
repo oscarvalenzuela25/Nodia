@@ -1494,3 +1494,19 @@ Los merges acreditan integración en Git. La aplicación de la migración
 `1793680000000` en DB operativa, la habilitación de proveedores OCR y las
 pruebas funcionales en producción requieren evidencia propia. El valor por
 defecto de `use_ocr` es `false`. Las fichas candidatas conservan su estado.
+
+## 44. Modelos OCR con acceso de Negocios — 2026-11-17
+
+El selector OCR dependía del GET de modelos de Administración de IA, por lo que
+un usuario de Negocios recibía 403 al seleccionar una conexión. La lectura
+nativa pasa a `GET /invoices/selectable-models` y su alias singular, con sesión
+y módulo `/business`. Exige el ID bigint de la conexión y el modo exacto.
+
+Server reutiliza el descubrimiento existente para una sola conexión activa.
+Proyecta instancia, modo, fuente y las opciones de modelo con etiquetas,
+modalidades y esfuerzos cuando se observan. La UI conserva la selección
+persistida, distingue catálogo y disponibilidad y reintenta la misma lectura
+si falla. El endpoint administrativo de modelos sigue reservado a su módulo.
+El cambio cubre el descubrimiento en el selector. La
+[confirmación transaccional de Caja](109-business-cash-ledger-plan.md#63-confirmación-de-productos-desde-ocr)
+sigue en CASH-04.

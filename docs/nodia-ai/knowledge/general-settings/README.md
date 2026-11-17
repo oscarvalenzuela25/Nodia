@@ -4,7 +4,7 @@
   "document_id": "general-settings",
   "product_id": "general-settings",
   "kind": "product",
-  "revision": 32,
+  "revision": 33,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -125,6 +125,16 @@
   "approval": null
 }
 ---
+
+## Acciones de cabecera para Negocios y PWA — 2026-11-17
+
+El topbar de Negocios consulta una proyección de estado y ofrece actualización
+manual. La navegación de configuración pertenece a Administración de IA.
+La recarga de página queda en el avatar bajo **Actualizar información**.
+Estas acciones nativas se documentan en las fichas candidatas de
+[conexiones IA](features/ai-connection-settings-ui.md) y
+[PWA](features/pwa-installation.md). Las herramientas y fichas firmadas
+conservan su alcance.
 
 ## Cierre funcional THEME-001 y PWA-001 — 2026-11-16
 

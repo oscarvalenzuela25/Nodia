@@ -1,5 +1,39 @@
 # Indicadores de modos IA en el topbar
 
+## Estado de IA para Negocios — 2026-11-17
+
+Una sesión con **Negocios** (`/business`) muestra API key y Agentic para los
+modos habilitados de la conexión predeterminada. Lee
+`GET /ai-providers/topbar-status` (alias `/ai-provider/topbar-status`) con
+`Cache-Control: no-store`. La política HTTP admite exactamente ese GET a
+Negocios o Administración de IA. Su respuesta incluye el nombre y tipo de
+proveedor, flags, existencia de clave y observación mínima de sesión. El
+Server resuelve el predeterminado y consulta sólo su sesión Agentic habilitada.
+
+La vista de Negocios ofrece estado y actualización manual. La navegación al
+ID y modo de configuración requiere Administración de IA. Ese módulo sigue
+usando la caché compartida de salud y la observación de sesión por instancia.
+Salud completa, detalle de sesión, gestión de claves, catálogo y mutaciones
+requieren ese módulo. Estado verde de API key significa clave guardada. En
+Agentic exige sesión disponible y autenticada, con la denegación de uso por
+Codex respetada. Un estado ocupado, ausente o inválido permanece sin verificar.
+
+Negocios reconsulta cada 120 s y detiene el sondeo ante 401/403. Refrescar
+desde el grupo repite sólo su lectura. El menú del avatar contiene una acción
+distinta que recarga la página. El OCR de facturas usa su propia
+[lectura limitada de modelos](../../mvp/94-business-point-of-sale-and-product-refactor.md#44-modelos-ocr-con-acceso-de-negocios--2026-11-17).
+
+Verificación local en Chromium con 16 perfiles sintéticos (320, 599, 600 y
+1440 px, ES/EN y claro/oscuro). Se verificaron foco, indicador de cada modo,
+un GET inicial y uno por actualización explícita, ausencia de navegación a
+Ajustes y geometría sin solapamientos. El adapter local interceptó las
+peticiones y usó observaciones sintéticas.
+
+Una prueba Nest local de 27 respuestas usó controladores compilados,
+guards reales y fuentes sintéticas. Comprobó 200 en ambos alias de estado
+y de modelos OCR para Negocios, 403 en las rutas administrativas para esa
+cuenta, 401 anónimo y 400 en parámetros OCR inválidos.
+
 ## Actualización manual desde la cabecera — 2026-11-06
 
 El grupo añade un IconButton de44px «Actualizar estado de IA», con tooltip/nombre accesible ES/EN. Se mantiene dentro del montaje existente: sesión Nodia validada y acceso al módulo canónico `/ai-providers` (o bypass `super_admin`); no aparece a visitantes ni amplía permisos. Los requisitos antiguos de acción y URLs `/settings/...` inferiores son históricos, sustituidos por política89/ADR092.

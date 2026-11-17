@@ -1,4 +1,4 @@
-import { styled } from "@mui/material/styles";
+import { styled, type Theme } from "@mui/material/styles";
 import { Badge, Button, Stack } from "@mui/material";
 
 export const Indicators = styled(Stack)(({ theme }) => ({
@@ -14,13 +14,25 @@ export const Indicators = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export const ModeButton = styled(Button)(({ theme }) => ({
+const indicatorStyle = (theme: Theme) => ({
   minWidth: 0,
   minHeight: 44,
   gap: theme.spacing(1),
   padding: theme.spacing(0.5, 1),
   color: theme.palette.text.secondary,
-  textTransform: "none",
+  textTransform: "none" as const,
+});
+
+export const ModeButton = styled(Button)(({ theme }) => indicatorStyle(theme));
+
+export const ModeLabel = styled("span")(({ theme }) => ({
+  ...theme.typography.button,
+  ...indicatorStyle(theme),
+  boxSizing: "border-box",
+  display: "inline-flex",
+  alignItems: "center",
+  borderRadius: theme.shape.borderRadius,
+  "&:focus-visible": { outline: `2px solid ${theme.palette.primary.main}`, outlineOffset: -2 },
 }));
 
 export const StatusBadge = styled(Badge)(({ theme }) => ({

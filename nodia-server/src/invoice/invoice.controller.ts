@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Header,
   Post,
   Put,
   Body,
@@ -17,6 +18,7 @@ import { UpdateInvoiceDto } from './dto/update-invoice.dto.js';
 import { GetInvoicesDto } from './dto/get-invoices.dto.js';
 import { AnalyzeInvoiceDto } from './dto/analyze-invoice.dto.js';
 import { VerifyIaProvidersQueryDto } from './dto/verify-ia-providers-query.dto.js';
+import { GetInvoiceSelectableModelsQueryDto } from './dto/get-invoice-selectable-models-query.dto.js';
 import { GetAllInvoicesUseCase } from './use-case/get-all-invoices.use-case.js';
 import { GetInvoiceByIdUseCase } from './use-case/get-invoice-by-id.use-case.js';
 import { GetInvoiceViewUrlUseCase } from './use-case/get-invoice-view-url.use-case.js';
@@ -24,6 +26,10 @@ import { CreateInvoiceUseCase } from './use-case/create-invoice.use-case.js';
 import { UpdateInvoiceUseCase } from './use-case/update-invoice.use-case.js';
 import { AnalyzeInvoiceUseCase } from './use-case/analyze-invoice.use-case.js';
 import { VerifyIaProvidersUseCase } from './use-case/verify-ia-providers.use-case.js';
+import {
+  GetInvoiceSelectableModelsUseCase,
+  type InvoiceSelectableModelsResult,
+} from './use-case/get-invoice-selectable-models.use-case.js';
 import type { Response } from 'express';
 import { AnalysisObservationsUseCase } from './use-case/analysis-observations.use-case.js';
 import { ReserveAnalysisObservationDto } from './dto/reserve-analysis-observation.dto.js';
@@ -44,6 +50,7 @@ export class InvoiceController {
     private readonly updateInvoiceUseCase: UpdateInvoiceUseCase,
     private readonly analyzeInvoiceUseCase: AnalyzeInvoiceUseCase,
     private readonly verifyIaProvidersUseCase: VerifyIaProvidersUseCase,
+    private readonly getInvoiceSelectableModelsUseCase: GetInvoiceSelectableModelsUseCase,
     private readonly observations: AnalysisObservationsUseCase,
   ) {}
 
@@ -58,6 +65,14 @@ export class InvoiceController {
   @Get(['verify-ia-providers', 'verify-ia-provider'])
   verifyIaProviders(@Query() query: VerifyIaProvidersQueryDto) {
     return this.verifyIaProvidersUseCase.execute(undefined, query.mode);
+  }
+
+  @Get('selectable-models')
+  @Header('Cache-Control', 'no-store')
+  getSelectableModels(
+    @Query() query: GetInvoiceSelectableModelsQueryDto,
+  ): Promise<InvoiceSelectableModelsResult[]> {
+    return this.getInvoiceSelectableModelsUseCase.execute(query);
   }
 
   @Get(':id/view-url')

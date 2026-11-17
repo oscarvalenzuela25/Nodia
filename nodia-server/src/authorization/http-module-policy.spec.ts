@@ -36,6 +36,32 @@ describe('HTTP module policy', () => {
         resolveHttpModulePolicy(['invoice', 'invoices'], [handler], 'POST'),
       ).toEqual({ routes: ['/business'], match: 'all' });
     }
+    expect(
+      resolveHttpModulePolicy(['invoice', 'invoices'], ['selectable-models'], 'GET'),
+    ).toEqual({ routes: ['/business'], match: 'all' });
+  });
+
+  it('shares the exact Topbar status GET without opening AI administration', () => {
+    const aliases = ['ai-provider', 'ai-providers'];
+    expect(resolveHttpModulePolicy(aliases, ['topbar-status'], 'GET')).toEqual({
+      routes: ['/ai-providers', '/business'],
+      match: 'any',
+    });
+    for (const [handlers, method] of [
+      [['topbar-status'], 'POST'],
+      [['topbar-status/:id'], 'GET'],
+      [['topbar-status', 'health'], 'GET'],
+      [['health', 'health-check', 'verify-all'], 'GET'],
+      [['models', 'selectable-models'], 'GET'],
+      [[':id/session'], 'GET'],
+      [[':id/session/login'], 'POST'],
+      [[':id'], 'PUT'],
+    ] as const) {
+      expect(resolveHttpModulePolicy(aliases, handlers, method)).toEqual({
+        routes: ['/ai-providers'],
+        match: 'all',
+      });
+    }
   });
 
   it.each([

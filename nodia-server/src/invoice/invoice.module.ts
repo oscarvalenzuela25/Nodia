@@ -8,6 +8,7 @@ import { GetInvoiceByIdUseCase } from './use-case/get-invoice-by-id.use-case.js'
 import { GetInvoiceViewUrlUseCase } from './use-case/get-invoice-view-url.use-case.js';
 import { AnalyzeInvoiceUseCase } from './use-case/analyze-invoice.use-case.js';
 import { VerifyIaProvidersUseCase } from './use-case/verify-ia-providers.use-case.js';
+import { GetInvoiceSelectableModelsUseCase } from './use-case/get-invoice-selectable-models.use-case.js';
 import { StorageModule } from '../common/storage/storage.module.js';
 import { GeminiModule } from '../common/ai/gemini.module.js';
 import { ProviderModule } from '../provider/provider.module.js';
@@ -35,6 +36,7 @@ import { InvoiceUploadRecoveryWorker } from './invoice-upload-recovery.worker.js
     InvoiceUploadRecoveryWorker,
     AnalyzeInvoiceUseCase,
     VerifyIaProvidersUseCase,
+    GetInvoiceSelectableModelsUseCase,
   ],
   exports: [InvoicePersistenceModule, VerifyIaProvidersUseCase],
 })
