@@ -1,5 +1,10 @@
 # Especificación del MVP — Nodia
 
+**Listas de Market — 2026-11-18.**
+[Plan110](110-market-shopping-lists-plan.md) registra la maqueta aprobada y
+el checklist compartido por negocio. El [TODO](TODO.md#cola-actual) recoge
+la iniciativa LISTA-001 y su primer pendiente.
+
 **Caja de Negocios — verificación integral CASH-07, 2026-11-17.**
 [Plan109 §16](109-business-cash-ledger-plan.md#16-verificación-de-entrega--cash-07-2026-11-17)
 registra Caja, Overview, Facturas y confirmación OCR en laboratorio,
