@@ -2,6 +2,7 @@
   "market_lists": {
     "market": "Market",
     "title": "Listas",
+    "table_region": "Tabla de listas",
     "create": "Nueva lista",
     "edit": "Editar lista",
     "name": "Nombre de la lista",
@@ -27,6 +28,7 @@
     "item_limit_other": "Puedes agregar hasta {{count}} productos.",
     "product_quantity": "Cantidad de {{name}}",
     "quantity": "Cantidad",
+    "checked_quantity": "Cantidad {{quantity}}",
     "remove_product": "Quitar producto",
     "remove_named_product": "Quitar {{name}}",
     "remove_product_confirmation": "¿Quieres quitar «{{name}}» de esta lista?",
@@ -166,6 +168,7 @@
     "type": "Tipo",
     "description_or_source": "Descripción u origen",
     "amount": "Importe CLP",
+    "record_value": "Valor",
     "activity": "Actividad",
     "movements": "Movimientos",
     "movements_empty": "No hay movimientos con estos filtros.",

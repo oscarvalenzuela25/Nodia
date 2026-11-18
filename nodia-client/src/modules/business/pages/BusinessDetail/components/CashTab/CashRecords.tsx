@@ -78,9 +78,9 @@ export function CashRecords({ rows, loading, hasSnapshot, mobile, disabled, form
   const columns = [
     { key: "date", header: t("business:cash.date"), width: 132 },
     { key: "type", header: t("business:cash.type"), width: 112 },
-    { key: "description", header: t("business:cash.description_or_source") },
     { key: "category", header: t("business:cash.category") },
-    { key: "amount", header: t("business:cash.amount"), align: "right" as const },
+    { key: "description", header: t("business:cash.description_or_source") },
+    { key: "amount", header: t("business:cash.record_value"), align: "right" as const },
     { key: "activity", header: t("business:filter_status_label"), width: 102 },
     { key: "actions", header: t("core:actions"), width: 72, align: "right" as const },
   ];
@@ -137,7 +137,7 @@ export function CashRecords({ rows, loading, hasSnapshot, mobile, disabled, form
                 fields={[
                   { key: "date", label: t("business:cash.date"), value: formatDate(movement.occurred_on) },
                   { key: "category", label: t("business:cash.category"), value: movement.category.name },
-                  { key: "amount", label: t("business:cash.amount"), value: formatCashAmount(movement.amount, locale), fullWidth: true },
+                  { key: "amount", label: t("business:cash.record_value"), value: formatCashAmount(movement.amount, locale), fullWidth: true },
                 ]}
                 actions={actions(movement)}
                 disabled={disabled}
@@ -173,10 +173,10 @@ export function CashRecords({ rows, loading, hasSnapshot, mobile, disabled, form
                   <TableCell>
                     <Chip size="small" label={t(`business:cash.${movement.type}`)} color={movement.type === "income" ? "success" : "error"} />
                   </TableCell>
+                  <TableCell sx={{ overflowWrap: "anywhere", maxWidth: 180 }}>{movement.category.name}</TableCell>
                   <TableCell sx={{ overflowWrap: "anywhere", maxWidth: 320 }}>
                     {movement.source === "manual" && !movement.description ? "—" : cashMovementName(movement, t)}
                   </TableCell>
-                  <TableCell sx={{ overflowWrap: "anywhere", maxWidth: 180 }}>{movement.category.name}</TableCell>
                   <TableCell align="right" sx={{ fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
                     {formatCashAmount(movement.amount, locale)}
                   </TableCell>

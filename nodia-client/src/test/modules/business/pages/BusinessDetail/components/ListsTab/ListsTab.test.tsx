@@ -31,7 +31,9 @@ describe("shopping lists pagination", () => {
 
     const table = await screen.findByRole("table", { name: "Listas" });
     const search = screen.getByRole("textbox", { name: "Buscar por nombre de la lista" });
-    expect(screen.getByRole("region", { name: "Listas" })).not.toContainElement(search);
+    expect(screen.getByRole("region", { name: "Listas" })).toContainElement(search);
+    expect(screen.getByRole("region", { name: "Tabla de listas" })).not.toContainElement(search);
+    expect(screen.queryByRole("heading", { name: "Listas" })).not.toBeInTheDocument();
     expect(within(table).getByRole("columnheader", { name: "Nombre de la lista" })).toBeVisible();
     expect(within(table).getByText("Todavía no hay listas de compra.")).toBeVisible();
     expect(screen.getByText("0–0 de 0")).toBeVisible();
@@ -46,5 +48,31 @@ describe("shopping lists pagination", () => {
       );
     });
     expect(within(table).getByText("No se encontraron listas para esta búsqueda.")).toBeVisible();
+  });
+
+  it("puts deactivation last in the keyboard order of a list's actions", async () => {
+    useAuthStore.getState().login({
+      token: "synthetic-test-token",
+      expiresAt: Date.now() + 60_000,
+      user: { id: "actor", name: "Actor" },
+    });
+    vi.mocked(transport.readLists).mockResolvedValue({
+      items: [{ id: "1d0acdf0-ad2b-4e3d-a04b-c4896fbd9d50", version: 1, is_active: true, name: "Compras", item_count: 1 }],
+      pagination: { page: 1, limit: 20, total: 1, total_pages: 1 },
+    });
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ListsTab businessId="22e62222-2dfa-4403-8092-36d899571f1d" actorId="actor" sessionVersion={useAuthStore.getState().sessionVersion} />
+      </QueryClientProvider>,
+    );
+
+    const user = userEvent.setup();
+    (await screen.findByRole("button", { name: "Editar lista · Compras" })).focus();
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Copiar lista · Compras" })).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Lista de compra · Compras" })).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Desactivar lista · Compras" })).toHaveFocus();
   });
 });

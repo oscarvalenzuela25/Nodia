@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   Alert,
   Box,
@@ -7,14 +7,20 @@ import {
   LinearProgress,
   Paper,
   TablePagination,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
+import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
+import EditOutlined from "@mui/icons-material/EditOutlined";
+import CheckCircleOutlineOutlined from "@mui/icons-material/CheckCircleOutlineOutlined";
+import { visuallyHidden } from "@mui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Skeleton } from "boneyard-js/react";
 import { useTranslation } from "react-i18next";
+import ConfirmDialog from "../../../../../../../components/ConfirmDialog";
 import ActiveStatusSelect, {
   type ActiveFilterStatus,
 } from "../../../../../../../components/Filter/components/ActiveStatusSelect";
@@ -31,13 +37,23 @@ import {
   useCashMutation,
 } from "../../../../../infrastructure/useCashServices";
 import { CashCategoryFields } from "./CashEditorFields";
+import { StatusDot } from "../../../styles";
 import {
   categoryFields,
   changedFields,
   isCashVersionConflict,
   type CategoryFields,
 } from "./fields";
-import { CategoryDrawer, DrawerBody, DrawerFooter, DrawerHeader, EditorForm } from "./styles";
+import {
+  CategoryDrawer,
+  CategoryRowActions,
+  CategoryRowHeader,
+  CategoryRowTitle,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  EditorForm,
+} from "./styles";
 
 type View =
   | { kind: "list" }
@@ -64,11 +80,14 @@ export function CashCategoryDrawer({ scope, open, onClose, disabled = false }: P
   const [page, setPage] = useState(0);
   const [latest, setLatest] = useState<CashCategory>();
   const reviewAttempt = useRef(0);
+  const activityButtons = useRef(new Map<string, HTMLButtonElement>());
+  const addButton = useRef<HTMLButtonElement>(null);
+  const activityFocus = useRef<{ categoryId?: string } | null>(null);
   const form = useForm<CategoryFields>({
     resolver: zodResolver(categoryFields),
     defaultValues: initialFields,
   });
-  const listing = view.kind === "list";
+  const listing = view.kind === "list" || view.kind === "activity";
   const base = view.kind === "edit" || view.kind === "activity" ? view.category : undefined;
   const query = useCashCategories(
     scope,
@@ -87,6 +106,18 @@ export function CashCategoryDrawer({ scope, open, onClose, disabled = false }: P
   const listBusy = query.isFetching || mutation.busy || disabled;
   const totalItems = query.data?.meta.total_items;
   const lastPage = Math.max(0, (query.data?.meta.total_pages ?? 1) - 1);
+
+  useEffect(() => {
+    const request = activityFocus.current;
+    if (!open || view.kind !== "list" || listBusy || !request) return;
+    const frame = requestAnimationFrame(() => {
+      const trigger = request.categoryId ? activityButtons.current.get(request.categoryId) : undefined;
+      activityFocus.current = null;
+      const target = trigger?.isConnected && !trigger.disabled ? trigger : addButton.current;
+      target?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [listBusy, open, view.kind]);
 
   if (
     listing &&
@@ -107,17 +138,28 @@ export function CashCategoryDrawer({ scope, open, onClose, disabled = false }: P
   };
 
   const back = () => {
-    if (locked) return;
-    if (listing) onClose();
-    else showView({ kind: "list" });
+    if (locked || view.kind === "activity") return;
+    if (view.kind === "list") {
+      activityFocus.current = null;
+      onClose();
+    } else showView({ kind: "list" });
+  };
+
+  const closeActivity = (categoryId?: string) => {
+    activityFocus.current = { categoryId };
+    showView({ kind: "list" });
   };
 
   const accept = (outcome: CashMutationOutcome | undefined) => {
     if (
       outcome?.status === "committed" &&
       (outcome.operation === "category_create" || outcome.operation === "category_update")
-    )
-      showView({ kind: "list" });
+    ) {
+      if (view.kind === "activity") {
+        const remainsInFilter = status === "all" || (status === "active") === outcome.result.category.is_active;
+        closeActivity(remainsInFilter ? view.category.id : undefined);
+      } else showView({ kind: "list" });
+    }
   };
 
   const save = async (fields: CategoryFields) => {
@@ -173,11 +215,31 @@ export function CashCategoryDrawer({ scope, open, onClose, disabled = false }: P
       ? "business:cash.category_add"
       : view.kind === "edit"
         ? "business:cash.category_edit"
-        : view.kind === "activity"
-          ? view.active
-            ? "business:cash.activate"
-            : "business:cash.deactivate"
-          : "business:cash.categories";
+        : "business:cash.categories";
+  const conflictNotice = conflict && (
+    <Alert severity="warning">
+      {t("business:cash_version_conflict")}
+      {latest ? (
+        <Box sx={{ mt: 1 }}>
+          <Typography sx={{ fontWeight: 600 }}>
+            {t("business:cash.current_version", { version: latest.version })}
+          </Typography>
+          <Typography variant="body2">{latest.name}</Typography>
+          <Typography variant="body2">{latest.description}</Typography>
+          <Typography variant="body2">
+            {t(latest.is_active ? "business:status_active" : "business:status_inactive")}
+          </Typography>
+          <Button onClick={useCurrent} color="inherit" disabled={disabled} sx={{ minHeight: 44 }}>
+            {t("business:cash.accept_current")}
+          </Button>
+        </Box>
+      ) : (
+        <Button color="inherit" disabled={details.isFetching || disabled} onClick={() => void checkCurrent()} sx={{ minHeight: 44 }}>
+          {t("business:cash.review_current")}
+        </Button>
+      )}
+    </Alert>
+  );
   return (
     <CategoryDrawer
       anchor="right"
@@ -223,6 +285,7 @@ export function CashCategoryDrawer({ scope, open, onClose, disabled = false }: P
               disabled={listBusy}
             />
             <Button
+              ref={addButton}
               variant="contained"
               startIcon={<AddOutlined />}
               disabled={listBusy}
@@ -252,62 +315,69 @@ export function CashCategoryDrawer({ scope, open, onClose, disabled = false }: P
             >
               {query.data?.data.length ? (
                 <Box component="ul" sx={{ listStyle: "none", m: 0, p: 0, display: "grid", gap: 1 }}>
-                  {query.data.data.map((entry) => (
-                    <Paper
-                      component="li"
-                      variant="outlined"
-                      key={entry.id}
-                      sx={{ p: 1.5, minWidth: 0 }}
-                    >
-                      <Typography component="h3" variant="subtitle2" sx={{ fontWeight: 700 }}>
-                        {entry.name}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        color={entry.is_active ? "success.main" : "text.secondary"}
+                  {query.data.data.map((entry) => {
+                    const editLabel = t("business:cash.edit");
+                    const activityLabel = t(entry.is_active ? "business:cash.deactivate" : "business:cash.activate");
+                    return (
+                      <Paper
+                        component="li"
+                        variant="outlined"
+                        key={entry.id}
+                        sx={{ p: 1.5, minWidth: 0 }}
                       >
-                        {t(entry.is_active ? "business:status_active" : "business:status_inactive")}
-                      </Typography>
-                      {entry.description && (
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ mt: 0.5, whiteSpace: "pre-wrap" }}
-                        >
-                          {entry.description}
-                        </Typography>
-                      )}
-                      <Box
-                        role="group"
-                        aria-label={entry.name}
-                        sx={{ mt: 0.5, display: "flex", flexWrap: "wrap", gap: 0.5 }}
-                      >
-                        <Button
-                          disabled={listBusy}
-                          onClick={() => showView({ kind: "edit", category: entry })}
-                          sx={{ minHeight: 44 }}
-                        >
-                          {t("business:cash.edit")}
-                        </Button>
-                        <Button
-                          disabled={listBusy}
-                          color={entry.is_active ? "error" : "success"}
-                          onClick={() =>
-                            showView({
-                              kind: "activity",
-                              category: entry,
-                              active: !entry.is_active,
-                            })
-                          }
-                          sx={{ minHeight: 44 }}
-                        >
-                          {t(
-                            entry.is_active ? "business:cash.deactivate" : "business:cash.activate",
-                          )}
-                        </Button>
-                      </Box>
-                    </Paper>
-                  ))}
+                        <CategoryRowHeader>
+                          <CategoryRowTitle>
+                            <StatusDot active={entry.is_active} aria-hidden="true" sx={{ flexShrink: 0 }} />
+                            <Box component="span" sx={visuallyHidden}>
+                              {t(entry.is_active ? "business:status_active" : "business:status_inactive")}
+                            </Box>
+                            <Typography component="h3" variant="subtitle2" sx={{ fontWeight: 700, minWidth: 0 }}>
+                              {entry.name}
+                            </Typography>
+                          </CategoryRowTitle>
+                          <CategoryRowActions role="group" aria-label={entry.name}>
+                            <Tooltip title={editLabel}>
+                              <span>
+                                <IconButton
+                                  color="primary"
+                                  aria-label={editLabel}
+                                  disabled={listBusy}
+                                  onClick={() => showView({ kind: "edit", category: entry })}
+                                >
+                                  <EditOutlined fontSize="small" />
+                                </IconButton>
+                              </span>
+                            </Tooltip>
+                            <Tooltip title={activityLabel}>
+                              <span>
+                                <IconButton
+                                  ref={(button) => {
+                                    if (button) activityButtons.current.set(entry.id, button);
+                                    else activityButtons.current.delete(entry.id);
+                                  }}
+                                  aria-label={activityLabel}
+                                  disabled={listBusy}
+                                  color={entry.is_active ? "error" : "success"}
+                                  onClick={() => showView({ kind: "activity", category: entry, active: !entry.is_active })}
+                                >
+                                  {entry.is_active ? <DeleteOutlined fontSize="small" /> : <CheckCircleOutlineOutlined fontSize="small" />}
+                                </IconButton>
+                              </span>
+                            </Tooltip>
+                          </CategoryRowActions>
+                        </CategoryRowHeader>
+                        {entry.description && (
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 0.5, whiteSpace: "pre-wrap" }}
+                          >
+                            {entry.description}
+                          </Typography>
+                        )}
+                      </Paper>
+                    );
+                  })}
                 </Box>
               ) : query.data && !query.isError ? (
                 <Typography variant="body2" color="text.secondary" align="center">
@@ -337,96 +407,55 @@ export function CashCategoryDrawer({ scope, open, onClose, disabled = false }: P
       ) : (
         <>
           <DrawerBody>
-            {conflict && (
-              <Alert severity="warning">
-                {t("business:cash_version_conflict")}
-                {latest ? (
-                  <Box sx={{ mt: 1 }}>
-                    <Typography sx={{ fontWeight: 600 }}>
-                      {t("business:cash.current_version", { version: latest.version })}
-                    </Typography>
-                    <Typography variant="body2">{latest.name}</Typography>
-                    <Typography variant="body2">{latest.description}</Typography>
-                    <Typography variant="body2">
-                      {t(latest.is_active ? "business:status_active" : "business:status_inactive")}
-                    </Typography>
-                    <Button
-                      onClick={useCurrent}
-                      color="inherit"
-                      disabled={disabled}
-                      sx={{ minHeight: 44 }}
-                    >
-                      {t("business:cash.accept_current")}
-                    </Button>
-                  </Box>
-                ) : (
-                  <Button
-                    color="inherit"
-                    disabled={details.isFetching || disabled}
-                    onClick={() => {
-                      void checkCurrent();
-                    }}
-                    sx={{ minHeight: 44 }}
-                  >
-                    {t("business:cash.review_current")}
-                  </Button>
-                )}
-              </Alert>
-            )}
-            {view.kind === "activity" ? (
-              <Typography>
-                {t(
-                  view.active
-                    ? "business:cash.category_activate_message"
-                    : "business:cash.category_deactivate_message",
-                  { name: view.category.name },
-                )}
-              </Typography>
-            ) : (
-              <EditorForm
-                id={formId}
-                onSubmit={(event) => {
-                  void form.handleSubmit(save)(event);
-                }}
-                noValidate
-              >
-                <CashCategoryFields control={form.control} disabled={locked || disabled} />
-              </EditorForm>
-            )}
+            {conflictNotice}
+            <EditorForm
+              id={formId}
+              onSubmit={(event) => {
+                void form.handleSubmit(save)(event);
+              }}
+              noValidate
+            >
+              <CashCategoryFields control={form.control} disabled={locked || disabled} />
+            </EditorForm>
           </DrawerBody>
           <DrawerFooter>
             <Button
               variant="outlined"
               onClick={back}
               disabled={locked}
-              autoFocus={view.kind === "activity"}
             >
               {t("core:cancel")}
             </Button>
-            {view.kind === "activity" ? (
-              <Button
-                variant="contained"
-                color={view.active ? "primary" : "error"}
-                onClick={() => {
-                  void updateActivity();
-                }}
-                disabled={mutation.busy || conflict || disabled}
-              >
-                {t(view.active ? "business:cash.activate" : "business:cash.deactivate")}
-              </Button>
-            ) : (
-              <Button
-                variant="contained"
-                type={mutation.pending ? "button" : "submit"}
-                form={formId}
-                disabled={mutation.busy || conflict || disabled}
-                onClick={mutation.pending ? () => { void mutation.retry().then(accept); } : undefined}
-              >
-                {t("core:save")}
-              </Button>
-            )}
+            <Button
+              variant="contained"
+              type={mutation.pending ? "button" : "submit"}
+              form={formId}
+              disabled={mutation.busy || conflict || disabled}
+              onClick={mutation.pending ? () => { void mutation.retry().then(accept); } : undefined}
+            >
+              {t("core:save")}
+            </Button>
           </DrawerFooter>
         </>
+      )}
+      {open && view.kind === "activity" && (
+        <ConfirmDialog
+          open
+          title={t(view.active ? "business:cash.activate" : "business:cash.deactivate")}
+          message={t(
+            view.active ? "business:cash.category_activate_message" : "business:cash.category_deactivate_message",
+            { name: view.category.name },
+          )}
+          confirmText={t(view.active ? "business:cash.activate" : "business:cash.deactivate")}
+          onConfirm={updateActivity}
+          onClose={() => closeActivity(view.category.id)}
+          isLoading={mutation.busy || details.isFetching}
+          cancelDisabled={mutation.pending}
+          showCloseButton={!mutation.pending}
+          confirmDisabled={conflict || disabled}
+        >
+          {conflictNotice}
+        </ConfirmDialog>
       )}
     </CategoryDrawer>
   );

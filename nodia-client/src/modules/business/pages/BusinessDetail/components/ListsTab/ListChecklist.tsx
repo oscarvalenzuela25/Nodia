@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Alert, Box, Button, Checkbox, Drawer, FormControlLabel, LinearProgress, Stack, Typography } from "@mui/material";
+import { Alert, Box, Button, Checkbox, LinearProgress, Stack, Typography } from "@mui/material";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
+import ChecklistOutlinedIcon from "@mui/icons-material/ChecklistOutlined";
+import { visuallyHidden } from "@mui/utils";
 import { Skeleton } from "boneyard-js/react";
 import { useId, useLayoutEffect, useRef, useState } from "react";
 import type { FocusEvent } from "react";
@@ -15,7 +17,10 @@ import { shoppingListKeys, useHasListScope, useListScopeGuard, useShoppingListDe
 import type { ShoppingListScope } from "./infrastructure/useServices";
 import { formatListQuantity } from "./listDraft";
 import { mergeListMark } from "./listMarks";
-import { CheckRow, DrawerContent, DrawerFooter, DrawerTitle, TouchIconButton } from "./styles";
+import {
+  CheckControl, ChecklistDrawer, ChecklistProgress, ChecklistTitleIcon, CheckRow,
+  DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, TouchIconButton,
+} from "./styles";
 
 interface ChecklistProps {
   scope: ShoppingListScope;
@@ -26,6 +31,7 @@ interface ChecklistProps {
 export default function ListChecklist({ scope, selected, onClose }: ChecklistProps) {
   const { t } = useTranslation(["business", "core"]);
   const titleId = useId();
+  const progressId = useId();
   const active = useHasListScope(scope);
   const detail = useShoppingListDetail(scope, selected.id, true);
   const [accessLost, setAccessLost] = useState(false);
@@ -56,7 +62,7 @@ export default function ListChecklist({ scope, selected, onClose }: ChecklistPro
     };
   };
 
-  return <Drawer
+  return <ChecklistDrawer
     anchor="right"
     open
     onClose={onClose}
@@ -65,33 +71,45 @@ export default function ListChecklist({ scope, selected, onClose }: ChecklistPro
       onFocusCapture: (event: FocusEvent<HTMLElement>) => {
         if (event.target !== event.currentTarget) focusTicket.current += 1;
       },
-      sx: { width: { xs: "100%", sm: 460 }, maxWidth: "100%", overflow: "hidden" },
     } }}
   >
-    <DrawerTitle>
-      <Box sx={{ minWidth: 0 }}>
-        <Typography variant="body2" color="text.secondary">{t("business:market_lists.checklist")}</Typography>
-        <Typography id={titleId} component="h2" variant="h6">{visibleDetail?.name ?? selected.name}</Typography>
-      </Box>
-      <TouchIconButton ref={closeButton} aria-label={t("core:close")} onClick={onClose} autoFocus>
-        <CloseOutlinedIcon />
-      </TouchIconButton>
-    </DrawerTitle>
+    <DrawerHeader>
+      <DrawerTitle>
+        <ChecklistTitleIcon aria-hidden="true"><ChecklistOutlinedIcon /></ChecklistTitleIcon>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography variant="caption" color="text.secondary">{t("business:market_lists.checklist")}</Typography>
+          <Typography id={titleId} component="h2" variant="h5" sx={theme => ({
+            fontWeight: 700,
+            [theme.breakpoints.down("sm")]: { fontSize: theme.typography.h6.fontSize },
+          })}>
+            {visibleDetail?.name ?? selected.name}
+          </Typography>
+        </Box>
+        <TouchIconButton ref={closeButton} aria-label={t("core:close")} onClick={onClose} autoFocus>
+          <CloseOutlinedIcon />
+        </TouchIconButton>
+      </DrawerTitle>
+      {items && items.length > 0 && <ChecklistProgress>
+        <Typography id={progressId} variant="body2" sx={{ fontWeight: 600 }} role="status">
+          {t("business:market_lists.marked", { marked, count: items.length })}
+        </Typography>
+        <LinearProgress
+          variant="determinate"
+          value={100 * marked / items.length}
+          color={marked === items.length ? "success" : "primary"}
+          aria-label={t("business:market_lists.checked_progress")}
+          aria-describedby={progressId}
+          sx={{ height: 6, borderRadius: 99 }}
+        />
+      </ChecklistProgress>}
+    </DrawerHeader>
     <DrawerContent aria-busy={detail.isFetching}>
       <QueryErrorAlert isError={detail.isError || accessLost} isFetching={detail.isFetching} onRetry={refresh} />
       <Skeleton loading={detail.isLoading} fallback={<Stack aria-hidden="true" sx={{ gap: 1 }}>
-        {[0, 1, 2].map(index => <Box key={index} sx={{ height: 48, borderRadius: 1, bgcolor: "action.hover" }} />)}
+        {[0, 1, 2].map(index => <Box key={index} sx={{ height: 58, borderRadius: 1.5, bgcolor: "action.hover" }} />)}
       </Stack>}>
-        {items && <>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }} role="status">
-            {t("business:market_lists.marked", { marked, count: items.length })}
-          </Typography>
-          <LinearProgress
-            variant="determinate" value={items.length ? 100 * marked / items.length : 0}
-            aria-label={t("business:market_lists.checked_progress")} sx={{ mb: 1 }}
-          />
-          {items.length ? (
-            <Stack component="ul" sx={{ p: 0, m: 0, listStyle: "none" }}>
+        {items && (items.length > 0 ? (
+            <Stack component="ul" sx={{ p: 0, m: 0, gap: 1, listStyle: "none" }}>
               {items.map(item => <ChecklistItem
                 key={item.id}
                 scope={scope}
@@ -103,17 +121,18 @@ export default function ListChecklist({ scope, selected, onClose }: ChecklistPro
                 captureFocus={captureFocus}
               />)}
             </Stack>
-          ) : <Typography color="text.secondary">{t("business:market_lists.empty_items")}</Typography>}
-        </>}
+          ) : <Typography color="text.secondary" sx={{ py: 3, textAlign: "center" }}>
+            {t("business:market_lists.empty_items")}
+          </Typography>)}
       </Skeleton>
     </DrawerContent>
-    {visibleDetail && <DrawerFooter>
+    {items && items.length > 0 && <DrawerFooter>
       <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
         <CheckCircleOutlineOutlinedIcon fontSize="small" />
         <Typography variant="body2">{t("business:market_lists.auto_save")}</Typography>
       </Stack>
     </DrawerFooter>}
-  </Drawer>;
+  </ChecklistDrawer>;
 }
 
 type ChecklistItemProps = {
@@ -128,6 +147,11 @@ type ChecklistItemProps = {
 
 function ChecklistItem({ scope, listId, item, querying, refresh, pauseAccess, captureFocus }: ChecklistItemProps) {
   const { t, i18n } = useTranslation(["business", "core"]);
+  const rowId = useId();
+  const nameId = `${rowId}-name`;
+  const quantityId = `${rowId}-quantity`;
+  const unavailableId = `${rowId}-unavailable`;
+  const quantity = formatListQuantity(item.quantity, i18n.resolvedLanguage ?? i18n.language);
   const queryClient = useQueryClient();
   const canUseResult = useListScopeGuard(scope);
   const inFlight = useRef(false);
@@ -202,28 +226,41 @@ function ChecklistItem({ scope, listId, item, querying, refresh, pauseAccess, ca
   useLayoutEffect(() => () => { restoreFocus.current?.(null); }, []);
 
   return <CheckRow ref={rowElement}>
-    <FormControlLabel
-      sx={{ minWidth: 0, m: 0 }}
+    <CheckControl
       disableTypography
       control={<Checkbox
         checked={item.checked}
+        color="success"
         disabled={busy || querying || Boolean(retry?.needsRead)}
         onChange={(_, checked) => { void save(checked); }}
-        slotProps={{ input: { ref: checkbox } }}
+        slotProps={{ input: {
+          ref: checkbox,
+          "aria-labelledby": nameId,
+          "aria-describedby": item.available ? quantityId : `${quantityId} ${unavailableId}`,
+        } }}
         sx={{ minWidth: 44, minHeight: 44, flexShrink: 0 }}
       />}
-      label={<Box component="span" sx={{ minWidth: 0, display: "grid" }}>
-        <Typography component="span" variant="body2" sx={{ textDecoration: item.checked ? "line-through" : "none" }}>{item.name}</Typography>
-        {!item.available && <Typography component="span" variant="caption" color="text.secondary">{t("business:market_lists.unavailable")}</Typography>}
+      label={<Box component="span" sx={{ minWidth: 0, flex: 1, display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto", alignItems: "center", gap: 1 }}>
+        <Box component="span" sx={{ display: "grid", minWidth: 0 }}>
+          <Typography id={nameId} component="span" variant="body2" sx={{ fontWeight: 600, textDecoration: item.checked ? "line-through" : "none" }}>
+            {item.name}
+          </Typography>
+          {!item.available && <Typography id={unavailableId} component="span" variant="caption" color="text.secondary">
+            {t("business:market_lists.unavailable")}
+          </Typography>}
+        </Box>
+        <Typography component="span" variant="body2" aria-hidden="true" sx={{ bgcolor: "action.hover", px: 1, py: 0.5, borderRadius: 1, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>
+          × {quantity}
+        </Typography>
+        <Box component="span" id={quantityId} sx={visuallyHidden}>
+          {t("business:market_lists.checked_quantity", { quantity })}
+        </Box>
       </Box>}
     />
-    <Typography variant="body2" sx={{ whiteSpace: "nowrap", alignSelf: "center" }}>
-      × {formatListQuantity(item.quantity, i18n.resolvedLanguage ?? i18n.language)}
-    </Typography>
-    {busy && <Typography variant="caption" role="status" sx={{ gridColumn: "1 / -1" }}>
+    {busy && <Typography variant="caption" role="status" sx={{ display: "block", mt: 0.5, px: 1, color: "text.secondary" }}>
       {t(recovering ? "business:market_lists.reconciling_check" : "business:market_lists.saving_check")}
     </Typography>}
-    {retry && !busy && <Alert severity="warning" sx={{ gridColumn: "1 / -1" }} action={
+    {retry && !busy && <Alert severity="warning" sx={{ mt: 0.5, flexWrap: "wrap", "& .MuiAlert-message": { flex: "1 1 140px" } }} action={
       <Button ref={retryButton} color="inherit" variant="outlined" size="small" disabled={querying} onClick={() => void save(retry.checked)}>
         {t("core:retry")}
       </Button>

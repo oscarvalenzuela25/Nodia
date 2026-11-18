@@ -1088,3 +1088,14 @@ simulada después del commit se recuperó con un GET del recibo y una única
 escritura. Caja y Productos mostraron la misma altura de botón Filtro. Las
 pruebas de Server cubrieron la secuencia de migraciones y la preservación de
 descripciones existentes al omitir ese campo en edición.
+
+La siguiente revisión visual centra el título y el icono de los dos
+totales del mes. Caja coloca Categoría antes de Descripción u origen y
+rotula el monto de la tabla y las tarjetas como Valor. En el drawer de
+categorías, el punto verde o rojo precede al nombre y el estado conserva
+su etiqueta para lectores de pantalla. Editar y cambiar actividad quedan
+a la derecha del título. La confirmación aparece en un modal sobre el
+listado, que conserva la búsqueda, el filtro y la página.
+En Chrome local se comprobó la alineación de las tarjetas, el orden de las
+columnas y el retorno del foco a la acción de la fila al cancelar, incluso
+si la búsqueda vuelve a montar esa fila.

@@ -43,7 +43,11 @@ describe("shopping checklist focus recovery", () => {
     </QueryClientProvider>);
     const user = userEvent.setup();
     const checkbox = await screen.findByRole("checkbox", { name: "Arroz" });
-    await user.click(checkbox);
+    expect(screen.getByRole("dialog", { name: "Compras" })).toContainElement(checkbox);
+    expect(checkbox).toHaveAccessibleDescription("Cantidad 1");
+    const progress = screen.getByRole("progressbar", { name: "Progreso de la lista de compra" });
+    expect(progress).toHaveAttribute("aria-valuenow", "0");
+    await user.click(screen.getByText("× 1"));
     const retry = await screen.findByRole("button", { name: "Reintentar" });
     expect(checkbox).not.toBeChecked();
     expect(transport.readList).toHaveBeenCalledTimes(2);
@@ -53,6 +57,7 @@ describe("shopping checklist focus recovery", () => {
     await waitFor(() => {
       expect(checkbox).toBeChecked();
       expect(checkbox).toHaveFocus();
+      expect(progress).toHaveAttribute("aria-valuenow", "100");
     });
     await user.keyboard("{Escape}");
     expect(close).toHaveBeenCalledOnce();

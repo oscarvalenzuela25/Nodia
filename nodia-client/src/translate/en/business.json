@@ -2,6 +2,7 @@
   "market_lists": {
     "market": "Market",
     "title": "Lists",
+    "table_region": "Lists table",
     "create": "New list",
     "edit": "Edit list",
     "name": "List name",
@@ -27,6 +28,7 @@
     "item_limit_other": "You can add up to {{count}} products.",
     "product_quantity": "Quantity for {{name}}",
     "quantity": "Quantity",
+    "checked_quantity": "Quantity {{quantity}}",
     "remove_product": "Remove product",
     "remove_named_product": "Remove {{name}}",
     "remove_product_confirmation": "Remove “{{name}}” from this list?",
@@ -166,6 +168,7 @@
     "type": "Type",
     "description_or_source": "Description or source",
     "amount": "Amount (CLP)",
+    "record_value": "Value",
     "activity": "Activity",
     "movements": "Movements",
     "movements_empty": "No movements match these filters.",

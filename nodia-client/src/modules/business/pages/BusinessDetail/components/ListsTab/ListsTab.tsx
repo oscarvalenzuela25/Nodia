@@ -36,7 +36,7 @@ import ListActivityDialog from "./ListActivityDialog";
 import ListChecklist from "./ListChecklist";
 import ListEditor from "./ListEditor";
 import { listClipboardText } from "./listDraft";
-import { ListHeading, ListMobileCard, ListPanel, ListToolbar, TouchIconButton } from "./styles";
+import { ListMobileCard, ListPanel, ListToolbar, TouchIconButton } from "./styles";
 
 type ListOverlay =
   | { kind: "new" }
@@ -130,28 +130,25 @@ export default function ListsTab(scope: ShoppingListScope) {
     else open({ kind, selected: list }, event);
   };
 
-  return <Stack component="section" sx={{ gap: 3, minWidth: 0 }}>
-    <ListHeading>
-      <Typography component="h2" variant="h6" sx={{ fontWeight: 700 }}>{title}</Typography>
-      <ListToolbar>
-        <Box sx={{ width: { xs: "100%", sm: 320 } }}>
-          <InputSearch
-            value={search}
-            onChange={value => { setSearch(value); setPage(0); }}
-            placeholder={t("business:market_lists.search")}
-            disabled={disabled}
-          />
-        </Box>
-        <Button
-          ref={createButton}
-          variant="contained"
-          startIcon={<AddCircleOutlinedIcon />}
-          disabled={actionsDisabled}
-          onClick={event => open({ kind: "new" }, event)}
-          sx={{ borderRadius: 2 }}
-        >{t("business:market_lists.create")}</Button>
-      </ListToolbar>
-    </ListHeading>
+  return <Stack component="section" aria-label={title} sx={{ gap: 2, minWidth: 0 }}>
+    <ListToolbar>
+      <Box sx={{ width: { xs: "100%", sm: 320 } }}>
+        <InputSearch
+          value={search}
+          onChange={value => { setSearch(value); setPage(0); }}
+          placeholder={t("business:market_lists.search")}
+          disabled={disabled}
+        />
+      </Box>
+      <Button
+        ref={createButton}
+        variant="contained"
+        startIcon={<AddCircleOutlinedIcon />}
+        disabled={actionsDisabled}
+        onClick={event => open({ kind: "new" }, event)}
+        sx={{ borderRadius: 2 }}
+      >{t("business:market_lists.create")}</Button>
+    </ListToolbar>
     <QueryErrorAlert isError={result.isError} isFetching={result.isFetching} onRetry={result.refetch} />
     <ListPanel elevation={0} aria-busy={result.isFetching || copying}>
       {result.isFetching && !result.isLoading && <LinearProgress aria-label={t("business:market_lists.loading")} />}
@@ -168,11 +165,11 @@ export default function ListsTab(scope: ShoppingListScope) {
                 <ListStatus active={selected.is_active} />
               </Stack>
               <Typography variant="body2" color="text.secondary">{t("business:market_lists.product_count", { count: selected.item_count })}</Typography>
-              <ListRowActions selected={selected} mobile disabled={actionsDisabled} onAction={handleAction} />
+              <ListRowActions selected={selected} disabled={actionsDisabled} onAction={handleAction} />
             </ListMobileCard>)}
           </Stack> : !result.isError && <Typography sx={{ p: 2, textAlign: "center", fontWeight: 600 }}>{emptyMessage}</Typography>
         ) : (
-          <TableContainer tabIndex={0} role="region" aria-label={title}>
+          <TableContainer tabIndex={0} role="region" aria-label={t("business:market_lists.table_region")}>
             <Table aria-label={title}>
               <TableHead>
                 <TableRow>
@@ -248,9 +245,8 @@ function ListStatus({ active }: { active: boolean }) {
   />;
 }
 
-function ListRowActions({ selected, mobile, disabled, onAction }: {
+function ListRowActions({ selected, disabled, onAction }: {
   selected: ShoppingListSummary;
-  mobile?: boolean;
   disabled: boolean;
   onAction: (action: RowAction, selected: ShoppingListSummary, event: MouseEvent<HTMLButtonElement>) => void;
 }) {
@@ -259,11 +255,11 @@ function ListRowActions({ selected, mobile, disabled, onAction }: {
   const ActivityIcon = selected.is_active ? BlockOutlinedIcon : CheckCircleOutlineOutlinedIcon;
   const rowActions = [
     { kind: "edit", action: "business:market_lists.edit", Icon: EditOutlinedIcon },
-    { kind: "activity", action: activityAction, Icon: ActivityIcon },
     { kind: "copy", action: "business:market_lists.copy", Icon: ContentCopyOutlinedIcon },
     { kind: "checklist", action: "business:market_lists.checklist", Icon: ChecklistOutlinedIcon },
+    { kind: "activity", action: activityAction, Icon: ActivityIcon },
   ] as const;
-  return <Stack direction="row" sx={{ gap: 0.5, flexWrap: "wrap", justifyContent: mobile ? "flex-start" : "flex-end" }}>
+  return <Stack direction="row" sx={{ gap: 0.5, flexWrap: "wrap", justifyContent: "flex-end" }}>
     {rowActions.map(({ kind, action, Icon }) => <Tooltip key={kind} title={t(action)}>
       <span><TouchIconButton
         aria-label={t("business:market_lists.named_action", { action: t(action), name: selected.name })}
