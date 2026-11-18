@@ -19,6 +19,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
+import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
@@ -66,6 +67,7 @@ import {
   TabsWrapper,
   StyledTabs,
   StyledTab,
+  MarketTabs,
   StatusPill,
   StatusDot,
 } from "./styles";
@@ -74,12 +76,17 @@ const sections = [
   { value: "overview", label: "business:tab_overview", icon: DashboardOutlinedIcon },
   { value: "cash", label: "business:tab_cash", icon: AccountBalanceWalletOutlinedIcon },
   { value: "providers", label: "business:tab_providers", icon: StorefrontOutlinedIcon },
-  { value: "products", label: "business:tab_products", icon: Inventory2OutlinedIcon },
+  { value: "market", label: "business:market_lists.market", icon: StorefrontOutlinedIcon },
   { value: "invoices", label: "business:tab_invoices", icon: ReceiptLongOutlinedIcon },
   { value: "pos", label: "business:pos.title" },
   { value: "sales", label: "business:pos.sales" },
   { value: "reports", label: "business:pos.reports" },
   { value: "collaborators", label: "business:tab_collaborators", icon: PeopleOutlinedIcon },
+] as const;
+
+const marketSections = [
+  { value: "products", label: "business:tab_products", icon: Inventory2OutlinedIcon },
+  { value: "lists", label: "business:market_lists.title", icon: FormatListBulletedOutlinedIcon },
 ] as const;
 
 function CashSectionEntry(scope: CashScope) {
@@ -103,6 +110,27 @@ function CashSectionEntry(scope: CashScope) {
   return <CashSection {...scope} />;
 }
 
+function ListsSectionEntry(scope: CashScope) {
+  const { t } = useTranslation(["business", "core"]);
+  const section = useQuery({
+    queryKey: ["business-shopping-lists-section-code"],
+    queryFn: () => import("./components/ListsTab"),
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: false,
+  });
+
+  if (!section.data) {
+    return section.isError ? (
+      <QueryErrorAlert isError isFetching={section.isFetching} onRetry={section.refetch} />
+    ) : (
+      <LinearProgress aria-label={t("business:market_lists.title")} />
+    );
+  }
+  const ListsTab = section.data.default;
+  return <ListsTab {...scope} />;
+}
+
 const BusinessDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -113,10 +141,13 @@ const BusinessDetail: FC = () => {
 
   const [sectionParams, setSectionParams] = useSearchParams();
   const activeSection = sectionParams.get("section") ?? "overview";
-  const selectedSection = sections.find((section) => section.value === activeSection)?.value ?? "overview";
+  const selectedMarketSection = marketSections.find(section => section.value === activeSection)?.value;
+  const selectedSection = selectedMarketSection ?? sections.find(section => section.value === activeSection && section.value !== "market")?.value ?? "overview";
+  const selectedTab = selectedMarketSection ? "market" : selectedSection;
   const saleSection: SaleSection | null = selectedSection === "pos" || selectedSection === "sales" || selectedSection === "reports" ? selectedSection : null;
   const selectSection = (value: unknown) => {
-    const section = sections.find((candidate) => candidate.value === value);
+    const target = value === "market" ? selectedMarketSection ?? "products" : value;
+    const section = [...sections, ...marketSections].find(candidate => candidate.value === target);
     if (!section) return;
     setSectionParams((params) => {
       params.set("section", section.value);
@@ -146,7 +177,7 @@ const BusinessDetail: FC = () => {
   const totalInvoices = invoicesData?.meta?.total_items ?? 0;
   const totalCollaborators = business?.collaborators?.length ?? business?.collaborators_count ?? 0;
   const sectionCounts: Partial<Record<(typeof sections)[number]["value"], number>> = {
-    providers: totalProviders, products: totalProducts, invoices: totalInvoices, collaborators: totalCollaborators,
+    providers: totalProviders, invoices: totalInvoices, collaborators: totalCollaborators,
   };
 
   const isMutating = useIsMutating() > 0;
@@ -309,9 +340,9 @@ const BusinessDetail: FC = () => {
 
           {/* Embedded Navigation Tabs */}
           <TabsWrapper>
-            {mobile ? <SelectSingleInput label={t("business:pos.section")} clearable={false} value={selectedSection} onChange={selectSection} disabled={isBusy} options={sections.map((section) => ({ value: section.value, label: t(section.label) }))} /> : <StyledTabs
+            {mobile ? <SelectSingleInput label={t("business:pos.section")} clearable={false} value={selectedTab} onChange={selectSection} disabled={isBusy} options={sections.map((section) => ({ value: section.value, label: t(section.label) }))} /> : <StyledTabs
               orientation="horizontal"
-              value={selectedSection}
+              value={selectedTab}
               onChange={handleTabChange}
               variant="scrollable"
               scrollButtons="auto"
@@ -335,6 +366,25 @@ const BusinessDetail: FC = () => {
               })}
             </StyledTabs>}
           </TabsWrapper>
+          {selectedMarketSection && <MarketTabs
+            value={selectedMarketSection}
+            onChange={handleTabChange}
+            aria-label={t("business:market_lists.market")}
+          >
+            {marketSections.map(({ value, label, icon: Icon }) => <StyledTab
+              key={value}
+              value={value}
+              disabled={isBusy}
+              icon={<Icon sx={{ fontSize: 18 }} />}
+              iconPosition="start"
+              data-testid={`tab-${value}`}
+              label={value !== "products" ? t(label) :
+                <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+                  {t(label)}
+                  <Chip label={totalProducts} size="small" sx={{ height: 18, fontSize: "0.68rem" }} />
+                </Box>}
+            />)}
+          </MarketTabs>}
         </HeaderCard>
       </Skeleton>
 
@@ -373,6 +423,15 @@ const BusinessDetail: FC = () => {
               businessId={business.id}
               isCreateModalOpenDirectly={directNewProductOpen}
               onCloseDirectCreateModal={() => setDirectNewProductOpen(false)}
+            />
+          )}
+
+          {selectedSection === "lists" && user?.id && (
+            <ListsSectionEntry
+              key={`${business.id}:${user.id}:${sessionVersion}`}
+              businessId={business.id}
+              actorId={user.id}
+              sessionVersion={sessionVersion}
             />
           )}
 

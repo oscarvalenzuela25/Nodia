@@ -4,7 +4,7 @@
   "document_id": "businesses",
   "product_id": "businesses",
   "kind": "product",
-  "revision": 66,
+  "revision": 67,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -323,11 +323,12 @@ describen el contrato por selección.
 
 ## Listas de Market — 2026-11-18
 
-La maqueta está aceptada y el checklist se comparte por negocio. El
-[plan110](../../../mvp/110-market-shopping-lists-plan.md) y la
-[ficha candidata](features/market-shopping-lists.md) describen el futuro
-editor, el copiado y el guardado por partida. La implementación nativa
-queda en el [TODO](../../../mvp/TODO.md#cola-actual).
+La implementación nativa incluye un editor por pasos, copiado y checklist
+compartido por negocio con guardado por partida. El
+[plan110](../../../mvp/110-market-shopping-lists-plan.md), la
+[ficha candidata](features/market-shopping-lists.md) y la
+[evidencia de laboratorio](../../../evidence/market-shopping-lists-20261118.md)
+registran el alcance. La adopción se verifica por entorno.
 
 ## Caja: plan de registro y egresos de factura — solicitud2026-11-17
 

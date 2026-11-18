@@ -7,6 +7,7 @@ import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { setTimeout as delay } from 'node:timers/promises';
 import { DataSource } from 'typeorm';
+import { verifyMarketListsUpgrade } from './fixtures/market-lists-upgrade.fixture.mjs';
 
 // Isolate config before compiled application imports; never load the workspace .env.
 process.env.DOTENV_CONFIG_PATH =
@@ -147,6 +148,7 @@ try {
       ),
     'Every registered entity table and its persisted columns exist',
   );
+  await verifyMarketListsUpgrade(db, options, check);
   const [initial] =
     await db.query(`SELECT (SELECT count(*)::int FROM roles WHERE key='super_admin') AS roles,
     (SELECT count(*)::int FROM users) AS users,
@@ -511,7 +513,7 @@ try {
   );
   checks++;
   console.log(
-    `Database setup integration: ${checks} checks passed; empty install, reusable Core, legacy preservation, rollback and concurrency verified.`,
+    `Database setup integration: ${checks} checks passed; empty install, Market Lists upgrade, reusable Core, legacy preservation, rollback and concurrency verified.`,
   );
 } finally {
   for (const connection of connections.reverse())
