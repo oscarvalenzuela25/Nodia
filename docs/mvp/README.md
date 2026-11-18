@@ -1,9 +1,11 @@
 # Especificación del MVP — Nodia
 
 **Listas de Market — 2026-11-18.**
-[Plan110](110-market-shopping-lists-plan.md) registra la maqueta aprobada y
-el checklist compartido por negocio. El [TODO](TODO.md#cola-actual) recoge
-la iniciativa LISTA-001 y su primer pendiente.
+[Plan110](110-market-shopping-lists-plan.md) registra el editor persistente,
+el copiado y el checklist compartido por negocio. La
+[evidencia](../evidence/market-shopping-lists-20261118.md) cubre navegador,
+Nest y PostgreSQL 16, incluida la actualización 56→57. El
+[TODO](TODO.md#cola-actual) conserva integración y verificación operativa.
 
 **Caja de Negocios — verificación integral CASH-07, 2026-11-17.**
 [Plan109 §16](109-business-cash-ledger-plan.md#16-verificación-de-entrega--cash-07-2026-11-17)

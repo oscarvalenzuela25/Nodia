@@ -66,11 +66,12 @@ export const assignCollaborators = async (
 // ----------------------------------------------------
 export const getProductAvailability = async (businessId: string) => (await mainInstance.get<{ total: number; available: number; unavailable: number; unknown: number; activity: string }>(apiPath("/products/availability-summary"), { params: { business_id: businessId, activity: "active" } })).data;
 export const getProducts = async (
-  params?: import("./types").GetProductsParams
+  params?: import("./types").GetProductsParams,
+  signal?: AbortSignal
 ): Promise<import("./types").GetProductsResponse> => {
   const { data } = await mainInstance.get<import("./types").GetProductsResponse>(
     apiPath("/products"),
-    { params }
+    { params, signal }
   );
   return data;
 };

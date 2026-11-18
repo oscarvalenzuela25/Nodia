@@ -272,9 +272,9 @@ describe("BusinessDetail Page", () => {
       await screen.findByRole("button", { name: /Administrar proveedores/i })
     ).toBeInTheDocument();
 
-    // 2. Switch to Productos tab
-    const productsTab = screen.getByRole("tab", { name: /Productos/i });
-    await user.click(productsTab);
+    // 2. Market opens Productos at its existing destination.
+    await user.click(screen.getByRole("tab", { name: "Market" }));
+    expect(screen.getByRole("tab", { name: /Productos/i })).toHaveAttribute("aria-selected", "true");
 
     expect(
       await screen.findByRole("button", { name: /Administrar productos/i })

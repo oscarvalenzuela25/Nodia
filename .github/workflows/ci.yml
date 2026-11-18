@@ -244,10 +244,14 @@ jobs:
         run: bash ../ops/ci/run-server-checks.sh
       - name: Run atomic unit tests without another build
         run: npm test -- --maxWorkers=2
-      - name: Verify schema installation on disposable PostgreSQL
+      - name: Verify clean schema installation and the Market Lists upgrade on disposable PostgreSQL
         env:
           DOTENV_CONFIG_PATH: /dev/null
         run: node test/database-setup.integration.mjs
+      - name: Verify Market Lists HTTP authority and concurrent writes on disposable PostgreSQL
+        env:
+          DOTENV_CONFIG_PATH: /dev/null
+        run: node test/market-shopping-lists.integration.mjs
       - name: Package the validated backend and Linux production dependencies without another build
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: node ../ops/ci/artifact-release.mjs package --root "$GITHUB_WORKSPACE" --source-sha "$GITHUB_SHA" --output "$RUNNER_TEMP/nodia-server-artifact" --component server

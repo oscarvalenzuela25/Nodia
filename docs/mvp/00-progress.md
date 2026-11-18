@@ -1,11 +1,14 @@
 # Progreso del MVP — Nodia
 
-**Listas de Market — planificación, 2026-11-18.** El usuario aceptó la
-maqueta y confirmó el checklist compartido. El
-[plan110](110-market-shopping-lists-plan.md) y el
-[ADR108 propuesto](../architecture/decisions/ADR-108-business-shopping-list-shared-checklist.md)
-registran flujo, contratos y pruebas pendientes. Implementación futura en
-[LISTA-001](TODO.md#cola-actual).
+**Listas de Market — implementación verificada, 2026-11-18.** Alta, edición,
+actividad, copiado y marcas compartidas implementadas en
+`codex/market-shopping-lists`. Pasaron el recorrido de navegador, cinco
+grupos de integración HTTP y el ensayo de instalación/actualización en
+PostgreSQL 16. El actualizador SQL de producción verificó 56→57 y 76
+entidades en Linux aislado con TLS. La CI ejecuta ambas comprobaciones de DB
+antes de empaquetar. [Plan110](110-market-shopping-lists-plan.md),
+[evidencia](../evidence/market-shopping-lists-20261118.md) y
+[LISTA-001](TODO.md#cola-actual) conservan el alcance y la entrega pendiente.
 
 **Entrega técnica de Caja, CASH-07 — 2026-11-17.**
 [Plan109 §16](109-business-cash-ledger-plan.md#16-verificación-de-entrega--cash-07-2026-11-17)

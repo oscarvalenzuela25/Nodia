@@ -15,6 +15,7 @@ import { AuthorizationModule } from './authorization/authorization.module.js';
 import { AiProviderModule } from './ai-provider/ai-provider.module.js';
 import { BusinessModule } from './business/business.module.js';
 import { BusinessCashModule } from './business-cash/business-cash.module.js';
+import { BusinessShoppingListModule } from './business-shopping-list/business-shopping-list.module.js';
 import { BusinessActionModule } from './business-action/business-action.module.js';
 import { ProviderModule } from './provider/provider.module.js';
 import { ProviderContactModule } from './provider-contact/provider-contact.module.js';
@@ -51,6 +52,7 @@ import { NewsModule } from './news/news.module.js';
     BusinessActionModule,
     BusinessModule,
     BusinessCashModule,
+    BusinessShoppingListModule,
     ProviderModule,
     ProviderContactModule,
     InvoiceModule,

@@ -1,10 +1,11 @@
 # Listas de Market — plan de implementación
 
-**Fecha:** 2026-11-18. **Estado:** especificado para desarrollo futuro.
+**Fecha:** 2026-11-18. **Estado:** implementado y verificado en laboratorio en
+`codex/market-shopping-lists`. Integración y verificación operativa pendientes.
 El usuario aprobó la maqueta navegable y confirmó que las marcas del
 checklist son compartidas entre los usuarios autorizados del negocio.
-Los contratos y fases de este documento son la propuesta técnica para
-retomar el trabajo.
+El usuario solicita la entrega completa y el ensayo de migración antes de
+la promoción a producción.
 
 [TODO](TODO.md#cola-actual) ·
 [Negocios y POS](94-business-point-of-sale-and-product-refactor.md) ·
@@ -35,7 +36,7 @@ texto seleccionable.
 ## 2. Punto de partida y navegación
 
 - [BusinessDetail](../../nodia-client/src/modules/business/pages/BusinessDetail/BusinessDetail.tsx)
-  ya resuelve secciones por query param. Propuesta de destino estable
+  resuelve secciones por query param. El destino estable es
   `/business/:id?section=lists`, visible como **Listas** dentro de **Market**.
   **Market** agrupa navegación del negocio y **Productos** conserva su destino
   `section=products`. La autoridad viene del módulo canónico `/business`,
@@ -57,18 +58,21 @@ texto seleccionable.
 
 ## 3. Datos, validación y convivencia con Productos
 
-| Recurso | Campos e invariantes propuestos |
+| Recurso | Campos e invariantes |
 | --- | --- |
 | Lista | UUID, negocio propietario, nombre obligatorio recortado, actividad inicial activa, revisión de contenido y fechas. Permite guardar una lista vacía. El ID distingue listas con el mismo nombre. |
 | Partida de lista | UUID propio, lista y negocio, producto de origen, nombre registrado al agregar, cantidad positiva y posición. Una partida por producto en cada lista. Quitar y volver a añadir genera otra identidad. |
 | Marca compartida | Booleano inicial `false` y revisión por partida. Fecha y actor de la última modificación para trazabilidad; el actor no participa en la identidad de la marca. |
 
-La maqueta usa cantidades enteras positivas con valor inicial **1**. En
-LISTA-01 se fija y documenta la representación HTTP y SQL, contrastando la
-[unidad del catálogo](../../nodia-server/src/product/product-measurement-unit.ts)
-y los productos fraccionables antes de elegir soporte de decimales. El
-contrato final debe validar la cantidad en ambos extremos, usar la misma regla
-en alta y edición y copiar la cantidad visible con precisión.
+La cantidad inicia en **1** y admite valores entre `0.001` y
+`999999999.999`, con hasta tres decimales. El contrato HTTP usa una cadena
+decimal con punto y PostgreSQL guarda `numeric(12,3)`. El editor admite la
+coma decimal y el copiado muestra la cantidad localizada sin ceros finales.
+El [catálogo](../../nodia-server/src/product/product-measurement-unit.ts)
+admite `unit`, `kg`, `g` y `bundle`. La cantidad es una planificación propia
+de la lista y admite la misma precisión para las cuatro unidades. Un cambio
+posterior de unidad en el catálogo no invalida la partida. El nombre de lista
+se recorta y admite hasta 150 caracteres. Se admiten hasta 500 partidas.
 
 El selector muestra productos activos del negocio para altas nuevas. Para una
 partida existente, usar el nombre vigente si el producto sigue activo en ese
@@ -79,20 +83,27 @@ Al editar, sólo las vinculaciones nuevas deben volver a acreditar actividad y
 pertenencia. Planificar el vínculo de modo que el traslado legítimo de un
 producto entre negocios conserve su comportamiento actual.
 
-## 4. Contratos HTTP propuestos
+## 4. Contratos HTTP
 
 Rutas bajo `/api/v1/businesses/:businessId`. El ID de negocio de la ruta
 es la entrada al ámbito, con sesión y autorización verificadas por Server.
 
-| Operación | Contrato propuesto |
+| Operación | Contrato |
 | --- | --- |
-| Listado | `GET /lists` paginado, búsqueda por nombre, orden estable con ID como desempate y conteo de productos obtenido en conjunto. El listado inicial muestra activas e inactivas. |
+| Listado | `GET /lists?page&limit&search`. Búsqueda literal por nombre sin distinguir mayúsculas ni tildes. Orden estable con ID como desempate y conteo de productos en conjunto. El listado inicial muestra activas e inactivas. |
 | Detalle | `GET /lists/:listId` con composición, cantidades, estado y marcas/revisiones. El editor, el drawer y la copia solicitan el detalle al abrir la acción. |
-| Alta | `POST /lists` con nombre y composición, transacción única e idempotencia por negocio, actor y clave de solicitud. Consultar el recibo de la clave ante un resultado incierto. |
+| Alta | `POST /lists` con `request_key`, `name` e `items`, transacción única e idempotencia por negocio, actor y clave de solicitud. Consultar el recibo de la clave ante un resultado incierto. |
 | Recibo de alta | `GET /lists/requests/:requestKey` con acceso actual al negocio y coincidencia exacta de actor y clave. Recupera el resultado de un alta confirmada. |
-| Edición | `PUT /lists/:listId` con revisión de contenido esperada, nombre y composición. Mantener las identidades y marcas de las partidas que permanecen. |
-| Actividad | `PUT /lists/:listId/activity` con `is_active` explícito y revisión de contenido esperada. |
-| Marca | `PUT /lists/:listId/items/:itemId/check` con `checked` explícito y revisión de marca esperada. Devuelve la marca y su revisión efectiva. |
+| Edición | `PUT /lists/:listId` con `version`, `name` e `items`. Cada vínculo retenido incluye su `item_id` y el mismo `product_id`. Un vínculo nuevo omite `item_id` y recibe otra identidad. |
+| Actividad | `PUT /lists/:listId/activity` con `is_active` explícito y `version`. |
+| Marca | `PUT /lists/:listId/items/:itemId/check` con `checked` explícito y `check_version`. Devuelve el ID, la marca y su revisión efectiva. |
+
+El listado devuelve `items` con `id`, `name`, `is_active`, `version` e
+`item_count`, además del objeto `pagination`. El detalle añade `items` con
+`id`, `product_id`, `name`, `quantity`, `position`, `available`, `checked` y
+`check_version`. `position` empieza en cero. Cada partida de un comando
+incluye `product_id` y `quantity`. El recibo devuelve el detalle confirmado
+por el alta original, bajo autoridad vigente del mismo actor y negocio.
 
 El guardado de composición rechaza toda la petición si una referencia nueva
 es ajena o inválida. El Server toma las barreras de sesión/módulo y ámbito
@@ -152,13 +163,34 @@ protege sólo el checkbox.
 
 ## 7. Fases y primer pendiente
 
-- [ ] **LISTA-01 — cerrar contrato y preparar Server.** Revisar cantidades
+- [x] **LISTA-01 — cerrar contrato y preparar Server.** Revisar cantidades
   según catálogo, proyección de partidas fuera de catálogo y DTOs. Implementar
   modelo, migración, política HTTP e invariantes en PostgreSQL aislado.
-- [ ] **LISTA-02 — completar API.** Listado, detalle, alta idempotente, edición,
+- [x] **LISTA-02 — completar API.** Listado, detalle, alta idempotente, edición,
   actividad y marca compartida con autoridad y pruebas de concurrencia.
-- [ ] **LISTA-03 — entregar Client.** Ubicar Listas en Market, tabla y búsqueda,
+- [x] **LISTA-03 — entregar Client.** Ubicar Listas en Market, tabla y búsqueda,
   editor reutilizado, confirmaciones, copiado y drawer con guardado por fila.
-- [ ] **LISTA-04 — verificar y documentar.** Ejecutar la matriz de §6, contrastar
+- [x] **LISTA-04 — verificar y documentar.** Ejecutar la matriz de §6, contrastar
   con la maqueta aprobada, actualizar ficha con evidencia real y preparar la
   entrega por entorno cuando se solicite.
+
+## 8. Migración y entrega
+
+La [migración `1793730000000`](../../nodia-server/src/migrations/1793730000000-CreateBusinessShoppingLists.ts)
+agrega listas, partidas y recibos. Las 56 migraciones previas y las tablas de
+Productos y Caja se conservan. `synchronize` permanece desactivado. El `down`
+de laboratorio comprueba bajo lock que las tres tablas estén vacías antes
+de retirarlas. Si ya hay datos, la recuperación conserva el esquema y usa
+el [procedimiento de actualización del entorno](../../ops/production/README.md).
+
+La CI ejecuta la [prueba de instalación y actualización](../../nodia-server/test/database-setup.integration.mjs)
+y la [integración HTTP](../../nodia-server/test/market-shopping-lists.integration.mjs)
+antes de empaquetar Server. El ensayo Linux de `inspect`, `migrate` y `verify`
+usó la acción SQL de producción y PostgreSQL 16 aislado con TLS. Partió de
+56 migraciones y terminó en 57, con 76 entidades verificadas, sin seed y con
+replay rechazado. Ver la [evidencia de la rama](../evidence/market-shopping-lists-20261118.md).
+
+La CI del SHA que se promocione debe completar ambas comprobaciones. El CD
+verifica el ledger y el prefijo histórico del artefacto operativo antes de
+aplicar la migración. La comprobación funcional posterior abre **Negocios →
+Market → Listas** con un actor autorizado en el entorno de destino.
