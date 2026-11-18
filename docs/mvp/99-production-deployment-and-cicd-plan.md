@@ -1935,3 +1935,26 @@ interrupción antes de publicar el recibo. El
 [runbook](../../ops/production/README.md#conciliación-posterior-a-migración-confirmada)
 incluye verificación previa, adopción mediante hashes y cierre de CD. Falta
 aplicar el paquete revisado en el VPS y verificar una entrega nueva de master.
+
+## 35. Respaldo previo interrumpido en Listas de Market — 2026-11-18
+
+El [PR 60](https://github.com/oscarvalenzuela25/Nodia/pull/60) integró Listas
+en `development`. El [PR 61](https://github.com/oscarvalenzuela25/Nodia/pull/61)
+lo promovió a `master` `8017dbc6` después de CI verde. La
+[CI de master](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44343636020)
+repitió instalación limpia, actualización de esquema y contratos HTTP.
+
+El [CD 44345737883](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44345737883)
+se detuvo en `backup_requested` del intento `1d6e3f19410a3cec6d2b97c958c44471`.
+El respaldo devolvió `nodia_ai:recovery_write_unknown`. La operación original
+conserva `migration_requested: false` y `automatic_retry_allowed: false`.
+El paso de Pages quedó omitido. La recuperación de disponibilidad verificó
+el ledger 56 por TLS, restauró los timers y retiró el mantenimiento del
+release `69aeecc7`, con API y worker activos. La recepción de CD conservó el
+bloqueo y los recibos originales.
+
+La extensión del [ADR099](../architecture/decisions/ADR-099-pre-migration-deployment-reconciliation.md#respaldo-previo-interrumpido--2026-11-18)
+vincula una observación de R2 en solo lectura a ese intento, el recibo de
+disponibilidad y los manifiestos. La admisión de otra entrega conserva los
+controles de procedencia, respaldo fresco, quiescencia y esquema. La verificación
+operativa de Listas requiere backend y Pages de la nueva entrega.
