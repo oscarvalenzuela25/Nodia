@@ -1408,3 +1408,40 @@ por sí sola esos resultados.
 
 Los intents, receipts y archivos de recepción/archivo son evidencia mantenida;
 no eliminarlos para liberar cuota o simular que una operación no ocurrió.
+
+## Conciliación posterior a migración confirmada
+
+El [ADR107](../../docs/architecture/decisions/ADR-107-post-migration-deployment-reconciliation.md)
+describe la recuperación de admisión para el intento
+`8014c78fc35edcaec2e4cb6658167329` con el candidato `backend-b62a9029861f-1d4cda79ea4a`
+ya activo. El paquete revisado contiene `post-migration-cd.json`, los cuatro
+assets que se instalan, y los dos helpers que lee el instalador. Su manifiesto
+fija los hashes instalados de receiver y updater, los archivos candidatos,
+la operación y el release activo. Verificar también el hash del instalador
+contra el paquete revisado antes de ejecutarlo.
+
+```bash
+sudo python3 -I -B /ruta/revisada/refresh-post-migration-cd.py \
+  --bundle /ruta/revisada/bundle \
+  --manifest-sha256 HASH_SHA256_DEL_MANIFIESTO
+```
+
+La consulta inicial comprueba los pins instalados, el estado bloqueado con
+ambos procesos activos y la evidencia privada de la recuperación. Debe devolver
+`post_migration_cd_dry_run` con `blocked: true`.
+
+Tras la revisión operativa, añadir `--apply` al mismo comando. Bajo los locks
+receiver→installation, guarda los originales de los cuatro scripts y de los
+dos archivos de pins en `post-migration-cd-refresh-<operación>`. Verifica el
+ledger por TLS con una transacción de solo lectura y vuelve a comprobar los
+servicios, la evidencia de esquema, la configuración del respaldo y CORS.
+Publica el recibo de admisión como última escritura. Si la ejecución se
+interrumpe, inspeccionar el registro de instalación y el intento. El instalador
+rechaza una segunda aplicación sobre ese registro.
+
+Después de `post_migration_cd_reconciled`, abrir una conexión nueva con el
+receptor restringido. Verificar `blocked: false`, el mismo release, ambos
+procesos activos y el intento original en `failed` con
+`automatic_retry_allowed: false`. Con la promoción normal a master, seguir
+una entrega nueva de CI/CD y confirmar HTTP, las fuentes publicadas en el VPS
+y Pages, y el recorrido de Caja desde el cliente.

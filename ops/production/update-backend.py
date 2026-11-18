@@ -254,7 +254,7 @@ class Host:
         atomic_write(self.attempt / 'request.json', (json.dumps(request, sort_keys=True) + '\n').encode())
         self.record(state)
 
-    def prior_updates_blocked(self):
+    def prior_updates_blocked(self, *, reconciliation_override=None):
         """Read-only admission: acknowledge only a fully bound historical failure."""
         def private(path, maximum=16384, mode=0o600):
             info = protected(path, mode=mode)
@@ -268,32 +268,50 @@ class Host:
             blocked_id = unique_json(blocked).get('operation_id') if blocked is not None else None
             if blocked is not None:
                 self.must(isinstance(blocked_id, str) and re.fullmatch(r'[a-f0-9]{32}', blocked_id), 'invalid_blocked_operation')
+            override_operation, override_receipt = reconciliation_override or (None, None)
+            if reconciliation_override is not None:
+                self.must(blocked_id is not None and override_operation == blocked_id and type(override_receipt) is bytes,
+                          'invalid_reconciliation_preview')
             reconciled = set()
             for previous in (STATE / 'attempts').iterdir():
                 protected(previous, directory=True)
+                pre = previous / 'pre-migration-reconciliation.json'
+                post = previous / 'post-migration-reconciliation.json'
+                has_pre = pre.exists() or pre.is_symlink()
+                has_post = post.exists() or post.is_symlink()
+                preview = previous.name == override_operation
+                self.must(not (has_pre and has_post) and not (preview and (has_pre or has_post)),
+                          'conflicting_reconciliation_receipts')
                 status = previous / 'state.json'
-                if not (status.exists() or status.is_symlink()): continue
+                if not (status.exists() or status.is_symlink()):
+                    self.must(not (has_pre or has_post or preview), 'reconciliation_attempt_missing')
+                    continue
                 state_bytes = private(status)
                 prior = unique_json(state_bytes)
-                acknowledgment = previous / 'pre-migration-reconciliation.json'
-                if not (acknowledgment.exists() or acknowledgment.is_symlink()):
+                if not (has_pre or has_post or preview):
                     if ((prior.get('effects_started') is False and prior.get('migration_requested') is False)
                             or prior.get('phase') in ('complete', 'planned')): continue
                     return True
                 self.must(re.fullmatch(r'[a-f0-9]{32}', previous.name) and prior.get('operation_id') == previous.name,
                           'invalid_update_history_identity')
-                receipt = unique_json(private(acknowledgment))
-                request_bytes = private(previous / 'request.json')
-                request = self.p.validate_request(unique_json(request_bytes))
-                recovery_bytes = private(STATE / ('same-release-recovery-' + previous.name + '.json'))
-                manifest = previous / 'recovered-manifest.json'
-                self.p.validate_pre_migration_reconciliation(receipt, state_bytes=state_bytes,
-                    request_bytes=request_bytes, recovery_bytes=recovery_bytes,
-                    manifest_bytes=private(manifest, 32 * 1024 ** 2),
-                    blocked_bytes=blocked if previous.name == blocked_id else None)
+                evidence = {
+                    'state_bytes': state_bytes,
+                    'request_bytes': private(previous / 'request.json'),
+                    'manifest_bytes': private(previous / 'recovered-manifest.json', 32 * 1024 ** 2),
+                    'blocked_bytes': blocked if previous.name == blocked_id else None,
+                }
+                if has_pre:
+                    recovery = private(STATE / ('same-release-recovery-' + previous.name + '.json'))
+                    self.p.validate_pre_migration_reconciliation(unique_json(private(pre)), recovery_bytes=recovery, **evidence)
+                else:
+                    acknowledgment = override_receipt if preview else private(post)
+                    self.must(0 < len(acknowledgment) <= 16384, 'update_history_size_invalid')
+                    evidence.update({field: private(previous / filename)
+                                     for field, (filename, _) in self.p.POST_MIGRATION_EVIDENCE.items()})
+                    self.p.validate_post_migration_reconciliation(unique_json(acknowledgment), **evidence)
                 reconciled.add(previous.name)
             return blocked is not None and blocked_id not in reconciled
-        except (OSError, ValueError, TypeError, AttributeError, self.p.Rejected):
+        except (OSError, ValueError, TypeError, AttributeError, RecursionError, self.p.Rejected):
             return True
 
     def record(self, state):
