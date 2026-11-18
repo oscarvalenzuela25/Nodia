@@ -1445,3 +1445,21 @@ procesos activos y el intento original en `failed` con
 `automatic_retry_allowed: false`. Con la promoción normal a master, seguir
 una entrega nueva de CI/CD y confirmar HTTP, las fuentes publicadas en el VPS
 y Pages, y el recorrido de Caja desde el cliente.
+
+## Conciliación del respaldo previo de Listas de Market
+
+`refresh-backup-request-cd.py` está acotado al fallo `backup_requested` de
+`1d6e3f19410a3cec6d2b97c958c44471`. Comprueba los hashes del paquete revisado,
+el intento, el recibo de disponibilidad y el release anterior activo.
+Revalida el ledger 56→57 por TLS en solo lectura y verifica en R2 la
+metadata y el SHA-256 del respaldo vigente con HEAD y GET condicional.
+
+El modo por defecto hace la comprobación previa. `--apply` toma los locks del
+receptor y del instalador, guarda originales e instala los dos archivos de
+política/actualizador y sus pins. Publica el recibo privado de conciliación
+después de verificar ambas barreras. El intento histórico conserva su estado
+fallido y la escritura original del catálogo conserva resultado incierto.
+
+La entrega siguiente usa CI de `master` nueva, el respaldo fresco del CD y
+las verificaciones ordinarias de esquema y activación. Ver el
+[incidente y la recuperación](../../docs/mvp/99-production-deployment-and-cicd-plan.md#35-respaldo-previo-interrumpido-en-listas-de-market--2026-11-18).

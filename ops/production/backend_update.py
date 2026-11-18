@@ -61,6 +61,18 @@ RECONCILIATION_FIELDS = frozenset(RECONCILIATION_DIGESTS) | {
     'schema_version', 'status', 'operation_id', 'current_release_id', 'migration_count',
     'acknowledged_at_utc', 'new_operation_allowed', 'original_operation_retry_allowed',
 }
+BACKUP_REQUEST_ACKNOWLEDGMENT = 'backup_request_reconciled_before_migration'
+BACKUP_REQUEST_OPERATION = '1d6e3f19410a3cec6d2b97c958c44471'
+BACKUP_REQUEST_CANDIDATE = 'backend-8017dbc63189-6422a361f0c7'
+BACKUP_REQUEST_PINS = {
+    'state_sha256': 'f025691958f67b9b34cde6e2146687626482ec3b822ffbb248253fcc042c65d3',
+    'request_sha256': 'f993a57fa97c50b14fccac4156f8a189bdbfd368eed5ddb62537ff919e45814f',
+    'blocked_sha256': '08d5b8f02a1d0852976871c238d75dbd8e32b89e629ef4efaa16ce8f2361d1cb',
+    'current_manifest_sha256': 'cf8140420f9624526ec81248b8dd6c0daf472215c28d10c61b4359df0294e0b7',
+    'ledger_sha256': '634d9db2209e4af8d3ac0df1335510d79b471b8390373654533d9edfd3c98718',
+}
+BACKUP_REQUEST_CANDIDATE_MANIFEST_SHA256 = '03d4fe06a5ff9e7c347b41f8ee2b8f8829dac7851ce96db1e8fe3b18d858c6df'
+BACKUP_REQUEST_AVAILABILITY_SHA256 = 'd8c3f6fbc60047ec4b470ac8dee0439ce0a81d86066f4ef1dceee28ea19caa07'
 
 
 def _check_acknowledgment(receipt, status, check, extra_digests=()):
@@ -87,6 +99,9 @@ def validate_pre_migration_reconciliation(receipt, *, state_bytes, request_bytes
     Manifest identity is the recovered original release, not the release active
     after a subsequent successful update. Historical recovery evidence stays bound.
     """
+    if type(receipt) is dict and receipt.get('status') == BACKUP_REQUEST_ACKNOWLEDGMENT:
+        return _validate_backup_request_reconciliation(
+            receipt, state_bytes, request_bytes, recovery_bytes, manifest_bytes, blocked_bytes)
     code = 'pre_migration_reconciliation_invalid'
     def check(condition): require(condition, code)
     try:
@@ -172,6 +187,96 @@ def _compiled_ledger(manifest, check):
     # Key order and separators match JSON.stringify in the Node verification action.
     digest = hashlib.sha256(json.dumps(ledger, separators=(',', ':')).encode()).hexdigest()
     return len(ledger), digest
+
+
+def _check_backup_request_r2(result, operation, acknowledged_at, check):
+    check(type(result) is dict and set(result) == {
+        'schema_version', 'status', 'operation_id', 'observed_at_utc', 'catalog_sha256',
+        'catalog_revision', 'catalog_last_sequence', 'catalog_open', 'unconfirmed_deletions',
+        'incident_outcome', 'verified_backup',
+    } and type(result['schema_version']) is int and result['schema_version'] == 1 and
+          result['status'] == 'verified_read_only' and result['operation_id'] == operation and
+          result['catalog_open'] is True and result['incident_outcome'] == 'unknown' and
+          type(result['unconfirmed_deletions']) is int and result['unconfirmed_deletions'] == 0 and
+          re.fullmatch(r'[a-f0-9]{64}', result['catalog_sha256']) and
+          all(type(result[field]) is int and result[field] >= 0
+              for field in ('catalog_revision', 'catalog_last_sequence')))
+    observed = _evidence_date(result['observed_at_utc'], check)
+    check(_evidence_date('2026-11-18T16:22:10Z', check) <= observed <= acknowledged_at)
+    backup = result['verified_backup']
+    check(type(backup) is dict and set(backup) == {
+        'backup_id', 'captured_at', 'expires_at', 'cipher_bytes', 'cipher_sha256', 'journal_sequence',
+    } and re.fullmatch(r'[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}', backup['backup_id']) and
+          re.fullmatch(r'[a-f0-9]{64}', backup['cipher_sha256']) and
+          type(backup['cipher_bytes']) is int and backup['cipher_bytes'] > 0 and
+          type(backup['journal_sequence']) is int and 0 <= backup['journal_sequence'] <= result['catalog_last_sequence'])
+    captured = _evidence_date(backup['captured_at'], check)
+    expires = _evidence_date(backup['expires_at'], check)
+    check(captured <= observed and acknowledged_at < expires and expires - captured == datetime.timedelta(days=7))
+
+
+def _validate_backup_request_reconciliation(receipt, state_bytes, request_bytes, recovery_bytes, manifest_bytes, blocked_bytes):
+    """Close this admission block, preserving the original external write as unknown."""
+    code = 'backup_request_reconciliation_invalid'
+
+    def check(condition):
+        require(condition, code)
+
+    try:
+        operation = _check_acknowledgment(receipt, BACKUP_REQUEST_ACKNOWLEDGMENT, check)
+        check(operation == BACKUP_REQUEST_OPERATION and all(receipt[name] == digest for name, digest in BACKUP_REQUEST_PINS.items()))
+        state = _evidence_json(state_bytes, check)
+        request = validate_request(_evidence_json(request_bytes, check))
+        check(type(state['schema_version']) is int and state['schema_version'] == 1 and
+              state['operation_id'] == request['operation_id'] == operation and state['phase'] == 'failed' and
+              state['failed_phase'] == 'backup_requested' and
+              state['error_code'] == 'host_command_failed_inspect_private_diagnostics' and
+              state['effects_started'] is True and state['migration_requested'] is False and
+              state['automatic_retry_allowed'] is False and 'backup' not in state and 'migration_result' not in state and
+              state['previous_release'] == request['expected_current_release'] == receipt['current_release_id'] and
+              state['candidate_release'] == BACKUP_REQUEST_CANDIDATE)
+        expected_block = blocked_record_bytes(state)
+        _check_evidence_digest(receipt, {
+            'state_sha256': state_bytes, 'request_sha256': request_bytes, 'blocked_sha256': expected_block,
+            'current_manifest_sha256': manifest_bytes, 'recovery_receipt_sha256': recovery_bytes,
+        }, check)
+        check(blocked_bytes is None or (type(blocked_bytes) is bytes and blocked_bytes == expected_block))
+        manifest = _evidence_json(manifest_bytes, check, 32 * 1024 ** 2)
+        check(type(manifest['schema_version']) is int and manifest['schema_version'] == 1 and
+              manifest['release_id'] == receipt['current_release_id'] and
+              manifest['package_tree_sha256'] == receipt['package_tree_sha256'] == request['expected_current_tree_sha256'] and
+              type(receipt['migration_count']) is int and receipt['migration_count'] == 56 and
+              _compiled_ledger(manifest, check) == (56, receipt['ledger_sha256']))
+        evidence = _evidence_json(recovery_bytes, check)
+        check(type(evidence) is dict and set(evidence) == {
+            'schema_version', 'status', 'operation_id', 'availability_receipt', 'availability_receipt_sha256',
+            'candidate_manifest_sha256', 'ledger_inspection', 'r2_observation',
+        } and type(evidence['schema_version']) is int and evidence['schema_version'] == 1 and
+              evidence['status'] == 'backup_request_reconciliation_evidence' and evidence['operation_id'] == operation and
+              evidence['availability_receipt_sha256'] == BACKUP_REQUEST_AVAILABILITY_SHA256 and
+              evidence['candidate_manifest_sha256'] == BACKUP_REQUEST_CANDIDATE_MANIFEST_SHA256)
+        availability = evidence['availability_receipt']
+        expected_availability = {
+            'schema_version': 1, 'operation_id': operation, 'current_release': receipt['current_release_id'],
+            'ledger_before': 56, 'migration_executed': False, 'failed_state_sha256': receipt['state_sha256'],
+            'blocked_sha256': receipt['blocked_sha256'], 'request_sha256': receipt['request_sha256'],
+            'backup_error_codes': ['nodia_ai:recovery_write_unknown'], 'status': 'api_restored_previous_release',
+            'public_http': 200, 'cors_verified': True, 'timers_restored': True, 'cd_still_blocked': True,
+        }
+        check(json.dumps(availability, sort_keys=True) == json.dumps(expected_availability, sort_keys=True) and
+              hashlib.sha256((json.dumps(expected_availability) + '\n').encode()).hexdigest() == BACKUP_REQUEST_AVAILABILITY_SHA256)
+        result = evidence['ledger_inspection']
+        check(type(result) is dict and set(result) == LEDGER_VERIFICATION_FIELDS and
+              all(type(result[field]) is int for field in ('schema_version', 'before', 'target', 'pending', 'incremental_migrations')) and
+              (result['schema_version'], result['before'], result['target'], result['pending'], result['incremental_migrations']) == (1, 56, 57, 1, 1) and
+              result['status'] == 'verified' and result['mode'] == 'inspect' and result['ledger_sha256'] == receipt['ledger_sha256'] and
+              result['quiescent'] is True and result['read_only'] is True and result['client_tls_authorized'] is True and
+              result['migrations_executed'] is False and type(result['counts']) is dict and set(result['counts']) == RUNTIME_COUNTERS and
+              all(type(value) is int and value == 0 for value in result['counts'].values()))
+        _check_backup_request_r2(evidence['r2_observation'], operation, _evidence_date(receipt['acknowledged_at_utc'], check), check)
+        return receipt
+    except (KeyError, TypeError, ValueError, AttributeError, RecursionError):
+        raise Rejected(code) from None
 
 
 def _check_ledger_verification(result, receipt, check, *, preactivation=False):
