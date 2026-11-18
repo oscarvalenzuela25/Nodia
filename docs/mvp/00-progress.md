@@ -1,5 +1,12 @@
 # Progreso del MVP — Nodia
 
+**Recuperación del CD antes de migrar — 2026-11-18.** El VPS adoptó el
+actualizador y la política que pasaron el fallo de respaldo simulado en systemd
+aislado. El ensayo confirmó el regreso de la API y el bloqueo del CD mientras
+R2 seguía incierto. La adopción conservó el release y ambos procesos activos.
+[Evidencia](../evidence/cd-backup-failure-recovery-20261118.md) y
+[Plan99 §36](99-production-deployment-and-cicd-plan.md#36-continuidad-del-servicio-y-reintento-por-fase).
+
 **Listas de Market — implementación verificada, 2026-11-18.** Alta, edición,
 actividad, copiado y marcas compartidas implementadas en
 `codex/market-shopping-lists`. Pasaron el recorrido de navegador, cinco

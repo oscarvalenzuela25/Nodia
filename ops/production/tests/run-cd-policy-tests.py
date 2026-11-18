@@ -17,7 +17,8 @@ suite = unittest.TestSuite(loader.discover(directory, pattern=pattern) for patte
                             'test_ai_runtime_updater.py', 'test_teacher_runtime.py',
                             'test_teacher_operator_upgrade.py', 'test_activate_teacher_window.py',
                             'test_capture_teacher_backup.py', 'test_refresh_post_migration_cd.py',
-                            'test_post_migration_reconciliation_helper.py', 'test_refresh_backup_request_cd.py'))
+                            'test_post_migration_reconciliation_helper.py', 'test_refresh_backup_request_cd.py',
+                            'test_refresh_backup_failure_recovery.py'))
 result = unittest.TextTestRunner(verbosity=1).run(suite)
 if result.skipped:
     raise SystemExit('cd_policy_regressions_must_not_be_skipped')
