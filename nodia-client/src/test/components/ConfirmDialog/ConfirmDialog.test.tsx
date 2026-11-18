@@ -94,6 +94,19 @@ describe("ConfirmDialog", () => {
     expect(handleConfirm).toHaveBeenCalledTimes(1);
   });
 
+  it("keeps confirmation available when cancel is temporarily disabled", async () => {
+    const onClose = vi.fn();
+    const onConfirm = vi.fn();
+    const user = userEvent.setup();
+    render(<ConfirmDialog open cancelDisabled onClose={onClose} onConfirm={onConfirm} title="Resume change" />);
+
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /close|cerrar/i })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: /confirm/i }));
+    expect(onConfirm).toHaveBeenCalledOnce();
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
   it("calls onCancel when cancel button is clicked", async () => {
     const handleCancel = vi.fn();
     const handleClose = vi.fn();

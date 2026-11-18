@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import ConfirmDialog from "../../../../../../components/ConfirmDialog";
 import type { CashScope, CashMovement, CashMutationOutcome } from "../../../../infrastructure/cashTypes";
 import { useCashMovement, useCashMutation } from "../../../../infrastructure/useCashServices";
-import { CashMutationFeedback, isCashVersionConflict } from "./CashEditors";
+import { isCashVersionConflict } from "./CashEditors";
 import { cashMovementName } from "./cashLabels";
 
 interface Props {
@@ -41,21 +41,18 @@ export function CashActivityDialog({ scope, movement, disabled, onClose }: Props
       message={t("business:cash.confirm_movement_activity", { name: cashMovementName(reviewed, t) })}
       confirmText={t(desired ? "business:action_activate" : "business:action_deactivate")}
       onClose={() => { if (!mutation.pending && !mutation.busy && !current.isFetching) onClose(); }}
-      onConfirm={() => track(() => mutation.submit({
-        operation: "movement_update",
-        id: movement.id,
-        fields: { expected_version: reviewed.version, is_active: desired },
-      }))}
+      onConfirm={() => track(() => mutation.pending
+        ? mutation.retry()
+        : mutation.submit({
+          operation: "movement_update",
+          id: movement.id,
+          fields: { expected_version: reviewed.version, is_active: desired },
+        }))}
       showCloseButton={!mutation.pending}
-      isLoading={mutation.pending || mutation.busy || current.isFetching}
+      isLoading={mutation.busy || current.isFetching}
+      cancelDisabled={mutation.pending}
       confirmDisabled={disabled || conflict}
     >
-      <CashMutationFeedback
-        outcome={mutation.outcome}
-        busy={disabled || mutation.busy}
-        onRecover={() => track(mutation.recover)}
-        onRetry={() => track(mutation.retry)}
-      />
       {conflict && (
         <Alert variant="outlined" severity="warning" action={
           <Button onClick={() => void review()} disabled={disabled || current.isFetching}>

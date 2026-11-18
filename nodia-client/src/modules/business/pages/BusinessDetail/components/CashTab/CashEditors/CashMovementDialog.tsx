@@ -22,7 +22,6 @@ import {
   useCashMutation,
 } from "../../../../../infrastructure/useCashServices";
 import { CashActiveField, CashCategoryFields, CashTextField } from "./CashEditorFields";
-import { CashMutationFeedback } from "./CashMutationFeedback";
 import {
   categoryFields,
   changedFields,
@@ -97,7 +96,8 @@ export function CashMovementDialog({ scope, editor, onClose, disabled = false }:
   const details = useCashMovement(scope, base?.id, false);
   const activityLocked = movement.busy || movement.pending;
   const quickLocked = category.busy || category.pending;
-  const locked = quickOpen ? quickLocked : activityLocked;
+  const currentMutation = quickOpen ? category : movement;
+  const locked = currentMutation.busy || currentMutation.pending;
   const conflict = isCashVersionConflict(movement.outcome);
 
   const candidates = new Map(
@@ -221,7 +221,8 @@ export function CashMovementDialog({ scope, editor, onClose, disabled = false }:
         ? "business:cash.movement_new_income"
         : "business:cash.movement_new_expense";
   const disableSubmit =
-    locked || disabled || (!quickOpen && (conflict || (!!selectedId && !canSaveCategory)));
+    currentMutation.busy || disabled ||
+    (!currentMutation.pending && !quickOpen && (conflict || (!!selectedId && !canSaveCategory)));
   const movementDisabled = activityLocked || disabled;
 
   return (
@@ -236,7 +237,16 @@ export function CashMovementDialog({ scope, editor, onClose, disabled = false }:
           <Button variant="outlined" onClick={handleClose} disabled={locked}>
             {t("core:cancel")}
           </Button>
-          <Button variant="contained" type="submit" form={formId} disabled={disableSubmit}>
+          <Button
+            variant="contained"
+            type={currentMutation.pending ? "button" : "submit"}
+            form={formId}
+            disabled={disableSubmit}
+            onClick={currentMutation.pending ? () => {
+              if (quickOpen) void category.retry().then(acceptCategory);
+              else void movement.retry().then(acceptMovement);
+            } : undefined}
+          >
             {t("core:save")}
           </Button>
         </>
@@ -257,16 +267,6 @@ export function CashMovementDialog({ scope, editor, onClose, disabled = false }:
               hideActivity
             />
           </EditorForm>
-          <CashMutationFeedback
-            outcome={category.outcome}
-            busy={category.busy || disabled}
-            onRecover={() => {
-              void category.recover().then(acceptCategory);
-            }}
-            onRetry={() => {
-              void category.retry().then(acceptCategory);
-            }}
-          />
         </>
       ) : (
         <>
@@ -318,12 +318,12 @@ export function CashMovementDialog({ scope, editor, onClose, disabled = false }:
             }}
             noValidate
           >
-            <Typography component="p" variant="body2" color="text.secondary">
-              {t("business:cash.type")} ·{" "}
-              <strong>
-                {t(type === "income" ? "business:cash.income" : "business:cash.expense")}
-              </strong>
-            </Typography>
+            {base && (
+              <Typography component="p" variant="body2" color="text.secondary">
+                {t("business:cash.type")} ·{" "}
+                <strong>{t(`business:cash.${type}`)}</strong>
+              </Typography>
+            )}
             <CategoryPickerRow>
               <Controller
                 control={movementForm.control}
@@ -414,6 +414,7 @@ export function CashMovementDialog({ scope, editor, onClose, disabled = false }:
               label={t("business:description_label")}
               disabled={movementDisabled}
               multiline
+              required={false}
             />
             <Controller
               control={movementForm.control}
@@ -427,16 +428,6 @@ export function CashMovementDialog({ scope, editor, onClose, disabled = false }:
               )}
             />
           </EditorForm>
-          <CashMutationFeedback
-            outcome={movement.outcome}
-            busy={movement.busy || disabled}
-            onRecover={() => {
-              void movement.recover().then(acceptMovement);
-            }}
-            onRetry={() => {
-              void movement.retry().then(acceptMovement);
-            }}
-          />
         </>
       )}
     </BaseModal>

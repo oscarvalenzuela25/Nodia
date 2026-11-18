@@ -4,7 +4,7 @@
   "document_id": "businesses.market-shopping-lists",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 2,
+  "revision": 3,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
@@ -78,6 +78,9 @@ recoge el flujo nativo, el contrato y las pruebas por entorno.
 
 Las operaciones se usan en **Negocios → Market → Listas**. La ficha registra
 el contexto de la función nativa y sigue como candidata a publicación.
+Market agrupa también **Proveedores**, **Productos** y **Facturas**. La
+búsqueda por nombre queda encima de la tabla, con la misma presentación
+de los listados de Productos y Proveedores.
 
 ## Datos mínimos y resolución de dudas
 

@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { CashCategoryFields } from "../../pages/BusinessDetail/components/CashTab/CashEditors/CashEditorFields";
-import { CashMutationFeedback } from "../../pages/BusinessDetail/components/CashTab/CashEditors/CashMutationFeedback";
 import { categoryFields, type CategoryFields } from "../../pages/BusinessDetail/components/CashTab/CashEditors/fields";
 import type { CashCategory, CashMutationOutcome, CashScope } from "../../infrastructure/cashTypes";
 import { useCashMutation } from "../../infrastructure/useCashServices";
@@ -47,22 +46,22 @@ export function QuickCashCategoryForm({ scope, onCreated, onCancel, children }: 
     locked,
     onClose,
     content: (
-      <>
-        <QuickCategoryFields id={formId} noValidate onSubmit={(event) => { void save(event); }}>
-          <CashCategoryFields control={form.control} disabled={locked} hideActivity />
-        </QuickCategoryFields>
-        <CashMutationFeedback
-          busy={mutation.busy}
-          outcome={mutation.outcome}
-          onRecover={() => { void mutation.recover().then(apply); }}
-          onRetry={() => { void mutation.retry().then(apply); }}
-        />
-      </>
+      <QuickCategoryFields id={formId} noValidate onSubmit={(event) => { void save(event); }}>
+        <CashCategoryFields control={form.control} disabled={locked} hideActivity />
+      </QuickCategoryFields>
     ),
     actions: (
       <>
         <Button variant="outlined" disabled={locked} onClick={onClose}>{t("core:cancel")}</Button>
-        <Button variant="contained" type="submit" form={formId} disabled={locked}>{t("core:save")}</Button>
+        <Button
+          variant="contained"
+          type={mutation.pending ? "button" : "submit"}
+          form={formId}
+          disabled={mutation.busy}
+          onClick={mutation.pending ? () => { void mutation.retry().then(apply); } : undefined}
+        >
+          {t("core:save")}
+        </Button>
       </>
     ),
   });

@@ -11,8 +11,9 @@ export class CreateCashCategoryDto {
   @IsString()
   name: string;
 
+  @ValidateIf((_object, value) => value !== undefined)
   @IsString()
-  description: string;
+  description?: string;
 
   @ValidateIf((_object, value) => value !== undefined)
   @IsBoolean()

@@ -38,9 +38,10 @@ texto seleccionable.
 - [BusinessDetail](../../nodia-client/src/modules/business/pages/BusinessDetail/BusinessDetail.tsx)
   resuelve secciones por query param. El destino estable es
   `/business/:id?section=lists`, visible como **Listas** dentro de **Market**.
-  **Market** agrupa navegación del negocio y **Productos** conserva su destino
-  `section=products`. La autoridad viene del módulo canónico `/business`,
-  la sesión y el negocio abierto.
+  **Market** agrupa **Proveedores**, **Productos**, **Facturas** y **Listas**,
+  en ese orden. Conservan los destinos `section=providers`,
+  `section=products`, `section=invoices` y `section=lists`. La autoridad
+  viene del módulo canónico `/business`, la sesión y el negocio abierto.
 - [Catálogo de productos](../../nodia-server/src/product/entities/product.entity.ts)
   expone identidad, nombre, negocio, unidad y actividad. Reutilizar su lectura
   paginada y su selector, acotados al negocio actual. Enviar IDs de producto
@@ -194,3 +195,27 @@ La CI del SHA que se promocione debe completar ambas comprobaciones. El CD
 verifica el ledger y el prefijo histórico del artefacto operativo antes de
 aplicar la migración. La comprobación funcional posterior abre **Negocios →
 Market → Listas** con un actor autorizado en el entorno de destino.
+
+## 9. Ajustes visuales de Market — 2026-11-18
+
+La pestaña Listas adopta el buscador por encima de la tabla y el panel
+de tabla con paginación de los listados de Productos y Proveedores. Se
+conservan las tarjetas móviles y la misma consulta paginada. Todas las
+pestañas del detalle tienen icono en las barras de navegación. Facturas
+muestra el total de la página visible a la derecha del botón Filtro.
+El filtro de variación de precio de Productos ofrece subidas y bajadas.
+Estos son ajustes de presentación y navegación de las operaciones vigentes.
+Chrome comprobó las cuatro pestañas, los iconos, la búsqueda encima de la
+tabla y la alineación de Facturas a 1088 px. A 390 px, el enlace directo a
+Listas conservó su selección y la página no desbordó horizontalmente.
+
+La siguiente revisión visual usa el nombre de la pestaña como título
+visible y conserva el nombre accesible de la región. La acción de actividad
+queda al extremo derecho del grupo. El editor centra los controles de cada
+partida y limita el alto del listado con desplazamiento propio. El drawer
+mantiene el nombre y progreso a la vista y permite marcar desde toda la
+fila, con cantidades legibles y el estado marcado distinguible. El impacto
+se concentra en la presentación y los controles de Client.
+Chrome verificó el orden de acciones y un borrador de ocho partidas con
+desplazamiento interno en escritorio y a 390 px. El drawer mostró el
+progreso en su cabecera y una zona de marcado de ancho completo.

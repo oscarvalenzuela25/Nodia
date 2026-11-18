@@ -203,7 +203,15 @@ function snapshotCommand(command: CashMutationCommand): CashMutationCommand {
   return structuredClone(command);
 }
 
-function notifyReceipt(receipt: CashReceipt) {
+function isCashCrud(operation: CashMutationCommand["operation"]) {
+  return operation.startsWith("category_") || operation.startsWith("movement_");
+}
+
+function notifyReceipt(receipt: CashReceipt, cashCrud: boolean) {
+  if (cashCrud && receipt.status !== "committed" && receipt.status !== "rejected") {
+    sileo.info({ title: i18n.t("business:cash.save_unconfirmed") });
+    return;
+  }
   switch (receipt.status) {
     case "committed":
       sileo.success({ title: i18n.t("business:cash_saved") });
@@ -262,6 +270,7 @@ export function useCashMutation(scope: CashScope) {
     action: "submit" | "recover" | "retry",
   ): Promise<CashMutationOutcome | undefined> => {
     const previous = currentState?.outcome;
+    const cashCrud = isCashCrud(entry.command.operation);
     lock.current = entry;
     setState({ owner, busy: true, pending: true, outcome: previous });
     const finish = (outcome: CashMutationOutcome) => {
@@ -270,37 +279,48 @@ export function useCashMutation(scope: CashScope) {
       setState({ owner, busy: false, pending, outcome });
       return outcome;
     };
-    try {
-      const receipt =
-        action === "recover"
-          ? await getCashReceipt(entry.scope.businessId, entry.requestKey, entry.command)
-          : await mutateAsync(entry);
+    const accept = (receipt: CashReceipt) => {
       if (receipt.status === "committed" && hasCashScope(entry.scope)) {
         invalidateCash(client, entry.scope, entry.command.operation);
       }
       if (!isCurrent()) return;
-      notifyReceipt(receipt);
+      notifyReceipt(receipt, cashCrud);
       return finish(receipt);
+    };
+    const readReceipt = () => getCashReceipt(entry.scope.businessId, entry.requestKey, entry.command);
+    const verifyWrite = async (): Promise<CashReceipt | undefined> => {
+      if (!isCurrent() || !canRequest(entry.scope)) return;
+      try {
+        return await readReceipt();
+      } catch {
+        // The original write's outcome remains unknown until a later confirmation.
+      }
+    };
+    try {
+      const receipt = action === "recover" ? await readReceipt() : await mutateAsync(entry);
+      return accept(cashCrud && action !== "recover" && receipt.status === "processing"
+        ? (await verifyWrite()) ?? receipt
+        : receipt);
     } catch (error) {
       if (!isCurrent()) return;
       const invalidCommand = error instanceof CashCommandValidationError ? error : undefined;
+      const response = isAxiosError<{ message?: unknown }>(error) ? error.response : undefined;
+      const status = invalidCommand?.statusCode ?? response?.status;
+      // An error on replay cannot override a previously uncertain commit.
+      const definitive = action === "submit" && status !== undefined &&
+        status >= 400 && status < 500 && status !== 408;
+      const observed = cashCrud && action !== "recover" && !definitive
+        ? await verifyWrite()
+        : undefined;
+      if (observed?.status === "committed" || observed?.status === "rejected") return accept(observed);
+      if (!isCurrent()) return;
       if (invalidCommand) {
         sileo.error({
           title: i18n.t("core:server_error_toast"),
           description: i18n.t(invalidCommand.message),
         });
       } else notifyHttpError(error);
-      const response = isAxiosError<{ message?: unknown }>(error) ? error.response : undefined;
-      const status = invalidCommand?.statusCode ?? response?.status;
-      // Only an initial, definitive client error can prove failure here. An
-      // error on replay cannot override a previously uncertain commit.
-      if (
-        action === "submit" &&
-        status !== undefined &&
-        status >= 400 &&
-        status < 500 &&
-        status !== 408
-      ) {
+      if (definitive) {
         const message = response?.data?.message;
         return finish({
           request_key: entry.requestKey,
@@ -315,7 +335,7 @@ export function useCashMutation(scope: CashScope) {
           },
         });
       }
-      return finish({ request_key: entry.requestKey, status: "unavailable" });
+      return finish(observed ?? { request_key: entry.requestKey, status: "unavailable" });
     } finally {
       if (lock.current === entry) lock.current = null;
     }

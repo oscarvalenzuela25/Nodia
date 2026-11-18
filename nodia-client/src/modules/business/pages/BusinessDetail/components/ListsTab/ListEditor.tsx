@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, Box, Button, LinearProgress, Stack, Tooltip, Typography } from "@mui/material";
+import { Alert, Box, Button, LinearProgress, Tooltip, Typography } from "@mui/material";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,7 @@ import { useHasListScope, useShoppingListCatalog, useShoppingListDetail } from "
 import type { ShoppingListScope } from "./infrastructure/useServices";
 import { editorValues, listCommand, listDraftSchema } from "./listDraft";
 import type { ListEditorValues } from "./listDraft";
-import { EditorFields, EditorProductRow, TouchIconButton } from "./styles";
+import { EditorFields, EditorProductHeader, EditorProductList, EditorProductRow, TouchIconButton } from "./styles";
 import { useListEditor } from "./useListEditor";
 
 type EditorProps = {
@@ -53,6 +53,7 @@ function EditorForm({ scope, detail, readCurrent, onClose, restricted }: Omit<Ed
   const editorId = useId();
   const nameId = `${editorId}-name`;
   const productId = `${editorId}-product`;
+  const productList = useRef<HTMLUListElement>(null);
   const [step, setStep] = useState(detail ? "items" : "name");
   const [baseline, setBaseline] = useState(detail);
   const [removeProductId, setRemoveProductId] = useState<string>();
@@ -78,6 +79,9 @@ function EditorForm({ scope, detail, readCurrent, onClose, restricted }: Omit<Ed
     const product = catalog.products.find(candidate => candidate.id === id);
     if (!product || locked || productIds.has(product.id) || fields.length >= maxListItems) return;
     append({ product_id: product.id, name: product.name, quantity: "1", available: true }, { shouldFocus: false });
+    requestAnimationFrame(() => {
+      if (productList.current) productList.current.scrollTop = productList.current.scrollHeight;
+    });
   };
 
   const close = () => {
@@ -181,12 +185,12 @@ function EditorForm({ scope, detail, readCurrent, onClose, restricted }: Omit<Ed
             {t("business:market_lists.item_limit", { count: maxListItems })}
           </Typography>}
           {!fields.length && <Typography variant="body2" color="text.secondary">{t("business:market_lists.empty_items")}</Typography>}
-          {!!fields.length && <Stack component="ul" sx={{ p: 0, m: 0, listStyle: "none" }}>
-            <EditorProductRow aria-hidden="true">
+          {!!fields.length && <EditorProductList ref={productList} tabIndex={0} aria-label={t("business:market_lists.items_and_quantities")}>
+            <EditorProductHeader aria-hidden="true">
               <Typography variant="caption" color="text.secondary">{t("business:tab_products")}</Typography>
               <Typography variant="caption" color="text.secondary">{t("business:market_lists.quantity")}</Typography>
               <Box sx={{ width: 44 }} />
-            </EditorProductRow>
+            </EditorProductHeader>
             {fields.map((item, index) => <EditorProductRow key={item.id}>
               <Box sx={{ minWidth: 0, overflowWrap: "anywhere" }}>
                 <Typography variant="body2">{item.name}</Typography>
@@ -218,7 +222,7 @@ function EditorForm({ scope, detail, readCurrent, onClose, restricted }: Omit<Ed
                 </span>
               </Tooltip>
             </EditorProductRow>)}
-          </Stack>}
+          </EditorProductList>}
         </>}
       </EditorFields>
     </BaseModal>

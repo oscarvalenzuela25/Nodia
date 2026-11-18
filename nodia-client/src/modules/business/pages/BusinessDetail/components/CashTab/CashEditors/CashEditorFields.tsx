@@ -37,6 +37,7 @@ export function CashTextField<Fields extends FieldValues>({
   label,
   disabled,
   multiline,
+  required = true,
   autoFocus,
   type,
 }: {
@@ -45,6 +46,7 @@ export function CashTextField<Fields extends FieldValues>({
   label: string;
   disabled: boolean;
   multiline?: boolean;
+  required?: boolean;
   autoFocus?: boolean;
   type?: "date" | "amount";
 }) {
@@ -68,7 +70,7 @@ export function CashTextField<Fields extends FieldValues>({
           inputMode={type === "amount" ? "numeric" : undefined}
           error={!!fieldState.error}
           helperText={fieldState.error?.message && t(fieldState.error.message)}
-          required
+          required={required}
         />
       )}
     />
@@ -100,6 +102,7 @@ export function CashCategoryFields({
         label={t("business:description_label")}
         disabled={disabled}
         multiline
+        required={false}
       />
       {!hideActivity && (
         <Controller

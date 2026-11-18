@@ -25,6 +25,18 @@ const invoiceMovement: CashMovement = {
 };
 
 describe("Cash records row/card actions", () => {
+  it("places category before the description and labels the displayed value", () => {
+    render(<CashRecords rows={[invoiceMovement]} hasSnapshot mobile={false} loading={false} disabled={false}
+      formatDate={(date) => date} onEdit={vi.fn()} onToggle={vi.fn()} />);
+    const table = within(screen.getByRole("table"));
+    const headers = table.getAllByRole("columnheader").map((cell) => cell.textContent);
+    expect(headers.slice(2, 5)).toEqual(["Categoría", "Descripción u origen", "Valor"]);
+    const cells = table.getAllByRole("cell");
+    expect(cells[2]).toHaveTextContent(invoiceMovement.category.name);
+    expect(cells[3]).toHaveTextContent(cashMovementName(invoiceMovement, i18n.t));
+    expect(cells[4]).toHaveTextContent("CLP");
+  });
+
   it.each([false, true])("offers invoice editing and the same activity callback (mobile=%s)", async (mobile) => {
     const onEdit = vi.fn();
     const onToggle = vi.fn();

@@ -41,7 +41,7 @@ export default function CashMonthlyCards({ businessId }: { businessId: string })
                 <KpiCard>
                   <Box>
                     <KpiTop>
-                      <KpiTitle as="h3" sx={{ mb: 0 }}>{t(title)}</KpiTitle>
+                      <KpiTitle as="h3" sx={{ m: 0 }}>{t(title)}</KpiTitle>
                       <Icon aria-hidden color={color} fontSize="small" />
                     </KpiTop>
                     {month && <Typography variant="caption" color="text.secondary">{month}</Typography>}
