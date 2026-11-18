@@ -25,6 +25,7 @@ export type SelectSingleInputProps = {
   helperText?: string;
   fullWidth?: boolean;
   clearable?: boolean;
+  fullSizeClear?: boolean;
   "data-testid"?: string;
   dataTestId?: string;
 };

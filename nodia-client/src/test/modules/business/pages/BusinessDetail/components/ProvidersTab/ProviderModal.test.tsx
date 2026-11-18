@@ -86,8 +86,14 @@ describe("ProviderModal Component", () => {
     });
     const codeInstructionsInput = screen
       .getByTestId("provider-field-code-instructions-input")
-      .querySelector("textarea, input")!;
-    await user.type(codeInstructionsInput, "Tomar el valor de la izquierda");
+      .querySelector("textarea")!;
+    const instructionLines = [
+      "Tomar el valor de la izquierda",
+      "Conservar los ceros iniciales",
+      "Ignorar el nombre del producto",
+      "Revisar la segunda columna si está vacío",
+    ];
+    await user.type(codeInstructionsInput, instructionLines.join("{enter}"));
 
     // Enter packages column
     const packagesInput = screen.getByTestId("provider-field-packages-input").querySelector("input")!;
@@ -107,7 +113,7 @@ describe("ProviderModal Component", () => {
       fields: {
         code: {
           value: "COD_ARTICULO",
-          instructions: "Tomar el valor de la izquierda",
+          instructions: instructionLines.join("\n"),
         },
         packages: {
           value: "CAJAS",

@@ -20,6 +20,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
+import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -27,10 +28,12 @@ import GroupAddOutlinedIcon from "@mui/icons-material/GroupAddOutlined";
 import KeyboardArrowUpOutlinedIcon from "@mui/icons-material/KeyboardArrowUpOutlined";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { Skeleton } from "boneyard-js/react";
-import { useIsMutating } from "@tanstack/react-query";
+import { useIsMutating, useQuery } from "@tanstack/react-query";
 
 import useAuth from "../../../../hooks/useAuth";
+import useAuthStore from "../../../../store/authStore";
 import { HeaderCardSkeleton } from "../../../../components/skeletons";
+import QueryErrorAlert from "../../../../components/QueryErrorAlert";
 import BusinessModal from "../Business/components/BusinessModal";
 import BusinessCollaboratorModal from "../Business/components/BusinessCollaboratorModal";
 import {
@@ -47,6 +50,7 @@ import ProvidersTab from "./components/ProvidersTab";
 import InvoicesTab from "./components/InvoicesTab";
 import CollaboratorsTab from "./components/CollaboratorsTab";
 import SalesWorkspace from "./components/SalesWorkspace";
+import type { CashScope } from "../../infrastructure/cashTypes";
 import type { SaleSection } from "../../infrastructure/salesTypes";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 
@@ -68,6 +72,7 @@ import {
 
 const sections = [
   { value: "overview", label: "business:tab_overview", icon: DashboardOutlinedIcon },
+  { value: "cash", label: "business:tab_cash", icon: AccountBalanceWalletOutlinedIcon },
   { value: "providers", label: "business:tab_providers", icon: StorefrontOutlinedIcon },
   { value: "products", label: "business:tab_products", icon: Inventory2OutlinedIcon },
   { value: "invoices", label: "business:tab_invoices", icon: ReceiptLongOutlinedIcon },
@@ -77,19 +82,47 @@ const sections = [
   { value: "collaborators", label: "business:tab_collaborators", icon: PeopleOutlinedIcon },
 ] as const;
 
+function CashSectionEntry(scope: CashScope) {
+  const { t } = useTranslation("business");
+  const section = useQuery({
+    queryKey: ["business-cash-section-code"],
+    queryFn: () => import("./CashSection"),
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: false,
+  });
+
+  if (!section.data) {
+    return section.isError ? (
+      <QueryErrorAlert isError isFetching={section.isFetching} onRetry={section.refetch} />
+    ) : (
+      <LinearProgress aria-label={t("business:tab_cash")} />
+    );
+  }
+  const CashSection = section.data.default;
+  return <CashSection {...scope} />;
+}
+
 const BusinessDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const sessionVersion = useAuthStore((state) => state.sessionVersion);
   const { t } = useTranslation(["business", "core"]);
   const mobile = useMediaQuery(useTheme().breakpoints.down("sm"));
 
   const [sectionParams, setSectionParams] = useSearchParams();
   const activeSection = sectionParams.get("section") ?? "overview";
-  const activeTab = Math.max(0, sections.findIndex((section) => section.value === activeSection));
-  const selectedSection = sections[activeTab].value;
+  const selectedSection = sections.find((section) => section.value === activeSection)?.value ?? "overview";
   const saleSection: SaleSection | null = selectedSection === "pos" || selectedSection === "sales" || selectedSection === "reports" ? selectedSection : null;
-  const setActiveTab = (index: number) => setSectionParams((params) => { params.set("section", sections[index]?.value ?? "overview"); return params; });
+  const selectSection = (value: unknown) => {
+    const section = sections.find((candidate) => candidate.value === value);
+    if (!section) return;
+    setSectionParams((params) => {
+      params.set("section", section.value);
+      return params;
+    });
+  };
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCollaboratorModalOpen, setIsCollaboratorModalOpen] = useState(false);
   const [collapsedHeaders, setCollapsedHeaders] = useState<Record<string, boolean>>({});
@@ -119,8 +152,8 @@ const BusinessDetail: FC = () => {
   const isMutating = useIsMutating() > 0;
   const isBusy = isLoading || isFetching || isMutating;
 
-  const handleTabChange = (_event: SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
+  const handleTabChange = (_event: SyntheticEvent, newValue: unknown) => {
+    selectSection(newValue);
   };
 
   const handleUpdateSubmit = async (data: BusinessFormData) => {
@@ -276,9 +309,9 @@ const BusinessDetail: FC = () => {
 
           {/* Embedded Navigation Tabs */}
           <TabsWrapper>
-            {mobile ? <SelectSingleInput label={t("business:pos.section")} clearable={false} value={selectedSection} onChange={(value) => setActiveTab(sections.findIndex((section) => section.value === value))} disabled={isBusy} options={sections.map((section) => ({ value: section.value, label: t(section.label) }))} /> : <StyledTabs
+            {mobile ? <SelectSingleInput label={t("business:pos.section")} clearable={false} value={selectedSection} onChange={selectSection} disabled={isBusy} options={sections.map((section) => ({ value: section.value, label: t(section.label) }))} /> : <StyledTabs
               orientation="horizontal"
-              value={activeTab}
+              value={selectedSection}
               onChange={handleTabChange}
               variant="scrollable"
               scrollButtons="auto"
@@ -288,6 +321,7 @@ const BusinessDetail: FC = () => {
                 const count = sectionCounts[section.value];
                 return <StyledTab
                   key={section.value}
+                  value={section.value}
                   icon={Icon ? <Icon sx={{ fontSize: 18 }} /> : undefined}
                   disabled={isBusy}
                   iconPosition="start"
@@ -310,17 +344,17 @@ const BusinessDetail: FC = () => {
           {selectedSection === "overview" && (
             <OverviewTab
               businessId={business.id}
-              onSwitchTab={(tabIdx) => setActiveTab(tabIdx)}
+              onOpenInvoices={() => selectSection("invoices")}
               onOpenNewProvider={() => {
-                setActiveTab(1);
+                selectSection("providers");
                 setDirectNewProviderOpen(true);
               }}
               onOpenNewProduct={() => {
-                setActiveTab(2);
+                selectSection("products");
                 setDirectNewProductOpen(true);
               }}
               onOpenNewInvoice={() => {
-                setActiveTab(3);
+                selectSection("invoices");
                 setDirectNewInvoiceOpen(true);
               }}
             />
@@ -351,6 +385,15 @@ const BusinessDetail: FC = () => {
           )}
 
           {saleSection && <SalesWorkspace key={`${business.id}:${user?.id ?? ""}`} businessId={business.id} businessName={business.name} section={saleSection} />}
+
+          {selectedSection === "cash" && user?.id && (
+            <CashSectionEntry
+              key={`${business.id}:${user.id}:${sessionVersion}`}
+              businessId={business.id}
+              actorId={user.id}
+              sessionVersion={sessionVersion}
+            />
+          )}
 
           {selectedSection === "collaborators" && (
             <CollaboratorsTab

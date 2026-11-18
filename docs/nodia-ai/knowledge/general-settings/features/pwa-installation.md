@@ -4,7 +4,7 @@
   "document_id": "general-settings.pwa-installation",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 5,
+  "revision": 6,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
@@ -35,10 +35,11 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-16",
+    "checked_on": "2026-11-17",
     "evidence_paths": [
       "docs/evidence/pwa-001-local-20261113.md",
-      "docs/evidence/pages-public-convergence-20261114.md"
+      "docs/evidence/pages-public-convergence-20261114.md",
+      "docs/mvp/103-pwa-progressive-implementation-plan.md"
     ],
     "notes": "Local static assets, build, auth unit regressions and CI/CD checks verified. Chrome/Edge persistent profiles return no manifest/installability errors; browser mode only, without installation or standalone auth. No device or production acceptance. Installation belongs to the user's browser and operating system; no AI tool applies. Favicon follow-up: Client build/types,31 Linux PWA/artifact checks without skips and10 built assets verified; visual comparison of existing PNG192/32 and common vector. No deployment or personal-cache/installation verification; plan103 section13 records scope. User acceptance and functional closure on2026-11-16 are recorded in plan103 section15; the confirmation does not identify platform/version/device or establish execution of every AC01–AC12 scenario. Earlier technical limits are preserved."
   },
@@ -47,6 +48,13 @@
 ---
 
 # Instalación de Nodia y evolución PWA — candidata
+
+## Actualizar información desde el avatar
+
+El menú del avatar ofrece **Actualizar información** encima de **Cerrar sesión**.
+Recarga la página actual con su URL completa. Es una acción del navegador que
+la persona inicia desde la PWA o la pestaña. Ver
+[plan103 §16](../../../../mvp/103-pwa-progressive-implementation-plan.md#16-recargar-la-página-desde-el-avatar--2026-11-17).
 
 ## Qué resuelve y qué significa
 

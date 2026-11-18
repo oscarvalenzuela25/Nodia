@@ -4,7 +4,7 @@
   "document_id": "businesses.product-price-calculator-and-invoice-binding",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 15,
+  "revision": 17,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -24,6 +24,10 @@
     {
       "path": "docs/mvp/89-module-access-and-user-data-scope.md",
       "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/invoice/use-case/get-invoice-selectable-models.use-case.ts",
+      "kind": "implementation"
     },
     {
       "path": "nodia-server/src/product/entities/product.entity.ts",
@@ -193,6 +197,11 @@ los selectores de producto/factura mantienen todos los proveedores según ámbit
 No deducir uso OCR de mapeos, actividad, nombre ni credencial. CSVv2 añade flag
 opcional final; false se conserva y omitirlo en legado no desactiva un update.
 
+La altura de los cinco campos de instrucciones OCR en el formulario de
+proveedores se ajusta al texto y el cuerpo del modal concentra el
+desplazamiento. Impacto exclusivamente visual en Client. El texto, los
+mapeos y su interpretación en OCR conservan el mismo contrato.
+
 Folio/código de factura es opcional, máximo255 y nullable. Blanco se envía como
 null u omitido en alta multipart; update omitido conserva y null limpia. Ausencia
 se muestra como «Sin folio», conservando su ID real. Fecha de emisión empieza en
@@ -326,6 +335,7 @@ La retirada del porcentaje requiere respaldo/migración verificados antes de la 
 | 1 | Solicitud del 2026-11-06, plan94 §35 y ADR095 propuesto | Sustituye cálculo bidireccional de §23; retira el campo de contratos activos. Ficha draft/planned/unregistered, approval:null; no altera cuerpos aprobados ni autoriza nuevas capacidades. |
 | 2 | Implementación local, regresiones, SQL aislado y CUA sintética; R11/R28 adoptados y QA de lectura verificada | Draft/partial/unregistered y approval:null;44cuerpos aprobados y46fragmentos intactos, sin nueva herramienta o publicación. |
 | 6 | Identidad/cierre OCR, conflictos409 y GET de recuperación; primera cancelación R13 confirmada, fixR14 del header | R12/R31/R14 activos; cancelación y cierre R14 confirmados, extracción final validada sin guardado comercial. ADR096 propuesto y ficha sin aprobación/publicación. |
+| 17 | Altura automática en los campos de instrucciones OCR de proveedores, comprobada en Chromium a 320 y 1280 px | Ajuste visual. El texto enviado y la interpretación de los mapeos conservan el mismo contrato. |
 
 ## Comprobación y adopción — 2026-11-06
 
@@ -398,3 +408,10 @@ El editor de alias conserva el nombre de factura y sólo modifica el borrador.
 Nuevos/existentes sin alias requieren revisión; alias existente se conserva.
 Todos los comandos se prevalidan antes del primer POST, sin declarar atomicidad
 global. Ver [ficha candidata](product-alias-and-code-completeness.md).
+
+## Selección OCR con el módulo Negocios — 2026-11-17
+
+El formulario consulta modelos por conexión y modo exactos dentro del módulo
+Negocios. El resultado público se limita a opciones del selector. Una lectura
+exitosa de modelos acredita descubrimiento, y la inferencia tiene su propia
+verificación. Ver [plan94 §44](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#44-modelos-ocr-con-acceso-de-negocios--2026-11-17).

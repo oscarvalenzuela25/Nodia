@@ -4,11 +4,11 @@
   "document_id": "general-settings.ai-connection-settings-ui",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 1,
+  "revision": 2,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Presentation and authenticated observation fixes implemented locally; no new tool, deployment or provider qualification."
+    "notes": "Consulta y presentación autenticadas implementadas localmente. El topbar de Negocios consulta una proyección mínima del predeterminado. La gestión de conexiones pertenece a Administración de IA. Disponibilidad de sesión, clave guardada e inferencia conservan significados distintos."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Ajustes Generales conforme AGENTS",
@@ -16,6 +16,14 @@
     {
       "path": "docs/mvp/ai-provider-feature-contract.md",
       "kind": "specification"
+    },
+    {
+      "path": "docs/features/ai-providers/topbar-mode-health.md",
+      "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/ai-provider/use-case/get-ai-provider-topbar-status.use-case.ts",
+      "kind": "implementation"
     },
     {
       "path": "nodia-client/src/modules/generalSettings/pages/AiProviders/components/ProviderDetail/ProviderDetail.tsx",
@@ -31,9 +39,10 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-12",
+    "checked_on": "2026-11-17",
     "evidence_paths": [
-      "docs/mvp/ai-provider-feature-contract.md"
+      "docs/mvp/ai-provider-feature-contract.md",
+      "docs/features/ai-providers/topbar-mode-health.md"
     ],
     "notes": "Synthetic HTTP/component tests and browser fixture; production OAuth, backend configuration and real provider availability not established."
   },
@@ -42,6 +51,12 @@
 ---
 
 # Ajustes de conexión IA: modelos ausentes y consulta de estado
+
+Con Negocios, el topbar muestra API key y Agentic del predeterminado mediante
+una lectura mínima. Administración de IA permite abrir la configuración.
+«Actualizar estado de IA» vuelve a consultar la observación. «Actualizar
+información» del avatar recarga la página. Ver
+[estado de IA para Negocios](../../../../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17).
 
 Una conexión puede existir sin modelos disponibles. En Gemini, Agentic/API key
 ocultan los controles de potencia cuando no hay modelos, conservando preferencias

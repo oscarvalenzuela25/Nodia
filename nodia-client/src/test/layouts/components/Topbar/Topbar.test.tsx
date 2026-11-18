@@ -11,7 +11,9 @@ import { logoutSession } from "../../../../modules/auth/infrastructure/services"
 
 vi.mock("../../../../modules/auth/infrastructure/services", () => ({ loginWithGoogle: vi.fn(), logoutSession: vi.fn() }));
 vi.mock("@react-oauth/google", () => ({ googleLogout: vi.fn() }));
-vi.mock("../../../../layouts/components/Topbar/components/AiProviderIndicators", () => ({ default: () => <div role="group" aria-label="AI indicators" /> }));
+vi.mock("../../../../layouts/components/Topbar/components/AiProviderIndicators", () => ({
+  default: ({ canManageAi }: { canManageAi: boolean }) => <div role="group" aria-label="AI indicators" data-can-manage-ai={canManageAi} />,
+}));
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 
 const renderTopbar = () => render(<MemoryRouter><Topbar onDrawerToggle={vi.fn()} /></MemoryRouter>);
@@ -41,6 +43,19 @@ describe("Topbar", () => {
     expect(screen.queryByRole("group", { name: "AI indicators" })).not.toBeInTheDocument();
   });
 
+  it("mounts read-only AI status for the canonical Commerce module in any menu group", () => {
+    signIn();
+    useAuthStore.setState({ expiresAt: Date.now() + 60_000 });
+    const context = { roles: [], actions: [], modules: [{ module_group_key: "custom", translates: [], modules: [{ key: "commerce", link: "/business", translates: [] }] }] };
+    useGeneralSettingsStore.getState().setContext(context);
+    const { rerender } = renderTopbar();
+    expect(screen.getByRole("group", { name: "AI indicators" })).toHaveAttribute("data-can-manage-ai", "false");
+
+    useGeneralSettingsStore.getState().setContext({ ...context, modules: [] });
+    rerender(<MemoryRouter><Topbar onDrawerToggle={vi.fn()} /></MemoryRouter>);
+    expect(screen.queryByRole("group", { name: "AI indicators" })).not.toBeInTheDocument();
+  });
+
   it("honors super_admin bypass without an action or module assignment", () => {
     signIn();
     useAuthStore.setState({ expiresAt: Date.now() + 60000 });
@@ -54,6 +69,18 @@ describe("Topbar", () => {
     useGeneralSettingsStore.getState().setContext({ ...context, roles: ["admin"], modules: [] });
     rerender(<MemoryRouter><Topbar onDrawerToggle={vi.fn()} /></MemoryRouter>);
     expect(screen.queryByRole("group", { name: "AI indicators" })).not.toBeInTheDocument();
+  });
+
+  it("offers refreshing the current page just before sign-out in the account menu", async () => {
+    signIn();
+    renderTopbar();
+
+    await userEvent.click(screen.getByRole("button", { name: "Abrir menú de cuenta" }));
+
+    const refresh = screen.getByRole("menuitem", { name: "Actualizar información" });
+    expect(refresh).toHaveFocus();
+    await userEvent.keyboard("{ArrowDown}");
+    expect(screen.getByRole("menuitem", { name: "Cerrar sesión" })).toHaveFocus();
   });
 
   it("shows the Google avatar and clears session, permissions, persist and cache on logout", async () => {

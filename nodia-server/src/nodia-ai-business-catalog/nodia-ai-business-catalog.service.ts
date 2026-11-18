@@ -21,12 +21,14 @@ export class NodiaAiBusinessCatalogService {
     manager: EntityManager,
     resource: BusinessCatalogResource,
     id: string,
+    lock = true,
   ): Promise<NodiaAiJsonObject | null> {
-    if (resource === 'businesses') return this.business(manager, id, true);
+    if (resource === 'businesses') return this.business(manager, id, lock ? true : null);
+    const suffix = lock ? ' FOR UPDATE' : '';
     const rows: NodiaAiJsonObject[] = await manager.query(
       resource === 'products'
-        ? 'SELECT id::text,business_id::text,provider_id::text,code,barcode,name,cost_price,cost_price_tax,sale_price,offer_price,is_offer_enabled,has_stock,version,stock,is_active,updated_at::text FROM products WHERE id=$1 FOR UPDATE'
-        : 'SELECT id::text,product_id::text,code,barcode,name,cost_price,cost_price_tax,sale_price,offer_price,is_offer_enabled,has_stock,product_version,stock,updated_at::text FROM product_logs WHERE id=$1 FOR UPDATE',
+        ? `SELECT id::text,business_id::text,provider_id::text,code,barcode,name,cost_price,cost_price_tax,sale_price,offer_price,is_offer_enabled,has_stock,version,stock,is_active,updated_at::text FROM products WHERE id=$1${suffix}`
+        : `SELECT id::text,product_id::text,code,barcode,name,cost_price,cost_price_tax,sale_price,offer_price,is_offer_enabled,has_stock,product_version,stock,updated_at::text FROM product_logs WHERE id=$1${suffix}`,
       [id],
     );
     return rows[0] ?? null;

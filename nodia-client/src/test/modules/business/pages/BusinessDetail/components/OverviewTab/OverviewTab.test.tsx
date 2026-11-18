@@ -183,7 +183,7 @@ describe("OverviewTab Component", () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
-        onSwitchTab={vi.fn()}
+        onOpenInvoices={vi.fn()}
         onOpenNewProvider={vi.fn()}
         onOpenNewProduct={vi.fn()}
         onOpenNewInvoice={vi.fn()}
@@ -225,7 +225,7 @@ describe("OverviewTab Component", () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
-        onSwitchTab={vi.fn()}
+        onOpenInvoices={vi.fn()}
         onOpenNewProvider={vi.fn()}
         onOpenNewProduct={vi.fn()}
         onOpenNewInvoice={vi.fn()}
@@ -257,7 +257,7 @@ describe("OverviewTab Component", () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
-        onSwitchTab={vi.fn()}
+        onOpenInvoices={vi.fn()}
         onOpenNewProvider={vi.fn()}
         onOpenNewProduct={vi.fn()}
         onOpenNewInvoice={vi.fn()}
@@ -281,7 +281,7 @@ describe("OverviewTab Component", () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
-        onSwitchTab={vi.fn()}
+        onOpenInvoices={vi.fn()}
         onOpenNewProvider={vi.fn()}
         onOpenNewProduct={vi.fn()}
         onOpenNewInvoice={vi.fn()}
@@ -306,7 +306,7 @@ describe("OverviewTab Component", () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
-        onSwitchTab={vi.fn()}
+        onOpenInvoices={vi.fn()}
         onOpenNewProvider={vi.fn()}
         onOpenNewProduct={vi.fn()}
         onOpenNewInvoice={vi.fn()}
@@ -336,7 +336,7 @@ describe("OverviewTab Component", () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
-        onSwitchTab={vi.fn()}
+        onOpenInvoices={vi.fn()}
         onOpenNewProvider={vi.fn()}
         onOpenNewProduct={vi.fn()}
         onOpenNewInvoice={vi.fn()}
@@ -361,7 +361,7 @@ describe("OverviewTab Component", () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
-        onSwitchTab={vi.fn()}
+        onOpenInvoices={vi.fn()}
         onOpenNewProvider={vi.fn()}
         onOpenNewProduct={vi.fn()}
         onOpenNewInvoice={vi.fn()}
@@ -385,7 +385,7 @@ describe("OverviewTab Component", () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
-        onSwitchTab={vi.fn()}
+        onOpenInvoices={vi.fn()}
         onOpenNewProvider={vi.fn()}
         onOpenNewProduct={vi.fn()}
         onOpenNewInvoice={vi.fn()}
@@ -412,7 +412,7 @@ describe("OverviewTab Component", () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
-        onSwitchTab={vi.fn()}
+        onOpenInvoices={vi.fn()}
         onOpenNewProvider={vi.fn()}
         onOpenNewProduct={vi.fn()}
         onOpenNewInvoice={vi.fn()}

@@ -19,6 +19,7 @@ import { CreateAiProviderUseCase } from './use-case/create-ai-provider.use-case.
 import { UpdateAiProviderUseCase } from './use-case/update-ai-provider.use-case.js';
 import { GetSelectableModelsUseCase } from './use-case/get-selectable-models.use-case.js';
 import { GetAiProvidersHealthUseCase } from './use-case/get-ai-providers-health.use-case.js';
+import { GetAiProviderTopbarStatusUseCase } from './use-case/get-ai-provider-topbar-status.use-case.js';
 import { GetSupportedAiProvidersUseCase } from './use-case/get-supported-ai-providers.use-case.js';
 import { GetAiProviderCatalogUseCase } from './use-case/get-ai-provider-catalog.use-case.js';
 import { CreateAiProviderCatalogUseCase } from './use-case/create-ai-provider-catalog.use-case.js';
@@ -76,6 +77,7 @@ import { ExecuteCodexInvoiceUseCase } from './use-case/execute-codex-invoice.use
     UpdateAiProviderUseCase,
     GetSelectableModelsUseCase,
     GetAiProvidersHealthUseCase,
+    GetAiProviderTopbarStatusUseCase,
     GetSupportedAiProvidersUseCase,
     GetAiProviderCatalogUseCase,
     CreateAiProviderCatalogUseCase,

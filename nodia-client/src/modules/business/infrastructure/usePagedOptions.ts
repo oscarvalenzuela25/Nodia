@@ -13,12 +13,12 @@ const useSearch = () => {
   return { search: debouncedSearch, setSearch };
 };
 
-export const usePagedProviderOptions = (businessId: string, enabled = true, options: { useOcrOnly?: boolean } = {}) => {
+export const usePagedProviderOptions = (businessId: string, enabled = true, options: { useOcrOnly?: boolean; actorScope?: readonly [string, number] } = {}) => {
   const { isSessionActive } = useAuth();
   const { search, setSearch } = useSearch();
   const useOcrOnly = options.useOcrOnly === true;
   const query = useInfiniteQuery({
-    queryKey: ["providers", "options", businessId, search, useOcrOnly],
+    queryKey: ["providers", "options", businessId, search, useOcrOnly, ...(options.actorScope ?? [])],
     initialPageParam: 1,
     queryFn: ({ pageParam }) => getProviders({ page: pageParam, limit: 50, q: { business_id_eq: businessId, name_cont: search || undefined, ...(useOcrOnly ? { use_ocr_eq: true } : {}), s: "name asc" } }),
     getNextPageParam: (page) => page.meta.page < page.meta.total_pages ? page.meta.page + 1 : undefined,

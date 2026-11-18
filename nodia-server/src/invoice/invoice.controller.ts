@@ -1,6 +1,10 @@
 import {
+  BadRequestException,
   Controller,
   Get,
+  Header,
+  HttpStatus,
+  PayloadTooLargeException,
   Post,
   Put,
   Body,
@@ -17,6 +21,7 @@ import { UpdateInvoiceDto } from './dto/update-invoice.dto.js';
 import { GetInvoicesDto } from './dto/get-invoices.dto.js';
 import { AnalyzeInvoiceDto } from './dto/analyze-invoice.dto.js';
 import { VerifyIaProvidersQueryDto } from './dto/verify-ia-providers-query.dto.js';
+import { GetInvoiceSelectableModelsQueryDto } from './dto/get-invoice-selectable-models-query.dto.js';
 import { GetAllInvoicesUseCase } from './use-case/get-all-invoices.use-case.js';
 import { GetInvoiceByIdUseCase } from './use-case/get-invoice-by-id.use-case.js';
 import { GetInvoiceViewUrlUseCase } from './use-case/get-invoice-view-url.use-case.js';
@@ -24,6 +29,10 @@ import { CreateInvoiceUseCase } from './use-case/create-invoice.use-case.js';
 import { UpdateInvoiceUseCase } from './use-case/update-invoice.use-case.js';
 import { AnalyzeInvoiceUseCase } from './use-case/analyze-invoice.use-case.js';
 import { VerifyIaProvidersUseCase } from './use-case/verify-ia-providers.use-case.js';
+import {
+  GetInvoiceSelectableModelsUseCase,
+  type InvoiceSelectableModelsResult,
+} from './use-case/get-invoice-selectable-models.use-case.js';
 import type { Response } from 'express';
 import { AnalysisObservationsUseCase } from './use-case/analysis-observations.use-case.js';
 import { ReserveAnalysisObservationDto } from './dto/reserve-analysis-observation.dto.js';
@@ -33,6 +42,13 @@ import {
 } from './analysis-observation.interceptor.js';
 import type { AuthRequest } from '../auth/types/auth.types.js';
 import { actorReference } from '../authorization/authority-transaction.js';
+import {
+  hasIdentifiedInvoiceFields,
+  parseLegacyInvoiceBody,
+} from './dto/cash-invoice-command.js';
+import { SaveCashInvoiceUseCase } from './use-case/save-cash-invoice.use-case.js';
+import { InvoiceOcrConfirmationInterceptor } from './invoice-ocr-confirmation.interceptor.js';
+import { MAX_INVOICE_FILE_BYTES } from './invoice-file-validation.js';
 
 @Controller(['invoice', 'invoices'])
 export class InvoiceController {
@@ -44,12 +60,14 @@ export class InvoiceController {
     private readonly updateInvoiceUseCase: UpdateInvoiceUseCase,
     private readonly analyzeInvoiceUseCase: AnalyzeInvoiceUseCase,
     private readonly verifyIaProvidersUseCase: VerifyIaProvidersUseCase,
+    private readonly getInvoiceSelectableModelsUseCase: GetInvoiceSelectableModelsUseCase,
     private readonly observations: AnalysisObservationsUseCase,
+    private readonly saveCashInvoice: SaveCashInvoiceUseCase,
   ) {}
 
   @Get()
   findAll(@Query() queryParams: GetInvoicesDto, @Req() request: AuthRequest) {
-    return this.getAllInvoicesUseCase.execute(
+    return this.getAllInvoicesUseCase.executeNative(
       queryParams,
       actorReference(request.auth),
     );
@@ -58,6 +76,14 @@ export class InvoiceController {
   @Get(['verify-ia-providers', 'verify-ia-provider'])
   verifyIaProviders(@Query() query: VerifyIaProvidersQueryDto) {
     return this.verifyIaProvidersUseCase.execute(undefined, query.mode);
+  }
+
+  @Get('selectable-models')
+  @Header('Cache-Control', 'no-store')
+  getSelectableModels(
+    @Query() query: GetInvoiceSelectableModelsQueryDto,
+  ): Promise<InvoiceSelectableModelsResult[]> {
+    return this.getInvoiceSelectableModelsUseCase.execute(query);
   }
 
   @Get(':id/view-url')
@@ -95,7 +121,10 @@ export class InvoiceController {
 
   @Get(':id')
   findOne(@Param('id') id: string, @Req() request: AuthRequest) {
-    return this.getInvoiceByIdUseCase.execute(id, actorReference(request.auth));
+    return this.getInvoiceByIdUseCase.executeNative(
+      id,
+      actorReference(request.auth),
+    );
   }
 
   @Post('analyze')
@@ -125,36 +154,90 @@ export class InvoiceController {
     );
   }
 
+  @Post('ocr-confirmations')
+  @Header('Cache-Control', 'no-store')
+  @UseInterceptors(InvoiceOcrConfirmationInterceptor)
+  async confirmOcr(
+    @Body() body: unknown,
+    @UploadedFile() file: Express.Multer.File | undefined,
+    @Req() request: AuthRequest,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    if (
+      !request.is('multipart/form-data') ||
+      !file ||
+      !body ||
+      typeof body !== 'object' ||
+      Object.keys(body).length !== 1 ||
+      !Object.hasOwn(body, 'command')
+    )
+      throw new BadRequestException('business:cash_invalid_command');
+    if (file.size > MAX_INVOICE_FILE_BYTES)
+      throw new PayloadTooLargeException('business:cash_invalid_command');
+    const result = await this.saveCashInvoice.confirmOcr(
+      (body as { command: unknown }).command,
+      file,
+      actorReference(request.auth),
+    );
+    if (result.status === 'processing') response.status(HttpStatus.ACCEPTED);
+    return result;
+  }
+
   @Post()
+  @Header('Cache-Control', 'no-store')
   @UseInterceptors(
     FileInterceptor('file', {
       limits: { fileSize: 10 * 1024 * 1024, files: 1, fields: 12 },
     }),
   )
-  create(
+  async create(
     @UploadedFile() file: Express.Multer.File | undefined,
-    @Body() createInvoiceDto: CreateInvoiceDto,
+    @Body() body: unknown,
     @Req() request: AuthRequest,
+    @Res({ passthrough: true }) response: Response,
   ) {
-    return this.createInvoiceUseCase.execute(
-      createInvoiceDto,
-      file,
-      undefined,
-      actorReference(request.auth),
-    );
+    const actor = actorReference(request.auth);
+    if (hasIdentifiedInvoiceFields(body)) {
+      const result = await this.saveCashInvoice.create(
+        body,
+        !!request.is('multipart/form-data'),
+        file,
+        actor,
+      );
+      if (result.status === 'processing') response.status(HttpStatus.ACCEPTED);
+      return result;
+    }
+    const { version: _version, ...invoice } =
+      await this.createInvoiceUseCase.execute(
+        await parseLegacyInvoiceBody(body, CreateInvoiceDto),
+        file,
+        undefined,
+        actor,
+      );
+    return invoice;
   }
 
   @Put(':id')
-  update(
+  @Header('Cache-Control', 'no-store')
+  async update(
     @Param('id') id: string,
-    @Body() updateInvoiceDto: UpdateInvoiceDto,
+    @Body() body: unknown,
     @Req() request: AuthRequest,
+    @Res({ passthrough: true }) response: Response,
   ) {
-    return this.updateInvoiceUseCase.execute(
-      id,
-      updateInvoiceDto,
-      undefined,
-      actorReference(request.auth),
-    );
+    const actor = actorReference(request.auth);
+    if (hasIdentifiedInvoiceFields(body)) {
+      const result = await this.saveCashInvoice.update(id, body, actor);
+      if (result.status === 'processing') response.status(HttpStatus.ACCEPTED);
+      return result;
+    }
+    const { version: _version, ...invoice } =
+      await this.updateInvoiceUseCase.execute(
+        id,
+        await parseLegacyInvoiceBody(body, UpdateInvoiceDto),
+        undefined,
+        actor,
+      );
+    return invoice;
   }
 }

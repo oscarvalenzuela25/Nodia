@@ -25,6 +25,29 @@ import {
   scopeBusinessQuery,
 } from '../business-access/business-access.js';
 import { assertInvoiceFileScope } from './invoice-file-scope.js';
+import { assertInvoiceCashCompatibility } from './invoice-cash-compatibility.js';
+
+const invoiceFields = [
+  'business_id',
+  'provider_id',
+  'code',
+  'total_amount',
+  'path_storage',
+  'data',
+  'is_active',
+] as const;
+
+type InvoiceWriteSnapshot = Pick<
+  Invoice,
+  'id' | 'version' | (typeof invoiceFields)[number]
+> & {
+  updated_at: string;
+};
+
+export interface PreparedInvoiceUpdate {
+  before: Invoice;
+  candidate: Invoice;
+}
 
 @Injectable()
 export class InvoiceService {
@@ -36,6 +59,7 @@ export class InvoiceService {
   async findAllInvoices(
     { page = 1, limit = 10, all = false, includes = true, q }: GetInvoicesDto,
     actor?: ActorReference,
+    includeCash = false,
   ): Promise<GetInvoicesResponse> {
     const scope = await resolveBusinessAccess(
       this.invoiceRepository.manager,
@@ -43,6 +67,7 @@ export class InvoiceService {
     );
     const qb = this.invoiceRepository.createQueryBuilder('invoice');
     validateRansackEnvelope(q);
+    if (includeCash) qb.addSelect('invoice.cash_expense');
 
     if (includes) {
       qb.leftJoinAndSelect('invoice.business', 'business').leftJoinAndSelect(
@@ -116,15 +141,24 @@ export class InvoiceService {
     id: string,
     manager?: EntityManager,
     actor?: ActorReference,
+    includeCash = false,
   ): Promise<Invoice> {
     const repository =
       manager?.getRepository(Invoice) ?? this.invoiceRepository;
     // Validate the actor even when the requested record does not exist.
     await resolveBusinessAccess(manager ?? repository.manager, actor);
-    const invoice = await repository.findOne({
-      where: { id },
-      relations: { business: true, provider: true },
-    });
+    const invoice = includeCash
+      ? await repository
+          .createQueryBuilder('invoice')
+          .addSelect('invoice.cash_expense')
+          .leftJoinAndSelect('invoice.business', 'business')
+          .leftJoinAndSelect('invoice.provider', 'provider')
+          .where('invoice.id = :id', { id })
+          .getOne()
+      : await repository.findOne({
+          where: { id },
+          relations: { business: true, provider: true },
+        });
     if (!invoice) {
       throw new NotFoundException(`Invoice with ID "${id}" not found`);
     }
@@ -163,27 +197,23 @@ export class InvoiceService {
         lock: true,
       });
       assertInvoiceFileScope(dto.path_storage, dto.business_id);
-      await this.lockReferences(
+      const provider = await this.lockProvider(
         manager,
-        [dto.business_id],
-        dto.business_id,
         dto.provider_id ?? null,
       );
+      this.assertProviderScope(
+        dto.provider_id ?? null,
+        provider,
+        dto.business_id,
+      );
       const repository = manager.getRepository(Invoice);
-      const invoice = repository.create({ ...dto, code: normalizeInvoiceCode(dto.code) });
+      const invoice = repository.create({
+        ...dto,
+        code: normalizeInvoiceCode(dto.code),
+      });
       return await repository.save(invoice);
-    } catch (error: any) {
-      if (error?.code === '23503') {
-        throw new BadRequestException(
-          'Referenced business or provider does not exist',
-        );
-      }
-      if (error?.code === '22P02') {
-        throw new BadRequestException(
-          'Invalid input syntax for ID or numeric field',
-        );
-      }
-      throw error;
+    } catch (error) {
+      this.mapDatabaseError(error);
     }
   }
 
@@ -197,67 +227,119 @@ export class InvoiceService {
       return this.invoiceRepository.manager.transaction((transaction) =>
         this.updateInvoice(id, dto, transaction, actor),
       );
+    const update = await this.prepareInvoiceUpdate(manager, id, dto, actor);
+    return this.applyInvoiceUpdate(manager, update);
+  }
+
+  /** A receipt-backed caller fixes the resolved source business and performs Cash sync. */
+  async prepareInvoiceUpdate(
+    manager: EntityManager,
+    id: string,
+    dto: UpdateInvoiceDto,
+    actor?: ActorReference,
+    expectedBusinessId?: string,
+  ): Promise<PreparedInvoiceUpdate> {
     this.requireTransaction(manager);
     try {
       await assertBusinessesAccess(manager, actor, [], { lock: true });
-      const before = await this.referenceSnapshot(manager, id);
-      if (!before)
+      const first = await this.referenceSnapshot(manager, id);
+      if (!first)
         throw new NotFoundException(`Invoice with ID "${id}" not found`);
-      const destination = dto.business_id ?? before.business_id;
+      if (expectedBusinessId && first.business_id !== expectedBusinessId)
+        throw new ConflictException('business:cash_version_conflict');
+      const destination = (dto.business_id ?? first.business_id).toLowerCase();
+      const transfer = destination !== first.business_id;
       const providerId =
-        dto.provider_id === undefined ? before.provider_id : dto.provider_id;
+        dto.provider_id === undefined ? first.provider_id : dto.provider_id;
+      const lockedBusiness = expectedBusinessId ?? destination;
       await assertBusinessesAccess(
         manager,
         actor,
-        [before.business_id, destination],
+        [first.business_id, lockedBusiness],
         { lock: true },
       );
-      if (dto.path_storage !== undefined || destination !== before.business_id)
-        assertInvoiceFileScope(
-          dto.path_storage ?? before.path_storage,
-          destination,
-        );
-      await this.lockReferences(
+      // Receipt-backed edits never transfer. A rejected transfer needs no
+      // destination provider lock and can still check source history.
+      const provider = await this.lockProvider(
         manager,
-        [before.business_id, destination],
-        destination,
-        providerId,
+        expectedBusinessId && transfer ? null : providerId,
       );
       const locked = await this.referenceSnapshot(manager, id, true);
-      if (!isDeepStrictEqual(before, locked))
+      if (!locked || !isDeepStrictEqual(first, locked))
         throw new ConflictException(
-          'Invoice changed. Reload it before retrying.',
+          expectedBusinessId
+            ? 'business:cash_version_conflict'
+            : 'Invoice changed. Reload it before retrying.',
         );
-      const repository = manager.getRepository(Invoice);
-      const invoice = await this.findOneInvoice(id, manager, actor);
+
+      if (!expectedBusinessId || transfer)
+        await assertInvoiceCashCompatibility(manager, locked, {
+          business_id: destination,
+          total_amount:
+            dto.total_amount === undefined
+              ? locked.total_amount
+              : dto.total_amount,
+          data: dto.data === undefined ? locked.data : dto.data,
+        });
+      if (expectedBusinessId && transfer)
+        throw new BadRequestException('business:cash_invalid_command');
+      this.assertProviderScope(providerId, provider, destination);
+      if (dto.path_storage !== undefined || transfer)
+        assertInvoiceFileScope(
+          dto.path_storage ?? locked.path_storage,
+          destination,
+        );
+
+      const before = await this.findOneInvoice(id, manager, actor);
+      const candidate = { ...before };
+      for (const field of invoiceFields) {
+        if (dto[field] !== undefined)
+          Object.assign(candidate, { [field]: dto[field] });
+      }
       // TypeORM gives a hydrated relation precedence over its scalar join column.
       // A requested FK change must not be overwritten by the previous object.
+      candidate.provider_id = provider?.id ?? null;
       if (
-        dto.provider_id !== undefined &&
-        (dto.provider_id === null || dto.provider_id !== invoice.provider_id)
+        candidate.provider_id !== before.provider_id ||
+        dto.provider_id === null
       )
-        Object.assign(invoice, {
-          provider: dto.provider_id === null ? null : undefined,
+        Object.assign(candidate, {
+          provider: candidate.provider_id === null ? null : undefined,
         });
-      if (
-        dto.business_id !== undefined &&
-        dto.business_id !== invoice.business_id
-      )
-        Object.assign(invoice, { business: undefined });
-      Object.assign(invoice, dto, dto.code !== undefined ? { code: normalizeInvoiceCode(dto.code) } : {});
-      return await repository.save(invoice);
-    } catch (error: any) {
-      if (error?.code === '23503') {
-        throw new BadRequestException(
-          'Referenced business or provider does not exist',
-        );
-      }
-      if (error?.code === '22P02') {
-        throw new BadRequestException(
-          'Invalid input syntax for ID or numeric field',
-        );
-      }
-      throw error;
+      candidate.business_id = destination;
+      if (transfer) Object.assign(candidate, { business: undefined });
+      if (dto.code !== undefined)
+        candidate.code = normalizeInvoiceCode(dto.code);
+      return { before, candidate };
+    } catch (error) {
+      this.mapDatabaseError(error);
+    }
+  }
+
+  async applyInvoiceUpdate(
+    manager: EntityManager,
+    { before, candidate }: PreparedInvoiceUpdate,
+    touchVersion = false,
+  ): Promise<Invoice> {
+    this.requireTransaction(manager);
+    const edited = invoiceFields.some(
+      (field) => !isDeepStrictEqual(before[field], candidate[field]),
+    );
+    if (!edited && !touchVersion) return before;
+    if (before.version >= 2147483647)
+      throw new ConflictException('business:cash_version_conflict');
+    if (!edited) candidate.version = before.version + 1;
+    try {
+      const invoice = await manager.getRepository(Invoice).save(candidate);
+      // A normal column can be advanced by the database even when TypeORM did
+      // not carry it in UPDATE ... RETURNING.
+      const [row] = await manager.query<{ version: number }[]>(
+        'SELECT version FROM invoices WHERE id=$1',
+        [invoice.id],
+      );
+      return Object.assign(invoice, { version: row.version });
+    } catch (error) {
+      this.mapDatabaseError(error);
     }
   }
 
@@ -272,50 +354,54 @@ export class InvoiceService {
     manager: EntityManager,
     id: string,
     lock = false,
-  ): Promise<{
-    business_id: string;
-    provider_id: string | null;
-    path_storage: string;
-  } | null> {
-    const rows: {
-      business_id: string;
-      provider_id: string | null;
-      path_storage: string;
-    }[] = await manager.query(
-      `SELECT id::text,business_id::text,provider_id::text,code,total_amount,path_storage,data,is_active,updated_at::text
+  ): Promise<InvoiceWriteSnapshot | null> {
+    const rows = await manager.query<InvoiceWriteSnapshot[]>(
+      `SELECT id::text,business_id::text,provider_id::text,code,total_amount,path_storage,data,is_active,version,updated_at::text
        FROM invoices WHERE id=$1${lock ? ' FOR UPDATE' : ''}`,
       [id],
     );
     return rows[0] ?? null;
   }
 
-  /** Ownership is checked under the same authority/parent locks as relation integrity. */
-  private async lockReferences(
+  private async lockProvider(
     manager: EntityManager,
-    sourceAndDestination: readonly string[],
-    destination: string,
     providerId: string | null,
   ) {
-    const businesses = [
-      ...new Set(sourceAndDestination.map((value) => value.toLowerCase())),
-    ].sort();
-    const rows: { id: string }[] = await manager.query(
-      'SELECT id::text FROM businesses WHERE id=ANY($1::uuid[]) ORDER BY id FOR SHARE',
-      [businesses],
+    if (providerId === null) return undefined;
+    const [provider] = await manager.query<
+      { id: string; business_id: string }[]
+    >(
+      'SELECT id::text,business_id::text FROM providers WHERE id=$1 FOR SHARE',
+      [providerId],
     );
-    if (rows.length !== businesses.length)
-      throw new BadRequestException('Referenced business does not exist');
+    return provider;
+  }
+
+  private assertProviderScope(
+    providerId: string | null,
+    provider: { business_id: string } | undefined,
+    destination: string,
+  ) {
     if (providerId === null) return;
-    const providers: { id: string; business_id: string }[] =
-      await manager.query(
-        'SELECT id::text,business_id::text FROM providers WHERE id=$1 FOR SHARE',
-        [providerId],
-      );
-    if (!providers[0])
+    if (!provider)
       throw new BadRequestException('Referenced provider does not exist');
-    if (providers[0].business_id.toLowerCase() !== destination.toLowerCase())
+    if (provider.business_id !== destination.toLowerCase())
       throw new BadRequestException(
         'Referenced provider must belong to the invoice business',
       );
+  }
+
+  private mapDatabaseError(error: unknown): never {
+    const code =
+      error && typeof error === 'object' && 'code' in error ? error.code : null;
+    if (code === '23503')
+      throw new BadRequestException(
+        'Referenced business or provider does not exist',
+      );
+    if (code === '22P02')
+      throw new BadRequestException(
+        'Invalid input syntax for ID or numeric field',
+      );
+    throw error;
   }
 }

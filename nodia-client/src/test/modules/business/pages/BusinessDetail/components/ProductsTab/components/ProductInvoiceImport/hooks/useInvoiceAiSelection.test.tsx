@@ -4,8 +4,7 @@ import type { VerifyIaProviderItem } from "../../../../../../../../../../modules
 import { useInvoiceAiSelection } from "../../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/hooks/useInvoiceAiSelection";
 
 const models = vi.hoisted(() => ({ query: vi.fn() }));
-vi.mock("../../../../../../../../../../hooks/useAuth", () => ({ default: () => ({ isSessionActive: true }) }));
-vi.mock("../../../../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/useServices", () => ({ useSelectableModels: models.query }));
+vi.mock("../../../../../../../../../../modules/business/infrastructure/useServices", () => ({ useInvoiceSelectableModels: models.query }));
 const provider: VerifyIaProviderItem = { id: "instance-1", key: "openai", name: "Synthetic", mode: "agentic", active_mode: "agentic",
   is_active: true, use_agentic: true, use_api_key: true, can_use_model: true, fields: {
     agentic: { selected_model: "model-a", thinking_level: "high", thinking_levels: { "model-b": "low" } },
@@ -62,7 +61,7 @@ describe("useInvoiceAiSelection", () => {
   it("can discover choices with no assigned default while keeping inference blocked", () => {
     const unassigned = { ...provider, can_use_model: false, fields: { agentic: {} } };
     const { result } = renderHook(() => useInvoiceAiSelection(unassigned, "agentic", "business-1"));
-    expect(models.query).toHaveBeenCalledWith({ provider_id: "instance-1", mode: "agentic" }, { enabled: true });
+    expect(models.query).toHaveBeenCalledWith({ provider_id: "instance-1", mode: "agentic" });
     expect(result.current.modelOptions.map(item => item.value)).toEqual(["model-a", "model-b"]);
     expect(result.current).toMatchObject({ model: "", canAnalyze: false });
   });
@@ -71,5 +70,11 @@ describe("useInvoiceAiSelection", () => {
     const { result } = renderHook(() => useInvoiceAiSelection(provider, "agentic", "business-1"));
     expect(result.current).toMatchObject({ model: "model-a", modelUnavailable: true, canAnalyze: false });
     expect(result.current.modelOptions.map(item => item.value)).not.toContain("fabricated");
+  });
+
+  it("requires a live model observation even if the fetch is waiting for the network", () => {
+    models.query.mockReturnValue({ ...query, isSuccess: false, isFetching: false, data: undefined });
+    const { result } = renderHook(() => useInvoiceAiSelection(provider, "agentic", "business-1"));
+    expect(result.current).toMatchObject({ model: "model-a", canAnalyze: false });
   });
 });

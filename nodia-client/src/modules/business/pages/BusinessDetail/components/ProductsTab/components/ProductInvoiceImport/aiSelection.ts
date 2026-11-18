@@ -1,5 +1,5 @@
 import { openAiApiReasoningPreferences } from "../../../../../../../generalSettings/pages/AiProviders/infrastructure/modelCards";
-import type { VerifyIaProviderItem, InvoiceAiConnectionMode } from "../../../../../../infrastructure/types";
+import type { VerifyIaProviderItem, InvoiceAiConnectionMode, InvoiceAiModel } from "../../../../../../infrastructure/types";
 
 export type InvoiceAiMode = InvoiceAiConnectionMode;
 
@@ -102,15 +102,6 @@ export const resolveInvoiceAiConfiguration = (
   };
 };
 
-
-export interface InvoiceAiModel {
-  id: string;
-  name?: string;
-  displayName?: string;
-  supportedReasoningEfforts?: string[];
-  inputModalities?: string[] | null;
-  capabilities?: string[];
-}
 
 /** Catalog values are configurable choices, never proof of successful inference. */
 export const getInvoiceAiSelectionOptions = (

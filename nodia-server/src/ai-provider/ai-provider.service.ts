@@ -29,6 +29,17 @@ import { sanitizeProviderFields } from './helpers/supported-providers.helper.js'
 import { resolveAiProviderUpdate } from './use-case/ai-provider-configuration.rules.js';
 import type { DiscoveredModelInfo } from './use-case/sync-ai-provider-models.use-case.js';
 
+type DefaultAiProviderStatus = {
+  id: string;
+  name: string | null;
+  catalogName: string | null;
+  key: string | null;
+  isActive: boolean;
+  use_api_key: boolean;
+  use_agentic: boolean;
+  hasApiKey: boolean;
+};
+
 @Injectable()
 export class AiProviderService {
   constructor(
@@ -118,6 +129,28 @@ export class AiProviderService {
         total_pages,
       },
     };
+  }
+
+  async findDefaultProviderStatus(): Promise<DefaultAiProviderStatus | null> {
+    const status = await this.aiProviderRepository
+      .createQueryBuilder('provider')
+      .leftJoin('provider.catalog', 'catalog')
+      .select('provider.id', 'id')
+      .addSelect('provider.name', 'name')
+      .addSelect('catalog.name', 'catalogName')
+      .addSelect('catalog.key', 'key')
+      .addSelect('provider.is_active', 'isActive')
+      .addSelect('provider.use_api_key', 'use_api_key')
+      .addSelect('provider.use_agentic', 'use_agentic')
+      .addSelect(
+        'EXISTS (SELECT 1 FROM ai_api_keys AS stored_key WHERE stored_key.provider_id = provider.id)',
+        'hasApiKey',
+      )
+      .where('provider.is_default = TRUE')
+      .orderBy('provider.id', 'ASC')
+      .limit(1)
+      .getRawOne<DefaultAiProviderStatus>();
+    return status ?? null;
   }
 
   async findProviderById(id: string): Promise<AiProvider> {

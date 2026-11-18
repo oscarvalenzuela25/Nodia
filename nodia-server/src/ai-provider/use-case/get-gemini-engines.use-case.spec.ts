@@ -50,6 +50,21 @@ describe('GetGeminiEnginesUseCase', () => {
 describe('GetGeminiEnginesUseCase with the microservice status contract', () => {
   afterEach(() => vi.unstubAllGlobals());
 
+  it.each([
+    {},
+    { agentic: { available: 'true', authenticated: true } },
+    { agentic: { available: true } },
+    { agentic: { available: true, has_active_session: 'false' } },
+  ])('keeps malformed HTTP 200 status unknown: %j', async (payload) => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: true, json: async () => payload }),
+    );
+    await expect(
+      new GetGeminiEnginesUseCase(new GeminiService()).execute(),
+    ).resolves.toBeNull();
+  });
+
   it.each([true, false])(
     'does not expose retired Web status (authenticated=%s)',
     async (authenticated) => {

@@ -279,6 +279,11 @@ export interface InvoiceEntity {
   code: string | null;
   total_amount: number;
   path_storage: string;
+  version?: number;
+  cash_expense?: {
+    movement_id: string;
+    category: { id: string; name: string; is_active: boolean };
+  } | null;
   data?: {
     issue_date?: string;
     notes?: string;
@@ -379,6 +384,26 @@ export interface AnalyzeInvoiceParams {
 }
 
 export type InvoiceAiConnectionMode = "agentic" | "api_key";
+
+export interface InvoiceAiModel {
+  id: string;
+  name?: string;
+  displayName?: string;
+  inputModalities?: string[] | null;
+  supportedReasoningEfforts?: string[];
+}
+
+export interface InvoiceSelectableModelsParams {
+  provider_id: string;
+  mode: InvoiceAiConnectionMode;
+}
+
+export type InvoiceSelectableModelsResponse = Array<{
+  providerId: string;
+  mode: InvoiceAiConnectionMode;
+  models_source: "provider" | "unavailable" | "configuration";
+  models: InvoiceAiModel[];
+}>;
 
 export interface VerifyIaProviderItem {
   id: string;

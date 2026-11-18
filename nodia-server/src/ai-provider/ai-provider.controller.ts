@@ -33,6 +33,7 @@ import type { AuthRequest } from '../auth/types/auth.types.js';
 import type { GeminiExecutionEngine } from '../common/ai/ai.types.js';
 import { ManageCodexSessionUseCase } from './use-case/manage-codex-session.use-case.js';
 import { CodexSessionDto } from './dto/codex-session.dto.js';
+import { GetAiProviderTopbarStatusUseCase } from './use-case/get-ai-provider-topbar-status.use-case.js';
 
 @Controller(['ai-provider', 'ai-providers'])
 export class AiProviderController {
@@ -50,6 +51,7 @@ export class AiProviderController {
     private readonly getGeminiEnginesUseCase: GetGeminiEnginesUseCase,
     private readonly manageGeminiAgenticLoginUseCase: ManageGeminiAgenticLoginUseCase,
     private readonly manageCodexSessionUseCase: ManageCodexSessionUseCase,
+    private readonly getAiProviderTopbarStatusUseCase: GetAiProviderTopbarStatusUseCase,
   ) {}
 
   @Get(':id/session')
@@ -200,6 +202,12 @@ export class AiProviderController {
   @Get(['health', 'health-check', 'verify-all'])
   getHealth() {
     return this.getAiProvidersHealthUseCase.execute();
+  }
+
+  @Get('topbar-status')
+  @Header('Cache-Control', 'no-store')
+  getTopbarStatus() {
+    return this.getAiProviderTopbarStatusUseCase.execute();
   }
 
   @Get(['models', 'selectable-models'])

@@ -490,6 +490,7 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
             context.manager,
             this.resourceKey,
             input.id,
+            this.resourceKey !== 'products',
           )))
       )
         await assertBusinessResourcesAccess(
@@ -924,17 +925,46 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
       input.command.business_id !== input.businessId
     )
       invalid();
-    const target =
+    let target =
       this.operation === 'create'
         ? null
-        : await this.store.target(manager, this.resourceKey, input.id!);
+        : await this.store.target(manager, this.resourceKey, input.id!, this.resourceKey !== 'products');
     if (this.operation !== 'create' && !target)
       throw new NotFoundException('Resource not found');
-    if (this.resourceKey === 'products')
+    let productProvider: NodiaAiJsonObject | null = null;
+    if (this.resourceKey === 'products') {
+      if (target && target.business_id !== input.businessId)
+        throw new NotFoundException('Product not found in specified business');
+      const previousProvider = target?.provider_id ?? null;
+      const providerId =
+        input.command.provider_id === undefined
+          ? previousProvider
+          : input.command.provider_id;
+      const providerIds = [...new Set([previousProvider, providerId].filter(
+        (value): value is string => typeof value === 'string',
+      ))].sort((a, b) => BigInt(a) < BigInt(b) ? -1 : 1);
+      // Keep the same provider-before-product order as native and OCR writers.
+      for (const id of providerIds) {
+        const provider = await this.store.provider(manager, id);
+        if (id === providerId) productProvider = provider;
+      }
+      if (
+        providerId !== null &&
+        productProvider?.business_id !== (input.command.business_id ?? input.businessId)
+      )
+        throw new BadRequestException('Provider does not belong to this business');
+      if (target) {
+        const locked = await this.store.target(manager, 'products', input.id!);
+        if (!locked) throw new NotFoundException('Resource not found');
+        if (locked.business_id !== target.business_id || locked.provider_id !== target.provider_id)
+          throw new ConflictException('nodia_ai:preconditions_changed');
+        target = locked;
+      }
       validateCatalogProduct(
         { ...target, ...input.command } as unknown as Partial<Product>,
         this.operation === 'create',
       );
+    }
     const result: NodiaAiJsonObject = { schema_version: 1, target };
     if (this.resourceKey === 'businesses') {
       if (this.operation === 'create') return result;
@@ -1010,27 +1040,10 @@ class BusinessCatalogOperation implements NodiaAiNativeOperation {
       result.product = product;
       destinationBusiness = String(product.business_id);
     } else {
-      if (target && target.business_id !== input.businessId)
-        throw new NotFoundException('Product not found in specified business');
       destinationBusiness = String(
         input.command.business_id ?? input.businessId,
       );
-      const providerId =
-        input.command.provider_id === undefined
-          ? (target?.provider_id ?? null)
-          : input.command.provider_id;
-      const provider =
-        providerId === null
-          ? null
-          : await this.store.provider(manager, String(providerId));
-      if (
-        providerId !== null &&
-        (!provider || provider.business_id !== destinationBusiness)
-      )
-        throw new BadRequestException(
-          'Provider does not belong to this business',
-        );
-      result.provider = provider;
+      result.provider = productProvider;
       if (
         await this.store.duplicateProduct(
           manager,

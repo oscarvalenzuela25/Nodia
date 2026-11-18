@@ -132,7 +132,9 @@ try {
   for (const metadata of db.entityMetadatas) {
     const table = tables.find((value) => value.name === metadata.tableName);
     assert.ok(table, `Missing entity table: ${metadata.tableName}`);
-    for (const column of metadata.columns)
+    for (const column of metadata.columns.filter(
+      ({ isVirtualProperty }) => !isVirtualProperty,
+    ))
       assert.ok(
         table.columns.find((value) => value.name === column.databaseName),
         `Missing column: ${metadata.tableName}.${column.databaseName}`,
@@ -143,7 +145,7 @@ try {
       db.entityMetadatas.every((metadata) =>
         tables.some((table) => table.name === metadata.tableName),
       ),
-    'Every registered entity table and its columns exist',
+    'Every registered entity table and its persisted columns exist',
   );
   const [initial] =
     await db.query(`SELECT (SELECT count(*)::int FROM roles WHERE key='super_admin') AS roles,

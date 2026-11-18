@@ -35,12 +35,21 @@ function fixture() {
     id: business,
     product_id: '3',
   });
+  const selection = {
+    where: vi.fn(() => selection),
+    orderBy: vi.fn(() => selection),
+    setLock: vi.fn(() => selection),
+    getMany: vi.fn(async () => [product]),
+  };
   const products = {
     create: vi.fn((value: object) =>
-      Object.assign(new Product(), { id: '3', ...value }),
+      Object.assign(new Product(), { id: '4', ...value }),
     ),
-    save: vi.fn(async (value: Product) => value),
-    findOne: vi.fn(async () => product),
+    save: vi.fn(async (value: Product) => {
+      if (value.id === product.id) Object.assign(product, value);
+      return value;
+    }),
+    createQueryBuilder: vi.fn(() => selection),
   };
   const logs = {
     create: vi.fn((value: object) =>
@@ -62,10 +71,9 @@ function fixture() {
           },
         ];
       if (sql.includes('FROM products'))
-        return ((parameters?.[0] ?? []) as string[]).map((id) => ({
-          id,
-          business_id: business,
-        }));
+        return ((parameters?.[0] ?? []) as string[]).includes(product.id)
+          ? [{ id: product.id, business_id: product.business_id, provider_id: product.provider_id }]
+          : [];
       return [{ id: business }];
     }),
     getRepository: vi.fn((entity: unknown) =>
@@ -97,6 +105,7 @@ function fixture() {
   );
   return {
     service,
+    selection,
     modules,
     product,
     log,
@@ -249,10 +258,8 @@ describe('Native product writers through their use cases', () => {
       f.manager,
       actor,
     );
-    expect(f.products.findOne).toHaveBeenCalledWith({
-      where: { id: '3' },
-      lock: { mode: 'pessimistic_write' },
-    });
+    expect(f.selection.where).toHaveBeenCalledWith('product.id IN (:...ids)', { ids: ['3'] });
+    expect(f.selection.setLock).toHaveBeenCalledWith('pessimistic_write');
     expect(f.logs.save).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'Renamed', stock: 5, sale_price: 4 }),
     );
@@ -260,7 +267,7 @@ describe('Native product writers through their use cases', () => {
   });
   it('rejects updates to missing targets instead of inserting a new record', async () => {
     const f = fixture();
-    f.products.findOne.mockResolvedValue(null as unknown as Product);
+    f.selection.getMany.mockResolvedValue([]);
     await expect(
       new UpdateProductUseCase(f.service).execute(
         '3',

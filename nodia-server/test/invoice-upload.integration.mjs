@@ -10,9 +10,15 @@ import { Module, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import {
+  businessAccessTestPrincipal,
+  installBusinessAccessFixture,
+} from './fixtures/business-access.fixture.mjs';
 
 const container = `template_invoice_upload_test_${process.pid}_${randomBytes(4).toString('hex')}`;
-const password = randomBytes(20).toString('hex');
+const portOverride = process.env.INVOICE_UPLOAD_TEST_PORT;
+const database = portOverride ? 'invoice_upload_test' : 'invoice_test';
+const password = portOverride ? database : randomBytes(20).toString('hex');
 const docker = (...args) =>
   execFileSync('docker', args, {
     encoding: 'utf8',
@@ -88,6 +94,10 @@ try {
     entityModule,
     journalModule,
     migrationModule,
+    cashCategoriesMigration,
+    cashMovementsMigration,
+    cashLinksMigration,
+    cashIntentsMigration,
   ] = await Promise.all([
     import('../dist/invoice/invoice.controller.js'),
     import('../dist/invoice/use-case/create-invoice.use-case.js'),
@@ -98,6 +108,10 @@ try {
     import('../dist/invoice/entities/invoice.entity.js'),
     import('../dist/invoice/entities/invoice-upload.entity.js'),
     import('../dist/migrations/1791630000000-CreateInvoiceUploads.js'),
+    import('../dist/migrations/1793690000000-CreateBusinessCashCategories.js'),
+    import('../dist/migrations/1793700000000-CreateBusinessCashMovements.js'),
+    import('../dist/migrations/1793710000000-LinkBusinessCashInvoiceExpenses.js'),
+    import('../dist/migrations/1793720000000-LinkInvoiceUploadsToCashAttempts.js'),
   ]);
   const { InvoiceController } = controllerModule;
   const { CreateInvoiceUseCase } = createModule;
@@ -108,48 +122,60 @@ try {
   const { Invoice } = entityModule;
   const { InvoiceUpload } = journalModule;
   const { CreateInvoiceUploads1791630000000: Migration } = migrationModule;
+  const { LinkInvoiceUploadsToCashAttempts1793720000000: CashIntents } =
+    cashIntentsMigration;
 
-  docker(
-    'run',
-    '--detach',
-    '--rm',
-    '--name',
-    container,
-    '--publish',
-    '127.0.0.1::5432',
-    '--env',
-    'POSTGRES_DB=invoice_test',
-    '--env',
-    'POSTGRES_USER=invoice_test',
-    '--env',
-    `POSTGRES_PASSWORD=${password}`,
-    'postgres:16-alpine',
-  );
-  started = true;
-  for (let attempt = 0; attempt < 40; attempt++) {
-    try {
-      docker(
-        'exec',
-        container,
-        'pg_isready',
-        '-h',
-        '127.0.0.1',
-        '-U',
-        'invoice_test',
-      );
-      break;
-    } catch (error) {
-      if (attempt === 39) throw error;
-      await delay(250);
+  let port;
+  if (portOverride) {
+    assert.match(portOverride, /^[1-9][0-9]{0,4}$/);
+    port = Number(portOverride);
+    assert.ok(port <= 65535);
+  } else {
+    docker(
+      'run',
+      '--detach',
+      '--rm',
+      '--name',
+      container,
+      '--publish',
+      '127.0.0.1::5432',
+      '--env',
+      `POSTGRES_DB=${database}`,
+      '--env',
+      `POSTGRES_USER=${database}`,
+      '--env',
+      `POSTGRES_PASSWORD=${password}`,
+      'postgres:16-alpine',
+    );
+    started = true;
+    for (let attempt = 0; attempt < 40; attempt++) {
+      try {
+        docker(
+          'exec',
+          container,
+          'pg_isready',
+          '-h',
+          '127.0.0.1',
+          '-U',
+          database,
+        );
+        break;
+      } catch (error) {
+        if (attempt === 39) throw error;
+        await delay(250);
+      }
     }
+    const mapping = docker('port', container, '5432/tcp');
+    assert.match(mapping, /^127\.0\.0\.1:\d+$/);
+    port = Number(mapping.split(':').at(-1));
   }
   const options = {
     type: 'postgres',
     host: '127.0.0.1',
-    port: Number(docker('port', container, '5432/tcp').split(':').at(-1)),
-    username: 'invoice_test',
+    port,
+    username: database,
     password,
-    database: 'invoice_test',
+    database,
     synchronize: false,
     entities: [
       fileURLToPath(new URL('../dist/**/*.entity.js', import.meta.url)),
@@ -157,9 +183,25 @@ try {
     migrations: [Migration],
   };
   db = await new DataSource(options).initialize();
+  const [identity] =
+    await db.query(`SELECT current_database() AS db, current_user AS username,
+    shobj_description((SELECT oid FROM pg_database WHERE datname=current_database()),'pg_database') AS mark,
+    current_setting('server_version_num')::int/10000 AS major`);
+  assert.equal(identity.db, database);
+  assert.equal(identity.username, database);
+  assert.equal(identity.major, 16);
+  if (portOverride)
+    assert.equal(identity.mark, 'nodia-disposable:invoice-upload');
+  assert.deepEqual(
+    await db.query("SELECT tablename FROM pg_tables WHERE schemaname='public'"),
+    [],
+  );
+  await installBusinessAccessFixture(db);
   await db.query(`
-    CREATE TABLE businesses(id uuid PRIMARY KEY);
-    CREATE TABLE providers(use_ocr boolean NOT NULL DEFAULT false,id bigint PRIMARY KEY);
+    CREATE TABLE providers(
+      use_ocr boolean NOT NULL DEFAULT false,id bigint PRIMARY KEY,
+      business_id uuid NOT NULL REFERENCES businesses(id)
+    );
     CREATE TABLE invoices(
       id bigserial PRIMARY KEY, business_id uuid NOT NULL REFERENCES businesses(id),
       provider_id bigint REFERENCES providers(id), code varchar(255) NOT NULL,
@@ -170,6 +212,20 @@ try {
   `);
   await db.query('INSERT INTO businesses(id) VALUES($1)', [businessId]);
   await db.runMigrations();
+  const applyCashSchema = async (...migrations) => {
+    const runner = db.createQueryRunner();
+    try {
+      for (const migration of migrations) await new migration().up(runner);
+    } finally {
+      await runner.release();
+    }
+  };
+  await applyCashSchema(
+    cashCategoriesMigration.CreateBusinessCashCategories1793690000000,
+    cashMovementsMigration.CreateBusinessCashMovements1793700000000,
+    cashLinksMigration.LinkBusinessCashInvoiceExpenses1793710000000,
+    CashIntents,
+  );
   const unused = Reflect.getMetadata('design:paramtypes', InvoiceController)
     .filter((token) => token !== CreateInvoiceUseCase)
     .map((provide) => ({
@@ -196,7 +252,14 @@ try {
       InvoiceUploadRecoveryWorker,
     ],
   })(InvoiceUploadTestModule);
-  app = await NestFactory.create(InvoiceUploadTestModule, { logger: false });
+  app = await NestFactory.create(InvoiceUploadTestModule, {
+    logger: false,
+    abortOnError: false,
+  });
+  app.use((request, _response, next) => {
+    request.auth = businessAccessTestPrincipal();
+    next();
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -270,7 +333,16 @@ try {
 
   const committedCount = await countInvoices();
   const committedObjects = objects.size;
-  assert.equal((await send({ business_id: randomUUID() })).status, 400);
+  const beforeForeign = storageCalls.length;
+  assert.equal((await send({ business_id: randomUUID() })).status, 404);
+  assert.equal(storageCalls.length, beforeForeign);
+  await db.query(`CREATE FUNCTION reject_invoice_at_insert() RETURNS trigger LANGUAGE plpgsql AS $$
+    BEGIN IF NEW.code = 'SYNTHETIC_FAIL' THEN
+      RAISE foreign_key_violation USING MESSAGE = 'synthetic INSERT failure';
+    END IF; RETURN NEW; END $$;
+    CREATE TRIGGER reject_invoice_at_insert BEFORE INSERT ON invoices
+      FOR EACH ROW EXECUTE FUNCTION reject_invoice_at_insert()`);
+  assert.equal((await send({ code: 'SYNTHETIC_FAIL' })).status, 400);
   assert.equal(await countInvoices(), committedCount);
   assert.equal(
     objects.size,
@@ -306,7 +378,7 @@ try {
   checks++;
 
   rejectDelete = true;
-  assert.equal((await send({ business_id: randomUUID() })).status, 400);
+  assert.equal((await send({ code: 'SYNTHETIC_FAIL' })).status, 400);
   assert.equal(await countInvoices(), committedCount);
   const deferredKey = lastKey;
   assert.equal(objects.has(deferredKey), true);
@@ -328,6 +400,9 @@ try {
   );
   assert.equal((await restartedRecovery.execute(deferredKey)).cleaned, 1);
   assert.equal(objects.has(deferredKey), false);
+  await db.query(
+    'DROP TRIGGER reject_invoice_at_insert ON invoices; DROP FUNCTION reject_invoice_at_insert()',
+  );
   checks++;
 
   // Fail the second write after INSERT, proving both SQL writes roll back.
@@ -476,6 +551,7 @@ try {
     null,
   );
   await db.runMigrations();
+  await applyCashSchema(CashIntents);
   assert.ok(caseCreate instanceof CreateInvoiceUseCase);
   checks++;
   console.log(

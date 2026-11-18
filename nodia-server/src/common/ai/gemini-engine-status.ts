@@ -13,6 +13,8 @@ export const isAgenticSessionActive = (value: unknown): boolean => {
 export const normalizeGeminiEngineStatus = (value: unknown): GeminiDualEngineStatus | null => {
  if (value === null || typeof value !== 'object' || Array.isArray(value)) return null;
  const status = asRecord(value), agentic = asRecord(status.agentic);
+ if (typeof agentic.available !== 'boolean' ||
+     (agentic.available && typeof (agentic.authenticated ?? agentic.has_active_session) !== 'boolean')) return null;
  const quota = observedAgenticQuota({ ...agentic, authenticated: isAgenticSessionActive(agentic) });
  return {
   default_engine: 'agentic',

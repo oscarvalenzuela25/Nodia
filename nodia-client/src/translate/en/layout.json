@@ -47,6 +47,7 @@
   "login": "Login",
   "toggle_drawer": "Toggle drawer",
   "collapse_drawer": "Collapse drawer",
+  "refresh_information": "Refresh information",
   "toggle_theme": "Toggle theme",
   "theme_selector": "Application theme",
   "theme_selector_label": "Choose theme: {{theme}}",
@@ -70,6 +71,6 @@
     "needs_review": "Needs review",
     "unverified": "Unverified; review status",
     "disabled": "Disabled",
-    "disabled_label": "{{provider}} · {{mode}}: {{status}}"
+    "status_label": "{{provider}} · {{mode}}: {{status}}"
   }
 }

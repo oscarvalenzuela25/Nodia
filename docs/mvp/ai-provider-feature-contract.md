@@ -120,6 +120,12 @@ Decisión de UI del 2026-10-13: «Cuenta Codex», sus acciones y cuotas aparecen
 
 ## Indicadores del topbar — 2026-10-08
 
+El ajuste del 2026-11-17 extiende el estado de lectura a Negocios mediante
+un endpoint de proyección mínima. La
+[regla vigente de permisos y UI](../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17)
+sucede el alcance de montaje de los cortes anteriores. La consulta de modelos
+del OCR tiene su contrato en [plan94 §44](94-business-point-of-sale-and-product-refactor.md#44-modelos-ocr-con-acceso-de-negocios--2026-11-17).
+
 Decisión del2026-10-13: Gemini Web dispone de un [visor de login desde Nodia](../features/ai-providers/gemini-web-login-viewer.md), en desarrollo y producción ([ADR-030](../architecture/decisions/ADR-030-gemini-web-login-viewer.md)). Pantalla y entradas limitadas viajan por la API autenticada/`ai:manage`, con ownership en Server y Python, TTL300s y no-store. No publicar FastAPI/VNC ni exportar contraseñas/cookies. Rechazo de Google y aceptación de cuenta real se distinguen de abrir/controlar correctamente el visor; no modificar Gemini Agentic/API ni Codex. Si el intento desaparece, permitir cerrar/reintentar; errores de envío conservan borrador, visor y mensaje visible.
 
 Por decisión del usuario del2026-10-13, el predeterminado muestra únicamente los indicadores de sus modos habilitados, consumiendo la misma caché de salud. Modos apagados se omiten; sin modos habilitados se omite el grupo. Los flags explícitos false prevalecen sobre el modo histórico. OpenAI sin Web habilitado muestra API/Agéntico. Un modo habilitado sigue visible aunque falte su clave o sesión, con estado pendiente. Web/Agéntico en verde exigen sesión disponible/autenticada. Por decisión explícita del usuario del2026-10-12, API en verde significa exclusivamente clave guardada, sin exigir modelo ni inferencia; tooltip «API key configurada», conservado con datos previos ante fallo de reconsulta. El detalle API y conexiones exclusivamente API no muestran chip de estado; Web/Agéntico lo conservan. El health del backend no cambia a saludable por almacenar una clave. El clic abre el ID y pestaña exactos en Ajustes IA. Sin predeterminado o permisos, se omite el grupo. La autorización contempla acción `ai:manage` o rol `super_admin`, además del módulo asignado, conforme al backend. Revalidación no desmonta los iconos; un fallo invalida el verde de las sesiones. Contrato, pruebas y límites: [funcionalidad del topbar](../features/ai-providers/topbar-mode-health.md).
