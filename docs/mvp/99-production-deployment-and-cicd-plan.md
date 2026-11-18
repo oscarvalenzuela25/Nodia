@@ -1782,3 +1782,53 @@ sus protecciones; no hay purga por defecto ni replay de entregas históricas.
 ADR104 sigue propuesto. Evaluación de conocimiento: sólo seguimiento de
 infraestructura, sin capacidad funcional NodiaAI, cambio de autoridad o fichas
 nuevas.
+
+## 34. Fallo de entrega productiva de master b62a9029 — 2026-11-17
+
+La [CI 44206362041](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44206362041)
+pasó para `b62a9029861f34539faa62823472ccce8f5ae567`. El
+[CD 44207632087](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44207632087)
+falló al aplicar el backend tras verificar el artefacto de Client y el
+contrato de consulta de Pages. La publicación de Client quedó omitida.
+El recibo saneado 14385175794, verificado por SHA-256, confirma upload v2
+completo de 216950400 bytes y solicitud de la operación
+`8014c78fc35edcaec2e4cb6658167329`.
+
+El SSH restringido confirmó fase `failed`, `effects_started=true`,
+`migration_requested=true`, `deployment_performed=false` y
+`automatic_retry_allowed=false`. El código seguro del host es
+`host_command_failed_inspect_private_diagnostics`. El receptor reportó
+`blocked=true` y current `backend-d4345ea90eb9-6e5f3d002c88`. Systemd
+confirmó API y worker inactivos. La API pública devolvió HTTP 503 y Client
+HTTP 200, ambos con TLS verificado desde el equipo local.
+
+La causa exacta y el efecto en el esquema quedan pendientes de la inspección
+privada del intento. La copia instalada de `inspect-backend-operation.py`
+coincide por SHA-256 con el helper versionado. La ejecución con `sudo -n`
+requirió autenticación interactiva. El diagnóstico se hizo por lectura de
+GitHub, SSH y HTTPS. La siguiente comprobación es el helper documentado
+para ese ID, sin reintentar la entrega original.
+
+### Corrección del verificador de esquema
+
+En PostgreSQL 16.15 aislado, con un usuario propietario sin privilegios de
+superusuario, se usaron los artefactos Server originales
+`14303846535` (current anterior) y `14383762946` (candidato), con sus SHA-256
+verificados. El historial compilado de 52 migraciones coincidió por nombre,
+timestamp y hashes. El candidato confirmó las cuatro nuevas en una
+transacción, dejando 56 en el ledger. El verificador anterior rechazó el
+esquema después del commit únicamente por `invoices.cash_expense`.
+
+TypeORM marca esa proyección como `isVirtualProperty=true`, así que el
+verificador comprueba las columnas persistentes de cada entidad y conserva
+la exigencia de las columnas físicas de relación marcadas `isVirtual`. Con
+el esquema real del ensayo y 73 entidades, el verificador corregido pasó.
+También rechazó un inventario al que se quitó la columna física
+`invoices.version`. Se alinearon el ensayo de primera instalación y el
+restaurador de Teacher, incluido el hash que este último verifica.
+
+La reproducción aislada acredita el defecto de código. La confirmación del
+diagnóstico privado y del ledger productivo requiere la inspección del
+intento original. La adopción en el VPS requiere actualizar el helper y su
+pin con revisión operativa. El recibo fallido y el bloqueo conservan su
+estado hasta conciliar los efectos productivos.
