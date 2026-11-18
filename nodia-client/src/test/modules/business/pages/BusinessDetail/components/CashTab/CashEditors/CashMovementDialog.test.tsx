@@ -129,19 +129,25 @@ describe("CashMovementDialog", () => {
 
     const user = userEvent.setup();
     const onClose = renderEditor({ mode: "create", type: "income" });
+    expect(screen.queryByText("Ingreso", { exact: true })).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/descripción/i)).not.toBeRequired();
     await user.type(screen.getByLabelText(/importe clp/i), "9999999999999");
     await user.type(screen.getByLabelText(/descripción/i), "Mi borrador de ingreso");
     await user.click(screen.getByRole("button", { name: "Nueva categoría" }));
     expect(screen.getAllByRole("dialog")).toHaveLength(1);
     expect(screen.queryByLabelText(/importe clp/i)).not.toBeInTheDocument();
     await user.type(screen.getByLabelText(/nombre/i), "Caja diaria");
-    await user.type(screen.getByLabelText(/descripción/i), "Cierres de caja");
+    expect(screen.getByLabelText(/descripción/i)).not.toBeRequired();
     const save = screen.getByRole("button", { name: "Guardar" });
     await user.click(save);
     await waitFor(() => expect(sendCashMutation).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(save).toBeEnabled());
     expect(screen.getByLabelText(/nombre/i)).toHaveValue("Caja diaria");
-    expect(screen.getByLabelText(/descripción/i)).toHaveValue("Cierres de caja");
+    expect(screen.getByLabelText(/descripción/i)).toHaveValue("");
+    expect(sendCashMutation).toHaveBeenLastCalledWith(scope.businessId, expect.any(String), {
+      operation: "category_create",
+      fields: { name: "Caja diaria", description: "", is_active: true },
+    });
     expect(onClose).not.toHaveBeenCalled();
 
     await user.click(save);

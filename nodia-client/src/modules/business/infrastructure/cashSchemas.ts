@@ -19,7 +19,7 @@ const categorySummarySchema = z.strictObject({
 });
 export const cashCategorySchema = categorySummarySchema.extend({
   business_id: cashUuidSchema,
-  description: z.string().min(1),
+  description: z.string(),
   version: cashVersionSchema,
 });
 
@@ -39,7 +39,7 @@ export const cashMovementSchema = z
       ...movementBase,
       type: typeSchema,
       source: z.literal("manual"),
-      description: z.string().min(1),
+      description: z.string(),
       invoice: z.null(),
     }),
     z.strictObject({

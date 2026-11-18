@@ -3,7 +3,9 @@ import type { CashMovement } from "../../../../infrastructure/cashTypes";
 import type { CashFilters } from "./cashFilters";
 
 export function cashMovementName(movement: CashMovement, t: TFunction): string {
-  if (movement.source === "manual") return movement.description;
+  if (movement.source === "manual") {
+    return movement.description || t(`business:cash.${movement.type}`);
+  }
   return t("business:cash.invoice_source", {
     code: movement.invoice.code ?? t("business:invoice_without_code"),
   });

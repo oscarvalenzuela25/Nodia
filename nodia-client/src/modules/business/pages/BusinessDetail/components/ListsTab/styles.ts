@@ -8,25 +8,28 @@ export const ListPanel = styled(Paper)(({ theme }) => ({
   borderRadius: TABLE_PANEL_RADIUS,
   border: `1px solid ${theme.palette.divider}`,
   overflow: "hidden",
+  boxShadow: "none",
+  [theme.breakpoints.down("sm")]: {
+    border: 0,
+    backgroundColor: "transparent",
+  },
 }));
 
 export const ListHeading = styled("header")(({ theme }) => ({
+  display: "grid",
+  gap: theme.spacing(2),
+}));
+
+export const ListToolbar = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
+  flexWrap: "wrap",
   gap: theme.spacing(2),
   [theme.breakpoints.down("sm")]: {
     alignItems: "stretch",
     flexDirection: "column",
     "& .MuiButton-root": { width: "100%", minHeight: 44 },
-  },
-}));
-
-export const ListToolbar = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(2),
-  "& > *": { maxWidth: 340 },
-  [theme.breakpoints.down("sm")]: {
-    "& > *": { maxWidth: "none" },
   },
 }));
 
@@ -39,10 +42,12 @@ export const TouchIconButton = styled(IconButton)({
 export const ListMobileCard = styled("li")(({ theme }) => ({
   listStyle: "none",
   border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.spacing(1.5),
+  borderRadius: theme.spacing(2),
+  backgroundColor: theme.palette.background.paper,
+  boxShadow: theme.shadows[1],
   display: "grid",
   gap: theme.spacing(1.5),
-  padding: theme.spacing(1.5),
+  padding: theme.spacing(2),
   minWidth: 0,
   overflowWrap: "anywhere",
 }));

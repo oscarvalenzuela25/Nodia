@@ -37,6 +37,20 @@ describe('Cash movement commands', () => {
     });
   });
 
+  it('uses an empty description when absent on create or blank on update', () => {
+    expect(
+      normalizeCashMovementCreate({ ...create, description: undefined })
+        .description,
+    ).toBe('');
+    expect(
+      normalizeCashMovementUpdate({ ...update, description: '\u0085' }),
+    ).toEqual({
+      ...update,
+      request_key: create.request_key.toLowerCase(),
+      description: '',
+    });
+  });
+
   it.each(['0', '01', '1.0', '+1', '1e2', '1\n', '10000000000000', 1, null])(
     'rejects amount %j outside the canonical decimal domain',
     (amount) => {
@@ -51,7 +65,7 @@ describe('Cash movement commands', () => {
     { type: 'income', amount: '1' },
     { source: 'invoice', is_active: false },
     { category_id: '9223372036854775808' },
-    { description: '\uFEFF\u0085' },
+    { description: null },
     { description: '💰'.repeat(501) },
     { is_active: null },
     { expected_version: '2', amount: '1' },

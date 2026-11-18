@@ -26,6 +26,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
   cancelText,
   additionalActions,
   isLoading = false,
+  cancelDisabled = false,
   confirmDisabled = false,
   size = "sm",
   showCloseButton = true,
@@ -45,7 +46,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
     _event: object,
     reason: "backdropClick" | "escapeKeyDown",
   ) => {
-    if (isLoading) return;
+    if (isLoading || cancelDisabled) return;
     if (reason === "backdropClick" || reason === "escapeKeyDown") {
       return;
     }
@@ -53,7 +54,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
   };
 
   const handleCancel = () => {
-    if (isLoading) return;
+    if (isLoading || cancelDisabled) return;
     if (onCancel) {
       onCancel();
     } else {
@@ -85,7 +86,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
           <IconButton
             aria-label={t("core:close")}
             onClick={onClose}
-            disabled={isLoading}
+            disabled={isLoading || cancelDisabled}
             size="small"
             sx={(theme) => ({
               color: theme.palette.text.secondary,
@@ -122,7 +123,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
         <CancelButton
           variant="contained"
           onClick={handleCancel}
-          disabled={isLoading}
+          disabled={isLoading || cancelDisabled}
         >
           {cancelText ?? t("core:cancel")}
         </CancelButton>

@@ -228,7 +228,6 @@ export const ProductsTab: FC<Props> = ({
     () => [
       { value: "increased", label: t("business:price_change_increased") },
       { value: "decreased", label: t("business:price_change_decreased") },
-      { value: "unchanged", label: t("business:price_change_unchanged") },
     ],
     [t],
   );
@@ -630,7 +629,7 @@ export const ProductsTab: FC<Props> = ({
             options={priceChangeOptions}
             value={draftFilterPriceChange}
             onChange={(vals) =>
-              setDraftFilterPriceChange(vals as PriceChangeStatus[])
+              setDraftFilterPriceChange(vals.filter((value) => value === "increased" || value === "decreased"))
             }
             disabled={isLoading || isFetching}
           />
@@ -719,31 +718,19 @@ export const ProductsTab: FC<Props> = ({
               }}
             />
           )}
-          {appliedFilterPriceChange.map((variation) => {
-            const label =
-              variation === "increased"
-                ? t("business:price_change_increased")
-                : variation === "decreased"
-                  ? t("business:price_change_decreased")
-                  : t("business:price_change_unchanged");
-            return (
+          {priceChangeOptions
+            .filter(({ value }) => appliedFilterPriceChange.some((variation) => variation === value))
+            .map(({ value, label }) => (
               <FilterChips
-                key={`price-change-${variation}`}
-                label={t("business:filter_chips_price_change", {
-                  value: label,
-                })}
+                key={`price-change-${value}`}
+                label={t("business:filter_chips_price_change", { value: label })}
                 onAction={() => {
-                  setAppliedFilterPriceChange((prev) =>
-                    prev.filter((v) => v !== variation),
-                  );
-                  setDraftFilterPriceChange((prev) =>
-                    prev.filter((v) => v !== variation),
-                  );
+                  setAppliedFilterPriceChange((prev) => prev.filter((variation) => variation !== value));
+                  setDraftFilterPriceChange((prev) => prev.filter((variation) => variation !== value));
                   setPage(0);
                 }}
               />
-            );
-          })}
+            ))}
         </ActiveFilters>
       )}
 

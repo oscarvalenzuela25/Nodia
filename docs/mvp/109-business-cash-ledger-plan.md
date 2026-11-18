@@ -88,9 +88,9 @@ y el ADR en revisión.
 | --- | --- |
 | Moneda e importe | CLP enteros positivos, de `1` a `9999999999999` por movimiento. En JSON, decimal canónico como string, sin signo, ceros iniciales, exponente ni fracciones. SQL `bigint` por movimiento y suma exacta `numeric`, sin el límite individual. Caja mantiene el monto en pesos enteros |
 | Fecha civil | `occurred_on` SQL DATE, fecha gregoriana real `YYYY-MM-DD` en años 0001–9999. El rango incluye los extremos. Día inicial, limpieza y mes toman `America/Santiago` con fechas civiles |
-| Categoría | Compartida por ingresos y egresos. Nombre y descripción obligatorios. Nombre visible recortado tras NFKC, 1–120 puntos de código, y descripción recortada, 1–500. Unicidad por negocio según §6.1, incluidas inactivas |
+| Categoría | Compartida por ingresos y egresos. Nombre obligatorio, visible recortado tras NFKC, de 1–120 puntos de código. Descripción opcional, recortada, hasta 500. Unicidad por negocio según §6.1, incluidas inactivas |
 | Actividad de categoría | La inactiva sigue visible en el historial y como selección actual. Se permite guardar la misma categoría de un movimiento vigente. Primera asignación, reasignación y restauración requieren categoría activa. Los movimientos tienen actividad independiente |
-| Movimiento manual | Categoría, importe, fecha y descripción recortada de 1–500 puntos de código. Tipo `income` o `expense` inmutable. Activo al crear por defecto. Se permiten edición y cambio de actividad con revisión |
+| Movimiento manual | Categoría, importe y fecha obligatorios. Descripción opcional recortada, hasta 500 puntos de código. Tipo `income` o `expense` inmutable. Activo al crear por defecto. Se permiten edición y cambio de actividad con revisión |
 | Movimiento de factura | Egreso con total, fecha y categoría editables desde la factura origen. En Caja, Editar abre esa factura y la acción de actividad sólo cambia el movimiento. La referencia se compone del ID y folio actual. Folio nulo muestra «Sin folio» en Client |
 | Actividad y retiro | La factura y su egreso conservan actividad independiente. Retirar una categoría al guardar oculta el egreso incluso con Todos. Restaurar reactiva el mismo ID. Cambiar datos de un egreso vigente conserva su actividad |
 | Historia | Sin borrado en UI ni backfill financiero. La factura con un egreso vigente o retirado permanece en su negocio para conservar la relación histórica. Facturas sin historia conservan la política nativa de transferencia |
@@ -134,12 +134,12 @@ El acceso a dos negocios no autoriza una referencia cruzada. Ver
 | --- | --- |
 | GET `/business-cash-categories` | `page`, `limit`, `q` de categorías. Devuelve `{data: Category[], meta}` |
 | GET `/business-cash-categories/:id` | Detalle de categoría autorizada, incluso inactiva |
-| POST `/business-cash-categories` | Cuerpo `{request_key, business_id, name, description, is_active?}`. 201 y resultado identificado |
+| POST `/business-cash-categories` | Cuerpo `{request_key, business_id, name, description?, is_active?}`. 201 y resultado identificado |
 | PUT `/business-cash-categories/:id` | Cuerpo `{request_key, expected_version, name?, description?, is_active?}`. Al menos un campo editable. 200 y resultado identificado |
 | GET `/business-cash-movements` | `page`, `limit`, `q` de movimientos. Devuelve `{data: Movement[], meta, summary}` |
 | GET `/business-cash-movements/monthly-summary?business_id=…` | Sólo negocio. Devuelve `{period: {from, to, time_zone}, summary}` para activos del mes civil actual. Ruta estática antes de `:id` |
 | GET `/business-cash-movements/:id` | Detalle vigente, incluso inactivo. Retirados devuelven 404 |
-| POST `/business-cash-movements` | Cuerpo `{request_key, business_id, type, category_id, amount, occurred_on, description, is_active?}`. Tipo y origen validados por Server, origen manual. 201 y resultado identificado |
+| POST `/business-cash-movements` | Cuerpo `{request_key, business_id, type, category_id, amount, occurred_on, description?, is_active?}`. Tipo y origen validados por Server, origen manual. 201 y resultado identificado |
 | PUT `/business-cash-movements/:id` | Cuerpo `{request_key, expected_version, category_id?, amount?, occurred_on?, description?, is_active?}`. Al menos un campo editable. Para vinculados sólo `is_active`. 200 y resultado identificado |
 | GET `/businesses/:businessId/cash-mutation-requests/:key` | Recibo del actor y negocio actuales, incluidas operaciones de factura descritas en §6.2. Respuesta 200 con estado y `Cache-Control: no-store` |
 
@@ -632,7 +632,7 @@ requiere confirmación documental explícita.
 - Unidades de dinero/fechas/reglas:0 vs ausente, negativos/fracciones/overflow,
   bisiestos, rango invertido, límites de mes y DST America/Santiago; no redondear
   CLP de Caja a decenas. Serialización decimal exacta de importes y sumas.
-- Categorías: nombre duplicado normalizado, descripción requerida, misma empresa,
+- Categorías: nombre duplicado normalizado, descripción opcional, misma empresa,
   desactivación conserva historia y categoría histórica visible al editar. Probar
   mayúsculas, whitespace inicial/final/repetido/interno, tab/NBSP/FEFF, sigma final,
   NFKC expansivo, bytes de clave y dos POST simultáneos. Inactivas también impiden
@@ -1062,3 +1062,29 @@ La instalación limpia pasó los 40 controles de esquema y migración.
 registra la validación del SHA de entrega mediante una PR a
 `development`. La adopción, las migraciones operativas y la prueba
 con teléfono físico o un proveedor OCR real tienen evidencia propia.
+
+## 17. Ajustes de Caja a partir de la revisión visual — 2026-11-18
+
+- Caja usa el botón Filtro, los chips aplicados y el panel de tabla con
+  paginación de los listados de Productos. El chip Estado identifica la
+  actividad y la selección implícita de todas las categorías queda
+  fuera de los chips. Caja y Facturas comparten el control Desde/Hasta.
+- Categorías abre desde un botón contained y su estado vacío queda
+  centrado. Los títulos Registrar ingreso y Registrar egreso identifican
+  el tipo del movimiento.
+- La descripción es opcional al crear categorías y movimientos manuales.
+  En edición, omitirla conserva el valor y enviar texto vacío lo limpia.
+  La migración aditiva `1793740000000` conserva descripciones existentes y
+  el origen de los egresos de factura.
+- En el CRUD de Caja, Client confirma automáticamente un resultado
+  incierto con una lectura del recibo. Si la lectura no confirma el
+  guardado, el formulario conserva los datos y el próximo Guardar usa la
+  misma intención. Facturas y OCR conservan su recuperación específica.
+
+Verificado localmente con Chrome a 1088 y 390 px, API real y PostgreSQL 16
+aislado. La instalación aplicó 58 migraciones. El alta de categoría, ingreso
+y egreso con descripción vacía devolvió 201. Una pérdida de respuesta HTTP
+simulada después del commit se recuperó con un GET del recibo y una única
+escritura. Caja y Productos mostraron la misma altura de botón Filtro. Las
+pruebas de Server cubrieron la secuencia de migraciones y la preservación de
+descripciones existentes al omitir ese campo en edición.

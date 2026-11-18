@@ -38,9 +38,10 @@ texto seleccionable.
 - [BusinessDetail](../../nodia-client/src/modules/business/pages/BusinessDetail/BusinessDetail.tsx)
   resuelve secciones por query param. El destino estable es
   `/business/:id?section=lists`, visible como **Listas** dentro de **Market**.
-  **Market** agrupa navegación del negocio y **Productos** conserva su destino
-  `section=products`. La autoridad viene del módulo canónico `/business`,
-  la sesión y el negocio abierto.
+  **Market** agrupa **Proveedores**, **Productos**, **Facturas** y **Listas**,
+  en ese orden. Conservan los destinos `section=providers`,
+  `section=products`, `section=invoices` y `section=lists`. La autoridad
+  viene del módulo canónico `/business`, la sesión y el negocio abierto.
 - [Catálogo de productos](../../nodia-server/src/product/entities/product.entity.ts)
   expone identidad, nombre, negocio, unidad y actividad. Reutilizar su lectura
   paginada y su selector, acotados al negocio actual. Enviar IDs de producto
@@ -194,3 +195,16 @@ La CI del SHA que se promocione debe completar ambas comprobaciones. El CD
 verifica el ledger y el prefijo histórico del artefacto operativo antes de
 aplicar la migración. La comprobación funcional posterior abre **Negocios →
 Market → Listas** con un actor autorizado en el entorno de destino.
+
+## 9. Ajustes visuales de Market — 2026-11-18
+
+La pestaña Listas adopta el título, buscador por encima de la tabla y panel
+de tabla con paginación de los listados de Productos y Proveedores. Se
+conservan las tarjetas móviles y la misma consulta paginada. Todas las
+pestañas del detalle tienen icono en las barras de navegación. Facturas
+muestra el total de la página visible a la derecha del botón Filtro.
+El filtro de variación de precio de Productos ofrece subidas y bajadas.
+Estos son ajustes de presentación y navegación de las operaciones vigentes.
+Chrome comprobó las cuatro pestañas, los iconos, la búsqueda encima de la
+tabla y la alineación de Facturas a 1088 px. A 390 px, el enlace directo a
+Listas conservó su selección y la página no desbordó horizontalmente.

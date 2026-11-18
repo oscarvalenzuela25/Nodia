@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -256,7 +256,7 @@ describe("BusinessDetail Page", () => {
     ).toBeInTheDocument();
   });
 
-  it("switches tabs to Proveedores, Productos, Facturas, and Colaboradores", async () => {
+  it("groups Proveedores, Productos, Facturas and Listas in Market", async () => {
     const user = userEvent.setup();
     renderWithClient(<BusinessDetail />);
 
@@ -264,37 +264,42 @@ describe("BusinessDetail Page", () => {
       expect(screen.getAllByText("Panadería Central").length).toBeGreaterThanOrEqual(1);
     });
 
-    // 1. Switch to Proveedores tab
-    const providersTab = screen.getByRole("tab", { name: /Proveedores/i });
-    await user.click(providersTab);
-
-    expect(
-      await screen.findByRole("button", { name: /Administrar proveedores/i })
-    ).toBeInTheDocument();
-
-    // 2. Market opens Productos at its existing destination.
+    expect(screen.queryByRole("tab", { name: /Proveedores/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: /Facturas/i })).not.toBeInTheDocument();
     await user.click(screen.getByRole("tab", { name: "Market" }));
-    expect(screen.getByRole("tab", { name: /Productos/i })).toHaveAttribute("aria-selected", "true");
-
+    const market = within(screen.getByRole("tablist", { name: "Market" }));
+    const products = market.getByRole("tab", { name: /Productos/i });
+    expect(market.getAllByRole("tab").map((tab) => tab.getAttribute("data-testid"))).toEqual([
+      "tab-providers", "tab-products", "tab-invoices", "tab-lists",
+    ]);
+    expect(products).toHaveAttribute("aria-selected", "true");
     expect(
       await screen.findByRole("button", { name: /Administrar productos/i })
     ).toBeInTheDocument();
 
-    // 3. Switch to Facturas tab
-    const invoicesTab = screen.getByRole("tab", { name: /Facturas/i });
-    await user.click(invoicesTab);
+    await user.click(market.getByRole("tab", { name: /Proveedores/i }));
+    expect(
+      await screen.findByRole("button", { name: /Administrar proveedores/i })
+    ).toBeInTheDocument();
 
+    await user.click(market.getByRole("tab", { name: /^Facturas \d+$/i }));
     expect(
       await screen.findByRole("button", { name: /Registrar Factura/i })
     ).toBeInTheDocument();
 
-    // 4. Switch to Colaboradores tab
     const collaboratorsTab = screen.getByRole("tab", { name: /Colaboradores/i });
-    expect(screen.getAllByRole("tab").at(-1)).toBe(collaboratorsTab);
     await user.click(collaboratorsTab);
 
     expect(await screen.findByText("Carlos Sanchez")).toBeInTheDocument();
     expect(screen.getByText("Jefe de Compras")).toBeInTheDocument();
+  });
+
+  it("opens the existing invoice deep link with Market and Facturas selected", async () => {
+    renderWithClient(<BusinessDetail />, "/business/biz-123?section=invoices");
+    expect(await screen.findByRole("button", { name: /Registrar Factura/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Market" })).toHaveAttribute("aria-selected", "true");
+    const market = within(screen.getByRole("tablist", { name: "Market" }));
+    expect(market.getByRole("tab", { name: /^Facturas \d+$/i })).toHaveAttribute("aria-selected", "true");
   });
   it("prevents collaborators from editing the business or assigning collaborators", async () => {
     vi.mocked(businessServices.getBusinessById).mockResolvedValue({ ...mockBusiness, owner_id: "another-user", user_role: "collaborator" });

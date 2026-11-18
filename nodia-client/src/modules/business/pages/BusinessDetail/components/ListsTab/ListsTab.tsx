@@ -4,7 +4,7 @@ import {
   TableContainer, TableHead, TableRow, TextField, Tooltip, Typography,
   useMediaQuery, useTheme,
 } from "@mui/material";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import ChecklistOutlinedIcon from "@mui/icons-material/ChecklistOutlined";
@@ -18,6 +18,7 @@ import { sileo } from "sileo";
 import BaseModal from "../../../../../../components/BaseModal";
 import InputSearch from "../../../../../../components/inputs/InputSearch";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
+import { TableSkeleton } from "../../../../../../components/skeletons";
 import { notifyHttpError } from "../../../../../../config/httpFeedback";
 import BusinessPagination from "../../../../components/BusinessPagination";
 import { isShoppingListScopeError } from "./infrastructure/services";
@@ -65,6 +66,14 @@ export default function ListsTab(scope: ShoppingListScope) {
   const disabled = !active || result.isFetching || copying;
   const actionsDisabled = disabled || isShoppingListScopeError(result.error);
   const locale = i18n.resolvedLanguage ?? i18n.language;
+  const title = t("business:market_lists.title");
+  const emptyMessage = t(search.trim() ? "business:market_lists.no_results" : "business:market_lists.empty");
+  const columns = [
+    { header: t("business:market_lists.name") },
+    { header: t("business:tab_products"), align: "right" as const },
+    { header: t("business:market_lists.status"), align: "center" as const },
+    { header: t("business:market_lists.actions"), align: "right" as const },
+  ];
 
   const close = () => {
     setOverlay(undefined);
@@ -123,35 +132,36 @@ export default function ListsTab(scope: ShoppingListScope) {
 
   return <Stack component="section" sx={{ gap: 3, minWidth: 0 }}>
     <ListHeading>
-      <Typography component="h2" variant="h5">{t("business:market_lists.title")}</Typography>
-      <Button
-        ref={createButton}
-        variant="contained"
-        startIcon={<AddOutlinedIcon />}
-        disabled={actionsDisabled}
-        onClick={event => open({ kind: "new" }, event)}
-      >{t("business:market_lists.create")}</Button>
-    </ListHeading>
-    <ListPanel elevation={0} aria-busy={result.isFetching || copying}>
+      <Typography component="h2" variant="h6" sx={{ fontWeight: 700 }}>{title}</Typography>
       <ListToolbar>
-        <InputSearch
-          value={search}
-          onChange={value => { setSearch(value); setPage(0); }}
-          placeholder={t("business:market_lists.search")}
-          ariaLabel={t("business:market_lists.search")}
-          disabled={disabled}
-          variant="outlined"
-        />
+        <Box sx={{ width: { xs: "100%", sm: 320 } }}>
+          <InputSearch
+            value={search}
+            onChange={value => { setSearch(value); setPage(0); }}
+            placeholder={t("business:market_lists.search")}
+            disabled={disabled}
+          />
+        </Box>
+        <Button
+          ref={createButton}
+          variant="contained"
+          startIcon={<AddCircleOutlinedIcon />}
+          disabled={actionsDisabled}
+          onClick={event => open({ kind: "new" }, event)}
+          sx={{ borderRadius: 2 }}
+        >{t("business:market_lists.create")}</Button>
       </ListToolbar>
+    </ListHeading>
+    <QueryErrorAlert isError={result.isError} isFetching={result.isFetching} onRetry={result.refetch} />
+    <ListPanel elevation={0} aria-busy={result.isFetching || copying}>
       {result.isFetching && !result.isLoading && <LinearProgress aria-label={t("business:market_lists.loading")} />}
-      <Box sx={{ px: 2 }}>
-        <QueryErrorAlert isError={result.isError} isFetching={result.isFetching} onRetry={result.refetch} />
-      </Box>
-      <Skeleton loading={result.isLoading} fallback={<Stack aria-hidden="true" sx={{ gap: 1, px: 2, pb: 2 }}>
-        {[0, 1, 2].map(index => <Box key={index} sx={{ height: mobile ? 106 : 48, borderRadius: 1, bgcolor: "action.hover" }} />)}
-      </Stack>}>
-        {ownsScope && data && (data.items.length ? (mobile ? (
-          <Stack component="ul" sx={{ gap: 1.5, px: 2, m: 0, pb: 2 }}>
+      <Skeleton loading={result.isLoading} fallback={mobile ? (
+        <Stack aria-hidden="true" sx={{ gap: 2 }}>
+          {[0, 1, 2].map(index => <Box key={index} sx={{ height: 106, borderRadius: 2, bgcolor: "action.hover" }} />)}
+        </Stack>
+      ) : <TableSkeleton columns={columns} paperSx={{ border: 0, borderRadius: 0 }} />}>
+        {ownsScope && data && (mobile ? (
+          data.items.length > 0 ? <Stack component="ul" sx={{ gap: 2, p: 0, m: 0 }}>
             {data.items.map(selected => <ListMobileCard key={selected.id}>
               <Stack direction="row" sx={{ alignItems: "flex-start", justifyContent: "space-between", gap: 1 }}>
                 <Typography component="h3" sx={{ fontWeight: 600 }}>{selected.name}</Typography>
@@ -160,23 +170,25 @@ export default function ListsTab(scope: ShoppingListScope) {
               <Typography variant="body2" color="text.secondary">{t("business:market_lists.product_count", { count: selected.item_count })}</Typography>
               <ListRowActions selected={selected} mobile disabled={actionsDisabled} onAction={handleAction} />
             </ListMobileCard>)}
-          </Stack>
+          </Stack> : !result.isError && <Typography sx={{ p: 2, textAlign: "center", fontWeight: 600 }}>{emptyMessage}</Typography>
         ) : (
-          <TableContainer tabIndex={0} role="region" aria-label={t("business:market_lists.title")}>
-            <Table aria-label={t("business:market_lists.title")}>
+          <TableContainer tabIndex={0} role="region" aria-label={title}>
+            <Table aria-label={title}>
               <TableHead>
                 <TableRow>
-                  <TableCell>{t("business:market_lists.name")}</TableCell>
-                  <TableCell>{t("business:tab_products")}</TableCell>
-                  <TableCell>{t("business:market_lists.status")}</TableCell>
-                  <TableCell align="right">{t("business:market_lists.actions")}</TableCell>
+                  {columns.map(({ header, align }) => <TableCell key={header} align={align}>{header}</TableCell>)}
                 </TableRow>
               </TableHead>
               <TableBody>
+                {!result.isError && data.items.length === 0 && <TableRow>
+                  <TableCell colSpan={columns.length} align="center" sx={{ py: 6 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{emptyMessage}</Typography>
+                  </TableCell>
+                </TableRow>}
                 {data.items.map(selected => <TableRow key={selected.id} hover>
-                  <TableCell component="th" scope="row" sx={{ overflowWrap: "anywhere", maxWidth: 320 }}>{selected.name}</TableCell>
-                  <TableCell>{selected.item_count}</TableCell>
-                  <TableCell><ListStatus active={selected.is_active} /></TableCell>
+                  <TableCell component="th" scope="row" sx={{ fontWeight: 600, overflowWrap: "anywhere", maxWidth: 320 }}>{selected.name}</TableCell>
+                  <TableCell align="right">{selected.item_count}</TableCell>
+                  <TableCell align="center"><ListStatus active={selected.is_active} /></TableCell>
                   <TableCell align="right">
                     <ListRowActions selected={selected} disabled={actionsDisabled} onAction={handleAction} />
                   </TableCell>
@@ -184,11 +196,9 @@ export default function ListsTab(scope: ShoppingListScope) {
               </TableBody>
             </Table>
           </TableContainer>
-        )) : <Typography sx={{ px: 2, pb: 2 }} color="text.secondary">
-          {t(search.trim() ? "business:market_lists.no_results" : "business:market_lists.empty")}
-        </Typography>)}
+        ))}
       </Skeleton>
-      {ownsScope && data && data.pagination.total > 0 && <BusinessPagination
+      {ownsScope && data && <BusinessPagination
         component="div"
         count={data.pagination.total}
         page={Math.min(data.pagination.page - 1, Math.max(0, data.pagination.total_pages - 1))}
@@ -197,9 +207,8 @@ export default function ListsTab(scope: ShoppingListScope) {
         onRowsPerPageChange={event => { setLimit(Number(event.target.value)); setPage(0); }}
         rowsPerPageOptions={rowsPerPageOptions}
         disabled={disabled}
-        labelRowsPerPage={t("core:rows_per_page")}
+        labelRowsPerPage={t("core:pagination.rows_per_page")}
         labelDisplayedRows={({ from, to, count }) => t("core:displayed_rows", { from, to, count })}
-        sx={{ overflowX: "auto" }}
       />}
     </ListPanel>
     {ownsScope && (overlay?.kind === "new" || overlay?.kind === "edit") && <ListEditor
@@ -236,7 +245,6 @@ function ListStatus({ active }: { active: boolean }) {
     label={t(active ? "business:status_active" : "business:status_inactive")}
     color={active ? "success" : "default"}
     size="small"
-    variant="outlined"
   />;
 }
 

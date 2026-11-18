@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { CreateBusinessCashCategories1793690000000 } from '../dist/migrations/1793690000000-CreateBusinessCashCategories.js';
 import { CreateBusinessCashMovements1793700000000 } from '../dist/migrations/1793700000000-CreateBusinessCashMovements.js';
 import { LinkBusinessCashInvoiceExpenses1793710000000 } from '../dist/migrations/1793710000000-LinkBusinessCashInvoiceExpenses.js';
+import { AllowOptionalBusinessCashDescriptions1793740000000 } from '../dist/migrations/1793740000000-AllowOptionalBusinessCashDescriptions.js';
 import { withBusinessCashHttpLab } from './fixtures/business-cash-http.fixture.mjs';
 
 const business = 'aa000000-0000-4000-8000-000000000001';
@@ -81,7 +82,7 @@ async function migrationAndAuthority(source, startHttp) {
   await source.query(`CREATE TABLE invoices (
     id bigint PRIMARY KEY, business_id uuid NOT NULL, code varchar(255)
   )`);
-  assert.equal((await source.runMigrations()).length, 3);
+  assert.equal((await source.runMigrations()).length, 4);
   const send = await startHttp();
   const categoryIntent = {
     business_id: business,
@@ -107,6 +108,7 @@ async function migrationAndAuthority(source, startHttp) {
   const alien = await addCategory(send, 'Categoría ajena', '2', otherBusiness);
   await source.undoLastMigration();
   await source.undoLastMigration();
+  await source.undoLastMigration();
   assert.deepEqual(
     await source.query(
       `SELECT to_regclass('business_cash_movements') AS movement,
@@ -116,7 +118,7 @@ async function migrationAndAuthority(source, startHttp) {
     ),
     [{ movement: null, audit: null, categories: 2, receipts: 2 }],
   );
-  assert.equal((await source.runMigrations()).length, 2);
+  assert.equal((await source.runMigrations()).length, 3);
   assert.deepEqual(
     expectStatus(await send('POST', categories, '1', categoryIntent), 201),
     categoryReceipt,
@@ -611,6 +613,128 @@ async function filtersAndExactMonth(source, send, category, alien) {
   );
 }
 
+async function optionalDescriptions(source, send) {
+  const categoryCommand = {
+    request_key: randomUUID(),
+    business_id: business,
+    name: 'Descripción opcional',
+  };
+  const saved = expectStatus(
+    await send('POST', categories, '1', categoryCommand),
+    201,
+  );
+  const category = saved.result.category;
+  assert.equal(saved.status, 'committed');
+  assert.equal(category.description, '');
+  assert.deepEqual(
+    expectStatus(
+      await send('POST', categories, '1', {
+        ...categoryCommand,
+        description: ' \u0085 ',
+      }),
+      201,
+    ),
+    saved,
+  );
+  const categoryPath = categories + '/' + category.id;
+  const described = expectStatus(
+    await send('PUT', categoryPath, '1', {
+      request_key: randomUUID(),
+      expected_version: 1,
+      description: 'Texto opcional',
+    }),
+    200,
+  ).result.category;
+  assert.equal(described.description, 'Texto opcional');
+  const cleared = expectStatus(
+    await send('PUT', categoryPath, '1', {
+      request_key: randomUUID(),
+      expected_version: described.version,
+      description: '',
+    }),
+    200,
+  ).result.category;
+  assert.equal(cleared.description, '');
+
+  for (const type of ['income', 'expense']) {
+    const { description: _description, ...intent } = command(category, {
+      type,
+    });
+    const receipt = expectStatus(
+      await send('POST', movements, '1', intent),
+      201,
+    );
+    const movement = receipt.result.movement;
+    assert.equal(movement.description, '');
+    assert.deepEqual(
+      expectStatus(
+        await send('POST', movements, '1', { ...intent, description: '' }),
+        201,
+      ),
+      receipt,
+    );
+    const movementPath = movements + '/' + movement.id;
+    const edit = async (expected_version, fields) =>
+      expectStatus(
+        await send('PUT', movementPath, '1', {
+          request_key: randomUUID(),
+          expected_version,
+          ...fields,
+        }),
+        200,
+      ).result.movement;
+    const edited = await edit(movement.version, {
+      description: 'Detalle válido',
+    });
+    const preserved = await edit(edited.version, { amount: '20' });
+    assert.equal(preserved.description, edited.description);
+    assert.equal(
+      (await edit(preserved.version, { description: '' })).description,
+      '',
+    );
+    assert.deepEqual(
+      (await readAudit(source, movement.id)).map(
+        ({ after }) => after.description,
+      ),
+      ['', 'Detalle válido', 'Detalle válido', ''],
+    );
+  }
+
+  const ledger = () =>
+    source.query('SELECT timestamp::text,name FROM migrations ORDER BY id');
+  const beforeRollback = await ledger();
+  await assert.rejects(
+    () => source.undoLastMigration(),
+    (error) =>
+      error.code === '23514' &&
+      error.constraint === 'ck_business_cash_categories_description',
+  );
+  expectStatus(
+    await send('PUT', categoryPath, '1', {
+      request_key: randomUUID(),
+      expected_version: cleared.version,
+      description: 'Detalle válido',
+    }),
+    200,
+  );
+  await assert.rejects(
+    () => source.undoLastMigration(),
+    (error) =>
+      error.code === '23514' &&
+      error.constraint === 'ck_business_cash_movements_source',
+  );
+  assert.deepEqual(await ledger(), beforeRollback);
+  assert.equal(
+    (
+      await source.query(
+        "SELECT count(*)::int AS count FROM business_cash_movements WHERE category_id=$1 AND description=''",
+        [category.id],
+      )
+    )[0].count,
+    2,
+  );
+}
+
 async function run({ source, startHttp }) {
   const { send, category, alien } = await migrationAndAuthority(
     source,
@@ -625,13 +749,15 @@ async function run({ source, startHttp }) {
   await filtersAndExactMonth(source, send, currentCategory, alien);
   const audit = await readAudit(source, movement.id);
   await source.undoLastMigration();
+  await source.undoLastMigration();
   await assert.rejects(
     () => source.undoLastMigration(),
     /business:cash_movements_rollback_would_lose_data/,
   );
   assert.deepEqual(await readAudit(source, movement.id), audit);
-  assert.equal((await source.runMigrations()).length, 1);
+  assert.equal((await source.runMigrations()).length, 2);
   expectStatus(await send('GET', movements + '/' + movement.id), 200);
+  await optionalDescriptions(source, send);
   console.log(
     JSON.stringify({
       task: 'business_cash_movements',
@@ -645,6 +771,7 @@ async function run({ source, startHttp }) {
         'transactional_audit_rollback_and_fenced_receipt_retry',
         'literal_search_pagination_filtered_totals_and_santiago_month',
         'exact_decimal_totals_above_safe_json_integer',
+        'optional_category_income_expense_descriptions_with_retry_audit_and_safe_rollback',
       ],
       limits: [
         'Isolated PostgreSQL 16 and compiled HTTP app with synthetic users.',
@@ -663,6 +790,7 @@ await withBusinessCashHttpLab(
       CreateBusinessCashCategories1793690000000,
       CreateBusinessCashMovements1793700000000,
       LinkBusinessCashInvoiceExpenses1793710000000,
+      AllowOptionalBusinessCashDescriptions1793740000000,
     ],
     business,
     otherBusiness,

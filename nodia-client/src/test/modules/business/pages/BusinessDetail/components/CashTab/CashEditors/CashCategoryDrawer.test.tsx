@@ -102,8 +102,10 @@ describe("CashCategoryDrawer", () => {
     await user.click(confirm);
     await user.keyboard("{Escape}");
     expect(onClose).not.toHaveBeenCalled();
-    await user.click(await screen.findByRole("button", { name: "Consultar recibo" }));
-    await user.click(await screen.findByRole("button", { name: "Reenviar operación" }));
+    await waitFor(() => expect(getCashReceipt).toHaveBeenCalledTimes(1));
+    expect(screen.queryByRole("button", { name: "Consultar recibo" })).not.toBeInTheDocument();
+    await waitFor(() => expect(confirm).toBeEnabled());
+    await user.click(confirm);
 
     const filtered = await screen.findByRole("button", { name: "Estado de actividad" });
     expect(filtered).toHaveTextContent("Todos");

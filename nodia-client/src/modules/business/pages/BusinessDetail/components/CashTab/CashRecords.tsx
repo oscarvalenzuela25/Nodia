@@ -1,6 +1,6 @@
 import { useId, useState } from "react";
 import {
-  Alert, Box, Chip, IconButton, ListItemIcon, ListItemText, Menu, MenuItem,
+  Box, Chip, IconButton, ListItemIcon, ListItemText, Menu, MenuItem,
   Skeleton as MuiSkeleton, Table, TableBody, TableCell, TableHead, TableRow, Typography,
 } from "@mui/material";
 import EditOutlined from "@mui/icons-material/EditOutlined";
@@ -81,7 +81,7 @@ export function CashRecords({ rows, loading, hasSnapshot, mobile, disabled, form
     { key: "description", header: t("business:cash.description_or_source") },
     { key: "category", header: t("business:cash.category") },
     { key: "amount", header: t("business:cash.amount"), align: "right" as const },
-    { key: "activity", header: t("business:cash.activity"), width: 102 },
+    { key: "activity", header: t("business:filter_status_label"), width: 102 },
     { key: "actions", header: t("core:actions"), width: 72, align: "right" as const },
   ];
   const status = (movement: CashMovement) => (
@@ -117,10 +117,13 @@ export function CashRecords({ rows, loading, hasSnapshot, mobile, disabled, form
     ) : (
       <TableSkeleton columns={columns} rows={5} paperSx={{ border: 0, borderRadius: 0, boxShadow: "none" }} />
     )}>
-      {hasSnapshot && (rows.length === 0 ? (
-        <Alert severity="info">{t("business:cash.movements_empty")}</Alert>
-      ) : mobile ? (
+      {hasSnapshot && (mobile ? (
         <CashCards>
+          {rows.length === 0 && (
+            <Typography sx={{ p: 2, textAlign: "center", fontWeight: 600 }}>
+              {t("business:cash.movements_empty")}
+            </Typography>
+          )}
           {rows.map((movement) => (
             <CashMobileRecordSurface key={movement.id} tone={movement.type} inactive={!movement.is_active}>
               <MobileRecordCard
@@ -153,6 +156,15 @@ export function CashRecords({ rows, loading, hasSnapshot, mobile, disabled, form
               </TableRow>
             </TableHead>
             <TableBody>
+              {rows.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={columns.length} align="center" sx={{ py: 6 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                      {t("business:cash.movements_empty")}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
               {rows.map((movement) => (
                 <CashMovementRow key={movement.id} tone={movement.type} inactive={!movement.is_active} hover>
                   <TableCell>
@@ -161,7 +173,9 @@ export function CashRecords({ rows, loading, hasSnapshot, mobile, disabled, form
                   <TableCell>
                     <Chip size="small" label={t(`business:cash.${movement.type}`)} color={movement.type === "income" ? "success" : "error"} />
                   </TableCell>
-                  <TableCell sx={{ overflowWrap: "anywhere", maxWidth: 320 }}>{cashMovementName(movement, t)}</TableCell>
+                  <TableCell sx={{ overflowWrap: "anywhere", maxWidth: 320 }}>
+                    {movement.source === "manual" && !movement.description ? "—" : cashMovementName(movement, t)}
+                  </TableCell>
                   <TableCell sx={{ overflowWrap: "anywhere", maxWidth: 180 }}>{movement.category.name}</TableCell>
                   <TableCell align="right" sx={{ fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
                     {formatCashAmount(movement.amount, locale)}

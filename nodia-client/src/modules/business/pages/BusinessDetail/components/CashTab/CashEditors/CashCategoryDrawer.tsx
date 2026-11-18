@@ -31,7 +31,6 @@ import {
   useCashMutation,
 } from "../../../../../infrastructure/useCashServices";
 import { CashCategoryFields } from "./CashEditorFields";
-import { CashMutationFeedback } from "./CashMutationFeedback";
 import {
   categoryFields,
   changedFields,
@@ -138,7 +137,11 @@ export function CashCategoryDrawer({ scope, open, onClose, disabled = false }: P
   };
 
   const updateActivity = async () => {
-    if (view.kind !== "activity" || locked || conflict || disabled) return;
+    if (view.kind !== "activity" || mutation.busy || conflict || disabled) return;
+    if (mutation.pending) {
+      accept(await mutation.retry());
+      return;
+    }
     accept(
       await mutation.submit({
         operation: "category_update",
@@ -265,13 +268,15 @@ export function CashCategoryDrawer({ scope, open, onClose, disabled = false }: P
                       >
                         {t(entry.is_active ? "business:status_active" : "business:status_inactive")}
                       </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ mt: 0.5, whiteSpace: "pre-wrap" }}
-                      >
-                        {entry.description}
-                      </Typography>
+                      {entry.description && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mt: 0.5, whiteSpace: "pre-wrap" }}
+                        >
+                          {entry.description}
+                        </Typography>
+                      )}
                       <Box
                         role="group"
                         aria-label={entry.name}
@@ -305,7 +310,7 @@ export function CashCategoryDrawer({ scope, open, onClose, disabled = false }: P
                   ))}
                 </Box>
               ) : query.data && !query.isError ? (
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" align="center">
                   {t("business:cash.category_empty")}
                 </Typography>
               ) : null}
@@ -388,16 +393,6 @@ export function CashCategoryDrawer({ scope, open, onClose, disabled = false }: P
                 <CashCategoryFields control={form.control} disabled={locked || disabled} />
               </EditorForm>
             )}
-            <CashMutationFeedback
-              outcome={mutation.outcome}
-              busy={mutation.busy || disabled}
-              onRecover={() => {
-                void mutation.recover().then(accept);
-              }}
-              onRetry={() => {
-                void mutation.retry().then(accept);
-              }}
-            />
           </DrawerBody>
           <DrawerFooter>
             <Button
@@ -415,16 +410,17 @@ export function CashCategoryDrawer({ scope, open, onClose, disabled = false }: P
                 onClick={() => {
                   void updateActivity();
                 }}
-                disabled={locked || conflict || disabled}
+                disabled={mutation.busy || conflict || disabled}
               >
                 {t(view.active ? "business:cash.activate" : "business:cash.deactivate")}
               </Button>
             ) : (
               <Button
                 variant="contained"
-                type="submit"
+                type={mutation.pending ? "button" : "submit"}
                 form={formId}
-                disabled={locked || conflict || disabled}
+                disabled={mutation.busy || conflict || disabled}
+                onClick={mutation.pending ? () => { void mutation.retry().then(accept); } : undefined}
               >
                 {t("core:save")}
               </Button>
