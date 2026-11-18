@@ -7,10 +7,14 @@ import useAuthStore, { hasValidatedSession } from "../../../../../store/authStor
 import { useAuthorizationContext } from "../../../../../services/authorizationService";
 import { claimHttpErrorNotification, getHttpErrorMessage, notifyHttpError } from "../../../../../config/httpFeedback";
 import i18n from "../../../../../translate";
-import type { NewsFilters, NewsSourceKey } from "../../../types";
+import { NEWS_CATALOG_VERSION, type NewsFilters, type NewsSourceKey } from "../../../types";
 import { getNews, refreshNews } from "./services";
 
-export const newsKeys = { all: ["news-public"] as const, list: (filters: NewsFilters) => ["news-public", filters] as const };
+const newsCatalogKey = ["news-public", NEWS_CATALOG_VERSION] as const;
+export const newsKeys = {
+  all: newsCatalogKey,
+  list: (filters: NewsFilters) => [...newsCatalogKey, filters] as const,
+};
 const currentActor = () => {
   const state = useAuthStore.getState();
   return hasValidatedSession(state) && state.user?.id ? `${state.user.id}:${state.sessionVersion}` : null;

@@ -1,4 +1,4 @@
-# Noticias — contratos de lectura y actualización RSS
+# Noticias — contratos de lectura y actualización de feeds
 
 > NEWS-02/03,2026-11-16. Primera fuente implementada/verificada localmente en
 > `codex/news-implementation`, con [evidencia por alcance](../../evidence/news-public-rss-implementation-20261116.md).
@@ -6,6 +6,8 @@
 > No acredita adopción de entorno ni aprueba el ADR105.
 > NEWS-04 amplía el catálogo con `node-js` por [plan105](../../mvp/105-on-demand-tech-news.md),
 > conservando lectura pública y una fuente explícita por POST super_admin.
+> La [revisión del catálogo](../../mvp/105-on-demand-tech-news.md#16-renovación-del-catálogo-de-noticias-dev--2026-11-18)
+> sustituye esas dos fuentes en la rama. El contrato vigente se describe abajo.
 
 ## Operaciones
 
@@ -22,11 +24,18 @@ IDs/roles del body, caché de navegación y JWT no sustituyen esa autoridad.
 
 ## Lectura pública
 
-Query permitida: `topic=technology|programming|ai`, `source_key=web-dev|node-js`,
+Query permitida: `catalog=2`, `topic=technology|programming|ai`,
+`source_key=go-blog|rust-blog|kubernetes-blog`,
 `order=recent|received` (predeterminado `recent`), `page` entero≥1 y `limit`
 entero1–50 (predeterminado20); página máxima10000. Omitir tema/fuente significa todos los habilitados,
 no consultar otras fuentes externas. Rechazar parámetros desconocidos/estructuras
 inválidas. Filtros y paginado se aplican a metadatos conservados vigentes.
+
+Client solicita `catalog=2`. Una lectura sin catálogo ni `source_key` devuelve
+`items: []`, `sources: []` y total cero, respetando página y límite. Así una
+pestaña con Client anterior puede leer el estado vacío mientras se publica el
+nuevo Client. Un filtro de fuente requiere `catalog=2`. `web-dev` y `node-js`
+se rechazan en el filtro y en la actualización.
 
 Respuesta: `{ items, sources, pagination: { page, limit, total, total_pages } }`.
 
@@ -35,29 +44,29 @@ Respuesta: `{ items, sources, pagination: { page, limit, total, total_pages } }`
 | Artículo | `id`, `source_key`, `source_name`, `title`, `url`, `excerpt`, `author`, `topic`, `published_at`, `received_at`, `license_url`, `provenances` |
 | Estado de fuente | `key`, `name`, `home_url`, `license_url`, `last_attempt_at`, `last_success_at`, `next_refresh_at`, `last_error_code` |
 
-Fuentes `web-dev` y `node-js`, tema de catálogo `programming`. `excerpt`, `author`
-y publicación admiten `null`. Instantes válidos en ISO8601; nunca sustituir
+Go y Rust se clasifican como `programming`; Kubernetes como `technology`.
+La publicación admite `null`. Instantes válidos en ISO8601; nunca sustituir
 publicación ausente por recepción sin indicarlo. Metadatos de estado desconocidos
 también son `null`. Errores de fuente son códigos públicos estables, sin XML,
 contenido remoto, credenciales o mensajes internos. No se exponen fuentes
 deshabilitadas ni metadatos privados por deduplicar enlaces.
 
 `provenances` es una lista no vacía de `{source_key, source_name, license_url}`
-por URL, sin repetir fuentes. Una misma URL en ambos snapshots produce una
-tarjeta, conservando ambas procedencias y licencias. Los campos primarios
-`source_*`/licencia y contenido proceden de web.dev primero y Node.js después
+por URL, sin repetir fuentes. Una misma URL en varios snapshots produce una
+tarjeta que conserva sus procedencias y licencias. Los campos primarios
+`source_*` y `license_url` siguen el orden Go, Rust y Kubernetes
 según orden estable del catálogo; con filtro de fuente, la primaria es la
-seleccionada. No copiar extracto/autor de web.dev a una tarjeta primaria Node.js.
+seleccionada.
 La paginación y total se calculan después de agrupar URLs. La procedencia sólo
 incluye entradas vigentes; no recupera metadata privada ni vencida.
 
-Node.js habilita sólo título/URL/fecha del RSS; `excerpt` y `author` son `null`.
-No se consultan cuerpos o medios. La UI conserva aviso MIT completo en
-`/legal/news-nodejs-notice.txt`, además de enlace a licencia original y marca.
+Se guardan título, URL, fecha y procedencia. `excerpt` y `author` son `null`.
+La UI enlaza la licencia de cada fuente y el aviso MIT de Rust en
+`/legal/news-rust-notice.txt`.
 
 ## Actualización administrativa
 
-Body exacto: `{ "source_key": "web-dev" }` o `{ "source_key": "node-js" }`. Respuesta:
+El body admite un único `source_key` del catálogo activo. Respuesta:
 `{ source_key, status, received_count, stored_count, last_attempt_at,
 last_success_at, next_refresh_at }`, con estado `updated`, `not_modified` o `cached`.
 `cached` informa reutilización, no un nuevo éxito upstream. Rechazo o fallo no
@@ -94,24 +103,21 @@ fuera de transacción. Validadores HTTP/304 conservan semántica de recepción y
 Destino fijo administrado, resolución DNS y TLS comprobadas, límites antes del
 parsing de bytes/tiempo/entradas, XML sin DTD/entidades externas, texto normalizado
 sin HTML ejecutable y enlaces HTTP(S) seguros. No seguir redirecciones arbitrarias
-ni habilitar otros RSS/credenciales desde el body. Los límites efectivos de
-transporte son10s de deadline total y1MiB antes del parsing;
-se conservan como máximo100artículos por fuente. Límite de entradas XML:
-500 para web.dev y2000 para Node.js, cuyo feed incluye historia completa; son
-protecciones locales, no cuotas del editor. El límite de1MiB/deadline10s se
-mantiene para ambas. Migración inicial `PublicNewsCache1793670000000` conservada;
-`NewsNodeSource1793670001000` amplía su CHECK de fuentes admitidas, sin precargar
-artículos. El rollback elimina sólo la caché Node y restaura el CHECK web.dev.
-Ensayar ambas migraciones y conservación de web.dev en PostgreSQL descartable;
-adopción/rollback de entorno siguen el procedimiento de plan99.
+ni habilitar otros feeds o credenciales desde el body. El transporte tiene un
+plazo total de 10 s y un máximo de 1 MiB en Go y Rust. Kubernetes tiene un límite
+propio de 2 MiB. El parser admite hasta 50 entradas para cada Atom y 150 para
+el RSS. Se conservan como máximo 100 artículos por fuente.
+`ReplaceDevNewsSources1793750000000` amplía el CHECK de `news_sources` sin
+reescribir las migraciones anteriores ni precargar artículos. La aplicación
+retira web.dev y Node.js del catálogo; sus snapshots quedan preservados para
+reversión. El `down` elimina la caché de los tres nuevos feeds y restaura el CHECK
+anterior. Adopción y reversión operativas siguen el procedimiento de plan99.
 
 ## Exclusiones y verificación
 
-daily.dev permanece deshabilitada; ser super_admin no elimina sus condiciones
-de redistribución o producto competidor. Node.js se incorpora sólo por el alcance
-de metadata/avisos verificado; GitHub sigue candidata del
-[catálogo](source-catalog.md). No hay ingestión programada, imágenes, inferencia
-IA, propuestas/herramientas de chat o despliegue en esta entrega local.
+daily.dev permanece deshabilitada por sus condiciones de redistribución.
+El [catálogo](source-catalog.md) registra la clasificación de las demás candidatas.
+La actualización se ejecuta bajo demanda desde el botón administrativo.
 
 Verificar DTOs/normalización/retención, HTTP público vs POST protegido, roles
 actuales/revocación, concurrencia entre instancias y recuperación en PostgreSQL

@@ -26,19 +26,25 @@ describe("NewsArticleCard", () => {
     expect(link).not.toHaveAttribute("aria-disabled");
   });
 
-  it("preserves both publishers and license links on a shared article", () => {
-    render(<NewsArticleCard article={{ ...article, provenances: [...article.provenances, { source_key: "node-js", source_name: "Node.js®", license_url: "https://example.test/node-license" }] }} />);
+  it("preserves all three publishers and license links on a shared article", () => {
+    render(<NewsArticleCard article={{ ...article, provenances: [
+      ...article.provenances,
+      { source_key: "rust-blog", source_name: "Synthetic Rust editor", license_url: "https://example.test/rust-license" },
+      { source_key: "kubernetes-blog", source_name: "Synthetic Kubernetes editor", license_url: "https://example.test/kubernetes-license" },
+    ] }} />);
     expect(screen.getByText("Synthetic editor")).toBeVisible();
-    expect(screen.getByText("Node.js®")).toBeVisible();
+    expect(screen.getByText("Synthetic Rust editor")).toBeVisible();
+    expect(screen.getByText("Synthetic Kubernetes editor")).toBeVisible();
     expect(screen.getByRole("link", { name: "Licencia de Synthetic editor" })).toHaveAttribute("href", article.license_url);
-    expect(screen.getByRole("link", { name: "Licencia de Node.js®" })).toHaveAttribute("href", "https://example.test/node-license");
-    expect(screen.getByRole("link", { name: "Aviso legal de Node.js" })).toHaveAttribute("href", "/legal/news-nodejs-notice.txt");
+    expect(screen.getByRole("link", { name: "Licencia de Synthetic Rust editor" })).toHaveAttribute("href", "https://example.test/rust-license");
+    expect(screen.getByRole("link", { name: "Licencia de Synthetic Kubernetes editor" })).toHaveAttribute("href", "https://example.test/kubernetes-license");
+    expect(screen.getByRole("link", { name: "Aviso legal de Rust" })).toHaveAttribute("href", "/legal/news-rust-notice.txt");
     expect(screen.getAllByRole("link", { name: article.title })).toHaveLength(1);
   });
 
-  it("shows the Node.js notice with missing optional article metadata", () => {
-    render(<NewsArticleCard article={{ ...article, source_key: "node-js", source_name: "Node.js®", excerpt: null, author: null, provenances: [{ source_key: "node-js", source_name: "Node.js®", license_url: "https://example.test/node-license" }] }} />);
-    expect(screen.getByRole("link", { name: "Aviso legal de Node.js" })).toBeVisible();
+  it("shows the Rust notice with missing optional article metadata", () => {
+    render(<NewsArticleCard article={{ ...article, source_key: "rust-blog", source_name: "Synthetic Rust editor", excerpt: null, author: null, provenances: [{ source_key: "rust-blog", source_name: "Synthetic Rust editor", license_url: "https://example.test/rust-license" }] }} />);
+    expect(screen.getByRole("link", { name: "Aviso legal de Rust" })).toBeVisible();
     expect(screen.queryByText("Extracto abreviado y presentado como texto.")).not.toBeInTheDocument();
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });

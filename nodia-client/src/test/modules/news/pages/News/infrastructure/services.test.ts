@@ -10,8 +10,8 @@ describe("News transport boundary", () => {
   it("reads saved results without session credentials and sends every applied filter", async () => {
     vi.mocked(mainInstance.get).mockResolvedValue({ data: news });
     const signal = new AbortController().signal;
-    expect(await getNews({ topic: "ai", source: "web-dev", order: "received", page: 2 }, signal)).toEqual(news);
-    expect(mainInstance.get).toHaveBeenCalledWith(expect.stringMatching(/\/news$/), expect.objectContaining({ skipAuth: true, withCredentials: false, signal, params: { topic: "ai", source_key: "web-dev", order: "received", page: 2, limit: 20 } }));
+    expect(await getNews({ topic: "programming", source: "go-blog", order: "received", page: 2 }, signal)).toEqual(news);
+    expect(mainInstance.get).toHaveBeenCalledWith(expect.stringMatching(/\/news$/), expect.objectContaining({ skipAuth: true, withCredentials: false, signal, params: { catalog: 2, topic: "programming", source_key: "go-blog", order: "received", page: 2, limit: 20 } }));
     expect(mainInstance.post).not.toHaveBeenCalled();
   });
 
@@ -25,7 +25,7 @@ describe("News transport boundary", () => {
     { ...news, items: [{ ...news.items[0], provenances: undefined }] },
     { ...news, items: [{ ...news.items[0], provenances: [{ source_key: "unknown", source_name: "Unknown", license_url: "https://example.test/license" }] }] },
     { ...news, items: [{ ...news.items[0], provenances: [...news.items[0].provenances, ...news.items[0].provenances] }] },
-    { ...news, items: [{ ...news.items[0], source_key: "node-js" }] },
+    { ...news, items: [{ ...news.items[0], source_key: "rust-blog" }] },
     { ...news, items: [{ ...news.items[0], source_name: "Another publisher" }] },
     { ...news, items: [{ ...news.items[0], license_url: "https://example.test/another-license" }] },
     { ...news, sources: [...news.sources, ...news.sources] },
@@ -34,26 +34,59 @@ describe("News transport boundary", () => {
     await expect(getNews({ topic: "all", source: "all", order: "recent", page: 1 })).rejects.toThrow("La respuesta de noticias");
   });
 
-  it("refreshes only the explicit approved source through authenticated transport", async () => {
-    vi.mocked(mainInstance.post).mockResolvedValue({ data: refreshed });
-    expect(await refreshNews("web-dev")).toEqual(refreshed);
-    expect(mainInstance.post).toHaveBeenCalledWith(expect.stringMatching(/\/news\/refresh$/), { source_key: "web-dev" });
+  it.each(["web-dev", "node-js"])("rejects retired source %s in the new catalog", async (key) => {
+    vi.mocked(mainInstance.get).mockResolvedValue({
+      data: { ...news, items: [], sources: [{ ...news.sources[0], key }] },
+    });
+    await expect(getNews({ topic: "all", source: "all", order: "recent", page: 1 })).rejects.toThrow("La respuesta de noticias");
+    expect(mainInstance.post).not.toHaveBeenCalled();
   });
 
-  it("reads Node.js without refresh and sends its explicit refresh independently", async () => {
-    const nodeArticle = { ...news.items[0], source_key: "node-js", source_name: "Node.js®", excerpt: null, author: null, provenances: [{ source_key: "node-js", source_name: "Node.js®", license_url: news.items[0].license_url }] };
-    const nodeNews = { ...news, items: [nodeArticle], sources: [{ ...news.sources[0], key: "node-js", name: "Node.js®" }] };
-    vi.mocked(mainInstance.get).mockResolvedValue({ data: nodeNews });
-    expect(await getNews({ topic: "all", source: "node-js", order: "recent", page: 1 })).toEqual(nodeNews);
-    expect(mainInstance.get).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ params: expect.objectContaining({ source_key: "node-js" }), skipAuth: true }));
+  it("reads a technology card with all three provenances and no invented optional metadata", async () => {
+    const sources = [
+      news.sources[0],
+      { ...news.sources[0], key: "rust-blog", name: "Synthetic Rust editor" },
+      { ...news.sources[0], key: "kubernetes-blog", name: "Synthetic Kubernetes editor" },
+    ];
+    const source = sources[2];
+    const data = {
+      ...news,
+      sources,
+      items: [{
+        ...news.items[0],
+        source_key: source.key,
+        source_name: source.name,
+        topic: "technology",
+        published_at: null,
+        excerpt: null,
+        author: null,
+        provenances: sources.map(({ key, name, license_url }) => ({ source_key: key, source_name: name, license_url })),
+      }],
+    };
+    vi.mocked(mainInstance.get).mockResolvedValue({ data });
+    expect(await getNews({ topic: "technology", source: "kubernetes-blog", order: "recent", page: 1 })).toEqual(data);
+  });
+
+  it("refreshes only the explicit approved source through authenticated transport", async () => {
+    vi.mocked(mainInstance.post).mockResolvedValue({ data: refreshed });
+    expect(await refreshNews("go-blog")).toEqual(refreshed);
+    expect(mainInstance.post).toHaveBeenCalledWith(expect.stringMatching(/\/news\/refresh$/), { source_key: "go-blog" });
+  });
+
+  it("reads Rust without refresh and sends its explicit refresh independently", async () => {
+    const rustArticle = { ...news.items[0], source_key: "rust-blog", source_name: "Synthetic Rust editor", excerpt: null, author: null, provenances: [{ source_key: "rust-blog", source_name: "Synthetic Rust editor", license_url: news.items[0].license_url }] };
+    const rustNews = { ...news, items: [rustArticle], sources: [{ ...news.sources[0], key: "rust-blog", name: "Synthetic Rust editor" }] };
+    vi.mocked(mainInstance.get).mockResolvedValue({ data: rustNews });
+    expect(await getNews({ topic: "all", source: "rust-blog", order: "recent", page: 1 })).toEqual(rustNews);
+    expect(mainInstance.get).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ params: expect.objectContaining({ catalog: 2, source_key: "rust-blog" }), skipAuth: true }));
     expect(mainInstance.post).not.toHaveBeenCalled();
-    vi.mocked(mainInstance.post).mockResolvedValue({ data: { ...refreshed, source_key: "node-js" } });
-    await refreshNews("node-js");
-    expect(mainInstance.post).toHaveBeenCalledExactlyOnceWith(expect.stringMatching(/\/news\/refresh$/), { source_key: "node-js" });
+    vi.mocked(mainInstance.post).mockResolvedValue({ data: { ...refreshed, source_key: "rust-blog" } });
+    await refreshNews("rust-blog");
+    expect(mainInstance.post).toHaveBeenCalledExactlyOnceWith(expect.stringMatching(/\/news\/refresh$/), { source_key: "rust-blog" });
   });
 
   it("rejects a refresh result from another source", async () => {
     vi.mocked(mainInstance.post).mockResolvedValue({ data: refreshed });
-    await expect(refreshNews("node-js")).rejects.toThrow("La respuesta de noticias");
+    await expect(refreshNews("rust-blog")).rejects.toThrow("La respuesta de noticias");
   });
 });

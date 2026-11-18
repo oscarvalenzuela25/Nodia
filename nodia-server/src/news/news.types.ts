@@ -1,5 +1,5 @@
 export type NewsTopic = 'technology' | 'programming' | 'ai';
-export type NewsSourceKey = 'web-dev' | 'node-js';
+export type NewsSourceKey = 'go-blog' | 'rust-blog' | 'kubernetes-blog';
 export interface NewsProvenance {
   source_key: NewsSourceKey;
   source_name: string;
@@ -11,7 +11,7 @@ interface NewsArticleMetadata extends NewsProvenance {
   url: string;
   excerpt: string | null;
   author: string | null;
-  topic: 'programming';
+  topic: NewsTopic;
   published_at: string | null;
   received_at: string;
 }

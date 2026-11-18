@@ -252,6 +252,11 @@ jobs:
         env:
           DOTENV_CONFIG_PATH: /dev/null
         run: node test/market-shopping-lists.integration.mjs
+      - name: Verify News catalog migration and refresh authority on disposable PostgreSQL
+        env:
+          DOTENV_CONFIG_PATH: /dev/null
+          NEWS_TEST_LIVE_RSS: '0'
+        run: node test/news.integration.mjs
       - name: Package the validated backend and Linux production dependencies without another build
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: node ../ops/ci/artifact-release.mjs package --root "$GITHUB_WORKSPACE" --source-sha "$GITHUB_SHA" --output "$RUNNER_TEMP/nodia-server-artifact" --component server

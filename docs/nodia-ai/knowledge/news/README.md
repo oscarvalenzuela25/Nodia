@@ -4,11 +4,11 @@
   "document_id": "news",
   "product_id": "news",
   "kind": "product",
-  "revision": 8,
+  "revision": 9,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "Primera versión RSS web.dev/Node.js implementada y preparación NEWS-06 técnica local completada: lectura pública, fetch exclusivo super_admin por fuente explícita, caché/procedencias y diseño editorial. Primera carga Boneyard corregida. Candidato para CI/promoción; sin adopción, aceptación humana o publicación de conocimiento. daily.dev deshabilitada."
+    "notes": "Catálogo revisado en la rama: Go, Rust y Kubernetes sustituyen web.dev y Node.js. Lectura pública de caché y actualización manual por fuente para super_admin. Preparado para CI y promoción."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -35,7 +35,7 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-16",
+    "checked_on": "2026-11-18",
     "evidence_paths": [
       "docs/evidence/news-source-discovery-20261116.md",
       "docs/evidence/news-public-rss-implementation-20261116.md",
@@ -43,15 +43,25 @@
       "docs/evidence/news-nodejs-source-review-20261116.md",
       "docs/evidence/news-nodejs-integration-20261116.md",
       "docs/evidence/news-final-validation-20261116.md",
-      "docs/evidence/news-final-ui-20261116.md"
+      "docs/evidence/news-final-ui-20261116.md",
+      "docs/evidence/news-dev-source-refresh-20261118.md"
     ],
-    "notes": "NEWS-06: JWT y sesiones SQL reales de laboratorio,13gates sin red; opt-in14gates con2POSTadmin/RSSreales y110noticias recuperadas públicamente, sin DB configurada. UI compilada adversa y carga inicial220px correctas;41focales News, tipos/lint/build. Zoom nativo200% geométrico/teclado correcto; captura visual fallida, teléfono/Google/sesión humana/adopción no acreditados. CI del SHA se consulta en PR/Actions."
+    "notes": "La revisión verificó los tres feeds oficiales por HTTPS y sus fuentes de atribución. Los cortes anteriores conservan las pruebas de la primera entrega."
   },
   "approval": null
 }
 ---
 
 # Noticias — contexto de producto para NodiaAI
+
+## Renovación de fuentes — 2026-11-18
+
+[Plan105 §16](../../../mvp/105-on-demand-tech-news.md#16-renovación-del-catálogo-de-noticias-dev--2026-11-18)
+y el [catálogo](../../../features/news/source-catalog.md) registran Go y Rust
+en Programación y Kubernetes en Tecnología. La rama deja fuera de lectura
+pública los snapshots de web.dev y Node.js. La lectura conserva acceso público
+y la obtención externa sigue reservada a cada clic de un super_admin vigente.
+La evidencia del catálogo anterior se conserva en las secciones históricas.
 
 ## NEWS-06: candidato preparado — 2026-11-16
 
@@ -71,9 +81,8 @@ Node.js aporta sólo título/URL/fecha y mantiene autor/extracto null. Aviso MIT
 
 Intención confirmada: una sección para consultar noticias de tecnología,
 programación e IA mediante un botón. [Plan105](../../../mvp/105-on-demand-tech-news.md)
-conserva investigación y contrato, con web.dev y Node.js implementadas y
-[verificadas por alcance local](../../../evidence/news-nodejs-integration-20261116.md),
-sin aprobación documental completa. El usuario confirmó en §8 lectura pública bajo Home y
+conserva la investigación, el contrato y el historial de la primera entrega.
+El usuario confirmó en §8 lectura pública bajo Home y
 fuentes con cupo sólo para sesiones Nodia válidas. La solicitud posterior de §9
 reserva toda obtención externa a super_admin activo; otros usuarios leen resultados
 conservados de la capa que les corresponda. La lectura pública no requiere módulo.
@@ -82,10 +91,10 @@ conservados de la capa que les corresponda. La lectura pública no requiere mód
 
 | Concepto | Significado | Relación y fuente |
 | --- | --- | --- |
-| Fuente | Proveedor/editor que entrega enlaces y metadatos | Plan105 §12; web.dev y Node.js habilitadas localmente |
+| Fuente | Editor que entrega enlaces y metadatos | Plan105 §16; Go, Rust y Kubernetes en el catálogo actualizado |
 | Noticia | Artículo enlazado con procedencia, sin garantía de veracidad | Plan105 §1 y §3 |
 | Actualización | Consulta externa explícita; puede consumir cuota | Plan105 §3 |
-| Tema | Interés para seleccionar/filtrar contenido | Tecnología, programación e IA; ambos RSS mapeados a Programación por catálogo, sin clasificación IA por título |
+| Tema | Interés para seleccionar o filtrar contenido | Go y Rust en Programación. Kubernetes en Tecnología. IA para futuras fuentes autorizadas |
 
 ## Módulos y autoridad
 
@@ -104,7 +113,7 @@ se vuelven públicos por guardar sus resultados.
 
 | Función | Ficha | Implementación | Integración NodiaAI | Destino |
 | --- | --- | --- | --- | --- |
-| Lectura y actualización bajo demanda | [Ficha](features/on-demand-reading.md) | implemented para web.dev y Node.js locales | unregistered | `/news` |
+| Lectura y actualización bajo demanda | [Ficha](features/on-demand-reading.md) | Go, Rust y Kubernetes integrados en la rama | unregistered | `/news` |
 
 ## Interpretación de solicitudes que combinan funciones
 
@@ -114,13 +123,10 @@ y consulta. No hay herramienta de Noticias disponible para el chat.
 
 ## Restricciones y pendientes
 
-El [catálogo inicial](../../../features/news/source-catalog.md) propone web.dev
-RSS y Node.js como fuentes públicas locales; GitHub sigue candidata con condiciones
-pendientes y daily.dev limitada/deshabilitada por términos. Login Nodia no autoriza
-una cuenta daily.dev compartida; aclaración del proveedor y conexión propias
-siguen pendientes. Los [contratos NEWS-02/03](../../../features/news/http-contract.md)
-separan GET público de caché y POST de actualización super_admin, implementados
-para web.dev y Node.js con pruebas locales. No se adopta por escribir este contexto.
+El [catálogo](../../../features/news/source-catalog.md) define tres fuentes
+públicas. Las demás candidatas requieren revisar sus propios términos y
+condiciones. Los [contratos](../../../features/news/http-contract.md) separan
+GET público de caché y POST de actualización super_admin.
 Resúmenes IA, guardados y estados de lectura son posibles
 ampliaciones; no presentarlos como funciones disponibles. Ficha draft excluida
 de publicación, añadida al registro sólo para validación documental.

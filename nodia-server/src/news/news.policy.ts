@@ -5,9 +5,11 @@ import { Parser } from 'htmlparser2';
 import type {
   NewsArticle,
   NewsSourceKey,
+  NewsTopic,
   StoredNewsArticle,
 } from './news.types.js';
 import {
+  NEWS_PUBLIC_CATALOG,
   NEWS_SOURCES,
   newsSource,
   type NewsSourceDefinition,
@@ -15,7 +17,6 @@ import {
 export const NEWS_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 export const NEWS_COOLDOWN_MS = 15 * 60 * 1000;
 export const NEWS_LEASE_MS = 30_000;
-export const NEWS_MAX_BYTES = 1024 * 1024;
 export const NEWS_MAX_ITEMS = 100;
 
 export class NewsFeedError extends Error {
@@ -83,12 +84,29 @@ export function safeNewsUrl(value: unknown): string | null {
   }
 }
 
+const ATOM_NAMESPACE = 'http://www.w3.org/2005/Atom';
+
+function xmlEntries(value: unknown): unknown[] {
+  return value === undefined ? [] : Array.isArray(value) ? value : [value];
+}
+
+function atomArticleUrl(value: unknown): string | null {
+  for (const raw of xmlEntries(value)) {
+    const link = object(raw);
+    if (!link || (link['@_rel'] !== undefined && link['@_rel'] !== 'alternate'))
+      continue;
+    const url = safeNewsUrl(link['@_href']);
+    if (url) return url;
+  }
+  return null;
+}
+
 export function parseNewsFeed(
   xml: string,
   receivedAt: Date,
-  source: NewsSourceDefinition = NEWS_SOURCES[0],
+  source: NewsSourceDefinition,
 ): StoredNewsArticle[] {
-  if (Buffer.byteLength(xml, 'utf8') > NEWS_MAX_BYTES)
+  if (Buffer.byteLength(xml, 'utf8') > source.max_feed_bytes)
     throw new NewsFeedError('response_too_large');
   // Reject DTDs/custom entities before parser work; no external entity resolution.
   if (
@@ -96,27 +114,26 @@ export function parseNewsFeed(
     XMLValidator.validate(xml) !== true
   )
     throw new NewsFeedError('invalid_feed');
-  let parsed: unknown;
+  const atom = source.format === 'atom';
+  let parsed: Record<string, unknown> | null;
   try {
-    parsed = new XMLParser({
-      ignoreAttributes: true,
-      parseTagValue: false,
-      trimValues: true,
-      processEntities: true,
-      maxNestedTags: 20,
-    }).parse(xml);
+    parsed = object(
+      new XMLParser({
+        ignoreAttributes: !atom,
+        parseTagValue: false,
+        trimValues: true,
+        processEntities: true,
+        maxNestedTags: 20,
+      }).parse(xml),
+    );
   } catch {
     throw new NewsFeedError('invalid_feed');
   }
-  const rawChannel = object(object(parsed)?.rss)?.channel;
+  const rawChannel = atom ? parsed?.feed : object(parsed?.rss)?.channel;
   const channel = rawChannel === '' ? {} : object(rawChannel);
-  if (!channel) throw new NewsFeedError('invalid_feed');
-  const rawItems =
-    channel.item === undefined
-      ? []
-      : Array.isArray(channel.item)
-        ? channel.item
-        : [channel.item];
+  if (!channel || (atom && channel['@_xmlns'] !== ATOM_NAMESPACE))
+    throw new NewsFeedError('invalid_feed');
+  const rawItems = xmlEntries(atom ? channel.entry : channel.item);
   if (rawItems.length > source.max_feed_items)
     throw new NewsFeedError('invalid_feed');
   const result: StoredNewsArticle[] = [];
@@ -124,31 +141,30 @@ export function parseNewsFeed(
   const identities = new Set<string>();
   for (const raw of rawItems) {
     const item = object(raw);
-    const title = newsPlainText(item?.title, 500);
-    const url = safeNewsUrl(item?.link);
-    if (!item || !title || !url) continue;
+    if (!item) continue;
+    const title = newsPlainText(
+      object(item.title)?.['#text'] ?? item.title,
+      500,
+    );
+    const url = atom ? atomArticleUrl(item.link) : safeNewsUrl(item.link);
+    if (!title || !url) continue;
+    const identity = atom ? item.id : item.guid;
     const guid =
-      typeof item.guid === 'string' && item.guid.length <= 4096
-        ? item.guid
-        : url;
+      typeof identity === 'string' && identity.length <= 4096 ? identity : url;
     if (identities.has(guid)) continue;
     identities.add(guid);
     if (urls.has(url)) continue;
-    const published =
-      typeof item.pubDate === 'string' ? Date.parse(item.pubDate) : Number.NaN;
+    const date = atom ? item.published : item.pubDate;
+    const published = typeof date === 'string' ? Date.parse(date) : Number.NaN;
     result.push({
       id: createHash('sha256').update(`${source.key}\0${guid}`).digest('hex'),
       source_key: source.key,
       source_name: source.name,
       title,
       url,
-      excerpt: source.include_excerpt
-        ? newsPlainText(item.description, 500)
-        : null,
-      author: source.include_author
-        ? newsPlainText(item['dc:creator'] ?? item.author, 200)
-        : null,
-      topic: 'programming',
+      excerpt: null,
+      author: null,
+      topic: source.topic,
       published_at: Number.isFinite(published)
         ? new Date(published).toISOString()
         : null,
@@ -224,6 +240,7 @@ export function publicNewsArticle(item: StoredNewsArticle): NewsArticle {
 export function groupPublicNewsArticles(
   articles: readonly StoredNewsArticle[],
   selectedSource?: NewsSourceKey,
+  selectedTopic?: NewsTopic,
 ): NewsArticle[] {
   const grouped = new Map<string, StoredNewsArticle[]>();
   for (const source of NEWS_SOURCES) {
@@ -237,9 +254,11 @@ export function groupPublicNewsArticles(
   }
   const result: NewsArticle[] = [];
   for (const entries of grouped.values()) {
-    const primary = selectedSource
-      ? entries.find((entry) => entry.source_key === selectedSource)
-      : entries[0];
+    const primary = entries.find(
+      (entry) =>
+        (!selectedSource || entry.source_key === selectedSource) &&
+        (!selectedTopic || entry.topic === selectedTopic),
+    );
     if (!primary) continue;
     result.push({
       ...publicNewsArticle(primary),
@@ -254,6 +273,7 @@ export function groupPublicNewsArticles(
 }
 
 export interface NewsQuery {
+  catalog?: number;
   source_key?: string;
   topic?: string;
   order?: string;
@@ -265,7 +285,10 @@ export function normalizeNewsQuery(value: NewsQuery) {
   const limit = value.limit ?? 20;
   const order = value.order ?? 'recent';
   if (
-    (value.source_key !== undefined && !newsSource(value.source_key)) ||
+    (value.catalog !== undefined && value.catalog !== NEWS_PUBLIC_CATALOG) ||
+    (value.source_key !== undefined &&
+      (value.catalog !== NEWS_PUBLIC_CATALOG ||
+        !newsSource(value.source_key))) ||
     (value.topic !== undefined &&
       !['technology', 'programming', 'ai'].includes(value.topic)) ||
     !['recent', 'received'].includes(order) ||
@@ -278,10 +301,11 @@ export function normalizeNewsQuery(value: NewsQuery) {
   )
     throw new BadRequestException('news:invalid_input');
   return {
+    catalog: value.catalog,
     page,
     limit,
     order,
-    topic: value.topic,
+    topic: value.topic as NewsTopic | undefined,
     source_key: value.source_key as NewsSourceKey | undefined,
   };
 }

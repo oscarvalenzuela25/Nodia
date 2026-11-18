@@ -703,3 +703,28 @@ permisos/UI reales y aceptación humana. Teléfono e inspección visual nativa20
 conservan los límites de§13. No repetir integración, promoción o despliegue ya
 comprobados. Esta conciliación no modifica contratos, capacidades, herramientas
 o aprobación de fichas/ADR; no acredita un recorrido humano por leer logs.
+
+## 16. Renovación del catálogo de Noticias dev — 2026-11-18
+
+El usuario solicita retirar web.dev y Node.js y buscar fuentes para Noticias
+dev. `codex/dev-news-sources`, creada desde `development`, las sustituye en el
+catálogo activo por The Go Blog, Rust Blog y Kubernetes Blog. Go y Rust cubren
+Programación y Kubernetes, Tecnología. La [revisión de los feeds](../evidence/news-dev-source-refresh-20261118.md)
+documenta publicaciones recientes, tamaños y atribución. También registra
+GitHub Changelog, DEV Community, Hacker News y Hugging Face como candidatas.
+
+El [contrato de lectura y actualización](../features/news/http-contract.md)
+usa `catalog=2` para leer las fuentes nuevas. Las pestañas con Client anterior
+reciben una página vacía válida mientras se publica el Client actualizado.
+La actualización requiere una fuente explícita, sesión válida y `super_admin`
+vigente. Se mantiene la lectura pública de caché, el enfriamiento de 15 minutos
+y la retención lógica de siete días. Se muestran título, URL, fecha y procedencia.
+
+La migración `1793750000000` amplía el CHECK sin tocar las filas históricas.
+La API excluye las dos fuentes retiradas de lectura y actualización. Su caché
+se conserva para una reversión de versión. El `down` restaura el CHECK anterior
+y elimina sólo la caché nueva. CI incorpora la prueba de migración y autoridad HTTP de
+Noticias sobre PostgreSQL desechable, con transporte controlado.
+
+El próximo corte operativo corresponde a CI del SHA de la rama y la publicación
+ordenada de Server y Client, seguida de las primeras actualizaciones por fuente.

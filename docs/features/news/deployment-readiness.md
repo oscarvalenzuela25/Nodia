@@ -1,5 +1,10 @@
 # News — preparación y entrega de la primera versión pública
 
+> Para el catálogo que sustituye las dos fuentes iniciales, consultar
+> [Plan105 §16](../../mvp/105-on-demand-tech-news.md#16-renovación-del-catálogo-de-noticias-dev--2026-11-18)
+> y el [contrato vigente](http-contract.md). La guía inferior conserva la
+> evidencia y los pasos de la primera publicación.
+
 Fecha2026-11-16. Complementa [plan105](../../mvp/105-on-demand-tech-news.md),
 [contrato HTTP](http-contract.md) y [plan99](../../mvp/99-production-deployment-and-cicd-plan.md).
 Esta guía concreta el recorrido de entrega; no autoriza ni acredita un despliegue,

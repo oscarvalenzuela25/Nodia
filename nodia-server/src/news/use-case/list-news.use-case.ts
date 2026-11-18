@@ -7,13 +7,25 @@ import {
   type NewsQuery,
 } from '../news.policy.js';
 import type { NewsListResponse } from '../news.types.js';
-import { NEWS_SOURCES } from '../news.sources.js';
+import { NEWS_PUBLIC_CATALOG, NEWS_SOURCES } from '../news.sources.js';
 
 @Injectable()
 export class ListNewsUseCase {
   constructor(private readonly news: NewsService) {}
   async execute(input: NewsQuery): Promise<NewsListResponse> {
     const query = normalizeNewsQuery(input);
+    // Previously published clients validate closed source enums.
+    if (query.catalog !== NEWS_PUBLIC_CATALOG)
+      return {
+        items: [],
+        sources: [],
+        pagination: {
+          page: query.page,
+          limit: query.limit,
+          total: 0,
+          total_pages: 0,
+        },
+      };
     const snapshots = await this.news.snapshots();
     const now = new Date();
     const items = groupPublicNewsArticles(
@@ -21,19 +33,18 @@ export class ListNewsUseCase {
         currentNewsArticles(snapshot.articles, now),
       ),
       query.source_key,
-    )
-      .filter((item) => !query.topic || item.topic === query.topic)
-      .sort((a, b) => {
-        const dateA =
-          query.order === 'received'
-            ? a.received_at
-            : (a.published_at ?? a.received_at);
-        const dateB =
-          query.order === 'received'
-            ? b.received_at
-            : (b.published_at ?? b.received_at);
-        return dateB.localeCompare(dateA) || a.id.localeCompare(b.id);
-      });
+      query.topic,
+    ).sort((a, b) => {
+      const dateA =
+        query.order === 'received'
+          ? a.received_at
+          : (a.published_at ?? a.received_at);
+      const dateB =
+        query.order === 'received'
+          ? b.received_at
+          : (b.published_at ?? b.received_at);
+      return dateB.localeCompare(dateA) || a.id.localeCompare(b.id);
+    });
     return {
       items: items.slice(
         (query.page - 1) * query.limit,

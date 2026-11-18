@@ -1,5 +1,11 @@
 # Progreso del MVP — Nodia
 
+**Noticias dev — 2026-11-18.** La rama
+`codex/dev-news-sources` sustituye web.dev y Node.js por Go, Rust y Kubernetes.
+El [Plan105 §16](105-on-demand-tech-news.md#16-renovación-del-catálogo-de-noticias-dev--2026-11-18)
+describe el contrato y la migración. La [revisión](../evidence/news-dev-source-refresh-20261118.md)
+registra tráfico HTTPS real de los feeds y candidatas para ampliar la cobertura.
+
 **Recuperación del CD antes de migrar — 2026-11-18.** El VPS adoptó el
 actualizador y la política que pasaron el fallo de respaldo simulado en systemd
 aislado. El ensayo confirmó el regreso de la API y el bloqueo del CD mientras

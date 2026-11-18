@@ -74,7 +74,7 @@ export class RefreshNewsUseCase {
     const token = randomUUID();
     const reservation = await this.asAdmin(actor, async (manager) => {
       await this.news.create(manager, definition.key);
-      const source = (await this.news.snapshot(manager, true, definition.key))!;
+      const source = (await this.news.snapshot(definition.key, manager, true))!;
       const now = await this.news.clock(manager);
       if (source.lease_token && source.lease_until && source.lease_until > now)
         throw new ConflictException('news:refresh_in_progress');
@@ -112,7 +112,7 @@ export class RefreshNewsUseCase {
       )
         throw new NewsFeedError('invalid_feed');
       const response = await this.asAdmin(actor, async (manager) => {
-        const source = await this.news.snapshot(manager, true, definition.key);
+        const source = await this.news.snapshot(definition.key, manager, true);
         const now = await this.news.clock(manager);
         if (
           !source ||
@@ -157,7 +157,7 @@ export class RefreshNewsUseCase {
       const failure = error instanceof NewsFeedError ? error : null;
       // Internal cleanup is fenced and cannot publish content after revocation or takeover.
       await this.dataSource.transaction(async (manager) => {
-        const source = await this.news.snapshot(manager, true, definition.key);
+        const source = await this.news.snapshot(definition.key, manager, true);
         if (!source || source.lease_token !== token) return;
         source.lease_token = null;
         source.lease_until = null;

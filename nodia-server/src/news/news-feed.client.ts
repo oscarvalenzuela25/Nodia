@@ -2,14 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { lookup } from 'node:dns/promises';
 import { request } from 'node:https';
 import ipaddr from 'ipaddr.js';
-import {
-  NEWS_MAX_BYTES,
-  NewsFeedError,
-  newsRetryAt,
-  parseNewsFeed,
-} from './news.policy.js';
-import type { FeedResult } from './news.types.js';
-import type { NewsSourceKey } from './news.types.js';
+import { NewsFeedError, newsRetryAt, parseNewsFeed } from './news.policy.js';
+import type { FeedResult, NewsSourceKey } from './news.types.js';
 import { newsSource } from './news.sources.js';
 
 export function assertNewsAddress(address: string): void {
@@ -35,7 +29,7 @@ export class NewsFeedClient {
       etag: string | null;
       lastModified: string | null;
     },
-    sourceKey: NewsSourceKey = 'web-dev',
+    sourceKey: NewsSourceKey,
   ): Promise<FeedResult> {
     const source = newsSource(sourceKey);
     if (!source) throw new NewsFeedError('unsafe_destination');
@@ -61,7 +55,7 @@ export class NewsFeedClient {
     const address = addresses[0];
     return new Promise((resolve, reject) => {
       const headers: Record<string, string> = {
-        Accept: 'application/rss+xml, application/xml, text/xml',
+        Accept: `application/${source.format}+xml, application/xml, text/xml`,
         'Accept-Encoding': 'identity',
         'User-Agent': 'Nodia-News/1.0',
       };
@@ -117,17 +111,22 @@ export class NewsFeedClient {
             return;
           }
           const encoding = response.headers['content-encoding'];
-          const type = response.headers['content-type'] ?? '';
+          const type = response.headers['content-type']
+            ?.split(';', 1)[0]
+            .trim()
+            .toLowerCase();
           if (
             (encoding && encoding !== 'identity') ||
-            !/^(?:application\/(?:rss\+xml|xml)|text\/xml)(?:;|$)/iu.test(type)
+            (type !== `application/${source.format}+xml` &&
+              type !== 'application/xml' &&
+              type !== 'text/xml')
           ) {
             response.destroy();
             reject(new NewsFeedError('invalid_feed'));
             return;
           }
           const length = Number(response.headers['content-length']);
-          if (Number.isFinite(length) && length > NEWS_MAX_BYTES) {
+          if (Number.isFinite(length) && length > source.max_feed_bytes) {
             response.destroy();
             reject(new NewsFeedError('response_too_large'));
             return;
@@ -136,7 +135,7 @@ export class NewsFeedClient {
           let bytes = 0;
           response.on('data', (chunk: Buffer) => {
             bytes += chunk.length;
-            if (bytes > NEWS_MAX_BYTES) {
+            if (bytes > source.max_feed_bytes) {
               response.destroy();
               reject(new NewsFeedError('response_too_large'));
               return;

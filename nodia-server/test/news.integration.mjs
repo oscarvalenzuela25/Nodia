@@ -25,6 +25,7 @@ import {
 } from '../dist/news/news.policy.js';
 import { PublicNewsCache1793670000000 } from '../dist/migrations/1793670000000-PublicNewsCache.js';
 import { NewsNodeSource1793670001000 } from '../dist/migrations/1793670001000-NewsNodeSource.js';
+import { ReplaceDevNewsSources1793750000000 } from '../dist/migrations/1793750000000-ReplaceDevNewsSources.js';
 import { newsSource } from '../dist/news/news.sources.js';
 import { AuthGuard } from '../dist/auth/auth.guard.js';
 import { AuthService } from '../dist/auth/auth.service.js';
@@ -43,6 +44,11 @@ const docker = (...args) =>
   }).trim();
 const session = randomUUID();
 const ordinarySession = randomUUID();
+const GO = 'go-blog';
+const RUST = 'rust-blog';
+const KUBERNETES = 'kubernetes-blog';
+const sourceKeys = [GO, RUST, KUBERNETES];
+const retiredKeys = ['node-js', 'web-dev'];
 const actor = { userId: '1', sessionId: session };
 const ordinary = { userId: '2', sessionId: ordinarySession };
 let source;
@@ -58,14 +64,35 @@ const feed = {
     return nextFetch(validators, key);
   },
 };
-const xml = (guid = 'news-fixture', suffix = '') =>
-  `<rss><channel><item><title>Fixture article</title><link>https://web.dev/blog/fixture${suffix}</link><guid>${guid}</guid><description>Fixture &amp; description</description></item></channel></rss>`;
-const result = (guid, suffix = '', key = 'web-dev') => ({
+function xml(guid, suffix, key) {
+  const url = `https://example.invalid/dev-news/fixture${suffix}`;
+  if (key === KUBERNETES)
+    return `<rss version="2.0"><channel><item><title>Fixture article</title><link>${url}</link><guid>${guid}</guid><pubDate>Wed, 18 Nov 2026 10:30:00 GMT</pubDate><description>Fixture description</description><author>Lab author</author></item></channel></rss>`;
+  return `<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Fixture article</title><link rel="alternate" href="${url}"/><id>${guid}</id><summary>Fixture description</summary><author><name>Lab author</name></author></entry></feed>`;
+}
+const result = (guid, suffix = '', key = GO) => ({
   status: 'updated',
-  articles: parseNewsFeed(xml(guid, suffix), new Date(), newsSource(key)),
+  articles: parseNewsFeed(xml(guid, suffix, key), new Date(), newsSource(key)),
   etag: '"fixture"',
   lastModified: null,
 });
+function historicalArticle(key) {
+  const now = new Date().toISOString();
+  return {
+    id: key,
+    source_key: key,
+    source_name: key === 'web-dev' ? 'web.dev' : 'Node.js',
+    title: `Retired fixture ${key}`,
+    url: `https://example.invalid/retired/${key}`,
+    excerpt: null,
+    author: null,
+    topic: 'programming',
+    published_at: null,
+    received_at: now,
+    last_seen_at: now,
+    license_url: 'https://example.invalid/license',
+  };
+}
 const checks = [];
 try {
   docker(
@@ -91,7 +118,17 @@ try {
   const port = Number(portLine.split(':')[1]);
   for (let attempt = 0; ; attempt++) {
     try {
-      docker('exec', name, 'pg_isready', '-U', 'news_test', '-d', 'news_test');
+      docker(
+        'exec',
+        name,
+        'pg_isready',
+        '-h',
+        '127.0.0.1',
+        '-U',
+        'news_test',
+        '-d',
+        'news_test',
+      );
       break;
     } catch (error) {
       if (attempt >= 60) throw error;
@@ -135,49 +172,65 @@ try {
   );
   const migration = new PublicNewsCache1793670000000();
   const runner = source.createQueryRunner();
+  const loadRetiredRows = () =>
+    source.query(
+      'SELECT * FROM news_sources WHERE source_key = ANY($1::text[]) ORDER BY source_key',
+      [retiredKeys],
+    );
+  const insertRetired = (key) =>
+    source.query(
+      `INSERT INTO news_sources(source_key,articles,etag)
+     VALUES($1,$2::jsonb,$3)`,
+      [
+        key,
+        JSON.stringify([historicalArticle(key)]),
+        `fixture-${key}-validator`,
+      ],
+    );
+  let retiredBefore;
   try {
     await migration.up(runner);
     await migration.down(runner);
     await migration.up(runner);
     const nodeMigration = new NewsNodeSource1793670001000();
-    await source.query(
-      "INSERT INTO news_sources(source_key,articles,etag) VALUES('web-dev',$1::jsonb,'fixture-web-validator')",
-      [JSON.stringify(result('migration-web').articles)],
-    );
-    const webBeforeMigration = await source.query(
-      "SELECT * FROM news_sources WHERE source_key='web-dev'",
-    );
+    await insertRetired('web-dev');
+    const webBeforeMigration = await loadRetiredRows();
     await nodeMigration.up(runner);
-    await source.query(
-      "INSERT INTO news_sources(source_key) VALUES('node-js')",
-    );
+    await insertRetired('node-js');
     await nodeMigration.down(runner);
     assert.deepEqual(
       await source.query('SELECT source_key FROM news_sources'),
       [{ source_key: 'web-dev' }],
     );
-    assert.deepEqual(
-      await source.query(
-        "SELECT * FROM news_sources WHERE source_key='web-dev'",
-      ),
-      webBeforeMigration,
-    );
+    assert.deepEqual(await loadRetiredRows(), webBeforeMigration);
     await nodeMigration.up(runner);
-    await source.query(
-      "UPDATE news_sources SET articles='[]'::jsonb,etag=NULL WHERE source_key='web-dev'",
+    await insertRetired('node-js');
+    retiredBefore = await loadRetiredRows();
+
+    const replacement = new ReplaceDevNewsSources1793750000000();
+    const insertSource = (key) =>
+      source.query('INSERT INTO news_sources(source_key) VALUES($1)', [key]);
+    const listSourceKeys = () =>
+      source.query('SELECT source_key FROM news_sources ORDER BY source_key');
+    await replacement.up(runner);
+    assert.deepEqual(await loadRetiredRows(), retiredBefore);
+    for (const key of sourceKeys) await insertSource(key);
+    assert.equal((await listSourceKeys()).length, 5);
+    await assert.rejects(() => insertSource('daily-dev'), { code: '23514' });
+    await replacement.down(runner);
+    assert.deepEqual(await loadRetiredRows(), retiredBefore);
+    assert.deepEqual(
+      await listSourceKeys(),
+      retiredKeys.map((source_key) => ({ source_key })),
     );
-    await assert.rejects(
-      () =>
-        source.query(
-          "INSERT INTO news_sources(source_key) VALUES('daily-dev')",
-        ),
-      /check constraint/,
-    );
+    await assert.rejects(() => insertSource(GO), { code: '23514' });
+    await replacement.up(runner);
+    assert.deepEqual(await loadRetiredRows(), retiredBefore);
   } finally {
     await runner.release();
   }
   checks.push(
-    'migration_up_down_up_only_disposable_cache_and_node_rollback_preserves_web',
+    'migration_up_down_up_preserves_retired_snapshots_and_rollback_discards_only_new_cache',
   );
   const service = new NewsService(source);
   const refresh = new RefreshNewsUseCase(source, service, feed);
@@ -187,39 +240,43 @@ try {
     feed,
   );
   const list = new ListNewsUseCase(service);
+  const listCurrent = (query = {}) => list.execute({ catalog: 2, ...query });
   const allowRefresh = async () =>
     source.query(
-      "UPDATE news_sources SET next_refresh_at=clock_timestamp()-interval '1 second',lease_token=NULL,lease_until=NULL",
+      `UPDATE news_sources SET next_refresh_at=clock_timestamp()-interval '1 second',
+       lease_token=NULL,lease_until=NULL WHERE source_key=ANY($1::text[])`,
+      [sourceKeys],
     );
-  assert.equal((await list.execute({})).items.length, 0);
+  assert.equal((await listCurrent()).items.length, 0);
   assert.deepEqual(
-    (await list.execute({})).sources.map((entry) => entry.key),
-    ['web-dev', 'node-js'],
+    (await listCurrent()).sources.map((entry) => entry.key),
+    sourceKeys,
   );
   assert.equal(calls, 0);
   nextFetch = async () => result('first');
   await assert.rejects(
-    () => refresh.execute(ordinary, { source_key: 'web-dev' }),
+    () => refresh.execute(ordinary, { source_key: GO }),
     /news:super_admin_required/,
   );
   await source.query('UPDATE user_roles SET is_active=false WHERE user_id=1');
   await assert.rejects(
-    () => refresh.execute(actor, { source_key: 'web-dev' }),
+    () => refresh.execute(actor, { source_key: GO }),
     /news:super_admin_required/,
   );
   assert.equal(calls, 0);
   await source.query('UPDATE user_roles SET is_active=true WHERE user_id=1');
   assert.equal(
-    (await refresh.execute(actor, { source_key: 'web-dev' })).status,
+    (await refresh.execute(actor, { source_key: GO })).status,
     'updated',
   );
   assert.equal(calls, 1);
-  const first = (await list.execute({})).items[0];
-  assert.equal(first.excerpt, 'Fixture & description');
+  const first = (await listCurrent()).items[0];
+  assert.equal(first.excerpt, null);
+  assert.equal(first.author, null);
   assert.equal(first.published_at, null);
   assert.ok(!Object.hasOwn(first, 'last_seen_at'));
   assert.equal(
-    (await refresh.execute(actor, { source_key: 'web-dev' })).status,
+    (await refresh.execute(actor, { source_key: GO })).status,
     'cached',
   );
   assert.equal(calls, 1);
@@ -237,10 +294,10 @@ try {
       release = () => resolve(result('second'));
     });
   };
-  const pending = refresh.execute(actor, { source_key: 'web-dev' });
+  const pending = refresh.execute(actor, { source_key: GO });
   await waitForStart;
   await assert.rejects(
-    () => refreshOtherProcess.execute(actor, { source_key: 'web-dev' }),
+    () => refreshOtherProcess.execute(actor, { source_key: GO }),
     /news:refresh_in_progress/,
   );
   const callsDuring = calls;
@@ -252,9 +309,9 @@ try {
   // Same URL with changed GUID must keep its canonical source ID on subsequent304.
   await allowRefresh();
   nextFetch = async () => result('changed-guid');
-  await refresh.execute(actor, { source_key: 'web-dev' });
-  assert.equal((await list.execute({})).items[0].id, first.id);
-  let snapshot = await service.snapshot();
+  await refresh.execute(actor, { source_key: GO });
+  assert.equal((await listCurrent()).items[0].id, first.id);
+  let snapshot = await service.snapshot(GO);
   assert.deepEqual(snapshot.feed_ids, [first.id]);
   const oldSeen = snapshot.articles[0].last_seen_at;
   await delay(5);
@@ -269,10 +326,10 @@ try {
     };
   };
   assert.equal(
-    (await refresh.execute(actor, { source_key: 'web-dev' })).status,
+    (await refresh.execute(actor, { source_key: GO })).status,
     'not_modified',
   );
-  snapshot = await service.snapshot();
+  snapshot = await service.snapshot(GO);
   assert.ok(snapshot.articles[0].last_seen_at > oldSeen);
   checks.push(
     'guid_change_same_url_canonical_id_then_304_revalidates_seen_only',
@@ -287,53 +344,54 @@ try {
     );
   };
   await assert.rejects(
-    () => refresh.execute(actor, { source_key: 'web-dev' }),
+    () => refresh.execute(actor, { source_key: GO }),
     /news:source_rate_limited/,
   );
-  snapshot = await service.snapshot();
+  snapshot = await service.snapshot(GO);
   assert.equal(snapshot.last_success_at.toISOString(), previousSuccess);
   assert.equal(snapshot.last_error_code, 'news:source_rate_limited');
   assert.ok(snapshot.next_refresh_at.getTime() > Date.now() + 3500000);
-  assert.equal((await list.execute({})).items[0].id, first.id);
+  assert.equal((await listCurrent()).items[0].id, first.id);
   checks.push('failed_refresh_keeps_content_success_date_and_retry_after');
 
   // Revocation after dispatch prevents publishing an already-running external response.
   await allowRefresh();
-  const beforeRevocation = (await list.execute({})).items;
+  const beforeRevocation = (await listCurrent()).items;
   nextFetch = async () => {
     await source.query('UPDATE user_roles SET is_active=false WHERE user_id=1');
     return result('revoked', '?revoked=1');
   };
   await assert.rejects(
-    () => refresh.execute(actor, { source_key: 'web-dev' }),
+    () => refresh.execute(actor, { source_key: GO }),
     /news:super_admin_required/,
   );
-  assert.deepEqual((await list.execute({})).items, beforeRevocation);
+  assert.deepEqual((await listCurrent()).items, beforeRevocation);
   await source.query('UPDATE user_roles SET is_active=true WHERE user_id=1');
   checks.push('role_revocation_during_network_prevents_publication');
 
   await allowRefresh();
   nextFetch = async () => {
     await source.query(
-      "UPDATE news_sources SET lease_token=$1,lease_until=clock_timestamp()+interval '30 seconds'",
-      [randomUUID()],
+      `UPDATE news_sources SET lease_token=$1,lease_until=clock_timestamp()+interval '30 seconds'
+       WHERE source_key=$2`,
+      [randomUUID(), GO],
     );
     return result('stale', '?stale=1');
   };
   await assert.rejects(
-    () => refresh.execute(actor, { source_key: 'web-dev' }),
+    () => refresh.execute(actor, { source_key: GO }),
     /news:refresh_superseded/,
   );
-  assert.deepEqual((await list.execute({})).items, beforeRevocation);
-  assert.notEqual((await service.snapshot()).lease_token, null);
+  assert.deepEqual((await listCurrent()).items, beforeRevocation);
+  assert.notEqual((await service.snapshot(GO)).lease_token, null);
   checks.push('stale_lease_result_and_cleanup_are_fenced');
 
-  snapshot = await service.snapshot();
+  snapshot = await service.snapshot(GO);
   snapshot.articles[0].last_seen_at = new Date(
     Date.now() - NEWS_RETENTION_MS - 1000,
   ).toISOString();
   await source.getRepository(NewsSource).save(snapshot);
-  assert.equal((await list.execute({})).items.length, 0);
+  assert.equal((await listCurrent()).items.length, 0);
   await allowRefresh();
   nextFetch = async () => ({
     status: 'updated',
@@ -341,8 +399,8 @@ try {
     etag: null,
     lastModified: null,
   });
-  await refresh.execute(actor, { source_key: 'web-dev' });
-  assert.deepEqual((await service.snapshot()).articles, []);
+  await refresh.execute(actor, { source_key: GO });
+  assert.deepEqual((await service.snapshot(GO)).articles, []);
   checks.push(
     'retention_read_excludes_expired_and_refresh_prunes_physical_cache',
   );
@@ -350,39 +408,38 @@ try {
   // Each source owns its reservation, validators, snapshot and failure state.
   await allowRefresh();
   nextFetch = async (_validators, key) => result('shared', '', key);
-  await refresh.execute(actor, { source_key: 'web-dev' });
-  const webState = await service.snapshot();
-  await refresh.execute(actor, { source_key: 'node-js' });
-  const nodeState = await service.snapshot(undefined, false, 'node-js');
-  assert.ok(nodeState.last_success_at);
-  const allSources = await list.execute({});
+  await refresh.execute(actor, { source_key: GO });
+  const goState = await service.snapshot(GO);
+  await refresh.execute(actor, { source_key: RUST });
+  const rustState = await service.snapshot(RUST);
+  assert.ok(rustState.last_success_at);
+  const allSources = await listCurrent();
   assert.equal(allSources.pagination.total, 1);
+  assert.equal(allSources.items[0].source_key, GO);
   assert.deepEqual(
     allSources.items[0].provenances.map((entry) => entry.source_key),
-    ['web-dev', 'node-js'],
+    [GO, RUST],
   );
-  const onlyNode = await list.execute({ source_key: 'node-js' });
-  assert.equal(onlyNode.items[0].source_key, 'node-js');
-  assert.equal(onlyNode.items[0].excerpt, null);
-  assert.equal(
-    (await list.execute({ source_key: 'web-dev' })).items[0].excerpt,
-    'Fixture & description',
-  );
+  const onlyRust = await listCurrent({ source_key: RUST });
+  assert.equal(onlyRust.items[0].source_key, RUST);
+  assert.equal(onlyRust.items[0].excerpt, null);
+  assert.notEqual(onlyRust.items[0].id, allSources.items[0].id);
   const beforeCached = calls;
   assert.equal(
-    (await refresh.execute(actor, { source_key: 'web-dev' })).status,
+    (await refresh.execute(actor, { source_key: GO })).status,
     'cached',
   );
   assert.equal(calls, beforeCached);
   assert.equal(
-    (await service.snapshot()).last_success_at.toISOString(),
-    webState.last_success_at.toISOString(),
+    (await service.snapshot(GO)).last_success_at.toISOString(),
+    goState.last_success_at.toISOString(),
   );
   await source.query(
-    "UPDATE news_sources SET next_refresh_at=clock_timestamp()-interval '1 second' WHERE source_key='node-js'",
+    "UPDATE news_sources SET next_refresh_at=clock_timestamp()-interval '1 second' WHERE source_key=$1",
+    [RUST],
   );
   nextFetch = async (validators, key) => {
-    assert.equal(key, 'node-js');
+    assert.equal(key, RUST);
     assert.equal(validators.etag, '"fixture"');
     return {
       status: 'not_modified',
@@ -392,25 +449,26 @@ try {
     };
   };
   assert.equal(
-    (await refresh.execute(actor, { source_key: 'node-js' })).status,
+    (await refresh.execute(actor, { source_key: RUST })).status,
     'not_modified',
   );
   await source.query(
-    "UPDATE news_sources SET next_refresh_at=clock_timestamp()-interval '1 second' WHERE source_key='node-js'",
+    "UPDATE news_sources SET next_refresh_at=clock_timestamp()-interval '1 second' WHERE source_key=$1",
+    [RUST],
   );
   nextFetch = async () => {
     throw new NewsFeedError('source_unavailable');
   };
   await assert.rejects(
-    () => refresh.execute(actor, { source_key: 'node-js' }),
+    () => refresh.execute(actor, { source_key: RUST }),
     /news:source_unavailable/,
   );
-  assert.equal((await list.execute({})).pagination.total, 1);
-  assert.equal((await list.execute({ source_key: 'node-js' })).items.length, 1);
-  assert.equal((await service.snapshot()).last_error_code, null);
+  assert.equal((await listCurrent()).pagination.total, 1);
+  assert.equal((await listCurrent({ source_key: RUST })).items.length, 1);
+  assert.equal((await service.snapshot(GO)).last_error_code, null);
   assert.equal(
-    (await service.snapshot()).last_success_at.toISOString(),
-    webState.last_success_at.toISOString(),
+    (await service.snapshot(GO)).last_success_at.toISOString(),
+    goState.last_success_at.toISOString(),
   );
   checks.push(
     'multi_source_independent_cooldown_validators_failure_and_dedupe_provenances',
@@ -418,32 +476,32 @@ try {
 
   // A source in flight must not reserve another source or leak its lease/validators.
   await allowRefresh();
-  let finishWeb;
-  let webStarted;
-  const waitWeb = new Promise((resolve) => {
-    webStarted = resolve;
+  let finishGo;
+  let goStarted;
+  const waitGo = new Promise((resolve) => {
+    goStarted = resolve;
   });
   nextFetch = async (_validators, key) => {
-    if (key === 'node-js') return result('separate-node', '?node=1', key);
-    webStarted();
+    if (key === RUST) return result('separate-rust', '?rust=1', key);
+    goStarted();
     return new Promise((resolve) => {
-      finishWeb = () => resolve(result('shared'));
+      finishGo = () => resolve(result('shared'));
     });
   };
-  const pendingWeb = refresh.execute(actor, { source_key: 'web-dev' });
-  await waitWeb;
+  const pendingGo = refresh.execute(actor, { source_key: GO });
+  await waitGo;
   assert.equal(
-    (await refreshOtherProcess.execute(actor, { source_key: 'node-js' }))
-      .status,
+    (await refreshOtherProcess.execute(actor, { source_key: RUST })).status,
     'updated',
   );
-  finishWeb();
-  await pendingWeb;
-  assert.equal((await list.execute({})).pagination.total, 2);
+  finishGo();
+  await pendingGo;
+  assert.equal((await listCurrent()).pagination.total, 2);
   checks.push('different_source_can_refresh_while_other_source_is_in_flight');
-  await source.query("DELETE FROM news_sources WHERE source_key='node-js'");
+  await source.query('DELETE FROM news_sources WHERE source_key=$1', [RUST]);
   await source.query(
-    "UPDATE news_sources SET articles='[]'::jsonb,feed_ids='{}' WHERE source_key='web-dev'",
+    "UPDATE news_sources SET articles='[]'::jsonb,feed_ids='{}' WHERE source_key=$1",
+    [GO],
   );
 
   moduleRef = await Test.createTestingModule({
@@ -519,13 +577,30 @@ try {
   );
   await app.init();
   const http = supertest(app.getHttpServer());
+  const getCurrent = (query = {}) =>
+    http.get('/api/v1/news').query({ catalog: 2, ...query });
   const beforeHttp = calls;
-  assert.equal((await http.get('/api/v1/news')).status, 200);
-  assert.equal((await http.get('/api/v1/news?source_key=node-js')).status, 200);
-  assert.equal((await http.get('/api/v1/news')).body.sources.length, 2);
+  const legacy = await http.get('/api/v1/news').query({ page: 2, limit: 10 });
+  assert.equal(legacy.status, 200);
+  assert.deepEqual(legacy.body, {
+    items: [],
+    sources: [],
+    pagination: { page: 2, limit: 10, total: 0, total_pages: 0 },
+  });
+  const current = await getCurrent();
+  assert.equal(current.status, 200);
+  assert.deepEqual(
+    current.body.sources.map(({ key }) => key),
+    sourceKeys,
+  );
+  assert.deepEqual(current.body.items, []);
+  assert.equal((await getCurrent({ source_key: RUST })).status, 200);
   assert.equal(
-    (await http.get('/api/v1/news').set('Authorization', 'Bearer invalid'))
-      .status,
+    (await http.get('/api/v1/news').query({ source_key: RUST })).status,
+    400,
+  );
+  assert.equal(
+    (await getCurrent().set('Authorization', 'Bearer invalid')).status,
     200,
   );
   assert.equal(calls, beforeHttp);
@@ -582,7 +657,7 @@ try {
         await http
           .post('/api/v1/news/refresh')
           .set('Authorization', rejectedHeader)
-          .send({ source_key: 'node-js' })
+          .send({ source_key: RUST })
       ).status,
       401,
     );
@@ -592,8 +667,7 @@ try {
     'real_lab_jwt_invalid_expired_audience_refresh_and_forged_rejected_without_consumption',
   );
   assert.equal(
-    (await http.post('/api/v1/news/refresh').send({ source_key: 'node-js' }))
-      .status,
+    (await http.post('/api/v1/news/refresh').send({ source_key: RUST })).status,
     401,
   );
   assert.equal(
@@ -601,7 +675,7 @@ try {
       await http
         .post('/api/v1/news/refresh')
         .set('Authorization', userHeader)
-        .send({ source_key: 'node-js' })
+        .send({ source_key: RUST })
     ).status,
     403,
   );
@@ -613,7 +687,7 @@ try {
       await http
         .post('/api/v1/news/refresh')
         .set('Authorization', adminHeader)
-        .send({ source_key: 'node-js' })
+        .send({ source_key: RUST })
     ).status,
     401,
   );
@@ -627,7 +701,7 @@ try {
       await http
         .post('/api/v1/news/refresh')
         .set('Authorization', adminHeader)
-        .send({ source_key: 'node-js' })
+        .send({ source_key: RUST })
     ).status,
     401,
   );
@@ -643,7 +717,7 @@ try {
       await http
         .post('/api/v1/news/refresh')
         .set('Authorization', adminHeader)
-        .send({ source_key: 'node-js' })
+        .send({ source_key: RUST })
     ).status,
     403,
   );
@@ -661,11 +735,13 @@ try {
     'order=popular',
     'actor=1',
     'page=',
+    'catalog=1',
+    'catalog=3',
+    'catalog=2&catalog=2',
   ])
     assert.equal((await http.get('/api/v1/news?' + query)).status, 400);
   assert.equal(
-    (await http.post('/api/v1/news/refresh').send({ source_key: 'web-dev' }))
-      .status,
+    (await http.post('/api/v1/news/refresh').send({ source_key: GO })).status,
     401,
   );
   assert.equal(
@@ -673,14 +749,15 @@ try {
       await http
         .post('/api/v1/news/refresh')
         .set('Authorization', userHeader)
-        .send({ source_key: 'web-dev' })
+        .send({ source_key: GO })
     ).status,
     403,
   );
   assert.equal(calls, beforeHttp);
   for (const body of [
     { source_key: 'daily-dev' },
-    { source_key: 'web-dev', actor: '1' },
+    ...retiredKeys.map((source_key) => ({ source_key })),
+    { source_key: GO, actor: '1' },
     {},
   ])
     assert.equal(
@@ -692,16 +769,19 @@ try {
       ).status,
       400,
     );
+  for (const source_key of retiredKeys)
+    assert.equal((await getCurrent({ source_key })).status, 400);
+  assert.equal(calls, beforeHttp);
   await allowRefresh();
   nextFetch = async () => result('http');
   const refreshed = await http
     .post('/api/v1/news/refresh')
     .set('Authorization', adminHeader)
-    .send({ source_key: 'web-dev' });
+    .send({ source_key: GO });
   assert.equal(refreshed.status, 200);
   assert.equal(refreshed.body.status, 'updated');
   assert.equal(calls, beforeHttp + 1);
-  const publicResult = await http.get('/api/v1/news?topic=programming&limit=1');
+  const publicResult = await getCurrent({ topic: 'programming', limit: 1 });
   assert.equal(publicResult.body.items.length, 1);
   assert.deepEqual(publicResult.body.pagination, {
     page: 1,
@@ -709,22 +789,51 @@ try {
     total: 1,
     total_pages: 1,
   });
-  assert.equal((await http.get('/api/v1/news?topic=ai')).body.items.length, 0);
+  assert.equal((await getCurrent({ topic: 'ai' })).body.items.length, 0);
   nextFetch = async (_validators, key) => {
-    assert.equal(key, 'node-js');
-    return result('http-node', '', key);
+    assert.equal(key, RUST);
+    return result('http-rust', '', key);
   };
-  const nodeRefreshed = await http
+  const rustRefreshed = await http
     .post('/api/v1/news/refresh')
     .set('Authorization', adminHeader)
-    .send({ source_key: 'node-js' });
-  assert.equal(nodeRefreshed.status, 200);
-  assert.equal(nodeRefreshed.body.source_key, 'node-js');
-  const nodePublic = await http.get('/api/v1/news?source_key=node-js');
-  assert.equal(nodePublic.body.items[0].source_key, 'node-js');
-  assert.equal(nodePublic.body.items[0].excerpt, null);
-  assert.equal(nodePublic.body.items[0].provenances.length, 2);
-  assert.equal((await http.get('/api/v1/news')).body.pagination.total, 1);
+    .send({ source_key: RUST });
+  assert.equal(rustRefreshed.status, 200);
+  assert.equal(rustRefreshed.body.source_key, RUST);
+  const rustPublic = await getCurrent({ source_key: RUST });
+  assert.equal(rustPublic.body.items[0].source_key, RUST);
+  assert.equal(rustPublic.body.items[0].excerpt, null);
+  assert.equal(rustPublic.body.items[0].provenances.length, 2);
+  assert.equal((await getCurrent()).body.pagination.total, 1);
+  nextFetch = async (_validators, key) => {
+    assert.equal(key, KUBERNETES);
+    return result('http-kubernetes', '?fixture=kubernetes', key);
+  };
+  const kubernetesRefreshed = await http
+    .post('/api/v1/news/refresh')
+    .set('Authorization', adminHeader)
+    .send({ source_key: KUBERNETES });
+  assert.equal(kubernetesRefreshed.status, 200);
+  const technology = await getCurrent({ topic: 'technology' });
+  assert.equal(technology.status, 200);
+  assert.equal(technology.body.items.length, 1);
+  assert.equal(technology.body.items[0].source_key, KUBERNETES);
+  assert.equal(
+    technology.body.items[0].published_at,
+    '2026-11-18T10:30:00.000Z',
+  );
+  assert.equal(technology.body.items[0].excerpt, null);
+  assert.equal(technology.body.items[0].author, null);
+  assert.equal((await getCurrent()).body.pagination.total, 2);
+  assert.deepEqual(await loadRetiredRows(), retiredBefore);
+  const legacyWithCache = await http
+    .get('/api/v1/news')
+    .query({ page: 2, limit: 10 });
+  assert.equal(legacyWithCache.status, 200);
+  assert.deepEqual(legacyWithCache.body, legacy.body);
+  checks.push(
+    'catalog_version_preserves_legacy_shape_hides_retired_cache_and_filters_new_topics',
+  );
   await source.query(
     'UPDATE auth_sessions SET revoked_at=clock_timestamp() WHERE public_id=$1',
     [session],
@@ -734,22 +843,24 @@ try {
       await http
         .post('/api/v1/news/refresh')
         .set('Authorization', adminHeader)
-        .send({ source_key: 'web-dev' })
+        .send({ source_key: GO })
     ).status,
     401,
   );
-  assert.equal(calls, beforeHttp + 2);
+  assert.equal(calls, beforeHttp + sourceKeys.length);
   checks.push(
     'compiled_nest_public_get_private_post_validation_role_session_and_pagination',
   );
-  // Explicit opt-in only: actual RSS -> real authorization/SQL -> anonymous reads.
-  // These are two bounded upstream GETs, never a retry/fallback or production DB.
+  // Opt-in: three bounded upstream RSS/Atom GETs through authorized refresh, then public SQL reads.
   if (process.env.NEWS_TEST_LIVE_RSS === '1') {
     assert.equal(
       (await source.query('SELECT current_database() AS db'))[0].db,
       'news_test',
     );
-    await source.query('DELETE FROM news_sources');
+    await source.query(
+      'DELETE FROM news_sources WHERE source_key=ANY($1::text[])',
+      [sourceKeys],
+    );
     await source.query('UPDATE users SET is_active=true WHERE id=1');
     await source.query(
       "UPDATE roles SET is_active=true WHERE key='super_admin'",
@@ -764,7 +875,7 @@ try {
       liveProviderCalls++;
       return realFeed.fetch(validators, key);
     };
-    for (const key of ['web-dev', 'node-js']) {
+    for (const key of sourceKeys) {
       const response = await http
         .post('/api/v1/news/refresh')
         .set('Authorization', adminHeader)
@@ -789,22 +900,24 @@ try {
         stored_count: response.body.stored_count,
       });
     }
-    assert.equal(liveProviderCalls, 2);
+    assert.equal(liveProviderCalls, sourceKeys.length);
     const persisted = await source.query(
-      'SELECT source_key,jsonb_array_length(articles)::int AS count FROM news_sources ORDER BY source_key',
+      `SELECT source_key,jsonb_array_length(articles)::int AS count FROM news_sources
+       WHERE source_key=ANY($1::text[]) ORDER BY source_key`,
+      [sourceKeys],
     );
-    assert.equal(persisted.length, 2);
+    assert.equal(persisted.length, sourceKeys.length);
     for (const row of persisted)
       assert.equal(
         row.count,
         liveBySource.find((item) => item.source_key === row.source_key)
           .stored_count,
       );
-    const firstPage = await http.get('/api/v1/news?limit=50');
+    const firstPage = await getCurrent({ limit: 50 });
     assert.equal(firstPage.status, 200);
     assert.deepEqual(
       firstPage.body.sources.map((item) => item.key),
-      ['web-dev', 'node-js'],
+      sourceKeys,
     );
     assert.ok(
       firstPage.body.sources.every(
@@ -813,11 +926,11 @@ try {
     );
     assert.ok(
       firstPage.body.pagination.total > 0 &&
-        firstPage.body.pagination.total <= 200,
+        firstPage.body.pagination.total <= sourceKeys.length * 100,
     );
     const allItems = [...firstPage.body.items];
     for (let page = 2; page <= firstPage.body.pagination.total_pages; page++) {
-      const response = await http.get(`/api/v1/news?limit=50&page=${page}`);
+      const response = await getCurrent({ limit: 50, page });
       assert.equal(response.status, 200);
       assert.equal(
         response.body.pagination.total,
@@ -832,7 +945,10 @@ try {
     );
     for (const item of allItems) {
       assert.ok(item.title && item.url.startsWith('https://'));
-      assert.ok(item.provenances.length > 0 && item.provenances.length <= 2);
+      assert.ok(
+        item.provenances.length > 0 &&
+          item.provenances.length <= sourceKeys.length,
+      );
       assert.equal(
         new Set(item.provenances.map((p) => p.source_key)).size,
         item.provenances.length,
@@ -846,39 +962,41 @@ try {
         ),
       );
       assert.ok(
-        item.provenances.every((p) =>
-          ['web-dev', 'node-js'].includes(p.source_key),
-        ),
+        item.provenances.every((p) => sourceKeys.includes(p.source_key)),
       );
-      if (item.source_key === 'node-js') {
-        assert.equal(item.excerpt, null);
-        assert.equal(item.author, null);
-      }
+      assert.equal(item.excerpt, null);
+      assert.equal(item.author, null);
+      assert.equal(
+        item.topic,
+        item.source_key === KUBERNETES ? 'technology' : 'programming',
+      );
     }
-    const nodeOnly = await http.get('/api/v1/news?source_key=node-js&limit=50');
-    assert.equal(nodeOnly.status, 200);
+    for (const source_key of sourceKeys) {
+      const selected = await getCurrent({ source_key, limit: 50 });
+      assert.equal(selected.status, 200);
+      assert.equal(
+        selected.body.pagination.total,
+        liveBySource.find((item) => item.source_key === source_key)
+          .stored_count,
+      );
+      assert.ok(selected.body.items.length > 0);
+      assert.ok(
+        selected.body.items.every((item) => item.source_key === source_key),
+      );
+    }
+    assert.deepEqual(await loadRetiredRows(), retiredBefore);
     assert.equal(
-      nodeOnly.body.pagination.total,
-      liveBySource.find((item) => item.source_key === 'node-js').stored_count,
+      liveProviderCalls,
+      sourceKeys.length,
+      'Anonymous reads never consume a feed',
     );
-    assert.ok(
-      nodeOnly.body.items.length > 0 &&
-        nodeOnly.body.items.every(
-          (item) =>
-            item.source_key === 'node-js' &&
-            item.excerpt === null &&
-            item.author === null,
-        ),
-    );
-    assert.equal(liveProviderCalls, 2, 'Anonymous reads never consume RSS');
     checks.push(
-      'opt_in_real_rss_two_jwt_admin_posts_persisted_then_anonymous_pagination_provenance_and_node_null_fields',
+      'opt_in_three_real_feeds_jwt_admin_posts_persisted_then_anonymous_pagination_and_source_filters',
     );
     liveSummary = {
       sources: liveBySource,
       public_total: firstPage.body.pagination.total,
       public_pages: firstPage.body.pagination.total_pages,
-      node_public_total: nodeOnly.body.pagination.total,
     };
   }
   console.log(

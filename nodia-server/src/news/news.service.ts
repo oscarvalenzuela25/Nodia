@@ -9,9 +9,9 @@ import type { NewsSourceKey } from './news.types.js';
 export class NewsService {
   constructor(private readonly dataSource: DataSource) {}
   async snapshot(
+    sourceKey: NewsSourceKey,
     manager: EntityManager = this.dataSource.manager,
     lock = false,
-    sourceKey: NewsSourceKey = 'web-dev',
   ): Promise<NewsSource | null> {
     const query = manager
       .getRepository(NewsSource)

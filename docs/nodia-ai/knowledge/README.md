@@ -1,5 +1,9 @@
 # Contexto funcional de productos para NodiaAI
 
+La [renovación de Noticias dev](news/README.md#renovación-de-fuentes--2026-11-18)
+actualiza el catálogo de fuentes y conserva el alcance de autoridad de
+[lectura bajo demanda](news/features/on-demand-reading.md).
+
 Los comentarios sobre Market y Caja actualizan el índice de
 [Negocios](businesses/README.md), la ficha de
 [Listas](businesses/features/market-shopping-lists.md) y la de

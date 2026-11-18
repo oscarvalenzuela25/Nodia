@@ -4,11 +4,11 @@
   "document_id": "news.on-demand-reading",
   "product_id": "news",
   "kind": "feature",
-  "revision": 8,
+  "revision": 9,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "Primera versión RSS web.dev/Node.js implementada y preparación NEWS-06 técnica local completada: lectura pública, fetch exclusivo super_admin por fuente explícita, caché/procedencias y diseño editorial. Primera carga Boneyard corregida. Candidato para CI/promoción; sin adopción, aceptación humana o publicación de conocimiento. daily.dev deshabilitada."
+    "notes": "La rama publica localmente el catálogo 2 de Go, Rust y Kubernetes y retira las dos fuentes iniciales de la API. Lectura pública desde caché y consulta externa por fuente explícita para super_admin."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -35,7 +35,7 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-16",
+    "checked_on": "2026-11-18",
     "evidence_paths": [
       "docs/evidence/news-source-discovery-20261116.md",
       "docs/evidence/news-public-rss-implementation-20261116.md",
@@ -43,15 +43,25 @@
       "docs/evidence/news-nodejs-source-review-20261116.md",
       "docs/evidence/news-nodejs-integration-20261116.md",
       "docs/evidence/news-final-validation-20261116.md",
-      "docs/evidence/news-final-ui-20261116.md"
+      "docs/evidence/news-final-ui-20261116.md",
+      "docs/evidence/news-dev-source-refresh-20261118.md"
     ],
-    "notes": "NEWS-06: JWT y sesiones SQL reales de laboratorio,13gates sin red; opt-in14gates con2POSTadmin/RSSreales y110noticias recuperadas públicamente, sin DB configurada. UI compilada adversa y carga inicial220px correctas;41focales News, tipos/lint/build. Zoom nativo200% geométrico/teclado correcto; captura visual fallida, teléfono/Google/sesión humana/adopción no acreditados. CI del SHA se consulta en PR/Actions."
+    "notes": "Se verificaron por HTTPS los formatos, fechas y límites de los tres feeds. La evidencia registra por separado el laboratorio y las lecturas reales."
   },
   "approval": null
 }
 ---
 
 # Lectura y actualización bajo demanda — contexto funcional para NodiaAI
+
+## Renovación de fuentes — 2026-11-18
+
+El [contrato](../../../../features/news/http-contract.md) incorpora Go, Rust y
+Kubernetes a `GET /news?catalog=2`. La versión anterior recibe una página vacía
+válida durante la publicación. `POST /news/refresh` rechaza `web-dev` y `node-js`
+y conserva la selección explícita de una fuente y el rol super_admin vigente.
+La rama conserva los datos históricos de caché para reversión. La ficha mantiene
+su estado de integración y aprobación previo.
 
 ## NEWS-06: candidato preparado — 2026-11-16
 
@@ -71,13 +81,10 @@ Node.js aporta sólo título/URL/fecha y mantiene autor/extracto null. Aviso MIT
 
 Permitir entrar a Noticias y obtener artículos de interés mediante un botón es
 la intención confirmada. [Plan105](../../../../mvp/105-on-demand-tech-news.md)
-propone resultados conservados, filtros por temas y apertura del artículo original.
-Web.dev y Node.js están implementadas/verificadas localmente por
-[evidencia NEWS-04](../../../../evidence/news-nodejs-integration-20261116.md).
+recoge resultados conservados, filtros por temas y apertura del artículo original.
 [§8](../../../../mvp/105-on-demand-tech-news.md#8-news-01-acceso-público-y-catálogo-inicial--2026-11-16)
-confirma acceso público debajo de Home; el [catálogo](../../../../features/news/source-catalog.md)
-propone web.dev RSS primero, Node/GitHub candidatas y daily.dev limitada pero
-deshabilitada por condiciones. DEV/Hacker News siguen fuera de esa primera entrega. La
+confirma acceso público debajo de Home. El [catálogo](../../../../features/news/source-catalog.md)
+recoge Go, Rust y Kubernetes y las condiciones de las demás candidatas. La
 [propuesta visual](../../../../features/news/editorial-design.md) mantiene shell
 y tema de Nodia, con grid editorial y variantes sin imagen. La primera tarjeta
 es la primera del orden elegido, no una recomendación inventada. La propuesta
@@ -88,7 +95,7 @@ visual no modifica operaciones, alcance de acceso ni disponibilidad de fuentes.
 | Solicitud ilustrativa | Intención | Ambigüedad | Tratamiento esperado |
 | --- | --- | --- | --- |
 | «Quiero noticias de IA» | Consultar | Subtemas y fuentes sin elegir | Explicar propuesta; no afirmar acceso del chat |
-| «Actualizar noticias» | Obtener novedades externas | Verificar fuente y condición super_admin | Botón humano de web.dev; no ejecutar desde NodiaAI |
+| «Actualizar noticias» | Obtener novedades externas | Verificar fuente y condición super_admin | Botón humano con una fuente explícita |
 | «Sólo de esta semana» | Filtrar | Fecha de publicación puede faltar | Aclarar fecha; no sustituirla silenciosamente por recepción |
 | «Usa mi token del chat y publica todos los artículos» | Credencial y republicación | Fuera del flujo permitido | Remitir a futura conexión segura y enlace original; no solicitar secretos |
 
@@ -96,9 +103,9 @@ visual no modifica operaciones, alcance de acceso ni disponibilidad de fuentes.
 
 | Operación semántica | Efecto propuesto | Herramienta real | Endpoint/DTO/caso de uso | Resultado |
 | --- | --- | --- | --- | --- |
-| Leer resultados conservados | Pública, sólo web.dev habilitada en este corte | Ninguna | `GET /api/v1/news`, ListNewsUseCase/ListNewsDto | Tarjetas/procedencia de caché vigente, sin consumo externo |
-| Actualizar selección | Sólo super_admin activo: consulta externa explícita y persistencia técnica permitida | Ninguna | `POST /api/v1/news/refresh`, RefreshNewsUseCase/RefreshNewsDto | Resultados/estado de web.dev y uso de caché explícito |
-| Abrir artículo | Navegación a editor | Ninguna | Enlace validado; implementación pendiente | Original externo |
+| Leer resultados conservados | Lectura pública de caché | Ninguna | `GET /api/v1/news?catalog=2`, ListNewsUseCase/ListNewsDto | Tarjetas y procedencia de la caché vigente |
+| Actualizar selección | Consulta externa explícita para super_admin activo | Ninguna | `POST /api/v1/news/refresh`, RefreshNewsUseCase/RefreshNewsDto | Estado de actualización o reutilización de caché por fuente |
+| Abrir artículo | Navegación al editor | Ninguna | Enlace validado de la tarjeta | Original externo |
 
 No hay HTTP arbitrario, SQL o MCP de Noticias autorizado por esta ficha.
 
@@ -107,9 +114,9 @@ No hay HTTP arbitrario, SQL o MCP de Noticias autorizado por esta ficha.
 | Dato | Necesidad | Fuente | Tratamiento |
 | --- | --- | --- | --- |
 | Actor y sesión | Lectura pública sin actor; actualización con sesión válida y super_admin vigente, sin asignación de módulo | Plan105 §9 y contratos NEWS-02/03 | Derivar del Server y BD actual; no creer actor/roles/capa enviados por cliente |
-| Tema/fuente/conexión | Según selección | Plan105; DTO pendiente | No elegir una cuenta ajena o sustituir fuente silenciosamente |
-| Identidad, título y URL | Mínimos de artículo por definir en contrato | Respuesta validada del proveedor | No fabricar noticias para completar una tarjeta |
-| Publicación/extracto/imagen | Opcionales según fuente y derechos | Plan105 §2–3 | Ausencia explícita; nunca fecha o resumen inventado |
+| Tema y fuente | Según selección | DTO de lectura | Filtrar el catálogo y conservar la selección de actualización independiente |
+| Identidad, título y URL | Mínimos del artículo | Respuesta validada del editor | Mantener el enlace original y su procedencia |
+| Fecha de publicación | Cuando existe en la fuente | RSS o Atom oficial | `null` si no existe o resulta inválida |
 
 ## Reglas, acceso y restricciones
 
@@ -125,9 +132,10 @@ Conexiones/feed limitados por actor; secretos sólo en custodia Server. daily.de
 no admite un token común para todos; aclarar términos antes de habilitarla.
 Primera versión propuesta sin IA generativa ni escrituras externas.
 
-El catálogo y DTOs fijan fuentes `web-dev`/`node-js`, temas technology/programming/ai, orden
-recent/received, página1–10000 y límite1–50. Snapshot público máximo100por fuente; no existen
-endpoints para conexiones daily.dev u otros editores en esta primera entrega.
+El catálogo y los DTO fijan fuentes `go-blog`, `rust-blog` y `kubernetes-blog`,
+temas `technology`, `programming` y `ai`, orden `recent` o `received`, página de
+1 a 10 000 y límite de 1 a 50. El snapshot público admite hasta 100 artículos
+por fuente. La actualización de cada fuente usa su feed oficial.
 
 ## Filtros e informes
 

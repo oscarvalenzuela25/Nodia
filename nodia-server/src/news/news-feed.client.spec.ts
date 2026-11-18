@@ -69,37 +69,38 @@ describe('News fixed-destination transport ownership', () => {
   it('uses only the selected catalog destination and its hostname with independent conditional headers', async () => {
     const fixture = responseFixture(
       200,
-      { 'content-type': 'application/rss+xml' },
+      { 'content-type': 'application/atom+xml' },
       [
         Buffer.from(
-          '<rss><channel><item><title>Node fixture</title><link>https://nodejs.org/en/blog/release/test</link><description>not included</description></item></channel></rss>',
+          '<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Rust fixture</title><link href="https://blog.rust-lang.org/fixture/"/><summary>not included</summary></entry></feed>',
         ),
       ],
     );
     const result = await new NewsFeedClient().fetch(
-      { etag: '"node-validator"', lastModified: null },
-      'node-js',
+      { etag: '"rust-validator"', lastModified: null },
+      'rust-blog',
     );
     expect(result.articles[0]).toMatchObject({
-      source_key: 'node-js',
+      source_key: 'rust-blog',
       excerpt: null,
     });
-    expect(transport.lookup).toHaveBeenCalledWith('nodejs.org', {
+    expect(transport.lookup).toHaveBeenCalledWith('blog.rust-lang.org', {
       all: true,
       verbatim: true,
     });
     expect(transport.request.mock.calls[0][0]).toBe(
-      'https://nodejs.org/en/feed/blog.xml',
+      'https://blog.rust-lang.org/feed.xml',
     );
     expect(fixture.options()?.headers).toMatchObject({
-      'If-None-Match': '"node-validator"',
+      Accept: 'application/atom+xml, application/xml, text/xml',
+      'If-None-Match': '"rust-validator"',
     });
     expect(fixture.options()).not.toHaveProperty('rejectUnauthorized');
     transport.request.mockReset();
     await expect(
       new NewsFeedClient().fetch(
         { etag: null, lastModified: null },
-        'http://127.0.0.1/' as 'node-js',
+        'http://127.0.0.1/' as 'rust-blog',
       ),
     ).rejects.toThrow('news:unsafe_destination');
     expect(transport.request).not.toHaveBeenCalled();
@@ -109,7 +110,10 @@ describe('News fixed-destination transport ownership', () => {
       Buffer.alloc(1024 * 1024 + 1),
     ]);
     expect(
-      await new NewsFeedClient().fetch({ etag: '"same"', lastModified: null }),
+      await new NewsFeedClient().fetch(
+        { etag: '"same"', lastModified: null },
+        'go-blog',
+      ),
     ).toMatchObject({ status: 'not_modified', articles: [] });
     expect(fixture.response.destroy).toHaveBeenCalledOnce();
     expect(transport.request).toHaveBeenCalledOnce();
@@ -127,7 +131,10 @@ describe('News fixed-destination transport ownership', () => {
         [Buffer.alloc(1024 * 1024 + 1)],
       );
       await expect(
-        new NewsFeedClient().fetch({ etag: null, lastModified: null }),
+        new NewsFeedClient().fetch(
+          { etag: null, lastModified: null },
+          'go-blog',
+        ),
       ).rejects.toThrow(`news:${code}`);
       expect(fixture.response.destroy).toHaveBeenCalledOnce();
       expect(transport.request).toHaveBeenCalledOnce();
@@ -140,9 +147,51 @@ describe('News fixed-destination transport ownership', () => {
       [Buffer.alloc(1024 * 1024 + 1)],
     );
     await expect(
-      new NewsFeedClient().fetch({ etag: null, lastModified: null }),
+      new NewsFeedClient().fetch({ etag: null, lastModified: null }, 'go-blog'),
     ).rejects.toThrow('news:response_too_large');
     expect(fixture.response.destroy).toHaveBeenCalledOnce();
+  });
+  it('honors the Kubernetes-specific ceiling for both declared length and streamed content', async () => {
+    const rss = Buffer.concat([
+      Buffer.from('<rss><channel>'),
+      Buffer.alloc(1024 * 1024, 0x20),
+      Buffer.from(
+        '<item><title>Fixture</title><link>https://kubernetes.io/blog/fixture/</link></item></channel></rss>',
+      ),
+    ]);
+    responseFixture(
+      200,
+      {
+        'content-type': 'application/xml',
+        'content-length': String(rss.length),
+      },
+      [rss],
+    );
+    const result = await new NewsFeedClient().fetch(
+      { etag: null, lastModified: null },
+      'kubernetes-blog',
+    );
+    expect(result.articles).toMatchObject([
+      { source_key: 'kubernetes-blog', topic: 'technology' },
+    ]);
+
+    for (const [headers, chunks] of [
+      [{ 'content-length': String(2 * 1024 * 1024 + 1) }, []],
+      [{}, [Buffer.alloc(2 * 1024 * 1024 + 1)]],
+    ] as const) {
+      const fixture = responseFixture(
+        200,
+        { 'content-type': 'application/xml', ...headers },
+        [...chunks],
+      );
+      await expect(
+        new NewsFeedClient().fetch(
+          { etag: null, lastModified: null },
+          'kubernetes-blog',
+        ),
+      ).rejects.toThrow('news:response_too_large');
+      expect(fixture.response.destroy).toHaveBeenCalledOnce();
+    }
   });
   it('rejects bad encoding, unexpected content type and invalid UTF8', async () => {
     for (const [headers, chunks] of [
@@ -152,26 +201,29 @@ describe('News fixed-destination transport ownership', () => {
     ] as const) {
       responseFixture(200, headers, [...chunks]);
       await expect(
-        new NewsFeedClient().fetch({ etag: null, lastModified: null }),
+        new NewsFeedClient().fetch(
+          { etag: null, lastModified: null },
+          'go-blog',
+        ),
       ).rejects.toThrow('news:invalid_feed');
     }
   });
   it('rejects a private DNS answer before dispatch and sends only safe conditional headers', async () => {
     transport.addresses = [{ address: '127.0.0.1', family: 4 }];
     await expect(
-      new NewsFeedClient().fetch({ etag: null, lastModified: null }),
+      new NewsFeedClient().fetch({ etag: null, lastModified: null }, 'go-blog'),
     ).rejects.toThrow('news:unsafe_destination');
     expect(transport.request).not.toHaveBeenCalled();
     transport.addresses = [{ address: '8.8.8.8', family: 4 }];
     const fixture = responseFixture(
       200,
       { 'content-type': 'application/xml' },
-      [Buffer.from('<rss><channel/></rss>')],
+      [Buffer.from('<feed xmlns="http://www.w3.org/2005/Atom"/>')],
     );
-    await new NewsFeedClient().fetch({
-      etag: 'bad\r\nheader',
-      lastModified: null,
-    });
+    await new NewsFeedClient().fetch(
+      { etag: 'bad\r\nheader', lastModified: null },
+      'go-blog',
+    );
     expect(fixture.options()?.headers).not.toHaveProperty('If-None-Match');
     expect(fixture.options()).not.toHaveProperty('rejectUnauthorized');
   });

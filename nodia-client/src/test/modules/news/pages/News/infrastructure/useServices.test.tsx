@@ -25,7 +25,7 @@ afterEach(() => { client.clear(); useAuthStore.getState().logout(); });
 describe("News explicit refresh and identity", () => {
   it.each(["anonymous", "ordinary"])("keeps %s reading free of upstream refresh", async (kind) => {
     if (kind === "ordinary") useAuthStore.getState().login(session());
-    const { result } = renderHook(() => ({ query: useNews(filters), action: useNewsRefresh("web-dev") }), { wrapper });
+    const { result } = renderHook(() => ({ query: useNews(filters), action: useNewsRefresh("go-blog") }), { wrapper });
     await waitFor(() => expect(result.current.query.data).toEqual(news));
     expect(result.current.action.canRefresh).toBe(false);
     act(() => result.current.action.refresh());
@@ -37,7 +37,7 @@ describe("News explicit refresh and identity", () => {
     useAuthStore.getState().login(session());
     let resolve!: (data: typeof refreshed) => void;
     vi.mocked(refreshNews).mockReturnValue(new Promise(done => { resolve = done; }));
-    const { result } = renderHook(() => useNewsRefresh("web-dev"), { wrapper });
+    const { result } = renderHook(() => useNewsRefresh("go-blog"), { wrapper });
     expect(refreshNews).not.toHaveBeenCalled();
     act(() => { result.current.refresh(); result.current.refresh(); });
     await waitFor(() => expect(refreshNews).toHaveBeenCalledOnce());
@@ -48,29 +48,29 @@ describe("News explicit refresh and identity", () => {
   it("does not assume a refresh source and ignores callbacks for an old selection", async () => {
     permission.roles = ["super_admin"];
     useAuthStore.getState().login(session());
-    vi.mocked(refreshNews).mockResolvedValue({ ...refreshed, source_key: "node-js" });
+    vi.mocked(refreshNews).mockResolvedValue({ ...refreshed, source_key: "rust-blog" });
     const { result, rerender } = renderHook(({ source }: { source: NewsSourceKey | null }) => useNewsRefresh(source), { wrapper, initialProps: { source: null as NewsSourceKey | null } });
     act(() => result.current.refresh());
     expect(refreshNews).not.toHaveBeenCalled();
-    rerender({ source: "web-dev" });
+    rerender({ source: "go-blog" });
     const oldRefresh = result.current.refresh;
-    rerender({ source: "node-js" });
+    rerender({ source: "rust-blog" });
     act(() => oldRefresh());
     expect(refreshNews).not.toHaveBeenCalled();
     act(() => result.current.refresh());
-    await waitFor(() => expect(refreshNews).toHaveBeenCalledExactlyOnceWith("node-js"));
+    await waitFor(() => expect(refreshNews).toHaveBeenCalledExactlyOnceWith("rust-blog"));
   });
 
-  it("refreshes Node.js without changing the web.dev reading filter", async () => {
+  it("refreshes Rust without changing the Go reading filter", async () => {
     permission.roles = ["super_admin"];
     useAuthStore.getState().login(session());
-    vi.mocked(refreshNews).mockResolvedValue({ ...refreshed, source_key: "node-js" });
-    const readFilters = { ...filters, source: "web-dev" as const };
-    const { result } = renderHook(() => ({ query: useNews(readFilters), action: useNewsRefresh("node-js") }), { wrapper });
+    vi.mocked(refreshNews).mockResolvedValue({ ...refreshed, source_key: "rust-blog" });
+    const readFilters = { ...filters, source: "go-blog" as const };
+    const { result } = renderHook(() => ({ query: useNews(readFilters), action: useNewsRefresh("rust-blog") }), { wrapper });
     await waitFor(() => expect(result.current.query.data).toEqual(news));
     act(() => result.current.action.refresh());
     await waitFor(() => expect(sileo.success).toHaveBeenCalledOnce());
-    expect(refreshNews).toHaveBeenCalledExactlyOnceWith("node-js");
+    expect(refreshNews).toHaveBeenCalledExactlyOnceWith("rust-blog");
     expect(getNews).toHaveBeenCalledWith(readFilters, expect.any(AbortSignal));
     expect(result.current.query.data).toEqual(news);
   });
@@ -80,11 +80,11 @@ describe("News explicit refresh and identity", () => {
     useAuthStore.getState().login(session());
     let reject!: (error: Error) => void;
     vi.mocked(refreshNews).mockReturnValue(new Promise((_, fail) => { reject = fail; }));
-    const { result, rerender } = renderHook(({ source }: { source: NewsSourceKey }) => useNewsRefresh(source), { wrapper, initialProps: { source: "node-js" as NewsSourceKey } });
+    const { result, rerender } = renderHook(({ source }: { source: NewsSourceKey }) => useNewsRefresh(source), { wrapper, initialProps: { source: "rust-blog" as NewsSourceKey } });
     act(() => result.current.refresh());
-    await waitFor(() => expect(refreshNews).toHaveBeenCalledExactlyOnceWith("node-js"));
-    rerender({ source: "web-dev" });
-    await act(async () => reject(new Error("Synthetic Node.js unavailable")));
+    await waitFor(() => expect(refreshNews).toHaveBeenCalledExactlyOnceWith("rust-blog"));
+    rerender({ source: "go-blog" });
+    await act(async () => reject(new Error("Synthetic Rust unavailable")));
     expect(result.current.failure).toBeNull();
     expect(sileo.error).not.toHaveBeenCalled();
     expect(sileo.success).not.toHaveBeenCalled();
@@ -94,7 +94,7 @@ describe("News explicit refresh and identity", () => {
   it("blocks a held action after role revocation", () => {
     permission.roles = ["super_admin"];
     useAuthStore.getState().login(session());
-    const { result, rerender } = renderHook(() => useNewsRefresh("node-js"), { wrapper });
+    const { result, rerender } = renderHook(() => useNewsRefresh("rust-blog"), { wrapper });
     const oldRefresh = result.current.refresh;
     permission.roles = [];
     rerender();
@@ -108,7 +108,7 @@ describe("News explicit refresh and identity", () => {
     const error = new AxiosError("Synthetic unavailable");
     error.response = { data: { message: "news:source_unavailable" }, status: 503, statusText: "Unavailable", headers: {}, config: { headers: {} } } as NonNullable<AxiosError["response"]>;
     vi.mocked(refreshNews).mockRejectedValue(error);
-    const { result } = renderHook(() => ({ query: useNews(filters), action: useNewsRefresh("web-dev") }), { wrapper });
+    const { result } = renderHook(() => ({ query: useNews(filters), action: useNewsRefresh("go-blog") }), { wrapper });
     await waitFor(() => expect(result.current.query.data).toEqual(news));
     act(() => result.current.action.refresh());
     await waitFor(() => expect(result.current.action.failure).toContain("La fuente no está disponible"));
@@ -124,7 +124,7 @@ describe("News explicit refresh and identity", () => {
     let resolve!: (data: typeof refreshed) => void;
     vi.mocked(refreshNews).mockReturnValue(new Promise(done => { resolve = done; }));
     const invalidate = vi.spyOn(client, "invalidateQueries");
-    const { result } = renderHook(() => useNewsRefresh("web-dev"), { wrapper });
+    const { result } = renderHook(() => useNewsRefresh("go-blog"), { wrapper });
     act(() => result.current.refresh());
     await waitFor(() => expect(refreshNews).toHaveBeenCalledOnce());
     act(() => { if (change === "logout") useAuthStore.getState().logout(); else useAuthStore.getState().login(session("43")); });
