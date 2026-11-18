@@ -8,8 +8,15 @@ const metadataSchema = z.object({ actorScope: z.string().min(1).max(256), reques
 export function rememberRequest(actorScope: string, command: TeacherCommand): void {
   try { window.sessionStorage.setItem(key, JSON.stringify({ actorScope, requestKey: command.requestKey, path: command.path, method: command.method })); } catch { /* In-memory reconciliation remains available when storage is denied. */ }
 }
-export function forgetRequest(): void {
-  try { window.sessionStorage.removeItem(key); } catch { /* Storage may be disabled. */ }
+export function forgetRequest(actorScope?: string, requestKey?: string): void {
+  try {
+    if (actorScope !== undefined) {
+      const raw = window.sessionStorage.getItem(key);
+      const stored = raw ? metadataSchema.safeParse(JSON.parse(raw)) : null;
+      if (!stored?.success || stored.data.actorScope !== actorScope || stored.data.requestKey !== requestKey) return;
+    }
+    window.sessionStorage.removeItem(key);
+  } catch { /* Storage may be disabled. */ }
 }
 export function pendingRequest(actorScope: string): TeacherCommand | null {
   try {

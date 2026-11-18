@@ -1,5 +1,4 @@
 import AdaptiveWorkspace from "../../components/AdaptiveWorkspace/AdaptiveWorkspace";
-import BlockLearningTools from "../../components/AdaptiveWorkspace/BlockLearningTools";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Box, Button, LinearProgress, Menu, MenuItem, Pagination, Stack, Switch, Typography } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
@@ -8,7 +7,7 @@ import AutoStoriesOutlined from "@mui/icons-material/AutoStoriesOutlined";
 import ArrowBackOutlined from "@mui/icons-material/ArrowBackOutlined";
 import { Link, useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import LessonMarkdown from "../../components/LessonMarkdown";
+import LessonTopics from "../../components/LessonTopics";
 import useAuth from "../../../../hooks/useAuth";
 import QueryErrorAlert from "../../../../components/QueryErrorAlert";
 import InputSearch from "../../../../components/inputs/InputSearch";
@@ -20,13 +19,14 @@ import SessionForm from "../../components/SessionForm";
 import SelectionPanel from "../../components/SelectionPanel";
 import PlanReview from "../../components/PlanReview";
 import QuestionCard from "../../components/QuestionCard";
-import JobPanel from "../../components/JobPanel";
+import { JobStatus } from "../../components/JobPanel";
+import { useJobStatus } from "../../components/JobPanel/useJobStatus";
 import TeacherLoading from "../../components/TeacherLoading";
 import StudyJourney from "../../components/StudyJourney";
 import SetupConversation from "../../components/SetupConversation";
 import StudyContinuation from "../../components/StudyContinuation";
 import DiagnosticEntry from "../../components/DiagnosticEntry/DiagnosticEntry";
-import { studyContinuation } from "../../infrastructure/studyContinuation";
+import { lessonPreparationState, studyContinuation } from "../../infrastructure/studyContinuation";
 import ReinforcementPanel from "../../components/ReinforcementPanel";
 import { useReinforcementNavigation } from "../../infrastructure/useReinforcementNavigation";
 import { useTeacherAttempt, useTeacherCommand, useTeacherMaterial, useTeacherMessages, useTeacherProposal, useTeacherQuestion, useTeacherSession, useTeacherSessions } from "../../infrastructure/useServices";
@@ -55,18 +55,18 @@ function Plans() {
   const command = useTeacherCommand();
   const openResult = (result: CommandResult) => { if (result.session_id) void navigate(`/nodia-teacher/${result.session_id}`); };
   return <Page>
-    <Header><Box><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>{t("teacher:my_plans")}</Typography><Typography color="text.secondary">{t("teacher:plans_description")}</Typography></Box><Button variant="contained" startIcon={<AddOutlined />} disabled={command.blocked || sessions.isFetching} component={Link} to={TEACHER_NEW_ROUTE}>{t("teacher:new_session")}</Button></Header>
+    <Header><Box><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>{t("teacher:my_plans")}</Typography><Typography color="text.secondary">{t("teacher:plans_description")}</Typography></Box><Button variant="contained" startIcon={<AddOutlined />} disabled={command.isPending || sessions.isFetching} component={Link} to={TEACHER_NEW_ROUTE}>{t("teacher:new_session")}</Button></Header>
     <RequestRecovery command={command} onRecovered={openResult} />
     <PlanFilters>
-      <PlanSearch><InputSearch value={search} onChange={value => { setSearch(value); setPage(1); }} placeholder={t("teacher:search")} disabled={command.blocked || sessions.isFetching} /></PlanSearch>
-      <ArchivedFilter control={<Switch checked={archived} disabled={command.blocked || sessions.isFetching} onChange={(_, value) => { setArchived(value); setPage(1); }} />} label={t("teacher:show_archived")} />
+      <PlanSearch><InputSearch value={search} onChange={value => { setSearch(value); setPage(1); }} placeholder={t("teacher:search")} disabled={command.isPending || sessions.isFetching} /></PlanSearch>
+      <ArchivedFilter control={<Switch checked={archived} disabled={command.isPending || sessions.isFetching} onChange={(_, value) => { setArchived(value); setPage(1); }} />} label={t("teacher:show_archived")} />
     </PlanFilters>
     <QueryErrorAlert retryVariant="outlined" isError={sessions.isError} isFetching={sessions.isFetching} onRetry={sessions.refetch} />
     {sessions.isFetching && !sessions.isLoading && <LinearProgress />}
     <TeacherLoading loading={sessions.isLoading && !sessions.data}>
-      {!sessions.isError && !sessions.data?.data.length ? <Panel sx={{ py: 6, textAlign: "center" }}><AutoStoriesOutlined sx={{ fontSize: 48, color: "primary.main", mb: 2 }} /><Typography variant="h6">{t("teacher:empty_title")}</Typography><Typography color="text.secondary" sx={{ mb: 3 }}>{t("teacher:empty_description")}</Typography><Button variant="outlined" disabled={command.blocked || sessions.isFetching} component={Link} to={TEACHER_NEW_ROUTE}>{t("teacher:new_session")}</Button></Panel> : <PlanGrid>{sessions.data?.data.map(session => <Panel key={session.id} sx={{ display: "flex", flexDirection: "column", gap: 2 }}><Box><Stack direction="row" sx={{ gap: 1, flexWrap: "wrap", mb: 2 }}><StateChip label={t(`teacher:states.${session.state}`)} color={SESSION_STATE_COLORS[session.state]} size="small" />{session.latest_job && <StateChip label={t(`teacher:jobs.${session.latest_job.state}`)} color={SESSION_JOB_COLORS[session.latest_job.state]} variant="outlined" size="small" sx={{ maxWidth: "100%", height: "auto", minHeight: 24, "& .MuiChip-label": { whiteSpace: "normal", py: 0.5 } }} />}</Stack>{sessions.isError && session.latest_job && <Typography variant="caption" color="text.secondary">{t("teacher:job_last_known_state")}</Typography>}<Typography variant="h6" component="h2">{session.title || session.topic}</Typography></Box><Typography color="text.secondary">{session.objective}</Typography><Button component={Link} to={`/nodia-teacher/${session.id}`} variant="contained" disabled={command.blocked || sessions.isFetching} sx={{ mt: "auto", minHeight: 44 }}>{t("teacher:open_plan")}</Button></Panel>)}</PlanGrid>}
+      {!sessions.isError && !sessions.data?.data.length ? <Panel sx={{ py: 6, textAlign: "center" }}><AutoStoriesOutlined sx={{ fontSize: 48, color: "primary.main", mb: 2 }} /><Typography variant="h6">{t("teacher:empty_title")}</Typography><Typography color="text.secondary" sx={{ mb: 3 }}>{t("teacher:empty_description")}</Typography><Button variant="outlined" disabled={command.isPending || sessions.isFetching} component={Link} to={TEACHER_NEW_ROUTE}>{t("teacher:new_session")}</Button></Panel> : <PlanGrid>{sessions.data?.data.map(session => <Panel key={session.id} sx={{ display: "flex", flexDirection: "column", gap: 2 }}><Box><Stack direction="row" sx={{ gap: 1, flexWrap: "wrap", mb: 2 }}><StateChip label={t(`teacher:states.${session.state}`)} color={SESSION_STATE_COLORS[session.state]} size="small" />{session.latest_job && <StateChip label={t(`teacher:jobs.${session.latest_job.state}`)} color={SESSION_JOB_COLORS[session.latest_job.state]} variant="outlined" size="small" sx={{ maxWidth: "100%", height: "auto", minHeight: 24, "& .MuiChip-label": { whiteSpace: "normal", py: 0.5 } }} />}</Stack>{sessions.isError && session.latest_job && <Typography variant="caption" color="text.secondary">{t("teacher:job_last_known_state")}</Typography>}<Typography variant="h6" component="h2">{session.title || session.topic}</Typography></Box><Typography color="text.secondary">{session.objective}</Typography><Button component={Link} to={`/nodia-teacher/${session.id}`} variant="contained" disabled={command.isPending || sessions.isFetching} sx={{ mt: "auto", minHeight: 44 }}>{t("teacher:open_plan")}</Button></Panel>)}</PlanGrid>}
     </TeacherLoading>
-    {sessions.data && sessions.data.meta.total_pages > 1 && <Pagination variant="outlined" page={page} count={sessions.data.meta.total_pages} disabled={sessions.isFetching || command.blocked} onChange={(_, value) => setPage(value)} />}
+    {sessions.data && sessions.data.meta.total_pages > 1 && <Pagination variant="outlined" page={page} count={sessions.data.meta.total_pages} disabled={sessions.isFetching || command.isPending} onChange={(_, value) => setPage(value)} />}
   </Page>;
 }
 
@@ -102,6 +102,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
   const [draftAnswer, setDraftAnswer] = useState<Answer | null>(null);
   const [draftConflict, setDraftConflict] = useState(false);
   const [localCursor, setLocalCursor] = useState<Cursor>(session.cursor);
+  const initialReadingPoint = useRef<Cursor | null>(session.cursor);
   const [helpOpen, setHelpOpen] = useState(false);
   const [adaptiveOpen, setAdaptiveOpen] = useState(false);
   const [diagnosticOpen, setDiagnosticOpen] = useState(false);
@@ -120,6 +121,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
   const plan = session.current_plan;
   const materialPlanId = localCursor.plan_revision_id && localCursor.plan_revision_id !== plan?.id ? null : plan?.id ?? null;
   const material = useTeacherMaterial(session.id, unitId, materialPlanId);
+  const lesson = material.data;
   const attempt = useTeacherAttempt(session.id, attemptId);
   const question = useTeacherQuestion(session.id, attemptId, questionId ?? attempt.data?.questions[0]?.question_id ?? null);
   const proposalView = proposal.data ?? session.latest_proposal ?? (revising ? plan : null);
@@ -141,9 +143,9 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
     if (result.proposal_revision_id) setProposalId(result.proposal_revision_id);
     if (result.attempt_id && result.attempt_id !== attemptId) { setAttemptId(result.attempt_id); setQuestionId(null); }
   }, [attemptId]);
-  const onTerminal = useCallback(() => {
-    if (jobSelection.jobId) void refreshTeacher(`jobs/${jobSelection.jobId}`);
-  }, [jobSelection.jobId, refreshTeacher]);
+  const onTerminal = useCallback((job: Job) => {
+    void refreshTeacher(`jobs/${job.job_id}`);
+  }, [refreshTeacher]);
   const onReady = useCallback((job: Job) => {
     const ref = readyJobResult(job, jobSelection);
     if (ref && typeof ref.proposal_revision_id === "string") setProposalId(ref.proposal_revision_id);
@@ -151,6 +153,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
     if (nextAttempt) { setAttemptId(nextAttempt); setQuestionId(null); }
     void refreshTeacher(ref && typeof ref.attempt_id === "string" ? `sessions/${session.id}/attempts/${ref.attempt_id}` : `jobs/${job.job_id}`);
   }, [jobSelection, attemptId, session.id, refreshTeacher]);
+  const jobStatus = useJobStatus(jobId, !active, { onReady, onTerminal });
   const execute = async (path: string, body: Record<string, unknown>, method: "POST" | "PATCH" = "POST") => {
     const result = await command.execute(path, body, method);
     if (result) applyResult(result);
@@ -191,8 +194,18 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
     if (result?.attempt_id) { setLocalCursor({ ...localCursor, phase: kind === "units" ? "practice" : "final", plan_revision_id: plan?.id ?? null, attempt_id: result.attempt_id, section_id: kind === "sections" ? id : localCursor.section_id, unit_id: kind === "sections" ? null : id, content_version_id: null, item_id: null, block_id: null }); }
   };
   useEffect(() => {
-    if (material.data?.kind === "material" && material.data.content_version_id === localCursor.content_version_id && localCursor.block_id) document.getElementById(`teacher-block-${localCursor.block_id}`)?.scrollIntoView({ block: "start" });
-  }, [material.data, localCursor.block_id, localCursor.content_version_id]);
+    const saved = initialReadingPoint.current;
+    if (!saved?.block_id) return;
+    if (saved.unit_id !== unitId || attemptId || (material.data && material.data.kind !== "material")) {
+      initialReadingPoint.current = null;
+      return;
+    }
+    if (material.data?.kind !== "material") return;
+    initialReadingPoint.current = null;
+    if (material.data.content_version_id === saved.content_version_id) {
+      document.getElementById(`teacher-block-${saved.block_id}`)?.scrollIntoView({ block: "start" });
+    }
+  }, [material.data, unitId, attemptId]);
   const saveAnswer = async (answer: Answer, expectedRevision: number) => {
     if (!attempt.data || !question.data) return null;
     const result = await execute(`sessions/${session.id}/attempts/${attempt.data.attempt_id}/responses`, { expected_attempt_revision: attempt.data.revision, responses: [{ question_id: question.data.question_id, expected_response_revision: expectedRevision, answer }] }, "PATCH");
@@ -222,10 +235,17 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
   const continuationContext = plan ? { plan, cursor: localCursor, selectedUnitId: unitId, attemptId,
     attemptPlanRevisionId: attempt.data?.attempt_id === attemptId ? attempt.data?.plan_revision_id : undefined,
     material: material.data, allowedActions: session.allowed_actions, paused: !active } : null;
+  const continuation = continuationContext ? studyContinuation(continuationContext) : null;
+  const lessonJobId = continuation?.jobId ?? null;
+  // A different session job can still be in progress while this lesson is open.
+  const otherLessonJobId = active && lessonJobId !== jobId && material.data?.kind === "availability"
+    && material.data.state === "preparing" ? lessonJobId : null;
+  const otherLessonJob = useJobStatus(otherLessonJobId, !active, { onReady: onTerminal, onTerminal });
+  const lessonJob = otherLessonJobId ? otherLessonJob : jobStatus;
+  const preparationState = lessonPreparationState(continuation, lessonJob.data, !active);
   const prepareLesson = async (targetUnitId: string) => {
     if (locked || material.isFetching || !continuationContext) return;
-    const next = studyContinuation(continuationContext);
-    if (next.kind !== "prepare" || !next.canPrepare || next.target?.unitId !== targetUnitId) return;
+    if (continuation?.kind !== "prepare" || !continuation.canPrepare || continuation.target?.unitId !== targetUnitId) return;
     await execute(`sessions/${session.id}/units/${targetUnitId}/material`, { plan_revision_id: plan?.id, expected_session_revision: session.revision, variant: "current" });
   };
   const focusStudy = () => {
@@ -256,14 +276,17 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
         </Panel> : null;
 
   return <SessionPage>
-    {!editingSession && !selecting && !helpOpen && !archiving && !adaptiveOpen && !diagnosticOpen && <RequestRecovery command={command} onRecovered={applyResult} />}
+    {!editingSession && !selecting && !helpOpen && !archiving && !adaptiveOpen && !diagnosticOpen && <RequestRecovery command={command} onRecovered={result => {
+      const matchesSession = result.session_id === session.id || command.uncertain?.path.startsWith(`sessions/${session.id}/`);
+      if (matchesSession && !result.thread_id) applyResult(result);
+    }} />}
     <Header><Box sx={{ width: "100%", minWidth: 0 }}><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><SessionTitleRow><Typography variant="h4" component="h1" sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" }, fontWeight: 700 }}>{session.title || session.topic}</Typography><StateChip label={t(`teacher:states.${session.state}`)} color={SESSION_STATE_COLORS[session.state]} /></SessionTitleRow><Typography color="text.secondary">{session.objective}</Typography></Box></Header>
     <SessionActions>
       {enabled(session.allowed_actions, "pause") && <Button disabled={busy || draftConflict || messageDraft.saving || messageDraft.conflict || !messageDraft.valid} variant="contained" onClick={() => void stateCommand("pause")}>{t("teacher:pause")}</Button>}
       {enabled(session.allowed_actions, "resume") && <Button disabled={busy} variant="contained" onClick={() => void stateCommand("resume")}>{t("teacher:resume")}</Button>}
       <Button variant="outlined" startIcon={<SchoolOutlined />} disabled={busy || recordingMessage || reinforcementNavigation.pending} aria-haspopup="dialog" aria-expanded={adaptiveOpen} onClick={() => setAdaptiveOpen(true)}>{t("teacher:adaptive.workspace")}</Button>
       {archiveOnly ? <Button variant="outlined" disabled={busy} onClick={() => setArchiving(true)}>{t("teacher:archive")}</Button> : <Button variant="outlined" disabled={busy} aria-haspopup="menu" aria-expanded={Boolean(optionsAnchor)} onClick={event => setOptionsAnchor(event.currentTarget)}>{t("teacher:session_options")}</Button>}
-      {jobId && <JobPanel key={`${jobId}:${jobSelection.followResult}`} presentation="inline" jobId={jobId} paused={!active} busy={busy} onReady={onReady} onTerminal={onTerminal} onContinue={async job => { await execute(`jobs/${jobId}/continue-before-dispatch`, { expected_session_revision: session.revision, expected_job_fence: job.fence }); }} onNew={async job => { await execute(`jobs/${jobId}/new-generation`, { expected_session_revision: session.revision, expected_job_fence: job.fence }); }} />}
+      {jobId && !(preparationState && lessonJobId === jobId) && <JobStatus presentation="inline" query={jobStatus} paused={!active} busy={busy} onContinue={async job => { await execute(`jobs/${jobId}/continue-before-dispatch`, { expected_session_revision: session.revision, expected_job_fence: job.fence }); }} onNew={async job => { await execute(`jobs/${jobId}/new-generation`, { expected_session_revision: session.revision, expected_job_fence: job.fence }); }} />}
     </SessionActions>
     <Menu anchorEl={optionsAnchor} open={Boolean(optionsAnchor)} onClose={() => setOptionsAnchor(null)} slotProps={{ list: { "aria-label": t("teacher:session_options") } }}>
       {enabled(session.allowed_actions, "edit") && <MenuItem disabled={busy} sx={{ minHeight: 44 }} onClick={() => { setOptionsAnchor(null); setEditingSession(true); }}>{t("teacher:edit_session")}</MenuItem>}
@@ -300,13 +323,41 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
         onSelectUnit={(sectionId, nextUnitId) => { void selectUnit(sectionId, nextUnitId); }}
         onStartFinal={sectionId => { void startAttempt("sections", sectionId); }} /></Panel>
       <Stack sx={{ gap: 3, minWidth: 0 }}>
-        {continuationContext && <TeacherLoading loading={Boolean(unitId && !attemptId && materialPlanId && material.isLoading && !material.data)}><StudyContinuation {...continuationContext} busy={busy || reinforcementNavigation.pending || recordingMessage || material.isFetching || attempt.isFetching || question.isFetching}
+        {continuation && <TeacherLoading loading={Boolean(unitId && !attemptId && materialPlanId && material.isLoading && !material.data)}><StudyContinuation view={continuation} paused={!active} preparationState={preparationState}
+          jobReadError={lessonJob.isError ? { busy: lessonJob.isFetching, onRetry: lessonJob.refetch } : undefined}
+          busy={busy || reinforcementNavigation.pending || recordingMessage || material.isFetching || attempt.isFetching || question.isFetching}
           onSelectUnit={(sectionId, nextUnitId) => { void selectUnit(sectionId, nextUnitId); }} onPrepare={id => { void prepareLesson(id); }} onOpen={focusStudy} onContinue={focusStudy}
           onInspectJob={id => { setJobSelection({ jobId: id, followResult: false }); }} onRefresh={() => { void material.refetch(); }} /></TeacherLoading>}
-        {unitId && !attemptId && materialPlanId && (material.isError || material.data?.kind === "material") && <Panel>
+        {unitId && !attemptId && materialPlanId && (material.isError || lesson?.kind === "material") && <Panel>
           <QueryErrorAlert retryVariant="outlined" isError={material.isError} isFetching={material.isFetching} onRetry={material.refetch} />
           <TeacherLoading loading={material.isLoading && !material.data}>
-            {material.data?.kind === "material" ? <Stack sx={{ gap: 3 }}><LessonHeader><Typography variant="overline">{t("teacher:theory")}</Typography><Typography ref={lessonHeading} tabIndex={-1} variant="h5" component="h2">{plan.outline.sections.flatMap(section => section.units).find(unit => unit.id === unitId)?.title}</Typography></LessonHeader>{material.data.blocks.map(block => <Box key={block.id} id={`teacher-block-${block.id}`} tabIndex={-1}><Typography variant="h6" component="h3">{block.title}</Typography><LessonMarkdown text={block.body_markdown} /><BlockLearningTools session={session} history={material.data?.kind === "material" ? material.data.lesson_interactions : undefined} busy={locked || material.isFetching} command={command} onResult={applyResult} contentVersionId={material.data?.kind === "material" ? material.data.content_version_id : ""} block={block} /><Button variant="outlined" disabled={locked} onClick={() => void saveCursor({ ...localCursor, phase: "theory", plan_revision_id: plan.id, unit_id: unitId, content_version_id: material.data?.kind === "material" ? material.data.content_version_id : null, block_id: block.id })}>{t("teacher:save_reading_point")}</Button></Box>)}<Actions>{session.state === "active" && enabled(material.data.allowed_actions, "prepare_material") && <NewMaterialVersion sessionId={session.id} planRevisionId={plan.id} unitId={unitId} contentVersionId={material.data.content_version_id} sessionRevision={session.revision} busy={fetching || material.isFetching || reinforcementNavigation.pending} command={command} onQueued={applyResult} />}<Button variant="contained" disabled={locked || !enabled(material.data.allowed_actions, "start_practice")} onClick={() => void startAttempt("units", unitId)}>{t("teacher:start_practice")}</Button><Button variant="outlined" disabled={locked || !enabled(session.allowed_actions, "start_section_final")} onClick={() => { const section = plan.outline.sections.find(section => section.units.some(unit => unit.id === unitId)); if (section) void startAttempt("sections", section.id, false, "after_study"); }}>{t("teacher:after_study_final")}</Button></Actions></Stack> : null}
+            {lesson?.kind === "material" && <Stack sx={{ gap: 3 }}>
+              <LessonHeader>
+                <Typography variant="overline">{t("teacher:theory")}</Typography>
+                <Typography ref={lessonHeading} tabIndex={-1} variant="h5" component="h2">
+                  {plan.outline.sections.flatMap(section => section.units).find(unit => unit.id === unitId)?.title}
+                </Typography>
+              </LessonHeader>
+              <LessonTopics blocks={lesson.blocks} contentVersionId={lesson.content_version_id} history={lesson.lesson_interactions}
+                session={session} busy={locked || material.isFetching} command={command} onResult={applyResult}
+                savedBlockId={session.cursor.content_version_id === lesson.content_version_id ? session.cursor.block_id : null}
+                onSaveReadingPoint={blockId => saveCursor({
+                  ...localCursor, phase: "theory", plan_revision_id: plan.id, unit_id: unitId,
+                  content_version_id: lesson.content_version_id, block_id: blockId,
+                })} />
+              <Actions>
+                {session.state === "active" && enabled(lesson.allowed_actions, "prepare_material") &&
+                  <NewMaterialVersion sessionId={session.id} planRevisionId={plan.id} unitId={unitId} contentVersionId={lesson.content_version_id} sessionRevision={session.revision}
+                    busy={fetching || material.isFetching || reinforcementNavigation.pending} command={command} onQueued={applyResult} />}
+                <Button variant="contained" disabled={locked || !enabled(lesson.allowed_actions, "start_practice")} onClick={() => void startAttempt("units", unitId)}>
+                  {t("teacher:start_practice")}
+                </Button>
+                <Button variant="outlined" disabled={locked || !enabled(session.allowed_actions, "start_section_final")} onClick={() => {
+                  const section = plan.outline.sections.find(section => section.units.some(unit => unit.id === unitId));
+                  if (section) void startAttempt("sections", section.id, false, "after_study");
+                }}>{t("teacher:after_study_final")}</Button>
+              </Actions>
+            </Stack>}
           </TeacherLoading>
         </Panel>}
         {assessmentView}

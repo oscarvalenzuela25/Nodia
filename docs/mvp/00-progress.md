@@ -1,5 +1,12 @@
 # Progreso del MVP — Nodia
 
+**Listas de Market — planificación, 2026-11-18.** El usuario aceptó la
+maqueta y confirmó el checklist compartido. El
+[plan110](110-market-shopping-lists-plan.md) y el
+[ADR108 propuesto](../architecture/decisions/ADR-108-business-shopping-list-shared-checklist.md)
+registran flujo, contratos y pruebas pendientes. Implementación futura en
+[LISTA-001](TODO.md#cola-actual).
+
 **Entrega técnica de Caja, CASH-07 — 2026-11-17.**
 [Plan109 §16](109-business-cash-ledger-plan.md#16-verificación-de-entrega--cash-07-2026-11-17)
 registra los contratos HTTP y SQL, la comprobación móvil y la recuperación

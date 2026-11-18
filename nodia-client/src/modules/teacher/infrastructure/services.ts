@@ -19,6 +19,19 @@ export async function sendTeacher(command: TeacherCommand) {
   return commandSchema.parse(response.data);
 }
 
+const receiptSchema = z.object({ request_key: z.uuid(), operation: z.string(), session_id: z.string().nullable(), http_status: z.number().int(), receipt: commandSchema, completed_at: z.string() });
+const closeRequestSchema = z.discriminatedUnion("status", [
+  z.object({ status: z.literal("closed"), request_key: z.uuid() }),
+  z.object({ status: z.literal("saved"), request: receiptSchema }),
+]);
+
 export async function readTeacherReceipt(key: string, signal?: AbortSignal) {
-  return readTeacher(`requests/${key}`, z.object({ request_key: z.string(), operation: z.string(), session_id: z.string().nullable(), http_status: z.number().int(), receipt: commandSchema, completed_at: z.string() }), signal);
+  return readTeacher(`requests/${key}`, receiptSchema.refine(receipt => receipt.request_key === key.toLowerCase()), signal);
+}
+
+export async function closeTeacherRequest(key: string) {
+  const response = await mainInstance.post<unknown>(`/teacher/requests/${key}/close`);
+  return closeRequestSchema.refine(result => (
+    result.status === "closed" ? result.request_key : result.request.request_key
+  ) === key.toLowerCase()).parse(response.data);
 }

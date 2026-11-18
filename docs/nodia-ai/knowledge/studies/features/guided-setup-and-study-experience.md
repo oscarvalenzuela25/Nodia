@@ -283,6 +283,16 @@ Fuente candidata validada; no publica ni acredita operación real por sí sola.
 Seguimiento [TODO](../../../../mvp/TODO.md): TUX-001 cerrado por alcance en106§14;
 TUX-03/05 tienen implementación local separada en106§15 y QA/aceptación pendientes.
 
+## Evaluación visual del progreso de la lección — 2026-11-17
+
+El [ajuste aprobado](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#17-progreso-en-el-panel-de-la-lección--2026-11-17)
+agrupa en el panel de la unidad el trabajo de preparación en curso, su estado y
+la barra indeterminada. El sondeo existente sigue consultando ese mismo trabajo
+y el reintento de lectura aparece ante error. El cambio de presentación conserva
+los conceptos, las operaciones y el significado de los resultados de Teacher,
+por lo que el contexto de NodiaAI se mantiene con las herramientas y permisos
+vigentes.
+
 ## Evolución y compatibilidad
 
 | Revisión | Cambio | Contexto afectado | Compatibilidad |

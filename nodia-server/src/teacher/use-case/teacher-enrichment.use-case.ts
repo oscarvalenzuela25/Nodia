@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import type { ActorReference } from '../../authorization/authority-transaction.js';
 import type { EntityManager } from 'typeorm';
-import { TeacherService, type TeacherScope } from '../teacher.service.js';
+import { assertTeacherRequestOpen, TeacherService, type TeacherScope } from '../teacher.service.js';
 import {
   TEACHER_GENERATION_PORT,
   type TeacherGenerationPort,
@@ -259,13 +259,15 @@ export class TeacherEnrichmentUseCase {
         sessionId,
         async ({ manager, actor: current, session }) => {
           const [receipt]: {
+            operation: string;
             payload_hash: string;
             receipt: Record<string, unknown>;
           }[] = await manager.query(
-            'SELECT payload_hash,receipt FROM teacher_requests WHERE actor_id=$1 AND request_key=$2',
+            'SELECT operation,payload_hash,receipt FROM teacher_requests WHERE actor_id=$1 AND request_key=$2',
             [current.actorId, key],
           );
           if (receipt) {
+            assertTeacherRequestOpen(receipt.operation);
             const digest = hash({
               operation: 'enrichment:source_create',
               session_id: sessionId,

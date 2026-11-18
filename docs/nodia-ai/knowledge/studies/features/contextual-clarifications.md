@@ -4,7 +4,7 @@
   "document_id": "studies.contextual-clarifications",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 5,
+  "revision": 6,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -44,6 +44,14 @@
     {
       "path": "nodia-client/src/modules/teacher/components/AdaptiveWorkspace/ClarificationPanel.tsx",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-client/src/modules/teacher/components/LessonTopics/TopicClarification.tsx",
+      "kind": "implementation"
+    },
+    {
+      "path": "docs/mvp/106-nodia-teacher-guided-ux-redesign.md",
+      "kind": "specification"
     },
     {
       "path": "docs/mvp/102-nodia-teacher-phased-implementation-and-final-qa.md",
@@ -95,7 +103,22 @@ Corte histórico de construcción local y QA parcial: las comprobaciones sintét
 
 # Aclaraciones vinculadas al material de Teacher — contexto funcional para NodiaAI
 
-> Propuesta del [upgrade101](../../../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y [ADR098 propuesto](../../../../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md); sin implementación, aprobación o publicación de esta capacidad. Las etapas y criterios de aceptación del plan son la fuente canónica.
+## Aclaraciones por tópico y marcador de lectura — 2026-11-17
+
+La [implementación aprobada en maqueta](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#18-lectura-y-aclaraciones-por-tópico--2026-11-17)
+presenta una cita y un compositor junto al tópico. Consultar la lectura y los
+hilos guardados conserva sus operaciones de consulta. **Enviar a Teacher**
+es la intención explícita que reserva una generación. El borrador y la
+conciliación conservan la identidad exacta de sesión, versión, tópico e hilo.
+El marcador de lectura confirma dónde quedó el usuario en esa versión.
+Estas acciones mantienen el significado de la ayuda recibida y del avance
+lector, con las autoridades y capacidades existentes. La ficha sigue
+candidata.
+
+> El detalle de diseño inicial se conserva abajo. Las etapas y criterios del
+> [upgrade101](../../../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y
+> el [ADR098 propuesto](../../../../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md)
+> definen el alcance funcional.
 
 ## Qué resuelve y qué significa
 

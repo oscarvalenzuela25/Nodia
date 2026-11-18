@@ -4,7 +4,7 @@
   "document_id": "businesses",
   "product_id": "businesses",
   "kind": "product",
-  "revision": 65,
+  "revision": 66,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -13,6 +13,14 @@
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/mvp/110-market-shopping-lists-plan.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/market-shopping-lists.md",
+      "kind": "specification"
+    },
     {
       "path": "docs/mvp/109-business-cash-ledger-plan.md",
       "kind": "specification"
@@ -312,6 +320,14 @@ exacto de modelos del OCR. Administración de IA conserva su propia autoridad
 de gestión. La [ficha candidata de revisión OCR](features/product-price-calculator-and-invoice-binding.md#selección-ocr-con-el-módulo-negocios--2026-11-17)
 y el [plan94 §44](../../../mvp/94-business-point-of-sale-and-product-refactor.md#44-modelos-ocr-con-acceso-de-negocios--2026-11-17)
 describen el contrato por selección.
+
+## Listas de Market — 2026-11-18
+
+La maqueta está aceptada y el checklist se comparte por negocio. El
+[plan110](../../../mvp/110-market-shopping-lists-plan.md) y la
+[ficha candidata](features/market-shopping-lists.md) describen el futuro
+editor, el copiado y el guardado por partida. La implementación nativa
+queda en el [TODO](../../../mvp/TODO.md#cola-actual).
 
 ## Caja: plan de registro y egresos de factura — solicitud2026-11-17
 
