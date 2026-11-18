@@ -1802,8 +1802,8 @@ El SSH restringido confirmó fase `failed`, `effects_started=true`,
 confirmó API y worker inactivos. La API pública devolvió HTTP 503 y Client
 HTTP 200, ambos con TLS verificado desde el equipo local.
 
-La causa exacta y el efecto en el esquema quedan pendientes de la inspección
-privada del intento. La copia instalada de `inspect-backend-operation.py`
+En esta primera comprobación, la causa exacta y el efecto en el esquema
+quedaron pendientes de la inspección privada del intento. La copia instalada de `inspect-backend-operation.py`
 coincide por SHA-256 con el helper versionado. La ejecución con `sudo -n`
 requirió autenticación interactiva. El diagnóstico se hizo por lectura de
 GitHub, SSH y HTTPS. La siguiente comprobación es el helper documentado
@@ -1827,8 +1827,111 @@ También rechazó un inventario al que se quitó la columna física
 `invoices.version`. Se alinearon el ensayo de primera instalación y el
 restaurador de Teacher, incluido el hash que este último verifica.
 
-La reproducción aislada acredita el defecto de código. La confirmación del
-diagnóstico privado y del ledger productivo requiere la inspección del
-intento original. La adopción en el VPS requiere actualizar el helper y su
+La reproducción aislada acredita el defecto de código. El diagnóstico privado
+y la verificación del ledger productivo se registran en el seguimiento de esta
+sección. La adopción en el VPS requiere actualizar el helper y su
 pin con revisión operativa. El recibo fallido y el bloqueo conservan su
 estado hasta conciliar los efectos productivos.
+
+### Merge del arreglo y comprobación del VPS
+
+La [CI del PR 54](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44215550478)
+pasó. El [PR 55](https://github.com/oscarvalenzuela25/Nodia/pull/55) integró
+el arreglo en master `0579acdc547280f19e46b6f126772892e48db6b7`.
+La [CI 44219137119](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44219137119)
+se detuvo al consultar el baseline del VPS con `deployment_gateway_not_ready`,
+antes de construir artefactos o despachar CD.
+
+Una lectura posterior por SSH restringido confirmó `blocked=true`, API y
+worker inactivos, y la operación original `8014c78fc35edcaec2e4cb6658167329`
+en `failed`. La API pública devolvió HTTP 503. El hash del helper instalado
+sigue siendo `0c63a501e61f31ecc350ec8a3d82b54a9fcb9c201c149edf7b1feb0432e66a1a`.
+El helper corregido del repositorio tiene SHA-256
+`c4ccbc0ad598611bedde395d4662b491785b912905bbde8de057b685bfba4c7f`.
+La lectura privada del intento sigue requiriendo autenticación interactiva
+en el VPS.
+
+### Diagnóstico privado del intento 8014c78f
+
+El operador ejecutó `inspect-backend-operation.py` y compartió su salida
+saneada. La fase fallida fue `migration_requested`; el proceso hijo emitió
+`entity_table_or_column_missing` con `automatic_retry_allowed=false`. Su
+JSON privado tiene SHA-256
+`46c6b995353adfad0470db3f93976fd64726764056a97c7f5d539e4c6d863d32`.
+Este código se emite después de confirmar `runMigrations({ transaction: 'all' })`
+y validar el ledger del candidato. El diagnóstico coincide con el defecto
+reproducido en PostgreSQL aislado.
+
+SSH administrativo de lectura confirmó que `current` apunta a
+`backend-d4345ea90eb9-6e5f3d002c88` y que está presente el manifiesto del
+candidato `backend-b62a9029861f-1d4cda79ea4a`, SHA-256
+`005b532a718382ef0cae011a56d75c0ad4381d593f8405f96255a351c3c4dfc7`.
+La comprobación del estado actual del ledger y de la quiescencia se realiza
+con el helper instalado en modo `verify`, bajo `nodia`, con TLS y
+transacción de solo lectura. La autenticación sudo se mantiene interactiva.
+
+### Ledger confirmado y activación autorizada
+
+El operador confirmó en producción `verify` por TLS de solo lectura.
+Ledger esperado de 52 a 56 migraciones, cuatro incorporadas, cero pendientes,
+SHA-256 `634d9db2209e4af8d3ac0df1335510d79b471b8390373654533d9edfd3c98718`
+y todos los contadores de trabajos en cero. El operador autorizó recuperar
+el servicio con el candidato exacto y conservar el bloqueo del CD.
+
+El paquete puntual `recovery.py` se conserva en el catálogo local
+`ops/lab/artifacts/recover-b62a9029-20261117/`. El archivo transferido al
+directorio administrativo del VPS se comprobó con SHA-256
+`f40a0acec739c37090c58c7f1a5e5ca117ba5ef670ec05f3da9240c1d4bd2320`.
+Usa los locks del receptor y del instalador, valida el intento original y los
+árboles de ambos releases y repite el chequeo del ledger y las columnas
+persistentes con SQL de solo lectura. Reserva una intención exclusiva antes
+de activar el candidato. La secuencia verifica las identidades de API y
+worker, HTTP y CORS, y restaura los timers originales. El fallo de un chequeo
+posterior a la activación vuelve a poner mantenimiento para ese intento.
+Pasaron cuatro pruebas locales del paquete y la sintaxis del verificador SQL.
+La activación queda sujeta a la ejecución privilegiada del operador y a la
+comprobación posterior del servicio.
+
+La primera ejecución se detuvo en `original_pre_migration_backup_receipt_missing`
+antes de reservar la activación. El verificador exigía `cipher_bytes`, que
+la política comprueba en el resultado original del respaldo y omite al
+guardar su recibo compacto. SSH confirmó que `current` y los servicios
+siguieron en el estado anterior. La revisión 2 utiliza el formato que
+produce `validate_backup_result`. Pasaron cinco pruebas locales, incluida
+una regresión con la salida de esa función. El nuevo archivo transferido
+y verificado en el VPS tiene SHA-256
+`4e642a67df18e8f6c72981c148b6e2b8919c0da53a23c8fe3f23efd15a723147`.
+
+### Servicio recuperado con el candidato
+
+La verificación externa posterior confirmó `backend-b62a9029861f-1d4cda79ea4a`
+como `current`, con el árbol exacto
+`1d4cda79ea4a58e6372137b25c80b63dd928e6d9c8c265146517feb70cba13f4`.
+API y worker activos por el receptor SSH, timers de respaldo y rotación
+activos por systemd, HTTP 200 en loopback y API pública con TLS verificado.
+Client permaneció en HTTP 200. Para el origen de Pages, la preconsulta de
+`auth/refresh` devolvió 204 y `auth/me` anónimo devolvió 401, con origen y
+credenciales CORS correctos en ambos.
+
+El receptor conservó `blocked=true`. La consulta separada del intento
+`8014c78fc35edcaec2e4cb6658167329` mantuvo `failed` y
+`automatic_retry_allowed=false`. La activación usó el ledger de 56
+migraciones previamente confirmado. La adopción del helper corregido y la
+conciliación que habilitaría una futura entrega siguen pendientes.
+
+### Preparación de la conciliación posterior a migrar
+
+El [ADR107](../architecture/decisions/ADR-107-post-migration-deployment-reconciliation.md)
+describe la política propuesta. La conciliación incorpora el recibo privado
+de recuperación, la prueba de columnas persistentes, el diagnóstico original,
+la identidad del candidato y una nueva verificación del ledger. El receptor
+y el actualizador validan la misma evidencia antes de admitir una intención
+nueva. El intento `8014c78f` y su bloqueo se conservan como evidencia histórica.
+
+Pasaron 220 pruebas de política y almacenamiento privado en Linux aislado y
+190 pruebas de CI y verificadores en Node 24.22.2 para Linux. Los casos nuevos
+comprueban evidencia alterada, otro intento bloqueado, pins diferentes y una
+interrupción antes de publicar el recibo. El
+[runbook](../../ops/production/README.md#conciliación-posterior-a-migración-confirmada)
+incluye verificación previa, adopción mediante hashes y cierre de CD. Falta
+aplicar el paquete revisado en el VPS y verificar una entrega nueva de master.

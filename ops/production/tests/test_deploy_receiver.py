@@ -390,6 +390,76 @@ class RootStateTests(PipeFixture, unittest.TestCase):
         shutil.rmtree(fixture.release)
         self.assertFalse(guard.prior_updates_blocked())
 
+    def post_migration_application_fixture(self):
+        self.application_fixture(True)
+        receipt, evidence = reconciliation_examples.post_migration_fixture()
+        attempt = self.state / 'attempts' / receipt['operation_id']
+        attempt.mkdir(mode=0o700)
+        fields = reconciliation_examples.policy.POST_MIGRATION_EVIDENCE
+        files = {attempt / name: evidence[field] for field, (name, _) in fields.items()}
+        files.update({attempt / 'state.json': evidence['state_bytes'], attempt / 'request.json': evidence['request_bytes'],
+                      attempt / 'recovered-manifest.json': evidence['manifest_bytes'],
+                      self.state / 'BLOCKED.json': evidence['blocked_bytes']})
+        for path, content in files.items():
+            path.write_bytes(content)
+            path.chmod(0o600)
+        return receipt, attempt, files
+
+    def test_post_migration_acknowledgment_releases_only_future_admissions(self):
+        receipt, attempt, files = self.post_migration_application_fixture()
+        acknowledgment = attempt / 'post-migration-reconciliation.json'
+        self.assertTrue(receiver.deployment_status()['blocked'])
+        receiver.save_new(acknowledgment, receipt)
+        self.assertFalse(receiver.deployment_status()['blocked'])
+
+        receiver.save_new(self.submissions / (receipt['operation_id'] + '.json'), {'message': self.message})
+        with patch.object(receiver, 'command') as launch:
+            original = receiver.submit(self.message)
+            self.assertEqual(original['phase'], 'failed')
+            self.assertTrue(original['migration_requested'])
+            self.assertFalse(original['deployment_performed'])
+            self.assertFalse(original['automatic_retry_allowed'])
+            launch.assert_not_called()
+
+        guard = receiver.application_service_guard()
+        previous_request = json.loads(files[attempt / 'request.json'])
+        with self.assertRaisesRegex(ValueError, 'operation_id_already_recorded'):
+            guard.begin(previous_request, {})
+        guard.begin({**previous_request, 'operation_id': 'b' * 32}, {
+            'schema_version': 1, 'operation_id': 'b' * 32, 'phase': 'preparing',
+            'effects_started': False, 'migration_requested': False,
+        })
+        self.assertEqual({path: path.read_bytes() for path in files}, files)
+
+    def test_post_migration_preview_keeps_gates_closed_to_other_blockers(self):
+        receipt, attempt, files = self.post_migration_application_fixture()
+        preview = {'reconciliation_override': (receipt['operation_id'], json.dumps(receipt).encode())}
+        self.assertFalse(receiver.deployment_status(**preview)['blocked'])
+        self.assertTrue(receiver.deployment_status()['blocked'])
+
+        pending = self.submissions / ('b' * 32 + '.json')
+        receiver.save_new(pending, {'message': {**self.message, 'operation_id': 'b' * 32}})
+        self.assertTrue(receiver.deployment_status(**preview)['blocked'])
+        pending.unlink()
+
+        other = self.state / 'attempts' / ('b' * 32)
+        other.mkdir(mode=0o700)
+        receiver.save_new(other / 'state.json', {
+            'operation_id': 'b' * 32, 'phase': 'failed', 'effects_started': True, 'migration_requested': True,
+        })
+        self.assertTrue(receiver.deployment_status(**preview)['blocked'])
+        (other / 'state.json').unlink()
+        other.rmdir()
+
+        verification = attempt / 'post-migration-verification.json'
+        verification.write_bytes(files[verification] + b' ')
+        self.assertTrue(receiver.deployment_status(**preview)['blocked'])
+        verification.write_bytes(files[verification])
+        receiver.save_new(attempt / 'post-migration-reconciliation.json', receipt)
+        self.assertTrue(receiver.deployment_status(**preview)['blocked'])
+        receiver.save_new(attempt / 'pre-migration-reconciliation.json', receipt)
+        self.assertTrue(receiver.deployment_status()['blocked'])
+
     def test_active_status_rejects_missing_altered_extra_unregistered_or_relocated_dropins(self):
         def missing(f): (f.units / 'nodia-api.service.d/70-codex-runtime.conf').unlink()
         def altered(f): (f.units / 'nodia-api.service.d/70-codex-runtime.conf').write_bytes(b'[Service]\nUser=root\n')

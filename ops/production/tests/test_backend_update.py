@@ -56,6 +56,67 @@ def reconciliation_fixture(*, state_change=None, request_change=None, recovery_c
                      'manifest_bytes':manifest_bytes,'blocked_bytes':block}
 
 
+def post_migration_fixture(*, changes=None):
+    """Produce a self-consistent fingerprint for synthetic post-migration evidence."""
+    changes = changes or {}
+
+    def encode(value):
+        return (json.dumps(value, sort_keys=True) + '\n').encode()
+
+    def digest(raw):
+        return hashlib.sha256(raw).hexdigest()
+
+    req = request()
+    operation = req['operation_id']
+    tree = 'f' * 64
+    release = f"backend-{req['source_sha'][:12]}-{tree[:12]}"
+    rows = [{'timestamp': '179000000000' + str(index), 'name': 'Fixture' + '179000000000' + str(index)}
+            for index in range(3)]
+    ledger = digest(json.dumps(rows, separators=(',', ':')).encode())
+    state = {'schema_version': 1, 'operation_id': operation, 'phase': 'failed',
+             'failed_phase': 'migration_requested', 'error_code': 'host_command_failed_inspect_private_diagnostics',
+             'effects_started': True, 'migration_requested': True, 'automatic_retry_allowed': False,
+             'previous_release': req['expected_current_release'], 'candidate_release': release,
+             **changes.get('state', {})}
+    block = policy.blocked_record_bytes(state)
+    state_bytes, request_bytes = encode(state), encode(req)
+    manifest = {'schema_version': 1, 'release_id': release, 'source_sha': req['source_sha'],
+                'package_tree_sha256': tree, 'files': [
+                    {'path': f"dist/migrations/{row['timestamp']}-Fixture.js", 'type': 'file', 'sha256': '0' * 64}
+                    for row in reversed(rows)], **changes.get('manifest', {})}
+    manifest_bytes = encode(manifest)
+    intent = {'schema_version': 1, 'status': 'intent_recorded', 'operation_id': operation, 'release_id': release,
+              'original_state_sha256': digest(state_bytes), 'request_sha256': digest(request_bytes),
+              'blocked_sha256': digest(block), 'manifest_sha256': digest(manifest_bytes), 'ledger_sha256': ledger,
+              'started_at': '2026-11-17T10:15:00Z', 'migrations_requested': False, **changes.get('intent', {})}
+    recovery = {'schema_version': 1, 'status': 'service_restored', 'operation_id': operation, 'release_id': release,
+                'ledger_sha256': ledger, 'migration_count': len(rows), 'migrations_executed': False,
+                'failed_attempt_preserved': True, 'backend_public_http': 200, 'cors_verified': True,
+                'timers_restored': True, 'cd_blocked': True, 'completed_at': '2026-11-17T10:16:00Z',
+                **changes.get('recovery', {})}
+    failure = {'schema_version': 1, 'status': 'failed', 'error_code': 'entity_table_or_column_missing',
+               'automatic_retry_allowed': False, **changes.get('failure', {})}
+    verified = {'schema_version': 1, 'status': 'verified', 'mode': 'verify', 'before': 2,
+                'target': len(rows), 'pending': 0, 'incremental_migrations': 1, 'ledger_sha256': ledger,
+                'quiescent': True, 'counts': dict.fromkeys(policy.RUNTIME_COUNTERS, 0),
+                'read_only': True, 'client_tls_authorized': True, 'migrations_executed': False}
+    preactivation = {**verified, 'entity_columns_present': True, 'entity_tables_checked': 3,
+                     **changes.get('preactivation', {})}
+    verification = {**verified, **changes.get('verification', {})}
+    evidence = {'state_bytes': state_bytes, 'request_bytes': request_bytes, 'manifest_bytes': manifest_bytes,
+                'blocked_bytes': block, 'recovery_bytes': encode(recovery), 'recovery_intent_bytes': encode(intent),
+                'migration_failure_bytes': encode(failure), 'preactivation_bytes': encode(preactivation),
+                'verification_bytes': encode(verification)}
+    receipt = {'schema_version': 1, 'status': 'candidate_restored_after_migration', 'operation_id': operation,
+               'state_sha256': digest(state_bytes), 'request_sha256': digest(request_bytes),
+               'blocked_sha256': digest(block), 'current_release_id': release,
+               'current_manifest_sha256': digest(manifest_bytes), 'package_tree_sha256': tree,
+               'ledger_sha256': ledger, 'migration_count': len(rows), 'acknowledged_at_utc': '2026-11-17T10:17:00Z',
+               'new_operation_allowed': True, 'original_operation_retry_allowed': False}
+    receipt.update({field: digest(evidence[name]) for name, (_, field) in policy.POST_MIGRATION_EVIDENCE.items()})
+    return receipt, evidence
+
+
 class ReconciliationPolicyTests(unittest.TestCase):
     def test_only_exact_bound_recovery_evidence_is_accepted_without_mutation_or_replay(self):
         receipt, evidence = reconciliation_fixture()
@@ -94,6 +155,43 @@ class ReconciliationPolicyTests(unittest.TestCase):
             receipt, evidence = reconciliation_fixture(recovery_change=change)
             with self.subTest(change=change), self.assertRaises(policy.Rejected):
                 policy.validate_pre_migration_reconciliation(receipt, **evidence)
+
+
+class PostMigrationReconciliationTests(unittest.TestCase):
+    def test_committed_candidate_with_complete_recovery_and_live_activity_is_accepted(self):
+        receipt, evidence = post_migration_fixture(changes={'verification': {
+            'counts': {**dict.fromkeys(policy.RUNTIME_COUNTERS, 0), 'jobs': 2}, 'quiescent': False,
+        }})
+        self.assertEqual(policy.validate_post_migration_reconciliation(receipt, **evidence), receipt)
+        self.assertEqual(policy.validate_post_migration_reconciliation(
+            receipt, **{**evidence, 'blocked_bytes': None}), receipt)
+        self.assertFalse(receipt['original_operation_retry_allowed'])
+
+    def test_any_altered_input_bytes_or_replay_permission_blocks_admission(self):
+        receipt, evidence = post_migration_fixture()
+        for field in evidence:
+            with self.subTest(field=field), self.assertRaises(policy.Rejected):
+                policy.validate_post_migration_reconciliation(receipt, **{**evidence, field: evidence[field] + b' '})
+        with self.assertRaises(policy.Rejected):
+            policy.validate_post_migration_reconciliation({**receipt, 'original_operation_retry_allowed': True}, **evidence)
+
+    def test_valid_digests_cannot_acknowledge_an_unknown_or_unverified_commit(self):
+        for changes in (
+            {'state': {'failed_phase': 'writers_stopped'}}, {'state': {'migration_requested': False}},
+            {'state': {'migration_result': {}}}, {'state': {'phase': 'complete'}},
+            {'failure': {'error_code': 'migration_ledger_mismatch'}}, {'failure': {'automatic_retry_allowed': 0}},
+            {'intent': {'migrations_requested': True}}, {'intent': {'started_at': '2026-11-17T10:17:00Z'}},
+            {'recovery': {'status': 'partial'}}, {'recovery': {'timers_restored': False}},
+            {'recovery': {'migrations_executed': True}}, {'recovery': {'release_id': 'unrelated'}},
+            {'manifest': {'source_sha': 'a' * 40}}, {'manifest': {'files': []}},
+            {'preactivation': {'entity_columns_present': False}}, {'preactivation': {'entity_tables_checked': True}},
+            {'verification': {'pending': 1}}, {'verification': {'read_only': False}},
+            {'verification': {'migrations_executed': True}}, {'verification': {'client_tls_authorized': False}},
+            {'verification': {'ledger_sha256': 'f' * 64}}, {'verification': {'quiescent': False}},
+        ):
+            with self.subTest(changes=changes), self.assertRaises(policy.Rejected):
+                receipt, evidence = post_migration_fixture(changes=changes)
+                policy.validate_post_migration_reconciliation(receipt, **evidence)
 
 
 class Ports:
