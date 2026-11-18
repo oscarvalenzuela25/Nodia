@@ -48,6 +48,22 @@ ese fallo de las barreras para una intención nueva; el ID fallido sigue sin pod
 reaplicarse. Los efectos inciertos, migraciones solicitadas y recibos alterados
 permanecen bloqueados.
 
+### Respaldo previo interrumpido — 2026-11-18
+
+El intento `1d6e3f19` de Listas de Market falló en `backup_requested` con
+`migration_requested: false`. La API volvió a servir el release anterior y el
+ledger quedó en 56. El resultado de la escritura del catálogo en R2 se conserva
+como incierto.
+
+Se usa el mismo registro privado de conciliación con estado
+`backup_request_reconciled_before_migration`, separado del caso de SIGTERM.
+La evidencia enlaza los bytes del intento fallido y su bloqueo, el recibo de
+disponibilidad, los manifiestos del release activo y el candidato, una lectura
+nueva del ledger por TLS y la verificación de un respaldo vigente por HEAD y
+GET con digest. El respaldo observado demuestra que hay una copia legible.
+La siguiente entrega debe generar y verificar su propio respaldo fresco.
+Ambas barreras verifican el recibo antes de admitir una intención nueva.
+
 ## Consecuencias
 
 - Se conserva evidencia honesta: recuperar f01 no equivale a desplegar el candidato.
@@ -63,3 +79,4 @@ permanecen bloqueados.
 
 - [Plan de producción99, sección22](../../mvp/99-production-deployment-and-cicd-plan.md#22-parada-limpia-por-sigterm-recuperación-de-disponibilidad-y-conciliación--2026-11-13).
 - [Runbook de producción](../../../ops/production/README.md).
+- [Incidente de Listas de Market](../../mvp/99-production-deployment-and-cicd-plan.md#35-respaldo-previo-interrumpido-en-listas-de-market--2026-11-18).

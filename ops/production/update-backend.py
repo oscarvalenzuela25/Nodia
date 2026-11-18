@@ -300,15 +300,16 @@ class Host:
                     'manifest_bytes': private(previous / 'recovered-manifest.json', 32 * 1024 ** 2),
                     'blocked_bytes': blocked if previous.name == blocked_id else None,
                 }
-                if has_pre:
+                acknowledgment = override_receipt if preview else private(pre if has_pre else post)
+                self.must(0 < len(acknowledgment) <= 16384, 'update_history_size_invalid')
+                receipt = unique_json(acknowledgment)
+                if has_pre or (preview and receipt.get('status') == 'backup_request_reconciled_before_migration'):
                     recovery = private(STATE / ('same-release-recovery-' + previous.name + '.json'))
-                    self.p.validate_pre_migration_reconciliation(unique_json(private(pre)), recovery_bytes=recovery, **evidence)
+                    self.p.validate_pre_migration_reconciliation(receipt, recovery_bytes=recovery, **evidence)
                 else:
-                    acknowledgment = override_receipt if preview else private(post)
-                    self.must(0 < len(acknowledgment) <= 16384, 'update_history_size_invalid')
                     evidence.update({field: private(previous / filename)
                                      for field, (filename, _) in self.p.POST_MIGRATION_EVIDENCE.items()})
-                    self.p.validate_post_migration_reconciliation(unique_json(acknowledgment), **evidence)
+                    self.p.validate_post_migration_reconciliation(receipt, **evidence)
                 reconciled.add(previous.name)
             return blocked is not None and blocked_id not in reconciled
         except (OSError, ValueError, TypeError, AttributeError, RecursionError, self.p.Rejected):

@@ -6,6 +6,7 @@ import importlib.util
 import json
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 source = Path(__file__).resolve().parents[1] / 'backend_update.py'
 spec = importlib.util.spec_from_file_location('backend_update', source)
@@ -115,6 +116,108 @@ def post_migration_fixture(*, changes=None):
                'new_operation_allowed': True, 'original_operation_retry_allowed': False}
     receipt.update({field: digest(evidence[name]) for name, (_, field) in policy.POST_MIGRATION_EVIDENCE.items()})
     return receipt, evidence
+
+
+def backup_request_fixture(*, changes=None, request_change=None):
+    """Synthetic evidence and pins for the incident-specific validator."""
+    changes = changes or {}
+    encode = lambda value: (json.dumps(value) + '\n').encode()
+    digest = lambda raw: hashlib.sha256(raw).hexdigest()
+    req = {**request(), **(request_change or {})}
+    operation = req['operation_id']
+    candidate = 'backend-' + 'a' * 12 + '-' + 'b' * 12
+    state = {'schema_version': 1, 'operation_id': operation, 'phase': 'failed',
+             'failed_phase': 'backup_requested', 'error_code': 'host_command_failed_inspect_private_diagnostics',
+             'effects_started': True, 'migration_requested': False, 'automatic_retry_allowed': False,
+             'previous_release': req['expected_current_release'], 'candidate_release': candidate,
+             **changes.get('state', {})}
+    state_bytes, request_bytes = encode(state), encode(req)
+    blocked = policy.blocked_record_bytes(state)
+    timestamps = [str(1790000000000 + index) for index in range(56)]
+    manifest = {'schema_version': 1, 'release_id': req['expected_current_release'],
+                'package_tree_sha256': req['expected_current_tree_sha256'], 'files': [
+                    {'path': f'dist/migrations/{timestamp}-Fixture.js', 'type': 'file', 'sha256': '0' * 64}
+                    for timestamp in timestamps]}
+    manifest_bytes = encode(manifest)
+    _, ledger = policy._compiled_ledger(manifest, lambda condition: None)
+    pins = {'state_sha256': digest(state_bytes), 'request_sha256': digest(request_bytes),
+            'blocked_sha256': digest(blocked), 'current_manifest_sha256': digest(manifest_bytes),
+            'ledger_sha256': ledger}
+    availability = {'schema_version': 1, 'operation_id': operation,
+                    'current_release': req['expected_current_release'], 'ledger_before': 56,
+                    'migration_executed': False, 'failed_state_sha256': pins['state_sha256'],
+                    'blocked_sha256': pins['blocked_sha256'], 'request_sha256': pins['request_sha256'],
+                    'backup_error_codes': ['nodia_ai:recovery_write_unknown'], 'status': 'api_restored_previous_release',
+                    'public_http': 200, 'cors_verified': True, 'timers_restored': True, 'cd_still_blocked': True}
+    availability_digest = digest(encode(availability))
+    observation = {'schema_version': 1, 'status': 'verified_read_only', 'operation_id': operation,
+                   'observed_at_utc': '2026-11-18T16:30:00.000Z', 'catalog_sha256': '1' * 64,
+                   'catalog_revision': 9, 'catalog_last_sequence': 3, 'catalog_open': True,
+                   'unconfirmed_deletions': 0, 'incident_outcome': 'unknown',
+                   'verified_backup': {'backup_id': '00000000-0000-4000-8000-000000000000',
+                       'captured_at': '2026-11-18T03:30:00.000Z', 'expires_at': '2026-11-25T03:30:00.000Z',
+                       'cipher_bytes': 123, 'cipher_sha256': '2' * 64, 'journal_sequence': 3,
+                       **changes.get('backup', {})}, **changes.get('r2', {})}
+    recovery = {'schema_version': 1, 'status': 'backup_request_reconciliation_evidence', 'operation_id': operation,
+                'availability_receipt': {**availability, **changes.get('availability', {})},
+                'availability_receipt_sha256': availability_digest, 'candidate_manifest_sha256': '3' * 64,
+                'ledger_inspection': {'schema_version': 1, 'status': 'verified', 'mode': 'inspect', 'before': 56,
+                    'target': 57, 'pending': 1, 'incremental_migrations': 1, 'ledger_sha256': ledger,
+                    'quiescent': True, 'counts': dict.fromkeys(policy.RUNTIME_COUNTERS, 0), 'read_only': True,
+                    'client_tls_authorized': True, 'migrations_executed': False, **changes.get('ledger', {})},
+                'r2_observation': observation, **changes.get('evidence', {})}
+    recovery_bytes = encode(recovery)
+    receipt = {'schema_version': 1, 'status': policy.BACKUP_REQUEST_ACKNOWLEDGMENT, 'operation_id': operation,
+               **pins, 'recovery_receipt_sha256': digest(recovery_bytes), 'migration_count': 56,
+               'current_release_id': req['expected_current_release'], 'package_tree_sha256': req['expected_current_tree_sha256'],
+               'acknowledged_at_utc': '2026-11-18T16:35:00Z', 'new_operation_allowed': True,
+               'original_operation_retry_allowed': False, **changes.get('receipt', {})}
+    return (receipt, {'state_bytes': state_bytes, 'request_bytes': request_bytes, 'recovery_bytes': recovery_bytes,
+                      'manifest_bytes': manifest_bytes, 'blocked_bytes': blocked},
+            {'BACKUP_REQUEST_OPERATION': operation, 'BACKUP_REQUEST_PINS': pins,
+             'BACKUP_REQUEST_AVAILABILITY_SHA256': availability_digest, 'BACKUP_REQUEST_CANDIDATE': candidate,
+             'BACKUP_REQUEST_CANDIDATE_MANIFEST_SHA256': '3' * 64})
+
+
+class BackupRequestReconciliationTests(unittest.TestCase):
+    def test_original_failure_remains_unknown_and_only_new_operations_are_allowed(self):
+        receipt, evidence, pins = backup_request_fixture()
+        original = copy.deepcopy((receipt, evidence))
+        with patch.multiple(policy, **pins):
+            self.assertEqual(policy.validate_pre_migration_reconciliation(receipt, **evidence), receipt)
+            self.assertEqual(policy.validate_pre_migration_reconciliation(
+                receipt, **{**evidence, 'blocked_bytes': None}), receipt)
+        self.assertEqual((receipt, evidence), original)
+        with self.assertRaises(policy.Rejected):
+            policy.validate_pre_migration_reconciliation(receipt, **evidence)
+
+    def test_policy_rejects_broken_binding_or_wrong_pinned_incident(self):
+        receipt, evidence, pins = backup_request_fixture()
+        with patch.multiple(policy, **pins):
+            for field in evidence:
+                with self.subTest(field=field), self.assertRaises(policy.Rejected):
+                    policy.validate_pre_migration_reconciliation(receipt, **{**evidence, field: evidence[field] + b' '})
+            for field in policy.BACKUP_REQUEST_PINS:
+                with self.subTest(pin=field), self.assertRaises(policy.Rejected):
+                    policy.validate_pre_migration_reconciliation({**receipt, field: '0' * 64}, **evidence)
+
+    def test_hash_consistent_evidence_cannot_invent_backup_success_or_change_migration_history(self):
+        for changes in (
+            {'state': {'failed_phase': 'stopping_writers'}}, {'state': {'migration_requested': True}},
+            {'state': {'backup': {}}}, {'state': {'candidate_release': 'unrelated'}},
+            {'availability': {'cd_still_blocked': False}}, {'availability': {'ledger_before': 56.0}},
+            {'evidence': {'candidate_manifest_sha256': '4' * 64}},
+            {'ledger': {'pending': 0}}, {'ledger': {'client_tls_authorized': False}},
+            {'ledger': {'migrations_executed': True}}, {'ledger': {'quiescent': False}},
+            {'r2': {'incident_outcome': 'ready_verified'}}, {'r2': {'unconfirmed_deletions': 1}},
+            {'r2': {'observed_at_utc': '2026-11-18T16:21:00Z'}}, {'r2': {'catalog_open': False}},
+            {'backup': {'journal_sequence': 4}}, {'backup': {'cipher_sha256': ''}},
+            {'backup': {'captured_at': '2026-11-10T03:30:00Z', 'expires_at': '2026-11-17T03:30:00Z'}},
+            {'receipt': {'original_operation_retry_allowed': True}},
+        ):
+            receipt, evidence, pins = backup_request_fixture(changes=changes)
+            with self.subTest(changes=changes), patch.multiple(policy, **pins), self.assertRaises(policy.Rejected):
+                policy.validate_pre_migration_reconciliation(receipt, **evidence)
 
 
 class ReconciliationPolicyTests(unittest.TestCase):
