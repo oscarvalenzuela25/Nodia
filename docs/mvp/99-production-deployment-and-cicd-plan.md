@@ -1958,3 +1958,55 @@ vincula una observación de R2 en solo lectura a ese intento, el recibo de
 disponibilidad y los manifiestos. La admisión de otra entrega conserva los
 controles de procedencia, respaldo fresco, quiescencia y esquema. La verificación
 operativa de Listas requiere backend y Pages de la nueva entrega.
+
+## 36. Continuidad del servicio y reintento por fase
+
+Consulta de GitHub Actions el 2026-11-18. En las últimas 20 ejecuciones
+de producción en master del 14 al 18 de noviembre hubo 15 exitosas y 5
+fallidas. Son fallos de ejecución del CD, con efectos distintos en servicio.
+
+| CD | Causa documentada |
+| --- | --- |
+| [44345737883](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44345737883) | Respaldo previo, escritura incierta en el catálogo R2. El esquema seguía en 56. |
+| [44207632087](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44207632087) | Rechazo de una columna virtual de TypeORM tras el commit de cuatro migraciones. |
+| [43791568791](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43791568791) | Resultado incierto del upload del artefacto antes de solicitar despliegue. |
+| [43754640640](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43754640640) | Cuota lógica del inbox de transferencia agotada. |
+| [43622185230](https://github.com/oscarvalenzuela25/Nodia/actions/runs/43622185230) | Verificación pública de assets de Pages después de publicar. |
+
+La entrega posterior de Market quedó confirmada en el
+[CD 44365035546](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44365035546).
+El respaldo fresco, la migración 56→57, el backend y Pages completaron.
+
+El [ADR109 propuesto](../architecture/decisions/ADR-109-phase-aware-production-deploy-recovery.md)
+recoge la política de continuación. Orden de implementación y evidencia:
+
+- [x] **Recuperación de tráfico ante un fallo de respaldo, en laboratorio.**
+  El actualizador persiste el bloqueo, confirma el ledger y los procesos del
+  release activo, verifica HTTP/CORS y recupera el tráfico. Los timers se
+  restauran si han terminado las unidades de respaldo. El fallo original,
+  el bloqueo de CD y la prohibición de repetir el intento quedan registrados.
+- [ ] **Adopción de la recuperación en el VPS.** Revisar el paquete de
+  actualizador y sus pins. La adopción requiere su propia verificación
+  operativa. Una terminación abrupta del actualizador durante la recuperación
+  se diagnostica desde el estado durable antes de seguir.
+- [ ] **Ensayo de migración de entrega.** Reproducir el verificador de Caja
+  usando los dos paquetes originales en PostgreSQL 16 desechable. Convertir
+  el ensayo del actualizador y del artefacto final en gate para cambios de
+  esquema. Incluir la instalación limpia, la actualización con datos
+  representativos y el arranque del candidato. Comprobar rollback de una
+  transacción fallida y resolución de commit incierto por lectura.
+- [ ] **Continuación por componente.** Emitir un recibo saneado con fase,
+  efecto confirmado, disponibilidad y paso admitido. Probar continuación de
+  transporte, pérdida de respuesta de R2 y de Pages, y publicación de Client
+  después de un backend ya activo. Exigir serialización, preservación de
+  identidades e historial y comprobación del artefacto exacto.
+
+La rama `codex/production-deploy-recovery` implementa el primer corte.
+El contenedor aislado con systemd como PID 1 pasó 36 comprobaciones.
+Reprodujo el fallo R2 mediante una unidad de respaldo real con resultado
+sintético. El proxy local pasó de 503 a 200 y verificó CORS, mantuvo los
+PID, recuperó los timers y rechazó una nueva entrega. Las fronteras de
+aplicación, R2, SQL y proxy del ensayo systemd son sintéticas. El ensayo SQL
+separado pasó 40 comprobaciones en PostgreSQL 16 desechable con TLS,
+incluidos el ledger en solo lectura y el rechazo de un historial alterado.
+También pasaron 233 pruebas de política en Linux y 16 pruebas Node.

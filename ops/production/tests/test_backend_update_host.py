@@ -64,6 +64,46 @@ class WriterShutdownTests(unittest.TestCase):
                 host.stop_writers()
 
 
+class BackupAvailabilityTests(unittest.TestCase):
+    def setUp(self):
+        self.host = adapter.Host(policy, None, {})
+        self.host.current = Path('/opt/nodia/releases/backend-aaaaaaaaaaaa-bbbbbbbbbbbb')
+        self.host.backup_environment = Mock()
+        self.host.node_action = Mock(return_value={'read_only': True, 'migrations_executed': False})
+        self.host.verify_writers = Mock()
+        self.host.http = Mock()
+        self.host.maintenance = Mock()
+        self.host.public_cors_smoke = Mock()
+        self.host.show = Mock(return_value={'ActiveState': 'failed', 'MainPID': '0'})
+        self.host.cgroup_empty = Mock(return_value=True)
+        self.host.restore_timers = Mock()
+        current = self.enterContext(patch.object(adapter, 'CURRENT'))
+        current.is_symlink.return_value = True
+        current.resolve.return_value = self.host.current
+
+    def test_unverified_ledger_prevents_removal_of_maintenance(self):
+        self.host.node_action.side_effect = policy.Rejected('database_action_rejected')
+        with self.assertRaisesRegex(policy.Rejected, 'database_action_rejected'):
+            self.host.recover_backup_failure({})
+        self.host.node_action.assert_called_once_with('inspect')
+        self.host.maintenance.assert_not_called()
+        self.host.restore_timers.assert_not_called()
+
+    def test_lingering_backup_process_defers_timers_but_does_not_keep_maintenance(self):
+        self.host.cgroup_empty.return_value = False
+        self.assertEqual(self.host.recover_backup_failure({}), 'deferred')
+        self.host.verify_writers.assert_called_once_with(self.host.current)
+        self.host.maintenance.assert_called_once_with(False)
+        self.host.public_cors_smoke.assert_called_once_with()
+        self.host.restore_timers.assert_not_called()
+
+    def test_timer_restore_failure_preserves_confirmed_availability(self):
+        self.host.restore_timers.side_effect = policy.Rejected('timer_state_not_restored')
+        self.assertEqual(self.host.recover_backup_failure({}), 'failed')
+        self.host.maintenance.assert_called_once_with(False)
+        self.host.public_cors_smoke.assert_called_once_with()
+
+
 class HostInputTests(unittest.TestCase):
     def setUp(self):
         workspace = BASE.parents[1] / '.tmp' / 'updater-policy-tests'

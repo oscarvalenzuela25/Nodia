@@ -459,12 +459,29 @@ def run_update(request, ports, *, apply=False):
         state['failed_phase'] = state['phase']
         state['phase'] = 'failed'
         state['error_code'] = str(error) if isinstance(error, Rejected) else 'update_failed_inspect_private_diagnostics'
+        backup_failed = state['failed_phase'] == 'backup_requested' and state['migration_requested'] is False
+        if backup_failed:
+            # Admission remains blocked independently of the HTTP maintenance flag.
+            state['availability_recovery'] = 'pending'
+            ports.record(state)
+            ports.block(state)
+            try:
+                state['backup_timers_recovery'] = ports.recover_backup_failure(state['timers_before'])
+            except Exception as recovery_error:
+                state['availability_recovery'] = 'failed'
+                code = str(recovery_error) if isinstance(recovery_error, Rejected) else ''
+                state['availability_recovery_error_code'] = (
+                    code if re.fullmatch(r'[a-z0-9_]{1,100}', code) else 'availability_recovery_failed')
+            else:
+                state['availability_recovery'] = 'restored'
         if state['effects_started']:
             # Technical admission fencing only: never rollback code/data or restart/retry a writer.
-            try:
-                ports.maintenance(True)
-            except Exception:
-                state['maintenance_reassertion_failed'] = True
-            ports.block(state)
+            if state.get('availability_recovery') != 'restored':
+                try:
+                    ports.maintenance(True)
+                except Exception:
+                    state['maintenance_reassertion_failed'] = True
+            if not backup_failed:
+                ports.block(state)
         ports.record(state)
         raise Rejected(state['error_code']) from error
