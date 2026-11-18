@@ -320,6 +320,12 @@ class Ports:
     def backup(self):
         self.call('backup')
         return {'backup_id': 'synthetic-ready-backup'}
+    def recover_backup_failure(self, original):
+        assert original == {'backup': True, 'rotate': False}
+        assert self.states[-1]['availability_recovery'] == 'pending'
+        assert self.events[-1] == 'block'
+        self.call('recover_backup_failure')
+        return 'restored'
     def require_quiescent(self, stopped): self.call('quiet_stopped' if stopped else 'quiet_live')
     def stop_writers(self): self.call('stop_writers')
     def probe_candidate(self): self.call('probe')
@@ -354,7 +360,7 @@ class UpdatePolicyTests(unittest.TestCase):
         self.assertEqual(ports.events, ['begin', 'prepare'])
 
     def test_failure_never_replays_or_rolls_back_and_preserves_admission_fence(self):
-        for point in ['backup', 'quiet_live', 'stop_writers', 'quiet_stopped', 'probe',
+        for point in ['quiet_live', 'stop_writers', 'quiet_stopped', 'probe',
                       'migrate', 'switch', 'start_verify', 'smoke', 'restore_timers']:
             with self.subTest(point=point):
                 ports = Ports(fail=point)
@@ -364,9 +370,39 @@ class UpdatePolicyTests(unittest.TestCase):
                 self.assertFalse(ports.states[-1]['automatic_retry_allowed'])
                 self.assertIn('block', ports.events)
                 self.assertEqual(ports.events[-2], 'maintenance_on')
+                self.assertNotIn('recover_backup_failure', ports.events)
                 self.assertLessEqual(ports.migrations, 1)
-                if point in ['backup', 'quiet_live', 'stop_writers', 'quiet_stopped', 'probe']:
+                if point in ['quiet_live', 'stop_writers', 'quiet_stopped', 'probe']:
                     self.assertEqual(ports.migrations, 0)
+
+    def test_backup_failure_recovers_availability_after_the_failure_and_fence_are_recorded(self):
+        ports = Ports(fail='backup')
+        with self.assertRaisesRegex(policy.Rejected, '^synthetic_failure$'):
+            policy.run_update(request(), ports, apply=True)
+        self.assertEqual(ports.events, ['begin', 'prepare', 'pause_timers', 'maintenance_on', 'backup',
+                                        'block', 'recover_backup_failure'])
+        self.assertEqual(ports.migrations, 0)
+        final = ports.states[-1]
+        self.assertEqual(final['phase'], 'failed')
+        self.assertEqual(final['failed_phase'], 'backup_requested')
+        self.assertEqual(final['error_code'], 'synthetic_failure')
+        self.assertFalse(final['migration_requested'])
+        self.assertFalse(final['automatic_retry_allowed'])
+        self.assertEqual(final['availability_recovery'], 'restored')
+        self.assertEqual(final['backup_timers_recovery'], 'restored')
+
+    def test_backup_failure_keeps_maintenance_if_availability_cannot_be_verified(self):
+        ports = Ports(fail='backup')
+        def unavailable(_timers):
+            ports.events.append('recover_backup_failure')
+            raise policy.Rejected('cors_preflight_not_verified')
+        ports.recover_backup_failure = unavailable
+        with self.assertRaisesRegex(policy.Rejected, '^synthetic_failure$'):
+            policy.run_update(request(), ports, apply=True)
+        self.assertEqual(ports.events[-3:], ['block', 'recover_backup_failure', 'maintenance_on'])
+        self.assertEqual(ports.states[-1]['availability_recovery'], 'failed')
+        self.assertEqual(ports.states[-1]['availability_recovery_error_code'], 'cors_preflight_not_verified')
+        self.assertFalse(ports.states[-1]['automatic_retry_allowed'])
 
     def test_preflight_failure_has_no_service_effects(self):
         ports = Ports(fail='prepare')

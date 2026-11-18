@@ -30,6 +30,8 @@ CURRENT = Path('/opt/nodia/current')
 UPLOAD = STATE / 'incoming'
 MAINTENANCE = Path('/var/lib/nodia-maintenance/backend')
 ENVIRONMENT = Path('/etc/nodia/backup-runner.env')
+PUBLIC_API = 'https://166.0.112.187/api/v1'
+PAGES_ORIGIN = 'https://nodia-1ge.pages.dev'
 SERVICES = ('nodia-api.service', 'nodia-ai-worker.service')
 TIMERS = ('nodia-ai-backup.timer', 'nodia-ai-backup-rotate.timer')
 BACKUPS = ('nodia-ai-backup.service', 'nodia-ai-backup-rotate.service', 'nodia-ai-journal-reconcile.service')
@@ -648,8 +650,7 @@ StandardError=file:{error}
             protected(MAINTENANCE, mode=0o644)
             self.must(MAINTENANCE.read_text().strip() == self.request['operation_id'], 'maintenance_owner_mismatch')
             MAINTENANCE.unlink()
-        expected = 503 if enabled else 200
-        self.http('https://166.0.112.187/api/v1', expected)
+        self.http(PUBLIC_API, 503 if enabled else 200)
 
     def http(self, url, status):
         import urllib.error
@@ -679,6 +680,41 @@ StandardError=file:{error}
         message = self.p.fresh_backup_message([unique_json(line) for line in raw.splitlines()], previous)
         return self.p.validate_backup_result(message, started_at=started, now=datetime.datetime.now(datetime.timezone.utc))
 
+    def recover_backup_failure(self, timers):
+        self.must(CURRENT.is_symlink() and CURRENT.resolve(strict=True) == self.current,
+                  'current_changed_during_update')
+        self.backup_environment(self.current)
+        inspection = self.node_action('inspect')
+        self.must(inspection.get('read_only') is True and inspection.get('migrations_executed') is False,
+                  'database_preflight_not_read_only')
+        self.verify_writers(self.current)
+        self.http('http://127.0.0.1:3000/api/v1', 200)
+        self.maintenance(False)
+        self.public_cors_smoke()
+        # An unfinished local backup must not keep verified application traffic in maintenance.
+        try:
+            for unit in BACKUPS:
+                state = self.show(unit)
+                if (state.get('ActiveState') not in ('inactive', 'failed') or state.get('MainPID') != '0' or
+                        not self.cgroup_empty('/system.slice/' + unit)):
+                    return 'deferred'
+            self.restore_timers(timers)
+        except (OSError, subprocess.SubprocessError, self.p.Rejected):
+            return 'failed'
+        return 'restored'
+
+    def public_cors_smoke(self):
+        request = urllib.request.Request(PUBLIC_API + '/auth/refresh', method='OPTIONS', headers={
+            'Origin': PAGES_ORIGIN, 'Access-Control-Request-Method': 'POST',
+            'Access-Control-Request-Headers': 'content-type'})
+        with urllib.request.urlopen(request, timeout=15) as response:
+            methods = {method.strip() for method in response.headers.get('Access-Control-Allow-Methods', '').split(',')}
+            allowed_headers = response.headers.get('Access-Control-Allow-Headers', '').lower().split(',')
+            self.must(response.url == request.full_url and response.status == 204 and 'POST' in methods and
+                      'content-type' in {name.strip() for name in allowed_headers} and
+                      response.headers.get('Access-Control-Allow-Origin') == PAGES_ORIGIN and
+                      response.headers.get('Access-Control-Allow-Credentials') == 'true', 'cors_preflight_not_verified')
+
     def require_quiescent(self, stopped):
         deadline = time.monotonic() + (1 if stopped else 120)
         while True:
@@ -695,7 +731,8 @@ StandardError=file:{error}
             self.must(self.cgroup_empty(self.groups[unit]), 'writer_cgroup_not_empty')
 
     def cgroup_empty(self, name):
-        self.must(re.fullmatch(r'/system.slice/nodia-(?:api|ai-worker|update-action-[a-f0-9]{32})\.service', name),
+        known = tuple('/system.slice/' + unit for unit in SERVICES + BACKUPS)
+        self.must(name in known or re.fullmatch(r'/system.slice/nodia-update-action-[a-f0-9]{32}\.service', name),
                   'invalid_unit_cgroup')
         group = Path('/sys/fs/cgroup') / name.lstrip('/')
         return not group.exists() or not any(file.read_text().strip() for file in group.rglob('cgroup.procs'))
@@ -732,7 +769,7 @@ StandardError=file:{error}
         self.must(self.node_action('verify').get('read_only') is True, 'poststart_ledger_not_verified')
         self.probe_candidate()
 
-    def public_smoke(self): self.http('https://166.0.112.187/api/v1', 200)
+    def public_smoke(self): self.http(PUBLIC_API, 200)
 
     def restore_timers(self, before):
         for unit, state in before.items():

@@ -22,6 +22,7 @@ def load(name, path):
 policy = load('fixture_policy', '/input/backend_update.py')
 host_module = load('fixture_host', '/input/update-backend.py')
 stage = load('fixture_stage', '/input/stage.py')
+host_module.PUBLIC_API = 'http://127.0.0.1:8080/api/v1'
 ROOT = Path('/opt/nodia')
 OLD = ROOT / 'releases/backend-111111111111-222222222222'
 NEW = ROOT / 'releases/backend-333333333333-444444444444'
@@ -62,7 +63,18 @@ for name in ('runtime.env', 'redis.env'):
 write(FIXTURE / 'backup-mode', 'fresh\n')
 
 api = '''import http from 'node:http';import fs from 'node:fs';
-const server=http.createServer((_request,response)=>{response.end('synthetic-api');});
+const server=http.createServer((request,response)=>{
+  if(request.method==='OPTIONS' && request.url==='/api/v1/auth/refresh'
+    && request.headers.origin==='https://nodia-1ge.pages.dev'
+    && request.headers['access-control-request-method']==='POST'
+    && request.headers['access-control-request-headers']==='content-type'){
+    response.writeHead(204,{'Access-Control-Allow-Origin':request.headers.origin,
+      'Access-Control-Allow-Headers':'Content-Type',
+      'Access-Control-Allow-Credentials':'true','Access-Control-Allow-Methods':'GET,POST,OPTIONS'});
+    return response.end();
+  }
+  response.end('synthetic-api');
+});
 server.listen(3000,'127.0.0.1');
 process.on('SIGTERM',()=>server.close(()=>{
 fs.writeFileSync('/var/lib/nodia/home/fixture-api-drained','synthetic cleanup completed');
@@ -73,13 +85,21 @@ worker = '''setInterval(()=>{},1000);
 process.on('SIGTERM',()=>process.exit(0));
 '''
 backup = '''import fs from 'node:fs';import{randomUUID}from'node:crypto';
-const now=new Date();const old=fs.readFileSync('/opt/nodia/fixture/backup-mode','utf8').trim()==='stale';
-const captured=new Date(now.getTime()-(old?3600000:0));
-if(process.argv[2]==='backup')console.log(JSON.stringify({schema_version:1,operation:'backup',
-status:'ready',backup_id:randomUUID(),captured_at:captured.toISOString(),
+const mode=fs.readFileSync('/opt/nodia/fixture/backup-mode','utf8').trim();
+if(process.argv[2]==='backup'){
+  fs.appendFileSync('/var/lib/nodia/home/fixture-backup-invocations',mode+'\\n');
+  if(mode==='unknown'){
+    const response=await fetch('http://127.0.0.1:8080/api/v1',{signal:AbortSignal.timeout(5000)});
+    fs.writeFileSync('/var/lib/nodia/home/fixture-backup-http',String(response.status));
+    console.error(JSON.stringify({operation:'backup',error_code:'nodia_ai:recovery_write_unknown'}));
+    process.exit(1);
+  }
+  const now=new Date();
+  console.log(JSON.stringify({schema_version:1,operation:'backup',
+status:'ready',backup_id:randomUUID(),captured_at:now.toISOString(),
 expires_at:new Date(now.getTime()+7*86400000).toISOString(),cipher_bytes:1024,
 cipher_sha256:'a'.repeat(64),encryption_key_id:'b'.repeat(64),journal_sequence:0,
-rotated:{removed:0,pending_recovered:0,retained:0}}));
+rotated:{removed:0,pending_recovered:0,retained:0}}));}
 else console.log(JSON.stringify({schema_version:1,operation:'rotate',removed:0,pending_recovered:0,retained:0}));
 '''
 journal = "console.log(JSON.stringify({operation:'reconcile',confirmed:0,pending:0,SQL_writes:0}));\n"
@@ -211,12 +231,20 @@ proxy = '''from http.server import BaseHTTPRequestHandler,HTTPServer
 from pathlib import Path
 import urllib.request
 class Handler(BaseHTTPRequestHandler):
- def do_GET(self):
+ def forward(self):
   if Path('/var/lib/nodia-maintenance/backend').exists(): self.send_response(503);self.end_headers();return
   try:
-   response=urllib.request.urlopen('http://127.0.0.1:3000/api/v1',timeout=1)
-   self.send_response(response.status);self.end_headers();self.wfile.write(response.read())
+   headers={name:self.headers[name] for name in ('Origin','Access-Control-Request-Method',
+     'Access-Control-Request-Headers') if name in self.headers}
+   request=urllib.request.Request('http://127.0.0.1:3000'+self.path,headers=headers,method=self.command)
+   with urllib.request.urlopen(request,timeout=1) as response:
+    self.send_response(response.status)
+    for name,value in response.headers.items():
+     if name.startswith('Access-Control-'): self.send_header(name,value)
+    self.end_headers();self.wfile.write(response.read())
   except Exception: self.send_response(502);self.end_headers()
+ do_GET=forward
+ do_OPTIONS=forward
  def log_message(self,*args): pass
 HTTPServer(('127.0.0.1',8080),Handler).serve_forever()
 '''
@@ -230,6 +258,7 @@ ExecStart=/usr/bin/python3 -I /opt/nodia/fixture/proxy.py
 action = '''const mode=process.argv[2];
 console.log(JSON.stringify({schema_version:1,status:mode==='migrate'?'migrated':'verified',
 mode,client_tls_authorized:true,read_only:mode!=='migrate',quiescent:true,
+migrations_executed:mode==='migrate',ledger_sha256:'a'.repeat(64),
 before:45,target:46,pending:mode==='inspect'?1:0,incremental_migrations:1,applied:mode==='migrate'?1:0}));
 '''
 probe = { 'schema_version': 1, 'status': 'verified', 'checks': {
@@ -255,7 +284,7 @@ command(['journalctl', '--sync'])
 
 
 class FixtureHost(host_module.Host):
-    """Only GitHub/artifact and HTTP destination boundaries are substituted.
+    """GitHub/artifact preparation and the public URL are substituted.
 
     systemctl/journalctl, node_job, PIDs/cgroups, timers, files and policy remain real.
     SQL/probe programs are explicit synthetic commands, independently covered by SQL39.
@@ -268,10 +297,6 @@ class FixtureHost(host_module.Host):
         self.backup_environment(self.current)
         self.metadata = {'package_tree_sha256': 'b'*64, 'ci': {'synthetic_fixture': True}}
         return {'candidate_release': self.candidate.name, 'source_sha': request['source_sha']}
-    def http(self, url, status):
-        if url.startswith('https://166.0.112.187/'):
-            url = 'http://127.0.0.1:8080/api/v1'
-        return super().http(url, status)
     def stop_writers(self):
         super().stop_writers()
         self.shutdown_observations = {}
@@ -311,21 +336,62 @@ check(json.loads((STATE/'deployed-backend.json').read_text())['release_id']==NEW
 check(not list(Path('/run/systemd/system').glob('nodia-update-action-*.service')), 'temporary action units removed')
 check(not (STATE/'BLOCKED.json').exists(), 'successful update is not blocked')
 
-# A stale ready message in a NEW real invocation must block before stopping writers.
-write(FIXTURE/'backup-mode','stale\n')
-second = FixtureHost(policy, stage, {});second.next_release=FINAL
+# The backup unit observes real maintenance and then fails at the synthetic R2 boundary.
+write(FIXTURE / 'backup-mode', 'unknown\n')
+second = FixtureHost(policy, stage, {})
+second.next_release = FINAL
+writers_before = {unit: second.show(unit)['MainPID'] for unit in host_module.SERVICES}
+timers_before = {unit: {key: second.show(unit)[key] for key in ('ActiveState', 'UnitFileState')}
+                 for unit in host_module.TIMERS}
+environment_before = host_module.ENVIRONMENT.read_bytes()
+attempts_file = Path('/var/lib/nodia/home/fixture-backup-invocations')
+backups_before = attempts_file.read_text().splitlines()
+failed_request = request(NEW)
 try:
-    policy.run_update(request(NEW),second,apply=True)
+    policy.run_update(failed_request, second, apply=True)
 except policy.Rejected as error:
-    check(str(error)=='backup_ready_time_invalid','stale backup timestamp is rejected despite new InvocationID')
-else: raise AssertionError('stale backup incorrectly accepted')
-check(host_module.CURRENT.resolve(strict=True)==NEW,'stale backup does not switch current')
-check(second.show('nodia-api.service')['ActiveState']=='active' and second.show('nodia-ai-worker.service')['ActiveState']=='active','stale backup failure preserves running writers')
-check(host_module.MAINTENANCE.exists(),'failure keeps admission fencing')
-check((STATE/'BLOCKED.json').exists(),'failure records reconciliation block')
-check(second.show('nodia-ai-backup.timer')['ActiveState']=='inactive','failure does not silently resume timers')
-failed=json.loads((second.attempt/'state.json').read_text())
-check(failed['failed_phase']=='backup_requested' and not failed['migration_requested'],'failure phase precedes migration intent')
+    check(str(error) == 'host_command_failed_inspect_private_diagnostics', 'updater reports original unit failure')
+else: raise AssertionError('failed backup incorrectly accepted')
+command(['journalctl', '--sync'])
+check('nodia_ai:recovery_write_unknown' in command(['journalctl', '--unit=nodia-ai-backup.service', '--output=cat']),
+      'systemd journal reports the injected R2 failure')
+check(Path('/var/lib/nodia/home/fixture-backup-http').read_text() == '503',
+      'real proxy returns maintenance during backup')
+with urllib.request.urlopen(host_module.PUBLIC_API, timeout=5) as response:
+    check(response.status == 200 and response.read() == b'synthetic-api',
+          'real proxy serves the original API after recovery')
+check(not host_module.MAINTENANCE.exists(), 'operation maintenance flag removed')
+check(host_module.CURRENT.resolve(strict=True) == NEW, 'backup failure does not switch current')
+check(host_module.ENVIRONMENT.read_bytes() == environment_before, 'backup paths remain pinned to current')
+check({unit: second.show(unit)['MainPID'] for unit in host_module.SERVICES} == writers_before,
+      'API and worker remain on the same PIDs')
+check({unit: {key: second.show(unit)[key] for key in ('ActiveState', 'UnitFileState')}
+       for unit in host_module.TIMERS} == timers_before, 'original timer states restored')
+check(attempts_file.read_text().splitlines() == [*backups_before, 'unknown'],
+      'exactly one backup invocation for the failed operation')
+
+failed = json.loads((second.attempt / 'state.json').read_bytes())
+check(failed['phase'] == 'failed' and failed['failed_phase'] == 'backup_requested'
+      and failed['migration_requested'] is False and failed['automatic_retry_allowed'] is False
+      and failed['availability_recovery'] == 'restored' and failed['backup_timers_recovery'] == 'restored'
+      and 'backup' not in failed,
+      'failure remains terminal before migration, with availability restored')
+sql_modes = [value['mode'] for item in second.attempt.glob('*.json')
+             if 'mode' in (value := json.loads(item.read_bytes()))]
+check(sql_modes == ['inspect'], 'recovery runs only a read-only SQL action')
+block = STATE / 'BLOCKED.json'
+check(block.read_bytes() == policy.blocked_record_bytes(failed)
+      and (block.stat().st_uid, block.stat().st_gid, block.stat().st_mode & 0o777) == (0, 0, 0o600),
+      'protected block belongs to the original operation')
+check(second.prior_updates_blocked(), 'unresolved backup failure blocks admission')
+fresh_request = request(NEW)
+try:
+    policy.run_update(fresh_request, FixtureHost(policy, stage, {}), apply=True)
+except policy.Rejected as error:
+    check(str(error) == 'prior_update_requires_reconciliation'
+          and not (STATE / 'attempts' / fresh_request['operation_id']).exists(),
+          'fresh delivery cannot start while backup outcome remains unknown')
+else: raise AssertionError('next operation bypassed unresolved backup block')
 
 print(json.dumps({'schema_version':1,'status':'passed','checks':checks,
  'writer_shutdown_observations':host.shutdown_observations,
@@ -334,6 +400,10 @@ print(json.dumps({'schema_version':1,'status':'passed','checks':checks,
                          'no_new_privileges':True,'effective_capabilities_zero':True,'full_validator_claimed':False},
  'real_systemd_pid1':True,'systemd_version':command(['/usr/lib/systemd/systemd','--version']).splitlines()[0],
  'real_systemctl_and_journalctl':True,'node_version':command(['/usr/local/bin/node','--version']).strip(),
- 'real_writers_uid':900,'fresh_backup_invocation_verified':True,'stale_backup_failure_blocked':True,
- 'successful_update':result,'synthetic_boundaries':['application services and encrypted backup result','SQL action and remote dependency probe programs','GitHub artifact prepare','public HTTP mapped to synthetic local proxy; no Nginx/TLS claim'],
+ 'real_writers_uid':900,'fresh_backup_invocation_verified':True,
+ 'failed_backup':{'synthetic_error':'nodia_ai:recovery_write_unknown','api_http_during_backup':503,
+                  'api_http_after_failure':200,'availability_restored':True,'same_writer_pids':True,
+                  'timers_restored':True,'backup_invocations':1,'migration_requested':False,
+                  'new_delivery_blocked':True,'automatic_retry_allowed':False},
+ 'successful_update':result,'synthetic_boundaries':['application services and backup outcome','SQL action and remote dependency probe programs','GitHub artifact prepare','public HTTP/CORS mapped to synthetic local proxy; no Nginx/TLS claim'],
  'host_cgroup_bind':False,'host_secrets_mounted':False,'production_accessed':False,'typescript_builds':0}))
