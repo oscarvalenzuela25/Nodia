@@ -891,13 +891,33 @@ anteriores con efectos pendientes. No borrar sus estados para poder continuar.
    y dependencias. Retirar mantenimiento, probar HTTPS público y restaurar el
    estado previo de timers. Registrar la versión efectiva sólo al completar.
 
-Cada fase registra intención antes del efecto. Si falla tras comenzar efectos,
-conserva estado privado y bloqueo, e intenta reponer mantenimiento. **No hay
-rollback automático, restore de DB, replay de migración o arranque del código
-anterior.** Revisar `/var/lib/nodia-updates/attempts/<ID>/state.json` y diagnósticos
-privados. SIGKILL/corte eléctrico puede impedir limpieza; la intención persistida
-no equivale a demostrar qué efecto terminó. Un fallo temprano de preflight no
-implica que API/worker se hayan detenido.
+Cada fase registra intención antes del efecto. Un fallo tras comenzar efectos
+conserva estado privado y bloqueo. El actualizador intenta reponer
+mantenimiento, con la recuperación de tráfico descrita abajo para
+`backup_requested`. Revisar `/var/lib/nodia-updates/attempts/<ID>/state.json` y
+diagnósticos privados. El rollback automático, la restauración de DB, el replay
+de migraciones y el reinicio del release anterior permanecen fuera de este
+flujo. SIGKILL o un corte eléctrico pueden interrumpir la recuperación. En ese
+caso, comprobar el último efecto antes de continuar.
+
+### Recuperación de tráfico ante un fallo de respaldo
+
+En el candidato del [ADR109](../../docs/architecture/decisions/ADR-109-phase-aware-production-deploy-recovery.md),
+un fallo de `backup_requested` anterior a cualquier intención de migrar
+registra el intento fallido y `BLOCKED.json` antes de recuperar tráfico. El
+actualizador confirma el release y su configuración de respaldo, comprueba el
+ledger en solo lectura por TLS y valida que API y worker sigan activos sobre
+ese release. Retira solo el mantenimiento de la operación y verifica HTTPS
+200 y el preflight CORS. Si la verificación de disponibilidad falla, intenta
+reponer mantenimiento.
+
+El intento conserva el error original y `automatic_retry_allowed: false`.
+`availability_recovery` indica `pending`, `restored` o `failed`.
+`backup_timers_recovery` indica `restored`, `deferred` si algún proceso
+local de respaldo sigue activo, o `failed` si falló su restauración. Los
+timers restaurados retoman su programación habitual, incluido un disparo
+previsto por systemd si el timer persistente venció durante la pausa.
+El CD exige conciliación para admitir otra entrega.
 
 ### Qué se probó y qué falta
 
