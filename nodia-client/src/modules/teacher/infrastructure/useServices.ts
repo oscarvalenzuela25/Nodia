@@ -7,11 +7,12 @@ import useAuthStore, { hasActiveSession } from "../../../store/authStore";
 import { notifyHttpError } from "../../../config/httpFeedback";
 import i18n from "../../../translate";
 import { readTeacher, readTeacherData, readTeacherReceipt, sendTeacher, type TeacherCommand } from "./services";
-import { attemptSchema, jobSchema, materialSchema, messagesSchema, planSchema, questionSchema, sessionSchema, sessionsSchema } from "./schemas";
+import { attemptSchema, jobSchema, materialSchema, messagesSchema, planSchema, questionSchema, sessionSchema, sessionsSchema, type CommandResult } from "./schemas";
 import { canPollJob } from "./presentation";
 import { forgetRequest, pendingRequest, rememberRequest } from "./recovery";
 import { refreshTeacherQueries } from "./refresh";
 import { sessionListPollInterval } from "./sessionList";
+import { validateClarificationReceipt } from "./clarificationReceipt";
 
 export function useTeacherQuery<T>(path: string, schema: z.ZodType<T>, params?: Record<string, unknown>, enabled = true,
   observationOptions?: { staleTime: number; refetchOnWindowFocus: false; refetchOnReconnect: false }) {
@@ -77,6 +78,7 @@ export function useTeacherCommand() {
   const [uncertainState, setUncertain] = useState<{actor:string;command:TeacherCommand} | null>(() => { const command = pendingRequest(actorKey); return command ? { actor: actorKey, command } : null; });
   const uncertain = uncertainState?.actor === actorKey ? uncertainState.command : null;
   const [recovering, setRecovering] = useState(false);
+  const [lastReconciled, setLastReconciled] = useState<{ actor: string; command: TeacherCommand; result: CommandResult } | null>(null);
   const [executing, setExecuting] = useState(false);
   const isCurrentActor = (actor: string) => { const state = useAuthStore.getState(); return `${state.user?.id}:${state.sessionVersion}` === actor; };
   const mutation = useMutation({ mutationFn: sendTeacher, retry: false });
@@ -90,7 +92,7 @@ export function useTeacherCommand() {
     setExecuting(true);
     rememberRequest(actor, command);
     try {
-      const result = await mutation.mutateAsync(command);
+      const result = validateClarificationReceipt(command, await mutation.mutateAsync(command));
       if (!isCurrentActor(actor)) return null;
       forgetRequest();
       sileo.success({ title: i18n.t("teacher:operation_saved") });
@@ -112,18 +114,21 @@ export function useTeacherCommand() {
     setRecovering(true);
     try {
       const receipt = await readTeacherReceipt(uncertain.requestKey);
-      const result = receipt.receipt;
+      const result = validateClarificationReceipt(uncertain, receipt.receipt);
       if (!isCurrentActor(actor)) return null;
       if (result) {
         setUncertain(null);
         forgetRequest();
         sileo.success({ title: i18n.t("teacher:operation_recovered") });
         await refresh(uncertain.path);
+        if (!isCurrentActor(actor)) return null;
+        setLastReconciled({ actor, command: uncertain, result });
         return result;
       }
       return null;
     } catch (error) { notifyHttpError(error); return null; }
     finally { if (isCurrentActor(actor)) setRecovering(false); }
   };
-  return { execute, reconcile, refresh, uncertain, isPending: executing || mutation.isPending || recovering, blocked: !sessionActive || Boolean(uncertain) || executing || mutation.isPending || recovering };
+  return { execute, reconcile, refresh, uncertain, lastReconciled: lastReconciled?.actor === actorKey ? lastReconciled : null,
+    isPending: executing || mutation.isPending || recovering, blocked: !sessionActive || Boolean(uncertain) || executing || mutation.isPending || recovering };
 }

@@ -1,5 +1,5 @@
 import { enabled } from "./presentation";
-import type { AllowedActions, Cursor, Material, Plan } from "./schemas";
+import type { AllowedActions, Cursor, Job, Material, Plan } from "./schemas";
 
 export type StudyTarget = { sectionId: string; unitId: string; title: string };
 export type StudyContinuationKind = "first" | "prepare" | "open" | "continue" | "job" | "preparing" | "unknown" | "unavailable" | "historical" | "empty";
@@ -52,4 +52,9 @@ export function studyContinuation(context: StudyContinuationContext): StudyConti
   if (material.job_id) return view("job", material.job_id);
   if (material.state === "not_prepared") return view("prepare");
   return view(material.state === "preparing" ? "preparing" : "unknown");
+}
+
+export function lessonPreparationState(view: StudyContinuation | null, job: Pick<Job, "job_id" | "purpose" | "state"> | undefined, paused: boolean) {
+  if (paused || !job || view?.jobId !== job.job_id || job.purpose !== "learning_packet") return null;
+  return job.state === "queued" || job.state === "running" ? job.state : null;
 }

@@ -1,1 +1,1 @@
-export { default } from "./JobPanel";
+export { default, JobStatus } from "./JobPanel";

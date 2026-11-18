@@ -678,8 +678,20 @@
   "job_proposal_review_help": "The proposal is ready to review. It will not become your plan until you accept it.",
   "diagnostic_optional_notice": "The diagnostic is optional. If no reviewed bank is available, you can continue with your declared background and create the proposal.",
   "resume_diagnostic": "Resume diagnostic",
+  "topic": {
+    "clarify": "Clarify excerpt",
+    "select_fragment": "Select an exact phrase from this topic and choose Clarify excerpt to ask about it.",
+    "question": "Your question",
+    "question_example": "Could you explain this excerpt with an example?",
+    "generation_notice": "Sending a question reserves one generation.",
+    "history": "Saved conversations",
+    "history_empty": "There are no saved conversations for this topic yet.",
+    "history_page_empty": "This page has no conversations for this topic.",
+    "reading_point_saved": "Reading point saved"
+  },
   "continuation": {
     "eyebrow": "Your next step",
+    "preparing_lesson": "Preparing lesson",
     "preparation_unavailable": "Preparation is not enabled in this session’s current state.",
     "titles": {
       "first": "Your plan is ready",

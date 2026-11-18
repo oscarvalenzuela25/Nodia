@@ -11,8 +11,7 @@ import PanelState from "./PanelState";
 import { useEnrichment } from "./useEnrichment";
 import type { AdaptivePanelProps } from "./types";
 
-export type ClarificationAnchor = { content_version_id: string; block_id: string; selection: string };
-export default function ClarificationPanel(props: AdaptivePanelProps & { anchor?: ClarificationAnchor }) {
+export default function ClarificationPanel(props: AdaptivePanelProps) {
   const { t } = useTranslation();
   const { query, disabled, readDisabled, execute, page, setPage } = useEnrichment(props);
   const [threadId, setThreadId] = useState<string | null>(null);
@@ -28,7 +27,6 @@ export default function ClarificationPanel(props: AdaptivePanelProps & { anchor?
     {finalActive && <Alert severity="info">{t("teacher:adaptive.helper_final_blocked")}</Alert>}
     <Alert severity="info">{t("teacher:adaptive.helper_notice")}</Alert>
     {query.data && <Stack sx={{ gap: 2 }}>
-      {props.anchor && <><Typography component="blockquote" sx={{ m: 0, borderLeft: 2, borderColor: "divider", pl: 2 }}>{props.anchor.selection}</Typography><Button variant="outlined" disabled={locked} onClick={async () => { const result = await execute("thread_create", props.anchor!); if (result?.resource_id) setThreadId(result.resource_id); }}>{t("teacher:adaptive.open_clarification")}</Button></>}
       {!query.data.threads.length && <Typography color="text.secondary">{t("teacher:adaptive.no_clarifications")}</Typography>}
       {query.data.threads.map(item => <Button key={item.id} variant={threadId === item.id ? "contained" : "outlined"} disabled={readDisabled || thread.isFetching} onClick={() => { setThreadId(item.id); setJobId(null); setJobPending(false); }}>{item.selection}</Button>)}
       {threadId && <PanelState loading={thread.isLoading && !thread.data} fetching={thread.isFetching} error={thread.isError} retry={thread.refetch}>{thread.data && <Stack sx={{ gap: 2 }}>
