@@ -272,10 +272,12 @@ def application_service_guard():
     module, policy = load('update-backend.py'), load('backend_update.py')
     return module.Host(SimpleNamespace(require=require, Rejected=policy.Rejected,
         validate_request=policy.validate_request,
-        validate_pre_migration_reconciliation=policy.validate_pre_migration_reconciliation), None, settings)
+        validate_pre_migration_reconciliation=policy.validate_pre_migration_reconciliation,
+        validate_post_migration_reconciliation=policy.validate_post_migration_reconciliation,
+        POST_MIGRATION_EVIDENCE=policy.POST_MIGRATION_EVIDENCE), None, settings)
 
 
-def deployment_status():
+def deployment_status(*, reconciliation_override=None):
     current = Path('/opt/nodia/current')
     require(current.is_symlink() and current.lstat().st_uid == current.lstat().st_gid == 0,
             'current_release_not_managed')
@@ -291,11 +293,12 @@ def deployment_status():
             isinstance(tree, str) and re.fullmatch(r'[a-f0-9]{64}', tree) and
             value.get('release_id') == release.name, 'invalid_current_identity')
     unresolved = (STATE / 'BLOCKED.json').exists() or (STATE / 'BLOCKED.json').is_symlink()
-    reconciliation_seen = False
+    reconciliation_seen = reconciliation_override is not None
     for directory in (STATE / 'attempts').iterdir():
         protect(directory, directory=True)
-        acknowledgment = directory / 'pre-migration-reconciliation.json'
-        reconciliation_seen |= acknowledgment.exists() or acknowledgment.is_symlink()
+        for filename in ('pre-migration-reconciliation.json', 'post-migration-reconciliation.json'):
+            acknowledgment = directory / filename
+            reconciliation_seen |= acknowledgment.exists() or acknowledgment.is_symlink()
         state_path = directory / 'state.json'
         if state_path.exists():
             previous = bounded_json(state_path)
@@ -304,7 +307,7 @@ def deployment_status():
     service_guard = None
     if reconciliation_seen:
         service_guard = application_service_guard()
-        unresolved = service_guard.prior_updates_blocked()
+        unresolved = service_guard.prior_updates_blocked(reconciliation_override=reconciliation_override)
     # A historical acknowledgment never resolves another pending submission.
     for path in SUBMISSIONS.glob('*.json'):
         if operation_status(path.stem)['phase'] not in ('complete', 'failed'): unresolved = True
