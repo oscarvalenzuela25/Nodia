@@ -191,6 +191,13 @@ ni sugerencia de volver a pulsar Crear para recuperar una generación existente.
 | unknown/cierre pendiente | Estamos comprobando qué ocurrió con la solicitud | Consultar estado/recibo y conciliación; sin replay o cambio automático de IA |
 | pérdida de sesión/conflicto | Recuperar acceso o revisar versión guardada | Preservar datos y aplicar la recuperación actual, sin sobreescribir remoto |
 
+Cuando Consultar guardado devuelve 404, Mis planes conserva el acceso al
+listado, filtros y apertura de planes. El 404 deja la solicitud original
+pendiente. El usuario puede consultar de nuevo o pedir el cierre explícito
+de esa clave. Teacher recupera el recibo si la operación ya se guardó. Si el
+servidor confirma el cierre, se puede iniciar un nuevo guardado con el
+formulario intacto. Ver [el contrato de recibos](97-nodia-teacher-technical-contracts.md#6-dtos-y-rutas-http).
+
 «Actualizar estado» es lectura/conciliación; «Volver a preparar» es otra intención
 y no se ofrece cuando no es segura. Mantener los trabajos al salir de la vista
 sin prometer cancelación remota. Toast y aviso inline con un único responsable.

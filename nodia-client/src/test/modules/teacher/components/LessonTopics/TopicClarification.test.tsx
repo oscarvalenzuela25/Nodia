@@ -62,7 +62,7 @@ describe("clarification inside a lesson topic", () => {
 
   it("recovers a saved thread without resending and keeps unrelated conversations out of the topic", async () => {
     const command: ReturnType<typeof useTeacherCommand> = {
-      execute: vi.fn(), reconcile: vi.fn(), refresh: vi.fn(), blocked: false, isPending: false, uncertain: null,
+      execute: vi.fn(), reconcile: vi.fn(), refresh: vi.fn(), blocked: false, isPending: false, uncertain: null, receiptMissing: false,
       lastReconciled: {
         actor: "fixture-actor",
         command: { requestKey: "original-intent", path: `sessions/${session.id}/enrichment/commands`, method: "POST",

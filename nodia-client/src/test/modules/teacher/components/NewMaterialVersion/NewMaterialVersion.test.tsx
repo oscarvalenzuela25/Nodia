@@ -17,7 +17,7 @@ beforeEach(() => {
     execute: vi.fn<Command["execute"]>().mockResolvedValue(null),
     reconcile: vi.fn<Command["reconcile"]>().mockResolvedValue(null),
     refresh: vi.fn<Command["refresh"]>().mockResolvedValue(undefined),
-    uncertain: null, lastReconciled: null, isPending: false, blocked: false,
+    uncertain: null, receiptMissing: false, lastReconciled: null, isPending: false, blocked: false,
   };
 });
 function view(extra = {}) {

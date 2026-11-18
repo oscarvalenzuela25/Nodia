@@ -395,7 +395,16 @@ SelectionDto exige connection_id decimal string exacto, mode agentic/api_key, mo
 | GET /teacher/jobs/:jobId | Estado seguro200, result_ref, error_code, retry_after_ms y allowed_actions; no prompt/proof privado |
 | POST /teacher/jobs/:jobId/continue-before-dispatch | 202 mismo job reactivado si apto; sin inferencia incierta repetida |
 | POST /teacher/jobs/:jobId/new-generation | 202 job nuevo de material/evaluación con replaces_job_id y variante nueva; sólo acción explícita tras cierre local comprobado y condiciones actuales. No cambia el remote_outcome original ni reevalúa respuestas inciertas |
-| GET /teacher/requests/:requestKey | Recibo200 por actor actual+key;404 si no existe o no tiene autoridad; no dispara trabajo |
+| GET /teacher/requests/:requestKey | Recibo200 por actor actual+key; 404 si no existe o no tiene autoridad; 410 `request_closed` si el actor ya cerró la clave. No dispara trabajo |
+| POST /teacher/requests/:requestKey/close | Cierre explícito sin body bajo el mismo lock actor+key de la solicitud. 200 `{status:"saved",request}` si hay recibo autorizado o `{status:"closed",request_key}` si quedó cerrada; 404 si el recibo existente perdió autoridad |
+
+Un 404 de consulta puede coincidir con una transacción que aún no confirma
+su recibo. El cierre registra la clave como terminal en el mismo ledger
+cuando no hay recibo después de adquirir el lock. Una entrega tardía de la
+solicitud original con esa clave recibe 410 antes de aplicar efectos. Si el
+recibo llega primero, el cierre recupera su resultado y revalida la autoridad.
+Repetir **el cierre** de la misma clave devuelve la misma confirmación. El
+cierre no reenvía el comando ni cancela un trabajo admitido.
 
 Cuando StartAttempt responde202 porque falta una evaluación, su job publica assessment e intento in_progress juntos si siguen vigentes autoridad/revisión/prerrequisitos; job.result_ref devuelve el attempt_id. Si ya existe un intento concurrente apto, lo recupera en lugar de insertar otro. No exigir reenviar el mismo POST para avanzar de evaluación lista a intento ni perder ese vínculo tras reload.
 

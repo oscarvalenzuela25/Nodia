@@ -18,6 +18,7 @@ import { ReadTeacherUseCase } from '../dist/teacher/use-case/read-teacher.use-ca
 import { ExecuteTeacherCommandUseCase } from '../dist/teacher/use-case/execute-teacher-command.use-case.js';
 import { PublishTeacherUseCase } from '../dist/teacher/use-case/publish-teacher.use-case.js';
 import { TeacherController } from '../dist/teacher/teacher.controller.js';
+import { TeacherRequestsController } from '../dist/teacher/teacher-requests.controller.js';
 import { teacherBodyParser } from '../dist/teacher/teacher-body-parser.js';
 import { AllExceptionsFilter } from '../dist/common/filters/all-exceptions.filter.js';
 import { defaultPolicy } from '../dist/teacher/policies/teacher-validation.js';
@@ -1227,7 +1228,7 @@ try {
     async () => {
       class HarnessModule {}
       Module({
-        controllers: [TeacherController],
+        controllers: [TeacherController, TeacherRequestsController],
         providers: [
           { provide: TeacherService, useValue: store },
           { provide: ReadTeacherUseCase, useValue: read },
@@ -1327,16 +1328,43 @@ try {
         organization: 'days',
         day_count: null,
       };
+      const createKey = randomUUID();
       const created = await fetch(`${url}/api/v1/teacher/sessions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Idempotency-Key': randomUUID(),
+          'Idempotency-Key': createKey,
         },
         body: JSON.stringify(validBody),
       });
       assert.equal(created.status, 201);
       const createdBody = await created.json();
+      const requestsUrl = `${url}/api/v1/teacher/requests`;
+      const found = await fetch(`${requestsUrl}/${createKey}/close`, {
+        method: 'POST',
+        headers: { 'Idempotency-Key': createKey },
+      });
+      assert.equal(found.status, 200);
+      assert.equal(found.headers.get('Cache-Control'), 'no-store');
+      const foundBody = await found.json();
+      assert.equal(foundBody.status, 'saved');
+      const existingReceipt = await fetch(`${requestsUrl}/${createKey}`);
+      assert.equal(existingReceipt.status, 200);
+      assert.deepEqual(foundBody.request, await existingReceipt.json());
+      assert.deepEqual(foundBody.request.receipt, createdBody);
+
+      const pendingKey = randomUUID();
+      const missingUrl = `${requestsUrl}/${pendingKey}`;
+      const missing = await fetch(missingUrl);
+      assert.equal(missing.status, 404);
+      assert.deepEqual(await missing.json(), { code: 'not_found', message: 'teacher:not_found' });
+      const closed = await fetch(`${missingUrl}/close`, { method: 'POST' });
+      assert.equal(closed.status, 200);
+      assert.deepEqual(await closed.json(), { status: 'closed', request_key: pendingKey });
+      const closedReceipt = await fetch(missingUrl);
+      assert.equal(closedReceipt.status, 410);
+      assert.deepEqual(await closedReceipt.json(), { code: 'request_closed', message: 'teacher:request_closed' });
+
       const plainMessage = await fetch(
         `${url}/api/v1/teacher/sessions/${createdBody.session_id}/messages`,
         {

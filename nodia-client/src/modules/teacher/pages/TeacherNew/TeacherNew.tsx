@@ -42,7 +42,9 @@ function NewSession() {
   return <Page>
     <Button variant="contained" component={Link} to={NODIA_TEACHER_ROUTE} startIcon={<ArrowBackOutlined />} disabled={command.isPending || form.formState.isSubmitting} sx={{ alignSelf: "flex-start", width: { xs: "100%", sm: "auto" } }}>{t("teacher:my_plans")}</Button>
     <Stack sx={{ gap: 1 }}><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>{t("teacher:wizard.title")}</Typography><Typography color="text.secondary">{t("teacher:wizard.intro")}</Typography></Stack>
-    <RequestRecovery command={command} onRecovered={openSession} />
+    <RequestRecovery command={command} onRecovered={result => {
+      if (command.uncertain?.path === "sessions") openSession(result);
+    }} />
     <NewPlanForm ref={formRef} noValidate onSubmit={event => {
       if (step < 2) { event.preventDefault(); void goTo(step + 1); }
       else void createProposal(event);

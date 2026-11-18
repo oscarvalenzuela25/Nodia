@@ -84,6 +84,9 @@ export class ExecuteTeacherCommandUseCase {
     @Inject(TEACHER_GENERATION_PORT)
     private readonly generation: TeacherGenerationPort,
   ) {}
+  closeRequest(actor: ActorReference, key: string) {
+    return this.store.closeRequest(actor, key);
+  }
   execute(
     actor: ActorReference,
     sessionId: string | null,
