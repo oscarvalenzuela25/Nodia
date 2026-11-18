@@ -62,6 +62,17 @@ export function quiescentCounters(row) {
   return { quiescent: Object.values(counts).every(count => count === 0), counts };
 }
 
+export function persistedEntitySchemaPresent(entities, columns) {
+  const available = new Set(columns.map(row => `${row.table_name}.${row.column_name}`));
+  return entities.length > 0 && entities.every(entity => {
+    // TypeORM also marks implicit join columns as isVirtual. Those are stored in SQL.
+    const persisted = entity.columns.filter(column => column.isVirtualProperty !== true);
+    return (entity.schema === undefined || entity.schema === 'public') &&
+      persisted.length > 0 &&
+      persisted.every(column => available.has(`${entity.tableName}.${column.databaseName}`));
+  });
+}
+
 function releaseDirectory(value) {
   const absolute = path.resolve(value);
   ensure(path.dirname(absolute) === '/opt/nodia/releases' && releasePattern.test(path.basename(absolute)) &&
@@ -120,11 +131,7 @@ async function runAction(mode, oldDirectory, candidateDirectory) {
     ensure(applied.length === before.pending, 'migration_applied_count_mismatch');
     const columns = (await db.query(`SELECT table_name,column_name FROM information_schema.columns
       WHERE table_schema='public'`)).rows;
-    const available = new Set(columns.map(row => `${row.table_name}.${row.column_name}`));
-    ensure(dataSource.entityMetadatas.length > 0 && dataSource.entityMetadatas.every(entity =>
-      (entity.schema === undefined || entity.schema === 'public') &&
-      entity.columns.every(column => available.has(`${entity.tableName}.${column.databaseName}`))),
-    'entity_table_or_column_missing');
+    ensure(persistedEntitySchemaPresent(dataSource.entityMetadatas, columns), 'entity_table_or_column_missing');
     return { schema_version: 1, status: 'migrated', ...after, applied: applied.length,
       entity_tables_checked: dataSource.entityMetadatas.length, entity_columns_present: true,
       client_tls_authorized: true, seed_requested: false, automatic_retry_allowed: false };

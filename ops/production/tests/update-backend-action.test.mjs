@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { migrationInventory, validateHistory, quiescentCounters, quiescencePredicates, failureResult } from '../update-backend-action.mjs';
+import { migrationInventory, validateHistory, quiescentCounters, quiescencePredicates, failureResult,
+  persistedEntitySchemaPresent } from '../update-backend-action.mjs';
 
 const manifest = (extra = false) => ({ schema_version: 1, files: [
   { path: 'dist/migrations/1789257400000-InitialCoreSchema.js', type: 'file', sha256: 'a'.repeat(64) },
@@ -30,6 +31,21 @@ test('missing, malformed and duplicate migration identities fail closed', () => 
     [{ ...manifest().files[0], path: 'dist/migrations/invalid.js' }, manifest().files[1]]]) {
     assert.throws(() => migrationInventory({ schema_version: 1, files }));
   }
+});
+
+test('schema checks computed columns separately from persisted fields and implicit joins', () => {
+  const id = { databaseName: 'id' };
+  const join = { databaseName: 'business_id', isVirtual: true, isVirtualProperty: false };
+  const projection = { databaseName: 'cash_expense', isVirtual: false, isVirtualProperty: true };
+  const invoices = { schema: 'public', tableName: 'invoices', columns: [id, join, projection] };
+  const columns = ['id', 'business_id'].map(column_name => ({ table_name: 'invoices', column_name }));
+  assert.equal(persistedEntitySchemaPresent([invoices], columns), true);
+  for (const missing of ['id', 'business_id'])
+    assert.equal(persistedEntitySchemaPresent([invoices], columns.filter(row => row.column_name !== missing)), false);
+  assert.equal(persistedEntitySchemaPresent([invoices], []), false);
+  assert.equal(persistedEntitySchemaPresent([{ ...invoices, columns: [projection] }], columns), false);
+  assert.equal(persistedEntitySchemaPresent([{ ...invoices, schema: 'another_schema' }], columns), false);
+  assert.equal(persistedEntitySchemaPresent([], columns), false);
 });
 
 test('zero requires every known runtime counter; active, unknown or missing states cannot pass', () => {

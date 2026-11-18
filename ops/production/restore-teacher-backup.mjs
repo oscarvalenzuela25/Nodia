@@ -10,7 +10,7 @@ import { validateFingerprint } from './fingerprint-teacher-restore.mjs';
 
 export const PINS = Object.freeze({ postgres: HISTORICAL_PINS.postgres, runner: HISTORICAL_PINS.runner,
   fingerprint: 'e4d899a31df33ca40f3e663369d7b3419577c530779cdb54c318f82ac9acf191',
-  inventory: '0c63a501e61f31ecc350ec8a3d82b54a9fcb9c201c149edf7b1feb0432e66a1a' });
+  inventory: 'c4ccbc0ad598611bedde395d4662b491785b912905bbde8de057b685bfba4c7f' });
 const LABEL = 'nodia.teacher.database.restore';
 const ensure = (condition, code) => { if (!condition) throw Object.assign(new Error('Teacher restore rejected'), { safeCode: code }); };
 const HEX = /^[a-f0-9]{64}$/u;
@@ -123,7 +123,7 @@ async function insideRunner(mode) {
   const { default: dataSource } = await import('/package/dist/config/data-source.js');
   ensure(dataSource.options.synchronize === false, 'restore_synchronize_not_disabled');
   await dataSource.buildMetadatas();
-  const { migrationInventory } = await import('/harness/update-backend-action.mjs');
+  const { migrationInventory, persistedEntitySchemaPresent } = await import('/harness/update-backend-action.mjs');
   const expectedMigrations = migrationInventory(manifest).map(item => item.name).sort();
   const actualMigrations = dataSource.migrations.map(item => item.name ?? item.constructor.name).sort();
   ensure(JSON.stringify(actualMigrations) === JSON.stringify(expectedMigrations) && dataSource.entityMetadatas.length > 0 && dataSource.entityMetadatas.every(item => !item.schema || item.schema === 'public'), 'restore_schema_inventory_invalid');
@@ -134,9 +134,7 @@ async function insideRunner(mode) {
     const ledger = (await client.query('SELECT name FROM public.migrations ORDER BY name')).rows.map(value => value.name);
     ensure(JSON.stringify(ledger) === JSON.stringify(expectedMigrations), 'restore_migration_ledger_mismatch');
     const columns = (await client.query("SELECT table_name,column_name FROM information_schema.columns WHERE table_schema='public'")).rows;
-    const available = new Set(columns.map(value => value.table_name + '.' + value.column_name));
-    ensure(dataSource.entityMetadatas.every(entity => entity.columns.every(column => available.has(entity.tableName + '.' + column.databaseName))),
-      'restore_entity_columns_missing');
+    ensure(persistedEntitySchemaPresent(dataSource.entityMetadatas, columns), 'restore_entity_columns_missing');
     const extensionState = (await client.query("SELECT extname FROM pg_extension ORDER BY extname")).rows.map(value => value.extname);
     ensure(JSON.stringify(extensionState) === JSON.stringify(['pg_trgm', 'plpgsql', 'uuid-ossp']), 'restore_provider_extensions_recreated');
     ensure((await client.query("SELECT count(*)::int AS count FROM pg_namespace WHERE nspname='pooler'")).rows[0].count === 0,
