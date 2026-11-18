@@ -42,7 +42,7 @@ import { BusinessCashCategory } from './business-cash-category.entity.js';
 @Check(
   'ck_business_cash_movements_source',
   `(source = 'manual' AND invoice_id IS NULL AND NOT withdrawn_from_invoice
-    AND description IS NOT NULL AND description ~ '[^[:space:]]')
+    AND description IS NOT NULL AND (description = '' OR description ~ '[^[:space:]]'))
   OR (source = 'invoice' AND type = 'expense' AND invoice_id IS NOT NULL
     AND description IS NULL)`,
 )

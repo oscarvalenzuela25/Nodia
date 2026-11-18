@@ -125,7 +125,7 @@ function ScopedCashTab({
           <Button variant="contained" color="error" startIcon={<CallMadeOutlined />} onClick={(event) => startMovement("expense", event.currentTarget)} disabled={busy}>
             {t("business:cash.add_expense")}
           </Button>
-          <Button variant="outlined" startIcon={<CategoryOutlined />} onClick={(event) => {
+          <Button variant="contained" startIcon={<CategoryOutlined />} onClick={(event) => {
             toolbarOpener.current = event.currentTarget;
             setCategoriesOpen(true);
           }} disabled={busy}>
@@ -171,8 +171,8 @@ function ScopedCashTab({
             rowsPerPageOptions={[10, 25, 50, 100]}
             count={snapshot.meta.total_items}
             disabled={busy}
-            labelRowsPerPage={t("core:rows_per_page")}
-            labelDisplayedRows={({ from, to, count }) => t("core:displayed_rows", { from, to, count })}
+            labelRowsPerPage={t("core:pagination.rows_per_page")}
+            labelDisplayedRows={({ from, to, count }) => `${from}–${to} ${t("core:pagination.of")} ${count}`}
             onPageChange={(_, value) => { if (!busy && value < MAX_PAGE) setPage(value + 1); }}
             onRowsPerPageChange={(event) => {
               if (busy) return;

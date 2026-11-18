@@ -17,7 +17,6 @@ export const CashToolbar = styled(Box)(({ theme }) => ({
   flexWrap: "wrap",
   gap: theme.spacing(2),
   minWidth: 0,
-  "& button": { minHeight: 44 },
   [theme.breakpoints.down("sm")]: {
     flexDirection: "column",
     alignItems: "stretch",
@@ -32,7 +31,7 @@ export const CashToolbarActions = styled(Box)(({ theme }) => ({
   minWidth: 0,
   [theme.breakpoints.down("sm")]: {
     display: "grid",
-    "& > button": { width: "100%" },
+    "& > button": { width: "100%", minHeight: 44 },
   },
 }));
 
@@ -42,8 +41,6 @@ export const AppliedFilters = styled(Box)(({ theme }) => ({
   alignItems: "center",
   gap: theme.spacing(1),
   minWidth: 0,
-  "& > *": { minWidth: 0, maxWidth: "100%", whiteSpace: "normal", overflowWrap: "anywhere" },
-  "& button": { minWidth: 44, minHeight: 44, flexShrink: 0 },
 }));
 
 export const TotalsGrid = styled(Box)(({ theme }) => ({
@@ -80,10 +77,10 @@ export const CashRecordsPanel = styled(Paper)(({ theme }) => ({
 }));
 
 export const SearchArea = styled(Box)(({ theme }) => ({
-  maxWidth: 360,
+  width: 320,
+  maxWidth: "100%",
   minWidth: 0,
-  "& .MuiInputBase-root": { minHeight: 44 },
-  [theme.breakpoints.down("sm")]: { maxWidth: "none" },
+  [theme.breakpoints.down("sm")]: { width: "100%" },
 }));
 
 export const CashCards = styled(Box)(({ theme }) => ({

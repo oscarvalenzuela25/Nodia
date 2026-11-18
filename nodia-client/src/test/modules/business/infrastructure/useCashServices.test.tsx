@@ -95,7 +95,7 @@ beforeEach(() => {
 });
 
 describe("Cash mutation recovery", () => {
-  it("keeps a write with unknown result, checks the receipt, and retries exactly the original key and body", async () => {
+  it("checks an unknown Caja write automatically and only replays the original key and body on retry", async () => {
     const { client, Wrapper } = prepare();
     const invalidate = vi.spyOn(client, "invalidateQueries");
     vi.mocked(sendCashMutation).mockRejectedValueOnce(new Error("Synthetic response lost"));
@@ -109,14 +109,13 @@ describe("Cash mutation recovery", () => {
     await act(async () => {
       const submitted = result.current.submit(draft);
       expect(await result.current.submit(draft)).toBeUndefined();
-      expect(await submitted).toMatchObject({ status: "unavailable" });
+      expect(await submitted).toMatchObject({ status: "unconfirmed" });
     });
     const key = vi.mocked(sendCashMutation).mock.calls[0][1];
     expect(result.current.pending).toBe(true);
     draft.fields.description = "Changes after dispatch";
     await act(async () => {
       expect(await result.current.submit(draft)).toBeUndefined();
-      expect(await result.current.recover()).toEqual({ request_key: key, status: "unconfirmed" });
     });
     expect(getCashReceipt).toHaveBeenCalledExactlyOnceWith(scope.businessId, key, command);
     expect(sendCashMutation).toHaveBeenCalledTimes(1);
@@ -130,6 +129,22 @@ describe("Cash mutation recovery", () => {
     expect(result.current.pending).toBe(false);
     expect(invalidate).toHaveBeenCalledWith({ queryKey: cashKeys.categories(scope) });
     expect(invalidate).toHaveBeenCalledWith({ queryKey: cashKeys.movements(scope) });
+  });
+
+  it("finishes a Caja save when the automatic read confirms the write that lost its response", async () => {
+    const { client, Wrapper } = prepare();
+    const invalidate = vi.spyOn(client, "invalidateQueries");
+    vi.mocked(sendCashMutation).mockRejectedValueOnce(new Error("Synthetic response lost"));
+    vi.mocked(getCashReceipt).mockImplementation(async (_business, key) => committed(key));
+    const { result } = renderHook(() => useCashMutation(scope), { wrapper: Wrapper });
+    await act(async () => {
+      expect(await result.current.submit(command)).toMatchObject({ status: "committed" });
+    });
+    const key = vi.mocked(sendCashMutation).mock.calls[0][1];
+    expect(getCashReceipt).toHaveBeenCalledExactlyOnceWith(scope.businessId, key, command);
+    expect(sendCashMutation).toHaveBeenCalledTimes(1);
+    expect(result.current.pending).toBe(false);
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: cashKeys.categories(scope) });
   });
 
   it("treats an initial CAS conflict as definitive and requires a new key for the reviewed command", async () => {
@@ -195,6 +210,7 @@ describe("Cash mutation recovery", () => {
       expect(await result.current.submit(draft)).toMatchObject({ status: "unavailable" });
     });
     expect(sendCashMutation).toHaveBeenCalledTimes(1);
+    expect(getCashReceipt).not.toHaveBeenCalled();
     expect(result.current.pending).toBe(true);
     expect(invalidate).not.toHaveBeenCalled();
     const key = vi.mocked(sendCashMutation).mock.calls[0][1];

@@ -4,7 +4,7 @@ import {
   TableContainer, TableHead, TableRow, TextField, Tooltip, Typography,
   useMediaQuery, useTheme,
 } from "@mui/material";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import ChecklistOutlinedIcon from "@mui/icons-material/ChecklistOutlined";
@@ -18,6 +18,7 @@ import { sileo } from "sileo";
 import BaseModal from "../../../../../../components/BaseModal";
 import InputSearch from "../../../../../../components/inputs/InputSearch";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
+import { TableSkeleton } from "../../../../../../components/skeletons";
 import { notifyHttpError } from "../../../../../../config/httpFeedback";
 import BusinessPagination from "../../../../components/BusinessPagination";
 import { isShoppingListScopeError } from "./infrastructure/services";
@@ -35,7 +36,7 @@ import ListActivityDialog from "./ListActivityDialog";
 import ListChecklist from "./ListChecklist";
 import ListEditor from "./ListEditor";
 import { listClipboardText } from "./listDraft";
-import { ListHeading, ListMobileCard, ListPanel, ListToolbar, TouchIconButton } from "./styles";
+import { ListMobileCard, ListPanel, ListToolbar, TouchIconButton } from "./styles";
 
 type ListOverlay =
   | { kind: "new" }
@@ -65,6 +66,14 @@ export default function ListsTab(scope: ShoppingListScope) {
   const disabled = !active || result.isFetching || copying;
   const actionsDisabled = disabled || isShoppingListScopeError(result.error);
   const locale = i18n.resolvedLanguage ?? i18n.language;
+  const title = t("business:market_lists.title");
+  const emptyMessage = t(search.trim() ? "business:market_lists.no_results" : "business:market_lists.empty");
+  const columns = [
+    { header: t("business:market_lists.name") },
+    { header: t("business:tab_products"), align: "right" as const },
+    { header: t("business:market_lists.status"), align: "center" as const },
+    { header: t("business:market_lists.actions"), align: "right" as const },
+  ];
 
   const close = () => {
     setOverlay(undefined);
@@ -121,62 +130,62 @@ export default function ListsTab(scope: ShoppingListScope) {
     else open({ kind, selected: list }, event);
   };
 
-  return <Stack component="section" sx={{ gap: 3, minWidth: 0 }}>
-    <ListHeading>
-      <Typography component="h2" variant="h5">{t("business:market_lists.title")}</Typography>
-      <Button
-        ref={createButton}
-        variant="contained"
-        startIcon={<AddOutlinedIcon />}
-        disabled={actionsDisabled}
-        onClick={event => open({ kind: "new" }, event)}
-      >{t("business:market_lists.create")}</Button>
-    </ListHeading>
-    <ListPanel elevation={0} aria-busy={result.isFetching || copying}>
-      <ListToolbar>
+  return <Stack component="section" aria-label={title} sx={{ gap: 2, minWidth: 0 }}>
+    <ListToolbar>
+      <Box sx={{ width: { xs: "100%", sm: 320 } }}>
         <InputSearch
           value={search}
           onChange={value => { setSearch(value); setPage(0); }}
           placeholder={t("business:market_lists.search")}
-          ariaLabel={t("business:market_lists.search")}
           disabled={disabled}
-          variant="outlined"
         />
-      </ListToolbar>
-      {result.isFetching && !result.isLoading && <LinearProgress aria-label={t("business:market_lists.loading")} />}
-      <Box sx={{ px: 2 }}>
-        <QueryErrorAlert isError={result.isError} isFetching={result.isFetching} onRetry={result.refetch} />
       </Box>
-      <Skeleton loading={result.isLoading} fallback={<Stack aria-hidden="true" sx={{ gap: 1, px: 2, pb: 2 }}>
-        {[0, 1, 2].map(index => <Box key={index} sx={{ height: mobile ? 106 : 48, borderRadius: 1, bgcolor: "action.hover" }} />)}
-      </Stack>}>
-        {ownsScope && data && (data.items.length ? (mobile ? (
-          <Stack component="ul" sx={{ gap: 1.5, px: 2, m: 0, pb: 2 }}>
+      <Button
+        ref={createButton}
+        variant="contained"
+        startIcon={<AddCircleOutlinedIcon />}
+        disabled={actionsDisabled}
+        onClick={event => open({ kind: "new" }, event)}
+        sx={{ borderRadius: 2 }}
+      >{t("business:market_lists.create")}</Button>
+    </ListToolbar>
+    <QueryErrorAlert isError={result.isError} isFetching={result.isFetching} onRetry={result.refetch} />
+    <ListPanel elevation={0} aria-busy={result.isFetching || copying}>
+      {result.isFetching && !result.isLoading && <LinearProgress aria-label={t("business:market_lists.loading")} />}
+      <Skeleton loading={result.isLoading} fallback={mobile ? (
+        <Stack aria-hidden="true" sx={{ gap: 2 }}>
+          {[0, 1, 2].map(index => <Box key={index} sx={{ height: 106, borderRadius: 2, bgcolor: "action.hover" }} />)}
+        </Stack>
+      ) : <TableSkeleton columns={columns} paperSx={{ border: 0, borderRadius: 0 }} />}>
+        {ownsScope && data && (mobile ? (
+          data.items.length > 0 ? <Stack component="ul" sx={{ gap: 2, p: 0, m: 0 }}>
             {data.items.map(selected => <ListMobileCard key={selected.id}>
               <Stack direction="row" sx={{ alignItems: "flex-start", justifyContent: "space-between", gap: 1 }}>
                 <Typography component="h3" sx={{ fontWeight: 600 }}>{selected.name}</Typography>
                 <ListStatus active={selected.is_active} />
               </Stack>
               <Typography variant="body2" color="text.secondary">{t("business:market_lists.product_count", { count: selected.item_count })}</Typography>
-              <ListRowActions selected={selected} mobile disabled={actionsDisabled} onAction={handleAction} />
+              <ListRowActions selected={selected} disabled={actionsDisabled} onAction={handleAction} />
             </ListMobileCard>)}
-          </Stack>
+          </Stack> : !result.isError && <Typography sx={{ p: 2, textAlign: "center", fontWeight: 600 }}>{emptyMessage}</Typography>
         ) : (
-          <TableContainer tabIndex={0} role="region" aria-label={t("business:market_lists.title")}>
-            <Table aria-label={t("business:market_lists.title")}>
+          <TableContainer tabIndex={0} role="region" aria-label={t("business:market_lists.table_region")}>
+            <Table aria-label={title}>
               <TableHead>
                 <TableRow>
-                  <TableCell>{t("business:market_lists.name")}</TableCell>
-                  <TableCell>{t("business:tab_products")}</TableCell>
-                  <TableCell>{t("business:market_lists.status")}</TableCell>
-                  <TableCell align="right">{t("business:market_lists.actions")}</TableCell>
+                  {columns.map(({ header, align }) => <TableCell key={header} align={align}>{header}</TableCell>)}
                 </TableRow>
               </TableHead>
               <TableBody>
+                {!result.isError && data.items.length === 0 && <TableRow>
+                  <TableCell colSpan={columns.length} align="center" sx={{ py: 6 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{emptyMessage}</Typography>
+                  </TableCell>
+                </TableRow>}
                 {data.items.map(selected => <TableRow key={selected.id} hover>
-                  <TableCell component="th" scope="row" sx={{ overflowWrap: "anywhere", maxWidth: 320 }}>{selected.name}</TableCell>
-                  <TableCell>{selected.item_count}</TableCell>
-                  <TableCell><ListStatus active={selected.is_active} /></TableCell>
+                  <TableCell component="th" scope="row" sx={{ fontWeight: 600, overflowWrap: "anywhere", maxWidth: 320 }}>{selected.name}</TableCell>
+                  <TableCell align="right">{selected.item_count}</TableCell>
+                  <TableCell align="center"><ListStatus active={selected.is_active} /></TableCell>
                   <TableCell align="right">
                     <ListRowActions selected={selected} disabled={actionsDisabled} onAction={handleAction} />
                   </TableCell>
@@ -184,11 +193,9 @@ export default function ListsTab(scope: ShoppingListScope) {
               </TableBody>
             </Table>
           </TableContainer>
-        )) : <Typography sx={{ px: 2, pb: 2 }} color="text.secondary">
-          {t(search.trim() ? "business:market_lists.no_results" : "business:market_lists.empty")}
-        </Typography>)}
+        ))}
       </Skeleton>
-      {ownsScope && data && data.pagination.total > 0 && <BusinessPagination
+      {ownsScope && data && <BusinessPagination
         component="div"
         count={data.pagination.total}
         page={Math.min(data.pagination.page - 1, Math.max(0, data.pagination.total_pages - 1))}
@@ -197,9 +204,8 @@ export default function ListsTab(scope: ShoppingListScope) {
         onRowsPerPageChange={event => { setLimit(Number(event.target.value)); setPage(0); }}
         rowsPerPageOptions={rowsPerPageOptions}
         disabled={disabled}
-        labelRowsPerPage={t("core:rows_per_page")}
+        labelRowsPerPage={t("core:pagination.rows_per_page")}
         labelDisplayedRows={({ from, to, count }) => t("core:displayed_rows", { from, to, count })}
-        sx={{ overflowX: "auto" }}
       />}
     </ListPanel>
     {ownsScope && (overlay?.kind === "new" || overlay?.kind === "edit") && <ListEditor
@@ -236,13 +242,11 @@ function ListStatus({ active }: { active: boolean }) {
     label={t(active ? "business:status_active" : "business:status_inactive")}
     color={active ? "success" : "default"}
     size="small"
-    variant="outlined"
   />;
 }
 
-function ListRowActions({ selected, mobile, disabled, onAction }: {
+function ListRowActions({ selected, disabled, onAction }: {
   selected: ShoppingListSummary;
-  mobile?: boolean;
   disabled: boolean;
   onAction: (action: RowAction, selected: ShoppingListSummary, event: MouseEvent<HTMLButtonElement>) => void;
 }) {
@@ -251,11 +255,11 @@ function ListRowActions({ selected, mobile, disabled, onAction }: {
   const ActivityIcon = selected.is_active ? BlockOutlinedIcon : CheckCircleOutlineOutlinedIcon;
   const rowActions = [
     { kind: "edit", action: "business:market_lists.edit", Icon: EditOutlinedIcon },
-    { kind: "activity", action: activityAction, Icon: ActivityIcon },
     { kind: "copy", action: "business:market_lists.copy", Icon: ContentCopyOutlinedIcon },
     { kind: "checklist", action: "business:market_lists.checklist", Icon: ChecklistOutlinedIcon },
+    { kind: "activity", action: activityAction, Icon: ActivityIcon },
   ] as const;
-  return <Stack direction="row" sx={{ gap: 0.5, flexWrap: "wrap", justifyContent: mobile ? "flex-start" : "flex-end" }}>
+  return <Stack direction="row" sx={{ gap: 0.5, flexWrap: "wrap", justifyContent: "flex-end" }}>
     {rowActions.map(({ kind, action, Icon }) => <Tooltip key={kind} title={t(action)}>
       <span><TouchIconButton
         aria-label={t("business:market_lists.named_action", { action: t(action), name: selected.name })}

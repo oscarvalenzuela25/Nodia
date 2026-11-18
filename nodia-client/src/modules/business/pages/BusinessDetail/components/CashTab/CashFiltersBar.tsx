@@ -3,10 +3,10 @@ import { Alert } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Filter from "../../../../../../components/Filter";
 import ActiveStatusSelect from "../../../../../../components/Filter/components/ActiveStatusSelect";
-import FilterChip from "../../../../../../components/Filter/components/FilterChips";
+import FilterChips from "../../../../../../components/Filter/components/FilterChips";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
-import DateInput from "../../../../../../components/inputs/DateInput";
 import SelectSingleInput from "../../../../../../components/inputs/SelectSingleInput";
+import BusinessDateRange from "../../../../components/BusinessDateRange";
 import type { CashScope } from "../../../../infrastructure/cashTypes";
 import { useCashCategoryOptions } from "../../../../infrastructure/useCashServices";
 import { trimCashText } from "../../../../infrastructure/cashValues";
@@ -48,21 +48,23 @@ export function CashFiltersButton({ scope, applied, onApply, disabled }: CashFil
         onChange={(category) => setDraft((previous) => ({ ...previous, category }))}
         disabled={disabled}
       />
-      <DateInput
-        label={t("business:cash.from")}
-        value={draft.from}
-        onChange={(from) => setDraft((previous) => ({ ...previous, from }))}
-        disabled={disabled}
-        error={!valid}
-        minDate="0001-01-01"
-      />
-      <DateInput
-        label={t("business:cash.to")}
-        value={draft.to}
-        onChange={(to) => setDraft((previous) => ({ ...previous, to }))}
-        disabled={disabled}
-        error={!valid}
-        minDate="0001-01-01"
+      <BusinessDateRange
+        from={{
+          label: t("business:cash.from"),
+          value: draft.from,
+          onChange: (from) => setDraft((previous) => ({ ...previous, from })),
+          disabled,
+          error: !valid,
+          minDate: "0001-01-01",
+        }}
+        to={{
+          label: t("business:cash.to"),
+          value: draft.to,
+          onChange: (to) => setDraft((previous) => ({ ...previous, to })),
+          disabled,
+          error: !valid,
+          minDate: "0001-01-01",
+        }}
       />
       <ActiveStatusSelect
         value={draft.activity}
@@ -137,23 +139,26 @@ export function CashAppliedFilters({
   disabled,
 }: Omit<CashFiltersProps, "scope"> & { period: string }) {
   const { t } = useTranslation(["business", "core"]);
+  const hasPeriod = Boolean(applied.from || applied.to);
+  const hasActivity = applied.activity !== "all";
+  const { category } = applied;
+  if (!hasPeriod && !hasActivity && !category) return null;
+
   return (
     <AppliedFilters>
-      <FilterChip
-        label={period}
-        disabled={disabled}
-        onAction={applied.from || applied.to ? () => onApply({ ...applied, from: "", to: "" }) : undefined}
-      />
-      <FilterChip
-        label={t(`core:active_filter.${applied.activity}`)}
-        disabled={disabled}
-        onAction={applied.activity !== "all" ? () => onApply({ ...applied, activity: "all" }) : undefined}
-      />
-      <FilterChip
-        label={applied.category?.name ?? t("business:cash.all_categories")}
-        disabled={disabled}
-        onAction={applied.category ? () => onApply({ ...applied, category: null }) : undefined}
-      />
+      {hasPeriod && (
+        <FilterChips label={period} disabled={disabled} onAction={() => onApply({ ...applied, from: "", to: "" })} />
+      )}
+      {hasActivity && (
+        <FilterChips
+          label={t("business:cash.filter_activity", { status: t(`core:active_filter.${applied.activity}`) })}
+          disabled={disabled}
+          onAction={() => onApply({ ...applied, activity: "all" })}
+        />
+      )}
+      {category && (
+        <FilterChips label={category.name} disabled={disabled} onAction={() => onApply({ ...applied, category: null })} />
+      )}
     </AppliedFilters>
   );
 }

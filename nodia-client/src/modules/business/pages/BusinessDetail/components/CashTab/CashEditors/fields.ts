@@ -7,18 +7,18 @@ import {
   trimCashText,
 } from "../../../../../infrastructure/cashValues";
 
-function cashText(max: number, message: string, normalize = false) {
+function cashText(max: number, message: string, { normalize = false, allowBlank = false } = {}) {
   return z
     .string()
     .refine((value) => !value.includes("\u0000") && !/[\uD800-\uDFFF]/u.test(value), message)
     .transform((value) => trimCashText(normalize ? value.normalize("NFKC") : value))
-    .refine((value) => value.length > 0 && [...value].length <= max, message);
+    .refine((value) => (allowBlank || value.length > 0) && [...value].length <= max, message);
 }
 
-const description = cashText(500, "business:cash.invalid_description");
+const description = cashText(500, "business:cash.invalid_description", { allowBlank: true });
 
 export const categoryFields = z.object({
-  name: cashText(120, "business:cash.invalid_category_name", true),
+  name: cashText(120, "business:cash.invalid_category_name", { normalize: true }),
   description,
   is_active: z.boolean(),
 });

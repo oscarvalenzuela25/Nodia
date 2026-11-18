@@ -66,7 +66,7 @@ export function isCashText(value: unknown): value is string {
 function text(value: unknown, max: number, normalize = false): string {
   if (!isCashText(value)) return invalid();
   const result = trimCashText(normalize ? value.normalize('NFKC') : value);
-  if (!result || [...result].length > max) return invalid();
+  if ([...result].length > max) return invalid();
   return result;
 }
 
@@ -85,7 +85,7 @@ function categoryName(
 }
 
 export function normalizeCashDescription(value: unknown): string {
-  return text(value, 500);
+  return text(value === undefined ? '' : value, 500);
 }
 
 export function normalizeCashActivity(value: unknown): boolean {

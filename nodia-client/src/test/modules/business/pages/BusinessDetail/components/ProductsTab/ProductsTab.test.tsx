@@ -675,7 +675,7 @@ describe("ProductsTab Component", () => {
     });
   });
 
-  it("filters products by price change status (increased, decreased, unchanged)", async () => {
+  it("offers increases and decreases as price filters and sends the selected variation", async () => {
     mockProducts[0].previous_price_snapshot = mockProductLogs[1];
     mockProducts[1].previous_price_snapshot = mockProductLogs[3];
     vi.mocked(businessServices.getProductLogs).mockResolvedValue({
@@ -701,8 +701,10 @@ describe("ProductsTab Component", () => {
     const priceChangeSelect = screen.getByRole("button", { name: /Variación de precio/i });
     await user.click(priceChangeSelect);
 
-    // Option "Subió de precio" should be visible
-    const optionIncreased = await screen.findByText("Subió de precio");
+    const options = within(await screen.findByRole("listbox"));
+    expect(options.getAllByRole("menuitem")).toHaveLength(2);
+    expect(options.getByRole("menuitem", { name: "Bajó de precio" })).toBeInTheDocument();
+    const optionIncreased = options.getByRole("menuitem", { name: "Subió de precio" });
     await user.click(optionIncreased);
 
     // Close select dropdown

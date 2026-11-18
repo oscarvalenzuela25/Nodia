@@ -18,10 +18,14 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
+import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
+import PointOfSaleOutlinedIcon from "@mui/icons-material/PointOfSaleOutlined";
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -75,19 +79,21 @@ import {
 const sections = [
   { value: "overview", label: "business:tab_overview", icon: DashboardOutlinedIcon },
   { value: "cash", label: "business:tab_cash", icon: AccountBalanceWalletOutlinedIcon },
-  { value: "providers", label: "business:tab_providers", icon: StorefrontOutlinedIcon },
   { value: "market", label: "business:market_lists.market", icon: StorefrontOutlinedIcon },
-  { value: "invoices", label: "business:tab_invoices", icon: ReceiptLongOutlinedIcon },
-  { value: "pos", label: "business:pos.title" },
-  { value: "sales", label: "business:pos.sales" },
-  { value: "reports", label: "business:pos.reports" },
+  { value: "pos", label: "business:pos.title", icon: PointOfSaleOutlinedIcon },
+  { value: "sales", label: "business:pos.sales", icon: ShoppingBagOutlinedIcon },
+  { value: "reports", label: "business:pos.reports", icon: AssessmentOutlinedIcon },
   { value: "collaborators", label: "business:tab_collaborators", icon: PeopleOutlinedIcon },
 ] as const;
 
 const marketSections = [
+  { value: "providers", label: "business:tab_providers", icon: LocalShippingOutlinedIcon },
   { value: "products", label: "business:tab_products", icon: Inventory2OutlinedIcon },
+  { value: "invoices", label: "business:tab_invoices", icon: ReceiptLongOutlinedIcon },
   { value: "lists", label: "business:market_lists.title", icon: FormatListBulletedOutlinedIcon },
 ] as const;
+
+type BusinessTab = (typeof sections | typeof marketSections)[number];
 
 function CashSectionEntry(scope: CashScope) {
   const { t } = useTranslation("business");
@@ -176,12 +182,29 @@ const BusinessDetail: FC = () => {
   const totalProviders = business?.total_providers_count ?? 0;
   const totalInvoices = invoicesData?.meta?.total_items ?? 0;
   const totalCollaborators = business?.collaborators?.length ?? business?.collaborators_count ?? 0;
-  const sectionCounts: Partial<Record<(typeof sections)[number]["value"], number>> = {
-    providers: totalProviders, invoices: totalInvoices, collaborators: totalCollaborators,
+  const sectionCounts: Partial<Record<BusinessTab["value"], number>> = {
+    providers: totalProviders, products: totalProducts, invoices: totalInvoices, collaborators: totalCollaborators,
   };
 
   const isMutating = useIsMutating() > 0;
   const isBusy = isLoading || isFetching || isMutating;
+
+  const renderSectionTabs = (items: readonly BusinessTab[]) => items.map(({ value, label, icon: Icon }) => {
+    const count = sectionCounts[value];
+    return <StyledTab
+      key={value}
+      value={value}
+      icon={<Icon sx={{ fontSize: 18 }} />}
+      iconPosition="start"
+      disabled={isBusy}
+      label={count === undefined ? t(label) :
+        <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+          {t(label)}
+          <Chip label={count} size="small" sx={{ height: 18, fontSize: "0.68rem" }} />
+        </Box>}
+      data-testid={`tab-${value}`}
+    />;
+  });
 
   const handleTabChange = (_event: SyntheticEvent, newValue: unknown) => {
     selectSection(newValue);
@@ -347,43 +370,18 @@ const BusinessDetail: FC = () => {
               variant="scrollable"
               scrollButtons="auto"
             >
-              {sections.map((section) => {
-                const Icon = "icon" in section ? section.icon : undefined;
-                const count = sectionCounts[section.value];
-                return <StyledTab
-                  key={section.value}
-                  value={section.value}
-                  icon={Icon ? <Icon sx={{ fontSize: 18 }} /> : undefined}
-                  disabled={isBusy}
-                  iconPosition="start"
-                  label={count === undefined ? t(section.label) :
-                    <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
-                      {t(section.label)}
-                      <Chip label={count} size="small" sx={{ height: 18, fontSize: "0.68rem" }} />
-                    </Box>}
-                  data-testid={`tab-${section.value}`}
-                />;
-              })}
+              {renderSectionTabs(sections)}
             </StyledTabs>}
           </TabsWrapper>
           {selectedMarketSection && <MarketTabs
             value={selectedMarketSection}
             onChange={handleTabChange}
             aria-label={t("business:market_lists.market")}
+            variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
           >
-            {marketSections.map(({ value, label, icon: Icon }) => <StyledTab
-              key={value}
-              value={value}
-              disabled={isBusy}
-              icon={<Icon sx={{ fontSize: 18 }} />}
-              iconPosition="start"
-              data-testid={`tab-${value}`}
-              label={value !== "products" ? t(label) :
-                <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
-                  {t(label)}
-                  <Chip label={totalProducts} size="small" sx={{ height: 18, fontSize: "0.68rem" }} />
-                </Box>}
-            />)}
+            {renderSectionTabs(marketSections)}
           </MarketTabs>}
         </HeaderCard>
       </Skeleton>

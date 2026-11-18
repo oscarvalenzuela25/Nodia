@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   cashCategoryParams,
   cashMovementParams,
+  getCashCategory,
   getCashMonthlySummary,
   getCashMovement,
   getCashMovements,
@@ -119,6 +120,14 @@ describe("Cash API contract", () => {
     const amount = result.summary.expense.total_amount;
     expect(formatCashAmount(amount, "es").replace(/\D/g, "")).toBe(amount);
     expect(formatCashAmount(amount, "en").replace(/\D/g, "")).toBe(amount);
+  });
+
+  it("reads manual records and categories with an empty optional description", async () => {
+    const category = { ...linked.category, business_id: businessId, description: "", version: 1 };
+    const movement = { ...linked, source: "manual", invoice: null, description: "" };
+    http.get.mockResolvedValueOnce({ data: category }).mockResolvedValueOnce({ data: movement });
+    await expect(getCashCategory(businessId, category.id)).resolves.toEqual(category);
+    await expect(getCashMovement(businessId, id)).resolves.toEqual(movement);
   });
 
   it("rejects an invalid successful sum, missing total, or a valid detail owned by another business", async () => {

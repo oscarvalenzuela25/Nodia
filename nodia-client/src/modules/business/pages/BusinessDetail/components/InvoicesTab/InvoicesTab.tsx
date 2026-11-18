@@ -1,4 +1,4 @@
-import DateInput from "../../../../../../components/inputs/DateInput";
+import BusinessDateRange from "../../../../components/BusinessDateRange";
 import BusinessPagination from "../../../../components/BusinessPagination";
 import { TABLE_PANEL_RADIUS } from "../../../../../../theme/tablePanel";
 import { InvoiceMobileCard } from "../../../../components/BusinessMobileCards/BusinessMobileCards";
@@ -264,7 +264,7 @@ export const InvoicesTab: FC<Props> = ({
       {isFetching && !isLoading && <LinearProgress sx={{ height: 2 }} />}
       <QueryErrorAlert isError={isError} isFetching={isFetching} onRetry={refetch} />
       {/* Filter Row */}
-      <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+      <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", justifyContent: "space-between", gap: 2, mb: 2 }}>
         <Filter
           disabled={isBusy}
           onOpen={() => setDraftFilterActive(appliedFilterActive)}
@@ -296,28 +296,22 @@ export const InvoicesTab: FC<Props> = ({
             disabled={isLoading || isFetching}
           />
 
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
-              gap: 1.5,
+          <BusinessDateRange
+            from={{
+              label: t("business:filter_date_from_label"),
+              value: draftFilterDateFrom,
+              onChange: setDraftFilterDateFrom,
+              disabled: isBusy,
+              dataTestId: "filter-invoice-date-from-input",
             }}
-          >
-            <DateInput
-              label={t("business:filter_date_from_label")}
-              value={draftFilterDateFrom}
-              onChange={setDraftFilterDateFrom}
-              disabled={isLoading || isFetching}
-              dataTestId="filter-invoice-date-from-input"
-            />
-            <DateInput
-              label={t("business:filter_date_to_label")}
-              value={draftFilterDateTo}
-              onChange={setDraftFilterDateTo}
-              disabled={isLoading || isFetching}
-              dataTestId="filter-invoice-date-to-input"
-            />
-          </Box>
+            to={{
+              label: t("business:filter_date_to_label"),
+              value: draftFilterDateTo,
+              onChange: setDraftFilterDateTo,
+              disabled: isBusy,
+              dataTestId: "filter-invoice-date-to-input",
+            }}
+          />
 
           <ActiveStatusSelect
             value={draftFilterActive ?? "all"}
@@ -325,6 +319,71 @@ export const InvoicesTab: FC<Props> = ({
             disabled={isBusy}
           />
         </Filter>
+        {/* Visible Invoices Summary Box */}
+        <Box
+          sx={(theme) => ({
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 2.5,
+            px: 2,
+            py: 0.85,
+            borderRadius: 2.5,
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? alpha(theme.palette.background.paper, 0.6)
+                : alpha(theme.palette.grey[100], 0.8),
+            border: `1px solid ${theme.palette.divider}`,
+            flexWrap: "wrap",
+            maxWidth: "100%",
+            ml: "auto",
+          })}
+          data-testid="invoices-visible-summary"
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+            <Typography sx={{ fontSize: "16px", color: "text.secondary" }}>
+              {t("business:invoices_visible_count_label")}:
+            </Typography>
+            <Typography
+              sx={{ fontSize: "16px", fontWeight: 700 }}
+              data-testid="invoices-visible-count"
+            >
+              {visibleInvoicesCount}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+            <Typography sx={{ fontSize: "16px", color: "text.secondary" }}>
+              {t("business:invoices_visible_total_label")}:
+            </Typography>
+            <Typography
+              sx={{ fontSize: "16px", fontWeight: 700, color: "primary.main" }}
+              data-testid="invoices-visible-total"
+            >
+              ${visibleTotalAmount.toLocaleString()}
+            </Typography>
+
+            <Tooltip
+              title={t("business:invoices_visible_info_tooltip")}
+              arrow
+              placement="top"
+            >
+              <Box
+                component="span"
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  cursor: "help",
+                  color: "text.secondary",
+                  "&:hover": { color: "primary.main" },
+                  transition: "color 0.15s ease",
+                }}
+                data-testid="invoices-visible-info-icon"
+              >
+                <InfoOutlinedIcon sx={{ fontSize: 20 }} />
+              </Box>
+            </Tooltip>
+          </Box>
+        </Box>
       </Box>
 
       {/* Active Filters Chips */}
@@ -407,88 +466,14 @@ export const InvoicesTab: FC<Props> = ({
           mb: 3,
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: 2,
-            flex: { xs: "1 1 100%", md: "1 1 auto" },
-          }}
-        >
-          <Box sx={{ width: { xs: "100%", sm: 300 } }}>
-            <InputSearch
-              value={search}
-              onChange={(val: string) => { setSearch(val); setPage(0); }}
-              placeholder={t("business:search_invoices_placeholder")}
-              fullWidth
+        <Box sx={{ width: { xs: "100%", sm: 300 } }}>
+          <InputSearch
+            value={search}
+            onChange={(val: string) => { setSearch(val); setPage(0); }}
+            placeholder={t("business:search_invoices_placeholder")}
+            fullWidth
             disabled={isBusy}
-            />
-          </Box>
-
-          {/* Visible Invoices Summary Box */}
-          <Box
-            sx={(theme) => ({
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 2.5,
-              px: 2,
-              py: 0.85,
-              borderRadius: 2.5,
-              backgroundColor:
-                theme.palette.mode === "dark"
-                  ? alpha(theme.palette.background.paper, 0.6)
-                  : alpha(theme.palette.grey[100], 0.8),
-              border: `1px solid ${theme.palette.divider}`,
-              flexWrap: "wrap",
-            })}
-            data-testid="invoices-visible-summary"
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-              <Typography sx={{ fontSize: "16px", color: "text.secondary" }}>
-                {t("business:invoices_visible_count_label")}:
-              </Typography>
-              <Typography
-                sx={{ fontSize: "16px", fontWeight: 700 }}
-                data-testid="invoices-visible-count"
-              >
-                {visibleInvoicesCount}
-              </Typography>
-            </Box>
-
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-              <Typography sx={{ fontSize: "16px", color: "text.secondary" }}>
-                {t("business:invoices_visible_total_label")}:
-              </Typography>
-              <Typography
-                sx={{ fontSize: "16px", fontWeight: 700, color: "primary.main" }}
-                data-testid="invoices-visible-total"
-              >
-                ${visibleTotalAmount.toLocaleString()}
-              </Typography>
-
-              <Tooltip
-                title={t("business:invoices_visible_info_tooltip")}
-                arrow
-                placement="top"
-              >
-                <Box
-                  component="span"
-                  sx={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    cursor: "help",
-                    color: "text.secondary",
-                    "&:hover": { color: "primary.main" },
-                    transition: "color 0.15s ease",
-                  }}
-                  data-testid="invoices-visible-info-icon"
-                >
-                  <InfoOutlinedIcon sx={{ fontSize: 20 }} />
-                </Box>
-              </Tooltip>
-            </Box>
-          </Box>
+          />
         </Box>
 
         <Button

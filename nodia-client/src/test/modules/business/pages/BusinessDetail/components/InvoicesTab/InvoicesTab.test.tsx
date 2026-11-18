@@ -224,7 +224,7 @@ describe("InvoicesTab Component", () => {
     await user.click(categoryButton);
     expect(screen.getAllByRole("dialog")).toHaveLength(1);
     await user.type(screen.getByRole("textbox", { name: `${i18n.t("business:cash.category_name")}*` }), createdCategory.name);
-    await user.type(screen.getByRole("textbox", { name: `${i18n.t("business:description_label")}*` }), createdCategory.description);
+    await user.type(screen.getByRole("textbox", { name: i18n.t("business:description_label") }), createdCategory.description);
     await user.click(screen.getByRole("button", { name: i18n.t("core:save") }));
 
     const picker = await screen.findByRole("button", { name: i18n.t("business:cash.expense_category") });

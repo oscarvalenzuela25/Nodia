@@ -17,6 +17,7 @@ describe("cash fields", () => {
     expect(fields.is_active).toBe(false);
     expect(categoryFields.safeParse({ ...fields, name: "💵".repeat(121) }).success).toBe(false);
     expect(categoryFields.safeParse({ ...fields, description: "Nota\u0000" }).success).toBe(false);
+    expect(categoryFields.parse({ ...fields, description: "  " }).description).toBe("");
   });
 
   it("preserves exact CLP strings and rejects noncanonical amounts and invalid civil dates", () => {
@@ -28,6 +29,7 @@ describe("cash fields", () => {
       is_active: true,
     };
     expect(movementFields.parse(fields)).toEqual(fields);
+    expect(movementFields.parse({ ...fields, description: "" }).description).toBe("");
     for (const amount of ["0", "1.2", "1e3", "01", "10000000000000"])
       expect(movementFields.safeParse({ ...fields, amount }).success).toBe(false);
     expect(

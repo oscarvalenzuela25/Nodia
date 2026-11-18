@@ -1,5 +1,11 @@
 # Contexto funcional de productos para NodiaAI
 
+Los comentarios sobre Market y Caja actualizan el índice de
+[Negocios](businesses/README.md), la ficha de
+[Listas](businesses/features/market-shopping-lists.md) y la de
+[Caja](businesses/features/cash-ledger-and-invoice-expenses.md). Los
+cambios corresponden a navegación, presentación y guardado nativo de Caja.
+
 ## Verificación de Caja — CASH-07, 2026-11-17
 
 [Plan109 §16](../../mvp/109-business-cash-ledger-plan.md#16-verificación-de-entrega--cash-07-2026-11-17),

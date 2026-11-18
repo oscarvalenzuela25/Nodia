@@ -4,7 +4,7 @@
   "document_id": "businesses",
   "product_id": "businesses",
   "kind": "product",
-  "revision": 67,
+  "revision": 68,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -312,6 +312,12 @@
 
 Las rutas de `ops/lab/artifacts/` citadas debajo identifican originales locales ignorados por Git; no se distribuyen con un checkout ni con el paquete productivo. Se conservan sus nombres, hechos y fuentes portables ya enlazadas, sin copiar originales, alterar evidencias o ampliar aprobación/publicación. Esta revisión sólo corrige su presentación documental y sigue draft/unregistered, con approval:null.
 # Negocios — contexto de producto para NodiaAI
+
+Market agrupa **Proveedores**, **Productos**, **Facturas** y **Listas**.
+En Caja, las descripciones de categorías y movimientos manuales son
+opcionales. Los formularios comprueban automáticamente el resultado del
+guardado cuando hay incertidumbre. Ver [Market](../../../mvp/110-market-shopping-lists-plan.md#9-ajustes-visuales-de-market--2026-11-18)
+y [Caja](../../../mvp/109-business-cash-ledger-plan.md#17-ajustes-de-caja-a-partir-de-la-revisión-visual--2026-11-18).
 
 ## Estado de IA y modelos OCR desde Negocios — 2026-11-17
 

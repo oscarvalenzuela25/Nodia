@@ -150,7 +150,8 @@ export const MarketTabs = styled(StyledTabs)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     "& .MuiTab-root": {
       width: "auto",
-      flex: "1 1 auto",
+      flex: "0 0 auto",
+      paddingInline: theme.spacing(1.5),
       justifyContent: "center",
     },
   },

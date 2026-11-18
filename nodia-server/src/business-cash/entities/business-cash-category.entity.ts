@@ -31,7 +31,7 @@ import { User } from '../../user/entities/user.entity.js';
 )
 @Check(
   'ck_business_cash_categories_description',
-  'char_length(btrim(description)) > 0',
+  "description = '' OR char_length(btrim(description)) > 0",
 )
 @Check('ck_business_cash_categories_version', 'version > 0')
 export class BusinessCashCategory {

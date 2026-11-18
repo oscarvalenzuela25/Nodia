@@ -46,7 +46,7 @@ describe('Cash category commands', () => {
     { name: '\u0085 \uFEFF' },
     { name: 'nombre\u0000' },
     { name: '\uD800' },
-    { description: '\uFEFF\u0085' },
+    { description: null },
     { description: 'x'.repeat(501) },
     { is_active: 'false' },
     { is_active: null },
@@ -69,6 +69,20 @@ describe('Cash category commands', () => {
       expected_version: 7,
       is_active: false,
     });
+  });
+
+  it('uses the same empty description for omitted and blank creates and clears on explicit update', () => {
+    const { description: _description, ...withoutDescription } = creation;
+    expect(normalizeCashCategoryCreate(withoutDescription)).toEqual(
+      normalizeCashCategoryCreate({ ...creation, description: '\uFEFF\u0085' }),
+    );
+    expect(
+      normalizeCashCategoryUpdate({
+        request_key: creation.request_key,
+        expected_version: 7,
+        description: '',
+      }).description,
+    ).toBe('');
   });
 
   it.each([

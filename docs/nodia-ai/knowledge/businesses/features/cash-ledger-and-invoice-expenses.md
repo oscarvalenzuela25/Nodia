@@ -4,7 +4,7 @@
   "document_id": "businesses.cash-ledger-and-invoice-expenses",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 9,
+  "revision": 10,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -55,6 +55,10 @@
     },
     {
       "path": "nodia-server/src/migrations/1793720000000-LinkInvoiceUploadsToCashAttempts.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/migrations/1793740000000-AllowOptionalBusinessCashDescriptions.ts",
       "kind": "implementation"
     },
     {
@@ -142,8 +146,8 @@ Confirmado por la solicitud:
 
 - Cada movimiento pertenece a un negocio y tiene una categoría obligatoria.
   Las categorías son identificaciones comunes para ingresos y egresos, sin
-  clasificación fija por tipo. Se administran en un Drawer con nombre y descripción
-  obligatorios.
+  clasificación fija por tipo. Se administran en un Drawer con nombre
+  obligatorio y descripción opcional.
 - Filtro de categoría, rango de fechas y actividad; al abrir, día actual y activos.
   Dos paneles muestran cantidad y total de ingresos/egresos del conjunto filtrado.
   La tabla tiene búsqueda, acciones de editar y activar/desactivar, y fondo
@@ -189,7 +193,7 @@ con regla española determinista, conservando acentos. Ver plan109 §6.1.
 | Operación semántica | Clase/efecto propuesto | Herramienta y estado real | Contrato | Resultado esperado de implementación |
 |---|---|---|---|---|
 | Listar movimientos y resumir filtros | Lectura paginada y agregada | Ninguna herramienta Caja registrada | GET y DTO Ransack implementados localmente en CASH-03 | data/meta/summary juntos desde una sentencia para la selección completa |
-| Administrar categorías | Escritura manual por negocio | No disponible en NodiaAI | HTTP nativo y Drawer de Caja con alta rápida en formularios de movimiento | Nombre y descripción, revisión al editar y duplicados rechazados incluso bajo concurrencia |
+| Administrar categorías | Escritura manual por negocio | No disponible en NodiaAI | HTTP nativo y Drawer de Caja con alta rápida en formularios de movimiento | Nombre obligatorio, descripción opcional, revisión al editar y duplicados rechazados incluso bajo concurrencia |
 | Crear/editar/activar/desactivar movimiento | Escritura manual | No disponible en NodiaAI | HTTP nativo con revisión y recibo implementado en CASH-03 | Movimiento con categoría obligatoria, importe válido e identidad estable |
 | Vincular/retirar/restaurar egreso de factura | Escritura dependiente | Ninguna ampliación publicada de Facturas | HTTP nativo identificado en CASH-04, plan109 §13 | Primera asignación crea uno; recategorizar conserva ID; null retira; reasignar restaura el mismo |
 | Confirmar revisión OCR de Facturas | Escritura compuesta | No disponible en NodiaAI | POST nativo identificado y multipart en CASH-04 | Factura, productos, logs, egreso opcional y recibo en un commit |
@@ -205,11 +209,11 @@ se intenta cambiar su importe o fecha desde esas rutas.
 | Dato/concepto | Carácter propuesto | Fuente y significado | Resolución |
 |---|---|---|---|
 | Negocio | Obligatorio | Ámbito nativo del recurso, conforme89 | Autoridad actual del actor; no aceptar IDs cruzados |
-| Categoría | Obligatoria en movimiento; opcional en factura | Categoría propia del negocio, común a ambos tipos; nombre y descripción obligatorios | Elegir categoría activa; limpiar movimiento deja campo requerido inválido hasta seleccionar; factura sin categoría no genera egreso o retira el existente al guardar |
+| Categoría | Obligatoria en movimiento; opcional en factura | Categoría propia del negocio, común a ambos tipos; el nombre es obligatorio | Elegir categoría activa; limpiar movimiento deja campo requerido inválido hasta seleccionar; factura sin categoría no genera egreso o retira el existente al guardar |
 | Tipo | Obligatorio en movimiento manual | Ingreso o egreso | Factura vinculada siempre egreso; una categoría no determina el tipo |
 | Importe | CLP entero positivo, como decimal canónico | Valor registrado o total de factura | Total cero impide un egreso vigente |
 | Fecha | Fecha civil | Movimiento manual o emisión de factura vinculada | Rango inclusivo en Santiago; usar fecha de emisión confirmada |
-| Descripción | Obligatoria en categoría y movimiento manual | Texto registral. Egreso vinculado presenta referencia de factura | Límites en plan109 §3 |
+| Descripción | Opcional en categoría y movimiento manual | Texto registral. Egreso vinculado presenta referencia de factura | Hasta 500 puntos de código. Omitir en edición conserva el texto; guardar vacío lo limpia |
 | Actividad | Activo/inactivo | Estado del movimiento separado del tipo | Actividad del egreso se cambia de forma independiente |
 | Retiro del vínculo | Efecto explícito de null al guardar factura | Retiro lógico auditado | Excluido de lista/resumen incluso con Todos. Recupera el mismo ID al restaurar |
 | Identidad de origen | Administrada por Server | Factura origen y egreso único | Folio opcional no identifica ni deduplica la factura |
@@ -308,6 +312,10 @@ Error conserva formulario y borrador, notifica por Sileo y permite recuperación
 sin replay ciego ante resultado incierto. Desactivar/reactivar exige confirmación
 y no cambia tipo ni origen. Concurrencia, idempotencia y resultado recuperable
 deben probarse en DB antes de declarar el flujo listo.
+
+En el CRUD de Caja, una respuesta incierta se comprueba automáticamente
+mediante una lectura del recibo. Guardar de nuevo conserva la identidad de
+la misma intención. Ver [plan109 §17](../../../../mvp/109-business-cash-ledger-plan.md#17-ajustes-de-caja-a-partir-de-la-revisión-visual--2026-11-18).
 
 ## Integración y evidencia
 

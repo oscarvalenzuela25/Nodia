@@ -84,6 +84,27 @@ export const DrawerBody = styled("div")(({ theme }) => ({
   [theme.breakpoints.down("sm")]: { padding: theme.spacing(2) },
 }));
 
+export const CategoryRowHeader = styled(Box)(({ theme }) => ({
+  display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr) auto",
+  alignItems: "center",
+  gap: theme.spacing(1),
+}));
+
+export const CategoryRowTitle = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  minWidth: 0,
+  gap: theme.spacing(1),
+}));
+
+export const CategoryRowActions = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: theme.spacing(0.5),
+  "& .MuiIconButton-root": { width: 44, height: 44 },
+}));
+
 export const DrawerFooter = styled("footer")(({ theme }) => ({
   flexShrink: 0,
   display: "flex",
