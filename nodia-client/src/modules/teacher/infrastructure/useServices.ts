@@ -6,12 +6,13 @@ import { sileo } from "sileo";
 import useAuthStore, { hasActiveSession } from "../../../store/authStore";
 import { notifyHttpError } from "../../../config/httpFeedback";
 import i18n from "../../../translate";
-import { readTeacher, readTeacherData, readTeacherReceipt, sendTeacher, type TeacherCommand } from "./services";
-import { attemptSchema, jobSchema, materialSchema, messagesSchema, planSchema, questionSchema, sessionSchema, sessionsSchema } from "./schemas";
+import { closeTeacherRequest, readTeacher, readTeacherData, readTeacherReceipt, sendTeacher, type TeacherCommand } from "./services";
+import { attemptSchema, jobSchema, materialSchema, messagesSchema, planSchema, questionSchema, sessionSchema, sessionsSchema, type CommandResult } from "./schemas";
 import { canPollJob } from "./presentation";
 import { forgetRequest, pendingRequest, rememberRequest } from "./recovery";
 import { refreshTeacherQueries } from "./refresh";
 import { sessionListPollInterval } from "./sessionList";
+import { validateClarificationReceipt } from "./clarificationReceipt";
 
 export function useTeacherQuery<T>(path: string, schema: z.ZodType<T>, params?: Record<string, unknown>, enabled = true,
   observationOptions?: { staleTime: number; refetchOnWindowFocus: false; refetchOnReconnect: false }) {
@@ -76,7 +77,10 @@ export function useTeacherCommand() {
   const inFlight = useRef(false);
   const [uncertainState, setUncertain] = useState<{actor:string;command:TeacherCommand} | null>(() => { const command = pendingRequest(actorKey); return command ? { actor: actorKey, command } : null; });
   const uncertain = uncertainState?.actor === actorKey ? uncertainState.command : null;
+  const [missingReceiptKey, setMissingReceiptKey] = useState<string | null>(null);
+  const receiptMissing = uncertain !== null && uncertain.requestKey === missingReceiptKey;
   const [recovering, setRecovering] = useState(false);
+  const [lastReconciled, setLastReconciled] = useState<{ actor: string; command: TeacherCommand; result: CommandResult } | null>(null);
   const [executing, setExecuting] = useState(false);
   const isCurrentActor = (actor: string) => { const state = useAuthStore.getState(); return `${state.user?.id}:${state.sessionVersion}` === actor; };
   const mutation = useMutation({ mutationFn: sendTeacher, retry: false });
@@ -90,9 +94,9 @@ export function useTeacherCommand() {
     setExecuting(true);
     rememberRequest(actor, command);
     try {
-      const result = await mutation.mutateAsync(command);
+      const result = validateClarificationReceipt(command, await mutation.mutateAsync(command));
       if (!isCurrentActor(actor)) return null;
-      forgetRequest();
+      forgetRequest(actor, command.requestKey);
       sileo.success({ title: i18n.t("teacher:operation_saved") });
       await refresh(command.path);
       return result;
@@ -100,30 +104,58 @@ export function useTeacherCommand() {
       if (!isCurrentActor(actor)) return null;
       // Validation/parser errors after a response also require the original receipt.
       if (!isAxiosError(error) || !error.response || [408, 500, 502, 504].includes(error.response.status)) setUncertain({ actor, command });
-      else forgetRequest();
+      else forgetRequest(actor, command.requestKey);
       notifyHttpError(error);
       if (isAxiosError(error) && error.response?.status === 409) await refresh(command.path);
       return null;
     } finally { inFlight.current = false; if (isCurrentActor(actor)) setExecuting(false); }
   };
-  const reconcile = async () => {
-    if (!uncertain || recovering) return null;
+  const reconcile = async (closeMissing = false) => {
+    if (!uncertain || inFlight.current || !hasActiveSession(useAuthStore.getState()) || (closeMissing && !receiptMissing)) return null;
     const actor = actorKey;
+    inFlight.current = true;
     setRecovering(true);
+    const clearPending = () => {
+      forgetRequest(actor, uncertain.requestKey);
+      setUncertain(null);
+      setMissingReceiptKey(null);
+    };
     try {
-      const receipt = await readTeacherReceipt(uncertain.requestKey);
-      const result = receipt.receipt;
+      const outcome = closeMissing
+        ? await closeTeacherRequest(uncertain.requestKey)
+        : { status: "saved" as const, request: await readTeacherReceipt(uncertain.requestKey) };
       if (!isCurrentActor(actor)) return null;
-      if (result) {
-        setUncertain(null);
-        forgetRequest();
-        sileo.success({ title: i18n.t("teacher:operation_recovered") });
-        await refresh(uncertain.path);
-        return result;
+      if (outcome.status === "closed") {
+        clearPending();
+        sileo.success({ title: i18n.t("teacher:request_closed") });
+        return null;
       }
+      const result = validateClarificationReceipt(uncertain, outcome.request.receipt);
+      clearPending();
+      sileo.success({ title: i18n.t("teacher:operation_recovered") });
+      await refresh(uncertain.path);
+      if (!isCurrentActor(actor)) return null;
+      setLastReconciled({ actor, command: uncertain, result });
+      return result;
+    } catch (error) {
+      if (!isCurrentActor(actor)) return null;
+      if (isAxiosError<{ code?: string }>(error)) {
+        const { status, data } = error.response ?? {};
+        if (!closeMissing && status === 404 && data?.code === "not_found") {
+          setMissingReceiptKey(uncertain.requestKey);
+          sileo.error({ title: i18n.t("teacher:receipt_missing") });
+          return null;
+        }
+        if (!closeMissing && status === 410 && data?.code === "request_closed") {
+          clearPending();
+          sileo.success({ title: i18n.t("teacher:request_closed") });
+          return null;
+        }
+      }
+      notifyHttpError(error);
       return null;
-    } catch (error) { notifyHttpError(error); return null; }
-    finally { if (isCurrentActor(actor)) setRecovering(false); }
+    } finally { inFlight.current = false; if (isCurrentActor(actor)) setRecovering(false); }
   };
-  return { execute, reconcile, refresh, uncertain, isPending: executing || mutation.isPending || recovering, blocked: !sessionActive || Boolean(uncertain) || executing || mutation.isPending || recovering };
+  return { execute, reconcile, refresh, uncertain, receiptMissing, lastReconciled: lastReconciled?.actor === actorKey ? lastReconciled : null,
+    isPending: executing || mutation.isPending || recovering, blocked: !sessionActive || Boolean(uncertain) || executing || mutation.isPending || recovering };
 }

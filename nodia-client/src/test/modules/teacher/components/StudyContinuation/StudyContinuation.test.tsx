@@ -1,11 +1,17 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
-import StudyContinuation from "../../../../../modules/teacher/components/StudyContinuation";
-import type { StudyContinuationContext } from "../../../../../modules/teacher/infrastructure/studyContinuation";
+import StudyContinuationPanel from "../../../../../modules/teacher/components/StudyContinuation";
+import { studyContinuation, type StudyContinuationContext } from "../../../../../modules/teacher/infrastructure/studyContinuation";
 import { planFixture } from "../../fixtures";
 
 vi.mock("react-i18next", () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+
+function StudyContinuation(props: StudyContinuationContext & Omit<ComponentProps<typeof StudyContinuationPanel>, "view">) {
+  return <StudyContinuationPanel {...props} view={studyContinuation(props)} />;
+}
+
 const props = (patch: Partial<StudyContinuationContext> = {}) => ({
   plan: planFixture,
   cursor: { revision: 0, phase: "setup" as const, plan_revision_id: planFixture.id, section_id: null,
@@ -58,6 +64,30 @@ describe("Teacher study continuation actions", () => {
     const actions = props({ selectedUnitId: "u1", material: { kind: "availability", state: "unknown", job_id: "fixture-job" } }); render(<StudyContinuation {...actions} />);
     await userEvent.click(screen.getByRole("button", { name: "teacher:continuation.actions.job" }));
     expect(actions.onInspectJob).toHaveBeenCalledExactlyOnceWith("fixture-job"); expect(actions.onPrepare).not.toHaveBeenCalled();
+  });
+  it("keeps progress in the lesson card during polling and offers a read retry only if the status read fails", async () => {
+    const actions = props({ selectedUnitId: "u1", material: { kind: "availability", state: "preparing", job_id: "fixture-job" } });
+    const onRetry = vi.fn();
+    const { rerender } = render(<StudyContinuation {...actions} preparationState="queued" />);
+    expect(screen.getByRole("heading", { name: "teacher:continuation.preparing_lesson" })).toBeVisible();
+    expect(screen.getByRole("status")).toHaveTextContent("teacher:jobs.queued");
+    expect(screen.getByText("DNS")).toBeVisible();
+    const progress = screen.getByRole("progressbar", { name: "teacher:preparation_progress" });
+    expect(progress).not.toHaveAttribute("aria-valuenow");
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+
+    rerender(<StudyContinuation {...actions} preparationState="running" jobReadError={{ busy: false, onRetry }} />);
+    expect(screen.getByRole("progressbar")).toBe(progress);
+    expect(screen.getByRole("status")).toHaveTextContent("teacher:jobs.running");
+    expect(screen.getByText("teacher:job_last_known_state")).toBeVisible();
+    await userEvent.click(screen.getByRole("button", { name: "core:retry" }));
+    expect(onRetry).toHaveBeenCalledOnce();
+    expect(actions.onInspectJob).not.toHaveBeenCalled();
+    expect(actions.onPrepare).not.toHaveBeenCalled();
+
+    rerender(<StudyContinuation {...actions} />);
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "teacher:continuation.actions.job" })).toBeVisible();
   });
   it.each(["unknown", "preparing"] as const)("refreshes %s availability explicitly without generating", async state => {
     const actions = props({ selectedUnitId: "u1", material: { kind: "availability", state, job_id: null } });

@@ -3,17 +3,28 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useTeacherCommand } from "../../../../modules/teacher/infrastructure/useServices";
+import { pendingRequest, rememberRequest } from "../../../../modules/teacher/infrastructure/recovery";
 
 const stub = vi.hoisted(() => ({
-  actor: { user: { id: "1" }, sessionVersion: 1, active: true }, send: vi.fn(), refresh: vi.fn(),
+  actor: { user: { id: "1" }, sessionVersion: 1, active: true }, send: vi.fn(), refresh: vi.fn(), receipt: vi.fn(), close: vi.fn(),
 }));
 vi.mock("../../../../store/authStore", () => ({ default: Object.assign(<T,>(selector: (state: typeof stub.actor) => T) => selector(stub.actor), { getState: () => stub.actor }), hasActiveSession: (state: typeof stub.actor) => state.active }));
-vi.mock("../../../../modules/teacher/infrastructure/services", () => ({ sendTeacher: stub.send, readTeacher: vi.fn(), readTeacherData: vi.fn(), readTeacherReceipt: vi.fn() }));
+vi.mock("../../../../modules/teacher/infrastructure/services", () => ({ sendTeacher: stub.send, readTeacher: vi.fn(), readTeacherData: vi.fn(), readTeacherReceipt: stub.receipt, closeTeacherRequest: stub.close }));
 vi.mock("../../../../modules/teacher/infrastructure/refresh", () => ({ refreshTeacherQueries: stub.refresh }));
-vi.mock("sileo", () => ({ sileo: { success: vi.fn() } }));
+vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 vi.mock("../../../../config/httpFeedback", () => ({ notifyHttpError: vi.fn() }));
 
-beforeEach(() => { stub.actor.active = true; stub.send.mockReset(); stub.refresh.mockReset(); window.sessionStorage.clear(); });
+beforeEach(() => {
+  stub.actor.active = true;
+  stub.send.mockReset();
+  stub.refresh.mockReset();
+  stub.receipt.mockReset();
+  stub.close.mockReset();
+  window.sessionStorage.clear();
+});
+const key = "11111111-1111-4111-8111-111111111111";
+const responseError = (status: number, code?: string) => ({ isAxiosError: true, response: { status, data: { code } } });
+const restorePending = () => rememberRequest("1:1", { requestKey: key, method: "POST", path: "sessions", body: {} });
 function wrapper({ children }: PropsWithChildren) {
   return <QueryClientProvider client={new QueryClient({ defaultOptions: { mutations: { retry: false } } })}>{children}</QueryClientProvider>;
 }
@@ -57,5 +68,48 @@ describe("Teacher mutation lifecycle", () => {
     expect(result.current.isPending).toBe(false); expect(result.current.blocked).toBe(true);
     expect(result.current.uncertain?.path).toBe("sessions/fixture-session/setup-draft");
     expect(stub.send).toHaveBeenCalledOnce(); expect(stub.refresh).not.toHaveBeenCalled();
+  });
+  it("keeps the key blocked on 404 and releases it only after the server closes the request", async () => {
+    restorePending();
+    stub.receipt.mockRejectedValue(responseError(404, "not_found"));
+    stub.close.mockRejectedValueOnce(responseError(503)).mockResolvedValueOnce({ status: "closed", request_key: key });
+    const { result } = renderHook(() => useTeacherCommand(), { wrapper });
+    await act(async () => { await result.current.reconcile(); });
+    expect(result.current.receiptMissing).toBe(true);
+    expect(result.current.blocked).toBe(true);
+    expect(pendingRequest("1:1")?.requestKey).toBe(key);
+    expect(stub.close).not.toHaveBeenCalled();
+    await act(async () => { await result.current.reconcile(true); });
+    expect(result.current.blocked).toBe(true);
+    await act(async () => { await result.current.reconcile(true); });
+    expect(stub.close).toHaveBeenLastCalledWith(key);
+    expect(stub.send).not.toHaveBeenCalled();
+    expect(result.current.blocked).toBe(false);
+    expect(pendingRequest("1:1")).toBeNull();
+  });
+  it("recovers the original result if it committed between the 404 and closing", async () => {
+    restorePending();
+    stub.receipt.mockRejectedValue(responseError(404, "not_found"));
+    const saved = { session_id: "fixture-session", revision: 1 };
+    stub.close.mockResolvedValue({ status: "saved", request: { receipt: saved } });
+    const { result } = renderHook(() => useTeacherCommand(), { wrapper });
+    await act(async () => { await result.current.reconcile(); });
+    await act(async () => { expect(await result.current.reconcile(true)).toEqual(saved); });
+    expect(result.current.lastReconciled?.result).toEqual(saved);
+    expect(stub.refresh).toHaveBeenCalledWith(expect.any(QueryClient), ["teacher", "1", 1], "sessions");
+    expect(stub.send).not.toHaveBeenCalled();
+    expect(pendingRequest("1:1")).toBeNull();
+  });
+  it("recovers a previously closed key after reload only from the explicit terminal code", async () => {
+    restorePending();
+    stub.receipt.mockRejectedValueOnce(responseError(410)).mockRejectedValueOnce(responseError(410, "request_closed"));
+    const { result } = renderHook(() => useTeacherCommand(), { wrapper });
+    await act(async () => { await result.current.reconcile(); });
+    expect(result.current.blocked).toBe(true);
+    await act(async () => { await result.current.reconcile(); });
+    expect(result.current.blocked).toBe(false);
+    expect(stub.send).not.toHaveBeenCalled();
+    expect(stub.close).not.toHaveBeenCalled();
+    expect(pendingRequest("1:1")).toBeNull();
   });
 });

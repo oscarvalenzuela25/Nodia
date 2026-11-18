@@ -1,6 +1,6 @@
 # TODO — núcleo de iniciativas y próximas entregas
 
-> Revisado el 2026-11-17. Creado por solicitud explícita para reunir ideas y
+> Revisado el 2026-11-18. Creado por solicitud explícita para reunir ideas y
 > especificaciones que se implementarán después. No hay prioridad nueva entre
 > iniciativas, fechas comprometidas ni autorización de despliegue por este índice.
 
@@ -35,6 +35,7 @@ validación pendiente`, `en implementación`, `bloqueado` (dependencia concreta)
 | ID / iniciativa | Estado comprobado por alcance | Documento para retomar | Primera acción pendiente y dependencia |
 | --- | --- | --- | --- |
 | **CASH-001 — Caja de Negocios** | CASH-01 documental, CASH-02…06 implementados y QA de CASH-07 en `codex/business-cash-ledger`. El commit de entrega tiene su propia comprobación CI | [Plan109 §16](109-business-cash-ledger-plan.md#16-verificación-de-entrega--cash-07-2026-11-17), [ADR106 propuesto](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md), [ficha candidata](../nodia-ai/knowledge/businesses/features/cash-ledger-and-invoice-expenses.md) | Adopción y verificación operativa por entorno, con pedido propio |
+| **LISTA-001 — Listas de Market** | Especificado. Maqueta aceptada y marcas del checklist compartidas por negocio confirmadas. Implementación pendiente | [Plan110 §7](110-market-shopping-lists-plan.md#7-fases-y-primer-pendiente), [ADR108 propuesto](../architecture/decisions/ADR-108-business-shopping-list-shared-checklist.md), [ficha candidata](../nodia-ai/knowledge/businesses/features/market-shopping-lists.md) | LISTA-01. Cerrar cantidades y contratos con el catálogo de Productos y preparar modelo y autoridad en PostgreSQL aislado. |
 | **PWA-002 — caché y actualización** | Especificado, sin implementación acreditada | [Plan103](103-pwa-progressive-implementation-plan.md) §4 | Retomar contrato de actualización/caché estática y preservar borradores; depende de base001 y compatibilidad de artefactos |
 | **PWA-003 — desconexión** | Especificado | [Plan103](103-pwa-progressive-implementation-plan.md) §5 | Diseñar estado offline/recuperación;002 para arranque sin red. No promete datos offline |
 | **PWA-004 — push** | Especificado; eventos sin concretar | [Plan103](103-pwa-progressive-implementation-plan.md) §6 | Elegir eventos/destinatarios/consentimiento y contrato de suscripción. No requiere escrituras offline |

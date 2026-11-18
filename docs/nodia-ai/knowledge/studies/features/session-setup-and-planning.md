@@ -418,6 +418,11 @@ Guardar borrador usa `start_plan:false` y no exige IA lista; crear propuesta usa
 El guard de salida SPA/recarga permite seguir editando; guardar antes de salir
 sólo continúa tras acuse Server. El alta incompleta permanece local y la
 recuperación del comando incierto mantiene el recibo existente, sin replay.
+Cuando Consultar guardado no encuentra el recibo, se pueden seguir abriendo
+planes desde el listado. El cierre explícito recupera el recibo si se guardó
+mientras se consultaba, o confirma que la clave anterior quedó cerrada.
+Tras el cierre se conserva el formulario para una nueva acción explícita.
+Ver el [contrato de Teacher](../../../../mvp/97-nodia-teacher-technical-contracts.md).
 
 Evaluación de impacto: cambia la presentación y la guía de creación, por lo que
 se actualiza este contexto. Conserva operaciones, mínimos, autoridad por destino,

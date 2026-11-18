@@ -104,6 +104,10 @@
   "operation_recovered": "Guardado recuperado",
   "recover_request": "Consultar guardado",
   "uncertain_request": "La respuesta no confirmó el resultado. Conservamos la intención original; consulta su recibo sin volver a enviarla.",
+  "receipt_missing": "Todavía no encontramos un recibo para esta solicitud.",
+  "receipt_missing_notice": "Puedes consultar de nuevo o pedir que se cierre la solicitud. Si ya se guardó, Teacher recuperará el resultado.",
+  "close_missing_request": "Cerrar solicitud pendiente",
+  "request_closed": "Solicitud cerrada. Ya puedes continuar.",
   "review_plan": "Revisar el plan",
   "revision": "Revisión {{revision}}",
   "review_description": "Revisa objetivos, unidades y organización. Los cambios manuales no consumen una inferencia.",
@@ -182,7 +186,7 @@
   "choose_unit": "Elige una unidad para estudiar o una sección para evaluar directamente. El material se prepara por tu solicitud.",
   "first_unit": "Ver primera unidad",
   "theory": "Teoría y práctica guiada",
-  "save_reading_point": "Guardar este punto de lectura",
+  "save_reading_point": "Guardar punto de lectura",
   "start_practice": "Comenzar quiz de práctica",
   "material_not_ready": "Material de la unidad",
   "material": {
@@ -678,8 +682,20 @@
   "job_proposal_review_help": "La propuesta está lista para revisar. No se usará como plan hasta que la aceptes.",
   "diagnostic_optional_notice": "El diagnóstico es opcional. Si no hay un banco revisado disponible, puedes continuar con tu base declarada y crear la propuesta.",
   "resume_diagnostic": "Retomar diagnóstico",
+  "topic": {
+    "clarify": "Aclarar fragmento",
+    "select_fragment": "Selecciona una frase exacta de este tópico y pulsa Aclarar fragmento para preguntar sobre ella.",
+    "question": "Tu pregunta",
+    "question_example": "¿Podrías explicar este fragmento con un ejemplo?",
+    "generation_notice": "Enviar una pregunta reserva una generación.",
+    "history": "Conversaciones guardadas",
+    "history_empty": "Todavía no hay conversaciones guardadas sobre este tópico.",
+    "history_page_empty": "Esta página no contiene conversaciones de este tópico.",
+    "reading_point_saved": "Punto guardado"
+  },
   "continuation": {
     "eyebrow": "Tu siguiente paso",
+    "preparing_lesson": "Preparando lección",
     "preparation_unavailable": "La preparación no está habilitada en el estado actual de esta sesión.",
     "titles": {
       "first": "Tu plan está listo",

@@ -14,11 +14,14 @@ const load = (name) => import(pathToFileURL(resolve(root, 'dist', `${name}.js`))
 const { CreateTeacherDomain1793570000000 } = await load('migrations/1793570000000-CreateTeacherDomain');
 const { PreserveTeacherArchivedPauseState1793590000000 } = await load('migrations/1793590000000-PreserveTeacherArchivedPauseState');
 const { PersistTeacherSetupDraft1793610000000 } = await load('migrations/1793610000000-PersistTeacherSetupDraft');
+const { TeacherLearningEvidence1793630000000 } = await load('migrations/1793630000000-TeacherLearningEvidence');
+const { TeacherLearningEnrichment1793640000000 } = await load('migrations/1793640000000-TeacherLearningEnrichment');
 const { TeacherService } = await load('teacher/teacher.service');
 const { CheckModuleAccessUseCase } = await load('authorization/use-case/check-module-access.use-case');
 const { ExecuteTeacherCommandUseCase } = await load('teacher/use-case/execute-teacher-command.use-case');
 const { ReadTeacherUseCase } = await load('teacher/use-case/read-teacher.use-case');
 const { PublishTeacherUseCase } = await load('teacher/use-case/publish-teacher.use-case');
+const { TeacherEnrichmentUseCase } = await load('teacher/use-case/teacher-enrichment.use-case');
 const { defaultPolicy } = await load('teacher/policies/teacher-validation');
 
 const container = `teacher_setup_${process.pid}_${randomBytes(4).toString('hex')}`;
@@ -32,10 +35,12 @@ const checks = [];
 const check = async (name, work) => { await work(); checks.push(name); };
 let db, started = false;
 let verifyFailure = false, verificationCalls = 0, generationCalls = 0;
+let beforeVerification;
 const port = {
   async verifySelection() {
     verificationCalls++;
     if (verifyFailure) throw Error('synthetic_unqualified');
+    await beforeVerification?.();
     return { configuration_generation: 'synthetic-config', session_generation: null };
   },
   async run() { generationCalls++; throw Error('generation_forbidden_in_test'); },
@@ -75,6 +80,8 @@ INSERT INTO user_modules(user_id,module_id) VALUES(${actor.userId},1),(2,1);`);
     assert.deepEqual(row, { setup_draft_text: '', setup_draft_revision: 0, revision: 1, dispatches_used: 0 });
     await migration.down(runner); await migration.up(runner);
   });
+  await new TeacherLearningEvidence1793630000000().up(runner);
+  await new TeacherLearningEnrichment1793640000000().up(runner);
   await runner.release();
   const store = new TeacherService(db, new CheckModuleAccessUseCase(db));
   const command = new ExecuteTeacherCommandUseCase(store, port), read = new ReadTeacherUseCase(store, port);
@@ -120,6 +127,66 @@ INSERT INTO user_modules(user_id,module_id) VALUES(${actor.userId},1),(2,1);`);
     before = await counts();
     await assert.rejects(perform('create', null, { ...create, start_plan: true, selection: selected }), rejectCode('capacity_unavailable', 429)); assert.deepEqual(await counts(), before);
     await db.query("UPDATE teacher_generation_jobs SET state='cancelled_before_dispatch',blocks_duplicate=false WHERE dispatches_used=0");
+  });
+  await check('closing an absent receipt fences the delayed command, including enrichment, for this actor only', async () => {
+    const key = randomUUID();
+    const closed = { status: 'closed', request_key: key };
+    const before = await counts();
+    const verifications = verificationCalls;
+    await assert.rejects(read.receipt(actor, key), rejectCode('not_found', 404));
+    assert.deepEqual(await Promise.all([
+      command.closeRequest(actor, key.toUpperCase()),
+      command.closeRequest(actor, key),
+    ]), [closed, closed]);
+    await assert.rejects(read.receipt(actor, key), rejectCode('request_closed', 410));
+    await assert.rejects(perform('create', null, { ...create, start_plan: true, selection: selected }, key), rejectCode('request_closed', 410));
+    await assert.rejects(
+      new TeacherEnrichmentUseCase(store, port).execute(actor, session.session_id, key, {
+        operation: 'source_create', expected_revision: 1, payload: {},
+      }),
+      rejectCode('request_closed', 410),
+    );
+    assert.deepEqual(await counts(), { ...before, requests: before.requests + 1 });
+    assert.equal(verificationCalls, verifications);
+    await assert.rejects(read.receipt(other, key), rejectCode('not_found', 404));
+    assert.ok((await perform('create', null, create, key, other)).session_id);
+    assert.deepEqual(await command.closeRequest(actor, key), closed);
+  });
+  await check('close waits for a command that won the actor-key lock and recovers its committed receipt', async () => {
+    const key = randomUUID();
+    const entered = Promise.withResolvers();
+    const resume = Promise.withResolvers();
+    beforeVerification = async () => { entered.resolve(); await resume.promise; };
+    const creating = perform('create', null, { ...create, start_plan: true, selection: selected }, key);
+    let closing;
+    try {
+      await Promise.race([entered.promise, creating]);
+      await assert.rejects(read.receipt(actor, key), rejectCode('not_found', 404));
+      closing = command.closeRequest(actor, key.toUpperCase());
+      const deadline = Date.now() + 1000;
+      for (;;) {
+        const [row] = await db.query("SELECT EXISTS (SELECT 1 FROM pg_locks WHERE locktype='advisory' AND NOT granted) AS waiting");
+        if (row.waiting) break;
+        assert.ok(Date.now() < deadline, 'close must wait on the original request lock');
+        await delay(10);
+      }
+    } finally {
+      beforeVerification = undefined;
+      resume.resolve();
+      await Promise.allSettled([creating, closing]);
+    }
+    const saved = await creating;
+    const receipt = await read.receipt(actor, key);
+    assert.deepEqual(await closing, { status: 'saved', request: receipt });
+    assert.deepEqual(receipt.receipt, saved);
+    assert.equal(receipt.http_status, 202);
+    await db.query('UPDATE teacher_sessions SET owner_user_id=$2 WHERE id=$1', [saved.session_id, other.userId]);
+    try {
+      await assert.rejects(command.closeRequest(actor, key), rejectCode('not_found', 404));
+    } finally {
+      await db.query('UPDATE teacher_sessions SET owner_user_id=$2 WHERE id=$1', [saved.session_id, actor.userId]);
+    }
+    await db.query("UPDATE teacher_generation_jobs SET state='cancelled_before_dispatch',blocks_duplicate=false WHERE id=$1", [saved.job_id]);
   });
   await check('Teacher-suggested scheduling publishes either valid proposal without fabricating or accepting a stored schedule', async () => {
     for (const organization of ['days', 'topics']) {

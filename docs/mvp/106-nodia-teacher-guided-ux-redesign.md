@@ -191,6 +191,13 @@ ni sugerencia de volver a pulsar Crear para recuperar una generación existente.
 | unknown/cierre pendiente | Estamos comprobando qué ocurrió con la solicitud | Consultar estado/recibo y conciliación; sin replay o cambio automático de IA |
 | pérdida de sesión/conflicto | Recuperar acceso o revisar versión guardada | Preservar datos y aplicar la recuperación actual, sin sobreescribir remoto |
 
+Cuando Consultar guardado devuelve 404, Mis planes conserva el acceso al
+listado, filtros y apertura de planes. El 404 deja la solicitud original
+pendiente. El usuario puede consultar de nuevo o pedir el cierre explícito
+de esa clave. Teacher recupera el recibo si la operación ya se guardó. Si el
+servidor confirma el cierre, se puede iniciar un nuevo guardado con el
+formulario intacto. Ver [el contrato de recibos](97-nodia-teacher-technical-contracts.md#6-dtos-y-rutas-http).
+
 «Actualizar estado» es lectura/conciliación; «Volver a preparar» es otra intención
 y no se ofrece cuando no es segura. Mantener los trabajos al salir de la vista
 sin prometer cancelación remota. Toast y aviso inline con un único responsable.
@@ -761,3 +768,67 @@ en `master` (`d4345ea9`). El cierre queda registrado en el [TODO](TODO.md).
 La evidencia funcional disponible cubre QA local. La adopción por entorno,
 inferencia real y pruebas en teléfono requieren comprobación propia. El plan
 sigue en revisión y las fichas candidatas conservan su estado.
+
+## 17. Progreso en el panel de la lección — 2026-11-17
+
+El usuario aprueba la maqueta e indica implementarla en
+`codex/teacher-ui-adjustments`. En la unidad seleccionada, un trabajo de material
+confirmado en cola o en ejecución se muestra en el panel **Preparando lección**.
+Debajo del título aparecen el chip de estado, el nombre de la lección, la barra
+indeterminada y el mensaje sobre el guardado y la vuelta a Mis planes.
+Durante ese estado el panel sustituye **Revisar preparación** y la recarga
+manual del mismo trabajo.
+
+La consulta automática usa el identificador de trabajo asociado a la unidad
+por Server. Un fallo de lectura conserva el estado confirmado e incluye un
+reintento de lectura. Al guardarse el material, el panel muestra la lección
+disponible. Los trabajos pausados o con resultado pendiente de conciliación
+conservan la recuperación existente. Otros trabajos de la sesión se muestran
+en su ubicación habitual.
+
+Chromium con transporte sintético verificó seis anchos entre 320 y 1600 px,
+en español e inglés y con los temas claro y oscuro. Se comprobó la recuperación
+visual tras un 503 y una respuesta inválida, el paso de cola a ejecución y
+material guardado tras una sola solicitud explícita, y un resultado incierto
+sin reenvío. La vista también mantuvo los controles de otro trabajo concurrente.
+La comprobación corresponde a Client local con fixtures.
+
+Pasaron 3287 pruebas de Client en 397 archivos, incluidas 279 pruebas de Teacher
+en la ejecución focal. También pasaron tipado, compilación y lint del código
+fuente. El lint general detectó cinco errores en prototipos locales de
+`nodia-client/.tmp`.
+
+[Evaluación en la ficha de experiencia guiada](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md#evaluación-visual-del-progreso-de-la-lección--2026-11-17).
+
+## 18. Lectura y aclaraciones por tópico — 2026-11-17
+
+El usuario aprueba la maqueta del bloque «Saludar y decir tu nombre» para
+implementarla como patrón reutilizable. Cada tópico tiene su cabecera,
+marcador de lectura y contenido Markdown. El marcador muestra **Punto
+guardado** cuando la sesión confirma la versión y el bloque guardados.
+Guardar mantiene la posición de lectura. Al volver a la sesión, se recupera
+el punto de la versión exacta.
+
+**Aclarar fragmento** reconoce una selección literal dentro del mismo tópico.
+El panel lateral, o inferior en un viewport estrecho, muestra una sola cita,
+una pregunta y el coste de enviarla. El historial plegable usa los hilos
+de la versión y el bloque, con el paginado existente. Cerrar el panel o
+cambiar de ancho conserva el borrador y el hilo del tópico.
+
+Abrir y consultar usan lecturas. El primer **Enviar a Teacher** crea el hilo y
+envía la pregunta con la revisión que confirma el recibo de creación. Los
+envíos siguientes al mismo hilo reutilizan su ID. Una lectura de conciliación
+recupera el recibo de la operación original sin reenviar el POST. El Server
+sigue resolviendo permisos, ancla exacta, CAS, presupuesto y bloqueo de
+aclaraciones nuevas durante una final.
+
+Chromium con datos sintéticos verificó español e inglés y temas claro y
+oscuro, entre 320 y 1600 px. La matriz cubrió selección, foco al cerrar y
+abrir, borrador al redimensionar, historial por tópico, conflicto de revisión
+en preguntas y cursor, y conciliación por GET de un recibo inválido sin
+reenvío. En el panel inferior, un 503 conservó el borrador y un 504 se
+concilió por GET. Pasaron 3291 pruebas de la suite general de Client y 283 de Teacher
+en la comprobación focal final. Tipado, compilación, lint del código fuente y
+`knowledge:check` pasaron. El alcance de la validación fue local.
+
+[Ficha de aclaraciones contextuales](../nodia-ai/knowledge/studies/features/contextual-clarifications.md#aclaraciones-por-tópico-y-marcador-de-lectura--2026-11-17).

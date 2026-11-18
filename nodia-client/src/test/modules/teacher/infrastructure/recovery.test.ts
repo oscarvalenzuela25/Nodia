@@ -18,4 +18,11 @@ describe("Teacher opaque request recovery", () => {
     window.sessionStorage.setItem("teacher:pending-request:v1", "{");
     expect(pendingRequest("actor:1")).toBeNull();
   });
+  it("does not clear a different request when recovery completes after navigation", () => {
+    rememberRequest("actor:1", command);
+    forgetRequest("actor:1", "22222222-2222-4222-8222-222222222222");
+    expect(pendingRequest("actor:1")?.requestKey).toBe(command.requestKey);
+    forgetRequest("actor:1", command.requestKey);
+    expect(pendingRequest("actor:1")).toBeNull();
+  });
 });

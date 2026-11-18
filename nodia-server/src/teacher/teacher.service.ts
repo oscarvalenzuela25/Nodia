@@ -21,6 +21,36 @@ export interface TeacherScope {
   session: TeacherSessionRow | null;
   reference: ActorReference;
 }
+
+type TeacherReceipt = {
+  request_key: string;
+  operation: string;
+  session_id: string | null;
+  http_status: number;
+  receipt: Record<string, unknown>;
+  completed_at: Date;
+};
+type TeacherRequestClosure =
+  | { status: 'closed'; request_key: string }
+  | { status: 'saved'; request: TeacherReceipt };
+
+const closeOperation = 'close_request';
+
+export function assertTeacherRequestOpen(operation: string): void {
+  if (operation === closeOperation) teacherError('request_closed', 410);
+}
+
+function lockTeacherRequest(
+  manager: EntityManager,
+  actorId: string,
+  key: string,
+) {
+  // PostgreSQL treats upper- and lowercase UUIDs as the same key.
+  return manager.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))', [
+    `teacher-request:${actorId}:${key.toLowerCase()}`,
+  ]);
+}
+
 @Injectable()
 export class TeacherService {
   constructor(
@@ -70,33 +100,22 @@ export class TeacherService {
       sessionId,
       async (scope) => {
         const m = scope.manager;
-        // Actor request lock serializes the first insert too, before a session exists.
-        await m.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))', [
-          `teacher-request:${scope.actor.actorId}:${key}`,
-        ]);
+        await lockTeacherRequest(m, scope.actor.actorId, key);
         const previous: {
+          operation: string;
           payload_hash: string;
           receipt: T;
           session_id: string | null;
         }[] = await m.query(
-          'SELECT payload_hash,receipt,session_id FROM teacher_requests WHERE actor_id=$1 AND request_key=$2',
+          'SELECT operation,payload_hash,receipt,session_id FROM teacher_requests WHERE actor_id=$1 AND request_key=$2',
           [scope.actor.actorId, key],
         );
         if (previous[0]) {
+          assertTeacherRequestOpen(previous[0].operation);
           if (previous[0].payload_hash !== digest)
             teacherError('idempotency_conflict');
-          if (previous[0].session_id && !scope.session) {
-            const rows: TeacherSessionRow[] = await m.query(
-              'SELECT * FROM teacher_sessions WHERE id=$1',
-              [previous[0].session_id],
-            );
-            if (
-              !rows[0] ||
-              (!scope.actor.isSuperAdmin &&
-                rows[0].owner_user_id !== scope.actor.actorId)
-            )
-              teacherError('not_found', 404);
-          }
+          if (!scope.session)
+            await this.requireReceiptAuthority(scope, previous[0].session_id);
           return previous[0].receipt;
         }
         const result = await work(scope);
@@ -124,28 +143,63 @@ export class TeacherService {
   }
   async receipt(actor: ActorReference, key: string) {
     requireUuid(key);
-    return this.scope(actor, null, async ({ manager, actor: current }) => {
-      const [row]: {
-        request_key: string;
-        session_id: string | null;
-        receipt: Record<string, unknown>;
-      }[] = await manager.query(
-        'SELECT request_key,operation,session_id,http_status,receipt,completed_at FROM teacher_requests WHERE actor_id=$1 AND request_key=$2',
-        [current.actorId, key],
-      );
+    return this.scope(actor, null, async (scope) => {
+      const row = await this.findReceipt(scope, key);
       if (!row) teacherError('not_found', 404);
-      if (row.session_id) {
-        const [session]: TeacherSessionRow[] = await manager.query(
-          'SELECT * FROM teacher_sessions WHERE id=$1',
-          [row.session_id],
-        );
-        if (
-          !session ||
-          (!current.isSuperAdmin && session.owner_user_id !== current.actorId)
-        )
-          teacherError('not_found', 404);
-      }
+      assertTeacherRequestOpen(row.operation);
+      await this.requireReceiptAuthority(scope, row.session_id);
       return row;
     });
+  }
+
+  async closeRequest(
+    actor: ActorReference,
+    key: string,
+  ): Promise<TeacherRequestClosure> {
+    const requestKey = requireUuid(key).toLowerCase();
+    return this.scope(actor, null, async (scope) => {
+      const { manager, actor: current } = scope;
+      await lockTeacherRequest(manager, current.actorId, requestKey);
+      const previous = await this.findReceipt(scope, requestKey);
+      if (previous && previous.operation !== closeOperation) {
+        await this.requireReceiptAuthority(scope, previous.session_id);
+        return { status: 'saved', request: previous };
+      }
+
+      const closed = { status: 'closed', request_key: requestKey } as const;
+      if (!previous) {
+        // Record the close itself before letting the client submit a new intent.
+        await manager.query(
+          'INSERT INTO teacher_requests(actor_id,request_key,operation,payload_hash,http_status,receipt) VALUES($1,$2,$3,$4,200,$5)',
+          [current.actorId, requestKey, closeOperation, hash(closed), closed],
+        );
+      }
+      return closed;
+    });
+  }
+
+  private async findReceipt({ manager, actor }: TeacherScope, key: string) {
+    const [row]: TeacherReceipt[] = await manager.query(
+      'SELECT request_key,operation,session_id,http_status,receipt,completed_at FROM teacher_requests WHERE actor_id=$1 AND request_key=$2',
+      [actor.actorId, key],
+    );
+    return row;
+  }
+
+  private async requireReceiptAuthority(
+    { manager, actor }: TeacherScope,
+    sessionId: string | null,
+  ) {
+    if (!sessionId) return;
+    const [session]: Pick<TeacherSessionRow, 'owner_user_id'>[] =
+      await manager.query(
+        'SELECT owner_user_id FROM teacher_sessions WHERE id=$1',
+        [sessionId],
+      );
+    if (
+      !session ||
+      (!actor.isSuperAdmin && session.owner_user_id !== actor.actorId)
+    )
+      teacherError('not_found', 404);
   }
 }

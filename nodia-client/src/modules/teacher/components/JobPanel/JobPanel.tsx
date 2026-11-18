@@ -1,32 +1,37 @@
-import { useEffect, useRef } from "react";
 import { Alert, Button, IconButton, LinearProgress, Stack, Tooltip, Typography } from "@mui/material";
 import RefreshOutlined from "@mui/icons-material/RefreshOutlined";
 import { useTranslation } from "react-i18next";
 import TeacherLoading from "../TeacherLoading";
 import QueryErrorAlert from "../../../../components/QueryErrorAlert";
-import { useTeacherJob } from "../../infrastructure/useServices";
 import { enabled } from "../../infrastructure/presentation";
 import type { Job } from "../../infrastructure/schemas";
 import { Actions } from "../../pages/Teacher/styles";
 import { InlineStatusRow, InlineStatusValue, ProgressSpace, StateChip, Status } from "./styles";
 import { jobErrorKey, jobExpectedResultKey } from "./presentation";
+import { useJobStatus, type JobStatusCallbacks } from "./useJobStatus";
 
-type Props = { allowNew?: boolean; presentation?: "panel" | "inline"; jobId: string; paused: boolean; busy: boolean; onReady: (job: Job) => void; onTerminal?: (job: Job) => void; onContinue: (job: Job) => Promise<void>; onNew: (job: Job) => Promise<void> };
-export default function JobPanel({ allowNew = true, presentation = "panel", jobId, paused, busy, onReady, onTerminal, onContinue, onNew }: Props) {
+type StatusProps = {
+  allowNew?: boolean;
+  presentation?: "panel" | "inline";
+  query: ReturnType<typeof useJobStatus>;
+  paused: boolean;
+  busy: boolean;
+  onContinue: (job: Job) => Promise<void>;
+  onNew: (job: Job) => Promise<void>;
+};
+
+export default function JobPanel({ jobId, onReady, onTerminal, ...props }: Omit<StatusProps, "query"> & JobStatusCallbacks & { jobId: string }) {
+  const query = useJobStatus(jobId, props.paused, { onReady, onTerminal });
+  return <JobStatus {...props} query={query} />;
+}
+
+export function JobStatus({ allowNew = true, presentation = "panel", query, paused, busy, onContinue, onNew }: StatusProps) {
   const { t } = useTranslation();
-  const query = useTeacherJob(jobId, paused);
-  const delivered = useRef<string | null>(null);
   const job = query.data;
   const preparing = !paused && (job?.state === "queued" || job?.state === "running");
   const errorKey = jobErrorKey(job?.error_code ?? null, job?.state === "failed_known");
   const canRequestNew = allowNew && enabled(job?.allowed_actions ?? {}, "request_new_generation");
   const disabled = busy || query.isFetching;
-  useEffect(() => {
-    if (!job || ["queued", "running", "blocked_paused"].includes(job.state) || delivered.current === job.job_id) return;
-    delivered.current = job.job_id;
-    if (job.state === "ready") onReady(job);
-    else onTerminal?.(job);
-  }, [job, onReady, onTerminal]);
   const feedback = job && <>
       {preparing && <Typography variant="body2">{t(jobExpectedResultKey(job.purpose))}</Typography>}
       {job.state === "blocked_paused" && <Typography variant="body2">{t("teacher:job_paused_help")}</Typography>}

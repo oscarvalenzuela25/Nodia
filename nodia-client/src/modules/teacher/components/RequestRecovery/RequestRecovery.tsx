@@ -8,5 +8,12 @@ type Props = { command: ReturnType<typeof useTeacherCommand>; onRecovered: (resu
 export default function RequestRecovery({ command, onRecovered }: Props) {
   const { t } = useTranslation();
   if (!command.uncertain) return null;
-  return <RecoveryAlert severity="warning" action={<Button variant="outlined" type="button" color="inherit" disabled={command.isPending} onClick={() => { void command.reconcile().then(result => { if (result) onRecovered(result); }); }}>{t("teacher:recover_request")}</Button>}>{t("teacher:uncertain_request")}</RecoveryAlert>;
+  const recover = async (closeMissing: boolean) => {
+    const result = await (closeMissing ? command.reconcile(true) : command.reconcile());
+    if (result) onRecovered(result);
+  };
+  return <RecoveryAlert severity="warning" action={<>
+    <Button variant="outlined" type="button" color="inherit" disabled={command.isPending} onClick={() => void recover(false)}>{t("teacher:recover_request")}</Button>
+    {command.receiptMissing && <Button variant="outlined" type="button" color="inherit" disabled={command.isPending} onClick={() => void recover(true)}>{t("teacher:close_missing_request")}</Button>}
+  </>}>{t(command.receiptMissing ? "teacher:receipt_missing_notice" : "teacher:uncertain_request")}</RecoveryAlert>;
 }

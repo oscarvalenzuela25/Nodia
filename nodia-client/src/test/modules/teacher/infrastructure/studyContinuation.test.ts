@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { studyContinuation, type StudyContinuationContext } from "../../../../modules/teacher/infrastructure/studyContinuation";
-import type { Material } from "../../../../modules/teacher/infrastructure/schemas";
+import { lessonPreparationState, studyContinuation, type StudyContinuationContext } from "../../../../modules/teacher/infrastructure/studyContinuation";
+import type { Job, Material } from "../../../../modules/teacher/infrastructure/schemas";
 import { planFixture } from "../fixtures";
 
 // Synthetic Server projections; no provider or persistence is invoked.
@@ -33,6 +33,21 @@ describe("Teacher study continuation policy", () => {
   });
   it.each(["not_prepared", "preparing", "unknown"] as const)("routes %s with a job to recovery instead of starting another generation", state => {
     expect(studyContinuation(context({ selectedUnitId: "u1", material: { kind: "availability", state, job_id: "fixture-job" } }))).toMatchObject({ kind: "job", jobId: "fixture-job" });
+  });
+  it("shows preparation only for the current lesson's exact pending job", () => {
+    const availability = { kind: "availability", state: "preparing", job_id: "fixture-job" } as const;
+    const study = context({ selectedUnitId: "u1", material: availability });
+    const view = studyContinuation(study);
+    const job = { job_id: "fixture-job", state: "running", purpose: "learning_packet" } as const;
+    expect(lessonPreparationState(view, { ...job, state: "queued" }, false)).toBe("queued");
+    expect(lessonPreparationState(view, job, false)).toBe("running");
+    expect(lessonPreparationState(view, { ...job, job_id: "different-job" }, false)).toBeNull();
+    expect(lessonPreparationState(view, { ...job, purpose: "assessment_only" }, false)).toBeNull();
+    expect(lessonPreparationState(view, undefined, false)).toBeNull();
+    expect(lessonPreparationState(view, job, true)).toBeNull();
+    expect(lessonPreparationState(studyContinuation({ ...study, material }), job, false)).toBeNull();
+    const recoveryStates: Job["state"][] = ["ready", "blocked_paused", "failed_known", "unknown", "cancelled_before_dispatch"];
+    for (const state of recoveryStates) expect(lessonPreparationState(view, { ...job, state }, false)).toBeNull();
   });
   it("keeps unknown, preparing and absent data distinct from missing material", () => {
     for (const state of ["unknown", "preparing"] as const) expect(studyContinuation(context({ selectedUnitId: "u1", material: { kind: "availability", state, job_id: null } })).kind).toBe(state);

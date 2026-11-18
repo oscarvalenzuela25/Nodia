@@ -7,13 +7,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import SessionForm from "../../../../../modules/teacher/components/SessionForm";
 import RequestRecovery from "../../../../../modules/teacher/components/RequestRecovery";
 import { useTeacherCommand } from "../../../../../modules/teacher/infrastructure/useServices";
-import { readTeacherReceipt, sendTeacher } from "../../../../../modules/teacher/infrastructure/services";
+import { closeTeacherRequest, readTeacherReceipt, sendTeacher } from "../../../../../modules/teacher/infrastructure/services";
 import { forgetRequest } from "../../../../../modules/teacher/infrastructure/recovery";
 import useAuthStore from "../../../../../store/authStore";
 import type { CommandResult } from "../../../../../modules/teacher/infrastructure/schemas";
 
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
-vi.mock("../../../../../modules/teacher/infrastructure/services", () => ({ sendTeacher: vi.fn(), readTeacherReceipt: vi.fn(), readTeacher: vi.fn(), readTeacherData: vi.fn() }));
+vi.mock("../../../../../modules/teacher/infrastructure/services", () => ({ closeTeacherRequest: vi.fn(), sendTeacher: vi.fn(), readTeacherReceipt: vi.fn(), readTeacher: vi.fn(), readTeacherData: vi.fn() }));
 beforeEach(() => {
   forgetRequest();
   vi.clearAllMocks();
@@ -58,6 +58,29 @@ describe("Teacher modal request reconciliation", () => {
     expect(readTeacherReceipt).toHaveBeenNthCalledWith(1, key);
     expect(readTeacherReceipt).toHaveBeenNthCalledWith(2, key);
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    client.clear();
+  });
+  it("offers closing after a missing receipt and restores the same form without submitting again", async () => {
+    vi.mocked(sendTeacher).mockRejectedValue(new AxiosError("Synthetic lost response", "ERR_NETWORK"));
+    vi.mocked(readTeacherReceipt).mockRejectedValue({ isAxiosError: true, response: { status: 404, data: { code: "not_found" } }, message: "Synthetic missing receipt" });
+    vi.mocked(closeTeacherRequest).mockImplementation(async key => ({ status: "closed", request_key: key }));
+    const onRecovered = vi.fn();
+    const client = new QueryClient();
+    render(<QueryClientProvider client={client}><DialogCommand onRecovered={onRecovered} /></QueryClientProvider>);
+    const user = userEvent.setup();
+    await user.type(screen.getByRole("textbox", { name: "Tema*" }), "Networks");
+    await user.type(screen.getByRole("textbox", { name: "¿Qué es lo que quieres aprender?*" }), "Explain DNS");
+    await user.click(screen.getByRole("button", { name: "Guardar borrador" }));
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).queryByRole("button", { name: "Cerrar solicitud pendiente" })).not.toBeInTheDocument();
+    await user.click(await within(dialog).findByRole("button", { name: "Consultar guardado" }));
+    await user.click(await within(dialog).findByRole("button", { name: "Cerrar solicitud pendiente" }));
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: "Guardar borrador" })).toBeEnabled());
+    expect(within(dialog).getByRole("textbox", { name: "Tema*" })).toHaveValue("Networks");
+    expect(within(dialog).getByRole("textbox", { name: "¿Qué es lo que quieres aprender?*" })).toHaveValue("Explain DNS");
+    expect(onRecovered).not.toHaveBeenCalled();
+    expect(sendTeacher).toHaveBeenCalledOnce();
+    expect(closeTeacherRequest).toHaveBeenCalledWith(vi.mocked(sendTeacher).mock.calls[0][0].requestKey);
     client.clear();
   });
 });
