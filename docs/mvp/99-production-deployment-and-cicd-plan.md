@@ -1985,10 +1985,12 @@ recoge la política de continuación. Orden de implementación y evidencia:
   release activo, verifica HTTP/CORS y recupera el tráfico. Los timers se
   restauran si han terminado las unidades de respaldo. El fallo original,
   el bloqueo de CD y la prohibición de repetir el intento quedan registrados.
-- [ ] **Adopción de la recuperación en el VPS.** Revisar el paquete de
-  actualizador y sus pins. La adopción requiere su propia verificación
-  operativa. Una terminación abrupta del actualizador durante la recuperación
-  se diagnostica desde el estado durable antes de seguir.
+- [x] **Adopción de la recuperación en el VPS.** Se instalaron los dos archivos
+  del ensayo y se verificaron los pins, el release, API, worker, timers y CORS.
+  El fallo inducido quedó cubierto en el laboratorio aislado. Ver
+  [evidencia de la adopción](../evidence/cd-backup-failure-recovery-20261118.md).
+  Una terminación abrupta del actualizador durante la recuperación se
+  diagnostica desde el estado durable antes de seguir.
 - [ ] **Ensayo de migración de entrega.** Reproducir el verificador de Caja
   usando los dos paquetes originales en PostgreSQL 16 desechable. Convertir
   el ensayo del actualizador y del artefacto final en gate para cambios de

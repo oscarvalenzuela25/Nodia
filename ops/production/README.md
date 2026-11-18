@@ -919,6 +919,16 @@ timers restaurados retoman su programación habitual, incluido un disparo
 previsto por systemd si el timer persistente venció durante la pausa.
 El CD exige conciliación para admitir otra entrega.
 
+La [adopción en el VPS](../../docs/evidence/cd-backup-failure-recovery-20261118.md)
+usó `refresh-backup-failure-recovery.py`. El instalador revisa el manifiesto
+del paquete y los pins instalados con los locks de recepción e instalación.
+Por defecto comprueba el estado y devuelve `backup_failure_recovery_dry_run`.
+Con `--apply`, conserva los originales, sustituye la política y el actualizador
+con sus pins, y verifica de nuevo release, servicios, API y CORS. Ante una
+interrupción, inspeccionar el registro privado antes de continuar. La ejecución
+requiere el hash revisado del instalador y el del manifiesto que fija el release
+y los archivos anteriores.
+
 ### Qué se probó y qué falta
 
 - 48 tests Node y 17 Python: validaciones, cambios, procedencia, errores y orden
