@@ -144,6 +144,18 @@ export const StyledTab = styled(MuiTab)(({ theme }) => ({
   },
 }));
 
+export const MarketTabs = styled(StyledTabs)(({ theme }) => ({
+  paddingInline: theme.spacing(2),
+  borderTop: `1px solid ${theme.palette.divider}`,
+  [theme.breakpoints.down("sm")]: {
+    "& .MuiTab-root": {
+      width: "auto",
+      flex: "1 1 auto",
+      justifyContent: "center",
+    },
+  },
+}));
+
 export const StatusPill = styled(Box, {
   shouldForwardProp: (prop) => prop !== "active",
 })<{ active: boolean }>(({ theme, active }) => ({

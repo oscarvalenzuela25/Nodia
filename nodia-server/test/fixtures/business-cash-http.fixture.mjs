@@ -33,8 +33,15 @@ const docker = (...args) =>
     timeout: 60000,
   }).trim();
 
-export async function withBusinessCashHttpLab(
-  { database, port, marker, migrations, business, otherBusiness },
+export async function withBusinessCashHttpLab(configuration, run) {
+  return withBusinessHttpLab(
+    { ...configuration, modules: [BusinessCashModule] },
+    run,
+  );
+}
+
+export async function withBusinessHttpLab(
+  { database, port, marker, migrations, business, otherBusiness, modules },
   run,
 ) {
   const container =
@@ -171,7 +178,7 @@ export async function withBusinessCashHttpLab(
       imports: [
         TypeOrmModule.forRoot(settings),
         RedisModule,
-        BusinessCashModule,
+        ...modules,
         ...imports,
       ],
       controllers,

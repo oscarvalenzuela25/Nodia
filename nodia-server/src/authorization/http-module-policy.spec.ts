@@ -15,6 +15,7 @@ describe('HTTP module policy', () => {
     [['ai-api-key', 'ai-api-keys'], '/ai-providers'],
     [['ai-provider-event', 'ai-provider-events'], '/ai-providers'],
     [['invoice', 'invoices'], '/business'],
+    [['businesses/:businessId/lists'], '/business'],
     [['business-cash-categories'], '/business'],
     [['business-cash-movements'], '/business'],
     [['providers/:providerId/contacts'], '/business'],

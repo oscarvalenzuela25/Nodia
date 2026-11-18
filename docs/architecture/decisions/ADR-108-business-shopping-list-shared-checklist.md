@@ -41,6 +41,18 @@ valida el negocio y el producto en Server. Una proyección limitada al negocio
 actual y el nombre registrado al agregar preservan el dato propio de una
 partida cuando el catálogo cambia de ámbito.
 
+La migración `1793730000000` añade tres tablas para listas, partidas y
+recibos de alta. Partidas y recibos referencian la lista por `(list_id,
+business_id)`. `product_id` es una identidad histórica. Una nueva asociación
+valida y bloquea el producto activo del negocio durante el guardado. Las
+lecturas del catálogo acotan el `JOIN` al negocio original. Así, el traslado
+o retiro de un producto conserva las partidas y su identidad comercial.
+
+La lista y sus partidas se guardan en la misma transacción que el recibo
+de alta. Un reenvío con la misma clave y contenido recupera ese recibo. Un
+contenido distinto con la misma clave genera conflicto. El `down` sólo puede
+retirar las tablas vacías y se bloquea si ya contienen datos.
+
 ## Consecuencias
 
 - La revocación de un usuario se aplica antes de nuevas escrituras y conserva
