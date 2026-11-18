@@ -100,8 +100,11 @@ async function insideRunner() {
     check(!(await db.showMigrations()), 'no_pending_migrations');
     const columns = await db.query(`SELECT table_schema,table_name,column_name FROM information_schema.columns`);
     const available = new Set(columns.map(value => `${value.table_schema}.${value.table_name}.${value.column_name}`));
-    for (const entity of db.entityMetadatas) for (const column of entity.columns)
-      assert.ok(available.has(`${entity.schema ?? 'public'}.${entity.tableName}.${column.databaseName}`), 'missing_entity_column');
+    for (const entity of db.entityMetadatas) {
+      const persisted = entity.columns.filter(column => column.isVirtualProperty !== true);
+      assert.ok(persisted.length > 0 && persisted.every(column =>
+        available.has(`${entity.schema ?? 'public'}.${entity.tableName}.${column.databaseName}`)), 'missing_entity_column');
+    }
     check(db.entityMetadatas.length > 0, 'all_entity_tables_and_columns_present');
     const extensions = await db.query(`SELECT e.extname,n.nspname FROM pg_extension e JOIN pg_namespace n ON n.oid=e.extnamespace`);
     check(['uuid-ossp', 'pg_trgm'].every(name => extensions.some(value => value.extname === name && value.nspname === 'public')), 'required_extensions_in_public');

@@ -39,10 +39,21 @@ const migration = `export class SyntheticUpdateProbe1793630000000 {
   }
   async down(runner) { await runner.query('DROP TABLE synthetic_update_probe'); }
 }\n`;
+const entityFilename = 'dist/synthetic-update-probe/synthetic-update-probe.entity.js';
+const entitySource = `import { Column, Entity, PrimaryColumn, VirtualColumn } from 'typeorm';
+export class SyntheticUpdateProbe {}
+PrimaryColumn('integer')(SyntheticUpdateProbe.prototype, 'id');
+Column('text')(SyntheticUpdateProbe.prototype, 'value');
+VirtualColumn({ type: 'text', query: alias => alias + '."value"' })(SyntheticUpdateProbe.prototype, 'projection');
+Entity('synthetic_update_probe')(SyntheticUpdateProbe);
+`;
 fs.writeFileSync(path.join(candidate, filename), migration);
+fs.mkdirSync(path.dirname(path.join(candidate, entityFilename)));
+fs.writeFileSync(path.join(candidate, entityFilename), entitySource);
 const candidateManifest = { ...manifest, release_id: path.basename(candidate), source_sha: 'a'.repeat(40),
   source_provenance: 'synthetic_sql_fixture', deployment_eligible: false,
-  files: [...manifest.files, { path: filename, type: 'file', bytes: Buffer.byteLength(migration), mode: '0644', sha256: hash(migration) }] };
+  files: [...manifest.files, ...[[filename, migration], [entityFilename, entitySource]].map(([file, contents]) =>
+    ({ path: file, type: 'file', bytes: Buffer.byteLength(contents), mode: '0644', sha256: hash(contents) }))] };
 fs.writeFileSync(path.join(candidate, 'release-manifest.json'), JSON.stringify(candidateManifest));
 const source = (await import(pathToFileURL(path.join(old, 'dist/config/data-source.js')))).default;
 await source.initialize();
@@ -68,7 +79,9 @@ fs.writeFileSync(path.join(candidate, 'release-manifest.json'), JSON.stringify(c
 
 const migrated = action('migrate');
 check(migrated.result.status === 0 && migrated.body.status === 'migrated' && migrated.body.applied === 1 &&
-  migrated.body.entity_columns_present && migrated.body.client_tls_authorized, 'one incremental migration applied with entity metadata check');
+  migrated.body.entity_tables_checked === source.entityMetadatas.length + 1 &&
+  migrated.body.entity_columns_present && migrated.body.client_tls_authorized,
+  'incremental schema postcheck includes the synthetic entity with an unpersisted projection');
 const verified = action('verify');
 check(verified.result.status === 0 && verified.body.target === 46 && verified.body.pending === 0 &&
   verified.body.incremental_migrations === 1 && verified.body.quiescent && verified.body.read_only,
@@ -83,6 +96,8 @@ await db.connect();
 check(db.connection.stream.authorized, 'fixture inspection also uses authorized TLS');
 check((await db.query('SELECT value FROM synthetic_update_probe WHERE id=1')).rows[0].value === 'synthetic-only',
   'incremental SQL effect is durable exactly once');
+check((await db.query("SELECT column_name FROM information_schema.columns WHERE table_schema='public' AND table_name='synthetic_update_probe' ORDER BY ordinal_position"))
+  .rows.map(row => row.column_name).join(',') === 'id,value', 'computed projection requires no physical schema change');
 check((await db.query('SELECT count(*)::int AS count FROM users')).rows[0].count === 0,
   'no superadministrator seed requested by update');
 await db.query("UPDATE migrations SET name='SyntheticLedgerTamper' WHERE timestamp=1793630000000");
