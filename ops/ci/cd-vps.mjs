@@ -170,7 +170,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   try {
     requireCd(process.argv[2] === 'baseline', 'vps_command_invalid');
     const result = await readBackend();
-    outputs({ source_sha: result.source_sha });
+    outputs({ source_sha: result.source_sha, release_id: result.current.release_id,
+      package_tree_digest: result.current.package_tree_sha256 });
     if (process.env.CD_STATE_FILE) writeState(process.env.CD_STATE_FILE, result);
     console.log(JSON.stringify(result));
   } catch (error) { console.error(JSON.stringify(safeFailure(error))); process.exitCode = 1; }

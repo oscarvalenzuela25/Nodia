@@ -1991,12 +1991,13 @@ recoge la política de continuación. Orden de implementación y evidencia:
   [evidencia de la adopción](../evidence/cd-backup-failure-recovery-20261118.md).
   Una terminación abrupta del actualizador durante la recuperación se
   diagnostica desde el estado durable antes de seguir.
-- [ ] **Ensayo de migración de entrega.** Reproducir el verificador de Caja
-  usando los dos paquetes originales en PostgreSQL 16 desechable. Convertir
-  el ensayo del actualizador y del artefacto final en gate para cambios de
-  esquema. Incluir la instalación limpia, la actualización con datos
-  representativos y el arranque del candidato. Comprobar rollback de una
-  transacción fallida y resolución de commit incierto por lectura.
+- [x] **Ensayo de migración de entrega.** Integrado en CI y verificado en
+  laboratorio con los dos paquetes originales de Caja. Cubre instalación
+  limpia, actualización con datos, arranque de la API empaquetada,
+  rollback de un commit rechazado y verificación por solo lectura.
+- [ ] **Primera ejecución del ensayo en GitHub Actions.** Comprobar el gate
+  con un push a `master` que cambie el esquema respecto del Server desplegado.
+  El ZIP oficial de la versión activa debe seguir disponible.
 - [ ] **Continuación por componente.** Emitir un recibo saneado con fase,
   efecto confirmado, disponibilidad y paso admitido. Probar continuación de
   transporte, pérdida de respuesta de R2 y de Pages, y publicación de Client
@@ -2012,3 +2013,864 @@ aplicación, R2, SQL y proxy del ensayo systemd son sintéticas. El ensayo SQL
 separado pasó 40 comprobaciones en PostgreSQL 16 desechable con TLS,
 incluidos el ledger en solo lectura y el rechazo de un historial alterado.
 También pasaron 233 pruebas de política en Linux y 16 pruebas Node.
+
+### Ensayo de migración con paquetes reales — 2026-11-19
+
+En `codex/cierre-entregas-todo`, el [workflow de CI](../../.github/workflows/ci.yml)
+selecciona el ensayo comparando `master` con el Server que el gateway reporta
+activo. Los cambios en migraciones, entidades y sus entradas de configuración
+ejecutan el ensayo después de empaquetar el candidato y antes de subirlo. CI
+descarga un ZIP oficial del release activo y verifica el SHA, el release y el
+digest completo del árbol. CD vincula el resultado al par de paquetes y exige
+esa misma identidad activa antes de admitir la entrega.
+
+El [ensayo](../../ops/production/tests/rehearse-release-migration.py) pasó con
+los dos ZIP originales de Caja de §34 (`14303846535` y `14383762946`). En
+PostgreSQL 16.15 desechable con TLS, la instalación limpia registró 56
+migraciones y 73 entidades. La actualización aplicó cuatro migraciones
+(52→56), preservó los datos de prueba y arrancó la API del candidato con HTTP
+200. Un error inducido al confirmar la transacción dejó el esquema y el ledger
+en el estado anterior. La lectura posterior distinguió el estado anterior del
+commit exitoso y rechazó repetir la migración confirmada.
+
+El verificador de artefactos aceptó una copia local del candidato después de
+adjuntar el resultado y verificó 25 042 archivos con el mismo digest del tar.
+Pasaron 195 pruebas Node y 237 de política de CD en Linux, además de actionlint.
+
+Los ZIP nuevos de Server se conservan 14 días en Actions. Si el ZIP de la
+versión activa expira o falta, el gate requiere recuperar el paquete oficial
+exacto antes de intentar otra entrega con cambios de esquema. Sigue pendiente
+la primera ejecución remota de este gate. El ensayo local usó datos y servicios
+desechables y sus resultados se limitan a ese entorno.
+
+## 37. OPS-05 — inventario de disco y propuesta de retención — 2026-11-19
+
+### Inventario del VPS
+
+Lectura por SSH desde las 03:52 UTC. `df -B1 -P` midió 115,25 GiB de
+capacidad, 40,49 GiB usados (36 %) y 74,74 GiB disponibles en `/dev/sda1`.
+Los inodos estaban al 7 %. La API y el worker estaban activos. El gateway
+confirmó `deployment_ready` para `backend-f769aa5945f0-35e74b20452c`.
+
+| Ruta o grupo medido | GiB asignados | Qué se observó |
+| --- | ---: | --- |
+| `/opt/nodia/releases` | 17,81 | 26 directorios y 15 árboles de paquete distintos según sus digests completos en los manifiestos |
+| `/opt/nodia/candidates` | 1,37 | Dos candidatos históricos de 45 migraciones. Uno comparte árbol con el release `f01b49333688` |
+| `/home/nodia-admin/nodia-setup/backend` | 0,53 | Incluye 0,39 GiB en dos tarballs de preparación y unos 1,5 MiB en `admin-jobs` |
+| `/var/log/journal` | 0,16 | Tamaño de los archivos visibles en la ruta, medido por bloques |
+
+El inventario de aplicación bajo `/opt/nodia` suma 19,18 GiB, cerca del 47 %
+del uso del filesystem. Los tamaños se midieron con `du -x -B1` en una
+traversía por árbol, sin seguir symlinks. Las filas del cuadro son disjuntas.
+Las 11 copias con árbol repetido representan unos 7,53 GiB brutos al conservar
+un directorio por digest. Esa cifra precede al cruce de referencias y a la
+estimación de bytes realmente recuperables.
+
+La cuenta SSH pudo leer releases y candidatos. `sudo -n` requirió autenticación
+del operador. Queda por medir `incoming`, `archived-incoming` y `attempts` en
+`/var/lib/nodia-updates`, los volúmenes de Docker/containerd y otros directorios
+privados. Cada intento puede contener su propio ZIP y tar. `df` incluye esos
+consumos en el total, pero el inventario por ruta sigue parcial. El antiguo
+recuento de ZIPs de §32 describe su fecha de observación.
+
+### Propuesta de conservación
+
+- **Versiones desplegadas.** Mantener local el release activo y hasta dos
+  versiones anteriores con árboles distintos y compatibilidad con la base
+  comprobada. El manifiesto activo contiene 60 migraciones. El último árbol
+  anterior, compartido por `6b5408fb0905` y `7fa91a8832dd`, contiene 58. El
+  siguiente árbol, compartido por `fc6ab21980a6`, `dd01e211e63b` y
+  `8017dbc63189`, contiene 57. Tratarlos como referencias de recuperación hasta
+  ensayar la compatibilidad. Proteger además cualquier release acoplado a
+  servicios, pins, respaldos, operaciones abiertas o conciliaciones históricas.
+  Conservar por identidad los ZIP oficiales del release activo y de los
+  anteriores elegidos, con su digest y cadena de procedencia.
+- **Diagnósticos.** Mantener localmente estados, manifiestos, hashes, intents y
+  recibos necesarios para la conciliación y el control de reintentos. Conservar
+  íntegros los intentos abiertos e inciertos. Para intentos ya conciliados,
+  proponer 30 días de diagnósticos voluminosos disponibles localmente. Después,
+  evaluar traslado a custodia privada y cifrada con restauración verificada.
+  Las políticas propias de backups, secretos y perfiles rigen esos datos.
+- **Prioridad del ensayo.** Empezar por las copias de release repetidas y los
+  candidatos de instalación ya identificados. Cada propuesta de retirada debe
+  enumerar la ruta exacta, sus consumidores, bytes asignados, copia verificada y
+  procedimiento de recuperación. El lector de [archived-incoming](../../ops/production/archive-completed-backend-upload.py#L267)
+  valida que cada ZIP permanezca en su ruta registrada. Trasladar esos ZIPs
+  requiere un contrato de custodia compatible y su propio ensayo.
+
+El siguiente paso es completar la lectura privilegiada de tamaños y referencias
+y generar un inventario de elegibilidad sin cambios de estado. La propuesta
+queda pendiente de revisión. Esta fase de inventario es operativa y carece de
+impacto funcional en NodiaAI.
+
+### Lista preliminar de copias para contrastar
+
+La lectura de los manifiestos desde la cuenta de administración volvió a
+identificar el release activo `f769aa5945f0` y siete grupos de copias con el
+mismo digest completo del árbol. Cada directorio de la tabla se identifica
+como `backend-<SHA corto>-<árbol corto>` bajo `/opt/nodia/releases`.
+
+| Árbol corto | Copia más reciente del grupo | Copias para revisar |
+| --- | --- | --- |
+| `1d4cda79ea4a` | `09e419ae5f2c` | `b62a9029861f` |
+| `1f8917ca3edf` | `6b5408fb0905` | `7fa91a8832dd` |
+| `3b25a0834e0f` | `307ffbccc510` | `bb83fd262a10` |
+| `6422a361f0c7` | `fc6ab21980a6` | `dd01e211e63b`, `8017dbc63189` |
+| `c01d5047410c` | `95b6189303df` | `6ba2afb7d258`, `20baee851cc3` |
+| `d096d1b33274` | `e2c2eca346a2` | `3beeedbcbf10` |
+| `ff076a0afc23` | `dcd9758dee67` | `0f69d505f282`, `174c2ca5a1e7`, `2cfce73d0b17` |
+
+La antigüedad de los directorios ordena la revisión. Para cada copia se debe
+comprobar si hay un servicio, respaldo, intento pendiente o conciliación que
+exija esa identidad exacta, y verificar la disponibilidad del paquete de
+recuperación. Los diagnósticos se clasificarán por operación, estado, edad y
+tamaño de archivos, conservando la evidencia de conciliación. La clasificación
+requiere la lectura privilegiada mediante la
+[sesión administrativa con sudo](../../ops/production/README.md#sesión-administrativa-compartida).
+
+### Inventario privilegiado y lista de revisión
+
+El 2026-11-19 a las 04:03 UTC completó la lectura privilegiada. El disco
+seguía en 40,49 GiB usados de 115,25 GiB. El release activo y los pins de
+API, worker y scripts de respaldo y journal apuntaban a
+`backend-f769aa5945f0-35e74b20452c`.
+
+| Grupo | GiB asignados | Inventario confirmado |
+| --- | ---: | --- |
+| Estado de despliegue en `/var/lib/nodia-updates` | 15,14 | Incluye las tres filas siguientes |
+| `attempts` | 10,10 | 21 completos y 4 fallidos |
+| `archived-incoming` | 3,23 | 16 ZIP |
+| `incoming` | 1,81 | 9 ZIP |
+| `/var/lib/containerd` | 1,26 | La mayor parte corresponde a capas de imágenes |
+| `/var/lib/docker` | 0,004 | Los volúmenes ocupan unos 2,55 MiB |
+
+La revisión de los 21 intentos completos cotejó el SHA-256 de su ZIP
+oficial contra el registrado en el despliegue. Cada intento conserva otro
+ZIP idéntico y un tar extraído cuyo SHA-256 coincide con el manifiesto de
+resultados autenticado por el ZIP. El release activo y los registros de
+intentos observados se mantuvieron estables durante la verificación.
+
+| Candidatos para ensayar la retirada | Cantidad | GiB brutos |
+| --- | ---: | ---: |
+| Versiones instaladas con árbol repetido y ZIP oficial verificado | 8 | 5,47 |
+| Copias secundarias dentro de intentos completos | 32 archivos en 16 intentos | 6,36 |
+| Total | | 11,83 |
+
+Los ocho directorios candidatos corresponden a `7fa91a8832dd`,
+`bb83fd262a10`, `dd01e211e63b`, `6ba2afb7d258`, `20baee851cc3`,
+`3beeedbcbf10`, `0f69d505f282` y `174c2ca5a1e7`. Las copias repetidas
+`b62a9029861f`, `8017dbc63189` y `2cfce73d0b17` se conservan por sus
+referencias a intentos fallidos o conciliaciones. Se protegen los cuatro
+intentos fallidos y las copias secundarias de cinco intentos completos
+vinculados al activo, a los dos árboles recientes distintos o a fallos.
+Los árboles de 58 y 57 migraciones se conservan como referencias de
+recuperación con compatibilidad de rollback por ensayar.
+
+Los 184 archivos `.log` bajo `attempts` ocupan 12 KiB en bloques y tienen
+menos de 30 días. La lista conserva los logs y todos los estados, recibos,
+manifiestos y evidencias de conciliación. Los ZIP oficiales de `incoming`
+y `archived-incoming` permanecen protegidos por ruta e identidad.
+
+La lista exacta de rutas, copias equivalentes, originales y digests se
+guardó en `output/production/ops-05-retention-review-2026-11-19.json`. Los
+11,83 GiB describen bloques de candidatos a revisar. El próximo paso es
+ensayar la extracción y restauración en un entorno aislado desde un ZIP
+oficial verificado y comprobar que los lectores de estado y conciliación
+conserven sus resultados. El inventario fue de solo lectura y la sesión
+administrativa se cerró después de invalidar su autenticación sudo.
+
+### Ensayo aislado de restauración y conciliación
+
+El 2026-11-19 se recuperaron desde GitHub Actions tres ZIP cuyos SHA-256
+coincidieron con el inventario privilegiado. Se validaron los cuatro
+archivos de cada ZIP, su procedencia y todos los archivos declarados por
+el manifiesto. La restauración partió de directorios vacíos.
+
+| Release | Artefacto de Actions | Ruta del original en el inventario |
+| --- | ---: | --- |
+| `dd01e211e63b` | `14455433430` | `archived-incoming` |
+| `7fa91a8832dd` | `14470210559` | `archived-incoming` |
+| `6b5408fb0905` | `14479336998` | `incoming` |
+
+En Docker local con PostgreSQL 16.15, TLS y Redis aislados, el actualizador
+real pasó de `dd01e211e63b` a `7fa91a8832dd` (57→58). Se comprobó el
+rollback de un commit rechazado, la conservación de datos de prueba, la
+lectura independiente del ledger y el arranque de la API con HTTP 200.
+La restauración de `6b5408fb0905` desde su propio ZIP conservó las 58
+migraciones y también arrancó con HTTP 200. Los dos releases de 58
+migraciones comparten el digest completo del árbol.
+
+Dos escenarios sintéticos en un contenedor sin red usaron los lectores
+reales de estado, conciliación y archivo. Se simuló la ausencia del
+directorio histórico duplicado y de sus ZIP y tar secundarios, conservando
+el árbol equivalente, el ZIP original y los JSON de evidencia. La
+conciliación anterior y posterior a la migración conservó el resultado y
+la barrera contra repetir el intento. El índice rechazó la falta del ZIP
+archivado. La evidencia alterada y un fallo independiente bloquearon la
+admisión. Pasaron también 237 pruebas de política de CD.
+
+El ensayo usó paquetes reales y bases y estados de despliegue desechables.
+Las operaciones se ejecutaron en contenedores locales. El resultado queda en
+`output/production/ops-05-restoration-2026-11-19.json`. El siguiente paso
+es preparar un primer lote en modo simulación, cotejar en el VPS la vigencia
+de rutas, hashes y referencias, y revisar el plan de reversión.
+
+### Primer lote en simulación y plan de reversión
+
+El lote de revisión se limita a tres rutas del release histórico
+`backend-7fa91a8832dd-1f8917ca3edf` y el intento completo
+`14cfa1a82506dd4f560360dd325f5dd9`:
+
+| Ruta candidata | Bytes asignados en el inventario |
+| --- | ---: |
+| `/opt/nodia/releases/backend-7fa91a8832dd-1f8917ca3edf` | 738 598 912 |
+| `/var/lib/nodia-updates/attempts/14cfa1a82506dd4f560360dd325f5dd9/14470210559.zip` | 216 981 504 |
+| `/var/lib/nodia-updates/attempts/14cfa1a82506dd4f560360dd325f5dd9/backend-7fa91a8832dd-1f8917ca3edf.tar.gz` | 211 013 632 |
+
+El potencial bruto del lote es 1 166 594 048 bytes (1,09 GiB). El ZIP
+original permanece en `archived-incoming/server-44394351214-1/14470210559.zip`
+con SHA-256 `75e658a9360c59e316382798063a91f2326d85341f861e845c6692e9868dda52`.
+El tar de `7fa91a8832dd` tiene SHA-256
+`7d830c2ddf8e0e1a0cce09a330d86e6d4ee66280775d60fbd1a0563b4a81c4e3`.
+El árbol equivalente `backend-6b5408fb0905-1f8917ca3edf`, los recibos,
+los manifiestos, las referencias de intentos completos y la evidencia de la
+adopción histórica sobre `7fa91a8832dd` quedan protegidos.
+
+A las 04:25 UTC, la lectura del VPS comprobó las tres rutas, propietarios,
+modos, SHA-256 y `mtime`. El verificador instalado comprobó el árbol completo
+de `7fa91a8832dd` y el de `6b5408fb0905` con el manifiesto propio de cada uno.
+El release activo era `f769aa5945f0`, la conciliación seguía habilitando
+entregas y se validaron 16 registros de archivo y 25 grupos de referencias.
+Las cinco referencias encontradas al release candidato pertenecían a intentos
+completos. El cotejo antes y después mantuvo las identidades observadas y la
+sesión administrativa se cerró al finalizar.
+
+En un contenedor desechable, el ensayo simuló la ausencia de las tres rutas y
+las reconstruyó a partir del ZIP exacto. Validó 25 087 entradas del manifiesto,
+los hashes, los modos `0755`/`0600`/`0600` y el rechazo de un destino ya
+ocupado. Las rutas del VPS se trataron en modo lectura. El recibo consolidado
+está en `output/production/ops-05-first-batch-dry-run-2026-11-19.json`.
+
+#### Reversión del lote
+
+1. Adquirir, en ese orden, los locks existentes del receptor y de instalación.
+   Verificar `deployment_ready`, ausencia de bloqueo, API y worker activos,
+   índice de archivo íntegro y el estado completo de los intentos referidos.
+   Usar las identidades, tamaños y `mtime` guardados en la lectura previa.
+   Registrar el estado inicial del gateway y reservar el espacio simultáneo de las tres
+   rutas en sus filesystems y el margen de 2 GiB que exige el actualizador.
+2. Leer el ZIP de `archived-incoming` en su ruta original. Verificar el SHA-256,
+   sus cuatro miembros, el manifiesto de `7fa91a8832dd` y el SHA-256 del tar.
+   Preparar el ZIP y el tar secundarios como root:root `0600` en staging
+   privado en el filesystem de `attempts`. Preparar en el filesystem de
+   `releases` el árbol de `7fa91a8832dd` con `read_plan` y `extract_verified`,
+   verificarlo íntegramente y publicar su raíz como root:root `0755`.
+   Usar el manifiesto propio de `7fa91a8832dd` para esa identidad histórica.
+3. Restaurar el `mtime` registrado de cada ruta y sincronizar archivos y
+   directorios de staging. Publicar cada ruta por separado con
+   `renameat2(RENAME_NOREPLACE)` y sincronizar su directorio padre. Registrar
+   el resultado por ruta. Si se interrumpe, comprobar qué rutas quedaron
+   publicadas y verificar sus bytes antes de reanudar; una discrepancia
+   exige conciliación. Mantener `current`, los servicios y el ledger activos.
+4. Verificar bytes, árbol, modos y propietarios en las tres rutas finales.
+   Comparar `deployment_status`, estados de los intentos, `reference_groups`
+   y `archive_records` con el punto de partida. Conservar las identidades de
+   los recibos y la barrera contra repetir operaciones.
+
+### Retirada efectiva y cierre del primer lote
+
+El 2026-11-19 se retiraron las tres rutas autorizadas. El procedimiento tomó
+los locks del receptor y de instalación, volvió a verificar íntegramente
+los árboles `7fa91a8832dd` y `6b5408fb0905` y registró una intención
+durable antes de separar las rutas. Validó la salud del despliegue antes y
+después de la purga local. El ZIP original `14470210559.zip` conservó su
+ruta en `archived-incoming` y su SHA-256 completo.
+
+El espacio disponible en `/dev/sda1` pasó de 80 248 958 976 a 81 415 507 968
+bytes. La diferencia medida fue **1 166 548 992 bytes (1,09 GiB)**. La lectura
+independiente de las 04:38 UTC confirmó 35 % de ocupación, HTTP 200 por HTTPS,
+API y worker activos con los mismos PID, y `deployment_ready` con
+`blocked=false` para `backend-f769aa5945f0-35e74b20452c`. El intento
+`14cfa1a82506dd4f560360dd325f5dd9` seguía completo y las verificaciones
+de conciliación, 16 registros de archivo y 25 grupos de referencias pasaron.
+
+Las pruebas aisladas del ejecutor comprobaron la reposición de las tres
+rutas ante un fallo simulado posterior a la purga, incluso con un error al
+registrar una etapa de la reversión. La ejecución real terminó con los
+controles en verde. Se invalidó el ticket `sudo` y se cerró la sesión.
+El recibo root queda en `/var/lib/nodia-updates/ops05-batch01-14cfa1a82506dd4f560360dd325f5dd9`.
+El resultado consolidado está en `output/production/ops-05-first-batch-apply-2026-11-19.json`.
+
+El cierre cubre el primer lote. Quedan por decidir siete directorios y 30
+archivos secundarios, unos 10,75 GiB brutos según el inventario, junto con
+la política permanente de retención y custodia.
+
+### Política permanente de retención de despliegues
+
+La revisión es operativa y por lotes. La edad y la presión de disco sirven
+para ordenar candidatos. Antes de cualquier retirada, comprobar que el
+objeto pueda reconstruirse en su identidad exacta y que los lectores del
+estado y la conciliación conserven su resultado.
+
+| Objeto | Retención y criterio de retirada |
+| --- | --- |
+| Releases protegidos | Conservar localmente el activo, los releases usados por servicios o scripts de recuperación y dos árboles anteriores distintos con compatibilidad de esquema comprobada. Conservar las dos referencias recientes de 58 y 57 migraciones mientras se valida esa compatibilidad. Proteger los releases exigidos por intentos abiertos, fallidos o inciertos y por evidencias activas de conciliación. |
+| Releases históricos | Revisar duplicados de árbol una vez cerrado su intento y verificada la reconstrucción desde el ZIP de esa identidad. Mantener un árbol equivalente comprobado. Para otros releases históricos, revisar a partir de 30 días de cierre confirmado, preservando las referencias protegidas y el original recuperable. |
+| ZIP y tar secundarios en `attempts` | Retirar por lote únicamente copias de intentos completos sin protecciones activas, cotejadas por SHA-256 con el ZIP original y su tar. Conservar íntegros los directorios y metadatos de los intentos. |
+| ZIP originales | Conservar el original de cada release protegido mientras dure su protección y el de cada release histórico durante al menos 90 días desde su cierre. Con los lectores actuales, mantener todos los ZIP indexados en su ruta registrada. El traslado o la caducidad requiere un lector compatible, un recibo por identidad y un ensayo aislado de los nuevos estados. |
+| Diagnósticos voluminosos | Mantener 30 días locales desde el cierre verificado. Luego pueden trasladarse a custodia privada y cifrada hasta completar al menos 90 días desde el cierre. Conservar el diagnóstico mientras exista una investigación o un lector que lo necesite. Si falta fecha de cierre verificable o custodia comprobada, mantenerlo. |
+| Estado y evidencia | Conservar estados, intents, recibos, manifiestos y hashes consumidos por conciliación, procedencia o control de reintentos. Los backups, credenciales, perfiles y datos de aplicación se rigen por sus propias políticas. |
+
+La custodia externa deberá permitir recuperar el ZIP byte por byte, cotejar
+su SHA-256 y procedencia y comprobar el recorrido de recuperación antes de
+liberar la copia local. El archivador instalado exige hoy ruta, tamaño y
+modo exactos y ausencia de ZIP o parcial en la ruta de entrada. Su índice
+debe seguir siendo válido. [Lector del índice](../../ops/production/archive-completed-backend-upload.py#L221).
+La retención de 14 días configurada en esta rama
+para Server en Actions tiene un alcance distinto. El gate de migración de
+esta rama exige el ZIP oficial vigente del intento de CI, aunque haya una
+copia verificada en el VPS.
+
+Revisar tras cada intervención y en el mantenimiento mensual el espacio
+por filesystem, los inodos, el crecimiento de `attempts` y el volumen
+archivado. Usar 70 % de ocupación como aviso y 85 % como revisión prioritaria.
+Revisar también antes de agotar los 2 GiB o 10 archivos de `incoming` y el
+límite de 1 000 registros del índice o referencias por carpeta. Estos son
+avisos operativos. Cada lote reserva espacio para reconstruir sus rutas y
+el margen de 2 GiB del actualizador en el filesystem correspondiente.
+
+En una ejecución autorizada, validar rutas canónicas, propietarios,
+modos, identidad y hashes, montajes, ficheros en uso, espacio y referencias
+bajo los locks de receptor e instalación en ese orden. Registrar la
+intención antes de separar rutas, cotejar HTTPS, API, worker, conciliación
+e índice antes y después, medir la diferencia disponible y guardar el
+recibo. Si falla una comprobación, reconstruir las rutas exactas y conciliar
+el intento antes de reanudar. Esta política queda definida para aplicación
+operativa por lotes y deja pendiente el soporte de custodia externa.
+
+### Segundo lote preparado
+
+Se selecciona `backend-dd01e211e63b-6422a361f0c7` porque su ZIP ya se restauró
+en laboratorio y comparte árbol con `backend-fc6ab21980a6-6422a361f0c7`.
+La lectura del VPS del 2026-11-19 cotejó los manifiestos propios de ambos y
+el digest completo de árbol. El gateway estaba listo y el último inventario
+privilegiado sólo registra referencias de intentos completos a `dd01e211e63b`.
+
+| Ruta candidata | Bytes asignados según inventario |
+| --- | ---: |
+| `/opt/nodia/releases/backend-dd01e211e63b-6422a361f0c7` | 738 586 624 |
+| `/var/lib/nodia-updates/attempts/72b02b8185a6681b95382e89d407a6cf/14455433430.zip` | 216 981 504 |
+| `/var/lib/nodia-updates/attempts/72b02b8185a6681b95382e89d407a6cf/backend-dd01e211e63b-6422a361f0c7.tar.gz` | 211 013 632 |
+
+El lote suma 1 166 581 760 bytes brutos (1,09 GiB). Conservar el ZIP original
+en `archived-incoming/server-44363040565-1/14455433430.zip`, SHA-256
+`4904a89ff8c8adf0d78dd793a60e9308d5110b7838a4219dda154f8d57015c9a`,
+el árbol alternativo, su original `14460364209.zip` y los metadatos de ambos
+intentos. El tar recuperable tiene SHA-256
+`24b0277797329d04ae040f99191f1622c6a1a50c1bc8053712890982ef8a2fab`.
+El plan de reversión del primer lote se aplica a las tres rutas exactas de
+`dd01e211e63b`, con su manifiesto, permisos y `mtime` del próximo cotejo
+privilegiado. Tras el lote 2 quedarían seis directorios y 28 archivos
+secundarios en revisión, con 9,66 GiB brutos.
+
+En Docker se simuló la ausencia de las tres rutas del lote y se reconstruyeron
+desde `14455433430.zip`. El ensayo verificó 25 084 entradas del manifiesto,
+el equivalente obtenido de su propio ZIP, permisos, hashes y rechazo de un
+destino ocupado. El VPS se consultó en modo lectura. El lote queda preparado
+para un cotejo privilegiado bajo locks antes de una ejecución autorizada.
+La lista del lote 2 se guardó en
+`output/production/ops-05-second-batch-plan-2026-11-19.json` con los hashes,
+los 14 grupos que quedarían pendientes y el recibo local del ensayo.
+
+### Retirada efectiva y cierre del segundo lote
+
+El 2026-11-19 se retiraron las tres rutas autorizadas de `dd01e211e63b`.
+Bajo los locks del receptor y de instalación se volvieron a comprobar los
+árboles de `dd01e211e63b` y `fc6ab21980a6`, los SHA-256 y las referencias
+completas de ambos originales. El ZIP `14455433430.zip` conservó su ruta
+en `archived-incoming` y su SHA-256. El tar y ZIP retirados del intento
+eran copias secundarias. El ejecutor comprobó la salud antes y después
+de la purga y conservó los estados y recibos del despliegue.
+
+El espacio disponible pasó de 81 415 102 464 a 82 581 639 168 bytes. La
+diferencia medida fue **1 166 536 704 bytes (1,09 GiB)**. A las 04:52 UTC,
+la comprobación independiente registró HTTP 200 por HTTPS, API y worker
+activos con los mismos PID y el gateway `deployment_ready` con
+`blocked=false`. El release activo seguía siendo `f769aa5945f0`. El intento
+`72b02b8185a6681b95382e89d407a6cf` conservó su estado completo y su barrera
+contra reintentos. Pasaron el índice de 16 registros de archivo y los
+25 grupos de referencias.
+
+El ensayo aislado del ejecutor comprobó la reversión de las tres rutas ante
+un fallo simulado posterior a la purga, incluso con un error de registro.
+La ejecución real completó las comprobaciones. Se invalidó `sudo` y se
+cerró la sesión. El recibo root queda en
+`/var/lib/nodia-updates/ops05-batch02-72b02b8185a6681b95382e89d407a6cf`.
+El resultado consolidado está en `output/production/ops-05-second-batch-apply-2026-11-19.json`.
+
+Quedan seis directorios y 28 archivos secundarios agrupados en 14 intentos
+para revisión. Su tamaño de inventario es de 9,66 GiB brutos. El soporte de
+custodia externa de originales conserva su alcance pendiente.
+
+### Revisión de los 14 grupos y tercer lote
+
+El 2026-11-19 se auditaron en modo lectura los 14 grupos del inventario
+posterior al lote 2. Se cotejaron por SHA-256 los 14 ZIP originales, sus
+14 ZIP secundarios y los 14 tar de los intentos contra el contenido de
+cada original. Las referencias de los grupos corresponden a intentos,
+solicitudes y envíos completos. Los validadores confirmaron los 16 registros
+del índice de archivo y los 25 grupos del receptor. En los seis directorios
+candidatos se cotejó la identidad de árbol declarada en los manifiestos con
+la versión que se conservaría. El cotejo integral de archivos se hizo para
+el par del lote 3 y se repetirá para los otros pares al preparar sus lotes.
+
+Once originales están indexados en `archived-incoming`. Los de
+`6ba2afb7d258`, `dcd9758dee67` y `e1cb012267a5` siguen en `incoming`,
+con sus hashes y referencias verificados. Esos grupos quedan para una
+revisión posterior de su ruta de custodia. El inventario contó
+82 581 426 176 bytes disponibles. El release activo era
+`backend-f769aa5945f0-35e74b20452c` y el receptor confirmó que la
+conciliación seguía habilitada.
+
+El lote 3 reúne tres rutas de un solo intento completo. Los árboles
+instalados de `bb83fd262a10` y `307ffbccc510` pasaron el cotejo de
+24 560 entradas cada uno contra sus respectivos manifiestos. Ambos
+comparten el SHA-256 de árbol
+`3b25a0834e0fd9c571c125f502fa25dcca3a5350418aa96d6f06eddd1fe3b6b4`.
+El estado del despliegue y las referencias se mantuvieron estables durante
+la lectura.
+
+| Ruta candidata | Bytes asignados |
+| --- | ---: |
+| `/opt/nodia/releases/backend-bb83fd262a10-3b25a0834e0f` | 733 552 640 |
+| `/var/lib/nodia-updates/attempts/017edb5724bd1f86c6835130c7cc97cd/14123834136.zip` | 215 990 272 |
+| `/var/lib/nodia-updates/attempts/017edb5724bd1f86c6835130c7cc97cd/backend-bb83fd262a10-3b25a0834e0f.tar.gz` | 210 137 088 |
+
+El total de inventario es **1 159 680 000 bytes (1,08 GiB)**. Se conservan
+el árbol equivalente `backend-307ffbccc510-3b25a0834e0f`, ambos originales
+en sus rutas de custodia y los estados y recibos de los intentos.
+
+| Original conservado | SHA-256 |
+| --- | --- |
+| `/var/lib/nodia-updates/archived-incoming/server-43620970891-1/14123834136.zip` | `a64e0dba707443fecc5d2c55226d457b195bf1120e6f647173c9a6a5dbdb3db7` |
+| `/var/lib/nodia-updates/archived-incoming/server-43628466598-1/14127640136.zip` | `baf3806dd0fb74b97818b24fe020450b0962d9ddcc30eaea2a54f2e802400723` |
+
+La reversión usa el original `14123834136.zip` y el
+[procedimiento del primer lote](#reversión-del-lote). Si falla un control
+tras la retirada, se mantienen los locks y se reconstruyen las tres rutas
+desde el ZIP en directorios temporales privados del filesystem de destino.
+Se cotejan el SHA-256 del tar
+`d5e0e1b45798fa647990d390d19e11db92c5e975ed65d81148c3362c5620e9d6`,
+el manifiesto
+`871a0786caa6d91af252903303bc2991071b570170addcde9a9f433bba68da92`,
+el árbol, los propietarios, los modos y las marcas de tiempo registradas
+al ejecutar. La publicación rechaza destinos ocupados. Después se vuelven
+a comprobar el gateway, HTTPS, API, worker, conciliación y sus referencias.
+
+Un contenedor Docker local sin red reconstruyó las tres rutas a partir
+del original exacto y comprobó sus hashes, las 24 560 entradas, los
+propietarios, los modos y el rechazo de un destino ocupado. También
+reconstruyó el equivalente desde su propio original. El VPS se consultó
+en modo lectura para todo el lote y la sesión `sudo` se cerró. El
+informe consolidado está en
+`output/production/ops-05-third-batch-plan-2026-11-19.json`.
+
+El lote queda preparado para autorización y cotejo bajo los locks del
+receptor y de instalación. Tras retirarlo quedarían 13 grupos, con cinco
+directorios y 26 archivos secundarios (8,58 GiB brutos). Sigue pendiente
+el soporte de custodia externa.
+
+### Retirada efectiva y cierre del tercer lote
+
+El 2026-11-19 se retiraron las tres rutas autorizadas de `bb83fd262a10`.
+Bajo los locks del receptor y de instalación se cotejaron las rutas, los
+dos árboles instalados, los hashes y las referencias completas. El ZIP
+original `14123834136.zip` conservó su ruta en `archived-incoming` y su
+SHA-256 completo. También se volvió a verificar por SHA-256 el original
+del equivalente `307ffbccc510`.
+
+En `/dev/sda1` el espacio disponible pasó de 82 580 885 504 a
+83 740 516 352 bytes. Se liberaron **1 159 630 848 bytes (1,08 GiB)**.
+La verificación de cierre registró HTTP 200, los mismos PID de API y
+worker, el mismo release activo y `deployment_ready` con `blocked=false`.
+El intento `017edb5724bd1f86c6835130c7cc97cd` conservó su estado completo y
+su barrera contra reintentos. Pasaron los 16 registros del índice de
+archivo y los 25 grupos de referencias. La lectura posterior del VPS
+marcó 33 % de ocupación.
+
+La primera sonda Python de Windows informó un error de certificado.
+Se verificó HTTPS con validación TLS activa desde Windows, WSL y el VPS
+y las tres sondas devolvieron HTTP 200. El certificado presentado estaba
+vigente hasta el 2026-11-25 a las 10:30:58 UTC.
+
+El ensayo del ejecutor comprobó la reposición de las tres rutas desde el
+ZIP ante un fallo posterior a la purga y desde cuarentena ante un fallo
+del ZIP detectado antes de purgar. La ejecución real completó los
+controles y se cerró la sesión `sudo`. El recibo root está en
+`/var/lib/nodia-updates/ops05-batch03-017edb5724bd1f86c6835130c7cc97cd`.
+El resultado consolidado está en
+`output/production/ops-05-third-batch-apply-2026-11-19.json`.
+
+Quedan 13 grupos para preparar por tandas, con cinco directorios y
+26 copias secundarias que ocupan 8,58 GiB brutos. El soporte de custodia
+externa sigue pendiente.
+
+### Revisión de los 13 grupos y cuarto lote
+
+El 2026-11-19 se cotejaron por SHA-256 los 13 ZIP originales y las 26
+copias de intentos completos, 13 ZIP y 13 tar. Pasaron los 16 registros
+del índice de archivo y los 25 grupos de referencias del receptor. Diez
+originales están en `archived-incoming`. Los de `6ba2afb7d258`,
+`dcd9758dee67` y `e1cb012267a5` siguen en `incoming` y quedan para
+una revisión posterior de custodia. El release activo seguía siendo
+`backend-f769aa5945f0-35e74b20452c` y la conciliación estaba habilitada.
+
+El lote 4 reúne las tres rutas de `3beeedbcbf10`. El árbol instalado y su
+equivalente `e2c2eca346a2` pasaron el cotejo integral de 24 572 entradas
+contra sus respectivos manifiestos y comparten el SHA-256 de árbol
+`d096d1b33274812cc54b83bf0090d222476a7fe6f5b77d2406c7f97680495979`.
+En los demás candidatos con directorio se cotejó la identidad de árbol
+declarada. El cotejo integral queda para el lote de cada candidato.
+
+| Ruta candidata | Bytes asignados |
+| --- | ---: |
+| `/opt/nodia/releases/backend-3beeedbcbf10-d096d1b33274` | 733 609 984 |
+| `/var/lib/nodia-updates/attempts/08d60166afc4130b789db202ff298630/14140049857.zip` | 215 986 176 |
+| `/var/lib/nodia-updates/attempts/08d60166afc4130b789db202ff298630/backend-3beeedbcbf10-d096d1b33274.tar.gz` | 210 132 992 |
+
+Las tres rutas ocupan **1 159 729 152 bytes (1,08 GiB)**. Se preservan el
+árbol equivalente, ambos originales en sus rutas de custodia y los estados
+y recibos. Las referencias a la versión candidata pertenecen a intentos,
+solicitudes y envíos completos.
+
+| Original conservado | SHA-256 |
+| --- | --- |
+| `/var/lib/nodia-updates/archived-incoming/server-43662589149-1/14140049857.zip` | `094ff3278e1bce03efd139f18071464ebfee1757a203111c7dbb3c5316e06c7b` |
+| `/var/lib/nodia-updates/archived-incoming/server-43692516659-1/14153775349.zip` | `9a9059bad83c1a36a9e1612fc9510810c9083a42d39c876d943a413b76039d51` |
+
+La [reversión](#reversión-del-lote) repone las tres rutas desde cuarentena
+si siguen íntegras allí, o las reconstruye desde `14140049857.zip` si ya
+se purgaron. Mantiene los locks y comprueba rutas, propietarios, modos,
+marcas de tiempo registradas al ejecutar, referencias y salud antes de
+cerrar. El tar recuperable tiene SHA-256
+`5182feb2e93095b72c2535c2c9cf28e9670e1a0b19d46e5b5869fa048c0b5f01`.
+
+Docker local sin red reconstruyó las tres rutas desde el ZIP original,
+verificó las 24 572 entradas, los hashes, los propietarios y los modos,
+y rechazó un destino ocupado. También reconstruyó el equivalente desde
+su propio original. La revisión del VPS fue de solo lectura y la sesión
+`sudo` se cerró. El informe consolidado está en
+`output/production/ops-05-fourth-batch-plan-2026-11-19.json`.
+
+El lote queda preparado para autorización y revalidación bajo los locks
+del receptor y de instalación. Tras retirarlo quedarían 12 grupos, con
+cuatro directorios y 24 copias secundarias (7,50 GiB brutos). El soporte
+de custodia externa sigue pendiente.
+
+### Retirada efectiva y cierre del cuarto lote
+
+El 2026-11-19 se retiraron las tres rutas autorizadas de `3beeedbcbf10`.
+Bajo los locks del receptor y de instalación se revalidaron las rutas,
+los hashes, los dos árboles instalados y las referencias de los intentos
+completos. El ZIP original `14140049857.zip` conservó su ruta en
+`archived-incoming` y su SHA-256. También se verificó por SHA-256 el ZIP
+del equivalente `e2c2eca346a2`, cuyo árbol se conservó instalado.
+
+En `/dev/sda1` el espacio disponible pasó de 83 739 942 912 a
+84 899 622 912 bytes. Se liberaron **1 159 680 000 bytes (1,08 GiB)** y el
+disco quedó al 32 % de ocupación. A las 05:25 UTC, la comprobación externa
+confirmó HTTP 200 por HTTPS, los mismos PID de API y worker y el receptor
+`deployment_ready` con `blocked=false`. El release activo seguía siendo
+`backend-f769aa5945f0-35e74b20452c`. El intento
+`08d60166afc4130b789db202ff298630` mantuvo el estado completo y la barrera
+contra reintentos. Pasaron los 16 registros del índice de archivo y los
+25 grupos de referencias.
+
+El ensayo del ejecutor comprobó la reposición desde cuarentena ante un
+fallo detectado antes de purgar y desde el ZIP original después de
+purgar. La ejecución real completó los controles y la reversión no se
+activó. Se invalidó `sudo` y se cerró la sesión. El recibo root queda en
+`/var/lib/nodia-updates/ops05-batch04-08d60166afc4130b789db202ff298630`.
+El informe consolidado está en
+`output/production/ops-05-fourth-batch-apply-2026-11-19.json`.
+
+Quedan 12 grupos para preparar por tandas, con cuatro directorios y
+24 copias secundarias (7,50 GiB brutos). El soporte de custodia externa
+sigue pendiente.
+
+### Revisión de los 12 grupos y quinto lote
+
+El 2026-11-19 se cotejaron en modo lectura los 12 ZIP originales y las
+24 copias secundarias por SHA-256. Las referencias de estos grupos
+corresponden a intentos, solicitudes y envíos completos. Pasaron los
+16 registros del índice de archivo y los 25 grupos de referencias del
+receptor. Nueve originales están en `archived-incoming`. Los de
+`6ba2afb7d258`, `dcd9758dee67` y `e1cb012267a5` permanecen en
+`incoming` para la revisión de custodia. El release activo seguía siendo
+`backend-f769aa5945f0-35e74b20452c` y la conciliación estaba habilitada.
+
+El lote 5 reúne tres rutas de `20baee851cc3`. El árbol instalado y su
+equivalente `95b6189303df` pasaron el cotejo integral de 24 572 entradas
+cada uno con sus respectivos manifiestos. Ambos comparten el SHA-256 de
+árbol `c01d5047410c7288a7d3fa47db35876ef7ebbd3d0c6bb94acdf51633a38f882d`.
+En los demás candidatos con directorio se cotejó la identidad de árbol
+declarada. El cotejo integral queda para el lote de cada candidato.
+
+| Ruta candidata | Bytes asignados |
+| --- | ---: |
+| `/opt/nodia/releases/backend-20baee851cc3-c01d5047410c` | 733 605 888 |
+| `/var/lib/nodia-updates/attempts/668b168d7c4cf659a7dd9fc9aeccebc4/14179749992.zip` | 215 986 176 |
+| `/var/lib/nodia-updates/attempts/668b168d7c4cf659a7dd9fc9aeccebc4/backend-20baee851cc3-c01d5047410c.tar.gz` | 210 128 896 |
+
+Las tres rutas ocupan **1 159 720 960 bytes (1,08 GiB)**. Se preservan
+el árbol equivalente, ambos originales y los estados y recibos de
+los intentos. Las cinco referencias encontradas para la versión candidata
+pertenecen a intentos completos.
+
+| Original conservado | SHA-256 |
+| --- | --- |
+| `/var/lib/nodia-updates/archived-incoming/server-43760491504-1/14179749992.zip` | `1f2bbfdb3ec938130badbc9cd87766ec19aea7bbd94711c4de1a8ef66fbf751e` |
+| `/var/lib/nodia-updates/archived-incoming/server-43878077045-1/14231846639.zip` | `96c25b730234cc2397048710453e9c20f37873d2d48dd1e8382fbb6f051260b7` |
+
+La [reversión](#reversión-del-lote) mantiene los locks del receptor y de
+instalación. Repone las tres rutas desde cuarentena si siguen íntegras,
+o las reconstruye desde `14179749992.zip` si ya se purgaron. Verifica
+los hashes, el árbol, los propietarios, los modos y las marcas de tiempo
+registradas al ejecutar. La publicación rechaza destinos ocupados y el
+cierre vuelve a comprobar servicios, conciliación y referencias. El tar
+recuperable tiene SHA-256
+`057a6d94386178e4ae7029dc3e6570f588a1b6d4244baa0796b633d2c330880f`.
+
+Docker local sin red reconstruyó las tres rutas desde el ZIP original y
+el equivalente desde su propio ZIP. Verificó los hashes, propietarios,
+modos y las 24 572 entradas de ambos manifiestos, y rechazó un destino
+ocupado. Las rutas del VPS siguen en sus ubicaciones y la sesión `sudo`
+se cerró. El informe consolidado está en
+`output/production/ops-05-fifth-batch-plan-2026-11-19.json`.
+
+El lote queda preparado para autorización y revalidación bajo los locks.
+Tras retirarlo quedarían 11 grupos, con tres directorios y 22 copias
+secundarias (6,42 GiB brutos). El soporte de custodia externa sigue
+pendiente.
+
+### Retirada efectiva y cierre del quinto lote
+
+El 2026-11-19 se retiraron las tres rutas autorizadas de `20baee851cc3`.
+Bajo los locks del receptor y de instalación se revalidaron las rutas,
+los hashes, ambos árboles instalados y las cinco referencias de intentos
+completos. El ZIP original `14179749992.zip` conservó su ruta en
+`archived-incoming` y su SHA-256. Se preservó el árbol instalado
+`95b6189303df` y se volvió a cotejar el SHA-256 de su ZIP original.
+
+En `/dev/sda1` el espacio disponible pasó de 84 899 106 816 a
+86 058 786 816 bytes. Se liberaron **1 159 680 000 bytes (1,08 GiB)** y el
+disco quedó al 31 % de ocupación. A las 05:35 UTC, la comprobación externa
+confirmó HTTP 200 por HTTPS, los mismos PID de API y worker, el release
+activo `backend-f769aa5945f0-35e74b20452c` y el receptor
+`deployment_ready` con `blocked=false`. El intento
+`668b168d7c4cf659a7dd9fc9aeccebc4` mantuvo su estado completo y la barrera
+contra reintentos. Pasaron los 16 registros del índice de archivo y los
+25 grupos de referencias.
+
+En Docker se probó la reversión desde cuarentena y desde el ZIP original
+tras una purga simulada. La ejecución real completó los controles sin
+activar la reversión. Se invalidó `sudo` y se cerró la sesión. El recibo
+root queda en `/var/lib/nodia-updates/ops05-batch05-668b168d7c4cf659a7dd9fc9aeccebc4`.
+El informe consolidado está en
+`output/production/ops-05-fifth-batch-apply-2026-11-19.json`.
+
+Quedan 11 grupos para preparar por tandas, con tres directorios y
+22 copias secundarias (6,42 GiB brutos). El soporte de custodia externa
+sigue pendiente.
+
+### Lista única para los 11 grupos restantes
+
+El 2026-11-19 se revalidaron en el VPS las 25 rutas del inventario posterior
+al lote 5. El alcance reúne tres directorios de releases y 22 archivos
+secundarios en 11 intentos completos. Ocupan **6 892 990 464 bytes
+(6,42 GiB)**. Se cotejaron los SHA-256 de los 11 ZIP originales y de las
+22 copias, las referencias completas y los tres árboles candidatos con
+sus dos equivalentes. Pasaron los 16 registros del índice de archivo y
+los 25 grupos de referencias del receptor. La conciliación siguió habilitada.
+
+Ocho originales están en `archived-incoming`. Se incluyen las rutas
+secundarias de los tres intentos con original en `incoming` tras
+comprobar que cada ZIP canónico es único, conserva su SHA-256 y carece
+de un parcial o de una transición de archivo pendiente. Los 11 originales
+se conservan en su ruta canónica. Un cambio de ruta antes de la retirada
+detiene el grupo para revalidar la custodia.
+
+Los grupos con directorio `0f69d505f282`, `174c2ca5a1e7` y
+`6ba2afb7d258` preceden a los grupos de copias secundarias. Así, los
+tar de los equivalentes siguen disponibles para el cotejo inicial.
+Se conservan los árboles instalados de `dcd9758dee67` y `95b6189303df`,
+los releases protegidos y los estados y recibos de todos los intentos.
+
+Una autorización cubre la lista exacta. La ejecución avanza por grupo en
+la misma sesión, con locks de receptor e instalación en ese orden. Entre
+grupos se comprueban el ZIP original, el espacio recuperado, la API, el
+worker y la conciliación. Si falla un control tras separar rutas, se
+repone el grupo afectado desde cuarentena o desde su original verificado
+y se detiene la tanda.
+
+El ensayo local en Docker sin red repuso las 25 rutas desde los ZIP
+originales, validó los hashes, propietarios y modos y rechazó los 25
+destinos ocupados. Reconstruyó y cotejó también ambos árboles equivalentes.
+El VPS se usó en modo lectura. La sesión de trabajo queda abierta para
+una sola autorización.
+
+La lista exacta está en
+`output/production/ops-05-remaining-11-authorization-2026-11-19.md`
+y el informe verificable en el JSON del mismo nombre. La huella SHA-256
+del alcance ordenado es
+`2ecfd1a8e9c8f4dd5605371fb1778fc3f9982b9d8578f49df155c139b24f6d54`.
+La custodia externa permanente sigue pendiente.
+
+### Retirada en bloque y cierre del inventario de OPS-05
+
+El 2026-11-19 se completó en una sola sesión la retirada autorizada de las
+25 rutas de los 11 grupos. Cada grupo revalidó sus rutas, hashes y
+referencias bajo los locks del receptor y de instalación, en ese orden.
+Se conservaron los 11 ZIP originales en sus rutas canónicas y los dos
+árboles equivalentes. Cada grupo registró espacio recuperado, HTTP 200
+por HTTPS, los mismos PID de API y worker y la conciliación habilitada.
+Los 16 registros del índice y los 25 grupos de referencias siguieron
+válidos con el mismo release activo.
+
+En `/dev/sda1` el espacio disponible pasó de 86 039 830 528 a
+92 932 235 264 bytes. El aumento neto fue de **6 892 404 736 bytes
+(6,42 GiB)**. La suma de las mediciones por grupo fue 6 892 580 864 bytes.
+La comprobación externa confirmó el disco al 25 % de ocupación, la API
+respondiendo por HTTPS y el receptor `deployment_ready` con `blocked=false`.
+
+El ejecutor superó siete pruebas aisladas, incluidas la restauración
+después de purgar y la detención de la tanda ante un fallo. En producción
+completó todos los controles y la reversión quedó en reserva. Una consulta
+SSH de seguimiento agotó su espera y se retomó por el mismo identificador.
+Se invalidó `sudo` y se cerró la sesión al terminar. Los recibos
+privilegiados por intento están en `/var/lib/nodia-updates/ops05-bulk11-<intento>`.
+El resultado por grupo quedó en
+`output/production/ops-05-remaining-11-apply-2026-11-19.md` y en el JSON
+del mismo nombre.
+
+El inventario de candidatos queda cerrado. Sigue pendiente implementar y
+ensayar la custodia externa permanente de ZIP originales.
+
+### Custodia cifrada y restauración aislada
+
+El 2026-11-19 se creó una copia cifrada fuera del VPS con **19 ZIP**
+en almacenamiento privado del PC del operador. Se cotejaron 18 copias
+existentes con recibos del VPS. El ZIP del release activo
+`backend-f769aa5945f0-35e74b20452c` se descargó del artefacto oficial
+`14492927226` de Actions. Coincidió byte por byte con el SHA-256
+registrado en el VPS. El último inventario del servidor registraba
+25 ZIP físicos. Quedan seis por cotejar o copiar y clasificar en una
+lectura privilegiada actual.
+
+El [helper de custodia](../../ops/production/release-zip-custody.py)
+cifra cada ZIP original con una identidad X25519 dedicada en formato age
+v1. El catálogo registra identidad de CI, tamaños y SHA-256 del ZIP,
+cifrado, TAR, manifiesto y árbol. Se guarda la huella del catálogo por
+separado. La restauración coteja la huella, descifra en un destino temporal
+privado, comprueba procedencia y hashes y publica sin sobrescribir.
+La clave se generó con acceso exclusivo del operador, en un directorio
+separado del de los cifrados. Su segunda copia independiente queda
+pendiente. [Formato age v1](https://age-encryption.org/v1).
+
+Docker sin red recuperó los **19 ZIP** byte por byte y reconstruyó los
+árboles completos de tres releases, incluido el activo del inventario.
+Rechazó una clave ajena, un cifrado alterado, una huella incorrecta del
+catálogo y un destino ocupado. El ensayo usó sólo el almacenamiento del
+PC y archivos temporales en el contenedor. El recibo está en
+`output/production/ops-05-external-custody-rehearsal-2026-11-19.json`.
+
+El operador eligió Cloudflare R2. Se creó el bucket dedicado
+`nodia-ops05-release-custody` en clase Standard y se verificaron la URL
+pública deshabilitada y la ausencia de dominios conectados. El proceso
+usa Wrangler autenticado, coteja por descarga los cifrados y conserva
+la huella del catálogo aparte. Se publicaron 19 cifrados y dos
+catálogos. Cada objeto se leyó de R2 y se cotejó por SHA-256. El ensayo
+aislado partió de esos bytes descargados, recuperó los 19 ZIP exactos
+y reconstruyó tres releases completos, incluido el activo del
+inventario. El recibo está en
+`output/production/ops-05-r2-custody-2026-11-19.json`.
+
+En el primer tramo quedaron seis ZIP del inventario por cotejar o
+copiar desde el VPS y verificar desde R2.
+[Buckets privados](https://developers.cloudflare.com/r2/buckets/public-buckets/),
+[retención de objetos](https://developers.cloudflare.com/r2/buckets/bucket-locks/).
+
+Los originales del VPS permanecen en sus ubicaciones. Cualquier traslado
+posterior requiere adaptar y ensayar el lector del índice de archivo y los
+consumidores de recuperación para esa transición, además de autorización.
+[Procedimiento de custodia](../../ops/production/README.md#custodia-de-zip-originales-de-despliegue).
+
+### Custodia en R2 verificada para los 25 ZIP
+
+El 2026-11-19 se copiaron en modo lectura los seis ZIP restantes desde
+sus rutas canónicas en el VPS. Los seis coincidieron por tamaño y
+SHA-256 con sus recibos independientes. El inventario siguió estable,
+con 25 ZIP, cero archivos parciales, 16 registros del índice de
+archivo y 25 grupos de referencias. Dos ZIP corresponden a
+despliegues completos y cuatro a intentos fallidos. Sus estados
+operativos se conservaron.
+
+Se publicaron los seis ZIP cifrados y su catálogo en
+`nodia-ops05-release-custody`. La descarga autenticada cotejó el
+SHA-256 de los seis cifrados. En Docker sin red se recuperaron los
+seis ZIP byte por byte y se reconstruyeron los árboles completos de
+`d4345ea90eb9` (24 898 entradas) y `8017dbc63189` (25 084 entradas).
+El ensayo rechazó una identidad ajena, un cifrado alterado, un pin de
+catálogo incorrecto y un destino ocupado.
+
+Los **25 ZIP del inventario** quedaron cifrados en el bucket privado y
+restaurados byte por byte en Docker. Se verificaron cinco árboles de
+release en total. La huella del último catálogo es
+`04195ef483506513e07c79d8ca8f97552b82c14eac2a819332cbeb602689de87`.
+El recibo consolidado está en
+`output/production/ops-05-r2-custody-complete-2026-11-19.json`.
+
+Los originales del VPS conservan sus ubicaciones. Cualquier traslado
+exige adaptar y ensayar los lectores dependientes de las rutas locales.
+
+### Bloqueo de objetos de custodia en R2
+
+El 2026-11-19 se habilitó la regla `ops05-release-custody-90d` en el
+bucket `nodia-ops05-release-custody`. Protege contra borrado y
+sobrescritura los objetos de `ops05/v1/` durante 90 días por edad del
+objeto. La regla cubre los objetos existentes y las cargas futuras
+bajo ese prefijo. Al vencer el bloqueo se sigue aplicando la política
+de conservación de OPS-05. La configuración vigente sólo aborta
+cargas multipart incompletas y carece de caducidad automática para
+los objetos publicados. [Bloqueo de buckets de R2](https://developers.cloudflare.com/r2/buckets/bucket-locks/).
+
+Se comprobó mediante lectura de Cloudflare que la regla estuviera
+activa, la URL pública deshabilitada y la lista de dominios vacía.
+Se descargaron los tres catálogos y se cotejó su SHA-256 y la cobertura
+del prefijo para los 25 cifrados. También se descargó y verificó el
+cifrado del release activo del inventario después del cambio.
+El recibo quedó en `output/production/ops-05-r2-lock-2026-11-19.json`.
+
+### Segunda copia de la clave de custodia
+
+El 2026-11-19 el operador cifró una copia de la identidad de OPS-05 con
+una frase secreta mediante `age`. Con su autorización se publicó el
+archivo cifrado y una nota de recuperación en `Nodia/OPS-05/` de su
+bóveda privada de Obsidian en GitHub. La frase secreta se introduce en
+la terminal del operador y se conserva por separado.
+
+Se descargaron ambos archivos desde GitHub en un repositorio aislado.
+El SHA-256 de la copia cifrada coincide con el de la publicación. En
+Docker sin red, esa copia de GitHub descifró el ZIP `14492927226`,
+descargado de R2 después del bloqueo de 90 días. El ZIP restaurado
+coincidió byte por byte con el original según su SHA-256 y Docker
+verificó las 25 001 entradas del árbol del release
+`backend-f769aa5945f0-35e74b20452c`. La identidad descifrada se pasó al
+contenedor por una tubería. El recibo consolidado está en
+`output/production/ops-05-obsidian-key-restoration-2026-11-19.json`.
+
+Queda cerrado el alcance de OPS-05 para la retirada del inventario
+verificado, la política operativa de retención y la custodia externa
+de los 25 ZIP. Los originales conservan sus rutas en el VPS. Un futuro
+traslado requiere adaptar y ensayar los lectores que dependen de esas
+rutas.

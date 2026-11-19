@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "catalog_release": "nodia-ai-business-pos/4",
+  "catalog_release": "nodia-ai-business-pos/5",
   "context_module_route": "/tools/nodia-ai",
   "source_paths": [
     "docs/nodia-ai/knowledge/businesses/README.md",
@@ -5930,7 +5930,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts",
-          "sha256": "5f91f032e0e381b9592ab33ae3ce3fb81f55a6e7ffabb2c1038f3055206d3b0a"
+          "sha256": "b40f4960b7f16bad0bef88cd00ef27c556ad767e91797cbf78faea93e3dc0d4e"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -6006,7 +6006,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts",
-          "sha256": "5f91f032e0e381b9592ab33ae3ce3fb81f55a6e7ffabb2c1038f3055206d3b0a"
+          "sha256": "b40f4960b7f16bad0bef88cd00ef27c556ad767e91797cbf78faea93e3dc0d4e"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -6061,6 +6061,334 @@
         "/tools/business"
       ],
       "revision": 3
+    },
+    {
+      "capability_id": "nodia_business_shopping_lists_list",
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-business-reads-20261119.md"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "sha256": "60ee5f0938f3afdaaa0a9c9d5e3ca8f9659fdd8d300a376bc7c1272156a811ba"
+        },
+        {
+          "path": "nodia-server/src/business-access/business-access.ts",
+          "sha256": "8fb26d8e5751fa3333800d05f962454dc75b0026e3c6236539479fe127ca053a"
+        },
+        {
+          "path": "nodia-server/src/business-shopping-list/business-shopping-list.module.ts",
+          "sha256": "d264ef21c0bc354fd02bae44d1aea50f60e1ee5608fbd98af9267aa59677f9e0"
+        },
+        {
+          "path": "nodia-server/src/business-shopping-list/shopping-list-scope.ts",
+          "sha256": "90533dc61a2f731970059d60e4bc05740b71ce1f6f05e54fc0c4e61503f3c18a"
+        },
+        {
+          "path": "nodia-server/src/business-shopping-list/use-case/read-shopping-lists.use-case.ts",
+          "sha256": "fefd5969aaf2c6af68a2c114038f8eecd014a3bebb7851fddd64cb8f8d0c0455"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-products/business-shopping-list/shopping-lists-tool-family.ts",
+          "sha256": "2aa1b9f618c8084ca168413fdf141b02f48aa376526df014d8a5be2eab760543"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts",
+          "sha256": "b40f4960b7f16bad0bef88cd00ef27c556ad767e91797cbf78faea93e3dc0d4e"
+        }
+      ],
+      "input_schema": {
+        "definition": "ShoppingListsListInput",
+        "path": "nodia-server/src/nodia-ai-products/contracts/business-shopping-lists.schema.json",
+        "sha256": "0ef662426294576571f0c6e59bf6c0a7ede813d011b04be9ab27321de1bc338b"
+      },
+      "kind": "read",
+      "output_schema": {
+        "definition": "ShoppingListsListResult",
+        "path": "nodia-server/src/nodia-ai-products/contracts/business-shopping-lists.schema.json",
+        "sha256": "0ef662426294576571f0c6e59bf6c0a7ede813d011b04be9ab27321de1bc338b"
+      },
+      "publication": "published",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "revision": 1
+    },
+    {
+      "capability_id": "nodia_business_shopping_lists_get",
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-business-reads-20261119.md"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "sha256": "60ee5f0938f3afdaaa0a9c9d5e3ca8f9659fdd8d300a376bc7c1272156a811ba"
+        },
+        {
+          "path": "nodia-server/src/business-access/business-access.ts",
+          "sha256": "8fb26d8e5751fa3333800d05f962454dc75b0026e3c6236539479fe127ca053a"
+        },
+        {
+          "path": "nodia-server/src/business-shopping-list/business-shopping-list.module.ts",
+          "sha256": "d264ef21c0bc354fd02bae44d1aea50f60e1ee5608fbd98af9267aa59677f9e0"
+        },
+        {
+          "path": "nodia-server/src/business-shopping-list/shopping-list-scope.ts",
+          "sha256": "90533dc61a2f731970059d60e4bc05740b71ce1f6f05e54fc0c4e61503f3c18a"
+        },
+        {
+          "path": "nodia-server/src/business-shopping-list/use-case/read-shopping-lists.use-case.ts",
+          "sha256": "fefd5969aaf2c6af68a2c114038f8eecd014a3bebb7851fddd64cb8f8d0c0455"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-products/business-shopping-list/shopping-lists-tool-family.ts",
+          "sha256": "2aa1b9f618c8084ca168413fdf141b02f48aa376526df014d8a5be2eab760543"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts",
+          "sha256": "b40f4960b7f16bad0bef88cd00ef27c556ad767e91797cbf78faea93e3dc0d4e"
+        }
+      ],
+      "input_schema": {
+        "definition": "ShoppingListsGetInput",
+        "path": "nodia-server/src/nodia-ai-products/contracts/business-shopping-lists.schema.json",
+        "sha256": "0ef662426294576571f0c6e59bf6c0a7ede813d011b04be9ab27321de1bc338b"
+      },
+      "kind": "read",
+      "output_schema": {
+        "definition": "ShoppingListsGetResult",
+        "path": "nodia-server/src/nodia-ai-products/contracts/business-shopping-lists.schema.json",
+        "sha256": "0ef662426294576571f0c6e59bf6c0a7ede813d011b04be9ab27321de1bc338b"
+      },
+      "publication": "published",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "revision": 1
+    },
+    {
+      "capability_id": "nodia_business_cash_categories_list",
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-business-reads-20261119.md"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "sha256": "60ee5f0938f3afdaaa0a9c9d5e3ca8f9659fdd8d300a376bc7c1272156a811ba"
+        },
+        {
+          "path": "nodia-server/src/business-access/business-access.ts",
+          "sha256": "8fb26d8e5751fa3333800d05f962454dc75b0026e3c6236539479fe127ca053a"
+        },
+        {
+          "path": "nodia-server/src/business-cash/business-cash.module.ts",
+          "sha256": "b395a36a69754d1a531901a95667ef0ce562bc181cbc7d3e25d7b9d9410c9d77"
+        },
+        {
+          "path": "nodia-server/src/business-cash/cash-business-scope.ts",
+          "sha256": "2e779c630a23fa52fe9c2c07d80d97001c75f204977e2940e19c730f4e051817"
+        },
+        {
+          "path": "nodia-server/src/business-cash/use-case/read-cash-categories.use-case.ts",
+          "sha256": "8099aa996c70b32a2cdef0a704090220a94059a9ebf000d0e3de3ebad92530ab"
+        },
+        {
+          "path": "nodia-server/src/business-cash/use-case/read-cash-movements.use-case.ts",
+          "sha256": "650c07677341a21831e186de409ee88fcc955aa5792b223172b8bb120afbcfe6"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-products/business-cash/business-cash-tool-family.ts",
+          "sha256": "81ca975a39423e6298b5ce410a7a2030704b0ba9c9073e076dc623c20ed0babf"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts",
+          "sha256": "b40f4960b7f16bad0bef88cd00ef27c556ad767e91797cbf78faea93e3dc0d4e"
+        }
+      ],
+      "input_schema": {
+        "definition": "CashCategoriesListInput",
+        "path": "nodia-server/src/nodia-ai-products/contracts/business-cash.schema.json",
+        "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+      },
+      "kind": "read",
+      "output_schema": {
+        "definition": "CashCategoriesListResult",
+        "path": "nodia-server/src/nodia-ai-products/contracts/business-cash.schema.json",
+        "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+      },
+      "publication": "published",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "revision": 1
+    },
+    {
+      "capability_id": "nodia_business_cash_movements_get",
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-business-reads-20261119.md"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "sha256": "60ee5f0938f3afdaaa0a9c9d5e3ca8f9659fdd8d300a376bc7c1272156a811ba"
+        },
+        {
+          "path": "nodia-server/src/business-access/business-access.ts",
+          "sha256": "8fb26d8e5751fa3333800d05f962454dc75b0026e3c6236539479fe127ca053a"
+        },
+        {
+          "path": "nodia-server/src/business-cash/business-cash.module.ts",
+          "sha256": "b395a36a69754d1a531901a95667ef0ce562bc181cbc7d3e25d7b9d9410c9d77"
+        },
+        {
+          "path": "nodia-server/src/business-cash/cash-business-scope.ts",
+          "sha256": "2e779c630a23fa52fe9c2c07d80d97001c75f204977e2940e19c730f4e051817"
+        },
+        {
+          "path": "nodia-server/src/business-cash/use-case/read-cash-categories.use-case.ts",
+          "sha256": "8099aa996c70b32a2cdef0a704090220a94059a9ebf000d0e3de3ebad92530ab"
+        },
+        {
+          "path": "nodia-server/src/business-cash/use-case/read-cash-movements.use-case.ts",
+          "sha256": "650c07677341a21831e186de409ee88fcc955aa5792b223172b8bb120afbcfe6"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-products/business-cash/business-cash-tool-family.ts",
+          "sha256": "81ca975a39423e6298b5ce410a7a2030704b0ba9c9073e076dc623c20ed0babf"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts",
+          "sha256": "b40f4960b7f16bad0bef88cd00ef27c556ad767e91797cbf78faea93e3dc0d4e"
+        }
+      ],
+      "input_schema": {
+        "definition": "CashMovementsGetInput",
+        "path": "nodia-server/src/nodia-ai-products/contracts/business-cash.schema.json",
+        "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+      },
+      "kind": "read",
+      "output_schema": {
+        "definition": "CashMovementsGetResult",
+        "path": "nodia-server/src/nodia-ai-products/contracts/business-cash.schema.json",
+        "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+      },
+      "publication": "published",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "revision": 1
+    },
+    {
+      "capability_id": "nodia_business_cash_movements_list",
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-business-reads-20261119.md"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "sha256": "60ee5f0938f3afdaaa0a9c9d5e3ca8f9659fdd8d300a376bc7c1272156a811ba"
+        },
+        {
+          "path": "nodia-server/src/business-access/business-access.ts",
+          "sha256": "8fb26d8e5751fa3333800d05f962454dc75b0026e3c6236539479fe127ca053a"
+        },
+        {
+          "path": "nodia-server/src/business-cash/business-cash.module.ts",
+          "sha256": "b395a36a69754d1a531901a95667ef0ce562bc181cbc7d3e25d7b9d9410c9d77"
+        },
+        {
+          "path": "nodia-server/src/business-cash/cash-business-scope.ts",
+          "sha256": "2e779c630a23fa52fe9c2c07d80d97001c75f204977e2940e19c730f4e051817"
+        },
+        {
+          "path": "nodia-server/src/business-cash/use-case/read-cash-categories.use-case.ts",
+          "sha256": "8099aa996c70b32a2cdef0a704090220a94059a9ebf000d0e3de3ebad92530ab"
+        },
+        {
+          "path": "nodia-server/src/business-cash/use-case/read-cash-movements.use-case.ts",
+          "sha256": "650c07677341a21831e186de409ee88fcc955aa5792b223172b8bb120afbcfe6"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-products/business-cash/business-cash-tool-family.ts",
+          "sha256": "81ca975a39423e6298b5ce410a7a2030704b0ba9c9073e076dc623c20ed0babf"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts",
+          "sha256": "b40f4960b7f16bad0bef88cd00ef27c556ad767e91797cbf78faea93e3dc0d4e"
+        }
+      ],
+      "input_schema": {
+        "definition": "CashMovementsListInput",
+        "path": "nodia-server/src/nodia-ai-products/contracts/business-cash.schema.json",
+        "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+      },
+      "kind": "read",
+      "output_schema": {
+        "definition": "CashMovementsListResult",
+        "path": "nodia-server/src/nodia-ai-products/contracts/business-cash.schema.json",
+        "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+      },
+      "publication": "published",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "revision": 1
+    },
+    {
+      "capability_id": "nodia_business_cash_monthly_summary",
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-business-reads-20261119.md"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "sha256": "60ee5f0938f3afdaaa0a9c9d5e3ca8f9659fdd8d300a376bc7c1272156a811ba"
+        },
+        {
+          "path": "nodia-server/src/business-access/business-access.ts",
+          "sha256": "8fb26d8e5751fa3333800d05f962454dc75b0026e3c6236539479fe127ca053a"
+        },
+        {
+          "path": "nodia-server/src/business-cash/business-cash.module.ts",
+          "sha256": "b395a36a69754d1a531901a95667ef0ce562bc181cbc7d3e25d7b9d9410c9d77"
+        },
+        {
+          "path": "nodia-server/src/business-cash/cash-business-scope.ts",
+          "sha256": "2e779c630a23fa52fe9c2c07d80d97001c75f204977e2940e19c730f4e051817"
+        },
+        {
+          "path": "nodia-server/src/business-cash/use-case/read-cash-categories.use-case.ts",
+          "sha256": "8099aa996c70b32a2cdef0a704090220a94059a9ebf000d0e3de3ebad92530ab"
+        },
+        {
+          "path": "nodia-server/src/business-cash/use-case/read-cash-movements.use-case.ts",
+          "sha256": "650c07677341a21831e186de409ee88fcc955aa5792b223172b8bb120afbcfe6"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-products/business-cash/business-cash-tool-family.ts",
+          "sha256": "81ca975a39423e6298b5ce410a7a2030704b0ba9c9073e076dc623c20ed0babf"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts",
+          "sha256": "b40f4960b7f16bad0bef88cd00ef27c556ad767e91797cbf78faea93e3dc0d4e"
+        }
+      ],
+      "input_schema": {
+        "definition": "CashMonthlySummaryInput",
+        "path": "nodia-server/src/nodia-ai-products/contracts/business-cash.schema.json",
+        "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+      },
+      "kind": "read",
+      "output_schema": {
+        "definition": "CashMonthlySummaryResult",
+        "path": "nodia-server/src/nodia-ai-products/contracts/business-cash.schema.json",
+        "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+      },
+      "publication": "published",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "revision": 1
     }
   ],
   "bindings": [
@@ -7606,6 +7934,68 @@
       ],
       "sections": [
         "Filtros e informes"
+      ]
+    },
+    {
+      "document_id": "businesses.market-shopping-lists",
+      "fragment_id": "market-shopping-lists-read-v1",
+      "purpose": "feature_explanation",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_business_shopping_lists_list",
+          "input_schema_sha256": "0ef662426294576571f0c6e59bf6c0a7ede813d011b04be9ab27321de1bc338b",
+          "output_schema_sha256": "0ef662426294576571f0c6e59bf6c0a7ede813d011b04be9ab27321de1bc338b",
+          "revision": 1
+        },
+        {
+          "capability_id": "nodia_business_shopping_lists_get",
+          "input_schema_sha256": "0ef662426294576571f0c6e59bf6c0a7ede813d011b04be9ab27321de1bc338b",
+          "output_schema_sha256": "0ef662426294576571f0c6e59bf6c0a7ede813d011b04be9ab27321de1bc338b",
+          "revision": 1
+        }
+      ],
+      "sections": [
+        "Consultas de solo lectura en NodiaAI"
+      ]
+    },
+    {
+      "document_id": "businesses.cash-ledger-and-invoice-expenses",
+      "fragment_id": "business-cash-read-v1",
+      "purpose": "feature_explanation",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_business_cash_categories_list",
+          "input_schema_sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b",
+          "output_schema_sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b",
+          "revision": 1
+        },
+        {
+          "capability_id": "nodia_business_cash_movements_get",
+          "input_schema_sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b",
+          "output_schema_sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b",
+          "revision": 1
+        },
+        {
+          "capability_id": "nodia_business_cash_movements_list",
+          "input_schema_sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b",
+          "output_schema_sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b",
+          "revision": 1
+        },
+        {
+          "capability_id": "nodia_business_cash_monthly_summary",
+          "input_schema_sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b",
+          "output_schema_sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b",
+          "revision": 1
+        }
+      ],
+      "sections": [
+        "Consultas de solo lectura en NodiaAI"
       ]
     }
   ]

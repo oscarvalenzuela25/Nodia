@@ -28,6 +28,8 @@ jobs:
     outputs:
       client_sha: ${{ steps.client.outputs.source_sha }}
       server_sha: ${{ steps.server.outputs.source_sha }}
+      server_release_id: ${{ steps.server.outputs.release_id }}
+      server_package_tree_sha256: ${{ steps.server.outputs.package_tree_digest }}
       config_changed: ${{ steps.client.outputs.config_changed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -70,6 +72,7 @@ jobs:
       docs: ${{ steps.changes.outputs.docs }}
       ci: ${{ steps.changes.outputs.ci }}
       docs_only: ${{ steps.changes.outputs.docs_only }}
+      migration_rehearsal: ${{ steps.changes.outputs.migration_rehearsal }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -122,12 +125,19 @@ jobs:
             base="$(git rev-parse "$EVENT_HEAD_SHA^")"
           fi
           baseline_args=()
+          migration_rehearsal=false
           if [[ "$EVENT_NAME" == push && "$GITHUB_REF" == refs/heads/master ]]; then
             baseline_args=(--client-base "$CLIENT_BASE_SHA" --server-base "$SERVER_BASE_SHA" --force-client "$PRODUCTION_CONFIG_CHANGED")
+            migration_rehearsal="$(node ops/ci/migration-gate.mjs required "$SERVER_BASE_SHA" "$EVENT_HEAD_SHA")"
+            if [[ "$migration_rehearsal" != true && "$migration_rehearsal" != false ]]; then
+              printf '%s\n' '::error::Invalid migration rehearsal selection'
+              exit 1
+            fi
           fi
           node ops/ci/cd-selection.mjs \
             --base "$base" --head "$EVENT_HEAD_SHA" "${baseline_args[@]}" \
             --github-output "$GITHUB_OUTPUT" --summary "$GITHUB_STEP_SUMMARY"
+          printf 'migration_rehearsal=%s\n' "$migration_rehearsal" >> "$GITHUB_OUTPUT"
           git diff --check "$base" "$EVENT_HEAD_SHA"
 
   production-client-config:
@@ -211,8 +221,11 @@ jobs:
 
   server:
     name: Server and worker - build, contracts and tests
-    needs: changes
-    if: ${{ !cancelled() && needs.changes.result == 'success' && (needs.changes.outputs.server == 'true' || needs.changes.outputs.contracts == 'true') }}
+    needs: [changes, production-baselines]
+    if: ${{ !cancelled() && needs.changes.result == 'success' && (needs.production-baselines.result == 'success' || needs.production-baselines.result == 'skipped') && (needs.changes.outputs.server == 'true' || needs.changes.outputs.contracts == 'true') }}
+    permissions:
+      contents: read
+      actions: read
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     defaults:
@@ -252,6 +265,10 @@ jobs:
         env:
           DOTENV_CONFIG_PATH: /dev/null
         run: node test/market-shopping-lists.integration.mjs
+      - name: Verify NodiaAI Market Lists and Business Cash authority on disposable PostgreSQL
+        env:
+          DOTENV_CONFIG_PATH: /dev/null
+        run: node test/nodia-ai-business-reads.integration.mjs
       - name: Verify Personal News migration, credential isolation and HTTP authority on disposable PostgreSQL
         env:
           DOTENV_CONFIG_PATH: /dev/null
@@ -259,6 +276,31 @@ jobs:
       - name: Package the validated backend and Linux production dependencies without another build
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: node ../ops/ci/artifact-release.mjs package --root "$GITHUB_WORKSPACE" --source-sha "$GITHUB_SHA" --output "$RUNNER_TEMP/nodia-server-artifact" --component server
+      - name: Download and verify the exact deployed backend package
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.changes.outputs.migration_rehearsal == 'true'
+        working-directory: .
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          MIGRATION_BASELINE_SHA: ${{ needs.production-baselines.outputs.server_sha }}
+          MIGRATION_BASELINE_RELEASE: ${{ needs.production-baselines.outputs.server_release_id }}
+          MIGRATION_BASELINE_TREE: ${{ needs.production-baselines.outputs.server_package_tree_sha256 }}
+          MIGRATION_BASELINE_DIRECTORY: ${{ runner.temp }}/nodia-migration-baseline
+        run: node ops/ci/migration-baseline.mjs
+      - name: Rehearse the production migration with both validated releases
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.changes.outputs.migration_rehearsal == 'true'
+        working-directory: .
+        shell: bash
+        env:
+          MIGRATION_BASELINE_SHA: ${{ needs.production-baselines.outputs.server_sha }}
+          MIGRATION_BASELINE_RELEASE: ${{ needs.production-baselines.outputs.server_release_id }}
+          MIGRATION_BASELINE_TREE: ${{ needs.production-baselines.outputs.server_package_tree_sha256 }}
+        run: |
+          set -euo pipefail
+          receipt="$RUNNER_TEMP/nodia-migration-rehearsal.json"
+          python3 -B ops/production/tests/rehearse-release-migration.py \
+            "$RUNNER_TEMP/nodia-migration-baseline" "$RUNNER_TEMP/nodia-server-artifact" > "$receipt"
+          cat "$receipt"
+          node ops/ci/migration-gate.mjs record "$RUNNER_TEMP/nodia-server-artifact" "$receipt"
       - name: Verify archive contents and run identity without extracting or building
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: node ../ops/ci/artifact-release.mjs verify --root "$GITHUB_WORKSPACE" --source-sha "$GITHUB_SHA" --output "$RUNNER_TEMP/nodia-server-artifact" --component server
@@ -273,7 +315,7 @@ jobs:
             ${{ runner.temp }}/nodia-server-artifact/artifact-result.json
           if-no-files-found: error
           compression-level: 0
-          retention-days: 1
+          retention-days: 14
 
   python:
     name: Python adapter - isolated unit tests

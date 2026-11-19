@@ -3,6 +3,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import type { EntityManager } from 'typeorm';
 import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { applyRansack } from '../../common/utils/ransack-query.builder.js';
 import { RANSACK_POLICIES } from '../../common/utils/ransack-query.policies.js';
@@ -31,10 +32,11 @@ export class ReadCashCategoriesUseCase {
   list(
     value: QueryCashCategoriesDto,
     actor: ActorReference,
+    existingManager?: EntityManager,
   ): Promise<CashCategoryList> {
     const { filters, page, limit, direction } =
       normalizeCashCategoryQuery(value);
-    return this.scope.run(filters.business_id_eq, actor, async (manager) => {
+    const read = async (manager: EntityManager) => {
       const filtered = manager
         .getRepository(BusinessCashCategory)
         .createQueryBuilder('category')
@@ -81,7 +83,8 @@ export class ReadCashCategoriesUseCase {
           total_pages: Math.ceil(total / limit),
         },
       };
-    });
+    };
+    return this.scope.run(filters.business_id_eq, actor, read, existingManager);
   }
 
   detail(id: string, actor: ActorReference): Promise<CashCategory> {

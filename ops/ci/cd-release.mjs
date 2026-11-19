@@ -11,6 +11,7 @@ import { preflightPages, publishPages } from './cd-pages.mjs';
 import { pwaVerificationDetails, verifyPublishedPwaAssets } from './pwa-assets.mjs';
 import { inventory } from '../production/package-backend-release.mjs';
 import { deliveryReceipt } from './delivery-receipt.mjs';
+import { migrationRehearsalRequired, requireMigrationProof } from './migration-gate.mjs';
 
 function workspace(environment) {
   const output = path.resolve(environment.CD_WORKSPACE ?? '');
@@ -58,6 +59,10 @@ export async function prepareRelease(environment = process.env, { api = githubCl
       runAttempt: ci.run_attempt, repository: ci.repository, requireProduction: true, environment });
     const metadata = JSON.parse(fs.readFileSync(path.join(directory, 'build-metadata.json'), 'utf8'));
     requireCd(metadata.production_eligible === true, 'production_artifact_required');
+    if (component === 'server' && (metadata.migration_rehearsal !== undefined ||
+        migrationRehearsalRequired(root, server.source_sha, ci.source_sha))) {
+      requireMigrationProof(metadata.migration_rehearsal, server.current, metadata);
+    }
     result.artifacts[component] = { ...artifact, zip_file: zipFile, zip_bytes: downloaded.bytes,
       directory, metadata, result: JSON.parse(fs.readFileSync(path.join(directory, 'artifact-result.json'), 'utf8')) };
   }

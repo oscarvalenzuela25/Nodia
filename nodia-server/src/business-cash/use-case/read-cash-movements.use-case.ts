@@ -1,4 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import type { EntityManager } from 'typeorm';
 import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { applyRansack } from '../../common/utils/ransack-query.builder.js';
 import { RANSACK_POLICIES } from '../../common/utils/ransack-query.policies.js';
@@ -70,10 +71,11 @@ export class ReadCashMovementsUseCase {
   list(
     value: QueryCashMovementsDto,
     actor: ActorReference,
+    existingManager?: EntityManager,
   ): Promise<CashMovementList> {
     const { filters, page, limit, search, order, direction } =
       normalizeCashMovementQuery(value);
-    return this.scope.run(filters.business_id_eq, actor, async (manager) => {
+    const read = async (manager: EntityManager) => {
       const filtered = manager
         .getRepository(BusinessCashMovement)
         .createQueryBuilder('movement')
@@ -141,7 +143,8 @@ export class ReadCashMovementsUseCase {
         },
         summary: cashSummary(row),
       };
-    });
+    };
+    return this.scope.run(filters.business_id_eq, actor, read, existingManager);
   }
 
   detail(id: string, actor: ActorReference): Promise<CashMovement> {
@@ -153,12 +156,29 @@ export class ReadCashMovementsUseCase {
     );
   }
 
+  detailInBusiness(
+    business: string,
+    rawId: string,
+    actor: ActorReference,
+    existingManager: EntityManager,
+  ): Promise<CashMovement> {
+    const businessId = normalizeCashUuid(business, CASH_INVALID_QUERY);
+    const id = normalizeCashUuid(rawId, CASH_INVALID_QUERY);
+    return this.scope.run(
+      businessId,
+      actor,
+      (manager) => readCashMovement(manager, id, businessId),
+      existingManager,
+    );
+  }
+
   monthly(
     business: string,
     actor: ActorReference,
+    existingManager?: EntityManager,
   ): Promise<CashMonthlySummary> {
     const businessId = normalizeCashUuid(business, CASH_INVALID_QUERY);
-    return this.scope.run(businessId, actor, async (manager) => {
+    const read = async (manager: EntityManager) => {
       const period = cashMonthlyPeriod(new Date());
       const [row] = await manager.query<CashSummaryRow[]>(
         `SELECT ${CASH_SUMMARY_COLUMNS} FROM business_cash_movements
@@ -167,6 +187,7 @@ export class ReadCashMovementsUseCase {
         [businessId, period.from, period.to],
       );
       return { period, summary: cashSummary(row) };
-    });
+    };
+    return this.scope.run(businessId, actor, read, existingManager);
   }
 }

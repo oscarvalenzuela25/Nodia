@@ -1,5 +1,144 @@
 # Progreso del MVP — Nodia
 
+**NodiaAI, consultas de Market y Caja — 2026-11-19.** La publicación de
+esta rama añade dos lecturas de Listas de Market y cuatro de Caja. Los
+lectores nativos reutilizan la transacción del gateway. PostgreSQL aislado
+verificó los accesos permitidos, el aislamiento entre negocios y la
+revocación de permisos. [Evidencia](../evidence/nodia-ai-business-reads-20261119.md).
+
+**OPS-05, custodia y segunda copia verificadas — 2026-11-19.** Con
+la llave cifrada descargada de la bóveda privada de Obsidian en
+GitHub, Docker sin red restauró el ZIP del release activo descargado
+de R2. Coincidieron el SHA-256 del ZIP y las 25 001 entradas del árbol.
+El alcance de retirada, retención y custodia queda cerrado. Los
+originales siguen en el VPS.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#segunda-copia-de-la-clave-de-custodia).
+
+**OPS-05, bloqueo en R2 verificado — 2026-11-19.** Los 25 cifrados y
+tres catálogos del bucket privado quedan bajo una regla de 90 días.
+Se verificaron los catálogos y la descarga del cifrado del release
+activo después del cambio.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#bloqueo-de-objetos-de-custodia-en-r2).
+
+**OPS-05, custodia de 25 ZIP verificada en R2 — 2026-11-19.** Se
+completó la copia cifrada de los seis ZIP restantes. Docker recuperó
+los 25 originales del inventario byte por byte en los ensayos desde
+R2. Los originales siguen en el VPS.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#custodia-en-r2-verificada-para-los-25-zip).
+
+**OPS-05, custodia en R2 verificada para 19 ZIP — 2026-11-19.** El
+bucket privado dedicado contiene 19 cifrados. Docker recuperó los 19
+ZIP descargados de R2 byte por byte y reconstruyó tres releases.
+Quedan seis del último inventario por cotejar o copiar desde el VPS.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#custodia-cifrada-y-restauración-aislada).
+
+**OPS-05, copia cifrada y restauración aislada — 2026-11-19.** Se
+prepararon 19 ZIP cifrados en almacenamiento privado del PC. Docker
+recuperó los 19 byte por byte y reconstruyó tres releases, incluido el
+activo del inventario. Quedan seis ZIP del último inventario y la
+validación desde el destino permanente. Los originales siguen en el VPS.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#custodia-cifrada-y-restauración-aislada).
+
+**OPS-05, inventario de retirada completado — 2026-11-19.** La tanda
+autorizada retiró 25 rutas de 11 grupos y recuperó 6,42 GiB. Los 11 ZIP
+originales conservaron su SHA-256. API, worker y conciliación pasaron por
+grupo. Sigue pendiente la custodia externa permanente.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#retirada-en-bloque-y-cierre-del-inventario-de-ops-05).
+
+**OPS-05, lista única preparada — 2026-11-19.** Se cotejaron los
+11 originales y las referencias de las 25 rutas restantes (6,42 GiB
+brutos). Docker las restauró en aislamiento. El VPS se usó en modo
+lectura y la retirada sigue pendiente de autorización en bloque.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#lista-única-para-los-11-grupos-restantes).
+
+**OPS-05, quinto lote retirado — 2026-11-19.** Las tres rutas autorizadas
+liberaron 1,08 GiB. Se verificó el ZIP original, la API respondió HTTP 200,
+el worker mantuvo su PID y la conciliación siguió habilitada. Quedan 11
+grupos para preparar.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#retirada-efectiva-y-cierre-del-quinto-lote).
+
+**OPS-05, quinto lote preparado — 2026-11-19.** Se cotejaron las
+referencias, originales y copias de los 12 grupos. El lote 5 reúne tres
+rutas de `20baee851cc3` (1,08 GiB brutos). Docker reconstruyó las tres
+desde el ZIP original. La retirada queda pendiente de autorización.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#revisión-de-los-12-grupos-y-quinto-lote).
+
+**OPS-05, cuarto lote retirado — 2026-11-19.** Las tres rutas autorizadas
+liberaron 1,08 GiB. Se conservó y verificó el ZIP original. La API
+respondió HTTP 200, el worker mantuvo su PID y la conciliación siguió
+habilitada. Quedan 12 grupos para preparar por tandas.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#retirada-efectiva-y-cierre-del-cuarto-lote).
+
+**OPS-05, cuarto lote preparado — 2026-11-19.** Se revisaron las
+referencias y los ZIP originales de los 13 grupos pendientes. El lote 4
+reúne tres rutas de `3beeedbcbf10` (1,08 GiB brutos). Docker reconstruyó
+las tres desde el ZIP original. La retirada queda pendiente de autorización.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#revisión-de-los-13-grupos-y-cuarto-lote).
+
+**OPS-05, tercer lote retirado — 2026-11-19.** Las tres rutas autorizadas
+liberaron 1,08 GiB. El ZIP original conservó su SHA-256, la API respondió
+HTTP 200, el worker mantuvo su PID y la conciliación siguió habilitada.
+Quedan 13 grupos para preparar por tandas.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#retirada-efectiva-y-cierre-del-tercer-lote).
+
+**OPS-05, tercer lote preparado — 2026-11-19.** Se cotejaron los originales,
+copias y referencias de los 14 grupos pendientes. El lote 3 reúne tres
+rutas de `bb83fd262a10` (1,08 GiB brutos). Docker reconstruyó las tres
+desde el ZIP original. El VPS se consultó en modo lectura y la retirada
+queda pendiente de autorización.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#revisión-de-los-14-grupos-y-tercer-lote).
+
+**OPS-05, segundo lote retirado — 2026-11-19.** Las tres rutas autorizadas
+liberaron 1,09 GiB en el VPS. El ZIP original se verificó por SHA-256, la
+API respondió HTTP 200, el worker siguió activo y la conciliación quedó
+habilitada. [Plan99 §37](99-production-deployment-and-cicd-plan.md#retirada-efectiva-y-cierre-del-segundo-lote).
+
+**OPS-05, política de retención y segundo lote — 2026-11-19.** Se definió
+la conservación de releases, ZIP originales, diagnósticos y evidencias.
+El lote 2 reúne tres rutas de `dd01e211e63b` con 1,09 GiB brutos y reversión
+probada en Docker. Pendiente el cotejo privilegiado previo a ejecutar.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#política-permanente-de-retención-de-despliegues).
+
+**OPS-05, primer lote retirado — 2026-11-19.** Las tres rutas autorizadas
+liberaron 1,09 GiB en el VPS. Se verificó el ZIP original por SHA-256, la API
+respondió HTTP 200, el worker siguió activo y la conciliación quedó habilitada.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#retirada-efectiva-y-cierre-del-primer-lote).
+
+**OPS-05, primer lote simulado — 2026-11-19.** Se cotejaron tres rutas en el
+VPS en modo lectura. Suman 1,09 GiB y se repusieron desde el ZIP original en
+Docker local. El resultado incluye hashes, referencias y un plan de reversión.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#primer-lote-en-simulación-y-plan-de-reversión).
+
+**OPS-05, restauración y conciliación aisladas — 2026-11-19.** Tres ZIP
+originales coincidieron con el inventario. La recuperación pasó de 57 a 58
+migraciones y entre dos releases equivalentes de 58, con ambas API en HTTP
+200. Los lectores de estado y conciliación pasaron en dos casos con las
+copias secundarias y el directorio histórico ausentes del entorno de prueba.
+[Plan99 §37](99-production-deployment-and-cicd-plan.md#ensayo-aislado-de-restauración-y-conciliación).
+
+**OPS-05, inventario privilegiado del VPS — 2026-11-19.** El estado de
+despliegue ocupa 15,14 GiB. La revisión por referencia y SHA-256 identificó
+ocho directorios de release y 32 archivos secundarios para ensayar su
+retirada. La lista suma 11,83 GiB brutos y conserva los ZIP originales y
+la evidencia. [Plan99 §37](99-production-deployment-and-cicd-plan.md#inventario-privilegiado-y-lista-de-revisión).
+
+**OPS-05, inventario inicial del VPS — 2026-11-19.** El disco estaba al 36 %
+y 26 releases más dos candidatos sumaban 19,18 GiB. Se compararon los
+manifiestos y se registró la propuesta de conservación. Queda por medir
+los archivos privados y comprobar referencias. [Plan99 §37](99-production-deployment-and-cicd-plan.md#37-ops-05--inventario-de-disco-y-propuesta-de-retención--2026-11-19).
+
+**Ensayo de migración con paquetes reales — 2026-11-19.** CI de `master`
+incluye el ensayo antes de publicar el paquete de Server cuando cambia el
+esquema. Con los dos ZIP originales de Caja, PostgreSQL 16.15 validó la
+instalación limpia, la actualización 52→56 con datos, el rollback ante un
+commit rechazado y el arranque de la API. La ejecución en Actions sigue
+pendiente. [Plan99 §36](99-production-deployment-and-cicd-plan.md#36-continuidad-del-servicio-y-reintento-por-fase).
+
+**Caja, Listas y Noticias personales — 2026-11-19.** El usuario confirmó
+que CASH-001, LISTA-001 y NEWS-001 quedaron listos. El
+[TODO](TODO.md#entregas-cerradas-por-alcance) registra el cierre de las tres
+entregas y enlaza sus planes y evidencias.
+
 **Revisión móvil de Client — 2026-11-18.** Se corrigieron controles táctiles,
 oclusiones del compositor y de diálogos, navegación entre secciones y
 recuperación de errores en pantallas estrechas. La
@@ -50,14 +189,16 @@ PostgreSQL 16. El actualizador SQL de producción verificó 56→57 y 76
 entidades en Linux aislado con TLS. La CI ejecuta ambas comprobaciones de DB
 antes de empaquetar. [Plan110](110-market-shopping-lists-plan.md),
 [evidencia](../evidence/market-shopping-lists-20261118.md) y
-[LISTA-001](TODO.md#cola-actual) conservan el alcance y la entrega pendiente.
+[cierre de LISTA-001](110-market-shopping-lists-plan.md#10-cierre-de-lista-001--2026-11-19)
+conservan el alcance y la evidencia de entrega.
 
 **Entrega técnica de Caja, CASH-07 — 2026-11-17.**
 [Plan109 §16](109-business-cash-ledger-plan.md#16-verificación-de-entrega--cash-07-2026-11-17)
 registra los contratos HTTP y SQL, la comprobación móvil y la recuperación
 de recibos de Caja, Facturas y OCR. El resultado de Nodia CI corresponde
-al SHA de entrega en GitHub. El [TODO](TODO.md) conserva la adopción por
-entorno operativo.
+al SHA de entrega en GitHub. El
+[cierre de CASH-001](109-business-cash-ledger-plan.md#18-cierre-de-cash-001--2026-11-19)
+registra el CD y la confirmación del usuario.
 
 **Topbar y OCR de Negocios — 2026-11-17.** Corrección local en
 `codex/business-cash-ledger`. El [estado IA](../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17)

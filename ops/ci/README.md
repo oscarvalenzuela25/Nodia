@@ -347,18 +347,42 @@ Cada artefacto `client|server-<SHA>-<run_id>-<run_attempt>` contiene exactamente
 | `build-metadata.json` | Componente, commit, repositorio, evento, ref, run e intento |
 | `artifact-result.json` | Nombres y hashes que enlazan los tres anteriores |
 
-Retención del upload: **un día**; compresión exterior cero porque el tar ya está
-comprimido. No es la retención de backups PostgreSQL/R2, que conserva su contrato
-de siete días. Un paquete expirado necesita un nuevo run válido; no se amplía su
-vigencia cambiando metadatos. No se suben capturas de source, secretos ni carpetas
-temporales enteras. Las etiquetas de checks del paquete describen sólo las
-comprobaciones del empaquetador, sin fingir lint/tests globales.
+Los ZIP nuevos se conservan **14 días para Server** y **un día para Client**.
+La compresión exterior es cero porque el tar ya está comprimido. La retención
+de backups PostgreSQL/R2 conserva su contrato de siete días. Un paquete candidato
+expirado requiere un nuevo run válido. Cada ZIP conserva el inventario de cuatro
+archivos de la tabla.
 
 El upload de un job no acredita el resultado global: un consumidor debe exigir
 **CI completo terminado en success** para el SHA/intento exactos. El updater de
 operador comprueba además en la API oficial de GitHub la identidad y digest del
 **ZIP original de Actions** antes de abrirlo, y exige master actual. Un tar con
 hash coherente y metadatos autoafirmados no sustituye ese origen autenticado.
+
+### Ensayo de migración antes del upload de Server
+
+En push a `master`, CI compara el candidato con el commit del Server activo.
+Para cambios en migraciones, entidades o entradas del esquema, descarga el ZIP
+oficial del release activo y coteja el identificador y el digest completo del
+árbol con los del gateway. El ensayo usa PostgreSQL 16 con TLS, Redis local y
+el `update-backend-action.mjs` de producción dentro de una red Docker interna.
+El único token de descarga es el de Actions en modo lectura. Las PR y
+`development` conservan sus comprobaciones SQL y HTTP aisladas.
+
+El resultado del ensayo queda en `build-metadata.json`, identificado por el
+SHA y digest completos de ambos releases. CD lo comprueba contra el estado
+actual antes de aplicar el paquete. El tar y el manifiesto conservan sus bytes.
+Si el ZIP oficial activo falta o expiró, CI falla con
+`migration_baseline_official_artifact_unavailable`. La retención de 14 días
+aplica a los ZIP nuevos. Para diagnosticar una caducidad, comprobar por identidad
+el ZIP de la versión activa en el archivo del VPS y su procedencia en Actions.
+
+Para repetir el ensayo local, extraer externamente los cuatro archivos de cada
+ZIP verificado y pasar ambos directorios al script, en este orden.
+
+```bash
+python3 -B ops/production/tests/rehearse-release-migration.py /ruta/paquete-activo /ruta/paquete-candidato
+```
 
 Preparación local verificada: 48 tests Node (CI y acción SQL) y 17 Python del
 updater; actionlint para tres workflows. Empaquetado Linux real de f01 reutilizó

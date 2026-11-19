@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
   ServiceUnavailableException,
@@ -9,6 +10,7 @@ import {
   lockAuthority,
   type ActorReference,
 } from '../authorization/authority-transaction.js';
+import { hasAuthorityTransactionLocks } from '../authorization/authority-transaction-proof.js';
 import { CheckModuleAccessUseCase } from '../authorization/use-case/check-module-access.use-case.js';
 import { assertBusinessesAccess } from '../business-access/business-access.js';
 import {
@@ -27,13 +29,34 @@ export class CashBusinessScope {
     businessId: string,
     actor: ActorReference,
     work: (manager: EntityManager) => Promise<T>,
+    existingManager?: EntityManager,
   ): Promise<T> {
-    return this.transaction(actor, async (manager) => {
+    const operation = async (manager: EntityManager) => {
       await assertBusinessesAccess(manager, actor, [businessId], {
         lock: true,
       });
       return work(manager);
-    });
+    };
+    return existingManager
+      ? this.inAuthorityCheckpoint(actor, existingManager, operation)
+      : this.transaction(actor, operation);
+  }
+
+  private async inAuthorityCheckpoint<T>(
+    actor: ActorReference,
+    manager: EntityManager,
+    work: (manager: EntityManager) => Promise<T>,
+  ): Promise<T> {
+    if (
+      manager.dataSource !== this.source ||
+      !(await hasAuthorityTransactionLocks(manager))
+    )
+      throw new ForbiddenException(
+        'authorization:authority_transaction_required',
+      );
+    // Preserve the checkpoint's statement budget and common lock ordering.
+    await this.modules.execute(actor.userId, ['/business'], manager);
+    return work(manager);
   }
 
   forCategory<T>(
